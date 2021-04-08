@@ -1,0 +1,44 @@
+.icon {
+  display: inline-block;
+  @apply cursor-pointer;
+
+  &.icon-triangle {
+    width: 0;
+    height: 0;
+    border-left: 5px solid transparent;
+    border-right: 5px solid transparent;
+    border-top: 5px solid var(--color-gray);
+  }
+
+  &.icon-arrow {
+    width: 1rem;
+    height: 1rem;
+    background-repeat: no-repeat;
+    background-image: linear-gradient(-90deg, white 2px, transparent 2px, transparent),
+    linear-gradient(180deg, white 2px, transparent 2px, transparent);
+    transform: rotate(45deg);
+  }
+
+  &.icon-cross {
+    position: relative;
+    width: 20px;
+    height: 20px;
+
+    &:before, &:after {
+      position: absolute;
+      left: 15px;
+      content: ' ';
+      height: 20px;
+      width: 2px;
+      background-color: #666;
+    }
+
+    &:before {
+      transform: rotate(45deg);
+    }
+
+    &:after {
+      transform: rotate(-45deg);
+    }
+  }
+}

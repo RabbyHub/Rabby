@@ -1,0 +1,10 @@
+{
+  "appName": {
+    "message": "DeFox",
+    "description": "The name of the application"
+  },
+  "appDescription": {
+    "message": "A Local Security Defi Wallet",
+    "description": "The description of the application"
+  }
+}
