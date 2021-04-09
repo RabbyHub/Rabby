@@ -6,11 +6,10 @@ const sendMetadata = ({ data: { method, params }, origin }) => {
 }
 
 const getProviderState = (req) => {
-  return {}
-  // return {
-  //   chainId: methodMap.getChainId(),
-  //   accounts: methodMap.getAccounts(req),
-  // }
+  return {
+    chainId: 1,
+    // accounts: methodMap.getAccounts(req),
+  }
 }
 
 export default {

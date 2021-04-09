@@ -1,6 +1,6 @@
 import { hexToUtf8 } from 'web3-utils';
 
-const Sign = ({ params }) => {
+const SignText = ({ params }) => {
   const [hexData, addr] = params;
   const data = hexToUtf8(hexData);
 
@@ -12,4 +12,4 @@ const Sign = ({ params }) => {
   </>
 }
 
-export default Sign;
+export default SignText;

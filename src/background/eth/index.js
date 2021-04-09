@@ -28,9 +28,6 @@ class Eth {
   getAccounts = () => this.keyringController.getAccounts();
 
   signTransaction = (tx, from) => {
-    console.log('----signTransaction-----')
-    console.log(tx, from)
-
     return this.keyringController.signTransaction(tx, from);
   };
 

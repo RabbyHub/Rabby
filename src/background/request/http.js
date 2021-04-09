@@ -3,7 +3,7 @@ function request(method, params) {
 
   return new Promise((resolve) => {
     setTimeout(() => {
-      resolve('hello from request')
+      resolve('success sign', method, params)
     }, 3000);
   })
 }

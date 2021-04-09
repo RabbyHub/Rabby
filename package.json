@@ -20,7 +20,7 @@
     "eth-keyring-controller": "^6.1.0",
     "eth-sig-util": "^3.0.1",
     "eth-simple-keyring": "^4.0.0",
-    "ethereumjs-util": "^7.0.9",
+    "ethereumjs-util": "^7.0.10",
     "events": "^3.3.0",
     "extensionizer": "^1.0.1",
     "loglevel": "^1.7.1",

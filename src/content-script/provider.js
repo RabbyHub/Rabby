@@ -20,10 +20,12 @@ class EthereumProvider extends EventEmitter {
     this.dm = new DomMessage('provider-cs').connect();
     this.dm.on('message', (data) => this.emit('message', data));
 
-    const { accounts, chainId } = this.request({
+    const { accounts, chainId } = await this.request({
       method: 'getProviderState',
     });
 
+    console.log('000000000000000')
+    console.log(chainId)
     this.chainId = chainId;
     this.emit('connected', { chainId });
   }
@@ -48,6 +50,8 @@ class EthereumProvider extends EventEmitter {
       throw new Error('xxxx')
     }
 
+
+    console.log('[request: start]', args)
     if (document.visibilityState !== 'visible') {
       return new Promise((resolve, reject) => {
         this._hiddenRequests.push({

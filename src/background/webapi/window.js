@@ -7,27 +7,27 @@ let popWinId = 0;
 
 // if focus other windows, then reject the approval
 chrome.windows.onFocusChanged.addListener((winId) => {
-  console.log("focus", winId, popWinId);
   if (popWinId && winId !== popWinId) {
     chrome.windows.remove(popWinId);
+    popWinId = 0;
   }
 });
 
 chrome.windows.onRemoved.addListener((winId) => {
-  console.log("remove", winId, popWinId);
   if (winId === popWinId) {
     popWinId = 0;
   }
 });
 
-function openNotification(hash = "") {
+function openNotification(hash = '') {
+  console.log('try open', popWinId);
   if (popWinId) return;
 
   chrome.windows.create(
     {
       focused: true,
       url: `notification.html${hash}`,
-      type: "popup",
+      type: 'popup',
       ...WINDOW_SIZE,
     },
     (res) => {

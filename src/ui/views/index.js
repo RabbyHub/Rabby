@@ -20,7 +20,7 @@ import Unlock from './Unlock';
 const App = ({ eth }) => (
   <EthProvider eth={eth}>
     <Router>
-      <main className="p-6 relative h-full">
+      <main className="p-6 relative min-h-full">
         <Switch>
           <Route exact path="/import"><ImportEntry /></Route>
           <Route exact path="/import/key"><ImportKey /></Route>

@@ -44,6 +44,7 @@ export default class RequestFlow {
           id: tabId,
           state: APPROVAL_STATE.SIGN,
           params,
+          origin,
         });
 
         this.currentState = APPROVAL_STATE.REQUEST;

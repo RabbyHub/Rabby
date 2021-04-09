@@ -3,7 +3,7 @@ import { useHistory, useLocation } from 'react-router-dom';
 import { APPROVAL_STATE } from 'constants';
 import { Footer, Button } from 'ui/component';
 import { useEth, useApproval } from 'ui/helper';
-import { Connect, Sign } from './components';
+import { Connect, SignText, SignTx } from './components';
 
 const Approval = () => {
   const history = useHistory();
@@ -14,34 +14,46 @@ const Approval = () => {
   const init = async () => {
     const account = await eth.getAccount();
     setAccount(account);
-  }
+  };
 
   useEffect(() => {
     init();
   }, [account]);
 
   const handleCancel = () => {
-    handleNext(true);
-  }
+    handleNext('user reject');
+  };
 
   const handleAllow = () => {
     handleNext(null, true);
-  }
+  };
 
-  const Content = approval?.state === APPROVAL_STATE.CONNECT ? Connect :
-    approval?.state === APPROVAL_STATE.SIGN ? Sign : null;
+  const Content =
+    approval?.state === APPROVAL_STATE.CONNECT
+      ? Connect
+      : approval?.state === APPROVAL_STATE.SIGN
+      ? approval?.params.hexData
+        ? SignText
+        : SignTx
+      : null;
 
-  return <>
-    <div className="absolute top-0 left-0 w-full py-2 px-4 bg-primary text-white">
-      <div className="text-xs">Current account</div>
-      <div>{account}</div>
-    </div>
-    { Content && <Content params={approval.params} />}
-    <Footer className="flex space-x-4">
-      <Button block onClick={handleCancel}>Cancel</Button>
-      <Button block onClick={handleAllow}>Allow</Button>
-    </Footer>
-  </>
-}
+  return (
+    <>
+      <div className="absolute top-0 left-0 w-full py-2 px-4 bg-primary text-white">
+        <div className="text-xs">Current account</div>
+        <div>{account}</div>
+      </div>
+      {Content && <Content params={approval.params} origin={approval.origin} />}
+      <Footer className="flex space-x-4">
+        <Button block onClick={handleCancel}>
+          Cancel
+        </Button>
+        <Button block onClick={handleAllow}>
+          Allow
+        </Button>
+      </Footer>
+    </>
+  );
+};
 
 export default Approval;

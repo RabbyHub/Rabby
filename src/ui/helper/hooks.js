@@ -22,9 +22,6 @@ export const useApproval = () => {
   }
 
   useEffect(() => {
-    // if the user closes notification, the the request will be rejected
-    if (!isNotification()) return;
-
     const beforeunload = () => {
       handleNext('user reject');
     }

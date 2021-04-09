@@ -19,6 +19,7 @@ class Notification {
   };
 
   notify = (tabId, data) => {
+    console.log('notify:', data);
     return new Promise((resolve, reject) => {
       this.notification.set(tabId, {
         ...data,
