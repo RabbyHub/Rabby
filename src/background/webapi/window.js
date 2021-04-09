@@ -8,8 +8,8 @@ let popWinId = 0;
 // if focus other windows, then reject the approval
 chrome.windows.onFocusChanged.addListener((winId) => {
   if (popWinId && winId !== popWinId) {
-    chrome.windows.remove(popWinId);
-    popWinId = 0;
+    // chrome.windows.remove(popWinId);
+    // popWinId = 0;
   }
 });
 

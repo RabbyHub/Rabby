@@ -15,8 +15,8 @@ const CreateMnemonic = () => {
       title="Create Password"
       subTitle="this password will be used to unlock your wallet"
     />
-    <input placeholder="Password" />
-    <input placeholder="Repeat Password" />
+    <Input placeholder="Password" />
+    <Input placeholder="Repeat Password" />
     <Button block onClick={handleSubmit}>Next</Button>
   </>
 

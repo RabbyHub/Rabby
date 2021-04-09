@@ -1,33 +1,41 @@
 import { useState } from 'react';
-import { useHistory, useLocation } from "react-router-dom";
+import { useForm } from 'react-hook-form';
 import { Input, Footer, Button } from 'ui/component';
 import { useEth, useApproval } from 'ui/helper';
 
 const Unlock = () => {
-  const history = useHistory();
-  const [value, setValue] = useState('');
+  const {
+    register,
+    handleSubmit,
+  } = useForm();
   const eth = useEth();
   const [, handleApproval] = useApproval();
+  const [error, setErr] = useState();
 
-  const handleChange = ({ currentTarget: { value }}) => {
-    setValue(value);
-  }
+  const onSubmit = async ({ password }) => {
+    try {
+      await eth.submitPassword(password);
+      handleApproval(null, true);
+    } catch (err) {
+      setErr(err?.message || '密码错误');
+    }
+  };
 
-  const handleNext = async () => {
-    await eth.submitPassword(value);
-    handleApproval(null, true);
-  }
-
-  return <>
-    <h4 className="font-bold">Welcome back</h4>
-    <p className="text-xs mt-2">input your password to unlock</p>
-    <div className="pt-8">
-      <Input onChange={handleChange} placeholder="Password" />
-    </div>
-    <Footer>
-      <Button block onClick={handleNext}>Unlock</Button>
-    </Footer>
-  </>
-}
+  return (
+    <>
+      <h4 className="font-bold">Welcome back</h4>
+      <p className="text-xs mt-2">input your password to unlock</p>
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <div className="pt-8">
+          <Input {...register('password')} placeholder="Password" />
+          <div className="text-red-500">{error}</div>
+        </div>
+        <Footer>
+          <Button block>Unlock</Button>
+        </Footer>
+      </form>
+    </>
+  );
+};
 
 export default Unlock;

@@ -32,9 +32,9 @@ const Approval = () => {
     approval?.state === APPROVAL_STATE.CONNECT
       ? Connect
       : approval?.state === APPROVAL_STATE.SIGN
-      ? approval?.params.hexData
-        ? SignText
-        : SignTx
+      ? approval?.params.gas
+        ? SignTx
+        : SignText
       : null;
 
   return (

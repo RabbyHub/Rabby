@@ -18,7 +18,7 @@ export const useApproval = () => {
     if (approval) {
       eth.handleApproval(approval.id, { err, res });
     }
-    history.push('/')
+    history.push('/');
   }
 
   useEffect(() => {
