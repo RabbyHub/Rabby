@@ -1,18 +1,18 @@
 import { APPROVAL_STATE } from 'constants';
 import eth from 'background/eth';
-import { approval, permission } from 'background/wallet';
+import { notification, permission } from 'background/wallet';
 import methods, { NEED_CONFIRM } from 'background/request';
 
 export default class RequestFlow {
   currentState = eth.isUnlocked() ? APPROVAL_STATE.UNLOCK : APPROVAL_STATE.LOCK;
 
   forwardNext = async (req) => {
-    const { _id_, data: { method, params }, origin } = req;
+    const { tabId, data: { method, params }, origin } = req;
 
     switch (this.currentState) {
       case APPROVAL_STATE.LOCK:
-        await approval.setApprovalWithPopup(_id_, {
-          id: _id_,
+        await notification.notify(tabId, {
+          id: tabId,
           state: APPROVAL_STATE.UNLOCK,
         });
         this.currentState = APPROVAL_STATE.UNLOCK;
@@ -23,8 +23,8 @@ export default class RequestFlow {
 
         // TODO: check the method permission
         if (!permission.hasPerssmion(origin)) {
-          await approval.setApprovalWithPopup(_id_, {
-            id: _id_,
+          await notification.notify(tabId, {
+            id: tabId,
             state: APPROVAL_STATE.CONNECT,
             params: siteMetadata,
           });
@@ -40,8 +40,8 @@ export default class RequestFlow {
         break;
 
       case APPROVAL_STATE.SIGN:
-        await approval.setApprovalWithPopup(_id_, {
-          id: _id_,
+        await notification.notify(tabId, {
+          id: tabId,
           state: APPROVAL_STATE.SIGN,
           params,
         });
@@ -60,7 +60,7 @@ export default class RequestFlow {
   }
 
   handle = async (req) => {
-    const { _id_, data: { method, params }, origin } = req;
+    const { tabId, data: { method, params }, origin } = req;
 
     if (!methods[method]) {
       throw new Error(`method [${method}] doesn't has corresponding handler`);

@@ -5,6 +5,7 @@ class PortMessage extends Message {
     super(...args);
     if (port) {
       this.port = port;
+      this.tabId = port.sender.tab.id;
     }
   }
 
@@ -20,7 +21,9 @@ class PortMessage extends Message {
   listen = (listenCallback) => {
     this.listenCallback = listenCallback;
     this.port.onMessage.addListener((data) => {
-      this.emit('data', data);
+      this.emit('data', data, {
+        tabId: this.tabId,
+      });
     });
 
     return this;

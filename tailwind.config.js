@@ -1,8 +1,8 @@
 module.exports = {
   mode: 'jit',
   purge: [
-    './src/{popup,notification}/**/*.html',
-    './src/{popup,notification}/**/*.js',
+    './src/ui/**/*.html',
+    './src/ui/**/*.js',
   ],
   theme: {
     extend: {

@@ -10,8 +10,7 @@ const config = {
     background: paths.rootResolve('src/background/index.js'),
     'content-script': paths.rootResolve('src/content-script/index.js'),
     provider: paths.rootResolve('src/content-script/provider.js'),
-    popup: paths.rootResolve('src/popup/index.js'),
-    notification: paths.rootResolve('src/notification/index.js'),
+    ui: paths.rootResolve('src/ui/index.js'),
   },
   output: {
     path: paths.dist,
@@ -45,13 +44,13 @@ const config = {
     new HtmlWebpackPlugin({
       inject: true,
       template: paths.popupHtml,
-      chunks: ['popup'],
+      chunks: ['ui'],
       filename: 'popup.html',
     }),
     new HtmlWebpackPlugin({
       inject: true,
       template: paths.notificationHtml,
-      chunks: ['notification'],
+      chunks: ['ui'],
       filename: 'notification.html',
     }),
     new webpack.ProvidePlugin({

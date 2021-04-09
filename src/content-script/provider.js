@@ -7,11 +7,13 @@ const { DomMessage } = Message;
 
 class EthereumProvider extends EventEmitter {
   chainId = null;
+  _hiddenRequests = [];
 
   constructor() {
     super();
 
     this.initialize();
+    this.processHiddenRequest();
   }
 
   initialize = async () => {
@@ -30,10 +32,30 @@ class EthereumProvider extends EventEmitter {
     return true;
   }
 
+  processHiddenRequest = async () => {
+    document.addEventListener("visibilitychange", () => {
+      if (document.visibilityState === 'visible') {
+        for (let i = 0; i < this._hiddenRequests.length; i++) {
+          const { data, resolve } = this._hiddenRequests.shift();
+          resolve(this.dm.request(data));
+        }
+      }
+    });
+  }
+
   request = (args) => {
-    console.log('[request: send]', args);
     if (!args) {
       throw new Error('xxxx')
+    }
+
+    if (document.visibilityState !== 'visible') {
+      return new Promise((resolve, reject) => {
+        this._hiddenRequests.push({
+          data: args,
+          resolve,
+          reject,
+        });
+      });
     }
 
     return this.dm.request(args).then(_ => {

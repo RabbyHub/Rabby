@@ -10,11 +10,10 @@ class Message extends EventEmitter {
     super();
 
     // two ends both can receive data //
-    this.on('data', async ({ _id_, data, _result_ }) => {
+    this.on('data', async ({ _id_, data, _result_ }, tab) => {
       if (_result_) {
+        // the url may update
         if (!this._pendingReqs.has(_id_)) {
-          this.emit('error')
-
           return;
         }
         const { resolve, reject } = this._pendingReqs.get(_id_);
@@ -31,7 +30,7 @@ class Message extends EventEmitter {
         let res, err;
 
         try {
-          res = await this.listenCallback({ _id_, ...data });
+          res = await this.listenCallback({ ...data, ...tab });
         } catch (e) {
           err = e?.message || e;
         }
