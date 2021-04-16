@@ -1,6 +1,6 @@
 import { useEffect, useReducer } from 'react';
 import { useHistory } from 'react-router-dom';
-import { useEth } from './EthContext';
+import { useWallet } from './WalletContext';
 import { isNotification } from '.';
 
 export const useForceUpdate = () => {
@@ -10,13 +10,13 @@ export const useForceUpdate = () => {
 }
 
 export const useApproval = () => {
-  const eth = useEth();
-  const approval = eth.getApproval();
+  const wallet = useWallet();
+  const approval = wallet.getApproval();
   const history = useHistory();
 
   const handleNext = (err, res) => {
     if (approval) {
-      eth.handleApproval(approval.id, { err, res });
+      wallet.handleApproval(approval.id, { err, res });
     }
     history.push('/');
   }

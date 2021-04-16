@@ -1,4 +1,4 @@
-import { isRuntimeError } from 'background/webapi';
+import { isRuntimeError } from 'background/common';
 
 class CacheStorage {
   cacheMap = new Map();

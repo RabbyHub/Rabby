@@ -1,21 +1,21 @@
 import { useEffect, useState } from 'react';
 import { Redirect, use } from 'react-router-dom';
-import { useEth, isNotification, WINDOW_TYPE } from 'ui/helper';
+import { useWallet, isNotification, WINDOW_TYPE } from 'ui/helper';
 
 const SortHat = () => {
-  const eth = useEth();
+  const wallet = useWallet();
   const [to, setTo] = useState();
 
   useEffect(() => {
     const isInNotification = isNotification();
-    const approval = eth.getApproval();
-    const hasVault = eth.hasVault();
-    const isUnlocked = eth.isUnlocked();
+    const approval = wallet.getApproval();
+    const isSetup = wallet.isSetup();
+    const isUnlocked = wallet.isUnlocked();
 
     if (isInNotification && !approval) {
       window.close();
-    } else if (!hasVault) {
-      setTo('/import');
+    } else if (!isSetup) {
+      setTo('/password');
     } else if (!isUnlocked) {
       setTo('/unlock');
     } else if (approval) {

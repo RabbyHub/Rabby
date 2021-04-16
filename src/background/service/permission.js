@@ -1,4 +1,4 @@
-import { createPersistStore } from 'background/helper';
+import { createPersistStore } from 'background/utils';
 
 class Permission {
   sitesMetadata = new Map();

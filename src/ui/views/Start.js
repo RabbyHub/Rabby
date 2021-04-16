@@ -4,16 +4,27 @@ import { Button, Header } from 'ui/component';
 const Start = () => {
   const history = useHistory();
 
-  return <>
-    <Header
-      title={'Create or Import Account Number'}
-      subTitle={'you can create a new account or import an existing one through seed pharse,private key or JSON file'}
-      className="mb-4"
-    />
-    <Link to="/create"><Button>Create</Button></Link>
-    <Link to="/import/mnemonic"><Button>Import</Button></Link>
-  </>
-
-}
+  return (
+    <>
+      <Header
+        title={'Create or Import Account Number'}
+        subTitle={
+          'you can create a new account or import an existing one through seed pharse,private key or JSON file'
+        }
+        className="mb-4"
+      />
+      <Link to="/create">
+        <Button block type="primary mb-2 mt-4">
+          Create
+        </Button>
+      </Link>
+      <Link to="/import">
+        <Button block type="primary">
+          Import
+        </Button>
+      </Link>
+    </>
+  );
+};
 
 export default Start;

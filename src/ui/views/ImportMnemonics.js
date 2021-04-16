@@ -1,8 +1,8 @@
 import { useForm } from 'react-hook-form';
-import { Input, Footer } from 'ui/component';
+import { Input, Footer, Header } from 'ui/component';
 import { useWallet, useApproval } from 'ui/helper';
 
-const ImportKey = () => {
+const ImportMnemonic = () => {
   const {
     register,
     formState: { isValid },
@@ -11,9 +11,9 @@ const ImportKey = () => {
   const wallet = useWallet();
   const [, handleApproval] = useApproval();
 
-  const onSubmit = async ({ key }) => {
+  const onSubmit = async ({ mnemonics }) => {
     try {
-      await wallet.importKey(key);
+      await wallet.importMnemonics(mnemonics.trim());
       wallet.setup();
 
       handleApproval(null, true);
@@ -24,13 +24,15 @@ const ImportKey = () => {
 
   return (
     <>
-      <h4 className="font-bold">Import Private Key</h4>
-      <p className="text-xs mt-2">Please input your private key below</p>
+      <Header
+        title="Import Mnemonics"
+        subTitle="Please input your mnemonics below"
+      />
       <form onSubmit={handleSubmit(onSubmit)}>
         <div className="pt-8">
-          <Input
-            {...register('key', { required: true })}
-            placeholder="Private key"
+          <Input.Textarea
+            {...register('mnemonics', { required: true })}
+            placeholder="Mnemonics"
           />
         </div>
         <Footer.Nav nextDisabled={!isValid} />
@@ -39,4 +41,4 @@ const ImportKey = () => {
   );
 };
 
-export default ImportKey;
+export default ImportMnemonic;

@@ -1,4 +1,4 @@
-import { openNotification } from "background/webapi";
+import { openNotification } from "background/utils/webapi";
 
 // something need user approval in window
 // should always open only one window
@@ -19,7 +19,6 @@ class Notification {
   };
 
   notify = (tabId, data) => {
-    console.log('notify:', data);
     return new Promise((resolve, reject) => {
       this.notification.set(tabId, {
         ...data,

@@ -720,6 +720,10 @@ class KeyringController extends EventEmitter {
       })
   }
 
+  getAllTypedAccounts () {
+    return Promise.all(this.keyrings.map(this.displayForKeyring));
+  }
+
   /**
    * Add Gas Buffer
    *

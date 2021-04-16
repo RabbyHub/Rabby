@@ -1,5 +1,4 @@
-import eth from 'background/eth';
-import { permission } from 'background/wallet';
+import { eth, permission } from 'background/service';
 
 export default ({ origin }) => {
   if (!permission.hasPerssmion(origin)) {

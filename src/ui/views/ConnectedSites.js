@@ -1,13 +1,13 @@
 import { useState, useEffect } from 'react';
 import { Button, Header } from 'ui/component';
-import { useEth } from 'ui/helper';
+import { useWallet } from 'ui/helper';
 
 const ConnectedSites = () => {
   const [sites, setSites] = useState([]);
-  const eth = useEth();
+  const wallet = useWallet();
 
   const getSites = async () => {
-    const sites = await eth.getConnectedSites();
+    const sites = await wallet.getConnectedSites();
 
     setSites(sites);
   }
@@ -17,7 +17,7 @@ const ConnectedSites = () => {
   }, []);
 
   const handleRemove = ({ currentTarget: { dataset: { origin } }}) => {
-    eth.removeConnectedSite(origin);
+    wallet.removeConnectedSite(origin);
     getSites();
   }
 

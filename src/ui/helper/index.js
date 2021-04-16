@@ -1,6 +1,6 @@
 export const noop = () => {};
 
-export * from './EthContext';
+export * from './WalletContext';
 
 export * from './hooks';
 

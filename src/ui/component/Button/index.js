@@ -8,6 +8,7 @@ function Button({
   block,
   className,
   size,
+  htmlType = 'button',
   ...restProps
 }) {
   return (
@@ -16,13 +17,13 @@ function Button({
         'btn',
         { 'w-full': block },
         [type && `is-${type}`, size && `is-${size}`],
-        className,
+        className
       )}
-      {...restProps}
-    >
+      type={htmlType}
+      {...restProps}>
       {children}
     </button>
-  )
+  );
 }
 
 export default Button;

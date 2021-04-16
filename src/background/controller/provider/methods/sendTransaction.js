@@ -1,6 +1,6 @@
 import { Transaction } from '@ethereumjs/tx';
-import eth from 'background/eth';
-import { http } from 'background/request';
+import { eth } from 'background/service';
+import { http } from 'background/utils';
 
 export default async ({ data: { params } }) => {
   const [txParams] = params;

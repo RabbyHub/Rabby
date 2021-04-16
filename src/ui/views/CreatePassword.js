@@ -1,25 +1,57 @@
 import { useHistory } from 'react-router-dom';
+import { useForm } from 'react-hook-form';
 import { Button, Header, Input } from 'ui/component';
+import { useWallet } from 'ui/helper';
 
-const { Textarea } = Input;
-
-const CreateMnemonic = () => {
+const CreatePassword = () => {
+  const {
+    register,
+    handleSubmit,
+    getValues,
+    formState: { isValid, errors },
+  } = useForm({ mode: 'onChange' });
   const history = useHistory();
+  const wallet = useWallet();
 
-  const handleSubmit = () => {
+  const onSubmit = ({ password }) => {
+    console.log('password', password)
+    wallet.setPassword(password.trim());
+    history.push('/start');
+  };
 
-  }
+  return (
+    <>
+      <Header
+        title="Create Password"
+        subTitle="this password will be used to unlock your wallet"
+      />
+      <form onSubmit={handleSubmit(onSubmit)}>
+        <Input
+          className="mb-4"
+          {...register('password', {
+            required: true,
+          })}
+          placeholder="Password"
+        />
+        <Input
+          className="mb-4"
+          {...register('_password', {
+            required: true,
+            validate: (v) => v === getValues('password'),
+          })}
+          placeholder="Repeat Password"
+        />
+        <Button
+          type="primary"
+          htmlType="submit"
+          block
+          onClick={handleSubmit}
+          disabled={!isValid}>
+          Next
+        </Button>
+      </form>
+    </>
+  );
+};
 
-  return <>
-    <Header
-      title="Create Password"
-      subTitle="this password will be used to unlock your wallet"
-    />
-    <Input placeholder="Password" />
-    <Input placeholder="Repeat Password" />
-    <Button block onClick={handleSubmit}>Next</Button>
-  </>
-
-}
-
-export default CreateMnemonic;
+export default CreatePassword;

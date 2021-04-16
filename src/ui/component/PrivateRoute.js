@@ -1,15 +1,16 @@
 import { useEffect, useState, useContext } from 'react';
 import { Route, Redirect } from 'react-router-dom';
-import { useEth } from 'ui/helper';
+import { useWallet } from 'ui/helper';
 
 const PrivateRoute = ({ children, ...restProps }) => {
-  const eth = useEth();
+  const wallet = useWallet();
   const [hasAccount, setHasAccount] = useState(null);
-  const noVaultPath = '/import';
+  const noVaultPath = '/password';
 
   const fetchVault = async () => {
-    const accounts = await eth.getAccounts();
-    setHasAccount(accounts.length);
+    const accounts = await wallet.getAccounts();
+
+    setHasAccount(accounts?.length);
   }
 
   useEffect(() => {

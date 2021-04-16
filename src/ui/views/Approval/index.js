@@ -1,18 +1,18 @@
 import { useEffect, useState } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
-import { APPROVAL_STATE } from 'constants';
+import { APPROVAL_STATE } from 'share';
 import { Footer, Button } from 'ui/component';
-import { useEth, useApproval } from 'ui/helper';
+import { useWallet, useApproval } from 'ui/helper';
 import { Connect, SignText, SignTx } from './components';
 
 const Approval = () => {
   const history = useHistory();
   const [account, setAccount] = useState('');
-  const eth = useEth();
+  const wallet = useWallet();
   const [approval, handleNext] = useApproval();
 
   const init = async () => {
-    const account = await eth.getAccount();
+    const account = await wallet.getAccount();
     setAccount(account);
   };
 

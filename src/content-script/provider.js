@@ -24,7 +24,6 @@ class EthereumProvider extends EventEmitter {
       method: 'getProviderState',
     });
 
-    console.log('000000000000000')
     console.log(chainId)
     this.chainId = chainId;
     this.emit('connected', { chainId });

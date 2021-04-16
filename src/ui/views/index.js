@@ -5,10 +5,11 @@ import {
   Route,
   Redirect,
 } from "react-router-dom";
-import { EthProvider } from 'ui/helper';
+import { WalletProvider } from 'ui/helper';
 import { PrivateRoute } from 'ui/component';
-import ImportEntry from './ImportEntry';
+import ImportMode from './ImportMode';
 import ImportKey from './ImportKey';
+import ImportMnemonics from './ImportMnemonics';
 import Dashboard from './Dashboard';
 import Settings from './Settings';
 import Address from './Address';
@@ -16,14 +17,22 @@ import ConnectedSites from './ConnectedSites';
 import Approval from './Approval';
 import SortHat from './SortHat';
 import Unlock from './Unlock';
+import CreatePassword from './CreatePassword';
+import Start from './Start';
+import CreateMnemonics from './CreateMnemonics';
 
-const App = ({ eth }) => (
-  <EthProvider eth={eth}>
+const App = ({ wallet }) => (
+  <WalletProvider wallet={wallet}>
     <Router>
       <main className="p-6 relative min-h-full">
         <Switch>
-          <Route exact path="/import"><ImportEntry /></Route>
+          <Route exact path="/password"><CreatePassword /></Route>
+          <Route exact path="/start"><Start /></Route>
+          <Route exact path="/create"><CreateMnemonics /></Route>
+          <Route exact path="/import"><ImportMode /></Route>
           <Route exact path="/import/key"><ImportKey /></Route>
+          <Route exact path="/import/mnemonics"><ImportMnemonics /></Route>
+
           <Route exact path="/unlock"><Unlock /></Route>
 
           <PrivateRoute exact path="/dashboard"><Dashboard /></PrivateRoute>
@@ -36,7 +45,7 @@ const App = ({ eth }) => (
         </Switch>
       </main>
     </Router>
-  </EthProvider>
+  </WalletProvider>
 );
 
 export default App;

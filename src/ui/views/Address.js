@@ -1,23 +1,20 @@
 import { useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 import { Icon, Button, Footer, Header } from 'ui/component';
-import { useEth } from 'ui/helper';
+import { useWallet } from 'ui/helper';
 
 const Address = () => {
   const [addresses, setAddresses] = useState([]);
-  const account = useEth();
+  const wallet = useWallet();
 
   const initData = async () => {
-    const addresses = await account.getAccounts();
+    const addresses = await wallet.getAccounts();
     setAddresses(addresses);
   }
 
   useEffect(() => {
-    if (!account) {
-      return;
-    }
     initData();
-  }, [account])
+  }, [])
 
   const handleHide = ({ currentTarget: { dataset: { id } } }) => {
     console.log(id);

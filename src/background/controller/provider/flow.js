@@ -1,13 +1,16 @@
-import { APPROVAL_STATE } from 'constants';
-import eth from 'background/eth';
-import { notification, permission } from 'background/wallet';
-import methods, { NEED_CONFIRM } from 'background/request';
+import { APPROVAL_STATE } from 'share';
+import { eth, notification, permission } from 'background/service';
+import { EthMethods, NEED_CONFIRM } from './index';
 
 export default class RequestFlow {
   currentState = eth.isUnlocked() ? APPROVAL_STATE.UNLOCK : APPROVAL_STATE.LOCK;
 
   forwardNext = async (req) => {
-    const { tabId, data: { method, params }, origin } = req;
+    const {
+      tabId,
+      data: { method, params },
+      origin,
+    } = req;
 
     switch (this.currentState) {
       case APPROVAL_STATE.LOCK:
@@ -51,19 +54,22 @@ export default class RequestFlow {
         break;
 
       case APPROVAL_STATE.REQUEST:
-        return Promise.resolve(methods[method](req)).finally(() => {
+        return Promise.resolve(EthMethods[method](req)).finally(() => {
           this.currentState = APPROVAL_STATE.END;
         });
 
       default:
     }
-
-  }
+  };
 
   handle = async (req) => {
-    const { tabId, data: { method, params }, origin } = req;
+    const {
+      tabId,
+      data: { method, params },
+      origin,
+    } = req;
 
-    if (!methods[method]) {
+    if (!EthMethods[method]) {
       throw new Error(`method [${method}] doesn't has corresponding handler`);
     }
 
@@ -73,5 +79,5 @@ export default class RequestFlow {
     }
 
     return result;
-  }
+  };
 }
