@@ -1,43 +1,21 @@
-import * as methodMap from './methods';
-import { permission } from 'background/service';
-import Flow from './flow';
+import { tab } from 'background/webapi';
+import { session } from 'background/service';
 
-export const NEED_CONFIRM = ['personal_sign', 'eth_sendTransaction'];
+import rpcFlow from './rpcFlow';
+import internal from './internal';
 
-const sendMetadata = ({ data: { method, params }, origin }) => {
-  permission.setSiteMetadata(origin, params);
-};
-
-const getProviderState = (req) => {
-  return {
-    chainId: 1,
-    // accounts: methodMap.getAccounts(req),
-  };
-};
-
-export const EthMethods = {
-  eth_chainId: methodMap.getChainId,
-  personal_sign: methodMap.personalSign,
-  eth_requestAccounts: methodMap.getAccounts,
-  eth_accounts: methodMap.getAccounts,
-  eth_sendTransaction: methodMap.sendTransaction,
-  eth_getTransactionCount: () => '0x100',
-};
-
-const LocalMethods = {
-  sendMetadata,
-  getProviderState,
-};
+tab.on('tabRemove', (id, url) => {
+  session.deleteSession(id);
+});
 
 export default (req) => {
   const {
     data: { method },
   } = req;
 
-  // console.log('handle', method, req)
-  if (LocalMethods[method]) {
-    return LocalMethods[method](req);
+  if (internal[method]) {
+    return Promise.resolve(internal[method](req));
   }
 
-  return new Flow().handle(req);
+  return new rpcFlow().handle(req);
 };

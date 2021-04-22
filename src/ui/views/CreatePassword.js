@@ -1,7 +1,7 @@
 import { useHistory } from 'react-router-dom';
 import { useForm } from 'react-hook-form';
 import { Button, Header, Input } from 'ui/component';
-import { useWallet } from 'ui/helper';
+import { useWallet } from 'ui/utils';
 
 const CreatePassword = () => {
   const {
@@ -14,7 +14,6 @@ const CreatePassword = () => {
   const wallet = useWallet();
 
   const onSubmit = ({ password }) => {
-    console.log('password', password)
     wallet.setPassword(password.trim());
     history.push('/start');
   };

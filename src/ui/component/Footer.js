@@ -2,7 +2,7 @@ import { memo } from 'react';
 import { useHistory } from 'react-router-dom';
 import cx from 'clsx';
 import { Button } from 'ui/component';
-import { noop } from 'ui/helper';
+import { noop } from 'ui/utils';
 
 const Footer = memo(({ className, children }) => {
   return (

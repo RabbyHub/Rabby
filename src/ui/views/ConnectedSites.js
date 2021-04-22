@@ -1,6 +1,6 @@
 import { useState, useEffect } from 'react';
 import { Button, Header } from 'ui/component';
-import { useWallet } from 'ui/helper';
+import { useWallet } from 'ui/utils';
 
 const ConnectedSites = () => {
   const [sites, setSites] = useState([]);

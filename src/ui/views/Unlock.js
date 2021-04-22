@@ -1,7 +1,7 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
 import { Input, Footer, Button } from 'ui/component';
-import { useWallet, useApproval } from 'ui/helper';
+import { useWallet, useApproval } from 'ui/utils';
 
 const Unlock = () => {
   const {

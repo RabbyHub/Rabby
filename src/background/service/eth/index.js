@@ -1,7 +1,7 @@
 import * as ethUtil from 'ethereumjs-util';
 import KeyringService from './eth-keyring-controller';
 import { addHexPrefix } from 'background/utils';
-import { storage } from 'background/utils/webapi';
+import { storage } from 'background/webapi';
 
 class Eth {
   constructor() {

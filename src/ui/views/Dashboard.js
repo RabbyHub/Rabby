@@ -1,7 +1,7 @@
 import { useCallback, useEffect, useState } from 'react';
 import { Link, useHistory } from 'react-router-dom';
 import { Modal, Icon } from 'ui/component';
-import { useWallet } from 'ui/helper';
+import { useWallet, getCurrentTab } from 'ui/utils';
 
 const SwitchAddress = ({ onChange }) => {
   const wallet = useWallet();
@@ -36,9 +36,7 @@ const SwitchAddress = ({ onChange }) => {
 
   return accounts ? (
     <div className="bg-white shadow-even p-4">
-      <div
-        className="mb-6 overflow-auto"
-        style={{ height: '220px', width: '280px' }}>
+      <div className="mb-6 overflow-auto w-[280px] h-[220px]">
         {accounts.map((a) => (
           <div key={a.type} className="mb-6">
             <div className="text-gray-500 text-lg">{keyrings[a.type]}</div>
@@ -92,7 +90,8 @@ const Dashboard = () => {
   };
 
   const handleChange = async (account) => {
-    await wallet.changeAccount(account);
+    const { id: tabId } = await getCurrentTab();
+    await wallet.changeAccount(account, tabId);
     setCurrentAccount(account);
     handleToggle();
   };

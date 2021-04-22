@@ -1,6 +1,6 @@
 module.exports = {
   mode: 'jit',
-  purge: ['./src/ui/**/*.html', './src/ui/**/*.js'],
+  purge: ['./src/ui/**/*.{js,html}'],
   theme: {
     extend: {
       colors: {
@@ -11,7 +11,7 @@ module.exports = {
       },
     },
   },
-  // prefers-color-scheme
+  // use media-query prefers-color-scheme
   darkMode: 'media',
   plugins: [require('@tailwindcss/forms')],
 };

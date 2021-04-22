@@ -48,5 +48,5 @@
     "webRequest",
     "notifications"
   ],
-  "web_accessible_resources": ["provider.js"]
+  "web_accessible_resources": ["pageProvider.js"]
 }

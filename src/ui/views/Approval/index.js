@@ -2,7 +2,7 @@ import { useEffect, useState } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import { APPROVAL_STATE } from 'share';
 import { Footer, Button } from 'ui/component';
-import { useWallet, useApproval } from 'ui/helper';
+import { useWallet, useApproval } from 'ui/utils';
 import { Connect, SignText, SignTx } from './components';
 
 const Approval = () => {

@@ -1,5 +1,5 @@
 import { useHistory } from 'react-router-dom';
-import { useWallet } from 'ui/helper';
+import { useWallet } from 'ui/utils';
 import { Icon, Button, ArrowLink, Header } from 'ui/component';
 
 const Settings = () => {

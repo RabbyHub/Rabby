@@ -1,7 +1,7 @@
 import { useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 import { Icon, Button, Footer, Header } from 'ui/component';
-import { useWallet } from 'ui/helper';
+import { useWallet } from 'ui/utils';
 
 const Address = () => {
   const [addresses, setAddresses] = useState([]);

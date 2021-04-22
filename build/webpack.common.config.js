@@ -9,7 +9,7 @@ const config = {
   entry: {
     background: paths.rootResolve('src/background/index.js'),
     'content-script': paths.rootResolve('src/content-script/index.js'),
-    provider: paths.rootResolve('src/content-script/provider.js'),
+    pageProvider: paths.rootResolve('src/content-script/pageProvider.js'),
     ui: paths.rootResolve('src/ui/index.js'),
   },
   output: {

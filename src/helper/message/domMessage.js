@@ -1,34 +1,35 @@
 // TODO: limit request count, slide window, unique number can loop
-import Message from './message';
+import Message from '.';
 
-const EV_TYPE = ['SYN', 'ACK'];
+const EV_PRE = 'ETH_WALLET_';
+
+function listenEvent(type) {
+  document.addEventListener(`${EV_PRE}${type}`, ({ detail }) => {
+    this.emit(type, detail);
+  });
+}
 
 export default class DomMessage extends Message {
   constructor(...args) {
     super(...args);
-  }
-
-  listen = (listenCallback) => {
-    this.listenCallback = listenCallback;
-    this.evType = EV_TYPE[0];
-    document.addEventListener(this.evType, ({ detail }) => {
-      this.emit('data', detail);
-    });
-
-    return this;
+    this.name ='dm'
   }
 
   connect = () => {
-    this.evType = EV_TYPE[1];
-    document.addEventListener(this.evType, ({ detail }) => {
-      this.emit('data', detail);
-    });
+    listenEvent.call(this, 'response');
+    listenEvent.call(this, 'message');
 
     return this;
-  }
+  };
 
-  send = (detail) => {
-    const evName = this.evType === EV_TYPE[0] ? EV_TYPE[1] : EV_TYPE[0];
-    document.dispatchEvent(new CustomEvent(evName, { detail }));
-  }
+  listen = (listenCallback) => {
+    this.listenCallback = listenCallback;
+    listenEvent.call(this, 'request');
+
+    return this;
+  };
+
+  send = (type, detail) => {
+    document.dispatchEvent(new CustomEvent(`${EV_PRE}${type}`, { detail }));
+  };
 }

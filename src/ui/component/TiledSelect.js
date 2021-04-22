@@ -24,7 +24,6 @@ const TiledSelect = ({ defaultValue, value, options, onChange, className }) => {
       dataset: { idx },
     },
   }) => {
-    console.log(idx);
     _value.splice(idx, 1);
     setValue((_value) => [..._value]);
     onChange && onChange(_value);

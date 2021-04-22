@@ -1,35 +1,32 @@
 import { APPROVAL_STATE } from 'share';
 import { eth, notification, permission } from 'background/service';
-import { EthMethods, NEED_CONFIRM } from './index';
+import * as methods from './methods';
+
+const NEED_CONFIRM = ['personal_sign', 'eth_sendTransaction'];
 
 export default class RequestFlow {
   currentState = eth.isUnlocked() ? APPROVAL_STATE.UNLOCK : APPROVAL_STATE.LOCK;
 
   forwardNext = async (req) => {
     const {
-      tabId,
       data: { method, params },
-      origin,
+      session: { origin, name, icon },
+      mapMethod,
     } = req;
 
     switch (this.currentState) {
       case APPROVAL_STATE.LOCK:
-        await notification.notify(tabId, {
-          id: tabId,
+        await notification.requestApproval({
           state: APPROVAL_STATE.UNLOCK,
         });
         this.currentState = APPROVAL_STATE.UNLOCK;
         break;
 
       case APPROVAL_STATE.UNLOCK:
-        const siteMetadata = permission.sitesMetadata.get(origin);
-
-        // TODO: check the method permission
         if (!permission.hasPerssmion(origin)) {
-          await notification.notify(tabId, {
-            id: tabId,
+          await notification.requestApproval({
             state: APPROVAL_STATE.CONNECT,
-            params: siteMetadata,
+            params: { origin, name, icon },
           });
           permission.addConnectedSite(origin);
         }
@@ -43,8 +40,7 @@ export default class RequestFlow {
         break;
 
       case APPROVAL_STATE.SIGN:
-        await notification.notify(tabId, {
-          id: tabId,
+        await notification.requestApproval({
           state: APPROVAL_STATE.SIGN,
           params,
           origin,
@@ -54,7 +50,7 @@ export default class RequestFlow {
         break;
 
       case APPROVAL_STATE.REQUEST:
-        return Promise.resolve(EthMethods[method](req)).finally(() => {
+        return Promise.resolve(methods[mapMethod](req)).finally(() => {
           this.currentState = APPROVAL_STATE.END;
         });
 
@@ -64,15 +60,16 @@ export default class RequestFlow {
 
   handle = async (req) => {
     const {
-      tabId,
-      data: { method, params },
-      origin,
+      data: { method },
     } = req;
 
-    if (!EthMethods[method]) {
+    // eth_chainId => ethChainId
+    const mapMethod = method.replace(/_(.)/g, (m, p1) => p1.toUpperCase());
+    if (!methods[mapMethod]) {
       throw new Error(`method [${method}] doesn't has corresponding handler`);
     }
 
+    req.mapMethod = mapMethod;
     let result;
     while (this.currentState <= APPROVAL_STATE.REQUEST) {
       result = await this.forwardNext(req);

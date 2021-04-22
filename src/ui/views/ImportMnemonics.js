@@ -1,6 +1,6 @@
 import { useForm } from 'react-hook-form';
 import { Input, Footer, Header } from 'ui/component';
-import { useWallet, useApproval } from 'ui/helper';
+import { useWallet, useApproval } from 'ui/utils';
 
 const ImportMnemonic = () => {
   const {

@@ -4,7 +4,7 @@ const { PortMessage, DomMessage } = Message;
 
 function injectPage() {
   const s = document.createElement('script');
-  s.src = chrome.runtime.getURL('provider.js');
+  s.src = chrome.runtime.getURL('pageProvider.js');
   s.onload = function () {
     this.remove();
   };
@@ -15,35 +15,32 @@ injectPage();
 
 const pm = new PortMessage().connect();
 
-function wrapRequest(data) {
-  return {
-    data,
-    origin: location.origin,
-  }
-}
+const dm = new DomMessage().listen((data) => pm.request(data));
+// background notification
+pm.on('message', (data) => dm.send('message', data));
 
-new DomMessage().listen(data => pm.request(wrapRequest(data)));
-
-function sendMetadata(connect) {
+function connectTab(connect) {
   const origin = location.origin;
   const icon = document.querySelector('head > link[rel~="icon"]')?.href;
-  const name = document.querySelector('head > meta[name="title"]')?.content || document.title || origin;
+  const name =
+    document.querySelector('head > meta[name="title"]')?.content ||
+    document.title ||
+    origin;
 
-  connect.request(wrapRequest({
-    method: 'sendMetadata',
-    params: { icon, name, origin },
-  }));
+  connect.request({
+    data: {
+      method: 'tabConnect',
+      params: { icon, name, origin },
+    },
+  });
 }
 
-
 if (document.readyState === 'complete') {
-  sendMetadata(pm);
+  connectTab(pm);
 } else {
   const domContentLoadedHandler = () => {
-    sendMetadata(pm);
+    connectTab(pm);
     window.removeEventListener('DOMContentLoaded', domContentLoadedHandler);
   };
   window.addEventListener('DOMContentLoaded', domContentLoadedHandler);
 }
-
-

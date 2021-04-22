@@ -4,6 +4,8 @@ export * from './WalletContext';
 
 export * from './hooks';
 
+export * from './tab';
+
 export const WINDOW_TYPE = {
   POPUP: 0,
   NOTIFICATION: 1,

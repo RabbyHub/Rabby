@@ -1,28 +1,23 @@
 import { Message } from 'helper';
-import { notification, permission, preference } from 'background/service';
+import { permission, preference, session } from 'background/service';
 import { providerController, walletController } from 'background/controller';
-import { Tab } from 'background/utils/webapi';
 
 const { PortMessage } = Message;
 
-const initialize = async () => {
-  await permission.init();
-  await preference.init();
-};
-
-initialize().catch((err) => {
-  console.log(err);
-});
+permission.init();
+preference.init();
 
 chrome.runtime.onConnect.addListener((port) => {
-  Tab.fromId(port.sender.tab.id)
-    .on('removed', (id) => notification.clear(id))
-    .on('updated', (id) => notification.clear(id));
+  const pm = new PortMessage(port);
 
-  new PortMessage(port).listen(providerController);
+  pm.listen((req) => {
+    req.session = session.getSession(port.sender.tab.id);
+
+    // for background push to respective page
+    req.session.pushMessage = (...data) => pm.send('message', data);
+    return providerController(req);
+  });
 });
-
-console.log('walletController', walletController)
 
 // for popup
 window.wallet = walletController;

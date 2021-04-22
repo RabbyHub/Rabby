@@ -2,7 +2,7 @@ import { useEffect, useState, useMemo } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useForm, Controller } from 'react-hook-form';
 import { Input, Footer, Header, TiledSelect } from 'ui/component';
-import { useWallet, useApproval } from 'ui/helper';
+import { useWallet, useApproval } from 'ui/utils';
 
 const VerifyMnemonics = ({ mnemonics, onBackClick }) => {
   const history = useHistory();
@@ -69,15 +69,12 @@ const CreateMnemonic = () => {
   const history = useHistory();
   const wallet = useWallet();
 
-  console.log(history.length)
-
   const getNewMnemonic = async () => {
     await wallet.createNewVaultAndKeychain();
     wallet.setup();
 
     const _mnemonics = await wallet.getCurrentMnemonics();
 
-    console.log('_mnemonics', _mnemonics)
     setMnemonics(_mnemonics);
   };
 

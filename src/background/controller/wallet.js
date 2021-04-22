@@ -1,4 +1,10 @@
-import { eth, preference, notification, permission } from 'background/service';
+import {
+  eth,
+  preference,
+  notification,
+  permission,
+  session,
+} from 'background/service';
 
 class Wallet {
   setPassword = (password) => {
@@ -8,7 +14,7 @@ class Wallet {
   getAccount = () => {
     let pa = preference.getCurrentAccount();
     if (!pa) {
-      pa = eth.getAccount()
+      pa = eth.getAccount();
       preference.setCurrentAccount(pa);
     }
     return pa;
@@ -25,7 +31,10 @@ class Wallet {
   removeConnectedSite = permission.removeConnectedSite;
   getCurrentMnemonics = eth.getCurrentMnemonics;
   createNewVaultAndKeychain = eth.createNewVaultAndKeychain;
-  lockWallet = eth.lockWallet;
+  lockWallet = () => {
+    eth.lockWallet();
+    session.broadcastEvent('disconnect');
+  };
   clearKeyrings = eth.clearKeyrings;
 
   importKey = eth.importKey;
@@ -34,8 +43,12 @@ class Wallet {
   getAllTypedAccounts = eth.getAllTypedAccounts;
   addNewAccount = eth.addNewAccount;
 
-  changeAccount = (account) => {
+  changeAccount = (account, tabId) => {
     preference.setCurrentAccount(account);
+
+    const { origin } = session.getSession(tabId);
+    // just test, should be all broadcast
+    session.broadcastEvent('accountsChanged', [account], origin);
   };
 
   clearStorage = () => {

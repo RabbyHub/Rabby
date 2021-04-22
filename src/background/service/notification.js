@@ -1,37 +1,75 @@
-import { openNotification } from "background/utils/webapi";
+import { winMgr } from 'background/webapi';
 
 // something need user approval in window
-// should always open only one window
+// should only open one window
 class Notification {
-  notification = new Map();
+  approval = null;
+  notifiWindowId = 0;
 
-  getApproval = (tabId) => {
-    if (!tabId) {
-      return this.notification.values().next().value;
-    }
-    return this.notification.get(tabId);
-  };
+  constructor() {
+    winMgr.event.on('windowRemoved', (winId) => {
+      console.log('[win]closed', winId);
+      // if (winId === this.notifiWindowId) {
+      //   this.notifiWindowId = 0;
+      // }
+    });
 
-  handleApproval = (tabId, { err, res }) => {
-    const { resolve, reject } = this.getApproval(tabId);
+    winMgr.event.on('windowFocusChange', (winId) => {
+      console.log('[win]focus changed!', this.notifiWindowId, '->', winId);
+      if (
+        this.approval &&
+        this.notifiWindowId &&
+        winId !== this.notifiWindowId
+      ) {
+        console.log('[win]remove', this.notifiWindowId);
+        winMgr.remove(this.notifiWindowId);
+        this.notifiWindowId = 0;
+      }
+    });
+  }
 
+  getApproval = () => this.approval;
+
+  handleApproval = ({ err, res }) => {
+    if (!this.approval) return;
+    const { resolve, reject } = this.approval;
+
+    this.clear();
     err ? reject(err) : resolve(res);
   };
 
-  notify = (tabId, data) => {
+  requestApproval = (data) => {
     return new Promise((resolve, reject) => {
-      this.notification.set(tabId, {
+      this.approval = {
         ...data,
         resolve,
         reject,
-      });
+      };
 
-      openNotification(`#id=${tabId}`);
-    }).finally(() => this.clear(tabId));
+      try {
+        this.openNotification();
+      } catch (err) {
+        reject(err);
+      }
+    });
   };
 
-  clear = (tabId) => {
-    this.notification.delete(tabId);
+  clear = () => {
+    console.log('[approval]clear');
+    this.approval = null;
+    // this.notifiWindowId = 0;
+  };
+
+  openNotification = () => {
+    console.log('[win]create');
+    // if (this.notifiWindowId) {
+    //   throw new Error('last notification window hasnt closed');
+    // }
+
+    winMgr.create().then((winId) => {
+      console.log('[win]opend', winId, this.notifiWindowId);
+      this.notifiWindowId = winId;
+    });
   };
 }
 
