@@ -3,8 +3,8 @@
   "version": "0.0.1",
   "description": "eth wallet",
   "scripts": {
-    "build:dev": "sh build/build.sh dev",
-    "build:pro": "sh build/build.sh",
+    "build:dev": "webpack --progress --env config=dev",
+    "build:pro": "webpack --progress",
     "start": "webpack serve --env config=start"
   },
   "dependencies": {

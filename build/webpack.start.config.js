@@ -5,6 +5,8 @@ const paths = require('./paths');
 
 // for popup test
 const config = {
+  mode: 'development',
+  devtool: 'eval-source-map',
   plugins: [
     new HtmlWebpackPlugin({
       inject: true,
@@ -12,15 +14,16 @@ const config = {
       chunks: ['popup'],
       filename: 'index.html',
     }),
-    new webpack.HotModuleReplacementPlugin()
+    new webpack.HotModuleReplacementPlugin(),
+    new webpack.DefinePlugin({
+      BUILD_ENV: JSON.stringify('START'),
+    }),
   ],
   devServer: {
     hot: true,
     port: 9000,
     historyApiFallback: true,
   },
-  devtool: 'eval-source-map',
-  mode: 'development',
-}
+};
 
 module.exports = config;

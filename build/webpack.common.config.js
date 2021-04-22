@@ -1,15 +1,16 @@
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 
 const paths = require('./paths');
-const { compilerOptions: { baseUrl } } = require('../jsconfig.json');
+const {
+  compilerOptions: { baseUrl },
+} = require('../jsconfig.json');
 
 const config = {
   entry: {
     background: paths.rootResolve('src/background/index.js'),
     'content-script': paths.rootResolve('src/content-script/index.js'),
-    pageProvider: paths.rootResolve('src/content-script/pageProvider.js'),
+    pageProvider: paths.rootResolve('src/content-script/pageProvider/index.js'),
     ui: paths.rootResolve('src/ui/index.js'),
   },
   output: {
@@ -17,28 +18,31 @@ const config = {
     filename: '[name].js',
     publicPath: '/',
   },
-  mode: 'production',
-  devtool: false,
   module: {
-    rules: [{
-      test: /\.js$/,
-      exclude: /node_modules/,
-      loader: 'babel-loader',
-    }, {
-      test: /\.css$/,
-      use: [{
-        loader: 'style-loader',
+    rules: [
+      {
+        test: /\.js$/,
+        exclude: /node_modules/,
+        loader: 'babel-loader',
       },
       {
-        loader: 'css-loader',
-        options: {
-          importLoaders: 1,
-        }
+        test: /\.css$/,
+        use: [
+          {
+            loader: 'style-loader',
+          },
+          {
+            loader: 'css-loader',
+            options: {
+              importLoaders: 1,
+            },
+          },
+          {
+            loader: 'postcss-loader',
+          },
+        ],
       },
-      {
-        loader: 'postcss-loader'
-      }]
-    }],
+    ],
   },
   plugins: [
     new HtmlWebpackPlugin({
@@ -57,7 +61,6 @@ const config = {
       Buffer: ['buffer', 'Buffer'],
       process: 'process',
     }),
-    // new BundleAnalyzerPlugin(),
   ],
   resolve: {
     modules: ['node_modules', baseUrl],
