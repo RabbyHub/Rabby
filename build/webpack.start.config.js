@@ -18,6 +18,9 @@ const config = {
     new webpack.DefinePlugin({
       BUILD_ENV: JSON.stringify('START'),
     }),
+    new webpack.ProvidePlugin({
+      langLocales: paths.rootResolve('src/_raw/_locales/en/messages.json'),
+    }),
   ],
   devServer: {
     hot: true,

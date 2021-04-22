@@ -28,8 +28,12 @@ export const checkWindowType = () => {
 export const isNotification = () =>
   checkWindowType() === WINDOW_TYPE.NOTIFICATION;
 
-export const getMsg = (name) => {
-  if (process.env.BUILD_ENV !== 'START') {
+export const t = (name) => {
+  if (BUILD_ENV !== 'START') {
     return chrome.i18n.getMessage(name);
   }
+
+  // default en in start mode
+  // only provider in start mode
+  return langLocales[name]?.message;
 };
