@@ -8,6 +8,7 @@ chrome.tabs.onUpdated.addListener((tabId, changeInfo) => {
   }
 });
 
+// window close will trigger this event also
 chrome.tabs.onRemoved.addListener((tabId) => {
   tabEvent.emit('tabRemove', tabId);
 });

@@ -3,6 +3,7 @@ import { WalletProvider } from 'ui/utils';
 import ImportMode from './ImportMode';
 import ImportKey from './ImportKey';
 import ImportMnemonics from './ImportMnemonics';
+import ImportHardware from './ImportHardware';
 import Dashboard from './Dashboard';
 import Settings from './Settings';
 import Address from './Address';
@@ -36,6 +37,9 @@ const App = ({ wallet }) => (
           </Route>
           <Route exact path="/import/mnemonics">
             <ImportMnemonics />
+          </Route>
+          <Route exact path="/import/hardware">
+            <ImportHardware />
           </Route>
 
           <Route exact path="/unlock">

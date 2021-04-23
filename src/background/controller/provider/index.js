@@ -4,7 +4,7 @@ import { session } from 'background/service';
 import rpcFlow from './rpcFlow';
 import internal from './internal';
 
-tab.on('tabRemove', (id, url) => {
+tab.on('tabRemove', (id) => {
   session.deleteSession(id);
 });
 

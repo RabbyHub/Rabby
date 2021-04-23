@@ -15,6 +15,10 @@ const entries = [
     name: 'json',
     label: 'Import JSON File',
   },
+  {
+    name: 'hardware',
+    label: 'Connect hardware',
+  },
 ];
 
 const ImportEntry = () => {

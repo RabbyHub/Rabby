@@ -1,5 +1,6 @@
 // this script is injected into webpage's context
 import EventEmitter from 'events';
+import { ethErrors, serializeError } from 'eth-rpc-errors';
 import { Message } from 'helper';
 
 const { DomMessage } = Message;
@@ -12,27 +13,12 @@ class EthereumProvider extends EventEmitter {
     super();
 
     this.initialize();
-    this.processHiddenRequest();
+    this.triggerHiddenRequest();
   }
 
   initialize = async () => {
     this.dm = new DomMessage('provider-cs').connect();
-    // for event listen
-    this.dm.on('message', ([type, data]) => {
-      console.log('type', type);
-
-      if (type === 'disconnect') {
-        this.emit(
-          type,
-          new CloseEvent('closed', {
-            code: 1000,
-          })
-        );
-
-        return;
-      }
-      this.emit(type, data);
-    });
+    this.dm.on('message', this.handleBackgroundMessage);
 
     const { accounts, chainId } = await this.request({
       method: 'getProviderState',
@@ -42,11 +28,31 @@ class EthereumProvider extends EventEmitter {
     this.emit('connected', { chainId });
   };
 
+  handleBackgroundMessage = ([type, data]) => {
+    if (type === 'disconnect') {
+      this.emit(type, ethErrors.provider.disconnected());
+
+      return;
+    }
+
+    this.emit(type, data);
+  };
+
   isConnected = () => {
     return true;
   };
 
-  processHiddenRequest = async () => {
+  pushHiddenRequest = (data) => {
+    return new Promise((resolve, reject) => {
+      this._hiddenRequests.push({
+        data,
+        resolve,
+        reject,
+      });
+    });
+  };
+
+  triggerHiddenRequest = async () => {
     document.addEventListener('visibilitychange', () => {
       if (document.visibilityState === 'visible') {
         for (let i = 0; i < this._hiddenRequests.length; i++) {
@@ -57,29 +63,25 @@ class EthereumProvider extends EventEmitter {
     });
   };
 
-  request = (args) => {
-    if (!args) {
-      throw new Error('xxxx');
+  request = async (data) => {
+    if (!data) {
+      throw ethErrors.rpc.invalidRequest();
     }
 
     if (document.visibilityState !== 'visible') {
-      return new Promise((resolve, reject) => {
-        this._hiddenRequests.push({
-          data: args,
-          resolve,
-          reject,
-        });
-      });
+      return this.pushHiddenRequest(data);
     }
 
-    return this.dm.request({ data: args });
+    return this.dm
+      .request({ data })
+      .catch((err) => Promise.reject(serializeError(err)));
   };
 
   // shim to matamask legacy api
   sendAsync = (payload, callback) => {
     this.request(payload)
       .then((result) => callback(null, { result }))
-      .catch((err) => callback(err, { error: new Error('reject') }));
+      .catch((error) => callback(error, { error }));
   };
 }
 

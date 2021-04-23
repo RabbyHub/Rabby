@@ -20,6 +20,7 @@
     "debounce": "^1.2.1",
     "eth-hd-keyring": "^3.5.0",
     "eth-keyring-controller": "^6.1.0",
+    "eth-rpc-errors": "^4.0.3",
     "eth-sig-util": "^3.0.1",
     "eth-simple-keyring": "^4.0.0",
     "ethereumjs-util": "^7.0.10",

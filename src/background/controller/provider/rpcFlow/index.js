@@ -63,7 +63,7 @@ export default class RequestFlow {
       data: { method },
     } = req;
 
-    // eth_chainId => ethChainId
+    // map method name, eth_chainId -> ethChainId
     const mapMethod = method.replace(/_(.)/g, (m, p1) => p1.toUpperCase());
     if (!methods[mapMethod]) {
       throw new Error(`method [${method}] doesn't has corresponding handler`);

@@ -1,3 +1,4 @@
+import { ethErrors } from 'eth-rpc-errors';
 import { winMgr } from 'background/webapi';
 
 // something need user approval in window
@@ -8,20 +9,20 @@ class Notification {
 
   constructor() {
     winMgr.event.on('windowRemoved', (winId) => {
-      console.log('[win]closed', winId);
-      // if (winId === this.notifiWindowId) {
-      //   this.notifiWindowId = 0;
-      // }
+      // console.log('[win]closed', winId);
+      if (winId === this.notifiWindowId) {
+        this.notifiWindowId = 0;
+      }
     });
 
     winMgr.event.on('windowFocusChange', (winId) => {
-      console.log('[win]focus changed!', this.notifiWindowId, '->', winId);
+      // console.log('[win]focus changed!', this.notifiWindowId, '->', winId);
       if (
         this.approval &&
         this.notifiWindowId &&
         winId !== this.notifiWindowId
       ) {
-        console.log('[win]remove', this.notifiWindowId);
+        // console.log('[win]remove', this.notifiWindowId);
         winMgr.remove(this.notifiWindowId);
         this.notifiWindowId = 0;
       }
@@ -35,7 +36,7 @@ class Notification {
     const { resolve, reject } = this.approval;
 
     this.clear();
-    err ? reject(err) : resolve(res);
+    err ? reject(ethErrors.provider.userRejectedRequest(err)) : resolve(res);
   };
 
   requestApproval = (data) => {
@@ -55,19 +56,19 @@ class Notification {
   };
 
   clear = () => {
-    console.log('[approval]clear');
+    // console.log('[approval]clear');
     this.approval = null;
     // this.notifiWindowId = 0;
   };
 
   openNotification = () => {
-    console.log('[win]create');
+    // console.log('[win]create');
     // if (this.notifiWindowId) {
     //   throw new Error('last notification window hasnt closed');
     // }
 
     winMgr.create().then((winId) => {
-      console.log('[win]opend', winId, this.notifiWindowId);
+      // console.log('[win]opend', winId, this.notifiWindowId);
       this.notifiWindowId = winId;
     });
   };

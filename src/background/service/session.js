@@ -36,10 +36,10 @@ const broadcastEvent = (ev, data, origin) => {
 
   // same origin
   if (origin) {
-    sessions = sessions.filter(([, value]) => value.origin === origin);
+    sessions = sessions.filter(([, session]) => session.origin === origin);
   }
 
-  sessions.forEach(([, s]) => s.pushMessage(ev, data));
+  sessions.forEach(([, session]) => session.pushMessage(ev, data));
 };
 
 export default {
