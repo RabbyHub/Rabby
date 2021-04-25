@@ -10,9 +10,7 @@ export default class DomMessage extends Message {
   connect = () => {
     this.listenEvent('response', (data) => this.onResponse(data));
 
-    this.listenEvent('message', ({ detail }) => {
-      this.emit('message', detail);
-    });
+    this.listenEvent('message', (data) => this.emit('message', data));
 
     return this;
   };

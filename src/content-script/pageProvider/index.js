@@ -28,14 +28,15 @@ class EthereumProvider extends EventEmitter {
     this.emit('connected', { chainId });
   };
 
-  handleBackgroundMessage = ([type, data]) => {
-    if (type === 'disconnect') {
-      this.emit(type, ethErrors.provider.disconnected());
+  handleBackgroundMessage = ({ event, data }) => {
+    console.log(event, data);
+    if (event === 'disconnect') {
+      this.emit(event, ethErrors.provider.disconnected());
 
       return;
     }
 
-    this.emit(type, data);
+    this.emit(event, data);
   };
 
   isConnected = () => {

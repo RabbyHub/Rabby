@@ -15,11 +15,7 @@ class Notification {
     });
 
     winMgr.event.on('windowFocusChange', (winId) => {
-      if (
-        this.approval &&
-        this.notifiWindowId &&
-        winId !== this.notifiWindowId
-      ) {
+      if (this.notifiWindowId && winId !== this.notifiWindowId) {
         this.handleApproval('');
       }
     });

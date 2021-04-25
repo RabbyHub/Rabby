@@ -1,5 +1,6 @@
 import * as ethUtil from 'ethereumjs-util';
 import KeyringService from './eth-keyring-controller';
+import TrezorKeyring from './eth-keyring-controller';
 import { addHexPrefix } from 'background/utils';
 import { storage } from 'background/webapi';
 
@@ -10,12 +11,13 @@ class Eth {
 
   setPassword = (password) => {
     this.password = password;
-  }
+  };
 
   initKeyring = async () => {
     const initState = await storage.get('keyringState');
 
     this.keyringService = new KeyringService({
+      keyringTypes: [TrezorKeyring],
       initState,
     });
 
@@ -54,13 +56,11 @@ class Eth {
   importMnemonics = (seed) =>
     this.keyringService.createNewVaultAndRestore(this.password, seed);
 
-  signPersonalMessage = (data) =>
-    this.keyringService.signPersonalMessage(data);
+  signPersonalMessage = (data) => this.keyringService.signPersonalMessage(data);
 
   isUnlocked = () => this.keyringService.memStore.getState().isUnlocked;
 
-  submitPassword = (password) =>
-    this.keyringService.submitPassword(password);
+  submitPassword = (password) => this.keyringService.submitPassword(password);
 
   createNewVaultAndKeychain = () =>
     this.keyringService.createNewVaultAndKeychain(this.password);
@@ -85,13 +85,13 @@ class Eth {
 
   addNewAccount = () => {
     const primaryKeyring = this.keyringService.getKeyringsByType(
-      'HD Key Tree',
+      'HD Key Tree'
     )[0];
     if (!primaryKeyring) {
       throw new Error('MetamaskController - No HD Key Tree found');
     }
     return this.keyringService.addNewAccount(primaryKeyring);
-  }
+  };
 }
 
 export default new Eth();

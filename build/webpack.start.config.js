@@ -26,6 +26,8 @@ const config = {
     hot: true,
     port: 9000,
     historyApiFallback: true,
+    open: true,
+    openPage: 'popup.html',
   },
 };
 
