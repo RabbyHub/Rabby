@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
-import { APPROVAL_STATE } from 'share';
+import { APPROVAL_STATE } from 'constants';
 import { Footer, Button } from 'ui/component';
 import { useWallet, useApproval } from 'ui/utils';
 import { Connect, SignText, SignTx } from './components';
@@ -25,7 +25,7 @@ const Approval = () => {
   };
 
   const handleAllow = () => {
-    handleNext(null, true);
+    handleNext();
   };
 
   const Content =

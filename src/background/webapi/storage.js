@@ -1,5 +1,4 @@
 import { isRuntimeError } from 'background/common';
-import { storage } from '.';
 
 const cacheMap = new Map();
 
@@ -35,8 +34,6 @@ const set = async (prop, value) => {
     });
   });
 };
-
-;
 
 export default {
   get,

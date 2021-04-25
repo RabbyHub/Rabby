@@ -9,5 +9,3 @@ const Message = {
 export {
   Message,
 }
-
-export { default as CHAINS } from './chains';

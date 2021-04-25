@@ -1,5 +1,4 @@
-import { hexToUtf8 } from 'web3-utils';
-import { CHAINS } from 'helper';
+import { CHAINS } from 'constants';
 
 const SignTx = ({ params, origin }) => {
   const [{ chainId, data, from, gas, gasPrice, nonce, to, value }] = params;
@@ -8,7 +7,9 @@ const SignTx = ({ params, origin }) => {
   return (
     <>
       <div>{origin}</div>
-      <div className="font-bold mt-12 mb-4 text-lg">Request for Sign Transaction</div>
+      <div className="font-bold mt-12 mb-4 text-lg">
+        Request for Sign Transaction
+      </div>
       <div className="text-xs text-gray-400 mb-1">On the chain</div>
       <div className="bg-gray-100 p-2 text-bold">{chain}</div>
 

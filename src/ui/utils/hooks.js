@@ -13,9 +13,9 @@ export const useApproval = () => {
   const approval = wallet.getApproval();
   const history = useHistory();
 
-  const handleNext = (err, res) => {
+  const handleNext = (err) => {
     if (approval) {
-      wallet.handleApproval({ err, res });
+      wallet.handleApproval(err);
     }
     history.push('/');
   };

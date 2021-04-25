@@ -1,5 +1,5 @@
 import { useEffect, useState } from 'react';
-import { Redirect, use } from 'react-router-dom';
+import { Redirect } from 'react-router-dom';
 import { useWallet, isNotification, useApproval } from 'ui/utils';
 
 const SortHat = () => {
@@ -16,7 +16,7 @@ const SortHat = () => {
     if (!isInNotification) {
       // chrome.window.windowFocusChange won't fire when
       // click popup in the meanwhile notification is present
-      handleNext('reject');
+      handleNext('');
     }
 
     if (isInNotification && !approval) {

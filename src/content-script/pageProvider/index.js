@@ -1,7 +1,7 @@
 // this script is injected into webpage's context
 import EventEmitter from 'events';
 import { ethErrors, serializeError } from 'eth-rpc-errors';
-import { Message } from 'helper';
+import { Message } from 'utils';
 
 const { DomMessage } = Message;
 
@@ -64,6 +64,8 @@ class EthereumProvider extends EventEmitter {
   };
 
   request = async (data) => {
+    console.log('[request]', data);
+
     if (!data) {
       throw ethErrors.rpc.invalidRequest();
     }
@@ -74,7 +76,16 @@ class EthereumProvider extends EventEmitter {
 
     return this.dm
       .request({ data })
-      .catch((err) => Promise.reject(serializeError(err)));
+      .then((res) => {
+        console.log('[request: success]', res);
+
+        return res;
+      })
+      .catch((err) => {
+        console.log('[request: error]', err);
+
+        return Promise.reject(serializeError(err));
+      });
   };
 
   // shim to matamask legacy api

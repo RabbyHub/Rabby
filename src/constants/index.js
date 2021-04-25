@@ -6,3 +6,10 @@ export const APPROVAL_STATE = {
   REQUEST: 4,
   END: 5,
 };
+
+export const CHAINS = {
+  1: {
+    name: 'Ethereum',
+    hex: '0x1',
+  },
+};

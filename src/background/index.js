@@ -1,4 +1,4 @@
-import { Message } from 'helper';
+import { Message } from 'utils';
 import { permission, preference, session } from 'background/service';
 import { providerController, walletController } from 'background/controller';
 

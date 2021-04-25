@@ -1,4 +1,4 @@
-import { Message } from 'helper';
+import { Message } from 'utils';
 
 const { PortMessage, DomMessage } = Message;
 
