@@ -5,9 +5,7 @@ class Session {
     }
   }
 
-  setProp(prop) {
-    const { origin, icon, name } = prop;
-
+  setProp({ origin, icon, name }) {
     this.origin = origin;
     this.icon = icon;
     this.name = name;
@@ -17,18 +15,19 @@ class Session {
 // for each tab
 const sessionMap = new Map();
 
-const getSession = (tabId, data) => {
-  if (sessionMap.has(tabId)) {
-    return sessionMap.get(tabId);
-  }
+const getSession = (id) => {
+  return sessionMap.get(id);
+};
 
-  const session = new Session(tabId, data);
-  sessionMap.set(tabId, session);
+const createSession = (id, data) => {
+  const session = new Session(data);
+  sessionMap.set(id, session);
+
   return session;
 };
 
-const deleteSession = (tabId) => {
-  sessionMap.delete(tabId);
+const deleteSession = (id) => {
+  sessionMap.delete(id);
 };
 
 const broadcastEvent = (ev, data, origin) => {
@@ -43,6 +42,7 @@ const broadcastEvent = (ev, data, origin) => {
 };
 
 export default {
+  createSession,
   getSession,
   deleteSession,
   broadcastEvent,

@@ -3,8 +3,9 @@
   "version": "0.0.1",
   "description": "eth wallet",
   "scripts": {
-    "build:dev": "webpack --progress --env config=dev",
-    "build:pro": "webpack --progress",
+    "clean": "rm -rf dist/* && cp -r src/_raw/* dist",
+    "build:dev": "npm run clean && webpack --progress --env config=dev",
+    "build:pro": "npm run clean && webpack --progress --env config=pro",
     "start": "webpack serve --env config=start"
   },
   "dependencies": {
@@ -23,6 +24,7 @@
     "eth-rpc-errors": "^4.0.3",
     "eth-sig-util": "^3.0.1",
     "eth-simple-keyring": "^4.0.0",
+    "ethereumjs-tx": "^2.1.2",
     "ethereumjs-util": "^7.0.10",
     "events": "^3.3.0",
     "extensionizer": "^1.0.1",

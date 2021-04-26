@@ -4,58 +4,72 @@ import {
   notification,
   permission,
   session,
+  account,
 } from 'background/service';
 
-export default {
-  setPassword: (password) => {
+class Wallet {
+  setPassword = (password) => {
     eth.password = password;
-  },
+  };
 
-  getAccount: () => {
-    let pa = preference.getCurrentAccount();
-    if (!pa) {
-      pa = eth.getAccount();
-      preference.setCurrentAccount(pa);
-    }
-    return pa;
-  },
+  getAccount = () => account.getAccount();
 
-  getApproval: notification.getApproval,
-  handleApproval: notification.handleApproval,
-  isUnlocked: eth.isUnlocked,
-  setPassword: eth.setPassword,
-  submitPassword: eth.submitPassword,
-  setup: preference.setup,
-  isSetup: preference.isSetup,
-  getConnectedSites: permission.getConnectedSites,
-  removeConnectedSite: permission.removeConnectedSite,
-  getCurrentMnemonics: eth.getCurrentMnemonics,
-  createNewVaultAndKeychain: eth.createNewVaultAndKeychain,
-  lockWallet: () => {
+  getApproval = notification.getApproval;
+  handleApproval = notification.handleApproval;
+  isUnlocked = eth.isUnlocked;
+  setPassword = eth.setPassword;
+  submitPassword = eth.submitPassword;
+  setup = preference.setup;
+  isSetup = preference.isSetup;
+  getConnectedSites = permission.getConnectedSites;
+  removeConnectedSite = permission.removeConnectedSite;
+  getCurrentMnemonics = eth.getCurrentMnemonics;
+  createNewVaultAndKeychain = eth.createNewVaultAndKeychain;
+  lockWallet = () => {
     eth.lockWallet();
     session.broadcastEvent('disconnect');
-  },
-  clearKeyrings: eth.clearKeyrings,
+  };
+  clearKeyrings = eth.clearKeyrings;
 
-  importKey: eth.importKey,
-  importMnemonics: eth.importMnemonics,
-  getAccounts: eth.getAccounts,
-  getAllTypedAccounts: eth.getAllTypedAccounts,
-  addNewAccount: eth.addNewAccount,
+  importKey = eth.importKey;
+  importMnemonics = eth.importMnemonics;
+  getAccounts = eth.getAccounts;
+  getAllTypedAccounts = eth.getAllTypedAccounts;
+  addNewAccount = eth.addNewAccount;
 
-  changeAccount: (account, tabId) => {
+  changeAccount = (account, tabId) => {
     preference.setCurrentAccount(account);
 
-    const { origin } = session.getSession(tabId);
-    // just test, should be all broadcast
-    session.broadcastEvent('accountsChanged', [account], origin);
-  },
+    const currentSession = session.getSession(tabId);
+    if (currentSession) {
+      // just test, should be all broadcast
+      session.broadcastEvent(
+        'accountsChanged',
+        [account],
+        currentSession.origin
+      );
+    }
+  };
 
-  clearStorage: () => {
+  clearStorage = () => {
     chrome.storage.local.clear();
-  },
+  };
 
-  connectHardware: (type) => {
-    console.log('type', type)
-  },
-};
+  connectHardware = async (type) => {
+    const keyring = await eth.getOrCreateHardwareKeyring(type);
+
+    return {
+      getFirstPage: keyring.getFirstPage.bind(keyring),
+      getNextPage: keyring.getNextPage.bind(keyring),
+      getPreviousPage: keyring.getPreviousPage.bind(keyring),
+    };
+  };
+
+  unlockHardwareAccount = async (type, indexes) => {
+    const account = await eth.unlockHardwareAccount(type, indexes);
+    preference.setCurrentAccount(account);
+    session.broadcastEvent('accountsChanged', account);
+  };
+}
+
+export default new Wallet();
