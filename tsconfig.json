@@ -1,0 +1,18 @@
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "module": "ES2015",
+    "target": "ES5",
+    "noImplicitAny": false,
+    "strict": false,
+    "declaration": true,
+    "paths": {
+      "utils": ["src/utils"],
+      "@/*": ["src/*"]
+    },
+    "jsx": "react",
+    "moduleResolution": "Node"
+  },
+  "include": ["./src/**/*"],
+  "exclude": ["node_modules"],
+}

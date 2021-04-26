@@ -21,9 +21,9 @@ const config = {
   module: {
     rules: [
       {
-        test: /\.js$/,
+        test: /\.js$|\.tsx?$/,
         exclude: /node_modules/,
-        loader: 'babel-loader',
+        loader: 'ts-loader',
       },
       {
         test: /\.css$/,

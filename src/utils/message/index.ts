@@ -12,7 +12,7 @@ class Message extends EventEmitter {
         data: this.pendingRequest.data?.data,
       });
     }
-
+    console.log(this)
     return new Promise((resolve, reject) => {
       this.pendingRequest = {
         data,
