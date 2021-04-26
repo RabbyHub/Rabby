@@ -12,6 +12,7 @@
     "@hookform/error-message": "^2.0.0",
     "@tailwindcss/forms": "^0.3.2",
     "@types/chrome": "^0.0.135",
+    "@types/events": "^3.0.0",
     "assert": "^2.0.0",
     "bip39": "^3.0.3",
     "browser-passworder": "^2.0.3",

@@ -3,13 +3,16 @@
     "baseUrl": ".",
     "module": "ES2015",
     "target": "ES5",
+    "lib": ["ES2015", "DOM"],
     "noImplicitAny": false,
-    "strict": false,
+    "strict": true,
     "declaration": true,
     "paths": {
       "utils": ["src/utils"],
-      "@/*": ["src/*"]
+      "@/*": ["src/*"],
+      "ui/*": ["src/ui/*"]
     },
+    "types": ["chrome"],
     "jsx": "react",
     "moduleResolution": "Node"
   },

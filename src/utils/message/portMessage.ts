@@ -1,15 +1,19 @@
 import Message from './index';
 
 class PortMessage extends Message {
-  constructor(port, ...args) {
-    super(...args);
+  port: chrome.runtime.Port | null = null
+  listenCallback: any
+
+  constructor(port: chrome.runtime.Port) {
+    super();
+
     if (port) {
       this.port = port;
     }
   }
 
   connect = () => {
-    this.port = chrome.runtime.connect();
+    this.port = window.chrome.runtime.connect();
     this.port.onMessage.addListener(({ _type_, data }) => {
       if (_type_ === `${this.EVENT_PRE}message`) {
         this.emit('message', data);
@@ -24,7 +28,8 @@ class PortMessage extends Message {
     return this;
   };
 
-  listen = (listenCallback) => {
+  listen = (listenCallback: any) => {
+    if (!this.port) return
     this.listenCallback = listenCallback;
     this.port.onMessage.addListener(({ _type_, data }) => {
       if (_type_ === `${this.EVENT_PRE}request`) {
@@ -36,6 +41,7 @@ class PortMessage extends Message {
   };
 
   send = (type, data) => {
+    if (!this.port) return
     this.port.postMessage({ _type_: `${this.EVENT_PRE}${type}`, data });
   };
 }

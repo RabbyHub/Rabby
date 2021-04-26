@@ -1,9 +1,12 @@
 import { EventEmitter } from 'events';
 import { ethErrors } from 'eth-rpc-errors';
 
-class Message extends EventEmitter {
-  pendingRequest = null;
+abstract class Message extends EventEmitter {
+  private pendingRequest: any;
   EVENT_PRE = 'ETH_WALLET_';
+  listenCallback: any
+
+  abstract send(type: string, data: any): void; 
 
   request = async (data) => {
     if (this.pendingRequest) {
@@ -12,7 +15,7 @@ class Message extends EventEmitter {
         data: this.pendingRequest.data?.data,
       });
     }
-    console.log(this)
+
     return new Promise((resolve, reject) => {
       this.pendingRequest = {
         data,
@@ -24,7 +27,7 @@ class Message extends EventEmitter {
     });
   };
 
-  onResponse = async ({ res, err } = {}) => {
+  onResponse = async ({ res, err }: any = {}) => {
     // the url may update
     if (!this.pendingRequest) {
       return;
