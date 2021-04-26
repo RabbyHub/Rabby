@@ -16,7 +16,7 @@ const Unlock = () => {
   const onSubmit = async ({ password }) => {
     try {
       await wallet.submitPassword(password);
-      handleApproval(null, true);
+      handleApproval();
     } catch (err) {
       setErr(err?.message || '密码错误');
     }

@@ -1,19 +1,27 @@
 import * as ethUtil from 'ethereumjs-util';
 import KeyringService from './eth-keyring-controller';
-import TrezorKeyring from './eth-keyring-controller';
+import TrezorKeyring from './eth-trezor-keyring';
+import { ethErrors } from 'eth-rpc-errors';
 import { addHexPrefix } from 'background/utils';
 import { storage } from 'background/webapi';
 
+// trezor: do read https://github.com/trezor/connect/blob/develop/src/js/plugins/webextension/README.md
+
+const KEYRING_TYPE = {
+  mnemonic: 'HD Key Tree',
+  trezor: TrezorKeyring.type,
+};
+
 class Eth {
   constructor() {
-    this.initKeyring();
+    this.initKeyringService();
   }
 
   setPassword = (password) => {
     this.password = password;
   };
 
-  initKeyring = async () => {
+  initKeyringService = async () => {
     const initState = await storage.get('keyringState');
 
     this.keyringService = new KeyringService({
@@ -25,14 +33,6 @@ class Eth {
       storage.set('keyringState', value)
     );
   };
-
-  getAccount = async () => {
-    const [account] = await this.getAccounts();
-
-    return account;
-  };
-
-  getAccounts = () => this.keyringService.getAccounts();
 
   signTransaction = (tx, from) => {
     return this.keyringService.signTransaction(tx, from);
@@ -62,18 +62,22 @@ class Eth {
 
   submitPassword = (password) => this.keyringService.submitPassword(password);
 
+  getKeyringByType = (type) => {
+    const keyring = this.keyringService.getKeyringsByType(type)[0];
+
+    if (keyring) {
+      return keyring;
+    }
+
+    throw new ethErrors.rpc.internal(`No ${type} keyring found`);
+  };
+
   createNewVaultAndKeychain = () =>
     this.keyringService.createNewVaultAndKeychain(this.password);
 
   getCurrentMnemonics = async () => {
-    const primaryKeyring = this.keyringService.getKeyringsByType(
-      'HD Key Tree'
-    )[0];
-    if (!primaryKeyring) {
-      throw new Error('No HD Key Tree found');
-    }
-
-    const serialized = await primaryKeyring.serialize();
+    const keyring = this.getKeyringByType(KEYRING_TYPE.mnemonic);
+    const serialized = await keyring.serialize();
     const seedWords = serialized.mnemonic;
 
     return seedWords;
@@ -84,13 +88,31 @@ class Eth {
   getAllTypedAccounts = () => this.keyringService.getAllTypedAccounts();
 
   addNewAccount = () => {
-    const primaryKeyring = this.keyringService.getKeyringsByType(
-      'HD Key Tree'
-    )[0];
-    if (!primaryKeyring) {
-      throw new Error('MetamaskController - No HD Key Tree found');
+    const keyring = this.getKeyringByType(KEYRING_TYPE.mnemonic);
+
+    return this.keyringService.addNewAccount(keyring);
+  };
+
+  getOrCreateHardwareKeyring = async (type) => {
+    let keyring;
+    try {
+      keyring = this.getKeyringByType(KEYRING_TYPE[type]);
+    } catch {
+      keyring = await this.keyringService.addNewKeyring(KEYRING_TYPE[type]);
     }
-    return this.keyringService.addNewAccount(primaryKeyring);
+
+    return keyring;
+  };
+
+  unlockHardwareAccount = async (type, indexes) => {
+    const keyring = this.getKeyringByType(KEYRING_TYPE[type]);
+
+    for (let i = 0; i < indexes.length; i++) {
+      keyring.setAccountToUnlock(indexes[i]);
+      await this.keyringService.addNewAccount(keyring);
+    }
+
+    return keyring.accounts[keyring.accounts.length - 1];
   };
 }
 

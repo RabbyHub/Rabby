@@ -1,5 +1,5 @@
 import { Transaction } from '@ethereumjs/tx';
-import { eth, permission } from 'background/service';
+import { eth, permission, account } from 'background/service';
 import { http } from 'background/utils';
 
 // eth_chainId: methodMap.getChainId,
@@ -31,7 +31,7 @@ export const ethAccounts = ({ session: { origin } }) => {
     return [];
   }
 
-  return eth.getAccounts();
+  return account.getAccounts();
 };
 
 export const ethChainId = () => '0x1';

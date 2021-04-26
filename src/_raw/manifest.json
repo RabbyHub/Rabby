@@ -23,22 +23,18 @@
   "author": "https://debank.com/",
   "background": {
     "persistent": true,
-    "scripts": [
-      "background.js"
-    ]
+    "scripts": ["background.js"]
   },
   "content_scripts": [
     {
       "all_frames": true,
-      "js": [
-        "content-script.js"
-      ],
-      "matches": [
-        "file://*/*",
-        "http://*/*",
-        "https://*/*"
-      ],
+      "js": ["content-script.js"],
+      "matches": ["file://*/*", "http://*/*", "https://*/*"],
       "run_at": "document_start"
+    },
+    {
+      "matches": ["*://connect.trezor.io/*/popup.html"],
+      "js": ["vendor/trezor/trezor-content-script.js"]
     }
   ],
   "permissions": [
@@ -46,7 +42,8 @@
     "clipboardWrite",
     "activeTab",
     "webRequest",
-    "notifications"
+    "notifications",
+    "*://connect.trezor.io/*"
   ],
   "web_accessible_resources": ["pageProvider.js"]
 }

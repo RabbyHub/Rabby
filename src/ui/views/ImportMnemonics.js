@@ -16,7 +16,7 @@ const ImportMnemonic = () => {
       await wallet.importMnemonics(mnemonics.trim());
       wallet.setup();
 
-      handleApproval(null, true);
+      handleApproval();
     } catch (err) {
       console.error('err', err);
     }

@@ -26,6 +26,9 @@ const Settings = () => {
       <ArrowLink className="mt-5 font-semibold" to="/settings/sites">
         Connect sites
       </ArrowLink>
+      <ArrowLink className="mt-5 font-semibold" to="/import">
+        import
+      </ArrowLink>
     </>
   );
 };

@@ -16,7 +16,7 @@ const ImportKey = () => {
       await wallet.importKey(key);
       wallet.setup();
 
-      handleApproval(null, true);
+      handleApproval();
     } catch (err) {
       console.error('err', err);
     }

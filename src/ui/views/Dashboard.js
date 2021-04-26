@@ -102,7 +102,7 @@ const Dashboard = () => {
         <div className="flex-1 flex items-center">
           <div className="font-bold truncate w-20">{currentAccount}</div>
           <div className="font-bold -ml-1">
-            {currentAccount && currentAccount.slice(-4)}
+            {currentAccount && currentAccount.toString().slice(-4)}
           </div>
           <Icon
             type="triangle"

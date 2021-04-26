@@ -8,14 +8,20 @@ permission.init();
 preference.init();
 
 chrome.runtime.onConnect.addListener((port) => {
+  if (!port.sender.tab) {
+    return;
+  }
   const pm = new PortMessage(port);
 
   pm.listen((req) => {
-    req.session = session.getSession(port.sender.tab.id);
+    const sessionId = port.sender.tab.id;
+    req.session = session.createSession(sessionId);
 
     // for background push to respective page
-    req.session.pushMessage = (event, data) =>
+    req.session.pushMessage = (event, data) => {
       pm.send('message', { event, data });
+    };
+
     return providerController(req);
   });
 });
