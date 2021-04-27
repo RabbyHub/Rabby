@@ -39,7 +39,11 @@ const VerifyMnemonics = ({ mnemonics, onBackClick }) => {
               validate: (v) => v && v.join(' ') === mnemonics,
             }}
             render={({ field: { ref, ...props } }) => (
-              <TiledSelect options={randomMnemonics} {...props} value={mnemonics.split(' ')} />
+              <TiledSelect
+                options={randomMnemonics}
+                {...props}
+                value={mnemonics.split(' ')}
+              />
             )}
           />
         </div>

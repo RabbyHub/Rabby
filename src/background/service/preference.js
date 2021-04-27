@@ -16,6 +16,10 @@ class Preference {
   setCurrentAccount = (val) => {
     this.store.currentAccount = val;
   };
+
+  setPopupOpen = (isOpen) => {
+    this.store.popupOpen = isOpen;
+  };
 }
 
 export default new Preference();

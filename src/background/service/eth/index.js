@@ -1,6 +1,7 @@
 import * as ethUtil from 'ethereumjs-util';
 import KeyringService from './eth-keyring-controller';
 import TrezorKeyring from './eth-trezor-keyring';
+import LedgerBridgeKeyring from '@metamask/eth-ledger-bridge-keyring';
 import { ethErrors } from 'eth-rpc-errors';
 import { addHexPrefix } from 'background/utils';
 import { storage } from 'background/webapi';
@@ -10,6 +11,7 @@ import { storage } from 'background/webapi';
 const KEYRING_TYPE = {
   mnemonic: 'HD Key Tree',
   trezor: TrezorKeyring.type,
+  ledger: LedgerBridgeKeyring.type,
 };
 
 class Eth {
@@ -25,7 +27,7 @@ class Eth {
     const initState = await storage.get('keyringState');
 
     this.keyringService = new KeyringService({
-      keyringTypes: [TrezorKeyring],
+      keyringTypes: [TrezorKeyring, LedgerBridgeKeyring],
       initState,
     });
 

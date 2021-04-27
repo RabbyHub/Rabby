@@ -12,8 +12,8 @@ const pathBase = 'm'
 const MAX_INDEX = 1000
 const DELAY_BETWEEN_POPUPS = 1000
 const TREZOR_CONNECT_MANIFEST = {
-  email: 'support@metamask.io',
-  appUrl: 'https://metamask.io',
+  email: 'support@debank.com/',
+  appUrl: 'https://debank.com/',
 }
 
 class TrezorKeyring extends EventEmitter {

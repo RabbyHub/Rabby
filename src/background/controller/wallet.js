@@ -70,6 +70,10 @@ class Wallet {
     preference.setCurrentAccount(account);
     session.broadcastEvent('accountsChanged', account);
   };
+
+  setPopupOpen = (isOpen) => {
+    preference.setPopupOpen(isOpen);
+  }
 }
 
 export default new Wallet();
