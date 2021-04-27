@@ -1,8 +1,15 @@
-import React, { useState, useEffect, useCallback } from 'react';
+import React, { useState, useEffect, useCallback, ReactNode } from 'react';
 import { createPortal } from 'react-dom';
 import cx from 'clsx';
 
-const Modal = ({ children, className, isOpen, onClose }) => {
+interface ModalProps {
+  children: ReactNode,
+  className?: string,
+  isOpen?: boolean
+  onClose?(): void
+}
+
+const Modal = ({ children, className, isOpen, onClose }: ModalProps) => {
   const modalDom = document.createElement('div');
 
   const handleClose = () => {

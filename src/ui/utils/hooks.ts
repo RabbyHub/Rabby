@@ -2,12 +2,6 @@ import { useEffect, useReducer } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useWallet } from './WalletContext';
 
-export const useForceUpdate = () => {
-  const [, forceUpdate] = useReducer((_) => Object.create(null));
-
-  return forceUpdate;
-};
-
 export const useApproval = () => {
   const wallet = useWallet();
   const approval = wallet.getApproval();

@@ -17,7 +17,7 @@ const ConnectedSites = () => {
     getSites();
   }, []);
 
-  const handleRemove = ({ currentTarget: { dataset: { origin } }}) => {
+  const handleRemove = (k: string) => {
     wallet.removeConnectedSite(origin);
     getSites();
   }
@@ -33,8 +33,7 @@ const ConnectedSites = () => {
           <div className="font-bold flex-1 text-sm">{k}</div>
           <div>
             <Button
-              data-origin={k}
-              onClick={handleRemove}
+              onClick={() => handleRemove(k)}
               size="sm"
               className="text-xs px-4 text-gray-500"
             >

@@ -1,5 +1,5 @@
 // inspired by https://github.com/ant-design/ant-design/blob/master/components/checkbox/Checkbox.tsx
-import React, { useContext, createContext, useState, useEffect } from 'react';
+import React, { useContext, createContext, useState, useEffect, ReactNode } from 'react';
 import cx from 'clsx';
 
 export type CheckboxValueType = string | number | boolean;
@@ -15,15 +15,29 @@ export interface CheckboxOptionType {
 export interface CheckboxGroupContext {
   name?: string;
   toggleOption?: (option: CheckboxOptionType) => void;
-  value?: any;
+  value?: string[];
   disabled?: boolean;
   registerValue: (val: string) => void;
   cancelValue: (val: string) => void;
 }
 
+interface CheckboxProps {
+  className?: string
+  children?: ReactNode
+  onChange?(val: any): void
+  value: any
+}
+
+interface CheckboxGroupProps {
+  className?: string,
+  children?: ReactNode,
+  onChange?: (e: any) => void;
+  value: string[]
+}
+
 const GroupContext = createContext<CheckboxGroupContext | null>(null);
 
-const CheckboxGroup = ({ className, children, onChange, ...restProps }) => {
+const CheckboxGroup = ({ className, children, onChange, ...restProps }: CheckboxGroupProps) => {
   const [registerValues, setRegisterValues] = useState<string[]>([]);
   const [value, setValue] = useState(restProps.value || []);
 
@@ -41,7 +55,7 @@ const CheckboxGroup = ({ className, children, onChange, ...restProps }) => {
     setRegisterValues((vals) => vals.filter((v) => v !== val));
   };
 
-  const toggleOption = (val) => {
+  const toggleOption = (val: any) => {
     const checkedBefore = value.indexOf(val);
     const newValue = [...value];
 
@@ -72,7 +86,7 @@ const CheckboxGroup = ({ className, children, onChange, ...restProps }) => {
   );
 };
 
-const Checkbox = ({ className, value, children, ...restProps }) => {
+const Checkbox = ({ className, value, children, ...restProps }: CheckboxProps) => {
   const baseClassName = 'w-full border border-gray rounded py-1 px-2';
   const checkboxGroup = useContext(GroupContext);
 
@@ -93,7 +107,7 @@ const Checkbox = ({ className, value, children, ...restProps }) => {
     <input
         type="checkbox"
         onChange={handleChange}
-        checked={checkboxGroup?.value.includes(value)}
+        checked={checkboxGroup?.value?.includes(value)}
         {...restProps}
       />
       <span>{children}</span>

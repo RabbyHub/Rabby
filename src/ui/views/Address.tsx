@@ -5,7 +5,7 @@ import { Icon, Button, Footer, Header } from 'ui/component';
 import { useWallet } from 'ui/utils';
 
 const Address = () => {
-  const [addresses, setAddresses] = useState([]);
+  const [addresses, setAddresses] = useState<string[]>([]);
   const wallet = useWallet();
 
   const initData = async () => {
@@ -17,10 +17,10 @@ const Address = () => {
     initData();
   }, [])
 
-  const handleHide = ({ currentTarget: { dataset: { id } } }) => {
+  const handleHide = (_, id: string) => {
     console.log(id);
   }
-  const handleSingleExport = ({ currentTarget: { dataset: { id } } }) => {
+  const handleSingleExport = (_, id: string) => {
     console.log(id);
   }
 
@@ -43,16 +43,14 @@ const Address = () => {
           </div>
           <div className="flex">
             <Button
-              data-id={k}
-              onClick={handleHide}
+              onClick={(e) => handleHide(e, k)}
               size="sm"
               className="text-xs px-4 text-gray-500 mr-2"
             >
               Hide
             </Button>
             <Button
-              data-id={k}
-              onClick={handleSingleExport}
+              onClick={(e) => handleSingleExport(e, k)}
               size="sm"
               className="text-xs px-4 text-gray-500"
             >

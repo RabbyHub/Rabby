@@ -58,7 +58,7 @@ const AccountChoose = ({ accounts, handleNextPage, handlePreviousPage }) => {
 
 const ImportHardware = () => {
   const { register, handleSubmit } = useForm();
-  const keyringRef = useRef();
+  const keyringRef = useRef<any>();
   const [accounts, setAccounts] = useState();
   const [error, setError] = useState();
   const wallet = useWallet();

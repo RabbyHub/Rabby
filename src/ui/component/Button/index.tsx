@@ -11,7 +11,7 @@ interface ButtonProps {
   size?: 'large' | 'middle' | 'small' | 'xs' | 'sm',
   htmlType?: 'submit' | 'reset' | 'button',
   disabled?: boolean
-  onClick: React.MouseEventHandler<HTMLElement>
+  onClick?: React.MouseEventHandler<HTMLElement>
 }
 
 function Button({

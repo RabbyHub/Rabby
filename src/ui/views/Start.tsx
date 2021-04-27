@@ -15,7 +15,7 @@ const Start = () => {
         className="mb-4"
       />
       <Link to="/create">
-        <Button block type="primary mb-2 mt-4">
+        <Button block type="primary" className="mb-2 mt-4">
           Create
         </Button>
       </Link>

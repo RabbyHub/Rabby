@@ -65,7 +65,7 @@ const DisplayMnemonic = ({ mnemonics, onNextClick, onBackClick }) => (
 );
 
 const CreateMnemonic = () => {
-  const [showVerify, setShowVerify] = useState();
+  const [showVerify, setShowVerify] = useState<boolean>(false);
   const [mnemonics, setMnemonics] = useState('');
   const history = useHistory();
   const wallet = useWallet();

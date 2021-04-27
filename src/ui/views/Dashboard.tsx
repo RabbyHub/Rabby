@@ -6,7 +6,7 @@ import { useWallet, getCurrentTab } from 'ui/utils';
 
 const SwitchAddress = ({ onChange }) => {
   const wallet = useWallet();
-  const [accounts, setAccounts] = useState();
+  const [accounts, setAccounts] = useState<any[]>([]);
   const keyrings = {
     'HD Key Tree': 'Mnemonics addresses',
     'Simple Key Pair': 'Private key addresses',
@@ -23,11 +23,7 @@ const SwitchAddress = ({ onChange }) => {
     getAllKeyrings();
   };
 
-  const changeAccount = ({
-    currentTarget: {
-      dataset: { account },
-    },
-  }) => {
+  const changeAccount = (account: any) => {
     onChange && onChange(account);
   };
 
@@ -43,8 +39,7 @@ const SwitchAddress = ({ onChange }) => {
             <div className="text-gray-500 text-lg">{keyrings[a.type]}</div>
             {a.accounts.map((acct) => (
               <div
-                data-account={acct}
-                onClick={changeAccount}
+                onClick={() => changeAccount(acct)}
                 className="bg-gray-100 text-gray-800 p-4 text-xs mt-4"
                 key={acct}>
                 {acct}

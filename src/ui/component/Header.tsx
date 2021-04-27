@@ -7,6 +7,7 @@ interface HeaderProps {
   subTitle?: string
   showClose?: boolean
   onCloseClick?: () => void
+  className?: string
 }
 
 const Header = ({ title, subTitle, showClose = true, onCloseClick }: HeaderProps) => {

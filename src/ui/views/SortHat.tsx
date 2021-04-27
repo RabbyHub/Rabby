@@ -5,7 +5,7 @@ import { useWallet, isNotification, useApproval } from 'ui/utils';
 
 const SortHat = () => {
   const wallet = useWallet();
-  const [to, setTo] = useState();
+  const [to, setTo] = useState('');
   const [, handleNext] = useApproval();
 
   useEffect(() => {

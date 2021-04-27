@@ -2,7 +2,15 @@ import React, { useEffect, useRef, useState } from 'react';
 import cx from 'clsx';
 import { Icon } from 'ui/component';
 
-const TiledSelect = ({ defaultValue, value, options, onChange, className }) => {
+interface TiledSelectProps {
+  defaultValue?: string[]
+  value: string[]
+  options: string[]
+  onChange(string): void
+  className?: string
+}
+
+const TiledSelect = ({ defaultValue, value, options, onChange, className }: TiledSelectProps) => {
   const isControlled = useRef(typeof value !== 'undefined').current;
   const [_value, setValue] = useState(
     (isControlled ? value : defaultValue) || []
@@ -19,21 +27,13 @@ const TiledSelect = ({ defaultValue, value, options, onChange, className }) => {
     }
   }, [value]);
 
-  const handleRemove = ({
-    currentTarget: {
-      dataset: { idx },
-    },
-  }) => {
+  const handleRemove = (idx: number) => {
     _value.splice(idx, 1);
     setValue((_value) => [..._value]);
     onChange && onChange(_value);
   };
 
-  const handleChoose = ({
-    currentTarget: {
-      dataset: { op },
-    },
-  }) => {
+  const handleChoose = (op: string) => {
     if (_value.includes(op)) {
       return;
     }
@@ -50,7 +50,7 @@ const TiledSelect = ({ defaultValue, value, options, onChange, className }) => {
           _value.map((v, i) => (
             <div className="bg-gray-100 text-gray-600 mr-2 h-4" key={v}>
               {v}
-              <Icon data-idx={i} type="cross" onClick={handleRemove} />
+              <Icon type="cross" onClick={() => handleRemove(i)} />
             </div>
           ))}
       </div>
@@ -64,8 +64,7 @@ const TiledSelect = ({ defaultValue, value, options, onChange, className }) => {
               }
             )}
             key={o}
-            onClick={handleChoose}
-            data-op={o}>
+            onClick={() => handleChoose(o)}>
             {o}
           </div>
         ))}

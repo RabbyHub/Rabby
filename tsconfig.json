@@ -18,8 +18,10 @@
     "jsx": "react",
     "moduleResolution": "node",
     "allowJs": true,
-    "allowSyntheticDefaultImports": true
+    "allowSyntheticDefaultImports": true,
+    "rootDir": "src",
+    "outDir": "dist"
   },
-  "include": ["./src/**/*"],
-  "exclude": ["node_modules"],
+  "exclude": ["_raw"],
+  "include": ["src"]
 }

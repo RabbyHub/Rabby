@@ -45,7 +45,6 @@ const CreatePassword = () => {
           type="primary"
           htmlType="submit"
           block
-          onClick={handleSubmit}
           disabled={!isValid}>
           Next
         </Button>

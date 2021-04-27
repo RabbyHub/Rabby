@@ -26,11 +26,7 @@ const ImportEntry = () => {
   const history = useHistory();
   const [mode, setMode] = useState('');
 
-  const chooseImportMode = ({
-    currentTarget: {
-      dataset: { mode },
-    },
-  }) => {
+  const chooseImportMode = (mode) => {
     setMode(mode);
   };
 
@@ -50,9 +46,8 @@ const ImportEntry = () => {
           <Button
             block
             key={e.name}
-            type={mode === e.name && 'primary'}
-            data-mode={e.name}
-            onClick={chooseImportMode}>
+            type={mode === e.name ? 'primary' : undefined}
+            onClick={() => chooseImportMode(e.name)}>
             {e.label}
           </Button>
         ))}
