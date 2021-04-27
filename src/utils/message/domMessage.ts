@@ -1,7 +1,7 @@
 import Message from './index';
 
 export default class DomMessage extends Message {
-  listenEvent = (type, callback) => {
+  listenEvent = (type: string, callback) => {
     document.addEventListener(`${this.EVENT_PRE}${type}`, (({ detail }: CustomEvent) => {
       callback(detail);
     }) as EventListener);

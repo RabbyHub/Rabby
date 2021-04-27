@@ -8,7 +8,7 @@ const config = {
   devtool: false,
   plugins: [
     new webpack.DefinePlugin({
-      BUILD_ENV: JSON.stringify('PRO'),
+      'process.env.BUILD_ENV': JSON.stringify('PRO'),
     }),
     new BundleAnalyzerPlugin(),
   ],

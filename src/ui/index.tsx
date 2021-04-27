@@ -1,9 +1,10 @@
+import React from 'react';
 import ReactDOM from 'react-dom';
 import App from 'ui/views';
 
 import './index.css';
 
-if (BUILD_ENV === 'START') {
+if (process.env.BUILD_ENV === 'START') {
   const wallet = new Proxy(
     {},
     {
@@ -14,7 +15,7 @@ if (BUILD_ENV === 'START') {
 } else {
   chrome.runtime.getBackgroundPage((win) => {
     ReactDOM.render(
-      <App wallet={win.wallet} />,
+      <App wallet={win?.wallet} />,
       document.getElementById('root')
     );
   });

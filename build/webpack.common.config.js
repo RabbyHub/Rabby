@@ -8,10 +8,10 @@ const {
 
 const config = {
   entry: {
-    background: paths.rootResolve('src/background/index.js'),
-    'content-script': paths.rootResolve('src/content-script/index.js'),
-    pageProvider: paths.rootResolve('src/content-script/pageProvider/index.js'),
-    ui: paths.rootResolve('src/ui/index.js'),
+    background: paths.rootResolve('src/background/index.ts'),
+    'content-script': paths.rootResolve('src/content-script/index.ts'),
+    pageProvider: paths.rootResolve('src/content-script/pageProvider/index.tsx'),
+    ui: paths.rootResolve('src/ui/index.tsx'),
   },
   output: {
     path: paths.dist,

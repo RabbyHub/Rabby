@@ -11,7 +11,7 @@ const config = {
   },
   plugins: [
     new webpack.DefinePlugin({
-      BUILD_ENV: JSON.stringify('DEV'),
+      'process.env.BUILD_ENV': JSON.stringify('DEV'),
     }),
   ],
 };

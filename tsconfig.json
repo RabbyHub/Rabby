@@ -10,11 +10,15 @@
     "paths": {
       "utils": ["src/utils"],
       "@/*": ["src/*"],
-      "ui/*": ["src/ui/*"]
+      "ui/*": ["src/ui/*"],
+      "background/*": ["src/background/*"],
+      "const": ["src/constants"]
     },
-    "types": ["chrome"],
+    "types": ["chrome", "node", "react", "react-dom"],
     "jsx": "react",
-    "moduleResolution": "Node"
+    "moduleResolution": "node",
+    "allowJs": true,
+    "allowSyntheticDefaultImports": true
   },
   "include": ["./src/**/*"],
   "exclude": ["node_modules"],

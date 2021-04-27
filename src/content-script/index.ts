@@ -1,4 +1,4 @@
-import { Message } from 'utils';
+import { Message } from '@/utils';
 
 const { PortMessage, DomMessage } = Message;
 
