@@ -5,7 +5,7 @@ import {
   permission,
   session,
   account,
-} from '@/background/service';
+} from 'background/service';
 
 class Wallet {
   getAccount = () => account.getAccount();

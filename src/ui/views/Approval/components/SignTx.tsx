@@ -1,5 +1,5 @@
 import React from 'react';
-import { CHAINS } from 'const';
+import { CHAINS } from 'consts';
 
 const SignTx = ({ params, origin }) => {
   const [{ chainId, data, from, gas, gasPrice, nonce, to, value }] = params;

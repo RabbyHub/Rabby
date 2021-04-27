@@ -13,5 +13,3 @@ export const CHAINS = {
     hex: '0x1',
   },
 };
-
-export default {}

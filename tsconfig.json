@@ -1,27 +1,25 @@
 {
   "compilerOptions": {
-    "baseUrl": ".",
-    "module": "ES2015",
-    "target": "ES5",
-    "lib": ["ES2015", "DOM"],
+    "baseUrl": "./",
+    "module": "commonjs",
+    "target": "es3",
+    "moduleResolution": "node",
     "noImplicitAny": false,
     "strict": true,
-    "declaration": true,
+    "esModuleInterop": true,
     "paths": {
-      "utils": ["src/utils"],
-      "@/*": ["src/*"],
-      "ui/*": ["src/ui/*"],
-      "background/*": ["src/background/*"],
-      "const": ["src/constants"]
+      "utils": ["./src/utils"],
+      "@/*": ["./src/*"],
+      "ui/*": ["./src/ui/*"],
+      "background/*": ["./src/background/*"],
+      "consts": ["./src/consts"]
     },
     "types": ["chrome", "node", "react", "react-dom"],
     "jsx": "react",
-    "moduleResolution": "node",
-    "allowJs": true,
     "allowSyntheticDefaultImports": true,
-    "rootDir": "src",
-    "outDir": "dist"
+    "allowJs": true,
+    "plugins": [{ "transform": "typescript-transform-paths", "afterDeclarations": true }]
   },
   "exclude": ["_raw"],
-  "include": ["src"]
+  "include": ["src", "ethereum-cryptography"]
 }

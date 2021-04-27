@@ -1,6 +1,6 @@
-import { Message } from '@/utils';
-import { permission, preference, session } from '@/background/service';
-import { providerController, walletController } from '@/background/controller';
+import { Message } from 'utils';
+import { permission, preference, session } from './service';
+import { providerController, walletController } from './controller';
 
 const { PortMessage } = Message;
 
@@ -29,4 +29,4 @@ chrome.runtime.onConnect.addListener((port) => {
 });
 
 // for popup
-window.wallet = walletController;
+(window as any).wallet = walletController;

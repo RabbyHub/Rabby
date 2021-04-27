@@ -22,8 +22,11 @@ const config = {
     rules: [
       {
         test: /\.jsx?$|\.tsx?$/,
-        exclude: /node_modules/,
+        exclude: /node_modules\/(?!(ethereum-cryptography|eth-rpc-errors|eth-simple-keyring|obs-store)\/).*/,
         loader: 'ts-loader',
+        options: {
+          compiler: 'ttypescript'
+        }
       },
       {
         test: /\.css$/,
@@ -68,6 +71,7 @@ const config = {
       stream: require.resolve('stream-browserify'),
       crypto: require.resolve('crypto-browserify'),
     },
+    extensions: ['.js', 'jsx', '.ts', '.tsx']
   },
   stats: 'minimal',
 };

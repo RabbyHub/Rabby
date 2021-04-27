@@ -1,7 +1,7 @@
 import React from 'react';
 import { useEffect, useState } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
-import { APPROVAL_STATE } from 'const';
+import { APPROVAL_STATE } from 'consts';
 import { Footer, Button } from 'ui/component';
 import { useWallet, useApproval } from 'ui/utils';
 import { Connect, SignText, SignTx } from './components';

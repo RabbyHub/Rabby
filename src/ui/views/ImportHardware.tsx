@@ -1,8 +1,8 @@
 import React from 'react';
 import { useState, useRef } from 'react';
 import { useForm, Controller } from 'react-hook-form';
-import { Input, Footer, Button, Checkbox } from 'ui/component';
-import { useWallet } from 'ui/utils';
+import { Input, Footer, Button, Checkbox } from '../component';
+import { useWallet } from '../utils';
 
 const defaultHdPaths = {
   trezor: `m/44'/60'/0'/0`,
