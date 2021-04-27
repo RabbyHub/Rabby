@@ -64,7 +64,7 @@ class EthereumProvider extends EventEmitter {
   };
 
   request = async (data) => {
-    // console.log('[request]', data);
+    console.log('[request]', data);
 
     if (!data) {
       throw ethErrors.rpc.invalidRequest();
@@ -77,12 +77,12 @@ class EthereumProvider extends EventEmitter {
     return this.dm
       .request({ data })
       .then((res) => {
-        // console.log('[request: success]', res);
+        console.log('[request: success]', res);
 
         return res;
       })
       .catch((err) => {
-        // console.log('[request: error]', err);
+        console.log('[request: error]', err);
 
         return Promise.reject(serializeError(err));
       });
@@ -90,7 +90,7 @@ class EthereumProvider extends EventEmitter {
 
   // shim to matamask legacy api
   sendAsync = (payload, callback) => {
-    // console.log('[request: sendAsync]', payload)
+    console.log('[request: sendAsync]', payload)
     this.request(payload)
       .then((result) => callback(null, { result }))
       .catch((error) => callback(error, { error }));

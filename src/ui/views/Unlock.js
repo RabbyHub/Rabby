@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { Input, Footer, Button } from 'ui/component';
+import { Input, Footer, Button, QrScan } from 'ui/component';
 import { useWallet, useApproval } from 'ui/utils';
 
 const Unlock = () => {
@@ -10,13 +10,13 @@ const Unlock = () => {
     formState: { isValid },
   } = useForm({ mode: 'onChange' });
   const wallet = useWallet();
-  const [, handleApproval] = useApproval();
+  const [, resolveApproval] = useApproval();
   const [error, setErr] = useState();
 
   const onSubmit = async ({ password }) => {
     try {
       await wallet.submitPassword(password);
-      handleApproval();
+      resolveApproval();
     } catch (err) {
       setErr(err?.message || '密码错误');
     }
@@ -31,6 +31,7 @@ const Unlock = () => {
           <Input {...register('password')} placeholder="Password" />
           <div className="text-red-500">{error}</div>
         </div>
+        <QrScan />
         <Footer>
           <Button disabled={!isValid} block htmlType="submit">
             Unlock

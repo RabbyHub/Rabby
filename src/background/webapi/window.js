@@ -31,7 +31,9 @@ const create = (hash = '') => {
 };
 
 const remove = (winId) => {
-  chrome.windows.remove(winId);
+  return new Promise((resolve, reject) => {
+    chrome.windows.remove(winId, resolve);
+  });
 };
 
 let window = {

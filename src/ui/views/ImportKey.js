@@ -9,14 +9,14 @@ const ImportKey = () => {
     handleSubmit,
   } = useForm({ mode: 'onChange' });
   const wallet = useWallet();
-  const [, handleApproval] = useApproval();
+  const [, resolveApproval] = useApproval();
 
   const onSubmit = async ({ key }) => {
     try {
       await wallet.importKey(key);
       wallet.setup();
 
-      handleApproval();
+      resolveApproval();
     } catch (err) {
       console.error('err', err);
     }

@@ -16,28 +16,27 @@ class Notification {
 
     winMgr.event.on('windowFocusChange', (winId) => {
       if (this.notifiWindowId && winId !== this.notifiWindowId) {
-        this.handleApproval('');
+        this.rejectApproval();
       }
     });
   }
 
-  getApproval = () => this.approval;
+  getApproval = () => this.approval?.data;
 
-  handleApproval = (err) => {
-    if (!this.approval) return;
-    const { resolve, reject } = this.approval;
+  resolveApproval = () => {
+    this.approval?.resolve();
+    this.approval = null;
+  };
 
-    this.clear();
-    // consider empty string '' as default error message
-    err !== void 0
-      ? reject(ethErrors.provider.userRejectedRequest(err))
-      : resolve();
+  rejectApproval = async (err) => {
+    this.approval?.reject(ethErrors.provider.userRejectedRequest(err));
+    await this.clear();
   };
 
   requestApproval = (data) => {
     return new Promise((resolve, reject) => {
       this.approval = {
-        ...data,
+        data,
         resolve,
         reject,
       };
@@ -50,15 +49,18 @@ class Notification {
     });
   };
 
-  clear = () => {
+  clear = async () => {
     this.approval = null;
     if (this.notifiWindowId) {
-      winMgr.remove(this.notifiWindowId);
+      await winMgr.remove(this.notifiWindowId);
       this.notifiWindowId = 0;
     }
   };
 
   openNotification = () => {
+    if (this.notifiWindowId) {
+      return;
+    }
     winMgr.create().then((winId) => {
       this.notifiWindowId = winId;
     });

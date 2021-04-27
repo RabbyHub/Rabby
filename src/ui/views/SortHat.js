@@ -5,18 +5,18 @@ import { useWallet, isNotification, useApproval } from 'ui/utils';
 const SortHat = () => {
   const wallet = useWallet();
   const [to, setTo] = useState();
-  const [, handleNext] = useApproval();
+  let [approval, , rejectApproval] = useApproval();
 
-  useEffect(() => {
+  const loadView = async () => {
     const isInNotification = isNotification();
-    const approval = wallet.getApproval();
     const isSetup = wallet.isSetup();
     const isUnlocked = wallet.isUnlocked();
 
     if (!isInNotification) {
       // chrome.window.windowFocusChange won't fire when
       // click popup in the meanwhile notification is present
-      handleNext('');
+      await rejectApproval();
+      approval = null;
     }
 
     if (isInNotification && !approval) {
@@ -30,6 +30,10 @@ const SortHat = () => {
     } else {
       setTo('/dashboard');
     }
+  };
+
+  useEffect(() => {
+    loadView();
   }, []);
 
   return to ? <Redirect to={to} /> : null;

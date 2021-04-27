@@ -45,5 +45,5 @@
     "notifications",
     "*://connect.trezor.io/*"
   ],
-  "web_accessible_resources": ["pageProvider.js"]
+  "web_accessible_resources": ["pageProvider.js", "user-media-permission.html"]
 }

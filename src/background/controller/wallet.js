@@ -15,7 +15,8 @@ class Wallet {
   getAccount = () => account.getAccount();
 
   getApproval = notification.getApproval;
-  handleApproval = notification.handleApproval;
+  resolveApproval = notification.resolveApproval;
+  rejectApproval = notification.rejectApproval;
   isUnlocked = eth.isUnlocked;
   setPassword = eth.setPassword;
   submitPassword = eth.submitPassword;
@@ -73,7 +74,7 @@ class Wallet {
 
   setPopupOpen = (isOpen) => {
     preference.setPopupOpen(isOpen);
-  }
+  };
 }
 
 export default new Wallet();

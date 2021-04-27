@@ -2837,15 +2837,7 @@ ethereum-cryptography@^0.1.3:
     secp256k1 "^4.0.1"
     setimmediate "^1.0.5"
 
-ethereumjs-abi@0.6.8, ethereumjs-abi@^0.6.5, ethereumjs-abi@^0.6.8:
-  version "0.6.8"
-  resolved "https://registry.yarnpkg.com/ethereumjs-abi/-/ethereumjs-abi-0.6.8.tgz#71bc152db099f70e62f108b7cdfca1b362c6fcae"
-  integrity sha512-Tx0r/iXI6r+lRsdvkFDlut0N08jWMnKRZ6Gkq+Nmw75lZe4e6o3EkSnkaBP5NF6+m5PTGAr9JP43N3LyeoglsA==
-  dependencies:
-    bn.js "^4.11.8"
-    ethereumjs-util "^6.0.0"
-
-"ethereumjs-abi@git+https://github.com/ethereumjs/ethereumjs-abi.git":
+ethereumjs-abi@0.6.8, ethereumjs-abi@^0.6.5, ethereumjs-abi@^0.6.8, "ethereumjs-abi@git+https://github.com/ethereumjs/ethereumjs-abi.git":
   version "0.6.8"
   resolved "git+https://github.com/ethereumjs/ethereumjs-abi.git#1a27c59c15ab1e95ee8e5c4ed6ad814c49cc439e"
   dependencies:
@@ -3138,6 +3130,14 @@ faye-websocket@^0.11.3:
   integrity sha512-D2y4bovYpzziGgbHYtGCMjlJM36vAl/y+xUyn1C+FVx8szd1E+86KwVw6XvYSzOP8iMpm1X0I4xJD+QtUb36OA==
   dependencies:
     websocket-driver ">=0.5.1"
+
+file-loader@^6.2.0:
+  version "6.2.0"
+  resolved "https://registry.yarnpkg.com/file-loader/-/file-loader-6.2.0.tgz#baef7cf8e1840df325e4390b4484879480eebe4d"
+  integrity sha512-qo3glqyTa61Ytg4u73GultjHGjdRyig3tG6lPtyX/jOEJvHif9uB0/OCI2Kif6ctF3caQTW2G5gym21oAsI4pw==
+  dependencies:
+    loader-utils "^2.0.0"
+    schema-utils "^3.0.0"
 
 file-uri-to-path@1.0.0:
   version "1.0.0"
@@ -5190,6 +5190,11 @@ purgecss@^3.1.3:
     glob "^7.0.0"
     postcss "^8.2.1"
     postcss-selector-parser "^6.0.2"
+
+qr-scanner@^1.2.0:
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/qr-scanner/-/qr-scanner-1.2.0.tgz#845a263d167a06f6d4aaebd5b2f66b64ba460c86"
+  integrity sha512-oTuOxV/UT0O1BMyNCoWusd8B8/Za4zNvDWxTN54+s0mRvnavU0OjQiwI2o3HCuXUVGO88Ee9yY9qjrt8yUYaSw==
 
 qs@6.7.0:
   version "6.7.0"

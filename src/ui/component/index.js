@@ -7,3 +7,4 @@ export { default as Icon } from './Icon';
 export { default as ArrowLink } from './ArrowLink';
 export { default as TiledSelect } from './TiledSelect';
 export { default as Checkbox } from './Checkbox';
+export { default as QrScan } from './QrScan';

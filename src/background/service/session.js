@@ -16,7 +16,11 @@ class Session {
 const sessionMap = new Map();
 
 const getSession = (id) => {
-  return sessionMap.get(id);
+  if (sessionMap.has(id)) {
+    return sessionMap.get(id);
+  }
+
+  return createSession(id);
 };
 
 const createSession = (id, data) => {

@@ -15,7 +15,7 @@ chrome.runtime.onConnect.addListener((port) => {
 
   pm.listen((req) => {
     const sessionId = port.sender.tab.id;
-    req.session = session.createSession(sessionId);
+    req.session = session.getSession(sessionId);
 
     // for background push to respective page
     req.session.pushMessage = (event, data) => {

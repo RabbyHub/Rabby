@@ -14,24 +14,32 @@ export const useApproval = () => {
   const approval = wallet.getApproval();
   const history = useHistory();
 
-  const handleNext = (err) => {
+  const resolveApproval = () => {
     if (approval) {
-      wallet.handleApproval(err);
+      wallet.resolveApproval();
+    }
+    setTimeout(() => {
+      history.push('/');
+    });
+  };
+
+  const rejectApproval = async (err) => {
+    if (approval) {
+      await wallet.rejectApproval(err);
     }
     history.push('/');
   };
 
   useEffect(() => {
-    const beforeunload = () => {
-      handleNext('user reject');
-    };
+    if (!isNotification()) {
+      return;
+    }
+    window.addEventListener('beforeunload', rejectApproval);
 
-    window.addEventListener('beforeunload', beforeunload);
-
-    return () => window.removeEventListener('beforeunload', beforeunload);
+    return () => window.removeEventListener('beforeunload', rejectApproval);
   }, []);
 
-  return [approval, handleNext];
+  return [approval, resolveApproval, rejectApproval];
 };
 
 export const usePopupOpen = () => {
