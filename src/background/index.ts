@@ -29,4 +29,4 @@ chrome.runtime.onConnect.addListener((port) => {
 });
 
 // for popup
-(window as any).wallet = walletController;
+window.wallet = walletController;

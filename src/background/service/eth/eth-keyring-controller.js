@@ -2,7 +2,7 @@
 
 import { EventEmitter } from 'events'
 import log from 'loglevel'
-import ethUtil from 'ethereumjs-util'
+import * as ethUtil from 'ethereumjs-util'
 import bip39 from 'bip39'
 import ObservableStore from 'obs-store'
 import encryptor from 'browser-passworder'

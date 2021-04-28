@@ -1,7 +1,7 @@
 // fork from https://github.com/MetaMask/eth-trezor-keyring/blob/main/index.js
 
 import { EventEmitter } from 'events'
-import ethUtil from 'ethereumjs-util'
+import * as ethUtil from 'ethereumjs-util'
 import Transaction from 'ethereumjs-tx'
 import HDKey from 'hdkey'
 import TrezorConnect from 'trezor-connect'
