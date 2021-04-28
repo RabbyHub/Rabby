@@ -1,7 +1,7 @@
 // extension has a bug when use `getUserMedia`
 // here we hack it with an iframed inject into current page to get the permission to use `getUserMedia`
 // ref: https://bugs.chromium.org/p/chromium/issues/detail?id=160337
-import { useEffect, createRef } from 'react';
+import React, { useEffect, createRef } from 'react';
 import QrScanner from 'qr-scanner';
 import QrScannerWorkerPath from '!!file-loader!qr-scanner/qr-scanner-worker.min.js';
 
