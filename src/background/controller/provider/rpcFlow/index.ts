@@ -1,4 +1,4 @@
-import { APPROVAL_STATE } from 'constants';
+import { APPROVAL_STATE } from 'consts';
 import { eth, notification, permission } from 'background/service';
 import * as methods from './methods';
 

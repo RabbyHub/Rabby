@@ -1,10 +1,8 @@
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const TSConfigPathsPlugin = require('tsconfig-paths-webpack-plugin')
 
 const paths = require('./paths');
-const {
-  compilerOptions: { baseUrl },
-} = require('../jsconfig.json');
 
 const config = {
   entry: {
@@ -22,11 +20,8 @@ const config = {
     rules: [
       {
         test: /\.jsx?$|\.tsx?$/,
-        exclude: /node_modules\/(?!(ethereum-cryptography|eth-rpc-errors|eth-simple-keyring|obs-store)\/).*/,
-        loader: 'ts-loader',
-        options: {
-          compiler: 'ttypescript'
-        }
+        exclude: /node_modules/,
+        loader: 'ts-loader'
       },
       {
         test: /\.css$/,
@@ -63,10 +58,10 @@ const config = {
     new webpack.ProvidePlugin({
       Buffer: ['buffer', 'Buffer'],
       process: 'process',
-    }),
+    })
   ],
   resolve: {
-    modules: ['node_modules', baseUrl],
+    plugins: [new TSConfigPathsPlugin()],
     fallback: {
       stream: require.resolve('stream-browserify'),
       crypto: require.resolve('crypto-browserify'),
