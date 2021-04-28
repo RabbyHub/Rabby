@@ -3,11 +3,10 @@
   "version": "0.0.1",
   "description": "eth wallet",
   "scripts": {
-    "clean": "rm -rf dist/* && cp -r _raw/* dist",
+    "clean": "mkdir -p dist && rm -rf dist/* && cp -r _raw/* dist",
     "build:dev": "npm run clean && webpack --progress --env config=dev",
     "build:pro": "npm run clean && webpack --progress --env config=pro",
-    "start": "webpack serve --env config=start",
-    "test": "ttsc"
+    "start": "webpack serve --env config=start"
   },
   "dependencies": {
     "@ethereumjs/tx": "^3.1.2",

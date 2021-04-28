@@ -1,5 +1,5 @@
 import { storage } from 'background/webapi';
-import { debounce } from "debounce";
+import { debounce } from 'debounce';
 
 const persistStorage = (name, obj) => debounce(storage.set(name, obj), 1000);
 
