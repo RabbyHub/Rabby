@@ -16,7 +16,7 @@ const config = {
     }),
     new webpack.HotModuleReplacementPlugin(),
     new webpack.DefinePlugin({
-      BUILD_ENV: JSON.stringify('START'),
+      'process.env.BUILD_ENV': JSON.stringify('START'),
     }),
     new webpack.ProvidePlugin({
       langLocales: paths.rootResolve('src/_raw/_locales/en/messages.json'),

@@ -1,14 +1,14 @@
 /// fork from https://github.com/MetaMask/KeyringController/blob/master/index.js
 
-const { EventEmitter } = require('events')
-const log = require('loglevel')
-const ethUtil = require('ethereumjs-util')
+import { EventEmitter } from 'events'
+import log from 'loglevel'
+import * as ethUtil from 'ethereumjs-util'
+import bip39 from 'bip39'
+import ObservableStore from 'obs-store'
+import encryptor from 'browser-passworder'
+import { normalize as normalizeAddress } from 'eth-sig-util'
 
 const { BN } = ethUtil
-const bip39 = require('bip39')
-const ObservableStore = require('obs-store')
-const encryptor = require('browser-passworder')
-const { normalize: normalizeAddress } = require('eth-sig-util')
 
 const SimpleKeyring = require('eth-simple-keyring')
 const HdKeyring = require('eth-hd-keyring')
@@ -777,4 +777,4 @@ class KeyringController extends EventEmitter {
   }
 }
 
-module.exports = KeyringController
+export default KeyringController
