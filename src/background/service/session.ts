@@ -26,7 +26,7 @@ const getSession = (id) => {
     return sessionMap.get(id);
   }
 
-  return createSession(id);
+  return createSession(id, null);
 };
 
 const createSession = (id, data) => {
