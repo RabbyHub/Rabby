@@ -1,17 +1,15 @@
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
+const TSConfigPathsPlugin = require('tsconfig-paths-webpack-plugin')
 
 const paths = require('./paths');
-const {
-  compilerOptions: { baseUrl },
-} = require('../jsconfig.json');
 
 const config = {
   entry: {
-    background: paths.rootResolve('src/background/index.js'),
-    'content-script': paths.rootResolve('src/content-script/index.js'),
-    pageProvider: paths.rootResolve('src/content-script/pageProvider/index.js'),
-    ui: paths.rootResolve('src/ui/index.js'),
+    background: paths.rootResolve('src/background/index.ts'),
+    'content-script': paths.rootResolve('src/content-script/index.ts'),
+    pageProvider: paths.rootResolve('src/content-script/pageProvider/index.tsx'),
+    ui: paths.rootResolve('src/ui/index.tsx'),
   },
   output: {
     path: paths.dist,
@@ -21,9 +19,9 @@ const config = {
   module: {
     rules: [
       {
-        test: /\.js$/,
+        test: /\.jsx?$|\.tsx?$/,
         exclude: /node_modules/,
-        loader: 'babel-loader',
+        loader: 'ts-loader'
       },
       {
         test: /\.css$/,
@@ -60,14 +58,15 @@ const config = {
     new webpack.ProvidePlugin({
       Buffer: ['buffer', 'Buffer'],
       process: 'process',
-    }),
+    })
   ],
   resolve: {
-    modules: ['node_modules', baseUrl],
+    plugins: [new TSConfigPathsPlugin()],
     fallback: {
       stream: require.resolve('stream-browserify'),
       crypto: require.resolve('crypto-browserify'),
     },
+    extensions: ['.js', 'jsx', '.ts', '.tsx']
   },
   stats: 'minimal',
 };

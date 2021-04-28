@@ -1,10 +1,10 @@
 // fork from https://github.com/MetaMask/eth-trezor-keyring/blob/main/index.js
 
-const { EventEmitter } = require('events')
-const ethUtil = require('ethereumjs-util')
-const Transaction = require('ethereumjs-tx')
-const HDKey = require('hdkey')
-const TrezorConnect = require('trezor-connect').default
+import { EventEmitter } from 'events'
+import * as ethUtil from 'ethereumjs-util'
+import Transaction from 'ethereumjs-tx'
+import HDKey from 'hdkey'
+import TrezorConnect from 'trezor-connect'
 
 const hdPathString = `m/44'/60'/0'/0`
 const keyringType = 'Trezor Hardware'
@@ -299,4 +299,4 @@ class TrezorKeyring extends EventEmitter {
 }
 
 TrezorKeyring.type = keyringType
-module.exports = TrezorKeyring
+export default TrezorKeyring

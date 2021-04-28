@@ -1,0 +1,25 @@
+{
+  "compilerOptions": {
+    "baseUrl": "./",
+    "module": "commonjs",
+    "target": "es2015",
+    "moduleResolution": "node",
+    "noImplicitAny": false,
+    "strict": true,
+    "esModuleInterop": true,
+    "paths": {
+      "utils": ["./src/utils"],
+      "@/*": ["./src/*"],
+      "ui/*": ["./src/ui/*"],
+      "background/*": ["./src/background/*"],
+      "consts": ["./src/constants"]
+    },
+    "types": ["chrome", "node", "react", "react-dom"],
+    "jsx": "react",
+    "allowSyntheticDefaultImports": true,
+    "allowJs": true,
+    "plugins": [{ "transform": "typescript-transform-paths", "afterDeclarations": true }]
+  },
+  "exclude": ["_raw", "./node_modules"],
+  "include": ["src"]
+}
