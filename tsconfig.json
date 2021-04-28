@@ -2,7 +2,7 @@
   "compilerOptions": {
     "baseUrl": "./",
     "module": "commonjs",
-    "target": "es3",
+    "target": "es2015",
     "moduleResolution": "node",
     "noImplicitAny": false,
     "strict": true,
@@ -20,6 +20,6 @@
     "allowJs": true,
     "plugins": [{ "transform": "typescript-transform-paths", "afterDeclarations": true }]
   },
-  "exclude": ["_raw"],
-  "include": ["src", "ethereum-cryptography"]
+  "exclude": ["_raw", "node_modules"],
+  "include": ["src"]
 }
