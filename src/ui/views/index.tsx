@@ -1,6 +1,6 @@
 import React from 'react';
 import { HashRouter as Router, Switch, Route } from 'react-router-dom';
-import { WalletProvider } from 'ui/utils';
+import { WalletProvider, usePopupOpen } from 'ui/utils';
 import ImportMode from './ImportMode';
 import ImportKey from './ImportKey';
 import ImportMnemonics from './ImportMnemonics';
@@ -16,8 +16,10 @@ import CreatePassword from './CreatePassword';
 import Start from './Start';
 import CreateMnemonics from './CreateMnemonics';
 
-const App = ({ wallet }) => (
-  <WalletProvider wallet={wallet}>
+const Main = () => {
+  usePopupOpen();
+
+  return (
     <Router>
       <main className="p-6 relative min-h-full">
         <Switch>
@@ -69,6 +71,12 @@ const App = ({ wallet }) => (
         </Switch>
       </main>
     </Router>
+  );
+};
+
+const App = ({ wallet }) => (
+  <WalletProvider wallet={wallet}>
+    <Main />
   </WalletProvider>
 );
 

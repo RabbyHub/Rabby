@@ -1,6 +1,7 @@
 import { useEffect, useReducer } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useWallet } from './WalletContext';
+import { isNotification } from './index';
 
 export const useApproval = () => {
   const wallet = useWallet();
@@ -25,4 +26,22 @@ export const useApproval = () => {
   }, []);
 
   return [approval, handleNext];
+};
+
+export const usePopupOpen = () => {
+  const wallet = useWallet();
+
+  useEffect(() => {
+    if (isNotification()) {
+      return;
+    }
+
+    wallet.setPopupOpen(true);
+
+    const beforeunload = () => {
+      wallet.setPopupOpen(false);
+    };
+
+    window.addEventListener('beforeunload', beforeunload);
+  }, []);
 };

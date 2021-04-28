@@ -9,12 +9,18 @@ const defaultHdPaths = {
   ledger: `m/44'/60'/0'/0/0`,
 };
 
-const AccountChoose = ({ accounts, handleNextPage, handlePreviousPage }) => {
+const AccountChoose = ({
+  accounts,
+  hardware,
+  handleNextPage,
+  handlePreviousPage,
+}) => {
   const { control, handleSubmit } = useForm();
   const wallet = useWallet();
 
   const onSubmit = ({ accounts }) => {
-    wallet.unlockHardwareAccount('trezor', accounts);
+    console.log(hardware, accounts)
+    wallet.unlockHardwareAccount(hardware, accounts);
   };
 
   return (
@@ -57,7 +63,7 @@ const AccountChoose = ({ accounts, handleNextPage, handlePreviousPage }) => {
 };
 
 const ImportHardware = () => {
-  const { register, handleSubmit } = useForm();
+  const { register, handleSubmit, getValues } = useForm();
   const keyringRef = useRef<any>();
   const [accounts, setAccounts] = useState();
   const [error, setError] = useState();
@@ -73,9 +79,9 @@ const ImportHardware = () => {
     setAccounts(accounts);
   };
 
-  const onSubmit = async () => {
+  const onSubmit = async ({ hardware }) => {
     try {
-      const keyring = await wallet.connectHardware('trezor');
+      const keyring = await wallet.connectHardware(hardware);
       const accounts = await keyring.getFirstPage();
       keyringRef.current = keyring;
       setAccounts(accounts);
@@ -96,8 +102,11 @@ const ImportHardware = () => {
           })}>
           <option>请选择</option>
           <option value="trezor">trezor</option>
+          <option value="ledger">ledger</option>
         </select>
-        {error && <div className="text-red-700 text-lg">{error}</div>}
+        {!accounts && error && (
+          <div className="text-red-700 text-lg">{error}</div>
+        )}
         {!accounts && (
           <Button type="primary" htmlType="submit">
             connect
@@ -106,6 +115,7 @@ const ImportHardware = () => {
       </form>
       {accounts && (
         <AccountChoose
+          hardware={getValues('hardware')}
           accounts={accounts}
           handleNextPage={handleNextPage}
           handlePreviousPage={handlePreviousPage}

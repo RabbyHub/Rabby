@@ -12,6 +12,7 @@
   "dependencies": {
     "@ethereumjs/tx": "^3.1.2",
     "@hookform/error-message": "^2.0.0",
+    "@metamask/eth-ledger-bridge-keyring": "^0.4.0",
     "@tailwindcss/forms": "^0.3.2",
     "@trezor/rollout": "^1.0.7",
     "@types/chrome": "^0.0.135",
