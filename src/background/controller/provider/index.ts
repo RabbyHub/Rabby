@@ -1,5 +1,5 @@
 import { tab } from 'background/webapi';
-import { session } from '../../service';
+import { session } from 'background/service';
 
 import rpcFlow from './rpcFlow';
 import internal from './internal';
