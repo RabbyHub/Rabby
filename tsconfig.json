@@ -18,8 +18,9 @@
     "jsx": "react",
     "allowSyntheticDefaultImports": true,
     "allowJs": true,
-    "plugins": [{ "transform": "typescript-transform-paths", "afterDeclarations": true }]
+    "plugins": [{ "transform": "typescript-transform-paths", "afterDeclarations": true }],
+    "outDir": "./dist"
   },
-  "exclude": ["_raw", "./node_modules"],
+  "exclude": ["./node_modules"],
   "include": ["src"]
 }

@@ -28,7 +28,7 @@ class Notification {
     this.approval = null;
   };
 
-  rejectApproval = async (err) => {
+  rejectApproval = async (err?) => {
     this.approval?.reject(ethErrors.provider.userRejectedRequest(err));
     await this.clear();
   };

@@ -3,7 +3,7 @@
   "version": "0.0.1",
   "description": "eth wallet",
   "scripts": {
-    "clean": "rm -rf dist/* && cp -r src/_raw/* dist",
+    "clean": "rm -rf dist/* && cp -r _raw/* dist",
     "build:dev": "npm run clean && webpack --progress --env config=dev",
     "build:pro": "npm run clean && webpack --progress --env config=pro",
     "start": "webpack serve --env config=start",
