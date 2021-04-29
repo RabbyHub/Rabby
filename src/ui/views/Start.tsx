@@ -1,6 +1,7 @@
 import React from 'react';
 import { useHistory, Link } from 'react-router-dom';
-import { Button, Header } from 'ui/component';
+import { Button } from 'antd';
+import { Header } from 'ui/component';
 
 const Start = () => {
   const history = useHistory();

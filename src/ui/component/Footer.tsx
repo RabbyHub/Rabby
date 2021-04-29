@@ -1,7 +1,7 @@
 import React, { memo, ReactNode } from 'react';
 import { useHistory } from 'react-router-dom';
 import cx from 'clsx';
-import { Button } from 'ui/component';
+import { Button } from 'antd';
 import { noop } from 'ui/utils';
 
 interface FooterProps {

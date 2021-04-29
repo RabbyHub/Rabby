@@ -1,8 +1,9 @@
-import React from 'react';
-import { useState, useRef } from 'react';
-import { useForm, Controller } from 'react-hook-form';
-import { Input, Footer, Button, Checkbox } from '../component';
+import React, { useState, useRef } from 'react';
+import { Button, Checkbox, Form, Select } from 'antd';
+import { Footer } from '../component';
 import { useWallet } from '../utils';
+
+const { Option } = Select
 
 const defaultHdPaths = {
   trezor: `m/44'/60'/0'/0`,
@@ -15,7 +16,6 @@ const AccountChoose = ({
   handleNextPage,
   handlePreviousPage,
 }) => {
-  const { control, handleSubmit } = useForm();
   const wallet = useWallet();
 
   const onSubmit = ({ accounts }) => {
@@ -24,30 +24,26 @@ const AccountChoose = ({
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)}>
+    <Form onFinish={onSubmit}>
       <div>
-        <Controller
+        <Form.Item
           name="accounts"
-          control={control}
-          rules={{
-            required: true,
-          }}
-          render={({ field: { ref, ...props } }) => (
-            <Checkbox.Group {...props}>
-              {accounts.map((o) => (
-                <div key={o.index} className="flex align-middle">
-                  <div className="w-[10px] mr-4">
-                    <Checkbox value={o.index} />
-                  </div>
-                  <div className="w-[10px] mr-4">{o.index}</div>
-                  <div className="flex-1" key={o.index}>
-                    {o.address}
-                  </div>
+          rules={[{ required: true, message: 'Please select account' }]}
+        >
+          <Checkbox.Group>
+            {accounts.map((o) => (
+              <div key={o.index} className="flex align-middle">
+                <div className="w-[10px] mr-4">
+                  <Checkbox value={o.index} />
                 </div>
-              ))}
-            </Checkbox.Group>
-          )}
-        />
+                <div className="w-[10px] mr-4">{o.index}</div>
+                <div className="flex-1" key={o.index}>
+                  {o.address}
+                </div>
+              </div>
+            ))}
+          </Checkbox.Group>
+        </Form.Item>
         <Button className="mr-12" onClick={handlePreviousPage}>
           previous
         </Button>
@@ -55,19 +51,19 @@ const AccountChoose = ({
       </div>
       <Footer>
         <Button type="primary" htmlType="submit">
-          confirm
+          Confirm
         </Button>
       </Footer>
-    </form>
+    </Form>
   );
 };
 
 const ImportHardware = () => {
-  const { register, handleSubmit, getValues } = useForm();
   const keyringRef = useRef<any>();
   const [accounts, setAccounts] = useState();
   const [error, setError] = useState();
   const wallet = useWallet();
+  const [form] = Form.useForm()
 
   const handleNextPage = async () => {
     const accounts = await keyringRef.current.getNextPage();
@@ -79,7 +75,7 @@ const ImportHardware = () => {
     setAccounts(accounts);
   };
 
-  const onSubmit = async ({ hardware }) => {
+  const onSubmit = async ({ hardware }: { hardware: string }) => {
     try {
       const keyring = await wallet.connectHardware(hardware);
       const accounts = await keyring.getFirstPage();
@@ -94,28 +90,25 @@ const ImportHardware = () => {
     <>
       <h4 className="font-bold">Connect hardware</h4>
       <p className="text-xs mt-2">Please select your hardware</p>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <select
-          className="rounded mr-4"
-          {...register('hardware', {
-            required: true,
-          })}>
-          <option>请选择</option>
-          <option value="trezor">trezor</option>
-          <option value="ledger">ledger</option>
-        </select>
+      <Form onFinish={onSubmit} form={form}>
+        <Form.Item name="hardware">
+          <Select>
+            <Option value="trezor">trezor</Option>
+            <Option value="ledger">ledger</Option>
+          </Select>
+        </Form.Item>
         {!accounts && error && (
           <div className="text-red-700 text-lg">{error}</div>
         )}
         {!accounts && (
           <Button type="primary" htmlType="submit">
-            connect
+            Connect
           </Button>
         )}
-      </form>
+      </Form>
       {accounts && (
         <AccountChoose
-          hardware={getValues('hardware')}
+          hardware={form.getFieldValue('hardware')}
           accounts={accounts}
           handleNextPage={handleNextPage}
           handlePreviousPage={handlePreviousPage}

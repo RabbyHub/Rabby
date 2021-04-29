@@ -1,8 +1,8 @@
-import React from 'react';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
+import { Button } from 'antd'
 import { APPROVAL_STATE } from 'consts';
-import { Footer, Button } from 'ui/component';
+import { Footer } from 'ui/component';
 import { useWallet, useApproval } from 'ui/utils';
 import { Connect, SignText, SignTx } from './components';
 
@@ -46,7 +46,7 @@ const Approval = () => {
       </div>
       {Content && <Content params={approval.params} origin={approval.origin} />}
       <Footer className="flex space-x-4">
-        <Button block onClick={handleCancel}>
+        <Button type="primary" block onClick={handleCancel}>
           Cancel
         </Button>
         <Button block onClick={handleAllow}>

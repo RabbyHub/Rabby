@@ -1,6 +1,7 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
-import { Button, Header } from 'ui/component';
+import { Button } from 'antd';
+import { Header } from 'ui/component';
 import { useWallet } from 'ui/utils';
 
 const ConnectedSites = () => {
@@ -34,7 +35,7 @@ const ConnectedSites = () => {
           <div>
             <Button
               onClick={() => handleRemove(k)}
-              size="sm"
+              size="small"
               className="text-xs px-4 text-gray-500"
             >
               remove

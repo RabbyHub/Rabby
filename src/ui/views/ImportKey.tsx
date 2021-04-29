@@ -1,14 +1,10 @@
 import React from 'react';
-import { useForm } from 'react-hook-form';
-import { Input, Footer } from 'ui/component';
+import { Input, Form } from 'antd';
+import { Footer } from 'ui/component';
 import { useWallet, useApproval } from 'ui/utils';
 
 const ImportKey = () => {
-  const {
-    register,
-    formState: { isValid },
-    handleSubmit,
-  } = useForm({ mode: 'onChange' });
+  const [form] = Form.useForm();
   const wallet = useWallet();
   const [, resolveApproval] = useApproval();
 
@@ -22,20 +18,17 @@ const ImportKey = () => {
       console.error('err', err);
     }
   };
-
+  console.log(form.getFieldsError())
   return (
     <>
       <h4 className="font-bold">Import Private Key</h4>
       <p className="text-xs mt-2">Please input your private key below</p>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <div className="pt-8">
-          <Input
-            {...register('key', { required: true })}
-            placeholder="Private key"
-          />
-        </div>
-        <Footer.Nav nextDisabled={!isValid} />
-      </form>
+      <Form onFinish={onSubmit}>
+        <Form.Item name="key" rules={[{ required: true, message: 'Please input Private key' }]}>
+          <Input placeholder="Private key" />
+        </Form.Item>
+        <Footer.Nav />
+      </Form>
     </>
   );
 };

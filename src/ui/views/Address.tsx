@@ -1,7 +1,7 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
-import { useHistory } from 'react-router-dom';
-import { Icon, Button, Footer, Header } from 'ui/component';
+import { Button } from 'antd';
+import { Footer, Header } from 'ui/component';
 import { useWallet } from 'ui/utils';
 
 const Address = () => {
@@ -44,14 +44,14 @@ const Address = () => {
           <div className="flex">
             <Button
               onClick={(e) => handleHide(e, k)}
-              size="sm"
+              size="small"
               className="text-xs px-4 text-gray-500 mr-2"
             >
               Hide
             </Button>
             <Button
               onClick={(e) => handleSingleExport(e, k)}
-              size="sm"
+              size="small"
               className="text-xs px-4 text-gray-500"
             >
               Export Pk
