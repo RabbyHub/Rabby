@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { Button, Checkbox, Form, Select } from 'antd';
-import { Input, Footer } from '../component';
+import { Footer } from '../component';
 import { useWallet } from '../utils';
 
 const { Option } = Select
@@ -76,13 +76,10 @@ const ImportHardware = () => {
   };
 
   const onSubmit = async ({ hardware }: { hardware: string }) => {
-    console.log(hardware)
     try {
       const keyring = await wallet.connectHardware(hardware);
-      console.log(keyring)
       const accounts = await keyring.getFirstPage();
       keyringRef.current = keyring;
-      console.log(accounts)
       setAccounts(accounts);
     } catch (err) {
       setError(err);
