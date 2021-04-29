@@ -1,7 +1,8 @@
 import React from 'react';
 import { useHistory } from 'react-router-dom';
 import { useWallet } from 'ui/utils';
-import { Icon, Button, ArrowLink, Header } from 'ui/component';
+import { Button } from 'antd';
+import { ArrowLink, Header } from 'ui/component';
 
 const Settings = () => {
   const wallet = useWallet();

@@ -2,7 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import App from './views';
 
-import './index.css';
+import './index.less';
 
 if (process.env.BUILD_ENV === 'START') {
   const wallet = new Proxy(

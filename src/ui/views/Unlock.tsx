@@ -1,15 +1,10 @@
 import React from 'react';
 import { useState } from 'react';
-import { useForm } from 'react-hook-form';
-import { Input, Footer, Button, QrScan } from 'ui/component';
+import { Input, Button, Form } from 'antd';
+import { Footer, QrScan } from 'ui/component';
 import { useWallet, useApproval } from 'ui/utils';
 
 const Unlock = () => {
-  const {
-    register,
-    handleSubmit,
-    formState: { isValid },
-  } = useForm({ mode: 'onChange' });
   const wallet = useWallet();
   const [, resolveApproval] = useApproval();
   const [error, setErr] = useState();
@@ -27,18 +22,18 @@ const Unlock = () => {
     <>
       <h4 className="font-bold">Welcome back</h4>
       <p className="text-xs mt-2">input your password to unlock</p>
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <div className="pt-8">
-          <Input {...register('password')} placeholder="Password" />
-          <div className="text-red-500">{error}</div>
-        </div>
+      <Form onFinish={onSubmit}>
+        <Form.Item className="mb-0" name="password" rules={[{ required: true, message: 'Please input Password' }]}>
+          <Input placeholder="Password" />
+        </Form.Item>
+        <div className="text-red-500">{error}</div>
         <QrScan />
         <Footer>
-          <Button disabled={!isValid} block htmlType="submit">
+          <Button block htmlType="submit">
             Unlock
           </Button>
         </Footer>
-      </form>
+      </Form>
     </>
   );
 };

@@ -1,7 +1,8 @@
 import React from 'react';
 import { useState, useCallback } from 'react';
 import { useHistory } from 'react-router-dom';
-import { Button, Footer } from 'ui/component';
+import { Button } from 'antd';
+import { Footer } from 'ui/component';
 
 const entries = [
   {

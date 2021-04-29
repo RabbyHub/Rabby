@@ -2,7 +2,7 @@ import React from 'react';
 import { useEffect, useState, useMemo } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useForm, Controller } from 'react-hook-form';
-import { Input, Footer, Header, TiledSelect } from 'ui/component';
+import { Footer, Header, TiledSelect } from 'ui/component';
 import { useWallet, useApproval } from 'ui/utils';
 
 const VerifyMnemonics = ({ mnemonics, onBackClick }) => {
