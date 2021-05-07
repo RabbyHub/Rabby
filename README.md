@@ -1,4 +1,4 @@
-# DEFOX
+# Rabby
 
 > [provider api](https://eips.ethereum.org/EIPS/eip-1193)
 ## extension's scripts!!
