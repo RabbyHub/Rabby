@@ -17,9 +17,9 @@ class Eth {
     this.initKeyringService();
   }
 
-  password: string = ''
+  password: string = '';
 
-  keyringService: any
+  keyringService: any;
 
   setPassword = (password) => {
     this.password = password;
@@ -64,7 +64,7 @@ class Eth {
 
   isUnlocked = () => this.keyringService.memStore.getState().isUnlocked;
 
-  submitPassword = (password) => this.keyringService.submitPassword(password);
+  unlock = (password) => this.keyringService.submitPassword(password);
 
   getAccounts = () => {};
 

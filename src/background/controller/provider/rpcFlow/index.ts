@@ -1,3 +1,4 @@
+import { ethErrors } from 'eth-rpc-errors';
 import { APPROVAL_STATE } from 'consts';
 import { eth, notification, permission } from 'background/service';
 import * as methods from './methods';
@@ -28,7 +29,7 @@ export default class RequestFlow {
             state: APPROVAL_STATE.CONNECT,
             params: { origin, name, icon },
           });
-          permission.addConnectedSite(origin);
+          permission.addConnectedSite(origin, name, icon);
         }
 
         if (NEED_CONFIRM.includes(method)) {
@@ -46,6 +47,7 @@ export default class RequestFlow {
           origin,
         });
 
+        permission.touchConnectedSite(origin);
         this.currentState = APPROVAL_STATE.REQUEST;
         break;
 
@@ -66,7 +68,10 @@ export default class RequestFlow {
     // map method name, eth_chainId -> ethChainId
     const mapMethod = method.replace(/_(.)/g, (m, p1) => p1.toUpperCase());
     if (!methods[mapMethod]) {
-      throw new Error(`method [${method}] doesn't has corresponding handler`);
+      throw ethErrors.rpc.methodNotFound({
+        message: `method [${method}] doesn't has corresponding handler`,
+        data: req.data,
+      });
     }
 
     req.mapMethod = mapMethod;

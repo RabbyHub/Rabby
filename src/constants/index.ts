@@ -12,6 +12,13 @@ export const CHAINS = {
     name: 'Ethereum',
     hex: '0x1',
   },
+  56: {
+    name: 'BSC',
+  },
+  100: {
+    name: 'XDAI',
+  },
+  128: {
+    name: 'Heco',
+  },
 };
-
-export default {}

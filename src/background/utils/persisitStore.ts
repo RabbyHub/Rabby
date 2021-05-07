@@ -5,19 +5,19 @@ const persistStorage = (name: string, obj: object) => debounce(storage.set(name,
 
 interface CreatePersistStoreParams<T> {
   name: string,
-  origin?: T,
+  template?: T,
   fromStorage?: boolean
 }
 
 const createPersistStore = async <T extends object>({
   name,
-  origin = Object.create(null),
+  template = Object.create(null),
   fromStorage = true,
 }: CreatePersistStoreParams<T>): Promise<T> => {
-  let template = origin;
+  let tpl = template;
 
   if (fromStorage) {
-    template = await storage.get(name) || origin;
+    tpl = await storage.get(name) || template;
   }
 
   const createProxy = <A extends object>(obj: A): A => new Proxy(obj, {
@@ -44,7 +44,7 @@ const createPersistStore = async <T extends object>({
     }
   });
 
-  return createProxy<T>(template);
+  return createProxy<T>(tpl);
 }
 
 export default createPersistStore;

@@ -72,7 +72,7 @@ class Notification {
     if (this.notifiWindowId) {
       return;
     }
-    winMgr.create().then((winId) => {
+    winMgr.openNotification().then((winId) => {
       this.notifiWindowId = winId;
     });
   };

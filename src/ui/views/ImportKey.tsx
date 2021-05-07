@@ -11,7 +11,6 @@ const ImportKey = () => {
   const onSubmit = async ({ key }) => {
     try {
       await wallet.importKey(key);
-      wallet.setup();
 
       resolveApproval();
     } catch (err) {

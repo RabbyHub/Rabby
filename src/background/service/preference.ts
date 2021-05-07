@@ -1,16 +1,18 @@
 import { createPersistStore } from 'background/utils';
 
 interface PreferenceStore {
-  currentAccount: string,
-  popupOpen: boolean,
-  setup: boolean
+  currentAccount: string;
+  popupOpen: boolean;
+  setup: boolean;
 }
 
 class Preference {
-  store: PreferenceStore | undefined
+  store: PreferenceStore | undefined;
 
   init = async () => {
-    this.store = await createPersistStore<PreferenceStore>({ name: 'preference' });
+    this.store = await createPersistStore<PreferenceStore>({
+      name: 'preference',
+    });
   };
 
   setup = () => {
@@ -20,16 +22,12 @@ class Preference {
   };
 
   isSetup = () => {
-    if (!this.store) return;
-
-    return this.store.setup;
-  }
+    return this.store?.setup;
+  };
 
   getCurrentAccount = () => {
-    if (!this.store) return;
-
-    return this.store.currentAccount;
-  }
+    return this.store?.currentAccount;
+  };
 
   setCurrentAccount = (val) => {
     if (!this.store) return;

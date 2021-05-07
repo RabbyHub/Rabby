@@ -3,6 +3,7 @@ import { useState, useCallback } from 'react';
 import { useHistory } from 'react-router-dom';
 import { Button } from 'antd';
 import { Footer } from 'ui/component';
+import { useWallet } from 'ui/utils';
 
 const entries = [
   {
@@ -26,13 +27,21 @@ const entries = [
 const ImportEntry = () => {
   const history = useHistory();
   const [mode, setMode] = useState('');
+  const wallet = useWallet();
 
   const chooseImportMode = (mode) => {
     setMode(mode);
   };
 
   const handleNext = () => {
-    history.push(`/import/${mode}`);
+    const route = `/import/${mode}`;
+
+    if (mode === 'hardware') {
+      wallet.openIndex(route);
+      return;
+    }
+
+    history.push(route);
   };
 
   return (

@@ -76,8 +76,6 @@ const CreateMnemonic = () => {
 
   const getNewMnemonic = async () => {
     await wallet.createNewVaultAndKeychain();
-    wallet.setup();
-
     const _mnemonics = await wallet.getCurrentMnemonics();
 
     setMnemonics(_mnemonics);

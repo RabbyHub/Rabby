@@ -6,6 +6,7 @@ import {
   session,
   account,
 } from 'background/service';
+import { openIndex } from 'background/webapi/tab';
 
 class Wallet {
   getAccount = () => account.getAccount();
@@ -14,9 +15,14 @@ class Wallet {
   resolveApproval = notification.resolveApproval;
   rejectApproval = notification.rejectApproval;
   isUnlocked = eth.isUnlocked;
-  setPassword = eth.setPassword;
-  submitPassword = eth.submitPassword;
-  setup = preference.setup;
+
+  setPassword = (password: string) => {
+    eth.setPassword(password);
+    preference.setup();
+  };
+
+  unlock = eth.unlock;
+
   isSetup = preference.isSetup;
   getConnectedSites = permission.getConnectedSites;
   removeConnectedSite = permission.removeConnectedSite;
@@ -71,6 +77,8 @@ class Wallet {
   setPopupOpen = (isOpen) => {
     preference.setPopupOpen(isOpen);
   };
+
+  openIndex = openIndex;
 }
 
 export default new Wallet();

@@ -10,6 +10,7 @@ module.exports = {
   src: rootResolve('src'),
   popupHtml: rootResolve('src/ui/popup.html'),
   notificationHtml: rootResolve('src/ui/notification.html'),
+  indexHtml: rootResolve('src/ui/index.html'),
   dist: rootResolve('dist'),
 
   rootResolve,

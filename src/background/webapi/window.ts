@@ -16,12 +16,12 @@ const WINDOW_SIZE = {
   height: 440,
 };
 
-const create = (hash = ''): Promise<number> => {
+const create = (url): Promise<number> => {
   return new Promise((resolve, reject) => {
     chrome.windows.create(
       {
         focused: true,
-        url: `notification.html${hash}`,
+        url,
         type: 'popup',
         ...WINDOW_SIZE,
       },
@@ -36,10 +36,14 @@ const remove = (winId) => {
   });
 };
 
-let window = {
-  create,
+const openNotification = (route: string = ''): Promise<number> => {
+  const url = `notification.html${route && `#${route}`}`;
+
+  return create(url);
+};
+
+export default {
+  openNotification,
   event,
   remove,
 };
-
-export default window;

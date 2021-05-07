@@ -78,6 +78,12 @@ const config = {
       chunks: ['ui'],
       filename: 'notification.html',
     }),
+    new HtmlWebpackPlugin({
+      inject: true,
+      template: paths.indexHtml,
+      chunks: ['ui'],
+      filename: 'index.html',
+    }),
     new webpack.ProvidePlugin({
       Buffer: ['buffer', 'Buffer'],
       process: 'process',

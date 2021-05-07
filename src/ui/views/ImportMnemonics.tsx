@@ -11,7 +11,6 @@ const ImportMnemonic = () => {
   const onSubmit = async ({ mnemonics }) => {
     try {
       await wallet.importMnemonics(mnemonics.trim());
-      wallet.setup();
 
       resolveApproval();
     } catch (err) {
