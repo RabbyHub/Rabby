@@ -48,7 +48,8 @@ const ImportEntry = () => {
             block
             key={e.name}
             type={mode === e.name ? 'primary' : undefined}
-            onClick={() => chooseImportMode(e.name)}>
+            onClick={() => chooseImportMode(e.name)}
+          >
             {e.label}
           </Button>
         ))}

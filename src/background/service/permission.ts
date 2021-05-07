@@ -1,14 +1,16 @@
 import { createPersistStore } from 'background/utils';
 
 type PermissionStore = {
-  [key: string]: string
-}
+  [key: string]: string;
+};
 
 class Permission {
-  store: PermissionStore | undefined
+  store: PermissionStore | undefined;
 
   init = async () => {
-    this.store = await createPersistStore<PermissionStore>({ name: 'permission' });
+    this.store = await createPersistStore<PermissionStore>({
+      name: 'permission',
+    });
   };
 
   addConnectedSite = (origin) => {
@@ -21,7 +23,7 @@ class Permission {
     if (!this.store) return;
 
     return !!this.store[origin];
-  }
+  };
 
   getConnectedSites = () => {
     if (!this.store) return;

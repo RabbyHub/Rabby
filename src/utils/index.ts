@@ -4,8 +4,6 @@ import PortMessage from './message/portMessage';
 const Message = {
   DomMessage,
   PortMessage,
-}
+};
 
-export {
-  Message,
-}
+export { Message };

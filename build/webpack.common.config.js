@@ -19,6 +19,16 @@ const config = {
   module: {
     rules: [
       {
+        enforce: 'pre',
+        test: /\.tsx?$/,
+        exclude: /node_modules/,
+        loader: 'eslint-loader',
+        options: {
+          emitWarning: true,
+          emitError: true,
+        }
+      },
+      {
         test: /\.jsx?$|\.tsx?$/,
         exclude: /node_modules/,
         loader: 'ts-loader'

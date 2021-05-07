@@ -5,8 +5,8 @@ const { PortMessage, DomMessage } = Message;
 function injectPage(url) {
   const s = document.createElement('script');
   s.src = chrome.runtime.getURL('pageProvider.js');
-  s.addEventListener('load', function() {
-    this.remove()
+  s.addEventListener('load', function () {
+    this.remove();
   });
   (document.head || document.documentElement).appendChild(s);
 }
@@ -21,9 +21,12 @@ pm.on('message', (data) => dm.send('message', data));
 
 function connectTab(connect) {
   const origin = location.origin;
-  const icon = (document.querySelector('head > link[rel~="icon"]') as HTMLLinkElement)?.href;
+  const icon = (document.querySelector(
+    'head > link[rel~="icon"]'
+  ) as HTMLLinkElement)?.href;
   const name =
-    (document.querySelector('head > meta[name="title"]') as HTMLMetaElement)?.content ||
+    (document.querySelector('head > meta[name="title"]') as HTMLMetaElement)
+      ?.content ||
     document.title ||
     origin;
 

@@ -4,9 +4,9 @@ import { ethErrors } from 'eth-rpc-errors';
 abstract class Message extends EventEmitter {
   private pendingRequest: any;
   EVENT_PRE = 'ETH_WALLET_';
-  listenCallback: any
+  listenCallback: any;
 
-  abstract send(type: string, data: any): void; 
+  abstract send(type: string, data: any): void;
 
   request = async (data) => {
     if (this.pendingRequest) {

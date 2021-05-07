@@ -36,7 +36,7 @@ const remove = (winId) => {
   });
 };
 
-let window = {
+const window = {
   create,
   event,
   remove,

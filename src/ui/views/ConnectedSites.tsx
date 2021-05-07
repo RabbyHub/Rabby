@@ -12,7 +12,7 @@ const ConnectedSites = () => {
     const sites = await wallet.getConnectedSites();
 
     setSites(sites);
-  }
+  };
 
   useEffect(() => {
     getSites();
@@ -21,12 +21,12 @@ const ConnectedSites = () => {
   const handleRemove = (k: string) => {
     wallet.removeConnectedSite(origin);
     getSites();
-  }
+  };
 
-  return <>
-    <Header title={'Connected Sites'} />
-    {
-      sites.map(k => (
+  return (
+    <>
+      <Header title={'Connected Sites'} />
+      {sites.map((k) => (
         <div
           className="rounded py-2 px-3 bg-gray-100 mb-2 flex items-center"
           key={k}
@@ -42,9 +42,9 @@ const ConnectedSites = () => {
             </Button>
           </div>
         </div>
-      ))
-    }
-  </>
-}
+      ))}
+    </>
+  );
+};
 
 export default ConnectedSites;

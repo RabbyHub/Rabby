@@ -3,14 +3,19 @@ import { useHistory } from 'react-router-dom';
 import { Icon } from 'ui/component';
 
 interface HeaderProps {
-  title: string
-  subTitle?: string
-  showClose?: boolean
-  onCloseClick?: () => void
-  className?: string
+  title: string;
+  subTitle?: string;
+  showClose?: boolean;
+  onCloseClick?: () => void;
+  className?: string;
 }
 
-const Header = ({ title, subTitle, showClose = true, onCloseClick }: HeaderProps) => {
+const Header = ({
+  title,
+  subTitle,
+  showClose = true,
+  onCloseClick,
+}: HeaderProps) => {
   const history = useHistory();
 
   const handleClose = () => {

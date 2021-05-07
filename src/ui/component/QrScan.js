@@ -11,10 +11,12 @@ const QrScan = () => {
   const videoRef = createRef();
 
   const initQrScanner = () => {
-    const qrScanner = new QrScanner(videoRef.current, result => console.log('decoded qr code:', result));
+    const qrScanner = new QrScanner(videoRef.current, (result) =>
+      console.log('decoded qr code:', result)
+    );
 
     qrScanner.start();
-  }
+  };
 
   // useEffect(() => {
   //   const s = document.createElement('iframe');
@@ -27,7 +29,7 @@ const QrScan = () => {
   //   (document.head || document.documentElement).appendChild(s);
   // }, []);
 
-  return <video ref={videoRef} />
+  return <video ref={videoRef} />;
 };
 
 export default QrScan;
