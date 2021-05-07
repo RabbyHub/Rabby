@@ -5,6 +5,7 @@ import LedgerBridgeKeyring from '@metamask/eth-ledger-bridge-keyring';
 import { ethErrors } from 'eth-rpc-errors';
 import { addHexPrefix } from 'background/utils';
 import { storage } from 'background/webapi';
+import { noop } from 'ui/utils';
 
 // trezor: do read https://github.com/trezor/connect/blob/develop/src/js/plugins/webextension/README.md
 
@@ -19,9 +20,9 @@ class Eth {
     this.initKeyringService();
   }
 
-  password: string = ''
-  
-  keyringService: any
+  password = '';
+
+  keyringService: any;
 
   setPassword = (password) => {
     this.password = password;
@@ -68,7 +69,7 @@ class Eth {
 
   submitPassword = (password) => this.keyringService.submitPassword(password);
 
-  getAccounts = () => {};
+  getAccounts = noop;
 
   getKeyringByType = (type) => {
     const keyring = this.keyringService.getKeyringsByType(type)[0];

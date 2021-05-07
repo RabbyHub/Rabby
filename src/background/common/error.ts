@@ -1,6 +1,6 @@
 class ChromeRuntimeError extends Error {}
 
-function isRuntimeError() {
+function isRuntimeError(): void {
   const { lastError } = chrome.runtime;
   if (!lastError) {
     return;
@@ -9,7 +9,4 @@ function isRuntimeError() {
   throw new ChromeRuntimeError(lastError.message);
 }
 
-export {
-  ChromeRuntimeError,
-  isRuntimeError,
-}
+export { ChromeRuntimeError, isRuntimeError };

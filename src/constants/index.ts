@@ -14,4 +14,4 @@ export const CHAINS = {
   },
 };
 
-export default {}
+export default {};

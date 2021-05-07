@@ -3,11 +3,11 @@ import { Button, Checkbox, Form, Select } from 'antd';
 import { Footer } from '../component';
 import { useWallet } from '../utils';
 
-const { Option } = Select
+const { Option } = Select;
 
 const defaultHdPaths = {
-  trezor: `m/44'/60'/0'/0`,
-  ledger: `m/44'/60'/0'/0/0`,
+  trezor: "m/44'/60'/0'/0",
+  ledger: "m/44'/60'/0'/0/0",
 };
 
 const AccountChoose = ({
@@ -19,7 +19,7 @@ const AccountChoose = ({
   const wallet = useWallet();
 
   const onSubmit = ({ accounts }) => {
-    console.log(hardware, accounts)
+    console.log(hardware, accounts);
     wallet.unlockHardwareAccount(hardware, accounts);
   };
 
@@ -63,7 +63,7 @@ const ImportHardware = () => {
   const [accounts, setAccounts] = useState();
   const [error, setError] = useState();
   const wallet = useWallet();
-  const [form] = Form.useForm()
+  const [form] = Form.useForm();
 
   const handleNextPage = async () => {
     const accounts = await keyringRef.current.getNextPage();

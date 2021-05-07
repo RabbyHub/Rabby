@@ -3,9 +3,9 @@ function request(method, params) {
 
   return new Promise((resolve) => {
     setTimeout(() => {
-      resolve('success sign')
+      resolve('success sign');
     }, 3000);
-  })
+  });
 }
 
 export default request;

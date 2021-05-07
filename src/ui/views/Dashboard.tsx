@@ -41,7 +41,8 @@ const SwitchAddress = ({ onChange }) => {
               <div
                 onClick={() => changeAccount(acct)}
                 className="bg-gray-100 text-gray-800 p-4 text-xs mt-4"
-                key={acct}>
+                key={acct}
+              >
                 {acct}
               </div>
             ))}

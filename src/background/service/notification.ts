@@ -1,15 +1,15 @@
 import { ethErrors } from 'eth-rpc-errors';
-import { EthereumProviderError } from 'eth-rpc-errors/dist/classes'
+import { EthereumProviderError } from 'eth-rpc-errors/dist/classes';
 import { winMgr } from 'background/webapi';
 
 interface Approval {
   data: {
-    state: number,
-    params?: any,
-    origin?: string,
-  },
-  resolve(params?: any): void
-  reject(err: EthereumProviderError<any>): void
+    state: number;
+    params?: any;
+    origin?: string;
+  };
+  resolve(params?: any): void;
+  reject(err: EthereumProviderError<any>): void;
 }
 
 // something need user approval in window

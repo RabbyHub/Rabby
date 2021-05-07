@@ -3,5 +3,8 @@ export const addHexPrefix = (str: string) => {
     return str;
   }
 
-  return str.replace(/^(-)?(0x)?(.+)$/iu, (m, p1, p2, p3) => `${p1 || ''}0x${p3}`);
+  return str.replace(
+    /^(-)?(0x)?(.+)$/iu,
+    (m, p1, p2, p3) => `${p1 || ''}0x${p3}`
+  );
 };
