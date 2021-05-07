@@ -1,3 +1,4 @@
+/* eslint-disable @typescript-eslint/ban-types */
 import { storage } from 'background/webapi';
 import { debounce } from 'debounce';
 

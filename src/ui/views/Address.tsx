@@ -2,7 +2,7 @@ import React from 'react';
 import { useState, useEffect } from 'react';
 import { Button } from 'antd';
 import { Footer, Header } from 'ui/component';
-import { useWallet } from 'ui/utils';
+import { useWallet, noop } from 'ui/utils';
 
 const Address = () => {
   const [addresses, setAddresses] = useState<string[]>([]);
@@ -24,7 +24,7 @@ const Address = () => {
     console.log(id);
   };
 
-  const handleExport = () => {};
+  const handleExport = noop;
 
   return (
     <>

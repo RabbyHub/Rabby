@@ -6,6 +6,7 @@ import { useWallet, isNotification, useApproval } from 'ui/utils';
 const SortHat = () => {
   const wallet = useWallet();
   const [to, setTo] = useState('');
+  // eslint-disable-next-line prefer-const
   let [approval, , rejectApproval] = useApproval();
 
   const loadView = async () => {

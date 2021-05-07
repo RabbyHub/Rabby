@@ -1,6 +1,7 @@
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const TSConfigPathsPlugin = require('tsconfig-paths-webpack-plugin')
+const ESLintWebpackPlugin = require('eslint-webpack-plugin')
 
 const paths = require('./paths');
 
@@ -18,16 +19,6 @@ const config = {
   },
   module: {
     rules: [
-      {
-        enforce: 'pre',
-        test: /\.tsx?$/,
-        exclude: /node_modules/,
-        loader: 'eslint-loader',
-        options: {
-          emitWarning: true,
-          emitError: true,
-        }
-      },
       {
         test: /\.jsx?$|\.tsx?$/,
         exclude: /node_modules/,
@@ -76,6 +67,9 @@ const config = {
     ],
   },
   plugins: [
+    new ESLintWebpackPlugin({
+      extensions: ['ts', 'tsx', 'js', 'jsx']
+    }),
     new HtmlWebpackPlugin({
       inject: true,
       template: paths.popupHtml,
