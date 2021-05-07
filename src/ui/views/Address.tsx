@@ -2,7 +2,7 @@ import React from 'react';
 import { useState, useEffect } from 'react';
 import { Button } from 'antd';
 import { Footer, Header } from 'ui/component';
-import { useWallet } from 'ui/utils';
+import { useWallet, noop } from 'ui/utils';
 
 const Address = () => {
   const [addresses, setAddresses] = useState<string[]>([]);
@@ -11,28 +11,28 @@ const Address = () => {
   const initData = async () => {
     const addresses = await wallet.getAccounts();
     setAddresses(addresses);
-  }
+  };
 
   useEffect(() => {
     initData();
-  }, [])
+  }, []);
 
   const handleHide = (_, id: string) => {
     console.log(id);
-  }
+  };
   const handleSingleExport = (_, id: string) => {
     console.log(id);
-  }
+  };
 
-  const handleExport = () => { }
+  const handleExport = noop;
 
-  return <>
-    <Header title={'Address Management'} />
-    <div className="flex text-gray-500 text-xs mb-1">
-      <div>Private key address</div>
-    </div>
-    {
-      addresses.map(k => (
+  return (
+    <>
+      <Header title={'Address Management'} />
+      <div className="flex text-gray-500 text-xs mb-1">
+        <div>Private key address</div>
+      </div>
+      {addresses.map((k) => (
         <div
           className="rounded py-2 px-3 bg-gray-100 mb-2 flex items-center"
           key={k}
@@ -58,14 +58,14 @@ const Address = () => {
             </Button>
           </div>
         </div>
-      ))
-    }
-    <Footer>
-      <Button block onClick={handleExport}>
-        Export all PKs as a JSON file
-      </Button>
-    </Footer>
-  </>
-}
+      ))}
+      <Footer>
+        <Button block onClick={handleExport}>
+          Export all PKs as a JSON file
+        </Button>
+      </Footer>
+    </>
+  );
+};
 
 export default Address;

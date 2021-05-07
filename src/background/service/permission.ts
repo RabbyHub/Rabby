@@ -31,9 +31,11 @@ class Permission {
   };
 
   touchConnectedSite = (origin) => {
+    if (!this.store) return;
+
     // reach max integer?
-    this.store![origin].touchTimes = this.store![origin].touchTimes + 1;
-    this.store!.orderedSites.sort(
+    this.store[origin].touchTimes = this.store[origin].touchTimes + 1;
+    this.store.orderedSites.sort(
       (pre, next) => pre.touchTimes - next.touchTimes
     );
   };
@@ -49,9 +51,9 @@ class Permission {
   removeConnectedSite = (origin) => {
     if (!this.store) return;
 
-    const idx = this.store!.orderedSites.indexOf(this.store![origin]);
+    const idx = this.store.orderedSites.indexOf(this.store[origin]);
     Reflect.deleteProperty(this.store, origin);
-    this.store!.orderedSites.splice(idx, 1);
+    this.store.orderedSites.splice(idx, 1);
   };
 }
 

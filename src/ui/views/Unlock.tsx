@@ -26,7 +26,8 @@ const Unlock = () => {
         <Form.Item
           className="mb-0"
           name="password"
-          rules={[{ required: true, message: 'Please input Password' }]}>
+          rules={[{ required: true, message: 'Please input Password' }]}
+        >
           <Input placeholder="Password" />
         </Form.Item>
         <div className="text-red-500">{error}</div>

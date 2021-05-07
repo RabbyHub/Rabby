@@ -19,7 +19,7 @@ const ConnectedSites = () => {
     getSites();
   }, []);
 
-  const handleRemove = (k: string) => {
+  const handleRemove = (origin: string) => {
     wallet.removeConnectedSite(origin);
     getSites();
   };
@@ -30,13 +30,15 @@ const ConnectedSites = () => {
       {sites.map((site) => (
         <div
           className="rounded py-2 px-3 bg-gray-100 mb-2 flex items-center"
-          key={site.origin}>
+          key={site.origin}
+        >
           <div className="font-bold flex-1 text-sm">{site.origin}</div>
           <div>
             <Button
               onClick={() => handleRemove(site.origin)}
               size="small"
-              className="text-xs px-4 text-gray-500">
+              className="text-xs px-4 text-gray-500"
+            >
               remove
             </Button>
           </div>

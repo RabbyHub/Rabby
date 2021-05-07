@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
-import { Button } from 'antd'
+import { Button } from 'antd';
 import { APPROVAL_STATE } from 'consts';
 import { Footer } from 'ui/component';
 import { useWallet, useApproval } from 'ui/utils';

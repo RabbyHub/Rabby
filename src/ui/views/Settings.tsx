@@ -19,7 +19,8 @@ const Settings = () => {
       <Button
         block
         className="rounded-full mb-4 text-base"
-        onClick={lockWallet}>
+        onClick={lockWallet}
+      >
         Lock wallet
       </Button>
       <ArrowLink className="mt-6 font-semibold" to="/settings/address">

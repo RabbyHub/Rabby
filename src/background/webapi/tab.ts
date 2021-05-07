@@ -25,7 +25,7 @@ const create = (url): Promise<number | undefined> => {
   });
 };
 
-const openIndex = (route: string = ''): Promise<number | undefined> => {
+const openIndex = (route = ''): Promise<number | undefined> => {
   // const indexLink = chrome.runtime.getURL('index.html');
   const url = `index.html${route && `#${route}`}`;
 

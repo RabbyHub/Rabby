@@ -9,7 +9,7 @@ const { DomMessage } = Message;
 class EthereumProvider extends EventEmitter {
   chainId = null;
   _hiddenRequests: any[] = [];
-  dm: DomMessageType | null = null
+  dm: DomMessageType | null = null;
 
   constructor() {
     super();
@@ -56,7 +56,7 @@ class EthereumProvider extends EventEmitter {
 
   triggerHiddenRequest = async () => {
     document.addEventListener('visibilitychange', () => {
-      if (!this.dm) return
+      if (!this.dm) return;
 
       if (document.visibilityState === 'visible') {
         for (let i = 0; i < this._hiddenRequests.length; i++) {
@@ -78,7 +78,7 @@ class EthereumProvider extends EventEmitter {
       return this.pushHiddenRequest(data);
     }
 
-    if (!this.dm) return
+    if (!this.dm) return;
 
     return this.dm
       .request({ data })
@@ -96,7 +96,7 @@ class EthereumProvider extends EventEmitter {
 
   // shim to matamask legacy api
   sendAsync = (payload, callback) => {
-    console.log('[request: sendAsync]', payload)
+    console.log('[request: sendAsync]', payload);
     this.request(payload)
       .then((result) => callback(null, { result }))
       .catch((error) => callback(error, { error }));

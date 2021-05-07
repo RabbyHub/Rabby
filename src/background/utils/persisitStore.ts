@@ -1,12 +1,14 @@
+/* eslint-disable @typescript-eslint/ban-types */
 import { storage } from 'background/webapi';
 import { debounce } from 'debounce';
 
-const persistStorage = (name: string, obj: object) => debounce(storage.set(name, obj), 1000);
+const persistStorage = (name: string, obj: object) =>
+  debounce(storage.set(name, obj), 1000);
 
 interface CreatePersistStoreParams<T> {
-  name: string,
-  template?: T,
-  fromStorage?: boolean
+  name: string;
+  template?: T;
+  fromStorage?: boolean;
 }
 
 const createPersistStore = async <T extends object>({
@@ -17,34 +19,35 @@ const createPersistStore = async <T extends object>({
   let tpl = template;
 
   if (fromStorage) {
-    tpl = await storage.get(name) || template;
+    tpl = (await storage.get(name)) || template;
   }
 
-  const createProxy = <A extends object>(obj: A): A => new Proxy(obj, {
-    set(target, prop, value) {
-      if (typeof value === 'object' && value !== null) {
-        target[prop] = createProxy(value);
-      }
+  const createProxy = <A extends object>(obj: A): A =>
+    new Proxy(obj, {
+      set(target, prop, value) {
+        if (typeof value === 'object' && value !== null) {
+          target[prop] = createProxy(value);
+        }
 
-      target[prop] = value;
-
-      persistStorage(name, target);
-
-      return true;
-    },
-
-    deleteProperty(target, prop) {
-      if (Reflect.has(target, prop)) {
-        Reflect.deleteProperty(target, prop);
+        target[prop] = value;
 
         persistStorage(name, target);
-      }
 
-      return true;
-    }
-  });
+        return true;
+      },
+
+      deleteProperty(target, prop) {
+        if (Reflect.has(target, prop)) {
+          Reflect.deleteProperty(target, prop);
+
+          persistStorage(name, target);
+        }
+
+        return true;
+      },
+    });
 
   return createProxy<T>(tpl);
-}
+};
 
 export default createPersistStore;

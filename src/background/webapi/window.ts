@@ -36,7 +36,7 @@ const remove = (winId) => {
   });
 };
 
-const openNotification = (route: string = ''): Promise<number> => {
+const openNotification = (route = ''): Promise<number> => {
   const url = `notification.html${route && `#${route}`}`;
 
   return create(url);

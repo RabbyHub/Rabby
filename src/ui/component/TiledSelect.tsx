@@ -3,14 +3,20 @@ import cx from 'clsx';
 import { Icon } from 'ui/component';
 
 interface TiledSelectProps {
-  defaultValue?: string[]
-  value: string[]
-  options: string[]
-  onChange(string): void
-  className?: string
+  defaultValue?: string[];
+  value: string[];
+  options: string[];
+  onChange(string): void;
+  className?: string;
 }
 
-const TiledSelect = ({ defaultValue, value, options, onChange, className }: TiledSelectProps) => {
+const TiledSelect = ({
+  defaultValue,
+  value,
+  options,
+  onChange,
+  className,
+}: TiledSelectProps) => {
   const isControlled = useRef(typeof value !== 'undefined').current;
   const [_value, setValue] = useState(
     (isControlled ? value : defaultValue) || []
@@ -64,7 +70,8 @@ const TiledSelect = ({ defaultValue, value, options, onChange, className }: Tile
               }
             )}
             key={o}
-            onClick={() => handleChoose(o)}>
+            onClick={() => handleChoose(o)}
+          >
             {o}
           </div>
         ))}
