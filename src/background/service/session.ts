@@ -1,6 +1,6 @@
 class Session {
   origin:string = ''
-  
+
   icon: string = ''
 
   name: string = ''

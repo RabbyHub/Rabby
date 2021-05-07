@@ -6,8 +6,6 @@ import { ethErrors } from 'eth-rpc-errors';
 import { addHexPrefix } from 'background/utils';
 import { storage } from 'background/webapi';
 
-// trezor: do read https://github.com/trezor/connect/blob/develop/src/js/plugins/webextension/README.md
-
 const KEYRING_TYPE = {
   mnemonic: 'HD Key Tree',
   trezor: TrezorKeyring.type,
@@ -20,7 +18,7 @@ class Eth {
   }
 
   password: string = ''
-  
+
   keyringService: any
 
   setPassword = (password) => {

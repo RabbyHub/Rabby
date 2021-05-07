@@ -4,9 +4,7 @@ import cx from 'clsx';
 import { Icon } from 'ui/component';
 
 const ArrowLink = ({ children, className, ...restProps }) => (
-  <Link
-    className={cx('w-full block flex items-center', className)} {...restProps}
-  >
+  <Link className={cx('w-full flex items-center', className)} {...restProps}>
     <div className="flex-1">{children}</div>
     <Icon type="arrow" />
   </Link>

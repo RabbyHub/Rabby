@@ -1,7 +1,7 @@
 import React from 'react';
 import { useState } from 'react';
 import { Input, Button, Form } from 'antd';
-import { Footer, QrScan } from 'ui/component';
+import { Footer } from 'ui/component';
 import { useWallet, useApproval } from 'ui/utils';
 
 const Unlock = () => {
@@ -23,11 +23,13 @@ const Unlock = () => {
       <h4 className="font-bold">Welcome back</h4>
       <p className="text-xs mt-2">input your password to unlock</p>
       <Form onFinish={onSubmit}>
-        <Form.Item className="mb-0" name="password" rules={[{ required: true, message: 'Please input Password' }]}>
+        <Form.Item
+          className="mb-0"
+          name="password"
+          rules={[{ required: true, message: 'Please input Password' }]}>
           <Input placeholder="Password" />
         </Form.Item>
         <div className="text-red-500">{error}</div>
-        <QrScan />
         <Footer>
           <Button block htmlType="submit">
             Unlock
