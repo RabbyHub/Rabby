@@ -7,11 +7,10 @@ import bip39 from 'bip39'
 import ObservableStore from 'obs-store'
 import encryptor from 'browser-passworder'
 import { normalize as normalizeAddress } from 'eth-sig-util'
+import SimpleKeyring from 'eth-simple-keyring'
+import HdKeyring from 'eth-hd-keyring'
 
 const { BN } = ethUtil
-
-const SimpleKeyring = require('eth-simple-keyring')
-const HdKeyring = require('eth-hd-keyring')
 
 const keyringTypes = [
   SimpleKeyring,
