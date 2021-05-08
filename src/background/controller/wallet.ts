@@ -35,6 +35,7 @@ class Wallet {
   clearKeyrings = eth.clearKeyrings;
 
   importKey = eth.importKey;
+  importJson = eth.importJson;
   importMnemonics = eth.importMnemonics;
   getAccounts = eth.getAccounts;
   getAllTypedAccounts = eth.getAllTypedAccounts;

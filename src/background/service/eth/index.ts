@@ -1,4 +1,5 @@
 import * as ethUtil from 'ethereumjs-util';
+import Wallet, { thirdparty } from 'ethereumjs-wallet';
 import KeyringService from './eth-keyring-controller';
 import TrezorKeyring from './eth-trezor-keyring';
 import LedgerBridgeKeyring from '@metamask/eth-ledger-bridge-keyring';
@@ -58,6 +59,24 @@ class Eth {
     );
   };
 
+  // json forumla is from "https://github.com/SilentCicero/ethereumjs-accounts"
+  // or "https://github.com/ethereum/wiki/wiki/Web3-Secret-Storage-Definition"
+  // for example: https://www.myetherwallet.com/create-wallet
+  importJson = async (content: string, password: string) => {
+    let wallet;
+    try {
+      wallet = thirdparty.fromEtherWallet(content, password);
+    } catch (e) {
+      wallet = await Wallet.fromV3(content, password, true);
+    }
+
+    const privateKey = wallet.getPrivateKeyString();
+    return this.keyringService.createNewVaultAndSimpleKeyring(
+      this.password,
+      ethUtil.stripHexPrefix(privateKey)
+    );
+  };
+
   importMnemonics = (seed) =>
     this.keyringService.createNewVaultAndRestore(this.password, seed);
 
@@ -65,7 +84,11 @@ class Eth {
 
   isUnlocked = () => this.keyringService.memStore.getState().isUnlocked;
 
-  unlock = (password) => this.keyringService.submitPassword(password);
+  unlock = async (password) => {
+    await this.keyringService.submitPassword(password);
+
+    this.password = password;
+  };
 
   getAccounts = noop;
 
