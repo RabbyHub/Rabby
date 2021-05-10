@@ -1,3 +1,4 @@
+import { browser } from 'webextension-polyfill-ts';
 import {
   eth,
   preference,
@@ -56,7 +57,7 @@ class Wallet {
   };
 
   clearStorage = () => {
-    chrome.storage.local.clear();
+    browser.storage.local.clear();
   };
 
   connectHardware = async (type) => {

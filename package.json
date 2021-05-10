@@ -49,7 +49,8 @@
     "trezor-connect": "^8.1.26",
     "typescript-transform-paths": "^2.2.3",
     "util": "^0.12.3",
-    "web3-utils": "^1.3.4"
+    "web3-utils": "^1.3.4",
+    "webextension-polyfill-ts": "^0.25.0"
   },
   "devDependencies": {
     "@types/jest": "^26.0.23",
@@ -70,13 +71,17 @@
     "eslint-webpack-plugin": "^2.5.4",
     "html-webpack-plugin": "^5.3.1",
     "jest": "^26.6.3",
+    "jest-webextension-mock": "^3.7.9",
     "less-loader": "^8.1.1",
+    "mockzilla": "^0.9.0",
+    "mockzilla-webextension": "^0.9.0",
     "postcss": "^8.2.8",
     "postcss-custom-properties": "^11.0.0",
     "postcss-import": "^14.0.0",
     "postcss-loader": "^5.2.0",
     "postcss-nested": "^5.0.5",
     "prettier": "^2.2.1",
+    "sinon-chrome": "^3.0.1",
     "style-loader": "^2.0.0",
     "tailwindcss": "^2.1.2",
     "ts-jest": "^26.5.6",

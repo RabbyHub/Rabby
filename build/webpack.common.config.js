@@ -1,7 +1,7 @@
 const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
-const TSConfigPathsPlugin = require('tsconfig-paths-webpack-plugin')
-const ESLintWebpackPlugin = require('eslint-webpack-plugin')
+const TSConfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
+const ESLintWebpackPlugin = require('eslint-webpack-plugin');
 
 const paths = require('./paths');
 
@@ -9,7 +9,9 @@ const config = {
   entry: {
     background: paths.rootResolve('src/background/index.ts'),
     'content-script': paths.rootResolve('src/content-script/index.ts'),
-    pageProvider: paths.rootResolve('src/content-script/pageProvider/index.tsx'),
+    pageProvider: paths.rootResolve(
+      'src/content-script/pageProvider/index.tsx'
+    ),
     ui: paths.rootResolve('src/ui/index.tsx'),
   },
   output: {
@@ -22,7 +24,7 @@ const config = {
       {
         test: /\.jsx?$|\.tsx?$/,
         exclude: /node_modules/,
-        loader: 'ts-loader'
+        loader: 'ts-loader',
       },
       {
         test: /\.less$/,
@@ -41,11 +43,11 @@ const config = {
             loader: 'less-loader',
             options: {
               lessOptions: {
-                javascriptEnabled: true
-              }
-            }
-          }
-        ]
+                javascriptEnabled: true,
+              },
+            },
+          },
+        ],
       },
       {
         test: /\.css$/,
@@ -68,7 +70,7 @@ const config = {
   },
   plugins: [
     new ESLintWebpackPlugin({
-      extensions: ['ts', 'tsx', 'js', 'jsx']
+      extensions: ['ts', 'tsx', 'js', 'jsx'],
     }),
     new HtmlWebpackPlugin({
       inject: true,
@@ -91,7 +93,7 @@ const config = {
     new webpack.ProvidePlugin({
       Buffer: ['buffer', 'Buffer'],
       process: 'process',
-    })
+    }),
   ],
   resolve: {
     plugins: [new TSConfigPathsPlugin()],
@@ -99,9 +101,21 @@ const config = {
       stream: require.resolve('stream-browserify'),
       crypto: require.resolve('crypto-browserify'),
     },
-    extensions: ['.js', 'jsx', '.ts', '.tsx']
+    extensions: ['.js', 'jsx', '.ts', '.tsx'],
   },
   stats: 'minimal',
+  optimization: {
+    splitChunks: {
+      cacheGroups: {
+        'webextension-polyfill': {
+          minSize: 0,
+          test: /[\\/]node_modules[\\/]webextension-polyfill/,
+          name: 'webextension-polyfill',
+          chunks: 'all',
+        },
+      },
+    },
+  },
 };
 
 module.exports = config;

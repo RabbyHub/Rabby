@@ -1,10 +1,10 @@
+import { Runtime, browser } from 'webextension-polyfill-ts';
 import Message from './index';
-
 class PortMessage extends Message {
-  port: chrome.runtime.Port | null = null;
+  port: Runtime.Port | null = null;
   listenCallback: any;
 
-  constructor(port?: chrome.runtime.Port) {
+  constructor(port?: Runtime.Port) {
     super();
 
     if (port) {
@@ -13,7 +13,7 @@ class PortMessage extends Message {
   }
 
   connect = () => {
-    this.port = window.chrome.runtime.connect();
+    this.port = browser.runtime.connect();
     this.port.onMessage.addListener(({ _type_, data }) => {
       if (_type_ === `${this.EVENT_PRE}message`) {
         this.emit('message', data);

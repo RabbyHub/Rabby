@@ -23,12 +23,12 @@
   "author": "https://debank.com/",
   "background": {
     "persistent": true,
-    "scripts": ["background.js"]
+    "scripts": ["webextension-polyfill.js", "background.js"]
   },
   "content_scripts": [
     {
       "all_frames": true,
-      "js": ["content-script.js"],
+      "js": ["webextension-polyfill.js", "content-script.js"],
       "matches": ["file://*/*", "http://*/*", "https://*/*"],
       "run_at": "document_start"
     },

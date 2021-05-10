@@ -1,4 +1,4 @@
-import { isRuntimeError } from 'background/common';
+import { browser } from 'webextension-polyfill-ts';
 
 const cacheMap = new Map();
 
@@ -7,32 +7,14 @@ const get = async (prop) => {
     return cacheMap.get(prop);
   }
 
-  return new Promise((resolve, reject) => {
-    chrome.storage.local.get(null, (result) => {
-      try {
-        isRuntimeError();
-        cacheMap.set(prop, result[prop]);
-        resolve(result[prop]);
-      } catch (err) {
-        reject(err);
-      }
-    });
-  });
+  const result = await browser.storage.local.get(null);
+  cacheMap.set(prop, result[prop]);
+  return result[prop];
 };
 
 const set = async (prop, value): Promise<void> => {
-  return new Promise((resolve, reject) => {
-    chrome.storage.local.set({ [prop]: value }, () => {
-      try {
-        isRuntimeError();
-        cacheMap.set(prop, value);
-
-        resolve();
-      } catch (err) {
-        reject(err);
-      }
-    });
-  });
+  await browser.storage.local.set({ [prop]: value });
+  cacheMap.set(prop, value);
 };
 
 export default {

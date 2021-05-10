@@ -73,7 +73,7 @@ class Notification {
       return;
     }
     winMgr.openNotification().then((winId) => {
-      this.notifiWindowId = winId;
+      this.notifiWindowId = winId!;
     });
   };
 }

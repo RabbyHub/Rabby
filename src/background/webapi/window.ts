@@ -1,13 +1,14 @@
+import { browser } from 'webextension-polyfill-ts';
 import { EventEmitter } from 'events';
 
 const event = new EventEmitter();
 
 // if focus other windows, then reject the approval
-chrome.windows.onFocusChanged.addListener((winId) => {
+browser.windows.onFocusChanged.addListener((winId) => {
   event.emit('windowFocusChange', winId);
 });
 
-chrome.windows.onRemoved.addListener((winId) => {
+browser.windows.onRemoved.addListener((winId) => {
   event.emit('windowRemoved', winId);
 });
 
@@ -16,27 +17,22 @@ const WINDOW_SIZE = {
   height: 440,
 };
 
-const create = (url): Promise<number> => {
-  return new Promise((resolve, reject) => {
-    chrome.windows.create(
-      {
-        focused: true,
-        url,
-        type: 'popup',
-        ...WINDOW_SIZE,
-      },
-      (win) => resolve(win!.id)
-    );
+const create = async (url): Promise<number | undefined> => {
+  const win = await browser.windows.create({
+    focused: true,
+    url,
+    type: 'popup',
+    ...WINDOW_SIZE,
   });
+
+  return win.id;
 };
 
-const remove = (winId) => {
-  return new Promise((resolve, reject) => {
-    chrome.windows.remove(winId, resolve);
-  });
+const remove = async (winId) => {
+  return browser.windows.remove(winId);
 };
 
-const openNotification = (route = ''): Promise<number> => {
+const openNotification = (route = ''): Promise<number | undefined> => {
   const url = `notification.html${route && `#${route}`}`;
 
   return create(url);

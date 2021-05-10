@@ -1,3 +1,4 @@
+import { browser } from 'webextension-polyfill-ts';
 import { Message } from 'utils';
 import { permission, preference, session } from './service';
 import { providerController, walletController } from './controller';
@@ -7,10 +8,11 @@ const { PortMessage } = Message;
 permission.init();
 preference.init();
 
-chrome.runtime.onConnect.addListener((port) => {
+browser.runtime.onConnect.addListener((port) => {
   if (!port?.sender?.tab) {
     return;
   }
+
   const pm = new PortMessage(port);
 
   pm.listen((req) => {

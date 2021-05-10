@@ -1,3 +1,5 @@
+import { browser } from 'webextension-polyfill-ts';
+
 // eslint-disable-next-line @typescript-eslint/no-empty-function
 export const noop = () => {};
 
@@ -31,7 +33,7 @@ export const isNotification = () =>
 
 export const t = (name) => {
   if (process.env.BUILD_ENV !== 'START') {
-    return chrome.i18n.getMessage(name);
+    return browser.i18n.getMessage(name);
   }
 
   // default en in start mode

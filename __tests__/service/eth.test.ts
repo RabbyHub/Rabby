@@ -3,7 +3,10 @@ import { jsonFile } from './eth.data';
 
 describe('eth service test', () => {
   test('import JSON file', async () => {
-    const data = await eth.importJson(jsonFile.content, jsonFile.password);
-    expect(data).toBe('peanut butter');
+    let simpleKeyring = eth.getKeyringByType('Simple Key Pair');
+    expect(simpleKeyring).toBeUndefined();
+    await eth.importJson(jsonFile.content, jsonFile.password);
+    simpleKeyring = eth.getKeyringByType('Simple Key Pair');
+    expect(simpleKeyring).toBeDefined();
   });
 });
