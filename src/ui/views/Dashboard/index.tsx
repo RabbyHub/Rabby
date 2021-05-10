@@ -1,8 +1,12 @@
 import React from 'react';
-import { useCallback, useEffect, useState } from 'react';
+import { useEffect, useState } from 'react';
 import { Link, useHistory } from 'react-router-dom';
-import { Modal, Icon } from 'ui/component';
+import { Modal, AddressViewer } from 'ui/component';
 import { useWallet, getCurrentTab } from 'ui/utils';
+import IconSetting from 'ui/assets/settings.svg';
+import IconCopy from 'ui/assets/copy.svg';
+import IconQrcode from 'ui/assets/qrcode.svg';
+import './style.less';
 
 const SwitchAddress = ({ onChange }) => {
   const wallet = useWallet();
@@ -93,29 +97,46 @@ const Dashboard = () => {
     handleToggle();
   };
 
+  const handleCopyCurrentAddress = () => {
+    console.log(1);
+  };
+
+  const handleShowQrcode = () => {
+    console.log(2);
+  };
+
   return (
     <>
-      <div className="flex">
-        <div className="flex-1 flex items-center">
-          <div className="font-bold truncate w-20">{currentAccount}</div>
-          <div className="font-bold -ml-1">
-            {currentAccount && currentAccount.toString().slice(-4)}
+      <div className="dashboard">
+        <div className="main">
+          <div className="flex header items-center">
+            <AddressViewer address={currentAccount} onClick={handleToggle} />
+            <img
+              className="icon icon-copy"
+              src={IconCopy}
+              onClick={handleCopyCurrentAddress}
+            />
+            <img
+              className="icon icon-qrcode"
+              src={IconQrcode}
+              onClick={handleShowQrcode}
+            />
+            <div className="flex-1" />
+            <img
+              className="icon icon-settings"
+              src={IconSetting}
+              onClick={handleConfig}
+            />
           </div>
-          <Icon
-            type="triangle"
-            className="ml-1 cursor-pointer"
-            onClick={handleToggle}
-          />
         </div>
-        <div onClick={handleConfig}>o</div>
       </div>
-      <div className="bg-primary mt-6 p-6 text-white rounded-2xl cursor-pointer">
+      {/* <div className="bg-primary mt-6 p-6 text-white rounded-2xl cursor-pointer">
         <div className="text-xs">Total Net Worth on 2 Chains</div>
         <div className="text-2xl font-bold flex">
           <div className="flex-1">$3,791,231.25</div>
           <Icon type="arrow" />
         </div>
-      </div>
+      </div> */}
       <Modal isOpen={isModalOpen} onClose={handleToggle}>
         <SwitchAddress onChange={handleChange} />
       </Modal>
