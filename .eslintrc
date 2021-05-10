@@ -16,6 +16,7 @@
     "@typescript-eslint/no-explicit-any": "off"
   },
   "env": {
-    "browser": true
+    "browser": true,
+    "node": true,
   }
 }

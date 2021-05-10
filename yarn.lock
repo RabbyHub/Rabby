@@ -5427,11 +5427,6 @@ jest-watcher@^26.6.2:
     jest-util "^26.6.2"
     string-length "^4.0.1"
 
-jest-webextension-mock@^3.7.9:
-  version "3.7.9"
-  resolved "https://registry.yarnpkg.com/jest-webextension-mock/-/jest-webextension-mock-3.7.9.tgz#5c3215092f25e372c04288430bb9122fb1fbe09e"
-  integrity sha512-vPHhiCz2P/IrO+73U5ZksVwnYoUxG1v86h5FOm5OjCNOzVHwgOAj8W2jewlg07lW+KHuckyQ2dakgYPxlFKQ2A==
-
 jest-worker@^26.6.2:
   version "26.6.2"
   resolved "https://registry.yarnpkg.com/jest-worker/-/jest-worker-26.6.2.tgz#7f72cbc4d643c365e27b9fd775f9d0eaa9c7a8ed"
@@ -6043,16 +6038,6 @@ mkdirp@^0.5.1, mkdirp@^0.5.5:
   integrity sha512-NKmAlESf6jMGym1++R0Ra7wvhV+wFW63FaSOFPwRahvea0gMUcGUhVeAg/0BC0wiv9ih5NYPB1Wn1UEI1/L+xQ==
   dependencies:
     minimist "^1.2.5"
-
-mockzilla-webextension@^0.9.0:
-  version "0.9.0"
-  resolved "https://registry.yarnpkg.com/mockzilla-webextension/-/mockzilla-webextension-0.9.0.tgz#179160708ad53cbc93667d85438b15e06cd9caa4"
-  integrity sha512-G4VVxJ0fbdN9eBy6n8CxmyyWc5VC7k7zTUYeghshkUDdsAdr6Tos4T2349Qangl4wu6oRZ9AO6ShozBoXXwY4A==
-
-mockzilla@^0.9.0:
-  version "0.9.0"
-  resolved "https://registry.yarnpkg.com/mockzilla/-/mockzilla-0.9.0.tgz#c1b56afd57476abc14b90ffc10509bb2da03daf7"
-  integrity sha512-JkVFqrdep3JtaqKh1QC5pV3KzjXtoJp5T32IsuPeZ3kMUcixm/4np3ytNd5OV/QjWn/VsSrd4Ti3dFgVLl9+2A==
 
 modern-normalize@^1.0.0:
   version "1.0.0"

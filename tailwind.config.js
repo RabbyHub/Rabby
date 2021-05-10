@@ -14,5 +14,5 @@ module.exports = {
   // use media-query prefers-color-scheme
   darkMode: 'media',
   plugins: [require('@tailwindcss/forms')],
-  important: true
+  important: true,
 };

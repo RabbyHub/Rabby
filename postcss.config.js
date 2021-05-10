@@ -5,5 +5,5 @@ module.exports = {
     require('tailwindcss'),
     require('postcss-custom-properties'),
     require('autoprefixer'),
-  ]
-}
+  ],
+};
