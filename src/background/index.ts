@@ -9,14 +9,14 @@ permission.init();
 preference.init();
 
 browser.runtime.onConnect.addListener((port) => {
-  if (!port?.sender?.tab) {
+  if (!port.sender?.tab) {
     return;
   }
 
   const pm = new PortMessage(port);
 
   pm.listen((req) => {
-    const sessionId = port.sender!.tab!.id;
+    const sessionId = port.sender?.tab?.id;
     req.session = session.getSession(sessionId);
 
     // for background push to respective page

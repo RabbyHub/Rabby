@@ -9,9 +9,7 @@ const config = {
   entry: {
     background: paths.rootResolve('src/background/index.ts'),
     'content-script': paths.rootResolve('src/content-script/index.ts'),
-    pageProvider: paths.rootResolve(
-      'src/content-script/pageProvider/index.tsx'
-    ),
+    pageProvider: paths.rootResolve('src/content-script/pageProvider/index.ts'),
     ui: paths.rootResolve('src/ui/index.tsx'),
   },
   output: {

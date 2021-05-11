@@ -1,59 +1,51 @@
+import LRU from 'lru-cache';
 import { createPersistStore } from 'background/utils';
 
-export interface ConnectSite {
+export interface ConnectedSite {
   origin: string;
   icon: string;
   name: string;
   chain?: string;
-  touchTimes: number;
 }
 
 type PermissionStore = {
-  [key: string]: ConnectSite;
-} & {
-  orderedSites: ConnectSite[];
+  dumpCache: ConnectedSite[];
 };
 
 class Permission {
   store: PermissionStore | undefined;
+  lruCache: any;
 
   init = async () => {
     this.store = await createPersistStore<PermissionStore>({
       name: 'permission',
     });
+
+    this.lruCache = new LRU();
+    this.lruCache.load(this.store.dumpCache);
   };
 
   addConnectedSite = (origin, name, icon) => {
-    if (!this.store || this.store[origin]) return;
-
-    this.store[origin] = { origin, name, icon, touchTimes: 0 };
-    this.store.orderedSites.push(this.store[origin]);
+    this.lruCache.set(origin, { origin, name, icon });
+    this.store!.dumpCache = this.lruCache.dump();
   };
 
   touchConnectedSite = (origin) => {
-    if (!this.store) return;
-
-    // reach max integer?
-    this.store[origin].touchTimes = this.store[origin].touchTimes + 1;
-    this.store.orderedSites.sort(
-      (pre, next) => pre.touchTimes - next.touchTimes
-    );
+    this.lruCache.get(origin);
+    this.store!.dumpCache = this.lruCache.dump();
   };
 
   hasPerssmion = (origin) => {
-    return !!this.store?.[origin];
+    return this.lruCache.has(origin);
   };
 
   getConnectedSites = () => {
-    return this.store?.orderedSites;
+    return this.lruCache.values();
   };
 
   removeConnectedSite = (origin) => {
-    if (!this.store) return;
-
-    const idx = this.store.orderedSites.indexOf(this.store[origin]);
-    Reflect.deleteProperty(this.store, origin);
-    this.store.orderedSites.splice(idx, 1);
+    this.lruCache.del(origin);
+    this.store!.dumpCache = this.lruCache.dump();
   };
 }
 
