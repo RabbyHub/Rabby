@@ -1,8 +1,11 @@
-import { Message, insertScript } from 'utils';
+import { Message } from 'utils';
+import { insertScript } from './utils';
 
 const { PortMessage, DomMessage } = Message;
 
-insertScript('pageProvider.js').then((ele) => ele.remove());
+insertScript('pageProvider.js').then((ele) => {
+  ele.remove();
+});
 
 const pm = new PortMessage().connect();
 

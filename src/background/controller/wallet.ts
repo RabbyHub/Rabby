@@ -1,3 +1,4 @@
+import { browser } from 'webextension-polyfill-ts';
 import {
   eth,
   preference,
@@ -35,6 +36,7 @@ class Wallet {
   clearKeyrings = eth.clearKeyrings;
 
   importKey = eth.importKey;
+  importJson = eth.importJson;
   importMnemonics = eth.importMnemonics;
   getAccounts = eth.getAccounts;
   getAllTypedAccounts = eth.getAllTypedAccounts;
@@ -55,7 +57,7 @@ class Wallet {
   };
 
   clearStorage = () => {
-    chrome.storage.local.clear();
+    browser.storage.local.clear();
   };
 
   connectHardware = async (type) => {

@@ -1,7 +1,6 @@
 interface Window {
   wallet: any;
   ethereum: any;
-  langLocales: any;
 }
 
 declare module 'browser-passworder' {

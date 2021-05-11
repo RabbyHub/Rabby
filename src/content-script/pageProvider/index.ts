@@ -1,15 +1,12 @@
 // this script is injected into webpage's context
 import { EventEmitter } from 'events';
 import { ethErrors, serializeError } from 'eth-rpc-errors';
-import { Message } from 'utils';
-import DomMessageType from '@/utils/message/domMessage';
-
-const { DomMessage } = Message;
+import DomMessage from '@/utils/message/domMessage';
 
 class EthereumProvider extends EventEmitter {
   chainId = null;
   _hiddenRequests: any[] = [];
-  dm: DomMessageType | null = null;
+  dm: DomMessage | null = null;
 
   constructor() {
     super();

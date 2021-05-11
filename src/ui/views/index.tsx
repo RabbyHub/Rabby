@@ -4,6 +4,7 @@ import { WalletProvider, usePopupOpen } from 'ui/utils';
 import ReactGA, { ga } from 'react-ga';
 import ImportMode from './ImportMode';
 import ImportKey from './ImportKey';
+import ImportJson from './ImportJson';
 import ImportMnemonics from './ImportMnemonics';
 import ImportHardware from './ImportHardware';
 import Dashboard from './Dashboard';
@@ -50,6 +51,9 @@ const Main = () => {
           </Route>
           <Route exact path="/import/key">
             <ImportKey />
+          </Route>
+          <Route exact path="/import/json">
+            <ImportJson />
           </Route>
           <Route exact path="/import/mnemonics">
             <ImportMnemonics />

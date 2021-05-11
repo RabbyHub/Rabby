@@ -17,6 +17,9 @@ all 4 scripts all run in different context!!
 
   it can get background window with `runtime.getBackgroundPage`, so use it directly
 
+  **`notification.html`** triggered by dapp to request user's permission
+  **`index.html`** opened in tab for better user interaction experience
+
 ### 0). bundle the whole app with `webpack`
-### 1). use `react` to manage `popup`
+### 1). use `react` to manage `ui`
 

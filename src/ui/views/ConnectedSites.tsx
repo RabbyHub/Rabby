@@ -3,10 +3,10 @@ import { useState, useEffect } from 'react';
 import { Button } from 'antd';
 import { Header } from 'ui/component';
 import { useWallet } from 'ui/utils';
-import { ConnectSite } from 'background/service/permission';
+import { ConnectedSite } from 'background/service/permission';
 
 const ConnectedSites = () => {
-  const [sites, setSites] = useState<ConnectSite[]>([]);
+  const [sites, setSites] = useState<ConnectedSite[]>([]);
   const wallet = useWallet();
 
   const getSites = async () => {

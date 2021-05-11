@@ -15,7 +15,7 @@
       "consts": ["./src/constants"],
       "assets": ["./src/ui/assets"]
     },
-    "types": ["chrome", "node", "react", "react-dom"],
+    "types": ["chrome", "node", "react", "react-dom", "jest"],
     "jsx": "react",
     "allowSyntheticDefaultImports": true,
     "allowJs": true,
@@ -23,5 +23,5 @@
     "outDir": "./dist"
   },
   "exclude": ["./node_modules"],
-  "include": ["src"]
+  "include": ["src", "__tests__"]
 }

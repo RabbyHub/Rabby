@@ -1,3 +1,5 @@
+import { browser } from 'webextension-polyfill-ts';
+
 import DomMessage from './message/domMessage';
 import PortMessage from './message/portMessage';
 
@@ -6,13 +8,18 @@ const Message = {
   PortMessage,
 };
 
-const insertScript = (url: string): Promise<HTMLScriptElement> => {
-  return new Promise((resolve) => {
-    const ele = document.createElement('script');
-    ele.src = chrome.runtime.getURL(url);
-    ele.addEventListener('load', () => resolve(ele));
-    (document.head || document.documentElement).appendChild(ele);
-  });
+declare global {
+  const langLocales: Record<string, Record<'message', string>>;
+}
+
+const t = (name) => {
+  if (process.env.BUILD_ENV !== 'START') {
+    return browser.i18n.getMessage(name);
+  }
+
+  // default en in start mode
+  // only provider in start mode
+  return langLocales[name]?.message;
 };
 
-export { Message, insertScript };
+export { Message, t };

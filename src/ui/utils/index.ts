@@ -7,16 +7,17 @@ export * from './hooks';
 
 export * from './tab';
 
-export const WINDOW_TYPE = {
-  POPUP: 0,
-  NOTIFICATION: 1,
-  BACKGROUND: 2,
-};
+export enum WINDOW_TYPE {
+  TAB,
+  POPUP,
+  NOTIFICATION,
+  BACKGROUND,
+}
 
 export const checkWindowType = () => {
-  const { pathname } = window.location;
-
-  switch (pathname) {
+  switch (window.location.pathname) {
+    case '/index.html':
+      return WINDOW_TYPE.TAB;
     case '/popup.html':
       return WINDOW_TYPE.POPUP;
     case '/notification.html':
@@ -28,13 +29,3 @@ export const checkWindowType = () => {
 
 export const isNotification = () =>
   checkWindowType() === WINDOW_TYPE.NOTIFICATION;
-
-export const t = (name) => {
-  if (process.env.BUILD_ENV !== 'START') {
-    return chrome.i18n.getMessage(name);
-  }
-
-  // default en in start mode
-  // only provider in start mode
-  return window.langLocales[name]?.message;
-};
