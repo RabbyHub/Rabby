@@ -1,11 +1,18 @@
 import React from 'react';
+import ClipboardJS from 'clipboard';
 import { useEffect, useState } from 'react';
 import { Link, useHistory } from 'react-router-dom';
+import { message } from 'antd';
 import { Modal, AddressViewer } from 'ui/component';
 import { useWallet, getCurrentTab } from 'ui/utils';
+import RecentConnections from './components/RecentConnections';
 import IconSetting from 'ui/assets/settings.svg';
 import IconCopy from 'ui/assets/copy.svg';
 import IconQrcode from 'ui/assets/qrcode.svg';
+import IconArrowRight from 'ui/assets/arrow-right.svg';
+import IconSend from 'ui/assets/send.svg';
+import IconSwap from 'ui/assets/swap.svg';
+import IconHistory from 'ui/assets/history.svg';
 import './style.less';
 
 const SwitchAddress = ({ onChange }) => {
@@ -98,11 +105,20 @@ const Dashboard = () => {
   };
 
   const handleCopyCurrentAddress = () => {
-    console.log(1);
+    const clipboard = new ClipboardJS('.main', {
+      text: function () {
+        return currentAccount;
+      },
+    });
+
+    clipboard.on('success', () => {
+      message.success('Copied');
+      clipboard.destroy();
+    });
   };
 
   const handleShowQrcode = () => {
-    console.log(2);
+    // TODO
   };
 
   return (
@@ -128,15 +144,34 @@ const Dashboard = () => {
               onClick={handleConfig}
             />
           </div>
+          <div className="assets flex">
+            <div className="left">
+              <p className="amount leading-none">$3,642,5421.18</p>
+              <p className="extra leading-none">
+                This seems to be no assets yet
+              </p>
+            </div>
+            <div className="right">
+              <img className="icon icon-arrow-right" src={IconArrowRight} />
+            </div>
+          </div>
+          <div className="operation flex">
+            <div className="operation-item">
+              <img className="icon icon-send" src={IconSend} />
+              Send
+            </div>
+            <div className="operation-item">
+              <img className="icon icon-swap" src={IconSwap} />
+              Swap
+            </div>
+            <div className="operation-item">
+              <img className="icon icon-history" src={IconHistory} />
+              History
+            </div>
+          </div>
         </div>
+        <RecentConnections />
       </div>
-      {/* <div className="bg-primary mt-6 p-6 text-white rounded-2xl cursor-pointer">
-        <div className="text-xs">Total Net Worth on 2 Chains</div>
-        <div className="text-2xl font-bold flex">
-          <div className="flex-1">$3,791,231.25</div>
-          <Icon type="arrow" />
-        </div>
-      </div> */}
       <Modal isOpen={isModalOpen} onClose={handleToggle}>
         <SwitchAddress onChange={handleChange} />
       </Modal>
