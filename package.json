@@ -18,6 +18,7 @@
     "@trezor/rollout": "^1.0.7",
     "@types/chrome": "^0.0.135",
     "@types/events": "^3.0.0",
+    "@types/lru-cache": "^5.1.0",
     "@types/react-router-dom": "^5.1.7",
     "antd": "^4.15.3",
     "assert": "^2.0.0",

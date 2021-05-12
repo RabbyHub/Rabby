@@ -15,13 +15,15 @@ pm.on('message', (data) => dm.send('message', data));
 
 function connectTab(connect) {
   const origin = location.origin;
-  const icon = (document.querySelector(
-    'head > link[rel~="icon"]'
-  ) as HTMLLinkElement)?.href;
+  const icon =
+    (document.querySelector('head > link[rel~="icon"]') as HTMLLinkElement)
+      ?.href ||
+    (document.querySelector('head > meta[itemprop="image"]') as HTMLMetaElement)
+      .content;
   const name =
+    document.title ||
     (document.querySelector('head > meta[name="title"]') as HTMLMetaElement)
       ?.content ||
-    document.title ||
     origin;
 
   connect.request({
