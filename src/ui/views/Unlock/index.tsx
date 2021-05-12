@@ -19,7 +19,7 @@ const Unlock = () => {
       await wallet.unlock(password);
       resolveApproval();
     } catch (err) {
-      setErr(err?.message || '密码错误');
+      setErr(err?.message || 'incorrect password');
     }
   };
 
