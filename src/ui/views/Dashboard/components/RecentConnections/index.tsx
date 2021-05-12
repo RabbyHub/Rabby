@@ -6,7 +6,11 @@ import IconAllSites from 'ui/assets/all-sites.svg';
 import IconInternet from 'ui/assets/internet.svg';
 import './style.less';
 
-const CurrentConnection = ({ site }: { site: null | ConnectedSite }) => {
+const CurrentConnection = ({
+  site,
+}: {
+  site: null | ConnectedSite | undefined;
+}) => {
   const NoConnected = () => (
     <p className="not-connected">
       <img src={IconInternet} className="icon icon-no-connect" />
@@ -50,9 +54,9 @@ const ConnectionItem = ({
 
 export default () => {
   const [connections, setConnections] = useState<ConnectedSite[]>([]);
-  const [currentConnect, setCurrentConnect] = useState<ConnectedSite | null>(
-    null
-  );
+  const [currentConnect, setCurrentConnect] = useState<
+    ConnectedSite | null | undefined
+  >(null);
   const wallet = useWallet();
   const [approval] = useApproval();
 
@@ -64,7 +68,6 @@ export default () => {
     const sites = await wallet.getRecentConnectedSites();
     setConnections(sites);
     const current = await getCurrentConnectSite(wallet);
-    console.log('current', current);
     setCurrentConnect(current);
   };
 

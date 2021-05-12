@@ -17,7 +17,6 @@ import Unlock from './Unlock';
 import CreatePassword from './CreatePassword';
 import Start from './Start';
 import CreateMnemonics from './CreateMnemonics';
-// import { Wallet } from 'background/controller/wallet';
 
 ReactGA.initialize('UA-196541140-1');
 // eslint-disable-next-line @typescript-eslint/no-empty-function

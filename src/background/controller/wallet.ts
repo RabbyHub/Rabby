@@ -28,7 +28,8 @@ export class Wallet {
   getConnectedSites = permission.getConnectedSites;
   getRecentConnectedSites = permission.getRecentConnectSites;
   getCurrentConnectedSite = (tabId: number) => {
-    return session.getSession(tabId);
+    const { origin } = session.getSession(tabId);
+    return permission.getWithoutUpdate(origin);
   };
   removeConnectedSite = permission.removeConnectedSite;
   getCurrentMnemonics = eth.getCurrentMnemonics;

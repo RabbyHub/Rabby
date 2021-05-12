@@ -4,7 +4,7 @@ import { browser } from 'webextension-polyfill-ts';
 import App from './views';
 import { noop } from 'ui/utils';
 
-import './index.less';
+import './style/index.less';
 
 if (process.env.BUILD_ENV === 'START') {
   const wallet = new Proxy(

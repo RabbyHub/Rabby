@@ -36,6 +36,12 @@ class Permission {
     this.lruCache.load(cache);
   };
 
+  getWithoutUpdate = (key: string) => {
+    if (!this.lruCache) return;
+
+    return this.lruCache.peek(key);
+  };
+
   addConnectedSite = (origin, name, icon) => {
     if (!this.lruCache) return;
     this.lruCache.set(origin, { origin, name, icon });
