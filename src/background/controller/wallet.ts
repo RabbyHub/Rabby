@@ -9,7 +9,7 @@ import {
 } from 'background/service';
 import { openIndex } from 'background/webapi/tab';
 
-class Wallet {
+export class Wallet {
   getAccount = () => account.getAccount();
 
   getApproval = notification.getApproval;
@@ -26,6 +26,10 @@ class Wallet {
 
   isSetup = preference.isSetup;
   getConnectedSites = permission.getConnectedSites;
+  getRecentConnectedSites = permission.getRecentConnectSites;
+  getCurrentConnectedSite = (tabId: number) => {
+    return session.getSession(tabId);
+  };
   removeConnectedSite = permission.removeConnectedSite;
   getCurrentMnemonics = eth.getCurrentMnemonics;
   createNewVaultAndKeychain = eth.createNewVaultAndKeychain;

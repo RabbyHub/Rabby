@@ -1,14 +1,10 @@
-interface Window {
-  wallet: any;
-  ethereum: any;
-}
+import { Wallet } from 'background/controller/wallet';
 
-declare module 'browser-passworder' {
-  export function encrypt(
-    password: string,
-    privateKey: Buffer
-  ): Promise<string>;
-  export function decrypt(password: string, encrypted: string): Promise<Buffer>;
+declare global {
+  interface Window {
+    wallet: Wallet;
+    ethereum: any;
+  }
 }
 
 // export enum ADDRESS_TYPE {

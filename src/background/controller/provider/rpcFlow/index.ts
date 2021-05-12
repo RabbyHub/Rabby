@@ -46,8 +46,11 @@ export default class RequestFlow {
           params,
           origin,
         });
-
-        permission.touchConnectedSite(origin);
+        if (permission.hasPerssmion(origin)) {
+          permission.touchConnectedSite(origin);
+        } else {
+          permission.addConnectedSite(origin, name, icon);
+        }
         this.currentState = APPROVAL_STATE.REQUEST;
         break;
 

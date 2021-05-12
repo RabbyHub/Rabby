@@ -13,7 +13,10 @@ if (process.env.BUILD_ENV === 'START') {
       get: () => noop,
     }
   );
-  ReactDOM.render(<App wallet={wallet} />, document.getElementById('root'));
+  ReactDOM.render(
+    <App wallet={wallet as any} />,
+    document.getElementById('root')
+  );
 } else {
   browser.runtime.getBackgroundPage().then((win) => {
     ReactDOM.render(
