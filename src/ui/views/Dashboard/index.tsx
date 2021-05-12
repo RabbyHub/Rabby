@@ -13,6 +13,7 @@ import IconArrowRight from 'ui/assets/arrow-right.svg';
 import IconSend from 'ui/assets/send.svg';
 import IconSwap from 'ui/assets/swap.svg';
 import IconHistory from 'ui/assets/history.svg';
+import IconSuccess from 'ui/assets/success.svg';
 import './style.less';
 
 const SwitchAddress = ({ onChange }) => {
@@ -112,7 +113,10 @@ const Dashboard = () => {
     });
 
     clipboard.on('success', () => {
-      message.success('Copied');
+      message.success({
+        icon: <img src={IconSuccess} className="icon icon-success" />,
+        content: 'Copied',
+      });
       clipboard.destroy();
     });
   };
