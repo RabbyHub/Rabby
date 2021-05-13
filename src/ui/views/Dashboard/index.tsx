@@ -63,14 +63,8 @@ const SwitchAddress = ({
   return accounts ? (
     <div className="modal-switch-address">
       <AddressList list={accounts} ActionButton={SwitchButton} />
-      <div>
-        <div className="text-gray-500 text-sm mb-1">New address</div>
-        <div className="text-gray-500 text-lg mb-1" onClick={handleCreate}>
-          Create a new address
-        </div>
-        <Link className="block text-gray-500 text-lg" to="/import">
-          Import addresses
-        </Link>
+      <div className="footer">
+        <Link to="/create">Add addresses</Link>
       </div>
     </div>
   ) : null;
