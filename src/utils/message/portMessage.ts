@@ -15,12 +15,12 @@ class PortMessage extends Message {
   connect = () => {
     this.port = browser.runtime.connect();
     this.port.onMessage.addListener(({ _type_, data }) => {
-      if (_type_ === `${this.EVENT_PRE}message`) {
+      if (_type_ === `${this._EVENT_PRE}message`) {
         this.emit('message', data);
         return;
       }
 
-      if (_type_ === `${this.EVENT_PRE}response`) {
+      if (_type_ === `${this._EVENT_PRE}response`) {
         this.onResponse(data);
       }
     });
@@ -32,7 +32,7 @@ class PortMessage extends Message {
     if (!this.port) return;
     this.listenCallback = listenCallback;
     this.port.onMessage.addListener(({ _type_, data }) => {
-      if (_type_ === `${this.EVENT_PRE}request`) {
+      if (_type_ === `${this._EVENT_PRE}request`) {
         this.onRequest(data);
       }
     });
@@ -42,10 +42,11 @@ class PortMessage extends Message {
 
   send = (type, data) => {
     if (!this.port) return;
-    this.port.postMessage({ _type_: `${this.EVENT_PRE}${type}`, data });
+    this.port.postMessage({ _type_: `${this._EVENT_PRE}${type}`, data });
   };
 
   dispose = () => {
+    this._waitingQueue.length = 0;
     this.port?.disconnect();
   };
 }

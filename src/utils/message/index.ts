@@ -1,30 +1,36 @@
 import { EventEmitter } from 'events';
-import { ethErrors } from 'eth-rpc-errors';
 
 abstract class Message extends EventEmitter {
   private pendingRequest: any;
-  EVENT_PRE = 'ETH_WALLET_';
-  listenCallback: any;
+  protected _EVENT_PRE = 'ETH_WALLET_';
+  protected listenCallback: any;
+
+  _waitingQueue: Array<{
+    data: any;
+    resolve: (arg: any) => any;
+    reject: (arg: any) => any;
+  }> = [];
 
   abstract send(type: string, data: any): void;
 
   request = async (data) => {
-    if (this.pendingRequest) {
-      throw ethErrors.rpc.limitExceeded({
-        message: "there's a pending request, wait until it handled",
-        data: this.pendingRequest.data?.data,
-      });
-    }
-
     return new Promise((resolve, reject) => {
-      this.pendingRequest = {
+      this._waitingQueue.push({
         data,
         resolve,
         reject,
-      };
+      });
 
-      this.send('request', data);
+      this._request();
     });
+  };
+
+  private _request = () => {
+    if (!this._waitingQueue.length) {
+      return;
+    }
+    this.pendingRequest = this._waitingQueue.shift();
+    this.send('request', this.pendingRequest.data);
   };
 
   onResponse = async ({ res, err }: any = {}) => {
@@ -36,6 +42,8 @@ abstract class Message extends EventEmitter {
 
     this.pendingRequest = null;
     err ? reject(err) : resolve(res);
+
+    this._request();
   };
 
   onRequest = async (data) => {

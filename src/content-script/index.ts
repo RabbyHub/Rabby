@@ -4,13 +4,11 @@ import { insertScript } from './utils';
 
 const { BroadcastChannelMessage, PortMessage } = Message;
 
-insertScript(`pageProvider.js?channel=${nanoid()}`).then((ele) => {
-  ele.remove();
-});
+const channelName = nanoid();
 
 const pm = new PortMessage().connect();
 
-const bcm = new BroadcastChannelMessage(nanoid()).listen((data) =>
+const bcm = new BroadcastChannelMessage(channelName).listen((data) =>
   pm.request(data)
 );
 
@@ -20,6 +18,10 @@ pm.on('message', (data) => bcm.send('message', data));
 document.addEventListener('beforeunload', () => {
   bcm.dispose();
   pm.dispose();
+});
+
+insertScript(`pageProvider.js?channel=${channelName}`).then((ele) => {
+  ele.remove();
 });
 
 function tabCheckin(connect) {

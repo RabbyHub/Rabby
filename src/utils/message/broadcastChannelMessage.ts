@@ -1,7 +1,7 @@
 import Message from './index';
 
 export default class BroadcastChannelMessage extends Message {
-  bcm: BroadcastChannel;
+  private _channel: BroadcastChannel;
 
   constructor(name?: string) {
     super();
@@ -9,11 +9,11 @@ export default class BroadcastChannelMessage extends Message {
       throw new Error('the broadcastChannel name is missing');
     }
 
-    this.bcm = new BroadcastChannel(name);
+    this._channel = new BroadcastChannel(name);
   }
 
   connect = () => {
-    this.bcm.onmessage = ({ data: { type, data } }) => {
+    this._channel.onmessage = ({ data: { type, data } }) => {
       if (type === 'message') {
         this.emit('message', data);
       } else if (type === 'response') {
@@ -27,8 +27,8 @@ export default class BroadcastChannelMessage extends Message {
   listen = (listenCallback) => {
     this.listenCallback = listenCallback;
 
-    this.bcm.onmessage = ({ data: { type, data } }) => {
-      if (type === 'response') {
+    this._channel.onmessage = ({ data: { type, data } }) => {
+      if (type === 'request') {
         this.onRequest(data);
       }
     };
@@ -37,13 +37,14 @@ export default class BroadcastChannelMessage extends Message {
   };
 
   send = (type, data) => {
-    this.bcm.postMessage({
+    this._channel.postMessage({
       type,
       data,
     });
   };
 
   dispose = () => {
-    this.bcm.close();
+    this._waitingQueue.length = 0;
+    this._channel.close();
   };
 }

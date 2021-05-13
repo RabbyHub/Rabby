@@ -32,6 +32,7 @@ browser.runtime.onConnect.addListener((port) => {
   const pm = new PortMessage(port);
 
   pm.listen(async (req) => {
+    console.log('req250', req);
     if (!appStoreLoaded) {
       throw ethErrors.provider.disconnected();
     }

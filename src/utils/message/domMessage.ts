@@ -2,7 +2,7 @@ import Message from './index';
 
 export default class DomMessage extends Message {
   listenEvent = (type: string, callback) => {
-    document.addEventListener(`${this.EVENT_PRE}${type}`, (({
+    document.addEventListener(`${this._EVENT_PRE}${type}`, (({
       detail,
     }: CustomEvent) => {
       callback(detail);
@@ -26,11 +26,11 @@ export default class DomMessage extends Message {
 
   send = (type, detail) => {
     document.dispatchEvent(
-      new CustomEvent(`${this.EVENT_PRE}${type}`, { detail })
+      new CustomEvent(`${this._EVENT_PRE}${type}`, { detail })
     );
   };
 
   dispose = () => {
-    console.log('--dispose--');
+    this._waitingQueue.length = 0;
   };
 }

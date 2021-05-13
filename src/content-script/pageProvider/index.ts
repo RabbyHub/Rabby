@@ -3,14 +3,14 @@ import { EventEmitter } from 'events';
 import { ethErrors, serializeError } from 'eth-rpc-errors';
 import BroadcastChannelMessage from '@/utils/message/broadcastChannelMessage';
 
-const bcmChannel = new URLSearchParams(location.search).get('channel')!;
+const bcmChannel = new URLSearchParams(
+  document!.currentScript!.getAttribute('src')!.split('?')[1]
+).get('channel')!;
 
 class EthereumProvider extends EventEmitter {
   chainId = null;
   private _hiddenRequests: any[] = [];
-  private _bcm: BroadcastChannelMessage = new BroadcastChannelMessage(
-    bcmChannel
-  );
+  private _bcm = new BroadcastChannelMessage(bcmChannel);
 
   constructor() {
     super();
