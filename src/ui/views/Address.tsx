@@ -5,12 +5,12 @@ import { Footer, Header } from 'ui/component';
 import { useWallet, noop } from 'ui/utils';
 
 const Address = () => {
-  const [addresses, setAddresses] = useState<string[]>([]);
   const wallet = useWallet();
+  const [accounts, setAccounts] = useState<string[]>([]);
 
   const initData = async () => {
-    const addresses = await wallet.getAccounts();
-    setAddresses(addresses);
+    const accounts = await wallet.getAllClassAccounts();
+    setAccounts(accounts);
   };
 
   useEffect(() => {
@@ -32,7 +32,7 @@ const Address = () => {
       <div className="flex text-gray-500 text-xs mb-1">
         <div>Private key address</div>
       </div>
-      {addresses.map((k) => (
+      {accounts.map((k) => (
         <div
           className="rounded py-2 px-3 bg-gray-100 mb-2 flex items-center"
           key={k}

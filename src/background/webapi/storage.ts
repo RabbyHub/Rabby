@@ -1,15 +1,16 @@
 import { browser } from 'webextension-polyfill-ts';
 
-const cacheMap = new Map();
+let cacheMap;
 
-const get = async (prop) => {
-  if (cacheMap.has(prop)) {
+const get = async (prop?) => {
+  if (cacheMap) {
     return cacheMap.get(prop);
   }
 
   const result = await browser.storage.local.get(null);
-  cacheMap.set(prop, result[prop]);
-  return result[prop];
+
+  cacheMap = new Map(Object.entries(result).map(([k, v]) => [k, v]));
+  return prop ? result[prop] : result;
 };
 
 const set = async (prop, value): Promise<void> => {

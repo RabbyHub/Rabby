@@ -13,7 +13,7 @@ type PermissionStore = {
 };
 
 class Permission {
-  store: PermissionStore | undefined;
+  store!: PermissionStore;
   lruCache: any;
 
   init = async () => {
@@ -27,12 +27,12 @@ class Permission {
 
   addConnectedSite = (origin, name, icon) => {
     this.lruCache.set(origin, { origin, name, icon });
-    this.store!.dumpCache = this.lruCache.dump();
+    this.store.dumpCache = this.lruCache.dump();
   };
 
   touchConnectedSite = (origin) => {
     this.lruCache.get(origin);
-    this.store!.dumpCache = this.lruCache.dump();
+    this.store.dumpCache = this.lruCache.dump();
   };
 
   hasPerssmion = (origin) => {
@@ -45,7 +45,7 @@ class Permission {
 
   removeConnectedSite = (origin) => {
     this.lruCache.del(origin);
-    this.store!.dumpCache = this.lruCache.dump();
+    this.store.dumpCache = this.lruCache.dump();
   };
 }
 

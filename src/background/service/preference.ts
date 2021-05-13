@@ -3,11 +3,10 @@ import { createPersistStore } from 'background/utils';
 interface PreferenceStore {
   currentAccount: string;
   popupOpen: boolean;
-  setup: boolean;
 }
 
 class Preference {
-  store: PreferenceStore | undefined;
+  store!: PreferenceStore;
 
   init = async () => {
     this.store = await createPersistStore<PreferenceStore>({
@@ -15,29 +14,15 @@ class Preference {
     });
   };
 
-  setup = () => {
-    if (!this.store) return;
-
-    this.store.setup = true;
-  };
-
-  isSetup = () => {
-    return this.store?.setup;
-  };
-
   getCurrentAccount = () => {
-    return this.store?.currentAccount;
+    return this.store.currentAccount;
   };
 
   setCurrentAccount = (val) => {
-    if (!this.store) return;
-
     this.store.currentAccount = val;
   };
 
   setPopupOpen = (isOpen) => {
-    if (!this.store) return;
-
     this.store.popupOpen = isOpen;
   };
 }

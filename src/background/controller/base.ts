@@ -1,7 +1,6 @@
-import eth from './eth';
-import preference from './preference';
+import { keyringService, preference } from 'background/service';
 
-class Account {
+class BaseController {
   getAccount = async () => {
     let account = preference.getCurrentAccount();
 
@@ -13,7 +12,7 @@ class Account {
     return account;
   };
 
-  getAccounts = () => eth.keyringService.getAccounts();
+  getAccounts = () => keyringService.getAccounts();
 }
 
-export default new Account();
+export default BaseController;

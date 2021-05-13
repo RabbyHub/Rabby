@@ -37,7 +37,7 @@ const ImportEntry = () => {
     const route = `/import/${mode}`;
 
     if (mode === 'hardware') {
-      wallet.openIndex(route);
+      wallet.openIndexPage(route);
       return;
     }
 

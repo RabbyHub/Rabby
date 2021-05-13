@@ -1,13 +1,28 @@
+import 'reflect-metadata';
 import { browser } from 'webextension-polyfill-ts';
+import { ethErrors } from 'eth-rpc-errors';
 import { Message } from 'utils';
-import { permission, preference, session } from './service';
+import { storage } from './webapi';
+import { permission, preference, session, keyringService } from './service';
 import { providerController, walletController } from './controller';
 
 const { PortMessage } = Message;
 
-permission.init();
-preference.init();
+let appStoreLoaded = false;
 
+async function restoreAppState() {
+  const keyringState = await storage.get('keyringState');
+  await permission.init();
+  await preference.init();
+  keyringService.loadStore(keyringState);
+  keyringService.store.subscribe((value) => storage.set('keyringState', value));
+
+  appStoreLoaded = true;
+}
+
+restoreAppState();
+
+// for page provider
 browser.runtime.onConnect.addListener((port) => {
   if (!port.sender?.tab) {
     return;
@@ -15,9 +30,13 @@ browser.runtime.onConnect.addListener((port) => {
 
   const pm = new PortMessage(port);
 
-  pm.listen((req) => {
+  pm.listen(async (req) => {
+    if (!appStoreLoaded) {
+      throw ethErrors.provider.disconnected();
+    }
+
     const sessionId = port.sender?.tab?.id;
-    req.session = session.getSession(sessionId);
+    req.session = session.getOrCreateSession(sessionId);
 
     // for background push to respective page
     req.session.pushMessage = (event, data) => {
@@ -28,5 +47,5 @@ browser.runtime.onConnect.addListener((port) => {
   });
 });
 
-// for popup
+// for popup operate
 window.wallet = walletController;

@@ -8,11 +8,31 @@ import { ObservableStore } from '@metamask/obs-store';
 import encryptor from 'browser-passworder';
 import { normalize as normalizeAddress } from 'eth-sig-util';
 import SimpleKeyring from 'eth-simple-keyring';
+import LedgerBridgeKeyring from '@metamask/eth-ledger-bridge-keyring';
 import HdKeyring from 'eth-hd-keyring';
+import TrezorKeyring from './eth-trezor-keyring';
+import OnekeyKeyring from './eth-onekey-keyring';
+import WatchKeyring from './eth-watch-keyring';
 
-const { BN } = ethUtil;
+export const KEYRING_SDK_TYPES = {
+  SimpleKeyring,
+  HdKeyring,
+  TrezorKeyring,
+  LedgerBridgeKeyring,
+  OnekeyKeyring,
+  WatchKeyring,
+};
 
-const keyringTypes = [SimpleKeyring, HdKeyring];
+export const KEYRING_CLASS = {
+  PRIVATE_KEY: SimpleKeyring.type,
+  MNEMONIC: HdKeyring.type,
+  HARDWARE: {
+    TREZOR: TrezorKeyring.type,
+    LEDGER: LedgerBridgeKeyring.type,
+    ONEKEY: OnekeyKeyring.type,
+  },
+  WATCH: WatchKeyring.type,
+};
 
 interface MemStoreState {
   isUnlocked: boolean;
@@ -20,32 +40,45 @@ interface MemStoreState {
   keyrings: any[];
 }
 
-class KeyringController extends EventEmitter {
+export interface DisplayedKeryring {
+  type: string;
+  accounts: string[];
+}
+
+class keyringService extends EventEmitter {
   //
   // PUBLIC METHODS
   //
   keyringTypes: any[];
-  store: ObservableStore<any>;
+  store!: ObservableStore<any>;
   memStore: ObservableStore<MemStoreState>;
   keyrings: any[];
-  encryptor: typeof encryptor;
+  encryptor: typeof encryptor = encryptor;
   password: string | null = null;
 
-  constructor(opts) {
+  constructor() {
     super();
-    const initState = opts.initState || {};
-    this.keyringTypes = opts.keyringTypes
-      ? keyringTypes.concat(opts.keyringTypes)
-      : keyringTypes;
-    this.store = new ObservableStore(initState);
+    this.keyringTypes = Object.values(KEYRING_SDK_TYPES);
     this.memStore = new ObservableStore({
       isUnlocked: false,
       keyringTypes: this.keyringTypes.map((krt) => krt.type),
       keyrings: [],
     });
 
-    this.encryptor = opts.encryptor || encryptor;
     this.keyrings = [];
+  }
+
+  loadStore(initState) {
+    this.store = new ObservableStore(initState);
+  }
+
+  boot(password: string) {
+    this.password = password;
+    this.store.updateState({ booted: true });
+  }
+
+  isBooted() {
+    return this.store.getState().booted;
   }
 
   /**
@@ -69,73 +102,57 @@ class KeyringController extends EventEmitter {
    * Create New Vault And Keychain
    *
    * Destroys any old encrypted storage,
-   * creates a new encrypted store with the given password,
+   * creates a new encrypted store
    * randomly creates a new HD wallet with 1 account,
-   * faucets that account on the testnet.
    *
    * @emits KeyringController#unlock
-   * @param {string} password - The password to encrypt the vault with.
    * @returns {Promise<Object>} A Promise that resolves to the state.
    */
-  createNewVaultAndKeychain(password: string): Promise<MemStoreState> {
-    return this.persistAllKeyrings(password)
+  createNewVaultInMnenomic(): Promise<MemStoreState> {
+    return this.persistAllKeyrings()
       .then(this.createFirstKeyTree.bind(this))
-      .then(this.persistAllKeyrings.bind(this, password))
+      .then(this.persistAllKeyrings.bind(this))
       .then(this.setUnlocked.bind(this))
       .then(this.fullUpdate.bind(this));
   }
 
   /**
-   * Create New Vault And Keychain with Simple Keyring
+   * Create New Vault And Keychain using Private key
    *
    * Destroys any old encrypted storage,
-   * creates a new encrypted store with the given password,
+   * creates a new encrypted store
    * randomly creates a new HD wallet with 1 account,
-   * faucets that account on the testnet.
    *
    * @emits KeyringController#unlock
-   * @param {string} password - The password to encrypt the vault with.
    * @param {string} privateKey - The privateKey to generate address
    * @returns {Promise<Object>} A Promise that resolves to the state.
    */
-  createNewVaultAndSimpleKeyring(
-    password: string,
-    privateKey: string
-  ): Promise<MemStoreState> {
-    return this.persistAllKeyrings(password)
+  createNewVaultWithPrivateKey(privateKey: string): Promise<MemStoreState> {
+    return this.persistAllKeyrings()
       .then(this.addNewKeyring.bind(this, 'Simple Key Pair', [privateKey]))
-      .then(this.persistAllKeyrings.bind(this, password))
+      .then(this.persistAllKeyrings.bind(this))
       .then(this.setUnlocked.bind(this))
       .then(this.fullUpdate.bind(this));
   }
 
   /**
-   * CreateNewVaultAndRestore
+   * CreateNewVaultAndRestore Mnenoic
    *
    * Destroys any old encrypted storage,
-   * creates a new encrypted store with the given password,
    * creates a new HD wallet from the given seed with 1 account.
    *
    * @emits KeyringController#unlock
-   * @param {string} password - The password to encrypt the vault with
    * @param {string} seed - The BIP44-compliant seed phrase.
    * @returns {Promise<Object>} A Promise that resolves to the state.
    */
-  createNewVaultAndRestore(
-    password: string,
-    seed: string
-  ): Promise<MemStoreState> {
-    if (typeof password !== 'string') {
-      return Promise.reject(new Error('Password must be text.'));
-    }
-
+  createNewVaultWithMnemonic(seed: string): Promise<MemStoreState> {
     if (!bip39.validateMnemonic(seed)) {
       return Promise.reject(new Error('Seed phrase is invalid.'));
     }
 
     this.clearKeyrings();
 
-    return this.persistAllKeyrings(password)
+    return this.persistAllKeyrings()
       .then(() => {
         return this.addNewKeyring('HD Key Tree', {
           mnemonic: seed,
@@ -151,7 +168,7 @@ class KeyringController extends EventEmitter {
         }
         return null;
       })
-      .then(this.persistAllKeyrings.bind(this, password))
+      .then(this.persistAllKeyrings.bind(this))
       .then(this.setUnlocked.bind(this))
       .then(this.fullUpdate.bind(this));
   }
@@ -204,11 +221,11 @@ class KeyringController extends EventEmitter {
    * @param {string} password
    */
   async verifyPassword(password: string): Promise<void> {
-    const encryptedVault = this.store.getState().vault;
-    if (!encryptedVault) {
+    const encryptedBooted = this.store.getState().booted;
+    if (!encryptedBooted) {
       throw new Error('Cannot unlock without a previous vault.');
     }
-    await this.encryptor.decrypt(password, encryptedVault);
+    await this.encryptor.decrypt(password, encryptedBooted);
   }
 
   /**
@@ -224,7 +241,7 @@ class KeyringController extends EventEmitter {
    * @param {Object} opts - The constructor options for the keyring.
    * @returns {Promise<Keyring>} The new keyring.
    */
-  addNewKeyring(type: string, opts: unknown): Promise<any> {
+  addNewKeyring(type: string, opts?: unknown): Promise<any> {
     const Keyring = this.getKeyringClassForType(type);
     const keyring = new Keyring(opts);
     return keyring
@@ -560,14 +577,13 @@ class KeyringController extends EventEmitter {
    * @param {string} password - The keyring controller password.
    * @returns {Promise<boolean>} Resolves to true once keyrings are persisted.
    */
-  persistAllKeyrings(password = this.password): Promise<boolean> {
-    if (typeof password !== 'string' || !password) {
+  persistAllKeyrings(): Promise<boolean> {
+    if (!this.password || typeof this.password !== 'string') {
       return Promise.reject(
         new Error('KeyringController - password is not a string')
       );
     }
 
-    this.password = password;
     return Promise.all(
       this.keyrings.map((keyring) => {
         return Promise.all([keyring.type, keyring.serialize()]).then(
@@ -737,7 +753,7 @@ class KeyringController extends EventEmitter {
    * @param {Keyring} keyring
    * @returns {Promise<Object>} A keyring display object, with type and accounts properties.
    */
-  displayForKeyring(keyring): any {
+  displayForKeyring(keyring): Promise<DisplayedKeryring> {
     return keyring.getAccounts().then((accounts) => {
       return {
         type: keyring.type,
@@ -746,23 +762,8 @@ class KeyringController extends EventEmitter {
     });
   }
 
-  getAllTypedAccounts(): Promise<any> {
+  getAllTypedAccounts() {
     return Promise.all(this.keyrings.map(this.displayForKeyring));
-  }
-
-  /**
-   * Add Gas Buffer
-   *
-   * Adds a healthy buffer of gas to an initial gas estimate.
-   *
-   * @param {string} gas - The gas value, as a hex string.
-   * @returns {string} The buffered gas, as a hex string.
-   */
-  addGasBuffer(gas: string): string {
-    const gasBuffer = new BN('100000', 10);
-    const bnGas = new BN(ethUtil.stripHexPrefix(gas), 16);
-    const correct = bnGas.add(gasBuffer);
-    return ethUtil.addHexPrefix(correct.toString(16));
   }
 
   /**
@@ -805,4 +806,4 @@ class KeyringController extends EventEmitter {
   }
 }
 
-export default KeyringController;
+export default new keyringService();

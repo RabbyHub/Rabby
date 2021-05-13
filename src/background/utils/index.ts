@@ -1,3 +1,32 @@
 export * from './encode';
 export { default as createPersistStore } from './persisitStore';
 export { default as http } from './http';
+
+// {a:{b: string}} => {1: 'a.b'}
+// later same [source] value will override [result] key generated before
+const retrieveValuePath = (obj) => {
+  const arr = [...Object.entries(obj)];
+  const result = {};
+  const parentKey: string[] = [];
+  let lastParent;
+
+  while (arr.length) {
+    const curNode = arr.shift();
+    const [key, value] = curNode!;
+    if (lastParent && lastParent[key] !== value) {
+      parentKey.pop();
+    }
+
+    if (typeof value === 'object') {
+      arr.unshift(...Object.entries(value!));
+      parentKey.push(key);
+      lastParent = value;
+    } else if (typeof value === 'string') {
+      result[value] = `${[...parentKey, key].join('.')}`;
+    }
+  }
+
+  return result;
+};
+
+export { retrieveValuePath };

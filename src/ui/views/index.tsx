@@ -3,7 +3,7 @@ import { HashRouter as Router, Switch, Route } from 'react-router-dom';
 import { WalletProvider, usePopupOpen } from 'ui/utils';
 import ReactGA, { ga } from 'react-ga';
 import ImportMode from './ImportMode';
-import ImportKey from './ImportKey';
+import ImportPrivateKey from './ImportPrivateKey';
 import ImportJson from './ImportJson';
 import ImportMnemonics from './ImportMnemonics';
 import ImportHardware from './ImportHardware';
@@ -52,7 +52,7 @@ const Main = () => {
             <ImportMode />
           </Route>
           <Route exact path="/import/key">
-            <ImportKey />
+            <ImportPrivateKey />
           </Route>
           <Route exact path="/import/json">
             <ImportJson />

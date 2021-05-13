@@ -15,7 +15,7 @@ const CreatePassword = () => {
     password: string;
     confirmPassword: string;
   }) => {
-    wallet.setPassword(password.trim());
+    wallet.boot(password.trim());
     history.push('/start');
   };
 

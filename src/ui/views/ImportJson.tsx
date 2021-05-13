@@ -3,7 +3,7 @@ import { Input, Form, Upload, Button } from 'antd';
 import { Footer } from 'ui/component';
 import { useWallet } from 'ui/utils';
 
-const ImportKey = () => {
+const ImportJson = () => {
   const [form] = Form.useForm();
   const wallet = useWallet();
 
@@ -45,4 +45,4 @@ const ImportKey = () => {
   );
 };
 
-export default ImportKey;
+export default ImportJson;

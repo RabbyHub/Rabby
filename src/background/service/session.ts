@@ -21,7 +21,7 @@ class Session {
 // for each tab
 const sessionMap = new Map();
 
-const getSession = (id) => {
+const getOrCreateSession = (id) => {
   if (sessionMap.has(id)) {
     return sessionMap.get(id);
   }
@@ -52,8 +52,7 @@ const broadcastEvent = (ev, data?, origin?) => {
 };
 
 export default {
-  createSession,
-  getSession,
+  getOrCreateSession,
   deleteSession,
   broadcastEvent,
 };

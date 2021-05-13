@@ -1,4 +1,4 @@
-const tabConnect = ({
+const tabCheckin = ({
   data: {
     params: { origin, name, icon },
   },
@@ -15,6 +15,6 @@ const getProviderState = (req) => {
 };
 
 export default {
-  tabConnect,
+  tabCheckin,
   getProviderState,
 };

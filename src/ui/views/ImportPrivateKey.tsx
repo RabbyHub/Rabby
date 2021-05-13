@@ -3,14 +3,14 @@ import { Input, Form } from 'antd';
 import { Footer } from 'ui/component';
 import { useWallet, useApproval } from 'ui/utils';
 
-const ImportKey = () => {
+const ImportPrivateKey = () => {
   const [form] = Form.useForm();
   const wallet = useWallet();
   const [, resolveApproval] = useApproval();
 
   const onSubmit = async ({ key }) => {
     try {
-      await wallet.importKey(key);
+      await wallet.importPrivateKey(key);
 
       resolveApproval();
     } catch (err) {
@@ -35,4 +35,4 @@ const ImportKey = () => {
   );
 };
 
-export default ImportKey;
+export default ImportPrivateKey;

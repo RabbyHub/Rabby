@@ -26,7 +26,7 @@ function connectTab(connect) {
 
   connect.request({
     data: {
-      method: 'tabConnect',
+      method: 'tabCheckin',
       params: { icon, name, origin },
     },
   });

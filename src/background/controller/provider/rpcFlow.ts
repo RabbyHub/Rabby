@@ -1,16 +1,16 @@
 import { ethErrors } from 'eth-rpc-errors';
 import { APPROVAL_STATE } from 'consts';
-import { eth, notification, permission } from 'background/service';
-import * as methods from './methods';
+import { keyringService, notification, permission } from 'background/service';
+import providerController from './controller';
 
-const NEED_CONFIRM = ['personal_sign', 'eth_sendTransaction'];
-
-export default class RequestFlow {
-  currentState = eth.isUnlocked() ? APPROVAL_STATE.UNLOCK : APPROVAL_STATE.LOCK;
+export default class RpcFlow {
+  currentState = keyringService.memStore.getState().isUnlocked
+    ? APPROVAL_STATE.UNLOCK
+    : APPROVAL_STATE.LOCK;
 
   forwardNext = async (req) => {
     const {
-      data: { method, params },
+      data: { params },
       session: { origin, name, icon },
       mapMethod,
     } = req;
@@ -32,7 +32,7 @@ export default class RequestFlow {
           permission.addConnectedSite(origin, name, icon);
         }
 
-        if (NEED_CONFIRM.includes(method)) {
+        if (Reflect.getMetadata('approval', providerController)) {
           this.currentState = APPROVAL_STATE.SIGN;
         } else {
           this.currentState = APPROVAL_STATE.REQUEST;
@@ -52,9 +52,11 @@ export default class RequestFlow {
         break;
 
       case APPROVAL_STATE.REQUEST:
-        return Promise.resolve(methods[mapMethod](req)).finally(() => {
-          this.currentState = APPROVAL_STATE.END;
-        });
+        return Promise.resolve(providerController[mapMethod](req)).finally(
+          () => {
+            this.currentState = APPROVAL_STATE.END;
+          }
+        );
 
       default:
     }
@@ -67,7 +69,7 @@ export default class RequestFlow {
 
     // map method name, eth_chainId -> ethChainId
     const mapMethod = method.replace(/_(.)/g, (m, p1) => p1.toUpperCase());
-    if (!methods[mapMethod]) {
+    if (!providerController[mapMethod]) {
       throw ethErrors.rpc.methodNotFound({
         message: `method [${method}] doesn't has corresponding handler`,
         data: req.data,

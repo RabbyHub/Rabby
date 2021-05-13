@@ -20,10 +20,10 @@ const create = async (url): Promise<number | undefined> => {
     url,
   });
 
-  return tab!.id;
+  return tab?.id;
 };
 
-const openIndex = (route = ''): Promise<number | undefined> => {
+const openIndexPage = (route = ''): Promise<number | undefined> => {
   const url = `index.html${route && `#${route}`}`;
 
   return create(url);
@@ -31,4 +31,4 @@ const openIndex = (route = ''): Promise<number | undefined> => {
 
 export default tabEvent;
 
-export { openIndex };
+export { openIndexPage };
