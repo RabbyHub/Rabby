@@ -46,7 +46,7 @@ class PortMessage extends Message {
   };
 
   dispose = () => {
-    this._waitingQueue.length = 0;
+    this._dispose();
     this.port?.disconnect();
   };
 }

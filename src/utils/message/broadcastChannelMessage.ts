@@ -44,7 +44,7 @@ export default class BroadcastChannelMessage extends Message {
   };
 
   dispose = () => {
-    this._waitingQueue.length = 0;
+    this._dispose();
     this._channel.close();
   };
 }

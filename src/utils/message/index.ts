@@ -1,4 +1,5 @@
 import { EventEmitter } from 'events';
+import { ethErrors } from 'eth-rpc-errors';
 
 abstract class Message extends EventEmitter {
   private pendingRequest: any;
@@ -60,6 +61,14 @@ abstract class Message extends EventEmitter {
       }
 
       this.send('response', { res, err });
+    }
+  };
+
+  _dispose = () => {
+    while (this._waitingQueue.length) {
+      const { reject } = this._waitingQueue.shift()!;
+
+      reject(ethErrors.provider.userRejectedRequest());
     }
   };
 }

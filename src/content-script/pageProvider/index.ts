@@ -59,7 +59,7 @@ class EthereumProvider extends EventEmitter {
       if (document.visibilityState === 'visible') {
         for (let i = 0; i < this._hiddenRequests.length; i++) {
           const { data, resolve } = this._hiddenRequests.shift();
-          resolve(this._bcm.request(data));
+          resolve(this._bcm.request({ data }));
         }
       }
     });

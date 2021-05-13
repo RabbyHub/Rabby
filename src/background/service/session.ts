@@ -41,14 +41,14 @@ const deleteSession = (id) => {
 };
 
 const broadcastEvent = (ev, data?, origin?) => {
-  let sessions = Array.from(sessionMap);
+  let sessions = [...sessionMap.values()];
 
   // same origin
   if (origin) {
-    sessions = sessions.filter(([, session]) => session.origin === origin);
+    sessions = sessions.filter((session) => session.origin === origin);
   }
 
-  sessions.forEach(([, session]) => session.pushMessage(ev, data));
+  sessions.forEach((session) => session.pushMessage(ev, data));
 };
 
 export default {
