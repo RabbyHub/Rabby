@@ -5,3 +5,4 @@ export { default as Icon } from './Icon';
 export { default as ArrowLink } from './ArrowLink';
 export { default as TiledSelect } from './TiledSelect';
 export { default as AddressViewer } from './AddressViewer';
+export { default as AddressList } from './AddressList';

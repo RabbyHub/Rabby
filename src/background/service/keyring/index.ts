@@ -762,7 +762,7 @@ class keyringService extends EventEmitter {
     });
   }
 
-  getAllTypedAccounts() {
+  getAllTypedAccounts(): Promise<DisplayedKeryring[]> {
     return Promise.all(this.keyrings.map(this.displayForKeyring));
   }
 

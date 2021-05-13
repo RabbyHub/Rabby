@@ -2,8 +2,8 @@ import React from 'react';
 import ClipboardJS from 'clipboard';
 import { useEffect, useState } from 'react';
 import { Link, useHistory } from 'react-router-dom';
-import { message } from 'antd';
-import { Modal, AddressViewer } from 'ui/component';
+import { message, Modal } from 'antd';
+import { AddressViewer, AddressList } from 'ui/component';
 import { useWallet, getCurrentTab } from 'ui/utils';
 import { DisplayedKeryring } from 'background/service/keyring';
 import RecentConnections from './components/RecentConnections';
@@ -47,23 +47,8 @@ const SwitchAddress = ({ onChange }) => {
   }, []);
 
   return accounts ? (
-    <div className="bg-white shadow-even p-4">
-      <div className="mb-6 overflow-auto w-[280px] h-[220px]">
-        {/* {accounts.map((a) => (
-          <div key={a.type} className="mb-6">
-            <div className="text-gray-500 text-lg">{keyrings[a.type]}</div>
-            {a.accounts.map((acct) => (
-              <div
-                onClick={() => changeAccount(acct)}
-                className="bg-gray-100 text-gray-800 p-4 text-xs mt-4"
-                key={acct}
-              >
-                {acct}
-              </div>
-            ))}
-          </div>
-        ))} */}
-      </div>
+    <div className="modal-switch-address">
+      <AddressList list={accounts} />
       <div>
         <div className="text-gray-500 text-sm mb-1">New address</div>
         <div className="text-gray-500 text-lg mb-1" onClick={handleCreate}>
@@ -93,8 +78,14 @@ const Dashboard = () => {
     setCurrentAccount(account);
   };
 
+  const getAccounts = async () => {
+    const accounts = await wallet.getAccounts();
+    console.log(accounts);
+  };
+
   useEffect(() => {
     getCurrentAccount();
+    getAccounts();
   }, []);
 
   const handleConfig = () => {
@@ -179,7 +170,13 @@ const Dashboard = () => {
         </div>
         <RecentConnections />
       </div>
-      <Modal isOpen={isModalOpen} onClose={handleToggle}>
+      <Modal
+        title="Switch address"
+        visible={isModalOpen}
+        footer={null}
+        width="344px"
+        onCancel={handleToggle}
+      >
         <SwitchAddress onChange={handleChange} />
       </Modal>
     </>
