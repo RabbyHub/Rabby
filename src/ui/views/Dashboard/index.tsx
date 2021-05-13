@@ -2,8 +2,8 @@ import React from 'react';
 import ClipboardJS from 'clipboard';
 import { useEffect, useState } from 'react';
 import { Link, useHistory } from 'react-router-dom';
-import { message } from 'antd';
-import { Modal, AddressViewer } from 'ui/component';
+import { message, Modal } from 'antd';
+import { AddressViewer, AddressList } from 'ui/component';
 import { useWallet, getCurrentTab } from 'ui/utils';
 import { DisplayedKeryring } from 'background/service/keyring';
 import RecentConnections from './components/RecentConnections';
@@ -15,17 +15,21 @@ import IconSend from 'ui/assets/send.svg';
 import IconSwap from 'ui/assets/swap.svg';
 import IconHistory from 'ui/assets/history.svg';
 import IconSuccess from 'ui/assets/success.svg';
+import IconChecked from 'ui/assets/checked.svg';
+import IconNotChecked from 'ui/assets/not-checked.svg';
 import './style.less';
 
-const SwitchAddress = ({ onChange }) => {
+const SwitchAddress = ({
+  onChange,
+  currentAccount,
+}: {
+  onChange(account: string): void;
+  currentAccount: string;
+}) => {
   const wallet = useWallet();
   const [accounts, setAccounts] = useState<Record<string, DisplayedKeryring[]>>(
     {}
   );
-  const keyrings = {
-    'HD Key Tree': 'Mnemonics addresses',
-    'Simple Key Pair': 'Private key addresses',
-  };
 
   const getAllKeyrings = async () => {
     const _accounts = await wallet.getAllClassAccounts();
@@ -38,7 +42,7 @@ const SwitchAddress = ({ onChange }) => {
     getAllKeyrings();
   };
 
-  const changeAccount = (account: any) => {
+  const changeAccount = (account: string) => {
     onChange && onChange(account);
   };
 
@@ -46,24 +50,19 @@ const SwitchAddress = ({ onChange }) => {
     getAllKeyrings();
   }, []);
 
+  const SwitchButton = ({ data }: { data: string }) => {
+    return (
+      <img
+        onClick={() => onChange(data)}
+        src={currentAccount === data ? IconChecked : IconNotChecked}
+        className="icon icon-checked"
+      />
+    );
+  };
+
   return accounts ? (
-    <div className="bg-white shadow-even p-4">
-      <div className="mb-6 overflow-auto w-[280px] h-[220px]">
-        {/* {accounts.map((a) => (
-          <div key={a.type} className="mb-6">
-            <div className="text-gray-500 text-lg">{keyrings[a.type]}</div>
-            {a.accounts.map((acct) => (
-              <div
-                onClick={() => changeAccount(acct)}
-                className="bg-gray-100 text-gray-800 p-4 text-xs mt-4"
-                key={acct}
-              >
-                {acct}
-              </div>
-            ))}
-          </div>
-        ))} */}
-      </div>
+    <div className="modal-switch-address">
+      <AddressList list={accounts} ActionButton={SwitchButton} />
       <div>
         <div className="text-gray-500 text-sm mb-1">New address</div>
         <div className="text-gray-500 text-lg mb-1" onClick={handleCreate}>
@@ -179,8 +178,17 @@ const Dashboard = () => {
         </div>
         <RecentConnections />
       </div>
-      <Modal isOpen={isModalOpen} onClose={handleToggle}>
-        <SwitchAddress onChange={handleChange} />
+      <Modal
+        title="Switch address"
+        visible={isModalOpen}
+        footer={null}
+        width="344px"
+        onCancel={handleToggle}
+      >
+        <SwitchAddress
+          currentAccount={currentAccount}
+          onChange={handleChange}
+        />
       </Modal>
     </>
   );

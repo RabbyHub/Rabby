@@ -20,7 +20,7 @@ if (process.env.BUILD_ENV === 'START') {
 } else {
   browser.runtime.getBackgroundPage().then((win) => {
     ReactDOM.render(
-      <App wallet={win?.wallet} />,
+      <App wallet={win.wallet} />,
       document.getElementById('root')
     );
   });

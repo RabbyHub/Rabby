@@ -2,7 +2,12 @@ import { keyringService, preference } from 'background/service';
 
 class BaseController {
   getAccount = async () => {
-    let account = preference.getCurrentAccount();
+    let account: string | undefined = preference.getCurrentAccount();
+    if (account) {
+      const accounts: string[] = await this.getAccounts();
+      const matchAcct = accounts.find((acct) => account === acct);
+      if (!matchAcct) account = undefined;
+    }
 
     if (!account) {
       [account] = await this.getAccounts();
@@ -12,7 +17,9 @@ class BaseController {
     return account;
   };
 
-  getAccounts = () => keyringService.getAccounts();
+  getAccounts = () => {
+    return keyringService!.getAccounts();
+  };
 }
 
 export default BaseController;

@@ -18,7 +18,7 @@ export class WalletController extends BaseController {
   resolveApproval = notification.resolveApproval;
   rejectApproval = notification.rejectApproval;
 
-  unlock = keyringService.submitPassword;
+  unlock = (password: string) => keyringService.submitPassword(password);
   isUnlocked = () => keyringService.memStore.getState().isUnlocked;
   lockWallet = () => {
     keyringService.setLocked();
