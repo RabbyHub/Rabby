@@ -18,13 +18,15 @@ export class WalletController extends BaseController {
   resolveApproval = notification.resolveApproval;
   rejectApproval = notification.rejectApproval;
 
+  unlock = keyringService.submitPassword;
   isUnlocked = () => keyringService.memStore.getState().isUnlocked;
+  lockWallet = () => {
+    keyringService.setLocked();
+    session.broadcastEvent('disconnect');
+  };
 
   boot = keyringService.boot;
-
   isBooted = () => keyringService.isBooted;
-
-  unlock = keyringService.submitPassword;
 
   getConnectedSites = permission.getConnectedSites;
   getRecentConnectedSites = permission.getRecentConnectSites;
@@ -43,12 +45,6 @@ export class WalletController extends BaseController {
   };
 
   createNewVaultInMnenomic = keyringService.createNewVaultInMnenomic;
-
-  lockWallet = () => {
-    keyringService.setLocked();
-    session.broadcastEvent('disconnect');
-  };
-
   clearKeyrings = keyringService.clearKeyrings;
 
   importPrivateKey = async (data) => {
