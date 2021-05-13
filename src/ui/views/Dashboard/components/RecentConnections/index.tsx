@@ -77,7 +77,7 @@ export default () => {
 
   return (
     <div className="recent-connections">
-      <p className="title">
+      <p className="title mb-0">
         {connections.length > 0
           ? 'Recently connected'
           : 'Not connected to any sites yet'}
