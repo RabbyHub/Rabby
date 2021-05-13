@@ -1,0 +1,38 @@
+@import '../../style/var.less';
+
+.address-group-list {
+  & > li {
+    margin-bottom: 16px;
+    &:nth-last-child(1) {
+      margin-bottom: 0;
+    }
+    .addresses {
+      background-color: #fff;
+      border-radius: 6px;
+      & > li {
+        min-height: 42px;
+        padding: 12px;
+        position: relative;
+        display: flex;
+        justify-content: space-between;
+        &::after {
+          .part-border(90%);
+          bottom: 0;
+          left: 50%;
+          transform: translateX(-50%);
+        }
+        &:nth-last-child(1)::after {
+          display: none;
+        }
+        .address-info {
+          .balance {
+            color: #3B3E4A;
+            font-size: 15px;
+            font-weight: 500;
+            margin-right: 8px;
+          }
+        }
+      }
+    }
+  }
+}

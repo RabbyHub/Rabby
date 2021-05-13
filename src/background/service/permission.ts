@@ -26,9 +26,9 @@ class Permission {
     this.store = storage || this.store;
 
     this.lruCache = new LRU();
-    const cache: ReadonlyArray<
-      LRU.Entry<string, ConnectedSite>
-    > = this.store.dumpCache.map((item) => ({
+    const cache: ReadonlyArray<LRU.Entry<string, ConnectedSite>> = (
+      this.store.dumpCache || []
+    ).map((item) => ({
       k: item.k,
       v: item.v,
       e: 0,

@@ -15,17 +15,21 @@ import IconSend from 'ui/assets/send.svg';
 import IconSwap from 'ui/assets/swap.svg';
 import IconHistory from 'ui/assets/history.svg';
 import IconSuccess from 'ui/assets/success.svg';
+import IconChecked from 'ui/assets/checked.svg';
+import IconNotChecked from 'ui/assets/not-checked.svg';
 import './style.less';
 
-const SwitchAddress = ({ onChange }) => {
+const SwitchAddress = ({
+  onChange,
+  currentAccount,
+}: {
+  onChange(account: string): void;
+  currentAccount: string;
+}) => {
   const wallet = useWallet();
   const [accounts, setAccounts] = useState<Record<string, DisplayedKeryring[]>>(
     {}
   );
-  const keyrings = {
-    'HD Key Tree': 'Mnemonics addresses',
-    'Simple Key Pair': 'Private key addresses',
-  };
 
   const getAllKeyrings = async () => {
     const _accounts = await wallet.getAllClassAccounts();
@@ -38,7 +42,7 @@ const SwitchAddress = ({ onChange }) => {
     getAllKeyrings();
   };
 
-  const changeAccount = (account: any) => {
+  const changeAccount = (account: string) => {
     onChange && onChange(account);
   };
 
@@ -46,9 +50,19 @@ const SwitchAddress = ({ onChange }) => {
     getAllKeyrings();
   }, []);
 
+  const SwitchButton = ({ data }: { data: string }) => {
+    return (
+      <img
+        onClick={() => onChange(data)}
+        src={currentAccount === data ? IconChecked : IconNotChecked}
+        className="icon icon-checked"
+      />
+    );
+  };
+
   return accounts ? (
     <div className="modal-switch-address">
-      <AddressList list={accounts} />
+      <AddressList list={accounts} ActionButton={SwitchButton} />
       <div>
         <div className="text-gray-500 text-sm mb-1">New address</div>
         <div className="text-gray-500 text-lg mb-1" onClick={handleCreate}>
@@ -78,14 +92,8 @@ const Dashboard = () => {
     setCurrentAccount(account);
   };
 
-  const getAccounts = async () => {
-    const accounts = await wallet.getAccounts();
-    console.log(accounts);
-  };
-
   useEffect(() => {
     getCurrentAccount();
-    getAccounts();
   }, []);
 
   const handleConfig = () => {
@@ -177,7 +185,10 @@ const Dashboard = () => {
         width="344px"
         onCancel={handleToggle}
       >
-        <SwitchAddress onChange={handleChange} />
+        <SwitchAddress
+          currentAccount={currentAccount}
+          onChange={handleChange}
+        />
       </Modal>
     </>
   );
