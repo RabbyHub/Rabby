@@ -44,8 +44,8 @@ export class WalletController extends BaseController {
     return seedWords;
   };
 
-  createNewVaultInMnenomic = keyringService.createNewVaultInMnenomic;
-  clearKeyrings = keyringService.clearKeyrings;
+  createNewVaultInMnenomic = () => keyringService.createNewVaultInMnenomic();
+  clearKeyrings = () => keyringService.clearKeyrings();
 
   importPrivateKey = async (data) => {
     const prefixed = addHexPrefix(data);
