@@ -82,7 +82,7 @@ const Dashboard = () => {
   };
 
   const getCurrentAccount = async () => {
-    const account = await wallet.getAccount();
+    const account = await wallet.getCurrentAccount();
     setCurrentAccount(account);
   };
 

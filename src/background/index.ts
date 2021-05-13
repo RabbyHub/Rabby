@@ -4,7 +4,13 @@ import { ethErrors } from 'eth-rpc-errors';
 import { WalletController } from 'background/controller/wallet';
 import { Message } from 'utils';
 import { storage } from './webapi';
-import { permission, preference, session, keyringService } from './service';
+import {
+  permission,
+  preference,
+  session,
+  keyringService,
+  chainService,
+} from './service';
 import { providerController, walletController } from './controller';
 
 const { PortMessage } = Message;
@@ -15,6 +21,8 @@ async function restoreAppState() {
   const keyringState = await storage.get('keyringState');
   await permission.init();
   await preference.init();
+  await chainService.init();
+
   keyringService.loadStore(keyringState);
   keyringService.store.subscribe((value) => storage.set('keyringState', value));
 
@@ -32,7 +40,6 @@ browser.runtime.onConnect.addListener((port) => {
   const pm = new PortMessage(port);
 
   pm.listen(async (req) => {
-    console.log('req250', req);
     if (!appStoreLoaded) {
       throw ethErrors.provider.disconnected();
     }

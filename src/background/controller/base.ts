@@ -1,7 +1,7 @@
 import { keyringService, preference } from 'background/service';
 
 class BaseController {
-  getAccount = async () => {
+  getCurrentAccount = async () => {
     let account: string | undefined = preference.getCurrentAccount();
     if (account) {
       const accounts: string[] = await this.getAccounts();

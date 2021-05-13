@@ -18,7 +18,7 @@ const Approval = () => {
   }
 
   const init = async () => {
-    const account = await wallet.getAccount();
+    const account = await wallet.getCurrentAccount();
     setAccount(account);
   };
 

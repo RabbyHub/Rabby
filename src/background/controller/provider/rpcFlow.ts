@@ -32,7 +32,7 @@ export default class RpcFlow {
           permission.addConnectedSite(origin, name, icon);
         }
 
-        if (Reflect.getMetadata('approval', providerController)) {
+        if (Reflect.getMetadata('approval', providerController, mapMethod)) {
           this.currentState = APPROVAL_STATE.SIGN;
         } else {
           this.currentState = APPROVAL_STATE.REQUEST;
