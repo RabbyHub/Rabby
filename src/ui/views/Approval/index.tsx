@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useHistory, useLocation } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import { Button } from 'antd';
 import { APPROVAL_STATE } from 'consts';
 import { Footer } from 'ui/component';
@@ -11,6 +11,11 @@ const Approval = () => {
   const [account, setAccount] = useState('');
   const wallet = useWallet();
   const [approval, resolveApproval, rejectApproval] = useApproval();
+
+  if (!approval) {
+    history.replace('/');
+    return null;
+  }
 
   const init = async () => {
     const account = await wallet.getAccount();

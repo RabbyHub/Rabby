@@ -1,0 +1,92 @@
+.recent-connections {
+  background-color: #F0F2F5;
+  flex: 1;
+  padding: 24px 28px 0 28px;
+  .title {
+    color: #818A99;
+    font-size: 12px;
+    margin: 0;
+  }
+  .list {
+    display: flex;
+    flex-wrap: wrap;
+    .item {
+      width: 33.333%;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      height: 83px;
+      .logo {
+        width: 28px;
+        height: 28px;
+        margin-bottom: 10px;
+      }
+      .name {
+        color: #2D3033;
+        font-size: 14px;
+        margin: 0;
+        width: 80%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+    }
+  }
+  .icon-no-data {
+    width: 140px;
+    height: 140px;
+    margin-top: 4px;
+    margin-left: 50%;
+    transform: translateX(-70px);
+  }
+  .current-connection {
+    width: 85%;
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    bottom: 28px;
+    background: #FFFFFF;
+    border-radius: 6px;
+    padding: 10px 12px;
+    .connected {
+      display: flex;
+      align-items: center;
+      .logo {
+        width: 28px;
+        height: 28px;
+        margin-right: 8px;
+      }
+      .info {
+        flex: 1;
+        p {
+          margin-bottom: 0;
+        }
+        .origin {
+          color: #2D3033;
+          font-size: 12px;
+          font-weight: 500;
+        }
+        .name {
+          color: #818A99;
+          font-size: 10px;
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+      }
+    }
+    .not-connected {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      color: #818A99;
+      font-size: 12px;
+      .icon-no-connect {
+        width: 16px;
+        height: 16px;
+        margin-right: 4px;
+      }
+    }
+  }
+}

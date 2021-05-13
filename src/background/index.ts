@@ -1,6 +1,7 @@
 import 'reflect-metadata';
 import { browser } from 'webextension-polyfill-ts';
 import { ethErrors } from 'eth-rpc-errors';
+import { WalletController } from 'background/controller/wallet';
 import { Message } from 'utils';
 import { storage } from './webapi';
 import { permission, preference, session, keyringService } from './service';
@@ -47,5 +48,18 @@ browser.runtime.onConnect.addListener((port) => {
   });
 });
 
+declare global {
+  interface Window {
+    wallet: WalletController;
+  }
+}
+
 // for popup operate
-window.wallet = walletController;
+window.wallet = new Proxy(walletController, {
+  get(target, propKey, receiver) {
+    if (!appStoreLoaded) {
+      throw ethErrors.provider.disconnected();
+    }
+    return Reflect.get(target, propKey, receiver);
+  },
+});

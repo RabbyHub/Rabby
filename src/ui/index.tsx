@@ -4,7 +4,7 @@ import { browser } from 'webextension-polyfill-ts';
 import App from './views';
 import { noop } from 'ui/utils';
 
-import './index.less';
+import './style/index.less';
 
 if (process.env.BUILD_ENV === 'START') {
   const wallet = new Proxy(
@@ -13,7 +13,10 @@ if (process.env.BUILD_ENV === 'START') {
       get: () => noop,
     }
   );
-  ReactDOM.render(<App wallet={wallet} />, document.getElementById('root'));
+  ReactDOM.render(
+    <App wallet={wallet as any} />,
+    document.getElementById('root')
+  );
 } else {
   browser.runtime.getBackgroundPage().then((win) => {
     ReactDOM.render(

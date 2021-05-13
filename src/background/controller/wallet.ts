@@ -13,7 +13,7 @@ import { KEYRING_CLASS, DisplayedKeryring } from 'background/service/keyring';
 import { addHexPrefix } from 'background/utils';
 import BaseController from './base';
 
-class WalletController extends BaseController {
+export class WalletController extends BaseController {
   getApproval = notification.getApproval;
   resolveApproval = notification.resolveApproval;
   rejectApproval = notification.rejectApproval;
@@ -22,11 +22,16 @@ class WalletController extends BaseController {
 
   boot = keyringService.boot;
 
-  isSetup = () => keyringService.isBooted;
+  isBooted = () => keyringService.isBooted;
 
   unlock = keyringService.submitPassword;
 
   getConnectedSites = permission.getConnectedSites;
+  getRecentConnectedSites = permission.getRecentConnectSites;
+  getCurrentConnectedSite = (tabId: number) => {
+    const { origin } = session.getOrCreateSession(tabId);
+    return permission.getWithoutUpdate(origin);
+  };
   removeConnectedSite = permission.removeConnectedSite;
 
   getCurrentMnemonics = async () => {

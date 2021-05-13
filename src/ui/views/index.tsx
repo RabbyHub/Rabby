@@ -18,9 +18,7 @@ import CreatePassword from './CreatePassword';
 import Start from './Start';
 import CreateMnemonics from './CreateMnemonics';
 
-ReactGA.initialize('UA-196541140-1', {
-  debug: true,
-});
+ReactGA.initialize('UA-196541140-1');
 // eslint-disable-next-line @typescript-eslint/no-empty-function
 ga('set', 'checkProtocolTask', function () {});
 ga('require', 'displayfeatures');
@@ -36,7 +34,7 @@ const Main = () => {
 
   return (
     <Router>
-      <main className="p-6 relative min-h-full">
+      <main className="relative min-h-full">
         <Route path="/" component={LogPageView} />
         <Switch>
           <Route exact path="/password">
@@ -93,7 +91,7 @@ const Main = () => {
   );
 };
 
-const App = ({ wallet }) => (
+const App = ({ wallet }: { wallet: any }) => (
   <WalletProvider wallet={wallet}>
     <Main />
   </WalletProvider>

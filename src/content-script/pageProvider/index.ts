@@ -100,4 +100,10 @@ class EthereumProvider extends EventEmitter {
   };
 }
 
+declare global {
+  interface Window {
+    ethereum: EthereumProvider;
+  }
+}
+
 window.ethereum = new EthereumProvider();

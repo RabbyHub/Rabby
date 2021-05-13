@@ -1,3 +1,5 @@
+import { CHAINS_ENUM, CHAINS } from 'consts';
+
 const tabCheckin = ({
   data: {
     params: { origin, name, icon },
@@ -9,7 +11,7 @@ const tabCheckin = ({
 
 const getProviderState = (req) => {
   return {
-    chainId: 1,
+    chainId: CHAINS[CHAINS_ENUM.ETH].id,
     // accounts: methodMap.getAccounts(req),
   };
 };

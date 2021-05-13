@@ -7,7 +7,7 @@ const SortHat = () => {
   const wallet = useWallet();
   const [to, setTo] = useState('');
   // eslint-disable-next-line prefer-const
-  let [approval, , rejectApproval] = useApproval();
+  let [approval, _, rejectApproval] = useApproval();
 
   const loadView = async () => {
     const isInNotification = isNotification();
@@ -18,7 +18,7 @@ const SortHat = () => {
       // chrome.window.windowFocusChange won't fire when
       // click popup in the meanwhile notification is present
       await rejectApproval();
-      approval = null;
+      approval = undefined;
     }
 
     if (isInNotification && !approval) {

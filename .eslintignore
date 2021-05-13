@@ -1,5 +1,6 @@
 build/*
 dist/*
-webpack.config.js
+*.config.js
 _raw/*
+webpack.config.js
 jest.config.js

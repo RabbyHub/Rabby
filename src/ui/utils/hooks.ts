@@ -1,4 +1,4 @@
-import { useEffect, useReducer } from 'react';
+import { useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useWallet } from './WalletContext';
 import { isNotification } from './index';
@@ -17,7 +17,7 @@ export const useApproval = () => {
     });
   };
 
-  const rejectApproval = async (err) => {
+  const rejectApproval = async (err?) => {
     if (approval) {
       await wallet.rejectApproval(err);
     }
@@ -33,7 +33,7 @@ export const useApproval = () => {
     return () => window.removeEventListener('beforeunload', rejectApproval);
   }, []);
 
-  return [approval, resolveApproval, rejectApproval];
+  return [approval, resolveApproval, rejectApproval] as const;
 };
 
 export const usePopupOpen = () => {

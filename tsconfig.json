@@ -14,7 +14,8 @@
       "@/*": ["./src/*"],
       "ui/*": ["./src/ui/*"],
       "background/*": ["./src/background/*"],
-      "consts": ["./src/constants"]
+      "consts": ["./src/constants"],
+      "assets": ["./src/ui/assets"]
     },
     "types": ["chrome", "node", "react", "react-dom", "jest"],
     "jsx": "react",
