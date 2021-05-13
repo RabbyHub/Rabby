@@ -1,9 +1,11 @@
 import { browser } from 'webextension-polyfill-ts';
 
+import BroadcastChannelMessage from './message/broadcastChannelMessage';
 import DomMessage from './message/domMessage';
 import PortMessage from './message/portMessage';
 
 const Message = {
+  BroadcastChannelMessage,
   DomMessage,
   PortMessage,
 };

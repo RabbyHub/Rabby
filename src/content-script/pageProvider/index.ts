@@ -1,12 +1,16 @@
 // this script is injected into webpage's context
 import { EventEmitter } from 'events';
 import { ethErrors, serializeError } from 'eth-rpc-errors';
-import DomMessage from '@/utils/message/domMessage';
+import BroadcastChannelMessage from '@/utils/message/broadcastChannelMessage';
+
+const bcmChannel = new URLSearchParams(location.search).get('channel')!;
 
 class EthereumProvider extends EventEmitter {
   chainId = null;
-  _hiddenRequests: any[] = [];
-  dm: DomMessage | null = null;
+  private _hiddenRequests: any[] = [];
+  private _bcm: BroadcastChannelMessage = new BroadcastChannelMessage(
+    bcmChannel
+  );
 
   constructor() {
     super();
@@ -16,8 +20,7 @@ class EthereumProvider extends EventEmitter {
   }
 
   initialize = async () => {
-    this.dm = new DomMessage().connect();
-    this.dm.on('message', this.handleBackgroundMessage);
+    this._bcm.connect().on('message', this.handleBackgroundMessage);
 
     const { accounts, chainId }: any = await this.request({
       method: 'getProviderState',
@@ -53,12 +56,10 @@ class EthereumProvider extends EventEmitter {
 
   triggerHiddenRequest = async () => {
     document.addEventListener('visibilitychange', () => {
-      if (!this.dm) return;
-
       if (document.visibilityState === 'visible') {
         for (let i = 0; i < this._hiddenRequests.length; i++) {
           const { data, resolve } = this._hiddenRequests.shift();
-          resolve(this.dm.request(data));
+          resolve(this._bcm.request(data));
         }
       }
     });
@@ -75,9 +76,7 @@ class EthereumProvider extends EventEmitter {
       return this.pushHiddenRequest(data);
     }
 
-    if (!this.dm) return;
-
-    return this.dm
+    return this._bcm
       .request({ data })
       .then((res) => {
         console.log('[request: success]', res);

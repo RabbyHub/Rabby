@@ -29,4 +29,8 @@ export default class DomMessage extends Message {
       new CustomEvent(`${this.EVENT_PRE}${type}`, { detail })
     );
   };
+
+  dispose = () => {
+    console.log('--dispose--');
+  };
 }

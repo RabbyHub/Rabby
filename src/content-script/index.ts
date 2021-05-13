@@ -1,19 +1,28 @@
 import { Message } from 'utils';
+import { nanoid } from 'nanoid';
 import { insertScript } from './utils';
 
-const { PortMessage, DomMessage } = Message;
+const { BroadcastChannelMessage, PortMessage } = Message;
 
-insertScript('pageProvider.js').then((ele) => {
+insertScript(`pageProvider.js?channel=${nanoid()}`).then((ele) => {
   ele.remove();
 });
 
 const pm = new PortMessage().connect();
 
-const dm = new DomMessage().listen((data) => pm.request(data));
-// background notification
-pm.on('message', (data) => dm.send('message', data));
+const bcm = new BroadcastChannelMessage(nanoid()).listen((data) =>
+  pm.request(data)
+);
 
-function connectTab(connect) {
+// background notification
+pm.on('message', (data) => bcm.send('message', data));
+
+document.addEventListener('beforeunload', () => {
+  bcm.dispose();
+  pm.dispose();
+});
+
+function tabCheckin(connect) {
   const origin = location.origin;
   const icon =
     (document.querySelector('head > link[rel~="icon"]') as HTMLLinkElement)
@@ -35,10 +44,10 @@ function connectTab(connect) {
 }
 
 if (document.readyState === 'complete') {
-  connectTab(pm);
+  tabCheckin(pm);
 } else {
   const domContentLoadedHandler = () => {
-    connectTab(pm);
+    tabCheckin(pm);
     window.removeEventListener('DOMContentLoaded', domContentLoadedHandler);
   };
   window.addEventListener('DOMContentLoaded', domContentLoadedHandler);
