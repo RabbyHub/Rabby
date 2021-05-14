@@ -15,7 +15,11 @@ const PageHeader = ({
   return (
     <div className="page-header">
       {canBack && history.length > 0 && (
-        <img src={IconBack} className="icon icon-back" />
+        <img
+          src={IconBack}
+          className="icon icon-back"
+          onClick={() => history.goBack()}
+        />
       )}
       <div className="header-content">{children}</div>
     </div>
