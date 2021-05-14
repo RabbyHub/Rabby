@@ -4,9 +4,8 @@
   "description": "eth wallet",
   "scripts": {
     "clean": "mkdir -p dist && rm -rf dist/* && cp -r _raw/* dist",
-    "build:dev": "npm run clean && webpack --progress --env config=dev",
+    "build:dev": "npm run clean && TAILWIND_MODE=watch webpack --progress --env config=dev",
     "build:pro": "npm run clean && webpack --progress --env config=pro",
-    "start": "webpack serve --env config=start",
     "lint:fix": "eslint --fix --ext .js,.jsx,.ts,.tsx ./src",
     "test": "jest"
   },

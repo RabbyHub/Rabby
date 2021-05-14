@@ -31,8 +31,8 @@ const Header = ({
   return (
     <div className="flex items-center mb-6">
       <div className="flex-1">
-        <div className="text-lg font-bold">{title}</div>
-        <div className="text-xs text-gray-light">{subTitle}</div>
+        <div className="font-bold text-24">{title}</div>
+        <div className="text-14 text-gray-light">{subTitle}</div>
       </div>
       {showClose && !subTitle && <Icon type="cross" onClick={handleClose} />}
     </div>

@@ -17,6 +17,7 @@ pm.on('message', (data) => bcm.send('message', data));
 
 document.addEventListener('beforeunload', () => {
   bcm.dispose();
+  pm.dispose();
 });
 
 insertScript(`pageProvider.js?channel=${channelName}`).then((ele) => {
