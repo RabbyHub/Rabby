@@ -1,6 +1,6 @@
 import React, { useState, useRef } from 'react';
 import { Button, Checkbox, Form, Select } from 'antd';
-import { Footer } from '../component';
+import { StrayPageWithButton } from '../component';
 import { useWallet } from '../utils';
 
 const { Option } = Select;
@@ -24,7 +24,12 @@ const AccountChoose = ({
   };
 
   return (
-    <Form onFinish={onSubmit}>
+    <StrayPageWithButton
+      header={{
+        title: 'import',
+      }}
+      onSubmit={onSubmit}
+    >
       <div>
         <Form.Item
           name="accounts"
@@ -49,12 +54,7 @@ const AccountChoose = ({
         </Button>
         <Button onClick={handleNextPage}>next</Button>
       </div>
-      <Footer>
-        <Button type="primary" htmlType="submit">
-          Confirm
-        </Button>
-      </Footer>
-    </Form>
+    </StrayPageWithButton>
   );
 };
 

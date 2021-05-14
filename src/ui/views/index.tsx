@@ -34,59 +34,57 @@ const Main = () => {
 
   return (
     <Router>
-      <main className="relative min-h-full">
-        <Route path="/" component={LogPageView} />
-        <Switch>
-          <Route exact path="/password">
-            <CreatePassword />
-          </Route>
-          <Route exact path="/start">
-            <Start />
-          </Route>
-          <Route exact path="/create">
-            <CreateMnemonics />
-          </Route>
-          <Route exact path="/import">
-            <ImportMode />
-          </Route>
-          <Route exact path="/import/key">
-            <ImportPrivateKey />
-          </Route>
-          <Route exact path="/import/json">
-            <ImportJson />
-          </Route>
-          <Route exact path="/import/mnemonics">
-            <ImportMnemonics />
-          </Route>
-          <Route exact path="/import/hardware">
-            <ImportHardware />
-          </Route>
+      <Route path="/" component={LogPageView} />
+      <Switch>
+        <Route exact path="/password">
+          <CreatePassword />
+        </Route>
+        <Route exact path="/start">
+          <Start />
+        </Route>
+        <Route exact path="/create">
+          <CreateMnemonics />
+        </Route>
+        <Route exact path="/import">
+          <ImportMode />
+        </Route>
+        <Route exact path="/import/key">
+          <ImportPrivateKey />
+        </Route>
+        <Route exact path="/import/json">
+          <ImportJson />
+        </Route>
+        <Route exact path="/import/mnemonics">
+          <ImportMnemonics />
+        </Route>
+        <Route exact path="/import/hardware">
+          <ImportHardware />
+        </Route>
 
-          <Route exact path="/unlock">
-            <Unlock />
-          </Route>
+        <Route exact path="/unlock">
+          <Unlock />
+        </Route>
 
-          <Route exact path="/dashboard">
-            <Dashboard />
-          </Route>
-          <Route exact path="/approval">
-            <Approval />
-          </Route>
-          <Route exact path="/settings">
-            <Settings />
-          </Route>
-          <Route exact path="/settings/address">
-            <Address />
-          </Route>
-          <Route exact path="/settings/sites">
-            <ConnectedSites />
-          </Route>
+        <Route exact path="/dashboard">
+          <Dashboard />
+        </Route>
+        <Route exact path="/approval">
+          <Approval />
+        </Route>
+        <Route exact path="/settings">
+          <Settings />
+        </Route>
+        <Route exact path="/settings/address">
+          <Address />
+        </Route>
+        <Route exact path="/settings/sites">
+          <ConnectedSites />
+        </Route>
 
-          <Route path="/">
-            <SortHat />
-          </Route>
-        </Switch>
-      </main>
+        <Route path="/">
+          <SortHat />
+        </Route>
+      </Switch>
     </Router>
   );
 };

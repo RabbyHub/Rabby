@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { Button } from 'antd';
 import { APPROVAL_STATE } from 'consts';
-import { Footer } from 'ui/component';
+import { StrayFooter } from 'ui/component';
 import { useWallet, useApproval } from 'ui/utils';
 import { Connect, SignText, SignTx } from './components';
 
@@ -50,14 +50,14 @@ const Approval = () => {
         <div>{account}</div>
       </div>
       {Content && <Content params={approval.params} origin={approval.origin} />}
-      <Footer className="flex space-x-4">
+      <StrayFooter className="flex space-x-4">
         <Button type="primary" block onClick={handleCancel}>
           Cancel
         </Button>
         <Button block onClick={handleAllow}>
           Allow
         </Button>
-      </Footer>
+      </StrayFooter>
     </>
   );
 };

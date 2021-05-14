@@ -4,9 +4,9 @@ import { Icon } from 'ui/component';
 
 interface TiledSelectProps {
   defaultValue?: string[];
-  value: string[];
+  value?: string[];
   options: string[];
-  onChange(string): void;
+  onChange?(string): void;
   className?: string;
 }
 
@@ -28,7 +28,7 @@ const TiledSelect = ({
     }
 
     // shallow compare
-    if (_value.some((x, i) => x !== value[i])) {
+    if (value && _value.some((x, i) => x !== value[i])) {
       setValue(value);
     }
   }, [value]);

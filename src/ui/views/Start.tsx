@@ -1,14 +1,14 @@
 import React from 'react';
 import { useHistory, Link } from 'react-router-dom';
 import { Button } from 'antd';
-import { Header } from 'ui/component';
+import { StrayHeader } from 'ui/component';
 
 const Start = () => {
   const history = useHistory();
 
   return (
     <>
-      <Header
+      <StrayHeader
         title={'Create or Import Account Number'}
         subTitle={
           'you can create a new account or import an existing one through seed pharse,private key or JSON file'

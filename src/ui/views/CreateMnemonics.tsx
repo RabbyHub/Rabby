@@ -1,8 +1,8 @@
 import React from 'react';
 import { useEffect, useState, useMemo } from 'react';
 import { useHistory } from 'react-router-dom';
-import { useForm, Controller } from 'react-hook-form';
-import { Footer, Header, TiledSelect } from 'ui/component';
+import { Form } from 'antd';
+import { StrayPageWithButton, TiledSelect } from 'ui/component';
 import { useWallet, useApproval } from 'ui/utils';
 
 const VerifyMnemonics = ({ mnemonics, onBackClick }) => {
@@ -13,59 +13,36 @@ const VerifyMnemonics = ({ mnemonics, onBackClick }) => {
     [mnemonics]
   );
 
-  const {
-    control,
-    formState: { isValid },
-    handleSubmit,
-  } = useForm({ mode: 'onChange' });
-
   const onSubmit = () => {
     history.push('/dashboard');
   };
 
   return (
-    <>
-      <Header
-        title="Verify Mnemonics"
-        subTitle="Please select the mnemonic words in order"
-        className="mb-4"
-      />
-      <form onSubmit={handleSubmit(onSubmit)}>
-        <div className="mt-4 mb-4">
-          <Controller
-            name="mnemonics"
-            control={control}
-            rules={{
-              required: true,
-              validate: (v) => v && v.join(' ') === mnemonics,
-            }}
-            render={({ field: { ref, ...props } }) => (
-              <TiledSelect
-                options={randomMnemonics}
-                {...props}
-                value={mnemonics.split(' ')}
-              />
-            )}
-          />
-        </div>
-        <Footer.Nav nextDisabled={!isValid} onBackClick={onBackClick} />
-      </form>
-    </>
+    <StrayPageWithButton
+      header={{
+        title: 'Verify Mnemonics',
+        subTitle: 'Please select the mnemonic words in order',
+      }}
+      onSubmit={onSubmit}
+    >
+      <Form.Item name="mnemonics" rules={[{ required: true }]}>
+        <TiledSelect options={randomMnemonics} />
+      </Form.Item>
+    </StrayPageWithButton>
   );
 };
 
 const DisplayMnemonic = ({ mnemonics, onNextClick, onBackClick }) => (
-  <>
-    <Header
-      title={'Back Up Your Mnemonics'}
-      subTitle={'Back Up Your Mnemonics'}
-      className="mb-4"
-    />
+  <StrayPageWithButton
+    header={{
+      title: 'Back Up Your Mnemonics',
+      subTitle: 'Back Up Your Mnemonics',
+    }}
+  >
     <div className="border bg-gray-100 font-bold text-gray-600 p-6">
       {mnemonics}
     </div>
-    <Footer.Nav onNextClick={onNextClick} onBackClick={onBackClick} />
-  </>
+  </StrayPageWithButton>
 );
 
 const CreateMnemonic = () => {

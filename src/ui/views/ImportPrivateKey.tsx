@@ -1,6 +1,6 @@
 import React from 'react';
 import { Input, Form } from 'antd';
-import { Footer } from 'ui/component';
+import { StrayPageWithButton } from 'ui/component';
 import { useWallet, useApproval } from 'ui/utils';
 
 const ImportPrivateKey = () => {
@@ -19,19 +19,20 @@ const ImportPrivateKey = () => {
   };
   console.log(form.getFieldsError());
   return (
-    <>
-      <h4 className="font-bold">Import Private Key</h4>
-      <p className="text-xs mt-2">Please input your private key below</p>
-      <Form onFinish={onSubmit}>
-        <Form.Item
-          name="key"
-          rules={[{ required: true, message: 'Please input Private key' }]}
-        >
-          <Input placeholder="Private key" />
-        </Form.Item>
-        <Footer.Nav />
-      </Form>
-    </>
+    <StrayPageWithButton
+      header={{
+        title: 'Import Private Key',
+        subTitle: 'Please input your private key below',
+      }}
+      onSubmit={onSubmit}
+    >
+      <Form.Item
+        name="key"
+        rules={[{ required: true, message: 'Please input Private key' }]}
+      >
+        <Input placeholder="Private key" />
+      </Form.Item>
+    </StrayPageWithButton>
   );
 };
 

@@ -73,6 +73,7 @@ class KeyringService extends EventEmitter {
   }
 
   boot(password: string) {
+    console.log(this, this.store);
     this.password = password;
     this.store.updateState({ booted: true });
   }

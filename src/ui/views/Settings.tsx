@@ -2,7 +2,7 @@ import React from 'react';
 import { useHistory } from 'react-router-dom';
 import { useWallet } from 'ui/utils';
 import { Button } from 'antd';
-import { ArrowLink, Header } from 'ui/component';
+import { ArrowLink, StrayHeader } from 'ui/component';
 
 const Settings = () => {
   const wallet = useWallet();
@@ -15,7 +15,7 @@ const Settings = () => {
 
   return (
     <>
-      <Header title={'Settings'} />
+      <StrayHeader title={'Settings'} />
       <Button
         block
         className="rounded-full mb-4 text-base"

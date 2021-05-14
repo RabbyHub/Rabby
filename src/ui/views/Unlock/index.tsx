@@ -2,18 +2,17 @@ import React from 'react';
 import { useState } from 'react';
 import { Input, Button, Form } from 'antd';
 import { useWallet, useApproval } from 'ui/utils';
+import { StrayPageWithButton } from 'ui/component';
+
 import './style.less';
 
 const Unlock = () => {
   const wallet = useWallet();
   const [, resolveApproval] = useApproval();
   const [error, setErr] = useState('');
+  const [form] = Form.useForm();
 
   const onSubmit = async ({ password }) => {
-    if (!password) {
-      setErr('Please input Password');
-      return;
-    }
     try {
       await wallet.unlock(password);
       resolveApproval();
@@ -25,25 +24,30 @@ const Unlock = () => {
   return (
     <div className="unlock">
       <div className="header"></div>
-      <div className="content">
-        <h1>Welcome back</h1>
-        <p className="subtitle">input your password to unlock</p>
-        <Form onFinish={onSubmit}>
-          <Form.Item
-            className="mb-0"
-            name="password"
-            validateStatus={error ? 'error' : undefined}
-            help={error}
-          >
-            <Input placeholder="Password" size="large" />
-          </Form.Item>
-          <div className="flex justify-center unlock-footer">
-            <Button type="primary" htmlType="submit" size="large">
-              Unlock
-            </Button>
-          </div>
-        </Form>
-      </div>
+      <StrayPageWithButton
+        header={{
+          title: 'Welcome back',
+          subTitle: 'input your password to unlock',
+        }}
+        onSubmit={onSubmit}
+        NextButtonText="Unlock"
+        form={form}
+      >
+        <Form.Item
+          className="mb-0"
+          name="password"
+          rules={[
+            {
+              required: true,
+              message: 'Please input Password',
+            },
+          ]}
+          validateStatus={error ? 'error' : undefined}
+          help={error}
+        >
+          <Input placeholder="Password" size="large" />
+        </Form.Item>
+      </StrayPageWithButton>
     </div>
   );
 };

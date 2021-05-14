@@ -2,7 +2,7 @@ import React from 'react';
 import { useState, useCallback } from 'react';
 import { useHistory } from 'react-router-dom';
 import { Button } from 'antd';
-import { Footer } from 'ui/component';
+import { StrayFooter } from 'ui/component';
 import { useWallet } from 'ui/utils';
 
 const entries = [
@@ -63,7 +63,7 @@ const ImportEntry = () => {
           </Button>
         ))}
       </div>
-      <Footer.Nav nextDisabled={!mode} onNextClick={handleNext} />
+      <StrayFooter.Nav nextDisabled={!mode} onNextClick={handleNext} />
     </>
   );
 };

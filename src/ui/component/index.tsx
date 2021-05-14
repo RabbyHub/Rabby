@@ -1,5 +1,6 @@
-export { default as Footer } from './Footer';
-export { default as Header } from './Header';
+export { default as StrayFooter } from './StrayFooter';
+export { default as StrayHeader } from './StrayHeader';
+export { default as StrayPage, StrayPageWithButton } from './StrayPage';
 export { default as Modal } from './Modal';
 export { default as Icon } from './Icon';
 export { default as ArrowLink } from './ArrowLink';

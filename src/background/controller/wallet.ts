@@ -14,6 +14,9 @@ import { addHexPrefix } from 'background/utils';
 import BaseController from './base';
 
 export class WalletController extends BaseController {
+  boot = (password) => keyringService.boot(password);
+  isBooted = () => keyringService.isBooted;
+
   getApproval = notification.getApproval;
   resolveApproval = notification.resolveApproval;
   rejectApproval = notification.rejectApproval;
@@ -24,9 +27,6 @@ export class WalletController extends BaseController {
     keyringService.setLocked();
     session.broadcastEvent('disconnect');
   };
-
-  boot = keyringService.boot;
-  isBooted = () => keyringService.isBooted;
 
   getConnectedSites = permission.getConnectedSites;
   getRecentConnectedSites = permission.getRecentConnectSites;

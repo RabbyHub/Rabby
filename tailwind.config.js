@@ -5,6 +5,8 @@ module.exports = {
   purge: ['./src/ui/**/*.{ts,tsx,html}'],
   theme: {
     spacing: {
+      0: '0',
+      1: '1px',
       8: '8px',
       10: '10px',
       12: '12px',
@@ -29,22 +31,27 @@ module.exports = {
       pink: '#F24822',
       red: '#AF160E',
       gray: {
-        1: '#F6F7F9',
-        2: '#F0F2F5',
-        3: '#D8DFEB',
-        4: '#B4BDCC',
-        5: '#818A99',
-        6: '#525966',
-        7: '#2D3033',
+        bg2: '#F6F7F9',
+        bg: '#F0F2F5',
+        divider: '#D8DFEB',
+        comment: '#B4BDCC',
+        content: '#818A99',
+        subTitle: '#525966',
+        title: '#2D3033',
       },
     },
     fontSize: {
       12: '12px',
-      13: ['13px', { fontWeight: 500 }],
+      13: '13px',
       14: '14px',
-      15: ['15px', { fontWeight: 500 }],
-      20: ['20px', { fontWeight: 500 }],
-      24: ['24px', { fontWeight: 'bold' }],
+      15: '15px',
+      20: '20px',
+      24: [
+        '24px',
+        {
+          lineHeight: '28px',
+        },
+      ],
     },
   },
   // use media-query prefers-color-scheme

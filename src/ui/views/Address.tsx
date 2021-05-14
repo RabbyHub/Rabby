@@ -1,7 +1,7 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
 import { Button } from 'antd';
-import { Footer, Header } from 'ui/component';
+import { StrayFooter, StrayHeader } from 'ui/component';
 import { useWallet, noop } from 'ui/utils';
 import { DisplayedKeryring } from 'background/service/keyring';
 
@@ -31,7 +31,7 @@ const Address = () => {
 
   return (
     <>
-      <Header title={'Address Management'} />
+      <StrayHeader title={'Address Management'} />
       <div className="flex text-gray-500 text-xs mb-1">
         <div>Private key address</div>
       </div>
@@ -62,11 +62,11 @@ const Address = () => {
           </div>
         </div>
       ))} */}
-      <Footer>
+      <StrayFooter>
         <Button block onClick={handleExport}>
           Export all PKs as a JSON file
         </Button>
-      </Footer>
+      </StrayFooter>
     </>
   );
 };

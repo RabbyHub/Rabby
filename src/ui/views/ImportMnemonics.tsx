@@ -1,10 +1,9 @@
 import React from 'react';
 import { Form, Input } from 'antd';
-import { Footer, Header } from 'ui/component';
+import { StrayPageWithButton } from 'ui/component';
 import { useWallet, useApproval } from 'ui/utils';
 
 const ImportMnemonic = () => {
-  const [form] = Form.useForm();
   const wallet = useWallet();
   const [, resolveApproval] = useApproval();
 
@@ -19,21 +18,20 @@ const ImportMnemonic = () => {
   };
 
   return (
-    <>
-      <Header
-        title="Import Mnemonics"
-        subTitle="Please input your mnemonics below"
-      />
-      <Form onFinish={onSubmit} form={form}>
-        <Form.Item
-          name="mnemonics"
-          rules={[{ required: true, message: 'Please input Mnemonics' }]}
-        >
-          <Input.TextArea placeholder="Mnemonics" />
-        </Form.Item>
-        <Footer.Nav />
-      </Form>
-    </>
+    <StrayPageWithButton
+      header={{
+        title: 'Import Mnemonics',
+        subTitle: 'Please input your mnemonics below',
+      }}
+      onSubmit={onSubmit}
+    >
+      <Form.Item
+        name="mnemonics"
+        rules={[{ required: true, message: 'Please input Mnemonics' }]}
+      >
+        <Input.TextArea placeholder="Mnemonics" />
+      </Form.Item>
+    </StrayPageWithButton>
   );
 };
 
