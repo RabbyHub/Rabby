@@ -1,8 +1,7 @@
 import React from 'react';
 import { useHistory } from 'react-router-dom';
 import { useWallet } from 'ui/utils';
-import { Button } from 'antd';
-import { ArrowLink, PageHeader, Field } from 'ui/component';
+import { PageHeader, Field } from 'ui/component';
 import IconAddressManagement from 'ui/assets/address-management.svg';
 import IconChainManagement from 'ui/assets/chain-management.svg';
 import IconConnectSitesManagement from 'ui/assets/connect-sites-management.svg';
@@ -13,6 +12,26 @@ import './style.less';
 const Settings = () => {
   const wallet = useWallet();
   const history = useHistory();
+  const renderData = [
+    {
+      leftIcon: IconAddressManagement,
+      content: 'Address management',
+      onClick: () => history.push('/settings/address'),
+    },
+    {
+      leftIcon: IconChainManagement,
+      content: 'Chain management',
+    },
+    {
+      leftIcon: IconConnectSitesManagement,
+      content: 'Connected sites',
+      onClick: () => history.push('/settings/sites'),
+    },
+    {
+      leftIcon: IconOpenapiManagement,
+      content: 'Change OpenAPI',
+    },
+  ];
 
   const lockWallet = async () => {
     await wallet.lockWallet();
@@ -20,37 +39,22 @@ const Settings = () => {
   };
 
   return (
-    <div className="settings" style={{ backgroundColor: '#F0F2F5' }}>
+    <div className="settings">
       <PageHeader>Settings</PageHeader>
-      <Button
-        block
-        className="rounded-full mb-4 text-base"
-        onClick={lockWallet}
-      >
+      <div className="field lock-wallet" onClick={lockWallet}>
         Lock wallet
-      </Button>
-      <Field
-        leftIcon={
-          <img
-            src={IconAddressManagement}
-            className="icon icon-address-management"
-          />
-        }
-        rightIcon={
-          <img src={IconArrowRight} className="icon icon-arrow-right" />
-        }
-      >
-        Address Management
-      </Field>
-      <ArrowLink className="mt-6 font-semibold" to="/settings/address">
-        Address management
-      </ArrowLink>
-      <ArrowLink className="mt-5 font-semibold" to="/settings/sites">
-        Connect sites
-      </ArrowLink>
-      <ArrowLink className="mt-5 font-semibold" to="/import">
-        import
-      </ArrowLink>
+      </div>
+      {renderData.map((data) => (
+        <Field
+          leftIcon={<img src={data.leftIcon} className="icon" />}
+          rightIcon={
+            <img src={IconArrowRight} className="icon icon-arrow-right" />
+          }
+          onClick={data.onClick}
+        >
+          {data.content}
+        </Field>
+      ))}
     </div>
   );
 };
