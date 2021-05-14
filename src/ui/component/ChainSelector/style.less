@@ -1,0 +1,73 @@
+@import '../../style/var.less';
+
+.chain-selector {
+  padding: 12px;
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  flex-shrink: 0;
+  -webkit-user-select: none;
+  .chain-logo {
+    width: 24px;
+    height: 24px;
+    margin-right: 8px;
+  }
+  .icon-arrow-down {
+    width: 12px;
+    height: 12px;
+    transition: transform .3s;
+    transform: rotate(0);
+  }
+  &.active {
+    .icon-arrow-down {
+      transform: rotate(180deg);
+    }
+  }
+}
+
+.chain-selector-options {
+  margin-bottom: 0;
+  li {
+    display: flex;
+    padding: 10px 0;
+    align-items: center;
+    position: relative;
+    cursor: pointer;
+    &:nth-child(1)::after, &:nth-last-child(2)::after {
+      .part-border();
+      left: 50%;
+      bottom: 0;
+      transform: translateX(-50%);
+      opacity: .4;
+    }
+    &:nth-child(1) {
+      padding-top: 0;
+    }
+    &:nth-last-child(1) {
+      padding-bottom: 0;
+    }
+    .chain-logo {
+      width: 16px;
+      height: 16px;
+      margin-right: 6px;
+    }
+    .chain-name {
+      font-size: 12px;
+      color: #3B3E4A;
+      margin-right: 10px;
+      flex: 1;
+    }
+    .icon-checked {
+      width: 12px;
+      height: 12px;
+    }
+  }
+}
+
+.chain-selector-popover {
+  background: #FFFFFF;
+  border-radius: 6px;
+  padding-bottom: 0 !important;
+  overflow: hidden;
+  box-shadow: 0px 4px 12px rgba(24, 35, 43, 0.08);
+}

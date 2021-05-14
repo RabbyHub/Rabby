@@ -34,6 +34,7 @@ export class WalletController extends BaseController {
     const { origin } = session.getOrCreateSession(tabId);
     return permission.getWithoutUpdate(origin);
   };
+  updateConnectSite = permission.updateConnectSite;
   removeConnectedSite = permission.removeConnectedSite;
 
   getCurrentMnemonics = async () => {
