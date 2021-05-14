@@ -1,11 +1,12 @@
 import LRU from 'lru-cache';
 import { createPersistStore } from 'background/utils';
+import { CHAINS_ENUM } from 'consts';
 
 export interface ConnectedSite {
   origin: string;
   icon: string;
   name: string;
-  chain?: string;
+  chain: CHAINS_ENUM;
   e?: number;
 }
 
@@ -36,6 +37,11 @@ class Permission {
     this.lruCache.load(cache);
   };
 
+  sync = () => {
+    if (!this.lruCache) return;
+    this.store.dumpCache = this.lruCache.dump();
+  };
+
   getWithoutUpdate = (key: string) => {
     if (!this.lruCache) return;
 
@@ -44,14 +50,21 @@ class Permission {
 
   addConnectedSite = (origin, name, icon) => {
     if (!this.lruCache) return;
-    this.lruCache.set(origin, { origin, name, icon });
-    this.store.dumpCache = this.lruCache.dump();
+    // TODO: remove hardcode
+    this.lruCache.set(origin, { origin, name, icon, chain: CHAINS_ENUM.ETH });
+    this.sync();
   };
 
   touchConnectedSite = (origin) => {
     if (!this.lruCache) return;
     this.lruCache.get(origin);
-    this.store.dumpCache = this.lruCache.dump();
+    this.sync();
+  };
+
+  updateConnectSite = (origin: string, value: ConnectedSite) => {
+    if (!this.lruCache || !this.lruCache.has(origin)) return;
+    this.lruCache.set(origin, value);
+    this.sync();
   };
 
   hasPerssmion = (origin) => {
@@ -72,7 +85,7 @@ class Permission {
     if (!this.lruCache) return;
 
     this.lruCache.del(origin);
-    this.store.dumpCache = this.lruCache.dump();
+    this.sync();
   };
 }
 

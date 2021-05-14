@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useWallet, useApproval, getCurrentConnectSite } from 'ui/utils';
 import { ConnectedSite } from 'background/service/permission';
+import { ChainSelector } from 'ui/component';
+import { CHAINS_ENUM } from 'consts';
 import IconNoData from 'ui/assets/no-data.svg';
 import IconAllSites from 'ui/assets/all-sites.svg';
 import IconInternet from 'ui/assets/internet.svg';
@@ -11,6 +13,15 @@ const CurrentConnection = ({
 }: {
   site: null | ConnectedSite | undefined;
 }) => {
+  const wallet = useWallet();
+
+  const handleChangeDefaultChain = (chain: CHAINS_ENUM) => {
+    wallet.updateConnectSite(site!.origin, {
+      ...site!,
+      chain,
+    });
+  };
+
   const NoConnected = () => (
     <p className="not-connected">
       <img src={IconInternet} className="icon icon-no-connect" />
@@ -24,6 +35,7 @@ const CurrentConnection = ({
         <p className="origin">{site!.origin}</p>
         <p className="name">{site!.name}</p>
       </div>
+      <ChainSelector value={site!.chain} onChange={handleChangeDefaultChain} />
     </div>
   );
   return (
@@ -90,7 +102,12 @@ export default () => {
           {connections.length >= 5 && (
             <ConnectionItem
               onClick={handleClickAllSites}
-              item={{ origin: 'all', name: 'All Sites', icon: IconAllSites }}
+              item={{
+                origin: 'all',
+                name: 'All Sites',
+                icon: IconAllSites,
+                chain: CHAINS_ENUM.ETH,
+              }}
             />
           )}
         </div>
