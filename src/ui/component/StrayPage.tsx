@@ -1,6 +1,5 @@
 import React, { ReactNode, FunctionComponent } from 'react';
 import { Form, FormInstance } from 'antd';
-import cx from 'clsx';
 import StrayHeader, { StrayHeaderProps } from './StrayHeader';
 import StrayFooter, { StrayFooterNavProps } from './StrayFooter';
 
@@ -11,7 +10,7 @@ interface StrayPageProps {
 }
 
 const StrayPage = ({ header, children, footerRender }: StrayPageProps) => (
-  <div className="p-28 bg-gray-bg h-full">
+  <div className="pt-28 px-20 bg-gray-bg h-full">
     <StrayHeader {...header} />
     {children}
     {footerRender && footerRender({})}

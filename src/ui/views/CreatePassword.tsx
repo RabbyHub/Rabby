@@ -17,7 +17,7 @@ const CreatePassword = () => {
     confirmPassword: string;
   }) => {
     wallet.boot(password.trim());
-    history.push('/start');
+    history.push('/no-address');
   };
 
   return (
@@ -28,39 +28,41 @@ const CreatePassword = () => {
       }}
       onSubmit={onSubmit}
     >
-      <Form.Item
-        name="password"
-        rules={[
-          {
-            required: true,
-            message: 'Please input Password',
-          },
-          {
-            min: MIN_PASSWORD_LENGTH,
-            message: '*Password is too short',
-          },
-        ]}
-      >
-        <Input size="large" placeholder="Password" type="password" />
-      </Form.Item>
-      <Form.Item
-        name="confirmPassword"
-        rules={[
-          { required: true, message: '*Please confirm Password' },
-          ({ getFieldValue }) => ({
-            validator(_, value: string) {
-              if (!value || getFieldValue('password') === value) {
-                return Promise.resolve();
-              }
-              return Promise.reject(
-                new Error('*The two passwords are inconsistent')
-              );
+      <div className="mt-40">
+        <Form.Item
+          name="password"
+          rules={[
+            {
+              required: true,
+              message: 'Please input Password',
             },
-          }),
-        ]}
-      >
-        <Input size="large" placeholder="Repeat Password" type="password" />
-      </Form.Item>
+            {
+              min: MIN_PASSWORD_LENGTH,
+              message: '*Password is too short',
+            },
+          ]}
+        >
+          <Input size="large" placeholder="Password" type="password" />
+        </Form.Item>
+        <Form.Item
+          name="confirmPassword"
+          rules={[
+            { required: true, message: '*Please confirm Password' },
+            ({ getFieldValue }) => ({
+              validator(_, value: string) {
+                if (!value || getFieldValue('password') === value) {
+                  return Promise.resolve();
+                }
+                return Promise.reject(
+                  new Error('*The two passwords are inconsistent')
+                );
+              },
+            }),
+          ]}
+        >
+          <Input size="large" placeholder="Repeat Password" type="password" />
+        </Form.Item>
+      </div>
     </StrayPageWithButton>
   );
 };

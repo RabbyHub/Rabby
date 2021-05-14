@@ -15,7 +15,7 @@ import Approval from './Approval';
 import SortHat from './SortHat';
 import Unlock from './Unlock';
 import CreatePassword from './CreatePassword';
-import Start from './Start';
+import NoAddress from './NoAddress';
 import CreateMnemonics from './CreateMnemonics';
 import AddAddress from './AddAddress';
 
@@ -40,8 +40,8 @@ const Main = () => {
         <Route exact path="/password">
           <CreatePassword />
         </Route>
-        <Route exact path="/start">
-          <Start />
+        <Route exact path="/no-address">
+          <NoAddress />
         </Route>
         <Route exact path="/create">
           <CreateMnemonics />

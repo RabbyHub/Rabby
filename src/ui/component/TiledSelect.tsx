@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import cx from 'clsx';
-import { Icon } from 'ui/component';
+import IconCross from 'ui/assets/cross.svg';
 
 interface TiledSelectProps {
   defaultValue?: string[];
@@ -51,23 +51,35 @@ const TiledSelect = ({
 
   return (
     <div className={className}>
-      <div className="border bg-white p-2 flex flex-wrap h-32 overflow-y-auto mb-4">
+      <div className="h-[165px] rounded-lg bg-white text-center font-medium mb-16 p-12 overflow-y-auto">
         {_value &&
           _value.map((v, i) => (
-            <div className="bg-gray-100 text-gray-600 mr-2 h-4" key={v}>
-              {v}
-              <Icon type="cross" onClick={() => handleRemove(i)} />
+            <div
+              style={{ lineHeight: '27px' }}
+              className="rounded-lg bg-gray-bg text-13 text-gray-title mr-8 h-[27px] px-10 mb-8 float-left inline-block"
+              key={v}
+            >
+              <span className="mr-8">{v}</span>
+              <img
+                className="align-baseline inline-block"
+                src={IconCross}
+                onClick={() => handleRemove(i)}
+              />
             </div>
           ))}
       </div>
-      <div className="flex justify-between flex-wrap">
+      <div className="flex justify-between flex-wrap -mr-8 clear-left">
         {options.map((o) => (
           <div
+            style={{ lineHeight: '32px' }}
             className={cx(
-              'border text-center border-primary w-16 rounded select-none text-primary mb-1 cursor-pointer',
-              {
-                'opacity-50': _value.includes(o),
-              }
+              'h-[32px] w-[84px] rounded-lg text-center bg-white mb-8 text-gray-title font-medium mr-8 transition-colors',
+              _value.includes(o) && [
+                'border',
+                'bg-gray-bg',
+                'text-gray-comment',
+                'border-gray-divider',
+              ]
             )}
             key={o}
             onClick={() => handleChoose(o)}

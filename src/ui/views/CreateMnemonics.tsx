@@ -20,10 +20,12 @@ const VerifyMnemonics = ({ mnemonics, onBackClick }) => {
   return (
     <StrayPageWithButton
       header={{
-        title: 'Verify Mnemonics',
+        secondTitle: 'Verify Mnemonics',
         subTitle: 'Please select the mnemonic words in order',
       }}
       onSubmit={onSubmit}
+      hasBack
+      withDivider
     >
       <Form.Item name="mnemonics" rules={[{ required: true }]}>
         <TiledSelect options={randomMnemonics} />
@@ -35,12 +37,21 @@ const VerifyMnemonics = ({ mnemonics, onBackClick }) => {
 const DisplayMnemonic = ({ mnemonics, onNextClick, onBackClick }) => (
   <StrayPageWithButton
     header={{
-      title: 'Back Up Your Mnemonics',
-      subTitle: 'Back Up Your Mnemonics',
+      secondTitle: 'Back Up Your Mnemonics',
+      subTitle: `Make sure you have backed up your mnemonics properly before clicking Next. Don't tell anyone the mnemonic`,
     }}
+    hasBack
+    withDivider
+    onNextClick={onNextClick}
   >
-    <div className="border bg-gray-100 font-bold text-gray-600 p-6">
+    <div
+      className="h-[180px] rounded-lg flex bg-white text-center items-center text-20 font-medium mt-32 p-40"
+      style={{ wordSpacing: '8px' }}
+    >
       {mnemonics}
+    </div>
+    <div className="mt-16 text-red text-12 text-center px-40">
+      Be sure to save the mnemonic phrase, it cannot be retrieved after loss！
     </div>
   </StrayPageWithButton>
 );

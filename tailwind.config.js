@@ -4,18 +4,10 @@ module.exports = {
   mode: 'jit',
   purge: ['./src/ui/**/*.{ts,tsx,html}'],
   theme: {
-    spacing: {
-      0: '0',
-      1: '1px',
-      8: '8px',
-      10: '10px',
-      12: '12px',
-      16: '16px',
-      20: '20px',
-      24: '24px',
-      28: '28px',
-      32: '32px',
-    },
+    spacing: [0, 1, 8, 10, 12, 14, 16, 20, 24, 28, 32, 40].reduce((m, n) => {
+      m[n] = `${n}px`;
+      return m;
+    }, {}),
     colors: {
       transparent: 'transparent',
       current: 'currentColor',
@@ -41,10 +33,25 @@ module.exports = {
       },
     },
     fontSize: {
-      12: '12px',
+      12: [
+        '12px',
+        {
+          lineHeight: '14px',
+        },
+      ],
       13: '13px',
-      14: '14px',
-      15: '15px',
+      14: [
+        '14px',
+        {
+          lineHeight: '18px',
+        },
+      ],
+      15: [
+        '15px',
+        {
+          lineHeight: '18px',
+        },
+      ],
       20: '20px',
       24: [
         '24px',
