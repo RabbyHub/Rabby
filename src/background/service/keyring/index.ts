@@ -72,10 +72,11 @@ class KeyringService extends EventEmitter {
     this.store = new ObservableStore(initState);
   }
 
-  boot(password: string) {
-    console.log(this, this.store);
+  async boot(password: string) {
     this.password = password;
-    this.store.updateState({ booted: true });
+    const encryptBooted = await this.encryptor.encrypt(password, 'true');
+    this.store.updateState({ booted: encryptBooted });
+    this.memStore.updateState({ isUnlocked: true });
   }
 
   isBooted() {
@@ -205,12 +206,18 @@ class KeyringService extends EventEmitter {
    * @param {string} password - The keyring controller password.
    * @returns {Promise<Object>} A Promise that resolves to the state.
    */
-  submitPassword(password: string): Promise<MemStoreState> {
-    return this.unlockKeyrings(password).then((keyrings) => {
-      this.keyrings = keyrings;
+  async submitPassword(password: string): Promise<MemStoreState> {
+    await this.verifyPassword(password);
+    this.password = password;
+    try {
+      this.keyrings = await this.unlockKeyrings(password);
+    } catch {
+      //
+    } finally {
       this.setUnlocked();
-      return this.fullUpdate();
-    });
+    }
+
+    return this.fullUpdate();
   }
 
   /**

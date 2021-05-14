@@ -13,6 +13,7 @@ const SortHat = () => {
     const isInNotification = isNotification();
     const isBooted = wallet.isBooted();
     const isUnlocked = wallet.isUnlocked();
+    const currentAccount = await wallet.getCurrentAccount();
 
     if (!isInNotification) {
       // chrome.window.windowFocusChange won't fire when
@@ -27,6 +28,8 @@ const SortHat = () => {
       setTo('/password');
     } else if (!isUnlocked) {
       setTo('/unlock');
+    } else if (!currentAccount) {
+      setTo('/no-address');
     } else if (approval) {
       setTo('/approval');
     } else {

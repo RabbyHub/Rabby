@@ -73,7 +73,7 @@ const TiledSelect = ({
           <div
             style={{ lineHeight: '32px' }}
             className={cx(
-              'h-[32px] w-[84px] rounded-lg text-center bg-white mb-8 text-gray-title font-medium mr-8 transition-colors',
+              'h-[32px] w-[84px] rounded-lg cursor-pointer text-center bg-white mb-8 text-gray-title font-medium mr-8 transition-colors',
               _value.includes(o) && [
                 'border',
                 'bg-gray-bg',

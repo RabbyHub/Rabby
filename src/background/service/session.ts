@@ -21,9 +21,13 @@ class Session {
 // for each tab
 const sessionMap = new Map();
 
+const getSession = (id) => {
+  return sessionMap.get(id);
+};
+
 const getOrCreateSession = (id) => {
   if (sessionMap.has(id)) {
-    return sessionMap.get(id);
+    return getSession(id);
   }
 
   return createSession(id, null);
@@ -48,10 +52,11 @@ const broadcastEvent = (ev, data?, origin?) => {
     sessions = sessions.filter((session) => session.origin === origin);
   }
 
-  sessions.forEach((session) => session.pushMessage(ev, data));
+  sessions.forEach((session) => session.pushMessage?.(ev, data));
 };
 
 export default {
+  getSession,
   getOrCreateSession,
   deleteSession,
   broadcastEvent,

@@ -15,7 +15,7 @@ import BaseController from './base';
 
 export class WalletController extends BaseController {
   boot = (password) => keyringService.boot(password);
-  isBooted = () => keyringService.isBooted;
+  isBooted = () => keyringService.isBooted();
 
   getApproval = notification.getApproval;
   resolveApproval = notification.resolveApproval;
@@ -31,7 +31,7 @@ export class WalletController extends BaseController {
   getConnectedSites = permission.getConnectedSites;
   getRecentConnectedSites = permission.getRecentConnectSites;
   getCurrentConnectedSite = (tabId: number) => {
-    const { origin } = session.getOrCreateSession(tabId);
+    const { origin } = session.getSession(tabId) || {};
     return permission.getWithoutUpdate(origin);
   };
   updateConnectSite = permission.updateConnectSite;

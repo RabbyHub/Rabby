@@ -46,6 +46,7 @@ const Settings = () => {
       </div>
       {renderData.map((data) => (
         <Field
+          key={data.content}
           leftIcon={<img src={data.leftIcon} className="icon" />}
           rightIcon={
             <img src={IconArrowRight} className="icon icon-arrow-right" />
