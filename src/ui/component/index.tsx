@@ -8,3 +8,4 @@ export { default as AddressViewer } from './AddressViewer';
 export { default as AddressList } from './AddressList';
 export { default as PageHeader } from './PageHeader';
 export { default as Field } from './Field';
+export { default as AddAddressOptions } from './AddAddressOptions';

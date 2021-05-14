@@ -53,7 +53,7 @@ const SwitchAddress = ({
   const SwitchButton = ({ data }: { data: string }) => {
     return (
       <img
-        onClick={() => onChange(data)}
+        onClick={() => changeAccount(data)}
         src={currentAccount === data ? IconChecked : IconNotChecked}
         className="icon icon-checked"
       />
@@ -64,7 +64,7 @@ const SwitchAddress = ({
     <div className="modal-switch-address">
       <AddressList list={accounts} ActionButton={SwitchButton} />
       <div className="footer">
-        <Link to="/create">Add addresses</Link>
+        <Link to="/add-address">Add addresses</Link>
       </div>
     </div>
   ) : null;
