@@ -19,7 +19,7 @@ class ChainService {
 
   init = async () => {
     this.store = await createPersistStore<ChainStore>({
-      name: 'permission',
+      name: 'chains',
     });
     // this.supportChainIds = await http('get_support_id');
   };
