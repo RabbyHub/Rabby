@@ -6,7 +6,7 @@ interface ChainStore {
   enableChains: CHAINS_ENUM[];
 }
 
-interface Chain {
+export interface Chain {
   id: number;
   name: string;
   hex: string;

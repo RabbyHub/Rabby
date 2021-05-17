@@ -7,6 +7,7 @@ import {
   notification,
   permission,
   session,
+  chainService,
 } from 'background/service';
 import { openIndexPage } from 'background/webapi/tab';
 import { KEYRING_CLASS, DisplayedKeryring } from 'background/service/keyring';
@@ -27,6 +28,8 @@ export class WalletController extends BaseController {
     keyringService.setLocked();
     session.broadcastEvent('disconnect');
   };
+
+  getEnableChains = () => chainService.getEnabledChains();
 
   getConnectedSites = permission.getConnectedSites;
   getRecentConnectedSites = permission.getRecentConnectSites;
