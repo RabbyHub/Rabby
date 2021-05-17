@@ -3,13 +3,13 @@
 import { EventEmitter } from 'events';
 import log from 'loglevel';
 import * as ethUtil from 'ethereumjs-util';
-import bip39 from 'bip39';
+import * as bip39 from 'bip39';
 import { ObservableStore } from '@metamask/obs-store';
 import encryptor from 'browser-passworder';
 import { normalize as normalizeAddress } from 'eth-sig-util';
-import SimpleKeyring from 'eth-simple-keyring';
 import LedgerBridgeKeyring from '@metamask/eth-ledger-bridge-keyring';
-import HdKeyring from 'eth-hd-keyring';
+import SimpleKeyring from 'eth-simple-keyring';
+import HdKeyring from './eth-hd-keyring';
 import TrezorKeyring from './eth-trezor-keyring';
 import OnekeyKeyring from './eth-onekey-keyring';
 import WatchKeyring from './eth-watch-keyring';
@@ -119,22 +119,22 @@ class KeyringService extends EventEmitter {
   }
 
   /**
-   * Create New Vault And Keychain using Private key
-   *
-   * Destroys any old encrypted storage,
-   * creates a new encrypted store
-   * randomly creates a new HD wallet with 1 account,
+   * Import Keychain using Private key
    *
    * @emits KeyringController#unlock
    * @param {string} privateKey - The privateKey to generate address
    * @returns {Promise<Object>} A Promise that resolves to the state.
    */
-  createNewVaultWithPrivateKey(privateKey: string): Promise<MemStoreState> {
+  importPrivateKey(privateKey: string): Promise<MemStoreState> {
     return this.persistAllKeyrings()
       .then(this.addNewKeyring.bind(this, 'Simple Key Pair', [privateKey]))
       .then(this.persistAllKeyrings.bind(this))
       .then(this.setUnlocked.bind(this))
       .then(this.fullUpdate.bind(this));
+  }
+
+  generateMnemonic(): string {
+    return bip39.generateMnemonic();
   }
 
   /**
@@ -147,13 +147,12 @@ class KeyringService extends EventEmitter {
    * @param {string} seed - The BIP44-compliant seed phrase.
    * @returns {Promise<Object>} A Promise that resolves to the state.
    */
-  createNewVaultWithMnemonic(seed: string): Promise<MemStoreState> {
+  importMnemonics(seed: string): Promise<string> {
     if (!bip39.validateMnemonic(seed)) {
       return Promise.reject(new Error('Seed phrase is invalid.'));
     }
 
-    this.clearKeyrings();
-
+    let currentAccount;
     return this.persistAllKeyrings()
       .then(() => {
         return this.addNewKeyring('HD Key Tree', {
@@ -168,11 +167,13 @@ class KeyringService extends EventEmitter {
         if (!firstAccount) {
           throw new Error('KeyringController - First Account not found.');
         }
+        currentAccount = firstAccount;
         return null;
       })
       .then(this.persistAllKeyrings.bind(this))
       .then(this.setUnlocked.bind(this))
-      .then(this.fullUpdate.bind(this));
+      .then(this.fullUpdate.bind(this))
+      .then(() => currentAccount);
   }
 
   /**

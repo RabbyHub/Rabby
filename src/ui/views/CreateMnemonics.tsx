@@ -3,38 +3,31 @@ import { useEffect, useState, useMemo } from 'react';
 import { useHistory } from 'react-router-dom';
 import { Form } from 'antd';
 import { StrayPageWithButton, TiledSelect } from 'ui/component';
-import { useWallet, useApproval } from 'ui/utils';
+import { useWallet } from 'ui/utils';
 
-const VerifyMnemonics = ({ mnemonics, onBackClick }) => {
-  const history = useHistory();
+const CreateMnemonic = () => {
+  const [showVerify, setShowVerify] = useState<boolean>(false);
+  const [mnemonics, setMnemonics] = useState('');
+  const wallet = useWallet();
 
-  const randomMnemonics = useMemo(
-    () => mnemonics.split(' ').sort(() => -(Math.random() > 0.5)),
-    [mnemonics]
-  );
+  useEffect(() => {
+    const _mnemonics = wallet.generateMnemonic();
 
-  const onSubmit = () => {
-    history.push('/dashboard');
+    setMnemonics(_mnemonics);
+  }, []);
+
+  const toggleVerify = () => {
+    setShowVerify(!showVerify);
   };
 
-  return (
-    <StrayPageWithButton
-      header={{
-        secondTitle: 'Verify Mnemonics',
-        subTitle: 'Please select the mnemonic words in order',
-      }}
-      onSubmit={onSubmit}
-      hasBack
-      withDivider
-    >
-      <Form.Item name="mnemonics" rules={[{ required: true }]}>
-        <TiledSelect options={randomMnemonics} />
-      </Form.Item>
-    </StrayPageWithButton>
+  return showVerify ? (
+    <VerifyMnemonics mnemonics={mnemonics} onBackClick={toggleVerify} />
+  ) : (
+    <DisplayMnemonic mnemonics={mnemonics} onNextClick={toggleVerify} />
   );
 };
 
-const DisplayMnemonic = ({ mnemonics, onNextClick, onBackClick }) => (
+const DisplayMnemonic = ({ mnemonics, onNextClick }) => (
   <StrayPageWithButton
     header={{
       secondTitle: 'Back Up Your Mnemonics',
@@ -56,40 +49,51 @@ const DisplayMnemonic = ({ mnemonics, onNextClick, onBackClick }) => (
   </StrayPageWithButton>
 );
 
-const CreateMnemonic = () => {
-  const [showVerify, setShowVerify] = useState<boolean>(false);
-  const [mnemonics, setMnemonics] = useState('');
+const VerifyMnemonics = ({ mnemonics, onBackClick }) => {
   const history = useHistory();
   const wallet = useWallet();
 
-  const getNewMnemonic = async () => {
-    await wallet.createNewVaultInMnenomic();
-    const _mnemonics = await wallet.getCurrentMnemonics();
+  const randomMnemonics = useMemo(
+    () => mnemonics.split(' ').sort(() => -(Math.random() > 0.5)),
+    [mnemonics]
+  );
 
-    setMnemonics(_mnemonics);
+  const onSubmit = async () => {
+    await wallet.importMnemonics(mnemonics);
+    history.push('/dashboard');
   };
 
-  useEffect(() => {
-    getNewMnemonic();
-  }, []);
-
-  const toggleVerify = () => {
-    setShowVerify(!showVerify);
-  };
-
-  const handleBackClick = () => {
-    wallet.clearKeyrings();
-    history.goBack();
-  };
-
-  return showVerify ? (
-    <VerifyMnemonics mnemonics={mnemonics} onBackClick={toggleVerify} />
-  ) : (
-    <DisplayMnemonic
-      mnemonics={mnemonics}
-      onNextClick={toggleVerify}
-      onBackClick={handleBackClick}
-    />
+  return (
+    <StrayPageWithButton
+      header={{
+        secondTitle: 'Verify Mnemonics',
+        subTitle: 'Please select the mnemonic words in order',
+      }}
+      onSubmit={onSubmit}
+      hasBack
+      withDivider
+      onBackClick={onBackClick}
+      initialValues={{
+        mnemonics: mnemonics.split(' '),
+      }}
+    >
+      <Form.Item
+        name="mnemonics"
+        rules={[
+          { required: true },
+          {
+            validator(_, value: []) {
+              if (!value || value.join(' ') === mnemonics) {
+                return Promise.resolve();
+              }
+              return Promise.reject(new Error('*Verification failed'));
+            },
+          },
+        ]}
+      >
+        <TiledSelect options={randomMnemonics} />
+      </Form.Item>
+    </StrayPageWithButton>
   );
 };
 

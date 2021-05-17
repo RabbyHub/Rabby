@@ -20,6 +20,7 @@ const StrayPage = ({ header, children, footerRender }: StrayPageProps) => (
 interface StrayPageWithButtonProps {
   header: StrayHeaderProps;
   form?: FormInstance<any>;
+  initialValues?: any;
   onSubmit?(values: any): any;
   children;
 }
@@ -35,9 +36,10 @@ export const StrayPageWithButton = ({
   nextDisabled,
   hasBack,
   withDivider,
+  initialValues,
 }: StrayPageWithButtonProps & StrayFooterNavProps) => (
   <StrayPage header={header}>
-    <Form form={form} onFinish={onSubmit}>
+    <Form form={form} onFinish={onSubmit} initialValues={initialValues}>
       {children}
       <StrayFooter.Nav
         onNextClick={onNextClick}
