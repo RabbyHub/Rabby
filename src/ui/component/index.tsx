@@ -11,3 +11,4 @@ export { default as PageHeader } from './PageHeader';
 export { default as Field } from './Field';
 export { default as AddAddressOptions } from './AddAddressOptions';
 export { default as ChainSelector } from './ChainSelector';
+export { default as Uploader } from './Uploader';

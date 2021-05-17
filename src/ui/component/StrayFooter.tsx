@@ -14,7 +14,7 @@ export interface StrayFooterNavProps {
   backDisabled?: boolean;
   nextDisabled?: boolean;
   hasBack?: boolean;
-  withDivider?: boolean;
+  hasDivider?: boolean;
   className?: string;
   NextButtonText?: string;
 }
@@ -41,7 +41,7 @@ const StrayFooterNav = memo(
     backDisabled,
     nextDisabled,
     hasBack = false,
-    withDivider = false,
+    hasDivider = false,
     NextButtonText = 'Next',
     className,
   }: StrayFooterNavProps) => {
@@ -59,7 +59,7 @@ const StrayFooterNav = memo(
         <div
           className={cx(
             'py-24 px-20 w-full flex justify-center',
-            withDivider && ['bg-white', 'border-gray-divider', 'border-t']
+            hasDivider && ['bg-white', 'border-gray-divider', 'border-t']
           )}
         >
           {hasBack && (

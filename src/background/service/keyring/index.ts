@@ -125,12 +125,15 @@ class KeyringService extends EventEmitter {
    * @param {string} privateKey - The privateKey to generate address
    * @returns {Promise<Object>} A Promise that resolves to the state.
    */
-  importPrivateKey(privateKey: string): Promise<MemStoreState> {
+  importPrivateKey(privateKey: string): Promise<string> {
+    let currentAccount;
+
     return this.persistAllKeyrings()
       .then(this.addNewKeyring.bind(this, 'Simple Key Pair', [privateKey]))
       .then(this.persistAllKeyrings.bind(this))
       .then(this.setUnlocked.bind(this))
-      .then(this.fullUpdate.bind(this));
+      .then(this.fullUpdate.bind(this))
+      .then(() => currentAccount);
   }
 
   generateMnemonic(): string {

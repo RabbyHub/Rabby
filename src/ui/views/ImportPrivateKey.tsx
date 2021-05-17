@@ -1,36 +1,43 @@
 import React from 'react';
 import { Input, Form } from 'antd';
+import { useLocation, useHistory } from 'react-router-dom';
 import { StrayPageWithButton } from 'ui/component';
-import { useWallet, useApproval } from 'ui/utils';
+import { useWallet } from 'ui/utils';
 
 const ImportPrivateKey = () => {
-  const [form] = Form.useForm();
+  const { state } = useLocation<{
+    getFirstPage(): string[];
+    getNextPage(): string[];
+    getPreviousPage(): string[];
+  }>();
+  const history = useHistory();
+
   const wallet = useWallet();
-  const [, resolveApproval] = useApproval();
 
   const onSubmit = async ({ key }) => {
     try {
       await wallet.importPrivateKey(key);
-
-      resolveApproval();
+      history.push('/dashboard');
     } catch (err) {
       console.error('err', err);
     }
   };
-  console.log(form.getFieldsError());
+
   return (
     <StrayPageWithButton
       header={{
-        title: 'Import Private Key',
+        secondTitle: 'Import Private Key',
         subTitle: 'Please input your private key below',
       }}
       onSubmit={onSubmit}
+      hasBack
+      hasDivider
     >
       <Form.Item
         name="key"
         rules={[{ required: true, message: 'Please input Private key' }]}
       >
-        <Input placeholder="Private key" />
+        <Input placeholder="Private key" size="large" />
       </Form.Item>
     </StrayPageWithButton>
   );

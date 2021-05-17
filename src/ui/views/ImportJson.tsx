@@ -1,47 +1,53 @@
 import React from 'react';
-import { Input, Form, Upload, Button } from 'antd';
-import { StrayPageWithButton } from 'ui/component';
+import { Input, Form } from 'antd';
+import { useLocation, useHistory } from 'react-router-dom';
+import { StrayPageWithButton, Uploader } from 'ui/component';
 import { useWallet } from 'ui/utils';
 
 const ImportJson = () => {
+  const history = useHistory();
   const [form] = Form.useForm();
   const wallet = useWallet();
 
   const onSubmit = async ({ keyStore, password }) => {
     await wallet.importJson(keyStore, password);
+    history.push('/dashboard');
   };
 
   return (
     <StrayPageWithButton
       header={{
-        title: 'Import Private Key',
-        subTitle: 'Please input your private key below',
+        secondTitle: 'Import Private Key',
+        subTitle:
+          'Please select the JSON file you want to import and enter the corresponding password',
       }}
       onSubmit={onSubmit}
       form={form}
+      hasBack
+      hasDivider
     >
-      <Form.Item name="keyStore" valuePropName="file">
-        <Upload
-          beforeUpload={(file) => {
+      <Form.Item
+        className="mx-auto mt-32 mb-[56px]"
+        name="keyStore"
+        valuePropName="file"
+      >
+        <Uploader
+          className="mx-auto w-[260px] h-[128px]"
+          onChange={({ file }) => {
             const reader = new FileReader();
-
             reader.onload = (e) => {
               form.setFieldsValue({ keyStore: e.target?.result });
             };
-            reader.readAsText(file);
 
-            // Prevent upload
-            return false;
+            reader.readAsText(file);
           }}
-        >
-          <Button>Select a JSON file</Button>
-        </Upload>
+        />
       </Form.Item>
       <Form.Item
         name="password"
         rules={[{ required: true, message: 'Please input your password' }]}
       >
-        <Input placeholder="Password" />
+        <Input placeholder="Password" type="password" size="large" />
       </Form.Item>
     </StrayPageWithButton>
   );

@@ -63,4 +63,5 @@ module.exports = {
   },
   // use media-query prefers-color-scheme
   darkMode: 'media',
+  important: true,
 };

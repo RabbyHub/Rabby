@@ -51,7 +51,7 @@ const TiledSelect = ({
 
   return (
     <div className={className}>
-      <div className="h-[165px] rounded-lg bg-white text-center font-medium mb-16 p-12 overflow-y-auto">
+      <div className="h-full rounded-lg bg-white text-center font-medium mb-16 p-12 overflow-y-auto">
         {_value &&
           _value.map((v, i) => (
             <div

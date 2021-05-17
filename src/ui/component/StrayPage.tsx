@@ -35,7 +35,7 @@ export const StrayPageWithButton = ({
   backDisabled,
   nextDisabled,
   hasBack,
-  withDivider,
+  hasDivider,
   initialValues,
 }: StrayPageWithButtonProps & StrayFooterNavProps) => (
   <StrayPage header={header}>
@@ -47,7 +47,7 @@ export const StrayPageWithButton = ({
         backDisabled={backDisabled}
         nextDisabled={nextDisabled}
         hasBack={hasBack}
-        withDivider={withDivider}
+        hasDivider={hasDivider}
       />
     </Form>
   </StrayPage>

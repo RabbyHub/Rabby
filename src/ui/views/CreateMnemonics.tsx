@@ -34,7 +34,7 @@ const DisplayMnemonic = ({ mnemonics, onNextClick }) => (
       subTitle: `Make sure you have backed up your mnemonics properly before clicking Next. Don't tell anyone the mnemonic`,
     }}
     hasBack
-    withDivider
+    hasDivider
     onNextClick={onNextClick}
   >
     <div
@@ -71,7 +71,7 @@ const VerifyMnemonics = ({ mnemonics, onBackClick }) => {
       }}
       onSubmit={onSubmit}
       hasBack
-      withDivider
+      hasDivider
       onBackClick={onBackClick}
       initialValues={{
         mnemonics: mnemonics.split(' '),
@@ -91,7 +91,7 @@ const VerifyMnemonics = ({ mnemonics, onBackClick }) => {
           },
         ]}
       >
-        <TiledSelect options={randomMnemonics} />
+        <TiledSelect className="h-[165px]" options={randomMnemonics} />
       </Form.Item>
     </StrayPageWithButton>
   );

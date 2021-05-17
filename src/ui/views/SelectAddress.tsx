@@ -1,17 +1,14 @@
 import React from 'react';
 import { Form, Input } from 'antd';
 import { StrayPageWithButton } from 'ui/component';
-import { useWallet, useApproval } from 'ui/utils';
+import { useWallet } from 'ui/utils';
 
-const ImportMnemonic = () => {
+const SelectAddress = () => {
   const wallet = useWallet();
-  const [, resolveApproval] = useApproval();
 
   const onSubmit = async ({ mnemonics }) => {
     try {
       await wallet.importMnemonics(mnemonics.trim());
-
-      resolveApproval();
     } catch (err) {
       console.error('err', err);
     }
@@ -30,12 +27,11 @@ const ImportMnemonic = () => {
       <Form.Item
         name="mnemonics"
         rules={[{ required: true, message: 'Please input Mnemonics' }]}
-        className="mt-[56px]"
       >
-        <Input.TextArea className="h-[124px]" placeholder="Import Mnemonics" />
+        <Input.TextArea placeholder="Mnemonics" />
       </Form.Item>
     </StrayPageWithButton>
   );
 };
 
-export default ImportMnemonic;
+export default SelectAddress;

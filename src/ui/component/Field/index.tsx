@@ -3,7 +3,7 @@ import './style.less';
 
 interface FieldProps {
   children: ReactNode;
-  leftIcon: ReactNode;
+  leftIcon?: ReactNode;
   rightIcon: ReactNode;
   onClick?(): void;
 }
@@ -15,7 +15,7 @@ const Field = ({ children, leftIcon, rightIcon, onClick }: FieldProps) => {
       onClick={onClick}
       style={{ cursor: onClick ? 'pointer' : 'initial' }}
     >
-      <div className="left-icon">{leftIcon}</div>
+      {leftIcon && <div className="left-icon">{leftIcon}</div>}
       <div className="field-slot">{children}</div>
       <div className="right-icon">{rightIcon}</div>
     </div>

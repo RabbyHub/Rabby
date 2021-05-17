@@ -65,7 +65,8 @@ export class WalletController extends BaseController {
     }
 
     const privateKey = ethUtil.stripHexPrefix(prefixed);
-    return keyringService.importPrivateKey(privateKey);
+    const account = keyringService.importPrivateKey(privateKey);
+    preference.setCurrentAccount(account);
   };
 
   // json format is from "https://github.com/SilentCicero/ethereumjs-accounts"
@@ -86,6 +87,14 @@ export class WalletController extends BaseController {
   importMnemonics = async (seed) => {
     const account = await keyringService.importMnemonics(seed);
     preference.setCurrentAccount(account);
+  };
+
+  getTypedAccounts = async (type) => {
+    return Promise.all(
+      keyringService.keyrings
+        .filter((keyring) => !type || keyring.type === type)
+        .map((keyring) => keyringService.displayForKeyring(keyring))
+    );
   };
 
   getAllClassAccounts: () => Promise<

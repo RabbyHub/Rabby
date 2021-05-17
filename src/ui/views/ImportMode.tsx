@@ -1,42 +1,52 @@
-import React from 'react';
-import { useState, useCallback } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
-import { Button } from 'antd';
-import { StrayFooter } from 'ui/component';
+import { Switch } from 'antd';
+import { StrayPageWithButton, Field } from 'ui/component';
 import { useWallet } from 'ui/utils';
+import { KEYRING_CLASS } from 'background/service/keyring';
+import IconChecked from 'ui/assets/checked.svg';
+import IconNotChecked from 'ui/assets/not-checked.svg';
 
-const entries = [
-  {
-    name: 'key',
-    label: 'Import Private Key',
-  },
-  {
-    name: 'mnemonics',
-    label: 'Import Mnemonics',
-  },
-  {
-    name: 'json',
-    label: 'Import JSON File',
-  },
-  {
-    name: 'hardware',
-    label: 'Connect hardware',
-  },
-];
-
-const ImportEntry = () => {
+const ImportMode = () => {
   const history = useHistory();
-  const [mode, setMode] = useState('');
+  const [currentMode, setCurrentMode] = useState('');
   const wallet = useWallet();
+  const [modes, setModes] = useState([
+    {
+      name: 'key',
+      label: 'Import Private Key',
+    },
+    {
+      name: 'json',
+      label: 'Import JSON File',
+    },
+  ]);
+
+  const loadMnemonics = async () => {
+    const accounts = await wallet.getTypedAccounts(KEYRING_CLASS.MNEMONIC);
+
+    console.log('accounts', accounts);
+    if (!accounts?.length) {
+      modes.splice(1, 0, {
+        name: 'mnemonics',
+        label: 'Import Mnemonics',
+      });
+      setModes([...modes]);
+    }
+  };
+
+  useEffect(() => {
+    loadMnemonics();
+  }, []);
 
   const chooseImportMode = (mode) => {
-    setMode(mode);
+    setCurrentMode(currentMode === mode ? '' : mode);
   };
 
   const handleNext = () => {
-    const route = `/import/${mode}`;
+    const route = `/import/${currentMode}`;
 
-    if (mode === 'hardware') {
+    if (currentMode === 'hardware') {
       wallet.openIndexPage(route);
       return;
     }
@@ -45,27 +55,34 @@ const ImportEntry = () => {
   };
 
   return (
-    <>
-      <h4 className="font-bold">How You Want to Import</h4>
-      <p className="text-xs mt-2">
-        Please select from the options below which method you would like to
-        import the address
-      </p>
-      <div className="pt-8 space-y-4">
-        {entries.map((e) => (
-          <Button
-            block
+    <StrayPageWithButton
+      header={{
+        secondTitle: 'How You Want to Import',
+        subTitle:
+          'Please select from the options below which method you would like to import the address',
+      }}
+      nextDisabled={!currentMode}
+      onNextClick={handleNext}
+      hasBack
+      hasDivider
+    >
+      <div className="mt-32">
+        {modes.map((e) => (
+          <Field
             key={e.name}
-            type={mode === e.name ? 'primary' : undefined}
-            onClick={() => chooseImportMode(e.name)}
+            rightIcon={
+              <img
+                onClick={() => chooseImportMode(e.name)}
+                src={currentMode === e.name ? IconChecked : IconNotChecked}
+              />
+            }
           >
-            {e.label}
-          </Button>
+            <div>{e.label}</div>
+          </Field>
         ))}
       </div>
-      <StrayFooter.Nav nextDisabled={!mode} onNextClick={handleNext} />
-    </>
+    </StrayPageWithButton>
   );
 };
 
-export default ImportEntry;
+export default ImportMode;
