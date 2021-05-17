@@ -2,8 +2,9 @@
 import { storage } from 'background/webapi';
 import { debounce } from 'debounce';
 
-const persistStorage = (name: string, obj: object) =>
+const persistStorage = (name: string, obj: object) => {
   debounce(storage.set(name, obj), 1000);
+};
 
 interface CreatePersistStoreParams<T> {
   name: string;
@@ -19,7 +20,11 @@ const createPersistStore = async <T extends object>({
   let tpl = template;
 
   if (fromStorage) {
-    tpl = (await storage.get(name)) || template;
+    const storageCache = await storage.get(name);
+    tpl = storageCache || template;
+    if (!storageCache) {
+      await storage.set(name, tpl);
+    }
   }
 
   const createProxy = <A extends object>(obj: A): A =>

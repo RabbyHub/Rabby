@@ -7,11 +7,13 @@ import {
   notification,
   permission,
   session,
+  chainService,
 } from 'background/service';
 import { openIndexPage } from 'background/webapi/tab';
 import { KEYRING_CLASS, DisplayedKeryring } from 'background/service/keyring';
 import { addHexPrefix } from 'background/utils';
 import BaseController from './base';
+import { CHAINS_ENUM } from 'consts';
 
 export class WalletController extends BaseController {
   boot = (password) => keyringService.boot(password);
@@ -27,6 +29,10 @@ export class WalletController extends BaseController {
     keyringService.setLocked();
     session.broadcastEvent('disconnect');
   };
+
+  getEnableChains = () => chainService.getEnabledChains();
+  enableChain = (id: CHAINS_ENUM) => chainService.enableChain(id);
+  disableChain = (id: CHAINS_ENUM) => chainService.disableChain(id);
 
   getConnectedSites = permission.getConnectedSites;
   getRecentConnectedSites = permission.getRecentConnectSites;

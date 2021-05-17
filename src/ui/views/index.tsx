@@ -18,6 +18,7 @@ import CreatePassword from './CreatePassword';
 import NoAddress from './NoAddress';
 import CreateMnemonics from './CreateMnemonics';
 import AddAddress from './AddAddress';
+import ChainManagement from './ChainManagement';
 
 ReactGA.initialize('UA-196541140-1');
 // eslint-disable-next-line @typescript-eslint/no-empty-function
@@ -83,6 +84,9 @@ const Main = () => {
         </Route>
         <Route exact path="/settings/sites">
           <ConnectedSites />
+        </Route>
+        <Route exact path="/settings/chain">
+          <ChainManagement />
         </Route>
 
         <Route path="/">
