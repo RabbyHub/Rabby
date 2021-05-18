@@ -18,6 +18,8 @@ import { CHAINS_ENUM } from 'consts';
 export class WalletController extends BaseController {
   boot = (password) => keyringService.boot(password);
   isBooted = () => keyringService.isBooted();
+  verifyPassword = (password: string) =>
+    keyringService.verifyPassword(password);
 
   getApproval = notification.getApproval;
   resolveApproval = notification.resolveApproval;
@@ -87,6 +89,12 @@ export class WalletController extends BaseController {
     const account = await keyringService.importMnemonics(seed);
     preference.setCurrentAccount(account);
   };
+
+  getHiddenAddresses = () => preference.getHiddenAddresses();
+  showAddress = (type: string, address: string) =>
+    preference.showAddress(type, address);
+  hideAddress = (type: string, address: string) =>
+    preference.hideAddress(type, address);
 
   getAllClassAccounts: () => Promise<
     Record<string, DisplayedKeryring[]>

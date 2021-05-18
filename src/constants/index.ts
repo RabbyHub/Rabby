@@ -53,6 +53,11 @@ export const CHAINS = {
 };
 
 export const KEYRING_TYPE = {
-  'HD Key Tree': 'Mnemonics addresses',
-  'Simple Key Pair': 'Private key addresses',
+  HdKeyring: 'HD Key Tree',
+  SimpleKeyring: 'Simple Key Pair',
+};
+
+export const KEYRING_TYPE_TEXT = {
+  [KEYRING_TYPE.HdKeyring]: 'Mnemonics addresses',
+  [KEYRING_TYPE.SimpleKeyring]: 'Private key addresses',
 };

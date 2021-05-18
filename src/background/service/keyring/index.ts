@@ -43,6 +43,7 @@ interface MemStoreState {
 export interface DisplayedKeryring {
   type: string;
   accounts: string[];
+  keyring: any;
 }
 
 class KeyringService extends EventEmitter {
@@ -767,6 +768,7 @@ class KeyringService extends EventEmitter {
       return {
         type: keyring.type,
         accounts: accounts.map(normalizeAddress),
+        keyring,
       };
     });
   }
