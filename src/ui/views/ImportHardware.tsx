@@ -1,7 +1,8 @@
 import React, { useState, useRef } from 'react';
 import { Button, Checkbox, Form, Select } from 'antd';
-import { StrayPageWithButton } from '../component';
-import { useWallet } from '../utils';
+import { StrayFooter, StrayHeader } from 'ui/component';
+import { useWallet } from 'ui/utils';
+import { IconLedger, IconOnekey, IconTrezor } from 'ui/assets';
 
 const { Option } = Select;
 
@@ -24,12 +25,7 @@ const AccountChoose = ({
   };
 
   return (
-    <StrayPageWithButton
-      header={{
-        title: 'import',
-      }}
-      onSubmit={onSubmit}
-    >
+    <Form onFinish={onSubmit}>
       <div>
         <Form.Item
           name="accounts"
@@ -54,9 +50,24 @@ const AccountChoose = ({
         </Button>
         <Button onClick={handleNextPage}>next</Button>
       </div>
-    </StrayPageWithButton>
+    </Form>
   );
 };
+
+const HARDWARES = [
+  {
+    icon: IconLedger,
+    label: 'Ledger',
+  },
+  {
+    icon: IconTrezor,
+    label: 'Trezor',
+  },
+  {
+    icon: IconOnekey,
+    label: 'Onekey',
+  },
+];
 
 const ImportHardware = () => {
   const keyringRef = useRef<any>();
@@ -87,34 +98,28 @@ const ImportHardware = () => {
   };
 
   return (
-    <>
-      <h4 className="font-bold">Connect hardware</h4>
-      <p className="text-xs mt-2">Please select your hardware</p>
-      <Form onFinish={onSubmit} form={form}>
-        <Form.Item name="hardware">
-          <Select>
-            <Option value="trezor">trezor</Option>
-            <Option value="ledger">ledger</Option>
-          </Select>
-        </Form.Item>
-        {!accounts && error && (
-          <div className="text-red-700 text-lg">{error}</div>
-        )}
-        {!accounts && (
-          <Button type="primary" htmlType="submit">
-            Connect
-          </Button>
-        )}
-      </Form>
-      {accounts && (
-        <AccountChoose
-          hardware={form.getFieldValue('hardware')}
-          accounts={accounts}
-          handleNextPage={handleNextPage}
-          handlePreviousPage={handlePreviousPage}
-        />
-      )}
-    </>
+    <div className="bg-gray-bg w-[993px] h-[519px] mt-[150px] rounded-md mx-auto pt-[60px]">
+      <StrayHeader
+        title="Connect Hardware Wallet"
+        subTitle="Select a hardware wallet you'd ike to use"
+        center
+        className="mb-[60px]"
+      />
+      <div className="flex mb-[60px]">
+        {HARDWARES.map((hardware) => (
+          <div key={hardware.label}>
+            <div className="rounded-full w-[128px] h-[128px] bg-white">
+              <img src={hardware.icon} />
+            </div>
+            <div>{hardware.label}</div>
+          </div>
+        ))}
+      </div>
+      <div className="text-center text-gray-content text-14">
+        If you are using a hardware wallet with a camera on it, you should use
+        watch address instead.
+      </div>
+    </div>
   );
 };
 

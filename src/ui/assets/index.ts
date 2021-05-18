@@ -3,4 +3,7 @@ export { default as IconImportSuccess } from './import-success.svg';
 export { default as IconUploader } from './uploader.svg';
 export { default as IconCross } from './cross.svg';
 export { default as IconChecked } from './checked.svg';
+export { default as IconLedger } from './ledger.svg';
+export { default as IconTrezor } from './trezor.svg';
+export { default as IconOnekey } from './onekey.svg';
 export { default as IconNotChecked } from './not-checked.svg';
