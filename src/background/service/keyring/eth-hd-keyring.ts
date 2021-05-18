@@ -78,6 +78,7 @@ class HdKeyring extends SimpleKeyring {
       newWallets.push(wallet);
       this.wallets.push(wallet);
     }
+
     const hexWallets = newWallets.map((w) => {
       return sigUtil.normalize(w.getAddress().toString('hex'));
     });
@@ -118,7 +119,7 @@ class HdKeyring extends SimpleKeyring {
   }> {
     this.page += increment;
 
-    if (this.page <= 0) {
+    if (!this.page || this.page <= 0) {
       this.page = 1;
     }
 

@@ -24,16 +24,7 @@
         &:nth-last-child(1)::after {
           display: none;
         }
-        .address-info {
-          display: flex;
-          .balance {
-            color: #3B3E4A;
-            font-size: 15px;
-            font-weight: 500;
-            margin-right: 8px;
-          }
-        }
-        &.hidden {
+        &.disable {
           opacity: .4;
         }
       }
@@ -47,5 +38,15 @@
         }
       }
     }
+  }
+}
+
+.address-info {
+  display: flex;
+  .balance {
+    color: #3b3e4a;
+    font-size: 15px;
+    font-weight: 500;
+    margin-right: 8px;
   }
 }

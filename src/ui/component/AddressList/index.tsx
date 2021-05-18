@@ -16,43 +16,57 @@ interface AddressListProps {
   onClick?(account: string, keyring: any): void;
 }
 
-const AddressList = ({
+const AddressItem = ({
+  account,
+  keyring,
+  ActionButton,
+  hiddenAddresses = [],
+  className,
+  onClick,
+}: {
+  account: string;
+  keyring?: any;
+  ActionButton?: AddressListProps['ActionButton'];
+  className?: string;
+  hiddenAddresses?: { type: string; address: string }[];
+  onClick?(account: string, keyring: any): void;
+}) => {
+  return (
+    <li
+      className={clsx(className, {
+        disable: hiddenAddresses.find(
+          (item) => item.address === account && item.type === keyring.type
+        ),
+      })}
+      onClick={() => onClick && onClick(account, keyring)}
+    >
+      <div className="address-info">
+        <span className="balance">${splitNumberByStep(1000)}</span>
+        <AddressViewer
+          address={account}
+          showArrow={false}
+          className="subtitle"
+        />
+      </div>
+      <div className="action-button flex items-center">
+        {ActionButton && <ActionButton data={account} keyring={keyring} />}
+      </div>
+    </li>
+  );
+};
+
+interface CompoundedComponent
+  extends React.FunctionComponent<AddressListProps> {
+  AddressItem: typeof AddressItem;
+}
+
+const AddressList: CompoundedComponent = ({
   list,
   action = 'switch',
   ActionButton,
   onClick,
   hiddenAddresses = [],
 }: AddressListProps) => {
-  const AddressItem = ({
-    account,
-    keyring,
-  }: {
-    account: string;
-    keyring: any;
-  }) => {
-    return (
-      <li
-        className={clsx({
-          hidden: hiddenAddresses.find(
-            (item) => item.address === account && item.type === keyring.type
-          ),
-        })}
-        onClick={() => onClick && onClick(account, keyring)}
-      >
-        <div className="address-info">
-          <span className="balance">${splitNumberByStep(1000)}</span>
-          <AddressViewer
-            address={account}
-            showArrow={false}
-            className="subtitle"
-          />
-        </div>
-        <div className="action-button flex items-center">
-          <ActionButton data={account} keyring={keyring} />
-        </div>
-      </li>
-    );
-  };
   const GroupItem = ({
     group,
     name,
@@ -66,7 +80,14 @@ const AddressList = ({
         <ul className="addresses">
           {group.map(({ accounts, keyring }) =>
             accounts.map((account) => (
-              <AddressItem key={account} account={account} keyring={keyring} />
+              <AddressItem
+                key={account}
+                account={account}
+                keyring={keyring}
+                ActionButton={ActionButton}
+                onClick={onClick}
+                hiddenAddresses={hiddenAddresses}
+              />
             ))
           )}
         </ul>
@@ -82,5 +103,7 @@ const AddressList = ({
     </ul>
   );
 };
+
+AddressList.AddressItem = AddressItem;
 
 export default AddressList;

@@ -1,7 +1,7 @@
 .field {
   display: flex;
   padding: 12px;
-  min-height: 56px; 
+  min-height: 56px;
   justify-content: space-between;
   background: #FFFFFF;
   border-radius: 6px;
@@ -11,5 +11,9 @@
     align-items: center;
     flex: 1;
     margin-left: 12px;
+  }
+
+  &+.field {
+    margin-top: 12px;
   }
 }
