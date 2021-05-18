@@ -5,43 +5,45 @@ import { splitNumberByStep } from 'ui/utils/number';
 import { KEYRING_TYPE } from 'consts';
 import './style.less';
 
-type ACTION = 'management' | 'switch';
-
 interface AddressListProps {
-  action?: ACTION;
   list: Record<string, DisplayedKeryring[]>;
   ActionButton: FunctionComponent<{ data: string }>;
 }
-{
-  [
-    {
-      type: 'a',
-      accounts: [],
-    },
-  ];
-}
-const AddressList = ({
-  list,
-  action = 'switch',
+
+const AddressItem = ({
+  account,
   ActionButton,
-}: AddressListProps) => {
-  const AddressItem = ({ account }: { account: string }) => {
-    return (
-      <li>
-        <div className="address-info">
-          <span className="balance">${splitNumberByStep(1000)}</span>
-          <AddressViewer
-            address={account}
-            showArrow={false}
-            className="subtitle"
-          />
-        </div>
+  className,
+}: {
+  account: string;
+  ActionButton?: AddressListProps['ActionButton'];
+  className?: string;
+}) => {
+  return (
+    <li className={className}>
+      <div className="address-info">
+        <span className="balance">${splitNumberByStep(1000)}</span>
+        <AddressViewer
+          address={account}
+          showArrow={false}
+          className="subtitle"
+        />
+      </div>
+      {ActionButton && (
         <div className="action-button">
           <ActionButton data={account} />
         </div>
-      </li>
-    );
-  };
+      )}
+    </li>
+  );
+};
+
+interface CompoundedComponent
+  extends React.FunctionComponent<AddressListProps> {
+  AddressItem: typeof AddressItem;
+}
+
+const AddressList: CompoundedComponent = ({ list, ActionButton }) => {
   const GroupItem = ({
     group,
     name,
@@ -55,7 +57,11 @@ const AddressList = ({
         <ul className="addresses">
           {group.map(({ accounts }) =>
             accounts.map((account) => (
-              <AddressItem key={account} account={account} />
+              <AddressItem
+                key={account}
+                account={account}
+                ActionButton={ActionButton}
+              />
             ))
           )}
         </ul>
@@ -71,5 +77,7 @@ const AddressList = ({
     </ul>
   );
 };
+
+AddressList.AddressItem = AddressItem;
 
 export default AddressList;

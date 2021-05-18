@@ -101,39 +101,24 @@ class KeyringService extends EventEmitter {
   }
 
   /**
-   * Create New Vault And Keychain
-   *
-   * Destroys any old encrypted storage,
-   * creates a new encrypted store
-   * randomly creates a new HD wallet with 1 account,
-   *
-   * @emits KeyringController#unlock
-   * @returns {Promise<Object>} A Promise that resolves to the state.
-   */
-  createNewVaultInMnenomic(): Promise<MemStoreState> {
-    return this.persistAllKeyrings()
-      .then(this.createFirstKeyTree.bind(this))
-      .then(this.persistAllKeyrings.bind(this))
-      .then(this.setUnlocked.bind(this))
-      .then(this.fullUpdate.bind(this));
-  }
-
-  /**
    * Import Keychain using Private key
    *
    * @emits KeyringController#unlock
    * @param {string} privateKey - The privateKey to generate address
    * @returns {Promise<Object>} A Promise that resolves to the state.
    */
-  importPrivateKey(privateKey: string): Promise<string> {
-    let currentAccount;
+  importPrivateKey(privateKey: string): Promise<any> {
+    let keyring;
 
     return this.persistAllKeyrings()
       .then(this.addNewKeyring.bind(this, 'Simple Key Pair', [privateKey]))
-      .then(this.persistAllKeyrings.bind(this))
+      .then((_keyring) => {
+        keyring = _keyring;
+        return this.persistAllKeyrings.bind(this);
+      })
       .then(this.setUnlocked.bind(this))
       .then(this.fullUpdate.bind(this))
-      .then(() => currentAccount);
+      .then(() => keyring);
   }
 
   generateMnemonic(): string {
@@ -150,12 +135,12 @@ class KeyringService extends EventEmitter {
    * @param {string} seed - The BIP44-compliant seed phrase.
    * @returns {Promise<Object>} A Promise that resolves to the state.
    */
-  importMnemonics(seed: string): Promise<string> {
+  importMnemonics(seed: string): Promise<any> {
     if (!bip39.validateMnemonic(seed)) {
-      return Promise.reject(new Error('Seed phrase is invalid.'));
+      return Promise.reject(new Error('mnemonic phrase is invalid.'));
     }
 
-    let currentAccount;
+    let keyring;
     return this.persistAllKeyrings()
       .then(() => {
         return this.addNewKeyring('HD Key Tree', {
@@ -164,19 +149,36 @@ class KeyringService extends EventEmitter {
         });
       })
       .then((firstKeyring) => {
+        keyring = firstKeyring;
         return firstKeyring.getAccounts();
       })
       .then(([firstAccount]) => {
         if (!firstAccount) {
           throw new Error('KeyringController - First Account not found.');
         }
-        currentAccount = firstAccount;
         return null;
       })
       .then(this.persistAllKeyrings.bind(this))
       .then(this.setUnlocked.bind(this))
       .then(this.fullUpdate.bind(this))
-      .then(() => currentAccount);
+      .then(() => keyring);
+  }
+
+  addKeyring(keyring) {
+    return keyring
+      .getAccounts()
+      .then((accounts) => {
+        return this.checkForDuplicate(keyring.type, accounts);
+      })
+      .then(() => {
+        this.keyrings.push(keyring);
+        return this.persistAllKeyrings();
+      })
+      .then(() => this._updateMemStoreKeyrings())
+      .then(() => this.fullUpdate())
+      .then(() => {
+        return keyring;
+      });
   }
 
   /**
@@ -256,20 +258,7 @@ class KeyringService extends EventEmitter {
   addNewKeyring(type: string, opts?: unknown): Promise<any> {
     const Keyring = this.getKeyringClassForType(type);
     const keyring = new Keyring(opts);
-    return keyring
-      .getAccounts()
-      .then((accounts) => {
-        return this.checkForDuplicate(type, accounts);
-      })
-      .then(() => {
-        this.keyrings.push(keyring);
-        return this.persistAllKeyrings();
-      })
-      .then(() => this._updateMemStoreKeyrings())
-      .then(() => this.fullUpdate())
-      .then(() => {
-        return keyring;
-      });
+    return this.addKeyring(keyring);
   }
 
   /**

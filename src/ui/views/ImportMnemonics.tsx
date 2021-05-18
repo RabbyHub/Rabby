@@ -1,17 +1,22 @@
 import React from 'react';
 import { Form, Input } from 'antd';
+import { useHistory } from 'react-router-dom';
 import { StrayPageWithButton } from 'ui/component';
-import { useWallet, useApproval } from 'ui/utils';
+import { useWallet } from 'ui/utils';
 
 const ImportMnemonic = () => {
+  const history = useHistory();
   const wallet = useWallet();
-  const [, resolveApproval] = useApproval();
 
   const onSubmit = async ({ mnemonics }) => {
     try {
-      await wallet.importMnemonics(mnemonics.trim());
-
-      resolveApproval();
+      const keyring = wallet.generateKeyringWithMnemonic(mnemonics.trim());
+      history.push({
+        pathname: '/import/select-address',
+        state: {
+          keyring,
+        },
+      });
     } catch (err) {
       console.error('err', err);
     }

@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useWallet } from './WalletContext';
 import { isNotification } from './index';
@@ -52,4 +52,52 @@ export const usePopupOpen = () => {
 
     window.addEventListener('beforeunload', beforeunload);
   }, []);
+};
+
+export const useSelectOption = (onChange?, value?, defaultValue?) => {
+  const isControlled = useRef(typeof value !== 'undefined').current;
+  const [_value, setValue] = useState(
+    (isControlled ? value : defaultValue) || []
+  );
+
+  useEffect(() => {
+    if (!isControlled) {
+      return;
+    }
+
+    // shallow compare
+    if (value && _value.some((x, i) => x !== value[i])) {
+      setValue(value);
+    }
+  }, [value]);
+
+  const handleRemove = (idx: number) => {
+    _value.splice(idx, 1);
+    setValue((_value) => [..._value]);
+    onChange && onChange(_value);
+  };
+
+  const handleChoose = (op: string) => {
+    if (_value.includes(op)) {
+      return;
+    }
+
+    _value.push(op);
+    setValue((_value) => [..._value]);
+    onChange && onChange(_value);
+  };
+
+  const handleToggle = (op: string) => {
+    const opIndex = _value.indexOf(op);
+    if (opIndex > -1) {
+      handleRemove(opIndex);
+      return;
+    }
+
+    _value.push(op);
+    setValue((_value) => [..._value]);
+    onChange && onChange(_value);
+  };
+
+  return [_value, handleRemove, handleChoose, handleToggle];
 };

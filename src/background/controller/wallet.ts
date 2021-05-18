@@ -1,6 +1,7 @@
 import * as ethUtil from 'ethereumjs-util';
 import Wallet, { thirdparty } from 'ethereumjs-wallet';
 import { ethErrors } from 'eth-rpc-errors';
+import * as bip39 from 'bip39';
 import {
   keyringService,
   preference,
@@ -16,6 +17,7 @@ import BaseController from './base';
 import { CHAINS_ENUM } from 'consts';
 
 export class WalletController extends BaseController {
+  /* wallet */
   boot = (password) => keyringService.boot(password);
   isBooted = () => keyringService.isBooted();
 
@@ -29,10 +31,18 @@ export class WalletController extends BaseController {
     keyringService.setLocked();
     session.broadcastEvent('disconnect');
   };
+  setPopupOpen = (isOpen) => {
+    preference.setPopupOpen(isOpen);
+  };
+  openIndexPage = openIndexPage;
+
+  /* chains */
 
   getEnableChains = () => chainService.getEnabledChains();
   enableChain = (id: CHAINS_ENUM) => chainService.enableChain(id);
   disableChain = (id: CHAINS_ENUM) => chainService.disableChain(id);
+
+  /* connectedSites */
 
   getConnectedSites = permission.getConnectedSites;
   getRecentConnectedSites = permission.getRecentConnectSites;
@@ -43,17 +53,8 @@ export class WalletController extends BaseController {
   updateConnectSite = permission.updateConnectSite;
   removeConnectedSite = permission.removeConnectedSite;
 
-  generateMnemonic = () => keyringService.generateMnemonic();
+  /* keyrings */
 
-  getCurrentMnemonics = async () => {
-    const keyring = this._getKeyringByType(KEYRING_CLASS.MNEMONIC);
-    const serialized = await keyring.serialize();
-    const seedWords = serialized.mnemonic;
-
-    return seedWords;
-  };
-
-  createNewVaultInMnenomic = () => keyringService.createNewVaultInMnenomic();
   clearKeyrings = () => keyringService.clearKeyrings();
 
   importPrivateKey = async (data) => {
@@ -65,7 +66,8 @@ export class WalletController extends BaseController {
     }
 
     const privateKey = ethUtil.stripHexPrefix(prefixed);
-    const account = keyringService.importPrivateKey(privateKey);
+    const keyring = await keyringService.importPrivateKey(privateKey);
+    const [account] = await keyring.getAccounts();
     preference.setCurrentAccount(account);
   };
 
@@ -84,9 +86,39 @@ export class WalletController extends BaseController {
     return keyringService.importPrivateKey(ethUtil.stripHexPrefix(privateKey));
   };
 
-  importMnemonics = async (seed) => {
-    const account = await keyringService.importMnemonics(seed);
+  generateMnemonic = () => keyringService.generateMnemonic();
+  importMnemonics = async (mnemonic) => {
+    const keyring = await keyringService.importMnemonics(mnemonic);
+    const [account] = await keyring.getAccounts();
     preference.setCurrentAccount(account);
+  };
+
+  generateKeyringWithMnemonic = (mnemonic) => {
+    if (!bip39.validateMnemonic(mnemonic)) {
+      throw new Error('mnemonic phrase is invalid.');
+    }
+
+    const Keyring = keyringService.getKeyringClassForType(
+      KEYRING_CLASS.MNEMONIC
+    );
+
+    return new Keyring({ mnemonic });
+  };
+
+  addKeyring = (keyring) => keyringService.addKeyring(keyring);
+
+  getCurrentMnemonics = async () => {
+    const keyring = this._getKeyringByType(KEYRING_CLASS.MNEMONIC);
+    const serialized = await keyring.serialize();
+    const seedWords = serialized.mnemonic;
+
+    return seedWords;
+  };
+
+  deriveNewAccount = () => {
+    const keyring = this._getKeyringByType(KEYRING_CLASS.MNEMONIC);
+
+    return keyringService.addNewAccount(keyring);
   };
 
   getTypedAccounts = async (type) => {
@@ -114,12 +146,6 @@ export class WalletController extends BaseController {
     }
 
     return result;
-  };
-
-  deriveNewAccount = () => {
-    const keyring = this._getKeyringByType(KEYRING_CLASS.MNEMONIC);
-
-    return keyringService.addNewAccount(keyring);
   };
 
   changeAccount = (account, tabId) => {
@@ -165,12 +191,6 @@ export class WalletController extends BaseController {
     preference.setCurrentAccount(account);
     session.broadcastEvent('accountsChanged', account);
   };
-
-  setPopupOpen = (isOpen) => {
-    preference.setPopupOpen(isOpen);
-  };
-
-  openIndexPage = openIndexPage;
 
   private _getKeyringByType(type) {
     const keyring = keyringService.getKeyringsByType(type)[0];

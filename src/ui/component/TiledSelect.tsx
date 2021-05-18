@@ -1,6 +1,7 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React from 'react';
 import cx from 'clsx';
-import IconCross from 'ui/assets/cross.svg';
+import { useSelectOption } from 'ui/utils';
+import { IconCross } from 'ui/assets';
 
 interface TiledSelectProps {
   defaultValue?: string[];
@@ -17,37 +18,11 @@ const TiledSelect = ({
   onChange,
   className,
 }: TiledSelectProps) => {
-  const isControlled = useRef(typeof value !== 'undefined').current;
-  const [_value, setValue] = useState(
-    (isControlled ? value : defaultValue) || []
+  const [_value, handleRemove, handleChoose] = useSelectOption(
+    onChange,
+    value,
+    defaultValue
   );
-
-  useEffect(() => {
-    if (!isControlled) {
-      return;
-    }
-
-    // shallow compare
-    if (value && _value.some((x, i) => x !== value[i])) {
-      setValue(value);
-    }
-  }, [value]);
-
-  const handleRemove = (idx: number) => {
-    _value.splice(idx, 1);
-    setValue((_value) => [..._value]);
-    onChange && onChange(_value);
-  };
-
-  const handleChoose = (op: string) => {
-    if (_value.includes(op)) {
-      return;
-    }
-
-    _value.push(op);
-    setValue((_value) => [..._value]);
-    onChange && onChange(_value);
-  };
 
   return (
     <div className={className}>

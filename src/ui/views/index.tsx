@@ -6,6 +6,7 @@ import ImportMode from './ImportMode';
 import ImportPrivateKey from './ImportPrivateKey';
 import ImportJson from './ImportJson';
 import ImportMnemonics from './ImportMnemonics';
+import SelectAddress from './SelectAddress';
 import ImportHardware from './ImportHardware';
 import Dashboard from './Dashboard';
 import Settings from './Settings';
@@ -58,6 +59,9 @@ const Main = () => {
         </Route>
         <Route exact path="/import/mnemonics">
           <ImportMnemonics />
+        </Route>
+        <Route exact path="/import/select-address">
+          <SelectAddress />
         </Route>
         <Route exact path="/import/hardware">
           <ImportHardware />
