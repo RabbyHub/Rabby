@@ -24,6 +24,18 @@
         &:nth-last-child(1)::after {
           display: none;
         }
+        &.disable {
+          opacity: .4;
+        }
+      }
+    }
+  }
+  &.switch {
+    & > li {
+      .addresses {
+        & > li {
+          cursor: pointer;
+        }
       }
     }
   }

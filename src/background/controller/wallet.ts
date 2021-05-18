@@ -20,6 +20,8 @@ export class WalletController extends BaseController {
   /* wallet */
   boot = (password) => keyringService.boot(password);
   isBooted = () => keyringService.isBooted();
+  verifyPassword = (password: string) =>
+    keyringService.verifyPassword(password);
 
   getApproval = notification.getApproval;
   resolveApproval = notification.resolveApproval;
@@ -92,6 +94,12 @@ export class WalletController extends BaseController {
     const [account] = await keyring.getAccounts();
     preference.setCurrentAccount(account);
   };
+
+  getHiddenAddresses = () => preference.getHiddenAddresses();
+  showAddress = (type: string, address: string) =>
+    preference.showAddress(type, address);
+  hideAddress = (type: string, address: string) =>
+    preference.hideAddress(type, address);
 
   generateKeyringWithMnemonic = (mnemonic) => {
     if (!bip39.validateMnemonic(mnemonic)) {
