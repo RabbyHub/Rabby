@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
-import { Switch } from 'antd';
 import { StrayPageWithButton, Field } from 'ui/component';
 import { useWallet } from 'ui/utils';
 import { KEYRING_CLASS } from 'background/service/keyring';
@@ -25,7 +24,6 @@ const ImportMode = () => {
   const loadMnemonics = async () => {
     const accounts = await wallet.getTypedAccounts(KEYRING_CLASS.MNEMONIC);
 
-    console.log('accounts', accounts);
     if (!accounts?.length) {
       modes.splice(1, 0, {
         name: 'mnemonics',

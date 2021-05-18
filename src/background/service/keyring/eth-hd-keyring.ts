@@ -10,7 +10,7 @@ const type = 'HD Key Tree';
 interface DeserializeOption {
   hdPath?: string;
   mnemonic?: string;
-  numberOfAccounts?: number;
+  walletIndexes?: number[];
 }
 
 class HdKeyring extends SimpleKeyring {
@@ -22,7 +22,7 @@ class HdKeyring extends SimpleKeyring {
   hdWallet?: hdkey;
   root: hdkey | null = null;
   wallets: Wallet[] = [];
-  _index2wallet: Record<string, [string, Wallet]> = {};
+  _index2wallet: Record<number, [string, Wallet]> = {};
   page = 0;
   perPage = 5;
 
@@ -35,7 +35,7 @@ class HdKeyring extends SimpleKeyring {
   serialize() {
     return Promise.resolve({
       mnemonic: this.mnemonic,
-      numberOfAccounts: this.wallets!.length,
+      walletIndexes: Object.keys(this._index2wallet).map(Number),
       hdPath: this.hdPath,
     });
   }
@@ -50,8 +50,8 @@ class HdKeyring extends SimpleKeyring {
       this.initFromMnemonic(opts.mnemonic);
     }
 
-    if (opts.numberOfAccounts) {
-      return this.addAccounts(opts.numberOfAccounts);
+    if (opts.walletIndexes) {
+      return this.activeAccounts(opts.walletIndexes);
     }
 
     return Promise.resolve([]);
@@ -70,13 +70,19 @@ class HdKeyring extends SimpleKeyring {
       this.initFromMnemonic(bip39.generateMnemonic());
     }
 
-    const oldLen = this.wallets.length;
+    let count = numberOfAccounts;
+    let currentIdx = 0;
     const newWallets: Wallet[] = [];
-    for (let i = oldLen; i < numberOfAccounts + oldLen; i++) {
-      const child = this.root!.deriveChild(i);
-      const wallet = child.getWallet();
-      newWallets.push(wallet);
-      this.wallets.push(wallet);
+
+    while (count) {
+      const [, wallet] = this._addressFromIndex(currentIdx);
+      if (this.wallets.includes(wallet)) {
+        currentIdx++;
+      } else {
+        this.wallets.push(wallet);
+        newWallets.push(wallet);
+        count--;
+      }
     }
 
     const hexWallets = newWallets.map((w) => {
@@ -86,7 +92,7 @@ class HdKeyring extends SimpleKeyring {
     return Promise.resolve(hexWallets);
   }
 
-  activeAccounts(indexes) {
+  activeAccounts(indexes: number[]) {
     const accounts: string[] = [];
     for (const index of indexes) {
       const [address, wallet] = this._addressFromIndex(index);
