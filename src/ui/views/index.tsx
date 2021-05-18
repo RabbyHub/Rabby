@@ -10,7 +10,6 @@ import SelectAddress from './SelectAddress';
 import ImportHardware from './ImportHardware';
 import Dashboard from './Dashboard';
 import Settings from './Settings';
-import Address from './Address';
 import ConnectedSites from './ConnectedSites';
 import Approval from './Approval';
 import SortHat from './SortHat';
@@ -20,6 +19,7 @@ import NoAddress from './NoAddress';
 import CreateMnemonics from './CreateMnemonics';
 import AddAddress from './AddAddress';
 import ChainManagement from './ChainManagement';
+import AddressManagement from './AddressManagement';
 
 ReactGA.initialize('UA-196541140-1');
 // eslint-disable-next-line @typescript-eslint/no-empty-function
@@ -84,7 +84,7 @@ const Main = () => {
           <Settings />
         </Route>
         <Route exact path="/settings/address">
-          <Address />
+          <AddressManagement />
         </Route>
         <Route exact path="/settings/sites">
           <ConnectedSites />

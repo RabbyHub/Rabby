@@ -33,7 +33,7 @@ const SwitchAddress = ({
 
   const getAllKeyrings = async () => {
     const _accounts = await wallet.getAllClassAccounts();
-
+    console.log(_accounts);
     setAccounts(_accounts);
   };
 
@@ -53,7 +53,6 @@ const SwitchAddress = ({
   const SwitchButton = ({ data }: { data: string }) => {
     return (
       <img
-        onClick={() => changeAccount(data)}
         src={currentAccount === data ? IconChecked : IconNotChecked}
         className="icon icon-checked"
       />
@@ -62,7 +61,11 @@ const SwitchAddress = ({
 
   return accounts ? (
     <div className="modal-switch-address">
-      <AddressList list={accounts} ActionButton={SwitchButton} />
+      <AddressList
+        list={accounts}
+        ActionButton={SwitchButton}
+        onClick={changeAccount}
+      />
       <div className="footer">
         <Link to="/add-address">Add addresses</Link>
       </div>
