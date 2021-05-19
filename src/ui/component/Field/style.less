@@ -6,11 +6,17 @@
   background: #FFFFFF;
   border-radius: 6px;
   align-items: center;
+
   .field-slot {
     display: flex;
     align-items: center;
     flex: 1;
     margin-left: 12px;
+    overflow: hidden;
+  }
+
+  .left-icon, .right-icon {
+    flex-shrink: 0;
   }
 
   &+.field {
