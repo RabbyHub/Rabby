@@ -10,7 +10,7 @@ const SelectAddress = () => {
   const { state } = useLocation<{ keyring: any }>();
 
   if (!state) {
-    history.push('/dashboard');
+    history.replace('/dashboard');
     return null;
   }
 

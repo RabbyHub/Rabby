@@ -1,0 +1,9 @@
+.hardware-icon {
+  @apply active:fill-current cursor-pointer transition-colors;
+
+  &:active {
+    path {
+      fill: white;
+    }
+  }
+}
