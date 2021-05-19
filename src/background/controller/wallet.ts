@@ -132,6 +132,12 @@ export class WalletController extends BaseController {
     return accounts;
   };
 
+  getAccountsCount = async () => {
+    return await keyringService.keyrings.reduce(async (count, keyring) => {
+      return count + (await keyring.getAccounts()).length;
+    }, 0);
+  };
+
   getTypedAccounts = async (type) => {
     return Promise.all(
       keyringService.keyrings
