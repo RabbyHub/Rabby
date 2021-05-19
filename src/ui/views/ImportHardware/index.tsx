@@ -1,6 +1,5 @@
-import React, { useState, useCallback } from 'react';
+import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import { Modal } from 'antd';
 import { StrayHeader } from 'ui/component';
 import { useWallet } from 'ui/utils';
 import { IconLedger, IconOnekey, IconTrezor } from 'ui/assets';
@@ -42,7 +41,6 @@ const ImportHardware = () => {
   const navSelectAddress = async (hardware) => {
     const keyring = await wallet.connectHardware(hardware, BIP44_PATH);
     await keyring.unlock();
-    console.log(keyring);
     history.push({
       pathname: '/import/select-address',
       state: {

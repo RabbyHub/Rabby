@@ -7,6 +7,7 @@ class WatchKeyring extends EventEmitter {
   static type = keyringType;
   type = keyringType;
   accounts: string[] = [];
+  accountToAdd = '';
 
   constructor(opts = {}) {
     super();
@@ -19,17 +20,36 @@ class WatchKeyring extends EventEmitter {
     });
   }
 
-  deserialize(opts) {
-    this.accounts = opts.accounts;
+  async deserialize(opts) {
+    if (opts.accounts) {
+      this.accounts = opts.accounts;
+    }
   }
+
+  setAccountToAdd = (account) => {
+    this.accountToAdd = account;
+  };
+
+  addAccounts = async () => {
+    if (!this.accountToAdd) {
+      return;
+    }
+    if (this.accounts.includes(this.accountToAdd)) {
+      throw new Error(`The account you're are trying to import is a duplicate`);
+    }
+
+    this.accounts.push(this.accountToAdd);
+
+    return [this.accountToAdd];
+  };
 
   // just generate a qrcode
   // signTransaction(address, transaction) {}
 
   // signMessage(address, data) {}
 
-  getAccounts(): Promise<string[]> {
-    return Promise.resolve(this.accounts.slice());
+  async getAccounts(): Promise<string[]> {
+    return this.accounts.slice();
   }
 
   removeAccount(address: string): void {

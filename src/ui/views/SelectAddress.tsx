@@ -24,6 +24,11 @@ const SelectAddress = () => {
 
   const getAccounts = async () => {
     const _accounts = await keyring.getNextPage();
+    if (_accounts.length < 5) {
+      throw new Error(
+        'You need to make use your last account before you can add a new one.'
+      );
+    }
     setAccounts(accounts.concat(..._accounts));
   };
 

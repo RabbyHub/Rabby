@@ -61,6 +61,20 @@ export class WalletController extends BaseController {
 
   clearKeyrings = () => keyringService.clearKeyrings();
 
+  importWatchAddress = async (address) => {
+    let keyring;
+    const keyringType = KEYRING_CLASS.WATCH;
+    try {
+      keyring = this._getKeyringByType(keyringType);
+    } catch {
+      keyring = await keyringService.addNewKeyring(keyringType);
+    }
+
+    keyring.setAccountToAdd(address);
+    await keyringService.addNewAccount(keyring);
+    preference.setCurrentAccount({ address, type: keyring.type });
+  };
+
   importPrivateKey = async (data) => {
     const prefixed = addHexPrefix(data);
     const buffer = ethUtil.toBuffer(prefixed);
@@ -91,8 +105,8 @@ export class WalletController extends BaseController {
   };
 
   generateMnemonic = () => keyringService.generateMnemonic();
-  importMnemonics = async (mnemonic) => {
-    const keyring = await keyringService.importMnemonics(mnemonic);
+  createKeyringWithMnemonics = async (mnemonic) => {
+    const keyring = await keyringService.createKeyringWithMnemonics(mnemonic);
     const [account] = await keyring.getAccounts();
     preference.setCurrentAccount({ address: account, type: keyring.type });
   };
@@ -125,7 +139,7 @@ export class WalletController extends BaseController {
     return seedWords;
   };
 
-  deriveNewAccount = async () => {
+  deriveNewAccountFromMnemonic = async () => {
     const keyring = this._getKeyringByType(KEYRING_CLASS.MNEMONIC);
 
     const accounts = await keyringService.addNewAccount(keyring);

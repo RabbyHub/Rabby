@@ -22,7 +22,7 @@ const AddAddressOptions = () => {
       onClick: async () => {
         try {
           await wallet.getCurrentMnemonics();
-          await wallet.deriveNewAccount();
+          await wallet.deriveNewAccountFromMnemonic();
           message.success({
             icon: <img src={IconSuccess} className="icon icon-success" />,
             content: 'Created successfully',
@@ -49,7 +49,7 @@ const AddAddressOptions = () => {
     {
       leftIcon: IconWatchAddress,
       content: 'Add awatch address',
-      onClick: () => history.push('/'),
+      onClick: () => history.push('/import/watch-address'),
     },
   ];
   return (

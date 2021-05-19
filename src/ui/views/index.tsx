@@ -6,6 +6,7 @@ import ImportMode from './ImportMode';
 import ImportPrivateKey from './ImportPrivateKey';
 import ImportJson from './ImportJson';
 import ImportMnemonics from './ImportMnemonics';
+import ImportWatchAddress from './ImportWatchAddress';
 import SelectAddress from './SelectAddress';
 import ImportHardware from './ImportHardware';
 import Dashboard from './Dashboard';
@@ -65,6 +66,9 @@ const Main = () => {
         </Route>
         <Route exact path="/import/hardware">
           <ImportHardware />
+        </Route>
+        <Route exact path="/import/watch-address">
+          <ImportWatchAddress />
         </Route>
 
         <Route exact path="/unlock">
