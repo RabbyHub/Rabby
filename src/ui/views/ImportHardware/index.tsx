@@ -1,22 +1,37 @@
-import React from 'react';
+import React, { useState, useCallback } from 'react';
 import { useHistory } from 'react-router-dom';
+import { Modal } from 'antd';
 import { StrayHeader } from 'ui/component';
 import { useWallet } from 'ui/utils';
 import { IconLedger, IconOnekey, IconTrezor } from 'ui/assets';
 
 import './index.css';
+
+const LEDGER_LIVE_PATH = `m/44'/60'/0'/0/0`;
+const MEW_PATH = `m/44'/60'/0'`;
+const BIP44_PATH = `m/44'/60'/0'/0`;
+
+const HD_PATHS = [
+  { name: 'Ledger Live', value: LEDGER_LIVE_PATH },
+  { name: 'Legacy (MEW / MyCrypto)', value: MEW_PATH },
+  { name: 'BIP44 Standard (e.g. MetaMask, Trezor)', value: BIP44_PATH },
+];
+
 const HARDWARES = [
   {
     icon: IconLedger,
     name: 'Ledger',
+    type: 'LEDGER',
   },
   {
     icon: IconTrezor,
     name: 'Trezor',
+    type: 'TREZOR',
   },
   {
     icon: IconOnekey,
     name: 'Onekey',
+    type: 'ONEKEY',
   },
 ];
 
@@ -25,7 +40,9 @@ const ImportHardware = () => {
   const history = useHistory();
 
   const navSelectAddress = async (hardware) => {
-    const keyring = await wallet.connectHardware(hardware);
+    const keyring = await wallet.connectHardware(hardware, BIP44_PATH);
+    await keyring.unlock();
+    console.log(keyring);
     history.push({
       pathname: '/import/select-address',
       state: {
@@ -33,7 +50,6 @@ const ImportHardware = () => {
       },
     });
   };
-
   return (
     <div className="bg-gray-bg w-[993px] h-[519px] mt-[150px] rounded-md mx-auto pt-[60px]">
       <StrayHeader
@@ -48,7 +64,7 @@ const ImportHardware = () => {
             <div
               className="w-[128px] mr-[80px] text-center active:text-blue-light"
               key={hardware.name}
-              onClick={() => navSelectAddress(hardware.name)}
+              onClick={() => navSelectAddress(hardware.type)}
             >
               <div className="rounded-full h-[128px] bg-white border border-white hover:border-blue-light">
                 <Icon className="hardware-icon" />

@@ -199,22 +199,23 @@ export class WalletController extends BaseController {
     }
   };
 
-  connectHardware = async (type) => {
+  connectHardware = async (type, hdPath) => {
     let keyring;
     const keyringType = KEYRING_CLASS.HARDWARE[type];
     try {
       keyring = this._getKeyringByType(keyringType);
     } catch {
-      const Keyring = keyringService.getKeyringClassForType(keyringType);
-      keyring = new Keyring();
+      keyring = await keyringService.addNewKeyring(keyringType);
+    }
+
+    if (hdPath && keyring.setHdPath) {
+      keyring.setHdPath(hdPath);
     }
 
     return keyring;
   };
 
-  unlockHardwareAccount = async (type, indexes) => {
-    const keyring = this._getKeyringByType(KEYRING_CLASS.HARDWARE[type]);
-
+  unlockHardwareAccount = async (keyring, indexes) => {
     for (let i = 0; i < indexes.length; i++) {
       keyring.setAccountToUnlock(indexes[i]);
       await keyringService.addNewAccount(keyring);

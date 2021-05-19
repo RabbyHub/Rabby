@@ -7,12 +7,14 @@ import { IconImportSuccess } from 'ui/assets';
 
 const SelectAddress = () => {
   const history = useHistory();
-  const { state } = useLocation<{ keyring: any }>();
+  const { state } = useLocation<{ keyring: any; isMnemonics?: boolean }>();
 
   if (!state) {
     history.replace('/dashboard');
     return null;
   }
+
+  const { keyring, isMnemonics } = state;
 
   const [accounts, setAccounts] = useState<any[]>([]);
   const [importedAccounts, setImportedAccounts] = useState<any[]>([]);
@@ -20,13 +22,13 @@ const SelectAddress = () => {
   const [form] = Form.useForm();
   const wallet = useWallet();
 
-  const getAccounts = () => {
-    const _accounts = state.keyring.getNextPage();
+  const getAccounts = async () => {
+    const _accounts = await keyring.getNextPage();
     setAccounts(accounts.concat(..._accounts));
   };
 
   const init = async () => {
-    const _importedAccounts = await state.keyring.getAccounts();
+    const _importedAccounts = await keyring.getAccounts();
     setImportedAccounts(_importedAccounts);
 
     getAccounts();
@@ -37,8 +39,12 @@ const SelectAddress = () => {
   }, []);
 
   const onSubmit = async ({ selectedAddressIndexes }) => {
-    state.keyring.activeAccounts(selectedAddressIndexes);
-    wallet.addKeyring(state.keyring);
+    if (isMnemonics) {
+      keyring.activeAccounts(selectedAddressIndexes);
+      await wallet.addKeyring(keyring);
+    } else {
+      await wallet.unlockHardwareAccount(keyring, selectedAddressIndexes);
+    }
     setSuccessAccounts(selectedAddressIndexes.map((i) => accounts[i]));
   };
 
