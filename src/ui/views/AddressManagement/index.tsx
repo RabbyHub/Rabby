@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Menu, Dropdown, Modal } from 'antd';
+import { Menu, Dropdown, Modal, message } from 'antd';
 import { KEYRING_TYPE } from 'consts';
 import { useWallet } from 'ui/utils';
 import { AddressList, PageHeader, AuthenticationModal } from 'ui/component';
@@ -62,18 +62,23 @@ const AddressManagement = () => {
       }
     };
 
-    const handleToggleAddressVisible = () => {
+    const handleToggleAddressVisible = async () => {
       const isHidden = hiddenAddresses.find(
         (item) => item.type === keyring.type && item.address === data
       );
       if (isHidden) {
         setHiddenAddresses(
           hiddenAddresses.filter(
-            (item) => item.type !== keyring.type && item.address !== data
+            (item) => item.type !== keyring.type || item.address !== data
           )
         );
         wallet.showAddress(keyring.type, data);
       } else {
+        const totalCount = await wallet.getAccountsCount();
+        if (hiddenAddresses.length >= totalCount - 1) {
+          message.error('Keep at least one address visible.');
+          return;
+        }
         setHiddenAddresses([
           ...hiddenAddresses,
           { type: keyring.type, address: data },

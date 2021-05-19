@@ -1,0 +1,28 @@
+@import '../../style/var.less';
+
+.connected-sites {
+  .page();
+  padding: 0 28px 28px;
+  .field {
+    margin-bottom: 12px;
+    &:nth-last-child(1) {
+      margin-bottom: 12px;
+    }
+    .icon-site {
+      width: 32px;
+      height: 32px;
+      border-radius: 100%;
+      border: 1px solid #D8DFEB;
+    }
+    .site-info {
+      width: 100%;
+      padding-right: 5px;
+      p {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        margin-bottom: 0;
+      }
+    }
+  }
+}
