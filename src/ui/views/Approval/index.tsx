@@ -19,7 +19,7 @@ const Approval = () => {
 
   const init = async () => {
     const account = await wallet.getCurrentAccount();
-    setAccount(account);
+    setAccount(account.address);
   };
 
   useEffect(() => {
