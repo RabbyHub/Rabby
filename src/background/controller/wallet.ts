@@ -9,6 +9,7 @@ import {
   permission,
   session,
   chainService,
+  openapi,
 } from 'background/service';
 import { openIndexPage } from 'background/webapi/tab';
 import { KEYRING_CLASS, DisplayedKeryring } from 'background/service/keyring';
@@ -238,6 +239,8 @@ export class WalletController extends BaseController {
 
     throw ethErrors.rpc.internal(`No ${type} keyring found`);
   }
+
+  openapi = openapi;
 }
 
 export default new WalletController();
