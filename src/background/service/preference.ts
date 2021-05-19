@@ -1,12 +1,15 @@
 import { createPersistStore } from 'background/utils';
+import { keyringService } from './index';
+
+export interface Account {
+  type: string;
+  address: string;
+}
 
 interface PreferenceStore {
-  currentAccount: string;
+  currentAccount: Account | undefined;
   popupOpen: boolean;
-  hiddenAddresses: {
-    type: string;
-    address: string;
-  }[];
+  hiddenAddresses: Account[];
 }
 
 class Preference {
@@ -16,7 +19,7 @@ class Preference {
     this.store = await createPersistStore<PreferenceStore>({
       name: 'preference',
       template: {
-        currentAccount: '',
+        currentAccount: undefined,
         popupOpen: false,
         hiddenAddresses: [],
       },
@@ -35,11 +38,27 @@ class Preference {
         address,
       },
     ];
+    if (
+      type === this.store.currentAccount?.type &&
+      address === this.store.currentAccount.address
+    ) {
+      this.resetCurrentAccount();
+    }
+  };
+
+  /**
+   * If current account be hidden or deleted
+   * call this function to reset current account
+   * to the first address in address list
+   */
+  resetCurrentAccount = async () => {
+    const [account] = await keyringService.getAllVisibleAccountsArray();
+    this.setCurrentAccount(account);
   };
 
   showAddress = (type: string, address: string) => {
     this.store.hiddenAddresses = this.store.hiddenAddresses.filter((item) => {
-      return item.type === type && item.address === address;
+      return item.type !== type || item.address !== address;
     });
   };
 
@@ -47,8 +66,8 @@ class Preference {
     return this.store.currentAccount;
   };
 
-  setCurrentAccount = (val) => {
-    this.store.currentAccount = val;
+  setCurrentAccount = (account: Account) => {
+    this.store.currentAccount = account;
   };
 
   setPopupOpen = (isOpen) => {

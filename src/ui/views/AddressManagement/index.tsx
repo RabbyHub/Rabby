@@ -69,7 +69,7 @@ const AddressManagement = () => {
       if (isHidden) {
         setHiddenAddresses(
           hiddenAddresses.filter(
-            (item) => item.type !== keyring.type && item.address !== data
+            (item) => item.type !== keyring.type || item.address !== data
           )
         );
         wallet.showAddress(keyring.type, data);
