@@ -21,7 +21,6 @@ const Uploader = ({ onChange, accept, className }: UploaderProps) => {
   );
   const [filename, setFilename] = useState<string>('');
   const handleClick = () => {
-    console.log('input.curret', inputRef.current);
     if (!inputRef.current) {
       return;
     }

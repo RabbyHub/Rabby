@@ -7,9 +7,9 @@ const bcmChannel = new URLSearchParams(
   document!.currentScript!.getAttribute('src')!.split('?')[1]
 ).get('channel')!;
 
-const log = (...args) => {
+const log = (event, ...args) => {
   console.log(
-    `%c [rabby] (${new Date().toTimeString().substr(0, 8)})`,
+    `%c [rabby] (${new Date().toTimeString().substr(0, 8)}) ${event}`,
     'font-weight: bold; color: #7d6ef9',
     ...args
   );
@@ -72,7 +72,20 @@ class EthereumProvider extends EventEmitter {
       if (document.visibilityState === 'visible') {
         while (this._hiddenRequests.length) {
           const { data, resolve } = this._hiddenRequests.shift();
-          resolve(this._bcm.request({ data }));
+          resolve(
+            this._bcm
+              .request({ data })
+              .then((res) => {
+                log('[request: success]', res);
+
+                return res;
+              })
+              .catch((err) => {
+                log('[request: error]', err);
+
+                return Promise.reject(serializeError(err));
+              })
+          );
         }
       }
     });
@@ -105,7 +118,6 @@ class EthereumProvider extends EventEmitter {
 
   // shim to matamask legacy api
   sendAsync = (payload, callback) => {
-    console.log('[request: sendAsync]', payload);
     this.request(payload)
       .then((result) => callback(null, { result }))
       .catch((error) => callback(error, { error }));

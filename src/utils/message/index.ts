@@ -56,7 +56,6 @@ abstract class Message extends EventEmitter {
       } catch (e) {
         // should be eth-rpc-errors (EthereumRpcError)
         // https://github.com/MetaMask/eth-rpc-errors/blob/main/src/classes.ts#L62
-        // console.log('[request handle error]', e)
         err = e.toString();
       }
 
