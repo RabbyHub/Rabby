@@ -1,5 +1,7 @@
 import { Transaction } from '@ethereumjs/tx';
 import { keyringService, permission } from 'background/service';
+import { Session } from 'background/service/session';
+import { CHAINS } from 'consts';
 import { http } from 'background/utils';
 import BaseController from '../base';
 
@@ -33,7 +35,11 @@ class ProviderController extends BaseController {
     return [account.address];
   };
 
-  ethChainId = () => '0x1';
+  ethChainId = ({ session }: { session: Session }) => {
+    const origin = session.origin;
+    const site = permission.getWithoutUpdate(origin);
+    return CHAINS[site!.chain].id;
+  };
 
   ethGetTransactionCount = () => '0x100';
 

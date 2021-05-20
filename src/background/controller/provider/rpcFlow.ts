@@ -25,11 +25,11 @@ export default class RpcFlow {
 
       case APPROVAL_STATE.UNLOCK:
         if (!permission.hasPerssmion(origin)) {
-          await notification.requestApproval({
+          const { defaultChain } = await notification.requestApproval({
             state: APPROVAL_STATE.CONNECT,
             params: { origin, name, icon },
           });
-          permission.addConnectedSite(origin, name, icon);
+          permission.addConnectedSite(origin, name, icon, defaultChain);
         }
 
         if (Reflect.getMetadata('approval', providerController, mapMethod)) {
@@ -48,8 +48,6 @@ export default class RpcFlow {
         });
         if (permission.hasPerssmion(origin)) {
           permission.touchConnectedSite(origin);
-        } else {
-          permission.addConnectedSite(origin, name, icon);
         }
         this.currentState = APPROVAL_STATE.REQUEST;
         break;

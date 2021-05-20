@@ -1,4 +1,4 @@
-class Session {
+export class Session {
   origin = '';
 
   icon = '';

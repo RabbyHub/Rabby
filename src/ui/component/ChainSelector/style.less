@@ -27,47 +27,49 @@
 
 .chain-selector-options {
   margin-bottom: 0;
+  display: flex;
+  flex-wrap: wrap;
   li {
     display: flex;
-    padding: 10px 0;
-    align-items: center;
-    position: relative;
+    width: 152px;
+    padding: 12px;
+    background-color: #fff;
+    border-radius: 6px;
     cursor: pointer;
-    &:nth-child(1)::after, &:nth-last-child(2)::after {
-      .part-border();
-      left: 50%;
-      bottom: 0;
-      transform: translateX(-50%);
-      opacity: .4;
+    margin-right: 8px;
+    align-items: center;
+    margin-bottom: 8px;
+    &:nth-child(2n) {
+      margin-right: 0;
     }
-    &:nth-child(1) {
-      padding-top: 0;
-    }
-    &:nth-last-child(1) {
-      padding-bottom: 0;
+    &:nth-last-child(1), &:nth-last-child(2) {
+      margin-bottom: 0;
     }
     .chain-logo {
-      width: 16px;
-      height: 16px;
-      margin-right: 6px;
+      width: 28px;
+      height: 28px;
+      margin-right: 8px;
     }
     .chain-name {
       font-size: 12px;
       color: #3B3E4A;
       margin-right: 10px;
       flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
     .icon-checked {
-      width: 12px;
-      height: 12px;
+      width: 16px;
+      height: 16px;
     }
   }
 }
 
-.chain-selector-popover {
-  background: #FFFFFF;
-  border-radius: 6px;
-  padding-bottom: 0 !important;
-  overflow: hidden;
-  box-shadow: 0px 4px 12px rgba(24, 35, 43, 0.08);
+.chain-selector__modal {
+  .ant-modal-body {
+    padding: 16px;
+  }
+  .tip {
+    margin-top: 16px;
+  }
 }
