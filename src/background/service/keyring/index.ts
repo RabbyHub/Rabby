@@ -137,7 +137,7 @@ class KeyringService extends EventEmitter {
    * @param {string} seed - The BIP44-compliant seed phrase.
    * @returns {Promise<Object>} A Promise that resolves to the state.
    */
-  importMnemonics(seed: string): Promise<any> {
+  createKeyringWithMnemonics(seed: string): Promise<any> {
     if (!bip39.validateMnemonic(seed)) {
       return Promise.reject(new Error('mnemonic phrase is invalid.'));
     }

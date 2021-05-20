@@ -59,7 +59,7 @@ const VerifyMnemonics = ({ mnemonics, onBackClick }) => {
   );
 
   const onSubmit = async () => {
-    await wallet.importMnemonics(mnemonics);
+    await wallet.createKeyringWithMnemonics(mnemonics);
     history.push('/dashboard');
   };
 

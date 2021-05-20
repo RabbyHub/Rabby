@@ -30,7 +30,7 @@ function tabCheckin(connect) {
     (document.querySelector('head > link[rel~="icon"]') as HTMLLinkElement)
       ?.href ||
     (document.querySelector('head > meta[itemprop="image"]') as HTMLMetaElement)
-      .content;
+      ?.content;
   const name =
     document.title ||
     (document.querySelector('head > meta[name="title"]') as HTMLMetaElement)

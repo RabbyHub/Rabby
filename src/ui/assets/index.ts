@@ -4,3 +4,7 @@ export { default as IconUploader } from './uploader.svg';
 export { default as IconCross } from './cross.svg';
 export { default as IconChecked } from './checked.svg';
 export { default as IconNotChecked } from './not-checked.svg';
+
+export { ReactComponent as IconLedger } from './ledger.svg';
+export { ReactComponent as IconTrezor } from './trezor.svg';
+export { ReactComponent as IconOnekey } from './onekey.svg';

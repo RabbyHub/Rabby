@@ -15,6 +15,7 @@ const ImportMnemonic = () => {
         pathname: '/import/select-address',
         state: {
           keyring,
+          isMnemonics: true,
         },
       });
     } catch (err) {

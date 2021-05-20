@@ -29,8 +29,8 @@ class ProviderController extends BaseController {
     if (!permission.hasPerssmion(origin)) {
       return [];
     }
-    const accounts = await this.getAccounts();
-    return accounts.map((account) => account.address);
+    const account = await this.getCurrentAccount();
+    return [account.address];
   };
 
   ethChainId = () => '0x1';
