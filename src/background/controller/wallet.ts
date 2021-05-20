@@ -208,7 +208,7 @@ export class WalletController extends BaseController {
       // just test, should be all broadcast
       session.broadcastEvent(
         'accountsChanged',
-        [account],
+        [account.address],
         currentSession.origin
       );
     }
