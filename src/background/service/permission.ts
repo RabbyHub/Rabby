@@ -48,10 +48,15 @@ class Permission {
     return this.lruCache.peek(key);
   };
 
-  addConnectedSite = (origin, name, icon) => {
+  addConnectedSite = (
+    origin: string,
+    name: string,
+    icon: string,
+    defaultChain: CHAINS_ENUM
+  ) => {
     if (!this.lruCache) return;
-    // TODO: remove hardcode
-    this.lruCache.set(origin, { origin, name, icon, chain: CHAINS_ENUM.ETH });
+
+    this.lruCache.set(origin, { origin, name, icon, chain: defaultChain });
     this.sync();
   };
 

@@ -5,6 +5,7 @@ import { Link, useHistory } from 'react-router-dom';
 import { message, Modal } from 'antd';
 import { AddressViewer, AddressList } from 'ui/component';
 import { useWallet, getCurrentTab } from 'ui/utils';
+import { splitNumberByStep } from 'ui/utils/number';
 import { DisplayedKeryring } from 'background/service/keyring';
 import { Account } from 'background/service/preference';
 import RecentConnections from './components/RecentConnections';
@@ -81,7 +82,6 @@ const Dashboard = () => {
 
   const getCurrentAccount = async () => {
     const account = await wallet.getCurrentAccount();
-    console.log('current', account);
     setCurrentAccount(account);
   };
 
@@ -150,7 +150,9 @@ const Dashboard = () => {
           </div>
           <div className="assets flex">
             <div className="left">
-              <p className="amount leading-none">$3,642,5421.18</p>
+              <p className="amount leading-none">
+                ${splitNumberByStep(36425421.18)}
+              </p>
               <p className="extra leading-none">
                 This seems to be no assets yet
               </p>

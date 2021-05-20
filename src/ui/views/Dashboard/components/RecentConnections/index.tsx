@@ -10,8 +10,10 @@ import './style.less';
 
 const CurrentConnection = ({
   site,
+  onChange,
 }: {
   site: null | ConnectedSite | undefined;
+  onChange(): void;
 }) => {
   const wallet = useWallet();
 
@@ -20,6 +22,7 @@ const CurrentConnection = ({
       ...site!,
       chain,
     });
+    onChange();
   };
 
   const NoConnected = () => (
@@ -76,11 +79,15 @@ export default () => {
     // TODO
   };
 
+  const getCurrentSite = async () => {
+    const current = await getCurrentConnectSite(wallet);
+    setCurrentConnect(current);
+  };
+
   const getConnectedSites = async () => {
     const sites = await wallet.getRecentConnectedSites();
     setConnections(sites);
-    const current = await getCurrentConnectSite(wallet);
-    setCurrentConnect(current);
+    await getCurrentSite();
   };
 
   useEffect(() => {
@@ -114,7 +121,7 @@ export default () => {
       ) : (
         <img className="icon icon-no-data" src={IconNoData} />
       )}
-      <CurrentConnection site={currentConnect} />
+      <CurrentConnection site={currentConnect} onChange={getCurrentSite} />
     </div>
   );
 };

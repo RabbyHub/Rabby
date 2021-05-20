@@ -1,17 +1,17 @@
 import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import { Button } from 'antd';
+import { CHAINS_ENUM } from 'consts';
 import { APPROVAL_STATE } from 'consts';
-import { StrayFooter } from 'ui/component';
 import { useWallet, useApproval } from 'ui/utils';
-import { Connect, SignText, SignTx } from './components';
+import { Connect, SignText, SignTx, Footer } from './components';
+import './style.less';
 
 const Approval = () => {
   const history = useHistory();
   const [account, setAccount] = useState('');
+  const [defaultChain, setDefaultChain] = useState(CHAINS_ENUM.ETH);
   const wallet = useWallet();
   const [approval, resolveApproval, rejectApproval] = useApproval();
-
   if (!approval) {
     history.replace('/');
     return null;
@@ -31,34 +31,43 @@ const Approval = () => {
   };
 
   const handleAllow = () => {
-    resolveApproval();
+    switch (approval.state) {
+      case APPROVAL_STATE.CONNECT:
+        resolveApproval({
+          defaultChain,
+        });
+    }
   };
 
-  const Content =
-    approval?.state === APPROVAL_STATE.CONNECT
-      ? Connect
-      : approval?.state === APPROVAL_STATE.SIGN
-      ? approval?.params.gas
-        ? SignTx
-        : SignText
-      : null;
+  const handleChainChange = (val: CHAINS_ENUM) => {
+    setDefaultChain(val);
+  };
 
   return (
-    <>
-      <div className="absolute top-0 left-0 w-full py-2 px-4 bg-primary text-white">
-        <div className="text-xs">Current account</div>
-        <div>{account}</div>
-      </div>
-      {Content && <Content params={approval.params} origin={approval.origin} />}
-      <StrayFooter className="flex space-x-4">
-        <Button type="primary" block onClick={handleCancel}>
-          Cancel
-        </Button>
-        <Button block onClick={handleAllow}>
-          Allow
-        </Button>
-      </StrayFooter>
-    </>
+    <div className="approval">
+      <header>
+        <p className="text-12">Current account</p>
+        <p className="text-13 font-medium">{account}</p>
+      </header>
+      {approval?.state === APPROVAL_STATE.CONNECT && (
+        <Connect
+          params={approval.params}
+          onChainChange={handleChainChange}
+          defaultChain={defaultChain}
+        />
+      )}
+      {approval?.state !== APPROVAL_STATE.CONNECT &&
+        (approval?.state === APPROVAL_STATE.SIGN ? (
+          <SignTx params={approval.params} origin={approval.origin} />
+        ) : (
+          <SignText params={approval.params} />
+        ))}
+      <Footer
+        state={approval.state}
+        onCancel={handleCancel}
+        onConfirm={handleAllow}
+      />
+    </div>
   );
 };
 

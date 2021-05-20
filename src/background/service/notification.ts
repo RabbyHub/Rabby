@@ -34,8 +34,8 @@ class Notification {
 
   getApproval = () => this.approval?.data;
 
-  resolveApproval = () => {
-    this.approval?.resolve();
+  resolveApproval = (data?: any) => {
+    this.approval?.resolve(data);
     this.approval = null;
   };
 
@@ -44,7 +44,7 @@ class Notification {
     await this.clear();
   };
 
-  requestApproval = (data) => {
+  requestApproval = (data): Promise<any> => {
     return new Promise((resolve, reject) => {
       this.approval = {
         data,

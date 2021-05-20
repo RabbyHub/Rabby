@@ -15,8 +15,9 @@ import { openIndexPage } from 'background/webapi/tab';
 import { KEYRING_CLASS, DisplayedKeryring } from 'background/service/keyring';
 import { addHexPrefix } from 'background/utils';
 import BaseController from './base';
-import { CHAINS_ENUM } from 'consts';
+import { CHAINS_ENUM, CHAINS } from 'consts';
 import { Account } from '../service/preference';
+import { ConnectedSite } from '../service/permission';
 
 export class WalletController extends BaseController {
   /* wallet */
@@ -54,7 +55,10 @@ export class WalletController extends BaseController {
     const { origin } = session.getSession(tabId) || {};
     return permission.getWithoutUpdate(origin);
   };
-  updateConnectSite = permission.updateConnectSite;
+  updateConnectSite = (origin: string, data: ConnectedSite) => {
+    session.broadcastEvent('chainChanged', CHAINS[data.chain].id, data.origin);
+    permission.updateConnectSite(origin, data);
+  };
   removeConnectedSite = permission.removeConnectedSite;
 
   /* keyrings */
