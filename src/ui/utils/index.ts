@@ -7,25 +7,21 @@ export * from './hooks';
 
 export * from './tab';
 
-export enum WINDOW_TYPE {
-  TAB,
-  POPUP,
-  NOTIFICATION,
-  BACKGROUND,
-}
-
-export const checkWindowType = () => {
-  switch (window.location.pathname) {
-    case '/index.html':
-      return WINDOW_TYPE.TAB;
-    case '/popup.html':
-      return WINDOW_TYPE.POPUP;
-    case '/notification.html':
-      return WINDOW_TYPE.NOTIFICATION;
-    default:
-      return WINDOW_TYPE.BACKGROUND;
-  }
+const UI_TYPE = {
+  Tab: 'index',
+  Pop: 'popup',
+  Notification: 'notification',
 };
 
-export const isNotification = () =>
-  checkWindowType() === WINDOW_TYPE.NOTIFICATION;
+type UiTypeCheck = {
+  [Prop in keyof typeof UI_TYPE as `is${Prop}`]: boolean;
+};
+
+export const getUiType: () => UiTypeCheck = () => {
+  const { pathname } = window.location;
+  return Object.entries(UI_TYPE).reduce((m, [key, value]) => {
+    m[`is${key}`] = pathname === `/${value}.html`;
+
+    return m;
+  }, {} as UiTypeCheck);
+};

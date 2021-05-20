@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useLocation, useHistory } from 'react-router-dom';
 import { Form } from 'antd';
 import { StrayPageWithButton, MultiSelectAddressList } from 'ui/component';
-import { useWallet } from 'ui/utils';
+import { useWallet, getUiType } from 'ui/utils';
 import { IconImportSuccess } from 'ui/assets';
 
 const SelectAddress = () => {
@@ -86,6 +86,11 @@ const SelectSuccess = ({ accounts }) => {
   const history = useHistory();
 
   const handleNextClick = () => {
+    if (getUiType().isTab) {
+      window.close();
+
+      return;
+    }
     history.push('/dashboard');
   };
 

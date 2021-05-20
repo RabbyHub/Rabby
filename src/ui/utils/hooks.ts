@@ -1,7 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useWallet } from './WalletContext';
-import { isNotification } from './index';
+import { getUiType } from './index';
 
 export const useApproval = () => {
   const wallet = useWallet();
@@ -25,7 +25,7 @@ export const useApproval = () => {
   };
 
   useEffect(() => {
-    if (!isNotification()) {
+    if (!getUiType().isNotification) {
       return;
     }
     window.addEventListener('beforeunload', rejectApproval);
@@ -40,7 +40,7 @@ export const usePopupOpen = () => {
   const wallet = useWallet();
 
   useEffect(() => {
-    if (isNotification()) {
+    if (!getUiType().isNotification) {
       return;
     }
 
