@@ -7,6 +7,14 @@ const bcmChannel = new URLSearchParams(
   document!.currentScript!.getAttribute('src')!.split('?')[1]
 ).get('channel')!;
 
+const log = (...args) => {
+  console.log(
+    `%c [rabby] (${new Date().toTimeString().substr(0, 8)})`,
+    'font-weight: bold; color: #7d6ef9',
+    ...args
+  );
+};
+
 class EthereumProvider extends EventEmitter {
   chainId = null;
   private _hiddenRequests: any[] = [];
@@ -22,15 +30,20 @@ class EthereumProvider extends EventEmitter {
   initialize = async () => {
     this._bcm.connect().on('message', this.handleBackgroundMessage);
 
-    const { accounts, chainId }: any = await this.request({
-      method: 'getProviderState',
-    });
+    try {
+      const { accounts, chainId }: any = await this.request({
+        method: 'getProviderState',
+      });
 
-    this.chainId = chainId;
-    this.emit('connected', { chainId });
+      this.chainId = chainId;
+      this.emit('connected', { chainId });
+    } catch {
+      //
+    }
   };
 
   handleBackgroundMessage = ({ event, data }) => {
+    log('[push event]', event, data);
     if (event === 'disconnect') {
       this.emit(event, ethErrors.provider.disconnected());
 
@@ -57,7 +70,7 @@ class EthereumProvider extends EventEmitter {
   triggerHiddenRequest = async () => {
     document.addEventListener('visibilitychange', () => {
       if (document.visibilityState === 'visible') {
-        for (let i = 0; i < this._hiddenRequests.length; i++) {
+        while (this._hiddenRequests.length) {
           const { data, resolve } = this._hiddenRequests.shift();
           resolve(this._bcm.request({ data }));
         }
@@ -66,7 +79,7 @@ class EthereumProvider extends EventEmitter {
   };
 
   request = async (data) => {
-    console.log('[request]', data);
+    log('[request]', data);
 
     if (!data) {
       throw ethErrors.rpc.invalidRequest();
@@ -79,12 +92,12 @@ class EthereumProvider extends EventEmitter {
     return this._bcm
       .request({ data })
       .then((res) => {
-        console.log('[request: success]', res);
+        log('[request: success]', res);
 
         return res;
       })
       .catch((err) => {
-        console.log('[request: error]', err);
+        log('[request: error]', err);
 
         return Promise.reject(serializeError(err));
       });
@@ -97,6 +110,8 @@ class EthereumProvider extends EventEmitter {
       .then((result) => callback(null, { result }))
       .catch((error) => callback(error, { error }));
   };
+
+  enable = () => this.request({ method: 'eth_requestAccounts' });
 }
 
 declare global {

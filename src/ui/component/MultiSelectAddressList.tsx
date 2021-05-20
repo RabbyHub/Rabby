@@ -26,17 +26,19 @@ const MultiSelectAddressList = ({
     <ul className="addresses">
       {accounts.map((account) => {
         const selected = _value.includes(account.index);
+        const imported = importedAccounts?.includes(account.address);
         return (
           <AddressItem
             className={cx(
               'rounded bg-white mb-8 flex justify-between align-center py-12 pl-16 pr-20 border',
-              selected ? 'border-blue' : 'border-white'
+              selected ? 'border-blue' : 'border-white',
+              imported && 'opacity-70'
             )}
             key={account.index}
             account={account.address}
             ActionButton={
               onChange &&
-              (importedAccounts?.includes(account.address)
+              (imported
                 ? () => (
                     <span className="rounded-full bg-gray-bg text-gray-comment text-12 px-[5px] py-[3px]">
                       Imported
