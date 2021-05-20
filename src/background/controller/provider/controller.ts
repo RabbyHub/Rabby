@@ -25,12 +25,12 @@ class ProviderController extends BaseController {
     },
   }) => keyringService.signPersonalMessage({ data, from });
 
-  ethAccounts = ({ session: { origin } }) => {
+  ethAccounts = async ({ session: { origin } }) => {
     if (!permission.hasPerssmion(origin)) {
       return [];
     }
-
-    return this.getAccounts();
+    const accounts = await this.getAccounts();
+    return accounts.map((account) => account.address);
   };
 
   ethChainId = () => '0x1';
