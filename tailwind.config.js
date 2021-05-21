@@ -11,6 +11,10 @@ module.exports = {
       },
       {}
     ),
+    screens: {
+      sm: { max: '600px' },
+      lg: { min: '600px' },
+    },
     colors: {
       transparent: 'transparent',
       current: 'currentColor',

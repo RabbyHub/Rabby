@@ -26,9 +26,7 @@ interface CompoundedComponent
 
 const StrayFooter = memo(({ className, children }: StrayFooterProps) => {
   return (
-    <div
-      className={cx('fixed', 'bottom-0', 'left-0', 'w-full', 'flex', className)}
-    >
+    <div className={cx('absolute bottom-0 left-0 w-full flex', className)}>
       {children}
     </div>
   );

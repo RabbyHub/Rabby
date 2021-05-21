@@ -17,9 +17,18 @@ const StrayPage = ({
   footerRender,
   className,
 }: StrayPageProps) => (
-  <div className={cx('pt-28 px-20 bg-gray-bg h-full flex flex-col', className)}>
+  <div
+    className={cx(
+      'relative flex flex-col',
+      'sm:pt-28 sm:px-20 sm:h-full sm:bg-gray-bg',
+      'lg:pt-[60px] lg:bg-gray-bg lg:w-[993px] lg:max-h-full lg:mt-[150px] lg:rounded-md lg:mx-auto',
+      className
+    )}
+  >
     {header && <StrayHeader {...header} />}
-    {children}
+    {children && (
+      <div className="lg:flex lg:items-center lg:flex-col">{children}</div>
+    )}
     {footerRender && footerRender({})}
   </div>
 );
@@ -64,6 +73,7 @@ export const StrayPageWithButton = ({
         hasBack={hasBack}
         hasDivider={hasDivider}
         NextButtonText={NextButtonText}
+        className="lg:w-[500px] lg:left-2/4 lg:-translate-x-2/4 lg:transform lg:mb-[36px]"
       />
     </Form>
   </StrayPage>

@@ -68,7 +68,7 @@ const Main = () => {
         <Route exact path="/import/hardware">
           <ImportHardware />
         </Route>
-        <Route exact path="/import/select-ledger-path">
+        <Route exact path="/import/hardware/ledger">
           <ImportLedgerPathSelect />
         </Route>
         <Route exact path="/import/watch-address">

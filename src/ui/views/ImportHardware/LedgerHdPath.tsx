@@ -43,8 +43,9 @@ const LedgerHdPath = () => {
         center: true,
       }}
       onSubmit={onSubmit}
+      hasBack
     >
-      <div className="mt-40">
+      <div className="mt-40 mb-[188px]">
         {HD_PATHS.map((path) => (
           <FieldCheckbox
             key={path.name}
