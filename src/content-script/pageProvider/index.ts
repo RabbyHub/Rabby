@@ -72,16 +72,18 @@ class EthereumProvider extends EventEmitter {
       if (document.visibilityState === 'visible') {
         while (this._hiddenRequests.length) {
           const { data, resolve } = this._hiddenRequests.shift();
+
+          log('[request:hidden]', data);
           resolve(
             this._bcm
               .request({ data })
               .then((res) => {
-                log('[request: success]', res);
+                log('[request:hidden: success]', res);
 
                 return res;
               })
               .catch((err) => {
-                log('[request: error]', err);
+                log('[request:hidden: error]', err);
 
                 return Promise.reject(serializeError(err));
               })
@@ -92,8 +94,6 @@ class EthereumProvider extends EventEmitter {
   };
 
   request = async (data) => {
-    log('[request]', data);
-
     if (!data) {
       throw ethErrors.rpc.invalidRequest();
     }
@@ -102,6 +102,7 @@ class EthereumProvider extends EventEmitter {
       return this.pushHiddenRequest(data);
     }
 
+    log('[request]', data);
     return this._bcm
       .request({ data })
       .then((res) => {

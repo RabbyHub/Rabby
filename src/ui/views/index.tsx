@@ -9,6 +9,7 @@ import ImportMnemonics from './ImportMnemonics';
 import ImportWatchAddress from './ImportWatchAddress';
 import SelectAddress from './SelectAddress';
 import ImportHardware from './ImportHardware';
+import ImportLedgerPathSelect from './ImportHardware/LedgerHdPath';
 import Dashboard from './Dashboard';
 import Settings from './Settings';
 import ConnectedSites from './ConnectedSites';
@@ -66,6 +67,9 @@ const Main = () => {
         </Route>
         <Route exact path="/import/hardware">
           <ImportHardware />
+        </Route>
+        <Route exact path="/import/select-ledger-path">
+          <ImportLedgerPathSelect />
         </Route>
         <Route exact path="/import/watch-address">
           <ImportWatchAddress />

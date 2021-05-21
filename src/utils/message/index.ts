@@ -27,7 +27,7 @@ abstract class Message extends EventEmitter {
   };
 
   private _request = () => {
-    if (!this._waitingQueue.length) {
+    if (this.pendingRequest || !this._waitingQueue.length) {
       return;
     }
     this.pendingRequest = this._waitingQueue.shift();

@@ -54,11 +54,13 @@ export const usePopupOpen = () => {
   }, []);
 };
 
-export const useSelectOption = (onChange?, value?, defaultValue?) => {
+export const useSelectOption = (
+  onChange?,
+  value?,
+  defaultValue: Array<string | number> = []
+) => {
   const isControlled = useRef(typeof value !== 'undefined').current;
-  const [_value, setValue] = useState(
-    (isControlled ? value : defaultValue) || []
-  );
+  const [_value, setValue] = useState(isControlled ? value : defaultValue);
 
   useEffect(() => {
     if (!isControlled) {

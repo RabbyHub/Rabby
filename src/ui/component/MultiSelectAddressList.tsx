@@ -1,8 +1,6 @@
 import React from 'react';
-import cx from 'clsx';
-import { AddressList } from 'ui/component';
+import { AddressList, FieldCheckbox } from 'ui/component';
 import { useSelectOption } from 'ui/utils';
-import { IconChecked, IconNotChecked } from 'ui/assets';
 
 const { AddressItem } = AddressList;
 
@@ -28,31 +26,20 @@ const MultiSelectAddressList = ({
         const selected = _value.includes(account.index);
         const imported = importedAccounts?.includes(account.address);
         return (
-          <AddressItem
-            className={cx(
-              'rounded bg-white mb-8 flex justify-between align-center py-12 pl-16 pr-20 border',
-              selected ? 'border-blue' : 'border-white',
-              imported && 'opacity-70'
-            )}
+          <FieldCheckbox
             key={account.index}
-            account={account.address}
-            ActionButton={
-              onChange &&
-              (imported
-                ? () => (
-                    <span className="rounded-full bg-gray-bg text-gray-comment text-12 px-[5px] py-[3px]">
-                      Imported
-                    </span>
-                  )
-                : () => (
-                    <img
-                      onClick={() => handleToggle(account.index)}
-                      src={selected ? IconChecked : IconNotChecked}
-                      className="icon icon-checked"
-                    />
-                  ))
+            checked={selected}
+            onChange={() => handleToggle(account.index)}
+            disable={
+              imported && (
+                <span className="rounded-full bg-gray-bg text-gray-comment text-12 px-[5px] py-[3px]">
+                  Imported
+                </span>
+              )
             }
-          />
+          >
+            <AddressItem account={account.address} />
+          </FieldCheckbox>
         );
       })}
     </ul>

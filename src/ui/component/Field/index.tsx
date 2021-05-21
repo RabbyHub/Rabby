@@ -1,4 +1,5 @@
 import React, { ReactNode } from 'react';
+import cx from 'clsx';
 import './style.less';
 
 interface FieldProps {
@@ -6,12 +7,19 @@ interface FieldProps {
   leftIcon?: ReactNode;
   rightIcon: ReactNode;
   onClick?(): void;
+  className?: string;
 }
 
-const Field = ({ children, leftIcon, rightIcon, onClick }: FieldProps) => {
+const Field = ({
+  children,
+  leftIcon,
+  rightIcon,
+  onClick,
+  className,
+}: FieldProps) => {
   return (
     <div
-      className="field"
+      className={cx('field', className)}
       onClick={onClick}
       style={{ cursor: onClick ? 'pointer' : 'initial' }}
     >

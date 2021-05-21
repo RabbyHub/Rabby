@@ -3,18 +3,9 @@ import { useHistory } from 'react-router-dom';
 import { StrayHeader } from 'ui/component';
 import { useWallet } from 'ui/utils';
 import { IconLedger, IconOnekey, IconTrezor } from 'ui/assets';
+import { BIP44_PATH } from './LedgerHdPath';
 
 import './index.css';
-
-const LEDGER_LIVE_PATH = `m/44'/60'/0'/0/0`;
-const MEW_PATH = `m/44'/60'/0'`;
-const BIP44_PATH = `m/44'/60'/0'/0`;
-
-const HD_PATHS = [
-  { name: 'Ledger Live', value: LEDGER_LIVE_PATH },
-  { name: 'Legacy (MEW / MyCrypto)', value: MEW_PATH },
-  { name: 'BIP44 Standard (e.g. MetaMask, Trezor)', value: BIP44_PATH },
-];
 
 const HARDWARES = [
   {
@@ -39,6 +30,10 @@ const ImportHardware = () => {
   const history = useHistory();
 
   const navSelectAddress = async (hardware) => {
+    if (hardware === 'LEDGER') {
+      history.push('/import/select-ledger-path');
+      return;
+    }
     const keyring = await wallet.connectHardware(hardware, BIP44_PATH);
     await keyring.unlock();
     history.push({

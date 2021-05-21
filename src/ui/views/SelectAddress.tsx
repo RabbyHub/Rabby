@@ -1,9 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useHistory } from 'react-router-dom';
 import { Form } from 'antd';
-import { StrayPageWithButton, MultiSelectAddressList } from 'ui/component';
+import {
+  StrayPageWithButton,
+  MultiSelectAddressList,
+  AddressList,
+  Field,
+} from 'ui/component';
 import { useWallet, getUiType } from 'ui/utils';
 import { IconImportSuccess } from 'ui/assets';
+
+const { AddressItem } = AddressList;
 
 const SelectAddress = () => {
   const history = useHistory();
@@ -22,8 +29,10 @@ const SelectAddress = () => {
   const [form] = Form.useForm();
   const wallet = useWallet();
 
-  const getAccounts = async () => {
-    const _accounts = await keyring.getNextPage();
+  const getAccounts = async (firstFlag = false) => {
+    const _accounts = firstFlag
+      ? await keyring.getFirstPage()
+      : await keyring.getNextPage();
     if (_accounts.length < 5) {
       throw new Error(
         'You need to make use your last account before you can add a new one.'
@@ -36,7 +45,7 @@ const SelectAddress = () => {
     const _importedAccounts = await keyring.getAccounts();
     setImportedAccounts(_importedAccounts);
 
-    getAccounts();
+    getAccounts(true);
   };
 
   useEffect(() => {
@@ -73,7 +82,7 @@ const SelectAddress = () => {
         />
       </Form.Item>
       <div
-        onClick={getAccounts}
+        onClick={() => getAccounts()}
         className="mt-28 text-blue text-15 text-center cursor-pointer mb-[120px]"
       >
         Load More...
@@ -110,7 +119,13 @@ const SelectSuccess = ({ accounts }) => {
         </div>
         <div className="text-green text-15 mb-12">Successfully imported</div>
         <div className="overflow-auto flex-1 mb-[120px]">
-          <MultiSelectAddressList accounts={accounts} />
+          {accounts.map((account) => (
+            <AddressItem
+              className="mb-12 rounded bg-white py-12 pl-16"
+              key={account.address}
+              account={account.address}
+            />
+          ))}
         </div>
       </div>
     </StrayPageWithButton>

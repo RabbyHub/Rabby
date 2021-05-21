@@ -14,3 +14,4 @@ export { default as AddAddressOptions } from './AddAddressOptions';
 export { default as ChainSelector } from './ChainSelector';
 export { default as AuthenticationModal } from './AuthenticationModal';
 export { default as Uploader } from './Uploader';
+export { default as FieldCheckbox } from './FieldCheckbox';

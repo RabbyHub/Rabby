@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
-import { StrayPageWithButton, Field } from 'ui/component';
+import { StrayPageWithButton, FieldCheckbox } from 'ui/component';
 import { useWallet } from 'ui/utils';
 import { KEYRING_CLASS } from 'background/service/keyring';
 import IconChecked from 'ui/assets/checked.svg';
@@ -37,8 +37,8 @@ const ImportMode = () => {
     loadMnemonics();
   }, []);
 
-  const chooseImportMode = (mode) => {
-    setCurrentMode(currentMode === mode ? '' : mode);
+  const chooseImportMode = (mode, checked) => {
+    setCurrentMode(checked && mode);
   };
 
   const handleNext = () => {
@@ -66,17 +66,13 @@ const ImportMode = () => {
     >
       <div className="mt-32">
         {modes.map((e) => (
-          <Field
+          <FieldCheckbox
             key={e.name}
-            rightIcon={
-              <img
-                onClick={() => chooseImportMode(e.name)}
-                src={currentMode === e.name ? IconChecked : IconNotChecked}
-              />
-            }
+            checked={e.name === currentMode}
+            onChange={(checked) => chooseImportMode(e.name, checked)}
           >
             <div>{e.label}</div>
-          </Field>
+          </FieldCheckbox>
         ))}
       </div>
     </StrayPageWithButton>
