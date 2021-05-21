@@ -16,7 +16,15 @@ class BaseController {
       preference.setCurrentAccount(account);
     }
 
-    return account;
+    const keyring = await keyringService.getKeyringForAccount(
+      account.address,
+      account.type
+    );
+
+    return {
+      ...account,
+      keyring,
+    };
   };
 
   getAccounts = () => {

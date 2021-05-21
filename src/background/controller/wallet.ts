@@ -120,6 +120,8 @@ export class WalletController extends BaseController {
     preference.showAddress(type, address);
   hideAddress = (type: string, address: string) =>
     preference.hideAddress(type, address);
+  removeAddress = (address: string, type: string) =>
+    keyringService.removeAccount(address, type);
 
   generateKeyringWithMnemonic = (mnemonic) => {
     if (!bip39.validateMnemonic(mnemonic)) {

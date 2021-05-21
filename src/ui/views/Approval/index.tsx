@@ -1,15 +1,19 @@
 import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import { CHAINS_ENUM } from 'consts';
+import { CHAINS_ENUM, HARDWARE_KEYRING_TYPES } from 'consts';
 import { APPROVAL_STATE } from 'consts';
+import cloneDeep from 'lodash/cloneDeep';
 import { useWallet, useApproval } from 'ui/utils';
-import { Connect, SignText, SignTx, Footer } from './components';
+import { Connect, SignText, SignTx, Footer, Hardware } from './components';
+import { Account } from 'background/service/preference';
 import './style.less';
 
 const Approval = () => {
   const history = useHistory();
   const [account, setAccount] = useState('');
+  // const [accountType, setAccountType] = useState('');
   const [defaultChain, setDefaultChain] = useState(CHAINS_ENUM.ETH);
+  // const [waitingForHardware, setWaitingForHardware] = useState(false);
   const wallet = useWallet();
   const [approval, resolveApproval, rejectApproval] = useApproval();
   if (!approval) {
@@ -20,22 +24,34 @@ const Approval = () => {
   const init = async () => {
     const account = await wallet.getCurrentAccount();
     setAccount(account.address);
+    // setAccountType(account.type);
   };
 
   useEffect(() => {
     init();
-  }, [account]);
+  }, []);
 
   const handleCancel = () => {
     rejectApproval('user reject');
   };
 
-  const handleAllow = () => {
+  const handleAllow = async () => {
     switch (approval.state) {
       case APPROVAL_STATE.CONNECT:
         resolveApproval({
           defaultChain,
         });
+        break;
+      case APPROVAL_STATE.SIGN:
+        // if (
+        //   Object.keys(HARDWARE_KEYRING_TYPES)
+        //     .map((key) => HARDWARE_KEYRING_TYPES[key].type)
+        //     .includes(accountType)
+        // ) {
+        //   setWaitingForHardware(true);
+        // }
+        resolveApproval();
+        break;
     }
   };
 
@@ -57,7 +73,7 @@ const Approval = () => {
         />
       )}
       {approval?.state !== APPROVAL_STATE.CONNECT &&
-        (approval?.state === APPROVAL_STATE.SIGN ? (
+        (approval?.state === APPROVAL_STATE.SIGN && approval?.params.gas ? (
           <SignTx params={approval.params} origin={approval.origin} />
         ) : (
           <SignText params={approval.params} />

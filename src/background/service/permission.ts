@@ -92,6 +92,11 @@ class Permission {
     this.lruCache.del(origin);
     this.sync();
   };
+
+  getSitesByDefaultChain = (chain: CHAINS_ENUM) => {
+    if (!this.lruCache) return [];
+    return this.lruCache.values().filter((item) => item.chain === chain);
+  };
 }
 
 export default new Permission();

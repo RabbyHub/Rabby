@@ -43,7 +43,10 @@ export default class RpcFlow {
       case APPROVAL_STATE.SIGN:
         await notification.requestApproval({
           state: APPROVAL_STATE.SIGN,
-          params,
+          params: {
+            data: params,
+            session: { origin, name, icon },
+          },
           origin,
         });
         if (permission.hasPerssmion(origin)) {
