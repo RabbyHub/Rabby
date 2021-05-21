@@ -6,7 +6,7 @@ import { http } from 'background/utils';
 import BaseController from '../base';
 
 class ProviderController extends BaseController {
-  @Reflect.metadata('approval', true)
+  @Reflect.metadata('APPROVAL', 'SignTx')
   ethSendTransaction = async ({
     data: {
       params: [txParams],
@@ -20,7 +20,7 @@ class ProviderController extends BaseController {
     return http('serializedTx', serializedTx);
   };
 
-  @Reflect.metadata('approval', true)
+  @Reflect.metadata('APPROVAL', 'SignText')
   personalSign = ({
     data: {
       params: [data, from],
@@ -44,6 +44,15 @@ class ProviderController extends BaseController {
   ethGetTransactionCount = () => '0x100';
 
   ethRequestAccounts = this.ethAccounts;
+
+  @Reflect.metadata('APPROVAL', 'AddChain')
+  walletAddEthereumChain = ({
+    data: {
+      params: [chain],
+    },
+  }) => {
+    console.log(chain);
+  };
 }
 
 export default new ProviderController();

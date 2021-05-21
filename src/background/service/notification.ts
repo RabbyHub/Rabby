@@ -7,6 +7,7 @@ interface Approval {
     state: number;
     params?: any;
     origin?: string;
+    type: string;
   };
   resolve(params?: any): void;
   reject(err: EthereumProviderError<any>): void;

@@ -4,6 +4,8 @@ import { keyringService, notification, permission } from 'background/service';
 import providerController from './controller';
 
 export default class RpcFlow {
+  approvalType: string | null = null;
+  approvalRes: any;
   currentState = keyringService.memStore.getState().isUnlocked
     ? APPROVAL_STATE.UNLOCK
     : APPROVAL_STATE.LOCK;
@@ -28,36 +30,59 @@ export default class RpcFlow {
           const { defaultChain } = await notification.requestApproval({
             state: APPROVAL_STATE.CONNECT,
             params: { origin, name, icon },
+            type: 'Connect',
           });
           permission.addConnectedSite(origin, name, icon, defaultChain);
         }
 
-        if (Reflect.getMetadata('approval', providerController, mapMethod)) {
-          this.currentState = APPROVAL_STATE.SIGN;
+        this.approvalType = Reflect.getMetadata(
+          'approval',
+          providerController,
+          mapMethod
+        );
+        if (this.approvalType) {
+          this.currentState = APPROVAL_STATE.APPROVAL;
         } else {
           this.currentState = APPROVAL_STATE.REQUEST;
         }
 
         break;
 
-      case APPROVAL_STATE.SIGN:
-        await notification.requestApproval({
-          state: APPROVAL_STATE.SIGN,
+      case APPROVAL_STATE.APPROVAL:
+        this.approvalRes = await notification.requestApproval({
+          state: APPROVAL_STATE.APPROVAL,
+          type: this.approvalType,
           params,
           origin,
         });
         if (permission.hasPerssmion(origin)) {
           permission.touchConnectedSite(origin);
         }
+        this.approvalType = null;
         this.currentState = APPROVAL_STATE.REQUEST;
         break;
 
-      case APPROVAL_STATE.REQUEST:
-        return Promise.resolve(providerController[mapMethod](req)).finally(
-          () => {
-            this.currentState = APPROVAL_STATE.END;
-          }
-        );
+      case APPROVAL_STATE.REQUEST: {
+        const { uiRequest, ...rest } = this.approvalRes || {};
+
+        const requestDeffer = Promise.resolve(
+          providerController[mapMethod](req)
+        ).finally(() => {
+          this.currentState = APPROVAL_STATE.END;
+        });
+
+        if (uiRequest) {
+          return await notification.requestApproval({
+            state: APPROVAL_STATE.APPROVAL,
+            type: uiRequest,
+            requestDeffer,
+            params: rest,
+            origin,
+          });
+        }
+
+        return requestDeffer;
+      }
 
       default:
     }
