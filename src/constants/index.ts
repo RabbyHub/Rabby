@@ -4,14 +4,14 @@ import IconEthLogo from 'ui/assets/chain-logos/eth.svg';
 import IconHecoLogo from 'ui/assets/chain-logos/heco.svg';
 import IconPolygonLogo from 'ui/assets/chain-logos/polygon.svg';
 
-export const APPROVAL_STATE = {
-  LOCK: 0,
-  UNLOCK: 1,
-  CONNECT: 2,
-  SIGN: 3,
-  REQUEST: 4,
-  END: 5,
-};
+export enum APPROVAL_STATE {
+  LOCK,
+  UNLOCK,
+  CONNECT,
+  APPROVAL,
+  REQUEST,
+  END,
+}
 
 export enum CHAINS_ENUM {
   ETH = 'ETH',
@@ -32,23 +32,30 @@ export const CHAINS = {
   [CHAINS_ENUM.BSC]: {
     id: 56,
     name: 'BSC',
-    hex: '',
+    hex: '0x38',
     enum: CHAINS_ENUM.BSC,
     logo: IconBscLogo,
   },
   [CHAINS_ENUM.DAI]: {
     id: 100,
     name: 'XDAI',
-    hex: '',
+    hex: '0x64',
     enum: CHAINS_ENUM.DAI,
     logo: IconDaiLogo,
   },
   [CHAINS_ENUM.HECO]: {
     id: 128,
     name: 'Heco',
-    hex: '',
+    hex: '0x80',
     enum: CHAINS_ENUM.HECO,
     logo: IconHecoLogo,
+  },
+  [CHAINS_ENUM.POLYGON]: {
+    id: 137,
+    name: 'Polygon',
+    hex: '0x89',
+    enum: CHAINS_ENUM.POLYGON,
+    logo: IconPolygonLogo,
   },
 };
 

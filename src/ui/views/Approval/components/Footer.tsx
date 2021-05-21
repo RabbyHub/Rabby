@@ -58,7 +58,7 @@ const Footer = ({ state, onCancel, onConfirm }: FooterProps) => {
   switch (state) {
     case APPROVAL_STATE.CONNECT:
       return ConnectFooter;
-    case APPROVAL_STATE.SIGN:
+    case APPROVAL_STATE.APPROVAL:
       return SignTextFooter;
     default:
       return <></>;

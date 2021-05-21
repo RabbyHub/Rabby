@@ -1,11 +1,9 @@
 import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import { CHAINS_ENUM, HARDWARE_KEYRING_TYPES } from 'consts';
+import { CHAINS_ENUM } from 'consts';
 import { APPROVAL_STATE } from 'consts';
-import cloneDeep from 'lodash/cloneDeep';
 import { useWallet, useApproval } from 'ui/utils';
-import { Connect, SignText, SignTx, Footer, Hardware } from './components';
-import { Account } from 'background/service/preference';
+import * as ApprovalComponent from './components';
 import './style.less';
 
 const Approval = () => {
@@ -42,7 +40,7 @@ const Approval = () => {
           defaultChain,
         });
         break;
-      case APPROVAL_STATE.SIGN:
+      case APPROVAL_STATE.APPROVAL:
         // if (
         //   Object.keys(HARDWARE_KEYRING_TYPES)
         //     .map((key) => HARDWARE_KEYRING_TYPES[key].type)
@@ -59,26 +57,22 @@ const Approval = () => {
     setDefaultChain(val);
   };
 
+  const { type, params, origin } = approval;
+  const CurrentApproval = ApprovalComponent[type];
+
   return (
     <div className="approval">
       <header>
         <p className="text-12">Current account</p>
         <p className="text-13 font-medium">{account}</p>
       </header>
-      {approval?.state === APPROVAL_STATE.CONNECT && (
-        <Connect
-          params={approval.params}
-          onChainChange={handleChainChange}
-          defaultChain={defaultChain}
-        />
-      )}
-      {approval?.state !== APPROVAL_STATE.CONNECT &&
-        (approval?.state === APPROVAL_STATE.SIGN && approval?.params.gas ? (
-          <SignTx params={approval.params} origin={approval.origin} />
-        ) : (
-          <SignText params={approval.params} />
-        ))}
-      <Footer
+      <CurrentApproval
+        params={params}
+        onChainChange={handleChainChange}
+        defaultChain={defaultChain}
+        origin={origin}
+      />
+      <ApprovalComponent.Footer
         state={approval.state}
         onCancel={handleCancel}
         onConfirm={handleAllow}

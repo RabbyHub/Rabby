@@ -5,7 +5,6 @@ import {
   StrayPageWithButton,
   MultiSelectAddressList,
   AddressList,
-  Field,
 } from 'ui/component';
 import { useWallet, getUiType } from 'ui/utils';
 import { IconImportSuccess } from 'ui/assets';
@@ -63,19 +62,30 @@ const SelectAddress = () => {
   };
 
   return successAccounts.length ? (
-    <SelectSuccess accounts={successAccounts} />
+    <SelectSuccess accounts={successAccounts} hasDivider={isMnemonics} />
   ) : (
     <StrayPageWithButton
-      header={{
-        title: 'Import Mnemonics',
-        subTitle: 'Please input your mnemonics below',
-      }}
+      header={
+        isMnemonics
+          ? {
+              secondTitle: 'Import Mnemonics',
+              subTitle: 'Please input your mnemonics below',
+            }
+          : {
+              title: 'Select Addresses',
+              subTitle: 'Select the addresses to vlew in Rabby',
+              center: true,
+            }
+      }
       onSubmit={onSubmit}
       hasBack
-      hasDivider
+      hasDivider={isMnemonics}
       form={form}
     >
-      <Form.Item className="mb-0" name="selectedAddressIndexes">
+      <Form.Item
+        className="mb-0 lg:max-h-[500px] overflow-auto"
+        name="selectedAddressIndexes"
+      >
         <MultiSelectAddressList
           accounts={accounts}
           importedAccounts={importedAccounts}
@@ -91,7 +101,7 @@ const SelectAddress = () => {
   );
 };
 
-const SelectSuccess = ({ accounts }) => {
+const SelectSuccess = ({ accounts, hasDivider }) => {
   const history = useHistory();
 
   const handleNextClick = () => {
@@ -105,7 +115,7 @@ const SelectSuccess = ({ accounts }) => {
 
   return (
     <StrayPageWithButton
-      hasDivider
+      hasDivider={hasDivider}
       NextButtonText="ok"
       onNextClick={handleNextClick}
     >
@@ -118,7 +128,7 @@ const SelectSuccess = ({ accounts }) => {
           {accounts?.length} addresses
         </div>
         <div className="text-green text-15 mb-12">Successfully imported</div>
-        <div className="overflow-auto flex-1 mb-[120px]">
+        <div className="overflow-auto flex-1 mb-[120px] w-[460px]">
           {accounts.map((account) => (
             <AddressItem
               className="mb-12 rounded bg-white py-12 pl-16"

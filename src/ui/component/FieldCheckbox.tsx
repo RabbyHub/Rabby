@@ -49,6 +49,7 @@ const FieldCheckbox = ({
     <Field
       className={cx(
         'rounded bg-white mb-8 flex justify-between align-center py-12 pl-16 pr-20 border hover:border-blue transition-colors',
+        'lg:w-[460px]',
         _checked ? 'border-blue' : 'border-white',
         disable && 'opacity-70'
       )}
