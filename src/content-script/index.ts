@@ -49,8 +49,9 @@ if (document.readyState === 'complete') {
   tabCheckin(pm);
 } else {
   const domContentLoadedHandler = () => {
+    if (document.readyState !== 'complete') return;
     tabCheckin(pm);
-    window.removeEventListener('DOMContentLoaded', domContentLoadedHandler);
+    document.removeEventListener('readystatechange', domContentLoadedHandler);
   };
-  window.addEventListener('DOMContentLoaded', domContentLoadedHandler);
+  document.addEventListener('readystatechange', domContentLoadedHandler);
 }

@@ -22,7 +22,7 @@ class ChainService {
     this.store = await createPersistStore<ChainStore>({
       name: 'chains',
       template: {
-        enableChains: [CHAINS_ENUM.ETH],
+        enableChains: Object.keys(CHAINS).map((key) => CHAINS[key]),
       },
     });
     // this.supportChainIds = await http('get_support_id');
