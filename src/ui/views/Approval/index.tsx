@@ -9,7 +9,9 @@ import './style.less';
 const Approval = () => {
   const history = useHistory();
   const [account, setAccount] = useState('');
+  // const [accountType, setAccountType] = useState('');
   const [defaultChain, setDefaultChain] = useState(CHAINS_ENUM.ETH);
+  // const [waitingForHardware, setWaitingForHardware] = useState(false);
   const wallet = useWallet();
   const [approval, resolveApproval, rejectApproval] = useApproval();
   if (!approval) {
@@ -20,22 +22,34 @@ const Approval = () => {
   const init = async () => {
     const account = await wallet.getCurrentAccount();
     setAccount(account.address);
+    // setAccountType(account.type);
   };
 
   useEffect(() => {
     init();
-  }, [account]);
+  }, []);
 
   const handleCancel = () => {
     rejectApproval('user reject');
   };
 
-  const handleAllow = () => {
+  const handleAllow = async () => {
     switch (approval.state) {
       case APPROVAL_STATE.CONNECT:
         resolveApproval({
           defaultChain,
         });
+        break;
+      case APPROVAL_STATE.APPROVAL:
+        // if (
+        //   Object.keys(HARDWARE_KEYRING_TYPES)
+        //     .map((key) => HARDWARE_KEYRING_TYPES[key].type)
+        //     .includes(accountType)
+        // ) {
+        //   setWaitingForHardware(true);
+        // }
+        resolveApproval();
+        break;
     }
   };
 

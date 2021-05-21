@@ -49,10 +49,13 @@ export default class RpcFlow {
         break;
 
       case APPROVAL_STATE.APPROVAL:
-        this.approvalRes = await notification.requestApproval({
+        await notification.requestApproval({
           state: APPROVAL_STATE.APPROVAL,
           type: this.approvalType,
-          params,
+          params: {
+            data: params,
+            session: { origin, name, icon },
+          },
           origin,
         });
         if (permission.hasPerssmion(origin)) {

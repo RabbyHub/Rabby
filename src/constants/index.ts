@@ -62,9 +62,28 @@ export const CHAINS = {
 export const KEYRING_TYPE = {
   HdKeyring: 'HD Key Tree',
   SimpleKeyring: 'Simple Key Pair',
+  HardwareKeyring: 'hardware',
+  WatchAddressKeyring: 'Watch Address',
 };
 
 export const KEYRING_TYPE_TEXT = {
   [KEYRING_TYPE.HdKeyring]: 'Mnemonics addresses',
   [KEYRING_TYPE.SimpleKeyring]: 'Private key addresses',
+  [KEYRING_TYPE.HardwareKeyring]: 'Hardware wallet addresses',
+  [KEYRING_TYPE.WatchAddressKeyring]: 'Watch Address',
+};
+
+export const HARDWARE_KEYRING_TYPES = {
+  Ledger: {
+    type: 'Ledger Hardware',
+    brandName: 'Ledger',
+  },
+  Trezor: {
+    type: 'Trezor Hardware',
+    brandName: 'Trezor',
+  },
+  Onekey: {
+    type: 'Onekey Hardware',
+    brandName: 'Onekey',
+  },
 };

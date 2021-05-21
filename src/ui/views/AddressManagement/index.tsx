@@ -1,6 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Menu, Dropdown, Modal, message } from 'antd';
-import { KEYRING_TYPE } from 'consts';
+import { KEYRING_TYPE, HARDWARE_KEYRING_TYPES } from 'consts';
 import { useWallet } from 'ui/utils';
 import { AddressList, PageHeader, AuthenticationModal } from 'ui/component';
 import { DisplayedKeryring } from 'background/service/keyring';
@@ -60,6 +60,12 @@ const AddressManagement = () => {
       } catch (e) {
         // NOTHING
       }
+    };
+
+    const handleDeleteAddress = async () => {
+      await AuthenticationModal(wallet);
+      await wallet.removeAddress(data, keyring.type);
+      getAllKeyrings();
     };
 
     const handleToggleAddressVisible = async () => {
@@ -123,6 +129,16 @@ const AddressManagement = () => {
               </Menu.Item>
             </Menu>
           );
+        case HARDWARE_KEYRING_TYPES.Ledger.type:
+        case HARDWARE_KEYRING_TYPES.Trezor.type:
+        case HARDWARE_KEYRING_TYPES.Onekey.type:
+          return (
+            <Menu>
+              <Menu.Item onClick={handleDeleteAddress}>
+                Delete address
+              </Menu.Item>
+            </Menu>
+          );
         default:
           return (
             <Menu>
@@ -132,7 +148,7 @@ const AddressManagement = () => {
       }
     };
     return (
-      <Dropdown overlay={DropdownOptions}>
+      <Dropdown overlay={DropdownOptions} trigger={['click']}>
         <div className="flex">
           {hiddenAddresses.find(
             (item) => item.address === data && item.type === keyring.type

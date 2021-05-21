@@ -14,6 +14,7 @@ import TrezorKeyring from './eth-trezor-keyring';
 import OnekeyKeyring from './eth-onekey-keyring';
 import WatchKeyring from './eth-watch-keyring';
 import preference from '../preference';
+import { KEYRING_TYPE } from 'consts';
 
 export const KEYRING_SDK_TYPES = {
   SimpleKeyring,
@@ -383,8 +384,8 @@ class KeyringService extends EventEmitter {
    * @param {string} address - The address of the account to remove.
    * @returns {Promise<void>} A Promise that resolves if the operation was successful.
    */
-  removeAccount(address: string): Promise<any> {
-    return this.getKeyringForAccount(address)
+  removeAccount(address: string, type: string): Promise<any> {
+    return this.getKeyringForAccount(address, type)
       .then((keyring) => {
         // Not all the keyrings support this, so we have to check
         if (typeof keyring.removeAccount === 'function') {
@@ -732,12 +733,23 @@ class KeyringService extends EventEmitter {
    * @param {string} address - An account address.
    * @returns {Promise<Keyring>} The keyring of the account, if it exists.
    */
-  getKeyringForAccount(address: string): Promise<any> {
+  getKeyringForAccount(
+    address: string,
+    type?: string,
+    includeWatchKeyring = true
+  ): Promise<any> {
     const hexed = normalizeAddress(address);
     log.debug(`KeyringController - getKeyringForAccount: ${hexed}`);
-
+    let keyrings = type
+      ? this.keyrings.filter((keyring) => keyring.type === type)
+      : this.keyrings;
+    if (!includeWatchKeyring) {
+      keyrings = keyrings.filter(
+        (keyring) => keyring.type !== KEYRING_TYPE.WatchAddressKeyring
+      );
+    }
     return Promise.all(
-      this.keyrings.map((keyring) => {
+      keyrings.map((keyring) => {
         return Promise.all([keyring, keyring.getAccounts()]);
       })
     ).then((candidates) => {

@@ -26,7 +26,7 @@ const SwitchAddress = ({
   currentAccount,
 }: {
   onChange(account: string, type: string): void;
-  currentAccount: string;
+  currentAccount: Account;
 }) => {
   const wallet = useWallet();
   const [accounts, setAccounts] = useState<Record<string, DisplayedKeryring[]>>(
@@ -46,10 +46,15 @@ const SwitchAddress = ({
     getAllKeyrings();
   }, []);
 
-  const SwitchButton = ({ data }: { data: string }) => {
+  const SwitchButton = ({ data, keyring }: { data: string; keyring: any }) => {
     return (
       <img
-        src={currentAccount === data ? IconChecked : IconNotChecked}
+        src={
+          currentAccount.address === data &&
+          currentAccount.type === keyring.type
+            ? IconChecked
+            : IconNotChecked
+        }
         className="icon icon-checked"
       />
     );
@@ -187,7 +192,7 @@ const Dashboard = () => {
       >
         {currentAccount && (
           <SwitchAddress
-            currentAccount={currentAccount!.address}
+            currentAccount={currentAccount}
             onChange={handleChange}
           />
         )}

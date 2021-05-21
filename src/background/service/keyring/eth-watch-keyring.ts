@@ -46,7 +46,9 @@ class WatchKeyring extends EventEmitter {
   // just generate a qrcode
   // signTransaction(address, transaction) {}
 
-  // signMessage(address, data) {}
+  signPersonalMessage(withAccount: string, message: string) {
+    // TODO
+  }
 
   async getAccounts(): Promise<string[]> {
     return this.accounts.slice();
