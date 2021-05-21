@@ -36,7 +36,7 @@ export default class RpcFlow {
         }
 
         this.approvalType = Reflect.getMetadata(
-          'approval',
+          'APPROVAL',
           providerController,
           mapMethod
         );
