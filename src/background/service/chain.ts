@@ -1,6 +1,6 @@
 import { CHAINS_ENUM, CHAINS } from 'consts';
 import { createPersistStore } from 'background/utils';
-// import { http } from 'background/utils';
+import openapi from './openapi';
 
 interface ChainStore {
   enableChains: CHAINS_ENUM[];
@@ -12,10 +12,11 @@ export interface Chain {
   hex: string;
   logo: string;
   enum: CHAINS_ENUM;
+  serverId: string;
 }
 
 class ChainService {
-  supportChainIds: string[] = [];
+  supportChains: Chain[] = [];
   store: ChainStore | null = null;
 
   init = async () => {
@@ -25,7 +26,8 @@ class ChainService {
         enableChains: Object.keys(CHAINS).map((key) => CHAINS[key].enum),
       },
     });
-    // this.supportChainIds = await http('get_support_id');
+
+    this.supportChains = await this.loadSupportChains();
   };
 
   getEnabledChains = (): Chain[] => {
@@ -50,10 +52,20 @@ class ChainService {
     this.store.enableChains = after;
   };
 
-  getSupportChains = (): Chain[] => {
-    // TODO
-    return [];
+  loadSupportChains = async (): Promise<Chain[]> => {
+    const chains = await openapi.getSupportedChains();
+    const localChainArr = Object.values(CHAINS);
+    const result: Chain[] = [];
+    for (let i = 0; i < chains.length; i++) {
+      const target = localChainArr.find(
+        (item) => item.serverId === chains[i].id
+      );
+      if (target) result.push(target);
+    }
+    return result;
   };
+
+  getSupportChains = () => this.supportChains;
 }
 
 export default new ChainService();

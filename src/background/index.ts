@@ -22,8 +22,8 @@ async function restoreAppState() {
   const keyringState = await storage.get('keyringState');
   await permission.init();
   await preference.init();
-  await chainService.init();
   await openapi.init();
+  await chainService.init();
 
   keyringService.loadStore(keyringState);
   keyringService.store.subscribe((value) => storage.set('keyringState', value));
