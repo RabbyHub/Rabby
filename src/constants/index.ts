@@ -4,15 +4,6 @@ import IconEthLogo from 'ui/assets/chain-logos/eth.svg';
 import IconHecoLogo from 'ui/assets/chain-logos/heco.svg';
 import IconPolygonLogo from 'ui/assets/chain-logos/polygon.svg';
 
-export enum APPROVAL_STATE {
-  LOCK,
-  UNLOCK,
-  CONNECT,
-  APPROVAL,
-  REQUEST,
-  END,
-}
-
 export enum CHAINS_ENUM {
   ETH = 'ETH',
   BSC = 'BSC',
