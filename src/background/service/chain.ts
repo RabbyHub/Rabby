@@ -1,6 +1,6 @@
 import { CHAINS_ENUM, CHAINS } from 'consts';
 import { createPersistStore } from 'background/utils';
-import openapi from './openapi';
+import openapi, { ServerChain } from './openapi';
 
 interface ChainStore {
   enableChains: CHAINS_ENUM[];
@@ -54,7 +54,12 @@ class ChainService {
   };
 
   loadSupportChains = async (): Promise<Chain[]> => {
-    const chains = await openapi.getSupportedChains();
+    let chains: ServerChain[] = [];
+    try {
+      chains = await openapi.getSupportedChains();
+    } catch (e) {
+      console.error('[rabby] get support chains failed', e);
+    }
     const localChainArr = Object.values(CHAINS);
     const result: Chain[] = [];
     for (let i = 0; i < chains.length; i++) {
