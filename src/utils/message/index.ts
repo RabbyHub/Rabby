@@ -54,7 +54,7 @@ abstract class Message extends EventEmitter {
       try {
         res = await this.listenCallback(data);
       } catch (e) {
-        console.error('eee', e);
+        // console.error('eee', e);
         // should be eth-rpc-errors (EthereumRpcError)
         // https://github.com/MetaMask/eth-rpc-errors/blob/main/src/classes.ts#L62
         err = e.toString();

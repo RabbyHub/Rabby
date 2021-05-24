@@ -47,7 +47,7 @@ export default (req) =>
       // check need approval
       const {
         request: {
-          data: params,
+          data: { params },
           session: { origin, name, icon },
         },
         mapMethod,
