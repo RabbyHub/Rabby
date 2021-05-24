@@ -1,5 +1,6 @@
 import React from 'react';
 import ClipboardJS from 'clipboard';
+import QRCode from 'qrcode.react';
 import { useEffect, useState } from 'react';
 import { Link, useHistory } from 'react-router-dom';
 import { message, Modal } from 'antd';
@@ -80,6 +81,7 @@ const Dashboard = () => {
   const [currentAccount, setCurrentAccount] = useState<Account | null>(null);
 
   const [isModalOpen, setModalOpen] = useState(false);
+  const [qrcodeVisible, setQrcodeVisible] = useState(false);
 
   const handleToggle = () => {
     setModalOpen(!isModalOpen);
@@ -122,7 +124,7 @@ const Dashboard = () => {
   };
 
   const handleShowQrcode = () => {
-    // TODO
+    setQrcodeVisible(true);
   };
 
   return (
@@ -183,6 +185,21 @@ const Dashboard = () => {
         </div>
         <RecentConnections />
       </div>
+      <Modal
+        visible={qrcodeVisible}
+        footer={null}
+        closable={false}
+        onCancel={() => setQrcodeVisible(false)}
+        className="qrcode-modal"
+        width="64%"
+      >
+        <div>
+          <QRCode value={currentAccount?.address} size={212} />
+          <p className="address text-gray-subTitle text-13 font-medium mb-0">
+            {currentAccount?.address}
+          </p>
+        </div>
+      </Modal>
       <Modal
         title="Switch address"
         visible={isModalOpen}
