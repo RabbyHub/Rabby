@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
+import { Chain } from 'background/service/chain';
 import { Button } from 'antd';
-import ChainSelector from 'ui/component/ChainSelector';
-import { useApproval } from 'ui/utils';
+import { ChainSelector, Spin } from 'ui/component';
+import { useApproval, useWallet } from 'ui/utils';
 import { CHAINS_ENUM } from 'consts';
 
 interface ConnectProps {
@@ -10,12 +11,34 @@ interface ConnectProps {
   defaultChain: CHAINS_ENUM;
 }
 
-const Connect = ({
-  params: { icon, origin, name },
-  onChainChange,
-  defaultChain,
-}: ConnectProps) => {
+const Connect = ({ params: { icon, origin, name } }: ConnectProps) => {
   const [, resolveApproval, rejectApproval] = useApproval();
+  const wallet = useWallet();
+  const [defaultChain, setDefaultChain] = useState(CHAINS_ENUM.ETH);
+  const [isLoading, setIsLoading] = useState(true);
+
+  const init = async () => {
+    const account = await wallet.getCurrentAccount();
+    const recommendChains = await wallet.openapi.getRecommendChains(
+      account!.address,
+      origin
+    );
+    const enableChains = wallet.getEnableChains();
+    setIsLoading(false);
+    let targetChain: Chain | undefined;
+    for (let i = 0; i < recommendChains.length; i++) {
+      targetChain = enableChains.find(
+        (c) => c.serverId === recommendChains[i].id
+      );
+      if (targetChain) break;
+    }
+    setDefaultChain(targetChain ? targetChain.enum : CHAINS_ENUM.ETH);
+    setIsLoading(false);
+  };
+
+  useEffect(() => {
+    init();
+  }, []);
 
   const handleCancel = () => {
     rejectApproval('user reject');
@@ -27,8 +50,12 @@ const Connect = ({
     });
   };
 
+  const handleChainChange = (val: CHAINS_ENUM) => {
+    setDefaultChain(val);
+  };
+
   return (
-    <>
+    <Spin spinning={isLoading}>
       <div className="approval-connect">
         <div className="font-medium text-20 text-center">
           Request for connection
@@ -45,7 +72,7 @@ const Connect = ({
             <p className="mb-0 text-12 text-gray-content">
               On this site use chain
             </p>
-            <ChainSelector value={defaultChain} onChange={onChainChange} />
+            <ChainSelector value={defaultChain} onChange={handleChainChange} />
           </div>
         </div>
       </div>
@@ -71,7 +98,7 @@ const Connect = ({
           </Button>
         </div>
       </footer>
-    </>
+    </Spin>
   );
 };
 
