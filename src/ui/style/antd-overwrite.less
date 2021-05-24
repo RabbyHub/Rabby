@@ -49,8 +49,8 @@
 .ant-modal-header {
   padding-bottom: 0;
 }
-.ant-modal-confirm-body {
-  .anticon.anticon-info-circle {
+.ant-modal-confirm-body { 
+  .anticon.anticon-info-circle, .anticon.anticon-exclamation-circle {
     display: none;
   }
   .ant-modal-confirm-title {
@@ -67,6 +67,20 @@
     padding: 18px 12px;
     border-radius: 6px;
     margin-left: 0 !important;
+  }
+}
+
+.ant-modal-confirm-body-wrapper {
+  .ant-modal-confirm-btns {
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    .ant-btn {
+      width: 144px;
+      font-size: 15px;
+      font-weight: 500;
+      height: 44px;
+    }
   }
 }
 

@@ -60,6 +60,7 @@ export class WalletController extends BaseController {
     permission.updateConnectSite(origin, data);
   };
   removeConnectedSite = permission.removeConnectedSite;
+  getSitesByDefaultChain = permission.getSitesByDefaultChain;
 
   /* keyrings */
 

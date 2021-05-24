@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useWallet } from '../../utils';
-import { Switch, message } from 'antd';
+import { Switch, message, Modal } from 'antd';
 import { PageHeader, Field } from '../../component';
 import { Chain } from 'background/service/chain';
 import { CHAINS, CHAINS_ENUM } from 'consts';
@@ -21,10 +21,24 @@ const ChainManagement = () => {
       wallet.enableChain(chainEnum);
     } else {
       if (enableChains.length > 1) {
-        setEnableChains(
-          enableChains.filter((chain) => chain.enum !== chainEnum)
-        );
-        wallet.disableChain(chainEnum);
+        Modal.confirm({
+          content:
+            'Disable this link will clear all website records associated with this link',
+          okText: 'Confirm',
+          cancelText: 'Cancel',
+          onOk: () => {
+            const sites = wallet.getSitesByDefaultChain(chainEnum);
+            if (sites.length > 0) {
+              sites.forEach((site) => {
+                wallet.removeConnectedSite(site.origin);
+              });
+            }
+            setEnableChains(
+              enableChains.filter((chain) => chain.enum !== chainEnum)
+            );
+            wallet.disableChain(chainEnum);
+          },
+        });
       } else {
         message.error('Keep at least one chain enabled.');
       }
