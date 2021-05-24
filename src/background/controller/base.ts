@@ -16,6 +16,8 @@ class BaseController {
       preference.setCurrentAccount(account);
     }
 
+    if (!account) return null;
+
     const keyring = await keyringService.getKeyringForAccount(
       account.address,
       account.type

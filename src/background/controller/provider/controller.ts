@@ -32,6 +32,7 @@ class ProviderController extends BaseController {
       return [];
     }
     const account = await this.getCurrentAccount();
+    if (!account) return null;
     return [account.address];
   };
 

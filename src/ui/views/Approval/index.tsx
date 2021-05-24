@@ -21,6 +21,10 @@ const Approval = () => {
 
   const init = async () => {
     const account = await wallet.getCurrentAccount();
+    if (!account) {
+      rejectApproval();
+      return;
+    }
     setAccount(account.address);
     // setAccountType(account.type);
   };
