@@ -7,7 +7,7 @@ interface Approval {
     state: number;
     params?: any;
     origin?: string;
-    type: string;
+    aporovalComponent: string;
   };
   resolve(params?: any): void;
   reject(err: EthereumProviderError<any>): void;
@@ -26,11 +26,11 @@ class Notification {
       }
     });
 
-    winMgr.event.on('windowFocusChange', (winId: number) => {
-      if (this.notifiWindowId && winId !== this.notifiWindowId) {
-        this.rejectApproval();
-      }
-    });
+    // winMgr.event.on('windowFocusChange', (winId: number) => {
+    //   if (this.notifiWindowId && winId !== this.notifiWindowId) {
+    //     this.rejectApproval();
+    //   }
+    // });
   }
 
   getApproval = () => this.approval?.data;
