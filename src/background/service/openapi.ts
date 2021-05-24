@@ -126,11 +126,23 @@ class OpenApi {
     this.store.config = data;
   };
 
-  getSupportedChains = async () => {
+  getSupportedChains = async (): Promise<ServerChain[]> => {
     const config = this.store.config.get_supported_chains;
-    const { data } = await this.request[config.method]<ServerChain[]>(
-      config.path
-    );
+    const { data } = await this.request[config.method](config.path);
+    return data;
+  };
+
+  getRecommendChains = async (
+    address: string,
+    origin: string
+  ): Promise<ServerChain[]> => {
+    const config = this.store.config.recommend_chains;
+    const { data } = await this.request[config.method](config.path, {
+      params: {
+        user_addr: address,
+        origin,
+      },
+    });
     return data;
   };
 }
