@@ -12,7 +12,7 @@ const Approval = () => {
   const [defaultChain, setDefaultChain] = useState(CHAINS_ENUM.ETH);
   // const [waitingForHardware, setWaitingForHardware] = useState(false);
   const wallet = useWallet();
-  const [approval] = useApproval();
+  const [approval, , rejectApproval] = useApproval();
   if (!approval) {
     history.replace('/');
     return null;
