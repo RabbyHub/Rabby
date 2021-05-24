@@ -47,7 +47,7 @@ const ChainSelector = ({ value, onChange }: ChainSelectorProps) => {
       >
         <>
           <ul className="chain-selector-options">
-            {enableChains.map((chain) => (
+            {/* {enableChains.map((chain) => (
               <li
                 key={chain.enum}
                 onClick={() => handleChange(chain.enum as CHAINS_ENUM)}
@@ -59,7 +59,7 @@ const ChainSelector = ({ value, onChange }: ChainSelectorProps) => {
                   src={value === chain.enum ? IconChecked : IconNotChecked}
                 />
               </li>
-            ))}
+            ))} */}
           </ul>
           <p className="text-12 text-gray-comment text-center mb-0 tip">
             More chains will be added in the future...
