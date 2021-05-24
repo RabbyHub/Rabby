@@ -9,6 +9,7 @@ import './style.less';
 const ChainManagement = () => {
   const wallet = useWallet();
   const [enableChains, setEnableChains] = useState<Chain[]>([]);
+  const chains = wallet.getSupportChains();
 
   useEffect(() => {
     setEnableChains(wallet.getEnableChains());
@@ -33,31 +34,20 @@ const ChainManagement = () => {
   return (
     <div className="chain-management">
       <PageHeader>Chain Management</PageHeader>
-      {Object.keys(CHAINS).map((chainEnum) => (
+      {chains.map((chain) => (
         <Field
-          key={chainEnum}
-          leftIcon={
-            <img src={CHAINS[chainEnum].logo} className="icon icon-chain" />
-          }
+          key={chain.enum}
+          leftIcon={<img src={chain.logo} className="icon icon-chain" />}
           rightIcon={
             <Switch
-              checked={
-                !!enableChains.find(
-                  (chain) => chain.enum.toString() === chainEnum
-                )
-              }
-              onChange={(checked) =>
-                handleSwitchChain(
-                  (chainEnum as unknown) as CHAINS_ENUM,
-                  checked
-                )
-              }
+              checked={!!enableChains.find((c) => c.enum === chain.enum)}
+              onChange={(checked) => handleSwitchChain(chain.enum, checked)}
             />
           }
         >
           <div className="chain-info">
-            <p className="text-13">{CHAINS[chainEnum].name}</p>
-            <p className="text-12">Chain ID: {CHAINS[chainEnum].id}</p>
+            <p className="text-13">{chain.name}</p>
+            <p className="text-12">Chain ID: {chain.id}</p>
           </div>
         </Field>
       ))}

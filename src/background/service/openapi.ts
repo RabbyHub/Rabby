@@ -12,6 +12,15 @@ interface OpenApiStore {
   config: Record<string, OpenApiConfigValue>;
 }
 
+interface ServerChain {
+  id: string;
+  community_id: number;
+  name: string;
+  native_token_id: string;
+  logo_url: string;
+  wrapped_token_id: string;
+}
+
 class OpenApi {
   store!: OpenApiStore;
 
@@ -106,18 +115,22 @@ class OpenApi {
   };
 
   getConfig = async () => {
-    // TODO
-    // const { data } = await this.request.get<Record<string, OpenApiConfigValue>>(
-    //   `${this.store.host}/v1/config`
-    // );
-    // this.store.config = data;
+    const { data } = await this.request.get<Record<string, OpenApiConfigValue>>(
+      `${this.store.host}/v1/wallet/config`
+    );
+
+    for (const key in data) {
+      data[key].method = data[key].method.toLowerCase() as Method;
+    }
+
+    this.store.config = data;
   };
 
   getSupportedChains = async () => {
     const config = this.store.config.get_supported_chains;
-    const { data } = await this.request.get<string[]>(config.path, {
-      method: config.method.toLowerCase() as Method,
-    });
+    const { data } = await this.request[config.method]<ServerChain[]>(
+      config.path
+    );
     return data;
   };
 }

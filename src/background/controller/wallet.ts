@@ -42,7 +42,7 @@ export class WalletController extends BaseController {
   openIndexPage = openIndexPage;
 
   /* chains */
-
+  getSupportChains = () => chainService.getSupportChains();
   getEnableChains = () => chainService.getEnabledChains();
   enableChain = (id: CHAINS_ENUM) => chainService.enableChain(id);
   disableChain = (id: CHAINS_ENUM) => chainService.disableChain(id);

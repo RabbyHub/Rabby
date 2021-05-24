@@ -1,6 +1,6 @@
 import { ethErrors } from 'eth-rpc-errors';
 import { keyringService, notification, permission } from 'background/service';
-import { PromiseFlow } from 'background/utils';
+import { PromiseFlow, underline2Camelcase } from 'background/utils';
 import providerController from './controller';
 
 export default (req) =>
@@ -10,7 +10,7 @@ export default (req) =>
       const {
         data: { method },
       } = ctx.request;
-      ctx.mapMethod = method.replace(/_(.)/g, (m, p1) => p1.toUpperCase());
+      ctx.mapMethod = underline2Camelcase(method);
 
       if (!providerController[ctx.mapMethod]) {
         throw ethErrors.rpc.methodNotFound({
