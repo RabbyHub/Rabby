@@ -133,9 +133,6 @@ class OpenApi {
     );
     return data;
   };
-    });
-    return data;
-  };
 }
 
 export default new OpenApi();
