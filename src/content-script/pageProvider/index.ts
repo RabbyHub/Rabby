@@ -17,6 +17,7 @@ const log = (event, ...args) => {
 
 class EthereumProvider extends EventEmitter {
   chainId = null;
+  isMetamask = true;
   private _hiddenRequests: any[] = [];
   private _bcm = new BroadcastChannelMessage(bcmChannel);
 
@@ -25,18 +26,19 @@ class EthereumProvider extends EventEmitter {
 
     this.initialize();
     this.triggerHiddenRequest();
+    this.shimLegacy();
   }
 
   initialize = async () => {
     this._bcm.connect().on('message', this.handleBackgroundMessage);
 
     try {
-      const { accounts, chainId }: any = await this.request({
+      const { chainId }: any = await this.request({
         method: 'getProviderState',
       });
 
       this.chainId = chainId;
-      this.emit('connected', { chainId });
+      this.emit('connect', { chainId });
     } catch {
       //
     }
@@ -124,7 +126,16 @@ class EthereumProvider extends EventEmitter {
       .catch((error) => callback(error, { error }));
   };
 
-  enable = () => this.request({ method: 'eth_requestAccounts' });
+  shimLegacy = () => {
+    const legacyMethods = [
+      ['enable', 'eth_requestAccounts'],
+      ['net_version', 'net_version'],
+    ];
+
+    for (const [_method, method] of legacyMethods) {
+      this[_method] = () => this.request({ method });
+    }
+  };
 }
 
 declare global {
@@ -133,4 +144,10 @@ declare global {
   }
 }
 
-window.ethereum = new EthereumProvider();
+window.ethereum = new Proxy(new EthereumProvider(), {
+  get(target, prop, receiver) {
+    log('*****i want****', prop);
+
+    return Reflect.get(target, prop, receiver);
+  },
+});

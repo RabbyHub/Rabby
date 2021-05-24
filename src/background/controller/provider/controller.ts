@@ -1,9 +1,18 @@
 import { Transaction } from '@ethereumjs/tx';
 import { keyringService, permission, chainService } from 'background/service';
 import { Session } from 'background/service/session';
-import { CHAINS, CHAINS_ENUM } from 'consts';
+import { CHAINS } from 'consts';
 import { http } from 'background/utils';
 import BaseController from '../base';
+
+// eth_coinbase
+// eth_sign
+// eth_signTypedData
+// eth_signTypedData_v3
+// eth_signTypedData_v4
+// eth_getEncryptionPublicKey
+// eth_decrypt
+// personal_ecRecover
 
 class ProviderController extends BaseController {
   @Reflect.metadata('APPROVAL', ['SignTx'])
@@ -42,6 +51,12 @@ class ProviderController extends BaseController {
     return CHAINS[site!.chain].id;
   };
 
+  netVersion = ({ session }: { session: Session }) => {
+    const origin = session.origin;
+    const site = permission.getWithoutUpdate(origin);
+    return CHAINS[site!.chain].network;
+  };
+
   ethGetTransactionCount = () => '0x100';
 
   ethRequestAccounts = this.ethAccounts;
@@ -62,6 +77,7 @@ class ProviderController extends BaseController {
     data: {
       params: [chainParams],
     },
+    session: { origin },
   }) => {
     const chain = Object.values(CHAINS).find(
       (value) => value.hex === chainParams.chainId
@@ -70,6 +86,14 @@ class ProviderController extends BaseController {
     if (!chain) {
       throw new Error('This chain is not supported by Rabby yet.');
     }
+
+    permission.updateConnectSite(
+      origin,
+      {
+        chain: chain.enum,
+      },
+      true
+    );
 
     return chainService.enableChain(chain.enum);
   };

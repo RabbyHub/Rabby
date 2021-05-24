@@ -22,6 +22,7 @@ export const CHAINS: Record<string, Chain> = {
     hex: '0x1',
     enum: CHAINS_ENUM.ETH,
     logo: IconEthLogo,
+    network: 1,
   },
   [CHAINS_ENUM.BSC]: {
     id: 56,
@@ -30,6 +31,7 @@ export const CHAINS: Record<string, Chain> = {
     hex: '0x38',
     enum: CHAINS_ENUM.BSC,
     logo: IconBscLogo,
+    network: 56,
   },
   [CHAINS_ENUM.DAI]: {
     id: 100,
@@ -38,6 +40,7 @@ export const CHAINS: Record<string, Chain> = {
     hex: '0x64',
     enum: CHAINS_ENUM.DAI,
     logo: IconDaiLogo,
+    network: 100,
   },
   [CHAINS_ENUM.FTM]: {
     id: 250,
@@ -47,6 +50,7 @@ export const CHAINS: Record<string, Chain> = {
     enum: CHAINS_ENUM.FTM,
     logo:
       'https://static.debank.com/image/chain/logo_url/ftm/700fca32e0ee6811686d72b99cc67713.png',
+    network: 250,
   },
   [CHAINS_ENUM.POLYGON]: {
     id: 137,
@@ -55,6 +59,7 @@ export const CHAINS: Record<string, Chain> = {
     hex: '0x89',
     enum: CHAINS_ENUM.POLYGON,
     logo: IconPolygonLogo,
+    network: 137,
   },
 };
 

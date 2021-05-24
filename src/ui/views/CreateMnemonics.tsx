@@ -91,7 +91,7 @@ const VerifyMnemonics = ({ mnemonics, onBackClick }) => {
           },
         ]}
       >
-        <TiledSelect className="h-[165px]" options={randomMnemonics} />
+        <TiledSelect className="h-[297px]" options={randomMnemonics} />
       </Form.Item>
     </StrayPageWithButton>
   );

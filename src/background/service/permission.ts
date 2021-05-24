@@ -66,9 +66,20 @@ class Permission {
     this.sync();
   };
 
-  updateConnectSite = (origin: string, value: ConnectedSite) => {
+  updateConnectSite = (
+    origin: string,
+    value: Partial<ConnectedSite>,
+    partialUpdate?: boolean
+  ) => {
     if (!this.lruCache || !this.lruCache.has(origin)) return;
-    this.lruCache.set(origin, value);
+
+    if (partialUpdate) {
+      const _value = this.lruCache.get(origin);
+      this.lruCache.set(origin, { ..._value, ...value } as ConnectedSite);
+    } else {
+      this.lruCache.set(origin, value as ConnectedSite);
+    }
+
     this.sync();
   };
 
