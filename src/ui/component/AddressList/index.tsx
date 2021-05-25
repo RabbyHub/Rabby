@@ -1,9 +1,11 @@
-import React, { FunctionComponent } from 'react';
+import React, { FunctionComponent, useEffect, useState } from 'react';
 import clsx from 'clsx';
 import { DisplayedKeryring } from 'background/service/keyring';
-import { AddressViewer } from 'ui/component';
+import { ChainWithBalance } from 'background/service/openapi';
+import { useWallet } from 'ui/utils';
+import { AddressViewer, Spin } from 'ui/component';
 import { splitNumberByStep } from 'ui/utils/number';
-import { KEYRING_TYPE_TEXT, HARDWARE_KEYRING_TYPES } from 'consts';
+import { KEYRING_TYPE_TEXT, HARDWARE_KEYRING_TYPES, CHAINS } from 'consts';
 import IconTrezor from 'ui/assets/icon-trezor.svg';
 import IconLedger from 'ui/assets/icon-ledger.svg';
 import IconOnekey from 'ui/assets/icon-onekey.svg';
@@ -17,6 +19,10 @@ interface AddressListProps {
   ActionButton: FunctionComponent<{ data: string; keyring: any }>;
   hiddenAddresses?: { type: string; address: string }[];
   onClick?(account: string, keyring: any): void;
+}
+
+interface DisplayChainWithWhiteLogo extends ChainWithBalance {
+  logo?: string;
 }
 
 const AddressItem = ({
@@ -34,6 +40,12 @@ const AddressItem = ({
   hiddenAddresses?: { type: string; address: string }[];
   onClick?(account: string, keyring: any): void;
 }) => {
+  const wallet = useWallet();
+  const [balance, setBalance] = useState<number | null>(null);
+  const [chainBalances, setChainBalances] = useState<
+    DisplayChainWithWhiteLogo[]
+  >([]);
+
   const HardwareIcon = () => {
     switch (keyring.type) {
       case HARDWARE_KEYRING_TYPES.Ledger.type:
@@ -46,6 +58,29 @@ const AddressItem = ({
         return <></>;
     }
   };
+
+  const getCurrentBalance = async () => {
+    if (!account) return;
+    const {
+      total_usd_value,
+      chain_list,
+    } = await wallet.openapi.getTotalBalance(account);
+    setBalance(total_usd_value);
+    const chainsArray = Object.values(CHAINS);
+    setChainBalances(
+      chain_list
+        .filter((item) => item.usd_value > 0)
+        .map((item) => ({
+          ...item,
+          logo: chainsArray.find((chain) => chain.serverId === item.id)?.logo,
+        }))
+    );
+  };
+
+  useEffect(() => {
+    getCurrentBalance();
+  }, [account]);
+
   return (
     <li
       className={clsx(className, {
@@ -55,13 +90,32 @@ const AddressItem = ({
       })}
       onClick={() => onClick && onClick(account, keyring)}
     >
-      <div className="address-info">
-        <span className="balance">${splitNumberByStep(1000)}</span>
-        <AddressViewer
-          address={account}
-          showArrow={false}
-          className="subtitle"
-        />
+      <div>
+        <div className="address-info">
+          <Spin spinning={balance === null}>
+            <span className="balance">
+              ${splitNumberByStep((balance || 0).toFixed(2))}
+            </span>
+          </Spin>
+          <AddressViewer
+            address={account}
+            showArrow={false}
+            className="subtitle"
+          />
+        </div>
+        {!!chainBalances.length && (
+          <div className="mt-4">
+            {chainBalances.map((item) => (
+              <img
+                src={item.logo}
+                className="w-16 h-16 mr-[6px] float-left"
+                key={item.id}
+                alt={`${item.name}: $${item.usd_value.toFixed(2)}`}
+                title={`${item.name}: $${item.usd_value.toFixed(2)}`}
+              />
+            ))}
+          </div>
+        )}
       </div>
       {keyring && (
         <div className="action-button flex items-center">

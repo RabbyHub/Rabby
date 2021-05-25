@@ -54,7 +54,10 @@ class ProviderController extends BaseController {
   netVersion = ({ session }: { session: Session }) => {
     const origin = session.origin;
     const site = permission.getWithoutUpdate(origin);
-    return CHAINS[site!.chain].network;
+    if (!site) {
+      return null;
+    }
+    return CHAINS[site.chain].network;
   };
 
   ethGetTransactionCount = () => '0x100';

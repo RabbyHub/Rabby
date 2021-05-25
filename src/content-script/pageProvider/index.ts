@@ -62,11 +62,7 @@ class EthereumProvider extends EventEmitter {
     });
 
     try {
-      const {
-        chainId,
-        accounts,
-        networkVersion,
-      }: any = await this._bcm.request({
+      const { chainId, accounts, networkVersion }: any = await this.request({
         method: 'getProviderState',
       });
 

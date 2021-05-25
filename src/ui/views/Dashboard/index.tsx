@@ -77,7 +77,7 @@ const SwitchAddress = ({
   ) : null;
 };
 
-interface DisplayChainWithWhiteLogo extends ChainWithBalance {
+export interface DisplayChainWithWhiteLogo extends ChainWithBalance {
   whiteLogo?: string;
 }
 
