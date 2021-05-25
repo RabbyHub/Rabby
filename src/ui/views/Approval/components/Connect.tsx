@@ -1,7 +1,9 @@
 import React, { useEffect, useState } from 'react';
+import { SecurityCheckDecision } from 'background/service/openapi';
 import { Chain } from 'background/service/chain';
 import { Button } from 'antd';
 import { ChainSelector, Spin } from 'ui/component';
+import SecurityCheckBar from './SecurityCheckBar';
 import { useApproval, useWallet } from 'ui/utils';
 import { CHAINS_ENUM } from 'consts';
 
@@ -16,6 +18,11 @@ const Connect = ({ params: { icon, origin, name } }: ConnectProps) => {
   const wallet = useWallet();
   const [defaultChain, setDefaultChain] = useState(CHAINS_ENUM.ETH);
   const [isLoading, setIsLoading] = useState(true);
+  const [
+    securityCheckStatus,
+    setSecurityCheckStatus,
+  ] = useState<SecurityCheckDecision>('loading');
+  const [securityCheckAlert, setSecurityCheckAlert] = useState('Checking...');
 
   const init = async () => {
     const account = await wallet.getCurrentAccount();
@@ -23,6 +30,9 @@ const Connect = ({ params: { icon, origin, name } }: ConnectProps) => {
       account!.address,
       origin
     );
+    const check = await wallet.openapi.checkOrigin(account!.address, origin);
+    setSecurityCheckStatus(check.decision);
+    setSecurityCheckAlert(check.alert);
     const enableChains = wallet.getEnableChains();
     setIsLoading(false);
     let targetChain: Chain | undefined;
@@ -78,7 +88,10 @@ const Connect = ({ params: { icon, origin, name } }: ConnectProps) => {
       </div>
 
       <footer className="connect-footer">
-        <div className="risk-info"></div>
+        <SecurityCheckBar
+          status={securityCheckStatus}
+          alert={securityCheckAlert}
+        />
         <div className="action-buttons flex justify-between">
           <Button
             type="primary"

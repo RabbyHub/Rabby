@@ -130,4 +130,30 @@
     border-top: 0.5px solid #D8DFEB;
     width: 100%;
   }
+
+  .security-check-bar {
+    display: flex;
+    padding-bottom: 20px;
+    font-weight: 500;
+    font-size: 13px;
+    line-height: 15px;
+    width: 100%;
+    overflow: hidden;
+    .icon-status {
+      width: 16px;
+      height: 16px;
+      margin-right: 8px;
+      flex-shrink: 0;
+    }
+    .alert {
+      flex: 1;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .icon-arrow-right {
+      width: 16px;
+      height: 16px;
+    }
+  }
 }

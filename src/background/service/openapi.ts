@@ -29,6 +29,26 @@ export interface ChainWithPendingCount extends ServerChain {
   pending_tx_count: number;
 }
 
+export type SecurityCheckDecision =
+  | 'pass'
+  | 'warning'
+  | 'danger'
+  | 'forbidden'
+  | 'loading';
+
+export interface SecurityCheckItem {
+  alert: string;
+  id: number;
+}
+
+export interface SecurityCheckResponse {
+  decision: SecurityCheckDecision;
+  alert: string;
+  danger_list: SecurityCheckItem[];
+  warning_list: SecurityCheckItem[];
+  forbidden_list: SecurityCheckItem[];
+}
+
 class OpenApi {
   store!: OpenApiStore;
 
@@ -179,6 +199,21 @@ class OpenApi {
         user_addr: address,
       },
     });
+    return data;
+  };
+
+  checkOrigin = async (
+    address: string,
+    origin: string
+  ): Promise<SecurityCheckResponse> => {
+    const config = this.store.config.check_origin;
+    const { data } = await this.request[config.method](config.path, {
+      params: {
+        user_addr: address,
+        origin,
+      },
+    });
+
     return data;
   };
 }
