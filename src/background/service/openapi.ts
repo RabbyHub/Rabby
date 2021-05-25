@@ -21,6 +21,14 @@ export interface ServerChain {
   wrapped_token_id: string;
 }
 
+export interface ChainWithBalance extends ServerChain {
+  usd_value: number;
+}
+
+export interface ChainWithPendingCount extends ServerChain {
+  pending_tx_count: number;
+}
+
 class OpenApi {
   store!: OpenApiStore;
 
@@ -145,6 +153,30 @@ class OpenApi {
       params: {
         user_addr: address,
         origin,
+      },
+    });
+    return data;
+  };
+
+  getTotalBalance = async (
+    address
+  ): Promise<{ total_usd_value: number; chain_list: ChainWithBalance[] }> => {
+    const config = this.store.config.get_total_balance;
+    const { data } = await this.request[config.method](config.path, {
+      params: {
+        id: address,
+      },
+    });
+    return data;
+  };
+
+  getPendingCount = async (
+    address: string
+  ): Promise<{ total_count: number; chains: ChainWithPendingCount[] }> => {
+    const config = this.store.config.get_pending_tx_count;
+    const { data } = await this.request[config.method](config.path, {
+      params: {
+        user_addr: address,
       },
     });
     return data;

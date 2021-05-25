@@ -4,6 +4,12 @@ import IconDaiLogo from 'ui/assets/chain-logos/dai.svg';
 import IconEthLogo from 'ui/assets/chain-logos/eth.svg';
 // import IconHecoLogo from 'ui/assets/chain-logos/heco.svg';
 import IconPolygonLogo from 'ui/assets/chain-logos/polygon.svg';
+import IconBscWhiteLogo from 'ui/assets/chain-logos/bsc-white.svg';
+import IconDaiWhiteLogo from 'ui/assets/chain-logos/dai-white.svg';
+import IconEthWhiteLogo from 'ui/assets/chain-logos/eth-white.svg';
+// import IconHecoWhiteLogo from 'ui/assets/chain-logos/heco-white.svg';
+import IconPolygonWhiteLogo from 'ui/assets/chain-logos/polygon-white.svg';
+import IconfantomWhiteLogo from 'ui/assets/chain-logos/fantom-white.svg';
 
 export enum CHAINS_ENUM {
   ETH = 'ETH',
@@ -22,6 +28,7 @@ export const CHAINS: Record<string, Chain> = {
     hex: '0x1',
     enum: CHAINS_ENUM.ETH,
     logo: IconEthLogo,
+    whiteLogo: IconEthWhiteLogo,
     network: 1,
   },
   [CHAINS_ENUM.BSC]: {
@@ -31,6 +38,7 @@ export const CHAINS: Record<string, Chain> = {
     hex: '0x38',
     enum: CHAINS_ENUM.BSC,
     logo: IconBscLogo,
+    whiteLogo: IconBscWhiteLogo,
     network: 56,
   },
   [CHAINS_ENUM.DAI]: {
@@ -40,6 +48,7 @@ export const CHAINS: Record<string, Chain> = {
     hex: '0x64',
     enum: CHAINS_ENUM.DAI,
     logo: IconDaiLogo,
+    whiteLogo: IconDaiWhiteLogo,
     network: 100,
   },
   [CHAINS_ENUM.FTM]: {
@@ -50,6 +59,7 @@ export const CHAINS: Record<string, Chain> = {
     enum: CHAINS_ENUM.FTM,
     logo:
       'https://static.debank.com/image/chain/logo_url/ftm/700fca32e0ee6811686d72b99cc67713.png',
+    whiteLogo: IconfantomWhiteLogo,
     network: 250,
   },
   [CHAINS_ENUM.POLYGON]: {
@@ -59,6 +69,7 @@ export const CHAINS: Record<string, Chain> = {
     hex: '0x89',
     enum: CHAINS_ENUM.POLYGON,
     logo: IconPolygonLogo,
+    whiteLogo: IconPolygonWhiteLogo,
     network: 137,
   },
 };
