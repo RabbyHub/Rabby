@@ -67,9 +67,14 @@ class ProviderController extends BaseController {
       data: {
         params: [chainParams],
       },
+      session: { origin },
     }) => {
-      return Object.values(CHAINS).some(
-        (chain) => chain.hex === chainParams.chainId
+      return (
+        chainService
+          .getEnabledChains()
+          .some((chain) => chain.hex === chainParams.chainId) &&
+        CHAINS[permission.getConnectedSite(origin)!.chain]?.hex ===
+          chainParams.chainId
       );
     },
   ])

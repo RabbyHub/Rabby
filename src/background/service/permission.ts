@@ -97,6 +97,10 @@ class Permission {
     return this.lruCache?.values() || [];
   };
 
+  getConnectedSite = (key) => {
+    return this.lruCache?.get(key);
+  };
+
   removeConnectedSite = (origin) => {
     if (!this.lruCache) return;
 

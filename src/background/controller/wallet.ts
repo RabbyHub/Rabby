@@ -49,6 +49,7 @@ export class WalletController extends BaseController {
 
   /* connectedSites */
 
+  getConnectedSite = permission.getConnectedSite;
   getConnectedSites = permission.getConnectedSites;
   getRecentConnectedSites = permission.getRecentConnectSites;
   getCurrentConnectedSite = (tabId: number) => {

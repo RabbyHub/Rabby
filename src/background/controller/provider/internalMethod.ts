@@ -1,4 +1,5 @@
 import { CHAINS_ENUM, CHAINS } from 'consts';
+import providerController from './controller';
 
 const tabCheckin = ({
   data: {
@@ -9,10 +10,11 @@ const tabCheckin = ({
   session.setProp({ origin, name, icon });
 };
 
-const getProviderState = (req) => {
+const getProviderState = async (req) => {
   return {
     chainId: CHAINS[CHAINS_ENUM.ETH].id,
-    // accounts: methodMap.getAccounts(req),
+    accounts: await providerController.ethAccounts(req),
+    networkVersion: await providerController.netVersion(req),
   };
 };
 

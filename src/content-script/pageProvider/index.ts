@@ -2,6 +2,8 @@
 import { EventEmitter } from 'events';
 import { ethErrors, serializeError } from 'eth-rpc-errors';
 import BroadcastChannelMessage from '@/utils/message/broadcastChannelMessage';
+import { domReadyCall, $ } from './utils';
+import ReadyPromise from '../readyPromise';
 
 const bcmChannel = new URLSearchParams(
   document!.currentScript!.getAttribute('src')!.split('?')[1]
@@ -16,31 +18,78 @@ const log = (event, ...args) => {
 };
 
 class EthereumProvider extends EventEmitter {
-  chainId = null;
-  isMetamask = true;
-  private _hiddenRequests: any[] = [];
+  chainId: string | null = null;
+  accounts: string[] = [];
+  /**
+   * The network ID of the currently connected Ethereum chain.
+   * @deprecated
+   */
+  networkVersion: string | null = null;
+  isMetaMask = true;
+
+  private _isConnected = false;
+  private requestPromise = new ReadyPromise(2);
   private _bcm = new BroadcastChannelMessage(bcmChannel);
 
   constructor() {
     super();
-
     this.initialize();
-    this.triggerHiddenRequest();
     this.shimLegacy();
   }
 
   initialize = async () => {
     this._bcm.connect().on('message', this.handleBackgroundMessage);
 
+    domReadyCall(() => {
+      const origin = location.origin;
+      const icon =
+        ($('head > link[rel~="icon"]') as HTMLLinkElement)?.href ||
+        ($('head > meta[itemprop="image"]') as HTMLMetaElement)?.content;
+
+      const name =
+        document.title ||
+        ($('head > meta[name="title"]') as HTMLMetaElement)?.content ||
+        origin;
+
+      this._bcm.request({
+        data: {
+          method: 'tabCheckin',
+          params: { icon, name, origin },
+        },
+      });
+
+      this.requestPromise.check(2);
+    });
+
     try {
-      const { chainId }: any = await this.request({
+      const {
+        chainId,
+        accounts,
+        networkVersion,
+      }: any = await this._bcm.request({
         method: 'getProviderState',
       });
 
       this.chainId = chainId;
+      this.accounts = accounts;
+      this.networkVersion = networkVersion;
       this.emit('connect', { chainId });
+      this._isConnected = true;
     } catch {
       //
+    }
+
+    document.addEventListener(
+      'visibilitychange',
+      this._requestPromiseCheckVisibility
+    );
+  };
+
+  _requestPromiseCheckVisibility = () => {
+    if (document.visibilityState === 'visible') {
+      this.requestPromise.check(1);
+    } else {
+      this.requestPromise.uncheck(1);
     }
   };
 
@@ -48,7 +97,7 @@ class EthereumProvider extends EventEmitter {
     log('[push event]', event, data);
     if (event === 'disconnect') {
       this.emit(event, ethErrors.provider.disconnected());
-
+      this._isConnected = false;
       return;
     }
 
@@ -56,43 +105,7 @@ class EthereumProvider extends EventEmitter {
   };
 
   isConnected = () => {
-    return true;
-  };
-
-  pushHiddenRequest = (data) => {
-    return new Promise((resolve, reject) => {
-      this._hiddenRequests.push({
-        data,
-        resolve,
-        reject,
-      });
-    });
-  };
-
-  triggerHiddenRequest = async () => {
-    document.addEventListener('visibilitychange', () => {
-      if (document.visibilityState === 'visible') {
-        while (this._hiddenRequests.length) {
-          const { data, resolve } = this._hiddenRequests.shift();
-
-          log('[request:hidden]', data);
-          resolve(
-            this._bcm
-              .request({ data })
-              .then((res) => {
-                log('[request:hidden: success]', res);
-
-                return res;
-              })
-              .catch((err) => {
-                log('[request:hidden: error]', err);
-
-                return Promise.reject(serializeError(err));
-              })
-          );
-        }
-      }
-    });
+    return this._isConnected;
   };
 
   request = async (data) => {
@@ -100,31 +113,73 @@ class EthereumProvider extends EventEmitter {
       throw ethErrors.rpc.invalidRequest();
     }
 
-    if (document.visibilityState !== 'visible') {
-      return this.pushHiddenRequest(data);
-    }
+    this._requestPromiseCheckVisibility();
 
-    log('[request]', data);
-    return this._bcm
-      .request({ data })
-      .then((res) => {
-        log('[request: success]', res);
+    return this.requestPromise.call(() => {
+      log('[request]', JSON.stringify(data, null, 2));
 
-        return res;
-      })
-      .catch((err) => {
-        log('[request: error]', err);
+      return this._bcm
+        .request({ data })
+        .then((res) => {
+          log('[request: success]', res);
 
-        return Promise.reject(serializeError(err));
-      });
+          return res;
+        })
+        .catch((err) => {
+          log('[request: error]', err);
+
+          throw serializeError(err);
+        });
+    });
   };
 
   // shim to matamask legacy api
   sendAsync = (payload, callback) => {
     log('[sendAsync]', payload);
-    this.request(payload)
-      .then((result) => callback(null, { result }))
-      .catch((error) => callback(error, { error }));
+    const { method, params, ...rest } = payload;
+    this.request({ method, params })
+      .then((result) => callback(null, { ...rest, method, result }))
+      .catch((error) => callback(error, { ...rest, method, error }));
+  };
+
+  send = (payload, callback?) => {
+    if (typeof payload === 'string' && (!callback || Array.isArray(callback))) {
+      // send(method, params? = [])
+      return this.request({ method: payload, params: callback });
+    }
+
+    if (typeof payload === 'object' && typeof callback === 'function') {
+      return this.sendAsync(payload, callback);
+    }
+
+    let result;
+    switch (payload.method) {
+      case 'eth_accounts':
+        result = this.accounts;
+        break;
+
+      case 'eth_coinbase':
+        result = this.accounts[0];
+        break;
+
+      // case 'eth_uninstallFilter':
+      //   this.request(payload);
+      //   result = true;
+      //   break;
+
+      case 'net_version':
+        result = this.networkVersion || null;
+        break;
+
+      default:
+        throw new Error('sync method doesnt support');
+    }
+
+    return {
+      id: payload.id,
+      jsonrpc: payload.jsonrpc,
+      result,
+    };
   };
 
   shimLegacy = () => {
@@ -151,4 +206,5 @@ window.ethereum = new Proxy(new EthereumProvider(), {
 
     return Reflect.get(target, prop, receiver);
   },
+  deleteProperty: () => true,
 });

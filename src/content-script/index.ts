@@ -1,6 +1,6 @@
 import { Message } from 'utils';
 import { nanoid } from 'nanoid';
-import { insertScript } from './utils';
+import { browser } from 'webextension-polyfill-ts';
 
 const { BroadcastChannelMessage, PortMessage } = Message;
 
@@ -20,38 +20,7 @@ document.addEventListener('beforeunload', () => {
   pm.dispose();
 });
 
-insertScript(`pageProvider.js?channel=${channelName}`).then((ele) => {
-  ele.remove();
-});
-
-function tabCheckin(connect) {
-  const origin = location.origin;
-  const icon =
-    (document.querySelector('head > link[rel~="icon"]') as HTMLLinkElement)
-      ?.href ||
-    (document.querySelector('head > meta[itemprop="image"]') as HTMLMetaElement)
-      ?.content;
-  const name =
-    document.title ||
-    (document.querySelector('head > meta[name="title"]') as HTMLMetaElement)
-      ?.content ||
-    origin;
-
-  connect.request({
-    data: {
-      method: 'tabCheckin',
-      params: { icon, name, origin },
-    },
-  });
-}
-
-if (document.readyState === 'complete') {
-  tabCheckin(pm);
-} else {
-  const domContentLoadedHandler = () => {
-    if (document.readyState !== 'complete') return;
-    tabCheckin(pm);
-    document.removeEventListener('readystatechange', domContentLoadedHandler);
-  };
-  document.addEventListener('readystatechange', domContentLoadedHandler);
-}
+const ele = document.createElement('script');
+ele.src = browser.runtime.getURL(`pageProvider.js?channel=${channelName}`);
+ele.addEventListener('load', () => ele.remove());
+(document.head || document.documentElement).appendChild(ele);
