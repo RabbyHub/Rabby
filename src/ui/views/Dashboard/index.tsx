@@ -4,9 +4,11 @@ import QRCode from 'qrcode.react';
 import { useEffect, useState } from 'react';
 import { Link, useHistory } from 'react-router-dom';
 import { message, Modal } from 'antd';
+import { CHAINS } from 'consts';
 import { AddressViewer, AddressList } from 'ui/component';
 import { useWallet, getCurrentTab } from 'ui/utils';
 import { splitNumberByStep } from 'ui/utils/number';
+import { ChainWithBalance } from 'background/service/openapi';
 import { DisplayedKeryring } from 'background/service/keyring';
 import { Account } from 'background/service/preference';
 import RecentConnections from './components/RecentConnections';
@@ -75,6 +77,10 @@ const SwitchAddress = ({
   ) : null;
 };
 
+interface DisplayChainWithWhiteLogo extends ChainWithBalance {
+  whiteLogo?: string;
+}
+
 const Dashboard = () => {
   const history = useHistory();
   const wallet = useWallet();
@@ -82,6 +88,11 @@ const Dashboard = () => {
 
   const [isModalOpen, setModalOpen] = useState(false);
   const [qrcodeVisible, setQrcodeVisible] = useState(false);
+  const [balance, setBalance] = useState(0);
+  const [chainBalances, setChainBalances] = useState<
+    DisplayChainWithWhiteLogo[]
+  >([]);
+  const [pendingTxCount, setPendingTxCount] = useState(0);
 
   const handleToggle = () => {
     setModalOpen(!isModalOpen);
@@ -91,6 +102,38 @@ const Dashboard = () => {
     const account = await wallet.getCurrentAccount();
     setCurrentAccount(account);
   };
+
+  const getCurrentBalance = async () => {
+    if (!currentAccount) return;
+    const {
+      total_usd_value,
+      chain_list,
+    } = await wallet.openapi.getTotalBalance(currentAccount.address);
+    setBalance(total_usd_value);
+    const chainsArray = Object.values(CHAINS);
+    setChainBalances(
+      chain_list
+        .filter((item) => item.usd_value > 0)
+        .map((item) => ({
+          ...item,
+          whiteLogo: chainsArray.find((chain) => chain.serverId === item.id)
+            ?.whiteLogo,
+        }))
+    );
+  };
+
+  const getPendingTxCount = async () => {
+    if (!currentAccount) return;
+    const { total_count } = await wallet.openapi.getPendingCount(
+      currentAccount.address
+    );
+    setPendingTxCount(total_count);
+  };
+
+  useEffect(() => {
+    getCurrentBalance();
+    getPendingTxCount();
+  }, [currentAccount]);
 
   useEffect(() => {
     getCurrentAccount();
@@ -158,10 +201,20 @@ const Dashboard = () => {
           <div className="assets flex">
             <div className="left">
               <p className="amount leading-none">
-                ${splitNumberByStep(36425421.18)}
+                ${splitNumberByStep(balance.toFixed(2))}
               </p>
-              <p className="extra leading-none">
-                This seems to be no assets yet
+              <p className="extra leading-none flex">
+                {chainBalances.length > 0
+                  ? chainBalances.map((item) => (
+                      <img
+                        src={item.whiteLogo || item.logo_url}
+                        className="icon icon-chain"
+                        key={item.id}
+                        alt={`${item.name}: $${item.usd_value.toFixed(2)}`}
+                        title={`${item.name}: $${item.usd_value.toFixed(2)}`}
+                      />
+                    ))
+                  : 'This seems to be no assets yet'}
               </p>
             </div>
             <div className="right">
@@ -180,6 +233,11 @@ const Dashboard = () => {
             <div className="operation-item">
               <img className="icon icon-history" src={IconHistory} />
               History
+              {pendingTxCount > 0 && (
+                <p className="pending-count mb-0 text-12 text-white text-opacity-60">
+                  {pendingTxCount} pending
+                </p>
+              )}
             </div>
           </div>
         </div>
