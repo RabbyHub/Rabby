@@ -14,7 +14,7 @@ browser.windows.onRemoved.addListener((winId) => {
 
 const WINDOW_SIZE = {
   width: 400,
-  height: 500,
+  height: 530,
 };
 
 const create = async (url): Promise<number | undefined> => {

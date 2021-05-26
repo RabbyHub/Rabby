@@ -65,7 +65,9 @@ const SecurityCheckBar = ({
         alt={STATUS[status].name}
         className="icon icon-status"
       />
-      <span className="alert">{alert}</span>
+      <span className="alert">
+        {status === 'pass' ? 'No risk found' : alert}
+      </span>
       {STATUS[status].clickable && (
         <img src={IconArrowRight} className="icon icon-arrow-right" />
       )}

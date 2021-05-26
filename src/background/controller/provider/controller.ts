@@ -65,7 +65,7 @@ class ProviderController extends BaseController {
     return CHAINS[site.chain].network;
   };
 
-  ethGetTransactionCount = () => '0x100';
+  ethGetTransactionCount = () => '0x4e20';
 
   ethRequestAccounts = this.ethAccounts;
 

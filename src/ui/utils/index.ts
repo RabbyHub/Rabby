@@ -7,6 +7,8 @@ export * from './hooks';
 
 export * from './tab';
 
+export * from './time';
+
 const UI_TYPE = {
   Tab: 'index',
   Pop: 'popup',
