@@ -2,12 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { Spin } from 'ui/component';
 import SecurityCheckBar from './SecurityCheckBar';
 import { Button } from 'antd';
-import { SecurityCheckDecision } from 'background/service/openapi';
+import { SecurityCheckDecision, Tx } from 'background/service/openapi';
 import { ExplainTxResponse, GasLevel } from 'background/service/openapi';
 import { CHAINS, TX_TYPE_ENUM } from 'consts';
 import { useWallet, useApproval } from 'ui/utils';
 import Approve from './TxComponents/Approve';
 import Cancel from './TxComponents/Cancel';
+import Sign from './TxComponents/Sign';
 import GasSelector from './TxComponents/GasSelecter';
 
 const SignTx = ({ params, origin }) => {
@@ -21,29 +22,31 @@ const SignTx = ({ params, origin }) => {
   const [, resolveApproval, rejectApproval] = useApproval();
   const wallet = useWallet();
   const session = params.session;
-  const [{ data, from, gas, gasPrice, nonce, to, value }] = params.data;
   const site = wallet.getConnectedSite(session.origin);
   let chainId = params.data.chainId;
   if (!chainId) {
     chainId = CHAINS[site!.chain].id;
   }
+  const [{ data, from, gas, gasPrice, nonce, to, value }] = params.data;
+  const [tx, setTx] = useState<Tx>({
+    chainId,
+    data,
+    from,
+    gas,
+    gasPrice,
+    nonce,
+    to,
+    value,
+  });
 
   const checkTx = async (address: string) => {
-    const res = await wallet.openapi.checkTx(
-      { chainId, data, from, gas, gasPrice, nonce, to, value },
-      origin,
-      address
-    );
+    const res = await wallet.openapi.checkTx(tx, origin, address);
     setSecurityCheckStatus(res.decision);
     setSecurityCheckAlert(res.alert);
   };
 
   const explainTx = async (address: string) => {
-    const res = await wallet.openapi.explainTx(
-      { chainId, data, from, gas, gasPrice, nonce, to, value },
-      origin,
-      address
-    );
+    const res = await wallet.openapi.explainTx(tx, origin, address);
     setTxDetail(res);
     setIsReady(true);
   };
@@ -60,6 +63,10 @@ const SignTx = ({ params, origin }) => {
 
   const handleGasChange = (gas: GasLevel) => {
     console.log(gas);
+    setTx({
+      ...tx,
+      gasPrice: `0x${gas.price.toString(16)}`,
+    });
   };
 
   const handleCancel = () => {
@@ -68,7 +75,7 @@ const SignTx = ({ params, origin }) => {
 
   useEffect(() => {
     init();
-  }, []);
+  }, [tx]);
 
   return (
     <Spin spinning={!isReady}>
@@ -97,6 +104,9 @@ const SignTx = ({ params, origin }) => {
             )}
             {txDetail.pre_exec.tx_type === TX_TYPE_ENUM.CANCEL_APPROVE && (
               <Cancel data={txDetail} />
+            )}
+            {txDetail.pre_exec.tx_type === TX_TYPE_ENUM.SIGN_TX && (
+              <Sign data={txDetail} />
             )}
             <footer className="connect-footer">
               <GasSelector

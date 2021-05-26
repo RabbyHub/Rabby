@@ -49,7 +49,10 @@ const GasSelector = ({ gas, nativeToken, tx, onChange }: GasSelectorProps) => {
         ...selectedGas,
         price: customGas,
       });
+    } else {
+      onChange(selectedGas);
     }
+    setModalVisible(false);
   };
 
   const handleCustomGasChange = (value: string) => {

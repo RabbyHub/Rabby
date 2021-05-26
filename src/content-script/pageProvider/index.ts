@@ -23,7 +23,7 @@ class EthereumProvider extends EventEmitter {
    * @deprecated
    */
   networkVersion: string | null = null;
-  isMetaMask = true;
+  isRabby = true;
 
   private _isConnected = false;
   private requestPromise = new ReadyPromise(2);
