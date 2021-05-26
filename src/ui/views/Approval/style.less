@@ -1,7 +1,9 @@
 @import '../../style/var.less';
 
 .approval {
-  min-height: 100vh;
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
 
   header {
     background: @primary-linear;
@@ -110,6 +112,9 @@
 
   .approval-tx {
     padding: 12px 20px;
+    padding-bottom: 185px;
+    display: flex;
+    flex-direction: column;
     .site-card {
       .chain-info {
         color: #525966;
@@ -137,6 +142,8 @@
       font-weight: 500;
       font-size: 13px;
       color: #525966;
+      margin-bottom: 24px;
+      word-break: break-word;
       .tags {
         display: flex;
         margin-top: 8px;
@@ -148,6 +155,29 @@
           margin-right: 8px;
           border: 0.5px solid #B4BDCC;
           border-radius: 10px;
+        }
+      }
+    }
+    .assets-change {
+      margin: 0;
+      li {
+        display: flex;
+        justify-content: space-between;
+        color: #525966;
+        font-size: 14px;
+        margin-bottom: 8px;
+        .token {
+          display: flex;
+          align-items: center;
+          .icon-token {
+            width: 24px;
+            height: 24px;
+            border-radius: 100%;
+            margin-right: 8px;
+          }
+        }
+        &:nth-last-child(1) {
+          margin-bottom: 0;
         }
       }
     }
@@ -255,6 +285,8 @@
     .time, .tx-count {
       color: #818A99;
       font-size: 12px;
+      display: flex;
+      align-items: center;
       .icon {
         width: 12px;
         height: 12px;
