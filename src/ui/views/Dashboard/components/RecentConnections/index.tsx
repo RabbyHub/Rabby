@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Tooltip } from 'antd';
+import { useHistory } from 'react-router-dom';
 import { useWallet, useApproval, getCurrentConnectSite } from 'ui/utils';
 import { ConnectedSite } from 'background/service/permission';
 import { ChainSelector } from 'ui/component';
@@ -71,15 +72,15 @@ const ConnectionItem = ({
 };
 
 export default () => {
+  const history = useHistory();
   const [connections, setConnections] = useState<ConnectedSite[]>([]);
   const [currentConnect, setCurrentConnect] = useState<
     ConnectedSite | null | undefined
   >(null);
   const wallet = useWallet();
-  const [approval] = useApproval();
 
   const handleClickAllSites = () => {
-    // TODO
+    history.push('/settings/sites');
   };
 
   const getCurrentSite = async () => {
