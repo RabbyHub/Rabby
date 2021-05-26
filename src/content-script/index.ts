@@ -3,11 +3,16 @@ import { nanoid } from 'nanoid';
 
 const channelName = nanoid();
 
+// the script element with src won't execute immediately
+// use inline script element instead!
 const container = document.head || document.documentElement;
 const ele = document.createElement('script');
-// the script element with src won't execute immediately
-ele.textContent = `var channelName = '${channelName}';`;
-ele.textContent += '#PAGEPROVIDER#';
+// in prevent of webpack optimized code do some magic(e.g. double/sigle quote wrap),
+// seperate content assignment to two line
+// use AssetReplacePlugin to replace pageprovider content
+let content = `var channelName = '${channelName}';`;
+content += '#PAGEPROVIDER#';
+ele.textContent = content;
 container.insertBefore(ele, container.children[0]);
 container.removeChild(ele);
 

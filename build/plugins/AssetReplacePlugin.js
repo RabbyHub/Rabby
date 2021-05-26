@@ -1,6 +1,7 @@
-// github.com/webpack/webpack-sources/blob/master/lib/ConcatSource.js
+/**
+ * replace string with other assets content at "afterProcessAssets"
+ */
 
-// replace string with other assets content afterProcessAssets
 class AssetReplacePlugin {
   constructor(options) {
     this.options = options;
@@ -31,6 +32,7 @@ class AssetReplacePlugin {
 
           const replaceFn = replaceArr
             .map(([k, assetName]) => {
+              // github.com/webpack/webpack-sources/blob/master/lib/ConcatSource.js
               const content = compilation.assets[assetName]?.source();
 
               return (source) =>
