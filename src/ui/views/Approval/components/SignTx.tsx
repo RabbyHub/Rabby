@@ -7,6 +7,7 @@ import { ExplainTxResponse, GasLevel } from 'background/service/openapi';
 import { CHAINS, TX_TYPE_ENUM } from 'consts';
 import { useWallet, useApproval } from 'ui/utils';
 import Approve from './TxComponents/Approve';
+import Cancel from './TxComponents/Cancel';
 import GasSelector from './TxComponents/GasSelecter';
 
 const SignTx = ({ params, origin }) => {
@@ -93,6 +94,9 @@ const SignTx = ({ params, origin }) => {
             </div>
             {txDetail.pre_exec.tx_type === TX_TYPE_ENUM.APPROVE && (
               <Approve data={txDetail} />
+            )}
+            {txDetail.pre_exec.tx_type === TX_TYPE_ENUM.CANCEL_APPROVE && (
+              <Cancel data={txDetail} />
             )}
             <footer className="connect-footer">
               <GasSelector
