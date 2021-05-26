@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import { StrayPageWithButton, FieldCheckbox } from 'ui/component';
+import { StrayPageWithButton, FieldCheckbox, Spin } from 'ui/component';
 import { useWallet } from 'ui/utils';
 
 const LEDGER_LIVE_PATH = `m/44'/60'/0'/0/0`;
@@ -17,19 +17,27 @@ const LedgerHdPath = () => {
   const history = useHistory();
   const wallet = useWallet();
   const [currentPath, setCurrentPath] = useState(LEDGER_LIVE_PATH);
+  const [spinning, setSpin] = useState(false);
 
   const onSubmit = async () => {
     if (!currentPath) {
       return;
     }
-    const keyring = await wallet.connectHardware('LEDGER', currentPath);
-    await keyring.unlock();
-    history.push({
-      pathname: '/import/select-address',
-      state: {
-        keyring,
-      },
-    });
+    setSpin(true);
+    try {
+      const keyring = await wallet.connectHardware('LEDGER', currentPath);
+      await keyring.unlock();
+      setSpin(false);
+      history.push({
+        pathname: '/import/select-address',
+        state: {
+          keyring,
+        },
+      });
+    } catch (err) {
+      console.log('connect error', err);
+      setSpin(false);
+    }
   };
 
   const handlePathChange = (_path, checked) => {
@@ -44,6 +52,7 @@ const LedgerHdPath = () => {
       }}
       onSubmit={onSubmit}
       hasBack
+      spinning={spinning}
     >
       <div className="mt-40 mb-[188px]">
         {HD_PATHS.map((path) => (

@@ -1,5 +1,10 @@
 import { Transaction } from '@ethereumjs/tx';
-import { keyringService, permission, chainService } from 'background/service';
+import {
+  keyringService,
+  permission,
+  chainService,
+  sessionService,
+} from 'background/service';
 import { Session } from 'background/service/session';
 import { CHAINS } from 'consts';
 import { http } from 'background/utils';
@@ -103,7 +108,10 @@ class ProviderController extends BaseController {
       true
     );
 
-    return chainService.enableChain(chain.enum);
+    chainService.enableChain(chain.enum);
+
+    sessionService.broadcastEvent('chainChanged', chain.id, origin);
+    return null;
   };
 }
 

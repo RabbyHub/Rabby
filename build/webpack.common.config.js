@@ -2,6 +2,7 @@ const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const TSConfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 const ESLintWebpackPlugin = require('eslint-webpack-plugin');
+const AssetReplacePlugin = require('./plugins/AssetReplacePlugin');
 
 const paths = require('./paths');
 
@@ -22,7 +23,17 @@ const config = {
       {
         test: /\.jsx?$|\.tsx?$/,
         exclude: /node_modules/,
-        loader: 'ts-loader',
+        oneOf: [
+          {
+            // prevent webpack remove this file's output even it's not been used in entry
+            sideEffects: true,
+            test: /[\\/]pageProvider[\\/]index.ts/,
+            loader: 'ts-loader',
+          },
+          {
+            loader: 'ts-loader',
+          },
+        ],
       },
       {
         test: /\.less$/,
@@ -66,8 +77,8 @@ const config = {
       },
       {
         test: /\.svg$/,
-        use: ['@svgr/webpack', 'url-loader']
-      }
+        use: ['@svgr/webpack', 'url-loader'],
+      },
     ],
   },
   plugins: [
@@ -95,6 +106,9 @@ const config = {
     new webpack.ProvidePlugin({
       Buffer: ['buffer', 'Buffer'],
       process: 'process',
+    }),
+    new AssetReplacePlugin({
+      '#PAGEPROVIDER#': 'pageProvider',
     }),
   ],
   resolve: {

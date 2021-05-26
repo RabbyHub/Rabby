@@ -64,7 +64,7 @@ const AddressItem = ({
     const {
       total_usd_value,
       chain_list,
-    } = await wallet.openapi.getTotalBalance(account);
+    } = await wallet.openapi.getTotalBalance(account.toLowerCase());
     setBalance(total_usd_value);
     const chainsArray = Object.values(CHAINS);
     setChainBalances(

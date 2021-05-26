@@ -21,6 +21,7 @@ const SelectAddress = () => {
   }
 
   const { keyring, isMnemonics } = state;
+  const [spinning, setSpin] = useState(false);
 
   const [accounts, setAccounts] = useState<any[]>([]);
   const [importedAccounts, setImportedAccounts] = useState<any[]>([]);
@@ -29,15 +30,23 @@ const SelectAddress = () => {
   const wallet = useWallet();
 
   const getAccounts = async (firstFlag = false) => {
-    const _accounts = firstFlag
-      ? await keyring.getFirstPage()
-      : await keyring.getNextPage();
-    if (_accounts.length < 5) {
-      throw new Error(
-        'You need to make use your last account before you can add a new one.'
-      );
+    setSpin(true);
+    try {
+      const _accounts = firstFlag
+        ? await keyring.getFirstPage()
+        : await keyring.getNextPage();
+
+      if (_accounts.length < 5) {
+        throw new Error(
+          'You need to make use your last account before you can add a new one.'
+        );
+      }
+      setSpin(false);
+      setAccounts(accounts.concat(..._accounts));
+    } catch (err) {
+      console.log('get hardware account error', err);
+      setSpin(false);
     }
-    setAccounts(accounts.concat(..._accounts));
   };
 
   const init = async () => {
@@ -65,6 +74,7 @@ const SelectAddress = () => {
     <SelectSuccess accounts={successAccounts} hasDivider={isMnemonics} />
   ) : (
     <StrayPageWithButton
+      spinning={spinning}
       header={
         isMnemonics
           ? {

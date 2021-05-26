@@ -7,11 +7,12 @@ const antIcon = <LoadingOutlined style={{ fontSize: 24 }} spin />;
 interface SpinProps {
   children?: ReactNode;
   spinning: boolean;
+  className?: string;
 }
 
-export default ({ children, spinning }: SpinProps) => {
+export default ({ children, spinning, className }: SpinProps) => {
   return (
-    <Spin indicator={antIcon} spinning={spinning}>
+    <Spin indicator={antIcon} spinning={spinning} wrapperClassName={className}>
       {children}
     </Spin>
   );
