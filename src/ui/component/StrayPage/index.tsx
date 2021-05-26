@@ -1,14 +1,18 @@
 import React, { ReactNode, FunctionComponent } from 'react';
 import cx from 'clsx';
 import { Form, FormInstance } from 'antd';
-import StrayHeader, { StrayHeaderProps } from './StrayHeader';
-import StrayFooter, { StrayFooterNavProps } from './StrayFooter';
+import StrayHeader, { StrayHeaderProps } from '../StrayHeader';
+import StrayFooter, { StrayFooterNavProps } from '../StrayFooter';
+import Spin from '../Spin';
+
+import './index.css';
 
 interface StrayPageProps {
   header?: StrayHeaderProps;
   children?: ReactNode;
   footerRender?: FunctionComponent;
   className?: string;
+  spinning?: boolean;
 }
 
 const StrayPage = ({
@@ -16,10 +20,12 @@ const StrayPage = ({
   children,
   footerRender,
   className,
+  spinning = false,
 }: StrayPageProps) => (
-  <div
+  <Spin
+    spinning={spinning}
     className={cx(
-      'relative flex flex-col',
+      'stray-page relative flex flex-col',
       'sm:pt-28 sm:px-20 sm:h-full sm:bg-gray-bg',
       'lg:pt-[60px] lg:bg-gray-bg lg:w-[993px] lg:max-h-full lg:mt-[150px] lg:rounded-md lg:mx-auto',
       className
@@ -30,7 +36,7 @@ const StrayPage = ({
       <div className="lg:flex lg:items-center lg:flex-col">{children}</div>
     )}
     {footerRender && footerRender({})}
-  </div>
+  </Spin>
 );
 
 interface StrayPageWithButtonProps {
@@ -40,6 +46,7 @@ interface StrayPageWithButtonProps {
   onSubmit?(values: any): any;
   children;
   className?: string;
+  spinning?: boolean;
 }
 
 export const StrayPageWithButton = ({
@@ -56,8 +63,9 @@ export const StrayPageWithButton = ({
   initialValues,
   className,
   NextButtonText,
+  spinning,
 }: StrayPageWithButtonProps & StrayFooterNavProps) => (
-  <StrayPage header={header} className={className}>
+  <StrayPage header={header} className={className} spinning={spinning}>
     <Form
       className="flex-1 overflow-auto"
       form={form}
