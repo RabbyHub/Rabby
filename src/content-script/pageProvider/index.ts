@@ -5,9 +5,7 @@ import BroadcastChannelMessage from '@/utils/message/broadcastChannelMessage';
 import { domReadyCall, $ } from './utils';
 import ReadyPromise from '../readyPromise';
 
-const bcmChannel = new URLSearchParams(
-  document!.currentScript!.getAttribute('src')!.split('?')[1]
-).get('channel')!;
+declare const channelName;
 
 const log = (event, ...args) => {
   console.log(
@@ -29,7 +27,7 @@ class EthereumProvider extends EventEmitter {
 
   private _isConnected = false;
   private requestPromise = new ReadyPromise(2);
-  private _bcm = new BroadcastChannelMessage(bcmChannel);
+  private _bcm = new BroadcastChannelMessage(channelName);
 
   constructor() {
     super();
@@ -196,11 +194,10 @@ declare global {
   }
 }
 
-window.ethereum = new Proxy(new EthereumProvider(), {
-  get(target, prop, receiver) {
-    log('*****i want****', prop);
+const provider = new EthereumProvider();
 
-    return Reflect.get(target, prop, receiver);
-  },
+window.ethereum = new Proxy(provider, {
   deleteProperty: () => true,
 });
+
+window.dispatchEvent(new Event('ethereum#initialized'));

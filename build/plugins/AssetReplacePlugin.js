@@ -1,0 +1,63 @@
+// github.com/webpack/webpack-sources/blob/master/lib/ConcatSource.js
+
+// replace string with other assets content afterProcessAssets
+class AssetReplacePlugin {
+  constructor(options) {
+    this.options = options;
+  }
+  apply(compiler) {
+    const {
+      webpack: {
+        sources: { RawSource },
+      },
+    } = compiler;
+    compiler.hooks.make.tapAsync(
+      'AssetReplacePlugin',
+      (compilation, callback) => {
+        compilation.hooks.afterProcessAssets.tap('AssetReplacePlugin', () => {
+          const replaceArr = Object.entries(this.options)
+            .map(([k, v]) => {
+              let assetName;
+              for (const chunk of compilation.chunks.values()) {
+                if (chunk.name === v) {
+                  assetName = chunk.files.values().next().value;
+
+                  break;
+                }
+              }
+              return [k, assetName];
+            })
+            .filter(([, assetName]) => assetName);
+
+          const replaceFn = replaceArr
+            .map(([k, assetName]) => {
+              const content = compilation.assets[assetName]?.source();
+
+              return (source) =>
+                source.replace(
+                  new RegExp(`['"]?${k}['"]?`, 'g'),
+                  JSON.stringify(content)
+                );
+            })
+            .reduce((m, n) => (content) => n(m(content)));
+
+          for (const chunk of compilation.chunks.values()) {
+            const fileName = chunk.files.values().next().value;
+            if (
+              !replaceArr.includes(([, assetName]) => assetName === fileName)
+            ) {
+              compilation.updateAsset(fileName, (content) => {
+                const result = replaceFn(content.source());
+
+                return new RawSource(result);
+              });
+            }
+          }
+        });
+        callback();
+      }
+    );
+  }
+}
+
+module.exports = AssetReplacePlugin;
