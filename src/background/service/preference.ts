@@ -12,7 +12,7 @@ interface PreferenceStore {
   hiddenAddresses: Account[];
 }
 
-class Preference {
+class PreferenceService {
   store!: PreferenceStore;
 
   init = async () => {
@@ -75,4 +75,4 @@ class Preference {
   };
 }
 
-export default new Preference();
+export default new PreferenceService();

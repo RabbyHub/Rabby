@@ -2,24 +2,24 @@ import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { Spin, StrayPage } from 'ui/component';
 import { useWallet } from 'ui/utils';
-import { IconLedger, IconOnekey, IconTrezor } from 'ui/assets';
+import { SvgIconLedger, SvgIconOnekey, SvgIconTrezor } from 'ui/assets';
 import { BIP44_PATH } from './LedgerHdPath';
 
 import './index.css';
 
 const HARDWARES = [
   {
-    icon: IconLedger,
+    icon: SvgIconLedger,
     name: 'Ledger',
     type: 'LEDGER',
   },
   {
-    icon: IconTrezor,
+    icon: SvgIconTrezor,
     name: 'Trezor',
     type: 'TREZOR',
   },
   {
-    icon: IconOnekey,
+    icon: SvgIconOnekey,
     name: 'Onekey',
     type: 'ONEKEY',
   },

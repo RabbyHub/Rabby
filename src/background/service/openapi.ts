@@ -109,7 +109,7 @@ export interface GasLevel {
   estimated_seconds: number;
 }
 
-class OpenApi {
+class OpenApiService {
   store!: OpenApiStore;
 
   request = axios.create();
@@ -331,4 +331,4 @@ class OpenApi {
   };
 }
 
-export default new OpenApi();
+export default new OpenApiService();

@@ -1,5 +1,9 @@
 import { ethErrors } from 'eth-rpc-errors';
-import { keyringService, notification, permission } from 'background/service';
+import {
+  keyringService,
+  notificationService,
+  permissionService,
+} from 'background/service';
 import { PromiseFlow, underline2Camelcase } from 'background/utils';
 import providerController from './controller';
 
@@ -24,7 +28,7 @@ export default (req) =>
       const isUnlock = keyringService.memStore.getState().isUnlocked;
 
       if (!isUnlock) {
-        await notification.requestApproval({});
+        await notificationService.requestApproval({});
       }
     })
     .use(async (ctx) => {
@@ -34,13 +38,13 @@ export default (req) =>
           session: { origin, name, icon },
         },
       } = ctx;
-      if (!permission.hasPerssmion(origin)) {
-        const { defaultChain } = await notification.requestApproval({
+      if (!permissionService.hasPerssmion(origin)) {
+        const { defaultChain } = await notificationService.requestApproval({
           params: { origin, name, icon },
           aporovalComponent: 'Connect',
         });
 
-        permission.addConnectedSite(origin, name, icon, defaultChain);
+        permissionService.addConnectedSite(origin, name, icon, defaultChain);
       }
     })
     .use(async (ctx) => {
@@ -56,7 +60,7 @@ export default (req) =>
         Reflect.getMetadata('APPROVAL', providerController, mapMethod) || [];
 
       if (approvalType && (!condition || !condition(ctx.request))) {
-        ctx.approvalRes = await notification.requestApproval({
+        ctx.approvalRes = await notificationService.requestApproval({
           aporovalComponent: approvalType,
           params: {
             data: params,
@@ -65,7 +69,7 @@ export default (req) =>
           origin,
         });
 
-        permission.touchConnectedSite(origin);
+        permissionService.touchConnectedSite(origin);
       }
     })
     .use(async ({ approvalRes, mapMethod, request }) => {
@@ -77,7 +81,7 @@ export default (req) =>
       );
 
       if (uiRequestComponent) {
-        return await notification.requestApproval({
+        return await notificationService.requestApproval({
           aporovalComponent: uiRequestComponent,
           requestDeffer,
           params: rest,

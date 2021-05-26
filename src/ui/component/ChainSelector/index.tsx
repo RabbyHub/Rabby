@@ -4,7 +4,7 @@ import { CHAINS_ENUM, CHAINS } from 'consts';
 import { useWallet } from 'ui/utils';
 import IconChecked from 'ui/assets/checked.svg';
 import IconNotChecked from 'ui/assets/not-checked.svg';
-import IconArrowDown from 'ui/assets/arrow-down-gray.svg';
+import { IconArrowDown } from 'ui/assets';
 import './style.less';
 
 interface ChainSelectorProps {
@@ -35,7 +35,7 @@ const ChainSelector = ({ value, onChange }: ChainSelectorProps) => {
     <>
       <div className="chain-selector" onClick={handleClickSelector}>
         <img src={CHAINS[value].logo} className="chain-logo" />
-        <img src={IconArrowDown} className="icon icon-arrow-down" />
+        <IconArrowDown className="icon icon-arrow-down text-gray-content fill-current" />
       </div>
       <Modal
         width="86%"

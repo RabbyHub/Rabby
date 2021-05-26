@@ -14,7 +14,7 @@ type PermissionStore = {
   dumpCache: ReadonlyArray<LRU.Entry<string, ConnectedSite>>;
 };
 
-class Permission {
+class PermissionService {
   store: PermissionStore = {
     dumpCache: [],
   };
@@ -114,4 +114,4 @@ class Permission {
   };
 }
 
-export default new Permission();
+export default new PermissionService();

@@ -1,8 +1,8 @@
-import { preference, keyringService } from 'background/service';
+import { preferenceService, keyringService } from 'background/service';
 
 class BaseController {
   getCurrentAccount = async () => {
-    let account = preference.getCurrentAccount();
+    let account = preferenceService.getCurrentAccount();
     if (account) {
       const accounts = await this.getAccounts();
       const matchAcct = accounts.find(
@@ -13,7 +13,7 @@ class BaseController {
 
     if (!account) {
       [account] = await this.getAccounts();
-      preference.setCurrentAccount(account);
+      preferenceService.setCurrentAccount(account);
     }
 
     if (!account) return null;

@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import { Tooltip } from 'antd';
 import { useWallet, useApproval, getCurrentConnectSite } from 'ui/utils';
 import { ConnectedSite } from 'background/service/permission';
 import { ChainSelector } from 'ui/component';
@@ -61,7 +62,9 @@ const ConnectionItem = ({
       onClick={onClick}
       style={{ cursor: onClick ? 'pointer' : 'inherit' }}
     >
-      <img src={item.icon} alt={item.name} className="logo" />
+      <Tooltip title={item.name} placement="topLeft">
+        <img src={item.icon} className="logo" />
+      </Tooltip>
       <p className="name">{item.name}</p>
     </div>
   );

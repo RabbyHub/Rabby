@@ -1,7 +1,7 @@
 import { Transaction } from '@ethereumjs/tx';
 import {
   keyringService,
-  permission,
+  permissionService,
   chainService,
   sessionService,
 } from 'background/service';
@@ -42,7 +42,7 @@ class ProviderController extends BaseController {
   }) => keyringService.signPersonalMessage({ data, from });
 
   ethAccounts = async ({ session: { origin } }) => {
-    if (!permission.hasPerssmion(origin)) {
+    if (!permissionService.hasPerssmion(origin)) {
       return [];
     }
     const account = await this.getCurrentAccount();
@@ -52,13 +52,13 @@ class ProviderController extends BaseController {
 
   ethChainId = ({ session }: { session: Session }) => {
     const origin = session.origin;
-    const site = permission.getWithoutUpdate(origin);
+    const site = permissionService.getWithoutUpdate(origin);
     return CHAINS[site!.chain].id;
   };
 
   netVersion = ({ session }: { session: Session }) => {
     const origin = session.origin;
-    const site = permission.getWithoutUpdate(origin);
+    const site = permissionService.getWithoutUpdate(origin);
     if (!site) {
       return null;
     }
@@ -81,7 +81,7 @@ class ProviderController extends BaseController {
         chainService
           .getEnabledChains()
           .some((chain) => chain.hex === chainParams.chainId) &&
-        CHAINS[permission.getConnectedSite(origin)!.chain]?.hex ===
+        CHAINS[permissionService.getConnectedSite(origin)!.chain]?.hex ===
           chainParams.chainId
       );
     },
@@ -100,7 +100,7 @@ class ProviderController extends BaseController {
       throw new Error('This chain is not supported by Rabby yet.');
     }
 
-    permission.updateConnectSite(
+    permissionService.updateConnectSite(
       origin,
       {
         chain: chain.enum,

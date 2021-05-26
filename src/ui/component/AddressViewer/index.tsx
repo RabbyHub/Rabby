@@ -1,6 +1,6 @@
 import React from 'react';
 import cx from 'clsx';
-import { Icon } from 'ui/component';
+import { IconArrowDown } from 'ui/assets';
 import './style.less';
 
 interface AddressViewProps {
@@ -27,7 +27,9 @@ export default ({
       <div className={cx('address-viewer-text', className)} title={address}>
         {ellipsis ? `${address.slice(0, 5)}...${address.slice(-4)}` : address}
       </div>
-      {showArrow && <Icon type="triangle" className="ml-1 cursor-pointer" />}
+      {showArrow && (
+        <IconArrowDown className="ml-1 cursor-pointer fill-current text-white" />
+      )}
     </div>
   );
 };

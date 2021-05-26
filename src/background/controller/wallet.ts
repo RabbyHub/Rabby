@@ -4,12 +4,12 @@ import { ethErrors } from 'eth-rpc-errors';
 import * as bip39 from 'bip39';
 import {
   keyringService,
-  preference,
-  notification,
-  permission,
+  preferenceService,
+  notificationService,
+  permissionService,
   sessionService,
   chainService,
-  openapi,
+  openapiService,
 } from 'background/service';
 import { openIndexPage } from 'background/webapi/tab';
 import { KEYRING_CLASS, DisplayedKeryring } from 'background/service/keyring';
@@ -26,9 +26,9 @@ export class WalletController extends BaseController {
   verifyPassword = (password: string) =>
     keyringService.verifyPassword(password);
 
-  getApproval = notification.getApproval;
-  resolveApproval = notification.resolveApproval;
-  rejectApproval = notification.rejectApproval;
+  getApproval = notificationService.getApproval;
+  resolveApproval = notificationService.resolveApproval;
+  rejectApproval = notificationService.rejectApproval;
 
   unlock = (password: string) => keyringService.submitPassword(password);
   isUnlocked = () => keyringService.memStore.getState().isUnlocked;
@@ -37,7 +37,7 @@ export class WalletController extends BaseController {
     sessionService.broadcastEvent('disconnect');
   };
   setPopupOpen = (isOpen) => {
-    preference.setPopupOpen(isOpen);
+    preferenceService.setPopupOpen(isOpen);
   };
   openIndexPage = openIndexPage;
 
@@ -49,12 +49,12 @@ export class WalletController extends BaseController {
 
   /* connectedSites */
 
-  getConnectedSite = permission.getConnectedSite;
-  getConnectedSites = permission.getConnectedSites;
-  getRecentConnectedSites = permission.getRecentConnectSites;
+  getConnectedSite = permissionService.getConnectedSite;
+  getConnectedSites = permissionService.getConnectedSites;
+  getRecentConnectedSites = permissionService.getRecentConnectSites;
   getCurrentConnectedSite = (tabId: number) => {
     const { origin } = sessionService.getSession(tabId) || {};
-    return permission.getWithoutUpdate(origin);
+    return permissionService.getWithoutUpdate(origin);
   };
   updateConnectSite = (origin: string, data: ConnectedSite) => {
     sessionService.broadcastEvent(
@@ -62,10 +62,10 @@ export class WalletController extends BaseController {
       CHAINS[data.chain].id,
       data.origin
     );
-    permission.updateConnectSite(origin, data);
+    permissionService.updateConnectSite(origin, data);
   };
-  removeConnectedSite = permission.removeConnectedSite;
-  getSitesByDefaultChain = permission.getSitesByDefaultChain;
+  removeConnectedSite = permissionService.removeConnectedSite;
+  getSitesByDefaultChain = permissionService.getSitesByDefaultChain;
 
   /* keyrings */
 
@@ -82,7 +82,7 @@ export class WalletController extends BaseController {
 
     keyring.setAccountToAdd(address);
     await keyringService.addNewAccount(keyring);
-    preference.setCurrentAccount({ address, type: keyring.type });
+    preferenceService.setCurrentAccount({ address, type: keyring.type });
   };
 
   importPrivateKey = async (data) => {
@@ -96,7 +96,10 @@ export class WalletController extends BaseController {
     const privateKey = ethUtil.stripHexPrefix(prefixed);
     const keyring = await keyringService.importPrivateKey(privateKey);
     const [account] = await keyring.getAccounts();
-    preference.setCurrentAccount({ address: account, type: keyring.type });
+    preferenceService.setCurrentAccount({
+      address: account,
+      type: keyring.type,
+    });
   };
 
   // json format is from "https://github.com/SilentCicero/ethereumjs-accounts"
@@ -118,14 +121,17 @@ export class WalletController extends BaseController {
   createKeyringWithMnemonics = async (mnemonic) => {
     const keyring = await keyringService.createKeyringWithMnemonics(mnemonic);
     const [account] = await keyring.getAccounts();
-    preference.setCurrentAccount({ address: account, type: keyring.type });
+    preferenceService.setCurrentAccount({
+      address: account,
+      type: keyring.type,
+    });
   };
 
-  getHiddenAddresses = () => preference.getHiddenAddresses();
+  getHiddenAddresses = () => preferenceService.getHiddenAddresses();
   showAddress = (type: string, address: string) =>
-    preference.showAddress(type, address);
+    preferenceService.showAddress(type, address);
   hideAddress = (type: string, address: string) =>
-    preference.hideAddress(type, address);
+    preferenceService.hideAddress(type, address);
   removeAddress = (address: string, type: string) =>
     keyringService.removeAccount(address, type);
 
@@ -155,7 +161,10 @@ export class WalletController extends BaseController {
     const keyring = this._getKeyringByType(KEYRING_CLASS.MNEMONIC);
 
     const accounts = await keyringService.addNewAccount(keyring);
-    preference.setCurrentAccount({ address: accounts[0], type: keyring.type });
+    preferenceService.setCurrentAccount({
+      address: accounts[0],
+      type: keyring.type,
+    });
 
     return accounts;
   };
@@ -213,7 +222,7 @@ export class WalletController extends BaseController {
   };
 
   changeAccount = (account: Account, tabId: number | undefined) => {
-    preference.setCurrentAccount(account);
+    preferenceService.setCurrentAccount(account);
 
     const currentSession = sessionService.getOrCreateSession(tabId);
     if (currentSession) {
@@ -249,7 +258,10 @@ export class WalletController extends BaseController {
     }
 
     const account = keyring.accounts[keyring.accounts.length - 1];
-    preference.setCurrentAccount({ address: account, type: keyring.type });
+    preferenceService.setCurrentAccount({
+      address: account,
+      type: keyring.type,
+    });
     sessionService.broadcastEvent('accountsChanged', account);
   };
 
@@ -263,7 +275,7 @@ export class WalletController extends BaseController {
     throw ethErrors.rpc.internal(`No ${type} keyring found`);
   }
 
-  openapi = openapi;
+  openapi = openapiService;
 }
 
 export default new WalletController();

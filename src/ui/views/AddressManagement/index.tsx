@@ -4,7 +4,7 @@ import { KEYRING_TYPE, HARDWARE_KEYRING_TYPES } from 'consts';
 import { useWallet } from 'ui/utils';
 import { AddressList, PageHeader, AuthenticationModal } from 'ui/component';
 import { DisplayedKeryring } from 'background/service/keyring';
-import IconArrowDown from 'ui/assets/arrow-down-gray.svg';
+import { IconArrowDown } from 'ui/assets';
 import './style.less';
 
 const AddressManagement = () => {
@@ -153,7 +153,7 @@ const AddressManagement = () => {
           {hiddenAddresses.find(
             (item) => item.address === data && item.type === keyring.type
           ) && <div className="address-item-hidden">Hidden</div>}
-          <img src={IconArrowDown} className="icon icon-arrow-down" />
+          <IconArrowDown className="icon icon-arrow-down cursor-pointer text-gray-content fill-current" />
         </div>
       </Dropdown>
     );

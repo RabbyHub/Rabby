@@ -26,15 +26,17 @@ const StrayPage = ({
     spinning={spinning}
     className={cx(
       'stray-page relative flex flex-col',
-      'sm:pt-28 sm:px-20 sm:h-full sm:bg-gray-bg',
+      'sm:pt-28 sm:h-full sm:bg-gray-bg',
       'lg:pt-[60px] lg:bg-gray-bg lg:w-[993px] lg:max-h-full lg:mt-[150px] lg:rounded-md lg:mx-auto',
       className
     )}
   >
-    {header && <StrayHeader {...header} />}
-    {children && (
-      <div className="lg:flex lg:items-center lg:flex-col">{children}</div>
-    )}
+    <div className="sm:px-20">
+      {header && <StrayHeader {...header} />}
+      {children && (
+        <div className="lg:flex lg:items-center lg:flex-col">{children}</div>
+      )}
+    </div>
     {footerRender && footerRender({})}
   </Spin>
 );

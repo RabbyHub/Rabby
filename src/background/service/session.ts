@@ -1,4 +1,4 @@
-import { permission } from 'background/service';
+import { permissionService } from 'background/service';
 
 export class Session {
   origin = '';
@@ -48,7 +48,7 @@ const deleteSession = (id) => {
 
 const broadcastEvent = (ev, data?, origin?) => {
   let sessions = [...sessionMap.values()].filter((session) =>
-    permission.hasPerssmion(session.origin)
+    permissionService.hasPerssmion(session.origin)
   );
 
   // same origin

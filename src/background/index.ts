@@ -5,12 +5,12 @@ import { WalletController } from 'background/controller/wallet';
 import { Message } from 'utils';
 import { storage } from './webapi';
 import {
-  permission,
-  preference,
+  permissionService,
+  preferenceService,
   sessionService,
   keyringService,
   chainService,
-  openapi,
+  openapiService,
 } from './service';
 import { providerController, walletController } from './controller';
 
@@ -20,13 +20,13 @@ let appStoreLoaded = false;
 
 async function restoreAppState() {
   const keyringState = await storage.get('keyringState');
-  await permission.init();
-  await preference.init();
-  await openapi.init();
-  await chainService.init();
-
   keyringService.loadStore(keyringState);
   keyringService.store.subscribe((value) => storage.set('keyringState', value));
+
+  await permissionService.init();
+  await preferenceService.init();
+  await openapiService.init();
+  await chainService.init();
 
   appStoreLoaded = true;
 }

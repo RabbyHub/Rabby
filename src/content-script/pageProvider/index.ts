@@ -10,7 +10,7 @@ declare const channelName;
 const log = (event, ...args) => {
   console.log(
     `%c [rabby] (${new Date().toTimeString().substr(0, 8)}) ${event}`,
-    'font-weight: bold; color: #7d6ef9',
+    'font-weight: bold; background-color: #7d6ef9; color: white;',
     ...args
   );
 };

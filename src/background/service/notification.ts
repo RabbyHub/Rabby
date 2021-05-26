@@ -15,7 +15,7 @@ interface Approval {
 
 // something need user approval in window
 // should only open one window, unfocus will close the current notification
-class Notification {
+class NotificationService {
   approval: Approval | null = null;
   notifiWindowId = 0;
 
@@ -26,11 +26,11 @@ class Notification {
       }
     });
 
-    // winMgr.event.on('windowFocusChange', (winId: number) => {
-    //   if (this.notifiWindowId && winId !== this.notifiWindowId) {
-    //     this.rejectApproval();
-    //   }
-    // });
+    winMgr.event.on('windowFocusChange', (winId: number) => {
+      if (this.notifiWindowId && winId !== this.notifiWindowId) {
+        this.rejectApproval();
+      }
+    });
   }
 
   getApproval = () => this.approval?.data;
@@ -79,4 +79,4 @@ class Notification {
   };
 }
 
-export default new Notification();
+export default new NotificationService();

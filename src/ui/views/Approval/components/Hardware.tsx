@@ -1,5 +1,5 @@
 import React from 'react';
-import { IconTrezor, IconLedger, IconOnekey } from 'ui/assets';
+import { SvgIconTrezor, SvgIconLedger, SvgIconOnekey } from 'ui/assets';
 import { HARDWARE_KEYRING_TYPES } from 'consts';
 
 const Hardware = ({ type }: { type: string }) => {
@@ -11,11 +11,11 @@ const Hardware = ({ type }: { type: string }) => {
   const Icon = () => {
     switch (type) {
       case HARDWARE_KEYRING_TYPES.Ledger.type:
-        return <IconLedger className="icon icon-hardware" />;
+        return <SvgIconLedger className="icon icon-hardware" />;
       case HARDWARE_KEYRING_TYPES.Onekey.type:
-        return <IconOnekey className="icon icon-hardware" />;
+        return <SvgIconOnekey className="icon icon-hardware" />;
       case HARDWARE_KEYRING_TYPES.Trezor.type:
-        return <IconTrezor className="icon icon-hardware" />;
+        return <SvgIconTrezor className="icon icon-hardware" />;
       default:
         return <></>;
     }
