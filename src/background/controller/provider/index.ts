@@ -1,11 +1,11 @@
 import { tab } from 'background/webapi';
-import { session } from 'background/service';
+import { sessionService } from 'background/service';
 
 import rpcFlow from './rpcFlow';
 import internalMethod from './internalMethod';
 
 tab.on('tabRemove', (id) => {
-  session.deleteSession(id);
+  sessionService.deleteSession(id);
 });
 
 export default (req) => {

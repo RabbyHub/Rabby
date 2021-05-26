@@ -1,4 +1,4 @@
-import { permission, session } from 'background/service';
+import { permission } from 'background/service';
 
 export class Session {
   origin = '';

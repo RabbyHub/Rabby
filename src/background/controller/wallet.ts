@@ -7,7 +7,7 @@ import {
   preference,
   notification,
   permission,
-  session,
+  sessionService,
   chainService,
   openapi,
 } from 'background/service';
@@ -34,7 +34,7 @@ export class WalletController extends BaseController {
   isUnlocked = () => keyringService.memStore.getState().isUnlocked;
   lockWallet = () => {
     keyringService.setLocked();
-    session.broadcastEvent('disconnect');
+    sessionService.broadcastEvent('disconnect');
   };
   setPopupOpen = (isOpen) => {
     preference.setPopupOpen(isOpen);
@@ -53,11 +53,15 @@ export class WalletController extends BaseController {
   getConnectedSites = permission.getConnectedSites;
   getRecentConnectedSites = permission.getRecentConnectSites;
   getCurrentConnectedSite = (tabId: number) => {
-    const { origin } = session.getSession(tabId) || {};
+    const { origin } = sessionService.getSession(tabId) || {};
     return permission.getWithoutUpdate(origin);
   };
   updateConnectSite = (origin: string, data: ConnectedSite) => {
-    session.broadcastEvent('chainChanged', CHAINS[data.chain].id, data.origin);
+    sessionService.broadcastEvent(
+      'chainChanged',
+      CHAINS[data.chain].id,
+      data.origin
+    );
     permission.updateConnectSite(origin, data);
   };
   removeConnectedSite = permission.removeConnectedSite;
@@ -211,10 +215,10 @@ export class WalletController extends BaseController {
   changeAccount = (account: Account, tabId: number | undefined) => {
     preference.setCurrentAccount(account);
 
-    const currentSession = session.getOrCreateSession(tabId);
+    const currentSession = sessionService.getOrCreateSession(tabId);
     if (currentSession) {
       // just test, should be all broadcast
-      session.broadcastEvent(
+      sessionService.broadcastEvent(
         'accountsChanged',
         [account.address],
         currentSession.origin
@@ -246,7 +250,7 @@ export class WalletController extends BaseController {
 
     const account = keyring.accounts[keyring.accounts.length - 1];
     preference.setCurrentAccount({ address: account, type: keyring.type });
-    session.broadcastEvent('accountsChanged', account);
+    sessionService.broadcastEvent('accountsChanged', account);
   };
 
   private _getKeyringByType(type) {

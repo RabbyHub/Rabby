@@ -7,7 +7,7 @@ import { storage } from './webapi';
 import {
   permission,
   preference,
-  session,
+  sessionService,
   keyringService,
   chainService,
   openapi,
@@ -47,7 +47,7 @@ browser.runtime.onConnect.addListener((port) => {
     }
 
     const sessionId = port.sender?.tab?.id;
-    req.session = session.getOrCreateSession(sessionId);
+    req.session = sessionService.getOrCreateSession(sessionId);
 
     // for background push to respective page
     req.session.pushMessage = (event, data) => {
