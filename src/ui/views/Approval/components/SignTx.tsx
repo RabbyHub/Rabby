@@ -1,45 +1,133 @@
-import React from 'react';
-import { CHAINS } from 'consts';
+import React, { useEffect, useState } from 'react';
+import { Spin } from 'ui/component';
+import SecurityCheckBar from './SecurityCheckBar';
+import { Button } from 'antd';
+import { SecurityCheckDecision } from 'background/service/openapi';
+import { ExplainTxResponse, GasLevel } from 'background/service/openapi';
+import { CHAINS, TX_TYPE_ENUM } from 'consts';
+import { useWallet, useApproval } from 'ui/utils';
+import Approve from './TxComponents/Approve';
+import GasSelector from './TxComponents/GasSelecter';
 
 const SignTx = ({ params, origin }) => {
-  const [{ chainId, data, from, gas, gasPrice, nonce, to, value }] = params;
-  const chain = CHAINS[chainId]?.name;
+  const [isReady, setIsReady] = useState(false);
+  const [txDetail, setTxDetail] = useState<ExplainTxResponse | null>(null);
+  const [
+    securityCheckStatus,
+    setSecurityCheckStatus,
+  ] = useState<SecurityCheckDecision>('loading');
+  const [securityCheckAlert, setSecurityCheckAlert] = useState('Checking...');
+  const [, resolveApproval, rejectApproval] = useApproval();
+  const wallet = useWallet();
+  const session = params.session;
+  const [{ data, from, gas, gasPrice, nonce, to, value }] = params.data;
+  const site = wallet.getConnectedSite(session.origin);
+  let chainId = params.data.chainId;
+  if (!chainId) {
+    chainId = CHAINS[site!.chain].id;
+  }
+
+  const checkTx = async (address: string) => {
+    const res = await wallet.openapi.checkTx(
+      { chainId, data, from, gas, gasPrice, nonce, to, value },
+      origin,
+      address
+    );
+    setSecurityCheckStatus(res.decision);
+    setSecurityCheckAlert(res.alert);
+  };
+
+  const explainTx = async (address: string) => {
+    const res = await wallet.openapi.explainTx(
+      { chainId, data, from, gas, gasPrice, nonce, to, value },
+      origin,
+      address
+    );
+    setTxDetail(res);
+    setIsReady(true);
+  };
+
+  const init = async () => {
+    const currentAccount = await wallet.getCurrentAccount();
+    await checkTx(currentAccount!.address);
+    await explainTx(currentAccount!.address);
+  };
+
+  const handleAllow = () => {
+    // TODO
+  };
+
+  const handleGasChange = (gas: GasLevel) => {
+    console.log(gas);
+  };
+
+  const handleCancel = () => {
+    rejectApproval('User Reject');
+  };
+
+  useEffect(() => {
+    init();
+  }, []);
 
   return (
-    <>
-      <div>{origin}</div>
-      <div className="font-bold mt-12 mb-4 text-lg">
-        Request for Sign Transaction
+    <Spin spinning={!isReady}>
+      <div className="approval-tx">
+        {txDetail && (
+          <>
+            <div className="site-card">
+              <img className="icon icon-site" src={session.icon} />
+              <div className="site-info">
+                <p className="font-medium text-gray-subTitle mb-0 text-13">
+                  {session.origin}
+                </p>
+                <p className="text-12 text-gray-content mb-0">{session.name}</p>
+              </div>
+              <div className="chain-info">
+                <img
+                  src={CHAINS[site!.chain].logo}
+                  alt={CHAINS[site!.chain].name}
+                  className="icon icon-chain"
+                />
+                <span>{CHAINS[site!.chain].name}</span>
+              </div>
+            </div>
+            {txDetail.pre_exec.tx_type === TX_TYPE_ENUM.APPROVE && (
+              <Approve data={txDetail} />
+            )}
+            <footer className="connect-footer">
+              <GasSelector
+                tx={txDetail.tx}
+                gas={txDetail.gas}
+                nativeToken={txDetail.native_token}
+                onChange={handleGasChange}
+              />
+              <SecurityCheckBar
+                status={securityCheckStatus}
+                alert={securityCheckAlert}
+              />
+              <div className="action-buttons flex justify-between">
+                <Button
+                  type="primary"
+                  size="large"
+                  className="w-[172px]"
+                  onClick={handleCancel}
+                >
+                  Cancel
+                </Button>
+                <Button
+                  type="primary"
+                  size="large"
+                  className="w-[172px]"
+                  onClick={handleAllow}
+                >
+                  Allow
+                </Button>
+              </div>
+            </footer>
+          </>
+        )}
       </div>
-      <div className="text-xs text-gray-400 mb-1">On the chain</div>
-      <div className="bg-gray-100 p-2 text-bold">{chain}</div>
-
-      <div className="text-xs text-gray-400 mb-1">
-        Interact with the address
-      </div>
-      <div className="bg-gray-100 p-2">{to}</div>
-
-      <div className="text-xs text-gray-400 mb-1">Transaction detail</div>
-      <div className="bg-gray-100 p-2">
-        <div className="flex items-center">
-          <div>data</div>
-          <div className="flex-1 break-all">{data}</div>
-        </div>
-        <div className="flex items-center">
-          <div>nonce</div>
-          <div className="flex-1">{nonce}</div>
-        </div>
-        <div className="flex items-center">
-          <div>value</div>
-          <div className="flex-1">{value}</div>
-        </div>
-      </div>
-
-      <div className="bg-gray-100 p-2 flex items-center mb-12">
-        <div>Est.gas</div>
-        <div className="flex-1">{gas}</div>
-      </div>
-    </>
+    </Spin>
   );
 };
 

@@ -1,5 +1,6 @@
 import axios, { Method } from 'axios';
 import { createPersistStore } from 'background/utils';
+import { TX_TYPE_ENUM } from 'consts';
 
 interface OpenApiConfigValue {
   path: string;
@@ -19,6 +20,7 @@ export interface ServerChain {
   native_token_id: string;
   logo_url: string;
   wrapped_token_id: string;
+  symbol: string;
 }
 
 export interface ChainWithBalance extends ServerChain {
@@ -47,6 +49,64 @@ export interface SecurityCheckResponse {
   danger_list: SecurityCheckItem[];
   warning_list: SecurityCheckItem[];
   forbidden_list: SecurityCheckItem[];
+}
+
+export interface Tx {
+  chainId: number;
+  data: string;
+  from: string;
+  gas: string;
+  gasPrice: string;
+  nonce: string;
+  to: string;
+  value: string;
+}
+
+interface AssertsChange {
+  amount: number;
+  chain: string;
+  decimals: number;
+  display_symbol: string | null;
+  id: string;
+  is_core: boolean;
+  is_verified: boolean;
+  is_wallet: boolean;
+  logo_url: string;
+  name: string;
+  optimized_symbol: string;
+  price: number;
+  symbol: string;
+  time_at: string;
+}
+
+export interface GasResult {
+  estimated_gas_cost_usd_value: number;
+  estimated_gas_cost_value: number;
+  estimated_gas_used: number;
+  estimated_seconds: number;
+  front_tx_count: number;
+  max_gas_cost_usd_value: number;
+  max_gas_cost_value: number;
+}
+
+export interface ExplainTxResponse {
+  gas: GasResult;
+  native_token: ServerChain;
+  pre_exec: {
+    assets_change: AssertsChange[];
+    err_msg: string;
+    success: boolean;
+    tx_type: TX_TYPE_ENUM;
+  };
+  tags: string[];
+  tx: Tx;
+}
+
+export interface GasLevel {
+  level: string;
+  price: number;
+  front_tx_count: number;
+  estimated_seconds: number;
 }
 
 class OpenApi {
@@ -179,12 +239,12 @@ class OpenApi {
   };
 
   getTotalBalance = async (
-    address
+    address: string
   ): Promise<{ total_usd_value: number; chain_list: ChainWithBalance[] }> => {
     const config = this.store.config.get_total_balance;
     const { data } = await this.request[config.method](config.path, {
       params: {
-        id: address,
+        id: address.toLowerCase(),
       },
     });
     return data;
@@ -211,6 +271,59 @@ class OpenApi {
       params: {
         user_addr: address,
         origin,
+      },
+    });
+
+    return data;
+  };
+
+  checkTx = async (
+    tx: Tx,
+    origin: string,
+    address: string,
+    update_nonce = false
+  ): Promise<SecurityCheckResponse> => {
+    const config = this.store.config.check_tx;
+    const { data } = await this.request[config.method](config.path, {
+      params: {
+        user_addr: address,
+        origin,
+        tx: JSON.stringify(tx),
+        update_nonce,
+      },
+    });
+
+    return data;
+  };
+
+  explainTx = async (
+    tx: Tx,
+    origin: string,
+    address: string,
+    update_nonce = false
+  ): Promise<ExplainTxResponse> => {
+    const config = this.store.config.explain_tx;
+    const { data } = await this.request[config.method](config.path, {
+      params: {
+        tx: JSON.stringify(tx),
+        user_addr: address,
+        origin,
+        update_nonce,
+      },
+    });
+
+    return data;
+  };
+
+  gasMarket = async (
+    chainId: string,
+    customGas?: number
+  ): Promise<GasLevel[]> => {
+    const config = this.store.config.gas_market;
+    const { data } = await this.request[config.method](config.path, {
+      params: {
+        chain_id: chainId,
+        custom_price: customGas,
       },
     });
 

@@ -102,3 +102,14 @@ export const HARDWARE_KEYRING_TYPES = {
     brandName: 'Onekey',
   },
 };
+
+export enum TX_TYPE_ENUM {
+  SEND = 1,
+  APPROVE = 2,
+  CANCEL_APPROVE = 3,
+  CANCEL_TX = 4,
+  SIGN_TX = 5,
+}
+
+// if amount more than this magic number, it should be an unlimited approve.
+export const MAX_LIMITED_COUNT = 999999999999999999999;
