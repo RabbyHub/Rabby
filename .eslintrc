@@ -11,7 +11,7 @@
     "plugin:prettier/recommended"
   ],
   "rules": {
-    "quotes": [1, "single"],
+    "quotes": [1, "single", "avoid-escape"],
     "@typescript-eslint/explicit-module-boundary-types": "off",
     "@typescript-eslint/no-explicit-any": "off",
     "@typescript-eslint/no-non-null-assertion": "off"

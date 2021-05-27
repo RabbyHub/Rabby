@@ -1,6 +1,6 @@
 import React from 'react';
 import { Input, Form } from 'antd';
-import { useLocation, useHistory } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import { StrayPageWithButton, Uploader } from 'ui/component';
 import { useWallet } from 'ui/utils';
 

@@ -6,7 +6,7 @@ import Transaction from 'ethereumjs-tx';
 import HDKey from 'hdkey';
 import TrezorConnect from 'trezor-connect';
 
-const hdPathString = `m/44'/60'/0'/0`;
+const hdPathString = "m/44'/60'/0'/0";
 const keyringType = 'Trezor Hardware';
 const pathBase = 'm';
 const MAX_INDEX = 1000;

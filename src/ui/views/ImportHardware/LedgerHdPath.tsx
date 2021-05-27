@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import { StrayPageWithButton, FieldCheckbox, Spin } from 'ui/component';
+import { StrayPageWithButton, FieldCheckbox } from 'ui/component';
 import { useWallet } from 'ui/utils';
 
-const LEDGER_LIVE_PATH = `m/44'/60'/0'/0/0`;
-const MEW_PATH = `m/44'/60'/0'`;
-export const BIP44_PATH = `m/44'/60'/0'/0`;
+const LEDGER_LIVE_PATH = "m/44'/60'/0'/0/0";
+const MEW_PATH = "m/44'/60'/0'";
+export const BIP44_PATH = "m/44'/60'/0'/0";
 
 const HD_PATHS = [
   { name: 'Ledger Live', value: LEDGER_LIVE_PATH },

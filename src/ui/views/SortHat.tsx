@@ -2,21 +2,20 @@ import React from 'react';
 import { useEffect, useState } from 'react';
 import { Redirect } from 'react-router-dom';
 import { useWallet, getUiType, useApproval } from 'ui/utils';
-import { Account } from 'background/service/preference';
+import { Spin } from 'ui/component';
 
 const SortHat = () => {
   const wallet = useWallet();
   const [to, setTo] = useState('');
   // eslint-disable-next-line prefer-const
-  let [approval, _, rejectApproval] = useApproval();
+  let [approval, , rejectApproval] = useApproval();
 
   const loadView = async () => {
     const isInNotification = getUiType().isNotification;
-    const isBooted = wallet.isBooted();
-    const isUnlocked = wallet.isUnlocked();
-    let currentAccount: Account | null = null;
-    if (isUnlocked) {
-      currentAccount = await wallet.getCurrentAccount();
+
+    if (isInNotification && !approval) {
+      window.close();
+      return;
     }
 
     if (!isInNotification) {
@@ -26,13 +25,19 @@ const SortHat = () => {
       approval = undefined;
     }
 
-    if (isInNotification && !approval) {
-      window.close();
-    } else if (!isBooted) {
+    if (!wallet.isBooted()) {
       setTo('/password');
-    } else if (!isUnlocked) {
+      return;
+    }
+
+    if (!wallet.isUnlocked()) {
       setTo('/unlock');
-    } else if (!currentAccount) {
+      return;
+    }
+
+    const currentAccount = await wallet.getCurrentAccount();
+
+    if (!currentAccount) {
       setTo('/no-address');
     } else if (approval) {
       setTo('/approval');
@@ -45,7 +50,11 @@ const SortHat = () => {
     loadView();
   }, []);
 
-  return to ? <Redirect to={to} /> : null;
+  return (
+    <Spin spinning={!to}>
+      <Redirect to={to} />
+    </Spin>
+  );
 };
 
 export default SortHat;

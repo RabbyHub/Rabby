@@ -4,7 +4,7 @@ import * as bip39 from 'bip39';
 import * as sigUtil from 'eth-sig-util';
 
 // Options:
-const hdPathString = `m/44'/60'/0'/0`;
+const hdPathString = "m/44'/60'/0'/0";
 const type = 'HD Key Tree';
 
 interface DeserializeOption {

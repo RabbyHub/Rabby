@@ -1,6 +1,6 @@
 import React from 'react';
 import { useState } from 'react';
-import { Input, Button, Form } from 'antd';
+import { Input, Form } from 'antd';
 import { useWallet, useApproval } from 'ui/utils';
 import { StrayPageWithButton } from 'ui/component';
 
@@ -45,7 +45,7 @@ const Unlock = () => {
           validateStatus={error ? 'error' : undefined}
           help={error}
         >
-          <Input placeholder="Password" size="large" />
+          <Input type="password" placeholder="Password" size="large" />
         </Form.Item>
       </StrayPageWithButton>
     </div>

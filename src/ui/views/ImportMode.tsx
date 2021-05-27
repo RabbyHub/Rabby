@@ -3,8 +3,6 @@ import { useHistory } from 'react-router-dom';
 import { StrayPageWithButton, FieldCheckbox } from 'ui/component';
 import { useWallet } from 'ui/utils';
 import { KEYRING_CLASS } from 'background/service/keyring';
-import IconChecked from 'ui/assets/checked.svg';
-import IconNotChecked from 'ui/assets/not-checked.svg';
 
 const ImportMode = () => {
   const history = useHistory();

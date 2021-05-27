@@ -35,7 +35,7 @@ class WatchKeyring extends EventEmitter {
       return;
     }
     if (this.accounts.includes(this.accountToAdd)) {
-      throw new Error(`The account you're are trying to import is a duplicate`);
+      throw new Error("The account you're are trying to import is a duplicate");
     }
 
     this.accounts.push(this.accountToAdd);

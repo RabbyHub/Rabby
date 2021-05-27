@@ -6,52 +6,52 @@
 
 ## 2. extension's scripts
 
-below scripts live in different context!
+below 4 scripts all live in different context!
 
-- `background.js`
+### **- `background.js`**
 
-  for all async request and encrypt things.
+for all async request and encrypt things.
 
-  user's keyrings, password and wallet personal preference data all stored in chrome local storage.
+user's keyrings, password and wallet personal preference data all stored in chrome local storage.
 
-  it has 2 main controllers:
+it has 2 main controllers:
 
-  - `walletController`
+1. `walletController`
 
-    it expose methods to background window, so other scripts can access these methods with `runtime.getBackgroundPage`, like `ui`.
+   it expose methods to background window, so other scripts can access these methods with `runtime.getBackgroundPage`, e.g. `ui.js`.
 
-  - `providerController`
+2. `providerController`
 
-    it handles request from pages(dapp request).
+   it handles request from pages(dapp request).
 
-- `content-script`
+### **- `content-script`**
 
-  injected at `document_start`, share the same dom with dapp, use `broadcastChannel` to tap `pageProvider`.
+injected at `document_start`, share the same dom with dapp, use `broadcastChannel` to tap `pageProvider`.
 
-  the main purpose is inject `pageProvider.js` and pass messages between `pageProvider.js` and `background.js`.
+the main purpose is inject `pageProvider.js` and pass messages between `pageProvider.js` and `background.js`.
 
-- `pageProvider.js`
+### **- `pageProvider.js`**
 
-  this script is injected into dapp's context through content-script. it mounts `ethereum` to `window`.
+this script is injected into dapp's context through `content-script`. it mounts `ethereum` to `window`.
 
-  when dapp use `window.ethereum` to request, it will send message to `content-script` with `broadcastChannel` and wait for it's response.
+when dapp use `window.ethereum` to request, it will send message to `content-script` with `broadcastChannel` and wait for it's response.
 
-  then the `content-script` will send message to `background` with `runtime.connect`.
+then the `content-script` will send message to `background` with `runtime.connect`.
 
-  after `background` receive the message, it will use `providerController` to handle the request. and keep the message channel in `sessionSevice` for later communicate.
+after `background` receive the message, it will use `providerController` to handle the request. and keep the message channel in `sessionSevice` for later communicate.
 
-- `ui`
+### **- `ui`**
 
-  it has 3 pages, all share the same js code, but the template html is different for respective purpose.
+it's used by 3 pages which share the same js code, but the template html is different for respective purpose.
 
-  - `notification.html`
+1. `notification.html`
 
-    triggered by dapp to request user's permission.
+   triggered by dapp to request user's permission.
 
-  - `index.html`
+2. `index.html`
 
-    opened in browser tab for better user interaction experience.
+   opened in browser tab for better user interaction experience.
 
-  - `popup.html`
+3. `popup.html`
 
-    user click the extension icon on the right of address bar, the popup will show.
+   user click the extension icon on the right of address bar, the popup will show.

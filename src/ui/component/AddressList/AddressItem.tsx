@@ -88,11 +88,11 @@ const AddressItem = ({
     >
       <div>
         <div className="address-info">
-          <Spin spinning={balance === null}>
-            <span className="balance">
+          <span className="balance">
+            <Spin size="small">
               ${splitNumberByStep((balance || 0).toFixed(2))}
-            </span>
-          </Spin>
+            </Spin>
+          </span>
           <AddressViewer
             address={account}
             showArrow={false}
