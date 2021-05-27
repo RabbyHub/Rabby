@@ -36,7 +36,8 @@ export type SecurityCheckDecision =
   | 'warning'
   | 'danger'
   | 'forbidden'
-  | 'loading';
+  | 'loading'
+  | 'pending';
 
 export interface SecurityCheckItem {
   alert: string;
@@ -290,6 +291,22 @@ class OpenApiService {
       },
     });
 
+    return data;
+  };
+
+  checkText = async (
+    address: string,
+    origin: string,
+    text: string
+  ): Promise<SecurityCheckResponse> => {
+    const config = this.store.config.check_text;
+    const { data } = await this.request[config.method](config.path, {
+      params: {
+        user_addr: address,
+        origin,
+        text,
+      },
+    });
     return data;
   };
 
