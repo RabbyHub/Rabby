@@ -1,4 +1,4 @@
-import { Transaction } from '@ethereumjs/tx';
+import Transaction from 'ethereumjs-tx';
 import {
   keyringService,
   permissionService,
@@ -26,10 +26,10 @@ class ProviderController extends BaseController {
       params: [txParams],
     },
   }) => {
-    const tx = Transaction.fromTxData(txParams);
-    await keyringService.signTransaction(tx, txParams.from);
+    const tx = new Transaction(txParams);
+    const signedTx = await keyringService.signTransaction(tx, txParams.from);
 
-    const serializedTx = tx.serialize().toString('hex');
+    const serializedTx = signedTx.serialize().toString('hex');
 
     return http('serializedTx', serializedTx);
   };

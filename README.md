@@ -1,4 +1,4 @@
-# RabbyWallet
+# Rabby
 
 ## 1. architecture
 
