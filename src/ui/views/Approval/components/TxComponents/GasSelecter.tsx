@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Modal, Input } from 'antd';
+import { Modal, Input, Button } from 'antd';
 import clsx from 'clsx';
 import { useDebounce } from 'react-use';
 import {
@@ -95,46 +95,59 @@ const GasSelector = ({ gas, nativeToken, tx, onChange }: GasSelectorProps) => {
         title="Gas"
         className="gas-modal"
         onCancel={() => setModalVisible(false)}
-        onOk={handleConfirmGas}
         okText="Confirm"
+        footer={null}
         width="360px"
       >
-        <ul className="gas-selector-panel">
-          {gasList.map((gas) => (
-            <li
-              key={gas.level}
-              className={clsx({ checked: selectedGas?.level === gas.level })}
-              onClick={() => handleSelectGas(gas)}
-            >
-              <div className="title">
-                {gas.level === 'custom' ? (
-                  <Input
-                    placeholder="Custom"
-                    onChange={(e) => handleCustomGasChange(e.target.value)}
+        <div>
+          <ul className="gas-selector-panel">
+            {gasList.map((gas) => (
+              <li
+                key={gas.level}
+                className={clsx({ checked: selectedGas?.level === gas.level })}
+                onClick={() => handleSelectGas(gas)}
+              >
+                <div className="title">
+                  {gas.level === 'custom' ? (
+                    <Input
+                      placeholder="Custom"
+                      onChange={(e) => handleCustomGasChange(e.target.value)}
+                    />
+                  ) : (
+                    gas.price / 1e9
+                  )}
+                  <img
+                    src={
+                      selectedGas?.level === gas.level
+                        ? IconChecked
+                        : IconUnchecked
+                    }
+                    className="icon icon-checked"
                   />
-                ) : (
-                  gas.price / 1e9
-                )}
-                <img
-                  src={
-                    selectedGas?.level === gas.level
-                      ? IconChecked
-                      : IconUnchecked
-                  }
-                  className="icon icon-checked"
-                />
-              </div>
-              <div className="time">
-                <img src={IconTime} className="icon icon-time" />
-                {formatSeconds(gas.estimated_seconds)}
-              </div>
-              <div className="tx-count">
-                <img src={IconGroup} className="icon icon-group" />
-                {gas.front_tx_count} txn ahead
-              </div>
-            </li>
-          ))}
-        </ul>
+                </div>
+                <div className="time">
+                  <img src={IconTime} className="icon icon-time" />
+                  {formatSeconds(gas.estimated_seconds)}
+                </div>
+                <div className="tx-count">
+                  <img src={IconGroup} className="icon icon-group" />
+                  {gas.front_tx_count} txn ahead
+                </div>
+              </li>
+            ))}
+          </ul>
+          <div className="flex justify-center">
+            <Button
+              type="primary"
+              className="w-[200px]"
+              size="large"
+              onClick={handleConfirmGas}
+              disabled={!selectedGas}
+            >
+              Confirm
+            </Button>
+          </div>
+        </div>
       </Modal>
     </>
   );

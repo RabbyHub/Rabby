@@ -45,7 +45,7 @@ const Unlock = () => {
           validateStatus={error ? 'error' : undefined}
           help={error}
         >
-          <Input placeholder="Password" size="large" />
+          <Input placeholder="Password" size="large" type="password" />
         </Form.Item>
       </StrayPageWithButton>
     </div>

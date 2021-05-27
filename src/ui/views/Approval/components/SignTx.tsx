@@ -9,6 +9,7 @@ import { useWallet, useApproval } from 'ui/utils';
 import Approve from './TxComponents/Approve';
 import Cancel from './TxComponents/Cancel';
 import Sign from './TxComponents/Sign';
+import CancelTx from './TxComponents/CancelTx';
 import GasSelector from './TxComponents/GasSelecter';
 
 const SignTx = ({ params, origin }) => {
@@ -107,6 +108,9 @@ const SignTx = ({ params, origin }) => {
             )}
             {txDetail.pre_exec.tx_type === TX_TYPE_ENUM.SIGN_TX && (
               <Sign data={txDetail} />
+            )}
+            {txDetail.pre_exec.tx_type === TX_TYPE_ENUM.CANCEL_TX && (
+              <CancelTx />
             )}
             <footer className="connect-footer">
               <GasSelector
