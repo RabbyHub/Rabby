@@ -10,6 +10,7 @@ import Approve from './TxComponents/Approve';
 import Cancel from './TxComponents/Cancel';
 import Sign from './TxComponents/Sign';
 import CancelTx from './TxComponents/CancelTx';
+import Send from './TxComponents/Send';
 import GasSelector from './TxComponents/GasSelecter';
 
 const SignTx = ({ params, origin }) => {
@@ -111,6 +112,9 @@ const SignTx = ({ params, origin }) => {
             )}
             {txDetail.pre_exec.tx_type === TX_TYPE_ENUM.CANCEL_TX && (
               <CancelTx />
+            )}
+            {txDetail.pre_exec.tx_type === TX_TYPE_ENUM.SEND && (
+              <Send data={txDetail} />
             )}
             <footer className="connect-footer">
               <GasSelector

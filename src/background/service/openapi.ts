@@ -76,7 +76,23 @@ interface AssertsChange {
   optimized_symbol: string;
   price: number;
   symbol: string;
-  time_at: string;
+  time_at: number;
+}
+
+export interface NativeToken {
+  id: string;
+  chain: string;
+  name: string;
+  symbol: string;
+  display_symbol: string | null;
+  optimized_symbol: string;
+  decimals: number;
+  logo_url: string;
+  price: number;
+  is_verified: boolean;
+  is_core: boolean;
+  is_wallet: boolean;
+  time_at: number;
 }
 
 export interface GasResult {
@@ -91,7 +107,7 @@ export interface GasResult {
 
 export interface ExplainTxResponse {
   gas: GasResult;
-  native_token: ServerChain;
+  native_token: NativeToken;
   pre_exec: {
     assets_change: AssertsChange[];
     err_msg: string;

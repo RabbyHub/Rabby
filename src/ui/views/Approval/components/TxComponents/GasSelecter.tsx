@@ -1,12 +1,12 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { Modal, Input, Button } from 'antd';
 import clsx from 'clsx';
 import { useDebounce } from 'react-use';
 import {
   GasResult,
-  ServerChain,
   Tx,
   GasLevel,
+  NativeToken,
 } from 'background/service/openapi';
 import { formatSeconds, useWallet } from 'ui/utils';
 import IconGas from 'ui/assets/gas.svg';
@@ -18,7 +18,7 @@ import IconGroup from 'ui/assets/group.svg';
 
 interface GasSelectorProps {
   gas: GasResult;
-  nativeToken: ServerChain;
+  nativeToken: NativeToken;
   tx: Tx;
   onChange(gas: GasLevel): void;
 }
