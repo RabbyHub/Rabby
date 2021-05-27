@@ -4,10 +4,12 @@ import {
   permissionService,
   chainService,
   sessionService,
+  openapiService,
 } from 'background/service';
 import { Session } from 'background/service/session';
+import { EVM_RPC_METHODS } from 'background/service/openapi';
 import { CHAINS } from 'consts';
-import { http } from 'background/utils';
+import { underline2Camelcase } from 'background/utils';
 import BaseController from '../base';
 
 // eth_coinbase
@@ -20,6 +22,26 @@ import BaseController from '../base';
 // personal_ecRecover
 
 class ProviderController extends BaseController {
+  constructor() {
+    super();
+
+    // handle 'eth_getTransactionCount' in exception
+    // const [, ...needMountMethods] = EVM_RPC_METHODS;
+    this._mountMethods(EVM_RPC_METHODS);
+  }
+
+  private _mountMethods(methods) {
+    methods.forEach((method) => {
+      const parsedMethodName = underline2Camelcase(method);
+      this[parsedMethodName] = ({ data: { params }, session: { origin } }) => {
+        const chainServerId =
+          CHAINS[permissionService.getConnectedSite(origin)!.chain].serverId;
+
+        return openapiService[parsedMethodName](chainServerId, params);
+      };
+    });
+  }
+
   @Reflect.metadata('APPROVAL', ['SignTx'])
   ethSendTransaction = async ({
     data: {
@@ -29,9 +51,7 @@ class ProviderController extends BaseController {
     const tx = new Transaction(txParams);
     const signedTx = await keyringService.signTransaction(tx, txParams.from);
 
-    const serializedTx = signedTx.serialize().toString('hex');
-
-    return http('serializedTx', serializedTx);
+    // return openapiService.pushTx(signedTx.toJSON());
   };
 
   @Reflect.metadata('APPROVAL', ['SignText'])
@@ -65,7 +85,25 @@ class ProviderController extends BaseController {
     return CHAINS[site.chain].network;
   };
 
-  ethGetTransactionCount = () => '0x4e20';
+  // ethGetTransactionCount = async ({
+  //   data: { params },
+  //   session: { origin },
+  // }) => {
+  //   const [addr, blockIdentifier] = params;
+  //   const chain = CHAINS[permissionService.getConnectedSite(origin)!.chain];
+
+  //   if (blockIdentifier === 'pending') {
+  //     const { chains } = await openapiService.getPendingCount(addr);
+
+  //     const pendingTxCount = chains.find(
+  //       (_chain) => _chain.community_id === chain.id
+  //     )?.pending_tx_count;
+
+  //     return pendingTxCount;
+  //   }
+
+  //   return openapiService.ethGetTransactionCount(chain.serverId, params);
+  // };
 
   ethRequestAccounts = this.ethAccounts;
 

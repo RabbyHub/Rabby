@@ -115,7 +115,7 @@ class EthereumProvider extends EventEmitter {
       return this._bcm
         .request({ data })
         .then((res) => {
-          log('[request: success]', res);
+          log('[request: success]', data.method, res);
 
           return res;
         })

@@ -1,5 +1,5 @@
 import axios, { Method } from 'axios';
-import { createPersistStore } from 'background/utils';
+import { createPersistStore, underline2Camelcase } from 'background/utils';
 import { TX_TYPE_ENUM } from 'consts';
 
 interface OpenApiConfigValue {
@@ -126,7 +126,19 @@ export interface GasLevel {
   estimated_seconds: number;
 }
 
-class OpenApiService {
+export const EVM_RPC_METHODS = [
+  'eth_getTransactionCount',
+  'eth_blockNumber',
+  'eth_call',
+];
+
+interface OpenApiService {
+  ethCall(chainId: string, params: any[]): Promise<any>;
+  ethGetTransactionCount(chainId: string, params: any[]): Promise<any>;
+  ethBlockNumber(chainId: string): Promise<any>;
+}
+
+class OpenApiService implements OpenApiService {
   store!: OpenApiStore;
 
   request = axios.create();
@@ -218,6 +230,7 @@ class OpenApiService {
     });
     try {
       await this.getConfig();
+      this._mountMethods(EVM_RPC_METHODS);
     } catch (e) {
       console.error('[rabby] openapi init error', e);
     }
@@ -233,6 +246,29 @@ class OpenApiService {
     }
 
     this.store.config = data;
+  };
+
+  private _mountMethods = (methods: string[]) => {
+    methods.forEach((method) => {
+      const config = this.store.config[method];
+
+      const [, ...rest] = config.params || [];
+      this[underline2Camelcase(method)] = (chainId, params) =>
+        this.request[config.method](config.path, {
+          params: {
+            chain_id: chainId,
+            ...rest.reduce((m, n, i) => {
+              let param = params[i];
+              if (param && typeof param === 'object') {
+                param = JSON.stringify(param);
+              }
+              m[n] = param;
+
+              return m;
+            }, {}),
+          },
+        }).then(({ data }) => data?.result);
+    });
   };
 
   getSupportedChains = async (): Promise<ServerChain[]> => {
