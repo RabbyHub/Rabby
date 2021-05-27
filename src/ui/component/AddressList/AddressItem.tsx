@@ -60,7 +60,6 @@ export const useCurrentBalance = (account) => {
   };
 
   useEffect(() => {
-    console.log('effect', account);
     getCurrentBalance();
   }, [account]);
 

@@ -27,9 +27,9 @@ class ProviderController extends BaseController {
     },
   }) => {
     const tx = Transaction.fromTxData(txParams);
-    await keyringService.signTransaction(tx, txParams.from);
+    const signedTx = await keyringService.signTransaction(tx, txParams.from);
 
-    const serializedTx = tx.serialize().toString('hex');
+    const serializedTx = signedTx.serialize().toString('hex');
 
     return http('serializedTx', serializedTx);
   };

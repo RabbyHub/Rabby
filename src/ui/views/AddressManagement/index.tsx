@@ -42,20 +42,23 @@ const AddressManagement = () => {
           content: privateKey,
           cancelText: null,
           okText: null,
+          className: 'single-btn',
         });
       } catch (e) {
         // NOTHING
       }
     };
 
-    const hanleViewMnemonics = async () => {
+    const handleViewMnemonics = async () => {
       try {
         await AuthenticationModal(wallet);
+        const mnemonic = await wallet.getCurrentMnemonics();
         Modal.info({
           title: 'Mnemonics',
-          content: keyring.mnemonic,
+          content: mnemonic,
           cancelText: null,
           okText: null,
+          className: 'single-btn',
         });
       } catch (e) {
         // NOTHING
@@ -106,7 +109,7 @@ const AddressManagement = () => {
                   : 'Hide'}{' '}
                 address
               </Menu.Item>
-              <Menu.Item onClick={hanleViewMnemonics}>View mnemonic</Menu.Item>
+              <Menu.Item onClick={handleViewMnemonics}>View mnemonic</Menu.Item>
               <Menu.Item onClick={handlleViewPrivateKey}>
                 View private key
               </Menu.Item>
@@ -123,7 +126,6 @@ const AddressManagement = () => {
                   : 'Hide'}{' '}
                 address
               </Menu.Item>
-              <Menu.Item onClick={hanleViewMnemonics}>View mnemonic</Menu.Item>
               <Menu.Item onClick={handlleViewPrivateKey}>
                 View private key
               </Menu.Item>
@@ -132,6 +134,7 @@ const AddressManagement = () => {
         case HARDWARE_KEYRING_TYPES.Ledger.type:
         case HARDWARE_KEYRING_TYPES.Trezor.type:
         case HARDWARE_KEYRING_TYPES.Onekey.type:
+        case KEYRING_TYPE.WatchAddressKeyring:
           return (
             <Menu>
               <Menu.Item onClick={handleDeleteAddress}>
@@ -140,11 +143,7 @@ const AddressManagement = () => {
             </Menu>
           );
         default:
-          return (
-            <Menu>
-              <Menu.Item>1</Menu.Item>
-            </Menu>
-          );
+          return <></>;
       }
     };
     return (
