@@ -104,3 +104,24 @@
 .ant-switch-checked {
   background-color: #27C193;
 }
+
+/*---------------------
+      Checkbox
+---------------------*/
+.ant-checkbox {
+  border-radius: 100%;
+  overflow: hidden;
+  .ant-checkbox-inner {
+    border: none;
+    background-color: #D8DFEB;
+  }
+}
+
+.ant-checkbox-checked {
+  .ant-checkbox-inner {
+    background-color: #8697FF;
+  }
+  &::after {
+    border-color: #8697FF;
+  }
+}

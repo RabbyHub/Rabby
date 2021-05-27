@@ -1,9 +1,15 @@
 import React, { useEffect, useState } from 'react';
 import { Spin } from 'ui/component';
 import SecurityCheckBar from './SecurityCheckBar';
+import SecurityCheckDetail from './SecurityCheckDetail';
 import { Button } from 'antd';
-import { SecurityCheckDecision, Tx } from 'background/service/openapi';
-import { ExplainTxResponse, GasLevel } from 'background/service/openapi';
+import {
+  ExplainTxResponse,
+  GasLevel,
+  SecurityCheckResponse,
+  SecurityCheckDecision,
+  Tx,
+} from 'background/service/openapi';
 import { CHAINS, TX_TYPE_ENUM } from 'consts';
 import { useWallet, useApproval } from 'ui/utils';
 import Approve from './TxComponents/Approve';
@@ -21,6 +27,11 @@ const SignTx = ({ params, origin }) => {
     setSecurityCheckStatus,
   ] = useState<SecurityCheckDecision>('loading');
   const [securityCheckAlert, setSecurityCheckAlert] = useState('Checking...');
+  const [showSecurityCheckDetail, setShowSecurityCheckDetail] = useState(false);
+  const [
+    securityCheckDetail,
+    setSecurityCheckDetail,
+  ] = useState<SecurityCheckResponse | null>(null);
   const [, resolveApproval, rejectApproval] = useApproval();
   const wallet = useWallet();
   const session = params.session;
@@ -45,6 +56,7 @@ const SignTx = ({ params, origin }) => {
     const res = await wallet.openapi.checkTx(tx, origin, address);
     setSecurityCheckStatus(res.decision);
     setSecurityCheckAlert(res.alert);
+    setSecurityCheckDetail(res);
   };
 
   const explainTx = async (address: string) => {
@@ -64,7 +76,6 @@ const SignTx = ({ params, origin }) => {
   };
 
   const handleGasChange = (gas: GasLevel) => {
-    console.log(gas);
     setTx({
       ...tx,
       gasPrice: `0x${gas.price.toString(16)}`,
@@ -146,6 +157,15 @@ const SignTx = ({ params, origin }) => {
                 </Button>
               </div>
             </footer>
+            {securityCheckDetail && (
+              <SecurityCheckDetail
+                visible={showSecurityCheckDetail}
+                onCancel={() => setShowSecurityCheckDetail(false)}
+                data={securityCheckDetail}
+                onOk={handleAllow}
+                okText="Connect"
+              />
+            )}
           </>
         )}
       </div>

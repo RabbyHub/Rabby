@@ -1,7 +1,13 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Button } from 'antd';
-import { useApproval } from 'ui/utils';
+import { useApproval, useWallet } from 'ui/utils';
 import { hexToUtf8 } from 'web3-utils';
+import {
+  SecurityCheckResponse,
+  SecurityCheckDecision,
+} from 'background/service/openapi';
+import SecurityCheckBar from './SecurityCheckBar';
+import SecurityCheckDetail from './SecurityCheckDetail';
 
 interface SignTextProps {
   data: string[];
@@ -14,9 +20,33 @@ interface SignTextProps {
 
 const SignText = ({ params }: { params: SignTextProps }) => {
   const [, resolveApproval, rejectApproval] = useApproval();
+  const wallet = useWallet();
   const { data, session } = params;
   const [hexData] = data;
   const signText = hexToUtf8(hexData);
+  const [showSecurityCheckDetail, setShowSecurityCheckDetail] = useState(false);
+  const [
+    securityCheckStatus,
+    setSecurityCheckStatus,
+  ] = useState<SecurityCheckDecision>('pending');
+  const [securityCheckAlert, setSecurityCheckAlert] = useState('Checking...');
+  const [
+    securityCheckDetail,
+    setSecurityCheckDetail,
+  ] = useState<SecurityCheckResponse | null>(null);
+
+  const handleSecurityCheck = async () => {
+    setSecurityCheckStatus('loading');
+    const currentAccount = await wallet.getCurrentAccount();
+    const check = await wallet.openapi.checkText(
+      currentAccount!.address,
+      session.origin,
+      hexData
+    );
+    setSecurityCheckStatus(check.decision);
+    setSecurityCheckAlert(check.alert);
+    setSecurityCheckDetail(check);
+  };
 
   const handleCancel = () => {
     rejectApproval('user reject');
@@ -42,7 +72,12 @@ const SignText = ({ params }: { params: SignTextProps }) => {
         <div className="text-detail text-14 text-gray-subTitle">{signText}</div>
       </div>
       <footer>
-        <div className="risk-info"></div>
+        <SecurityCheckBar
+          status={securityCheckStatus}
+          alert={securityCheckAlert}
+          onClick={() => setShowSecurityCheckDetail(true)}
+          onCheck={handleSecurityCheck}
+        />
         <div className="action-buttons flex justify-between">
           <Button
             type="primary"
@@ -62,6 +97,15 @@ const SignText = ({ params }: { params: SignTextProps }) => {
           </Button>
         </div>
       </footer>
+      {securityCheckDetail && (
+        <SecurityCheckDetail
+          visible={showSecurityCheckDetail}
+          onCancel={() => setShowSecurityCheckDetail(false)}
+          data={securityCheckDetail}
+          onOk={handleAllow}
+          okText="Connect"
+        />
+      )}
     </>
   );
 };

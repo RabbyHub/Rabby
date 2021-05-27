@@ -1,9 +1,13 @@
 import React, { useEffect, useState } from 'react';
-import { SecurityCheckDecision } from 'background/service/openapi';
+import {
+  SecurityCheckDecision,
+  SecurityCheckResponse,
+} from 'background/service/openapi';
 import { Chain } from 'background/service/chain';
 import { Button } from 'antd';
 import { ChainSelector, Spin } from 'ui/component';
 import SecurityCheckBar from './SecurityCheckBar';
+import SecurityCheckDetail from './SecurityCheckDetail';
 import { useApproval, useWallet } from 'ui/utils';
 import { CHAINS_ENUM } from 'consts';
 
@@ -18,6 +22,11 @@ const Connect = ({ params: { icon, origin, name } }: ConnectProps) => {
   const wallet = useWallet();
   const [defaultChain, setDefaultChain] = useState(CHAINS_ENUM.ETH);
   const [isLoading, setIsLoading] = useState(true);
+  const [showSecurityCheckDetail, setShowSecurityCheckDetail] = useState(false);
+  const [
+    securityCheckDetail,
+    setSecurityCheckDetail,
+  ] = useState<SecurityCheckResponse | null>(null);
   const [
     securityCheckStatus,
     setSecurityCheckStatus,
@@ -33,6 +42,7 @@ const Connect = ({ params: { icon, origin, name } }: ConnectProps) => {
     const check = await wallet.openapi.checkOrigin(account!.address, origin);
     setSecurityCheckStatus(check.decision);
     setSecurityCheckAlert(check.alert);
+    setSecurityCheckDetail(check);
     const enableChains = wallet.getEnableChains();
     setIsLoading(false);
     let targetChain: Chain | undefined;
@@ -91,6 +101,7 @@ const Connect = ({ params: { icon, origin, name } }: ConnectProps) => {
         <SecurityCheckBar
           status={securityCheckStatus}
           alert={securityCheckAlert}
+          onClick={() => setShowSecurityCheckDetail(true)}
         />
         <div className="action-buttons flex justify-between">
           <Button
@@ -111,6 +122,15 @@ const Connect = ({ params: { icon, origin, name } }: ConnectProps) => {
           </Button>
         </div>
       </footer>
+      {securityCheckDetail && (
+        <SecurityCheckDetail
+          visible={showSecurityCheckDetail}
+          onCancel={() => setShowSecurityCheckDetail(false)}
+          data={securityCheckDetail}
+          onOk={handleAllow}
+          okText="Connect"
+        />
+      )}
     </Spin>
   );
 };

@@ -236,6 +236,7 @@
     line-height: 15px;
     width: 100%;
     overflow: hidden;
+    align-items: center;
     .icon-status {
       width: 16px;
       height: 16px;
@@ -247,10 +248,19 @@
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
     }
     .icon-arrow-right {
       width: 16px;
       height: 16px;
+    }
+    .ant-btn {
+      border: 1px solid #8697FF;
+      border-radius: 12px;
+      background-color: #fff;
+      color: #8697FF;
     }
   }
 }
@@ -328,5 +338,83 @@
 .gas-modal {
   .ant-modal-body {
     padding: 16px;
+  }
+}
+
+.security-check-detail {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  .container {
+    flex: 1;
+    overflow: auto;
+    .symbol {
+      padding: 4px 8px;
+      border-radius: 10px;
+      color: #fff;
+      font-size: 12px;
+    }
+    .forbidden {
+      .symbol {
+        background-color: #AF160E;
+      }
+    }
+    .danger {
+      .symbol {
+        background-color: #F24822;
+      }
+    }
+    .warning {
+      .symbol {
+        background-color: #F29C1B;
+      }
+    }
+    ul {
+      margin-left: 16px;
+      margin-bottom: 20px;
+      border-bottom: 0.5px solid #D8DFEB;
+      li {
+        color: #525966;
+        font-size: 14px;
+        margin-bottom: 16px;
+        .number {
+          font-size: 12px;
+          color: #B4BDCC;
+        }
+      }
+    }
+  }
+  .footer {
+    position: relative;
+    color: #818A99;
+    font-size: 14px;
+    padding-top: 20px;
+    &::before {
+      content: '';
+      height: 0.5px;
+      background-color: #D8DFEB;
+      width: 100vw;
+      position: absolute;
+      left: -24px;
+      top: 0;
+    }
+    .input-password {
+      margin-bottom: 20px;
+      p {
+        margin-bottom: 8px;
+      }
+      .ant-input {
+        background-color: #F6F7F9;
+        height: 44px;
+      }
+    }
+    .buttons {
+      margin-top: 20px;
+      display: flex;
+      justify-content: space-between;
+      .ant-btn {
+        width: 172px;
+      }
+    }
   }
 }

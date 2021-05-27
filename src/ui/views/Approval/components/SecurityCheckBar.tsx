@@ -1,4 +1,5 @@
 import React from 'react';
+import { Button } from 'antd';
 import { SecurityCheckDecision } from 'background/service/openapi';
 import IconLoading from 'ui/assets/loading.svg';
 import IconPass from 'ui/assets/checked.svg';
@@ -6,37 +7,50 @@ import IconWarning from 'ui/assets/warning.svg';
 import IconDanger from 'ui/assets/danger.svg';
 import IconForbidden from 'ui/assets/forbidden.svg';
 import IconArrowRight from 'ui/assets/arrow-right-gray.svg';
+import IconQuestionMark from 'ui/assets/question-mark.svg';
 
 const STATUS = {
+  pending: {
+    name: 'pending',
+    color: '#818A99',
+    clickable: false,
+    icon: IconQuestionMark,
+    text: 'Security checks not yet implemented',
+  },
   loading: {
     name: 'loading',
     color: '#818A99',
     clickable: false,
     icon: IconLoading,
+    text: 'Checking...',
   },
   pass: {
     name: 'pass',
     color: '#27C193',
     clickable: false,
     icon: IconPass,
+    text: 'No risk found',
   },
   warning: {
     name: 'warning',
     color: '#F29C1B',
     clickable: true,
     icon: IconWarning,
+    text: null,
   },
   danger: {
     name: 'danger',
     color: '#F24822',
     clickable: true,
     icon: IconDanger,
+    text: null,
   },
   forbidden: {
     name: 'forbidden',
     color: '#AF160E',
     clickable: true,
     icon: IconForbidden,
+    text: null,
   },
 };
 
@@ -44,12 +58,14 @@ interface SecurityCheckBarProps {
   status: SecurityCheckDecision;
   alert: string;
   onClick?(): void;
+  onCheck?(): void;
 }
 
 const SecurityCheckBar = ({
   status,
   alert,
   onClick,
+  onCheck,
 }: SecurityCheckBarProps) => {
   return (
     <div
@@ -66,7 +82,8 @@ const SecurityCheckBar = ({
         className="icon icon-status"
       />
       <span className="alert">
-        {status === 'pass' ? 'No risk found' : alert}
+        {STATUS[status].text || alert}
+        {status === 'pending' && <Button onClick={onCheck}>Check</Button>}
       </span>
       {STATUS[status].clickable && (
         <img src={IconArrowRight} className="icon icon-arrow-right" />
