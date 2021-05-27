@@ -258,11 +258,7 @@ class OpenApiService implements OpenApiService {
           params: {
             chain_id: chainId,
             ...rest.reduce((m, n, i) => {
-              let param = params[i];
-              if (param && typeof param === 'object') {
-                param = JSON.stringify(param);
-              }
-              m[n] = param;
+              m[n] = params[i];
 
               return m;
             }, {}),

@@ -29,8 +29,9 @@ class EthereumProvider extends EventEmitter {
   private requestPromise = new ReadyPromise(2);
   private _bcm = new BroadcastChannelMessage(channelName);
 
-  constructor() {
+  constructor({ maxListeners = 100 } = {}) {
     super();
+    this.setMaxListeners(maxListeners);
     this.initialize();
     this.shimLegacy();
   }
