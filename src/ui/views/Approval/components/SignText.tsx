@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Button } from 'antd';
 import { useApproval, useWallet } from 'ui/utils';
-import { hexToUtf8 } from 'web3-utils';
+import { hex2Utf8 } from 'ui/utils';
 import {
   SecurityCheckResponse,
   SecurityCheckDecision,
@@ -23,7 +23,7 @@ const SignText = ({ params }: { params: SignTextProps }) => {
   const wallet = useWallet();
   const { data, session } = params;
   const [hexData] = data;
-  const signText = hexToUtf8(hexData);
+  const signText = hex2Utf8(hexData);
   const [showSecurityCheckDetail, setShowSecurityCheckDetail] = useState(false);
   const [
     securityCheckStatus,

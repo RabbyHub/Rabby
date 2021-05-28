@@ -88,6 +88,17 @@ export const KEYRING_TYPE_TEXT = {
   [KEYRING_TYPE.WatchAddressKeyring]: 'Watch Address',
 };
 
+export const KEYRING_CLASS = {
+  PRIVATE_KEY: 'Simple Key Pair',
+  MNEMONIC: 'HD Key Tree',
+  HARDWARE: {
+    TREZOR: 'Trezor Hardware',
+    LEDGER: 'Ledger Hardware',
+    ONEKEY: 'Onekey Hardware',
+  },
+  WATCH: 'Watch Address',
+};
+
 export const HARDWARE_KEYRING_TYPES = {
   Ledger: {
     type: 'Ledger Hardware',

@@ -27,3 +27,9 @@ export const getUiType: () => UiTypeCheck = () => {
     return m;
   }, {} as UiTypeCheck);
 };
+
+export const hex2Utf8 = (hex) => {
+  return decodeURIComponent(
+    hex.replace(/^0x/, '').replace(/[0-9a-f]{2}/g, '%$&')
+  );
+};

@@ -1,4 +1,5 @@
 import axios, { Method } from 'axios';
+import rateLimit from 'axios-rate-limit';
 import { createPersistStore, underline2Camelcase } from 'background/utils';
 import { TX_TYPE_ENUM } from 'consts';
 
@@ -141,7 +142,7 @@ interface OpenApiService {
 class OpenApiService implements OpenApiService {
   store!: OpenApiStore;
 
-  request = axios.create();
+  request = rateLimit(axios.create(), { maxRPS: 25 });
 
   setHost = async (host: string) => {
     this.store.host = host;
@@ -225,9 +226,13 @@ class OpenApiService implements OpenApiService {
         },
       },
     });
-    this.request = axios.create({
-      baseURL: this.store.host,
-    });
+
+    this.request = rateLimit(
+      axios.create({
+        baseURL: this.store.host,
+      }),
+      { maxRPS: 25 }
+    );
     try {
       await this.getConfig();
       this._mountMethods(EVM_RPC_METHODS);
@@ -253,17 +258,22 @@ class OpenApiService implements OpenApiService {
       const config = this.store.config[method];
 
       const [, ...rest] = config.params || [];
-      this[underline2Camelcase(method)] = (chainId, params) =>
-        this.request[config.method](config.path, {
-          params: {
-            chain_id: chainId,
-            ...rest.reduce((m, n, i) => {
-              m[n] = params[i];
+      this[underline2Camelcase(method)] = (chainId, params) => {
+        const data = {
+          chain_id: chainId,
+          ...rest.reduce((m, n, i) => {
+            m[n] = params[i];
 
-              return m;
-            }, {}),
-          },
-        }).then(({ data }) => data?.result);
+            return m;
+          }, {}),
+        };
+
+        const _config = config.method === 'get' ? { params: data } : { data };
+
+        this.request[config.method](config.path, _config).then(
+          ({ data }) => data?.result
+        );
+      };
     });
   };
 

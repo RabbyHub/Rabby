@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
-import { KEYRING_CLASS, DisplayedKeryring } from 'background/service/keyring';
+import { KEYRING_CLASS } from 'consts';
+import { DisplayedKeryring } from 'background/service/keyring';
 import { useWallet } from 'ui/utils';
 
 const ADDRESS_TYPES = [

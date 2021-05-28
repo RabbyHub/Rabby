@@ -32,6 +32,7 @@ class EthereumProvider extends EventEmitter {
   constructor({ maxListeners = 100 } = {}) {
     super();
     this.setMaxListeners(maxListeners);
+    this.setMaxListeners = () => this;
     this.initialize();
     this.shimLegacy();
   }

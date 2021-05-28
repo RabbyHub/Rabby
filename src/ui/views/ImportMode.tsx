@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 import { StrayPageWithButton, FieldCheckbox } from 'ui/component';
 import { useWallet } from 'ui/utils';
-import { KEYRING_CLASS } from 'background/service/keyring';
+import { KEYRING_CLASS } from 'consts';
 
 const ImportMode = () => {
   const history = useHistory();

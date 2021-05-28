@@ -2,6 +2,8 @@ const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const TSConfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 const ESLintWebpackPlugin = require('eslint-webpack-plugin');
+const AntdDayjsWebpackPlugin = require('antd-dayjs-webpack-plugin');
+const tsImportPluginFactory = require('ts-import-plugin');
 const AssetReplacePlugin = require('./plugins/AssetReplacePlugin');
 
 const paths = require('./paths');
@@ -32,6 +34,21 @@ const config = {
           },
           {
             loader: 'ts-loader',
+            options: {
+              transpileOnly: true,
+              getCustomTransformers: () => ({
+                before: [
+                  tsImportPluginFactory({
+                    libraryName: 'antd',
+                    libraryDirectory: 'lib',
+                    style: true,
+                  }),
+                ],
+              }),
+              compilerOptions: {
+                module: 'es2015',
+              },
+            },
           },
         ],
       },
@@ -85,6 +102,7 @@ const config = {
     new ESLintWebpackPlugin({
       extensions: ['ts', 'tsx', 'js', 'jsx'],
     }),
+    new AntdDayjsWebpackPlugin(),
     new HtmlWebpackPlugin({
       inject: true,
       template: paths.popupHtml,
