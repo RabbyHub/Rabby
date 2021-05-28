@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Button } from 'antd';
+import { Button, Tooltip } from 'antd';
 import { useApproval, useWallet } from 'ui/utils';
 import { hex2Utf8 } from 'ui/utils';
 import {
@@ -8,6 +8,7 @@ import {
 } from 'background/service/openapi';
 import SecurityCheckBar from './SecurityCheckBar';
 import SecurityCheckDetail from './SecurityCheckDetail';
+import IconQuestionMark from 'ui/assets/question-mark-gray.svg';
 
 interface SignTextProps {
   data: string[];
@@ -34,6 +35,7 @@ const SignText = ({ params }: { params: SignTextProps }) => {
     securityCheckDetail,
     setSecurityCheckDetail,
   ] = useState<SecurityCheckResponse | null>(null);
+  const [explain, setExplain] = useState('');
 
   const handleSecurityCheck = async () => {
     setSecurityCheckStatus('loading');
@@ -43,6 +45,12 @@ const SignText = ({ params }: { params: SignTextProps }) => {
       session.origin,
       hexData
     );
+    const serverExplain = await wallet.openapi.explainText(
+      session.origin,
+      currentAccount!.address,
+      hexData
+    );
+    setExplain(serverExplain.comment);
     setSecurityCheckStatus(check.decision);
     setSecurityCheckAlert(check.alert);
     setSecurityCheckDetail(check);
@@ -69,7 +77,25 @@ const SignText = ({ params }: { params: SignTextProps }) => {
           </div>
         </div>
         <h1 className="text-center">Request for Sign text</h1>
-        <div className="text-detail text-14 text-gray-subTitle">{signText}</div>
+        <div className="text-detail-wrapper">
+          <div className="text-detail text-14 text-gray-subTitle">
+            {signText}
+          </div>
+          {explain && (
+            <p className="text-explain">
+              {explain}
+              <Tooltip
+                placement="top"
+                title="This summary is provide by DeBank"
+              >
+                <img
+                  src={IconQuestionMark}
+                  className="icon icon-question-mark"
+                />
+              </Tooltip>
+            </p>
+          )}
+        </div>
       </div>
       <footer>
         <SecurityCheckBar

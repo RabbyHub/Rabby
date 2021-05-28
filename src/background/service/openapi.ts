@@ -390,6 +390,23 @@ class OpenApiService implements OpenApiService {
     return data;
   };
 
+  explainText = async (
+    origin: string,
+    address: string,
+    text: string
+  ): Promise<{ comment: string }> => {
+    const config = this.store.config.explain_text;
+    const { data } = await this.request[config.method](config.path, {
+      params: {
+        user_addr: address,
+        origin,
+        text,
+      },
+    });
+
+    return data;
+  };
+
   gasMarket = async (
     chainId: string,
     customGas?: number
