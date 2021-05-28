@@ -52,6 +52,7 @@ const SignTx = ({ params, origin }) => {
     to,
     value,
   });
+  const [realNonce, setRealNonce] = useState('');
 
   const checkTx = async (address: string) => {
     const res = await wallet.openapi.checkTx(tx, origin, address);
@@ -61,27 +62,37 @@ const SignTx = ({ params, origin }) => {
   };
 
   const explainTx = async (address: string) => {
-    const res = await wallet.openapi.explainTx(tx, origin, address);
+    const res = await wallet.openapi.explainTx(
+      tx,
+      origin,
+      address,
+      tx.from !== tx.to
+    );
     setTxDetail(res);
+    setRealNonce(res.tx.nonce);
     setPreprocessSuccess(res.pre_exec.success);
     if (!res.pre_exec.success) {
       setShowSecurityCheckDetail(true);
     }
-    setIsReady(true);
   };
 
   const init = async () => {
     const currentAccount = await wallet.getCurrentAccount();
     try {
+      setIsReady(false);
       await explainTx(currentAccount!.address);
       await checkTx(currentAccount!.address);
+      setIsReady(true);
     } catch (e) {
       // NOTHING
     }
   };
 
   const handleAllow = () => {
-    // TODO
+    resolveApproval({
+      ...tx,
+      nonce: realNonce,
+    });
   };
 
   const handleGasChange = (gas: GasLevel) => {

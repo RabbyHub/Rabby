@@ -62,6 +62,9 @@ export interface Tx {
   nonce: string;
   to: string;
   value: string;
+  r?: string;
+  s?: string;
+  v?: string;
 }
 
 interface AssertsChange {
@@ -388,6 +391,17 @@ class OpenApiService implements OpenApiService {
         user_addr: address,
         origin,
         update_nonce,
+      },
+    });
+
+    return data;
+  };
+
+  pushTx = async (tx: Tx) => {
+    const config = this.store.config.push_tx;
+    const { data } = await this.request[config.method](config.path, {
+      params: {
+        tx: JSON.stringify(tx),
       },
     });
 
