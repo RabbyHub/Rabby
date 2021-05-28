@@ -52,7 +52,7 @@ export const useCurrentBalance = (account) => {
 
           return {
             ...item,
-            logo: chain?.logo,
+            logo: chain?.logo || item.logo_url,
             whiteLogo: chain?.whiteLogo,
           };
         })
@@ -88,7 +88,7 @@ const AddressItem = ({
       <div>
         <div className="address-info">
           <span className="balance">
-            <Spin size="small">
+            <Spin size="small" spinning={balance === null}>
               ${splitNumberByStep((balance || 0).toFixed(2))}
             </Spin>
           </span>
