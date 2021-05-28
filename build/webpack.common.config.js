@@ -150,6 +150,7 @@ const config = {
     new webpack.ProvidePlugin({
       Buffer: ['buffer', 'Buffer'],
       process: 'process',
+      dayjs: 'dayjs',
     }),
     new AssetReplacePlugin({
       '#PAGEPROVIDER#': 'pageProvider',
