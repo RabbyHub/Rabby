@@ -2,7 +2,6 @@ const webpack = require('webpack');
 const HtmlWebpackPlugin = require('html-webpack-plugin');
 const TSConfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 const ESLintWebpackPlugin = require('eslint-webpack-plugin');
-const AntdDayjsWebpackPlugin = require('antd-dayjs-webpack-plugin');
 const tsImportPluginFactory = require('ts-import-plugin');
 const AssetReplacePlugin = require('./plugins/AssetReplacePlugin');
 
@@ -33,22 +32,49 @@ const config = {
             loader: 'ts-loader',
           },
           {
-            loader: 'ts-loader',
-            options: {
-              transpileOnly: true,
-              getCustomTransformers: () => ({
-                before: [
-                  tsImportPluginFactory({
-                    libraryName: 'antd',
-                    libraryDirectory: 'lib',
-                    style: true,
+            test: /[\\/]ui[\\/]index.tsx/,
+            use: [
+              {
+                loader: 'ts-loader',
+                options: {
+                  transpileOnly: true,
+                  getCustomTransformers: () => ({
+                    before: [
+                      tsImportPluginFactory({
+                        libraryName: 'antd',
+                        libraryDirectory: 'lib',
+                        style: true,
+                      }),
+                    ],
                   }),
-                ],
-              }),
-              compilerOptions: {
-                module: 'es2015',
+                  compilerOptions: {
+                    module: 'es2015',
+                  },
+                },
               },
-            },
+              {
+                loader: paths.rootResolve(
+                  'node_modules/antd-dayjs-webpack-plugin/src/init-loader'
+                ),
+                options: {
+                  plugins: [
+                    'isSameOrBefore',
+                    'isSameOrAfter',
+                    'advancedFormat',
+                    'customParseFormat',
+                    'weekday',
+                    'weekYear',
+                    'weekOfYear',
+                    'isMoment',
+                    'localeData',
+                    'localizedFormat',
+                  ],
+                },
+              },
+            ],
+          },
+          {
+            loader: 'ts-loader',
           },
         ],
       },
@@ -102,7 +128,7 @@ const config = {
     new ESLintWebpackPlugin({
       extensions: ['ts', 'tsx', 'js', 'jsx'],
     }),
-    new AntdDayjsWebpackPlugin(),
+    // new AntdDayjsWebpackPlugin(),
     new HtmlWebpackPlugin({
       inject: true,
       template: paths.popupHtml,
@@ -130,6 +156,9 @@ const config = {
     }),
   ],
   resolve: {
+    alias: {
+      moment: require.resolve('dayjs'),
+    },
     plugins: [new TSConfigPathsPlugin()],
     fallback: {
       stream: require.resolve('stream-browserify'),
