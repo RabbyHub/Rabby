@@ -34,8 +34,8 @@ const SecurityCheckDetail = ({
   };
   useDebounce(
     async () => {
+      if (!password) return;
       await wallet.verifyPassword(password);
-      console.log(true);
       setPasswordCorrect(true);
     },
     500,
@@ -66,7 +66,7 @@ const SecurityCheckDetail = ({
               <div className="symbol">Forbidden</div>
               <ul>
                 {data.forbidden_list.map((item) => (
-                  <li>
+                  <li key={`forbidden_${item.id}`}>
                     {item.alert} <span className="number">#{item.id}</span>
                   </li>
                 ))}
@@ -78,7 +78,7 @@ const SecurityCheckDetail = ({
               <div className="symbol">Danger</div>
               <ul>
                 {data.danger_list.map((item) => (
-                  <li>
+                  <li key={`danger_${item.id}`}>
                     {item.alert} <span className="number">#{item.id}</span>
                   </li>
                 ))}
@@ -90,7 +90,7 @@ const SecurityCheckDetail = ({
               <div className="symbol">Warning</div>
               <ul>
                 {data.warning_list.map((item) => (
-                  <li>
+                  <li key={`warning_${item.id}`}>
                     {item.alert} <span className="number">#{item.id}</span>
                   </li>
                 ))}
