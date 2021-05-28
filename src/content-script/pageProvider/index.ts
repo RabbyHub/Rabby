@@ -121,7 +121,7 @@ class EthereumProvider extends EventEmitter {
           return res;
         })
         .catch((err) => {
-          log('[request: error]', err);
+          log('[request: error]', serializeError(err));
 
           throw serializeError(err);
         });
