@@ -3,6 +3,7 @@ import IconBscLogo from 'ui/assets/chain-logos/bsc.svg';
 import IconDaiLogo from 'ui/assets/chain-logos/dai.svg';
 import IconEthLogo from 'ui/assets/chain-logos/eth.svg';
 // import IconHecoLogo from 'ui/assets/chain-logos/heco.svg';
+import IconOKTLogo from 'ui/assets/chain-logos/okex.svg';
 import IconPolygonLogo from 'ui/assets/chain-logos/polygon.svg';
 import IconBscWhiteLogo from 'ui/assets/chain-logos/bsc-white.svg';
 import IconDaiWhiteLogo from 'ui/assets/chain-logos/dai-white.svg';
@@ -10,6 +11,7 @@ import IconEthWhiteLogo from 'ui/assets/chain-logos/eth-white.svg';
 // import IconHecoWhiteLogo from 'ui/assets/chain-logos/heco-white.svg';
 import IconPolygonWhiteLogo from 'ui/assets/chain-logos/polygon-white.svg';
 import IconfantomWhiteLogo from 'ui/assets/chain-logos/fantom-white.svg';
+import IconOKTWhiteLogo from 'ui/assets/chain-logos/okex-white.svg';
 
 export enum CHAINS_ENUM {
   ETH = 'ETH',
@@ -18,6 +20,7 @@ export enum CHAINS_ENUM {
   HECO = 'HECO',
   POLYGON = 'POLYGON',
   FTM = 'FTM',
+  OKT = 'OKT',
 }
 
 export const CHAINS: Record<string, Chain> = {
@@ -71,6 +74,16 @@ export const CHAINS: Record<string, Chain> = {
     logo: IconPolygonLogo,
     whiteLogo: IconPolygonWhiteLogo,
     network: 137,
+  },
+  [CHAINS_ENUM.OKT]: {
+    id: 66,
+    serverId: 'okt',
+    name: 'OKExChain',
+    enum: CHAINS_ENUM.OKT,
+    logo: IconOKTLogo,
+    whiteLogo: IconOKTWhiteLogo,
+    hex: '0x42',
+    network: 66,
   },
 };
 
