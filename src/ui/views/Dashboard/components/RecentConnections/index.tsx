@@ -63,7 +63,7 @@ const ConnectionItem = ({
       onClick={onClick}
       style={{ cursor: onClick ? 'pointer' : 'inherit' }}
     >
-      <Tooltip title={item.name} placement="topLeft">
+      <Tooltip title={item.origin} placement="topLeft">
         <img src={item.icon} className="logo" />
       </Tooltip>
       <p className="name">{item.name}</p>
