@@ -137,3 +137,6 @@ export enum TX_TYPE_ENUM {
 
 // if amount more than this magic number, it should be an unlimited approve.
 export const MAX_LIMITED_COUNT = 999999999999999999999;
+
+// ref: https://github.com/ethereum/yellowpaper/blob/fa00ff14c2c44198635d7b93f848fc51ca03fa39/Paper.tex#L1833
+export const DEFAULT_GAS_LIMIT = '0x5208';
