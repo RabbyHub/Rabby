@@ -77,7 +77,10 @@ export default (req) =>
       const { uiRequestComponent, ...rest } = approvalRes || {};
 
       const requestDeffer = Promise.resolve(
-        providerController[mapMethod](request)
+        providerController[mapMethod]({
+          ...request,
+          approvalRes,
+        })
       );
 
       if (uiRequestComponent) {

@@ -1,4 +1,5 @@
 import Transaction from 'ethereumjs-tx';
+import { bufferToHex } from 'ethereumjs-util';
 import {
   keyringService,
   permissionService,
@@ -7,7 +8,7 @@ import {
   openapiService,
 } from 'background/service';
 import { Session } from 'background/service/session';
-import { EVM_RPC_METHODS } from 'background/service/openapi';
+import { EVM_RPC_METHODS, Tx } from 'background/service/openapi';
 import { CHAINS } from 'consts';
 import { underline2Camelcase } from 'background/utils';
 import BaseController from '../base';
@@ -47,11 +48,22 @@ class ProviderController extends BaseController {
     data: {
       params: [txParams],
     },
+    approvalRes,
+  }: {
+    data: {
+      params: any;
+    };
+    approvalRes: Tx;
   }) => {
-    const tx = new Transaction(txParams);
+    const tx = new Transaction(approvalRes);
     const signedTx = await keyringService.signTransaction(tx, txParams.from);
 
-    // return openapiService.pushTx(signedTx.toJSON());
+    return openapiService.pushTx({
+      ...approvalRes,
+      r: bufferToHex(signedTx.r),
+      s: bufferToHex(signedTx.s),
+      v: bufferToHex(signedTx.v),
+    });
   };
 
   @Reflect.metadata('APPROVAL', ['SignText'])
