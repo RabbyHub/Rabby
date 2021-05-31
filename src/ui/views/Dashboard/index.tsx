@@ -140,6 +140,7 @@ const Dashboard = () => {
       message.success({
         icon: <img src={IconSuccess} className="icon icon-success" />,
         content: 'Copied',
+        duration: 0.5,
       });
       clipboard.destroy();
     });
