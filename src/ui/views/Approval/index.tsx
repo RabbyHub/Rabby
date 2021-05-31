@@ -9,8 +9,6 @@ import './style.less';
 const Approval = () => {
   const history = useHistory();
   const [account, setAccount] = useState('');
-  // const [accountType, setAccountType] = useState('');
-  // const [waitingForHardware, setWaitingForHardware] = useState(false);
   const wallet = useWallet();
   const [approval, , rejectApproval] = useApproval();
   if (!approval) {
@@ -25,14 +23,13 @@ const Approval = () => {
       return;
     }
     setAccount(account.address);
-    // setAccountType(account.type);
   };
 
   useEffect(() => {
     init();
   }, []);
 
-  const { aporovalComponent, params, origin } = approval;
+  const { aporovalComponent, params, origin, requestDeffer } = approval;
   const CurrentApprovalComponent = ApprovalComponent[aporovalComponent];
 
   return (
@@ -41,7 +38,11 @@ const Approval = () => {
         <p className="text-12">Current account</p>
         <p className="text-13 font-medium">{account}</p>
       </header>
-      <CurrentApprovalComponent params={params} origin={origin} />
+      <CurrentApprovalComponent
+        params={params}
+        origin={origin}
+        requestDeffer={requestDeffer}
+      />
     </div>
   );
 };

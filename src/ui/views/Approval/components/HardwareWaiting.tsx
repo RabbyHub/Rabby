@@ -1,12 +1,22 @@
 import React from 'react';
+import { Button } from 'antd';
+import { useApproval } from 'ui/utils';
 import { SvgIconTrezor, SvgIconLedger, SvgIconOnekey } from 'ui/assets';
 import { HARDWARE_KEYRING_TYPES } from 'consts';
 
-const Hardware = ({ type }: { type: string }) => {
-  console.log('type', type);
+const Hardware = ({
+  params,
+  requestDeffer,
+}: {
+  params: { type: string };
+  requestDeffer: Promise<any>;
+}) => {
+  const [, resolveApproval, rejectApproval] = useApproval();
+  const { type } = params;
   const currentKeyringType = Object.keys(HARDWARE_KEYRING_TYPES)
     .map((key) => HARDWARE_KEYRING_TYPES[key])
     .find((item) => item.type === type);
+  requestDeffer.then(resolveApproval).catch(rejectApproval);
 
   const Icon = () => {
     switch (type) {
@@ -20,6 +30,11 @@ const Hardware = ({ type }: { type: string }) => {
         return <></>;
     }
   };
+
+  const handleCancel = () => {
+    rejectApproval('user cancel');
+  };
+
   return (
     <div className="hardware-operation">
       <Icon />
@@ -27,6 +42,18 @@ const Hardware = ({ type }: { type: string }) => {
       <p className="text-15 text-medium text-gray-content text-center">
         Please operate in your hardware wallet
       </p>
+      <footer>
+        <div className="action-buttons flex justify-center">
+          <Button
+            type="primary"
+            size="large"
+            className="w-[172px]"
+            onClick={handleCancel}
+          >
+            Cancel
+          </Button>
+        </div>
+      </footer>
     </div>
   );
 };

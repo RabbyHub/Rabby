@@ -297,7 +297,7 @@ class OpenApiService implements OpenApiService {
     const config = this.store.config.recommend_chains;
     const { data } = await this.request[config.method](config.path, {
       params: {
-        user_addr: address,
+        user_addr: address.toLowerCase(),
         origin,
       },
     });
@@ -322,7 +322,7 @@ class OpenApiService implements OpenApiService {
     const config = this.store.config.get_pending_tx_count;
     const { data } = await this.request[config.method](config.path, {
       params: {
-        user_addr: address,
+        user_addr: address.toLowerCase(),
       },
     });
     return data;
@@ -335,7 +335,7 @@ class OpenApiService implements OpenApiService {
     const config = this.store.config.check_origin;
     const { data } = await this.request[config.method](config.path, {
       params: {
-        user_addr: address,
+        user_addr: address.toLowerCase(),
         origin,
       },
     });
@@ -351,7 +351,7 @@ class OpenApiService implements OpenApiService {
     const config = this.store.config.check_text;
     const { data } = await this.request[config.method](config.path, {
       params: {
-        user_addr: address,
+        user_addr: address.toLowerCase(),
         origin,
         text,
       },
@@ -368,7 +368,7 @@ class OpenApiService implements OpenApiService {
     const config = this.store.config.check_tx;
     const { data } = await this.request[config.method](config.path, {
       params: {
-        user_addr: address,
+        user_addr: address.toLowerCase(),
         origin,
         tx: JSON.stringify(tx),
         update_nonce,
@@ -388,7 +388,7 @@ class OpenApiService implements OpenApiService {
     const { data } = await this.request[config.method](config.path, {
       params: {
         tx: JSON.stringify(tx),
-        user_addr: address,
+        user_addr: address.toLowerCase(),
         origin,
         update_nonce,
       },
@@ -416,7 +416,7 @@ class OpenApiService implements OpenApiService {
     const config = this.store.config.explain_text;
     const { data } = await this.request[config.method](config.path, {
       params: {
-        user_addr: address,
+        user_addr: address.toLowerCase(),
         origin,
         text,
       },

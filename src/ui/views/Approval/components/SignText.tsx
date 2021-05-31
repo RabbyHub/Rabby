@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Button, Tooltip } from 'antd';
+import { KEYRING_CLASS } from 'consts';
 import { useApproval, useWallet } from 'ui/utils';
 import { hex2Utf8 } from 'ui/utils';
 import {
@@ -61,7 +62,15 @@ const SignText = ({ params }: { params: SignTextProps }) => {
   };
 
   const handleAllow = async () => {
-    resolveApproval({});
+    const currentAccount = await wallet.getCurrentAccount();
+    if (currentAccount?.type === KEYRING_CLASS.HARDWARE.LEDGER) {
+      resolveApproval({
+        uiRequestComponent: 'HardwareWaiting',
+        type: currentAccount.type,
+      });
+    } else {
+      resolveApproval({});
+    }
   };
 
   return (
