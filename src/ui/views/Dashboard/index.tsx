@@ -1,6 +1,7 @@
 import React from 'react';
 import ClipboardJS from 'clipboard';
 import QRCode from 'qrcode.react';
+import { browser } from 'webextension-polyfill-ts';
 import { useEffect, useState } from 'react';
 import { Link, useHistory } from 'react-router-dom';
 import { message, Modal } from 'antd';
@@ -122,6 +123,12 @@ const Dashboard = () => {
     handleToggle();
   };
 
+  const handleGotoProfile = () => {
+    browser.tabs.create({
+      url: `https://debank.com/profile/${currentAccount?.address}`,
+    });
+  };
+
   const handleCopyCurrentAddress = () => {
     const clipboard = new ClipboardJS('.main', {
       text: function () {
@@ -170,7 +177,7 @@ const Dashboard = () => {
               onClick={handleConfig}
             />
           </div>
-          <div className="assets flex">
+          <div className="assets flex" onClick={handleGotoProfile}>
             <div className="left">
               <p className="amount leading-none">
                 ${splitNumberByStep((balance || 0).toFixed(2))}
