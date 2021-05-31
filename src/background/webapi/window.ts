@@ -12,16 +12,23 @@ browser.windows.onRemoved.addListener((winId) => {
   event.emit('windowRemoved', winId);
 });
 
+const BROWSER_HEADER = 80;
 const WINDOW_SIZE = {
   width: 400,
   height: 530,
 };
 
 const create = async (url): Promise<number | undefined> => {
+  const { top: cTop, left: cLeft, width } = await browser.windows.getCurrent();
+  const top = cTop! + BROWSER_HEADER;
+  const left = cLeft! + width! - WINDOW_SIZE.width;
+
   const win = await browser.windows.create({
     focused: true,
     url,
     type: 'popup',
+    top,
+    left,
     ...WINDOW_SIZE,
   });
 
