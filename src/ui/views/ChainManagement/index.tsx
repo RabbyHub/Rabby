@@ -8,12 +8,10 @@ import './style.less';
 
 const ChainManagement = () => {
   const wallet = useWallet();
-  const [enableChains, setEnableChains] = useState<Chain[]>([]);
+  const [enableChains, setEnableChains] = useState<Chain[]>(
+    wallet.getEnableChains()
+  );
   const chains = wallet.getSupportChains();
-
-  useEffect(() => {
-    setEnableChains(wallet.getEnableChains());
-  }, []);
 
   const handleSwitchChain = (chainEnum: CHAINS_ENUM, checked: boolean) => {
     if (checked) {
@@ -54,6 +52,7 @@ const ChainManagement = () => {
           leftIcon={<img src={chain.logo} className="icon icon-chain" />}
           rightIcon={
             <Switch
+              defaultChecked={!!enableChains.find((c) => c.enum === chain.enum)}
               checked={!!enableChains.find((c) => c.enum === chain.enum)}
               onChange={(checked) => handleSwitchChain(chain.enum, checked)}
             />
