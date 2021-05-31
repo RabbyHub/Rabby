@@ -8,6 +8,7 @@ interface Approval {
     params?: any;
     origin?: string;
     aporovalComponent: string;
+    requestDeffer?: Promise<any>;
   };
   resolve(params?: any): void;
   reject(err: EthereumProviderError<any>): void;
