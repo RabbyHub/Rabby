@@ -1,8 +1,5 @@
 const domReadyCall = (callback) => {
-  if (
-    document.readyState === 'interactive' ||
-    document.readyState === 'complete'
-  ) {
+  if (document.readyState === 'complete') {
     callback();
   } else {
     const domContentLoadedHandler = () => {

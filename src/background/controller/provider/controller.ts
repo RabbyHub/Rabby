@@ -26,8 +26,6 @@ class ProviderController extends BaseController {
   constructor() {
     super();
 
-    // handle 'eth_getTransactionCount' in exception
-    // const [, ...needMountMethods] = EVM_RPC_METHODS;
     this._mountMethods(EVM_RPC_METHODS);
   }
 
@@ -96,26 +94,6 @@ class ProviderController extends BaseController {
     }
     return CHAINS[site.chain].network;
   };
-
-  // ethGetTransactionCount = async ({
-  //   data: { params },
-  //   session: { origin },
-  // }) => {
-  //   const [addr, blockIdentifier] = params;
-  //   const chain = CHAINS[permissionService.getConnectedSite(origin)!.chain];
-
-  //   if (blockIdentifier === 'pending') {
-  //     const { chains } = await openapiService.getPendingCount(addr);
-
-  //     const pendingTxCount = chains.find(
-  //       (_chain) => _chain.community_id === chain.id
-  //     )?.pending_tx_count;
-
-  //     return pendingTxCount;
-  //   }
-
-  //   return openapiService.ethGetTransactionCount(chain.serverId, params);
-  // };
 
   ethRequestAccounts = this.ethAccounts;
 
