@@ -26,7 +26,7 @@ interface GasSelectorProps {
 const GasSelector = ({ gas, nativeToken, tx, onChange }: GasSelectorProps) => {
   const wallet = useWallet();
   const [modalVisible, setModalVisible] = useState(false);
-  const [customGas, setCustomGas] = useState(0);
+  const [customGas, setCustomGas] = useState(Number(tx.gasPrice));
   const [gasList, setGasList] = useState<GasLevel[]>([]);
   const [selectedGas, setSelectGas] = useState<GasLevel | null>(null);
   const loadGasMarket = async () => {
@@ -40,6 +40,12 @@ const GasSelector = ({ gas, nativeToken, tx, onChange }: GasSelectorProps) => {
   const handleSelectGas = (gas: GasLevel) => {
     if (gas.price === 0) return;
     setSelectGas(gas);
+  };
+
+  const handleShowSelectModal = () => {
+    setCustomGas(Number(tx.gasPrice));
+    setSelectGas(null);
+    setModalVisible(true);
   };
 
   const handleConfirmGas = () => {
@@ -86,7 +92,7 @@ const GasSelector = ({ gas, nativeToken, tx, onChange }: GasSelectorProps) => {
             src={IconSetting}
             alt="setting"
             className="icon icon-setting"
-            onClick={() => setModalVisible(true)}
+            onClick={handleShowSelectModal}
           />
         </div>
       </div>
@@ -98,6 +104,7 @@ const GasSelector = ({ gas, nativeToken, tx, onChange }: GasSelectorProps) => {
         okText="Confirm"
         footer={null}
         width="360px"
+        destroyOnClose
       >
         <div>
           <ul className="gas-selector-panel">
@@ -111,6 +118,7 @@ const GasSelector = ({ gas, nativeToken, tx, onChange }: GasSelectorProps) => {
                   {gas.level === 'custom' ? (
                     <Input
                       placeholder="Custom"
+                      defaultValue={customGas / 1e9}
                       onChange={(e) => handleCustomGasChange(e.target.value)}
                     />
                   ) : (
