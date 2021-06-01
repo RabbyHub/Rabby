@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { intToHex } from 'ethereumjs-util';
 import { Spin } from 'ui/component';
 import SecurityCheckBar from './SecurityCheckBar';
 import SecurityCheckDetail from './SecurityCheckDetail';
@@ -82,10 +83,25 @@ const SignTx = ({ params, origin }) => {
     }
   };
 
+  const getDefaultGas = async () => {
+    const chain = Object.keys(CHAINS)
+      .map((key) => CHAINS[key])
+      .find((item) => item.id === chainId);
+    const gas = await wallet.openapi.gasMarket(chain!.serverId);
+    setTx({
+      ...tx,
+      gasPrice: intToHex(gas[0].price),
+    });
+  };
+
   const init = async () => {
     const currentAccount = await wallet.getCurrentAccount();
     try {
       setIsReady(false);
+      if (!tx.gasPrice) {
+        // use minimum gas as default gas if dapp not set gasPrice
+        await getDefaultGas();
+      }
       await explainTx(currentAccount!.address);
       await checkTx(currentAccount!.address);
       setIsReady(true);
