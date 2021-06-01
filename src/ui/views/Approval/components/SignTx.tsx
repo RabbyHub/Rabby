@@ -57,7 +57,11 @@ const SignTx = ({ params, origin }) => {
   const [realNonce, setRealNonce] = useState('');
 
   const checkTx = async (address: string) => {
-    const res = await wallet.openapi.checkTx(tx, origin, address);
+    const res = await wallet.openapi.checkTx(
+      { ...tx, nonce: tx.nonce || '0x1' }, // set a mock nonce for check if dapp not set it
+      origin,
+      address
+    );
     setSecurityCheckStatus(res.decision);
     setSecurityCheckAlert(res.alert);
     setSecurityCheckDetail(res);
@@ -65,7 +69,7 @@ const SignTx = ({ params, origin }) => {
 
   const explainTx = async (address: string) => {
     const res = await wallet.openapi.explainTx(
-      tx,
+      { ...tx, nonce: tx.nonce || '0x1' }, // set a mock nonce for explain if dapp not set it
       origin,
       address,
       tx.from !== tx.to
