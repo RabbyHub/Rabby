@@ -1,5 +1,5 @@
-import React from 'react';
-import { useState } from 'react';
+import React, { useEffect } from 'react';
+import { useState, useRef } from 'react';
 import { Input, Form } from 'antd';
 import { useWallet, useApproval } from 'ui/utils';
 import { StrayPageWithButton } from 'ui/component';
@@ -11,6 +11,12 @@ const Unlock = () => {
   const [, resolveApproval] = useApproval();
   const [error, setErr] = useState('');
   const [form] = Form.useForm();
+  const inputEl = useRef<Input>(null);
+
+  useEffect(() => {
+    if (!inputEl.current) return;
+    inputEl.current.focus();
+  }, []);
 
   const onSubmit = async ({ password }) => {
     try {
@@ -45,7 +51,12 @@ const Unlock = () => {
           validateStatus={error ? 'error' : undefined}
           help={error}
         >
-          <Input placeholder="Password" size="large" type="password" />
+          <Input
+            placeholder="Password"
+            size="large"
+            type="password"
+            ref={inputEl}
+          />
         </Form.Item>
       </StrayPageWithButton>
     </div>
