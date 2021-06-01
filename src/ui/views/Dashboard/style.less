@@ -101,13 +101,21 @@
     cursor: pointer;
   }
   .footer {
-    display: flex;
-    color: @primary-text-color;
-    font-size: 15px;
-    line-height: 18px;
-    font-weight: 500;
-    justify-content: center;
     margin-top: 24px;
+    a {
+      display: flex;
+      color: @primary-text-color;
+      font-size: 15px;
+      line-height: 18px;
+      font-weight: 500;
+      justify-content: center;
+      align-items: center;
+      .icon-add {
+        width: 16px;
+        height: 16px;
+        margin-right: 6px;
+      }
+    }
   }
 }
 

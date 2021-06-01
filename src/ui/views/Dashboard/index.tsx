@@ -22,6 +22,7 @@ import IconHistory from 'ui/assets/history.svg';
 import IconSuccess from 'ui/assets/success.svg';
 import IconChecked from 'ui/assets/checked.svg';
 import IconNotChecked from 'ui/assets/not-checked.svg';
+import IconAdd from 'ui/assets/add.svg';
 import './style.less';
 
 const SwitchAddress = ({
@@ -71,7 +72,10 @@ const SwitchAddress = ({
         onClick={changeAccount}
       />
       <div className="footer">
-        <Link to="/add-address">Add addresses</Link>
+        <Link to="/add-address">
+          <img src={IconAdd} className="icon icon-add" />
+          Add addresses
+        </Link>
       </div>
     </div>
   ) : null;
