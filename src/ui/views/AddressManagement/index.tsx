@@ -66,8 +66,8 @@ const AddressManagement = () => {
     };
 
     const handleDeleteAddress = async () => {
-      await AuthenticationModal(wallet);
       await wallet.removeAddress(data, keyring.type);
+      message.success('removed');
       getAllKeyrings();
     };
 
