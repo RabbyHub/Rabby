@@ -110,11 +110,15 @@ const SignTx = ({ params, origin }) => {
     }
   };
 
-  const handleAllow = () => {
-    resolveApproval({
-      ...tx,
-      nonce: realNonce,
-    });
+  const handleAllow = (doubleCheck = false) => {
+    if (!doubleCheck && securityCheckStatus !== 'pass') {
+      setShowSecurityCheckDetail(true);
+    } else {
+      resolveApproval({
+        ...tx,
+        nonce: realNonce,
+      });
+    }
   };
 
   const handleGasChange = (gas: GasLevel) => {
@@ -200,7 +204,7 @@ const SignTx = ({ params, origin }) => {
                   type="primary"
                   size="large"
                   className="w-[172px]"
-                  onClick={handleAllow}
+                  onClick={() => handleAllow()}
                 >
                   Allow
                 </Button>
@@ -213,7 +217,7 @@ const SignTx = ({ params, origin }) => {
             visible={showSecurityCheckDetail}
             onCancel={() => setShowSecurityCheckDetail(false)}
             data={securityCheckDetail}
-            onOk={handleAllow}
+            onOk={() => handleAllow(true)}
             okText="Sign"
             preprocessSuccess={preprocessSuccess}
           />
