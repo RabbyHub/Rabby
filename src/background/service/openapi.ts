@@ -134,6 +134,7 @@ export const EVM_RPC_METHODS = [
   'eth_getTransactionCount',
   'eth_blockNumber',
   'eth_call',
+  'eth_estimateGas',
 ];
 
 interface OpenApiService {
