@@ -1,9 +1,9 @@
 import React from 'react';
 import { useEffect, useState, useMemo } from 'react';
-import { useHistory } from 'react-router-dom';
 import { Form } from 'antd';
 import { StrayPageWithButton, TiledSelect } from 'ui/component';
 import { useWallet } from 'ui/utils';
+import SelectSuccess from 'ui/views/SelectAddress/SelectSuccess';
 
 const CreateMnemonic = () => {
   const [showVerify, setShowVerify] = useState<boolean>(false);
@@ -50,7 +50,7 @@ const DisplayMnemonic = ({ mnemonics, onNextClick }) => (
 );
 
 const VerifyMnemonics = ({ mnemonics, onBackClick }) => {
-  const history = useHistory();
+  const [accounts, setAccounts] = useState<any[]>([]);
   const wallet = useWallet();
 
   const randomMnemonics = useMemo(
@@ -59,41 +59,47 @@ const VerifyMnemonics = ({ mnemonics, onBackClick }) => {
   );
 
   const onSubmit = async () => {
-    await wallet.createKeyringWithMnemonics(mnemonics);
-    history.push('/dashboard');
+    const _accounts = await wallet.createKeyringWithMnemonics(mnemonics);
+    setAccounts(_accounts);
   };
 
   return (
-    <StrayPageWithButton
-      header={{
-        secondTitle: 'Verify Mnemonics',
-        subTitle: 'Please select the mnemonic words in order',
-      }}
-      onSubmit={onSubmit}
-      hasBack
-      hasDivider
-      onBackClick={onBackClick}
-      initialValues={{
-        mnemonics: mnemonics.split(' '),
-      }}
-    >
-      <Form.Item
-        name="mnemonics"
-        rules={[
-          { required: true },
-          {
-            validator(_, value: []) {
-              if (!value || value.join(' ') === mnemonics) {
-                return Promise.resolve();
-              }
-              return Promise.reject(new Error('*Verification failed'));
-            },
-          },
-        ]}
-      >
-        <TiledSelect className="h-[297px]" options={randomMnemonics} />
-      </Form.Item>
-    </StrayPageWithButton>
+    <>
+      {accounts.length ? (
+        <SelectSuccess accounts={accounts} title="Successfully created" />
+      ) : (
+        <StrayPageWithButton
+          header={{
+            secondTitle: 'Verify Mnemonics',
+            subTitle: 'Please select the mnemonic words in order',
+          }}
+          onSubmit={onSubmit}
+          hasBack
+          hasDivider
+          onBackClick={onBackClick}
+          initialValues={{
+            mnemonics: mnemonics.split(' '),
+          }}
+        >
+          <Form.Item
+            name="mnemonics"
+            rules={[
+              { required: true },
+              {
+                validator(_, value: []) {
+                  if (!value || value.join(' ') === mnemonics) {
+                    return Promise.resolve();
+                  }
+                  return Promise.reject(new Error('*Verification failed'));
+                },
+              },
+            ]}
+          >
+            <TiledSelect className="h-[297px]" options={randomMnemonics} />
+          </Form.Item>
+        </StrayPageWithButton>
+      )}
+    </>
   );
 };
 

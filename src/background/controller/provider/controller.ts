@@ -83,7 +83,7 @@ class ProviderController extends BaseController {
   ethChainId = ({ session }: { session: Session }) => {
     const origin = session.origin;
     const site = permissionService.getWithoutUpdate(origin);
-    return CHAINS[site!.chain].id;
+    return CHAINS[site!.chain].hex;
   };
 
   netVersion = ({ session }: { session: Session }) => {

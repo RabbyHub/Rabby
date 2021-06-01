@@ -1,0 +1,54 @@
+import React from 'react';
+import { useHistory } from 'react-router-dom';
+import { AddressList, StrayPageWithButton } from 'ui/component';
+import { getUiType } from 'ui/utils';
+import { IconImportSuccess } from 'ui/assets';
+
+const { AddressItem } = AddressList;
+
+const SelectSuccess = ({
+  accounts,
+  hasDivider = true,
+  title = 'Successfully imported',
+}) => {
+  const history = useHistory();
+
+  const handleNextClick = () => {
+    if (getUiType().isTab) {
+      window.close();
+
+      return;
+    }
+    history.push('/dashboard');
+  };
+
+  return (
+    <StrayPageWithButton
+      hasDivider={hasDivider}
+      NextButtonText="ok"
+      onNextClick={handleNextClick}
+    >
+      <div className="flex flex-col justify-center text-center">
+        <img
+          src={IconImportSuccess}
+          className="mx-auto mb-18 w-[100px] h-[100px]"
+        />
+        <div className="text-title text-20 mb-2">
+          {accounts?.length} addresses
+        </div>
+        <div className="text-green text-15 mb-12">{title}</div>
+        <div className="overflow-auto flex-1 mb-[120px] lg:w-[460px]">
+          {accounts.map((account) => (
+            <AddressItem
+              className="mb-12 rounded bg-white py-12 pl-16"
+              key={account.address}
+              account={account.address}
+            />
+          ))}
+        </div>
+      </div>
+    </StrayPageWithButton>
+  );
+};
+
+export default SelectSuccess;

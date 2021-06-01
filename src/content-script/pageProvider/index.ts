@@ -24,6 +24,7 @@ class EthereumProvider extends EventEmitter {
    */
   networkVersion: string | null = null;
   isRabby = true;
+  isMetaMask = true;
 
   private _isConnected = false;
   private requestPromise = new ReadyPromise(2);
@@ -69,6 +70,8 @@ class EthereumProvider extends EventEmitter {
       this.accounts = accounts;
       this.networkVersion = networkVersion;
       this.emit('connect', { chainId });
+      this.emit('chainChanged', chainId);
+      this.emit('networkChanged', networkVersion);
       this._isConnected = true;
     } catch {
       //
