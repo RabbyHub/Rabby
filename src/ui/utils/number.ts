@@ -8,7 +8,10 @@ export const splitNumberByStep = (
   const reg = new RegExp(`(\\d)(?=(\\d{${step}})+(?!\\d))`, 'g');
 
   int = int.replace(reg, `$1${symbol}`);
-
+  if (Number(num) > 1000000) {
+    // hide the after-point part if number is more than 1000000
+    float = '';
+  }
   if (float) {
     return `${int}.${float}`;
   }
