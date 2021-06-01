@@ -8,7 +8,7 @@ const { AddressItem } = AddressList;
 
 const SelectSuccess = ({
   accounts,
-  hasDivider = true,
+  hasDivider = false,
   title = 'Successfully imported',
 }) => {
   const history = useHistory();

@@ -2,6 +2,7 @@ import React from 'react';
 import { HashRouter as Router, Switch, Route } from 'react-router-dom';
 import { WalletProvider, usePopupOpen } from 'ui/utils';
 import ReactGA, { ga } from 'react-ga';
+
 import ImportMode from './ImportMode';
 import ImportPrivateKey from './ImportPrivateKey';
 import ImportJson from './ImportJson';

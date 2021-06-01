@@ -13,15 +13,6 @@ import { CHAINS } from 'consts';
 import { underline2Camelcase } from 'background/utils';
 import BaseController from '../base';
 
-// eth_coinbase
-// eth_sign
-// eth_signTypedData
-// eth_signTypedData_v3
-// eth_signTypedData_v4
-// eth_getEncryptionPublicKey
-// eth_decrypt
-// personal_ecRecover
-
 class ProviderController extends BaseController {
   constructor() {
     super();
