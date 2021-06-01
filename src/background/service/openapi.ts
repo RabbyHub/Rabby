@@ -350,11 +350,9 @@ class OpenApiService implements OpenApiService {
   ): Promise<SecurityCheckResponse> => {
     const config = this.store.config.check_text;
     const { data } = await this.request[config.method](config.path, {
-      params: {
-        user_addr: address.toLowerCase(),
-        origin,
-        text,
-      },
+      user_addr: address.toLowerCase(),
+      origin,
+      text,
     });
     return data;
   };
@@ -367,12 +365,10 @@ class OpenApiService implements OpenApiService {
   ): Promise<SecurityCheckResponse> => {
     const config = this.store.config.check_tx;
     const { data } = await this.request[config.method](config.path, {
-      params: {
-        user_addr: address.toLowerCase(),
-        origin,
-        tx: JSON.stringify(tx),
-        update_nonce,
-      },
+      user_addr: address.toLowerCase(),
+      origin,
+      tx,
+      update_nonce,
     });
 
     return data;
@@ -386,12 +382,10 @@ class OpenApiService implements OpenApiService {
   ): Promise<ExplainTxResponse> => {
     const config = this.store.config.explain_tx;
     const { data } = await this.request[config.method](config.path, {
-      params: {
-        tx: JSON.stringify(tx),
-        user_addr: address.toLowerCase(),
-        origin,
-        update_nonce,
-      },
+      tx,
+      user_addr: address.toLowerCase(),
+      origin,
+      update_nonce,
     });
 
     return data;
@@ -400,9 +394,7 @@ class OpenApiService implements OpenApiService {
   pushTx = async (tx: Tx) => {
     const config = this.store.config.push_tx;
     const { data } = await this.request[config.method](config.path, {
-      params: {
-        tx: JSON.stringify(tx),
-      },
+      tx,
     });
 
     return data;
@@ -415,11 +407,9 @@ class OpenApiService implements OpenApiService {
   ): Promise<{ comment: string }> => {
     const config = this.store.config.explain_text;
     const { data } = await this.request[config.method](config.path, {
-      params: {
-        user_addr: address.toLowerCase(),
-        origin,
-        text,
-      },
+      user_addr: address.toLowerCase(),
+      origin,
+      text,
     });
 
     return data;
