@@ -204,7 +204,7 @@ const SignTx = ({ params, origin }) => {
                   type="primary"
                   size="large"
                   className="w-[172px]"
-                  onClick={() => handleAllow}
+                  onClick={() => handleAllow()}
                 >
                   Allow
                 </Button>
