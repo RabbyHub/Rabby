@@ -13,7 +13,7 @@ const Approve = ({ data }: ApproveProps) => {
     <div className="approve">
       <h1 className="tx-header">
         Approve {isUnlimited ? 'unlimited' : assetChange.amount}{' '}
-        {assetChange.optimized_symbol}
+        {assetChange.symbol}
       </h1>
       <p className="tx-subtitle text-gray-content text-14">To spender</p>
       <div className="tx-target">

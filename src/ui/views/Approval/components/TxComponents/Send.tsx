@@ -14,7 +14,7 @@ const Send = ({ data }: SendProps) => {
         <img src={assetChange.logo_url} className="icon icon-token" />
         <p>
           <span className="token-amount">{assetChange.amount}</span>
-          {assetChange.optimized_symbol}
+          {assetChange.symbol}
         </p>
       </div>
       <p className="tx-subtitle text-gray-content text-14">To spender</p>
