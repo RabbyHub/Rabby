@@ -184,8 +184,8 @@ const Dashboard = () => {
               onClick={handleConfig}
             />
           </div>
-          <div className="assets flex" onClick={handleGotoProfile}>
-            <div className="left">
+          <div className="assets flex">
+            <div className="left" onClick={handleGotoProfile}>
               <p className="amount leading-none">
                 <span>${splitNumberByStep((balance || 0).toFixed(2))}</span>
                 <img className="icon icon-arrow-right" src={IconArrowRight} />
