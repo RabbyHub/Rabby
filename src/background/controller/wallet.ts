@@ -43,6 +43,16 @@ export class WalletController extends BaseController {
   };
   openIndexPage = openIndexPage;
 
+  getAddressBalance = async (address: string) => {
+    const data = await openapiService.getTotalBalance(address);
+    preferenceService.updateAddressBalance(address, data);
+    return data;
+  };
+  getAddressCacheBalance = (address: string | undefined) => {
+    if (!address) return null;
+    return preferenceService.getAddressBalance(address);
+  };
+
   /* chains */
   getSupportChains = () => chainService.getSupportChains();
   getEnableChains = () => chainService.getEnabledChains();
