@@ -29,6 +29,10 @@ class BaseController {
     };
   };
 
+  syncGetCurrentAccount = () => {
+    return preferenceService.getCurrentAccount() || null;
+  };
+
   getAccounts = () => {
     return keyringService.getAllVisibleAccountsArray();
   };
