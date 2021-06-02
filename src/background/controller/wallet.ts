@@ -137,10 +137,28 @@ export class WalletController extends BaseController {
   getHiddenAddresses = () => preferenceService.getHiddenAddresses();
   showAddress = (type: string, address: string) =>
     preferenceService.showAddress(type, address);
-  hideAddress = (type: string, address: string) =>
+  hideAddress = (type: string, address: string) => {
     preferenceService.hideAddress(type, address);
-  removeAddress = (address: string, type: string) =>
+    const current = preferenceService.getCurrentAccount();
+    if (current?.address === address && current.type === type) {
+      this.resetCurrentAccount();
+    }
+  };
+
+  removeAddress = (address: string, type: string) => {
     keyringService.removeAccount(address, type);
+    const current = preferenceService.getCurrentAccount();
+    if (current?.address === address && current.type === type) {
+      this.resetCurrentAccount();
+    }
+  };
+
+  resetCurrentAccount = async () => {
+    const [account] = await this.getAccounts();
+    if (account) {
+      preferenceService.setCurrentAccount(account);
+    }
+  };
 
   generateKeyringWithMnemonic = (mnemonic) => {
     if (!bip39.validateMnemonic(mnemonic)) {

@@ -84,7 +84,9 @@ const SwitchAddress = ({
 const Dashboard = () => {
   const history = useHistory();
   const wallet = useWallet();
-  const [currentAccount, setCurrentAccount] = useState<Account | null>(null);
+  const [currentAccount, setCurrentAccount] = useState<Account | null>(
+    wallet.syncGetCurrentAccount()
+  );
   const [balance, chainBalances] = useCurrentBalance(currentAccount?.address);
 
   const [isModalOpen, setModalOpen] = useState(false);
