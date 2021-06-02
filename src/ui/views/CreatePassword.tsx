@@ -4,7 +4,7 @@ import { StrayPageWithButton } from 'ui/component';
 import { Input, Form } from 'antd';
 import { useWallet } from 'ui/utils';
 
-const PASSWORD_LENGTH = [8, 20];
+const PASSWORD_LENGTH = [1, 20];
 
 const CreatePassword = () => {
   const history = useHistory();

@@ -10,8 +10,14 @@ const ImportWatchAddress = () => {
 
   const onSubmit = async ({ address }) => {
     try {
-      await wallet.importWatchAddress(address);
-      history.push('/dashboard');
+      const accounts = await wallet.importWatchAddress(address);
+      history.replace({
+        pathname: '/import/success',
+        state: {
+          accounts,
+          title: 'Successfully created',
+        },
+      });
     } catch (err) {
       console.error('err', err);
     }

@@ -20,6 +20,8 @@ import { Account } from '../service/preference';
 import { ConnectedSite } from '../service/permission';
 
 export class WalletController extends BaseController {
+  openapi = openapiService;
+
   /* wallet */
   boot = (password) => keyringService.boot(password);
   isBooted = () => keyringService.isBooted();
@@ -82,7 +84,7 @@ export class WalletController extends BaseController {
 
     keyring.setAccountToAdd(address);
     await keyringService.addNewAccount(keyring);
-    preferenceService.setCurrentAccount({ address, type: keyring.type });
+    return this._setCurrentAccountFromKeyring(keyring);
   };
 
   importPrivateKey = async (data) => {
@@ -95,11 +97,7 @@ export class WalletController extends BaseController {
 
     const privateKey = ethUtil.stripHexPrefix(prefixed);
     const keyring = await keyringService.importPrivateKey(privateKey);
-    const [account] = await keyring.getAccounts();
-    preferenceService.setCurrentAccount({
-      address: account,
-      type: keyring.type,
-    });
+    return this._setCurrentAccountFromKeyring(keyring);
   };
 
   // json format is from "https://github.com/SilentCicero/ethereumjs-accounts"
@@ -114,20 +112,16 @@ export class WalletController extends BaseController {
     }
 
     const privateKey = wallet.getPrivateKeyString();
-    return keyringService.importPrivateKey(ethUtil.stripHexPrefix(privateKey));
+    const keyring = await keyringService.importPrivateKey(
+      ethUtil.stripHexPrefix(privateKey)
+    );
+    return this._setCurrentAccountFromKeyring(keyring);
   };
 
   generateMnemonic = () => keyringService.generateMnemonic();
   createKeyringWithMnemonics = async (mnemonic) => {
     const keyring = await keyringService.createKeyringWithMnemonics(mnemonic);
-    const [account] = await keyring.getAccounts();
-    const _account = {
-      address: account,
-      type: keyring.type,
-    };
-    preferenceService.setCurrentAccount(_account);
-
-    return [_account];
+    return this._setCurrentAccountFromKeyring(keyring);
   };
 
   getHiddenAddresses = () => preferenceService.getHiddenAddresses();
@@ -278,7 +272,17 @@ export class WalletController extends BaseController {
     throw ethErrors.rpc.internal(`No ${type} keyring found`);
   }
 
-  openapi = openapiService;
+  private async _setCurrentAccountFromKeyring(keyring) {
+    const [account] = await keyring.getAccounts();
+
+    const _account = {
+      address: account,
+      type: keyring.type,
+    };
+    preferenceService.setCurrentAccount(_account);
+
+    return [_account];
+  }
 }
 
 export default new WalletController();

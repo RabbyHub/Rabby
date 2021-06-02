@@ -299,33 +299,28 @@ class KeyringService extends EventEmitter {
    * @param {Array<string>} newAccountArray - Array of new accounts.
    * @returns {Promise<Array<string>>} The account, if no duplicate is found.
    */
-  checkForDuplicate(
+  async checkForDuplicate(
     type: string,
     newAccountArray: string[]
   ): Promise<string[]> {
-    return this.getAccounts().then((accounts) => {
-      switch (type) {
-        case 'Simple Key Pair': {
-          const isIncluded = Boolean(
-            accounts.find(
-              (key) =>
-                key === newAccountArray[0] ||
-                key === ethUtil.stripHexPrefix(newAccountArray[0])
-            )
-          );
-          return isIncluded
-            ? Promise.reject(
-                new Error(
-                  "The account you're are trying to import is a duplicate"
-                )
-              )
-            : Promise.resolve(newAccountArray);
-        }
-        default: {
-          return Promise.resolve(newAccountArray);
-        }
-      }
-    });
+    const keyrings = this.getKeyringsByType(type);
+    const accounts = keyrings
+      .map(async (keyring) => await keyring.getAccounts())
+      .reduce((m, n) => m.concat(n), [] as any[])
+      .map(normalizeAddress);
+
+    const isIncluded = Boolean(
+      accounts.find(
+        (key) =>
+          key === newAccountArray[0] ||
+          key === ethUtil.stripHexPrefix(newAccountArray[0])
+      )
+    );
+    return isIncluded
+      ? Promise.reject(
+          new Error("The account you're are trying to import is a duplicate")
+        )
+      : Promise.resolve(newAccountArray);
   }
 
   /**

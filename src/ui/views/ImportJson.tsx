@@ -10,8 +10,14 @@ const ImportJson = () => {
   const wallet = useWallet();
 
   const onSubmit = async ({ keyStore, password }) => {
-    await wallet.importJson(keyStore, password);
-    history.push('/dashboard');
+    const accounts = await wallet.importJson(keyStore, password);
+    history.replace({
+      pathname: '/import/success',
+      state: {
+        accounts,
+        title: 'Successfully created',
+      },
+    });
   };
 
   return (

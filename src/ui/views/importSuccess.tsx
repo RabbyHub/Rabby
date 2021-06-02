@@ -1,17 +1,25 @@
 import React from 'react';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 import { AddressList, StrayPageWithButton } from 'ui/component';
 import { getUiType } from 'ui/utils';
 import { IconImportSuccess } from 'ui/assets';
+import { Account } from 'background/service/preference';
 
 const { AddressItem } = AddressList;
 
-const SelectSuccess = ({
-  accounts,
-  hasDivider = false,
-  title = 'Successfully imported',
-}) => {
+const ImportSuccess = () => {
   const history = useHistory();
+  const { state } = useLocation<{
+    accounts: Account[];
+    hasDivider: boolean;
+    title: string;
+  }>();
+
+  const {
+    accounts,
+    hasDivider = false,
+    title = 'Successfully imported',
+  } = state;
 
   const handleNextClick = () => {
     if (getUiType().isTab) {
@@ -51,4 +59,4 @@ const SelectSuccess = ({
   );
 };
 
-export default SelectSuccess;
+export default ImportSuccess;

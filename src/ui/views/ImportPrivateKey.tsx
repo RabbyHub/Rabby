@@ -10,8 +10,14 @@ const ImportPrivateKey = () => {
 
   const onSubmit = async ({ key }) => {
     try {
-      await wallet.importPrivateKey(key);
-      history.push('/dashboard');
+      const accounts = await wallet.importPrivateKey(key);
+      history.replace({
+        pathname: '/import/success',
+        state: {
+          accounts,
+          title: 'Successfully created',
+        },
+      });
     } catch (err) {
       console.error('err', err);
     }

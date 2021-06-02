@@ -3,7 +3,6 @@ import { useLocation, useHistory } from 'react-router-dom';
 import { Form } from 'antd';
 import { StrayPageWithButton, MultiSelectAddressList } from 'ui/component';
 import { useWallet } from 'ui/utils';
-import SelectSuccess from './SelectSuccess';
 
 const SelectAddress = () => {
   const history = useHistory();
@@ -19,7 +18,6 @@ const SelectAddress = () => {
 
   const [accounts, setAccounts] = useState<any[]>([]);
   const [importedAccounts, setImportedAccounts] = useState<any[]>([]);
-  const [successAccounts, setSuccessAccounts] = useState<any[]>([]);
   const [form] = Form.useForm();
   const wallet = useWallet();
 
@@ -61,12 +59,16 @@ const SelectAddress = () => {
     } else {
       await wallet.unlockHardwareAccount(keyring, selectedAddressIndexes);
     }
-    setSuccessAccounts(selectedAddressIndexes.map((i) => accounts[i]));
+
+    history.replace({
+      pathname: '/import/success',
+      state: {
+        accounts: selectedAddressIndexes.map((i) => accounts[i]),
+      },
+    });
   };
 
-  return successAccounts.length ? (
-    <SelectSuccess accounts={successAccounts} hasDivider={isMnemonics} />
-  ) : (
+  return (
     <StrayPageWithButton
       spinning={spinning}
       header={
