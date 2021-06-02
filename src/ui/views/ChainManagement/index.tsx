@@ -31,6 +31,7 @@ export const ChainManagementList = ({ inStart = false }) => {
         }
 
         Modal.confirm({
+          centered: true,
           content:
             'Disable this link will clear all website records associated with this link',
           okText: 'Confirm',

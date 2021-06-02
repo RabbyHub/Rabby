@@ -48,7 +48,7 @@ const AddAddressOptions = () => {
     },
     {
       leftIcon: IconWatchAddress,
-      content: 'Add awatch address',
+      content: 'Add a watch address',
       onClick: () => history.push('/import/watch-address'),
     },
   ];

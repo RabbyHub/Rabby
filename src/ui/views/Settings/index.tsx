@@ -31,7 +31,13 @@ const OpenApiModal = ({
   };
 
   return (
-    <Modal title="OpenApi" footer={null} visible={visible} onCancel={onCancel}>
+    <Modal
+      title="OpenApi"
+      footer={null}
+      visible={visible}
+      onCancel={onCancel}
+      centered
+    >
       <Form onFinish={handleSubmit} form={form}>
         <Form.Item
           name="host"

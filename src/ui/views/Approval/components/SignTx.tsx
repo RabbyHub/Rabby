@@ -59,7 +59,11 @@ const SignTx = ({ params, origin }) => {
 
   const checkTx = async (address: string) => {
     const res = await wallet.openapi.checkTx(
-      { ...tx, nonce: tx.nonce || '0x1' }, // set a mock nonce for check if dapp not set it
+      {
+        ...tx,
+        nonce: tx.nonce || '0x1',
+        data: tx.data || '',
+      }, // set a mock nonce for check if dapp not set it
       origin,
       address
     );
@@ -70,7 +74,11 @@ const SignTx = ({ params, origin }) => {
 
   const explainTx = async (address: string) => {
     const res = await wallet.openapi.explainTx(
-      { ...tx, nonce: tx.nonce || '0x1' }, // set a mock nonce for explain if dapp not set it
+      {
+        ...tx,
+        nonce: tx.nonce || '0x1',
+        data: tx.data || '',
+      }, // set a mock nonce for explain if dapp not set it
       origin,
       address,
       tx.from !== tx.to
@@ -90,7 +98,7 @@ const SignTx = ({ params, origin }) => {
     const gas = await wallet.openapi.gasMarket(chain!.serverId);
     setTx({
       ...tx,
-      gasPrice: intToHex(gas[0].price),
+      gasPrice: intToHex(Math.max(...gas.map((item) => item.price))),
     });
   };
 

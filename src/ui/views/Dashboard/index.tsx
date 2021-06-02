@@ -185,7 +185,8 @@ const Dashboard = () => {
           <div className="assets flex" onClick={handleGotoProfile}>
             <div className="left">
               <p className="amount leading-none">
-                ${splitNumberByStep((balance || 0).toFixed(2))}
+                <span>${splitNumberByStep((balance || 0).toFixed(2))}</span>
+                <img className="icon icon-arrow-right" src={IconArrowRight} />
               </p>
               <p className="extra leading-none flex">
                 {chainBalances.length > 0
@@ -200,9 +201,6 @@ const Dashboard = () => {
                     ))
                   : 'This seems to be no assets yet'}
               </p>
-            </div>
-            <div className="right">
-              <img className="icon icon-arrow-right" src={IconArrowRight} />
             </div>
           </div>
           <div className="operation flex">
@@ -228,6 +226,7 @@ const Dashboard = () => {
         <RecentConnections />
       </div>
       <Modal
+        centered
         visible={qrcodeVisible}
         footer={null}
         closable={false}
@@ -243,11 +242,13 @@ const Dashboard = () => {
         </div>
       </Modal>
       <Modal
+        centered
         title="Switch address"
         visible={isModalOpen}
         footer={null}
         width="344px"
         onCancel={handleToggle}
+        style={{ margin: 0, padding: 0 }}
       >
         {currentAccount && (
           <SwitchAddress

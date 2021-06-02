@@ -32,6 +32,7 @@ const AuthenticationModal = ({
 
   return (
     <Modal
+      centered
       visible={visible}
       footer={null}
       title="Authentication"

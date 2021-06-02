@@ -34,6 +34,7 @@ const AddressManagement = () => {
       const mnemonic = await wallet.getCurrentMnemonics();
       Modal.info({
         title: 'Mnemonics',
+        centered: true,
         content: mnemonic,
         cancelText: null,
         okText: null,
@@ -57,6 +58,7 @@ const AddressManagement = () => {
         const privateKey = await keyring.exportAccount(data);
         Modal.info({
           title: 'Private Key',
+          centered: true,
           content: privateKey,
           cancelText: null,
           okText: null,
@@ -149,7 +151,7 @@ const AddressManagement = () => {
     };
     return (
       <Dropdown overlay={DropdownOptions} trigger={['click']}>
-        <div className="flex">
+        <div className="flex items-center">
           {hiddenAddresses.find(
             (item) => item.address === data && item.type === keyring.type
           ) && <div className="address-item-hidden">Hidden</div>}

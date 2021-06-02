@@ -35,7 +35,9 @@ const Sign = ({ data }: SignProps) => {
               />
               {item.symbol}
             </div>
-            <div className="amount">{item.amount}</div>
+            <div className="amount" title={item.amount + ''}>
+              {item.amount}
+            </div>
           </li>
         ))}
       </ul>

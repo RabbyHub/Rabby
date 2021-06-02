@@ -185,12 +185,20 @@
         .token {
           display: flex;
           align-items: center;
+          margin-right: 6px;
           .icon-token {
             width: 24px;
             height: 24px;
             border-radius: 100%;
             margin-right: 8px;
           }
+        }
+        .amount {
+          flex: 1;
+          overflow: hidden;
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          text-align: right;
         }
         &:nth-last-child(1) {
           margin-bottom: 0;

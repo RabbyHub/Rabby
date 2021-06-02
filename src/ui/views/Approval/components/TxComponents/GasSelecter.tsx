@@ -98,6 +98,7 @@ const GasSelector = ({ gas, nativeToken, tx, onChange }: GasSelectorProps) => {
       </div>
       <Modal
         visible={modalVisible}
+        centered
         title="Gas"
         className="gas-modal"
         onCancel={() => setModalVisible(false)}

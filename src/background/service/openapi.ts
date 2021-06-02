@@ -76,6 +76,7 @@ interface AssertsChange {
   is_core: boolean;
   is_verified: boolean;
   is_wallet: boolean;
+  is_infinity: boolean;
   logo_url: string;
   name: string;
   optimized_symbol: string;

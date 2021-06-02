@@ -30,7 +30,7 @@
       margin-bottom: 28px;
       padding-top: 28px;
       .left {
-        flex: 1;
+        width: 100%;
         color: #fff;
         p {
           margin: 0;
@@ -39,6 +39,19 @@
           font-size: 32px;
           font-weight: bold;
           margin-bottom: 14px;
+          display: flex;
+          align-items: center;
+          justify-content: space-between;
+          span {
+            flex: 1;
+            overflow: hidden;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+          }
+          .icon-arrow-right {
+            width: 24px;
+            height: 24px;
+          }
         }
         .extra {
           font-size: 12px;
