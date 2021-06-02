@@ -1,7 +1,8 @@
 import React from 'react';
 import { DisplayedKeryring } from 'background/service/keyring';
-import { KEYRING_TYPE_TEXT } from 'consts';
+import { KEYRING_TYPE, KEYRING_TYPE_TEXT } from 'consts';
 import AddressItem, { AddressItemProps } from './AddressItem';
+import IconArrowRight from 'ui/assets/arrow-right-gray.svg';
 import './style.less';
 
 type ACTION = 'management' | 'switch';
@@ -12,6 +13,7 @@ interface AddressListProps {
   ActionButton: AddressItemProps['ActionButton'];
   hiddenAddresses?: { type: string; address: string }[];
   onClick?(account: string, keyring: any): void;
+  onShowMnemonics?(): void;
 }
 
 interface CompoundedComponent
@@ -25,6 +27,7 @@ const AddressList: CompoundedComponent = ({
   ActionButton,
   onClick,
   hiddenAddresses = [],
+  onShowMnemonics,
 }: AddressListProps) => {
   const GroupItem = ({
     group,
@@ -35,7 +38,19 @@ const AddressList: CompoundedComponent = ({
   }) => {
     return (
       <li>
-        <p className="subtitle">{KEYRING_TYPE_TEXT[name]}</p>
+        <div className="subtitle flex justify-between">
+          <span>{KEYRING_TYPE_TEXT[name]}</span>
+          {name === KEYRING_TYPE.HdKeyring && action === 'management' && (
+            <a
+              className="flex items-center"
+              href="javascript:;"
+              onClick={onShowMnemonics}
+            >
+              View Mnemonics
+              <img src={IconArrowRight} className="icon icon-arrow-right" />
+            </a>
+          )}
+        </div>
         <ul className="addresses">
           {group.map(({ accounts, keyring }) =>
             accounts.map((account) => (
