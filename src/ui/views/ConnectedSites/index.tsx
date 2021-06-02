@@ -1,6 +1,5 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
-import { Popconfirm } from 'antd';
 import { CloseOutlined } from '@ant-design/icons';
 import { PageHeader, Field } from 'ui/component';
 import { useWallet } from 'ui/utils';
@@ -33,14 +32,7 @@ const ConnectedSites = () => {
           key={site.origin}
           leftIcon={<img src={site.icon} className="icon icon-site" />}
           rightIcon={
-            <Popconfirm
-              title="Are you sure to delete this site?"
-              onConfirm={() => handleRemove(site.origin)}
-              okText="Yes"
-              cancelText="No"
-            >
-              <CloseOutlined />
-            </Popconfirm>
+            <CloseOutlined onClick={() => handleRemove(site.origin)} />
           }
         >
           <div className="site-info">
