@@ -25,7 +25,7 @@ export default ({
       style={{ cursor: onClick ? 'pointer' : 'inherit' }}
     >
       <div className={cx('address-viewer-text', className)} title={address}>
-        {ellipsis ? `${address.slice(0, 5)}...${address.slice(-4)}` : address}
+        {ellipsis ? `${address.slice(0, 6)}...${address.slice(-4)}` : address}
       </div>
       {showArrow && (
         <IconArrowDown className="ml-1 cursor-pointer fill-current text-white" />
