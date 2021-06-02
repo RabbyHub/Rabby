@@ -99,11 +99,11 @@ const AddressItem = ({
           />
         </div>
         {!!chainBalances.length && (
-          <div className="mt-4">
+          <div className="mt-4 flex">
             {chainBalances.map((item) => (
               <img
                 src={item.logo}
-                className="w-16 h-16 mr-[6px] float-left"
+                className="w-16 h-16 mr-[6px]"
                 key={item.id}
                 alt={`${item.name}: $${item.usd_value.toFixed(2)}`}
                 title={`${item.name}: $${item.usd_value.toFixed(2)}`}

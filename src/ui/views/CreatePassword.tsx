@@ -17,7 +17,7 @@ const CreatePassword = () => {
     confirmPassword: string;
   }) => {
     wallet.boot(password.trim());
-    history.push('/no-address');
+    history.push('/start-chain-management');
   };
 
   return (

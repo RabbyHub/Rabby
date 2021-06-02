@@ -23,6 +23,7 @@ import CreateMnemonics from './CreateMnemonics';
 import AddAddress from './AddAddress';
 import ChainManagement from './ChainManagement';
 import AddressManagement from './AddressManagement';
+import { StartChainManagement } from './ChainManagement';
 
 ReactGA.initialize('UA-196541140-1');
 // eslint-disable-next-line @typescript-eslint/no-empty-function
@@ -44,6 +45,9 @@ const Main = () => {
       <Switch>
         <Route exact path="/password">
           <CreatePassword />
+        </Route>
+        <Route exact path="/start-chain-management">
+          <StartChainManagement />
         </Route>
         <Route exact path="/no-address">
           <NoAddress />

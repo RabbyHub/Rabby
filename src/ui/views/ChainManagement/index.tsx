@@ -1,17 +1,23 @@
 import React, { useState, useEffect } from 'react';
-import { useWallet } from '../../utils';
+import { useHistory } from 'react-router-dom';
+import { useWallet } from 'ui/utils';
 import { Switch, message, Modal } from 'antd';
-import { PageHeader, Field } from '../../component';
+import { PageHeader, Field, StrayPageWithButton } from 'ui/component';
 import { Chain } from 'background/service/chain';
 import { CHAINS, CHAINS_ENUM } from 'consts';
 import './style.less';
 
-const ChainManagement = () => {
+export const ChainManagementList = ({ inStart = false }) => {
   const wallet = useWallet();
   const [enableChains, setEnableChains] = useState<Chain[]>(
     wallet.getEnableChains()
   );
   const chains = wallet.getSupportChains();
+
+  const disableChain = (chainEnum: CHAINS_ENUM) => {
+    setEnableChains(enableChains.filter((chain) => chain.enum !== chainEnum));
+    wallet.disableChain(chainEnum);
+  };
 
   const handleSwitchChain = (chainEnum: CHAINS_ENUM, checked: boolean) => {
     if (checked) {
@@ -19,6 +25,11 @@ const ChainManagement = () => {
       wallet.enableChain(chainEnum);
     } else {
       if (enableChains.length > 1) {
+        if (inStart) {
+          disableChain(chainEnum);
+          return;
+        }
+
         Modal.confirm({
           content:
             'Disable this link will clear all website records associated with this link',
@@ -31,10 +42,8 @@ const ChainManagement = () => {
                 wallet.removeConnectedSite(site.origin);
               });
             }
-            setEnableChains(
-              enableChains.filter((chain) => chain.enum !== chainEnum)
-            );
-            wallet.disableChain(chainEnum);
+
+            disableChain(chainEnum);
           },
         });
       } else {
@@ -44,8 +53,7 @@ const ChainManagement = () => {
   };
 
   return (
-    <div className="chain-management">
-      <PageHeader>Chain Management</PageHeader>
+    <>
       {chains.map((chain) => (
         <Field
           key={chain.enum}
@@ -67,8 +75,39 @@ const ChainManagement = () => {
       <div className="tip text-12 text-gray-comment text-center">
         More chains will be added in the future...
       </div>
-    </div>
+    </>
   );
 };
+
+export const StartChainManagement = () => {
+  const history = useHistory();
+
+  const handleNextClick = () => {
+    history.replace('/no-address');
+  };
+
+  return (
+    <StrayPageWithButton
+      NextButtonText="confirm"
+      hasDivider
+      onNextClick={handleNextClick}
+      header={{
+        title: 'Enable Chains',
+        subTitle: 'Choose which chains you would like to use',
+      }}
+    >
+      <div className="chain-management px-0 pb-[120px]">
+        <ChainManagementList inStart />
+      </div>
+    </StrayPageWithButton>
+  );
+};
+
+const ChainManagement = () => (
+  <div className="chain-management">
+    <PageHeader>Chain Management</PageHeader>
+    <ChainManagementList />
+  </div>
+);
 
 export default ChainManagement;
