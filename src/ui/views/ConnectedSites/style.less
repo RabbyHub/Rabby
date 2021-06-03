@@ -3,6 +3,7 @@
 .connected-sites {
   .page();
   padding: 0 28px 28px;
+  position: relative;
   .field {
     margin-bottom: 12px;
     &:nth-last-child(1) {
@@ -23,6 +24,20 @@
         text-overflow: ellipsis;
         margin-bottom: 0;
       }
+    }
+  }
+  .no-site {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    .no-data-image {
+      width: 156px;
+      height: 152px;
+      margin-bottom: 32px;
     }
   }
 }
