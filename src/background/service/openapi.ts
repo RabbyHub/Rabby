@@ -143,6 +143,7 @@ export const EVM_RPC_METHODS = [
   'eth_estimateGas',
   'eth_subscribe',
   'eth_getTransactionReceipt',
+  'eth_getBalance',
 ];
 
 interface OpenApiService {
