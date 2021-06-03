@@ -54,6 +54,10 @@ export const useCurrentBalance = (account: string | undefined) => {
 
   const getCurrentBalance = async () => {
     if (!account) return;
+    const cacheData = wallet.getAddressCacheBalance(account);
+    if (cacheData) {
+      setBalance(cacheData.total_usd_value);
+    }
     const { total_usd_value, chain_list } = await wallet.getAddressBalance(
       account.toLowerCase()
     );
@@ -89,7 +93,7 @@ const AddressItem = ({
       })}
       onClick={() => onClick && onClick(account, keyring)}
     >
-      <div>
+      <div className="flex items-center flex-wrap">
         <div className="address-info">
           <span className="balance">
             <Spin size="small" spinning={balance === null}>
@@ -103,7 +107,7 @@ const AddressItem = ({
           />
         </div>
         {!!chainBalances.length && (
-          <div className="mt-4 flex">
+          <div className="mt-4 flex w-full">
             {chainBalances.map((item) => (
               <img
                 src={item.logo}
