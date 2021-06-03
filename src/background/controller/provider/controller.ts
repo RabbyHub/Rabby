@@ -1,5 +1,7 @@
 import Transaction from 'ethereumjs-tx';
 import { bufferToHex } from 'ethereumjs-util';
+import { ethErrors } from 'eth-rpc-errors';
+import { normalize as normalizeAddress } from 'eth-sig-util';
 import {
   keyringService,
   permissionService,
@@ -44,8 +46,14 @@ class ProviderController extends BaseController {
     };
     approvalRes: Tx;
   }) => {
+    const keyring = await this._checkAddress(txParams.from);
     const tx = new Transaction(approvalRes);
-    const signedTx = await keyringService.signTransaction(tx, txParams.from);
+
+    const signedTx = await keyringService.signTransaction(
+      keyring,
+      tx,
+      txParams.from
+    );
 
     return openapiService.pushTx({
       ...approvalRes,
@@ -56,11 +64,15 @@ class ProviderController extends BaseController {
   };
 
   @Reflect.metadata('APPROVAL', ['SignText'])
-  personalSign = ({
+  personalSign = async ({
     data: {
       params: [data, from],
     },
-  }) => keyringService.signPersonalMessage({ data, from });
+  }) => {
+    const keyring = await this._checkAddress(from);
+
+    return keyringService.signPersonalMessage(keyring, { data, from });
+  };
 
   ethAccounts = async ({ session: { origin } }) => {
     if (!permissionService.hasPerssmion(origin)) {
@@ -131,6 +143,19 @@ class ProviderController extends BaseController {
 
     sessionService.broadcastEvent('chainChanged', chain.id, origin);
     return null;
+  };
+
+  private _checkAddress = async (address) => {
+    const { address: currentAddress, keyring } =
+      (await this.getCurrentAccount()) || {};
+    if (!currentAddress || currentAddress !== normalizeAddress(address)) {
+      throw ethErrors.rpc.invalidParams({
+        message:
+          'Invalid parameters: must use the current user address to sign',
+      });
+    }
+
+    return keyring;
   };
 }
 

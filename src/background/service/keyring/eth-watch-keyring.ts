@@ -1,5 +1,6 @@
 // https://github.com/MetaMask/eth-simple-keyring#the-keyring-class-protocol
 import { EventEmitter } from 'events';
+import { ethErrors } from 'eth-rpc-errors';
 
 const keyringType = 'Watch Address';
 
@@ -43,11 +44,13 @@ class WatchKeyring extends EventEmitter {
     return [this.accountToAdd];
   };
 
-  // just generate a qrcode
-  // signTransaction(address, transaction) {}
+  // pull the transaction current state, then resolve or reject
+  async signTransaction(address, transaction) {
+    throw ethErrors.provider.userRejectedRequest();
+  }
 
-  signPersonalMessage(withAccount: string, message: string) {
-    // TODO
+  async signPersonalMessage(withAccount: string, message: string) {
+    throw ethErrors.provider.userRejectedRequest();
   }
 
   async getAccounts(): Promise<string[]> {

@@ -426,11 +426,9 @@ class KeyringService extends EventEmitter {
    * @param {Object} opts - Signing options.
    * @returns {Promise<Object>} The signed transactio object.
    */
-  signTransaction(ethTx, _fromAddress, opts = {}) {
+  signTransaction(keyring, ethTx, _fromAddress, opts = {}) {
     const fromAddress = normalizeAddress(_fromAddress);
-    return this.getKeyringForAccount(fromAddress).then((keyring) => {
-      return keyring.signTransaction(fromAddress, ethTx, opts);
-    });
+    return keyring.signTransaction(fromAddress, ethTx, opts);
   }
 
   /**
@@ -457,11 +455,9 @@ class KeyringService extends EventEmitter {
    * @param {Object} msgParams - The message parameters to sign.
    * @returns {Promise<Buffer>} The raw signature.
    */
-  signPersonalMessage(msgParams, opts = {}) {
+  signPersonalMessage(keyring, msgParams, opts = {}) {
     const address = normalizeAddress(msgParams.from);
-    return this.getKeyringForAccount(address).then((keyring) => {
-      return keyring.signPersonalMessage(address, msgParams.data, opts);
-    });
+    return keyring.signPersonalMessage(address, msgParams.data, opts);
   }
 
   /**
