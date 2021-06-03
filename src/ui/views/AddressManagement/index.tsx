@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Menu, Dropdown, Modal, message } from 'antd';
+import { Menu, Dropdown, Modal, message, Button } from 'antd';
 import { KEYRING_TYPE, HARDWARE_KEYRING_TYPES } from 'consts';
 import { useWallet } from 'ui/utils';
 import { AddressList, PageHeader, AuthenticationModal } from 'ui/component';
 import { DisplayedKeryring } from 'background/service/keyring';
 import { IconArrowDown } from 'ui/assets';
 import IconAdd from 'ui/assets/add.svg';
+import IconPlus from 'ui/assets/plus-primary.svg';
 import './style.less';
 
 const AddressManagement = () => {
@@ -14,6 +15,7 @@ const AddressManagement = () => {
   const [accounts, setAccounts] = useState<Record<string, DisplayedKeryring[]>>(
     {}
   );
+  const [noAccount, setNoAccount] = useState(false);
   const [hiddenAddresses, setHiddenAddresses] = useState<
     { type: string; address: string }[]
   >([]);
@@ -21,6 +23,20 @@ const AddressManagement = () => {
   useEffect(() => {
     setHiddenAddresses(wallet.getHiddenAddresses());
   }, []);
+
+  useEffect(() => {
+    let count = 0;
+    for (const key in accounts) {
+      const c = accounts[key].reduce((res, item) => {
+        return res + item.accounts.length;
+      }, 0);
+      count = c;
+      if (c > 0) {
+        break;
+      }
+    }
+    setNoAccount(count <= 0);
+  }, [accounts]);
 
   const getAllKeyrings = async () => {
     const _accounts = await wallet.getAllClassAccounts();
@@ -165,20 +181,41 @@ const AddressManagement = () => {
     getAllKeyrings();
   }, []);
 
+  const NoAddressUI = (
+    <div className="no-address">
+      <img
+        className="no-data-image"
+        src="/images/nodata-address.png"
+        alt="no address"
+      />
+      <p className="text-gray-content text-14">No address</p>
+      <Link to="/add-address" className="flex no-data-add-btn">
+        <img src={IconPlus} className="icon icon-plus" />
+        Add addresses
+      </Link>
+    </div>
+  );
+
   return (
     <div className="address-management">
       <PageHeader>Address Management</PageHeader>
-      <AddressList
-        list={accounts}
-        action="management"
-        ActionButton={AddressActionButton}
-        hiddenAddresses={hiddenAddresses}
-        onShowMnemonics={handleViewMnemonics}
-      />
-      <Link className="create-address" to="/add-address">
-        <img src={IconAdd} className="icon icon-add" />
-        Add Address
-      </Link>
+      {noAccount ? (
+        NoAddressUI
+      ) : (
+        <>
+          <AddressList
+            list={accounts}
+            action="management"
+            ActionButton={AddressActionButton}
+            hiddenAddresses={hiddenAddresses}
+            onShowMnemonics={handleViewMnemonics}
+          />
+          <Link className="create-address" to="/add-address">
+            <img src={IconAdd} className="icon icon-add" />
+            Add Address
+          </Link>
+        </>
+      )}
     </div>
   );
 };
