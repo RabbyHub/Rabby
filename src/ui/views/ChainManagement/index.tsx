@@ -97,7 +97,7 @@ export const StartChainManagement = () => {
         subTitle: 'Choose which chains you would like to use',
       }}
     >
-      <div className="chain-management px-0 pb-[120px]">
+      <div className="chain-management px-0 pb-[120px] min-h-full">
         <ChainManagementList inStart />
       </div>
     </StrayPageWithButton>
