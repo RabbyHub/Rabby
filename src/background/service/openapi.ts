@@ -294,9 +294,31 @@ class OpenApiService implements OpenApiService {
   };
 
   getSupportedChains = async (): Promise<ServerChain[]> => {
-    const config = this.store.config.get_supported_chains;
-    const { data } = await this.request[config.method](config.path);
-    return data;
+    // const config = this.store.config.get_supported_chains;
+    // const { data } = await this.request[config.method](config.path);
+    // return data;
+    return Promise.resolve([
+      {
+        community_id: 56,
+        id: 'bsc',
+        logo_url:
+          'https://static.debank.com/image/chain/logo_url/bsc/7c87af7b52853145f6aa790d893763f1.png',
+        name: 'BSC',
+        native_token_id: 'bsc',
+        wrapped_token_id: '0xbb4cdb9cbd36b01bd1cbaebf2de08d9173bc095c',
+        symbol: 'BSC',
+      },
+      {
+        community_id: 1,
+        id: 'eth',
+        logo_url:
+          'https://static.debank.com/image/chain/logo_url/eth/42ba589cd077e7bdd97db6480b0ff61d.png',
+        name: 'Ethereum',
+        native_token_id: 'eth',
+        wrapped_token_id: '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',
+        symbol: 'ETH',
+      },
+    ]);
   };
 
   getRecommendChains = async (
