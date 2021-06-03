@@ -304,9 +304,12 @@ class KeyringService extends EventEmitter {
     newAccountArray: string[]
   ): Promise<string[]> {
     const keyrings = this.getKeyringsByType(type);
-    const accounts = keyrings
-      .map(async (keyring) => await keyring.getAccounts())
-      .reduce((m, n) => m.concat(n), [] as any[])
+    const _accounts = await Promise.all(
+      keyrings.map((keyring) => keyring.getAccounts())
+    );
+
+    const accounts = _accounts
+      .reduce((m, n) => m.concat(n), [] as string[])
       .map(normalizeAddress);
 
     const isIncluded = Boolean(
