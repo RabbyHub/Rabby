@@ -24,25 +24,38 @@ const ConnectedSites = () => {
     getSites();
   };
 
+  const NoDataUI = (
+    <div className="no-site">
+      <img
+        className="no-data-image"
+        src="/images/nodata-site.png"
+        alt="no site"
+      />
+      <p className="text-gray-content text-14">No data</p>
+    </div>
+  );
+
   return (
     <div className="connected-sites">
       <PageHeader>Connected Sites</PageHeader>
-      {sites.map((site) => (
-        <Field
-          key={site.origin}
-          leftIcon={<img src={site.icon} className="icon icon-site" />}
-          rightIcon={
-            <CloseOutlined onClick={() => handleRemove(site.origin)} />
-          }
-        >
-          <div className="site-info">
-            <p className="text-13 font-medium">{site.origin}</p>
-            <p className="text-12">
-              {site.name} {site.name}
-            </p>
-          </div>
-        </Field>
-      ))}
+      {sites.length > 0
+        ? sites.map((site) => (
+            <Field
+              key={site.origin}
+              leftIcon={<img src={site.icon} className="icon icon-site" />}
+              rightIcon={
+                <CloseOutlined onClick={() => handleRemove(site.origin)} />
+              }
+            >
+              <div className="site-info">
+                <p className="text-13 font-medium">{site.origin}</p>
+                <p className="text-12">
+                  {site.name} {site.name}
+                </p>
+              </div>
+            </Field>
+          ))
+        : NoDataUI}
     </div>
   );
 };
