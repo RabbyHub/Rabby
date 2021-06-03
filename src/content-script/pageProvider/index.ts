@@ -2,6 +2,7 @@
 import { EventEmitter } from 'events';
 import { ethErrors, serializeError } from 'eth-rpc-errors';
 import BroadcastChannelMessage from '@/utils/message/broadcastChannelMessage';
+import PushEventHandlers from './pushEventHandlers';
 import { domReadyCall, $ } from './utils';
 import ReadyPromise from '../readyPromise';
 
@@ -17,7 +18,7 @@ const log = (event, ...args) => {
 
 class EthereumProvider extends EventEmitter {
   chainId: string | null = null;
-  accounts: string[] = [];
+  selectedAddress: string | null = null;
   /**
    * The network ID of the currently connected Ethereum chain.
    * @deprecated
@@ -25,6 +26,7 @@ class EthereumProvider extends EventEmitter {
   networkVersion: string | null = null;
   isRabby = true;
   isMetaMask = true;
+  pushEventHandlers: PushEventHandlers;
 
   private _isConnected = false;
   private requestPromise = new ReadyPromise(2);
@@ -35,10 +37,11 @@ class EthereumProvider extends EventEmitter {
     this.setMaxListeners(maxListeners);
     this.initialize();
     this.shimLegacy();
+    this.pushEventHandlers = new PushEventHandlers(this);
   }
 
   initialize = async () => {
-    this._bcm.connect().on('message', this.handleBackgroundMessage);
+    this._bcm.connect().on('message', this._handleBackgroundMessage);
 
     domReadyCall(() => {
       const origin = top.location.origin;
@@ -67,11 +70,11 @@ class EthereumProvider extends EventEmitter {
       });
 
       this.chainId = chainId;
-      this.accounts = accounts;
       this.networkVersion = networkVersion;
       this.emit('connect', { chainId });
       this.emit('chainChanged', chainId);
       this.emit('networkChanged', networkVersion);
+      this.pushEventHandlers.accountsChanged(accounts);
       this._isConnected = true;
     } catch {
       //
@@ -91,12 +94,10 @@ class EthereumProvider extends EventEmitter {
     }
   };
 
-  handleBackgroundMessage = ({ event, data }) => {
+  _handleBackgroundMessage = ({ event, data }) => {
     log('[push event]', event, data);
-    if (event === 'disconnect') {
-      this.emit(event, ethErrors.provider.disconnected());
-      this._isConnected = false;
-      return;
+    if (this.pushEventHandlers[event]) {
+      return this.pushEventHandlers[event](data);
     }
 
     this.emit(event, data);
@@ -157,11 +158,11 @@ class EthereumProvider extends EventEmitter {
     let result;
     switch (payload.method) {
       case 'eth_accounts':
-        result = this.accounts;
+        result = this.selectedAddress ? [this.selectedAddress] : [];
         break;
 
       case 'eth_coinbase':
-        result = this.accounts[0];
+        result = this.selectedAddress || null;
         break;
 
       // case 'eth_uninstallFilter':

@@ -1,3 +1,4 @@
+import cloneDeep from 'lodash/cloneDeep';
 import { createPersistStore } from 'background/utils';
 import { keyringService } from './index';
 import { TotalBalanceResponse } from './openapi';
@@ -32,7 +33,7 @@ class PreferenceService {
   };
 
   getHiddenAddresses = () => {
-    return this.store.hiddenAddresses;
+    return cloneDeep(this.store.hiddenAddresses);
   };
 
   hideAddress = (type: string, address: string) => {
@@ -68,7 +69,7 @@ class PreferenceService {
   };
 
   getCurrentAccount = () => {
-    return this.store.currentAccount;
+    return cloneDeep(this.store.currentAccount);
   };
 
   setCurrentAccount = (account: Account) => {
