@@ -144,6 +144,7 @@ export const EVM_RPC_METHODS = [
   'eth_subscribe',
   'eth_getTransactionReceipt',
   'eth_getBalance',
+  'eth_getTransactionByHash',
 ];
 
 interface OpenApiService {
@@ -270,6 +271,10 @@ class OpenApiService implements OpenApiService {
     methods.forEach((method) => {
       const config = this.store.config[method];
 
+      if (!config) {
+        return;
+      }
+
       const [, ...rest] = config.params || [];
       this[underline2Camelcase(method)] = (chainId, params) => {
         const reqData = {
@@ -280,10 +285,6 @@ class OpenApiService implements OpenApiService {
             return m;
           }, {}),
         };
-
-        if (config.method === 'post') {
-          console.log(params);
-        }
 
         const _config = config.method === 'get' ? { params: reqData } : reqData;
 

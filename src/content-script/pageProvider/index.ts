@@ -128,7 +128,7 @@ class EthereumProvider extends EventEmitter {
         })
         .catch((err) => {
           if (data.method !== 'eth_call') {
-            log('[request: error]', serializeError(err));
+            log('[request: error]', data.method, serializeError(err));
           }
           throw serializeError(err);
         });

@@ -19,6 +19,7 @@ import Sign from './TxComponents/Sign';
 import CancelTx from './TxComponents/CancelTx';
 import Send from './TxComponents/Send';
 import GasSelector from './TxComponents/GasSelecter';
+import { WaitingSignComponent } from './SignText';
 
 const SignTx = ({ params, origin }) => {
   const [isReady, setIsReady] = useState(false);
@@ -124,15 +125,27 @@ const SignTx = ({ params, origin }) => {
     }
   };
 
-  const handleAllow = (doubleCheck = false) => {
+  const handleAllow = async (doubleCheck = false) => {
     if (!doubleCheck && securityCheckStatus !== 'pass') {
       setShowSecurityCheckDetail(true);
-    } else {
-      resolveApproval({
-        ...tx,
-        nonce: realNonce,
-      });
+      return;
     }
+
+    const currentAccount = await wallet.getCurrentAccount();
+    if (currentAccount?.type && WaitingSignComponent[currentAccount.type]) {
+      resolveApproval({
+        uiRequestComponent: WaitingSignComponent[currentAccount.type],
+        type: currentAccount.type,
+        address: currentAccount.address,
+      });
+
+      return;
+    }
+
+    resolveApproval({
+      ...tx,
+      nonce: realNonce,
+    });
   };
 
   const handleGasChange = (gas: GasLevel) => {

@@ -20,6 +20,11 @@ interface SignTextProps {
   };
 }
 
+export const WaitingSignComponent = {
+  [KEYRING_CLASS.HARDWARE.LEDGER]: 'HardwareWaiting',
+  [KEYRING_CLASS.WATCH]: 'WatchAdrressWaiting',
+};
+
 const SignText = ({ params }: { params: SignTextProps }) => {
   const [, resolveApproval, rejectApproval] = useApproval();
   const wallet = useWallet();
@@ -68,17 +73,21 @@ const SignText = ({ params }: { params: SignTextProps }) => {
       securityCheckStatus !== 'pending'
     ) {
       setShowSecurityCheckDetail(true);
-    } else {
-      const currentAccount = await wallet.getCurrentAccount();
-      if (currentAccount?.type === KEYRING_CLASS.HARDWARE.LEDGER) {
-        resolveApproval({
-          uiRequestComponent: 'HardwareWaiting',
-          type: currentAccount.type,
-        });
-      } else {
-        resolveApproval({});
-      }
+
+      return;
     }
+    const currentAccount = await wallet.getCurrentAccount();
+    if (currentAccount?.type && WaitingSignComponent[currentAccount?.type]) {
+      resolveApproval({
+        uiRequestComponent: WaitingSignComponent[currentAccount?.type],
+        type: currentAccount.type,
+        address: currentAccount.address,
+      });
+
+      return;
+    }
+
+    resolveApproval({});
   };
 
   return (
