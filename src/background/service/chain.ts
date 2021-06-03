@@ -34,8 +34,9 @@ class ChainService {
 
   getEnabledChains = (): Chain[] => {
     if (!this.store) return [];
-
-    return this.store.enableChains.map((chain) => CHAINS[chain]);
+    return this.store.enableChains
+      .map((chain) => this.supportChains.find((item) => item.enum === chain)!)
+      .filter((item) => !!item);
   };
 
   enableChain = (id: CHAINS_ENUM) => {
