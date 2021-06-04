@@ -48,7 +48,7 @@ export const ChainManagementList = ({ inStart = false }) => {
           },
         });
       } else {
-        message.error('Keep at least one chain enabled.');
+        message.error('At least one enabled chain is required.');
       }
     }
   };
@@ -89,7 +89,7 @@ export const StartChainManagement = () => {
 
   return (
     <StrayPageWithButton
-      NextButtonText="confirm"
+      NextButtonText="OK"
       hasDivider
       onNextClick={handleNextClick}
       header={{

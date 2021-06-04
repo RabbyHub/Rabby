@@ -95,10 +95,10 @@ export const KEYRING_TYPE = {
 };
 
 export const KEYRING_TYPE_TEXT = {
-  [KEYRING_TYPE.HdKeyring]: 'Mnemonics addresses',
-  [KEYRING_TYPE.SimpleKeyring]: 'Private key addresses',
-  [KEYRING_TYPE.HardwareKeyring]: 'Hardware wallet addresses',
-  [KEYRING_TYPE.WatchAddressKeyring]: 'Watch Address',
+  [KEYRING_TYPE.HdKeyring]: 'Mnemonic',
+  [KEYRING_TYPE.SimpleKeyring]: 'Private Key',
+  [KEYRING_TYPE.HardwareKeyring]: 'Hardware Wallet',
+  [KEYRING_TYPE.WatchAddressKeyring]: 'Watch Mode',
 };
 
 export const KEYRING_CLASS = {

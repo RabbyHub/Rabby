@@ -23,9 +23,9 @@ const ImportJson = () => {
   return (
     <StrayPageWithButton
       header={{
-        secondTitle: 'Import Private Key',
+        secondTitle: 'Import Your Keystore',
         subTitle:
-          'Please select the JSON file you want to import and enter the corresponding password',
+          'Select the keystore file you want to import and enter the corresponding password',
       }}
       onSubmit={onSubmit}
       form={form}
