@@ -251,12 +251,7 @@ export class WalletController extends BaseController {
 
     const currentSession = sessionService.getOrCreateSession(tabId);
     if (currentSession) {
-      // just test, should be all broadcast
-      sessionService.broadcastEvent(
-        'accountsChanged',
-        [account.address],
-        currentSession.origin
-      );
+      sessionService.broadcastEvent('accountsChanged', [account.address]);
     }
   };
 
