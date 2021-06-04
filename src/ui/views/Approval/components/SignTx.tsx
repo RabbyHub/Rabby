@@ -51,10 +51,10 @@ const SignTx = ({ params, origin }) => {
   if (!chainId) {
     chainId = CHAINS[site!.chain].id;
   }
-  const [{ data = '', from, gas, gasPrice, nonce, to, value }] = params.data;
+  const [{ data = '0x', from, gas, gasPrice, nonce, to, value }] = params.data;
   const [tx, setTx] = useState<Tx>({
     chainId,
-    data,
+    data: data || '0x', // can not execute with empty string, use 0x instead
     from,
     gas,
     gasPrice,

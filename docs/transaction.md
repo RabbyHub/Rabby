@@ -16,4 +16,4 @@ Sometimes DApp not set value param(like [https://pancakeswap.finance/farms](http
 
 ## data
 
-When transaction is not a contract(like send token to another address), DApp will not set data param, we use empty string(`''`) as default.
+When transaction is not a contract(like send token to another address), DApp will not set data param, we use `0x` as default.
