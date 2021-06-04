@@ -191,13 +191,8 @@ export class WalletController extends BaseController {
   deriveNewAccountFromMnemonic = async () => {
     const keyring = this._getKeyringByType(KEYRING_CLASS.MNEMONIC);
 
-    const accounts = await keyringService.addNewAccount(keyring);
-    preferenceService.setCurrentAccount({
-      address: accounts[0],
-      type: keyring.type,
-    });
-
-    return accounts;
+    await keyringService.addNewAccount(keyring);
+    this._setCurrentAccountFromKeyring(keyring, -1);
   };
 
   getAccountsCount = async () => {
@@ -267,7 +262,8 @@ export class WalletController extends BaseController {
     try {
       keyring = this._getKeyringByType(keyringType);
     } catch {
-      keyring = await keyringService.addNewKeyring(keyringType);
+      const Keyring = keyringService.getKeyringClassForType(keyringType);
+      keyring = new Keyring();
     }
 
     if (hdPath && keyring.setHdPath) {
@@ -278,17 +274,13 @@ export class WalletController extends BaseController {
   };
 
   unlockHardwareAccount = async (keyring, indexes) => {
+    await keyringService.addKeyring(keyring);
     for (let i = 0; i < indexes.length; i++) {
       keyring.setAccountToUnlock(indexes[i]);
       await keyringService.addNewAccount(keyring);
     }
 
-    const account = keyring.accounts[keyring.accounts.length - 1];
-    preferenceService.setCurrentAccount({
-      address: account,
-      type: keyring.type,
-    });
-    sessionService.broadcastEvent('accountsChanged', account);
+    return this._setCurrentAccountFromKeyring(keyring);
   };
 
   private _getKeyringByType(type) {
@@ -301,14 +293,16 @@ export class WalletController extends BaseController {
     throw ethErrors.rpc.internal(`No ${type} keyring found`);
   }
 
-  private async _setCurrentAccountFromKeyring(keyring) {
-    const [account] = await keyring.getAccounts();
+  private async _setCurrentAccountFromKeyring(keyring, index = 0) {
+    const accounts = await keyring.getAccounts();
+    const account = accounts[index < 0 ? index + accounts.length : index];
 
     const _account = {
       address: account,
       type: keyring.type,
     };
     preferenceService.setCurrentAccount(_account);
+    sessionService.broadcastEvent('accountsChanged', [account]);
 
     return [_account];
   }

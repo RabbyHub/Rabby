@@ -35,6 +35,7 @@ const ImportHardware = () => {
       history.push('/import/hardware/ledger');
       return;
     }
+
     try {
       setSpin(true);
       const keyring = await wallet.connectHardware(hardware, BIP44_PATH);
