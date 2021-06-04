@@ -75,7 +75,7 @@ const SwitchAddress = ({
       <div className="footer">
         <Link to="/add-address">
           <img src={IconAdd} className="icon icon-add" />
-          Management Addresses
+          Add addresses
         </Link>
       </div>
     </div>
