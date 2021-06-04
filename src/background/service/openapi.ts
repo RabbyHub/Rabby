@@ -137,17 +137,23 @@ export interface GasLevel {
 }
 
 export const EVM_RPC_METHODS = [
-  'eth_getTransactionCount',
   'eth_blockNumber',
   'eth_call',
+  'eth_coinbase',
   'eth_estimateGas',
-  'eth_subscribe',
-  'eth_getTransactionReceipt',
+  'eth_gasPrice',
   'eth_getBalance',
-  'eth_getTransactionByHash',
-  'eth_getLogs',
-  'eth_getCode',
   'eth_getBlockByNumber',
+  'eth_getCode',
+  'eth_getLogs',
+  'eth_getProof',
+  'eth_getTransactionCount',
+  'eth_getTransactionReceipt',
+  'eth_getTransactionByHash',
+  'eth_getWork',
+  'eth_sendRawTransaction',
+  'eth_subscribe',
+  'eth_syncing',
 ] as const;
 
 interface RPCResponse<T> {
