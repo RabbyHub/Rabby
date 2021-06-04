@@ -60,6 +60,7 @@ class ProviderController extends BaseController {
       r: bufferToHex(signedTx.r),
       s: bufferToHex(signedTx.s),
       v: bufferToHex(signedTx.v),
+      value: approvalRes.value || '0x0',
     });
   };
 
