@@ -58,13 +58,17 @@ export const useCurrentBalance = (account: string | undefined) => {
     if (cacheData) {
       setBalance(cacheData.total_usd_value);
     }
-    const { total_usd_value, chain_list } = await wallet.getAddressBalance(
-      account.toLowerCase()
-    );
-    setBalance(total_usd_value);
-    setChainBalances(
-      chain_list.filter((item) => item.usd_value > 0).map(formatChain)
-    );
+    try {
+      const { total_usd_value, chain_list } = await wallet.getAddressBalance(
+        account.toLowerCase()
+      );
+      setBalance(total_usd_value);
+      setChainBalances(
+        chain_list.filter((item) => item.usd_value > 0).map(formatChain)
+      );
+    } catch {
+      setBalance(NaN);
+    }
   };
 
   useEffect(() => {

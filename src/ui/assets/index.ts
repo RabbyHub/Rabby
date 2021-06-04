@@ -10,6 +10,8 @@ export { default as IconLedger } from './icon-ledger.svg';
 export { default as IconTrezor } from './icon-trezor.svg';
 export { default as IconOnekey } from './icon-onekey.svg';
 
+export { ReactComponent as IconSpin } from './spin.svg';
+export { ReactComponent as IconOffline } from './offline.svg';
 export { ReactComponent as SvgIconLedger } from './ledger.svg';
 export { ReactComponent as SvgIconTrezor } from './trezor.svg';
 export { ReactComponent as SvgIconOnekey } from './onekey.svg';

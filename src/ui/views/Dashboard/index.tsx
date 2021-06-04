@@ -7,16 +7,13 @@ import { Link, useHistory } from 'react-router-dom';
 import { message, Modal } from 'antd';
 import { CHAINS } from 'consts';
 import { AddressViewer, AddressList } from 'ui/component';
-import { useCurrentBalance } from 'ui/component/AddressList/AddressItem';
 import { useWallet, getCurrentTab, getCurrentConnectSite } from 'ui/utils';
-import { splitNumberByStep } from 'ui/utils/number';
 import { DisplayedKeryring } from 'background/service/keyring';
 import { Account } from 'background/service/preference';
-import RecentConnections from './components/RecentConnections';
+import { RecentConnections, BalanceView } from './components';
 import IconSetting from 'ui/assets/settings.svg';
 import IconCopy from 'ui/assets/copy.svg';
 import IconQrcode from 'ui/assets/qrcode.svg';
-import IconArrowRight from 'ui/assets/arrow-right.svg';
 import IconSend from 'ui/assets/send.svg';
 import IconSwap from 'ui/assets/swap.svg';
 import IconHistory from 'ui/assets/history.svg';
@@ -88,7 +85,6 @@ const Dashboard = () => {
   const [currentAccount, setCurrentAccount] = useState<Account | null>(
     wallet.syncGetCurrentAccount()
   );
-  const [balance, chainBalances] = useCurrentBalance(currentAccount?.address);
 
   const [isModalOpen, setModalOpen] = useState(false);
   const [qrcodeVisible, setQrcodeVisible] = useState(false);
@@ -128,12 +124,6 @@ const Dashboard = () => {
     await wallet.changeAccount({ address: account, type }, tabId);
     setCurrentAccount({ address: account, type });
     handleToggle();
-  };
-
-  const handleGotoProfile = () => {
-    browser.tabs.create({
-      url: `https://debank.com/profile/${currentAccount?.address}`,
-    });
   };
 
   const handleGotoSend = () => {
@@ -208,27 +198,7 @@ const Dashboard = () => {
               onClick={handleConfig}
             />
           </div>
-          <div className="assets flex">
-            <div className="left" onClick={handleGotoProfile}>
-              <p className="amount leading-none">
-                <span>${splitNumberByStep((balance || 0).toFixed(2))}</span>
-                <img className="icon icon-arrow-right" src={IconArrowRight} />
-              </p>
-              <p className="extra leading-none flex">
-                {chainBalances.length > 0
-                  ? chainBalances.map((item) => (
-                      <img
-                        src={item.whiteLogo || item.logo_url}
-                        className="icon icon-chain"
-                        key={item.id}
-                        alt={`${item.name}: $${item.usd_value.toFixed(2)}`}
-                        title={`${item.name}: $${item.usd_value.toFixed(2)}`}
-                      />
-                    ))
-                  : 'This seems to be no assets yet'}
-              </p>
-            </div>
-          </div>
+          <BalanceView currentAccount={currentAccount} />
           <div className="operation flex">
             <div className="operation-item" onClick={handleGotoSend}>
               <img className="icon icon-send" src={IconSend} />
