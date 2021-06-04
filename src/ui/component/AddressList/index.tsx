@@ -21,6 +21,13 @@ interface CompoundedComponent
   AddressItem: typeof AddressItem;
 }
 
+const SORT_WEIGHT = {
+  [KEYRING_TYPE.HdKeyring]: 1,
+  [KEYRING_TYPE.SimpleKeyring]: 2,
+  [KEYRING_TYPE.HardwareKeyring]: 3,
+  [KEYRING_TYPE.WatchAddressKeyring]: 4,
+};
+
 const AddressList: CompoundedComponent = ({
   list,
   action = 'switch',
@@ -71,9 +78,13 @@ const AddressList: CompoundedComponent = ({
 
   return (
     <ul className={`address-group-list ${action}`}>
-      {Object.keys(list).map((name) => (
-        <GroupItem key={name} name={name} group={list[name]} />
-      ))}
+      {Object.keys(list)
+        .sort((a, b) => {
+          return SORT_WEIGHT[a] - SORT_WEIGHT[b];
+        })
+        .map((name) => (
+          <GroupItem key={name} name={name} group={list[name]} />
+        ))}
     </ul>
   );
 };
