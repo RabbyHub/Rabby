@@ -29,8 +29,8 @@ const CreateMnemonic = () => {
 const DisplayMnemonic = ({ mnemonics, onNextClick }) => (
   <StrayPageWithButton
     header={{
-      secondTitle: 'Back Up Your Mnemonics',
-      subTitle: `Make sure you have backed up your mnemonics properly before clicking Next. Don't tell anyone the mnemonic`,
+      secondTitle: 'Back Up Your Mnemonic',
+      subTitle: `Make sure you have backed up your mnemonics properly before clicking Next. Don't tell anyone the mnemonic.`,
     }}
     hasBack
     hasDivider
@@ -72,7 +72,7 @@ const VerifyMnemonics = ({ mnemonics, onBackClick }) => {
   return (
     <StrayPageWithButton
       header={{
-        secondTitle: 'Verify Mnemonics',
+        secondTitle: 'Verify Mnemonic',
         subTitle: 'Please select the mnemonic words in order',
       }}
       onSubmit={onSubmit}

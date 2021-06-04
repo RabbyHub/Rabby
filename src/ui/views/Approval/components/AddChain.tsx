@@ -29,7 +29,7 @@ const AddChain = ({ params }: { params: AddChainProps }) => {
   if (!showChain) {
     return (
       <>
-        <div>This chain is not supported by Rabby yet.</div>
+        <div>The requested chain is not supported by Rabby yet.</div>
         <Button
           type="primary"
           size="large"
@@ -46,10 +46,14 @@ const AddChain = ({ params }: { params: AddChainProps }) => {
   const { chain: defaultChain } = wallet.getConnectedSite(session.origin)!;
 
   let title;
+  let content;
   if (!enableChains.some((chain) => chain.hex === chainId)) {
-    title = 'Want to Enable a Chain';
+    title = 'Wants to Enable a Chain';
+    content = 'By enabling a chain, you’ll be able to make transactions on it';
   } else if (CHAINS[defaultChain].hex !== chainId) {
-    title = 'Want to Change to the Chain';
+    title = 'Wants to Switch to the Chain';
+    content =
+      'The next time you visit, this site will be connected to Ethereum';
   }
 
   return (
@@ -72,10 +76,7 @@ const AddChain = ({ params }: { params: AddChainProps }) => {
             Chain ID: {showChain.id}
           </div>
         </div>
-        <div className="text-center text-14 text-gray-content">
-          After enabling this chain, you will be able to initiate transactions
-          on the change chain.
-        </div>
+        <div className="text-center text-14 text-gray-content">{content}</div>
       </div>
       <footer className="connect-footer">
         <div className="risk-info"></div>
@@ -94,7 +95,7 @@ const AddChain = ({ params }: { params: AddChainProps }) => {
             className="w-[172px]"
             onClick={resolveApproval}
           >
-            Allow
+            Change
           </Button>
         </div>
       </footer>

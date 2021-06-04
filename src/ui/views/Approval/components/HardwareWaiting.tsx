@@ -40,7 +40,7 @@ const Hardware = ({
       <Icon />
       <h1 className="brand-name">{currentKeyringType.brandName}</h1>
       <p className="text-15 text-medium text-gray-content text-center">
-        Please operate in your hardware wallet
+        Please proceed in your hardware wallet
       </p>
       <footer>
         <div className="action-buttons flex justify-center">

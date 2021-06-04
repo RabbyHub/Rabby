@@ -225,7 +225,7 @@ const Dashboard = () => {
                         title={`${item.name}: $${item.usd_value.toFixed(2)}`}
                       />
                     ))
-                  : 'This seems to be no assets yet'}
+                  : 'No assets'}
               </p>
             </div>
           </div>
@@ -269,7 +269,7 @@ const Dashboard = () => {
       </Modal>
       <Modal
         centered
-        title="Switch address"
+        title="Set Current Address"
         visible={isModalOpen}
         footer={null}
         width="344px"

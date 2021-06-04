@@ -71,18 +71,11 @@ const SelectAddress = () => {
   return (
     <StrayPageWithButton
       spinning={spinning}
-      header={
-        isMnemonics
-          ? {
-              secondTitle: 'Import Mnemonics',
-              subTitle: 'Please input your mnemonics below',
-            }
-          : {
-              title: 'Select Addresses',
-              subTitle: 'Select the addresses to vlew in Rabby',
-              center: true,
-            }
-      }
+      header={{
+        title: 'Select Addresses',
+        subTitle: 'Select the addresses you want to import',
+        center: true,
+      }}
       onSubmit={onSubmit}
       hasBack
       hasDivider={isMnemonics}

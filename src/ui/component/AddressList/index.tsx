@@ -46,7 +46,7 @@ const AddressList: CompoundedComponent = ({
               href="javascript:;"
               onClick={onShowMnemonics}
             >
-              View Mnemonics
+              View Mnemonic
               <img src={IconArrowRight} className="icon icon-arrow-right" />
             </a>
           )}

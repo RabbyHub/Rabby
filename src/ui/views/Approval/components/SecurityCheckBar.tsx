@@ -15,7 +15,7 @@ const STATUS = {
     color: '#818A99',
     clickable: false,
     icon: IconQuestionMark,
-    text: 'Security checks not yet implemented',
+    text: 'Security checks have not been executed',
   },
   loading: {
     name: 'loading',

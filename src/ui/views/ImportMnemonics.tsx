@@ -26,8 +26,7 @@ const ImportMnemonic = () => {
   return (
     <StrayPageWithButton
       header={{
-        title: 'Import Mnemonics',
-        subTitle: 'Please input your mnemonics below',
+        title: 'Enter Your Mnemonic',
       }}
       onSubmit={onSubmit}
       hasBack
@@ -38,7 +37,7 @@ const ImportMnemonic = () => {
         rules={[{ required: true, message: 'Please input Mnemonics' }]}
         className="mt-[56px]"
       >
-        <Input.TextArea className="h-[124px]" placeholder="Import Mnemonics" />
+        <Input.TextArea className="h-[124px]" placeholder="Mnemonics words" />
       </Form.Item>
     </StrayPageWithButton>
   );
