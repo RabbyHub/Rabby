@@ -249,14 +249,9 @@ export class WalletController extends BaseController {
   changeAccount = (account: Account, tabId: number | undefined) => {
     preferenceService.setCurrentAccount(account);
 
-    const currentSession = sessionService.getOrCreateSession(tabId);
+    const currentSession = sessionService.getSession(tabId);
     if (currentSession) {
-      // just test, should be all broadcast
-      sessionService.broadcastEvent(
-        'accountsChanged',
-        [account.address],
-        currentSession.origin
-      );
+      sessionService.broadcastEvent('accountsChanged', [account.address]);
     }
   };
 
