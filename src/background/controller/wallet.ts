@@ -249,7 +249,7 @@ export class WalletController extends BaseController {
   changeAccount = (account: Account, tabId: number | undefined) => {
     preferenceService.setCurrentAccount(account);
 
-    const currentSession = sessionService.getOrCreateSession(tabId);
+    const currentSession = sessionService.getSession(tabId);
     if (currentSession) {
       sessionService.broadcastEvent('accountsChanged', [account.address]);
     }
