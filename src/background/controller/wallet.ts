@@ -175,7 +175,10 @@ export class WalletController extends BaseController {
     return new Keyring({ mnemonic });
   };
 
-  addKeyring = (keyring) => keyringService.addKeyring(keyring);
+  addKeyring = async (keyring) => {
+    await keyringService.addKeyring(keyring);
+    this._setCurrentAccountFromKeyring(keyring);
+  };
 
   getCurrentMnemonics = async () => {
     const keyring = this._getKeyringByType(KEYRING_CLASS.MNEMONIC);
