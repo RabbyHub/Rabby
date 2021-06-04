@@ -1,6 +1,6 @@
 import cloneDeep from 'lodash/cloneDeep';
 import { createPersistStore } from 'background/utils';
-import { keyringService } from './index';
+import { keyringService, sessionService } from './index';
 import { TotalBalanceResponse } from './openapi';
 
 export interface Account {
@@ -74,6 +74,7 @@ class PreferenceService {
 
   setCurrentAccount = (account: Account) => {
     this.store.currentAccount = account;
+    sessionService.broadcastEvent('accountsChanged', [account.address]);
   };
 
   setPopupOpen = (isOpen) => {

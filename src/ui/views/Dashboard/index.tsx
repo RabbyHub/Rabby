@@ -7,7 +7,7 @@ import { Link, useHistory } from 'react-router-dom';
 import { message, Modal } from 'antd';
 import { CHAINS } from 'consts';
 import { AddressViewer, AddressList } from 'ui/component';
-import { useWallet, getCurrentTab, getCurrentConnectSite } from 'ui/utils';
+import { useWallet, getCurrentConnectSite } from 'ui/utils';
 import { DisplayedKeryring } from 'background/service/keyring';
 import { Account } from 'background/service/preference';
 import { RecentConnections, BalanceView } from './components';
@@ -120,8 +120,7 @@ const Dashboard = () => {
   };
 
   const handleChange = async (account: string, type: string) => {
-    const { id: tabId } = await getCurrentTab();
-    await wallet.changeAccount({ address: account, type }, tabId);
+    await wallet.changeAccount({ address: account, type });
     setCurrentAccount({ address: account, type });
     handleToggle();
   };

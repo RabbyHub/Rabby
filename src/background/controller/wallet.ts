@@ -148,8 +148,8 @@ export class WalletController extends BaseController {
     }
   };
 
-  removeAddress = (address: string, type: string) => {
-    keyringService.removeAccount(address, type);
+  removeAddress = async (address: string, type: string) => {
+    await keyringService.removeAccount(address, type);
     const current = preferenceService.getCurrentAccount();
     if (current?.address === address && current.type === type) {
       this.resetCurrentAccount();
@@ -247,13 +247,8 @@ export class WalletController extends BaseController {
     return result;
   };
 
-  changeAccount = (account: Account, tabId: number | undefined) => {
+  changeAccount = (account: Account) => {
     preferenceService.setCurrentAccount(account);
-
-    const currentSession = sessionService.getSession(tabId);
-    if (currentSession) {
-      sessionService.broadcastEvent('accountsChanged', [account.address]);
-    }
   };
 
   connectHardware = async (type, hdPath) => {
@@ -274,7 +269,15 @@ export class WalletController extends BaseController {
   };
 
   unlockHardwareAccount = async (keyring, indexes) => {
-    await keyringService.addKeyring(keyring);
+    let hasKeyring = false;
+    try {
+      hasKeyring = !!this._getKeyringByType(keyring.type);
+    } catch (e) {
+      // NOTHING
+    }
+    if (!hasKeyring) {
+      await keyringService.addKeyring(keyring);
+    }
     for (let i = 0; i < indexes.length; i++) {
       keyring.setAccountToUnlock(indexes[i]);
       await keyringService.addNewAccount(keyring);
@@ -302,7 +305,6 @@ export class WalletController extends BaseController {
       type: keyring.type,
     };
     preferenceService.setCurrentAccount(_account);
-    sessionService.broadcastEvent('accountsChanged', [account]);
 
     return [_account];
   }
