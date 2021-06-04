@@ -14,10 +14,10 @@ const NoAddress = () => {
           </Link>
         </div>
         <div className="text-12 text-white opacity-60">
-          No available addresses.
+          No available addresses
         </div>
         <div className="text-12 text-white opacity-60">
-          Add one through the following methods:
+          Please add your address via one of the following methods
         </div>
       </div>
       <div className="pt-40 px-28">

@@ -44,7 +44,7 @@ const BalanceView = ({ currentAccount }) => {
               />
             ))
           ) : (
-            'This seems to be no assets yet'
+            'No assets'
           )}
         </div>
       </div>

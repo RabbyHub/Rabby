@@ -258,6 +258,12 @@ class OpenApiService implements OpenApiService {
       }),
       { maxRPS: 25 }
     );
+    this.request.interceptors.response.use((response) => {
+      if (response.data?.err_code && response.data?.err_code !== 200) {
+        Promise.reject(response.data);
+      }
+      return response;
+    });
     try {
       await this.getConfig();
       this._mountMethods(EVM_RPC_METHODS);

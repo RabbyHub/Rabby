@@ -26,8 +26,8 @@ const ImportWatchAddress = () => {
   return (
     <StrayPageWithButton
       header={{
-        secondTitle: 'Add Watch Address',
-        subTitle: 'Add an address without providing private key',
+        secondTitle: 'Watch Mode',
+        subTitle: 'Enter an address without providing private key',
       }}
       onSubmit={onSubmit}
       hasBack

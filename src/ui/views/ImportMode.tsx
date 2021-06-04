@@ -11,11 +11,11 @@ const ImportMode = () => {
   const [modes, setModes] = useState([
     {
       name: 'key',
-      label: 'Import Private Key',
+      label: 'Import via Private Key',
     },
     {
       name: 'json',
-      label: 'Import JSON File',
+      label: 'Import via Keystore',
     },
   ]);
 
@@ -25,7 +25,7 @@ const ImportMode = () => {
     if (!accounts?.length) {
       modes.splice(1, 0, {
         name: 'mnemonics',
-        label: 'Import Mnemonics',
+        label: 'Import via Mnemonic',
       });
       setModes([...modes]);
     }
@@ -53,9 +53,7 @@ const ImportMode = () => {
   return (
     <StrayPageWithButton
       header={{
-        secondTitle: 'How You Want to Import',
-        subTitle:
-          'Please select from the options below which method you would like to import the address',
+        secondTitle: 'Import',
       }}
       nextDisabled={!currentMode}
       onNextClick={handleNext}

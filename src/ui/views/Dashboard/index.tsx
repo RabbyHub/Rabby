@@ -239,7 +239,7 @@ const Dashboard = () => {
       </Modal>
       <Modal
         centered
-        title="Switch address"
+        title="Set Current Address"
         visible={isModalOpen}
         footer={null}
         width="344px"

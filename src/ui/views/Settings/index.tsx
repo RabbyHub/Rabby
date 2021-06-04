@@ -32,7 +32,7 @@ const OpenApiModal = ({
 
   return (
     <Modal
-      title="OpenApi"
+      title="Backend Service URL"
       footer={null}
       visible={visible}
       onCancel={onCancel}
@@ -83,12 +83,12 @@ const Settings = () => {
     },
     {
       leftIcon: IconConnectSitesManagement,
-      content: 'Connected sites',
+      content: 'Connected websites',
       onClick: () => history.push('/settings/sites'),
     },
     {
       leftIcon: IconOpenapiManagement,
-      content: 'Change OpenAPI',
+      content: 'Backend Service URL',
       onClick: () => setShowOpenApiModal(true),
     },
   ];
@@ -102,7 +102,7 @@ const Settings = () => {
     <div className="settings">
       <PageHeader>Settings</PageHeader>
       <div className="field lock-wallet" onClick={lockWallet}>
-        Lock wallet
+        Lock
       </div>
       {renderData.map((data) => (
         <Field

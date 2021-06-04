@@ -23,8 +23,7 @@ const CreatePassword = () => {
   return (
     <StrayPageWithButton
       header={{
-        title: 'Create Password',
-        subTitle: 'this password will be used to unlock your wallet',
+        title: 'Set Unlock Password',
       }}
       onSubmit={onSubmit}
     >
@@ -34,15 +33,15 @@ const CreatePassword = () => {
           rules={[
             {
               required: true,
-              message: 'Please input Password',
+              message: 'Please input Password.',
             },
             {
               min: PASSWORD_LENGTH[0],
-              message: '*Password is too short',
+              message: `Password can’t be less than ${PASSWORD_LENGTH[0]} letters`,
             },
             {
               max: PASSWORD_LENGTH[1],
-              message: '*Password is too long',
+              message: `Password can’t be more than ${PASSWORD_LENGTH[1]} letters`,
             },
           ]}
         >
@@ -51,15 +50,13 @@ const CreatePassword = () => {
         <Form.Item
           name="confirmPassword"
           rules={[
-            { required: true, message: '*Please confirm Password' },
+            { required: true, message: 'Please confirm Password.' },
             ({ getFieldValue }) => ({
               validator(_, value: string) {
                 if (!value || getFieldValue('password') === value) {
                   return Promise.resolve();
                 }
-                return Promise.reject(
-                  new Error('*The two passwords are inconsistent')
-                );
+                return Promise.reject(new Error('Two inputs do not match'));
               },
             }),
           ]}
