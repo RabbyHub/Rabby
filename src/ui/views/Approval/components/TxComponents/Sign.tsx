@@ -27,13 +27,15 @@ const Sign = ({ data }: SignProps) => {
       <ul className="assets-change">
         {assetsChange.map((item) => (
           <li key={item.id}>
-            <div className="token">
+            <div className="token" title={item.symbol}>
               <img
                 src={item.logo_url}
                 alt={item.symbol}
                 className="icon icon-token"
               />
-              {item.symbol}
+              {item.symbol.length > 8
+                ? item.symbol.slice(0, 8) + '...'
+                : item.symbol}
             </div>
             <div
               className="amount"
