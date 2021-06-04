@@ -32,7 +32,7 @@ const OpenApiModal = ({
 
   return (
     <Modal
-      title="OpenApi"
+      title="Backend Service URL"
       footer={null}
       visible={visible}
       onCancel={onCancel}

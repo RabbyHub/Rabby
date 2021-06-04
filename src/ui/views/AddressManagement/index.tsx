@@ -49,7 +49,7 @@ const AddressManagement = () => {
       await AuthenticationModal(wallet);
       const mnemonic = await wallet.getCurrentMnemonics();
       Modal.info({
-        title: 'Mnemonics',
+        title: 'Mnemonic',
         centered: true,
         content: mnemonic,
         cancelText: null,

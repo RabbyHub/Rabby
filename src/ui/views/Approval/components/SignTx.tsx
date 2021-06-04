@@ -21,6 +21,14 @@ import Send from './TxComponents/Send';
 import GasSelector from './TxComponents/GasSelecter';
 import { WaitingSignComponent } from './SignText';
 
+const confirmText = {
+  [TX_TYPE_ENUM.APPROVE]: 'Approve',
+  [TX_TYPE_ENUM.SEND]: 'Send',
+  [TX_TYPE_ENUM.SIGN_TX]: 'Sign',
+  [TX_TYPE_ENUM.CANCEL_APPROVE]: 'Confirm',
+  [TX_TYPE_ENUM.CANCEL_TX]: 'Confirm',
+};
+
 const SignTx = ({ params, origin }) => {
   const [isReady, setIsReady] = useState(false);
   const [txDetail, setTxDetail] = useState<ExplainTxResponse | null>(null);
@@ -253,7 +261,9 @@ const SignTx = ({ params, origin }) => {
                   className="w-[172px]"
                   onClick={() => handleAllow()}
                 >
-                  Allow
+                  {securityCheckStatus === 'pass'
+                    ? confirmText[txDetail?.pre_exec.tx_type] || 'Confirm'
+                    : 'Continue'}
                 </Button>
               </div>
             </footer>
@@ -265,7 +275,9 @@ const SignTx = ({ params, origin }) => {
             onCancel={() => setShowSecurityCheckDetail(false)}
             data={securityCheckDetail}
             onOk={() => handleAllow(true)}
-            okText="Sign"
+            okText={
+              (txDetail && confirmText[txDetail.pre_exec.tx_type]) || 'Confirm'
+            }
             preprocessSuccess={preprocessSuccess}
           />
         )}
