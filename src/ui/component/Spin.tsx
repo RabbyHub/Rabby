@@ -7,6 +7,7 @@ interface SpinProps {
   children?: ReactNode;
   spinning?: boolean;
   className?: string;
+  iconClassName?: string;
   size?: AntdSpinProps['size'];
 }
 
@@ -15,16 +16,22 @@ export default ({
   spinning = true,
   className,
   size = 'default',
+  iconClassName,
 }: SpinProps) => {
   return (
     <Spin
       indicator={
         <IconSpin
-          className={cx('animate-spin', {
-            'w-14 h-14': size === 'small',
-            'w-24 h-24': size === 'default',
-            'w-40 h-40': size === 'large',
-          })}
+          className={cx(
+            'animate-spin',
+            {
+              'w-14 h-14': size === 'small',
+              'w-24 h-24': size === 'default',
+              'w-40 h-40': size === 'large',
+            },
+            'stroke-current text-bg-content',
+            iconClassName
+          )}
         />
       }
       spinning={spinning}

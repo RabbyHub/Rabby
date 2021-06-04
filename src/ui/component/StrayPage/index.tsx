@@ -24,6 +24,7 @@ const StrayPage = ({
 }: StrayPageProps) => (
   <Spin
     spinning={spinning}
+    size="large"
     className={cx(
       'stray-page relative flex flex-col',
       'sm:pt-28 sm:h-full sm:bg-gray-bg',
