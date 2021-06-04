@@ -15,15 +15,23 @@ class PushEventHandlers {
   };
 
   accountsChanged = (accounts) => {
+    if (accounts?.[0] === this.provider.selectedAddress) {
+      return;
+    }
     this.provider.selectedAddress = accounts?.[0];
     this.provider.emit('accountsChanged', accounts);
   };
 
   chainChanged = ({ chain, networkVersion }) => {
-    this.provider.chainId = chain;
-    this.provider.networkVersion = networkVersion;
-    this.provider.emit('chainChanged', chain);
-    this.provider.emit('networkChanged', networkVersion);
+    if (chain !== this.provider.chainId) {
+      this.provider.chainId = chain;
+      this.provider.emit('chainChanged', chain);
+    }
+
+    if (networkVersion !== this.provider.networkVersion) {
+      this.provider.networkVersion = networkVersion;
+      this.provider.emit('networkChanged', networkVersion);
+    }
   };
 }
 
