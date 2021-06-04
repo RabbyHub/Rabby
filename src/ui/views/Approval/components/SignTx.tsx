@@ -51,7 +51,7 @@ const SignTx = ({ params, origin }) => {
   if (!chainId) {
     chainId = CHAINS[site!.chain].id;
   }
-  const [{ data, from, gas, gasPrice, nonce, to, value }] = params.data;
+  const [{ data = '', from, gas, gasPrice, nonce, to, value }] = params.data;
   const [tx, setTx] = useState<Tx>({
     chainId,
     data,
@@ -63,14 +63,16 @@ const SignTx = ({ params, origin }) => {
     value,
   });
   const [realNonce, setRealNonce] = useState('');
+  const [gasLimit, setGasLimit] = useState(gas);
 
   const checkTx = async (address: string) => {
     const res = await wallet.openapi.checkTx(
       {
         ...tx,
         nonce: tx.nonce || '0x1',
-        data: tx.data || '',
+        data: tx.data,
         value: tx.value || '0x0',
+        gas: tx.gas || '',
       }, // set a mock nonce for check if dapp not set it
       origin,
       address
@@ -84,10 +86,11 @@ const SignTx = ({ params, origin }) => {
     const res = await wallet.openapi.explainTx(
       {
         ...tx,
-        nonce: tx.nonce || '0x1',
-        data: tx.data || '',
+        nonce: tx.nonce || '0x1', // set a mock nonce for explain if dapp not set it
+        data: tx.data,
         value: tx.value || '0x0',
-      }, // set a mock nonce for explain if dapp not set it
+        gas: tx.gas || '', // set gas limit if dapp not set
+      },
       origin,
       address,
       tx.from !== tx.to
@@ -99,6 +102,10 @@ const SignTx = ({ params, origin }) => {
         onOk: rejectApproval,
       });
       return;
+    }
+    if (!gasLimit) {
+      // use server response gas limit
+      setGasLimit(res.tx.gas);
     }
     setTxDetail(res);
     setRealNonce(res.tx.nonce);
@@ -116,19 +123,6 @@ const SignTx = ({ params, origin }) => {
     setTx({
       ...tx,
       gasPrice: intToHex(Math.max(...gas.map((item) => item.price))),
-    });
-  };
-
-  const getGasLimit = async () => {
-    const chain = Object.keys(CHAINS)
-      .map((key) => CHAINS[key])
-      .find((item) => item.id === chainId);
-    const gasLimit = await wallet.openapi.ethEstimateGas(chain!.serverId, [
-      { ...tx, gasPrice: undefined },
-    ]);
-    setTx({
-      ...tx,
-      gas: intToHex(Math.floor(gasLimit * 1.2)),
     });
   };
 
@@ -164,6 +158,7 @@ const SignTx = ({ params, origin }) => {
     resolveApproval({
       ...tx,
       nonce: realNonce,
+      gas: gasLimit,
     });
   };
 
@@ -182,10 +177,6 @@ const SignTx = ({ params, origin }) => {
     if (!tx.gasPrice) {
       // use minimum gas as default gas if dapp not set gasPrice
       getDefaultGas();
-      return;
-    }
-    if (!tx.gas) {
-      getGasLimit();
       return;
     }
     init();
