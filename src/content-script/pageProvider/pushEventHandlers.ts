@@ -11,13 +11,17 @@ class PushEventHandlers {
   disconnect = () => {
     this.provider._isConnected = false;
     this.provider.selectedAddress = null;
-    this.provider.emit('disconnect', ethErrors.provider.disconnected());
+    const disconnectError = ethErrors.provider.disconnected();
+
+    this.provider.emit('disconnect', disconnectError);
+    this.provider.emit('close', disconnectError);
   };
 
   accountsChanged = (accounts) => {
     if (accounts?.[0] === this.provider.selectedAddress) {
       return;
     }
+
     this.provider.selectedAddress = accounts?.[0];
     this.provider.emit('accountsChanged', accounts);
   };
