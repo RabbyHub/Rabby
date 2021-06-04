@@ -1,7 +1,8 @@
 import { ethErrors } from 'eth-rpc-errors';
+import { EthereumProvider } from './index';
 
 class PushEventHandlers {
-  provider: any;
+  provider: EthereumProvider;
 
   constructor(provider) {
     this.provider = provider;
@@ -16,6 +17,13 @@ class PushEventHandlers {
   accountsChanged = (accounts) => {
     this.provider.selectedAddress = accounts?.[0];
     this.provider.emit('accountsChanged', accounts);
+  };
+
+  chainChanged = ({ chain, networkVersion }) => {
+    this.provider.chainId = chain;
+    this.provider.networkVersion = networkVersion;
+    this.provider.emit('chainChanged', chain);
+    this.provider.emit('networkChanged', networkVersion);
   };
 }
 

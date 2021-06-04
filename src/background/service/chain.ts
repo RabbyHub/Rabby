@@ -13,7 +13,7 @@ export interface Chain {
   logo: string;
   enum: CHAINS_ENUM;
   serverId: string;
-  network: number;
+  network: string;
   whiteLogo?: string;
 }
 

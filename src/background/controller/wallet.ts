@@ -69,12 +69,15 @@ export class WalletController extends BaseController {
     return permissionService.getWithoutUpdate(origin);
   };
   updateConnectSite = (origin: string, data: ConnectedSite) => {
+    permissionService.updateConnectSite(origin, data);
     sessionService.broadcastEvent(
       'chainChanged',
-      CHAINS[data.chain].id,
+      {
+        chain: CHAINS[data.chain].hex,
+        networkVersion: CHAINS[data.chain].network,
+      },
       data.origin
     );
-    permissionService.updateConnectSite(origin, data);
   };
   removeConnectedSite = permissionService.removeConnectedSite;
   getSitesByDefaultChain = permissionService.getSitesByDefaultChain;

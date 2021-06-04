@@ -33,7 +33,7 @@ export const CHAINS: Record<string, Chain> = {
     enum: CHAINS_ENUM.ETH,
     logo: IconEthLogo,
     whiteLogo: IconEthWhiteLogo,
-    network: 1,
+    network: '1',
   },
   [CHAINS_ENUM.BSC]: {
     id: 56,
@@ -43,7 +43,7 @@ export const CHAINS: Record<string, Chain> = {
     enum: CHAINS_ENUM.BSC,
     logo: IconBscLogo,
     whiteLogo: IconBscWhiteLogo,
-    network: 56,
+    network: '56',
   },
   [CHAINS_ENUM.DAI]: {
     id: 100,
@@ -53,7 +53,7 @@ export const CHAINS: Record<string, Chain> = {
     enum: CHAINS_ENUM.DAI,
     logo: IconDaiLogo,
     whiteLogo: IconDaiWhiteLogo,
-    network: 100,
+    network: '100',
   },
   [CHAINS_ENUM.FTM]: {
     id: 250,
@@ -63,7 +63,7 @@ export const CHAINS: Record<string, Chain> = {
     enum: CHAINS_ENUM.FTM,
     logo: IconFantom,
     whiteLogo: IconFantomWhiteLogo,
-    network: 250,
+    network: '250',
   },
   [CHAINS_ENUM.POLYGON]: {
     id: 137,
@@ -73,7 +73,7 @@ export const CHAINS: Record<string, Chain> = {
     enum: CHAINS_ENUM.POLYGON,
     logo: IconPolygonLogo,
     whiteLogo: IconPolygonWhiteLogo,
-    network: 137,
+    network: '137',
   },
   [CHAINS_ENUM.OKT]: {
     id: 66,
@@ -83,7 +83,7 @@ export const CHAINS: Record<string, Chain> = {
     logo: IconOKTLogo,
     whiteLogo: IconOKTWhiteLogo,
     hex: '0x42',
-    network: 66,
+    network: '66',
   },
 };
 

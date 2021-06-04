@@ -20,7 +20,7 @@ const getProviderState = async (req) => {
   const isUnlocked = keyringService.memStore.getState().isUnlocked;
 
   return {
-    chainId: CHAINS[chainEnum || CHAINS_ENUM.ETH].id,
+    chainId: CHAINS[chainEnum || CHAINS_ENUM.ETH].hex,
     isUnlocked,
     accounts: isUnlocked ? await providerController.ethAccounts(req) : [],
     networkVersion: await providerController.netVersion(req),

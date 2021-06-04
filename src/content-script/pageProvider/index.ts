@@ -16,7 +16,7 @@ const log = (event, ...args) => {
   );
 };
 
-class EthereumProvider extends EventEmitter {
+export class EthereumProvider extends EventEmitter {
   chainId: string | null = null;
   selectedAddress: string | null = null;
   /**
@@ -26,9 +26,9 @@ class EthereumProvider extends EventEmitter {
   networkVersion: string | null = null;
   isRabby = true;
   isMetaMask = true;
-  pushEventHandlers: PushEventHandlers;
+  _isConnected = false;
 
-  private _isConnected = false;
+  private pushEventHandlers: PushEventHandlers;
   private requestPromise = new ReadyPromise(2);
   private _bcm = new BroadcastChannelMessage(channelName);
 
@@ -69,13 +69,15 @@ class EthereumProvider extends EventEmitter {
         method: 'getProviderState',
       });
 
+      this._isConnected = true;
       this.chainId = chainId;
       this.networkVersion = networkVersion;
       this.emit('connect', { chainId });
-      this.emit('chainChanged', chainId);
-      this.emit('networkChanged', networkVersion);
+      this.pushEventHandlers.chainChanged({
+        chain: chainId,
+        networkVersion,
+      });
       this.pushEventHandlers.accountsChanged(accounts);
-      this._isConnected = true;
     } catch {
       //
     }
@@ -86,7 +88,7 @@ class EthereumProvider extends EventEmitter {
     );
   };
 
-  _requestPromiseCheckVisibility = () => {
+  private _requestPromiseCheckVisibility = () => {
     if (document.visibilityState === 'visible') {
       this.requestPromise.check(1);
     } else {
@@ -94,7 +96,7 @@ class EthereumProvider extends EventEmitter {
     }
   };
 
-  _handleBackgroundMessage = ({ event, data }) => {
+  private _handleBackgroundMessage = ({ event, data }) => {
     log('[push event]', event, data);
     if (this.pushEventHandlers[event]) {
       return this.pushEventHandlers[event](data);

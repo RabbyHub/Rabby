@@ -142,7 +142,14 @@ class ProviderController extends BaseController {
 
     chainService.enableChain(chain.enum);
 
-    sessionService.broadcastEvent('chainChanged', chain.id, origin);
+    sessionService.broadcastEvent(
+      'chainChanged',
+      {
+        chain: chain.hex,
+        networkVersion: chain.network,
+      },
+      origin
+    );
     return null;
   };
 
