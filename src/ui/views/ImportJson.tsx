@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Input, Form } from 'antd';
 import { useHistory } from 'react-router-dom';
 import { StrayPageWithButton, Uploader } from 'ui/component';
@@ -6,18 +6,24 @@ import { useWallet } from 'ui/utils';
 
 const ImportJson = () => {
   const history = useHistory();
+  const [importing, setImporting] = useState(false);
   const [form] = Form.useForm();
   const wallet = useWallet();
 
   const onSubmit = async ({ keyStore, password }) => {
-    const accounts = await wallet.importJson(keyStore, password);
-    history.replace({
-      pathname: '/import/success',
-      state: {
-        accounts,
-        title: 'Successfully created',
-      },
-    });
+    try {
+      setImporting(true);
+      const accounts = await wallet.importJson(keyStore, password);
+      history.replace({
+        pathname: '/import/success',
+        state: {
+          accounts,
+          title: 'Successfully created',
+        },
+      });
+    } finally {
+      setImporting(false);
+    }
   };
 
   return (
@@ -29,6 +35,7 @@ const ImportJson = () => {
       }}
       onSubmit={onSubmit}
       form={form}
+      spinning={importing}
       hasBack
       hasDivider
     >
