@@ -97,7 +97,7 @@ export class WalletController extends BaseController {
 
     keyring.setAccountToAdd(address);
     await keyringService.addNewAccount(keyring);
-    return this._setCurrentAccountFromKeyring(keyring);
+    return this._setCurrentAccountFromKeyring(keyring, -1);
   };
 
   importPrivateKey = async (data) => {
