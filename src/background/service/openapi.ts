@@ -146,6 +146,7 @@ export const EVM_RPC_METHODS = [
   'eth_getBalance',
   'eth_getTransactionByHash',
   'eth_getLogs',
+  'eth_getCode',
 ] as const;
 
 interface RPCResponse<T> {

@@ -1,5 +1,6 @@
+import { ethErrors } from 'eth-rpc-errors';
 import { tab } from 'background/webapi';
-import { sessionService } from 'background/service';
+import { sessionService, keyringService } from 'background/service';
 
 import rpcFlow from './rpcFlow';
 import internalMethod from './internalMethod';
@@ -8,13 +9,20 @@ tab.on('tabRemove', (id) => {
   sessionService.deleteSession(id);
 });
 
-export default (req) => {
+export default async (req) => {
   const {
     data: { method },
   } = req;
 
   if (internalMethod[method]) {
-    return Promise.resolve(internalMethod[method](req));
+    return internalMethod[method](req);
+  }
+
+  const accounts = await keyringService.getAccounts();
+  if (!accounts.length) {
+    throw ethErrors.provider.userRejectedRequest({
+      message: 'wallet must has at least one account',
+    });
   }
 
   return rpcFlow(req);
