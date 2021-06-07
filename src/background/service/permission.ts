@@ -89,7 +89,7 @@ class PermissionService {
     return this.lruCache.has(origin);
   };
 
-  getRecentConnectSites = (max = 5) => {
+  getRecentConnectSites = (max = 12) => {
     return this.lruCache?.values().slice(0, max) || [];
   };
 
