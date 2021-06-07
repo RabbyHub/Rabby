@@ -6,7 +6,7 @@
   height: 100vh;
   .main {
     width: 100%;
-    height: 200px;
+    height: 220px;
     background: @primary-linear;
     padding: 20px 28px 0;
     position: relative;
@@ -26,8 +26,8 @@
       }
     }
     .assets {
-      margin-bottom: 28px;
-      padding-top: 28px;
+      margin-bottom: 31px;
+      padding-top: 32px;
       .left {
         width: 100%;
         color: #fff;
@@ -38,7 +38,7 @@
         .amount {
           font-size: 32px;
           font-weight: bold;
-          margin-bottom: 14px;
+          margin-bottom: 15px;
           display: flex;
           align-items: center;
           justify-content: space-between;
@@ -137,6 +137,53 @@
     background-color: #fff;
     .address {
       margin-top: 22px;
+    }
+  }
+}
+
+.balance-popover {
+  margin-bottom: 0;
+  padding: 8px 0;
+  li {
+    align-items: center;
+    margin-bottom: 16px;
+    .chain-logo {
+      width: 30px;
+      height: 30px;
+      margin-right: 8px;
+    }
+    .amount {
+      color: #2D3033;
+      font-weight: 500;
+      font-size: 13px;
+      margin-right: 8px;
+      width: 90px;
+      text-align: left;
+      margin-right: 8px;
+    }
+    .progress {
+      position: relative;
+      height: 8px;
+      width: 150px;
+      background-color: #D8DFEB;
+      border-radius: 10px;
+      margin-right: 12px;
+      overflow: hidden;
+      .inner {
+        background-color: #8697FF;
+        height: 8px;
+        border-radius: 10px;
+      }
+    }
+    .percent {
+      color: #818A99;
+      font-size: 13px;
+      font-weight: 500;
+      width: 25px;
+      text-align: right;
+    }
+    &:nth-last-child(1) {
+      margin-bottom: 0;
     }
   }
 }

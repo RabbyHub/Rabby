@@ -1,7 +1,7 @@
 .recent-connections {
   background-color: #F0F2F5;
   flex: 1;
-  padding: 24px 28px 0 28px;
+  padding: 44px 40px 0;
   .title {
     color: #818A99;
     font-size: 12px;
@@ -11,26 +11,36 @@
     display: flex;
     flex-wrap: wrap;
     .item {
-      width: 33.333%;
+      width: 25%;
       display: flex;
-      flex-direction: column;
-      align-items: center;
-      justify-content: center;
-      height: 83px;
-      .logo {
-        width: 28px;
-        height: 28px;
-        margin-bottom: 10px;
+      padding: 24px;
+      border-right: 0.5px solid #D8DFEB;
+      border-top: 0.5px solid #D8DFEB;
+      position: relative;
+      .connect-chain {
+        position: absolute;
+        right: 16px;
+        top: 16px;
+        width: 16px;
+        height: 16px;
       }
-      .name {
-        color: #2D3033;
-        font-size: 14px;
-        margin: 0;
-        width: 80%;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-        text-align: center;
+      .logo {
+        width: 32px;
+        height: 32px;
+        border-radius: 4px;
+      }
+      &:nth-child(4n) {
+        border-right: none;
+      }
+      &:nth-child(-n+4) {
+        border-top: none;
+        padding-top: 8px;
+        .connect-chain {
+          top: 0;
+        }
+      }
+      &:nth-last-child(-n+4) {
+        padding-bottom: 8px;
       }
     }
   }
@@ -42,11 +52,13 @@
     transform: translateX(-70px);
   }
   .current-connection {
-    width: 85%;
-    position: absolute;
-    left: 50%;
-    transform: translateX(-50%);
-    bottom: 28px;
+    width: 344px;
+    height: 56px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 44px;
+    margin-left: -12px;
     background: #FFFFFF;
     border-radius: 6px;
     padding: 10px 12px;
@@ -92,5 +104,20 @@
         margin-right: 4px;
       }
     }
+    .chain-selector {
+      padding: 4px 12px;
+    }
+  }
+}
+
+.connect-site-popover {
+  font-size: 12px;
+  p {
+    margin-bottom: 0;
+  }
+  .origin {
+    color: #2D3033;
+    margin-bottom: 4px;
+    font-weight: 500;
   }
 }

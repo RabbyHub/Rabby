@@ -1,13 +1,10 @@
 import React, { useState, useEffect } from 'react';
-import { Tooltip } from 'antd';
-import { useHistory } from 'react-router-dom';
+import { Popover } from 'antd';
 import { browser } from 'webextension-polyfill-ts';
-import { useWallet, useApproval, getCurrentConnectSite } from 'ui/utils';
+import { useWallet, getCurrentConnectSite } from 'ui/utils';
 import { ConnectedSite } from 'background/service/permission';
 import { ChainSelector } from 'ui/component';
-import { CHAINS_ENUM } from 'consts';
-import IconNoData from 'ui/assets/no-data.svg';
-import IconAllSites from 'ui/assets/all-sites.svg';
+import { CHAINS_ENUM, CHAINS } from 'consts';
 import IconInternet from 'ui/assets/internet.svg';
 import './style.less';
 
@@ -31,7 +28,7 @@ const CurrentConnection = ({
   const NoConnected = () => (
     <p className="not-connected">
       <img src={IconInternet} className="icon icon-no-connect" />
-      Not connected
+      Not connected to current website
     </p>
   );
   const Connected = () => (
@@ -59,36 +56,53 @@ const ConnectionItem = ({
   item,
   onClick,
 }: {
-  item: ConnectedSite;
+  item: ConnectedSite | null;
   onClick?(): void;
 }) => {
-  return (
-    <div
-      className="item"
-      onClick={onClick}
-      style={{ cursor: onClick ? 'pointer' : 'inherit' }}
-    >
-      <Tooltip title={item.origin} placement="topLeft">
-        <img src={item.icon} className="logo" />
-      </Tooltip>
-      <p className="name">{item.name}</p>
+  if (!item) {
+    return (
+      <div
+        className="item"
+        onClick={onClick}
+        style={{ cursor: onClick ? 'pointer' : 'inherit' }}
+      >
+        <img src="/images/no-recent-connect.png" className="logo" />
+      </div>
+    );
+  }
+  const popoverContent = (
+    <div className="connect-site-popover">
+      <p className="origin">{item.origin}</p>
+      <p className="text-gray-content">{item.name}</p>
     </div>
+  );
+  return (
+    <Popover content={popoverContent} placement="topLeft">
+      <div
+        className="item"
+        onClick={onClick}
+        style={{ cursor: onClick ? 'pointer' : 'inherit' }}
+      >
+        <img
+          className="connect-chain"
+          src={CHAINS[item.chain].logo}
+          alt={CHAINS[item.chain].name}
+        />
+        <img src={item.icon} className="logo" />
+      </div>
+    </Popover>
   );
 };
 
 export default () => {
-  const history = useHistory();
-  const [connections, setConnections] = useState<ConnectedSite[]>([]);
+  const [connections, setConnections] = useState<(ConnectedSite | null)[]>([]);
   const [currentConnect, setCurrentConnect] = useState<
     ConnectedSite | null | undefined
   >(null);
   const wallet = useWallet();
 
-  const handleClickAllSites = () => {
-    history.push('/settings/sites');
-  };
-
-  const handleClickConnection = (connection: ConnectedSite) => {
+  const handleClickConnection = (connection: ConnectedSite | null) => {
+    if (!connection) return;
     browser.tabs.create({
       url: connection.origin,
     });
@@ -111,35 +125,15 @@ export default () => {
 
   return (
     <div className="recent-connections">
-      <p className="title mb-0">
-        {connections.length > 0
-          ? 'Recently connected'
-          : 'Not connected to any sites yet'}
-      </p>
-      {connections.length > 0 ? (
-        <div className="list">
-          {connections.map((item) => (
-            <ConnectionItem
-              item={item}
-              key={item.origin}
-              onClick={() => handleClickConnection(item)}
-            />
-          ))}
-          {connections.length >= 5 && (
-            <ConnectionItem
-              onClick={handleClickAllSites}
-              item={{
-                origin: 'all',
-                name: 'All Sites',
-                icon: IconAllSites,
-                chain: CHAINS_ENUM.ETH,
-              }}
-            />
-          )}
-        </div>
-      ) : (
-        <img className="icon icon-no-data" src={IconNoData} />
-      )}
+      <div className="list">
+        {connections.map((item) => (
+          <ConnectionItem
+            item={item}
+            key={item?.origin || Date.now() * Math.random()}
+            onClick={() => handleClickConnection(item)}
+          />
+        ))}
+      </div>
       <CurrentConnection site={currentConnect} onChange={getCurrentSite} />
     </div>
   );

@@ -63,7 +63,16 @@ export class WalletController extends BaseController {
 
   getConnectedSite = permissionService.getConnectedSite;
   getConnectedSites = permissionService.getConnectedSites;
-  getRecentConnectedSites = permissionService.getRecentConnectSites;
+  getRecentConnectedSites = () => {
+    const max = 12;
+    let list: (ConnectedSite | null)[] = permissionService.getRecentConnectSites(
+      max
+    );
+    if (list.length < max) {
+      list = [...list, ...Array(max - list.length).fill(null)];
+    }
+    return list;
+  };
   getCurrentConnectedSite = (tabId: number) => {
     const { origin } = sessionService.getSession(tabId) || {};
     return permissionService.getWithoutUpdate(origin);
