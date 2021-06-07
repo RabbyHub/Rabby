@@ -44,7 +44,12 @@ const GasSelector = ({ gas, nativeToken, tx, onChange }: GasSelectorProps) => {
 
   const handleShowSelectModal = () => {
     setCustomGas(Number(tx.gasPrice));
-    setSelectGas(null);
+    setSelectGas({
+      level: 'custom',
+      price: Number(tx.gasPrice),
+      front_tx_count: 0,
+      estimated_seconds: 0,
+    });
     setModalVisible(true);
   };
 

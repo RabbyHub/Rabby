@@ -19,27 +19,29 @@ const BalanceView = ({ currentAccount }) => {
 
   const balancePopoverContent = (
     <ul className="balance-popover">
-      {chainBalances.map((item) => {
-        const totalUSDValue = chainBalances.reduce((res, item) => {
-          return res + item.usd_value;
-        }, 0);
-        const chain = Object.values(CHAINS).find(
-          (v) => v.serverId === item.id
-        )!;
-        const percent = (item.usd_value / totalUSDValue) * 100;
-        return (
-          <li className="flex">
-            <img className="chain-logo" src={chain.logo} />
-            <span className="amount">
-              ${splitNumberByStep(item.usd_value.toFixed(2))}
-            </span>
-            <div className="progress">
-              <div className="inner" style={{ width: percent + '%' }}></div>
-            </div>
-            <span className="percent">{Math.floor(percent)}%</span>
-          </li>
-        );
-      })}
+      {chainBalances
+        .sort((a, b) => b.usd_value - a.usd_value)
+        .map((item) => {
+          const totalUSDValue = chainBalances.reduce((res, item) => {
+            return res + item.usd_value;
+          }, 0);
+          const chain = Object.values(CHAINS).find(
+            (v) => v.serverId === item.id
+          )!;
+          const percent = (item.usd_value / totalUSDValue) * 100;
+          return (
+            <li className="flex">
+              <img className="chain-logo" src={chain.logo} />
+              <span className="amount">
+                ${splitNumberByStep(item.usd_value.toFixed(2))}
+              </span>
+              <div className="progress">
+                <div className="inner" style={{ width: percent + '%' }}></div>
+              </div>
+              <span className="percent">{Math.floor(percent)}%</span>
+            </li>
+          );
+        })}
     </ul>
   );
 
