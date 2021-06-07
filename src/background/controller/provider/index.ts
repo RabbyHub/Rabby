@@ -18,8 +18,8 @@ export default async (req) => {
     return internalMethod[method](req);
   }
 
-  const accounts = await keyringService.getAccounts();
-  if (!accounts.length) {
+  const hasVault = await keyringService.hasVault();
+  if (!hasVault) {
     throw ethErrors.provider.userRejectedRequest({
       message: 'wallet must has at least one account',
     });

@@ -83,7 +83,11 @@ class KeyringService extends EventEmitter {
   }
 
   isBooted() {
-    return this.store.getState().booted;
+    return !!this.store.getState().booted;
+  }
+
+  hasVault() {
+    return !!this.store.getState().vault;
   }
 
   /**
