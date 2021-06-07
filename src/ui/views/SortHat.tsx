@@ -26,7 +26,7 @@ const SortHat = () => {
     }
 
     if (!wallet.isBooted()) {
-      setTo('/password');
+      setTo('/welcome');
       return;
     }
 

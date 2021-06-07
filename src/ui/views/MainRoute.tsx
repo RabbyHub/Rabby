@@ -2,6 +2,7 @@ import React from 'react';
 import { Switch, Route } from 'react-router-dom';
 import ReactGA, { ga } from 'react-ga';
 
+import Welcome from './Welcome';
 import NoAddress from './NoAddress';
 import CreatePassword from './CreatePassword';
 
@@ -39,6 +40,9 @@ const Main = () => {
     <>
       <Route path="/" component={LogPageView} />
       <Switch>
+        <Route exact path="/welcome">
+          <Welcome />
+        </Route>
         <Route exact path="/password">
           <CreatePassword />
         </Route>

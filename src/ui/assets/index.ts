@@ -16,3 +16,5 @@ export { ReactComponent as SvgIconLedger } from './ledger.svg';
 export { ReactComponent as SvgIconTrezor } from './trezor.svg';
 export { ReactComponent as SvgIconOnekey } from './onekey.svg';
 export { ReactComponent as IconArrowDown } from './arrow-down-gray.svg';
+
+export { default as ImgUnlock } from './unlock.png';

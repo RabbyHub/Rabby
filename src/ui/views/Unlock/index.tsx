@@ -1,8 +1,7 @@
 import React, { useEffect } from 'react';
 import { useState, useRef } from 'react';
-import { Input, Form } from 'antd';
+import { Input, Form, Button } from 'antd';
 import { useWallet, useApproval } from 'ui/utils';
-import { StrayPageWithButton } from 'ui/component';
 
 import './style.less';
 
@@ -29,18 +28,10 @@ const Unlock = () => {
 
   return (
     <div className="unlock">
-      <div className="header"></div>
-      <StrayPageWithButton
-        header={{
-          title: 'Welcome back',
-          subTitle: 'input your password to unlock',
-        }}
-        onSubmit={onSubmit}
-        NextButtonText="Unlock"
-        form={form}
-      >
+      <div className="header" />
+      <Form className="bg-gray-bg flex-1" form={form} onFinish={onSubmit}>
         <Form.Item
-          className="mb-0"
+          className="mt-[34px] mx-28"
           name="password"
           rules={[
             {
@@ -58,7 +49,15 @@ const Unlock = () => {
             ref={inputEl}
           />
         </Form.Item>
-      </StrayPageWithButton>
+        <Button
+          htmlType="submit"
+          type="primary"
+          size="large"
+          className="w-[200px] block mx-auto mt-24"
+        >
+          Unlock
+        </Button>
+      </Form>
     </div>
   );
 };

@@ -26,9 +26,9 @@ const StrayPage = ({
     spinning={spinning}
     size="large"
     className={cx(
-      'stray-page relative flex flex-col',
-      'sm:pt-28 sm:h-full sm:bg-gray-bg',
-      'lg:pt-[60px] lg:bg-gray-bg lg:w-[993px] lg:max-h-full lg:mt-[150px] lg:rounded-md lg:mx-auto',
+      'stray-page relative flex flex-col bg-gray-bg',
+      'sm:pt-28 sm:h-full',
+      'lg:pt-[60px] lg:w-[993px] lg:max-h-full lg:mt-[150px] lg:rounded-md lg:mx-auto',
       className
     )}
   >
