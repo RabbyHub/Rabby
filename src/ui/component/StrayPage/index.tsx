@@ -70,7 +70,7 @@ export const StrayPageWithButton = ({
 }: StrayPageWithButtonProps & StrayFooterNavProps) => (
   <StrayPage header={header} className={className} spinning={spinning}>
     <Form
-      className="flex-1 overflow-auto"
+      className="flex-1 overflow-auto pb-[124px]"
       form={form}
       onFinish={onSubmit}
       initialValues={initialValues}

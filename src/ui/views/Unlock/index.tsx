@@ -1,5 +1,5 @@
 import React, { useEffect } from 'react';
-import { useState, useRef } from 'react';
+import { useRef } from 'react';
 import { Input, Form, Button } from 'antd';
 import { useWallet, useApproval } from 'ui/utils';
 
@@ -8,7 +8,6 @@ import './style.less';
 const Unlock = () => {
   const wallet = useWallet();
   const [, resolveApproval] = useApproval();
-  const [error, setErr] = useState('');
   const [form] = Form.useForm();
   const inputEl = useRef<Input>(null);
 
@@ -22,7 +21,12 @@ const Unlock = () => {
       await wallet.unlock(password);
       resolveApproval();
     } catch (err) {
-      setErr(err?.message || 'incorrect password');
+      form.setFields([
+        {
+          name: 'password',
+          errors: [err?.message || 'incorrect password'],
+        },
+      ]);
     }
   };
 
@@ -39,8 +43,6 @@ const Unlock = () => {
               message: 'Please input Password',
             },
           ]}
-          validateStatus={error ? 'error' : undefined}
-          help={error}
         >
           <Input
             placeholder="Password"
@@ -49,14 +51,16 @@ const Unlock = () => {
             ref={inputEl}
           />
         </Form.Item>
-        <Button
-          htmlType="submit"
-          type="primary"
-          size="large"
-          className="w-[200px] block mx-auto mt-24"
-        >
-          Unlock
-        </Button>
+        <Form.Item>
+          <Button
+            className="w-[200px] block mx-auto mt-18"
+            htmlType="submit"
+            type="primary"
+            size="large"
+          >
+            Unlock
+          </Button>
+        </Form.Item>
       </Form>
     </div>
   );
