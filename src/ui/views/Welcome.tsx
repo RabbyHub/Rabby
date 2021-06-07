@@ -1,7 +1,7 @@
 import React from 'react';
 import { Button } from 'antd';
 import { Link } from 'react-router-dom';
-import { ImgUnlock } from 'ui/assets';
+import { ImgWelcome } from 'ui/assets';
 
 const Welcome = () => {
   return (
@@ -14,7 +14,7 @@ const Welcome = () => {
     >
       <div
         className="bg-center bg h-[400px] pt-[304px] text-center text-white text-20 bg-no-repeat"
-        style={{ backgroundImage: `url(${ImgUnlock})` }}
+        style={{ backgroundImage: `url(${ImgWelcome})` }}
       >
         A browser plugin for DeFi users
       </div>

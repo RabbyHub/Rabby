@@ -1,6 +1,8 @@
 // https://github.com/MetaMask/eth-simple-keyring#the-keyring-class-protocol
 import { EventEmitter } from 'events';
 import { ethErrors } from 'eth-rpc-errors';
+import { isAddress } from 'web3-utils';
+import { addHexPrefix } from 'background/utils';
 
 const keyringType = 'Watch Address';
 
@@ -32,16 +34,22 @@ class WatchKeyring extends EventEmitter {
   };
 
   addAccounts = async () => {
-    if (!this.accountToAdd) {
-      return;
+    if (!isAddress(this.accountToAdd)) {
+      throw new Error("The account you're are trying to import is a invalid");
     }
-    if (this.accounts.includes(this.accountToAdd)) {
+    const prefixedAddress = addHexPrefix(this.accountToAdd);
+
+    if (
+      this.accounts
+        .map((x) => x.toLowerCase())
+        .includes(prefixedAddress.toLowerCase())
+    ) {
       throw new Error("The account you're are trying to import is a duplicate");
     }
 
-    this.accounts.push(this.accountToAdd);
+    this.accounts.push(prefixedAddress);
 
-    return [this.accountToAdd];
+    return [prefixedAddress];
   };
 
   // pull the transaction current state, then resolve or reject

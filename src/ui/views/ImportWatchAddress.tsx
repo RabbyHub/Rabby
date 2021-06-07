@@ -2,15 +2,15 @@ import React from 'react';
 import { Input, Form } from 'antd';
 import { useHistory } from 'react-router-dom';
 import { StrayPageWithButton } from 'ui/component';
-import { useWallet } from 'ui/utils';
+import { useWallet, useWalletRequest } from 'ui/utils';
 
 const ImportWatchAddress = () => {
   const history = useHistory();
   const wallet = useWallet();
+  const [form] = Form.useForm();
 
-  const onSubmit = async ({ address }) => {
-    try {
-      const accounts = await wallet.importWatchAddress(address);
+  const [run, loading] = useWalletRequest(wallet.importWatchAddress, {
+    onSuccess(accounts) {
       history.replace({
         pathname: '/import/success',
         state: {
@@ -18,10 +18,16 @@ const ImportWatchAddress = () => {
           title: 'Successfully created',
         },
       });
-    } catch (err) {
-      console.error('err', err);
-    }
-  };
+    },
+    onError(err) {
+      form.setFields([
+        {
+          name: 'address',
+          errors: [err?.message || 'Not a valid address'],
+        },
+      ]);
+    },
+  });
 
   return (
     <StrayPageWithButton
@@ -29,16 +35,18 @@ const ImportWatchAddress = () => {
         secondTitle: 'Watch Mode',
         subTitle: 'Enter an address without providing private key',
       }}
-      onSubmit={onSubmit}
+      onSubmit={({ address }) => run(address)}
+      spinning={loading}
+      form={form}
       hasBack
       hasDivider
     >
       <Form.Item
         name="address"
         rules={[{ required: true, message: 'Please input address' }]}
-        className="mt-[56px]"
+        className="mt-56"
       >
-        <Input placeholder="Address" size="large" />
+        <Input placeholder="Address" size="large" maxLength={44} />
       </Form.Item>
     </StrayPageWithButton>
   );

@@ -1,19 +1,16 @@
-import React, { useState } from 'react';
+import React from 'react';
 import { Input, Form } from 'antd';
 import { useHistory } from 'react-router-dom';
 import { StrayPageWithButton, Uploader } from 'ui/component';
-import { useWallet } from 'ui/utils';
+import { useWallet, useWalletRequest } from 'ui/utils';
 
 const ImportJson = () => {
   const history = useHistory();
-  const [importing, setImporting] = useState(false);
   const [form] = Form.useForm();
   const wallet = useWallet();
 
-  const onSubmit = async ({ keyStore, password }) => {
-    try {
-      setImporting(true);
-      const accounts = await wallet.importJson(keyStore, password);
+  const [run, loading] = useWalletRequest(wallet.importJson, {
+    onSuccess(accounts) {
       history.replace({
         pathname: '/import/success',
         state: {
@@ -21,10 +18,16 @@ const ImportJson = () => {
           title: 'Successfully created',
         },
       });
-    } finally {
-      setImporting(false);
-    }
-  };
+    },
+    onError(err) {
+      form.setFields([
+        {
+          name: 'password',
+          errors: [err?.message || 'Wrong password'],
+        },
+      ]);
+    },
+  });
 
   return (
     <StrayPageWithButton
@@ -33,14 +36,14 @@ const ImportJson = () => {
         subTitle:
           'Select the keystore file you want to import and enter the corresponding password',
       }}
-      onSubmit={onSubmit}
+      onSubmit={({ keyStore, password }) => run(keyStore, password)}
       form={form}
-      spinning={importing}
+      spinning={loading}
       hasBack
       hasDivider
     >
       <Form.Item
-        className="mx-auto mt-32 mb-[56px]"
+        className="mx-auto mt-32 mb-56"
         name="keyStore"
         valuePropName="file"
       >

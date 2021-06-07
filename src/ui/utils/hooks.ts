@@ -103,3 +103,34 @@ export const useSelectOption = (
 
   return [_value, handleRemove, handleChoose, handleToggle];
 };
+
+export const useWalletRequest = (
+  requestFn,
+  {
+    onSuccess,
+    onError,
+  }: {
+    onSuccess?(arg: any): void;
+    onError?(arg: any): void;
+  }
+) => {
+  const [loading, setLoading] = useState<boolean>(false);
+  const [res, setRes] = useState();
+  const [err, setErr] = useState();
+
+  const run = async (...args) => {
+    setLoading(true);
+    try {
+      const _res = await Promise.resolve(requestFn(...args));
+      setRes(_res);
+      onSuccess && onSuccess(_res);
+    } catch (err) {
+      setErr(err);
+      onError && onError(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return [run, loading, res, err] as const;
+};

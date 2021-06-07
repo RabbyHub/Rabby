@@ -2,10 +2,10 @@
 
 import { EventEmitter } from 'events';
 import log from 'loglevel';
+import encryptor from 'browser-passworder';
 import * as ethUtil from 'ethereumjs-util';
 import * as bip39 from 'bip39';
 import { ObservableStore } from '@metamask/obs-store';
-import encryptor from 'browser-passworder';
 import { normalize as normalizeAddress } from 'eth-sig-util';
 import LedgerBridgeKeyring from '@metamask/eth-ledger-bridge-keyring';
 import SimpleKeyring from 'eth-simple-keyring';
