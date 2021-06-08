@@ -44,9 +44,13 @@ const ImportWatchAddress = () => {
       <Form.Item
         name="address"
         rules={[{ required: true, message: 'Please input address' }]}
-        className="mt-56"
       >
-        <Input placeholder="Address" size="large" maxLength={44} />
+        <Input.TextArea
+          className="h-[124px]"
+          placeholder="Address"
+          size="large"
+          maxLength={44}
+        />
       </Form.Item>
     </StrayPageWithButton>
   );

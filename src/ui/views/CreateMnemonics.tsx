@@ -37,12 +37,12 @@ const DisplayMnemonic = ({ mnemonics, onNextClick }) => (
     onNextClick={onNextClick}
   >
     <div
-      className="h-[180px] rounded-lg flex bg-white text-center items-center text-20 font-medium mt-32 p-40"
+      className="h-[180px] rounded-lg flex bg-white text-center items-center text-20 font-medium p-40"
       style={{ wordSpacing: '8px' }}
     >
       {mnemonics}
     </div>
-    <div className="mt-16 text-red text-12 text-center px-40">
+    <div className="mt-16 text-red-light text-13 text-center px-40 font-medium">
       Be sure to save the mnemonic phrase, it cannot be retrieved after loss！
     </div>
   </StrayPageWithButton>

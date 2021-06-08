@@ -43,7 +43,6 @@ const ImportPrivateKey = () => {
       <Form.Item
         name="key"
         rules={[{ required: true, message: 'Please input Private key' }]}
-        className="mt-56"
       >
         <Input placeholder="Private key" size="large" />
       </Form.Item>

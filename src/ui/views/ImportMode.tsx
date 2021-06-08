@@ -60,7 +60,7 @@ const ImportMode = () => {
       hasBack
       hasDivider
     >
-      <div className="mt-56">
+      <div className="mt-20">
         {modes.map((e) => (
           <FieldCheckbox
             key={e.name}

@@ -42,11 +42,7 @@ const ImportJson = () => {
       hasBack
       hasDivider
     >
-      <Form.Item
-        className="mx-auto mt-32 mb-56"
-        name="keyStore"
-        valuePropName="file"
-      >
+      <Form.Item className="mx-auto mt-24" name="keyStore" valuePropName="file">
         <Uploader
           className="mx-auto w-[260px] h-[128px]"
           onChange={({ file }) => {

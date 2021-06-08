@@ -20,7 +20,7 @@ const NoAddress = () => {
           Please add your address via one of the following methods
         </div>
       </div>
-      <div className="pt-40 px-28">
+      <div className="pt-[87px] px-28">
         <AddAddressOptions />
       </div>
     </div>

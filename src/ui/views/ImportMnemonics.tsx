@@ -32,7 +32,7 @@ const ImportMnemonic = () => {
   return (
     <StrayPageWithButton
       header={{
-        title: 'Enter Your Mnemonic',
+        secondTitle: 'Enter Your Mnemonic',
       }}
       spinning={loading}
       form={form}
@@ -43,7 +43,6 @@ const ImportMnemonic = () => {
       <Form.Item
         name="mnemonics"
         rules={[{ required: true, message: 'Please input Mnemonics' }]}
-        className="mt-56"
       >
         <Input.TextArea className="h-[124px]" placeholder="Mnemonics words" />
       </Form.Item>

@@ -95,16 +95,21 @@ export class WalletController extends BaseController {
   clearKeyrings = () => keyringService.clearKeyrings();
 
   importWatchAddress = async (address) => {
-    let keyring;
+    let keyring, isNewKey;
     const keyringType = KEYRING_CLASS.WATCH;
     try {
       keyring = this._getKeyringByType(keyringType);
     } catch {
-      keyring = await keyringService.addNewKeyring(keyringType);
+      const WatchKeyring = keyringService.getKeyringClassForType(keyringType);
+      keyring = new WatchKeyring();
+      isNewKey = true;
     }
 
     keyring.setAccountToAdd(address);
     await keyringService.addNewAccount(keyring);
+    if (isNewKey) {
+      await keyringService.addKeyring(keyring);
+    }
     return this._setCurrentAccountFromKeyring(keyring, -1);
   };
 

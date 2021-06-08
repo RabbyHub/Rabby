@@ -4,7 +4,7 @@ module.exports = {
   mode: 'jit',
   purge: ['./src/ui/**/*.{ts,tsx,html}'],
   theme: {
-    spacing: [0, 1, 2, 4, 8, 10, 12, 14, 16, 18, 20, 24, 28, 32, 40, 56].reduce(
+    spacing: [0, 1, 2, 4, 8, 10, 12, 14, 16, 18, 20, 24, 28, 32, 40, 60].reduce(
       (m, n) => {
         m[n] = `${n}px`;
         return m;
@@ -28,7 +28,10 @@ module.exports = {
       white: colors.white,
       yellow: '#F29C1B',
       pink: '#F24822',
-      red: '#AF160E',
+      red: {
+        light: '#F24822',
+        DEFAULT: '#AF160E',
+      },
       gray: {
         bg2: '#F6F7F9',
         bg: '#F0F2F5',
