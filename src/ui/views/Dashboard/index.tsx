@@ -70,7 +70,7 @@ const SwitchAddress = ({
         onClick={changeAccount}
       />
       <div className="footer">
-        <Link to="/add-address">
+        <Link to="/settings/address">
           <img src={IconAdd} className="icon icon-add" />
           Manage addresses
         </Link>
