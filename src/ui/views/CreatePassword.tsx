@@ -48,6 +48,7 @@ const CreatePassword = () => {
       </Form.Item>
       <Form.Item
         name="confirmPassword"
+        help="123123"
         rules={[
           { required: true, message: 'Please confirm Password.' },
           ({ getFieldValue }) => ({
