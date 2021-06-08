@@ -1,4 +1,3 @@
-export * from './encode';
 export { default as createPersistStore } from './persisitStore';
 
 // {a:{b: string}} => {1: 'a.b'}

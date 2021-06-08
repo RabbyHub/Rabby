@@ -2,7 +2,7 @@
 import { EventEmitter } from 'events';
 import { ethErrors } from 'eth-rpc-errors';
 import { isAddress } from 'web3-utils';
-import { addHexPrefix } from 'background/utils';
+import { addHexPrefix } from 'ethereumjs-util';
 
 const keyringType = 'Watch Address';
 

@@ -86,6 +86,9 @@ const AddressItem = ({
   className,
   onClick,
 }: AddressItemProps) => {
+  if (!account) {
+    return null;
+  }
   const [balance, chainBalances] = useCurrentBalance(account);
 
   return (

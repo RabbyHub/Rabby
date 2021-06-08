@@ -61,7 +61,9 @@ const BalanceView = ({ currentAccount }) => {
           ) : isNaN(balance) ? (
             <>
               <IconOffline className="mr-4" />
-              The network is disconnected and no data is obtained
+              <span className="leading-tight">
+                The network is disconnected and no data is obtained
+              </span>
             </>
           ) : chainBalances.length > 0 ? (
             <Popover content={balancePopoverContent} placement="bottomLeft">

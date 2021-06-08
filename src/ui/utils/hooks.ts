@@ -114,6 +114,14 @@ export const useWalletRequest = (
     onError?(arg: any): void;
   }
 ) => {
+  const mounted = useRef(false);
+  useEffect(() => {
+    mounted.current = true;
+
+    return () => {
+      mounted.current = false;
+    };
+  }, []);
   const [loading, setLoading] = useState<boolean>(false);
   const [res, setRes] = useState();
   const [err, setErr] = useState();
@@ -122,13 +130,21 @@ export const useWalletRequest = (
     setLoading(true);
     try {
       const _res = await Promise.resolve(requestFn(...args));
+      if (!mounted.current) {
+        return;
+      }
       setRes(_res);
       onSuccess && onSuccess(_res);
     } catch (err) {
+      if (!mounted.current) {
+        return;
+      }
       setErr(err);
       onError && onError(err);
     } finally {
-      setLoading(false);
+      if (mounted.current) {
+        setLoading(false);
+      }
     }
   };
 

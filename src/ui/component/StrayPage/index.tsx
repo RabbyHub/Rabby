@@ -74,6 +74,7 @@ export const StrayPageWithButton = ({
       form={form}
       onFinish={onSubmit}
       initialValues={initialValues}
+      autoComplete="off"
     >
       {children}
       <StrayFooter.Nav

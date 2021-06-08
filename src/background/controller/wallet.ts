@@ -13,7 +13,6 @@ import {
 } from 'background/service';
 import { openIndexPage } from 'background/webapi/tab';
 import { KEYRING_CLASS, DisplayedKeryring } from 'background/service/keyring';
-import { addHexPrefix } from 'background/utils';
 import BaseController from './base';
 import { CHAINS_ENUM, CHAINS } from 'consts';
 import { Account } from '../service/preference';
@@ -110,7 +109,7 @@ export class WalletController extends BaseController {
   };
 
   importPrivateKey = async (data) => {
-    const prefixed = addHexPrefix(data);
+    const prefixed = ethUtil.addHexPrefix(data);
     const buffer = ethUtil.toBuffer(prefixed);
 
     if (!ethUtil.isValidPrivate(buffer)) {
@@ -126,6 +125,12 @@ export class WalletController extends BaseController {
   // or "https://github.com/ethereum/wiki/wiki/Web3-Secret-Storage-Definition"
   // for example: https://www.myetherwallet.com/create-wallet
   importJson = async (content: string, password: string) => {
+    try {
+      JSON.parse(content);
+    } catch {
+      throw new Error('the input file is invalid');
+    }
+
     let wallet;
     try {
       wallet = thirdparty.fromEtherWallet(content, password);
@@ -308,6 +313,10 @@ export class WalletController extends BaseController {
   private async _setCurrentAccountFromKeyring(keyring, index = 0) {
     const accounts = await keyring.getAccounts();
     const account = accounts[index < 0 ? index + accounts.length : index];
+
+    if (!account) {
+      throw new Error('the current account is empty');
+    }
 
     const _account = {
       address: account,
