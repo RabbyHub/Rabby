@@ -109,14 +109,18 @@ export class WalletController extends BaseController {
   };
 
   importPrivateKey = async (data) => {
-    const prefixed = ethUtil.addHexPrefix(data);
-    const buffer = ethUtil.toBuffer(prefixed);
+    const privateKey = ethUtil.stripHexPrefix(data);
+    const buffer = Buffer.from(privateKey, 'hex');
 
-    if (!ethUtil.isValidPrivate(buffer)) {
-      throw new Error('Cannot import invalid private key.');
+    const error = new Error('the private key is invalid');
+    try {
+      if (!ethUtil.isValidPrivate(buffer)) {
+        throw error;
+      }
+    } catch {
+      throw error;
     }
 
-    const privateKey = ethUtil.stripHexPrefix(prefixed);
     const keyring = await keyringService.importPrivateKey(privateKey);
     return this._setCurrentAccountFromKeyring(keyring);
   };
@@ -210,9 +214,8 @@ export class WalletController extends BaseController {
   };
 
   getAccountsCount = async () => {
-    return await keyringService.keyrings.reduce(async (count, keyring) => {
-      return count + (await keyring.getAccounts()).length;
-    }, 0);
+    const accounts = await keyringService.getAccounts();
+    return accounts.filter((x) => x).length;
   };
 
   getTypedAccounts = async (type) => {
