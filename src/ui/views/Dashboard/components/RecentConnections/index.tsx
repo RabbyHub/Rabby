@@ -1,5 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Popover } from 'antd';
+// import positions from 'positions';
 import { browser } from 'webextension-polyfill-ts';
 import { useWallet, getCurrentConnectSite } from 'ui/utils';
 import { ConnectedSite } from 'background/service/permission';
@@ -7,6 +8,7 @@ import { ChainSelector } from 'ui/component';
 import { CHAINS_ENUM, CHAINS } from 'consts';
 import IconInternet from 'ui/assets/internet.svg';
 import './style.less';
+import { TooltipPlacement } from 'antd/lib/tooltip';
 
 const CurrentConnection = ({
   site,
@@ -55,9 +57,11 @@ const CurrentConnection = ({
 const ConnectionItem = ({
   item,
   onClick,
+  index,
 }: {
   item: ConnectedSite | null;
   onClick?(): void;
+  index: number;
 }) => {
   if (!item) {
     return (
@@ -70,18 +74,62 @@ const ConnectionItem = ({
       </div>
     );
   }
+
+  const triggerEl = useRef<HTMLDivElement>(null);
   const popoverContent = (
     <div className="connect-site-popover">
       <p className="origin">{item.origin}</p>
       <p className="text-gray-content">{item.name}</p>
     </div>
   );
+  /* for backup
+  const handlePopoverVisibleChange = (visible: boolean) => {
+    if (visible) {
+      setTimeout(() => {
+        // currently workaround for https://github.com/ant-design/ant-design/issues/7038
+        // TODO: create PR to antd to fix this
+        const el = document.querySelector(
+          '.ant-popover:not(.ant-popover-hidden)'
+        )!;
+        const onAnimationEnd = function (this: HTMLDivElement) {
+          const arrowCopy = document
+            .querySelector('.ant-popover:not(.ant-popover-hidden)')!
+            .querySelector<HTMLDivElement>('.ant-popover-arrow')!;
+          const css = positions(
+            arrowCopy,
+            'bottom center',
+            triggerEl.current,
+            'top center'
+          );
+          const { left } = css;
+          console.log(left);
+          arrowCopy.style.left = left + 'px';
+          arrowCopy.style.transform = 'rotate(45deg)';
+          el.removeEventListener('animationend', onAnimationEnd);
+        };
+        el.addEventListener('animationend', onAnimationEnd);
+      });
+    }
+  };
+  */
+  let placement: TooltipPlacement = 'top';
+  if (index % 4 === 0) {
+    placement = 'right';
+  } else if (index % 4 === 3) {
+    placement = 'left';
+  }
   return (
-    <Popover content={popoverContent} placement="topLeft">
+    <Popover
+      content={popoverContent}
+      placement={placement}
+      arrowPointAtCenter
+      // onVisibleChange={handlePopoverVisibleChange}
+    >
       <div
         className="item"
         onClick={onClick}
         style={{ cursor: onClick ? 'pointer' : 'inherit' }}
+        ref={triggerEl}
       >
         <img
           className="connect-chain"
@@ -126,8 +174,9 @@ export default () => {
   return (
     <div className="recent-connections">
       <div className="list">
-        {connections.map((item) => (
+        {connections.map((item, index) => (
           <ConnectionItem
+            index={index}
             item={item}
             key={item?.origin || Date.now() * Math.random()}
             onClick={() => handleClickConnection(item)}
