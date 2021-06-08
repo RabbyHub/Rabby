@@ -65,6 +65,7 @@
     .connected {
       display: flex;
       align-items: center;
+      width: 100%;
       .logo {
         width: 28px;
         height: 28px;
@@ -106,14 +107,17 @@
     }
     .chain-selector {
       padding: 4px 12px;
+      border-left: 0.5px solid #D8DFEB;
     }
   }
 }
 
 .connect-site-popover {
   font-size: 12px;
+  max-width: 220px;
   p {
     margin-bottom: 0;
+    word-break: break-all;
   }
   .origin {
     color: #2D3033;
