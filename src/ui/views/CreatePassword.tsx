@@ -9,7 +9,7 @@ const PASSWORD_LENGTH = [8, 20];
 const CreatePassword = () => {
   const history = useHistory();
   const wallet = useWallet();
-
+  const [form] = Form.useForm();
   const onSubmit = ({
     password,
   }: {
@@ -26,9 +26,12 @@ const CreatePassword = () => {
         title: 'Set Unlock Password',
       }}
       onSubmit={onSubmit}
+      form={form}
     >
       <Form.Item
+        className="mb-0 h-[56px] overflow-hidden"
         name="password"
+        help=""
         rules={[
           {
             required: true,
@@ -47,8 +50,9 @@ const CreatePassword = () => {
         <Input size="large" placeholder="Password" type="password" />
       </Form.Item>
       <Form.Item
+        className="mb-0 h-[56px] overflow-hidden"
         name="confirmPassword"
-        help="123123"
+        help=""
         rules={[
           { required: true, message: 'Please confirm Password.' },
           ({ getFieldValue }) => ({
@@ -62,6 +66,16 @@ const CreatePassword = () => {
         ]}
       >
         <Input size="large" placeholder="Repeat Password" type="password" />
+      </Form.Item>
+      <Form.Item shouldUpdate className="text-red-light">
+        {() => (
+          <Form.ErrorList
+            errors={form
+              .getFieldsError()
+              .map((x) => x.errors)
+              .reduce((m, n) => m.concat(n), [])}
+          />
+        )}
       </Form.Item>
     </StrayPageWithButton>
   );
