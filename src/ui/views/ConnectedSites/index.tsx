@@ -1,7 +1,7 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
 import { CloseOutlined } from '@ant-design/icons';
-import { PageHeader, Field } from 'ui/component';
+import { PageHeader, Field, FallbackSiteLogo } from 'ui/component';
 import { useWallet } from 'ui/utils';
 import { ConnectedSite } from 'background/service/permission';
 import './style.less';
@@ -42,16 +42,24 @@ const ConnectedSites = () => {
         ? sites.map((site) => (
             <Field
               key={site.origin}
-              leftIcon={<img src={site.icon} className="icon icon-site" />}
+              leftIcon={
+                <div className="icon icon-site">
+                  <FallbackSiteLogo
+                    url={site.icon}
+                    origin={site.origin}
+                    width="32px"
+                    height="32px"
+                    style={{ borderRadius: '4px' }}
+                  />
+                </div>
+              }
               rightIcon={
                 <CloseOutlined onClick={() => handleRemove(site.origin)} />
               }
             >
               <div className="site-info">
                 <p className="text-13 font-medium">{site.origin}</p>
-                <p className="text-12">
-                  {site.name} {site.name}
-                </p>
+                <p className="text-12">{site.name}</p>
               </div>
             </Field>
           ))

@@ -1,11 +1,11 @@
 import React, { useEffect, useState } from 'react';
+import { Button } from 'antd';
 import {
   SecurityCheckDecision,
   SecurityCheckResponse,
 } from 'background/service/openapi';
 import { Chain } from 'background/service/chain';
-import { Button } from 'antd';
-import { ChainSelector, Spin } from 'ui/component';
+import { ChainSelector, Spin, FallbackSiteLogo } from 'ui/component';
 import SecurityCheckBar from './SecurityCheckBar';
 import SecurityCheckDetail from './SecurityCheckDetail';
 import { useApproval, useWallet } from 'ui/utils';
@@ -85,7 +85,18 @@ const Connect = ({ params: { icon, origin, name } }: ConnectProps) => {
         <div className="font-medium text-20 text-center">Website Connect</div>
         <div className="connect-card">
           <div className="site-info">
-            <img src={icon} className="site-info__icon" />
+            <div className="site-info__icon">
+              <FallbackSiteLogo
+                url={icon}
+                origin={origin}
+                width="52px"
+                height="52px"
+                style={{
+                  borderRadius: '100%',
+                  border: '1px solid #D8DFEB',
+                }}
+              />
+            </div>
             <div className="site-info__text">
               <p className="text-15 font-medium">{origin}</p>
               <p className="text-14 text-gray-content">{name}</p>
