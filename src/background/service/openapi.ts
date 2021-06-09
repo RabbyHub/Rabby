@@ -1,6 +1,6 @@
 import axios, { Method } from 'axios';
 import rateLimit from 'axios-rate-limit';
-import { createPersistStore, underline2Camelcase } from 'background/utils';
+import { createPersistStore } from 'background/utils';
 import { TX_TYPE_ENUM } from 'consts';
 
 interface OpenApiConfigValue {
@@ -136,26 +136,6 @@ export interface GasLevel {
   estimated_seconds: number;
 }
 
-export const EVM_RPC_METHODS = [
-  'eth_blockNumber',
-  'eth_call',
-  'eth_coinbase',
-  'eth_estimateGas',
-  'eth_gasPrice',
-  'eth_getBalance',
-  'eth_getBlockByNumber',
-  'eth_getCode',
-  'eth_getLogs',
-  'eth_getProof',
-  'eth_getTransactionCount',
-  'eth_getTransactionReceipt',
-  'eth_getTransactionByHash',
-  'eth_getWork',
-  'eth_sendRawTransaction',
-  'eth_subscribe',
-  'eth_syncing',
-] as const;
-
 interface RPCResponse<T> {
   result: T;
   id: number;
@@ -166,14 +146,7 @@ interface RPCResponse<T> {
   };
 }
 
-interface OpenApiService {
-  ethCall(chainId: string, params: any[]): Promise<any>;
-  ethGetTransactionCount(chainId: string, params: any[]): Promise<any>;
-  ethBlockNumber(chainId: string): Promise<any>;
-  ethEstimateGas(chainId: string, params: any[]): Promise<number>;
-}
-
-class OpenApiService implements OpenApiService {
+class OpenApiService {
   store!: OpenApiStore;
 
   request = rateLimit(axios.create(), { maxRPS: 25 });
@@ -186,6 +159,13 @@ class OpenApiService implements OpenApiService {
   getHost = () => {
     return this.store.host;
   };
+
+  ethRpc:
+    | ((
+        chainId: string,
+        arg: { method: string; params: Array<any> }
+      ) => Promise<any>)
+    | null = null;
 
   init = async () => {
     this.store = await createPersistStore({
@@ -275,7 +255,7 @@ class OpenApiService implements OpenApiService {
     });
     try {
       await this.getConfig();
-      this._mountMethods(EVM_RPC_METHODS);
+      this._mountMethods();
     } catch (e) {
       console.error('[rabby] openapi init error', e);
     }
@@ -293,32 +273,25 @@ class OpenApiService implements OpenApiService {
     this.store.config = data;
   };
 
-  private _mountMethods = (methods: typeof EVM_RPC_METHODS) => {
-    methods.forEach((method) => {
-      const config = this.store.config[method];
+  private _mountMethods = () => {
+    const config = this.store.config.eth_rpc;
+    if (!config) {
+      return;
+    }
 
-      if (!config) {
-        return;
-      }
+    this.ethRpc = (chain_id, { method, params }) => {
+      return this.request[config.method](config.path, {
+        chain_id,
+        method,
+        params,
+      }).then(({ data }: { data: RPCResponse<any> }) => {
+        if (data?.error) {
+          throw data.error;
+        }
 
-      const [, ...rest] = config.params || [];
-      this[underline2Camelcase(method)] = (chainId, params) => {
-        const reqData = {
-          chain_id: chainId,
-          ...rest.reduce((m, n, i) => {
-            m[n] = params[i];
-
-            return m;
-          }, {}),
-        };
-
-        const _config = config.method === 'get' ? { params: reqData } : reqData;
-
-        return this.request[config.method](config.path, _config).then(
-          ({ data }: { data: RPCResponse<any> }) => data?.result
-        );
-      };
-    });
+        return data?.result;
+      });
+    };
   };
 
   getSupportedChains = async (): Promise<ServerChain[]> => {

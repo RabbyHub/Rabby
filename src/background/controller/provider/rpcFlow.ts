@@ -17,6 +17,13 @@ export default (req) =>
       ctx.mapMethod = underline2Camelcase(method);
 
       if (!providerController[ctx.mapMethod]) {
+        if (method.startsWith('eth_')) {
+          ctx.ethRpc = true;
+          // maybe return directly later
+          // providerController.ethRpc(req);
+          return;
+        }
+
         throw ethErrors.rpc.methodNotFound({
           message: `method [${method}] doesn't has corresponding handler`,
           data: ctx.request.data,
@@ -78,16 +85,18 @@ export default (req) =>
         permissionService.touchConnectedSite(origin);
       }
     })
-    .use(async ({ approvalRes, mapMethod, request }) => {
+    .use(async ({ approvalRes, mapMethod, request, ethRpc }) => {
       // process request
       const { uiRequestComponent, ...rest } = approvalRes || {};
 
-      const requestDeffer = Promise.resolve(
-        providerController[mapMethod]({
-          ...request,
-          approvalRes,
-        })
-      );
+      const requestDeffer = ethRpc
+        ? providerController.ethRpc(request)
+        : Promise.resolve(
+            providerController[mapMethod]({
+              ...request,
+              approvalRes,
+            })
+          );
 
       if (uiRequestComponent) {
         return await notificationService.requestApproval({

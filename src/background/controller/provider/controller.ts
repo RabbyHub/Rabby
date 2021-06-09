@@ -10,29 +10,25 @@ import {
   openapiService,
 } from 'background/service';
 import { Session } from 'background/service/session';
-import { EVM_RPC_METHODS, Tx } from 'background/service/openapi';
+import { Tx } from 'background/service/openapi';
 import { CHAINS } from 'consts';
-import { underline2Camelcase } from 'background/utils';
 import BaseController from '../base';
 
 class ProviderController extends BaseController {
-  constructor() {
-    super();
+  ethRpc = (req) => {
+    if (!openapiService.ethRpc) {
+      throw ethErrors.provider.disconnected();
+    }
 
-    this._mountMethods(EVM_RPC_METHODS);
-  }
+    const {
+      data: { method, params },
+      session: { origin },
+    } = req;
+    const chainServerId =
+      CHAINS[permissionService.getConnectedSite(origin)!.chain].serverId;
 
-  private _mountMethods(methods) {
-    methods.forEach((method) => {
-      const parsedMethodName = underline2Camelcase(method);
-      this[parsedMethodName] = ({ data: { params }, session: { origin } }) => {
-        const chainServerId =
-          CHAINS[permissionService.getConnectedSite(origin)!.chain].serverId;
-
-        return openapiService[parsedMethodName](chainServerId, params);
-      };
-    });
-  }
+    return openapiService.ethRpc(chainServerId, { method, params });
+  };
 
   @Reflect.metadata('APPROVAL', ['SignTx'])
   ethSendTransaction = async ({
