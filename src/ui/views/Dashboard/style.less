@@ -1,5 +1,14 @@
 @import '../../style/var.less';
 
+@keyframes spining {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}
+
 .dashboard {
   display: flex;
   flex-direction: column;
@@ -97,15 +106,28 @@
         justify-content: center;
         cursor: pointer;
         position: relative;
-        .pending-count {
-          position: absolute;
-          bottom: 2px;
-          left: 40px;
-        }
         .icon {
           width: 20px;
           height: 20px;
           margin-right: 4px;
+        }
+        .pending-count {
+          position: relative;
+          font-size: 12px;
+          text-align: center;
+          width: 24px;
+          height: 24px;
+          line-height: 24px;
+          margin-right: 4px;
+          .icon-pending {
+            animation: spining 1.5s infinite linear;
+            position: absolute;
+            left: 0;
+            top: 0;
+            width:24px;
+            height: 24px;
+            margin: 0;
+          }
         }
       }
     }
