@@ -25,19 +25,19 @@
       margin: 24px auto;
       background-color: #F6F7F9;
       border-radius: 6px;
-      padding: 16px;
+      padding: 16px 10px 10px;
       .site-info {
         display: flex;
         position: relative;
         padding-bottom: 16px;
         &::after {
-          .part-border(100% );
+          .part-border(328px);
           bottom: 0;
           left: 50%;
           transform: translateX(-50%);
         }
         .site-info__icon {
-          width: 52px;
+          width: 44px;
           margin-right: 12px;
           flex-shrink: 0;
         }
@@ -53,6 +53,9 @@
             overflow: hidden;
             text-overflow: ellipsis;
             white-space: nowrap;
+            &:nth-child(1) {
+              margin-bottom: 4px;
+            }
           }
         }
       }
@@ -60,7 +63,7 @@
         display: flex;
         justify-content: space-between;
         align-items: center;
-        padding-top: 16px;
+        padding: 16px 6px 6px;
         .chain-selector {
           padding: 0;
         }
@@ -89,6 +92,10 @@
         white-space: nowrap;
       }
     }
+  }
+
+  .approval-chain {
+    padding-top: 40px;
   }
 
   .approval-text {
