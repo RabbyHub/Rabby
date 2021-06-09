@@ -10,6 +10,7 @@ import {
 } from 'background/service/openapi';
 import SecurityCheckBar from './SecurityCheckBar';
 import SecurityCheckDetail from './SecurityCheckDetail';
+import AccountCard from './AccountCard';
 import IconQuestionMark from 'ui/assets/question-mark-gray.svg';
 
 interface SignTextProps {
@@ -93,38 +94,17 @@ const SignText = ({ params }: { params: SignTextProps }) => {
 
   return (
     <>
+      <AccountCard />
       <div className="approval-text">
-        <div className="site-card">
-          <div className="icon icon-site">
-            <FallbackSiteLogo
-              url={session.icon}
-              origin={session.origin}
-              width="32px"
-              height="32px"
-              style={{
-                borderRadius: '100%',
-                border: '1px solid #D8DFEB',
-              }}
-            />
-          </div>
-          {/* <img className="icon icon-site" src={session.icon} /> */}
-          <div className="site-info">
-            <p className="font-medium text-gray-subTitle mb-0 text-13">
-              {session.origin}
-            </p>
-            <p className="text-12 text-gray-content mb-0">{session.name}</p>
-          </div>
-        </div>
-        <h1 className="text-center">Request for Sign text</h1>
+        <p className="section-title">Sign Text</p>
         <div className="text-detail-wrapper">
-          <div className="text-detail text-14 text-gray-subTitle">
-            {signText}
-          </div>
+          <div className="text-detail text-gray-subTitle">{signText}</div>
           {explain && (
             <p className="text-explain">
               {explain}
               <Tooltip
                 placement="top"
+                overlayClassName="text-explain-tooltip"
                 title="This summary information is provide by DeBank OpenAPI"
               >
                 <img
