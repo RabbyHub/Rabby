@@ -117,6 +117,7 @@ class ProviderController extends BaseController {
           chainParams.chainId
       );
     },
+    { height: 360 },
   ])
   walletAddEthereumChain = ({
     data: {

@@ -59,7 +59,7 @@ export default (req) =>
         },
         mapMethod,
       } = ctx;
-      const [approvalType, condition] =
+      const [approvalType, condition, { height = 720 } = {}] =
         Reflect.getMetadata('APPROVAL', providerController, mapMethod) || [];
 
       if (approvalType && (!condition || !condition(ctx.request))) {
@@ -72,7 +72,7 @@ export default (req) =>
             },
             origin,
           },
-          { height: 720 }
+          { height }
         );
 
         permissionService.touchConnectedSite(origin);
