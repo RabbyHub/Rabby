@@ -79,9 +79,6 @@ const VerifyMnemonics = ({ mnemonics, onBackClick }) => {
       hasBack
       hasDivider
       onBackClick={onBackClick}
-      initialValues={{
-        mnemonics: mnemonics.split(' '),
-      }}
     >
       <Form.Item
         name="mnemonics"
@@ -89,7 +86,7 @@ const VerifyMnemonics = ({ mnemonics, onBackClick }) => {
           { required: true },
           {
             validator(_, value: []) {
-              if (!value || value.join(' ') === mnemonics) {
+              if (!value || !value.length || value.join(' ') === mnemonics) {
                 return Promise.resolve();
               }
               return Promise.reject(new Error('*Verification failed'));
@@ -97,7 +94,7 @@ const VerifyMnemonics = ({ mnemonics, onBackClick }) => {
           },
         ]}
       >
-        <TiledSelect className="h-[297px]" options={randomMnemonics} />
+        <TiledSelect options={randomMnemonics} />
       </Form.Item>
     </StrayPageWithButton>
   );

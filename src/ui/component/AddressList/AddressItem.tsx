@@ -118,7 +118,7 @@ const AddressItem = ({
             {chainBalances.map((item) => (
               <img
                 src={item.logo}
-                className="w-16 h-16 mr-[6px]"
+                className="w-16 h-16 mr-6"
                 key={item.id}
                 alt={`${item.name}: $${item.usd_value.toFixed(2)}`}
                 title={`${item.name}: $${item.usd_value.toFixed(2)}`}

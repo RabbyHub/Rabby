@@ -10,7 +10,7 @@ const type = 'HD Key Tree';
 interface DeserializeOption {
   hdPath?: string;
   mnemonic?: string;
-  walletIndexes?: number[];
+  activeIndexes?: number[];
 }
 
 class HdKeyring extends SimpleKeyring {
@@ -23,6 +23,7 @@ class HdKeyring extends SimpleKeyring {
   root: hdkey | null = null;
   wallets: Wallet[] = [];
   _index2wallet: Record<number, [string, Wallet]> = {};
+  activeIndexes: number[] = [];
   page = 0;
   perPage = 5;
 
@@ -35,7 +36,7 @@ class HdKeyring extends SimpleKeyring {
   serialize() {
     return Promise.resolve({
       mnemonic: this.mnemonic,
-      walletIndexes: Object.keys(this._index2wallet).map(Number),
+      activeIndexes: this.activeIndexes,
       hdPath: this.hdPath,
     });
   }
@@ -50,8 +51,8 @@ class HdKeyring extends SimpleKeyring {
       this.initFromMnemonic(opts.mnemonic);
     }
 
-    if (opts.walletIndexes) {
-      return this.activeAccounts(opts.walletIndexes);
+    if (opts.activeIndexes) {
+      return this.activeAccounts(opts.activeIndexes);
     }
 
     return Promise.resolve([]);
@@ -81,6 +82,7 @@ class HdKeyring extends SimpleKeyring {
       } else {
         this.wallets.push(wallet);
         newWallets.push(wallet);
+        this.activeIndexes.push(currentIdx);
         count--;
       }
     }
@@ -97,6 +99,7 @@ class HdKeyring extends SimpleKeyring {
     for (const index of indexes) {
       const [address, wallet] = this._addressFromIndex(index);
       this.wallets.push(wallet);
+      this.activeIndexes.push(index);
 
       accounts.push(address);
     }
