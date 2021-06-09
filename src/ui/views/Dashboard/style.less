@@ -24,6 +24,11 @@
       .icon-qrcode {
         margin-left: 8px;
       }
+      .icon-account-type {
+        width: 18px;
+        height: 18px;
+        margin-right: 4px;
+      }
     }
     .assets {
       margin-bottom: 31px;
@@ -142,48 +147,64 @@
 }
 
 .balance-popover {
-  margin-bottom: 0;
-  padding: 8px 0;
-  li {
-    align-items: center;
-    margin-bottom: 16px;
-    .chain-logo {
-      width: 20px;
-      height: 20px;
-      margin-right: 8px;
-    }
-    .amount {
-      color: #2D3033;
-      font-weight: 500;
-      font-size: 13px;
-      margin-right: 8px;
-      width: 90px;
-      text-align: left;
-      margin-right: 8px;
-    }
-    .progress {
-      position: relative;
-      height: 8px;
-      width: 150px;
-      background-color: #D8DFEB;
-      border-radius: 10px;
-      margin-right: 12px;
-      overflow: hidden;
-      .inner {
-        background-color: #8697FF;
-        height: 8px;
-        border-radius: 10px;
+  width: 360px;
+  left: 50% !important;
+  margin-left: -180px !important;
+  .ant-popover-arrow {
+    left: 14px !important;
+  }
+  .ant-popover-inner-content {
+    padding: 12px 8px
+  }
+  ul {
+    max-height: 300px;
+    overflow: auto;
+    margin-bottom: 0;
+    padding: 8px;
+    li {
+      align-items: center;
+      margin-bottom: 16px;
+      .chain-logo {
+        width: 20px;
+        height: 20px;
+        margin-right: 8px;
       }
-    }
-    .percent {
-      color: #818A99;
-      font-size: 13px;
-      font-weight: 500;
-      width: 25px;
-      text-align: right;
-    }
-    &:nth-last-child(1) {
-      margin-bottom: 0;
+      .amount {
+        color: #2D3033;
+        font-weight: 500;
+        font-size: 13px;
+        margin-right: 8px;
+        width: 90px;
+        text-align: left;
+        margin-right: 8px;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        flex-shrink: 0;
+      }
+      .progress {
+        position: relative;
+        height: 8px;
+        width: 150px;
+        background-color: #D8DFEB;
+        border-radius: 10px;
+        margin-right: 12px;
+        overflow: hidden;
+        .inner {
+          background-color: #8697FF;
+          height: 8px;
+          border-radius: 10px;
+        }
+      }
+      .percent {
+        color: #818A99;
+        font-size: 13px;
+        font-weight: 500;
+        width: 25px;
+        text-align: right;
+      }
+      &:nth-last-child(1) {
+        margin-bottom: 0;
+      }
     }
   }
 }
