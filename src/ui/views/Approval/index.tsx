@@ -1,14 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import { CHAINS_ENUM } from 'consts';
 import { useWallet, useApproval } from 'ui/utils';
-import { Spin } from 'ui/component';
 import * as ApprovalComponent from './components';
 import './style.less';
 
 const Approval = () => {
   const history = useHistory();
-  const [account, setAccount] = useState('');
+  // const [account, setAccount] = useState('');
   const wallet = useWallet();
   const [approval, , rejectApproval] = useApproval();
   if (!approval) {
@@ -17,12 +15,15 @@ const Approval = () => {
   }
 
   const init = async () => {
+    if (approval.origin || approval.params.origin) {
+      document.title = approval.origin || approval.params.origin;
+    }
     const account = await wallet.getCurrentAccount();
     if (!account) {
       rejectApproval();
       return;
     }
-    setAccount(account.address);
+    // setAccount(account.address);
   };
 
   useEffect(() => {
@@ -34,10 +35,10 @@ const Approval = () => {
 
   return (
     <div className="approval">
-      <header>
+      {/* <header>
         <p className="text-12">Current account</p>
         <p className="text-13 font-medium">{account}</p>
-      </header>
+      </header> */}
       <CurrentApprovalComponent
         params={params}
         origin={origin}
