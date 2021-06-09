@@ -62,7 +62,7 @@ const ImportHardware = () => {
       }}
     >
       <Spin spinning={spinning}>
-        <div className="flex mb-[60px] justify-center mr-[-80px]">
+        <div className="flex mb-60 justify-center mr-[-80px]">
           {HARDWARES.map((hardware) => {
             const Icon = hardware.icon;
             return (

@@ -29,7 +29,7 @@ const CreatePassword = () => {
       form={form}
     >
       <Form.Item
-        className="mb-0 h-[56px] overflow-hidden"
+        className="mb-0 h-60 overflow-hidden"
         name="password"
         help=""
         rules={[
@@ -67,13 +67,15 @@ const CreatePassword = () => {
       >
         <Input size="large" placeholder="Repeat Password" type="password" />
       </Form.Item>
-      <Form.Item shouldUpdate className="text-red-light">
+      <Form.Item shouldUpdate className="text-red-light text-12">
         {() => (
           <Form.ErrorList
-            errors={form
-              .getFieldsError()
-              .map((x) => x.errors)
-              .reduce((m, n) => m.concat(n), [])}
+            errors={[
+              form
+                .getFieldsError()
+                .map((x) => x.errors)
+                .reduce((m, n) => m.concat(n), [])[0],
+            ]}
           />
         )}
       </Form.Item>
