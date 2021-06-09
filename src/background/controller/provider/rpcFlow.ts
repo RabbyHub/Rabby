@@ -44,7 +44,7 @@ export default (req) =>
             params: { origin, name, icon },
             aporovalComponent: 'Connect',
           },
-          { height: 360 }
+          { height: 390 }
         );
 
         permissionService.addConnectedSite(origin, name, icon, defaultChain);
@@ -59,7 +59,7 @@ export default (req) =>
         },
         mapMethod,
       } = ctx;
-      const [approvalType, condition, { height = 720 } = {}] =
+      const [approvalType, condition, { height = 750 } = {}] =
         Reflect.getMetadata('APPROVAL', providerController, mapMethod) || [];
 
       if (approvalType && (!condition || !condition(ctx.request))) {
