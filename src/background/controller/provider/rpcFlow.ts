@@ -39,10 +39,13 @@ export default (req) =>
         },
       } = ctx;
       if (!permissionService.hasPerssmion(origin)) {
-        const { defaultChain } = await notificationService.requestApproval({
-          params: { origin, name, icon },
-          aporovalComponent: 'Connect',
-        });
+        const { defaultChain } = await notificationService.requestApproval(
+          {
+            params: { origin, name, icon },
+            aporovalComponent: 'Connect',
+          },
+          { height: 360 }
+        );
 
         permissionService.addConnectedSite(origin, name, icon, defaultChain);
       }
@@ -60,14 +63,17 @@ export default (req) =>
         Reflect.getMetadata('APPROVAL', providerController, mapMethod) || [];
 
       if (approvalType && (!condition || !condition(ctx.request))) {
-        ctx.approvalRes = await notificationService.requestApproval({
-          aporovalComponent: approvalType,
-          params: {
-            data: params,
-            session: { origin, name, icon },
+        ctx.approvalRes = await notificationService.requestApproval(
+          {
+            aporovalComponent: approvalType,
+            params: {
+              data: params,
+              session: { origin, name, icon },
+            },
+            origin,
           },
-          origin,
-        });
+          { height: 720 }
+        );
 
         permissionService.touchConnectedSite(origin);
       }

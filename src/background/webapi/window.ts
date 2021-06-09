@@ -15,10 +15,10 @@ browser.windows.onRemoved.addListener((winId) => {
 const BROWSER_HEADER = 80;
 const WINDOW_SIZE = {
   width: 400,
-  height: 530,
+  height: 600,
 };
 
-const create = async (url): Promise<number | undefined> => {
+const create = async ({ url, ...rest }): Promise<number | undefined> => {
   const { top: cTop, left: cLeft, width } = await browser.windows.getCurrent();
   const top = cTop! + BROWSER_HEADER;
   const left = cLeft! + width! - WINDOW_SIZE.width;
@@ -30,6 +30,7 @@ const create = async (url): Promise<number | undefined> => {
     top,
     left,
     ...WINDOW_SIZE,
+    ...rest,
   });
 
   return win.id;
@@ -39,10 +40,12 @@ const remove = async (winId) => {
   return browser.windows.remove(winId);
 };
 
-const openNotification = (route = ''): Promise<number | undefined> => {
+const openNotification = ({ route = '', ...rest } = {}): Promise<
+  number | undefined
+> => {
   const url = `notification.html${route && `#${route}`}`;
 
-  return create(url);
+  return create({ url, ...rest });
 };
 
 export default {

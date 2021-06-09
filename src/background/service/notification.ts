@@ -46,7 +46,7 @@ class NotificationService {
     await this.clear();
   };
 
-  requestApproval = (data): Promise<any> => {
+  requestApproval = (data, winProps?): Promise<any> => {
     return new Promise((resolve, reject) => {
       this.approval = {
         data,
@@ -55,7 +55,7 @@ class NotificationService {
       };
 
       try {
-        this.openNotification();
+        this.openNotification(winProps);
       } catch (err) {
         reject(err);
       }
@@ -70,11 +70,11 @@ class NotificationService {
     }
   };
 
-  openNotification = () => {
+  openNotification = (winProps) => {
     if (this.notifiWindowId) {
       return;
     }
-    winMgr.openNotification().then((winId) => {
+    winMgr.openNotification(winProps).then((winId) => {
       this.notifiWindowId = winId!;
     });
   };
