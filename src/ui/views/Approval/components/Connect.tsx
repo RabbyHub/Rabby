@@ -1,13 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Button } from 'antd';
-import {
-  SecurityCheckDecision,
-  SecurityCheckResponse,
-} from 'background/service/openapi';
 import { Chain } from 'background/service/chain';
 import { ChainSelector, Spin, FallbackSiteLogo } from 'ui/component';
-import SecurityCheckBar from './SecurityCheckBar';
-import SecurityCheckDetail from './SecurityCheckDetail';
 import { useApproval, useWallet } from 'ui/utils';
 import { CHAINS_ENUM } from 'consts';
 
@@ -22,37 +16,27 @@ const Connect = ({ params: { icon, origin, name } }: ConnectProps) => {
   const wallet = useWallet();
   const [defaultChain, setDefaultChain] = useState(CHAINS_ENUM.ETH);
   const [isLoading, setIsLoading] = useState(true);
-  const [showSecurityCheckDetail, setShowSecurityCheckDetail] = useState(false);
-  const [
-    securityCheckDetail,
-    setSecurityCheckDetail,
-  ] = useState<SecurityCheckResponse | null>(null);
-  const [
-    securityCheckStatus,
-    setSecurityCheckStatus,
-  ] = useState<SecurityCheckDecision>('loading');
-  const [securityCheckAlert, setSecurityCheckAlert] = useState('Checking...');
 
   const init = async () => {
     const account = await wallet.getCurrentAccount();
-    const recommendChains = await wallet.openapi.getRecommendChains(
-      account!.address,
-      origin
-    );
-    const check = await wallet.openapi.checkOrigin(account!.address, origin);
-    setSecurityCheckStatus(check.decision);
-    setSecurityCheckAlert(check.alert);
-    setSecurityCheckDetail(check);
-    const enableChains = wallet.getEnableChains();
-    setIsLoading(false);
-    let targetChain: Chain | undefined;
-    for (let i = 0; i < recommendChains.length; i++) {
-      targetChain = enableChains.find(
-        (c) => c.serverId === recommendChains[i].id
+    try {
+      const recommendChains = await wallet.openapi.getRecommendChains(
+        account!.address,
+        origin
       );
-      if (targetChain) break;
+      const enableChains = wallet.getEnableChains();
+      setIsLoading(false);
+      let targetChain: Chain | undefined;
+      for (let i = 0; i < recommendChains.length; i++) {
+        targetChain = enableChains.find(
+          (c) => c.serverId === recommendChains[i].id
+        );
+        if (targetChain) break;
+      }
+      setDefaultChain(targetChain ? targetChain.enum : CHAINS_ENUM.ETH);
+    } catch (e) {
+      console.log(e);
     }
-    setDefaultChain(targetChain ? targetChain.enum : CHAINS_ENUM.ETH);
     setIsLoading(false);
   };
 
@@ -64,12 +48,7 @@ const Connect = ({ params: { icon, origin, name } }: ConnectProps) => {
     rejectApproval('user reject');
   };
 
-  const handleAllow = async (doubleCheck = false) => {
-    if (!doubleCheck && securityCheckStatus !== 'pass') {
-      setShowSecurityCheckDetail(true);
-
-      return;
-    }
+  const handleAllow = async () => {
     resolveApproval({
       defaultChain,
     });
@@ -82,18 +61,19 @@ const Connect = ({ params: { icon, origin, name } }: ConnectProps) => {
   return (
     <Spin spinning={isLoading}>
       <div className="approval-connect">
-        <div className="font-medium text-20 text-center">Website Connect</div>
+        <div className="font-medium text-20 text-center">
+          Website Wants to Connect
+        </div>
         <div className="connect-card">
           <div className="site-info">
             <div className="site-info__icon">
               <FallbackSiteLogo
                 url={icon}
                 origin={origin}
-                width="52px"
-                height="52px"
+                width="44px"
+                height="44px"
                 style={{
-                  borderRadius: '100%',
-                  border: '1px solid #D8DFEB',
+                  borderRadius: '4px',
                 }}
               />
             </div>
@@ -112,11 +92,6 @@ const Connect = ({ params: { icon, origin, name } }: ConnectProps) => {
       </div>
 
       <footer className="connect-footer">
-        <SecurityCheckBar
-          status={securityCheckStatus}
-          alert={securityCheckAlert}
-          onClick={() => setShowSecurityCheckDetail(true)}
-        />
         <div className="action-buttons flex justify-between">
           <Button
             type="primary"
@@ -130,21 +105,12 @@ const Connect = ({ params: { icon, origin, name } }: ConnectProps) => {
             type="primary"
             size="large"
             className="w-[172px]"
-            onClick={() => handleAllow(false)}
+            onClick={() => handleAllow()}
           >
-            {securityCheckStatus === 'pass' ? 'Connect' : 'Continue'}
+            Allow
           </Button>
         </div>
       </footer>
-      {securityCheckDetail && (
-        <SecurityCheckDetail
-          visible={showSecurityCheckDetail}
-          onCancel={() => setShowSecurityCheckDetail(false)}
-          data={securityCheckDetail}
-          onOk={() => handleAllow(true)}
-          okText="Connect"
-        />
-      )}
     </Spin>
   );
 };
