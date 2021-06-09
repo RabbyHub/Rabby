@@ -5,7 +5,7 @@ import { browser } from 'webextension-polyfill-ts';
 import { useEffect, useState } from 'react';
 import { Link, useHistory } from 'react-router-dom';
 import { message, Modal } from 'antd';
-import { CHAINS } from 'consts';
+import { CHAINS, HARDWARE_KEYRING_TYPES, KEYRING_TYPE } from 'consts';
 import { AddressViewer, AddressList } from 'ui/component';
 import { useWallet, getCurrentConnectSite } from 'ui/utils';
 import { DisplayedKeryring } from 'background/service/keyring';
@@ -21,6 +21,8 @@ import IconSuccess from 'ui/assets/success.svg';
 import IconChecked from 'ui/assets/checked.svg';
 import IconNotChecked from 'ui/assets/not-checked.svg';
 import IconAdd from 'ui/assets/add.svg';
+import IconHardware from 'ui/assets/hardware-white.svg';
+import IconWatch from 'ui/assets/watch-white.svg';
 import './style.less';
 
 const SwitchAddress = ({
@@ -169,11 +171,26 @@ const Dashboard = () => {
     setQrcodeVisible(true);
   };
 
+  const hardwareTypes = Object.values(HARDWARE_KEYRING_TYPES).map(
+    (item) => item.type
+  );
+
   return (
     <>
       <div className="dashboard">
         <div className="main">
           <div className="flex header items-center">
+            {(currentAccount?.type === KEYRING_TYPE.WatchAddressKeyring ||
+              hardwareTypes.includes(currentAccount!.type)) && (
+              <img
+                src={
+                  currentAccount?.type === KEYRING_TYPE.WatchAddressKeyring
+                    ? IconWatch
+                    : IconHardware
+                }
+                className="icon icon-account-type"
+              />
+            )}
             {currentAccount && (
               <AddressViewer
                 address={currentAccount.address}

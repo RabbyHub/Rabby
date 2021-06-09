@@ -269,7 +269,7 @@ class OpenApiService implements OpenApiService {
     );
     this.request.interceptors.response.use((response) => {
       if (response.data?.err_code && response.data?.err_code !== 200) {
-        Promise.reject(response.data);
+        throw new Error(response.data);
       }
       return response;
     });
