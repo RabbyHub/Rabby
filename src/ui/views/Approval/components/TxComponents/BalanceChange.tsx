@@ -5,7 +5,7 @@ import { splitNumberByStep } from 'ui/utils/number';
 
 const BalanceChange = ({ data }: { data: BC }) => {
   const isSuccess = data.success;
-  const errorMessage = data.error_msg;
+  const errorMessage = data.err_msg;
   const receiveTokenList = data.receive_token_list;
   const sendTokenList = data.send_token_list;
   const isUSDValueChangePositive = data.usd_value_change > 0;
@@ -21,8 +21,8 @@ const BalanceChange = ({ data }: { data: BC }) => {
               green: isUSDValueChangePositive,
             })}
           >
-            {isUSDValueChangePositive && '+'}
-            {splitNumberByStep(data.usd_value_change.toFixed(2))}
+            {isUSDValueChangePositive ? '+' : '-'}$
+            {splitNumberByStep(Math.abs(data.usd_value_change).toFixed(2))}
           </span>
         )}
       </p>

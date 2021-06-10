@@ -1,10 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { intToHex } from 'ethereumjs-util';
+import { intToHex, isHexString } from 'ethereumjs-util';
+import { Button, Checkbox } from 'antd';
 import { Spin } from 'ui/component';
 import AccountCard from './AccountCard';
 import SecurityCheckBar from './SecurityCheckBar';
 import SecurityCheckDetail from './SecurityCheckDetail';
-import { Button, Modal } from 'antd';
 import {
   ExplainTxResponse,
   GasLevel,
@@ -22,6 +22,7 @@ import Send from './TxComponents/Send';
 import GasSelector from './TxComponents/GasSelecter';
 import { WaitingSignComponent } from './SignText';
 import { Chain } from 'background/service/chain';
+import clsx from 'clsx';
 
 const TxTypeComponent = ({
   txDetail,
@@ -71,13 +72,15 @@ const SignTx = ({ params, origin }) => {
     data: data || '0x', // can not execute with empty string, use 0x instead
     from,
     gas,
-    gasPrice,
+    gasPrice:
+      gasPrice && (isHexString(gasPrice) ? gasPrice : intToHex(gasPrice)),
     nonce,
     to,
     value,
   });
   const [realNonce, setRealNonce] = useState('');
   const [gasLimit, setGasLimit] = useState(gas);
+  const [forceProcess, setForceProcess] = useState(false);
 
   const checkTx = async (address: string) => {
     try {
@@ -122,14 +125,6 @@ const SignTx = ({ params, origin }) => {
       address,
       tx.from !== tx.to
     );
-    if (!res.pre_exec.success) {
-      Modal.error({
-        title: 'Error',
-        content: 'Pre-execution not passed, please try again',
-        onOk: rejectApproval,
-      });
-      return;
-    }
     if (!gasLimit) {
       // use server response gas limit
       setGasLimit(res.recommend.gas);
@@ -137,9 +132,6 @@ const SignTx = ({ params, origin }) => {
     setTxDetail(res);
     if (tx.from !== tx.to) setRealNonce(res.recommend.nonce); // only use nonce from s
     setPreprocessSuccess(res.pre_exec.success);
-    if (!res.pre_exec.success) {
-      setShowSecurityCheckDetail(true);
-    }
   };
 
   const getDefaultGas = async () => {
@@ -200,6 +192,10 @@ const SignTx = ({ params, origin }) => {
     rejectApproval('User Reject');
   };
 
+  const handleForceProcessChange = (checked: boolean) => {
+    setForceProcess(checked);
+  };
+
   useEffect(() => {
     if (!tx.gasPrice) {
       // use minimum gas as default gas if dapp not set gasPrice
@@ -212,7 +208,11 @@ const SignTx = ({ params, origin }) => {
   return (
     <Spin spinning={!isReady}>
       <AccountCard />
-      <div className="approval-tx">
+      <div
+        className={clsx('approval-tx', {
+          'pre-process-failed': !preprocessSuccess,
+        })}
+      >
         {txDetail && (
           <>
             {txDetail && <TxTypeComponent txDetail={txDetail} chain={chain} />}
@@ -235,29 +235,71 @@ const SignTx = ({ params, origin }) => {
               onChange={handleGasChange}
             />
             <footer className="connect-footer">
-              <SecurityCheckBar
-                status={securityCheckStatus}
-                alert={securityCheckAlert}
-                onClick={() => setShowSecurityCheckDetail(true)}
-              />
-              <div className="action-buttons flex justify-between">
-                <Button
-                  type="primary"
-                  size="large"
-                  className="w-[172px]"
-                  onClick={handleCancel}
-                >
-                  Cancel
-                </Button>
-                <Button
-                  type="primary"
-                  size="large"
-                  className="w-[172px]"
-                  onClick={() => handleAllow()}
-                >
-                  {securityCheckStatus === 'pass' ? 'Sign' : 'Continue'}
-                </Button>
-              </div>
+              {txDetail && txDetail.pre_exec.success && (
+                <>
+                  <SecurityCheckBar
+                    status={securityCheckStatus}
+                    alert={securityCheckAlert}
+                    onClick={() => setShowSecurityCheckDetail(true)}
+                  />
+                  <div className="action-buttons flex justify-between">
+                    <Button
+                      type="primary"
+                      size="large"
+                      className="w-[172px]"
+                      onClick={handleCancel}
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      type="primary"
+                      size="large"
+                      className="w-[172px]"
+                      onClick={() => handleAllow()}
+                    >
+                      {securityCheckStatus === 'pass' ? 'Sign' : 'Continue'}
+                    </Button>
+                  </div>
+                </>
+              )}
+              {txDetail && !txDetail.pre_exec.success && (
+                <>
+                  <p className="text-gray-subTitle mb-8 text-15 font-medium">
+                    Pre-execution failed
+                  </p>
+                  <p className="text-gray-content text-14 mb-20">
+                    {txDetail.pre_exec.err_msg}
+                  </p>
+                  <div className="force-process">
+                    <Checkbox
+                      onChange={(e) =>
+                        handleForceProcessChange(e.target.checked)
+                      }
+                    >
+                      I'm sure I want to proceed anyway.
+                    </Checkbox>
+                  </div>
+                  <div className="action-buttons flex justify-between">
+                    <Button
+                      type="primary"
+                      size="large"
+                      className="w-[172px]"
+                      onClick={handleCancel}
+                    >
+                      Cancel
+                    </Button>
+                    <Button
+                      type="primary"
+                      size="large"
+                      className="w-[172px]"
+                      disabled={!forceProcess}
+                      onClick={() => handleAllow(true)}
+                    >
+                      Sign
+                    </Button>
+                  </div>
+                </>
+              )}
             </footer>
           </>
         )}
