@@ -2,13 +2,13 @@ import { Chain } from 'background/service/chain';
 import IconBscLogo from 'ui/assets/chain-logos/bsc.svg';
 import IconDaiLogo from 'ui/assets/chain-logos/dai.svg';
 import IconEthLogo from 'ui/assets/chain-logos/eth.svg';
-// import IconHecoLogo from 'ui/assets/chain-logos/heco.svg';
+import IconHecoLogo from 'ui/assets/chain-logos/heco.svg';
 import IconOKTLogo from 'ui/assets/chain-logos/okex.svg';
 import IconPolygonLogo from 'ui/assets/chain-logos/polygon.svg';
 import IconBscWhiteLogo from 'ui/assets/chain-logos/bsc-white.svg';
 import IconDaiWhiteLogo from 'ui/assets/chain-logos/dai-white.svg';
 import IconEthWhiteLogo from 'ui/assets/chain-logos/eth-white.svg';
-// import IconHecoWhiteLogo from 'ui/assets/chain-logos/heco-white.svg';
+import IconHecoWhiteLogo from 'ui/assets/chain-logos/heco-white.svg';
 import IconPolygonWhiteLogo from 'ui/assets/chain-logos/polygon-white.svg';
 import IconFantomWhiteLogo from 'ui/assets/chain-logos/fantom-white.svg';
 import IconFantom from 'ui/assets/chain-logos/fantom.svg';
@@ -45,6 +45,16 @@ export const CHAINS: Record<string, Chain> = {
     whiteLogo: IconBscWhiteLogo,
     network: '56',
   },
+  [CHAINS_ENUM.POLYGON]: {
+    id: 137,
+    serverId: 'matic',
+    name: 'Polygon',
+    hex: '0x89',
+    enum: CHAINS_ENUM.POLYGON,
+    logo: IconPolygonLogo,
+    whiteLogo: IconPolygonWhiteLogo,
+    network: '137',
+  },
   [CHAINS_ENUM.DAI]: {
     id: 100,
     name: 'xDai',
@@ -54,6 +64,16 @@ export const CHAINS: Record<string, Chain> = {
     logo: IconDaiLogo,
     whiteLogo: IconDaiWhiteLogo,
     network: '100',
+  },
+  [CHAINS_ENUM.HECO]: {
+    id: 128,
+    serverId: 'heco',
+    name: 'HECO',
+    enum: CHAINS_ENUM.HECO,
+    logo: IconHecoLogo,
+    whiteLogo: IconHecoWhiteLogo,
+    hex: '0x80',
+    network: '128',
   },
   [CHAINS_ENUM.FTM]: {
     id: 250,
@@ -65,20 +85,10 @@ export const CHAINS: Record<string, Chain> = {
     whiteLogo: IconFantomWhiteLogo,
     network: '250',
   },
-  [CHAINS_ENUM.POLYGON]: {
-    id: 137,
-    serverId: 'matic',
-    name: 'Polygon',
-    hex: '0x89',
-    enum: CHAINS_ENUM.POLYGON,
-    logo: IconPolygonLogo,
-    whiteLogo: IconPolygonWhiteLogo,
-    network: '137',
-  },
   [CHAINS_ENUM.OKT]: {
     id: 66,
     serverId: 'okt',
-    name: 'OKExChain',
+    name: 'OKEx',
     enum: CHAINS_ENUM.OKT,
     logo: IconOKTLogo,
     whiteLogo: IconOKTWhiteLogo,

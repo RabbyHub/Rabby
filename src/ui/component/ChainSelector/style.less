@@ -15,7 +15,7 @@
   .icon-arrow-down {
     width: 12px;
     height: 12px;
-    transition: transform .3s;
+    transition: transform 0.3s;
     transform: rotate(0);
   }
   &.active {
@@ -26,12 +26,13 @@
 }
 
 .chain-selector-options {
-  margin-bottom: 0;
+  margin-bottom: -8px;
+  margin-right: -8px;
   display: flex;
   flex-wrap: wrap;
   li {
+    width: 160px;
     display: flex;
-    width: 152px;
     padding: 12px;
     background-color: #fff;
     border-radius: 6px;
@@ -39,20 +40,13 @@
     margin-right: 8px;
     align-items: center;
     margin-bottom: 8px;
-    &:nth-child(2n) {
-      margin-right: 0;
-    }
-    &:nth-last-child(1), &:nth-last-child(2) {
-      margin-bottom: 0;
-    }
     .chain-logo {
       width: 28px;
       height: 28px;
       margin-right: 8px;
     }
     .chain-name {
-      font-size: 12px;
-      color: #3B3E4A;
+      color: #3b3e4a;
       margin-right: 10px;
       flex: 1;
       overflow: hidden;

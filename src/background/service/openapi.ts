@@ -300,6 +300,16 @@ class OpenApiService {
     // return data;
     return Promise.resolve([
       {
+        community_id: 1,
+        id: 'eth',
+        logo_url:
+          'https://static.debank.com/image/chain/logo_url/eth/42ba589cd077e7bdd97db6480b0ff61d.png',
+        name: 'Ethereum',
+        native_token_id: 'eth',
+        wrapped_token_id: '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',
+        symbol: 'ETH',
+      },
+      {
         community_id: 56,
         id: 'bsc',
         logo_url:
@@ -310,14 +320,49 @@ class OpenApiService {
         symbol: 'BSC',
       },
       {
-        community_id: 1,
-        id: 'eth',
-        logo_url:
-          'https://static.debank.com/image/chain/logo_url/eth/42ba589cd077e7bdd97db6480b0ff61d.png',
-        name: 'Ethereum',
-        native_token_id: 'eth',
-        wrapped_token_id: '0xc02aaa39b223fe8d0a0e5c4f27ead9083c756cc2',
-        symbol: 'ETH',
+        community_id: 137,
+        id: 'matic',
+        logo_url: '',
+        name: '',
+        native_token_id: '',
+        wrapped_token_id: '',
+        symbol: '',
+      },
+      {
+        community_id: 100,
+        id: 'xdai',
+        logo_url: '',
+        name: '',
+        native_token_id: '',
+        wrapped_token_id: '',
+        symbol: '',
+      },
+      {
+        community_id: 128,
+        id: 'heco',
+        logo_url: '',
+        name: '',
+        native_token_id: '',
+        wrapped_token_id: '',
+        symbol: '',
+      },
+      {
+        community_id: 250,
+        id: 'ftm',
+        logo_url: '',
+        name: '',
+        native_token_id: '',
+        wrapped_token_id: '',
+        symbol: '',
+      },
+      {
+        community_id: 66,
+        id: 'okt',
+        logo_url: '',
+        name: '',
+        native_token_id: '',
+        wrapped_token_id: '',
+        symbol: '',
       },
     ]);
   };
