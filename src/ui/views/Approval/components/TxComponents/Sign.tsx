@@ -65,7 +65,11 @@ const Sign = ({ data, chainEnum }: SignProps) => {
           />
         )}
       </div>
-      <BalanceChange data={data.balance_change} />
+      <BalanceChange
+        data={data.balance_change}
+        chainEnum={chainEnum}
+        isSupport={data.support_balance_change}
+      />
     </div>
   );
 };

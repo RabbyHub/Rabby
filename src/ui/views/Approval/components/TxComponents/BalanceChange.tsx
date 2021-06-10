@@ -1,14 +1,24 @@
 import React from 'react';
 import clsx from 'clsx';
+import { CHAINS_ENUM, CHAINS } from 'consts';
 import { BalanceChange as BC } from 'background/service/openapi';
 import { splitNumberByStep } from 'ui/utils/number';
 
-const BalanceChange = ({ data }: { data: BC }) => {
-  const isSuccess = data.success;
+const BalanceChange = ({
+  data,
+  isSupport,
+  chainEnum,
+}: {
+  data: BC;
+  isSupport: boolean;
+  chainEnum: CHAINS_ENUM;
+}) => {
+  const isSuccess = data.success && isSupport;
   const errorMessage = data.err_msg;
   const receiveTokenList = data.receive_token_list;
   const sendTokenList = data.send_token_list;
   const isUSDValueChangePositive = data.usd_value_change > 0;
+  const chain = CHAINS[chainEnum];
   if (isSuccess && receiveTokenList.length <= 0 && sendTokenList.length <= 0)
     return <></>;
   return (
@@ -60,7 +70,13 @@ const BalanceChange = ({ data }: { data: BC }) => {
           </ul>
         </div>
       )}
-      {!isSuccess && <div className="balance-change_error">{errorMessage}</div>}
+      {!isSuccess && (
+        <div className="balance-change_error">
+          {!data.success
+            ? errorMessage
+            : `This feature is not supported on ${chain.name} at the moment`}
+        </div>
+      )}
     </div>
   );
 };
