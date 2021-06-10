@@ -9,6 +9,8 @@ const BalanceChange = ({ data }: { data: BC }) => {
   const receiveTokenList = data.receive_token_list;
   const sendTokenList = data.send_token_list;
   const isUSDValueChangePositive = data.usd_value_change > 0;
+  if (isSuccess && receiveTokenList.length <= 0 && sendTokenList.length <= 0)
+    return <></>;
   return (
     <div className="balance-change">
       <p className="section-title flex justify-between">
@@ -19,7 +21,7 @@ const BalanceChange = ({ data }: { data: BC }) => {
               green: isUSDValueChangePositive,
             })}
           >
-            {isUSDValueChangePositive ? '+' : '-'}
+            {isUSDValueChangePositive && '+'}
             {splitNumberByStep(data.usd_value_change.toFixed(2))}
           </span>
         )}
