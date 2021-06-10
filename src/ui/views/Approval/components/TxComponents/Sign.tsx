@@ -39,11 +39,13 @@ const Sign = ({ data, chainEnum }: SignProps) => {
       <div className="gray-section-block common-detail-block">
         <div className="block-field">
           <span className="label">Protocol</span>
-          <span className="value">{detail.contract_protocol_name}</span>
+          <span className="value">
+            {detail.contract_protocol_name || 'Unknown Protocol'}
+          </span>
         </div>
         <div className="block-field">
           <span className="label">Action</span>
-          <span className="value">{detail.action}</span>
+          <span className="value">{detail.action || 'Unknown Action'}</span>
         </div>
         <div className="block-field contract">
           <span className="label">Contract</span>
@@ -56,10 +58,12 @@ const Sign = ({ data, chainEnum }: SignProps) => {
             />
           </span>
         </div>
-        <img
-          src={detail.contract_protocol_logo_url}
-          className="contract-logo"
-        />
+        {detail.contract_protocol_logo_url && (
+          <img
+            src={detail.contract_protocol_logo_url}
+            className="contract-logo"
+          />
+        )}
       </div>
       <BalanceChange data={data.balance_change} />
     </div>
