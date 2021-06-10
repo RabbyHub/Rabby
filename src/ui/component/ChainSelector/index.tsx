@@ -1,10 +1,12 @@
 import React, { useState } from 'react';
 import { Modal } from 'antd';
 import { CHAINS_ENUM, CHAINS } from 'consts';
-import { useWallet } from 'ui/utils';
+import { useWallet, splitNumberByStep } from 'ui/utils';
 import IconChecked from 'ui/assets/checked.svg';
 import IconNotChecked from 'ui/assets/not-checked.svg';
 import { IconArrowDown } from 'ui/assets';
+import { useCurrentBalance } from 'ui/component/AddressList/AddressItem';
+
 import './style.less';
 
 interface ChainSelectorProps {
@@ -17,6 +19,8 @@ const ChainSelector = ({ value, onChange }: ChainSelectorProps) => {
   const wallet = useWallet();
   const [showSelectorModal, setShowSelectorModal] = useState(false);
   const [enableChains] = useState(wallet.getEnableChains());
+  const currentAccount = wallet.syncGetCurrentAccount();
+  const [, chainBalances] = useCurrentBalance(currentAccount?.address);
 
   const handleClickSelector = () => {
     setShowSelectorModal(true);
@@ -31,6 +35,12 @@ const ChainSelector = ({ value, onChange }: ChainSelectorProps) => {
     onChange(val);
   };
 
+  const chainBalanceMap = chainBalances.reduce((m, n) => {
+    m[n.community_id] = n;
+    m[n.community_id].splitedNumber = splitNumberByStep(n.usd_value.toFixed(2));
+    return m;
+  }, {});
+
   return (
     <>
       <div className="chain-selector" onClick={handleClickSelector}>
@@ -39,7 +49,7 @@ const ChainSelector = ({ value, onChange }: ChainSelectorProps) => {
       </div>
       <Modal
         centered
-        width="86%"
+        width="90%"
         closable={false}
         visible={showSelectorModal}
         footer={null}
@@ -50,11 +60,30 @@ const ChainSelector = ({ value, onChange }: ChainSelectorProps) => {
           <ul className="chain-selector-options">
             {enableChains.map((chain) => (
               <li
+                className="relative"
                 key={chain.enum}
                 onClick={() => handleChange(chain.enum as CHAINS_ENUM)}
               >
                 <img className="chain-logo" src={chain.logo} />
-                <span className="chain-name">{chain.name}</span>
+                <div className="chain-name">
+                  <p className="text-13 font-medium my-0">{chain.name}</p>
+                  {chainBalanceMap[chain.id]?.usd_value && (
+                    <>
+                      <div className="absolute left-0 top-10 bottom-10 w-2 bg-blue-light" />
+                      <p
+                        className="mt-4 mb-0 text-gray-content text-12 truncate"
+                        title={splitNumberByStep(
+                          chainBalanceMap[chain.id].splitedNumber
+                        )}
+                      >
+                        $
+                        {splitNumberByStep(
+                          chainBalanceMap[chain.id].splitedNumber
+                        )}
+                      </p>
+                    </>
+                  )}
+                </div>
                 <img
                   className="icon icon-checked"
                   src={value === chain.enum ? IconChecked : IconNotChecked}
@@ -62,9 +91,6 @@ const ChainSelector = ({ value, onChange }: ChainSelectorProps) => {
               </li>
             ))}
           </ul>
-          <p className="text-12 text-gray-comment text-center mb-0 tip">
-            More chains will be added in the future...
-          </p>
         </>
       </Modal>
     </>
