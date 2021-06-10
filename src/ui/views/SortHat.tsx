@@ -50,11 +50,7 @@ const SortHat = () => {
     loadView();
   }, []);
 
-  return (
-    <Spin spinning={!to}>
-      <Redirect to={to} />
-    </Spin>
-  );
+  return <Spin spinning={!to}>{to && <Redirect to={to} />}</Spin>;
 };
 
 export default SortHat;
