@@ -37,6 +37,7 @@ const ChainSelector = ({ value, onChange }: ChainSelectorProps) => {
 
   const chainBalanceMap = chainBalances.reduce((m, n) => {
     m[n.community_id] = n;
+    m[n.community_id].splitedNumber = splitNumberByStep(n.usd_value.toFixed(2));
     return m;
   }, {});
 
@@ -69,10 +70,15 @@ const ChainSelector = ({ value, onChange }: ChainSelectorProps) => {
                   {chainBalanceMap[chain.id]?.usd_value && (
                     <>
                       <div className="absolute left-0 top-10 bottom-10 w-2 bg-blue-light" />
-                      <p className="mt-4 mb-0 text-gray-content text-12">
+                      <p
+                        className="mt-4 mb-0 text-gray-content text-12 truncate"
+                        title={splitNumberByStep(
+                          chainBalanceMap[chain.id].splitedNumber
+                        )}
+                      >
                         $
                         {splitNumberByStep(
-                          chainBalanceMap[chain.id].usd_value.toFixed(2)
+                          chainBalanceMap[chain.id].splitedNumber
                         )}
                       </p>
                     </>

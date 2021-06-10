@@ -1,18 +1,20 @@
 import { Chain } from 'background/service/chain';
-import IconBscLogo from 'ui/assets/chain-logos/bsc.svg';
-import IconDaiLogo from 'ui/assets/chain-logos/dai.svg';
 import IconEthLogo from 'ui/assets/chain-logos/eth.svg';
-import IconHecoLogo from 'ui/assets/chain-logos/heco.svg';
-import IconOKTLogo from 'ui/assets/chain-logos/okex.svg';
-import IconPolygonLogo from 'ui/assets/chain-logos/polygon.svg';
-import IconBscWhiteLogo from 'ui/assets/chain-logos/bsc-white.svg';
-import IconDaiWhiteLogo from 'ui/assets/chain-logos/dai-white.svg';
 import IconEthWhiteLogo from 'ui/assets/chain-logos/eth-white.svg';
+import IconHecoLogo from 'ui/assets/chain-logos/heco.svg';
 import IconHecoWhiteLogo from 'ui/assets/chain-logos/heco-white.svg';
+import IconBscLogo from 'ui/assets/chain-logos/bsc.svg';
+import IconBscWhiteLogo from 'ui/assets/chain-logos/bsc-white.svg';
+import IconDaiLogo from 'ui/assets/chain-logos/dai.svg';
+import IconDaiWhiteLogo from 'ui/assets/chain-logos/dai-white.svg';
+import IconPolygonLogo from 'ui/assets/chain-logos/polygon.svg';
 import IconPolygonWhiteLogo from 'ui/assets/chain-logos/polygon-white.svg';
-import IconFantomWhiteLogo from 'ui/assets/chain-logos/fantom-white.svg';
 import IconFantom from 'ui/assets/chain-logos/fantom.svg';
+import IconFantomWhiteLogo from 'ui/assets/chain-logos/fantom-white.svg';
+import IconOKTLogo from 'ui/assets/chain-logos/okex.svg';
 import IconOKTWhiteLogo from 'ui/assets/chain-logos/okex-white.svg';
+import IconArbitrumLogo from 'ui/assets/chain-logos/arbitrum.svg';
+import IconArbitrumWhiteLogo from 'ui/assets/chain-logos/arbitrum-white.svg';
 
 export enum CHAINS_ENUM {
   ETH = 'ETH',
@@ -22,6 +24,7 @@ export enum CHAINS_ENUM {
   POLYGON = 'POLYGON',
   FTM = 'FTM',
   OKT = 'OKT',
+  ARBITRUM = 'ARBITRUM',
 }
 
 export const CHAINS: Record<string, Chain> = {
@@ -94,6 +97,17 @@ export const CHAINS: Record<string, Chain> = {
     whiteLogo: IconOKTWhiteLogo,
     hex: '0x42',
     network: '66',
+  },
+  // https://developer.offchainlabs.com/docs/public_testnet#connection-information
+  [CHAINS_ENUM.ARBITRUM]: {
+    id: 42161,
+    serverId: 'arbitrum',
+    name: 'Arbitrum',
+    enum: CHAINS_ENUM.ARBITRUM,
+    logo: IconArbitrumLogo,
+    whiteLogo: IconArbitrumWhiteLogo,
+    hex: '0xa4b1',
+    network: '42161',
   },
 };
 
