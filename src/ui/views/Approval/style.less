@@ -12,6 +12,12 @@
     margin-bottom: 8px;
   }
 
+  .gray-section-block {
+    background-color: #F6F7F9;
+    border: 1px solid #D8DFEB;
+    border-radius: 6px;
+  }
+
   header {
     background: @primary-linear;
     height: 56px;
@@ -110,12 +116,8 @@
     .text-detail-wrapper {
       padding: 16px;
       padding-bottom: 45px;
-      background-color: #F6F7F9;
-      border-radius: 6px;
       margin: 0 auto;
       height: 360px;
-      border: 1px solid #D8DFEB;
-      border-radius: 6px;
       position: relative;
     }
     .text-detail {
@@ -147,101 +149,165 @@
   }
 
   .approval-tx {
-    padding: 12px 20px;
-    padding-bottom: 185px;
+    padding: 24px 20px;
+    padding-bottom: 130px;
     display: flex;
     flex-direction: column;
-    .site-card {
-      .chain-info {
-        color: #525966;
-        font-size: 12px;
+    .send, .approve, .cancel, .cancel-tx {
+      .common-detail-block {
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        height: 147px;
+        padding: 0 16px;
+        margin-bottom: 24px;
+        .title {
+          color: #525966;
+          font-size: 20px;
+          font-weight: 500;
+          margin-bottom: 16px; 
+        }
+        p {
+          word-break: break-all;
+          white-space: pre-wrap;
+        }
+      }
+      .protocol {
         display: flex;
         align-items: center;
-        .icon-chain {
-          width: 20px;
-          height: 20px;
+        .protocol-logo {
+          width: 36px;
+          height: 36px;
           margin-right: 8px;
+          flex-shrink: 0;
         }
-      }
-    }
-    .tx-header {
-      margin-bottom: 24px;
-      text-align: center;
-    }
-    .tx-subtitle {
-      margin-bottom: 8px;
-    }
-    .tx-target {
-      background: #F6F7F9;
-      border-radius: 6px;
-      padding: 12px;
-      font-weight: 500;
-      font-size: 13px;
-      color: #525966;
-      margin-bottom: 24px;
-      word-break: break-word;
-      .tags {
-        display: flex;
-        margin-top: 8px;
-        margin-bottom: 0;
-        li {
-          font-size: 12px;
-          padding: 3px 8px;
-          color: #818A99;
-          margin-right: 8px;
-          border: 0.5px solid #B4BDCC;
-          border-radius: 10px;
-        }
-      }
-    }
-    .assets-change {
-      margin: 0;
-      li {
-        display: flex;
-        justify-content: space-between;
-        color: #525966;
-        font-size: 14px;
-        margin-bottom: 8px;
-        .token {
-          display: flex;
-          align-items: center;
-          margin-right: 6px;
-          .icon-token {
-            width: 24px;
-            height: 24px;
-            border-radius: 100%;
-            margin-right: 8px;
+        .protocol-info {
+          .protocol-info__name {
+            color: #525966;
+            font-size: 14px;
+            font-weight: bold;
+            margin-bottom: 4px;
+            line-height: 1;
+          }
+          .protocol-info__spender {
+            display: flex;
+            align-items: center;
+            .icon-copy {
+              margin-left: 6px;
+              width: 16px;
+              height: 16px;
+              cursor: pointer;
+            }
+            .address-viewer-text {
+              color: #818A99;
+              font-size: 13px;
+              font-weight: 500;
+              margin-right: 0;
+            }
           }
         }
-        .amount {
-          flex: 1;
-          overflow: hidden;
-          text-overflow: ellipsis;
-          white-space: nowrap;
-          text-align: right;
-        }
-        &:nth-last-child(1) {
-          margin-bottom: 0;
-        }
       }
     }
-    .token-detail {
-      text-align: center;
-      .icon-token {
-        width: 64px;
-        height: 64px;
-        margin: 0 auto 16px;
+    .sign {
+      .common-detail-block {
+        padding: 21px 16px;
+        margin-bottom: 24px;
+        position: relative;
+        .block-field {
+          display: flex;
+          margin-bottom: 18px;
+          .label {
+            color: #818A99;
+            font-size: 14px;
+            width: 100px;
+            flex-shrink: 0;
+            line-height: 1;
+          }
+          .value {
+            line-height: 1;
+            flex: 1;
+            color: #525966;
+            font-size: 15px;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            overflow: hidden;
+          }
+          &.contract {
+            margin-bottom: 0;
+            border-top: 0.5px solid rgba(180, 189, 204, 0.6);
+            padding-top: 20px;
+            .value {
+              display: flex;
+              align-items: center;
+              .address-viewer-text {
+                color: #818A99;
+                font-size: 13px;
+                font-weight: 500;
+                margin-right: 0;
+              }
+              .icon-copy {
+                width: 16px;
+                height: 16px;
+                margin-left: 6px;
+                cursor: pointer;
+              }
+            }
+          }
+        }
+        .contract-logo {
+          position: absolute;
+          right: 16px;
+          top: 16px;
+          width: 60px;
+          height: 60px;
+          opacity: 0.2;
+        }
       }
-      p {
-        font-size: 20px;
-        color: #818A99;
-        text-align: center;
-        font-weight: 500;
-        .token-amount {
-          color: #2D3033;
-          font-size: 24px;
-          font-weight: bold;
-          margin-right: 8px;
+      .balance-change {
+        margin-bottom: 24px;
+      }
+    }
+    .balance-change {
+      .section-title {
+        .usd-value-change {
+          color: #F24822;
+          font-size: 15px;
+          font-weight: 500;
+          &.green {
+            color: #27C193;
+          }
+        }
+      }
+      .balance-change-content {
+        padding: 16px;
+        ul {
+          margin: 0;
+          li {
+            display: flex;
+            justify-content: space-between;
+            font-size: 14px;
+            color: #525966;
+            margin-bottom: 12px;
+            line-height: 1;
+            .token-symbol {
+              color: #818A99;
+              width: 80px;
+              flex-shrink: 0;
+              overflow: hidden;
+              text-overflow: ellipsis;
+            }
+            .token-amount {
+              flex: 1;
+              overflow: hidden;
+              text-overflow: ellipsis;
+              text-align: right;
+            }
+          }
+          &:nth-last-child(1) {
+            li:nth-last-child(1) {
+              margin-bottom: 0;
+            }
+          }
         }
       }
     }
@@ -319,6 +385,7 @@
 .gas-selector {
   display: flex;
   margin-bottom: 20px;
+  padding: 16px;
   .left {
     margin-right: 8px;
     .icon-gas {
@@ -336,6 +403,8 @@
     }
   }
   .right {
+    display: flex;
+    align-items: center;
     cursor: pointer;
     .icon-setting {
       width: 16px;

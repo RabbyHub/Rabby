@@ -37,6 +37,7 @@ export const CHAINS: Record<string, Chain> = {
     logo: IconEthLogo,
     whiteLogo: IconEthWhiteLogo,
     network: '1',
+    nativeTokenSymbol: 'ETH',
   },
   [CHAINS_ENUM.BSC]: {
     id: 56,
@@ -47,6 +48,7 @@ export const CHAINS: Record<string, Chain> = {
     logo: IconBscLogo,
     whiteLogo: IconBscWhiteLogo,
     network: '56',
+    nativeTokenSymbol: 'BSC',
   },
   [CHAINS_ENUM.POLYGON]: {
     id: 137,
@@ -57,6 +59,7 @@ export const CHAINS: Record<string, Chain> = {
     logo: IconPolygonLogo,
     whiteLogo: IconPolygonWhiteLogo,
     network: '137',
+    nativeTokenSymbol: 'MATIC',
   },
   [CHAINS_ENUM.DAI]: {
     id: 100,
@@ -67,6 +70,7 @@ export const CHAINS: Record<string, Chain> = {
     logo: IconDaiLogo,
     whiteLogo: IconDaiWhiteLogo,
     network: '100',
+    nativeTokenSymbol: 'xDAI',
   },
   [CHAINS_ENUM.HECO]: {
     id: 128,
@@ -77,6 +81,7 @@ export const CHAINS: Record<string, Chain> = {
     whiteLogo: IconHecoWhiteLogo,
     hex: '0x80',
     network: '128',
+    nativeTokenSymbol: 'HT',
   },
   [CHAINS_ENUM.FTM]: {
     id: 250,
@@ -87,6 +92,7 @@ export const CHAINS: Record<string, Chain> = {
     logo: IconFantom,
     whiteLogo: IconFantomWhiteLogo,
     network: '250',
+    nativeTokenSymbol: 'FTM',
   },
   [CHAINS_ENUM.OKT]: {
     id: 66,
@@ -97,6 +103,7 @@ export const CHAINS: Record<string, Chain> = {
     whiteLogo: IconOKTWhiteLogo,
     hex: '0x42',
     network: '66',
+    nativeTokenSymbol: 'OKT',
   },
   // https://developer.offchainlabs.com/docs/public_testnet#connection-information
   [CHAINS_ENUM.ARBITRUM]: {
@@ -108,6 +115,7 @@ export const CHAINS: Record<string, Chain> = {
     whiteLogo: IconArbitrumWhiteLogo,
     hex: '0xa4b1',
     network: '42161',
+    nativeTokenSymbol: 'ARB',
   },
 };
 

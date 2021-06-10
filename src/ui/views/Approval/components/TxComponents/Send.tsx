@@ -1,30 +1,26 @@
 import React from 'react';
+import { CHAINS_ENUM, CHAINS } from 'consts';
 import { ExplainTxResponse } from 'background/service/openapi';
+import { splitNumberByStep } from 'ui/utils/number';
 
 interface SendProps {
   data: ExplainTxResponse;
+  chainEnum: CHAINS_ENUM;
 }
 
-const Send = ({ data }: SendProps) => {
-  const assetChange = data.pre_exec.assets_change[0];
+const Send = ({ data, chainEnum }: SendProps) => {
+  const detail = data.type_send!;
+  const chain = CHAINS[chainEnum];
   return (
     <div className="send">
-      <h1 className="tx-header text-center">Send Token</h1>
-      <div className="token-detail">
-        <img src={assetChange.logo_url} className="icon icon-token" />
-        <p>
-          <span className="token-amount">{assetChange.amount}</span>
-          {assetChange.symbol}
+      <p className="section-title">Sign {chain.name} transaction</p>
+      <div className="gray-section-block common-detail-block">
+        <p className="title">
+          Send {splitNumberByStep(detail.token_amount)} {detail.token_symbol} to
         </p>
-      </div>
-      <p className="tx-subtitle text-gray-content text-14">To spender</p>
-      <div className="tx-target">
-        {data.tx.to}
-        <ul className="tags">
-          {data.tags.map((tag) => (
-            <li key={tag}>{tag}</li>
-          ))}
-        </ul>
+        <p className="text-gray-content text-13 font-medium mb-0">
+          {detail.to_addr}
+        </p>
       </div>
     </div>
   );

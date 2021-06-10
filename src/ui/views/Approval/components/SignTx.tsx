@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { intToHex } from 'ethereumjs-util';
 import { Spin } from 'ui/component';
+import AccountCard from './AccountCard';
 import SecurityCheckBar from './SecurityCheckBar';
 import SecurityCheckDetail from './SecurityCheckDetail';
 import { Button, Modal } from 'antd';
@@ -11,7 +12,7 @@ import {
   SecurityCheckDecision,
   Tx,
 } from 'background/service/openapi';
-import { CHAINS, TX_TYPE_ENUM } from 'consts';
+import { CHAINS } from 'consts';
 import { useWallet, useApproval } from 'ui/utils';
 import Approve from './TxComponents/Approve';
 import Cancel from './TxComponents/Cancel';
@@ -20,13 +21,25 @@ import CancelTx from './TxComponents/CancelTx';
 import Send from './TxComponents/Send';
 import GasSelector from './TxComponents/GasSelecter';
 import { WaitingSignComponent } from './SignText';
+import { Chain } from 'background/service/chain';
 
-const confirmText = {
-  [TX_TYPE_ENUM.APPROVE]: 'Approve',
-  [TX_TYPE_ENUM.SEND]: 'Send',
-  [TX_TYPE_ENUM.SIGN_TX]: 'Sign',
-  [TX_TYPE_ENUM.CANCEL_APPROVE]: 'Confirm',
-  [TX_TYPE_ENUM.CANCEL_TX]: 'Confirm',
+const TxTypeComponent = ({
+  txDetail,
+  chain,
+}: {
+  txDetail: ExplainTxResponse;
+  chain: Chain;
+}) => {
+  if (txDetail.type_cancel_tx) return <CancelTx chainEnum={chain.enum} />;
+  if (txDetail.type_cancel_token_approval)
+    return <Cancel data={txDetail} chainEnum={chain.enum} />;
+  if (txDetail.type_token_approval)
+    return <Approve data={txDetail} chainEnum={chain.enum} />;
+  if (txDetail.type_send)
+    return <Send data={txDetail} chainEnum={chain.enum} />;
+  if (txDetail.type_call)
+    return <Sign data={txDetail} chainEnum={chain.enum} />;
+  return <></>;
 };
 
 const SignTx = ({ params, origin }) => {
@@ -51,6 +64,7 @@ const SignTx = ({ params, origin }) => {
   if (!chainId) {
     chainId = CHAINS[site!.chain].id;
   }
+  const chain = Object.values(CHAINS).find((item) => item.id === chainId)!;
   const [{ data = '0x', from, gas, gasPrice, nonce, to, value }] = params.data;
   const [tx, setTx] = useState<Tx>({
     chainId,
@@ -66,20 +80,33 @@ const SignTx = ({ params, origin }) => {
   const [gasLimit, setGasLimit] = useState(gas);
 
   const checkTx = async (address: string) => {
-    const res = await wallet.openapi.checkTx(
-      {
-        ...tx,
-        nonce: tx.nonce || '0x1',
-        data: tx.data,
-        value: tx.value || '0x0',
-        gas: tx.gas || '',
-      }, // set a mock nonce for check if dapp not set it
-      origin,
-      address
-    );
-    setSecurityCheckStatus(res.decision);
-    setSecurityCheckAlert(res.alert);
-    setSecurityCheckDetail(res);
+    try {
+      const res = await wallet.openapi.checkTx(
+        {
+          ...tx,
+          nonce: tx.nonce || '0x1',
+          data: tx.data,
+          value: tx.value || '0x0',
+          gas: tx.gas || '',
+        }, // set a mock nonce for check if dapp not set it
+        origin,
+        address
+      );
+      setSecurityCheckStatus(res.decision);
+      setSecurityCheckAlert(res.alert);
+      setSecurityCheckDetail(res);
+    } catch (e) {
+      const alert = e.message || JSON.stringify(e);
+      setSecurityCheckStatus('danger');
+      setSecurityCheckAlert(alert);
+      setSecurityCheckDetail({
+        alert,
+        decision: 'danger',
+        danger_list: [{ id: 1, alert }],
+        warning_list: [],
+        forbidden_list: [],
+      });
+    }
   };
 
   const explainTx = async (address: string) => {
@@ -105,10 +132,10 @@ const SignTx = ({ params, origin }) => {
     }
     if (!gasLimit) {
       // use server response gas limit
-      setGasLimit(res.tx.gas);
+      setGasLimit(res.recommend.gas);
     }
     setTxDetail(res);
-    setRealNonce(res.tx.nonce);
+    if (tx.from !== tx.to) setRealNonce(res.recommend.nonce); // only use nonce from s
     setPreprocessSuccess(res.pre_exec.success);
     if (!res.pre_exec.success) {
       setShowSecurityCheckDetail(true);
@@ -184,58 +211,34 @@ const SignTx = ({ params, origin }) => {
 
   return (
     <Spin spinning={!isReady}>
+      <AccountCard />
       <div className="approval-tx">
         {txDetail && (
           <>
-            <div className="site-card">
-              <img className="icon icon-site" src={session.icon} />
-              <div className="site-info">
-                <p className="font-medium text-gray-subTitle mb-0 text-13">
-                  {session.origin}
-                </p>
-                <p className="text-12 text-gray-content mb-0">{session.name}</p>
-              </div>
-              <div className="chain-info">
-                <img
-                  src={CHAINS[site!.chain].logo}
-                  alt={CHAINS[site!.chain].name}
-                  className="icon icon-chain"
-                />
-                <span>{CHAINS[site!.chain].name}</span>
-              </div>
-            </div>
-            {txDetail.pre_exec.success &&
-              txDetail.pre_exec.tx_type === TX_TYPE_ENUM.APPROVE && (
-                <Approve data={txDetail} />
-              )}
-            {txDetail.pre_exec.success &&
-              txDetail.pre_exec.tx_type === TX_TYPE_ENUM.CANCEL_APPROVE && (
-                <Cancel data={txDetail} />
-              )}
-            {txDetail.pre_exec.success &&
-              txDetail.pre_exec.tx_type === TX_TYPE_ENUM.SIGN_TX && (
-                <Sign data={txDetail} />
-              )}
-            {txDetail.pre_exec.success &&
-              txDetail.pre_exec.tx_type === TX_TYPE_ENUM.CANCEL_TX && (
-                <CancelTx />
-              )}
-            {txDetail.pre_exec.success &&
-              txDetail.pre_exec.tx_type === TX_TYPE_ENUM.SEND && (
-                <Send data={txDetail} />
-              )}
+            {txDetail && <TxTypeComponent txDetail={txDetail} chain={chain} />}
+            <GasSelector
+              tx={tx}
+              gas={{
+                ...(txDetail
+                  ? txDetail.gas
+                  : {
+                      estimated_gas_cost_usd_value: 0,
+                      estimated_gas_cost_value: 0,
+                      estimated_seconds: 0,
+                      estimated_gas_used: 0,
+                    }),
+                front_tx_count: 0,
+                max_gas_cost_usd_value: 0,
+                max_gas_cost_value: 0,
+              }}
+              chainId={chainId}
+              onChange={handleGasChange}
+            />
             <footer className="connect-footer">
-              {txDetail.pre_exec.success && (
-                <GasSelector
-                  tx={txDetail.tx}
-                  gas={txDetail.gas}
-                  nativeToken={txDetail.native_token}
-                  onChange={handleGasChange}
-                />
-              )}
               <SecurityCheckBar
                 status={securityCheckStatus}
                 alert={securityCheckAlert}
+                onClick={() => setShowSecurityCheckDetail(true)}
               />
               <div className="action-buttons flex justify-between">
                 <Button
@@ -252,9 +255,7 @@ const SignTx = ({ params, origin }) => {
                   className="w-[172px]"
                   onClick={() => handleAllow()}
                 >
-                  {securityCheckStatus === 'pass'
-                    ? confirmText[txDetail?.pre_exec.tx_type] || 'Confirm'
-                    : 'Continue'}
+                  {securityCheckStatus === 'pass' ? 'Sign' : 'Continue'}
                 </Button>
               </div>
             </footer>
@@ -266,9 +267,7 @@ const SignTx = ({ params, origin }) => {
             onCancel={() => setShowSecurityCheckDetail(false)}
             data={securityCheckDetail}
             onOk={() => handleAllow(true)}
-            okText={
-              (txDetail && confirmText[txDetail.pre_exec.tx_type]) || 'Confirm'
-            }
+            okText="Sign"
             preprocessSuccess={preprocessSuccess}
           />
         )}

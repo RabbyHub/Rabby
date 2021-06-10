@@ -2,12 +2,8 @@ import React, { useState } from 'react';
 import { Modal, Input, Button } from 'antd';
 import clsx from 'clsx';
 import { useDebounce } from 'react-use';
-import {
-  GasResult,
-  Tx,
-  GasLevel,
-  NativeToken,
-} from 'background/service/openapi';
+import { CHAINS } from 'consts';
+import { GasResult, Tx, GasLevel } from 'background/service/openapi';
 import { formatSeconds, useWallet } from 'ui/utils';
 import IconGas from 'ui/assets/gas.svg';
 import IconSetting from 'ui/assets/setting-gray.svg';
@@ -18,20 +14,21 @@ import IconGroup from 'ui/assets/group.svg';
 
 interface GasSelectorProps {
   gas: GasResult;
-  nativeToken: NativeToken;
+  chainId: number;
   tx: Tx;
   onChange(gas: GasLevel): void;
 }
 
-const GasSelector = ({ gas, nativeToken, tx, onChange }: GasSelectorProps) => {
+const GasSelector = ({ gas, chainId, tx, onChange }: GasSelectorProps) => {
   const wallet = useWallet();
   const [modalVisible, setModalVisible] = useState(false);
   const [customGas, setCustomGas] = useState(Number(tx.gasPrice));
   const [gasList, setGasList] = useState<GasLevel[]>([]);
   const [selectedGas, setSelectGas] = useState<GasLevel | null>(null);
+  const chain = Object.values(CHAINS).find((item) => item.id === chainId)!;
   const loadGasMarket = async () => {
     const list = await wallet.openapi.gasMarket(
-      nativeToken.id,
+      chain.serverId,
       customGas > 0 ? customGas : undefined
     );
     setGasList(list);
@@ -78,13 +75,11 @@ const GasSelector = ({ gas, nativeToken, tx, onChange }: GasSelectorProps) => {
   );
   return (
     <>
-      <div className="gas-selector">
-        <div className="left">
-          <img src={IconGas} alt="gas" className="icon icon-gas" />
-        </div>
+      <p className="section-title">Es. gas cost</p>
+      <div className="gas-selector gray-section-block">
         <div className="gas-info">
-          <p className="text-gray-content font-medium text-13">
-            {`${gas.estimated_gas_cost_value} ${nativeToken.symbol}`}/$
+          <p className="text-gray-content text-14">
+            {`${gas.estimated_gas_cost_value} ${chain.nativeTokenSymbol}`} ≈ $
             {gas.estimated_gas_cost_usd_value.toFixed(2)}
           </p>
           <p className="text-gray-content text-12">

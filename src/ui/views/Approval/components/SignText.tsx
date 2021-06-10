@@ -97,7 +97,7 @@ const SignText = ({ params }: { params: SignTextProps }) => {
       <AccountCard />
       <div className="approval-text">
         <p className="section-title">Sign Text</p>
-        <div className="text-detail-wrapper">
+        <div className="text-detail-wrapper gray-section-block">
           <div className="text-detail text-gray-subTitle">{signText}</div>
           {explain && (
             <p className="text-explain">

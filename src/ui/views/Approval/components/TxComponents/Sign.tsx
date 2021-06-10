@@ -1,52 +1,67 @@
 import React from 'react';
+import { message } from 'antd';
+import ClipboardJS from 'clipboard';
+import { AddressViewer } from 'ui/component';
+import { CHAINS, CHAINS_ENUM } from 'consts';
 import { ExplainTxResponse } from 'background/service/openapi';
+import BalanceChange from './BalanceChange';
+import IconCopy from 'ui/assets/copy-no-border.svg';
+import IconSuccess from 'ui/assets/success.svg';
 
 interface SignProps {
   data: ExplainTxResponse;
+  chainEnum: CHAINS_ENUM;
 }
 
-const Sign = ({ data }: SignProps) => {
-  const assetsChange = data.pre_exec.assets_change;
+const Sign = ({ data, chainEnum }: SignProps) => {
+  const detail = data.type_call!;
+  const chain = CHAINS[chainEnum];
+  const handleCopySpender = () => {
+    const clipboard = new ClipboardJS('.sign', {
+      text: function () {
+        return detail.contract;
+      },
+    });
+
+    clipboard.on('success', () => {
+      message.success({
+        icon: <img src={IconSuccess} className="icon icon-success" />,
+        content: 'Copied',
+        duration: 0.5,
+      });
+      clipboard.destroy();
+    });
+  };
+
   return (
     <div className="sign">
-      <h1 className="tx-header">Sign Transaction</h1>
-      <p className="tx-subtitle text-gray-content text-14">
-        Intereact with contract
-      </p>
-      <div className="tx-target">
-        {data.tx.to}
-        <ul className="tags">
-          {data.tags.map((tag) => (
-            <li key={tag}>{tag}</li>
-          ))}
-        </ul>
+      <p className="section-title">Sign {chain.name} transaction</p>
+      <div className="gray-section-block common-detail-block">
+        <div className="block-field">
+          <span className="label">Protocol</span>
+          <span className="value">{detail.contract_protocol_name}</span>
+        </div>
+        <div className="block-field">
+          <span className="label">Action</span>
+          <span className="value">{detail.action}</span>
+        </div>
+        <div className="block-field contract">
+          <span className="label">Contract</span>
+          <span className="value">
+            <AddressViewer address={detail.contract} showArrow={false} />
+            <img
+              src={IconCopy}
+              className="icon icon-copy"
+              onClick={handleCopySpender}
+            />
+          </span>
+        </div>
+        <img
+          src={detail.contract_protocol_logo_url}
+          className="contract-logo"
+        />
       </div>
-      <p className="tx-subtitle text-gray-content text-14">
-        Balance changes after this transaction (est.)
-      </p>
-      <ul className="assets-change">
-        {assetsChange.map((item) => (
-          <li key={item.id}>
-            <div className="token" title={item.symbol}>
-              <img
-                src={item.logo_url}
-                alt={item.symbol}
-                className="icon icon-token"
-              />
-              {item.symbol.length > 8
-                ? item.symbol.slice(0, 8) + '...'
-                : item.symbol}
-            </div>
-            <div
-              className="amount"
-              title={`${item.amount > 0 ? '+' : ''}${item.amount}`}
-            >
-              {item.amount > 0 ? '+' : ''}
-              {item.amount}
-            </div>
-          </li>
-        ))}
-      </ul>
+      <BalanceChange data={data.balance_change} />
     </div>
   );
 };
