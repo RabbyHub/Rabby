@@ -107,7 +107,7 @@ export interface GasLevel {
 }
 
 export interface BalanceChange {
-  error_msg: string;
+  err_msg: string;
   receive_token_list: TokenItem[];
   send_token_list: TokenItem[];
   success: boolean;
@@ -124,7 +124,7 @@ export interface ExplainTxResponse {
   };
   pre_exec: {
     success: boolean;
-    err_message: string;
+    err_msg: string;
   };
   recommend: {
     gas: string;

@@ -153,6 +153,9 @@
     padding-bottom: 130px;
     display: flex;
     flex-direction: column;
+    &.pre-process-failed {
+      padding-bottom: 200px;
+    }
     .send, .approve, .cancel, .cancel-tx {
       .common-detail-block {
         display: flex;
@@ -345,13 +348,21 @@
   }
 
   footer {
-    padding: 20px;
+    padding: 20px 20px 32px;
     position: fixed;
     bottom: 0;
     left: 0;
     background-color: #fff;
     border-top: 0.5px solid #D8DFEB;
     width: 100%;
+  }
+
+  .force-process {
+    margin-bottom: 20px;
+    span {
+      color: #818A99;
+      font-size: 14px;
+    }
   }
 
   .security-check-bar {
