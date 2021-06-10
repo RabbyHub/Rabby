@@ -4,7 +4,6 @@ import QRCode from 'qrcode.react';
 import { browser } from 'webextension-polyfill-ts';
 import { useEffect, useState } from 'react';
 import { Link, useHistory } from 'react-router-dom';
-import { useDebounce } from 'react-use';
 import { message, Modal } from 'antd';
 import { CHAINS, HARDWARE_KEYRING_TYPES, KEYRING_TYPE } from 'consts';
 import { AddressViewer, AddressList } from 'ui/component';

@@ -14,6 +14,7 @@ export interface Chain {
   enum: CHAINS_ENUM;
   serverId: string;
   network: string;
+  nativeTokenSymbol: string;
   whiteLogo?: string;
 }
 

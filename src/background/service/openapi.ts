@@ -1,7 +1,6 @@
 import axios, { Method } from 'axios';
 import rateLimit from 'axios-rate-limit';
 import { createPersistStore } from 'background/utils';
-import { TX_TYPE_ENUM } from 'consts';
 
 interface OpenApiConfigValue {
   path: string;
@@ -72,7 +71,7 @@ export interface TotalBalanceResponse {
   chain_list: ChainWithBalance[];
 }
 
-interface AssertsChange {
+export interface TokenItem {
   amount: number;
   chain: string;
   decimals: number;
@@ -90,22 +89,6 @@ interface AssertsChange {
   time_at: number;
 }
 
-export interface NativeToken {
-  id: string;
-  chain: string;
-  name: string;
-  symbol: string;
-  display_symbol: string | null;
-  optimized_symbol: string;
-  decimals: number;
-  logo_url: string;
-  price: number;
-  is_verified: boolean;
-  is_core: boolean;
-  is_wallet: boolean;
-  time_at: number;
-}
-
 export interface GasResult {
   estimated_gas_cost_usd_value: number;
   estimated_gas_cost_value: number;
@@ -116,24 +99,65 @@ export interface GasResult {
   max_gas_cost_value: number;
 }
 
-export interface ExplainTxResponse {
-  gas: GasResult;
-  native_token: NativeToken;
-  pre_exec: {
-    assets_change: AssertsChange[];
-    err_msg: string;
-    success: boolean;
-    tx_type: TX_TYPE_ENUM;
-  };
-  tags: string[];
-  tx: Tx;
-}
-
 export interface GasLevel {
   level: string;
   price: number;
   front_tx_count: number;
   estimated_seconds: number;
+}
+
+export interface BalanceChange {
+  error_msg: string;
+  receive_token_list: TokenItem[];
+  send_token_list: TokenItem[];
+  success: boolean;
+  usd_value_change: number;
+}
+
+export interface ExplainTxResponse {
+  balance_change: BalanceChange;
+  gas: {
+    estimated_gas_cost_usd_value: number;
+    estimated_gas_cost_value: number;
+    estimated_gas_used: number;
+    estimated_seconds: number;
+  };
+  pre_exec: {
+    success: boolean;
+    err_message: string;
+  };
+  recommend: {
+    gas: string;
+    nonce: string;
+  };
+  support_balance_change: true;
+  type_call?: {
+    action: string;
+    contract: string;
+    contract_protocol_logo_url: string;
+    contract_protocol_name: string;
+  };
+  type_send?: {
+    to_addr: string;
+    token_symbol: string;
+    token_amount: number;
+  };
+  type_token_approval?: {
+    spender: string;
+    spender_protocol_logo_url: string;
+    spender_protocol_name: string;
+    token_symbol: string;
+    token_amount: number;
+    is_infinity: boolean;
+  };
+  type_cancel_token_approval?: {
+    spender: string;
+    spender_protocol_logo_url: string;
+    spender_protocol_name: string;
+    token_symbol: string;
+  };
+  type_cancel_tx?: any; // TODO
+  type_deploy_contract?: any; // TODO
 }
 
 interface RPCResponse<T> {
