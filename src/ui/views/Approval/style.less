@@ -291,6 +291,16 @@
             line-height: 1;
             .token-symbol {
               color: #818A99;
+              width: 80px;
+              flex-shrink: 0;
+              overflow: hidden;
+              text-overflow: ellipsis;
+            }
+            .token-amount {
+              flex: 1;
+              overflow: hidden;
+              text-overflow: ellipsis;
+              text-align: right;
             }
           }
           &:nth-last-child(1) {
