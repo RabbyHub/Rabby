@@ -6,7 +6,7 @@ class DedupePromise {
     this._blackList = blackList;
   }
 
-  async call(key: string, defer: Promise<any>) {
+  async call(key: string, defer: () => Promise<any>) {
     if (this._blackList.includes(key) && this._tasks[key]) {
       throw new Error(
         'there is a pending request, please request after it resolved'
@@ -17,7 +17,7 @@ class DedupePromise {
       this._tasks[key] = (this._tasks[key] || 0) + 1;
 
       resolve(
-        defer.finally(() => {
+        defer().finally(() => {
           this._tasks[key]--;
           if (!this._tasks[key]) {
             delete this._tasks[key];

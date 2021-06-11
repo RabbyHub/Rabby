@@ -122,7 +122,7 @@ export class EthereumProvider extends EventEmitter {
 
   // TODO: support multi request!
   request = async (data) => {
-    return this.dedupePromise.call(data.method, this._request(data));
+    return this.dedupePromise.call(data.method, () => this._request(data));
   };
 
   _request = async (data) => {
