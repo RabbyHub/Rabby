@@ -68,11 +68,10 @@ const FallbackImage = ({
         <img
           src={url}
           alt={origin}
-          className="transition-opacity"
           style={{
             width,
             height,
-            opacity: loadSuccess ? '1' : '0',
+            visibility: loadSuccess ? 'visible' : 'hidden',
             ...style,
           }}
           onLoad={handleImageLoadSuccess}
