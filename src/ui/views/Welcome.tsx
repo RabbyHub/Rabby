@@ -18,7 +18,7 @@ const Welcome = () => {
       >
         A browser plugin for DeFi users
       </div>
-      <Link to="/password">
+      <Link to="/password" replace>
         <Button
           size="large"
           className="w-[288px] block mx-auto text-blue bg-white"

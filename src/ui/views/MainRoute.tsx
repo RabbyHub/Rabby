@@ -1,11 +1,11 @@
 import React from 'react';
 import { Switch, Route } from 'react-router-dom';
 import ReactGA, { ga } from 'react-ga';
+import { PrivateRoute } from 'ui/component';
 
 import Welcome from './Welcome';
 import NoAddress from './NoAddress';
 import CreatePassword from './CreatePassword';
-
 import ImportMode from './ImportMode';
 import ImportPrivateKey from './ImportPrivateKey';
 import ImportJson from './ImportJson';
@@ -18,7 +18,6 @@ import ImportLedgerPathSelect from './ImportHardware/LedgerHdPath';
 import Settings from './Settings';
 import ConnectedSites from './ConnectedSites';
 import Approval from './Approval';
-import SortHat from './SortHat';
 import CreateMnemonics from './CreateMnemonics';
 import AddAddress from './AddAddress';
 import ChainManagement, { StartChainManagement } from './ChainManagement';
@@ -46,63 +45,62 @@ const Main = () => {
         <Route exact path="/password">
           <CreatePassword />
         </Route>
-        <Route exact path="/start-chain-management">
-          <StartChainManagement />
-        </Route>
-        <Route exact path="/no-address">
+
+        <PrivateRoute exact path="/no-address">
           <NoAddress />
-        </Route>
-        <Route exact path="/create">
+        </PrivateRoute>
+        <PrivateRoute exact path="/start-chain-management">
+          <StartChainManagement />
+        </PrivateRoute>
+        <PrivateRoute exact path="/create">
           <CreateMnemonics />
-        </Route>
-        <Route exact path="/import">
+        </PrivateRoute>
+        <PrivateRoute exact path="/import">
           <ImportMode />
-        </Route>
-        <Route exact path="/import/key">
+        </PrivateRoute>
+        <PrivateRoute exact path="/import/key">
           <ImportPrivateKey />
-        </Route>
-        <Route exact path="/import/json">
+        </PrivateRoute>
+        <PrivateRoute exact path="/import/json">
           <ImportJson />
-        </Route>
-        <Route exact path="/import/mnemonics">
+        </PrivateRoute>
+        <PrivateRoute exact path="/import/mnemonics">
           <ImportMnemonics />
-        </Route>
-        <Route exact path="/import/select-address">
+        </PrivateRoute>
+        <PrivateRoute exact path="/import/select-address">
           <SelectAddress />
-        </Route>
-        <Route exact path="/import/hardware">
+        </PrivateRoute>
+        <PrivateRoute exact path="/import/hardware">
           <ImportHardware />
-        </Route>
-        <Route exact path="/import/hardware/ledger">
+        </PrivateRoute>
+        <PrivateRoute exact path="/import/hardware/ledger">
           <ImportLedgerPathSelect />
-        </Route>
-        <Route exact path="/import/watch-address">
+        </PrivateRoute>
+        <PrivateRoute exact path="/import/watch-address">
           <ImportWatchAddress />
-        </Route>
-        <Route exact path="/import/success">
+        </PrivateRoute>
+        <PrivateRoute exact path="/import/success">
           <ImportSuccess />
-        </Route>
-        <Route exact path="/add-address">
+        </PrivateRoute>
+
+        <PrivateRoute exact path="/add-address">
           <AddAddress />
-        </Route>
-        <Route exact path="/approval">
+        </PrivateRoute>
+        <PrivateRoute exact path="/approval">
           <Approval />
-        </Route>
-        <Route exact path="/settings">
+        </PrivateRoute>
+        <PrivateRoute exact path="/settings">
           <Settings />
-        </Route>
-        <Route exact path="/settings/address">
+        </PrivateRoute>
+        <PrivateRoute exact path="/settings/address">
           <AddressManagement />
-        </Route>
-        <Route exact path="/settings/sites">
+        </PrivateRoute>
+        <PrivateRoute exact path="/settings/sites">
           <ConnectedSites />
-        </Route>
-        <Route exact path="/settings/chain">
+        </PrivateRoute>
+        <PrivateRoute exact path="/settings/chain">
           <ChainManagement />
-        </Route>
-        <Route exact path="/">
-          <SortHat />
-        </Route>
+        </PrivateRoute>
       </Switch>
     </>
   );
