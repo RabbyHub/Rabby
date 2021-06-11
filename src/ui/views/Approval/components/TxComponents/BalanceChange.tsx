@@ -38,36 +38,40 @@ const BalanceChange = ({
       </p>
       {isSuccess && (
         <div className="gray-section-block balance-change-content">
-          <ul>
-            {sendTokenList.map((token) => (
-              <li key={token.id}>
-                <span className="token-symbol" title={token.symbol}>
-                  {token.symbol}
-                </span>
-                <span
-                  className="token-amount"
-                  title={`-${splitNumberByStep(token.amount)}`}
-                >
-                  -{splitNumberByStep(token.amount)}
-                </span>
-              </li>
-            ))}
-          </ul>
-          <ul>
-            {receiveTokenList.map((token) => (
-              <li key={token.id}>
-                <span className="token-symbol" title={token.symbol}>
-                  {token.symbol}
-                </span>
-                <span
-                  className="token-amount"
-                  title={`+${splitNumberByStep(token.amount)}`}
-                >
-                  +{splitNumberByStep(token.amount)}
-                </span>
-              </li>
-            ))}
-          </ul>
+          {sendTokenList && sendTokenList.length > 0 && (
+            <ul>
+              {sendTokenList.map((token) => (
+                <li key={token.id}>
+                  <span className="token-symbol" title={token.symbol}>
+                    {token.symbol}
+                  </span>
+                  <span
+                    className="token-amount"
+                    title={`-${splitNumberByStep(token.amount)}`}
+                  >
+                    -{splitNumberByStep(token.amount)}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          )}
+          {receiveTokenList && receiveTokenList.length > 0 && (
+            <ul>
+              {receiveTokenList.map((token) => (
+                <li key={token.id}>
+                  <span className="token-symbol" title={token.symbol}>
+                    {token.symbol}
+                  </span>
+                  <span
+                    className="token-amount"
+                    title={`+${splitNumberByStep(token.amount)}`}
+                  >
+                    +{splitNumberByStep(token.amount)}
+                  </span>
+                </li>
+              ))}
+            </ul>
+          )}
         </div>
       )}
       {!isSuccess && (
