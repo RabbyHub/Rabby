@@ -8,13 +8,19 @@ class PushEventHandlers {
     this.provider = provider;
   }
 
+  _emit(event, data) {
+    if (this.provider._initialized) {
+      this.provider.emit(event, data);
+    }
+  }
+
   disconnect = () => {
     this.provider._isConnected = false;
     this.provider.selectedAddress = null;
     const disconnectError = ethErrors.provider.disconnected();
 
-    this.provider.emit('disconnect', disconnectError);
-    this.provider.emit('close', disconnectError);
+    this._emit('disconnect', disconnectError);
+    this._emit('close', disconnectError);
   };
 
   accountsChanged = (accounts) => {
@@ -23,18 +29,18 @@ class PushEventHandlers {
     }
 
     this.provider.selectedAddress = accounts?.[0];
-    this.provider.emit('accountsChanged', accounts);
+    this._emit('accountsChanged', accounts);
   };
 
   chainChanged = ({ chain, networkVersion }) => {
     if (chain !== this.provider.chainId) {
       this.provider.chainId = chain;
-      this.provider.emit('chainChanged', chain);
+      this._emit('chainChanged', chain);
     }
 
     if (networkVersion !== this.provider.networkVersion) {
       this.provider.networkVersion = networkVersion;
-      this.provider.emit('networkChanged', networkVersion);
+      this._emit('networkChanged', networkVersion);
     }
   };
 }

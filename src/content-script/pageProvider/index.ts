@@ -27,6 +27,7 @@ export class EthereumProvider extends EventEmitter {
   isRabby = true;
   isMetaMask = true;
   _isConnected = false;
+  _initialized = false;
 
   private pushEventHandlers: PushEventHandlers;
   private requestPromise = new ReadyPromise(2);
@@ -80,13 +81,15 @@ export class EthereumProvider extends EventEmitter {
       this.pushEventHandlers.accountsChanged(accounts);
     } catch {
       //
+    } finally {
+      this._initialized = true;
+      this.emit('_initialized');
     }
 
     document.addEventListener(
       'visibilitychange',
       this._requestPromiseCheckVisibility
     );
-    this.emit('_initialized');
   };
 
   private _requestPromiseCheckVisibility = () => {
@@ -141,7 +144,6 @@ export class EthereumProvider extends EventEmitter {
 
   // shim to matamask legacy api
   sendAsync = (payload, callback) => {
-    log('[sendAsync]', payload);
     const { method, params, ...rest } = payload;
     this.request({ method, params })
       .then((result) => callback(null, { ...rest, method, result }))
