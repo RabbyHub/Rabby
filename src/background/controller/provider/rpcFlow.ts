@@ -98,6 +98,10 @@ export default (req) =>
             })
           );
 
+      const {
+        session: { origin },
+      } = request;
+
       if (uiRequestComponent) {
         return await notificationService.requestApproval({
           aporovalComponent: uiRequestComponent,
