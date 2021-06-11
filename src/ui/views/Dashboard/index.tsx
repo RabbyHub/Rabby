@@ -258,7 +258,7 @@ const Dashboard = () => {
       >
         <div>
           <QRCode value={currentAccount?.address} size={212} />
-          <p className="address text-gray-subTitle text-13 font-medium mb-0">
+          <p className="address text-gray-subTitle text-13 font-medium mb-0 font-roboto-mono">
             {currentAccount?.address}
           </p>
         </div>

@@ -18,7 +18,7 @@ const AddAddressOptions = () => {
   const renderData = [
     {
       leftIcon: IconNewAddress,
-      content: 'Create a new address',
+      content: 'Create',
       onClick: async () => {
         try {
           await wallet.getCurrentMnemonics();
@@ -36,19 +36,19 @@ const AddAddressOptions = () => {
     },
     {
       leftIcon: IconImportAddress,
-      content: 'Import an address',
+      content: 'Import',
       onClick: () => history.push('/import'),
     },
     {
       leftIcon: IconConnectHardware,
-      content: 'Connect a hardware wallet',
+      content: 'Harware Wallet',
       onClick: () => {
         wallet.openIndexPage('/import/hardware');
       },
     },
     {
       leftIcon: IconWatchAddress,
-      content: 'Add a watch address',
+      content: 'Watch Mode',
       onClick: () => history.push('/import/watch-address'),
     },
   ];

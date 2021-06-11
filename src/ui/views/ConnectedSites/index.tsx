@@ -58,8 +58,10 @@ const ConnectedSites = () => {
               }
             >
               <div className="site-info">
-                <p className="text-13 font-medium">{site.origin}</p>
-                <p className="text-12">{site.name}</p>
+                <p className="text-13 font-medium text-gray-title">
+                  {site.origin}
+                </p>
+                <p className="text-12 text-gray-content">{site.name}</p>
               </div>
             </Field>
           ))

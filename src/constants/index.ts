@@ -48,7 +48,7 @@ export const CHAINS: Record<string, Chain> = {
     logo: IconBscLogo,
     whiteLogo: IconBscWhiteLogo,
     network: '56',
-    nativeTokenSymbol: 'BSC',
+    nativeTokenSymbol: 'BNB',
   },
   [CHAINS_ENUM.POLYGON]: {
     id: 137,
@@ -115,7 +115,7 @@ export const CHAINS: Record<string, Chain> = {
     whiteLogo: IconArbitrumWhiteLogo,
     hex: '0xa4b1',
     network: '42161',
-    nativeTokenSymbol: 'ARB',
+    nativeTokenSymbol: 'ETH',
   },
 };
 

@@ -18,7 +18,7 @@ const Send = ({ data, chainEnum }: SendProps) => {
         <p className="title">
           Send {splitNumberByStep(detail.token_amount)} {detail.token_symbol} to
         </p>
-        <p className="text-gray-content text-13 font-medium mb-0">
+        <p className="text-gray-content text-13 font-medium mb-0 font-roboto-mono whitespace-nowrap">
           {detail.to_addr}
         </p>
       </div>
