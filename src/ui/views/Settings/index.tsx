@@ -50,7 +50,7 @@ const OpenApiModal = ({
             },
           ]}
         >
-          <Input placeholder="Host" />
+          <Input placeholder="Host" size="large" />
         </Form.Item>
         <div className="flex justify-center">
           <Button

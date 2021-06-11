@@ -4,7 +4,8 @@ import { ethErrors, serializeError } from 'eth-rpc-errors';
 import BroadcastChannelMessage from '@/utils/message/broadcastChannelMessage';
 import PushEventHandlers from './pushEventHandlers';
 import { domReadyCall, $ } from './utils';
-import ReadyPromise from '../readyPromise';
+import ReadyPromise from './readyPromise';
+import DedupePromise from './dedupePromise';
 
 declare const channelName;
 
@@ -26,11 +27,17 @@ export class EthereumProvider extends EventEmitter {
   networkVersion: string | null = null;
   isRabby = true;
   isMetaMask = true;
+
   _isConnected = false;
   _initialized = false;
 
   private pushEventHandlers: PushEventHandlers;
   private requestPromise = new ReadyPromise(2);
+  private dedupePromise = new DedupePromise([
+    'personal_sign',
+    'wallet_addEthereumChain',
+    'eth_sendTransaction',
+  ]);
   private _bcm = new BroadcastChannelMessage(channelName);
 
   constructor({ maxListeners = 100 } = {}) {
@@ -113,7 +120,12 @@ export class EthereumProvider extends EventEmitter {
     return this._isConnected;
   };
 
+  // TODO: support multi request!
   request = async (data) => {
+    return this.dedupePromise.call(data.method, this._request(data));
+  };
+
+  _request = async (data) => {
     if (!data) {
       throw ethErrors.rpc.invalidRequest();
     }
