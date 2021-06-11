@@ -21,7 +21,7 @@ import IconPending from 'ui/assets/pending.svg';
 import IconSuccess from 'ui/assets/success.svg';
 import IconChecked from 'ui/assets/checked.svg';
 import IconNotChecked from 'ui/assets/not-checked.svg';
-import IconAdd from 'ui/assets/add.svg';
+import IconManageAddress from 'ui/assets/manage-address.svg';
 import IconHardware from 'ui/assets/hardware-white.svg';
 import IconWatch from 'ui/assets/watch-white.svg';
 import './style.less';
@@ -74,7 +74,7 @@ const SwitchAddress = ({
       />
       <div className="footer">
         <Link to="/settings/address">
-          <img src={IconAdd} className="icon icon-add" />
+          <img src={IconManageAddress} className="icon icon-add" />
           Manage addresses
         </Link>
       </div>
@@ -254,10 +254,10 @@ const Dashboard = () => {
         closable={false}
         onCancel={() => setQrcodeVisible(false)}
         className="qrcode-modal"
-        width="64%"
+        width="304px"
       >
         <div>
-          <QRCode value={currentAccount?.address} size={212} />
+          <QRCode value={currentAccount?.address} size={240} />
           <p className="address text-gray-subTitle text-13 font-medium mb-0 font-roboto-mono">
             {currentAccount?.address}
           </p>

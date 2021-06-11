@@ -32,7 +32,9 @@ const Unlock = () => {
 
   return (
     <div className="unlock">
-      <div className="header" />
+      <div className="header">
+        <div className="image" />
+      </div>
       <Form className="bg-gray-bg flex-1" form={form} onFinish={onSubmit}>
         <Form.Item
           className="mt-[34px] mx-28"
