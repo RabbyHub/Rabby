@@ -15,3 +15,4 @@ export { default as Uploader } from './Uploader';
 export { default as FieldCheckbox } from './FieldCheckbox';
 export { default as Spin } from './Spin';
 export { default as FallbackSiteLogo } from './FallbackSiteLogo';
+export { default as PrivateRoute } from './PrivateRoute';

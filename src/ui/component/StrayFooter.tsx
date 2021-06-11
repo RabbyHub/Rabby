@@ -56,8 +56,8 @@ const StrayFooterNav = memo(
       <StrayFooter className={className}>
         <div
           className={cx(
-            'py-24 px-20 w-full flex justify-center',
-            hasDivider && ['bg-white', 'border-gray-divider', 'border-t']
+            'pb-24 px-20 w-full flex justify-center',
+            hasDivider && 'bg-white border-gray-divider border-t pt-24'
           )}
         >
           {hasBack && (

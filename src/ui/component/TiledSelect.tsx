@@ -7,7 +7,7 @@ interface TiledSelectProps {
   defaultValue?: string[];
   value?: string[];
   options: string[];
-  onChange?(string): void;
+  onChange?(arg: string[]): void;
   className?: string;
 }
 
@@ -18,46 +18,41 @@ const TiledSelect = ({
   onChange,
   className,
 }: TiledSelectProps) => {
-  const [_value, handleRemove, handleChoose] = useSelectOption(
+  const [_value, handleRemove, handleChoose] = useSelectOption<string>({
     onChange,
     value,
-    defaultValue
-  );
+    defaultValue,
+    options,
+  });
 
   return (
     <div className={className}>
-      <div className="rounded-lg bg-white text-center font-medium mb-16 p-12 overflow-y-auto">
+      <div className="rounded-lg bg-white text-center font-medium mb-16 p-12 pr-0 h-[165px]">
         {_value &&
           _value.map((v, i) => (
             <div
               style={{ lineHeight: '27px' }}
-              className="rounded-lg bg-gray-bg text-13 text-gray-title mr-8 h-[27px] px-10 mb-8 float-left inline-block"
+              className="rounded-lg bg-gray-bg text-13 text-gray-title mr-8 h-[28px] px-10 mb-8 float-left inline-block cursor-pointer"
               key={v}
+              onClick={() => handleRemove(i)}
             >
               <span className="mr-8">{v}</span>
-              <img
-                className="align-baseline inline-block"
-                src={IconCross}
-                onClick={() => handleRemove(i)}
-              />
+              <img className="align-baseline inline-block" src={IconCross} />
             </div>
           ))}
       </div>
       <div className="flex justify-between flex-wrap -mr-8 clear-left">
-        {options.map((o) => (
+        {options.map((o, i) => (
           <div
             style={{ lineHeight: '32px' }}
             className={cx(
-              'h-[32px] w-[84px] rounded-lg cursor-pointer text-center bg-white mb-8 text-gray-title font-medium mr-8 transition-colors',
-              _value.includes(o) && [
-                'border',
-                'bg-gray-bg',
-                'text-gray-comment',
-                'border-gray-divider',
-              ]
+              'h-[32px] w-[84px] rounded-lg cursor-pointer text-center mb-8 font-medium mr-8 transition-colors border',
+              _value.includes(o)
+                ? 'bg-gray-bg text-gray-comment border-gray-divider'
+                : 'bg-white text-gray-title border-white'
             )}
             key={o}
-            onClick={() => handleChoose(o)}
+            onClick={() => handleChoose(i)}
           >
             {o}
           </div>

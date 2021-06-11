@@ -2,7 +2,7 @@ import React from 'react';
 import { useHistory } from 'react-router-dom';
 import { StrayPageWithButton } from 'ui/component';
 import { Input, Form } from 'antd';
-import { useWallet } from 'ui/utils';
+import { useWallet, useWalletRequest } from 'ui/utils';
 
 const PASSWORD_LENGTH = [8, 20];
 
@@ -10,23 +10,29 @@ const CreatePassword = () => {
   const history = useHistory();
   const wallet = useWallet();
   const [form] = Form.useForm();
-  const onSubmit = ({
-    password,
-  }: {
-    password: string;
-    confirmPassword: string;
-  }) => {
-    wallet.boot(password.trim());
-    history.push('/start-chain-management');
-  };
+
+  const [run, loading] = useWalletRequest(wallet.boot, {
+    onSuccess() {
+      history.replace('/start-chain-management');
+    },
+    onError(err) {
+      form.setFields([
+        {
+          name: 'password',
+          errors: [err?.message || 'Wrong password'],
+        },
+      ]);
+    },
+  });
 
   return (
     <StrayPageWithButton
       header={{
         title: 'Set Unlock Password',
       }}
-      onSubmit={onSubmit}
+      onSubmit={({ password }) => run(password.trim())}
       form={form}
+      spinning={loading}
     >
       <Form.Item
         className="mb-0 h-60 overflow-hidden"

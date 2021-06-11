@@ -45,7 +45,7 @@ const ImportSuccess = () => {
           {accounts?.length} addresses
         </div>
         <div className="text-green text-15 mb-12">{title}</div>
-        <div className="overflow-auto flex-1 mb-[120px] lg:w-[460px]">
+        <div className="overflow-auto flex-1 lg:w-[460px]">
           {accounts.map((account) => (
             <AddressItem
               className="mb-12 rounded bg-white py-12 pl-16"

@@ -15,8 +15,8 @@ const Welcome = () => {
       <div
         className="absolute top-[95px] left-[31px] bg-no-repeat bg-cover w-[337px] h-[337px]"
         style={{ backgroundImage: `url(${ImgWelcome})` }}
-      ></div>
-      <Link to="/password">
+      />
+      <Link to="/password" replace>
         <Button
           size="large"
           className="w-[288px] h-[48px] block mx-auto text-blue bg-white"
