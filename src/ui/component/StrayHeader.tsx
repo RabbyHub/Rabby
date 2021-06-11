@@ -14,9 +14,10 @@ const Header = ({
   subTitle,
   secondTitle,
   center = false,
+  className,
 }: StrayHeaderProps) => {
   return (
-    <div className={cx('mb-60', center && 'text-center')}>
+    <div className={cx(className, center && 'text-center')}>
       {title && <div className="text-24 font-bold">{title}</div>}
       {secondTitle && <div className="text-20 font-medium">{secondTitle}</div>}
       {subTitle && (

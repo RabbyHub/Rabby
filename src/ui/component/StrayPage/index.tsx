@@ -32,10 +32,12 @@ const StrayPage = ({
       className
     )}
   >
-    <div className="sm:px-20 max-h-full overflow-auto">
-      {header && <StrayHeader {...header} />}
+    <div className="sm:px-20 h-full flex flex-col">
+      {header && <StrayHeader className="mb-60" {...header} />}
       {children && (
-        <div className="lg:flex lg:items-center lg:flex-col">{children}</div>
+        <div className="lg:flex lg:items-center lg:flex-col flex-1 overflow-auto">
+          {children}
+        </div>
       )}
     </div>
     {footerRender && footerRender({})}
@@ -64,13 +66,12 @@ export const StrayPageWithButton = ({
   hasBack,
   hasDivider,
   initialValues,
-  className,
   NextButtonText,
   spinning,
 }: StrayPageWithButtonProps & StrayFooterNavProps) => (
-  <StrayPage header={header} className={className} spinning={spinning}>
+  <StrayPage header={header} spinning={spinning}>
     <Form
-      className="flex-1 overflow-auto pb-[124px]"
+      className="overflow-y-auto max-h-full sm:pb-[100px] lg:pb-[38px]"
       form={form}
       onFinish={onSubmit}
       initialValues={initialValues}
