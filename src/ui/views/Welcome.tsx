@@ -6,22 +6,20 @@ import { ImgWelcome } from 'ui/assets';
 const Welcome = () => {
   return (
     <div
-      className="h-full pt-[95px]"
+      className="h-full pt-[482px] relative"
       style={{
         backgroundImage:
           'linear-gradient(101.58deg, #8BB2FF 1.04%, #7A7CFF 90.78%)',
       }}
     >
       <div
-        className="bg-center bg h-[400px] pt-[304px] text-center text-white text-20 bg-no-repeat"
+        className="absolute top-[95px] left-[31px] bg-no-repeat bg-cover w-[337px] h-[337px]"
         style={{ backgroundImage: `url(${ImgWelcome})` }}
-      >
-        A browser plugin for DeFi users
-      </div>
+      />
       <Link to="/password" replace>
         <Button
           size="large"
-          className="w-[288px] block mx-auto text-blue bg-white"
+          className="w-[288px] h-[48px] block mx-auto text-blue bg-white"
         >
           Get Started
         </Button>

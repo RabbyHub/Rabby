@@ -5,10 +5,20 @@
   overflow: hidden;
   .header {
     height: 400px;
-    background-color: #b4bdcc;
-    background-image: url('../../assets/welcome.png'),
-      linear-gradient(101.58deg, #8bb2ff 1.04%, #7a7cff 90.78%);
-    background-repeat: no-repeat;
-    background-position: center;
+    width: 100%;
+    background: linear-gradient(101.58deg, #8BB2FF 1.04%, #7A7CFF 90.78%);
+    background-size: 100%;
+    position: relative;
+    .image {
+      position: absolute;
+      width: 337px;
+      height: 272px;
+      background-image: url('../../assets/welcome.png');
+      background-repeat: no-repeat;
+      background-size: cover;
+      left: 50%;
+      top: 50%;
+      transform: translate(-50%, -50%);
+    }
   }
 }

@@ -8,6 +8,7 @@ import IconChainManagement from 'ui/assets/chain-management.svg';
 import IconConnectSitesManagement from 'ui/assets/connect-sites-management.svg';
 import IconOpenapiManagement from 'ui/assets/openapi-management.svg';
 import IconArrowRight from 'ui/assets/arrow-right-gray.svg';
+import IconLock from 'ui/assets/lock.svg';
 import './style.less';
 
 const OpenApiModal = ({
@@ -102,7 +103,7 @@ const Settings = () => {
     <div className="settings">
       <PageHeader>Settings</PageHeader>
       <div className="field lock-wallet" onClick={lockWallet}>
-        Lock
+        <img src={IconLock} className="icon icon-lock" /> Lock
       </div>
       {renderData.map((data) => (
         <Field
