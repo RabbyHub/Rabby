@@ -172,19 +172,20 @@ export default () => {
     });
   };
 
-  const getCurrentSite = async () => {
-    const current = await getCurrentConnectSite(wallet);
-    setCurrentConnect(current);
-  };
-
   const getConnectedSites = async () => {
     const sites = await wallet.getRecentConnectedSites();
     setConnections(sites);
-    await getCurrentSite();
+  };
+
+  const getCurrentSite = async () => {
+    const current = await getCurrentConnectSite(wallet);
+    setCurrentConnect(current);
+    getConnectedSites();
   };
 
   useEffect(() => {
     getConnectedSites();
+    getCurrentSite();
   }, []);
 
   return (
