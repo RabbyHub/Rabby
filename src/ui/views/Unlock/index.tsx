@@ -31,7 +31,9 @@ const Unlock = () => {
 
   return (
     <div className="unlock">
-      <div className="header" />
+      <div className="header pt-[304px] text-center text-white text-20">
+        A browser plugin for DeFi users
+      </div>
       <Form className="bg-gray-bg flex-1" form={form} onFinish={onSubmit}>
         <Form.Item
           className="mt-[34px] mx-28"

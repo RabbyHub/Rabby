@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import { getOriginName, hashCode } from 'ui/utils';
 import './style.less';
 
@@ -31,36 +31,55 @@ const FallbackImage = ({
   style?: React.CSSProperties;
 }) => {
   const [loadFaild, setLoadFaild] = useState(false);
-  const [bgColor, setBgColor] = useState('');
+  const [loadSuccess, setLoadSuccess] = useState(false);
+
+  const [bgColor, originName] = useMemo(() => {
+    const bgIndex = Math.abs(hashCode(origin) % 12);
+
+    return [bgColorList[bgIndex].toLowerCase(), getOriginName(origin)];
+  }, [url]);
+
   const handleImageLoadError = () => {
     setLoadFaild(true);
   };
 
-  useEffect(() => {
-    const bgIndex = Math.abs(hashCode(origin) % 12);
-    setBgColor(bgColorList[bgIndex]);
-  }, []);
+  const handleImageLoadSuccess = () => {
+    setLoadSuccess(true);
+  };
 
   useEffect(() => {
     if (!url) setLoadFaild(true);
   }, [url]);
 
-  const originName = getOriginName(origin);
+  const bgText = `url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text x='11' y='22' fill='white' font-size='15' font-weight='500'>${originName[0].toUpperCase()}</text></svg>")`;
 
-  return loadFaild ? (
+  return (
     <div
       className="fallback-site-logo"
-      style={{ backgroundColor: bgColor, width, height, ...style }}
+      style={{
+        backgroundColor: loadSuccess ? 'transparent' : bgColor,
+        backgroundImage: loadSuccess ? 'none' : bgText,
+        width,
+        height,
+        ...style,
+      }}
     >
-      {originName[0].toUpperCase()}
+      {!loadFaild && (
+        <img
+          src={url}
+          alt={origin}
+          className="transition-opacity"
+          style={{
+            width,
+            height,
+            opacity: loadSuccess ? '1' : '0',
+            ...style,
+          }}
+          onLoad={handleImageLoadSuccess}
+          onError={handleImageLoadError}
+        />
+      )}
     </div>
-  ) : (
-    <img
-      src={url}
-      alt={origin}
-      style={{ width, height, ...style }}
-      onError={handleImageLoadError}
-    />
   );
 };
 
