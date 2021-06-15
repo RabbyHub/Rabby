@@ -30,7 +30,7 @@ const AddAddressOptions = () => {
 
           history.push('/dashboard');
         } catch {
-          history.push('/create');
+          history.push('/create-mnemonics');
         }
       },
     },

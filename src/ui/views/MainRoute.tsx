@@ -18,7 +18,7 @@ import ImportLedgerPathSelect from './ImportHardware/LedgerHdPath';
 import Settings from './Settings';
 import ConnectedSites from './ConnectedSites';
 import Approval from './Approval';
-import CreateMnemonics from './CreateMnemonics';
+import CreateMnemonics from './createMnemonics';
 import AddAddress from './AddAddress';
 import ChainManagement, { StartChainManagement } from './ChainManagement';
 import AddressManagement from './AddressManagement';
@@ -52,7 +52,7 @@ const Main = () => {
         <PrivateRoute exact path="/start-chain-management">
           <StartChainManagement />
         </PrivateRoute>
-        <PrivateRoute exact path="/create">
+        <PrivateRoute exact path="/create-mnemonics">
           <CreateMnemonics />
         </PrivateRoute>
         <PrivateRoute exact path="/import">

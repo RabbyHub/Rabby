@@ -11,8 +11,7 @@ const CreateMnemonic = () => {
 
   const init = async () => {
     const _mnemonics =
-      (await wallet.getPreMnemonics()) ||
-      (await wallet.generateMnemonicWithCache());
+      (await wallet.getPreMnemonics()) || (await wallet.generatePreMnemonic());
 
     setMnemonics(_mnemonics);
   };
@@ -40,6 +39,7 @@ const DisplayMnemonic = ({ mnemonics, onNextClick }) => {
     wallet.removePreMnemonics();
     history.replace('/no-address');
   };
+
   return (
     <StrayPageWithButton
       header={{

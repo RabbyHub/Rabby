@@ -36,7 +36,7 @@ const SortHat = () => {
     }
 
     if (await wallet.getPreMnemonics()) {
-      setTo('/create');
+      setTo('/create-mnemonics');
       return;
     }
 
