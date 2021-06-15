@@ -41,6 +41,7 @@ const ConnectedSites = () => {
       {sites.length > 0
         ? sites.map((site) => (
             <Field
+              className="border hover:border-blue transition-colors border-white"
               key={site.origin}
               leftIcon={
                 <div className="icon icon-site">
@@ -55,7 +56,7 @@ const ConnectedSites = () => {
               }
               rightIcon={
                 <SvgIconCross
-                  className="w-8 fill-current text-gray-comment cursor-pointer"
+                  className="cross-icon w-8 fill-current text-gray-comment cursor-pointer"
                   onClick={() => handleRemove(site.origin)}
                 />
               }

@@ -3,6 +3,7 @@ import { useDebounce } from 'react-use';
 import { Drawer, Button, Input, Checkbox } from 'antd';
 import { useWallet } from 'ui/utils';
 import { SecurityCheckResponse } from 'background/service/openapi';
+import { SvgIconCross } from 'ui/assets';
 
 const SecurityCheckDetail = ({
   visible,
@@ -55,9 +56,13 @@ const SecurityCheckDetail = ({
     <Drawer
       title="Security Check"
       placement="bottom"
+      className="security-check-drawer"
       visible={visible}
       onClose={onCancel}
       height="100vh"
+      closeIcon={
+        <SvgIconCross className="w-14 fill-current text-gray-comment" />
+      }
     >
       <div className="security-check-detail">
         <div className="container">
