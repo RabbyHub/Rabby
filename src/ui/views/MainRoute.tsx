@@ -18,7 +18,7 @@ import ImportLedgerPathSelect from './ImportHardware/LedgerHdPath';
 import Settings from './Settings';
 import ConnectedSites from './ConnectedSites';
 import Approval from './Approval';
-import CreateMnemonics from './createMnemonics';
+import CreateMnemonics from './CreateMnemonics';
 import AddAddress from './AddAddress';
 import ChainManagement, { StartChainManagement } from './ChainManagement';
 import AddressManagement from './AddressManagement';

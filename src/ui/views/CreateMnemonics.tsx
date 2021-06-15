@@ -69,7 +69,7 @@ const VerifyMnemonics = ({ mnemonics, onBackClick }) => {
   const wallet = useWallet();
 
   const randomMnemonics = useMemo(
-    () => mnemonics.split(' ').sort(() => -(Math.random() > 0.5)),
+    () => mnemonics.split(' ').sort(() => Math.random() - 0.5),
     [mnemonics]
   );
 
