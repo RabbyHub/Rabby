@@ -2,6 +2,7 @@ import * as ethUtil from 'ethereumjs-util';
 import Wallet, { thirdparty } from 'ethereumjs-wallet';
 import { ethErrors } from 'eth-rpc-errors';
 import * as bip39 from 'bip39';
+import encryptor from 'browser-passworder';
 import {
   keyringService,
   preferenceService,
@@ -154,9 +155,12 @@ export class WalletController extends BaseController {
     return this._setCurrentAccountFromKeyring(keyring);
   };
 
-  generateMnemonic = () => keyringService.generateMnemonic();
+  getPreMnemonics = () => keyringService.getPreMnemonics();
+  generateMnemonicWithCache = () => keyringService.generateMnemonicWithCache();
+  removePreMnemonics = () => keyringService.removePreMnemonics();
   createKeyringWithMnemonics = async (mnemonic) => {
     const keyring = await keyringService.createKeyringWithMnemonics(mnemonic);
+    keyringService.removePreMnemonics();
     return this._setCurrentAccountFromKeyring(keyring);
   };
 

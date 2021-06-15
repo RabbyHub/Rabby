@@ -40,6 +40,7 @@ interface MemStoreState {
   isUnlocked: boolean;
   keyringTypes: any[];
   keyrings: any[];
+  preMnemonics: string;
 }
 
 export interface DisplayedKeryring {
@@ -66,6 +67,7 @@ class KeyringService extends EventEmitter {
       isUnlocked: false,
       keyringTypes: this.keyringTypes.map((krt) => krt.type),
       keyrings: [],
+      preMnemonics: '',
     });
 
     this.keyrings = [];
@@ -130,6 +132,36 @@ class KeyringService extends EventEmitter {
 
   generateMnemonic(): string {
     return bip39.generateMnemonic();
+  }
+
+  async generateMnemonicWithCache(): Promise<string> {
+    if (!this.password) {
+      throw new Error('you need to unlock wallet first!');
+    }
+    const mnemonic = this.generateMnemonic();
+    const preMnemonics = await this.encryptor.encrypt(this.password, mnemonic);
+    this.memStore.updateState({ preMnemonics });
+
+    return mnemonic;
+  }
+
+  removePreMnemonics() {
+    this.memStore.updateState({ preMnemonics: '' });
+  }
+
+  async getPreMnemonics(): Promise<any> {
+    if (!this.memStore.getState().preMnemonics) {
+      return '';
+    }
+
+    if (!this.password) {
+      throw new Error('you need to unlock wallet first!');
+    }
+
+    return await this.encryptor.decrypt(
+      this.password,
+      this.memStore.getState().preMnemonics
+    );
   }
 
   /**

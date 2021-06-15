@@ -35,6 +35,11 @@ const SortHat = () => {
       return;
     }
 
+    if (await wallet.getPreMnemonics()) {
+      setTo('/create');
+      return;
+    }
+
     const currentAccount = await wallet.getCurrentAccount();
 
     if (!currentAccount) {
