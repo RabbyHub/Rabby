@@ -17,7 +17,7 @@ const ImportSuccess = () => {
 
   const {
     accounts,
-    hasDivider = false,
+    hasDivider = true,
     title = 'Successfully imported',
   } = state;
 
@@ -33,7 +33,7 @@ const ImportSuccess = () => {
   return (
     <StrayPageWithButton
       hasDivider={hasDivider}
-      NextButtonText="ok"
+      NextButtonContent="ok"
       onNextClick={handleNextClick}
     >
       <div className="flex flex-col justify-center text-center h-[480px]">

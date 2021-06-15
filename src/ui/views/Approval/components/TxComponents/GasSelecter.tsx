@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import { Modal, Input, Button } from 'antd';
+import { Input, Button } from 'antd';
 import clsx from 'clsx';
 import { useDebounce } from 'react-use';
 import { CHAINS } from 'consts';
 import { GasResult, Tx, GasLevel } from 'background/service/openapi';
 import { formatSeconds, useWallet } from 'ui/utils';
+import { Modal } from 'ui/component';
 import IconGas from 'ui/assets/gas.svg';
 import IconSetting from 'ui/assets/setting-gray.svg';
 import IconChecked from 'ui/assets/checked.svg';

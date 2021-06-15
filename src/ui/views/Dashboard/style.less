@@ -16,14 +16,16 @@
   .main {
     width: 100%;
     height: 220px;
-    background: linear-gradient(118.3deg, #8BA4FF -9.59%, #8082FF 108.51%);
+    background: linear-gradient(118.3deg, #8ba4ff -9.59%, #8082ff 108.51%);
     padding: 20px 28px 0;
     position: relative;
+    overflow: hidden;
     .header {
       .icon {
         cursor: pointer;
       }
-      .icon-copy, .icon-qrcode {
+      .icon-copy,
+      .icon-qrcode {
         width: 18px;
         height: 18px;
       }
@@ -69,7 +71,7 @@
         }
         .extra {
           font-size: 12px;
-          color: rgba(255, 255, 255, .6);
+          color: rgba(255, 255, 255, 0.6);
           .icon-chain {
             margin-right: 6px;
             width: 20px;
@@ -90,14 +92,29 @@
 
     .operation {
       position: absolute;
-      bottom: 0;
+      bottom: -1px;
       left: 50%;
       transform: translateX(-50%);
       width: 85%;
       height: 50px;
-      background: rgba(255, 255, 255, 0.2);
-      backdrop-filter: blur(40px);
       border-radius: 6px 6px 0px 0px;
+      border: 1px solid transparent;
+      box-shadow: 0 0 100px rgba(0, 0, 0, 0.1);
+      &::before {
+        content: '';
+        border-radius: 6px 6px 0px 0px;
+        position: absolute;
+        top: -1px;
+        right: -1px;
+        bottom: -1px;
+        left: -1px;
+        background-image: linear-gradient(
+          173deg,
+          rgba(255, 255, 255, 0.78) 5.31%,
+          rgba(255, 255, 255, 0) 59%
+        );
+        z-index: -1;
+      }
       .operation-item {
         flex: 1;
         color: #fff;
@@ -126,7 +143,7 @@
             position: absolute;
             left: 0;
             top: 0;
-            width:24px;
+            width: 24px;
             height: 24px;
             margin: 0;
           }
@@ -184,7 +201,7 @@
     left: 14px !important;
   }
   .ant-popover-inner-content {
-    padding: 12px 8px
+    padding: 12px 8px;
   }
   ul {
     max-height: 300px;
@@ -200,7 +217,7 @@
         margin-right: 8px;
       }
       .amount {
-        color: #2D3033;
+        color: #2d3033;
         font-weight: 500;
         font-size: 13px;
         margin-right: 8px;
@@ -215,18 +232,18 @@
         position: relative;
         height: 8px;
         width: 150px;
-        background-color: #D8DFEB;
+        background-color: #d8dfeb;
         border-radius: 10px;
         margin-right: 12px;
         overflow: hidden;
         .inner {
-          background-color: #8697FF;
+          background-color: #8697ff;
           height: 8px;
           border-radius: 10px;
         }
       }
       .percent {
-        color: #818A99;
+        color: #818a99;
         font-size: 13px;
         font-weight: 500;
         width: 25px;

@@ -16,7 +16,7 @@ export interface StrayFooterNavProps {
   hasBack?: boolean;
   hasDivider?: boolean;
   className?: string;
-  NextButtonText?: string;
+  NextButtonContent?: React.ReactNode;
 }
 
 interface CompoundedComponent
@@ -40,7 +40,7 @@ const StrayFooterNav = memo(
     nextDisabled,
     hasBack = false,
     hasDivider = false,
-    NextButtonText = 'Next',
+    NextButtonContent = 'Next',
     className,
   }: StrayFooterNavProps) => {
     const history = useHistory();
@@ -56,7 +56,7 @@ const StrayFooterNav = memo(
       <StrayFooter className={className}>
         <div
           className={cx(
-            'pb-24 px-20 w-full flex justify-center',
+            'pt-24 pb-32 px-20 w-full flex justify-center',
             hasDivider && 'bg-white border-gray-divider border-t pt-24'
           )}
         >
@@ -65,7 +65,7 @@ const StrayFooterNav = memo(
               disabled={backDisabled}
               onClick={handleBack}
               size="large"
-              className="flex-1 mr-16"
+              className="flex-1 mr-16 lg:h-[52px]"
             >
               Back
             </Button>
@@ -75,10 +75,10 @@ const StrayFooterNav = memo(
             htmlType="submit"
             onClick={onNextClick}
             size="large"
-            className={hasBack ? 'flex-1' : 'w-[200px]'}
+            className={cx('lg:h-[52px]', hasBack ? 'flex-1' : 'w-[200px]')}
             type="primary"
           >
-            {NextButtonText}
+            {NextButtonContent}
           </Button>
         </div>
       </StrayFooter>

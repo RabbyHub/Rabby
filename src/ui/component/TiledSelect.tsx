@@ -37,7 +37,7 @@ const TiledSelect = ({
               onClick={() => handleRemove(i)}
             >
               <span className="mr-8">{v}</span>
-              <img className="align-baseline inline-block" src={IconCross} />
+              <IconCross className="align-baseline inline-block w-6 fill-current text-gray-comment" />
             </div>
           ))}
       </div>

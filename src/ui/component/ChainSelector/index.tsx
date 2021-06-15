@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Modal } from 'antd';
+import { Modal } from 'ui/component';
 import { CHAINS_ENUM, CHAINS } from 'consts';
 import { useWallet, splitNumberByStep } from 'ui/utils';
 import IconChecked from 'ui/assets/checked.svg';
@@ -66,7 +66,9 @@ const ChainSelector = ({ value, onChange }: ChainSelectorProps) => {
               >
                 <img className="chain-logo" src={chain.logo} />
                 <div className="chain-name">
-                  <p className="text-13 font-medium my-0">{chain.name}</p>
+                  <p className="text-13 font-medium my-0 leading-none">
+                    {chain.name}
+                  </p>
                   {chainBalanceMap[chain.id]?.usd_value && (
                     <>
                       <div className="absolute left-0 top-10 bottom-10 w-2 bg-blue-light" />

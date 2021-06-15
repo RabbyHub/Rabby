@@ -1,7 +1,7 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
-import { CloseOutlined } from '@ant-design/icons';
 import { PageHeader, Field, FallbackSiteLogo } from 'ui/component';
+import { IconCross } from 'ui/assets';
 import { useWallet } from 'ui/utils';
 import { ConnectedSite } from 'background/service/permission';
 import './style.less';
@@ -54,7 +54,10 @@ const ConnectedSites = () => {
                 </div>
               }
               rightIcon={
-                <CloseOutlined onClick={() => handleRemove(site.origin)} />
+                <IconCross
+                  className="w-8 fill-current text-gray-comment cursor-pointer"
+                  onClick={() => handleRemove(site.origin)}
+                />
               }
             >
               <div className="site-info">

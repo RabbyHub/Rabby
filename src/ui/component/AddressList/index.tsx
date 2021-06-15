@@ -48,14 +48,13 @@ const AddressList: CompoundedComponent = ({
         <div className="subtitle flex justify-between">
           <span>{KEYRING_TYPE_TEXT[name]}</span>
           {name === KEYRING_TYPE.HdKeyring && action === 'management' && (
-            <a
-              className="flex items-center"
-              href="javascript:;"
+            <span
+              className="flex items-center text-12 cursor-pointer"
               onClick={onShowMnemonics}
             >
               View Mnemonic
               <img src={IconArrowRight} className="icon icon-arrow-right" />
-            </a>
+            </span>
           )}
         </div>
         <ul className="addresses">

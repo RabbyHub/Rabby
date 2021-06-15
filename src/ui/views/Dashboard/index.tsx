@@ -4,9 +4,9 @@ import QRCode from 'qrcode.react';
 import { browser } from 'webextension-polyfill-ts';
 import { useEffect, useState } from 'react';
 import { Link, useHistory } from 'react-router-dom';
-import { message, Modal } from 'antd';
+import { message } from 'antd';
 import { CHAINS, HARDWARE_KEYRING_TYPES, KEYRING_TYPE } from 'consts';
-import { AddressViewer, AddressList } from 'ui/component';
+import { AddressViewer, AddressList, Modal } from 'ui/component';
 import { useWallet, getCurrentConnectSite } from 'ui/utils';
 import { DisplayedKeryring } from 'background/service/keyring';
 import { Account } from 'background/service/preference';
@@ -223,25 +223,27 @@ const Dashboard = () => {
             />
           </div>
           <BalanceView currentAccount={currentAccount} />
-          <div className="operation flex">
-            <div className="operation-item" onClick={handleGotoSend}>
-              <img className="icon icon-send" src={IconSend} />
-              Send
-            </div>
-            <div className="operation-item" onClick={handleGotoSwap}>
-              <img className="icon icon-swap" src={IconSwap} />
-              Swap
-            </div>
-            <div className="operation-item" onClick={handleGotoHistory}>
-              {pendingTxCount > 0 ? (
-                <div className="pending-count">
-                  <img src={IconPending} className="icon icon-pending" />
-                  {pendingTxCount}
-                </div>
-              ) : (
-                <img className="icon icon-history" src={IconHistory} />
-              )}
-              History
+          <div className="operation">
+            <div className="flex h-full w-full absolute bg-blue-light rounded-t-md">
+              <div className="operation-item" onClick={handleGotoSend}>
+                <img className="icon icon-send" src={IconSend} />
+                Send
+              </div>
+              <div className="operation-item" onClick={handleGotoSwap}>
+                <img className="icon icon-swap" src={IconSwap} />
+                Swap
+              </div>
+              <div className="operation-item" onClick={handleGotoHistory}>
+                {pendingTxCount > 0 ? (
+                  <div className="pending-count">
+                    <img src={IconPending} className="icon icon-pending" />
+                    {pendingTxCount}
+                  </div>
+                ) : (
+                  <img className="icon icon-history" src={IconHistory} />
+                )}
+                History
+              </div>
             </div>
           </div>
         </div>

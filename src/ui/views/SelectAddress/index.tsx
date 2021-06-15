@@ -64,7 +64,7 @@ const SelectAddress = () => {
       pathname: '/import/success',
       state: {
         accounts: selectedAddressIndexes.map((i) => accounts[i]),
-        hasDivider: isMnemonics,
+        hasDivider: !!isMnemonics,
       },
     });
   };

@@ -1,8 +1,8 @@
 import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import { Modal, Form, Input, Button } from 'antd';
+import { Form, Input, Button } from 'antd';
 import { useWallet } from 'ui/utils';
-import { PageHeader, Field } from 'ui/component';
+import { PageHeader, Field, Modal } from 'ui/component';
 import IconAddressManagement from 'ui/assets/address-management.svg';
 import IconChainManagement from 'ui/assets/chain-management.svg';
 import IconConnectSitesManagement from 'ui/assets/connect-sites-management.svg';

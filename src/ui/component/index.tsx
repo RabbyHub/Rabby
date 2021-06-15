@@ -1,7 +1,6 @@
 export { default as StrayFooter } from './StrayFooter';
 export { default as StrayHeader } from './StrayHeader';
 export { default as StrayPage, StrayPageWithButton } from './StrayPage';
-export { default as Modal } from './Modal';
 export { default as TiledSelect } from './TiledSelect';
 export { default as AddressViewer } from './AddressViewer';
 export { default as AddressList } from './AddressList';
@@ -16,3 +15,4 @@ export { default as FieldCheckbox } from './FieldCheckbox';
 export { default as Spin } from './Spin';
 export { default as FallbackSiteLogo } from './FallbackSiteLogo';
 export { default as PrivateRoute } from './PrivateRoute';
+export { default as Modal } from './Modal';

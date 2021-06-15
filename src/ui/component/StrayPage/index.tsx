@@ -66,12 +66,12 @@ export const StrayPageWithButton = ({
   hasBack,
   hasDivider,
   initialValues,
-  NextButtonText,
+  NextButtonContent,
   spinning,
 }: StrayPageWithButtonProps & StrayFooterNavProps) => (
   <StrayPage header={header} spinning={spinning}>
     <Form
-      className="overflow-y-auto max-h-full sm:pb-[100px] lg:pb-[120px]"
+      className="overflow-y-auto max-h-full sm:pb-[99px] lg:pb-[120px]"
       form={form}
       onFinish={onSubmit}
       initialValues={initialValues}
@@ -85,7 +85,7 @@ export const StrayPageWithButton = ({
         nextDisabled={nextDisabled}
         hasBack={hasBack}
         hasDivider={hasDivider}
-        NextButtonText={NextButtonText}
+        NextButtonContent={NextButtonContent}
         className="lg:w-[500px] lg:left-2/4 lg:-translate-x-2/4 lg:transform lg:mb-[36px] z-10"
       />
     </Form>

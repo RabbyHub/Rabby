@@ -89,7 +89,7 @@ export const StartChainManagement = () => {
 
   return (
     <StrayPageWithButton
-      NextButtonText="OK"
+      NextButtonContent="OK"
       hasDivider
       onNextClick={handleNextClick}
       header={{

@@ -1,14 +1,19 @@
 import React, { useEffect, useState } from 'react';
-import { Link } from 'react-router-dom';
-import { Menu, Dropdown, Modal, message, Button } from 'antd';
+import { Link, useHistory } from 'react-router-dom';
+import { Menu, Dropdown, Modal, message } from 'antd';
 import { KEYRING_TYPE, HARDWARE_KEYRING_TYPES } from 'consts';
 import { useWallet } from 'ui/utils';
-import { AddressList, PageHeader, AuthenticationModal } from 'ui/component';
+import {
+  AddressList,
+  PageHeader,
+  AuthenticationModal,
+  StrayFooter,
+} from 'ui/component';
 import { DisplayedKeryring } from 'background/service/keyring';
-import { IconArrowDown } from 'ui/assets';
-import IconAdd from 'ui/assets/add.svg';
-import IconPlus from 'ui/assets/plus-primary.svg';
+import { IconArrowDown, SvgIconPlusPrimary } from 'ui/assets';
 import './style.less';
+
+const { Nav: StrayFooterNav } = StrayFooter;
 
 const AddressManagement = () => {
   const wallet = useWallet();
@@ -19,6 +24,7 @@ const AddressManagement = () => {
   const [hiddenAddresses, setHiddenAddresses] = useState<
     { type: string; address: string }[]
   >([]);
+  const history = useHistory();
 
   useEffect(() => {
     setHiddenAddresses(wallet.getHiddenAddresses());
@@ -190,7 +196,7 @@ const AddressManagement = () => {
       />
       <p className="text-gray-content text-14">No address</p>
       <Link to="/add-address" className="flex no-data-add-btn">
-        <img src={IconPlus} className="icon icon-plus" />
+        <SvgIconPlusPrimary className="icon icon-plus text-blue-light stroke-current fill-current" />
         Add addresses
       </Link>
     </div>
@@ -210,10 +216,18 @@ const AddressManagement = () => {
             hiddenAddresses={hiddenAddresses}
             onShowMnemonics={handleViewMnemonics}
           />
-          <Link className="create-address" to="/add-address">
-            <img src={IconAdd} className="icon icon-add" />
-            Add Address
-          </Link>
+          <StrayFooterNav
+            hasDivider
+            onNextClick={() => {
+              history.push('/add-address');
+            }}
+            NextButtonContent={
+              <div className="flex items-center h-full justify-center">
+                <SvgIconPlusPrimary className="icon icon-add text-white stroke-current fill-current mr-6" />
+                Add Address
+              </div>
+            }
+          />
         </>
       )}
     </div>

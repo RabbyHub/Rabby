@@ -78,15 +78,15 @@ const ConnectionItem = ({
       </div>
     );
     return (
-      <Popover
-        content={popoverContent}
-        placement={placement}
-        arrowPointAtCenter
-      >
-        <div className="item" onClick={onClick} style={{ cursor: 'inherit' }}>
+      <div className="item" onClick={onClick} style={{ cursor: 'inherit' }}>
+        <Popover
+          content={popoverContent}
+          placement={placement}
+          arrowPointAtCenter
+        >
           <img src="/images/no-recent-connect.png" className="logo" />
-        </div>
-      </Popover>
+        </Popover>
+      </div>
     );
   }
 
@@ -128,17 +128,17 @@ const ConnectionItem = ({
   };
   */
   return (
-    <Popover
-      content={popoverContent}
-      placement={placement}
-      arrowPointAtCenter
-      // onVisibleChange={handlePopoverVisibleChange}
+    <div
+      className="item"
+      onClick={onClick}
+      style={{ cursor: onClick ? 'pointer' : 'inherit' }}
+      ref={triggerEl}
     >
-      <div
-        className="item"
-        onClick={onClick}
-        style={{ cursor: onClick ? 'pointer' : 'inherit' }}
-        ref={triggerEl}
+      <Popover
+        content={popoverContent}
+        placement={placement}
+        arrowPointAtCenter
+        // onVisibleChange={handlePopoverVisibleChange}
       >
         <img
           className="connect-chain"
@@ -156,8 +156,8 @@ const ConnectionItem = ({
             }}
           />
         </div>
-      </div>
-    </Popover>
+      </Popover>
+    </div>
   );
 };
 
