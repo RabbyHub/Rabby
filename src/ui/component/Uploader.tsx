@@ -46,7 +46,7 @@ const Uploader = ({ onChange, accept, className }: UploaderProps) => {
   return (
     <div
       className={cx(
-        'rounded bg-white flex items-center justify-center cursor-pointer',
+        'rounded bg-white flex items-center justify-center cursor-pointer text-center',
         className
       )}
       onClick={handleClick}

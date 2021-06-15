@@ -195,7 +195,10 @@ const AddressManagement = () => {
         alt="no address"
       />
       <p className="text-gray-content text-14">No address</p>
-      <Link to="/add-address" className="flex no-data-add-btn">
+      <Link
+        to="/add-address"
+        className="flex no-data-add-btn rounded-tl-md text-15"
+      >
         <SvgIconPlusPrimary className="icon icon-plus text-blue-light stroke-current fill-current" />
         Add addresses
       </Link>
@@ -222,7 +225,7 @@ const AddressManagement = () => {
               history.push('/add-address');
             }}
             NextButtonContent={
-              <div className="flex items-center h-full justify-center">
+              <div className="flex items-center h-full justify-center text-15">
                 <SvgIconPlusPrimary className="icon icon-add text-white stroke-current fill-current mr-6" />
                 Add Address
               </div>

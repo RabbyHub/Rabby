@@ -1,7 +1,7 @@
 import React from 'react';
 import cx from 'clsx';
 import { useSelectOption } from 'ui/utils';
-import { IconCross } from 'ui/assets';
+import { SvgIconCross } from 'ui/assets';
 
 interface TiledSelectProps {
   defaultValue?: string[];
@@ -37,7 +37,7 @@ const TiledSelect = ({
               onClick={() => handleRemove(i)}
             >
               <span className="mr-8">{v}</span>
-              <IconCross className="align-baseline inline-block w-6 fill-current text-gray-comment" />
+              <SvgIconCross className="align-baseline inline-block w-6 fill-current text-gray-comment" />
             </div>
           ))}
       </div>

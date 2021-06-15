@@ -78,8 +78,7 @@ const AddChain = ({ params }: { params: AddChainProps }) => {
       <footer className="connect-footer">
         <div
           className={clsx([
-            'action-buttons',
-            'flex',
+            'action-buttons flex mt-4',
             showChain ? 'justify-between' : 'justify-center',
           ])}
         >

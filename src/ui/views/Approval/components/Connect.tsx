@@ -92,7 +92,7 @@ const Connect = ({ params: { icon, origin, name } }: ConnectProps) => {
       </div>
 
       <footer className="connect-footer">
-        <div className="action-buttons flex justify-between">
+        <div className="action-buttons flex justify-between mt-4">
           <Button
             type="primary"
             size="large"
