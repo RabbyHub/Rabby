@@ -71,7 +71,7 @@ export const StrayPageWithButton = ({
 }: StrayPageWithButtonProps & StrayFooterNavProps) => (
   <StrayPage header={header} spinning={spinning}>
     <Form
-      className="overflow-y-auto max-h-full sm:pb-[100px] lg:pb-[38px]"
+      className="overflow-y-auto max-h-full sm:pb-[100px] lg:pb-[120px]"
       form={form}
       onFinish={onSubmit}
       initialValues={initialValues}

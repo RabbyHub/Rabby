@@ -36,7 +36,7 @@ const ImportSuccess = () => {
       NextButtonText="ok"
       onNextClick={handleNextClick}
     >
-      <div className="flex flex-col justify-center text-center">
+      <div className="flex flex-col justify-center text-center h-[480px]">
         <img
           src={IconImportSuccess}
           className="mx-auto mb-18 w-[100px] h-[100px]"

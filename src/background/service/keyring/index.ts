@@ -152,7 +152,7 @@ class KeyringService extends EventEmitter {
       .then(() => {
         return this.addNewKeyring('HD Key Tree', {
           mnemonic: seed,
-          walletIndexes: [0],
+          activeIndexes: [0],
         });
       })
       .then((firstKeyring) => {
@@ -557,7 +557,7 @@ class KeyringService extends EventEmitter {
    */
   createFirstKeyTree() {
     this.clearKeyrings();
-    return this.addNewKeyring('HD Key Tree', { walletIndexes: [0] })
+    return this.addNewKeyring('HD Key Tree', { activeIndexes: [0] })
       .then((keyring) => {
         return keyring.getAccounts();
       })

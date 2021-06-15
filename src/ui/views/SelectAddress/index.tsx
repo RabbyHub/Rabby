@@ -89,7 +89,7 @@ const SelectAddress = () => {
       hasDivider={isMnemonics}
       form={form}
     >
-      <div className="overflow-y-auto lg:max-h-[500px]">
+      <div className="overflow-y-auto lg:h-[480px]">
         <Form.Item className="mb-0" name="selectedAddressIndexes">
           <MultiSelectAddressList
             accounts={accounts}
