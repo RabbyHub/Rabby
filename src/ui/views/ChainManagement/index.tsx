@@ -34,11 +34,13 @@ export const ChainManagementList = ({ inStart = false }) => {
           centered: true,
           title:
             'After disabling a chain,  all websites connected using this chain will also be deleted',
+          className: 'disable-chain',
           bodyStyle: {
             backgroundColor: 'transparent',
           },
           okText: 'Disable',
           cancelText: 'Cancel',
+          width: '360px',
           onOk: () => {
             const sites = wallet.getSitesByDefaultChain(chainEnum);
             if (sites.length > 0) {
