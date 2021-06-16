@@ -1,3 +1,5 @@
+import { ethErrors } from 'eth-rpc-errors';
+
 class DedupePromise {
   private _blackList: string[];
   private _tasks: Record<string, number> = {};
@@ -8,7 +10,7 @@ class DedupePromise {
 
   async call(key: string, defer: () => Promise<any>) {
     if (this._blackList.includes(key) && this._tasks[key]) {
-      throw new Error(
+      throw ethErrors.rpc.transactionRejected(
         'there is a pending request, please request after it resolved'
       );
     }

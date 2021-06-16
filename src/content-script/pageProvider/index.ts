@@ -31,9 +31,9 @@ export class EthereumProvider extends EventEmitter {
   _isConnected = false;
   _initialized = false;
 
-  private pushEventHandlers: PushEventHandlers;
-  private requestPromise = new ReadyPromise(2);
-  private dedupePromise = new DedupePromise([
+  private _pushEventHandlers: PushEventHandlers;
+  private _requestPromise = new ReadyPromise(2);
+  private _dedupePromise = new DedupePromise([
     'personal_sign',
     'wallet_addEthereumChain',
     'eth_sendTransaction',
@@ -45,7 +45,7 @@ export class EthereumProvider extends EventEmitter {
     this.setMaxListeners(maxListeners);
     this.initialize();
     this.shimLegacy();
-    this.pushEventHandlers = new PushEventHandlers(this);
+    this._pushEventHandlers = new PushEventHandlers(this);
   }
 
   initialize = async () => {
@@ -69,7 +69,7 @@ export class EthereumProvider extends EventEmitter {
         },
       });
 
-      this.requestPromise.check(2);
+      this._requestPromise.check(2);
     });
 
     try {
@@ -81,11 +81,11 @@ export class EthereumProvider extends EventEmitter {
       this.chainId = chainId;
       this.networkVersion = networkVersion;
       this.emit('connect', { chainId });
-      this.pushEventHandlers.chainChanged({
+      this._pushEventHandlers.chainChanged({
         chain: chainId,
         networkVersion,
       });
-      this.pushEventHandlers.accountsChanged(accounts);
+      this._pushEventHandlers.accountsChanged(accounts);
     } catch {
       //
     } finally {
@@ -101,16 +101,16 @@ export class EthereumProvider extends EventEmitter {
 
   private _requestPromiseCheckVisibility = () => {
     if (document.visibilityState === 'visible') {
-      this.requestPromise.check(1);
+      this._requestPromise.check(1);
     } else {
-      this.requestPromise.uncheck(1);
+      this._requestPromise.uncheck(1);
     }
   };
 
   private _handleBackgroundMessage = ({ event, data }) => {
     log('[push event]', event, data);
-    if (this.pushEventHandlers[event]) {
-      return this.pushEventHandlers[event](data);
+    if (this._pushEventHandlers[event]) {
+      return this._pushEventHandlers[event](data);
     }
 
     this.emit(event, data);
@@ -122,7 +122,7 @@ export class EthereumProvider extends EventEmitter {
 
   // TODO: support multi request!
   request = async (data) => {
-    return this.dedupePromise.call(data.method, () => this._request(data));
+    return this._dedupePromise.call(data.method, () => this._request(data));
   };
 
   _request = async (data) => {
@@ -132,7 +132,7 @@ export class EthereumProvider extends EventEmitter {
 
     this._requestPromiseCheckVisibility();
 
-    return this.requestPromise.call(() => {
+    return this._requestPromise.call(() => {
       if (data.method !== 'eth_call') {
         log('[request]', JSON.stringify(data, null, 2));
       }
