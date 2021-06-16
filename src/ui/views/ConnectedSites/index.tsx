@@ -41,7 +41,7 @@ const ConnectedSites = () => {
       {sites.length > 0
         ? sites.map((site) => (
             <Field
-              className="border hover:border-blue transition-colors border-white"
+              className="border border-white"
               key={site.origin}
               leftIcon={
                 <div className="icon icon-site">

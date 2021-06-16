@@ -1,7 +1,7 @@
 import React, { FunctionComponent, useEffect, useState, memo } from 'react';
 import clsx from 'clsx';
 import { ChainWithBalance } from 'background/service/openapi';
-import { useWallet } from 'ui/utils';
+import { useWallet, useWalletRequest } from 'ui/utils';
 import { AddressViewer, Spin } from 'ui/component';
 import { splitNumberByStep } from 'ui/utils/number';
 import { HARDWARE_KEYRING_TYPES, CHAINS } from 'consts';
@@ -53,23 +53,25 @@ export const useCurrentBalance = (account: string | undefined) => {
       : []
   );
 
+  const [getAddressBalance] = useWalletRequest(wallet.getAddressBalance, {
+    onSuccess({ total_usd_value, chain_list }) {
+      setBalance(total_usd_value);
+      setChainBalances(
+        chain_list.filter((item) => item.usd_value > 0).map(formatChain)
+      );
+    },
+    onError() {
+      setBalance(NaN);
+    },
+  });
+
   const getCurrentBalance = async () => {
     if (!account) return;
     const cacheData = wallet.getAddressCacheBalance(account);
     if (cacheData) {
       setBalance(cacheData.total_usd_value);
     }
-    try {
-      const { total_usd_value, chain_list } = await wallet.getAddressBalance(
-        account.toLowerCase()
-      );
-      setBalance(total_usd_value);
-      setChainBalances(
-        chain_list.filter((item) => item.usd_value > 0).map(formatChain)
-      );
-    } catch {
-      setBalance(NaN);
-    }
+    getAddressBalance(account.toLowerCase());
   };
 
   useEffect(() => {
@@ -136,7 +138,7 @@ const AddressItem = ({
         </div>
       </div>
       {keyring && (
-        <div className="action-button flex items-center">
+        <div className="action-button flex items-center flex-shrink-0">
           {Object.keys(HARDWARE_KEYRING_TYPES)
             .map((key) => HARDWARE_KEYRING_TYPES[key].type)
             .includes(keyring.type) && (

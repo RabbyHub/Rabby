@@ -197,18 +197,19 @@
   width: 360px;
   left: 50% !important;
   margin-left: -180px !important;
+  backdrop-filter: blur(16px);
   .ant-popover-arrow {
     left: 14px !important;
   }
   .ant-popover-inner-content {
-    padding: 12px 8px;
+    padding: 20px 16px;
   }
   ul {
     max-height: 300px;
     overflow: auto;
     margin-bottom: 0;
-    padding: 8px;
     li {
+      line-height: 15px;
       align-items: center;
       margin-bottom: 16px;
       .chain-logo {
@@ -220,10 +221,8 @@
         color: #2d3033;
         font-weight: 500;
         font-size: 13px;
-        margin-right: 8px;
-        width: 90px;
+        width: 106px;
         text-align: left;
-        margin-right: 8px;
         text-overflow: ellipsis;
         overflow: hidden;
         flex-shrink: 0;
@@ -231,10 +230,9 @@
       .progress {
         position: relative;
         height: 8px;
-        width: 150px;
+        width: 157px;
         background-color: #d8dfeb;
         border-radius: 10px;
-        margin-right: 12px;
         overflow: hidden;
         .inner {
           background-color: #8697ff;
@@ -243,10 +241,10 @@
         }
       }
       .percent {
+        flex: 1;
         color: #818a99;
         font-size: 13px;
         font-weight: 500;
-        width: 25px;
         text-align: right;
       }
       &:nth-last-child(1) {

@@ -36,7 +36,7 @@ const BalanceView = ({ currentAccount }) => {
                 className="amount"
                 title={'$' + splitNumberByStep(item.usd_value.toFixed(2))}
               >
-                ${splitNumberByStep(item.usd_value.toFixed(2))}
+                ${splitNumberByStep(Math.floor(item.usd_value))}
               </span>
               <div className="progress">
                 <div className="inner" style={{ width: percent + '%' }}></div>

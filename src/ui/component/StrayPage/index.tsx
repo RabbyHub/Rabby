@@ -9,6 +9,7 @@ import './index.css';
 
 interface StrayPageProps {
   header?: StrayHeaderProps;
+  headerClassName?: string;
   children?: ReactNode;
   footerRender?: FunctionComponent;
   className?: string;
@@ -17,6 +18,7 @@ interface StrayPageProps {
 
 const StrayPage = ({
   header,
+  headerClassName,
   children,
   footerRender,
   className,
@@ -33,7 +35,9 @@ const StrayPage = ({
     )}
   >
     <div className="sm:px-20 h-full flex flex-col">
-      {header && <StrayHeader className="mb-60" {...header} />}
+      {header && (
+        <StrayHeader className={headerClassName || 'mb-60'} {...header} />
+      )}
       {children && (
         <div className="lg:flex lg:items-center lg:flex-col flex-1 overflow-auto">
           {children}
@@ -46,6 +50,7 @@ const StrayPage = ({
 
 interface StrayPageWithButtonProps {
   header?: StrayHeaderProps;
+  headerClassName?: string;
   form?: FormInstance<any>;
   formProps?: FormProps;
   initialValues?: any;
@@ -57,6 +62,7 @@ interface StrayPageWithButtonProps {
 
 export const StrayPageWithButton = ({
   header,
+  headerClassName,
   form,
   formProps,
   onSubmit,
@@ -71,7 +77,11 @@ export const StrayPageWithButton = ({
   NextButtonContent,
   spinning,
 }: StrayPageWithButtonProps & StrayFooterNavProps) => (
-  <StrayPage header={header} spinning={spinning}>
+  <StrayPage
+    header={header}
+    spinning={spinning}
+    headerClassName={headerClassName}
+  >
     <Form
       className="overflow-y-auto max-h-full sm:pb-[99px] lg:pb-[120px]"
       autoComplete="off"

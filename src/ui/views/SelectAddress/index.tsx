@@ -84,6 +84,7 @@ const SelectAddress = () => {
               center: true,
             }
       }
+      headerClassName="mb-16"
       onSubmit={onSubmit}
       hasBack
       hasDivider={isMnemonics}

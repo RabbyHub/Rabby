@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { Input, Form } from 'antd';
 import { useHistory } from 'react-router-dom';
 import { StrayPageWithButton, Uploader } from 'ui/component';
@@ -8,6 +8,7 @@ const ImportJson = () => {
   const history = useHistory();
   const [form] = Form.useForm();
   const wallet = useWallet();
+  const [isUpload, setUpload] = useState(false);
 
   const [run, loading] = useWalletRequest(wallet.importJson, {
     onSuccess(accounts) {
@@ -46,6 +47,7 @@ const ImportJson = () => {
         <Uploader
           className="mx-auto w-[260px] h-[128px]"
           onChange={({ file }) => {
+            setUpload(true);
             const reader = new FileReader();
             reader.onload = (e) => {
               form.setFieldsValue({ keyStore: e.target?.result });
@@ -55,6 +57,9 @@ const ImportJson = () => {
           }}
         />
       </Form.Item>
+      <div className="text-center text-14 text-gray-comment -mt-20 mb-[52px] h-14">
+        {isUpload && 'Click to upload again'}
+      </div>
       <Form.Item
         name="password"
         rules={[{ required: true, message: 'Please input your password' }]}
