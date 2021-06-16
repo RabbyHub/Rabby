@@ -15,6 +15,7 @@ import OnekeyKeyring from './eth-onekey-keyring';
 import WatchKeyring from './eth-watch-keyring';
 import preference from '../preference';
 import { KEYRING_TYPE } from 'consts';
+import DisplayKeyring from './display';
 
 export const KEYRING_SDK_TYPES = {
   SimpleKeyring,
@@ -46,7 +47,7 @@ interface MemStoreState {
 export interface DisplayedKeryring {
   type: string;
   accounts: string[];
-  keyring: any;
+  keyring: DisplayKeyring;
 }
 
 class KeyringService extends EventEmitter {
