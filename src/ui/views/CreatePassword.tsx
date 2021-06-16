@@ -32,6 +32,9 @@ const CreatePassword = () => {
       }}
       onSubmit={({ password }) => run(password.trim())}
       form={form}
+      formProps={{
+        validateTrigger: 'onBlur',
+      }}
       spinning={loading}
     >
       <Form.Item

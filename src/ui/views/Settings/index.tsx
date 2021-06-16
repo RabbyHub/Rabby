@@ -32,13 +32,7 @@ const OpenApiModal = ({
   };
 
   return (
-    <Modal
-      title="Backend Service URL"
-      footer={null}
-      visible={visible}
-      onCancel={onCancel}
-      centered
-    >
+    <Modal title="Backend Service URL" visible={visible} onCancel={onCancel}>
       <Form onFinish={handleSubmit} form={form}>
         <Form.Item
           name="host"
@@ -59,7 +53,7 @@ const OpenApiModal = ({
             htmlType="submit"
             className="w-[200px]"
           >
-            Confirm
+            Save
           </Button>
         </div>
       </Form>

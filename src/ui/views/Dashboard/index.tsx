@@ -250,26 +250,22 @@ const Dashboard = () => {
         <RecentConnections />
       </div>
       <Modal
-        centered
         visible={qrcodeVisible}
-        footer={null}
         closable={false}
         onCancel={() => setQrcodeVisible(false)}
         className="qrcode-modal"
         width="304px"
       >
         <div>
-          <QRCode value={currentAccount?.address} size={240} />
-          <p className="address text-gray-subTitle text-13 font-medium mb-0 font-roboto-mono">
+          <QRCode value={currentAccount?.address} size={254} />
+          <p className="address text-gray-subTitle text-15 font-medium mb-0 font-roboto-mono">
             {currentAccount?.address}
           </p>
         </div>
       </Modal>
       <Modal
-        centered
         title="Set Current Address"
         visible={isModalOpen}
-        footer={null}
         width="344px"
         onCancel={handleToggle}
         style={{ margin: 0, padding: 0 }}

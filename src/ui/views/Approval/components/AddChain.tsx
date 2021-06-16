@@ -38,7 +38,7 @@ const AddChain = ({ params }: { params: AddChainProps }) => {
     content = 'By enabling a chain, you’ll be able to make transactions on it.';
   } else if (CHAINS[defaultChain].hex !== chainId) {
     title = 'Switch a Chain';
-    content = 'By enabling a chain, you’ll be able to make transactions on it.';
+    content = `Next time you visit, this site will be connected to ${showChain?.name}`;
   }
 
   return (

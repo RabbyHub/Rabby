@@ -45,13 +45,7 @@ const ImportWatchAddress = () => {
         name="address"
         rules={[{ required: true, message: 'Please input address' }]}
       >
-        <Input.TextArea
-          className="h-[124px]"
-          placeholder="Address"
-          size="large"
-          maxLength={44}
-          autoSize={false}
-        />
+        <Input placeholder="Address" size="large" maxLength={44} />
       </Form.Item>
     </StrayPageWithButton>
   );

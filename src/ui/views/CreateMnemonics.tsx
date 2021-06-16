@@ -91,6 +91,9 @@ const VerifyMnemonics = ({ mnemonics, onBackClick }) => {
         secondTitle: 'Verify Mnemonic',
         subTitle: 'Please select the mnemonic words in order',
       }}
+      formProps={{
+        validateTrigger: 'onBlur',
+      }}
       onSubmit={onSubmit}
       hasBack
       hasDivider

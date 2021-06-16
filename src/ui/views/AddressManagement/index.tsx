@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
 import { Link, useHistory } from 'react-router-dom';
-import { Menu, Dropdown, Modal, message } from 'antd';
+import { Menu, Dropdown, message } from 'antd';
 import { KEYRING_TYPE, HARDWARE_KEYRING_TYPES } from 'consts';
 import { useWallet } from 'ui/utils';
 import {
   AddressList,
   PageHeader,
   AuthenticationModal,
+  Modal,
   StrayFooter,
 } from 'ui/component';
 import { DisplayedKeryring } from 'background/service/keyring';
@@ -74,6 +75,10 @@ const AddressManagement = () => {
     data: string;
     keyring: any;
   }) => {
+    const isHidden = hiddenAddresses.find(
+      (item) => item.type === keyring.type && item.address === data
+    );
+
     const handlleViewPrivateKey = async () => {
       try {
         await AuthenticationModal(wallet);
@@ -98,9 +103,6 @@ const AddressManagement = () => {
     };
 
     const handleToggleAddressVisible = async () => {
-      const isHidden = hiddenAddresses.find(
-        (item) => item.type === keyring.type && item.address === data
-      );
       if (isHidden) {
         setHiddenAddresses(
           hiddenAddresses.filter(
@@ -172,14 +174,14 @@ const AddressManagement = () => {
       }
     };
     return (
-      <Dropdown overlay={DropdownOptions} trigger={['click']}>
-        <div className="flex items-center">
-          {hiddenAddresses.find(
-            (item) => item.address === data && item.type === keyring.type
-          ) && <div className="address-item-hidden">Hidden</div>}
+      <div className="flex items-center">
+        {isHidden && (
+          <div className="address-item-hidden opacity-40">Hidden</div>
+        )}
+        <Dropdown overlay={DropdownOptions} trigger={['click']}>
           <IconArrowDown className="icon icon-arrow-down cursor-pointer text-gray-content fill-current" />
-        </div>
-      </Dropdown>
+        </Dropdown>
+      </div>
     );
   };
 

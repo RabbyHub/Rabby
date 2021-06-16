@@ -32,8 +32,11 @@ export const ChainManagementList = ({ inStart = false }) => {
 
         Modal.confirm({
           centered: true,
-          content:
+          title:
             'After disabling a chain,  all websites connected using this chain will also be deleted',
+          bodyStyle: {
+            backgroundColor: 'transparent',
+          },
           okText: 'Disable',
           cancelText: 'Cancel',
           onOk: () => {

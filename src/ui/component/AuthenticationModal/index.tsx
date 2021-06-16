@@ -38,13 +38,7 @@ const AuthenticationModal = ({
   };
 
   return (
-    <Modal
-      centered
-      visible={visible}
-      footer={null}
-      title="Enter Password"
-      onCancel={handleCancel}
-    >
+    <Modal visible={visible} title="Enter Password" onCancel={handleCancel}>
       <Form onFinish={handleSubmit} form={form}>
         <Form.Item
           name="password"
@@ -59,7 +53,7 @@ const AuthenticationModal = ({
             htmlType="submit"
             className="w-[200px]"
           >
-            Confirm
+            View
           </Button>
         </div>
       </Form>

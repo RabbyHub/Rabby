@@ -187,7 +187,6 @@ export default () => {
   };
 
   useEffect(() => {
-    getConnectedSites();
     getCurrentSite();
   }, []);
 

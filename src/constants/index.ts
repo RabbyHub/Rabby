@@ -127,8 +127,8 @@ export const KEYRING_TYPE = {
 };
 
 export const KEYRING_TYPE_TEXT = {
-  [KEYRING_TYPE.HdKeyring]: 'Mnemonic',
-  [KEYRING_TYPE.SimpleKeyring]: 'Private Key',
+  [KEYRING_TYPE.HdKeyring]: 'Created by Mnemonic',
+  [KEYRING_TYPE.SimpleKeyring]: 'Imported by Private Key',
   [KEYRING_TYPE.HardwareKeyring]: 'Hardware Wallet',
   [KEYRING_TYPE.WatchAddressKeyring]: 'Watch Mode',
 };

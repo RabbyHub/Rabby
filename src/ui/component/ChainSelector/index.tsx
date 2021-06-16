@@ -48,11 +48,9 @@ const ChainSelector = ({ value, onChange }: ChainSelectorProps) => {
         <IconArrowDown className="icon icon-arrow-down text-gray-content fill-current" />
       </div>
       <Modal
-        centered
         width="90%"
         closable={false}
         visible={showSelectorModal}
-        footer={null}
         onCancel={handleCancel}
         className="chain-selector__modal"
       >

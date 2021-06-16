@@ -92,16 +92,20 @@ const AddressItem = ({
   }
   const [balance, chainBalances] = useCurrentBalance(account);
 
+  const isDisabled = hiddenAddresses.find(
+    (item) => item.address === account && item.type === keyring.type
+  );
   return (
     <li
-      className={clsx(className, {
-        disable: hiddenAddresses.find(
-          (item) => item.address === account && item.type === keyring.type
-        ),
-      })}
+      className={className}
       onClick={() => onClick && onClick(account, keyring)}
     >
-      <div className="flex items-center flex-wrap">
+      <div
+        className={clsx(
+          'flex items-center flex-wrap',
+          isDisabled && 'opacity-40'
+        )}
+      >
         <div className="address-info">
           <span className="balance">
             <Spin size="small" spinning={balance === null}>

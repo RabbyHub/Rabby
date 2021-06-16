@@ -1,6 +1,6 @@
 import React, { ReactNode, FunctionComponent } from 'react';
 import cx from 'clsx';
-import { Form, FormInstance } from 'antd';
+import { Form, FormInstance, FormProps } from 'antd';
 import StrayHeader, { StrayHeaderProps } from '../StrayHeader';
 import StrayFooter, { StrayFooterNavProps } from '../StrayFooter';
 import Spin from '../Spin';
@@ -47,6 +47,7 @@ const StrayPage = ({
 interface StrayPageWithButtonProps {
   header?: StrayHeaderProps;
   form?: FormInstance<any>;
+  formProps?: FormProps;
   initialValues?: any;
   onSubmit?(values: any): any;
   children;
@@ -57,6 +58,7 @@ interface StrayPageWithButtonProps {
 export const StrayPageWithButton = ({
   header,
   form,
+  formProps,
   onSubmit,
   children,
   onNextClick,
@@ -72,10 +74,11 @@ export const StrayPageWithButton = ({
   <StrayPage header={header} spinning={spinning}>
     <Form
       className="overflow-y-auto max-h-full sm:pb-[99px] lg:pb-[120px]"
-      form={form}
+      autoComplete="off"
+      {...formProps}
       onFinish={onSubmit}
       initialValues={initialValues}
-      autoComplete="off"
+      form={form}
     >
       {children}
       <StrayFooter.Nav

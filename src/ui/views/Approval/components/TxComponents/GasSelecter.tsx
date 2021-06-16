@@ -99,13 +99,10 @@ const GasSelector = ({ gas, chainId, tx, onChange }: GasSelectorProps) => {
       </div>
       <Modal
         visible={modalVisible}
-        centered
         title="Gas"
         className="gas-modal"
         onCancel={() => setModalVisible(false)}
         okText="Confirm"
-        footer={null}
-        width="360px"
         destroyOnClose
       >
         <div>
