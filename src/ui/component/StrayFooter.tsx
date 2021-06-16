@@ -49,8 +49,10 @@ const StrayFooterNav = memo(
 
     const handleBack = async () => {
       if (onBackClick) {
-        await Promise.resolve(onBackClick());
+        onBackClick();
+        return;
       }
+
       history.goBack();
     };
 

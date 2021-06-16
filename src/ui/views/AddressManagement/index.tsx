@@ -197,7 +197,7 @@ const AddressManagement = () => {
       <p className="text-gray-content text-14">No address</p>
       <Link
         to="/add-address"
-        className="flex no-data-add-btn rounded-tl-md text-15"
+        className="flex no-data-add-btn rounded-md text-15"
       >
         <SvgIconPlusPrimary className="icon icon-plus text-blue-light stroke-current fill-current" />
         Add addresses
