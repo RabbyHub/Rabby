@@ -125,7 +125,6 @@ const GasSelector = ({ gas, chainId, tx, onChange }: GasSelectorProps) => {
                         onChange={(e) => handleCustomGasChange(e.target.value)}
                         onFocus={() => setCustomGasInputFocusing(true)}
                         onBlur={() => setCustomGasInputFocusing(false)}
-                        type="number"
                       />
                       <div className="input-border" />
                     </div>
