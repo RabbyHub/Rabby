@@ -16,3 +16,4 @@ export { default as Spin } from './Spin';
 export { default as FallbackSiteLogo } from './FallbackSiteLogo';
 export { default as PrivateRoute } from './PrivateRoute';
 export { default as Modal } from './Modal';
+export { default as Checkbox } from './Checkbox';
