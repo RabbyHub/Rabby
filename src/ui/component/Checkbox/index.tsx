@@ -5,7 +5,7 @@ import './style.less';
 interface CheckboxProps {
   checked: boolean;
   defaultChecked?: boolean;
-  onChange(checked: boolean): void;
+  onChange?(checked: boolean): void;
   background?: string;
   width?: string;
   height?: string;
@@ -30,7 +30,7 @@ const Checkbox = ({
   }, [checked]);
 
   const handleValueChange = (checked) => {
-    onChange(checked);
+    onChange && onChange(checked);
   };
 
   return (
@@ -48,7 +48,7 @@ const Checkbox = ({
       >
         <img src={IconCheck} className="icon icon-check" />
       </div>
-      <div className="rabby-checkbox__label">{children}</div>
+      {children && <div className="rabby-checkbox__label">{children}</div>}
     </div>
   );
 };

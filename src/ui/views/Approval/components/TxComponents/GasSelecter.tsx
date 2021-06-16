@@ -5,11 +5,8 @@ import { useDebounce } from 'react-use';
 import { CHAINS } from 'consts';
 import { GasResult, Tx, GasLevel } from 'background/service/openapi';
 import { formatSeconds, useWallet } from 'ui/utils';
-import { Modal } from 'ui/component';
-import IconGas from 'ui/assets/gas.svg';
+import { Modal, Checkbox } from 'ui/component';
 import IconSetting from 'ui/assets/setting-gray.svg';
-import IconChecked from 'ui/assets/checked.svg';
-import IconUnchecked from 'ui/assets/unchecked.svg';
 import IconTime from 'ui/assets/time.svg';
 import IconGroup from 'ui/assets/group.svg';
 
@@ -26,6 +23,7 @@ const GasSelector = ({ gas, chainId, tx, onChange }: GasSelectorProps) => {
   const [customGas, setCustomGas] = useState(Number(tx.gasPrice));
   const [gasList, setGasList] = useState<GasLevel[]>([]);
   const [selectedGas, setSelectGas] = useState<GasLevel | null>(null);
+  const [customGasInputFocusing, setCustomGasInputFocusing] = useState(false);
   const chain = Object.values(CHAINS).find((item) => item.id === chainId)!;
   const loadGasMarket = async () => {
     const list = await wallet.openapi.gasMarket(
@@ -67,6 +65,7 @@ const GasSelector = ({ gas, chainId, tx, onChange }: GasSelectorProps) => {
   const handleCustomGasChange = (value: string) => {
     setCustomGas(Number(value) * 1e9);
   };
+
   useDebounce(
     () => {
       modalVisible && loadGasMarket();
@@ -115,21 +114,27 @@ const GasSelector = ({ gas, chainId, tx, onChange }: GasSelectorProps) => {
               >
                 <div className="title">
                   {gas.level === 'custom' ? (
-                    <Input
-                      placeholder="Custom"
-                      defaultValue={customGas / 1e9}
-                      onChange={(e) => handleCustomGasChange(e.target.value)}
-                    />
+                    <div
+                      className={clsx('relative', 'input-wrapper', {
+                        focusing: customGasInputFocusing,
+                      })}
+                    >
+                      <Input
+                        placeholder="Custom"
+                        defaultValue={customGas / 1e9}
+                        onChange={(e) => handleCustomGasChange(e.target.value)}
+                        onFocus={() => setCustomGasInputFocusing(true)}
+                        onBlur={() => setCustomGasInputFocusing(false)}
+                        type="number"
+                      />
+                      <div className="input-border" />
+                    </div>
                   ) : (
                     gas.price / 1e9
                   )}
-                  <img
-                    src={
-                      selectedGas?.level === gas.level
-                        ? IconChecked
-                        : IconUnchecked
-                    }
-                    className="icon icon-checked"
+                  <Checkbox
+                    background="#27C193"
+                    checked={selectedGas?.level === gas.level}
                   />
                 </div>
                 <div className="time">

@@ -452,6 +452,39 @@
       margin-bottom: 12px;
       display: flex;
       justify-content: space-between;
+      .input-wrapper {
+        .ant-input {
+          max-width: 81px;
+          border-radius: 0;
+          outline: none;
+          height: 24px;
+          transition: none;
+          border: none;
+          font-size: 15px;
+          font-weight: 500;
+          color: #2D3033;
+          padding-left: 0;
+          position: relative;
+        }
+        .ant-input:focus, .ant-input-focused, .ant-input:hover, .ant-input:focus-visible {
+          border: none;
+        }
+        .input-border {
+          position: absolute;
+          bottom: 0;
+          left: 0;
+          width: 100%;
+          height: 0.5px;
+          background-color: #D8DFEB;
+          opacity: 0;
+          transition: opacity .3s;
+        }
+        &.focusing {
+          .input-border {
+            opacity: 1;
+          }
+        }
+      }
     }
     .time, .tx-count {
       color: #818A99;
