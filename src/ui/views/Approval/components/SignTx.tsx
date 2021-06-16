@@ -130,7 +130,7 @@ const SignTx = ({ params, origin }) => {
       setGasLimit(res.recommend.gas);
     }
     setTxDetail(res);
-    if (tx.from !== tx.to) setRealNonce(res.recommend.nonce); // only use nonce from s
+    if (tx.from !== tx.to) setRealNonce(res.recommend.nonce); // do not overwrite nonce if from === to(cancel transaction)
     setPreprocessSuccess(res.pre_exec.success);
   };
 
@@ -176,7 +176,7 @@ const SignTx = ({ params, origin }) => {
 
     resolveApproval({
       ...tx,
-      nonce: realNonce,
+      nonce: realNonce || tx.nonce,
       gas: gasLimit,
     });
   };
