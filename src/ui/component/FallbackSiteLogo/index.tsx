@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import { getOriginName, hashCode } from 'ui/utils';
+import cx from 'clsx';
 import './style.less';
 
 const bgColorList = [
@@ -22,12 +23,14 @@ const FallbackImage = ({
   origin,
   width,
   height,
+  className,
   style = {},
 }: {
   url: string;
   origin: string;
   width: string;
-  height: string;
+  height?: string;
+  className?: string;
   style?: React.CSSProperties;
 }) => {
   const [loadFaild, setLoadFaild] = useState(false);
@@ -55,12 +58,12 @@ const FallbackImage = ({
 
   return (
     <div
-      className="fallback-site-logo"
+      className={cx('fallback-site-logo', className)}
       style={{
         backgroundColor: loadSuccess ? 'transparent' : bgColor,
         backgroundImage: loadSuccess ? 'none' : bgText,
         width,
-        height,
+        height: height || width,
         ...style,
       }}
     >

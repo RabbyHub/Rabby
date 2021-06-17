@@ -75,7 +75,7 @@ const GasSelector = ({ gas, chainId, tx, onChange }: GasSelectorProps) => {
   );
   return (
     <>
-      <p className="section-title">Es. gas cost</p>
+      <p className="section-title">Est. gas cost</p>
       <div className="gas-selector gray-section-block">
         <div className="gas-info">
           <p className="text-gray-content text-14">

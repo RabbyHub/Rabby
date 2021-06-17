@@ -61,9 +61,10 @@ const AuthenticationModal = ({
   );
 };
 
-export default (wallet: WalletController) => {
+export const wrapModalPromise = (Component) => (props?) => {
   const div = document.createElement('div');
   document.body.appendChild(div);
+
   return new Promise((resolve, reject) => {
     const handleCancel = () => {
       setTimeout(() => {
@@ -72,13 +73,21 @@ export default (wallet: WalletController) => {
       }, 1000);
       reject();
     };
+
     ReactDOM.render(
-      <AuthenticationModal
-        onFinished={resolve as () => void}
-        onCancel={handleCancel}
-        wallet={wallet}
-      />,
+      ReactDOM.createPortal(
+        <Component
+          onFinished={resolve as () => void}
+          onCancel={handleCancel}
+          {...props}
+        />,
+        div
+      ),
       div
     );
   });
 };
+
+const AuthenticationModalPromise = wrapModalPromise(AuthenticationModal);
+
+export default AuthenticationModalPromise;

@@ -1,10 +1,9 @@
 import React from 'react';
-import { browser } from 'webextension-polyfill-ts';
 import { Popover } from 'antd';
 import { Spin } from 'ui/component';
 import { IconOffline } from 'ui/assets';
 import { useCurrentBalance } from 'ui/component/AddressList/AddressItem';
-import { splitNumberByStep } from 'ui/utils/number';
+import { splitNumberByStep, openInTab } from 'ui/utils';
 import IconArrowRight from 'ui/assets/arrow-right.svg';
 import { CHAINS } from 'consts';
 
@@ -12,9 +11,7 @@ const BalanceView = ({ currentAccount }) => {
   const [balance, chainBalances] = useCurrentBalance(currentAccount?.address);
 
   const handleGotoProfile = () => {
-    browser.tabs.create({
-      url: `https://debank.com/profile/${currentAccount?.address}`,
-    });
+    openInTab(`https://debank.com/profile/${currentAccount?.address}`);
   };
 
   const balancePopoverContent = (

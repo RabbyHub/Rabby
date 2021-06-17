@@ -49,8 +49,6 @@ const ConnectedSites = () => {
                     url={site.icon}
                     origin={site.origin}
                     width="28px"
-                    height="28px"
-                    style={{ borderRadius: '4px' }}
                   />
                 </div>
               }

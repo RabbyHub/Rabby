@@ -16,7 +16,7 @@ import { openIndexPage } from 'background/webapi/tab';
 import { KEYRING_CLASS, DisplayedKeryring } from 'background/service/keyring';
 import BaseController from './base';
 import { CHAINS_ENUM, CHAINS } from 'consts';
-import { Account } from '../service/preference';
+import preference, { Account } from '../service/preference';
 import { ConnectedSite } from '../service/permission';
 
 export class WalletController extends BaseController {
@@ -52,6 +52,10 @@ export class WalletController extends BaseController {
     if (!address) return null;
     return preferenceService.getAddressBalance(address);
   };
+
+  getExternalLinkAck = () => preference.getExternalLinkAck();
+
+  setExternalLinkAck = (ack) => preference.setExternalLinkAck(ack);
 
   /* chains */
   getSupportChains = () => chainService.getSupportChains();

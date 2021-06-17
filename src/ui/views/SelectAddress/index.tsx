@@ -99,7 +99,7 @@ const SelectAddress = () => {
         </Form.Item>
         <div
           onClick={() => getAccounts()}
-          className="mt-6 text-blue text-15 text-center cursor-pointer lg:mb-[100px]"
+          className="mt-6 text-blue text-15 text-center cursor-pointer lg:mb-[66px]"
         >
           Load More...
         </div>

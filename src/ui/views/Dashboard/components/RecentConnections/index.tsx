@@ -1,9 +1,5 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { Popover } from 'antd';
-import { TooltipPlacement } from 'antd/lib/tooltip';
-// import positions from 'positions';
-import { browser } from 'webextension-polyfill-ts';
-import { useWallet, getCurrentConnectSite } from 'ui/utils';
+import React, { useState, useEffect } from 'react';
+import { useWallet, getCurrentConnectSite, openInTab } from 'ui/utils';
 import { ConnectedSite } from 'background/service/permission';
 import { ChainSelector, FallbackSiteLogo } from 'ui/component';
 import { CHAINS_ENUM, CHAINS } from 'consts';
@@ -35,7 +31,7 @@ const CurrentConnection = ({
   );
   const Connected = () => (
     <div className="connected flex">
-      <img src={site!.icon} className="logo" />
+      <FallbackSiteLogo url={site!.icon} origin={site!.origin} width="32px" />
       <div className="info">
         <p className="origin" title={site!.origin}>
           {site!.origin}
@@ -55,122 +51,48 @@ const CurrentConnection = ({
 const ConnectionItem = ({
   item,
   onClick,
-  index,
+  onPointerEnter,
+  onPointerLeave,
 }: {
   item: ConnectedSite | null;
   onClick?(): void;
-  index: number;
-}) => {
-  let placement: TooltipPlacement = 'top';
-  if (index % 4 === 0) {
-    placement = 'right';
-  } else if (index % 4 === 3) {
-    placement = 'left';
-  }
-  if (!item) {
-    const popoverContent = (
-      <div className="connect-site-popover">
-        <p className="text-gray-content">
-          Recently used websites will be recorded
-        </p>
-      </div>
-    );
-    return (
-      <div className="item" onClick={onClick} style={{ cursor: 'inherit' }}>
-        <Popover
-          content={popoverContent}
-          placement={placement}
-          arrowPointAtCenter
-        >
-          <img src="/images/no-recent-connect.png" className="logo" />
-        </Popover>
-      </div>
-    );
-  }
-
-  const triggerEl = useRef<HTMLDivElement>(null);
-  const popoverContent = (
-    <div className="connect-site-popover">
-      <p className="origin">{item.origin}</p>
-      <p className="text-gray-content">{item.name}</p>
-    </div>
-  );
-  /* for backup
-  const handlePopoverVisibleChange = (visible: boolean) => {
-    if (visible) {
-      setTimeout(() => {
-        // currently workaround for https://github.com/ant-design/ant-design/issues/7038
-        // TODO: create PR to antd to fix this
-        const el = document.querySelector(
-          '.ant-popover:not(.ant-popover-hidden)'
-        )!;
-        const onAnimationEnd = function (this: HTMLDivElement) {
-          const arrowCopy = document
-            .querySelector('.ant-popover:not(.ant-popover-hidden)')!
-            .querySelector<HTMLDivElement>('.ant-popover-arrow')!;
-          const css = positions(
-            arrowCopy,
-            'bottom center',
-            triggerEl.current,
-            'top center'
-          );
-          const { left } = css;
-          console.log(left);
-          arrowCopy.style.left = left + 'px';
-          arrowCopy.style.transform = 'rotate(45deg)';
-          el.removeEventListener('animationend', onAnimationEnd);
-        };
-        el.addEventListener('animationend', onAnimationEnd);
-      });
-    }
-  };
-  */
-  return (
-    <div
-      className="item"
-      onClick={onClick}
-      style={{ cursor: onClick ? 'pointer' : 'inherit' }}
-      ref={triggerEl}
-    >
-      <Popover
-        content={popoverContent}
-        placement={placement}
-        arrowPointAtCenter
-        // onVisibleChange={handlePopoverVisibleChange}
-      >
+  onPointerEnter?(): void;
+  onPointerLeave?(): void;
+}) => (
+  <div
+    className="item"
+    onClick={onClick}
+    onPointerEnter={onPointerEnter}
+    onPointerLeave={onPointerLeave}
+  >
+    {item ? (
+      <>
         <img
           className="connect-chain"
           src={CHAINS[item.chain].logo}
           alt={CHAINS[item.chain].name}
         />
-        <div className="logo">
-          <FallbackSiteLogo
-            url={item.icon}
-            origin={item.origin}
-            width="32px"
-            height="32px"
-            style={{
-              borderRadius: '4px',
-            }}
-          />
+        <div className="logo cursor-pointer">
+          <FallbackSiteLogo url={item.icon} origin={item.origin} width="32px" />
         </div>
-      </Popover>
-    </div>
-  );
-};
+      </>
+    ) : (
+      <img src="/images/no-recent-connect.png" className="logo" />
+    )}
+  </div>
+);
 
 export default () => {
   const [connections, setConnections] = useState<(ConnectedSite | null)[]>([]);
   const [currentConnect, setCurrentConnect] = useState<
     ConnectedSite | null | undefined
   >(null);
+  const [hoverSite, setHoverSite] = useState<string | undefined>();
   const wallet = useWallet();
 
   const handleClickConnection = (connection: ConnectedSite | null) => {
     if (!connection) return;
-    browser.tabs.create({
-      url: connection.origin,
-    });
+    openInTab(connection.origin);
   };
 
   const getConnectedSites = async () => {
@@ -184,16 +106,24 @@ export default () => {
     getConnectedSites();
   };
 
+  const showHoverSite = (item?: ConnectedSite | null) => {
+    setHoverSite(item?.origin);
+  };
+
   useEffect(() => {
     getCurrentSite();
   }, []);
 
   return (
     <div className="recent-connections">
+      <div className="mb-[17px] text-12 text-gray-content h-14 text-center">
+        {hoverSite}
+      </div>
       <div className="list">
-        {connections.map((item, index) => (
+        {connections.map((item) => (
           <ConnectionItem
-            index={index}
+            onPointerEnter={() => showHoverSite(item)}
+            onPointerLeave={() => showHoverSite()}
             item={item}
             key={item?.origin || Date.now() * Math.random()}
             onClick={() => handleClickConnection(item)}

@@ -54,7 +54,7 @@ const AddressManagement = () => {
 
   const handleViewMnemonics = async () => {
     try {
-      await AuthenticationModal(wallet);
+      await AuthenticationModal({ wallet });
       const mnemonic = await wallet.getCurrentMnemonics();
       Modal.info({
         title: 'Mnemonic',
@@ -82,7 +82,7 @@ const AddressManagement = () => {
 
     const handlleViewPrivateKey = async () => {
       try {
-        await AuthenticationModal(wallet);
+        await AuthenticationModal({ wallet });
         const privateKey = await keyring.exportAccount(data);
         Modal.info({
           title: 'Private Key',

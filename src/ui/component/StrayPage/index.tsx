@@ -83,7 +83,7 @@ export const StrayPageWithButton = ({
     headerClassName={headerClassName}
   >
     <Form
-      className="overflow-y-auto max-h-full sm:pb-[99px] lg:pb-[120px]"
+      className="overflow-y-auto max-h-full sm:pb-[91px] lg:pb-[112px]"
       autoComplete="off"
       {...formProps}
       onFinish={onSubmit}

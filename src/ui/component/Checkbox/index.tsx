@@ -1,4 +1,5 @@
 import React, { ReactNode, useEffect, useState } from 'react';
+import cx from 'clsx';
 import IconCheck from 'ui/assets/check.svg';
 import './style.less';
 
@@ -9,6 +10,7 @@ interface CheckboxProps {
   background?: string;
   width?: string;
   height?: string;
+  className?: string;
   children?: ReactNode;
 }
 
@@ -21,6 +23,7 @@ const Checkbox = ({
   background = '#8697FF',
   width = '16px',
   height = '16px',
+  className,
   children,
 }: CheckboxProps) => {
   const [checkState, setCheckState] = useState(defaultChecked);
@@ -35,7 +38,7 @@ const Checkbox = ({
 
   return (
     <div
-      className="rabby-checkbox__wrapper"
+      className={cx('rabby-checkbox__wrapper', className)}
       onClick={() => handleValueChange(!checkState)}
     >
       <div

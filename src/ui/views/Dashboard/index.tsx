@@ -7,10 +7,14 @@ import { Link, useHistory } from 'react-router-dom';
 import { message } from 'antd';
 import { CHAINS, HARDWARE_KEYRING_TYPES, KEYRING_TYPE } from 'consts';
 import { AddressViewer, AddressList, Modal } from 'ui/component';
-import { useWallet, getCurrentConnectSite } from 'ui/utils';
+import { useWallet, getCurrentConnectSite, openInTab } from 'ui/utils';
 import { DisplayedKeryring } from 'background/service/keyring';
 import { Account } from 'background/service/preference';
-import { RecentConnections, BalanceView } from './components';
+import {
+  RecentConnections,
+  BalanceView,
+  confirmOpenExternalModal,
+} from './components';
 import IconSetting from 'ui/assets/settings.svg';
 import IconCopy from 'ui/assets/copy.svg';
 import IconQrcode from 'ui/assets/qrcode.svg';
@@ -135,16 +139,23 @@ const Dashboard = () => {
     handleToggle();
   };
 
-  const handleGotoSend = () => {
-    browser.tabs.create({
-      url: 'https://debank.com/send',
+  const _openInTab = (url) => {
+    if (wallet.getExternalLinkAck()) {
+      openInTab(url);
+      return;
+    }
+
+    confirmOpenExternalModal({ wallet }).then(() => {
+      openInTab(url);
     });
   };
 
+  const handleGotoSend = () => {
+    _openInTab('https://debank.com/send');
+  };
+
   const handleGotoHistory = () => {
-    browser.tabs.create({
-      url: `https://debank.com/profile/${currentAccount?.address}/history`,
-    });
+    _openInTab(`https://debank.com/profile/${currentAccount?.address}/history`);
   };
 
   const handleGotoSwap = async () => {
@@ -153,9 +164,7 @@ const Dashboard = () => {
     if (site) {
       chain = CHAINS[site.chain].serverId;
     }
-    browser.tabs.create({
-      url: `https://debank.com/swap${chain ? `?chain=${chain}` : ''}`,
-    });
+    _openInTab(`https://debank.com/swap${chain ? `?chain=${chain}` : ''}`);
   };
 
   const handleCopyCurrentAddress = () => {

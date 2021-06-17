@@ -67,15 +67,7 @@ const Connect = ({ params: { icon, origin, name } }: ConnectProps) => {
         <div className="connect-card">
           <div className="site-info">
             <div className="site-info__icon">
-              <FallbackSiteLogo
-                url={icon}
-                origin={origin}
-                width="44px"
-                height="44px"
-                style={{
-                  borderRadius: '4px',
-                }}
-              />
+              <FallbackSiteLogo url={icon} origin={origin} width="44px" />
             </div>
             <div className="site-info__text">
               <p className="text-15 font-medium">{origin}</p>

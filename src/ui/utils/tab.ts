@@ -12,3 +12,12 @@ export const getCurrentConnectSite = async (wallet: WalletController) => {
   if (!id) return null;
   return wallet.getCurrentConnectedSite(id);
 };
+
+export const openInTab = async (url): Promise<number | undefined> => {
+  const tab = await browser.tabs.create({
+    active: true,
+    url,
+  });
+
+  return tab?.id;
+};
