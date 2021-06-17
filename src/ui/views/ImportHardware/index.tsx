@@ -4,6 +4,7 @@ import { Spin, StrayPage } from 'ui/component';
 import { useWallet } from 'ui/utils';
 import { SvgIconLedger, SvgIconOnekey, SvgIconTrezor } from 'ui/assets';
 import { BIP44_PATH } from './LedgerHdPath';
+import { IS_CHROME } from 'consts';
 
 import './index.css';
 
@@ -32,7 +33,11 @@ const ImportHardware = () => {
 
   const navSelectAddress = async (hardware) => {
     if (hardware === 'LEDGER') {
-      history.push('/import/hardware/ledger');
+      history.push(
+        IS_CHROME
+          ? '/import/hardware/ledger-connect'
+          : '/import/hardware/ledger'
+      );
       return;
     }
 

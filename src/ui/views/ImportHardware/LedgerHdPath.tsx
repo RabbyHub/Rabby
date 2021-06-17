@@ -24,8 +24,12 @@ const LedgerHdPath = () => {
       return;
     }
     setSpin(true);
+    const useLedgerLive = wallet.isUseLedgerLive();
     try {
       const keyring = await wallet.connectHardware('LEDGER', currentPath);
+      if (useLedgerLive) {
+        await keyring.updateTransportMethod(true);
+      }
       await keyring.unlock();
       setSpin(false);
       history.push({

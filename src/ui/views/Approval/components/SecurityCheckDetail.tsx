@@ -107,7 +107,7 @@ const SecurityCheckDetail = ({
         <div className="footer">
           {needPassword && (
             <div className="input-password">
-              <p>If you stil want to sign, enter passward to continue.</p>
+              <p>Enter passward to continue your transaction</p>
               <Input
                 placeholder="Please enter the password"
                 type="password"
