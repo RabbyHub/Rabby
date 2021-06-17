@@ -2,6 +2,7 @@ import React from 'react';
 import { CHAINS_ENUM, CHAINS } from 'consts';
 import { ExplainTxResponse } from 'background/service/openapi';
 import { splitNumberByStep } from 'ui/utils/number';
+import BalanceChange from './BalanceChange';
 
 interface SendProps {
   data: ExplainTxResponse;
@@ -22,6 +23,11 @@ const Send = ({ data, chainEnum }: SendProps) => {
           {detail.to_addr}
         </p>
       </div>
+      <BalanceChange
+        data={data.balance_change}
+        chainEnum={chainEnum}
+        isSupport={data.support_balance_change}
+      />
     </div>
   );
 };

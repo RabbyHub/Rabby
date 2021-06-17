@@ -87,6 +87,7 @@ export interface TokenItem {
   price: number;
   symbol: string;
   time_at: number;
+  usd_value: number;
 }
 
 export interface GasResult {

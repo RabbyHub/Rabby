@@ -1,7 +1,15 @@
 import React from 'react';
 import { CHAINS, CHAINS_ENUM } from 'consts';
+import { ExplainTxResponse } from 'background/service/openapi';
+import BalanceChange from './BalanceChange';
 
-const CancelTx = ({ chainEnum }: { chainEnum: CHAINS_ENUM }) => {
+const CancelTx = ({
+  chainEnum,
+  data,
+}: {
+  chainEnum: CHAINS_ENUM;
+  data: ExplainTxResponse;
+}) => {
   const chain = CHAINS[chainEnum];
   return (
     <div className="cancel-tx">
@@ -12,6 +20,11 @@ const CancelTx = ({ chainEnum }: { chainEnum: CHAINS_ENUM }) => {
           One pending transaction will be canceled
         </p>
       </div>
+      <BalanceChange
+        data={data.balance_change}
+        chainEnum={chainEnum}
+        isSupport={data.support_balance_change}
+      />
     </div>
   );
 };

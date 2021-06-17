@@ -31,7 +31,8 @@ const TxTypeComponent = ({
   txDetail: ExplainTxResponse;
   chain: Chain;
 }) => {
-  if (txDetail.type_cancel_tx) return <CancelTx chainEnum={chain.enum} />;
+  if (txDetail.type_cancel_tx)
+    return <CancelTx data={txDetail} chainEnum={chain.enum} />;
   if (txDetail.type_cancel_token_approval)
     return <Cancel data={txDetail} chainEnum={chain.enum} />;
   if (txDetail.type_token_approval)

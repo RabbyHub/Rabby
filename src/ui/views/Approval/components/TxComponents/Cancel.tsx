@@ -3,6 +3,7 @@ import clsx from 'clsx';
 import ClipboardJS from 'clipboard';
 import { message } from 'antd';
 import { AddressViewer } from 'ui/component';
+import BalanceChange from './BalanceChange';
 import { CHAINS_ENUM, CHAINS } from 'consts';
 import { ExplainTxResponse } from 'background/service/openapi';
 import IconCopy from 'ui/assets/copy-no-border.svg';
@@ -73,6 +74,11 @@ const Cancel = ({ data, chainEnum }: CancelProps) => {
           </div>
         </div>
       </div>
+      <BalanceChange
+        data={data.balance_change}
+        chainEnum={chainEnum}
+        isSupport={data.support_balance_change}
+      />
     </div>
   );
 };

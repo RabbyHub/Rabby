@@ -6,6 +6,7 @@ import { AddressViewer } from 'ui/component';
 import { CHAINS_ENUM, CHAINS } from 'consts';
 import { splitNumberByStep } from 'ui/utils/number';
 import { ExplainTxResponse } from 'background/service/openapi';
+import BalanceChange from './BalanceChange';
 import IconCopy from 'ui/assets/copy-no-border.svg';
 import IconSuccess from 'ui/assets/success.svg';
 import IconUnknownProtocol from 'ui/assets/unknown-protocol.svg';
@@ -79,6 +80,11 @@ const Approve = ({ data, chainEnum }: ApproveProps) => {
           </div>
         </div>
       </div>
+      <BalanceChange
+        data={data.balance_change}
+        chainEnum={chainEnum}
+        isSupport={data.support_balance_change}
+      />
     </div>
   );
 };

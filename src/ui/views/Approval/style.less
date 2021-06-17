@@ -154,6 +154,9 @@
       padding-bottom: 200px;
     }
     .send, .approve, .cancel, .cancel-tx {
+      .balance-change {
+        margin-bottom: 24px;
+      }
       .common-detail-block {
         display: flex;
         flex-direction: column;
@@ -268,56 +271,81 @@
       }
     }
     .balance-change {
-      .section-title {
-        .usd-value-change {
-          color: #F24822;
-          font-size: 15px;
-          font-weight: 500;
-          &.green {
-            color: #27C193;
-          }
-        }
-      }
       .balance-change-content {
         padding: 16px;
         ul {
           margin: 0;
+          position: relative;
+          padding-bottom: 16px;
           li {
-            display: flex;
-            justify-content: space-between;
             font-size: 14px;
             color: #525966;
             margin-bottom: 12px;
             line-height: 1;
-            .token-symbol {
-              color: #818A99;
-              width: 80px;
-              flex-shrink: 0;
-              overflow: hidden;
-              text-overflow: ellipsis;
+            .first-line {
+              display: flex;
+              justify-content: space-between;
+              margin-bottom: 2px;
+              .token-amount {
+                flex: 1;
+                overflow: hidden;
+                text-overflow: ellipsis;
+                text-align: right;
+                font-weight: 500;
+                font-size: 15px;
+                line-height: 18px;
+              }
             }
-            .token-amount {
-              flex: 1;
-              overflow: hidden;
-              text-overflow: ellipsis;
+            .second-line {
               text-align: right;
+              font-size: 12px;
+              color: #818A99;
+              line-height: 14px;
             }
           }
           &:nth-last-child(1) {
+            &::after {
+              .part-border(328px);
+              bottom: 0;
+              left: 50%;
+              transform: translateX(-50%);
+            }
             li:nth-last-child(1) {
               margin-bottom: 0;
+            }
+          }
+        }
+        .token-symbol {
+          color: #818A99;
+          width: 120px;
+          flex-shrink: 0;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+        .total-balance-change {
+          display: flex;
+          justify-content: space-between;
+          padding: 16px 0 0;
+          .usd-value-change {
+            color: #525966;
+            font-size: 14px; 
+            &.red {
+              color: #F24822;
+            }
+            &.green {
+              color: #27C193;
             }
           }
         }
       }
       .balance-change_error {
         width: 360px;
-        background-color: rgba(242, 156, 27, 0.1);
+        background: rgba(242, 156, 27, 0.1);
         border-radius: 4px;
         color: #F29C1B;
+        border: 1px solid rgba(242, 156, 27, 0.2);
         font-size: 14px;
-        text-align: center;
-        padding: 10px 13px;
+        padding: 14px 16px;
       }
     }
   }
