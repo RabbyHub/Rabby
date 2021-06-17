@@ -48,8 +48,8 @@ const ConnectedSites = () => {
                   <FallbackSiteLogo
                     url={site.icon}
                     origin={site.origin}
-                    width="32px"
-                    height="32px"
+                    width="28px"
+                    height="28px"
                     style={{ borderRadius: '4px' }}
                   />
                 </div>
@@ -65,7 +65,6 @@ const ConnectedSites = () => {
                 <p className="text-13 font-medium text-gray-title">
                   {site.origin}
                 </p>
-                <p className="text-12 text-gray-content">{site.name}</p>
               </div>
             </Field>
           ))

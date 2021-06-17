@@ -40,9 +40,7 @@ const CurrentConnection = ({
         <p className="origin" title={site!.origin}>
           {site!.origin}
         </p>
-        <p className="name" title={site!.name}>
-          {site!.name}
-        </p>
+        <p className="name">connected</p>
       </div>
       <ChainSelector value={site!.chain} onChange={handleChangeDefaultChain} />
     </div>

@@ -79,7 +79,6 @@ const Connect = ({ params: { icon, origin, name } }: ConnectProps) => {
             </div>
             <div className="site-info__text">
               <p className="text-15 font-medium">{origin}</p>
-              <p className="text-14 text-gray-content">{name}</p>
             </div>
           </div>
           <div className="site-chain">
