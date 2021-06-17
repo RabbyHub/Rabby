@@ -43,13 +43,6 @@
     }
   ],
   "content_security_policy": "script-src 'self' https://www.google-analytics.com; object-src 'self'",
-  "permissions": [
-    "storage",
-    "clipboardWrite",
-    "activeTab",
-    "webRequest",
-    "notifications",
-    "*://connect.trezor.io/*"
-  ],
+  "permissions": ["storage", "activeTab"],
   "web_accessible_resources": ["user-media-permission.html"]
 }

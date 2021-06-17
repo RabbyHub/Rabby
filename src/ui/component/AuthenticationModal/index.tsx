@@ -7,20 +7,25 @@ import { WalletController } from 'background/controller/wallet';
 interface AuthenticationModalProps {
   onFinished(): void;
   onCancel(): void;
+  validationHandler?(password: string): Promise<void>;
   wallet: WalletController;
 }
 
 const AuthenticationModal = ({
+  validationHandler,
   onFinished,
   onCancel,
   wallet,
 }: AuthenticationModalProps) => {
   const [visible, setVisible] = useState(true);
-  const [error, setError] = useState<string>('');
   const [form] = Form.useForm();
   const handleSubmit = async ({ password }: { password: string }) => {
     try {
-      await wallet.verifyPassword(password);
+      if (validationHandler) {
+        await validationHandler(password);
+      } else {
+        await wallet.verifyPassword(password);
+      }
       onFinished();
       setVisible(false);
     } catch (e) {
@@ -61,7 +66,13 @@ const AuthenticationModal = ({
   );
 };
 
-export default (wallet: WalletController) => {
+export default ({
+  wallet,
+  validationHandler,
+}: {
+  wallet: WalletController;
+  validationHandler?(password: string): Promise<void>;
+}) => {
   const div = document.createElement('div');
   document.body.appendChild(div);
   return new Promise((resolve, reject) => {
@@ -74,6 +85,7 @@ export default (wallet: WalletController) => {
     };
     ReactDOM.render(
       <AuthenticationModal
+        validationHandler={validationHandler}
         onFinished={resolve as () => void}
         onCancel={handleCancel}
         wallet={wallet}
