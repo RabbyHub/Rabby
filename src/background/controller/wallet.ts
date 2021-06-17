@@ -299,6 +299,11 @@ export class WalletController extends BaseController {
     preferenceService.setCurrentAccount(account);
   };
 
+  isUseLedgerLive = () => preferenceService.isUseLedgerLive();
+
+  updateUseLedgerLive = async (value: boolean) =>
+    preferenceService.updateUseLedgerLive(value);
+
   connectHardware = async (type, hdPath) => {
     let keyring;
     const keyringType = KEYRING_CLASS.HARDWARE[type];

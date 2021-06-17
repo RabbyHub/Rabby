@@ -15,6 +15,7 @@ import SelectAddress from './SelectAddress';
 import ImportSuccess from './ImportSuccess';
 import ImportHardware from './ImportHardware';
 import ImportLedgerPathSelect from './ImportHardware/LedgerHdPath';
+import ConnectLedgerMethodSelect from './ImportHardware/LedgerConnectMethod';
 import Settings from './Settings';
 import ConnectedSites from './ConnectedSites';
 import Approval from './Approval';
@@ -72,6 +73,9 @@ const Main = () => {
         </PrivateRoute>
         <PrivateRoute exact path="/import/hardware">
           <ImportHardware />
+        </PrivateRoute>
+        <PrivateRoute exact path="/import/hardware/ledger-connect">
+          <ConnectLedgerMethodSelect />
         </PrivateRoute>
         <PrivateRoute exact path="/import/hardware/ledger">
           <ImportLedgerPathSelect />

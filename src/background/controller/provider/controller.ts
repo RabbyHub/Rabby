@@ -151,9 +151,14 @@ class ProviderController extends BaseController {
   };
 
   private _checkAddress = async (address) => {
-    const { address: currentAddress, keyring } =
+    // eslint-disable-next-line prefer-const
+    let { address: currentAddress, keyring } =
       (await this.getCurrentAccount()) || {};
-    if (!currentAddress || currentAddress !== normalizeAddress(address)) {
+    currentAddress = currentAddress?.toLowerCase();
+    if (
+      !currentAddress ||
+      currentAddress !== normalizeAddress(address).toLowerCase()
+    ) {
       throw ethErrors.rpc.invalidParams({
         message:
           'Invalid parameters: must use the current user address to sign',
