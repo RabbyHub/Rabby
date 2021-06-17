@@ -1,7 +1,7 @@
 {
   "name": "rabby",
-  "version": "0.0.1",
-  "description": "eth wallet",
+  "version": "0.2.0",
+  "description": "A browser plugin for DeFi users",
   "scripts": {
     "clean": "mkdir -p dist && rm -rf dist/* && cp -r _raw/* dist",
     "build:dev": "npm run clean && TAILWIND_MODE=watch webpack --progress --env config=dev",
