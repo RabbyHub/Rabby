@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, memo, useCallback } from 'react';
 import { useWallet, getCurrentConnectSite, openInTab } from 'ui/utils';
 import { ConnectedSite } from 'background/service/permission';
 import { ChainSelector, FallbackSiteLogo } from 'ui/component';
@@ -6,80 +6,92 @@ import { CHAINS_ENUM, CHAINS } from 'consts';
 import IconInternet from 'ui/assets/internet.svg';
 import './style.less';
 
-const CurrentConnection = ({
-  site,
-  onChange,
-}: {
-  site: null | ConnectedSite | undefined;
-  onChange(): void;
-}) => {
-  const wallet = useWallet();
+const CurrentConnection = memo(
+  ({
+    site,
+    onChange,
+  }: {
+    site: null | ConnectedSite | undefined;
+    onChange(): void;
+  }) => {
+    const wallet = useWallet();
 
-  const handleChangeDefaultChain = (chain: CHAINS_ENUM) => {
-    wallet.updateConnectSite(site!.origin, {
-      ...site!,
-      chain,
-    });
-    onChange();
-  };
+    const handleChangeDefaultChain = (chain: CHAINS_ENUM) => {
+      wallet.updateConnectSite(site!.origin, {
+        ...site!,
+        chain,
+      });
+      onChange();
+    };
 
-  const NoConnected = () => (
-    <p className="not-connected">
-      <img src={IconInternet} className="icon icon-no-connect" />
-      Not connected to current website
-    </p>
-  );
-  const Connected = () => (
-    <div className="connected flex">
-      <FallbackSiteLogo url={site!.icon} origin={site!.origin} width="32px" />
-      <div className="info">
-        <p className="origin" title={site!.origin}>
-          {site!.origin}
-        </p>
-        <p className="name">connected</p>
-      </div>
-      <ChainSelector value={site!.chain} onChange={handleChangeDefaultChain} />
-    </div>
-  );
-  return (
-    <div className="current-connection">
-      {site ? <Connected /> : <NoConnected />}
-    </div>
-  );
-};
-
-const ConnectionItem = ({
-  item,
-  onClick,
-  onPointerEnter,
-  onPointerLeave,
-}: {
-  item: ConnectedSite | null;
-  onClick?(): void;
-  onPointerEnter?(): void;
-  onPointerLeave?(): void;
-}) => (
-  <div
-    className="item"
-    onClick={onClick}
-    onPointerEnter={onPointerEnter}
-    onPointerLeave={onPointerLeave}
-  >
-    {item ? (
-      <>
-        <img
-          className="connect-chain"
-          src={CHAINS[item.chain].logo}
-          alt={CHAINS[item.chain].name}
-        />
-        <div className="logo cursor-pointer">
-          <FallbackSiteLogo url={item.icon} origin={item.origin} width="32px" />
+    const NoConnected = () => (
+      <p className="not-connected">
+        <img src={IconInternet} className="icon icon-no-connect" />
+        Not connected to current website
+      </p>
+    );
+    const Connected = () => (
+      <div className="connected flex">
+        <FallbackSiteLogo url={site!.icon} origin={site!.origin} width="32px" />
+        <div className="info">
+          <p className="origin" title={site!.origin}>
+            {site!.origin}
+          </p>
+          <p className="name">connected</p>
         </div>
-      </>
-    ) : (
-      <img src="/images/no-recent-connect.png" className="logo" />
-    )}
-  </div>
+        <ChainSelector
+          value={site!.chain}
+          onChange={handleChangeDefaultChain}
+        />
+      </div>
+    );
+    return (
+      <div className="current-connection">
+        {site ? <Connected /> : <NoConnected />}
+      </div>
+    );
+  }
+);
+
+const ConnectionItem = memo(
+  ({
+    item,
+    onClick,
+    onPointerEnter,
+    onPointerLeave,
+  }: {
+    item: ConnectedSite | null;
+    onClick?(): void;
+    onPointerEnter?(): void;
+    onPointerLeave?(): void;
+  }) => (
+    <div
+      className="item"
+      onClick={onClick}
+      onPointerEnter={onPointerEnter}
+      onPointerLeave={onPointerLeave}
+    >
+      {item ? (
+        <>
+          <img
+            className="connect-chain"
+            src={CHAINS[item.chain].logo}
+            alt={CHAINS[item.chain].name}
+          />
+          <div className="logo cursor-pointer">
+            <FallbackSiteLogo
+              url={item.icon}
+              origin={item.origin}
+              width="32px"
+            />
+          </div>
+        </>
+      ) : (
+        <img src="/images/no-recent-connect.png" className="logo" />
+      )}
+    </div>
+  ),
+  () => true
 );
 
 export default () => {
@@ -100,11 +112,11 @@ export default () => {
     setConnections(sites);
   };
 
-  const getCurrentSite = async () => {
+  const getCurrentSite = useCallback(async () => {
     const current = await getCurrentConnectSite(wallet);
     setCurrentConnect(current);
     getConnectedSites();
-  };
+  }, []);
 
   const showHoverSite = (item?: ConnectedSite | null) => {
     setHoverSite(item?.origin);
@@ -120,13 +132,14 @@ export default () => {
         {hoverSite}
       </div>
       <div className="list">
-        {connections.map((item) => (
+        {connections.map((item, index) => (
           <ConnectionItem
+            data-item={item}
             onPointerEnter={() => showHoverSite(item)}
             onPointerLeave={() => showHoverSite()}
-            item={item}
-            key={item?.origin || Date.now() * Math.random()}
             onClick={() => handleClickConnection(item)}
+            item={item}
+            key={item?.origin || index}
           />
         ))}
       </div>
