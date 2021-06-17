@@ -23,7 +23,7 @@ import AddAddress from './AddAddress';
 import ChainManagement, { StartChainManagement } from './ChainManagement';
 import AddressManagement from './AddressManagement';
 
-ReactGA.initialize('UA-196541140-1');
+ReactGA.initialize('UA-199755108-1');
 // eslint-disable-next-line @typescript-eslint/no-empty-function
 ga('set', 'checkProtocolTask', function () {});
 ga('require', 'displayfeatures');
