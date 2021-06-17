@@ -224,26 +224,24 @@ const Dashboard = () => {
           </div>
           <BalanceView currentAccount={currentAccount} />
           <div className="operation">
-            <div className="flex h-full w-full absolute bg-blue-light rounded-t-md">
-              <div className="operation-item" onClick={handleGotoSend}>
-                <img className="icon icon-send" src={IconSend} />
-                Send
-              </div>
-              <div className="operation-item" onClick={handleGotoSwap}>
-                <img className="icon icon-swap" src={IconSwap} />
-                Swap
-              </div>
-              <div className="operation-item" onClick={handleGotoHistory}>
-                {pendingTxCount > 0 ? (
-                  <div className="pending-count">
-                    <img src={IconPending} className="icon icon-pending" />
-                    {pendingTxCount}
-                  </div>
-                ) : (
-                  <img className="icon icon-history" src={IconHistory} />
-                )}
-                History
-              </div>
+            <div className="operation-item" onClick={handleGotoSend}>
+              <img className="icon icon-send" src={IconSend} />
+              Send
+            </div>
+            <div className="operation-item" onClick={handleGotoSwap}>
+              <img className="icon icon-swap" src={IconSwap} />
+              Swap
+            </div>
+            <div className="operation-item" onClick={handleGotoHistory}>
+              {pendingTxCount > 0 ? (
+                <div className="pending-count">
+                  <img src={IconPending} className="icon icon-pending" />
+                  {pendingTxCount}
+                </div>
+              ) : (
+                <img className="icon icon-history" src={IconHistory} />
+              )}
+              History
             </div>
           </div>
         </div>

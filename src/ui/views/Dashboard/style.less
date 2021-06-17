@@ -91,6 +91,7 @@
     }
 
     .operation {
+      display: flex;
       position: absolute;
       bottom: -1px;
       left: 50%;
@@ -98,23 +99,8 @@
       width: 85%;
       height: 50px;
       border-radius: 6px 6px 0px 0px;
-      border: 1px solid transparent;
       box-shadow: 0 0 100px rgba(0, 0, 0, 0.1);
-      &::before {
-        content: '';
-        border-radius: 6px 6px 0px 0px;
-        position: absolute;
-        top: -1px;
-        right: -1px;
-        bottom: -1px;
-        left: -1px;
-        background-image: linear-gradient(
-          173deg,
-          rgba(255, 255, 255, 0.78) 5.31%,
-          rgba(255, 255, 255, 0) 59%
-        );
-        z-index: -1;
-      }
+      background: url('../../assets/operation-card.png') left top / cover no-repeat;
       .operation-item {
         flex: 1;
         color: #fff;
