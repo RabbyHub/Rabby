@@ -1,8 +1,8 @@
 import React from 'react';
 import { Button } from 'antd';
-import { useApproval } from 'ui/utils';
+import { useApproval, useWallet } from 'ui/utils';
 import { SvgIconTrezor, SvgIconLedger, SvgIconOnekey } from 'ui/assets';
-import { HARDWARE_KEYRING_TYPES } from 'consts';
+import { HARDWARE_KEYRING_TYPES, IS_AFTER_CHROME91 } from 'consts';
 
 const Hardware = ({
   params,
@@ -16,6 +16,8 @@ const Hardware = ({
   const currentKeyringType = Object.keys(HARDWARE_KEYRING_TYPES)
     .map((key) => HARDWARE_KEYRING_TYPES[key])
     .find((item) => item.type === type);
+  const wallet = useWallet();
+  const useLedgerLive = wallet.isUseLedgerLive();
   requestDeffer.then(resolveApproval).catch(rejectApproval);
 
   const Icon = () => {
@@ -39,8 +41,10 @@ const Hardware = ({
     <div className="hardware-operation">
       <Icon />
       <h1 className="brand-name">{currentKeyringType.brandName}</h1>
-      <p className="text-15 text-medium text-gray-content text-center">
-        Please proceed in your hardware wallet
+      <p className="text-15 text-medium text-gray-content text-center whitespace-pre-line text-yellow">
+        {IS_AFTER_CHROME91 && !useLedgerLive
+          ? 'Unable to proceed  due to a Chrome issue. \n Please delete and re-connect this address'
+          : 'Please proceed in your hardware wallet'}
       </p>
       <footer>
         <div className="action-buttons flex justify-center">

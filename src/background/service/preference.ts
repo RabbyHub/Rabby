@@ -2,6 +2,7 @@ import cloneDeep from 'lodash/cloneDeep';
 import { createPersistStore } from 'background/utils';
 import { keyringService, sessionService } from './index';
 import { TotalBalanceResponse } from './openapi';
+import { HARDWARE_KEYRING_TYPES } from 'consts';
 
 export interface Account {
   type: string;
@@ -15,6 +16,7 @@ interface PreferenceStore {
   balanceMap: {
     [address: string]: TotalBalanceResponse;
   };
+  useLedgerLive: boolean;
 }
 
 class PreferenceService {
@@ -28,6 +30,7 @@ class PreferenceService {
         popupOpen: false,
         hiddenAddresses: [],
         balanceMap: {},
+        useLedgerLive: false,
       },
     });
   };
@@ -92,6 +95,23 @@ class PreferenceService {
   getAddressBalance = (address: string): TotalBalanceResponse | null => {
     const balanceMap = this.store.balanceMap || {};
     return balanceMap[address] || null;
+  };
+
+  updateUseLedgerLive = async (value: boolean) => {
+    this.store.useLedgerLive = value;
+    const keyrings = keyringService.getKeyringsByType(
+      HARDWARE_KEYRING_TYPES.Ledger.type
+    );
+    await Promise.all(
+      keyrings.map(async (keyring) => {
+        await keyring.updateTransportMethod(value);
+        keyring.restart();
+      })
+    );
+  };
+
+  isUseLedgerLive = () => {
+    return this.store.useLedgerLive;
   };
 }
 
