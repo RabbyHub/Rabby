@@ -2,7 +2,6 @@ import * as ethUtil from 'ethereumjs-util';
 import Wallet, { thirdparty } from 'ethereumjs-wallet';
 import { ethErrors } from 'eth-rpc-errors';
 import * as bip39 from 'bip39';
-import encryptor from 'browser-passworder';
 import {
   keyringService,
   preferenceService,
@@ -15,9 +14,10 @@ import {
 import { openIndexPage } from 'background/webapi/tab';
 import { KEYRING_CLASS, DisplayedKeryring } from 'background/service/keyring';
 import BaseController from './base';
-import { CHAINS_ENUM, CHAINS } from 'consts';
+import { CHAINS_ENUM, CHAINS, KEYRING_TYPE } from 'consts';
 import { Account } from '../service/preference';
 import { ConnectedSite } from '../service/permission';
+import DisplayKeyring from '../service/keyring/display';
 
 export class WalletController extends BaseController {
   openapi = openapiService;
@@ -114,6 +114,25 @@ export class WalletController extends BaseController {
     return this._setCurrentAccountFromKeyring(keyring, -1);
   };
 
+  getPrivateKey = async (password: string, address: string) => {
+    await this.verifyPassword(password);
+    const keyring = await keyringService.getKeyringForAccount(
+      address,
+      KEYRING_TYPE.SimpleKeyring
+    );
+    if (!keyring) return null;
+    return await keyring.exportAccount(address);
+  };
+
+  getMnemonics = async (password: string) => {
+    await this.verifyPassword(password);
+    const keyring = this._getKeyringByType(KEYRING_CLASS.MNEMONIC);
+    const serialized = await keyring.serialize();
+    const seedWords = serialized.mnemonic;
+
+    return seedWords;
+  };
+
   importPrivateKey = async (data) => {
     const privateKey = ethUtil.stripHexPrefix(data);
     const buffer = Buffer.from(privateKey, 'hex');
@@ -207,12 +226,9 @@ export class WalletController extends BaseController {
     this._setCurrentAccountFromKeyring(keyring);
   };
 
-  getCurrentMnemonics = async () => {
+  checkHasMnemonic = () => {
     const keyring = this._getKeyringByType(KEYRING_CLASS.MNEMONIC);
-    const serialized = await keyring.serialize();
-    const seedWords = serialized.mnemonic;
-
-    return seedWords;
+    return !!keyring.mnemonic;
   };
 
   deriveNewAccountFromMnemonic = async () => {
@@ -248,7 +264,10 @@ export class WalletController extends BaseController {
         : account.type;
 
       result[type] = result[type] || [];
-      result[type].push(account);
+      result[type].push({
+        ...account,
+        keyring: new DisplayKeyring(account.keyring),
+      });
     }
 
     return result;
@@ -267,7 +286,10 @@ export class WalletController extends BaseController {
         : account.type;
 
       result[type] = result[type] || [];
-      result[type].push(account);
+      result[type].push({
+        ...account,
+        keyring: new DisplayKeyring(account.keyring),
+      });
     }
 
     return result;
