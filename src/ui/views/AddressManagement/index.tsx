@@ -85,12 +85,15 @@ const AddressManagement = () => {
       (item) => item.type === keyring.type && item.address === data
     );
 
-    const handlleViewPrivateKey = async () => {
+    const handlleViewPrivateKey = async (address: string, type: string) => {
       try {
         await AuthenticationModal({
           wallet,
           async validationHandler(password) {
-            const privateKey = await wallet.getPrivateKey(password, data);
+            const privateKey = await wallet.getPrivateKey(password, {
+              address,
+              type,
+            });
             Modal.info({
               title: 'Private Key',
               centered: true,
@@ -151,7 +154,9 @@ const AddressManagement = () => {
                   : 'Hide'}{' '}
                 address
               </Menu.Item>
-              <Menu.Item onClick={handlleViewPrivateKey}>
+              <Menu.Item
+                onClick={() => handlleViewPrivateKey(data, keyring.type)}
+              >
                 View private key
               </Menu.Item>
             </Menu>
@@ -167,7 +172,9 @@ const AddressManagement = () => {
                   : 'Hide'}{' '}
                 address
               </Menu.Item>
-              <Menu.Item onClick={handlleViewPrivateKey}>
+              <Menu.Item
+                onClick={() => handlleViewPrivateKey(data, keyring.type)}
+              >
                 View private key
               </Menu.Item>
             </Menu>

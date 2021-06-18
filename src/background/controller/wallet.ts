@@ -118,12 +118,12 @@ export class WalletController extends BaseController {
     return this._setCurrentAccountFromKeyring(keyring, -1);
   };
 
-  getPrivateKey = async (password: string, address: string) => {
+  getPrivateKey = async (
+    password: string,
+    { address, type }: { address: string; type: string }
+  ) => {
     await this.verifyPassword(password);
-    const keyring = await keyringService.getKeyringForAccount(
-      address,
-      KEYRING_TYPE.SimpleKeyring
-    );
+    const keyring = await keyringService.getKeyringForAccount(address, type);
     if (!keyring) return null;
     return await keyring.exportAccount(address);
   };
