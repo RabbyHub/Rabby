@@ -46,7 +46,7 @@ const Cancel = ({ data, chainEnum }: CancelProps) => {
     <div className="cancel">
       <p className="section-title">Sign {chain.name} transaction</p>
       <div className="gray-section-block common-detail-block">
-        <p className="title">Cancel {detail.token_symbol} for</p>
+        <p className="title">Cancel {detail.token_symbol} Approval for</p>
         <div className="protocol">
           {detail.spender_protocol_logo_url && (
             <img
