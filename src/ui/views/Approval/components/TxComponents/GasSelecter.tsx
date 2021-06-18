@@ -2,13 +2,11 @@ import React, { useState } from 'react';
 import { Input, Button } from 'antd';
 import clsx from 'clsx';
 import { useDebounce } from 'react-use';
-import { CHAINS } from 'consts';
+import { CHAINS, GAS_LEVEL_TEXT } from 'consts';
 import { GasResult, Tx, GasLevel } from 'background/service/openapi';
 import { formatSeconds, useWallet } from 'ui/utils';
-import { Modal, Checkbox } from 'ui/component';
+import { Modal, FieldCheckbox } from 'ui/component';
 import IconSetting from 'ui/assets/setting-gray.svg';
-import IconTime from 'ui/assets/time.svg';
-import IconGroup from 'ui/assets/group.svg';
 
 interface GasSelectorProps {
   gas: GasResult;
@@ -23,7 +21,6 @@ const GasSelector = ({ gas, chainId, tx, onChange }: GasSelectorProps) => {
   const [customGas, setCustomGas] = useState(Number(tx.gasPrice));
   const [gasList, setGasList] = useState<GasLevel[]>([]);
   const [selectedGas, setSelectGas] = useState<GasLevel | null>(null);
-  const [customGasInputFocusing, setCustomGasInputFocusing] = useState(false);
   const chain = Object.values(CHAINS).find((item) => item.id === chainId)!;
   const loadGasMarket = async () => {
     const list = await wallet.openapi.gasMarket(
@@ -33,7 +30,11 @@ const GasSelector = ({ gas, chainId, tx, onChange }: GasSelectorProps) => {
     setGasList(list);
   };
 
-  const handleSelectGas = (gas: GasLevel) => {
+  const handleSelectGas = (checked: boolean, gas: GasLevel) => {
+    if (!checked) {
+      setSelectGas(null);
+      return;
+    }
     if (gas.price === 0) return;
     setSelectGas(gas);
   };
@@ -98,56 +99,51 @@ const GasSelector = ({ gas, chainId, tx, onChange }: GasSelectorProps) => {
       </div>
       <Modal
         visible={modalVisible}
-        title="Gas"
+        title="Select Gas Setting"
         className="gas-modal"
         onCancel={() => setModalVisible(false)}
         okText="Confirm"
         destroyOnClose
       >
         <div>
-          <ul className="gas-selector-panel">
+          <p className="section-title">Gas price (Gwei)</p>
+          <div className="gas-selector-panel">
             {gasList.map((gas) => (
-              <li
-                key={gas.level}
-                className={clsx({ checked: selectedGas?.level === gas.level })}
-                onClick={() => handleSelectGas(gas)}
+              <FieldCheckbox
+                checked={selectedGas?.level === gas.level}
+                onChange={(checked: boolean) => handleSelectGas(checked, gas)}
               >
-                <div className="title">
-                  {gas.level === 'custom' ? (
-                    <div
-                      className={clsx('relative', 'input-wrapper', {
-                        focusing: customGasInputFocusing,
-                      })}
-                    >
-                      <Input
-                        placeholder="Custom"
-                        defaultValue={customGas / 1e9}
-                        onChange={(e) => handleCustomGasChange(e.target.value)}
-                        onFocus={() => setCustomGasInputFocusing(true)}
-                        onBlur={() => setCustomGasInputFocusing(false)}
-                      />
-                      <div className="input-border" />
-                    </div>
-                  ) : (
-                    gas.price / 1e9
-                  )}
-                  <Checkbox
-                    background="#27C193"
-                    checked={selectedGas?.level === gas.level}
-                  />
+                <div className="gas-content">
+                  <div className="gas-content__info">
+                    <p className="text-gray-title text-13 font-medium mb-0">
+                      {GAS_LEVEL_TEXT[gas.level]}
+                    </p>
+                    <p className="text-gray-content text-12 mb-0">
+                      {formatSeconds(gas.estimated_seconds)} -{' '}
+                      {gas.front_tx_count} txn ahead
+                    </p>
+                  </div>
+                  <div className="gas-content__price">
+                    {gas.level === 'custom' ? (
+                      <div className="relative input-wrapper">
+                        <Input
+                          placeholder="Custom"
+                          defaultValue={customGas / 1e9}
+                          onChange={(e) =>
+                            handleCustomGasChange(e.target.value)
+                          }
+                          onClick={(e) => e.stopPropagation()}
+                        />
+                      </div>
+                    ) : (
+                      gas.price / 1e9
+                    )}
+                  </div>
                 </div>
-                <div className="time">
-                  <img src={IconTime} className="icon icon-time" />
-                  {formatSeconds(gas.estimated_seconds)}
-                </div>
-                <div className="tx-count">
-                  <img src={IconGroup} className="icon icon-group" />
-                  {gas.front_tx_count} txn ahead
-                </div>
-              </li>
+              </FieldCheckbox>
             ))}
-          </ul>
-          <div className="flex justify-center">
+          </div>
+          <div className="flex justify-center mt-40">
             <Button
               type="primary"
               className="w-[200px]"

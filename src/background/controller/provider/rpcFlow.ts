@@ -66,7 +66,7 @@ export default (req) =>
         },
         mapMethod,
       } = ctx;
-      const [approvalType, condition, { height = 750 } = {}] =
+      const [approvalType, condition, { height = 810 } = {}] =
         Reflect.getMetadata('APPROVAL', providerController, mapMethod) || [];
 
       if (approvalType && (!condition || !condition(ctx.request))) {

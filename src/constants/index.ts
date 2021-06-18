@@ -184,3 +184,10 @@ if (IS_CHROME) {
 export const IS_AFTER_CHROME91 = IS_CHROME
   ? chromeVersion && chromeVersion >= 91
   : false;
+
+export const GAS_LEVEL_TEXT = {
+  slow: 'Standard',
+  normal: 'Fast',
+  fast: 'Instant',
+  custom: 'Custom',
+};

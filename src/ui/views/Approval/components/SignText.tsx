@@ -1,7 +1,6 @@
 import React, { useState } from 'react';
 import { Button, Tooltip } from 'antd';
 import { KEYRING_CLASS } from 'consts';
-import { FallbackSiteLogo } from 'ui/component';
 import { useApproval, useWallet } from 'ui/utils';
 import { hex2Utf8 } from 'ui/utils';
 import {
