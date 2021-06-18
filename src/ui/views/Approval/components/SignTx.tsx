@@ -19,6 +19,7 @@ import Cancel from './TxComponents/Cancel';
 import Sign from './TxComponents/Sign';
 import CancelTx from './TxComponents/CancelTx';
 import Send from './TxComponents/Send';
+import Loading from './TxComponents/Loading';
 import GasSelector from './TxComponents/GasSelecter';
 import { WaitingSignComponent } from './SignText';
 import { Chain } from 'background/service/chain';
@@ -27,10 +28,13 @@ import clsx from 'clsx';
 const TxTypeComponent = ({
   txDetail,
   chain,
+  isReady,
 }: {
   txDetail: ExplainTxResponse;
   chain: Chain;
+  isReady: boolean;
 }) => {
+  if (!isReady) return <Loading chainEnum={chain.enum} />;
   if (txDetail.type_cancel_tx)
     return <CancelTx data={txDetail} chainEnum={chain.enum} />;
   if (txDetail.type_cancel_token_approval)
@@ -207,7 +211,7 @@ const SignTx = ({ params, origin }) => {
   }, [tx]);
 
   return (
-    <Spin spinning={!isReady}>
+    <>
       <AccountCard />
       <div
         className={clsx('approval-tx', {
@@ -216,8 +220,15 @@ const SignTx = ({ params, origin }) => {
       >
         {txDetail && (
           <>
-            {txDetail && <TxTypeComponent txDetail={txDetail} chain={chain} />}
+            {txDetail && (
+              <TxTypeComponent
+                isReady={isReady}
+                txDetail={txDetail}
+                chain={chain}
+              />
+            )}
             <GasSelector
+              isReady={isReady}
               tx={tx}
               gas={{
                 ...(txDetail
@@ -314,7 +325,7 @@ const SignTx = ({ params, origin }) => {
           />
         )}
       </div>
-    </Spin>
+    </>
   );
 };
 

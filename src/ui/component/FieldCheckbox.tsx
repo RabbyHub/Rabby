@@ -9,6 +9,7 @@ interface FieldCheckboxProps {
   checked?: boolean;
   defaultChecked?: boolean;
   onChange?(any): void;
+  showCheckbox?: boolean;
 }
 
 const FieldCheckbox = ({
@@ -18,6 +19,7 @@ const FieldCheckbox = ({
   checked,
   onChange,
   defaultChecked = false,
+  showCheckbox = true,
 }: FieldCheckboxProps) => {
   const isControlled = useRef(typeof checked !== 'undefined').current;
   const [_checked, setChecked] = useState<boolean>(
@@ -52,7 +54,8 @@ const FieldCheckbox = ({
       )}
       leftIcon={leftIcon}
       rightIcon={
-        disable || (
+        disable ||
+        (showCheckbox && (
           <Checkbox
             checked={_checked}
             width="20px"
@@ -60,7 +63,7 @@ const FieldCheckbox = ({
             background="#27C193"
             onChange={handleToggle}
           />
-        )
+        ))
       }
       onClick={() => {
         handleToggle(!checked);
