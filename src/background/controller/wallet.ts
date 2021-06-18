@@ -231,8 +231,12 @@ export class WalletController extends BaseController {
   };
 
   checkHasMnemonic = () => {
-    const keyring = this._getKeyringByType(KEYRING_CLASS.MNEMONIC);
-    return !!keyring.mnemonic;
+    try {
+      const keyring = this._getKeyringByType(KEYRING_CLASS.MNEMONIC);
+      return !!keyring.mnemonic;
+    } catch (e) {
+      return false;
+    }
   };
 
   deriveNewAccountFromMnemonic = async () => {
