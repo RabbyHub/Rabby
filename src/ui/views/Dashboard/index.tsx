@@ -1,7 +1,6 @@
 import React from 'react';
 import ClipboardJS from 'clipboard';
 import QRCode from 'qrcode.react';
-import { browser } from 'webextension-polyfill-ts';
 import { useEffect, useState } from 'react';
 import { Link, useHistory } from 'react-router-dom';
 import { message } from 'antd';
@@ -111,8 +110,12 @@ const Dashboard = () => {
     setPendingTxCount(total_count);
   };
 
+  if (!currentAccount) {
+    history.replace('/no-address');
+    return <></>;
+  }
+
   useEffect(() => {
-    if (!currentAccount) return;
     getPendingTxCount(currentAccount.address);
   }, [currentAccount]);
 

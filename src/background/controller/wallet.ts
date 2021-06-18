@@ -210,6 +210,8 @@ export class WalletController extends BaseController {
     const [account] = await this.getAccounts();
     if (account) {
       preferenceService.setCurrentAccount(account);
+    } else {
+      preferenceService.setCurrentAccount(null);
     }
   };
 

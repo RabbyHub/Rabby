@@ -10,7 +10,7 @@ export interface Account {
 }
 
 interface PreferenceStore {
-  currentAccount: Account | undefined;
+  currentAccount: Account | undefined | null;
   popupOpen: boolean;
   externalLinkAck: boolean;
   hiddenAddresses: Account[];
@@ -77,9 +77,11 @@ class PreferenceService {
     return cloneDeep(this.store.currentAccount);
   };
 
-  setCurrentAccount = (account: Account) => {
+  setCurrentAccount = (account: Account | null) => {
     this.store.currentAccount = account;
-    sessionService.broadcastEvent('accountsChanged', [account.address]);
+    if (account) {
+      sessionService.broadcastEvent('accountsChanged', [account.address]);
+    }
   };
 
   setPopupOpen = (isOpen) => {
