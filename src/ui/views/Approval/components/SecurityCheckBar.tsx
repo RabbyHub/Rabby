@@ -2,7 +2,7 @@ import React from 'react';
 import { Button } from 'antd';
 import { SecurityCheckDecision } from 'background/service/openapi';
 import IconLoading from 'ui/assets/loading.svg';
-import IconPass from 'ui/assets/checked.svg';
+import IconPass from 'ui/assets/no-risk.svg';
 import IconWarning from 'ui/assets/warning.svg';
 import IconDanger from 'ui/assets/danger.svg';
 import IconForbidden from 'ui/assets/forbidden.svg';
@@ -26,7 +26,7 @@ const STATUS = {
   },
   pass: {
     name: 'pass',
-    color: '#27C193',
+    color: '#818A99',
     clickable: false,
     icon: IconPass,
     text: 'No risk found',

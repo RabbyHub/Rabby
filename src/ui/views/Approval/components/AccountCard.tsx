@@ -17,7 +17,7 @@ const getAccountIcon = (type: string) => {
     case KEYRING_TYPE.HdKeyring:
     case KEYRING_TYPE.SimpleKeyring:
       return IconNormal;
-    case IconWatch:
+    case KEYRING_TYPE.WatchAddressKeyring:
       return IconWatch;
     default:
       return IconNormal;
