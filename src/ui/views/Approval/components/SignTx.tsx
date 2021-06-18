@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { intToHex, isHexString } from 'ethereumjs-util';
 import { Button } from 'antd';
-import { Spin, Checkbox } from 'ui/component';
+import { Checkbox } from 'ui/component';
 import AccountCard from './AccountCard';
 import SecurityCheckBar from './SecurityCheckBar';
 import SecurityCheckDetail from './SecurityCheckDetail';
@@ -19,6 +19,7 @@ import Cancel from './TxComponents/Cancel';
 import Sign from './TxComponents/Sign';
 import CancelTx from './TxComponents/CancelTx';
 import Send from './TxComponents/Send';
+import Deploy from './TxComponents/Deploy';
 import Loading from './TxComponents/Loading';
 import GasSelector from './TxComponents/GasSelecter';
 import { WaitingSignComponent } from './SignText';
@@ -35,6 +36,8 @@ const TxTypeComponent = ({
   isReady: boolean;
 }) => {
   if (!isReady) return <Loading chainEnum={chain.enum} />;
+  if (txDetail.type_deploy_contract)
+    return <Deploy data={txDetail} chainEnum={chain.enum} />;
   if (txDetail.type_cancel_tx)
     return <CancelTx data={txDetail} chainEnum={chain.enum} />;
   if (txDetail.type_cancel_token_approval)
