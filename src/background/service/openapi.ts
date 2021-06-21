@@ -274,6 +274,13 @@ class OpenApiService {
     );
     this.request.interceptors.response.use((response) => {
       if (response.data?.err_code && response.data?.err_code !== 200) {
+        if (response.data.err_msg) {
+          try {
+            throw new Error(JSON.parse(response.data.err_msg.en));
+          } catch (e) {
+            throw new Error(response.data.err_msg.en);
+          }
+        }
         throw new Error(response.data);
       }
       return response;
