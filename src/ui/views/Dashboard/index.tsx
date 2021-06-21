@@ -6,13 +6,13 @@ import { Link, useHistory } from 'react-router-dom';
 import { message } from 'antd';
 import { CHAINS, HARDWARE_KEYRING_TYPES, KEYRING_TYPE } from 'consts';
 import { AddressViewer, AddressList, Modal } from 'ui/component';
-import { useWallet, getCurrentConnectSite, openInTab } from 'ui/utils';
+import { useWallet, getCurrentConnectSite } from 'ui/utils';
 import { DisplayedKeryring } from 'background/service/keyring';
 import { Account } from 'background/service/preference';
 import {
   RecentConnections,
   BalanceView,
-  confirmOpenExternalModal,
+  useConfirmExternalModal,
 } from './components';
 import IconSetting from 'ui/assets/settings.svg';
 import IconCopy from 'ui/assets/copy.svg';
@@ -115,6 +115,8 @@ const Dashboard = () => {
     return <></>;
   }
 
+  const _openInTab = useConfirmExternalModal();
+
   useEffect(() => {
     getPendingTxCount(currentAccount.address);
   }, [currentAccount]);
@@ -140,17 +142,6 @@ const Dashboard = () => {
     await wallet.changeAccount({ address: account, type });
     setCurrentAccount({ address: account, type });
     handleToggle();
-  };
-
-  const _openInTab = (url) => {
-    if (wallet.getExternalLinkAck()) {
-      openInTab(url);
-      return;
-    }
-
-    confirmOpenExternalModal({ wallet }).then(() => {
-      openInTab(url);
-    });
   };
 
   const handleGotoSend = () => {

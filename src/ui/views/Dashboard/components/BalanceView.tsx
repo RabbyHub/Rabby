@@ -3,15 +3,17 @@ import { Popover } from 'antd';
 import { Spin } from 'ui/component';
 import { IconOffline } from 'ui/assets';
 import { useCurrentBalance } from 'ui/component/AddressList/AddressItem';
-import { splitNumberByStep, openInTab } from 'ui/utils';
+import { splitNumberByStep } from 'ui/utils';
 import IconArrowRight from 'ui/assets/arrow-right.svg';
 import { CHAINS } from 'consts';
+import useConfirmExternalModal from './ConfirmOpenExternalModal';
 
 const BalanceView = ({ currentAccount }) => {
   const [balance, chainBalances] = useCurrentBalance(currentAccount?.address);
+  const _openInTab = useConfirmExternalModal();
 
   const handleGotoProfile = () => {
-    openInTab(`https://debank.com/profile/${currentAccount?.address}`);
+    _openInTab(`https://debank.com/profile/${currentAccount?.address}`);
   };
 
   const balancePopoverContent = (

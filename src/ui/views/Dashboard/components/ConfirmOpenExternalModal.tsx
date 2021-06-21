@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Button } from 'antd';
+import { useWallet, openInTab } from 'ui/utils';
 import { Modal, Checkbox, FallbackSiteLogo } from 'ui/component';
 import { IconDebank } from 'ui/assets';
 import { wrapModalPromise } from 'ui/component/AuthenticationModal';
@@ -71,4 +72,21 @@ const ConfirmOpenExternalModal = ({
   );
 };
 
-export default wrapModalPromise(ConfirmOpenExternalModal);
+const funConfirmOpenExternalModal = wrapModalPromise(ConfirmOpenExternalModal);
+
+const useConfirmExternalModal = () => {
+  const wallet = useWallet();
+
+  return (url) => {
+    if (wallet.getExternalLinkAck()) {
+      openInTab(url);
+      return;
+    }
+
+    funConfirmOpenExternalModal({ wallet }).then(() => {
+      openInTab(url);
+    });
+  };
+};
+
+export default useConfirmExternalModal;
