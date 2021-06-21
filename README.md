@@ -1,10 +1,12 @@
-# Rabby
+# Rabby[![CircleCI](https://circleci.com/gh/RabbyHub/Rabby/tree/master.svg?style=svg)](https://circleci.com/gh/RabbyHub/Rabby/tree/master)
 
-## 1. architecture
+Rabby is an open source browser plugin for the DeFi ecosystem, providing users with a better-to-use and more secure multi-chain experience.
+
+## 1. Architecture
 
 ![architecture](./docs/architecture.png)
 
-## 2. extension's scripts
+## 2. Extension's scripts
 
 below 4 scripts all live in different context!
 
