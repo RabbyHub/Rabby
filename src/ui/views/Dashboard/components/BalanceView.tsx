@@ -49,8 +49,8 @@ const BalanceView = ({ currentAccount }) => {
 
   return (
     <div className="assets flex">
-      <div className="left" onClick={handleGotoProfile}>
-        <p className="amount leading-none">
+      <div className="left">
+        <p className="amount leading-none" onClick={handleGotoProfile}>
           <span>${splitNumberByStep((balance || 0).toFixed(2))}</span>
           <img className="icon icon-arrow-right" src={IconArrowRight} />
         </p>
