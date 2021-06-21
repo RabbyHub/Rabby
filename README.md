@@ -1,10 +1,12 @@
-# Rabby
+# Rabby [![CircleCI](https://circleci.com/gh/RabbyHub/Rabby/tree/master.svg?style=svg)](https://circleci.com/gh/RabbyHub/Rabby/tree/master) [![DavidDM](https://img.shields.io/david/RabbyHub/rabby)](https://david-dm.org/RabbyHub/rabby)
 
-## 1. architecture
+Rabby is an open source browser plugin for the DeFi ecosystem, providing users with a better-to-use and more secure multi-chain experience.
+
+## 1. Architecture
 
 ![architecture](./docs/architecture.png)
 
-## 2. extension's scripts
+## 2. Extension's scripts
 
 below 4 scripts all live in different context!
 
@@ -55,3 +57,7 @@ it's used by 3 pages which share the same js code, but the template html is diff
 3. `popup.html`
 
    user click the extension icon on the right of address bar, the popup will show.
+
+## Thanks
+
+Thanks for contributions from MetaMask team to browser extension wallet community, Rabby use (or fork) them to make Rabby better.
