@@ -1,7 +1,7 @@
 {
   "manifest_version": 2,
   "name": "__MSG_appName__",
-  "version": "0.0.1",
+  "version": "0.3",
   "default_locale": "en",
   "description": "__MSG_appDescription__",
   "icons": {
@@ -25,7 +25,7 @@
     "default_title": "Rabby",
     "default_popup": "popup.html"
   },
-  "author": "https://debank.com/",
+  "author": "https://rabby.io/",
   "background": {
     "persistent": true,
     "scripts": ["webextension-polyfill.js", "background.js"]

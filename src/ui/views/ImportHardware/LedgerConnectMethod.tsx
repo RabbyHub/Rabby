@@ -50,6 +50,7 @@ const LedgerConnectMethod = () => {
       onSubmit={onSubmit}
       hasBack
       spinning={spinning}
+      footerFixed={false}
     >
       <div className="mt-40 mb-[188px]">
         {ConnectMethods.map((path) => (

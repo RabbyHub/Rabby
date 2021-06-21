@@ -90,6 +90,7 @@ const SelectAddress = () => {
       hasBack
       hasDivider={isMnemonics}
       form={form}
+      footerFixed={false}
     >
       <div className="overflow-y-auto lg:h-[472px]">
         <Form.Item className="mb-0" name="selectedAddressIndexes">

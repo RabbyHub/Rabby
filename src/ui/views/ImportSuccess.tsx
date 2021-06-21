@@ -35,6 +35,7 @@ const ImportSuccess = () => {
       hasDivider={hasDivider}
       NextButtonContent="ok"
       onNextClick={handleNextClick}
+      footerFixed={false}
     >
       <div className="flex flex-col justify-center text-center h-[472px]">
         <img

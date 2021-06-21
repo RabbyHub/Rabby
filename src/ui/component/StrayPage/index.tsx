@@ -31,7 +31,7 @@ const StrayPage = ({
     className={cx(
       'stray-page relative flex flex-col bg-gray-bg',
       'sm:pt-28',
-      'lg:pt-[60px] lg:w-[993px] min-h-full lg:mt-[150px] lg:rounded-md lg:mx-auto',
+      'lg:pt-[60px] lg:w-[993px] sm:min-h-full lg:mt-[150px] lg:rounded-md lg:mx-auto',
       className
     )}
   >
@@ -78,6 +78,7 @@ export const StrayPageWithButton = ({
   initialValues,
   NextButtonContent,
   spinning,
+  footerFixed,
 }: StrayPageWithButtonProps & StrayFooterNavProps) => (
   <StrayPage
     header={header}
@@ -94,6 +95,7 @@ export const StrayPageWithButton = ({
     >
       {children}
       <StrayFooter.Nav
+        footerFixed={footerFixed}
         onNextClick={onNextClick}
         onBackClick={onBackClick}
         backDisabled={backDisabled}

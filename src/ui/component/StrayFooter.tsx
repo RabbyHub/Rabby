@@ -6,6 +6,7 @@ import { Button } from 'antd';
 interface StrayFooterProps {
   className?: string;
   children: ReactNode;
+  isFixed?: boolean;
 }
 
 export interface StrayFooterNavProps {
@@ -18,6 +19,7 @@ export interface StrayFooterNavProps {
   className?: string;
   NextButtonContent?: React.ReactNode;
   BackButtonContent?: React.ReactNode;
+  footerFixed?: boolean;
 }
 
 interface CompoundedComponent
@@ -25,13 +27,20 @@ interface CompoundedComponent
   Nav: typeof StrayFooterNav;
 }
 
-const StrayFooter = memo(({ className, children }: StrayFooterProps) => {
-  return (
-    <div className={cx('fixed bottom-0 left-0 w-full flex', className)}>
-      {children}
-    </div>
-  );
-}) as CompoundedComponent;
+const StrayFooter = memo(
+  ({ className, children, isFixed = true }: StrayFooterProps) => {
+    return (
+      <div
+        className={cx('bottom-0 left-0 w-full flex', className, {
+          fixed: isFixed,
+          absolute: !isFixed,
+        })}
+      >
+        {children}
+      </div>
+    );
+  }
+) as CompoundedComponent;
 
 const StrayFooterNav = memo(
   ({
@@ -44,6 +53,7 @@ const StrayFooterNav = memo(
     NextButtonContent = 'Next',
     BackButtonContent = 'Back',
     className,
+    footerFixed,
   }: StrayFooterNavProps) => {
     const history = useHistory();
 
@@ -57,7 +67,7 @@ const StrayFooterNav = memo(
     };
 
     return (
-      <StrayFooter className={className}>
+      <StrayFooter className={className} isFixed={footerFixed}>
         <div
           className={cx(
             'py-24 px-20 w-full flex justify-center',

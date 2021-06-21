@@ -57,6 +57,7 @@ const LedgerHdPath = () => {
       onSubmit={onSubmit}
       hasBack
       spinning={spinning}
+      footerFixed={false}
     >
       <div className="mt-40 mb-[188px]">
         {HD_PATHS.map((path) => (
