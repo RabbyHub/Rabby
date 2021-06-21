@@ -158,7 +158,7 @@ export interface ExplainTxResponse {
     token_symbol: string;
   };
   type_cancel_tx?: any; // TODO
-  type_deploy_contract?: any; // TODO
+  type_contract_create?: any; // TODO
 }
 
 interface RPCResponse<T> {
