@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import { Spin, StrayPage } from 'ui/component';
+import { StrayPage } from 'ui/component';
 import { useWallet } from 'ui/utils';
 import { SvgIconLedger, SvgIconOnekey, SvgIconTrezor } from 'ui/assets';
 import { BIP44_PATH } from './LedgerHdPath';
@@ -65,30 +65,29 @@ const ImportHardware = () => {
         subTitle: 'Select the hardware wallet you are using',
         center: true,
       }}
+      spinning={spinning}
     >
-      <Spin spinning={spinning}>
-        <div className="flex mt-28 mb-60 justify-center mr-[-80px]">
-          {HARDWARES.map((hardware) => {
-            const Icon = hardware.icon;
-            return (
-              <div
-                className="w-[128px] mr-[80px] text-center active:text-blue-light"
-                key={hardware.name}
-                onClick={() => navSelectAddress(hardware.type)}
-              >
-                <div className="rounded-full h-[128px] bg-white border border-white hover:border-blue-light">
-                  <Icon className="hardware-icon" />
-                </div>
-                <div className="mt-20 font-medium text-20">{hardware.name}</div>
+      <div className="flex mt-28 mb-60 justify-center mr-[-80px]">
+        {HARDWARES.map((hardware) => {
+          const Icon = hardware.icon;
+          return (
+            <div
+              className="w-[128px] mr-[80px] text-center active:text-blue-light"
+              key={hardware.name}
+              onClick={() => navSelectAddress(hardware.type)}
+            >
+              <div className="rounded-full h-[128px] bg-white border border-white hover:border-blue-light">
+                <Icon className="hardware-icon" />
               </div>
-            );
-          })}
-        </div>
-        <div className="text-center mb-[100px] text-gray-content text-14">
-          If you are using a hardware wallet with a camera on it, you should use
-          watch address instead.
-        </div>
-      </Spin>
+              <div className="mt-20 font-medium text-20">{hardware.name}</div>
+            </div>
+          );
+        })}
+      </div>
+      <div className="text-center mb-[100px] text-gray-content text-14">
+        If you are using a hardware wallet with a camera on it, you should use
+        watch address instead.
+      </div>
     </StrayPage>
   );
 };

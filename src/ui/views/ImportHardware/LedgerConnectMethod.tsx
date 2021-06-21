@@ -60,9 +60,9 @@ const LedgerConnectMethod = () => {
             disable={path.value === DIRECTLY && IS_AFTER_CHROME91}
           >
             <div>
-              <p className="my-0 leading-none">{path.name}</p>
+              <p className="my-0">{path.name}</p>
               {path.value === DIRECTLY && IS_AFTER_CHROME91 && (
-                <p className="mt-4 mb-0 leading-none text-red-light">
+                <p className="mt-4 mb-0 text-red-light text-12">
                   Not supported by Chrome 91 and above versions
                 </p>
               )}

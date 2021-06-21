@@ -1,7 +1,7 @@
 import React, { ReactNode } from 'react';
 import cx from 'clsx';
 import { Spin, SpinProps as AntdSpinProps } from 'antd';
-import { IconSpin } from 'ui/assets';
+import { SvgIconSpin } from 'ui/assets';
 
 interface SpinProps {
   children?: ReactNode;
@@ -21,7 +21,7 @@ export default ({
   return (
     <Spin
       indicator={
-        <IconSpin
+        <SvgIconSpin
           className={cx(
             'animate-spin',
             {

@@ -1,7 +1,7 @@
 import React from 'react';
 import { Popover } from 'antd';
 import { Spin } from 'ui/component';
-import { IconOffline } from 'ui/assets';
+import { SvgIconOffline } from 'ui/assets';
 import { useCurrentBalance } from 'ui/component/AddressList/AddressItem';
 import { splitNumberByStep } from 'ui/utils';
 import IconArrowRight from 'ui/assets/arrow-right.svg';
@@ -62,7 +62,7 @@ const BalanceView = ({ currentAccount }) => {
             </>
           ) : isNaN(balance) ? (
             <>
-              <IconOffline className="mr-4" />
+              <SvgIconOffline className="mr-4" />
               <span className="leading-tight">
                 The network is disconnected and no data is obtained
               </span>
