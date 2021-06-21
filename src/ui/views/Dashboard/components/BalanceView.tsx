@@ -57,7 +57,7 @@ const BalanceView = ({ currentAccount }) => {
         <div className="extra leading-none flex">
           {balance === null ? (
             <>
-              <Spin spinning={true} size="small" iconClassName="text-white" />
+              <Spin size="small" iconClassName="text-white" />
               <span className="ml-4 leading-tight">Asset data loading</span>
             </>
           ) : isNaN(balance) ? (

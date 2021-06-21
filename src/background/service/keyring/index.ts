@@ -6,7 +6,7 @@ import encryptor from 'browser-passworder';
 import * as ethUtil from 'ethereumjs-util';
 import * as bip39 from 'bip39';
 import { ObservableStore } from '@metamask/obs-store';
-import { normalize as normalizeAddress } from 'eth-sig-util';
+import { normalizeAddress } from 'background/utils';
 import LedgerBridgeKeyring from './eth-ledger-bridge-keyring';
 import SimpleKeyring from 'eth-simple-keyring';
 import HdKeyring from './eth-hd-keyring';

@@ -1,18 +1,17 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import ClipboardJS from 'clipboard';
 import QRCode from 'qrcode.react';
-import { useEffect, useState } from 'react';
-import { Link, useHistory } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import { message } from 'antd';
 import { CHAINS, HARDWARE_KEYRING_TYPES, KEYRING_TYPE } from 'consts';
-import { AddressViewer, AddressList, Modal } from 'ui/component';
+import { AddressViewer, Modal } from 'ui/component';
 import { useWallet, getCurrentConnectSite } from 'ui/utils';
-import { DisplayedKeryring } from 'background/service/keyring';
 import { Account } from 'background/service/preference';
 import {
   RecentConnections,
   BalanceView,
   useConfirmExternalModal,
+  SwitchAddress,
 } from './components';
 import IconSetting from 'ui/assets/settings.svg';
 import IconCopy from 'ui/assets/copy.svg';
@@ -22,68 +21,9 @@ import IconSwap from 'ui/assets/swap.svg';
 import IconHistory from 'ui/assets/history.svg';
 import IconPending from 'ui/assets/pending.svg';
 import IconSuccess from 'ui/assets/success.svg';
-import IconChecked from 'ui/assets/checked.svg';
-import IconNotChecked from 'ui/assets/not-checked.svg';
-import IconManageAddress from 'ui/assets/manage-address.svg';
 import IconHardware from 'ui/assets/hardware-white.svg';
 import IconWatch from 'ui/assets/watch-white.svg';
 import './style.less';
-
-const SwitchAddress = ({
-  onChange,
-  currentAccount,
-}: {
-  onChange(account: string, type: string): void;
-  currentAccount: Account;
-}) => {
-  const wallet = useWallet();
-  const [accounts, setAccounts] = useState<Record<string, DisplayedKeryring[]>>(
-    {}
-  );
-
-  const getAllKeyrings = async () => {
-    const _accounts = await wallet.getAllVisibleAccounts();
-    setAccounts(_accounts);
-  };
-
-  const changeAccount = (account: string, keyring: any) => {
-    onChange && onChange(account, keyring.type);
-  };
-
-  useEffect(() => {
-    getAllKeyrings();
-  }, []);
-
-  const SwitchButton = ({ data, keyring }: { data: string; keyring: any }) => {
-    return (
-      <img
-        src={
-          currentAccount.address === data &&
-          currentAccount.type === keyring.type
-            ? IconChecked
-            : IconNotChecked
-        }
-        className="icon icon-checked"
-      />
-    );
-  };
-
-  return accounts ? (
-    <div className="modal-switch-address">
-      <AddressList
-        list={accounts}
-        ActionButton={SwitchButton}
-        onClick={changeAccount}
-      />
-      <div className="footer">
-        <Link to="/settings/address">
-          <img src={IconManageAddress} className="icon icon-add" />
-          Manage addresses
-        </Link>
-      </div>
-    </div>
-  ) : null;
-};
 
 const Dashboard = () => {
   const history = useHistory();
@@ -91,6 +31,11 @@ const Dashboard = () => {
   const [currentAccount, setCurrentAccount] = useState<Account | null>(
     wallet.syncGetCurrentAccount()
   );
+
+  if (!currentAccount) {
+    history.replace('/no-address');
+    return null;
+  }
 
   const [isModalOpen, setModalOpen] = useState(false);
   const [qrcodeVisible, setQrcodeVisible] = useState(false);
@@ -109,11 +54,6 @@ const Dashboard = () => {
     const { total_count } = await wallet.openapi.getPendingCount(address);
     setPendingTxCount(total_count);
   };
-
-  if (!currentAccount) {
-    history.replace('/no-address');
-    return <></>;
-  }
 
   const _openInTab = useConfirmExternalModal();
 

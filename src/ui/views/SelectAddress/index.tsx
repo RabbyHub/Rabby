@@ -1,8 +1,12 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useHistory } from 'react-router-dom';
 import { Form } from 'antd';
-import { StrayPageWithButton, MultiSelectAddressList } from 'ui/component';
-import { useWallet } from 'ui/utils';
+import {
+  StrayPageWithButton,
+  MultiSelectAddressList,
+  Spin,
+} from 'ui/component';
+import { useWallet, useWalletRequest } from 'ui/utils';
 
 const SelectAddress = () => {
   const history = useHistory();
@@ -14,32 +18,30 @@ const SelectAddress = () => {
   }
 
   const { keyring, isMnemonics } = state;
-  const [spinning, setSpin] = useState(false);
 
   const [accounts, setAccounts] = useState<any[]>([]);
   const [importedAccounts, setImportedAccounts] = useState<any[]>([]);
   const [form] = Form.useForm();
   const wallet = useWallet();
 
-  const getAccounts = async (firstFlag = false) => {
-    setSpin(true);
-    try {
-      const _accounts = firstFlag
-        ? await keyring.getFirstPage()
-        : await keyring.getNextPage();
+  const [getAccounts, loading] = useWalletRequest(
+    async (firstFlag) =>
+      firstFlag ? await keyring.getFirstPage() : await keyring.getNextPage(),
+    {
+      onSuccess(_accounts) {
+        if (_accounts.length < 5) {
+          throw new Error(
+            'You need to make use your last account before you can add a new one.'
+          );
+        }
 
-      if (_accounts.length < 5) {
-        throw new Error(
-          'You need to make use your last account before you can add a new one.'
-        );
-      }
-      setSpin(false);
-      setAccounts(accounts.concat(..._accounts));
-    } catch (err) {
-      console.log('get hardware account error', err);
-      setSpin(false);
+        setAccounts(accounts.concat(..._accounts));
+      },
+      onError(err) {
+        console.log('get hardware account error', err);
+      },
     }
-  };
+  );
 
   const init = async () => {
     const _importedAccounts = await keyring.getAccounts();
@@ -71,7 +73,6 @@ const SelectAddress = () => {
 
   return (
     <StrayPageWithButton
-      spinning={spinning}
       header={
         isMnemonics
           ? {
@@ -99,9 +100,9 @@ const SelectAddress = () => {
         </Form.Item>
         <div
           onClick={() => getAccounts()}
-          className="mt-6 text-blue text-15 text-center cursor-pointer lg:mb-[66px]"
+          className="mt-6 text-blue-light text-15 text-center cursor-pointer lg:mb-[66px]"
         >
-          Load More...
+          {loading && <Spin size="small" />} Load More...
         </div>
       </div>
     </StrayPageWithButton>
