@@ -172,8 +172,15 @@ const SignTx = ({ params, origin }) => {
     }
 
     const currentAccount = await wallet.getCurrentAccount();
-    if (currentAccount?.type && WaitingSignComponent[currentAccount.type]) {
+    if (
+      currentAccount?.type &&
+      WaitingSignComponent[currentAccount.type] &&
+      !wallet.isUseLedgerLive()
+    ) {
       resolveApproval({
+        ...tx,
+        nonce: realNonce || tx.nonce,
+        gas: gasLimit,
         uiRequestComponent: WaitingSignComponent[currentAccount.type],
         type: currentAccount.type,
         address: currentAccount.address,

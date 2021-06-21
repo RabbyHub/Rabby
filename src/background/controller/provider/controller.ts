@@ -14,6 +14,12 @@ import { Tx } from 'background/service/openapi';
 import { CHAINS } from 'consts';
 import BaseController from '../base';
 
+interface ApprovalRes extends Tx {
+  type?: string;
+  address?: string;
+  uiRequestComponent?: string;
+}
+
 class ProviderController extends BaseController {
   ethRpc = (req) => {
     if (!openapiService.ethRpc) {
@@ -40,17 +46,18 @@ class ProviderController extends BaseController {
     data: {
       params: any;
     };
-    approvalRes: Tx;
+    approvalRes: ApprovalRes;
   }) => {
     const keyring = await this._checkAddress(txParams.from);
+    delete approvalRes.address;
+    delete approvalRes.type;
+    delete approvalRes.uiRequestComponent;
     const tx = new Transaction(approvalRes);
-
     const signedTx = await keyringService.signTransaction(
       keyring,
       tx,
       txParams.from
     );
-
     return openapiService.pushTx({
       ...approvalRes,
       r: bufferToHex(signedTx.r),
