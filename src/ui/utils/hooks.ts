@@ -136,8 +136,8 @@ export const useWalletRequest = (
     };
   }, []);
   const [loading, setLoading] = useState<boolean>(false);
-  const [res, setRes] = useState();
-  const [err, setErr] = useState();
+  const [res, setRes] = useState<any>();
+  const [err, setErr] = useState<any>();
 
   const run = async (...args) => {
     setLoading(true);

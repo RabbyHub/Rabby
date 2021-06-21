@@ -9,6 +9,13 @@ const PASSWORD_LENGTH = [8, 20];
 const CreatePassword = () => {
   const history = useHistory();
   const wallet = useWallet();
+
+  if (wallet.isBooted() && !wallet.isUnlocked()) {
+    history.replace('/unlock');
+
+    return null;
+  }
+
   const [form] = Form.useForm();
 
   const [run, loading] = useWalletRequest(wallet.boot, {

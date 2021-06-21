@@ -1,6 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { Input, Form, Button } from 'antd';
-import { useWallet, useApproval } from 'ui/utils';
+import { useWallet, useApproval, useWalletRequest } from 'ui/utils';
 
 import './style.less';
 
@@ -15,26 +15,30 @@ const Unlock = () => {
     inputEl.current.focus();
   }, []);
 
-  const onSubmit = async ({ password }) => {
-    try {
-      await wallet.unlock(password);
+  const [run, loading] = useWalletRequest(wallet.unlock, {
+    onSuccess() {
       resolveApproval();
-    } catch (err) {
+    },
+    onError(err) {
       form.setFields([
         {
           name: 'password',
           errors: [err?.message || 'incorrect password'],
         },
       ]);
-    }
-  };
+    },
+  });
 
   return (
     <div className="unlock">
       <div className="header">
         <div className="image" />
       </div>
-      <Form className="bg-gray-bg flex-1" form={form} onFinish={onSubmit}>
+      <Form
+        className="bg-gray-bg flex-1"
+        form={form}
+        onFinish={({ password }) => run(password)}
+      >
         <Form.Item
           className="mt-[34px] mx-28"
           name="password"
