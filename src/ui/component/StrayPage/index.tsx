@@ -30,8 +30,8 @@ const StrayPage = ({
     size="large"
     className={cx(
       'stray-page relative flex flex-col bg-gray-bg',
-      'sm:pt-28 sm:h-full',
-      'lg:pt-[60px] lg:w-[993px] lg:max-h-full lg:mt-[179px] lg:rounded-md lg:mx-auto',
+      'sm:pt-28',
+      'lg:pt-[60px] lg:w-[993px] min-h-full lg:mt-[150px] lg:rounded-md lg:mx-auto',
       className
     )}
   >
@@ -41,7 +41,7 @@ const StrayPage = ({
         <StrayHeader className={headerClassName || 'mb-60'} {...header} />
       )}
       {children && (
-        <div className="lg:flex lg:items-center lg:flex-col flex-1 overflow-auto">
+        <div className="lg:flex lg:items-center lg:flex-col flex-1">
           {children}
         </div>
       )}
@@ -85,7 +85,7 @@ export const StrayPageWithButton = ({
     headerClassName={headerClassName}
   >
     <Form
-      className="overflow-y-auto max-h-full sm:pb-[91px] lg:pb-[112px]"
+      className="sm:pb-[91px] lg:pb-[112px]"
       autoComplete="off"
       {...formProps}
       onFinish={onSubmit}
