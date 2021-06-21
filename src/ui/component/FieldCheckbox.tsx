@@ -10,6 +10,7 @@ interface FieldCheckboxProps {
   defaultChecked?: boolean;
   onChange?(any): void;
   showCheckbox?: boolean;
+  className?: string;
 }
 
 const FieldCheckbox = ({
@@ -20,6 +21,7 @@ const FieldCheckbox = ({
   onChange,
   defaultChecked = false,
   showCheckbox = true,
+  className,
 }: FieldCheckboxProps) => {
   const isControlled = useRef(typeof checked !== 'undefined').current;
   const [_checked, setChecked] = useState<boolean>(
@@ -47,10 +49,11 @@ const FieldCheckbox = ({
   return (
     <Field
       className={cx(
-        'rounded bg-white mb-8 flex justify-between items-center py-12 px-16 border transition-colors',
+        'bg-white mb-8 flex justify-between items-center py-12 px-16 border transition-colors',
         'lg:w-[460px]',
-        _checked ? 'border-blue' : 'border-white',
-        disable ? 'opacity-40' : 'hover:border-blue'
+        _checked ? 'border-blue-light' : 'border-white',
+        disable ? 'opacity-40' : 'hover:border-blue-light',
+        className
       )}
       leftIcon={leftIcon}
       rightIcon={

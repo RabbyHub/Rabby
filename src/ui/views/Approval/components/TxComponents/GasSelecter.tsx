@@ -157,6 +157,7 @@ const GasSelector = ({
           <div className="gas-selector-panel">
             {gasList.map((gas) => (
               <FieldCheckbox
+                className="mt-8"
                 checked={selectedGas?.level === gas.level}
                 onChange={(checked: boolean) => handleSelectGas(checked, gas)}
                 showCheckbox={!isLoading}
@@ -165,7 +166,7 @@ const GasSelector = ({
                   {isLoading ? (
                     <>
                       <div className="gas-content__info">
-                        <p className="text-gray-title text-13 font-medium mb-4">
+                        <p className="text-gray-title text-13 font-medium leading-none mb-4">
                           <Skeleton.Input style={{ width: 80 }} />
                         </p>
                         <p className="text-gray-content text-12 mb-0">
@@ -176,7 +177,7 @@ const GasSelector = ({
                   ) : (
                     <>
                       <div className="gas-content__info">
-                        <p className="text-gray-title text-13 font-medium mb-0">
+                        <p className="text-gray-title text-13 font-medium leading-none mb-4">
                           {GAS_LEVEL_TEXT[gas.level]}
                         </p>
                         <p className="text-gray-content text-12 mb-0">
@@ -206,7 +207,7 @@ const GasSelector = ({
               </FieldCheckbox>
             ))}
           </div>
-          <div className="flex justify-center mt-40">
+          <div className="flex justify-center mt-32">
             <Button
               type="primary"
               className="w-[200px]"
