@@ -1,6 +1,6 @@
 import React from 'react';
 import cx from 'clsx';
-import { IconArrowDown } from 'ui/assets';
+import { SvgIconArrowDown } from 'ui/assets';
 import './style.less';
 
 interface AddressViewProps {
@@ -28,7 +28,7 @@ export default ({
         {ellipsis ? `${address.slice(0, 6)}...${address.slice(-4)}` : address}
       </div>
       {showArrow && (
-        <IconArrowDown className="ml-1 cursor-pointer fill-current text-white" />
+        <SvgIconArrowDown className="ml-1 cursor-pointer fill-current text-white" />
       )}
     </div>
   );

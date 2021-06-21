@@ -1,5 +1,5 @@
 .hardware-icon {
-  @apply active:fill-current cursor-pointer transition-colors;
+  @apply active:fill-current cursor-pointer transition-colors relative mt-[-1px] ml-[-1px];
 
   &:active {
     path {

@@ -37,10 +37,12 @@ const ConfirmOpenExternalModal = ({
 
   return (
     <Modal
+      className="modal-bg-white"
       visible={visible}
       title={null}
       closable={false}
       onCancel={handleCancel}
+      classN
     >
       <div className="flex flex-col items-center pt-12 pb-8">
         <div className="text-15 font-medium mb-32">

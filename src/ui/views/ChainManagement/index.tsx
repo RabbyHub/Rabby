@@ -99,8 +99,8 @@ export const StartChainManagement = () => {
       onNextClick={handleNextClick}
       header={{
         title: 'Enable Chains',
-        subTitle: 'Choose which chains you would like to use',
       }}
+      headerClassName="mb-24"
     >
       <div className="chain-management px-0 min-h-full">
         <ChainManagementList inStart />

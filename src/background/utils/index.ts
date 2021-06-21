@@ -1,3 +1,4 @@
+import * as ethUtil from 'ethereumjs-util';
 export { default as createPersistStore } from './persisitStore';
 
 // {a:{b: string}} => {1: 'a.b'}
@@ -33,3 +34,22 @@ export const underline2Camelcase = (str: string) => {
 
 export { retrieveValuePath };
 export { default as PromiseFlow } from './promiseFlow';
+
+export function normalizeAddress(input: number | string): string {
+  if (!input) {
+    return '';
+  }
+
+  if (typeof input === 'number') {
+    const buffer = ethUtil.toBuffer(input);
+    input = ethUtil.bufferToHex(buffer);
+  }
+
+  if (typeof input !== 'string') {
+    let msg = 'eth-sig-util.normalize() requires hex string or integer input.';
+    msg += ` received ${typeof input}: ${input}`;
+    throw new Error(msg);
+  }
+
+  return ethUtil.addHexPrefix(input);
+}

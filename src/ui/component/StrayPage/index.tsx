@@ -1,6 +1,7 @@
 import React, { ReactNode, FunctionComponent } from 'react';
 import cx from 'clsx';
 import { Form, FormInstance, FormProps } from 'antd';
+import { SvgIconSlogon } from 'assets';
 import StrayHeader, { StrayHeaderProps } from '../StrayHeader';
 import StrayFooter, { StrayFooterNavProps } from '../StrayFooter';
 import Spin from '../Spin';
@@ -34,6 +35,7 @@ const StrayPage = ({
       className
     )}
   >
+    <SvgIconSlogon className="absolute left-28 top-[-116px] hidden lg:block" />
     <div className="sm:px-20 h-full flex flex-col">
       {header && (
         <StrayHeader className={headerClassName || 'mb-60'} {...header} />
