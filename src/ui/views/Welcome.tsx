@@ -19,7 +19,7 @@ const Welcome = () => {
       <Link to="/password" replace>
         <Button
           size="large"
-          className="w-[288px] h-[48px] block mx-auto text-blue-light bg-white"
+          className="w-[288px] h-[48px] block mx-auto text-blue-light bg-white border-none"
         >
           Get Started
         </Button>
