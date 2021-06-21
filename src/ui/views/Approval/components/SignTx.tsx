@@ -36,7 +36,7 @@ const TxTypeComponent = ({
   isReady: boolean;
 }) => {
   if (!isReady) return <Loading chainEnum={chain.enum} />;
-  if (txDetail.type_contract_create)
+  if (txDetail.type_deploy_contract)
     return <Deploy data={txDetail} chainEnum={chain.enum} />;
   if (txDetail.type_cancel_tx)
     return <CancelTx data={txDetail} chainEnum={chain.enum} />;
