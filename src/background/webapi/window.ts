@@ -13,17 +13,19 @@ browser.windows.onRemoved.addListener((winId) => {
 });
 
 const BROWSER_HEADER = 80;
+const BROWSER_RIGHT = 40;
 const WINDOW_SIZE = {
   width: 400,
   height: 600,
 };
 
 const create = async ({ url, ...rest }): Promise<number | undefined> => {
-  const { top: cTop, left: cLeft, width } = await browser.windows.get(-2, {
+  const { top: cTop, left: cLeft, width } = await browser.windows.getCurrent({
     windowTypes: ['normal'],
   } as Windows.GetInfo);
+
   const top = cTop! + BROWSER_HEADER;
-  const left = cLeft! + width! - WINDOW_SIZE.width;
+  const left = cLeft! + width! - WINDOW_SIZE.width - BROWSER_RIGHT;
 
   const win = await browser.windows.create({
     focused: true,
@@ -34,6 +36,11 @@ const create = async ({ url, ...rest }): Promise<number | undefined> => {
     ...WINDOW_SIZE,
     ...rest,
   });
+
+  // shim firefox
+  if (win.left !== left) {
+    await browser.windows.update(win.id!, { left, top });
+  }
 
   return win.id;
 };

@@ -35,6 +35,7 @@ const Unlock = () => {
         <div className="image" />
       </div>
       <Form
+        autoComplete="off"
         className="bg-gray-bg flex-1"
         form={form}
         onFinish={({ password }) => run(password)}
