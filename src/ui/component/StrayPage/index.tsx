@@ -25,9 +25,7 @@ const StrayPage = ({
   className,
   spinning = false,
 }: StrayPageProps) => (
-  <Spin
-    spinning={spinning}
-    size="large"
+  <div
     className={cx(
       'stray-page relative flex flex-col bg-gray-bg',
       'sm:pt-28',
@@ -35,19 +33,21 @@ const StrayPage = ({
       className
     )}
   >
-    <SvgIconSlogon className="absolute left-28 top-[-116px] hidden lg:block" />
-    <div className="sm:px-20 h-full flex flex-col">
-      {header && (
-        <StrayHeader className={headerClassName || 'mb-60'} {...header} />
-      )}
-      {children && (
-        <div className="lg:flex lg:items-center lg:flex-col flex-1">
-          {children}
-        </div>
-      )}
-    </div>
-    {footerRender && footerRender({})}
-  </Spin>
+    <SvgIconSlogon className="absolute left-28 top-[-56px] hidden lg:block" />
+    <Spin spinning={spinning} size="large">
+      <div className="sm:px-20 h-full flex flex-col">
+        {header && (
+          <StrayHeader className={headerClassName || 'mb-60'} {...header} />
+        )}
+        {children && (
+          <div className="lg:flex lg:items-center lg:flex-col flex-1">
+            {children}
+          </div>
+        )}
+      </div>
+      {footerRender && footerRender({})}
+    </Spin>
+  </div>
 );
 
 interface StrayPageWithButtonProps {

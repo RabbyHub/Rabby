@@ -78,9 +78,6 @@ export const ChainManagementList = ({ inStart = false }) => {
           </div>
         </Field>
       ))}
-      <div className="tip text-12 text-gray-comment text-center">
-        More chains will be added in the future...
-      </div>
     </>
   );
 };
