@@ -1,0 +1,164 @@
+import React, { useState } from 'react';
+import { Button, Tooltip } from 'antd';
+import { KEYRING_CLASS } from 'consts';
+import { useApproval, useWallet } from 'ui/utils';
+import {
+  SecurityCheckResponse,
+  SecurityCheckDecision,
+} from 'background/service/openapi';
+import SecurityCheckBar from './SecurityCheckBar';
+import SecurityCheckDetail from './SecurityCheckDetail';
+import AccountCard from './AccountCard';
+import IconQuestionMark from 'ui/assets/question-mark-gray.svg';
+
+interface SignTextProps {
+  data: string[];
+  session: {
+    origin: string;
+    icon: string;
+    name: string;
+  };
+}
+
+export const WaitingSignComponent = {
+  [KEYRING_CLASS.HARDWARE.LEDGER]: 'HardwareWaiting',
+  [KEYRING_CLASS.WATCH]: 'WatchAdrressWaiting',
+};
+
+const SignText = ({ params }: { params: SignTextProps }) => {
+  const [, resolveApproval, rejectApproval] = useApproval();
+  const wallet = useWallet();
+  const { data, session } = params;
+  const [, typedMessage] = data;
+  let parsedMessage = {};
+  try {
+    const _message = JSON.parse(typedMessage)?.message;
+    parsedMessage = JSON.stringify(_message, null, 4);
+  } catch (err) {
+    console.log('parse message error', parsedMessage);
+  }
+  const [showSecurityCheckDetail, setShowSecurityCheckDetail] = useState(false);
+  const [
+    securityCheckStatus,
+    setSecurityCheckStatus,
+  ] = useState<SecurityCheckDecision>('pending');
+  const [securityCheckAlert, setSecurityCheckAlert] = useState('Checking...');
+  const [
+    securityCheckDetail,
+    setSecurityCheckDetail,
+  ] = useState<SecurityCheckResponse | null>(null);
+  const [explain, setExplain] = useState('');
+
+  const handleSecurityCheck = async () => {
+    setSecurityCheckStatus('loading');
+    const currentAccount = await wallet.getCurrentAccount();
+    const check = await wallet.openapi.checkText(
+      currentAccount!.address,
+      session.origin,
+      typedMessage
+    );
+    const serverExplain = await wallet.openapi.explainText(
+      session.origin,
+      currentAccount!.address,
+      typedMessage
+    );
+    setExplain(serverExplain.comment);
+    setSecurityCheckStatus(check.decision);
+    setSecurityCheckAlert(check.alert);
+    setSecurityCheckDetail(check);
+  };
+
+  const handleCancel = () => {
+    rejectApproval('user reject');
+  };
+
+  const handleAllow = async (doubleCheck = false) => {
+    if (
+      !doubleCheck &&
+      securityCheckStatus !== 'pass' &&
+      securityCheckStatus !== 'pending'
+    ) {
+      setShowSecurityCheckDetail(true);
+
+      return;
+    }
+    const currentAccount = await wallet.getCurrentAccount();
+    if (currentAccount?.type && WaitingSignComponent[currentAccount?.type]) {
+      resolveApproval({
+        uiRequestComponent: WaitingSignComponent[currentAccount?.type],
+        type: currentAccount.type,
+        address: currentAccount.address,
+      });
+
+      return;
+    }
+
+    resolveApproval({});
+  };
+
+  return (
+    <>
+      <AccountCard />
+      <div className="approval-text">
+        <p className="section-title">Sign Typed Message</p>
+        <div className="text-detail-wrapper gray-section-block">
+          <div className="text-detail text-gray-subTitle">{parsedMessage}</div>
+          {explain && (
+            <p className="text-explain">
+              {explain}
+              <Tooltip
+                placement="top"
+                overlayClassName="text-explain-tooltip"
+                title="This summary information is provide by DeBank OpenAPI"
+              >
+                <img
+                  src={IconQuestionMark}
+                  className="icon icon-question-mark"
+                />
+              </Tooltip>
+            </p>
+          )}
+        </div>
+      </div>
+      <footer>
+        <SecurityCheckBar
+          status={securityCheckStatus}
+          alert={securityCheckAlert}
+          onClick={() => setShowSecurityCheckDetail(true)}
+          onCheck={handleSecurityCheck}
+        />
+        <div className="action-buttons flex justify-between">
+          <Button
+            type="primary"
+            size="large"
+            className="w-[172px]"
+            onClick={handleCancel}
+          >
+            Cancel
+          </Button>
+          <Button
+            type="primary"
+            size="large"
+            className="w-[172px]"
+            onClick={() => handleAllow()}
+          >
+            {securityCheckStatus === 'pass' || securityCheckStatus === 'pending'
+              ? 'Sign'
+              : 'Continue'}
+          </Button>
+        </div>
+      </footer>
+      {securityCheckDetail && (
+        <SecurityCheckDetail
+          visible={showSecurityCheckDetail}
+          onCancel={() => setShowSecurityCheckDetail(false)}
+          data={securityCheckDetail}
+          onOk={() => handleAllow(true)}
+          okText="Sign"
+        />
+      )}
+    </>
+  );
+};
+
+export default SignText;

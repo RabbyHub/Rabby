@@ -78,6 +78,50 @@ class ProviderController extends BaseController {
     return keyringService.signPersonalMessage(keyring, { data, from });
   };
 
+  private _signTypedData = async (from, data, version) => {
+    const keyring = await this._checkAddress(from);
+    let _data = data;
+    if (version !== 'V1') {
+      if (typeof data === 'string') {
+        _data = JSON.parse(data);
+      }
+    }
+
+    return keyringService.signTypedMessage(
+      keyring,
+      { from, data: _data },
+      { version }
+    );
+  };
+
+  @Reflect.metadata('APPROVAL', ['SignTypedData'])
+  ethSignTypedData = async ({
+    data: {
+      params: [from, data],
+    },
+  }) => this._signTypedData(from, data, 'V1');
+
+  @Reflect.metadata('APPROVAL', ['SignTypedData'])
+  ethSignTypedDataV1 = async ({
+    data: {
+      params: [from, data],
+    },
+  }) => this._signTypedData(from, data, 'V1');
+
+  @Reflect.metadata('APPROVAL', ['SignTypedData'])
+  ethSignTypedDataV3 = async ({
+    data: {
+      params: [from, data],
+    },
+  }) => this._signTypedData(from, data, 'V3');
+
+  @Reflect.metadata('APPROVAL', ['SignTypedData'])
+  ethSignTypedDataV4 = async ({
+    data: {
+      params: [from, data],
+    },
+  }) => this._signTypedData(from, data, 'V4');
+
   ethAccounts = async ({ session: { origin } }) => {
     if (!permissionService.hasPerssmion(origin)) {
       return [];

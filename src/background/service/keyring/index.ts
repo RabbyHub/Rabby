@@ -498,6 +498,18 @@ class KeyringService extends EventEmitter {
   }
 
   /**
+   * Sign Typed Data
+   * (EIP712 https://github.com/ethereum/EIPs/pull/712#issuecomment-329988454)
+   *
+   * @param {Object} msgParams - The message parameters to sign.
+   * @returns {Promise<Buffer>} The raw signature.
+   */
+  signTypedMessage(keyring, msgParams, opts = { version: 'V1' }) {
+    const address = normalizeAddress(msgParams.from);
+    return keyring.signTypedData(address, msgParams.data, opts);
+  }
+
+  /**
    * Get encryption public key
    *
    * Get encryption public key for using in encrypt/decrypt process.
@@ -524,20 +536,6 @@ class KeyringService extends EventEmitter {
     const address = normalizeAddress(msgParams.from);
     return this.getKeyringForAccount(address).then((keyring) => {
       return keyring.decryptMessage(address, msgParams.data, opts);
-    });
-  }
-
-  /**
-   * Sign Typed Data
-   * (EIP712 https://github.com/ethereum/EIPs/pull/712#issuecomment-329988454)
-   *
-   * @param {Object} msgParams - The message parameters to sign.
-   * @returns {Promise<Buffer>} The raw signature.
-   */
-  signTypedMessage(msgParams, opts = { version: 'V1' }) {
-    const address = normalizeAddress(msgParams.from);
-    return this.getKeyringForAccount(address).then((keyring) => {
-      return keyring.signTypedData(address, msgParams.data, opts);
     });
   }
 
