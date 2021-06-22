@@ -196,7 +196,7 @@ class OpenApiService {
     this.store = await createPersistStore({
       name: 'openapi',
       template: {
-        host: 'https://alpha2-openapi.debank.com',
+        host: 'https://openapi.debank.com',
         config: {
           get_supported_chains: {
             path: '/v1/wallet/supported_chains',
