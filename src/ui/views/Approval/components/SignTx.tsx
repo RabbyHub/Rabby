@@ -101,7 +101,8 @@ const SignTx = ({ params, origin }) => {
           gas: tx.gas || '',
         }, // set a mock nonce for check if dapp not set it
         origin,
-        address
+        address,
+        tx.from !== tx.to
       );
       setSecurityCheckStatus(res.decision);
       setSecurityCheckAlert(res.alert);
