@@ -91,7 +91,8 @@ const ConnectionItem = memo(
       )}
     </div>
   ),
-  () => true
+  (pre, next) =>
+    pre.item?.origin == next.item?.origin && pre.item?.chain == next.item?.chain
 );
 
 export default () => {
