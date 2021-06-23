@@ -53,8 +53,12 @@ export class EthereumProvider extends EventEmitter {
   }
 
   initialize = async () => {
-    this._bcm.connect().on('message', this._handleBackgroundMessage);
+    document.addEventListener(
+      'visibilitychange',
+      this._requestPromiseCheckVisibility
+    );
 
+    this._bcm.connect().on('message', this._handleBackgroundMessage);
     domReadyCall(() => {
       const origin = top.location.origin;
       const icon =
@@ -94,11 +98,6 @@ export class EthereumProvider extends EventEmitter {
       this._initialized = true;
       this.emit('_initialized');
     }
-
-    document.addEventListener(
-      'visibilitychange',
-      this._requestPromiseCheckVisibility
-    );
   };
 
   private _requestPromiseCheckVisibility = () => {
