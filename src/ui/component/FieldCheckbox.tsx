@@ -11,6 +11,7 @@ interface FieldCheckboxProps {
   onChange?(any): void;
   showCheckbox?: boolean;
   className?: string;
+  checkboxSize?: number;
 }
 
 const FieldCheckbox = ({
@@ -22,6 +23,7 @@ const FieldCheckbox = ({
   defaultChecked = false,
   showCheckbox = true,
   className,
+  checkboxSize = 20,
 }: FieldCheckboxProps) => {
   const isControlled = useRef(typeof checked !== 'undefined').current;
   const [_checked, setChecked] = useState<boolean>(
@@ -61,8 +63,8 @@ const FieldCheckbox = ({
         (showCheckbox && (
           <Checkbox
             checked={_checked}
-            width="20px"
-            height="20px"
+            width={`${checkboxSize}px`}
+            height={`${checkboxSize}px`}
             background="#27C193"
             onChange={handleToggle}
           />

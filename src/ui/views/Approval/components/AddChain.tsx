@@ -33,12 +33,15 @@ const AddChain = ({ params }: { params: AddChainProps }) => {
 
   let title;
   let content;
+  let confirmBtnText;
   if (!enableChains.some((chain) => chain.hex === chainId)) {
     title = 'Enable a Chain';
     content = 'By enabling a chain, you’ll be able to make transactions on it.';
+    confirmBtnText = 'Enable';
   } else if (CHAINS[defaultChain].hex !== chainId) {
     title = 'Switch a Chain';
     content = `Next time you visit, this site will be connected to ${showChain?.name}`;
+    confirmBtnText = 'Change';
   }
 
   return (
@@ -98,7 +101,7 @@ const AddChain = ({ params }: { params: AddChainProps }) => {
                 className="w-[172px]"
                 onClick={resolveApproval}
               >
-                Allow
+                {confirmBtnText}
               </Button>
             </>
           ) : (

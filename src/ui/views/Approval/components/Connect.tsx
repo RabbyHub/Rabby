@@ -98,7 +98,7 @@ const Connect = ({ params: { icon, origin, name } }: ConnectProps) => {
             className="w-[172px]"
             onClick={() => handleAllow()}
           >
-            Allow
+            Connect
           </Button>
         </div>
       </footer>
