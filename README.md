@@ -2,11 +2,15 @@
 
 Rabby is an open source browser plugin for the DeFi ecosystem, providing users with a better-to-use and more secure multi-chain experience.
 
-## 1. Architecture
+## Install
+
+You can Download the latest Rabby [here](https://github.com/RabbyHub/Rabby/releases/latest).
+
+## Architecture
 
 ![architecture](./docs/architecture.png)
 
-## 2. Extension's scripts
+## Extension's scripts
 
 below 4 scripts all live in different context!
 
