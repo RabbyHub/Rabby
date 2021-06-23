@@ -53,8 +53,12 @@ export class EthereumProvider extends EventEmitter {
   }
 
   initialize = async () => {
-    this._bcm.connect().on('message', this._handleBackgroundMessage);
+    document.addEventListener(
+      'visibilitychange',
+      this._requestPromiseCheckVisibility
+    );
 
+    this._bcm.connect().on('message', this._handleBackgroundMessage);
     domReadyCall(() => {
       const origin = top.location.origin;
       const icon =
@@ -67,10 +71,8 @@ export class EthereumProvider extends EventEmitter {
         origin;
 
       this._bcm.request({
-        data: {
-          method: 'tabCheckin',
-          params: { icon, name, origin },
-        },
+        method: 'tabCheckin',
+        params: { icon, name, origin },
       });
 
       this._requestPromise.check(2);
@@ -96,11 +98,6 @@ export class EthereumProvider extends EventEmitter {
       this._initialized = true;
       this.emit('_initialized');
     }
-
-    document.addEventListener(
-      'visibilitychange',
-      this._requestPromiseCheckVisibility
-    );
   };
 
   private _requestPromiseCheckVisibility = () => {
@@ -142,7 +139,7 @@ export class EthereumProvider extends EventEmitter {
       }
 
       return this._bcm
-        .request({ data })
+        .request(data)
         .then((res) => {
           if (data.method !== 'eth_call') {
             log('[request: success]', data.method, res);

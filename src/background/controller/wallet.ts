@@ -92,7 +92,10 @@ export class WalletController extends BaseController {
       data.origin
     );
   };
-  removeConnectedSite = permissionService.removeConnectedSite;
+  removeConnectedSite = (origin: string) => {
+    sessionService.broadcastEvent('disconnect', null, origin);
+    permissionService.removeConnectedSite(origin);
+  };
   getSitesByDefaultChain = permissionService.getSitesByDefaultChain;
 
   /* keyrings */

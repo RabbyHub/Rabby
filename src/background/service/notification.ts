@@ -46,7 +46,16 @@ class NotificationService {
     await this.clear();
   };
 
+  // currently it only support one approval at the same time
   requestApproval = (data, winProps?): Promise<any> => {
+    if (this.approval) {
+      return Promise.reject(
+        ethErrors.rpc.transactionRejected(
+          'there is a pending request, please request after it resolved'
+        )
+      );
+    }
+
     return new Promise((resolve, reject) => {
       this.approval = {
         data,
@@ -54,11 +63,7 @@ class NotificationService {
         reject,
       };
 
-      try {
-        this.openNotification(winProps);
-      } catch (err) {
-        reject(err);
-      }
+      this.openNotification(winProps);
     });
   };
 
