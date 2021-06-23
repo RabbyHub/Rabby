@@ -41,14 +41,15 @@ browser.runtime.onConnect.addListener((port) => {
 
   const pm = new PortMessage(port);
 
-  pm.listen(async (req) => {
+  pm.listen(async (data) => {
     if (!appStoreLoaded) {
       throw ethErrors.provider.disconnected();
     }
 
     const sessionId = port.sender?.tab?.id;
-    req.session = sessionService.getOrCreateSession(sessionId);
+    const session = sessionService.getOrCreateSession(sessionId);
 
+    const req = { data, session };
     // for background push to respective page
     req.session.pushMessage = (event, data) => {
       pm.send('message', { event, data });

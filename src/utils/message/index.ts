@@ -1,53 +1,59 @@
+/**
+ * this script is live in content-script / dapp's page
+ */
+
 import { EventEmitter } from 'events';
 import { ethErrors } from 'eth-rpc-errors';
 
 abstract class Message extends EventEmitter {
-  private pendingRequest: any;
+  // avaiable id list
+  // max concurrent request limit
+  private _requestIdPool = [...Array(100).keys()];
   protected _EVENT_PRE = 'ETH_WALLET_';
   protected listenCallback: any;
 
-  _waitingQueue: Array<{
-    data: any;
-    resolve: (arg: any) => any;
-    reject: (arg: any) => any;
-  }> = [];
+  private _waitingMap = new Map<
+    number,
+    {
+      data: any;
+      resolve: (arg: any) => any;
+      reject: (arg: any) => any;
+    }
+  >();
 
   abstract send(type: string, data: any): void;
 
-  request = async (data) => {
+  request = (data) => {
+    if (!this._requestIdPool.length) {
+      throw ethErrors.rpc.limitExceeded();
+    }
+    const ident = this._requestIdPool.shift()!;
+
     return new Promise((resolve, reject) => {
-      this._waitingQueue.push({
+      this._waitingMap.set(ident, {
         data,
         resolve,
         reject,
       });
 
-      this._request();
+      this.send('request', { ident, data });
     });
   };
 
-  private _request = () => {
-    if (this.pendingRequest || !this._waitingQueue.length) {
-      return;
-    }
-    this.pendingRequest = this._waitingQueue.shift();
-    this.send('request', this.pendingRequest.data);
-  };
-
-  onResponse = async ({ res, err }: any = {}) => {
+  onResponse = async ({ ident, res, err }: any = {}) => {
     // the url may update
-    if (!this.pendingRequest) {
+    if (!this._waitingMap.has(ident)) {
       return;
     }
-    const { resolve, reject } = this.pendingRequest;
 
-    this.pendingRequest = null;
+    const { resolve, reject } = this._waitingMap.get(ident)!;
+
+    this._requestIdPool.push(ident);
+    this._waitingMap.delete(ident);
     err ? reject(err) : resolve(res);
-
-    this._request();
   };
 
-  onRequest = async (data) => {
+  onRequest = async ({ ident, data }) => {
     if (this.listenCallback) {
       let res, err;
 
@@ -62,16 +68,16 @@ abstract class Message extends EventEmitter {
         e.data && (err.data = e.data);
       }
 
-      this.send('response', { res, err });
+      this.send('response', { ident, res, err });
     }
   };
 
   _dispose = () => {
-    while (this._waitingQueue.length) {
-      const { reject } = this._waitingQueue.shift()!;
-
-      reject(ethErrors.provider.userRejectedRequest());
+    for (const request of this._waitingMap.values()) {
+      request.reject(ethErrors.provider.userRejectedRequest());
     }
+
+    this._waitingMap.clear();
   };
 }
 

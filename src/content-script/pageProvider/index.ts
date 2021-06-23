@@ -67,10 +67,8 @@ export class EthereumProvider extends EventEmitter {
         origin;
 
       this._bcm.request({
-        data: {
-          method: 'tabCheckin',
-          params: { icon, name, origin },
-        },
+        method: 'tabCheckin',
+        params: { icon, name, origin },
       });
 
       this._requestPromise.check(2);
@@ -142,7 +140,7 @@ export class EthereumProvider extends EventEmitter {
       }
 
       return this._bcm
-        .request({ data })
+        .request(data)
         .then((res) => {
           if (data.method !== 'eth_call') {
             log('[request: success]', data.method, res);
