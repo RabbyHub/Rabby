@@ -55,7 +55,7 @@ const Hardware = ({
         )}
       >
         {IS_AFTER_CHROME91 && !useLedgerLive
-          ? 'Unable to proceed  due to a Chrome issue. \n Please delete and re-connect this address'
+          ? 'If can not proceess signature, \n Please try delete and re-connect this address'
           : 'Please proceed in your hardware wallet'}
       </p>
       <footer>
