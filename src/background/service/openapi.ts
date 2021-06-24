@@ -273,12 +273,15 @@ class OpenApiService {
       { maxRPS: 25 }
     );
     this.request.interceptors.response.use((response) => {
-      if (response.data?.err_code && response.data?.err_code !== 200) {
-        if (response.data.err_msg) {
+      const code = response.data?.err_code || response.data?.error_code;
+      const msg = response.data?.err_msg || response.data?.error_msg;
+
+      if (code && code !== 200) {
+        if (msg) {
           try {
-            throw new Error(JSON.parse(response.data.err_msg.en));
+            throw new Error(JSON.parse(msg.en));
           } catch (e) {
-            throw new Error(response.data.err_msg.en);
+            throw new Error(msg.en);
           }
         }
         throw new Error(response.data);

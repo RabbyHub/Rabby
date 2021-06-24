@@ -14,6 +14,13 @@ class PushEventHandlers {
     }
   }
 
+  connect = (data) => {
+    if (!this.provider._isConnected) {
+      this.provider._isConnected = true;
+      this._emit('connect', data);
+    }
+  };
+
   disconnect = () => {
     this.provider._isConnected = false;
     this.provider.selectedAddress = null;
@@ -33,6 +40,7 @@ class PushEventHandlers {
   };
 
   chainChanged = ({ chain, networkVersion }) => {
+    this.connect({ chainId: chain });
     if (chain !== this.provider.chainId) {
       this.provider.chainId = chain;
       this._emit('chainChanged', chain);

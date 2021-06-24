@@ -1,4 +1,4 @@
-import { Tabs, browser } from 'webextension-polyfill-ts';
+import { Tabs, browser, Windows } from 'webextension-polyfill-ts';
 import { WalletController } from 'background/controller/wallet';
 
 export const getCurrentTab = async (): Promise<Tabs.Tab> => {
@@ -20,4 +20,12 @@ export const openInTab = async (url): Promise<number | undefined> => {
   });
 
   return tab?.id;
+};
+
+export const getCurrentWindow = async (): Promise<number | undefined> => {
+  const { id } = await browser.windows.getCurrent({
+    windowTypes: ['popup'],
+  } as Windows.GetInfo);
+
+  return id;
 };

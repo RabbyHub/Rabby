@@ -161,6 +161,7 @@ const GasSelector = ({
                 checked={selectedGas?.level === gas.level}
                 onChange={(checked: boolean) => handleSelectGas(checked, gas)}
                 showCheckbox={!isLoading}
+                checkboxSize={16}
               >
                 <div className="gas-content">
                   {isLoading ? (

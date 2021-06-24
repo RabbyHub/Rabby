@@ -11,8 +11,9 @@ import SecurityCheckDetail from './SecurityCheckDetail';
 import AccountCard from './AccountCard';
 import IconQuestionMark from 'ui/assets/question-mark-gray.svg';
 
-interface SignTextProps {
-  data: string[];
+interface SignTypedDataProps {
+  method: string;
+  data: any[];
   session: {
     origin: string;
     icon: string;
@@ -25,18 +26,29 @@ export const WaitingSignComponent = {
   [KEYRING_CLASS.WATCH]: 'WatchAdrressWaiting',
 };
 
-const SignText = ({ params }: { params: SignTextProps }) => {
+const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
   const [, resolveApproval, rejectApproval] = useApproval();
   const wallet = useWallet();
-  const { data, session } = params;
-  const [, typedMessage] = data;
-  let parsedMessage = {};
+  const { data, session, method } = params;
+  let parsedMessage = '';
+  let _message = '';
   try {
-    const _message = JSON.parse(typedMessage)?.message;
+    // signTypeDataV1 [Message, from]
+    if (/^eth_signTypedData(_v1)?$/.test(method)) {
+      _message = data[0].reduce((m, n) => {
+        m[n.name] = n.value;
+        return m;
+      }, {});
+    } else {
+      // [from, Message]
+      _message = JSON.parse(data[1])?.message;
+    }
+
     parsedMessage = JSON.stringify(_message, null, 4);
   } catch (err) {
     console.log('parse message error', parsedMessage);
   }
+
   const [showSecurityCheckDetail, setShowSecurityCheckDetail] = useState(false);
   const [
     securityCheckStatus,
@@ -52,15 +64,16 @@ const SignText = ({ params }: { params: SignTextProps }) => {
   const handleSecurityCheck = async () => {
     setSecurityCheckStatus('loading');
     const currentAccount = await wallet.getCurrentAccount();
+    const dataStr = JSON.stringify(data);
     const check = await wallet.openapi.checkText(
       currentAccount!.address,
       session.origin,
-      typedMessage
+      dataStr
     );
     const serverExplain = await wallet.openapi.explainText(
       session.origin,
       currentAccount!.address,
-      typedMessage
+      dataStr
     );
     setExplain(serverExplain.comment);
     setSecurityCheckStatus(check.decision);
@@ -161,4 +174,4 @@ const SignText = ({ params }: { params: SignTextProps }) => {
   );
 };
 
-export default SignText;
+export default SignTypedData;

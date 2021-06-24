@@ -2,10 +2,11 @@
 export const noop = () => {};
 
 export * from './WalletContext';
+export * from './WindowContext';
 
 export * from './hooks';
 
-export * from './tab';
+export * from './webapi';
 
 export * from './time';
 
