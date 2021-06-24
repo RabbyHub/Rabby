@@ -58,7 +58,7 @@ const LedgerConnectMethod = () => {
             key={path.name}
             checked={currentMethod === path.value}
             onChange={(checked) => handleMethodChange(path.value, checked)}
-            disable={path.value === DIRECTLY && IS_AFTER_CHROME91}
+            // disable={path.value === DIRECTLY && IS_AFTER_CHROME91}
           >
             <div>
               <p className="my-0">{path.name}</p>
