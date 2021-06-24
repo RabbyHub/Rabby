@@ -97,14 +97,14 @@ class ProviderController extends BaseController {
   @Reflect.metadata('APPROVAL', ['SignTypedData'])
   ethSignTypedData = async ({
     data: {
-      params: [from, data],
+      params: [data, from],
     },
   }) => this._signTypedData(from, data, 'V1');
 
   @Reflect.metadata('APPROVAL', ['SignTypedData'])
   ethSignTypedDataV1 = async ({
     data: {
-      params: [from, data],
+      params: [data, from],
     },
   }) => this._signTypedData(from, data, 'V1');
 

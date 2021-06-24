@@ -61,7 +61,7 @@ export default (req) =>
       // check need approval
       const {
         request: {
-          data: { params },
+          data: { params, method },
           session: { origin, name, icon },
         },
         mapMethod,
@@ -74,6 +74,7 @@ export default (req) =>
           {
             aporovalComponent: approvalType,
             params: {
+              method,
               data: params,
               session: { origin, name, icon },
             },

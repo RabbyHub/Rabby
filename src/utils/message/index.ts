@@ -8,7 +8,7 @@ import { ethErrors } from 'eth-rpc-errors';
 abstract class Message extends EventEmitter {
   // avaiable id list
   // max concurrent request limit
-  private _requestIdPool = [...Array(100).keys()];
+  private _requestIdPool = [...Array(500).keys()];
   protected _EVENT_PRE = 'ETH_WALLET_';
   protected listenCallback: any;
 

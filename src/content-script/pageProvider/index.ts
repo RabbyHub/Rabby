@@ -83,7 +83,6 @@ export class EthereumProvider extends EventEmitter {
         method: 'getProviderState',
       });
 
-      this._isConnected = true;
       this.chainId = chainId;
       this.networkVersion = networkVersion;
       this.emit('connect', { chainId });
@@ -91,6 +90,7 @@ export class EthereumProvider extends EventEmitter {
         chain: chainId,
         networkVersion,
       });
+
       this._pushEventHandlers.accountsChanged(accounts);
     } catch {
       //
