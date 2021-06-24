@@ -2,6 +2,7 @@ import React from 'react';
 import ReactDOM from 'react-dom';
 import { browser } from 'webextension-polyfill-ts';
 import Views from './views';
+import { getUiType } from 'ui/utils';
 
 import './style/index.less';
 
@@ -45,3 +46,7 @@ browser.runtime.getBackgroundPage().then((win) => {
     document.getElementById('root')
   );
 });
+
+if (getUiType().isPop) {
+  browser.runtime.connect(undefined, { name: 'popup' });
+}

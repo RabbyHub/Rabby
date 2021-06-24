@@ -11,7 +11,7 @@ import {
 } from 'background/service';
 import { Session } from 'background/service/session';
 import { Tx } from 'background/service/openapi';
-import { CHAINS } from 'consts';
+import { CHAINS, CHAINS_ENUM } from 'consts';
 import BaseController from '../base';
 
 interface ApprovalRes extends Tx {
@@ -25,15 +25,61 @@ class ProviderController extends BaseController {
     if (!openapiService.ethRpc) {
       throw ethErrors.provider.disconnected();
     }
-
     const {
       data: { method, params },
       session: { origin },
     } = req;
+
+    if (!permissionService.hasPerssmion(origin)) {
+      throw ethErrors.provider.unauthorized();
+    }
+
     const chainServerId =
       CHAINS[permissionService.getConnectedSite(origin)!.chain].serverId;
 
-    return openapiService.ethRpc(chainServerId, { method, params });
+    return openapiService.ethRpc(chainServerId, {
+      origin: encodeURIComponent(origin),
+      method,
+      params,
+    });
+  };
+
+  ethRequestAccounts = async ({ session: { origin } }) => {
+    if (!permissionService.hasPerssmion(origin)) {
+      throw ethErrors.provider.unauthorized();
+    }
+
+    const _account = await this.getCurrentAccount();
+    const account = _account ? [_account.address] : [];
+    sessionService.broadcastEvent('accountsChanged', account);
+
+    return account;
+  };
+
+  @Reflect.metadata('SAFE', true)
+  ethAccounts = async ({ session: { origin } }) => {
+    if (!permissionService.hasPerssmion(origin)) {
+      return [];
+    }
+
+    const account = await this.getCurrentAccount();
+    return account ? [account.address] : [];
+  };
+
+  @Reflect.metadata('SAFE', true)
+  ethChainId = ({ session }: { session: Session }) => {
+    const origin = session.origin;
+    const site = permissionService.getWithoutUpdate(origin);
+
+    return CHAINS[site?.chain || CHAINS_ENUM.ETH].hex;
+  };
+
+  @Reflect.metadata('SAFE', true)
+  netVersion = ({ session }: { session: Session }) => {
+    const origin = session.origin;
+    const site = permissionService.getWithoutUpdate(origin);
+
+    return CHAINS[site?.chain || CHAINS_ENUM.ETH].network;
   };
 
   @Reflect.metadata('APPROVAL', ['SignTx'])
@@ -121,32 +167,6 @@ class ProviderController extends BaseController {
       params: [from, data],
     },
   }) => this._signTypedData(from, data, 'V4');
-
-  ethAccounts = async ({ session: { origin } }) => {
-    if (!permissionService.hasPerssmion(origin)) {
-      return [];
-    }
-    const account = await this.getCurrentAccount();
-    if (!account) return [];
-    return [account.address];
-  };
-
-  ethChainId = ({ session }: { session: Session }) => {
-    const origin = session.origin;
-    const site = permissionService.getWithoutUpdate(origin);
-    return CHAINS[site!.chain].hex;
-  };
-
-  netVersion = ({ session }: { session: Session }) => {
-    const origin = session.origin;
-    const site = permissionService.getWithoutUpdate(origin);
-    if (!site) {
-      return null;
-    }
-    return CHAINS[site.chain].network;
-  };
-
-  ethRequestAccounts = this.ethAccounts;
 
   @Reflect.metadata('APPROVAL', [
     'AddChain',

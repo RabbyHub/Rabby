@@ -1,6 +1,7 @@
 import { ethErrors } from 'eth-rpc-errors';
 import { EthereumProviderError } from 'eth-rpc-errors/dist/classes';
 import { winMgr } from 'background/webapi';
+import { preferenceService } from 'background/service';
 
 interface Approval {
   data: {
@@ -47,12 +48,18 @@ class NotificationService {
   };
 
   // currently it only support one approval at the same time
-  requestApproval = (data, winProps?): Promise<any> => {
+  requestApproval = async (data, winProps?): Promise<any> => {
+    // if the request comes into while user approving
     if (this.approval) {
-      return Promise.reject(
-        ethErrors.rpc.transactionRejected(
-          'there is a pending request, please request after it resolved'
-        )
+      throw ethErrors.provider.userRejectedRequest(
+        'please request after current approval resolve'
+      );
+    }
+
+    if (preferenceService.getPopupOpen()) {
+      this.approval = null;
+      throw ethErrors.provider.userRejectedRequest(
+        'please request after user close current popup'
       );
     }
 

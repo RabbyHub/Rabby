@@ -209,7 +209,7 @@ const SignTx = ({ params, origin }) => {
   };
 
   const handleCancel = () => {
-    rejectApproval('User Reject');
+    rejectApproval('User rejected the request.');
   };
 
   const handleForceProcessChange = (checked: boolean) => {

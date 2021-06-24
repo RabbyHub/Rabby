@@ -45,7 +45,7 @@ const Connect = ({ params: { icon, origin, name } }: ConnectProps) => {
   }, []);
 
   const handleCancel = () => {
-    rejectApproval('user reject');
+    rejectApproval('User rejected the request.');
   };
 
   const handleAllow = async () => {

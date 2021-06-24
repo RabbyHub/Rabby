@@ -34,9 +34,10 @@ export class WalletController extends BaseController {
 
   unlock = (password: string) => keyringService.submitPassword(password);
   isUnlocked = () => keyringService.memStore.getState().isUnlocked;
-  lockWallet = () => {
-    keyringService.setLocked();
-    sessionService.broadcastEvent('disconnect');
+
+  lockWallet = async () => {
+    await keyringService.setLocked();
+    sessionService.broadcastEvent('accountsChanged', []);
   };
   setPopupOpen = (isOpen) => {
     preferenceService.setPopupOpen(isOpen);
@@ -93,7 +94,7 @@ export class WalletController extends BaseController {
     );
   };
   removeConnectedSite = (origin: string) => {
-    sessionService.broadcastEvent('disconnect', null, origin);
+    sessionService.broadcastEvent('accountsChanged', [], origin);
     permissionService.removeConnectedSite(origin);
   };
   getSitesByDefaultChain = permissionService.getSitesByDefaultChain;

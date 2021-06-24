@@ -188,7 +188,7 @@ class OpenApiService {
   ethRpc:
     | ((
         chainId: string,
-        arg: { method: string; params: Array<any> }
+        arg: { method: string; params: Array<any>; origin: string }
       ) => Promise<any>)
     | null = null;
 
@@ -314,12 +314,15 @@ class OpenApiService {
       return;
     }
 
-    this.ethRpc = (chain_id, { method, params }) => {
-      return this.request[config.method](config.path, {
-        chain_id,
-        method,
-        params,
-      }).then(({ data }: { data: RPCResponse<any> }) => {
+    this.ethRpc = (chain_id, { origin, method, params }) => {
+      return this.request[config.method](
+        `${config.path}?origin=${origin}&method=${method}`,
+        {
+          chain_id,
+          method,
+          params,
+        }
+      ).then(({ data }: { data: RPCResponse<any> }) => {
         if (data?.error) {
           throw data.error;
         }

@@ -4,7 +4,7 @@
     "description": "The name of the application"
   },
   "appDescription": {
-    "message": "A browser plugin for DeFi users",
+    "message": "A better browser plugin for DeFi users",
     "description": "The description of the application"
   }
 }

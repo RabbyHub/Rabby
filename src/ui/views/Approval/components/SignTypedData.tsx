@@ -82,7 +82,7 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
   };
 
   const handleCancel = () => {
-    rejectApproval('user reject');
+    rejectApproval('User rejected the request.');
   };
 
   const handleAllow = async (doubleCheck = false) => {
