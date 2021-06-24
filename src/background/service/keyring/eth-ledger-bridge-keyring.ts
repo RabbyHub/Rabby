@@ -9,7 +9,7 @@ const pathBase = 'm';
 const hdPathString = `${pathBase}/44'/60'/0'`;
 const type = 'Ledger Hardware';
 
-const BRIDGE_URL = 'https://metamask.github.io/eth-ledger-bridge-keyring';
+const BRIDGE_URL = 'https://rabbyhub.github.io/eth-ledger-bridge-keyring';
 
 const MAX_INDEX = 1000;
 const NETWORK_API_URLS = {
@@ -69,7 +69,7 @@ class LedgerBridgeKeyring extends EventEmitter {
 
   deserialize(opts: any = {}) {
     this.hdPath = opts.hdPath || hdPathString;
-    this.bridgeUrl = opts.bridgeUrl || BRIDGE_URL;
+    this.bridgeUrl = BRIDGE_URL;
     this.accounts = opts.accounts || [];
     this.accountDetails = opts.accountDetails || {};
     if (!opts.accountDetails) {

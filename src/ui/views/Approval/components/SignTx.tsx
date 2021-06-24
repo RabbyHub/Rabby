@@ -53,7 +53,36 @@ const TxTypeComponent = ({
 
 const SignTx = ({ params, origin }) => {
   const [isReady, setIsReady] = useState(false);
-  const [txDetail, setTxDetail] = useState<ExplainTxResponse | null>(null);
+  const [txDetail, setTxDetail] = useState<ExplainTxResponse | null>({
+    balance_change: {
+      err_msg: '',
+      receive_token_list: [],
+      send_token_list: [],
+      success: true,
+      usd_value_change: 0,
+    },
+    gas: {
+      estimated_gas_cost_usd_value: 0,
+      estimated_gas_cost_value: 0,
+      estimated_gas_used: 0,
+      estimated_seconds: 0,
+    },
+    pre_exec: {
+      success: true,
+      err_msg: '',
+    },
+    recommend: {
+      gas: '',
+      nonce: '',
+    },
+    support_balance_change: true,
+    type_call: {
+      action: '',
+      contract: '',
+      contract_protocol_logo_url: '',
+      contract_protocol_name: '',
+    },
+  });
   const [
     securityCheckStatus,
     setSecurityCheckStatus,
