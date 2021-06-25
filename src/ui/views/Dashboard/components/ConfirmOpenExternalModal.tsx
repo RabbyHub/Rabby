@@ -5,6 +5,7 @@ import { Modal, Checkbox, FallbackSiteLogo } from 'ui/component';
 import { IconDebank } from 'ui/assets';
 import { wrapModalPromise } from 'ui/component/AuthenticationModal';
 import { WalletController } from 'background/controller/wallet';
+import { query2obj, obj2query } from 'ui/utils/url';
 
 const ConfirmOpenExternalModal = ({
   onFinished,
@@ -80,13 +81,21 @@ const useConfirmExternalModal = () => {
   const wallet = useWallet();
 
   return (url) => {
+    const origin = url.split('?')[0];
+    const openUrl =
+      origin +
+      '?' +
+      obj2query({
+        ...query2obj(url),
+        utm_source: 'rabby',
+      });
     if (wallet.getExternalLinkAck()) {
-      openInTab(url);
+      openInTab(openUrl);
       return;
     }
 
     funConfirmOpenExternalModal({ wallet }).then(() => {
-      openInTab(url);
+      openInTab(openUrl);
     });
   };
 };
