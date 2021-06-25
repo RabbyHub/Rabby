@@ -35,6 +35,16 @@ restoreAppState();
 
 // for page provider
 browser.runtime.onConnect.addListener((port) => {
+  if (port.name === 'popup') {
+    preferenceService.setPopupOpen(true);
+
+    port.onDisconnect.addListener(() => {
+      preferenceService.setPopupOpen(false);
+    });
+
+    return;
+  }
+
   if (!port.sender?.tab) {
     return;
   }

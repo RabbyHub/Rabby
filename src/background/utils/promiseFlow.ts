@@ -1,3 +1,5 @@
+import compose from 'koa-compose';
+
 export default class PromiseFlow {
   private _tasks: ((args: any) => void)[] = [];
   _context: any = {};
@@ -11,15 +13,7 @@ export default class PromiseFlow {
     return this;
   }
 
-  handle = async (req) => {
-    this._context.request = req;
-
-    let result;
-
-    for (const fn of this._tasks) {
-      result = await fn(this._context);
-    }
-
-    return result;
-  };
+  callback() {
+    return compose(this._tasks);
+  }
 }

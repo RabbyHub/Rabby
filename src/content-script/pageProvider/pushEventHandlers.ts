@@ -26,6 +26,7 @@ class PushEventHandlers {
     this.provider.selectedAddress = null;
     const disconnectError = ethErrors.provider.disconnected();
 
+    this._emit('accountsChanged', []);
     this._emit('disconnect', disconnectError);
     this._emit('close', disconnectError);
   };
@@ -41,6 +42,7 @@ class PushEventHandlers {
 
   chainChanged = ({ chain, networkVersion }) => {
     this.connect({ chainId: chain });
+
     if (chain !== this.provider.chainId) {
       this.provider.chainId = chain;
       this._emit('chainChanged', chain);

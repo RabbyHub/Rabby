@@ -36,24 +36,6 @@ export const useApproval = () => {
   return [approval, resolveApproval, rejectApproval] as const;
 };
 
-export const usePopupOpen = () => {
-  const wallet = useWallet();
-
-  useEffect(() => {
-    if (!getUiType().isNotification) {
-      return;
-    }
-
-    wallet.setPopupOpen(true);
-
-    const beforeunload = () => {
-      wallet.setPopupOpen(false);
-    };
-
-    window.addEventListener('beforeunload', beforeunload);
-  }, []);
-};
-
 export const useSelectOption = <T>({
   options,
   defaultValue = [],

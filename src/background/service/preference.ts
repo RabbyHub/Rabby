@@ -11,7 +11,6 @@ export interface Account {
 
 interface PreferenceStore {
   currentAccount: Account | undefined | null;
-  popupOpen: boolean;
   externalLinkAck: boolean;
   hiddenAddresses: Account[];
   balanceMap: {
@@ -22,13 +21,13 @@ interface PreferenceStore {
 
 class PreferenceService {
   store!: PreferenceStore;
+  popupOpen = false;
 
   init = async () => {
     this.store = await createPersistStore<PreferenceStore>({
       name: 'preference',
       template: {
         currentAccount: undefined,
-        popupOpen: false,
         externalLinkAck: false,
         hiddenAddresses: [],
         balanceMap: {},
@@ -85,8 +84,10 @@ class PreferenceService {
   };
 
   setPopupOpen = (isOpen) => {
-    this.store.popupOpen = isOpen;
+    this.popupOpen = isOpen;
   };
+
+  getPopupOpen = () => this.popupOpen;
 
   updateAddressBalance = (address, data: TotalBalanceResponse) => {
     const balanceMap = this.store.balanceMap || {};
