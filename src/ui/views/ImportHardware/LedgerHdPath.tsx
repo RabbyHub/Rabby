@@ -28,16 +28,16 @@ const LedgerHdPath = () => {
     setSpin(true);
     const useLedgerLive = wallet.isUseLedgerLive();
     const isSupportWebUSB = await TransportWebUSB.isSupported();
+    const keyring = wallet.connectHardware('LEDGER', currentPath);
     try {
-      const keyring = wallet.connectHardware('LEDGER', currentPath);
       if (useLedgerLive) {
         await keyring.updateTransportMethod(true);
         keyring.useWebUSB(false);
       } else if (IS_AFTER_CHROME91 && isSupportWebUSB) {
+        await keyring.cleanUp();
         keyring.useWebUSB(true);
         const transport = await TransportWebUSB.create();
-        transport.close();
-        await keyring.makeApp();
+        await transport.close();
       }
       await keyring.unlock();
       setSpin(false);

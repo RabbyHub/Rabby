@@ -160,6 +160,7 @@ class LedgerBridgeKeyring extends EventEmitter {
 
   cleanUp() {
     this.app = null;
+    if (this.transport) this.transport.close();
     this.transport = null;
   }
 
@@ -170,7 +171,11 @@ class LedgerBridgeKeyring extends EventEmitter {
     const path = hdPath ? this._toLedgerPath(hdPath) : this.hdPath;
     if (this.isWebUSB) {
       await this.makeApp();
-      const { address } = await this.app!.getAddress(path);
+      const res = await this.app!.getAddress(path, false, true);
+      const { address, publicKey, chainCode } = res;
+      console.log('chainCode', chainCode);
+      this.hdk.publicKey = Buffer.from(publicKey, 'hex');
+      this.hdk.chainCode = Buffer.from(chainCode!, 'hex');
       return address;
     }
     return new Promise((resolve, reject) => {
@@ -709,7 +714,8 @@ class LedgerBridgeKeyring extends EventEmitter {
 
     await this.unlock();
     let accounts;
-    if (this._isLedgerLiveHdPath()) {
+    if (this._isLedgerLiveHdPath() || this.isWebUSB) {
+      // TODO: why webusb have to use bip44?
       accounts = await this._getAccountsBIP44(from, to);
     } else {
       accounts = this._getAccountsLegacy(from, to);
