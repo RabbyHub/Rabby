@@ -7,10 +7,10 @@ import { HARDWARE_KEYRING_TYPES, IS_AFTER_CHROME91 } from 'consts';
 
 const Hardware = ({
   params,
-  requestDeffer,
+  requestDefer,
 }: {
   params: { type: string };
-  requestDeffer: Promise<any>;
+  requestDefer: Promise<any>;
 }) => {
   const [, resolveApproval, rejectApproval] = useApproval();
   const { type } = params;
@@ -19,7 +19,7 @@ const Hardware = ({
     .find((item) => item.type === type);
   const wallet = useWallet();
   const useLedgerLive = wallet.isUseLedgerLive();
-  requestDeffer.then(resolveApproval).catch(rejectApproval);
+  requestDefer.then(resolveApproval).catch(rejectApproval);
 
   const Icon = () => {
     switch (type) {
