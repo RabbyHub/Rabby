@@ -12,6 +12,9 @@
   "dependencies": {
     "@metamask/eth-ledger-bridge-keyring": "^0.6.0",
     "@metamask/obs-store": "^6.0.2",
+    "@sentry/browser": "^6.7.2",
+    "@sentry/react": "^6.7.2",
+    "@sentry/tracing": "^6.7.2",
     "antd": "^4.15.3",
     "assert": "^2.0.0",
     "axios": "^0.21.1",
