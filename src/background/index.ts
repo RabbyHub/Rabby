@@ -1,4 +1,6 @@
 import 'reflect-metadata';
+import * as Sentry from '@sentry/browser';
+import { Integrations } from '@sentry/tracing';
 import { browser } from 'webextension-polyfill-ts';
 import { ethErrors } from 'eth-rpc-errors';
 import { WalletController } from 'background/controller/wallet';
@@ -17,6 +19,17 @@ import { providerController, walletController } from './controller';
 const { PortMessage } = Message;
 
 let appStoreLoaded = false;
+
+Sentry.init({
+  dsn:
+    'https://e871ee64a51b4e8c91ea5fa50b67be6b@o460488.ingest.sentry.io/5831390',
+  integrations: [new Integrations.BrowserTracing()],
+
+  // Set tracesSampleRate to 1.0 to capture 100%
+  // of transactions for performance monitoring.
+  // We recommend adjusting this value in production
+  tracesSampleRate: 1.0,
+});
 
 async function restoreAppState() {
   const keyringState = await storage.get('keyringState');

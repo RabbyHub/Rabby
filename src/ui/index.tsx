@@ -3,8 +3,21 @@ import ReactDOM from 'react-dom';
 import { browser } from 'webextension-polyfill-ts';
 import Views from './views';
 import { getUiType } from 'ui/utils';
+import * as Sentry from '@sentry/react';
+import { Integrations } from '@sentry/tracing';
 
 import './style/index.less';
+
+Sentry.init({
+  dsn:
+    'https://e871ee64a51b4e8c91ea5fa50b67be6b@o460488.ingest.sentry.io/5831390',
+  integrations: [new Integrations.BrowserTracing()],
+
+  // Set tracesSampleRate to 1.0 to capture 100%
+  // of transactions for performance monitoring.
+  // We recommend adjusting this value in production
+  tracesSampleRate: 1.0,
+});
 
 // For fix chrome extension render problem in external screen
 if (
