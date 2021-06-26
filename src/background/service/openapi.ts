@@ -1,5 +1,6 @@
 import axios, { Method } from 'axios';
 import rateLimit from 'axios-rate-limit';
+import { ethErrors } from 'eth-rpc-errors';
 import { createPersistStore } from 'background/utils';
 
 interface OpenApiConfigValue {
@@ -188,9 +189,11 @@ class OpenApiService {
   ethRpc:
     | ((
         chainId: string,
-        arg: { method: string; params: Array<any>; origin: string }
+        arg: { method: string; params: Array<any>; origin?: string }
       ) => Promise<any>)
-    | null = null;
+    | (() => Promise<never>) = async () => {
+    throw ethErrors.provider.disconnected();
+  };
 
   init = async () => {
     this.store = await createPersistStore({
@@ -314,7 +317,7 @@ class OpenApiService {
       return;
     }
 
-    this.ethRpc = (chain_id, { origin, method, params }) => {
+    this.ethRpc = (chain_id, { origin = 'rabby', method, params }) => {
       return this.request[config.method](
         `${config.path}?origin=${origin}&method=${method}`,
         {
