@@ -8,8 +8,8 @@ const get = async (prop?) => {
   }
 
   const result = await browser.storage.local.get(null);
-
   cacheMap = new Map(Object.entries(result).map(([k, v]) => [k, v]));
+
   return prop ? result[prop] : result;
 };
 

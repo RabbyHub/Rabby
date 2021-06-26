@@ -13,6 +13,7 @@ import {
   keyringService,
   chainService,
   openapiService,
+  transactionWatchService,
 } from './service';
 import { providerController, walletController } from './controller';
 
@@ -40,8 +41,11 @@ async function restoreAppState() {
   await preferenceService.init();
   await openapiService.init();
   await chainService.init();
+  await transactionWatchService.init();
 
   appStoreLoaded = true;
+
+  transactionWatchService.roll();
 }
 
 restoreAppState();
