@@ -9,6 +9,7 @@ import {
   sessionService,
   openapiService,
   preferenceService,
+  transactionWatchService,
 } from 'background/service';
 import { Session } from 'background/service/session';
 import { Tx } from 'background/service/openapi';
@@ -35,9 +36,6 @@ const signTypedDataVlidation = ({
 
 class ProviderController extends BaseController {
   ethRpc = (req) => {
-    if (!openapiService.ethRpc) {
-      throw ethErrors.provider.disconnected();
-    }
     const {
       data: { method, params },
       session: { origin },
@@ -127,11 +125,13 @@ class ProviderController extends BaseController {
     data: {
       params: [txParams],
     },
+    session: { origin },
     approvalRes,
   }: {
     data: {
       params: any;
     };
+    session: Session;
     approvalRes: ApprovalRes;
   }) => {
     const keyring = await this._checkAddress(txParams.from);
@@ -144,13 +144,22 @@ class ProviderController extends BaseController {
       tx,
       txParams.from
     );
-    return openapiService.pushTx({
+
+    const hash = await openapiService.pushTx({
       ...approvalRes,
       r: bufferToHex(signedTx.r),
       s: bufferToHex(signedTx.s),
       v: bufferToHex(signedTx.v),
       value: approvalRes.value || '0x0',
     });
+
+    const chain = permissionService.getConnectedSite(origin)!.chain;
+    transactionWatchService.addTx(`${approvalRes.nonce}_${chain}`, {
+      hash,
+      chain,
+    });
+
+    return hash;
   };
 
   @Reflect.metadata('APPROVAL', [

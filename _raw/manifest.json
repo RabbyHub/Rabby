@@ -43,6 +43,6 @@
     }
   ],
   "content_security_policy": "script-src 'self' https://www.google-analytics.com; object-src 'self'",
-  "permissions": ["storage", "activeTab"],
+  "permissions": ["storage", "activeTab", "notifications"],
   "web_accessible_resources": ["user-media-permission.html"]
 }
