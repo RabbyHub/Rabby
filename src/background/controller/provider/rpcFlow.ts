@@ -53,7 +53,7 @@ const flow = new PromiseFlow()
         const { defaultChain } = await notificationService.requestApproval(
           {
             params: { origin, name, icon },
-            aporovalComponent: 'Connect',
+            approvalComponent: 'Connect',
           },
           { height: 390 }
         );
@@ -79,7 +79,7 @@ const flow = new PromiseFlow()
     if (approvalType && (!condition || !condition(ctx.request))) {
       ctx.approvalRes = await notificationService.requestApproval(
         {
-          aporovalComponent: approvalType,
+          approvalComponent: approvalType,
           params: {
             method,
             data: params,
@@ -111,7 +111,7 @@ const flow = new PromiseFlow()
 
     if (uiRequestComponent) {
       return await notificationService.requestApproval({
-        aporovalComponent: uiRequestComponent,
+        approvalComponent: uiRequestComponent,
         requestDefer,
         params: rest,
         origin,

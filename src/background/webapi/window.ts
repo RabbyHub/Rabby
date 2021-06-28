@@ -1,5 +1,6 @@
 import { browser, Windows } from 'webextension-polyfill-ts';
 import { EventEmitter } from 'events';
+import { IS_WINDOWS } from 'consts';
 
 const event = new EventEmitter();
 
@@ -15,7 +16,7 @@ browser.windows.onRemoved.addListener((winId) => {
 const BROWSER_HEADER = 80;
 const BROWSER_RIGHT = 40;
 const WINDOW_SIZE = {
-  width: 400,
+  width: 400 + (IS_WINDOWS ? 14 : 0), // idk why windows cut the width.
   height: 600,
 };
 

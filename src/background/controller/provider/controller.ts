@@ -8,6 +8,8 @@ import {
   chainService,
   sessionService,
   openapiService,
+  preferenceService,
+  transactionWatchService,
 } from 'background/service';
 import { Session } from 'background/service/session';
 import { Tx } from 'background/service/openapi';
@@ -20,11 +22,20 @@ interface ApprovalRes extends Tx {
   uiRequestComponent?: string;
 }
 
+const signTypedDataVlidation = ({
+  data: {
+    params: [from, _],
+  },
+}) => {
+  const currentAddress = preferenceService
+    .getCurrentAccount()
+    ?.address.toLowerCase();
+  if (from.toLowerCase() !== currentAddress)
+    throw ethErrors.rpc.invalidParams('from should be same as current address');
+};
+
 class ProviderController extends BaseController {
   ethRpc = (req) => {
-    if (!openapiService.ethRpc) {
-      throw ethErrors.provider.disconnected();
-    }
     const {
       data: { method, params },
       session: { origin },
@@ -82,16 +93,45 @@ class ProviderController extends BaseController {
     return CHAINS[site?.chain || CHAINS_ENUM.ETH].network;
   };
 
-  @Reflect.metadata('APPROVAL', ['SignTx'])
+  @Reflect.metadata('APPROVAL', [
+    'SignTx',
+    ({
+      data: {
+        params: [tx],
+      },
+      session,
+    }) => {
+      const currentAddress = preferenceService
+        .getCurrentAccount()
+        ?.address.toLowerCase();
+      const currentChain = permissionService.getConnectedSite(session.origin)
+        ?.chain;
+      if (tx.from.toLowerCase() !== currentAddress) {
+        throw ethErrors.rpc.invalidParams(
+          'from should be same as current address'
+        );
+      }
+      if (
+        'chainId' in tx &&
+        (!currentChain || Number(tx.chainId) !== CHAINS[currentChain].id)
+      ) {
+        throw ethErrors.rpc.invalidParams(
+          'chainId should be same as current chainId'
+        );
+      }
+    },
+  ])
   ethSendTransaction = async ({
     data: {
       params: [txParams],
     },
+    session: { origin },
     approvalRes,
   }: {
     data: {
       params: any;
     };
+    session: Session;
     approvalRes: ApprovalRes;
   }) => {
     const keyring = await this._checkAddress(txParams.from);
@@ -104,16 +144,40 @@ class ProviderController extends BaseController {
       tx,
       txParams.from
     );
-    return openapiService.pushTx({
+
+    const hash = await openapiService.pushTx({
       ...approvalRes,
       r: bufferToHex(signedTx.r),
       s: bufferToHex(signedTx.s),
       v: bufferToHex(signedTx.v),
       value: approvalRes.value || '0x0',
     });
+
+    const chain = permissionService.getConnectedSite(origin)!.chain;
+    transactionWatchService.addTx(`${approvalRes.nonce}_${chain}`, {
+      hash,
+      chain,
+    });
+
+    return hash;
   };
 
-  @Reflect.metadata('APPROVAL', ['SignText'])
+  @Reflect.metadata('APPROVAL', [
+    'SignText',
+    ({
+      data: {
+        params: [_, from],
+      },
+    }) => {
+      const currentAddress = preferenceService
+        .getCurrentAccount()
+        ?.address.toLowerCase();
+      if (from.toLowerCase() !== currentAddress)
+        throw ethErrors.rpc.invalidParams(
+          'from should be same as current address'
+        );
+    },
+  ])
   personalSign = async ({
     data: {
       params: [data, from],
@@ -140,28 +204,28 @@ class ProviderController extends BaseController {
     );
   };
 
-  @Reflect.metadata('APPROVAL', ['SignTypedData'])
+  @Reflect.metadata('APPROVAL', ['SignTypedData', signTypedDataVlidation])
   ethSignTypedData = async ({
     data: {
       params: [data, from],
     },
   }) => this._signTypedData(from, data, 'V1');
 
-  @Reflect.metadata('APPROVAL', ['SignTypedData'])
+  @Reflect.metadata('APPROVAL', ['SignTypedData', signTypedDataVlidation])
   ethSignTypedDataV1 = async ({
     data: {
       params: [data, from],
     },
   }) => this._signTypedData(from, data, 'V1');
 
-  @Reflect.metadata('APPROVAL', ['SignTypedData'])
+  @Reflect.metadata('APPROVAL', ['SignTypedData', signTypedDataVlidation])
   ethSignTypedDataV3 = async ({
     data: {
       params: [from, data],
     },
   }) => this._signTypedData(from, data, 'V3');
 
-  @Reflect.metadata('APPROVAL', ['SignTypedData'])
+  @Reflect.metadata('APPROVAL', ['SignTypedData', signTypedDataVlidation])
   ethSignTypedDataV4 = async ({
     data: {
       params: [from, data],

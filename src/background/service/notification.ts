@@ -8,7 +8,7 @@ interface Approval {
     state: number;
     params?: any;
     origin?: string;
-    aporovalComponent: string;
+    approvalComponent: string;
     requestDefer?: Promise<any>;
   };
   resolve(params?: any): void;
