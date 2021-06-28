@@ -31,7 +31,10 @@ class TransactionWatcher {
     id: string,
     { hash, chain }: { hash: string; chain: CHAINS_ENUM }
   ) => {
-    this.store.pendingTx[id] = new Transaction(hash, chain);
+    this.store.pendingTx = {
+      ...this.store.pendingTx,
+      [id]: new Transaction(hash, chain),
+    };
     const url = format(CHAINS[chain].scanLink, hash);
     notification.create(
       url,
@@ -62,8 +65,16 @@ class TransactionWatcher {
     }`;
 
     notification.create(url, title, 'click to view more information');
+    this.store.pendingTx = Object.entries(this.store.pendingTx).reduce(
+      (m, [k, v]) => {
+        if (k !== id) {
+          m[k] = v;
+        }
 
-    delete this.store.pendingTx[id];
+        return m;
+      },
+      {}
+    );
   };
 
   roll = () => {
