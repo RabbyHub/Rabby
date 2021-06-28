@@ -14,4 +14,8 @@ declare global {
 
 const t = (name) => browser.i18n.getMessage(name);
 
-export { Message, t };
+const format = (str, ...args) => {
+  return args.reduce((m, n) => m.replace('_s_', n), str);
+};
+
+export { Message, t, format };
