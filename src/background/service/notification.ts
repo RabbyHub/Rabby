@@ -1,8 +1,7 @@
 import { ethErrors } from 'eth-rpc-errors';
 import { EthereumProviderError } from 'eth-rpc-errors/dist/classes';
 import { winMgr } from 'background/webapi';
-import { preferenceService, permissionService } from 'background/service';
-import { CHAINS } from 'consts';
+import { preferenceService } from 'background/service';
 
 interface Approval {
   data: {
@@ -50,45 +49,6 @@ class NotificationService {
 
   // currently it only support one approval at the same time
   requestApproval = async (data, winProps?): Promise<any> => {
-    const NEED_CHECK_ADDRESS_METHODS = ['SignTx', 'SignText', 'SignTypedData'];
-    if (NEED_CHECK_ADDRESS_METHODS.includes(data.approvalComponent)) {
-      const currentAddress = preferenceService
-        .getCurrentAccount()
-        ?.address.toLowerCase();
-      const currentChain = permissionService.getConnectedSite(
-        data.params.session.origin
-      )?.chain;
-      switch (data.approvalComponent) {
-        case 'SignTx':
-          if (data.params.data[0].from.toLowerCase() !== currentAddress) {
-            throw ethErrors.rpc.invalidParams(
-              'from should be same as current address'
-            );
-          }
-          if (
-            'chainId' in data.params.data[0] &&
-            (!currentChain ||
-              Number(data.params.data[0].chainId) !== CHAINS[currentChain].id)
-          ) {
-            throw ethErrors.rpc.invalidParams(
-              'chainId should be same as current chainId'
-            );
-          }
-          break;
-        case 'SignText':
-          if (data.params.data[1].toLowerCase() !== currentAddress)
-            throw ethErrors.rpc.invalidParams(
-              'from should be same as current address'
-            );
-          break;
-        case 'SignTypedData':
-          if (data.params.data[0].toLowerCase() !== currentAddress)
-            throw ethErrors.rpc.invalidParams(
-              'from should be same as current address'
-            );
-          break;
-      }
-    }
     // if the request comes into while user approving
     if (this.approval) {
       throw ethErrors.provider.userRejectedRequest(
