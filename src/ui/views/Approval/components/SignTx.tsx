@@ -132,7 +132,7 @@ const SignTx = ({ params, origin }) => {
         }, // set a mock nonce for check if dapp not set it
         origin,
         address,
-        tx.from !== tx.to
+        !(nonce && tx.from === tx.to)
       );
       setSecurityCheckStatus(res.decision);
       setSecurityCheckAlert(res.alert);
@@ -162,14 +162,14 @@ const SignTx = ({ params, origin }) => {
       },
       origin,
       address,
-      tx.from !== tx.to
+      !(nonce && tx.from === tx.to)
     );
     if (!gasLimit) {
       // use server response gas limit
       setGasLimit(res.recommend.gas);
     }
     setTxDetail(res);
-    if (tx.from !== tx.to) setRealNonce(res.recommend.nonce); // do not overwrite nonce if from === to(cancel transaction)
+    if (!(nonce && tx.from === tx.to)) setRealNonce(res.recommend.nonce); // do not overwrite nonce if from === to(cancel transaction)
     setPreprocessSuccess(res.pre_exec.success);
   };
 
