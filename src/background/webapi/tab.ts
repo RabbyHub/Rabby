@@ -14,7 +14,7 @@ browser.tabs.onRemoved.addListener((tabId) => {
   tabEvent.emit('tabRemove', tabId);
 });
 
-const createTab = async (url): Promise<number | undefined> => {
+const create = async (url): Promise<number | undefined> => {
   const tab = await browser.tabs.create({
     active: true,
     url,
@@ -26,9 +26,9 @@ const createTab = async (url): Promise<number | undefined> => {
 const openIndexPage = (route = ''): Promise<number | undefined> => {
   const url = `index.html${route && `#${route}`}`;
 
-  return createTab(url);
+  return create(url);
 };
 
 export default tabEvent;
 
-export { createTab, openIndexPage };
+export { openIndexPage };
