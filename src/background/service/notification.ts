@@ -51,9 +51,6 @@ class NotificationService {
   // currently it only support one approval at the same time
   requestApproval = async (data, winProps?): Promise<any> => {
     const NEED_CHECK_ADDRESS_METHODS = ['SignTx', 'SignText', 'SignTypedData'];
-    console.log('approval', this.approval);
-    console.log('data', data);
-    console.log('data.approvalComponent', data.approvalComponent);
     if (NEED_CHECK_ADDRESS_METHODS.includes(data.approvalComponent)) {
       const currentAddress = preferenceService
         .getCurrentAccount()
