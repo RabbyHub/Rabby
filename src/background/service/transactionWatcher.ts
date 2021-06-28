@@ -2,6 +2,7 @@ import { openapiService } from 'background/service';
 import { createPersistStore } from 'background/utils';
 import { notification } from 'background/webapi';
 import { CHAINS, CHAINS_ENUM } from 'consts';
+import { format } from 'utils';
 
 class Transaction {
   constructor(public hash: string, public chain: CHAINS_ENUM) {}
@@ -28,16 +29,15 @@ class TransactionWatcher {
 
   addTx = (
     id: string,
-    {
-      hash,
-      chain,
-      title,
-      message,
-    }: { hash: string; chain: CHAINS_ENUM; title?: string; message?: string }
+    { hash, chain }: { hash: string; chain: CHAINS_ENUM }
   ) => {
     this.store.pendingTx[id] = new Transaction(hash, chain);
-    const _title = title || `transaction on ${chain}`;
-    notification.create(hash, _title, message || 'submit');
+    const url = format(CHAINS[chain].scanLink, hash);
+    notification.create(
+      url,
+      'Transaction submitted',
+      'click to view more information'
+    );
   };
 
   checkStatus = async (id: string) => {
@@ -45,7 +45,7 @@ class TransactionWatcher {
       const { hash, chain } = this.store.pendingTx[id];
 
       return openapiService
-        .ethRpc(chain, {
+        .ethRpc(CHAINS[chain].serverId, {
           method: 'eth_getTransactionReceipt',
           params: [hash],
         })
@@ -55,14 +55,14 @@ class TransactionWatcher {
 
   notify = (id: string, txReceipt) => {
     const { hash, chain } = this.store.pendingTx[id];
-    const url = CHAINS[chain].scanLink.replace('{}', hash);
+    const url = format(CHAINS[chain].scanLink, hash);
 
-    const title = `transaction on ${chain}`;
-    const message = txReceipt.status === '0x1' ? 'confirmed' : 'failed';
+    const title = `Transaction ${
+      txReceipt.status === '0x1' ? 'completed' : 'failed'
+    }`;
 
-    notification.create(url, title, message);
+    notification.create(url, title, 'click to view more information');
 
-    console.log('-----', id, hash, txReceipt);
     delete this.store.pendingTx[id];
   };
 

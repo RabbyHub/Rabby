@@ -27,39 +27,56 @@ const createPersistStore = async <T extends object>({
     }
   }
 
-  const createProxy = <A extends object>(obj: A, cacheProxy = new Map()): A => {
-    return new Proxy(obj, {
+  const raw = Symbol('raw');
+
+  const createProxy = <A extends object>(
+    obj: A,
+    setCall,
+    cacheProxy = new Map()
+  ): A =>
+    new Proxy(obj, {
       get(target, prop) {
+        if (prop === raw) {
+          return target;
+        }
+
         const oldValue = target[prop];
         if (
           ['[object Object]', '[object Array]'].indexOf(
             Object.prototype.toString.call(oldValue)
           ) > -1
         ) {
-          return cacheProxy[oldValue] || createProxy(oldValue, cacheProxy);
+          if (!cacheProxy.has(oldValue)) {
+            cacheProxy.set(
+              oldValue,
+              createProxy(oldValue, setCall, cacheProxy)
+            );
+          }
+          return cacheProxy.get(oldValue);
         }
 
         return oldValue;
       },
       set(target, prop, value) {
         target[prop] = value;
-        persistStorage(name, target);
+        setCall(name, target);
 
         return true;
       },
-
       deleteProperty(target, prop) {
         if (Reflect.has(target, prop)) {
           Reflect.deleteProperty(target, prop);
-          persistStorage(name, target);
+          setCall(name, target);
         }
 
         return true;
       },
     });
-  };
 
-  return createProxy<T>(tpl);
+  const callback = () => persistStorage(name, result[raw]);
+  const result = createProxy<T>(tpl, callback);
+
+  return result;
 };
 
 export default createPersistStore;
