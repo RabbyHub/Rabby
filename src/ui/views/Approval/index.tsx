@@ -30,8 +30,8 @@ const Approval = () => {
     init();
   }, []);
 
-  const { aporovalComponent, params, origin, requestDefer } = approval;
-  const CurrentApprovalComponent = ApprovalComponent[aporovalComponent];
+  const { approvalComponent, params, origin, requestDefer } = approval;
+  const CurrentApprovalComponent = ApprovalComponent[approvalComponent];
 
   return (
     <div className="approval">
