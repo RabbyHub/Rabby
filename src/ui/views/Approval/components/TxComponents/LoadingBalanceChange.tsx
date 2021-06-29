@@ -5,7 +5,7 @@ const LoadingBalanceChange = () => {
   return (
     <div className="balance-change">
       <p className="section-title flex justify-between">
-        <span>Est. token balance changes</span>
+        <span>Est. token balance change</span>
       </p>
       <div className="gray-section-block balance-change-content">
         <>
