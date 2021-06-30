@@ -96,9 +96,15 @@ const Settings = () => {
   return (
     <div className="settings">
       <PageHeader>Settings</PageHeader>
-      <div className="field lock-wallet" onClick={lockWallet}>
+      <Button
+        block
+        size="large"
+        type="primary"
+        className="flex justify-center items-center lock-wallet"
+        onClick={lockWallet}
+      >
         <img src={IconLock} className="icon icon-lock" /> Lock
-      </div>
+      </Button>
       {renderData.map((data) => (
         <Field
           key={data.content}

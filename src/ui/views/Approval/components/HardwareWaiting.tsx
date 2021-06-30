@@ -1,6 +1,5 @@
 import React from 'react';
 import { Button } from 'antd';
-import clsx from 'clsx';
 import { useApproval, useWallet } from 'ui/utils';
 import { SvgIconTrezor, SvgIconLedger, SvgIconOnekey } from 'ui/assets';
 import { HARDWARE_KEYRING_TYPES, IS_AFTER_CHROME91 } from 'consts';
@@ -42,22 +41,16 @@ const Hardware = ({
     <div className="hardware-operation">
       <Icon />
       <h1 className="brand-name">{currentKeyringType.brandName}</h1>
-      <p
-        className={clsx(
-          'text-15',
-          'text-medium',
-          'text-gray-content',
-          'text-center',
-          'whitespace-pre-line',
-          {
-            'text-yellow': IS_AFTER_CHROME91 && !useLedgerLive,
-          }
-        )}
-      >
-        {IS_AFTER_CHROME91 && !useLedgerLive
-          ? 'Unable to proceed  due to a Chrome issue. \n Please delete and re-connect this address'
-          : 'Please proceed in your hardware wallet'}
-      </p>
+      {IS_AFTER_CHROME91 && !useLedgerLive ? (
+        <div className="text-yellow text-15 text-center whitespace-pre-line px-16 py-12 border-yellow border-opacity-20 border bg-yellow bg-opacity-10 rounded w-[360px] leading-5">
+          <div>Unable to proceed due to a Chrome issue.</div>
+          <div>Please delete and re-connect this address.</div>
+        </div>
+      ) : (
+        <p className="text-15 text-gray-content text-center">
+          Please proceed in your hardware wallet
+        </p>
+      )}
       <footer>
         <div className="action-buttons flex justify-center">
           <Button

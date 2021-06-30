@@ -81,6 +81,7 @@ const BalanceChange = ({
                 <span className="token-symbol">Total value change</span>
                 <span
                   className={clsx('usd-value-change', {
+                    'text-gray-subTitle': !data.usd_value_change,
                     green: isUSDValueChangePositive,
                     red: isUSDValueChangeNegative,
                   })}
