@@ -4,6 +4,7 @@ const TSConfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 const ESLintWebpackPlugin = require('eslint-webpack-plugin');
 const tsImportPluginFactory = require('ts-import-plugin');
 const AssetReplacePlugin = require('./plugins/AssetReplacePlugin');
+const { version } = require('../_raw/manifest.json');
 
 const paths = require('./paths');
 
@@ -161,6 +162,11 @@ const config = {
     }),
     new AssetReplacePlugin({
       '#PAGEPROVIDER#': 'pageProvider',
+    }),
+    new webpack.DefinePlugin({
+      'process.env.version': JSON.stringify(
+        `version: ${version} / ${new Date().toISOString()}`
+      ),
     }),
   ],
   resolve: {

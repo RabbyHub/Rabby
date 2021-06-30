@@ -117,6 +117,9 @@ const Settings = () => {
           {data.content}
         </Field>
       ))}
+      <div className="text-12 text-gray-comment text-center mt-40">
+        {process.env.version}
+      </div>
       <OpenApiModal
         visible={showOpenApiModal}
         onFinish={() => setShowOpenApiModal(false)}
