@@ -7,10 +7,12 @@ import {
   SecurityCheckResponse,
   SecurityCheckDecision,
 } from 'background/service/openapi';
+import { Modal } from 'ui/component';
 import SecurityCheckBar from './SecurityCheckBar';
 import SecurityCheckDetail from './SecurityCheckDetail';
 import AccountCard from './AccountCard';
 import IconQuestionMark from 'ui/assets/question-mark-gray.svg';
+import IconArrowRight from 'ui/assets/arrow-right-gray.svg';
 
 interface SignTextProps {
   data: string[];
@@ -91,11 +93,30 @@ const SignText = ({ params }: { params: SignTextProps }) => {
     resolveApproval({});
   };
 
+  const handleViewRawClick = () => {
+    Modal.info({
+      title: 'Transaction detail',
+      centered: true,
+      content: hexData,
+      cancelText: null,
+      okText: null,
+      className: 'font-roboto-mono',
+    });
+  };
+
   return (
     <>
       <AccountCard />
       <div className="approval-text">
-        <p className="section-title">Sign Text</p>
+        <p className="section-title">
+          Sign Text
+          <span
+            className="float-right text-gray-comment text-12 cursor-pointer flex items-center"
+            onClick={handleViewRawClick}
+          >
+            view Raw <img src={IconArrowRight} />
+          </span>
+        </p>
         <div className="text-detail-wrapper gray-section-block">
           <div className="text-detail text-gray-subTitle">{signText}</div>
           {explain && (

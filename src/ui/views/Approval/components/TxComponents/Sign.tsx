@@ -4,16 +4,19 @@ import ClipboardJS from 'clipboard';
 import { AddressViewer } from 'ui/component';
 import { CHAINS, CHAINS_ENUM } from 'consts';
 import { ExplainTxResponse } from 'background/service/openapi';
+import { Modal } from 'ui/component';
 import BalanceChange from './BalanceChange';
 import IconCopy from 'ui/assets/copy-no-border.svg';
 import IconSuccess from 'ui/assets/success.svg';
+import IconArrowRight from 'ui/assets/arrow-right-gray.svg';
 
 interface SignProps {
   data: ExplainTxResponse;
   chainEnum: CHAINS_ENUM;
+  raw: Record<string, string>;
 }
 
-const Sign = ({ data, chainEnum }: SignProps) => {
+const Sign = ({ data, chainEnum, raw }: SignProps) => {
   const detail = data.type_call!;
   const chain = CHAINS[chainEnum];
   const handleCopySpender = () => {
@@ -33,9 +36,34 @@ const Sign = ({ data, chainEnum }: SignProps) => {
     });
   };
 
+  const handleViewRawClick = () => {
+    try {
+      const content = JSON.stringify(raw, null, 4);
+
+      Modal.info({
+        title: 'Transaction detail',
+        centered: true,
+        content,
+        cancelText: null,
+        okText: null,
+        className: 'font-roboto-mono',
+      });
+    } catch (error) {
+      console.log('stringify raw fail', error);
+    }
+  };
+
   return (
     <div className="sign">
-      <p className="section-title">Sign {chain.name} transaction</p>
+      <p className="section-title">
+        Sign {chain.name} transaction
+        <span
+          className="float-right text-gray-comment text-12 cursor-pointer flex items-center"
+          onClick={handleViewRawClick}
+        >
+          view Raw <img src={IconArrowRight} />
+        </span>
+      </p>
       <div className="gray-section-block common-detail-block">
         <div className="block-field">
           <span className="label">Protocol</span>

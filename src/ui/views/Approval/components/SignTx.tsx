@@ -30,10 +30,12 @@ const TxTypeComponent = ({
   txDetail,
   chain,
   isReady,
+  raw,
 }: {
   txDetail: ExplainTxResponse;
   chain: Chain;
   isReady: boolean;
+  raw: Record<string, string>;
 }) => {
   if (!isReady) return <Loading chainEnum={chain.enum} />;
   if (txDetail.type_deploy_contract)
@@ -47,7 +49,7 @@ const TxTypeComponent = ({
   if (txDetail.type_send)
     return <Send data={txDetail} chainEnum={chain.enum} />;
   if (txDetail.type_call)
-    return <Sign data={txDetail} chainEnum={chain.enum} />;
+    return <Sign data={txDetail} raw={raw} chainEnum={chain.enum} />;
   return <></>;
 };
 
@@ -269,6 +271,7 @@ const SignTx = ({ params, origin }) => {
                 isReady={isReady}
                 txDetail={txDetail}
                 chain={chain}
+                raw={params.data}
               />
             )}
             <GasSelector
