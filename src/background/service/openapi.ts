@@ -172,10 +172,12 @@ interface RPCResponse<T> {
   };
 }
 
+const maxRPS = 25;
+
 class OpenApiService {
   store!: OpenApiStore;
 
-  request = rateLimit(axios.create(), { maxRPS: 25 });
+  request = rateLimit(axios.create(), { maxRPS });
 
   setHost = async (host: string) => {
     this.store.host = host;
@@ -273,7 +275,7 @@ class OpenApiService {
       axios.create({
         baseURL: this.store.host,
       }),
-      { maxRPS: 25 }
+      { maxRPS }
     );
     this.request.interceptors.response.use((response) => {
       const code = response.data?.err_code || response.data?.error_code;

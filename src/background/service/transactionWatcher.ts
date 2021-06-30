@@ -45,18 +45,22 @@ class TransactionWatcher {
 
   checkStatus = async (id: string) => {
     if (this.store.pendingTx[id]) {
-      const { hash, chain } = this.store.pendingTx[id];
-
-      return openapiService
-        .ethRpc(CHAINS[chain].serverId, {
-          method: 'eth_getTransactionReceipt',
-          params: [hash],
-        })
-        .catch(() => null);
+      return;
     }
+    const { hash, chain } = this.store.pendingTx[id];
+
+    return openapiService
+      .ethRpc(CHAINS[chain].serverId, {
+        method: 'eth_getTransactionReceipt',
+        params: [hash],
+      })
+      .catch(() => null);
   };
 
   notify = (id: string, txReceipt) => {
+    if (this.store.pendingTx[id]) {
+      return;
+    }
     const { hash, chain } = this.store.pendingTx[id];
     const url = format(CHAINS[chain].scanLink, hash);
 
@@ -67,7 +71,7 @@ class TransactionWatcher {
     notification.create(url, title, 'click to view more information');
     this.store.pendingTx = Object.entries(this.store.pendingTx).reduce(
       (m, [k, v]) => {
-        if (k !== id) {
+        if (k !== id && v) {
           m[k] = v;
         }
 
