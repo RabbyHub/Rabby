@@ -12,12 +12,12 @@
       p {
         margin: 0;
         &:nth-child(1) {
-          color: #3B3E4A;
+          color: #3b3e4a;
           font-weight: 500;
           line-height: 15px;
         }
         &:nth-child(2) {
-          color: #818A99;
+          color: #818a99;
           line-height: 14px;
         }
       }
@@ -29,11 +29,21 @@
 }
 
 .ant-modal-confirm.disable-chain {
+  .ant-modal-content {
+    background-color: white;
+  }
   .ant-modal-confirm-title {
     font-size: 15px;
     line-height: 18px;
   }
   .ant-modal-confirm-content {
-    display: none;
+    margin-top: 0;
+  }
+
+  .ant-modal-confirm-btns {
+    float: none;
+    width: 304px;
+    margin-left: auto;
+    margin-right: auto;
   }
 }

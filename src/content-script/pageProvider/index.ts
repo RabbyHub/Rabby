@@ -10,11 +10,13 @@ import DedupePromise from './dedupePromise';
 declare const channelName;
 
 const log = (event, ...args) => {
-  console.log(
-    `%c [rabby] (${new Date().toTimeString().substr(0, 8)}) ${event}`,
-    'font-weight: bold; background-color: #7d6ef9; color: white;',
-    ...args
-  );
+  if (process.env.NODE_ENV !== 'production') {
+    console.log(
+      `%c [rabby] (${new Date().toTimeString().substr(0, 8)}) ${event}`,
+      'font-weight: bold; background-color: #7d6ef9; color: white;',
+      ...args
+    );
+  }
 };
 
 export class EthereumProvider extends EventEmitter {

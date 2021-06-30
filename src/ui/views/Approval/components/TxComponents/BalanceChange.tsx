@@ -25,7 +25,7 @@ const BalanceChange = ({
   return (
     <div className="balance-change">
       <p className="section-title flex justify-between">
-        <span>Est. token balance changes</span>
+        <span>Est. token balance change</span>
       </p>
       {isSuccess && (
         <div className="gray-section-block balance-change-content">
@@ -81,6 +81,7 @@ const BalanceChange = ({
                 <span className="token-symbol">Total value change</span>
                 <span
                   className={clsx('usd-value-change', {
+                    'text-gray-subTitle': !data.usd_value_change,
                     green: isUSDValueChangePositive,
                     red: isUSDValueChangeNegative,
                   })}

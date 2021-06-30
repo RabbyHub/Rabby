@@ -14,7 +14,6 @@ browser.windows.onRemoved.addListener((winId) => {
 });
 
 const BROWSER_HEADER = 80;
-const BROWSER_RIGHT = 40;
 const WINDOW_SIZE = {
   width: 400 + (IS_WINDOWS ? 14 : 0), // idk why windows cut the width.
   height: 600,
@@ -26,7 +25,7 @@ const create = async ({ url, ...rest }): Promise<number | undefined> => {
   } as Windows.GetInfo);
 
   const top = cTop! + BROWSER_HEADER;
-  const left = cLeft! + width! - WINDOW_SIZE.width - BROWSER_RIGHT;
+  const left = cLeft! + width! - WINDOW_SIZE.width;
 
   const win = await browser.windows.create({
     focused: true,
