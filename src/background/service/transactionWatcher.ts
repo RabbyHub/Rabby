@@ -44,7 +44,7 @@ class TransactionWatcher {
   };
 
   checkStatus = async (id: string) => {
-    if (this.store.pendingTx[id]) {
+    if (!this.store.pendingTx[id]) {
       return;
     }
     const { hash, chain } = this.store.pendingTx[id];
@@ -58,7 +58,7 @@ class TransactionWatcher {
   };
 
   notify = (id: string, txReceipt) => {
-    if (this.store.pendingTx[id]) {
+    if (!this.store.pendingTx[id]) {
       return;
     }
     const { hash, chain } = this.store.pendingTx[id];
