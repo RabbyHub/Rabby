@@ -69,7 +69,9 @@ const SecurityCheckDetail = ({
         <div className="container">
           {data.forbidden_list.length > 0 && (
             <div className="forbidden flex items-start">
-              <div className="symbol">Forbidden</div>
+              <div className="w-[70px]">
+                <div className="symbol">Forbidden</div>
+              </div>
               <ul>
                 {data.forbidden_list.map((item) => (
                   <li key={`forbidden_${item.id}`}>
@@ -81,7 +83,9 @@ const SecurityCheckDetail = ({
           )}
           {data.danger_list.length > 0 && (
             <div className="danger flex items-start">
-              <div className="symbol">Danger</div>
+              <div className="w-[70px]">
+                <div className="symbol">Danger</div>
+              </div>
               <ul>
                 {data.danger_list.map((item) => (
                   <li key={`danger_${item.id}`}>
@@ -93,7 +97,9 @@ const SecurityCheckDetail = ({
           )}
           {data.warning_list.length > 0 && (
             <div className="warning flex items-start">
-              <div className="symbol">Warning</div>
+              <div className="w-[70px]">
+                <div className="symbol">Warning</div>
+              </div>
               <ul>
                 {data.warning_list.map((item) => (
                   <li key={`warning_${item.id}`}>

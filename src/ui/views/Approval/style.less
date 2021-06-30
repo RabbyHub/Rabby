@@ -365,6 +365,7 @@
     flex-direction: column;
     align-items: center;
     .icon-hardware {
+      border-radius: 50%;
       border: 0.5px solid #D8DFEB;
       width: 128px;
       height: 128px;
@@ -532,6 +533,7 @@
     flex: 1;
     overflow: auto;
     .symbol {
+      display: inline-block;
       padding: 4px 8px;
       border-radius: 10px;
       color: #fff;
@@ -555,7 +557,8 @@
       }
     }
     ul {
-      margin-left: 16px;
+      flex: 1;
+      margin-left: 8px;
       margin-bottom: 20px;
       border-bottom: 0.5px solid #D8DFEB;
       li {
@@ -573,7 +576,7 @@
     position: relative;
     color: #818A99;
     font-size: 14px;
-    padding-top: 20px;
+    padding-top: 4px;
     &::before {
       content: '';
       height: 0.5px;
@@ -584,6 +587,7 @@
       top: 0;
     }
     .input-password {
+      margin-top: 12px;
       margin-bottom: 20px;
       p {
         margin-bottom: 8px;

@@ -1,25 +1,22 @@
-@import  '../../style/var.less';
+@import '../../style/var.less';
 
 .settings {
   padding: 0 28px;
   min-height: 100vh;
-  background-color: #F0F2F5;
+  background-color: #f0f2f5;
+  .lock-wallet {
+    margin-bottom: 32px;
+    font-weight: 500;
+    height: 56px;
+    .icon-lock {
+      width: 16px;
+      height: 16px;
+      margin-right: 8px;
+      margin-left: -24px;
+    }
+  }
   .field {
     margin-bottom: 12px;
-    &.lock-wallet {
-      justify-content: center;
-      background-color: @primary-text-color;
-      color: white;
-      margin-bottom: 32px;
-      font-weight: 500;
-      cursor: pointer;
-      .icon-lock {
-        width: 16px;
-        height: 16px;
-        margin-right: 8px;
-        margin-left: -24px;
-      }
-    }
     .left-icon {
       .icon {
         width: 20px;
