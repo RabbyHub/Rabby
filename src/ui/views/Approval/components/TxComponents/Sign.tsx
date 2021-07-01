@@ -46,7 +46,7 @@ const Sign = ({ data, chainEnum, raw }: SignProps) => {
         content,
         cancelText: null,
         okText: null,
-        className: 'font-roboto-mono',
+        className: 'transaction-detail',
       });
     } catch (error) {
       console.log('stringify raw fail', error);
