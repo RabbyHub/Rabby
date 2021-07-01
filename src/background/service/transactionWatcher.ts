@@ -14,7 +14,7 @@ interface TransactionWatcherStore {
 
 class TransactionWatcher {
   store!: TransactionWatcherStore;
-  poolTimer = 0;
+  poolTimer: number | null = null;
 
   constructor(private poolInterval) {}
 
@@ -82,9 +82,9 @@ class TransactionWatcher {
   };
 
   roll = () => {
-    if (this.poolTimer) {
-      clearTimeout(this.poolInterval);
-      this.poolInterval = 0;
+    if (this.poolTimer !== null) {
+      clearTimeout(this.poolTimer);
+      this.poolTimer = null;
     }
 
     Promise.all(
@@ -100,7 +100,7 @@ class TransactionWatcher {
         });
       })
       .finally(() => {
-        this.poolTimer = 0;
+        this.poolTimer = null;
       });
 
     this.poolTimer = window.setTimeout(() => {
