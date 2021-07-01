@@ -5,8 +5,24 @@ import { CHAINS, CHAINS_ENUM } from 'consts';
 import { format } from 'utils';
 
 class Transaction {
-  constructor(public hash: string, public chain: CHAINS_ENUM) {}
+  createdTime = 0;
+  queryingTimer: number | null = null;
+
+  constructor(
+    public nonce: string,
+    public hash: string,
+    public chain: CHAINS_ENUM
+  ) {
+    this.createdTime = +new Date();
+  }
 }
+
+// [interval, timeout]
+const QUERY_FREQUENCY = [
+  [60 * 1000, 1000],
+  [10 * 60 * 1000, 5 * 1000],
+  [60 * 60 * 1000, 30 * 1000],
+];
 
 interface TransactionWatcherStore {
   pendingTx: Record<string, Transaction>;
@@ -14,7 +30,7 @@ interface TransactionWatcherStore {
 
 class TransactionWatcher {
   store!: TransactionWatcherStore;
-  poolTimer = 0;
+  poolTimer: number | null = null;
 
   constructor(private poolInterval) {}
 
@@ -29,18 +45,21 @@ class TransactionWatcher {
 
   addTx = (
     id: string,
-    { hash, chain }: { hash: string; chain: CHAINS_ENUM }
+    { hash, chain, nonce }: { hash: string; chain: CHAINS_ENUM; nonce: string }
   ) => {
     this.store.pendingTx = {
       ...this.store.pendingTx,
-      [id]: new Transaction(hash, chain),
+      [id]: new Transaction(nonce, hash, chain),
     };
+
     const url = format(CHAINS[chain].scanLink, hash);
     notification.create(
       url,
       'Transaction submitted',
       'click to view more information'
     );
+
+    this._scheduleQuerying(id);
   };
 
   checkStatus = async (id: string) => {
@@ -69,43 +88,67 @@ class TransactionWatcher {
     }`;
 
     notification.create(url, title, 'click to view more information');
+  };
+
+  roll = () => {
+    // make a copy
+    const currentList = { ...this.store.pendingTx };
+
+    Object.keys(currentList).forEach(this._scheduleQuerying);
+  };
+
+  _scheduleQuerying = (id) => {
+    const tx = this.store.pendingTx[id];
+
+    if (!tx) {
+      return;
+    }
+
+    if (tx.queryingTimer) {
+      clearTimeout(tx.queryingTimer);
+      tx.queryingTimer = null;
+    }
+
+    const nextTimeout = tx.createdTime && this._findFrequency(tx.createdTime);
+
+    if (nextTimeout) {
+      tx.queryingTimer = window.setTimeout(() => {
+        this.checkStatus(id).then((txReceipt) => {
+          tx.queryingTimer = null;
+
+          if (txReceipt) {
+            this.notify(id, txReceipt);
+            this._removeTx(id);
+          } else {
+            this._scheduleQuerying(id);
+          }
+        });
+      }, nextTimeout);
+    } else {
+      this._removeTx(id);
+    }
+  };
+
+  _findFrequency = (createTime) => {
+    const now = +new Date();
+
+    return QUERY_FREQUENCY.find(
+      ([sinceCreate]) => now - createTime < sinceCreate
+    )?.[1];
+  };
+
+  _removeTx = (id: string) => {
     this.store.pendingTx = Object.entries(this.store.pendingTx).reduce(
       (m, [k, v]) => {
         if (k !== id && v) {
-          m[k] = v;
+          const { queryingTimer, ...rest } = v;
+          m[k] = rest;
         }
 
         return m;
       },
       {}
     );
-  };
-
-  roll = () => {
-    if (this.poolTimer) {
-      clearTimeout(this.poolInterval);
-      this.poolInterval = 0;
-    }
-
-    Promise.all(
-      Object.keys(this.store.pendingTx).map((id) =>
-        this.checkStatus(id).then((txReceipt) => [id, txReceipt])
-      )
-    )
-      .then((txs) => {
-        txs.forEach(([id, txReceipt]) => {
-          if (txReceipt) {
-            this.notify(id, txReceipt);
-          }
-        });
-      })
-      .finally(() => {
-        this.poolTimer = 0;
-      });
-
-    this.poolTimer = window.setTimeout(() => {
-      this.roll();
-    }, this.poolInterval * 1000);
   };
 }
 
