@@ -105,7 +105,7 @@ class TransactionWatcher {
       tx.queryingTimer = null;
     }
 
-    const nextTimeout = this._findFrequency(tx.createdTime);
+    const nextTimeout = tx.createdTime && this._findFrequency(tx.createdTime);
 
     if (nextTimeout) {
       tx.queryingTimer = window.setTimeout(() => {
@@ -133,11 +133,12 @@ class TransactionWatcher {
     )?.[1];
   };
 
-  _removeTx = ([id]: string) => {
+  _removeTx = (id: string) => {
     this.store.pendingTx = Object.entries(this.store.pendingTx).reduce(
       (m, [k, v]) => {
         if (k !== id && v) {
-          m[k] = v;
+          const { queryingTimer, ...rest } = v;
+          m[k] = rest;
         }
 
         return m;
