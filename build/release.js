@@ -13,7 +13,7 @@ async function release() {
   const manifest = fs.readJSONSync(manifestPath);
   manifest.version = input.version;
   fs.writeJSONSync(manifestPath, manifest, { spaces: 2 });
-  shell.exec(`npm version ${input.version}`);
+  shell.exec(`npm version ${input.version} --force`);
   shell.exec('git add -A');
   shell.exec(`git commit -m [release] ${input.version}`);
   shell.exec(`git push origin refs/tags/v${input.version}`);
