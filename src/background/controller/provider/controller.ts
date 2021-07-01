@@ -154,11 +154,14 @@ class ProviderController extends BaseController {
     });
 
     const chain = permissionService.getConnectedSite(origin)!.chain;
-    transactionWatchService.addTx(`${approvalRes.nonce}_${chain}`, {
-      nonce: txParams.nonce,
-      hash,
-      chain,
-    });
+    transactionWatchService.addTx(
+      `${txParams.from}_${approvalRes.nonce}_${chain}`,
+      {
+        nonce: approvalRes.nonce,
+        hash,
+        chain,
+      }
+    );
 
     return hash;
   };
