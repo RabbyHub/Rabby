@@ -89,17 +89,17 @@ class PreferenceService {
 
   getPopupOpen = () => this.popupOpen;
 
-  updateAddressBalance = (address, data: TotalBalanceResponse) => {
+  updateAddressBalance = (address: string, data: TotalBalanceResponse) => {
     const balanceMap = this.store.balanceMap || {};
     this.store.balanceMap = {
       ...balanceMap,
-      [address]: data,
+      [address.toLowerCase()]: data,
     };
   };
 
   getAddressBalance = (address: string): TotalBalanceResponse | null => {
     const balanceMap = this.store.balanceMap || {};
-    return balanceMap[address] || null;
+    return balanceMap[address.toLowerCase()] || null;
   };
 
   getExternalLinkAck = (): boolean => {
