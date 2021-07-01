@@ -426,7 +426,7 @@ class OpenApiService {
     const config = this.store.config.recommend_chains;
     const { data } = await this.request[config.method](config.path, {
       params: {
-        user_addr: address.toLowerCase(),
+        user_addr: address,
         origin,
       },
     });
@@ -437,7 +437,7 @@ class OpenApiService {
     const config = this.store.config.get_total_balance;
     const { data } = await this.request[config.method](config.path, {
       params: {
-        id: address.toLowerCase(),
+        id: address,
       },
     });
     return data;
@@ -449,7 +449,7 @@ class OpenApiService {
     const config = this.store.config.get_pending_tx_count;
     const { data } = await this.request[config.method](config.path, {
       params: {
-        user_addr: address.toLowerCase(),
+        user_addr: address,
       },
     });
     return data;
@@ -462,7 +462,7 @@ class OpenApiService {
     const config = this.store.config.check_origin;
     const { data } = await this.request[config.method](config.path, {
       params: {
-        user_addr: address.toLowerCase(),
+        user_addr: address,
         origin,
       },
     });
@@ -477,7 +477,7 @@ class OpenApiService {
   ): Promise<SecurityCheckResponse> => {
     const config = this.store.config.check_text;
     const { data } = await this.request[config.method](config.path, {
-      user_addr: address.toLowerCase(),
+      user_addr: address,
       origin,
       text,
     });
@@ -492,7 +492,7 @@ class OpenApiService {
   ): Promise<SecurityCheckResponse> => {
     const config = this.store.config.check_tx;
     const { data } = await this.request[config.method](config.path, {
-      user_addr: address.toLowerCase(),
+      user_addr: address,
       origin,
       tx,
       update_nonce,
@@ -510,7 +510,7 @@ class OpenApiService {
     const config = this.store.config.explain_tx;
     const { data } = await this.request[config.method](config.path, {
       tx,
-      user_addr: address.toLowerCase(),
+      user_addr: address,
       origin,
       update_nonce,
     });
@@ -534,7 +534,7 @@ class OpenApiService {
   ): Promise<{ comment: string }> => {
     const config = this.store.config.explain_text;
     const { data } = await this.request[config.method](config.path, {
-      user_addr: address.toLowerCase(),
+      user_addr: address,
       origin,
       text,
     });

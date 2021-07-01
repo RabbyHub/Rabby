@@ -204,6 +204,7 @@ export class WalletController extends BaseController {
 
   removeAddress = async (address: string, type: string) => {
     await keyringService.removeAccount(address, type);
+    preferenceService.removeAddressBalance(address);
     const current = preferenceService.getCurrentAccount();
     if (current?.address === address && current.type === type) {
       this.resetCurrentAccount();
