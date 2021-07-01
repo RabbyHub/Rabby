@@ -6,7 +6,6 @@ import { format } from 'utils';
 
 class Transaction {
   createdTime = 0;
-  queryingTimer: number | null = null;
 
   constructor(
     public nonce: string,
@@ -30,9 +29,7 @@ interface TransactionWatcherStore {
 
 class TransactionWatcher {
   store!: TransactionWatcherStore;
-  poolTimer: number | null = null;
-
-  constructor(private poolInterval) {}
+  timers = {};
 
   init = async () => {
     this.store = await createPersistStore<TransactionWatcherStore>({
@@ -104,22 +101,21 @@ class TransactionWatcher {
       return;
     }
 
-    if (tx.queryingTimer) {
-      clearTimeout(tx.queryingTimer);
-      tx.queryingTimer = null;
+    if (this.timers[id] !== null && typeof this.timers[id] !== 'undefined') {
+      clearTimeout(this.timers[id]);
+      this.timers[id] = null;
     }
 
     const nextTimeout = tx.createdTime && this._findFrequency(tx.createdTime);
 
     if (nextTimeout) {
-      tx.queryingTimer = window.setTimeout(() => {
+      this.timers[id] = window.setTimeout(() => {
         this.checkStatus(id).then((txReceipt) => {
-          tx.queryingTimer = null;
-
           if (txReceipt) {
             this.notify(id, txReceipt);
             this._removeTx(id);
           } else {
+            this.timers[id] = null;
             this._scheduleQuerying(id);
           }
         });
@@ -138,11 +134,11 @@ class TransactionWatcher {
   };
 
   _removeTx = (id: string) => {
+    delete this.timers[id];
     this.store.pendingTx = Object.entries(this.store.pendingTx).reduce(
       (m, [k, v]) => {
         if (k !== id && v) {
-          const { queryingTimer, ...rest } = v;
-          m[k] = rest;
+          m[k] = v;
         }
 
         return m;
@@ -152,4 +148,4 @@ class TransactionWatcher {
   };
 }
 
-export default new TransactionWatcher(5);
+export default new TransactionWatcher();
