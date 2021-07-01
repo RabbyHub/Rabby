@@ -30,7 +30,7 @@ interface TransactionWatcherStore {
 
 class TransactionWatcher {
   store!: TransactionWatcherStore;
-  poolTimer = 0;
+  poolTimer: number | null = null;
 
   constructor(private poolInterval) {}
 
