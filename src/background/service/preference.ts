@@ -91,10 +91,24 @@ class PreferenceService {
 
   updateAddressBalance = (address: string, data: TotalBalanceResponse) => {
     const balanceMap = this.store.balanceMap || {};
+    const key = address.toLowerCase();
+    if (!(key in balanceMap) && data.total_usd_value <= 0) {
+      // skip if no balance before and current total value is 0
+      return;
+    }
     this.store.balanceMap = {
       ...balanceMap,
       [address.toLowerCase()]: data,
     };
+  };
+
+  removeAddressBalance = (address: string) => {
+    const key = address.toLowerCase();
+    if (key in this.store.balanceMap) {
+      const map = this.store.balanceMap;
+      delete map[key];
+      this.store.balanceMap = map;
+    }
   };
 
   getAddressBalance = (address: string): TotalBalanceResponse | null => {
