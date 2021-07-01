@@ -88,7 +88,6 @@ class TransactionWatcher {
     }`;
 
     notification.create(url, title, 'click to view more information');
-    this._removeTx(id);
   };
 
   roll = () => {
@@ -115,6 +114,7 @@ class TransactionWatcher {
 
           if (txReceipt) {
             this.notify(id, txReceipt);
+            this._removeTx(id);
           } else {
             this._scheduleQuerying(id);
           }
