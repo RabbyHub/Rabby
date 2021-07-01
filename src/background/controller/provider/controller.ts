@@ -22,6 +22,18 @@ interface ApprovalRes extends Tx {
   uiRequestComponent?: string;
 }
 
+const v1SignTypedDataVlidation = ({
+  data: {
+    params: [_, from],
+  },
+}) => {
+  const currentAddress = preferenceService
+    .getCurrentAccount()
+    ?.address.toLowerCase();
+  if (from.toLowerCase() !== currentAddress)
+    throw ethErrors.rpc.invalidParams('from should be same as current address');
+};
+
 const signTypedDataVlidation = ({
   data: {
     params: [from, _],
@@ -208,14 +220,14 @@ class ProviderController extends BaseController {
     );
   };
 
-  @Reflect.metadata('APPROVAL', ['SignTypedData', signTypedDataVlidation])
+  @Reflect.metadata('APPROVAL', ['SignTypedData', v1SignTypedDataVlidation])
   ethSignTypedData = async ({
     data: {
       params: [data, from],
     },
   }) => this._signTypedData(from, data, 'V1');
 
-  @Reflect.metadata('APPROVAL', ['SignTypedData', signTypedDataVlidation])
+  @Reflect.metadata('APPROVAL', ['SignTypedData', v1SignTypedDataVlidation])
   ethSignTypedDataV1 = async ({
     data: {
       params: [data, from],

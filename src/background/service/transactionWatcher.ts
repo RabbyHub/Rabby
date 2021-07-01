@@ -100,6 +100,10 @@ class TransactionWatcher {
   _scheduleQuerying = (id) => {
     const tx = this.store.pendingTx[id];
 
+    if (!tx) {
+      return;
+    }
+
     if (tx.queryingTimer) {
       clearTimeout(tx.queryingTimer);
       tx.queryingTimer = null;

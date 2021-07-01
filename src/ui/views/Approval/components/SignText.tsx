@@ -100,7 +100,7 @@ const SignText = ({ params }: { params: SignTextProps }) => {
       content: hexData,
       cancelText: null,
       okText: null,
-      className: 'font-roboto-mono',
+      className: 'transaction-detail',
     });
   };
 
