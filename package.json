@@ -7,7 +7,8 @@
     "build:dev": "npm run clean && TAILWIND_MODE=watch webpack --progress --env config=dev",
     "build:pro": "npm run clean && webpack --progress --env config=pro",
     "lint:fix": "eslint --fix --ext .js,.jsx,.ts,.tsx ./src",
-    "test": "jest"
+    "test": "jest",
+    "pub": "node build/release.js"
   },
   "dependencies": {
     "@metamask/eth-ledger-bridge-keyring": "^0.6.0",
