@@ -175,10 +175,9 @@ export enum TX_TYPE_ENUM {
   SIGN_TX = 5,
 }
 
-// ref: https://github.com/ethereum/yellowpaper/blob/fa00ff14c2c44198635d7b93f848fc51ca03fa39/Paper.tex#L1833
-export const DEFAULT_GAS_LIMIT = '0x5208';
+export const IS_CHROME = /Chrome\//i.test(navigator.userAgent);
 
-export const IS_CHROME = /Chrome\//.test(navigator.userAgent);
+export const IS_FIREFOX = /Firefox\//i.test(navigator.userAgent);
 
 let chromeVersion: number | null = null;
 

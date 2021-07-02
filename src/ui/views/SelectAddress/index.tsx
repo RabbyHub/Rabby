@@ -7,6 +7,7 @@ import {
   Spin,
 } from 'ui/component';
 import { useWallet, useWalletRequest } from 'ui/utils';
+import { HARDWARE_KEYRING_TYPES } from 'consts';
 
 const SelectAddress = () => {
   const history = useHistory();
@@ -52,6 +53,9 @@ const SelectAddress = () => {
 
   useEffect(() => {
     init();
+    return () => {
+      keyring.cleanUp();
+    };
   }, []);
 
   const onSubmit = async ({ selectedAddressIndexes }) => {
@@ -60,6 +64,10 @@ const SelectAddress = () => {
       await wallet.addKeyring(keyring);
     } else {
       await wallet.unlockHardwareAccount(keyring, selectedAddressIndexes);
+    }
+
+    if (keyring.type === HARDWARE_KEYRING_TYPES.Ledger && keyring.isWebUSB) {
+      await keyring.cleanUp();
     }
 
     history.replace({

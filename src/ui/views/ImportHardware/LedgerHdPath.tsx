@@ -1,7 +1,9 @@
 import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
+import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
 import { StrayPageWithButton, FieldCheckbox } from 'ui/component';
 import { useWallet } from 'ui/utils';
+import { IS_AFTER_CHROME91 } from 'consts';
 
 const LEDGER_LIVE_PATH = "m/44'/60'/0'/0/0";
 const MEW_PATH = "m/44'/60'/0'";
@@ -25,10 +27,17 @@ const LedgerHdPath = () => {
     }
     setSpin(true);
     const useLedgerLive = wallet.isUseLedgerLive();
+    const isSupportWebUSB = await TransportWebUSB.isSupported();
+    const keyring = wallet.connectHardware('LEDGER', currentPath);
     try {
-      const keyring = await wallet.connectHardware('LEDGER', currentPath);
       if (useLedgerLive) {
         await keyring.updateTransportMethod(true);
+        keyring.useWebUSB(false);
+      } else if (IS_AFTER_CHROME91 && isSupportWebUSB) {
+        await keyring.cleanUp();
+        keyring.useWebUSB(true);
+        const transport = await TransportWebUSB.create();
+        await transport.close();
       }
       await keyring.unlock();
       setSpin(false);
