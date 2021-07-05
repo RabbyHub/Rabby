@@ -14,7 +14,7 @@ import {
 import { openIndexPage } from 'background/webapi/tab';
 import { KEYRING_CLASS, DisplayedKeryring } from 'background/service/keyring';
 import BaseController from './base';
-import { CHAINS_ENUM, CHAINS, KEYRING_TYPE } from 'consts';
+import { CHAINS_ENUM, CHAINS } from 'consts';
 import { Account } from '../service/preference';
 import { ConnectedSite } from '../service/permission';
 import DisplayKeyring from '../service/keyring/display';
