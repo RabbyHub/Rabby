@@ -1,5 +1,6 @@
 import React from 'react';
 import { Button } from 'antd';
+import { useTranslation } from 'react-i18next';
 import { useApproval, useWallet } from 'ui/utils';
 import { SvgIconTrezor, SvgIconLedger, SvgIconOnekey } from 'ui/assets';
 import { HARDWARE_KEYRING_TYPES, IS_AFTER_CHROME91 } from 'consts';
@@ -12,6 +13,7 @@ const Hardware = ({
   requestDefer: Promise<any>;
 }) => {
   const [, resolveApproval, rejectApproval] = useApproval();
+  const { t } = useTranslation();
   const { type } = params;
   const currentKeyringType = Object.keys(HARDWARE_KEYRING_TYPES)
     .map((key) => HARDWARE_KEYRING_TYPES[key])
@@ -43,12 +45,12 @@ const Hardware = ({
       <h1 className="brand-name">{currentKeyringType.brandName}</h1>
       {IS_AFTER_CHROME91 && !useLedgerLive ? (
         <div className="text-yellow text-15 text-center whitespace-pre-line px-16 py-12 border-yellow border-opacity-20 border bg-yellow bg-opacity-10 rounded w-[360px] leading-5">
-          <div>Unable to proceed due to a Chrome issue.</div>
-          <div>Please delete and re-connect this address.</div>
+          <div>{t('ledgerWebUSBSignAlertPart1')}</div>
+          <div>{t('ledgerWebUSBSignAlertPart2')}</div>
         </div>
       ) : (
         <p className="text-15 text-gray-content text-center">
-          Please proceed in your hardware wallet
+          {t('Please proceed in your hardware wallet')}
         </p>
       )}
       <footer>
@@ -59,7 +61,7 @@ const Hardware = ({
             className="w-[172px]"
             onClick={handleCancel}
           >
-            Cancel
+            {t('Cancel')}
           </Button>
         </div>
       </footer>

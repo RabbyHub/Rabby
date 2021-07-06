@@ -1,6 +1,7 @@
 import React from 'react';
 import { useHistory } from 'react-router-dom';
 import { message } from 'antd';
+import { useTranslation } from 'react-i18next';
 import { useWallet } from 'ui/utils';
 import Field from '../Field';
 import IconNewAddress from 'ui/assets/create.svg';
@@ -14,17 +15,18 @@ import './style.less';
 const AddAddressOptions = () => {
   const history = useHistory();
   const wallet = useWallet();
+  const { t } = useTranslation();
 
   const renderData = [
     {
       leftIcon: IconNewAddress,
-      content: 'Create',
+      content: t('createAddress'),
       onClick: async () => {
         if (wallet.checkHasMnemonic()) {
           await wallet.deriveNewAccountFromMnemonic();
           message.success({
             icon: <img src={IconSuccess} className="icon icon-success" />,
-            content: 'Created successfully',
+            content: t('Successfully created'),
           });
 
           history.push('/dashboard');
@@ -35,19 +37,19 @@ const AddAddressOptions = () => {
     },
     {
       leftIcon: IconImportAddress,
-      content: 'Import',
+      content: t('Import'),
       onClick: () => history.push('/import'),
     },
     {
       leftIcon: IconConnectHardware,
-      content: 'Harware Wallet',
+      content: t('Harware Wallet'),
       onClick: () => {
         wallet.openIndexPage('/import/hardware');
       },
     },
     {
       leftIcon: IconWatchAddress,
-      content: 'Watch Mode',
+      content: t('Watch Mode'),
       onClick: () => history.push('/import/watch-address'),
     },
   ];

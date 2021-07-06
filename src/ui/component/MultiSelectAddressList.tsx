@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { AddressList, FieldCheckbox } from 'ui/component';
 import { useSelectOption } from 'ui/utils';
 
@@ -20,6 +21,7 @@ const MultiSelectAddressList = ({
   value,
   importedAccounts,
 }: MultiSelectAddressListArgs) => {
+  const { t } = useTranslation();
   const [_value, , , handleToggle] = useSelectOption<number>({
     onChange,
     value,
@@ -39,7 +41,7 @@ const MultiSelectAddressList = ({
             disable={
               imported && (
                 <span className="rounded-full bg-gray-bg text-gray-comment text-12 px-[5px] py-[3px]">
-                  Imported
+                  {t('Imported')}
                 </span>
               )
             }

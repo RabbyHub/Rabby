@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Button } from 'antd';
+import { useTranslation } from 'react-i18next';
 import { Chain } from 'background/service/chain';
 import { ChainSelector, Spin, FallbackSiteLogo } from 'ui/component';
 import { useApproval, useWallet } from 'ui/utils';
@@ -11,8 +12,9 @@ interface ConnectProps {
   defaultChain: CHAINS_ENUM;
 }
 
-const Connect = ({ params: { icon, origin, name } }: ConnectProps) => {
+const Connect = ({ params: { icon, origin } }: ConnectProps) => {
   const [, resolveApproval, rejectApproval] = useApproval();
+  const { t } = useTranslation();
   const wallet = useWallet();
   const [defaultChain, setDefaultChain] = useState(CHAINS_ENUM.ETH);
   const [isLoading, setIsLoading] = useState(true);
@@ -62,7 +64,7 @@ const Connect = ({ params: { icon, origin, name } }: ConnectProps) => {
     <Spin spinning={isLoading}>
       <div className="approval-connect">
         <div className="font-medium text-20 text-center">
-          Website Wants to Connect
+          {t('Website Wants to Connect')}
         </div>
         <div className="connect-card">
           <div className="site-info">
@@ -75,7 +77,7 @@ const Connect = ({ params: { icon, origin, name } }: ConnectProps) => {
           </div>
           <div className="site-chain">
             <p className="mb-0 text-12 text-gray-content">
-              On this site use chain
+              {t('On this site use chain')}
             </p>
             <ChainSelector value={defaultChain} onChange={handleChainChange} />
           </div>
@@ -90,7 +92,7 @@ const Connect = ({ params: { icon, origin, name } }: ConnectProps) => {
             className="w-[172px]"
             onClick={handleCancel}
           >
-            Cancel
+            {t('Cancel')}
           </Button>
           <Button
             type="primary"
@@ -98,7 +100,7 @@ const Connect = ({ params: { icon, origin, name } }: ConnectProps) => {
             className="w-[172px]"
             onClick={() => handleAllow()}
           >
-            Connect
+            {t('Connect')}
           </Button>
         </div>
       </footer>

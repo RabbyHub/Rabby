@@ -292,5 +292,67 @@
   },
   "Enable Chains": {
     "message": "Enable Chains"
+  },
+  "createAddress": {
+    "message": "Create"
+  },
+  "Import": {
+    "message": "Import"
+  },
+  "Harware Wallet": {
+    "message": "Harware Wallet"
+  },
+  "Imported": {
+    "message": "Imported"
+  },
+  "Select a JSON file": {
+    "message": "Select a JSON file"
+  },
+  "Current account": {
+    "message": "Current account"
+  },
+  "By enabling a chain, you’ll be able to make transactions on it": {
+    "message": "By enabling a chain, you’ll be able to make transactions on it."
+  },
+  "switchChainDesc": {
+    "message": "Next time you visit, this site will be connected to {{name}}"
+  },
+  "Change": {
+    "message": "Change",
+    "description": "Switch chain confirm button text"
+  },
+  "Switch a Chain": {
+    "message": "Switch a Chain"
+  },
+  "Enable": {
+    "message": "Enable"
+  },
+  "Enable a Chain": {
+    "message": "Enable a Chain"
+  },
+  "The requested chain is not supported by Rabby yet": {
+    "message": "The requested chain is not supported by Rabby yet"
+  },
+  "OK": {
+    "message": "OK"
+  },
+  "Website Wants to Connect": {
+    "message": "Website Wants to Connect"
+  },
+  "On this site use chain": {
+    "message": "On this site use chain"
+  },
+  "Connect": {
+    "message": "Connect",
+    "description": "Website connect confirm button text"
+  },
+  "ledgerWebUSBSignAlertPart1": {
+    "message": "Unable to proceed due to a Chrome issue."
+  },
+  "ledgerWebUSBSignAlertPart2": {
+    "message": "Please delete and re-connect this address."
+  },
+  "Please proceed in your hardware wallet": {
+    "message": "Please proceed in your hardware wallet"
   }
 }
