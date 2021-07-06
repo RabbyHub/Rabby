@@ -143,6 +143,14 @@ class PreferenceService {
     this.store.externalLinkAck = ack;
   };
 
+  getLocale = () => {
+    return this.store.locale;
+  };
+
+  setLocale = (locale: string) => {
+    this.store.locale = locale;
+  };
+
   updateUseLedgerLive = async (value: boolean) => {
     this.store.useLedgerLive = value;
     const keyrings = keyringService.getKeyringsByType(

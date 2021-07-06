@@ -3,8 +3,10 @@ import ClipboardJS from 'clipboard';
 import QRCode from 'qrcode.react';
 import { useHistory } from 'react-router-dom';
 import { message } from 'antd';
+import { Trans, useTranslation } from 'react-i18next';
 import { CHAINS, HARDWARE_KEYRING_TYPES, KEYRING_TYPE } from 'consts';
 import { AddressViewer, Modal } from 'ui/component';
+import i18n from 'src/i18n';
 import { useWallet, getCurrentConnectSite } from 'ui/utils';
 import { Account } from 'background/service/preference';
 import {
@@ -28,6 +30,7 @@ import './style.less';
 const Dashboard = () => {
   const history = useHistory();
   const wallet = useWallet();
+  const { t } = useTranslation();
   const [currentAccount, setCurrentAccount] = useState<Account | null>(
     wallet.syncGetCurrentAccount()
   );
@@ -126,6 +129,11 @@ const Dashboard = () => {
     (item) => item.type
   );
 
+  const handleSwitchLang = () => {
+    const lang = i18n.language;
+    i18n.changeLanguage(lang === 'en' ? 'zh_CN' : 'en');
+  };
+
   return (
     <>
       <div className="dashboard">
@@ -199,8 +207,15 @@ const Dashboard = () => {
       >
         <div>
           <QRCode value={currentAccount?.address} size={254} />
-          <p className="address text-gray-subTitle text-15 font-medium mb-0 font-roboto-mono">
-            {currentAccount?.address}
+          <p
+            className="address text-gray-subTitle text-15 font-medium mb-0 font-roboto-mono"
+            onClick={handleSwitchLang}
+          >
+            <Trans
+              i18nKey="testAddress"
+              values={{ address: currentAccount?.address }}
+            />
+            {t('teststr')}
           </p>
         </div>
       </Modal>

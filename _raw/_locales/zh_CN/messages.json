@@ -2,5 +2,11 @@
   "appName": {
     "message": "Rabby",
     "description": "The name of the application"
+  },
+  "testAddress": {
+    "message": "地址: {{address}}"
+  },
+  "teststr": {
+    "message": "测试"
   }
 }

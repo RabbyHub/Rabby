@@ -58,6 +58,9 @@ export class WalletController extends BaseController {
 
   setExternalLinkAck = (ack) => preferenceService.setExternalLinkAck(ack);
 
+  getLocale = () => preferenceService.getLocale();
+  setLocale = (locale: string) => preferenceService.setLocale(locale);
+
   /* chains */
   getSupportChains = () => chainService.getSupportChains();
   getEnableChains = () => chainService.getEnabledChains();
