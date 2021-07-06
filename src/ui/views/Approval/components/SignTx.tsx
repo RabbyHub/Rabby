@@ -100,7 +100,7 @@ const SignTx = ({ params, origin }) => {
   const wallet = useWallet();
   const session = params.session;
   const site = wallet.getConnectedSite(session.origin);
-  let chainId = params.data.chainId;
+  let chainId = params.data[0].chainId;
   if (!chainId) {
     chainId = CHAINS[site!.chain].id;
   }
@@ -173,6 +173,7 @@ const SignTx = ({ params, origin }) => {
     setTxDetail(res);
     if (!(nonce && tx.from === tx.to)) setRealNonce(res.recommend.nonce); // do not overwrite nonce if from === to(cancel transaction)
     setPreprocessSuccess(res.pre_exec.success);
+    return res;
   };
 
   const getDefaultGas = async () => {
@@ -190,9 +191,11 @@ const SignTx = ({ params, origin }) => {
     const currentAccount = await wallet.getCurrentAccount();
     try {
       setIsReady(false);
-      await explainTx(currentAccount!.address);
-      await checkTx(currentAccount!.address);
+      const res = await explainTx(currentAccount!.address);
       setIsReady(true);
+      if (res.pre_exec.success) {
+        await checkTx(currentAccount!.address);
+      }
     } catch (e) {
       Modal.error({
         title: 'Error',
@@ -255,7 +258,6 @@ const SignTx = ({ params, origin }) => {
     }
     init();
   }, [tx]);
-
   return (
     <>
       <AccountCard />
@@ -271,7 +273,7 @@ const SignTx = ({ params, origin }) => {
                 isReady={isReady}
                 txDetail={txDetail}
                 chain={chain}
-                raw={params.data}
+                raw={params.data[0]}
               />
             )}
             <GasSelector
