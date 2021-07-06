@@ -3,10 +3,23 @@
     "message": "Rabby",
     "description": "The name of the application"
   },
-  "testAddress": {
-    "message": "地址: {{address}}"
+  "appDescription": {
+    "message": "A better browser plugin for DeFi users",
+    "description": "The description of the application"
   },
-  "teststr": {
-    "message": "测试"
+  "Send": {
+    "message": "发送"
+  },
+  "Swap": {
+    "message": "交易"
+  },
+  "History": {
+    "message": "交易历史"
+  },
+  "Copied": {
+    "message": "已复制"
+  },
+  "AddressCount": {
+    "message": "{{count}} 个地址"
   }
 }

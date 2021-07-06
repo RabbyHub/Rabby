@@ -10,7 +10,7 @@ export const fetchLocale = async (locale) => {
   return Object.keys(data).reduce((res, key) => {
     return {
       ...res,
-      [key]: data[key].message,
+      [key.replace(/__/g, ' ')]: data[key].message,
     };
   }, {});
 };
@@ -30,6 +30,7 @@ export const I18N_NS = 'translations';
 export const addResourceBundle = async (locale: string) => {
   if (i18n.hasResourceBundle(locale, I18N_NS)) return;
   const bundle = await fetchLocale(locale);
+  console.log(bundle);
   i18n.addResourceBundle(locale, 'translations', bundle);
 };
 

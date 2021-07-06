@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Button } from 'antd';
+import { useTranslation } from 'react-i18next';
 import { useWallet, openInTab } from 'ui/utils';
 import { Modal, Checkbox, FallbackSiteLogo } from 'ui/component';
 import { IconDebank } from 'ui/assets';
@@ -22,6 +23,7 @@ const ConfirmOpenExternalModal = ({
 }) => {
   const [visible, setVisible] = useState(true);
   const [checked, setChecked] = useState(false);
+  const { t } = useTranslation();
 
   const handleCancel = () => {
     setVisible(false);
@@ -47,7 +49,7 @@ const ConfirmOpenExternalModal = ({
     >
       <div className="flex flex-col items-center pt-12 pb-8">
         <div className="text-15 font-medium mb-32">
-          You will be visiting a third party website
+          {t('You will be visiting a third party website')}
         </div>
         <FallbackSiteLogo
           url={icon}
@@ -57,9 +59,7 @@ const ConfirmOpenExternalModal = ({
         />
         <div className="text-13 text-gray-subTitle mb-40">{origin}</div>
         <Checkbox checked={checked} onChange={setChecked} className="mb-20">
-          <div className="text-14 text-gray-content">
-            Don't remind me anymore
-          </div>
+          <div className="text-14 text-gray-content">{t('dontRemind')}</div>
         </Checkbox>
         <Button
           type="primary"

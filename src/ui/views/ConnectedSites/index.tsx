@@ -1,5 +1,6 @@
 import React from 'react';
 import { useState, useEffect } from 'react';
+import { useTranslation } from 'react-i18next';
 import { PageHeader, Field, FallbackSiteLogo } from 'ui/component';
 import { SvgIconCross } from 'ui/assets';
 import { useWallet } from 'ui/utils';
@@ -9,6 +10,7 @@ import './style.less';
 const ConnectedSites = () => {
   const [sites, setSites] = useState<ConnectedSite[]>([]);
   const wallet = useWallet();
+  const { t } = useTranslation();
 
   const getSites = async () => {
     const sites = await wallet.getConnectedSites();
@@ -31,13 +33,13 @@ const ConnectedSites = () => {
         src="/images/nodata-site.png"
         alt="no site"
       />
-      <p className="text-gray-content text-14">No data</p>
+      <p className="text-gray-content text-14">{t('No data')}</p>
     </div>
   );
 
   return (
     <div className="connected-sites">
-      <PageHeader>Connected Sites</PageHeader>
+      <PageHeader>{t('Connected Sites')}</PageHeader>
       {sites.length > 0
         ? sites.map((site) => (
             <Field

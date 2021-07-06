@@ -1,6 +1,7 @@
 import React from 'react';
 import { Form, Input } from 'antd';
 import { useHistory } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { StrayPageWithButton } from 'ui/component';
 import { useWallet, useWalletRequest } from 'ui/utils';
 
@@ -8,6 +9,7 @@ const ImportMnemonic = () => {
   const history = useHistory();
   const wallet = useWallet();
   const [form] = Form.useForm();
+  const { t } = useTranslation();
 
   const [run, loading] = useWalletRequest(wallet.generateKeyringWithMnemonic, {
     onSuccess(keyring) {
@@ -23,7 +25,7 @@ const ImportMnemonic = () => {
       form.setFields([
         {
           name: 'mnemonics',
-          errors: [err?.message || 'Not a valid mnemonic'],
+          errors: [err?.message || t('Not a valid mnemonic')],
         },
       ]);
     },
@@ -32,7 +34,7 @@ const ImportMnemonic = () => {
   return (
     <StrayPageWithButton
       header={{
-        secondTitle: 'Enter Your Mnemonic',
+        secondTitle: t('Enter Your Mnemonic'),
       }}
       spinning={loading}
       form={form}
@@ -42,9 +44,12 @@ const ImportMnemonic = () => {
     >
       <Form.Item
         name="mnemonics"
-        rules={[{ required: true, message: 'Please input Mnemonics' }]}
+        rules={[{ required: true, message: t('Please input Mnemonics') }]}
       >
-        <Input.TextArea className="h-[124px]" placeholder="Mnemonics words" />
+        <Input.TextArea
+          className="h-[124px]"
+          placeholder={t('Mnemonics words')}
+        />
       </Form.Item>
     </StrayPageWithButton>
   );

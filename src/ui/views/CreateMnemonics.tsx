@@ -1,5 +1,6 @@
 import React, { useEffect, useState, useMemo } from 'react';
 import { useHistory } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Form } from 'antd';
 import { StrayPageWithButton, TiledSelect } from 'ui/component';
 import { useWallet } from 'ui/utils';
@@ -34,6 +35,7 @@ const CreateMnemonic = () => {
 const DisplayMnemonic = ({ mnemonics, onNextClick }) => {
   const wallet = useWallet();
   const history = useHistory();
+  const { t } = useTranslation();
 
   const handleBackClick = () => {
     wallet.removePreMnemonics();
@@ -43,8 +45,8 @@ const DisplayMnemonic = ({ mnemonics, onNextClick }) => {
   return (
     <StrayPageWithButton
       header={{
-        secondTitle: 'Back Up Your Mnemonic',
-        subTitle: `Make sure you have backed up your mnemonics properly before clicking Next. Don't tell anyone the mnemonic.`,
+        secondTitle: t('Back Up Your Mnemonic'),
+        subTitle: t('backupMnemonicTip'),
       }}
       hasBack
       hasDivider
@@ -58,7 +60,7 @@ const DisplayMnemonic = ({ mnemonics, onNextClick }) => {
         {mnemonics}
       </div>
       <div className="mt-16 text-red-light text-13 text-center px-40 font-medium">
-        Be sure to save the mnemonic phrase, it cannot be retrieved after loss！
+        {t('backupMnemonicAlert')}
       </div>
     </StrayPageWithButton>
   );
@@ -67,6 +69,7 @@ const DisplayMnemonic = ({ mnemonics, onNextClick }) => {
 const VerifyMnemonics = ({ mnemonics, onBackClick }) => {
   const history = useHistory();
   const wallet = useWallet();
+  const { t } = useTranslation();
 
   const randomMnemonics = useMemo(
     () => mnemonics.split(' ').sort(() => Math.random() - 0.5),
@@ -80,7 +83,7 @@ const VerifyMnemonics = ({ mnemonics, onBackClick }) => {
       pathname: '/import/success',
       state: {
         accounts,
-        title: 'Successfully created',
+        title: t('Successfully created'),
       },
     });
   };
@@ -88,8 +91,8 @@ const VerifyMnemonics = ({ mnemonics, onBackClick }) => {
   return (
     <StrayPageWithButton
       header={{
-        secondTitle: 'Verify Mnemonic',
-        subTitle: 'Please select the mnemonic words in order',
+        secondTitle: t('Verify Mnemonic'),
+        subTitle: t('Please select the mnemonic words in order'),
       }}
       formProps={{
         validateTrigger: 'onBlur',
@@ -108,7 +111,7 @@ const VerifyMnemonics = ({ mnemonics, onBackClick }) => {
               if (!value || !value.length || value.join(' ') === mnemonics) {
                 return Promise.resolve();
               }
-              return Promise.reject(new Error('*Verification failed'));
+              return Promise.reject(new Error(t('Verification failed')));
             },
           },
         ]}

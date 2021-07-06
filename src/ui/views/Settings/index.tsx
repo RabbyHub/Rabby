@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { Form, Input, Button } from 'antd';
+import { useTranslation } from 'react-i18next';
 import { useWallet } from 'ui/utils';
 import { PageHeader, Field, Modal } from 'ui/component';
 import IconAddressManagement from 'ui/assets/address-management.svg';
@@ -23,6 +24,7 @@ const OpenApiModal = ({
   const { useForm } = Form;
   const [form] = useForm<{ host: string }>();
   const wallet = useWallet();
+  const { t } = useTranslation();
   form.setFieldsValue({
     host: wallet.openapi.getHost(),
   });
@@ -37,10 +39,10 @@ const OpenApiModal = ({
         <Form.Item
           name="host"
           rules={[
-            { required: true, message: 'Please input openapi host' },
+            { required: true, message: t('Please input openapi host') },
             {
               pattern: /^((https|http)?:\/\/)[^\s]+/,
-              message: 'Please check your host',
+              message: t('Please check your host'),
             },
           ]}
         >
@@ -53,7 +55,7 @@ const OpenApiModal = ({
             htmlType="submit"
             className="w-[200px]"
           >
-            Save
+            {t('Save')}
           </Button>
         </div>
       </Form>
@@ -64,26 +66,27 @@ const OpenApiModal = ({
 const Settings = () => {
   const wallet = useWallet();
   const history = useHistory();
+  const { t } = useTranslation();
   const [showOpenApiModal, setShowOpenApiModal] = useState(false);
   const renderData = [
     {
       leftIcon: IconAddressManagement,
-      content: 'Address management',
+      content: t('Address management'),
       onClick: () => history.push('/settings/address'),
     },
     {
       leftIcon: IconChainManagement,
-      content: 'Chain management',
+      content: t('Chain management'),
       onClick: () => history.push('/settings/chain'),
     },
     {
       leftIcon: IconConnectSitesManagement,
-      content: 'Connected websites',
+      content: t('Connected websites'),
       onClick: () => history.push('/settings/sites'),
     },
     {
       leftIcon: IconOpenapiManagement,
-      content: 'Backend Service URL',
+      content: t('Backend Service URL'),
       onClick: () => setShowOpenApiModal(true),
     },
   ];
@@ -95,7 +98,7 @@ const Settings = () => {
 
   return (
     <div className="settings">
-      <PageHeader>Settings</PageHeader>
+      <PageHeader>{t('Settings')}</PageHeader>
       <Button
         block
         size="large"
@@ -103,7 +106,7 @@ const Settings = () => {
         className="flex justify-center items-center lock-wallet"
         onClick={lockWallet}
       >
-        <img src={IconLock} className="icon icon-lock" /> Lock
+        <img src={IconLock} className="icon icon-lock" /> {t('Lock')}
       </Button>
       {renderData.map((data) => (
         <Field

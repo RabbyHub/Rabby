@@ -1,10 +1,12 @@
 import React from 'react';
 import { Input, Form } from 'antd';
 import { useHistory } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { StrayPageWithButton } from 'ui/component';
 import { useWallet, useWalletRequest } from 'ui/utils';
 
 const ImportWatchAddress = () => {
+  const { t } = useTranslation();
   const history = useHistory();
   const wallet = useWallet();
   const [form] = Form.useForm();
@@ -15,7 +17,7 @@ const ImportWatchAddress = () => {
         pathname: '/import/success',
         state: {
           accounts,
-          title: 'Successfully created',
+          title: t('Successfully created'),
         },
       });
     },
@@ -23,7 +25,7 @@ const ImportWatchAddress = () => {
       form.setFields([
         {
           name: 'address',
-          errors: [err?.message || 'Not a valid address'],
+          errors: [err?.message || t('Not a valid address')],
         },
       ]);
     },
@@ -32,8 +34,8 @@ const ImportWatchAddress = () => {
   return (
     <StrayPageWithButton
       header={{
-        secondTitle: 'Watch Mode',
-        subTitle: 'Enter an address without providing private key',
+        secondTitle: t('Watch Mode'),
+        subTitle: t('Enter an address without providing private key'),
       }}
       onSubmit={({ address }) => run(address)}
       spinning={loading}
@@ -43,9 +45,9 @@ const ImportWatchAddress = () => {
     >
       <Form.Item
         name="address"
-        rules={[{ required: true, message: 'Please input address' }]}
+        rules={[{ required: true, message: t('Please input address') }]}
       >
-        <Input placeholder="Address" size="large" maxLength={44} />
+        <Input placeholder={t('Address')} size="large" maxLength={44} />
       </Form.Item>
     </StrayPageWithButton>
   );

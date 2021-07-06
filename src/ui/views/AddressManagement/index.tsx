@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { Link, useHistory } from 'react-router-dom';
 import { Menu, Dropdown, message } from 'antd';
 import { KEYRING_TYPE, HARDWARE_KEYRING_TYPES } from 'consts';
@@ -20,6 +21,7 @@ const { Nav: StrayFooterNav } = StrayFooter;
 
 const AddressManagement = () => {
   const wallet = useWallet();
+  const { t } = useTranslation();
   const [accounts, setAccounts] = useState<Record<string, DisplayedKeryring[]>>(
     {}
   );
@@ -60,7 +62,7 @@ const AddressManagement = () => {
         async validationHandler(password) {
           const mnemonic = await wallet.getMnemonics(password);
           Modal.info({
-            title: 'Mnemonic',
+            title: t('Mnemonic'),
             centered: true,
             content: mnemonic,
             cancelText: null,
@@ -95,7 +97,7 @@ const AddressManagement = () => {
               type,
             });
             Modal.info({
-              title: 'Private Key',
+              title: t('Private Key'),
               centered: true,
               content: privateKey,
               cancelText: null,
@@ -113,7 +115,7 @@ const AddressManagement = () => {
       await wallet.removeAddress(data, keyring.type);
       message.success({
         icon: <img src={IconSuccess} className="icon icon-success" />,
-        content: 'removed',
+        content: t('removed'),
         duration: 0.5,
       });
       getAllKeyrings();
@@ -130,7 +132,7 @@ const AddressManagement = () => {
       } else {
         const totalCount = await wallet.getAccountsCount();
         if (hiddenAddresses.length >= totalCount - 1) {
-          message.error('Keep at least one address visible.');
+          message.error(t('Keep at least one address visible'));
           return;
         }
         setHiddenAddresses([
@@ -147,17 +149,21 @@ const AddressManagement = () => {
           return (
             <Menu>
               <Menu.Item onClick={handleToggleAddressVisible}>
-                {hiddenAddresses.find(
-                  (item) => item.address === data && item.type === keyring.type
-                )
-                  ? 'Show'
-                  : 'Hide'}{' '}
-                address
+                {t(
+                  `${
+                    hiddenAddresses.find(
+                      (item) =>
+                        item.address === data && item.type === keyring.type
+                    )
+                      ? 'Show'
+                      : 'Hide'
+                  } address`
+                )}
               </Menu.Item>
               <Menu.Item
                 onClick={() => handlleViewPrivateKey(data, keyring.type)}
               >
-                View private key
+                {t('View private key')}
               </Menu.Item>
             </Menu>
           );
@@ -165,17 +171,21 @@ const AddressManagement = () => {
           return (
             <Menu>
               <Menu.Item onClick={handleToggleAddressVisible}>
-                {hiddenAddresses.find(
-                  (item) => item.address === data && item.type === keyring.type
-                )
-                  ? 'Show'
-                  : 'Hide'}{' '}
-                address
+                {t(
+                  `${
+                    hiddenAddresses.find(
+                      (item) =>
+                        item.address === data && item.type === keyring.type
+                    )
+                      ? 'Show'
+                      : 'Hide'
+                  } address`
+                )}
               </Menu.Item>
               <Menu.Item
                 onClick={() => handlleViewPrivateKey(data, keyring.type)}
               >
-                View private key
+                {t('View private key')}
               </Menu.Item>
             </Menu>
           );
@@ -186,7 +196,7 @@ const AddressManagement = () => {
           return (
             <Menu>
               <Menu.Item onClick={handleDeleteAddress}>
-                Delete address
+                {t('Delete address')}
               </Menu.Item>
             </Menu>
           );
@@ -197,7 +207,7 @@ const AddressManagement = () => {
     return (
       <div className="flex items-center">
         {isHidden && (
-          <div className="address-item-hidden opacity-40">Hidden</div>
+          <div className="address-item-hidden opacity-40">{t('Hidden')}</div>
         )}
         <Dropdown overlay={DropdownOptions} trigger={['click']}>
           <SvgIconArrowDown className="icon icon-arrow-down cursor-pointer text-gray-content fill-current" />
@@ -217,20 +227,20 @@ const AddressManagement = () => {
         src="/images/nodata-address.png"
         alt="no address"
       />
-      <p className="text-gray-content text-14">No address</p>
+      <p className="text-gray-content text-14">{t('No address')}</p>
       <Link
         to="/add-address"
         className="flex no-data-add-btn rounded-md text-15"
       >
         <SvgIconPlusPrimary className="icon icon-plus text-blue-light stroke-current fill-current" />
-        Add addresses
+        {t('Add addresses')}
       </Link>
     </div>
   );
 
   return (
     <div className="address-management">
-      <PageHeader>Address Management</PageHeader>
+      <PageHeader>{t('Address Management')}</PageHeader>
       {noAccount ? (
         NoAddressUI
       ) : (
@@ -250,7 +260,7 @@ const AddressManagement = () => {
             NextButtonContent={
               <div className="flex items-center h-full justify-center text-15">
                 <SvgIconPlusPrimary className="icon icon-add text-white stroke-current fill-current mr-6" />
-                Add Address
+                {t('Add Address')}
               </div>
             }
           />

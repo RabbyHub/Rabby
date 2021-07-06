@@ -3,7 +3,7 @@ import ClipboardJS from 'clipboard';
 import QRCode from 'qrcode.react';
 import { useHistory } from 'react-router-dom';
 import { message } from 'antd';
-import { Trans, useTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { CHAINS, HARDWARE_KEYRING_TYPES, KEYRING_TYPE } from 'consts';
 import { AddressViewer, Modal } from 'ui/component';
 import i18n from 'src/i18n';
@@ -114,7 +114,7 @@ const Dashboard = () => {
     clipboard.on('success', () => {
       message.success({
         icon: <img src={IconSuccess} className="icon icon-success" />,
-        content: 'Copied',
+        content: t('Copied'),
         duration: 0.5,
       });
       clipboard.destroy();
@@ -177,11 +177,11 @@ const Dashboard = () => {
           <div className="operation">
             <div className="operation-item" onClick={handleGotoSend}>
               <img className="icon icon-send" src={IconSend} />
-              Send
+              {t('Send')}
             </div>
             <div className="operation-item" onClick={handleGotoSwap}>
               <img className="icon icon-swap" src={IconSwap} />
-              Swap
+              {t('Swap')}
             </div>
             <div className="operation-item" onClick={handleGotoHistory}>
               {pendingTxCount > 0 ? (
@@ -192,7 +192,7 @@ const Dashboard = () => {
               ) : (
                 <img className="icon icon-history" src={IconHistory} />
               )}
-              History
+              {t('History')}
             </div>
           </div>
         </div>
@@ -211,16 +211,12 @@ const Dashboard = () => {
             className="address text-gray-subTitle text-15 font-medium mb-0 font-roboto-mono"
             onClick={handleSwitchLang}
           >
-            <Trans
-              i18nKey="testAddress"
-              values={{ address: currentAccount?.address }}
-            />
-            {t('teststr')}
+            {currentAccount?.address}
           </p>
         </div>
       </Modal>
       <Modal
-        title="Set Current Address"
+        title={t('Set Current Address')}
         visible={isModalOpen}
         width="344px"
         onCancel={handleToggle}

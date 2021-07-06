@@ -1,5 +1,6 @@
 import React from 'react';
 import { useHistory } from 'react-router-dom';
+import { useTranslation, Trans } from 'react-i18next';
 import { StrayPageWithButton } from 'ui/component';
 import { Input, Form } from 'antd';
 import { useWallet, useWalletRequest } from 'ui/utils';
@@ -9,6 +10,7 @@ const PASSWORD_LENGTH = [8, 20];
 const CreatePassword = () => {
   const history = useHistory();
   const wallet = useWallet();
+  const { t } = useTranslation();
 
   if (wallet.isBooted() && !wallet.isUnlocked()) {
     history.replace('/unlock');
@@ -26,7 +28,7 @@ const CreatePassword = () => {
       form.setFields([
         {
           name: 'password',
-          errors: [err?.message || 'Wrong password'],
+          errors: [err?.message || t('incorrect password')],
         },
       ]);
     },
@@ -35,7 +37,7 @@ const CreatePassword = () => {
   return (
     <StrayPageWithButton
       header={{
-        title: 'Set Unlock Password',
+        title: t('Set Unlock Password'),
       }}
       onSubmit={({ password }) => run(password.trim())}
       form={form}
@@ -51,37 +53,51 @@ const CreatePassword = () => {
         rules={[
           {
             required: true,
-            message: 'Please input Password.',
+            message: t('Please input Password'),
           },
           {
             min: PASSWORD_LENGTH[0],
-            message: `Password can’t be less than ${PASSWORD_LENGTH[0]} letters`,
+            message: (
+              <Trans
+                i18nKey="passwordMinimumLengthAlert"
+                values={{ length: PASSWORD_LENGTH[0] }}
+              />
+            ),
           },
           {
             max: PASSWORD_LENGTH[1],
-            message: `Password can’t be more than ${PASSWORD_LENGTH[1]} letters`,
+            message: (
+              <Trans
+                i18nKey="passwordMaximumLengthAlert"
+                values={{ length: PASSWORD_LENGTH[1] }}
+              />
+            ),
           },
         ]}
       >
-        <Input size="large" placeholder="Password" type="password" />
+        <Input size="large" placeholder={t('Password')} type="password" />
       </Form.Item>
       <Form.Item
         className="mb-0 h-[56px] overflow-hidden"
         name="confirmPassword"
         help=""
         rules={[
-          { required: true, message: 'Please confirm Password.' },
+          { required: true, message: t('Please confirm Password') },
           ({ getFieldValue }) => ({
             validator(_, value: string) {
               if (!value || getFieldValue('password') === value) {
                 return Promise.resolve();
               }
-              return Promise.reject(new Error('Two inputs do not match'));
+              return Promise.reject(new Error(t('Two inputs do not match')));
             },
           }),
         ]}
       >
-        <Input size="large" placeholder="Repeat Password" type="password" />
+        <Input
+          size="large"
+          placeholder={t('Repeat Password')}
+          type="password"
+        />
       </Form.Item>
       <Form.Item shouldUpdate className="text-red-light text-12">
         {() => (

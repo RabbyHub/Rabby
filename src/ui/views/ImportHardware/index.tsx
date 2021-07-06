@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
 import { StrayPage } from 'ui/component';
 import { useWallet } from 'ui/utils';
@@ -30,6 +31,7 @@ const ImportHardware = () => {
   const wallet = useWallet();
   const history = useHistory();
   const [spinning, setSpin] = useState(false);
+  const { t } = useTranslation();
 
   const navSelectAddress = async (hardware) => {
     if (hardware === 'LEDGER') {
@@ -61,8 +63,8 @@ const ImportHardware = () => {
   return (
     <StrayPage
       header={{
-        title: 'Connect Hardware Wallet',
-        subTitle: 'Select the hardware wallet you are using',
+        title: t('Connect Hardware Wallet'),
+        subTitle: t('Select the hardware wallet you are using'),
         center: true,
       }}
       spinning={spinning}
@@ -85,8 +87,7 @@ const ImportHardware = () => {
         })}
       </div>
       <div className="text-center mb-[100px] text-gray-content text-14">
-        If you are using a hardware wallet with a camera on it, you should use
-        watch address instead.
+        {t('hardwareImportTip')}
       </div>
     </StrayPage>
   );

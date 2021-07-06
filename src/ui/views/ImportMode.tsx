@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { StrayPageWithButton, FieldCheckbox } from 'ui/component';
 import { useWallet } from 'ui/utils';
 import { KEYRING_CLASS } from 'consts';
@@ -8,14 +9,15 @@ const ImportMode = () => {
   const history = useHistory();
   const [currentMode, setCurrentMode] = useState('');
   const wallet = useWallet();
+  const { t } = useTranslation();
   const [modes, setModes] = useState([
     {
       name: 'key',
-      label: 'Import via Private Key',
+      label: t('Import via Private Key'),
     },
     {
       name: 'json',
-      label: 'Import via Keystore',
+      label: t('Import via Keystore'),
     },
   ]);
 
@@ -25,7 +27,7 @@ const ImportMode = () => {
     if (!accounts?.length) {
       modes.splice(1, 0, {
         name: 'mnemonics',
-        label: 'Import via Mnemonic',
+        label: t('Import via Mnemonic'),
       });
       setModes([...modes]);
     }

@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from 'react';
 import { Input, Form, Button } from 'antd';
+import { useTranslation } from 'react-i18next';
 import { useWallet, useApproval, useWalletRequest } from 'ui/utils';
 
 import './style.less';
@@ -9,6 +10,7 @@ const Unlock = () => {
   const [, resolveApproval] = useApproval();
   const [form] = Form.useForm();
   const inputEl = useRef<Input>(null);
+  const { t } = useTranslation();
 
   useEffect(() => {
     if (!inputEl.current) return;
@@ -23,7 +25,7 @@ const Unlock = () => {
       form.setFields([
         {
           name: 'password',
-          errors: [err?.message || 'incorrect password'],
+          errors: [err?.message || t('incorrect password')],
         },
       ]);
     },
@@ -46,12 +48,12 @@ const Unlock = () => {
           rules={[
             {
               required: true,
-              message: 'Please input Password',
+              message: t('Please input Password'),
             },
           ]}
         >
           <Input
-            placeholder="Password"
+            placeholder={t('Password')}
             size="large"
             type="password"
             ref={inputEl}
@@ -64,7 +66,7 @@ const Unlock = () => {
             type="primary"
             size="large"
           >
-            Unlock
+            {t('Unlock')}
           </Button>
         </Form.Item>
       </Form>
