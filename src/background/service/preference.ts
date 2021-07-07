@@ -21,7 +21,7 @@ interface PreferenceStore {
   locale: string;
 }
 
-const SUPPORT_LOCALES = ['en'];
+const SUPPORT_LOCALES = ['en', 'zh_CN'];
 
 class PreferenceService {
   store!: PreferenceStore;

@@ -5,7 +5,7 @@ import { PrivateRoute } from 'ui/component';
 import Dashboard from './Dashboard';
 import Unlock from './Unlock';
 import SortHat from './SortHat';
-import { addResourceBundle } from 'src/i18n';
+import i18n, { addResourceBundle } from 'src/i18n';
 const AsyncMainRoute = lazy(() => import('./MainRoute'));
 
 const Main = () => (
@@ -31,6 +31,7 @@ const App = ({ wallet }: { wallet: any }) => {
   useEffect(() => {
     const locale = wallet.getLocale();
     addResourceBundle(locale);
+    i18n.changeLanguage(locale);
   }, []);
 
   return (

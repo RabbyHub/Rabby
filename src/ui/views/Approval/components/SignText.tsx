@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Button, Tooltip } from 'antd';
+import { useTranslation } from 'react-i18next';
 import { KEYRING_CLASS } from 'consts';
 import { useApproval, useWallet } from 'ui/utils';
 import { hex2Text } from 'ui/utils';
@@ -31,6 +32,7 @@ export const WaitingSignComponent = {
 const SignText = ({ params }: { params: SignTextProps }) => {
   const [, resolveApproval, rejectApproval] = useApproval();
   const wallet = useWallet();
+  const { t } = useTranslation();
   const { data, session } = params;
   const [hexData] = data;
   const signText = hex2Text(hexData);
@@ -95,7 +97,7 @@ const SignText = ({ params }: { params: SignTextProps }) => {
 
   const handleViewRawClick = () => {
     Modal.info({
-      title: 'Transaction detail',
+      title: t('Transaction detail'),
       centered: true,
       content: hexData,
       cancelText: null,
@@ -109,12 +111,12 @@ const SignText = ({ params }: { params: SignTextProps }) => {
       <AccountCard />
       <div className="approval-text">
         <p className="section-title">
-          Sign Text
+          {t('Sign Text')}
           <span
             className="float-right text-gray-comment text-12 cursor-pointer flex items-center"
             onClick={handleViewRawClick}
           >
-            view Raw <img src={IconArrowRight} />
+            {t('view Raw')} <img src={IconArrowRight} />
           </span>
         </p>
         <div className="text-detail-wrapper gray-section-block">
@@ -125,7 +127,9 @@ const SignText = ({ params }: { params: SignTextProps }) => {
               <Tooltip
                 placement="top"
                 overlayClassName="text-explain-tooltip"
-                title="This summary information is provide by DeBank OpenAPI"
+                title={t(
+                  'This summary information is provide by DeBank OpenAPI'
+                )}
               >
                 <img
                   src={IconQuestionMark}
@@ -150,7 +154,7 @@ const SignText = ({ params }: { params: SignTextProps }) => {
             className="w-[172px]"
             onClick={handleCancel}
           >
-            Cancel
+            {t('Cancel')}
           </Button>
           <Button
             type="primary"
@@ -159,8 +163,8 @@ const SignText = ({ params }: { params: SignTextProps }) => {
             onClick={() => handleAllow()}
           >
             {securityCheckStatus === 'pass' || securityCheckStatus === 'pending'
-              ? 'Sign'
-              : 'Continue'}
+              ? t('Sign')
+              : t('Continue')}
           </Button>
         </div>
       </footer>
@@ -170,7 +174,8 @@ const SignText = ({ params }: { params: SignTextProps }) => {
           onCancel={() => setShowSecurityCheckDetail(false)}
           data={securityCheckDetail}
           onOk={() => handleAllow(true)}
-          okText="Sign"
+          okText={t('Sign')}
+          cancelText={t('Cancel')}
         />
       )}
     </>

@@ -1,6 +1,7 @@
 import React from 'react';
 import { Button } from 'antd';
 import { SecurityCheckDecision } from 'background/service/openapi';
+import { useTranslation } from 'react-i18next';
 import IconLoading from 'ui/assets/loading.svg';
 import IconPass from 'ui/assets/no-risk.svg';
 import IconWarning from 'ui/assets/warning.svg';
@@ -8,51 +9,6 @@ import IconDanger from 'ui/assets/danger.svg';
 import IconForbidden from 'ui/assets/forbidden.svg';
 import IconArrowRight from 'ui/assets/arrow-right-gray.svg';
 import IconQuestionMark from 'ui/assets/question-mark.svg';
-
-const STATUS = {
-  pending: {
-    name: 'pending',
-    color: '#818A99',
-    clickable: false,
-    icon: IconQuestionMark,
-    text: 'Security checks have not been executed',
-  },
-  loading: {
-    name: 'loading',
-    color: '#818A99',
-    clickable: false,
-    icon: IconLoading,
-    text: 'Checking...',
-  },
-  pass: {
-    name: 'pass',
-    color: '#818A99',
-    clickable: false,
-    icon: IconPass,
-    text: 'No risk found',
-  },
-  warning: {
-    name: 'warning',
-    color: '#F29C1B',
-    clickable: true,
-    icon: IconWarning,
-    text: null,
-  },
-  danger: {
-    name: 'danger',
-    color: '#F24822',
-    clickable: true,
-    icon: IconDanger,
-    text: null,
-  },
-  forbidden: {
-    name: 'forbidden',
-    color: '#AF160E',
-    clickable: true,
-    icon: IconForbidden,
-    text: null,
-  },
-};
 
 interface SecurityCheckBarProps {
   status: SecurityCheckDecision;
@@ -67,6 +23,51 @@ const SecurityCheckBar = ({
   onClick,
   onCheck,
 }: SecurityCheckBarProps) => {
+  const { t } = useTranslation();
+  const STATUS = {
+    pending: {
+      name: 'pending',
+      color: '#818A99',
+      clickable: false,
+      icon: IconQuestionMark,
+      text: t('Security checks have not been executed'),
+    },
+    loading: {
+      name: 'loading',
+      color: '#818A99',
+      clickable: false,
+      icon: IconLoading,
+      text: t('Checking'),
+    },
+    pass: {
+      name: 'pass',
+      color: '#818A99',
+      clickable: false,
+      icon: IconPass,
+      text: t('No risk found'),
+    },
+    warning: {
+      name: 'warning',
+      color: '#F29C1B',
+      clickable: true,
+      icon: IconWarning,
+      text: null,
+    },
+    danger: {
+      name: 'danger',
+      color: '#F24822',
+      clickable: true,
+      icon: IconDanger,
+      text: null,
+    },
+    forbidden: {
+      name: 'forbidden',
+      color: '#AF160E',
+      clickable: true,
+      icon: IconForbidden,
+      text: null,
+    },
+  };
   return (
     <div
       className="security-check-bar"
@@ -83,7 +84,9 @@ const SecurityCheckBar = ({
       />
       <span className="alert">
         {STATUS[status].text || alert}
-        {status === 'pending' && <Button onClick={onCheck}>Check</Button>}
+        {status === 'pending' && (
+          <Button onClick={onCheck}>{t('Check')}</Button>
+        )}
       </span>
       {STATUS[status].clickable && (
         <img src={IconArrowRight} className="icon icon-arrow-right" />

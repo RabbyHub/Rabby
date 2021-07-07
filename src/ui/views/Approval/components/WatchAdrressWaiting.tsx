@@ -1,6 +1,7 @@
 import React from 'react';
 import { Button } from 'antd';
-import QRCode from 'qrcode.react';
+// import QRCode from 'qrcode.react';
+import { useTranslation } from 'react-i18next';
 import { useApproval } from 'ui/utils';
 import AccountCard from './AccountCard';
 import { QrScan } from 'ui/assets';
@@ -14,7 +15,7 @@ const WatchAddressWaiting = ({
   requestDefer: Promise<any>;
 }) => {
   const [, , rejectApproval] = useApproval();
-
+  const { t } = useTranslation();
   const handleCancel = () => {
     rejectApproval('user cancel');
   };
@@ -26,10 +27,10 @@ const WatchAddressWaiting = ({
         <img src={QrScan} className="mb-[27px]" />
         {/* <QRCode value={address} size={212} /> */}
         <h1 className="text-15 text-medium text-gray-title text-center mb-[40px] px-[40px]">
-          Cannot sign using a watch mode address at this moment
+          {t('Cannot sign using a watch mode address at this moment')}
         </h1>
         <p className="text-13 text-medium text-gray-content text-center">
-          Sign via phone scanning coming soon
+          {t('Sign via phone scanning coming soon')}
         </p>
         <footer>
           <div className="action-buttons flex justify-center">
@@ -39,7 +40,7 @@ const WatchAddressWaiting = ({
               className="w-[172px]"
               onClick={handleCancel}
             >
-              Cancel
+              {t('Cancel')}
             </Button>
           </div>
         </footer>

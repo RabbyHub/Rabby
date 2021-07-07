@@ -38,9 +38,7 @@ const AddChain = ({ params }: { params: AddChainProps }) => {
   let confirmBtnText;
   if (!enableChains.some((chain) => chain.hex === chainId)) {
     title = t('Enable a Chain');
-    content = t(
-      'By enabling a chain, you’ll be able to make transactions on it'
-    );
+    content = t('enableChainContent');
     confirmBtnText = t('Enable');
   } else if (CHAINS[defaultChain].hex !== chainId) {
     title = t('Switch a Chain');

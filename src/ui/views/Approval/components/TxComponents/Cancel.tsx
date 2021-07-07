@@ -1,5 +1,6 @@
 import React from 'react';
 import clsx from 'clsx';
+import { useTranslation, Trans } from 'react-i18next';
 import ClipboardJS from 'clipboard';
 import { message } from 'antd';
 import { AddressViewer } from 'ui/component';
@@ -18,6 +19,7 @@ interface CancelProps {
 const Cancel = ({ data, chainEnum }: CancelProps) => {
   const detail = data.type_cancel_token_approval!;
   const chain = CHAINS[chainEnum];
+  const { t } = useTranslation();
 
   const handleCopySpender = () => {
     const clipboard = new ClipboardJS('.cancel', {
@@ -29,7 +31,7 @@ const Cancel = ({ data, chainEnum }: CancelProps) => {
     clipboard.on('success', () => {
       message.success({
         icon: <img src={IconSuccess} className="icon icon-success" />,
-        content: 'Copied',
+        content: t('Copied'),
         duration: 0.5,
       });
       clipboard.destroy();
@@ -44,9 +46,19 @@ const Cancel = ({ data, chainEnum }: CancelProps) => {
 
   return (
     <div className="cancel">
-      <p className="section-title">Sign {chain.name} transaction</p>
+      <p className="section-title">
+        <Trans
+          i18nKey="signTransactionWithChain"
+          values={{ names: chain.name }}
+        />
+      </p>
       <div className="gray-section-block common-detail-block">
-        <p className="title">Cancel {detail.token_symbol} Approval for</p>
+        <p className="title">
+          <Trans
+            i18nKey="cancelApprovalTitle"
+            values={{ symbol: detail.token_symbol }}
+          />
+        </p>
         <div className="protocol">
           {detail.spender_protocol_logo_url && (
             <img
@@ -61,7 +73,7 @@ const Cancel = ({ data, chainEnum }: CancelProps) => {
                 'text-gray-content': !detail.spender_protocol_name,
               })}
             >
-              {detail.spender_protocol_name || 'Unknown protocol'}
+              {detail.spender_protocol_name || t('Unknown protocol')}
             </p>
             <div className="protocol-info__spender">
               <AddressViewer address={detail.spender} showArrow={false} />

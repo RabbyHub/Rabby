@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { intToHex, isHexString } from 'ethereumjs-util';
 import { Button, Modal } from 'antd';
+import { useTranslation } from 'react-i18next';
 import { Checkbox } from 'ui/component';
 import AccountCard from './AccountCard';
 import SecurityCheckBar from './SecurityCheckBar';
@@ -85,6 +86,7 @@ const SignTx = ({ params, origin }) => {
       contract_protocol_name: '',
     },
   });
+  const { t } = useTranslation();
   const [
     securityCheckStatus,
     setSecurityCheckStatus,
@@ -198,7 +200,7 @@ const SignTx = ({ params, origin }) => {
       }
     } catch (e) {
       Modal.error({
-        title: 'Error',
+        title: t('Error'),
         content: e.message || JSON.stringify(e),
       });
     }
@@ -310,7 +312,7 @@ const SignTx = ({ params, origin }) => {
                       className="w-[172px]"
                       onClick={handleCancel}
                     >
-                      Cancel
+                      {t('Cancel')}
                     </Button>
                     <Button
                       type="primary"
@@ -318,7 +320,9 @@ const SignTx = ({ params, origin }) => {
                       className="w-[172px]"
                       onClick={() => handleAllow()}
                     >
-                      {securityCheckStatus === 'pass' ? 'Sign' : 'Continue'}
+                      {securityCheckStatus === 'pass'
+                        ? t('Sign')
+                        : t('Continue')}
                     </Button>
                   </div>
                 </>
@@ -326,7 +330,7 @@ const SignTx = ({ params, origin }) => {
               {txDetail && !txDetail.pre_exec.success && (
                 <>
                   <p className="text-gray-subTitle mb-8 text-15 font-medium">
-                    Pre-execution failed
+                    {t('Preexecution failed')}
                   </p>
                   <p className="text-gray-content text-14 mb-20">
                     {txDetail.pre_exec.err_msg}
@@ -336,7 +340,7 @@ const SignTx = ({ params, origin }) => {
                       checked={forceProcess}
                       onChange={(e) => handleForceProcessChange(e)}
                     >
-                      I'm sure I want to proceed anyway.
+                      {t('processAnyway')}
                     </Checkbox>
                   </div>
                   <div className="action-buttons flex justify-between">
@@ -346,7 +350,7 @@ const SignTx = ({ params, origin }) => {
                       className="w-[172px]"
                       onClick={handleCancel}
                     >
-                      Cancel
+                      {t('Cancel')}
                     </Button>
                     <Button
                       type="primary"
@@ -355,7 +359,7 @@ const SignTx = ({ params, origin }) => {
                       disabled={!forceProcess}
                       onClick={() => handleAllow(true)}
                     >
-                      Sign
+                      {t('Sign')}
                     </Button>
                   </div>
                 </>
@@ -369,7 +373,8 @@ const SignTx = ({ params, origin }) => {
             onCancel={() => setShowSecurityCheckDetail(false)}
             data={securityCheckDetail}
             onOk={() => handleAllow(true)}
-            okText="Sign"
+            okText={t('Sign')}
+            cancelText={t('Cancel')}
             preprocessSuccess={preprocessSuccess}
           />
         )}

@@ -1,11 +1,13 @@
 import React from 'react';
 import { Skeleton } from 'antd';
+import { useTranslation } from 'react-i18next';
 
 const LoadingBalanceChange = () => {
+  const { t } = useTranslation();
   return (
     <div className="balance-change">
       <p className="section-title flex justify-between">
-        <span>Est. token balance change</span>
+        <span>{t('token balance change')}</span>
       </p>
       <div className="gray-section-block balance-change-content">
         <>

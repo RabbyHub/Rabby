@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Input, Button, Skeleton } from 'antd';
+import { useTranslation } from 'react-i18next';
 import { useDebounce } from 'react-use';
 import { CHAINS, GAS_LEVEL_TEXT } from 'consts';
 import { GasResult, Tx, GasLevel } from 'background/service/openapi';
@@ -23,6 +24,7 @@ const GasSelector = ({
   isReady,
 }: GasSelectorProps) => {
   const wallet = useWallet();
+  const { t } = useTranslation();
   const [modalVisible, setModalVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [customGas, setCustomGas] = useState(Number(tx.gasPrice));
@@ -112,7 +114,7 @@ const GasSelector = ({
   if (!isReady)
     return (
       <>
-        <p className="section-title">Est. gas cost</p>
+        <p className="section-title">{t('gasCostTitle')}</p>
         <div className="gas-selector gray-section-block">
           <div className="gas-info">
             <Skeleton.Input style={{ width: 200 }} />
@@ -123,7 +125,7 @@ const GasSelector = ({
 
   return (
     <>
-      <p className="section-title">Est. gas cost</p>
+      <p className="section-title">{t('gasCostTitle')}</p>
       <div className="gas-selector gray-section-block">
         <div className="gas-info">
           <p className="text-gray-content text-14">
@@ -146,14 +148,14 @@ const GasSelector = ({
       </div>
       <Modal
         visible={modalVisible}
-        title="Select Gas Setting"
+        title={t('Select Gas Setting')}
         className="gas-modal"
         onCancel={() => setModalVisible(false)}
         okText="Confirm"
         destroyOnClose
       >
         <div>
-          <p className="section-title">Gas price (Gwei)</p>
+          <p className="section-title">{t('gasPriceTitle')}</p>
           <div className="gas-selector-panel">
             {gasList.map((gas) => (
               <FieldCheckbox
@@ -179,11 +181,11 @@ const GasSelector = ({
                     <>
                       <div className="gas-content__info">
                         <p className="text-gray-title text-13 font-medium leading-none mb-4">
-                          {GAS_LEVEL_TEXT[gas.level]}
+                          {t(GAS_LEVEL_TEXT[gas.level])}
                         </p>
                         <p className="text-gray-content text-12 mb-0">
                           {formatSeconds(gas.estimated_seconds)} -{' '}
-                          {gas.front_tx_count} txn ahead
+                          {gas.front_tx_count} {t('txn ahead')}
                         </p>
                       </div>
                       <div className="gas-content__price">
@@ -216,7 +218,7 @@ const GasSelector = ({
               onClick={handleConfirmGas}
               disabled={!selectedGas || isLoading}
             >
-              Confirm
+              {t('Confirm')}
             </Button>
           </div>
         </div>

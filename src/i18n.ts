@@ -30,11 +30,11 @@ export const I18N_NS = 'translations';
 export const addResourceBundle = async (locale: string) => {
   if (i18n.hasResourceBundle(locale, I18N_NS)) return;
   const bundle = await fetchLocale(locale);
-  console.log(bundle);
+
   i18n.addResourceBundle(locale, 'translations', bundle);
 };
 
-addResourceBundle('en');
+addResourceBundle('zh_CN');
 
 i18n.on('languageChanged', function (lng) {
   addResourceBundle(lng);
