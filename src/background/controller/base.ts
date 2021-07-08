@@ -1,3 +1,4 @@
+import cloneDeep from 'lodash/cloneDeep';
 import { preferenceService, keyringService } from 'background/service';
 
 class BaseController {
@@ -16,16 +17,15 @@ class BaseController {
       if (!account) return null;
       preferenceService.setCurrentAccount(account);
     }
-
     const keyring = await keyringService.getKeyringForAccount(
       account.address,
       account.type
     );
 
-    return {
+    return cloneDeep({
       ...account,
       keyring,
-    };
+    });
   };
 
   syncGetCurrentAccount = () => {

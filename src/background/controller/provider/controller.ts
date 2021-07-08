@@ -2,6 +2,7 @@ import Transaction from 'ethereumjs-tx';
 import { bufferToHex } from 'ethereumjs-util';
 import { ethErrors } from 'eth-rpc-errors';
 import { normalize as normalizeAddress } from 'eth-sig-util';
+import cloneDeep from 'lodash/cloneDeep';
 import {
   keyringService,
   permissionService,
@@ -133,19 +134,20 @@ class ProviderController extends BaseController {
       }
     },
   ])
-  ethSendTransaction = async ({
-    data: {
-      params: [txParams],
-    },
-    session: { origin },
-    approvalRes,
-  }: {
+  ethSendTransaction = async (options: {
     data: {
       params: any;
     };
     session: Session;
     approvalRes: ApprovalRes;
   }) => {
+    const {
+      data: {
+        params: [txParams],
+      },
+      session: { origin },
+      approvalRes,
+    } = cloneDeep(options);
     const keyring = await this._checkAddress(txParams.from);
     delete approvalRes.address;
     delete approvalRes.type;
