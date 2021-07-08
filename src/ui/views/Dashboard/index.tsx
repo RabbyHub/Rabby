@@ -129,11 +129,6 @@ const Dashboard = () => {
     (item) => item.type
   );
 
-  const handleSwitchLang = () => {
-    const lang = i18n.language;
-    i18n.changeLanguage(lang === 'en' ? 'zh_CN' : 'en');
-  };
-
   return (
     <>
       <div className="dashboard">
@@ -207,10 +202,7 @@ const Dashboard = () => {
       >
         <div>
           <QRCode value={currentAccount?.address} size={254} />
-          <p
-            className="address text-gray-subTitle text-15 font-medium mb-0 font-roboto-mono"
-            onClick={handleSwitchLang}
-          >
+          <p className="address text-gray-subTitle text-15 font-medium mb-0 font-roboto-mono">
             {currentAccount?.address}
           </p>
         </div>

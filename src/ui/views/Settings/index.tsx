@@ -10,6 +10,7 @@ import IconConnectSitesManagement from 'ui/assets/connect-sites-management.svg';
 import IconOpenapiManagement from 'ui/assets/openapi-management.svg';
 import IconArrowRight from 'ui/assets/arrow-right-gray.svg';
 import IconLock from 'ui/assets/lock.svg';
+import IconSwitch from 'ui/assets/switch-lang.svg';
 import './style.less';
 
 const OpenApiModal = ({
@@ -88,6 +89,11 @@ const Settings = () => {
       leftIcon: IconOpenapiManagement,
       content: t('Backend Service URL'),
       onClick: () => setShowOpenApiModal(true),
+    },
+    {
+      leftIcon: IconSwitch,
+      content: t('Switching languages'),
+      onClick: () => history.push('/settings/switch-lang'),
     },
   ];
 

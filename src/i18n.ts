@@ -34,7 +34,7 @@ export const addResourceBundle = async (locale: string) => {
   i18n.addResourceBundle(locale, 'translations', bundle);
 };
 
-addResourceBundle('zh_CN');
+addResourceBundle('en');
 
 i18n.on('languageChanged', function (lng) {
   addResourceBundle(lng);

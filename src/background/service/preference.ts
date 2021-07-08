@@ -52,7 +52,9 @@ class PreferenceService {
   getAcceptLanguages = async () => {
     let langs = await browser.i18n.getAcceptLanguages();
     if (!langs) langs = [];
-    return langs.filter((lang) => SUPPORT_LOCALES.includes(lang));
+    return langs
+      .map((lang) => lang.replace(/-/g, '_'))
+      .filter((lang) => SUPPORT_LOCALES.includes(lang));
   };
 
   getHiddenAddresses = () => {
