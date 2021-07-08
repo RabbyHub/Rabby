@@ -60,7 +60,7 @@ const Sign = ({ data, chainEnum, raw }: SignProps) => {
       <p className="section-title">
         <Trans
           i18nKey="signTransactionWithChain"
-          values={{ names: chain.name }}
+          values={{ name: chain.name }}
         />
         <span
           className="float-right text-gray-comment text-12 cursor-pointer flex items-center"

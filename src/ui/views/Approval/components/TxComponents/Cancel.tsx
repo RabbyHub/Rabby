@@ -49,7 +49,7 @@ const Cancel = ({ data, chainEnum }: CancelProps) => {
       <p className="section-title">
         <Trans
           i18nKey="signTransactionWithChain"
-          values={{ names: chain.name }}
+          values={{ name: chain.name }}
         />
       </p>
       <div className="gray-section-block common-detail-block">
