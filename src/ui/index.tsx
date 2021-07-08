@@ -5,6 +5,7 @@ import Views from './views';
 import { getUiType } from 'ui/utils';
 import * as Sentry from '@sentry/react';
 import { Integrations } from '@sentry/tracing';
+import '../i18n';
 
 import './style/index.less';
 

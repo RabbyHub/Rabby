@@ -1,5 +1,6 @@
 import React from 'react';
 import clsx from 'clsx';
+import { useTranslation, Trans } from 'react-i18next';
 import { CHAINS_ENUM, CHAINS } from 'consts';
 import { BalanceChange as BC } from 'background/service/openapi';
 import { splitNumberByStep } from 'ui/utils/number';
@@ -13,6 +14,7 @@ const BalanceChange = ({
   isSupport: boolean;
   chainEnum: CHAINS_ENUM;
 }) => {
+  const { t } = useTranslation();
   const isSuccess = data.success && isSupport;
   const errorMessage = data.err_msg;
   const receiveTokenList = data.receive_token_list;
@@ -25,7 +27,7 @@ const BalanceChange = ({
   return (
     <div className="balance-change">
       <p className="section-title flex justify-between">
-        <span>Est. token balance change</span>
+        <span>{t('token balance change')}</span>
       </p>
       {isSuccess && (
         <div className="gray-section-block balance-change-content">
@@ -78,7 +80,7 @@ const BalanceChange = ({
                 )}
               </div>
               <div className="total-balance-change">
-                <span className="token-symbol">Total value change</span>
+                <span className="token-symbol">{t('Total value change')}</span>
                 <span
                   className={clsx('usd-value-change', {
                     'text-gray-subTitle': !data.usd_value_change,
@@ -94,13 +96,20 @@ const BalanceChange = ({
               </div>
             </>
           ) : (
-            <span className="text-14 text-gray-content">No Changes</span>
+            <span className="text-14 text-gray-content">{t('No Changes')}</span>
           )}
         </div>
       )}
       {!isSuccess && (
         <div className="balance-change_error">
-          {!data.success ? errorMessage : `Not supported on ${chain.name}`}
+          {!data.success ? (
+            errorMessage
+          ) : (
+            <Trans
+              i18nKey="balanceChangeNotSupport"
+              values={{ name: chain.name }}
+            />
+          )}
         </div>
       )}
     </div>

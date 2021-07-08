@@ -1,4 +1,5 @@
 import React from 'react';
+import { Trans } from 'react-i18next';
 import { CHAINS_ENUM, CHAINS } from 'consts';
 import { ExplainTxResponse } from 'background/service/openapi';
 import { splitNumberByStep } from 'ui/utils/number';
@@ -14,10 +15,21 @@ const Send = ({ data, chainEnum }: SendProps) => {
   const chain = CHAINS[chainEnum];
   return (
     <div className="send">
-      <p className="section-title">Sign {chain.name} transaction</p>
+      <p className="section-title">
+        <Trans
+          i18nKey="signTransactionWithChain"
+          values={{ names: chain.name }}
+        />
+      </p>
       <div className="gray-section-block common-detail-block">
         <p className="title">
-          Send {splitNumberByStep(detail.token_amount)} {detail.token_symbol} to
+          <Trans
+            i18nKey="sendTokenTo"
+            values={{
+              amount: splitNumberByStep(detail.token_amount),
+              symbol: detail.token_symbol,
+            }}
+          />
         </p>
         <p className="text-gray-content text-13 font-medium mb-0 font-roboto-mono whitespace-nowrap">
           {detail.to_addr}

@@ -6,5 +6,508 @@
   "appDescription": {
     "message": "A better browser plugin for DeFi users",
     "description": "The description of the application"
+  },
+  "Send": {
+    "message": "Send"
+  },
+  "Swap": {
+    "message": "Swap"
+  },
+  "History": {
+    "message": "History"
+  },
+  "Set__Current__Address": {
+    "message": "Set Current Address",
+    "description": "Switch modal title in dashboard"
+  },
+  "Manage__addresses": {
+    "message": "Manage addresses"
+  },
+  "View__Mnemonic": {
+    "message": "View Mnemonic"
+  },
+  "Created__by__Mnemonic": {
+    "message": "Created by Mnemonic"
+  },
+  "Imported__by__Private__Key": {
+    "message": "Imported by Private Key"
+  },
+  "Hardware__Wallet": {
+    "message": "Hardware Wallet"
+  },
+  "Watch__Mode": {
+    "message": "Watch Mode"
+  },
+  "Copied": {
+    "message": "Copied"
+  },
+  "connected": {
+    "message": "connected"
+  },
+  "Not__connected__to__current__website": {
+    "message": "Not connected to current website"
+  },
+  "Please__input__openapi__host": {
+    "message": "Please input openapi host"
+  },
+  "Please__check__your__host": {
+    "message": "Please check your host"
+  },
+  "Save": {
+    "message": "Save"
+  },
+  "Address__management": {
+    "message": "Address management"
+  },
+  "Chain__management": {
+    "message": "Chain management"
+  },
+  "Connected__websites": {
+    "message": "Connected websites"
+  },
+  "Backend__Service__URL": {
+    "message": "Backend Service URL"
+  },
+  "Settings": {
+    "message": "Settings"
+  },
+  "Lock": {
+    "message": "Lock"
+  },
+  "Mnemonic": {
+    "message": "Mnemonic"
+  },
+  "Private__Key": {
+    "message": "Private Key"
+  },
+  "removed": {
+    "message": "removed"
+  },
+  "Keep__at__least__one__address__visible": {
+    "message": "Keep at least one address visible"
+  },
+  "Show__address": {
+    "message": "Show address"
+  },
+  "Hide__address": {
+    "message": "Hide address"
+  },
+  "Delete__address": {
+    "message": "Delete address"
+  },
+  "No__address": {
+    "message": "No address"
+  },
+  "Add__addresses": {
+    "message": "Add addresses"
+  },
+  "Address__Management": {
+    "message": "Address Management"
+  },
+  "Add__Address": {
+    "message": "Add Address"
+  },
+  "incorrect__password": {
+    "message": "incorrect password"
+  },
+  "Password": {
+    "message": "Password"
+  },
+  "Please__input__Password": {
+    "message": "Please input Password"
+  },
+  "Unlock": {
+    "message": "Unlock"
+  },
+  "Get__Started": {
+    "message": "Get Started"
+  },
+  "Successfully__created": {
+    "message": "Successfully created"
+  },
+  "Not__a__valid__address": {
+    "message": "Not a valid address"
+  },
+  "Enter__an__address__without__providing__private__key": {
+    "message": "Enter an address without providing private key"
+  },
+  "Please__input__address": {
+    "message": "Please input address"
+  },
+  "Address": {
+    "message": "Address"
+  },
+  "Successfully__imported": {
+    "message": "Successfully imported"
+  },
+  "AddressCount": {
+    "message": "{{count}} addresses"
+  },
+  "Not__a__valid__private__key": {
+    "message": "Not a valid private key"
+  },
+  "Enter__Your__Private__Key": {
+    "message": "Enter Your Private Key"
+  },
+  "Please__input__Private__key": {
+    "message": "Please input Private key"
+  },
+  "Import__via__Private__Key": {
+    "message": "Import via Private Key"
+  },
+  "Import__via__Keystore": {
+    "message": "Import via Keystore"
+  },
+  "Import__via__Mnemonic": {
+    "message": "Import via Mnemonic"
+  },
+  "Not__a__valid__mnemonic": {
+    "message": "Not a valid mnemonic"
+  },
+  "Enter__Your__Mnemonic": {
+    "message": "Enter Your Mnemonic"
+  },
+  "Please__input__Mnemonics": {
+    "message": "Please input Mnemonics"
+  },
+  "Mnemonics__words": {
+    "message": "Mnemonics words"
+  },
+  "Select__the__keystore__file__you__want__to__import__and__enter__the__corresponding__password": {
+    "message": "Select the keystore file you want to import and enter the corresponding password"
+  },
+  "Click__to__upload__again": {
+    "message": "Click to upload again"
+  },
+  "Import__Your__Keystore": {
+    "message": "Import Your Keystore"
+  },
+  "passwordMinimumLengthAlert": {
+    "message": "Password can’t be less than {{length}} letters"
+  },
+  "passwordMaximumLengthAlert": {
+    "message": "Password can’t be more than {{length}} letters"
+  },
+  "Please__confirm__Password": {
+    "message": "Please confirm Password"
+  },
+  "Two__inputs__do__not__match": {
+    "message": "Two inputs do not match"
+  },
+  "Repeat__Password": {
+    "message": "Repeat Password"
+  },
+  "backupMnemonicTip": {
+    "message": "Make sure you have backed up your mnemonics properly before clicking Next. Don't tell anyone the mnemonic."
+  },
+  "backupMnemonicAlert": {
+    "message": "Be sure to save the mnemonic phrase, it cannot be retrieved after loss！"
+  },
+  "Back__Up__Your__Mnemonic": {
+    "message": "Back Up Your Mnemonic"
+  },
+  "Verify__Mnemonic": {
+    "message": "Verify Mnemonic"
+  },
+  "Please__select__the__mnemonic__words__in__order": {
+    "message": "Please select the mnemonic words in order"
+  },
+  "Verification__failed": {
+    "message": "Verification failed"
+  },
+  "You__need__to__make__use__your__last__account__before__you__can__add__a__new__one": {
+    "message": "You need to make use your last account before you can add a new one."
+  },
+  "Select__Addresses": {
+    "message": "Select Addresses"
+  },
+  "Select__the__addresses__you__want__to__import": {
+    "message": "Select the addresses you want to import"
+  },
+  "Load__More": {
+    "message": "Load More..."
+  },
+  "Please__add__your__address__via__one__of__the__following__methods": {
+    "message": "Please add your address via one of the following methods"
+  },
+  "No__Address": {
+    "message": "No Address"
+  },
+  "hardwareImportTip": {
+    "message": "If you are using a hardware wallet with a camera on it, you should use watch address instead."
+  },
+  "Connect__Hardware__Wallet": {
+    "message": "Connect Hardware Wallet"
+  },
+  "Select__the__hardware__wallet__you__are__using": {
+    "message": "Select the hardware wallet you are using"
+  },
+  "Select__Connect__Method": {
+    "message": "Select Connect Method"
+  },
+  "Ledger__Blue__is__not__supported__by__Chrome__91__and__above__versions": {
+    "message": "Ledger Blue is not supported by Chrome 91 and above versions"
+  },
+  "Connect__through__Ledger__Live__app": {
+    "message": "Connect through Ledger Live app"
+  },
+  "Connect__hardware__wallet__directly": {
+    "message": "Connect hardware wallet directly"
+  },
+  "dontRemind": {
+    "message": "Don't remind me anymore"
+  },
+  "You__will__be__visiting__a__third__party__website": {
+    "message": "You will be visiting a third party website"
+  },
+  "Asset__data__loading": {
+    "message": "Asset data loading"
+  },
+  "The__network__is__disconnected__and__no__data__is__obtained": {
+    "message": "The network is disconnected and no data is obtained"
+  },
+  "No__assets": {
+    "message": "No assets"
+  },
+  "No__data": {
+    "message": "No data"
+  },
+  "Connected__Sites": {
+    "message": "Connected Sites"
+  },
+  "disableChainAlert": {
+    "message": "After disabling a chain, all websites connected using this chain will also be deleted"
+  },
+  "Disable": {
+    "message": "Disable"
+  },
+  "Cancel": {
+    "message": "Cancel"
+  },
+  "At__least__one__enabled__chain__is__required": {
+    "message": "At least one enabled chain is required"
+  },
+  "Chain__ID": {
+    "message": "Chain ID"
+  },
+  "Enable__Chains": {
+    "message": "Enable Chains"
+  },
+  "createAddress": {
+    "message": "Create"
+  },
+  "Import": {
+    "message": "Import"
+  },
+  "Harware__Wallet": {
+    "message": "Harware Wallet"
+  },
+  "Imported": {
+    "message": "Imported"
+  },
+  "Select__a__JSON__file": {
+    "message": "Select a JSON file"
+  },
+  "Current__account": {
+    "message": "Current account"
+  },
+  "enableChainContent": {
+    "message": "By enabling a chain, you’ll be able to make transactions on it."
+  },
+  "switchChainDesc": {
+    "message": "Next time you visit, this site will be connected to {{name}}"
+  },
+  "Change": {
+    "message": "Change",
+    "description": "Switch chain confirm button text"
+  },
+  "Switch__a__Chain": {
+    "message": "Switch a Chain"
+  },
+  "Enable": {
+    "message": "Enable"
+  },
+  "Enable__a__Chain": {
+    "message": "Enable a Chain"
+  },
+  "The__requested__chain__is__not__supported__by__Rabby__yet": {
+    "message": "The requested chain is not supported by Rabby yet"
+  },
+  "OK": {
+    "message": "OK"
+  },
+  "Website__Wants__to__Connect": {
+    "message": "Website Wants to Connect"
+  },
+  "On__this__site__use__chain": {
+    "message": "On this site use chain"
+  },
+  "Connect": {
+    "message": "Connect",
+    "description": "Website connect confirm button text"
+  },
+  "ledgerWebUSBSignAlertPart1": {
+    "message": "Unable to proceed due to a Chrome issue."
+  },
+  "ledgerWebUSBSignAlertPart2": {
+    "message": "Please delete and re-connect this address."
+  },
+  "Please__proceed__in__your__hardware__wallet": {
+    "message": "Please proceed in your hardware wallet"
+  },
+  "Security__checks__have__not__been__executed": {
+    "message": "Security checks have not been executed"
+  },
+  "Checking": {
+    "message": "Checking..."
+  },
+  "No__risk__found": {
+    "message": "No risk found"
+  },
+  "Check": {
+    "message": "Check",
+    "description": "Security check action button text"
+  },
+  "processAnyway": {
+    "message": "I'm sure I want to proceed anyway."
+  },
+  "Forbidden": {
+    "message": "Forbidden"
+  },
+  "Danger": {
+    "message": "Danger"
+  },
+  "Warning": {
+    "message": "Warning"
+  },
+  "Enter__passward__to__continue__your__transaction": {
+    "message": "Enter passward to continue your transaction"
+  },
+  "Confirm": {
+    "message": "Confirm"
+  },
+  "Please__enter__the__password": {
+    "message": "Please enter the password"
+  },
+  "Transaction__detail": {
+    "message": "Transaction detail"
+  },
+  "Sign__Text": {
+    "message": "Sign Text"
+  },
+  "view__Raw": {
+    "message": "view Raw"
+  },
+  "This__summary__information__is__provide__by__DeBank__OpenAPI": {
+    "message": "This summary information is provide by DeBank OpenAPI"
+  },
+  "Sign": {
+    "message": "Sign"
+  },
+  "Continue": {
+    "message": "Continue"
+  },
+  "Preexecution__failed": {
+    "message": "Pre-execution failed"
+  },
+  "Error": {
+    "message": "Error"
+  },
+  "Sign__Typed__Message": {
+    "message": "Sign Typed Message"
+  },
+  "Cannot__sign__using__a__watch__mode__address__at__this__moment": {
+    "message": "Cannot sign using a watch mode address at this moment"
+  },
+  "Sign__via__phone__scanning__coming__soon": {
+    "message": "Sign via phone scanning coming soon"
+  },
+  "signTransactionWithChain": {
+    "message": "Sign {{name}} transaction"
+  },
+  "Approve": {
+    "message": "Approve",
+    "description": "Approve token tx title"
+  },
+  "unlimited": {
+    "message": "unlimited"
+  },
+  "Unknown__protocol": {
+    "message": "Unknown protocol"
+  },
+  "token__balance__change": {
+    "message": "Est. token balance change"
+  },
+  "Total__value__change": {
+    "message": "Total value change"
+  },
+  "balanceChangeNotSupport": {
+    "message": "Not supported on {{name}}"
+  },
+  "No__Changes": {
+    "message": "No Changes"
+  },
+  "cancelApprovalTitle": {
+    "message": "Cancel {{symbol}} Approval for"
+  },
+  "Cancel__Pending__Transaction": {
+    "message": "Cancel Pending Transaction"
+  },
+  "One__pending__transaction__will__be__canceled": {
+    "message": "One pending transaction will be canceled"
+  },
+  "Deploy__a__Contract": {
+    "message": "Deploy a Contract"
+  },
+  "You__are__deploying__a__smart__contract": {
+    "message": "You are deploying a smart contract"
+  },
+  "sendTokenTo": {
+    "message": "Send {{amount}} {{symbol}} to"
+  },
+  "Protocol": {
+    "message": "Protocol"
+  },
+  "Unknown__Protocol": {
+    "message": "Unknown Protocol"
+  },
+  "Action": {
+    "message": "Action"
+  },
+  "Unknown__Action": {
+    "message": "Unknown Action"
+  },
+  "Contract": {
+    "message": "Contract"
+  },
+  "gasCostTitle": {
+    "message": "Est. gas cost"
+  },
+  "gasPriceTitle": {
+    "message": "Gas price (Gwei)"
+  },
+  "txn__ahead": {
+    "message": "txn ahead"
+  },
+  "Select__Gas__Setting": {
+    "message": "Select Gas Setting"
+  },
+  "Standard": {
+    "message": "Standard"
+  },
+  "Fast": {
+    "message": "Fast"
+  },
+  "Instant": {
+    "message": "Instant"
+  },
+  "Custom": {
+    "message": "Custom"
+  },
+  "Enter__Password": {
+    "message": "Enter Password"
+  },
+  "View": {
+    "message": "View"
   }
 }

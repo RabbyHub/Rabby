@@ -1,4 +1,5 @@
 import React, { useState, useEffect, memo, useCallback } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useWallet, getCurrentConnectSite, openInTab } from 'ui/utils';
 import { ConnectedSite } from 'background/service/permission';
 import { ChainSelector, FallbackSiteLogo } from 'ui/component';
@@ -15,6 +16,7 @@ const CurrentConnection = memo(
     onChange(): void;
   }) => {
     const wallet = useWallet();
+    const { t } = useTranslation();
 
     const handleChangeDefaultChain = (chain: CHAINS_ENUM) => {
       wallet.updateConnectSite(site!.origin, {
@@ -27,7 +29,7 @@ const CurrentConnection = memo(
     const NoConnected = () => (
       <p className="not-connected">
         <img src={IconInternet} className="icon icon-no-connect" />
-        Not connected to current website
+        {t('Not connected to current website')}
       </p>
     );
     const Connected = () => (
@@ -37,7 +39,7 @@ const CurrentConnection = memo(
           <p className="origin" title={site!.origin}>
             {site!.origin}
           </p>
-          <p className="name">connected</p>
+          <p className="name">{t('connected')}</p>
         </div>
         <ChainSelector
           value={site!.chain}

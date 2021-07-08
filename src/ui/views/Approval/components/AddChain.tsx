@@ -1,6 +1,7 @@
 import React from 'react';
 import clsx from 'clsx';
 import { Button } from 'antd';
+import { useTranslation, Trans } from 'react-i18next';
 import { CHAINS } from 'consts';
 import { useWallet, useApproval } from 'ui/utils';
 import IconWarning from 'ui/assets/warning.svg';
@@ -19,6 +20,7 @@ interface AddChainProps {
 const AddChain = ({ params }: { params: AddChainProps }) => {
   const wallet = useWallet();
   const [, resolveApproval, rejectApproval] = useApproval();
+  const { t } = useTranslation();
 
   const {
     data: [{ chainId }],
@@ -35,13 +37,15 @@ const AddChain = ({ params }: { params: AddChainProps }) => {
   let content;
   let confirmBtnText;
   if (!enableChains.some((chain) => chain.hex === chainId)) {
-    title = 'Enable a Chain';
-    content = 'By enabling a chain, you’ll be able to make transactions on it.';
-    confirmBtnText = 'Enable';
+    title = t('Enable a Chain');
+    content = t('enableChainContent');
+    confirmBtnText = t('Enable');
   } else if (CHAINS[defaultChain].hex !== chainId) {
-    title = 'Switch a Chain';
-    content = `Next time you visit, this site will be connected to ${showChain?.name}`;
-    confirmBtnText = 'Change';
+    title = t('Switch a Chain');
+    content = (
+      <Trans i18nKey="switchChainDesc" values={{ name: showChain?.name }} />
+    );
+    confirmBtnText = t('Change');
   }
 
   return (
@@ -59,7 +63,7 @@ const AddChain = ({ params }: { params: AddChainProps }) => {
                 {showChain.name}
               </div>
               <div className="mb-28 text-14 text-gray-content">
-                Chain ID:{showChain.id}
+                {t('Chain ID')}:{showChain.id}
               </div>
             </div>
             <div className="text-center text-13 text-gray-content font-medium">
@@ -73,7 +77,7 @@ const AddChain = ({ params }: { params: AddChainProps }) => {
               className="w-[68px] h-[68px] mb-28 mx-auto"
             />
             <div className="text-gray-title text-20 w-[344px] mx-auto font-medium text-center">
-              The requested chain is not supported by Rabby yet
+              {t('The requested chain is not supported by Rabby yet')}
             </div>
           </>
         )}
@@ -93,7 +97,7 @@ const AddChain = ({ params }: { params: AddChainProps }) => {
                 className="w-[172px]"
                 onClick={rejectApproval}
               >
-                Cancel
+                {t('Cancel')}
               </Button>
               <Button
                 type="primary"
@@ -111,7 +115,7 @@ const AddChain = ({ params }: { params: AddChainProps }) => {
               className="w-[200px]"
               onClick={rejectApproval}
             >
-              OK
+              {t('OK')}
             </Button>
           )}
         </div>

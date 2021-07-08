@@ -1,5 +1,6 @@
 import React from 'react';
 import { Popover } from 'antd';
+import { useTranslation } from 'react-i18next';
 import { Spin } from 'ui/component';
 import { SvgIconOffline } from 'ui/assets';
 import { useCurrentBalance } from 'ui/component/AddressList/AddressItem';
@@ -11,6 +12,7 @@ import useConfirmExternalModal from './ConfirmOpenExternalModal';
 const BalanceView = ({ currentAccount }) => {
   const [balance, chainBalances] = useCurrentBalance(currentAccount?.address);
   const _openInTab = useConfirmExternalModal();
+  const { t } = useTranslation();
 
   const handleGotoProfile = () => {
     _openInTab(`https://debank.com/profile/${currentAccount?.address}`);
@@ -58,13 +60,15 @@ const BalanceView = ({ currentAccount }) => {
           {balance === null ? (
             <>
               <Spin size="small" iconClassName="text-white" />
-              <span className="ml-4 leading-tight">Asset data loading</span>
+              <span className="ml-4 leading-tight">
+                {t('Asset data loading')}
+              </span>
             </>
           ) : isNaN(balance) ? (
             <>
               <SvgIconOffline className="mr-4" />
               <span className="leading-tight">
-                The network is disconnected and no data is obtained
+                {t('The network is disconnected and no data is obtained')}
               </span>
             </>
           ) : chainBalances.length > 0 ? (
@@ -85,7 +89,7 @@ const BalanceView = ({ currentAccount }) => {
               </div>
             </Popover>
           ) : (
-            'No assets'
+            t('No assets')
           )}
         </div>
       </div>

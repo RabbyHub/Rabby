@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { useWallet } from 'ui/utils';
 import { splitNumberByStep } from 'ui/utils/number';
 import { KEYRING_TYPE, HARDWARE_KEYRING_TYPES } from 'consts';
@@ -25,6 +26,7 @@ const getAccountIcon = (type: string) => {
 };
 
 const AccountCard = () => {
+  const { t } = useTranslation();
   const wallet = useWallet();
   const currentAccount = wallet.syncGetCurrentAccount();
 
@@ -35,7 +37,7 @@ const AccountCard = () => {
 
   return (
     <div className="account-card">
-      <p className="title">Current account</p>
+      <p className="title">{t('Current account')}</p>
       <div className="account-detail">
         <img src={icon} className="icon icon-account" />
         <AddressViewer showArrow={false} address={currentAccount.address} />

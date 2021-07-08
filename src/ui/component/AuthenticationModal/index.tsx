@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import * as ReactDOM from 'react-dom';
 import { Input, Form, Button } from 'antd';
 import { Modal } from 'ui/component';
@@ -19,6 +20,7 @@ const AuthenticationModal = ({
 }: AuthenticationModalProps) => {
   const [visible, setVisible] = useState(true);
   const [form] = Form.useForm();
+  const { t } = useTranslation();
   const handleSubmit = async ({ password }: { password: string }) => {
     try {
       if (validationHandler) {
@@ -32,7 +34,7 @@ const AuthenticationModal = ({
       form.setFields([
         {
           name: 'password',
-          errors: [e?.message || 'Wrong password'],
+          errors: [e?.message || t('incorrect password')],
         },
       ]);
     }
@@ -43,13 +45,17 @@ const AuthenticationModal = ({
   };
 
   return (
-    <Modal visible={visible} title="Enter Password" onCancel={handleCancel}>
+    <Modal
+      visible={visible}
+      title={t('Enter Password')}
+      onCancel={handleCancel}
+    >
       <Form onFinish={handleSubmit} form={form}>
         <Form.Item
           name="password"
-          rules={[{ required: true, message: 'Please input password' }]}
+          rules={[{ required: true, message: t('Please input password') }]}
         >
-          <Input placeholder="Password" type="password" size="large" />
+          <Input placeholder={t('Password')} type="password" size="large" />
         </Form.Item>
         <div className="flex justify-center pt-6">
           <Button
@@ -58,7 +64,7 @@ const AuthenticationModal = ({
             htmlType="submit"
             className="w-[200px]"
           >
-            View
+            {t('View')}
           </Button>
         </div>
       </Form>

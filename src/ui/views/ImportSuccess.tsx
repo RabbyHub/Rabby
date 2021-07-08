@@ -1,5 +1,6 @@
 import React from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
+import { useTranslation, Trans } from 'react-i18next';
 import { AddressList, StrayPageWithButton } from 'ui/component';
 import { getUiType } from 'ui/utils';
 import { IconImportSuccess } from 'ui/assets';
@@ -14,11 +15,12 @@ const ImportSuccess = () => {
     hasDivider: boolean;
     title: string;
   }>();
+  const { t } = useTranslation();
 
   const {
     accounts,
     hasDivider = true,
-    title = 'Successfully imported',
+    title = t('Successfully imported'),
   } = state;
 
   const handleNextClick = () => {
@@ -43,7 +45,7 @@ const ImportSuccess = () => {
           className="mx-auto mb-18 w-[100px] h-[100px]"
         />
         <div className="text-title text-20 mb-2">
-          {accounts?.length} addresses
+          <Trans i18nKey="AddressCount" values={{ count: accounts?.length }} />
         </div>
         <div className="text-green text-15 mb-12">{title}</div>
         <div className="overflow-auto flex-1 lg:w-[460px]">

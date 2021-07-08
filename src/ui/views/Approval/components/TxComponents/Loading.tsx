@@ -1,5 +1,6 @@
 import React from 'react';
 import { Skeleton } from 'antd';
+import { Trans } from 'react-i18next';
 import { CHAINS, CHAINS_ENUM } from 'consts';
 import BalanceChange from './LoadingBalanceChange';
 
@@ -12,7 +13,12 @@ const Loading = ({ chainEnum }: SignProps) => {
 
   return (
     <div className="sign">
-      <p className="section-title">Sign {chain.name} transaction</p>
+      <p className="section-title">
+        <Trans
+          i18nKey="signTransactionWithChain"
+          values={{ names: chain.name }}
+        />
+      </p>
       <div className="gray-section-block common-detail-block">
         <div className="block-field">
           <Skeleton.Input style={{ width: 200 }} />

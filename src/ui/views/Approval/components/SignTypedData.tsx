@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Button, Tooltip } from 'antd';
+import { useTranslation } from 'react-i18next';
 import { KEYRING_CLASS } from 'consts';
 import { useApproval, useWallet } from 'ui/utils';
 import {
@@ -28,6 +29,7 @@ export const WaitingSignComponent = {
 
 const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
   const [, resolveApproval, rejectApproval] = useApproval();
+  const { t } = useTranslation();
   const wallet = useWallet();
   const { data, session, method } = params;
   let parsedMessage = '';
@@ -54,7 +56,9 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
     securityCheckStatus,
     setSecurityCheckStatus,
   ] = useState<SecurityCheckDecision>('pending');
-  const [securityCheckAlert, setSecurityCheckAlert] = useState('Checking...');
+  const [securityCheckAlert, setSecurityCheckAlert] = useState(
+    t<string>('Checking')
+  );
   const [
     securityCheckDetail,
     setSecurityCheckDetail,
@@ -113,7 +117,7 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
     <>
       <AccountCard />
       <div className="approval-text">
-        <p className="section-title">Sign Typed Message</p>
+        <p className="section-title">{t('Sign Typed Message')}</p>
         <div className="text-detail-wrapper gray-section-block">
           <div className="text-detail text-gray-subTitle">{parsedMessage}</div>
           {explain && (
@@ -122,7 +126,9 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
               <Tooltip
                 placement="top"
                 overlayClassName="text-explain-tooltip"
-                title="This summary information is provide by DeBank OpenAPI"
+                title={t(
+                  'This summary information is provide by DeBank OpenAPI'
+                )}
               >
                 <img
                   src={IconQuestionMark}
@@ -147,7 +153,7 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
             className="w-[172px]"
             onClick={handleCancel}
           >
-            Cancel
+            {t('Cancel')}
           </Button>
           <Button
             type="primary"
@@ -156,8 +162,8 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
             onClick={() => handleAllow()}
           >
             {securityCheckStatus === 'pass' || securityCheckStatus === 'pending'
-              ? 'Sign'
-              : 'Continue'}
+              ? t('Sign')
+              : t('Continue')}
           </Button>
         </div>
       </footer>
@@ -167,7 +173,8 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
           onCancel={() => setShowSecurityCheckDetail(false)}
           data={securityCheckDetail}
           onOk={() => handleAllow(true)}
-          okText="Sign"
+          okText={t('Sign')}
+          cancelText={t('Cancel')}
         />
       )}
     </>

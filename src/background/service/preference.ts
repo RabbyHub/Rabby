@@ -3,6 +3,7 @@ import { createPersistStore } from 'background/utils';
 import { keyringService, sessionService } from './index';
 import { TotalBalanceResponse } from './openapi';
 import { HARDWARE_KEYRING_TYPES } from 'consts';
+import { browser } from 'webextension-polyfill-ts';
 
 export interface Account {
   type: string;
@@ -17,13 +18,21 @@ interface PreferenceStore {
     [address: string]: TotalBalanceResponse;
   };
   useLedgerLive: boolean;
+  locale: string;
 }
+
+const SUPPORT_LOCALES = ['en', 'zh_CN'];
 
 class PreferenceService {
   store!: PreferenceStore;
   popupOpen = false;
 
   init = async () => {
+    let defaultLang = 'en';
+    const acceptLangs = await this.getAcceptLanguages();
+    if (acceptLangs.length > 0) {
+      defaultLang = acceptLangs[0];
+    }
     this.store = await createPersistStore<PreferenceStore>({
       name: 'preference',
       template: {
@@ -32,8 +41,18 @@ class PreferenceService {
         hiddenAddresses: [],
         balanceMap: {},
         useLedgerLive: false,
+        locale: defaultLang,
       },
     });
+    if (!this.store.locale) {
+      this.store.locale = defaultLang;
+    }
+  };
+
+  getAcceptLanguages = async () => {
+    let langs = await browser.i18n.getAcceptLanguages();
+    if (!langs) langs = [];
+    return langs.filter((lang) => SUPPORT_LOCALES.includes(lang));
   };
 
   getHiddenAddresses = () => {
@@ -122,6 +141,14 @@ class PreferenceService {
 
   setExternalLinkAck = (ack = false) => {
     this.store.externalLinkAck = ack;
+  };
+
+  getLocale = () => {
+    return this.store.locale;
+  };
+
+  setLocale = (locale: string) => {
+    this.store.locale = locale;
   };
 
   updateUseLedgerLive = async (value: boolean) => {

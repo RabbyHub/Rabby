@@ -1,6 +1,7 @@
 import React from 'react';
 import { Input, Form } from 'antd';
 import { useHistory } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { StrayPageWithButton } from 'ui/component';
 import { useWallet, useWalletRequest } from 'ui/utils';
 
@@ -8,6 +9,7 @@ const ImportPrivateKey = () => {
   const history = useHistory();
   const wallet = useWallet();
   const [form] = Form.useForm();
+  const { t } = useTranslation();
 
   const [run, loading] = useWalletRequest(wallet.importPrivateKey, {
     onSuccess(accounts) {
@@ -15,7 +17,7 @@ const ImportPrivateKey = () => {
         pathname: '/import/success',
         state: {
           accounts,
-          title: 'Successfully created',
+          title: t('Successfully created'),
         },
       });
     },
@@ -23,7 +25,7 @@ const ImportPrivateKey = () => {
       form.setFields([
         {
           name: 'key',
-          errors: [err?.message || 'Not a valid private key'],
+          errors: [err?.message || t('Not a valid private key')],
         },
       ]);
     },
@@ -32,7 +34,7 @@ const ImportPrivateKey = () => {
   return (
     <StrayPageWithButton
       header={{
-        secondTitle: 'Enter Your  Private Key',
+        secondTitle: t('Enter Your  Private Key'),
       }}
       spinning={loading}
       form={form}
@@ -42,9 +44,9 @@ const ImportPrivateKey = () => {
     >
       <Form.Item
         name="key"
-        rules={[{ required: true, message: 'Please input Private key' }]}
+        rules={[{ required: true, message: t('Please input Private key') }]}
       >
-        <Input placeholder="Private key" size="large" />
+        <Input placeholder={t('Private key')} size="large" />
       </Form.Item>
     </StrayPageWithButton>
   );

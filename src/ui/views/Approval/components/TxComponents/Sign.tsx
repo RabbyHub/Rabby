@@ -1,5 +1,6 @@
 import React from 'react';
 import { message } from 'antd';
+import { Trans, useTranslation } from 'react-i18next';
 import ClipboardJS from 'clipboard';
 import { AddressViewer } from 'ui/component';
 import { CHAINS, CHAINS_ENUM } from 'consts';
@@ -19,6 +20,7 @@ interface SignProps {
 const Sign = ({ data, chainEnum, raw }: SignProps) => {
   const detail = data.type_call!;
   const chain = CHAINS[chainEnum];
+  const { t } = useTranslation();
   const handleCopySpender = () => {
     const clipboard = new ClipboardJS('.sign', {
       text: function () {
@@ -29,7 +31,7 @@ const Sign = ({ data, chainEnum, raw }: SignProps) => {
     clipboard.on('success', () => {
       message.success({
         icon: <img src={IconSuccess} className="icon icon-success" />,
-        content: 'Copied',
+        content: t('Copied'),
         duration: 0.5,
       });
       clipboard.destroy();
@@ -41,7 +43,7 @@ const Sign = ({ data, chainEnum, raw }: SignProps) => {
       const content = JSON.stringify(raw, null, 4);
 
       Modal.info({
-        title: 'Transaction detail',
+        title: t('Transaction detail'),
         centered: true,
         content,
         cancelText: null,
@@ -56,27 +58,31 @@ const Sign = ({ data, chainEnum, raw }: SignProps) => {
   return (
     <div className="sign">
       <p className="section-title">
-        Sign {chain.name} transaction
+        <Trans
+          i18nKey="signTransactionWithChain"
+          values={{ names: chain.name }}
+        />
         <span
           className="float-right text-gray-comment text-12 cursor-pointer flex items-center"
           onClick={handleViewRawClick}
         >
-          view Raw <img src={IconArrowRight} />
+          {t('view Raw')}
+          <img src={IconArrowRight} />
         </span>
       </p>
       <div className="gray-section-block common-detail-block">
         <div className="block-field">
-          <span className="label">Protocol</span>
+          <span className="label">{t('Protocol')}</span>
           <span className="value">
-            {detail.contract_protocol_name || 'Unknown Protocol'}
+            {detail.contract_protocol_name || t('Unknown Protocol')}
           </span>
         </div>
         <div className="block-field">
-          <span className="label">Action</span>
-          <span className="value">{detail.action || 'Unknown Action'}</span>
+          <span className="label">{t('Action')}</span>
+          <span className="value">{detail.action || t('Unknown Action')}</span>
         </div>
         <div className="block-field contract">
-          <span className="label">Contract</span>
+          <span className="label">{t('Contract')}</span>
           <span className="value">
             <AddressViewer address={detail.contract} showArrow={false} />
             <img

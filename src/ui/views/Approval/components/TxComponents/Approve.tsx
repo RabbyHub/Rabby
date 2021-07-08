@@ -2,6 +2,7 @@ import React from 'react';
 import clsx from 'clsx';
 import ClipboardJS from 'clipboard';
 import { message } from 'antd';
+import { useTranslation, Trans } from 'react-i18next';
 import { AddressViewer } from 'ui/component';
 import { CHAINS_ENUM, CHAINS } from 'consts';
 import { splitNumberByStep } from 'ui/utils/number';
@@ -20,6 +21,7 @@ const Approve = ({ data, chainEnum }: ApproveProps) => {
   const detail = data.type_token_approval!;
   const isUnlimited = detail.is_infinity;
   const chain = CHAINS[chainEnum];
+  const { t } = useTranslation();
 
   const handleCopySpender = () => {
     const clipboard = new ClipboardJS('.approve', {
@@ -31,7 +33,7 @@ const Approve = ({ data, chainEnum }: ApproveProps) => {
     clipboard.on('success', () => {
       message.success({
         icon: <img src={IconSuccess} className="icon icon-success" />,
-        content: 'Copied',
+        content: t('Copied'),
         duration: 0.5,
       });
       clipboard.destroy();
@@ -46,11 +48,18 @@ const Approve = ({ data, chainEnum }: ApproveProps) => {
 
   return (
     <div className="approve">
-      <p className="section-title">Sign {chain.name} transaction</p>
+      <p className="section-title">
+        <Trans
+          i18nKey="signTransactionWithChain"
+          values={{ name: chain.name }}
+        />
+      </p>
       <div className="gray-section-block common-detail-block">
         <p className="title">
-          Approve{' '}
-          {isUnlimited ? 'unlimited' : splitNumberByStep(detail.token_amount)}{' '}
+          {t('Approve')}{' '}
+          {isUnlimited
+            ? t('unlimited')
+            : splitNumberByStep(detail.token_amount)}{' '}
           {detail.token_symbol}
         </p>
         <div className="protocol">
@@ -67,7 +76,7 @@ const Approve = ({ data, chainEnum }: ApproveProps) => {
                 'text-gray-content': !detail.spender_protocol_name,
               })}
             >
-              {detail.spender_protocol_name || 'Unknown protocol'}
+              {detail.spender_protocol_name || t('Unknown protocol')}
             </p>
             <div className="protocol-info__spender">
               <AddressViewer address={detail.spender} showArrow={false} />

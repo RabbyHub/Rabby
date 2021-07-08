@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation, Trans } from 'react-i18next';
 import { CHAINS, CHAINS_ENUM } from 'consts';
 import { ExplainTxResponse } from 'background/service/openapi';
 import BalanceChange from './BalanceChange';
@@ -11,13 +12,19 @@ const CancelTx = ({
   data: ExplainTxResponse;
 }) => {
   const chain = CHAINS[chainEnum];
+  const { t } = useTranslation();
   return (
     <div className="cancel-tx">
-      <p className="section-title">Sign {chain.name} transaction</p>
+      <p className="section-title">
+        <Trans
+          i18nKey="signTransactionWithChain"
+          values={{ names: chain.name }}
+        />
+      </p>
       <div className="gray-section-block common-detail-block">
-        <p className="title">Cancel Pending Transaction</p>
+        <p className="title">{t('Cancel Pending Transaction')}</p>
         <p className="text-gray-content text-14 mb-0">
-          One pending transaction will be canceled
+          {t('One pending transaction will be canceled')}
         </p>
       </div>
       <BalanceChange

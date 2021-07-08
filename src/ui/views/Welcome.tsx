@@ -1,9 +1,11 @@
 import React from 'react';
 import { Button } from 'antd';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { ImgWelcome } from 'ui/assets';
 
 const Welcome = () => {
+  const { t } = useTranslation();
   return (
     <div
       className="h-full pt-[482px] relative"
@@ -21,7 +23,7 @@ const Welcome = () => {
           size="large"
           className="w-[288px] h-[48px] block mx-auto text-blue-light bg-white border-none"
         >
-          Get Started
+          {t('Get Started')}
         </Button>
       </Link>
     </div>

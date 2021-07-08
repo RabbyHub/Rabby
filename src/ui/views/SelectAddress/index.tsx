@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useHistory } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { Form } from 'antd';
 import {
   StrayPageWithButton,
@@ -11,6 +12,7 @@ import { HARDWARE_KEYRING_TYPES } from 'consts';
 
 const SelectAddress = () => {
   const history = useHistory();
+  const { t } = useTranslation();
   const { state } = useLocation<{ keyring: any; isMnemonics?: boolean }>();
 
   if (!state) {
@@ -32,7 +34,9 @@ const SelectAddress = () => {
       onSuccess(_accounts) {
         if (_accounts.length < 5) {
           throw new Error(
-            'You need to make use your last account before you can add a new one.'
+            t(
+              'You need to make use your last account before you can add a new one'
+            )
           );
         }
 
@@ -84,12 +88,12 @@ const SelectAddress = () => {
       header={
         isMnemonics
           ? {
-              secondTitle: 'Select Addresses',
-              subTitle: 'Select the addresses you want to import',
+              secondTitle: t('Select Addresses'),
+              subTitle: t('Select the addresses you want to import'),
             }
           : {
-              title: 'Select Addresses',
-              subTitle: 'Select the addresses you want to import',
+              title: t('Select Addresses'),
+              subTitle: t('Select the addresses you want to import'),
               center: true,
             }
       }
@@ -111,7 +115,7 @@ const SelectAddress = () => {
           onClick={() => getAccounts()}
           className="mt-6 text-blue-light text-15 text-center cursor-pointer lg:mb-[66px]"
         >
-          {loading && <Spin size="small" />} Load More...
+          {loading && <Spin size="small" />} {t('Load More')}
         </div>
       </div>
     </StrayPageWithButton>

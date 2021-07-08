@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useDebounce } from 'react-use';
 import { Drawer, Button, Input } from 'antd';
+import { useTranslation } from 'react-i18next';
 import { Checkbox } from 'ui/component';
 import { useWallet } from 'ui/utils';
 import { SecurityCheckResponse } from 'background/service/openapi';
@@ -24,6 +25,7 @@ const SecurityCheckDetail = ({
   preprocessSuccess?: boolean;
 }) => {
   const wallet = useWallet();
+  const { t } = useTranslation();
   const [needPassword, setNeedPassword] = useState(false);
   const [forceProcess, setForceProcess] = useState(false);
   const [password, setPassword] = useState('');
@@ -70,7 +72,7 @@ const SecurityCheckDetail = ({
           {data.forbidden_list.length > 0 && (
             <div className="forbidden flex items-start">
               <div className="w-[70px]">
-                <div className="symbol">Forbidden</div>
+                <div className="symbol">{t('Forbidden')}</div>
               </div>
               <ul>
                 {data.forbidden_list.map((item) => (
@@ -84,7 +86,7 @@ const SecurityCheckDetail = ({
           {data.danger_list.length > 0 && (
             <div className="danger flex items-start">
               <div className="w-[70px]">
-                <div className="symbol">Danger</div>
+                <div className="symbol">{t('Danger')}</div>
               </div>
               <ul>
                 {data.danger_list.map((item) => (
@@ -98,7 +100,7 @@ const SecurityCheckDetail = ({
           {data.warning_list.length > 0 && (
             <div className="warning flex items-start">
               <div className="w-[70px]">
-                <div className="symbol">Warning</div>
+                <div className="symbol">{t('Warning')}</div>
               </div>
               <ul>
                 {data.warning_list.map((item) => (
@@ -113,9 +115,9 @@ const SecurityCheckDetail = ({
         <div className="footer">
           {needPassword && (
             <div className="input-password">
-              <p>Enter passward to continue your transaction</p>
+              <p>{t('Enter passward to continue your transaction')}</p>
               <Input
-                placeholder="Please enter the password"
+                placeholder={t('Please enter the password')}
                 type="password"
                 onChange={(e) => handlePasswordChange(e.target.value)}
               />
@@ -127,7 +129,7 @@ const SecurityCheckDetail = ({
                 checked={forceProcess}
                 onChange={(value) => handleForceProcessChange(value)}
               >
-                I'm sure I want to proceed anyway.
+                {t('processAnyway')}
               </Checkbox>
             </div>
           )}

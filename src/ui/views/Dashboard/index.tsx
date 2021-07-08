@@ -3,8 +3,10 @@ import ClipboardJS from 'clipboard';
 import QRCode from 'qrcode.react';
 import { useHistory } from 'react-router-dom';
 import { message } from 'antd';
+import { useTranslation } from 'react-i18next';
 import { CHAINS, HARDWARE_KEYRING_TYPES, KEYRING_TYPE } from 'consts';
 import { AddressViewer, Modal } from 'ui/component';
+import i18n from 'src/i18n';
 import { useWallet, getCurrentConnectSite } from 'ui/utils';
 import { Account } from 'background/service/preference';
 import {
@@ -28,6 +30,7 @@ import './style.less';
 const Dashboard = () => {
   const history = useHistory();
   const wallet = useWallet();
+  const { t } = useTranslation();
   const [currentAccount, setCurrentAccount] = useState<Account | null>(
     wallet.syncGetCurrentAccount()
   );
@@ -111,7 +114,7 @@ const Dashboard = () => {
     clipboard.on('success', () => {
       message.success({
         icon: <img src={IconSuccess} className="icon icon-success" />,
-        content: 'Copied',
+        content: t('Copied'),
         duration: 0.5,
       });
       clipboard.destroy();
@@ -125,6 +128,11 @@ const Dashboard = () => {
   const hardwareTypes = Object.values(HARDWARE_KEYRING_TYPES).map(
     (item) => item.type
   );
+
+  const handleSwitchLang = () => {
+    const lang = i18n.language;
+    i18n.changeLanguage(lang === 'en' ? 'zh_CN' : 'en');
+  };
 
   return (
     <>
@@ -169,11 +177,11 @@ const Dashboard = () => {
           <div className="operation">
             <div className="operation-item" onClick={handleGotoSend}>
               <img className="icon icon-send" src={IconSend} />
-              Send
+              {t('Send')}
             </div>
             <div className="operation-item" onClick={handleGotoSwap}>
               <img className="icon icon-swap" src={IconSwap} />
-              Swap
+              {t('Swap')}
             </div>
             <div className="operation-item" onClick={handleGotoHistory}>
               {pendingTxCount > 0 ? (
@@ -184,7 +192,7 @@ const Dashboard = () => {
               ) : (
                 <img className="icon icon-history" src={IconHistory} />
               )}
-              History
+              {t('History')}
             </div>
           </div>
         </div>
@@ -199,13 +207,16 @@ const Dashboard = () => {
       >
         <div>
           <QRCode value={currentAccount?.address} size={254} />
-          <p className="address text-gray-subTitle text-15 font-medium mb-0 font-roboto-mono">
+          <p
+            className="address text-gray-subTitle text-15 font-medium mb-0 font-roboto-mono"
+            onClick={handleSwitchLang}
+          >
             {currentAccount?.address}
           </p>
         </div>
       </Modal>
       <Modal
-        title="Set Current Address"
+        title={t('Set Current Address')}
         visible={isModalOpen}
         width="344px"
         onCancel={handleToggle}

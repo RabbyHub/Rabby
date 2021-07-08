@@ -1,4 +1,5 @@
 import React from 'react';
+import { useTranslation } from 'react-i18next';
 import { DisplayedKeryring } from 'background/service/keyring';
 import { KEYRING_TYPE, KEYRING_TYPE_TEXT } from 'consts';
 import AddressItem, { AddressItemProps } from './AddressItem';
@@ -36,6 +37,7 @@ const AddressList: CompoundedComponent = ({
   hiddenAddresses = [],
   onShowMnemonics,
 }: AddressListProps) => {
+  const { t } = useTranslation();
   const GroupItem = ({
     group,
     name,
@@ -46,13 +48,13 @@ const AddressList: CompoundedComponent = ({
     return (
       <li>
         <div className="subtitle flex justify-between">
-          <span>{KEYRING_TYPE_TEXT[name]}</span>
+          <span>{t(KEYRING_TYPE_TEXT[name])}</span>
           {name === KEYRING_TYPE.HdKeyring && action === 'management' && (
             <span
               className="flex items-center text-12 cursor-pointer"
               onClick={onShowMnemonics}
             >
-              View Mnemonic
+              {t('View Mnemonic')}
               <img src={IconArrowRight} className="icon icon-arrow-right" />
             </span>
           )}

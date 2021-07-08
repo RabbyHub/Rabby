@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Link } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import { DisplayedKeryring } from 'background/service/keyring';
 import { Account } from 'background/service/preference';
 import { AddressList } from 'ui/component';
@@ -19,6 +20,7 @@ const SwitchAddress = ({
   const [accounts, setAccounts] = useState<Record<string, DisplayedKeryring[]>>(
     {}
   );
+  const { t } = useTranslation();
 
   const getAllKeyrings = async () => {
     const _accounts = await wallet.getAllVisibleAccounts();
@@ -57,7 +59,7 @@ const SwitchAddress = ({
       <div className="footer">
         <Link to="/settings/address">
           <img src={IconManageAddress} className="icon icon-add" />
-          Manage addresses
+          {t('Manage addresses')}
         </Link>
       </div>
     </div>
