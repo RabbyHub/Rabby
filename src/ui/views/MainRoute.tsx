@@ -69,6 +69,9 @@ const Main = () => {
         <PrivateRoute exact path="/import/mnemonics">
           <ImportMnemonics />
         </PrivateRoute>
+        <PrivateRoute exact path="/popup/import/select-address">
+          <SelectAddress isPopup />
+        </PrivateRoute>
         <PrivateRoute exact path="/import/select-address">
           <SelectAddress />
         </PrivateRoute>

@@ -4,6 +4,7 @@ import { useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { StrayPageWithButton } from 'ui/component';
 import { useWallet, useWalletRequest } from 'ui/utils';
+import PrivatekeyIcon from 'ui/assets/privatekey-icon.svg';
 
 const ImportPrivateKey = () => {
   const history = useHistory();
@@ -33,21 +34,36 @@ const ImportPrivateKey = () => {
 
   return (
     <StrayPageWithButton
-      header={{
-        secondTitle: t('Enter Your  Private Key'),
-      }}
       spinning={loading}
       form={form}
       onSubmit={({ key }) => run(key)}
       hasBack
       hasDivider
+      noPadding
     >
-      <Form.Item
-        name="key"
-        rules={[{ required: true, message: t('Please input Private key') }]}
-      >
-        <Input placeholder={t('Private key')} size="large" />
-      </Form.Item>
+      <header className="create-new-header create-password-header h-[234px]">
+        <img
+          className="rabby-logo"
+          src="/images/logo-gray.png"
+          alt="rabby logo"
+        />
+        <img
+          className="unlock-logo w-[128px] h-[128px] mx-auto"
+          src={PrivatekeyIcon}
+        />
+        <p className="text-24 mb-4 mt-0 text-white text-center font-bold">
+          {t('Enter Your Private Key')}
+        </p>
+        <img src="/images/private-mask.png" className="mask" />
+      </header>
+      <div className="pt-32 px-20">
+        <Form.Item
+          name="key"
+          rules={[{ required: true, message: t('Please input Private key') }]}
+        >
+          <Input placeholder={t('Private key')} size="large" />
+        </Form.Item>
+      </div>
     </StrayPageWithButton>
   );
 };
