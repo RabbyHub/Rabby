@@ -23,6 +23,7 @@ import CreateMnemonics from './CreateMnemonics';
 import AddAddress from './AddAddress';
 import ChainManagement, { StartChainManagement } from './ChainManagement';
 import AddressManagement from './AddressManagement';
+import SwitchLang from './SwitchLang';
 
 ReactGA.initialize('UA-199755108-1');
 // eslint-disable-next-line @typescript-eslint/no-empty-function
@@ -104,6 +105,9 @@ const Main = () => {
         </PrivateRoute>
         <PrivateRoute exact path="/settings/chain">
           <ChainManagement />
+        </PrivateRoute>
+        <PrivateRoute exact path="/settings/switch-lang">
+          <SwitchLang />
         </PrivateRoute>
       </Switch>
     </>

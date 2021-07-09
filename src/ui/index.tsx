@@ -5,6 +5,7 @@ import Views from './views';
 import { getUiType } from 'ui/utils';
 import * as Sentry from '@sentry/react';
 import { Integrations } from '@sentry/tracing';
+import i18n, { addResourceBundle } from 'src/i18n';
 import '../i18n';
 
 import './style/index.less';
@@ -55,10 +56,15 @@ if (
 }
 
 browser.runtime.getBackgroundPage().then((win) => {
-  ReactDOM.render(
-    <Views wallet={win.wallet} />,
-    document.getElementById('root')
-  );
+  const locale = win.wallet.getLocale();
+  console.log('locale', locale);
+  addResourceBundle(locale).then(() => {
+    i18n.changeLanguage(locale);
+    ReactDOM.render(
+      <Views wallet={win.wallet} />,
+      document.getElementById('root')
+    );
+  });
 });
 
 if (getUiType().isPop) {

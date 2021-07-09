@@ -15,6 +15,8 @@ import IconOKTLogo from 'ui/assets/chain-logos/okex.svg';
 import IconOKTWhiteLogo from 'ui/assets/chain-logos/okex-white.svg';
 import IconArbitrumLogo from 'ui/assets/chain-logos/arbitrum.svg';
 import IconArbitrumWhiteLogo from 'ui/assets/chain-logos/arbitrum-white.svg';
+import IconEN from 'ui/assets/langs/en.svg';
+import IconZH from 'ui/assets/langs/zh_cn.svg';
 
 export enum CHAINS_ENUM {
   ETH = 'ETH',
@@ -200,3 +202,16 @@ export const GAS_LEVEL_TEXT = {
 };
 
 export const IS_WINDOWS = /windows/i.test(navigator.userAgent);
+
+export const LANGS = [
+  {
+    value: 'en',
+    label: 'English',
+    icon: IconEN,
+  },
+  {
+    value: 'zh_CN',
+    label: '中文',
+    icon: IconZH,
+  },
+];

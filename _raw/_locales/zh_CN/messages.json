@@ -509,5 +509,11 @@
   },
   "View": {
     "message": "查看"
+  },
+  "Languages": {
+    "message": "语言"
+  },
+  "Switching__languages": {
+    "message": "切换语言"
   }
 }
