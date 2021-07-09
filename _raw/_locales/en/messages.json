@@ -512,5 +512,8 @@
   },
   "Languages": {
     "message": "Languages"
+  },
+  "Switching__languages": {
+    "message": "Switching languages"
   }
 }
