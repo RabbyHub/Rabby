@@ -57,7 +57,7 @@ const ImportWatchAddress = () => {
         <p className="text-14 mb-0 mt-4 text-white opacity-80 text-center">
           {t('Enter an address without providing private key')}
         </p>
-        <img src="/images/create-password-mask.png" className="mask" />
+        <img src="/images/watch-mask.png" className="mask" />
       </header>
       <Form.Item
         className="pt-32 px-20"

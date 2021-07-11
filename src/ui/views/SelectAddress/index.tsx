@@ -76,7 +76,7 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
     }
 
     history.replace({
-      pathname: '/import/success',
+      pathname: isPopup ? '/popup/import/success' : '/import/success',
       state: {
         accounts: selectedAddressIndexes.map((i) => accounts[i]),
         hasDivider: !!isMnemonics,
@@ -107,7 +107,7 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
       form={form}
       footerFixed={false}
       noPadding={isPopup}
-      // className={clsx(isPopup ? 'flex flex-column' : '')}
+      isScrollContainer={isPopup}
     >
       {isPopup && (
         <header className="create-new-header create-password-header h-[160px]">

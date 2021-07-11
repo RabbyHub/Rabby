@@ -87,6 +87,9 @@ const Main = () => {
         <PrivateRoute exact path="/import/watch-address">
           <ImportWatchAddress />
         </PrivateRoute>
+        <PrivateRoute exact path="/popup/import/success">
+          <ImportSuccess isPopup />
+        </PrivateRoute>
         <PrivateRoute exact path="/import/success">
           <ImportSuccess />
         </PrivateRoute>

@@ -1,3 +1,9 @@
 .stray-page .ant-spin-container {
   height: 100%;
 }
+
+.scroll-container {
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
+}

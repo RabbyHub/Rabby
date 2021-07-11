@@ -1,6 +1,7 @@
 import React, { ReactNode, FunctionComponent } from 'react';
 import cx from 'clsx';
 import { Form, FormInstance, FormProps } from 'antd';
+import clsx from 'clsx';
 import { SvgIconSlogon } from 'assets';
 import StrayHeader, { StrayHeaderProps } from '../StrayHeader';
 import StrayFooter, { StrayFooterNavProps } from '../StrayFooter';
@@ -63,6 +64,7 @@ interface StrayPageWithButtonProps {
   className?: string;
   spinning?: boolean;
   noPadding?: boolean;
+  isScrollContainer?: boolean;
 }
 
 export const StrayPageWithButton = ({
@@ -83,6 +85,7 @@ export const StrayPageWithButton = ({
   spinning,
   footerFixed,
   noPadding = false,
+  isScrollContainer = false,
 }: StrayPageWithButtonProps & StrayFooterNavProps) => (
   <StrayPage
     header={header}
@@ -91,7 +94,9 @@ export const StrayPageWithButton = ({
     noPadding={noPadding}
   >
     <Form
-      className="sm:pb-[85px] lg:pb-[112px]"
+      className={clsx('sm:pb-[85px] lg:pb-[112px]', {
+        'scroll-container': isScrollContainer,
+      })}
       autoComplete="off"
       {...formProps}
       onFinish={onSubmit}
