@@ -7,6 +7,11 @@ import {
 import { PromiseFlow, underline2Camelcase } from 'background/utils';
 import providerController from './controller';
 
+const isSignApproval = (type: string) => {
+  const SIGN_APPROVALS = ['SignText', 'SignTypedData', 'SignTx'];
+  return SIGN_APPROVALS.includes(type);
+};
+
 const flow = new PromiseFlow()
   .use(async (ctx, next) => {
     // check method
@@ -89,8 +94,11 @@ const flow = new PromiseFlow()
         },
         { height }
       );
-
-      permissionService.touchConnectedSite(origin);
+      if (isSignApproval(approvalType)) {
+        permissionService.updateConnectSite(origin, { isSigned: true }, true);
+      } else {
+        permissionService.touchConnectedSite(origin);
+      }
     }
 
     return next();

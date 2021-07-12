@@ -69,7 +69,6 @@ const ConnectionItem = memo(
   }) => (
     <div
       className="item"
-      onClick={onClick}
       onPointerEnter={onPointerEnter}
       onPointerLeave={onPointerLeave}
     >
@@ -85,6 +84,7 @@ const ConnectionItem = memo(
               url={item.icon}
               origin={item.origin}
               width="32px"
+              onClick={onClick}
             />
           </div>
         </>
@@ -140,9 +140,9 @@ export default () => {
             data-item={item}
             onPointerEnter={() => showHoverSite(item)}
             onPointerLeave={() => showHoverSite()}
-            onClick={() => handleClickConnection(item)}
             item={item}
             key={item?.origin || index}
+            onClick={() => handleClickConnection(item)}
           />
         ))}
       </div>

@@ -25,6 +25,7 @@ const FallbackImage = ({
   height,
   className,
   style = {},
+  onClick,
 }: {
   url: string;
   origin: string;
@@ -32,6 +33,7 @@ const FallbackImage = ({
   height?: string;
   className?: string;
   style?: React.CSSProperties;
+  onClick?(): void;
 }) => {
   const [loadFaild, setLoadFaild] = useState(false);
   const [loadSuccess, setLoadSuccess] = useState(false);
@@ -59,6 +61,7 @@ const FallbackImage = ({
   return (
     <div
       className={cx('fallback-site-logo', className)}
+      onClick={onClick}
       style={{
         backgroundColor: loadSuccess ? 'transparent' : bgColor,
         backgroundImage: loadSuccess ? 'none' : bgText,
