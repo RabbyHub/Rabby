@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "name": "__MSG_appName__",
   "short_name": "__MSG_appName__",
-  "version": "0.4.0",
+  "version": "0.5.0",
   "default_locale": "en",
   "description": "__MSG_appDescription__",
   "icons": {
@@ -29,21 +29,41 @@
   "author": "https://rabby.io/",
   "background": {
     "persistent": true,
-    "scripts": ["webextension-polyfill.js", "background.js"]
+    "scripts": [
+      "webextension-polyfill.js",
+      "background.js"
+    ]
   },
   "content_scripts": [
     {
       "all_frames": true,
-      "js": ["webextension-polyfill.js", "content-script.js"],
-      "matches": ["file://*/*", "http://*/*", "https://*/*"],
+      "js": [
+        "webextension-polyfill.js",
+        "content-script.js"
+      ],
+      "matches": [
+        "file://*/*",
+        "http://*/*",
+        "https://*/*"
+      ],
       "run_at": "document_start"
     },
     {
-      "matches": ["*://connect.trezor.io/*/popup.html"],
-      "js": ["vendor/trezor/trezor-content-script.js"]
+      "matches": [
+        "*://connect.trezor.io/*/popup.html"
+      ],
+      "js": [
+        "vendor/trezor/trezor-content-script.js"
+      ]
     }
   ],
   "content_security_policy": "script-src 'self' https://www.google-analytics.com; object-src 'self'",
-  "permissions": ["storage", "activeTab", "notifications"],
-  "web_accessible_resources": ["user-media-permission.html"]
+  "permissions": [
+    "storage",
+    "activeTab",
+    "notifications"
+  ],
+  "web_accessible_resources": [
+    "user-media-permission.html"
+  ]
 }
