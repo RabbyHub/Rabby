@@ -89,16 +89,12 @@ const VerifyMnemonics = ({ mnemonics, onBackClick }) => {
     [mnemonics]
   );
 
-  useEffect(() => {
-    console.log(errMsg);
-  }, [errMsg]);
-
-  const onSubmit = async ({ mnemonics }: { mnemonics: string[] }) => {
-    if (!mnemonics || mnemonics.length <= 0) {
+  const onSubmit = async (values: { mnemonics: string[] }) => {
+    if (!values.mnemonics || values.mnemonics.length <= 0) {
       setErrMsg(t('Please select words'));
       return;
     }
-    if (mnemonics.join(' ') !== randomMnemonics) {
+    if (values.mnemonics.join(' ') !== mnemonics) {
       setErrMsg(t('Verification failed'));
       return;
     }
