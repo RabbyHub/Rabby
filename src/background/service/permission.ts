@@ -135,6 +135,15 @@ class PermissionService {
     });
   };
 
+  unpinConnectedSite = (origin: string) => {
+    const site = this.getConnectedSite(origin);
+    if (!site || !this.lruCache) return;
+    this.updateConnectSite(origin, {
+      ...site,
+      isTop: false,
+    });
+  };
+
   removeConnectedSite = (origin: string) => {
     if (!this.lruCache) return;
 

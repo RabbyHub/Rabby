@@ -25,6 +25,28 @@
         height: 16px;
         z-index: 2;
       }
+      .pin-website {
+        position: absolute;
+        width: 12px;
+        height: 12px;
+        left: 4px;
+        top: 4px;
+        z-index: 2;
+        cursor: pointer;
+        display: none;
+      }
+      .unpin-website {
+        position: absolute;
+        left: 0;
+        top: -14px;
+        width: 0;
+        height: 0;
+        border: 10px solid transparent;
+        border-right: 10px solid #8697FF;
+        cursor: pointer;
+        transform-origin: left top;
+        transform: rotate(45deg);
+      }
       .logo {
         width: 32px;
         height: 32px;
@@ -42,6 +64,11 @@
       }
       &:nth-last-child(-n+4) {
         padding-bottom: 8px;
+      }
+      &:hover {
+        .pin-website {
+          display: block;
+        }
       }
     }
     .fallback-site-logo {
