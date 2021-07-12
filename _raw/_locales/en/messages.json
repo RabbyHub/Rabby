@@ -215,6 +215,9 @@
   "Verification__failed": {
     "message": "Verification failed"
   },
+  "Please__select__words": {
+    "message": "Please select words"
+  },
   "You__need__to__make__use__your__last__account__before__you__can__add__a__new__one": {
     "message": "You need to make use your last account before you can add a new one."
   },
@@ -515,5 +518,8 @@
   },
   "Switching__languages": {
     "message": "Switching languages"
+  },
+  "This__password__will__be__used__to__unlock__your__wallet": {
+    "message": "This password will be used to unlock your wallet"
   }
 }

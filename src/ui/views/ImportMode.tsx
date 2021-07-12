@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { StrayPageWithButton, FieldCheckbox } from 'ui/component';
 import { useWallet } from 'ui/utils';
 import { KEYRING_CLASS } from 'consts';
+import ImportIcon from 'ui/assets/import-icon.svg';
 
 const ImportMode = () => {
   const history = useHistory();
@@ -54,15 +55,28 @@ const ImportMode = () => {
 
   return (
     <StrayPageWithButton
-      header={{
-        secondTitle: 'Import',
-      }}
       nextDisabled={!currentMode}
       onNextClick={handleNext}
       hasBack
       hasDivider
+      noPadding
     >
-      <div className="mt-20">
+      <header className="create-new-header create-password-header h-[234px]">
+        <img
+          className="rabby-logo"
+          src="/images/logo-gray.png"
+          alt="rabby logo"
+        />
+        <img
+          className="unlock-logo w-[128px] h-[128px] mx-auto"
+          src={ImportIcon}
+        />
+        <p className="text-24 mb-4 mt-0 text-white text-center font-bold">
+          {t('Import')}
+        </p>
+        <img src="/images/import-mask.png" className="mask" />
+      </header>
+      <div className="pt-32 px-20">
         {modes.map((e) => (
           <FieldCheckbox
             key={e.name}

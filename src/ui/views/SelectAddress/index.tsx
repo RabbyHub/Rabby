@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useLocation, useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import clsx from 'clsx';
 import { Form } from 'antd';
 import {
   StrayPageWithButton,
@@ -10,7 +11,7 @@ import {
 import { useWallet, useWalletRequest } from 'ui/utils';
 import { HARDWARE_KEYRING_TYPES } from 'consts';
 
-const SelectAddress = () => {
+const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
   const history = useHistory();
   const { t } = useTranslation();
   const { state } = useLocation<{ keyring: any; isMnemonics?: boolean }>();
@@ -75,7 +76,7 @@ const SelectAddress = () => {
     }
 
     history.replace({
-      pathname: '/import/success',
+      pathname: isPopup ? '/popup/import/success' : '/import/success',
       state: {
         accounts: selectedAddressIndexes.map((i) => accounts[i]),
         hasDivider: !!isMnemonics,
@@ -86,7 +87,9 @@ const SelectAddress = () => {
   return (
     <StrayPageWithButton
       header={
-        isMnemonics
+        isPopup
+          ? undefined
+          : isMnemonics
           ? {
               secondTitle: t('Select Addresses'),
               subTitle: t('Select the addresses you want to import'),
@@ -103,8 +106,30 @@ const SelectAddress = () => {
       hasDivider={isMnemonics}
       form={form}
       footerFixed={false}
+      noPadding={isPopup}
+      isScrollContainer={isPopup}
     >
-      <div className="overflow-y-auto lg:h-[472px]">
+      {isPopup && (
+        <header className="create-new-header create-password-header h-[160px]">
+          <img
+            className="rabby-logo"
+            src="/images/logo-gray.png"
+            alt="rabby logo"
+          />
+          <p className="text-24 mb-4 mt-32 text-white text-center font-bold">
+            {t('Select Addresses')}
+          </p>
+          <p className="text-14 mb-0 mt-4 text-white opacity-80 text-center">
+            {t('Select the addresses you want to import')}
+          </p>
+        </header>
+      )}
+      <div
+        className={clsx('overflow-y-auto lg:h-[472px]', {
+          'p-20': isPopup,
+          'flex-1': isPopup,
+        })}
+      >
         <Form.Item className="mb-0" name="selectedAddressIndexes">
           <MultiSelectAddressList
             accounts={accounts}

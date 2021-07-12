@@ -44,23 +44,35 @@ const DisplayMnemonic = ({ mnemonics, onNextClick }) => {
 
   return (
     <StrayPageWithButton
-      header={{
-        secondTitle: t('Back Up Your Mnemonic'),
-        subTitle: t('backupMnemonicTip'),
-      }}
       hasBack
       hasDivider
       onNextClick={onNextClick}
       onBackClick={handleBackClick}
+      noPadding
     >
-      <div
-        className="h-[180px] rounded-lg flex bg-white text-center items-center text-20 font-medium p-40"
-        style={{ wordSpacing: '8px' }}
-      >
-        {mnemonics}
-      </div>
-      <div className="mt-16 text-red-light text-13 text-center px-40 font-medium">
-        {t('backupMnemonicAlert')}
+      <header className="create-new-header create-password-header h-[180px]">
+        <img
+          className="rabby-logo"
+          src="/images/logo-gray.png"
+          alt="rabby logo"
+        />
+        <p className="text-24 mb-4 mt-32 text-white text-center font-bold">
+          {t('Back Up Your Mnemonic')}
+        </p>
+        <p className="text-14 mb-0 mt-4 text-white opacity-80 text-center">
+          {t('backupMnemonicTip')}
+        </p>
+      </header>
+      <div className="px-20 pt-60">
+        <div
+          className="h-[180px] rounded-lg flex bg-white text-center items-center text-20 font-medium p-40"
+          style={{ wordSpacing: '8px' }}
+        >
+          {mnemonics}
+        </div>
+        <div className="mt-16 text-red-light text-13 text-center px-40 font-medium">
+          {t('backupMnemonicAlert')}
+        </div>
       </div>
     </StrayPageWithButton>
   );
@@ -70,13 +82,22 @@ const VerifyMnemonics = ({ mnemonics, onBackClick }) => {
   const history = useHistory();
   const wallet = useWallet();
   const { t } = useTranslation();
+  const [errMsg, setErrMsg] = useState('');
 
   const randomMnemonics = useMemo(
     () => mnemonics.split(' ').sort(() => Math.random() - 0.5),
     [mnemonics]
   );
 
-  const onSubmit = async () => {
+  const onSubmit = async (values: { mnemonics: string[] }) => {
+    if (!values.mnemonics || values.mnemonics.length <= 0) {
+      setErrMsg(t('Please select words'));
+      return;
+    }
+    if (values.mnemonics.join(' ') !== mnemonics) {
+      setErrMsg(t('Verification failed'));
+      return;
+    }
     const accounts = await wallet.createKeyringWithMnemonics(mnemonics);
 
     history.replace({
@@ -90,10 +111,6 @@ const VerifyMnemonics = ({ mnemonics, onBackClick }) => {
 
   return (
     <StrayPageWithButton
-      header={{
-        secondTitle: t('Verify Mnemonic'),
-        subTitle: t('Please select the mnemonic words in order'),
-      }}
       formProps={{
         validateTrigger: 'onBlur',
       }}
@@ -101,23 +118,26 @@ const VerifyMnemonics = ({ mnemonics, onBackClick }) => {
       hasBack
       hasDivider
       onBackClick={onBackClick}
+      noPadding
     >
-      <Form.Item
-        name="mnemonics"
-        rules={[
-          { required: true },
-          {
-            validator(_, value: []) {
-              if (!value || !value.length || value.join(' ') === mnemonics) {
-                return Promise.resolve();
-              }
-              return Promise.reject(new Error(t('Verification failed')));
-            },
-          },
-        ]}
-      >
-        <TiledSelect options={randomMnemonics} />
-      </Form.Item>
+      <header className="create-new-header create-password-header h-[160px]">
+        <img
+          className="rabby-logo"
+          src="/images/logo-gray.png"
+          alt="rabby logo"
+        />
+        <p className="text-24 mb-4 mt-32 text-white text-center font-bold">
+          {t('Verify Mnemonic')}
+        </p>
+        <p className="text-14 mb-0 mt-4 text-white opacity-80 text-center">
+          {t('Please select the mnemonic words in order')}
+        </p>
+      </header>
+      <div className="pt-20 px-20 w-screen">
+        <Form.Item name="mnemonics">
+          <TiledSelect options={randomMnemonics} errMsg={errMsg} />
+        </Form.Item>
+      </div>
     </StrayPageWithButton>
   );
 };

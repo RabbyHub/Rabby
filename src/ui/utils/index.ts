@@ -19,7 +19,9 @@ const UI_TYPE = {
 };
 
 type UiTypeCheck = {
-  [Prop in keyof typeof UI_TYPE as `is${Prop}`]: boolean;
+  isTab: boolean;
+  isNotification: boolean;
+  isPop: boolean;
 };
 
 export const getUiType = (): UiTypeCheck => {

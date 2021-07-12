@@ -1,6 +1,7 @@
 import React, { ReactNode, FunctionComponent } from 'react';
 import cx from 'clsx';
 import { Form, FormInstance, FormProps } from 'antd';
+import clsx from 'clsx';
 import { SvgIconSlogon } from 'assets';
 import StrayHeader, { StrayHeaderProps } from '../StrayHeader';
 import StrayFooter, { StrayFooterNavProps } from '../StrayFooter';
@@ -15,6 +16,7 @@ interface StrayPageProps {
   footerRender?: FunctionComponent;
   className?: string;
   spinning?: boolean;
+  noPadding?: boolean;
 }
 
 const StrayPage = ({
@@ -24,18 +26,19 @@ const StrayPage = ({
   footerRender,
   className,
   spinning = false,
+  noPadding = false,
 }: StrayPageProps) => (
   <div
     className={cx(
       'stray-page relative flex flex-col bg-gray-bg',
-      'sm:pt-28',
+      { 'sm:pt-28': !noPadding },
       'lg:pt-[60px] lg:w-[993px] sm:min-h-full lg:mt-[150px] lg:rounded-md lg:mx-auto',
       className
     )}
   >
     <SvgIconSlogon className="absolute left-28 top-[-56px] hidden lg:block" />
     <Spin spinning={spinning} size="large">
-      <div className="sm:px-20 h-full flex flex-col">
+      <div className={cx({ 'sm:px-20': !noPadding }, 'h-full flex flex-col')}>
         {header && (
           <StrayHeader className={headerClassName || 'mb-60'} {...header} />
         )}
@@ -60,6 +63,8 @@ interface StrayPageWithButtonProps {
   children;
   className?: string;
   spinning?: boolean;
+  noPadding?: boolean;
+  isScrollContainer?: boolean;
 }
 
 export const StrayPageWithButton = ({
@@ -79,14 +84,19 @@ export const StrayPageWithButton = ({
   NextButtonContent,
   spinning,
   footerFixed,
+  noPadding = false,
+  isScrollContainer = false,
 }: StrayPageWithButtonProps & StrayFooterNavProps) => (
   <StrayPage
     header={header}
     spinning={spinning}
     headerClassName={headerClassName}
+    noPadding={noPadding}
   >
     <Form
-      className="sm:pb-[91px] lg:pb-[112px]"
+      className={clsx('sm:pb-[85px] lg:pb-[112px]', {
+        'scroll-container': isScrollContainer,
+      })}
       autoComplete="off"
       {...formProps}
       onFinish={onSubmit}

@@ -91,11 +91,16 @@ export const useSelectOption = <T>({
     }
   };
 
+  const handleClear = () => {
+    changeValue([]);
+  };
+
   return [
     idxs.map((o) => options[o]),
     handleRemove,
     handleChoose,
     handleToggle,
+    handleClear,
   ] as const;
 };
 

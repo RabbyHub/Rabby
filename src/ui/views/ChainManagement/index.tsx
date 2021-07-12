@@ -98,12 +98,20 @@ export const StartChainManagement = () => {
       NextButtonContent="OK"
       hasDivider
       onNextClick={handleNextClick}
-      header={{
-        title: t('Enable Chains'),
-      }}
+      noPadding
       headerClassName="mb-24"
     >
-      <div className="chain-management px-0 min-h-full">
+      <header className="create-new-header create-password-header h-[140px]">
+        <img
+          className="rabby-logo"
+          src="/images/logo-gray.png"
+          alt="rabby logo"
+        />
+        <p className="text-24 mt-32 mb-0 text-white text-center font-bold">
+          {t('Enable Chains')}
+        </p>
+      </header>
+      <div className="chain-management p-20 min-h-full">
         <ChainManagementList inStart />
       </div>
     </StrayPageWithButton>
