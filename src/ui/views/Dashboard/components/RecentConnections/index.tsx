@@ -83,7 +83,11 @@ const ConnectionItem = memo(
         {item ? (
           <>
             {item.isTop ? (
-              <div className="unpin-website" onClick={onUnpin} />
+              <div
+                className="unpin-website"
+                onClick={onUnpin}
+                title={t('UnPin Website')}
+              />
             ) : (
               <img
                 className="pin-website"

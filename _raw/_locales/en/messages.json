@@ -524,5 +524,8 @@
   },
   "Pin__Website": {
     "message": "Pin Website"
+  },
+  "UnPin__Website": {
+    "message": "UnPin Website"
   }
 }
