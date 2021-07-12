@@ -23,6 +23,7 @@
         top: 16px;
         width: 16px;
         height: 16px;
+        z-index: 2;
       }
       .logo {
         width: 32px;
@@ -41,6 +42,49 @@
       }
       &:nth-last-child(-n+4) {
         padding-bottom: 8px;
+      }
+    }
+    .fallback-site-logo {
+      position: relative;
+      overflow: visible;
+      .img-wrapper {
+        width: 32px;
+        height: 32px;
+        img {
+          pointer-events: none;
+          position: absolute;
+          left: 50%;
+          top: 50%;
+          margin-left: -16px;
+          margin-top: -16px;
+          z-index: 1;
+          transform: scale(1);
+          transition: transform .2s;
+        }
+      }
+      .img-wrapper::after {
+        content: '';
+        transform: scale(0);
+        position: absolute;
+        width: 32px;
+        height: 32px;
+        left: 50%;
+        top: 50%;
+        margin-left: -16px;
+        margin-top: -16px;
+        transition: transform .2s;
+        background: var(--background);
+        filter: blur(15px);
+        z-index: 0;
+        background-size: cover;
+      }
+      &:hover {
+        .img-wrapper::after {
+          transform: scale(1);
+        }
+        img {
+          transform: scale(1.2);
+        }
       }
     }
   }
