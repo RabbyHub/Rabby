@@ -515,5 +515,8 @@
   },
   "Switching__languages": {
     "message": "切换语言"
+  },
+  "This__password__will__be__used__to__unlock__your__wallet": {
+    "message": "此密码将被用于解锁您的钱包"
   }
 }
