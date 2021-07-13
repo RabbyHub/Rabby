@@ -8,6 +8,8 @@ export interface ConnectedSite {
   name: string;
   chain: CHAINS_ENUM;
   e?: number;
+  isSigned: boolean;
+  isTop: boolean;
 }
 
 type PermissionStore = {
@@ -52,11 +54,19 @@ class PermissionService {
     origin: string,
     name: string,
     icon: string,
-    defaultChain: CHAINS_ENUM
+    defaultChain: CHAINS_ENUM,
+    isSigned = false
   ) => {
     if (!this.lruCache) return;
 
-    this.lruCache.set(origin, { origin, name, icon, chain: defaultChain });
+    this.lruCache.set(origin, {
+      origin,
+      name,
+      icon,
+      chain: defaultChain,
+      isSigned,
+      isTop: false,
+    });
     this.sync();
   };
 
@@ -90,18 +100,51 @@ class PermissionService {
   };
 
   getRecentConnectSites = (max = 12) => {
-    return this.lruCache?.values().slice(0, max) || [];
+    const values = this.lruCache?.values() || [];
+    const topSites: ConnectedSite[] = [];
+    const signedSites: ConnectedSite[] = [];
+    const connectedSites: ConnectedSite[] = [];
+
+    for (let i = 0; i < values.length; i++) {
+      const item = values[i];
+      if (item.isTop) {
+        topSites.push(item);
+      } else if (item.isSigned) {
+        signedSites.push(item);
+      } else {
+        connectedSites.push(item);
+      }
+    }
+    return [...topSites, ...signedSites, ...connectedSites].slice(0, max) || [];
   };
 
   getConnectedSites = () => {
     return this.lruCache?.values() || [];
   };
 
-  getConnectedSite = (key) => {
+  getConnectedSite = (key: string) => {
     return this.lruCache?.get(key);
   };
 
-  removeConnectedSite = (origin) => {
+  topConnectedSite = (origin: string) => {
+    const site = this.getConnectedSite(origin);
+    if (!site || !this.lruCache) return;
+    this.updateConnectSite(origin, {
+      ...site,
+      isTop: true,
+    });
+  };
+
+  unpinConnectedSite = (origin: string) => {
+    const site = this.getConnectedSite(origin);
+    if (!site || !this.lruCache) return;
+    this.updateConnectSite(origin, {
+      ...site,
+      isTop: false,
+    });
+  };
+
+  removeConnectedSite = (origin: string) => {
     if (!this.lruCache) return;
 
     this.lruCache.del(origin);

@@ -101,7 +101,10 @@ export class WalletController extends BaseController {
     permissionService.removeConnectedSite(origin);
   };
   getSitesByDefaultChain = permissionService.getSitesByDefaultChain;
-
+  topConnectedSite = (origin: string) =>
+    permissionService.topConnectedSite(origin);
+  unpinConnectedSite = (origin: string) =>
+    permissionService.unpinConnectedSite(origin);
   /* keyrings */
 
   clearKeyrings = () => keyringService.clearKeyrings();

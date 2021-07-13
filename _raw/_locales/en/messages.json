@@ -521,5 +521,11 @@
   },
   "This__password__will__be__used__to__unlock__your__wallet": {
     "message": "This password will be used to unlock your wallet"
+  },
+  "Pin__Website": {
+    "message": "Pin Website"
+  },
+  "UnPin__Website": {
+    "message": "UnPin Website"
   }
 }

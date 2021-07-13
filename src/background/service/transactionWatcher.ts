@@ -84,7 +84,7 @@ class TransactionWatcher {
       txReceipt.status === '0x1' ? 'completed' : 'failed'
     }`;
 
-    notification.create(url, title, 'click to view more information');
+    notification.create(url, title, 'click to view more information', 2);
   };
 
   roll = () => {

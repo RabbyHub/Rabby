@@ -5,6 +5,7 @@ import { ConnectedSite } from 'background/service/permission';
 import { ChainSelector, FallbackSiteLogo } from 'ui/component';
 import { CHAINS_ENUM, CHAINS } from 'consts';
 import IconInternet from 'ui/assets/internet.svg';
+import IconPin from 'ui/assets/pin.svg';
 import './style.less';
 
 const CurrentConnection = memo(
@@ -59,42 +60,67 @@ const ConnectionItem = memo(
   ({
     item,
     onClick,
+    onPin,
+    onUnpin,
     onPointerEnter,
     onPointerLeave,
   }: {
     item: ConnectedSite | null;
     onClick?(): void;
+    onPin?(): void;
+    onUnpin?(): void;
     onPointerEnter?(): void;
     onPointerLeave?(): void;
-  }) => (
-    <div
-      className="item"
-      onClick={onClick}
-      onPointerEnter={onPointerEnter}
-      onPointerLeave={onPointerLeave}
-    >
-      {item ? (
-        <>
-          <img
-            className="connect-chain"
-            src={CHAINS[item.chain].logo}
-            alt={CHAINS[item.chain].name}
-          />
-          <div className="logo cursor-pointer">
-            <FallbackSiteLogo
-              url={item.icon}
-              origin={item.origin}
-              width="32px"
+  }) => {
+    const { t } = useTranslation();
+
+    return (
+      <div
+        className="item"
+        onPointerEnter={onPointerEnter}
+        onPointerLeave={onPointerLeave}
+      >
+        {item ? (
+          <>
+            {item.isTop ? (
+              <div
+                className="unpin-website"
+                onClick={onUnpin}
+                title={t('UnPin Website')}
+              />
+            ) : (
+              <img
+                className="pin-website"
+                src={IconPin}
+                alt={t('Pin Website')}
+                title={t('Pin Website')}
+                onClick={onPin}
+              />
+            )}
+            <img
+              className="connect-chain"
+              src={CHAINS[item.chain].logo}
+              alt={CHAINS[item.chain].name}
             />
-          </div>
-        </>
-      ) : (
-        <img src="/images/no-recent-connect.png" className="logo" />
-      )}
-    </div>
-  ),
+            <div className="logo cursor-pointer">
+              <FallbackSiteLogo
+                url={item.icon}
+                origin={item.origin}
+                width="32px"
+                onClick={onClick}
+              />
+            </div>
+          </>
+        ) : (
+          <img src="/images/no-recent-connect.png" className="logo" />
+        )}
+      </div>
+    );
+  },
   (pre, next) =>
-    pre.item?.origin == next.item?.origin && pre.item?.chain == next.item?.chain
+    pre.item?.origin == next.item?.origin &&
+    pre.item?.chain == next.item?.chain &&
+    pre.item?.isTop === next.item?.isTop
 );
 
 export default () => {
@@ -110,8 +136,8 @@ export default () => {
     openInTab(connection.origin);
   };
 
-  const getConnectedSites = async () => {
-    const sites = await wallet.getRecentConnectedSites();
+  const getConnectedSites = () => {
+    const sites = wallet.getRecentConnectedSites();
     setConnections(sites);
   };
 
@@ -123,6 +149,18 @@ export default () => {
 
   const showHoverSite = (item?: ConnectedSite | null) => {
     setHoverSite(item?.origin);
+  };
+
+  const handlePinWebsite = (item: ConnectedSite | null) => {
+    if (!item || item.isTop) return;
+    wallet.topConnectedSite(item.origin);
+    getConnectedSites();
+  };
+
+  const handleUnpinWebsite = (item: ConnectedSite | null) => {
+    if (!item || !item.isTop) return;
+    wallet.unpinConnectedSite(item.origin);
+    getConnectedSites();
   };
 
   useEffect(() => {
@@ -140,9 +178,11 @@ export default () => {
             data-item={item}
             onPointerEnter={() => showHoverSite(item)}
             onPointerLeave={() => showHoverSite()}
-            onClick={() => handleClickConnection(item)}
             item={item}
             key={item?.origin || index}
+            onClick={() => handleClickConnection(item)}
+            onPin={() => handlePinWebsite(item)}
+            onUnpin={() => handleUnpinWebsite(item)}
           />
         ))}
       </div>

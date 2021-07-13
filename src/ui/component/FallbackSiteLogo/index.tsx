@@ -25,6 +25,7 @@ const FallbackImage = ({
   height,
   className,
   style = {},
+  onClick,
 }: {
   url: string;
   origin: string;
@@ -32,6 +33,7 @@ const FallbackImage = ({
   height?: string;
   className?: string;
   style?: React.CSSProperties;
+  onClick?(): void;
 }) => {
   const [loadFaild, setLoadFaild] = useState(false);
   const [loadSuccess, setLoadSuccess] = useState(false);
@@ -54,33 +56,50 @@ const FallbackImage = ({
     if (!url) setLoadFaild(true);
   }, [url]);
 
-  const bgText = `url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text x='11' y='22' fill='white' font-size='15' font-weight='500'>${originName?.[0]?.toUpperCase()}</text></svg>")`;
+  const bgText = `data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text x='11' y='22' fill='white' font-size='15' font-weight='500'>${originName?.[0]?.toUpperCase()}</text></svg>`;
 
   return (
     <div
       className={cx('fallback-site-logo', className)}
+      onClick={onClick}
       style={{
-        backgroundColor: loadSuccess ? 'transparent' : bgColor,
-        backgroundImage: loadSuccess ? 'none' : bgText,
         width,
         height: height || width,
         ...style,
       }}
     >
-      {!loadFaild && (
+      <div
+        className="img-wrapper"
+        style={{
+          '--background': loadSuccess ? `url(${url})` : bgColor,
+        }}
+      >
+        {!loadFaild && (
+          <img
+            src={url}
+            alt={origin}
+            style={{
+              width,
+              height,
+              visibility: loadSuccess ? 'visible' : 'hidden',
+              ...style,
+            }}
+            onLoad={handleImageLoadSuccess}
+            onError={handleImageLoadError}
+          />
+        )}
         <img
-          src={url}
+          src={bgText}
           alt={origin}
           style={{
             width,
             height,
-            visibility: loadSuccess ? 'visible' : 'hidden',
+            display: loadSuccess ? 'none' : 'block',
+            backgroundColor: bgColor,
             ...style,
           }}
-          onLoad={handleImageLoadSuccess}
-          onError={handleImageLoadError}
         />
-      )}
+      </div>
     </div>
   );
 };

@@ -518,5 +518,11 @@
   },
   "This__password__will__be__used__to__unlock__your__wallet": {
     "message": "此密码将被用于解锁您的钱包"
+  },
+  "Pin__Website": {
+    "message": "置顶此网站"
+  },
+  "UnPin__Website": {
+    "message": "解除置顶"
   }
 }
