@@ -1,4 +1,5 @@
 import * as ethUtil from 'ethereumjs-util';
+import cloneDeep from 'lodash/cloneDeep';
 import Wallet, { thirdparty } from 'ethereumjs-wallet';
 import { ethErrors } from 'eth-rpc-errors';
 import * as bip39 from 'bip39';
@@ -147,7 +148,7 @@ export class WalletController extends BaseController {
     return seedWords;
   };
 
-  importPrivateKey = async (data) => {
+  importPrivateKey = async (data: string) => {
     const privateKey = ethUtil.stripHexPrefix(data);
     const buffer = Buffer.from(privateKey, 'hex');
 
@@ -317,7 +318,8 @@ export class WalletController extends BaseController {
   };
 
   changeAccount = (account: Account) => {
-    preferenceService.setCurrentAccount(account);
+    const acct = cloneDeep(account);
+    preferenceService.setCurrentAccount(acct);
   };
 
   isUseLedgerLive = () => preferenceService.isUseLedgerLive();

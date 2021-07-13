@@ -1,4 +1,5 @@
 import 'reflect-metadata';
+import cloneDeep from 'lodash/cloneDeep';
 import * as Sentry from '@sentry/browser';
 import { Integrations } from '@sentry/tracing';
 import { browser } from 'webextension-polyfill-ts';
@@ -69,6 +70,7 @@ browser.runtime.onConnect.addListener((port) => {
   const pm = new PortMessage(port);
 
   pm.listen(async (data) => {
+    const d = cloneDeep(data);
     if (!appStoreLoaded) {
       throw ethErrors.provider.disconnected();
     }
@@ -76,10 +78,10 @@ browser.runtime.onConnect.addListener((port) => {
     const sessionId = port.sender?.tab?.id;
     const session = sessionService.getOrCreateSession(sessionId);
 
-    const req = { data, session };
+    const req = { data: d, session };
     // for background push to respective page
-    req.session.pushMessage = (event, data) => {
-      pm.send('message', { event, data });
+    req.session.pushMessage = (event, params) => {
+      pm.send('message', { event, data: params });
     };
 
     return providerController(req);
