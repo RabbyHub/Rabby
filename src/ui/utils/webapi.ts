@@ -13,11 +13,16 @@ export const getCurrentConnectSite = async (wallet: WalletController) => {
   return wallet.getCurrentConnectedSite(id);
 };
 
-export const openInTab = async (url): Promise<number | undefined> => {
+export const openInTab = async (
+  url,
+  needClose = true
+): Promise<number | undefined> => {
   const tab = await browser.tabs.create({
     active: true,
     url,
   });
+
+  if (needClose) window.close();
 
   return tab?.id;
 };
