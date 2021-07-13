@@ -72,7 +72,7 @@ const Settings = () => {
   const renderData = [
     {
       leftIcon: IconAddressManagement,
-      content: t('Address management'),
+      content: t('AddressManagement'),
       onClick: () => history.push('/settings/address'),
     },
     {
