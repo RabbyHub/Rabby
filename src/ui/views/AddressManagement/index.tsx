@@ -227,7 +227,7 @@ const AddressManagement = () => {
         src="/images/nodata-address.png"
         alt="no address"
       />
-      <p className="text-gray-content text-14">{t('No address')}</p>
+      <p className="text-gray-content text-14">{t('NoAddress')}</p>
       <Link
         to="/add-address"
         className="flex no-data-add-btn rounded-md text-15"

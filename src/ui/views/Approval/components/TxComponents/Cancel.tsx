@@ -73,7 +73,7 @@ const Cancel = ({ data, chainEnum }: CancelProps) => {
                 'text-gray-content': !detail.spender_protocol_name,
               })}
             >
-              {detail.spender_protocol_name || t('Unknown protocol')}
+              {detail.spender_protocol_name || t('UnknownProtocol')}
             </p>
             <div className="protocol-info__spender">
               <AddressViewer address={detail.spender} showArrow={false} />

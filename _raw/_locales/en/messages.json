@@ -56,7 +56,7 @@
   "Save": {
     "message": "Save"
   },
-  "Address__management": {
+  "AddressManagement": {
     "message": "Address management"
   },
   "Chain__management": {
@@ -95,7 +95,7 @@
   "Delete__address": {
     "message": "Delete address"
   },
-  "No__address": {
+  "NoAddress": {
     "message": "No address"
   },
   "Add__addresses": {
@@ -435,7 +435,7 @@
   "unlimited": {
     "message": "unlimited"
   },
-  "Unknown__protocol": {
+  "UnknownProtocol": {
     "message": "Unknown protocol"
   },
   "token__balance__change": {

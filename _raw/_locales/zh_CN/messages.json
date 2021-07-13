@@ -56,7 +56,7 @@
   "Save": {
     "message": "保存"
   },
-  "Address__management": {
+  "AddressManagement": {
     "message": "地址管理"
   },
   "Chain__management": {
@@ -95,7 +95,7 @@
   "Delete__address": {
     "message": "删除地址"
   },
-  "No__address": {
+  "NoAddress": {
     "message": "无地址"
   },
   "Add__addresses": {
@@ -432,7 +432,7 @@
   "unlimited": {
     "message": "无限"
   },
-  "Unknown__protocol": {
+  "UnknownProtocol": {
     "message": "未知协议"
   },
   "token__balance__change": {

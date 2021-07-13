@@ -6,7 +6,6 @@ import { message } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { CHAINS, HARDWARE_KEYRING_TYPES, KEYRING_TYPE } from 'consts';
 import { AddressViewer, Modal } from 'ui/component';
-import i18n from 'src/i18n';
 import { useWallet, getCurrentConnectSite } from 'ui/utils';
 import { Account } from 'background/service/preference';
 import {
