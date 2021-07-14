@@ -67,18 +67,19 @@ const ImportHardware = () => {
         subTitle: t('Select the hardware wallet you are using'),
         center: true,
       }}
+      headerClassName="mb-40"
       spinning={spinning}
     >
-      <div className="flex mt-28 mb-60 justify-center mr-[-80px]">
+      <div className="flex justify-center mr-[-80px]">
         {HARDWARES.map((hardware) => {
           const Icon = hardware.icon;
           return (
             <div
-              className="w-[128px] mr-[80px] text-center active:text-blue-light"
+              className="w-[100px] mr-[80px] text-center active:text-blue-light"
               key={hardware.name}
               onClick={() => navSelectAddress(hardware.type)}
             >
-              <div className="rounded-full h-[128px] bg-white border border-white hover:border-blue-light">
+              <div className="rounded-full h-[100px] bg-white border border-white hover:border-blue-light">
                 <Icon className="hardware-icon" />
               </div>
               <div className="mt-20 font-medium text-20">{hardware.name}</div>
@@ -86,9 +87,9 @@ const ImportHardware = () => {
           );
         })}
       </div>
-      <div className="text-center mb-[100px] text-gray-content text-14">
+      {/* <div className="text-center mb-[100px] text-gray-content text-14">
         {t('hardwareImportTip')}
-      </div>
+      </div> */}
     </StrayPage>
   );
 };

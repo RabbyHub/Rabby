@@ -37,7 +37,7 @@ const ImportSuccess = ({ isPopup = false }: { isPopup?: boolean }) => {
   return (
     <StrayPageWithButton
       hasDivider={hasDivider}
-      NextButtonContent="ok"
+      NextButtonContent={t('OK')}
       onNextClick={handleNextClick}
       footerFixed={false}
       noPadding={isPopup}
@@ -61,11 +61,14 @@ const ImportSuccess = ({ isPopup = false }: { isPopup?: boolean }) => {
         </header>
       )}
       <div
-        className={clsx('flex flex-col justify-center text-center h-[472px]', {
-          'flex-1': isPopup,
-          'overflow-auto': isPopup,
-          'px-20': isPopup,
-        })}
+        className={clsx(
+          'flex flex-col justify-center text-center h-[472px] lg:h-auto',
+          {
+            'flex-1': isPopup,
+            'overflow-auto': isPopup,
+            'px-20': isPopup,
+          }
+        )}
       >
         {!isPopup && (
           <>
@@ -73,16 +76,16 @@ const ImportSuccess = ({ isPopup = false }: { isPopup?: boolean }) => {
               src={IconImportSuccess}
               className="mx-auto mb-18 w-[100px] h-[100px]"
             />
-            <div className="text-title text-20 mb-2">
+            <div className="text-green text-20 mb-2">{title}</div>
+            <div className="text-title text-15 mb-12">
               <Trans
                 i18nKey="AddressCount"
                 values={{ count: accounts?.length }}
               />
             </div>
-            <div className="text-green text-15 mb-12">{title}</div>
           </>
         )}
-        <div className="lg:w-[460px]">
+        <div className="lg:w-[460px] lg:h-[200px] overflow-y-auto">
           {accounts.map((account) => (
             <AddressItem
               className="mb-12 rounded bg-white py-12 pl-16"

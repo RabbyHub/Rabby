@@ -527,5 +527,8 @@
   },
   "UnPin__Website": {
     "message": "UnPin Website"
+  },
+  "Select__HD__Path": {
+    "message": "Select HD Path"
   }
 }

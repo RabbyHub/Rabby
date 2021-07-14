@@ -59,12 +59,13 @@ const LedgerConnectMethod = () => {
         title: t('Select Connect Method'),
         center: true,
       }}
+      headerClassName="mb-40"
       onSubmit={onSubmit}
       hasBack
       spinning={spinning}
       footerFixed={false}
     >
-      <div className="mt-40 mb-[188px]">
+      <div>
         {ConnectMethods.map((path) => (
           <FieldCheckbox
             key={path.name}

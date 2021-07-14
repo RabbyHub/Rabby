@@ -524,5 +524,8 @@
   },
   "UnPin__Website": {
     "message": "解除置顶"
+  },
+  "Select__HD__Path": {
+    "message": "Select HD Path"
   }
 }

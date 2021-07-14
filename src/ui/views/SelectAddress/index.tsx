@@ -10,6 +10,7 @@ import {
 } from 'ui/component';
 import { useWallet, useWalletRequest } from 'ui/utils';
 import { HARDWARE_KEYRING_TYPES } from 'consts';
+import './style.less';
 
 const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
   const history = useHistory();
@@ -85,65 +86,67 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
   };
 
   return (
-    <StrayPageWithButton
-      header={
-        isPopup
-          ? undefined
-          : isMnemonics
-          ? {
-              secondTitle: t('Select Addresses'),
-              subTitle: t('Select the addresses you want to import'),
-            }
-          : {
-              title: t('Select Addresses'),
-              subTitle: t('Select the addresses you want to import'),
-              center: true,
-            }
-      }
-      headerClassName="mb-16"
-      onSubmit={onSubmit}
-      hasBack
-      hasDivider={isMnemonics}
-      form={form}
-      footerFixed={false}
-      noPadding={isPopup}
-      isScrollContainer={isPopup}
-    >
-      {isPopup && (
-        <header className="create-new-header create-password-header h-[160px]">
-          <img
-            className="rabby-logo"
-            src="/images/logo-gray.png"
-            alt="rabby logo"
-          />
-          <p className="text-24 mb-4 mt-32 text-white text-center font-bold">
-            {t('Select Addresses')}
-          </p>
-          <p className="text-14 mb-0 mt-4 text-white opacity-80 text-center">
-            {t('Select the addresses you want to import')}
-          </p>
-        </header>
-      )}
-      <div
-        className={clsx('overflow-y-auto lg:h-[472px]', {
-          'p-20': isPopup,
-          'flex-1': isPopup,
-        })}
+    <div className="select-address">
+      <StrayPageWithButton
+        header={
+          isPopup
+            ? undefined
+            : isMnemonics
+            ? {
+                secondTitle: t('Select Addresses'),
+                subTitle: t('Select the addresses you want to import'),
+              }
+            : {
+                title: t('Select Addresses'),
+                subTitle: t('Select the addresses you want to import'),
+                center: true,
+              }
+        }
+        headerClassName="mb-16"
+        onSubmit={onSubmit}
+        hasBack
+        hasDivider={isMnemonics}
+        form={form}
+        footerFixed={false}
+        noPadding={isPopup}
+        isScrollContainer={isPopup}
       >
-        <Form.Item className="mb-0" name="selectedAddressIndexes">
-          <MultiSelectAddressList
-            accounts={accounts}
-            importedAccounts={importedAccounts}
-          />
-        </Form.Item>
+        {isPopup && (
+          <header className="create-new-header create-password-header h-[160px]">
+            <img
+              className="rabby-logo"
+              src="/images/logo-gray.png"
+              alt="rabby logo"
+            />
+            <p className="text-24 mb-4 mt-32 text-white text-center font-bold">
+              {t('Select Addresses')}
+            </p>
+            <p className="text-14 mb-0 mt-4 text-white opacity-80 text-center">
+              {t('Select the addresses you want to import')}
+            </p>
+          </header>
+        )}
+        <div
+          className={clsx('overflow-y-auto lg:h-[340px]', {
+            'p-20': isPopup,
+            'flex-1': isPopup,
+          })}
+        >
+          <Form.Item className="mb-0" name="selectedAddressIndexes">
+            <MultiSelectAddressList
+              accounts={accounts}
+              importedAccounts={importedAccounts}
+            />
+          </Form.Item>
+        </div>
         <div
           onClick={() => getAccounts()}
-          className="mt-6 text-blue-light text-15 text-center cursor-pointer lg:mb-[66px]"
+          className="mt-24 text-blue-light text-15 text-center cursor-pointer"
         >
           {loading && <Spin size="small" />} {t('Load More')}
         </div>
-      </div>
-    </StrayPageWithButton>
+      </StrayPageWithButton>
+    </div>
   );
 };
 

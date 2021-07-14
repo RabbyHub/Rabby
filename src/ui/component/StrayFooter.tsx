@@ -31,10 +31,14 @@ const StrayFooter = memo(
   ({ className, children, isFixed = true }: StrayFooterProps) => {
     return (
       <div
-        className={cx('bottom-0 left-0 w-full flex', className, {
-          fixed: isFixed,
-          absolute: !isFixed,
-        })}
+        className={cx(
+          'bottom-0 left-0 w-full flex lg:bottom-[-24px]',
+          className,
+          {
+            fixed: isFixed,
+            absolute: !isFixed,
+          }
+        )}
       >
         {children}
       </div>

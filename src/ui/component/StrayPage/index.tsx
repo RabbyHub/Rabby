@@ -32,11 +32,11 @@ const StrayPage = ({
     className={cx(
       'stray-page relative flex flex-col bg-gray-bg',
       { 'sm:pt-28': !noPadding },
-      'lg:pt-[60px] lg:w-[993px] sm:min-h-full lg:mt-[150px] lg:rounded-md lg:mx-auto',
+      'lg:py-[60px] lg:w-[800px] sm:min-h-full lg:rounded-xl',
       className
     )}
   >
-    <SvgIconSlogon className="absolute left-28 top-[-56px] hidden lg:block" />
+    <SvgIconSlogon className="absolute left-14 top-[-48px] hidden lg:block" />
     <Spin spinning={spinning} size="large">
       <div className={cx({ 'sm:px-20': !noPadding }, 'h-full flex flex-col')}>
         {header && (
@@ -94,7 +94,7 @@ export const StrayPageWithButton = ({
     noPadding={noPadding}
   >
     <Form
-      className={clsx('sm:pb-[85px] lg:pb-[112px]', {
+      className={clsx('sm:pb-[98px] lg:pb-[72px]', {
         'scroll-container': isScrollContainer,
       })}
       autoComplete="off"
@@ -113,7 +113,7 @@ export const StrayPageWithButton = ({
         hasBack={hasBack}
         hasDivider={hasDivider}
         NextButtonContent={NextButtonContent}
-        className="lg:w-[500px] lg:left-2/4 lg:-translate-x-2/4 lg:transform lg:mb-[36px] z-10"
+        className="lg:w-[500px] lg:left-2/4 lg:-translate-x-2/4 lg:transform z-10"
       />
     </Form>
   </StrayPage>

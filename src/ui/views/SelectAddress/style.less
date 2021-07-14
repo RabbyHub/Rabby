@@ -1,0 +1,21 @@
+@media (min-width: 600px) {
+  .select-address {
+    .stray-page {
+      padding-top: 40px !important;
+      padding-bottom: 40px !important;
+    }
+
+    .addresses {
+      margin-bottom: 0;
+      & > div {
+        height: 62px;
+      }
+      & > div:nth-last-child(1) {
+        margin-bottom: 0 !important;
+      }
+      .field + .field {
+        margin-top: 0;
+      }
+    }
+  }
+}
