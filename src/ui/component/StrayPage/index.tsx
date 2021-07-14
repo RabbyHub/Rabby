@@ -2,6 +2,7 @@ import React, { ReactNode, FunctionComponent } from 'react';
 import cx from 'clsx';
 import { Form, FormInstance, FormProps } from 'antd';
 import clsx from 'clsx';
+import { useTranslation } from 'react-i18next';
 import { SvgIconSlogon } from 'assets';
 import StrayHeader, { StrayHeaderProps } from '../StrayHeader';
 import StrayFooter, { StrayFooterNavProps } from '../StrayFooter';
@@ -86,37 +87,42 @@ export const StrayPageWithButton = ({
   footerFixed,
   noPadding = false,
   isScrollContainer = false,
-}: StrayPageWithButtonProps & StrayFooterNavProps) => (
-  <StrayPage
-    header={header}
-    spinning={spinning}
-    headerClassName={headerClassName}
-    noPadding={noPadding}
-  >
-    <Form
-      className={clsx('sm:pb-[98px] lg:pb-[72px]', {
-        'scroll-container': isScrollContainer,
-      })}
-      autoComplete="off"
-      {...formProps}
-      onFinish={onSubmit}
-      initialValues={initialValues}
-      form={form}
+}: StrayPageWithButtonProps & StrayFooterNavProps) => {
+  const { t } = useTranslation();
+
+  return (
+    <StrayPage
+      header={header}
+      spinning={spinning}
+      headerClassName={headerClassName}
+      noPadding={noPadding}
     >
-      {children}
-      <StrayFooter.Nav
-        footerFixed={footerFixed}
-        onNextClick={onNextClick}
-        onBackClick={onBackClick}
-        backDisabled={backDisabled}
-        nextDisabled={nextDisabled}
-        hasBack={hasBack}
-        hasDivider={hasDivider}
-        NextButtonContent={NextButtonContent}
-        className="lg:w-[500px] lg:left-2/4 lg:-translate-x-2/4 lg:transform z-10"
-      />
-    </Form>
-  </StrayPage>
-);
+      <Form
+        className={clsx('sm:pb-[98px] lg:pb-[72px]', {
+          'scroll-container': isScrollContainer,
+        })}
+        autoComplete="off"
+        {...formProps}
+        onFinish={onSubmit}
+        initialValues={initialValues}
+        form={form}
+      >
+        {children}
+        <StrayFooter.Nav
+          footerFixed={footerFixed}
+          onNextClick={onNextClick}
+          onBackClick={onBackClick}
+          backDisabled={backDisabled}
+          nextDisabled={nextDisabled}
+          hasBack={hasBack}
+          hasDivider={hasDivider}
+          BackButtonContent={t('Back')}
+          NextButtonContent={NextButtonContent || t('Next')}
+          className="lg:w-[500px] lg:left-2/4 lg:-translate-x-2/4 lg:transform z-10"
+        />
+      </Form>
+    </StrayPage>
+  );
+};
 
 export default StrayPage;

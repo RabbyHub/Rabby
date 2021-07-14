@@ -527,5 +527,11 @@
   },
   "Select__HD__Path": {
     "message": "Select HD Path"
+  },
+  "Next": {
+    "message": "下一步"
+  },
+  "Back": {
+    "message": "返回"
   }
 }

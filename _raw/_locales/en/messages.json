@@ -530,5 +530,11 @@
   },
   "Select__HD__Path": {
     "message": "Select HD Path"
+  },
+  "Next": {
+    "message": "Next"
+  },
+  "Back": {
+    "message": "Back"
   }
 }
