@@ -59,7 +59,10 @@
   "AddressManagement": {
     "message": "地址管理"
   },
-  "Chain__management": {
+  "ChainManagement": {
+    "message": "链管理"
+  },
+  "Chain__Management": {
     "message": "链管理"
   },
   "Connected__websites": {

@@ -77,7 +77,7 @@ const Settings = () => {
     },
     {
       leftIcon: IconChainManagement,
-      content: t('Chain management'),
+      content: t('ChainManagement'),
       onClick: () => history.push('/settings/chain'),
     },
     {

@@ -59,8 +59,11 @@
   "AddressManagement": {
     "message": "Address management"
   },
-  "Chain__management": {
+  "ChainManagement": {
     "message": "Chain management"
+  },
+  "Chain__Management": {
+    "message": "Chain Management"
   },
   "Connected__websites": {
     "message": "Connected websites"

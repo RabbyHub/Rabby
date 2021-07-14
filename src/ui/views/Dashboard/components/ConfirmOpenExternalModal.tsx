@@ -45,7 +45,6 @@ const ConfirmOpenExternalModal = ({
       title={null}
       closable={false}
       onCancel={handleCancel}
-      classN
     >
       <div className="flex flex-col items-center pt-12 pb-8">
         <div className="text-15 font-medium mb-32">
@@ -68,7 +67,7 @@ const ConfirmOpenExternalModal = ({
           className="w-[200px]"
           onClick={handleConfirm}
         >
-          Ok
+          {t('OK')}
         </Button>
       </div>
     </Modal>
