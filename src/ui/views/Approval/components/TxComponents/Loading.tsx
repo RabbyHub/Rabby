@@ -21,13 +21,13 @@ const Loading = ({ chainEnum }: SignProps) => {
       </p>
       <div className="gray-section-block common-detail-block">
         <div className="block-field">
-          <Skeleton.Input style={{ width: 200 }} />
+          <Skeleton.Input active style={{ width: 200 }} />
         </div>
         <div className="block-field">
-          <Skeleton.Input style={{ width: 200 }} />
+          <Skeleton.Input active style={{ width: 200 }} />
         </div>
         <div className="block-field contract">
-          <Skeleton.Input style={{ width: 120 }} />
+          <Skeleton.Input active style={{ width: 120 }} />
         </div>
       </div>
       <BalanceChange />

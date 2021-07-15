@@ -117,7 +117,7 @@ const GasSelector = ({
         <p className="section-title">{t('gasCostTitle')}</p>
         <div className="gas-selector gray-section-block">
           <div className="gas-info">
-            <Skeleton.Input style={{ width: 200 }} />
+            <Skeleton.Input active style={{ width: 200 }} />
           </div>
         </div>
       </>
@@ -170,10 +170,10 @@ const GasSelector = ({
                     <>
                       <div className="gas-content__info">
                         <p className="text-gray-title text-13 font-medium leading-none mb-4">
-                          <Skeleton.Input style={{ width: 80 }} />
+                          <Skeleton.Input active style={{ width: 80 }} />
                         </p>
                         <p className="text-gray-content text-12 mb-0">
-                          <Skeleton.Input style={{ width: 128 }} />
+                          <Skeleton.Input active style={{ width: 128 }} />
                         </p>
                       </div>
                     </>
