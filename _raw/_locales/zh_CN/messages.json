@@ -537,7 +537,7 @@
   "Back": {
     "message": "返回"
   },
-  "View private key": {
+  "View__private__key": {
     "message": "查看私钥"
   },
   "Wrong__mnemonic__word": {

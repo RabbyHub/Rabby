@@ -305,7 +305,7 @@ class ProviderController extends BaseController {
 
   private _checkAddress = async (address) => {
     // eslint-disable-next-line prefer-const
-    let { address: currentAddress, keyring } =
+    let { address: currentAddress, type } =
       (await this.getCurrentAccount()) || {};
     currentAddress = currentAddress?.toLowerCase();
     if (
@@ -317,6 +317,10 @@ class ProviderController extends BaseController {
           'Invalid parameters: must use the current user address to sign',
       });
     }
+    const keyring = await keyringService.getKeyringForAccount(
+      currentAddress,
+      type
+    );
 
     return keyring;
   };
