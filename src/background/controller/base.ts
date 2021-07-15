@@ -17,15 +17,8 @@ class BaseController {
       if (!account) return null;
       preferenceService.setCurrentAccount(account);
     }
-    const keyring = await keyringService.getKeyringForAccount(
-      account.address,
-      account.type
-    );
 
-    return cloneDeep({
-      ...account,
-      keyring,
-    });
+    return cloneDeep(account);
   };
 
   syncGetCurrentAccount = () => {

@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import ClipboardJS from 'clipboard';
 import QRCode from 'qrcode.react';
 import { useHistory } from 'react-router-dom';
+import { useInterval } from 'react-use';
 import { message } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { CHAINS, HARDWARE_KEYRING_TYPES, KEYRING_TYPE } from 'consts';
@@ -59,22 +60,20 @@ const Dashboard = () => {
 
   const _openInTab = useConfirmExternalModal();
 
+  useInterval(() => {
+    if (!currentAccount) return;
+    getPendingTxCount(currentAccount.address);
+  }, 30000);
+
+  useEffect(() => {
+    if (!currentAccount) {
+      getCurrentAccount();
+    }
+  }, []);
+
   useEffect(() => {
     getPendingTxCount(currentAccount.address);
   }, [currentAccount]);
-
-  useEffect(() => {
-    getCurrentAccount();
-
-    const intervalId = setInterval(() => {
-      if (!currentAccount) return;
-      getPendingTxCount(currentAccount.address);
-    }, 30000);
-
-    return () => {
-      window.clearInterval(intervalId);
-    };
-  }, []);
 
   const handleConfig = () => {
     history.push('/settings');
