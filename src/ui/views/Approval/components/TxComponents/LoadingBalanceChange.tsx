@@ -14,15 +14,15 @@ const LoadingBalanceChange = () => {
           <div>
             <ul>
               <li>
-                <Skeleton.Input style={{ width: 156 }} />
+                <Skeleton.Input active style={{ width: 156 }} />
               </li>
               <li>
-                <Skeleton.Input style={{ width: 156 }} />
+                <Skeleton.Input active style={{ width: 156 }} />
               </li>
             </ul>
           </div>
           <div className="total-balance-change">
-            <Skeleton.Input style={{ width: 108 }} />
+            <Skeleton.Input active style={{ width: 108 }} />
           </div>
         </>
       </div>
