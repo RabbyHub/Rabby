@@ -8,7 +8,6 @@ import { browser } from 'webextension-polyfill-ts';
 export interface Account {
   type: string;
   address: string;
-  keyring?: any;
 }
 
 interface PreferenceStore {

@@ -1,5 +1,6 @@
 import cloneDeep from 'lodash/cloneDeep';
 import { preferenceService, keyringService } from 'background/service';
+import { Account } from 'background/service/preference';
 
 class BaseController {
   getCurrentAccount = async () => {
@@ -18,7 +19,7 @@ class BaseController {
       preferenceService.setCurrentAccount(account);
     }
 
-    return cloneDeep(account);
+    return cloneDeep(account) as Account;
   };
 
   syncGetCurrentAccount = () => {
