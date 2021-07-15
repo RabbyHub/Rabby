@@ -540,7 +540,10 @@
   "Back": {
     "message": "Back"
   },
-  "View private key": {
+  "View__private__key": {
     "message": "View private key"
+  },
+  "Wrong__mnemonic__word": {
+    "message": "Wrong mnemonic word"
   }
 }

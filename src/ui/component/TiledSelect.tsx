@@ -1,10 +1,13 @@
 import React from 'react';
 import cx from 'clsx';
+import { message } from 'antd';
+import { useTranslation } from 'react-i18next';
 import { useSelectOption } from 'ui/utils';
 import { SvgIconCross } from 'ui/assets';
 import IconClear from 'ui/assets/clear.svg';
 
 interface TiledSelectProps {
+  correctValue?: string[];
   defaultValue?: string[];
   value?: string[];
   options: string[];
@@ -20,6 +23,7 @@ const TiledSelect = ({
   onChange,
   className,
   errMsg = '',
+  correctValue,
 }: TiledSelectProps) => {
   const [
     _value,
@@ -33,6 +37,18 @@ const TiledSelect = ({
     defaultValue,
     options,
   });
+  const { t } = useTranslation();
+
+  const handleClickOption = (i: number) => {
+    if (correctValue) {
+      if (options[i] !== correctValue[_value.length]) {
+        message.error(t('Wrong mnemonic word'));
+        return;
+      }
+    }
+    handleChoose(i);
+  };
+
   const handleClickClear = () => {
     handleClear();
   };
@@ -77,7 +93,7 @@ const TiledSelect = ({
                 : 'bg-white text-gray-title border-white'
             )}
             key={o}
-            onClick={() => handleChoose(i)}
+            onClick={() => handleClickOption(i)}
           >
             {o}
           </div>
