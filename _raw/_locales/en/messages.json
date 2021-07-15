@@ -539,5 +539,8 @@
   },
   "Back": {
     "message": "Back"
+  },
+  "View private key": {
+    "message": "View private key"
   }
 }

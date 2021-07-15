@@ -536,5 +536,8 @@
   },
   "Back": {
     "message": "返回"
+  },
+  "View private key": {
+    "message": "查看私钥"
   }
 }
