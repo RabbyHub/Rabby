@@ -215,3 +215,10 @@ export const LANGS = [
     icon: IconZH,
   },
 ];
+
+export const CHECK_METAMASK_INSTALLED_URL = {
+  Chrome: 'chrome-extension://nkbihfbeogaeaoehlefnkodbefgpgknn/phishing.html',
+  Firefox: '',
+  Brave: '',
+  Edge: '',
+};

@@ -4,16 +4,18 @@ import QRCode from 'qrcode.react';
 import { useHistory } from 'react-router-dom';
 import { useInterval } from 'react-use';
 import { message } from 'antd';
+import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 import { CHAINS, HARDWARE_KEYRING_TYPES, KEYRING_TYPE } from 'consts';
 import { AddressViewer, Modal } from 'ui/component';
-import { useWallet, getCurrentConnectSite } from 'ui/utils';
+import { useWallet, getCurrentConnectSite, isMetaMaskActive } from 'ui/utils';
 import { Account } from 'background/service/preference';
 import {
   RecentConnections,
   BalanceView,
   useConfirmExternalModal,
   SwitchAddress,
+  MetaMaskConflictAlertBar,
 } from './components';
 import IconSetting from 'ui/assets/settings.svg';
 import IconCopy from 'ui/assets/copy.svg';
@@ -43,6 +45,7 @@ const Dashboard = () => {
   const [isModalOpen, setModalOpen] = useState(false);
   const [qrcodeVisible, setQrcodeVisible] = useState(false);
   const [pendingTxCount, setPendingTxCount] = useState(0);
+  const [metaMaskActive, setMetaMaskActive] = useState(false);
 
   const handleToggle = () => {
     setModalOpen(!isModalOpen);
@@ -58,6 +61,11 @@ const Dashboard = () => {
     setPendingTxCount(total_count);
   };
 
+  const checkIsMetaMaskActive = async () => {
+    const active = await isMetaMaskActive();
+    setMetaMaskActive(active);
+  };
+
   const _openInTab = useConfirmExternalModal();
 
   useInterval(() => {
@@ -69,6 +77,7 @@ const Dashboard = () => {
     if (!currentAccount) {
       getCurrentAccount();
     }
+    checkIsMetaMaskActive();
   }, []);
 
   useEffect(() => {
@@ -129,7 +138,7 @@ const Dashboard = () => {
 
   return (
     <>
-      <div className="dashboard">
+      <div className={clsx('dashboard', { 'metamask-active': metaMaskActive })}>
         <div className="main">
           <div className="flex header items-center">
             {(currentAccount?.type === KEYRING_TYPE.WatchAddressKeyring ||
@@ -190,6 +199,7 @@ const Dashboard = () => {
           </div>
         </div>
         <RecentConnections />
+        {metaMaskActive && <MetaMaskConflictAlertBar />}
       </div>
       <Modal
         visible={qrcodeVisible}

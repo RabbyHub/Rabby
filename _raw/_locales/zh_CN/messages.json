@@ -542,5 +542,8 @@
   },
   "Wrong__mnemonic__word": {
     "message": "Wrong mnemonic word"
+  },
+  "Disable__metamask__to__avoid__conflicts": {
+    "message": "Disable metamask to avoid conflicts"
   }
 }
