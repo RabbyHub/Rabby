@@ -219,7 +219,7 @@
     "message": "验证失败"
   },
   "You__need__to__make__use__your__last__account__before__you__can__add__a__new__one": {
-    "message": "You need to make use your last account before you can add a new one."
+    "message": "创建新账号前请先使用已有账号"
   },
   "Select__Addresses": {
     "message": "选择地址"
@@ -237,7 +237,7 @@
     "message": "无可用地址"
   },
   "hardwareImportTip": {
-    "message": "If you are using a hardware wallet with a camera on it, you should use watch address instead."
+    "message": "如果你正在使用带有摄像头的硬件钱包，请选择观察模式添加地址"
   },
   "Connect__Hardware__Wallet": {
     "message": "连接硬件钱包"
@@ -496,13 +496,13 @@
     "message": "选择 gas 价格"
   },
   "Standard": {
-    "message": "Standard"
+    "message": "一般"
   },
   "Fast": {
-    "message": "Fast"
+    "message": "高速"
   },
   "Instant": {
-    "message": "Instant"
+    "message": "极速"
   },
   "Custom": {
     "message": "自定义"
@@ -529,7 +529,7 @@
     "message": "解除置顶"
   },
   "Select__HD__Path": {
-    "message": "Select HD Path"
+    "message": "请选择 HD Path"
   },
   "Next": {
     "message": "下一步"
@@ -539,5 +539,8 @@
   },
   "View private key": {
     "message": "查看私钥"
+  },
+  "Wrong__mnemonic__word": {
+    "message": "Wrong mnemonic word"
   }
 }

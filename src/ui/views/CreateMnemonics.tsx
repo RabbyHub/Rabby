@@ -78,7 +78,13 @@ const DisplayMnemonic = ({ mnemonics, onNextClick }) => {
   );
 };
 
-const VerifyMnemonics = ({ mnemonics, onBackClick }) => {
+const VerifyMnemonics = ({
+  mnemonics,
+  onBackClick,
+}: {
+  mnemonics: string;
+  onBackClick(): void;
+}) => {
   const history = useHistory();
   const wallet = useWallet();
   const { t } = useTranslation();
@@ -135,7 +141,11 @@ const VerifyMnemonics = ({ mnemonics, onBackClick }) => {
       </header>
       <div className="pt-20 px-20 w-screen">
         <Form.Item name="mnemonics">
-          <TiledSelect options={randomMnemonics} errMsg={errMsg} />
+          <TiledSelect
+            options={randomMnemonics}
+            errMsg={errMsg}
+            correctValue={mnemonics.split(' ')}
+          />
         </Form.Item>
       </div>
     </StrayPageWithButton>
