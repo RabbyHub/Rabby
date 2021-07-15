@@ -59,7 +59,10 @@
   "AddressManagement": {
     "message": "地址管理"
   },
-  "Chain__management": {
+  "ChainManagement": {
+    "message": "链管理"
+  },
+  "Chain__Management": {
     "message": "链管理"
   },
   "Connected__websites": {
@@ -524,5 +527,17 @@
   },
   "UnPin__Website": {
     "message": "解除置顶"
+  },
+  "Select__HD__Path": {
+    "message": "Select HD Path"
+  },
+  "Next": {
+    "message": "下一步"
+  },
+  "Back": {
+    "message": "返回"
+  },
+  "View private key": {
+    "message": "查看私钥"
   }
 }

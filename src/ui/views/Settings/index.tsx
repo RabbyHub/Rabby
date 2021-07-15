@@ -35,7 +35,11 @@ const OpenApiModal = ({
   };
 
   return (
-    <Modal title="Backend Service URL" visible={visible} onCancel={onCancel}>
+    <Modal
+      title={t('Backend Service URL')}
+      visible={visible}
+      onCancel={onCancel}
+    >
       <Form onFinish={handleSubmit} form={form}>
         <Form.Item
           name="host"
@@ -77,7 +81,7 @@ const Settings = () => {
     },
     {
       leftIcon: IconChainManagement,
-      content: t('Chain management'),
+      content: t('ChainManagement'),
       onClick: () => history.push('/settings/chain'),
     },
     {

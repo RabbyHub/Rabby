@@ -59,8 +59,11 @@
   "AddressManagement": {
     "message": "Address management"
   },
-  "Chain__management": {
+  "ChainManagement": {
     "message": "Chain management"
+  },
+  "Chain__Management": {
+    "message": "Chain Management"
   },
   "Connected__websites": {
     "message": "Connected websites"
@@ -527,5 +530,17 @@
   },
   "UnPin__Website": {
     "message": "UnPin Website"
+  },
+  "Select__HD__Path": {
+    "message": "Select HD Path"
+  },
+  "Next": {
+    "message": "Next"
+  },
+  "Back": {
+    "message": "Back"
+  },
+  "View private key": {
+    "message": "View private key"
   }
 }

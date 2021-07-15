@@ -2,6 +2,7 @@ import React, { ReactNode, FunctionComponent } from 'react';
 import cx from 'clsx';
 import { Form, FormInstance, FormProps } from 'antd';
 import clsx from 'clsx';
+import { useTranslation } from 'react-i18next';
 import { SvgIconSlogon } from 'assets';
 import StrayHeader, { StrayHeaderProps } from '../StrayHeader';
 import StrayFooter, { StrayFooterNavProps } from '../StrayFooter';
@@ -32,11 +33,11 @@ const StrayPage = ({
     className={cx(
       'stray-page relative flex flex-col bg-gray-bg',
       { 'sm:pt-28': !noPadding },
-      'lg:pt-[60px] lg:w-[993px] sm:min-h-full lg:mt-[150px] lg:rounded-md lg:mx-auto',
+      'lg:py-[60px] lg:w-[800px] sm:min-h-full lg:rounded-xl',
       className
     )}
   >
-    <SvgIconSlogon className="absolute left-28 top-[-56px] hidden lg:block" />
+    <SvgIconSlogon className="absolute left-14 top-[-48px] hidden lg:block" />
     <Spin spinning={spinning} size="large">
       <div className={cx({ 'sm:px-20': !noPadding }, 'h-full flex flex-col')}>
         {header && (
@@ -86,37 +87,42 @@ export const StrayPageWithButton = ({
   footerFixed,
   noPadding = false,
   isScrollContainer = false,
-}: StrayPageWithButtonProps & StrayFooterNavProps) => (
-  <StrayPage
-    header={header}
-    spinning={spinning}
-    headerClassName={headerClassName}
-    noPadding={noPadding}
-  >
-    <Form
-      className={clsx('sm:pb-[85px] lg:pb-[112px]', {
-        'scroll-container': isScrollContainer,
-      })}
-      autoComplete="off"
-      {...formProps}
-      onFinish={onSubmit}
-      initialValues={initialValues}
-      form={form}
+}: StrayPageWithButtonProps & StrayFooterNavProps) => {
+  const { t } = useTranslation();
+
+  return (
+    <StrayPage
+      header={header}
+      spinning={spinning}
+      headerClassName={headerClassName}
+      noPadding={noPadding}
     >
-      {children}
-      <StrayFooter.Nav
-        footerFixed={footerFixed}
-        onNextClick={onNextClick}
-        onBackClick={onBackClick}
-        backDisabled={backDisabled}
-        nextDisabled={nextDisabled}
-        hasBack={hasBack}
-        hasDivider={hasDivider}
-        NextButtonContent={NextButtonContent}
-        className="lg:w-[500px] lg:left-2/4 lg:-translate-x-2/4 lg:transform lg:mb-[36px] z-10"
-      />
-    </Form>
-  </StrayPage>
-);
+      <Form
+        className={clsx('sm:pb-[98px] lg:pb-[72px]', {
+          'scroll-container': isScrollContainer,
+        })}
+        autoComplete="off"
+        {...formProps}
+        onFinish={onSubmit}
+        initialValues={initialValues}
+        form={form}
+      >
+        {children}
+        <StrayFooter.Nav
+          footerFixed={footerFixed}
+          onNextClick={onNextClick}
+          onBackClick={onBackClick}
+          backDisabled={backDisabled}
+          nextDisabled={nextDisabled}
+          hasBack={hasBack}
+          hasDivider={hasDivider}
+          BackButtonContent={t('Back')}
+          NextButtonContent={NextButtonContent || t('Next')}
+          className="lg:w-[500px] lg:left-2/4 lg:-translate-x-2/4 lg:transform z-10"
+        />
+      </Form>
+    </StrayPage>
+  );
+};
 
 export default StrayPage;

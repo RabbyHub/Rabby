@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
 import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
 import { StrayPageWithButton, FieldCheckbox } from 'ui/component';
 import { useWallet } from 'ui/utils';
@@ -20,6 +21,7 @@ const LedgerHdPath = () => {
   const wallet = useWallet();
   const [currentPath, setCurrentPath] = useState(LEDGER_LIVE_PATH);
   const [spinning, setSpin] = useState(false);
+  const { t } = useTranslation();
 
   const onSubmit = async () => {
     if (!currentPath) {
@@ -60,15 +62,16 @@ const LedgerHdPath = () => {
   return (
     <StrayPageWithButton
       header={{
-        title: 'Select HD Path',
+        title: t('Select HD Path'),
         center: true,
       }}
+      headerClassName="mb-40"
       onSubmit={onSubmit}
       hasBack
       spinning={spinning}
       footerFixed={false}
     >
-      <div className="mt-40 mb-[188px]">
+      <div>
         {HD_PATHS.map((path) => (
           <FieldCheckbox
             key={path.name}

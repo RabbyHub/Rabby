@@ -1,3 +1,12 @@
+@media (min-width: 600px) { 
+  .stray-page.relative {
+    position: absolute !important;
+    left: 50%;
+    top: calc(50% + 24px);
+    transform: translate(-50%, -50%);
+  }
+}
+
 .stray-page .ant-spin-container {
   height: 100%;
 }
