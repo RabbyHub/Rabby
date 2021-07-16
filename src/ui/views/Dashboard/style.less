@@ -138,6 +138,11 @@
       }
     }
   }
+  &.metamask-active {
+    .current-connection {
+      margin-top: 22px;
+    }
+  }
 }
 
 .modal-switch-address {
@@ -238,5 +243,30 @@
         margin-bottom: 0;
       }
     }
+  }
+}
+
+.metamask-conflict-alert {
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  height: 32px;
+  width: 100%;
+  background-color: rgba(242, 156, 27, .2);
+  font-size: 12px;
+  color: #F29C1B;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  cursor: pointer;
+  .icon-metamask-warning {
+    width: 18px;
+    height: 17px;
+    margin-right: 8px;
+  }
+  .icon-open-external {
+    width: 12px;
+    height: 12px;
+    margin-left: 8px;
   }
 }

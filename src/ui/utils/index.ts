@@ -1,3 +1,5 @@
+import { IS_CHROME, CHECK_METAMASK_INSTALLED_URL } from 'consts';
+
 // eslint-disable-next-line @typescript-eslint/no-empty-function
 export const noop = () => {};
 
@@ -69,4 +71,24 @@ export const hashCode = (str: string) => {
     hash |= 0; // Convert to 32bit integer
   }
   return hash;
+};
+
+export const isMetaMaskActive = async () => {
+  let url = '';
+
+  if (IS_CHROME) {
+    url = CHECK_METAMASK_INSTALLED_URL.Chrome;
+  }
+
+  if (!url) return false;
+
+  try {
+    const res = await window.fetch(url);
+    const j = await res.text();
+    console.log(j);
+    return true;
+  } catch (e) {
+    console.log('e', e);
+    return false;
+  }
 };
