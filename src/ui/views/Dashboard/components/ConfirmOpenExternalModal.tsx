@@ -79,7 +79,7 @@ const funConfirmOpenExternalModal = wrapModalPromise(ConfirmOpenExternalModal);
 const useConfirmExternalModal = () => {
   const wallet = useWallet();
 
-  return (url) => {
+  return (url: string) => {
     const origin = url.split('?')[0];
     const openUrl =
       origin +
