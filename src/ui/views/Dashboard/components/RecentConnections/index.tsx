@@ -6,6 +6,7 @@ import { ChainSelector, FallbackSiteLogo } from 'ui/component';
 import { CHAINS_ENUM, CHAINS } from 'consts';
 import IconInternet from 'ui/assets/internet.svg';
 import IconPin from 'ui/assets/pin.svg';
+import { ReactComponent as IconStar } from 'ui/assets/star.svg';
 import './style.less';
 
 const CurrentConnection = memo(
@@ -82,21 +83,11 @@ const ConnectionItem = memo(
       >
         {item ? (
           <>
-            {item.isTop ? (
-              <div
-                className="unpin-website"
-                onClick={onUnpin}
-                title={t('UnPin Website')}
-              />
-            ) : (
-              <img
-                className="pin-website"
-                src={IconPin}
-                alt={t('Pin Website')}
-                title={t('Pin Website')}
-                onClick={onPin}
-              />
-            )}
+            <IconStar
+              className="pin-website"
+              fill={item.isTop ? '#8697FF' : 'none'}
+              onClick={item.isTop ? onUnpin : onPin}
+            />
             <img
               className="connect-chain"
               src={CHAINS[item.chain].logo}

@@ -27,10 +27,11 @@
       }
       .pin-website {
         position: absolute;
-        width: 12px;
-        height: 12px;
-        left: 4px;
-        top: 4px;
+        width: 8px;
+        height: 8px;
+        left: 50%;
+        margin-left: -4px;
+        bottom: 8px;
         z-index: 2;
         cursor: pointer;
         display: none;
@@ -64,6 +65,9 @@
       }
       &:nth-last-child(-n+4) {
         padding-bottom: 8px;
+        .pin-website {
+          bottom: -4px;
+        }
       }
       &:hover {
         .pin-website {
