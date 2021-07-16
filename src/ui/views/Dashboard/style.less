@@ -28,9 +28,35 @@
       .icon-qrcode {
         width: 18px;
         height: 18px;
+        circle {
+          transition: opacity .2s;
+        }
+        &:hover {
+          circle {
+            opacity: .4;
+          }
+        }
       }
       .icon-copy {
         margin-left: 13px;
+        path.copy_svg__checked {
+          transform: scale(0);
+        }
+        path.copy_svg__copy {
+          transform: scale(1);
+        }
+        path {
+          transform-origin: center center;
+          transition: transform .2s;
+        }
+        &.success {
+          path.copy_svg__copy {
+            transform: scale(0);
+          }
+          path.copy_svg__checked {
+            transform: scale(1);
+          }
+        }
       }
       .icon-qrcode {
         margin-left: 8px;
@@ -39,6 +65,13 @@
         width: 18px;
         height: 18px;
         margin-right: 4px;
+      }
+      .icon-settings {
+        transition:  transform .2s;
+        transform: rotate(0deg);
+        &:hover {
+          transform: rotate(120deg);
+        }
       }
     }
     .assets {
@@ -106,11 +139,21 @@
         flex: 1;
         color: #fff;
         font-size: 14px;
-        display: flex;
-        align-items: center;
-        justify-content: center;
-        cursor: pointer;
         position: relative;
+        padding: 6px;
+        .operation-item__inner {
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          height: 100%;
+          cursor: pointer;
+          background-color: transparent;
+          border-radius: 6px;
+          transition: background-color .2s;
+          &:hover {
+            background-color: rgba(0, 0, 0, 0.08);
+          }
+        }
         .icon {
           width: 20px;
           height: 20px;

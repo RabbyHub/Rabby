@@ -18,8 +18,8 @@ import {
   MetaMaskConflictAlertBar,
 } from './components';
 import IconSetting from 'ui/assets/settings.svg';
-import IconCopy from 'ui/assets/copy.svg';
-import IconQrcode from 'ui/assets/qrcode.svg';
+import { ReactComponent as IconCopy } from 'ui/assets/copy.svg';
+import { ReactComponent as IconQrcode } from 'ui/assets/qrcode.svg';
 import IconSend from 'ui/assets/send.svg';
 import IconSwap from 'ui/assets/swap.svg';
 import IconHistory from 'ui/assets/history.svg';
@@ -46,6 +46,7 @@ const Dashboard = () => {
   const [qrcodeVisible, setQrcodeVisible] = useState(false);
   const [pendingTxCount, setPendingTxCount] = useState(0);
   const [metaMaskActive, setMetaMaskActive] = useState(false);
+  const [copySuccess, setCopySuccess] = useState(false);
 
   const handleToggle = () => {
     setModalOpen(!isModalOpen);
@@ -119,6 +120,10 @@ const Dashboard = () => {
     });
 
     clipboard.on('success', () => {
+      setCopySuccess(true);
+      setTimeout(() => {
+        setCopySuccess(false);
+      }, 1000);
       message.success({
         icon: <img src={IconSuccess} className="icon icon-success" />,
         content: t('Copied'),
@@ -158,14 +163,12 @@ const Dashboard = () => {
                 onClick={handleToggle}
               />
             )}
-            <img
-              className="icon icon-copy"
-              src={IconCopy}
+            <IconCopy
+              className={clsx('icon icon-copy', { success: copySuccess })}
               onClick={handleCopyCurrentAddress}
             />
-            <img
+            <IconQrcode
               className="icon icon-qrcode"
-              src={IconQrcode}
               onClick={handleShowQrcode}
             />
             <div className="flex-1" />
@@ -178,23 +181,29 @@ const Dashboard = () => {
           <BalanceView currentAccount={currentAccount} />
           <div className="operation">
             <div className="operation-item" onClick={handleGotoSend}>
-              <img className="icon icon-send" src={IconSend} />
-              {t('Send')}
+              <div className="operation-item__inner">
+                <img className="icon icon-send" src={IconSend} />
+                {t('Send')}
+              </div>
             </div>
             <div className="operation-item" onClick={handleGotoSwap}>
-              <img className="icon icon-swap" src={IconSwap} />
-              {t('Swap')}
+              <div className="operation-item__inner">
+                <img className="icon icon-swap" src={IconSwap} />
+                {t('Swap')}
+              </div>
             </div>
             <div className="operation-item" onClick={handleGotoHistory}>
-              {pendingTxCount > 0 ? (
-                <div className="pending-count">
-                  <img src={IconPending} className="icon icon-pending" />
-                  {pendingTxCount}
-                </div>
-              ) : (
-                <img className="icon icon-history" src={IconHistory} />
-              )}
-              {t('History')}
+              <div className="operation-item__inner">
+                {pendingTxCount > 0 ? (
+                  <div className="pending-count">
+                    <img src={IconPending} className="icon icon-pending" />
+                    {pendingTxCount}
+                  </div>
+                ) : (
+                  <img className="icon icon-history" src={IconHistory} />
+                )}
+                {t('History')}
+              </div>
             </div>
           </div>
         </div>
