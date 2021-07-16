@@ -1,11 +1,11 @@
 import React, { useState, useEffect, memo, useCallback } from 'react';
+import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 import { useWallet, getCurrentConnectSite, openInTab } from 'ui/utils';
 import { ConnectedSite } from 'background/service/permission';
 import { ChainSelector, FallbackSiteLogo } from 'ui/component';
 import { CHAINS_ENUM, CHAINS } from 'consts';
 import IconInternet from 'ui/assets/internet.svg';
-import IconPin from 'ui/assets/pin.svg';
 import { ReactComponent as IconStar } from 'ui/assets/star.svg';
 import './style.less';
 
@@ -73,8 +73,6 @@ const ConnectionItem = memo(
     onPointerEnter?(): void;
     onPointerLeave?(): void;
   }) => {
-    const { t } = useTranslation();
-
     return (
       <div
         className="item"
@@ -84,7 +82,7 @@ const ConnectionItem = memo(
         {item ? (
           <>
             <IconStar
-              className="pin-website"
+              className={clsx('pin-website', { block: item.isTop })}
               fill={item.isTop ? '#8697FF' : 'none'}
               onClick={item.isTop ? onUnpin : onPin}
             />
@@ -99,6 +97,9 @@ const ConnectionItem = memo(
                 origin={item.origin}
                 width="32px"
                 onClick={onClick}
+                style={{
+                  borderRadius: '4px',
+                }}
               />
             </div>
           </>

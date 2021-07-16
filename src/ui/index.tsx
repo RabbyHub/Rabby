@@ -57,7 +57,6 @@ if (
 
 browser.runtime.getBackgroundPage().then((win) => {
   const locale = win.wallet.getLocale();
-  console.log('locale', locale);
   addResourceBundle(locale).then(() => {
     i18n.changeLanguage(locale);
     ReactDOM.render(
