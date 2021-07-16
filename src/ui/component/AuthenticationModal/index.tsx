@@ -55,7 +55,12 @@ const AuthenticationModal = ({
           name="password"
           rules={[{ required: true, message: t('Please input password') }]}
         >
-          <Input placeholder={t('Password')} type="password" size="large" />
+          <Input
+            placeholder={t('Password')}
+            type="password"
+            size="large"
+            autoFocus
+          />
         </Form.Item>
         <div className="flex justify-center pt-6">
           <Button

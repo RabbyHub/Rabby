@@ -94,7 +94,12 @@ const CreatePassword = () => {
             },
           ]}
         >
-          <Input size="large" placeholder={t('Password')} type="password" />
+          <Input
+            size="large"
+            placeholder={t('Password')}
+            type="password"
+            autoFocus
+          />
         </Form.Item>
         <Form.Item
           className="mb-0 h-[56px] overflow-hidden"

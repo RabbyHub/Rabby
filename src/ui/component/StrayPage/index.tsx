@@ -1,4 +1,4 @@
-import React, { ReactNode, FunctionComponent } from 'react';
+import React, { ReactNode, FunctionComponent, useEffect, useMemo } from 'react';
 import cx from 'clsx';
 import { Form, FormInstance, FormProps } from 'antd';
 import clsx from 'clsx';
@@ -89,6 +89,31 @@ export const StrayPageWithButton = ({
   isScrollContainer = false,
 }: StrayPageWithButtonProps & StrayFooterNavProps) => {
   const { t } = useTranslation();
+
+  useEffect(() => {
+    console.log('nextDisabled', nextDisabled);
+  }, [nextDisabled]);
+
+  const handleKeyDown = useMemo(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.key.toLowerCase() === 'enter') {
+        console.log('onSubmit', onSubmit);
+        console.log('onNextClick', onNextClick, nextDisabled);
+        if (onSubmit) return;
+        if (onNextClick && !nextDisabled) {
+          onNextClick();
+        }
+      }
+    };
+    return handler;
+  }, [nextDisabled]);
+
+  useEffect(() => {
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [handleKeyDown]);
 
   return (
     <StrayPage
