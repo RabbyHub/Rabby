@@ -325,7 +325,7 @@ export class WalletController extends BaseController {
   updateUseLedgerLive = async (value: boolean) =>
     preferenceService.updateUseLedgerLive(value);
 
-  connectHardware = (type, hdPath) => {
+  connectHardware = (type, hdPath?: string) => {
     let keyring;
     const keyringType = KEYRING_CLASS.HARDWARE[type];
     try {
