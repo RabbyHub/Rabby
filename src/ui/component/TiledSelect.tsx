@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React from 'react';
 import cx from 'clsx';
 import { message } from 'antd';
 import { useTranslation } from 'react-i18next';
