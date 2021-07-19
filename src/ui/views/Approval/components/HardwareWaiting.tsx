@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useApproval, useWallet } from 'ui/utils';
 import { SvgIconTrezor, SvgIconLedger, SvgIconOnekey } from 'ui/assets';
 import { HARDWARE_KEYRING_TYPES, IS_AFTER_CHROME91 } from 'consts';
+import AccountCard from './AccountCard';
 
 const Hardware = ({
   params,
@@ -40,32 +41,34 @@ const Hardware = ({
   };
 
   return (
-    <div className="hardware-operation">
-      <Icon />
-      <h1 className="brand-name">{currentKeyringType.brandName}</h1>
-      {IS_AFTER_CHROME91 && !useLedgerLive ? (
-        <div className="text-yellow text-15 text-center whitespace-pre-line px-16 py-12 border-yellow border-opacity-20 border bg-yellow bg-opacity-10 rounded w-[360px] leading-5">
-          <div>{t('ledgerWebUSBSignAlertPart1')}</div>
-          <div>{t('ledgerWebUSBSignAlertPart2')}</div>
-        </div>
-      ) : (
+    <>
+      <AccountCard />
+      <div className="hardware-operation">
+        <Icon />
+        <h1 className="brand-name">{currentKeyringType.brandName}</h1>
         <p className="text-15 text-gray-content text-center">
           {t('Please proceed in your hardware wallet')}
         </p>
-      )}
-      <footer>
-        <div className="action-buttons flex justify-center">
-          <Button
-            type="primary"
-            size="large"
-            className="w-[172px]"
-            onClick={handleCancel}
-          >
-            {t('Cancel')}
-          </Button>
-        </div>
-      </footer>
-    </div>
+        {IS_AFTER_CHROME91 && !useLedgerLive && (
+          <div className="text-yellow text-15 text-center whitespace-pre-line px-16 py-12 border-yellow border-opacity-20 border bg-yellow bg-opacity-10 rounded w-[360px] leading-5 mt-[60px]">
+            <div>{t('ledgerWebUSBSignAlertPart1')}</div>
+            <div>{t('ledgerWebUSBSignAlertPart2')}</div>
+          </div>
+        )}
+        <footer>
+          <div className="action-buttons flex justify-center">
+            <Button
+              type="primary"
+              size="large"
+              className="w-[172px]"
+              onClick={handleCancel}
+            >
+              {t('Cancel')}
+            </Button>
+          </div>
+        </footer>
+      </div>
+    </>
   );
 };
 
