@@ -57,7 +57,7 @@ class PreferenceService {
       .filter((lang) => SUPPORT_LOCALES.includes(lang));
   };
 
-  getHiddenAddresses = () => {
+  getHiddenAddresses = (): Account[] => {
     return cloneDeep(this.store.hiddenAddresses);
   };
 

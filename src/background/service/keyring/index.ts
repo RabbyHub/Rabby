@@ -789,7 +789,9 @@ class KeyringService extends EventEmitter {
       })
     ).then((candidates) => {
       const winners = candidates.filter((candidate) => {
-        const accounts = candidate[1].map(normalizeAddress);
+        const accounts = candidate[1].map((addr) => {
+          return normalizeAddress(addr).toLowerCase();
+        });
         return accounts.includes(hexed);
       });
       if (winners && winners.length > 0) {
@@ -808,7 +810,7 @@ class KeyringService extends EventEmitter {
    */
   displayForKeyring(keyring, includeHidden = true): Promise<DisplayedKeryring> {
     const hiddenAddresses = preference.getHiddenAddresses();
-    return keyring.getAccounts().then((accounts) => {
+    return keyring.getAccounts().then((accounts: string[]) => {
       return {
         type: keyring.type,
         accounts: includeHidden
@@ -817,7 +819,8 @@ class KeyringService extends EventEmitter {
               (account) =>
                 !hiddenAddresses.find(
                   (item) =>
-                    item.type === keyring.type && item.address === account
+                    item.type === keyring.type &&
+                    item.address.toLowerCase() === account.toLowerCase()
                 )
             ),
         keyring,
