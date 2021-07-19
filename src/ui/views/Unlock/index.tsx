@@ -57,6 +57,7 @@ const Unlock = () => {
             size="large"
             type="password"
             ref={inputEl}
+            spellCheck={false}
           />
         </Form.Item>
         <Form.Item>

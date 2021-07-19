@@ -60,6 +60,7 @@ const AuthenticationModal = ({
             type="password"
             size="large"
             autoFocus
+            spellCheck={false}
           />
         </Form.Item>
         <div className="flex justify-center pt-6">

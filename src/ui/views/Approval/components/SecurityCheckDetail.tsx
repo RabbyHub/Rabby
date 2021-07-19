@@ -120,6 +120,7 @@ const SecurityCheckDetail = ({
                 placeholder={t('Please enter the password')}
                 type="password"
                 onChange={(e) => handlePasswordChange(e.target.value)}
+                spellCheck={false}
               />
             </div>
           )}

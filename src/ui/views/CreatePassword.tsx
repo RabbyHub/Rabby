@@ -99,6 +99,7 @@ const CreatePassword = () => {
             placeholder={t('Password')}
             type="password"
             autoFocus
+            spellCheck={false}
           />
         </Form.Item>
         <Form.Item
@@ -121,6 +122,7 @@ const CreatePassword = () => {
             size="large"
             placeholder={t('Repeat Password')}
             type="password"
+            spellCheck={false}
           />
         </Form.Item>
         <Form.Item shouldUpdate className="text-red-light text-12">

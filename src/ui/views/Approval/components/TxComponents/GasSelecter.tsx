@@ -198,6 +198,7 @@ const GasSelector = ({
                                 handleCustomGasChange(e.target.value)
                               }
                               onClick={(e) => e.stopPropagation()}
+                              spellCheck={false}
                             />
                           </div>
                         ) : (

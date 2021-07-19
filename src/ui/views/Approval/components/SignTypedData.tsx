@@ -1,6 +1,7 @@
 import React, { useState } from 'react';
 import { Button, Tooltip } from 'antd';
 import { useTranslation } from 'react-i18next';
+import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
 import { KEYRING_CLASS } from 'consts';
 import { useApproval, useWallet } from 'ui/utils';
 import {
@@ -101,6 +102,17 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
     }
     const currentAccount = await wallet.getCurrentAccount();
     if (currentAccount?.type && WaitingSignComponent[currentAccount?.type]) {
+      if (currentAccount.type === KEYRING_CLASS.HARDWARE.LEDGER) {
+        try {
+          const keyring = wallet.connectHardware(KEYRING_CLASS.HARDWARE.LEDGER);
+          if (keyring.isWebUSB) {
+            const transport = await TransportWebUSB.create();
+            await transport.close();
+          }
+        } catch (e) {
+          // NOTHING
+        }
+      }
       resolveApproval({
         uiRequestComponent: WaitingSignComponent[currentAccount?.type],
         type: currentAccount.type,

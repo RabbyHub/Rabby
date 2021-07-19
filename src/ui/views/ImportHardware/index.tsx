@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
 import { StrayPage } from 'ui/component';
 import { useWallet } from 'ui/utils';
-import { SvgIconLedger, SvgIconOnekey, SvgIconTrezor } from 'ui/assets';
+import { SvgIconOnekey, SvgIconTrezor, ImportLedgerIcon } from 'ui/assets';
 import { BIP44_PATH } from './LedgerHdPath';
 import { IS_CHROME } from 'consts';
 
@@ -11,7 +11,7 @@ import './index.css';
 
 const HARDWARES = [
   {
-    icon: SvgIconLedger,
+    icon: ImportLedgerIcon,
     name: 'Ledger',
     type: 'LEDGER',
   },

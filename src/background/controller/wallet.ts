@@ -32,12 +32,16 @@ export class WalletController extends BaseController {
   resolveApproval = notificationService.resolveApproval;
   rejectApproval = notificationService.rejectApproval;
 
-  unlock = (password: string) => keyringService.submitPassword(password);
+  unlock = (password: string) => {
+    keyringService.submitPassword(password);
+    sessionService.broadcastEvent('unlock');
+  };
   isUnlocked = () => keyringService.memStore.getState().isUnlocked;
 
   lockWallet = async () => {
     await keyringService.setLocked();
     sessionService.broadcastEvent('accountsChanged', []);
+    sessionService.broadcastEvent('lock');
   };
   setPopupOpen = (isOpen) => {
     preferenceService.setPopupOpen(isOpen);
@@ -325,7 +329,7 @@ export class WalletController extends BaseController {
   updateUseLedgerLive = async (value: boolean) =>
     preferenceService.updateUseLedgerLive(value);
 
-  connectHardware = (type, hdPath) => {
+  connectHardware = (type, hdPath?: string) => {
     let keyring;
     const keyringType = KEYRING_CLASS.HARDWARE[type];
     try {

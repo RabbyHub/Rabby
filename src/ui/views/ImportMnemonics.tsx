@@ -64,6 +64,7 @@ const ImportMnemonic = () => {
           <Input.TextArea
             className="h-[124px]"
             placeholder={t('Mnemonics words')}
+            spellCheck={false}
           />
         </Form.Item>
       </div>

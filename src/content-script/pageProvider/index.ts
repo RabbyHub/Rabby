@@ -32,6 +32,15 @@ export class EthereumProvider extends EventEmitter {
 
   _isConnected = false;
   _initialized = false;
+  _isUnlocked = false;
+
+  _metamask = {
+    isUnlocked: () => {
+      return new Promise((resolve) => {
+        resolve(this._isUnlocked);
+      });
+    },
+  };
 
   private _pushEventHandlers: PushEventHandlers;
   private _requestPromise = new ReadyPromise(2);
@@ -81,10 +90,17 @@ export class EthereumProvider extends EventEmitter {
     });
 
     try {
-      const { chainId, accounts, networkVersion }: any = await this.request({
+      const {
+        chainId,
+        accounts,
+        networkVersion,
+        isUnlocked,
+      }: any = await this.request({
         method: 'getProviderState',
       });
-
+      if (isUnlocked) {
+        this._isUnlocked = true;
+      }
       this.chainId = chainId;
       this.networkVersion = networkVersion;
       this.emit('connect', { chainId });

@@ -61,7 +61,12 @@ const ImportPrivateKey = () => {
           name="key"
           rules={[{ required: true, message: t('Please input Private key') }]}
         >
-          <Input placeholder={t('Private key')} size="large" autoFocus />
+          <Input
+            placeholder={t('Private key')}
+            size="large"
+            autoFocus
+            spellCheck={false}
+          />
         </Form.Item>
       </div>
     </StrayPageWithButton>

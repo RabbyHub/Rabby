@@ -350,7 +350,7 @@
     "description": "Website connect confirm button text"
   },
   "ledgerWebUSBSignAlertPart1": {
-    "message": "因为 Chrome 问题无法继续"
+    "message": "如果因为 Chrome 问题而无法继续"
   },
   "ledgerWebUSBSignAlertPart2": {
     "message": "请删除该地址后，重新添加以重试该操作"
