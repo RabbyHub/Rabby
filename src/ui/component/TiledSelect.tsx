@@ -12,6 +12,7 @@ interface TiledSelectProps {
   value?: string[];
   options: string[];
   onChange?(arg: string[]): void;
+  onClear?(): void;
   className?: string;
   errMsg?: string;
 }
@@ -24,6 +25,7 @@ const TiledSelect = ({
   className,
   errMsg = '',
   correctValue,
+  onClear,
 }: TiledSelectProps) => {
   const [
     _value,
@@ -51,6 +53,7 @@ const TiledSelect = ({
 
   const handleClickClear = () => {
     handleClear();
+    onClear && onClear();
   };
 
   return (
@@ -69,12 +72,12 @@ const TiledSelect = ({
             </div>
           ))}
         {errMsg && (
-          <div
-            className="flex text-12 justify-between absolute left-0 bottom-12 px-12 w-full cursor-pointer"
-            onClick={handleClickClear}
-          >
+          <div className="flex text-12 justify-between absolute left-0 bottom-12 px-12 w-full">
             <span className="text-red-light">{errMsg}</span>
-            <span className="text-gray-subTitle flex">
+            <span
+              className="text-gray-subTitle flex cursor-pointer"
+              onClick={handleClickClear}
+            >
               <img src={IconClear} className="w-[12px] h-[12px] mr-4" />
               Clear
             </span>

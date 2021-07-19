@@ -145,6 +145,7 @@ const VerifyMnemonics = ({
             options={randomMnemonics}
             errMsg={errMsg}
             correctValue={mnemonics.split(' ')}
+            onClear={() => setErrMsg('')}
           />
         </Form.Item>
       </div>

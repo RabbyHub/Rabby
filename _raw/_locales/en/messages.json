@@ -16,6 +16,9 @@
   "History": {
     "message": "History"
   },
+  "Set__Unlock__Password": {
+    "message": "Set Unlock Password"
+  },
   "Set__Current__Address": {
     "message": "Set Current Address",
     "description": "Switch modal title in dashboard"
