@@ -75,9 +75,6 @@ const ImportJson = () => {
             }}
           />
         </Form.Item>
-        <div className="text-center text-14 text-gray-comment -mt-20 mb-[20px] h-14">
-          {isUpload && t('Click to upload again')}
-        </div>
         <Form.Item
           name="password"
           rules={[{ required: true, message: t('Please input Password') }]}

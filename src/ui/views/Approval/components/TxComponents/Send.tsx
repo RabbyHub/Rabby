@@ -31,7 +31,7 @@ const Send = ({ data, chainEnum }: SendProps) => {
             }}
           />
         </p>
-        <p className="text-gray-content text-13 font-medium mb-0 font-roboto-mono whitespace-nowrap">
+        <p className="text-gray-content text-13 font-medium mb-0 font-roboto-mono">
           {detail.to_addr}
         </p>
       </div>
