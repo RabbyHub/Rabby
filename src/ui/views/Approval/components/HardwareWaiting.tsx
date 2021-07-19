@@ -50,7 +50,7 @@ const Hardware = ({
           {t('Please proceed in your hardware wallet')}
         </p>
         {IS_AFTER_CHROME91 && !useLedgerLive && (
-          <div className="text-yellow text-15 text-center whitespace-pre-line px-16 py-12 border-yellow border-opacity-20 border bg-yellow bg-opacity-10 rounded w-[360px] leading-5">
+          <div className="text-yellow text-15 text-center whitespace-pre-line px-16 py-12 border-yellow border-opacity-20 border bg-yellow bg-opacity-10 rounded w-[360px] leading-5 mt-[60px]">
             <div>{t('ledgerWebUSBSignAlertPart1')}</div>
             <div>{t('ledgerWebUSBSignAlertPart2')}</div>
           </div>
