@@ -345,20 +345,21 @@ class KeyringService extends EventEmitter {
       keyrings.map((keyring) => keyring.getAccounts())
     );
 
-    const accounts = _accounts
+    const accounts: string[] = _accounts
       .reduce((m, n) => m.concat(n), [] as string[])
-      .map(normalizeAddress);
+      .map((address) => normalizeAddress(address).toLowerCase());
 
-    const isIncluded = Boolean(
-      accounts.find(
+    const isIncluded = newAccountArray.some((account) => {
+      return accounts.find(
         (key) =>
-          key === newAccountArray[0] ||
-          key === ethUtil.stripHexPrefix(newAccountArray[0])
-      )
-    );
+          key === account.toLowerCase() ||
+          key === ethUtil.stripHexPrefix(account)
+      );
+    });
+
     return isIncluded
       ? Promise.reject(
-          new Error("The account you're are trying to import is a duplicate")
+          new Error("The account you're are trying to import is duplicate")
         )
       : Promise.resolve(newAccountArray);
   }
@@ -773,7 +774,7 @@ class KeyringService extends EventEmitter {
     type?: string,
     includeWatchKeyring = true
   ): Promise<any> {
-    const hexed = normalizeAddress(address);
+    const hexed = normalizeAddress(address).toLowerCase();
     log.debug(`KeyringController - getKeyringForAccount: ${hexed}`);
     let keyrings = type
       ? this.keyrings.filter((keyring) => keyring.type === type)
@@ -789,7 +790,9 @@ class KeyringService extends EventEmitter {
       })
     ).then((candidates) => {
       const winners = candidates.filter((candidate) => {
-        const accounts = candidate[1].map(normalizeAddress);
+        const accounts = candidate[1].map((addr) => {
+          return normalizeAddress(addr).toLowerCase();
+        });
         return accounts.includes(hexed);
       });
       if (winners && winners.length > 0) {
@@ -808,7 +811,7 @@ class KeyringService extends EventEmitter {
    */
   displayForKeyring(keyring, includeHidden = true): Promise<DisplayedKeryring> {
     const hiddenAddresses = preference.getHiddenAddresses();
-    return keyring.getAccounts().then((accounts) => {
+    return keyring.getAccounts().then((accounts: string[]) => {
       return {
         type: keyring.type,
         accounts: includeHidden
@@ -817,7 +820,8 @@ class KeyringService extends EventEmitter {
               (account) =>
                 !hiddenAddresses.find(
                   (item) =>
-                    item.type === keyring.type && item.address === account
+                    item.type === keyring.type &&
+                    item.address.toLowerCase() === account.toLowerCase()
                 )
             ),
         keyring,
