@@ -363,15 +363,6 @@ class OpenApiService {
         symbol: 'BSC',
       },
       {
-        community_id: 137,
-        id: 'matic',
-        logo_url: '',
-        name: '',
-        native_token_id: '',
-        wrapped_token_id: '',
-        symbol: '',
-      },
-      {
         community_id: 100,
         id: 'xdai',
         logo_url: '',
@@ -381,8 +372,8 @@ class OpenApiService {
         symbol: '',
       },
       {
-        community_id: 128,
-        id: 'heco',
+        community_id: 137,
+        id: 'matic',
         logo_url: '',
         name: '',
         native_token_id: '',
@@ -401,6 +392,15 @@ class OpenApiService {
       {
         community_id: 66,
         id: 'okt',
+        logo_url: '',
+        name: '',
+        native_token_id: '',
+        wrapped_token_id: '',
+        symbol: '',
+      },
+      {
+        community_id: 128,
+        id: 'heco',
         logo_url: '',
         name: '',
         native_token_id: '',
