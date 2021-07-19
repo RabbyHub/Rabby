@@ -21,6 +21,14 @@ class PushEventHandlers {
     }
   };
 
+  unlock = () => {
+    this.provider._isUnlocked = true;
+  };
+
+  lock = () => {
+    this.provider._isUnlocked = false;
+  };
+
   disconnect = () => {
     this.provider._isConnected = false;
     this.provider.selectedAddress = null;

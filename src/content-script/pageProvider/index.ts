@@ -32,6 +32,15 @@ export class EthereumProvider extends EventEmitter {
 
   _isConnected = false;
   _initialized = false;
+  _isUnlocked = false;
+
+  _metamask = {
+    isUnlocked: () => {
+      return new Promise((resolve) => {
+        resolve(this._isUnlocked);
+      });
+    },
+  };
 
   private _pushEventHandlers: PushEventHandlers;
   private _requestPromise = new ReadyPromise(2);

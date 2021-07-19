@@ -14,6 +14,7 @@ export { ReactComponent as SvgIconCross } from './cross.svg';
 export { ReactComponent as SvgIconPlusPrimary } from './plus-primary.svg';
 export { ReactComponent as SvgIconSpin } from './spin.svg';
 export { ReactComponent as SvgIconOffline } from './offline.svg';
+export { ReactComponent as ImportLedgerIcon } from './import-ledger.svg';
 export { ReactComponent as SvgIconLedger } from './ledger.svg';
 export { ReactComponent as SvgIconTrezor } from './trezor.svg';
 export { ReactComponent as SvgIconOnekey } from './onekey.svg';

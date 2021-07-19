@@ -32,12 +32,16 @@ export class WalletController extends BaseController {
   resolveApproval = notificationService.resolveApproval;
   rejectApproval = notificationService.rejectApproval;
 
-  unlock = (password: string) => keyringService.submitPassword(password);
+  unlock = (password: string) => {
+    keyringService.submitPassword(password);
+    sessionService.broadcastEvent('unlock');
+  };
   isUnlocked = () => keyringService.memStore.getState().isUnlocked;
 
   lockWallet = async () => {
     await keyringService.setLocked();
     sessionService.broadcastEvent('accountsChanged', []);
+    sessionService.broadcastEvent('lock');
   };
   setPopupOpen = (isOpen) => {
     preferenceService.setPopupOpen(isOpen);
