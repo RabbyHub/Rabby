@@ -82,7 +82,12 @@ const ImportJson = () => {
           name="password"
           rules={[{ required: true, message: t('Please input Password') }]}
         >
-          <Input placeholder={t('Password')} type="password" size="large" />
+          <Input
+            placeholder={t('Password')}
+            type="password"
+            size="large"
+            spellCheck={false}
+          />
         </Form.Item>
       </div>
     </StrayPageWithButton>

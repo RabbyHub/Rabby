@@ -69,6 +69,7 @@ const ImportWatchAddress = () => {
           size="large"
           maxLength={44}
           autoFocus
+          spellCheck={false}
         />
       </Form.Item>
     </StrayPageWithButton>
