@@ -16,6 +16,9 @@
   "History": {
     "message": "交易历史"
   },
+  "Set__Unlock__Password": {
+    "message": "设置解锁密码"
+  },
   "Set__Current__Address": {
     "message": "选择当前地址",
     "description": "Switch modal title in dashboard"
