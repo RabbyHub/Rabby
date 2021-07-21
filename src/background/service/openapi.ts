@@ -172,7 +172,7 @@ interface RPCResponse<T> {
   };
 }
 
-const maxRPS = 25;
+const maxRPS = 100;
 
 class OpenApiService {
   store!: OpenApiStore;

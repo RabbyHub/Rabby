@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useMemo } from 'react';
-import { getOriginName, hashCode } from 'ui/utils';
 import cx from 'clsx';
+import { getOriginName, hashCode } from 'ui/utils';
 import './style.less';
 
 const bgColorList = [
