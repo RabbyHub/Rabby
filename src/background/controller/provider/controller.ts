@@ -14,6 +14,7 @@ import {
 } from 'background/service';
 import { Session } from 'background/service/session';
 import { Tx } from 'background/service/openapi';
+import RpcCache from 'background/utils/rpcCache';
 import { CHAINS, CHAINS_ENUM } from 'consts';
 import BaseController from '../base';
 
@@ -61,11 +62,26 @@ class ProviderController extends BaseController {
     const chainServerId =
       CHAINS[permissionService.getConnectedSite(origin)!.chain].serverId;
 
-    return openapiService.ethRpc(chainServerId, {
-      origin: encodeURIComponent(origin),
-      method,
-      params,
-    });
+    const currentAddress =
+      preferenceService.getCurrentAccount()?.address.toLowerCase() || '0x';
+
+    const cache = RpcCache.get(currentAddress, { method, params });
+    if (cache) return cache;
+
+    return openapiService
+      .ethRpc(chainServerId, {
+        origin: encodeURIComponent(origin),
+        method,
+        params,
+      })
+      .then((result) => {
+        RpcCache.set(
+          currentAddress,
+          { method, params, result },
+          method === 'eth_call' ? 20 * 60000 : undefined
+        );
+        return result;
+      });
   };
 
   ethRequestAccounts = async ({ session: { origin } }) => {
