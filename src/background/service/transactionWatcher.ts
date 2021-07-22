@@ -52,7 +52,7 @@ class TransactionWatcher {
     const url = format(CHAINS[chain].scanLink, hash);
     notification.create(
       url,
-      'Transaction submitted',
+      '⏳  Transaction submitted',
       'click to view more information'
     );
 
@@ -80,7 +80,7 @@ class TransactionWatcher {
     const { hash, chain } = this.store.pendingTx[id];
     const url = format(CHAINS[chain].scanLink, hash);
 
-    const title = `Transaction ${
+    const title = `${txReceipt.status === '0x1' ? '🎉' : '❌'} Transaction ${
       txReceipt.status === '0x1' ? 'completed' : 'failed'
     }`;
 
