@@ -14,6 +14,7 @@ import {
   chainService,
   openapiService,
   transactionWatchService,
+  pageStateCacheService,
 } from './service';
 import { providerController, walletController } from './controller';
 
@@ -42,6 +43,7 @@ async function restoreAppState() {
   await openapiService.init();
   await chainService.init();
   await transactionWatchService.init();
+  await pageStateCacheService.init();
 
   appStoreLoaded = true;
 
