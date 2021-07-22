@@ -11,7 +11,9 @@ const SortHat = () => {
   let [approval, , rejectApproval] = useApproval();
 
   const loadView = async () => {
-    const isInNotification = getUiType().isNotification;
+    const UIType = getUiType();
+    const isInNotification = UIType.isNotification;
+    const isInTab = UIType.isTab;
 
     if (isInNotification && !approval) {
       window.close();
@@ -35,7 +37,13 @@ const SortHat = () => {
       return;
     }
 
-    if (await wallet.getPreMnemonics()) {
+    if (wallet.hasPageStateCache() && !isInNotification && !isInTab) {
+      const cache = wallet.getPageStateCache()!;
+      setTo(cache.path);
+      return;
+    }
+
+    if ((await wallet.getPreMnemonics()) && !isInNotification && !isInTab) {
       setTo('/create-mnemonics');
       return;
     }

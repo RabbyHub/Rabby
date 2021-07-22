@@ -90,15 +90,9 @@ export const StrayPageWithButton = ({
 }: StrayPageWithButtonProps & StrayFooterNavProps) => {
   const { t } = useTranslation();
 
-  useEffect(() => {
-    console.log('nextDisabled', nextDisabled);
-  }, [nextDisabled]);
-
   const handleKeyDown = useMemo(() => {
     const handler = (e: KeyboardEvent) => {
       if (e.key.toLowerCase() === 'enter') {
-        console.log('onSubmit', onSubmit);
-        console.log('onNextClick', onNextClick, nextDisabled);
         if (onSubmit) return;
         if (onNextClick && !nextDisabled) {
           onNextClick();

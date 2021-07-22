@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Form, Input } from 'antd';
 import { useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -32,14 +32,50 @@ const ImportMnemonic = () => {
     },
   });
 
+  const handleLoadCache = () => {
+    const cache = wallet.getPageStateCache();
+    if (cache && cache.path === history.location.pathname) {
+      form.setFieldsValue(cache.states);
+    }
+  };
+
+  const handleValuesChange = (states) => {
+    wallet.setPageStateCache({
+      path: history.location.pathname,
+      params: {},
+      states,
+    });
+  };
+
+  const handleClickBack = () => {
+    if (history.length > 1) {
+      history.goBack();
+    } else {
+      history.replace('/');
+    }
+  };
+
+  useEffect(() => {
+    if (wallet.hasPageStateCache()) handleLoadCache();
+
+    return () => {
+      wallet.clearPageStateCache();
+    };
+  }, []);
+
   return (
     <StrayPageWithButton
       spinning={loading}
       form={form}
+      formProps={{
+        onValuesChange: handleValuesChange,
+      }}
       onSubmit={({ mnemonics }) => run(mnemonics)}
       hasBack
       hasDivider
       noPadding
+      onBackClick={handleClickBack}
+      backDisabled={false}
     >
       <header className="create-new-header create-password-header h-[234px]">
         <img

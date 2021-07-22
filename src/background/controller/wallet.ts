@@ -10,8 +10,10 @@ import {
   sessionService,
   chainService,
   openapiService,
+  pageStateCacheService,
 } from 'background/service';
 import { openIndexPage } from 'background/webapi/tab';
+import { CacheState } from 'background/service/pageStateCache';
 import { KEYRING_CLASS, DisplayedKeryring } from 'background/service/keyring';
 import BaseController from './base';
 import { CHAINS_ENUM, CHAINS } from 'consts';
@@ -47,6 +49,14 @@ export class WalletController extends BaseController {
     preferenceService.setPopupOpen(isOpen);
   };
   openIndexPage = openIndexPage;
+
+  hasPageStateCache = () => pageStateCacheService.has();
+  getPageStateCache = () => {
+    if (!this.isUnlocked()) return null;
+    return pageStateCacheService.get();
+  };
+  clearPageStateCache = () => pageStateCacheService.clear();
+  setPageStateCache = (cache: CacheState) => pageStateCacheService.set(cache);
 
   getAddressBalance = async (address: string) => {
     const data = await openapiService.getTotalBalance(address);
