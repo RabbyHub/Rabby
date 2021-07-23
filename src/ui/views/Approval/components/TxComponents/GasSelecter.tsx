@@ -7,12 +7,18 @@ import { GasResult, Tx, GasLevel } from 'background/service/openapi';
 import { formatSeconds, useWallet } from 'ui/utils';
 import { Modal, FieldCheckbox } from 'ui/component';
 import IconSetting from 'ui/assets/setting-gray.svg';
+import IconArrowDown from 'ui/assets/arrow-down.svg';
+import clsx from 'clsx';
+
+export interface GasSelectorResponse extends GasLevel {
+  gasLimit: number;
+}
 
 interface GasSelectorProps {
   gas: GasResult;
   chainId: number;
   tx: Tx;
-  onChange(gas: GasLevel): void;
+  onChange(gas: GasSelectorResponse): void;
   isReady: boolean;
 }
 
@@ -25,6 +31,8 @@ const GasSelector = ({
 }: GasSelectorProps) => {
   const wallet = useWallet();
   const { t } = useTranslation();
+  const [advanceExpanded, setAdvanceExpanded] = useState(false);
+  const [gasLimit, setGasLimit] = useState(Number(tx.gas));
   const [modalVisible, setModalVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [customGas, setCustomGas] = useState(Number(tx.gasPrice));
@@ -92,15 +100,24 @@ const GasSelector = ({
       onChange({
         ...selectedGas,
         price: customGas,
+        gasLimit,
       });
     } else {
-      onChange(selectedGas);
+      onChange({ ...selectedGas, gasLimit });
     }
     setModalVisible(false);
   };
 
   const handleCustomGasChange = (value: string) => {
     setCustomGas(Number(value) * 1e9);
+  };
+
+  const handleGasLimitChange = (value: string) => {
+    setGasLimit(Number(value));
+  };
+
+  const handleClickAdvance = () => {
+    setAdvanceExpanded(!advanceExpanded);
   };
 
   useDebounce(
@@ -210,6 +227,31 @@ const GasSelector = ({
                 </div>
               </FieldCheckbox>
             ))}
+          </div>
+          <div className="gas-limit mt-20">
+            <p className="section-title flex">
+              <span>{advanceExpanded ? t('Gas limit') : ''}</span>
+              <span
+                className="flex-1 text-right cursor-pointer"
+                onClick={handleClickAdvance}
+              >
+                {t('Advanced Options')}
+                <img
+                  className={clsx('icon icon-arrow-down inline-block ml-4', {
+                    expanded: advanceExpanded,
+                  })}
+                  src={IconArrowDown}
+                />
+              </span>
+            </p>
+            <div
+              className={clsx('gas-limit-panel', { expanded: advanceExpanded })}
+            >
+              <Input
+                value={gasLimit}
+                onChange={(e) => handleGasLimitChange(e.target.value)}
+              />
+            </div>
           </div>
           <div className="flex justify-center mt-32">
             <Button

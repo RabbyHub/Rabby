@@ -24,7 +24,7 @@ import CancelTx from './TxComponents/CancelTx';
 import Send from './TxComponents/Send';
 import Deploy from './TxComponents/Deploy';
 import Loading from './TxComponents/Loading';
-import GasSelector from './TxComponents/GasSelecter';
+import GasSelector, { GasSelectorResponse } from './TxComponents/GasSelecter';
 import { WaitingSignComponent } from './SignText';
 import { Chain } from 'background/service/chain';
 
@@ -249,10 +249,11 @@ const SignTx = ({ params, origin }) => {
     });
   };
 
-  const handleGasChange = (gas: GasLevel) => {
+  const handleGasChange = (gas: GasSelectorResponse) => {
     setTx({
       ...tx,
       gasPrice: `0x${gas.price.toString(16)}`,
+      gas: `0x${gas.gasLimit.toString(16)}`,
     });
   };
 
