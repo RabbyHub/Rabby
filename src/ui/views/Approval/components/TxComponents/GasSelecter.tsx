@@ -245,12 +245,19 @@ const GasSelector = ({
               </span>
             </p>
             <div
-              className={clsx('gas-limit-panel', { expanded: advanceExpanded })}
+              className={clsx('gas-limit-panel-wrapper', {
+                expanded: advanceExpanded,
+              })}
             >
-              <Input
-                value={gasLimit}
-                onChange={(e) => handleGasLimitChange(e.target.value)}
-              />
+              <div className="gas-limit-panel">
+                <Input
+                  value={gasLimit}
+                  onChange={(e) => handleGasLimitChange(e.target.value)}
+                />
+              </div>
+              <p className="tip">
+                Est. {Number(tx.gas)}. Current 1.0x, recommended 1.5x.
+              </p>
             </div>
           </div>
           <div className="flex justify-center mt-32">

@@ -516,6 +516,7 @@
   .gas-limit {
     .icon-arrow-down {
       transform: rotate(0);
+      transition: transform .3s;
       &.expanded {
         transform: rotate(180deg);
       }
@@ -523,12 +524,18 @@
     .section-title {
       margin-bottom: 0;
     }
+    .gas-limit-panel-wrapper {
+      max-height: 0;
+      transition: max-height .3s;
+      overflow: hidden;
+      &.expanded {
+        max-height: 100px;
+      }
+    }
     .gas-limit-panel {
       margin-top: 12px;
       background-color: #fff;
       border-radius: 6px;
-      max-height: 0;
-      transition: max-height .3s;
       overflow: hidden;
       .ant-input {
         padding: 15px;
@@ -544,9 +551,13 @@
       .ant-input:focus, .ant-input-focused, .ant-input:hover, .ant-input:focus-visible {
         border: none;
       }
-      &.expanded {
-        max-height: 60px;
-      }
+    }
+    .tip {
+      color: #B4BDCC;
+      font-size: 12px;
+      font-style: italic;
+      margin-top: 12px;
+      margin-bottom: 0;
     }
   }
 }
