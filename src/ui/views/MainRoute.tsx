@@ -1,5 +1,6 @@
 import React from 'react';
-import { Switch, Route } from 'react-router-dom';
+import { Switch, Route, useLocation } from 'react-router-dom';
+import { TransitionGroup, CSSTransition } from 'react-transition-group';
 import ReactGA, { ga } from 'react-ga';
 import { PrivateRoute } from 'ui/component';
 
@@ -37,85 +38,95 @@ const LogPageView = () => {
 };
 
 const Main = () => {
+  const location = useLocation();
+
   return (
     <>
       <Route path="/" component={LogPageView} />
-      <Switch>
-        <Route exact path="/welcome">
-          <Welcome />
-        </Route>
-        <Route exact path="/password">
-          <CreatePassword />
-        </Route>
+      <TransitionGroup>
+        <CSSTransition
+          key={location.pathname}
+          classNames="page-transition"
+          timeout={300}
+        >
+          <Switch location={location}>
+            <Route exact path="/welcome">
+              <Welcome />
+            </Route>
+            <Route exact path="/password">
+              <CreatePassword />
+            </Route>
 
-        <PrivateRoute exact path="/no-address">
-          <NoAddress />
-        </PrivateRoute>
-        <PrivateRoute exact path="/start-chain-management">
-          <StartChainManagement />
-        </PrivateRoute>
-        <PrivateRoute exact path="/create-mnemonics">
-          <CreateMnemonics />
-        </PrivateRoute>
-        <PrivateRoute exact path="/import">
-          <ImportMode />
-        </PrivateRoute>
-        <PrivateRoute exact path="/import/key">
-          <ImportPrivateKey />
-        </PrivateRoute>
-        <PrivateRoute exact path="/import/json">
-          <ImportJson />
-        </PrivateRoute>
-        <PrivateRoute exact path="/import/mnemonics">
-          <ImportMnemonics />
-        </PrivateRoute>
-        <PrivateRoute exact path="/popup/import/select-address">
-          <SelectAddress isPopup />
-        </PrivateRoute>
-        <PrivateRoute exact path="/import/select-address">
-          <SelectAddress />
-        </PrivateRoute>
-        <PrivateRoute exact path="/import/hardware">
-          <ImportHardware />
-        </PrivateRoute>
-        <PrivateRoute exact path="/import/hardware/ledger-connect">
-          <ConnectLedgerMethodSelect />
-        </PrivateRoute>
-        <PrivateRoute exact path="/import/hardware/ledger">
-          <ImportLedgerPathSelect />
-        </PrivateRoute>
-        <PrivateRoute exact path="/import/watch-address">
-          <ImportWatchAddress />
-        </PrivateRoute>
-        <PrivateRoute exact path="/popup/import/success">
-          <ImportSuccess isPopup />
-        </PrivateRoute>
-        <PrivateRoute exact path="/import/success">
-          <ImportSuccess />
-        </PrivateRoute>
+            <PrivateRoute exact path="/no-address">
+              <NoAddress />
+            </PrivateRoute>
+            <PrivateRoute exact path="/start-chain-management">
+              <StartChainManagement />
+            </PrivateRoute>
+            <PrivateRoute exact path="/create-mnemonics">
+              <CreateMnemonics />
+            </PrivateRoute>
+            <PrivateRoute exact path="/import">
+              <ImportMode />
+            </PrivateRoute>
+            <PrivateRoute exact path="/import/key">
+              <ImportPrivateKey />
+            </PrivateRoute>
+            <PrivateRoute exact path="/import/json">
+              <ImportJson />
+            </PrivateRoute>
+            <PrivateRoute exact path="/import/mnemonics">
+              <ImportMnemonics />
+            </PrivateRoute>
+            <PrivateRoute exact path="/popup/import/select-address">
+              <SelectAddress isPopup />
+            </PrivateRoute>
+            <PrivateRoute exact path="/import/select-address">
+              <SelectAddress />
+            </PrivateRoute>
+            <PrivateRoute exact path="/import/hardware">
+              <ImportHardware />
+            </PrivateRoute>
+            <PrivateRoute exact path="/import/hardware/ledger-connect">
+              <ConnectLedgerMethodSelect />
+            </PrivateRoute>
+            <PrivateRoute exact path="/import/hardware/ledger">
+              <ImportLedgerPathSelect />
+            </PrivateRoute>
+            <PrivateRoute exact path="/import/watch-address">
+              <ImportWatchAddress />
+            </PrivateRoute>
+            <PrivateRoute exact path="/popup/import/success">
+              <ImportSuccess isPopup />
+            </PrivateRoute>
+            <PrivateRoute exact path="/import/success">
+              <ImportSuccess />
+            </PrivateRoute>
 
-        <PrivateRoute exact path="/add-address">
-          <AddAddress />
-        </PrivateRoute>
-        <PrivateRoute exact path="/approval">
-          <Approval />
-        </PrivateRoute>
-        <PrivateRoute exact path="/settings">
-          <Settings />
-        </PrivateRoute>
-        <PrivateRoute exact path="/settings/address">
-          <AddressManagement />
-        </PrivateRoute>
-        <PrivateRoute exact path="/settings/sites">
-          <ConnectedSites />
-        </PrivateRoute>
-        <PrivateRoute exact path="/settings/chain">
-          <ChainManagement />
-        </PrivateRoute>
-        <PrivateRoute exact path="/settings/switch-lang">
-          <SwitchLang />
-        </PrivateRoute>
-      </Switch>
+            <PrivateRoute exact path="/add-address">
+              <AddAddress />
+            </PrivateRoute>
+            <PrivateRoute exact path="/approval">
+              <Approval />
+            </PrivateRoute>
+            <PrivateRoute exact path="/settings">
+              <Settings />
+            </PrivateRoute>
+            <PrivateRoute exact path="/settings/address">
+              <AddressManagement />
+            </PrivateRoute>
+            <PrivateRoute exact path="/settings/sites">
+              <ConnectedSites />
+            </PrivateRoute>
+            <PrivateRoute exact path="/settings/chain">
+              <ChainManagement />
+            </PrivateRoute>
+            <PrivateRoute exact path="/settings/switch-lang">
+              <SwitchLang />
+            </PrivateRoute>
+          </Switch>
+        </CSSTransition>
+      </TransitionGroup>
     </>
   );
 };

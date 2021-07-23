@@ -1,5 +1,11 @@
 import React, { lazy, Suspense } from 'react';
-import { HashRouter as Router, Route } from 'react-router-dom';
+import {
+  HashRouter as Router,
+  Route,
+  useLocation,
+  Switch,
+} from 'react-router-dom';
+import { TransitionGroup, CSSTransition } from 'react-transition-group';
 import { WalletProvider } from 'ui/utils';
 import { PrivateRoute } from 'ui/component';
 import Dashboard from './Dashboard';
@@ -7,24 +13,45 @@ import Unlock from './Unlock';
 import SortHat from './SortHat';
 const AsyncMainRoute = lazy(() => import('./MainRoute'));
 
-const Main = () => (
-  <Router>
-    <Route exact path="/">
-      <SortHat />
-    </Route>
+const TransitionRoute = () => {
+  const location = useLocation();
+  return (
+    <TransitionGroup>
+      <CSSTransition
+        key={location.pathname}
+        classNames="page-transition"
+        timeout={300}
+      >
+        <Switch location={location}>
+          <PrivateRoute exact path="/dashboard">
+            <Dashboard />
+          </PrivateRoute>
+        </Switch>
+      </CSSTransition>
+    </TransitionGroup>
+  );
+};
 
-    <Route exact path="/unlock">
-      <Unlock />
-    </Route>
-
-    <PrivateRoute exact path="/dashboard">
-      <Dashboard />
-    </PrivateRoute>
-    <Suspense fallback={null}>
-      <AsyncMainRoute />
-    </Suspense>
-  </Router>
-);
+const Main = () => {
+  return (
+    <Router>
+      <Switch>
+        <Route exact path="/">
+          <SortHat />
+        </Route>
+        <Route exact path="/unlock">
+          <Unlock />
+        </Route>
+        <Route path="/dashboard">
+          <TransitionRoute />
+        </Route>
+        <Suspense fallback={null}>
+          <AsyncMainRoute />
+        </Suspense>
+      </Switch>
+    </Router>
+  );
+};
 
 const App = ({ wallet }: { wallet: any }) => {
   return (

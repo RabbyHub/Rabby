@@ -65,3 +65,27 @@ button:focus {
     border-color: #b0bdff;
   }
 }
+
+
+.page-transition-enter {
+  transform: translateX(100%);
+  z-index: 1;
+}
+
+.page-transition-enter.page-transition-enter-active {
+  transform: translateX(0);
+  transition: transform 250ms ease-in;
+}
+
+.page-transition-exit {
+  transform: translateX(0);
+}
+
+.page-transition-exit-active {
+  position: absolute;
+  left: 0;
+  top: 0;
+  transform: translateX(0);
+  z-index: -1;
+  width: 100%;
+}

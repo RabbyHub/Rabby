@@ -13,7 +13,7 @@ export const useApproval = () => {
       wallet.resolveApproval(data);
     }
     setTimeout(() => {
-      history.replace('/');
+      history.replace('/dashboard');
     });
   };
 
