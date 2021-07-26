@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { InputNumber, Button, Skeleton, Form } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { useDebounce } from 'react-use';
@@ -15,6 +15,7 @@ export interface GasSelectorResponse extends GasLevel {
 }
 
 interface GasSelectorProps {
+  gasLimit: string;
   gas: GasResult;
   chainId: number;
   tx: Tx;
@@ -23,6 +24,7 @@ interface GasSelectorProps {
 }
 
 const GasSelector = ({
+  gasLimit,
   gas,
   chainId,
   tx,
@@ -32,7 +34,7 @@ const GasSelector = ({
   const wallet = useWallet();
   const { t } = useTranslation();
   const [advanceExpanded, setAdvanceExpanded] = useState(false);
-  const [gasLimit, setGasLimit] = useState(Number(tx.gas));
+  const [afterGasLimit, setGasLimit] = useState(Number(gasLimit));
   const [modalVisible, setModalVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [customGas, setCustomGas] = useState(Number(tx.gasPrice));
@@ -100,10 +102,10 @@ const GasSelector = ({
       onChange({
         ...selectedGas,
         price: customGas,
-        gasLimit,
+        gasLimit: afterGasLimit,
       });
     } else {
-      onChange({ ...selectedGas, gasLimit });
+      onChange({ ...selectedGas, gasLimit: afterGasLimit });
     }
     setModalVisible(false);
   };
@@ -127,6 +129,10 @@ const GasSelector = ({
     500,
     [modalVisible, customGas]
   );
+
+  useEffect(() => {
+    setGasLimit(Number(gasLimit));
+  }, [gasLimit]);
 
   if (!isReady)
     return (
@@ -249,7 +255,7 @@ const GasSelector = ({
             >
               <Form.Item className="gas-limit-panel mb-0">
                 <InputNumber
-                  value={gasLimit}
+                  value={afterGasLimit}
                   onChange={handleGasLimitChange}
                   min={0}
                   bordered={false}

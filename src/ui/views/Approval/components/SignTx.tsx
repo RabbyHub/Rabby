@@ -294,6 +294,7 @@ const SignTx = ({ params, origin }) => {
             <GasSelector
               isReady={isReady}
               tx={tx}
+              gasLimit={gasLimit}
               gas={{
                 ...(txDetail
                   ? txDetail.gas
