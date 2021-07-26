@@ -25,7 +25,7 @@ jobs:
       - npm-config/set-registry:
           registry-prurl: https://npm.pkg.github.com 
           scope: '@onekeyhq'
-          auth-token: ${GITHUB_AK}
+          auth-token: "${GITHUB_AK}"
       - node/install-packages:
           pkg-manager: yarn 
       - run:
