@@ -15,6 +15,7 @@
     "@ledgerhq/hw-transport-webusb": "^6.0.2",
     "@metamask/eth-ledger-bridge-keyring": "^0.6.0",
     "@metamask/obs-store": "^6.0.2",
+    "@onekeyhq/connect": "8.2.4-extended",
     "@sentry/browser": "^6.7.2",
     "@sentry/react": "^6.7.2",
     "@sentry/tracing": "^6.7.2",
