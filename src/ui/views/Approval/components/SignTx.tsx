@@ -11,7 +11,6 @@ import SecurityCheckBar from './SecurityCheckBar';
 import SecurityCheckDetail from './SecurityCheckDetail';
 import {
   ExplainTxResponse,
-  GasLevel,
   SecurityCheckResponse,
   SecurityCheckDecision,
   Tx,

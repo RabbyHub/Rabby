@@ -486,7 +486,7 @@
     }
   }
   .input-wrapper {
-    .ant-input-number {
+    .ant-input {
       padding-right: 0;
       text-align: right;
       max-width: 81px;
@@ -505,13 +505,13 @@
       .ant-input-number-handler-wrap {
         display: none;
       }
-      .ant-input-number-input {
+      .ant-input {
         padding-right: 0;
         text-align: right;
         height: auto;
       }
     }
-    .ant-input-number:focus, .ant-input-number-focused, .ant-input-number:hover, .ant-input-number:focus-visible {
+    .ant-input:focus, .ant-input-focused, .ant-input:hover, .ant-input:focus-visible {
       border: none;
       border-bottom: 0.5px solid #D8DFEB;
     }
@@ -546,7 +546,7 @@
       background-color: #fff;
       border-radius: 6px;
       overflow: hidden;
-      .ant-input-number {
+      .ant-input {
         width: 100%;
         padding: 15px;
         border-radius: 0;
@@ -557,6 +557,9 @@
         font-weight: 500;
         color: #2D3033;
         position: relative;
+        .ant-input-number-handler-wrap {
+          display: none;
+        }
       }
       .ant-input-number:focus, .ant-input-number-focused, .ant-input-number:hover, .ant-input-number:focus-visible {
         border: none;

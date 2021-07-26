@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { InputNumber, Button, Skeleton, Form } from 'antd';
+import { Input, Button, Skeleton, Form } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { useDebounce } from 'react-use';
 import { CHAINS, GAS_LEVEL_TEXT } from 'consts';
@@ -34,10 +34,14 @@ const GasSelector = ({
   const wallet = useWallet();
   const { t } = useTranslation();
   const [advanceExpanded, setAdvanceExpanded] = useState(false);
-  const [afterGasLimit, setGasLimit] = useState(Number(gasLimit));
+  const [afterGasLimit, setGasLimit] = useState<string | number>(
+    Number(gasLimit)
+  );
   const [modalVisible, setModalVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
-  const [customGas, setCustomGas] = useState(Number(tx.gasPrice));
+  const [customGas, setCustomGas] = useState<string | number>(
+    Number(tx.gasPrice) / 1e9
+  );
   const [gasList, setGasList] = useState<GasLevel[]>([
     {
       level: 'slow',
@@ -70,9 +74,18 @@ const GasSelector = ({
   const loadGasMarket = async () => {
     const list = await wallet.openapi.gasMarket(
       chain.serverId,
-      customGas > 0 ? customGas : undefined
+      customGas && customGas > 0 ? Number(customGas) * 1e9 : undefined
     );
-    setGasList(list);
+    setGasList(
+      list.map((item) =>
+        item.level === 'custom' ? { ...item, price: item.price / 1e9 } : item
+      )
+    );
+    console.log(
+      list.map((item) =>
+        item.level === 'custom' ? { ...item, price: item.price / 1e9 } : item
+      )
+    );
     setIsLoading(false);
   };
 
@@ -86,10 +99,10 @@ const GasSelector = ({
   };
 
   const handleShowSelectModal = () => {
-    setCustomGas(Number(tx.gasPrice));
+    setCustomGas(Number(tx.gasPrice) / 1e9);
     setSelectGas({
       level: 'custom',
-      price: Number(tx.gasPrice),
+      price: Number(tx.gasPrice) / 1e9,
       front_tx_count: 0,
       estimated_seconds: 0,
     });
@@ -101,21 +114,31 @@ const GasSelector = ({
     if (selectedGas.level === 'custom') {
       onChange({
         ...selectedGas,
-        price: customGas,
-        gasLimit: afterGasLimit,
+        price: Number(customGas) * 1e9,
+        gasLimit: Number(afterGasLimit),
       });
     } else {
-      onChange({ ...selectedGas, gasLimit: afterGasLimit });
+      onChange({ ...selectedGas, gasLimit: Number(afterGasLimit) });
     }
     setModalVisible(false);
   };
 
-  const handleCustomGasChange = (value: number) => {
-    setCustomGas(Number(value) * 1e9);
+  const handleCustomGasChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (/^\d*(\.\d*)?$/.test(e.target.value)) {
+      setCustomGas(e.target.value);
+    }
+    // if (!e.target.value) {
+    //   setCustomGas('');
+    // }
   };
 
-  const handleGasLimitChange = (value: number) => {
-    setGasLimit(Number(value));
+  const handleGasLimitChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (/^\d*$/.test(e.target.value)) {
+      setGasLimit(e.target.value);
+    }
+    // if (!e.target.value) {
+    //   setGasLimit('');
+    // }
   };
 
   const handleClickAdvance = () => {
@@ -124,6 +147,7 @@ const GasSelector = ({
 
   useDebounce(
     () => {
+      console.log(customGas);
       modalVisible && loadGasMarket();
     },
     500,
@@ -214,9 +238,10 @@ const GasSelector = ({
                       <div className="gas-content__price">
                         {gas.level === 'custom' ? (
                           <Form.Item className="relative input-wrapper mb-0">
-                            <InputNumber
+                            <Input
                               placeholder="Custom"
-                              defaultValue={customGas / 1e9}
+                              value={customGas}
+                              defaultValue={customGas}
                               onChange={handleCustomGasChange}
                               onClick={(e) => e.stopPropagation()}
                               min={0}
@@ -254,7 +279,7 @@ const GasSelector = ({
               })}
             >
               <Form.Item className="gas-limit-panel mb-0">
-                <InputNumber
+                <Input
                   value={afterGasLimit}
                   onChange={handleGasLimitChange}
                   min={0}
