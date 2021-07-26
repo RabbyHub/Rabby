@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Input, Button, Skeleton } from 'antd';
+import { InputNumber, Button, Skeleton, Form } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { useDebounce } from 'react-use';
 import { CHAINS, GAS_LEVEL_TEXT } from 'consts';
@@ -7,12 +7,18 @@ import { GasResult, Tx, GasLevel } from 'background/service/openapi';
 import { formatSeconds, useWallet } from 'ui/utils';
 import { Modal, FieldCheckbox } from 'ui/component';
 import IconSetting from 'ui/assets/setting-gray.svg';
+import IconArrowDown from 'ui/assets/arrow-down.svg';
+import clsx from 'clsx';
+
+export interface GasSelectorResponse extends GasLevel {
+  gasLimit: number;
+}
 
 interface GasSelectorProps {
   gas: GasResult;
   chainId: number;
   tx: Tx;
-  onChange(gas: GasLevel): void;
+  onChange(gas: GasSelectorResponse): void;
   isReady: boolean;
 }
 
@@ -25,6 +31,8 @@ const GasSelector = ({
 }: GasSelectorProps) => {
   const wallet = useWallet();
   const { t } = useTranslation();
+  const [advanceExpanded, setAdvanceExpanded] = useState(false);
+  const [gasLimit, setGasLimit] = useState(Number(tx.gas));
   const [modalVisible, setModalVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [customGas, setCustomGas] = useState(Number(tx.gasPrice));
@@ -92,15 +100,24 @@ const GasSelector = ({
       onChange({
         ...selectedGas,
         price: customGas,
+        gasLimit,
       });
     } else {
-      onChange(selectedGas);
+      onChange({ ...selectedGas, gasLimit });
     }
     setModalVisible(false);
   };
 
-  const handleCustomGasChange = (value: string) => {
+  const handleCustomGasChange = (value: number) => {
     setCustomGas(Number(value) * 1e9);
+  };
+
+  const handleGasLimitChange = (value: number) => {
+    setGasLimit(Number(value));
+  };
+
+  const handleClickAdvance = () => {
+    setAdvanceExpanded(!advanceExpanded);
   };
 
   useDebounce(
@@ -154,7 +171,7 @@ const GasSelector = ({
         okText="Confirm"
         destroyOnClose
       >
-        <div>
+        <Form onFinish={handleConfirmGas}>
           <p className="section-title">{t('gasPriceTitle')}</p>
           <div className="gas-selector-panel">
             {gasList.map((gas) => (
@@ -190,17 +207,15 @@ const GasSelector = ({
                       </div>
                       <div className="gas-content__price">
                         {gas.level === 'custom' ? (
-                          <div className="relative input-wrapper">
-                            <Input
+                          <Form.Item className="relative input-wrapper mb-0">
+                            <InputNumber
                               placeholder="Custom"
                               defaultValue={customGas / 1e9}
-                              onChange={(e) =>
-                                handleCustomGasChange(e.target.value)
-                              }
+                              onChange={handleCustomGasChange}
                               onClick={(e) => e.stopPropagation()}
-                              spellCheck={false}
+                              min={0}
                             />
-                          </div>
+                          </Form.Item>
                         ) : (
                           gas.price / 1e9
                         )}
@@ -210,6 +225,40 @@ const GasSelector = ({
                 </div>
               </FieldCheckbox>
             ))}
+          </div>
+          <div className="gas-limit mt-20">
+            <p className="section-title flex">
+              <span>{advanceExpanded ? t('Gas limit') : ''}</span>
+              <span
+                className="flex-1 text-right cursor-pointer"
+                onClick={handleClickAdvance}
+              >
+                {t('Advanced Options')}
+                <img
+                  className={clsx('icon icon-arrow-down inline-block ml-4', {
+                    expanded: advanceExpanded,
+                  })}
+                  src={IconArrowDown}
+                />
+              </span>
+            </p>
+            <div
+              className={clsx('gas-limit-panel-wrapper', {
+                expanded: advanceExpanded,
+              })}
+            >
+              <Form.Item className="gas-limit-panel mb-0">
+                <InputNumber
+                  value={gasLimit}
+                  onChange={handleGasLimitChange}
+                  min={0}
+                  bordered={false}
+                />
+              </Form.Item>
+              <p className="tip">
+                Est. {Number(tx.gas)}. Current 1.0x, recommended 1.5x.
+              </p>
+            </div>
           </div>
           <div className="flex justify-center mt-32">
             <Button
@@ -222,7 +271,7 @@ const GasSelector = ({
               {t('Confirm')}
             </Button>
           </div>
-        </div>
+        </Form>
       </Modal>
     </>
   );

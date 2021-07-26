@@ -486,7 +486,7 @@
     }
   }
   .input-wrapper {
-    .ant-input {
+    .ant-input-number {
       padding-right: 0;
       text-align: right;
       max-width: 81px;
@@ -501,8 +501,17 @@
       padding-left: 0;
       position: relative;
       border-bottom: 0.5px solid #D8DFEB;
+      width: 100%;
+      .ant-input-number-handler-wrap {
+        display: none;
+      }
+      .ant-input-number-input {
+        padding-right: 0;
+        text-align: right;
+        height: auto;
+      }
     }
-    .ant-input:focus, .ant-input-focused, .ant-input:hover, .ant-input:focus-visible {
+    .ant-input-number:focus, .ant-input-number-focused, .ant-input-number:hover, .ant-input-number:focus-visible {
       border: none;
       border-bottom: 0.5px solid #D8DFEB;
     }
@@ -511,7 +520,55 @@
 
 .gas-modal {
   .ant-modal-body {
-    max-height: 500px;
+    max-height: 520px;
+  }
+  .gas-limit {
+    .icon-arrow-down {
+      transform: rotate(0);
+      transition: transform .3s;
+      &.expanded {
+        transform: rotate(180deg);
+      }
+    }
+    .section-title {
+      margin-bottom: 0;
+    }
+    .gas-limit-panel-wrapper {
+      max-height: 0;
+      transition: max-height .3s;
+      overflow: hidden;
+      &.expanded {
+        max-height: 100px;
+      }
+    }
+    .gas-limit-panel {
+      margin-top: 12px;
+      background-color: #fff;
+      border-radius: 6px;
+      overflow: hidden;
+      .ant-input-number {
+        width: 100%;
+        padding: 15px;
+        border-radius: 0;
+        outline: none;
+        transition: none;
+        border: none;
+        font-size: 15px;
+        font-weight: 500;
+        color: #2D3033;
+        position: relative;
+      }
+      .ant-input-number:focus, .ant-input-number-focused, .ant-input-number:hover, .ant-input-number:focus-visible {
+        border: none;
+      }
+    }
+    .tip {
+      color: #B4BDCC;
+      font-size: 12px;
+      font-style: italic;
+      margin-top: 12px;
+      margin-bottom: 0;
+    }
   }
 }
 
