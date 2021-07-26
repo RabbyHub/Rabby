@@ -7,8 +7,7 @@ orbs:
   # Orbs reduce the amount of configuration required for common tasks. 
   # See the orb documentation here: https://circleci.com/developer/orbs/orb/circleci/node
   node: circleci/node@4.1
-
-
+  npm-config: cobli/npm-config@1.0.0
 jobs:
   # Below is the definition of your job to build and test your app, you can rename and customize it as you want.
   build-and-test:  
@@ -23,6 +22,10 @@ jobs:
       # Checkout the code as the first step.
       - checkout
       # If you are using yarn instead npm, remove the line above and uncomment the two lines below.
+      - npm-config/set-registry:
+          registry-prurl: https://npm.pkg.github.com 
+          scope: '@onekeyhq'
+          auth-token: "${GITHUB_AK}"
       - node/install-packages:
           pkg-manager: yarn 
       - run:
