@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { Input, Button, Skeleton } from 'antd';
+import { InputNumber, Button, Skeleton, Form } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { useDebounce } from 'react-use';
 import { CHAINS, GAS_LEVEL_TEXT } from 'consts';
@@ -108,11 +108,11 @@ const GasSelector = ({
     setModalVisible(false);
   };
 
-  const handleCustomGasChange = (value: string) => {
+  const handleCustomGasChange = (value: number) => {
     setCustomGas(Number(value) * 1e9);
   };
 
-  const handleGasLimitChange = (value: string) => {
+  const handleGasLimitChange = (value: number) => {
     setGasLimit(Number(value));
   };
 
@@ -171,7 +171,7 @@ const GasSelector = ({
         okText="Confirm"
         destroyOnClose
       >
-        <div>
+        <Form onFinish={handleConfirmGas}>
           <p className="section-title">{t('gasPriceTitle')}</p>
           <div className="gas-selector-panel">
             {gasList.map((gas) => (
@@ -207,17 +207,15 @@ const GasSelector = ({
                       </div>
                       <div className="gas-content__price">
                         {gas.level === 'custom' ? (
-                          <div className="relative input-wrapper">
-                            <Input
+                          <Form.Item className="relative input-wrapper mb-0">
+                            <InputNumber
                               placeholder="Custom"
                               defaultValue={customGas / 1e9}
-                              onChange={(e) =>
-                                handleCustomGasChange(e.target.value)
-                              }
+                              onChange={handleCustomGasChange}
                               onClick={(e) => e.stopPropagation()}
-                              spellCheck={false}
+                              min={0}
                             />
-                          </div>
+                          </Form.Item>
                         ) : (
                           gas.price / 1e9
                         )}
@@ -249,12 +247,14 @@ const GasSelector = ({
                 expanded: advanceExpanded,
               })}
             >
-              <div className="gas-limit-panel">
-                <Input
+              <Form.Item className="gas-limit-panel mb-0">
+                <InputNumber
                   value={gasLimit}
-                  onChange={(e) => handleGasLimitChange(e.target.value)}
+                  onChange={handleGasLimitChange}
+                  min={0}
+                  bordered={false}
                 />
-              </div>
+              </Form.Item>
               <p className="tip">
                 Est. {Number(tx.gas)}. Current 1.0x, recommended 1.5x.
               </p>
@@ -271,7 +271,7 @@ const GasSelector = ({
               {t('Confirm')}
             </Button>
           </div>
-        </div>
+        </Form>
       </Modal>
     </>
   );
