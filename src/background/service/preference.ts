@@ -93,7 +93,7 @@ class PreferenceService {
     });
   };
 
-  getCurrentAccount = (): Account | undefined => {
+  getCurrentAccount = (): Account | undefined | null => {
     return cloneDeep(this.store.currentAccount);
   };
 
