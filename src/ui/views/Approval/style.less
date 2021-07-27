@@ -476,7 +476,7 @@
       flex: 1;
     }
     .gas-content__price {
-      width: 60px;
+      width: 75px;
       text-align: right;
       font-size: 15px;
       color: #2D3033;
@@ -520,7 +520,7 @@
 
 .gas-modal {
   .ant-modal-body {
-    max-height: 520px;
+    max-height: 550px;
   }
   .gas-limit {
     .icon-arrow-down {
@@ -538,7 +538,7 @@
       transition: max-height .3s;
       overflow: hidden;
       &.expanded {
-        max-height: 100px;
+        max-height: 120px;
       }
     }
     .gas-limit-panel {
@@ -557,12 +557,20 @@
         font-weight: 500;
         color: #2D3033;
         position: relative;
+        border-width: 1px;
+        border-style: solid;
+        border-color: transparent;
+        border-radius: 6px;
+        transition: border-color .3s;
         .ant-input-number-handler-wrap {
           display: none;
         }
       }
       .ant-input-number:focus, .ant-input-number-focused, .ant-input-number:hover, .ant-input-number:focus-visible {
         border: none;
+      }
+      &.ant-form-item-has-error .ant-input {
+        border-color: #F24822 !important;
       }
     }
     .tip {
@@ -571,6 +579,10 @@
       font-style: italic;
       margin-top: 12px;
       margin-bottom: 0;
+      .recommend-times {
+        text-decoration: underline;
+        cursor: pointer;
+      }
     }
   }
 }

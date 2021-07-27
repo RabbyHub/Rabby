@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { Input, Button, Skeleton, Form } from 'antd';
+import BigNumber from 'bignumber.js';
+import { ValidateStatus } from 'antd/lib/form/FormItem';
 import { useTranslation } from 'react-i18next';
 import { useDebounce } from 'react-use';
-import { CHAINS, GAS_LEVEL_TEXT } from 'consts';
+import { CHAINS, GAS_LEVEL_TEXT, MINIMUM_GAS_LIMIT } from 'consts';
 import { GasResult, Tx, GasLevel } from 'background/service/openapi';
 import { formatSeconds, useWallet } from 'ui/utils';
 import { Modal, FieldCheckbox } from 'ui/component';
@@ -68,8 +70,57 @@ const GasSelector = ({
       estimated_seconds: 0,
     },
   ]);
+  const [validateStatus, setValidateStatus] = useState<
+    Record<string, { status: ValidateStatus; message: string | null }>
+  >({
+    customGas: {
+      status: 'success',
+      message: null,
+    },
+    gasLimit: {
+      status: 'success',
+      message: null,
+    },
+  });
   const [selectedGas, setSelectGas] = useState<GasLevel | null>(null);
   const chain = Object.values(CHAINS).find((item) => item.id === chainId)!;
+
+  const handleSetRecommendTimes = () => {
+    const value = new BigNumber(Number(tx.gas)).times(1.5).toFixed(0);
+    setGasLimit(value);
+  };
+
+  const formValidator = () => {
+    if (!afterGasLimit) {
+      setValidateStatus({
+        ...validateStatus,
+        gasLimit: {
+          status: 'error',
+          message: t('GasLimitEmptyAlert'),
+        },
+      });
+    } else if (Number(afterGasLimit) < MINIMUM_GAS_LIMIT) {
+      setValidateStatus({
+        ...validateStatus,
+        gasLimit: {
+          status: 'error',
+          message: t('GasLimitMinimumValueAlert'),
+        },
+      });
+    } else {
+      setValidateStatus({
+        ...validateStatus,
+        gasLimit: {
+          status: 'success',
+          message: null,
+        },
+      });
+    }
+  };
+
+  useEffect(() => {
+    formValidator();
+  }, [customGas, afterGasLimit]);
 
   const loadGasMarket = async () => {
     const list = await wallet.openapi.gasMarket(
@@ -77,11 +128,6 @@ const GasSelector = ({
       customGas && customGas > 0 ? Number(customGas) * 1e9 : undefined
     );
     setGasList(
-      list.map((item) =>
-        item.level === 'custom' ? { ...item, price: item.price / 1e9 } : item
-      )
-    );
-    console.log(
       list.map((item) =>
         item.level === 'custom' ? { ...item, price: item.price / 1e9 } : item
       )
@@ -94,7 +140,6 @@ const GasSelector = ({
       setSelectGas(null);
       return;
     }
-    if (gas.price === 0) return;
     setSelectGas(gas);
   };
 
@@ -231,7 +276,10 @@ const GasSelector = ({
                       </div>
                       <div className="gas-content__price">
                         {gas.level === 'custom' ? (
-                          <Form.Item className="relative input-wrapper mb-0">
+                          <Form.Item
+                            className="relative input-wrapper mb-0"
+                            validateStatus={validateStatus.customGas.status}
+                          >
                             <Input
                               placeholder="Custom"
                               value={customGas}
@@ -272,7 +320,10 @@ const GasSelector = ({
                 expanded: advanceExpanded,
               })}
             >
-              <Form.Item className="gas-limit-panel mb-0">
+              <Form.Item
+                className="gas-limit-panel mb-0"
+                validateStatus={validateStatus.gasLimit.status}
+              >
                 <Input
                   value={afterGasLimit}
                   onChange={handleGasLimitChange}
@@ -280,11 +331,26 @@ const GasSelector = ({
                   bordered={false}
                 />
               </Form.Item>
-              <p className="tip">
-                Est. {Number(tx.gas)}. Current{' '}
-                {(Number(afterGasLimit) / Number(tx.gas)).toFixed(1)}x,
-                recommended 1.5x.
-              </p>
+              {validateStatus.gasLimit.message ? (
+                <p className="tip text-red-light not-italic">
+                  {validateStatus.gasLimit.message}
+                </p>
+              ) : (
+                <p className="tip">
+                  Est. {Number(tx.gas)}. Current{' '}
+                  {new BigNumber(
+                    Number(afterGasLimit) / Number(tx.gas)
+                  ).toFixed(1)}
+                  x, recommended{' '}
+                  <span
+                    className="recommend-times"
+                    onClick={handleSetRecommendTimes}
+                  >
+                    1.5x
+                  </span>
+                  .
+                </p>
+              )}
             </div>
           </div>
           <div className="flex justify-center mt-32">
@@ -293,7 +359,12 @@ const GasSelector = ({
               className="w-[200px]"
               size="large"
               onClick={handleConfirmGas}
-              disabled={!selectedGas || isLoading}
+              disabled={
+                !selectedGas ||
+                isLoading ||
+                validateStatus.customGas.status === 'error' ||
+                validateStatus.gasLimit.status === 'error'
+              }
             >
               {t('Confirm')}
             </Button>

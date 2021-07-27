@@ -551,5 +551,11 @@
   },
   "Disable__metamask__to__avoid__conflicts": {
     "message": "Disable metamask to avoid conflicts"
+  },
+  "GasLimitMinimumValueAlert": {
+    "message": "Gas limit should be more than 21000"
+  },
+  "GasLimitEmptyAlert": {
+    "message": "Please input gas limit"
   }
 }

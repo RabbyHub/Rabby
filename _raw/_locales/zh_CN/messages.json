@@ -544,9 +544,15 @@
     "message": "查看私钥"
   },
   "Wrong__mnemonic__word": {
-    "message": "Wrong mnemonic word"
+    "message": "错误的助记词"
   },
   "Disable__metamask__to__avoid__conflicts": {
-    "message": "Disable metamask to avoid conflicts"
+    "message": "为避免冲突，请禁用 MetaMask"
+  },
+  "GasLimitMinimumValueAlert": {
+    "message": "Gas limit 不可小于 21000"
+  },
+  "GasLimitEmptyAlert": {
+    "message": "请输入 gas limit"
   }
 }
