@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Input, Button, Skeleton, Form } from 'antd';
 import BigNumber from 'bignumber.js';
 import { ValidateStatus } from 'antd/lib/form/FormItem';
-import { useTranslation } from 'react-i18next';
+import { useTranslation, Trans } from 'react-i18next';
 import { useDebounce } from 'react-use';
 import { CHAINS, GAS_LEVEL_TEXT, MINIMUM_GAS_LIMIT } from 'consts';
 import { GasResult, Tx, GasLevel } from 'background/service/openapi';
@@ -301,7 +301,7 @@ const GasSelector = ({
           </div>
           <div className="gas-limit mt-20">
             <p className="section-title flex">
-              <span>{advanceExpanded ? t('Gas limit') : ''}</span>
+              <span>{advanceExpanded ? t('GasLimit') : ''}</span>
               <span
                 className="flex-1 text-right cursor-pointer"
                 onClick={handleClickAdvance}
@@ -337,11 +337,15 @@ const GasSelector = ({
                 </p>
               ) : (
                 <p className="tip">
-                  Est. {Number(tx.gas)}. Current{' '}
-                  {new BigNumber(
-                    Number(afterGasLimit) / Number(tx.gas)
-                  ).toFixed(1)}
-                  x, recommended{' '}
+                  <Trans
+                    i18nKey="RecommendGasLimitTip"
+                    values={{
+                      est: Number(tx.gas),
+                      current: new BigNumber(
+                        Number(afterGasLimit) / Number(tx.gas)
+                      ).toFixed(1),
+                    }}
+                  />
                   <span
                     className="recommend-times"
                     onClick={handleSetRecommendTimes}

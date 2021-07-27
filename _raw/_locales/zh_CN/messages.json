@@ -550,9 +550,18 @@
     "message": "为避免冲突，请禁用 MetaMask"
   },
   "GasLimitMinimumValueAlert": {
-    "message": "Gas limit 不可小于 21000"
+    "message": "燃料限制不可小于 21000"
   },
   "GasLimitEmptyAlert": {
-    "message": "请输入 gas limit"
+    "message": "请输入燃料限制"
+  },
+  "RecommendGasLimitTip": {
+    "message": "预估 {{est}}，当前 {{current}}x, 建议"
+  },
+  "Advanced__Options": {
+    "message": "高级选项"
+  },
+  "GasLimit": {
+    "message": "燃料限制"
   }
 }
