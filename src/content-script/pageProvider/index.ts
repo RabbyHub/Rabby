@@ -246,10 +246,6 @@ const provider = new EthereumProvider();
 
 window.ethereum = new Proxy(provider, {
   deleteProperty: () => true,
-  get(target, prop) {
-    console.log('prop', prop);
-    return target[prop];
-  },
 });
 
 window.web3 = {
