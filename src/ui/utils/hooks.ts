@@ -101,6 +101,7 @@ export const useSelectOption = <T>({
     handleChoose,
     handleToggle,
     handleClear,
+    idxs,
   ] as const;
 };
 
