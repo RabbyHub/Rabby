@@ -186,7 +186,6 @@ const GasSelector = ({
 
   useDebounce(
     () => {
-      console.log(customGas);
       modalVisible && loadGasMarket();
     },
     500,
