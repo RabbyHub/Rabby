@@ -42,8 +42,6 @@ const TiledSelect = ({
   });
   const { t } = useTranslation();
 
-  console.log('>>> value', _value);
-
   const handleClickOption = (i: number) => {
     if (correctValue) {
       if (options[i] !== correctValue[_value.length]) {
