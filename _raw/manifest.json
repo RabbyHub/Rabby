@@ -50,7 +50,8 @@
     },
     {
       "matches": [
-        "*://connect.trezor.io/*/popup.html"
+        "*://connect.trezor.io/*/popup.html",
+        "*://connect.onekey.so/*/popup.html"
       ],
       "js": [
         "vendor/trezor/trezor-content-script.js"

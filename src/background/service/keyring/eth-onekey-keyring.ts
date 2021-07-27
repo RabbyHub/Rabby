@@ -5,7 +5,7 @@ import HDKey from 'hdkey';
 import TrezorConnect from '@onekeyhq/connect';
 
 const hdPathString = `m/44'/60'/0'/0`;
-const keyringType = 'Trezor Hardware';
+const keyringType = 'Onekey Hardware';
 const pathBase = 'm';
 const MAX_INDEX = 1000;
 const DELAY_BETWEEN_POPUPS = 1000;
@@ -13,7 +13,7 @@ const TREZOR_CONNECT_MANIFEST = {
   email: 'hi@onekey.so',
   appUrl: 'https://www.onekey.so',
 };
-class TrezorKeyring extends EventEmitter {
+class OnekeyKeyring extends EventEmitter {
   static type = keyringType;
   type = keyringType;
   accounts: string[] = [];
@@ -61,16 +61,19 @@ class TrezorKeyring extends EventEmitter {
   }
 
   unlock() {
+    console.log(this.isUnlocked());
     if (this.isUnlocked()) {
       return Promise.resolve('already unlocked');
     }
     return new Promise((resolve, reject) => {
       try {
+        console.log('getPublicKey');
         TrezorConnect.getPublicKey({
           path: this.hdPath,
           coin: 'ETH',
         })
           .then((response) => {
+            console.log('response', response);
             if (response.success) {
               this.hdk.publicKey = Buffer.from(
                 response.payload.publicKey,
@@ -91,9 +94,11 @@ class TrezorKeyring extends EventEmitter {
             }
           })
           .catch((e) => {
+            console.log(e);
             reject(new Error((e && e.toString()) || 'Unknown error'));
           });
       } catch (e) {
+        console.log(e);
         reject(new Error((e && e.toString()) || 'Unknown error'));
       }
     });
@@ -363,5 +368,5 @@ class TrezorKeyring extends EventEmitter {
   }
 }
 
-TrezorKeyring.type = keyringType;
-module.exports = TrezorKeyring;
+OnekeyKeyring.type = keyringType;
+export default OnekeyKeyring;
