@@ -222,3 +222,5 @@ export const CHECK_METAMASK_INSTALLED_URL = {
   Brave: '',
   Edge: '',
 };
+
+export const MINIMUM_GAS_LIMIT = 21000;

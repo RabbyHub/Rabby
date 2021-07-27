@@ -544,9 +544,24 @@
     "message": "查看私钥"
   },
   "Wrong__mnemonic__word": {
-    "message": "Wrong mnemonic word"
+    "message": "错误的助记词"
   },
   "Disable__metamask__to__avoid__conflicts": {
-    "message": "Disable metamask to avoid conflicts"
+    "message": "为避免冲突，请禁用 MetaMask"
+  },
+  "GasLimitMinimumValueAlert": {
+    "message": "燃料限制不可小于 21000"
+  },
+  "GasLimitEmptyAlert": {
+    "message": "请输入燃料限制"
+  },
+  "RecommendGasLimitTip": {
+    "message": "预估 {{est}}，当前 {{current}}x, 建议"
+  },
+  "Advanced__Options": {
+    "message": "高级选项"
+  },
+  "GasLimit": {
+    "message": "燃料限制"
   }
 }
