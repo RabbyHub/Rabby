@@ -127,18 +127,12 @@ const GasSelector = ({
     if (/^\d*(\.\d*)?$/.test(e.target.value)) {
       setCustomGas(e.target.value);
     }
-    // if (!e.target.value) {
-    //   setCustomGas('');
-    // }
   };
 
   const handleGasLimitChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (/^\d*$/.test(e.target.value)) {
       setGasLimit(e.target.value);
     }
-    // if (!e.target.value) {
-    //   setGasLimit('');
-    // }
   };
 
   const handleClickAdvance = () => {
@@ -287,7 +281,9 @@ const GasSelector = ({
                 />
               </Form.Item>
               <p className="tip">
-                Est. {Number(tx.gas)}. Current 1.0x, recommended 1.5x.
+                Est. {Number(tx.gas)}. Current{' '}
+                {(Number(afterGasLimit) / Number(tx.gas)).toFixed(1)}x,
+                recommended 1.5x.
               </p>
             </div>
           </div>
