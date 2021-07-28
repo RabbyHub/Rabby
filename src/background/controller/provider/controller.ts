@@ -15,7 +15,7 @@ import {
 import { Session } from 'background/service/session';
 import { Tx } from 'background/service/openapi';
 import RpcCache from 'background/utils/rpcCache';
-import { CHAINS, CHAINS_ENUM } from 'consts';
+import { CHAINS, CHAINS_ENUM, SAFE_RPC_METHODS } from 'consts';
 import BaseController from '../base';
 
 interface ApprovalRes extends Tx {
@@ -55,12 +55,19 @@ class ProviderController extends BaseController {
       session: { origin },
     } = req;
 
-    if (!permissionService.hasPerssmion(origin)) {
+    if (
+      !permissionService.hasPerssmion(origin) &&
+      !SAFE_RPC_METHODS.includes(method)
+    ) {
       throw ethErrors.provider.unauthorized();
     }
 
-    const chainServerId =
-      CHAINS[permissionService.getConnectedSite(origin)!.chain].serverId;
+    const connected = permissionService.getConnectedSite(origin);
+    let chainServerId = CHAINS[CHAINS_ENUM.ETH].serverId;
+
+    if (connected) {
+      chainServerId = CHAINS[connected.chain].serverId;
+    }
 
     const currentAddress =
       preferenceService.getCurrentAccount()?.address.toLowerCase() || '0x';
