@@ -266,3 +266,5 @@ export const SAFE_RPC_METHODS = [
   'eth_syncing',
   'eth_uninstallFilter',
 ];
+
+export const MINIMUM_GAS_LIMIT = 21000;
