@@ -35,9 +35,6 @@
   "Imported__by__Private__Key": {
     "message": "Imported by Private Key"
   },
-  "Hardware__Wallet": {
-    "message": "Hardware Wallet"
-  },
   "Watch__Mode": {
     "message": "Watch Mode"
   },
@@ -308,8 +305,8 @@
   "Import": {
     "message": "Import"
   },
-  "Harware__Wallet": {
-    "message": "Harware Wallet"
+  "Hardware__Wallet": {
+    "message": "Hardware Wallet"
   },
   "Imported": {
     "message": "Imported"
