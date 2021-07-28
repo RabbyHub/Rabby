@@ -11,7 +11,9 @@ const ImportMode = () => {
   const [currentMode, setCurrentMode] = useState('');
   const wallet = useWallet();
   const { t } = useTranslation();
-  const [modes, setModes] = useState([
+  const [modes, setModes] = useState<
+    { name: string; label: string; disabled?: boolean }[]
+  >([
     {
       name: 'key',
       label: t('Import via Private Key'),
@@ -25,13 +27,14 @@ const ImportMode = () => {
   const loadMnemonics = async () => {
     const accounts = await wallet.getTypedAccounts(KEYRING_CLASS.MNEMONIC);
 
-    if (!accounts?.length) {
-      modes.splice(1, 0, {
-        name: 'mnemonics',
-        label: t('Import via Mnemonic'),
-      });
-      setModes([...modes]);
-    }
+    // if (!accounts?.length) {
+    modes.splice(1, 0, {
+      name: 'mnemonics',
+      label: t('Import via Mnemonic'),
+      disabled: accounts.length > 0,
+    });
+    setModes([...modes]);
+    // }
   };
 
   useEffect(() => {
@@ -80,6 +83,7 @@ const ImportMode = () => {
         {modes.map((e) => (
           <FieldCheckbox
             key={e.name}
+            disable={e.disabled}
             checked={e.name === currentMode}
             onChange={(checked) => chooseImportMode(e.name, checked)}
           >
