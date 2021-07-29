@@ -216,56 +216,57 @@ class OpenApiService {
           get_pending_tx_count: {
             path: '/v1/wallet/pending_tx_count',
             method: 'get',
-            params: ['id'],
+            params: ['user_addr'],
           },
-          // 按照优先级从高到低返回多个
-          // chain会返回整个对象，其中会包含comunity_id，作为客户端标准id
           recommend_chains: {
             path: '/v1/wallet/recommend_chains',
             method: 'get',
-            params: ['origin', 'id'],
+            params: ['user_addr', 'origin'],
           },
-          check_origin_to_connect: {
-            path: '/v1/wallet/security/check_origin',
-            method: 'get',
-          },
-          explain_origin_to_connect: {
+          explain_origin: {
             path: '/v1/wallet/explain_origin',
             method: 'get',
-            params: ['origin', 'title', 'return_logo'],
+            params: ['user_addr', 'origin'],
           },
-          // 文本签名
-          explain_text_to_sign: {
-            path: '/v1/wallet/api/explain_text',
+          check_origin: {
+            path: '/v1/wallet/check_origin',
             method: 'get',
-            params: ['origin', 'text', 'user_addr'],
+            params: ['user_addr', 'origin'],
           },
-          check_text_to_sign: {
+          explain_text: {
+            path: '/v1/wallet/explain_text',
+            method: 'post',
+            params: ['user_addr', 'origin', 'text'],
+          },
+          check_text: {
             path: '/v1/wallet/check_text',
             method: 'post',
-            params: ['origin', 'text', 'user_addr'],
+            params: ['user_addr', 'origin', 'text'],
           },
-          // 交易签名解释
-          // 1. 地址和调用函数说明，或者是其他行为，比如转账、授权等等；以及，当前链是否由这个交互地址
-          // 2. 预执行是否成功
-          // 3. 实际消耗的 gas，以及预估打包时间
-          // 4. 代币余额变化
-          explain_tx_to_sign: {
+          explain_tx: {
             path: '/v1/wallet/explain_tx',
-            method: 'get',
+            method: 'post',
+            params: ['user_addr', 'origin', 'tx', 'update_nonce'],
           },
-          check_tx_to_sign: {
+          check_tx: {
             path: '/v1/wallet/check_tx',
             method: 'post',
+            params: ['user_addr', 'origin', 'tx'],
           },
           gas_market: {
             path: '/v1/wallet/gas_market',
             method: 'get',
-            params: ['chainId', 'custom_price'],
+            params: ['chain_id', 'custom_price'],
           },
           push_tx: {
             path: '/v1/wallet/push_tx',
-            method: 'get',
+            method: 'post',
+            params: ['chain_id', 'tx'],
+          },
+          eth_rpc: {
+            path: 'v1/wallet/eth_rpc',
+            method: 'post',
+            params: ['chain_id', 'method', 'params'],
           },
         },
       },
@@ -293,12 +294,17 @@ class OpenApiService {
       }
       return response;
     });
-    try {
-      await this.getConfig();
-      this._mountMethods();
-    } catch (e) {
-      console.error('[rabby] openapi init error', e);
-    }
+    this._mountMethods();
+    const getConfig = async () => {
+      try {
+        await this.getConfig();
+      } catch (e) {
+        setTimeout(() => {
+          getConfig(); // reload openapi config if load faild 5s later
+        }, 5000);
+      }
+    };
+    await getConfig();
   };
 
   getConfig = async () => {
