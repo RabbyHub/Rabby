@@ -54,6 +54,8 @@ restoreAppState();
 
 // for page provider
 browser.runtime.onConnect.addListener((port) => {
+  openapiService.getConfig();
+
   if (port.name === 'popup') {
     preferenceService.setPopupOpen(true);
 
