@@ -560,5 +560,8 @@
   },
   "GasLimit": {
     "message": "燃料限制"
+  },
+  "MnemonicDisableTip": {
+    "message": "钱包中已有一个助记词，不可再导入"
   }
 }

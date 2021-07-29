@@ -563,5 +563,8 @@
   },
   "GasLimit": {
     "message": "Gas limit"
+  },
+  "MnemonicDisableTip": {
+    "message": "Cannot import mnemonics for there is already one in the wallet"
   }
 }
