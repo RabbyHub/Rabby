@@ -89,6 +89,7 @@ export interface TokenItem {
   symbol: string;
   time_at: number;
   usd_value: number;
+  raw_amount?: number;
 }
 
 export interface GasResult {
@@ -151,6 +152,7 @@ export interface ExplainTxResponse {
     token_symbol: string;
     token_amount: number;
     is_infinity: boolean;
+    token: TokenItem;
   };
   type_cancel_token_approval?: {
     spender: string;

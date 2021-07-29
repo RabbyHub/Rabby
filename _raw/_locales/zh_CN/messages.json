@@ -563,5 +563,17 @@
   },
   "MnemonicDisableTip": {
     "message": "钱包中已有一个助记词，不可再导入"
+  },
+  "Token__Approval": {
+    "message": "Token 授权"
+  },
+  "Amount": {
+    "message": "数量"
+  },
+  "Edit": {
+    "message": "编辑"
+  },
+  "Approve to": {
+    "message": "授权给"
   }
 }

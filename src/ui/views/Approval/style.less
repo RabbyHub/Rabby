@@ -175,6 +175,26 @@
           word-break: break-all;
           white-space: pre-wrap;
         }
+        .block-field {
+          display: flex;
+          margin-bottom: 18px;
+          .label {
+            color: #818A99;
+            font-size: 14px;
+            width: 100px;
+            flex-shrink: 0;
+            line-height: 1;
+          }
+          .value {
+            line-height: 1;
+            flex: 1;
+            color: #525966;
+            font-size: 15px;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            overflow: hidden;
+          }
+        }
       }
       .protocol {
         display: flex;
@@ -210,6 +230,73 @@
             }
           }
         }
+      }
+    }
+    .approve {
+      .common-detail-block {
+        height: auto;
+        padding: 24px 16px;
+      }
+      .protocol {
+        .protocol-logo {
+          width: 24px;
+          height: 24px;
+          margin-right: 8px;
+          flex-shrink: 0;
+        }
+        .protocol-info {
+          display: flex;
+          align-items: center;
+          .protocol-info__name {
+            font-size: 13px;
+            line-height: 1;
+            margin-bottom: 0;
+            align-items: center;
+            .protocol-info__spender {
+              margin-left: 8px;
+            }
+          }
+          .address-viewer-text {
+            line-height: 1;
+          }
+        }
+      }
+      .token-info {
+        display: flex;
+        justify-content: space-between;
+        width: 100%;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap !important;
+        margin: 0;
+        margin-bottom: 4px;
+        color: #2D3033;
+        font-weight: 500;
+        font-size: 15px;
+        line-height: 18px;
+        .ant-btn-link {
+          color: #8697FF;
+          font-size: 14px;
+          font-weight: normal;
+          padding: 0;
+          line-height: 1;
+          height: auto;
+          &::before {
+            display: none;
+          }
+          span {
+            text-decoration: underline;
+          }
+          &:hover {
+            background-color: transparent;
+          }
+        }
+      }
+      .token-value {
+        margin: 0;
+        color: #818A99;
+        font-size: 12px;
+        line-height: 14px;
       }
     }
     .sign {
@@ -739,5 +826,13 @@
   .ant-modal-confirm-content {
     font-family: 'Roboto', sans-serif;
     font-family: 'Roboto Mono', monospace;
+  }
+}
+
+.edit-approve-amount-modal {
+  .ant-form-item {
+    background-color: #fff;
+    border-radius: 6px;
+    padding: 14px;
   }
 }
