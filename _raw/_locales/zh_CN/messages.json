@@ -189,10 +189,10 @@
     "message": "导入 Keystore"
   },
   "passwordMinimumLengthAlert": {
-    "message": "密码不能少于{{length}}个字符"
+    "message": "密码不能少于 {{length}} 个字符"
   },
   "passwordMaximumLengthAlert": {
-    "message": "密码不能超过{{length}}个字符"
+    "message": "密码不能超过 {{length}} 个字符"
   },
   "Please__confirm__Password": {
     "message": "请确认密码"
@@ -426,7 +426,7 @@
     "message": "即将上线手机扫码签名功能"
   },
   "signTransactionWithChain": {
-    "message": "签名{{name}}上的交易"
+    "message": "签名 {{name}} 上的交易"
   },
   "Approve": {
     "message": "授权",
@@ -553,7 +553,7 @@
     "message": "请输入燃料限制"
   },
   "RecommendGasLimitTip": {
-    "message": "预估 {{est}}，当前 {{current}}x, 建议"
+    "message": "预估 {{est}}，当前 {{current}}x，建议"
   },
   "Advanced__Options": {
     "message": "高级选项"
