@@ -211,7 +211,10 @@ const GasSelector = ({
   return (
     <>
       <p className="section-title">{t('gasCostTitle')}</p>
-      <div className="gas-selector gray-section-block">
+      <div
+        className="gas-selector gray-section-block"
+        onClick={handleShowSelectModal}
+      >
         <div className="gas-info">
           <p className="text-gray-content text-14">
             {`${gas.estimated_gas_cost_value} ${chain.nativeTokenSymbol}`} ≈ $
@@ -223,12 +226,7 @@ const GasSelector = ({
           </p>
         </div>
         <div className="right">
-          <img
-            src={IconSetting}
-            alt="setting"
-            className="icon icon-setting"
-            onClick={handleShowSelectModal}
-          />
+          <img src={IconSetting} alt="setting" className="icon icon-setting" />
         </div>
       </div>
       <Modal
