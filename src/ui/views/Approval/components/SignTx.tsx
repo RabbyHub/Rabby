@@ -46,7 +46,7 @@ const TxTypeComponent = ({
   if (txDetail.type_deploy_contract)
     return <Deploy data={txDetail} chainEnum={chain.enum} />;
   if (txDetail.type_cancel_tx)
-    return <CancelTx data={txDetail} chainEnum={chain.enum} />;
+    return <CancelTx data={txDetail} chainEnum={chain.enum} tx={tx} />;
   if (txDetail.type_cancel_token_approval)
     return <Cancel data={txDetail} chainEnum={chain.enum} />;
   if (txDetail.type_token_approval)
@@ -205,10 +205,10 @@ const SignTx = ({ params, origin }) => {
     try {
       setIsReady(false);
       const res = await explainTx(currentAccount!.address);
-      setIsReady(true);
       if (res.pre_exec.success) {
         await checkTx(currentAccount!.address);
       }
+      setIsReady(true);
     } catch (e) {
       Modal.error({
         title: t('Error'),
@@ -352,6 +352,7 @@ const SignTx = ({ params, origin }) => {
                       size="large"
                       className="w-[172px]"
                       onClick={() => handleAllow()}
+                      disabled={!isReady}
                     >
                       {securityCheckStatus === 'pass'
                         ? t('Sign')

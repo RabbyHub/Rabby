@@ -575,5 +575,11 @@
   },
   "Approve__to": {
     "message": "授权给"
+  },
+  "Send__Token": {
+    "message": "转账"
+  },
+  "To__address": {
+    "message": "接收地址"
   }
 }

@@ -578,5 +578,11 @@
   },
   "Approve__to": {
     "message": "Approve to"
+  },
+  "Send__Token": {
+    "message": "Send Token"
+  },
+  "To__address": {
+    "message": "To address"
   }
 }
