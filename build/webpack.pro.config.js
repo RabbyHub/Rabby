@@ -5,7 +5,6 @@ const config = {
   mode: 'production',
   devtool: false,
   performance: {
-    hints: false,
     maxEntrypointSize: 2500000,
     maxAssetSize: 2500000
   },
