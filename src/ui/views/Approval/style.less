@@ -834,5 +834,40 @@
     background-color: #fff;
     border-radius: 6px;
     padding: 14px;
+    margin-bottom: 0;
+  }
+  .est-approve-price {
+    margin: 8px 0 0 0;
+    color: #818A99;
+    font-size: 12px;
+    text-align: right;
+  }
+  .ant-input-group-wrapper {
+    position: relative;
+    .ant-input {
+      color: #2D3033;
+      font-size: 20px;
+      padding: 0;
+      width: 264px;
+    }
+    .ant-input-group-addon {
+      background: transparent;
+      border: none;
+      font-size: 15px;
+      color: #818A99;
+      padding-right: 0;
+      padding-left: 14px;
+    }
+    &::after {
+      content: '';
+      position: absolute;
+      background: linear-gradient(270deg, #FFFFFF 11.22%, rgba(255, 255, 255, 0.2) 100%);
+      width: 76px;
+      height: 31px;
+      left: 188px;
+      top: 0;
+      z-index: 999;
+      pointer-events: none;
+    }
   }
 }

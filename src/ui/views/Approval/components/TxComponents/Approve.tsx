@@ -3,13 +3,13 @@ import clsx from 'clsx';
 import ClipboardJS from 'clipboard';
 import BigNumber from 'bignumber.js';
 import { message, Button, Form, Input, Modal } from 'antd';
-import { ValidateStatus } from 'antd/lib/form/FormItem';
 import { useTranslation, Trans } from 'react-i18next';
 import { AddressViewer } from 'ui/component';
 import { CHAINS_ENUM, CHAINS } from 'consts';
 import { ellipsisOverflowedText } from 'ui/utils';
+import { getCustomTxParamsData } from 'ui/utils/transaction';
 import { splitNumberByStep } from 'ui/utils/number';
-import { ExplainTxResponse, TokenItem } from 'background/service/openapi';
+import { ExplainTxResponse, TokenItem, Tx } from 'background/service/openapi';
 import BalanceChange from './BalanceChange';
 import IconCopy from 'ui/assets/copy-no-border.svg';
 import IconSuccess from 'ui/assets/success.svg';
@@ -18,6 +18,8 @@ import IconUnknownProtocol from 'ui/assets/unknown-protocol.svg';
 interface ApproveProps {
   data: ExplainTxResponse;
   chainEnum: CHAINS_ENUM;
+  onChange(data: Record<string, string>): void;
+  tx: Tx;
 }
 
 interface ApproveAmountModalProps {
@@ -32,40 +34,40 @@ const ApproveAmountModal = ({
   onChange,
 }: ApproveAmountModalProps) => {
   const { t } = useTranslation();
-  const [validateStatus, setValidateStatus] = useState<ValidateStatus>(
-    'success'
-  );
   const [customAmount, setCustomAmount] = useState(
     new BigNumber(amount).toFixed()
   );
+  const [tokenPrice, setTokenPrice] = useState(amount * token.price);
   const [canSubmit, setCanSubmit] = useState(false);
   const handleSubmit = () => {
-    // TODO
+    onChange(customAmount);
   };
   const handleChange = (value: string) => {
-    console.log(value);
     if (/^\d*(\.\d*)?$/.test(value)) {
-      if (Number.isNaN(Number(value)) || !value) {
-        setCustomAmount(value);
-      } else {
-        setCustomAmount(new BigNumber(value).toFixed());
-      }
+      setCustomAmount(value);
     }
   };
+
   useEffect(() => {
-    if (!amount || Number(amount) <= 0 || Number.isNaN(Number(amount))) {
+    if (
+      !customAmount ||
+      Number(customAmount) <= 0 ||
+      Number.isNaN(Number(customAmount))
+    ) {
       setCanSubmit(false);
     } else {
       setCanSubmit(true);
     }
-  }, [amount]);
+    setTokenPrice(Number(customAmount || 0) * token.price);
+  }, [customAmount]);
 
   return (
     <Form onFinish={handleSubmit}>
-      <Form.Item validateStatus={validateStatus}>
+      <Form.Item>
         <Input
           value={customAmount}
           onChange={(e) => handleChange(e.target.value)}
+          bordered={false}
           addonAfter={
             <span title={token.symbol}>
               {ellipsisOverflowedText(token.symbol, 4)}
@@ -73,14 +75,30 @@ const ApproveAmountModal = ({
           }
         />
       </Form.Item>
-      <Button disabled={canSubmit} htmlType="submit">
-        {t('Confirm')}
-      </Button>
+      <p className="est-approve-price">
+        ≈ $
+        {tokenPrice > Number.MAX_SAFE_INTEGER
+          ? t('unlimited')
+          : splitNumberByStep(
+              new BigNumber(customAmount || 0).times(token.price).toFixed(2)
+            )}
+      </p>
+      <div className="flex justify-center mt-32">
+        <Button
+          type="primary"
+          className="w-[200px]"
+          size="large"
+          htmlType="submit"
+          disabled={!canSubmit}
+        >
+          {t('Confirm')}
+        </Button>
+      </div>
     </Form>
   );
 };
 
-const Approve = ({ data, chainEnum }: ApproveProps) => {
+const Approve = ({ data, chainEnum, onChange, tx }: ApproveProps) => {
   const detail = data.type_token_approval!;
   const isUnlimited = detail.is_infinity;
   const chain = CHAINS[chainEnum];
@@ -119,7 +137,16 @@ const Approve = ({ data, chainEnum }: ApproveProps) => {
   };
 
   const handleApproveAmountChange = (value: string) => {
-    console.log(value);
+    const result = new BigNumber(value).isGreaterThan(Number.MAX_SAFE_INTEGER)
+      ? String(Number.MAX_SAFE_INTEGER)
+      : value;
+    const data = getCustomTxParamsData(tx.data, {
+      customPermissionAmount: result,
+      decimals: detail.token.decimals,
+    });
+    onChange({
+      data,
+    });
   };
 
   return (
@@ -207,6 +234,10 @@ const Approve = ({ data, chainEnum }: ApproveProps) => {
         visible={editApproveModalVisible}
         footer={null}
         className="edit-approve-amount-modal"
+        title={t('Amount')}
+        centered
+        onCancel={() => setEditApproveModalVisible(false)}
+        destroyOnClose
       >
         <ApproveAmountModal
           amount={detail.token_amount}
