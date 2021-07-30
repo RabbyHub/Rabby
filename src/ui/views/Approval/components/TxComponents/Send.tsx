@@ -58,7 +58,9 @@ const Send = ({ data, chainEnum }: SendProps) => {
             <p className="est-price">
               ≈ $
               {splitNumberByStep(
-                new BigNumber(detail.token_amount).times(1).toFixed(2)
+                new BigNumber(detail.token_amount)
+                  .times(detail.token.price)
+                  .toFixed(2)
               )}
             </p>
           </div>

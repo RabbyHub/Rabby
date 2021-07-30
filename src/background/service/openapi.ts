@@ -144,6 +144,7 @@ export interface ExplainTxResponse {
     to_addr: string;
     token_symbol: string;
     token_amount: number;
+    token: TokenItem;
   };
   type_token_approval?: {
     spender: string;
