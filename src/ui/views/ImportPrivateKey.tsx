@@ -14,7 +14,6 @@ const ImportPrivateKey = () => {
 
   const [run, loading] = useWalletRequest(wallet.importPrivateKey, {
     onSuccess(accounts) {
-      throw new Error('test');
       history.replace({
         pathname: '/import/success',
         state: {

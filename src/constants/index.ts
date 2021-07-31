@@ -266,6 +266,7 @@ export const SAFE_RPC_METHODS = [
   'eth_syncing',
   'eth_uninstallFilter',
   'wallet_requestPermissions',
+  'wallet_getPermissions',
 ];
 
 export const MINIMUM_GAS_LIMIT = 21000;
