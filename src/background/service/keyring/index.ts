@@ -466,7 +466,6 @@ class KeyringService extends EventEmitter {
    */
   signTransaction(keyring, ethTx, _fromAddress, opts = {}) {
     const fromAddress = normalizeAddress(_fromAddress);
-    console.log('from', fromAddress);
     return keyring.signTransaction(fromAddress, ethTx, opts);
   }
 
