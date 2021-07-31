@@ -172,6 +172,7 @@ class ProviderController extends BaseController {
       approvalRes,
     } = cloneDeep(options);
     const keyring = await this._checkAddress(txParams.from);
+    console.log('keyring', keyring);
     delete approvalRes.address;
     delete approvalRes.type;
     delete approvalRes.uiRequestComponent;
@@ -181,6 +182,7 @@ class ProviderController extends BaseController {
       tx,
       txParams.from
     );
+    console.log('signedTx', signedTx);
 
     const hash = await openapiService.pushTx({
       ...approvalRes,

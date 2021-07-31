@@ -375,31 +375,34 @@ class LedgerBridgeKeyring extends EventEmitter {
         this.cleanUp();
       }
     } else {
-      this._sendMessage(
-        {
-          action: 'ledger-sign-transaction',
-          params: {
-            tx: tx.serialize().toString('hex'),
-            hdPath,
-            to: ethUtil.bufferToHex(toAddress).toLowerCase(),
+      return new Promise((resolve, reject) => {
+        this._sendMessage(
+          {
+            action: 'ledger-sign-transaction',
+            params: {
+              tx: tx.serialize().toString('hex'),
+              hdPath,
+              to: ethUtil.bufferToHex(toAddress).toLowerCase(),
+            },
           },
-        },
-        ({ success, payload }) => {
-          if (success) {
-            const newOrMutatedTx = handleSigning(payload);
-            const valid = newOrMutatedTx.verifySignature();
-            if (valid) {
-              return newOrMutatedTx;
+          ({ success, payload }) => {
+            if (success) {
+              const newOrMutatedTx = handleSigning(payload);
+              const valid = newOrMutatedTx.verifySignature();
+              if (valid) {
+                resolve(newOrMutatedTx);
+              } else {
+                reject('Ledger: The transaction signature is not valid');
+              }
             } else {
-              throw new Error('Ledger: The transaction signature is not valid');
+              reject(
+                payload.error ||
+                  'Ledger: Unknown error while signing transaction'
+              );
             }
-          } else {
-            throw new Error(
-              payload.error || 'Ledger: Unknown error while signing transaction'
-            );
           }
-        }
-      );
+        );
+      });
     }
   }
 
