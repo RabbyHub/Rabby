@@ -343,6 +343,7 @@ class ProviderController extends BaseController {
     return result;
   };
 
+  @Reflect.metadata('SAFE', true)
   walletGetPermissions = ({ session: { origin } }) => {
     const result: Web3WalletPermission[] = [];
     if (Wallet.isUnlocked() && Wallet.getConnectedSite(origin)) {
