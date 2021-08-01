@@ -163,7 +163,10 @@ class ProviderController extends BaseController {
     };
     session: Session;
     approvalRes: ApprovalRes;
+    pushed: boolean;
+    result: any;
   }) => {
+    if (options.pushed) return options.result;
     const {
       data: {
         params: [txParams],

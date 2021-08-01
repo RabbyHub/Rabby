@@ -1,21 +1,75 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Button } from 'antd';
 // import QRCode from 'qrcode.react';
 import { useTranslation } from 'react-i18next';
+import WalletConnect from '@walletconnect/client';
+import QRCodeModal from '@walletconnect/qrcode-modal';
+import { Tx } from 'background/service/openapi';
 import { useApproval } from 'ui/utils';
 import AccountCard from './AccountCard';
 import { QrScan } from 'ui/assets';
 
+interface ApprovalParams extends Tx {
+  address: string;
+}
+
 const WatchAddressWaiting = ({
-  params: { address },
+  params,
   // currently doesn't support
   requestDefer,
 }: {
-  params: { address: string };
-  requestDefer: Promise<any>;
+  params: ApprovalParams;
+  requestDefer(params: any): void;
 }) => {
-  const [, , rejectApproval] = useApproval();
+  const [, resolveApproval, rejectApproval] = useApproval();
   const { t } = useTranslation();
+  useEffect(() => {
+    const connector = new WalletConnect({
+      bridge: 'http://192.168.31.109:5555', // Required
+      qrcodeModal: QRCodeModal,
+    });
+
+    // Check if connection is already established
+    if (!connector.connected) {
+      // create new session
+      connector.createSession();
+    }
+
+    // Subscribe to connection events
+    connector.on('connect', async (error, payload) => {
+      if (error) {
+        throw error;
+      }
+      // Get provided accounts and chainId
+      const { accounts, chainId } = payload.params[0];
+      if (accounts[0].toLowerCase() !== params.from) {
+        alert('not same address');
+      }
+      const result = await connector.sendTransaction(params);
+      console.log('result', result);
+      // requestDefer({ pushed: true, result });
+      await connector.killSession();
+      resolveApproval(result);
+    });
+
+    connector.on('session_update', (error, payload) => {
+      if (error) {
+        throw error;
+      }
+
+      // Get updated accounts and chainId
+      const { accounts, chainId } = payload.params[0];
+    });
+
+    connector.on('disconnect', (error, payload) => {
+      if (error) {
+        throw error;
+      }
+
+      // Delete connector
+    });
+    // QRCodeModal.open(connector.uri);
+  });
   const handleCancel = () => {
     rejectApproval('user cancel');
   };

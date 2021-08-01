@@ -54,7 +54,7 @@ class WatchKeyring extends EventEmitter {
 
   // pull the transaction current state, then resolve or reject
   async signTransaction(address, transaction) {
-    throw ethErrors.provider.userRejectedRequest();
+    return transaction;
   }
 
   async signPersonalMessage(withAccount: string, message: string) {
