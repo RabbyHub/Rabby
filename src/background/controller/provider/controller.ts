@@ -123,6 +123,16 @@ class ProviderController extends BaseController {
   };
 
   @Reflect.metadata('SAFE', true)
+  ethCoinbase = async ({ session: { origin } }) => {
+    if (!permissionService.hasPerssmion(origin)) {
+      return null;
+    }
+
+    const account = await this.getCurrentAccount();
+    return account ? account.address : null;
+  };
+
+  @Reflect.metadata('SAFE', true)
   ethChainId = ({ session }: { session: Session }) => {
     const origin = session.origin;
     const site = permissionService.getWithoutUpdate(origin);
