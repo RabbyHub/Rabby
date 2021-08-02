@@ -1,15 +1,18 @@
 import React from 'react';
 import { useTranslation, Trans } from 'react-i18next';
 import { CHAINS, CHAINS_ENUM } from 'consts';
-import { ExplainTxResponse } from 'background/service/openapi';
+import { ExplainTxResponse, Tx } from 'background/service/openapi';
 import BalanceChange from './BalanceChange';
+import IconCancelTx from 'ui/assets/cancel-tx.svg';
 
 const CancelTx = ({
   chainEnum,
   data,
+  tx,
 }: {
   chainEnum: CHAINS_ENUM;
   data: ExplainTxResponse;
+  tx: Tx;
 }) => {
   const chain = CHAINS[chainEnum];
   const { t } = useTranslation();
@@ -23,9 +26,8 @@ const CancelTx = ({
       </p>
       <div className="gray-section-block common-detail-block">
         <p className="title">{t('Cancel Pending Transaction')}</p>
-        <p className="text-gray-content text-14 mb-0">
-          {t('One pending transaction will be canceled')}
-        </p>
+        <p className="text-gray-content text-14 mb-0">Nonce: {tx.nonce}</p>
+        <img src={IconCancelTx} className="icon icon-cancel-tx" />
       </div>
       <BalanceChange
         data={data.balance_change}

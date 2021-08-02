@@ -32,21 +32,32 @@ const TxTypeComponent = ({
   chain,
   isReady,
   raw,
+  onChange,
+  tx,
 }: {
   txDetail: ExplainTxResponse;
   chain: Chain;
   isReady: boolean;
   raw: Record<string, string>;
+  onChange(data: Record<string, any>): void;
+  tx: Tx;
 }) => {
   if (!isReady) return <Loading chainEnum={chain.enum} />;
   if (txDetail.type_deploy_contract)
     return <Deploy data={txDetail} chainEnum={chain.enum} />;
   if (txDetail.type_cancel_tx)
-    return <CancelTx data={txDetail} chainEnum={chain.enum} />;
+    return <CancelTx data={txDetail} chainEnum={chain.enum} tx={tx} />;
   if (txDetail.type_cancel_token_approval)
     return <Cancel data={txDetail} chainEnum={chain.enum} />;
   if (txDetail.type_token_approval)
-    return <Approve data={txDetail} chainEnum={chain.enum} />;
+    return (
+      <Approve
+        data={txDetail}
+        chainEnum={chain.enum}
+        onChange={onChange}
+        tx={tx}
+      />
+    );
   if (txDetail.type_send)
     return <Send data={txDetail} chainEnum={chain.enum} />;
   if (txDetail.type_call)
@@ -194,10 +205,10 @@ const SignTx = ({ params, origin }) => {
     try {
       setIsReady(false);
       const res = await explainTx(currentAccount!.address);
-      setIsReady(true);
       if (res.pre_exec.success) {
         await checkTx(currentAccount!.address);
       }
+      setIsReady(true);
     } catch (e) {
       Modal.error({
         title: t('Error'),
@@ -264,6 +275,13 @@ const SignTx = ({ params, origin }) => {
     setForceProcess(checked);
   };
 
+  const handleTxChange = (obj: Record<string, any>) => {
+    setTx({
+      ...tx,
+      ...obj,
+    });
+  };
+
   useEffect(() => {
     if (!tx.gasPrice) {
       // use minimum gas as default gas if dapp not set gasPrice
@@ -288,6 +306,8 @@ const SignTx = ({ params, origin }) => {
                 txDetail={txDetail}
                 chain={chain}
                 raw={params.data[0]}
+                onChange={handleTxChange}
+                tx={tx}
               />
             )}
             <GasSelector
@@ -332,6 +352,7 @@ const SignTx = ({ params, origin }) => {
                       size="large"
                       className="w-[172px]"
                       onClick={() => handleAllow()}
+                      disabled={!isReady}
                     >
                       {securityCheckStatus === 'pass'
                         ? t('Sign')

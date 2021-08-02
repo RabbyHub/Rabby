@@ -159,11 +159,8 @@
         margin-bottom: 24px;
       }
       .common-detail-block {
-        display: flex;
-        flex-direction: column;
-        justify-content: center;
-        height: 147px;
-        padding: 0 16px;
+        min-height: 120px;
+        padding: 24px 16px;
         margin-bottom: 24px;
         .title {
           color: #525966;
@@ -174,6 +171,47 @@
         p {
           word-break: break-all;
           white-space: pre-wrap;
+        }
+        .block-field {
+          display: flex;
+          margin-bottom: 18px;
+          .label {
+            color: #818A99;
+            font-size: 14px;
+            width: 100px;
+            flex-shrink: 0;
+            line-height: 1;
+          }
+          .value {
+            line-height: 1;
+            flex: 1;
+            color: #525966;
+            font-size: 15px;
+            white-space: nowrap;
+            text-overflow: ellipsis;
+            overflow: hidden;
+          }
+          &.contract {
+            .value {
+              display: flex;
+              align-items: center;
+              .address-viewer-text {
+                color: #818A99;
+                font-size: 13px;
+                font-weight: 500;
+                margin-right: 0;
+              }
+              .icon-copy {
+                width: 16px;
+                height: 16px;
+                margin-left: 6px;
+                cursor: pointer;
+              }
+            }
+          }
+          &:nth-last-child(1) {
+            margin-bottom: 0;
+          }
         }
       }
       .protocol {
@@ -212,6 +250,89 @@
         }
       }
     }
+    .send {
+      .est-price {
+        margin: 8px 0 0 0;
+        color: #818A99;
+        font-size: 12px;
+      }
+    }
+    .cancel-tx {
+      .common-detail-block {
+        position: relative;
+        .icon-cancel-tx {
+          position: absolute;
+          width: 60px;
+          height: 60px;
+          right: 16px;
+          top: 24px;
+          pointer-events: none;
+        }
+      }
+    }
+    .approve {
+      .protocol {
+        .protocol-logo {
+          width: 24px;
+          height: 24px;
+          margin-right: 8px;
+          flex-shrink: 0;
+        }
+        .protocol-info {
+          display: flex;
+          align-items: center;
+          .protocol-info__name {
+            font-size: 13px;
+            line-height: 1;
+            margin-bottom: 0;
+            align-items: center;
+            .protocol-info__spender {
+              margin-left: 8px;
+            }
+          }
+          .address-viewer-text {
+            line-height: 1;
+          }
+        }
+      }
+      .token-info {
+        display: flex;
+        justify-content: space-between;
+        width: 100%;
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap !important;
+        margin: 0;
+        margin-bottom: 4px;
+        color: #2D3033;
+        font-weight: 500;
+        font-size: 15px;
+        line-height: 18px;
+        .ant-btn-link {
+          color: #8697FF;
+          font-size: 14px;
+          font-weight: normal;
+          padding: 0;
+          line-height: 1;
+          height: auto;
+          &::before {
+            display: none;
+          }
+          span {
+            text-decoration: underline;
+          }
+          &:hover {
+            background-color: transparent;
+          }
+        }
+      }
+      .token-value {
+        margin: 0;
+        color: #818A99;
+        font-size: 12px;
+        line-height: 14px;
+      }
+    }
     .sign {
       .common-detail-block {
         padding: 21px 16px;
@@ -240,22 +361,6 @@
             margin-bottom: 0;
             border-top: 0.5px solid rgba(180, 189, 204, 0.6);
             padding-top: 20px;
-            .value {
-              display: flex;
-              align-items: center;
-              .address-viewer-text {
-                color: #818A99;
-                font-size: 13px;
-                font-weight: 500;
-                margin-right: 0;
-              }
-              .icon-copy {
-                width: 16px;
-                height: 16px;
-                margin-left: 6px;
-                cursor: pointer;
-              }
-            }
           }
         }
         .contract-logo {
@@ -458,8 +563,8 @@
     display: flex;
     align-items: center;
     .icon-setting {
-      width: 16px;
-      height: 16px;
+      width: 20px;
+      height: 20px;
     }
   }
 }
@@ -739,5 +844,48 @@
   .ant-modal-confirm-content {
     font-family: 'Roboto', sans-serif;
     font-family: 'Roboto Mono', monospace;
+  }
+}
+
+.edit-approve-amount-modal {
+  .ant-form-item {
+    background-color: #fff;
+    border-radius: 6px;
+    padding: 14px;
+    margin-bottom: 0;
+  }
+  .est-approve-price {
+    margin: 8px 0 0 0;
+    color: #818A99;
+    font-size: 12px;
+    text-align: right;
+  }
+  .ant-input-group-wrapper {
+    position: relative;
+    .ant-input {
+      color: #2D3033;
+      font-size: 20px;
+      padding: 0;
+      width: 264px;
+    }
+    .ant-input-group-addon {
+      background: transparent;
+      border: none;
+      font-size: 15px;
+      color: #818A99;
+      padding-right: 0;
+      padding-left: 14px;
+    }
+    &::after {
+      content: '';
+      position: absolute;
+      background: linear-gradient(270deg, #FFFFFF 11.22%, rgba(255, 255, 255, 0.2) 100%);
+      width: 76px;
+      height: 31px;
+      left: 188px;
+      top: 0;
+      z-index: 999;
+      pointer-events: none;
+    }
   }
 }
