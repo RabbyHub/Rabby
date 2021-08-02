@@ -92,8 +92,17 @@ export const isMetaMaskActive = async () => {
   }
 };
 
-export const ellipsisOverflowedText = (str: string, length = 5) => {
+export const ellipsisOverflowedText = (
+  str: string,
+  length = 5,
+  removeLastComma = false
+) => {
   if (str.length <= length) return str;
-
-  return `${str.substring(0, length)}...`;
+  let cut = str.substring(0, length);
+  if (removeLastComma) {
+    if (cut.endsWith(',')) {
+      cut = cut.substring(0, length - 1);
+    }
+  }
+  return `${cut}...`;
 };

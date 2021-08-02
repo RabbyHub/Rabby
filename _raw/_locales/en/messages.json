@@ -556,7 +556,7 @@
     "message": "Please input gas limit"
   },
   "RecommendGasLimitTip": {
-    "message": "Est. {{est}}. Current {{current}}x, recommend"
+    "message": "Est. {{est}}. Current {{current}}x, recommend "
   },
   "Advanced__Options": {
     "message": "Advanced Options"

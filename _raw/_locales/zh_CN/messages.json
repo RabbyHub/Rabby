@@ -439,7 +439,7 @@
     "message": "未知协议"
   },
   "token__balance__change": {
-    "message": "预估 token 余额变化"
+    "message": "预估 Token 余额变化"
   },
   "Total__value__change": {
     "message": "净值变化"
@@ -484,7 +484,7 @@
     "message": "合约"
   },
   "gasCostTitle": {
-    "message": "预估 gas 费用"
+    "message": "预估 Gas 费用"
   },
   "gasPriceTitle": {
     "message": "Gas 价格 (Gwei)"
@@ -493,7 +493,7 @@
     "message": "笔交易在前"
   },
   "Select__Gas__Setting": {
-    "message": "选择 gas 价格"
+    "message": "选择 Gas 价格"
   },
   "Standard": {
     "message": "一般"
@@ -553,7 +553,7 @@
     "message": "请输入燃料限制"
   },
   "RecommendGasLimitTip": {
-    "message": "预估 {{est}}，当前 {{current}}x，建议"
+    "message": "预估 {{est}}，当前 {{current}}x，建议 "
   },
   "Advanced__Options": {
     "message": "高级选项"
