@@ -566,5 +566,23 @@
   },
   "MnemonicDisableTip": {
     "message": "Cannot import mnemonics for there is already one in the wallet"
+  },
+  "Token__Approval": {
+    "message": "Token Approval"
+  },
+  "Amount": {
+    "message": "Amount"
+  },
+  "Edit": {
+    "message": "Edit"
+  },
+  "Approve__to": {
+    "message": "Approve to"
+  },
+  "Send__Token": {
+    "message": "Send Token"
+  },
+  "To__address": {
+    "message": "To address"
   }
 }
