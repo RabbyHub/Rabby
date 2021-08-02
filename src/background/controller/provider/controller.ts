@@ -15,6 +15,7 @@ import {
 import { Session } from 'background/service/session';
 import { Tx } from 'background/service/openapi';
 import RpcCache from 'background/utils/rpcCache';
+import Wallet from '../wallet';
 import { CHAINS, CHAINS_ENUM, SAFE_RPC_METHODS } from 'consts';
 import BaseController from '../base';
 
@@ -22,6 +23,14 @@ interface ApprovalRes extends Tx {
   type?: string;
   address?: string;
   uiRequestComponent?: string;
+}
+
+interface Web3WalletPermission {
+  // The name of the method corresponding to the permission
+  parentCapability: string;
+
+  // The date the permission was granted, in UNIX epoch time
+  date?: number;
 }
 
 const v1SignTypedDataVlidation = ({
@@ -324,6 +333,23 @@ class ProviderController extends BaseController {
       origin
     );
     return null;
+  };
+
+  walletRequestPermissions = ({ data: { params: permissions } }) => {
+    const result: Web3WalletPermission[] = [];
+    if ('eth_accounts' in permissions?.[0]) {
+      result.push({ parentCapability: 'eth_accounts' });
+    }
+    return result;
+  };
+
+  @Reflect.metadata('SAFE', true)
+  walletGetPermissions = ({ session: { origin } }) => {
+    const result: Web3WalletPermission[] = [];
+    if (Wallet.isUnlocked() && Wallet.getConnectedSite(origin)) {
+      result.push({ parentCapability: 'eth_accounts' });
+    }
+    return result;
   };
 
   private _checkAddress = async (address) => {
