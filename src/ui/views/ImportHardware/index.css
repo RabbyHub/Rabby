@@ -1,9 +1,12 @@
 .hardware-icon {
-  @apply active:fill-current cursor-pointer transition-colors relative mt-[-1px] ml-[-1px];
+  @apply cursor-pointer transition-colors relative mt-[-1px] ml-[-1px];
 
   &:active {
     path {
       fill: white;
+    }
+    rect {
+      fill: currentColor;
     }
   }
 }

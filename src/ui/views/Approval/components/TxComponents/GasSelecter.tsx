@@ -86,7 +86,7 @@ const GasSelector = ({
   const chain = Object.values(CHAINS).find((item) => item.id === chainId)!;
 
   const handleSetRecommendTimes = () => {
-    const value = new BigNumber(Number(tx.gas)).times(1.5).toFixed(0);
+    const value = new BigNumber(gas.estimated_gas_used).times(1.5).toFixed(0);
     setGasLimit(value);
   };
 
@@ -137,7 +137,6 @@ const GasSelector = ({
 
   const handleSelectGas = (checked: boolean, gas: GasLevel) => {
     if (!checked) {
-      setSelectGas(null);
       return;
     }
     setSelectGas(gas);
@@ -282,7 +281,10 @@ const GasSelector = ({
                               value={customGas}
                               defaultValue={customGas}
                               onChange={handleCustomGasChange}
-                              onClick={(e) => e.stopPropagation()}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                              }}
+                              autoFocus
                               min={0}
                             />
                           </Form.Item>
@@ -298,9 +300,11 @@ const GasSelector = ({
           </div>
           <div className="gas-limit mt-20">
             <p className="section-title flex">
-              <span>{advanceExpanded ? t('GasLimit') : ''}</span>
+              <span className="flex-1">
+                {advanceExpanded ? t('GasLimit') : ''}
+              </span>
               <span
-                className="flex-1 text-right cursor-pointer"
+                className="text-right cursor-pointer"
                 onClick={handleClickAdvance}
               >
                 {t('Advanced Options')}
@@ -337,9 +341,9 @@ const GasSelector = ({
                   <Trans
                     i18nKey="RecommendGasLimitTip"
                     values={{
-                      est: Number(tx.gas),
+                      est: Number(gas.estimated_gas_used),
                       current: new BigNumber(
-                        Number(afterGasLimit) / Number(tx.gas)
+                        Number(afterGasLimit) / gas.estimated_gas_used
                       ).toFixed(1),
                     }}
                   />

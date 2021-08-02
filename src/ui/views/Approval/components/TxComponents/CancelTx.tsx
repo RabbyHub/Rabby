@@ -26,7 +26,9 @@ const CancelTx = ({
       </p>
       <div className="gray-section-block common-detail-block">
         <p className="title">{t('Cancel Pending Transaction')}</p>
-        <p className="text-gray-content text-14 mb-0">Nonce: {tx.nonce}</p>
+        <p className="text-gray-content text-14 mb-0">
+          Nonce: {Number(tx.nonce)}
+        </p>
         <img src={IconCancelTx} className="icon icon-cancel-tx" />
       </div>
       <BalanceChange

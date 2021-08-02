@@ -73,15 +73,19 @@ const ApproveAmountModal = ({
               {ellipsisOverflowedText(token.symbol, 4)}
             </span>
           }
+          autoFocus
         />
       </Form.Item>
-      <p className="est-approve-price">
+      <p
+        className="est-approve-price"
+        title={splitNumberByStep(new BigNumber(tokenPrice).toFixed(2))}
+      >
         ≈ $
-        {tokenPrice > Number.MAX_SAFE_INTEGER
-          ? t('unlimited')
-          : splitNumberByStep(
-              new BigNumber(customAmount || 0).times(token.price).toFixed(2)
-            )}
+        {ellipsisOverflowedText(
+          splitNumberByStep(new BigNumber(tokenPrice).toFixed(2)),
+          18,
+          true
+        )}
       </p>
       <div className="flex justify-center mt-32">
         <Button
@@ -100,7 +104,6 @@ const ApproveAmountModal = ({
 
 const Approve = ({ data, chainEnum, onChange, tx }: ApproveProps) => {
   const detail = data.type_token_approval!;
-  const isUnlimited = detail.is_infinity;
   const chain = CHAINS[chainEnum];
   const [editApproveModalVisible, setEditApproveModalVisible] = useState(false);
   const { t } = useTranslation();
@@ -108,6 +111,7 @@ const Approve = ({ data, chainEnum, onChange, tx }: ApproveProps) => {
     ((detail.token.raw_amount || 0) / Math.pow(10, detail.token.decimals)) *
       detail.token.price
   ).toFixed(2);
+  const tokenAmount = new BigNumber(detail.token_amount).toFixed();
 
   const handleCopySpender = () => {
     const clipboard = new ClipboardJS('.approve', {
@@ -158,24 +162,17 @@ const Approve = ({ data, chainEnum, onChange, tx }: ApproveProps) => {
         />
       </p>
       <div className="gray-section-block common-detail-block">
-        <p className="title">{t('Toekn Approval')}</p>
+        <p className="title">{t('Token Approval')}</p>
         <div className="block-field">
           <span className="label">{t('Amount')}</span>
           <div className="value">
-            <p
-              className="token-info"
-              title={
-                isUnlimited
-                  ? t('unlimited')
-                  : splitNumberByStep(detail.token_amount)
-              }
-            >
+            <p className="token-info" title={splitNumberByStep(tokenAmount)}>
               <span>
-                {isUnlimited
-                  ? t('unlimited')
-                  : splitNumberByStep(
-                      ellipsisOverflowedText(detail.token_amount + '', 12)
-                    )}{' '}
+                {ellipsisOverflowedText(
+                  splitNumberByStep(tokenAmount),
+                  15,
+                  true
+                )}{' '}
                 <span title={detail.token_symbol}>
                   {ellipsisOverflowedText(detail.token_symbol, 4)}
                 </span>
@@ -184,11 +181,16 @@ const Approve = ({ data, chainEnum, onChange, tx }: ApproveProps) => {
                 {t('Edit')}
               </Button>
             </p>
-            <p className="token-value">
+            <p
+              className="token-value"
+              title={splitNumberByStep(totalTokenPrice)}
+            >
               ≈ $
-              {isUnlimited
-                ? t('unlimited')
-                : splitNumberByStep(totalTokenPrice)}
+              {ellipsisOverflowedText(
+                splitNumberByStep(totalTokenPrice),
+                18,
+                true
+              )}
             </p>
           </div>
         </div>
@@ -210,7 +212,7 @@ const Approve = ({ data, chainEnum, onChange, tx }: ApproveProps) => {
               >
                 {ellipsisOverflowedText(
                   detail.spender_protocol_name || t('UnknownProtocol'),
-                  11
+                  10
                 )}
                 <span className="protocol-info__spender">
                   <AddressViewer address={detail.spender} showArrow={false} />
@@ -238,6 +240,7 @@ const Approve = ({ data, chainEnum, onChange, tx }: ApproveProps) => {
         centered
         onCancel={() => setEditApproveModalVisible(false)}
         destroyOnClose
+        width="90%"
       >
         <ApproveAmountModal
           amount={detail.token_amount}
