@@ -284,6 +284,7 @@ const GasSelector = ({
                               onClick={(e) => {
                                 e.stopPropagation();
                               }}
+                              autoFocus
                               min={0}
                             />
                           </Form.Item>
