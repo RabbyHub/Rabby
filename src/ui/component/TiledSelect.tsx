@@ -27,19 +27,13 @@ const TiledSelect = ({
   correctValue,
   onClear,
 }: TiledSelectProps) => {
-  const [
-    _value,
-    handleRemove,
-    handleChoose,
-    _,
-    handleClear,
-    idxs,
-  ] = useSelectOption<string>({
-    onChange,
-    value,
-    defaultValue,
-    options,
-  });
+  const [_value, handleRemove, handleChoose, _, handleClear, idxs] =
+    useSelectOption<string>({
+      onChange,
+      value,
+      defaultValue,
+      options,
+    });
   const { t } = useTranslation();
 
   const handleClickOption = (i: number) => {

@@ -53,17 +53,13 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
   }
 
   const [showSecurityCheckDetail, setShowSecurityCheckDetail] = useState(false);
-  const [
-    securityCheckStatus,
-    setSecurityCheckStatus,
-  ] = useState<SecurityCheckDecision>('pending');
+  const [securityCheckStatus, setSecurityCheckStatus] =
+    useState<SecurityCheckDecision>('pending');
   const [securityCheckAlert, setSecurityCheckAlert] = useState(
     t<string>('Checking')
   );
-  const [
-    securityCheckDetail,
-    setSecurityCheckDetail,
-  ] = useState<SecurityCheckResponse | null>(null);
+  const [securityCheckDetail, setSecurityCheckDetail] =
+    useState<SecurityCheckResponse | null>(null);
   const [explain, setExplain] = useState('');
 
   const handleSecurityCheck = async () => {

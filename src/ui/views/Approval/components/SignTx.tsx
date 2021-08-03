@@ -98,16 +98,12 @@ const SignTx = ({ params, origin }) => {
     },
   });
   const { t } = useTranslation();
-  const [
-    securityCheckStatus,
-    setSecurityCheckStatus,
-  ] = useState<SecurityCheckDecision>('loading');
+  const [securityCheckStatus, setSecurityCheckStatus] =
+    useState<SecurityCheckDecision>('loading');
   const [securityCheckAlert, setSecurityCheckAlert] = useState('Checking...');
   const [showSecurityCheckDetail, setShowSecurityCheckDetail] = useState(false);
-  const [
-    securityCheckDetail,
-    setSecurityCheckDetail,
-  ] = useState<SecurityCheckResponse | null>(null);
+  const [securityCheckDetail, setSecurityCheckDetail] =
+    useState<SecurityCheckResponse | null>(null);
   const [preprocessSuccess, setPreprocessSuccess] = useState(true);
   const [, resolveApproval, rejectApproval] = useApproval();
   const wallet = useWallet();

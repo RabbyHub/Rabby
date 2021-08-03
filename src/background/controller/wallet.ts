@@ -87,9 +87,8 @@ export class WalletController extends BaseController {
   getConnectedSites = permissionService.getConnectedSites;
   getRecentConnectedSites = () => {
     const max = 12;
-    let list: (ConnectedSite | null)[] = permissionService.getRecentConnectSites(
-      max
-    );
+    let list: (ConnectedSite | null)[] =
+      permissionService.getRecentConnectSites(max);
     if (list.length < max) {
       list = [...list, ...Array(max - list.length).fill(null)];
     }
@@ -286,49 +285,47 @@ export class WalletController extends BaseController {
     );
   };
 
-  getAllVisibleAccounts: () => Promise<
-    Record<string, DisplayedKeryring[]>
-  > = async () => {
-    const typedAccounts = await keyringService.getAllTypedVisibleAccounts();
-    const result: Record<string, DisplayedKeryring[]> = {};
-    const hardwareTypes = Object.values(KEYRING_CLASS.HARDWARE);
+  getAllVisibleAccounts: () => Promise<Record<string, DisplayedKeryring[]>> =
+    async () => {
+      const typedAccounts = await keyringService.getAllTypedVisibleAccounts();
+      const result: Record<string, DisplayedKeryring[]> = {};
+      const hardwareTypes = Object.values(KEYRING_CLASS.HARDWARE);
 
-    for (const account of typedAccounts) {
-      const type = hardwareTypes.includes(account.type)
-        ? 'hardware'
-        : account.type;
+      for (const account of typedAccounts) {
+        const type = hardwareTypes.includes(account.type)
+          ? 'hardware'
+          : account.type;
 
-      result[type] = result[type] || [];
-      result[type].push({
-        ...account,
-        keyring: new DisplayKeyring(account.keyring),
-      });
-    }
+        result[type] = result[type] || [];
+        result[type].push({
+          ...account,
+          keyring: new DisplayKeyring(account.keyring),
+        });
+      }
 
-    return result;
-  };
+      return result;
+    };
 
-  getAllClassAccounts: () => Promise<
-    Record<string, DisplayedKeryring[]>
-  > = async () => {
-    const typedAccounts = await keyringService.getAllTypedAccounts();
-    const result: Record<string, DisplayedKeryring[]> = {};
-    const hardwareTypes = Object.values(KEYRING_CLASS.HARDWARE);
+  getAllClassAccounts: () => Promise<Record<string, DisplayedKeryring[]>> =
+    async () => {
+      const typedAccounts = await keyringService.getAllTypedAccounts();
+      const result: Record<string, DisplayedKeryring[]> = {};
+      const hardwareTypes = Object.values(KEYRING_CLASS.HARDWARE);
 
-    for (const account of typedAccounts) {
-      const type = hardwareTypes.includes(account.type)
-        ? 'hardware'
-        : account.type;
+      for (const account of typedAccounts) {
+        const type = hardwareTypes.includes(account.type)
+          ? 'hardware'
+          : account.type;
 
-      result[type] = result[type] || [];
-      result[type].push({
-        ...account,
-        keyring: new DisplayKeyring(account.keyring),
-      });
-    }
+        result[type] = result[type] || [];
+        result[type].push({
+          ...account,
+          keyring: new DisplayKeyring(account.keyring),
+        });
+      }
 
-    return result;
-  };
+      return result;
+    };
 
   changeAccount = (account: Account) => {
     preferenceService.setCurrentAccount(account);

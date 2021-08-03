@@ -90,14 +90,10 @@ export class EthereumProvider extends EventEmitter {
     });
 
     try {
-      const {
-        chainId,
-        accounts,
-        networkVersion,
-        isUnlocked,
-      }: any = await this.request({
-        method: 'getProviderState',
-      });
+      const { chainId, accounts, networkVersion, isUnlocked }: any =
+        await this.request({
+          method: 'getProviderState',
+        });
       if (isUnlocked) {
         this._isUnlocked = true;
       }

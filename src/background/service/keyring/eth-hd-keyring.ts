@@ -120,9 +120,7 @@ class HdKeyring extends SimpleKeyring {
     return this.__getPage(-1);
   }
 
-  async __getPage(
-    increment: number
-  ): Promise<
+  async __getPage(increment: number): Promise<
     Array<{
       address: string;
       index: string;

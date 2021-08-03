@@ -525,12 +525,8 @@ class LedgerBridgeKeyring extends EventEmitter {
       );
     }
 
-    const {
-      domain,
-      types,
-      primaryType,
-      message,
-    } = sigUtil.TypedDataUtils.sanitizeData(data);
+    const { domain, types, primaryType, message } =
+      sigUtil.TypedDataUtils.sanitizeData(data);
     const domainSeparatorHex = sigUtil.TypedDataUtils.hashStruct(
       'EIP712Domain',
       domain,

@@ -160,8 +160,9 @@ class ProviderController extends BaseController {
       const currentAddress = preferenceService
         .getCurrentAccount()
         ?.address.toLowerCase();
-      const currentChain = permissionService.getConnectedSite(session.origin)
-        ?.chain;
+      const currentChain = permissionService.getConnectedSite(
+        session.origin
+      )?.chain;
       if (tx.from.toLowerCase() !== currentAddress) {
         throw ethErrors.rpc.invalidParams(
           'from should be same as current address'

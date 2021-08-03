@@ -20,7 +20,11 @@ const WINDOW_SIZE = {
 };
 
 const create = async ({ url, ...rest }): Promise<number | undefined> => {
-  const { top: cTop, left: cLeft, width } = await browser.windows.getCurrent({
+  const {
+    top: cTop,
+    left: cLeft,
+    width,
+  } = await browser.windows.getCurrent({
     windowTypes: ['normal'],
   } as Windows.GetInfo);
 
