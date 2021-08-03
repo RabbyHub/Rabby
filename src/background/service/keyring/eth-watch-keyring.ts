@@ -2,7 +2,9 @@
 import { EventEmitter } from 'events';
 import { ethErrors } from 'eth-rpc-errors';
 import { isAddress } from 'web3-utils';
-import { addHexPrefix } from 'ethereumjs-util';
+import { addHexPrefix, bufferToHex } from 'ethereumjs-util';
+import { Tx } from 'background/service/openapi';
+import WalletConnect from '@walletconnect/client';
 
 const keyringType = 'Watch Address';
 
@@ -11,6 +13,7 @@ class WatchKeyring extends EventEmitter {
   type = keyringType;
   accounts: string[] = [];
   accountToAdd = '';
+  walletConnector: WalletConnect | null = null;
 
   constructor(opts = {}) {
     super();
@@ -31,6 +34,14 @@ class WatchKeyring extends EventEmitter {
 
   setAccountToAdd = (account) => {
     this.accountToAdd = account;
+  };
+
+  initWalletConnect = async () => {
+    const connector = new WalletConnect({
+      bridge: 'http://10.0.0.52:5555', // Required
+    });
+
+    this.walletConnector = connector;
   };
 
   addAccounts = async () => {
@@ -54,7 +65,63 @@ class WatchKeyring extends EventEmitter {
 
   // pull the transaction current state, then resolve or reject
   async signTransaction(address, transaction) {
-    return transaction;
+    return new Promise((resolve, reject) => {
+      this.initWalletConnect();
+
+      const connector = this.walletConnector!;
+      // Check if connection is already established
+      if (!connector.connected) {
+        // create new session
+        connector.createSession();
+      }
+
+      // Subscribe to connection events
+      connector.on('connect', async (error, payload) => {
+        if (error) {
+          reject(error);
+        }
+
+        // Get provided accounts and chainId
+        const { accounts, chainId } = payload.params[0];
+        if (accounts[0].toLowerCase() !== address.toLowerCase()) {
+          reject('not same address');
+          return;
+        }
+        try {
+          const result = await connector.sendTransaction({
+            from: address,
+            to: bufferToHex(transaction.to),
+            gas: bufferToHex(transaction.gas),
+            gasPrice: bufferToHex(transaction.gasPrice),
+            value: bufferToHex(transaction.value),
+            data: bufferToHex(transaction.data),
+            nonce: bufferToHex(transaction.nonce),
+          });
+          resolve(result);
+          connector.killSession();
+        } catch (e) {
+          reject(e);
+          connector.killSession();
+        }
+      });
+
+      connector.on('session_update', (error, payload) => {
+        if (error) {
+          reject(error);
+        }
+
+        // Get updated accounts and chainId
+        const { accounts, chainId } = payload.params[0];
+      });
+
+      connector.on('disconnect', (error, payload) => {
+        if (error) {
+          reject(error);
+        }
+
+        // Delete connector
+      });
+    });
   }
 
   async signPersonalMessage(withAccount: string, message: string) {

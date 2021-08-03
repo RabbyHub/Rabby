@@ -224,12 +224,11 @@ const SignTx = ({ params, origin }) => {
     }
 
     const currentAccount = await wallet.getCurrentAccount();
-    if (
-      currentAccount?.type &&
-      WaitingSignComponent[currentAccount.type] &&
-      !wallet.isUseLedgerLive()
-    ) {
-      if (currentAccount.type === KEYRING_CLASS.HARDWARE.LEDGER) {
+    if (currentAccount?.type && WaitingSignComponent[currentAccount.type]) {
+      if (
+        currentAccount.type === KEYRING_CLASS.HARDWARE.LEDGER &&
+        !wallet.isUseLedgerLive()
+      ) {
         try {
           const keyring = wallet.connectHardware(KEYRING_CLASS.HARDWARE.LEDGER);
           if (keyring.isWebUSB) {
@@ -240,6 +239,7 @@ const SignTx = ({ params, origin }) => {
           // NOTHING
         }
       }
+      console.log(WaitingSignComponent[currentAccount.type]);
       resolveApproval({
         ...tx,
         nonce: realNonce || tx.nonce,

@@ -257,6 +257,8 @@ export class WalletController extends BaseController {
     this._setCurrentAccountFromKeyring(keyring);
   };
 
+  getKeyringByType = (type: string) => keyringService.getKeyringByType(type);
+
   checkHasMnemonic = () => {
     try {
       const keyring = this._getKeyringByType(KEYRING_CLASS.MNEMONIC);
