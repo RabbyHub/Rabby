@@ -1,4 +1,5 @@
-import React, { FunctionComponent, useEffect, useState, memo } from 'react';
+import React, { FunctionComponent, useEffect, useState } from 'react';
+import { Skeleton } from 'antd';
 import clsx from 'clsx';
 import { ChainWithBalance } from 'background/service/openapi';
 import { useWallet, useWalletRequest } from 'ui/utils';
@@ -110,9 +111,11 @@ const AddressItem = ({
       >
         <div className="address-info">
           <span className="balance">
-            <Spin size="small" spinning={balance === null}>
-              ${splitNumberByStep((balance || 0).toFixed(2))}
-            </Spin>
+            {balance === null ? (
+              <Skeleton.Input active style={{ width: 30 }} />
+            ) : (
+              `$${splitNumberByStep((balance || 0).toFixed(2))}`
+            )}
           </span>
           <AddressViewer
             address={account}

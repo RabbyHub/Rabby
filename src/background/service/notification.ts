@@ -30,7 +30,7 @@ class NotificationService {
 
     winMgr.event.on('windowFocusChange', (winId: number) => {
       if (this.notifiWindowId && winId !== this.notifiWindowId) {
-        this.rejectApproval();
+        if (process.env.NODE_ENV === 'production') this.rejectApproval();
       }
     });
   }

@@ -33,6 +33,7 @@ const TiledSelect = ({
     handleChoose,
     _,
     handleClear,
+    idxs,
   ] = useSelectOption<string>({
     onChange,
     value,
@@ -91,7 +92,7 @@ const TiledSelect = ({
             className={cx(
               (i + 1) % 4 === 0 ? 'mr-0' : 'mr-8',
               'h-[32px] w-[84px] rounded-lg cursor-pointer text-center mb-8 font-medium transition-colors border',
-              _value.includes(o)
+              idxs.includes(i)
                 ? 'bg-gray-bg text-gray-comment border-gray-divider'
                 : 'bg-white text-gray-title border-white'
             )}

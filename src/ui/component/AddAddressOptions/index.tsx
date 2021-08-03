@@ -42,7 +42,7 @@ const AddAddressOptions = () => {
     },
     {
       leftIcon: IconConnectHardware,
-      content: t('Harware Wallet'),
+      content: t('Hardware Wallet'),
       onClick: () => {
         wallet.openIndexPage('/import/hardware');
       },

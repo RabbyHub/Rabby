@@ -1,5 +1,6 @@
 import Transaction from 'ethereumjs-tx';
-import { bufferToHex } from 'ethereumjs-util';
+import { bufferToHex, isHexString } from 'ethereumjs-util';
+import { stringToHex } from 'web3-utils';
 import { ethErrors } from 'eth-rpc-errors';
 import { normalize as normalizeAddress } from 'eth-sig-util';
 import cloneDeep from 'lodash/cloneDeep';
@@ -15,13 +16,22 @@ import {
 import { Session } from 'background/service/session';
 import { Tx } from 'background/service/openapi';
 import RpcCache from 'background/utils/rpcCache';
-import { CHAINS, CHAINS_ENUM } from 'consts';
+import Wallet from '../wallet';
+import { CHAINS, CHAINS_ENUM, SAFE_RPC_METHODS } from 'consts';
 import BaseController from '../base';
 
 interface ApprovalRes extends Tx {
   type?: string;
   address?: string;
   uiRequestComponent?: string;
+}
+
+interface Web3WalletPermission {
+  // The name of the method corresponding to the permission
+  parentCapability: string;
+
+  // The date the permission was granted, in UNIX epoch time
+  date?: number;
 }
 
 const v1SignTypedDataVlidation = ({
@@ -55,12 +65,19 @@ class ProviderController extends BaseController {
       session: { origin },
     } = req;
 
-    if (!permissionService.hasPerssmion(origin)) {
+    if (
+      !permissionService.hasPerssmion(origin) &&
+      !SAFE_RPC_METHODS.includes(method)
+    ) {
       throw ethErrors.provider.unauthorized();
     }
 
-    const chainServerId =
-      CHAINS[permissionService.getConnectedSite(origin)!.chain].serverId;
+    const connected = permissionService.getConnectedSite(origin);
+    let chainServerId = CHAINS[CHAINS_ENUM.ETH].serverId;
+
+    if (connected) {
+      chainServerId = CHAINS[connected.chain].serverId;
+    }
 
     const currentAddress =
       preferenceService.getCurrentAccount()?.address.toLowerCase() || '0x';
@@ -104,6 +121,16 @@ class ProviderController extends BaseController {
 
     const account = await this.getCurrentAccount();
     return account ? [account.address] : [];
+  };
+
+  @Reflect.metadata('SAFE', true)
+  ethCoinbase = async ({ session: { origin } }) => {
+    if (!permissionService.hasPerssmion(origin)) {
+      return null;
+    }
+
+    const account = await this.getCurrentAccount();
+    return account ? account.address : null;
   };
 
   @Reflect.metadata('SAFE', true)
@@ -217,6 +244,7 @@ class ProviderController extends BaseController {
       params: [data, from],
     },
   }) => {
+    data = data = isHexString(data) ? data : stringToHex(data);
     const keyring = await this._checkAddress(from);
 
     return keyringService.signPersonalMessage(keyring, { data, from });
@@ -317,6 +345,23 @@ class ProviderController extends BaseController {
       origin
     );
     return null;
+  };
+
+  walletRequestPermissions = ({ data: { params: permissions } }) => {
+    const result: Web3WalletPermission[] = [];
+    if ('eth_accounts' in permissions?.[0]) {
+      result.push({ parentCapability: 'eth_accounts' });
+    }
+    return result;
+  };
+
+  @Reflect.metadata('SAFE', true)
+  walletGetPermissions = ({ session: { origin } }) => {
+    const result: Web3WalletPermission[] = [];
+    if (Wallet.isUnlocked() && Wallet.getConnectedSite(origin)) {
+      result.push({ parentCapability: 'eth_accounts' });
+    }
+    return result;
   };
 
   private _checkAddress = async (address) => {

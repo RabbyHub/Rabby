@@ -236,6 +236,9 @@ export class EthereumProvider extends EventEmitter {
 declare global {
   interface Window {
     ethereum: EthereumProvider;
+    web3: {
+      currentProvider: EthereumProvider;
+    };
   }
 }
 
@@ -244,5 +247,9 @@ const provider = new EthereumProvider();
 window.ethereum = new Proxy(provider, {
   deleteProperty: () => true,
 });
+
+window.web3 = {
+  currentProvider: window.ethereum,
+};
 
 window.dispatchEvent(new Event('ethereum#initialized'));

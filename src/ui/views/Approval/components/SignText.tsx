@@ -83,7 +83,11 @@ const SignText = ({ params }: { params: SignTextProps }) => {
       return;
     }
     const currentAccount = await wallet.getCurrentAccount();
-    if (currentAccount?.type && WaitingSignComponent[currentAccount?.type]) {
+    if (
+      currentAccount?.type &&
+      WaitingSignComponent[currentAccount?.type] &&
+      !wallet.isUseLedgerLive()
+    ) {
       if (currentAccount.type === KEYRING_CLASS.HARDWARE.LEDGER) {
         try {
           const keyring = wallet.connectHardware(KEYRING_CLASS.HARDWARE.LEDGER);
