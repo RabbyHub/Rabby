@@ -7,7 +7,7 @@ import { useWallet, useWalletRequest } from 'ui/utils';
 import UnlockLogo from 'ui/assets/unlock-logo.svg';
 import UnlockMask from 'ui/assets/unlock-mask.svg';
 
-const PASSWORD_LENGTH = [8, 20];
+const MINIMUM_PASSWORD_LENGTH = 8;
 
 const CreatePassword = () => {
   const history = useHistory();
@@ -75,20 +75,11 @@ const CreatePassword = () => {
               message: t('Please input Password'),
             },
             {
-              min: PASSWORD_LENGTH[0],
+              min: MINIMUM_PASSWORD_LENGTH,
               message: (
                 <Trans
                   i18nKey="passwordMinimumLengthAlert"
-                  values={{ length: PASSWORD_LENGTH[0] }}
-                />
-              ),
-            },
-            {
-              max: PASSWORD_LENGTH[1],
-              message: (
-                <Trans
-                  i18nKey="passwordMaximumLengthAlert"
-                  values={{ length: PASSWORD_LENGTH[1] }}
+                  values={{ length: MINIMUM_PASSWORD_LENGTH }}
                 />
               ),
             },
