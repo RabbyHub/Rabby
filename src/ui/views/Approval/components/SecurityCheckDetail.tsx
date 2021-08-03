@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { Checkbox } from 'ui/component';
 import { useWallet } from 'ui/utils';
 import { SecurityCheckResponse } from 'background/service/openapi';
-import { SvgIconCross } from 'ui/assets';
+import IconArrowRight from 'ui/assets/arrow-right-gray.svg';
 
 const SecurityCheckDetail = ({
   visible,
@@ -64,7 +64,7 @@ const SecurityCheckDetail = ({
       onClose={onCancel}
       height="100vh"
       closeIcon={
-        <SvgIconCross className="w-14 fill-current text-gray-comment" />
+        <img src={IconArrowRight} className="w-14 icon icon-drawer-close" />
       }
     >
       <div className="security-check-detail">
