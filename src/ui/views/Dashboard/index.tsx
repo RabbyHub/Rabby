@@ -95,12 +95,26 @@ const Dashboard = () => {
     handleToggle();
   };
 
-  const handleGotoSend = () => {
-    _openInTab('https://debank.com/send');
+  const handleGotoSend = async () => {
+    const site = await getCurrentConnectSite(wallet);
+    let chain: null | string = null;
+    if (site) {
+      chain = CHAINS[site.chain].serverId;
+    }
+    _openInTab(`https://debank.com/send${chain ? `?chain=${chain}` : ''}`);
   };
 
-  const handleGotoHistory = () => {
-    _openInTab(`https://debank.com/profile/${currentAccount?.address}/history`);
+  const handleGotoHistory = async () => {
+    const site = await getCurrentConnectSite(wallet);
+    let chain: null | string = null;
+    if (site) {
+      chain = CHAINS[site.chain].serverId;
+    }
+    _openInTab(
+      `https://debank.com/profile/${currentAccount?.address}/history${
+        chain ? `?chain=${chain}` : ''
+      }`
+    );
   };
 
   const handleGotoSwap = async () => {
