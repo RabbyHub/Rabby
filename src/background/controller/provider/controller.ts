@@ -1,5 +1,6 @@
 import Transaction from 'ethereumjs-tx';
-import { bufferToHex } from 'ethereumjs-util';
+import { bufferToHex, isHexString } from 'ethereumjs-util';
+import { stringToHex } from 'web3-utils';
 import { ethErrors } from 'eth-rpc-errors';
 import { normalize as normalizeAddress } from 'eth-sig-util';
 import cloneDeep from 'lodash/cloneDeep';
@@ -243,6 +244,7 @@ class ProviderController extends BaseController {
       params: [data, from],
     },
   }) => {
+    data = data = isHexString(data) ? data : stringToHex(data);
     const keyring = await this._checkAddress(from);
 
     return keyringService.signPersonalMessage(keyring, { data, from });

@@ -450,6 +450,7 @@ class LedgerBridgeKeyring extends EventEmitter {
       return new Promise((resolve, reject) => {
         this.unlockAccountByAddress(withAccount)
           .then((hdPath) => {
+            console.log('hdPath', hdPath);
             this._sendMessage(
               {
                 action: 'ledger-sign-personal-message',
@@ -459,6 +460,7 @@ class LedgerBridgeKeyring extends EventEmitter {
                 },
               },
               ({ success, payload }) => {
+                console.log(success, payload);
                 if (success) {
                   let v: string | number = payload.v - 27;
                   v = v.toString(16);
