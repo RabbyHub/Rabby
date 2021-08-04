@@ -21,6 +21,7 @@ const CustomModal = (props) => (
 
 const info = ({ className, ...rest }) =>
   Modal.info({
+    maskClosable: true,
     closeIcon,
     closable: true,
     width: '360px',
