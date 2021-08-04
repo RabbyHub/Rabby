@@ -63,7 +63,7 @@ const Sign = ({ data, chainEnum, raw }: SignProps) => {
           values={{ name: chain.name }}
         />
         <span
-          className="float-right text-gray-comment text-12 cursor-pointer flex items-center"
+          className="float-right text-gray-comment text-12 cursor-pointer flex items-center view-raw"
           onClick={handleViewRawClick}
         >
           {t('view Raw')}

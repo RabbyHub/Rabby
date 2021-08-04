@@ -75,9 +75,6 @@
         justify-content: space-between;
         align-items: center;
         padding: 16px 6px 6px;
-        .chain-selector {
-          padding: 0;
-        }
       }
     }
   }
@@ -151,6 +148,9 @@
     padding-bottom: 130px;
     display: flex;
     flex-direction: column;
+    .view-raw {
+      line-height: 16px !important;
+    }
     &.pre-process-failed {
       padding-bottom: 200px;
     }
@@ -569,6 +569,7 @@
   }
   .gas-info {
     flex: 1;
+    line-height: 1;
     p {
       margin-bottom: 4px;
       &:nth-last-child(1) {
