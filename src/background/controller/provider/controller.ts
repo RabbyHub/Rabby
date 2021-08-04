@@ -1,5 +1,6 @@
 import Transaction from 'ethereumjs-tx';
-import { bufferToHex, isHexString } from 'ethereumjs-util';
+import { TransactionFactory } from '@ethereumjs/tx';
+import { bufferToHex, isHexString, addHexPrefix } from 'ethereumjs-util';
 import { stringToHex } from 'web3-utils';
 import { ethErrors } from 'eth-rpc-errors';
 import { normalize as normalizeAddress } from 'eth-sig-util';
@@ -201,6 +202,15 @@ class ProviderController extends BaseController {
       tx,
       txParams.from
     );
+    const buildTx = TransactionFactory.fromTxData({
+      ...approvalRes,
+      r: addHexPrefix(signedTx.r),
+      s: addHexPrefix(signedTx.s),
+      v: addHexPrefix(signedTx.v),
+    });
+    if (!buildTx.verifySignature()) {
+      throw new Error('wrong signature');
+    }
 
     const hash = await openapiService.pushTx({
       ...approvalRes,
