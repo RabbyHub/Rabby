@@ -1,3 +1,4 @@
+import * as Sentry from '@sentry/browser';
 import Transaction from 'ethereumjs-tx';
 import { TransactionFactory } from '@ethereumjs/tx';
 import { bufferToHex, isHexString, addHexPrefix } from 'ethereumjs-util';
@@ -208,8 +209,20 @@ class ProviderController extends BaseController {
       s: addHexPrefix(signedTx.s),
       v: addHexPrefix(signedTx.v),
     });
+
+    // Report address type(not sensitive information) to sentry when tx signatuure is invalid
     if (!buildTx.verifySignature()) {
-      throw new Error('wrong signature');
+      if (!buildTx.v) {
+        Sentry.captureException(new Error(`v missed, ${keyring.type}`));
+      } else if (!buildTx.s) {
+        Sentry.captureException(new Error(`s midded, ${keyring.type}`));
+      } else if (!buildTx.r) {
+        Sentry.captureException(new Error(`r midded, ${keyring.type}`));
+      } else {
+        Sentry.captureException(
+          new Error(`invalid signature, ${keyring.type}`)
+        );
+      }
     }
 
     const hash = await openapiService.pushTx({
