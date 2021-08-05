@@ -1,11 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useDebounce } from 'react-use';
-import { Drawer, Button, Input } from 'antd';
+import { Drawer, Button, Input, Form } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { Checkbox } from 'ui/component';
 import { useWallet } from 'ui/utils';
 import { SecurityCheckResponse } from 'background/service/openapi';
-import { SvgIconCross } from 'ui/assets';
+import IconArrowRight from 'ui/assets/arrow-right-gray.svg';
 
 const SecurityCheckDetail = ({
   visible,
@@ -25,26 +25,51 @@ const SecurityCheckDetail = ({
   preprocessSuccess?: boolean;
 }) => {
   const wallet = useWallet();
+  const inputEl = useRef<any>(null);
   const { t } = useTranslation();
   const [needPassword, setNeedPassword] = useState(false);
   const [forceProcess, setForceProcess] = useState(false);
   const [password, setPassword] = useState('');
-  const [passwordCorrect, setPasswordCorrect] = useState(false);
+  const [passwordCorrect, setPasswordCorrect] = useState(true);
   const handleForceProcessChange = (checked: boolean) => {
     setForceProcess(checked);
   };
   const handlePasswordChange = (val: string) => {
     setPassword(val);
   };
+  const handleClickSubmit = async () => {
+    try {
+      await wallet.verifyPassword(password);
+      onOk();
+    } catch (e) {
+      setPasswordCorrect(false);
+    }
+  };
+
   useDebounce(
     async () => {
-      if (!password) return;
-      await wallet.verifyPassword(password);
-      setPasswordCorrect(true);
+      if (!password && passwordCorrect) return;
+      try {
+        await wallet.verifyPassword(password);
+        setPasswordCorrect(true);
+      } catch (e) {
+        setPasswordCorrect(false);
+      }
     },
     500,
     [password]
   );
+
+  useEffect(() => {
+    if (visible) {
+      setTimeout(() => {
+        if (inputEl.current) {
+          inputEl.current.focus();
+        }
+      }, 100);
+    }
+  }, [visible]);
+
   useEffect(() => {
     if (!data) return;
     if (
@@ -61,10 +86,11 @@ const SecurityCheckDetail = ({
       placement="bottom"
       className="security-check-drawer"
       visible={visible}
+      destroyOnClose
       onClose={onCancel}
       height="100vh"
       closeIcon={
-        <SvgIconCross className="w-14 fill-current text-gray-comment" />
+        <img src={IconArrowRight} className="w-14 icon icon-drawer-close" />
       }
     >
       <div className="security-check-detail">
@@ -116,12 +142,22 @@ const SecurityCheckDetail = ({
           {needPassword && (
             <div className="input-password">
               <p>{t('Enter passward to continue your transaction')}</p>
-              <Input
-                placeholder={t('Please enter the password')}
-                type="password"
-                onChange={(e) => handlePasswordChange(e.target.value)}
-                spellCheck={false}
-              />
+              <Form onFinish={handleClickSubmit}>
+                <Form.Item
+                  name="password"
+                  validateTrigger="blur"
+                  validateStatus={passwordCorrect ? 'success' : 'error'}
+                  help={passwordCorrect ? null : t('incorrect password')}
+                >
+                  <Input
+                    placeholder={t('Please enter the password')}
+                    type="password"
+                    onChange={(e) => handlePasswordChange(e.target.value)}
+                    spellCheck={false}
+                    ref={inputEl}
+                  />
+                </Form.Item>
+              </Form>
             </div>
           )}
           {!preprocessSuccess && (
@@ -140,12 +176,9 @@ const SecurityCheckDetail = ({
             </Button>
             <Button
               type="primary"
-              onClick={onOk}
+              onClick={handleClickSubmit}
               size="large"
-              disabled={
-                (needPassword && !passwordCorrect) ||
-                (!preprocessSuccess && !forceProcess)
-              }
+              disabled={!preprocessSuccess && !forceProcess}
             >
               {okText}
             </Button>

@@ -75,9 +75,6 @@
         justify-content: space-between;
         align-items: center;
         padding: 16px 6px 6px;
-        .chain-selector {
-          padding: 0;
-        }
       }
     }
   }
@@ -151,6 +148,9 @@
     padding-bottom: 130px;
     display: flex;
     flex-direction: column;
+    .view-raw {
+      line-height: 16px !important;
+    }
     &.pre-process-failed {
       padding-bottom: 200px;
     }
@@ -465,13 +465,14 @@
         }
       }
       .balance-change_error {
-        width: 360px;
+        width: 100%;
         background: rgba(242, 156, 27, 0.1);
         border-radius: 4px;
         color: #F29C1B;
         border: 1px solid rgba(242, 156, 27, 0.2);
         font-size: 14px;
         padding: 14px 16px;
+        word-break: break-all;
       }
     }
   }
@@ -544,6 +545,7 @@
     .icon-arrow-right {
       width: 16px;
       height: 16px;
+      transform: rotate(-90deg);
     }
     .ant-btn {
       border: 1px solid #8697FF;
@@ -568,6 +570,7 @@
   }
   .gas-info {
     flex: 1;
+    line-height: 1;
     p {
       margin-bottom: 4px;
       &:nth-last-child(1) {
@@ -718,6 +721,9 @@
     .ant-drawer-title {
       font-size: 20px;
       font-weight: 500;
+    }
+    .icon-drawer-close {
+      transform: rotate(90deg);
     }
   }
 }

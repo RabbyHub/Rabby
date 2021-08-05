@@ -83,6 +83,14 @@ const CreatePassword = () => {
                 />
               ),
             },
+            ({ getFieldValue }) => ({
+              validator(_, value: string) {
+                if (!value || getFieldValue('confirmPassword') === value) {
+                  return Promise.resolve();
+                }
+                return Promise.reject(new Error(t('Two inputs do not match')));
+              },
+            }),
           ]}
         >
           <Input
@@ -97,17 +105,6 @@ const CreatePassword = () => {
           className="mb-0 h-[56px] overflow-hidden"
           name="confirmPassword"
           help=""
-          rules={[
-            { required: true, message: t('Please confirm Password') },
-            ({ getFieldValue }) => ({
-              validator(_, value: string) {
-                if (!value || getFieldValue('password') === value) {
-                  return Promise.resolve();
-                }
-                return Promise.reject(new Error(t('Two inputs do not match')));
-              },
-            }),
-          ]}
         >
           <Input
             size="large"

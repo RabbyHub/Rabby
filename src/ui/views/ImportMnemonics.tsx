@@ -98,7 +98,7 @@ const ImportMnemonic = () => {
           rules={[{ required: true, message: t('Please input Mnemonics') }]}
         >
           <Input.TextArea
-            className="h-[124px]"
+            className="h-[124px] p-16"
             placeholder={t('Mnemonics words')}
             spellCheck={false}
           />
