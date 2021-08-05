@@ -72,11 +72,7 @@ const SecurityCheckDetail = ({
 
   useEffect(() => {
     if (!data) return;
-    if (
-      data.danger_list.length > 0 ||
-      data.forbidden_list.length > 0 ||
-      !preprocessSuccess
-    ) {
+    if (data.forbidden_list.length > 0 || !preprocessSuccess) {
       setNeedPassword(true);
     }
   }, [data, preprocessSuccess]);
