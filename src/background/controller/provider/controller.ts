@@ -14,7 +14,9 @@ import {
   openapiService,
   preferenceService,
   transactionWatchService,
+  i18n,
 } from 'background/service';
+import { notification } from 'background/webapi';
 import { Session } from 'background/service/session';
 import { Tx } from 'background/service/openapi';
 import RpcCache from 'background/utils/rpcCache';
@@ -224,26 +226,31 @@ class ProviderController extends BaseController {
         );
       }
     }
+    try {
+      const hash = await openapiService.pushTx({
+        ...approvalRes,
+        r: bufferToHex(signedTx.r),
+        s: bufferToHex(signedTx.s),
+        v: bufferToHex(signedTx.v),
+        value: approvalRes.value || '0x0',
+      });
 
-    const hash = await openapiService.pushTx({
-      ...approvalRes,
-      r: bufferToHex(signedTx.r),
-      s: bufferToHex(signedTx.s),
-      v: bufferToHex(signedTx.v),
-      value: approvalRes.value || '0x0',
-    });
+      const chain = permissionService.getConnectedSite(origin)!.chain;
+      transactionWatchService.addTx(
+        `${txParams.from}_${approvalRes.nonce}_${chain}`,
+        {
+          nonce: approvalRes.nonce,
+          hash,
+          chain,
+        }
+      );
 
-    const chain = permissionService.getConnectedSite(origin)!.chain;
-    transactionWatchService.addTx(
-      `${txParams.from}_${approvalRes.nonce}_${chain}`,
-      {
-        nonce: approvalRes.nonce,
-        hash,
-        chain,
-      }
-    );
-
-    return hash;
+      return hash;
+    } catch (e) {
+      const errMsg = e.message || JSON.stringify(e);
+      notification.create(undefined, i18n.t('Transaction push failed'), errMsg);
+      throw new Error(errMsg);
+    }
   };
 
   @Reflect.metadata('APPROVAL', [

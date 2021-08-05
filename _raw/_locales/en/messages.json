@@ -584,5 +584,38 @@
   },
   "To__address": {
     "message": "To address"
+  },
+  "Transaction__submitted": {
+    "message": "⏳ Transaction submitted"
+  },
+  "Transaction__completed": {
+    "message": "🎉 Transaction completed"
+  },
+  "Transaction__failed": {
+    "message": "❌ Transaction failed"
+  },
+  "Transaction__push__failed": {
+    "message": "❌ Transaction push failed"
+  },
+  "click__to__view__more__information": {
+    "message": "click to view more information"
+  },
+  "you__need__to__unlock__wallet__first": {
+    "message": "you need to unlock wallet first!"
+  },
+  "mnemonic__phrase__is__invalid": {
+    "message": "mnemonic phrase is invalid."
+  },
+  "Cannot__unlock__without__a__previous__vault": {
+    "message": "Cannot unlock without a previous vault."
+  },
+  "duplicateAccount": {
+    "message": "The account you're are trying to import is duplicate"
+  },
+  "the__private__key__is__invalid": {
+    "message": "the private key is invalid"
+  },
+  "the__input__file__is__invalid": {
+    "message": "the input file is invalid"
   }
 }

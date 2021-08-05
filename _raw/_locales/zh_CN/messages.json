@@ -581,5 +581,38 @@
   },
   "To__address": {
     "message": "接收地址"
+  },
+  "Transaction__submitted": {
+    "message": "⏳ 交易已提交"
+  },
+  "Transaction__completed": {
+    "message": "🎉 交易已完成"
+  },
+  "Transaction__failed": {
+    "message": "❌ 交易失败"
+  },
+  "Transaction__push__failed": {
+    "message": "❌ 交易提交失败"
+  },
+  "click__to__view__more__information": {
+    "message": "点击查看更多信息"
+  },
+  "you__need__to__unlock__wallet__first": {
+    "message": "请先解锁钱包"
+  },
+  "mnemonic__phrase__is__invalid": {
+    "message": "错误的助记词"
+  },
+  "Cannot__unlock__without__a__previous__vault": {
+    "message": "请先初始化钱包"
+  },
+  "duplicateAccount": {
+    "message": "此地址已经存在"
+  },
+  "the__private__key__is__invalid": {
+    "message": "错误的私钥"
+  },
+  "the__input__file__is__invalid": {
+    "message": "错误的文件格式"
   }
 }
