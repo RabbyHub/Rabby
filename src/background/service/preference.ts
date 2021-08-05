@@ -1,6 +1,6 @@
 import cloneDeep from 'lodash/cloneDeep';
 import { createPersistStore } from 'background/utils';
-import { keyringService, sessionService } from './index';
+import { keyringService, sessionService, i18n } from './index';
 import { TotalBalanceResponse } from './openapi';
 import { HARDWARE_KEYRING_TYPES } from 'consts';
 import { browser } from 'webextension-polyfill-ts';
@@ -47,6 +47,7 @@ class PreferenceService {
     if (!this.store.locale) {
       this.store.locale = defaultLang;
     }
+    i18n.changeLanguage(this.store.locale);
   };
 
   getAcceptLanguages = async () => {
@@ -151,6 +152,7 @@ class PreferenceService {
 
   setLocale = (locale: string) => {
     this.store.locale = locale;
+    i18n.changeLanguage(locale);
   };
 
   updateUseLedgerLive = async (value: boolean) => {
