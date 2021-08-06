@@ -188,41 +188,85 @@
   }
 }
 
-.modal-switch-address {
-  .icon-checked {
-    width: 20px;
-    height: 20px;
-    cursor: pointer;
+.switch-address-modal {
+  .ant-modal-close {
+    right: 16px;
+    top: 16px;
+    .ant-modal-close-x {
+      width: 72px;
+      height: 24px;
+    }
   }
-  .footer {
-    margin-top: 24px;
-    a {
+  .ant-modal-title {
+    text-align: left;
+  }
+  .close-icon {
+    width: 72px;
+    height: 24px;
+    background: #FFFFFF;
+    border: 0.5px solid #D8DFEB;
+    border-radius: 12px;
+    padding: 1px;
+    display: flex;
+    .close-icon__action {
+      width: 35px;
       display: flex;
-      color: @primary-text-color;
-      font-size: 15px;
-      line-height: 18px;
-      font-weight: 500;
       justify-content: center;
       align-items: center;
-      .icon-add {
+      &:nth-child(1) {
+        border-radius: 12px 0px 0px 12px;
+      }
+      &:nth-child(2) {
+        border-radius: 0px 12px 12px 0px;
+      }
+      &:hover {
+        background-color: rgba(134, 151, 255, 0.2);
+      }
+      .icon {
         width: 16px;
         height: 16px;
-        margin-right: 6px;
+        &.rolling {
+          animation: spining 1s infinite;
+        }
       }
     }
   }
-}
-
-.qrcode-modal {
-  .ant-modal-content {
-    background-color: #fff;
-    .ant-modal-body {
-      height: 368px;
-      canvas {
-        margin: 0 auto;
+  .modal-switch-address {
+    .icon-checked {
+      width: 20px;
+      height: 20px;
+      cursor: pointer;
+    }
+    .footer {
+      margin-top: 24px;
+      a {
+        display: flex;
+        color: @primary-text-color;
+        font-size: 15px;
+        line-height: 18px;
+        font-weight: 500;
+        justify-content: center;
+        align-items: center;
+        .icon-add {
+          width: 16px;
+          height: 16px;
+          margin-right: 6px;
+        }
       }
-      .address {
-        margin-top: 17px;
+    }
+  }
+  
+  .qrcode-modal {
+    .ant-modal-content {
+      background-color: #fff;
+      .ant-modal-body {
+        height: 368px;
+        canvas {
+          margin: 0 auto;
+        }
+        .address {
+          margin-top: 17px;
+        }
       }
     }
   }

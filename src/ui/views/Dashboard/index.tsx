@@ -238,20 +238,14 @@ const Dashboard = () => {
           </p>
         </div>
       </Modal>
-      <Modal
-        title={t('Set Current Address')}
-        visible={isModalOpen}
-        width="344px"
-        onCancel={handleToggle}
-        style={{ margin: 0, padding: 0 }}
-      >
-        {currentAccount && (
-          <SwitchAddress
-            currentAccount={currentAccount}
-            onChange={handleChange}
-          />
-        )}
-      </Modal>
+      {currentAccount && (
+        <SwitchAddress
+          currentAccount={currentAccount}
+          onChange={handleChange}
+          visible={isModalOpen}
+          onCancel={handleToggle}
+        />
+      )}
     </>
   );
 };

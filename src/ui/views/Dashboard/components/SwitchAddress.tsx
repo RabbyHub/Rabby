@@ -1,4 +1,6 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import clsx from 'clsx';
+import { Modal } from 'ui/component';
 import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { DisplayedKeryring } from 'background/service/keyring';
@@ -8,18 +10,26 @@ import { useWallet } from 'ui/utils';
 import IconChecked from 'ui/assets/checked.svg';
 import IconNotChecked from 'ui/assets/not-checked.svg';
 import IconManageAddress from 'ui/assets/manage-address.svg';
+import IconClose from 'ui/assets/close.svg';
+import IconRefresh from 'ui/assets/refresh.svg';
 
 const SwitchAddress = ({
   onChange,
   currentAccount,
+  visible,
+  onCancel,
 }: {
   onChange(account: string, type: string): void;
   currentAccount: Account;
+  visible: boolean;
+  onCancel(): void;
 }) => {
   const wallet = useWallet();
+  const addressList = useRef<any>();
   const [accounts, setAccounts] = useState<Record<string, DisplayedKeryring[]>>(
     {}
   );
+  const [isRefreshingBalance, setIsRefreshingBalance] = useState(false);
   const { t } = useTranslation();
 
   const getAllKeyrings = async () => {
@@ -31,9 +41,38 @@ const SwitchAddress = ({
     onChange && onChange(account, keyring.type);
   };
 
+  const handleRefreshBalance = async () => {
+    setIsRefreshingBalance(true);
+    await addressList.current!.updateAllBalance();
+    setIsRefreshingBalance(false);
+  };
+
   useEffect(() => {
     getAllKeyrings();
   }, []);
+
+  const CloseIcon = ({ rolling }: { rolling: boolean }) => (
+    <div className="close-icon">
+      <a
+        className="close-icon__action"
+        href="javascript:;"
+        onClick={(e) => {
+          e.stopPropagation();
+          handleRefreshBalance();
+        }}
+      >
+        <img
+          src={IconRefresh}
+          className={clsx('icon icon-refresh', {
+            rolling,
+          })}
+        />
+      </a>
+      <a className="close-icon__action" href="javascript:;">
+        <img src={IconClose} className="icon icon-close" />
+      </a>
+    </div>
+  );
 
   const SwitchButton = ({ data, keyring }: { data: string; keyring: any }) => {
     return (
@@ -50,19 +89,30 @@ const SwitchAddress = ({
   };
 
   return accounts ? (
-    <div className="modal-switch-address">
-      <AddressList
-        list={accounts}
-        ActionButton={SwitchButton}
-        onClick={changeAccount}
-      />
-      <div className="footer">
-        <Link to="/settings/address">
-          <img src={IconManageAddress} className="icon icon-add" />
-          {t('Manage addresses')}
-        </Link>
+    <Modal
+      title={t('Set Current Address')}
+      visible={visible}
+      width="344px"
+      onCancel={onCancel}
+      style={{ margin: 0, padding: 0 }}
+      className="switch-address-modal"
+      closeIcon={<CloseIcon rolling={isRefreshingBalance} />}
+    >
+      <div className="modal-switch-address">
+        <AddressList
+          ref={addressList}
+          list={accounts}
+          ActionButton={SwitchButton}
+          onClick={changeAccount}
+        />
+        <div className="footer">
+          <Link to="/settings/address">
+            <img src={IconManageAddress} className="icon icon-add" />
+            {t('Manage addresses')}
+          </Link>
+        </div>
       </div>
-    </div>
+    </Modal>
   ) : null;
 };
 
