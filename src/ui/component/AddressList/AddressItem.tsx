@@ -111,15 +111,20 @@ const AddressItem = forwardRef(
     if (!account) {
       return null;
     }
+    const [isLoading, setIsLoading] = useState(false);
 
     const [balance, chainBalances, getAddressBalance] = useCurrentBalance(
       account
     );
 
+    const updateBalance = async () => {
+      setIsLoading(true);
+      await getAddressBalance(account.toLowerCase());
+      setIsLoading(false);
+    };
+
     useImperativeHandle(ref, () => ({
-      updateBalance() {
-        return getAddressBalance(account.toLowerCase());
-      },
+      updateBalance,
     }));
 
     const isDisabled = hiddenAddresses.find(
@@ -128,7 +133,7 @@ const AddressItem = forwardRef(
 
     return (
       <li
-        className={className}
+        className={clsx(className, { 'no-assets': !showAssets })}
         onClick={() => onClick && onClick(account, keyring)}
       >
         <div
@@ -140,11 +145,12 @@ const AddressItem = forwardRef(
           <div className="address-info">
             {showAssets && (
               <span className="balance">
-                {balance === null ? (
-                  <Skeleton.Input active style={{ width: 30 }} />
-                ) : (
-                  `$${splitNumberByStep((balance || 0).toFixed(2))}`
+                {isLoading && (
+                  <Skeleton.Input active style={{ width: '100%' }} />
                 )}
+                <span style={{ opacity: 0 }}>
+                  ${splitNumberByStep((balance || 0).toFixed(2))}
+                </span>
               </span>
             )}
             <AddressViewer
@@ -155,20 +161,30 @@ const AddressItem = forwardRef(
           </div>
 
           {showAssets && (
-            <div className="mt-4 flex w-full">
-              {chainBalances.length ? (
-                chainBalances.map((item) => (
+            <div className="mt-4 w-full">
+              <div className="inline-flex relative">
+                {chainBalances.length ? (
+                  chainBalances.map((item) => (
+                    <img
+                      src={item.logo}
+                      className="w-16 h-16 mr-6"
+                      key={item.id}
+                      alt={`${item.name}: $${item.usd_value.toFixed(2)}`}
+                      title={`${item.name}: $${item.usd_value.toFixed(2)}`}
+                      style={{ opacity: 0 }}
+                    />
+                  ))
+                ) : (
                   <img
-                    src={item.logo}
-                    className="w-16 h-16 mr-6"
-                    key={item.id}
-                    alt={`${item.name}: $${item.usd_value.toFixed(2)}`}
-                    title={`${item.name}: $${item.usd_value.toFixed(2)}`}
+                    className="w-16 h-16"
+                    src={IconEmptyChain}
+                    style={{ opacity: 0 }}
                   />
-                ))
-              ) : (
-                <img src={IconEmptyChain} />
-              )}
+                )}
+                {isLoading && (
+                  <Skeleton.Input active style={{ width: '100%' }} />
+                )}
+              </div>
             </div>
           )}
         </div>
