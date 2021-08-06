@@ -148,7 +148,7 @@ const AddressItem = forwardRef(
                 {isLoading && (
                   <Skeleton.Input active style={{ width: '100%' }} />
                 )}
-                <span style={{ opacity: 0 }}>
+                <span style={{ opacity: isLoading ? 0 : 1 }}>
                   ${splitNumberByStep((balance || 0).toFixed(2))}
                 </span>
               </span>
@@ -171,14 +171,14 @@ const AddressItem = forwardRef(
                       key={item.id}
                       alt={`${item.name}: $${item.usd_value.toFixed(2)}`}
                       title={`${item.name}: $${item.usd_value.toFixed(2)}`}
-                      style={{ opacity: 0 }}
+                      style={{ opacity: isLoading ? 0 : 1 }}
                     />
                   ))
                 ) : (
                   <img
                     className="w-16 h-16"
                     src={IconEmptyChain}
-                    style={{ opacity: 0 }}
+                    style={{ opacity: isLoading ? 0 : 1 }}
                   />
                 )}
                 {isLoading && (

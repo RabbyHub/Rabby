@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import clsx from 'clsx';
 import { Modal } from 'ui/component';
 import { Link } from 'react-router-dom';
@@ -42,8 +42,9 @@ const SwitchAddress = ({
   };
 
   const handleRefreshBalance = async () => {
+    if (isRefreshingBalance) return;
     setIsRefreshingBalance(true);
-    await addressList.current!.updateAllBalance();
+    await addressList.current.updateAllBalance();
     setIsRefreshingBalance(false);
   };
 
@@ -52,7 +53,7 @@ const SwitchAddress = ({
   }, []);
 
   const CloseIcon = ({ rolling }: { rolling: boolean }) => (
-    <div className="close-icon">
+    <div className="close-icon" onClick={(e) => e.stopPropagation()}>
       <a
         className="close-icon__action"
         href="javascript:;"
@@ -68,7 +69,7 @@ const SwitchAddress = ({
           })}
         />
       </a>
-      <a className="close-icon__action" href="javascript:;">
+      <a className="close-icon__action" href="javascript:;" onClick={onCancel}>
         <img src={IconClose} className="icon icon-close" />
       </a>
     </div>
@@ -88,16 +89,8 @@ const SwitchAddress = ({
     );
   };
 
-  return accounts ? (
-    <Modal
-      title={t('Set Current Address')}
-      visible={visible}
-      width="344px"
-      onCancel={onCancel}
-      style={{ margin: 0, padding: 0 }}
-      className="switch-address-modal"
-      closeIcon={<CloseIcon rolling={isRefreshingBalance} />}
-    >
+  const Container = useMemo(() => {
+    return (
       <div className="modal-switch-address">
         <AddressList
           ref={addressList}
@@ -112,6 +105,21 @@ const SwitchAddress = ({
           </Link>
         </div>
       </div>
+    );
+  }, [addressList, accounts]);
+
+  return accounts ? (
+    <Modal
+      title={t('Set Current Address')}
+      visible={visible}
+      width="344px"
+      onCancel={onCancel}
+      style={{ margin: 0, padding: 0 }}
+      className="switch-address-modal"
+      closeIcon={<CloseIcon rolling={isRefreshingBalance} />}
+      destroyOnClose
+    >
+      {Container}
     </Modal>
   ) : null;
 };

@@ -48,14 +48,17 @@ const AddressList: any = forwardRef(
           : new Array(keyring.accounts.length);
       });
     });
+
+    const updateAllBalance = () => {
+      const q: Promise<void>[] = [];
+      Object.values(addressItems.current).forEach((arr: any) => {
+        q.push(...arr.map((el) => el.updateBalance()));
+      });
+      return Promise.all(q);
+    };
+
     useImperativeHandle(ref, () => ({
-      updateAllBalance() {
-        const q: Promise<any>[] = [];
-        for (const key in addressItems.current) {
-          q.push(...addressItems.current[key].map((el) => el.updateBalance()));
-        }
-        return Promise.all(q);
-      },
+      updateAllBalance,
     }));
     const GroupItem = ({
       group,
