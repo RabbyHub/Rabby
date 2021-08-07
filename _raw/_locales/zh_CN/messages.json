@@ -263,8 +263,11 @@
   "dontRemind": {
     "message": "不再提醒"
   },
-  "You__will__be__visiting__a__third__party__website": {
-    "message": "将会访问第三方网站"
+  "You__will__be__visiting": {
+    "message": "即将访问"
+  },
+  "debankExternalLinkAlert": {
+    "message": "为了更好地提供服务，Rabby 使用了 DeBank 所提供的功能"
   },
   "Asset__data__loading": {
     "message": "资产数据加载中"

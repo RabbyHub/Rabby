@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Button } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { useWallet, openInTab } from 'ui/utils';
-import { Modal, Checkbox, FallbackSiteLogo } from 'ui/component';
+import { Modal } from 'ui/component';
 import { IconDebank } from 'ui/assets';
 import { wrapModalPromise } from 'ui/component/AuthenticationModal';
 import { WalletController } from 'background/controller/wallet';
@@ -22,7 +22,6 @@ const ConfirmOpenExternalModal = ({
   icon?: string;
 }) => {
   const [visible, setVisible] = useState(true);
-  const [checked, setChecked] = useState(false);
   const { t } = useTranslation();
 
   const handleCancel = () => {
@@ -31,9 +30,7 @@ const ConfirmOpenExternalModal = ({
   };
 
   const handleConfirm = () => {
-    if (checked) {
-      wallet.setExternalLinkAck(true);
-    }
+    wallet.setExternalLinkAck(true);
     setVisible(false);
     onFinished();
   };
@@ -45,26 +42,19 @@ const ConfirmOpenExternalModal = ({
       title={null}
       closable={false}
       onCancel={handleCancel}
+      width={312}
     >
       <div className="flex flex-col items-center pt-12 pb-8">
-        <div className="text-15 font-medium mb-32">
-          {t('You will be visiting a third party website')}
+        <div className="text-15 font-medium mb-12">
+          {t('You will be visiting') + ' ' + origin}
         </div>
-        <FallbackSiteLogo
-          url={icon}
-          origin={origin}
-          width="48px"
-          className="mb-12"
-        />
-        <div className="text-13 text-gray-subTitle mb-40">{origin}</div>
-        <Checkbox checked={checked} onChange={setChecked} className="mb-20">
-          <div className="text-14 text-gray-content">{t('dontRemind')}</div>
-        </Checkbox>
+        <div className="text-12 text-gray-subTitle mb-20 px-16 text-center">
+          {t('debankExternalLinkAlert')}
+        </div>
         <Button
           type="primary"
-          size="large"
           htmlType="submit"
-          className="w-[200px]"
+          className="w-[140px]"
           onClick={handleConfirm}
         >
           {t('OK')}

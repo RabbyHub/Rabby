@@ -263,8 +263,11 @@
   "dontRemind": {
     "message": "Don't remind me anymore"
   },
-  "You__will__be__visiting__a__third__party__website": {
-    "message": "You will be visiting a third party website"
+  "You__will__be__visiting": {
+    "message": "You will be visiting"
+  },
+  "debankExternalLinkAlert": {
+    "message": "Rabby uses DeBank's well-established features to provide you with better service"
   },
   "Asset__data__loading": {
     "message": "Asset data loading"
