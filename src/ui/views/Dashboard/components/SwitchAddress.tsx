@@ -106,7 +106,7 @@ const SwitchAddress = ({
         </div>
       </div>
     );
-  }, [addressList, accounts]);
+  }, [addressList, accounts, currentAccount, visible]);
 
   return accounts ? (
     <Modal
