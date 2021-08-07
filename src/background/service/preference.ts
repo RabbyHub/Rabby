@@ -113,11 +113,6 @@ class PreferenceService {
 
   updateAddressBalance = (address: string, data: TotalBalanceResponse) => {
     const balanceMap = this.store.balanceMap || {};
-    const key = address.toLowerCase();
-    if (!(key in balanceMap) && data.total_usd_value <= 0) {
-      // skip if no balance before and current total value is 0
-      return;
-    }
     this.store.balanceMap = {
       ...balanceMap,
       [address.toLowerCase()]: data,

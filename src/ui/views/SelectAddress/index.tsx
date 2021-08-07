@@ -60,7 +60,7 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
   useEffect(() => {
     init();
     return () => {
-      keyring.cleanUp();
+      keyring.cleanUp && keyring.cleanUp();
     };
   }, []);
 

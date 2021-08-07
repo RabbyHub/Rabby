@@ -1,9 +1,15 @@
-import React, { FunctionComponent, useEffect, useState } from 'react';
+import React, {
+  FunctionComponent,
+  useEffect,
+  useState,
+  useImperativeHandle,
+  forwardRef,
+} from 'react';
 import { Skeleton } from 'antd';
 import clsx from 'clsx';
 import { ChainWithBalance } from 'background/service/openapi';
 import { useWallet, useWalletRequest } from 'ui/utils';
-import { AddressViewer, Spin } from 'ui/component';
+import { AddressViewer } from 'ui/component';
 import { splitNumberByStep } from 'ui/utils/number';
 import { HARDWARE_KEYRING_TYPES, CHAINS } from 'consts';
 import { IconLedger, IconOnekey, IconTrezor } from 'ui/assets';
@@ -21,6 +27,7 @@ export interface AddressItemProps {
   className?: string;
   hiddenAddresses?: { type: string; address: string }[];
   onClick?(account: string, keyring: any): void;
+  showAssets?: boolean;
 }
 
 const HARDWARES = {
@@ -40,7 +47,10 @@ const formatChain = (item: ChainWithBalance): DisplayChainWithWhiteLogo => {
   };
 };
 
-export const useCurrentBalance = (account: string | undefined) => {
+export const useCurrentBalance = (
+  account: string | undefined,
+  update = false
+) => {
   const wallet = useWallet();
   const cache = wallet.getAddressCacheBalance(account);
   const [balance, setBalance] = useState<number | null>(
@@ -71,87 +81,125 @@ export const useCurrentBalance = (account: string | undefined) => {
     const cacheData = wallet.getAddressCacheBalance(account);
     if (cacheData) {
       setBalance(cacheData.total_usd_value);
+      if (update) {
+        getAddressBalance(account.toLowerCase());
+      }
+    } else {
+      getAddressBalance(account.toLowerCase());
     }
-    getAddressBalance(account.toLowerCase());
   };
 
   useEffect(() => {
     getCurrentBalance();
   }, [account]);
 
-  return [balance, chainBalances] as const;
+  return [balance, chainBalances, getAddressBalance] as const;
 };
+const AddressItem = forwardRef(
+  (
+    {
+      account,
+      keyring,
+      ActionButton,
+      hiddenAddresses = [],
+      className,
+      showAssets,
+      onClick,
+    }: AddressItemProps,
+    ref
+  ) => {
+    if (!account) {
+      return null;
+    }
+    const [isLoading, setIsLoading] = useState(false);
 
-const AddressItem = ({
-  account,
-  keyring,
-  ActionButton,
-  hiddenAddresses = [],
-  className,
-  onClick,
-}: AddressItemProps) => {
-  if (!account) {
-    return null;
-  }
-  const [balance, chainBalances] = useCurrentBalance(account);
+    const [balance, chainBalances, getAddressBalance] = useCurrentBalance(
+      account
+    );
 
-  const isDisabled = hiddenAddresses.find(
-    (item) => item.address === account && item.type === keyring.type
-  );
-  return (
-    <li
-      className={className}
-      onClick={() => onClick && onClick(account, keyring)}
-    >
-      <div
-        className={clsx(
-          'flex items-center flex-wrap',
-          isDisabled && 'opacity-40'
-        )}
+    const updateBalance = async () => {
+      setIsLoading(true);
+      await getAddressBalance(account.toLowerCase());
+      setIsLoading(false);
+    };
+
+    useImperativeHandle(ref, () => ({
+      updateBalance,
+    }));
+
+    const isDisabled = hiddenAddresses.find(
+      (item) => item.address === account && item.type === keyring.type
+    );
+
+    return (
+      <li
+        className={clsx(className, { 'no-assets': !showAssets })}
+        onClick={() => onClick && onClick(account, keyring)}
       >
-        <div className="address-info">
-          <span className="balance">
-            {balance === null ? (
-              <Skeleton.Input active style={{ width: 30 }} />
-            ) : (
-              `$${splitNumberByStep((balance || 0).toFixed(2))}`
+        <div
+          className={clsx(
+            'flex items-center flex-wrap',
+            isDisabled && 'opacity-40'
+          )}
+        >
+          <div className="address-info">
+            {showAssets && (
+              <span className="balance">
+                {isLoading && <Skeleton.Input active />}
+                <span style={{ opacity: isLoading ? 0 : 1 }}>
+                  ${splitNumberByStep((balance || 0).toFixed(2))}
+                </span>
+              </span>
             )}
-          </span>
-          <AddressViewer
-            address={account}
-            showArrow={false}
-            className="subtitle"
-          />
-        </div>
+            <AddressViewer
+              address={account}
+              showArrow={false}
+              className="subtitle"
+            />
+          </div>
 
-        <div className="mt-4 flex w-full">
-          {chainBalances.length ? (
-            chainBalances.map((item) => (
+          {showAssets && (
+            <div className="mt-4 w-full">
+              <div className="inline-flex relative">
+                {chainBalances.length ? (
+                  chainBalances.map((item) => (
+                    <img
+                      src={item.logo}
+                      className="w-16 h-16 mr-6"
+                      key={item.id}
+                      alt={`${item.name}: $${item.usd_value.toFixed(2)}`}
+                      title={`${item.name}: $${item.usd_value.toFixed(2)}`}
+                      style={{ opacity: isLoading ? 0 : 1 }}
+                    />
+                  ))
+                ) : (
+                  <img
+                    className="w-16 h-16"
+                    src={IconEmptyChain}
+                    style={{ opacity: isLoading ? 0 : 1 }}
+                  />
+                )}
+                {isLoading && <Skeleton.Input active />}
+              </div>
+            </div>
+          )}
+        </div>
+        {keyring && (
+          <div className="action-button flex items-center flex-shrink-0">
+            {Object.keys(HARDWARE_KEYRING_TYPES)
+              .map((key) => HARDWARE_KEYRING_TYPES[key].type)
+              .includes(keyring.type) && (
               <img
-                src={item.logo}
-                className="w-16 h-16 mr-6"
-                key={item.id}
-                alt={`${item.name}: $${item.usd_value.toFixed(2)}`}
-                title={`${item.name}: $${item.usd_value.toFixed(2)}`}
+                src={HARDWARES[keyring.type]}
+                className="icon icon-hardware"
               />
-            ))
-          ) : (
-            <img src={IconEmptyChain} />
-          )}
-        </div>
-      </div>
-      {keyring && (
-        <div className="action-button flex items-center flex-shrink-0">
-          {Object.keys(HARDWARE_KEYRING_TYPES)
-            .map((key) => HARDWARE_KEYRING_TYPES[key].type)
-            .includes(keyring.type) && (
-            <img src={HARDWARES[keyring.type]} className="icon icon-hardware" />
-          )}
-          {ActionButton && <ActionButton data={account} keyring={keyring} />}
-        </div>
-      )}
-    </li>
-  );
-};
+            )}
+            {ActionButton && <ActionButton data={account} keyring={keyring} />}
+          </div>
+        )}
+      </li>
+    );
+  }
+);
 
 export default AddressItem;

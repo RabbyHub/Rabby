@@ -10,7 +10,10 @@ import { CHAINS } from 'consts';
 import useConfirmExternalModal from './ConfirmOpenExternalModal';
 
 const BalanceView = ({ currentAccount }) => {
-  const [balance, chainBalances] = useCurrentBalance(currentAccount?.address);
+  const [balance, chainBalances] = useCurrentBalance(
+    currentAccount?.address,
+    true
+  );
   const _openInTab = useConfirmExternalModal();
   const { t } = useTranslation();
 

@@ -91,6 +91,7 @@ const ImportSuccess = ({ isPopup = false }: { isPopup?: boolean }) => {
               className="mb-12 rounded bg-white py-12 pl-16"
               key={account.address}
               account={account.address}
+              showAssets
             />
           ))}
         </div>
