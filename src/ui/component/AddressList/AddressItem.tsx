@@ -145,9 +145,7 @@ const AddressItem = forwardRef(
           <div className="address-info">
             {showAssets && (
               <span className="balance">
-                {isLoading && (
-                  <Skeleton.Input active style={{ width: '100%' }} />
-                )}
+                {isLoading && <Skeleton.Input active />}
                 <span style={{ opacity: isLoading ? 0 : 1 }}>
                   ${splitNumberByStep((balance || 0).toFixed(2))}
                 </span>
@@ -181,9 +179,7 @@ const AddressItem = forwardRef(
                     style={{ opacity: isLoading ? 0 : 1 }}
                   />
                 )}
-                {isLoading && (
-                  <Skeleton.Input active style={{ width: '100%' }} />
-                )}
+                {isLoading && <Skeleton.Input active />}
               </div>
             </div>
           )}
