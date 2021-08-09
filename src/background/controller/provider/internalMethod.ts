@@ -1,5 +1,9 @@
 import { CHAINS_ENUM, CHAINS } from 'consts';
-import { permissionService, keyringService } from 'background/service';
+import {
+  permissionService,
+  keyringService,
+  preferenceService,
+} from 'background/service';
 import providerController from './controller';
 
 const tabCheckin = ({
@@ -27,7 +31,19 @@ const getProviderState = async (req) => {
   };
 };
 
+const providerOverwrite = () => {
+  preferenceService.setHasOtherProvider(true);
+  return true;
+};
+
+const hasOtherProvider = () => {
+  preferenceService.setHasOtherProvider(true);
+  return true;
+};
+
 export default {
   tabCheckin,
   getProviderState,
+  providerOverwrite,
+  hasOtherProvider,
 };

@@ -63,7 +63,7 @@ const Dashboard = () => {
   };
 
   const checkIsMetaMaskActive = async () => {
-    const active = await isMetaMaskActive();
+    const active = wallet.getHasOtherProvider();
     setMetaMaskActive(active);
   };
 

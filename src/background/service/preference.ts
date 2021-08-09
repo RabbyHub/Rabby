@@ -26,6 +26,7 @@ const SUPPORT_LOCALES = ['en', 'zh_CN'];
 class PreferenceService {
   store!: PreferenceStore;
   popupOpen = false;
+  hasOtherProvider = false;
 
   init = async () => {
     let defaultLang = 'en';
@@ -48,6 +49,14 @@ class PreferenceService {
       this.store.locale = defaultLang;
     }
     i18n.changeLanguage(this.store.locale);
+  };
+
+  getHasOtherProvider = () => {
+    return this.hasOtherProvider;
+  };
+
+  setHasOtherProvider = (val: boolean) => {
+    this.hasOtherProvider = val;
   };
 
   getAcceptLanguages = async () => {

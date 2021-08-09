@@ -69,6 +69,10 @@ export class WalletController extends BaseController {
     return preferenceService.getAddressBalance(address);
   };
 
+  setHasOtherProvider = (val: boolean) =>
+    preferenceService.setHasOtherProvider(val);
+  getHasOtherProvider = () => preferenceService.getHasOtherProvider();
+
   getExternalLinkAck = () => preferenceService.getExternalLinkAck();
 
   setExternalLinkAck = (ack) => preferenceService.setExternalLinkAck(ack);

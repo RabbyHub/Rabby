@@ -549,8 +549,8 @@
   "Wrong__mnemonic__word": {
     "message": "Wrong mnemonic word"
   },
-  "Disable__metamask__to__avoid__conflicts": {
-    "message": "Disable metamask to avoid conflicts"
+  "otherWalletConflictAlert": {
+    "message": "Disable other browser wallet to avoid conflicts"
   },
   "GasLimitMinimumValueAlert": {
     "message": "Gas limit should be more than 21000"

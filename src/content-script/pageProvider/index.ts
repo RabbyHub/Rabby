@@ -243,9 +243,29 @@ declare global {
 }
 
 const provider = new EthereumProvider();
+let overwriteProvider = null;
 
-window.ethereum = new Proxy(provider, {
-  deleteProperty: () => true,
+if (window.ethereum) {
+  provider.request({
+    method: 'hasOtherProvider',
+    params: [],
+  });
+}
+
+Object.defineProperty(window, 'ethereum', {
+  get() {
+    if (overwriteProvider) return overwriteProvider;
+    return new Proxy(provider, {
+      deleteProperty: () => true,
+    });
+  },
+  set(val) {
+    overwriteProvider = val;
+    provider.request({
+      method: 'providerOverwrite',
+      params: [],
+    });
+  },
 });
 
 window.web3 = {

@@ -546,8 +546,8 @@
   "Wrong__mnemonic__word": {
     "message": "错误的助记词"
   },
-  "Disable__metamask__to__avoid__conflicts": {
-    "message": "为避免冲突，请禁用 MetaMask"
+  "otherWalletConflictAlert": {
+    "message": "为避免冲突，请禁用其他浏览器钱包"
   },
   "GasLimitMinimumValueAlert": {
     "message": "燃料限制不可小于 21000"
