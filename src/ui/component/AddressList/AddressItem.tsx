@@ -159,7 +159,7 @@ const AddressItem = forwardRef(
           </div>
 
           {showAssets && (
-            <div className="mt-4 w-full">
+            <div className="mt-4 w-full text-left leading-none">
               <div className="inline-flex relative">
                 {chainBalances.length ? (
                   chainBalances.map((item) => (
