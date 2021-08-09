@@ -256,7 +256,7 @@ const GasSelector = ({
       >
         <Form onFinish={handleConfirmGas}>
           <p className="section-title">{t('gasPriceTitle')}</p>
-          <div className="gas-selector-panel">
+          <div className={clsx('gas-selector-panel', { invalid: !!errMsg })}>
             {gasList.map((gas) => (
               <FieldCheckbox
                 className="mt-8"

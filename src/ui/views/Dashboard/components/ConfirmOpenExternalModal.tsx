@@ -37,14 +37,14 @@ const ConfirmOpenExternalModal = ({
 
   return (
     <Modal
-      className="modal-bg-white"
+      className="modal-bg-white external-link-modal"
       visible={visible}
       title={null}
       closable={false}
       onCancel={handleCancel}
       width={312}
     >
-      <div className="flex flex-col items-center pt-12 pb-8">
+      <div className="flex flex-col items-center pt-12">
         <div className="text-15 font-medium mb-12">
           {t('You will be visiting') + ' ' + origin}
         </div>

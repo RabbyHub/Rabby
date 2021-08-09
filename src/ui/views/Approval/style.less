@@ -634,17 +634,26 @@
         text-align: right;
         height: auto;
       }
+      &::placeholder {
+        font-weight: normal;
+        color: #B4BDCC;
+      }
     }
     .ant-input:focus, .ant-input-focused, .ant-input:hover, .ant-input:focus-visible {
       border: none;
       border-bottom: 0.5px solid #D8DFEB;
     }
   }
+  &.invalid {
+    .field.border-blue-light {
+      border-color: #F24822 !important;
+    }
+  }
 }
 
 .gas-modal {
   .ant-modal-body {
-    max-height: 550px;
+    max-height: 570px;
   }
   .gas-limit {
     .icon-arrow-down {
