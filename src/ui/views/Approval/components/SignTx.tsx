@@ -136,7 +136,6 @@ const SignTx = ({ params, origin }) => {
     }
     return result;
   };
-  console.log(getGasPrice());
   const [tx, setTx] = useState<Tx>({
     chainId,
     data: data || '0x', // can not execute with empty string, use 0x instead
@@ -344,6 +343,7 @@ const SignTx = ({ params, origin }) => {
                 max_gas_cost_usd_value: 0,
                 max_gas_cost_value: 0,
               }}
+              recommendGasLimit={Number(txDetail.recommend.gas)}
               chainId={chainId}
               onChange={handleGasChange}
             />

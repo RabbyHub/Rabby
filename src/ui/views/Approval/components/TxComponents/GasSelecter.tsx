@@ -23,6 +23,7 @@ interface GasSelectorProps {
   tx: Tx;
   onChange(gas: GasSelectorResponse): void;
   isReady: boolean;
+  recommendGasLimit: number;
 }
 
 const GasSelector = ({
@@ -32,6 +33,7 @@ const GasSelector = ({
   tx,
   onChange,
   isReady,
+  recommendGasLimit,
 }: GasSelectorProps) => {
   const wallet = useWallet();
   const { t } = useTranslation();
@@ -91,7 +93,7 @@ const GasSelector = ({
   const chain = Object.values(CHAINS).find((item) => item.id === chainId)!;
 
   const handleSetRecommendTimes = () => {
-    const value = new BigNumber(gas.estimated_gas_used).times(1.5).toFixed(0);
+    const value = new BigNumber(recommendGasLimit).times(1.5).toFixed(0);
     setGasLimit(value);
   };
 
@@ -360,9 +362,9 @@ const GasSelector = ({
                   <Trans
                     i18nKey="RecommendGasLimitTip"
                     values={{
-                      est: Number(gas.estimated_gas_used),
+                      est: Number(recommendGasLimit),
                       current: new BigNumber(
-                        Number(afterGasLimit) / gas.estimated_gas_used
+                        Number(afterGasLimit) / recommendGasLimit
                       ).toFixed(1),
                     }}
                   />
