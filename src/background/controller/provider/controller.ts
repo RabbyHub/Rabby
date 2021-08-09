@@ -101,6 +101,7 @@ class ProviderController extends BaseController {
           { method, params, result },
           method === 'eth_call' ? 20 * 60000 : undefined
         );
+        return result;
       });
     RpcCache.set(
       currentAddress,
