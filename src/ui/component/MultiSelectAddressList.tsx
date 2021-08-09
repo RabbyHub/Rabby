@@ -46,7 +46,11 @@ const MultiSelectAddressList = ({
               )
             }
           >
-            <AddressItem account={account.address} showAssets={imported} />
+            <AddressItem
+              account={account.address}
+              showAssets={imported}
+              className="select-address-item"
+            />
           </FieldCheckbox>
         );
       })}

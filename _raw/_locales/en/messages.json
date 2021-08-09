@@ -620,5 +620,8 @@
   },
   "the__input__file__is__invalid": {
     "message": "the input file is invalid"
+  },
+  "Gas__price__too__low": {
+    "message": "Gas price too low"
   }
 }

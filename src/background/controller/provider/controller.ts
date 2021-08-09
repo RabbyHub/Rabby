@@ -85,11 +85,11 @@ class ProviderController extends BaseController {
 
     const currentAddress =
       preferenceService.getCurrentAccount()?.address.toLowerCase() || '0x';
-
     const cache = RpcCache.get(currentAddress, { method, params });
+
     if (cache) return cache;
 
-    return openapiService
+    const promise = openapiService
       .ethRpc(chainServerId, {
         origin: encodeURIComponent(origin),
         method,
@@ -101,8 +101,13 @@ class ProviderController extends BaseController {
           { method, params, result },
           method === 'eth_call' ? 20 * 60000 : undefined
         );
-        return result;
       });
+    RpcCache.set(
+      currentAddress,
+      { method, params, result: promise },
+      method === 'eth_call' ? 20 * 60000 : undefined
+    );
+    return promise;
   };
 
   ethRequestAccounts = async ({ session: { origin } }) => {
