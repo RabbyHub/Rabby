@@ -31,8 +31,12 @@ const getProviderState = async (req) => {
   };
 };
 
-const providerOverwrite = () => {
-  preferenceService.setHasOtherProvider(true);
+const providerOverwrite = ({
+  data: {
+    params: [val],
+  },
+}) => {
+  preferenceService.setHasOtherProvider(val);
   return true;
 };
 
