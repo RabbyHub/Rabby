@@ -86,9 +86,7 @@ class ProviderController extends BaseController {
     const currentAddress =
       preferenceService.getCurrentAccount()?.address.toLowerCase() || '0x';
     const cache = RpcCache.get(currentAddress, { method, params });
-    if (method === 'eth_call' && !cache) {
-      console.log(JSON.stringify(params));
-    }
+
     if (cache) return cache;
 
     const promise = openapiService
