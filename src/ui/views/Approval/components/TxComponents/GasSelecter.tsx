@@ -44,30 +44,35 @@ const GasSelector = ({
   const [customGas, setCustomGas] = useState<string | number>(
     Number(tx.gasPrice) / 1e9
   );
+  const [errMsg, setErrMsg] = useState(null);
   const [gasList, setGasList] = useState<GasLevel[]>([
     {
       level: 'slow',
       front_tx_count: 0,
       price: 0,
       estimated_seconds: 0,
+      base_fee: 0,
     },
     {
       level: 'normal',
       front_tx_count: 0,
       price: 0,
       estimated_seconds: 0,
+      base_fee: 0,
     },
     {
       level: 'fast',
       front_tx_count: 0,
       price: 0,
       estimated_seconds: 0,
+      base_fee: 0,
     },
     {
       level: 'custom',
       price: Number(tx.gasPrice),
       front_tx_count: 0,
       estimated_seconds: 0,
+      base_fee: 0,
     },
   ]);
   const [validateStatus, setValidateStatus] = useState<
@@ -116,11 +121,23 @@ const GasSelector = ({
         },
       });
     }
+    if (selectedGas && selectedGas.price * 1e9 < gasList[0].base_fee) {
+      setErrMsg(t('Gas price too low'));
+    } else {
+      setErrMsg(null);
+    }
+    if (selectedGas?.level === 'custom') {
+      if (Number(customGas) * 1e9 < gasList[0].base_fee) {
+        setErrMsg(t('Gas price too low'));
+      } else {
+        setErrMsg(null);
+      }
+    }
   };
 
   useEffect(() => {
     formValidator();
-  }, [customGas, afterGasLimit]);
+  }, [customGas, afterGasLimit, selectedGas, gasList]);
 
   const loadGasMarket = async () => {
     const list = await wallet.openapi.gasMarket(
@@ -149,6 +166,7 @@ const GasSelector = ({
       price: Number(tx.gasPrice) / 1e9,
       front_tx_count: 0,
       estimated_seconds: 0,
+      base_fee: gasList[0].base_fee,
     });
     setModalVisible(true);
   };
@@ -298,6 +316,7 @@ const GasSelector = ({
               </FieldCheckbox>
             ))}
           </div>
+          {errMsg && <p className="mt-20 text-red-light mb-0">{errMsg}</p>}
           <div className="gas-limit mt-20">
             <p className="section-title flex">
               <span className="flex-1">
@@ -368,7 +387,8 @@ const GasSelector = ({
                 !selectedGas ||
                 isLoading ||
                 validateStatus.customGas.status === 'error' ||
-                validateStatus.gasLimit.status === 'error'
+                validateStatus.gasLimit.status === 'error' ||
+                errMsg !== null
               }
             >
               {t('Confirm')}

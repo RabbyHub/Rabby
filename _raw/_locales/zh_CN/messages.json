@@ -550,10 +550,10 @@
     "message": "为避免冲突，请禁用其他浏览器钱包"
   },
   "GasLimitMinimumValueAlert": {
-    "message": "燃料限制不可小于 21000"
+    "message": "Gas 限制不可小于 21000"
   },
   "GasLimitEmptyAlert": {
-    "message": "请输入燃料限制"
+    "message": "请输入 Gas 限制"
   },
   "RecommendGasLimitTip": {
     "message": "预估 {{est}}，当前 {{current}}x，建议 "
@@ -562,7 +562,7 @@
     "message": "高级选项"
   },
   "GasLimit": {
-    "message": "燃料限制"
+    "message": "Gas 限制"
   },
   "MnemonicDisableTip": {
     "message": "钱包中已有一个助记词，不可再导入"
@@ -617,5 +617,8 @@
   },
   "the__input__file__is__invalid": {
     "message": "错误的文件格式"
+  },
+  "Gas__price__too__low": {
+    "message": "Gas 价格过低"
   }
 }

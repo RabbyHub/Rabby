@@ -107,6 +107,7 @@ export interface GasLevel {
   price: number;
   front_tx_count: number;
   estimated_seconds: number;
+  base_fee: number;
 }
 
 export interface BalanceChange {
