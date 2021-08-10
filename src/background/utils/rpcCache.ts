@@ -46,9 +46,6 @@ class RpcCache {
   get(address: string, data: { method: string; params: any }) {
     const key = `${address}-${data.method}-${JSON.stringify(data.params)}`;
     const cache = this.getIfExist(key);
-    if (cache) {
-      this.updateExpire(address, data, cache.expireTime);
-    }
     return cache?.result;
   }
 
