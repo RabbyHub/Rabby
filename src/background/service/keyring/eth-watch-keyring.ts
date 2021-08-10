@@ -2,11 +2,24 @@
 import { EventEmitter } from 'events';
 import { ethErrors } from 'eth-rpc-errors';
 import { isAddress } from 'web3-utils';
-import { addHexPrefix, bufferToHex } from 'ethereumjs-util';
-import { Tx } from 'background/service/openapi';
+import {
+  addHexPrefix,
+  bufferToHex,
+  bufferToInt,
+  intToHex,
+} from 'ethereumjs-util';
 import WalletConnect from '@walletconnect/client';
 
 const keyringType = 'Watch Address';
+
+function sanitizeHex(hex: string): string {
+  hex = hex.substring(0, 2) === '0x' ? hex.substring(2) : hex;
+  if (hex === '') {
+    return '';
+  }
+  hex = hex.length % 2 !== 0 ? '0' + hex : hex;
+  return '0x' + hex;
+}
 
 class WatchKeyring extends EventEmitter {
   static type = keyringType;
@@ -38,10 +51,11 @@ class WatchKeyring extends EventEmitter {
 
   initWalletConnect = async () => {
     const connector = new WalletConnect({
-      bridge: 'http://10.0.0.52:5555', // Required
+      bridge: 'https://bridge.walletconnect.org/',
+      // bridge: 'http://10.0.0.52:5555',
     });
-
     this.walletConnector = connector;
+    console.log(this.walletConnector);
   };
 
   addAccounts = async () => {
@@ -87,15 +101,25 @@ class WatchKeyring extends EventEmitter {
           reject('not same address');
           return;
         }
+        console.log({
+          from: address,
+          to: bufferToHex(transaction.to),
+          gas: sanitizeHex(bufferToHex(transaction.gas)),
+          gasPrice: sanitizeHex(bufferToHex(transaction.gasPrice)),
+          // value: sanitizeHex(bufferToHex(transaction.value)),
+          data: sanitizeHex(bufferToHex(transaction.data)),
+          nonce: sanitizeHex(bufferToHex(transaction.nonce)),
+        });
         try {
-          const result = await connector.sendTransaction({
+          const result = await connector.signTransaction({
             from: address,
             to: bufferToHex(transaction.to),
-            gas: bufferToHex(transaction.gas),
-            gasPrice: bufferToHex(transaction.gasPrice),
-            value: bufferToHex(transaction.value),
-            data: bufferToHex(transaction.data),
-            nonce: bufferToHex(transaction.nonce),
+            gas: sanitizeHex(bufferToHex(transaction.gas)),
+            gasPrice: sanitizeHex(bufferToHex(transaction.gasPrice)),
+            // value: sanitizeHex(intToHex(bufferToInt(transaction.value))),
+            value: '0x00',
+            data: sanitizeHex(bufferToHex(transaction.data)),
+            nonce: sanitizeHex(bufferToHex(transaction.nonce)),
           });
           resolve(result);
           connector.killSession();

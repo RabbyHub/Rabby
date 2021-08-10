@@ -209,6 +209,7 @@ class ProviderController extends BaseController {
     delete approvalRes.type;
     delete approvalRes.uiRequestComponent;
     const tx = new Transaction(approvalRes);
+    console.log('approvalRes', approvalRes);
     const signedTx = await keyringService.signTransaction(
       keyring,
       tx,
