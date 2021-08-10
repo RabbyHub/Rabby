@@ -1,5 +1,8 @@
+import * as Sentry from '@sentry/browser';
 import Transaction from 'ethereumjs-tx';
-import { bufferToHex } from 'ethereumjs-util';
+import { TransactionFactory } from '@ethereumjs/tx';
+import { bufferToHex, isHexString, addHexPrefix } from 'ethereumjs-util';
+import { stringToHex } from 'web3-utils';
 import { ethErrors } from 'eth-rpc-errors';
 import { normalize as normalizeAddress } from 'eth-sig-util';
 import cloneDeep from 'lodash/cloneDeep';
@@ -11,7 +14,9 @@ import {
   openapiService,
   preferenceService,
   transactionWatchService,
+  i18n,
 } from 'background/service';
+import { notification } from 'background/webapi';
 import { Session } from 'background/service/session';
 import { Tx } from 'background/service/openapi';
 import RpcCache from 'background/utils/rpcCache';
@@ -80,11 +85,11 @@ class ProviderController extends BaseController {
 
     const currentAddress =
       preferenceService.getCurrentAccount()?.address.toLowerCase() || '0x';
-
     const cache = RpcCache.get(currentAddress, { method, params });
+
     if (cache) return cache;
 
-    return openapiService
+    const promise = openapiService
       .ethRpc(chainServerId, {
         origin: encodeURIComponent(origin),
         method,
@@ -98,6 +103,12 @@ class ProviderController extends BaseController {
         );
         return result;
       });
+    RpcCache.set(
+      currentAddress,
+      { method, params, result: promise },
+      method === 'eth_call' ? 20 * 60000 : undefined
+    );
+    return promise;
   };
 
   ethRequestAccounts = async ({ session: { origin } }) => {
@@ -120,6 +131,16 @@ class ProviderController extends BaseController {
 
     const account = await this.getCurrentAccount();
     return account ? [account.address] : [];
+  };
+
+  @Reflect.metadata('SAFE', true)
+  ethCoinbase = async ({ session: { origin } }) => {
+    if (!permissionService.hasPerssmion(origin)) {
+      return null;
+    }
+
+    const account = await this.getCurrentAccount();
+    return account ? account.address : null;
   };
 
   @Reflect.metadata('SAFE', true)
@@ -193,26 +214,52 @@ class ProviderController extends BaseController {
       tx,
       txParams.from
     );
-
-    const hash = await openapiService.pushTx({
+    const buildTx = TransactionFactory.fromTxData({
       ...approvalRes,
-      r: bufferToHex(signedTx.r),
-      s: bufferToHex(signedTx.s),
-      v: bufferToHex(signedTx.v),
-      value: approvalRes.value || '0x0',
+      r: addHexPrefix(signedTx.r),
+      s: addHexPrefix(signedTx.s),
+      v: addHexPrefix(signedTx.v),
     });
 
-    const chain = permissionService.getConnectedSite(origin)!.chain;
-    transactionWatchService.addTx(
-      `${txParams.from}_${approvalRes.nonce}_${chain}`,
-      {
-        nonce: approvalRes.nonce,
-        hash,
-        chain,
+    // Report address type(not sensitive information) to sentry when tx signatuure is invalid
+    if (!buildTx.verifySignature()) {
+      if (!buildTx.v) {
+        Sentry.captureException(new Error(`v missed, ${keyring.type}`));
+      } else if (!buildTx.s) {
+        Sentry.captureException(new Error(`s midded, ${keyring.type}`));
+      } else if (!buildTx.r) {
+        Sentry.captureException(new Error(`r midded, ${keyring.type}`));
+      } else {
+        Sentry.captureException(
+          new Error(`invalid signature, ${keyring.type}`)
+        );
       }
-    );
+    }
+    try {
+      const hash = await openapiService.pushTx({
+        ...approvalRes,
+        r: bufferToHex(signedTx.r),
+        s: bufferToHex(signedTx.s),
+        v: bufferToHex(signedTx.v),
+        value: approvalRes.value || '0x0',
+      });
 
-    return hash;
+      const chain = permissionService.getConnectedSite(origin)!.chain;
+      transactionWatchService.addTx(
+        `${txParams.from}_${approvalRes.nonce}_${chain}`,
+        {
+          nonce: approvalRes.nonce,
+          hash,
+          chain,
+        }
+      );
+
+      return hash;
+    } catch (e) {
+      const errMsg = e.message || JSON.stringify(e);
+      notification.create(undefined, i18n.t('Transaction push failed'), errMsg);
+      throw new Error(errMsg);
+    }
   };
 
   @Reflect.metadata('APPROVAL', [
@@ -236,6 +283,7 @@ class ProviderController extends BaseController {
       params: [data, from],
     },
   }) => {
+    data = data = isHexString(data) ? data : stringToHex(data);
     const keyring = await this._checkAddress(from);
 
     return keyringService.signPersonalMessage(keyring, { data, from });

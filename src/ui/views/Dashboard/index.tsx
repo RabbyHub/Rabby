@@ -63,7 +63,7 @@ const Dashboard = () => {
   };
 
   const checkIsMetaMaskActive = async () => {
-    const active = await isMetaMaskActive();
+    const active = wallet.getHasOtherProvider();
     setMetaMaskActive(active);
   };
 
@@ -95,12 +95,26 @@ const Dashboard = () => {
     handleToggle();
   };
 
-  const handleGotoSend = () => {
-    _openInTab('https://debank.com/send');
+  const handleGotoSend = async () => {
+    const site = await getCurrentConnectSite(wallet);
+    let chain: null | string = null;
+    if (site) {
+      chain = CHAINS[site.chain].serverId;
+    }
+    _openInTab(`https://debank.com/send${chain ? `?chain=${chain}` : ''}`);
   };
 
-  const handleGotoHistory = () => {
-    _openInTab(`https://debank.com/profile/${currentAccount?.address}/history`);
+  const handleGotoHistory = async () => {
+    const site = await getCurrentConnectSite(wallet);
+    let chain: null | string = null;
+    if (site) {
+      chain = CHAINS[site.chain].serverId;
+    }
+    _openInTab(
+      `https://debank.com/profile/${currentAccount?.address}/history${
+        chain ? `?chain=${chain}` : ''
+      }`
+    );
   };
 
   const handleGotoSwap = async () => {
@@ -224,20 +238,14 @@ const Dashboard = () => {
           </p>
         </div>
       </Modal>
-      <Modal
-        title={t('Set Current Address')}
-        visible={isModalOpen}
-        width="344px"
-        onCancel={handleToggle}
-        style={{ margin: 0, padding: 0 }}
-      >
-        {currentAccount && (
-          <SwitchAddress
-            currentAccount={currentAccount}
-            onChange={handleChange}
-          />
-        )}
-      </Modal>
+      {currentAccount && (
+        <SwitchAddress
+          currentAccount={currentAccount}
+          onChange={handleChange}
+          visible={isModalOpen}
+          onCancel={handleToggle}
+        />
+      )}
     </>
   );
 };

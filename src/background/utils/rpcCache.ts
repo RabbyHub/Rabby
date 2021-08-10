@@ -1,4 +1,7 @@
-type CacheState = Map<string, { timeoutId: number; result: any }>;
+type CacheState = Map<
+  string,
+  { timeoutId: number; result: any; expireTime: number }
+>;
 
 class RpcCache {
   state: CacheState = new Map();
@@ -19,13 +22,14 @@ class RpcCache {
       this.state.set(key, {
         result: data.result,
         timeoutId: id,
+        expireTime,
       });
     } else {
       const methodState: CacheState = new Map();
       const timeoutId = window.setTimeout(() => {
         methodState.delete(key);
       }, expireTime);
-      this.state.set(key, { result: data.result, timeoutId });
+      this.state.set(key, { result: data.result, timeoutId, expireTime });
     }
   }
 
@@ -42,9 +46,6 @@ class RpcCache {
   get(address: string, data: { method: string; params: any }) {
     const key = `${address}-${data.method}-${JSON.stringify(data.params)}`;
     const cache = this.getIfExist(key);
-    if (cache) {
-      this.updateExpire(address, data);
-    }
     return cache?.result;
   }
 
@@ -62,6 +63,7 @@ class RpcCache {
       this.state.set(key, {
         timeoutId,
         result: cache.result,
+        expireTime: cache.expireTime,
       });
     }
   }

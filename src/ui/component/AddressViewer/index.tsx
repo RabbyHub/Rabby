@@ -28,7 +28,7 @@ export default ({
         {ellipsis ? `${address.slice(0, 6)}...${address.slice(-4)}` : address}
       </div>
       {showArrow && (
-        <SvgIconArrowDown className="ml-1 cursor-pointer fill-current text-white" />
+        <SvgIconArrowDown className="ml-1 cursor-pointer fill-current text-white opacity-80" />
       )}
     </div>
   );

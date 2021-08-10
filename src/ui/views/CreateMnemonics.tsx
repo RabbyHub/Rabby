@@ -39,7 +39,7 @@ const DisplayMnemonic = ({ mnemonics, onNextClick }) => {
 
   const handleBackClick = () => {
     wallet.removePreMnemonics();
-    history.replace('/no-address');
+    history.replace('/');
   };
 
   return (

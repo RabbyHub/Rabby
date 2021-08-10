@@ -14,6 +14,7 @@ import {
 } from 'background/service';
 import { openIndexPage } from 'background/webapi/tab';
 import { CacheState } from 'background/service/pageStateCache';
+import i18n from 'background/service/i18n';
 import { KEYRING_CLASS, DisplayedKeryring } from 'background/service/keyring';
 import BaseController from './base';
 import { CHAINS_ENUM, CHAINS } from 'consts';
@@ -67,6 +68,10 @@ export class WalletController extends BaseController {
     if (!address) return null;
     return preferenceService.getAddressBalance(address);
   };
+
+  setHasOtherProvider = (val: boolean) =>
+    preferenceService.setHasOtherProvider(val);
+  getHasOtherProvider = () => preferenceService.getHasOtherProvider();
 
   getExternalLinkAck = () => preferenceService.getExternalLinkAck();
 
@@ -165,7 +170,7 @@ export class WalletController extends BaseController {
     const privateKey = ethUtil.stripHexPrefix(data);
     const buffer = Buffer.from(privateKey, 'hex');
 
-    const error = new Error('the private key is invalid');
+    const error = new Error(i18n.t('the private key is invalid'));
     try {
       if (!ethUtil.isValidPrivate(buffer)) {
         throw error;
@@ -185,7 +190,7 @@ export class WalletController extends BaseController {
     try {
       JSON.parse(content);
     } catch {
-      throw new Error('the input file is invalid');
+      throw new Error(i18n.t('the input file is invalid'));
     }
 
     let wallet;
@@ -242,7 +247,7 @@ export class WalletController extends BaseController {
 
   generateKeyringWithMnemonic = (mnemonic) => {
     if (!bip39.validateMnemonic(mnemonic)) {
-      throw new Error('mnemonic phrase is invalid.');
+      throw new Error(i18n.t('mnemonic phrase is invalid'));
     }
 
     const Keyring = keyringService.getKeyringClassForType(

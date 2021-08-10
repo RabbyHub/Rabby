@@ -38,7 +38,7 @@
       margin: 24px auto;
       background-color: #F6F7F9;
       border-radius: 6px;
-      padding: 12px 10px 10px;
+      padding: 10px;
       .site-info {
         display: flex;
         position: relative;
@@ -75,9 +75,6 @@
         justify-content: space-between;
         align-items: center;
         padding: 16px 6px 6px;
-        .chain-selector {
-          padding: 0;
-        }
       }
     }
   }
@@ -151,6 +148,9 @@
     padding-bottom: 130px;
     display: flex;
     flex-direction: column;
+    .view-raw {
+      line-height: 16px !important;
+    }
     &.pre-process-failed {
       padding-bottom: 200px;
     }
@@ -178,7 +178,7 @@
           .label {
             color: #818A99;
             font-size: 14px;
-            width: 100px;
+            width: 90px;
             flex-shrink: 0;
             line-height: 1;
           }
@@ -465,13 +465,14 @@
         }
       }
       .balance-change_error {
-        width: 360px;
+        width: 100%;
         background: rgba(242, 156, 27, 0.1);
         border-radius: 4px;
         color: #F29C1B;
         border: 1px solid rgba(242, 156, 27, 0.2);
         font-size: 14px;
         padding: 14px 16px;
+        word-break: break-all;
       }
     }
   }
@@ -505,7 +506,7 @@
     bottom: 0;
     left: 0;
     background-color: #fff;
-    border-top: 0.5px solid #D8DFEB;
+    border-top: 0.5px solid #D6DFEC;
     width: 100%;
   }
 
@@ -544,6 +545,7 @@
     .icon-arrow-right {
       width: 16px;
       height: 16px;
+      transform: rotate(-90deg);
     }
     .ant-btn {
       border: 1px solid #8697FF;
@@ -568,6 +570,7 @@
   }
   .gas-info {
     flex: 1;
+    line-height: 1;
     p {
       margin-bottom: 4px;
       &:nth-last-child(1) {
@@ -631,17 +634,26 @@
         text-align: right;
         height: auto;
       }
+      &::placeholder {
+        font-weight: normal;
+        color: #B4BDCC;
+      }
     }
     .ant-input:focus, .ant-input-focused, .ant-input:hover, .ant-input:focus-visible {
       border: none;
       border-bottom: 0.5px solid #D8DFEB;
     }
   }
+  &.invalid {
+    .field.border-blue-light {
+      border-color: #F24822 !important;
+    }
+  }
 }
 
 .gas-modal {
   .ant-modal-body {
-    max-height: 550px;
+    max-height: 570px;
   }
   .gas-limit {
     .icon-arrow-down {
@@ -718,6 +730,9 @@
     .ant-drawer-title {
       font-size: 20px;
       font-weight: 500;
+    }
+    .icon-drawer-close {
+      transform: rotate(90deg);
     }
   }
 }
@@ -883,6 +898,7 @@
       font-size: 20px;
       padding: 0;
       width: 264px;
+      border-radius: 0;
     }
     .ant-input-group-addon {
       background: transparent;
@@ -890,7 +906,6 @@
       font-size: 15px;
       color: #818A99;
       padding-right: 0;
-      padding-left: 14px;
     }
     &::after {
       content: '';

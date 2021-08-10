@@ -7,7 +7,7 @@ import { useWallet, useWalletRequest } from 'ui/utils';
 import UnlockLogo from 'ui/assets/unlock-logo.svg';
 import UnlockMask from 'ui/assets/unlock-mask.svg';
 
-const PASSWORD_LENGTH = [8, 20];
+const MINIMUM_PASSWORD_LENGTH = 8;
 
 const CreatePassword = () => {
   const history = useHistory();
@@ -75,23 +75,22 @@ const CreatePassword = () => {
               message: t('Please input Password'),
             },
             {
-              min: PASSWORD_LENGTH[0],
+              min: MINIMUM_PASSWORD_LENGTH,
               message: (
                 <Trans
                   i18nKey="passwordMinimumLengthAlert"
-                  values={{ length: PASSWORD_LENGTH[0] }}
+                  values={{ length: MINIMUM_PASSWORD_LENGTH }}
                 />
               ),
             },
-            {
-              max: PASSWORD_LENGTH[1],
-              message: (
-                <Trans
-                  i18nKey="passwordMaximumLengthAlert"
-                  values={{ length: PASSWORD_LENGTH[1] }}
-                />
-              ),
-            },
+            ({ getFieldValue }) => ({
+              validator(_, value: string) {
+                if (!value || getFieldValue('confirmPassword') === value) {
+                  return Promise.resolve();
+                }
+                return Promise.reject(new Error(t('Two inputs do not match')));
+              },
+            }),
           ]}
         >
           <Input
@@ -106,17 +105,6 @@ const CreatePassword = () => {
           className="mb-0 h-[56px] overflow-hidden"
           name="confirmPassword"
           help=""
-          rules={[
-            { required: true, message: t('Please confirm Password') },
-            ({ getFieldValue }) => ({
-              validator(_, value: string) {
-                if (!value || getFieldValue('password') === value) {
-                  return Promise.resolve();
-                }
-                return Promise.reject(new Error(t('Two inputs do not match')));
-              },
-            }),
-          ]}
         >
           <Input
             size="large"

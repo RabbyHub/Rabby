@@ -44,7 +44,6 @@ const FieldCheckbox = ({
     if (disable) {
       return;
     }
-    setChecked(checked);
     onChange && onChange(checked);
   };
 

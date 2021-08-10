@@ -118,20 +118,36 @@ const SignTx = ({ params, origin }) => {
     chainId = CHAINS[site!.chain].id;
   }
   const chain = Object.values(CHAINS).find((item) => item.id === chainId)!;
-  const [{ data = '0x', from, gas, gasPrice, nonce, to, value }] = params.data;
+  const [
+    { data = '0x', from, gas, gasPrice, nonce, to, value, maxFeePerGas },
+  ] = params.data;
+  const getGasPrice = () => {
+    let result = '';
+    if (maxFeePerGas) {
+      result = isHexString(maxFeePerGas)
+        ? maxFeePerGas
+        : intToHex(maxFeePerGas);
+    }
+    if (gasPrice) {
+      result = isHexString(gasPrice) ? gasPrice : intToHex(gasPrice);
+    }
+    if (Number.isNaN(Number(result))) {
+      result = '';
+    }
+    return result;
+  };
   const [tx, setTx] = useState<Tx>({
     chainId,
     data: data || '0x', // can not execute with empty string, use 0x instead
     from,
-    gas,
-    gasPrice:
-      gasPrice && (isHexString(gasPrice) ? gasPrice : intToHex(gasPrice)),
+    gas: gas || params.data[0].gasLimit,
+    gasPrice: getGasPrice(),
     nonce,
     to,
     value,
   });
   const [realNonce, setRealNonce] = useState('');
-  const [gasLimit, setGasLimit] = useState(gas);
+  const [gasLimit, setGasLimit] = useState(gas || params.data[0].gasLimit);
   const [forceProcess, setForceProcess] = useState(false);
 
   const checkTx = async (address: string) => {
@@ -327,6 +343,7 @@ const SignTx = ({ params, origin }) => {
                 max_gas_cost_usd_value: 0,
                 max_gas_cost_value: 0,
               }}
+              recommendGasLimit={Number(txDetail.recommend.gas)}
               chainId={chainId}
               onChange={handleGasChange}
             />

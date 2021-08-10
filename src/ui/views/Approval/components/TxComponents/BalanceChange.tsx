@@ -87,6 +87,7 @@ const BalanceChange = ({
                     green: isUSDValueChangePositive,
                     red: isUSDValueChangeNegative,
                   })}
+                  title={splitNumberByStep(data.usd_value_change)}
                 >
                   {isUSDValueChangePositive ? '+' : '-'}$
                   {splitNumberByStep(

@@ -1,4 +1,4 @@
-import { openapiService } from 'background/service';
+import { openapiService, i18n } from 'background/service';
 import { createPersistStore } from 'background/utils';
 import { notification } from 'background/webapi';
 import { CHAINS, CHAINS_ENUM } from 'consts';
@@ -52,8 +52,8 @@ class TransactionWatcher {
     const url = format(CHAINS[chain].scanLink, hash);
     notification.create(
       url,
-      '⏳  Transaction submitted',
-      'click to view more information'
+      i18n.t('Transaction submitted'),
+      i18n.t('click to view more information')
     );
 
     this._scheduleQuerying(id);
@@ -80,11 +80,17 @@ class TransactionWatcher {
     const { hash, chain } = this.store.pendingTx[id];
     const url = format(CHAINS[chain].scanLink, hash);
 
-    const title = `${txReceipt.status === '0x1' ? '🎉' : '❌'} Transaction ${
-      txReceipt.status === '0x1' ? 'completed' : 'failed'
-    }`;
+    const title =
+      txReceipt.status === '0x1'
+        ? i18n.t('Transaction completed')
+        : i18n.t('Transaction failed');
 
-    notification.create(url, title, 'click to view more information', 2);
+    notification.create(
+      url,
+      title,
+      i18n.t('click to view more information'),
+      2
+    );
   };
 
   roll = () => {
