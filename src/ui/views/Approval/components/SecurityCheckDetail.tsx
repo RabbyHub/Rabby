@@ -39,7 +39,9 @@ const SecurityCheckDetail = ({
   };
   const handleClickSubmit = async () => {
     try {
-      await wallet.verifyPassword(password);
+      if (needPassword) {
+        await wallet.verifyPassword(password);
+      }
       onOk();
     } catch (e) {
       setPasswordCorrect(false);
