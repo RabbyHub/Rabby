@@ -1,14 +1,9 @@
 // https://github.com/MetaMask/eth-simple-keyring#the-keyring-class-protocol
 import { EventEmitter } from 'events';
-import { ethErrors } from 'eth-rpc-errors';
 import { isAddress } from 'web3-utils';
-import {
-  addHexPrefix,
-  bufferToHex,
-  bufferToInt,
-  intToHex,
-} from 'ethereumjs-util';
+import { addHexPrefix, bufferToHex } from 'ethereumjs-util';
 import WalletConnect from '@walletconnect/client';
+import i18n from '../i18n';
 
 const keyringType = 'Watch Address';
 
@@ -50,12 +45,26 @@ class WatchKeyring extends EventEmitter {
   };
 
   initWalletConnect = async () => {
+    if (localStorage.getItem('walletconnect')) {
+      // always clear walletconnect cache
+      localStorage.removeItem('walletconnect');
+    }
     const connector = new WalletConnect({
-      bridge: 'https://bridge.walletconnect.org/',
-      // bridge: 'http://10.0.0.52:5555',
+      bridge: 'https://wcbridge.debank.com',
+      clientMeta: {
+        description: i18n.t('appDescription'),
+        url: 'https://rabby.io',
+        icons: ['https://rabby.io/assets/images/logo.png'],
+        name: 'Rabby',
+      },
     });
     this.walletConnector = connector;
-    console.log(this.walletConnector);
+    if (!connector.connected) {
+      // create new session
+      await connector.createSession();
+    }
+    console.log(connector.uri);
+    return connector;
   };
 
   addAccounts = async () => {
@@ -79,15 +88,12 @@ class WatchKeyring extends EventEmitter {
 
   // pull the transaction current state, then resolve or reject
   async signTransaction(address, transaction) {
-    return new Promise((resolve, reject) => {
-      this.initWalletConnect();
+    // TODO: split by protocol(walletconnect, cold wallet, etc)
+    await this.initWalletConnect();
 
+    return new Promise((resolve, reject) => {
       const connector = this.walletConnector!;
       // Check if connection is already established
-      if (!connector.connected) {
-        // create new session
-        connector.createSession();
-      }
 
       // Subscribe to connection events
       connector.on('connect', async (error, payload) => {
@@ -101,31 +107,23 @@ class WatchKeyring extends EventEmitter {
           reject('not same address');
           return;
         }
-        console.log({
-          from: address,
-          to: bufferToHex(transaction.to),
-          gas: sanitizeHex(bufferToHex(transaction.gas)),
-          gasPrice: sanitizeHex(bufferToHex(transaction.gasPrice)),
-          // value: sanitizeHex(bufferToHex(transaction.value)),
-          data: sanitizeHex(bufferToHex(transaction.data)),
-          nonce: sanitizeHex(bufferToHex(transaction.nonce)),
-        });
         try {
-          const result = await connector.signTransaction({
+          const result = await connector.sendTransaction({
+            data: this._normalize(transaction.data),
             from: address,
-            to: bufferToHex(transaction.to),
-            gas: sanitizeHex(bufferToHex(transaction.gas)),
-            gasPrice: sanitizeHex(bufferToHex(transaction.gasPrice)),
-            // value: sanitizeHex(intToHex(bufferToInt(transaction.value))),
-            value: '0x00',
-            data: sanitizeHex(bufferToHex(transaction.data)),
-            nonce: sanitizeHex(bufferToHex(transaction.nonce)),
+            gas: this._normalize(transaction.gas),
+            gasPrice: this._normalize(transaction.gasPrice),
+            nonce: this._normalize(transaction.nonce),
+            to: this._normalize(transaction.to),
+            value: this._normalize(transaction.value) || '0x0', // prevent 0x
           });
           resolve(result);
           connector.killSession();
+          this.walletConnector = null;
         } catch (e) {
           reject(e);
           connector.killSession();
+          this.walletConnector = null;
         }
       });
 
@@ -142,14 +140,46 @@ class WatchKeyring extends EventEmitter {
         if (error) {
           reject(error);
         }
-
-        // Delete connector
+        this.walletConnector = null;
       });
     });
   }
 
-  async signPersonalMessage(withAccount: string, message: string) {
-    throw ethErrors.provider.userRejectedRequest();
+  async signPersonalMessage(address: string, message: string) {
+    return new Promise((resolve, reject) => {
+      this.initWalletConnect();
+      const connector = this.walletConnector!;
+      // Check if connection is already established
+      if (!connector.connected) {
+        // create new session
+        connector.createSession();
+      }
+      connector.on('connect', async (error, payload) => {
+        if (error) {
+          reject(error);
+        }
+
+        // Get provided accounts and chainId
+        const { accounts } = payload.params[0];
+        if (accounts[0].toLowerCase() !== address.toLowerCase()) {
+          reject('not same address');
+          return;
+        }
+        try {
+          const result = await connector.signPersonalMessage([
+            message,
+            address,
+          ]);
+          resolve(result);
+          connector.killSession();
+          this.walletConnector = null;
+        } catch (e) {
+          reject(e);
+          connector.killSession();
+          this.walletConnector = null;
+        }
+      });
+    });
   }
 
   async getAccounts(): Promise<string[]> {
@@ -165,6 +195,10 @@ class WatchKeyring extends EventEmitter {
     this.accounts = this.accounts.filter(
       (a) => a.toLowerCase() !== address.toLowerCase()
     );
+  }
+
+  _normalize(buf) {
+    return sanitizeHex(bufferToHex(buf).toString());
   }
 }
 

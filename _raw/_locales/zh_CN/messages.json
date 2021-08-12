@@ -620,5 +620,14 @@
   },
   "Gas__price__too__low": {
     "message": "Gas 价格过低"
+  },
+  "WatchGuideStep1": {
+    "message": "在你的手机上打开 <1>{{name}}</1>"
+  },
+  "WatchGuideStep2": {
+    "message": "确认你正在 <1>{{chainName}}</1> 上使用 <1>{{address}}</1>"
+  },
+  "WatchGuideStep3": {
+    "message": "扫描上方二维码"
   }
 }

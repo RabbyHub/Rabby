@@ -19,6 +19,7 @@ interface PreferenceStore {
   };
   useLedgerLive: boolean;
   locale: string;
+  watchAddressPreference: Record<string, number>;
 }
 
 const SUPPORT_LOCALES = ['en', 'zh_CN'];
@@ -43,6 +44,7 @@ class PreferenceService {
         balanceMap: {},
         useLedgerLive: false,
         locale: defaultLang,
+        watchAddressPreference: {},
       },
     });
     if (!this.store.locale) {
@@ -69,6 +71,27 @@ class PreferenceService {
 
   getHiddenAddresses = (): Account[] => {
     return cloneDeep(this.store.hiddenAddresses);
+  };
+
+  getWatchAddressPreference = (address: string) => {
+    const key = address.toLowerCase();
+    if (
+      !this.store.watchAddressPreference ||
+      !this.store.watchAddressPreference[key]
+    )
+      return null;
+
+    return this.store.watchAddressPreference[key];
+  };
+
+  setWatchAddressPreference = (address: string, id: number) => {
+    if (!this.store.watchAddressPreference) {
+      this.store.watchAddressPreference = {};
+    }
+    this.store.watchAddressPreference = {
+      ...this.store.watchAddressPreference,
+      [address.toLowerCase()]: id,
+    };
   };
 
   hideAddress = (type: string, address: string) => {

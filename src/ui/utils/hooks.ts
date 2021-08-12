@@ -8,9 +8,12 @@ export const useApproval = () => {
   const approval = wallet.getApproval();
   const history = useHistory();
 
-  const resolveApproval = (data?: any) => {
+  const resolveApproval = (data?: any, stay = false) => {
     if (approval) {
       wallet.resolveApproval(data);
+    }
+    if (stay) {
+      return;
     }
     setTimeout(() => {
       history.replace('/');

@@ -209,12 +209,26 @@ class ProviderController extends BaseController {
     delete approvalRes.type;
     delete approvalRes.uiRequestComponent;
     const tx = new Transaction(approvalRes);
-    console.log('approvalRes', approvalRes);
     const signedTx = await keyringService.signTransaction(
       keyring,
       tx,
       txParams.from
     );
+    const onTranscationSubmitted = (hash: string) => {
+      const chain = permissionService.getConnectedSite(origin)!.chain;
+      transactionWatchService.addTx(
+        `${txParams.from}_${approvalRes.nonce}_${chain}`,
+        {
+          nonce: approvalRes.nonce,
+          hash,
+          chain,
+        }
+      );
+    };
+    if (typeof signedTx === 'string') {
+      onTranscationSubmitted(signedTx);
+      return signedTx;
+    }
     const buildTx = TransactionFactory.fromTxData({
       ...approvalRes,
       r: addHexPrefix(signedTx.r),
@@ -245,15 +259,7 @@ class ProviderController extends BaseController {
         value: approvalRes.value || '0x0',
       });
 
-      const chain = permissionService.getConnectedSite(origin)!.chain;
-      transactionWatchService.addTx(
-        `${txParams.from}_${approvalRes.nonce}_${chain}`,
-        {
-          nonce: approvalRes.nonce,
-          hash,
-          chain,
-        }
-      );
+      onTranscationSubmitted(hash);
 
       return hash;
     } catch (e) {
