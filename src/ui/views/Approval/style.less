@@ -936,6 +936,7 @@
         margin-right: 24px;
         opacity: 0.4;
         cursor: pointer;
+        user-select: none;
         .brand-logo {
           width: 32px;
           height: 32px;
@@ -985,6 +986,44 @@
         &:nth-last-child(1) {
           margin-bottom: 0;
         }
+      }
+    }
+    &__tip {
+      color: #B4BDCC;
+      text-align: center;
+      font-size: 12px;
+      line-height: 14px;
+      margin-top: 73px;
+    }
+  }
+  .watchaddress-process {
+    padding: 48px 0 0;
+    &__status {
+      width: 304px;
+      margin: 0 auto 28px;
+    }
+    &__title {
+      font-weight: bold;
+      font-size: 24px;
+      line-height: 28px;
+      text-align: center;
+      margin: 0 0 24px;
+    }
+    .error-alert {
+      background: rgba(242, 72, 34, 0.1);
+      border: 0.5px solid rgba(242, 72, 34, 0.5);
+      border-radius: 4px;
+      text-align: center;
+      width: 352px;
+      margin: 0 auto;
+      padding: 10px 16px;
+      font-size: 14px;
+      line-height: 20px;
+      text-align: center;
+      color: #F24822;
+      p {
+        margin-bottom: 0;
+        margin-top: 6px;
       }
     }
   }

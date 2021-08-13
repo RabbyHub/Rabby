@@ -319,3 +319,12 @@ export const WATCH_ADDRESS_TYPE_CONTENT = {
     connectType: WATCH_ADDRESS_CONNECT_TYPE.WalletConnect,
   },
 };
+
+export const WALLETCONNECT_STATUS_MAP = {
+  PENDING: 1,
+  CONNECTED: 2,
+  WAITING: 3,
+  SIBMITTED: 4,
+  REJECTED: 5,
+  FAILD: 6,
+};

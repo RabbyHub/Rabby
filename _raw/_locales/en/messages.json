@@ -632,5 +632,11 @@
   },
   "WatchGuideStep3": {
     "message": "Scan the QR code above"
+  },
+  "ChooseCorrectAddress": {
+    "message": "Choose <1>{{address}}</1> on your phone"
+  },
+  "ChooseCorrectChain": {
+    "message": "Wrong chain Set your mobile wallet to {{chain}}"
   }
 }

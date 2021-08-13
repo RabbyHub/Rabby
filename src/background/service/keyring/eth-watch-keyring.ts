@@ -1,9 +1,11 @@
 // https://github.com/MetaMask/eth-simple-keyring#the-keyring-class-protocol
 import { EventEmitter } from 'events';
 import { isAddress } from 'web3-utils';
-import { addHexPrefix, bufferToHex } from 'ethereumjs-util';
+import { addHexPrefix, bufferToHex, bufferToInt } from 'ethereumjs-util';
 import WalletConnect from '@walletconnect/client';
 import i18n from '../i18n';
+import { WALLETCONNECT_STATUS_MAP } from 'consts';
+import { wait } from 'background/utils';
 
 const keyringType = 'Watch Address';
 
@@ -21,11 +23,18 @@ class WatchKeyring extends EventEmitter {
   type = keyringType;
   accounts: string[] = [];
   accountToAdd = '';
-  walletConnector: WalletConnect | null = null;
+  _walletConnector: WalletConnect | null = null;
+  resolvePromise: null | ((value: any) => void) = null;
+  onAfterConnect: null | ((err: any, payload: any) => void) = null;
+  onDisconnect: null | ((err: any, payload: any) => void) = null;
 
   constructor(opts = {}) {
     super();
     this.deserialize(opts);
+  }
+
+  get walletConnector() {
+    return this._walletConnector;
   }
 
   serialize() {
@@ -49,6 +58,14 @@ class WatchKeyring extends EventEmitter {
       // always clear walletconnect cache
       localStorage.removeItem('walletconnect');
     }
+
+    if (this.walletConnector) {
+      if (this.walletConnector.connected) {
+        await this.walletConnector.killSession();
+      }
+      this._walletConnector = null;
+    }
+
     const connector = new WalletConnect({
       bridge: 'https://wcbridge.debank.com',
       clientMeta: {
@@ -58,13 +75,22 @@ class WatchKeyring extends EventEmitter {
         name: 'Rabby',
       },
     });
-    this.walletConnector = connector;
-    if (!connector.connected) {
+    this._walletConnector = connector;
+
+    this._walletConnector.on('connect', (error, payload) => {
+      this.onAfterConnect && this.onAfterConnect(error, payload);
+    });
+
+    this._walletConnector.on('disconnect', (error, payload) => {
+      this.onDisconnect && this.onDisconnect(error, payload);
+    });
+
+    if (!this._walletConnector.connected) {
       // create new session
-      await connector.createSession();
+      await this._walletConnector.createSession();
     }
-    console.log(connector.uri);
-    return connector;
+
+    return this._walletConnector;
   };
 
   addAccounts = async () => {
@@ -91,22 +117,31 @@ class WatchKeyring extends EventEmitter {
     // TODO: split by protocol(walletconnect, cold wallet, etc)
     await this.initWalletConnect();
 
-    return new Promise((resolve, reject) => {
+    this.onAfterConnect = async (error, payload) => {
       const connector = this.walletConnector!;
-      // Check if connection is already established
+      if (error) {
+        this.emit('statusChange', {
+          status: WALLETCONNECT_STATUS_MAP.FAILD,
+          payload: error,
+        });
+        return;
+      }
+      this.emit('statusChange', {
+        status: WALLETCONNECT_STATUS_MAP.CONNECTED,
+        payload,
+      });
 
-      // Subscribe to connection events
-      connector.on('connect', async (error, payload) => {
-        if (error) {
-          reject(error);
-        }
-
-        // Get provided accounts and chainId
-        const { accounts, chainId } = payload.params[0];
-        if (accounts[0].toLowerCase() !== address.toLowerCase()) {
-          reject('not same address');
-          return;
-        }
+      await wait(() => {
+        this.emit('statusChange', {
+          status: WALLETCONNECT_STATUS_MAP.WAITING,
+          payload,
+        });
+      }, 1000);
+      const { accounts, chainId } = payload.params[0];
+      if (
+        accounts[0].toLowerCase() === address.toLowerCase() &&
+        chainId == transaction.getChainId()
+      ) {
         try {
           const result = await connector.sendTransaction({
             data: this._normalize(transaction.data),
@@ -117,37 +152,50 @@ class WatchKeyring extends EventEmitter {
             to: this._normalize(transaction.to),
             value: this._normalize(transaction.value) || '0x0', // prevent 0x
           });
-          resolve(result);
-          connector.killSession();
-          this.walletConnector = null;
+          this.resolvePromise!(result);
+          this.emit('statusChange', {
+            status: WALLETCONNECT_STATUS_MAP.SIBMITTED,
+            payload: result,
+          });
+          await connector.killSession();
+          this._walletConnector = null;
         } catch (e) {
-          reject(e);
-          connector.killSession();
-          this.walletConnector = null;
+          this.emit('statusChange', {
+            status: WALLETCONNECT_STATUS_MAP.REJECTED,
+            payload: e,
+          });
         }
-      });
+      } else {
+        this.emit('statusChange', {
+          status: WALLETCONNECT_STATUS_MAP.FAILD,
+          payload: {
+            message: 'Wrong address or chainId',
+            code:
+              accounts[0].toLowerCase() === address.toLowerCase() ? 1000 : 1001,
+          },
+        });
+      }
+    };
 
-      connector.on('session_update', (error, payload) => {
-        if (error) {
-          reject(error);
-        }
-
-        // Get updated accounts and chainId
-        const { accounts, chainId } = payload.params[0];
+    this.onDisconnect = (error, payload) => {
+      this.emit('statusChange', {
+        status: WALLETCONNECT_STATUS_MAP.FAILD,
+        payload: error || payload.params[0],
       });
+    };
 
-      connector.on('disconnect', (error, payload) => {
-        if (error) {
-          reject(error);
-        }
-        this.walletConnector = null;
-      });
+    return new Promise((resolve, reject) => {
+      this.resolvePromise = resolve;
     });
   }
 
   async signPersonalMessage(address: string, message: string) {
+    await this.initWalletConnect();
+    // this.onAfterConnect = async (error, payload) => {
+
+    // }
     return new Promise((resolve, reject) => {
-      this.initWalletConnect();
+      this.resolvePromise = resolve;
       const connector = this.walletConnector!;
       // Check if connection is already established
       if (!connector.connected) {
@@ -172,11 +220,11 @@ class WatchKeyring extends EventEmitter {
           ]);
           resolve(result);
           connector.killSession();
-          this.walletConnector = null;
+          this._walletConnector = null;
         } catch (e) {
           reject(e);
           connector.killSession();
-          this.walletConnector = null;
+          this._walletConnector = null;
         }
       });
     });
