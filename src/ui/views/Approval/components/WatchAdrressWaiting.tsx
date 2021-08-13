@@ -84,7 +84,12 @@ const Process = ({
   const wallet = useWallet();
   const { address } = wallet.syncGetCurrentAccount()!;
   const { t } = useTranslation();
-  console.log(status, error);
+  const handleRetry = () => {
+    // TODO
+  };
+  const handleCancel = () => {
+    // TODO
+  };
   let image = '';
   let title = '';
   let titleColor = '';
@@ -178,6 +183,17 @@ const Process = ({
         {title}
       </h2>
       {description}
+      {(status === WALLETCONNECT_STATUS_MAP.FAILD ||
+        status === WALLETCONNECT_STATUS_MAP.REJECTED) && (
+        <div className="watchaddress-process__buttons">
+          <Button className="w-[200px]" type="primary" onClick={handleRetry}>
+            {t('Retry')}
+          </Button>
+          <Button type="link" onClick={handleCancel}>
+            {t('Cancel')}
+          </Button>
+        </div>
+      )}
     </div>
   );
 };
