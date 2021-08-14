@@ -1,6 +1,6 @@
 import cloneDeep from 'lodash/cloneDeep';
 import { createPersistStore } from 'background/utils';
-import { keyringService, sessionService } from './index';
+import { keyringService, sessionService, i18n } from './index';
 import { TotalBalanceResponse } from './openapi';
 import { HARDWARE_KEYRING_TYPES } from 'consts';
 import { browser } from 'webextension-polyfill-ts';
@@ -26,6 +26,7 @@ const SUPPORT_LOCALES = ['en', 'zh_CN'];
 class PreferenceService {
   store!: PreferenceStore;
   popupOpen = false;
+  hasOtherProvider = false;
 
   init = async () => {
     let defaultLang = 'en';
@@ -47,6 +48,15 @@ class PreferenceService {
     if (!this.store.locale) {
       this.store.locale = defaultLang;
     }
+    i18n.changeLanguage(this.store.locale);
+  };
+
+  getHasOtherProvider = () => {
+    return this.hasOtherProvider;
+  };
+
+  setHasOtherProvider = (val: boolean) => {
+    this.hasOtherProvider = val;
   };
 
   getAcceptLanguages = async () => {
@@ -112,11 +122,6 @@ class PreferenceService {
 
   updateAddressBalance = (address: string, data: TotalBalanceResponse) => {
     const balanceMap = this.store.balanceMap || {};
-    const key = address.toLowerCase();
-    if (!(key in balanceMap) && data.total_usd_value <= 0) {
-      // skip if no balance before and current total value is 0
-      return;
-    }
     this.store.balanceMap = {
       ...balanceMap,
       [address.toLowerCase()]: data,
@@ -151,6 +156,7 @@ class PreferenceService {
 
   setLocale = (locale: string) => {
     this.store.locale = locale;
+    i18n.changeLanguage(locale);
   };
 
   updateUseLedgerLive = async (value: boolean) => {

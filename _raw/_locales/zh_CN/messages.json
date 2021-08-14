@@ -263,8 +263,11 @@
   "dontRemind": {
     "message": "不再提醒"
   },
-  "You__will__be__visiting__a__third__party__website": {
-    "message": "将会访问第三方网站"
+  "You__will__be__visiting": {
+    "message": "即将访问"
+  },
+  "debankExternalLinkAlert": {
+    "message": "为了更好地提供服务，Rabby 使用了 DeBank 所提供的功能"
   },
   "Asset__data__loading": {
     "message": "资产数据加载中"
@@ -439,7 +442,7 @@
     "message": "未知协议"
   },
   "token__balance__change": {
-    "message": "预估 token 余额变化"
+    "message": "预估 Token 余额变化"
   },
   "Total__value__change": {
     "message": "净值变化"
@@ -484,7 +487,7 @@
     "message": "合约"
   },
   "gasCostTitle": {
-    "message": "预估 gas 费用"
+    "message": "预估 Gas 费用"
   },
   "gasPriceTitle": {
     "message": "Gas 价格 (Gwei)"
@@ -493,7 +496,7 @@
     "message": "笔交易在前"
   },
   "Select__Gas__Setting": {
-    "message": "选择 gas 价格"
+    "message": "选择 Gas 价格"
   },
   "Standard": {
     "message": "一般"
@@ -543,25 +546,79 @@
   "Wrong__mnemonic__word": {
     "message": "错误的助记词"
   },
-  "Disable__metamask__to__avoid__conflicts": {
-    "message": "为避免冲突，请禁用 MetaMask"
+  "otherWalletConflictAlert": {
+    "message": "为避免冲突，请禁用其他浏览器钱包"
   },
   "GasLimitMinimumValueAlert": {
-    "message": "燃料限制不可小于 21000"
+    "message": "Gas 限制不可小于 21000"
   },
   "GasLimitEmptyAlert": {
-    "message": "请输入燃料限制"
+    "message": "请输入 Gas 限制"
   },
   "RecommendGasLimitTip": {
-    "message": "预估 {{est}}，当前 {{current}}x，建议"
+    "message": "预估 {{est}}，当前 {{current}}x，建议 "
   },
   "Advanced__Options": {
     "message": "高级选项"
   },
   "GasLimit": {
-    "message": "燃料限制"
+    "message": "Gas 限制"
   },
   "MnemonicDisableTip": {
     "message": "钱包中已有一个助记词，不可再导入"
+  },
+  "Token__Approval": {
+    "message": "Token 授权"
+  },
+  "Amount": {
+    "message": "数量"
+  },
+  "Edit": {
+    "message": "编辑"
+  },
+  "Approve__to": {
+    "message": "授权给"
+  },
+  "Send__Token": {
+    "message": "转账"
+  },
+  "To__address": {
+    "message": "接收地址"
+  },
+  "Transaction__submitted": {
+    "message": "⏳ 交易已提交"
+  },
+  "Transaction__completed": {
+    "message": "🎉 交易已完成"
+  },
+  "Transaction__failed": {
+    "message": "❌ 交易失败"
+  },
+  "Transaction__push__failed": {
+    "message": "❌ 交易提交失败"
+  },
+  "click__to__view__more__information": {
+    "message": "点击查看更多信息"
+  },
+  "you__need__to__unlock__wallet__first": {
+    "message": "请先解锁钱包"
+  },
+  "mnemonic__phrase__is__invalid": {
+    "message": "错误的助记词"
+  },
+  "Cannot__unlock__without__a__previous__vault": {
+    "message": "请先初始化钱包"
+  },
+  "duplicateAccount": {
+    "message": "此地址已经存在"
+  },
+  "the__private__key__is__invalid": {
+    "message": "错误的私钥"
+  },
+  "the__input__file__is__invalid": {
+    "message": "错误的文件格式"
+  },
+  "Gas__price__too__low": {
+    "message": "Gas 价格过低"
   }
 }

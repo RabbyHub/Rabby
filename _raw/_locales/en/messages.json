@@ -263,8 +263,11 @@
   "dontRemind": {
     "message": "Don't remind me anymore"
   },
-  "You__will__be__visiting__a__third__party__website": {
-    "message": "You will be visiting a third party website"
+  "You__will__be__visiting": {
+    "message": "You will be visiting"
+  },
+  "debankExternalLinkAlert": {
+    "message": "Rabby uses DeBank's well-established features to provide you with better service"
   },
   "Asset__data__loading": {
     "message": "Asset data loading"
@@ -546,8 +549,8 @@
   "Wrong__mnemonic__word": {
     "message": "Wrong mnemonic word"
   },
-  "Disable__metamask__to__avoid__conflicts": {
-    "message": "Disable metamask to avoid conflicts"
+  "otherWalletConflictAlert": {
+    "message": "Disable other browser wallet to avoid conflicts"
   },
   "GasLimitMinimumValueAlert": {
     "message": "Gas limit should be more than 21000"
@@ -556,7 +559,7 @@
     "message": "Please input gas limit"
   },
   "RecommendGasLimitTip": {
-    "message": "Est. {{est}}. Current {{current}}x, recommend"
+    "message": "Est. {{est}}. Current {{current}}x, recommend "
   },
   "Advanced__Options": {
     "message": "Advanced Options"
@@ -566,5 +569,59 @@
   },
   "MnemonicDisableTip": {
     "message": "Cannot import mnemonics for there is already one in the wallet"
+  },
+  "Token__Approval": {
+    "message": "Token Approval"
+  },
+  "Amount": {
+    "message": "Amount"
+  },
+  "Edit": {
+    "message": "Edit"
+  },
+  "Approve__to": {
+    "message": "Approve to"
+  },
+  "Send__Token": {
+    "message": "Send Token"
+  },
+  "To__address": {
+    "message": "To address"
+  },
+  "Transaction__submitted": {
+    "message": "⏳ Transaction submitted"
+  },
+  "Transaction__completed": {
+    "message": "🎉 Transaction completed"
+  },
+  "Transaction__failed": {
+    "message": "❌ Transaction failed"
+  },
+  "Transaction__push__failed": {
+    "message": "❌ Transaction push failed"
+  },
+  "click__to__view__more__information": {
+    "message": "click to view more information"
+  },
+  "you__need__to__unlock__wallet__first": {
+    "message": "you need to unlock wallet first!"
+  },
+  "mnemonic__phrase__is__invalid": {
+    "message": "mnemonic phrase is invalid."
+  },
+  "Cannot__unlock__without__a__previous__vault": {
+    "message": "Cannot unlock without a previous vault."
+  },
+  "duplicateAccount": {
+    "message": "The account you're are trying to import is duplicate"
+  },
+  "the__private__key__is__invalid": {
+    "message": "the private key is invalid"
+  },
+  "the__input__file__is__invalid": {
+    "message": "the input file is invalid"
+  },
+  "Gas__price__too__low": {
+    "message": "Gas price too low"
   }
 }

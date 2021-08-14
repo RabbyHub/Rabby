@@ -31,14 +31,12 @@ const ImportMode = () => {
       modes.splice(1, 0, {
         name: 'mnemonics',
         label: t('Import via Mnemonic'),
-        disabled: accounts.length > 0,
-        tip: t('MnemonicDisableTip'),
       });
     } else {
       modes.push({
         name: 'mnemonics',
         label: t('Import via Mnemonic'),
-        disabled: accounts.length > 0,
+        disabled: true,
         tip: t('MnemonicDisableTip'),
       });
     }

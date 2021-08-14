@@ -62,7 +62,7 @@ const ImportSuccess = ({ isPopup = false }: { isPopup?: boolean }) => {
       )}
       <div
         className={clsx(
-          'flex flex-col justify-center text-center h-[472px] lg:h-auto',
+          'flex flex-col lg:justify-center text-center h-[472px] lg:h-auto',
           {
             'flex-1': isPopup,
             'overflow-auto': isPopup,
@@ -85,12 +85,17 @@ const ImportSuccess = ({ isPopup = false }: { isPopup?: boolean }) => {
             </div>
           </>
         )}
-        <div className="lg:w-[460px] lg:h-[200px] overflow-y-auto">
+        <div
+          className={clsx('lg:w-[460px] lg:h-[200px] sm:pt-20', {
+            'overflow-auto': !isPopup,
+          })}
+        >
           {accounts.map((account) => (
             <AddressItem
               className="mb-12 rounded bg-white py-12 pl-16"
               key={account.address}
               account={account.address}
+              showAssets
             />
           ))}
         </div>

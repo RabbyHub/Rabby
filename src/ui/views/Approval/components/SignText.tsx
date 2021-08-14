@@ -83,7 +83,11 @@ const SignText = ({ params }: { params: SignTextProps }) => {
       return;
     }
     const currentAccount = await wallet.getCurrentAccount();
-    if (currentAccount?.type && WaitingSignComponent[currentAccount?.type]) {
+    if (
+      currentAccount?.type &&
+      WaitingSignComponent[currentAccount?.type] &&
+      !wallet.isUseLedgerLive()
+    ) {
       if (currentAccount.type === KEYRING_CLASS.HARDWARE.LEDGER) {
         try {
           const keyring = wallet.connectHardware(KEYRING_CLASS.HARDWARE.LEDGER);
@@ -125,7 +129,8 @@ const SignText = ({ params }: { params: SignTextProps }) => {
         <p className="section-title">
           {t('Sign Text')}
           <span
-            className="float-right text-gray-comment text-12 cursor-pointer flex items-center"
+            className="float-right text-gray-comment text-12 cursor-pointer flex items-center view-raw"
+            style={{ lineHeight: '16px !important' }}
             onClick={handleViewRawClick}
           >
             {t('view Raw')} <img src={IconArrowRight} />

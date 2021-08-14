@@ -3,6 +3,7 @@ import { useTranslation, Trans } from 'react-i18next';
 import { CHAINS, CHAINS_ENUM } from 'consts';
 import { ExplainTxResponse } from 'background/service/openapi';
 import BalanceChange from './BalanceChange';
+import IconDeployContract from 'ui/assets/deploy-contract.svg';
 
 const Deploy = ({
   chainEnum,
@@ -26,6 +27,7 @@ const Deploy = ({
         <p className="text-gray-content text-14 mb-0">
           {t('You are deploying a smart contract')}
         </p>
+        <img src={IconDeployContract} className="icon icon-cancel-tx" />
       </div>
       <BalanceChange
         data={data.balance_change}

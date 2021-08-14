@@ -23,6 +23,7 @@ interface GasSelectorProps {
   tx: Tx;
   onChange(gas: GasSelectorResponse): void;
   isReady: boolean;
+  recommendGasLimit: number;
 }
 
 const GasSelector = ({
@@ -32,6 +33,7 @@ const GasSelector = ({
   tx,
   onChange,
   isReady,
+  recommendGasLimit,
 }: GasSelectorProps) => {
   const wallet = useWallet();
   const { t } = useTranslation();
@@ -44,30 +46,35 @@ const GasSelector = ({
   const [customGas, setCustomGas] = useState<string | number>(
     Number(tx.gasPrice) / 1e9
   );
+  const [errMsg, setErrMsg] = useState(null);
   const [gasList, setGasList] = useState<GasLevel[]>([
     {
       level: 'slow',
       front_tx_count: 0,
       price: 0,
       estimated_seconds: 0,
+      base_fee: 0,
     },
     {
       level: 'normal',
       front_tx_count: 0,
       price: 0,
       estimated_seconds: 0,
+      base_fee: 0,
     },
     {
       level: 'fast',
       front_tx_count: 0,
       price: 0,
       estimated_seconds: 0,
+      base_fee: 0,
     },
     {
       level: 'custom',
       price: Number(tx.gasPrice),
       front_tx_count: 0,
       estimated_seconds: 0,
+      base_fee: 0,
     },
   ]);
   const [validateStatus, setValidateStatus] = useState<
@@ -86,7 +93,7 @@ const GasSelector = ({
   const chain = Object.values(CHAINS).find((item) => item.id === chainId)!;
 
   const handleSetRecommendTimes = () => {
-    const value = new BigNumber(Number(tx.gas)).times(1.5).toFixed(0);
+    const value = new BigNumber(recommendGasLimit).times(1.5).toFixed(0);
     setGasLimit(value);
   };
 
@@ -116,11 +123,23 @@ const GasSelector = ({
         },
       });
     }
+    if (selectedGas && selectedGas.price * 1e9 < gasList[0].base_fee) {
+      setErrMsg(t('Gas price too low'));
+    } else {
+      setErrMsg(null);
+    }
+    if (selectedGas?.level === 'custom') {
+      if (Number(customGas) * 1e9 < gasList[0].base_fee) {
+        setErrMsg(t('Gas price too low'));
+      } else {
+        setErrMsg(null);
+      }
+    }
   };
 
   useEffect(() => {
     formValidator();
-  }, [customGas, afterGasLimit]);
+  }, [customGas, afterGasLimit, selectedGas, gasList]);
 
   const loadGasMarket = async () => {
     const list = await wallet.openapi.gasMarket(
@@ -137,7 +156,6 @@ const GasSelector = ({
 
   const handleSelectGas = (checked: boolean, gas: GasLevel) => {
     if (!checked) {
-      setSelectGas(null);
       return;
     }
     setSelectGas(gas);
@@ -150,6 +168,7 @@ const GasSelector = ({
       price: Number(tx.gasPrice) / 1e9,
       front_tx_count: 0,
       estimated_seconds: 0,
+      base_fee: gasList[0].base_fee,
     });
     setModalVisible(true);
   };
@@ -239,7 +258,7 @@ const GasSelector = ({
       >
         <Form onFinish={handleConfirmGas}>
           <p className="section-title">{t('gasPriceTitle')}</p>
-          <div className="gas-selector-panel">
+          <div className={clsx('gas-selector-panel', { invalid: !!errMsg })}>
             {gasList.map((gas) => (
               <FieldCheckbox
                 className="mt-8"
@@ -282,7 +301,10 @@ const GasSelector = ({
                               value={customGas}
                               defaultValue={customGas}
                               onChange={handleCustomGasChange}
-                              onClick={(e) => e.stopPropagation()}
+                              onClick={(e) => {
+                                e.stopPropagation();
+                              }}
+                              autoFocus
                               min={0}
                             />
                           </Form.Item>
@@ -296,11 +318,14 @@ const GasSelector = ({
               </FieldCheckbox>
             ))}
           </div>
+          {errMsg && <p className="mt-20 text-red-light mb-0">{errMsg}</p>}
           <div className="gas-limit mt-20">
             <p className="section-title flex">
-              <span>{advanceExpanded ? t('GasLimit') : ''}</span>
+              <span className="flex-1">
+                {advanceExpanded ? t('GasLimit') : ''}
+              </span>
               <span
-                className="flex-1 text-right cursor-pointer"
+                className="text-right cursor-pointer"
                 onClick={handleClickAdvance}
               >
                 {t('Advanced Options')}
@@ -337,9 +362,9 @@ const GasSelector = ({
                   <Trans
                     i18nKey="RecommendGasLimitTip"
                     values={{
-                      est: Number(tx.gas),
+                      est: Number(recommendGasLimit),
                       current: new BigNumber(
-                        Number(afterGasLimit) / Number(tx.gas)
+                        Number(afterGasLimit) / recommendGasLimit
                       ).toFixed(1),
                     }}
                   />
@@ -364,7 +389,8 @@ const GasSelector = ({
                 !selectedGas ||
                 isLoading ||
                 validateStatus.customGas.status === 'error' ||
-                validateStatus.gasLimit.status === 'error'
+                validateStatus.gasLimit.status === 'error' ||
+                errMsg !== null
               }
             >
               {t('Confirm')}

@@ -32,21 +32,32 @@ const TxTypeComponent = ({
   chain,
   isReady,
   raw,
+  onChange,
+  tx,
 }: {
   txDetail: ExplainTxResponse;
   chain: Chain;
   isReady: boolean;
   raw: Record<string, string>;
+  onChange(data: Record<string, any>): void;
+  tx: Tx;
 }) => {
   if (!isReady) return <Loading chainEnum={chain.enum} />;
   if (txDetail.type_deploy_contract)
     return <Deploy data={txDetail} chainEnum={chain.enum} />;
   if (txDetail.type_cancel_tx)
-    return <CancelTx data={txDetail} chainEnum={chain.enum} />;
+    return <CancelTx data={txDetail} chainEnum={chain.enum} tx={tx} />;
   if (txDetail.type_cancel_token_approval)
     return <Cancel data={txDetail} chainEnum={chain.enum} />;
   if (txDetail.type_token_approval)
-    return <Approve data={txDetail} chainEnum={chain.enum} />;
+    return (
+      <Approve
+        data={txDetail}
+        chainEnum={chain.enum}
+        onChange={onChange}
+        tx={tx}
+      />
+    );
   if (txDetail.type_send)
     return <Send data={txDetail} chainEnum={chain.enum} />;
   if (txDetail.type_call)
@@ -107,20 +118,36 @@ const SignTx = ({ params, origin }) => {
     chainId = CHAINS[site!.chain].id;
   }
   const chain = Object.values(CHAINS).find((item) => item.id === chainId)!;
-  const [{ data = '0x', from, gas, gasPrice, nonce, to, value }] = params.data;
+  const [
+    { data = '0x', from, gas, gasPrice, nonce, to, value, maxFeePerGas },
+  ] = params.data;
+  const getGasPrice = () => {
+    let result = '';
+    if (maxFeePerGas) {
+      result = isHexString(maxFeePerGas)
+        ? maxFeePerGas
+        : intToHex(maxFeePerGas);
+    }
+    if (gasPrice) {
+      result = isHexString(gasPrice) ? gasPrice : intToHex(gasPrice);
+    }
+    if (Number.isNaN(Number(result))) {
+      result = '';
+    }
+    return result;
+  };
   const [tx, setTx] = useState<Tx>({
     chainId,
     data: data || '0x', // can not execute with empty string, use 0x instead
     from,
-    gas,
-    gasPrice:
-      gasPrice && (isHexString(gasPrice) ? gasPrice : intToHex(gasPrice)),
+    gas: gas || params.data[0].gasLimit,
+    gasPrice: getGasPrice(),
     nonce,
     to,
     value,
   });
   const [realNonce, setRealNonce] = useState('');
-  const [gasLimit, setGasLimit] = useState(gas);
+  const [gasLimit, setGasLimit] = useState(gas || params.data[0].gasLimit);
   const [forceProcess, setForceProcess] = useState(false);
 
   const checkTx = async (address: string) => {
@@ -194,10 +221,10 @@ const SignTx = ({ params, origin }) => {
     try {
       setIsReady(false);
       const res = await explainTx(currentAccount!.address);
-      setIsReady(true);
       if (res.pre_exec.success) {
         await checkTx(currentAccount!.address);
       }
+      setIsReady(true);
     } catch (e) {
       Modal.error({
         title: t('Error'),
@@ -264,6 +291,13 @@ const SignTx = ({ params, origin }) => {
     setForceProcess(checked);
   };
 
+  const handleTxChange = (obj: Record<string, any>) => {
+    setTx({
+      ...tx,
+      ...obj,
+    });
+  };
+
   useEffect(() => {
     if (!tx.gasPrice) {
       // use minimum gas as default gas if dapp not set gasPrice
@@ -288,6 +322,8 @@ const SignTx = ({ params, origin }) => {
                 txDetail={txDetail}
                 chain={chain}
                 raw={params.data[0]}
+                onChange={handleTxChange}
+                tx={tx}
               />
             )}
             <GasSelector
@@ -307,6 +343,7 @@ const SignTx = ({ params, origin }) => {
                 max_gas_cost_usd_value: 0,
                 max_gas_cost_value: 0,
               }}
+              recommendGasLimit={Number(txDetail.recommend.gas)}
               chainId={chainId}
               onChange={handleGasChange}
             />
@@ -332,6 +369,7 @@ const SignTx = ({ params, origin }) => {
                       size="large"
                       className="w-[172px]"
                       onClick={() => handleAllow()}
+                      disabled={!isReady}
                     >
                       {securityCheckStatus === 'pass'
                         ? t('Sign')

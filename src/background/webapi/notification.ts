@@ -7,9 +7,14 @@ browser.notifications.onClicked.addListener((url) => {
   }
 });
 
-const create = (url, title, message, priority = 0) => {
+const create = (
+  url: string | undefined,
+  title: string,
+  message: string,
+  priority = 0
+) => {
   const randomId = +new Date();
-  browser.notifications.create(`${url}_randomId_=${randomId}`, {
+  browser.notifications.create(url && `${url}_randomId_=${randomId}`, {
     type: 'basic',
     title,
     iconUrl: browser.extension.getURL('./images/icon-64.png'),
