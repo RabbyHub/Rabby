@@ -668,5 +668,11 @@
   },
   "Transaction__rejected": {
     "message": "已取消签名"
+  },
+  "ConnectedCannotSwitch": {
+    "message": "当前已连接，不可切换钱包"
+  },
+  "Sending__transaction__to__your__phone": {
+    "message": "正在发送交易"
   }
 }

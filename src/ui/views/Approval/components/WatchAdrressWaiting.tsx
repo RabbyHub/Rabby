@@ -251,6 +251,11 @@ const WatchAddressWaiting = ({
   params: ApprovalParams;
   requestDefer: Promise<any>;
 }) => {
+  const canNotSwitchStatus = [
+    WALLETCONNECT_STATUS_MAP.CONNECTED,
+    WALLETCONNECT_STATUS_MAP.SIBMITTED,
+    WALLETCONNECT_STATUS_MAP.WAITING,
+  ];
   const wallet = useWallet();
   const { address } = wallet.syncGetCurrentAccount()!;
   const [connectStatus, setConnectStatus] = useState(
@@ -303,8 +308,13 @@ const WatchAddressWaiting = ({
   };
 
   const handleClickBrand = (id: number, index: number) => {
+    if (canNotSwitchStatus.includes(connectStatus)) {
+      return;
+    }
     setCurrentType(id);
     setCurrentTypeIndex(index);
+    setConnectStatus(WALLETCONNECT_STATUS_MAP.PENDING);
+    setConnectError(null);
   };
 
   useEffect(() => {
@@ -342,7 +352,14 @@ const WatchAddressWaiting = ({
         </p>
         <ul className="watchaddress-type-list">
           {Object.values(WATCH_ADDRESS_TYPE_CONTENT).map((item, index) => (
-            <Tooltip title={item.name} key={item.id}>
+            <Tooltip
+              title={
+                canNotSwitchStatus.includes(connectStatus)
+                  ? t('ConnectedCannotSwitch')
+                  : item.name
+              }
+              key={item.id}
+            >
               <li
                 className={clsx({ active: currentType === item.id })}
                 onClick={() => handleClickBrand(item.id, index)}

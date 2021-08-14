@@ -677,5 +677,11 @@
   },
   "Transaction__rejected": {
     "message": "Transaction rejected"
+  },
+  "ConnectedCannotSwitch": {
+    "message": "Currently connected, cannot switch wallets"
+  },
+  "Sending__transaction__to__your__phone": {
+    "message": "Sending transaction to your phone"
   }
 }
