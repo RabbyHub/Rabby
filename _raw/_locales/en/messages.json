@@ -674,5 +674,8 @@
   },
   "Choose__your__mobile__wallet": {
     "message": "Choose your mobile wallet"
+  },
+  "Transaction__rejected": {
+    "message": "Transaction rejected"
   }
 }

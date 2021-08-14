@@ -665,5 +665,8 @@
   },
   "Choose__your__mobile__wallet": {
     "message": "选择你的手机钱包"
+  },
+  "Transaction__rejected": {
+    "message": "已取消签名"
   }
 }

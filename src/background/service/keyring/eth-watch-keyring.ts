@@ -1,7 +1,7 @@
 // https://github.com/MetaMask/eth-simple-keyring#the-keyring-class-protocol
 import { EventEmitter } from 'events';
 import { isAddress } from 'web3-utils';
-import { addHexPrefix, bufferToHex, bufferToInt } from 'ethereumjs-util';
+import { addHexPrefix, bufferToHex } from 'ethereumjs-util';
 import WalletConnect from '@walletconnect/client';
 import i18n from '../i18n';
 import { WALLETCONNECT_STATUS_MAP } from 'consts';
