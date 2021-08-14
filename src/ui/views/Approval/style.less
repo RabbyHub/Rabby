@@ -1009,6 +1009,55 @@
       text-align: center;
       margin: 0 0 24px;
     }
+    &__buttons {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      margin-top: 60px;
+      .ant-btn-link {
+        color: #818A99;
+        margin-top: 12px;
+        &:hover {
+          color: #818A99;
+          background-color: transparent;
+        }
+        &::before {
+          display: none;
+        }
+        span {
+          text-decoration: underline;
+        }
+      }
+    }
+    &__result {
+      display: flex;
+      justify-content: center;
+      margin-top: 56px;
+      .icon-chain {
+        width: 20px;
+        height: 20px;
+        margin-right: 8px;
+      }
+      .tx-hash {
+        color: #525966;
+        font-weight: 500;
+        font-size: 15px;
+        line-height: 18px;
+        text-decoration: underline;
+      }
+      .icon-external {
+        display: inline-block;
+        margin-left: 8px;
+        path {
+          fill: #818A99;
+        }
+      }
+    }
+    .watchaddress-process__ok {
+      margin-top: 56px;
+      display: flex;
+      justify-content: center;
+    }
     .error-alert {
       background: rgba(242, 72, 34, 0.1);
       border: 0.5px solid rgba(242, 72, 34, 0.5);

@@ -27,6 +27,7 @@ class WatchKeyring extends EventEmitter {
   resolvePromise: null | ((value: any) => void) = null;
   onAfterConnect: null | ((err: any, payload: any) => void) = null;
   onDisconnect: null | ((err: any, payload: any) => void) = null;
+  currentConnectStatus: number = WALLETCONNECT_STATUS_MAP.PENDING;
 
   constructor(opts = {}) {
     super();
@@ -120,22 +121,13 @@ class WatchKeyring extends EventEmitter {
     this.onAfterConnect = async (error, payload) => {
       const connector = this.walletConnector!;
       if (error) {
-        this.emit('statusChange', {
-          status: WALLETCONNECT_STATUS_MAP.FAILD,
-          payload: error,
-        });
+        this.updateCurrentStatus(WALLETCONNECT_STATUS_MAP.FAILD, error);
         return;
       }
-      this.emit('statusChange', {
-        status: WALLETCONNECT_STATUS_MAP.CONNECTED,
-        payload,
-      });
+      this.updateCurrentStatus(WALLETCONNECT_STATUS_MAP.CONNECTED, payload);
 
       await wait(() => {
-        this.emit('statusChange', {
-          status: WALLETCONNECT_STATUS_MAP.WAITING,
-          payload,
-        });
+        this.updateCurrentStatus(WALLETCONNECT_STATUS_MAP.WAITING, payload);
       }, 1000);
       const { accounts, chainId } = payload.params[0];
       if (
@@ -153,35 +145,26 @@ class WatchKeyring extends EventEmitter {
             value: this._normalize(transaction.value) || '0x0', // prevent 0x
           });
           this.resolvePromise!(result);
-          this.emit('statusChange', {
-            status: WALLETCONNECT_STATUS_MAP.SIBMITTED,
-            payload: result,
-          });
+          this.updateCurrentStatus(WALLETCONNECT_STATUS_MAP.SIBMITTED, result);
           await connector.killSession();
           this._walletConnector = null;
         } catch (e) {
-          this.emit('statusChange', {
-            status: WALLETCONNECT_STATUS_MAP.REJECTED,
-            payload: e,
-          });
+          this.updateCurrentStatus(WALLETCONNECT_STATUS_MAP.REJECTED, e);
         }
       } else {
-        this.emit('statusChange', {
-          status: WALLETCONNECT_STATUS_MAP.FAILD,
-          payload: {
-            message: 'Wrong address or chainId',
-            code:
-              accounts[0].toLowerCase() === address.toLowerCase() ? 1000 : 1001,
-          },
+        this.updateCurrentStatus(WALLETCONNECT_STATUS_MAP.FAILD, {
+          message: 'Wrong address or chainId',
+          code:
+            accounts[0].toLowerCase() === address.toLowerCase() ? 1000 : 1001,
         });
       }
     };
 
     this.onDisconnect = (error, payload) => {
-      this.emit('statusChange', {
-        status: WALLETCONNECT_STATUS_MAP.FAILD,
-        payload: error || payload.params[0],
-      });
+      this.updateCurrentStatus(
+        WALLETCONNECT_STATUS_MAP.FAILD,
+        error || payload.params[0]
+      );
     };
 
     return new Promise((resolve, reject) => {
@@ -191,42 +174,97 @@ class WatchKeyring extends EventEmitter {
 
   async signPersonalMessage(address: string, message: string) {
     await this.initWalletConnect();
-    // this.onAfterConnect = async (error, payload) => {
 
-    // }
-    return new Promise((resolve, reject) => {
-      this.resolvePromise = resolve;
+    this.onAfterConnect = async (error, payload) => {
       const connector = this.walletConnector!;
-      // Check if connection is already established
-      if (!connector.connected) {
-        // create new session
-        connector.createSession();
+      if (error) {
+        this.updateCurrentStatus(WALLETCONNECT_STATUS_MAP.FAILD, error);
+        return;
       }
-      connector.on('connect', async (error, payload) => {
-        if (error) {
-          reject(error);
-        }
 
-        // Get provided accounts and chainId
-        const { accounts } = payload.params[0];
-        if (accounts[0].toLowerCase() !== address.toLowerCase()) {
-          reject('not same address');
-          return;
-        }
+      const { accounts } = payload.params[0];
+      if (accounts[0].toLowerCase() == address.toLowerCase()) {
         try {
+          this.updateCurrentStatus(WALLETCONNECT_STATUS_MAP.CONNECTED, payload);
+
+          await wait(() => {
+            this.updateCurrentStatus(WALLETCONNECT_STATUS_MAP.WAITING, payload);
+          }, 1000);
           const result = await connector.signPersonalMessage([
             message,
             address,
           ]);
-          resolve(result);
-          connector.killSession();
+          this.resolvePromise!(result);
+          this.updateCurrentStatus(WALLETCONNECT_STATUS_MAP.SIBMITTED, result);
+          await connector.killSession();
           this._walletConnector = null;
         } catch (e) {
-          reject(e);
-          connector.killSession();
-          this._walletConnector = null;
+          this.updateCurrentStatus(WALLETCONNECT_STATUS_MAP.REJECTED, e);
         }
-      });
+      } else {
+        this.updateCurrentStatus(WALLETCONNECT_STATUS_MAP.FAILD, {
+          message: 'Wrong address or chainId',
+          code:
+            accounts[0].toLowerCase() === address.toLowerCase() ? 1000 : 1001,
+        });
+      }
+    };
+
+    this.onDisconnect = (error, payload) => {
+      this.updateCurrentStatus(
+        WALLETCONNECT_STATUS_MAP.FAILD,
+        error || payload.params[0]
+      );
+    };
+    return new Promise((resolve) => {
+      this.resolvePromise = resolve;
+    });
+  }
+
+  async signTypedData(address: string, data, options) {
+    await this.initWalletConnect();
+
+    this.onAfterConnect = async (error, payload) => {
+      const connector = this.walletConnector!;
+      if (error) {
+        this.updateCurrentStatus(WALLETCONNECT_STATUS_MAP.FAILD, error);
+        return;
+      }
+
+      const { accounts } = payload.params[0];
+      if (accounts[0].toLowerCase() == address.toLowerCase()) {
+        try {
+          this.updateCurrentStatus(WALLETCONNECT_STATUS_MAP.CONNECTED, payload);
+
+          await wait(() => {
+            this.updateCurrentStatus(WALLETCONNECT_STATUS_MAP.WAITING, payload);
+          }, 1000);
+
+          const result = await connector.signTypedData([address, data]);
+          this.resolvePromise!(result);
+          this.updateCurrentStatus(WALLETCONNECT_STATUS_MAP.SIBMITTED, result);
+          await connector.killSession();
+          this._walletConnector = null;
+        } catch (e) {
+          this.updateCurrentStatus(WALLETCONNECT_STATUS_MAP.REJECTED, e);
+        }
+      } else {
+        this.updateCurrentStatus(WALLETCONNECT_STATUS_MAP.FAILD, {
+          message: 'Wrong address or chainId',
+          code:
+            accounts[0].toLowerCase() === address.toLowerCase() ? 1000 : 1001,
+        });
+      }
+    };
+
+    this.onDisconnect = (error, payload) => {
+      this.updateCurrentStatus(
+        WALLETCONNECT_STATUS_MAP.FAILD,
+        error || payload.params[0]
+      );
+    };
+    return new Promise((resolve) => {
+      this.resolvePromise = resolve;
     });
   }
 
@@ -243,6 +281,23 @@ class WatchKeyring extends EventEmitter {
     this.accounts = this.accounts.filter(
       (a) => a.toLowerCase() !== address.toLowerCase()
     );
+  }
+
+  updateCurrentStatus(status: number, payload?: any) {
+    if (
+      (status === WALLETCONNECT_STATUS_MAP.REJECTED ||
+        status === WALLETCONNECT_STATUS_MAP.FAILD) &&
+      (this.currentConnectStatus === WALLETCONNECT_STATUS_MAP.FAILD ||
+        this.currentConnectStatus === WALLETCONNECT_STATUS_MAP.REJECTED ||
+        this.currentConnectStatus === WALLETCONNECT_STATUS_MAP.SIBMITTED)
+    ) {
+      return;
+    }
+    this.currentConnectStatus = status;
+    this.emit('statusChange', {
+      status,
+      payload,
+    });
   }
 
   _normalize(buf) {

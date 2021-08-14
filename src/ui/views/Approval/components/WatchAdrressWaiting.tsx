@@ -2,6 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Button, Tooltip } from 'antd';
 import clsx from 'clsx';
 import QRCode from 'qrcode.react';
+import { useHistory } from 'react-router-dom';
 import { useTranslation, Trans } from 'react-i18next';
 import {
   KEYRING_TYPE,
@@ -12,8 +13,9 @@ import {
   WALLETCONNECT_STATUS_MAP,
 } from 'consts';
 import { Tx } from 'background/service/openapi';
-import { useApproval, useWallet } from 'ui/utils';
+import { useApproval, useWallet, openInTab } from 'ui/utils';
 import WatchKeyring from 'background/service/keyring/eth-watch-keyring';
+import { SvgIconOpenExternal } from 'ui/assets';
 
 interface ApprovalParams extends Tx {
   address: string;
@@ -75,21 +77,34 @@ const Process = ({
   result,
   status,
   error,
+  onRetry,
+  onCancel,
 }: {
   chain: CHAINS_ENUM;
   result: string;
   status: Valueof<typeof WALLETCONNECT_STATUS_MAP>;
   error: { code?: number; message: string } | null;
+  onRetry(): void;
+  onCancel(): void;
 }) => {
   const wallet = useWallet();
   const { address } = wallet.syncGetCurrentAccount()!;
   const { t } = useTranslation();
+  const history = useHistory();
   const handleRetry = () => {
-    // TODO
+    onRetry();
   };
   const handleCancel = () => {
-    // TODO
+    onCancel();
   };
+  const handleOK = () => {
+    history.push('/');
+  };
+  const handleClickResult = () => {
+    const url = CHAIN.scanLink.replace(/_s_/, result);
+    openInTab(url);
+  };
+  const CHAIN = CHAINS[chain];
   let image = '';
   let title = '';
   let titleColor = '';
@@ -157,7 +172,7 @@ const Process = ({
       break;
     case WALLETCONNECT_STATUS_MAP.SIBMITTED:
       image = './images/tx-submitted.png';
-      title = t('Transaction submitted');
+      title = t('watch Transaction submitted');
       titleColor = '#27C193';
       description = (
         <p className="text-gray-content text-14 text-center">
@@ -183,14 +198,44 @@ const Process = ({
         {title}
       </h2>
       {description}
+      {result && status === WALLETCONNECT_STATUS_MAP.SIBMITTED && (
+        <div className="watchaddress-process__result">
+          <img className="icon icon-chain" src={CHAIN.logo} />
+          <a
+            href="javascript:;"
+            className="tx-hash"
+            onClick={handleClickResult}
+          >
+            {`${result.slice(0, 6)}...${result.slice(-4)}`}
+            <SvgIconOpenExternal className="icon icon-external" />
+          </a>
+        </div>
+      )}
       {(status === WALLETCONNECT_STATUS_MAP.FAILD ||
         status === WALLETCONNECT_STATUS_MAP.REJECTED) && (
         <div className="watchaddress-process__buttons">
-          <Button className="w-[200px]" type="primary" onClick={handleRetry}>
+          <Button
+            className="w-[200px]"
+            type="primary"
+            onClick={handleRetry}
+            size="large"
+          >
             {t('Retry')}
           </Button>
           <Button type="link" onClick={handleCancel}>
             {t('Cancel')}
+          </Button>
+        </div>
+      )}
+      {status === WALLETCONNECT_STATUS_MAP.SIBMITTED && (
+        <div className="watchaddress-process__ok">
+          <Button
+            type="primary"
+            className="w-[200px]"
+            size="large"
+            onClick={handleOK}
+          >
+            {t('OK')}
           </Button>
         </div>
       )}
@@ -232,18 +277,11 @@ const WatchAddressWaiting = ({
   const [origin] = useState(approval!.origin!);
   const { chain } = wallet.getConnectedSite(origin)!;
   const { t } = useTranslation();
-  const handleCancel = () => {
-    rejectApproval('user cancel');
-  };
+  const isSignText = approval?.approvalType !== 'SignTx';
 
   requestDefer
-    .then((data) => resolveApproval(data, true))
+    .then((data) => resolveApproval(data, !isSignText))
     .catch(rejectApproval);
-
-  const handleClickBrand = (id: number, index: number) => {
-    setCurrentType(id);
-    setCurrentTypeIndex(index);
-  };
 
   const initWalletConnect = async () => {
     const connector = keyring.walletConnector;
@@ -254,6 +292,21 @@ const WatchAddressWaiting = ({
     }
   };
 
+  const handleCancel = () => {
+    rejectApproval('user cancel');
+  };
+
+  const handleRetry = async () => {
+    await initWalletConnect();
+    setConnectStatus(WALLETCONNECT_STATUS_MAP.PENDING);
+    setConnectError(null);
+  };
+
+  const handleClickBrand = (id: number, index: number) => {
+    setCurrentType(id);
+    setCurrentTypeIndex(index);
+  };
+
   useEffect(() => {
     const watchType = Object.values(WATCH_ADDRESS_TYPE_CONTENT).find(
       (item) => item.id === currentType
@@ -261,6 +314,9 @@ const WatchAddressWaiting = ({
     if (watchType.connectType === WATCH_ADDRESS_CONNECT_TYPE.WalletConnect) {
       initWalletConnect();
     }
+  }, [currentType]);
+
+  useEffect(() => {
     keyring.on('statusChange', ({ status, payload }) => {
       setConnectStatus(status);
       switch (status) {
@@ -276,7 +332,7 @@ const WatchAddressWaiting = ({
           break;
       }
     });
-  }, [currentType]);
+  }, []);
 
   return (
     <div className="watchaddress">
@@ -314,6 +370,8 @@ const WatchAddressWaiting = ({
             result={result}
             status={connectStatus}
             error={connectError}
+            onRetry={handleRetry}
+            onCancel={handleCancel}
           />
         )}
       </div>
