@@ -3,11 +3,9 @@ import {
   keyringService,
   notificationService,
   permissionService,
-  preferenceService,
 } from 'background/service';
 import { PromiseFlow, underline2Camelcase } from 'background/utils';
 import providerController from './controller';
-import { KEYRING_TYPE } from 'consts';
 
 const isSignApproval = (type: string) => {
   const SIGN_APPROVALS = ['SignText', 'SignTypedData', 'SignTx'];
@@ -111,21 +109,12 @@ const flow = new PromiseFlow()
     const {
       session: { origin },
     } = request;
-    const currentAccount = preferenceService.getCurrentAccount();
-    let requestDefer;
-    if (
-      currentAccount &&
-      currentAccount.type === KEYRING_TYPE.WatchAddressKeyring
-    ) {
-      requestDefer = providerController[mapMethod];
-    } else {
-      requestDefer = Promise.resolve(
-        providerController[mapMethod]({
-          ...request,
-          approvalRes,
-        })
-      );
-    }
+    const requestDefer = Promise.resolve(
+      providerController[mapMethod]({
+        ...request,
+        approvalRes,
+      })
+    );
 
     if (uiRequestComponent) {
       return await notificationService.requestApproval({

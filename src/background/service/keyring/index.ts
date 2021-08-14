@@ -147,6 +147,12 @@ class KeyringService extends EventEmitter {
     return mnemonic;
   }
 
+  getKeyringByType(type: string) {
+    const keyring = this.keyrings.find((keyring) => keyring.type === type);
+
+    return keyring;
+  }
+
   removePreMnemonics() {
     this.memStore.updateState({ preMnemonics: '' });
   }

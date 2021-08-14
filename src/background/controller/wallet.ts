@@ -262,6 +262,8 @@ export class WalletController extends BaseController {
     this._setCurrentAccountFromKeyring(keyring);
   };
 
+  getKeyringByType = (type: string) => keyringService.getKeyringByType(type);
+
   checkHasMnemonic = () => {
     try {
       const keyring = this._getKeyringByType(KEYRING_CLASS.MNEMONIC);
@@ -378,6 +380,11 @@ export class WalletController extends BaseController {
 
     return this._setCurrentAccountFromKeyring(keyring);
   };
+
+  getWatchAddressPreference = (address: string) =>
+    preferenceService.getWatchAddressPreference(address);
+
+  setWatchAddressPreference = preferenceService.setWatchAddressPreference;
 
   private _getKeyringByType(type) {
     const keyring = keyringService.getKeyringsByType(type)[0];
