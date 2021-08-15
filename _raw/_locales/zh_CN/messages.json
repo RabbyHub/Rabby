@@ -586,7 +586,7 @@
     "message": "接收地址"
   },
   "Transaction__submitted": {
-    "message": "⏳ 交易已提交"
+    "message": "📥 交易已提交"
   },
   "Transaction__completed": {
     "message": "🎉 交易已完成"

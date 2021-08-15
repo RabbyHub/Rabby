@@ -589,7 +589,7 @@
     "message": "To address"
   },
   "Transaction__submitted": {
-    "message": "⏳ Transaction submitted"
+    "message": "📥 Transaction submitted"
   },
   "Transaction__completed": {
     "message": "🎉 Transaction completed"
