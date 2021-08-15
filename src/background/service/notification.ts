@@ -56,12 +56,12 @@ class NotificationService {
       );
     }
 
-    if (preferenceService.getPopupOpen()) {
-      this.approval = null;
-      throw ethErrors.provider.userRejectedRequest(
-        'please request after user close current popup'
-      );
-    }
+    // if (preferenceService.getPopupOpen()) {
+    //   this.approval = null;
+    //   throw ethErrors.provider.userRejectedRequest(
+    //     'please request after user close current popup'
+    //   );
+    // }
 
     return new Promise((resolve, reject) => {
       this.approval = {
