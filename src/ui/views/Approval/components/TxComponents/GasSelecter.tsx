@@ -14,6 +14,7 @@ import clsx from 'clsx';
 
 export interface GasSelectorResponse extends GasLevel {
   gasLimit: number;
+  nonce: number;
 }
 
 interface GasSelectorProps {
@@ -24,6 +25,7 @@ interface GasSelectorProps {
   onChange(gas: GasSelectorResponse): void;
   isReady: boolean;
   recommendGasLimit: number;
+  nonce: string;
 }
 
 const GasSelector = ({
@@ -34,6 +36,7 @@ const GasSelector = ({
   onChange,
   isReady,
   recommendGasLimit,
+  nonce,
 }: GasSelectorProps) => {
   const wallet = useWallet();
   const { t } = useTranslation();
@@ -46,6 +49,7 @@ const GasSelector = ({
   const [customGas, setCustomGas] = useState<string | number>(
     Number(tx.gasPrice) / 1e9
   );
+  const [customNonce, setCustomNonce] = useState(Number(nonce));
   const [errMsg, setErrMsg] = useState(null);
   const [gasList, setGasList] = useState<GasLevel[]>([
     {
@@ -170,6 +174,7 @@ const GasSelector = ({
       estimated_seconds: 0,
       base_fee: gasList[0].base_fee,
     });
+    setCustomNonce(Number(nonce));
     setModalVisible(true);
   };
 
@@ -180,9 +185,14 @@ const GasSelector = ({
         ...selectedGas,
         price: Number(customGas) * 1e9,
         gasLimit: Number(afterGasLimit),
+        nonce: customNonce,
       });
     } else {
-      onChange({ ...selectedGas, gasLimit: Number(afterGasLimit) });
+      onChange({
+        ...selectedGas,
+        gasLimit: Number(afterGasLimit),
+        nonce: customNonce,
+      });
     }
     setModalVisible(false);
   };
@@ -196,6 +206,12 @@ const GasSelector = ({
   const handleGasLimitChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     if (/^\d*$/.test(e.target.value)) {
       setGasLimit(e.target.value);
+    }
+  };
+
+  const handleCustomNonceChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    if (/^\d*$/.test(e.target.value)) {
+      setCustomNonce(Number(e.target.value));
     }
   };
 
@@ -349,7 +365,6 @@ const GasSelector = ({
                 <Input
                   value={afterGasLimit}
                   onChange={handleGasLimitChange}
-                  min={0}
                   bordered={false}
                 />
               </Form.Item>
@@ -377,6 +392,15 @@ const GasSelector = ({
                   .
                 </p>
               )}
+              <p className="section-title mt-20">{t('Nonce')}</p>
+              <Form.Item className="gas-limit-panel mb-0" required>
+                <Input
+                  value={customNonce}
+                  onChange={handleCustomNonceChange}
+                  bordered={false}
+                />
+              </Form.Item>
+              <p className="tip">{t('Modify only when necessary')}</p>
             </div>
           </div>
           <div className="flex justify-center mt-32">

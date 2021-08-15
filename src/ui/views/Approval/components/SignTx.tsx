@@ -67,6 +67,7 @@ const TxTypeComponent = ({
 
 const SignTx = ({ params, origin }) => {
   const [isReady, setIsReady] = useState(false);
+  const [nonceChanged, setNonceChanged] = useState(false);
   const [txDetail, setTxDetail] = useState<ExplainTxResponse | null>({
     balance_change: {
       err_msg: '',
@@ -193,7 +194,7 @@ const SignTx = ({ params, origin }) => {
       },
       origin,
       address,
-      !(nonce && tx.from === tx.to)
+      !nonceChanged || (nonce && tx.from === tx.to)
     );
     if (!gasLimit) {
       // use server response gas limit
@@ -276,11 +277,18 @@ const SignTx = ({ params, origin }) => {
   };
 
   const handleGasChange = (gas: GasSelectorResponse) => {
+    const beforeNonce = realNonce || tx.nonce;
+    const afterNonce = intToHex(gas.nonce);
     setTx({
       ...tx,
       gasPrice: `0x${gas.price.toString(16)}`,
       gas: `0x${gas.gasLimit.toString(16)}`,
+      nonce: afterNonce,
     });
+    setRealNonce(afterNonce);
+    if (beforeNonce !== afterNonce) {
+      setNonceChanged(true);
+    }
   };
 
   const handleCancel = () => {
@@ -346,6 +354,7 @@ const SignTx = ({ params, origin }) => {
               recommendGasLimit={Number(txDetail.recommend.gas)}
               chainId={chainId}
               onChange={handleGasChange}
+              nonce={realNonce || tx.nonce}
             />
             <footer className="connect-footer">
               {txDetail && txDetail.pre_exec.success && (
