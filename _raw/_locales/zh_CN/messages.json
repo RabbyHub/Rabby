@@ -683,5 +683,8 @@
   },
   "Modify__only__when__necessary": {
     "message": "如非必要请勿修改"
+  },
+  "Refresh__QR__Code": {
+    "message": "刷新二维码"
   }
 }

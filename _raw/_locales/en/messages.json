@@ -686,5 +686,8 @@
   },
   "Modify__only__when__necessary": {
     "message": "Modify only when necessary"
+  },
+  "Refresh__QR__Code": {
+    "message": "Refresh QR Code"
   }
 }

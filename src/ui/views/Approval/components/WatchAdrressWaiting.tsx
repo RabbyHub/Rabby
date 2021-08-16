@@ -15,7 +15,7 @@ import {
 import { Tx } from 'background/service/openapi';
 import { useApproval, useWallet, openInTab } from 'ui/utils';
 import WatchKeyring from 'background/service/keyring/eth-watch-keyring';
-import { SvgIconOpenExternal } from 'ui/assets';
+import { SvgIconOpenExternal, SvgIconRefresh } from 'ui/assets';
 
 interface ApprovalParams extends Tx {
   address: string;
@@ -27,10 +27,12 @@ const Scan = ({
   uri,
   typeId,
   chain,
+  onRefresh,
 }: {
   uri: string;
   typeId: number;
   chain: CHAINS_ENUM;
+  onRefresh(): void;
 }) => {
   const wallet = useWallet();
   const { address } = wallet.syncGetCurrentAccount()!;
@@ -39,11 +41,20 @@ const Scan = ({
   )!;
   const chainName = CHAINS[chain].name;
   const { t } = useTranslation();
+  const handleRefresh = () => {
+    onRefresh();
+  };
 
   return (
     <div className="watchaddress-scan">
       <div className="watchaddress-scan__qrcode">
         <QRCode value={uri} size={208} />
+      </div>
+      <div className="watchaddress-scan__refresh">
+        <SvgIconRefresh className="icon icon-refresh" onClick={handleRefresh} />
+        <Button type="link" onClick={handleRefresh}>
+          {t('Refresh QR Code')}
+        </Button>
       </div>
       <div className="watchaddress-scan__guide">
         <p>
@@ -320,6 +331,10 @@ const WatchAddressWaiting = ({
     setConnectError(null);
   };
 
+  const handleRefreshQrCode = () => {
+    initWalletConnect();
+  };
+
   useEffect(() => {
     const watchType = Object.values(WATCH_ADDRESS_TYPE_CONTENT).find(
       (item) => item.id === currentType
@@ -368,7 +383,12 @@ const WatchAddressWaiting = ({
               key={item.id}
             >
               <li
-                className={clsx({ active: currentType === item.id })}
+                className={clsx({
+                  active: currentType === item.id,
+                  'cursor-not-allowed': canNotSwitchStatus.includes(
+                    connectStatus
+                  ),
+                })}
                 onClick={() => handleClickBrand(item.id, index)}
               >
                 <img src={item.icon} className="brand-logo" />
@@ -387,7 +407,12 @@ const WatchAddressWaiting = ({
       </div>
       <div className="watchaddress-operation">
         {connectStatus === WALLETCONNECT_STATUS_MAP.PENDING ? (
-          <Scan uri={qrcodeContent} typeId={currentType} chain={chain} />
+          <Scan
+            uri={qrcodeContent}
+            typeId={currentType}
+            chain={chain}
+            onRefresh={handleRefreshQrCode}
+          />
         ) : (
           <Process
             chain={chain}
