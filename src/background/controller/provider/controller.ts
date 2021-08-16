@@ -393,6 +393,8 @@ class ProviderController extends BaseController {
     return null;
   };
 
+  walletSwitchEthereumChain = this.walletAddEthereumChain;
+
   walletRequestPermissions = ({ data: { params: permissions } }) => {
     const result: Web3WalletPermission[] = [];
     if ('eth_accounts' in permissions?.[0]) {
