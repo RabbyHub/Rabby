@@ -674,5 +674,8 @@
   },
   "Sending__transaction__to__your__phone": {
     "message": "正在发送交易"
+  },
+  "Modify__only__when__necessary": {
+    "message": "如非必要请勿修改"
   }
 }
