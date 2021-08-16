@@ -20,6 +20,7 @@ interface Approval {
 class NotificationService {
   approval: Approval | null = null;
   notifiWindowId = 0;
+  isLocked = false;
 
   constructor() {
     winMgr.event.on('windowRemoved', (winId: number) => {
@@ -40,6 +41,7 @@ class NotificationService {
   resolveApproval = (data?: any) => {
     this.approval?.resolve(data);
     this.approval = null;
+    this.notifiWindowId = 0;
   };
 
   rejectApproval = async (err?: string) => {
@@ -82,7 +84,17 @@ class NotificationService {
     }
   };
 
+  unLock = () => {
+    this.isLocked = false;
+  };
+
+  lock = () => {
+    this.isLocked = true;
+  };
+
   openNotification = (winProps) => {
+    if (this.isLocked) return;
+    this.lock();
     if (this.notifiWindowId) {
       winMgr.remove(this.notifiWindowId);
       this.notifiWindowId = 0;

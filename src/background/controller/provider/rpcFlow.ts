@@ -132,4 +132,8 @@ const flow = new PromiseFlow()
   })
   .callback();
 
-export default (request) => flow({ request });
+export default (request) => {
+  return flow({ request }).finally(() => {
+    notificationService.unLock();
+  });
+};
