@@ -69,6 +69,7 @@ const CreatePassword = () => {
           className="mb-0 h-60 overflow-hidden"
           name="password"
           help=""
+          validateTrigger="submit"
           rules={[
             {
               required: true,
