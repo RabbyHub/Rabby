@@ -630,6 +630,12 @@
   "WatchGuideStep3": {
     "message": "扫描上方二维码"
   },
+  "ChooseCorrectAddress": {
+    "message": "在你的手机上选择 <1>{{address}}</1>"
+  },
+  "ChooseCorrectChain": {
+    "message": "在你的手机上选择 {{chain}}"
+  },
   "Connected__successfully": {
     "message": "连接成功"
   },

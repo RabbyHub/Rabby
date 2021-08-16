@@ -83,7 +83,7 @@ const Process = ({
   chain: CHAINS_ENUM;
   result: string;
   status: Valueof<typeof WALLETCONNECT_STATUS_MAP>;
-  error: { code?: number; message: string } | null;
+  error: { code?: number; message?: string } | null;
   onRetry(): void;
   onCancel(): void;
 }) => {
@@ -144,6 +144,15 @@ const Process = ({
             (error.code === 1000 ? (
               <p>
                 <Trans
+                  i18nKey="ChooseCorrectChain"
+                  values={{
+                    chain: CHAINS[chain].name,
+                  }}
+                />
+              </p>
+            ) : (
+              <p>
+                <Trans
                   i18nKey="ChooseCorrectAddress"
                   values={{
                     address: `${address.slice(0, 6)}...${address.slice(-4)}`,
@@ -151,15 +160,6 @@ const Process = ({
                 >
                   Choose <strong>{{ address }}</strong> on your phone
                 </Trans>
-              </p>
-            ) : (
-              <p>
-                <Trans
-                  i18nKey="ChooseCorrectChain"
-                  values={{
-                    chain: CHAINS[chain].name,
-                  }}
-                />
               </p>
             ))}
           {!error || (!error.code && !error) ? (
@@ -263,7 +263,7 @@ const WatchAddressWaiting = ({
   );
   const [connectError, setConnectError] = useState<null | {
     code?: number;
-    message: string;
+    message?: string;
   }>(null);
   const [currentType, setCurrentType] = useState(
     wallet.getWatchAddressPreference(address) || 0
@@ -335,7 +335,11 @@ const WatchAddressWaiting = ({
         case WALLETCONNECT_STATUS_MAP.FAILD:
         case WALLETCONNECT_STATUS_MAP.REJECTED:
           initWalletConnect();
-          setConnectError(payload.params);
+          if (payload.code) {
+            setConnectError({ code: payload.code });
+          } else {
+            setConnectError((payload.params && payload.params[0]) || payload);
+          }
           break;
         case WALLETCONNECT_STATUS_MAP.SIBMITTED:
           setResult(payload);

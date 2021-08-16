@@ -637,7 +637,7 @@
     "message": "Choose <1>{{address}}</1> on your phone"
   },
   "ChooseCorrectChain": {
-    "message": "Wrong chain Set your mobile wallet to {{chain}}"
+    "message": "Set your mobile wallet to {{chain}}"
   },
   "Connected__successfully": {
     "message": "Connected successfully"
