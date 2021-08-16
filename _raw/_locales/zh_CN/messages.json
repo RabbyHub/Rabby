@@ -620,5 +620,59 @@
   },
   "Gas__price__too__low": {
     "message": "Gas 价格过低"
+  },
+  "WatchGuideStep1": {
+    "message": "在你的手机上打开 <1>{{name}}</1>"
+  },
+  "WatchGuideStep2": {
+    "message": "确认你正在 <1>{{chainName}}</1> 上使用 <1>{{address}}</1>"
+  },
+  "WatchGuideStep3": {
+    "message": "扫描上方二维码"
+  },
+  "Connected__successfully": {
+    "message": "连接成功"
+  },
+  "Waiting__for__signature": {
+    "message": "等待签名"
+  },
+  "Please__sign__on__your__phone": {
+    "message": "请在你的手机上签名"
+  },
+  "Connection__failed": {
+    "message": "连接失败"
+  },
+  "Wrong__chain": {
+    "message": "错误的链"
+  },
+  "Wrong__address": {
+    "message": "错误的地址"
+  },
+  "No__longer__connected__to__the__phone": {
+    "message": "已与手机断开连接"
+  },
+  "watch__Transaction__submitted": {
+    "message": "交易已提交"
+  },
+  "Your__transaction__has__been__submitted": {
+    "message": "你的交易已被提交"
+  },
+  "You__have__refused__to__sign__the__transaction": {
+    "message": "你拒绝了签名"
+  },
+  "Retry": {
+    "message": "重试"
+  },
+  "Choose__your__mobile__wallet": {
+    "message": "选择你的手机钱包"
+  },
+  "Transaction__rejected": {
+    "message": "已取消签名"
+  },
+  "ConnectedCannotSwitch": {
+    "message": "当前已连接，不可切换钱包"
+  },
+  "Sending__transaction__to__your__phone": {
+    "message": "正在发送交易"
   }
 }

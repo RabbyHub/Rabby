@@ -623,5 +623,65 @@
   },
   "Gas__price__too__low": {
     "message": "Gas price too low"
+  },
+  "WatchGuideStep1": {
+    "message": "Open <1>{{name}}</1> on your phone"
+  },
+  "WatchGuideStep2": {
+    "message": "Make sure you are using address <1>{{address}}</1> on <1>{{chainName}}</1>"
+  },
+  "WatchGuideStep3": {
+    "message": "Scan the QR code above"
+  },
+  "ChooseCorrectAddress": {
+    "message": "Choose <1>{{address}}</1> on your phone"
+  },
+  "ChooseCorrectChain": {
+    "message": "Wrong chain Set your mobile wallet to {{chain}}"
+  },
+  "Connected__successfully": {
+    "message": "Connected successfully"
+  },
+  "Waiting__for__signature": {
+    "message": "Waiting for signature"
+  },
+  "Please__sign__on__your__phone": {
+    "message": "Please sign on your phone"
+  },
+  "Connection__failed": {
+    "message": "Connection failed"
+  },
+  "Wrong__chain": {
+    "message": "Wrong chain"
+  },
+  "Wrong__address": {
+    "message": "Wrong address"
+  },
+  "No__longer__connected__to__the__phone": {
+    "message": "No longer connected to the phone"
+  },
+  "watch__Transaction__submitted": {
+    "message": "Transaction submitted"
+  },
+  "Your__transaction__has__been__submitted": {
+    "message": "Your transaction has been submitted"
+  },
+  "You__have__refused__to__sign__the__transaction": {
+    "message": "You have refused to sign the transaction"
+  },
+  "Retry": {
+    "message": "Retry"
+  },
+  "Choose__your__mobile__wallet": {
+    "message": "Choose your mobile wallet"
+  },
+  "Transaction__rejected": {
+    "message": "Transaction rejected"
+  },
+  "ConnectedCannotSwitch": {
+    "message": "Currently connected, cannot switch wallets"
+  },
+  "Sending__transaction__to__your__phone": {
+    "message": "Sending transaction to your phone"
   }
 }

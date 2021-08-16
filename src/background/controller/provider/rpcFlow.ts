@@ -105,11 +105,12 @@ const flow = new PromiseFlow()
   })
   .use(async ({ approvalRes, mapMethod, request }) => {
     // process request
+    const [approvalType] =
+      Reflect.getMetadata('APPROVAL', providerController, mapMethod) || [];
     const { uiRequestComponent, ...rest } = approvalRes || {};
     const {
       session: { origin },
     } = request;
-
     const requestDefer = Promise.resolve(
       providerController[mapMethod]({
         ...request,
@@ -123,6 +124,7 @@ const flow = new PromiseFlow()
         requestDefer,
         params: rest,
         origin,
+        approvalType,
       });
     }
 
