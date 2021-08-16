@@ -41,7 +41,6 @@ class NotificationService {
   resolveApproval = (data?: any) => {
     this.approval?.resolve(data);
     this.approval = null;
-    this.notifiWindowId = 0;
   };
 
   rejectApproval = async (err?: string) => {
