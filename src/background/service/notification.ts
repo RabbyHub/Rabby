@@ -1,7 +1,6 @@
 import { ethErrors } from 'eth-rpc-errors';
 import { EthereumProviderError } from 'eth-rpc-errors/dist/classes';
 import { winMgr } from 'background/webapi';
-import { preferenceService } from 'background/service';
 
 interface Approval {
   data: {
@@ -85,7 +84,8 @@ class NotificationService {
 
   openNotification = (winProps) => {
     if (this.notifiWindowId) {
-      return;
+      winMgr.remove(this.notifiWindowId);
+      this.notifiWindowId = 0;
     }
     winMgr.openNotification(winProps).then((winId) => {
       this.notifiWindowId = winId!;
