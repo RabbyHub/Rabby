@@ -667,7 +667,7 @@
     "message": "Your transaction has been submitted"
   },
   "You__have__refused__to__sign__the__transaction": {
-    "message": "You have refused to sign the transaction"
+    "message": "You have refused to sign"
   },
   "Retry": {
     "message": "Retry"
@@ -679,10 +679,10 @@
     "message": "Transaction rejected"
   },
   "ConnectedCannotSwitch": {
-    "message": "Currently connected, cannot switch wallets"
+    "message": "Cannot switch wallet while connected"
   },
   "Sending__transaction__to__your__phone": {
-    "message": "Sending transaction to your phone"
+    "message": "Sending data to your phone"
   },
   "Modify__only__when__necessary": {
     "message": "Modify only when necessary"
