@@ -304,13 +304,13 @@ export const WATCH_ADDRESS_TYPE_CONTENT = {
     icon: './images/brand-logos/icon-imtoken.png',
     connectType: WATCH_ADDRESS_CONNECT_TYPE.WalletConnect,
   },
-  [WATCH_ADDRESS_TYPES.TRUSTWALLET]: {
-    id: 2,
-    name: 'Trust Wallet',
-    brand: WATH_ADDRESS_BRAND.TRUSTWALLET,
-    icon: './images/brand-logos/icon-trustwallet.png',
-    connectType: WATCH_ADDRESS_CONNECT_TYPE.WalletConnect,
-  },
+  // [WATCH_ADDRESS_TYPES.TRUSTWALLET]: {
+  //   id: 2,
+  //   name: 'Trust Wallet',
+  //   brand: WATH_ADDRESS_BRAND.TRUSTWALLET,
+  //   icon: './images/brand-logos/icon-trustwallet.png',
+  //   connectType: WATCH_ADDRESS_CONNECT_TYPE.WalletConnect,
+  // }, disable TrustWallet since walletconnect of TW is white-list based
   [WATCH_ADDRESS_TYPES.MATHWALLET]: {
     id: 3,
     name: 'Math Wallet',
