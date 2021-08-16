@@ -968,14 +968,43 @@
     }
   }
   .watchaddress-scan {
-    padding: 80px 0;
+    padding: 80px 0 0;
     &__qrcode {
       width: 240px;
       height: 240px;
       border: 1px solid #D8DFEB;
       border-radius: 12px;
-      margin: 0 auto 80px;
+      margin: 0 auto;
       padding: 16px;
+    }
+    &__refresh {
+      display: flex;
+      margin: 24px 0 44px;
+      align-items: center;
+      justify-content: center;
+      .ant-btn-link {
+        padding: 0;
+        color: #818A99;
+        font-weight: normal;
+        span {
+          text-decoration: underline;
+        }
+        &:hover {
+          color: #818A99;
+          &::before {
+            display: none;
+          }
+        }
+      }
+      .icon-refresh {
+        margin-right: 6px;
+        width: 14px;
+        height: 14px;
+        cursor: pointer;
+        path {
+          fill: #818A99;
+        }
+      }
     }
     &__guide {
       font-size: 15px;

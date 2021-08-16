@@ -256,7 +256,7 @@ const SignTx = ({ params, origin }) => {
           // NOTHING
         }
       }
-      console.log(WaitingSignComponent[currentAccount.type]);
+
       resolveApproval({
         ...tx,
         nonce: realNonce || tx.nonce,

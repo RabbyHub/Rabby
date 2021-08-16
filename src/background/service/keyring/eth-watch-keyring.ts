@@ -59,8 +59,8 @@ class WatchKeyring extends EventEmitter {
       // always clear walletconnect cache
       localStorage.removeItem('walletconnect');
     }
-
     if (this.walletConnector) {
+      this.walletConnector.transportClose();
       if (this.walletConnector.connected) {
         await this.walletConnector.killSession();
       }

@@ -21,6 +21,7 @@ export { ReactComponent as SvgIconOnekey } from './onekey.svg';
 export { ReactComponent as SvgIconArrowDown } from './arrow-down-gray.svg';
 export { ReactComponent as SvgIconSlogon } from './slogon.svg';
 export { ReactComponent as SvgIconOpenExternal } from './open-external.svg';
+export { ReactComponent as SvgIconRefresh } from './refresh.svg';
 
 export { default as ImgWelcome } from './welcome-start.png';
 export { default as OperationCard } from './operation-card.png';
