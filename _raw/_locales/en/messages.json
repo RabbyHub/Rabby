@@ -683,5 +683,8 @@
   },
   "Sending__transaction__to__your__phone": {
     "message": "Sending transaction to your phone"
+  },
+  "Modify__only__when__necessary": {
+    "message": "Modify only when necessary"
   }
 }
