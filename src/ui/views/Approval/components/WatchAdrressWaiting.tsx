@@ -285,7 +285,10 @@ const WatchAddressWaiting = ({
   const isSignText = approval?.approvalType !== 'SignTx';
 
   requestDefer
-    .then((data) => resolveApproval(data, !isSignText))
+    .then((data) => {
+      wallet.setWatchAddressPreference(address, currentType);
+      resolveApproval(data, !isSignText);
+    })
     .catch(rejectApproval);
 
   const initWalletConnect = async () => {
