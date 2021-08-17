@@ -14,6 +14,7 @@ import {
   openapiService,
   preferenceService,
   transactionWatchService,
+  transactionHistoryService,
   i18n,
 } from 'background/service';
 import { notification } from 'background/webapi';
@@ -216,6 +217,20 @@ class ProviderController extends BaseController {
     );
     const onTranscationSubmitted = (hash: string) => {
       const chain = permissionService.getConnectedSite(origin)!.chain;
+      const cacheExplain = transactionHistoryService.getExplainCache({
+        address: txParams.from,
+        chainId: Number(approvalRes.chainId),
+        nonce: Number(approvalRes.nonce),
+      });
+      transactionHistoryService.addTx(
+        {
+          rawTx: approvalRes,
+          createdAt: Date.now(),
+          isCompleted: false,
+          hash,
+        },
+        cacheExplain
+      );
       transactionWatchService.addTx(
         `${txParams.from}_${approvalRes.nonce}_${chain}`,
         {

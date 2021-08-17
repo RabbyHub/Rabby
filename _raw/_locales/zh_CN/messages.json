@@ -686,5 +686,11 @@
   },
   "Refresh__QR__Code": {
     "message": "刷新二维码"
+  },
+  "CancelExplain": {
+    "message": "取消授权 {{token}} 给 {{protocol}}"
+  },
+  "ApproveExplain": {
+    "message": "授权 {{count}} 个 {{token}} 给 {{protocol}}"
   }
 }

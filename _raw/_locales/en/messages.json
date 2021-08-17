@@ -689,5 +689,11 @@
   },
   "Refresh__QR__Code": {
     "message": "Refresh QR Code"
+  },
+  "CancelExplain": {
+    "message": "Cancel {{token}} Approve for {{protocol}}"
+  },
+  "ApproveExplain": {
+    "message": "Approve {{count}} {{token}} for {{protocol}}"
   }
 }

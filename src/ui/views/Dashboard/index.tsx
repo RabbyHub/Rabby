@@ -8,7 +8,7 @@ import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 import { CHAINS, HARDWARE_KEYRING_TYPES, KEYRING_TYPE } from 'consts';
 import { AddressViewer, Modal } from 'ui/component';
-import { useWallet, getCurrentConnectSite, isMetaMaskActive } from 'ui/utils';
+import { useWallet, getCurrentConnectSite } from 'ui/utils';
 import { Account } from 'background/service/preference';
 import {
   RecentConnections,
@@ -105,16 +105,17 @@ const Dashboard = () => {
   };
 
   const handleGotoHistory = async () => {
-    const site = await getCurrentConnectSite(wallet);
-    let chain: null | string = null;
-    if (site) {
-      chain = CHAINS[site.chain].serverId;
-    }
-    _openInTab(
-      `https://debank.com/profile/${currentAccount?.address}/history${
-        chain ? `?chain=${chain}` : ''
-      }`
-    );
+    history.push('/tx-history');
+    // const site = await getCurrentConnectSite(wallet);
+    // let chain: null | string = null;
+    // if (site) {
+    //   chain = CHAINS[site.chain].serverId;
+    // }
+    // _openInTab(
+    //   `https://debank.com/profile/${currentAccount?.address}/history${
+    //     chain ? `?chain=${chain}` : ''
+    //   }`
+    // );
   };
 
   const handleGotoSwap = async () => {

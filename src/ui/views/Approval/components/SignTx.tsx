@@ -203,6 +203,14 @@ const SignTx = ({ params, origin }) => {
     setTxDetail(res);
     if (!(nonce && tx.from === tx.to)) setRealNonce(res.recommend.nonce); // do not overwrite nonce if from === to(cancel transaction)
     setPreprocessSuccess(res.pre_exec.success);
+    wallet.addTxExplainCache({
+      address,
+      chainId,
+      nonce: !(nonce && tx.from === tx.to)
+        ? Number(res.recommend.nonce)
+        : Number(tx.nonce),
+      explain: res,
+    });
     return res;
   };
 

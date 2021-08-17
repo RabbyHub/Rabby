@@ -11,6 +11,7 @@ import {
   chainService,
   openapiService,
   pageStateCacheService,
+  transactionHistoryService,
 } from 'background/service';
 import { openIndexPage } from 'background/webapi/tab';
 import { CacheState } from 'background/service/pageStateCache';
@@ -20,6 +21,7 @@ import BaseController from './base';
 import { CHAINS_ENUM, CHAINS } from 'consts';
 import { Account } from '../service/preference';
 import { ConnectedSite } from '../service/permission';
+import { ExplainTxResponse } from '../service/openapi';
 import DisplayKeyring from '../service/keyring/display';
 
 export class WalletController extends BaseController {
@@ -385,6 +387,15 @@ export class WalletController extends BaseController {
     preferenceService.getWatchAddressPreference(address);
 
   setWatchAddressPreference = preferenceService.setWatchAddressPreference;
+
+  addTxExplainCache = (params: {
+    address: string;
+    chainId: number;
+    nonce: number;
+    explain: ExplainTxResponse;
+  }) => transactionHistoryService.addExplainCache(params);
+  getTransactionHistory = (address: string) =>
+    transactionHistoryService.getList(address);
 
   private _getKeyringByType(type) {
     const keyring = keyringService.getKeyringsByType(type)[0];

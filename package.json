@@ -20,6 +20,7 @@
     "@sentry/react": "^6.7.2",
     "@sentry/tracing": "^6.7.2",
     "@types/bignumber.js": "^5.0.0",
+    "@types/lodash": "^4.14.172",
     "@walletconnect/client": "^1.5.5",
     "@walletconnect/qrcode-modal": "^1.5.4",
     "antd": "^4.15.3",
