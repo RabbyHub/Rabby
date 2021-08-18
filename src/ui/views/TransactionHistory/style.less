@@ -2,13 +2,13 @@
 
 .tx-history {
   .page();
-  padding: 0 28px;
-
+  padding: 0 28px 23px;
   &__item {
     position: relative;
     background: #FFFFFF;
     box-shadow: 0px 6px 20px rgba(45, 48, 51, 0.08);
     border-radius: 6px;
+    margin-bottom: 12px;
     &--main {
       padding: 8px 12px;
     }
@@ -45,7 +45,8 @@
       }
     }
     .tx-id {
-      text-align: right;
+      display: flex;
+      justify-content: space-between;
       font-size: 12px;
       color: #818A99;
       margin-bottom: 14px;
@@ -74,6 +75,15 @@
           width: 0.5px;
           height: 12px;
           background-color: #D8DFEB;
+        }
+      }
+      .pending-detail {
+        display: flex;
+        align-items: center;
+        .icon-question-mark {
+          width: 10px;
+          height: 10px;
+          margin-left: 6px;
         }
       }
     }
@@ -110,5 +120,29 @@
         }
       }
     }
+  }
+  &__pending {
+    margin-bottom: 40px;
+  }
+  &__completed {
+    .subtitle {
+      margin-bottom: 12px;
+    }
+    .tx-history__item {
+      .tx-history__item--main {
+        padding-bottom: 16px;
+      }
+    }
+  }
+}
+
+.pending-detail__tooltip {
+  .ant-tooltip-inner {
+    transform: translateX(60px);
+  }
+}
+.cant-cancel__tooltip {
+  .ant-tooltip-arrow {
+    transform: translateX(-7px);
   }
 }

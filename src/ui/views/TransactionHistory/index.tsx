@@ -1,8 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation, Trans } from 'react-i18next';
+import { useInterval } from 'react-use';
+import clsx from 'clsx';
 import minBy from 'lodash/minBy';
-import { useWallet } from 'ui/utils';
+import { Tooltip } from 'antd';
+import { useWallet, isSameAddress } from 'ui/utils';
 import { splitNumberByStep } from 'ui/utils/number';
+import { timeago } from 'ui/utils/time';
 import { PageHeader } from 'ui/component';
 import {
   TransactionGroup,
@@ -15,12 +19,15 @@ import IconUser from 'ui/assets/address-management.svg';
 import IconUnknown from 'ui/assets/icon-unknown.svg';
 import IconCancel from 'ui/assets/cancel.svg';
 import IconSpeedup from 'ui/assets/speedup.svg';
+import IconQuestionMark from 'ui/assets/question-mark-black.svg';
 import './style.less';
 
 const TransactionExplain = ({ explain }: { explain: ExplainTxResponse }) => {
   const { t } = useTranslation();
-  let icon: React.ReactNode | null = null;
-  let content: string | React.ReactNode = '';
+  let icon: React.ReactNode = (
+    <img className="icon icon-explain" src={IconUnknown} />
+  );
+  let content: string | React.ReactNode = t('Unknown Transaction');
 
   if (explain.type_cancel_token_approval) {
     icon = (
@@ -86,20 +93,102 @@ const TransactionExplain = ({ explain }: { explain: ExplainTxResponse }) => {
 
   return (
     <p className="tx-explain">
-      {icon}
-      {content}
+      {icon || <img className="icon icon-explain" src={IconUnknown} />}
+      {content || t('Unknown Transaction')}
     </p>
   );
 };
 
-const TransactionItem = ({ item }: { item: TransactionGroup }) => {
+const TransactionItem = ({
+  item,
+  canCancel,
+  onComplete,
+}: {
+  item: TransactionGroup;
+  canCancel: boolean;
+  onComplete?(): void;
+}) => {
   const { t } = useTranslation();
+  const wallet = useWallet();
   const chain = Object.values(CHAINS).find((c) => c.id === item.chainId)!;
   const originTx = minBy(item.txs, (tx) => tx.createdAt)!;
+  const completedTx = item.txs.find((tx) => tx.isCompleted);
+  const [isCompleted, setIsCompleted] = useState(!item.isPending);
+  const [intervalDelay, setIntervalDelay] = useState(
+    item.isPending ? 1000 : null
+  );
+  const isCanceled =
+    !item.isPending &&
+    item.txs.length > 1 &&
+    isSameAddress(completedTx!.rawTx.from, completedTx!.rawTx.to);
+  const ago = timeago(item.createdAt, Date.now());
+  const [txQueues, setTxQueues] = useState<Record<string, { frontTx: number }>>(
+    {}
+  );
+  let agoText = '';
+
+  const loadTxData = async () => {
+    item.txs.forEach(async (tx) => {
+      const { code, status, front_tx_count } = await wallet.openapi.getTx(
+        chain.serverId,
+        tx.hash,
+        Number(tx.rawTx.gasPrice)
+      );
+      if (code === 0) {
+        if (status !== 0) {
+          setIsCompleted(true);
+          wallet.comepleteTransaction({
+            address: tx.rawTx.from,
+            chainId: Number(tx.rawTx.chainId),
+            nonce: Number(tx.rawTx.nonce),
+            hash: tx.hash,
+            success: status === 1,
+          });
+        } else {
+          setTxQueues({
+            ...txQueues,
+            [tx.hash]: {
+              frontTx: front_tx_count,
+            },
+          });
+        }
+      }
+    });
+  };
+
+  if (item.isPending) {
+    useInterval(() => {
+      loadTxData();
+    }, intervalDelay);
+  }
+
+  useEffect(() => {
+    if (isCompleted) {
+      setIntervalDelay(null);
+      onComplete && onComplete();
+    }
+  }, [isCompleted]);
+
+  if (ago.hour <= 0 && ago.minute <= 0) {
+    ago.minute = 1;
+  }
+  if (ago.hour < 24) {
+    if (ago.hour > 0) {
+      agoText += `${ago.hour} hour`;
+    }
+    if (ago.minute > 0) {
+      if (agoText) agoText += ' ';
+      agoText += `${ago.minute} min`;
+    }
+    agoText += ' ago';
+  } else {
+    const date = new Date(item.createdAt);
+    agoText = `${date.getMonth()}/${date.getDate()} ${date.getHours()}:${date.getMinutes()}`;
+  }
 
   const ChildrenTxText = ({ tx }: { tx: TransactionHistoryItem }) => {
     const isOrigin = tx.hash === originTx.hash;
-    const isCancel = tx.rawTx.from === tx.rawTx.to;
+    const isCancel = isSameAddress(tx.rawTx.from, tx.rawTx.to);
 
     if (isOrigin) return <span className="tx-type">{t('Initial tx')}</span>;
     if (isCancel) return <span className="tx-type">{t('Cancel tx')}</span>;
@@ -107,7 +196,7 @@ const TransactionItem = ({ item }: { item: TransactionGroup }) => {
   };
 
   return (
-    <div className="tx-history__item">
+    <div className={clsx('tx-history__item', { 'opacity-50': isCanceled })}>
       <div className="tx-history__item--main">
         {item.isPending && (
           <div className="pending">
@@ -116,6 +205,7 @@ const TransactionItem = ({ item }: { item: TransactionGroup }) => {
           </div>
         )}
         <div className="tx-id">
+          <span>{item.isPending ? null : agoText}</span>
           <span>
             {chain.name} #{item.nonce}
           </span>
@@ -124,34 +214,99 @@ const TransactionItem = ({ item }: { item: TransactionGroup }) => {
         {item.isPending ? (
           <div className="tx-footer">
             {item.txs.length > 1 ? (
-              <div>Pending detail</div>
+              <div className="pending-detail">
+                {t('Pending detail')}
+                <Tooltip
+                  title={t('PendingDetailTip')}
+                  overlayClassName="rectangle pending-detail__tooltip"
+                  autoAdjustOverflow={false}
+                >
+                  <img
+                    className="icon icon-question-mark"
+                    src={IconQuestionMark}
+                  />
+                </Tooltip>
+              </div>
             ) : (
               <div className="ahead">
-                <span className="text-yellow">148</span> tx ahead - 28 Gwei{' '}
+                {txQueues[originTx.hash] ? (
+                  <>
+                    <span className="text-yellow">
+                      {txQueues[originTx.hash].frontTx}
+                    </span>{' '}
+                    tx ahead - {Number(originTx.rawTx.gasPrice) / 1e9} Gwei{' '}
+                  </>
+                ) : (
+                  t('Unknown')
+                )}
               </div>
             )}
-            <div className="tx-footer__actions">
-              <img className="icon icon-action" src={IconSpeedup} />
-              <div className="hr" />
-              <img className="icon icon-action" src={IconCancel} />
+            <div
+              className={clsx('tx-footer__actions', {
+                'opacity-40': !canCancel,
+              })}
+            >
+              <Tooltip
+                title={canCancel ? null : t('CanNotCancelTip')}
+                overlayClassName="rectangle cant-cancel__tooltip"
+                placement="topRight"
+                autoAdjustOverflow={false}
+              >
+                <div className="flex items-center">
+                  <img
+                    className={clsx('icon icon-action', {
+                      'cursor-not-allowed': !canCancel,
+                    })}
+                    src={IconSpeedup}
+                  />
+                  <div className="hr" />
+                  <img
+                    className={clsx('icon icon-action', {
+                      'cursor-not-allowed': !canCancel,
+                    })}
+                    src={IconCancel}
+                  />
+                </div>
+              </Tooltip>
             </div>
           </div>
         ) : (
-          <div className="tx-footer">Gas: 0.01 ETH</div>
+          <div className="tx-footer justify-between">
+            <span>Gas: 0.01 ETH</span>
+            <span className="text-red-light">
+              {isCanceled && t('Canceled')}
+              {item.isFailed && t('Failed')}
+            </span>
+          </div>
         )}
       </div>
-      {item.txs.length > 1 && (
+      {item.isPending && item.txs.length > 1 && (
         <div className="tx-history__item--children">
-          {item.txs.map((tx) => (
-            <div className="tx-history__item--children__item">
-              <ChildrenTxText tx={tx} />
-              <div className="ahead">
-                <span className="text-yellow">148</span> tx ahead -{' '}
-                {Number(tx.rawTx.gasPrice) / 1e9} Gwei{' '}
+          {item.txs
+            .sort((a, b) => b.createdAt - a.createdAt)
+            .map((tx, index) => (
+              <div
+                className={clsx('tx-history__item--children__item', {
+                  'opacity-50': index === 1,
+                  'opacity-30': index > 1,
+                })}
+              >
+                <ChildrenTxText tx={tx} />
+                <div className="ahead">
+                  {txQueues[tx.hash] ? (
+                    <>
+                      <span className="text-yellow">
+                        {txQueues[tx.hash].frontTx}
+                      </span>{' '}
+                      tx ahead - {Number(tx.rawTx.gasPrice) / 1e9} Gwei{' '}
+                    </>
+                  ) : (
+                    t('Unknown')
+                  )}
+                </div>
+                <SvgPendingSpin className="icon icon-spin" />
               </div>
-              <SvgPendingSpin className="icon icon-spin" />
-            </div>
-          ))}
+            ))}
         </div>
       )}
     </div>
@@ -171,6 +326,10 @@ const TransactionHistory = () => {
     setCompleteList(completeds);
   };
 
+  const handleTxComplete = () => {
+    init();
+  };
+
   useEffect(() => {
     init();
   }, []);
@@ -180,7 +339,27 @@ const TransactionHistory = () => {
       <PageHeader>{t('History')}</PageHeader>
       <div className="tx-history__pending">
         {pendingList.map((item) => (
-          <TransactionItem item={item} key={`${item.chainId}-${item.nonce}`} />
+          <TransactionItem
+            item={item}
+            key={`${item.chainId}-${item.nonce}`}
+            canCancel={
+              minBy(
+                pendingList.filter((i) => i.chainId === item.chainId),
+                (i) => i.nonce
+              )?.nonce === item.nonce
+            }
+            onComplete={() => handleTxComplete()}
+          />
+        ))}
+      </div>
+      <div className="tx-history__completed">
+        <p className="subtitle">{t('Completed transactions')}</p>
+        {completeList.map((item) => (
+          <TransactionItem
+            item={item}
+            key={`${item.chainId}-${item.nonce}`}
+            canCancel={false}
+          />
         ))}
       </div>
     </div>

@@ -692,5 +692,11 @@
   },
   "ApproveExplain": {
     "message": "授权 {{count}} 个 {{token}} 给 {{protocol}}"
+  },
+  "PendingDetailTip": {
+    "message": "只有一笔交易会被打包，并且几乎永远是 gas price 最高的那一笔"
+  },
+  "CanNotCancelTip": {
+    "message": "无法取消交易：不是第一笔 pending 中的交易"
   }
 }

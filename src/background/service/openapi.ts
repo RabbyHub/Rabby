@@ -176,6 +176,27 @@ interface RPCResponse<T> {
   };
 }
 
+interface GetTxResponse {
+  blockHash: string;
+  blockNumber: string;
+  from: string;
+  gas: string;
+  gasPrice: string;
+  hash: string;
+  input: string;
+  nonce: string;
+  to: string;
+  transactionIndex: string;
+  value: string;
+  type: string;
+  v: string;
+  r: string;
+  s: string;
+  front_tx_count: number;
+  code: 0 | -1;
+  status: -1 | 0 | 1;
+}
+
 const maxRPS = 100;
 
 class OpenApiService {
@@ -271,6 +292,11 @@ class OpenApiService {
             path: 'v1/wallet/eth_rpc',
             method: 'post',
             params: ['chain_id', 'method', 'params'],
+          },
+          get_tx: {
+            path: 'v1/wallet/get_tx',
+            method: 'GET',
+            params: ['chain_id', 'tx_id', 'gas_price'],
           },
         },
       },
@@ -561,6 +587,23 @@ class OpenApiService {
       params: {
         chain_id: chainId,
         custom_price: customGas,
+      },
+    });
+
+    return data;
+  };
+
+  getTx = async (
+    chainId: string,
+    hash: string,
+    gasPrice: number
+  ): Promise<GetTxResponse> => {
+    const config = this.store.config.get_tx;
+    const { data } = await this.request[config.method](config.path, {
+      params: {
+        chain_id: chainId,
+        gas_price: gasPrice,
+        tx_id: hash,
       },
     });
 

@@ -6,6 +6,7 @@ export interface TransactionHistoryItem {
   createdAt: number;
   isCompleted: boolean;
   hash: string;
+  failed: boolean;
 }
 
 export interface TransactionGroup {
@@ -15,6 +16,7 @@ export interface TransactionGroup {
   isPending: boolean;
   createdAt: number;
   explain: ExplainTxResponse;
+  isFailed: boolean;
 }
 
 interface TxHistoryStore {
@@ -64,6 +66,7 @@ class TxHistory {
       this.store.transactions = {
         ...this.store.transactions,
         [from]: {
+          ...this.store.transactions[from],
           [key]: {
             chainId: tx.rawTx.chainId,
             nonce,
@@ -71,6 +74,7 @@ class TxHistory {
             createdAt: tx.createdAt,
             isPending: true,
             explain: explain,
+            isFailed: false,
           },
         },
       };
@@ -80,7 +84,7 @@ class TxHistory {
   }
 
   getList(address: string) {
-    const list = Object.values(this.store.transactions[address]);
+    const list = Object.values(this.store.transactions[address] || {});
     const pendings: TransactionGroup[] = [];
     const completeds: TransactionGroup[] = [];
     if (!list) return { pendings: [], completeds: [] };
@@ -94,7 +98,7 @@ class TxHistory {
     return {
       pendings: pendings.sort((a, b) => {
         if (a.chainId === b.chainId) {
-          return a.nonce - b.nonce;
+          return b.nonce - a.nonce;
         } else {
           return a.chainId - b.chainId;
         }
@@ -114,19 +118,23 @@ class TxHistory {
     chainId,
     nonce,
     hash,
+    success = true,
   }: {
     address: string;
     chainId: number;
     nonce: number;
     hash: string;
+    success?: boolean;
   }) {
     const key = `${chainId}-${nonce}`;
     const normalizedAddress = address.toLowerCase();
     const target = this.store.transactions[normalizedAddress][key];
     target.isPending = false;
+    target.isFailed = !success;
     const index = target.txs.findIndex((tx) => tx.hash === hash);
     if (index !== -1) {
       target.txs[index].isCompleted = true;
+      target.txs[index].failed = !success;
     }
     this.store.transactions = {
       ...this.store.transactions,

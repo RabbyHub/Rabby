@@ -228,6 +228,7 @@ class ProviderController extends BaseController {
           createdAt: Date.now(),
           isCompleted: false,
           hash,
+          failed: false,
         },
         cacheExplain
       );

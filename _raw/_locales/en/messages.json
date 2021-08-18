@@ -695,5 +695,11 @@
   },
   "ApproveExplain": {
     "message": "Approve {{count}} {{token}} for {{protocol}}"
+  },
+  "PendingDetailTip": {
+    "message": "Only one transaction will be completed, and it is almost always the one with the highest gas price"
+  },
+  "CanNotCancelTip": {
+    "message": "Cannot speed up or cancel: Not the first pending txn"
   }
 }

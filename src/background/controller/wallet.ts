@@ -396,6 +396,13 @@ export class WalletController extends BaseController {
   }) => transactionHistoryService.addExplainCache(params);
   getTransactionHistory = (address: string) =>
     transactionHistoryService.getList(address);
+  comepleteTransaction = (params: {
+    address: string;
+    chainId: number;
+    nonce: number;
+    hash: string;
+    success?: boolean;
+  }) => transactionHistoryService.completeTx(params);
 
   private _getKeyringByType(type) {
     const keyring = keyringService.getKeyringsByType(type)[0];
