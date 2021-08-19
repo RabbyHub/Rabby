@@ -1,8 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation, Trans } from 'react-i18next';
 import { useInterval } from 'react-use';
+import { intToHex } from 'ethereumjs-util';
 import clsx from 'clsx';
 import minBy from 'lodash/minBy';
+import maxBy from 'lodash/maxby';
 import { Tooltip } from 'antd';
 import { useWallet, isSameAddress } from 'ui/utils';
 import { splitNumberByStep } from 'ui/utils/number';
@@ -12,8 +14,8 @@ import {
   TransactionGroup,
   TransactionHistoryItem,
 } from 'background/service/transactionHistory';
-import { ExplainTxResponse } from 'background/service/openapi';
-import { CHAINS } from 'consts';
+import { ExplainTxResponse, TokenItem } from 'background/service/openapi';
+import { CHAINS, MINIMUM_GAS_LIMIT } from 'consts';
 import { SvgPendingSpin } from 'ui/assets';
 import IconUser from 'ui/assets/address-management.svg';
 import IconUnknown from 'ui/assets/icon-unknown.svg';
@@ -122,52 +124,86 @@ const TransactionItem = ({
     item.txs.length > 1 &&
     isSameAddress(completedTx!.rawTx.from, completedTx!.rawTx.to);
   const ago = timeago(item.createdAt, Date.now());
-  const [txQueues, setTxQueues] = useState<Record<string, { frontTx: number }>>(
-    {}
-  );
+  const [txQueues, setTxQueues] = useState<
+    Record<
+      string,
+      {
+        frontTx?: number;
+        gasUsed?: number;
+        token?: TokenItem;
+        tokenCount?: number;
+      }
+    >
+  >({});
   let agoText = '';
 
   const loadTxData = async () => {
-    item.txs.forEach(async (tx) => {
-      const { code, status, front_tx_count } = await wallet.openapi.getTx(
-        chain.serverId,
-        tx.hash,
-        Number(tx.rawTx.gasPrice)
-      );
-      if (code === 0) {
-        if (status !== 0) {
-          setIsCompleted(true);
+    const results = await Promise.all(
+      item.txs.map((tx) =>
+        wallet.openapi.getTx(chain.serverId, tx.hash, Number(tx.rawTx.gasPrice))
+      )
+    );
+    let map = {};
+    results.forEach(
+      ({ code, status, front_tx_count, gas_used, token }, index) => {
+        if (isCompleted) {
+          if (!completedTx!.gasUsed) {
+            map = {
+              ...map,
+              [item.txs[index].hash]: {
+                token,
+                tokenCount:
+                  (gas_used * Number(completedTx!.rawTx.gasPrice)) / 1e18,
+                gasUsed: gas_used,
+              },
+            };
+          } else if (code === 0) {
+            map = {
+              ...map,
+              [item.txs[index].hash]: {
+                token,
+                gasUsed: completedTx!.gasUsed,
+                tokenCount:
+                  (completedTx!.gasUsed * Number(completedTx!.rawTx.gasPrice)) /
+                  1e18,
+              },
+            };
+          }
+        } else if (status !== 0 && code === 0) {
           wallet.comepleteTransaction({
-            address: tx.rawTx.from,
-            chainId: Number(tx.rawTx.chainId),
-            nonce: Number(tx.rawTx.nonce),
-            hash: tx.hash,
+            address: item.txs[index].rawTx.from,
+            chainId: Number(item.txs[index].rawTx.chainId),
+            nonce: Number(item.txs[index].rawTx.nonce),
+            hash: item.txs[index].hash,
             success: status === 1,
           });
         } else {
-          setTxQueues({
-            ...txQueues,
-            [tx.hash]: {
+          map = {
+            ...map,
+            [item.txs[index].hash]: {
               frontTx: front_tx_count,
             },
-          });
+          };
         }
       }
-    });
+    );
+    if (!isCompleted && results.some((i) => i.status !== 0 && i.code === 0)) {
+      setIntervalDelay(null);
+      onComplete && onComplete();
+    }
+    setTxQueues(map);
   };
 
   if (item.isPending) {
     useInterval(() => {
+      console.log('interval');
       loadTxData();
     }, intervalDelay);
   }
 
   useEffect(() => {
-    if (isCompleted) {
-      setIntervalDelay(null);
-      onComplete && onComplete();
-    }
-  }, [isCompleted]);
+    loadTxData();
+  }, []);
 
   if (ago.hour <= 0 && ago.minute <= 0) {
     ago.minute = 1;
@@ -183,8 +219,55 @@ const TransactionItem = ({
     agoText += ' ago';
   } else {
     const date = new Date(item.createdAt);
-    agoText = `${date.getMonth()}/${date.getDate()} ${date.getHours()}:${date.getMinutes()}`;
+    agoText = `${
+      date.getMonth() + 1
+    }/${date.getDate()} ${date.getHours()}:${date.getMinutes()}`;
   }
+
+  const handleClickCancel = async () => {
+    const maxGasTx = maxBy(item.txs, (tx) => Number(tx.rawTx.gasPrice))!;
+    const maxGasPrice = Number(maxGasTx.rawTx.gasPrice);
+    const chainServerId = Object.values(CHAINS).find(
+      (chain) => chain.id === item.chainId
+    )!.serverId;
+    const gasLevels = await wallet.openapi.gasMarket(chainServerId);
+    const maxGasMarketPrice = maxBy(gasLevels, (level) => level.price)!.price;
+    wallet.sendRequest({
+      method: 'eth_sendTransaction',
+      params: [
+        {
+          from: maxGasTx.rawTx.from,
+          to: maxGasTx.rawTx.from,
+          gasPrice: intToHex(Math.max(maxGasPrice * 2, maxGasMarketPrice)),
+          value: '0x0',
+          chainId: item.chainId,
+          nonce: intToHex(item.nonce),
+          gas: intToHex(MINIMUM_GAS_LIMIT),
+          isCancel: true,
+        },
+      ],
+    });
+  };
+
+  const handleClickSpeedUp = async () => {
+    const maxGasTx = maxBy(item.txs, (tx) => Number(tx.rawTx.gasPrice))!;
+    const maxGasPrice = Number(maxGasTx.rawTx.gasPrice);
+    const chainServerId = Object.values(CHAINS).find(
+      (chain) => chain.id === item.chainId
+    )!.serverId;
+    const gasLevels = await wallet.openapi.gasMarket(chainServerId);
+    const maxGasMarketPrice = maxBy(gasLevels, (level) => level.price)!.price;
+    wallet.sendRequest({
+      method: 'eth_sendTransaction',
+      params: [
+        {
+          ...originTx.rawTx,
+          gasPrice: intToHex(Math.max(maxGasPrice * 2, maxGasMarketPrice)),
+          isSpeedUp: true,
+        },
+      ],
+    });
+  };
 
   const ChildrenTxText = ({ tx }: { tx: TransactionHistoryItem }) => {
     const isOrigin = tx.hash === originTx.hash;
@@ -258,6 +341,7 @@ const TransactionItem = ({
                       'cursor-not-allowed': !canCancel,
                     })}
                     src={IconSpeedup}
+                    onClick={handleClickSpeedUp}
                   />
                   <div className="hr" />
                   <img
@@ -265,6 +349,7 @@ const TransactionItem = ({
                       'cursor-not-allowed': !canCancel,
                     })}
                     src={IconCancel}
+                    onClick={handleClickCancel}
                   />
                 </div>
               </Tooltip>
@@ -272,7 +357,16 @@ const TransactionItem = ({
           </div>
         ) : (
           <div className="tx-footer justify-between">
-            <span>Gas: 0.01 ETH</span>
+            <span>
+              Gas:{' '}
+              {txQueues[completedTx!.hash]
+                ? txQueues[completedTx!.hash].tokenCount +
+                  ` ${txQueues[completedTx!.hash].token?.symbol} ($${(
+                    txQueues[completedTx!.hash].tokenCount! *
+                    (txQueues[completedTx!.hash].token?.price || 1)
+                  ).toFixed(4)})`
+                : t('Unknown')}
+            </span>
             <span className="text-red-light">
               {isCanceled && t('Canceled')}
               {item.isFailed && t('Failed')}

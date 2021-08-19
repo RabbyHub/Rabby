@@ -1,5 +1,6 @@
 import { createPersistStore } from 'background/utils';
-import { Tx, ExplainTxResponse } from './openapi';
+import openapiService, { Tx, ExplainTxResponse } from './openapi';
+import { CHAINS } from 'consts';
 
 export interface TransactionHistoryItem {
   rawTx: Tx;
@@ -7,6 +8,7 @@ export interface TransactionHistoryItem {
   isCompleted: boolean;
   hash: string;
   failed: boolean;
+  gasUsed?: number;
 }
 
 export interface TransactionGroup {
@@ -81,6 +83,86 @@ class TxHistory {
     }
 
     this.removeExplainCache(`${from.toLowerCase()}-${chainId}-${nonce}`);
+  }
+
+  updateSingleTx(tx: TransactionHistoryItem) {
+    const nonce = Number(tx.rawTx.nonce);
+    const chainId = tx.rawTx.chainId;
+    const key = `${chainId}-${nonce}`;
+    const from = tx.rawTx.from.toLowerCase();
+    const target = this.store.transactions[from][key];
+    if (!this.store.transactions[from] || !target) return;
+    const index = target.txs.findIndex((t) => t.hash === tx.hash);
+    target.txs[index] = tx;
+    this.store.transactions = {
+      ...this.store.transactions,
+      [from]: {
+        ...this.store.transactions[from],
+        [key]: target,
+      },
+    };
+  }
+
+  async reloadTx(
+    {
+      address,
+      chainId,
+      nonce,
+    }: {
+      address: string;
+      chainId: number;
+      nonce: number;
+    },
+    duration = 0
+  ) {
+    const key = `${chainId}-${nonce}`;
+    const from = address.toLowerCase();
+    const target = this.store.transactions[from][key];
+    const chain = Object.values(CHAINS).find((c) => c.id === chainId)!;
+    if (!target) return;
+    const { txs } = target;
+    try {
+      const results = await Promise.all(
+        txs.map((tx) =>
+          openapiService.getTx(
+            chain.serverId,
+            tx.hash,
+            Number(tx.rawTx.gasPrice)
+          )
+        )
+      );
+      const completed = results.find(
+        (result) => result.code === 0 && result.status !== 0
+      );
+      if (!completed) {
+        if (duration < 1000 * 15) {
+          // maximum retry 15 times;
+          setTimeout(() => {
+            this.reloadTx({ address, chainId, nonce });
+          }, duration + 1000);
+        }
+        return;
+      }
+      const completedTx = txs.find((tx) => tx.hash === completed.hash)!;
+      this.updateSingleTx({
+        ...completedTx,
+        gasUsed: completed.gas_used,
+      });
+      this.completeTx({
+        address,
+        chainId,
+        nonce,
+        hash: completedTx.hash,
+        success: completed.status === 1,
+      });
+    } catch (e) {
+      if (duration < 1000 * 15) {
+        // maximum retry 15 times;
+        setTimeout(() => {
+          this.reloadTx({ address, chainId, nonce });
+        }, duration + 1000);
+      }
+    }
   }
 
   getList(address: string) {

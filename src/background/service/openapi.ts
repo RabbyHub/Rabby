@@ -193,8 +193,10 @@ interface GetTxResponse {
   r: string;
   s: string;
   front_tx_count: number;
-  code: 0 | -1;
-  status: -1 | 0 | 1;
+  code: 0 | -1; // 0: success, -1: failed
+  status: -1 | 0 | 1; // -1: failed, 0: pending, 1: success
+  gas_used: number;
+  token: TokenItem;
 }
 
 const maxRPS = 100;

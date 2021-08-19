@@ -26,6 +26,7 @@ interface GasSelectorProps {
   isReady: boolean;
   recommendGasLimit: number;
   nonce: string;
+  disableNonce: boolean;
 }
 
 const GasSelector = ({
@@ -37,6 +38,7 @@ const GasSelector = ({
   isReady,
   recommendGasLimit,
   nonce,
+  disableNonce,
 }: GasSelectorProps) => {
   const wallet = useWallet();
   const { t } = useTranslation();
@@ -392,15 +394,18 @@ const GasSelector = ({
                   .
                 </p>
               )}
-              <p className="section-title mt-20">{t('Nonce')}</p>
-              <Form.Item className="gas-limit-panel mb-0" required>
-                <Input
-                  value={customNonce}
-                  onChange={handleCustomNonceChange}
-                  bordered={false}
-                />
-              </Form.Item>
-              <p className="tip">{t('Modify only when necessary')}</p>
+              <div className={clsx({ 'opacity-50': disableNonce })}>
+                <p className="section-title mt-20">{t('Nonce')}</p>
+                <Form.Item className="gas-limit-panel mb-0" required>
+                  <Input
+                    value={customNonce}
+                    onChange={handleCustomNonceChange}
+                    bordered={false}
+                    disabled={disableNonce}
+                  />
+                </Form.Item>
+                <p className="tip">{t('Modify only when necessary')}</p>
+              </div>
             </div>
           </div>
           <div className="flex justify-center mt-32">

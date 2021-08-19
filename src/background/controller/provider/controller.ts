@@ -171,8 +171,9 @@ class ProviderController extends BaseController {
       const currentAddress = preferenceService
         .getCurrentAccount()
         ?.address.toLowerCase();
-      const currentChain = permissionService.getConnectedSite(session.origin)
-        ?.chain;
+      const currentChain = permissionService.isInternalOrigin(session.origin)
+        ? Object.values(CHAINS).find((chain) => chain.id === tx.chainId)!.enum
+        : permissionService.getConnectedSite(session.origin)?.chain;
       if (tx.from.toLowerCase() !== currentAddress) {
         throw ethErrors.rpc.invalidParams(
           'from should be same as current address'
@@ -216,7 +217,12 @@ class ProviderController extends BaseController {
       txParams.from
     );
     const onTranscationSubmitted = (hash: string) => {
-      const chain = permissionService.getConnectedSite(origin)!.chain;
+      console.log(approvalRes);
+      const chain = permissionService.isInternalOrigin(origin)
+        ? Object.values(CHAINS).find(
+            (chain) => chain.id === approvalRes.chainId
+          )!.enum
+        : permissionService.getConnectedSite(origin)!.chain;
       const cacheExplain = transactionHistoryService.getExplainCache({
         address: txParams.from,
         chainId: Number(approvalRes.chainId),

@@ -88,11 +88,10 @@ class TransactionWatcher {
       .id;
 
     if (txReceipt) {
-      transactionHistoryService.completeTx({
+      transactionHistoryService.reloadTx({
         address,
         nonce: Number(nonce),
         chainId,
-        hash,
       });
     }
 

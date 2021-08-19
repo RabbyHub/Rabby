@@ -1,6 +1,6 @@
 import LRU from 'lru-cache';
 import { createPersistStore } from 'background/utils';
-import { CHAINS_ENUM } from 'consts';
+import { CHAINS_ENUM, INTERNAL_REQUEST_ORIGIN } from 'consts';
 
 export interface ConnectedSite {
   origin: string;
@@ -72,6 +72,7 @@ class PermissionService {
 
   touchConnectedSite = (origin) => {
     if (!this.lruCache) return;
+    if (origin === INTERNAL_REQUEST_ORIGIN) return;
     this.lruCache.get(origin);
     this.sync();
   };
@@ -82,6 +83,7 @@ class PermissionService {
     partialUpdate?: boolean
   ) => {
     if (!this.lruCache || !this.lruCache.has(origin)) return;
+    if (origin === INTERNAL_REQUEST_ORIGIN) return;
 
     if (partialUpdate) {
       const _value = this.lruCache.get(origin);
@@ -95,6 +97,7 @@ class PermissionService {
 
   hasPerssmion = (origin) => {
     if (!this.lruCache) return;
+    if (origin === INTERNAL_REQUEST_ORIGIN) return true;
 
     return this.lruCache.has(origin);
   };
@@ -154,6 +157,10 @@ class PermissionService {
   getSitesByDefaultChain = (chain: CHAINS_ENUM) => {
     if (!this.lruCache) return [];
     return this.lruCache.values().filter((item) => item.chain === chain);
+  };
+
+  isInternalOrigin = (origin: string) => {
+    return origin === INTERNAL_REQUEST_ORIGIN;
   };
 }
 
