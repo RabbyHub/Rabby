@@ -115,18 +115,18 @@ export const CHAINS: Record<string, Chain> = {
     scanLink: 'https://hecoinfo.com/tx/_s_',
   },
   // https://developer.offchainlabs.com/docs/public_testnet#connection-information
-  [CHAINS_ENUM.ARBITRUM]: {
-    id: 42161,
-    serverId: 'arbitrum',
-    name: 'Arbitrum',
-    enum: CHAINS_ENUM.ARBITRUM,
-    logo: IconArbitrumLogo,
-    whiteLogo: IconArbitrumWhiteLogo,
-    hex: '0xa4b1',
-    network: '42161',
-    nativeTokenSymbol: 'ETH',
-    scanLink: 'https://explorer.arbitrum.io/tx/_s_',
-  },
+  // [CHAINS_ENUM.ARBITRUM]: {
+  //   id: 42161,
+  //   serverId: 'arbitrum',
+  //   name: 'Arbitrum',
+  //   enum: CHAINS_ENUM.ARBITRUM,
+  //   logo: IconArbitrumLogo,
+  //   whiteLogo: IconArbitrumWhiteLogo,
+  //   hex: '0xa4b1',
+  //   network: '42161',
+  //   nativeTokenSymbol: 'ETH',
+  //   scanLink: 'https://explorer.arbitrum.io/tx/_s_',
+  // },
 };
 
 export const KEYRING_TYPE = {

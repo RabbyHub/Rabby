@@ -85,8 +85,11 @@ class ProviderController extends BaseController {
 
     const currentAddress =
       preferenceService.getCurrentAccount()?.address.toLowerCase() || '0x';
-    const cache = RpcCache.get(currentAddress, { method, params });
-
+    const cache = RpcCache.get(currentAddress, {
+      method,
+      params,
+      chainId: chainServerId,
+    });
     if (cache) return cache;
 
     const promise = openapiService
@@ -98,14 +101,14 @@ class ProviderController extends BaseController {
       .then((result) => {
         RpcCache.set(
           currentAddress,
-          { method, params, result },
+          { method, params, result, chainId: chainServerId },
           method === 'eth_call' ? 20 * 60000 : undefined
         );
         return result;
       });
     RpcCache.set(
       currentAddress,
-      { method, params, result: promise },
+      { method, params, result: promise, chainId: chainServerId },
       method === 'eth_call' ? 20 * 60000 : undefined
     );
     return promise;

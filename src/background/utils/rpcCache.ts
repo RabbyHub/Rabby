@@ -1,3 +1,6 @@
+import openapiService from 'background/service/openapi';
+import { CHAINS } from 'consts';
+
 type CacheState = Map<
   string,
   { timeoutId: number; result: any; expireTime: number }
@@ -5,13 +8,48 @@ type CacheState = Map<
 
 class RpcCache {
   state: CacheState = new Map();
+  latestBlockNumber: Record<string, string> = {};
+
+  start() {
+    this.loadBlockNumber();
+    setInterval(() => {
+      this.loadBlockNumber();
+    }, 10000);
+  }
+
+  async loadBlockNumber() {
+    const chainList = Object.values(CHAINS);
+    const blockNumbers = await Promise.all(
+      chainList.map((chain) =>
+        openapiService.ethRpc(chain.serverId, {
+          method: 'eth_blockNumber',
+          params: [],
+        })
+      )
+    );
+    this.latestBlockNumber = blockNumbers.reduce((res, current, index) => {
+      const chain = chainList[index];
+      return {
+        ...res,
+        [chain.serverId]: current,
+      };
+    }, {});
+  }
+
+  getLatestBlockNumber(chainId: string) {
+    return this.latestBlockNumber[chainId] || Date.now().toString();
+  }
 
   set(
     address: string,
-    data: { method: string; params: any; result: any },
+    data: { method: string; chainId: string; params: any; result: any },
     expireTime = 10000
   ) {
-    const key = `${address}-${data.method}-${JSON.stringify(data.params)}`;
+    if (!this.canCache(data)) return;
+    const latestBlockNumber = this.getLatestBlockNumber(data.chainId);
+    const key = `${address}-${data.method}-${
+      data.chainId
+    }-${latestBlockNumber}-${JSON.stringify(data.params)}`;
     const cache = this.getIfExist(key);
     if (cache) {
       const { timeoutId } = this.state.get(key)!;
@@ -33,8 +71,11 @@ class RpcCache {
     }
   }
 
-  has(address: string, data: { method: string; params: any }) {
-    const key = `${address}-${data.method}-${JSON.stringify(data.params)}`;
+  has(address: string, data: { method: string; params: any; chainId: string }) {
+    const latestBlockNumber = this.getLatestBlockNumber(data.chainId);
+    const key = `${address}-${data.method}-${
+      data.chainId
+    }-${latestBlockNumber}-${JSON.stringify(data.params)}`;
     const timeout = this.getIfExist(key);
     if (timeout !== null) {
       return true;
@@ -43,18 +84,24 @@ class RpcCache {
     return false;
   }
 
-  get(address: string, data: { method: string; params: any }) {
-    const key = `${address}-${data.method}-${JSON.stringify(data.params)}`;
+  get(address: string, data: { method: string; params: any; chainId: string }) {
+    const latestBlockNumber = this.getLatestBlockNumber(data.chainId);
+    const key = `${address}-${data.method}-${
+      data.chainId
+    }-${latestBlockNumber}-${JSON.stringify(data.params)}`;
     const cache = this.getIfExist(key);
     return cache?.result;
   }
 
   updateExpire(
     address: string,
-    data: { method: string; params: any },
+    data: { method: string; params: any; chainId: string },
     expireTime = 10000
   ) {
-    const key = `${address}-${data.method}-${JSON.stringify(data.params)}`;
+    const latestBlockNumber = this.getLatestBlockNumber(data.chainId);
+    const key = `${address}-${data.method}-${
+      data.chainId
+    }-${latestBlockNumber}-${JSON.stringify(data.params)}`;
     const cache = this.getIfExist(key);
     if (cache) {
       const timeoutId = window.setTimeout(() => {
@@ -65,6 +112,40 @@ class RpcCache {
         result: cache.result,
         expireTime: cache.expireTime,
       });
+    }
+  }
+
+  canCache(data: { method: string; params: any }) {
+    switch (data.method) {
+      case 'web3_clientVersion':
+      case 'web3_sha3':
+      case 'eth_protocolVersion':
+      case 'eth_getBlockTransactionCountByHash':
+      case 'eth_getUncleCountByBlockHash':
+      case 'eth_getCode':
+      case 'eth_getBlockByHash':
+      case 'eth_getUncleByBlockHashAndIndex':
+      case 'eth_getCompilers':
+      case 'eth_compileLLL':
+      case 'eth_compileSolidity':
+      case 'eth_compileSerpent':
+      case 'shh_version':
+      case 'eth_getBlockByNumber':
+      case 'eth_getBlockTransactionCountByNumber':
+      case 'eth_getUncleCountByBlockNumber':
+      case 'eth_getTransactionByBlockNumberAndIndex':
+      case 'eth_getUncleByBlockNumberAndIndex':
+      case 'eth_gasPrice':
+      case 'eth_blockNumber':
+      case 'eth_getStorageAt':
+      case 'eth_call':
+      case 'eth_estimateGas':
+      case 'eth_getFilterLogs':
+      case 'eth_getLogs':
+        return true;
+
+      default:
+        return false;
     }
   }
 
