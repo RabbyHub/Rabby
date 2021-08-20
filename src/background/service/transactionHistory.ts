@@ -45,6 +45,13 @@ class TxHistory {
     if (!this.store.cacheExplain) this.store.cacheExplain = {};
   }
 
+  getPendingCount(address: string) {
+    const normalizedAddress = address.toLowerCase();
+    return Object.values(
+      this.store.transactions[normalizedAddress] || {}
+    ).filter((item) => item.isPending).length;
+  }
+
   addTx(tx: TransactionHistoryItem, explain: TransactionGroup['explain']) {
     const nonce = Number(tx.rawTx.nonce);
     const chainId = tx.rawTx.chainId;
@@ -185,13 +192,18 @@ class TxHistory {
           return a.chainId - b.chainId;
         }
       }),
-      completeds: completeds.sort((a, b) => {
-        if (a.chainId === b.chainId) {
-          return a.nonce - b.nonce;
-        } else {
-          return a.chainId - b.chainId;
-        }
-      }),
+      completeds: completeds
+        .sort((a, b) => {
+          return b.createdAt - a.createdAt;
+        })
+        .slice(0, 10)
+        .sort((a, b) => {
+          if (a.chainId === b.chainId) {
+            return b.nonce - a.nonce;
+          } else {
+            return a.chainId - b.chainId;
+          }
+        }),
     };
   }
 
@@ -201,12 +213,14 @@ class TxHistory {
     nonce,
     hash,
     success = true,
+    gasUsed,
   }: {
     address: string;
     chainId: number;
     nonce: number;
     hash: string;
     success?: boolean;
+    gasUsed?: number;
   }) {
     const key = `${chainId}-${nonce}`;
     const normalizedAddress = address.toLowerCase();
@@ -217,6 +231,9 @@ class TxHistory {
     if (index !== -1) {
       target.txs[index].isCompleted = true;
       target.txs[index].failed = !success;
+      if (gasUsed) {
+        target.txs[index].gasUsed = gasUsed;
+      }
     }
     this.store.transactions = {
       ...this.store.transactions,
@@ -225,6 +242,42 @@ class TxHistory {
         [key]: target,
       },
     };
+    this.clearBefore({ address, chainId, nonce });
+  }
+
+  clearBefore({
+    address,
+    chainId,
+    nonce,
+  }: {
+    address: string;
+    chainId: number;
+    nonce: number;
+  }) {
+    const normalizedAddress = address.toLowerCase();
+    const copyHistory = this.store.transactions[normalizedAddress];
+    const copyExplain = this.store.cacheExplain;
+    for (const k in copyHistory) {
+      const t = copyHistory[k];
+      if (t.chainId === chainId && t.nonce < nonce && t.isPending) {
+        delete copyHistory[k];
+      }
+    }
+    for (const k in copyExplain) {
+      const [addr, cacheChainId, cacheNonce] = k.split('-');
+      if (
+        addr.toLowerCase() === normalizedAddress &&
+        Number(cacheChainId) === chainId &&
+        Number(cacheNonce) < nonce
+      ) {
+        delete copyExplain[k];
+      }
+    }
+    this.store.transactions = {
+      ...this.store.transactions,
+      [normalizedAddress]: copyHistory,
+    };
+    this.store.cacheExplain = copyExplain;
   }
 
   addExplainCache({

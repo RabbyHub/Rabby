@@ -9,7 +9,9 @@ import { Tooltip } from 'antd';
 import { useWallet, isSameAddress } from 'ui/utils';
 import { splitNumberByStep } from 'ui/utils/number';
 import { timeago } from 'ui/utils/time';
+import { openInTab } from 'ui/utils/webapi';
 import { PageHeader } from 'ui/component';
+import { useConfirmExternalModal } from '../Dashboard/components';
 import {
   TransactionGroup,
   TransactionHistoryItem,
@@ -22,9 +24,16 @@ import IconUnknown from 'ui/assets/icon-unknown.svg';
 import IconCancel from 'ui/assets/cancel.svg';
 import IconSpeedup from 'ui/assets/speedup.svg';
 import IconQuestionMark from 'ui/assets/question-mark-black.svg';
+import { SvgIconOpenExternal } from 'ui/assets';
 import './style.less';
 
-const TransactionExplain = ({ explain }: { explain: ExplainTxResponse }) => {
+const TransactionExplain = ({
+  explain,
+  onOpenScan,
+}: {
+  explain: ExplainTxResponse;
+  onOpenScan(): void;
+}) => {
   const { t } = useTranslation();
   let icon: React.ReactNode = (
     <img className="icon icon-explain" src={IconUnknown} />
@@ -94,11 +103,30 @@ const TransactionExplain = ({ explain }: { explain: ExplainTxResponse }) => {
   }
 
   return (
-    <p className="tx-explain">
+    <p className="tx-explain" onClick={onOpenScan}>
       {icon || <img className="icon icon-explain" src={IconUnknown} />}
       {content || t('Unknown Transaction')}
+      <SvgIconOpenExternal className="icon icon-external" />
     </p>
   );
+};
+
+const ChildrenTxText = ({
+  tx,
+  originTx,
+}: {
+  tx: TransactionHistoryItem;
+  originTx: TransactionHistoryItem;
+}) => {
+  const isOrigin = tx.hash === originTx.hash;
+  const isCancel = isSameAddress(tx.rawTx.from, tx.rawTx.to);
+  const { t } = useTranslation();
+  let text = '';
+
+  if (isOrigin) text = t('Initial tx');
+  if (isCancel) text = t('Cancel tx');
+  text = t('Speed up tx');
+  return <span className="tx-type">{text}</span>;
 };
 
 const TransactionItem = ({
@@ -115,10 +143,8 @@ const TransactionItem = ({
   const chain = Object.values(CHAINS).find((c) => c.id === item.chainId)!;
   const originTx = minBy(item.txs, (tx) => tx.createdAt)!;
   const completedTx = item.txs.find((tx) => tx.isCompleted);
-  const [isCompleted, setIsCompleted] = useState(!item.isPending);
-  const [intervalDelay, setIntervalDelay] = useState(
-    item.isPending ? 1000 : null
-  );
+  const isCompleted = !item.isPending;
+  const intervalDelay = item.isPending ? 1000 : null;
   const isCanceled =
     !item.isPending &&
     item.txs.length > 1 &&
@@ -176,6 +202,7 @@ const TransactionItem = ({
             nonce: Number(item.txs[index].rawTx.nonce),
             hash: item.txs[index].hash,
             success: status === 1,
+            gasUsed: gas_used,
           });
         } else {
           map = {
@@ -188,15 +215,14 @@ const TransactionItem = ({
       }
     );
     if (!isCompleted && results.some((i) => i.status !== 0 && i.code === 0)) {
-      setIntervalDelay(null);
       onComplete && onComplete();
+    } else {
+      setTxQueues(map);
     }
-    setTxQueues(map);
   };
 
   if (item.isPending) {
     useInterval(() => {
-      console.log('interval');
       loadTxData();
     }, intervalDelay);
   }
@@ -225,6 +251,7 @@ const TransactionItem = ({
   }
 
   const handleClickCancel = async () => {
+    if (!canCancel) return;
     const maxGasTx = maxBy(item.txs, (tx) => Number(tx.rawTx.gasPrice))!;
     const maxGasPrice = Number(maxGasTx.rawTx.gasPrice);
     const chainServerId = Object.values(CHAINS).find(
@@ -250,6 +277,7 @@ const TransactionItem = ({
   };
 
   const handleClickSpeedUp = async () => {
+    if (!canCancel) return;
     const maxGasTx = maxBy(item.txs, (tx) => Number(tx.rawTx.gasPrice))!;
     const maxGasPrice = Number(maxGasTx.rawTx.gasPrice);
     const chainServerId = Object.values(CHAINS).find(
@@ -269,13 +297,15 @@ const TransactionItem = ({
     });
   };
 
-  const ChildrenTxText = ({ tx }: { tx: TransactionHistoryItem }) => {
-    const isOrigin = tx.hash === originTx.hash;
-    const isCancel = isSameAddress(tx.rawTx.from, tx.rawTx.to);
-
-    if (isOrigin) return <span className="tx-type">{t('Initial tx')}</span>;
-    if (isCancel) return <span className="tx-type">{t('Cancel tx')}</span>;
-    return <span className="tx-type">{t('Speed up tx')}</span>;
+  const handleOpenScan = () => {
+    let hash = '';
+    if (isCompleted) {
+      hash = completedTx!.hash;
+    } else {
+      const maxGasTx = maxBy(item.txs, (tx) => Number(tx.rawTx.gasPrice))!;
+      hash = maxGasTx.hash;
+    }
+    openInTab(chain.scanLink.replace(/_s_/, hash));
   };
 
   return (
@@ -293,7 +323,10 @@ const TransactionItem = ({
             {chain.name} #{item.nonce}
           </span>
         </div>
-        <TransactionExplain explain={item.explain} />
+        <TransactionExplain
+          explain={item.explain}
+          onOpenScan={handleOpenScan}
+        />
         {item.isPending ? (
           <div className="tx-footer">
             {item.txs.length > 1 ? (
@@ -317,7 +350,8 @@ const TransactionItem = ({
                     <span className="text-yellow">
                       {txQueues[originTx.hash].frontTx}
                     </span>{' '}
-                    tx ahead - {Number(originTx.rawTx.gasPrice) / 1e9} Gwei{' '}
+                    {t('tx ahead')} - {Number(originTx.rawTx.gasPrice) / 1e9}{' '}
+                    Gwei{' '}
                   </>
                 ) : (
                   t('Unknown')
@@ -385,7 +419,7 @@ const TransactionItem = ({
                   'opacity-30': index > 1,
                 })}
               >
-                <ChildrenTxText tx={tx} />
+                <ChildrenTxText tx={tx} originTx={originTx} />
                 <div className="ahead">
                   {txQueues[tx.hash] ? (
                     <>
@@ -413,6 +447,7 @@ const TransactionHistory = () => {
   const { address } = wallet.syncGetCurrentAccount()!;
   const [pendingList, setPendingList] = useState<TransactionGroup[]>([]);
   const [completeList, setCompleteList] = useState<TransactionGroup[]>([]);
+  const _openInTab = useConfirmExternalModal();
 
   const init = () => {
     const { pendings, completeds } = wallet.getTransactionHistory(address);
@@ -428,34 +463,69 @@ const TransactionHistory = () => {
     init();
   }, []);
 
+  const handleViewAll = () => {
+    _openInTab(`https://debank.com/profile/${address}/history`);
+  };
+
+  const rightSlotButton = (
+    <a
+      className="header-view-all-transaction"
+      href="javascript:;"
+      onClick={handleViewAll}
+    >
+      {t('View all')}
+      <SvgIconOpenExternal className="icon icon-external" />
+    </a>
+  );
+
   return (
     <div className="tx-history">
-      <PageHeader>{t('History')}</PageHeader>
-      <div className="tx-history__pending">
-        {pendingList.map((item) => (
-          <TransactionItem
-            item={item}
-            key={`${item.chainId}-${item.nonce}`}
-            canCancel={
-              minBy(
-                pendingList.filter((i) => i.chainId === item.chainId),
-                (i) => i.nonce
-              )?.nonce === item.nonce
-            }
-            onComplete={() => handleTxComplete()}
-          />
-        ))}
-      </div>
-      <div className="tx-history__completed">
-        <p className="subtitle">{t('Completed transactions')}</p>
-        {completeList.map((item) => (
-          <TransactionItem
-            item={item}
-            key={`${item.chainId}-${item.nonce}`}
-            canCancel={false}
-          />
-        ))}
-      </div>
+      <PageHeader rightSlot={rightSlotButton}>{t('History')}</PageHeader>
+      {pendingList.length > 0 && (
+        <div className="tx-history__pending">
+          {pendingList.map((item) => (
+            <TransactionItem
+              item={item}
+              key={`${item.chainId}-${item.nonce}`}
+              canCancel={
+                minBy(
+                  pendingList.filter((i) => i.chainId === item.chainId),
+                  (i) => i.nonce
+                )?.nonce === item.nonce
+              }
+              onComplete={() => handleTxComplete()}
+            />
+          ))}
+        </div>
+      )}
+      {completeList.length > 0 && (
+        <div className="tx-history__completed">
+          <p className="subtitle">{t('Completed transactions')}</p>
+          {completeList.map((item) => (
+            <TransactionItem
+              item={item}
+              key={`${item.chainId}-${item.nonce}`}
+              canCancel={false}
+            />
+          ))}
+        </div>
+      )}
+      {completeList.length <= 0 && pendingList.length <= 0 && (
+        <div className="tx-history__empty">
+          <img className="no-data" src="./images/nodata-tx.png" />
+          <p className="text-14 text-gray-content mt-12">
+            {t('No transaction')}
+          </p>
+        </div>
+      )}
+      <a
+        href="javascript:;"
+        className="bottom-view-all-transaction"
+        onClick={handleViewAll}
+      >
+        {t('View all history on DeBank')}
+        <SvgIconOpenExternal className="icon icon-external" />
+      </a>
     </div>
   );
 };

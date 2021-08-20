@@ -413,7 +413,10 @@ export class WalletController extends BaseController {
     nonce: number;
     hash: string;
     success?: boolean;
+    gasUsed?: number;
   }) => transactionHistoryService.completeTx(params);
+  getPendingCount = (address: string) =>
+    transactionHistoryService.getPendingCount(address);
 
   private _getKeyringByType(type) {
     const keyring = keyringService.getKeyringsByType(type)[0];

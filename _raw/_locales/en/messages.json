@@ -701,5 +701,35 @@
   },
   "CanNotCancelTip": {
     "message": "Cannot speed up or cancel: Not the first pending txn"
+  },
+  "SpeedUpTooltip": {
+    "message": "This accelerated transaction and the original transaction, only one of which will eventually be completed"
+  },
+  "View__all__history__on__DeBank": {
+    "message": "View all history on DeBank"
+  },
+  "View__all": {
+    "message": "View all"
+  },
+  "Pending__detail": {
+    "message": "Pending detail"
+  },
+  "Pending": {
+    "message": "Pending"
+  },
+  "tx__ahead": {
+    "message": "tx ahead"
+  },
+  "Initial__tx": {
+    "message": "Initial tx"
+  },
+  "Cancel__tx": {
+    "message": "Cancel tx"
+  },
+  "Speed__up__tx": {
+    "message": "Speed up tx"
+  },
+  "Completed__transactions": {
+    "message": "Completed transactions"
   }
 }

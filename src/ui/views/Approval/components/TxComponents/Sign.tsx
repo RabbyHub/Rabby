@@ -7,6 +7,7 @@ import { CHAINS, CHAINS_ENUM } from 'consts';
 import { ExplainTxResponse } from 'background/service/openapi';
 import { Modal } from 'ui/component';
 import BalanceChange from './BalanceChange';
+import SpeedUpCorner from './SpeedUpCorner';
 import IconCopy from 'ui/assets/copy-no-border.svg';
 import IconSuccess from 'ui/assets/success.svg';
 import IconArrowRight from 'ui/assets/arrow-right-gray.svg';
@@ -15,9 +16,10 @@ interface SignProps {
   data: ExplainTxResponse;
   chainEnum: CHAINS_ENUM;
   raw: Record<string, string>;
+  isSpeedUp: boolean;
 }
 
-const Sign = ({ data, chainEnum, raw }: SignProps) => {
+const Sign = ({ data, chainEnum, raw, isSpeedUp }: SignProps) => {
   const detail = data.type_call!;
   const chain = CHAINS[chainEnum];
   const { t } = useTranslation();
@@ -71,6 +73,7 @@ const Sign = ({ data, chainEnum, raw }: SignProps) => {
         </span>
       </p>
       <div className="gray-section-block common-detail-block">
+        {isSpeedUp && <SpeedUpCorner />}
         <div className="block-field">
           <span className="label">{t('Protocol')}</span>
           <span className="value">

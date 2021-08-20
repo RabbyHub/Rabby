@@ -698,5 +698,35 @@
   },
   "CanNotCancelTip": {
     "message": "无法取消交易：不是第一笔 pending 中的交易"
+  },
+  "SpeedUpTooltip": {
+    "message": "加速交易和原始交易最终只会有一笔能够完成"
+  },
+  "View__all__history__on__DeBank": {
+    "message": "在 Debank 上查看所有交易"
+  },
+  "View__all": {
+    "message": "查看所有"
+  },
+  "Pending__detail": {
+    "message": "等待详情"
+  },
+  "Pending": {
+    "message": "进行中"
+  },
+  "tx__ahead": {
+    "message": "笔交易在前"
+  },
+  "Initial__tx": {
+    "message": "原始交易"
+  },
+  "Cancel__tx": {
+    "message": "取消交易"
+  },
+  "Speed__up__tx": {
+    "message": "加速交易"
+  },
+  "Completed__transactions": {
+    "message": "已完成交易"
   }
 }

@@ -57,9 +57,9 @@ const Dashboard = () => {
     setCurrentAccount(account);
   };
 
-  const getPendingTxCount = async (address: string) => {
-    const { total_count } = await wallet.openapi.getPendingCount(address);
-    setPendingTxCount(total_count);
+  const getPendingTxCount = (address: string) => {
+    const count = wallet.getPendingCount(address);
+    setPendingTxCount(count);
   };
 
   const checkIsMetaMaskActive = async () => {

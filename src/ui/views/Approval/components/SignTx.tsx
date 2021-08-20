@@ -34,6 +34,7 @@ const TxTypeComponent = ({
   raw,
   onChange,
   tx,
+  isSpeedUp,
 }: {
   txDetail: ExplainTxResponse;
   chain: Chain;
@@ -41,14 +42,26 @@ const TxTypeComponent = ({
   raw: Record<string, string>;
   onChange(data: Record<string, any>): void;
   tx: Tx;
+  isSpeedUp: boolean;
 }) => {
   if (!isReady) return <Loading chainEnum={chain.enum} />;
   if (txDetail.type_deploy_contract)
-    return <Deploy data={txDetail} chainEnum={chain.enum} />;
+    return (
+      <Deploy data={txDetail} chainEnum={chain.enum} isSpeedUp={isSpeedUp} />
+    );
   if (txDetail.type_cancel_tx)
-    return <CancelTx data={txDetail} chainEnum={chain.enum} tx={tx} />;
+    return (
+      <CancelTx
+        data={txDetail}
+        chainEnum={chain.enum}
+        tx={tx}
+        isSpeedUp={isSpeedUp}
+      />
+    );
   if (txDetail.type_cancel_token_approval)
-    return <Cancel data={txDetail} chainEnum={chain.enum} />;
+    return (
+      <Cancel data={txDetail} chainEnum={chain.enum} isSpeedUp={isSpeedUp} />
+    );
   if (txDetail.type_token_approval)
     return (
       <Approve
@@ -56,12 +69,22 @@ const TxTypeComponent = ({
         chainEnum={chain.enum}
         onChange={onChange}
         tx={tx}
+        isSpeedUp={isSpeedUp}
       />
     );
   if (txDetail.type_send)
-    return <Send data={txDetail} chainEnum={chain.enum} />;
+    return (
+      <Send data={txDetail} chainEnum={chain.enum} isSpeedUp={isSpeedUp} />
+    );
   if (txDetail.type_call)
-    return <Sign data={txDetail} raw={raw} chainEnum={chain.enum} />;
+    return (
+      <Sign
+        data={txDetail}
+        raw={raw}
+        chainEnum={chain.enum}
+        isSpeedUp={isSpeedUp}
+      />
+    );
   return <></>;
 };
 
@@ -353,6 +376,7 @@ const SignTx = ({ params, origin }) => {
                 raw={params.data[0]}
                 onChange={handleTxChange}
                 tx={tx}
+                isSpeedUp={isSpeedUp}
               />
             )}
             <GasSelector

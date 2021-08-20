@@ -475,6 +475,14 @@
         word-break: break-all;
       }
     }
+    .common-detail-block {
+      position: relative;
+      .speedup-corner {
+        position: absolute;
+        right: 0;
+        top: 0;
+      }
+    }
   }
   .watch-operation {
     padding-top: 128px;
@@ -1106,5 +1114,13 @@
         }
       }
     }
+  }
+}
+
+.speedup-corner-tooltip {
+  .ant-tooltip-arrow {
+    transform: translateX(0);
+    left: auto;
+    right: 45px;
   }
 }
