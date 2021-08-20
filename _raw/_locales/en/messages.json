@@ -731,5 +731,14 @@
   },
   "Completed__transactions": {
     "message": "Completed transactions"
+  },
+  "hour": {
+    "message": "hour"
+  },
+  "min": {
+    "message": "min"
+  },
+  "ago": {
+    "message": "ago"
   }
 }

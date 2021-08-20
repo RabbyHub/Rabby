@@ -728,5 +728,14 @@
   },
   "Completed__transactions": {
     "message": "已完成交易"
+  },
+  "hour": {
+    "message": "小时"
+  },
+  "min": {
+    "message": "分钟"
+  },
+  "ago": {
+    "message": "前"
   }
 }

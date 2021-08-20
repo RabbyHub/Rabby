@@ -217,7 +217,6 @@ class ProviderController extends BaseController {
       txParams.from
     );
     const onTranscationSubmitted = (hash: string) => {
-      console.log(approvalRes);
       const chain = permissionService.isInternalOrigin(origin)
         ? Object.values(CHAINS).find(
             (chain) => chain.id === approvalRes.chainId

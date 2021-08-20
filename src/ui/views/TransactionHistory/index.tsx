@@ -105,7 +105,7 @@ const TransactionExplain = ({
   return (
     <p className="tx-explain" onClick={onOpenScan}>
       {icon || <img className="icon icon-explain" src={IconUnknown} />}
-      {content || t('Unknown Transaction')}
+      <span>{content || t('Unknown Transaction')}</span>
       <SvgIconOpenExternal className="icon icon-external" />
     </p>
   );
@@ -236,13 +236,13 @@ const TransactionItem = ({
   }
   if (ago.hour < 24) {
     if (ago.hour > 0) {
-      agoText += `${ago.hour} hour`;
+      agoText += `${ago.hour} ${t('hour')}`;
     }
     if (ago.minute > 0) {
       if (agoText) agoText += ' ';
-      agoText += `${ago.minute} min`;
+      agoText += `${ago.minute} ${t('min')}`;
     }
-    agoText += ' ago';
+    agoText += ` ${t('ago')}`;
   } else {
     const date = new Date(item.createdAt);
     agoText = `${

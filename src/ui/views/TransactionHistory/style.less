@@ -22,8 +22,13 @@
       font-size: 15px;
       color: #525966;
       cursor: pointer;
-      overflow: hidden;
-      text-overflow: ellipsis;
+      width: 100%;
+      span {
+        max-width: 80%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
       .icon-explain {
         width: 18px;
         height: 18px;
