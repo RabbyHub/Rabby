@@ -4,7 +4,7 @@ import { useInterval } from 'react-use';
 import { intToHex } from 'ethereumjs-util';
 import clsx from 'clsx';
 import minBy from 'lodash/minBy';
-import maxBy from 'lodash/maxby';
+import maxBy from 'lodash/maxBy';
 import { Tooltip } from 'antd';
 import { useWallet, isSameAddress } from 'ui/utils';
 import { splitNumberByStep } from 'ui/utils/number';
