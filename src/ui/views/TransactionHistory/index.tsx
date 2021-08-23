@@ -409,11 +409,11 @@ const TransactionItem = ({
             <span className="flex-1 whitespace-nowrap overflow-ellipsis overflow-hidden text-gray-light">
               Gas:{' '}
               {txQueues[completedTx!.hash]
-                ? txQueues[completedTx!.hash].tokenCount +
+                ? txQueues[completedTx!.hash].tokenCount?.toFixed(8) +
                   ` ${txQueues[completedTx!.hash].token?.symbol} ($${(
                     txQueues[completedTx!.hash].tokenCount! *
                     (txQueues[completedTx!.hash].token?.price || 1)
-                  ).toFixed(4)})`
+                  ).toFixed(2)})`
                 : t('Unknown')}
             </span>
             <span className="text-red-light">
