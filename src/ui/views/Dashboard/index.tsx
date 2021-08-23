@@ -27,6 +27,7 @@ import IconPending from 'ui/assets/pending.svg';
 import IconSuccess from 'ui/assets/success.svg';
 import IconHardware from 'ui/assets/hardware-white.svg';
 import IconWatch from 'ui/assets/watch-white.svg';
+import IconExternal from 'ui/assets/open-external-gray.svg';
 import './style.less';
 
 const Dashboard = () => {
@@ -106,16 +107,6 @@ const Dashboard = () => {
 
   const handleGotoHistory = async () => {
     history.push('/tx-history');
-    // const site = await getCurrentConnectSite(wallet);
-    // let chain: null | string = null;
-    // if (site) {
-    //   chain = CHAINS[site.chain].serverId;
-    // }
-    // _openInTab(
-    //   `https://debank.com/profile/${currentAccount?.address}/history${
-    //     chain ? `?chain=${chain}` : ''
-    //   }`
-    // );
   };
 
   const handleGotoSwap = async () => {
@@ -199,12 +190,14 @@ const Dashboard = () => {
               <div className="operation-item__inner">
                 <img className="icon icon-send" src={IconSend} />
                 {t('Send')}
+                <img src={IconExternal} className="icon icon-external-link" />
               </div>
             </div>
             <div className="operation-item" onClick={handleGotoSwap}>
               <div className="operation-item__inner">
                 <img className="icon icon-swap" src={IconSwap} />
                 {t('Swap')}
+                <img src={IconExternal} className="icon icon-external-link" />
               </div>
             </div>
             <div className="operation-item" onClick={handleGotoHistory}>

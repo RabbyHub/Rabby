@@ -2,12 +2,13 @@ import React from 'react';
 import { Popover } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { Spin } from 'ui/component';
-import { SvgIconOffline } from 'ui/assets';
 import { useCurrentBalance } from 'ui/component/AddressList/AddressItem';
 import { splitNumberByStep } from 'ui/utils';
-import IconArrowRight from 'ui/assets/arrow-right.svg';
 import { CHAINS } from 'consts';
 import useConfirmExternalModal from './ConfirmOpenExternalModal';
+import { SvgIconOffline } from 'ui/assets';
+import IconArrowRight from 'ui/assets/arrow-right.svg';
+import IconExternal from 'ui/assets/open-external-gray.svg';
 
 const BalanceView = ({ currentAccount }) => {
   const [balance, chainBalances] = useCurrentBalance(
@@ -55,10 +56,13 @@ const BalanceView = ({ currentAccount }) => {
   return (
     <div className="assets flex">
       <div className="left">
-        <p className="amount leading-none" onClick={handleGotoProfile}>
-          <span>${splitNumberByStep((balance || 0).toFixed(2))}</span>
+        <div className="amount leading-none" onClick={handleGotoProfile}>
+          <div className="amount-number">
+            <span>${splitNumberByStep((balance || 0).toFixed(2))}</span>
+            <img className="icon icon-external-link" src={IconExternal} />
+          </div>
           <img className="icon icon-arrow-right" src={IconArrowRight} />
-        </p>
+        </div>
         <div className="extra leading-none flex">
           {balance === null ? (
             <>
