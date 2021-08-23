@@ -196,14 +196,7 @@ class TxHistory {
         .sort((a, b) => {
           return b.createdAt - a.createdAt;
         })
-        .slice(0, 10)
-        .sort((a, b) => {
-          if (a.chainId === b.chainId) {
-            return b.nonce - a.nonce;
-          } else {
-            return a.chainId - b.chainId;
-          }
-        }),
+        .slice(0, 10),
     };
   }
 
