@@ -287,6 +287,7 @@ const TransactionItem = ({
         },
       ],
     });
+    window.close();
   };
 
   const handleClickSpeedUp = async () => {
@@ -308,6 +309,7 @@ const TransactionItem = ({
         },
       ],
     });
+    window.close();
   };
 
   const handleOpenScan = () => {
@@ -403,8 +405,8 @@ const TransactionItem = ({
             </div>
           </div>
         ) : (
-          <div className="tx-footer justify-between">
-            <span className="flex-1 whitespace-nowrap overflow-ellipsis overflow-hidden">
+          <div className="tx-footer justify-between text-12">
+            <span className="flex-1 whitespace-nowrap overflow-ellipsis overflow-hidden text-gray-light">
               Gas:{' '}
               {txQueues[completedTx!.hash]
                 ? txQueues[completedTx!.hash].tokenCount +
