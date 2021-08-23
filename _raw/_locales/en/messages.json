@@ -752,5 +752,8 @@
   },
   "Failed": {
     "message": "Failed"
+  },
+  "No__transaction": {
+    "message": "No transaction"
   }
 }

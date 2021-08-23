@@ -749,5 +749,8 @@
   },
   "Failed": {
     "message": "已失败"
+  },
+  "No__transaction": {
+    "message": "无交易"
   }
 }

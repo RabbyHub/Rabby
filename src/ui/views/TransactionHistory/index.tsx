@@ -533,14 +533,16 @@ const TransactionHistory = () => {
           </p>
         </div>
       )}
-      <a
-        href="javascript:;"
-        className="bottom-view-all-transaction"
-        onClick={handleViewAll}
-      >
-        {t('View all history on DeBank')}
-        <SvgIconOpenExternal className="icon icon-external" />
-      </a>
+      <div className="tx-history__bottom">
+        <a
+          href="javascript:;"
+          className="bottom-view-all-transaction"
+          onClick={handleViewAll}
+        >
+          {t('View all history on DeBank')}
+          <SvgIconOpenExternal className="icon icon-external" />
+        </a>
+      </div>
     </div>
   );
 };
