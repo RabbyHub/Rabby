@@ -140,7 +140,7 @@ export const CHAINS: Record<string, Chain> = {
     logo: IconAvaxLogo,
     whiteLogo: IconAvaxWhiteLogo,
     hex: '0xa86a',
-    scanLink: 'https://explorer.avax.network/tx/_s_',
+    scanLink: 'https://cchain.explorer.avax.network/tx/_s_',
   },
 };
 
