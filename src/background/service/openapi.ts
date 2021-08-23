@@ -2,6 +2,7 @@ import axios, { Method } from 'axios';
 import rateLimit from 'axios-rate-limit';
 import { ethErrors } from 'eth-rpc-errors';
 import { createPersistStore } from 'background/utils';
+import { CHAINS } from 'consts';
 
 interface OpenApiConfigValue {
   path: string;
@@ -240,6 +241,11 @@ class OpenApiService {
             method: 'get',
             params: ['id'],
           },
+          get_total_balance_v2: {
+            path: '/v1/user/total_balance_v2',
+            method: 'GET',
+            params: ['id'],
+          },
           get_pending_tx_count: {
             path: '/v1/wallet/pending_tx_count',
             method: 'get',
@@ -445,6 +451,15 @@ class OpenApiService {
         wrapped_token_id: '',
         symbol: '',
       },
+      {
+        community_id: 43114,
+        id: 'avax',
+        logo_url: '',
+        name: '',
+        native_token_id: '',
+        wrapped_token_id: '',
+        symbol: '',
+      },
       // {
       //   community_id: 421611,
       //   id: 'arbitrum',
@@ -472,13 +487,19 @@ class OpenApiService {
   };
 
   getTotalBalance = async (address: string): Promise<TotalBalanceResponse> => {
-    const config = this.store.config.get_total_balance;
+    const config = this.store.config.get_total_balance_v2;
     const { data } = await this.request[config.method](config.path, {
       params: {
         id: address,
       },
     });
-    return data;
+    return {
+      ...data,
+      chain_list: data.chain_list.filter(
+        (item) =>
+          !!Object.values(CHAINS).find((chain) => chain.serverId === item.id)
+      ),
+    };
   };
 
   getPendingCount = async (

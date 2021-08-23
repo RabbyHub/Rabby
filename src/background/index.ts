@@ -19,6 +19,7 @@ import {
 } from './service';
 import { providerController, walletController } from './controller';
 import i18n from './service/i18n';
+import rpcCache from './utils/rpcCache';
 
 const { PortMessage } = Message;
 
@@ -63,6 +64,7 @@ async function restoreAppState() {
   await transactionWatchService.init();
   await pageStateCacheService.init();
   await transactionHistoryService.init();
+  rpcCache.start();
 
   appStoreLoaded = true;
 
