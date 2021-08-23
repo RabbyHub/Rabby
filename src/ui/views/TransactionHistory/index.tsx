@@ -5,6 +5,7 @@ import { intToHex } from 'ethereumjs-util';
 import clsx from 'clsx';
 import minBy from 'lodash/minBy';
 import maxBy from 'lodash/maxBy';
+import padStart from 'lodash/padStart';
 import { Tooltip } from 'antd';
 import { useWallet, isSameAddress } from 'ui/utils';
 import { splitNumberByStep } from 'ui/utils/number';
@@ -40,66 +41,68 @@ const TransactionExplain = ({
   );
   let content: string | React.ReactNode = t('Unknown Transaction');
 
-  if (explain.type_cancel_token_approval) {
-    icon = (
-      <img
-        src={
-          explain.type_cancel_token_approval.spender_protocol_logo_url ||
-          IconUnknown
-        }
-        className="icon icon-explain"
-      />
-    );
-    content = (
-      <Trans
-        i18nKey="CancelExplain"
-        values={{
-          token: explain.type_cancel_token_approval.token_symbol,
-          protocol:
-            explain.type_cancel_token_approval.spender_protocol_name ||
-            t('UnknownProtocol'),
-        }}
-      />
-    );
-  }
-  if (explain.type_token_approval) {
-    icon = (
-      <img
-        src={
-          explain.type_token_approval.spender_protocol_logo_url || IconUnknown
-        }
-        className="icon icon-explain"
-      />
-    );
-    content = (
-      <Trans
-        i18nKey="ApproveExplain"
-        values={{
-          token: explain.type_token_approval.token_symbol,
-          count: explain.type_token_approval.is_infinity
-            ? t('unlimited')
-            : splitNumberByStep(explain.type_token_approval.token_amount),
-          protocol:
-            explain.type_token_approval.spender_protocol_name ||
-            t('UnknownProtocol'),
-        }}
-      />
-    );
-  }
-  if (explain.type_send) {
-    icon = <img className="icon icon-explain" src={IconUser} />;
-    content = `${t('Send')} ${splitNumberByStep(
-      explain.type_send.token_amount
-    )} ${explain.type_send.token_symbol}`;
-  }
-  if (explain.type_call) {
-    icon = (
-      <img
-        src={explain.type_call.contract_protocol_logo_url || IconUnknown}
-        className="icon icon-explain"
-      />
-    );
-    content = explain.type_call.action;
+  if (explain) {
+    if (explain.type_cancel_token_approval) {
+      icon = (
+        <img
+          src={
+            explain.type_cancel_token_approval.spender_protocol_logo_url ||
+            IconUnknown
+          }
+          className="icon icon-explain"
+        />
+      );
+      content = (
+        <Trans
+          i18nKey="CancelExplain"
+          values={{
+            token: explain.type_cancel_token_approval.token_symbol,
+            protocol:
+              explain.type_cancel_token_approval.spender_protocol_name ||
+              t('UnknownProtocol'),
+          }}
+        />
+      );
+    }
+    if (explain.type_token_approval) {
+      icon = (
+        <img
+          src={
+            explain.type_token_approval.spender_protocol_logo_url || IconUnknown
+          }
+          className="icon icon-explain"
+        />
+      );
+      content = (
+        <Trans
+          i18nKey="ApproveExplain"
+          values={{
+            token: explain.type_token_approval.token_symbol,
+            count: explain.type_token_approval.is_infinity
+              ? t('unlimited')
+              : splitNumberByStep(explain.type_token_approval.token_amount),
+            protocol:
+              explain.type_token_approval.spender_protocol_name ||
+              t('UnknownProtocol'),
+          }}
+        />
+      );
+    }
+    if (explain.type_send) {
+      icon = <img className="icon icon-explain" src={IconUser} />;
+      content = `${t('Send')} ${splitNumberByStep(
+        explain.type_send.token_amount
+      )} ${explain.type_send.token_symbol}`;
+    }
+    if (explain.type_call) {
+      icon = (
+        <img
+          src={explain.type_call.contract_protocol_logo_url || IconUnknown}
+          className="icon icon-explain"
+        />
+      );
+      content = explain.type_call.action;
+    }
   }
 
   return (
@@ -245,9 +248,15 @@ const TransactionItem = ({
     agoText += ` ${t('ago')}`;
   } else {
     const date = new Date(item.createdAt);
-    agoText = `${
-      date.getMonth() + 1
-    }/${date.getDate()} ${date.getHours()}:${date.getMinutes()}`;
+    agoText = `${date.getMonth() + 1}/${padStart(
+      date.getDate().toString(),
+      2,
+      '0'
+    )} ${padStart(date.getHours().toString(), 2, '0')}:${padStart(
+      date.getMinutes().toString(),
+      2,
+      '0'
+    )}`;
   }
 
   const handleClickCancel = async () => {

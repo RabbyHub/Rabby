@@ -740,5 +740,11 @@
   },
   "ago": {
     "message": "ago"
+  },
+  "Unknown__Transaction": {
+    "message": "Unknown Transaction"
+  },
+  "Unknown": {
+    "message": "Unknown"
   }
 }

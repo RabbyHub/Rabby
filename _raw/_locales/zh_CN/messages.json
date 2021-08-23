@@ -737,5 +737,11 @@
   },
   "ago": {
     "message": "前"
+  },
+  "Unknown__Transaction": {
+    "message": "未知交易"
+  },
+  "Unknown": {
+    "message": "未知"
   }
 }
