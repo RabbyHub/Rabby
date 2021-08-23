@@ -88,8 +88,8 @@ const ConnectionItem = memo(
             />
             <img
               className="connect-chain"
-              src={CHAINS[item.chain].logo}
-              alt={CHAINS[item.chain].name}
+              src={CHAINS[item.chain]?.logo}
+              alt={CHAINS[item.chain]?.name}
             />
             <div className="logo cursor-pointer">
               <FallbackSiteLogo

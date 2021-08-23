@@ -36,7 +36,7 @@ const BalanceView = ({ currentAccount }) => {
           const percent = (item.usd_value / totalUSDValue) * 100;
           return (
             <li className="flex" key={item.id}>
-              <img className="chain-logo" src={chain.logo} />
+              <img className="chain-logo" src={chain?.logo} />
               <span
                 className="amount"
                 title={'$' + splitNumberByStep(item.usd_value.toFixed(2))}
