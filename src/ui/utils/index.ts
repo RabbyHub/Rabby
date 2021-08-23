@@ -106,3 +106,7 @@ export const ellipsisOverflowedText = (
   }
   return `${cut}...`;
 };
+
+export const isSameAddress = (a: string, b: string) => {
+  return a.toLowerCase() === b.toLowerCase();
+};

@@ -7,6 +7,7 @@ import { AddressViewer } from 'ui/component';
 import BalanceChange from './BalanceChange';
 import { CHAINS_ENUM, CHAINS } from 'consts';
 import { ExplainTxResponse } from 'background/service/openapi';
+import SpeedUpCorner from './SpeedUpCorner';
 import IconCopy from 'ui/assets/copy-no-border.svg';
 import IconSuccess from 'ui/assets/success.svg';
 import IconUnknownProtocol from 'ui/assets/unknown-protocol.svg';
@@ -14,9 +15,10 @@ import IconUnknownProtocol from 'ui/assets/unknown-protocol.svg';
 interface CancelProps {
   data: ExplainTxResponse;
   chainEnum: CHAINS_ENUM;
+  isSpeedUp: boolean;
 }
 
-const Cancel = ({ data, chainEnum }: CancelProps) => {
+const Cancel = ({ data, chainEnum, isSpeedUp }: CancelProps) => {
   const detail = data.type_cancel_token_approval!;
   const chain = CHAINS[chainEnum];
   const { t } = useTranslation();
@@ -53,6 +55,7 @@ const Cancel = ({ data, chainEnum }: CancelProps) => {
         />
       </p>
       <div className="gray-section-block common-detail-block">
+        {isSpeedUp && <SpeedUpCorner />}
         <p className="title">
           <Trans
             i18nKey="cancelApprovalTitle"

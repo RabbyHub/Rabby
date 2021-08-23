@@ -11,16 +11,19 @@ import {
   chainService,
   openapiService,
   pageStateCacheService,
+  transactionHistoryService,
 } from 'background/service';
 import { openIndexPage } from 'background/webapi/tab';
 import { CacheState } from 'background/service/pageStateCache';
 import i18n from 'background/service/i18n';
 import { KEYRING_CLASS, DisplayedKeryring } from 'background/service/keyring';
 import BaseController from './base';
-import { CHAINS_ENUM, CHAINS } from 'consts';
+import { CHAINS_ENUM, CHAINS, INTERNAL_REQUEST_ORIGIN } from 'consts';
 import { Account } from '../service/preference';
 import { ConnectedSite } from '../service/permission';
+import { ExplainTxResponse } from '../service/openapi';
 import DisplayKeyring from '../service/keyring/display';
+import provider from './provider';
 
 export class WalletController extends BaseController {
   openapi = openapiService;
@@ -30,6 +33,16 @@ export class WalletController extends BaseController {
   isBooted = () => keyringService.isBooted();
   verifyPassword = (password: string) =>
     keyringService.verifyPassword(password);
+
+  sendRequest = (data) =>
+    provider({
+      data,
+      session: {
+        name: 'Rabby',
+        origin: INTERNAL_REQUEST_ORIGIN,
+        icon: './images/icon-128.png',
+      },
+    });
 
   getApproval = notificationService.getApproval;
   resolveApproval = notificationService.resolveApproval;
@@ -385,6 +398,25 @@ export class WalletController extends BaseController {
     preferenceService.getWatchAddressPreference(address);
 
   setWatchAddressPreference = preferenceService.setWatchAddressPreference;
+
+  addTxExplainCache = (params: {
+    address: string;
+    chainId: number;
+    nonce: number;
+    explain: ExplainTxResponse;
+  }) => transactionHistoryService.addExplainCache(params);
+  getTransactionHistory = (address: string) =>
+    transactionHistoryService.getList(address);
+  comepleteTransaction = (params: {
+    address: string;
+    chainId: number;
+    nonce: number;
+    hash: string;
+    success?: boolean;
+    gasUsed?: number;
+  }) => transactionHistoryService.completeTx(params);
+  getPendingCount = (address: string) =>
+    transactionHistoryService.getPendingCount(address);
 
   private _getKeyringByType(type) {
     const keyring = keyringService.getKeyringsByType(type)[0];

@@ -686,5 +686,71 @@
   },
   "Refresh__QR__Code": {
     "message": "刷新二维码"
+  },
+  "CancelExplain": {
+    "message": "取消授权 {{token}} 给 {{protocol}}"
+  },
+  "ApproveExplain": {
+    "message": "授权 {{count}} {{token}} 给 {{protocol}}"
+  },
+  "PendingDetailTip": {
+    "message": "最终只会有一笔交易完成，并且在绝大多数情况下，都是 gas 价格最高的交易完成"
+  },
+  "CanNotCancelTip": {
+    "message": "无法取消交易：不是第一笔 pending 中的交易"
+  },
+  "SpeedUpTooltip": {
+    "message": "加速交易和原始交易最终只会有一笔能够完成"
+  },
+  "View__all__history__on__DeBank": {
+    "message": "在 DeBank 上查看所有交易"
+  },
+  "View__all": {
+    "message": "查看所有"
+  },
+  "Pending__detail": {
+    "message": "交易状态详情"
+  },
+  "Pending": {
+    "message": "进行中"
+  },
+  "tx__ahead": {
+    "message": "笔交易在前"
+  },
+  "Initial__tx": {
+    "message": "原始交易"
+  },
+  "Cancel__tx": {
+    "message": "取消交易"
+  },
+  "Speed__up__tx": {
+    "message": "加速交易"
+  },
+  "Completed__transactions": {
+    "message": "已完成交易"
+  },
+  "hour": {
+    "message": "小时"
+  },
+  "min": {
+    "message": "分钟"
+  },
+  "ago": {
+    "message": "前"
+  },
+  "Unknown__Transaction": {
+    "message": "未知交易"
+  },
+  "Unknown": {
+    "message": "未知"
+  },
+  "Canceled": {
+    "message": "已取消"
+  },
+  "Failed": {
+    "message": "已失败"
+  },
+  "No__transaction": {
+    "message": "无交易"
   }
 }

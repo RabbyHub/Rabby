@@ -689,5 +689,71 @@
   },
   "Refresh__QR__Code": {
     "message": "Refresh QR Code"
+  },
+  "CancelExplain": {
+    "message": "Cancel {{token}} Approve for {{protocol}}"
+  },
+  "ApproveExplain": {
+    "message": "Approve {{count}} {{token}} for {{protocol}}"
+  },
+  "PendingDetailTip": {
+    "message": "Only one transaction will be completed, and it is almost always the one with the highest gas price"
+  },
+  "CanNotCancelTip": {
+    "message": "Cannot speed up or cancel: Not the first pending txn"
+  },
+  "SpeedUpTooltip": {
+    "message": "This accelerated transaction and the original transaction, only one of which will eventually be completed"
+  },
+  "View__all__history__on__DeBank": {
+    "message": "View all history on DeBank"
+  },
+  "View__all": {
+    "message": "View all"
+  },
+  "Pending__detail": {
+    "message": "Pending detail"
+  },
+  "Pending": {
+    "message": "Pending"
+  },
+  "tx__ahead": {
+    "message": "tx ahead"
+  },
+  "Initial__tx": {
+    "message": "Initial tx"
+  },
+  "Cancel__tx": {
+    "message": "Cancel tx"
+  },
+  "Speed__up__tx": {
+    "message": "Speed up tx"
+  },
+  "Completed__transactions": {
+    "message": "Completed transactions"
+  },
+  "hour": {
+    "message": "hour"
+  },
+  "min": {
+    "message": "min"
+  },
+  "ago": {
+    "message": "ago"
+  },
+  "Unknown__Transaction": {
+    "message": "Unknown Transaction"
+  },
+  "Unknown": {
+    "message": "Unknown"
+  },
+  "Canceled": {
+    "message": "Canceled"
+  },
+  "Failed": {
+    "message": "Failed"
+  },
+  "No__transaction": {
+    "message": "No transaction"
   }
 }

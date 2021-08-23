@@ -76,6 +76,7 @@ class WatchKeyring extends EventEmitter {
         name: 'Rabby',
       },
     });
+    this.currentConnectStatus = WALLETCONNECT_STATUS_MAP.PENDING;
     this._walletConnector = connector;
 
     this._walletConnector.on('connect', (error, payload) => {

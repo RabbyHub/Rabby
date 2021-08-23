@@ -40,6 +40,7 @@ module.exports = {
         content: '#818A99',
         subTitle: '#525966',
         title: '#2D3033',
+        light: '#707880'
       },
     },
     fontSize: {

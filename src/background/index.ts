@@ -15,6 +15,7 @@ import {
   openapiService,
   transactionWatchService,
   pageStateCacheService,
+  transactionHistoryService,
 } from './service';
 import { providerController, walletController } from './controller';
 import i18n from './service/i18n';
@@ -62,6 +63,7 @@ async function restoreAppState() {
   await chainService.init();
   await transactionWatchService.init();
   await pageStateCacheService.init();
+  await transactionHistoryService.init();
   rpcCache.start();
 
   appStoreLoaded = true;

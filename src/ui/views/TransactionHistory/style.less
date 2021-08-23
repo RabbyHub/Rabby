@@ -1,0 +1,224 @@
+@import '../../style/var.less';
+
+.tx-history {
+  .page();
+  display: flex;
+  flex-direction: column;
+  padding: 0 28px 23px;
+  &__item {
+    position: relative;
+    background: #FFFFFF;
+    box-shadow: 0px 6px 20px rgba(45, 48, 51, 0.08);
+    border-radius: 6px;
+    margin-bottom: 12px;
+    &--main {
+      padding: 8px 12px 16px;
+    }
+    .tx-explain {
+      display: inline-flex;
+      margin: 0;
+      align-items: center;
+      font-weight: 500;
+      font-size: 15px;
+      line-height: 18px;
+      color: #525966;
+      cursor: pointer;
+      width: 100%;
+      span {
+        max-width: 80%;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .icon-explain {
+        width: 18px;
+        height: 18px;
+        margin-right: 8px;
+        border-radius: 2px;
+      }
+      .icon-external {
+        display: none;
+        margin-left: 6px;
+        path {
+          fill: #818A99;
+        }
+      }
+      &:hover {
+        text-decoration: underline;
+        .icon-external {
+          display: block;
+        } 
+      }
+    }
+    .pending {
+      position: absolute;
+      top: 0;
+      left: 12px;
+      background-color: rgba(242, 156, 27, .2);
+      border-radius: 0px 0px 4px 4px;
+      padding: 5px 10px;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      font-size: 12px;
+      color: #F29C1B;
+      .icon-pending-spin {
+        width: 12px;
+        height: 12px;
+        animation: spining 1.5s infinite linear;
+        margin-right: 6px;
+      }
+    }
+    .tx-id {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      color: #818A99;
+      margin-bottom: 14px;
+      line-height: 14px;
+    }
+    .tx-footer {
+      margin-top: 16px;
+      display: flex;
+      align-items: flex-end;
+      &__actions {
+        flex: 1;
+        display: flex;
+        justify-content: flex-end;
+        align-items: center;
+        .icon-action {
+          cursor: pointer;
+          width: 24px;
+          height: 24px;
+          &:nth-child(1) {
+            margin-right: 4px;
+          }
+          &:nth-last-child(1) {
+            margin-left: 4px;
+          }
+        }
+        .hr {
+          width: 0.5px;
+          height: 12px;
+          background-color: #D8DFEB;
+        }
+      }
+      .pending-detail {
+        display: flex;
+        align-items: center;
+        color: #707880;
+        font-size: 12px;
+        .icon-question-mark {
+          width: 10px;
+          height: 10px;
+          margin-left: 6px;
+        }
+      }
+    }
+    .ahead {
+      font-size: 14px;
+      color: #7F8A9A;
+    }
+    &--children {
+      background: #F6F7F9;
+      border-radius: 0px 0px 6px 6px;
+      padding: 12px;
+      font-size: 12px;
+      line-height: 14px;
+      color: #818A99;
+      &__item {
+        display: flex;
+        margin-bottom: 10px;
+        .tx-type {
+          width: 65px;
+        }
+        .ahead {
+          flex: 1;
+          margin-left: 25px;
+          font-size: 12px;
+        }
+        .icon-spin {
+          animation: spining 1.5s infinite linear;
+          path {
+            fill: #818A99;
+          }
+        }
+        &:nth-last-child(1) {
+          margin-bottom: 0;
+        }
+      }
+    }
+  }
+  &__pending {
+    margin-bottom: 40px;
+  }
+  &__completed {
+    .subtitle {
+      margin-bottom: 12px;
+    }
+    .tx-history__item {
+      .tx-history__item--main {
+        padding-bottom: 16px;
+      }
+    }
+  }
+  &__empty {
+    width: 100%;
+    padding-top: 150px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    .no-data {
+      width: 100px;
+      height: 100px;
+    }
+  }
+  &__bottom {
+    display: flex;
+    flex: 1;
+    align-items: flex-end;
+    justify-content: center;
+  }
+}
+
+.pending-detail__tooltip {
+  .ant-tooltip-inner {
+    transform: translateX(60px);
+  }
+}
+.cant-cancel__tooltip {
+  .ant-tooltip-arrow {
+    transform: translateX(-7px);
+  }
+}
+
+.header-view-all-transaction, .bottom-view-all-transaction {
+  display: flex;
+  font-size: 12px;
+  color: #818A99;
+  align-items: center;
+  white-space: nowrap;
+  position: absolute;
+  right: 0;
+  line-height: 20px;
+  bottom: 0;
+  font-weight: normal;
+  &:hover {
+    color: #818A99;
+  }
+  .icon-external {
+    width: 12px;
+    height: 12px;
+    margin-left: 4px;
+    path {
+      fill: #818A99;
+    }
+  }
+}
+
+.bottom-view-all-transaction {
+  justify-content: center;
+  position: static;
+  margin-top: 36px;  
+}

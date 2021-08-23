@@ -11,6 +11,7 @@ import { getCustomTxParamsData } from 'ui/utils/transaction';
 import { splitNumberByStep } from 'ui/utils/number';
 import { ExplainTxResponse, TokenItem, Tx } from 'background/service/openapi';
 import BalanceChange from './BalanceChange';
+import SpeedUpCorner from './SpeedUpCorner';
 import IconCopy from 'ui/assets/copy-no-border.svg';
 import IconSuccess from 'ui/assets/success.svg';
 import IconUnknownProtocol from 'ui/assets/unknown-protocol.svg';
@@ -20,6 +21,7 @@ interface ApproveProps {
   chainEnum: CHAINS_ENUM;
   onChange(data: Record<string, string>): void;
   tx: Tx;
+  isSpeedUp: boolean;
 }
 
 interface ApproveAmountModalProps {
@@ -102,7 +104,13 @@ const ApproveAmountModal = ({
   );
 };
 
-const Approve = ({ data, chainEnum, onChange, tx }: ApproveProps) => {
+const Approve = ({
+  data,
+  chainEnum,
+  onChange,
+  tx,
+  isSpeedUp,
+}: ApproveProps) => {
   const detail = data.type_token_approval!;
   const chain = CHAINS[chainEnum];
   const [editApproveModalVisible, setEditApproveModalVisible] = useState(false);
@@ -162,6 +170,7 @@ const Approve = ({ data, chainEnum, onChange, tx }: ApproveProps) => {
         />
       </p>
       <div className="gray-section-block common-detail-block">
+        {isSpeedUp && <SpeedUpCorner />}
         <p className="title">{t('Token Approval')}</p>
         <div className="block-field">
           <span className="label">{t('Amount')}</span>

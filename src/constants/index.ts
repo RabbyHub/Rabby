@@ -343,3 +343,5 @@ export const WALLETCONNECT_STATUS_MAP = {
   REJECTED: 5,
   FAILD: 6,
 };
+
+export const INTERNAL_REQUEST_ORIGIN = 'https://rabby.io';

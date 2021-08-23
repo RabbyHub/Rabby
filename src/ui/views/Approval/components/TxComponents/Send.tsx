@@ -8,6 +8,7 @@ import { ExplainTxResponse } from 'background/service/openapi';
 import { splitNumberByStep } from 'ui/utils/number';
 import { ellipsisOverflowedText } from 'ui/utils';
 import BalanceChange from './BalanceChange';
+import SpeedUpCorner from './SpeedUpCorner';
 import AddressViewer from 'ui/component/AddressViewer';
 import IconCopy from 'ui/assets/copy-no-border.svg';
 import IconSuccess from 'ui/assets/success.svg';
@@ -15,9 +16,10 @@ import IconSuccess from 'ui/assets/success.svg';
 interface SendProps {
   data: ExplainTxResponse;
   chainEnum: CHAINS_ENUM;
+  isSpeedUp: boolean;
 }
 
-const Send = ({ data, chainEnum }: SendProps) => {
+const Send = ({ data, chainEnum, isSpeedUp }: SendProps) => {
   const detail = data.type_send!;
   const chain = CHAINS[chainEnum];
   const { t } = useTranslation();
@@ -47,6 +49,7 @@ const Send = ({ data, chainEnum }: SendProps) => {
         />
       </p>
       <div className="gray-section-block common-detail-block">
+        {isSpeedUp && <SpeedUpCorner />}
         <p className="title">{t('Send Token')}</p>
         <div className="block-field">
           <span className="label">{t('Amount')}</span>

@@ -1,4 +1,8 @@
-import { openapiService, i18n } from 'background/service';
+import {
+  openapiService,
+  i18n,
+  transactionHistoryService,
+} from 'background/service';
 import { createPersistStore } from 'background/utils';
 import { notification } from 'background/webapi';
 import { CHAINS, CHAINS_ENUM } from 'consts';
@@ -77,8 +81,19 @@ class TransactionWatcher {
     if (!this.store.pendingTx[id]) {
       return;
     }
-    const { hash, chain } = this.store.pendingTx[id];
+    const { hash, chain, nonce } = this.store.pendingTx[id];
     const url = format(CHAINS[chain].scanLink, hash);
+    const [address] = id.split('_');
+    const chainId = Object.values(CHAINS).find((item) => item.enum === chain)!
+      .id;
+
+    if (txReceipt) {
+      transactionHistoryService.reloadTx({
+        address,
+        nonce: Number(nonce),
+        chainId,
+      });
+    }
 
     const title =
       txReceipt.status === '0x1'

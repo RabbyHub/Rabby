@@ -6,9 +6,11 @@ import './style.less';
 const PageHeader = ({
   children,
   canBack = true,
+  rightSlot,
 }: {
   children: ReactNode;
   canBack?: boolean;
+  rightSlot?: ReactNode;
 }) => {
   const history = useHistory();
 
@@ -22,6 +24,7 @@ const PageHeader = ({
         />
       )}
       <div className="header-content">{children}</div>
+      {rightSlot && rightSlot}
     </div>
   );
 };

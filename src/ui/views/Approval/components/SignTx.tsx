@@ -34,6 +34,7 @@ const TxTypeComponent = ({
   raw,
   onChange,
   tx,
+  isSpeedUp,
 }: {
   txDetail: ExplainTxResponse;
   chain: Chain;
@@ -41,14 +42,26 @@ const TxTypeComponent = ({
   raw: Record<string, string>;
   onChange(data: Record<string, any>): void;
   tx: Tx;
+  isSpeedUp: boolean;
 }) => {
   if (!isReady) return <Loading chainEnum={chain.enum} />;
   if (txDetail.type_deploy_contract)
-    return <Deploy data={txDetail} chainEnum={chain.enum} />;
+    return (
+      <Deploy data={txDetail} chainEnum={chain.enum} isSpeedUp={isSpeedUp} />
+    );
   if (txDetail.type_cancel_tx)
-    return <CancelTx data={txDetail} chainEnum={chain.enum} tx={tx} />;
+    return (
+      <CancelTx
+        data={txDetail}
+        chainEnum={chain.enum}
+        tx={tx}
+        isSpeedUp={isSpeedUp}
+      />
+    );
   if (txDetail.type_cancel_token_approval)
-    return <Cancel data={txDetail} chainEnum={chain.enum} />;
+    return (
+      <Cancel data={txDetail} chainEnum={chain.enum} isSpeedUp={isSpeedUp} />
+    );
   if (txDetail.type_token_approval)
     return (
       <Approve
@@ -56,12 +69,22 @@ const TxTypeComponent = ({
         chainEnum={chain.enum}
         onChange={onChange}
         tx={tx}
+        isSpeedUp={isSpeedUp}
       />
     );
   if (txDetail.type_send)
-    return <Send data={txDetail} chainEnum={chain.enum} />;
+    return (
+      <Send data={txDetail} chainEnum={chain.enum} isSpeedUp={isSpeedUp} />
+    );
   if (txDetail.type_call)
-    return <Sign data={txDetail} raw={raw} chainEnum={chain.enum} />;
+    return (
+      <Sign
+        data={txDetail}
+        raw={raw}
+        chainEnum={chain.enum}
+        isSpeedUp={isSpeedUp}
+      />
+    );
   return <></>;
 };
 
@@ -120,8 +143,23 @@ const SignTx = ({ params, origin }) => {
   }
   const chain = Object.values(CHAINS).find((item) => item.id === chainId)!;
   const [
-    { data = '0x', from, gas, gasPrice, nonce, to, value, maxFeePerGas },
+    {
+      data = '0x',
+      from,
+      gas,
+      gasPrice,
+      nonce,
+      to,
+      value,
+      maxFeePerGas,
+      isSpeedUp,
+      isCancel,
+    },
   ] = params.data;
+  let updateNonce = true;
+  if (isCancel || isSpeedUp || (nonce && from === to) || nonceChanged)
+    updateNonce = false;
+
   const getGasPrice = () => {
     let result = '';
     if (maxFeePerGas) {
@@ -194,15 +232,21 @@ const SignTx = ({ params, origin }) => {
       },
       origin,
       address,
-      !nonceChanged || (nonce && tx.from === tx.to)
+      updateNonce
     );
     if (!gasLimit) {
       // use server response gas limit
       setGasLimit(res.recommend.gas);
     }
     setTxDetail(res);
-    if (!(nonce && tx.from === tx.to)) setRealNonce(res.recommend.nonce); // do not overwrite nonce if from === to(cancel transaction)
+    if (updateNonce) setRealNonce(res.recommend.nonce); // do not overwrite nonce if from === to(cancel transaction)
     setPreprocessSuccess(res.pre_exec.success);
+    wallet.addTxExplainCache({
+      address,
+      chainId,
+      nonce: updateNonce ? Number(res.recommend.nonce) : Number(tx.nonce),
+      explain: res,
+    });
     return res;
   };
 
@@ -332,6 +376,7 @@ const SignTx = ({ params, origin }) => {
                 raw={params.data[0]}
                 onChange={handleTxChange}
                 tx={tx}
+                isSpeedUp={isSpeedUp}
               />
             )}
             <GasSelector
@@ -355,6 +400,7 @@ const SignTx = ({ params, origin }) => {
               chainId={chainId}
               onChange={handleGasChange}
               nonce={realNonce || tx.nonce}
+              disableNonce={isSpeedUp || isCancel}
             />
             <footer className="connect-footer">
               {txDetail && txDetail.pre_exec.success && (
