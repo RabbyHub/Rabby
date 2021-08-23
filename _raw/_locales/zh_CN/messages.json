@@ -743,5 +743,11 @@
   },
   "Unknown": {
     "message": "未知"
+  },
+  "Canceled": {
+    "message": "已取消"
+  },
+  "Failed": {
+    "message": "已失败"
   }
 }

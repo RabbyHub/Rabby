@@ -126,9 +126,13 @@ const ChildrenTxText = ({
   const { t } = useTranslation();
   let text = '';
 
-  if (isOrigin) text = t('Initial tx');
-  if (isCancel) text = t('Cancel tx');
-  text = t('Speed up tx');
+  if (isOrigin) {
+    text = t('Initial tx');
+  } else if (isCancel) {
+    text = t('Cancel tx');
+  } else {
+    text = t('Speed up tx');
+  }
   return <span className="tx-type">{text}</span>;
 };
 

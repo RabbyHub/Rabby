@@ -746,5 +746,11 @@
   },
   "Unknown": {
     "message": "Unknown"
+  },
+  "Canceled": {
+    "message": "Canceled"
+  },
+  "Failed": {
+    "message": "Failed"
   }
 }
