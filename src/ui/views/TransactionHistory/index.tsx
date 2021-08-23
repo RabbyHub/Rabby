@@ -391,7 +391,7 @@ const TransactionItem = ({
           </div>
         ) : (
           <div className="tx-footer justify-between">
-            <span>
+            <span className="flex-1 whitespace-nowrap overflow-ellipsis overflow-hidden">
               Gas:{' '}
               {txQueues[completedTx!.hash]
                 ? txQueues[completedTx!.hash].tokenCount +
