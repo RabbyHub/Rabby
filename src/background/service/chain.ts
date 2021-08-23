@@ -4,6 +4,7 @@ import openapi, { ServerChain } from './openapi';
 
 interface ChainStore {
   enableChains: CHAINS_ENUM[];
+  addedChains: CHAINS_ENUM[];
 }
 
 export interface Chain {
@@ -28,10 +29,27 @@ class ChainService {
       name: 'chains',
       template: {
         enableChains: Object.keys(CHAINS).map((key) => CHAINS[key].enum),
+        addedChains: [],
       },
     });
-
+    if (!this.store.addedChains) this.store.addedChains = [];
     this.supportChains = await this.loadSupportChains();
+    this.syncNewChains();
+  };
+
+  syncNewChains = () => {
+    if (!this.store) return;
+    const needAdd = [CHAINS_ENUM.AVAX];
+    for (let i = 0; i < needAdd.length; i++) {
+      if (this.store.enableChains.includes(needAdd[i])) {
+        if (!this.store.addedChains.includes(needAdd[i])) {
+          this.store.addedChains = [...this.store.addedChains, needAdd[i]];
+        }
+      } else if (!this.store.addedChains.includes(needAdd[i])) {
+        this.store.enableChains = [...this.store.enableChains, needAdd[i]];
+        this.store.addedChains = [...this.store.addedChains, needAdd[i]];
+      }
+    }
   };
 
   getEnabledChains = (): Chain[] => {
