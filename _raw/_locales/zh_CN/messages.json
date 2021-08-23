@@ -691,10 +691,10 @@
     "message": "取消授权 {{token}} 给 {{protocol}}"
   },
   "ApproveExplain": {
-    "message": "授权 {{count}} 个 {{token}} 给 {{protocol}}"
+    "message": "授权 {{count}} {{token}} 给 {{protocol}}"
   },
   "PendingDetailTip": {
-    "message": "只有一笔交易会被打包，并且几乎永远是 gas price 最高的那一笔"
+    "message": "最终只会有一笔交易完成，并且在绝大多数情况下，都是 gas 价格最高的交易完成"
   },
   "CanNotCancelTip": {
     "message": "无法取消交易：不是第一笔 pending 中的交易"
@@ -703,13 +703,13 @@
     "message": "加速交易和原始交易最终只会有一笔能够完成"
   },
   "View__all__history__on__DeBank": {
-    "message": "在 Debank 上查看所有交易"
+    "message": "在 DeBank 上查看所有交易"
   },
   "View__all": {
     "message": "查看所有"
   },
   "Pending__detail": {
-    "message": "等待详情"
+    "message": "交易状态详情"
   },
   "Pending": {
     "message": "进行中"
