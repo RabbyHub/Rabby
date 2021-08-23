@@ -167,6 +167,7 @@ const config = {
       'process.env.version': JSON.stringify(
         `version: ${version} / ${new Date().toISOString()}`
       ),
+      'process.env.release': JSON.stringify(version)
     }),
   ],
   resolve: {
