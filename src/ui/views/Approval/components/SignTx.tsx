@@ -137,7 +137,7 @@ const SignTx = ({ params, origin }) => {
   const wallet = useWallet();
   const session = params.session;
   const site = wallet.getConnectedSite(session.origin);
-  let chainId = params.data[0].chainId;
+  let chainId = Number(params.data[0].chainId);
   if (!chainId) {
     chainId = CHAINS[site!.chain].id;
   }
