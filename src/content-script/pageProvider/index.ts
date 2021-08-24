@@ -184,7 +184,14 @@ export class EthereumProvider extends EventEmitter {
   send = (payload, callback?) => {
     if (typeof payload === 'string' && (!callback || Array.isArray(callback))) {
       // send(method, params? = [])
-      return this.request({ method: payload, params: callback });
+      return this.request({
+        method: payload,
+        params: callback,
+      }).then((result) => ({
+        id: undefined,
+        jsonrpc: '2.0',
+        result,
+      }));
     }
 
     if (typeof payload === 'object' && typeof callback === 'function') {
