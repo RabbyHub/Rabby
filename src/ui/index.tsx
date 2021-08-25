@@ -56,6 +56,24 @@ if (
   });
 }
 
+function initAppMeta() {
+  const head = document.querySelector('head');
+  const icon = document.createElement('link');
+  icon.href = 'https://rabby.io/assets/images/logo-128.png';
+  icon.rel = 'icon';
+  head?.appendChild(icon);
+  const name = document.createElement('meta');
+  name.name = 'name';
+  name.content = 'Rabby';
+  head?.appendChild(name);
+  const description = document.createElement('meta');
+  description.name = 'description';
+  description.content = i18n.t('appDescription');
+  head?.appendChild(description);
+}
+
+initAppMeta();
+
 browser.runtime.getBackgroundPage().then((win) => {
   const locale = win.wallet.getLocale();
   addResourceBundle(locale).then(() => {

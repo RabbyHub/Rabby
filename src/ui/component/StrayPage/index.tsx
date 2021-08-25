@@ -87,6 +87,7 @@ export const StrayPageWithButton = ({
   footerFixed,
   noPadding = false,
   isScrollContainer = false,
+  className,
 }: StrayPageWithButtonProps & StrayFooterNavProps) => {
   const { t } = useTranslation();
 
@@ -115,6 +116,7 @@ export const StrayPageWithButton = ({
       spinning={spinning}
       headerClassName={headerClassName}
       noPadding={noPadding}
+      className={className}
     >
       <Form
         className={clsx('sm:pb-[98px] lg:pb-[72px]', {

@@ -58,6 +58,65 @@ button:focus {
   }
 }
 
+.import-watchmode {
+  &__button {
+    display: flex;
+    justify-content: center;
+    padding: 11px 0;
+    font-size: 12px;
+    line-height: 14px;
+    color: #2D3033;
+    background-color: #fff;
+    border-radius: 6px;
+    cursor: pointer;
+    user-select: none;
+    .icon {
+      width: 14px;
+      height: 14px;
+      margin-right: 8px;
+    }
+  }
+}
+
+.walletconnect-modal {
+  .ant-modal-content {
+    background-color: #fff;
+    .guide {
+      color: #2D3033;
+      font-weight: 500;
+      font-size: 15px;
+      line-height: 18px;
+      text-align: center;
+      width: 239px;
+      margin: 0 auto 24px;
+    }
+    .symbol {
+      display: flex;
+      justify-content: center;
+      font-weight: 500;
+      font-size: 13px;
+      line-height: 15px;
+      color: #3B99FD;
+      margin-bottom: 16px;
+      .icon {
+        width: 15px;
+        height: 15px;
+        margin-right: 6px;
+      }
+    }
+    .qrcode {
+      padding: 10px;
+      border: 1px solid #D8DFEB;
+      border-radius: 12px;
+      margin: 0 auto;
+      width: 200px;
+      canvas {
+        margin: 0;
+      }
+    }
+  }
+}
+
 .uploader {
   border-color: transparent;
   border-width: 1px;
