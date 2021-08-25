@@ -26,7 +26,7 @@ interface SignTextProps {
 }
 
 export const WaitingSignComponent = {
-  [KEYRING_CLASS.HARDWARE.LEDGER]: 'HardwareWaiting',
+  // [KEYRING_CLASS.HARDWARE.LEDGER]: 'HardwareWaiting',
   [KEYRING_CLASS.WATCH]: 'WatchAdrressWaiting',
 };
 
@@ -84,21 +84,20 @@ const SignText = ({ params }: { params: SignTextProps }) => {
     }
     const currentAccount = await wallet.getCurrentAccount();
     if (
-      currentAccount?.type &&
-      WaitingSignComponent[currentAccount?.type] &&
+      currentAccount?.type === KEYRING_CLASS.HARDWARE.LEDGER &&
       !wallet.isUseLedgerLive()
     ) {
-      if (currentAccount.type === KEYRING_CLASS.HARDWARE.LEDGER) {
-        try {
-          const keyring = wallet.connectHardware(KEYRING_CLASS.HARDWARE.LEDGER);
-          if (keyring.isWebUSB) {
-            const transport = await TransportWebUSB.create();
-            await transport.close();
-          }
-        } catch (e) {
-          // NOTHING
+      try {
+        const keyring = wallet.connectHardware(KEYRING_CLASS.HARDWARE.LEDGER);
+        if (keyring.isWebUSB) {
+          const transport = await TransportWebUSB.create();
+          await transport.close();
         }
+      } catch (e) {
+        // NOTHING
       }
+    }
+    if (currentAccount?.type && WaitingSignComponent[currentAccount?.type]) {
       resolveApproval({
         uiRequestComponent: WaitingSignComponent[currentAccount?.type],
         type: currentAccount.type,
