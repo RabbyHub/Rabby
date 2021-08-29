@@ -96,8 +96,9 @@ class WatchKeyring extends EventEmitter {
   };
 
   addAccounts = async () => {
+    console.log('accountToAdd', this.accountToAdd);
     if (!isAddress(this.accountToAdd)) {
-      throw new Error("The account you're are trying to import is a invalid");
+      throw new Error(i18n.t('importAddressInvalid'));
     }
     const prefixedAddress = addHexPrefix(this.accountToAdd);
 
@@ -106,7 +107,7 @@ class WatchKeyring extends EventEmitter {
         .map((x) => x.toLowerCase())
         .includes(prefixedAddress.toLowerCase())
     ) {
-      throw new Error("The account you're are trying to import is a duplicate");
+      throw new Error(i18n.t('importAddressDuplicate'));
     }
 
     this.accounts.push(prefixedAddress);

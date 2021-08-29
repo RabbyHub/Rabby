@@ -34,3 +34,7 @@ export const getCurrentWindow = async (): Promise<number | undefined> => {
 
   return id;
 };
+
+export const openInternalPageInTab = (path: string) => {
+  window.open(`./index.html#/${path}`);
+};

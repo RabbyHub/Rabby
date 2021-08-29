@@ -755,5 +755,11 @@
   },
   "No__transaction": {
     "message": "No transaction"
+  },
+  "importAddressInvalid": {
+    "message": "The address you're are trying to import is invalid"
+  },
+  "importAddressDuplicate": {
+    "message": "The address you're are trying to import is duplicate"
   }
 }

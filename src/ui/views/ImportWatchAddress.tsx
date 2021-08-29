@@ -1,28 +1,43 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useMemo, useEffect } from 'react';
 import { Input, Form, Modal } from 'antd';
 import { useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import QRCode from 'qrcode.react';
+import ENS from 'ethjs-ens';
+import QrReader from 'react-qr-scanner';
+import { isValidAddress } from 'ethereumjs-util';
 import WalletConnect from '@walletconnect/client';
 import { StrayPageWithButton } from 'ui/component';
 import { useWallet, useWalletRequest } from 'ui/utils';
+import HttpProvider from 'ui/utils/ens';
+import { openInternalPageInTab } from 'ui/utils/webapi';
 import WatchLogo from 'ui/assets/watch-logo.svg';
 import IconWalletconnect from 'ui/assets/walletconnect.svg';
 import IconScan from 'ui/assets/scan.svg';
+import IconArrowDown from 'ui/assets/big-arrow-down.svg';
+import IconEnter from 'ui/assets/enter.svg';
 
 const ImportWatchAddress = () => {
   const { t } = useTranslation();
   const history = useHistory();
   const wallet = useWallet();
   const [form] = Form.useForm();
+  const [disableKeydown, setDisableKeydown] = useState(false);
   const [walletconnectModalVisible, setWalletconnectModalVisible] = useState(
     false
   );
+  const [QRScanModalVisible, setQRScanModalVisible] = useState(false);
   const connector = useRef<WalletConnect>();
   const [walletconnectUri, setWalletconnectUri] = useState('');
+  const [ensResult, setEnsResult] = useState<null | string>(null);
+  const provider = new HttpProvider(
+    'https://openapi.debank.com/v1/wallet/eth_rpc'
+  );
+  const ens = new ENS({ provider, network: '1' });
 
   const [run, loading] = useWalletRequest(wallet.importWatchAddress, {
     onSuccess(accounts) {
+      setDisableKeydown(false);
       history.replace({
         pathname: '/import/success',
         state: {
@@ -32,6 +47,7 @@ const ImportWatchAddress = () => {
       });
     },
     onError(err) {
+      setDisableKeydown(false);
       form.setFields([
         {
           name: 'address',
@@ -40,6 +56,25 @@ const ImportWatchAddress = () => {
       ]);
     },
   });
+
+  const handleKeyDown = useMemo(() => {
+    const handler = (e: KeyboardEvent) => {
+      if (e.key.toLowerCase() === 'enter') {
+        if (ensResult) {
+          e.preventDefault();
+          run(ensResult);
+        }
+      }
+    };
+    return handler;
+  }, [ensResult]);
+
+  useEffect(() => {
+    document.addEventListener('keydown', handleKeyDown);
+    return () => {
+      document.removeEventListener('keydown', handleKeyDown);
+    };
+  }, [handleKeyDown]);
 
   const handleImportByWalletconnect = async () => {
     localStorage.removeItem('walletconnect');
@@ -80,15 +115,59 @@ const ImportWatchAddress = () => {
     setWalletconnectModalVisible(false);
   };
 
+  const handleScanQRCodeSuccess = (data) => {
+    if (data?.text) {
+      form.setFieldsValue({
+        address: data.text,
+      });
+      setQRScanModalVisible(false);
+    }
+  };
+
+  const handleQRScanModalCancel = () => {
+    setQRScanModalVisible(false);
+  };
+
+  const handleScanQRCodeError = () => {
+    openInternalPageInTab('qrcode-reader');
+  };
+
+  const handleImportByQrcode = () => {
+    setQRScanModalVisible(true);
+  };
+
+  const handleValuesChange = async ({ address }: { address: string }) => {
+    if (!isValidAddress(address)) {
+      try {
+        const result = await ens.lookup(address);
+        setDisableKeydown(true);
+        setEnsResult(result);
+      } catch (e) {
+        setEnsResult(null);
+      }
+    } else {
+      setEnsResult(null);
+    }
+  };
+
+  const handleNextClick = () => {
+    const address = form.getFieldValue('address');
+    run(address);
+  };
+
   return (
     <StrayPageWithButton
-      onSubmit={({ address }) => run(address)}
+      onSubmit={handleNextClick}
       spinning={loading}
       form={form}
       hasBack
       hasDivider
       noPadding
       className="import-watchmode"
+      formProps={{
+        onValuesChange: handleValuesChange,
+      }}
+      disableKeyDownEvent={disableKeydown}
     >
       <header className="create-new-header create-password-header h-[264px]">
         <img
@@ -108,19 +187,29 @@ const ImportWatchAddress = () => {
         </p>
         <img src="/images/watch-mask.png" className="mask" />
       </header>
-      <Form.Item
-        className="pt-32 px-20"
-        name="address"
-        rules={[{ required: true, message: t('Please input address') }]}
-      >
-        <Input
-          placeholder={t('Address')}
-          size="large"
-          maxLength={44}
-          autoFocus
-          spellCheck={false}
-        />
-      </Form.Item>
+      <div className="relative">
+        <Form.Item
+          className="pt-32 px-20"
+          name="address"
+          rules={[{ required: true, message: t('Please input address') }]}
+        >
+          <Input
+            placeholder={t('Address')}
+            size="large"
+            maxLength={44}
+            autoFocus
+            spellCheck={false}
+          />
+        </Form.Item>
+        {ensResult && (
+          <div className="ens-search">
+            <div className="ens-search__inner">
+              {ensResult}
+              <img className="icon icon-enter" src={IconEnter} />
+            </div>
+          </div>
+        )}
+      </div>
       <div className="flex justify-between px-20">
         <div
           className="w-[172px] import-watchmode__button"
@@ -129,7 +218,10 @@ const ImportWatchAddress = () => {
           <img src={IconWalletconnect} className="icon icon-walletconnect" />
           {t('Scan via mobile wallet')}
         </div>
-        <div className="w-[172px] import-watchmode__button">
+        <div
+          className="w-[172px] import-watchmode__button"
+          onClick={handleImportByQrcode}
+        >
           <img src={IconScan} className="icon icon-walletconnect" />
           {t('Scan via PC camera')}
         </div>
@@ -153,6 +245,30 @@ const ImportWatchAddress = () => {
             <QRCode value={walletconnectUri} size={176} />
           </div>
         )}
+      </Modal>
+      <Modal
+        className="walletconnect-modal"
+        visible={QRScanModalVisible}
+        onCancel={handleQRScanModalCancel}
+        footer={null}
+        width={360}
+        destroyOnClose
+      >
+        <p className="guide">
+          {t('Please point the QR code in your phone at the screen')}
+        </p>
+        <img src={IconArrowDown} className="icon icon-arrow-down" />
+        <div className="qrcode">
+          <QrReader
+            delay={100}
+            style={{
+              width: '176px',
+              height: '176px',
+            }}
+            onError={handleScanQRCodeError}
+            onScan={handleScanQRCodeSuccess}
+          />
+        </div>
       </Modal>
     </StrayPageWithButton>
   );

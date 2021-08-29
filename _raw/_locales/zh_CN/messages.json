@@ -752,5 +752,11 @@
   },
   "No__transaction": {
     "message": "无交易"
+  },
+  "importAddressInvalid": {
+    "message": "导入地址格式不合法"
+  },
+  "importAddressDuplicate": {
+    "message": "此地址已存在，请勿重复导入"
   }
 }
