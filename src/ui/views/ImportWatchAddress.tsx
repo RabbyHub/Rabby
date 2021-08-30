@@ -16,6 +16,7 @@ import IconWalletconnect from 'ui/assets/walletconnect.svg';
 import IconScan from 'ui/assets/scan.svg';
 import IconArrowDown from 'ui/assets/big-arrow-down.svg';
 import IconEnter from 'ui/assets/enter.svg';
+import IconChecked from 'ui/assets/checked.svg';
 
 const ImportWatchAddress = () => {
   const { t } = useTranslation();
@@ -199,6 +200,11 @@ const ImportWatchAddress = () => {
             maxLength={44}
             autoFocus
             spellCheck={false}
+            suffix={
+              ensResult ? (
+                <img src={IconChecked} className="icon icon-checked" />
+              ) : null
+            }
           />
         </Form.Item>
         {ensResult && (
