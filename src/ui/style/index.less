@@ -58,6 +58,108 @@ button:focus {
   }
 }
 
+.import-watchmode {
+  .ant-form-item {
+    margin-bottom: 16px;
+  }
+  &__button {
+    display: flex;
+    justify-content: center;
+    padding: 11px 0;
+    font-size: 12px;
+    line-height: 14px;
+    color: #2D3033;
+    background-color: #fff;
+    border-radius: 6px;
+    cursor: pointer;
+    user-select: none;
+    .icon {
+      width: 14px;
+      height: 14px;
+      margin-right: 8px;
+    }
+  }
+  .ens-search {
+    position: absolute;
+    padding: 4px;
+    border-radius: 6px;
+    background-color: #fff;
+    width: 360px;
+    top: calc(100% + 8px);
+    left: 50%;
+    margin-left: -180px;
+    &__inner {
+      background-color: rgba(134, 151, 255, .1);
+      border-radius: 4px;
+      height: 40px;
+      display: flex;
+      align-items: center;
+      padding: 0 12px;
+      justify-content: space-between;
+      font-size: 12px;
+      line-height: 14px;
+      color: #2D3033;
+    }
+  }
+  .icon-checked {
+    width: 16px;
+    height: 16px;
+  }
+  .ant-input-affix-wrapper {
+    line-height: 1;
+  }
+}
+
+.walletconnect-modal {
+  .ant-modal-content {
+    background-color: #fff;
+    .guide {
+      color: #2D3033;
+      font-weight: 500;
+      font-size: 15px;
+      line-height: 18px;
+      text-align: center;
+      width: 239px;
+      margin: 0 auto 24px;
+    }
+    .symbol {
+      display: flex;
+      justify-content: center;
+      font-weight: 500;
+      font-size: 13px;
+      line-height: 15px;
+      color: #3B99FD;
+      margin-bottom: 16px;
+      .icon {
+        width: 15px;
+        height: 15px;
+        margin-right: 6px;
+      }
+    }
+    .qrcode {
+      padding: 10px;
+      border: 1px solid #D8DFEB;
+      border-radius: 12px;
+      margin: 0 auto;
+      width: 200px;
+      canvas {
+        margin: 0;
+      }
+      video {
+        margin: 0;
+        object-fit: cover;
+        border-radius: 8px;
+        background-color: #B4BDCC;
+      }
+    }
+    .icon-arrow-down {
+      width: 28px;
+      height: 28px;
+      margin: 13px auto;
+    }
+  }
+}
+
 .uploader {
   border-color: transparent;
   border-width: 1px;

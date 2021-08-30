@@ -1,0 +1,42 @@
+.qrcode-reader {
+  &__container {
+    width: 200px;
+    height: 200px;
+    margin: 0 auto;
+    border: 1px solid #D8DFEB;
+    border-radius: 12px;
+    padding: 15px;
+    video {
+      margin: 0 auto;
+      object-fit: cover;
+      border-radius: 8px;
+      background-color: #B4BDCC;
+    }
+  }
+  &__result {
+    width: 460px;
+    .item {
+      padding: 20px;
+      background-color: #fff;
+      text-align: center;
+      border-radius: 6px;
+      white-space: nowrap;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      &.invalid {
+        border: 1px solid #F24822;
+      }
+    }
+    .error-message {
+      font-size: 12px;
+      line-height: 14px;
+      color: #F24822;
+      margin: 8px 0 0;
+    }
+    .actions {
+      display: flex;
+      justify-content: space-between;
+      margin-top: 106px;
+    }
+  }
+}

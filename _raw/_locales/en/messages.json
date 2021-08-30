@@ -755,5 +755,26 @@
   },
   "No__transaction": {
     "message": "No transaction"
+  },
+  "importAddressInvalid": {
+    "message": "The address you're are trying to import is invalid"
+  },
+  "importAddressDuplicate": {
+    "message": "The address you're are trying to import is duplicate"
+  },
+  "Scan__via__mobile__wallet": {
+    "message": "Scan via mobile wallet"
+  },
+  "Scan via PC camera": {
+    "message": "Scan via PC camera"
+  },
+  "ScanQRcodesWithWalletConnect": {
+    "message": "Scan QR codes with WalletConnect-compatible wallets"
+  },
+  "Please__point__the__QR__code__in__your__phone__at__the__screen": {
+    "message": "Please point the QR code in your phone at the screen"
+  },
+  "Whether__to__add__scanned__address": {
+    "message": "Whether to add scanned address?"
   }
 }

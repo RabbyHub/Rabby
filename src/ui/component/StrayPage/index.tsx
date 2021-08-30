@@ -66,6 +66,7 @@ interface StrayPageWithButtonProps {
   spinning?: boolean;
   noPadding?: boolean;
   isScrollContainer?: boolean;
+  disableKeyDownEvent?: boolean;
 }
 
 export const StrayPageWithButton = ({
@@ -87,11 +88,14 @@ export const StrayPageWithButton = ({
   footerFixed,
   noPadding = false,
   isScrollContainer = false,
+  className,
+  disableKeyDownEvent = false,
 }: StrayPageWithButtonProps & StrayFooterNavProps) => {
   const { t } = useTranslation();
 
   const handleKeyDown = useMemo(() => {
     const handler = (e: KeyboardEvent) => {
+      if (disableKeyDownEvent) return;
       if (e.key.toLowerCase() === 'enter') {
         if (onSubmit) return;
         if (onNextClick && !nextDisabled) {
@@ -100,7 +104,7 @@ export const StrayPageWithButton = ({
       }
     };
     return handler;
-  }, [nextDisabled]);
+  }, [nextDisabled, disableKeyDownEvent]);
 
   useEffect(() => {
     document.addEventListener('keydown', handleKeyDown);
@@ -115,6 +119,7 @@ export const StrayPageWithButton = ({
       spinning={spinning}
       headerClassName={headerClassName}
       noPadding={noPadding}
+      className={className}
     >
       <Form
         className={clsx('sm:pb-[98px] lg:pb-[72px]', {
