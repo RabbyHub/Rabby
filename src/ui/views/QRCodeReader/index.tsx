@@ -24,7 +24,7 @@ const ImportHardware = () => {
 
   const handleScanQRCodeSuccess = (data) => {
     if (data?.text) {
-      setTitle(t('Whether to add scanned address?'));
+      setTitle(t('Whether to add scanned address'));
       setDescription('');
       setResult(data.text);
       const isValid = isValidAddress(data.text);

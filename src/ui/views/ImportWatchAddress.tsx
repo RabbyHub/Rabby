@@ -233,9 +233,7 @@ const ImportWatchAddress = () => {
         footer={null}
         width={360}
       >
-        <p className="guide">
-          {t('Scan QR codes with WalletConnect-compatible wallets')}
-        </p>
+        <p className="guide">{t('ScanQRcodesWithWalletConnect')}</p>
         <div className="symbol">
           <img src={IconWalletconnect} className="icon icon-walletconnect" />
           Wallet connect
