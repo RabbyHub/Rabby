@@ -329,6 +329,7 @@ const SignTx = ({ params, origin }) => {
       gas: `0x${gas.gasLimit.toString(16)}`,
       nonce: afterNonce,
     });
+    setGasLimit(`0x${gas.gasLimit.toString(16)}`);
     setRealNonce(afterNonce);
     if (beforeNonce !== afterNonce) {
       setNonceChanged(true);
