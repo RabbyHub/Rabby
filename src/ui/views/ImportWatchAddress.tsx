@@ -58,12 +58,19 @@ const ImportWatchAddress = () => {
     },
   });
 
+  const handleConfirmENS = (result: string) => {
+    form.setFieldsValue({
+      address: result,
+    });
+    setEnsResult('');
+  };
+
   const handleKeyDown = useMemo(() => {
     const handler = (e: KeyboardEvent) => {
       if (e.key.toLowerCase() === 'enter') {
         if (ensResult) {
           e.preventDefault();
-          run(ensResult);
+          handleConfirmENS(ensResult);
         }
       }
     };
@@ -195,7 +202,7 @@ const ImportWatchAddress = () => {
           rules={[{ required: true, message: t('Please input address') }]}
         >
           <Input
-            placeholder={t('Address')}
+            placeholder="Address / ENS"
             size="large"
             maxLength={44}
             autoFocus
@@ -208,7 +215,10 @@ const ImportWatchAddress = () => {
           />
         </Form.Item>
         {ensResult && (
-          <div className="ens-search">
+          <div
+            className="ens-search"
+            onClick={() => handleConfirmENS(ensResult)}
+          >
             <div className="ens-search__inner">
               {ensResult}
               <img className="icon icon-enter" src={IconEnter} />

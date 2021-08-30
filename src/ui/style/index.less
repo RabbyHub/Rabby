@@ -88,6 +88,8 @@ button:focus {
     top: calc(100% + 8px);
     left: 50%;
     margin-left: -180px;
+    cursor: pointer;
+    user-select: none;
     &__inner {
       background-color: rgba(134, 151, 255, .1);
       border-radius: 4px;
@@ -107,12 +109,17 @@ button:focus {
   }
   .ant-input-affix-wrapper {
     line-height: 1;
+    border-radius: 6px;
+    .ant-input {
+      border-radius: 0;
+    }
   }
 }
 
 .walletconnect-modal {
   .ant-modal-content {
     background-color: #fff;
+    height: 365px;
     .guide {
       color: #2D3033;
       font-weight: 500;
