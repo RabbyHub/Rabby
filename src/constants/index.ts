@@ -127,7 +127,7 @@ export const CHAINS: Record<string, Chain> = {
     whiteLogo: IconArbitrumWhiteLogo,
     hex: '0xa4b1',
     network: '42161',
-    nativeTokenSymbol: 'ETH',
+    nativeTokenSymbol: 'ARETH',
     scanLink: 'https://explorer.arbitrum.io/tx/_s_',
   },
   [CHAINS_ENUM.AVAX]: {
