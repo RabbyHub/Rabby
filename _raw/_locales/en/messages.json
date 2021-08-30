@@ -760,7 +760,7 @@
     "message": "The address you're are trying to import is invalid"
   },
   "importAddressDuplicate": {
-    "message": "The address you're are trying to import is duplicate"
+    "message": "The address you're are trying to import is already in Rabby"
   },
   "Scan__via__mobile__wallet": {
     "message": "Scan via mobile wallet"
@@ -769,12 +769,15 @@
     "message": "Scan via PC camera"
   },
   "ScanQRcodesWithWalletConnect": {
-    "message": "Scan QR codes with WalletConnect-compatible wallets"
+    "message": "Scan the QR code with a WalletConnect-compatible wallet"
   },
   "Please__point__the__QR__code__in__your__phone__at__the__screen": {
-    "message": "Please point the QR code in your phone at the screen"
+    "message": "Please put your address QR code towards the camera on your computer"
   },
   "Whether__to__add__scanned__address": {
-    "message": "Whether to add scanned address?"
+    "message": "Add Watch Mode address"
+  },
+  "Scan__to__add__address": {
+    "message": "Add Watch Mode address"
   }
 }

@@ -760,7 +760,7 @@
     "message": "此地址已存在，请勿重复导入"
   },
   "Scan__via__mobile__wallet": {
-    "message": "使用手机扫码"
+    "message": "使用手机钱包扫码"
   },
   "Scan via PC camera": {
     "message": "使用电脑摄像头扫码"
@@ -769,9 +769,12 @@
     "message": "使用支持 WalletConnect 的手机钱包扫码"
   },
   "Please__point__the__QR__code__in__your__phone__at__the__screen": {
-    "message": "请将手机屏幕上的二维码放在摄像头区域内"
+    "message": "请将地址二维码对准电脑上的摄像头"
   },
   "Whether__to__add__scanned__address": {
-    "message": "确定添加扫码所得地址？"
+    "message": "添加观察模式地址"
+  },
+  "Scan__to__add__address": {
+    "message": "添加观察模式地址"
   }
 }
