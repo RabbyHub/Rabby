@@ -20,6 +20,7 @@ interface PreferenceStore {
   useLedgerLive: boolean;
   locale: string;
   watchAddressPreference: Record<string, number>;
+  isDefaultWallet: boolean;
 }
 
 const SUPPORT_LOCALES = ['en', 'zh_CN'];
@@ -45,12 +46,21 @@ class PreferenceService {
         useLedgerLive: false,
         locale: defaultLang,
         watchAddressPreference: {},
+        isDefaultWallet: false,
       },
     });
     if (!this.store.locale) {
       this.store.locale = defaultLang;
     }
     i18n.changeLanguage(this.store.locale);
+  };
+
+  setIsDefaultWallet = (val: boolean) => {
+    this.store.isDefaultWallet = val;
+  };
+
+  getIsDefaultWallet = () => {
+    return this.store.isDefaultWallet;
   };
 
   getHasOtherProvider = () => {
