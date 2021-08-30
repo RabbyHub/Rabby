@@ -765,7 +765,7 @@
   "Scan__via__mobile__wallet": {
     "message": "Scan via mobile wallet"
   },
-  "Scan via PC camera": {
+  "Scan__via__PC__camera": {
     "message": "Scan via PC camera"
   },
   "ScanQRcodesWithWalletConnect": {
