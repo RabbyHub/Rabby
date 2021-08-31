@@ -3,11 +3,12 @@ import { useTranslation } from 'react-i18next';
 import { useWallet } from 'ui/utils';
 import IconRabbyWhite from 'ui/assets/rabby-white.svg';
 
-const DefaultWalletAlertBar = () => {
+const DefaultWalletAlertBar = ({ onChange }: { onChange(): void }) => {
   const { t } = useTranslation();
   const wallet = useWallet();
   const handleConfirm = () => {
     wallet.setDefaultWallet();
+    onChange();
   };
 
   return (

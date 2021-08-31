@@ -139,6 +139,10 @@ const Dashboard = () => {
     });
   };
 
+  const handleDefaultWalletChange = () => {
+    setIsDefaultWallet(wallet.isDefaultWallet());
+  };
+
   const handleShowQrcode = () => {
     setQrcodeVisible(true);
   };
@@ -218,7 +222,9 @@ const Dashboard = () => {
           </div>
         </div>
         <RecentConnections />
-        {!isDefaultWallet && <DefaultWalletAlertBar />}
+        {!isDefaultWallet && (
+          <DefaultWalletAlertBar onChange={handleDefaultWalletChange} />
+        )}
       </div>
       <Modal
         visible={qrcodeVisible}
