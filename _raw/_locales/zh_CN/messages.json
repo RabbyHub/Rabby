@@ -762,7 +762,7 @@
   "Scan__via__mobile__wallet": {
     "message": "使用手机钱包扫码"
   },
-  "Scan via PC camera": {
+  "Scan__via__PC__camera": {
     "message": "使用电脑摄像头扫码"
   },
   "ScanQRcodesWithWalletConnect": {
