@@ -116,7 +116,9 @@ const ConnectionItem = memo(
 );
 
 export default () => {
-  const [connections, setConnections] = useState<(ConnectedSite | null)[]>([]);
+  const [connections, setConnections] = useState<(ConnectedSite | null)[]>(
+    new Array(12).fill(null)
+  );
   const [currentConnect, setCurrentConnect] = useState<
     ConnectedSite | null | undefined
   >(null);
