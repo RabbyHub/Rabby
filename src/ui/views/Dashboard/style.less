@@ -366,6 +366,9 @@
       }
     }
   }
+  ::-webkit-scrollbar {
+    display: none;
+  }
 }
 
 .default-wallet-alert {
@@ -389,7 +392,6 @@
     flex: 1;
   }
   .confirm-btn {
-    background: rgba(255, 255, 255, 0.2);
     border: 0.5px solid #FFFFFF;
     border-radius: 2px;
     color: #fff;
@@ -397,6 +399,11 @@
     width: 60px;
     height: 20px;
     line-height: 20px;
+    background-color: transparent;
+    transition: background-color .3s;
+    &:hover {
+      background-color: rgba(255, 255, 255, 0.2);
+    }
   }
 }
 

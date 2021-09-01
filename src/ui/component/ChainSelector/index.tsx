@@ -44,11 +44,11 @@ const ChainSelector = ({ value, onChange }: ChainSelectorProps) => {
   return (
     <>
       <div className="chain-selector" onClick={handleClickSelector}>
-        <img src={CHAINS[value].logo} className="chain-logo" />
+        <img src={CHAINS[value]?.logo} className="chain-logo" />
         <SvgIconArrowDown className="icon icon-arrow-down text-gray-content fill-current" />
       </div>
       <Modal
-        width="90%"
+        width="360px"
         closable={false}
         visible={showSelectorModal}
         onCancel={handleCancel}
@@ -62,23 +62,23 @@ const ChainSelector = ({ value, onChange }: ChainSelectorProps) => {
                 key={chain.enum}
                 onClick={() => handleChange(chain.enum as CHAINS_ENUM)}
               >
-                <img className="chain-logo" src={chain.logo} />
+                <img className="chain-logo" src={chain?.logo} />
                 <div className="chain-name">
                   <p className="text-13 font-medium my-0 leading-none">
                     {chain.name}
                   </p>
-                  {chainBalanceMap[chain.id]?.usd_value && (
+                  {chainBalanceMap[chain?.id]?.usd_value && (
                     <>
                       <div className="absolute left-0 top-10 bottom-10 w-2 bg-blue-light" />
                       <p
                         className="mt-4 mb-0 text-gray-content text-12 truncate"
                         title={splitNumberByStep(
-                          chainBalanceMap[chain.id].splitedNumber
+                          chainBalanceMap[chain?.id].splitedNumber
                         )}
                       >
                         $
                         {splitNumberByStep(
-                          chainBalanceMap[chain.id].splitedNumber
+                          chainBalanceMap[chain?.id].splitedNumber
                         )}
                       </p>
                     </>
@@ -86,7 +86,7 @@ const ChainSelector = ({ value, onChange }: ChainSelectorProps) => {
                 </div>
                 <img
                   className="icon icon-checked"
-                  src={value === chain.enum ? IconChecked : IconNotChecked}
+                  src={value === chain?.enum ? IconChecked : IconNotChecked}
                 />
               </li>
             ))}

@@ -99,6 +99,24 @@ const SignTx = ({ params, origin }) => {
       success: true,
       usd_value_change: 0,
     },
+    native_token: {
+      amount: 0,
+      chain: '',
+      decimals: 18,
+      display_symbol: '',
+      id: '1',
+      is_core: true,
+      is_verified: true,
+      is_wallet: true,
+      is_infinity: true,
+      logo_url: '',
+      name: '',
+      optimized_symbol: '',
+      price: 0,
+      symbol: '',
+      time_at: 0,
+      usd_value: 0,
+    },
     gas: {
       estimated_gas_cost_usd_value: 0,
       estimated_gas_cost_value: 0,
@@ -240,7 +258,12 @@ const SignTx = ({ params, origin }) => {
       setGasLimit(res.recommend.gas);
     }
     setTxDetail(res);
-    if (updateNonce) setRealNonce(res.recommend.nonce); // do not overwrite nonce if from === to(cancel transaction)
+    if (updateNonce) {
+      const localNonce = wallet.getNonceByChain(tx.from, chainId) || 0;
+      console.log('localNonce', localNonce);
+      console.log('recommendNonce', res.recommend.nonce);
+      setRealNonce(intToHex(Math.max(Number(res.recommend.nonce), localNonce)));
+    } // do not overwrite nonce if from === to(cancel transaction)
     setPreprocessSuccess(res.pre_exec.success);
     wallet.addTxExplainCache({
       address,

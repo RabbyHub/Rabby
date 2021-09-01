@@ -1,17 +1,10 @@
 import React, { useState } from 'react';
-import { useHistory } from 'react-router-dom';
-import { Form, Input, Button } from 'antd';
+import { Form, Input, Button, Switch } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { useWallet } from 'ui/utils';
 import { PageHeader, Field, Modal } from 'ui/component';
 import { INITIAL_OPENAPI_URL } from 'consts';
-import IconAddressManagement from 'ui/assets/address-management.svg';
-import IconChainManagement from 'ui/assets/chain-management.svg';
-import IconConnectSitesManagement from 'ui/assets/connect-sites-management.svg';
 import IconArrowRight from 'ui/assets/arrow-right-gray.svg';
-import IconLock from 'ui/assets/lock.svg';
-import IconSwitch from 'ui/assets/switch-lang.svg';
-import IconAdvanceOption from 'ui/assets/advance-option.svg';
 import './style.less';
 
 const OpenApiModal = ({
@@ -28,6 +21,7 @@ const OpenApiModal = ({
   const wallet = useWallet();
   const { t } = useTranslation();
   const currentHost = wallet.openapi.getHost();
+
   form.setFieldsValue({
     host: currentHost,
   });
@@ -70,7 +64,7 @@ const OpenApiModal = ({
             </Button>
           </div>
         )}
-        <div className="flex justify-center mt-40">
+        <div className="flex justify-center mt-24">
           <Button
             type="primary"
             size="large"
@@ -85,71 +79,48 @@ const OpenApiModal = ({
   );
 };
 
-const Settings = () => {
+const AdvancedSettings = () => {
   const wallet = useWallet();
-  const history = useHistory();
   const { t } = useTranslation();
   const [showOpenApiModal, setShowOpenApiModal] = useState(false);
+  const [isDefaultWallet, setIsDefaultWallet] = useState(
+    wallet.isDefaultWallet()
+  );
+
+  const handleDefaultWalletChange = (value: boolean) => {
+    wallet.setIsDefaultWallet(value);
+    setIsDefaultWallet(value);
+  };
+
   const renderData = [
     {
-      leftIcon: IconAddressManagement,
-      content: t('AddressManagement'),
-      onClick: () => history.push('/settings/address'),
+      content: t('Backend Service URL'),
+      onClick: () => setShowOpenApiModal(true),
+      rightIcon: <img src={IconArrowRight} className="icon icon-arrow-right" />,
     },
     {
-      leftIcon: IconChainManagement,
-      content: t('ChainManagement'),
-      onClick: () => history.push('/settings/chain'),
-    },
-    {
-      leftIcon: IconConnectSitesManagement,
-      content: t('Connected websites'),
-      onClick: () => history.push('/settings/sites'),
-    },
-    {
-      leftIcon: IconSwitch,
-      content: t('Switching languages'),
-      onClick: () => history.push('/settings/switch-lang'),
-    },
-    {
-      leftIcon: IconAdvanceOption,
-      content: t('Advanced Options'),
-      onClick: () => history.push('/settings/advanced'),
+      content: t('Set Rabby as default wallet'),
+      rightIcon: (
+        <Switch
+          defaultChecked={isDefaultWallet}
+          onChange={handleDefaultWalletChange}
+        />
+      ),
     },
   ];
 
-  const lockWallet = async () => {
-    await wallet.lockWallet();
-    history.push('/unlock');
-  };
-
   return (
     <div className="settings">
-      <PageHeader>{t('Settings')}</PageHeader>
-      <Button
-        block
-        size="large"
-        type="primary"
-        className="flex justify-center items-center lock-wallet"
-        onClick={lockWallet}
-      >
-        <img src={IconLock} className="icon icon-lock" /> {t('Lock')}
-      </Button>
+      <PageHeader>{t('Advanced Options')}</PageHeader>
       {renderData.map((data) => (
         <Field
           key={data.content}
-          leftIcon={<img src={data.leftIcon} className="icon" />}
-          rightIcon={
-            <img src={IconArrowRight} className="icon icon-arrow-right" />
-          }
+          rightIcon={data.rightIcon}
           onClick={data.onClick}
         >
           {data.content}
         </Field>
       ))}
-      <div className="text-12 text-gray-comment text-center mt-40">
-        {process.env.version}
-      </div>
       <OpenApiModal
         visible={showOpenApiModal}
         onFinish={() => setShowOpenApiModal(false)}
@@ -159,4 +130,4 @@ const Settings = () => {
   );
 };
 
-export default Settings;
+export default AdvancedSettings;

@@ -1,6 +1,7 @@
 import { createPersistStore } from 'background/utils';
+import maxBy from 'lodash/maxBy';
 import openapiService, { Tx, ExplainTxResponse } from './openapi';
-import { CHAINS } from 'consts';
+import { CHAINS, CHAINS_ENUM } from 'consts';
 
 export interface TransactionHistoryItem {
   rawTx: Tx;
@@ -310,6 +311,18 @@ class TxHistory {
       delete cacheExplain[key];
       this.store.cacheExplain = cacheExplain;
     }
+  }
+
+  getNonceByChain(address: string, chainId: number) {
+    const list = Object.values(this.store.transactions[address] || {});
+    const maxNonceTx = maxBy(
+      list.filter((item) => item.chainId === chainId),
+      (item) => item.nonce
+    );
+
+    if (!maxNonceTx) return null;
+
+    return maxNonceTx.nonce + 1;
   }
 }
 

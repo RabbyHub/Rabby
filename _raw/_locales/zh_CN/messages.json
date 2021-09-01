@@ -782,5 +782,11 @@
   },
   "SetDefaultWalletAlert": {
     "message": "是否将 Rabby 设置为默认钱包？"
+  },
+  "Set__Rabby__as__default__wallet": {
+    "message": "将 Rabby 设置为默认钱包"
+  },
+  "Please__refresh__the__website__your__are__viewing": {
+    "message": "请刷新正在使用的网页"
   }
 }

@@ -46,7 +46,7 @@ const Dashboard = () => {
   const [isModalOpen, setModalOpen] = useState(false);
   const [qrcodeVisible, setQrcodeVisible] = useState(false);
   const [pendingTxCount, setPendingTxCount] = useState(0);
-  const [isDefaultWallet, setIsDefaultWallet] = useState(false);
+  const [isDefaultWallet, setIsDefaultWallet] = useState(true);
   const [copySuccess, setCopySuccess] = useState(false);
 
   const handleToggle = () => {

@@ -168,9 +168,20 @@ const TransactionItem = ({
       }
     >
   >({});
+  const hasTokenPrice = !!item.explain.native_token;
+  const gasTokenCount =
+    hasTokenPrice && completedTx
+      ? (Number(completedTx.rawTx.gasPrice) * (completedTx.gasUsed || 0)) / 1e18
+      : 0;
+  const gasUSDValue = gasTokenCount
+    ? (item.explain.native_token.price * gasTokenCount).toFixed(2)
+    : 0;
+  const gasTokenSymbol = hasTokenPrice ? item.explain.native_token.symbol : '';
   let agoText = '';
 
   const loadTxData = async () => {
+    if (gasTokenCount) return;
+
     const results = await Promise.all(
       item.txs.map((tx) =>
         wallet.openapi.getTx(chain.serverId, tx.hash, Number(tx.rawTx.gasPrice))
@@ -408,7 +419,11 @@ const TransactionItem = ({
           <div className="tx-footer justify-between text-12">
             <span className="flex-1 whitespace-nowrap overflow-ellipsis overflow-hidden text-gray-light">
               Gas:{' '}
-              {txQueues[completedTx!.hash]
+              {gasTokenCount
+                ? `${gasTokenCount.toFixed(
+                    8
+                  )} ${gasTokenSymbol} ($${gasUSDValue})`
+                : txQueues[completedTx!.hash]
                 ? txQueues[completedTx!.hash].tokenCount?.toFixed(8) +
                   ` ${txQueues[completedTx!.hash].token?.symbol} ($${(
                     txQueues[completedTx!.hash].tokenCount! *

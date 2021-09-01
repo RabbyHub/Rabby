@@ -2,6 +2,7 @@ import React from 'react';
 import clsx from 'clsx';
 import { Button } from 'antd';
 import { useTranslation, Trans } from 'react-i18next';
+import { intToHex } from 'ethereumjs-util';
 import { CHAINS } from 'consts';
 import { useWallet, useApproval } from 'ui/utils';
 import IconWarning from 'ui/assets/warning.svg';
@@ -22,10 +23,13 @@ const AddChain = ({ params }: { params: AddChainProps }) => {
   const [, resolveApproval, rejectApproval] = useApproval();
   const { t } = useTranslation();
 
-  const {
-    data: [{ chainId }],
-    session,
-  } = params;
+  const { data, session } = params;
+  let [{ chainId }] = data;
+  if (typeof chainId === 'number') {
+    chainId = intToHex(chainId).toLowerCase();
+  } else {
+    chainId = chainId.toLowerCase();
+  }
 
   const supportChains = wallet.getSupportChains();
   const showChain = supportChains.find((chain) => chain.hex === chainId);

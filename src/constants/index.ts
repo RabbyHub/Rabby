@@ -13,8 +13,8 @@ import IconFantom from 'ui/assets/chain-logos/fantom.svg';
 import IconFantomWhiteLogo from 'ui/assets/chain-logos/fantom-white.svg';
 import IconOKTLogo from 'ui/assets/chain-logos/okex.svg';
 import IconOKTWhiteLogo from 'ui/assets/chain-logos/okex-white.svg';
-// import IconArbitrumLogo from 'ui/assets/chain-logos/arbitrum.svg';
-// import IconArbitrumWhiteLogo from 'ui/assets/chain-logos/arbitrum-white.svg';
+import IconArbitrumLogo from 'ui/assets/chain-logos/arbitrum.svg';
+import IconArbitrumWhiteLogo from 'ui/assets/chain-logos/arbitrum-white.svg';
 import IconOPLogo from 'ui/assets/chain-logos/op.svg';
 import IconOPWhiteLogo from 'ui/assets/chain-logos/op-white.svg';
 import IconAvaxLogo from 'ui/assets/chain-logos/avax.svg';
@@ -121,18 +121,18 @@ export const CHAINS: Record<string, Chain> = {
     scanLink: 'https://hecoinfo.com/tx/_s_',
   },
   // https://developer.offchainlabs.com/docs/public_testnet#connection-information
-  // [CHAINS_ENUM.ARBITRUM]: {
-  //   id: 42161,
-  //   serverId: 'arbitrum',
-  //   name: 'Arbitrum',
-  //   enum: CHAINS_ENUM.ARBITRUM,
-  //   logo: IconArbitrumLogo,
-  //   whiteLogo: IconArbitrumWhiteLogo,
-  //   hex: '0xa4b1',
-  //   network: '42161',
-  //   nativeTokenSymbol: 'ETH',
-  //   scanLink: 'https://explorer.arbitrum.io/tx/_s_',
-  // },
+  [CHAINS_ENUM.ARBITRUM]: {
+    id: 42161,
+    serverId: 'arb',
+    name: 'Arbitrum',
+    enum: CHAINS_ENUM.ARBITRUM,
+    logo: IconArbitrumLogo,
+    whiteLogo: IconArbitrumWhiteLogo,
+    hex: '0xa4b1',
+    network: '42161',
+    nativeTokenSymbol: 'ETH',
+    scanLink: 'https://explorer.arbitrum.io/tx/_s_',
+  },
   [CHAINS_ENUM.AVAX]: {
     id: 43114,
     serverId: 'avax',
@@ -149,7 +149,7 @@ export const CHAINS: Record<string, Chain> = {
     id: 10,
     serverId: 'op',
     network: '10',
-    name: 'Optimistic',
+    name: 'Optimism',
     nativeTokenSymbol: 'ETH',
     enum: CHAINS_ENUM.OP,
     logo: IconOPLogo,

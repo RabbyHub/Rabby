@@ -127,6 +127,7 @@ export interface ExplainTxResponse {
     estimated_gas_used: number;
     estimated_seconds: number;
   };
+  native_token: TokenItem;
   pre_exec: {
     success: boolean;
     err_msg: string;
@@ -465,15 +466,15 @@ class OpenApiService {
         wrapped_token_id: '',
         symbol: '',
       },
-      // {
-      //   community_id: 421611,
-      //   id: 'arbitrum',
-      //   logo_url: '',
-      //   name: '',
-      //   native_token_id: '',
-      //   wrapped_token_id: '',
-      //   symbol: '',
-      // },
+      {
+        community_id: 421611,
+        id: 'arb',
+        logo_url: '',
+        name: '',
+        native_token_id: '',
+        wrapped_token_id: '',
+        symbol: '',
+      },
       {
         community_id: 10,
         id: 'op',
