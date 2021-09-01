@@ -3013,19 +3013,14 @@
   resolved "https://registry.yarnpkg.com/@xtuc/long/-/long-4.2.2.tgz#d291c6a4e97989b5c61d9acf396ae4fe133a718d"
   integrity sha512-NuHqBY1PB/D8xU6s/thBgOAiAP7HOYDQ32+BFZILJ8ivkUkAHQnWfn6WhL79Owj1qmUnoN/YPhktdIoucipkAQ==
 
-"@zxing/library@^0.18.3":
-  version "0.18.6"
-  resolved "https://registry.yarnpkg.com/@zxing/library/-/library-0.18.6.tgz#717af8c6c1fd982865e21051afdd7b470ae6674c"
-  integrity sha512-bulZ9JHoLFd9W36pi+7e7DnEYNJhljYjZ1UTsKPOoLMU3qtC+REHITeCRNx40zTRJZx18W5TBRXt5pq2Uopjsw==
+"@zxing/library@0.8.0":
+  version "0.8.0"
+  resolved "https://registry.yarnpkg.com/@zxing/library/-/library-0.8.0.tgz#accd9f3cd5c06fa40a95c2c1f61398c41548a9e3"
+  integrity sha512-D7oopukr7cJ0Va01Er2zXiSPXvmvc6D1PpOq/THRvd/57yEsBs+setRsiDo7tSRnYHcw7FrRZSZ7rwyzNSLJeA==
   dependencies:
-    ts-custom-error "^3.0.0"
+    ts-custom-error "^2.2.1"
   optionalDependencies:
-    "@zxing/text-encoding" "~0.9.0"
-
-"@zxing/text-encoding@~0.9.0":
-  version "0.9.0"
-  resolved "https://registry.yarnpkg.com/@zxing/text-encoding/-/text-encoding-0.9.0.tgz#fb50ffabc6c7c66a0c96b4c03e3d9be74864b70b"
-  integrity sha512-U/4aVJ2mxI0aDNI8Uq0wEhMgY+u4CNtEb0om3+y3+niDAsoTCOB33UF0sxpzqzdqXLqmvc+vZyAt4O8pPdfkwA==
+    text-encoding "^0.6.4"
 
 abab@^2.0.3, abab@^2.0.5:
   version "2.0.5"
@@ -9782,14 +9777,6 @@ react-is@^17.0.1:
   resolved "https://registry.yarnpkg.com/react-is/-/react-is-17.0.2.tgz#e691d4a8e9c789365655539ab372762b0efb54f0"
   integrity sha512-w2GsyukL62IJnlaff/nRegPQR94C/XXamvMWmSHRJ4y7Ts/4ocGRmTHvOs8PSE6pB3dWOrD/nueuU5sduBsQ4w==
 
-react-qr-scanner@^1.0.0-alpha.7:
-  version "1.0.0-alpha.7"
-  resolved "https://registry.yarnpkg.com/react-qr-scanner/-/react-qr-scanner-1.0.0-alpha.7.tgz#f63993cffe238f8cbca4984d03973accc842500b"
-  integrity sha512-gitUvuT0SvU2e11Fa8N7TY/1k4FUL+d0iuQYYCuLjJZT3hSjCvk9argxzmefrGQzVQhbhQpl4Bj7Ek07f68s4g==
-  dependencies:
-    "@zxing/library" "^0.18.3"
-    prop-types "^15.7.2"
-
 react-router-dom@^5.2.0:
   version "5.2.0"
   resolved "https://registry.yarnpkg.com/react-router-dom/-/react-router-dom-5.2.0.tgz#9e65a4d0c45e13289e66c7b17c7e175d0ea15662"
@@ -11233,6 +11220,11 @@ test-exclude@^6.0.0:
     glob "^7.1.4"
     minimatch "^3.0.4"
 
+text-encoding@^0.6.4:
+  version "0.6.4"
+  resolved "https://registry.yarnpkg.com/text-encoding/-/text-encoding-0.6.4.tgz#e399a982257a276dae428bb92845cb71bdc26d19"
+  integrity sha1-45mpgiV6J22uQou5KEXLcb3CbRk=
+
 text-table@^0.2.0:
   version "0.2.0"
   resolved "https://registry.yarnpkg.com/text-table/-/text-table-0.2.0.tgz#7f5ee823ae805207c00af2df4a84ec3fcfa570b4"
@@ -11378,10 +11370,10 @@ trezor-connect@^8.1.26:
     events "^3.2.0"
     whatwg-fetch "^3.5.0"
 
-ts-custom-error@^3.0.0:
-  version "3.2.0"
-  resolved "https://registry.yarnpkg.com/ts-custom-error/-/ts-custom-error-3.2.0.tgz#ff8f80a3812bab9dc448536312da52dce1b720fb"
-  integrity sha512-cBvC2QjtvJ9JfWLvstVnI45Y46Y5dMxIaG1TDMGAD/R87hpvqFL+7LhvUDhnRCfOnx/xitollFWWvUKKKhbN0A==
+ts-custom-error@^2.2.1:
+  version "2.2.2"
+  resolved "https://registry.yarnpkg.com/ts-custom-error/-/ts-custom-error-2.2.2.tgz#ee769cd6a9cf35dc2e9fedefbb3842f3a2fbceae"
+  integrity sha512-I0FEdfdatDjeigRqh1JFj67bcIKyRNm12UVGheBjs2pXgyELg2xeiQLVaWu1pVmNGXZVnz/fvycSU41moBIpOg==
 
 ts-easing@^0.2.0:
   version "0.2.0"

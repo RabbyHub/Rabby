@@ -4,7 +4,7 @@ import { useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import QRCode from 'qrcode.react';
 import ENS from 'ethjs-ens';
-import QrReader from 'react-qr-scanner';
+import QRCodeReader from 'ui/component/QRCodeReader';
 import { isValidAddress } from 'ethereumjs-util';
 import WalletConnect from '@walletconnect/client';
 import { StrayPageWithButton } from 'ui/component';
@@ -124,12 +124,10 @@ const ImportWatchAddress = () => {
   };
 
   const handleScanQRCodeSuccess = (data) => {
-    if (data?.text) {
-      form.setFieldsValue({
-        address: data.text,
-      });
-      setQRScanModalVisible(false);
-    }
+    form.setFieldsValue({
+      address: data,
+    });
+    setQRScanModalVisible(false);
   };
 
   const handleQRScanModalCancel = () => {
@@ -273,14 +271,11 @@ const ImportWatchAddress = () => {
         </p>
         <img src={IconArrowDown} className="icon icon-arrow-down" />
         <div className="qrcode">
-          <QrReader
-            delay={100}
-            style={{
-              width: '176px',
-              height: '176px',
-            }}
+          <QRCodeReader
+            width={176}
+            height={176}
+            onSuccess={handleScanQRCodeSuccess}
             onError={handleScanQRCodeError}
-            onScan={handleScanQRCodeSuccess}
           />
         </div>
       </Modal>
