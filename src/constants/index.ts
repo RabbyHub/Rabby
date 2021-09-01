@@ -149,7 +149,7 @@ export const CHAINS: Record<string, Chain> = {
     id: 10,
     serverId: 'op',
     network: '10',
-    name: 'Optimistic',
+    name: 'Optimism',
     nativeTokenSymbol: 'ETH',
     enum: CHAINS_ENUM.OP,
     logo: IconOPLogo,
