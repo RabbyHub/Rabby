@@ -6,7 +6,7 @@ import { isValidAddress } from 'ethereumjs-util';
 import { useWallet, useWalletRequest } from 'ui/utils';
 import clsx from 'clsx';
 import { StrayPage } from 'ui/component';
-import QrReader from 'react-qr-scanner';
+import QRCodeReader from 'ui/component/QRCodeReader';
 
 import './style.less';
 
@@ -22,21 +22,15 @@ const ImportHardware = () => {
   const [result, setResult] = useState<string>('');
   const [isValidResult, setIsValidResult] = useState(true);
 
-  const handleScanQRCodeSuccess = (data) => {
-    if (data?.text) {
-      setTitle(t('Whether to add scanned address'));
-      setDescription('');
-      setResult(data.text);
-      const isValid = isValidAddress(data.text);
-      setIsValidResult(isValid);
-      if (!isValid) {
-        setErrorMsg(t('Not a valid address'));
-      }
+  const handleScanQRCodeSuccess = (data: string) => {
+    setTitle(t('Whether to add scanned address'));
+    setDescription('');
+    setResult(data);
+    const isValid = isValidAddress(data);
+    setIsValidResult(isValid);
+    if (!isValid) {
+      setErrorMsg(t('Not a valid address'));
     }
-  };
-
-  const handleScanQRCodeError = (params) => {
-    console.log('error', params);
   };
 
   const handleCancel = () => {
@@ -76,14 +70,10 @@ const ImportHardware = () => {
     >
       {!result && (
         <div className="qrcode-reader__container">
-          <QrReader
-            delay={100}
-            style={{
-              width: '170px',
-              height: '170px',
-            }}
-            onError={handleScanQRCodeError}
-            onScan={handleScanQRCodeSuccess}
+          <QRCodeReader
+            onSuccess={handleScanQRCodeSuccess}
+            width={170}
+            height={170}
           />
         </div>
       )}
