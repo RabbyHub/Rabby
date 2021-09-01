@@ -306,6 +306,11 @@ class OpenApiService {
             method: 'GET',
             params: ['chain_id', 'tx_id', 'gas_price'],
           },
+          ens: {
+            path: 'v1/wallet/ens',
+            method: 'GET',
+            params: ['text'],
+          },
         },
       },
     });
@@ -636,6 +641,19 @@ class OpenApiService {
         chain_id: chainId,
         gas_price: gasPrice,
         tx_id: hash,
+      },
+    });
+
+    return data;
+  };
+
+  getEnsAddressByName = async (
+    name: string
+  ): Promise<{ addr: string; name: string }> => {
+    const config = this.store.config.ens;
+    const { data } = await this.request[config.method](config.path, {
+      params: {
+        text: name,
       },
     });
 

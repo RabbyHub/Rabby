@@ -3,13 +3,11 @@ import { Input, Form, Modal } from 'antd';
 import { useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import QRCode from 'qrcode.react';
-import ENS from 'ethjs-ens';
-import QrReader from 'react-qr-scanner';
+import QRCodeReader from 'ui/component/QRCodeReader';
 import { isValidAddress } from 'ethereumjs-util';
 import WalletConnect from '@walletconnect/client';
 import { StrayPageWithButton } from 'ui/component';
 import { useWallet, useWalletRequest } from 'ui/utils';
-import HttpProvider from 'ui/utils/ens';
 import { openInternalPageInTab } from 'ui/utils/webapi';
 import WatchLogo from 'ui/assets/watch-logo.svg';
 import IconWalletconnect from 'ui/assets/walletconnect.svg';
@@ -31,10 +29,6 @@ const ImportWatchAddress = () => {
   const connector = useRef<WalletConnect>();
   const [walletconnectUri, setWalletconnectUri] = useState('');
   const [ensResult, setEnsResult] = useState<null | string>(null);
-  const provider = new HttpProvider(
-    'https://openapi.debank.com/v1/wallet/eth_rpc'
-  );
-  const ens = new ENS({ provider, network: '1' });
 
   const [run, loading] = useWalletRequest(wallet.importWatchAddress, {
     onSuccess(accounts) {
@@ -124,12 +118,10 @@ const ImportWatchAddress = () => {
   };
 
   const handleScanQRCodeSuccess = (data) => {
-    if (data?.text) {
-      form.setFieldsValue({
-        address: data.text,
-      });
-      setQRScanModalVisible(false);
-    }
+    form.setFieldsValue({
+      address: data,
+    });
+    setQRScanModalVisible(false);
   };
 
   const handleQRScanModalCancel = () => {
@@ -147,9 +139,9 @@ const ImportWatchAddress = () => {
   const handleValuesChange = async ({ address }: { address: string }) => {
     if (!isValidAddress(address)) {
       try {
-        const result = await ens.lookup(address);
+        const result = await wallet.openapi.getEnsAddressByName(address);
         setDisableKeydown(true);
-        setEnsResult(result);
+        setEnsResult(result.addr);
       } catch (e) {
         setEnsResult(null);
       }
@@ -273,14 +265,11 @@ const ImportWatchAddress = () => {
         </p>
         <img src={IconArrowDown} className="icon icon-arrow-down" />
         <div className="qrcode">
-          <QrReader
-            delay={100}
-            style={{
-              width: '176px',
-              height: '176px',
-            }}
+          <QRCodeReader
+            width={176}
+            height={176}
+            onSuccess={handleScanQRCodeSuccess}
             onError={handleScanQRCodeError}
-            onScan={handleScanQRCodeSuccess}
           />
         </div>
       </Modal>
