@@ -780,6 +780,9 @@
   "Scan__to__add__address": {
     "message": "Add Watch Mode address"
   },
+  "Restore__initial__setting": {
+    "message": "Restore initial setting"
+  },
   "SetDefaultWalletAlert": {
     "message": "Set Rabby as the default browser wallet?"
   }
