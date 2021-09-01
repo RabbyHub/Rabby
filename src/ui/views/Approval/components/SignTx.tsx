@@ -258,7 +258,12 @@ const SignTx = ({ params, origin }) => {
       setGasLimit(res.recommend.gas);
     }
     setTxDetail(res);
-    if (updateNonce) setRealNonce(res.recommend.nonce); // do not overwrite nonce if from === to(cancel transaction)
+    if (updateNonce) {
+      const localNonce = wallet.getNonceByChain(tx.from, chainId) || 0;
+      console.log('localNonce', localNonce);
+      console.log('recommendNonce', res.recommend.nonce);
+      setRealNonce(intToHex(Math.max(Number(res.recommend.nonce), localNonce)));
+    } // do not overwrite nonce if from === to(cancel transaction)
     setPreprocessSuccess(res.pre_exec.success);
     wallet.addTxExplainCache({
       address,
