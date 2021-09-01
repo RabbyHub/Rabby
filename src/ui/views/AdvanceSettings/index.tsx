@@ -64,7 +64,7 @@ const OpenApiModal = ({
             </Button>
           </div>
         )}
-        <div className="flex justify-center mt-40">
+        <div className="flex justify-center mt-24">
           <Button
             type="primary"
             size="large"

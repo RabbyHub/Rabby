@@ -13,7 +13,7 @@ const DefaultWalletAlertBar = ({ onChange }: { onChange(): void }) => {
     message.info({
       className: 'refresh-toast rectangle-toast',
       content: t('Please refresh the website your are viewing'),
-      duration: 0.5,
+      duration: 3,
     });
   };
 

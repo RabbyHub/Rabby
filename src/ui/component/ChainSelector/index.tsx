@@ -48,7 +48,7 @@ const ChainSelector = ({ value, onChange }: ChainSelectorProps) => {
         <SvgIconArrowDown className="icon icon-arrow-down text-gray-content fill-current" />
       </div>
       <Modal
-        width="90%"
+        width="360px"
         closable={false}
         visible={showSelectorModal}
         onCancel={handleCancel}
