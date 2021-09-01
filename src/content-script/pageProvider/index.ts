@@ -260,22 +260,10 @@ provider
   })
   .then((isDefaultWallet) => {
     if (isDefaultWallet) {
-      console.log(isDefaultWallet);
       Object.defineProperty(window, 'ethereum', {
-        get() {
-          if (overwriteProvider) return overwriteProvider;
-          return new Proxy(provider, {
-            deleteProperty: () => true,
-          });
-        },
-        set(val) {
-          overwriteProvider = val;
-          hasOtherProvider = true;
-          provider.request({
-            method: 'providerOverwrite',
-            params: [true],
-          });
-        },
+        value: new Proxy(provider, {
+          deleteProperty: () => true,
+        }),
         writable: false,
       });
     } else {
