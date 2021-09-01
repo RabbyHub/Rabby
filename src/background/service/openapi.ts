@@ -2,7 +2,7 @@ import axios, { Method } from 'axios';
 import rateLimit from 'axios-rate-limit';
 import { ethErrors } from 'eth-rpc-errors';
 import { createPersistStore } from 'background/utils';
-import { CHAINS } from 'consts';
+import { CHAINS, INITIAL_OPENAPI_URL } from 'consts';
 
 interface OpenApiConfigValue {
   path: string;
@@ -229,7 +229,7 @@ class OpenApiService {
     this.store = await createPersistStore({
       name: 'openapi',
       template: {
-        host: 'https://openapi.debank.com',
+        host: INITIAL_OPENAPI_URL,
         config: {
           get_supported_chains: {
             path: '/v1/wallet/supported_chains',
