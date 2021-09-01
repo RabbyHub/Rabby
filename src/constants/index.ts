@@ -120,7 +120,7 @@ export const CHAINS: Record<string, Chain> = {
   // https://developer.offchainlabs.com/docs/public_testnet#connection-information
   [CHAINS_ENUM.ARBITRUM]: {
     id: 42161,
-    serverId: 'arbitrum',
+    serverId: 'arb',
     name: 'Arbitrum',
     enum: CHAINS_ENUM.ARBITRUM,
     logo: IconArbitrumLogo,

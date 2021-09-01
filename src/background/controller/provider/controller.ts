@@ -1,7 +1,12 @@
 import * as Sentry from '@sentry/browser';
 import Transaction from 'ethereumjs-tx';
 import { TransactionFactory } from '@ethereumjs/tx';
-import { bufferToHex, isHexString, addHexPrefix } from 'ethereumjs-util';
+import {
+  bufferToHex,
+  isHexString,
+  addHexPrefix,
+  intToHex,
+} from 'ethereumjs-util';
 import { stringToHex } from 'web3-utils';
 import { ethErrors } from 'eth-rpc-errors';
 import { normalize as normalizeAddress } from 'eth-sig-util';
@@ -388,9 +393,13 @@ class ProviderController extends BaseController {
     },
     session: { origin },
   }) => {
-    const chain = Object.values(CHAINS).find(
-      (value) => value.hex === chainParams.chainId
-    );
+    let chainId = chainParams.chainId;
+    if (typeof chainId === 'number') {
+      chainId = intToHex(chainId).toLowerCase();
+    } else {
+      chainId = chainId.toLowerCase();
+    }
+    const chain = Object.values(CHAINS).find((value) => value.hex === chainId);
 
     if (!chain) {
       throw new Error('This chain is not supported by Rabby yet.');
