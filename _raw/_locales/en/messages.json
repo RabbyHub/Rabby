@@ -784,6 +784,12 @@
     "message": "Restore initial setting"
   },
   "SetDefaultWalletAlert": {
-    "message": "Set Rabby as the default browser wallet?"
+    "message": "Set Rabby as default wallet?"
+  },
+  "Set__Rabby__as__default__wallet": {
+    "message": "Set Rabby as default wallet"
+  },
+  "Please__refresh__the__website__your__are__viewing": {
+    "message": "Please refresh the website your are viewing"
   }
 }

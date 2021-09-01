@@ -53,6 +53,12 @@ class PreferenceService {
       this.store.locale = defaultLang;
     }
     i18n.changeLanguage(this.store.locale);
+    if (
+      this.store.isDefaultWallet === undefined ||
+      this.store.isDefaultWallet === null
+    ) {
+      this.store.isDefaultWallet = true;
+    }
   };
 
   setIsDefaultWallet = (val: boolean) => {

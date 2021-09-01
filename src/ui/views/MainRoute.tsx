@@ -26,6 +26,7 @@ import AddressManagement from './AddressManagement';
 import SwitchLang from './SwitchLang';
 import TransactionHistory from './TransactionHistory';
 import QRCodeReader from './QRCodeReader';
+import AdvancedSettings from './AdvanceSettings';
 
 ReactGA.initialize('UA-199755108-1');
 // eslint-disable-next-line @typescript-eslint/no-empty-function
@@ -121,6 +122,9 @@ const Main = () => {
         </PrivateRoute>
         <PrivateRoute exact path="/settings/switch-lang">
           <SwitchLang />
+        </PrivateRoute>
+        <PrivateRoute exact path="/settings/advanced">
+          <AdvancedSettings />
         </PrivateRoute>
         <PrivateRoute exact path="/qrcode-reader">
           <QRCodeReader />
