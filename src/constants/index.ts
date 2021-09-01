@@ -15,6 +15,8 @@ import IconOKTLogo from 'ui/assets/chain-logos/okex.svg';
 import IconOKTWhiteLogo from 'ui/assets/chain-logos/okex-white.svg';
 // import IconArbitrumLogo from 'ui/assets/chain-logos/arbitrum.svg';
 // import IconArbitrumWhiteLogo from 'ui/assets/chain-logos/arbitrum-white.svg';
+import IconOPLogo from 'ui/assets/chain-logos/op.svg';
+import IconOPWhiteLogo from 'ui/assets/chain-logos/op-white.svg';
 import IconAvaxLogo from 'ui/assets/chain-logos/avax.svg';
 import IconAvaxWhiteLogo from 'ui/assets/chain-logos/avax-white.svg';
 import IconEN from 'ui/assets/langs/en.svg';
@@ -30,6 +32,7 @@ export enum CHAINS_ENUM {
   OKT = 'OKT',
   ARBITRUM = 'ARBITRUM',
   AVAX = 'AVAX',
+  OP = 'OP',
 }
 
 export const CHAINS: Record<string, Chain> = {
@@ -141,6 +144,18 @@ export const CHAINS: Record<string, Chain> = {
     whiteLogo: IconAvaxWhiteLogo,
     hex: '0xa86a',
     scanLink: 'https://cchain.explorer.avax.network/tx/_s_',
+  },
+  [CHAINS_ENUM.OP]: {
+    id: 10,
+    serverId: 'op',
+    network: '10',
+    name: 'Optimistic',
+    nativeTokenSymbol: 'ETH',
+    enum: CHAINS_ENUM.OP,
+    logo: IconOPLogo,
+    whiteLogo: IconOPWhiteLogo,
+    hex: '0xa',
+    scanLink: 'https://optimistic.etherscan.io/tx/_s_',
   },
 };
 
