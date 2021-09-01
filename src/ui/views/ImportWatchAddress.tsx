@@ -122,6 +122,7 @@ const ImportWatchAddress = () => {
       address: data,
     });
     setQRScanModalVisible(false);
+    wallet.clearPageStateCache();
   };
 
   const handleQRScanModalCancel = () => {
@@ -129,7 +130,19 @@ const ImportWatchAddress = () => {
   };
 
   const handleScanQRCodeError = () => {
-    openInternalPageInTab('qrcode-reader');
+    wallet.setPageStateCache({
+      path: history.location.pathname,
+      params: {},
+      states: form.getFieldsValue(),
+    });
+    openInternalPageInTab('request-permission?type=camera');
+  };
+
+  const handleLoadCache = () => {
+    const cache = wallet.getPageStateCache();
+    if (cache && cache.path === history.location.pathname) {
+      form.setFieldsValue(cache.states);
+    }
   };
 
   const handleImportByQrcode = () => {
@@ -155,6 +168,21 @@ const ImportWatchAddress = () => {
     run(address);
   };
 
+  const handleClickBack = () => {
+    if (history.length > 1) {
+      history.goBack();
+    } else {
+      history.replace('/');
+    }
+  };
+
+  useEffect(() => {
+    handleLoadCache();
+    return () => {
+      wallet.clearPageStateCache();
+    };
+  }, []);
+
   return (
     <StrayPageWithButton
       onSubmit={handleNextClick}
@@ -168,6 +196,7 @@ const ImportWatchAddress = () => {
         onValuesChange: handleValuesChange,
       }}
       disableKeyDownEvent={disableKeydown}
+      onBackClick={handleClickBack}
     >
       <header className="create-new-header create-password-header h-[264px]">
         <img

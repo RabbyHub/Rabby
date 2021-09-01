@@ -791,5 +791,14 @@
   },
   "Please__refresh__the__website__your__are__viewing": {
     "message": "Please refresh the website your are viewing"
+  },
+  "CameraPermissionTitle": {
+    "message": "Allow Rabby to access the camera"
+  },
+  "CameraPermission1": {
+    "message": "Allow Rabby to access the camera in the browser pop-up"
+  },
+  "CameraPermission2": {
+    "message": "Open Rabby and try import again"
   }
 }

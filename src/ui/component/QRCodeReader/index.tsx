@@ -28,7 +28,10 @@ const QRCodeReader = ({
       );
       onSuccess(result.getText());
     } catch (e) {
-      onError && onError();
+      if (!/ended/.test(e.message)) {
+        // Magic error message for Video stream has ended before any code could be detected
+        onError && onError();
+      }
     }
   };
 
@@ -36,8 +39,8 @@ const QRCodeReader = ({
     init();
     return () => {
       if (controls.current) {
+        controls.current.stopContinuousDecode();
         controls.current.reset();
-        controls.current.stop();
         controls.current = null;
       }
     };
