@@ -776,5 +776,8 @@
   },
   "Scan__to__add__address": {
     "message": "添加观察模式地址"
+  },
+  "SetDefaultWalletAlert": {
+    "message": "是否将 Rabby 设置为默认钱包？"
   }
 }
