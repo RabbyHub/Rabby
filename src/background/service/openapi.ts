@@ -127,6 +127,7 @@ export interface ExplainTxResponse {
     estimated_gas_used: number;
     estimated_seconds: number;
   };
+  native_token: TokenItem;
   pre_exec: {
     success: boolean;
     err_msg: string;
