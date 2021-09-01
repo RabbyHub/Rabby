@@ -4,6 +4,7 @@ import { Form, Input, Button } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { useWallet } from 'ui/utils';
 import { PageHeader, Field, Modal } from 'ui/component';
+import { INITIAL_OPENAPI_URL } from 'consts';
 import IconAddressManagement from 'ui/assets/address-management.svg';
 import IconChainManagement from 'ui/assets/chain-management.svg';
 import IconConnectSitesManagement from 'ui/assets/connect-sites-management.svg';
@@ -26,12 +27,20 @@ const OpenApiModal = ({
   const [form] = useForm<{ host: string }>();
   const wallet = useWallet();
   const { t } = useTranslation();
+  const currentHost = wallet.openapi.getHost();
   form.setFieldsValue({
-    host: wallet.openapi.getHost(),
+    host: currentHost,
   });
+
   const handleSubmit = async ({ host }: { host: string }) => {
     await wallet.openapi.setHost(host);
     onFinish();
+  };
+
+  const restoreInitial = () => {
+    form.setFieldsValue({
+      host: INITIAL_OPENAPI_URL,
+    });
   };
 
   return (
@@ -39,6 +48,7 @@ const OpenApiModal = ({
       title={t('Backend Service URL')}
       visible={visible}
       onCancel={onCancel}
+      className="openapi-modal"
     >
       <Form onFinish={handleSubmit} form={form}>
         <Form.Item
@@ -53,7 +63,14 @@ const OpenApiModal = ({
         >
           <Input placeholder="Host" size="large" autoFocus spellCheck={false} />
         </Form.Item>
-        <div className="flex justify-center">
+        {currentHost !== INITIAL_OPENAPI_URL && (
+          <div className="flex justify-end">
+            <Button type="link" onClick={restoreInitial} className="restore">
+              {t('Restore initial setting')}
+            </Button>
+          </div>
+        )}
+        <div className="flex justify-center mt-40">
           <Button
             type="primary"
             size="large"

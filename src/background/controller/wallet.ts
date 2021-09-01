@@ -418,6 +418,9 @@ export class WalletController extends BaseController {
   getPendingCount = (address: string) =>
     transactionHistoryService.getPendingCount(address);
 
+  setDefaultWallet = () => preferenceService.setIsDefaultWallet(true);
+  isDefaultWallet = () => preferenceService.getIsDefaultWallet();
+
   private _getKeyringByType(type) {
     const keyring = keyringService.getKeyringsByType(type)[0];
 

@@ -15,7 +15,7 @@ import {
   BalanceView,
   useConfirmExternalModal,
   SwitchAddress,
-  MetaMaskConflictAlertBar,
+  DefaultWalletAlertBar,
 } from './components';
 import IconSetting from 'ui/assets/settings.svg';
 import { ReactComponent as IconCopy } from 'ui/assets/copy.svg';
@@ -46,7 +46,7 @@ const Dashboard = () => {
   const [isModalOpen, setModalOpen] = useState(false);
   const [qrcodeVisible, setQrcodeVisible] = useState(false);
   const [pendingTxCount, setPendingTxCount] = useState(0);
-  const [metaMaskActive, setMetaMaskActive] = useState(false);
+  const [isDefaultWallet, setIsDefaultWallet] = useState(false);
   const [copySuccess, setCopySuccess] = useState(false);
 
   const handleToggle = () => {
@@ -63,9 +63,9 @@ const Dashboard = () => {
     setPendingTxCount(count);
   };
 
-  const checkIsMetaMaskActive = async () => {
-    const active = wallet.getHasOtherProvider();
-    setMetaMaskActive(active);
+  const checkIsDefaultWallet = () => {
+    const isDefault = wallet.isDefaultWallet();
+    setIsDefaultWallet(isDefault);
   };
 
   const _openInTab = useConfirmExternalModal();
@@ -79,7 +79,7 @@ const Dashboard = () => {
     if (!currentAccount) {
       getCurrentAccount();
     }
-    checkIsMetaMaskActive();
+    checkIsDefaultWallet();
   }, []);
 
   useEffect(() => {
@@ -139,6 +139,10 @@ const Dashboard = () => {
     });
   };
 
+  const handleDefaultWalletChange = () => {
+    setIsDefaultWallet(wallet.isDefaultWallet());
+  };
+
   const handleShowQrcode = () => {
     setQrcodeVisible(true);
   };
@@ -149,7 +153,9 @@ const Dashboard = () => {
 
   return (
     <>
-      <div className={clsx('dashboard', { 'metamask-active': metaMaskActive })}>
+      <div
+        className={clsx('dashboard', { 'metamask-active': !isDefaultWallet })}
+      >
         <div className="main">
           <div className="flex header items-center">
             {(currentAccount?.type === KEYRING_TYPE.WatchAddressKeyring ||
@@ -216,7 +222,9 @@ const Dashboard = () => {
           </div>
         </div>
         <RecentConnections />
-        {metaMaskActive && <MetaMaskConflictAlertBar />}
+        {!isDefaultWallet && (
+          <DefaultWalletAlertBar onChange={handleDefaultWalletChange} />
+        )}
       </div>
       <Modal
         visible={qrcodeVisible}
