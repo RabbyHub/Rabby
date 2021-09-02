@@ -50,7 +50,7 @@ const OpenApiModal = ({
           rules={[
             { required: true, message: t('Please input openapi host') },
             {
-              pattern: /^((https|http)?:\/\/)[^\s]+/,
+              pattern: /^((https|http)?:\/\/)[^\s]+\.[^\s]+/,
               message: t('Please check your host'),
             },
           ]}

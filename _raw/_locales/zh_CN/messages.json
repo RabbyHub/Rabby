@@ -788,5 +788,14 @@
   },
   "Please__refresh__the__website__your__are__viewing": {
     "message": "请刷新正在使用的网页"
+  },
+  "CameraPermissionTitle": {
+    "message": "允许 Rabby 使用摄像头"
+  },
+  "CameraPermission1": {
+    "message": "允许 Rabby 在浏览器弹窗中使用摄像头"
+  },
+  "CameraPermission2": {
+    "message": "打开 Rabby 并再次导入"
   }
 }
