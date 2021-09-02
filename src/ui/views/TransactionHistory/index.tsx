@@ -168,7 +168,7 @@ const TransactionItem = ({
       }
     >
   >({});
-  const hasTokenPrice = !!item.explain.native_token;
+  const hasTokenPrice = !!item.explain?.native_token;
   const gasTokenCount =
     hasTokenPrice && completedTx
       ? (Number(completedTx.rawTx.gasPrice) * (completedTx.gasUsed || 0)) / 1e18
