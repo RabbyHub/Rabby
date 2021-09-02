@@ -28,7 +28,11 @@ const ImportWatchAddress = () => {
   const [QRScanModalVisible, setQRScanModalVisible] = useState(false);
   const connector = useRef<WalletConnect>();
   const [walletconnectUri, setWalletconnectUri] = useState('');
-  const [ensResult, setEnsResult] = useState<null | string>(null);
+  const [ensResult, setEnsResult] = useState<null | {
+    addr: string;
+    name: string;
+  }>(null);
+  const [tags, setTags] = useState<string[]>([]);
 
   const [run, loading] = useWalletRequest(wallet.importWatchAddress, {
     onSuccess(accounts) {
@@ -56,7 +60,8 @@ const ImportWatchAddress = () => {
     form.setFieldsValue({
       address: result,
     });
-    setEnsResult('');
+    setTags([`ENS: ${ensResult!.name}`]);
+    setEnsResult(null);
   };
 
   const handleKeyDown = useMemo(() => {
@@ -64,7 +69,7 @@ const ImportWatchAddress = () => {
       if (e.key.toLowerCase() === 'enter') {
         if (ensResult) {
           e.preventDefault();
-          handleConfirmENS(ensResult);
+          handleConfirmENS(ensResult.addr);
         }
       }
     };
@@ -150,11 +155,14 @@ const ImportWatchAddress = () => {
   };
 
   const handleValuesChange = async ({ address }: { address: string }) => {
+    setTags([]);
     if (!isValidAddress(address)) {
       try {
         const result = await wallet.openapi.getEnsAddressByName(address);
         setDisableKeydown(true);
-        setEnsResult(result.addr);
+        if (result && result.addr) {
+          setEnsResult(result);
+        }
       } catch (e) {
         setEnsResult(null);
       }
@@ -235,13 +243,20 @@ const ImportWatchAddress = () => {
             }
           />
         </Form.Item>
+        {tags.length > 0 && (
+          <ul className="tags">
+            {tags.map((tag) => (
+              <li key={tag}>{tag}</li>
+            ))}
+          </ul>
+        )}
         {ensResult && (
           <div
             className="ens-search"
-            onClick={() => handleConfirmENS(ensResult)}
+            onClick={() => handleConfirmENS(ensResult.addr)}
           >
             <div className="ens-search__inner">
-              {ensResult}
+              {ensResult.addr}
               <img className="icon icon-enter" src={IconEnter} />
             </div>
           </div>
