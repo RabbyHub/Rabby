@@ -314,7 +314,9 @@ class TxHistory {
   }
 
   getNonceByChain(address: string, chainId: number) {
-    const list = Object.values(this.store.transactions[address] || {});
+    const list = Object.values(
+      this.store.transactions[address.toLowerCase()] || {}
+    );
     const maxNonceTx = maxBy(
       list.filter((item) => item.chainId === chainId),
       (item) => item.nonce
