@@ -9,7 +9,10 @@ import {
 } from 'ethereumjs-util';
 import { stringToHex } from 'web3-utils';
 import { ethErrors } from 'eth-rpc-errors';
-import { normalize as normalizeAddress } from 'eth-sig-util';
+import {
+  normalize as normalizeAddress,
+  recoverPersonalSignature,
+} from 'eth-sig-util';
 import cloneDeep from 'lodash/cloneDeep';
 import {
   keyringService,
@@ -443,6 +446,18 @@ class ProviderController extends BaseController {
       result.push({ parentCapability: 'eth_accounts' });
     }
     return result;
+  };
+
+  personalEcRecover = ({
+    data: {
+      params: [data, sig, extra = {}],
+    },
+  }) => {
+    return recoverPersonalSignature({
+      ...extra,
+      data,
+      sig,
+    });
   };
 
   private _checkAddress = async (address) => {
