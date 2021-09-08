@@ -1,0 +1,153 @@
+@import '../../style/var.less';
+
+.send-token {
+  .page();
+  padding: 0 28px 20px;
+  .section {
+    padding: 14px 12px;
+    background-color: #fff;
+    border-radius: 6px;
+    margin-bottom: 12px;
+    .section-title {
+      display: flex;
+      font-size: 12px;
+      line-height: 14px;
+      color: #707880;
+      margin-bottom: 8px;
+    }
+  }
+  .account-card {
+    height: 36px;
+    padding: 0;
+    background: rgba(134, 151, 255, .1);
+    border-radius: 4px;
+    .title {
+      display: none;
+    }
+    .icon-account {
+      width: 18px;
+      height: 18px;
+      path {
+        fill: #8697FF;
+      }
+    }
+    .account-detail {
+      height: 36px;
+      width: 100%;
+      .address-viewer-text, .amount {
+        color: #8697FF;
+        font-size: 13px;
+        line-height: 15px;
+        font-weight: 500;
+      }
+    }
+  }
+  .ant-form-item {
+    margin: 0;
+  }
+  .ant-input {
+    border: none;
+    background: #F6F7F9;
+    border-radius: 4px;
+    padding: 10px 12px;
+    font-weight: 500;
+    font-size: 13px;
+    line-height: 15px;
+    color: #161819;
+    &:hover {
+      border: none;
+    }
+  }
+  .ant-form-item-has-error .ant-input:hover {
+    background: #F6F7F9;
+  }
+  .ant-form-item-explain, .ant-form-item-extra {
+    min-height: auto;
+  }
+  .section-title__to {
+    line-height: 24px;
+  }
+  .contact-info {
+    display: flex;
+    align-items: center;
+    padding: 3px 6px;
+    border: 0.5px solid rgba(134, 151, 255, 0.5);
+    border-radius: 2px;
+    color: #8697FF;
+    font-size: 12px;
+    line-height: 14px;
+    cursor: pointer;
+    background-color: transparent;
+    transition: background-color .3s;
+    .icon {
+      width: 16px;
+      height: 16px;
+      margin-right: 4px;
+    }
+    &:hover {
+      background-color: rgba(134, 151, 255, 0.1);
+    }
+    &.disabled {
+      opacity: 0.5;
+      cursor: default;
+      &:hover {
+        background-color: transparent;
+      }
+    }
+  }
+  .icon-contact {
+    width: 20px;
+    height: 20px;
+    margin-left: 12px;
+    cursor: pointer;
+  }
+  .token-input {
+    padding: 14px 12px;
+    background: #F6F7F9;
+    border-radius: 4px;
+    font-weight: 500;
+    font-size: 15px;
+    line-height: 18px;
+    color: #161819;
+    display: flex;
+    .left {
+      display: flex;
+      align-items: center;
+      position: relative;
+      cursor: pointer;
+      padding-right: 12px;
+      .token-input__symbol {
+        width: 50px;
+        margin-left: 8px;
+      }
+      .icon-arrow-down {
+        width: 12px;
+        height: 12px;
+      }
+      &::after {
+        content: '';
+        background-color: #D8DFEB;
+        width: 0.5px;
+        height: 32px;
+        position: absolute;
+        right: 0;
+        top: 50%;
+        margin-top: -16px;
+      }
+    }
+    .right {
+      flex: 1;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      .ant-input {
+        padding: 0;
+        text-align: right;
+        font-weight: 500;
+        font-size: 15px;
+        line-height: 18px;
+        border-radius: 0;
+      }
+    }
+  }
+}

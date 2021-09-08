@@ -50,7 +50,7 @@ const BalanceChange = ({
                           </span>
                         </div>
                         <div className="second-line">
-                          ${splitNumberByStep(token.usd_value.toFixed(2))}
+                          ${splitNumberByStep(token.usd_value!.toFixed(2))}
                         </div>
                       </li>
                     ))}
@@ -72,7 +72,7 @@ const BalanceChange = ({
                           </span>
                         </div>
                         <div className="second-line">
-                          ${splitNumberByStep(token.usd_value.toFixed(2))}
+                          ${splitNumberByStep(token.usd_value!.toFixed(2))}
                         </div>
                       </li>
                     ))}

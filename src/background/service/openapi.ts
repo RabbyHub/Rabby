@@ -82,14 +82,14 @@ export interface TokenItem {
   is_core: boolean;
   is_verified: boolean;
   is_wallet: boolean;
-  is_infinity: boolean;
+  is_infinity?: boolean;
   logo_url: string;
   name: string;
   optimized_symbol: string;
   price: number;
   symbol: string;
   time_at: number;
-  usd_value: number;
+  usd_value?: number;
   raw_amount?: number;
 }
 
@@ -311,6 +311,16 @@ class OpenApiService {
             path: 'v1/wallet/ens',
             method: 'GET',
             params: ['text'],
+          },
+          token_search: {
+            path: '/v1/user/token_search',
+            method: 'GET',
+            params: ['id'],
+          },
+          token_list: {
+            path: '/v1/user/token_list',
+            method: 'GET',
+            params: ['id', 'is_all'],
           },
         },
       },
@@ -655,6 +665,30 @@ class OpenApiService {
     const { data } = await this.request[config.method](config.path, {
       params: {
         text: name,
+      },
+    });
+
+    return data;
+  };
+
+  searchToken = async (id: string, q: string): Promise<TokenItem[]> => {
+    const config = this.store.config.token_search;
+    const { data } = await this.request[config.method](config.path, {
+      params: {
+        id,
+        q,
+      },
+    });
+
+    return data;
+  };
+
+  listToken = async (id: string): Promise<TokenItem[]> => {
+    const config = this.store.config.token_list;
+    const { data } = await this.request[config.method](config.path, {
+      params: {
+        id,
+        is_all: true,
       },
     });
 

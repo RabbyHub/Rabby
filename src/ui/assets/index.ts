@@ -26,3 +26,7 @@ export { ReactComponent as SvgPendingSpin } from './pending-spin.svg';
 
 export { default as ImgWelcome } from './welcome-start.png';
 export { default as OperationCard } from './operation-card.png';
+
+export { ReactComponent as IconNormal } from 'ui/assets/keyring-normal.svg';
+export { ReactComponent as IconHardware } from 'ui/assets/hardware-white.svg';
+export { ReactComponent as IconWatch } from 'ui/assets/watch-white.svg';

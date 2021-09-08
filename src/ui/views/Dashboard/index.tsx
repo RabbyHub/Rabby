@@ -97,12 +97,13 @@ const Dashboard = () => {
   };
 
   const handleGotoSend = async () => {
-    const site = await getCurrentConnectSite(wallet);
-    let chain: null | string = null;
-    if (site) {
-      chain = CHAINS[site.chain].serverId;
-    }
-    _openInTab(`https://debank.com/send${chain ? `?chain=${chain}` : ''}`);
+    history.push('/send-token');
+    // const site = await getCurrentConnectSite(wallet);
+    // let chain: null | string = null;
+    // if (site) {
+    //   chain = CHAINS[site.chain].serverId;
+    // }
+    // _openInTab(`https://debank.com/send${chain ? `?chain=${chain}` : ''}`);
   };
 
   const handleGotoHistory = async () => {
@@ -196,7 +197,6 @@ const Dashboard = () => {
               <div className="operation-item__inner">
                 <img className="icon icon-send" src={IconSend} />
                 {t('Send')}
-                <img src={IconExternal} className="icon icon-external-link" />
               </div>
             </div>
             <div className="operation-item" onClick={handleGotoSwap}>

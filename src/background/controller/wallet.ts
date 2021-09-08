@@ -12,7 +12,9 @@ import {
   openapiService,
   pageStateCacheService,
   transactionHistoryService,
+  contactBookService,
 } from 'background/service';
+import { ContactBookItem } from '../service/contactBook';
 import { openIndexPage } from 'background/webapi/tab';
 import { CacheState } from 'background/service/pageStateCache';
 import i18n from 'background/service/i18n';
@@ -433,6 +435,19 @@ export class WalletController extends BaseController {
 
     throw ethErrors.rpc.internal(`No ${type} keyring found`);
   }
+
+  addContact = (data: ContactBookItem) => {
+    contactBookService.addContact(data);
+  };
+  updateContact = (data: ContactBookItem) => {
+    contactBookService.updateContact(data);
+  };
+  removeContact = (address: string) => {
+    contactBookService.removeContact(address);
+  };
+  listContact = () => contactBookService.listContacts();
+  getContactByAddress = (address: string) =>
+    contactBookService.getContactByAddress(address);
 
   private async _setCurrentAccountFromKeyring(keyring, index = 0) {
     const accounts = await keyring.getAccounts();
