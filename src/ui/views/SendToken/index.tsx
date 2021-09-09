@@ -1,15 +1,19 @@
 import React, { useState, useEffect } from 'react';
 import clsx from 'clsx';
+import BigNumber from 'bignumber.js';
 import { useTranslation } from 'react-i18next';
-import { Input, Form } from 'antd';
+import cloneDeep from 'lodash/cloneDeep';
+import { Input, Form, Skeleton } from 'antd';
 import { isValidAddress } from 'ethereumjs-util';
+import { CHAINS } from 'consts';
 import { ContactBookItem } from 'background/service/contactBook';
 import { useWallet } from 'ui/utils';
+import { formatTokenAmount, splitNumberByStep } from 'ui/utils/number';
 import AccountCard from '../Approval/components/AccountCard';
 import TokenSelector from 'ui/component/TokenSelector';
 import TokenWithChain from 'ui/component/TokenWithChain';
 import { TokenItem } from 'background/service/openapi';
-import { PageHeader } from 'ui/component';
+import { PageHeader, AddressViewer } from 'ui/component';
 import ContactEditModal from 'ui/component/Contact/EditModal';
 import ContactListModal from 'ui/component/Contact/ListModal';
 import IconContact from 'ui/assets/contact.svg';
@@ -18,6 +22,7 @@ import IconNormal from 'ui/assets/keyring-normal-purple.svg';
 import IconHardware from 'ui/assets/hardware-purple.svg';
 import IconWatch from 'ui/assets/watch-purple.svg';
 import IconArrowDown from 'ui/assets/arrow-down-triangle.svg';
+import IconCopy from 'ui/assets/copy-no-border.svg';
 import { SvgIconPlusPrimary } from 'ui/assets';
 import './style.less';
 
@@ -51,6 +56,8 @@ const SendToken = () => {
   const [editBtnDisabled, setEditBtnDisabled] = useState(true);
   const [cacheAmount, setCacheAmount] = useState('0');
   const [tokenSelectorVisible, setTokenSelectorVisible] = useState(false);
+  const [originTokenList, setOriginTokenList] = useState<TokenItem[]>([]);
+  const [isLoading, setIsLoading] = useState(true);
 
   const handleSubmit = (values) => {
     console.log(values);
@@ -108,7 +115,13 @@ const SendToken = () => {
   };
 
   const handleCurrentTokenChange = (token: TokenItem) => {
-    console.log(token);
+    const values = form.getFieldsValue();
+    form.setFieldsValue({
+      ...values,
+      amount: '0',
+    });
+    setCurrentToken(token);
+    setTokenSelectorVisible(false);
   };
 
   const handleTokenSelectorClose = () => {
@@ -119,25 +132,68 @@ const SendToken = () => {
     setTokenSelectorVisible(true);
   };
 
+  const sortTokens = (condition: 'common' | 'all', tokens: TokenItem[]) => {
+    if (condition === 'common') {
+      const copy = cloneDeep(tokens);
+      return copy.sort((a, b) => {
+        if (a.is_core && !b.is_core) {
+          return -1;
+        } else if (a.is_core && b.is_core) {
+          return 0;
+        } else if (!a.is_core && b.is_core) {
+          return 1;
+        }
+        return 0;
+      });
+    } else {
+      return tokens;
+    }
+  };
+
+  const handleSort = (condition: 'common' | 'all') => {
+    setTokens(sortTokens(condition, originTokenList));
+  };
+
+  const handleClickTokenBalance = () => {
+    const values = form.getFieldsValue();
+    const newValues = {
+      ...values,
+      amount: new BigNumber(currentToken.amount).toFixed(),
+    };
+    form.setFieldsValue(newValues);
+    handleFormValuesChange(newValues);
+  };
+
   const handleLoadTokens = async (q?: string) => {
     let tokens: TokenItem[] = [];
     if (q) {
       tokens = await wallet.openapi.searchToken(currentAccount.address, q);
     } else {
-      tokens = await wallet.openapi.listToken(currentAccount.address);
+      if (originTokenList.length > 0) {
+        tokens = originTokenList;
+      } else {
+        tokens = await wallet.openapi.listToken(currentAccount.address);
+        setOriginTokenList(tokens);
+      }
     }
-    setTokens(tokens);
+    setTokens(sortTokens('common', tokens));
     const existCurrentToken = tokens.find(
       (token) => token.id === currentToken.id
     );
     if (existCurrentToken) {
       setCurrentToken(existCurrentToken);
     }
+    if (isLoading) {
+      setIsLoading(false);
+    }
   };
 
-  // useEffect(() => {
-  //   handleLoadTokens();
-  // }, []);
+  useEffect(() => {
+    form.setFieldsValue({
+      to: '',
+      amount: '0',
+    });
+  }, []);
 
   return (
     <div className="send-token">
@@ -209,8 +265,23 @@ const SendToken = () => {
           </div>
         </div>
         <div className="section">
-          <div className="section-title">
-            {t('Blance')}: {currentToken.amount}
+          <div className="section-title flex justify-between">
+            <div className="token-balance" onClick={handleClickTokenBalance}>
+              {t('Balance')}:{' '}
+              {isLoading ? (
+                <Skeleton.Input active style={{ width: 50 }} />
+              ) : (
+                formatTokenAmount(currentToken.amount, 8)
+              )}
+            </div>
+            <div className="token-price">
+              ≈ $
+              {splitNumberByStep(
+                (
+                  (form.getFieldValue('amount') || 0) * currentToken.price || 0
+                ).toFixed(2)
+              )}
+            </div>
           </div>
           <div className="token-input">
             <div className="left" onClick={handleSelectToken}>
@@ -229,7 +300,35 @@ const SendToken = () => {
               onConfirm={handleCurrentTokenChange}
               onCancel={handleTokenSelectorClose}
               onSearch={handleLoadTokens}
+              onSort={handleSort}
             />
+          </div>
+          <div className="token-info">
+            {isValidAddress(currentToken.id) ? (
+              <div className="section-field">
+                <span>{t('Contract Address')}</span>
+                <span className="flex">
+                  <AddressViewer address={currentToken.id} showArrow={false} />
+                  <img src={IconCopy} className="icon icon-copy" />
+                </span>
+              </div>
+            ) : (
+              ''
+            )}
+            <div className="section-field">
+              <span>{t('Chain')}</span>
+              <span>
+                {
+                  Object.values(CHAINS).find(
+                    (chain) => chain.serverId === currentToken.chain
+                  )?.name
+                }
+              </span>
+            </div>
+            <div className="section-field">
+              <span>{t('Price')}</span>
+              <span>${splitNumberByStep(currentToken.price)}</span>
+            </div>
           </div>
         </div>
       </Form>

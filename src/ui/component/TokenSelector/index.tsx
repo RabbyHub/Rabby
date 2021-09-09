@@ -2,11 +2,13 @@ import React, { useEffect, useState } from 'react';
 import { Modal, Input } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { useDebounce } from 'react-use';
+
 import TokenWithChain from '../TokenWithChain';
 import { TokenItem } from 'background/service/openapi';
 import { splitNumberByStep, formatTokenAmount } from 'ui/utils/number';
 import IconSearch from 'ui/assets/search.svg';
 import './style.less';
+import clsx from 'clsx';
 
 interface TokenSelectorProps {
   visible: boolean;
@@ -14,6 +16,7 @@ interface TokenSelectorProps {
   onConfirm(item: TokenItem): void;
   onCancel(): void;
   onSearch(q: string);
+  onSort(condition: string);
 }
 
 const TokenSelector = ({
@@ -22,35 +25,23 @@ const TokenSelector = ({
   onConfirm,
   onCancel,
   onSearch,
+  onSort,
 }: TokenSelectorProps) => {
   const { t } = useTranslation();
   const [query, setQuery] = useState('');
   const [sortBy, setSortBy] = useState<'common' | 'all'>('common');
   const [displayList, setDisplayList] = useState<TokenItem[]>(list);
+
   const handleSort = (condition: 'common' | 'all') => {
-    if (condition === 'common') {
-      setDisplayList(
-        list.sort((a, b) => {
-          if (a.is_core && !b.is_core) {
-            return 1;
-          } else if (a.is_core && b.is_core) {
-            return 0;
-          } else if (!a.is_core && b.is_core) {
-            return -1;
-          }
-          return 0;
-        })
-      );
-    } else {
-      setDisplayList(list);
-    }
+    setSortBy(condition);
+    onSort(condition);
   };
 
   useDebounce(
     () => {
       onSearch(query);
     },
-    300,
+    150,
     [query]
   );
 
@@ -61,6 +52,28 @@ const TokenSelector = ({
   useEffect(() => {
     setDisplayList(list);
   }, [list]);
+
+  useEffect(() => {
+    if (!visible) {
+      setQuery('');
+      handleSort('common');
+    }
+  }, [visible]);
+
+  const isEmpty = !query && list.length <= 0;
+
+  const NoDataUI = (
+    <div className="no-token">
+      <img
+        className="no-data-image"
+        src="/images/nodata-tx.png"
+        alt="no site"
+      />
+      <p className="text-gray-content text-14 mt-12 text-center">
+        {t('No Tokens')}
+      </p>
+    </div>
+  );
 
   return (
     <Modal
@@ -81,22 +94,45 @@ const TokenSelector = ({
           onChange={(e) => handleQueryChange(e.target.value)}
         />
       </div>
-      <ul className="token-list">
+      {!query && (
+        <div className="token-sort">
+          <span
+            className={clsx({ active: sortBy === 'common' })}
+            onClick={() => handleSort('common')}
+          >
+            {t('Common')}
+          </span>{' '}
+          /{' '}
+          <span
+            className={clsx({ active: sortBy === 'all' })}
+            onClick={() => handleSort('all')}
+          >
+            {t('All')}
+          </span>
+        </div>
+      )}
+      <ul className={clsx('token-list', { empty: isEmpty })}>
         <li className="token-list__header">
           <div>{t('Token')}</div>
           <div>{t('Price')}</div>
           <div>{t('Balance')}</div>
         </li>
-        {displayList.map((token) => (
-          <li className="token-list__item" key={`${token.chain}-${token.id}`}>
-            <div>
-              <TokenWithChain token={token} width="24px" height="24px" />
-              <span className="symbol">{token.symbol}</span>
-            </div>
-            <div>${splitNumberByStep((token.price || 0).toFixed(2))}</div>
-            <div>{formatTokenAmount(token.amount)}</div>
-          </li>
-        ))}
+        {isEmpty
+          ? NoDataUI
+          : displayList.map((token) => (
+              <li
+                className="token-list__item"
+                key={`${token.chain}-${token.id}`}
+                onClick={() => onConfirm(token)}
+              >
+                <div>
+                  <TokenWithChain token={token} width="24px" height="24px" />
+                  <span className="symbol">{token.symbol}</span>
+                </div>
+                <div>${splitNumberByStep((token.price || 0).toFixed(2))}</div>
+                <div>{formatTokenAmount(token.amount)}</div>
+              </li>
+            ))}
       </ul>
     </Modal>
   );

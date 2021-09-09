@@ -14,6 +14,12 @@
       line-height: 14px;
       color: #707880;
       margin-bottom: 8px;
+      .token-balance {
+        display: flex;
+        align-items: center;
+        text-decoration: underline;
+        cursor: pointer;
+      }
     }
   }
   .account-card {
@@ -147,6 +153,36 @@
         font-size: 15px;
         line-height: 18px;
         border-radius: 0;
+      }
+    }
+  }
+  .token-info {
+    background: #F6F7F9;
+    border-radius: 4px;
+    padding: 12px;
+    border: 0.5px solid #D8DFEB;
+    margin-top: 20px;
+    .section-field {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      line-height: 14px;
+      color: #707880;
+      margin-bottom: 8px;
+      .address-viewer-text.normal {
+        font-size: 12px;
+        line-height: 14px;
+        color: #707880;
+        font-weight: normal;
+      }
+      .icon-copy {
+        width: 14px;
+        height: 14px;
+        margin-left: 8px;
+        cursor: pointer;
+      }
+      &:nth-last-child(1) {
+        margin-bottom: 0;
       }
     }
   }
