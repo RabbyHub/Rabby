@@ -6,13 +6,8 @@ import { useTranslation } from 'react-i18next';
 import cloneDeep from 'lodash/cloneDeep';
 import { Input, Form, Skeleton, message, Button } from 'antd';
 import abiCoder, { AbiCoder } from 'web3-eth-abi';
-import {
-  isValidAddress,
-  intToHex,
-  unpadHexString,
-  addHexPrefix,
-} from 'ethereumjs-util';
-import { CHAINS, MINIMUM_GAS_LIMIT } from 'consts';
+import { isValidAddress, unpadHexString, addHexPrefix } from 'ethereumjs-util';
+import { CHAINS } from 'consts';
 import { ContactBookItem } from 'background/service/contactBook';
 import { useWallet } from 'ui/utils';
 import { formatTokenAmount, splitNumberByStep } from 'ui/utils/number';
@@ -105,6 +100,7 @@ const SendToken = () => {
         },
         [to, sendValue]
       ),
+      isSend: true,
     };
     if (isNativeToken) {
       params.to = to;
