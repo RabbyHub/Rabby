@@ -1,11 +1,18 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
+import ClipboardJS from 'clipboard';
 import clsx from 'clsx';
 import BigNumber from 'bignumber.js';
 import { useTranslation } from 'react-i18next';
 import cloneDeep from 'lodash/cloneDeep';
-import { Input, Form, Skeleton } from 'antd';
-import { isValidAddress } from 'ethereumjs-util';
-import { CHAINS } from 'consts';
+import { Input, Form, Skeleton, message, Button } from 'antd';
+import abiCoder, { AbiCoder } from 'web3-eth-abi';
+import {
+  isValidAddress,
+  intToHex,
+  unpadHexString,
+  addHexPrefix,
+} from 'ethereumjs-util';
+import { CHAINS, MINIMUM_GAS_LIMIT } from 'consts';
 import { ContactBookItem } from 'background/service/contactBook';
 import { useWallet } from 'ui/utils';
 import { formatTokenAmount, splitNumberByStep } from 'ui/utils/number';
@@ -23,6 +30,7 @@ import IconHardware from 'ui/assets/hardware-purple.svg';
 import IconWatch from 'ui/assets/watch-purple.svg';
 import IconArrowDown from 'ui/assets/arrow-down-triangle.svg';
 import IconCopy from 'ui/assets/copy-no-border.svg';
+import IconSuccess from 'ui/assets/success.svg';
 import { SvgIconPlusPrimary } from 'ui/assets';
 import './style.less';
 
@@ -51,6 +59,7 @@ const SendToken = () => {
     time_at: 0,
     amount: 0,
   });
+
   const [showEditContactModal, setShowEditContactModal] = useState(false);
   const [showListContactModal, setShowListContactModal] = useState(false);
   const [editBtnDisabled, setEditBtnDisabled] = useState(true);
@@ -58,23 +67,77 @@ const SendToken = () => {
   const [tokenSelectorVisible, setTokenSelectorVisible] = useState(false);
   const [originTokenList, setOriginTokenList] = useState<TokenItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [balanceError, setBalanceError] = useState(null);
+  const [balanceWarn, setBalanceWarn] = useState(null);
 
-  const handleSubmit = (values) => {
-    console.log(values);
+  const canSubmit =
+    isValidAddress(form.getFieldValue('to')) &&
+    !balanceError &&
+    new BigNumber(form.getFieldValue('amount')).isGreaterThan(0);
+  const isNativeToken = currentToken.id === currentToken.chain;
+
+  const handleSubmit = ({ to, amount }: { to: string; amount: string }) => {
+    const chain = Object.values(CHAINS).find(
+      (item) => item.serverId === currentToken.chain
+    )!;
+    const sendValue = new BigNumber(amount)
+      .multipliedBy(10 ** currentToken.decimals)
+      .toFixed();
+    const params: Record<string, any> = {
+      chainId: chain.id,
+      from: currentAccount.address,
+      to: currentToken.id,
+      value: '0x0',
+      data: ((abiCoder as unknown) as AbiCoder).encodeFunctionCall(
+        {
+          name: 'transfer',
+          type: 'function',
+          inputs: [
+            {
+              type: 'address',
+              name: 'to',
+            },
+            {
+              type: 'uint256',
+              name: 'value',
+            },
+          ],
+        },
+        [to, sendValue]
+      ),
+    };
+    if (isNativeToken) {
+      params.to = to;
+      delete params.data;
+      params.value = addHexPrefix(
+        unpadHexString(
+          ((abiCoder as unknown) as AbiCoder).encodeParameter(
+            'uint256',
+            sendValue
+          )
+        )
+      );
+    }
+    wallet.sendRequest({
+      method: 'eth_sendTransaction',
+      params: [params],
+    });
+    window.close();
   };
 
-  const handleConfirmContact = (data: ContactBookItem) => {
+  const handleConfirmContact = (data: ContactBookItem | null) => {
     setShowEditContactModal(false);
     setShowListContactModal(false);
     setContactInfo(data);
     const values = form.getFieldsValue();
+    const to = data ? data.address : '';
     form.setFieldsValue({
       ...values,
-      to: data.address,
+      to,
     });
-    handleFormValuesChange({
+    handleFormValuesChange(null, {
       ...values,
-      to: data.address,
+      to,
     });
   };
 
@@ -91,13 +154,16 @@ const SendToken = () => {
     setShowEditContactModal(true);
   };
 
-  const handleFormValuesChange = ({
-    to,
-    amount,
-  }: {
-    to: string;
-    amount: string;
-  }) => {
+  const handleFormValuesChange = (
+    _,
+    {
+      to,
+      amount,
+    }: {
+      to: string;
+      amount: string;
+    }
+  ) => {
     if (!to || !isValidAddress(to)) {
       setEditBtnDisabled(true);
     } else {
@@ -107,18 +173,44 @@ const SendToken = () => {
     if (!/^\d*(\.\d*)?$/.test(amount)) {
       resultAmount = cacheAmount;
     }
+
+    if (
+      isNativeToken &&
+      new BigNumber(currentToken.amount)
+        .minus(new BigNumber(amount))
+        .isLessThan(0.1)
+    ) {
+      setBalanceWarn(t('Gas fee reservation required'));
+    } else {
+      setBalanceWarn(null);
+    }
+    if (
+      new BigNumber(resultAmount).isGreaterThan(
+        new BigNumber(currentToken.amount)
+      )
+    ) {
+      setBalanceError(t('Insufficient balance'));
+    } else {
+      setBalanceError(null);
+    }
     form.setFieldsValue({
       to,
       amount: resultAmount,
     });
     setCacheAmount(resultAmount);
+    const addressContact = wallet.getContactByAddress(to);
+    if (!contactInfo && addressContact) {
+      setContactInfo(addressContact);
+    } else if (!addressContact && contactInfo) {
+      setContactInfo(null);
+    }
   };
 
   const handleCurrentTokenChange = (token: TokenItem) => {
     const values = form.getFieldsValue();
     form.setFieldsValue({
       ...values,
-      amount: '0',
+      amount: '',
     });
     setCurrentToken(token);
     setTokenSelectorVisible(false);
@@ -161,7 +253,7 @@ const SendToken = () => {
       amount: new BigNumber(currentToken.amount).toFixed(),
     };
     form.setFieldsValue(newValues);
-    handleFormValuesChange(newValues);
+    handleFormValuesChange(null, newValues);
   };
 
   const handleLoadTokens = async (q?: string) => {
@@ -188,23 +280,37 @@ const SendToken = () => {
     }
   };
 
-  useEffect(() => {
-    form.setFieldsValue({
-      to: '',
-      amount: '0',
+  const handleCopyContractAddress = () => {
+    const clipboard = new ClipboardJS('.send-token', {
+      text: function () {
+        return currentToken.id;
+      },
     });
-  }, []);
+
+    clipboard.on('success', () => {
+      message.success({
+        icon: <img src={IconSuccess} className="icon icon-success" />,
+        content: t('Copied'),
+        duration: 0.5,
+      });
+      clipboard.destroy();
+    });
+  };
 
   return (
     <div className="send-token">
-      <PageHeader>{t('Settings')}</PageHeader>
+      <PageHeader>{t('Send')}</PageHeader>
       <Form
         form={form}
         onFinish={handleSubmit}
         onValuesChange={handleFormValuesChange}
+        initialValues={{
+          to: '',
+          amount: '',
+        }}
       >
         <div className="section">
-          <div className="section-title">From</div>
+          <div className="section-title">{t('From')}</div>
           <AccountCard
             icons={{
               normal: IconNormal,
@@ -215,7 +321,7 @@ const SendToken = () => {
         </div>
         <div className="section">
           <div className="section-title">
-            <span className="section-title__to">To</span>
+            <span className="section-title__to">{t('To')}</span>
             <div className="flex flex-1 justify-end items-center">
               <div
                 className={clsx('contact-info', { disabled: editBtnDisabled })}
@@ -250,6 +356,7 @@ const SendToken = () => {
                 { required: true, message: t('Please input address') },
                 {
                   validator(_, value) {
+                    if (!value) return Promise.resolve();
                     if (value && isValidAddress(value)) {
                       return Promise.resolve();
                     }
@@ -260,7 +367,7 @@ const SendToken = () => {
                 },
               ]}
             >
-              <Input placeholder={t('Enter the address')} />
+              <Input placeholder={t('Enter the address')} autoFocus />
             </Form.Item>
           </div>
         </div>
@@ -274,19 +381,26 @@ const SendToken = () => {
                 formatTokenAmount(currentToken.amount, 8)
               )}
             </div>
-            <div className="token-price">
-              ≈ $
-              {splitNumberByStep(
-                (
-                  (form.getFieldValue('amount') || 0) * currentToken.price || 0
-                ).toFixed(2)
-              )}
-            </div>
+            {balanceError || balanceWarn ? (
+              <div className="balance-error">{balanceError || balanceWarn}</div>
+            ) : (
+              <div className="token-price">
+                ≈ $
+                {splitNumberByStep(
+                  (
+                    (form.getFieldValue('amount') || 0) * currentToken.price ||
+                    0
+                  ).toFixed(2)
+                )}
+              </div>
+            )}
           </div>
           <div className="token-input">
             <div className="left" onClick={handleSelectToken}>
               <TokenWithChain token={currentToken} />
-              <span className="token-input__symbol">{currentToken.symbol}</span>
+              <span className="token-input__symbol" title={currentToken.symbol}>
+                {currentToken.symbol}
+              </span>
               <img src={IconArrowDown} className="icon icon-arrow-down" />
             </div>
             <div className="right">
@@ -304,12 +418,16 @@ const SendToken = () => {
             />
           </div>
           <div className="token-info">
-            {isValidAddress(currentToken.id) ? (
+            {!isNativeToken ? (
               <div className="section-field">
                 <span>{t('Contract Address')}</span>
                 <span className="flex">
                   <AddressViewer address={currentToken.id} showArrow={false} />
-                  <img src={IconCopy} className="icon icon-copy" />
+                  <img
+                    src={IconCopy}
+                    className="icon icon-copy"
+                    onClick={handleCopyContractAddress}
+                  />
                 </span>
               </div>
             ) : (
@@ -330,6 +448,17 @@ const SendToken = () => {
               <span>${splitNumberByStep(currentToken.price)}</span>
             </div>
           </div>
+        </div>
+        <div className="footer flex justify-center">
+          <Button
+            disabled={!canSubmit}
+            type="primary"
+            htmlType="submit"
+            size="large"
+            className="w-[200px]"
+          >
+            {t('Send')}
+          </Button>
         </div>
       </Form>
       <ContactEditModal

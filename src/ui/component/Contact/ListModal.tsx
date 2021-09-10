@@ -19,13 +19,28 @@ const ListModal = ({ address, visible, onOk, onCancel }: ListModalProps) => {
   const [list, setList] = useState<ContactBookItem[]>([]);
 
   useEffect(() => {
-    const data = wallet.listContact();
-    setList(data);
-  }, []);
+    if (visible) {
+      const data = wallet.listContact();
+      setList(data);
+    }
+  }, [visible]);
 
   const handleConfirm = (data: ContactBookItem) => {
     onOk(data);
   };
+
+  const NoDataUI = (
+    <div className="no-contact">
+      <img
+        className="no-data-image"
+        src="/images/nodata-site.png"
+        alt="no contact"
+      />
+      <p className="text-gray-content text-14 text-center">
+        {t('No contacts')}
+      </p>
+    </div>
+  );
 
   return (
     <Modal
@@ -35,21 +50,24 @@ const ListModal = ({ address, visible, onOk, onCancel }: ListModalProps) => {
       onCancel={onCancel}
       footer={null}
       width="360px"
+      centered
     >
-      {list.map((item) => (
-        <FieldCheckbox
-          key={item.address}
-          checked={item.address.toLowerCase() === address?.toLowerCase()}
-          onChange={(checked) => checked && handleConfirm(item)}
-        >
-          <div className="contact-info">
-            <p>{item.name}</p>
-            <p>
-              <AddressViewer address={item.address} />
-            </p>
-          </div>
-        </FieldCheckbox>
-      ))}
+      {list.length > 0
+        ? list.map((item) => (
+            <FieldCheckbox
+              key={item.address}
+              checked={item.address.toLowerCase() === address?.toLowerCase()}
+              onChange={(checked) => checked && handleConfirm(item)}
+            >
+              <div className="contact-info">
+                <p>{item.name}</p>
+                <p>
+                  <AddressViewer address={item.address} />
+                </p>
+              </div>
+            </FieldCheckbox>
+          ))
+        : NoDataUI}
     </Modal>
   );
 };

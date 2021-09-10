@@ -84,6 +84,7 @@ const TokenSelector = ({
       onCancel={onCancel}
       footer={null}
       centered
+      destroyOnClose
     >
       <div className="input-wrapper">
         <Input
@@ -92,6 +93,7 @@ const TokenSelector = ({
           placeholder={t('Search name or paste address')}
           value={query}
           onChange={(e) => handleQueryChange(e.target.value)}
+          autoFocus
         />
       </div>
       {!query && (

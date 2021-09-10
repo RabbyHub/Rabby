@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Modal, Input, Button, Form } from 'antd';
 import { useWallet } from 'ui/utils';
@@ -9,7 +9,7 @@ import './style.less';
 interface EditModalProps {
   address: string;
   visible: boolean;
-  onOk(data: ContactBookItem): void;
+  onOk(data: ContactBookItem | null): void;
   onCancel(): void;
   isEdit: boolean;
 }
@@ -24,7 +24,7 @@ const EditModal = ({
   const { t } = useTranslation();
   const wallet = useWallet();
   const [name, setName] = useState(
-    isEdit ? wallet.getContactByAddress(address).name : ''
+    isEdit ? wallet.getContactByAddress(address)?.name : ''
   );
 
   const handleConfirm = () => {
@@ -43,12 +43,23 @@ const EditModal = ({
   };
 
   const handleRemoveContact = () => {
-    // TODO
+    wallet.removeContact(address);
+    onOk(null);
   };
 
   const handleNameChange = (value: string) => {
     setName(value);
   };
+
+  useEffect(() => {
+    if (visible) {
+      if (isEdit) {
+        setName(wallet.getContactByAddress(address)?.name);
+      } else {
+        setName('');
+      }
+    }
+  }, [visible]);
 
   return (
     <Modal
@@ -82,9 +93,11 @@ const EditModal = ({
         </Button>
       </div>
       {isEdit && (
-        <Button type="link" onClick={handleRemoveContact}>
-          {t('Remove from Contacts')}
-        </Button>
+        <div className="remove-btn">
+          <Button type="link" onClick={handleRemoveContact}>
+            {t('Remove from Contacts')}
+          </Button>
+        </div>
       )}
     </Modal>
   );

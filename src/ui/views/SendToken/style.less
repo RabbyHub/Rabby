@@ -3,6 +3,7 @@
 .send-token {
   .page();
   padding: 0 28px 20px;
+  position: relative;
   .section {
     padding: 14px 12px;
     background-color: #fff;
@@ -48,11 +49,8 @@
       }
     }
   }
-  .ant-form-item {
-    margin: 0;
-  }
   .ant-input {
-    border: none;
+    border: 1px solid transparent;
     background: #F6F7F9;
     border-radius: 4px;
     padding: 10px 12px;
@@ -60,8 +58,16 @@
     font-size: 13px;
     line-height: 15px;
     color: #161819;
-    &:hover {
-      border: none;
+  }
+  .ant-form-item {
+    margin: 0;
+    &.ant-form-item-has-error {
+      .ant-input {
+        border-color: #F24822 !important;
+        &:hover {
+          border: 1px solid #F24822;
+        }
+      }
     }
   }
   .ant-form-item-has-error .ant-input:hover {
@@ -125,6 +131,9 @@
       .token-input__symbol {
         width: 50px;
         margin-left: 8px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
       }
       .icon-arrow-down {
         width: 12px;
@@ -174,16 +183,29 @@
         line-height: 14px;
         color: #707880;
         font-weight: normal;
+        margin-right: 0;
       }
       .icon-copy {
         width: 14px;
         height: 14px;
-        margin-left: 8px;
+        margin-left: 6px;
         cursor: pointer;
       }
       &:nth-last-child(1) {
         margin-bottom: 0;
       }
     }
+  }
+  .balance-error {
+    font-size: 12px;
+    line-height: 14px;
+    color: #F24822;
+    text-align: right;
+  }
+  .footer {
+    position: absolute;
+    bottom: 32px;
+    left: 0;
+    width: 100%;
   }
 }

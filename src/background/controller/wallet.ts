@@ -36,8 +36,8 @@ export class WalletController extends BaseController {
   verifyPassword = (password: string) =>
     keyringService.verifyPassword(password);
 
-  sendRequest = (data) =>
-    provider({
+  sendRequest = (data) => {
+    return provider({
       data,
       session: {
         name: 'Rabby',
@@ -45,6 +45,7 @@ export class WalletController extends BaseController {
         icon: './images/icon-128.png',
       },
     });
+  };
 
   getApproval = notificationService.getApproval;
   resolveApproval = notificationService.resolveApproval;
