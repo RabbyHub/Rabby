@@ -206,7 +206,14 @@ const maxRPS = 100;
 class OpenApiService {
   store!: OpenApiStore;
 
-  request = rateLimit(axios.create(), { maxRPS });
+  request = rateLimit(
+    axios.create({
+      headers: {
+        'X-Client': 'Rabby',
+      },
+    }),
+    { maxRPS }
+  );
 
   setHost = async (host: string) => {
     this.store.host = host;
@@ -319,6 +326,9 @@ class OpenApiService {
     this.request = rateLimit(
       axios.create({
         baseURL: this.store.host,
+        headers: {
+          'X-Client': 'Rabby',
+        },
       }),
       { maxRPS }
     );
