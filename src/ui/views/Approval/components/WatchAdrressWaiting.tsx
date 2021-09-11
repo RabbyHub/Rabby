@@ -290,8 +290,9 @@ const WatchAddressWaiting = ({
     KEYRING_TYPE.WatchAddressKeyring
   );
   const [approval, resolveApproval, rejectApproval] = useApproval();
-  const [origin] = useState(approval!.origin!);
-  const { chain } = wallet.getConnectedSite(origin)!;
+  const chain = Object.values(CHAINS).find(
+    (item) => item.id === params.chainId
+  )!.enum;
   const { t } = useTranslation();
   const isSignText = approval?.approvalType !== 'SignTx';
 

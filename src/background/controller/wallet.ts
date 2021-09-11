@@ -23,7 +23,7 @@ import BaseController from './base';
 import { CHAINS_ENUM, CHAINS, INTERNAL_REQUEST_ORIGIN } from 'consts';
 import { Account } from '../service/preference';
 import { ConnectedSite } from '../service/permission';
-import { ExplainTxResponse } from '../service/openapi';
+import { ExplainTxResponse, TokenItem } from '../service/openapi';
 import DisplayKeyring from '../service/keyring/display';
 import provider from './provider';
 
@@ -95,6 +95,11 @@ export class WalletController extends BaseController {
 
   getLocale = () => preferenceService.getLocale();
   setLocale = (locale: string) => preferenceService.setLocale(locale);
+
+  getLastTimeSendToken = (address: string) =>
+    preferenceService.getLastTimeSendToken(address);
+  setLastTimeSendToken = (address: string, token: TokenItem) =>
+    preferenceService.setLastTimeSendToken(address, token);
 
   /* chains */
   getSupportChains = () => chainService.getSupportChains();

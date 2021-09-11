@@ -1,9 +1,10 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import ClipboardJS from 'clipboard';
 import clsx from 'clsx';
 import BigNumber from 'bignumber.js';
 import { useTranslation } from 'react-i18next';
 import cloneDeep from 'lodash/cloneDeep';
+import { useHistory } from 'react-router-dom';
 import { Input, Form, Skeleton, message, Button } from 'antd';
 import abiCoder, { AbiCoder } from 'web3-eth-abi';
 import { isValidAddress, unpadHexString, addHexPrefix } from 'ethereumjs-util';
@@ -34,6 +35,7 @@ const SendToken = () => {
   const currentAccount = wallet.syncGetCurrentAccount()!;
   const { t } = useTranslation();
   const { useForm } = Form;
+  const history = useHistory();
   const [form] = useForm<{ to: string; amount: string }>();
   const [contactInfo, setContactInfo] = useState<null | ContactBookItem>(null);
   const [tokens, setTokens] = useState<TokenItem[]>([]);
@@ -68,7 +70,8 @@ const SendToken = () => {
   const canSubmit =
     isValidAddress(form.getFieldValue('to')) &&
     !balanceError &&
-    new BigNumber(form.getFieldValue('amount')).isGreaterThan(0);
+    new BigNumber(form.getFieldValue('amount')).isGreaterThan(0) &&
+    !isLoading;
   const isNativeToken = currentToken.id === currentToken.chain;
 
   const handleSubmit = ({ to, amount }: { to: string; amount: string }) => {
@@ -114,6 +117,15 @@ const SendToken = () => {
         )
       );
     }
+    wallet.setLastTimeSendToken(currentAccount.address, currentToken);
+    wallet.setPageStateCache({
+      path: history.location.pathname,
+      params: {},
+      states: {
+        values: form.getFieldsValue(),
+        currentToken,
+      },
+    });
     wallet.sendRequest({
       method: 'eth_sendTransaction',
       params: [params],
@@ -293,9 +305,39 @@ const SendToken = () => {
     });
   };
 
+  const handleClickBack = () => {
+    if (history.length > 1) {
+      history.goBack();
+    } else {
+      history.replace('/');
+    }
+  };
+
+  useEffect(() => {
+    const lastTimeSendToken = wallet.getLastTimeSendToken(
+      currentAccount.address
+    );
+    if (lastTimeSendToken) {
+      setCurrentToken(lastTimeSendToken);
+    }
+    if (wallet.hasPageStateCache()) {
+      const cache = wallet.getPageStateCache();
+      if (cache?.path === history.location.pathname) {
+        if (cache.states.values) form.setFieldsValue(cache.states.values);
+        if (cache.states.currentToken)
+          setCurrentToken(cache.states.currentToken);
+      }
+    }
+    return () => {
+      wallet.clearPageStateCache();
+    };
+  }, []);
+
   return (
     <div className="send-token">
-      <PageHeader>{t('Send')}</PageHeader>
+      <PageHeader onBack={handleClickBack} forceShowBack>
+        {t('Send')}
+      </PageHeader>
       <Form
         form={form}
         onFinish={handleSubmit}

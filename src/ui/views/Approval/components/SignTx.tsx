@@ -173,6 +173,7 @@ const SignTx = ({ params, origin }) => {
       maxFeePerGas,
       isSpeedUp,
       isCancel,
+      isSend,
     },
   ] = params.data;
   let updateNonce = true;
@@ -326,6 +327,7 @@ const SignTx = ({ params, origin }) => {
     if (currentAccount?.type && WaitingSignComponent[currentAccount.type]) {
       resolveApproval({
         ...tx,
+        isSend,
         nonce: realNonce || tx.nonce,
         gas: gasLimit,
         uiRequestComponent: WaitingSignComponent[currentAccount.type],
@@ -340,6 +342,7 @@ const SignTx = ({ params, origin }) => {
       ...tx,
       nonce: realNonce || tx.nonce,
       gas: gasLimit,
+      isSend,
     });
   };
 
@@ -399,7 +402,11 @@ const SignTx = ({ params, origin }) => {
                 chain={chain}
                 raw={params.data[0]}
                 onChange={handleTxChange}
-                tx={tx}
+                tx={{
+                  ...tx,
+                  nonce: realNonce || tx.nonce,
+                  gas: gasLimit,
+                }}
                 isSpeedUp={isSpeedUp}
               />
             )}

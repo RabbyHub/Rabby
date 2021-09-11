@@ -7,20 +7,24 @@ const PageHeader = ({
   children,
   canBack = true,
   rightSlot,
+  onBack,
+  forceShowBack,
 }: {
   children: ReactNode;
   canBack?: boolean;
   rightSlot?: ReactNode;
+  onBack?(): void;
+  forceShowBack?: boolean;
 }) => {
   const history = useHistory();
 
   return (
     <div className="page-header">
-      {canBack && history.length > 0 && (
+      {(forceShowBack || (canBack && history.length > 1)) && (
         <img
           src={IconBack}
           className="icon icon-back"
-          onClick={() => history.goBack()}
+          onClick={onBack || (() => history.goBack())}
         />
       )}
       <div className="header-content">{children}</div>
