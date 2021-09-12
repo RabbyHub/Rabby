@@ -174,7 +174,9 @@ class TxHistory {
   }
 
   getList(address: string) {
-    const list = Object.values(this.store.transactions[address] || {});
+    const list = Object.values(
+      this.store.transactions[address.toLowerCase()] || {}
+    );
     const pendings: TransactionGroup[] = [];
     const completeds: TransactionGroup[] = [];
     if (!list) return { pendings: [], completeds: [] };
