@@ -1,5 +1,11 @@
 import React, { useEffect, useState } from 'react';
-import { intToHex, isHexString } from 'ethereumjs-util';
+import {
+  intToHex,
+  isHexString,
+  isHexPrefixed,
+  addHexPrefix,
+  unpadHexString,
+} from 'ethereumjs-util';
 import { Button, Modal } from 'antd';
 import { useTranslation } from 'react-i18next';
 import clsx from 'clsx';
@@ -26,6 +32,39 @@ import Loading from './TxComponents/Loading';
 import GasSelector, { GasSelectorResponse } from './TxComponents/GasSelecter';
 import { WaitingSignComponent } from './SignText';
 import { Chain } from 'background/service/chain';
+
+const normalizeHex = (value: string | number) => {
+  if (typeof value === 'number') {
+    return intToHex(value);
+  }
+  if (typeof value === 'string') {
+    if (!isHexPrefixed(value)) {
+      return addHexPrefix(value);
+    }
+    return value;
+  }
+  return value;
+};
+
+const normalizeTxParams = (tx) => {
+  const copy = tx;
+  if ('nonce' in copy) {
+    copy.nonce = normalizeHex(copy.nonce);
+  }
+  if ('gas' in copy) {
+    copy.gas = normalizeHex(copy.gas);
+  }
+  if ('gasLimit' in copy) {
+    copy.gas = normalizeHex(copy.gas);
+  }
+  if ('gasPrice' in copy) {
+    copy.gas = normalizeHex(copy.gas);
+  }
+  if ('value' in copy) {
+    copy.value = addHexPrefix(unpadHexString(copy.value));
+  }
+  return copy;
+};
 
 const TxTypeComponent = ({
   txDetail,
@@ -161,20 +200,18 @@ const SignTx = ({ params, origin }) => {
   }
   chainId = Number(chainId);
   const chain = Object.values(CHAINS).find((item) => item.id === chainId)!;
-  const [
-    {
-      data = '0x',
-      from,
-      gas,
-      gasPrice,
-      nonce,
-      to,
-      value,
-      maxFeePerGas,
-      isSpeedUp,
-      isCancel,
-    },
-  ] = params.data;
+  const {
+    data = '0x',
+    from,
+    gas,
+    gasPrice,
+    nonce,
+    to,
+    value,
+    maxFeePerGas,
+    isSpeedUp,
+    isCancel,
+  } = normalizeTxParams(params.data[0]);
   let updateNonce = true;
   if (isCancel || isSpeedUp || (nonce && from === to) || nonceChanged)
     updateNonce = false;
