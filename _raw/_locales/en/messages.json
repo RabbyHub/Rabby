@@ -800,5 +800,17 @@
   },
   "CameraPermission2": {
     "message": "Open Rabby and try import again"
+  },
+  "AllowRabbyPermissionsTitle": {
+    "message": "Allow Rabby permissions to:"
+  },
+  "LedgerPermission1": {
+    "message": "Read public keys from Ledger"
+  },
+  "LedgerPermission2": {
+    "message": "Prepare Ledger for transaction and data signing"
+  },
+  "Allow": {
+    "message": "Allow"
   }
 }

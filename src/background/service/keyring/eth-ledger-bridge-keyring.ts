@@ -151,10 +151,35 @@ class LedgerBridgeKeyring extends EventEmitter {
     this.hdPath = hdPath;
   }
 
-  async makeApp() {
+  async makeApp(signing = false) {
     if (!this.app && this.isWebUSB) {
-      this.transport = await TransportWebUSB.create();
-      this.app = new LedgerEth(this.transport);
+      try {
+        this.transport = await TransportWebUSB.create();
+        this.app = new LedgerEth(this.transport);
+      } catch (e) {
+        if (signing) {
+          if (
+            e.name === 'TransportWebUSBGestureRequired' ||
+            e.name === 'TransportOpenUserCancelled'
+          ) {
+            return new Promise((resolve, reject) => {
+              const permissionWindow = window.open(
+                './index.html#/request-permission?type=ledger'
+              );
+              permissionWindow?.addEventListener('message', ({ data }) => {
+                if (data.success) {
+                  this.makeApp().then(() => {
+                    resolve(null);
+                  });
+                } else {
+                  reject(new Error('Permission Rejected'));
+                }
+                permissionWindow.close();
+              });
+            });
+          }
+        }
+      }
     }
   }
 
@@ -349,7 +374,7 @@ class LedgerBridgeKeyring extends EventEmitter {
     const hdPath = await this.unlockAccountByAddress(address);
     if (this.isWebUSB) {
       const to = ethUtil.bufferToHex(toAddress).toLowerCase();
-      await this.makeApp();
+      await this.makeApp(true);
       if (toAddress) {
         const isKnownERC20Token = byContractAddress(to);
         if (isKnownERC20Token)
@@ -414,7 +439,7 @@ class LedgerBridgeKeyring extends EventEmitter {
   async signPersonalMessage(withAccount, message) {
     if (this.isWebUSB) {
       try {
-        await this.makeApp();
+        await this.makeApp(true);
         const hdPath = await this.unlockAccountByAddress(withAccount);
         const res = await this.app!.signPersonalMessage(
           hdPath,
@@ -547,7 +572,7 @@ class LedgerBridgeKeyring extends EventEmitter {
     const hdPath = await this.unlockAccountByAddress(withAccount);
     if (this.isWebUSB) {
       try {
-        await this.makeApp();
+        await this.makeApp(true);
         const res = await this.app!.signEIP712HashedMessage(
           hdPath,
           domainSeparatorHex,
