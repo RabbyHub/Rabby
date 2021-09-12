@@ -70,12 +70,14 @@ const EditModal = ({
       onCancel={onCancel}
       footer={null}
       width="360px"
+      destroyOnClose
     >
       <div className="flex justify-center mb-16">
         <AddressViewer address={address} showArrow={false} />
       </div>
       <Form onFinish={handleConfirm}>
         <Input
+          autoFocus
           allowClear
           maxLength={24}
           value={name}
