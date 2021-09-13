@@ -453,7 +453,7 @@ const SendToken = () => {
               {isLoading ? (
                 <Skeleton.Input active style={{ width: 100 }} />
               ) : (
-                `${t('Balance')} ${formatTokenAmount(currentToken.amount, 8)}`
+                `${t('Balance')}: ${formatTokenAmount(currentToken.amount, 8)}`
               )}
             </div>
             {balanceError || balanceWarn ? (
