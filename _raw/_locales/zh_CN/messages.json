@@ -797,5 +797,17 @@
   },
   "CameraPermission2": {
     "message": "打开 Rabby 并再次导入"
+  },
+  "AllowRabbyPermissionsTitle": {
+    "message": "允许 Rabby 使用权限:"
+  },
+  "LedgerPermission1": {
+    "message": "获取 Ledger 的公钥"
+  },
+  "LedgerPermission2": {
+    "message": "使用 Rabby 进行文本和交易签名"
+  },
+  "Allow": {
+    "message": "同意"
   }
 }
