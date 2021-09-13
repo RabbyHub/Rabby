@@ -24,7 +24,7 @@ const EditModal = ({
   const { t } = useTranslation();
   const wallet = useWallet();
   const [name, setName] = useState(
-    isEdit ? wallet.getContactByAddress(address)?.name : ''
+    isEdit ? wallet.getContactByAddress(address)?.name || '' : ''
   );
 
   const handleConfirm = () => {
@@ -54,7 +54,7 @@ const EditModal = ({
   useEffect(() => {
     if (visible) {
       if (isEdit) {
-        setName(wallet.getContactByAddress(address)?.name);
+        setName(wallet.getContactByAddress(address)?.name || '');
       } else {
         setName('');
       }

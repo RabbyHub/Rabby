@@ -6,7 +6,7 @@ export interface ContactBookItem {
   address: string;
 }
 
-type ContactBookStore = Record<string, ContactBookItem>;
+type ContactBookStore = Record<string, ContactBookItem | undefined>;
 
 class ContactBook {
   store!: ContactBookStore;
@@ -27,17 +27,16 @@ class ContactBook {
   };
 
   removeContact = (address: string) => {
-    const storeCopy = cloneDeep(this.store);
-    delete storeCopy[address.toLowerCase()];
-    this.store = storeCopy;
+    this.store[address.toLowerCase()] = undefined;
   };
 
   updateContact = (data: ContactBookItem) => {
     this.store[data.address.toLowerCase()] = data;
   };
 
-  listContacts = () => {
-    return Object.values(this.store) || [];
+  listContacts = (): ContactBookItem[] => {
+    const list = Object.values(this.store);
+    return list.filter((item): item is ContactBookItem => !!item) || [];
   };
 }
 
