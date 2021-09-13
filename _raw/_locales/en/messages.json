@@ -808,7 +808,7 @@
     "message": "To"
   },
   "Enter__the__address": {
-    "message": "Enter the address"
+    "message": "Enter address"
   },
   "This__address__is__invalid": {
     "message": "This address is invalid"
@@ -878,5 +878,8 @@
   },
   "No__contacts": {
     "message": "No contacts"
+  },
+  "Loading__Tokens": {
+    "message": "Loading Tokens..."
   }
 }

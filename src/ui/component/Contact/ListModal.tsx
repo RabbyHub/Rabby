@@ -57,7 +57,7 @@ const ListModal = ({ address, visible, onOk, onCancel }: ListModalProps) => {
             <FieldCheckbox
               key={item.address}
               checked={item.address.toLowerCase() === address?.toLowerCase()}
-              onChange={(checked) => checked && handleConfirm(item)}
+              onChange={() => handleConfirm(item)}
             >
               <div className="contact-info">
                 <p>{item.name}</p>

@@ -2,17 +2,18 @@ import React, { useEffect, useState } from 'react';
 import { Modal, Input } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { useDebounce } from 'react-use';
-
 import TokenWithChain from '../TokenWithChain';
 import { TokenItem } from 'background/service/openapi';
 import { splitNumberByStep, formatTokenAmount } from 'ui/utils/number';
 import IconSearch from 'ui/assets/search.svg';
+import IconLoading from 'ui/assets/loading-big.svg';
 import './style.less';
 import clsx from 'clsx';
 
 interface TokenSelectorProps {
   visible: boolean;
   list: TokenItem[];
+  isLoading?: boolean;
   onConfirm(item: TokenItem): void;
   onCancel(): void;
   onSearch(q: string);
@@ -26,11 +27,13 @@ const TokenSelector = ({
   onCancel,
   onSearch,
   onSort,
+  isLoading = false,
 }: TokenSelectorProps) => {
   const { t } = useTranslation();
   const [query, setQuery] = useState('');
   const [sortBy, setSortBy] = useState<'common' | 'all'>('common');
   const [displayList, setDisplayList] = useState<TokenItem[]>(list);
+  const [timeoutId, setTimeoutId] = useState<number | null>(null);
 
   const handleSort = (condition: 'common' | 'all') => {
     setSortBy(condition);
@@ -49,14 +52,43 @@ const TokenSelector = ({
     setQuery(value);
   };
 
+  const setTokensByStep = () => {
+    if (displayList.length < list.length) {
+      const tmId = window.setTimeout(
+        () => {
+          const thisStep = list.slice(
+            displayList.length,
+            displayList.length + 100 > list.length
+              ? list.length
+              : displayList.length + 100
+          );
+          setDisplayList([...displayList, ...thisStep]);
+        },
+        displayList.length <= 0 ? 0 : 500
+      );
+      setTimeoutId(tmId);
+    }
+  };
+
   useEffect(() => {
-    setDisplayList(list);
+    setDisplayList([]);
+    if (timeoutId !== null) {
+      window.clearTimeout(timeoutId);
+      setTimeoutId(null);
+    }
   }, [list]);
+
+  useEffect(() => {
+    if (visible) {
+      setTokensByStep();
+    }
+  }, [displayList, visible]);
 
   useEffect(() => {
     if (!visible) {
       setQuery('');
       handleSort('common');
+      setDisplayList([]);
     }
   }, [visible]);
 
@@ -64,13 +96,17 @@ const TokenSelector = ({
 
   const NoDataUI = (
     <div className="no-token">
-      <img
-        className="no-data-image"
-        src="/images/nodata-tx.png"
-        alt="no site"
-      />
+      {isLoading ? (
+        <img className="icon icon-loading" src={IconLoading} />
+      ) : (
+        <img
+          className="no-data-image"
+          src="/images/nodata-tx.png"
+          alt="no site"
+        />
+      )}
       <p className="text-gray-content text-14 mt-12 text-center">
-        {t('No Tokens')}
+        {isLoading ? t('Loading Tokens') : t('No Tokens')}
       </p>
     </div>
   );

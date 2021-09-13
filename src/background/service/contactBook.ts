@@ -1,4 +1,3 @@
-import cloneDeep from 'lodash/cloneDeep';
 import { createPersistStore } from 'background/utils';
 
 export interface ContactBookItem {

@@ -808,7 +808,7 @@
     "message": "输入地址"
   },
   "This__address__is__invalid": {
-    "message": "不是一个有效地址"
+    "message": "地址格式不正确"
   },
   "Balance": {
     "message": "余额"
@@ -829,7 +829,7 @@
     "message": "选择 Token"
   },
   "Search__name__or__paste__address": {
-    "message": "根据名称或合约地址搜索"
+    "message": "搜索 token 名称或地址"
   },
   "Common": {
     "message": "常用"
@@ -875,5 +875,8 @@
   },
   "No__contacts": {
     "message": "无可用联系人"
+  },
+  "Loading__Tokens": {
+    "message": "加载中..."
   }
 }

@@ -2,7 +2,7 @@
 
 .send-token {
   .page();
-  padding: 0 28px 20px;
+  padding: 0 16px 20px;
   position: relative;
   .section {
     padding: 14px 12px;
@@ -41,6 +41,7 @@
     .account-detail {
       height: 36px;
       width: 100%;
+      padding: 10px 12px;
       .address-viewer-text, .amount {
         color: #8697FF;
         font-size: 13px;
@@ -122,6 +123,7 @@
     line-height: 18px;
     color: #161819;
     display: flex;
+    margin-bottom: 6px;
     .left {
       display: flex;
       align-items: center;
@@ -165,23 +167,34 @@
       }
     }
   }
+  .token-info__header {
+    width: 100%;
+    height: 15px;
+    background: url(../../assets/arrow-container-header.svg);
+    background-size: cover;
+    background-repeat: no-repeat;
+    z-index: 0;
+    transform: translateY(6px);
+  }
   .token-info {
-    background: #F6F7F9;
+    background: #FAFAFB;
+    border: 1px solid #D8DFEB;
     border-radius: 4px;
     padding: 12px;
-    border: 0.5px solid #D8DFEB;
-    margin-top: 20px;
+    border-top: none;
+    position: relative;
+    z-index: 1;
     .section-field {
       display: flex;
       justify-content: space-between;
       font-size: 12px;
       line-height: 14px;
-      color: #707880;
+      color: rgba(112, 120, 128, .6);
       margin-bottom: 8px;
       .address-viewer-text.normal {
         font-size: 12px;
         line-height: 14px;
-        color: #707880;
+        color: rgba(112, 120, 128, .6);
         font-weight: normal;
         margin-right: 0;
       }

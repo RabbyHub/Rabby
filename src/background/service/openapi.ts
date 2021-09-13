@@ -329,6 +329,11 @@ class OpenApiService {
             method: 'GET',
             params: ['id', 'is_all'],
           },
+          user_token: {
+            path: '/v1/user/token',
+            method: 'GET',
+            params: ['id', 'chain_id', 'token_id'],
+          },
         },
       },
     });
@@ -696,6 +701,23 @@ class OpenApiService {
       params: {
         id,
         q,
+      },
+    });
+
+    return data;
+  };
+
+  getToken = async (
+    id: string,
+    chainId: string,
+    tokenId: string
+  ): Promise<TokenItem> => {
+    const config = this.store.config.user_token;
+    const { data } = await this.request[config.method](config.path, {
+      params: {
+        id,
+        chain_id: chainId,
+        token_id: tokenId,
       },
     });
 

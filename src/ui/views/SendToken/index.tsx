@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, MutableRefObject } from 'react';
 import ClipboardJS from 'clipboard';
 import clsx from 'clsx';
 import BigNumber from 'bignumber.js';
@@ -39,23 +39,27 @@ const SendToken = () => {
   const [form] = useForm<{ to: string; amount: string }>();
   const [contactInfo, setContactInfo] = useState<null | ContactBookItem>(null);
   const [tokens, setTokens] = useState<TokenItem[]>([]);
-  const [currentToken, setCurrentToken] = useState<TokenItem>({
-    id: 'eth',
-    chain: 'eth',
-    name: 'ETH',
-    symbol: 'ETH',
-    display_symbol: null,
-    optimized_symbol: 'ETH',
-    decimals: 18,
-    logo_url:
-      'https://static.debank.com/image/token/logo_url/eth/935ae4e4d1d12d59a99717a24f2540b5.png',
-    price: 0,
-    is_verified: true,
-    is_core: true,
-    is_wallet: true,
-    time_at: 0,
-    amount: 0,
-  });
+  const lastTimeSendToken = wallet.getLastTimeSendToken(currentAccount.address);
+  const tokenInputRef = useRef<Input>(null);
+  const [currentToken, setCurrentToken] = useState<TokenItem>(
+    lastTimeSendToken || {
+      id: 'eth',
+      chain: 'eth',
+      name: 'ETH',
+      symbol: 'ETH',
+      display_symbol: null,
+      optimized_symbol: 'ETH',
+      decimals: 18,
+      logo_url:
+        'https://static.debank.com/image/token/logo_url/eth/935ae4e4d1d12d59a99717a24f2540b5.png',
+      price: 0,
+      is_verified: true,
+      is_core: true,
+      is_wallet: true,
+      time_at: 0,
+      amount: 0,
+    }
+  );
 
   const [showEditContactModal, setShowEditContactModal] = useState(false);
   const [showListContactModal, setShowListContactModal] = useState(false);
@@ -64,8 +68,10 @@ const SendToken = () => {
   const [tokenSelectorVisible, setTokenSelectorVisible] = useState(false);
   const [originTokenList, setOriginTokenList] = useState<TokenItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isListLoading, setIsListLoading] = useState(true);
   const [balanceError, setBalanceError] = useState(null);
   const [balanceWarn, setBalanceWarn] = useState(null);
+  const [showContactInfo, setShowContactInfo] = useState(false);
 
   const canSubmit =
     isValidAddress(form.getFieldValue('to')) &&
@@ -139,6 +145,7 @@ const SendToken = () => {
     setContactInfo(data);
     const values = form.getFieldsValue();
     const to = data ? data.address : '';
+    if (!data) return;
     form.setFieldsValue({
       ...values,
       to,
@@ -172,6 +179,9 @@ const SendToken = () => {
       amount: string;
     }
   ) => {
+    setShowContactInfo(
+      !!to && isValidAddress(to) && form.getFieldError('to').length <= 0
+    );
     if (!to || !isValidAddress(to)) {
       setEditBtnDisabled(true);
     } else {
@@ -193,7 +203,7 @@ const SendToken = () => {
       setBalanceWarn(null);
     }
     if (
-      new BigNumber(resultAmount).isGreaterThan(
+      new BigNumber(resultAmount || 0).isGreaterThan(
         new BigNumber(currentToken.amount)
       )
     ) {
@@ -220,8 +230,11 @@ const SendToken = () => {
       ...values,
       amount: '',
     });
-    setCurrentToken(token);
     setTokenSelectorVisible(false);
+    setCurrentToken(token);
+    setBalanceError(null);
+    setBalanceWarn(null);
+    tokenInputRef.current?.focus();
   };
 
   const handleTokenSelectorClose = () => {
@@ -232,9 +245,19 @@ const SendToken = () => {
     setTokenSelectorVisible(true);
   };
 
+  const sortTokensByPrice = (tokens: TokenItem[]) => {
+    const copy = cloneDeep(tokens);
+    return copy.sort((a, b) => {
+      return new BigNumber(b.amount)
+        .times(new BigNumber(b.price || 0))
+        .minus(new BigNumber(a.amount).times(new BigNumber(a.price || 0)))
+        .toNumber();
+    });
+  };
+
   const sortTokens = (condition: 'common' | 'all', tokens: TokenItem[]) => {
+    const copy = cloneDeep(tokens);
     if (condition === 'common') {
-      const copy = cloneDeep(tokens);
       return copy.sort((a, b) => {
         if (a.is_core && !b.is_core) {
           return -1;
@@ -246,7 +269,7 @@ const SendToken = () => {
         return 0;
       });
     } else {
-      return tokens;
+      return copy;
     }
   };
 
@@ -268,13 +291,18 @@ const SendToken = () => {
   const handleLoadTokens = async (q?: string) => {
     let tokens: TokenItem[] = [];
     if (q) {
-      tokens = await wallet.openapi.searchToken(currentAccount.address, q);
+      tokens = sortTokensByPrice(
+        await wallet.openapi.searchToken(currentAccount.address, q)
+      );
     } else {
       if (originTokenList.length > 0) {
         tokens = originTokenList;
       } else {
-        tokens = await wallet.openapi.listToken(currentAccount.address);
+        tokens = sortTokensByPrice(
+          await wallet.openapi.listToken(currentAccount.address)
+        );
         setOriginTokenList(tokens);
+        setIsListLoading(false);
       }
     }
     setTokens(sortTokens('common', tokens));
@@ -283,9 +311,6 @@ const SendToken = () => {
     );
     if (existCurrentToken) {
       setCurrentToken(existCurrentToken);
-    }
-    if (isLoading) {
-      setIsLoading(false);
     }
   };
 
@@ -314,21 +339,29 @@ const SendToken = () => {
     }
   };
 
-  useEffect(() => {
-    const lastTimeSendToken = wallet.getLastTimeSendToken(
-      currentAccount.address
+  const loadCurrentToken = async (token: TokenItem) => {
+    const t = await wallet.openapi.getToken(
+      currentAccount.address,
+      token.chain,
+      token.id
     );
-    if (lastTimeSendToken) {
-      setCurrentToken(lastTimeSendToken);
-    }
+    setCurrentToken(t);
+    setIsLoading(false);
+  };
+
+  useEffect(() => {
+    let needLoadToken = currentToken;
     if (wallet.hasPageStateCache()) {
       const cache = wallet.getPageStateCache();
       if (cache?.path === history.location.pathname) {
         if (cache.states.values) form.setFieldsValue(cache.states.values);
-        if (cache.states.currentToken)
+        if (cache.states.currentToken) {
           setCurrentToken(cache.states.currentToken);
+          needLoadToken = cache.states.currentToken;
+        }
       }
     }
+    loadCurrentToken(needLoadToken);
     return () => {
       wallet.clearPageStateCache();
     };
@@ -362,25 +395,29 @@ const SendToken = () => {
           <div className="section-title">
             <span className="section-title__to">{t('To')}</span>
             <div className="flex flex-1 justify-end items-center">
-              <div
-                className={clsx('contact-info', { disabled: editBtnDisabled })}
-                onClick={handleEditContact}
-              >
-                {contactInfo ? (
-                  <>
-                    <img src={IconEdit} className="icon icon-edit" />
-                    <span>{contactInfo.name}</span>
-                  </>
-                ) : (
-                  <>
-                    <SvgIconPlusPrimary
-                      className="icon icon-add"
-                      fill="#8697FF"
-                    />
-                    <span>{t('Add contact')}</span>
-                  </>
-                )}
-              </div>
+              {showContactInfo && (
+                <div
+                  className={clsx('contact-info', {
+                    disabled: editBtnDisabled,
+                  })}
+                  onClick={handleEditContact}
+                >
+                  {contactInfo ? (
+                    <>
+                      <img src={IconEdit} className="icon icon-edit" />
+                      <span>{contactInfo.name}</span>
+                    </>
+                  ) : (
+                    <>
+                      <SvgIconPlusPrimary
+                        className="icon icon-add"
+                        fill="#8697FF"
+                      />
+                      <span>{t('Add contact')}</span>
+                    </>
+                  )}
+                </div>
+              )}
               <img
                 className="icon icon-contact"
                 src={IconContact}
@@ -413,11 +450,10 @@ const SendToken = () => {
         <div className="section">
           <div className="section-title flex justify-between">
             <div className="token-balance" onClick={handleClickTokenBalance}>
-              {t('Balance')}:{' '}
               {isLoading ? (
-                <Skeleton.Input active style={{ width: 50 }} />
+                <Skeleton.Input active style={{ width: 100 }} />
               ) : (
-                formatTokenAmount(currentToken.amount, 8)
+                `${t('Balance')} ${formatTokenAmount(currentToken.amount, 8)}`
               )}
             </div>
             {balanceError || balanceWarn ? (
@@ -444,7 +480,7 @@ const SendToken = () => {
             </div>
             <div className="right">
               <Form.Item name="amount">
-                <Input />
+                <Input ref={tokenInputRef} />
               </Form.Item>
             </div>
             <TokenSelector
@@ -454,8 +490,10 @@ const SendToken = () => {
               onCancel={handleTokenSelectorClose}
               onSearch={handleLoadTokens}
               onSort={handleSort}
+              isLoading={isListLoading}
             />
           </div>
+          <div className="token-info__header" />
           <div className="token-info">
             {!isNativeToken ? (
               <div className="section-field">

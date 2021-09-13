@@ -1,3 +1,5 @@
+@import '../../style/var.less';
+
 .token-selector {
   padding-bottom: 0;
   .ant-modal-body {
@@ -17,6 +19,9 @@
       padding: 12px;
       border-radius: 6px;
       border: none;
+      .ant-input {
+        border-radius: 0;
+      }
     }
   }
   .token-sort {
@@ -45,13 +50,13 @@
   .token-list {
     position: relative;
     background-color: #fff;
-    padding: 0 16px;
     height: 417px;
     overflow-y: auto;
     margin: 0;
     li {
       display: flex;
       cursor: pointer;
+      padding: 0 16px;
       & > div {
         &:nth-child(1) {
           width: 150px;
@@ -105,6 +110,11 @@
     .token-list__item {
       height: 44px;
       align-items: center;
+      border: 1px solid transparent;
+      transition: border-color .3s;
+      &:hover {
+        border-color: #8697FF;
+      }
     }
     &.empty {
       height: 317px;
@@ -112,8 +122,15 @@
         position: absolute;
         top: 50%;
         left: 50%;
-        margin-top: -50px;
-        margin-left: -50px;
+        transform: translate(-50%, -50%);
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        .icon-loading {
+          width: 28px;
+          height: 28px;
+          animation: spining 1s linear infinite;
+        }
         .no-data-image {
           width: 100px;
           height: 100px;
