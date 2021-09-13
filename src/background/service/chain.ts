@@ -40,7 +40,12 @@ class ChainService {
   syncNewChains = () => {
     if (!this.store) return;
 
-    const needAdd = [CHAINS_ENUM.AVAX, CHAINS_ENUM.OP, CHAINS_ENUM.ARBITRUM];
+    const needAdd = [
+      CHAINS_ENUM.AVAX,
+      CHAINS_ENUM.OP,
+      CHAINS_ENUM.ARBITRUM,
+      CHAINS_ENUM.CELO,
+    ];
 
     for (let i = 0; i < needAdd.length; i++) {
       if (this.store.enableChains.includes(needAdd[i])) {
