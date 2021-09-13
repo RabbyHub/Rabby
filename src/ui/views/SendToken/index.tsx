@@ -255,6 +255,7 @@ const SendToken = () => {
   };
 
   const handleClickTokenBalance = () => {
+    if (isLoading) return;
     const values = form.getFieldsValue();
     const newValues = {
       ...values,

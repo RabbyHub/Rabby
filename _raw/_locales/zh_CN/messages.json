@@ -872,5 +872,8 @@
   },
   "Allow": {
     "message": "同意"
+  },
+  "No__contacts": {
+    "message": "无可用联系人"
   }
 }

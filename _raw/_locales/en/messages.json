@@ -875,5 +875,8 @@
   },
   "Allow": {
     "message": "Allow"
+  },
+  "No__contacts": {
+    "message": "No contacts"
   }
 }
