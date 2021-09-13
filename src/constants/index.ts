@@ -19,6 +19,8 @@ import IconOPLogo from 'ui/assets/chain-logos/op.svg';
 import IconOPWhiteLogo from 'ui/assets/chain-logos/op-white.svg';
 import IconAvaxLogo from 'ui/assets/chain-logos/avax.svg';
 import IconAvaxWhiteLogo from 'ui/assets/chain-logos/avax-white.svg';
+import IconCeloLogo from 'ui/assets/chain-logos/celo.svg';
+import IconCeloWhiteLogo from 'ui/assets/chain-logos/celo-white.svg';
 import IconEN from 'ui/assets/langs/en.svg';
 import IconZH from 'ui/assets/langs/zh_cn.svg';
 
@@ -33,6 +35,7 @@ export enum CHAINS_ENUM {
   ARBITRUM = 'ARBITRUM',
   AVAX = 'AVAX',
   OP = 'OP',
+  CELO = 'CELO',
 }
 
 export const CHAINS: Record<string, Chain> = {
@@ -156,6 +159,18 @@ export const CHAINS: Record<string, Chain> = {
     whiteLogo: IconOPWhiteLogo,
     hex: '0xa',
     scanLink: 'https://optimistic.etherscan.io/tx/_s_',
+  },
+  [CHAINS_ENUM.CELO]: {
+    id: 42220,
+    serverId: 'celo',
+    network: '42220',
+    name: 'Celo',
+    nativeTokenSymbol: 'CELO',
+    enum: CHAINS_ENUM.CELO,
+    logo: IconCeloLogo,
+    whiteLogo: IconCeloWhiteLogo,
+    hex: '0xa4ec',
+    scanLink: 'https://explorer.celo.org/tx/_s_',
   },
 };
 
