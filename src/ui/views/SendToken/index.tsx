@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef, MutableRefObject } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import ClipboardJS from 'clipboard';
 import clsx from 'clsx';
 import BigNumber from 'bignumber.js';
