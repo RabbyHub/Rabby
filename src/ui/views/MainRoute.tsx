@@ -28,6 +28,7 @@ import TransactionHistory from './TransactionHistory';
 import QRCodeReader from './QRCodeReader';
 import AdvancedSettings from './AdvanceSettings';
 import RequestPermission from './RequestPermission';
+import SendToken from './SendToken';
 
 ReactGA.initialize('UA-199755108-1');
 // eslint-disable-next-line @typescript-eslint/no-empty-function
@@ -132,6 +133,9 @@ const Main = () => {
         </PrivateRoute>
         <PrivateRoute exact path="/request-permission">
           <RequestPermission />
+        </PrivateRoute>
+        <PrivateRoute exact path="/send-token">
+          <SendToken />
         </PrivateRoute>
       </Switch>
     </>

@@ -1,0 +1,74 @@
+.edit-contact-modal {
+  .address-viewer-text.normal {
+    color: #5A6066;
+    font-size: 14px;
+    line-height: 16px;
+  }
+  .ant-input-affix-wrapper {
+    padding: 15px 16px;
+    border-radius: 6px;
+    &::before {
+      display: none;
+    }
+  }
+  .ant-input {
+    font-weight: 500;
+    font-size: 15px;
+    line-height: 18px;
+    color: #161819;
+    border-radius: 0;
+  }
+  
+  .remove-btn {
+    display: flex;
+    justify-content: center;
+    .ant-btn-link {
+      padding: 0;
+      height: auto;
+      margin-top: 16px;
+      span {
+        font-weight: normal;
+        font-size: 12px;
+        line-height: 14px;
+        text-decoration-line: underline;
+        color: #707880;
+      }
+      &::before {
+        display: none;
+      }
+    }
+  }
+}
+
+.list-contact-modal {
+  .ant-modal-body {
+    height: 431px;
+  }
+  .no-contact {
+    margin-top: 96px;
+    .no-data-image {
+      width: 156px;
+      margin: 0 auto 32px auto;
+    }
+  }
+  .contact-info {
+    p {
+      &:nth-child(1) {
+        font-weight: 500;
+        font-size: 15px;
+        line-height: 18px;
+        color: #161819;
+        margin-bottom: 4px;
+      }
+      &:nth-child(2) {
+        margin-bottom: 0;
+        .address-viewer-text.normal {
+          font-size: 12px;
+          line-height: 14px;
+          color: #707880;
+          font-weight: normal;
+        }
+      }
+    }
+  }
+}

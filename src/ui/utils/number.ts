@@ -1,3 +1,5 @@
+import BigNumber from 'bignumber.js';
+
 export const splitNumberByStep = (
   num: number | string,
   step = 3,
@@ -17,4 +19,15 @@ export const splitNumberByStep = (
     return `${int}.${float}`;
   }
   return int;
+};
+
+export const formatTokenAmount = (amount: number, decimals = 4) => {
+  if (!amount) return '0';
+  const bn = new BigNumber(amount);
+  const str = bn.toFixed();
+  const split = str.split('.');
+  if (!split[1] || split[1].length < decimals) {
+    return splitNumberByStep(bn.toFixed());
+  }
+  return splitNumberByStep(bn.toFixed(decimals));
 };

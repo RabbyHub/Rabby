@@ -1,7 +1,7 @@
 import cloneDeep from 'lodash/cloneDeep';
 import { createPersistStore } from 'background/utils';
 import { keyringService, sessionService, i18n } from './index';
-import { TotalBalanceResponse } from './openapi';
+import { TotalBalanceResponse, TokenItem } from './openapi';
 import { HARDWARE_KEYRING_TYPES } from 'consts';
 import { browser } from 'webextension-polyfill-ts';
 
@@ -21,6 +21,7 @@ interface PreferenceStore {
   locale: string;
   watchAddressPreference: Record<string, number>;
   isDefaultWallet: boolean;
+  lastTimeSendToken: Record<string, TokenItem>;
 }
 
 const SUPPORT_LOCALES = ['en', 'zh_CN'];
@@ -47,6 +48,7 @@ class PreferenceService {
         locale: defaultLang,
         watchAddressPreference: {},
         isDefaultWallet: false,
+        lastTimeSendToken: {},
       },
     });
     if (!this.store.locale) {
@@ -59,6 +61,22 @@ class PreferenceService {
     ) {
       this.store.isDefaultWallet = true;
     }
+    if (!this.store.lastTimeSendToken) {
+      this.store.lastTimeSendToken = {};
+    }
+  };
+
+  getLastTimeSendToken = (address: string) => {
+    const key = address.toLowerCase();
+    return this.store.lastTimeSendToken[key];
+  };
+
+  setLastTimeSendToken = (address: string, token: TokenItem) => {
+    const key = address.toLowerCase();
+    this.store.lastTimeSendToken = {
+      ...this.store.lastTimeSendToken,
+      [key]: token,
+    };
   };
 
   setIsDefaultWallet = (val: boolean) => {

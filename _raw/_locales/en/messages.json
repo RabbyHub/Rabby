@@ -801,6 +801,69 @@
   "CameraPermission2": {
     "message": "Open Rabby and try import again"
   },
+  "From": {
+    "message": "From"
+  },
+  "To": {
+    "message": "To"
+  },
+  "Enter__the__address": {
+    "message": "Enter address"
+  },
+  "This__address__is__invalid": {
+    "message": "This address is invalid"
+  },
+  "Balance": {
+    "message": "Balance"
+  },
+  "Contract__Address": {
+    "message": "Contract Address"
+  },
+  "Chain": {
+    "message": "Chain"
+  },
+  "Price": {
+    "message": "Price"
+  },
+  "Add__contact": {
+    "message": "Add contact"
+  },
+  "Select__a__token": {
+    "message": "Select a token"
+  },
+  "Search__name__or__paste__address": {
+    "message": "Search name or paste address"
+  },
+  "Common": {
+    "message": "Common"
+  },
+  "All": {
+    "message": "All"
+  },
+  "Token": {
+    "message": "Token"
+  },
+  "No__Tokens": {
+    "message": "No Tokens"
+  },
+  "Edit__address__memo": {
+    "message": "Edit address memo"
+  },
+  "Add__address__memo": {
+    "message": "Add address memo"
+  },
+  "Remove__from__Contacts": {
+    "message": "Remove from Contacts"
+  },
+  "Contacts": {
+    "message": "Contacts"
+  },
+  "Gas__fee__reservation__required": {
+    "message": "Gas fee reservation required"
+  },
+  "Insufficient__balance": {
+    "message": "Insufficient balance"
+  },
   "AllowRabbyPermissionsTitle": {
     "message": "Allow Rabby permissions to:"
   },
@@ -812,5 +875,11 @@
   },
   "Allow": {
     "message": "Allow"
+  },
+  "No__contacts": {
+    "message": "No contacts"
+  },
+  "Loading__Tokens": {
+    "message": "Loading Tokens..."
   }
 }

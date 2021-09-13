@@ -798,6 +798,69 @@
   "CameraPermission2": {
     "message": "打开 Rabby 并再次导入"
   },
+  "From": {
+    "message": "From"
+  },
+  "To": {
+    "message": "To"
+  },
+  "Enter__the__address": {
+    "message": "输入地址"
+  },
+  "This__address__is__invalid": {
+    "message": "地址格式不正确"
+  },
+  "Balance": {
+    "message": "余额"
+  },
+  "Contract__Address": {
+    "message": "合约地址"
+  },
+  "Chain": {
+    "message": "链"
+  },
+  "Price": {
+    "message": "价格"
+  },
+  "Add__contact": {
+    "message": "添加联系人"
+  },
+  "Select__a__token": {
+    "message": "选择 Token"
+  },
+  "Search__name__or__paste__address": {
+    "message": "搜索 token 名称或地址"
+  },
+  "Common": {
+    "message": "常用"
+  },
+  "All": {
+    "message": "全部"
+  },
+  "Token": {
+    "message": "Token"
+  },
+  "No__Tokens": {
+    "message": "无可用 Token"
+  },
+  "Edit__address__memo": {
+    "message": "修改地址备注"
+  },
+  "Add__address__memo": {
+    "message": "添加地址备注"
+  },
+  "Remove__from__Contacts": {
+    "message": "从联系人中删除"
+  },
+  "Contacts": {
+    "message": "联系人"
+  },
+  "Gas__fee__reservation__required": {
+    "message": "需要预留 Gas 费用"
+  },
+  "Insufficient__balance": {
+    "message": "余额不足"
+  },
   "AllowRabbyPermissionsTitle": {
     "message": "允许 Rabby 使用权限:"
   },
@@ -809,5 +872,11 @@
   },
   "Allow": {
     "message": "同意"
+  },
+  "No__contacts": {
+    "message": "无可用联系人"
+  },
+  "Loading__Tokens": {
+    "message": "加载中..."
   }
 }

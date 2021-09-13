@@ -23,6 +23,7 @@ import {
   preferenceService,
   transactionWatchService,
   transactionHistoryService,
+  pageStateCacheService,
   i18n,
 } from 'background/service';
 import { notification } from 'background/webapi';
@@ -37,6 +38,7 @@ interface ApprovalRes extends Tx {
   type?: string;
   address?: string;
   uiRequestComponent?: string;
+  isSend?: boolean;
 }
 
 interface Web3WalletPermission {
@@ -218,6 +220,9 @@ class ProviderController extends BaseController {
       approvalRes,
     } = cloneDeep(options);
     const keyring = await this._checkAddress(txParams.from);
+    const isSend = !!txParams.isSend;
+    delete txParams.isSend;
+    delete approvalRes.isSend;
     delete approvalRes.address;
     delete approvalRes.type;
     delete approvalRes.uiRequestComponent;
@@ -238,6 +243,9 @@ class ProviderController extends BaseController {
         chainId: Number(approvalRes.chainId),
         nonce: Number(approvalRes.nonce),
       });
+      if (isSend) {
+        pageStateCacheService.clear();
+      }
       transactionHistoryService.addTx(
         {
           rawTx: approvalRes,

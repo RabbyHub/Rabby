@@ -9,26 +9,34 @@ import IconNormal from 'ui/assets/keyring-normal.svg';
 import IconHardware from 'ui/assets/hardware-white.svg';
 import IconWatch from 'ui/assets/watch-white.svg';
 
-const getAccountIcon = (type: string) => {
-  switch (type) {
-    case HARDWARE_KEYRING_TYPES.Ledger.type:
-    case HARDWARE_KEYRING_TYPES.Trezor.type:
-    case HARDWARE_KEYRING_TYPES.Onekey.type:
-      return IconHardware;
-    case KEYRING_TYPE.HdKeyring:
-    case KEYRING_TYPE.SimpleKeyring:
-      return IconNormal;
-    case KEYRING_TYPE.WatchAddressKeyring:
-      return IconWatch;
-    default:
-      return IconNormal;
-  }
-};
-
-const AccountCard = () => {
+const AccountCard = ({
+  icons,
+}: {
+  icons?: {
+    normal: string;
+    hardware: string;
+    watch: string;
+  };
+}) => {
   const { t } = useTranslation();
   const wallet = useWallet();
   const currentAccount = wallet.syncGetCurrentAccount();
+
+  const getAccountIcon = (type: string) => {
+    switch (type) {
+      case HARDWARE_KEYRING_TYPES.Ledger.type:
+      case HARDWARE_KEYRING_TYPES.Trezor.type:
+      case HARDWARE_KEYRING_TYPES.Onekey.type:
+        return icons?.hardware || IconHardware;
+      case KEYRING_TYPE.HdKeyring:
+      case KEYRING_TYPE.SimpleKeyring:
+        return icons?.normal || IconNormal;
+      case KEYRING_TYPE.WatchAddressKeyring:
+        return icons?.watch || IconWatch;
+      default:
+        return icons?.normal || IconNormal;
+    }
+  };
 
   if (!currentAccount) return <></>;
 

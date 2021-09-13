@@ -8,4 +8,5 @@ export { default as openapiService } from './openapi';
 export { default as transactionWatchService } from './transactionWatcher';
 export { default as pageStateCacheService } from './pageStateCache';
 export { default as transactionHistoryService } from './transactionHistory';
+export { default as contactBookService } from './contactBook';
 export { default as i18n } from './i18n';

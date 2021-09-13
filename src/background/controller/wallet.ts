@@ -12,7 +12,9 @@ import {
   openapiService,
   pageStateCacheService,
   transactionHistoryService,
+  contactBookService,
 } from 'background/service';
+import { ContactBookItem } from '../service/contactBook';
 import { openIndexPage } from 'background/webapi/tab';
 import { CacheState } from 'background/service/pageStateCache';
 import i18n from 'background/service/i18n';
@@ -21,7 +23,7 @@ import BaseController from './base';
 import { CHAINS_ENUM, CHAINS, INTERNAL_REQUEST_ORIGIN } from 'consts';
 import { Account } from '../service/preference';
 import { ConnectedSite } from '../service/permission';
-import { ExplainTxResponse } from '../service/openapi';
+import { ExplainTxResponse, TokenItem } from '../service/openapi';
 import DisplayKeyring from '../service/keyring/display';
 import provider from './provider';
 
@@ -34,8 +36,8 @@ export class WalletController extends BaseController {
   verifyPassword = (password: string) =>
     keyringService.verifyPassword(password);
 
-  sendRequest = (data) =>
-    provider({
+  sendRequest = (data) => {
+    return provider({
       data,
       session: {
         name: 'Rabby',
@@ -43,6 +45,7 @@ export class WalletController extends BaseController {
         icon: './images/icon-128.png',
       },
     });
+  };
 
   getApproval = notificationService.getApproval;
   resolveApproval = notificationService.resolveApproval;
@@ -92,6 +95,11 @@ export class WalletController extends BaseController {
 
   getLocale = () => preferenceService.getLocale();
   setLocale = (locale: string) => preferenceService.setLocale(locale);
+
+  getLastTimeSendToken = (address: string) =>
+    preferenceService.getLastTimeSendToken(address);
+  setLastTimeSendToken = (address: string, token: TokenItem) =>
+    preferenceService.setLastTimeSendToken(address, token);
 
   /* chains */
   getSupportChains = () => chainService.getSupportChains();
@@ -433,6 +441,19 @@ export class WalletController extends BaseController {
 
     throw ethErrors.rpc.internal(`No ${type} keyring found`);
   }
+
+  addContact = (data: ContactBookItem) => {
+    contactBookService.addContact(data);
+  };
+  updateContact = (data: ContactBookItem) => {
+    contactBookService.updateContact(data);
+  };
+  removeContact = (address: string) => {
+    contactBookService.removeContact(address);
+  };
+  listContact = () => contactBookService.listContacts();
+  getContactByAddress = (address: string) =>
+    contactBookService.getContactByAddress(address);
 
   private async _setCurrentAccountFromKeyring(keyring, index = 0) {
     const accounts = await keyring.getAccounts();

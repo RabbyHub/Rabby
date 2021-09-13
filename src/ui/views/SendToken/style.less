@@ -1,0 +1,224 @@
+@import '../../style/var.less';
+
+.send-token {
+  .page();
+  padding: 0 16px 20px;
+  position: relative;
+  .section {
+    padding: 14px 12px;
+    background-color: #fff;
+    border-radius: 6px;
+    margin-bottom: 12px;
+    .section-title {
+      display: flex;
+      font-size: 12px;
+      line-height: 14px;
+      color: #707880;
+      margin-bottom: 8px;
+      .token-balance {
+        display: flex;
+        align-items: center;
+        text-decoration: underline;
+        cursor: pointer;
+      }
+    }
+  }
+  .account-card {
+    height: 36px;
+    padding: 0;
+    background: rgba(134, 151, 255, .1);
+    border-radius: 4px;
+    .title {
+      display: none;
+    }
+    .icon-account {
+      width: 18px;
+      height: 18px;
+      path {
+        fill: #8697FF;
+      }
+    }
+    .account-detail {
+      height: 36px;
+      width: 100%;
+      padding: 10px 12px;
+      .address-viewer-text, .amount {
+        color: #8697FF;
+        font-size: 13px;
+        line-height: 15px;
+        font-weight: 500;
+      }
+    }
+  }
+  .ant-input {
+    border: 1px solid transparent;
+    background: #F6F7F9;
+    border-radius: 4px;
+    padding: 10px 12px;
+    font-weight: 500;
+    font-size: 13px;
+    line-height: 15px;
+    color: #161819;
+  }
+  .ant-form-item {
+    margin: 0;
+    &.ant-form-item-has-error {
+      .ant-input {
+        border-color: #F24822 !important;
+        &:hover {
+          border: 1px solid #F24822;
+        }
+      }
+    }
+  }
+  .ant-form-item-has-error .ant-input:hover {
+    background: #F6F7F9;
+  }
+  .ant-form-item-explain, .ant-form-item-extra {
+    min-height: auto;
+  }
+  .section-title__to {
+    line-height: 24px;
+  }
+  .contact-info {
+    display: flex;
+    align-items: center;
+    padding: 3px 6px;
+    border: 0.5px solid rgba(134, 151, 255, 0.5);
+    border-radius: 2px;
+    color: #8697FF;
+    font-size: 12px;
+    line-height: 14px;
+    cursor: pointer;
+    background-color: transparent;
+    transition: background-color .3s;
+    .icon {
+      width: 16px;
+      height: 16px;
+      margin-right: 4px;
+    }
+    &:hover {
+      background-color: rgba(134, 151, 255, 0.1);
+    }
+    &.disabled {
+      opacity: 0.5;
+      cursor: default;
+      &:hover {
+        background-color: transparent;
+      }
+    }
+  }
+  .icon-contact {
+    width: 20px;
+    height: 20px;
+    margin-left: 12px;
+    cursor: pointer;
+  }
+  .token-input {
+    padding: 14px 12px;
+    background: #F6F7F9;
+    border-radius: 4px;
+    font-weight: 500;
+    font-size: 15px;
+    line-height: 18px;
+    color: #161819;
+    display: flex;
+    margin-bottom: 6px;
+    .left {
+      display: flex;
+      align-items: center;
+      position: relative;
+      cursor: pointer;
+      padding-right: 12px;
+      .token-input__symbol {
+        width: 50px;
+        margin-left: 8px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .icon-arrow-down {
+        width: 12px;
+        height: 12px;
+      }
+      &::after {
+        content: '';
+        background-color: #D8DFEB;
+        width: 0.5px;
+        height: 32px;
+        position: absolute;
+        right: 0;
+        top: 50%;
+        margin-top: -16px;
+      }
+    }
+    .right {
+      flex: 1;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      .ant-input {
+        padding: 0;
+        text-align: right;
+        font-weight: 500;
+        font-size: 15px;
+        line-height: 18px;
+        border-radius: 0;
+      }
+    }
+  }
+  .token-info__header {
+    width: 100%;
+    height: 15px;
+    background: url(../../assets/arrow-container-header.svg);
+    background-size: cover;
+    background-repeat: no-repeat;
+    z-index: 0;
+    transform: translateY(6px);
+  }
+  .token-info {
+    background: #FAFAFB;
+    border: 1px solid #D8DFEB;
+    border-radius: 4px;
+    padding: 12px;
+    border-top: none;
+    position: relative;
+    z-index: 1;
+    .section-field {
+      display: flex;
+      justify-content: space-between;
+      font-size: 12px;
+      line-height: 14px;
+      color: rgba(112, 120, 128, .6);
+      margin-bottom: 8px;
+      .address-viewer-text.normal {
+        font-size: 12px;
+        line-height: 14px;
+        color: rgba(112, 120, 128, .6);
+        font-weight: normal;
+        margin-right: 0;
+      }
+      .icon-copy {
+        width: 14px;
+        height: 14px;
+        margin-left: 6px;
+        cursor: pointer;
+      }
+      &:nth-last-child(1) {
+        margin-bottom: 0;
+      }
+    }
+  }
+  .balance-error {
+    font-size: 12px;
+    line-height: 14px;
+    color: #F24822;
+    text-align: right;
+  }
+  .footer {
+    position: absolute;
+    bottom: 32px;
+    left: 0;
+    width: 100%;
+  }
+}

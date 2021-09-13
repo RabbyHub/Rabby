@@ -66,6 +66,7 @@
     "stream-browserify": "^3.0.0",
     "trezor-connect": "^8.1.26",
     "util": "^0.12.3",
+    "web3-eth-abi": "^1.5.2",
     "web3-utils": "^1.3.6",
     "webextension-polyfill-ts": "^0.25.0"
   },
