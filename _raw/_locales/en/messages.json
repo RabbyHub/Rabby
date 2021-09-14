@@ -881,5 +881,8 @@
   },
   "Loading__Tokens": {
     "message": "Loading Tokens..."
+  },
+  "Added to Contact": {
+    "message": "联系人已添加"
   }
 }

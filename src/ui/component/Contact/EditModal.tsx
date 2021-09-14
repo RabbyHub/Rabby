@@ -1,9 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Modal, Input, Button, Form } from 'antd';
+import { Modal, Input, Button, Form, message } from 'antd';
 import { useWallet } from 'ui/utils';
 import { AddressViewer } from '..';
 import { ContactBookItem } from 'background/service/contactBook';
+import IconSuccess from 'ui/assets/success.svg';
 import './style.less';
 
 interface EditModalProps {
@@ -38,6 +39,11 @@ const EditModal = ({
       wallet.addContact({
         address,
         name,
+      });
+      message.success({
+        icon: <img src={IconSuccess} className="icon icon-success" />,
+        content: t('Added to Contact'),
+        duration: 1,
       });
     }
     onOk({ address, name });
