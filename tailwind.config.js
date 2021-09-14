@@ -63,6 +63,12 @@ module.exports = {
           lineHeight: '18px',
         },
       ],
+      18: [
+        '18px',
+        {
+          lineHeight: '22px',
+        }
+      ],
       20: '20px',
       24: [
         '24px',
