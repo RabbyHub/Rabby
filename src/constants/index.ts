@@ -226,6 +226,8 @@ export const IS_CHROME = /Chrome\//i.test(navigator.userAgent);
 
 export const IS_FIREFOX = /Firefox\//i.test(navigator.userAgent);
 
+export const IS_LINUX = /linux/i.test(navigator.userAgent);
+
 let chromeVersion: number | null = null;
 
 if (IS_CHROME) {
