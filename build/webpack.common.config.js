@@ -155,6 +155,12 @@ const config = {
       chunks: ['ui'],
       filename: 'index.html',
     }),
+    new HtmlWebpackPlugin({
+      inject: true,
+      template: paths.notificationHtml,
+      chunks: ['background'],
+      filename: 'background.html',
+    }),
     new webpack.ProvidePlugin({
       Buffer: ['buffer', 'Buffer'],
       process: 'process',
