@@ -881,5 +881,8 @@
   },
   "Loading__Tokens": {
     "message": "Loading Tokens..."
+  },
+  "Added__to__Contact": {
+    "message": "Added to Contact"
   }
 }
