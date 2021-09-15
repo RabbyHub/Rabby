@@ -1,6 +1,7 @@
 import { ethErrors } from 'eth-rpc-errors';
 import { EthereumProviderError } from 'eth-rpc-errors/dist/classes';
 import { winMgr } from 'background/webapi';
+import { IS_CHROME, IS_LINUX } from 'consts';
 
 interface Approval {
   data: {
@@ -31,7 +32,17 @@ class NotificationService {
 
     winMgr.event.on('windowFocusChange', (winId: number) => {
       if (this.notifiWindowId && winId !== this.notifiWindowId) {
-        if (process.env.NODE_ENV === 'production') this.rejectApproval();
+        if (process.env.NODE_ENV === 'production') {
+          if (
+            IS_CHROME &&
+            winId === chrome.windows.WINDOW_ID_NONE &&
+            IS_LINUX
+          ) {
+            // Wired issue: When notification popuped, will focus to -1 first then focus on notification
+            return;
+          }
+          this.rejectApproval();
+        }
       }
     });
   }

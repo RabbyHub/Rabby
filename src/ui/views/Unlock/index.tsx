@@ -61,9 +61,9 @@ const Unlock = () => {
             spellCheck={false}
           />
         </Form.Item>
-        <Form.Item>
+        <Form.Item className="mx-28 mt-18">
           <Button
-            className="w-[200px] block mx-auto mt-18"
+            className="w-full block"
             htmlType="submit"
             type="primary"
             size="large"
