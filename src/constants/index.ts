@@ -134,7 +134,7 @@ export const CHAINS: Record<string, Chain> = {
     hex: '0xa4b1',
     network: '42161',
     nativeTokenSymbol: 'ETH',
-    scanLink: 'https://explorer.arbitrum.io/tx/_s_',
+    scanLink: 'https://arbiscan.io/tx/_s_',
   },
   [CHAINS_ENUM.AVAX]: {
     id: 43114,
