@@ -309,6 +309,10 @@ class ProviderController extends BaseController {
     }
   };
 
+  web3ClientVersion = () => {
+    return `Rabby/${process.env.release}`;
+  };
+
   @Reflect.metadata('APPROVAL', [
     'SignText',
     ({
