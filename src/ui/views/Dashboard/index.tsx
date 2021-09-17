@@ -34,15 +34,7 @@ const Dashboard = () => {
   const history = useHistory();
   const wallet = useWallet();
   const { t } = useTranslation();
-  const [currentAccount, setCurrentAccount] = useState<Account | null>(
-    wallet.syncGetCurrentAccount()
-  );
-
-  if (!currentAccount) {
-    history.replace('/no-address');
-    return null;
-  }
-
+  const [currentAccount, setCurrentAccount] = useState<Account | null>(null);
   const [isModalOpen, setModalOpen] = useState(false);
   const [qrcodeVisible, setQrcodeVisible] = useState(false);
   const [pendingTxCount, setPendingTxCount] = useState(0);
@@ -55,16 +47,20 @@ const Dashboard = () => {
 
   const getCurrentAccount = async () => {
     const account = await wallet.getCurrentAccount();
+    if (!account) {
+      history.replace('/no-address');
+      return;
+    }
     setCurrentAccount(account);
   };
 
-  const getPendingTxCount = (address: string) => {
-    const count = wallet.getPendingCount(address);
+  const getPendingTxCount = async (address: string) => {
+    const count = await wallet.getPendingCount(address);
     setPendingTxCount(count);
   };
 
-  const checkIsDefaultWallet = () => {
-    const isDefault = wallet.isDefaultWallet();
+  const checkIsDefaultWallet = async () => {
+    const isDefault = await wallet.isDefaultWallet();
     setIsDefaultWallet(isDefault);
   };
 
@@ -83,7 +79,9 @@ const Dashboard = () => {
   }, []);
 
   useEffect(() => {
-    getPendingTxCount(currentAccount.address);
+    if (currentAccount) {
+      getPendingTxCount(currentAccount.address);
+    }
   }, [currentAccount]);
 
   const handleConfig = () => {
@@ -140,8 +138,9 @@ const Dashboard = () => {
     });
   };
 
-  const handleDefaultWalletChange = () => {
-    setIsDefaultWallet(wallet.isDefaultWallet());
+  const handleDefaultWalletChange = async () => {
+    const isDefault = await wallet.isDefaultWallet();
+    setIsDefaultWallet(isDefault);
   };
 
   const handleShowQrcode = () => {
@@ -152,6 +151,8 @@ const Dashboard = () => {
     (item) => item.type
   );
 
+  if (!currentAccount) return <></>;
+
   return (
     <>
       <div
@@ -160,7 +161,7 @@ const Dashboard = () => {
         <div className="main">
           <div className="flex header items-center">
             {(currentAccount?.type === KEYRING_TYPE.WatchAddressKeyring ||
-              hardwareTypes.includes(currentAccount!.type)) && (
+              hardwareTypes.includes(currentAccount.type)) && (
               <img
                 src={
                   currentAccount?.type === KEYRING_TYPE.WatchAddressKeyring

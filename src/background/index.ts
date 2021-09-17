@@ -80,6 +80,33 @@ restoreAppState();
 browser.runtime.onConnect.addListener((port) => {
   openapiService.getConfig();
 
+  if (
+    port.name === 'popup' ||
+    port.name === 'notification' ||
+    port.name === 'tab'
+  ) {
+    const pm = new PortMessage(port);
+    pm.listen((data) => {
+      if (data?.type) {
+        switch (data.type) {
+          case 'openapi':
+            if (walletController.openapi[data.method]) {
+              return walletController.openapi[data.method].apply(
+                null,
+                data.params
+              );
+            }
+            break;
+          case 'controller':
+          default:
+            if (data.method) {
+              return walletController[data.method].apply(null, data.params);
+            }
+        }
+      }
+    });
+  }
+
   if (port.name === 'popup') {
     preferenceService.setPopupOpen(true);
 

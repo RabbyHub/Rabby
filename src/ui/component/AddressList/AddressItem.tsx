@@ -52,17 +52,17 @@ export const useCurrentBalance = (
   update = false
 ) => {
   const wallet = useWallet();
-  const cache = wallet.getAddressCacheBalance(account);
-  const [balance, setBalance] = useState<number | null>(
-    cache ? cache.total_usd_value : null
-  );
+  const [balance, setBalance] = useState<number | null>(null);
   const [chainBalances, setChainBalances] = useState<
     DisplayChainWithWhiteLogo[]
-  >(
-    cache
-      ? cache.chain_list.filter((item) => item.usd_value > 0).map(formatChain)
-      : []
-  );
+  >([]);
+  wallet.getAddressCacheBalance(account).then((cache) => {
+    setChainBalances(
+      cache
+        ? cache.chain_list.filter((item) => item.usd_value > 0).map(formatChain)
+        : []
+    );
+  });
 
   const [getAddressBalance] = useWalletRequest(wallet.getAddressBalance, {
     onSuccess({ total_usd_value, chain_list }) {
@@ -78,7 +78,7 @@ export const useCurrentBalance = (
 
   const getCurrentBalance = async () => {
     if (!account) return;
-    const cacheData = wallet.getAddressCacheBalance(account);
+    const cacheData = await wallet.getAddressCacheBalance(account);
     if (cacheData) {
       setBalance(cacheData.total_usd_value);
       if (update) {
