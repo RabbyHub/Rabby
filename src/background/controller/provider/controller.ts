@@ -133,6 +133,18 @@ class ProviderController extends BaseController {
     const _account = await this.getCurrentAccount();
     const account = _account ? [_account.address] : [];
     sessionService.broadcastEvent('accountsChanged', account);
+    const connectSite = permissionService.getConnectedSite(origin);
+    if (connectSite) {
+      const chain = CHAINS[connectSite.chain];
+      sessionService.broadcastEvent(
+        'chainChanged',
+        {
+          chain: chain.hex,
+          networkVersion: chain.network,
+        },
+        origin
+      );
+    }
 
     return account;
   };
