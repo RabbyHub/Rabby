@@ -1,5 +1,6 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Account } from 'background/service/preference';
 import { useWallet } from 'ui/utils';
 import { splitNumberByStep } from 'ui/utils/number';
 import { KEYRING_TYPE, HARDWARE_KEYRING_TYPES } from 'consts';
@@ -20,9 +21,9 @@ const AccountCard = ({
 }) => {
   const { t } = useTranslation();
   const wallet = useWallet();
-  const currentAccount = wallet.syncGetCurrentAccount();
+  const [currentAccount, setCurrentAccount] = useState<Account | null>(null);
 
-  const getAccountIcon = (type: string) => {
+  const getAccountIcon = (type: string | undefined) => {
     switch (type) {
       case HARDWARE_KEYRING_TYPES.Ledger.type:
       case HARDWARE_KEYRING_TYPES.Trezor.type:
@@ -38,10 +39,19 @@ const AccountCard = ({
     }
   };
 
-  if (!currentAccount) return <></>;
+  const init = async () => {
+    const account = await wallet.syncGetCurrentAccount();
+    setCurrentAccount(account);
+  };
 
-  const icon = getAccountIcon(currentAccount.type);
-  const [balance] = useCurrentBalance(currentAccount.address);
+  useEffect(() => {
+    init();
+  }, []);
+
+  const [balance] = useCurrentBalance(currentAccount?.address);
+  const icon = getAccountIcon(currentAccount?.type);
+
+  if (!currentAccount) return <></>;
 
   return (
     <div className="account-card">

@@ -24,9 +24,7 @@ const EditModal = ({
 }: EditModalProps) => {
   const { t } = useTranslation();
   const wallet = useWallet();
-  const [name, setName] = useState(
-    isEdit ? wallet.getContactByAddress(address)?.name || '' : ''
-  );
+  const [name, setName] = useState('');
 
   const handleConfirm = () => {
     if (!name) return;
@@ -74,15 +72,31 @@ const EditModal = ({
     setName(value);
   };
 
-  useEffect(() => {
+  const init = async () => {
+    if (isEdit) {
+      const contact = await wallet.getContactByAddress(address);
+      setName(contact.name);
+    }
+  };
+
+  const handleVisibleChange = async () => {
     if (visible) {
       if (isEdit) {
-        setName(wallet.getContactByAddress(address)?.name || '');
+        const contact = await wallet.getContactByAddress(address);
+        setName(contact?.name || '');
       } else {
         setName('');
       }
     }
+  };
+
+  useEffect(() => {
+    handleVisibleChange();
   }, [visible]);
+
+  useEffect(() => {
+    init();
+  }, []);
 
   return (
     <Modal

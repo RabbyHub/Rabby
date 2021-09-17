@@ -18,6 +18,7 @@ export default ({
   showArrow = true,
   className = 'normal',
 }: AddressViewProps) => {
+  console.log('address', address);
   return (
     <div
       className="flex items-center"

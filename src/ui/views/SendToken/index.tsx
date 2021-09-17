@@ -343,24 +343,23 @@ const SendToken = () => {
     }
   };
 
-  const loadCurrentToken = async (token: TokenItem) => {
-    const t = await wallet.openapi.getToken(
-      currentAccount!.address,
-      token.chain,
-      token.id
-    );
+  const loadCurrentToken = async (token: TokenItem, address: string) => {
+    const t = await wallet.openapi.getToken(address, token.chain, token.id);
     setCurrentToken(t);
     setIsLoading(false);
   };
 
   const init = async () => {
     const account = await wallet.syncGetCurrentAccount();
+
     if (!account) {
       history.replace('/');
+      return;
     }
+
     const lastTimeToken = await wallet.getLastTimeSendToken(account.address);
-    console.log(lastTimeToken, account);
     let needLoadToken = lastTimeToken || currentToken;
+
     if (lastTimeToken) setCurrentToken(lastTimeToken);
     setCurrentAccount(account);
     if (await wallet.hasPageStateCache()) {
@@ -373,7 +372,7 @@ const SendToken = () => {
         }
       }
     }
-    loadCurrentToken(needLoadToken);
+    loadCurrentToken(needLoadToken, account.address);
   };
 
   useEffect(() => {
