@@ -32,8 +32,8 @@ const ImportMnemonic = () => {
     },
   });
 
-  const handleLoadCache = () => {
-    const cache = wallet.getPageStateCache();
+  const handleLoadCache = async () => {
+    const cache = await wallet.getPageStateCache();
     if (cache && cache.path === history.location.pathname) {
       form.setFieldsValue(cache.states);
     }
@@ -55,8 +55,12 @@ const ImportMnemonic = () => {
     }
   };
 
+  const init = async () => {
+    if (await wallet.hasPageStateCache()) handleLoadCache();
+  };
+
   useEffect(() => {
-    if (wallet.hasPageStateCache()) handleLoadCache();
+    init();
 
     return () => {
       wallet.clearPageStateCache();

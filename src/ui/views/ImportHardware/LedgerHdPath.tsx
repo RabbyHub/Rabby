@@ -28,9 +28,9 @@ const LedgerHdPath = () => {
       return;
     }
     setSpin(true);
-    const useLedgerLive = wallet.isUseLedgerLive();
+    const useLedgerLive = await wallet.isUseLedgerLive();
     const isSupportWebUSB = await TransportWebUSB.isSupported();
-    const keyring = wallet.connectHardware('LEDGER', currentPath);
+    const keyring = await wallet.connectHardware('LEDGER', currentPath);
     try {
       if (useLedgerLive) {
         await keyring.updateTransportMethod(true);

@@ -37,8 +37,8 @@ const DisplayMnemonic = ({ mnemonics, onNextClick }) => {
   const history = useHistory();
   const { t } = useTranslation();
 
-  const handleBackClick = () => {
-    wallet.removePreMnemonics();
+  const handleBackClick = async () => {
+    await wallet.removePreMnemonics();
     history.replace('/');
   };
 

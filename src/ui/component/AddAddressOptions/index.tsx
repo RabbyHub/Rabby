@@ -22,7 +22,7 @@ const AddAddressOptions = () => {
       leftIcon: IconNewAddress,
       content: t('createAddress'),
       onClick: async () => {
-        if (wallet.checkHasMnemonic()) {
+        if (await wallet.checkHasMnemonic()) {
           await wallet.deriveNewAccountFromMnemonic();
           message.success({
             icon: <img src={IconSuccess} className="icon icon-success" />,
