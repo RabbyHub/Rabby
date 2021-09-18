@@ -61,7 +61,7 @@ const normalizeTxParams = (tx) => {
     copy.gas = normalizeHex(copy.gas);
   }
   if ('value' in copy) {
-    copy.value = addHexPrefix(unpadHexString(copy.value));
+    copy.value = addHexPrefix(unpadHexString(copy.value || '0x0'));
   }
   return copy;
 };
