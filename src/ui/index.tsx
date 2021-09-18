@@ -1,12 +1,13 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { browser } from 'webextension-polyfill-ts';
 import Views from './views';
 import { Message } from '@/utils';
 import { getUITypeName } from 'ui/utils';
+import eventBus from './utils/eventBus';
 import * as Sentry from '@sentry/react';
 import { Integrations } from '@sentry/tracing';
 import i18n, { addResourceBundle } from 'src/i18n';
+import { EVENTS } from 'consts';
 import '../i18n';
 
 import './style/index.less';
@@ -114,6 +115,22 @@ const wallet: Record<string, any> = new Proxy(
     },
   }
 );
+
+portMessageChannel.listen((data) => {
+  console.log('listen', data);
+  if (data.type === 'broadcast') {
+    eventBus.emit(data.method, data.params);
+  }
+});
+
+eventBus.addEventListener(EVENTS.broadcastToBackground, (data) => {
+  console.log(data);
+  portMessageChannel.request({
+    type: 'broadcast',
+    method: data.method,
+    params: data.data,
+  });
+});
 
 wallet.getLocale().then((locale) => {
   addResourceBundle(locale).then(() => {

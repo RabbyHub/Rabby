@@ -5,6 +5,7 @@ import { browser } from 'webextension-polyfill-ts';
 import { ethErrors } from 'eth-rpc-errors';
 import { WalletController } from 'background/controller/wallet';
 import { Message } from 'utils';
+import { EVENTS } from 'consts';
 import { storage } from './webapi';
 import {
   permissionService,
@@ -21,6 +22,7 @@ import {
 import { providerController, walletController } from './controller';
 import i18n from './service/i18n';
 import rpcCache from './utils/rpcCache';
+import eventBus from './utils/eventBus';
 
 const { PortMessage } = Message;
 
@@ -89,6 +91,9 @@ browser.runtime.onConnect.addListener((port) => {
     pm.listen((data) => {
       if (data?.type) {
         switch (data.type) {
+          case 'broadcast':
+            eventBus.emit(data.method, data.params);
+            break;
           case 'openapi':
             if (walletController.openapi[data.method]) {
               return walletController.openapi[data.method].apply(
@@ -105,6 +110,14 @@ browser.runtime.onConnect.addListener((port) => {
         }
       }
     });
+
+    eventBus.addEventListener(EVENTS.broadcastToUI, (data: any) => {
+      pm.request({
+        type: 'broadcast',
+        method: data.method,
+        params: data.params,
+      });
+    });
   }
 
   if (port.name === 'popup') {
@@ -116,6 +129,8 @@ browser.runtime.onConnect.addListener((port) => {
 
     return;
   }
+
+  if (port.name === 'notification' || port.name === 'tab') return;
 
   if (!port.sender?.tab) {
     return;

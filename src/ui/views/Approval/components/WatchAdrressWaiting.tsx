@@ -11,9 +11,11 @@ import {
   CHAINS,
   CHAINS_ENUM,
   WALLETCONNECT_STATUS_MAP,
+  EVENTS,
 } from 'consts';
 import { Tx } from 'background/service/openapi';
 import { useApproval, useWallet, openInTab } from 'ui/utils';
+import eventBus from 'ui/utils/eventBus';
 import WatchKeyring from 'background/service/keyring/eth-watch-keyring';
 import { SvgIconOpenExternal, SvgIconRefresh } from 'ui/assets';
 
@@ -35,7 +37,7 @@ const Scan = ({
   onRefresh(): void;
 }) => {
   const wallet = useWallet();
-  const { address } = wallet.syncGetCurrentAccount()!;
+  const [address, setAddress] = useState<string | null>(null);
   const typeContent = Object.values(WATCH_ADDRESS_TYPE_CONTENT).find(
     (item) => item.id === typeId
   )!;
@@ -44,6 +46,15 @@ const Scan = ({
   const handleRefresh = () => {
     onRefresh();
   };
+
+  const init = async () => {
+    const account = await wallet.syncGetCurrentAccount();
+    setAddress(account.address);
+  };
+
+  useEffect(() => {
+    init();
+  });
 
   return (
     <div className="watchaddress-scan">
@@ -68,7 +79,7 @@ const Scan = ({
           <Trans
             i18nKey="WatchGuideStep2"
             values={{
-              address: `${address.slice(0, 6)}...${address.slice(-4)}`,
+              address: `${address?.slice(0, 6)}...${address?.slice(-4)}`,
               chainName,
             }}
           >
@@ -99,7 +110,7 @@ const Process = ({
   onCancel(): void;
 }) => {
   const wallet = useWallet();
-  const { address } = wallet.syncGetCurrentAccount()!;
+  const [address, setAddress] = useState<null | string>(null);
   const { t } = useTranslation();
   const history = useHistory();
   const handleRetry = () => {
@@ -120,6 +131,7 @@ const Process = ({
   let title = '';
   let titleColor = '';
   let description = <></>;
+
   switch (status) {
     case WALLETCONNECT_STATUS_MAP.CONNECTED:
       image = './images/connection-success.png';
@@ -166,7 +178,7 @@ const Process = ({
                 <Trans
                   i18nKey="ChooseCorrectAddress"
                   values={{
-                    address: `${address.slice(0, 6)}...${address.slice(-4)}`,
+                    address: `${address?.slice(0, 6)}...${address?.slice(-4)}`,
                   }}
                 >
                   Choose <strong>{{ address }}</strong> on your phone
@@ -202,6 +214,16 @@ const Process = ({
       );
       break;
   }
+
+  const init = async () => {
+    const account = await wallet.syncGetCurrentAccount()!;
+    setAddress(account.address);
+  };
+
+  useEffect(() => {
+    init();
+  }, []);
+
   return (
     <div className="watchaddress-process">
       <img src={image} className="watchaddress-process__status" />
@@ -254,21 +276,14 @@ const Process = ({
   );
 };
 
-const WatchAddressWaiting = ({
-  params,
-  // currently doesn't support
-  requestDefer,
-}: {
-  params: ApprovalParams;
-  requestDefer: Promise<any>;
-}) => {
+const WatchAddressWaiting = ({ params }: { params: ApprovalParams }) => {
   const canNotSwitchStatus = [
     WALLETCONNECT_STATUS_MAP.CONNECTED,
     WALLETCONNECT_STATUS_MAP.SIBMITTED,
     WALLETCONNECT_STATUS_MAP.WAITING,
   ];
   const wallet = useWallet();
-  const { address } = wallet.syncGetCurrentAccount()!;
+  const [address, setAddress] = useState<string | null>(null);
   const [connectStatus, setConnectStatus] = useState(
     WALLETCONNECT_STATUS_MAP.PENDING
   );
@@ -276,9 +291,7 @@ const WatchAddressWaiting = ({
     code?: number;
     message?: string;
   }>(null);
-  const [currentType, setCurrentType] = useState(
-    wallet.getWatchAddressPreference(address) || 0
-  );
+  const [currentType, setCurrentType] = useState(0);
   const [qrcodeContent, setQrcodeContent] = useState('');
   const [result, setResult] = useState('');
   const [currentTypeIndex, setCurrentTypeIndex] = useState(
@@ -286,30 +299,21 @@ const WatchAddressWaiting = ({
       (item) => item.id === currentType
     )
   );
-  const keyring: WatchKeyring = wallet.getKeyringByType(
-    KEYRING_TYPE.WatchAddressKeyring
-  );
-  const [approval, resolveApproval, rejectApproval] = useApproval();
+  const [getApproval, resolveApproval, rejectApproval] = useApproval();
   const chain = Object.values(CHAINS).find(
     (item) => item.id === params.chainId
   )!.enum;
   const { t } = useTranslation();
-  const isSignText = approval?.approvalType !== 'SignTx';
-
-  requestDefer
-    .then((data) => {
-      wallet.setWatchAddressPreference(address, currentType);
-      resolveApproval(data, !isSignText);
-    })
-    .catch(rejectApproval);
+  const [isSignText, setIsSignText] = useState(false);
 
   const initWalletConnect = async () => {
-    const connector = keyring.walletConnector;
-    if (connector) {
-      await keyring.initWalletConnect();
-      const connector = keyring.walletConnector!;
-      setQrcodeContent(connector.uri);
-    }
+    eventBus.addEventListener(EVENTS.WALLETCONNECT.INITED, ({ uri }) => {
+      console.log('uri', uri);
+      setQrcodeContent(uri);
+    });
+    eventBus.emit(EVENTS.broadcastToBackground, {
+      method: EVENTS.WALLETCONNECT.INIT,
+    });
   };
 
   const handleCancel = () => {
@@ -336,6 +340,48 @@ const WatchAddressWaiting = ({
     initWalletConnect();
   };
 
+  const init = async () => {
+    const approval = await getApproval();
+    const account = await wallet.syncGetCurrentAccount()!;
+
+    setCurrentType(
+      (await wallet.getWatchAddressPreference(account.address)) || 0
+    );
+    setIsSignText(approval?.approvalType !== 'SignTx');
+    setAddress(account.address);
+    eventBus.addEventListener(EVENTS.SIGN_FINISHED, async (data) => {
+      if (data.success) {
+        await wallet.setWatchAddressPreference(account.address, currentType);
+        resolveApproval(data.data, !isSignText);
+      } else {
+        rejectApproval(data.errorMsg);
+      }
+    });
+
+    eventBus.addEventListener(
+      EVENTS.WALLETCONNECT.STATUS_CHANGED,
+      ({ status, payload }) => {
+        setConnectStatus(status);
+        switch (status) {
+          case WALLETCONNECT_STATUS_MAP.CONNECTED:
+            break;
+          case WALLETCONNECT_STATUS_MAP.FAILD:
+          case WALLETCONNECT_STATUS_MAP.REJECTED:
+            initWalletConnect();
+            if (payload.code) {
+              setConnectError({ code: payload.code });
+            } else {
+              setConnectError((payload.params && payload.params[0]) || payload);
+            }
+            break;
+          case WALLETCONNECT_STATUS_MAP.SIBMITTED:
+            setResult(payload);
+            break;
+        }
+      }
+    );
+  };
+
   useEffect(() => {
     const watchType = Object.values(WATCH_ADDRESS_TYPE_CONTENT).find(
       (item) => item.id === currentType
@@ -346,25 +392,7 @@ const WatchAddressWaiting = ({
   }, [currentType]);
 
   useEffect(() => {
-    keyring.on('statusChange', ({ status, payload }) => {
-      setConnectStatus(status);
-      switch (status) {
-        case WALLETCONNECT_STATUS_MAP.CONNECTED:
-          break;
-        case WALLETCONNECT_STATUS_MAP.FAILD:
-        case WALLETCONNECT_STATUS_MAP.REJECTED:
-          initWalletConnect();
-          if (payload.code) {
-            setConnectError({ code: payload.code });
-          } else {
-            setConnectError((payload.params && payload.params[0]) || payload);
-          }
-          break;
-        case WALLETCONNECT_STATUS_MAP.SIBMITTED:
-          setResult(payload);
-          break;
-      }
-    });
+    init();
   }, []);
 
   return (

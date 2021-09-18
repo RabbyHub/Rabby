@@ -5,7 +5,9 @@ import {
   permissionService,
 } from 'background/service';
 import { PromiseFlow, underline2Camelcase } from 'background/utils';
+import { EVENTS } from 'consts';
 import providerController from './controller';
+import eventBus from '../../utils/eventBus';
 
 const isSignApproval = (type: string) => {
   const SIGN_APPROVALS = ['SignText', 'SignTypedData', 'SignTx'];
@@ -118,10 +120,30 @@ const flow = new PromiseFlow()
       })
     );
 
+    requestDefer
+      .then((result) => {
+        eventBus.emit(EVENTS.broadcastToUI, {
+          method: EVENTS.SIGN_FINISHED,
+          params: {
+            success: true,
+            data: result,
+          },
+        });
+        return result;
+      })
+      .catch((e: any) => {
+        eventBus.emit(EVENTS.broadcastToUI, {
+          method: EVENTS.SIGN_FINISHED,
+          params: {
+            success: false,
+            errorMsg: JSON.stringify(e),
+          },
+        });
+      });
+
     if (uiRequestComponent) {
       return await notificationService.requestApproval({
         approvalComponent: uiRequestComponent,
-        requestDefer,
         params: rest,
         origin,
         approvalType,

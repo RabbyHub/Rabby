@@ -151,47 +151,47 @@ const Dashboard = () => {
     (item) => item.type
   );
 
-  if (!currentAccount) return <></>;
-
   return (
     <>
       <div
         className={clsx('dashboard', { 'metamask-active': !isDefaultWallet })}
       >
         <div className="main">
-          <div className="flex header items-center">
-            {(currentAccount?.type === KEYRING_TYPE.WatchAddressKeyring ||
-              hardwareTypes.includes(currentAccount.type)) && (
+          {currentAccount && (
+            <div className="flex header items-center">
+              {(currentAccount?.type === KEYRING_TYPE.WatchAddressKeyring ||
+                hardwareTypes.includes(currentAccount.type)) && (
+                <img
+                  src={
+                    currentAccount?.type === KEYRING_TYPE.WatchAddressKeyring
+                      ? IconWatch
+                      : IconHardware
+                  }
+                  className="icon icon-account-type"
+                />
+              )}
+              {currentAccount && (
+                <AddressViewer
+                  address={currentAccount.address}
+                  onClick={handleToggle}
+                />
+              )}
+              <IconCopy
+                className={clsx('icon icon-copy', { success: copySuccess })}
+                onClick={handleCopyCurrentAddress}
+              />
+              <IconQrcode
+                className="icon icon-qrcode"
+                onClick={handleShowQrcode}
+              />
+              <div className="flex-1" />
               <img
-                src={
-                  currentAccount?.type === KEYRING_TYPE.WatchAddressKeyring
-                    ? IconWatch
-                    : IconHardware
-                }
-                className="icon icon-account-type"
+                className="icon icon-settings"
+                src={IconSetting}
+                onClick={handleConfig}
               />
-            )}
-            {currentAccount && (
-              <AddressViewer
-                address={currentAccount.address}
-                onClick={handleToggle}
-              />
-            )}
-            <IconCopy
-              className={clsx('icon icon-copy', { success: copySuccess })}
-              onClick={handleCopyCurrentAddress}
-            />
-            <IconQrcode
-              className="icon icon-qrcode"
-              onClick={handleShowQrcode}
-            />
-            <div className="flex-1" />
-            <img
-              className="icon icon-settings"
-              src={IconSetting}
-              onClick={handleConfig}
-            />
-          </div>
+            </div>
+          )}
           <BalanceView currentAccount={currentAccount} />
           <div className="operation">
             <div className="operation-item" onClick={handleGotoSend}>

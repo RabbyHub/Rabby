@@ -1,4 +1,3 @@
-// import openapiService from 'background/service/openapi';
 import { CHAINS } from 'consts';
 
 type CacheState = Map<
@@ -19,21 +18,6 @@ class RpcCache {
 
   async loadBlockNumber() {
     const chainList = Object.values(CHAINS);
-    // const blockNumbers = await Promise.all(
-    //   chainList.map((chain) =>
-    //     openapiService.ethRpc(chain.serverId, {
-    //       method: 'eth_blockNumber',
-    //       params: [],
-    //     })
-    //   )
-    // );
-    // this.latestBlockNumber = blockNumbers.reduce((res, current, index) => {
-    //   const chain = chainList[index];
-    //   return {
-    //     ...res,
-    //     [chain.serverId]: current,
-    //   };
-    // }, {});
     // currently use random number as blockNumber to reduce the heavy burdens of server
     this.latestBlockNumber = chainList.reduce((res, current) => {
       return {
