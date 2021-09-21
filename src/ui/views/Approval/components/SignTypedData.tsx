@@ -104,7 +104,9 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
     if (currentAccount?.type && WaitingSignComponent[currentAccount?.type]) {
       if (currentAccount.type === KEYRING_CLASS.HARDWARE.LEDGER) {
         try {
-          const keyring = wallet.connectHardware(KEYRING_CLASS.HARDWARE.LEDGER);
+          const keyring = await wallet.connectHardware(
+            KEYRING_CLASS.HARDWARE.LEDGER
+          );
           if (keyring.isWebUSB) {
             const transport = await TransportWebUSB.create();
             await transport.close();

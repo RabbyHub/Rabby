@@ -264,7 +264,7 @@ const SignTx = ({ params, origin }) => {
       setSecurityCheckStatus(res.decision);
       setSecurityCheckAlert(res.alert);
       setSecurityCheckDetail(res);
-    } catch (e: any) {
+    } catch (e) {
       const alert = e.message || JSON.stringify(e);
       setSecurityCheckStatus('danger');
       setSecurityCheckAlert(alert);
@@ -332,7 +332,7 @@ const SignTx = ({ params, origin }) => {
         await checkTx(currentAccount!.address);
       }
       setIsReady(true);
-    } catch (e: any) {
+    } catch (e) {
       Modal.error({
         title: t('Error'),
         content: e.message || JSON.stringify(e),
@@ -349,7 +349,7 @@ const SignTx = ({ params, origin }) => {
     const currentAccount = await wallet.getCurrentAccount();
     if (
       currentAccount?.type === KEYRING_CLASS.HARDWARE.LEDGER &&
-      !wallet.isUseLedgerLive()
+      !(await wallet.isUseLedgerLive())
     ) {
       try {
         const keyring = await wallet.connectHardware(
