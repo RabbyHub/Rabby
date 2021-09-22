@@ -453,6 +453,24 @@ class ProviderController extends BaseController {
     return null;
   };
 
+  @Reflect.metadata('APPROVAL', [
+    'AddChain',
+    ({
+      data: {
+        params: [chainParams],
+      },
+      session: { origin },
+    }) => {
+      return (
+        chainService
+          .getEnabledChains()
+          .some((chain) => chain.hex === chainParams.chainId) &&
+        CHAINS[permissionService.getConnectedSite(origin)!.chain]?.hex ===
+          chainParams.chainId
+      );
+    },
+    { height: 390 },
+  ])
   walletSwitchEthereumChain = this.walletAddEthereumChain;
 
   walletRequestPermissions = ({ data: { params: permissions } }) => {
@@ -482,6 +500,10 @@ class ProviderController extends BaseController {
       data,
       sig,
     });
+  };
+
+  netListening = () => {
+    return true;
   };
 
   private _checkAddress = async (address) => {

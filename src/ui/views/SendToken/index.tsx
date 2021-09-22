@@ -183,9 +183,7 @@ const SendToken = () => {
       amount: string;
     }
   ) => {
-    setShowContactInfo(
-      !!to && isValidAddress(to) && form.getFieldError('to').length <= 0
-    );
+    setShowContactInfo(!!to && isValidAddress(to));
     if (!to || !isValidAddress(to)) {
       setEditBtnDisabled(true);
     } else {
@@ -221,7 +219,7 @@ const SendToken = () => {
     });
     setCacheAmount(resultAmount);
     const addressContact = await wallet.getContactByAddress(to);
-    if (!contactInfo && addressContact) {
+    if (addressContact) {
       setContactInfo(addressContact);
     } else if (!addressContact && contactInfo) {
       setContactInfo(null);

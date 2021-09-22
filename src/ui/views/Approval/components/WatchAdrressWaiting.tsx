@@ -301,7 +301,7 @@ const WatchAddressWaiting = ({ params }: { params: ApprovalParams }) => {
   );
   const [getApproval, resolveApproval, rejectApproval] = useApproval();
   const chain = Object.values(CHAINS).find(
-    (item) => item.id === params.chainId
+    (item) => item.id === (params.chainId || 1)
   )!.enum;
   const { t } = useTranslation();
   const [isSignText, setIsSignText] = useState(false);
