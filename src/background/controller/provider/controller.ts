@@ -502,6 +502,10 @@ class ProviderController extends BaseController {
     });
   };
 
+  netListening = () => {
+    return true;
+  };
+
   private _checkAddress = async (address) => {
     // eslint-disable-next-line prefer-const
     let { address: currentAddress, type } =
