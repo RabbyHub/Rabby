@@ -134,6 +134,20 @@ const flow = new PromiseFlow()
 
 export default (request) => {
   return flow({ request }).finally(() => {
-    notificationService.unLock();
+    const isApproval =
+      Reflect.getMetadata(
+        'APPROVAL',
+        providerController,
+        underline2Camelcase(request?.data.method)
+      ) ||
+      Reflect.getMetadata(
+        'SAFE',
+        providerController,
+        underline2Camelcase(request?.data.method)
+      );
+    if (isApproval) {
+      // only unlock notification if current flow is an approval flow
+      notificationService.unLock();
+    }
   });
 };
