@@ -239,6 +239,27 @@ class TxHistory {
       },
     };
     this.clearBefore({ address, chainId, nonce });
+    this.clearExpiredTxs(address);
+  }
+
+  clearExpiredTxs(address: string) {
+    // maximum keep 20 transactions in storage each address since chrome storage maximum useage 5MB
+    const normalizedAddress = address.toLowerCase();
+    if (this.store.transactions[normalizedAddress]) {
+      const txs = Object.values(this.store.transactions[normalizedAddress]);
+      if (txs.length <= 20) return;
+      txs.sort((a, b) => {
+        return a.createdAt - b.createdAt > 0 ? -1 : 1;
+      });
+      this.store.transactions[normalizedAddress] = txs
+        .slice(0, 20)
+        .reduce((res, current) => {
+          return {
+            ...res,
+            [`${current.chainId}-${current.nonce}`]: current,
+          };
+        }, {});
+    }
   }
 
   clearBefore({
