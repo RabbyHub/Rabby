@@ -438,7 +438,6 @@ export class WalletController extends BaseController {
     if (!keyringInstance && keyringId !== null && keyringId !== undefined) {
       await keyringService.addKeyring(stashKeyrings[keyringId]);
       keyringInstance = stashKeyrings[keyringId];
-      delete stashKeyrings[keyringId];
     }
     for (let i = 0; i < indexes.length; i++) {
       keyringInstance!.setAccountToUnlock(indexes[i]);

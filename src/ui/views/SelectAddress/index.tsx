@@ -92,7 +92,7 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
   useEffect(() => {
     init();
     return () => {
-      wallet.requestKeyring(keyring, 'cleanUp');
+      wallet.requestKeyring(keyring, 'cleanUp', keyringId.current);
     };
   }, []);
 

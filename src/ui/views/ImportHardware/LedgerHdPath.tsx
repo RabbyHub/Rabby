@@ -40,7 +40,6 @@ const LedgerHdPath = () => {
         // await keyring.updateTransportMethod(true);
         // keyring.useWebUSB(false);
       } else if (IS_AFTER_CHROME91 && isSupportWebUSB) {
-        console.log('before request keyring');
         await wallet.requestKeyring(
           HARDWARE_KEYRING_TYPES.Ledger.type,
           'cleanUp',
