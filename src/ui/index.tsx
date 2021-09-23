@@ -117,14 +117,12 @@ const wallet: Record<string, any> = new Proxy(
 );
 
 portMessageChannel.listen((data) => {
-  console.log('listen', data);
   if (data.type === 'broadcast') {
     eventBus.emit(data.method, data.params);
   }
 });
 
 eventBus.addEventListener(EVENTS.broadcastToBackground, (data) => {
-  console.log(data);
   portMessageChannel.request({
     type: 'broadcast',
     method: data.method,

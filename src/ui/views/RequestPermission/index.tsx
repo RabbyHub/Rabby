@@ -41,6 +41,7 @@ const RequestPermission = () => {
           window.postMessage({ success: true }, '*');
         }
       } catch (e) {
+        console.log(e);
         if (parent) {
           window.postMessage({ success: false }, '*');
         }

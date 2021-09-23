@@ -41,7 +41,6 @@ class PortMessage extends Message {
   };
 
   send = (type, data) => {
-    console.log(data);
     if (!this.port) return;
     this.port.postMessage({ _type_: `${this._EVENT_PRE}${type}`, data });
   };

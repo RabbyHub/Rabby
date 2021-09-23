@@ -4,6 +4,7 @@ import { useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { StrayPageWithButton } from 'ui/component';
 import { useWallet, useWalletRequest } from 'ui/utils';
+import { KEYRING_TYPE } from 'consts';
 import MnemonicLogo from 'ui/assets/mnemonic-icon.svg';
 
 const ImportMnemonic = () => {
@@ -13,11 +14,12 @@ const ImportMnemonic = () => {
   const { t } = useTranslation();
 
   const [run, loading] = useWalletRequest(wallet.generateKeyringWithMnemonic, {
-    onSuccess(keyring) {
+    onSuccess(stashKeyringId) {
       history.push({
         pathname: '/popup/import/select-address',
         state: {
-          keyring,
+          keyring: KEYRING_TYPE.HdKeyring,
+          keyringId: stashKeyringId,
           isMnemonics: true,
         },
       });
