@@ -152,6 +152,7 @@ export default (request) => {
       ) ||
       flow.requestedApproval;
     if (isApproval) {
+      flow.requestedApproval = false;
       // only unlock notification if current flow is an approval flow
       notificationService.unLock();
     }
