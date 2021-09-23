@@ -54,7 +54,7 @@ const AddChain = ({ params }: { params: AddChainProps }) => {
       setTitle(t('Enable a Chain'));
       setContent(t('enableChainContent'));
       setConfirmBtnText(t('Enable'));
-    } else if (defaultChain && CHAINS[defaultChain].hex !== chainId) {
+    } else {
       setTitle(t('Switch a Chain'));
       setContent(
         <Trans i18nKey="switchChainDesc" values={{ name: showChain?.name }} />
