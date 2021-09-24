@@ -6,7 +6,7 @@ import WalletConnect from '@walletconnect/client';
 import i18n from '../i18n';
 import { WALLETCONNECT_STATUS_MAP, EVENTS } from 'consts';
 import { wait } from 'background/utils';
-import eventBus from 'background/utils/eventBus';
+import eventBus from '@/eventBus';
 
 const keyringType = 'Watch Address';
 

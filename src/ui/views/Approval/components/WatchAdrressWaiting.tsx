@@ -5,7 +5,6 @@ import QRCode from 'qrcode.react';
 import { useHistory } from 'react-router-dom';
 import { useTranslation, Trans } from 'react-i18next';
 import {
-  KEYRING_TYPE,
   WATCH_ADDRESS_TYPE_CONTENT,
   WATCH_ADDRESS_CONNECT_TYPE,
   CHAINS,
@@ -15,8 +14,7 @@ import {
 } from 'consts';
 import { Tx } from 'background/service/openapi';
 import { useApproval, useWallet, openInTab } from 'ui/utils';
-import eventBus from 'ui/utils/eventBus';
-import WatchKeyring from 'background/service/keyring/eth-watch-keyring';
+import eventBus from '@/eventBus';
 import { SvgIconOpenExternal, SvgIconRefresh } from 'ui/assets';
 
 interface ApprovalParams extends Tx {

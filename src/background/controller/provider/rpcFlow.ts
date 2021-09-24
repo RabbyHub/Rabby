@@ -7,7 +7,7 @@ import {
 import { PromiseFlow, underline2Camelcase } from 'background/utils';
 import { EVENTS } from 'consts';
 import providerController from './controller';
-import eventBus from '../../utils/eventBus';
+import eventBus from '@/eventBus';
 
 const isSignApproval = (type: string) => {
   const SIGN_APPROVALS = ['SignText', 'SignTypedData', 'SignTx'];

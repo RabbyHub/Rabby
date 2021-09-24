@@ -4,7 +4,7 @@ import ReactDOM from 'react-dom';
 import Views from './views';
 import { Message } from '@/utils';
 import { getUITypeName } from 'ui/utils';
-import eventBus from './utils/eventBus';
+import eventBus from '@/eventBus';
 import * as Sentry from '@sentry/react';
 import { Integrations } from '@sentry/tracing';
 import i18n, { addResourceBundle } from 'src/i18n';
