@@ -418,8 +418,7 @@ const GasSelector = ({
                 !selectedGas ||
                 isLoading ||
                 validateStatus.customGas.status === 'error' ||
-                validateStatus.gasLimit.status === 'error' ||
-                errMsg !== null
+                validateStatus.gasLimit.status === 'error'
               }
             >
               {t('Confirm')}
