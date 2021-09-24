@@ -35,7 +35,6 @@ const AddChain = ({ params }: { params: AddChainProps }) => {
   const showChain = supportChains.find((chain) => chain.hex === chainId);
 
   const enableChains = wallet.getEnableChains();
-  const { chain: defaultChain } = wallet.getConnectedSite(session.origin)!;
 
   let title;
   let content;
@@ -44,7 +43,7 @@ const AddChain = ({ params }: { params: AddChainProps }) => {
     title = t('Enable a Chain');
     content = t('enableChainContent');
     confirmBtnText = t('Enable');
-  } else if (CHAINS[defaultChain].hex !== chainId) {
+  } else {
     title = t('Switch a Chain');
     content = (
       <Trans i18nKey="switchChainDesc" values={{ name: showChain?.name }} />

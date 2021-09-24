@@ -12,7 +12,8 @@ const isSignApproval = (type: string) => {
   return SIGN_APPROVALS.includes(type);
 };
 
-const flow = new PromiseFlow()
+const flow = new PromiseFlow();
+const flowContext = flow
   .use(async (ctx, next) => {
     // check method
     const {
@@ -39,6 +40,7 @@ const flow = new PromiseFlow()
       const isUnlock = keyringService.memStore.getState().isUnlocked;
 
       if (!isUnlock) {
+        flow.requestedApproval = true;
         await notificationService.requestApproval({ lock: true });
       }
     }
@@ -55,6 +57,7 @@ const flow = new PromiseFlow()
     } = ctx;
     if (!Reflect.getMetadata('SAFE', providerController, mapMethod)) {
       if (!permissionService.hasPerssmion(origin)) {
+        flow.requestedApproval = true;
         const { defaultChain } = await notificationService.requestApproval(
           {
             params: { origin, name, icon },
@@ -82,6 +85,7 @@ const flow = new PromiseFlow()
       Reflect.getMetadata('APPROVAL', providerController, mapMethod) || [];
 
     if (approvalType && (!condition || !condition(ctx.request))) {
+      flow.requestedApproval = true;
       ctx.approvalRes = await notificationService.requestApproval(
         {
           approvalComponent: approvalType,
@@ -119,6 +123,7 @@ const flow = new PromiseFlow()
     );
 
     if (uiRequestComponent) {
+      flow.requestedApproval = true;
       return await notificationService.requestApproval({
         approvalComponent: uiRequestComponent,
         requestDefer,
@@ -133,7 +138,7 @@ const flow = new PromiseFlow()
   .callback();
 
 export default (request) => {
-  return flow({ request }).finally(() => {
+  return flowContext({ request }).finally(() => {
     const isApproval =
       Reflect.getMetadata(
         'APPROVAL',
@@ -144,8 +149,10 @@ export default (request) => {
         'SAFE',
         providerController,
         underline2Camelcase(request?.data.method)
-      );
+      ) ||
+      flow.requestedApproval;
     if (isApproval) {
+      flow.requestedApproval = false;
       // only unlock notification if current flow is an approval flow
       notificationService.unLock();
     }
