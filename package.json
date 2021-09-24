@@ -84,6 +84,7 @@
     "@types/react-router-dom": "^5.1.7",
     "@typescript-eslint/eslint-plugin": "^4.22.1",
     "@typescript-eslint/parser": "^4.22.1",
+    "@welldone-software/why-did-you-render": "^6.2.1",
     "antd-dayjs-webpack-plugin": "^1.0.6",
     "autoprefixer": "latest",
     "craco-antd": "^1.19.0",
