@@ -13,7 +13,7 @@ class RpcCache {
     this.loadBlockNumber();
     setInterval(() => {
       this.loadBlockNumber();
-    }, 3000);
+    }, 100000);
   }
 
   async loadBlockNumber() {
@@ -34,7 +34,7 @@ class RpcCache {
   set(
     address: string,
     data: { method: string; chainId: string; params: any; result: any },
-    expireTime = 10000
+    expireTime = 150000
   ) {
     if (!this.canCache(data)) return;
     const latestBlockNumber = this.getLatestBlockNumber(data.chainId);

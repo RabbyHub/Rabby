@@ -111,26 +111,29 @@ browser.runtime.onConnect.addListener((port) => {
       }
     });
 
-    eventBus.addEventListener(EVENTS.broadcastToUI, (data: any) => {
+    const boardcaseCallback = (data: any) => {
       pm.request({
         type: 'broadcast',
         method: data.method,
         params: data.params,
       });
-    });
-  }
+    };
 
-  if (port.name === 'popup') {
-    preferenceService.setPopupOpen(true);
+    if (port.name === 'popup') {
+      preferenceService.setPopupOpen(true);
 
+      port.onDisconnect.addListener(() => {
+        preferenceService.setPopupOpen(false);
+      });
+    }
+
+    eventBus.addEventListener(EVENTS.broadcastToUI, boardcaseCallback);
     port.onDisconnect.addListener(() => {
-      preferenceService.setPopupOpen(false);
+      eventBus.removeEventListerner(EVENTS.broadcastToUI, boardcaseCallback);
     });
 
     return;
   }
-
-  if (port.name === 'notification' || port.name === 'tab') return;
 
   if (!port.sender?.tab) {
     return;

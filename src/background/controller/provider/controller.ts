@@ -110,18 +110,20 @@ class ProviderController extends BaseController {
         params,
       })
       .then((result) => {
-        RpcCache.set(
-          currentAddress,
-          { method, params, result, chainId: chainServerId },
-          method === 'eth_call' ? 10000 : undefined
-        );
+        RpcCache.set(currentAddress, {
+          method,
+          params,
+          result,
+          chainId: chainServerId,
+        });
         return result;
       });
-    RpcCache.set(
-      currentAddress,
-      { method, params, result: promise, chainId: chainServerId },
-      method === 'eth_call' ? 10000 : undefined
-    );
+    RpcCache.set(currentAddress, {
+      method,
+      params,
+      result: promise,
+      chainId: chainServerId,
+    });
     return promise;
   };
 
