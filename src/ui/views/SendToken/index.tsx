@@ -90,7 +90,7 @@ const SendToken = () => {
     )!;
     const sendValue = new BigNumber(amount)
       .multipliedBy(10 ** currentToken.decimals)
-      .toFixed();
+      .toFixed(0);
     const params: Record<string, any> = {
       chainId: chain.id,
       from: currentAccount!.address,
@@ -363,7 +363,10 @@ const SendToken = () => {
     if (await wallet.hasPageStateCache()) {
       const cache = await wallet.getPageStateCache();
       if (cache?.path === history.location.pathname) {
-        if (cache.states.values) form.setFieldsValue(cache.states.values);
+        if (cache.states.values) {
+          form.setFieldsValue(cache.states.values);
+          handleFormValuesChange(null, form.getFieldsValue());
+        }
         if (cache.states.currentToken) {
           setCurrentToken(cache.states.currentToken);
           needLoadToken = cache.states.currentToken;
