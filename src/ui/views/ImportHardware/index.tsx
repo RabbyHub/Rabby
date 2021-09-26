@@ -2,9 +2,7 @@ import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
 import { StrayPage } from 'ui/component';
-import { useWallet } from 'ui/utils';
 import { SvgIconOnekey, SvgIconTrezor, ImportLedgerIcon } from 'ui/assets';
-import { BIP44_PATH } from './LedgerHdPath';
 import { IS_CHROME, KEYRING_CLASS } from 'consts';
 
 import './index.css';

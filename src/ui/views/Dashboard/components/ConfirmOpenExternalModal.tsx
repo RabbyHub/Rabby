@@ -3,7 +3,6 @@ import { Button } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { useWallet, openInTab } from 'ui/utils';
 import { Modal } from 'ui/component';
-import { IconDebank } from 'ui/assets';
 import { wrapModalPromise } from 'ui/component/AuthenticationModal';
 import { WalletController } from 'background/controller/wallet';
 import { query2obj, obj2query } from 'ui/utils/url';
@@ -12,14 +11,12 @@ const ConfirmOpenExternalModal = ({
   onFinished,
   onCancel,
   origin = 'https://debank.com',
-  icon = IconDebank,
   wallet,
 }: {
   onFinished(): void;
   onCancel(): void;
   wallet: WalletController;
   origin?: string;
-  icon?: string;
 }) => {
   const [visible, setVisible] = useState(true);
   const { t } = useTranslation();
@@ -69,7 +66,7 @@ const funConfirmOpenExternalModal = wrapModalPromise(ConfirmOpenExternalModal);
 const useConfirmExternalModal = () => {
   const wallet = useWallet();
 
-  return (url: string) => {
+  return async (url: string) => {
     const origin = url.split('?')[0];
     const openUrl =
       origin +
@@ -78,7 +75,7 @@ const useConfirmExternalModal = () => {
         ...query2obj(url),
         utm_source: 'rabby',
       });
-    if (wallet.getExternalLinkAck()) {
+    if (await wallet.getExternalLinkAck()) {
       openInTab(openUrl);
       return;
     }

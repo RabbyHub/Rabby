@@ -281,7 +281,6 @@ const WatchAddressWaiting = ({ params }: { params: ApprovalParams }) => {
     WALLETCONNECT_STATUS_MAP.WAITING,
   ];
   const wallet = useWallet();
-  const [address, setAddress] = useState<string | null>(null);
   const [connectStatus, setConnectStatus] = useState(
     WALLETCONNECT_STATUS_MAP.PENDING
   );
@@ -346,7 +345,6 @@ const WatchAddressWaiting = ({ params }: { params: ApprovalParams }) => {
       (await wallet.getWatchAddressPreference(account.address)) || 0
     );
     setIsSignText(approval?.approvalType !== 'SignTx');
-    setAddress(account.address);
     eventBus.addEventListener(EVENTS.SIGN_FINISHED, async (data) => {
       if (data.success) {
         await wallet.setWatchAddressPreference(account.address, currentType);

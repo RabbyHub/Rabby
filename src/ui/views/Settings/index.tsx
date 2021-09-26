@@ -1,10 +1,9 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { useHistory } from 'react-router-dom';
-import { Form, Input, Button } from 'antd';
+import { Button } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { useWallet } from 'ui/utils';
-import { PageHeader, Field, Modal } from 'ui/component';
-import { INITIAL_OPENAPI_URL } from 'consts';
+import { PageHeader, Field } from 'ui/component';
 import IconAddressManagement from 'ui/assets/address-management.svg';
 import IconChainManagement from 'ui/assets/chain-management.svg';
 import IconConnectSitesManagement from 'ui/assets/connect-sites-management.svg';

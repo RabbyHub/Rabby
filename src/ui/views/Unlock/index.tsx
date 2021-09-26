@@ -17,7 +17,7 @@ const Unlock = () => {
     inputEl.current.focus();
   }, []);
 
-  const [run, loading] = useWalletRequest(wallet.unlock, {
+  const [run] = useWalletRequest(wallet.unlock, {
     onSuccess() {
       resolveApproval();
     },

@@ -3,7 +3,7 @@ import clsx from 'clsx';
 import { Button } from 'antd';
 import { useTranslation, Trans } from 'react-i18next';
 import { intToHex } from 'ethereumjs-util';
-import { CHAINS, CHAINS_ENUM } from 'consts';
+import { CHAINS_ENUM } from 'consts';
 import { Chain } from 'background/service/chain';
 import { useWallet, useApproval } from 'ui/utils';
 import IconWarning from 'ui/assets/warning.svg';

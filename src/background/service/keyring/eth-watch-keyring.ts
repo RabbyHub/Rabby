@@ -176,7 +176,7 @@ class WatchKeyring extends EventEmitter {
       );
     };
 
-    return new Promise((resolve, reject) => {
+    return new Promise((resolve) => {
       this.resolvePromise = resolve;
     });
   }
@@ -230,7 +230,7 @@ class WatchKeyring extends EventEmitter {
     });
   }
 
-  async signTypedData(address: string, data, options) {
+  async signTypedData(address: string, data) {
     await this.initWalletConnect();
 
     this.onAfterConnect = async (error, payload) => {

@@ -1,7 +1,7 @@
 import { createPersistStore } from 'background/utils';
 import maxBy from 'lodash/maxBy';
 import openapiService, { Tx, ExplainTxResponse } from './openapi';
-import { CHAINS, CHAINS_ENUM } from 'consts';
+import { CHAINS } from 'consts';
 
 export interface TransactionHistoryItem {
   rawTx: Tx;
