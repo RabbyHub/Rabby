@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Modal } from 'ui/component';
 import { CHAINS_ENUM, CHAINS } from 'consts';
 import { useWallet, splitNumberByStep } from 'ui/utils';
@@ -6,6 +6,8 @@ import IconChecked from 'ui/assets/checked.svg';
 import IconNotChecked from 'ui/assets/not-checked.svg';
 import { SvgIconArrowDown } from 'ui/assets';
 import { useCurrentBalance } from 'ui/component/AddressList/AddressItem';
+import { Chain } from 'background/service/chain';
+import { Account } from 'background/service/preference';
 
 import './style.less';
 
@@ -18,8 +20,8 @@ interface ChainSelectorProps {
 const ChainSelector = ({ value, onChange }: ChainSelectorProps) => {
   const wallet = useWallet();
   const [showSelectorModal, setShowSelectorModal] = useState(false);
-  const [enableChains] = useState(wallet.getEnableChains());
-  const currentAccount = wallet.syncGetCurrentAccount();
+  const [enableChains, setEnableChains] = useState<Chain[]>([]);
+  const [currentAccount, setCurrentAccount] = useState<Account | null>(null);
   const [, chainBalances] = useCurrentBalance(currentAccount?.address);
 
   const handleClickSelector = () => {
@@ -40,6 +42,15 @@ const ChainSelector = ({ value, onChange }: ChainSelectorProps) => {
     m[n.community_id].splitedNumber = splitNumberByStep(n.usd_value.toFixed(2));
     return m;
   }, {});
+
+  const init = async () => {
+    setEnableChains(await wallet.getEnableChains());
+    setCurrentAccount(await wallet.syncGetCurrentAccount());
+  };
+
+  useEffect(() => {
+    init();
+  }, []);
 
   return (
     <>

@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
 import { StrayPageWithButton, FieldCheckbox } from 'ui/component';
 import { useWallet } from 'ui/utils';
-import { IS_AFTER_CHROME91 } from 'consts';
+import { IS_AFTER_CHROME91, HARDWARE_KEYRING_TYPES } from 'consts';
 
 const LEDGER_LIVE_PATH = "m/44'/60'/0'/0/0";
 const MEW_PATH = "m/44'/60'/0'";
@@ -28,25 +28,37 @@ const LedgerHdPath = () => {
       return;
     }
     setSpin(true);
-    const useLedgerLive = wallet.isUseLedgerLive();
+    const useLedgerLive = await wallet.isUseLedgerLive();
     const isSupportWebUSB = await TransportWebUSB.isSupported();
-    const keyring = wallet.connectHardware('LEDGER', currentPath);
+    const keyringId = await wallet.connectHardware({
+      type: HARDWARE_KEYRING_TYPES.Ledger.type,
+      hdPath: currentPath,
+      isWebUSB: !useLedgerLive,
+    });
     try {
       if (useLedgerLive) {
-        await keyring.updateTransportMethod(true);
-        keyring.useWebUSB(false);
+        // await keyring.updateTransportMethod(true);
+        // keyring.useWebUSB(false);
       } else if (IS_AFTER_CHROME91 && isSupportWebUSB) {
-        await keyring.cleanUp();
-        keyring.useWebUSB(true);
+        await wallet.requestKeyring(
+          HARDWARE_KEYRING_TYPES.Ledger.type,
+          'cleanUp',
+          keyringId
+        );
+        // await keyring.cleanUp();
+        // keyring.useWebUSB(true);
         const transport = await TransportWebUSB.create();
         await transport.close();
       }
-      await keyring.unlock();
+      // await keyring.unlock();
       setSpin(false);
       history.push({
         pathname: '/import/select-address',
         state: {
-          keyring,
+          keyring: HARDWARE_KEYRING_TYPES.Ledger.type,
+          path: currentPath,
+          isWebUSB: !useLedgerLive,
+          keyringId,
         },
       });
     } catch (err) {

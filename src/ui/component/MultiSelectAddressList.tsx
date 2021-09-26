@@ -32,7 +32,9 @@ const MultiSelectAddressList = ({
     <ul className="addresses">
       {accounts.map((account, i) => {
         const selected = _value.includes(account.index);
-        const imported = importedAccounts?.includes(account.address);
+        const imported = importedAccounts
+          ?.map((address) => address.toLowerCase())
+          .includes(account.address.toLowerCase());
         return (
           <FieldCheckbox
             key={account.index}
@@ -48,6 +50,7 @@ const MultiSelectAddressList = ({
           >
             <AddressItem
               account={account.address}
+              noNeedBalance={!imported}
               showAssets={imported}
               className="select-address-item"
             />

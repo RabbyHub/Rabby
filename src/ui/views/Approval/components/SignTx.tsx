@@ -10,7 +10,7 @@ import { Button, Modal } from 'antd';
 import { useTranslation } from 'react-i18next';
 import clsx from 'clsx';
 import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
-import { KEYRING_CLASS, CHAINS } from 'consts';
+import { KEYRING_CLASS, CHAINS, CHAINS_ENUM } from 'consts';
 import { Checkbox } from 'ui/component';
 import AccountCard from './AccountCard';
 import SecurityCheckBar from './SecurityCheckBar';
@@ -68,7 +68,7 @@ const normalizeTxParams = (tx) => {
 
 const TxTypeComponent = ({
   txDetail,
-  chain,
+  chain = CHAINS[CHAINS_ENUM.ETH],
   isReady,
   raw,
   onChange,
@@ -76,7 +76,7 @@ const TxTypeComponent = ({
   isSpeedUp,
 }: {
   txDetail: ExplainTxResponse;
-  chain: Chain;
+  chain: Chain | undefined;
   isReady: boolean;
   raw: Record<string, string>;
   onChange(data: Record<string, any>): void;
@@ -190,16 +190,16 @@ const SignTx = ({ params, origin }) => {
     setSecurityCheckDetail,
   ] = useState<SecurityCheckResponse | null>(null);
   const [preprocessSuccess, setPreprocessSuccess] = useState(true);
+  const [chainId, setChainId] = useState<number>(
+    params.data[0].chainId && Number(params.data[0].chainId)
+  );
+  const [chain, setChain] = useState(
+    Object.values(CHAINS).find((item) => item.id === chainId)
+  );
+  const [inited, setInited] = useState(false);
   const [, resolveApproval, rejectApproval] = useApproval();
   const wallet = useWallet();
-  const session = params.session;
-  const site = wallet.getConnectedSite(session.origin);
-  let chainId = params.data[0].chainId;
-  if (!chainId) {
-    chainId = CHAINS[site!.chain].id;
-  }
-  chainId = Number(chainId);
-  const chain = Object.values(CHAINS).find((item) => item.id === chainId)!;
+
   const {
     data = '0x',
     from,
@@ -296,7 +296,7 @@ const SignTx = ({ params, origin }) => {
       setGasLimit(res.recommend.gas);
     }
     setTxDetail(res);
-    const localNonce = wallet.getNonceByChain(tx.from, chainId) || 0;
+    const localNonce = (await wallet.getNonceByChain(tx.from, chainId)) || 0;
     if (updateNonce) {
       setRealNonce(intToHex(Math.max(Number(res.recommend.nonce), localNonce)));
     } // do not overwrite nonce if from === to(cancel transaction)
@@ -323,7 +323,7 @@ const SignTx = ({ params, origin }) => {
     });
   };
 
-  const init = async () => {
+  const explain = async () => {
     const currentAccount = await wallet.getCurrentAccount();
     try {
       setIsReady(false);
@@ -349,10 +349,12 @@ const SignTx = ({ params, origin }) => {
     const currentAccount = await wallet.getCurrentAccount();
     if (
       currentAccount?.type === KEYRING_CLASS.HARDWARE.LEDGER &&
-      !wallet.isUseLedgerLive()
+      !(await wallet.isUseLedgerLive())
     ) {
       try {
-        const keyring = wallet.connectHardware(KEYRING_CLASS.HARDWARE.LEDGER);
+        const keyring = await wallet.connectHardware(
+          KEYRING_CLASS.HARDWARE.LEDGER
+        );
         if (keyring.isWebUSB) {
           const transport = await TransportWebUSB.create();
           await transport.close();
@@ -414,14 +416,40 @@ const SignTx = ({ params, origin }) => {
     });
   };
 
+  const init = async () => {
+    const session = params.session;
+    const site = await wallet.getConnectedSite(session.origin);
+
+    if (!chainId) {
+      setChainId(CHAINS[site!.chain].id);
+    }
+    setChain(
+      Object.values(CHAINS).find(
+        (item) => item.id === (chainId || CHAINS[site!.chain].id)
+      )!
+    );
+    setTx({
+      ...tx,
+      chainId: chainId || CHAINS[site!.chain].id,
+    });
+    setInited(true);
+  };
+
   useEffect(() => {
+    init();
+  }, []);
+
+  useEffect(() => {
+    if (!inited) return;
+
     if (!tx.gasPrice) {
       // use minimum gas as default gas if dapp not set gasPrice
       getDefaultGas();
       return;
     }
-    init();
-  }, [tx]);
+    explain();
+  }, [tx, inited]);
+
   return (
     <>
       <AccountCard />

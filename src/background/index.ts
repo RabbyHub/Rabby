@@ -5,6 +5,7 @@ import { browser } from 'webextension-polyfill-ts';
 import { ethErrors } from 'eth-rpc-errors';
 import { WalletController } from 'background/controller/wallet';
 import { Message } from 'utils';
+import { EVENTS } from 'consts';
 import { storage } from './webapi';
 import {
   permissionService,
@@ -21,6 +22,7 @@ import {
 import { providerController, walletController } from './controller';
 import i18n from './service/i18n';
 import rpcCache from './utils/rpcCache';
+import eventBus from '@/eventBus';
 
 const { PortMessage } = Message;
 
@@ -80,11 +82,54 @@ restoreAppState();
 browser.runtime.onConnect.addListener((port) => {
   openapiService.getConfig();
 
-  if (port.name === 'popup') {
-    preferenceService.setPopupOpen(true);
+  if (
+    port.name === 'popup' ||
+    port.name === 'notification' ||
+    port.name === 'tab'
+  ) {
+    const pm = new PortMessage(port);
+    pm.listen((data) => {
+      if (data?.type) {
+        switch (data.type) {
+          case 'broadcast':
+            eventBus.emit(data.method, data.params);
+            break;
+          case 'openapi':
+            if (walletController.openapi[data.method]) {
+              return walletController.openapi[data.method].apply(
+                null,
+                data.params
+              );
+            }
+            break;
+          case 'controller':
+          default:
+            if (data.method) {
+              return walletController[data.method].apply(null, data.params);
+            }
+        }
+      }
+    });
 
+    const boardcaseCallback = (data: any) => {
+      pm.request({
+        type: 'broadcast',
+        method: data.method,
+        params: data.params,
+      });
+    };
+
+    if (port.name === 'popup') {
+      preferenceService.setPopupOpen(true);
+
+      port.onDisconnect.addListener(() => {
+        preferenceService.setPopupOpen(false);
+      });
+    }
+
+    eventBus.addEventListener(EVENTS.broadcastToUI, boardcaseCallback);
     port.onDisconnect.addListener(() => {
-      preferenceService.setPopupOpen(false);
+      eventBus.removeEventListerner(EVENTS.broadcastToUI, boardcaseCallback);
     });
 
     return;

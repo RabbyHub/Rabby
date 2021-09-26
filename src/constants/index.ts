@@ -379,3 +379,14 @@ export const WALLETCONNECT_STATUS_MAP = {
 export const INTERNAL_REQUEST_ORIGIN = 'https://rabby.io';
 
 export const INITIAL_OPENAPI_URL = 'https://openapi.debank.com';
+
+export const EVENTS = {
+  broadcastToUI: 'broadcastToUI',
+  broadcastToBackground: 'broadcastToBackground',
+  SIGN_FINISHED: 'SIGN_FINISHED',
+  WALLETCONNECT: {
+    STATUS_CHANGED: 'WALLETCONNECT_STATUS_CHANGED',
+    INIT: 'WALLETCONNECT_INIT',
+    INITED: 'WALLETCONNECT_INITED',
+  },
+};

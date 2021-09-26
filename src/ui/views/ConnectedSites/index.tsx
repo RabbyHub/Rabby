@@ -21,8 +21,8 @@ const ConnectedSites = () => {
     getSites();
   }, []);
 
-  const handleRemove = (origin: string) => {
-    wallet.removeConnectedSite(origin);
+  const handleRemove = async (origin: string) => {
+    await wallet.removeConnectedSite(origin);
     getSites();
   };
 

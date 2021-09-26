@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useWallet } from 'ui/utils';
@@ -11,24 +11,25 @@ import './style.less';
 export const ChainManagementList = ({ inStart = false }) => {
   const wallet = useWallet();
   const { t } = useTranslation();
-  const [enableChains, setEnableChains] = useState<Chain[]>(
-    wallet.getEnableChains()
-  );
-  const chains = wallet.getSupportChains();
+  const [enableChains, setEnableChains] = useState<Chain[]>([]);
+  const [chains, setChains] = useState<Chain[]>([]);
 
-  const disableChain = (chainEnum: CHAINS_ENUM) => {
+  const disableChain = async (chainEnum: CHAINS_ENUM) => {
     setEnableChains(enableChains.filter((chain) => chain.enum !== chainEnum));
-    wallet.disableChain(chainEnum);
+    await wallet.disableChain(chainEnum);
   };
 
-  const handleSwitchChain = (chainEnum: CHAINS_ENUM, checked: boolean) => {
+  const handleSwitchChain = async (
+    chainEnum: CHAINS_ENUM,
+    checked: boolean
+  ) => {
     if (checked) {
       setEnableChains([...enableChains, CHAINS[chainEnum]]);
-      wallet.enableChain(chainEnum);
+      await wallet.enableChain(chainEnum);
     } else {
       if (enableChains.length > 1) {
         if (inStart) {
-          disableChain(chainEnum);
+          await disableChain(chainEnum);
           return;
         }
 
@@ -42,15 +43,15 @@ export const ChainManagementList = ({ inStart = false }) => {
           okText: t('Disable'),
           cancelText: t('Cancel'),
           width: '360px',
-          onOk: () => {
-            const sites = wallet.getSitesByDefaultChain(chainEnum);
+          onOk: async () => {
+            const sites = await wallet.getSitesByDefaultChain(chainEnum);
             if (sites.length > 0) {
               sites.forEach((site) => {
                 wallet.removeConnectedSite(site.origin);
               });
             }
 
-            disableChain(chainEnum);
+            await disableChain(chainEnum);
           },
         });
       } else {
@@ -58,6 +59,15 @@ export const ChainManagementList = ({ inStart = false }) => {
       }
     }
   };
+
+  const init = async () => {
+    setEnableChains(await wallet.getEnableChains());
+    setChains(await wallet.getSupportChains());
+  };
+
+  useEffect(() => {
+    init();
+  }, []);
 
   return (
     <>

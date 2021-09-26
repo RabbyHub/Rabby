@@ -31,8 +31,12 @@ const AddressManagement = () => {
   >([]);
   const history = useHistory();
 
+  const init = async () => {
+    setHiddenAddresses(await wallet.getHiddenAddresses());
+  };
+
   useEffect(() => {
-    setHiddenAddresses(wallet.getHiddenAddresses());
+    init();
   }, []);
 
   useEffect(() => {
@@ -128,7 +132,7 @@ const AddressManagement = () => {
             (item) => item.type !== keyring.type || item.address !== data
           )
         );
-        wallet.showAddress(keyring.type, data);
+        await wallet.showAddress(keyring.type, data);
       } else {
         const totalCount = await wallet.getAccountsCount();
         if (hiddenAddresses.length >= totalCount - 1) {
@@ -139,7 +143,7 @@ const AddressManagement = () => {
           ...hiddenAddresses,
           { type: keyring.type, address: data },
         ]);
-        wallet.hideAddress(keyring.type, data);
+        await wallet.hideAddress(keyring.type, data);
       }
     };
 

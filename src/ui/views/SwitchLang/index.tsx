@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useWallet } from 'ui/utils';
 import { PageHeader } from 'ui/component';
@@ -10,15 +10,24 @@ import './style.less';
 const SwitchLang = () => {
   const wallet = useWallet();
   const { t } = useTranslation();
-  const [lang, setLang] = useState(wallet.getLocale());
+  const [lang, setLang] = useState('en');
   const handleSwitchLang = async (checked: boolean, value: string) => {
     if (checked) {
       setLang(value);
-      wallet.setLocale(value);
+      await wallet.setLocale(value);
       await addResourceBundle(value);
       i18n.changeLanguage(value);
     }
   };
+
+  const init = async () => {
+    const locale = await wallet.getLocale();
+    setLang(locale);
+  };
+
+  useEffect(() => {
+    init();
+  }, []);
 
   return (
     <div className="switch-lang">

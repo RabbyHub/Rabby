@@ -1,11 +1,14 @@
+import './wdyr';
 import React from 'react';
 import ReactDOM from 'react-dom';
-import { browser } from 'webextension-polyfill-ts';
 import Views from './views';
-import { getUiType } from 'ui/utils';
+import { Message } from '@/utils';
+import { getUITypeName } from 'ui/utils';
+import eventBus from '@/eventBus';
 import * as Sentry from '@sentry/react';
 import { Integrations } from '@sentry/tracing';
 import i18n, { addResourceBundle } from 'src/i18n';
+import { EVENTS } from 'consts';
 import '../i18n';
 
 import './style/index.less';
@@ -74,17 +77,63 @@ function initAppMeta() {
 
 initAppMeta();
 
-browser.runtime.getBackgroundPage().then((win) => {
-  const locale = win.wallet.getLocale();
-  addResourceBundle(locale).then(() => {
-    i18n.changeLanguage(locale);
-    ReactDOM.render(
-      <Views wallet={win.wallet} />,
-      document.getElementById('root')
-    );
+const { PortMessage } = Message;
+
+const portMessageChannel = new PortMessage();
+
+portMessageChannel.connect(getUITypeName());
+
+const wallet: Record<string, any> = new Proxy(
+  {},
+  {
+    get(obj, key) {
+      switch (key) {
+        case 'openapi':
+          return new Proxy(
+            {},
+            {
+              get(obj, key) {
+                return function (...params: any) {
+                  return portMessageChannel.request({
+                    type: 'openapi',
+                    method: key,
+                    params,
+                  });
+                };
+              },
+            }
+          );
+          break;
+        default:
+          return function (...params: any) {
+            return portMessageChannel.request({
+              type: 'controller',
+              method: key,
+              params,
+            });
+          };
+      }
+    },
+  }
+);
+
+portMessageChannel.listen((data) => {
+  if (data.type === 'broadcast') {
+    eventBus.emit(data.method, data.params);
+  }
+});
+
+eventBus.addEventListener(EVENTS.broadcastToBackground, (data) => {
+  portMessageChannel.request({
+    type: 'broadcast',
+    method: data.method,
+    params: data.data,
   });
 });
 
-if (getUiType().isPop) {
-  browser.runtime.connect(undefined, { name: 'popup' });
-}
+wallet.getLocale().then((locale) => {
+  addResourceBundle(locale).then(() => {
+    i18n.changeLanguage(locale);
+    ReactDOM.render(<Views wallet={wallet} />, document.getElementById('root'));
+  });
+});

@@ -47,6 +47,16 @@ export const hex2Text = (hex: string) => {
   }
 };
 
+export const getUITypeName = (): string => {
+  const UIType = getUiType();
+
+  if (UIType.isPop) return 'popup';
+  if (UIType.isNotification) return 'notification';
+  if (UIType.isTab) return 'tab';
+
+  return '';
+};
+
 /**
  *
  * @param origin (exchange.pancakeswap.finance)

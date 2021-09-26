@@ -9,6 +9,7 @@ import { Input, Form, Skeleton, message, Button } from 'antd';
 import abiCoder, { AbiCoder } from 'web3-eth-abi';
 import { isValidAddress, unpadHexString, addHexPrefix } from 'ethereumjs-util';
 import { CHAINS } from 'consts';
+import { Account } from 'background/service/preference';
 import { ContactBookItem } from 'background/service/contactBook';
 import { useWallet } from 'ui/utils';
 import { formatTokenAmount, splitNumberByStep } from 'ui/utils/number';
@@ -32,34 +33,31 @@ import './style.less';
 
 const SendToken = () => {
   const wallet = useWallet();
-  const currentAccount = wallet.syncGetCurrentAccount()!;
+  const [currentAccount, setCurrentAccount] = useState<Account | null>(null);
   const { t } = useTranslation();
   const { useForm } = Form;
   const history = useHistory();
   const [form] = useForm<{ to: string; amount: string }>();
   const [contactInfo, setContactInfo] = useState<null | ContactBookItem>(null);
   const [tokens, setTokens] = useState<TokenItem[]>([]);
-  const lastTimeSendToken = wallet.getLastTimeSendToken(currentAccount.address);
   const tokenInputRef = useRef<Input>(null);
-  const [currentToken, setCurrentToken] = useState<TokenItem>(
-    lastTimeSendToken || {
-      id: 'eth',
-      chain: 'eth',
-      name: 'ETH',
-      symbol: 'ETH',
-      display_symbol: null,
-      optimized_symbol: 'ETH',
-      decimals: 18,
-      logo_url:
-        'https://static.debank.com/image/token/logo_url/eth/935ae4e4d1d12d59a99717a24f2540b5.png',
-      price: 0,
-      is_verified: true,
-      is_core: true,
-      is_wallet: true,
-      time_at: 0,
-      amount: 0,
-    }
-  );
+  const [currentToken, setCurrentToken] = useState<TokenItem>({
+    id: 'eth',
+    chain: 'eth',
+    name: 'ETH',
+    symbol: 'ETH',
+    display_symbol: null,
+    optimized_symbol: 'ETH',
+    decimals: 18,
+    logo_url:
+      'https://static.debank.com/image/token/logo_url/eth/935ae4e4d1d12d59a99717a24f2540b5.png',
+    price: 0,
+    is_verified: true,
+    is_core: true,
+    is_wallet: true,
+    time_at: 0,
+    amount: 0,
+  });
 
   const [showEditContactModal, setShowEditContactModal] = useState(false);
   const [showListContactModal, setShowListContactModal] = useState(false);
@@ -80,7 +78,13 @@ const SendToken = () => {
     !isLoading;
   const isNativeToken = currentToken.id === currentToken.chain;
 
-  const handleSubmit = ({ to, amount }: { to: string; amount: string }) => {
+  const handleSubmit = async ({
+    to,
+    amount,
+  }: {
+    to: string;
+    amount: string;
+  }) => {
     const chain = Object.values(CHAINS).find(
       (item) => item.serverId === currentToken.chain
     )!;
@@ -89,7 +93,7 @@ const SendToken = () => {
       .toFixed();
     const params: Record<string, any> = {
       chainId: chain.id,
-      from: currentAccount.address,
+      from: currentAccount!.address,
       to: currentToken.id,
       value: '0x0',
       data: ((abiCoder as unknown) as AbiCoder).encodeFunctionCall(
@@ -123,8 +127,8 @@ const SendToken = () => {
         )
       );
     }
-    wallet.setLastTimeSendToken(currentAccount.address, currentToken);
-    wallet.setPageStateCache({
+    await wallet.setLastTimeSendToken(currentAccount!.address, currentToken);
+    await wallet.setPageStateCache({
       path: history.location.pathname,
       params: {},
       states: {
@@ -132,7 +136,7 @@ const SendToken = () => {
         currentToken,
       },
     });
-    wallet.sendRequest({
+    await wallet.sendRequest({
       method: 'eth_sendTransaction',
       params: [params],
     });
@@ -169,7 +173,7 @@ const SendToken = () => {
     setShowEditContactModal(true);
   };
 
-  const handleFormValuesChange = (
+  const handleFormValuesChange = async (
     _,
     {
       to,
@@ -214,7 +218,7 @@ const SendToken = () => {
       amount: resultAmount,
     });
     setCacheAmount(resultAmount);
-    const addressContact = wallet.getContactByAddress(to);
+    const addressContact = await wallet.getContactByAddress(to);
     if (addressContact) {
       setContactInfo(addressContact);
     } else if (!addressContact && contactInfo) {
@@ -290,14 +294,14 @@ const SendToken = () => {
     let tokens: TokenItem[] = [];
     if (q) {
       tokens = sortTokensByPrice(
-        await wallet.openapi.searchToken(currentAccount.address, q)
+        await wallet.openapi.searchToken(currentAccount!.address, q)
       );
     } else {
       if (originTokenList.length > 0) {
         tokens = originTokenList;
       } else {
         tokens = sortTokensByPrice(
-          await wallet.openapi.listToken(currentAccount.address)
+          await wallet.openapi.listToken(currentAccount!.address)
         );
         setOriginTokenList(tokens);
         setIsListLoading(false);
@@ -337,20 +341,27 @@ const SendToken = () => {
     }
   };
 
-  const loadCurrentToken = async (token: TokenItem) => {
-    const t = await wallet.openapi.getToken(
-      currentAccount.address,
-      token.chain,
-      token.id
-    );
+  const loadCurrentToken = async (token: TokenItem, address: string) => {
+    const t = await wallet.openapi.getToken(address, token.chain, token.id);
     setCurrentToken(t);
     setIsLoading(false);
   };
 
-  useEffect(() => {
-    let needLoadToken = currentToken;
-    if (wallet.hasPageStateCache()) {
-      const cache = wallet.getPageStateCache();
+  const init = async () => {
+    const account = await wallet.syncGetCurrentAccount();
+
+    if (!account) {
+      history.replace('/');
+      return;
+    }
+
+    const lastTimeToken = await wallet.getLastTimeSendToken(account.address);
+    let needLoadToken = lastTimeToken || currentToken;
+
+    if (lastTimeToken) setCurrentToken(lastTimeToken);
+    setCurrentAccount(account);
+    if (await wallet.hasPageStateCache()) {
+      const cache = await wallet.getPageStateCache();
       if (cache?.path === history.location.pathname) {
         if (cache.states.values) form.setFieldsValue(cache.states.values);
         if (cache.states.currentToken) {
@@ -359,7 +370,11 @@ const SendToken = () => {
         }
       }
     }
-    loadCurrentToken(needLoadToken);
+    loadCurrentToken(needLoadToken, account.address);
+  };
+
+  useEffect(() => {
+    init();
     return () => {
       wallet.clearPageStateCache();
     };

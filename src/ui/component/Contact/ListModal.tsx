@@ -18,11 +18,15 @@ const ListModal = ({ address, visible, onOk, onCancel }: ListModalProps) => {
   const wallet = useWallet();
   const [list, setList] = useState<ContactBookItem[]>([]);
 
-  useEffect(() => {
+  const handleVisibleChange = async () => {
     if (visible) {
-      const data = wallet.listContact();
+      const data = await wallet.listContact();
       setList(data);
     }
+  };
+
+  useEffect(() => {
+    handleVisibleChange();
   }, [visible]);
 
   const handleConfirm = (data: ContactBookItem) => {

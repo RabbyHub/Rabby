@@ -26,7 +26,7 @@ const Connect = ({ params: { icon, origin } }: ConnectProps) => {
         account!.address,
         origin
       );
-      const enableChains = wallet.getEnableChains();
+      const enableChains = await wallet.getEnableChains();
       setIsLoading(false);
       let targetChain: Chain | undefined;
       for (let i = 0; i < recommendChains.length; i++) {

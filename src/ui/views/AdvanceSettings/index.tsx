@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Form, Input, Button, Switch } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { useWallet } from 'ui/utils';
@@ -20,11 +20,14 @@ const OpenApiModal = ({
   const [form] = useForm<{ host: string }>();
   const wallet = useWallet();
   const { t } = useTranslation();
-  const currentHost = wallet.openapi.getHost();
 
-  form.setFieldsValue({
-    host: currentHost,
-  });
+  const init = async () => {
+    const currentHost = await wallet.openapi.getHost();
+
+    form.setFieldsValue({
+      host: currentHost,
+    });
+  };
 
   const handleSubmit = async ({ host }: { host: string }) => {
     await wallet.openapi.setHost(host);
@@ -36,6 +39,10 @@ const OpenApiModal = ({
       host: INITIAL_OPENAPI_URL,
     });
   };
+
+  useEffect(() => {
+    init();
+  }, []);
 
   return (
     <Modal
@@ -57,7 +64,7 @@ const OpenApiModal = ({
         >
           <Input placeholder="Host" size="large" autoFocus spellCheck={false} />
         </Form.Item>
-        {currentHost !== INITIAL_OPENAPI_URL && (
+        {form.getFieldValue('host') !== INITIAL_OPENAPI_URL && (
           <div className="flex justify-end">
             <Button type="link" onClick={restoreInitial} className="restore">
               {t('Restore initial setting')}
@@ -83,14 +90,20 @@ const AdvancedSettings = () => {
   const wallet = useWallet();
   const { t } = useTranslation();
   const [showOpenApiModal, setShowOpenApiModal] = useState(false);
-  const [isDefaultWallet, setIsDefaultWallet] = useState(
-    wallet.isDefaultWallet()
-  );
+  const [isDefaultWallet, setIsDefaultWallet] = useState(false);
 
   const handleDefaultWalletChange = (value: boolean) => {
     wallet.setIsDefaultWallet(value);
     setIsDefaultWallet(value);
   };
+
+  const init = async () => {
+    setIsDefaultWallet(await wallet.isDefaultWallet());
+  };
+
+  useEffect(() => {
+    init();
+  }, []);
 
   const renderData = [
     {
@@ -102,7 +115,7 @@ const AdvancedSettings = () => {
       content: t('Set Rabby as default wallet'),
       rightIcon: (
         <Switch
-          defaultChecked={isDefaultWallet}
+          checked={isDefaultWallet}
           onChange={handleDefaultWalletChange}
         />
       ),

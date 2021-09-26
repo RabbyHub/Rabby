@@ -27,6 +27,8 @@ import { ExplainTxResponse, TokenItem } from '../service/openapi';
 import DisplayKeyring from '../service/keyring/display';
 import provider from './provider';
 
+const stashKeyrings: Record<string, any> = {};
+
 export class WalletController extends BaseController {
   openapi = openapiService;
 
@@ -275,7 +277,12 @@ export class WalletController extends BaseController {
       KEYRING_CLASS.MNEMONIC
     );
 
-    return new Keyring({ mnemonic });
+    const keyring = new Keyring({ mnemonic });
+
+    const stashId = Object.values(stashKeyrings).length;
+    stashKeyrings[stashId] = keyring;
+
+    return stashId;
   };
 
   addKeyring = async (keyring) => {
@@ -367,39 +374,77 @@ export class WalletController extends BaseController {
   updateUseLedgerLive = async (value: boolean) =>
     preferenceService.updateUseLedgerLive(value);
 
-  connectHardware = (type, hdPath?: string) => {
+  connectHardware = async ({
+    type,
+    hdPath,
+    needUnlock = false,
+    isWebUSB = false,
+  }: {
+    type: string;
+    hdPath?: string;
+    needUnlock?: boolean;
+    isWebUSB?: boolean;
+  }) => {
     let keyring;
-    const keyringType = KEYRING_CLASS.HARDWARE[type];
+    let stashKeyringId: number | null = null;
     try {
-      keyring = this._getKeyringByType(keyringType);
+      keyring = this._getKeyringByType(type);
     } catch {
-      const Keyring = keyringService.getKeyringClassForType(keyringType);
+      const Keyring = keyringService.getKeyringClassForType(type);
       keyring = new Keyring();
+      stashKeyringId = Object.values(stashKeyrings).length;
+      stashKeyrings[stashKeyringId] = keyring;
     }
 
     if (hdPath && keyring.setHdPath) {
       keyring.setHdPath(hdPath);
     }
 
-    return keyring;
+    if (needUnlock) {
+      await keyring.unlock();
+    }
+
+    if (keyring.useWebUSB) {
+      keyring.useWebUSB(isWebUSB);
+    }
+
+    return stashKeyringId;
   };
 
-  unlockHardwareAccount = async (keyring, indexes) => {
-    let hasKeyring = false;
+  requestKeyring = (type, methodName, keyringId: number | null, ...params) => {
+    let keyring;
+    if (keyringId !== null && keyringId !== undefined) {
+      keyring = stashKeyrings[keyringId];
+    } else {
+      try {
+        keyring = this._getKeyringByType(type);
+      } catch {
+        const Keyring = keyringService.getKeyringClassForType(type);
+        keyring = new Keyring();
+      }
+    }
+    if (keyring[methodName]) {
+      return keyring[methodName].apply(keyring, ...params);
+    }
+  };
+
+  unlockHardwareAccount = async (keyring, indexes, keyringId) => {
+    let keyringInstance: any = null;
     try {
-      hasKeyring = !!this._getKeyringByType(keyring.type);
+      keyringInstance = this._getKeyringByType(keyring);
     } catch (e) {
       // NOTHING
     }
-    if (!hasKeyring) {
-      await keyringService.addKeyring(keyring);
+    if (!keyringInstance && keyringId !== null && keyringId !== undefined) {
+      await keyringService.addKeyring(stashKeyrings[keyringId]);
+      keyringInstance = stashKeyrings[keyringId];
     }
     for (let i = 0; i < indexes.length; i++) {
-      keyring.setAccountToUnlock(indexes[i]);
-      await keyringService.addNewAccount(keyring);
+      keyringInstance!.setAccountToUnlock(indexes[i]);
+      await keyringService.addNewAccount(keyringInstance);
     }
 
-    return this._setCurrentAccountFromKeyring(keyring);
+    return this._setCurrentAccountFromKeyring(keyringInstance);
   };
 
   getWatchAddressPreference = (address: string) =>

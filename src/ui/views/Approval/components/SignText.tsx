@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Button, Tooltip } from 'antd';
 import { useTranslation } from 'react-i18next';
 import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
-import { KEYRING_CLASS, IS_AFTER_CHROME91 } from 'consts';
+import { KEYRING_CLASS } from 'consts';
 import { useApproval, useWallet } from 'ui/utils';
 import { hex2Text } from 'ui/utils';
 import {
@@ -85,10 +85,12 @@ const SignText = ({ params }: { params: SignTextProps }) => {
     const currentAccount = await wallet.getCurrentAccount();
     if (
       currentAccount?.type === KEYRING_CLASS.HARDWARE.LEDGER &&
-      !wallet.isUseLedgerLive()
+      !(await wallet.isUseLedgerLive())
     ) {
       try {
-        const keyring = wallet.connectHardware(KEYRING_CLASS.HARDWARE.LEDGER);
+        const keyring = await wallet.connectHardware(
+          KEYRING_CLASS.HARDWARE.LEDGER
+        );
         if (keyring.isWebUSB) {
           const transport = await TransportWebUSB.create();
           await transport.close();
