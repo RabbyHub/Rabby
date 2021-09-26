@@ -33,31 +33,25 @@ const LedgerHdPath = () => {
     const keyringId = await wallet.connectHardware({
       type: HARDWARE_KEYRING_TYPES.Ledger.type,
       hdPath: currentPath,
-      isWebUSB: !useLedgerLive,
+      isWebUSB: !useLedgerLive && isSupportWebUSB,
     });
     try {
-      if (useLedgerLive) {
-        // await keyring.updateTransportMethod(true);
-        // keyring.useWebUSB(false);
-      } else if (IS_AFTER_CHROME91 && isSupportWebUSB) {
+      if (IS_AFTER_CHROME91 && isSupportWebUSB && !useLedgerLive) {
         await wallet.requestKeyring(
           HARDWARE_KEYRING_TYPES.Ledger.type,
           'cleanUp',
           keyringId
         );
-        // await keyring.cleanUp();
-        // keyring.useWebUSB(true);
         const transport = await TransportWebUSB.create();
         await transport.close();
       }
-      // await keyring.unlock();
       setSpin(false);
       history.push({
         pathname: '/import/select-address',
         state: {
           keyring: HARDWARE_KEYRING_TYPES.Ledger.type,
           path: currentPath,
-          isWebUSB: !useLedgerLive,
+          isWebUSB: !useLedgerLive && isSupportWebUSB,
           keyringId,
         },
       });
