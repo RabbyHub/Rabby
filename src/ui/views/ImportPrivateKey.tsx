@@ -32,8 +32,8 @@ const ImportPrivateKey = () => {
     },
   });
 
-  const handleLoadCache = () => {
-    const cache = wallet.getPageStateCache();
+  const handleLoadCache = async () => {
+    const cache = await wallet.getPageStateCache();
     if (cache && cache.path === history.location.pathname) {
       form.setFieldsValue(cache.states);
     }
@@ -55,9 +55,12 @@ const ImportPrivateKey = () => {
     }
   };
 
-  useEffect(() => {
-    if (wallet.hasPageStateCache()) handleLoadCache();
+  const init = async () => {
+    if (await wallet.hasPageStateCache()) handleLoadCache();
+  };
 
+  useEffect(() => {
+    init();
     return () => {
       wallet.clearPageStateCache();
     };

@@ -17,7 +17,11 @@ import {
   TransactionGroup,
   TransactionHistoryItem,
 } from 'background/service/transactionHistory';
-import { ExplainTxResponse, TokenItem } from 'background/service/openapi';
+import {
+  ExplainTxResponse,
+  TokenItem,
+  GasLevel,
+} from 'background/service/openapi';
 import { CHAINS, MINIMUM_GAS_LIMIT } from 'consts';
 import { SvgPendingSpin } from 'ui/assets';
 import IconUser from 'ui/assets/address-management.svg';
@@ -281,9 +285,9 @@ const TransactionItem = ({
     const chainServerId = Object.values(CHAINS).find(
       (chain) => chain.id === item.chainId
     )!.serverId;
-    const gasLevels = await wallet.openapi.gasMarket(chainServerId);
+    const gasLevels: GasLevel[] = await wallet.openapi.gasMarket(chainServerId);
     const maxGasMarketPrice = maxBy(gasLevels, (level) => level.price)!.price;
-    wallet.sendRequest({
+    await wallet.sendRequest({
       method: 'eth_sendTransaction',
       params: [
         {
@@ -308,9 +312,9 @@ const TransactionItem = ({
     const chainServerId = Object.values(CHAINS).find(
       (chain) => chain.id === item.chainId
     )!.serverId;
-    const gasLevels = await wallet.openapi.gasMarket(chainServerId);
+    const gasLevels: GasLevel[] = await wallet.openapi.gasMarket(chainServerId);
     const maxGasMarketPrice = maxBy(gasLevels, (level) => level.price)!.price;
-    wallet.sendRequest({
+    await wallet.sendRequest({
       method: 'eth_sendTransaction',
       params: [
         {
@@ -474,13 +478,17 @@ const TransactionItem = ({
 const TransactionHistory = () => {
   const wallet = useWallet();
   const { t } = useTranslation();
-  const { address } = wallet.syncGetCurrentAccount()!;
+  const [address, setAddress] = useState<string | null>(null);
   const [pendingList, setPendingList] = useState<TransactionGroup[]>([]);
   const [completeList, setCompleteList] = useState<TransactionGroup[]>([]);
   const _openInTab = useConfirmExternalModal();
 
-  const init = () => {
-    const { pendings, completeds } = wallet.getTransactionHistory(address);
+  const init = async () => {
+    const account = await wallet.syncGetCurrentAccount()!;
+    setAddress(account.address);
+    const { pendings, completeds } = await wallet.getTransactionHistory(
+      account.address
+    );
     setPendingList(pendings);
     setCompleteList(completeds);
   };

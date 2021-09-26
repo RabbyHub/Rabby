@@ -5,7 +5,7 @@ import { StrayPage } from 'ui/component';
 import { useWallet } from 'ui/utils';
 import { SvgIconOnekey, SvgIconTrezor, ImportLedgerIcon } from 'ui/assets';
 import { BIP44_PATH } from './LedgerHdPath';
-import { IS_CHROME } from 'consts';
+import { IS_CHROME, KEYRING_CLASS } from 'consts';
 
 import './index.css';
 
@@ -28,7 +28,6 @@ const HARDWARES = [
 ];
 
 const ImportHardware = () => {
-  const wallet = useWallet();
   const history = useHistory();
   const [spinning, setSpin] = useState(false);
   const { t } = useTranslation();
@@ -44,14 +43,13 @@ const ImportHardware = () => {
     }
 
     try {
-      setSpin(true);
-      const keyring = wallet.connectHardware(hardware, BIP44_PATH);
-      await keyring.unlock();
-      setSpin(false);
+      // setSpin(true);
+      // const keyring = await wallet.connectHardware(hardware, BIP44_PATH, true);
+      // setSpin(false);
       history.push({
         pathname: '/import/select-address',
         state: {
-          keyring,
+          keyring: KEYRING_CLASS.HARDWARE[hardware],
         },
       });
     } catch (err) {

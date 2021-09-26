@@ -27,7 +27,7 @@ const LedgerConnectMethod = () => {
     }
     setSpin(true);
     try {
-      const useLedgerLive = wallet.isUseLedgerLive();
+      const useLedgerLive = await wallet.isUseLedgerLive();
       if (currentMethod === LEDGER_LIVE && !useLedgerLive) {
         await wallet.updateUseLedgerLive(true);
       } else if (currentMethod === DIRECTLY && useLedgerLive) {

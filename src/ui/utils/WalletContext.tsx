@@ -1,8 +1,19 @@
 import React, { ReactNode } from 'react';
 import { createContext, useContext } from 'react';
-import { WalletController } from 'background/controller/wallet';
+import { Object } from 'ts-toolbelt';
 
-const WalletContext = createContext<{ wallet: WalletController } | null>(null);
+export type WalletController = Object.Merge<
+  {
+    openapi: {
+      [key: string]: (...params: any) => Promise<any>;
+    };
+  },
+  Record<string, (...params: any) => Promise<any>>
+>;
+
+const WalletContext = createContext<{
+  wallet: WalletController;
+} | null>(null);
 
 const WalletProvider = ({
   children,
@@ -15,7 +26,9 @@ const WalletProvider = ({
 );
 
 const useWallet = () => {
-  const { wallet } = useContext(WalletContext) as { wallet: WalletController };
+  const { wallet } = useContext(WalletContext) as {
+    wallet: WalletController;
+  };
 
   return wallet;
 };

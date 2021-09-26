@@ -5,10 +5,13 @@ import { getUiType } from './index';
 
 export const useApproval = () => {
   const wallet = useWallet();
-  const approval = wallet.getApproval();
   const history = useHistory();
 
-  const resolveApproval = (data?: any, stay = false) => {
+  const getApproval = wallet.getApproval;
+
+  const resolveApproval = async (data?: any, stay = false) => {
+    const approval = await getApproval();
+
     if (approval) {
       wallet.resolveApproval(data);
     }
@@ -21,6 +24,7 @@ export const useApproval = () => {
   };
 
   const rejectApproval = async (err?) => {
+    const approval = await getApproval();
     if (approval) {
       await wallet.rejectApproval(err);
     }
@@ -36,7 +40,7 @@ export const useApproval = () => {
     return () => window.removeEventListener('beforeunload', rejectApproval);
   }, []);
 
-  return [approval, resolveApproval, rejectApproval] as const;
+  return [getApproval, resolveApproval, rejectApproval] as const;
 };
 
 export const useSelectOption = <T>({

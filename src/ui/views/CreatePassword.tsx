@@ -1,11 +1,10 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useTranslation, Trans } from 'react-i18next';
 import { StrayPageWithButton } from 'ui/component';
 import { Input, Form } from 'antd';
 import { useWallet, useWalletRequest } from 'ui/utils';
 import UnlockLogo from 'ui/assets/unlock-logo.svg';
-import UnlockMask from 'ui/assets/unlock-mask.svg';
 
 const MINIMUM_PASSWORD_LENGTH = 8;
 
@@ -13,13 +12,6 @@ const CreatePassword = () => {
   const history = useHistory();
   const wallet = useWallet();
   const { t } = useTranslation();
-
-  if (wallet.isBooted() && !wallet.isUnlocked()) {
-    history.replace('/unlock');
-
-    return null;
-  }
-
   const [form] = Form.useForm();
 
   const [run, loading] = useWalletRequest(wallet.boot, {
@@ -35,6 +27,16 @@ const CreatePassword = () => {
       ]);
     },
   });
+
+  const init = async () => {
+    if ((await wallet.isBooted()) && !(await wallet.isUnlocked())) {
+      history.replace('/unlock');
+    }
+  };
+
+  useEffect(() => {
+    init();
+  }, []);
 
   return (
     <StrayPageWithButton

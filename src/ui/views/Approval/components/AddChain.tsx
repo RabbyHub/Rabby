@@ -1,9 +1,10 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import clsx from 'clsx';
 import { Button } from 'antd';
 import { useTranslation, Trans } from 'react-i18next';
 import { intToHex } from 'ethereumjs-util';
-import { CHAINS } from 'consts';
+import { CHAINS, CHAINS_ENUM } from 'consts';
+import { Chain } from 'background/service/chain';
 import { useWallet, useApproval } from 'ui/utils';
 import IconWarning from 'ui/assets/warning.svg';
 
@@ -31,25 +32,43 @@ const AddChain = ({ params }: { params: AddChainProps }) => {
     chainId = chainId.toLowerCase();
   }
 
-  const supportChains = wallet.getSupportChains();
-  const showChain = supportChains.find((chain) => chain.hex === chainId);
+  const [supportChains, setSupportChains] = useState<Chain[]>([]);
+  const [showChain, setShowChain] = useState<Chain | undefined>(undefined);
+  const [enableChains, setEnableChains] = useState<Chain[]>([]);
+  const [defaultChain, setDefaultChain] = useState<CHAINS_ENUM | null>(null);
+  const [title, setTitle] = useState('');
+  const [content, setContent] = useState<any>('');
+  const [confirmBtnText, setConfirmBtnText] = useState('');
+  const [inited, setInited] = useState(false);
 
-  const enableChains = wallet.getEnableChains();
+  const init = async () => {
+    setSupportChains(await wallet.getSupportChains());
+    setEnableChains(await wallet.getEnableChains());
+    const site = await wallet.getConnectedSite(session.origin)!;
+    setDefaultChain(site.chain);
+    setInited(true);
+  };
 
-  let title;
-  let content;
-  let confirmBtnText;
-  if (!enableChains.some((chain) => chain.hex === chainId)) {
-    title = t('Enable a Chain');
-    content = t('enableChainContent');
-    confirmBtnText = t('Enable');
-  } else {
-    title = t('Switch a Chain');
-    content = (
-      <Trans i18nKey="switchChainDesc" values={{ name: showChain?.name }} />
-    );
-    confirmBtnText = t('Change');
-  }
+  useEffect(() => {
+    if (!enableChains.some((chain) => chain.hex === chainId)) {
+      setTitle(t('Enable a Chain'));
+      setContent(t('enableChainContent'));
+      setConfirmBtnText(t('Enable'));
+    } else {
+      setTitle(t('Switch a Chain'));
+      setContent(
+        <Trans i18nKey="switchChainDesc" values={{ name: showChain?.name }} />
+      );
+      setConfirmBtnText(t('Change'));
+    }
+    setShowChain(supportChains.find((chain) => chain.hex === chainId));
+  }, [enableChains, supportChains, defaultChain]);
+
+  useEffect(() => {
+    init();
+  }, []);
+
+  if (!inited) return <></>;
 
   return (
     <>
@@ -98,7 +117,7 @@ const AddChain = ({ params }: { params: AddChainProps }) => {
                 type="primary"
                 size="large"
                 className="w-[172px]"
-                onClick={rejectApproval}
+                onClick={() => rejectApproval()}
               >
                 {t('Cancel')}
               </Button>
@@ -106,7 +125,7 @@ const AddChain = ({ params }: { params: AddChainProps }) => {
                 type="primary"
                 size="large"
                 className="w-[172px]"
-                onClick={resolveApproval}
+                onClick={() => resolveApproval()}
               >
                 {confirmBtnText}
               </Button>
@@ -116,7 +135,7 @@ const AddChain = ({ params }: { params: AddChainProps }) => {
               type="primary"
               size="large"
               className="w-[200px]"
-              onClick={rejectApproval}
+              onClick={() => rejectApproval()}
             >
               {t('OK')}
             </Button>

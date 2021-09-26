@@ -4,8 +4,9 @@ import { isAddress } from 'web3-utils';
 import { addHexPrefix, bufferToHex } from 'ethereumjs-util';
 import WalletConnect from '@walletconnect/client';
 import i18n from '../i18n';
-import { WALLETCONNECT_STATUS_MAP } from 'consts';
+import { WALLETCONNECT_STATUS_MAP, EVENTS } from 'consts';
 import { wait } from 'background/utils';
+import eventBus from '@/eventBus';
 
 const keyringType = 'Watch Address';
 
@@ -32,6 +33,13 @@ class WatchKeyring extends EventEmitter {
   constructor(opts = {}) {
     super();
     this.deserialize(opts);
+    eventBus.addEventListener(EVENTS.WALLETCONNECT.INIT, async () => {
+      await this.initWalletConnect();
+      eventBus.emit(EVENTS.broadcastToUI, {
+        method: EVENTS.WALLETCONNECT.INITED,
+        params: { uri: this.walletConnector?.uri },
+      });
+    });
   }
 
   get walletConnector() {
@@ -96,7 +104,6 @@ class WatchKeyring extends EventEmitter {
   };
 
   addAccounts = async () => {
-    console.log('accountToAdd', this.accountToAdd);
     if (!isAddress(this.accountToAdd)) {
       throw new Error(i18n.t('importAddressInvalid'));
     }
@@ -299,6 +306,13 @@ class WatchKeyring extends EventEmitter {
     this.emit('statusChange', {
       status,
       payload,
+    });
+    eventBus.emit(EVENTS.broadcastToUI, {
+      method: EVENTS.WALLETCONNECT.STATUS_CHANGED,
+      params: {
+        status,
+        payload,
+      },
     });
   }
 

@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { useLocation, useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import clsx from 'clsx';
@@ -10,28 +10,47 @@ import {
 } from 'ui/component';
 import { useWallet, useWalletRequest } from 'ui/utils';
 import { HARDWARE_KEYRING_TYPES } from 'consts';
+import { BIP44_PATH } from '../ImportHardware/LedgerHdPath';
 import './style.less';
 
 const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
   const history = useHistory();
   const { t } = useTranslation();
-  const { state } = useLocation<{ keyring: any; isMnemonics?: boolean }>();
+  const { state } = useLocation<{
+    keyring: string;
+    isMnemonics?: boolean;
+    isWebUSB?: boolean;
+    path?: string;
+    keyringId?: number | null;
+  }>();
 
   if (!state) {
     history.replace('/dashboard');
     return null;
   }
 
-  const { keyring, isMnemonics } = state;
+  const { keyring, isMnemonics, isWebUSB, path } = state;
 
   const [accounts, setAccounts] = useState<any[]>([]);
   const [importedAccounts, setImportedAccounts] = useState<any[]>([]);
   const [form] = Form.useForm();
   const wallet = useWallet();
+  const keyringId = useRef<number | null>(state.keyringId || null);
 
   const [getAccounts, loading] = useWalletRequest(
-    async (firstFlag) =>
-      firstFlag ? await keyring.getFirstPage() : await keyring.getNextPage(),
+    async (firstFlag) => {
+      return firstFlag
+        ? await wallet.requestKeyring(
+            keyring,
+            'getFirstPage',
+            keyringId.current
+          )
+        : await wallet.requestKeyring(
+            keyring,
+            'getNextPage',
+            keyringId.current
+          );
+    },
     {
       onSuccess(_accounts) {
         if (_accounts.length < 5) {
@@ -51,7 +70,20 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
   );
 
   const init = async () => {
-    const _importedAccounts = await keyring.getAccounts();
+    if (keyringId.current === null || keyringId.current === undefined) {
+      const stashKeyringId = await wallet.connectHardware({
+        type: keyring,
+        hdPath: path || BIP44_PATH,
+        isWebUSB,
+      });
+      keyringId.current = stashKeyringId;
+    }
+
+    const _importedAccounts = await wallet.requestKeyring(
+      keyring,
+      'getAccounts',
+      keyringId.current
+    );
     setImportedAccounts(_importedAccounts);
 
     getAccounts(true);
@@ -60,20 +92,29 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
   useEffect(() => {
     init();
     return () => {
-      keyring.cleanUp && keyring.cleanUp();
+      wallet.requestKeyring(keyring, 'cleanUp', keyringId.current);
     };
   }, []);
 
   const onSubmit = async ({ selectedAddressIndexes }) => {
     if (isMnemonics) {
-      keyring.activeAccounts(selectedAddressIndexes);
+      await wallet.requestKeyring(
+        keyring,
+        'activeAccounts',
+        keyringId.current,
+        selectedAddressIndexes
+      );
       await wallet.addKeyring(keyring);
     } else {
-      await wallet.unlockHardwareAccount(keyring, selectedAddressIndexes);
+      await wallet.unlockHardwareAccount(
+        keyring,
+        selectedAddressIndexes,
+        keyringId.current
+      );
     }
 
-    if (keyring.type === HARDWARE_KEYRING_TYPES.Ledger && keyring.isWebUSB) {
-      await keyring.cleanUp();
+    if (keyring === HARDWARE_KEYRING_TYPES.Ledger.type && isWebUSB) {
+      await wallet.requestKeyring(keyring, 'cleanUp', keyringId.current);
     }
 
     history.replace({

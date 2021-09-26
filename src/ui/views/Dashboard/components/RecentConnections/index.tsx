@@ -130,8 +130,8 @@ export default () => {
     openInTab(connection.origin);
   };
 
-  const getConnectedSites = () => {
-    const sites = wallet.getRecentConnectedSites();
+  const getConnectedSites = async () => {
+    const sites = await wallet.getRecentConnectedSites();
     setConnections(sites);
   };
 

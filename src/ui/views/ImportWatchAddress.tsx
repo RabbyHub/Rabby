@@ -134,8 +134,8 @@ const ImportWatchAddress = () => {
     setQRScanModalVisible(false);
   };
 
-  const handleScanQRCodeError = () => {
-    wallet.setPageStateCache({
+  const handleScanQRCodeError = async () => {
+    await wallet.setPageStateCache({
       path: history.location.pathname,
       params: {},
       states: form.getFieldsValue(),
@@ -143,8 +143,8 @@ const ImportWatchAddress = () => {
     openInternalPageInTab('request-permission?type=camera');
   };
 
-  const handleLoadCache = () => {
-    const cache = wallet.getPageStateCache();
+  const handleLoadCache = async () => {
+    const cache = await wallet.getPageStateCache();
     if (cache && cache.path === history.location.pathname) {
       form.setFieldsValue(cache.states);
     }

@@ -8,13 +8,16 @@ const Approval = () => {
   const history = useHistory();
   // const [account, setAccount] = useState('');
   const wallet = useWallet();
-  const [approval, , rejectApproval] = useApproval();
-  if (!approval) {
-    history.replace('/');
-    return null;
-  }
+  const [getApproval, , rejectApproval] = useApproval();
+  const [approval, setApproval] = useState<any>(null);
 
   const init = async () => {
+    const approval = await getApproval();
+    if (!approval) {
+      history.replace('/');
+      return null;
+    }
+    setApproval(approval);
     if (approval.origin || approval.params.origin) {
       document.title = approval.origin || approval.params.origin;
     }
@@ -23,27 +26,25 @@ const Approval = () => {
       rejectApproval();
       return;
     }
-    // setAccount(account.address);
   };
 
   useEffect(() => {
     init();
   }, []);
 
+  if (!approval) return <></>;
   const { approvalComponent, params, origin, requestDefer } = approval;
   const CurrentApprovalComponent = ApprovalComponent[approvalComponent];
 
   return (
     <div className="approval">
-      {/* <header>
-        <p className="text-12">Current account</p>
-        <p className="text-13 font-medium">{account}</p>
-      </header> */}
-      <CurrentApprovalComponent
-        params={params}
-        origin={origin}
-        requestDefer={requestDefer}
-      />
+      {approval && (
+        <CurrentApprovalComponent
+          params={params}
+          origin={origin}
+          requestDefer={requestDefer}
+        />
+      )}
     </div>
   );
 };

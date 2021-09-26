@@ -8,12 +8,13 @@ const SortHat = () => {
   const wallet = useWallet();
   const [to, setTo] = useState('');
   // eslint-disable-next-line prefer-const
-  let [approval, , rejectApproval] = useApproval();
+  let [getApproval, , rejectApproval] = useApproval();
 
   const loadView = async () => {
     const UIType = getUiType();
     const isInNotification = UIType.isNotification;
     const isInTab = UIType.isTab;
+    let approval = await getApproval();
 
     if (isInNotification && !approval) {
       window.close();
@@ -27,18 +28,18 @@ const SortHat = () => {
       approval = undefined;
     }
 
-    if (!wallet.isBooted()) {
+    if (!(await wallet.isBooted())) {
       setTo('/welcome');
       return;
     }
 
-    if (!wallet.isUnlocked()) {
+    if (!(await wallet.isUnlocked())) {
       setTo('/unlock');
       return;
     }
 
-    if (wallet.hasPageStateCache() && !isInNotification && !isInTab) {
-      const cache = wallet.getPageStateCache()!;
+    if ((await wallet.hasPageStateCache()) && !isInNotification && !isInTab) {
+      const cache = await wallet.getPageStateCache()!;
       setTo(cache.path);
       return;
     }
