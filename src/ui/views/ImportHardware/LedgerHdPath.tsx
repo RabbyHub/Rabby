@@ -36,7 +36,7 @@ const LedgerHdPath = () => {
       isWebUSB: !useLedgerLive && isSupportWebUSB,
     });
     try {
-      if (IS_AFTER_CHROME91 && isSupportWebUSB) {
+      if (IS_AFTER_CHROME91 && isSupportWebUSB && !useLedgerLive) {
         await wallet.requestKeyring(
           HARDWARE_KEYRING_TYPES.Ledger.type,
           'cleanUp',
