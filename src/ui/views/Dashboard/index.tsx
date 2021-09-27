@@ -109,12 +109,13 @@ const Dashboard = () => {
   };
 
   const handleGotoSwap = async () => {
-    const site = await getCurrentConnectSite(wallet);
-    let chain: null | string = null;
-    if (site) {
-      chain = CHAINS[site.chain].serverId;
-    }
-    _openInTab(`https://debank.com/swap${chain ? `?chain=${chain}` : ''}`);
+    history.push('/swap');
+    // const site = await getCurrentConnectSite(wallet);
+    // let chain: null | string = null;
+    // if (site) {
+    //   chain = CHAINS[site.chain].serverId;
+    // }
+    // _openInTab(`https://debank.com/swap${chain ? `?chain=${chain}` : ''}`);
   };
 
   const handleCopyCurrentAddress = () => {

@@ -3,7 +3,6 @@ import ClipboardJS from 'clipboard';
 import clsx from 'clsx';
 import BigNumber from 'bignumber.js';
 import { useTranslation } from 'react-i18next';
-import cloneDeep from 'lodash/cloneDeep';
 import { useHistory } from 'react-router-dom';
 import { Input, Form, Skeleton, message, Button } from 'antd';
 import abiCoder, { AbiCoder } from 'web3-eth-abi';
@@ -16,6 +15,7 @@ import { formatTokenAmount, splitNumberByStep } from 'ui/utils/number';
 import AccountCard from '../Approval/components/AccountCard';
 import TokenSelector from 'ui/component/TokenSelector';
 import TokenWithChain from 'ui/component/TokenWithChain';
+import TokenAmountInput from '../'
 import { TokenItem } from 'background/service/openapi';
 import { PageHeader, AddressViewer } from 'ui/component';
 import ContactEditModal from 'ui/component/Contact/EditModal';
@@ -64,9 +64,7 @@ const SendToken = () => {
   const [editBtnDisabled, setEditBtnDisabled] = useState(true);
   const [cacheAmount, setCacheAmount] = useState('0');
   const [tokenSelectorVisible, setTokenSelectorVisible] = useState(false);
-  const [originTokenList, setOriginTokenList] = useState<TokenItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
-  const [isListLoading, setIsListLoading] = useState(true);
   const [balanceError, setBalanceError] = useState(null);
   const [balanceWarn, setBalanceWarn] = useState(null);
   const [showContactInfo, setShowContactInfo] = useState(false);
@@ -247,38 +245,6 @@ const SendToken = () => {
     setTokenSelectorVisible(true);
   };
 
-  const sortTokensByPrice = (tokens: TokenItem[]) => {
-    const copy = cloneDeep(tokens);
-    return copy.sort((a, b) => {
-      return new BigNumber(b.amount)
-        .times(new BigNumber(b.price || 0))
-        .minus(new BigNumber(a.amount).times(new BigNumber(a.price || 0)))
-        .toNumber();
-    });
-  };
-
-  const sortTokens = (condition: 'common' | 'all', tokens: TokenItem[]) => {
-    const copy = cloneDeep(tokens);
-    if (condition === 'common') {
-      return copy.sort((a, b) => {
-        if (a.is_core && !b.is_core) {
-          return -1;
-        } else if (a.is_core && b.is_core) {
-          return 0;
-        } else if (!a.is_core && b.is_core) {
-          return 1;
-        }
-        return 0;
-      });
-    } else {
-      return copy;
-    }
-  };
-
-  const handleSort = (condition: 'common' | 'all') => {
-    setTokens(sortTokens(condition, originTokenList));
-  };
-
   const handleClickTokenBalance = () => {
     if (isLoading) return;
     const values = form.getFieldsValue();
@@ -288,32 +254,6 @@ const SendToken = () => {
     };
     form.setFieldsValue(newValues);
     handleFormValuesChange(null, newValues);
-  };
-
-  const handleLoadTokens = async (q?: string) => {
-    let tokens: TokenItem[] = [];
-    if (q) {
-      tokens = sortTokensByPrice(
-        await wallet.openapi.searchToken(currentAccount!.address, q)
-      );
-    } else {
-      if (originTokenList.length > 0) {
-        tokens = originTokenList;
-      } else {
-        tokens = sortTokensByPrice(
-          await wallet.openapi.listToken(currentAccount!.address)
-        );
-        setOriginTokenList(tokens);
-        setIsListLoading(false);
-      }
-    }
-    setTokens(sortTokens('common', tokens));
-    const existCurrentToken = tokens.find(
-      (token) => token.id === currentToken.id
-    );
-    if (existCurrentToken) {
-      setCurrentToken(existCurrentToken);
-    }
   };
 
   const handleCopyContractAddress = () => {
