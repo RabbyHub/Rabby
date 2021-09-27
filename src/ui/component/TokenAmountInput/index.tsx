@@ -10,8 +10,8 @@ import IconArrowDown from 'ui/assets/arrow-down-triangle.svg';
 
 interface TokenAmountInputProps {
   token: TokenItem;
-  value: string;
-  onChange(amount: string): void;
+  value?: string;
+  onChange?(amount: string): void;
   onTokenChange(token: TokenItem): void;
   address: string;
 }
@@ -31,7 +31,7 @@ const TokenAmountInput = ({
   const wallet = useWallet();
 
   const handleCurrentTokenChange = (token: TokenItem) => {
-    onChange('');
+    onChange && onChange('');
     onTokenChange(token);
     setTokenSelectorVisible(false);
     tokenInputRef.current?.focus();
@@ -110,7 +110,7 @@ const TokenAmountInput = ({
         <Input
           ref={tokenInputRef}
           value={value}
-          onChange={(e) => onChange(e.target.value)}
+          onChange={(e) => onChange && onChange(e.target.value)}
         />
       </div>
       <TokenSelector

@@ -13,9 +13,7 @@ import { ContactBookItem } from 'background/service/contactBook';
 import { useWallet } from 'ui/utils';
 import { formatTokenAmount, splitNumberByStep } from 'ui/utils/number';
 import AccountCard from '../Approval/components/AccountCard';
-import TokenSelector from 'ui/component/TokenSelector';
-import TokenWithChain from 'ui/component/TokenWithChain';
-import TokenAmountInput from '../'
+import TokenAmountInput from 'ui/component/TokenAmountInput';
 import { TokenItem } from 'background/service/openapi';
 import { PageHeader, AddressViewer } from 'ui/component';
 import ContactEditModal from 'ui/component/Contact/EditModal';
@@ -25,7 +23,6 @@ import IconEdit from 'ui/assets/edit-purple.svg';
 import IconNormal from 'ui/assets/keyring-normal-purple.svg';
 import IconHardware from 'ui/assets/hardware-purple.svg';
 import IconWatch from 'ui/assets/watch-purple.svg';
-import IconArrowDown from 'ui/assets/arrow-down-triangle.svg';
 import IconCopy from 'ui/assets/copy-no-border.svg';
 import IconSuccess from 'ui/assets/success.svg';
 import { SvgIconPlusPrimary } from 'ui/assets';
@@ -39,8 +36,6 @@ const SendToken = () => {
   const history = useHistory();
   const [form] = useForm<{ to: string; amount: string }>();
   const [contactInfo, setContactInfo] = useState<null | ContactBookItem>(null);
-  const [tokens, setTokens] = useState<TokenItem[]>([]);
-  const tokenInputRef = useRef<Input>(null);
   const [currentToken, setCurrentToken] = useState<TokenItem>({
     id: 'eth',
     chain: 'eth',
@@ -63,7 +58,6 @@ const SendToken = () => {
   const [showListContactModal, setShowListContactModal] = useState(false);
   const [editBtnDisabled, setEditBtnDisabled] = useState(true);
   const [cacheAmount, setCacheAmount] = useState('0');
-  const [tokenSelectorVisible, setTokenSelectorVisible] = useState(false);
   const [isLoading, setIsLoading] = useState(true);
   const [balanceError, setBalanceError] = useState(null);
   const [balanceWarn, setBalanceWarn] = useState(null);
@@ -230,19 +224,9 @@ const SendToken = () => {
       ...values,
       amount: '',
     });
-    setTokenSelectorVisible(false);
     setCurrentToken(token);
     setBalanceError(null);
     setBalanceWarn(null);
-    tokenInputRef.current?.focus();
-  };
-
-  const handleTokenSelectorClose = () => {
-    setTokenSelectorVisible(false);
-  };
-
-  const handleSelectToken = () => {
-    setTokenSelectorVisible(true);
   };
 
   const handleClickTokenBalance = () => {
@@ -426,29 +410,15 @@ const SendToken = () => {
               </div>
             )}
           </div>
-          <div className="token-input">
-            <div className="left" onClick={handleSelectToken}>
-              <TokenWithChain token={currentToken} />
-              <span className="token-input__symbol" title={currentToken.symbol}>
-                {currentToken.symbol}
-              </span>
-              <img src={IconArrowDown} className="icon icon-arrow-down" />
-            </div>
-            <div className="right">
-              <Form.Item name="amount">
-                <Input ref={tokenInputRef} />
-              </Form.Item>
-            </div>
-            <TokenSelector
-              visible={tokenSelectorVisible}
-              list={tokens}
-              onConfirm={handleCurrentTokenChange}
-              onCancel={handleTokenSelectorClose}
-              onSearch={handleLoadTokens}
-              onSort={handleSort}
-              isLoading={isListLoading}
-            />
-          </div>
+          <Form.Item name="amount">
+            {currentAccount && (
+              <TokenAmountInput
+                address={currentAccount.address}
+                token={currentToken}
+                onTokenChange={handleCurrentTokenChange}
+              />
+            )}
+          </Form.Item>
           <div className="token-info__header" />
           <div className="token-info">
             {!isNativeToken ? (
