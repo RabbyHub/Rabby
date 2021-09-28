@@ -7,6 +7,7 @@ import { useWallet } from 'ui/utils';
 import TokenWithChain from '../TokenWithChain';
 import TokenSelector from '../TokenSelector';
 import IconArrowDown from 'ui/assets/arrow-down-triangle.svg';
+import './style.less';
 
 interface TokenAmountInputProps {
   token: TokenItem;
@@ -91,14 +92,14 @@ const TokenAmountInput = ({
       }
     }
     setTokens(sortTokens('common', tokens));
-    const existCurrentToken = tokens.find((token) => token.id === token.id);
+    const existCurrentToken = tokens.find((t) => t.id === token.id);
     if (existCurrentToken) {
       onTokenChange(existCurrentToken);
     }
   };
 
   return (
-    <div className="token-input">
+    <div className="token-amount-input">
       <div className="left" onClick={handleSelectToken}>
         <TokenWithChain token={token} />
         <span className="token-input__symbol" title={token.symbol}>

@@ -1,12 +1,16 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { PageHeader } from 'ui/component';
+import TokenAmountInput from 'ui/component/TokenAmountInput';
+import { useWallet } from 'ui/utils';
 import { CHAINS_ENUM } from 'consts';
 import { TokenItem } from 'background/service/openapi';
+import { Account } from 'background/service/preference';
 import './style.less';
 
 const Swap = () => {
   const { t } = useTranslation();
+  const wallet = useWallet();
   const [chain, setChain] = useState(CHAINS_ENUM.BSC);
   const [from, setFrom] = useState<TokenItem>({
     id: 'bsc',
@@ -42,11 +46,32 @@ const Swap = () => {
     symbol: 'BUSD',
     time_at: 0,
   });
+  const [currentAccount, setCurrentAccount] = useState<Account | null>(null);
+
+  const handleTokenChange = (token: TokenItem) => {
+    setFrom(token);
+  };
+
+  const init = async () => {
+    setCurrentAccount(await wallet.syncGetCurrentAccount());
+  };
+
+  useEffect(() => {
+    init();
+  }, []);
 
   return (
     <div className="swap">
       <PageHeader>{t('Swap')}</PageHeader>
-      <div className="swap-section"></div>
+      <div className="swap-section">
+        {currentAccount && (
+          <TokenAmountInput
+            address={currentAccount.address}
+            token={from}
+            onTokenChange={handleTokenChange}
+          />
+        )}
+      </div>
     </div>
   );
 };
