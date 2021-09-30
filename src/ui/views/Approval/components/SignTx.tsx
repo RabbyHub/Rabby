@@ -5,8 +5,6 @@ import {
   isHexPrefixed,
   addHexPrefix,
   unpadHexString,
-  intToBuffer,
-  bufferToHex,
 } from 'ethereumjs-util';
 import { Button, Modal } from 'antd';
 import { useTranslation } from 'react-i18next';
