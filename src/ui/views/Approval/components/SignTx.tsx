@@ -35,7 +35,7 @@ import { Chain } from 'background/service/chain';
 
 const normalizeHex = (value: string | number) => {
   if (typeof value === 'number') {
-    return intToHex(value);
+    return intToHex(Math.floor(value));
   }
   if (typeof value === 'string') {
     if (!isHexPrefixed(value)) {
@@ -58,7 +58,7 @@ const normalizeTxParams = (tx) => {
     copy.gas = normalizeHex(copy.gas);
   }
   if ('gasPrice' in copy) {
-    copy.gas = normalizeHex(copy.gas);
+    copy.gasPrice = normalizeHex(copy.gasPrice);
   }
   if ('value' in copy) {
     copy.value = addHexPrefix(unpadHexString(copy.value || '0x0'));
@@ -319,7 +319,7 @@ const SignTx = ({ params, origin }) => {
     const gas = await wallet.openapi.gasMarket(chain!.serverId);
     setTx({
       ...tx,
-      gasPrice: intToHex(Math.max(...gas.map((item) => item.price))),
+      gasPrice: intToHex(Math.max(...gas.map((item) => parseInt(item.price)))),
     });
   };
 
