@@ -314,7 +314,6 @@ class ProviderController extends BaseController {
       });
 
       onTranscationSubmitted(hash);
-
       return hash;
     } catch (e) {
       const errMsg = e.message || JSON.stringify(e);
