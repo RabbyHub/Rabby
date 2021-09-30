@@ -5,6 +5,8 @@ import {
   isHexPrefixed,
   addHexPrefix,
   unpadHexString,
+  intToBuffer,
+  bufferToHex,
 } from 'ethereumjs-util';
 import { Button, Modal } from 'antd';
 import { useTranslation } from 'react-i18next';
@@ -225,7 +227,7 @@ const SignTx = ({ params, origin }) => {
         : intToHex(maxFeePerGas);
     }
     if (gasPrice) {
-      result = isHexString(gasPrice) ? gasPrice : intToHex(gasPrice);
+      result = isHexString(gasPrice) ? gasPrice : intToHex(parseInt(gasPrice));
     }
     if (Number.isNaN(Number(result))) {
       result = '';
@@ -390,11 +392,11 @@ const SignTx = ({ params, origin }) => {
     const afterNonce = intToHex(gas.nonce);
     setTx({
       ...tx,
-      gasPrice: `0x${gas.price.toString(16)}`,
-      gas: `0x${gas.gasLimit.toString(16)}`,
+      gasPrice: intToHex(Math.round(gas.price)),
+      gas: intToHex(gas.gasLimit),
       nonce: afterNonce,
     });
-    setGasLimit(`0x${gas.gasLimit.toString(16)}`);
+    setGasLimit(intToHex(gas.gasLimit));
     setRealNonce(afterNonce);
     if (beforeNonce !== afterNonce) {
       setNonceChanged(true);
