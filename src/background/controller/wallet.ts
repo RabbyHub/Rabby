@@ -285,9 +285,14 @@ export class WalletController extends BaseController {
     return stashId;
   };
 
-  addKeyring = async (keyring) => {
-    await keyringService.addKeyring(keyring);
-    this._setCurrentAccountFromKeyring(keyring);
+  addKeyring = async (keyringId) => {
+    const keyring = stashKeyrings[keyringId];
+    if (keyring) {
+      await keyringService.addKeyring(keyring);
+      this._setCurrentAccountFromKeyring(keyring);
+    } else {
+      throw new Error('failed to addKeyring, keyring is undefined');
+    }
   };
 
   getKeyringByType = (type: string) => keyringService.getKeyringByType(type);
@@ -424,7 +429,7 @@ export class WalletController extends BaseController {
       }
     }
     if (keyring[methodName]) {
-      return keyring[methodName].apply(keyring, ...params);
+      return keyring[methodName].call(keyring, ...params);
     }
   };
 
