@@ -10,6 +10,7 @@ import {
   normalizeAddress,
   setPageStateCacheWhenPopupClose,
 } from 'background/utils';
+import BitBox02Keyring from './eth-bitbox02-keyring';
 import LedgerBridgeKeyring from './eth-ledger-bridge-keyring';
 import SimpleKeyring from '@rabby-wallet/eth-simple-keyring';
 import HdKeyring from '@rabby-wallet/eth-hd-keyring';
@@ -26,6 +27,7 @@ import eventBus from '@/eventBus';
 export const KEYRING_SDK_TYPES = {
   SimpleKeyring,
   HdKeyring,
+  BitBox02Keyring,
   TrezorKeyring,
   LedgerBridgeKeyring,
   OnekeyKeyring,
@@ -37,6 +39,7 @@ export const KEYRING_CLASS = {
   PRIVATE_KEY: SimpleKeyring.type,
   MNEMONIC: HdKeyring.type,
   HARDWARE: {
+    BITBOX02: BitBox02Keyring.type,
     TREZOR: TrezorKeyring.type,
     LEDGER: LedgerBridgeKeyring.type,
     ONEKEY: OnekeyKeyring.type,

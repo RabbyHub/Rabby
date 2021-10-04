@@ -2,7 +2,12 @@ import React from 'react';
 import { Button } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { useApproval, useWallet } from 'ui/utils';
-import { SvgIconTrezor, SvgIconLedger, SvgIconOnekey } from 'ui/assets';
+import {
+  SvgIconBitBox02,
+  SvgIconTrezor,
+  SvgIconLedger,
+  SvgIconOnekey,
+} from 'ui/assets';
 import { HARDWARE_KEYRING_TYPES, IS_AFTER_CHROME91 } from 'consts';
 import AccountCard from './AccountCard';
 
@@ -25,6 +30,8 @@ const Hardware = ({
 
   const Icon = () => {
     switch (type) {
+      case HARDWARE_KEYRING_TYPES.BitBox02.type:
+        return <SvgIconBitBox02 className="icon icon-hardware" />;
       case HARDWARE_KEYRING_TYPES.Ledger.type:
         return <SvgIconLedger className="icon icon-hardware" />;
       case HARDWARE_KEYRING_TYPES.Onekey.type:
