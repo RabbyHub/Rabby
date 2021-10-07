@@ -1,13 +1,7 @@
-import React, { useEffect, useState } from 'react';
-import { Modal } from 'ui/component';
+import React, { useState } from 'react';
 import { CHAINS_ENUM, CHAINS } from 'consts';
-import { useWallet, splitNumberByStep } from 'ui/utils';
-import IconChecked from 'ui/assets/checked.svg';
-import IconNotChecked from 'ui/assets/not-checked.svg';
 import { SvgIconArrowDown } from 'ui/assets';
-import { useCurrentBalance } from 'ui/component/AddressList/AddressItem';
-import { Chain } from 'background/service/chain';
-import { Account } from 'background/service/preference';
+import Modal from './Modal';
 
 import './style.less';
 
@@ -18,11 +12,7 @@ interface ChainSelectorProps {
 }
 
 const ChainSelector = ({ value, onChange }: ChainSelectorProps) => {
-  const wallet = useWallet();
   const [showSelectorModal, setShowSelectorModal] = useState(false);
-  const [enableChains, setEnableChains] = useState<Chain[]>([]);
-  const [currentAccount, setCurrentAccount] = useState<Account | null>(null);
-  const [, chainBalances] = useCurrentBalance(currentAccount?.address);
 
   const handleClickSelector = () => {
     setShowSelectorModal(true);
@@ -32,25 +22,10 @@ const ChainSelector = ({ value, onChange }: ChainSelectorProps) => {
     setShowSelectorModal(false);
   };
 
-  const handleChange = (val: CHAINS_ENUM) => {
+  const handleChange = (value: CHAINS_ENUM) => {
+    onChange(value);
     setShowSelectorModal(false);
-    onChange(val);
   };
-
-  const chainBalanceMap = chainBalances.reduce((m, n) => {
-    m[n.community_id] = n;
-    m[n.community_id].splitedNumber = splitNumberByStep(n.usd_value.toFixed(2));
-    return m;
-  }, {});
-
-  const init = async () => {
-    setEnableChains(await wallet.getEnableChains());
-    setCurrentAccount(await wallet.syncGetCurrentAccount());
-  };
-
-  useEffect(() => {
-    init();
-  }, []);
 
   return (
     <>
@@ -59,51 +34,11 @@ const ChainSelector = ({ value, onChange }: ChainSelectorProps) => {
         <SvgIconArrowDown className="icon icon-arrow-down text-gray-content fill-current" />
       </div>
       <Modal
-        width="360px"
-        closable={false}
+        value={value}
         visible={showSelectorModal}
+        onChange={handleChange}
         onCancel={handleCancel}
-        className="chain-selector__modal"
-      >
-        <>
-          <ul className="chain-selector-options">
-            {enableChains.map((chain) => (
-              <li
-                className="relative"
-                key={chain.enum}
-                onClick={() => handleChange(chain.enum as CHAINS_ENUM)}
-              >
-                <img className="chain-logo" src={chain?.logo} />
-                <div className="chain-name">
-                  <p className="text-13 font-medium my-0 leading-none">
-                    {chain.name}
-                  </p>
-                  {chainBalanceMap[chain?.id]?.usd_value && (
-                    <>
-                      <div className="absolute left-0 top-10 bottom-10 w-2 bg-blue-light" />
-                      <p
-                        className="mt-4 mb-0 text-gray-content text-12 truncate"
-                        title={splitNumberByStep(
-                          chainBalanceMap[chain?.id].splitedNumber
-                        )}
-                      >
-                        $
-                        {splitNumberByStep(
-                          chainBalanceMap[chain?.id].splitedNumber
-                        )}
-                      </p>
-                    </>
-                  )}
-                </div>
-                <img
-                  className="icon icon-checked"
-                  src={value === chain?.enum ? IconChecked : IconNotChecked}
-                />
-              </li>
-            ))}
-          </ul>
-        </>
-      </Modal>
+      />
     </>
   );
 };

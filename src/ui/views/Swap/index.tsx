@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { PageHeader } from 'ui/component';
 import TokenAmountInput from 'ui/component/TokenAmountInput';
 import { useWallet } from 'ui/utils';
+import { formatTokenAmount, splitNumberByStep } from 'ui/utils/number';
 import { CHAINS_ENUM } from 'consts';
 import { TokenItem } from 'background/service/openapi';
 import { Account } from 'background/service/preference';
@@ -12,6 +13,7 @@ const Swap = () => {
   const { t } = useTranslation();
   const wallet = useWallet();
   const [chain, setChain] = useState(CHAINS_ENUM.BSC);
+  const [fromUSDValue, setFromUSDValue] = useState('0');
   const [from, setFrom] = useState<TokenItem>({
     id: 'bsc',
     chain: 'bsc',
@@ -64,6 +66,11 @@ const Swap = () => {
     <div className="swap">
       <PageHeader>{t('Swap')}</PageHeader>
       <div className="swap-section">
+        <div className="from-balance">
+          <span className="cursor-pointer">
+            {t('Balance')}: {formatTokenAmount(from.amount, 8)}
+          </span>
+        </div>
         {currentAccount && (
           <TokenAmountInput
             address={currentAccount.address}
