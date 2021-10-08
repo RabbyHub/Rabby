@@ -19,6 +19,14 @@ const log = (event, ...args) => {
   }
 };
 
+interface StateProvider {
+  accounts: string[] | null;
+  isConnected: boolean;
+  isUnlocked: boolean;
+  initialized: boolean;
+  isPermanentlyDisconnected: boolean;
+}
+
 export class EthereumProvider extends EventEmitter {
   chainId: string | null = null;
   selectedAddress: string | null = null;
@@ -33,6 +41,14 @@ export class EthereumProvider extends EventEmitter {
   _isConnected = false;
   _initialized = false;
   _isUnlocked = false;
+
+  _state: StateProvider = {
+    accounts: null,
+    isConnected: false,
+    isUnlocked: false,
+    initialized: false,
+    isPermanentlyDisconnected: false,
+  };
 
   _metamask = {
     isUnlocked: () => {
@@ -100,6 +116,7 @@ export class EthereumProvider extends EventEmitter {
       });
       if (isUnlocked) {
         this._isUnlocked = true;
+        this._state.isUnlocked = true;
       }
       this.chainId = chainId;
       this.networkVersion = networkVersion;
@@ -114,6 +131,7 @@ export class EthereumProvider extends EventEmitter {
       //
     } finally {
       this._initialized = true;
+      this._state.initialized = true;
       this.emit('_initialized');
     }
   };

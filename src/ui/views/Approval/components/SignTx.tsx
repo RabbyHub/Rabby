@@ -35,7 +35,7 @@ import { Chain } from 'background/service/chain';
 
 const normalizeHex = (value: string | number) => {
   if (typeof value === 'number') {
-    return intToHex(value);
+    return intToHex(Math.floor(value));
   }
   if (typeof value === 'string') {
     if (!isHexPrefixed(value)) {
@@ -58,7 +58,7 @@ const normalizeTxParams = (tx) => {
     copy.gas = normalizeHex(copy.gas);
   }
   if ('gasPrice' in copy) {
-    copy.gas = normalizeHex(copy.gas);
+    copy.gasPrice = normalizeHex(copy.gasPrice);
   }
   if ('value' in copy) {
     copy.value = addHexPrefix(unpadHexString(copy.value || '0x0'));
@@ -225,7 +225,7 @@ const SignTx = ({ params, origin }) => {
         : intToHex(maxFeePerGas);
     }
     if (gasPrice) {
-      result = isHexString(gasPrice) ? gasPrice : intToHex(gasPrice);
+      result = isHexString(gasPrice) ? gasPrice : intToHex(parseInt(gasPrice));
     }
     if (Number.isNaN(Number(result))) {
       result = '';
@@ -319,7 +319,7 @@ const SignTx = ({ params, origin }) => {
     const gas = await wallet.openapi.gasMarket(chain!.serverId);
     setTx({
       ...tx,
-      gasPrice: intToHex(Math.max(...gas.map((item) => item.price))),
+      gasPrice: intToHex(Math.max(...gas.map((item) => parseInt(item.price)))),
     });
   };
 
@@ -390,11 +390,11 @@ const SignTx = ({ params, origin }) => {
     const afterNonce = intToHex(gas.nonce);
     setTx({
       ...tx,
-      gasPrice: `0x${gas.price.toString(16)}`,
-      gas: `0x${gas.gasLimit.toString(16)}`,
+      gasPrice: intToHex(Math.round(gas.price)),
+      gas: intToHex(gas.gasLimit),
       nonce: afterNonce,
     });
-    setGasLimit(`0x${gas.gasLimit.toString(16)}`);
+    setGasLimit(intToHex(gas.gasLimit));
     setRealNonce(afterNonce);
     if (beforeNonce !== afterNonce) {
       setNonceChanged(true);

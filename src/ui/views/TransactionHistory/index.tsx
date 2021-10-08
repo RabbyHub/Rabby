@@ -319,7 +319,9 @@ const TransactionItem = ({
       params: [
         {
           ...originTx.rawTx,
-          gasPrice: intToHex(Math.max(maxGasPrice * 2, maxGasMarketPrice)),
+          gasPrice: intToHex(
+            Math.round(Math.max(maxGasPrice * 2, maxGasMarketPrice))
+          ),
           isSpeedUp: true,
         },
       ],

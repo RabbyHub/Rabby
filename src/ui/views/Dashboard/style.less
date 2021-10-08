@@ -134,45 +134,46 @@
     .operation {
       display: flex;
       position: absolute;
-      bottom: -1px;
+      bottom: 12px;
       left: 50%;
       transform: translateX(-50%);
-      width: 85%;
-      height: 50px;
-      border-radius: 6px 6px 0px 0px;
-      box-shadow: 0 0 100px rgba(0, 0, 0, 0.1);
-      background: url('../../assets/operation-card.png') left top / cover no-repeat;
+      width: 344px;
+      height: 44px;
       .operation-item {
         flex: 1;
         color: #fff;
         font-size: 14px;
         position: relative;
         padding: 6px;
-        .operation-item__inner {
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          height: 100%;
-          cursor: pointer;
-          background-color: transparent;
-          border-radius: 6px;
-          transition: background-color .2s;
-          position: relative;
+        width: 166px;
+        background-color: rgba(255, 255, 255, 0.12);
+        backdrop-filter: blur(40px);
+        border-radius: 6px;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+        height: 100%;
+        cursor: pointer;
+        transition: background-color .2s;
+        position: relative;
+        margin-right: 12px;
+        &:nth-last-child(1) {
+          margin-right: 0;
+        }
+        .icon-external-link {
+          width: 10px;
+          height: 10px;
+          position: absolute;
+          margin: 0;
+          top: 4px;
+          right: 4px;
+          opacity: 0;
+          transition: opacity .2s;
+        }
+        &:hover {
+          background: rgba(19, 20, 26, 0.1);
           .icon-external-link {
-            width: 10px;
-            height: 10px;
-            position: absolute;
-            margin: 0;
-            top: 4px;
-            right: 4px;
-            opacity: 0;
-            transition: opacity .2s;
-          }
-          &:hover {
-            background-color: rgba(0, 0, 0, 0.08);
-            .icon-external-link {
-              opacity: 1;
-            }
+            opacity: 1;
           }
         }
         .icon {

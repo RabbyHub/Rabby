@@ -35,7 +35,7 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
   const [importedAccounts, setImportedAccounts] = useState<any[]>([]);
   const [form] = Form.useForm();
   const wallet = useWallet();
-  const keyringId = useRef<number | null>(state.keyringId || null);
+  const keyringId = useRef<number | null | undefined>(state.keyringId);
 
   const [getAccounts, loading] = useWalletRequest(
     async (firstFlag) => {
@@ -104,7 +104,7 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
         keyringId.current,
         selectedAddressIndexes
       );
-      await wallet.addKeyring(keyring);
+      await wallet.addKeyring(keyringId.current);
     } else {
       await wallet.unlockHardwareAccount(
         keyring,
