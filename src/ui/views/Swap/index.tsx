@@ -1,10 +1,12 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import BigNumber from 'bignumber.js';
 import { PageHeader } from 'ui/component';
 import TokenAmountInput from 'ui/component/TokenAmountInput';
+import TagChainSelector from 'ui/component/ChainSelector/tag';
 import { useWallet } from 'ui/utils';
 import { formatTokenAmount, splitNumberByStep } from 'ui/utils/number';
-import { CHAINS_ENUM } from 'consts';
+import { CHAINS_ENUM, CHAINS } from 'consts';
 import { TokenItem } from 'background/service/openapi';
 import { Account } from 'background/service/preference';
 import './style.less';
@@ -14,6 +16,7 @@ const Swap = () => {
   const wallet = useWallet();
   const [chain, setChain] = useState(CHAINS_ENUM.BSC);
   const [fromUSDValue, setFromUSDValue] = useState('0');
+  const [fromValue, setFromValue] = useState('');
   const [from, setFrom] = useState<TokenItem>({
     id: 'bsc',
     chain: 'bsc',
@@ -31,7 +34,7 @@ const Swap = () => {
     time_at: 0,
     amount: 0,
   });
-  const [to, setTo] = useState<TokenItem>({
+  const [to, setTo] = useState<TokenItem | null>({
     amount: 0,
     chain: 'eth',
     decimals: 18,
@@ -58,6 +61,40 @@ const Swap = () => {
     setCurrentAccount(await wallet.syncGetCurrentAccount());
   };
 
+  const handleClickFromBalance = () => {
+    const value = new BigNumber(from.amount).toFixed();
+    setFromValue(value);
+  };
+
+  const handleChainChanged = (value: CHAINS_ENUM) => {
+    setChain(value);
+  };
+
+  useEffect(() => {
+    const target = CHAINS[chain];
+
+    setFrom({
+      id: target.serverId,
+      chain: target.serverId,
+      name: target.nativeTokenSymbol,
+      symbol: target.nativeTokenSymbol,
+      display_symbol: null,
+      optimized_symbol: target.nativeTokenSymbol,
+      decimals: 18,
+      logo_url: '',
+      price: 0,
+      is_verified: true,
+      is_core: true,
+      is_wallet: true,
+      time_at: 0,
+      amount: 0,
+    });
+  }, [chain]);
+
+  useEffect(() => {
+    // TODO
+  }, [fromValue]);
+
   useEffect(() => {
     init();
   }, []);
@@ -65,9 +102,10 @@ const Swap = () => {
   return (
     <div className="swap">
       <PageHeader>{t('Swap')}</PageHeader>
+      <TagChainSelector value={chain} onChange={handleChainChanged} />
       <div className="swap-section">
         <div className="from-balance">
-          <span className="cursor-pointer">
+          <span className="cursor-pointer" onClick={handleClickFromBalance}>
             {t('Balance')}: {formatTokenAmount(from.amount, 8)}
           </span>
         </div>
@@ -75,6 +113,7 @@ const Swap = () => {
           <TokenAmountInput
             address={currentAccount.address}
             token={from}
+            value={fromValue}
             onTokenChange={handleTokenChange}
           />
         )}

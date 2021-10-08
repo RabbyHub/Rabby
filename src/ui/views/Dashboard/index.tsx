@@ -96,12 +96,6 @@ const Dashboard = () => {
 
   const handleGotoSend = async () => {
     history.push('/send-token');
-    // const site = await getCurrentConnectSite(wallet);
-    // let chain: null | string = null;
-    // if (site) {
-    //   chain = CHAINS[site.chain].serverId;
-    // }
-    // _openInTab(`https://debank.com/send${chain ? `?chain=${chain}` : ''}`);
   };
 
   const handleGotoHistory = async () => {
@@ -196,26 +190,30 @@ const Dashboard = () => {
           <BalanceView currentAccount={currentAccount} />
           <div className="operation">
             <div className="operation-item" onClick={handleGotoSend}>
-              <img className="icon icon-send" src={IconSend} />
-              {t('Send')}
+              <div className="operation-item__inner">
+                <img className="icon icon-send" src={IconSend} />
+                {t('Send')}
+              </div>
             </div>
-            {/* <div className="operation-item" onClick={handleGotoSwap}>
+            <div className="operation-item" onClick={handleGotoSwap}>
               <div className="operation-item__inner">
                 <img className="icon icon-swap" src={IconSwap} />
                 {t('Swap')}
                 <img src={IconExternal} className="icon icon-external-link" />
               </div>
-            </div> */}
+            </div>
             <div className="operation-item" onClick={handleGotoHistory}>
-              {pendingTxCount > 0 ? (
-                <div className="pending-count">
-                  <img src={IconPending} className="icon icon-pending" />
-                  {pendingTxCount}
-                </div>
-              ) : (
-                <img className="icon icon-history" src={IconHistory} />
-              )}
-              {t('History')}
+              <div className="operation-item__inner">
+                {pendingTxCount > 0 ? (
+                  <div className="pending-count">
+                    <img src={IconPending} className="icon icon-pending" />
+                    {pendingTxCount}
+                  </div>
+                ) : (
+                  <img className="icon icon-history" src={IconHistory} />
+                )}
+                {t('History')}
+              </div>
             </div>
           </div>
         </div>
