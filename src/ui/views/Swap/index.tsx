@@ -5,11 +5,14 @@ import BigNumber from 'bignumber.js';
 import { PageHeader } from 'ui/component';
 import TokenAmountInput from 'ui/component/TokenAmountInput';
 import TagChainSelector from 'ui/component/ChainSelector/tag';
+import TokenSelector from 'ui/component/TokenSelector';
+import ReadonlyToeknAmount from 'ui/component/ReadonlyTokenAmount';
 import { useWallet } from 'ui/utils';
 import { formatTokenAmount, splitNumberByStep } from 'ui/utils/number';
 import { CHAINS_ENUM, CHAINS } from 'consts';
 import { TokenItem } from 'background/service/openapi';
 import { Account } from 'background/service/preference';
+import IconSwapArrow from 'ui/assets/swap-arrow.svg';
 import './style.less';
 
 const Swap = () => {
@@ -35,12 +38,12 @@ const Swap = () => {
     time_at: 0,
     amount: 0,
   });
-  const [to, setTo] = useState<TokenItem | null>({
+  const [to, setTo] = useState<TokenItem>({
     amount: 0,
-    chain: 'eth',
+    chain: 'bsc',
     decimals: 18,
     display_symbol: null,
-    id: '0x4fabb145d64652a948d72533023f6e7a623c7c53',
+    id: '0xe9e7cea3dedca5984780bafc599bd69add087d56',
     is_core: true,
     is_verified: true,
     is_wallet: true,
@@ -52,14 +55,31 @@ const Swap = () => {
     symbol: 'BUSD',
     time_at: 0,
   });
+  const [tokens, setTokens] = useState<TokenItem[]>([]);
+  const [originTokens, setOriginTokens] = useState<TokenItem[]>([]);
   const [currentAccount, setCurrentAccount] = useState<Account | null>(null);
 
   const handleTokenChange = (token: TokenItem) => {
     setFrom(token);
   };
 
+  const loadToken = async (
+    token: TokenItem,
+    address: string
+  ): Promise<TokenItem> => {
+    return await wallet.openapi.getToken(address, token.chain, token.id);
+  };
+
   const init = async () => {
-    setCurrentAccount(await wallet.syncGetCurrentAccount());
+    const account = await wallet.syncGetCurrentAccount();
+    const [fromToken, toToken] = await Promise.all([
+      loadToken(from, account.address),
+      loadToken(to, account.address),
+    ]);
+
+    setCurrentAccount(account);
+    setFrom(fromToken);
+    setTo(toToken);
   };
 
   const handleClickFromBalance = () => {
@@ -70,6 +90,8 @@ const Swap = () => {
   const handleChainChanged = (value: CHAINS_ENUM) => {
     setChain(value);
   };
+
+  const handleClickToToken = () => {};
 
   useEffect(() => {
     const target = CHAINS[chain];
@@ -130,6 +152,13 @@ const Swap = () => {
                 .toFixed()
             )}
           </span>
+        </div>
+        <div className="swap-arrow">
+          <img src={IconSwapArrow} className="icon icon-swap-arrow" />
+        </div>
+        <ReadonlyToeknAmount token={to} onClick={handleClickToToken} />
+        <div className="to-token">
+          <span className="to-token__name">{to.name}</span>
         </div>
       </div>
     </div>
