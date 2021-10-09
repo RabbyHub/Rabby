@@ -187,6 +187,7 @@ class LedgerBridgeKeyring extends EventEmitter {
     this.app = null;
     if (this.transport) this.transport.close();
     this.transport = null;
+    this.hdk = new HDKey();
   }
 
   async unlock(hdPath?): Promise<string> {
@@ -742,7 +743,6 @@ class LedgerBridgeKeyring extends EventEmitter {
     await this.unlock();
     let accounts;
     if (this._isLedgerLiveHdPath()) {
-      // TODO: why webusb have to use bip44?
       accounts = await this._getAccountsBIP44(from, to);
     } else {
       accounts = this._getAccountsLegacy(from, to);
@@ -785,7 +785,6 @@ class LedgerBridgeKeyring extends EventEmitter {
       balance: number | null;
       index: number;
     }[] = [];
-
     for (let i = from; i < to; i++) {
       const address = this._addressFromIndex(pathBase, i);
       accounts.push({
