@@ -54,4 +54,12 @@
       color: #161819;
     }
   }
+  &.readonly {
+    cursor: pointer;
+    .left {
+      &::after {
+        display: none;
+      }
+    }
+  }
 }

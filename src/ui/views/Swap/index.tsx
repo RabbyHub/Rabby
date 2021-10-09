@@ -91,7 +91,10 @@ const Swap = () => {
     setChain(value);
   };
 
-  const handleClickToToken = () => {};
+  const handleToTokenChange = (token: TokenItem) => {
+    console.log(token);
+    setTo(token);
+  };
 
   useEffect(() => {
     const target = CHAINS[chain];
@@ -156,7 +159,15 @@ const Swap = () => {
         <div className="swap-arrow">
           <img src={IconSwapArrow} className="icon icon-swap-arrow" />
         </div>
-        <ReadonlyToeknAmount token={to} onClick={handleClickToToken} />
+        {currentAccount && (
+          <TokenAmountInput
+            address={currentAccount.address}
+            token={to}
+            chainId={CHAINS[chain].serverId}
+            onTokenChange={handleToTokenChange}
+            readOnly
+          />
+        )}
         <div className="to-token">
           <span className="to-token__name">{to.name}</span>
         </div>

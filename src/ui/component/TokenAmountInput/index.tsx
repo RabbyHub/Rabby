@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import clsx from 'clsx';
 import { Input } from 'antd';
 import cloneDeep from 'lodash/cloneDeep';
 import BigNumber from 'bignumber.js';
@@ -16,6 +17,7 @@ interface TokenAmountInputProps {
   onTokenChange(token: TokenItem): void;
   address: string;
   chainId: string;
+  readOnly?: boolean;
 }
 
 const TokenAmountInput = ({
@@ -25,6 +27,7 @@ const TokenAmountInput = ({
   onTokenChange,
   address,
   chainId,
+  readOnly = false,
 }: TokenAmountInputProps) => {
   const tokenInputRef = useRef<Input>(null);
   const [tokens, setTokens] = useState<TokenItem[]>([]);
@@ -35,8 +38,11 @@ const TokenAmountInput = ({
 
   const handleCurrentTokenChange = (token: TokenItem) => {
     onChange && onChange('');
+    console.log(1);
     onTokenChange(token);
+    console.log(2);
     setTokenSelectorVisible(false);
+    console.log('hidden');
     tokenInputRef.current?.focus();
   };
 
@@ -105,20 +111,36 @@ const TokenAmountInput = ({
   }, [chainId]);
 
   return (
-    <div className="token-amount-input">
-      <div className="left" onClick={handleSelectToken}>
-        <TokenWithChain token={token} />
-        <span className="token-input__symbol" title={token.symbol}>
-          {token.symbol}
-        </span>
-        <img src={IconArrowDown} className="icon icon-arrow-down" />
-      </div>
-      <div className="right">
-        <Input
-          ref={tokenInputRef}
-          value={value}
-          onChange={(e) => onChange && onChange(e.target.value)}
-        />
+    <>
+      <div
+        className={clsx('token-amount-input', { readonly: readOnly })}
+        onClick={readOnly ? handleSelectToken : undefined}
+      >
+        <div
+          className="left"
+          onClick={readOnly ? undefined : handleSelectToken}
+        >
+          <TokenWithChain token={token} />
+          <span className="token-input__symbol" title={token.symbol}>
+            {token.symbol}
+          </span>
+          {!readOnly && (
+            <img src={IconArrowDown} className="icon icon-arrow-down" />
+          )}
+        </div>
+        <div className="right">
+          {!readOnly && (
+            <Input
+              ref={tokenInputRef}
+              value={value}
+              onChange={(e) => onChange && onChange(e.target.value)}
+              readOnly={readOnly}
+            />
+          )}
+          {readOnly && (
+            <img src={IconArrowDown} className="icon icon-arrow-down" />
+          )}
+        </div>
       </div>
       <TokenSelector
         visible={tokenSelectorVisible}
@@ -129,7 +151,7 @@ const TokenAmountInput = ({
         onSort={handleSort}
         isLoading={isListLoading}
       />
-    </div>
+    </>
   );
 };
 
