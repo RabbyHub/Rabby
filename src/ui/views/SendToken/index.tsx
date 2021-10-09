@@ -267,6 +267,11 @@ const SendToken = () => {
       },
       account.address
     );
+    const values = form.getFieldsValue();
+    form.setFieldsValue({
+      ...values,
+      amount: '',
+    });
   };
 
   const handleCopyContractAddress = () => {
@@ -366,8 +371,6 @@ const SendToken = () => {
               hardware: IconHardware,
             }}
           />
-        </div>
-        <div className="section">
           <div className="section-title">
             <span className="section-title__to">{t('To')}</span>
             <div className="flex flex-1 justify-end items-center">
