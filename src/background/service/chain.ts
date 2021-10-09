@@ -17,6 +17,7 @@ export interface Chain {
   network: string;
   nativeTokenSymbol: string;
   whiteLogo?: string;
+  nativeTokenLogo: string;
   scanLink: string;
 }
 

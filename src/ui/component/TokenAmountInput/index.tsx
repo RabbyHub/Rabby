@@ -15,6 +15,7 @@ interface TokenAmountInputProps {
   onChange?(amount: string): void;
   onTokenChange(token: TokenItem): void;
   address: string;
+  chainId: string;
 }
 
 const TokenAmountInput = ({
@@ -23,6 +24,7 @@ const TokenAmountInput = ({
   onChange,
   onTokenChange,
   address,
+  chainId,
 }: TokenAmountInputProps) => {
   const tokenInputRef = useRef<Input>(null);
   const [tokens, setTokens] = useState<TokenItem[]>([]);
@@ -81,12 +83,16 @@ const TokenAmountInput = ({
   const handleLoadTokens = async (q?: string) => {
     let tokens: TokenItem[] = [];
     if (q) {
-      tokens = sortTokensByPrice(await wallet.openapi.searchToken(address, q));
+      tokens = sortTokensByPrice(
+        await wallet.openapi.searchToken(address, q, chainId)
+      );
     } else {
       if (originTokenList.length > 0) {
         tokens = originTokenList;
       } else {
-        tokens = sortTokensByPrice(await wallet.openapi.listToken(address));
+        tokens = sortTokensByPrice(
+          await wallet.openapi.listToken(address, chainId)
+        );
         setOriginTokenList(tokens);
         setIsListLoading(false);
       }

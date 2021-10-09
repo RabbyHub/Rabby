@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import { Popover } from 'antd';
 import BigNumber from 'bignumber.js';
 import { PageHeader } from 'ui/component';
 import TokenAmountInput from 'ui/component/TokenAmountInput';
@@ -16,7 +17,7 @@ const Swap = () => {
   const wallet = useWallet();
   const [chain, setChain] = useState(CHAINS_ENUM.BSC);
   const [fromUSDValue, setFromUSDValue] = useState('0');
-  const [fromValue, setFromValue] = useState('');
+  const [fromValue, setFromValue] = useState('0');
   const [from, setFrom] = useState<TokenItem>({
     id: 'bsc',
     chain: 'bsc',
@@ -81,7 +82,7 @@ const Swap = () => {
       display_symbol: null,
       optimized_symbol: target.nativeTokenSymbol,
       decimals: 18,
-      logo_url: '',
+      logo_url: target.nativeTokenLogo,
       price: 0,
       is_verified: true,
       is_core: true,
@@ -114,9 +115,22 @@ const Swap = () => {
             address={currentAccount.address}
             token={from}
             value={fromValue}
+            chainId={CHAINS[chain].serverId}
             onTokenChange={handleTokenChange}
+            onChange={(v) => setFromValue(v)}
           />
         )}
+        <div className="from-token">
+          <span className="from-token__name">{from.name}</span>
+          <span className="from-token__usdvalue">
+            ≈ $
+            {splitNumberByStep(
+              new BigNumber(fromValue || 0)
+                .times(new BigNumber(from.price || 0))
+                .toFixed()
+            )}
+          </span>
+        </div>
       </div>
     </div>
   );
