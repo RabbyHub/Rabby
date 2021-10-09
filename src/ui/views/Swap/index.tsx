@@ -172,6 +172,9 @@ const Swap = () => {
           <span className="to-token__name">{to.name}</span>
         </div>
       </div>
+      <div className="swap-section price-slippage">
+        
+      </div>
     </div>
   );
 };
