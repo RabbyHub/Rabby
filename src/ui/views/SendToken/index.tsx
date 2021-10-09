@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect } from 'react';
 import ClipboardJS from 'clipboard';
 import clsx from 'clsx';
 import BigNumber from 'bignumber.js';
@@ -7,13 +7,14 @@ import { useHistory } from 'react-router-dom';
 import { Input, Form, Skeleton, message, Button } from 'antd';
 import abiCoder, { AbiCoder } from 'web3-eth-abi';
 import { isValidAddress, unpadHexString, addHexPrefix } from 'ethereumjs-util';
-import { CHAINS } from 'consts';
+import { CHAINS, CHAINS_ENUM } from 'consts';
 import { Account } from 'background/service/preference';
 import { ContactBookItem } from 'background/service/contactBook';
 import { useWallet } from 'ui/utils';
 import { formatTokenAmount, splitNumberByStep } from 'ui/utils/number';
 import AccountCard from '../Approval/components/AccountCard';
 import TokenAmountInput from 'ui/component/TokenAmountInput';
+import TagChainSelector from 'ui/component/ChainSelector/tag';
 import { TokenItem } from 'background/service/openapi';
 import { PageHeader, AddressViewer } from 'ui/component';
 import ContactEditModal from 'ui/component/Contact/EditModal';
@@ -31,6 +32,7 @@ import './style.less';
 const SendToken = () => {
   const wallet = useWallet();
   const [currentAccount, setCurrentAccount] = useState<Account | null>(null);
+  const [chain, setChain] = useState(CHAINS_ENUM.ETH);
   const { t } = useTranslation();
   const { useForm } = Form;
   const history = useHistory();
@@ -68,7 +70,7 @@ const SendToken = () => {
     !balanceError &&
     new BigNumber(form.getFieldValue('amount')).isGreaterThan(0) &&
     !isLoading;
-  const isNativeToken = currentToken.id === currentToken.chain;
+  const isNativeToken = currentToken.id === CHAINS[chain].nativeTokenAddress;
 
   const handleSubmit = async ({
     to,
@@ -128,7 +130,7 @@ const SendToken = () => {
         currentToken,
       },
     });
-    await wallet.sendRequest({
+    wallet.sendRequest({
       method: 'eth_sendTransaction',
       params: [params],
     });
@@ -220,10 +222,12 @@ const SendToken = () => {
 
   const handleCurrentTokenChange = (token: TokenItem) => {
     const values = form.getFieldsValue();
-    form.setFieldsValue({
-      ...values,
-      amount: '',
-    });
+    if (token.id !== currentToken.id || token.chain !== currentToken.chain) {
+      form.setFieldsValue({
+        ...values,
+        amount: '',
+      });
+    }
     setCurrentToken(token);
     setBalanceError(null);
     setBalanceWarn(null);
@@ -238,6 +242,36 @@ const SendToken = () => {
     };
     form.setFieldsValue(newValues);
     handleFormValuesChange(null, newValues);
+  };
+
+  const handleChainChanged = async (val: CHAINS_ENUM) => {
+    const account = await wallet.syncGetCurrentAccount();
+    const chain = CHAINS[val];
+    setChain(val);
+    loadCurrentToken(
+      {
+        id: chain.nativeTokenAddress,
+        chain: chain.serverId,
+        name: chain.nativeTokenSymbol,
+        symbol: chain.nativeTokenSymbol,
+        display_symbol: null,
+        optimized_symbol: chain.nativeTokenSymbol,
+        decimals: 18,
+        logo_url: chain.nativeTokenLogo,
+        price: 0,
+        is_verified: true,
+        is_core: true,
+        is_wallet: true,
+        time_at: 0,
+        amount: 0,
+      },
+      account.address
+    );
+    const values = form.getFieldsValue();
+    form.setFieldsValue({
+      ...values,
+      amount: '',
+    });
   };
 
   const handleCopyContractAddress = () => {
@@ -280,7 +314,7 @@ const SendToken = () => {
     }
 
     const lastTimeToken = await wallet.getLastTimeSendToken(account.address);
-    let needLoadToken = lastTimeToken || currentToken;
+    let needLoadToken: TokenItem = lastTimeToken || currentToken;
 
     if (lastTimeToken) setCurrentToken(lastTimeToken);
     setCurrentAccount(account);
@@ -296,6 +330,12 @@ const SendToken = () => {
           needLoadToken = cache.states.currentToken;
         }
       }
+    }
+    if (needLoadToken.chain !== CHAINS[chain].serverId) {
+      const target = Object.values(CHAINS).find(
+        (item) => item.serverId === needLoadToken.chain
+      )!;
+      setChain(target.enum);
     }
     loadCurrentToken(needLoadToken, account.address);
   };
@@ -321,6 +361,7 @@ const SendToken = () => {
           amount: '',
         }}
       >
+        <TagChainSelector value={chain} onChange={handleChainChanged} />
         <div className="section">
           <div className="section-title">{t('From')}</div>
           <AccountCard
@@ -330,8 +371,6 @@ const SendToken = () => {
               hardware: IconHardware,
             }}
           />
-        </div>
-        <div className="section">
           <div className="section-title">
             <span className="section-title__to">{t('To')}</span>
             <div className="flex flex-1 justify-end items-center">
@@ -416,6 +455,7 @@ const SendToken = () => {
                 address={currentAccount.address}
                 token={currentToken}
                 onTokenChange={handleCurrentTokenChange}
+                chainId={CHAINS[chain].serverId}
               />
             )}
           </Form.Item>

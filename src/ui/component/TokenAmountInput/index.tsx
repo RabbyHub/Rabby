@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Input } from 'antd';
 import cloneDeep from 'lodash/cloneDeep';
 import BigNumber from 'bignumber.js';
@@ -87,15 +87,11 @@ const TokenAmountInput = ({
         await wallet.openapi.searchToken(address, q, chainId)
       );
     } else {
-      if (originTokenList.length > 0) {
-        tokens = originTokenList;
-      } else {
-        tokens = sortTokensByPrice(
-          await wallet.openapi.listToken(address, chainId)
-        );
-        setOriginTokenList(tokens);
-        setIsListLoading(false);
-      }
+      tokens = sortTokensByPrice(
+        await wallet.openapi.listToken(address, chainId)
+      );
+      setOriginTokenList(tokens);
+      setIsListLoading(false);
     }
     setTokens(sortTokens('common', tokens));
     const existCurrentToken = tokens.find((t) => t.id === token.id);
@@ -103,6 +99,10 @@ const TokenAmountInput = ({
       onTokenChange(existCurrentToken);
     }
   };
+
+  useEffect(() => {
+    handleLoadTokens();
+  }, [chainId]);
 
   return (
     <div className="token-amount-input">
