@@ -130,7 +130,7 @@ const SendToken = () => {
         currentToken,
       },
     });
-    await wallet.sendRequest({
+    wallet.sendRequest({
       method: 'eth_sendTransaction',
       params: [params],
     });
@@ -222,10 +222,12 @@ const SendToken = () => {
 
   const handleCurrentTokenChange = (token: TokenItem) => {
     const values = form.getFieldsValue();
-    form.setFieldsValue({
-      ...values,
-      amount: '',
-    });
+    if (token.id !== currentToken.id || token.chain !== currentToken.chain) {
+      form.setFieldsValue({
+        ...values,
+        amount: '',
+      });
+    }
     setCurrentToken(token);
     setBalanceError(null);
     setBalanceWarn(null);
