@@ -1,20 +1,21 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import ClipboardJS from 'clipboard';
 import clsx from 'clsx';
 import BigNumber from 'bignumber.js';
 import { useTranslation } from 'react-i18next';
+import cloneDeep from 'lodash/cloneDeep';
 import { useHistory } from 'react-router-dom';
 import { Input, Form, Skeleton, message, Button } from 'antd';
 import abiCoder, { AbiCoder } from 'web3-eth-abi';
 import { isValidAddress, unpadHexString, addHexPrefix } from 'ethereumjs-util';
-import { CHAINS, CHAINS_ENUM } from 'consts';
+import { CHAINS } from 'consts';
 import { Account } from 'background/service/preference';
 import { ContactBookItem } from 'background/service/contactBook';
 import { useWallet } from 'ui/utils';
 import { formatTokenAmount, splitNumberByStep } from 'ui/utils/number';
 import AccountCard from '../Approval/components/AccountCard';
-import TokenAmountInput from 'ui/component/TokenAmountInput';
-import TagChainSelector from 'ui/component/ChainSelector/tag';
+import TokenSelector from 'ui/component/TokenSelector';
+import TokenWithChain from 'ui/component/TokenWithChain';
 import { TokenItem } from 'background/service/openapi';
 import { PageHeader, AddressViewer } from 'ui/component';
 import ContactEditModal from 'ui/component/Contact/EditModal';
@@ -24,6 +25,7 @@ import IconEdit from 'ui/assets/edit-purple.svg';
 import IconNormal from 'ui/assets/keyring-normal-purple.svg';
 import IconHardware from 'ui/assets/hardware-purple.svg';
 import IconWatch from 'ui/assets/watch-purple.svg';
+import IconArrowDown from 'ui/assets/arrow-down-triangle.svg';
 import IconCopy from 'ui/assets/copy-no-border.svg';
 import IconSuccess from 'ui/assets/success.svg';
 import { SvgIconPlusPrimary } from 'ui/assets';
@@ -32,12 +34,13 @@ import './style.less';
 const SendToken = () => {
   const wallet = useWallet();
   const [currentAccount, setCurrentAccount] = useState<Account | null>(null);
-  const [chain, setChain] = useState(CHAINS_ENUM.ETH);
   const { t } = useTranslation();
   const { useForm } = Form;
   const history = useHistory();
   const [form] = useForm<{ to: string; amount: string }>();
   const [contactInfo, setContactInfo] = useState<null | ContactBookItem>(null);
+  const [tokens, setTokens] = useState<TokenItem[]>([]);
+  const tokenInputRef = useRef<Input>(null);
   const [currentToken, setCurrentToken] = useState<TokenItem>({
     id: 'eth',
     chain: 'eth',
@@ -60,7 +63,10 @@ const SendToken = () => {
   const [showListContactModal, setShowListContactModal] = useState(false);
   const [editBtnDisabled, setEditBtnDisabled] = useState(true);
   const [cacheAmount, setCacheAmount] = useState('0');
+  const [tokenSelectorVisible, setTokenSelectorVisible] = useState(false);
+  const [originTokenList, setOriginTokenList] = useState<TokenItem[]>([]);
   const [isLoading, setIsLoading] = useState(true);
+  const [isListLoading, setIsListLoading] = useState(true);
   const [balanceError, setBalanceError] = useState(null);
   const [balanceWarn, setBalanceWarn] = useState(null);
   const [showContactInfo, setShowContactInfo] = useState(false);
@@ -70,7 +76,7 @@ const SendToken = () => {
     !balanceError &&
     new BigNumber(form.getFieldValue('amount')).isGreaterThan(0) &&
     !isLoading;
-  const isNativeToken = currentToken.id === CHAINS[chain].nativeTokenAddress;
+  const isNativeToken = currentToken.id === currentToken.chain;
 
   const handleSubmit = async ({
     to,
@@ -130,7 +136,7 @@ const SendToken = () => {
         currentToken,
       },
     });
-    wallet.sendRequest({
+    await wallet.sendRequest({
       method: 'eth_sendTransaction',
       params: [params],
     });
@@ -222,15 +228,55 @@ const SendToken = () => {
 
   const handleCurrentTokenChange = (token: TokenItem) => {
     const values = form.getFieldsValue();
-    if (token.id !== currentToken.id || token.chain !== currentToken.chain) {
-      form.setFieldsValue({
-        ...values,
-        amount: '',
-      });
-    }
+    form.setFieldsValue({
+      ...values,
+      amount: '',
+    });
+    setTokenSelectorVisible(false);
     setCurrentToken(token);
     setBalanceError(null);
     setBalanceWarn(null);
+    tokenInputRef.current?.focus();
+  };
+
+  const handleTokenSelectorClose = () => {
+    setTokenSelectorVisible(false);
+  };
+
+  const handleSelectToken = () => {
+    setTokenSelectorVisible(true);
+  };
+
+  const sortTokensByPrice = (tokens: TokenItem[]) => {
+    const copy = cloneDeep(tokens);
+    return copy.sort((a, b) => {
+      return new BigNumber(b.amount)
+        .times(new BigNumber(b.price || 0))
+        .minus(new BigNumber(a.amount).times(new BigNumber(a.price || 0)))
+        .toNumber();
+    });
+  };
+
+  const sortTokens = (condition: 'common' | 'all', tokens: TokenItem[]) => {
+    const copy = cloneDeep(tokens);
+    if (condition === 'common') {
+      return copy.sort((a, b) => {
+        if (a.is_core && !b.is_core) {
+          return -1;
+        } else if (a.is_core && b.is_core) {
+          return 0;
+        } else if (!a.is_core && b.is_core) {
+          return 1;
+        }
+        return 0;
+      });
+    } else {
+      return copy;
+    }
+  };
+
+  const handleSort = (condition: 'common' | 'all') => {
+    setTokens(sortTokens(condition, originTokenList));
   };
 
   const handleClickTokenBalance = () => {
@@ -244,34 +290,30 @@ const SendToken = () => {
     handleFormValuesChange(null, newValues);
   };
 
-  const handleChainChanged = async (val: CHAINS_ENUM) => {
-    const account = await wallet.syncGetCurrentAccount();
-    const chain = CHAINS[val];
-    setChain(val);
-    loadCurrentToken(
-      {
-        id: chain.nativeTokenAddress,
-        chain: chain.serverId,
-        name: chain.nativeTokenSymbol,
-        symbol: chain.nativeTokenSymbol,
-        display_symbol: null,
-        optimized_symbol: chain.nativeTokenSymbol,
-        decimals: 18,
-        logo_url: chain.nativeTokenLogo,
-        price: 0,
-        is_verified: true,
-        is_core: true,
-        is_wallet: true,
-        time_at: 0,
-        amount: 0,
-      },
-      account.address
+  const handleLoadTokens = async (q?: string) => {
+    let tokens: TokenItem[] = [];
+    if (q) {
+      tokens = sortTokensByPrice(
+        await wallet.openapi.searchToken(currentAccount!.address, q)
+      );
+    } else {
+      if (originTokenList.length > 0) {
+        tokens = originTokenList;
+      } else {
+        tokens = sortTokensByPrice(
+          await wallet.openapi.listToken(currentAccount!.address)
+        );
+        setOriginTokenList(tokens);
+        setIsListLoading(false);
+      }
+    }
+    setTokens(sortTokens('common', tokens));
+    const existCurrentToken = tokens.find(
+      (token) => token.id === currentToken.id
     );
-    const values = form.getFieldsValue();
-    form.setFieldsValue({
-      ...values,
-      amount: '',
-    });
+    if (existCurrentToken) {
+      setCurrentToken(existCurrentToken);
+    }
   };
 
   const handleCopyContractAddress = () => {
@@ -314,7 +356,7 @@ const SendToken = () => {
     }
 
     const lastTimeToken = await wallet.getLastTimeSendToken(account.address);
-    let needLoadToken: TokenItem = lastTimeToken || currentToken;
+    let needLoadToken = lastTimeToken || currentToken;
 
     if (lastTimeToken) setCurrentToken(lastTimeToken);
     setCurrentAccount(account);
@@ -330,12 +372,6 @@ const SendToken = () => {
           needLoadToken = cache.states.currentToken;
         }
       }
-    }
-    if (needLoadToken.chain !== CHAINS[chain].serverId) {
-      const target = Object.values(CHAINS).find(
-        (item) => item.serverId === needLoadToken.chain
-      )!;
-      setChain(target.enum);
     }
     loadCurrentToken(needLoadToken, account.address);
   };
@@ -361,7 +397,6 @@ const SendToken = () => {
           amount: '',
         }}
       >
-        <TagChainSelector value={chain} onChange={handleChainChanged} />
         <div className="section">
           <div className="section-title">{t('From')}</div>
           <AccountCard
@@ -371,6 +406,8 @@ const SendToken = () => {
               hardware: IconHardware,
             }}
           />
+        </div>
+        <div className="section">
           <div className="section-title">
             <span className="section-title__to">{t('To')}</span>
             <div className="flex flex-1 justify-end items-center">
@@ -449,16 +486,29 @@ const SendToken = () => {
               </div>
             )}
           </div>
-          <Form.Item name="amount">
-            {currentAccount && (
-              <TokenAmountInput
-                address={currentAccount.address}
-                token={currentToken}
-                onTokenChange={handleCurrentTokenChange}
-                chainId={CHAINS[chain].serverId}
-              />
-            )}
-          </Form.Item>
+          <div className="token-input">
+            <div className="left" onClick={handleSelectToken}>
+              <TokenWithChain token={currentToken} />
+              <span className="token-input__symbol" title={currentToken.symbol}>
+                {currentToken.symbol}
+              </span>
+              <img src={IconArrowDown} className="icon icon-arrow-down" />
+            </div>
+            <div className="right">
+              <Form.Item name="amount">
+                <Input ref={tokenInputRef} />
+              </Form.Item>
+            </div>
+            <TokenSelector
+              visible={tokenSelectorVisible}
+              list={tokens}
+              onConfirm={handleCurrentTokenChange}
+              onCancel={handleTokenSelectorClose}
+              onSearch={handleLoadTokens}
+              onSort={handleSort}
+              isLoading={isListLoading}
+            />
+          </div>
           <div className="token-info__header" />
           <div className="token-info">
             {!isNativeToken ? (

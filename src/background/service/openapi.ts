@@ -695,17 +695,12 @@ class OpenApiService {
     return data;
   };
 
-  searchToken = async (
-    id: string,
-    q: string,
-    chainId: string
-  ): Promise<TokenItem[]> => {
+  searchToken = async (id: string, q: string): Promise<TokenItem[]> => {
     const config = this.store.config.token_search;
     const { data } = await this.request[config.method](config.path, {
       params: {
         id,
         q,
-        chain_id: chainId,
       },
     });
 
@@ -729,13 +724,12 @@ class OpenApiService {
     return data;
   };
 
-  listToken = async (id: string, chainId: string): Promise<TokenItem[]> => {
+  listToken = async (id: string): Promise<TokenItem[]> => {
     const config = this.store.config.token_list;
     const { data } = await this.request[config.method](config.path, {
       params: {
         id,
         is_all: true,
-        chain_id: chainId,
       },
     });
 
