@@ -47,16 +47,30 @@ const deleteSession = (id) => {
 };
 
 const broadcastEvent = (ev, data?, origin?) => {
-  let sessions = [...sessionMap.values()].filter((session) =>
-    permissionService.hasPerssmion(session.origin)
-  );
+  let sessions: any[] = [];
+  sessionMap.forEach((session, key) => {
+    if (permissionService.hasPerssmion(session.origin)) {
+      sessions.push({
+        key,
+        ...session,
+      });
+    }
+  });
 
   // same origin
   if (origin) {
     sessions = sessions.filter((session) => session.origin === origin);
   }
 
-  sessions.forEach((session) => session.pushMessage?.(ev, data));
+  sessions.forEach((session) => {
+    try {
+      session.pushMessage?.(ev, data);
+    } catch (e) {
+      if (sessionMap.has(session.key)) {
+        deleteSession(session.key);
+      }
+    }
+  });
 };
 
 export default {
