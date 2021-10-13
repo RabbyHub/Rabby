@@ -19,6 +19,7 @@ export { ReactComponent as SvgIconLedger } from './ledger.svg';
 export { ReactComponent as SvgIconTrezor } from './trezor.svg';
 export { ReactComponent as SvgIconOnekey } from './onekey.svg';
 export { ReactComponent as SvgIconArrowDown } from './arrow-down-gray.svg';
+export { ReactComponent as SvgIconArrowDownTriangle } from './arrow-down-triangle.svg';
 export { ReactComponent as SvgIconSlogon } from './slogon.svg';
 export { ReactComponent as SvgIconOpenExternal } from './open-external.svg';
 export { ReactComponent as SvgIconRefresh } from './refresh.svg';

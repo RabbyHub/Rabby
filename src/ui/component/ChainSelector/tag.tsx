@@ -1,6 +1,6 @@
 import React, { useState } from 'react';
 import { CHAINS_ENUM, CHAINS } from 'consts';
-import { SvgIconArrowDown } from 'ui/assets';
+import { SvgIconArrowDownTriangle } from 'ui/assets';
 import Modal from './Modal';
 
 import './style.less';
@@ -29,9 +29,12 @@ const ChainSelector = ({ value, onChange }: ChainSelectorProps) => {
 
   return (
     <>
-      <div className="chain-selector" onClick={handleClickSelector}>
-        <img src={CHAINS[value]?.logo} className="chain-logo" />
-        <SvgIconArrowDown className="icon icon-arrow-down text-gray-content fill-current" />
+      <div className="chain-tag-selector flex" onClick={handleClickSelector}>
+        On{' '}
+        <span className="chain-tag-selector__name flex-1">
+          {CHAINS[value].name}
+        </span>
+        <SvgIconArrowDownTriangle className="icon icon-arrow-down" />
       </div>
       <Modal
         value={value}

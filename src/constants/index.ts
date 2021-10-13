@@ -66,6 +66,9 @@ export const CHAINS: Record<string, Chain> = {
     whiteLogo: IconEthWhiteLogo,
     network: '1',
     nativeTokenSymbol: 'ETH',
+    nativeTokenLogo:
+      'https://static.debank.com/image/token/logo_url/eth/935ae4e4d1d12d59a99717a24f2540b5.png',
+    nativeTokenAddress: 'eth',
     scanLink: 'https://etherscan.io/tx/_s_',
   },
   [CHAINS_ENUM.BSC]: {
@@ -78,7 +81,10 @@ export const CHAINS: Record<string, Chain> = {
     whiteLogo: IconBscWhiteLogo,
     network: '56',
     nativeTokenSymbol: 'BNB',
+    nativeTokenAddress: 'bsc',
     scanLink: 'https://bscscan.com/tx/_s_',
+    nativeTokenLogo:
+      'https://static.debank.com/image/bsc_token/logo_url/bsc/8bfdeaa46fe9be8f5cd43a53b8d1eea1.png',
   },
   [CHAINS_ENUM.DAI]: {
     id: 100,
@@ -90,7 +96,10 @@ export const CHAINS: Record<string, Chain> = {
     whiteLogo: IconDaiWhiteLogo,
     network: '100',
     nativeTokenSymbol: 'xDAI',
+    nativeTokenAddress: 'xdai',
     scanLink: 'https://blockscout.com/xdai/mainnet/tx/_s_',
+    nativeTokenLogo:
+      'https://static.debank.com/image/xdai_token/logo_url/xdai/1207e67652b691ef3bfe04f89f4b5362.png',
   },
   [CHAINS_ENUM.POLYGON]: {
     id: 137,
@@ -102,7 +111,10 @@ export const CHAINS: Record<string, Chain> = {
     whiteLogo: IconPolygonWhiteLogo,
     network: '137',
     nativeTokenSymbol: 'MATIC',
+    nativeTokenAddress: 'matic',
     scanLink: 'https://polygonscan.com/tx/_s_',
+    nativeTokenLogo:
+      'https://static.debank.com/image/matic_token/logo_url/matic/e5a8a2860ba5cf740a474dcab796dc63.png',
   },
   [CHAINS_ENUM.FTM]: {
     id: 250,
@@ -114,7 +126,10 @@ export const CHAINS: Record<string, Chain> = {
     whiteLogo: IconFantomWhiteLogo,
     network: '250',
     nativeTokenSymbol: 'FTM',
+    nativeTokenAddress: 'ftm',
     scanLink: 'https://ftmscan.com/tx/_s_',
+    nativeTokenLogo:
+      'https://static.debank.com/image/token/logo_url/eth/935ae4e4d1d12d59a99717a24f2540b5.png',
   },
   [CHAINS_ENUM.OKT]: {
     id: 66,
@@ -126,7 +141,10 @@ export const CHAINS: Record<string, Chain> = {
     hex: '0x42',
     network: '66',
     nativeTokenSymbol: 'OKT',
+    nativeTokenAddress: 'okt',
     scanLink: 'https://www.oklink.com/okexchain/tx/_s_',
+    nativeTokenLogo:
+      'https://static.debank.com/image/ftm_token/logo_url/ftm/33fdb9c5067e94f3a1b9e78f6fa86984.png',
   },
   [CHAINS_ENUM.HECO]: {
     id: 128,
@@ -138,7 +156,10 @@ export const CHAINS: Record<string, Chain> = {
     hex: '0x80',
     network: '128',
     nativeTokenSymbol: 'HT',
+    nativeTokenAddress: 'heco',
     scanLink: 'https://hecoinfo.com/tx/_s_',
+    nativeTokenLogo:
+      'https://static.debank.com/image/heco_token/logo_url/heco/c399dcddde07e1944c4dd8f922832b53.png',
   },
   // https://developer.offchainlabs.com/docs/public_testnet#connection-information
   [CHAINS_ENUM.ARBITRUM]: {
@@ -151,7 +172,10 @@ export const CHAINS: Record<string, Chain> = {
     hex: '0xa4b1',
     network: '42161',
     nativeTokenSymbol: 'ETH',
+    nativeTokenAddress: 'arb',
     scanLink: 'https://arbiscan.io/tx/_s_',
+    nativeTokenLogo:
+      'https://static.debank.com/image/arb_token/logo_url/arb/d61441782d4a08a7479d54aea211679e.png',
   },
   [CHAINS_ENUM.AVAX]: {
     id: 43114,
@@ -159,11 +183,14 @@ export const CHAINS: Record<string, Chain> = {
     network: '43114',
     name: 'Avalanche',
     nativeTokenSymbol: 'AVAX',
+    nativeTokenAddress: 'avax',
     enum: CHAINS_ENUM.AVAX,
     logo: IconAvaxLogo,
     whiteLogo: IconAvaxWhiteLogo,
     hex: '0xa86a',
     scanLink: 'https://cchain.explorer.avax.network/tx/_s_',
+    nativeTokenLogo:
+      'https://static.debank.com/image/avax_token/logo_url/avax/0b9c84359c84d6bdd5bfda9c2d4c4a82.png',
   },
   [CHAINS_ENUM.OP]: {
     id: 10,
@@ -176,6 +203,9 @@ export const CHAINS: Record<string, Chain> = {
     whiteLogo: IconOPWhiteLogo,
     hex: '0xa',
     scanLink: 'https://optimistic.etherscan.io/tx/_s_',
+    nativeTokenAddress: '0x4200000000000000000000000000000000000006',
+    nativeTokenLogo:
+      'https://static.debank.com/image/op_token/logo_url/0x4200000000000000000000000000000000000006/d61441782d4a08a7479d54aea211679e.png',
   },
   [CHAINS_ENUM.CELO]: {
     id: 42220,
@@ -183,11 +213,14 @@ export const CHAINS: Record<string, Chain> = {
     network: '42220',
     name: 'Celo',
     nativeTokenSymbol: 'CELO',
+    nativeTokenAddress: '0x471ece3750da237f93b8e339c536989b8978a438',
     enum: CHAINS_ENUM.CELO,
     logo: IconCeloLogo,
     whiteLogo: IconCeloWhiteLogo,
     hex: '0xa4ec',
     scanLink: 'https://explorer.celo.org/tx/_s_',
+    nativeTokenLogo:
+      'https://static.debank.com/image/celo_token/logo_url/0x471ece3750da237f93b8e339c536989b8978a438/6f524d91db674876ba0f5767cf0124cc.png',
   },
 };
 
