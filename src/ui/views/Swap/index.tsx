@@ -1,12 +1,13 @@
 import React, { useEffect, useState } from 'react';
+import axios from 'axios';
 import { useTranslation } from 'react-i18next';
-import { Popover } from 'antd';
+import { Popover, Button } from 'antd';
 import BigNumber from 'bignumber.js';
 import { PageHeader } from 'ui/component';
 import TokenAmountInput from 'ui/component/TokenAmountInput';
 import TagChainSelector from 'ui/component/ChainSelector/tag';
-import TokenSelector from 'ui/component/TokenSelector';
-import ReadonlyToeknAmount from 'ui/component/ReadonlyTokenAmount';
+import PriceSlippageSelector from 'ui/component/PriceSlippageSelector';
+import Quoting from './components/Quoting';
 import { useWallet } from 'ui/utils';
 import { formatTokenAmount, splitNumberByStep } from 'ui/utils/number';
 import { CHAINS_ENUM, CHAINS } from 'consts';
@@ -16,6 +17,20 @@ import IconSwapArrow from 'ui/assets/swap-arrow.svg';
 import './style.less';
 
 const Swap = () => {
+  const dapps = [
+    {
+      logo:
+        'https://static.debank.com/image/project/logo_url/bsc_pancakeswap/a4e035cf4495755fddd5ebb6e5657f63.png',
+      name: 'PancakeSwap',
+      id: 'bsc_1inch',
+    },
+    {
+      logo:
+        'https://static.debank.com/image/project/logo_url/bsc_1inch/a4fcc0d0e8daddd0313ad14172e11aff.png',
+      name: '1inch',
+      id: 'bsc_pancakeswap',
+    },
+  ];
   const { t } = useTranslation();
   const wallet = useWallet();
   const [chain, setChain] = useState(CHAINS_ENUM.BSC);
@@ -58,6 +73,9 @@ const Swap = () => {
   const [tokens, setTokens] = useState<TokenItem[]>([]);
   const [originTokens, setOriginTokens] = useState<TokenItem[]>([]);
   const [currentAccount, setCurrentAccount] = useState<Account | null>(null);
+  const [priceSlippage, setPriceSlippage] = useState<number>(1);
+  const [currentStep, setCurrentStep] = useState(0);
+  const [currentIndex, setCurrentIndex] = useState(0);
 
   const handleTokenChange = (token: TokenItem) => {
     setFrom(token);
@@ -92,8 +110,44 @@ const Swap = () => {
   };
 
   const handleToTokenChange = (token: TokenItem) => {
-    console.log(token);
     setTo(token);
+  };
+
+  const handlePriceSlippageChange = (val: number) => {
+    setPriceSlippage(val);
+  };
+
+  const loadQuotes = async () => {
+    const pancakeRes = await axios.get('https://api.debank.com/swap/check', {
+      params: {
+        dex_id: dapps[0].id,
+        pay_token_id: from.id,
+        pay_token_amount: new BigNumber(fromValue).times(1e18).toFixed(),
+        receive_token_id: to.id,
+        user_addr: currentAccount?.address,
+        max_slippage: priceSlippage / 100,
+        chain: CHAINS[chain].serverId,
+      },
+    });
+    setCurrentIndex(1);
+    const inchRes = await axios.get('https://api.debank.com/swap/check', {
+      params: {
+        dex_id: dapps[1].id,
+        pay_token_id: from.id,
+        pay_token_amount: new BigNumber(fromValue).times(1e18).toFixed(),
+        receive_token_id: to.id,
+        user_addr: currentAccount?.address,
+        max_slippage: priceSlippage / 100,
+        chain: CHAINS[chain].serverId,
+      },
+    });
+    console.log('pancakeRes', pancakeRes);
+    console.log('inchRes', inchRes);
+  };
+
+  const handleGetQuote = () => {
+    setCurrentStep(1);
+    loadQuotes();
   };
 
   useEffect(() => {
@@ -172,9 +226,26 @@ const Swap = () => {
           <span className="to-token__name">{to.name}</span>
         </div>
       </div>
-      <div className="swap-section price-slippage">
-        
+      <div className="swap-section price-slippage-section">
+        <p className="section-title">{t('Max price slippage')}</p>
+        <PriceSlippageSelector
+          value={priceSlippage}
+          onChange={handlePriceSlippageChange}
+        />
       </div>
+      <div className="footer">
+        <Button
+          size="large"
+          type="primary"
+          className="w-[200px]"
+          onClick={handleGetQuote}
+        >
+          {t('Get Quotes')}
+        </Button>
+      </div>
+      {currentStep === 1 && (
+        <Quoting dapps={dapps} currentIndex={currentIndex} />
+      )}
     </div>
   );
 };

@@ -30,6 +30,7 @@ import AdvancedSettings from './AdvanceSettings';
 import RequestPermission from './RequestPermission';
 import SendToken from './SendToken';
 import Swap from './Swap';
+import SwapConfirm from './SwapConfirm';
 
 ReactGA.initialize('UA-199755108-1');
 // eslint-disable-next-line @typescript-eslint/no-empty-function
@@ -140,6 +141,9 @@ const Main = () => {
         </PrivateRoute>
         <PrivateRoute exact path="/swap">
           <Swap />
+        </PrivateRoute>
+        <PrivateRoute exact path="/swap-confirm">
+          <SwapConfirm />
         </PrivateRoute>
       </Switch>
     </>
