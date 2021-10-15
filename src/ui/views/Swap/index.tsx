@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import axios from 'axios';
+import { useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Popover, Button } from 'antd';
 import BigNumber from 'bignumber.js';
@@ -33,6 +34,7 @@ const Swap = () => {
   ];
   const { t } = useTranslation();
   const wallet = useWallet();
+  const history = useHistory();
   const [chain, setChain] = useState(CHAINS_ENUM.BSC);
   const [fromUSDValue, setFromUSDValue] = useState('0');
   const [fromValue, setFromValue] = useState('0');
@@ -141,8 +143,23 @@ const Swap = () => {
         chain: CHAINS[chain].serverId,
       },
     });
-    console.log('pancakeRes', pancakeRes);
-    console.log('inchRes', inchRes);
+    console.log(inchRes);
+    history.push({
+      pathname: '/swap-confirm',
+      state: {
+        data: { dapp: dapps[0], data: pancakeRes.data.data },
+        from,
+        to,
+        fromValue,
+      },
+    });
+  };
+
+  const handleGoPrevStep = () => {
+    setCurrentStep(currentStep - 1);
+    if (currentStep === 1) {
+      setCurrentIndex(0);
+    }
   };
 
   const handleGetQuote = () => {
@@ -244,7 +261,11 @@ const Swap = () => {
         </Button>
       </div>
       {currentStep === 1 && (
-        <Quoting dapps={dapps} currentIndex={currentIndex} />
+        <Quoting
+          dapps={dapps}
+          currentIndex={currentIndex}
+          onCancel={handleGoPrevStep}
+        />
       )}
     </div>
   );

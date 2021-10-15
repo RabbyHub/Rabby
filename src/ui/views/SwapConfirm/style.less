@@ -1,0 +1,106 @@
+@import '../../style/var.less';
+
+.swapConfirm {
+  .page();
+  padding: 0 24px;
+  .token-with-chain {
+    margin-right: 8px;
+  }
+  .swapConfirm-main__from {
+    display: flex;
+    justify-content: center;
+    margin-top: 32px;
+    font-weight: 500;
+    font-size: 18px;
+    line-height: 21px;
+  }
+  .swapConfirm-main__arrow {
+    margin-top: 8px;
+    display: flex;
+    justify-content: center;
+  }
+  .swapConfirm-main__tip {
+    position: absolute;
+    left: -12px;
+    top: 16px;
+    z-index: 3;
+    .best-quote {
+      width: 90px;
+      user-select: none;
+    }
+    .icon-question {
+      position: absolute;
+      right: 7px;
+      top: 9px;
+      width: 10px;
+      cursor: pointer;
+    }
+  }
+  .swapConfirm-main__to {
+    width: 100%;
+    height: 300px;
+    padding: 16px;
+    position: relative;
+    background-color: #fff;
+    margin-top: 8px;
+    z-index: 1;
+    &-refresh {
+      display: flex;
+      justify-content: flex-end;
+      .icon-refresh {
+        width: 28px;
+        height: 28px;
+        cursor: pointer;
+        user-select: none;
+      }
+    }
+    &-info {
+      margin-top: 36px;
+      &__token {
+        display: flex;
+        justify-content: center;
+        font-weight: 500;
+        font-size: 15px;
+        line-height: 18px;
+        color: #5A6066;
+        align-items: center;
+      }
+      &__amount {
+        font-weight: bold;
+        margin-top: 8px;
+        font-size: 28px;
+        line-height: 33px;
+        text-align: center;
+        color: #161819;
+      }
+      &__usd {
+        font-size: 14px;
+        line-height: 16px;
+        text-align: right;
+        color: #707880;
+        text-align: center;
+        margin-top: 8px;
+      }
+      &__exchangeRate {
+        display: flex;
+        margin-top: 48px;
+        justify-content: center;
+        font-size: 13px;
+        line-height: 15px;
+        color: #707880;
+        .icon-revert {
+          margin-left: 4px;
+          width: 15px;
+          height: 15px;
+          cursor: pointer;
+        }
+      }
+    }
+  }
+  .swapConfirm-main__stack {
+    position: absolute;
+    left: 50%;
+    transform: translateX(-50%);
+    background-color: #fff;
+  }
+}

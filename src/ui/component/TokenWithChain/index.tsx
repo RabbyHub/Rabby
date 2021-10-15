@@ -8,10 +8,12 @@ const TokenWithChain = ({
   token,
   width = '28px',
   height = '28px',
+  displayChain = false,
 }: {
   token: TokenItem;
   width?: string;
   height?: string;
+  displayChain?: boolean;
 }) => {
   const chainServerId = token.chain;
   const chain = Object.values(CHAINS).find(
@@ -25,7 +27,9 @@ const TokenWithChain = ({
         alt={token.symbol}
         style={{ width, height }}
       />
-      <img className="chain-symbol" src={chain?.logo || IconUnknown} />
+      {displayChain && (
+        <img className="chain-symbol" src={chain?.logo || IconUnknown} />
+      )}
     </div>
   );
 };
