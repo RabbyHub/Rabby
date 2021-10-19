@@ -26,6 +26,17 @@ import { ConnectedSite } from '../service/permission';
 import { ExplainTxResponse, TokenItem } from '../service/openapi';
 import DisplayKeyring from '../service/keyring/display';
 import provider from './provider';
+import { getAllow } from 'background/utils/web3';
+
+interface ApproveParams {
+  owner: string;
+  spender: string;
+  erc20: string;
+  chainId: number;
+  gasPrice?: number;
+  value?: number | string;
+  infinite?: boolean;
+}
 
 const stashKeyrings: Record<string, any> = {};
 
@@ -46,6 +57,30 @@ export class WalletController extends BaseController {
         origin: INTERNAL_REQUEST_ORIGIN,
         icon: './images/icon-128.png',
       },
+    });
+  };
+
+  approveAndSwap = async (approveParams: ApproveParams) => {
+    const data = await getAllow(
+      approveParams.owner,
+      approveParams.spender,
+      approveParams.erc20,
+      approveParams.gasPrice,
+      approveParams.value,
+      approveParams.infinite
+    );
+    return provider({
+      method: 'eth_sendTransaction',
+      params: [
+        {
+          from: data.from,
+          to: data.to,
+          gasPrice: data.gasPrice,
+          value: data.value,
+          chainId: approveParams.chainId,
+          isSwap: true,
+        },
+      ],
     });
   };
 

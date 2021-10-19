@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import BigNumber from 'bignumber.js';
 import { useLocation } from 'react-router-dom';
 import { Button } from 'antd';
-import { splitNumberByStep, formatTokenAmount } from 'ui/utils';
+import { splitNumberByStep, formatTokenAmount, useWallet } from 'ui/utils';
 import { TokenItem } from 'background/service/openapi';
 import { PageHeader } from 'ui/component';
 import TokenWithChain from 'ui/component/TokenWithChain';
@@ -15,6 +15,7 @@ import { Question } from 'ui/assets';
 import './style.less';
 
 const SwapConfirm = () => {
+  const wallet = useWallet();
   const { t } = useTranslation();
   const { state } = useLocation<{
     data: {
@@ -49,8 +50,15 @@ const SwapConfirm = () => {
     setIsReverted(!isReverted);
   };
 
-  const handleSubmit = () => {
+  const handleSubmit = async () => {
     // TODO
+    const account = await wallet.syncGetCurrentAccount();
+    wallet.approveAndSwap({
+      owner: state.data.data.contract_id,
+      spender: account.address,
+      erc20: state.from.id,
+      value: state.fromValue,
+    });
   };
 
   return (
