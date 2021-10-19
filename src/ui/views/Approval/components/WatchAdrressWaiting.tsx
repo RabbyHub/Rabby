@@ -305,7 +305,6 @@ const WatchAddressWaiting = ({ params }: { params: ApprovalParams }) => {
 
   const initWalletConnect = async () => {
     eventBus.addEventListener(EVENTS.WALLETCONNECT.INITED, ({ uri }) => {
-      console.log('uri', uri);
       setQrcodeContent(uri);
     });
     eventBus.emit(EVENTS.broadcastToBackground, {

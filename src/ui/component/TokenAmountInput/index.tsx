@@ -39,11 +39,8 @@ const TokenAmountInput = ({
 
   const handleCurrentTokenChange = (token: TokenItem) => {
     onChange && onChange('');
-    console.log(1);
     onTokenChange(token);
-    console.log(2);
     setTokenSelectorVisible(false);
-    console.log('hidden');
     tokenInputRef.current?.focus();
   };
 

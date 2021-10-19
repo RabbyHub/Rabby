@@ -1,8 +1,11 @@
 import React, { useState } from 'react';
+import axios from 'axios';
 import { useTranslation } from 'react-i18next';
 import BigNumber from 'bignumber.js';
 import { useLocation } from 'react-router-dom';
+import { numberToHex } from 'web3-utils';
 import { Button } from 'antd';
+import { CHAINS_ENUM, CHAINS } from 'consts';
 import { splitNumberByStep, formatTokenAmount, useWallet } from 'ui/utils';
 import { TokenItem } from 'background/service/openapi';
 import { PageHeader } from 'ui/component';
@@ -40,6 +43,8 @@ const SwapConfirm = () => {
     from: TokenItem;
     to: TokenItem;
     fromValue: string;
+    chainId: CHAINS_ENUM;
+    priceSlippage: number;
   }>();
   const [isReverted, setIsReverted] = useState(false);
   const needApprove = new BigNumber(state.data.data.allowance)
@@ -51,14 +56,41 @@ const SwapConfirm = () => {
   };
 
   const handleSubmit = async () => {
-    // TODO
     const account = await wallet.syncGetCurrentAccount();
-    wallet.approveAndSwap({
-      owner: state.data.data.contract_id,
-      spender: account.address,
-      erc20: state.from.id,
-      value: state.fromValue,
+    const chain = CHAINS[state.chainId];
+    const swapTx = await axios.get('https://api.debank.com/swap/prepare', {
+      params: {
+        dex_id: state.data.dapp.id,
+        pay_token_id: state.from.id,
+        pay_token_amount: new BigNumber(state.fromValue)
+          .times(Math.pow(10, state.from.decimals))
+          .toFixed(),
+        receive_token_id: state.to.id,
+        user_addr: account.address,
+        max_slippage: state.priceSlippage,
+        chain: chain.serverId,
+      },
     });
+    console.log(swapTx);
+    if (state.from.id !== chain.nativeTokenAddress && needApprove) {
+      wallet.approveAndSwap(
+        {
+          owner: account.address,
+          spender: state.data.data.contract_id,
+          erc20: state.from.id,
+          value: numberToHex(
+            Number(state.fromValue) * Math.pow(10, state.from.decimals)
+          ),
+          chainId: chain.id,
+        },
+        swapTx.data.data.tx
+      );
+    } else {
+      wallet.sendRequest({
+        method: 'eth_sendTransaction',
+        params: [swapTx.data.data.tx],
+      });
+    }
   };
 
   return (

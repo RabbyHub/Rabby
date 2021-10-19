@@ -34,7 +34,7 @@ interface ApproveParams {
   erc20: string;
   chainId: number;
   gasPrice?: number;
-  value?: number | string;
+  value: number | string;
   infinite?: boolean;
 }
 
@@ -60,27 +60,36 @@ export class WalletController extends BaseController {
     });
   };
 
-  approveAndSwap = async (approveParams: ApproveParams) => {
+  approveAndSwap = async (approveParams: ApproveParams, swapTx) => {
     const data = await getAllow(
       approveParams.owner,
       approveParams.spender,
       approveParams.erc20,
-      approveParams.gasPrice,
-      approveParams.value,
-      approveParams.infinite
+      approveParams.value
     );
-    return provider({
-      method: 'eth_sendTransaction',
-      params: [
-        {
-          from: data.from,
-          to: data.to,
-          gasPrice: data.gasPrice,
-          value: data.value,
-          chainId: approveParams.chainId,
-          isSwap: true,
-        },
-      ],
+
+    // eslint-disable-next-line no-async-promise-executor
+    return new Promise(async (resolve, reject) => {
+      try {
+        await this.sendRequest({
+          method: 'eth_sendTransaction',
+          params: [
+            {
+              ...data,
+              chainId: approveParams.chainId,
+            },
+          ],
+        });
+        setTimeout(async () => {
+          const swapHash = await this.sendRequest({
+            method: 'eth_sendTransaction',
+            params: [swapTx],
+          });
+          resolve(swapHash);
+        }, 500);
+      } catch (e) {
+        reject(e);
+      }
     });
   };
 

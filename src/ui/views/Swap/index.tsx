@@ -23,20 +23,19 @@ const Swap = () => {
       logo:
         'https://static.debank.com/image/project/logo_url/bsc_pancakeswap/a4e035cf4495755fddd5ebb6e5657f63.png',
       name: 'PancakeSwap',
-      id: 'bsc_1inch',
+      id: 'bsc_pancakeswap',
     },
     {
       logo:
         'https://static.debank.com/image/project/logo_url/bsc_1inch/a4fcc0d0e8daddd0313ad14172e11aff.png',
       name: '1inch',
-      id: 'bsc_pancakeswap',
+      id: 'bsc_1inch',
     },
   ];
   const { t } = useTranslation();
   const wallet = useWallet();
   const history = useHistory();
   const [chain, setChain] = useState(CHAINS_ENUM.BSC);
-  const [fromUSDValue, setFromUSDValue] = useState('0');
   const [fromValue, setFromValue] = useState('0');
   const [from, setFrom] = useState<TokenItem>({
     id: 'bsc',
@@ -72,12 +71,12 @@ const Swap = () => {
     symbol: 'BUSD',
     time_at: 0,
   });
-  const [tokens, setTokens] = useState<TokenItem[]>([]);
-  const [originTokens, setOriginTokens] = useState<TokenItem[]>([]);
   const [currentAccount, setCurrentAccount] = useState<Account | null>(null);
   const [priceSlippage, setPriceSlippage] = useState<number>(1);
   const [currentStep, setCurrentStep] = useState(0);
   const [currentIndex, setCurrentIndex] = useState(0);
+  const submitDisabled =
+    !fromValue || Number(fromValue) <= 0 || from.id === to.id;
 
   const handleTokenChange = (token: TokenItem) => {
     setFrom(token);
@@ -143,7 +142,6 @@ const Swap = () => {
         chain: CHAINS[chain].serverId,
       },
     });
-    console.log(inchRes);
     history.push({
       pathname: '/swap-confirm',
       state: {
@@ -151,6 +149,8 @@ const Swap = () => {
         from,
         to,
         fromValue,
+        chainId: chain,
+        priceSlippage: priceSlippage / 100,
       },
     });
   };
@@ -256,6 +256,7 @@ const Swap = () => {
           type="primary"
           className="w-[200px]"
           onClick={handleGetQuote}
+          disabled={submitDisabled}
         >
           {t('Get Quotes')}
         </Button>
