@@ -1,10 +1,11 @@
 import React, { useEffect, useState } from 'react';
+import ClipboardJS from 'clipboard';
 import axios from 'axios';
 import { useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { Popover, Button } from 'antd';
+import { Popover, Button, message, Skeleton } from 'antd';
 import BigNumber from 'bignumber.js';
-import { PageHeader } from 'ui/component';
+import { PageHeader, AddressViewer } from 'ui/component';
 import TokenAmountInput from 'ui/component/TokenAmountInput';
 import TagChainSelector from 'ui/component/ChainSelector/tag';
 import PriceSlippageSelector from 'ui/component/PriceSlippageSelector';
@@ -15,7 +16,63 @@ import { CHAINS_ENUM, CHAINS } from 'consts';
 import { TokenItem } from 'background/service/openapi';
 import { Account } from 'background/service/preference';
 import IconSwapArrow from 'ui/assets/swap-arrow.svg';
+import { CopyNoBorder } from 'ui/assets';
+import IconSuccess from 'ui/assets/success.svg';
 import './style.less';
+
+const TokenPopoverContent = ({
+  token,
+  chain,
+}: {
+  token: TokenItem;
+  chain: CHAINS_ENUM;
+}) => {
+  const { t } = useTranslation();
+  const currentChain = CHAINS[chain];
+  const isNative = currentChain.nativeTokenAddress === token.id;
+
+  const handleClickCopy = () => {
+    const clipboard = new ClipboardJS('.token-popover-content', {
+      text: function () {
+        return token.id;
+      },
+    });
+
+    clipboard.on('success', () => {
+      message.success({
+        icon: <img src={IconSuccess} className="icon icon-success" />,
+        content: t('Copied'),
+        duration: 0.5,
+      });
+      clipboard.destroy();
+    });
+  };
+
+  return (
+    <div className="token-popover-content">
+      {!isNative && (
+        <p>
+          <span>{t('Contract Address')}</span>
+          <span>
+            <AddressViewer address={token.id} showArrow={false} />
+            <CopyNoBorder
+              className="icon icon-copy"
+              onClick={handleClickCopy}
+            />
+          </span>
+        </p>
+      )}
+      <p>
+        <span>{t('Chain')}</span>
+        <span>{currentChain.name}</span>
+      </p>
+      <p>
+        <span>{t('Price')}</span>
+        <span>${splitNumberByStep(token.price.toFixed(2))}</span>
+      </p>
+    </div>
+  );
+};
 
 const Swap = () => {
   const dapps = [
@@ -35,6 +92,7 @@ const Swap = () => {
   const { t } = useTranslation();
   const wallet = useWallet();
   const history = useHistory();
+  const [isLoading, setIsLoading] = useState(true);
   const [chain, setChain] = useState(CHAINS_ENUM.BSC);
   const [fromValue, setFromValue] = useState('0');
   const [from, setFrom] = useState<TokenItem>({
@@ -79,7 +137,11 @@ const Swap = () => {
     !fromValue || Number(fromValue) <= 0 || from.id === to.id;
 
   const handleTokenChange = (token: TokenItem) => {
+    if (token.id === to.id) {
+      setTo(from);
+    }
     setFrom(token);
+    setFromValue('0');
   };
 
   const loadToken = async (
@@ -91,14 +153,14 @@ const Swap = () => {
 
   const init = async () => {
     const account = await wallet.syncGetCurrentAccount();
+    setCurrentAccount(account);
     const [fromToken, toToken] = await Promise.all([
       loadToken(from, account.address),
       loadToken(to, account.address),
     ]);
-
-    setCurrentAccount(account);
     setFrom(fromToken);
     setTo(toToken);
+    setIsLoading(false);
   };
 
   const handleClickFromBalance = () => {
@@ -111,6 +173,9 @@ const Swap = () => {
   };
 
   const handleToTokenChange = (token: TokenItem) => {
+    if (token.id === from.id) {
+      setFrom(to);
+    }
     setTo(token);
   };
 
@@ -167,6 +232,12 @@ const Swap = () => {
     loadQuotes();
   };
 
+  const handleFromValueChange = (value: string) => {
+    if (/^\d*(\.\d*)?$/.test(value)) {
+      setFromValue(value);
+    }
+  };
+
   useEffect(() => {
     const target = CHAINS[chain];
 
@@ -189,84 +260,98 @@ const Swap = () => {
   }, [chain]);
 
   useEffect(() => {
-    // TODO
-  }, [fromValue]);
-
-  useEffect(() => {
     init();
   }, []);
 
   return (
     <div className="swap">
-      <PageHeader>{t('Swap')}</PageHeader>
-      <TagChainSelector value={chain} onChange={handleChainChanged} />
-      <div className="swap-section">
-        <div className="from-balance">
-          <span className="cursor-pointer" onClick={handleClickFromBalance}>
-            {t('Balance')}: {formatTokenAmount(from.amount, 8)}
-          </span>
-        </div>
-        {currentAccount && (
-          <TokenAmountInput
-            address={currentAccount.address}
-            token={from}
-            value={fromValue}
-            chainId={CHAINS[chain].serverId}
-            onTokenChange={handleTokenChange}
-            onChange={(v) => setFromValue(v)}
-          />
-        )}
-        <div className="from-token">
-          <span className="from-token__name">{from.name}</span>
-          <span className="from-token__usdvalue">
-            ≈ $
-            {splitNumberByStep(
-              new BigNumber(fromValue || 0)
-                .times(new BigNumber(from.price || 0))
-                .toFixed()
+      {currentAccount && (
+        <>
+          <PageHeader>{t('Swap')}</PageHeader>
+          <TagChainSelector value={chain} onChange={handleChainChanged} />
+          <div className="swap-section">
+            <div className="from-balance">
+              <span className="cursor-pointer" onClick={handleClickFromBalance}>
+                {isLoading ? (
+                  <Skeleton.Input active style={{ width: 100 }} />
+                ) : (
+                  `${t('Balance')}: ${formatTokenAmount(from.amount, 8)}`
+                )}
+              </span>
+            </div>
+            <TokenAmountInput
+              address={currentAccount.address}
+              token={from}
+              value={fromValue}
+              chainId={CHAINS[chain].serverId}
+              onTokenChange={handleTokenChange}
+              onChange={handleFromValueChange}
+            />
+            <div className="from-token">
+              <Popover
+                placement="topRight"
+                overlayClassName="token-popover"
+                content={<TokenPopoverContent token={from} chain={chain} />}
+              >
+                <span className="from-token__name">{from.name}</span>
+              </Popover>
+              <span className="from-token__usdvalue">
+                ≈ $
+                {splitNumberByStep(
+                  new BigNumber(fromValue || 0)
+                    .times(new BigNumber(from.price || 0))
+                    .toFixed()
+                )}
+              </span>
+            </div>
+            <div className="swap-arrow">
+              <img src={IconSwapArrow} className="icon icon-swap-arrow" />
+            </div>
+            {currentAccount && (
+              <TokenAmountInput
+                address={currentAccount.address}
+                token={to}
+                chainId={CHAINS[chain].serverId}
+                onTokenChange={handleToTokenChange}
+                readOnly
+              />
             )}
-          </span>
-        </div>
-        <div className="swap-arrow">
-          <img src={IconSwapArrow} className="icon icon-swap-arrow" />
-        </div>
-        {currentAccount && (
-          <TokenAmountInput
-            address={currentAccount.address}
-            token={to}
-            chainId={CHAINS[chain].serverId}
-            onTokenChange={handleToTokenChange}
-            readOnly
-          />
-        )}
-        <div className="to-token">
-          <span className="to-token__name">{to.name}</span>
-        </div>
-      </div>
-      <div className="swap-section price-slippage-section">
-        <p className="section-title">{t('Max price slippage')}</p>
-        <PriceSlippageSelector
-          value={priceSlippage}
-          onChange={handlePriceSlippageChange}
-        />
-      </div>
-      <div className="footer">
-        <Button
-          size="large"
-          type="primary"
-          className="w-[200px]"
-          onClick={handleGetQuote}
-          disabled={submitDisabled}
-        >
-          {t('Get Quotes')}
-        </Button>
-      </div>
-      {currentStep === 1 && (
-        <Quoting
-          dapps={dapps}
-          currentIndex={currentIndex}
-          onCancel={handleGoPrevStep}
-        />
+            <div className="to-token">
+              <Popover
+                placement="topRight"
+                overlayClassName="token-popover"
+                content={<TokenPopoverContent token={to} chain={chain} />}
+              >
+                <span className="to-token__name">{to.name}</span>
+              </Popover>
+            </div>
+          </div>
+          <div className="swap-section price-slippage-section">
+            <p className="section-title">{t('Max price slippage')}</p>
+            <PriceSlippageSelector
+              value={priceSlippage}
+              onChange={handlePriceSlippageChange}
+            />
+          </div>
+          <div className="footer">
+            <Button
+              size="large"
+              type="primary"
+              className="w-[200px]"
+              onClick={handleGetQuote}
+              disabled={submitDisabled}
+            >
+              {t('Get Quotes')}
+            </Button>
+          </div>
+          {currentStep === 1 && (
+            <Quoting
+              dapps={dapps}
+              currentIndex={currentIndex}
+              onCancel={handleGoPrevStep}
+            />
+          )}
+        </>
       )}
     </div>
   );

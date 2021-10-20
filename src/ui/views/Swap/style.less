@@ -62,3 +62,48 @@
     margin-top: 45px;
   }
 }
+
+.token-popover {
+  width: 344px;
+  left: 16px !important;
+  font-size: 12px;
+  line-height: 14px;
+  .ant-popover-inner {
+    background-color: rgba(45, 48, 51, .95);
+    .ant-popover-inner-content {
+      color: #fff;
+      padding: 12px;
+      .token-popover-content {
+        p {
+          display: flex;
+          justify-content: space-between;
+          margin-bottom: 8px;
+          &:nth-last-child(1) {
+            margin-bottom: 0;
+          }
+          span {
+            display: flex;
+          }
+          .address-viewer-text.normal {
+            font-size: 12px;
+            line-height: 14px;
+            font-weight: normal;
+            margin-right: 6px;
+          }
+          .icon-copy {
+            cursor: pointer;
+            width: 14px;
+            height: 14px;
+            path {
+              fill: #fff;
+            }
+          }
+        }
+      }
+    }
+  }
+  .ant-popover-arrow {
+    border-right-color: rgba(45, 48, 51, .95) !important;
+    border-bottom-color: rgba(45, 48, 51, .95) !important;
+  }
+}

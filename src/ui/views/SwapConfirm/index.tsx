@@ -1,10 +1,11 @@
 import React, { useState } from 'react';
-import axios from 'axios';
+import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 import BigNumber from 'bignumber.js';
 import { useLocation } from 'react-router-dom';
 import { numberToHex } from 'web3-utils';
-import { Button } from 'antd';
+import { Button, Tooltip } from 'antd';
+import axios from 'axios';
 import { CHAINS_ENUM, CHAINS } from 'consts';
 import { splitNumberByStep, formatTokenAmount, useWallet } from 'ui/utils';
 import { TokenItem } from 'background/service/openapi';
@@ -46,13 +47,56 @@ const SwapConfirm = () => {
     chainId: CHAINS_ENUM;
     priceSlippage: number;
   }>();
+  const [data, setData] = useState(state.data.data);
+  const [from, setFrom] = useState(state.from);
+  const [to, setTo] = useState(state.to);
   const [isReverted, setIsReverted] = useState(false);
-  const needApprove = new BigNumber(state.data.data.allowance)
-    .dividedBy(10 ** state.to.decimals)
-    .lt(new BigNumber(state.fromValue));
+  const [isRefreshing, setIsRefreshing] = useState(false);
+  const needApprove =
+    new BigNumber(data.allowance)
+      .dividedBy(10 ** state.to.decimals)
+      .lt(new BigNumber(state.fromValue)) ||
+    from.id === '0x0e09fabb73bd3ade0a17ecc321fd13a19e81ce82';
 
   const handleRevertExchangeRate = () => {
     setIsReverted(!isReverted);
+  };
+
+  const loadQuote = async () => {
+    const account = await wallet.syncGetCurrentAccount();
+    const { data } = await axios.get('https://api.debank.com/swap/check', {
+      params: {
+        dex_id: 'bsc_pancakeswap',
+        pay_token_id: from.id,
+        pay_token_amount: new BigNumber(state.fromValue).times(1e18).toFixed(),
+        receive_token_id: state.to.id,
+        user_addr: account?.address,
+        max_slippage: state.priceSlippage / 100,
+        chain: CHAINS[state.chainId].serverId,
+      },
+    });
+    return data.data;
+  };
+
+  const loadToken = async (
+    token: TokenItem,
+    address: string
+  ): Promise<TokenItem> => {
+    return await wallet.openapi.getToken(address, token.chain, token.id);
+  };
+
+  const handleRefreshQuote = async () => {
+    setIsRefreshing(true);
+    const account = await wallet.syncGetCurrentAccount();
+    const quote = await loadQuote();
+    const [fromToken, toToken] = await Promise.all([
+      loadToken(from, account.address),
+      loadToken(to, account.address),
+    ]);
+    setFrom(fromToken);
+    setTo(toToken);
+    setData(quote);
+    setIsRefreshing(false);
   };
 
   const handleSubmit = async () => {
@@ -61,25 +105,24 @@ const SwapConfirm = () => {
     const swapTx = await axios.get('https://api.debank.com/swap/prepare', {
       params: {
         dex_id: state.data.dapp.id,
-        pay_token_id: state.from.id,
+        pay_token_id: from.id,
         pay_token_amount: new BigNumber(state.fromValue)
-          .times(Math.pow(10, state.from.decimals))
+          .times(Math.pow(10, from.decimals))
           .toFixed(),
-        receive_token_id: state.to.id,
+        receive_token_id: to.id,
         user_addr: account.address,
         max_slippage: state.priceSlippage,
         chain: chain.serverId,
       },
     });
-    console.log(swapTx);
-    if (state.from.id !== chain.nativeTokenAddress && needApprove) {
+    if (from.id !== chain.nativeTokenAddress && needApprove) {
       wallet.approveAndSwap(
         {
           owner: account.address,
-          spender: state.data.data.contract_id,
-          erc20: state.from.id,
+          spender: data.contract_id,
+          erc20: from.id,
           value: numberToHex(
-            Number(state.fromValue) * Math.pow(10, state.from.decimals)
+            Number(state.fromValue) * Math.pow(10, from.decimals)
           ),
           chainId: chain.id,
         },
@@ -100,7 +143,7 @@ const SwapConfirm = () => {
         <div className="swapConfirm-main__from">
           <TokenWithChain width="20px" height="20px" token={state.from} />
           {state.fromValue}
-          {state.from.symbol}
+          {from.symbol}
         </div>
         <div className="swapConfirm-main__arrow">
           <img src={IconArrowDown} className="icon icon-arrow-down" />
@@ -108,46 +151,52 @@ const SwapConfirm = () => {
         <div className="relative">
           <div className="swapConfirm-main__tip">
             <img className="best-quote" src={IconBestQuote} />
-            <Question className="icon icon-question" />
+            <Tooltip
+              title={t(
+                'A Rabby fee of 0.875% has been deducted from the quote'
+              )}
+              overlayClassName="rectangle best-quote__tooltip"
+              autoAdjustOverflow={false}
+            >
+              <Question className="icon icon-question" />
+            </Tooltip>
           </div>
           <div className="swapConfirm-main__to">
             <div className="swapConfirm-main__to-refresh">
-              <img src={IconQuoteRefresh} className="icon icon-refresh" />
+              <img
+                src={IconQuoteRefresh}
+                className={clsx('icon icon-refresh', { spining: isRefreshing })}
+                onClick={handleRefreshQuote}
+              />
             </div>
             <div className="swapConfirm-main__to-info">
               <div className="swapConfirm-main__to-info__token">
                 <TokenWithChain width="24px" height="24px" token={state.to} />
-                {state.to.symbol}
+                {to.symbol}
               </div>
               <div className="swapConfirm-main__to-info__amount">
-                {new BigNumber(state.data.data.receive_token_amount)
-                  .dividedBy(10 ** state.to.decimals)
-                  .toFixed(
-                    Number(state.data.data.receive_token_amount) > 1 ? 6 : 10
-                  )}
+                {new BigNumber(data.receive_token_amount)
+                  .dividedBy(10 ** to.decimals)
+                  .toFixed(Number(data.receive_token_amount) > 1 ? 6 : 10)}
               </div>
               <div className="swapConfirm-main__to-info__usd">
                 ≈ $
                 {splitNumberByStep(
-                  new BigNumber(state.data.data.receive_token_amount)
-                    .dividedBy(10 ** state.to.decimals)
-                    .times(state.to.price)
+                  new BigNumber(data.receive_token_amount)
+                    .dividedBy(10 ** to.decimals)
+                    .times(to.price)
                     .toFixed(2)
                 )}
               </div>
               <div className="swapConfirm-main__to-info__exchangeRate">
-                1 {isReverted ? state.to.symbol : state.from.symbol} ={' '}
+                1 {isReverted ? to.symbol : from.symbol} ={' '}
                 {formatTokenAmount(
                   isReverted
-                    ? new BigNumber(state.to.price)
-                        .div(state.from.price)
-                        .toFixed()
-                    : new BigNumber(state.from.price)
-                        .div(state.to.price)
-                        .toFixed(),
+                    ? new BigNumber(to.price).div(from.price).toFixed()
+                    : new BigNumber(from.price).div(to.price).toFixed(),
                   10
                 )}
-                {isReverted ? state.from.symbol : state.to.symbol}
+                {isReverted ? from.symbol : state.to.symbol}
                 <img
                   src={IconRevert}
                   className="icon icon-revert"

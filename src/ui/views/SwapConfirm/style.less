@@ -52,6 +52,15 @@
         height: 28px;
         cursor: pointer;
         user-select: none;
+        border-radius: 4px;
+        transition: background-color .3s;
+        &:hover {
+          background-color: rgba(134, 151, 255, .1);
+        }
+        &.spining {
+          background-color: transparent;
+          animation: spining 1s infinite linear;
+        }
       }
     }
     &-info {
@@ -102,5 +111,11 @@
     left: 50%;
     transform: translateX(-50%);
     background-color: #fff;
+  }
+}
+
+.best-quote__tooltip {
+  .ant-tooltip-inner {
+    transform: translateX(87px);
   }
 }
