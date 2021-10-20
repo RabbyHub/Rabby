@@ -113,6 +113,7 @@ const SwapConfirm = () => {
         user_addr: account.address,
         max_slippage: state.priceSlippage,
         chain: chain.serverId,
+        gasPrice: '7000000000',
       },
     });
     if (from.id !== chain.nativeTokenAddress && needApprove) {

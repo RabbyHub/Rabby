@@ -137,11 +137,14 @@ const Swap = () => {
     !fromValue || Number(fromValue) <= 0 || from.id === to.id;
 
   const handleTokenChange = (token: TokenItem) => {
+    console.log('tokenchange', token);
     if (token.id === to.id) {
       setTo(from);
     }
     setFrom(token);
-    setFromValue('0');
+    if (token.id !== from.id) {
+      setFromValue('0');
+    }
   };
 
   const loadToken = async (
@@ -154,9 +157,21 @@ const Swap = () => {
   const init = async () => {
     const account = await wallet.syncGetCurrentAccount();
     setCurrentAccount(account);
+    let needLoadFrom = from;
+    let needLoadTo = to;
+    const cache = JSON.parse(localStorage.getItem('swapCache') || '{}');
+    if (localStorage.getItem('swapCache')) {
+      setFrom(cache.from);
+      needLoadFrom = cache.from;
+      setTo(cache.to);
+      needLoadTo = cache.to;
+      setChain(cache.chain);
+      setFromValue(cache.fromValue);
+      setPriceSlippage(cache.priceSlippage);
+    }
     const [fromToken, toToken] = await Promise.all([
-      loadToken(from, account.address),
-      loadToken(to, account.address),
+      loadToken(needLoadFrom, account.address),
+      loadToken(needLoadTo, account.address),
     ]);
     setFrom(fromToken);
     setTo(toToken);
@@ -230,6 +245,16 @@ const Swap = () => {
   const handleGetQuote = () => {
     setCurrentStep(1);
     loadQuotes();
+    localStorage.setItem(
+      'swapCache',
+      JSON.stringify({
+        chain,
+        fromValue,
+        from,
+        to,
+        priceSlippage,
+      })
+    );
   };
 
   const handleFromValueChange = (value: string) => {

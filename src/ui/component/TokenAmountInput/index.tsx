@@ -31,6 +31,7 @@ const TokenAmountInput = ({
 }: TokenAmountInputProps) => {
   const tokenInputRef = useRef<Input>(null);
   const latestChainId = useRef(chainId);
+  const latestToken = useRef(token);
   const [tokens, setTokens] = useState<TokenItem[]>([]);
   const [originTokenList, setOriginTokenList] = useState<TokenItem[]>([]);
   const [isListLoading, setIsListLoading] = useState(true);
@@ -102,7 +103,10 @@ const TokenAmountInput = ({
     if (latestChainId.current === chainId) {
       setTokens(sortTokens('common', tokens));
       const existCurrentToken = tokens.find((t) => t.id === token.id);
-      if (existCurrentToken) {
+      if (
+        existCurrentToken &&
+        latestToken.current?.id === existCurrentToken.id
+      ) {
         onTokenChange(existCurrentToken);
       }
     }
@@ -114,6 +118,10 @@ const TokenAmountInput = ({
     handleLoadTokens();
     latestChainId.current = chainId;
   }, [chainId]);
+
+  useEffect(() => {
+    latestToken.current = token;
+  }, [token]);
 
   return (
     <>
