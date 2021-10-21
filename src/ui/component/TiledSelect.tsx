@@ -41,11 +41,11 @@ const TiledSelect = ({
     options,
   });
   const { t } = useTranslation();
-
+  const key = 'showError';
   const handleClickOption = (i: number) => {
     if (correctValue) {
       if (options[i] !== correctValue[_value.length]) {
-        message.error(t('Wrong mnemonic word'));
+        message.error({ content: t('Wrong mnemonic word'), key, duration: 1 });
         return;
       }
     }
