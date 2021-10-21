@@ -8,7 +8,7 @@ import * as bip39 from 'bip39';
 import { ObservableStore } from '@metamask/obs-store';
 import { normalizeAddress } from 'background/utils';
 import LedgerBridgeKeyring from './eth-ledger-bridge-keyring';
-import SimpleKeyring from 'eth-simple-keyring';
+import SimpleKeyring from '@rabby-wallet/eth-simple-keyring';
 import HdKeyring from './eth-hd-keyring';
 import TrezorKeyring from './eth-trezor-keyring';
 import OnekeyKeyring from './eth-onekey-keyring';

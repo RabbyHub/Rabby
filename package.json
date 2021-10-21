@@ -16,6 +16,7 @@
     "@ledgerhq/hw-transport-webusb": "^6.0.2",
     "@metamask/eth-ledger-bridge-keyring": "^0.6.0",
     "@metamask/obs-store": "^6.0.2",
+    "@rabby-wallet/eth-simple-keyring": "^4.2.0",
     "@sentry/browser": "^6.7.2",
     "@sentry/react": "^6.7.2",
     "@sentry/tracing": "^6.7.2",

@@ -1,5 +1,5 @@
 import Wallet, { hdkey } from 'ethereumjs-wallet';
-import SimpleKeyring from 'eth-simple-keyring';
+import SimpleKeyring from '@rabby-wallet/eth-simple-keyring';
 import * as bip39 from 'bip39';
 import * as sigUtil from 'eth-sig-util';
 
