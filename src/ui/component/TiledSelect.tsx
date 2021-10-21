@@ -45,8 +45,10 @@ const TiledSelect = ({
   const handleClickOption = (i: number) => {
     if (correctValue) {
       if (options[i] !== correctValue[_value.length]) {
-        message.error({ content: t('Wrong mnemonic word'), key, duration: 1 });
+        message.error({ content: t('Wrong mnemonic word'), key });
         return;
+      } else {
+        onClear && onClear();
       }
     }
     handleChoose(i);
