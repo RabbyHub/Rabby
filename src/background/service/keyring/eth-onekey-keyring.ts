@@ -1,4 +1,4 @@
-import TrezorKeyring from './eth-trezor-keyring';
+import TrezorKeyring from '@rabby-wallet/eth-trezor-keyring';
 
 const keyringType = 'Onekey Hardware';
 
