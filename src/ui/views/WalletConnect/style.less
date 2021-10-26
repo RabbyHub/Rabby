@@ -1,0 +1,87 @@
+@import '../../style/var.less';
+.wallet-connect {
+  background: #f0f2f5;
+  position: relative;
+  height: 100%;
+}
+.button-container {
+  width: 148px;
+  height: 32px;
+  margin: 26px 126px;
+  background: #ffffff;
+  display: flex;
+  div {
+    width: 72px;
+    height: 28px;
+    margin: 2px;
+    padding: 3px;
+    border-radius: 3px;
+    color: #707280;
+    text-align: center;
+  }
+  .active {
+    background: #8697ff;
+    color: #ffffff;
+  }
+}
+.goback {
+  position: absolute;
+  color: #ffffff;
+  top: 38px;
+  left: 34px;
+  z-index: 100;
+}
+.qrcode {
+  width: 200px;
+  height: 200px;
+  margin: 0 100px 24px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  border-radius: 12px;
+  background: #ffffff;
+  position: relative;
+  .refresh-container {
+    position: absolute;
+    width: 200px;
+    height: 200px;
+    background: #ffffff;
+    opacity: 0.8;
+    z-index: 10;
+    .qrcode-refresh {
+      position: absolute;
+      width: 80px;
+      height: 80px;
+      top: 60px;
+      left: 60px;
+    }
+  }
+}
+
+.url-container {
+  position: relative;
+  border-radius: 4px;
+}
+.icon-copy {
+  width: 16px;
+  height: 16px;
+  position: absolute;
+  right: 48px;
+  bottom: 60px;
+}
+.icon-refresh {
+  .icon-copy;
+  position: absolute;
+  right: 78px;
+  bottom: 60px;
+}
+.change-bridge {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  color: #b4bdcc;
+  font-size: 12px;
+  img {
+    margin-right: 4px;
+  }
+}

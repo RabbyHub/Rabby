@@ -1,10 +1,9 @@
-import React, { useEffect, useState } from 'react';
-import { Form, Input, Button, Switch } from 'antd';
+import React, { useEffect } from 'react';
+import { Form, Input, Button } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { useWallet } from 'ui/utils';
-import { PageHeader, Field, Modal } from 'ui/component';
+import { Modal } from 'ui/component';
 import { INITIAL_OPENAPI_URL } from 'consts';
-import IconArrowRight from 'ui/assets/arrow-right-gray.svg';
 
 const OpenApiModal = ({
   visible,
@@ -45,7 +44,7 @@ const OpenApiModal = ({
 
   return (
     <Modal
-      title={t('Backend Service URL')}
+      title={t('Bridge Service URL')}
       visible={visible}
       onCancel={onCancel}
       className="openapi-modal"
@@ -84,59 +83,4 @@ const OpenApiModal = ({
     </Modal>
   );
 };
-const AdvancedSettings = () => {
-  const wallet = useWallet();
-  const { t } = useTranslation();
-  const [showOpenApiModal, setShowOpenApiModal] = useState(false);
-  const [isDefaultWallet, setIsDefaultWallet] = useState(false);
-  const handleDefaultWalletChange = (value: boolean) => {
-    wallet.setIsDefaultWallet(value);
-    setIsDefaultWallet(value);
-  };
-
-  const init = async () => {
-    setIsDefaultWallet(await wallet.isDefaultWallet());
-  };
-
-  useEffect(() => {
-    init();
-  }, []);
-
-  const renderData = [
-    {
-      content: t('Backend Service URL'),
-      onClick: () => setShowOpenApiModal(true),
-      rightIcon: <img src={IconArrowRight} className="icon icon-arrow-right" />,
-    },
-    {
-      content: t('Set Rabby as default wallet'),
-      rightIcon: (
-        <Switch
-          checked={isDefaultWallet}
-          onChange={handleDefaultWalletChange}
-        />
-      ),
-    },
-  ];
-  return (
-    <div className="settings">
-      <PageHeader>{t('Advanced Options')}</PageHeader>
-      {renderData.map((data) => (
-        <Field
-          key={data.content}
-          rightIcon={data.rightIcon}
-          onClick={data.onClick}
-        >
-          {data.content}
-        </Field>
-      ))}
-      <OpenApiModal
-        visible={showOpenApiModal}
-        onFinish={() => setShowOpenApiModal(false)}
-        onCancel={() => setShowOpenApiModal(false)}
-      />
-    </div>
-  );
-};
-
-export default AdvancedSettings;
+export default OpenApiModal;
