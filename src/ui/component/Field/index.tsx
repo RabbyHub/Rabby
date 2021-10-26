@@ -1,6 +1,6 @@
 import React, { ReactNode } from 'react';
 import cx from 'clsx';
-import { useWallet } from 'ui/utils';
+import { useWallet, useHover } from 'ui/utils';
 import './style.less';
 import IconWalletConnect from 'ui/assets/walletlogo/walletconnect.png';
 interface FieldProps {
@@ -29,6 +29,8 @@ const Field = ({
   unselect,
 }: FieldProps) => {
   const wallet = useWallet();
+  const [isHovering, hoverProps] = useHover();
+
   const saveWallet = async (e) => {
     e.stopPropagation();
     const savedList = await wallet.getHighlightWalletList();
@@ -41,7 +43,6 @@ const Field = ({
   };
   const removeWallet = async (e) => {
     e.stopPropagation();
-    console.log('remove wallet');
     const savedList = await wallet.getHighlightWalletList();
     const newList = savedList.filter((item) => item !== brand);
     await wallet.updateHighlightWalletList(newList);
@@ -52,6 +53,7 @@ const Field = ({
       className={cx('field', className)}
       onClick={onClick}
       style={{ cursor: onClick ? 'pointer' : 'initial' }}
+      {...hoverProps}
     >
       {leftIcon && (
         <div className="left-icon">
@@ -69,7 +71,7 @@ const Field = ({
         className="right-icon"
         onClick={unselect ? removeWallet : saveWallet}
       >
-        {rightIcon}
+        {(isHovering || unselect) && rightIcon}
       </div>
     </div>
   );

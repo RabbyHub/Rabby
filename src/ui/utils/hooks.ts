@@ -158,3 +158,40 @@ export const useWalletRequest = (
 
   return [run, loading, res, err] as const;
 };
+export interface UseHoverOptions {
+  mouseEnterDelayMS?: number;
+  mouseLeaveDelayMS?: number;
+}
+
+export type HoverProps = Pick<
+  React.HTMLAttributes<HTMLElement>,
+  'onMouseEnter' | 'onMouseLeave'
+>;
+
+export const useHover = ({
+  mouseEnterDelayMS = 0,
+  mouseLeaveDelayMS = 0,
+}: UseHoverOptions = {}): [boolean, HoverProps] => {
+  const [isHovering, setIsHovering] = useState(false);
+  let mouseEnterTimer: number | undefined;
+  let mouseOutTimer: number | undefined;
+  return [
+    isHovering,
+    {
+      onMouseEnter: () => {
+        clearTimeout(mouseOutTimer);
+        mouseEnterTimer = window.setTimeout(
+          () => setIsHovering(true),
+          mouseEnterDelayMS
+        );
+      },
+      onMouseLeave: () => {
+        clearTimeout(mouseEnterTimer);
+        mouseOutTimer = window.setTimeout(
+          () => setIsHovering(false),
+          mouseLeaveDelayMS
+        );
+      },
+    },
+  ];
+};

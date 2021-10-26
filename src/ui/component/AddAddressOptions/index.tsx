@@ -124,7 +124,7 @@ const AddAddressOptions = () => {
         {savedWalletData.length > 0 &&
           savedWalletData.map((data: any) => (
             <Field
-              key={data.content}
+              key={`saved${data.content}`}
               brand={data.brand}
               leftIcon={
                 <img src={data.leftIcon} className="icon wallet-icon" />
@@ -143,7 +143,7 @@ const AddAddressOptions = () => {
       </div>
       <div className="add-address-options">
         <div className="connect-hint">{t('Connect with')}</div>
-        {brandWallet.map((data) => (
+        {brandWallet.map((data, index) => (
           <Field
             key={data.content}
             brand={data.brand}

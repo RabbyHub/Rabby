@@ -5,7 +5,7 @@ import { useWallet } from 'ui/utils';
 import { PageHeader, Field, Modal } from 'ui/component';
 import { INITIAL_OPENAPI_URL } from 'consts';
 import IconArrowRight from 'ui/assets/arrow-right-gray.svg';
-
+import './style.less';
 const OpenApiModal = ({
   visible,
   onFinish,

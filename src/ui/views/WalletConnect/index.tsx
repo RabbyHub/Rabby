@@ -7,7 +7,7 @@ import clsx from 'clsx';
 import { isValidAddress } from 'ethereumjs-util';
 import WalletConnect from '@walletconnect/client';
 import { StrayPageWithButton } from 'ui/component';
-import { useWallet, useWalletRequest } from 'ui/utils';
+import { useWallet, useWalletRequest, useHover } from 'ui/utils';
 import { openInternalPageInTab } from 'ui/utils/webapi';
 import { Account } from 'background/service/preference';
 import IconCopy from 'ui/assets/urlcopy.svg';
@@ -25,6 +25,7 @@ const WalletConnectTemplate = () => {
   const location = useLocation<{ brand: any }>();
   const wallet = useWallet();
   const [form] = Form.useForm();
+  const [isHovering, hoverProps] = useHover();
   const [disableKeydown, setDisableKeydown] = useState(false);
   const connector = useRef<WalletConnect>();
   const [walletconnectUri, setWalletconnectUri] = useState('');
@@ -104,7 +105,6 @@ const WalletConnectTemplate = () => {
         handleImportByWalletconnect();
       } else {
         const { accounts } = payload.params[0];
-        console.log(accounts, 'accounts');
         form.setFieldsValue({
           address: accounts[0],
         });
@@ -196,7 +196,6 @@ const WalletConnectTemplate = () => {
     };
   }, []);
   const { name, id, icon, brand, image } = location.state!.brand;
-  console.log(image, 'image');
   return (
     <div className="wallet-connect">
       <div className="create-new-header create-password-header h-[220px]">
@@ -228,13 +227,9 @@ const WalletConnectTemplate = () => {
         </div>
       </div>
       {walletconnectUri && !showURL && (
-        <div
-          className="qrcode"
-          onMouseEnter={() => setShowRefresh(true)}
-          onMouseLeave={() => setShowRefresh(false)}
-        >
+        <div className="qrcode" {...hoverProps}>
           <QRCode value={walletconnectUri} size={170} />
-          {showRefresh && (
+          {isHovering && (
             <div className="refresh-container">
               <img
                 className="qrcode-refresh"
@@ -260,7 +255,7 @@ const WalletConnectTemplate = () => {
           <img
             src={IconCopy}
             onClick={handleCopyCurrentAddress}
-            className={clsx('icon-copy', { success: copySuccess })}
+            className={clsx('icon-copy-wallet', { success: copySuccess })}
           />
           <div
             className="change-bridge"
