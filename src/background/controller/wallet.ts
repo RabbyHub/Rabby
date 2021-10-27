@@ -20,12 +20,14 @@ import { CacheState } from 'background/service/pageStateCache';
 import i18n from 'background/service/i18n';
 import { KEYRING_CLASS, DisplayedKeryring } from 'background/service/keyring';
 import BaseController from './base';
-import { CHAINS_ENUM, CHAINS, INTERNAL_REQUEST_ORIGIN } from 'consts';
+import { CHAINS_ENUM, CHAINS, INTERNAL_REQUEST_ORIGIN, EVENTS } from 'consts';
 import { Account } from '../service/preference';
 import { ConnectedSite } from '../service/permission';
 import { ExplainTxResponse, TokenItem } from '../service/openapi';
 import DisplayKeyring from '../service/keyring/display';
 import provider from './provider';
+import WalletConnectKeyring from '@rabby-wallet/eth-walletconnect-keyring';
+import eventBus from '@/eventBus';
 
 const stashKeyrings: Record<string, any> = {};
 
@@ -170,6 +172,97 @@ export class WalletController extends BaseController {
     return this._setCurrentAccountFromKeyring(keyring, -1);
   };
 
+  getWalletConnectStatus = (address: string, brandName: string) => {
+    const keyringType = KEYRING_CLASS.WALLETCONNECT;
+    const keyring: WalletConnectKeyring = this._getKeyringByType(keyringType);
+    if (keyring) {
+      return keyring.getConnectorStatus(address, brandName);
+    }
+    return null;
+  };
+
+  initWalletConnect = async (brandName: string, bridge?: string) => {
+    let keyring: WalletConnectKeyring, isNewKey;
+    const keyringType = KEYRING_CLASS.WALLETCONNECT;
+    try {
+      keyring = this._getKeyringByType(keyringType);
+    } catch {
+      const WalletConnect = keyringService.getKeyringClassForType(keyringType);
+      keyring = new WalletConnect({
+        accounts: [],
+        brandName: brandName,
+        clientMeta: {
+          description: i18n.t('appDescription'),
+          url: 'https://rabby.io',
+          icons: ['https://rabby.io/assets/images/logo.png'],
+          name: 'Rabby',
+        },
+      });
+      isNewKey = true;
+    }
+    const { uri } = await keyring.initConnector(bridge);
+    let stashId: null | number = null;
+    if (isNewKey) {
+      stashId = this.addKyeringToStash(keyring);
+      eventBus.addEventListener(
+        EVENTS.WALLETCONNECT.INIT,
+        ({ address, brandName }) => {
+          (keyring as WalletConnectKeyring).init(address, brandName);
+        }
+      );
+      (keyring as WalletConnectKeyring).on('inited', (uri) => {
+        eventBus.emit(EVENTS.broadcastToUI, {
+          method: EVENTS.WALLETCONNECT.INITED,
+          params: { uri },
+        });
+      });
+      keyring.on('statusChange', (data) => {
+        eventBus.emit(EVENTS.broadcastToUI, {
+          method: EVENTS.WALLETCONNECT.STATUS_CHANGED,
+          params: data,
+        });
+      });
+    }
+    return {
+      uri,
+      stashId,
+    };
+  };
+
+  importWalletConnect = async (
+    address: string,
+    brandName: string,
+    stashId?: number
+  ) => {
+    let keyring: WalletConnectKeyring, isNewKey;
+    const keyringType = KEYRING_CLASS.WALLETCONNECT;
+    if (stashId !== null && stashId !== undefined) {
+      keyring = stashKeyrings[stashId];
+      isNewKey = true;
+    } else {
+      try {
+        keyring = this._getKeyringByType(keyringType);
+      } catch {
+        const WalletConnectKeyring = keyringService.getKeyringClassForType(
+          keyringType
+        );
+        keyring = new WalletConnectKeyring();
+        isNewKey = true;
+      }
+    }
+
+    keyring.setAccountToAdd({
+      address,
+      brandName,
+    });
+    await keyringService.addNewAccount(keyring);
+    if (isNewKey) {
+      await keyringService.addKeyring(keyring);
+      keyring.removeAllListeners('statucChange');
+    }
+    return this._setCurrentAccountFromKeyring(keyring, -1);
+  };
+
   getPrivateKey = async (
     password: string,
     { address, type }: { address: string; type: string }
@@ -279,6 +372,13 @@ export class WalletController extends BaseController {
 
     const keyring = new Keyring({ mnemonic });
 
+    const stashId = Object.values(stashKeyrings).length;
+    stashKeyrings[stashId] = keyring;
+
+    return stashId;
+  };
+
+  addKyeringToStash = (keyring) => {
     const stashId = Object.values(stashKeyrings).length;
     stashKeyrings[stashId] = keyring;
 
