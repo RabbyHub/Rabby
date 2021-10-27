@@ -6,6 +6,7 @@ import React, {
   forwardRef,
   memo,
 } from 'react';
+import { useHistory } from 'react-router-dom';
 import { Skeleton } from 'antd';
 import clsx from 'clsx';
 import { ChainWithBalance } from 'background/service/openapi';
@@ -30,6 +31,8 @@ export interface AddressItemProps {
   onClick?(account: string, keyring: any): void;
   showAssets?: boolean;
   noNeedBalance?: boolean;
+  currentAccount?: any;
+  icon?: string;
 }
 
 const HARDWARES = {
@@ -114,12 +117,16 @@ const AddressItem = memo(
         showAssets,
         onClick,
         noNeedBalance = false,
+        currentAccount = null,
+        icon = '',
       }: AddressItemProps,
       ref
     ) => {
       if (!account) {
         return null;
       }
+      const history = useHistory();
+      console.log(history.location.pathname);
       const [isLoading, setIsLoading] = useState(false);
       const [balance, chainBalances, getAddressBalance] = useCurrentBalance(
         account,
@@ -136,19 +143,23 @@ const AddressItem = memo(
       useImperativeHandle(ref, () => ({
         updateBalance,
       }));
-
       const isDisabled = hiddenAddresses.find(
         (item) => item.address === account && item.type === keyring.type
       );
-
+      const isCurrentAddress = currentAccount?.address === account;
+      const isManagement = history.location.pathname === '/settings/address';
       return (
         <li
-          className={clsx(className, { 'no-assets': !showAssets })}
+          className={clsx(
+            className,
+            { 'no-assets': !showAssets },
+            isCurrentAddress && 'highlight-address'
+          )}
           onClick={() => onClick && onClick(account, keyring)}
         >
           <div
             className={clsx(
-              'flex items-center flex-wrap',
+              'flex items-center flex-wrap relative',
               isDisabled && 'opacity-40'
             )}
           >
@@ -193,6 +204,7 @@ const AddressItem = memo(
                 </div>
               </div>
             )}
+            {icon && <img src={icon} className="item-right-icon" />}
           </div>
           {keyring && (
             <div className="action-button flex items-center flex-shrink-0">

@@ -1,23 +1,12 @@
 import React, { useState, useRef, useMemo, useEffect } from 'react';
-import { Input, Form, message } from 'antd';
+import { Form, message } from 'antd';
 import { useHistory, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import QRCode from 'qrcode.react';
-import clsx from 'clsx';
-import { isValidAddress } from 'ethereumjs-util';
 import WalletConnect from '@walletconnect/client';
-import { StrayPageWithButton } from 'ui/component';
-import { useWallet, useWalletRequest, useHover } from 'ui/utils';
+import { useWallet, useWalletRequest } from 'ui/utils';
 import { openInternalPageInTab } from 'ui/utils/webapi';
-import { Account } from 'background/service/preference';
-import IconCopy from 'ui/assets/urlcopy.svg';
-import IconRefresh from 'ui/assets/urlrefresh.svg';
-import ClipboardJS from 'clipboard';
-import IconSuccess from 'ui/assets/success.svg';
-import IconBridgeChange from 'ui/assets/bridgechange.svg';
-import OpenApiModal from './Component/OpenApiModal';
 import IconBack from 'ui/assets/gobackwhite.svg';
-import IconQRCodeRefresh from 'ui/assets/qrcoderefresh.svg';
+import { ScanCopyQRCode } from 'ui/component';
 import './style.less';
 const WalletConnectTemplate = () => {
   const { t } = useTranslation();
@@ -25,8 +14,6 @@ const WalletConnectTemplate = () => {
   const location = useLocation<{ brand: any }>();
   const wallet = useWallet();
   const [form] = Form.useForm();
-  const [isHovering, hoverProps] = useHover();
-  const [disableKeydown, setDisableKeydown] = useState(false);
   const connector = useRef<WalletConnect>();
   const [walletconnectUri, setWalletconnectUri] = useState('');
   const [ensResult, setEnsResult] = useState<null | {
@@ -35,30 +22,24 @@ const WalletConnectTemplate = () => {
   }>(null);
   const [tags, setTags] = useState<string[]>([]);
   const [showURL, setShowURL] = useState(false);
-  const [currentAccount, setCurrentAccount] = useState<Account | null>(null);
-  const [copySuccess, setCopySuccess] = useState(false);
-  const [showOpenApiModal, setShowOpenApiModal] = useState(false);
-  const [isDefaultWallet, setIsDefaultWallet] = useState(false);
-  const [showRefresh, setShowRefresh] = useState(false);
+  const { name, id, icon, brand, image } = location.state!.brand;
+
   const [run, loading] = useWalletRequest(wallet.importWatchAddress, {
     onSuccess(accounts) {
-      setDisableKeydown(false);
       history.replace({
         pathname: '/import/success',
         state: {
           accounts,
+          brand,
+          image,
           title: t('Successfully created'),
         },
       });
     },
     onError(err) {
-      setDisableKeydown(false);
-      form.setFields([
-        {
-          name: 'address',
-          errors: [err?.message || t('Not a valid address')],
-        },
-      ]);
+      message.error(t(err?.message));
+      handleImportByWalletconnect();
+      return;
     },
   });
 
@@ -92,7 +73,7 @@ const WalletConnectTemplate = () => {
   const handleImportByWalletconnect = async () => {
     localStorage.removeItem('walletconnect');
     connector.current = new WalletConnect({
-      bridge: 'https://wcbridge.debank.com',
+      bridge: 'https://wcbridge.rabby.io',
       clientMeta: {
         description: t('appDescription'),
         url: 'https://rabby.io',
@@ -105,11 +86,10 @@ const WalletConnectTemplate = () => {
         handleImportByWalletconnect();
       } else {
         const { accounts } = payload.params[0];
-        form.setFieldsValue({
-          address: accounts[0],
-        });
         await connector.current?.killSession();
-        setWalletconnectUri('');
+        if (accounts[0]) {
+          run(accounts[0]);
+        }
       }
     });
     await connector.current.createSession();
@@ -139,54 +119,12 @@ const WalletConnectTemplate = () => {
     }
   };
 
-  const handleValuesChange = async ({ address }: { address: string }) => {
-    setTags([]);
-    if (!isValidAddress(address)) {
-      try {
-        const result = await wallet.openapi.getEnsAddressByName(address);
-        setDisableKeydown(true);
-        if (result && result.addr) {
-          setEnsResult(result);
-        }
-      } catch (e) {
-        setEnsResult(null);
-      }
-    } else {
-      setEnsResult(null);
-    }
-  };
-
-  const handleNextClick = () => {
-    const address = form.getFieldValue('address');
-    run(address);
-  };
-
   const handleClickBack = () => {
     if (history.length > 1) {
       history.goBack();
     } else {
       history.replace('/');
     }
-  };
-  const handleCopyCurrentAddress = () => {
-    const clipboard = new ClipboardJS('.main', {
-      text: function () {
-        return currentAccount!.address;
-      },
-    });
-
-    clipboard.on('success', () => {
-      setCopySuccess(true);
-      setTimeout(() => {
-        setCopySuccess(false);
-      }, 1000);
-      message.success({
-        icon: <img src={IconSuccess} className="icon icon-success" />,
-        content: t('Copied'),
-        duration: 0.5,
-      });
-      clipboard.destroy();
-    });
   };
   useEffect(() => {
     handleLoadCache();
@@ -195,7 +133,6 @@ const WalletConnectTemplate = () => {
       wallet.clearPageStateCache();
     };
   }, []);
-  const { name, id, icon, brand, image } = location.state!.brand;
   return (
     <div className="wallet-connect">
       <div className="create-new-header create-password-header h-[220px]">
@@ -212,64 +149,11 @@ const WalletConnectTemplate = () => {
         </p>
         <img src="/images/watch-mask.png" className="mask" />
       </div>
-      <div className="button-container">
-        <div
-          className={showURL ? '' : 'active'}
-          onClick={() => setShowURL(false)}
-        >
-          {t('QR code')}
-        </div>
-        <div
-          className={showURL ? 'active' : ''}
-          onClick={() => setShowURL(true)}
-        >
-          {t('URL')}
-        </div>
-      </div>
-      {walletconnectUri && !showURL && (
-        <div className="qrcode" {...hoverProps}>
-          <QRCode value={walletconnectUri} size={170} />
-          {isHovering && (
-            <div className="refresh-container">
-              <img
-                className="qrcode-refresh"
-                src={IconQRCodeRefresh}
-                onClick={handleImportByWalletconnect}
-              />
-            </div>
-          )}
-        </div>
-      )}
-      {walletconnectUri && showURL && (
-        <div className="url-container">
-          <Input.TextArea
-            className="h-[200px] w-[336px] p-16 m-32 mt-0 mb-24"
-            spellCheck={false}
-            value={walletconnectUri}
-          />
-          <img
-            src={IconRefresh}
-            onClick={handleImportByWalletconnect}
-            className="icon-refresh"
-          />
-          <img
-            src={IconCopy}
-            onClick={handleCopyCurrentAddress}
-            className={clsx('icon-copy-wallet', { success: copySuccess })}
-          />
-          <div
-            className="change-bridge"
-            onClick={() => setShowOpenApiModal(true)}
-          >
-            <img src={IconBridgeChange} />
-            {t('Change bridge server')}
-          </div>
-        </div>
-      )}
-      <OpenApiModal
-        visible={showOpenApiModal}
-        onFinish={() => setShowOpenApiModal(false)}
-        onCancel={() => setShowOpenApiModal(false)}
+      <ScanCopyQRCode
+        showURL={showURL}
+        changeShowURL={setShowURL}
+        qrcodeURL={walletconnectUri}
+        refreshFun={handleImportByWalletconnect}
       />
     </div>
   );

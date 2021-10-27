@@ -86,7 +86,7 @@ const ImportWatchAddress = () => {
   const handleImportByWalletconnect = async () => {
     localStorage.removeItem('walletconnect');
     connector.current = new WalletConnect({
-      bridge: 'https://wcbridge.debank.com',
+      bridge: 'https://wcbridge.rabby.io',
       clientMeta: {
         description: t('appDescription'),
         url: 'https://rabby.io',

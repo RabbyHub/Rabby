@@ -15,6 +15,7 @@ interface AddressListProps {
   hiddenAddresses?: { type: string; address: string }[];
   onClick?(account: string, keyring: any): void;
   onShowMnemonics?(): void;
+  currentAccount?: any;
 }
 
 const SORT_WEIGHT = {
@@ -33,6 +34,7 @@ const AddressList: any = forwardRef(
       onClick,
       hiddenAddresses = [],
       onShowMnemonics,
+      currentAccount,
     }: AddressListProps,
     ref
   ) => {
@@ -91,6 +93,7 @@ const AddressList: any = forwardRef(
                   ActionButton={ActionButton}
                   onClick={onClick}
                   hiddenAddresses={hiddenAddresses}
+                  currentAccount={currentAccount}
                   showAssets
                   ref={(el) => {
                     let i: number | null = index;
