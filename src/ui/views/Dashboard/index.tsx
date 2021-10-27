@@ -86,9 +86,13 @@ const Dashboard = () => {
     history.push('/settings');
   };
 
-  const handleChange = async (account: string, type: string) => {
-    await wallet.changeAccount({ address: account, type });
-    setCurrentAccount({ address: account, type });
+  const handleChange = async (
+    account: string,
+    type: string,
+    brandName: string
+  ) => {
+    await wallet.changeAccount({ address: account, type, brandName });
+    setCurrentAccount({ address: account, type, brandName });
     handleToggle();
   };
 

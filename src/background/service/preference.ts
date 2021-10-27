@@ -8,6 +8,7 @@ import { browser } from 'webextension-polyfill-ts';
 export interface Account {
   type: string;
   address: string;
+  brandName: string;
 }
 
 interface PreferenceStore {
@@ -128,17 +129,19 @@ class PreferenceService {
     };
   };
 
-  hideAddress = (type: string, address: string) => {
+  hideAddress = (type: string, address: string, brandName: string) => {
     this.store.hiddenAddresses = [
       ...this.store.hiddenAddresses,
       {
         type,
         address,
+        brandName,
       },
     ];
     if (
       type === this.store.currentAccount?.type &&
-      address === this.store.currentAccount.address
+      address === this.store.currentAccount.address &&
+      brandName === this.store.currentAccount.brandName
     ) {
       this.resetCurrentAccount();
     }
