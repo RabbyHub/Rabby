@@ -21,13 +21,11 @@ import IconSetting from 'ui/assets/settings.svg';
 import { ReactComponent as IconCopy } from 'ui/assets/copy.svg';
 import { ReactComponent as IconQrcode } from 'ui/assets/qrcode.svg';
 import IconSend from 'ui/assets/send.svg';
-import IconSwap from 'ui/assets/swap.svg';
 import IconHistory from 'ui/assets/history.svg';
 import IconPending from 'ui/assets/pending.svg';
 import IconSuccess from 'ui/assets/success.svg';
 import IconHardware from 'ui/assets/hardware-white.svg';
 import IconWatch from 'ui/assets/watch-white.svg';
-import IconExternal from 'ui/assets/open-external-gray.svg';
 import './style.less';
 
 const Dashboard = () => {

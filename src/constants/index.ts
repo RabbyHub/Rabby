@@ -229,6 +229,7 @@ export const KEYRING_TYPE = {
   SimpleKeyring: 'Simple Key Pair',
   HardwareKeyring: 'hardware',
   WatchAddressKeyring: 'Watch Address',
+  WalletConnectKeyring: 'WalletConnect',
 };
 
 export const KEYRING_TYPE_TEXT = {
@@ -247,6 +248,7 @@ export const KEYRING_CLASS = {
     ONEKEY: 'Onekey Hardware',
   },
   WATCH: 'Watch Address',
+  WALLETCONNECT: 'WalletConnect',
 };
 
 export const HARDWARE_KEYRING_TYPES = {
