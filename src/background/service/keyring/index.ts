@@ -8,15 +8,17 @@ import * as bip39 from 'bip39';
 import { ObservableStore } from '@metamask/obs-store';
 import { normalizeAddress } from 'background/utils';
 import LedgerBridgeKeyring from './eth-ledger-bridge-keyring';
-import SimpleKeyring from 'eth-simple-keyring';
-import HdKeyring from './eth-hd-keyring';
-import TrezorKeyring from './eth-trezor-keyring';
+import SimpleKeyring from '@rabby-wallet/eth-simple-keyring';
+import HdKeyring from '@rabby-wallet/eth-hd-keyring';
+import TrezorKeyring from '@rabby-wallet/eth-trezor-keyring';
 import OnekeyKeyring from './eth-onekey-keyring';
-import WatchKeyring from './eth-watch-keyring';
+import WatchKeyring from '@rabby-wallet/eth-watch-keyring';
+import WalletConnectKeyring from '@rabby-wallet/eth-walletconnect-keyring';
 import preference from '../preference';
 import i18n from '../i18n';
-import { KEYRING_TYPE, HARDWARE_KEYRING_TYPES } from 'consts';
+import { KEYRING_TYPE, HARDWARE_KEYRING_TYPES, EVENTS } from 'consts';
 import DisplayKeyring from './display';
+import eventBus from '@/eventBus';
 
 export const KEYRING_SDK_TYPES = {
   SimpleKeyring,
@@ -25,6 +27,7 @@ export const KEYRING_SDK_TYPES = {
   LedgerBridgeKeyring,
   OnekeyKeyring,
   WatchKeyring,
+  WalletConnectKeyring,
 };
 
 export const KEYRING_CLASS = {
@@ -36,6 +39,7 @@ export const KEYRING_CLASS = {
     ONEKEY: OnekeyKeyring.type,
   },
   WATCH: WatchKeyring.type,
+  WALLETCONNECT: WalletConnectKeyring.type,
 };
 
 interface MemStoreState {
@@ -711,6 +715,26 @@ class KeyringService extends EventEmitter {
       preference.store.useLedgerLive
     ) {
       await keyring.updateTransportMethod(true);
+    }
+    if (keyring.type === KEYRING_CLASS.WALLETCONNECT) {
+      eventBus.addEventListener(
+        EVENTS.WALLETCONNECT.INIT,
+        ({ address, brandName }) => {
+          (keyring as WalletConnectKeyring).init(address, brandName);
+        }
+      );
+      (keyring as WalletConnectKeyring).on('inited', (uri) => {
+        eventBus.emit(EVENTS.broadcastToUI, {
+          method: EVENTS.WALLETCONNECT.INITED,
+          params: { uri },
+        });
+      });
+      keyring.on('statusChange', (data) => {
+        eventBus.emit(EVENTS.broadcastToUI, {
+          method: EVENTS.WALLETCONNECT.STATUS_CHANGED,
+          params: data,
+        });
+      });
     }
     // getAccounts also validates the accounts for some keyrings
     await keyring.getAccounts();
