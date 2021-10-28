@@ -2,7 +2,7 @@
 
 .address-group-list {
   & > li {
-    margin-bottom: 16px;
+    margin-bottom: 8px;
     &:nth-last-child(1) {
       margin-bottom: 0;
     }
@@ -14,32 +14,26 @@
       }
     }
     .addresses {
-      background-color: #fff;
-      border-radius: 6px;
       & > li {
+        background-color: #fff;
         padding: 12px;
         position: relative;
         display: flex;
         justify-content: space-between;
+        margin-bottom: 8px;
+        border-radius: 6px;
         .ant-skeleton-element {
           position: absolute;
           left: 0;
           top: 0;
           width: 100%;
         }
-        &::after {
-          .part-border(93%);
-          bottom: 0;
-          left: 50%;
-          transform: translateX(-50%);
-        }
         .icon-hardware {
-          width: 32px;
-          height: 32px;
-          margin-right: 16px;
+          width: 24px;
+          height: 24px;
         }
-        &:nth-last-child(1)::after {
-          display: none;
+        &:nth-last-child(1) {
+          margin-bottom: 0;
         }
       }
     }

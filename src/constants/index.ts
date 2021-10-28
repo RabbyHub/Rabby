@@ -33,6 +33,12 @@ import IconOnekey from 'ui/assets/walletlogo/onekey.png';
 import IconTokenpocket from 'ui/assets/walletlogo/tp.png';
 import IconTrezor from 'ui/assets/walletlogo/trezor.png';
 import IconTrust from 'ui/assets/walletlogo/trust.png';
+import IconMnemonic24 from 'ui/assets/walletlogo/mnemonic24.svg';
+import IconPrivateKey24 from 'ui/assets/walletlogo/privatekey24.svg';
+import IconWatch24 from 'ui/assets/walletlogo/watch24.svg';
+import IconLedger24 from 'ui/assets/walletlogo/ledger24.svg';
+import IconTrezor24 from 'ui/assets/walletlogo/trezor24.svg';
+import IconOneKey24 from 'ui/assets/walletlogo/onekey24.svg';
 import LogoTrust from 'ui/assets/walletlogo/TrustWalletLogo.png';
 import LogoTp from 'ui/assets/walletlogo/TokenPocketLogo.png';
 import LogoMath from 'ui/assets/walletlogo/MathWalletLogo.png';
@@ -43,6 +49,10 @@ import LogoAmber from 'ui/assets/walletlogo/AmberLogo.png';
 import LogoOnekey from 'ui/assets/walletlogo/onekey28.png';
 import LogoTrezor from 'ui/assets/walletlogo/Trezor28.png';
 import LogoLedger from 'ui/assets/walletlogo/ledger28.png';
+import LogoMnemonic from 'ui/assets/walletlogo/mnemoniclogo.svg';
+import LogoPrivateKey from 'ui/assets/walletlogo/privatekeylogo.svg';
+import LogoWatch from 'ui/assets/walletlogo/watchlogo.svg';
+
 export enum CHAINS_ENUM {
   ETH = 'ETH',
   BSC = 'BSC',
@@ -464,6 +474,7 @@ export enum WALLET_BRAND_TYPES {
   TREZOR = 'TREZOR',
   TRUSTWALLET = 'TRUSTWALLET',
 }
+
 export const WALLET_BRAND_CONTENT = {
   [WALLET_BRAND_TYPES.AMBER]: {
     id: 0,
@@ -545,4 +556,19 @@ export const WALLET_BRAND_CONTENT = {
     image: LogoTrust,
     connectType: BRAND_WALLET_CONNECT_TYPE.WalletConnect,
   },
+};
+
+export const KEYRING_ICONS = {
+  [KEYRING_CLASS.MNEMONIC]: IconMnemonic24,
+  [KEYRING_CLASS.PRIVATE_KEY]: IconPrivateKey24,
+  [KEYRING_CLASS.WATCH]: IconWatch24,
+  [HARDWARE_KEYRING_TYPES.Ledger.type]: IconLedger24,
+  [HARDWARE_KEYRING_TYPES.Onekey.type]: IconOneKey24,
+  [HARDWARE_KEYRING_TYPES.Trezor.type]: IconTrezor24,
+};
+
+export const KEYRINGS_LOGOS = {
+  [KEYRING_CLASS.MNEMONIC]: LogoMnemonic,
+  [KEYRING_CLASS.PRIVATE_KEY]: LogoPrivateKey,
+  [KEYRING_CLASS.WATCH]: LogoWatch,
 };

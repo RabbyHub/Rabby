@@ -26,9 +26,7 @@ const SwitchAddress = ({
 }) => {
   const wallet = useWallet();
   const addressList = useRef<any>();
-  const [accounts, setAccounts] = useState<Record<string, DisplayedKeryring[]>>(
-    {}
-  );
+  const [accounts, setAccounts] = useState<DisplayedKeryring[]>([]);
   const [isRefreshingBalance, setIsRefreshingBalance] = useState(false);
   const { t } = useTranslation();
 
@@ -95,7 +93,6 @@ const SwitchAddress = ({
         <AddressList
           ref={addressList}
           list={accounts}
-          ActionButton={SwitchButton}
           onClick={changeAccount}
           currentAccount={currentAccount}
         />

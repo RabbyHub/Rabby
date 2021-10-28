@@ -6,12 +6,7 @@ import { useInterval } from 'react-use';
 import { message } from 'antd';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
-import {
-  CHAINS,
-  HARDWARE_KEYRING_TYPES,
-  KEYRING_TYPE,
-  WALLET_BRAND_CONTENT,
-} from 'consts';
+import { WALLET_BRAND_CONTENT, KEYRINGS_LOGOS } from 'consts';
 import { AddressViewer, Modal } from 'ui/component';
 import { useWallet, getCurrentConnectSite } from 'ui/utils';
 import { Account } from 'background/service/preference';
@@ -29,8 +24,6 @@ import IconSend from 'ui/assets/send.svg';
 import IconHistory from 'ui/assets/history.svg';
 import IconPending from 'ui/assets/pending.svg';
 import IconSuccess from 'ui/assets/success.svg';
-import IconHardware from 'ui/assets/hardware-white.svg';
-import IconWatch from 'ui/assets/watch-white.svg';
 import './style.less';
 
 const Dashboard = () => {
@@ -103,25 +96,10 @@ const Dashboard = () => {
 
   const handleGotoSend = async () => {
     history.push('/send-token');
-    // const site = await getCurrentConnectSite(wallet);
-    // let chain: null | string = null;
-    // if (site) {
-    //   chain = CHAINS[site.chain].serverId;
-    // }
-    // _openInTab(`https://debank.com/send${chain ? `?chain=${chain}` : ''}`);
   };
 
   const handleGotoHistory = async () => {
     history.push('/tx-history');
-  };
-
-  const handleGotoSwap = async () => {
-    const site = await getCurrentConnectSite(wallet);
-    let chain: null | string = null;
-    if (site) {
-      chain = CHAINS[site.chain].serverId;
-    }
-    _openInTab(`https://debank.com/swap${chain ? `?chain=${chain}` : ''}`);
   };
 
   const handleCopyCurrentAddress = () => {
@@ -154,16 +132,6 @@ const Dashboard = () => {
     setQrcodeVisible(true);
   };
 
-  const hardwareTypes = Object.values(HARDWARE_KEYRING_TYPES).map(
-    (item) => item.type
-  );
-  const walletBrandIcon = () => {
-    const account = Object.values(WALLET_BRAND_CONTENT).find(
-      (wallet) =>
-        wallet.brand.toString() === currentAccount?.brandName.toString()
-    );
-    return account?.image;
-  };
   return (
     <>
       <div
@@ -172,19 +140,15 @@ const Dashboard = () => {
         <div className="main">
           {currentAccount && (
             <div className="flex header items-center">
-              {(currentAccount?.type === KEYRING_TYPE.WalletConnectKeyring ||
-                KEYRING_TYPE.WatchAddressKeyring ||
-                hardwareTypes.includes(currentAccount.type)) && (
+              {KEYRINGS_LOGOS[currentAccount?.type] ? (
                 <img
-                  src={
-                    currentAccount?.type === KEYRING_TYPE.WalletConnectKeyring
-                      ? walletBrandIcon()
-                      : currentAccount?.type ===
-                        KEYRING_TYPE.WatchAddressKeyring
-                      ? IconWatch
-                      : IconHardware
-                  }
                   className="icon icon-account-type"
+                  src={KEYRINGS_LOGOS[currentAccount?.type]}
+                />
+              ) : (
+                <img
+                  className="icon icon-account-type"
+                  src={WALLET_BRAND_CONTENT[currentAccount?.brandName]}
                 />
               )}
               {currentAccount && (
