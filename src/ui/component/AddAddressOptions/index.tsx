@@ -13,7 +13,7 @@ import IconMnemonics from 'ui/assets/walletlogo/mnemonics.svg';
 import IconCreatenewaddr from 'ui/assets/walletlogo/createnewaddr.svg';
 import IconKeystore from 'ui/assets/walletlogo/keystore.svg';
 import IconPrivatekey from 'ui/assets/walletlogo/privatekey.svg';
-import { WALLET_BRAND_CONTENT } from 'consts';
+import { IS_CHROME, WALLET_BRAND_CONTENT } from 'consts';
 const AddAddressOptions = () => {
   const history = useHistory();
   const wallet = useWallet();
@@ -34,11 +34,15 @@ const AddAddressOptions = () => {
   }, [savedWallet]);
   const connectRouter = (item) => {
     if (item.connectType === 'TrezorConnect') {
-      history.push('/import');
+      history.push('/import/hardware');
     } else if (item.connectType === 'LedgerConnect') {
-      history.push('/import/hardware/ledger');
+      history.push(
+        IS_CHROME
+          ? '/import/hardware/ledger-connect'
+          : '/import/hardware/ledger'
+      );
     } else if (item.connectType === 'OneKeyConnect') {
-      history.push('/import/hardware/ledger');
+      history.push('/import/hardware');
     } else {
       history.push({
         pathname: '/import/wallet-connect',
