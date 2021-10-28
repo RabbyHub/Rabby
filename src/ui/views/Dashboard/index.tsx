@@ -148,7 +148,7 @@ const Dashboard = () => {
               ) : (
                 <img
                   className="icon icon-account-type"
-                  src={WALLET_BRAND_CONTENT[currentAccount?.brandName]}
+                  src={WALLET_BRAND_CONTENT[currentAccount?.brandName].image}
                 />
               )}
               {currentAccount && (

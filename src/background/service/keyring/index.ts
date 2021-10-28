@@ -842,7 +842,7 @@ class KeyringService extends EventEmitter {
     const hiddenAddresses = preference.getHiddenAddresses();
     const accounts: Promise<
       ({ address: string; brandName: string } | string)[]
-    > = keyring.getAccountWithBrand
+    > = keyring.getAccountsWithBrand
       ? keyring.getAccountsWithBrand()
       : keyring.getAccounts();
 

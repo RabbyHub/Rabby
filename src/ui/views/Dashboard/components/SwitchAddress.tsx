@@ -7,8 +7,6 @@ import { DisplayedKeryring } from 'background/service/keyring';
 import { Account } from 'background/service/preference';
 import { AddressList } from 'ui/component';
 import { useWallet } from 'ui/utils';
-import IconChecked from 'ui/assets/checked.svg';
-import IconNotChecked from 'ui/assets/not-checked.svg';
 import IconManageAddress from 'ui/assets/manage-address.svg';
 import IconClose from 'ui/assets/close.svg';
 import IconRefresh from 'ui/assets/refresh.svg';
@@ -72,20 +70,6 @@ const SwitchAddress = ({
       </a>
     </div>
   );
-
-  const SwitchButton = ({ data, keyring }: { data: string; keyring: any }) => {
-    return (
-      <img
-        src={
-          currentAccount.address === data &&
-          currentAccount.type === keyring.type
-            ? IconChecked
-            : IconNotChecked
-        }
-        className="icon icon-checked"
-      />
-    );
-  };
 
   const Container = useMemo(() => {
     return (

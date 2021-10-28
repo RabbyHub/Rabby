@@ -237,7 +237,7 @@ class PreferenceService {
     return this.store.useLedgerLive;
   };
   getWalletSavedList = () => {
-    return this.store.walletSavedList;
+    return this.store.walletSavedList || [];
   };
 
   updateWalletSavedList = (list: []) => {
