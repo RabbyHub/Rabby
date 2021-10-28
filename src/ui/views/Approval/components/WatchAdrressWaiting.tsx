@@ -61,7 +61,7 @@ const Scan = ({
       <ScanCopyQRCode
         showURL={showURL}
         changeShowURL={setShowURL}
-        qrcodeURL={address || ''}
+        qrcodeURL={uri || ''}
         refreshFun={handleRefresh}
       />
       <div className="watchaddress-scan__guide">
@@ -303,11 +303,13 @@ const WatchAddressWaiting = ({ params }: { params: ApprovalParams }) => {
   const [isSignText, setIsSignText] = useState(false);
 
   const initWalletConnect = async () => {
+    const account = await wallet.syncGetCurrentAccount()!;
     eventBus.addEventListener(EVENTS.WALLETCONNECT.INITED, ({ uri }) => {
       setQrcodeContent(uri);
     });
     eventBus.emit(EVENTS.broadcastToBackground, {
       method: EVENTS.WALLETCONNECT.INIT,
+      data: account,
     });
   };
 

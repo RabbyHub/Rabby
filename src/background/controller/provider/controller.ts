@@ -39,6 +39,7 @@ interface ApprovalRes extends Tx {
   address?: string;
   uiRequestComponent?: string;
   isSend?: boolean;
+  extra?: Record<string, any>;
 }
 
 interface Web3WalletPermission {
@@ -244,7 +245,8 @@ class ProviderController extends BaseController {
     const signedTx = await keyringService.signTransaction(
       keyring,
       tx,
-      txParams.from
+      txParams.from,
+      approvalRes?.extra
     );
     const onTranscationSubmitted = (hash: string) => {
       const chain = permissionService.isInternalOrigin(origin)
@@ -346,14 +348,19 @@ class ProviderController extends BaseController {
     data: {
       params: [data, from],
     },
+    approvalRes,
   }) => {
     data = data = isHexString(data) ? data : stringToHex(data);
     const keyring = await this._checkAddress(from);
 
-    return keyringService.signPersonalMessage(keyring, { data, from });
+    return keyringService.signPersonalMessage(
+      keyring,
+      { data, from },
+      approvalRes?.extra
+    );
   };
 
-  private _signTypedData = async (from, data, version) => {
+  private _signTypedData = async (from, data, version, extra?) => {
     const keyring = await this._checkAddress(from);
     let _data = data;
     if (version !== 'V1') {
@@ -365,7 +372,7 @@ class ProviderController extends BaseController {
     return keyringService.signTypedMessage(
       keyring,
       { from, data: _data },
-      { version }
+      { version, ...(extra || {}) }
     );
   };
 
@@ -374,28 +381,32 @@ class ProviderController extends BaseController {
     data: {
       params: [data, from],
     },
-  }) => this._signTypedData(from, data, 'V1');
+    approvalRes,
+  }) => this._signTypedData(from, data, 'V1', approvalRes?.extra);
 
   @Reflect.metadata('APPROVAL', ['SignTypedData', v1SignTypedDataVlidation])
   ethSignTypedDataV1 = async ({
     data: {
       params: [data, from],
     },
-  }) => this._signTypedData(from, data, 'V1');
+    approvalRes,
+  }) => this._signTypedData(from, data, 'V1', approvalRes?.extra);
 
   @Reflect.metadata('APPROVAL', ['SignTypedData', signTypedDataVlidation])
   ethSignTypedDataV3 = async ({
     data: {
       params: [from, data],
     },
-  }) => this._signTypedData(from, data, 'V3');
+    approvalRes,
+  }) => this._signTypedData(from, data, 'V3', approvalRes?.extra);
 
   @Reflect.metadata('APPROVAL', ['SignTypedData', signTypedDataVlidation])
   ethSignTypedDataV4 = async ({
     data: {
       params: [from, data],
     },
-  }) => this._signTypedData(from, data, 'V4');
+    approvalRes,
+  }) => this._signTypedData(from, data, 'V4', approvalRes?.extra);
 
   @Reflect.metadata('APPROVAL', [
     'AddChain',
