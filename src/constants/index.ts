@@ -40,7 +40,9 @@ import LogoJade from 'ui/assets/walletlogo/JadeLogo.png';
 import LogoImtoken from 'ui/assets/walletlogo/imTokenLogo.png';
 import LogoCobo from 'ui/assets/walletlogo/CoboLogo.png';
 import LogoAmber from 'ui/assets/walletlogo/AmberLogo.png';
-
+import LogoOnekey from 'ui/assets/walletlogo/onekey28.png';
+import LogoTrezor from 'ui/assets/walletlogo/Trezor28.png';
+import LogoLedger from 'ui/assets/walletlogo/ledger28.png';
 export enum CHAINS_ENUM {
   ETH = 'ETH',
   BSC = 'BSC',
@@ -500,7 +502,7 @@ export const WALLET_BRAND_CONTENT = {
     name: 'Ledger',
     brand: WALLET_BRAND_TYPES.LEDGER,
     icon: IconLedger,
-    image: '',
+    image: LogoLedger,
     connectType: BRAND_WALLET_CONNECT_TYPE.LedgerConnect,
   },
   [WALLET_BRAND_TYPES.MATHWALLET]: {
@@ -516,7 +518,7 @@ export const WALLET_BRAND_CONTENT = {
     name: 'OneKey',
     brand: WALLET_BRAND_TYPES.ONEKEY,
     icon: IconOnekey,
-    image: '',
+    image: LogoOnekey,
     connectType: BRAND_WALLET_CONNECT_TYPE.OneKeyConnect,
   },
   [WALLET_BRAND_TYPES.TP]: {
@@ -532,7 +534,7 @@ export const WALLET_BRAND_CONTENT = {
     name: 'Trezor',
     brand: WALLET_BRAND_TYPES.TREZOR,
     icon: IconTrezor,
-    image: '',
+    image: LogoTrezor,
     connectType: BRAND_WALLET_CONNECT_TYPE.TrezorConnect,
   },
   [WALLET_BRAND_TYPES.TRUSTWALLET]: {
