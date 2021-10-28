@@ -23,9 +23,7 @@ const { Nav: StrayFooterNav } = StrayFooter;
 const AddressManagement = () => {
   const wallet = useWallet();
   const { t } = useTranslation();
-  const [accounts, setAccounts] = useState<Record<string, DisplayedKeryring[]>>(
-    {}
-  );
+  const [accounts, setAccounts] = useState<DisplayedKeryring[]>([]);
   const [noAccount, setNoAccount] = useState(false);
   const [hiddenAddresses, setHiddenAddresses] = useState<
     { type: string; address: string }[]
@@ -42,15 +40,10 @@ const AddressManagement = () => {
 
   useEffect(() => {
     let count = 0;
-    for (const key in accounts) {
-      const c = accounts[key].reduce((res, item) => {
-        return res + item.accounts.length;
-      }, 0);
-      count = c;
-      if (c > 0) {
-        break;
-      }
-    }
+    const c = accounts.reduce((res, item) => {
+      return res + item.accounts.length;
+    }, 0);
+    count = c;
     setNoAccount(count <= 0);
   }, [accounts]);
 
@@ -197,6 +190,7 @@ const AddressManagement = () => {
         case HARDWARE_KEYRING_TYPES.Ledger.type:
         case HARDWARE_KEYRING_TYPES.Trezor.type:
         case HARDWARE_KEYRING_TYPES.Onekey.type:
+        case KEYRING_TYPE.WalletConnectKeyring:
         case KEYRING_TYPE.WatchAddressKeyring:
           return (
             <Menu>
@@ -211,11 +205,8 @@ const AddressManagement = () => {
     };
     return (
       <div className="flex items-center">
-        {isHidden && (
-          <div className="address-item-hidden opacity-40">{t('Hidden')}</div>
-        )}
         <Dropdown overlay={DropdownOptions} trigger={['click']}>
-          <img src={IconHint} />
+          <img className="cursor-pointer" src={IconHint} />
         </Dropdown>
       </div>
     );

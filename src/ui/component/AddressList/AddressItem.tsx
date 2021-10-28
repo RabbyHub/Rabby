@@ -6,14 +6,18 @@ import React, {
   forwardRef,
   memo,
 } from 'react';
-import { useHistory } from 'react-router-dom';
 import { Skeleton } from 'antd';
 import clsx from 'clsx';
 import { ChainWithBalance } from 'background/service/openapi';
 import { useWallet, useWalletRequest } from 'ui/utils';
 import { AddressViewer } from 'ui/component';
 import { splitNumberByStep } from 'ui/utils/number';
-import { HARDWARE_KEYRING_TYPES, CHAINS } from 'consts';
+import {
+  HARDWARE_KEYRING_TYPES,
+  CHAINS,
+  KEYRING_ICONS,
+  WALLET_BRAND_CONTENT,
+} from 'consts';
 import { IconLedger, IconOnekey, IconTrezor } from 'ui/assets';
 import IconEmptyChain from 'ui/assets/chain-logos/empty.svg';
 
@@ -25,6 +29,7 @@ interface DisplayChainWithWhiteLogo extends ChainWithBalance {
 export interface AddressItemProps {
   account: {
     address: string;
+    type: string;
     brandName: string;
   };
   keyring?: any;
@@ -128,8 +133,6 @@ const AddressItem = memo(
       if (!account) {
         return null;
       }
-      const history = useHistory();
-      console.log(history.location.pathname);
       const [isLoading, setIsLoading] = useState(false);
       const [balance, chainBalances, getAddressBalance] = useCurrentBalance(
         account.address,
@@ -149,8 +152,9 @@ const AddressItem = memo(
       const isDisabled = hiddenAddresses.find(
         (item) => item.address === account.address && item.type === keyring.type
       );
-      const isCurrentAddress = currentAccount?.address === account.address;
-      const isManagement = history.location.pathname === '/settings/address';
+      const isCurrentAddress =
+        currentAccount?.address === account.address &&
+        currentAccount?.type === account.type;
       return (
         <li
           className={clsx(
@@ -213,14 +217,13 @@ const AddressItem = memo(
           </div>
           {keyring && (
             <div className="action-button flex items-center flex-shrink-0">
-              {Object.keys(HARDWARE_KEYRING_TYPES)
-                .map((key) => HARDWARE_KEYRING_TYPES[key].type)
-                .includes(keyring.type) && (
-                <img
-                  src={HARDWARES[keyring.type]}
-                  className="icon icon-hardware"
-                />
-              )}
+              <img
+                src={
+                  KEYRING_ICONS[account.type] ||
+                  WALLET_BRAND_CONTENT[account.brandName]
+                }
+                className="icon icon-hardware"
+              />
               {ActionButton && (
                 <ActionButton data={account.address} keyring={keyring} />
               )}
