@@ -3,6 +3,7 @@ import { useHistory } from 'react-router-dom';
 import { message } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { useWallet } from 'ui/utils';
+import { openInternalPageInTab } from 'ui/utils/webapi';
 import Field from '../Field';
 import IconArrowRight from 'ui/assets/bookmark.svg';
 import IconHighLight from 'ui/assets/walletlogo/highlightstar.svg';
@@ -34,15 +35,13 @@ const AddAddressOptions = () => {
   }, [savedWallet]);
   const connectRouter = (item) => {
     if (item.connectType === 'TrezorConnect') {
-      history.push('/import/hardware');
+      openInternalPageInTab('import/hardware?connectType=TREZOR');
     } else if (item.connectType === 'LedgerConnect') {
-      history.push(
-        IS_CHROME
-          ? '/import/hardware/ledger-connect'
-          : '/import/hardware/ledger'
+      openInternalPageInTab(
+        IS_CHROME ? 'import/hardware/ledger-connect' : 'import/hardware/ledger'
       );
     } else if (item.connectType === 'OneKeyConnect') {
-      history.push('/import/hardware');
+      openInternalPageInTab('import/hardware?connectType=ONEKEY');
     } else {
       history.push({
         pathname: '/import/wallet-connect',
@@ -110,7 +109,7 @@ const AddAddressOptions = () => {
           (wallet) => wallet.brand.toString() === item
         );
         result.push({
-          leftIcon: savedItem!.image,
+          leftIcon: savedItem!.image || '',
           content: t(savedItem!.name),
           brand: savedItem!.brand,
           image: savedItem!.image,

@@ -29,7 +29,8 @@ const ImportHardware = () => {
   const history = useHistory();
   const [spinning, setSpin] = useState(false);
   const { t } = useTranslation();
-
+  const query = new URLSearchParams(history.location.search);
+  const connectType = query.get('connectType');
   const navSelectAddress = async (hardware) => {
     if (hardware === 'LEDGER') {
       history.push(
@@ -55,7 +56,9 @@ const ImportHardware = () => {
       setSpin(false);
     }
   };
-
+  if (connectType) {
+    navSelectAddress(connectType);
+  }
   return (
     <StrayPage
       header={{
