@@ -27,7 +27,8 @@ interface SignTextProps {
 
 export const WaitingSignComponent = {
   // [KEYRING_CLASS.HARDWARE.LEDGER]: 'HardwareWaiting',
-  [KEYRING_CLASS.WATCH]: 'WatchAdrressWaiting',
+  // [KEYRING_CLASS.WATCH]: 'WatchAdrressWaiting',
+  [KEYRING_CLASS.WALLETCONNECT]: 'WatchAdrressWaiting',
 };
 
 const SignText = ({ params }: { params: SignTextProps }) => {
@@ -104,6 +105,9 @@ const SignText = ({ params }: { params: SignTextProps }) => {
         uiRequestComponent: WaitingSignComponent[currentAccount?.type],
         type: currentAccount.type,
         address: currentAccount.address,
+        extra: {
+          brandName: currentAccount.brandName,
+        },
       });
 
       return;
