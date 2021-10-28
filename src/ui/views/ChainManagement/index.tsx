@@ -75,6 +75,7 @@ export const ChainManagementList = ({ inStart = false }) => {
         <Field
           key={chain.enum}
           leftIcon={<img src={chain.logo} className="icon icon-chain" />}
+          unselect
           rightIcon={
             <Switch
               defaultChecked={!!enableChains.find((c) => c.enum === chain.enum)}

@@ -9,6 +9,7 @@ import IconBack from 'ui/assets/gobackwhite.svg';
 import { ScanCopyQRCode } from 'ui/component';
 import eventBus from '@/eventBus';
 import { WALLETCONNECT_STATUS_MAP, EVENTS } from 'consts';
+import Mask from 'ui/assets/import-mask.png';
 import './style.less';
 const WalletConnectTemplate = () => {
   const { t } = useTranslation();
@@ -23,15 +24,10 @@ const WalletConnectTemplate = () => {
     message?: string;
   }>(null);
   const [result, setResult] = useState('');
-
   const [walletconnectUri, setWalletconnectUri] = useState('');
-  const [ensResult, setEnsResult] = useState<null | {
-    addr: string;
-    name: string;
-  }>(null);
-  const [tags, setTags] = useState<string[]>([]);
   const [showURL, setShowURL] = useState(false);
   const [stashId, setStashId] = useState<number | null>(null);
+
   const { name, id, icon, brand, image } = location.state!.brand;
 
   const [run, loading] = useWalletRequest(wallet.importWalletConnect, {
@@ -105,7 +101,7 @@ const WalletConnectTemplate = () => {
         <p className="text-14 mb-0 mt-4 text-white font-bold text-center">
           {t('Scan with your wallet app')}
         </p>
-        <img src="/images/watch-mask.png" className="mask" />
+        <img src={Mask} className="mask" />
       </div>
       <ScanCopyQRCode
         showURL={showURL}
