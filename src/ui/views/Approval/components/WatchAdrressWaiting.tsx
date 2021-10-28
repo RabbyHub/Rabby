@@ -18,7 +18,7 @@ import { Tx } from 'background/service/openapi';
 import { useApproval, useWallet, openInTab } from 'ui/utils';
 import eventBus from '@/eventBus';
 import { SvgIconOpenExternal, SvgIconRefresh } from 'ui/assets';
-
+import Mask from 'ui/assets/bg-watchtrade.png';
 interface ApprovalParams extends Tx {
   address: string;
 }
@@ -56,7 +56,6 @@ const Scan = ({
   useEffect(() => {
     init();
   });
-  console.log(uri, address, 'address>>>>>');
   return (
     <div className="watchaddress-scan wallet-connect">
       <ScanCopyQRCode
@@ -393,6 +392,7 @@ const WatchAddressWaiting = ({ params }: { params: ApprovalParams }) => {
   return (
     <div className="watchaddress">
       <div className="watchaddress-header">
+        <img src={Mask} className="mask" />
         {/* <p className="text-15 text-medium mb-24">
           {t('Choose your mobile wallet')}
         </p>
