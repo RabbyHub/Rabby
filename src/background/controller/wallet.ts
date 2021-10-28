@@ -618,7 +618,7 @@ export class WalletController extends BaseController {
     const _account = {
       address: typeof account === 'string' ? account : account.address,
       type: keyring.type,
-      brandName: typeof account === 'string' ? keyring.type : account.address,
+      brandName: typeof account === 'string' ? keyring.type : account.brandName,
     };
     preferenceService.setCurrentAccount(_account);
 
