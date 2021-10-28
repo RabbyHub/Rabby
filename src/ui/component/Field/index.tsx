@@ -14,6 +14,7 @@ interface FieldProps {
   brand?: string | null;
   callback?(): void;
   unselect?: boolean;
+  address?: boolean;
 }
 
 const Field = ({
@@ -27,6 +28,7 @@ const Field = ({
   brand,
   callback,
   unselect,
+  address,
 }: FieldProps) => {
   const wallet = useWallet();
   const [isHovering, hoverProps] = useHover();
@@ -56,22 +58,22 @@ const Field = ({
       {...hoverProps}
     >
       {leftIcon && (
-        <div className="left-icon">
+        <div className={cx('left-icon', address && 'left-icon-address')}>
           {leftIcon}
           {showWalletConnect && (
             <img className="corner-icon" src={IconWalletConnect} />
           )}
         </div>
       )}
-      <div className="field-slot">
-        <div>{children}</div>
+      <div className={cx('field-slot', address && 'field-slot-address')}>
+        {children}
         {subText && <div className="sub-text">{subText}</div>}
       </div>
       <div
         className="right-icon"
         onClick={unselect ? removeWallet : saveWallet}
       >
-        {(isHovering || unselect) && rightIcon}
+        {rightIcon}
       </div>
     </div>
   );

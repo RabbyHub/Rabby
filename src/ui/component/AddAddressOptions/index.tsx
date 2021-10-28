@@ -140,6 +140,7 @@ const AddAddressOptions = () => {
               onClick={data.onClick}
               callback={init}
               unselect
+              address
             >
               {data.content}
             </Field>
@@ -160,6 +161,7 @@ const AddAddressOptions = () => {
             showWalletConnect={data.connectType === 'WalletConnect'}
             onClick={data.onClick}
             callback={init}
+            address
           >
             {data.content}
           </Field>
@@ -172,6 +174,7 @@ const AddAddressOptions = () => {
             rightIcon={null}
             subText={data.subText}
             onClick={data.onClick}
+            address
           >
             {data.content}
           </Field>

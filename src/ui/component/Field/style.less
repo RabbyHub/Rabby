@@ -9,17 +9,22 @@
 
   .field-slot {
     display: flex;
-    flex-direction: column;
-    align-items: flex-start;
+    align-items: center;
     flex: 1;
     overflow: hidden;
+  }
+  .field-slot-address {
+    flex-direction: column;
+    align-items: flex-start;
   }
   .sub-text{
     font-size: 12px;
     color: #707280;
   }
-
   .left-icon {
+    margin-right: 12px;
+  }
+  .left-icon-address {
     margin-right: 12px;
     position: relative;
     .corner-icon{
@@ -38,6 +43,6 @@
   }
 
   &+.field {
-    margin-top: 14px;
+    margin-top: 12px;
   }
 }
