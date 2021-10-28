@@ -163,6 +163,9 @@ const AddressManagement = () => {
               >
                 {t('View private key')}
               </Menu.Item>
+              <Menu.Item onClick={() => handleViewMnemonics()}>
+                {t('View Mnemonic')}
+              </Menu.Item>
             </Menu>
           );
         case KEYRING_TYPE.SimpleKeyring:
