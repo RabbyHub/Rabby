@@ -149,7 +149,7 @@ const AddressItem = memo(
       const isDisabled = hiddenAddresses.find(
         (item) => item.address === account.address && item.type === keyring.type
       );
-      const isCurrentAddress = currentAccount?.address === account;
+      const isCurrentAddress = currentAccount?.address === account.address;
       const isManagement = history.location.pathname === '/settings/address';
       return (
         <li

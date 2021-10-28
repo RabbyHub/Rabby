@@ -7,6 +7,16 @@ import { useWallet, useWalletRequest } from 'ui/utils';
 import { openInternalPageInTab } from 'ui/utils/webapi';
 import IconBack from 'ui/assets/gobackwhite.svg';
 import { ScanCopyQRCode } from 'ui/component';
+import eventBus from '@/eventBus';
+import {
+  BRAND_WALLET_CONNECT_TYPE,
+  WATCH_ADDRESS_CONNECT_TYPE,
+  CHAINS,
+  CHAINS_ENUM,
+  WALLETCONNECT_STATUS_MAP,
+  EVENTS,
+  WALLET_BRAND_CONTENT,
+} from 'consts';
 import './style.less';
 const WalletConnectTemplate = () => {
   const { t } = useTranslation();
@@ -15,6 +25,15 @@ const WalletConnectTemplate = () => {
   const wallet = useWallet();
   const [form] = Form.useForm();
   const connector = useRef<WalletConnect>();
+  const [connectStatus, setConnectStatus] = useState(
+    WALLETCONNECT_STATUS_MAP.PENDING
+  );
+  const [connectError, setConnectError] = useState<null | {
+    code?: number;
+    message?: string;
+  }>(null);
+  const [result, setResult] = useState('');
+
   const [walletconnectUri, setWalletconnectUri] = useState('');
   const [ensResult, setEnsResult] = useState<null | {
     addr: string;
@@ -22,9 +41,10 @@ const WalletConnectTemplate = () => {
   }>(null);
   const [tags, setTags] = useState<string[]>([]);
   const [showURL, setShowURL] = useState(false);
+  const [stashId, setStashId] = useState<number | null>(null);
   const { name, id, icon, brand, image } = location.state!.brand;
 
-  const [run, loading] = useWalletRequest(wallet.importWatchAddress, {
+  const [run, loading] = useWalletRequest(wallet.importWalletConnect, {
     onSuccess(accounts) {
       history.replace({
         pathname: '/import/success',
@@ -42,83 +62,35 @@ const WalletConnectTemplate = () => {
       return;
     },
   });
-
-  const handleConfirmENS = (result: string) => {
-    form.setFieldsValue({
-      address: result,
-    });
-    setTags([`ENS: ${ensResult!.name}`]);
-    setEnsResult(null);
-  };
-
-  const handleKeyDown = useMemo(() => {
-    const handler = (e: KeyboardEvent) => {
-      if (e.key.toLowerCase() === 'enter') {
-        if (ensResult) {
-          e.preventDefault();
-          handleConfirmENS(ensResult.addr);
-        }
-      }
-    };
-    return handler;
-  }, [ensResult]);
-
-  useEffect(() => {
-    document.addEventListener('keydown', handleKeyDown);
-    return () => {
-      document.removeEventListener('keydown', handleKeyDown);
-    };
-  }, [handleKeyDown]);
-
   const handleImportByWalletconnect = async () => {
-    localStorage.removeItem('walletconnect');
-    connector.current = new WalletConnect({
-      bridge: 'https://wcbridge.rabby.io',
-      clientMeta: {
-        description: t('appDescription'),
-        url: 'https://rabby.io',
-        icons: ['https://rabby.io/assets/images/logo.png'],
-        name: 'Rabby',
-      },
-    });
-    connector.current.on('connect', async (error, payload) => {
-      if (error) {
-        handleImportByWalletconnect();
-      } else {
-        const { accounts } = payload.params[0];
-        await connector.current?.killSession();
-        if (accounts[0]) {
-          run(accounts[0]);
+    const { uri, stashId } = await wallet.initWalletConnect(brand);
+    await setWalletconnectUri(uri);
+    await setStashId(stashId);
+    eventBus.addEventListener(
+      EVENTS.WALLETCONNECT.STATUS_CHANGED,
+      ({ status, payload }) => {
+        setConnectStatus(status);
+        switch (status) {
+          case WALLETCONNECT_STATUS_MAP.CONNECTED:
+            setResult(payload);
+            run(payload, brand, stashId);
+            break;
+          case WALLETCONNECT_STATUS_MAP.FAILD:
+          case WALLETCONNECT_STATUS_MAP.REJECTED:
+            handleImportByWalletconnect();
+            if (payload.code) {
+              setConnectError({ code: payload.code });
+            } else {
+              setConnectError((payload.params && payload.params[0]) || payload);
+            }
+            break;
+          case WALLETCONNECT_STATUS_MAP.SIBMITTED:
+            setResult(payload);
+            break;
         }
       }
-    });
-    await connector.current.createSession();
-    setWalletconnectUri(connector.current.uri);
+    );
   };
-
-  const handleScanQRCodeSuccess = (data) => {
-    form.setFieldsValue({
-      address: data,
-    });
-    wallet.clearPageStateCache();
-  };
-
-  const handleScanQRCodeError = async () => {
-    await wallet.setPageStateCache({
-      path: history.location.pathname,
-      params: {},
-      states: form.getFieldsValue(),
-    });
-    openInternalPageInTab('request-permission?type=camera');
-  };
-
-  const handleLoadCache = async () => {
-    const cache = await wallet.getPageStateCache();
-    if (cache && cache.path === history.location.pathname) {
-      form.setFieldsValue(cache.states);
-    }
-  };
-
   const handleClickBack = () => {
     if (history.length > 1) {
       history.goBack();
@@ -127,11 +99,11 @@ const WalletConnectTemplate = () => {
     }
   };
   useEffect(() => {
-    handleLoadCache();
+    //handleLoadCache();
     handleImportByWalletconnect();
-    return () => {
-      wallet.clearPageStateCache();
-    };
+    // return () => {
+    //   wallet.clearPageStateCache();
+    // };
   }, []);
   return (
     <div className="wallet-connect">

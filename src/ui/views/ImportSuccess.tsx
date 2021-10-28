@@ -97,7 +97,7 @@ const ImportSuccess = ({ isPopup = false }: { isPopup?: boolean }) => {
             <AddressItem
               className="mb-12 rounded bg-white py-12 pl-16"
               key={account.address}
-              account={account.address}
+              account={account}
               showAssets
               icon={image}
             />
