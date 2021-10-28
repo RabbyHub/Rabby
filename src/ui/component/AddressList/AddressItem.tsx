@@ -153,7 +153,11 @@ const AddressItem = memo(
       const isManagement = history.location.pathname === '/settings/address';
       return (
         <li
-          className={clsx(className, { 'no-assets': !showAssets })}
+          className={clsx(
+            className,
+            { 'no-assets': !showAssets },
+            isCurrentAddress && 'highlight-address'
+          )}
           onClick={() =>
             onClick && onClick(account.address, keyring, account.brandName)
           }
