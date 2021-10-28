@@ -23,12 +23,15 @@ interface DisplayChainWithWhiteLogo extends ChainWithBalance {
 }
 
 export interface AddressItemProps {
-  account: string;
+  account: {
+    address: string;
+    brandName: string;
+  };
   keyring?: any;
   ActionButton?: FunctionComponent<{ data: string; keyring: any }>;
   className?: string;
   hiddenAddresses?: { type: string; address: string }[];
-  onClick?(account: string, keyring: any): void;
+  onClick?(account: string, keyring: any, brandName: string): void;
   showAssets?: boolean;
   noNeedBalance?: boolean;
   currentAccount?: any;
@@ -129,14 +132,14 @@ const AddressItem = memo(
       console.log(history.location.pathname);
       const [isLoading, setIsLoading] = useState(false);
       const [balance, chainBalances, getAddressBalance] = useCurrentBalance(
-        account,
+        account.address,
         false,
         noNeedBalance
       );
 
       const updateBalance = async () => {
         setIsLoading(true);
-        await getAddressBalance(account.toLowerCase());
+        await getAddressBalance(account.address.toLowerCase());
         setIsLoading(false);
       };
 
@@ -144,18 +147,16 @@ const AddressItem = memo(
         updateBalance,
       }));
       const isDisabled = hiddenAddresses.find(
-        (item) => item.address === account && item.type === keyring.type
+        (item) => item.address === account.address && item.type === keyring.type
       );
       const isCurrentAddress = currentAccount?.address === account;
       const isManagement = history.location.pathname === '/settings/address';
       return (
         <li
-          className={clsx(
-            className,
-            { 'no-assets': !showAssets },
-            isCurrentAddress && 'highlight-address'
-          )}
-          onClick={() => onClick && onClick(account, keyring)}
+          className={clsx(className, { 'no-assets': !showAssets })}
+          onClick={() =>
+            onClick && onClick(account.address, keyring, account.brandName)
+          }
         >
           <div
             className={clsx(
@@ -173,7 +174,7 @@ const AddressItem = memo(
                 </span>
               )}
               <AddressViewer
-                address={account}
+                address={account.address}
                 showArrow={false}
                 className="subtitle"
               />
@@ -217,7 +218,7 @@ const AddressItem = memo(
                 />
               )}
               {ActionButton && (
-                <ActionButton data={account} keyring={keyring} />
+                <ActionButton data={account.address} keyring={keyring} />
               )}
             </div>
           )}

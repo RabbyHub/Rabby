@@ -51,7 +51,7 @@ interface MemStoreState {
 
 export interface DisplayedKeryring {
   type: string;
-  accounts: string[];
+  accounts: { address: string; brandName: string }[];
   keyring: DisplayKeyring;
 }
 
@@ -840,17 +840,31 @@ class KeyringService extends EventEmitter {
    */
   displayForKeyring(keyring, includeHidden = true): Promise<DisplayedKeryring> {
     const hiddenAddresses = preference.getHiddenAddresses();
-    return keyring.getAccounts().then((accounts: string[]) => {
+    const accounts: Promise<
+      ({ address: string; brandName: string } | string)[]
+    > = keyring.getAccountWithBrand
+      ? keyring.getAccountsWithBrand()
+      : keyring.getAccounts();
+
+    return accounts.then((accounts) => {
+      const allAccounts = accounts.map((account) => ({
+        address: normalizeAddress(
+          typeof account === 'string' ? account : account.address
+        ),
+        brandName:
+          typeof account === 'string' ? keyring.type : account.brandName,
+      }));
+
       return {
         type: keyring.type,
         accounts: includeHidden
-          ? accounts.map(normalizeAddress)
-          : accounts.filter(
+          ? allAccounts
+          : allAccounts.filter(
               (account) =>
                 !hiddenAddresses.find(
                   (item) =>
                     item.type === keyring.type &&
-                    item.address.toLowerCase() === account.toLowerCase()
+                    item.address.toLowerCase() === account.address.toLowerCase()
                 )
             ),
         keyring,
@@ -873,11 +887,12 @@ class KeyringService extends EventEmitter {
 
   async getAllVisibleAccountsArray() {
     const typedAccounts = await this.getAllTypedVisibleAccounts();
-    const result: { address: string; type: string }[] = [];
+    const result: { address: string; type: string; brandName: string }[] = [];
     typedAccounts.forEach((accountGroup) => {
       result.push(
         ...accountGroup.accounts.map((account) => ({
-          address: account,
+          address: account.address,
+          brandName: account.brandName,
           type: accountGroup.type,
         }))
       );

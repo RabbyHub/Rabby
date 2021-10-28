@@ -335,8 +335,8 @@ export class WalletController extends BaseController {
   getHiddenAddresses = () => preferenceService.getHiddenAddresses();
   showAddress = (type: string, address: string) =>
     preferenceService.showAddress(type, address);
-  hideAddress = (type: string, address: string) => {
-    preferenceService.hideAddress(type, address);
+  hideAddress = (type: string, address: string, brandName: string) => {
+    preferenceService.hideAddress(type, address, brandName);
     const current = preferenceService.getCurrentAccount();
     if (current?.address === address && current.type === type) {
       this.resetCurrentAccount();
@@ -606,7 +606,9 @@ export class WalletController extends BaseController {
     contactBookService.getContactByAddress(address);
 
   private async _setCurrentAccountFromKeyring(keyring, index = 0) {
-    const accounts = await keyring.getAccounts();
+    const accounts = keyring.getAccountsWithBrand
+      ? await keyring.getAccountsWithBrand()
+      : await keyring.getAccounts();
     const account = accounts[index < 0 ? index + accounts.length : index];
 
     if (!account) {
@@ -614,8 +616,9 @@ export class WalletController extends BaseController {
     }
 
     const _account = {
-      address: account,
+      address: typeof account === 'string' ? account : account.address,
       type: keyring.type,
+      brandName: typeof account === 'string' ? keyring.type : account.address,
     };
     preferenceService.setCurrentAccount(_account);
 
