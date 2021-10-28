@@ -9,13 +9,26 @@
 
   .field-slot {
     display: flex;
-    align-items: center;
+    flex-direction: column;
+    align-items: flex-start;
     flex: 1;
     overflow: hidden;
+  }
+  .sub-text{
+    font-size: 12px;
+    color: #707280;
   }
 
   .left-icon {
     margin-right: 12px;
+    position: relative;
+    .corner-icon{
+      width: 16px;
+      height: 16px;
+      position: absolute;
+      right:-4px;
+      top:2px;
+    }
   }
 
   .left-icon, .right-icon {
@@ -25,6 +38,6 @@
   }
 
   &+.field {
-    margin-top: 12px;
+    margin-top: 14px;
   }
 }

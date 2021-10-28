@@ -6,7 +6,6 @@ import { PageHeader, Field, Modal } from 'ui/component';
 import { INITIAL_OPENAPI_URL } from 'consts';
 import IconArrowRight from 'ui/assets/arrow-right-gray.svg';
 import './style.less';
-
 const OpenApiModal = ({
   visible,
   onFinish,
@@ -85,13 +84,11 @@ const OpenApiModal = ({
     </Modal>
   );
 };
-
 const AdvancedSettings = () => {
   const wallet = useWallet();
   const { t } = useTranslation();
   const [showOpenApiModal, setShowOpenApiModal] = useState(false);
   const [isDefaultWallet, setIsDefaultWallet] = useState(false);
-
   const handleDefaultWalletChange = (value: boolean) => {
     wallet.setIsDefaultWallet(value);
     setIsDefaultWallet(value);
@@ -121,7 +118,6 @@ const AdvancedSettings = () => {
       ),
     },
   ];
-
   return (
     <div className="settings">
       <PageHeader>{t('Advanced Options')}</PageHeader>

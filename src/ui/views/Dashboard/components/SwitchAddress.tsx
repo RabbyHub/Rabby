@@ -97,6 +97,7 @@ const SwitchAddress = ({
           list={accounts}
           ActionButton={SwitchButton}
           onClick={changeAccount}
+          currentAccount={currentAccount}
         />
         <div className="footer">
           <Link to="/settings/address">

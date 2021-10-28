@@ -33,7 +33,7 @@
     "message": "Created by Mnemonic"
   },
   "Imported__by__Private__Key": {
-    "message": "Imported by Private Key"
+    "message": "Import Private Key"
   },
   "Watch__Mode": {
     "message": "Watch Mode"
@@ -162,7 +162,7 @@
     "message": "Import via Keystore"
   },
   "Import__via__Mnemonic": {
-    "message": "Import via Mnemonic"
+    "message": "Import Mnemonic"
   },
   "Not__a__valid__mnemonic": {
     "message": "Not a valid mnemonic"
@@ -183,7 +183,7 @@
     "message": "Click to upload again"
   },
   "Import__Your__Keystore": {
-    "message": "Import Your Keystore"
+    "message": "Import Key Store"
   },
   "passwordMinimumLengthAlert": {
     "message": "Password can’t be less than {{length}} letters"
@@ -237,7 +237,7 @@
     "message": "Please add your address via one of the following methods"
   },
   "No__Address": {
-    "message": "No Address"
+    "message": "Please add an address"
   },
   "hardwareImportTip": {
     "message": "If you are using a hardware wallet with a camera on it, you should use watch address instead."
@@ -303,7 +303,7 @@
     "message": "Enable Chains"
   },
   "createAddress": {
-    "message": "Create"
+    "message": "Create New Address"
   },
   "Import": {
     "message": "Import"
@@ -884,5 +884,8 @@
   },
   "Added__to__Contact": {
     "message": "Added to Contact"
+  },
+  "Add__Watch__Mode__Address": {
+    "message": "Add Watch Mode Address"
   }
 }

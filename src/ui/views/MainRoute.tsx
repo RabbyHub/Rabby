@@ -29,7 +29,7 @@ import QRCodeReader from './QRCodeReader';
 import AdvancedSettings from './AdvanceSettings';
 import RequestPermission from './RequestPermission';
 import SendToken from './SendToken';
-
+import WalletConnectTemplate from './WalletConnect';
 ReactGA.initialize('UA-199755108-1');
 // eslint-disable-next-line @typescript-eslint/no-empty-function
 ga('set', 'checkProtocolTask', function () {});
@@ -93,6 +93,9 @@ const Main = () => {
         </PrivateRoute>
         <PrivateRoute exact path="/import/watch-address">
           <ImportWatchAddress />
+        </PrivateRoute>
+        <PrivateRoute exact path="/import/wallet-connect">
+          <WalletConnectTemplate />
         </PrivateRoute>
         <PrivateRoute exact path="/popup/import/success">
           <ImportSuccess isPopup />

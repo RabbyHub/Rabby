@@ -5,13 +5,15 @@ import QRCode from 'qrcode.react';
 import { useHistory } from 'react-router-dom';
 import { useTranslation, Trans } from 'react-i18next';
 import {
-  WATCH_ADDRESS_TYPE_CONTENT,
+  BRAND_WALLET_CONNECT_TYPE,
   WATCH_ADDRESS_CONNECT_TYPE,
   CHAINS,
   CHAINS_ENUM,
   WALLETCONNECT_STATUS_MAP,
   EVENTS,
+  WALLET_BRAND_CONTENT,
 } from 'consts';
+import { ScanCopyQRCode } from 'ui/component';
 import { Tx } from 'background/service/openapi';
 import { useApproval, useWallet, openInTab } from 'ui/utils';
 import eventBus from '@/eventBus';
@@ -36,7 +38,8 @@ const Scan = ({
 }) => {
   const wallet = useWallet();
   const [address, setAddress] = useState<string | null>(null);
-  const typeContent = Object.values(WATCH_ADDRESS_TYPE_CONTENT).find(
+  const [showURL, setShowURL] = useState(false);
+  const typeContent = Object.values(WALLET_BRAND_CONTENT).find(
     (item) => item.id === typeId
   )!;
   const chainName = CHAINS[chain].name;
@@ -53,18 +56,15 @@ const Scan = ({
   useEffect(() => {
     init();
   });
-
+  console.log(uri, address, 'address>>>>>');
   return (
-    <div className="watchaddress-scan">
-      <div className="watchaddress-scan__qrcode">
-        <QRCode value={uri} size={208} />
-      </div>
-      <div className="watchaddress-scan__refresh">
-        <SvgIconRefresh className="icon icon-refresh" onClick={handleRefresh} />
-        <Button type="link" onClick={handleRefresh}>
-          {t('Refresh QR Code')}
-        </Button>
-      </div>
+    <div className="watchaddress-scan wallet-connect">
+      <ScanCopyQRCode
+        showURL={showURL}
+        changeShowURL={setShowURL}
+        qrcodeURL={address || ''}
+        refreshFun={handleRefresh}
+      />
       <div className="watchaddress-scan__guide">
         <p>
           1.{' '}
@@ -292,7 +292,7 @@ const WatchAddressWaiting = ({ params }: { params: ApprovalParams }) => {
   const [qrcodeContent, setQrcodeContent] = useState('');
   const [result, setResult] = useState('');
   const [currentTypeIndex, setCurrentTypeIndex] = useState(
-    Object.values(WATCH_ADDRESS_TYPE_CONTENT).findIndex(
+    Object.values(WALLET_BRAND_CONTENT).findIndex(
       (item) => item.id === currentType
     )
   );
@@ -305,7 +305,6 @@ const WatchAddressWaiting = ({ params }: { params: ApprovalParams }) => {
 
   const initWalletConnect = async () => {
     eventBus.addEventListener(EVENTS.WALLETCONNECT.INITED, ({ uri }) => {
-      console.log('uri', uri);
       setQrcodeContent(uri);
     });
     eventBus.emit(EVENTS.broadcastToBackground, {
@@ -379,10 +378,10 @@ const WatchAddressWaiting = ({ params }: { params: ApprovalParams }) => {
   };
 
   useEffect(() => {
-    const watchType = Object.values(WATCH_ADDRESS_TYPE_CONTENT).find(
+    const watchType = Object.values(WALLET_BRAND_CONTENT).find(
       (item) => item.id === currentType
     )!;
-    if (watchType.connectType === WATCH_ADDRESS_CONNECT_TYPE.WalletConnect) {
+    if (watchType.connectType === BRAND_WALLET_CONNECT_TYPE.WalletConnect) {
       initWalletConnect();
     }
   }, [currentType]);
@@ -394,11 +393,11 @@ const WatchAddressWaiting = ({ params }: { params: ApprovalParams }) => {
   return (
     <div className="watchaddress">
       <div className="watchaddress-header">
-        <p className="text-15 text-medium mb-24">
+        {/* <p className="text-15 text-medium mb-24">
           {t('Choose your mobile wallet')}
         </p>
         <ul className="watchaddress-type-list">
-          {Object.values(WATCH_ADDRESS_TYPE_CONTENT).map((item, index) => (
+          {Object.values(WALLET_BRAND_CONTENT).map((item, index) => (
             <Tooltip
               title={
                 canNotSwitchStatus.includes(connectStatus)
@@ -428,7 +427,7 @@ const WatchAddressWaiting = ({ params }: { params: ApprovalParams }) => {
           }}
         >
           <div className="select-corner__inner" />
-        </div>
+        </div> */}
       </div>
       <div className="watchaddress-operation">
         {connectStatus === WALLETCONNECT_STATUS_MAP.PENDING ? (

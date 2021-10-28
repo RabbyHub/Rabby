@@ -624,6 +624,14 @@ export class WalletController extends BaseController {
 
     return [_account];
   }
+
+  getHighlightWalletList = () => {
+    return preferenceService.getWalletSavedList();
+  };
+
+  updateHighlightWalletList = (list) => {
+    return preferenceService.updateWalletSavedList(list);
+  };
 }
 
 export default new WalletController();

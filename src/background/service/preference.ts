@@ -10,7 +10,6 @@ export interface Account {
   address: string;
   brandName: string;
 }
-
 interface PreferenceStore {
   currentAccount: Account | undefined | null;
   externalLinkAck: boolean;
@@ -23,6 +22,7 @@ interface PreferenceStore {
   watchAddressPreference: Record<string, number>;
   isDefaultWallet: boolean;
   lastTimeSendToken: Record<string, TokenItem>;
+  walletSavedList: [];
 }
 
 const SUPPORT_LOCALES = ['en', 'zh_CN'];
@@ -50,6 +50,7 @@ class PreferenceService {
         watchAddressPreference: {},
         isDefaultWallet: false,
         lastTimeSendToken: {},
+        walletSavedList: [],
       },
     });
     if (!this.store.locale) {
@@ -234,6 +235,13 @@ class PreferenceService {
 
   isUseLedgerLive = () => {
     return this.store.useLedgerLive;
+  };
+  getWalletSavedList = () => {
+    return this.store.walletSavedList;
+  };
+
+  updateWalletSavedList = (list: []) => {
+    this.store.walletSavedList = list;
   };
 }
 

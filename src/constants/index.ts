@@ -23,6 +23,23 @@ import IconCeloLogo from 'ui/assets/chain-logos/celo.svg';
 import IconCeloWhiteLogo from 'ui/assets/chain-logos/celo-white.svg';
 import IconEN from 'ui/assets/langs/en.svg';
 import IconZH from 'ui/assets/langs/zh_cn.svg';
+import IconAmber from 'ui/assets/walletlogo/amber.png';
+import IconCobo from 'ui/assets/walletlogo/cobo.png';
+import IconImtoken from 'ui/assets/walletlogo/imtoken.png';
+import IconJade from 'ui/assets/walletlogo/jade.png';
+import IconLedger from 'ui/assets/walletlogo/ledger.svg';
+import IconMath from 'ui/assets/walletlogo/math.png';
+import IconOnekey from 'ui/assets/walletlogo/onekey.png';
+import IconTokenpocket from 'ui/assets/walletlogo/tp.png';
+import IconTrezor from 'ui/assets/walletlogo/trezor.png';
+import IconTrust from 'ui/assets/walletlogo/trust.png';
+import LogoTrust from 'ui/assets/walletlogo/TrustWalletLogo.png';
+import LogoTp from 'ui/assets/walletlogo/TokenPocketLogo.png';
+import LogoMath from 'ui/assets/walletlogo/MathWalletLogo.png';
+import LogoJade from 'ui/assets/walletlogo/JadeLogo.png';
+import LogoImtoken from 'ui/assets/walletlogo/imTokenLogo.png';
+import LogoCobo from 'ui/assets/walletlogo/CoboLogo.png';
+import LogoAmber from 'ui/assets/walletlogo/AmberLogo.png';
 
 export enum CHAINS_ENUM {
   ETH = 'ETH',
@@ -371,6 +388,13 @@ export enum WATCH_ADDRESS_CONNECT_TYPE {
   WalletConnect = 'WalletConnect',
 }
 
+export enum BRAND_WALLET_CONNECT_TYPE {
+  WalletConnect = 'WalletConnect',
+  LedgerConnect = 'LedgerConnect',
+  OneKeyConnect = 'OneKeyConnect',
+  TrezorConnect = 'TrezorConnect',
+}
+
 export const WATCH_ADDRESS_TYPE_CONTENT = {
   [WATCH_ADDRESS_TYPES.TP]: {
     id: 0,
@@ -423,5 +447,100 @@ export const EVENTS = {
     STATUS_CHANGED: 'WALLETCONNECT_STATUS_CHANGED',
     INIT: 'WALLETCONNECT_INIT',
     INITED: 'WALLETCONNECT_INITED',
+  },
+};
+
+export enum WALLET_BRAND_TYPES {
+  AMBER = 'AMBER',
+  COBO = 'COBO',
+  IMTOKEN = 'IMTOKEN',
+  JADE = 'JADE',
+  LEDGER = 'LEDGER',
+  MATHWALLET = 'MATHWALLET',
+  ONEKEY = 'ONEKEY',
+  TP = 'TP',
+  TREZOR = 'TREZOR',
+  TRUSTWALLET = 'TRUSTWALLET',
+}
+export const WALLET_BRAND_CONTENT = {
+  [WALLET_BRAND_TYPES.AMBER]: {
+    id: 0,
+    name: 'Amber',
+    brand: WALLET_BRAND_TYPES.AMBER,
+    icon: IconAmber,
+    image: LogoAmber,
+    connectType: BRAND_WALLET_CONNECT_TYPE.WalletConnect,
+  },
+  [WALLET_BRAND_TYPES.COBO]: {
+    id: 1,
+    name: 'Cobo Wallet',
+    brand: WALLET_BRAND_TYPES.COBO,
+    icon: IconCobo,
+    image: LogoCobo,
+    connectType: BRAND_WALLET_CONNECT_TYPE.WalletConnect,
+  },
+  [WALLET_BRAND_TYPES.IMTOKEN]: {
+    id: 2,
+    name: 'Imtoken',
+    brand: WALLET_BRAND_TYPES.IMTOKEN,
+    icon: IconImtoken,
+    image: LogoImtoken,
+    connectType: BRAND_WALLET_CONNECT_TYPE.WalletConnect,
+  },
+  [WALLET_BRAND_TYPES.JADE]: {
+    id: 3,
+    name: 'Jade Wallet',
+    brand: WALLET_BRAND_TYPES.JADE,
+    icon: IconJade,
+    image: LogoJade,
+    connectType: BRAND_WALLET_CONNECT_TYPE.WalletConnect,
+  },
+  [WALLET_BRAND_TYPES.LEDGER]: {
+    id: 4,
+    name: 'Ledger',
+    brand: WALLET_BRAND_TYPES.LEDGER,
+    icon: IconLedger,
+    image: '',
+    connectType: BRAND_WALLET_CONNECT_TYPE.LedgerConnect,
+  },
+  [WALLET_BRAND_TYPES.MATHWALLET]: {
+    id: 5,
+    name: 'Math Wallet',
+    brand: WALLET_BRAND_TYPES.MATHWALLET,
+    icon: IconMath,
+    image: LogoMath,
+    connectType: BRAND_WALLET_CONNECT_TYPE.WalletConnect,
+  },
+  [WALLET_BRAND_TYPES.ONEKEY]: {
+    id: 6,
+    name: 'OneKey',
+    brand: WALLET_BRAND_TYPES.ONEKEY,
+    icon: IconOnekey,
+    image: '',
+    connectType: BRAND_WALLET_CONNECT_TYPE.OneKeyConnect,
+  },
+  [WALLET_BRAND_TYPES.TP]: {
+    id: 7,
+    name: 'TokenPocket',
+    brand: WALLET_BRAND_TYPES.TP,
+    icon: IconTokenpocket,
+    image: LogoTp,
+    connectType: BRAND_WALLET_CONNECT_TYPE.WalletConnect,
+  },
+  [WALLET_BRAND_TYPES.TREZOR]: {
+    id: 8,
+    name: 'Trezor',
+    brand: WALLET_BRAND_TYPES.TREZOR,
+    icon: IconTrezor,
+    image: '',
+    connectType: BRAND_WALLET_CONNECT_TYPE.TrezorConnect,
+  },
+  [WALLET_BRAND_TYPES.TRUSTWALLET]: {
+    id: 9,
+    name: 'Trust Wallet',
+    brand: WALLET_BRAND_TYPES.TRUSTWALLET,
+    icon: IconTrust,
+    image: LogoTrust,
+    connectType: BRAND_WALLET_CONNECT_TYPE.WalletConnect,
   },
 };

@@ -9,7 +9,7 @@ import WalletConnect from '@walletconnect/client';
 import { StrayPageWithButton } from 'ui/component';
 import { useWallet, useWalletRequest } from 'ui/utils';
 import { openInternalPageInTab } from 'ui/utils/webapi';
-import WatchLogo from 'ui/assets/watch-logo.svg';
+import WatchLogo from 'ui/assets/waitcup.svg';
 import IconWalletconnect from 'ui/assets/walletconnect.svg';
 import IconScan from 'ui/assets/scan.svg';
 import IconArrowDown from 'ui/assets/big-arrow-down.svg';
@@ -213,7 +213,7 @@ const ImportWatchAddress = () => {
           alt="rabby logo"
         />
         <img
-          className="unlock-logo w-[128px] h-[128px] mx-auto"
+          className="unlock-logo w-[80px] h-[75px] mb-20 mx-auto"
           src={WatchLogo}
         />
         <p className="text-24 mb-4 mt-0 text-white text-center font-bold">

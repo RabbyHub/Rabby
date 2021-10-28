@@ -303,7 +303,7 @@
     "message": "启用链"
   },
   "createAddress": {
-    "message": "创建"
+    "message": "创建新地址"
   },
   "Import": {
     "message": "导入"

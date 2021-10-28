@@ -13,7 +13,8 @@ import {
 } from 'ui/component';
 import { DisplayedKeryring } from 'background/service/keyring';
 import DisplayKeyring from 'background/service/keyring/display';
-import { SvgIconArrowDown, SvgIconPlusPrimary } from 'ui/assets';
+import { SvgIconPlusPrimary } from 'ui/assets';
+import IconHint from 'ui/assets/hint.png';
 import IconSuccess from 'ui/assets/success.svg';
 import './style.less';
 
@@ -214,7 +215,7 @@ const AddressManagement = () => {
           <div className="address-item-hidden opacity-40">{t('Hidden')}</div>
         )}
         <Dropdown overlay={DropdownOptions} trigger={['click']}>
-          <SvgIconArrowDown className="icon icon-arrow-down cursor-pointer text-gray-content fill-current" />
+          <img src={IconHint} />
         </Dropdown>
       </div>
     );

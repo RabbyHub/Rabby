@@ -16,12 +16,15 @@ const ImportSuccess = ({ isPopup = false }: { isPopup?: boolean }) => {
     accounts: Account[];
     hasDivider: boolean;
     title: string;
+    brand?: string;
+    image?: string;
   }>();
   const { t } = useTranslation();
-
   const {
     accounts,
     hasDivider = true,
+    brand,
+    image,
     title = t('Successfully imported'),
   } = state;
 
@@ -94,8 +97,9 @@ const ImportSuccess = ({ isPopup = false }: { isPopup?: boolean }) => {
             <AddressItem
               className="mb-12 rounded bg-white py-12 pl-16"
               key={account.address}
-              account={account.address}
+              account={account}
               showAssets
+              icon={image}
             />
           ))}
         </div>
