@@ -160,7 +160,7 @@ const AddAddressOptions = () => {
             {data.content}
           </Field>
         ))}
-        <div className="bg-white border-gray-divider border-t"></div>
+        <div className="divide-line-list"></div>
         {renderData.map((data) => (
           <Field
             key={data.content}

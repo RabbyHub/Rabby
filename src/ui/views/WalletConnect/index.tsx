@@ -8,23 +8,13 @@ import { openInternalPageInTab } from 'ui/utils/webapi';
 import IconBack from 'ui/assets/gobackwhite.svg';
 import { ScanCopyQRCode } from 'ui/component';
 import eventBus from '@/eventBus';
-import {
-  BRAND_WALLET_CONNECT_TYPE,
-  WATCH_ADDRESS_CONNECT_TYPE,
-  CHAINS,
-  CHAINS_ENUM,
-  WALLETCONNECT_STATUS_MAP,
-  EVENTS,
-  WALLET_BRAND_CONTENT,
-} from 'consts';
+import { WALLETCONNECT_STATUS_MAP, EVENTS } from 'consts';
 import './style.less';
 const WalletConnectTemplate = () => {
   const { t } = useTranslation();
   const history = useHistory();
   const location = useLocation<{ brand: any }>();
   const wallet = useWallet();
-  const [form] = Form.useForm();
-  const connector = useRef<WalletConnect>();
   const [connectStatus, setConnectStatus] = useState(
     WALLETCONNECT_STATUS_MAP.PENDING
   );
@@ -99,11 +89,7 @@ const WalletConnectTemplate = () => {
     }
   };
   useEffect(() => {
-    //handleLoadCache();
     handleImportByWalletconnect();
-    // return () => {
-    //   wallet.clearPageStateCache();
-    // };
   }, []);
   return (
     <div className="wallet-connect">
