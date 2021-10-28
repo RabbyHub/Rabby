@@ -50,7 +50,7 @@ const AddAddressOptions = () => {
   };
   const brandWallet = Object.values(WALLET_BRAND_CONTENT).map((item) => {
     return {
-      leftIcon: item.icon,
+      leftIcon: item.image,
       content: t(item.name),
       brand: item.brand,
       connectType: item.connectType,
@@ -106,7 +106,7 @@ const AddAddressOptions = () => {
           (wallet) => wallet.brand.toString() === item
         );
         result.push({
-          leftIcon: savedItem!.icon,
+          leftIcon: savedItem!.image,
           content: t(savedItem!.name),
           brand: savedItem!.brand,
           image: savedItem!.image,
