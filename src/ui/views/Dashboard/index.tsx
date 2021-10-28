@@ -6,7 +6,12 @@ import { useInterval } from 'react-use';
 import { message } from 'antd';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
-import { CHAINS, HARDWARE_KEYRING_TYPES, KEYRING_TYPE } from 'consts';
+import {
+  CHAINS,
+  HARDWARE_KEYRING_TYPES,
+  KEYRING_TYPE,
+  WALLET_BRAND_CONTENT,
+} from 'consts';
 import { AddressViewer, Modal } from 'ui/component';
 import { useWallet, getCurrentConnectSite } from 'ui/utils';
 import { Account } from 'background/service/preference';
@@ -152,7 +157,13 @@ const Dashboard = () => {
   const hardwareTypes = Object.values(HARDWARE_KEYRING_TYPES).map(
     (item) => item.type
   );
-
+  const walletBrandIcon = () => {
+    const account = Object.values(WALLET_BRAND_CONTENT).find(
+      (wallet) =>
+        wallet.brand.toString() === currentAccount?.brandName.toString()
+    );
+    return account?.image;
+  };
   return (
     <>
       <div
@@ -161,11 +172,15 @@ const Dashboard = () => {
         <div className="main">
           {currentAccount && (
             <div className="flex header items-center">
-              {(currentAccount?.type === KEYRING_TYPE.WatchAddressKeyring ||
+              {(currentAccount?.type === KEYRING_TYPE.WalletConnectKeyring ||
+                KEYRING_TYPE.WatchAddressKeyring ||
                 hardwareTypes.includes(currentAccount.type)) && (
                 <img
                   src={
-                    currentAccount?.type === KEYRING_TYPE.WatchAddressKeyring
+                    currentAccount?.type === KEYRING_TYPE.WalletConnectKeyring
+                      ? walletBrandIcon()
+                      : currentAccount?.type ===
+                        KEYRING_TYPE.WatchAddressKeyring
                       ? IconWatch
                       : IconHardware
                   }
