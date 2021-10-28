@@ -49,7 +49,7 @@ const AddressManagement = () => {
 
   const getAllKeyrings = async () => {
     const _accounts = await wallet.getAllClassAccounts();
-    console.log('_accounts', _accounts);
+
     setAccounts(_accounts);
   };
 
