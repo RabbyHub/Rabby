@@ -131,7 +131,6 @@ const Dashboard = () => {
   const handleShowQrcode = () => {
     setQrcodeVisible(true);
   };
-
   return (
     <>
       <div
