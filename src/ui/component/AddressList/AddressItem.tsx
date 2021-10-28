@@ -22,12 +22,15 @@ interface DisplayChainWithWhiteLogo extends ChainWithBalance {
 }
 
 export interface AddressItemProps {
-  account: string;
+  account: {
+    address: string;
+    brandName: string;
+  };
   keyring?: any;
   ActionButton?: FunctionComponent<{ data: string; keyring: any }>;
   className?: string;
   hiddenAddresses?: { type: string; address: string }[];
-  onClick?(account: string, keyring: any): void;
+  onClick?(account: string, keyring: any, brandName: string): void;
   showAssets?: boolean;
   noNeedBalance?: boolean;
 }
@@ -122,14 +125,14 @@ const AddressItem = memo(
       }
       const [isLoading, setIsLoading] = useState(false);
       const [balance, chainBalances, getAddressBalance] = useCurrentBalance(
-        account,
+        account.address,
         false,
         noNeedBalance
       );
 
       const updateBalance = async () => {
         setIsLoading(true);
-        await getAddressBalance(account.toLowerCase());
+        await getAddressBalance(account.address.toLowerCase());
         setIsLoading(false);
       };
 
@@ -138,13 +141,15 @@ const AddressItem = memo(
       }));
 
       const isDisabled = hiddenAddresses.find(
-        (item) => item.address === account && item.type === keyring.type
+        (item) => item.address === account.address && item.type === keyring.type
       );
 
       return (
         <li
           className={clsx(className, { 'no-assets': !showAssets })}
-          onClick={() => onClick && onClick(account, keyring)}
+          onClick={() =>
+            onClick && onClick(account.address, keyring, account.brandName)
+          }
         >
           <div
             className={clsx(
@@ -162,7 +167,7 @@ const AddressItem = memo(
                 </span>
               )}
               <AddressViewer
-                address={account}
+                address={account.address}
                 showArrow={false}
                 className="subtitle"
               />
@@ -205,7 +210,7 @@ const AddressItem = memo(
                 />
               )}
               {ActionButton && (
-                <ActionButton data={account} keyring={keyring} />
+                <ActionButton data={account.address} keyring={keyring} />
               )}
             </div>
           )}

@@ -19,7 +19,7 @@ const SwitchAddress = ({
   visible,
   onCancel,
 }: {
-  onChange(account: string, type: string): void;
+  onChange(account: string, type: string, brandName: string): void;
   currentAccount: Account;
   visible: boolean;
   onCancel(): void;
@@ -37,8 +37,8 @@ const SwitchAddress = ({
     setAccounts(_accounts);
   };
 
-  const changeAccount = (account: string, keyring: any) => {
-    onChange && onChange(account, keyring.type);
+  const changeAccount = (account: string, keyring: any, brandName: string) => {
+    onChange && onChange(account, keyring.type, brandName);
   };
 
   const handleRefreshBalance = async () => {
