@@ -12,13 +12,7 @@ import { ChainWithBalance } from 'background/service/openapi';
 import { useWallet, useWalletRequest } from 'ui/utils';
 import { AddressViewer } from 'ui/component';
 import { splitNumberByStep } from 'ui/utils/number';
-import {
-  HARDWARE_KEYRING_TYPES,
-  CHAINS,
-  KEYRING_ICONS,
-  WALLET_BRAND_CONTENT,
-} from 'consts';
-import { IconLedger, IconOnekey, IconTrezor } from 'ui/assets';
+import { CHAINS, KEYRING_ICONS, WALLET_BRAND_CONTENT } from 'consts';
 import IconEmptyChain from 'ui/assets/chain-logos/empty.svg';
 
 interface DisplayChainWithWhiteLogo extends ChainWithBalance {
@@ -42,12 +36,6 @@ export interface AddressItemProps {
   currentAccount?: any;
   icon?: string;
 }
-
-const HARDWARES = {
-  [HARDWARE_KEYRING_TYPES.Ledger.type]: IconLedger,
-  [HARDWARE_KEYRING_TYPES.Trezor.type]: IconTrezor,
-  [HARDWARE_KEYRING_TYPES.Onekey.type]: IconOnekey,
-};
 
 const formatChain = (item: ChainWithBalance): DisplayChainWithWhiteLogo => {
   const chainsArray = Object.values(CHAINS);
