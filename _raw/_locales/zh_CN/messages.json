@@ -914,5 +914,8 @@
   },
   "Please__add__an__address": {
     "message": "请添加一个地址"
+  },
+  "Bridge__Service__URL": {
+    "message": "后端服务地址"
   }
 }
