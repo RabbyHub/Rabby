@@ -301,9 +301,10 @@ const WatchAddressWaiting = ({ params }: { params: ApprovalParams }) => {
   )!.enum;
   const { t } = useTranslation();
   const [isSignText, setIsSignText] = useState(false);
-
+  const [brandName, setBrandName] = useState<string | null>(null);
   const initWalletConnect = async () => {
     const account = await wallet.syncGetCurrentAccount()!;
+    setBrandName(account!.brandName);
     eventBus.addEventListener(EVENTS.WALLETCONNECT.INITED, ({ uri }) => {
       setQrcodeContent(uri);
     });
@@ -394,42 +395,16 @@ const WatchAddressWaiting = ({ params }: { params: ApprovalParams }) => {
   return (
     <div className="watchaddress">
       <div className="watchaddress-header">
+        <div className="flex item-center justify-center icon-header">
+          <img
+            className="w-[28px] h-[28px]"
+            src={brandName && WALLET_BRAND_CONTENT[brandName]!.image}
+          />
+          <div className="text-24 ml-10">
+            {t(brandName && WALLET_BRAND_CONTENT[brandName]!.name)}
+          </div>
+        </div>
         <img src={Mask} className="mask" />
-        {/* <p className="text-15 text-medium mb-24">
-          {t('Choose your mobile wallet')}
-        </p>
-        <ul className="watchaddress-type-list">
-          {Object.values(WALLET_BRAND_CONTENT).map((item, index) => (
-            <Tooltip
-              title={
-                canNotSwitchStatus.includes(connectStatus)
-                  ? t('ConnectedCannotSwitch')
-                  : item.name
-              }
-              key={item.id}
-            >
-              <li
-                className={clsx({
-                  active: currentType === item.id,
-                  'cursor-not-allowed': canNotSwitchStatus.includes(
-                    connectStatus
-                  ),
-                })}
-                onClick={() => handleClickBrand(item.id, index)}
-              >
-                <img src={item.icon} className="brand-logo" />
-              </li>
-            </Tooltip>
-          ))}
-        </ul>
-        <div
-          className="select-corner"
-          style={{
-            transform: `translateX(${currentTypeIndex * 56}px)`,
-          }}
-        >
-          <div className="select-corner__inner" />
-        </div> */}
       </div>
       <div className="watchaddress-operation">
         {connectStatus === WALLETCONNECT_STATUS_MAP.PENDING ? (
