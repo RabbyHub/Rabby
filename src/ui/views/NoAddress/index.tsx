@@ -11,7 +11,7 @@ const NoAddress = () => {
     <div className="no-address bg-gray-bg">
       <div className="h-[60px] header px-24">
         <div className="flex justify-between mb-4">
-          <div className="text-20 text-white">{t('Please add an address')}</div>
+          <div className="text-20 text-white">{t('No Address')}</div>
           <Link to="/settings">
             <img className="icon icon-settings" src={IconSetting} />
           </Link>
