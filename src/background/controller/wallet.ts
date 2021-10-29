@@ -229,9 +229,27 @@ export class WalletController extends BaseController {
     };
   };
 
+  getWalletConnectBridge = (address: string, brandName: string) => {
+    const keyringType = KEYRING_CLASS.WALLETCONNECT;
+    const keyring: WalletConnectKeyring = this._getKeyringByType(keyringType);
+    if (keyring) {
+      const target = keyring.accounts.find(
+        (account) =>
+          account.address.toLowerCase() === address.toLowerCase() &&
+          brandName === account.brandName
+      );
+
+      if (target) return target.bridge;
+
+      return null;
+    }
+    return null;
+  };
+
   importWalletConnect = async (
     address: string,
     brandName: string,
+    bridge?: string,
     stashId?: number
   ) => {
     let keyring: WalletConnectKeyring, isNewKey;
@@ -254,6 +272,7 @@ export class WalletController extends BaseController {
     keyring.setAccountToAdd({
       address,
       brandName,
+      bridge,
     });
     await keyringService.addNewAccount(keyring);
     if (isNewKey) {

@@ -1,10 +1,9 @@
-import React, { useState, useRef, useMemo, useEffect } from 'react';
-import { Form, message } from 'antd';
+import React, { useState, useEffect } from 'react';
+import { message } from 'antd';
 import { useHistory, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import WalletConnect from '@walletconnect/client';
+import { DEFAULT_BRIDGE } from '@rabby-wallet/eth-walletconnect-keyring';
 import { useWallet, useWalletRequest } from 'ui/utils';
-import { openInternalPageInTab } from 'ui/utils/webapi';
 import IconBack from 'ui/assets/gobackwhite.svg';
 import { ScanCopyQRCode } from 'ui/component';
 import eventBus from '@/eventBus';
@@ -27,6 +26,7 @@ const WalletConnectTemplate = () => {
   const [walletconnectUri, setWalletconnectUri] = useState('');
   const [showURL, setShowURL] = useState(false);
   const [stashId, setStashId] = useState<number | null>(null);
+  const [bridgeURL, setBridgeURL] = useState(DEFAULT_BRIDGE);
 
   const { name, id, icon, brand, image } = location.state!.brand;
 
@@ -48,8 +48,9 @@ const WalletConnectTemplate = () => {
       return;
     },
   });
+
   const handleImportByWalletconnect = async () => {
-    const { uri, stashId } = await wallet.initWalletConnect(brand);
+    const { uri, stashId } = await wallet.initWalletConnect(brand, bridgeURL);
     await setWalletconnectUri(uri);
     await setStashId(stashId);
     eventBus.addEventListener(
@@ -59,7 +60,7 @@ const WalletConnectTemplate = () => {
         switch (status) {
           case WALLETCONNECT_STATUS_MAP.CONNECTED:
             setResult(payload);
-            run(payload, brand, stashId);
+            run(payload, brand, bridgeURL, stashId);
             break;
           case WALLETCONNECT_STATUS_MAP.FAILD:
           case WALLETCONNECT_STATUS_MAP.REJECTED:
@@ -77,6 +78,7 @@ const WalletConnectTemplate = () => {
       }
     );
   };
+
   const handleClickBack = () => {
     if (history.length > 1) {
       history.goBack();
@@ -84,9 +86,25 @@ const WalletConnectTemplate = () => {
       history.replace('/');
     }
   };
+
+  const handleRefresh = () => {
+    eventBus.removeAllEventListeners(EVENTS.WALLETCONNECT.STATUS_CHANGED);
+    handleImportByWalletconnect();
+  };
+
+  const handleBridgeChange = (val: string) => {
+    setBridgeURL(val);
+  };
+
+  useEffect(() => {
+    eventBus.removeAllEventListeners(EVENTS.WALLETCONNECT.STATUS_CHANGED);
+    handleImportByWalletconnect();
+  }, [bridgeURL]);
+
   useEffect(() => {
     handleImportByWalletconnect();
   }, []);
+
   return (
     <div className="wallet-connect">
       <div className="create-new-header create-password-header h-[220px]">
@@ -107,7 +125,10 @@ const WalletConnectTemplate = () => {
         showURL={showURL}
         changeShowURL={setShowURL}
         qrcodeURL={walletconnectUri}
-        refreshFun={handleImportByWalletconnect}
+        refreshFun={handleRefresh}
+        bridgeURL={bridgeURL}
+        onBridgeChange={handleBridgeChange}
+        defaultBridge={DEFAULT_BRIDGE}
       />
     </div>
   );

@@ -1,42 +1,47 @@
 import React, { useEffect } from 'react';
 import { Form, Input, Button } from 'antd';
 import { useTranslation } from 'react-i18next';
-import { useWallet } from 'ui/utils';
 import { Modal } from 'ui/component';
 import { INITIAL_OPENAPI_URL } from 'consts';
 
 const OpenApiModal = ({
+  value,
+  defaultValue,
   visible,
-  onFinish,
+  onChange,
   onCancel,
 }: {
+  value: string;
+  defaultValue: string;
   visible: boolean;
-  onFinish(): void;
+  onChange(val: string): void;
   onCancel(): void;
 }) => {
   const { useForm } = Form;
   const [form] = useForm<{ host: string }>();
-  const wallet = useWallet();
   const { t } = useTranslation();
 
   const init = async () => {
-    const currentHost = await wallet.openapi.getHost();
-
     form.setFieldsValue({
-      host: currentHost,
+      host: value,
     });
   };
 
   const handleSubmit = async ({ host }: { host: string }) => {
-    await wallet.openapi.setHost(host);
-    onFinish();
+    onChange(host);
   };
 
   const restoreInitial = () => {
     form.setFieldsValue({
-      host: INITIAL_OPENAPI_URL,
+      host: defaultValue,
     });
   };
+
+  useEffect(() => {
+    form.setFieldsValue({
+      host: value,
+    });
+  }, [value]);
 
   useEffect(() => {
     init();
@@ -44,7 +49,7 @@ const OpenApiModal = ({
 
   return (
     <Modal
-      title={t('Bridge Service URL')}
+      title={t('Bridge server URL')}
       visible={visible}
       onCancel={onCancel}
       className="openapi-modal"
@@ -53,7 +58,7 @@ const OpenApiModal = ({
         <Form.Item
           name="host"
           rules={[
-            { required: true, message: t('Please input openapi host') },
+            { required: true, message: t('Please input bridge server host') },
             {
               pattern: /^((https|http)?:\/\/)[^\s]+\.[^\s]+/,
               message: t('Please check your host'),
