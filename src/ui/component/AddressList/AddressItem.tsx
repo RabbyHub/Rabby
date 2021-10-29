@@ -132,13 +132,13 @@ const AddressItem = memo(
       if (!account) {
         return null;
       }
+      const { t } = useTranslation();
       const [isLoading, setIsLoading] = useState(false);
       const [balance, chainBalances, getAddressBalance] = useCurrentBalance(
         account.address,
         false,
         noNeedBalance
       );
-      const { t } = useTranslation();
 
       const updateBalance = async () => {
         setIsLoading(true);

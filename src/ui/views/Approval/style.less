@@ -11,7 +11,7 @@
   height: 100vh;
   display: flex;
   flex-direction: column;
-
+  background: #f0f2f5;
   .gray-section-block {
     background-color: #F6F7F9;
     border: 1px solid #D8DFEB;
@@ -936,9 +936,22 @@
   &-header {
     background: linear-gradient(97.59deg, #8BA8FF 0%, #8C96FF 99.49%);
     width: 100%;
-    height: 80px;
+    height: 100px;
     color: #fff;
     position: relative;
+    .icon-header {
+      padding-top: 30px;
+      
+    }
+    .mask {
+      position: absolute;
+      user-select: none;
+      z-index: 0;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+    }
     .watchaddress-type-list {
       display: flex;
       position: relative;
@@ -978,7 +991,7 @@
     }
   }
   .watchaddress-scan {
-    padding: 80px 0 0;
+    padding: 40px 0 0;
     &__qrcode {
       width: 240px;
       height: 240px;
