@@ -207,7 +207,7 @@ const AddressManagement = () => {
       }
     };
     return (
-      <div className="flex items-center">
+      <div className="flex items-center hint">
         <Dropdown overlay={DropdownOptions} trigger={['click']}>
           <img className="cursor-pointer" src={IconHint} />
         </Dropdown>
