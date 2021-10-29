@@ -911,5 +911,8 @@
   },
   "URL": {
     "message": "链接"
+  },
+  "Please__add__an__address": {
+    "message": "请添加一个地址"
   }
 }
