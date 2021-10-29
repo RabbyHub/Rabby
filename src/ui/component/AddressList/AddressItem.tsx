@@ -6,8 +6,9 @@ import React, {
   forwardRef,
   memo,
 } from 'react';
-import { Skeleton } from 'antd';
+import { Skeleton, Tooltip } from 'antd';
 import clsx from 'clsx';
+import { useTranslation } from 'react-i18next';
 import { ChainWithBalance } from 'background/service/openapi';
 import { useWallet, useWalletRequest } from 'ui/utils';
 import { AddressViewer } from 'ui/component';
@@ -121,6 +122,7 @@ const AddressItem = memo(
       if (!account) {
         return null;
       }
+      const { t } = useTranslation();
       const [isLoading, setIsLoading] = useState(false);
       const [balance, chainBalances, getAddressBalance] = useCurrentBalance(
         account.address,
@@ -205,13 +207,18 @@ const AddressItem = memo(
           </div>
           {keyring && (
             <div className="action-button flex items-center flex-shrink-0">
-              <img
-                src={
-                  KEYRING_ICONS[account.type] ||
-                  WALLET_BRAND_CONTENT[account.brandName].image
-                }
-                className="icon icon-hardware"
-              />
+              <Tooltip
+                title={t(`Created by ${account.brandName}`)}
+                overlayClassName="rectangle"
+              >
+                <img
+                  src={
+                    KEYRING_ICONS[account.type] ||
+                    WALLET_BRAND_CONTENT[account.brandName].image
+                  }
+                  className="icon icon-hardware"
+                />
+              </Tooltip>
               {ActionButton && (
                 <ActionButton data={account.address} keyring={keyring} />
               )}
