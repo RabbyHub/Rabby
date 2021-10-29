@@ -899,5 +899,17 @@
   },
   "Proceed": {
     "message": "继续"
+  },
+  "Change__bridge__server": {
+    "message": "更换服务器地址"
+  },
+  "Scan__with__your__wallet__app": {
+    "message": "请用您的手机钱包扫描"
+  },
+  "QR__code": {
+    "message": "二维码"
+  },
+  "URL": {
+    "message": "链接"
   }
 }

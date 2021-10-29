@@ -33,7 +33,7 @@
     "message": "Created by Mnemonic"
   },
   "Imported__by__Private__Key": {
-    "message": "Import Private Key"
+    "message": "Imported by Private Key"
   },
   "Watch__Mode": {
     "message": "Watch Mode"
@@ -162,7 +162,7 @@
     "message": "Import via Keystore"
   },
   "Import__via__Mnemonic": {
-    "message": "Import Mnemonic"
+    "message": "Import via Mnemonic"
   },
   "Not__a__valid__mnemonic": {
     "message": "Not a valid mnemonic"
@@ -237,7 +237,7 @@
     "message": "Please add your address via one of the following methods"
   },
   "No__Address": {
-    "message": "Please add an address"
+    "message": "No Address"
   },
   "hardwareImportTip": {
     "message": "If you are using a hardware wallet with a camera on it, you should use watch address instead."
@@ -303,7 +303,7 @@
     "message": "Enable Chains"
   },
   "createAddress": {
-    "message": "Create New Address"
+    "message": "Create"
   },
   "Import": {
     "message": "Import"
@@ -568,7 +568,7 @@
     "message": "Gas limit"
   },
   "MnemonicDisableTip": {
-    "message": "Cannot import mnemonics for there is already one in the wallet"
+    "message": "Cannot Import via Mnemonics for there is already one in the wallet"
   },
   "Token__Approval": {
     "message": "Token Approval"
@@ -892,7 +892,7 @@
     "message": "Add address without private keys"
   },
   "Import__Private__Key": {
-    "message": "Import Private Key"
+    "message": "Imported by Private Key"
   },
   "Connect__with": {
     "message": "Connect with"
@@ -902,5 +902,18 @@
   },
   "Proceed": {
     "message": "Proceed"
+  },
+  "Change__bridge__server": {
+    "message": "Change bridge server"
+  },
+  "Scan__with__your__wallet__app": {
+    "message": "Scan with your wallet app"
+  },
+  "QR__code": {
+    "message": "QR code"
+  },
+  "URL": {
+    "message": "URL"
   }
+  
 }

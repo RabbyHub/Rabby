@@ -52,7 +52,7 @@ const ScanCopyQRCode: React.FC<Props> = ({
     <div>
       <div className="button-container">
         <div
-          className={clsx('cursor-pointer', { active: showURL })}
+          className={clsx('cursor-pointer', { active: !showURL })}
           onClick={() => changeShowURL(false)}
         >
           {t('QR code')}
