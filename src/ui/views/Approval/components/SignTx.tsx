@@ -6,11 +6,11 @@ import {
   addHexPrefix,
   unpadHexString,
 } from 'ethereumjs-util';
-import { Button, Modal } from 'antd';
+import { Button, Modal, Tooltip } from 'antd';
 import { useTranslation } from 'react-i18next';
 import clsx from 'clsx';
 import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
-import { KEYRING_CLASS, CHAINS, CHAINS_ENUM } from 'consts';
+import { KEYRING_CLASS, CHAINS, CHAINS_ENUM, KEYRING_TYPE } from 'consts';
 import { Checkbox } from 'ui/component';
 import AccountCard from './AccountCard';
 import SecurityCheckBar from './SecurityCheckBar';
@@ -32,6 +32,7 @@ import Loading from './TxComponents/Loading';
 import GasSelector, { GasSelectorResponse } from './TxComponents/GasSelecter';
 import { WaitingSignComponent } from './SignText';
 import { Chain } from 'background/service/chain';
+import IconInfo from 'ui/assets/infoicon.svg';
 
 const normalizeHex = (value: string | number) => {
   if (typeof value === 'number') {
@@ -130,6 +131,7 @@ const TxTypeComponent = ({
 const SignTx = ({ params, origin }) => {
   const [isReady, setIsReady] = useState(false);
   const [nonceChanged, setNonceChanged] = useState(false);
+  const [isWatch, setIsWatch] = useState(false);
   const [txDetail, setTxDetail] = useState<ExplainTxResponse | null>({
     balance_change: {
       err_msg: '',
@@ -325,6 +327,9 @@ const SignTx = ({ params, origin }) => {
 
   const explain = async () => {
     const currentAccount = await wallet.getCurrentAccount();
+    if (currentAccount.type === KEYRING_TYPE.WatchAddressKeyring) {
+      await setIsWatch(true);
+    }
     try {
       setIsReady(false);
       const res = await explainTx(currentAccount!.address);
@@ -518,17 +523,42 @@ const SignTx = ({ params, origin }) => {
                     >
                       {t('Cancel')}
                     </Button>
-                    <Button
-                      type="primary"
-                      size="large"
-                      className="w-[172px]"
-                      onClick={() => handleAllow()}
-                      disabled={!isReady}
-                    >
-                      {securityCheckStatus === 'pass'
-                        ? t('Sign')
-                        : t('Continue')}
-                    </Button>
+                    {isWatch ? (
+                      <Tooltip
+                        placement="top"
+                        title={t(
+                          'You are using watch mode, if you need to trade please use other methods.'
+                        )}
+                      >
+                        <div className="w-[172px] relative flex items-center">
+                          <Button
+                            type="primary"
+                            size="large"
+                            className="w-[172px]"
+                            onClick={() => handleAllow()}
+                            disabled={true}
+                          >
+                            {t('Proceed')}
+                          </Button>
+                          <img
+                            src={IconInfo}
+                            className="absolute right-[40px]"
+                          />
+                        </div>
+                      </Tooltip>
+                    ) : (
+                      <Button
+                        type="primary"
+                        size="large"
+                        className="w-[172px]"
+                        onClick={() => handleAllow()}
+                        disabled={!isReady}
+                      >
+                        {securityCheckStatus === 'pass'
+                          ? t('Sign')
+                          : t('Continue')}
+                      </Button>
+                    )}
                   </div>
                 </>
               )}
@@ -572,7 +602,7 @@ const SignTx = ({ params, origin }) => {
             </footer>
           </>
         )}
-        {securityCheckDetail && (
+        {securityCheckDetail && !isWatch && (
           <SecurityCheckDetail
             visible={showSecurityCheckDetail}
             onCancel={() => setShowSecurityCheckDetail(false)}
