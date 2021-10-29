@@ -1,12 +1,10 @@
 import React, { useEffect, useState } from 'react';
-import { Button, Tooltip } from 'antd';
-import clsx from 'clsx';
-import QRCode from 'qrcode.react';
+import { Button } from 'antd';
 import { useHistory } from 'react-router-dom';
 import { useTranslation, Trans } from 'react-i18next';
+import { DEFAULT_BRIDGE } from '@rabby-wallet/eth-walletconnect-keyring';
 import {
   BRAND_WALLET_CONNECT_TYPE,
-  WATCH_ADDRESS_CONNECT_TYPE,
   CHAINS,
   CHAINS_ENUM,
   WALLETCONNECT_STATUS_MAP,
@@ -17,7 +15,7 @@ import { ScanCopyQRCode } from 'ui/component';
 import { Tx } from 'background/service/openapi';
 import { useApproval, useWallet, openInTab } from 'ui/utils';
 import eventBus from '@/eventBus';
-import { SvgIconOpenExternal, SvgIconRefresh } from 'ui/assets';
+import { SvgIconOpenExternal } from 'ui/assets';
 import Mask from 'ui/assets/bg-watchtrade.png';
 interface ApprovalParams extends Tx {
   address: string;
@@ -30,11 +28,17 @@ const Scan = ({
   typeId,
   chain,
   onRefresh,
+  bridgeURL,
+  onBridgeChange,
+  defaultBridge,
 }: {
   uri: string;
   typeId: number;
   chain: CHAINS_ENUM;
+  bridgeURL: string;
+  defaultBridge: string;
   onRefresh(): void;
+  onBridgeChange(val: string): void;
 }) => {
   const wallet = useWallet();
   const [address, setAddress] = useState<string | null>(null);
@@ -63,6 +67,9 @@ const Scan = ({
         changeShowURL={setShowURL}
         qrcodeURL={uri || ''}
         refreshFun={handleRefresh}
+        onBridgeChange={onBridgeChange}
+        bridgeURL={bridgeURL}
+        defaultBridge={defaultBridge}
       />
       <div className="watchaddress-scan__guide">
         <p>
@@ -274,11 +281,6 @@ const Process = ({
 };
 
 const WatchAddressWaiting = ({ params }: { params: ApprovalParams }) => {
-  const canNotSwitchStatus = [
-    WALLETCONNECT_STATUS_MAP.CONNECTED,
-    WALLETCONNECT_STATUS_MAP.SIBMITTED,
-    WALLETCONNECT_STATUS_MAP.WAITING,
-  ];
   const wallet = useWallet();
   const [connectStatus, setConnectStatus] = useState(
     WALLETCONNECT_STATUS_MAP.PENDING
@@ -290,11 +292,6 @@ const WatchAddressWaiting = ({ params }: { params: ApprovalParams }) => {
   const [currentType, setCurrentType] = useState(0);
   const [qrcodeContent, setQrcodeContent] = useState('');
   const [result, setResult] = useState('');
-  const [currentTypeIndex, setCurrentTypeIndex] = useState(
-    Object.values(WALLET_BRAND_CONTENT).findIndex(
-      (item) => item.id === currentType
-    )
-  );
   const [getApproval, resolveApproval, rejectApproval] = useApproval();
   const chain = Object.values(CHAINS).find(
     (item) => item.id === (params.chainId || 1)
@@ -302,6 +299,8 @@ const WatchAddressWaiting = ({ params }: { params: ApprovalParams }) => {
   const { t } = useTranslation();
   const [isSignText, setIsSignText] = useState(false);
   const [brandName, setBrandName] = useState<string | null>(null);
+  const [bridgeURL, setBridge] = useState<string>(DEFAULT_BRIDGE);
+
   const initWalletConnect = async () => {
     const account = await wallet.syncGetCurrentAccount()!;
     setBrandName(account!.brandName);
@@ -324,16 +323,6 @@ const WatchAddressWaiting = ({ params }: { params: ApprovalParams }) => {
     setConnectError(null);
   };
 
-  const handleClickBrand = (id: number, index: number) => {
-    if (canNotSwitchStatus.includes(connectStatus)) {
-      return;
-    }
-    setCurrentType(id);
-    setCurrentTypeIndex(index);
-    setConnectStatus(WALLETCONNECT_STATUS_MAP.PENDING);
-    setConnectError(null);
-  };
-
   const handleRefreshQrCode = () => {
     initWalletConnect();
   };
@@ -341,6 +330,12 @@ const WatchAddressWaiting = ({ params }: { params: ApprovalParams }) => {
   const init = async () => {
     const approval = await getApproval();
     const account = await wallet.syncGetCurrentAccount()!;
+    const bridge = await wallet.getWalletConnectBridge(
+      account.address,
+      account.brandName
+    );
+
+    setBridge(bridge || DEFAULT_BRIDGE);
 
     setCurrentType(
       (await wallet.getWatchAddressPreference(account.address)) || 0
@@ -379,6 +374,12 @@ const WatchAddressWaiting = ({ params }: { params: ApprovalParams }) => {
     );
   };
 
+  const handleBridgeChange = (val: string) => {
+    setBridge(val);
+    eventBus.removeAllEventListeners(EVENTS.WALLETCONNECT.INITED);
+    initWalletConnect();
+  };
+
   useEffect(() => {
     const watchType = Object.values(WALLET_BRAND_CONTENT).find(
       (item) => item.id === currentType
@@ -412,7 +413,10 @@ const WatchAddressWaiting = ({ params }: { params: ApprovalParams }) => {
             uri={qrcodeContent}
             typeId={currentType}
             chain={chain}
+            bridgeURL={bridgeURL}
+            onBridgeChange={handleBridgeChange}
             onRefresh={handleRefreshQrCode}
+            defaultBridge={DEFAULT_BRIDGE}
           />
         ) : (
           <Process

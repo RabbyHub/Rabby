@@ -1,33 +1,40 @@
 import React, { useState } from 'react';
-import { useHover } from 'ui/utils';
+import ClipboardJS from 'clipboard';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 import QRCode from 'qrcode.react';
 import { Input, message } from 'antd';
+import { useHover } from 'ui/utils';
+import WalletConnectBridgeModal from './WalletConnectBridgeModal';
+import IconSuccess from 'ui/assets/success.svg';
+import IconBridgeChange from 'ui/assets/bridgechange.svg';
 import IconQRCodeRefresh from 'ui/assets/qrcoderefresh.svg';
 import IconCopy from 'ui/assets/urlcopy.svg';
 import IconRefresh from 'ui/assets/urlrefresh.svg';
-import ClipboardJS from 'clipboard';
-import IconSuccess from 'ui/assets/success.svg';
-import IconBridgeChange from 'ui/assets/bridgechange.svg';
-import OpenApiModal from './OpenApiModal';
 
 interface Props {
   showURL: boolean;
   changeShowURL: (active: boolean) => void;
   refreshFun(): void;
   qrcodeURL: string;
+  onBridgeChange(val: string): void;
+  bridgeURL: string;
+  defaultBridge: string;
 }
 const ScanCopyQRCode: React.FC<Props> = ({
   showURL = false,
   changeShowURL,
   qrcodeURL,
   refreshFun,
+  onBridgeChange,
+  bridgeURL,
+  defaultBridge,
 }) => {
   const [isHovering, hoverProps] = useHover();
   const { t } = useTranslation();
   const [copySuccess, setCopySuccess] = useState(false);
   const [showOpenApiModal, setShowOpenApiModal] = useState(false);
+
   const handleCopyCurrentAddress = () => {
     const clipboard = new ClipboardJS('.wallet-connect', {
       text: function () {
@@ -48,6 +55,12 @@ const ScanCopyQRCode: React.FC<Props> = ({
       clipboard.destroy();
     });
   };
+
+  const handleBridgeServerChange = (val: string) => {
+    onBridgeChange(val);
+    setShowOpenApiModal(false);
+  };
+
   return (
     <div>
       <div className="button-container">
@@ -101,9 +114,11 @@ const ScanCopyQRCode: React.FC<Props> = ({
         <img src={IconBridgeChange} />
         {t('Change bridge server')}
       </div>
-      <OpenApiModal
+      <WalletConnectBridgeModal
+        defaultValue={defaultBridge}
+        value={bridgeURL}
         visible={showOpenApiModal}
-        onFinish={() => setShowOpenApiModal(false)}
+        onChange={handleBridgeServerChange}
         onCancel={() => setShowOpenApiModal(false)}
       />
     </div>

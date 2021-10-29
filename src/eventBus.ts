@@ -27,6 +27,10 @@ class EventBus {
       this.events[type] = this.events[type].filter((item) => item !== fn);
     }
   };
+
+  removeAllEventListeners = (type: string) => {
+    this.events[type] = [];
+  };
 }
 
 export default new EventBus();
