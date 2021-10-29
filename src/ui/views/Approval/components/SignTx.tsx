@@ -514,7 +514,7 @@ const SignTx = ({ params, origin }) => {
                     alert={securityCheckAlert}
                     onClick={() => setShowSecurityCheckDetail(true)}
                   />
-                  <div className="action-buttons flex justify-between">
+                  <div className="action-buttons flex justify-between relative">
                     <Button
                       type="primary"
                       size="large"
@@ -525,10 +525,8 @@ const SignTx = ({ params, origin }) => {
                     </Button>
                     {isWatch ? (
                       <Tooltip
-                        placement="top"
-                        title={t(
-                          'You are using watch mode, if you need to trade please use other methods.'
-                        )}
+                        overlayClassName="rectangle watcSign__tooltip"
+                        title={t('Use_other_methods')}
                       >
                         <div className="w-[172px] relative flex items-center">
                           <Button
