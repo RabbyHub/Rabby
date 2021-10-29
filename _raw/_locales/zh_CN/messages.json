@@ -893,5 +893,11 @@
   },
   "Connect__with": {
     "message": "使用下列钱包连接："
+  },
+  "Use_other_methods": {
+    "message": "您正在使用观察者模式，请切换其他方式。"
+  },
+  "Proceed": {
+    "message": "继续"
   }
 }

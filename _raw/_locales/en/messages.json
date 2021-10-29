@@ -896,5 +896,11 @@
   },
   "Connect__with": {
     "message": "Connect with"
+  },
+  "Use_other_methods": {
+    "message": "You are using watch mode, if you need to trade please use other methods."
+  },
+  "Proceed": {
+    "message": "Proceed"
   }
 }
