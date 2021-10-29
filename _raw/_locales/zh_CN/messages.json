@@ -881,5 +881,17 @@
   },
   "Added__to__Contact": {
     "message": "联系人已添加"
+  },
+  "Add__Watch__Mode__Address": {
+    "message": "添加观察模式地址"
+  },
+  "Add__address__without__private__keys": {
+    "message": "无需私钥添加地址"
+  },
+  "Import__Private__Key": {
+    "message": "导入私钥地址"
+  },
+  "Connect__with": {
+    "message": "使用下列钱包连接："
   }
 }

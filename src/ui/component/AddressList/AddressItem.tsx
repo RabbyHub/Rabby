@@ -9,11 +9,17 @@ import React, {
 import { Skeleton, Tooltip } from 'antd';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
+import { Account } from 'background/service/preference';
 import { ChainWithBalance } from 'background/service/openapi';
 import { useWallet, useWalletRequest } from 'ui/utils';
 import { AddressViewer } from 'ui/component';
 import { splitNumberByStep } from 'ui/utils/number';
-import { CHAINS, KEYRING_ICONS, WALLET_BRAND_CONTENT } from 'consts';
+import {
+  CHAINS,
+  KEYRING_ICONS,
+  WALLET_BRAND_CONTENT,
+  KEYRING_TYPE_TEXT,
+} from 'consts';
 import IconEmptyChain from 'ui/assets/chain-logos/empty.svg';
 
 interface DisplayChainWithWhiteLogo extends ChainWithBalance {
@@ -28,7 +34,11 @@ export interface AddressItemProps {
     brandName: string;
   };
   keyring?: any;
-  ActionButton?: FunctionComponent<{ data: string; keyring: any }>;
+  ActionButton?: FunctionComponent<{
+    data: string;
+    account: Account;
+    keyring: any;
+  }>;
   className?: string;
   hiddenAddresses?: { type: string; address: string }[];
   onClick?(account: string, keyring: any, brandName: string): void;
@@ -139,12 +149,25 @@ const AddressItem = memo(
       useImperativeHandle(ref, () => ({
         updateBalance,
       }));
+
       const isDisabled = hiddenAddresses.find(
         (item) => item.address === account.address && item.type === keyring.type
       );
+
       const isCurrentAddress =
         currentAccount?.address === account.address &&
         currentAccount?.type === account.type;
+
+      const formatAddressTooltip = (type: string, brandName: string) => {
+        if (KEYRING_TYPE_TEXT[type]) {
+          return KEYRING_TYPE_TEXT[type];
+        }
+        if (WALLET_BRAND_CONTENT[brandName]) {
+          return `Imported by ${WALLET_BRAND_CONTENT[brandName].name}`;
+        }
+        return '';
+      };
+
       return (
         <li
           className={clsx(
@@ -206,10 +229,15 @@ const AddressItem = memo(
             {icon && <img src={icon} className="item-right-icon" />}
           </div>
           {keyring && (
-            <div className="action-button flex items-center flex-shrink-0">
+            <div className="action-button flex items-center flex-shrink-0 cursor-pointer">
               <Tooltip
-                title={t(`Created by ${account.brandName}`)}
-                overlayClassName="rectangle"
+                overlayClassName="rectangle addressType__tooltip"
+                placement="topRight"
+                title={
+                  ActionButton
+                    ? t(formatAddressTooltip(account.type, account.brandName))
+                    : null
+                }
               >
                 <img
                   src={
@@ -220,7 +248,11 @@ const AddressItem = memo(
                 />
               </Tooltip>
               {ActionButton && (
-                <ActionButton data={account.address} keyring={keyring} />
+                <ActionButton
+                  data={account.address}
+                  account={account}
+                  keyring={keyring}
+                />
               )}
             </div>
           )}

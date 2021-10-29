@@ -343,11 +343,15 @@ export class WalletController extends BaseController {
     }
   };
 
-  removeAddress = async (address: string, type: string) => {
-    await keyringService.removeAccount(address, type);
+  removeAddress = async (address: string, type: string, brand?: string) => {
+    await keyringService.removeAccount(address, type, brand);
     preferenceService.removeAddressBalance(address);
     const current = preferenceService.getCurrentAccount();
-    if (current?.address === address && current.type === type) {
+    if (
+      current?.address === address &&
+      current.type === type &&
+      current.brandName === brand
+    ) {
       this.resetCurrentAccount();
     }
   };

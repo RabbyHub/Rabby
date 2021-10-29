@@ -15,6 +15,7 @@ import IconCreatenewaddr from 'ui/assets/walletlogo/createnewaddr.svg';
 import IconKeystore from 'ui/assets/walletlogo/keystore.svg';
 import IconPrivatekey from 'ui/assets/walletlogo/privatekey.svg';
 import { IS_CHROME, WALLET_BRAND_CONTENT } from 'consts';
+
 const AddAddressOptions = () => {
   const history = useHistory();
   const wallet = useWallet();
@@ -92,12 +93,12 @@ const AddAddressOptions = () => {
     },
     {
       leftIcon: IconMnemonics,
-      content: t('Import Mnemonic'),
+      content: t('Import via Mnemonic'),
       onClick: () => history.push('/import/mnemonics'),
     },
     {
       leftIcon: IconKeystore,
-      content: t('Import Key Store'),
+      content: t('Import Your Keystore'),
       onClick: () => history.push('/import/json'),
     },
   ];

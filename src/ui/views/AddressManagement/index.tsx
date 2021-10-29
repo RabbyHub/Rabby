@@ -12,6 +12,7 @@ import {
   StrayFooter,
 } from 'ui/component';
 import { DisplayedKeryring } from 'background/service/keyring';
+import { Account } from 'background/service/preference';
 import DisplayKeyring from 'background/service/keyring/display';
 import { SvgIconPlusPrimary } from 'ui/assets';
 import IconHint from 'ui/assets/hint.png';
@@ -77,9 +78,11 @@ const AddressManagement = () => {
   const AddressActionButton = ({
     data,
     keyring,
+    account,
   }: {
     data: string;
     keyring: DisplayKeyring;
+    account: Account;
   }) => {
     const isHidden = hiddenAddresses.find(
       (item) => item.type === keyring.type && item.address === data
@@ -110,7 +113,7 @@ const AddressManagement = () => {
     };
 
     const handleDeleteAddress = async () => {
-      await wallet.removeAddress(data, keyring.type);
+      await wallet.removeAddress(data, keyring.type, account.brandName);
       message.success({
         icon: <img src={IconSuccess} className="icon icon-success" />,
         content: t('removed'),

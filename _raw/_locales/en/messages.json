@@ -887,5 +887,14 @@
   },
   "Add__Watch__Mode__Address": {
     "message": "Add Watch Mode Address"
+  },
+  "Add__address__without__private__keys": {
+    "message": "Add address without private keys"
+  },
+  "Import__Private__Key": {
+    "message": "Import Private Key"
+  },
+  "Connect__with": {
+    "message": "Connect with"
   }
 }

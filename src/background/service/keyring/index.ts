@@ -429,12 +429,12 @@ class KeyringService extends EventEmitter {
    * @param {string} address - The address of the account to remove.
    * @returns {Promise<void>} A Promise that resolves if the operation was successful.
    */
-  removeAccount(address: string, type: string): Promise<any> {
+  removeAccount(address: string, type: string, brand?: string): Promise<any> {
     return this.getKeyringForAccount(address, type)
       .then((keyring) => {
         // Not all the keyrings support this, so we have to check
         if (typeof keyring.removeAccount === 'function') {
-          keyring.removeAccount(address);
+          keyring.removeAccount(address, brand);
           this.emit('removedAccount', address);
           return keyring.getAccounts();
         }
