@@ -3,7 +3,11 @@ import { useTranslation } from 'react-i18next';
 import { Account } from 'background/service/preference';
 import { useWallet } from 'ui/utils';
 import { splitNumberByStep } from 'ui/utils/number';
-import { KEYRING_TYPE, HARDWARE_KEYRING_TYPES } from 'consts';
+import {
+  KEYRING_TYPE,
+  HARDWARE_KEYRING_TYPES,
+  WALLET_BRAND_CONTENT,
+} from 'consts';
 import { AddressViewer } from 'ui/component';
 import { useCurrentBalance } from 'ui/component/AddressList/AddressItem';
 import IconNormal from 'ui/assets/keyring-normal.svg';
@@ -24,6 +28,9 @@ const AccountCard = ({
   const [currentAccount, setCurrentAccount] = useState<Account | null>(null);
 
   const getAccountIcon = (type: string | undefined) => {
+    if (currentAccount && WALLET_BRAND_CONTENT[currentAccount?.brandName]) {
+      return WALLET_BRAND_CONTENT[currentAccount?.brandName].image;
+    }
     switch (type) {
       case HARDWARE_KEYRING_TYPES.Ledger.type:
       case HARDWARE_KEYRING_TYPES.Trezor.type:
