@@ -73,7 +73,7 @@ const Field = ({
         className="right-icon"
         onClick={unselect ? removeWallet : saveWallet}
       >
-        {rightIcon}
+        {!address ? rightIcon : (isHovering || unselect) && rightIcon}
       </div>
     </div>
   );
