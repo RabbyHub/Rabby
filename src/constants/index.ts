@@ -244,13 +244,6 @@ export const KEYRING_TYPE = {
   WalletConnectKeyring: 'WalletConnect',
 };
 
-export const KEYRING_TYPE_TEXT = {
-  [KEYRING_TYPE.HdKeyring]: 'Created by Mnemonic',
-  [KEYRING_TYPE.SimpleKeyring]: 'Imported by Private Key',
-  [KEYRING_TYPE.HardwareKeyring]: 'Hardware Wallet',
-  [KEYRING_TYPE.WatchAddressKeyring]: 'Watch Mode',
-};
-
 export const KEYRING_CLASS = {
   PRIVATE_KEY: 'Simple Key Pair',
   MNEMONIC: 'HD Key Tree',
@@ -261,6 +254,15 @@ export const KEYRING_CLASS = {
   },
   WATCH: 'Watch Address',
   WALLETCONNECT: 'WalletConnect',
+};
+
+export const KEYRING_TYPE_TEXT = {
+  [KEYRING_TYPE.HdKeyring]: 'Created by Mnemonic',
+  [KEYRING_TYPE.SimpleKeyring]: 'Imported by Private Key',
+  [KEYRING_TYPE.WatchAddressKeyring]: 'Watch Mode',
+  [KEYRING_CLASS.HARDWARE.LEDGER]: 'Imported by Ledger',
+  [KEYRING_CLASS.HARDWARE.TREZOR]: 'Imported by Trezor',
+  [KEYRING_CLASS.HARDWARE.ONEKEY]: 'Imported by Onekey',
 };
 
 export const HARDWARE_KEYRING_TYPES = {

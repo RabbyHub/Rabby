@@ -1,9 +1,7 @@
 import React, { useImperativeHandle, forwardRef, useRef } from 'react';
-import { useTranslation } from 'react-i18next';
 import { DisplayedKeryring } from 'background/service/keyring';
-import { KEYRING_TYPE, KEYRING_TYPE_TEXT } from 'consts';
+import { KEYRING_TYPE } from 'consts';
 import AddressItem, { AddressItemProps } from './AddressItem';
-import IconArrowRight from 'ui/assets/arrow-right-gray.svg';
 import './style.less';
 
 type ACTION = 'management' | 'switch';
@@ -14,7 +12,6 @@ interface AddressListProps {
   ActionButton: AddressItemProps['ActionButton'];
   hiddenAddresses?: { type: string; address: string }[];
   onClick?(account: string, keyring: any, brandName: string): void;
-  onShowMnemonics?(): void;
   currentAccount?: any;
 }
 
@@ -34,12 +31,10 @@ const AddressList: any = forwardRef(
       ActionButton,
       onClick,
       hiddenAddresses = [],
-      onShowMnemonics,
       currentAccount,
     }: AddressListProps,
     ref
   ) => {
-    const { t } = useTranslation();
     const addressItems = useRef({});
     list.forEach((group) => {
       addressItems.current[group.type] = new Array(group.accounts.length);
