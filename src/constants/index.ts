@@ -574,3 +574,8 @@ export const KEYRINGS_LOGOS = {
   [KEYRING_CLASS.PRIVATE_KEY]: LogoPrivateKey,
   [KEYRING_CLASS.WATCH]: LogoWatch,
 };
+
+export const NOT_CLOSE_UNFOCUS_LIST: string[] = [
+  WALLET_BRAND_TYPES.AMBER,
+  WALLET_BRAND_TYPES.COBO,
+];

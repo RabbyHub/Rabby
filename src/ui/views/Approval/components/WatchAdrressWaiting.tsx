@@ -70,6 +70,7 @@ const Scan = ({
         onBridgeChange={onBridgeChange}
         bridgeURL={bridgeURL}
         defaultBridge={defaultBridge}
+        canChangeBridge={false}
       />
       <div className="watchaddress-scan__guide">
         <p>
@@ -374,10 +375,12 @@ const WatchAddressWaiting = ({ params }: { params: ApprovalParams }) => {
     );
   };
 
-  const handleBridgeChange = (val: string) => {
+  const handleBridgeChange = async (val: string) => {
+    const account = await wallet.syncGetCurrentAccount()!;
     setBridge(val);
     eventBus.removeAllEventListeners(EVENTS.WALLETCONNECT.INITED);
     initWalletConnect();
+    wallet.setWalletConnectBridge(account.address, account.brandName, val);
   };
 
   useEffect(() => {
