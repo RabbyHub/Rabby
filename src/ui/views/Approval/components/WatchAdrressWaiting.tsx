@@ -10,6 +10,7 @@ import {
   WALLETCONNECT_STATUS_MAP,
   EVENTS,
   WALLET_BRAND_CONTENT,
+  SPECIFIC_TEXT_BRAND,
 } from 'consts';
 import { ScanCopyQRCode } from 'ui/component';
 import { Tx } from 'background/service/openapi';
@@ -56,7 +57,6 @@ const Scan = ({
     const account = await wallet.syncGetCurrentAccount();
     setAddress(account.address);
   };
-
   useEffect(() => {
     init();
   });
@@ -81,18 +81,26 @@ const Scan = ({
         </p>
         <p>
           2.{' '}
-          <Trans
-            i18nKey="WatchGuideStep2"
-            values={{
-              address: `${address?.slice(0, 6)}...${address?.slice(-4)}`,
-              chainName,
-            }}
-          >
-            Make sure you are using address <strong>{{ address }}</strong> on
-            <strong>{{ chainName }}</strong>
-          </Trans>
+          {!showSpecialText && (
+            <Trans
+              i18nKey={'WatchGuideStep2'}
+              values={{
+                address: `${address?.slice(0, 6)}...${address?.slice(-4)}`,
+                chainName,
+              }}
+            >
+              Make sure you are using address <strong>{{ address }}</strong> on
+              <strong>{{ chainName }}</strong>
+            </Trans>
+          )}
+          {showSpecialText && (
+            <Trans i18nKey={'WatchGuideStep2Special'}>
+              Goes to the <strong>Discover</strong> page on Jade Wallet and
+              clicks <strong>WalletConnect</strong> to scan the code.
+            </Trans>
+          )}
         </p>
-        <p>3. {t('WatchGuideStep3')}</p>
+        {!showSpecialText && <p>3. {t('WatchGuideStep3')}</p>}
       </div>
       <p className="watchaddress-scan__tip">Connect via WallletConnect</p>
     </div>
