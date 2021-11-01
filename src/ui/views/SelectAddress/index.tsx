@@ -36,7 +36,6 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
   const [form] = Form.useForm();
   const wallet = useWallet();
   const keyringId = useRef<number | null | undefined>(state.keyringId);
-
   const [getAccounts, loading] = useWalletRequest(
     async (firstFlag) => {
       return firstFlag
@@ -120,7 +119,11 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
     history.replace({
       pathname: isPopup ? '/popup/import/success' : '/import/success',
       state: {
-        accounts: selectedAddressIndexes.map((i) => accounts[i]),
+        accounts: selectedAddressIndexes.map((i) => ({
+          ...accounts[i],
+          brandName: keyring,
+          type: keyring,
+        })),
         hasDivider: !!isMnemonics,
       },
     });
@@ -177,6 +180,7 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
             <MultiSelectAddressList
               accounts={accounts}
               importedAccounts={importedAccounts}
+              type={keyring}
             />
           </Form.Item>
         </div>

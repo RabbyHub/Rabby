@@ -242,7 +242,7 @@ const AddressItem = memo(
                 <img
                   src={
                     KEYRING_ICONS[account.type] ||
-                    WALLET_BRAND_CONTENT[account.brandName].image
+                    WALLET_BRAND_CONTENT[account.brandName]?.image
                   }
                   className="icon icon-hardware"
                 />
