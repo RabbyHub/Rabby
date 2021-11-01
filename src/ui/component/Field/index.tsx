@@ -40,9 +40,7 @@ const Field = ({
     if (savedList.includes(brand)) {
       return;
     }
-    const newList = [brand, ...savedList].sort((a, b) =>
-      a.content > b.content ? 1 : -1
-    );
+    const newList = [brand, ...savedList].sort();
     await wallet.updateHighlightWalletList(newList);
     callback && callback();
   };
