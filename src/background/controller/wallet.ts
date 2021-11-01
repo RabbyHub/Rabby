@@ -200,7 +200,7 @@ export class WalletController extends BaseController {
       });
       isNewKey = true;
     }
-    const { uri } = await keyring.initConnector(bridge);
+    const { uri } = await keyring.initConnector(brandName, bridge);
     let stashId: null | number = null;
     if (isNewKey) {
       stashId = this.addKyeringToStash(keyring);
@@ -244,6 +244,34 @@ export class WalletController extends BaseController {
       return null;
     }
     return null;
+  };
+
+  getWalletConnectConnectors = () => {
+    const keyringType = KEYRING_CLASS.WALLETCONNECT;
+    const keyring: WalletConnectKeyring = this._getKeyringByType(keyringType);
+    if (keyring) {
+      const result: { address: string; brandName: string }[] = [];
+      for (const key in keyring.connectors) {
+        const target = keyring.connectors[key];
+        result.push({
+          address: key,
+          brandName: target.brandName,
+        });
+      }
+      return result;
+    }
+    return [];
+  };
+
+  killWalletConnectConnector = (address: string, brandName: string) => {
+    const keyringType = KEYRING_CLASS.WALLETCONNECT;
+    const keyring: WalletConnectKeyring = this._getKeyringByType(keyringType);
+    if (keyring) {
+      const connector = keyring.connectors[address];
+      if (connector) {
+        keyring.closeConnector(connector.connector, address);
+      }
+    }
   };
 
   importWalletConnect = async (
