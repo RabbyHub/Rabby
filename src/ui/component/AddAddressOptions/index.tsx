@@ -30,11 +30,11 @@ const AddAddressOptions = () => {
   const [savedWalletData, setSavedWalletData] = useState([]);
   const init = async () => {
     const walletSavedList = await wallet.getHighlightWalletList();
-    const savedTemp: [] = renderSavedData();
-    setSavedWalletData(savedTemp);
     if (walletSavedList.toString() !== savedWallet.toString()) {
-      setSavedWallet(walletSavedList);
+      await setSavedWallet(walletSavedList);
     }
+    const savedTemp: [] = await renderSavedData();
+    setSavedWalletData(savedTemp);
   };
 
   useEffect(() => {
@@ -133,7 +133,7 @@ const AddAddressOptions = () => {
           });
         }
       });
-      return result;
+      return result.sort((a, b) => (a.content > b.content ? 1 : -1));
     }
     return [];
   };
