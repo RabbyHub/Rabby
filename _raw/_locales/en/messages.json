@@ -923,5 +923,8 @@
   },
   "Bridge__Service__URL": {
     "message": "Bridge Service URL"
+  },
+  "Imported successfully": {
+    "message": "Imported successfully"
   }
 }
