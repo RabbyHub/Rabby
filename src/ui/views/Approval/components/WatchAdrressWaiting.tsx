@@ -95,8 +95,11 @@ const Scan = ({
             </Trans>
           )}
           {showSpecialText && (
-            <Trans i18nKey={'WatchGuideStep2Special'}>
-              Goes to the <strong>Discover</strong> page on Jade Wallet and
+            <Trans
+              i18nKey={'WatchGuideStep2Special'}
+              values={{ name: typeContent.name }}
+            >
+              Goes to the <strong>Discover</strong> page on {{ name }} and
               clicks <strong>WalletConnect</strong> to scan the code.
             </Trans>
           )}
