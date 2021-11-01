@@ -920,5 +920,8 @@
   },
   "Bridge__Service__URL": {
     "message": "后端服务地址"
+  },
+  "Imported successfully": {
+    "message": "导入成功"
   }
 }
