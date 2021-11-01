@@ -3,16 +3,9 @@ import { useTranslation } from 'react-i18next';
 import { Account } from 'background/service/preference';
 import { useWallet } from 'ui/utils';
 import { splitNumberByStep } from 'ui/utils/number';
-import {
-  KEYRING_TYPE,
-  HARDWARE_KEYRING_TYPES,
-  WALLET_BRAND_CONTENT,
-} from 'consts';
+import { KEYRINGS_LOGOS, WALLET_BRAND_CONTENT } from 'consts';
 import { AddressViewer } from 'ui/component';
 import { useCurrentBalance } from 'ui/component/AddressList/AddressItem';
-import IconNormal from 'ui/assets/keyring-normal.svg';
-import IconHardware from 'ui/assets/hardware-white.svg';
-import IconWatch from 'ui/assets/watch-white.svg';
 
 const AccountCard = ({
   icons,
@@ -28,22 +21,13 @@ const AccountCard = ({
   const [currentAccount, setCurrentAccount] = useState<Account | null>(null);
 
   const getAccountIcon = (type: string | undefined) => {
-    if (currentAccount && WALLET_BRAND_CONTENT[currentAccount?.brandName]) {
-      return WALLET_BRAND_CONTENT[currentAccount?.brandName].image;
+    if (currentAccount && type) {
+      if (WALLET_BRAND_CONTENT[currentAccount?.brandName]) {
+        return WALLET_BRAND_CONTENT[currentAccount?.brandName].image;
+      }
+      return KEYRINGS_LOGOS[type];
     }
-    switch (type) {
-      case HARDWARE_KEYRING_TYPES.Ledger.type:
-      case HARDWARE_KEYRING_TYPES.Trezor.type:
-      case HARDWARE_KEYRING_TYPES.Onekey.type:
-        return icons?.hardware || IconHardware;
-      case KEYRING_TYPE.HdKeyring:
-      case KEYRING_TYPE.SimpleKeyring:
-        return icons?.normal || IconNormal;
-      case KEYRING_TYPE.WatchAddressKeyring:
-        return icons?.watch || IconWatch;
-      default:
-        return icons?.normal || IconNormal;
-    }
+    return '';
   };
 
   const init = async () => {
