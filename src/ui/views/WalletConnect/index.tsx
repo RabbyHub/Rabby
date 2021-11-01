@@ -114,7 +114,7 @@ const WalletConnectTemplate = () => {
           onClick={handleClickBack}
         />
         <img
-          className="unlock-logo w-[80px] h-[75px] mb-20 mx-auto"
+          className="unlock-logo w-[80px] h-[80px] mb-20 mx-auto"
           src={image}
         />
         <p className="text-24 mb-4 mt-0 text-white text-center font-bold">
