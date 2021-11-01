@@ -631,7 +631,7 @@
     "message": "Make sure you are using address <1>{{address}}</1> on <1>{{chainName}}</1>"
   },
   "WatchGuideStep2Special": {
-    "message": "Goes to the <1>Discover</1> page on Jade Wallet and clicks <1>WalletConnect</1> to scan the code."
+    "message": "Goes to the <1>Discover</1> page on {{name}} and clicks <1>WalletConnect</1> to scan the code."
   },
   "WatchGuideStep3": {
     "message": "Scan the QR code above"
