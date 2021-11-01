@@ -372,7 +372,6 @@ const WatchAddressWaiting = ({ params }: { params: ApprovalParams }) => {
             break;
           case WALLETCONNECT_STATUS_MAP.FAILD:
           case WALLETCONNECT_STATUS_MAP.REJECTED:
-            initWalletConnect();
             if (payload.code) {
               setConnectError({ code: payload.code });
             } else {
