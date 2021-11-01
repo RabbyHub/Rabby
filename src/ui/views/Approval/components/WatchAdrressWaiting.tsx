@@ -57,10 +57,7 @@ const Scan = ({
     setBrandName(account.brandName);
   };
   const showSpecialText = SPECIFIC_TEXT_BRAND.includes(brandName || '');
-  let displayName = '';
-  if (showSpecialText && brandName) {
-    displayName = WALLET_BRAND_CONTENT[brandName].name;
-  }
+  const displayName = brandName && WALLET_BRAND_CONTENT[brandName].name;
   useEffect(() => {
     init();
   });
