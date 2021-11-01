@@ -15,7 +15,13 @@ import IconCreatenewaddr from 'ui/assets/walletlogo/createnewaddr.svg';
 import IconKeystore from 'ui/assets/walletlogo/keystore.svg';
 import IconPrivatekey from 'ui/assets/walletlogo/privatekey.svg';
 import { IS_CHROME, WALLET_BRAND_CONTENT } from 'consts';
-
+const normaltype: string[] = [
+  'createAddress',
+  'addWatchMode',
+  'imporPrivateKey',
+  'importviaMnemonic',
+  'importKeystore',
+];
 const AddAddressOptions = () => {
   const history = useHistory();
   const wallet = useWallet();
@@ -66,6 +72,7 @@ const AddAddressOptions = () => {
     {
       leftIcon: IconCreatenewaddr,
       content: t('createAddress'),
+      brand: 'createAddress',
       onClick: async () => {
         if (await wallet.checkHasMnemonic()) {
           await wallet.deriveNewAccountFromMnemonic();
@@ -82,22 +89,26 @@ const AddAddressOptions = () => {
     },
     {
       leftIcon: IconAddwatchmodo,
+      brand: 'addWatchMode',
       content: t('Add Watch Mode Address'),
       subText: t('Add address without private keys'),
       onClick: () => history.push('/import/watch-address'),
     },
     {
       leftIcon: IconPrivatekey,
+      brand: 'imporPrivateKey',
       content: t('Import Private Key'),
       onClick: () => history.push('/import/key'),
     },
     {
       leftIcon: IconMnemonics,
+      brand: 'importviaMnemonic',
       content: t('Import via Mnemonic'),
       onClick: () => history.push('/import/mnemonics'),
     },
     {
       leftIcon: IconKeystore,
+      brand: 'importKeystore',
       content: t('Import Your Keystore'),
       onClick: () => history.push('/import/json'),
     },
@@ -106,17 +117,21 @@ const AddAddressOptions = () => {
     if (savedWallet.length > 0) {
       const result = [] as any;
       savedWallet.map((item) => {
-        const savedItem = Object.values(WALLET_BRAND_CONTENT).find(
-          (wallet) => wallet.brand.toString() === item
-        );
-        result.push({
-          leftIcon: savedItem!.image || '',
-          content: t(savedItem!.name),
-          brand: savedItem!.brand,
-          image: savedItem!.image,
-          connectType: savedItem!.connectType,
-          onClick: () => connectRouter(savedItem),
-        });
+        if (normaltype.includes(item)) {
+          result.push(renderData.find((data) => data.brand === item));
+        } else {
+          const savedItem = Object.values(WALLET_BRAND_CONTENT).find(
+            (wallet) => wallet.brand.toString() === item
+          );
+          result.push({
+            leftIcon: savedItem!.image || '',
+            content: t(savedItem!.name),
+            brand: savedItem!.brand,
+            image: savedItem!.image,
+            connectType: savedItem!.connectType,
+            onClick: () => connectRouter(savedItem),
+          });
+        }
       });
       return result;
     }
@@ -129,7 +144,7 @@ const AddAddressOptions = () => {
           savedWalletData.map((data: any) => (
             <Field
               key={`saved${data.content}`}
-              brand={data.brand}
+              brand={data.brand || data.type}
               leftIcon={
                 <img src={data.leftIcon} className="icon wallet-icon" />
               }
@@ -171,9 +186,15 @@ const AddAddressOptions = () => {
           <Field
             key={data.content}
             leftIcon={<img src={data.leftIcon} className="icon" />}
-            rightIcon={null}
+            rightIcon={
+              !savedWallet.toString().includes(data.brand) ? (
+                <img src={IconArrowRight} className="icon icon-arrow-right" />
+              ) : null
+            }
+            brand={data.brand}
             subText={data.subText}
             onClick={data.onClick}
+            callback={init}
             address
           >
             {data.content}

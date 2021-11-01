@@ -36,10 +36,11 @@ const Field = ({
   const saveWallet = async (e) => {
     e.stopPropagation();
     const savedList = await wallet.getHighlightWalletList();
+    console.log(brand, '......');
     if (savedList.includes(brand)) {
       return;
     }
-    const newList = [brand, ...savedList].sort();
+    const newList = [brand, ...savedList].sort((a, b) => a.brand - b.brand);
     await wallet.updateHighlightWalletList(newList);
     callback && callback();
   };
