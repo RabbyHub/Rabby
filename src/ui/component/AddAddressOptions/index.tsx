@@ -14,7 +14,7 @@ import IconMnemonics from 'ui/assets/walletlogo/mnemonics.svg';
 import IconCreatenewaddr from 'ui/assets/walletlogo/createnewaddr.svg';
 import IconKeystore from 'ui/assets/walletlogo/keystore.svg';
 import IconPrivatekey from 'ui/assets/walletlogo/privatekey.svg';
-import { IS_CHROME, WALLET_BRAND_CONTENT } from 'consts';
+import { IS_CHROME, WALLET_BRAND_CONTENT, KEYRING_CLASS } from 'consts';
 const normaltype: string[] = [
   'createAddress',
   'addWatchMode',
@@ -28,18 +28,19 @@ const AddAddressOptions = () => {
   const { t } = useTranslation();
   const [savedWallet, setSavedWallet] = useState([]);
   const [savedWalletData, setSavedWalletData] = useState([]);
+  const [showMnemonic, setShowMnemonic] = useState(false);
   const init = async () => {
     const walletSavedList = await wallet.getHighlightWalletList();
     if (walletSavedList.toString() !== savedWallet.toString()) {
       await setSavedWallet(walletSavedList);
     }
+    const accounts = await wallet.getTypedAccounts(KEYRING_CLASS.MNEMONIC);
+    if (accounts.length <= 0) {
+      setShowMnemonic(true);
+    }
     const savedTemp: [] = await renderSavedData();
     setSavedWalletData(savedTemp);
   };
-
-  useEffect(() => {
-    init();
-  }, [savedWallet]);
   const connectRouter = (item) => {
     if (item.connectType === 'TrezorConnect') {
       openInternalPageInTab('import/hardware?connectType=TREZOR');
@@ -137,6 +138,9 @@ const AddAddressOptions = () => {
     }
     return [];
   };
+  useEffect(() => {
+    init();
+  }, [savedWallet]);
   return (
     <>
       <div className="saved-list">
@@ -182,24 +186,26 @@ const AddAddressOptions = () => {
           </Field>
         ))}
         <div className="divide-line-list"></div>
-        {renderData.map((data) => (
-          <Field
-            key={data.content}
-            leftIcon={<img src={data.leftIcon} className="icon" />}
-            rightIcon={
-              !savedWallet.toString().includes(data.brand) ? (
-                <img src={IconArrowRight} className="icon icon-arrow-right" />
-              ) : null
-            }
-            brand={data.brand}
-            subText={data.subText}
-            onClick={data.onClick}
-            callback={init}
-            address
-          >
-            {data.content}
-          </Field>
-        ))}
+        {renderData.map((data) => {
+          return !showMnemonic && data.brand === 'importviaMnemonic' ? null : (
+            <Field
+              key={data.content}
+              leftIcon={<img src={data.leftIcon} className="icon" />}
+              rightIcon={
+                !savedWallet.toString().includes(data.brand) ? (
+                  <img src={IconArrowRight} className="icon icon-arrow-right" />
+                ) : null
+              }
+              brand={data.brand}
+              subText={data.subText}
+              onClick={data.onClick}
+              callback={init}
+              address
+            >
+              {data.content}
+            </Field>
+          );
+        })}
       </div>
     </>
   );
