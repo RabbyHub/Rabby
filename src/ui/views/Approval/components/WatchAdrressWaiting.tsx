@@ -44,9 +44,7 @@ const Scan = ({
   const wallet = useWallet();
   const [address, setAddress] = useState<string | null>(null);
   const [showURL, setShowURL] = useState(false);
-  const typeContent = Object.values(WALLET_BRAND_CONTENT).find(
-    (item) => item.id === typeId
-  )!;
+  const [brandName, setBrandName] = useState<string | null>(null);
   const chainName = CHAINS[chain].name;
   const { t } = useTranslation();
   const handleRefresh = () => {
@@ -56,8 +54,13 @@ const Scan = ({
   const init = async () => {
     const account = await wallet.syncGetCurrentAccount();
     setAddress(account.address);
+    setBrandName(account.brandName);
   };
-  const showSpecialText = SPECIFIC_TEXT_BRAND.includes(typeContent.brand);
+  const showSpecialText = SPECIFIC_TEXT_BRAND.includes(brandName || '');
+  let displayName = '';
+  if (showSpecialText && brandName) {
+    displayName = WALLET_BRAND_CONTENT[brandName].name;
+  }
   useEffect(() => {
     init();
   });
@@ -76,7 +79,7 @@ const Scan = ({
       <div className="watchaddress-scan__guide">
         <p>
           1.{' '}
-          <Trans i18nKey="WatchGuideStep1" values={{ name: typeContent.name }}>
+          <Trans i18nKey="WatchGuideStep1" values={{ name: displayName }}>
             Open <strong>{{ name }}</strong> on your phone
           </Trans>
         </p>
@@ -97,7 +100,7 @@ const Scan = ({
           {showSpecialText && (
             <Trans
               i18nKey={'WatchGuideStep2Special'}
-              values={{ name: typeContent.name }}
+              values={{ name: displayName }}
             >
               Goes to the <strong>Discover</strong> page on {{ name }} and
               clicks <strong>WalletConnect</strong> to scan the code.
