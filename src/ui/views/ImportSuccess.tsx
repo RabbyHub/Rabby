@@ -7,7 +7,7 @@ import { IconImportSuccess } from 'ui/assets';
 import { Account } from 'background/service/preference';
 import SuccessLogo from 'ui/assets/success-logo.svg';
 import clsx from 'clsx';
-
+import { KEYRING_ICONS, WALLET_BRAND_CONTENT } from 'consts';
 const { AddressItem } = AddressList;
 
 const ImportSuccess = ({ isPopup = false }: { isPopup?: boolean }) => {
@@ -23,8 +23,6 @@ const ImportSuccess = ({ isPopup = false }: { isPopup?: boolean }) => {
   const {
     accounts,
     hasDivider = true,
-    brand,
-    image,
     title = t('Successfully imported'),
   } = state;
 
@@ -36,6 +34,9 @@ const ImportSuccess = ({ isPopup = false }: { isPopup?: boolean }) => {
     }
     history.push('/dashboard');
   };
+  const importedIcon =
+    KEYRING_ICONS[accounts[0].type] ||
+    WALLET_BRAND_CONTENT[accounts[0].brandName].image;
 
   return (
     <StrayPageWithButton
@@ -99,7 +100,7 @@ const ImportSuccess = ({ isPopup = false }: { isPopup?: boolean }) => {
               key={account.address}
               account={account}
               showAssets
-              icon={image}
+              icon={importedIcon}
             />
           ))}
         </div>
