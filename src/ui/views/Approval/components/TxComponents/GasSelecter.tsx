@@ -161,7 +161,7 @@ const GasSelector = ({
   };
 
   const handleSelectGas = (checked: boolean, gas: GasLevel) => {
-    if (!checked) {
+    if (!checked || isLoading) {
       return;
     }
     setSelectGas(gas);
