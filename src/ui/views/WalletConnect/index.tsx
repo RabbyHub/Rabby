@@ -53,6 +53,7 @@ const WalletConnectTemplate = () => {
     const { uri, stashId } = await wallet.initWalletConnect(brand, bridgeURL);
     await setWalletconnectUri(uri);
     await setStashId(stashId);
+    eventBus.removeAllEventListeners(EVENTS.WALLETCONNECT.STATUS_CHANGED);
     eventBus.addEventListener(
       EVENTS.WALLETCONNECT.STATUS_CHANGED,
       ({ status, payload }) => {
@@ -88,7 +89,6 @@ const WalletConnectTemplate = () => {
   };
 
   const handleRefresh = () => {
-    eventBus.removeAllEventListeners(EVENTS.WALLETCONNECT.STATUS_CHANGED);
     handleImportByWalletconnect();
   };
 
@@ -97,7 +97,6 @@ const WalletConnectTemplate = () => {
   };
 
   useEffect(() => {
-    eventBus.removeAllEventListeners(EVENTS.WALLETCONNECT.STATUS_CHANGED);
     handleImportByWalletconnect();
   }, [bridgeURL]);
 

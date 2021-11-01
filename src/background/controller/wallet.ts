@@ -274,11 +274,13 @@ export class WalletController extends BaseController {
       brandName,
       bridge,
     });
-    await keyringService.addNewAccount(keyring);
+
     if (isNewKey) {
       await keyringService.addKeyring(keyring);
       keyring.removeAllListeners('statucChange');
     }
+
+    await keyringService.addNewAccount(keyring);
     return this._setCurrentAccountFromKeyring(keyring, -1);
   };
 

@@ -20,6 +20,7 @@ interface Props {
   onBridgeChange(val: string): void;
   bridgeURL: string;
   defaultBridge: string;
+  canChangeBridge?: boolean;
 }
 const ScanCopyQRCode: React.FC<Props> = ({
   showURL = false,
@@ -29,6 +30,7 @@ const ScanCopyQRCode: React.FC<Props> = ({
   onBridgeChange,
   bridgeURL,
   defaultBridge,
+  canChangeBridge = true,
 }) => {
   const [isHovering, hoverProps] = useHover();
   const { t } = useTranslation();
@@ -110,10 +112,15 @@ const ScanCopyQRCode: React.FC<Props> = ({
           />
         </div>
       )}
-      <div className="change-bridge" onClick={() => setShowOpenApiModal(true)}>
-        <img src={IconBridgeChange} />
-        {t('Change bridge server')}
-      </div>
+      {canChangeBridge && (
+        <div
+          className="change-bridge"
+          onClick={() => setShowOpenApiModal(true)}
+        >
+          <img src={IconBridgeChange} />
+          {t('Change bridge server')}
+        </div>
+      )}
       <WalletConnectBridgeModal
         defaultValue={defaultBridge}
         value={bridgeURL}

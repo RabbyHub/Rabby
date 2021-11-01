@@ -1,7 +1,13 @@
 import { ethErrors } from 'eth-rpc-errors';
 import { EthereumProviderError } from 'eth-rpc-errors/dist/classes';
 import { winMgr } from 'background/webapi';
-import { IS_CHROME, IS_LINUX } from 'consts';
+import {
+  IS_CHROME,
+  IS_LINUX,
+  KEYRING_TYPE,
+  NOT_CLOSE_UNFOCUS_LIST,
+} from 'consts';
+import preferenceService from './preference';
 
 interface Approval {
   data: {
@@ -31,12 +37,15 @@ class NotificationService {
     });
 
     winMgr.event.on('windowFocusChange', (winId: number) => {
+      const account = preferenceService.getCurrentAccount()!;
       if (this.notifiWindowId && winId !== this.notifiWindowId) {
         if (process.env.NODE_ENV === 'production') {
           if (
-            IS_CHROME &&
-            winId === chrome.windows.WINDOW_ID_NONE &&
-            IS_LINUX
+            (IS_CHROME &&
+              winId === chrome.windows.WINDOW_ID_NONE &&
+              IS_LINUX) ||
+            (account?.type === KEYRING_TYPE.WalletConnectKeyring &&
+              NOT_CLOSE_UNFOCUS_LIST.includes(account.brandName))
           ) {
             // Wired issue: When notification popuped, will focus to -1 first then focus on notification
             return;
