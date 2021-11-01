@@ -49,9 +49,6 @@ import LogoAmber from 'ui/assets/walletlogo/AmberLogo.png';
 import LogoOnekey from 'ui/assets/walletlogo/onekey28.png';
 import LogoTrezor from 'ui/assets/walletlogo/Trezor28.png';
 import LogoLedger from 'ui/assets/walletlogo/ledger28.png';
-import LogoMnemonic from 'ui/assets/walletlogo/mnemoniclogo.svg';
-import LogoPrivateKey from 'ui/assets/walletlogo/privatekeylogo.svg';
-import LogoWatch from 'ui/assets/walletlogo/watchlogo.svg';
 
 export enum CHAINS_ENUM {
   ETH = 'ETH',
