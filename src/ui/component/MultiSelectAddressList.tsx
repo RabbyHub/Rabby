@@ -1,15 +1,15 @@
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { AddressList, FieldCheckbox } from 'ui/component';
+import { FieldCheckbox } from 'ui/component';
+import AddressItem from 'ui/component/AddressList/AddressItem';
 import { useSelectOption } from 'ui/utils';
-
-const { AddressItem } = AddressList;
 
 interface MultiSelectAddressListArgs {
   accounts: Array<{
     address: string;
     index: number;
   }>;
+  type: string;
   onChange?(arg: number[]): void;
   value?: number[];
   importedAccounts?: string[];
@@ -20,6 +20,7 @@ const MultiSelectAddressList = ({
   onChange,
   value,
   importedAccounts,
+  type,
 }: MultiSelectAddressListArgs) => {
   const { t } = useTranslation();
   const [_value, , , handleToggle] = useSelectOption<number>({
@@ -49,7 +50,11 @@ const MultiSelectAddressList = ({
             }
           >
             <AddressItem
-              account={account.address}
+              account={{
+                address: account.address,
+                type,
+                brandName: type,
+              }}
               noNeedBalance={!imported}
               showAssets={imported}
               className="select-address-item"

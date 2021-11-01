@@ -36,7 +36,7 @@ const ImportSuccess = ({ isPopup = false }: { isPopup?: boolean }) => {
   };
   const importedIcon =
     KEYRING_ICONS[accounts[0].type] ||
-    WALLET_BRAND_CONTENT[accounts[0].brandName].image;
+    WALLET_BRAND_CONTENT[accounts[0].brandName]?.image;
 
   return (
     <StrayPageWithButton

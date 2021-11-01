@@ -6,9 +6,9 @@ import { useInterval } from 'react-use';
 import { message } from 'antd';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
-import { WALLET_BRAND_CONTENT, KEYRINGS_LOGOS } from 'consts';
+import { WALLET_BRAND_CONTENT, KEYRING_ICONS } from 'consts';
 import { AddressViewer, Modal } from 'ui/component';
-import { useWallet, getCurrentConnectSite } from 'ui/utils';
+import { useWallet } from 'ui/utils';
 import { Account } from 'background/service/preference';
 import {
   RecentConnections,
@@ -139,15 +139,15 @@ const Dashboard = () => {
         <div className="main">
           {currentAccount && (
             <div className="flex header items-center">
-              {KEYRINGS_LOGOS[currentAccount?.type] ? (
+              {KEYRING_ICONS[currentAccount?.type] ? (
                 <img
                   className="icon icon-account-type"
-                  src={KEYRINGS_LOGOS[currentAccount?.type]}
+                  src={KEYRING_ICONS[currentAccount?.type]}
                 />
               ) : (
                 <img
                   className="icon icon-account-type"
-                  src={WALLET_BRAND_CONTENT[currentAccount?.brandName].image}
+                  src={WALLET_BRAND_CONTENT[currentAccount?.brandName]?.image}
                 />
               )}
               {currentAccount && (
