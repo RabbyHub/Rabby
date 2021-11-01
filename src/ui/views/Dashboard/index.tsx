@@ -6,7 +6,7 @@ import { useInterval } from 'react-use';
 import { message } from 'antd';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
-import { WALLET_BRAND_CONTENT, KEYRING_ICONS } from 'consts';
+import { WALLET_BRAND_CONTENT, KEYRINGS_LOGOS } from 'consts';
 import { AddressViewer, Modal } from 'ui/component';
 import { useWallet } from 'ui/utils';
 import { Account } from 'background/service/preference';
@@ -139,10 +139,10 @@ const Dashboard = () => {
         <div className="main">
           {currentAccount && (
             <div className="flex header items-center">
-              {KEYRING_ICONS[currentAccount?.type] ? (
+              {KEYRINGS_LOGOS[currentAccount?.type] ? (
                 <img
                   className="icon icon-account-type"
-                  src={KEYRING_ICONS[currentAccount?.type]}
+                  src={KEYRINGS_LOGOS[currentAccount?.type]}
                 />
               ) : (
                 <img
@@ -178,13 +178,6 @@ const Dashboard = () => {
               <img className="icon icon-send" src={IconSend} />
               {t('Send')}
             </div>
-            {/* <div className="operation-item" onClick={handleGotoSwap}>
-              <div className="operation-item__inner">
-                <img className="icon icon-swap" src={IconSwap} />
-                {t('Swap')}
-                <img src={IconExternal} className="icon icon-external-link" />
-              </div>
-            </div> */}
             <div className="operation-item" onClick={handleGotoHistory}>
               {pendingTxCount > 0 ? (
                 <div className="pending-count">

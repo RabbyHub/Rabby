@@ -30,6 +30,7 @@ import IconJade from 'ui/assets/walletlogo/jade.png';
 import IconLedger from 'ui/assets/walletlogo/ledger.svg';
 import IconMath from 'ui/assets/walletlogo/math.png';
 import IconOnekey from 'ui/assets/walletlogo/onekey.png';
+import IconOneKey18 from 'ui/assets/walletlogo/onekey18.png';
 import IconTokenpocket from 'ui/assets/walletlogo/tp.png';
 import IconTrezor from 'ui/assets/walletlogo/trezor.png';
 import IconTrust from 'ui/assets/walletlogo/trust.png';
@@ -37,7 +38,9 @@ import IconMnemonic24 from 'ui/assets/walletlogo/mnemonic24.svg';
 import IconPrivateKey24 from 'ui/assets/walletlogo/privatekey24.svg';
 import IconWatch24 from 'ui/assets/walletlogo/watch24.svg';
 import IconLedger24 from 'ui/assets/walletlogo/ledger24.svg';
+import IconLedger18 from 'ui/assets/walletlogo/ledger18.png';
 import IconTrezor24 from 'ui/assets/walletlogo/trezor24.svg';
+import IconTrezor24Border from 'ui/assets/walletlogo/trezor24-border.png';
 import IconOneKey24 from 'ui/assets/walletlogo/onekey24.png';
 import LogoTrust from 'ui/assets/walletlogo/TrustWalletLogo.png';
 import LogoTp from 'ui/assets/walletlogo/TokenPocketLogo.png';
@@ -49,6 +52,9 @@ import LogoAmber from 'ui/assets/walletlogo/AmberLogo.png';
 import LogoOnekey from 'ui/assets/walletlogo/onekey28.png';
 import LogoTrezor from 'ui/assets/walletlogo/Trezor28.png';
 import LogoLedger from 'ui/assets/walletlogo/ledger28.png';
+import LogoMnemonic from 'ui/assets/walletlogo/mnemoniclogo.svg';
+import LogoPrivateKey from 'ui/assets/walletlogo/privatekeylogo.svg';
+import LogoWatch from 'ui/assets/walletlogo/watchlogo.svg';
 
 export enum CHAINS_ENUM {
   ETH = 'ETH',
@@ -564,6 +570,15 @@ export const KEYRING_ICONS = {
   [HARDWARE_KEYRING_TYPES.Ledger.type]: IconLedger24,
   [HARDWARE_KEYRING_TYPES.Onekey.type]: IconOneKey24,
   [HARDWARE_KEYRING_TYPES.Trezor.type]: IconTrezor24,
+};
+
+export const KEYRINGS_LOGOS = {
+  [KEYRING_CLASS.MNEMONIC]: LogoMnemonic,
+  [KEYRING_CLASS.PRIVATE_KEY]: LogoPrivateKey,
+  [KEYRING_CLASS.WATCH]: LogoWatch,
+  [HARDWARE_KEYRING_TYPES.Ledger.type]: IconLedger18,
+  [HARDWARE_KEYRING_TYPES.Onekey.type]: IconOneKey18,
+  [HARDWARE_KEYRING_TYPES.Trezor.type]: IconTrezor24Border,
 };
 
 export const NOT_CLOSE_UNFOCUS_LIST: string[] = [
