@@ -581,3 +581,4 @@ export const NOT_CLOSE_UNFOCUS_LIST: string[] = [
 ];
 
 export const SPECIFIC_TEXT_BRAND: string[] = [WALLET_BRAND_TYPES.JADE];
+
