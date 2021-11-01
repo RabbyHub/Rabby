@@ -33,12 +33,12 @@ const WalletConnectTemplate = () => {
   const [run, loading] = useWalletRequest(wallet.importWalletConnect, {
     onSuccess(accounts) {
       history.replace({
-        pathname: '/import/success',
+        pathname: '/popup/import/success',
         state: {
           accounts,
           brand,
           image,
-          title: t('Successfully created'),
+          title: t('Imported successfully'),
         },
       });
     },

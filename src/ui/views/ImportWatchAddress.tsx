@@ -38,10 +38,10 @@ const ImportWatchAddress = () => {
     onSuccess(accounts) {
       setDisableKeydown(false);
       history.replace({
-        pathname: '/import/success',
+        pathname: '/popup/import/success',
         state: {
           accounts,
-          title: t('Successfully created'),
+          title: t('Imported successfully'),
         },
       });
     },
