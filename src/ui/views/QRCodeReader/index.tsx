@@ -40,10 +40,10 @@ const ImportHardware = () => {
   const [run] = useWalletRequest(wallet.importWatchAddress, {
     onSuccess(accounts) {
       history.replace({
-        pathname: '/import/success',
+        pathname: '/popup/import/success',
         state: {
           accounts,
-          title: t('Successfully created'),
+          title: t('Imported successfully'),
           hasDivider: false,
         },
       });
