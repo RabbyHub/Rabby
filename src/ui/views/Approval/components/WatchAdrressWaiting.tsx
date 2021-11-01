@@ -57,6 +57,7 @@ const Scan = ({
     const account = await wallet.syncGetCurrentAccount();
     setAddress(account.address);
   };
+  const showSpecialText = SPECIFIC_TEXT_BRAND.includes(typeContent.brand);
   useEffect(() => {
     init();
   });
