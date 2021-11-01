@@ -47,14 +47,22 @@
     width: 200px;
     height: 200px;
     background: #ffffff;
-    opacity: 0.8;
+    opacity: 0.9;
     z-index: 10;
-    .qrcode-refresh {
+    border-radius: 12px;
+    .refresh-wrapper {
       position: absolute;
       width: 80px;
       height: 80px;
-      top: 60px;
       left: 60px;
+      top: 60px;
+      background: rgba(0, 0, 0, 0.8);
+      border-radius: 8px;
+      .qrcode-refresh {
+        position: absolute;
+        width: 80px;
+        height: 80px;
+      }
     }
   }
 }

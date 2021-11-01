@@ -10,6 +10,7 @@ import eventBus from '@/eventBus';
 import { WALLETCONNECT_STATUS_MAP, EVENTS } from 'consts';
 import Mask from 'ui/assets/import-mask.png';
 import './style.less';
+import clsx from 'clsx';
 const WalletConnectTemplate = () => {
   const { t } = useTranslation();
   const history = useHistory();
@@ -107,7 +108,11 @@ const WalletConnectTemplate = () => {
   return (
     <div className="wallet-connect">
       <div className="create-new-header create-password-header h-[220px]">
-        <img src={IconBack} className="goback" onClick={handleClickBack} />
+        <img
+          src={IconBack}
+          className={clsx('goback', 'cursor-pointer')}
+          onClick={handleClickBack}
+        />
         <img
           className="unlock-logo w-[80px] h-[75px] mb-20 mx-auto"
           src={image}
