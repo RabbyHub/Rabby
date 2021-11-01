@@ -84,11 +84,13 @@ const ScanCopyQRCode: React.FC<Props> = ({
           <QRCode value={qrcodeURL} size={170} />
           {isHovering && (
             <div className="refresh-container">
-              <img
-                className="qrcode-refresh"
-                src={IconQRCodeRefresh}
-                onClick={refreshFun}
-              />
+              <div className="refresh-wrapper">
+                <img
+                  className="qrcode-refresh"
+                  src={IconQRCodeRefresh}
+                  onClick={refreshFun}
+                />
+              </div>
             </div>
           )}
         </div>
@@ -103,12 +105,14 @@ const ScanCopyQRCode: React.FC<Props> = ({
           <img
             src={IconRefresh}
             onClick={refreshFun}
-            className="icon-refresh-wallet"
+            className="icon-refresh-wallet cursor-pointer"
           />
           <img
             src={IconCopy}
             onClick={handleCopyCurrentAddress}
-            className={clsx('icon-copy-wallet', { success: copySuccess })}
+            className={clsx('icon-copy-wallet cursor-pointer', {
+              success: copySuccess,
+            })}
           />
         </div>
       )}
