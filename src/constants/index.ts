@@ -39,7 +39,7 @@ import IconPrivateKey24 from 'ui/assets/walletlogo/privatekey24.svg';
 import IconWatch24 from 'ui/assets/walletlogo/watch24.svg';
 import IconLedger24 from 'ui/assets/walletlogo/ledger24.svg';
 import IconLedger18 from 'ui/assets/walletlogo/ledger18.png';
-import IconTrezor24 from 'ui/assets/walletlogo/trezor24.svg';
+import IconTrezor24 from 'ui/assets/walletlogo/trezor24.png';
 import IconTrezor24Border from 'ui/assets/walletlogo/trezor24-border.png';
 import IconOneKey24 from 'ui/assets/walletlogo/onekey24.png';
 import LogoTrust from 'ui/assets/walletlogo/TrustWalletLogo.png';
