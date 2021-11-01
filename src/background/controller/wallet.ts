@@ -254,7 +254,7 @@ export class WalletController extends BaseController {
       for (const key in keyring.connectors) {
         const target = keyring.connectors[key];
         result.push({
-          address: key,
+          address: key.split('-')[1],
           brandName: target.brandName,
         });
       }
@@ -263,13 +263,14 @@ export class WalletController extends BaseController {
     return [];
   };
 
-  killWalletConnectConnector = (address: string, brandName: string) => {
+  killWalletConnectConnector = async (address: string, brandName: string) => {
     const keyringType = KEYRING_CLASS.WALLETCONNECT;
     const keyring: WalletConnectKeyring = this._getKeyringByType(keyringType);
     if (keyring) {
-      const connector = keyring.connectors[address];
+      const connector =
+        keyring.connectors[`${brandName}-${address.toLowerCase()}`];
       if (connector) {
-        keyring.closeConnector(connector.connector, address);
+        await keyring.closeConnector(connector.connector, address, brandName);
       }
     }
   };

@@ -156,7 +156,8 @@ const AddressItem = memo(
 
       const isCurrentAddress =
         currentAccount?.address === account.address &&
-        currentAccount?.type === account.type;
+        currentAccount?.type === account.type &&
+        currentAccount?.brandName === account.brandName;
 
       const formatAddressTooltip = (type: string, brandName: string) => {
         if (KEYRING_TYPE_TEXT[type]) {
