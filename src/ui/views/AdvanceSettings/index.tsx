@@ -113,6 +113,7 @@ const AdvancedSettings = () => {
       connector.address,
       connector.brandName
     );
+    getConnections();
     message.success(t('WalletConnect Disconnected'));
   };
 
