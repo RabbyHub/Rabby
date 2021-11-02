@@ -15,6 +15,7 @@ import IconCreatenewaddr from 'ui/assets/walletlogo/createnewaddr.svg';
 import IconKeystore from 'ui/assets/walletlogo/keystore.svg';
 import IconPrivatekey from 'ui/assets/walletlogo/privatekey.svg';
 import { IS_CHROME, WALLET_BRAND_CONTENT, KEYRING_CLASS } from 'consts';
+import clsx from 'clsx';
 const normaltype: string[] = [
   'createAddress',
   'addWatchMode',
@@ -152,7 +153,10 @@ const AddAddressOptions = () => {
               key={`saved${data.content}`}
               brand={data.brand || data.type}
               leftIcon={
-                <img src={data.leftIcon} className="icon wallet-icon" />
+                <img
+                  src={data.leftIcon}
+                  className={clsx('icon', data.connectType && 'wallet-icon')}
+                />
               }
               rightIcon={
                 <img src={IconHighLight} className="icon icon-arrow-right" />
