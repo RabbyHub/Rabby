@@ -923,5 +923,17 @@
   },
   "Imported__successfully": {
     "message": "导入成功"
+  },
+  "addressTypeTip": {
+    "message": "通过 {{type}} 导入"
+  },
+  "Imported__by__Ledger": {
+    "message": "通过 Ledger 导入"
+  },
+  "Imported__by__Trezor": {
+    "message": "通过 Trezor 导入"
+  },
+  "Imported__by__Onekey": {
+    "message": "通过 Onekey 导入"
   }
 }

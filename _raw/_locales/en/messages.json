@@ -303,7 +303,7 @@
     "message": "Enable Chains"
   },
   "createAddress": {
-    "message": "Create"
+    "message": "Create New Address"
   },
   "Import": {
     "message": "Import"
@@ -895,7 +895,7 @@
     "message": "Add address without private keys"
   },
   "Import__Private__Key": {
-    "message": "Imported by Private Key"
+    "message": "Import by Private Key"
   },
   "Connect__with": {
     "message": "Connect with"
@@ -926,5 +926,17 @@
   },
   "Imported__successfully": {
     "message": "Imported successfully"
+  },
+  "addressTypeTip": {
+    "message": "Imported by {{type}}"
+  },
+  "Imported__by__Ledger": {
+    "message": "Imported by Ledger"
+  },
+  "Imported__by__Trezor": {
+    "message": "Imported by Trezor"
+  },
+  "Imported__by__Onekey": {
+    "message": "Imported by Onekey"
   }
 }
