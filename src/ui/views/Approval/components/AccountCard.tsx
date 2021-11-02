@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Account } from 'background/service/preference';
 import { useWallet } from 'ui/utils';
 import { splitNumberByStep } from 'ui/utils/number';
-import { KEYRINGS_LOGOS, WALLET_BRAND_CONTENT } from 'consts';
+import { KEYRINGS_LOGOS, WALLET_BRAND_CONTENT, KEYRING_CLASS } from 'consts';
 import { AddressViewer } from 'ui/component';
 import { useCurrentBalance } from 'ui/component/AddressList/AddressItem';
 
@@ -11,8 +11,8 @@ const AccountCard = ({
   icons,
 }: {
   icons?: {
-    normal: string;
-    hardware: string;
+    mnemonic: string;
+    privatekey: string;
     watch: string;
   };
 }) => {
@@ -25,6 +25,18 @@ const AccountCard = ({
       if (WALLET_BRAND_CONTENT[currentAccount?.brandName]) {
         return WALLET_BRAND_CONTENT[currentAccount?.brandName].image;
       }
+
+      if (icons) {
+        switch (type) {
+          case KEYRING_CLASS.MNEMONIC:
+            return icons.mnemonic;
+          case KEYRING_CLASS.PRIVATE_KEY:
+            return icons.privatekey;
+          case KEYRING_CLASS.WATCH:
+            return icons.watch;
+        }
+      }
+
       return KEYRINGS_LOGOS[type];
     }
     return '';

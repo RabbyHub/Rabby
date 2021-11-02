@@ -7,7 +7,12 @@ import { useHistory } from 'react-router-dom';
 import { Input, Form, Skeleton, message, Button } from 'antd';
 import abiCoder, { AbiCoder } from 'web3-eth-abi';
 import { isValidAddress, unpadHexString, addHexPrefix } from 'ethereumjs-util';
-import { CHAINS, CHAINS_ENUM } from 'consts';
+import {
+  CHAINS,
+  CHAINS_ENUM,
+  KEYRING_PURPLE_LOGOS,
+  KEYRING_CLASS,
+} from 'consts';
 import { Account } from 'background/service/preference';
 import { ContactBookItem } from 'background/service/contactBook';
 import { useWallet } from 'ui/utils';
@@ -21,9 +26,6 @@ import ContactEditModal from 'ui/component/Contact/EditModal';
 import ContactListModal from 'ui/component/Contact/ListModal';
 import IconContact from 'ui/assets/contact.svg';
 import IconEdit from 'ui/assets/edit-purple.svg';
-import IconNormal from 'ui/assets/keyring-normal-purple.svg';
-import IconHardware from 'ui/assets/hardware-purple.svg';
-import IconWatch from 'ui/assets/watch-purple.svg';
 import IconCopy from 'ui/assets/copy-no-border.svg';
 import IconSuccess from 'ui/assets/success.svg';
 import { SvgIconPlusPrimary } from 'ui/assets';
@@ -370,9 +372,9 @@ const SendToken = () => {
           <div className="section-title">{t('From')}</div>
           <AccountCard
             icons={{
-              normal: IconNormal,
-              watch: IconWatch,
-              hardware: IconHardware,
+              mnemonic: KEYRING_PURPLE_LOGOS[KEYRING_CLASS.MNEMONIC],
+              privatekey: KEYRING_PURPLE_LOGOS[KEYRING_CLASS.PRIVATE_KEY],
+              watch: KEYRING_PURPLE_LOGOS[KEYRING_CLASS.WATCH],
             }}
           />
           <div className="section-title">
