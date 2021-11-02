@@ -31,8 +31,9 @@ const AddAddressOptions = () => {
   const [showMnemonic, setShowMnemonic] = useState(false);
   const init = async () => {
     const walletSavedList = await wallet.getHighlightWalletList();
-    if (walletSavedList.toString() !== savedWallet.toString()) {
-      await setSavedWallet(walletSavedList);
+    const filterdlist = walletSavedList.filter(Boolean);
+    if (filterdlist.toString() !== savedWallet.toString()) {
+      await setSavedWallet(filterdlist);
     }
     const accounts = await wallet.getTypedAccounts(KEYRING_CLASS.MNEMONIC);
     if (accounts.length <= 0) {
