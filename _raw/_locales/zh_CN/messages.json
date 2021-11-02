@@ -889,7 +889,7 @@
     "message": "添加观察模式地址"
   },
   "Add__address__without__private__keys": {
-    "message": "无需私钥添加地址"
+    "message": "完整体验钱包功能而无需导入私钥"
   },
   "Import__Private__Key": {
     "message": "导入私钥地址"

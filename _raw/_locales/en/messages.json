@@ -892,7 +892,7 @@
     "message": "Add Watch Mode Address"
   },
   "Add__address__without__private__keys": {
-    "message": "Add address without private keys"
+    "message": "Full experience without importing private keys"
   },
   "Import__Private__Key": {
     "message": "Import by Private Key"
