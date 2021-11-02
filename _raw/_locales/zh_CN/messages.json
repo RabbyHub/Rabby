@@ -627,8 +627,8 @@
   "WatchGuideStep2": {
     "message": "确认你正在 <1>{{chainName}}</1> 上使用 <1>{{address}}</1>"
   },
-  "WatchGuideStep2Special": {
-    "message": "请在{{name}}上打开<1>Discover</1>并点击<1>WalletConnect</1>扫描二维码。"
+  "WatchGuideStep2JADE": {
+    "message": "请在Jade wallet上打开<strong>Discover</strong>并点击<strong>WalletConnect</strong>扫描二维码。"
   },
   "WatchGuideStep3": {
     "message": "扫描上方二维码"
