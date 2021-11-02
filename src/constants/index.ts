@@ -595,4 +595,8 @@ export const NOT_CLOSE_UNFOCUS_LIST: string[] = [
   WALLET_BRAND_TYPES.COBO,
 ];
 
-export const SPECIFIC_TEXT_BRAND: string[] = [WALLET_BRAND_TYPES.JADE];
+export const SPECIFIC_TEXT_BRAND = {
+  [WALLET_BRAND_TYPES.JADE]: {
+    i18nKey: 'WatchGuideStep2JADE',
+  },
+};

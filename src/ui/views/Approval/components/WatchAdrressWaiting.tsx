@@ -56,7 +56,7 @@ const Scan = ({
     setAddress(account.address);
     setBrandName(account.brandName);
   };
-  const showSpecialText = SPECIFIC_TEXT_BRAND.includes(brandName || '');
+  const showSpecialText = brandName && SPECIFIC_TEXT_BRAND[brandName];
   const displayName = brandName && WALLET_BRAND_CONTENT[brandName].name;
   useEffect(() => {
     init();
@@ -96,12 +96,8 @@ const Scan = ({
           )}
           {showSpecialText && (
             <Trans
-              i18nKey={'WatchGuideStep2Special'}
-              values={{ name: displayName }}
-            >
-              Goes to the <strong>Discover</strong> page on {{ name }} and
-              clicks <strong>WalletConnect</strong> to scan the code.
-            </Trans>
+              i18nKey={brandName && SPECIFIC_TEXT_BRAND[brandName]!.i18nKey}
+            />
           )}
         </p>
         {!showSpecialText && <p>3. {t('WatchGuideStep3')}</p>}
