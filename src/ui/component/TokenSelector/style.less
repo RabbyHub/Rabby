@@ -88,6 +88,7 @@
           line-height: 15px;
           color: #5A6066;
           font-weight: 500;
+          flex: 1;
         }
       }
     }
@@ -105,15 +106,20 @@
         line-height: 14px;
         color: #707880;
         font-weight: normal;
+        &:nth-last-child(1) {
+          flex: 1;
+          text-align: right;
+        }
       }
     }
     .token-list__item {
       height: 44px;
       align-items: center;
       border: 1px solid transparent;
-      transition: border-color .3s;
       &:hover {
+        border-radius: 6px;
         border-color: #8697FF;
+        background: rgba(134, 151, 255, 0.1);
       }
     }
     &.empty {
