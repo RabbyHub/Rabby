@@ -40,7 +40,7 @@ import IconPrivateKey24 from 'ui/assets/walletlogo/privatekey24.svg';
 import IconPrivateKeyPurple from 'ui/assets/walletlogo/privatekey-purple.svg';
 import IconWatch24 from 'ui/assets/walletlogo/watch24.svg';
 import IconWatchPurple from 'ui/assets/walletlogo/watch-purple.svg';
-import IconLedger24 from 'ui/assets/walletlogo/ledger24.svg';
+import IconLedger24 from 'ui/assets/walletlogo/ledger24.png';
 import IconLedger18 from 'ui/assets/walletlogo/ledger18.png';
 import IconTrezor24 from 'ui/assets/walletlogo/trezor24.png';
 import IconTrezor24Border from 'ui/assets/walletlogo/trezor24-border.png';
