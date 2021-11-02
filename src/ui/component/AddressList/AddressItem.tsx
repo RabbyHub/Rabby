@@ -8,7 +8,7 @@ import React, {
 } from 'react';
 import { Skeleton, Tooltip } from 'antd';
 import clsx from 'clsx';
-import { useTranslation } from 'react-i18next';
+import { useTranslation, Trans } from 'react-i18next';
 import { Account } from 'background/service/preference';
 import { ChainWithBalance } from 'background/service/openapi';
 import { useWallet, useWalletRequest } from 'ui/utils';
@@ -161,10 +161,17 @@ const AddressItem = memo(
 
       const formatAddressTooltip = (type: string, brandName: string) => {
         if (KEYRING_TYPE_TEXT[type]) {
-          return KEYRING_TYPE_TEXT[type];
+          return t(KEYRING_TYPE_TEXT[type]);
         }
         if (WALLET_BRAND_CONTENT[brandName]) {
-          return `Imported by ${WALLET_BRAND_CONTENT[brandName].name}`;
+          return (
+            <Trans
+              i18nKey="addressTypeTip"
+              values={{
+                type: WALLET_BRAND_CONTENT[brandName].name,
+              }}
+            />
+          );
         }
         return '';
       };
@@ -236,7 +243,7 @@ const AddressItem = memo(
                 placement="topRight"
                 title={
                   ActionButton
-                    ? t(formatAddressTooltip(account.type, account.brandName))
+                    ? formatAddressTooltip(account.type, account.brandName)
                     : null
                 }
               >
