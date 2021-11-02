@@ -245,7 +245,9 @@ const AddressItem = memo(
                     KEYRING_ICONS[account.type] ||
                     WALLET_BRAND_CONTENT[account.brandName]?.image
                   }
-                  className="icon icon-hardware"
+                  className={clsx('icon icon-hardware', {
+                    'opacity-40': isDisabled,
+                  })}
                 />
               </Tooltip>
               {ActionButton && (
