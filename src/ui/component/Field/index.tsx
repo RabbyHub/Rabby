@@ -36,7 +36,6 @@ const Field = ({
   const saveWallet = async (e) => {
     e.stopPropagation();
     const savedList = await wallet.getHighlightWalletList();
-    console.log(brand, '......');
     if (savedList.includes(brand)) {
       return;
     }
