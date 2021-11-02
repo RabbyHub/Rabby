@@ -502,7 +502,7 @@ export const WALLET_BRAND_CONTENT = {
   },
   [WALLET_BRAND_TYPES.IMTOKEN]: {
     id: 2,
-    name: 'Imtoken',
+    name: 'imToken',
     brand: WALLET_BRAND_TYPES.IMTOKEN,
     icon: IconImtoken,
     image: LogoImtoken,

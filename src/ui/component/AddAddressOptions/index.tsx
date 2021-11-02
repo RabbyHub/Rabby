@@ -147,6 +147,7 @@ const AddAddressOptions = () => {
         {savedWalletData.length > 0 &&
           savedWalletData.map((data: any) => (
             <Field
+              className="address-options"
               key={`saved${data.content}`}
               brand={data.brand || data.type}
               leftIcon={
@@ -169,6 +170,7 @@ const AddAddressOptions = () => {
         <div className="connect-hint">{t('Connect with')}</div>
         {brandWallet.map((data, index) => (
           <Field
+            className="address-options"
             key={data.content}
             brand={data.brand}
             leftIcon={<img src={data.leftIcon} className="icon wallet-icon" />}
@@ -189,6 +191,7 @@ const AddAddressOptions = () => {
         {renderData.map((data) => {
           return !showMnemonic && data.brand === 'importviaMnemonic' ? null : (
             <Field
+              className="address-options"
               key={data.content}
               leftIcon={<img src={data.leftIcon} className="icon" />}
               rightIcon={
