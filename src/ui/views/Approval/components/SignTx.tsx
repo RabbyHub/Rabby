@@ -585,15 +585,38 @@ const SignTx = ({ params, origin }) => {
                     >
                       {t('Cancel')}
                     </Button>
-                    <Button
-                      type="primary"
-                      size="large"
-                      className="w-[172px]"
-                      disabled={!forceProcess}
-                      onClick={() => handleAllow(true)}
-                    >
-                      {t('Sign')}
-                    </Button>
+                    {isWatch ? (
+                      <Tooltip
+                        overlayClassName="rectangle watcSign__tooltip"
+                        title={t('Use_other_methods')}
+                      >
+                        <div className="w-[172px] relative flex items-center">
+                          <Button
+                            type="primary"
+                            size="large"
+                            className="w-[172px]"
+                            onClick={() => handleAllow()}
+                            disabled={true}
+                          >
+                            {t('Proceed')}
+                          </Button>
+                          <img
+                            src={IconInfo}
+                            className="absolute right-[40px]"
+                          />
+                        </div>
+                      </Tooltip>
+                    ) : (
+                      <Button
+                        type="primary"
+                        size="large"
+                        className="w-[172px]"
+                        disabled={!forceProcess}
+                        onClick={() => handleAllow(true)}
+                      >
+                        {t('Sign')}
+                      </Button>
+                    )}
                   </div>
                 </>
               )}
