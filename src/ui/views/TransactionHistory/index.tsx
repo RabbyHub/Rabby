@@ -341,7 +341,11 @@ const TransactionItem = ({
   };
 
   return (
-    <div className={clsx('tx-history__item', { 'opacity-50': isCanceled })}>
+    <div
+      className={clsx('tx-history__item', {
+        'opacity-50': isCanceled || item.isFailed,
+      })}
+    >
       <div className="tx-history__item--main">
         {item.isPending && (
           <div className="pending">
