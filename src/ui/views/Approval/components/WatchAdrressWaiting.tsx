@@ -106,7 +106,7 @@ const Scan = ({
         </p>
         {!showSpecialText && <p>3. {t('WatchGuideStep3')}</p>}
       </div>
-      <p className="watchaddress-scan__tip">Connect via WallletConnect</p>
+      <p className="watchaddress-scan__tip">Connect via WalletConnect</p>
     </div>
   );
 };
