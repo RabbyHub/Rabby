@@ -622,7 +622,7 @@
     "message": "Gas 价格过低"
   },
   "WatchGuideStep1": {
-    "message": "请在手机上打开 <1>{{name}}</1>"
+    "message": "请打开 <1>{{name}}</1>"
   },
   "WatchGuideStep2": {
     "message": "确认你正在 <1>{{chainName}}</1> 上使用 <1>{{address}}</1>"
@@ -634,10 +634,10 @@
     "message": "扫描上方二维码"
   },
   "ChooseCorrectAddress": {
-    "message": "请在手机上选择 <1>{{address}}</1>"
+    "message": "请选择 <1>{{address}}</1>"
   },
   "ChooseCorrectChain": {
-    "message": "请在手机上选择 {{chain}}"
+    "message": "请选择 {{chain}}"
   },
   "Connected__successfully": {
     "message": "连接成功"

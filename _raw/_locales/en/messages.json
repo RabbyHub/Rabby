@@ -625,7 +625,7 @@
     "message": "Gas price too low"
   },
   "WatchGuideStep1": {
-    "message": "Open <1>{{name}}</1> on your phone"
+    "message": "Open <1>{{name}}</1>"
   },
   "WatchGuideStep2": {
     "message": "Make sure you are using address <1>{{address}}</1> on <1>{{chainName}}</1>"
@@ -640,7 +640,7 @@
     "message": "Choose <1>{{address}}</1> on your phone"
   },
   "ChooseCorrectChain": {
-    "message": "Set your mobile wallet to {{chain}}"
+    "message": "Set your wallet to {{chain}}"
   },
   "Connected__successfully": {
     "message": "Connected successfully"

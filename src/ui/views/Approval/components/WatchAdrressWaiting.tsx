@@ -77,7 +77,7 @@ const Scan = ({
         <p>
           1.{' '}
           <Trans i18nKey="WatchGuideStep1" values={{ name: displayName }}>
-            Open <strong>{{ name }}</strong> on your phone
+            Open <strong>{{ name }}</strong>
           </Trans>
         </p>
         <p>
