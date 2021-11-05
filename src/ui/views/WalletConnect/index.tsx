@@ -16,20 +16,12 @@ const WalletConnectTemplate = () => {
   const history = useHistory();
   const location = useLocation<{ brand: any }>();
   const wallet = useWallet();
-  const [connectStatus, setConnectStatus] = useState(
-    WALLETCONNECT_STATUS_MAP.PENDING
-  );
-  const [connectError, setConnectError] = useState<null | {
-    code?: number;
-    message?: string;
-  }>(null);
   const [result, setResult] = useState('');
   const [walletconnectUri, setWalletconnectUri] = useState('');
   const [showURL, setShowURL] = useState(false);
-  const [stashId, setStashId] = useState<number | null>(null);
   const [bridgeURL, setBridgeURL] = useState(DEFAULT_BRIDGE);
-
-  const { name, id, icon, brand, image } = location.state!.brand;
+  const [brand, setBrand] = useState(location.state?.brand || {});
+  const [ready, setReady] = useState(false);
 
   const [run, loading] = useWalletRequest(wallet.importWalletConnect, {
     onSuccess(accounts) {
@@ -37,8 +29,8 @@ const WalletConnectTemplate = () => {
         pathname: '/popup/import/success',
         state: {
           accounts,
-          brand,
-          image,
+          brand: brand.brand,
+          image: brand.image,
           title: t('Imported successfully'),
         },
       });
@@ -51,27 +43,32 @@ const WalletConnectTemplate = () => {
   });
 
   const handleImportByWalletconnect = async () => {
-    const { uri, stashId } = await wallet.initWalletConnect(brand, bridgeURL);
-    await setWalletconnectUri(uri);
-    await setStashId(stashId);
+    const { uri, stashId } = await wallet.initWalletConnect(
+      brand.brand,
+      bridgeURL
+    );
+    setWalletconnectUri(uri);
+    await wallet.setPageStateCache({
+      path: history.location.pathname,
+      params: {},
+      states: {
+        uri,
+        stashId,
+        brand,
+      },
+    });
     eventBus.removeAllEventListeners(EVENTS.WALLETCONNECT.STATUS_CHANGED);
     eventBus.addEventListener(
       EVENTS.WALLETCONNECT.STATUS_CHANGED,
       ({ status, payload }) => {
-        setConnectStatus(status);
         switch (status) {
           case WALLETCONNECT_STATUS_MAP.CONNECTED:
             setResult(payload);
-            run(payload, brand, bridgeURL, stashId);
+            run(payload, brand.brand, bridgeURL, stashId);
             break;
           case WALLETCONNECT_STATUS_MAP.FAILD:
           case WALLETCONNECT_STATUS_MAP.REJECTED:
             handleImportByWalletconnect();
-            if (payload.code) {
-              setConnectError({ code: payload.code });
-            } else {
-              setConnectError((payload.params && payload.params[0]) || payload);
-            }
             break;
           case WALLETCONNECT_STATUS_MAP.SIBMITTED:
             setResult(payload);
@@ -94,15 +91,45 @@ const WalletConnectTemplate = () => {
   };
 
   const handleBridgeChange = (val: string) => {
-    setBridgeURL(val);
+    if (val !== bridgeURL) {
+      setBridgeURL(val);
+    }
   };
 
   useEffect(() => {
-    handleImportByWalletconnect();
+    if (ready) handleImportByWalletconnect();
   }, [bridgeURL]);
 
+  const init = async () => {
+    const cache = await wallet.getPageStateCache();
+    if (cache && cache.path === history.location.pathname) {
+      const { states } = cache;
+      if (states.uri) setWalletconnectUri(states.uri);
+      if (states.brand) {
+        setBrand(states.brand);
+      }
+      if (states.data) {
+        run(
+          states.data.payload,
+          states.brand.brand,
+          states.bridgeURL,
+          states.stashId
+        );
+      }
+      if (states.bridgeURL && states.bridgeURL !== bridgeURL) {
+        setBridgeURL(states.bridgeURL);
+      }
+    } else {
+      handleImportByWalletconnect();
+    }
+    setReady(true);
+  };
+
   useEffect(() => {
-    handleImportByWalletconnect();
+    init();
+    return () => {
+      wallet.clearPageStateCache();
+    };
   }, []);
 
   return (
@@ -115,10 +142,10 @@ const WalletConnectTemplate = () => {
         />
         <img
           className="unlock-logo w-[80px] h-[80px] mb-20 mx-auto"
-          src={image}
+          src={brand.image}
         />
         <p className="text-24 mb-4 mt-0 text-white text-center font-bold">
-          {t(name)}
+          {t(brand.name)}
         </p>
         <p className="text-14 mb-0 mt-4 text-white font-bold text-center">
           {t('Scan with your wallet app')}
