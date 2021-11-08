@@ -82,3 +82,40 @@
     bottom: -13.071068px !important;
   }
 }
+.address-wrap {
+  margin-bottom: 8px;
+  &:nth-last-child(1) {
+    margin-bottom: 0;
+  }
+  & > .subtitle {
+    margin-bottom: 8px;
+    a {
+      color: currentColor;
+      margin-left: 2px;
+    }
+  }
+}
+.addresses {
+  & > li {
+    background-color: #fff;
+    padding: 12px;
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    margin-bottom: 8px;
+    border-radius: 6px;
+    .ant-skeleton-element {
+      position: absolute;
+      left: 0;
+      top: 0;
+      width: 100%;
+    }
+    .icon-hardware {
+      width: 24px;
+      height: 24px;
+    }
+    &:nth-last-child(1) {
+      margin-bottom: 0;
+    }
+  }
+}
