@@ -1,4 +1,5 @@
 import * as ethUtil from 'ethereumjs-util';
+import pageStateCache from '../service/pageStateCache';
 export { default as createPersistStore } from './persisitStore';
 
 // {a:{b: string}} => {1: 'a.b'}
@@ -61,4 +62,17 @@ export const wait = (fn: () => void, ms = 1000) => {
       resolve(true);
     }, ms);
   });
+};
+
+export const setPageStateCacheWhenPopupClose = (data) => {
+  const cache = pageStateCache.get();
+  if (cache && cache.path === '/import/wallet-connect') {
+    pageStateCache.set({
+      ...cache,
+      states: {
+        ...cache.states,
+        data,
+      },
+    });
+  }
 };

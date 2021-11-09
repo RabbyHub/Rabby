@@ -6,7 +6,10 @@ import encryptor from 'browser-passworder';
 import * as ethUtil from 'ethereumjs-util';
 import * as bip39 from 'bip39';
 import { ObservableStore } from '@metamask/obs-store';
-import { normalizeAddress } from 'background/utils';
+import {
+  normalizeAddress,
+  setPageStateCacheWhenPopupClose,
+} from 'background/utils';
 import LedgerBridgeKeyring from './eth-ledger-bridge-keyring';
 import SimpleKeyring from '@rabby-wallet/eth-simple-keyring';
 import HdKeyring from '@rabby-wallet/eth-hd-keyring';
@@ -730,10 +733,14 @@ class KeyringService extends EventEmitter {
         });
       });
       keyring.on('statusChange', (data) => {
-        eventBus.emit(EVENTS.broadcastToUI, {
-          method: EVENTS.WALLETCONNECT.STATUS_CHANGED,
-          params: data,
-        });
+        if (preference.getPopupOpen()) {
+          eventBus.emit(EVENTS.broadcastToUI, {
+            method: EVENTS.WALLETCONNECT.STATUS_CHANGED,
+            params: data,
+          });
+        } else {
+          setPageStateCacheWhenPopupClose(data);
+        }
       });
     }
     // getAccounts also validates the accounts for some keyrings
