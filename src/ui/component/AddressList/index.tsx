@@ -4,8 +4,10 @@ import React, {
   useRef,
   useCallback,
   useState,
+  useEffect,
   memo,
 } from 'react';
+import { findIndex } from 'lodash';
 import { FixedSizeList, areEqual } from 'react-window';
 import { DisplayedKeryring } from 'background/service/keyring';
 import { KEYRING_TYPE } from 'consts';
@@ -46,6 +48,8 @@ const AddressList: any = forwardRef(
     ref
   ) => {
     const addressItems = useRef(new Array(list.length));
+    const fixedList = useRef<FixedSizeList>();
+
     const [start, setStart] = useState(0);
     const [end, setEnd] = useState(10);
     const updateAllBalance = () => {
@@ -100,7 +104,12 @@ const AddressList: any = forwardRef(
       setStart(overscanStartIndex);
       setEnd(overscanStopIndex);
     };
-
+    useEffect(() => {
+      if (currentAccount) {
+        const position = findIndex(combinedList, currentAccount);
+        fixedList.current?.scrollToItem(position, 'center');
+      }
+    }, []);
     return (
       <ul className={`address-group-list ${action}`}>
         <FixedSizeList
@@ -111,6 +120,7 @@ const AddressList: any = forwardRef(
           itemSize={76}
           itemKey={itemKey}
           onItemsRendered={onItemsRendered}
+          ref={fixedList}
         >
           {Row}
         </FixedSizeList>
