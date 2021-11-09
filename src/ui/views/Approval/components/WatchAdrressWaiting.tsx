@@ -26,7 +26,6 @@ type Valueof<T> = T[keyof T];
 
 const Scan = ({
   uri,
-  typeId,
   chain,
   onRefresh,
   bridgeURL,
@@ -34,7 +33,6 @@ const Scan = ({
   defaultBridge,
 }: {
   uri: string;
-  typeId: number;
   chain: CHAINS_ENUM;
   bridgeURL: string;
   defaultBridge: string;
@@ -60,7 +58,7 @@ const Scan = ({
   const displayName = brandName && WALLET_BRAND_CONTENT[brandName].name;
   useEffect(() => {
     init();
-  });
+  }, []);
   return (
     <div className="watchaddress-scan wallet-connect">
       <ScanCopyQRCode
@@ -298,7 +296,6 @@ const WatchAddressWaiting = ({ params }: { params: ApprovalParams }) => {
     code?: number;
     message?: string;
   }>(null);
-  const [currentType, setCurrentType] = useState(0);
   const [qrcodeContent, setQrcodeContent] = useState('');
   const [result, setResult] = useState('');
   const [getApproval, resolveApproval, rejectApproval] = useApproval();
@@ -312,14 +309,23 @@ const WatchAddressWaiting = ({ params }: { params: ApprovalParams }) => {
 
   const initWalletConnect = async () => {
     const account = await wallet.syncGetCurrentAccount()!;
+    const status = await wallet.getWalletConnectStatus(
+      account.address,
+      account.brandName
+    );
     setBrandName(account!.brandName);
     eventBus.addEventListener(EVENTS.WALLETCONNECT.INITED, ({ uri }) => {
       setQrcodeContent(uri);
     });
-    eventBus.emit(EVENTS.broadcastToBackground, {
-      method: EVENTS.WALLETCONNECT.INIT,
-      data: account,
-    });
+    if (
+      status !== WALLETCONNECT_STATUS_MAP.CONNECTED &&
+      status !== WALLETCONNECT_STATUS_MAP.SIBMITTED
+    ) {
+      eventBus.emit(EVENTS.broadcastToBackground, {
+        method: EVENTS.WALLETCONNECT.INIT,
+        data: account,
+      });
+    }
   };
 
   const handleCancel = () => {
@@ -327,6 +333,8 @@ const WatchAddressWaiting = ({ params }: { params: ApprovalParams }) => {
   };
 
   const handleRetry = async () => {
+    const account = await wallet.syncGetCurrentAccount()!;
+    await wallet.killWalletConnectConnector(account.address, account.brandName);
     await initWalletConnect();
     setConnectStatus(WALLETCONNECT_STATUS_MAP.PENDING);
     setConnectError(null);
@@ -345,14 +353,9 @@ const WatchAddressWaiting = ({ params }: { params: ApprovalParams }) => {
     );
 
     setBridge(bridge || DEFAULT_BRIDGE);
-
-    setCurrentType(
-      (await wallet.getWatchAddressPreference(account.address)) || 0
-    );
     setIsSignText(approval?.approvalType !== 'SignTx');
     eventBus.addEventListener(EVENTS.SIGN_FINISHED, async (data) => {
       if (data.success) {
-        await wallet.setWatchAddressPreference(account.address, currentType);
         resolveApproval(data.data, !isSignText);
       } else {
         rejectApproval(data.errorMsg);
@@ -380,6 +383,7 @@ const WatchAddressWaiting = ({ params }: { params: ApprovalParams }) => {
         }
       }
     );
+    initWalletConnect();
   };
 
   const handleBridgeChange = async (val: string) => {
@@ -389,15 +393,6 @@ const WatchAddressWaiting = ({ params }: { params: ApprovalParams }) => {
     initWalletConnect();
     wallet.setWalletConnectBridge(account.address, account.brandName, val);
   };
-
-  useEffect(() => {
-    const watchType = Object.values(WALLET_BRAND_CONTENT).find(
-      (item) => item.id === currentType
-    )!;
-    if (watchType.connectType === BRAND_WALLET_CONNECT_TYPE.WalletConnect) {
-      initWalletConnect();
-    }
-  }, [currentType]);
 
   useEffect(() => {
     init();
@@ -421,7 +416,6 @@ const WatchAddressWaiting = ({ params }: { params: ApprovalParams }) => {
         {connectStatus === WALLETCONNECT_STATUS_MAP.PENDING ? (
           <Scan
             uri={qrcodeContent}
-            typeId={currentType}
             chain={chain}
             bridgeURL={bridgeURL}
             onBridgeChange={handleBridgeChange}
