@@ -85,15 +85,18 @@
 }
 .address-wrap {
   margin-bottom: 8px;
-  &:nth-last-child(1) {
-    padding-bottom: 200px;
-  }
   & > .subtitle {
     margin-bottom: 8px;
     a {
       color: currentColor;
       margin-left: 2px;
     }
+  }
+}
+.address-wrap-with-padding {
+  .address-wrap;
+  &:nth-last-child(1) {
+    padding-bottom: 200px;
   }
 }
 .addresses {

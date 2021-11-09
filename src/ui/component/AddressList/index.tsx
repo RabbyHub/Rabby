@@ -13,6 +13,7 @@ import { DisplayedKeryring } from 'background/service/keyring';
 import { KEYRING_TYPE } from 'consts';
 import AddressItem, { AddressItemProps } from './AddressItem';
 import './style.less';
+import clsx from 'clsx';
 type ACTION = 'management' | 'switch';
 
 interface AddressListProps {
@@ -77,7 +78,13 @@ const AddressList: any = forwardRef(
       const { data, index, style } = props;
       const account = data[index];
       return (
-        <li className="address-wrap" style={style}>
+        <li
+          className={clsx(
+            'address-wrap',
+            !currentAccount && 'address-wrap-with-padding'
+          )}
+          style={style}
+        >
           <ul className="addresses">
             <AddressItem
               key={account.address}
@@ -113,7 +120,7 @@ const AddressList: any = forwardRef(
     return (
       <ul className={`address-group-list ${action}`}>
         <FixedSizeList
-          height={500}
+          height={currentAccount ? 380 : 500}
           width="100%"
           itemData={combinedList}
           itemCount={combinedList.length}
