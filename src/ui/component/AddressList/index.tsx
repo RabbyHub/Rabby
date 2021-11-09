@@ -3,6 +3,7 @@ import React, {
   forwardRef,
   useRef,
   useCallback,
+  useState,
   memo,
 } from 'react';
 import { FixedSizeList, areEqual } from 'react-window';
@@ -44,23 +45,13 @@ const AddressList: any = forwardRef(
     }: AddressListProps,
     ref
   ) => {
-    const addressItems = useRef({});
-    list.forEach((group) => {
-      if (addressItems.current[group.type]) {
-        addressItems.current[group.type] = [
-          ...addressItems.current[group.type],
-          ...new Array(group.accounts.length),
-        ];
-      } else {
-        addressItems.current[group.type] = new Array(group.accounts.length);
-      }
-    });
+    const addressItems = useRef(new Array(list.length));
+    const [start, setStart] = useState(0);
+    const [end, setEnd] = useState(10);
     const updateAllBalance = () => {
-      const q: Promise<void>[] = [];
-      Object.values(addressItems.current).forEach((arr: any) => {
-        q.push(...arr.filter(Boolean).map((el) => el.updateBalance()));
+      addressItems.current.slice(start, end + 1).forEach((item) => {
+        item.updateBalance();
       });
-      return Promise.all(q);
     };
 
     useImperativeHandle(ref, () => ({
@@ -94,18 +85,7 @@ const AddressList: any = forwardRef(
               currentAccount={currentAccount}
               showAssets
               ref={(el) => {
-                let i: number | null = index;
-                while (
-                  i !== null &&
-                  i < addressItems.current[account.keyring.type].length
-                ) {
-                  if (addressItems.current[account.keyring.type][i]) {
-                    i++;
-                  } else {
-                    addressItems.current[account.keyring.type][i] = el;
-                    i = null;
-                  }
-                }
+                addressItems.current[index] = el;
               }}
             />
           </ul>
@@ -116,6 +96,11 @@ const AddressList: any = forwardRef(
       (index: number, data: any) => data[index].address,
       []
     );
+    const onItemsRendered = ({ overscanStartIndex, overscanStopIndex }) => {
+      setStart(overscanStartIndex);
+      setEnd(overscanStopIndex);
+    };
+
     return (
       <ul className={`address-group-list ${action}`}>
         <FixedSizeList
@@ -125,6 +110,7 @@ const AddressList: any = forwardRef(
           itemCount={combinedList.length}
           itemSize={76}
           itemKey={itemKey}
+          onItemsRendered={onItemsRendered}
         >
           {Row}
         </FixedSizeList>
