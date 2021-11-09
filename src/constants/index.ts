@@ -254,7 +254,7 @@ export const CHAINS: Record<string, Chain> = {
     logo: IconMoonriverLogo,
     whiteLogo: IconMoonriverWhiteLogo,
     hex: '0x505',
-    scanLink: 'https://blockscout.moonriver.moonbeam.network/tx/_s_',
+    scanLink: 'https://moonriver.moonscan.io/tx/_s_',
     nativeTokenLogo:
       'https://static.debank.com/image/chain/logo_url/movr/c66f89fdceaea8d8fce263a1f816d671.png',
   },
