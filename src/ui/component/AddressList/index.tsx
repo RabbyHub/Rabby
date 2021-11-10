@@ -7,13 +7,13 @@ import React, {
   useEffect,
   memo,
 } from 'react';
+import clsx from 'clsx';
 import { findIndex } from 'lodash';
 import { FixedSizeList, areEqual } from 'react-window';
 import { DisplayedKeryring } from 'background/service/keyring';
 import { KEYRING_TYPE } from 'consts';
 import AddressItem, { AddressItemProps } from './AddressItem';
 import './style.less';
-import clsx from 'clsx';
 type ACTION = 'management' | 'switch';
 
 interface AddressListProps {
@@ -28,6 +28,7 @@ interface RowProps {
   data: any;
   index: number;
   style?: any;
+  others?: any;
 }
 const SORT_WEIGHT = {
   [KEYRING_TYPE.HdKeyring]: 1,
@@ -36,6 +37,44 @@ const SORT_WEIGHT = {
   [KEYRING_TYPE.WalletConnectKeyring]: 4,
   [KEYRING_TYPE.WatchAddressKeyring]: 5,
 };
+const Row: React.FC<RowProps> = memo((props) => {
+  const { data, index, style } = props;
+  const { combinedList, others } = data;
+  const {
+    currentAccount,
+    ActionButton,
+    onClick,
+    hiddenAddresses,
+    addressItems,
+  } = others;
+  const account = combinedList[index];
+  return (
+    <li
+      className={clsx(
+        'address-wrap',
+        !currentAccount && 'address-wrap-with-padding'
+      )}
+      style={style}
+    >
+      <ul className="addresses">
+        <AddressItem
+          key={account.address}
+          account={{ ...account, type: account.type }}
+          keyring={account.keyring}
+          ActionButton={ActionButton}
+          onClick={onClick}
+          hiddenAddresses={hiddenAddresses}
+          currentAccount={currentAccount}
+          showAssets
+          ref={(el) => {
+            addressItems.current[index] = el;
+          }}
+        />
+      </ul>
+    </li>
+  );
+}, areEqual);
+
 const AddressList: any = forwardRef(
   (
     {
@@ -48,11 +87,11 @@ const AddressList: any = forwardRef(
     }: AddressListProps,
     ref
   ) => {
-    const addressItems = useRef(new Array(list.length));
-    const fixedList = useRef<FixedSizeList>();
-
     const [start, setStart] = useState(0);
     const [end, setEnd] = useState(10);
+
+    const addressItems = useRef(new Array(list.length));
+    const fixedList = useRef<FixedSizeList>();
     const updateAllBalance = () => {
       addressItems.current.slice(start, end + 1).forEach((item) => {
         item.updateBalance();
@@ -74,43 +113,15 @@ const AddressList: any = forwardRef(
         return templist;
       })
       .flat(1);
-    const Row: React.FC<RowProps> = memo((props) => {
-      const { data, index, style } = props;
-      const account = data[index];
-      return (
-        <li
-          className={clsx(
-            'address-wrap',
-            !currentAccount && 'address-wrap-with-padding'
-          )}
-          style={style}
-        >
-          <ul className="addresses">
-            <AddressItem
-              key={account.address}
-              account={{ ...account, type: account.type }}
-              keyring={account.keyring}
-              ActionButton={ActionButton}
-              onClick={onClick}
-              hiddenAddresses={hiddenAddresses}
-              currentAccount={currentAccount}
-              showAssets
-              ref={(el) => {
-                addressItems.current[index] = el;
-              }}
-            />
-          </ul>
-        </li>
-      );
-    }, areEqual);
     const itemKey = useCallback(
-      (index: number, data: any) => data[index].address,
+      (index: number, data: any) => data.combinedList[index].address,
       []
     );
     const onItemsRendered = ({ overscanStartIndex, overscanStopIndex }) => {
       setStart(overscanStartIndex);
       setEnd(overscanStopIndex);
     };
+
     useEffect(() => {
       if (currentAccount) {
         const position = findIndex(combinedList, currentAccount);
@@ -122,12 +133,21 @@ const AddressList: any = forwardRef(
         <FixedSizeList
           height={currentAccount ? 380 : 500}
           width="100%"
-          itemData={combinedList}
+          itemData={{
+            combinedList: combinedList,
+            others: {
+              ActionButton,
+              onClick,
+              hiddenAddresses,
+              addressItems,
+              currentAccount,
+            },
+          }}
           itemCount={combinedList.length}
           itemSize={76}
           itemKey={itemKey}
-          onItemsRendered={onItemsRendered}
           ref={fixedList}
+          onItemsRendered={onItemsRendered}
         >
           {Row}
         </FixedSizeList>
