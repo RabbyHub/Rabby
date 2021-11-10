@@ -4,7 +4,7 @@
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "module": "ESNext",
-    "target": "es2015",
+    "target": "es2019",
     "moduleResolution": "node",
     "noImplicitAny": false,
     "strict": true,

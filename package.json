@@ -64,6 +64,7 @@
     "react-ga": "^3.3.0",
     "react-router-dom": "^5.2.0",
     "react-use": "^17.2.4",
+    "react-window": "^1.8.6",
     "reflect-metadata": "^0.1.13",
     "secp256k1": "^4.0.2",
     "stream-browserify": "^3.0.0",

@@ -54,7 +54,12 @@ interface MemStoreState {
 
 export interface DisplayedKeryring {
   type: string;
-  accounts: { address: string; brandName: string }[];
+  accounts: {
+    address: string;
+    brandName: string;
+    type?: string;
+    keyring?: DisplayKeyring;
+  }[];
   keyring: DisplayKeyring;
 }
 
