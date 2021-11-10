@@ -21,6 +21,8 @@ import IconAvaxLogo from 'ui/assets/chain-logos/avax.svg';
 import IconAvaxWhiteLogo from 'ui/assets/chain-logos/avax-white.svg';
 import IconCeloLogo from 'ui/assets/chain-logos/celo.svg';
 import IconCeloWhiteLogo from 'ui/assets/chain-logos/celo-white.svg';
+import IconMoonriverLogo from 'ui/assets/chain-logos/movr.svg';
+import IconMoonriverWhiteLogo from 'ui/assets/chain-logos/movr-white.svg';
 import IconEN from 'ui/assets/langs/en.svg';
 import IconZH from 'ui/assets/langs/zh_cn.svg';
 import IconAmber from 'ui/assets/walletlogo/amber.png';
@@ -71,6 +73,7 @@ export enum CHAINS_ENUM {
   AVAX = 'AVAX',
   OP = 'OP',
   CELO = 'CELO',
+  MOVR = 'MOVR',
 }
 
 export const CHAINS: Record<string, Chain> = {
@@ -239,6 +242,21 @@ export const CHAINS: Record<string, Chain> = {
     scanLink: 'https://explorer.celo.org/tx/_s_',
     nativeTokenLogo:
       'https://static.debank.com/image/celo_token/logo_url/0x471ece3750da237f93b8e339c536989b8978a438/6f524d91db674876ba0f5767cf0124cc.png',
+  },
+  [CHAINS_ENUM.MOVR]: {
+    id: 1285,
+    serverId: 'movr',
+    network: '1285',
+    name: 'Moonriver',
+    nativeTokenSymbol: 'MOVR',
+    nativeTokenAddress: 'movr',
+    enum: CHAINS_ENUM.MOVR,
+    logo: IconMoonriverLogo,
+    whiteLogo: IconMoonriverWhiteLogo,
+    hex: '0x505',
+    scanLink: 'https://moonriver.moonscan.io/tx/_s_',
+    nativeTokenLogo:
+      'https://static.debank.com/image/chain/logo_url/movr/c66f89fdceaea8d8fce263a1f816d671.png',
   },
 };
 
