@@ -206,7 +206,7 @@ export const CHAINS: Record<string, Chain> = {
     logo: IconAvaxLogo,
     whiteLogo: IconAvaxWhiteLogo,
     hex: '0xa86a',
-    scanLink: 'https://cchain.explorer.avax.network/tx/_s_',
+    scanLink: 'https://snowtrace.io/tx/_s_',
     nativeTokenLogo:
       'https://static.debank.com/image/avax_token/logo_url/avax/0b9c84359c84d6bdd5bfda9c2d4c4a82.png',
   },
