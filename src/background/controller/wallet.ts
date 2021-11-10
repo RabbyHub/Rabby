@@ -28,6 +28,7 @@ import DisplayKeyring from '../service/keyring/display';
 import provider from './provider';
 import WalletConnectKeyring from '@rabby-wallet/eth-walletconnect-keyring';
 import eventBus from '@/eventBus';
+import { setPageStateCacheWhenPopupClose } from 'background/utils';
 
 const stashKeyrings: Record<string, any> = {};
 
@@ -217,10 +218,14 @@ export class WalletController extends BaseController {
         });
       });
       keyring.on('statusChange', (data) => {
-        eventBus.emit(EVENTS.broadcastToUI, {
-          method: EVENTS.WALLETCONNECT.STATUS_CHANGED,
-          params: data,
-        });
+        if (preferenceService.getPopupOpen()) {
+          eventBus.emit(EVENTS.broadcastToUI, {
+            method: EVENTS.WALLETCONNECT.STATUS_CHANGED,
+            params: data,
+          });
+        } else {
+          setPageStateCacheWhenPopupClose(data);
+        }
       });
     }
     return {
