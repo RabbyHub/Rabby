@@ -241,11 +241,7 @@ const AddressItem = memo(
               <Tooltip
                 overlayClassName="rectangle addressType__tooltip"
                 placement="topRight"
-                title={
-                  ActionButton
-                    ? formatAddressTooltip(account.type, account.brandName)
-                    : null
-                }
+                title={formatAddressTooltip(account.type, account.brandName)}
               >
                 <img
                   src={
