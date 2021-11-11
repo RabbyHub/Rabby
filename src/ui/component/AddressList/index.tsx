@@ -131,7 +131,7 @@ const AddressList: any = forwardRef(
     return (
       <ul className={`address-group-list ${action}`}>
         <FixedSizeList
-          height={currentAccount ? 380 : 500}
+          height={currentAccount ? 400 : 500}
           width="100%"
           itemData={{
             combinedList: combinedList,
@@ -144,7 +144,7 @@ const AddressList: any = forwardRef(
             },
           }}
           itemCount={combinedList.length}
-          itemSize={76}
+          itemSize={72}
           itemKey={itemKey}
           ref={fixedList}
           onItemsRendered={onItemsRendered}
