@@ -58,7 +58,7 @@ const Row: React.FC<RowProps> = memo((props) => {
     >
       <ul className="addresses">
         <AddressItem
-          key={account.address}
+          key={account.address + account.brandName}
           account={{ ...account, type: account.type }}
           keyring={account.keyring}
           ActionButton={ActionButton}
@@ -114,14 +114,14 @@ const AddressList: any = forwardRef(
       })
       .flat(1);
     const itemKey = useCallback(
-      (index: number, data: any) => data.combinedList[index].address,
+      (index: number, data: any) =>
+        data.combinedList[index].address + data.combinedList[index].brandName,
       []
     );
     const onItemsRendered = ({ overscanStartIndex, overscanStopIndex }) => {
       setStart(overscanStartIndex);
       setEnd(overscanStopIndex);
     };
-
     useEffect(() => {
       if (currentAccount) {
         const position = findIndex(combinedList, currentAccount);
