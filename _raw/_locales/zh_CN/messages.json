@@ -935,5 +935,8 @@
   },
   "Imported__by__Onekey": {
     "message": "通过 Onekey 导入"
+  },
+  "Disconnect": {
+    "message": "断开连接"
   }
 }
