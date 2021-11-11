@@ -6,9 +6,10 @@ import { useInterval } from 'react-use';
 import { message } from 'antd';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
+import find from 'lodash/find';
 import { WALLET_BRAND_CONTENT, KEYRINGS_LOGOS } from 'consts';
 import { AddressViewer, Modal } from 'ui/component';
-import { useWallet } from 'ui/utils';
+import { useWallet, useHover } from 'ui/utils';
 import { Account } from 'background/service/preference';
 import {
   RecentConnections,
@@ -24,11 +25,15 @@ import IconSend from 'ui/assets/send.svg';
 import IconHistory from 'ui/assets/history.svg';
 import IconPending from 'ui/assets/pending.svg';
 import IconSuccess from 'ui/assets/success.svg';
+import IconCorner from 'ui/assets/walletconnect-corner.png';
+import IconWalletConnected from 'ui/assets/walletconnect.svg';
+
 import './style.less';
 
 const Dashboard = () => {
   const history = useHistory();
   const wallet = useWallet();
+  const [isHovering, hoverProps] = useHover();
   const { t } = useTranslation();
   const [currentAccount, setCurrentAccount] = useState<Account | null>(null);
   const [isModalOpen, setModalOpen] = useState(false);
@@ -36,6 +41,20 @@ const Dashboard = () => {
   const [pendingTxCount, setPendingTxCount] = useState(0);
   const [isDefaultWallet, setIsDefaultWallet] = useState(true);
   const [copySuccess, setCopySuccess] = useState(false);
+  const [walletPop, setWalletPop] = useState(false);
+  const getConnections = async () => {
+    const connections = await wallet.getWalletConnectConnectors();
+    const hasAddress = connections.filter(
+      (item) =>
+        item.address === currentAccount?.address &&
+        item.brandName === currentAccount?.brandName
+    );
+    if (hasAddress.length > 0) {
+      setWalletPop(true);
+    } else {
+      setWalletPop(false);
+    }
+  };
 
   const handleToggle = () => {
     setModalOpen(!isModalOpen);
@@ -77,6 +96,7 @@ const Dashboard = () => {
   useEffect(() => {
     if (currentAccount) {
       getPendingTxCount(currentAccount.address);
+      getConnections();
     }
   }, [currentAccount]);
 
@@ -130,6 +150,14 @@ const Dashboard = () => {
 
   const handleShowQrcode = () => {
     setQrcodeVisible(true);
+  };
+  const disconnectWallet = async () => {
+    await wallet.killWalletConnectConnector(
+      currentAccount?.address,
+      currentAccount?.brandName
+    );
+    getConnections();
+    message.success(t('WalletConnect Disconnected'));
   };
   return (
     <>
@@ -191,6 +219,22 @@ const Dashboard = () => {
             </div>
           </div>
         </div>
+        {walletPop && (
+          <div className="wallet-wrapper" {...hoverProps}>
+            <div className="wallet-container">
+              <img className="icon icon-wallet-corner" src={IconCorner} />
+              <img
+                className="icon icon-walletconnect"
+                src={IconWalletConnected}
+              />
+              {isHovering && (
+                <div className="disconnect" onClick={disconnectWallet}>
+                  {t('Disconnect')}{' '}
+                </div>
+              )}
+            </div>
+          </div>
+        )}
         <RecentConnections />
         {!isDefaultWallet && (
           <DefaultWalletAlertBar onChange={handleDefaultWalletChange} />

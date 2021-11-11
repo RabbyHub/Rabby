@@ -76,3 +76,11 @@ export const setPageStateCacheWhenPopupClose = (data) => {
     });
   }
 };
+
+export const hasWalletConnectPageStateCache = () => {
+  const cache = pageStateCache.get();
+  if (cache && cache.path === '/import/wallet-connect') {
+    return true;
+  }
+  return false;
+};

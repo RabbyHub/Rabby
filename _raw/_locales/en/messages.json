@@ -938,5 +938,8 @@
   },
   "Imported__by__Onekey": {
     "message": "Imported by Onekey"
+  },
+  "Disconnect": {
+    "message": "Disconnect"
   }
 }

@@ -9,6 +9,7 @@ import { ObservableStore } from '@metamask/obs-store';
 import {
   normalizeAddress,
   setPageStateCacheWhenPopupClose,
+  hasWalletConnectPageStateCache,
 } from 'background/utils';
 import LedgerBridgeKeyring from './eth-ledger-bridge-keyring';
 import SimpleKeyring from '@rabby-wallet/eth-simple-keyring';
@@ -54,7 +55,12 @@ interface MemStoreState {
 
 export interface DisplayedKeryring {
   type: string;
-  accounts: { address: string; brandName: string }[];
+  accounts: {
+    address: string;
+    brandName: string;
+    type?: string;
+    keyring?: DisplayKeyring;
+  }[];
   keyring: DisplayKeyring;
 }
 
@@ -733,14 +739,13 @@ class KeyringService extends EventEmitter {
         });
       });
       keyring.on('statusChange', (data) => {
-        if (preference.getPopupOpen()) {
-          eventBus.emit(EVENTS.broadcastToUI, {
-            method: EVENTS.WALLETCONNECT.STATUS_CHANGED,
-            params: data,
-          });
-        } else {
+        if (!preference.getPopupOpen() && hasWalletConnectPageStateCache()) {
           setPageStateCacheWhenPopupClose(data);
         }
+        eventBus.emit(EVENTS.broadcastToUI, {
+          method: EVENTS.WALLETCONNECT.STATUS_CHANGED,
+          params: data,
+        });
       });
     }
     // getAccounts also validates the accounts for some keyrings

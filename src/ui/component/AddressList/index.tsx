@@ -1,9 +1,19 @@
-import React, { useImperativeHandle, forwardRef, useRef } from 'react';
+import React, {
+  useImperativeHandle,
+  forwardRef,
+  useRef,
+  useCallback,
+  useState,
+  useEffect,
+  memo,
+} from 'react';
+import clsx from 'clsx';
+import { findIndex } from 'lodash';
+import { FixedSizeList, areEqual } from 'react-window';
 import { DisplayedKeryring } from 'background/service/keyring';
 import { KEYRING_TYPE } from 'consts';
 import AddressItem, { AddressItemProps } from './AddressItem';
 import './style.less';
-
 type ACTION = 'management' | 'switch';
 
 interface AddressListProps {
@@ -14,7 +24,12 @@ interface AddressListProps {
   onClick?(account: string, keyring: any, brandName: string): void;
   currentAccount?: any;
 }
-
+interface RowProps {
+  data: any;
+  index: number;
+  style?: any;
+  others?: any;
+}
 const SORT_WEIGHT = {
   [KEYRING_TYPE.HdKeyring]: 1,
   [KEYRING_TYPE.SimpleKeyring]: 2,
@@ -22,6 +37,43 @@ const SORT_WEIGHT = {
   [KEYRING_TYPE.WalletConnectKeyring]: 4,
   [KEYRING_TYPE.WatchAddressKeyring]: 5,
 };
+const Row: React.FC<RowProps> = memo((props) => {
+  const { data, index, style } = props;
+  const { combinedList, others } = data;
+  const {
+    currentAccount,
+    ActionButton,
+    onClick,
+    hiddenAddresses,
+    addressItems,
+  } = others;
+  const account = combinedList[index];
+  return (
+    <li
+      className={clsx(
+        'address-wrap',
+        !currentAccount && 'address-wrap-with-padding'
+      )}
+      style={style}
+    >
+      <ul className="addresses">
+        <AddressItem
+          key={account.address + account.brandName}
+          account={{ ...account, type: account.type }}
+          keyring={account.keyring}
+          ActionButton={ActionButton}
+          onClick={onClick}
+          hiddenAddresses={hiddenAddresses}
+          currentAccount={currentAccount}
+          showAssets
+          ref={(el) => {
+            addressItems.current[index] = el;
+          }}
+        />
+      </ul>
+    </li>
+  );
+}, areEqual);
 
 const AddressList: any = forwardRef(
   (
@@ -35,73 +87,70 @@ const AddressList: any = forwardRef(
     }: AddressListProps,
     ref
   ) => {
-    const addressItems = useRef({});
-    list.forEach((group) => {
-      if (addressItems.current[group.type]) {
-        addressItems.current[group.type] = [
-          ...addressItems.current[group.type],
-          ...new Array(group.accounts.length),
-        ];
-      } else {
-        addressItems.current[group.type] = new Array(group.accounts.length);
-      }
-    });
+    const [start, setStart] = useState(0);
+    const [end, setEnd] = useState(10);
 
+    const addressItems = useRef(new Array(list.length));
+    const fixedList = useRef<FixedSizeList>();
     const updateAllBalance = () => {
-      const q: Promise<void>[] = [];
-      Object.values(addressItems.current).forEach((arr: any) => {
-        q.push(...arr.map((el) => el.updateBalance()));
+      addressItems.current.slice(start, end + 1).forEach((item) => {
+        item.updateBalance();
       });
-      return Promise.all(q);
     };
 
     useImperativeHandle(ref, () => ({
       updateAllBalance,
     }));
-    const GroupItem = ({ group }: { group: DisplayedKeryring }) => {
-      return (
-        <li>
-          <ul className="addresses">
-            {group.accounts.map((account, index) => (
-              <AddressItem
-                key={account.address}
-                account={{ ...account, type: group.type }}
-                keyring={group.keyring}
-                ActionButton={ActionButton}
-                onClick={onClick}
-                hiddenAddresses={hiddenAddresses}
-                currentAccount={currentAccount}
-                showAssets
-                ref={(el) => {
-                  let i: number | null = index;
-                  while (
-                    i !== null &&
-                    i < addressItems.current[group.keyring.type].length
-                  ) {
-                    if (addressItems.current[group.keyring.type][i]) {
-                      i++;
-                    } else {
-                      addressItems.current[group.keyring.type][i] = el;
-                      i = null;
-                    }
-                  }
-                }}
-              />
-            ))}
-          </ul>
-        </li>
-      );
+    const combinedList = list
+      .sort((a, b) => {
+        return SORT_WEIGHT[a.type] - SORT_WEIGHT[b.type];
+      })
+      .map((group) => {
+        const templist = group.accounts.map(
+          (item) =>
+            (item = { ...item, type: group.type, keyring: group.keyring })
+        );
+        return templist;
+      })
+      .flat(1);
+    const itemKey = useCallback(
+      (index: number, data: any) =>
+        data.combinedList[index].address + data.combinedList[index].brandName,
+      []
+    );
+    const onItemsRendered = ({ overscanStartIndex, overscanStopIndex }) => {
+      setStart(overscanStartIndex);
+      setEnd(overscanStopIndex);
     };
-
+    useEffect(() => {
+      if (currentAccount) {
+        const position = findIndex(combinedList, currentAccount);
+        fixedList.current?.scrollToItem(position, 'center');
+      }
+    }, []);
     return (
       <ul className={`address-group-list ${action}`}>
-        {list
-          .sort((a, b) => {
-            return SORT_WEIGHT[a.type] - SORT_WEIGHT[b.type];
-          })
-          .map((group) => (
-            <GroupItem key={group.type} group={group} />
-          ))}
+        <FixedSizeList
+          height={currentAccount ? 380 : 500}
+          width="100%"
+          itemData={{
+            combinedList: combinedList,
+            others: {
+              ActionButton,
+              onClick,
+              hiddenAddresses,
+              addressItems,
+              currentAccount,
+            },
+          }}
+          itemCount={combinedList.length}
+          itemSize={76}
+          itemKey={itemKey}
+          ref={fixedList}
+          onItemsRendered={onItemsRendered}
+        >
+          {Row}
+        </FixedSizeList>
       </ul>
     );
   }
