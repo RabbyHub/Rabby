@@ -344,6 +344,7 @@ class OpenApiService {
         baseURL: this.store.host,
         headers: {
           'X-Client': 'Rabby',
+          'X-Version': process.env.release,
         },
       }),
       { maxRPS }
