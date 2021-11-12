@@ -52,6 +52,24 @@ const BalanceView = ({ currentAccount }) => {
         })}
     </ul>
   );
+  const displayChainList = () => {
+    const result = chainBalances.map((item) => (
+      <img
+        src={item.whiteLogo || item.logo_url}
+        className="icon icon-chain"
+        key={item.id}
+        alt={`${item.name}: $${item.usd_value.toFixed(2)}`}
+      />
+    ));
+    if (result.length > 9) {
+      return result
+        .slice(0, 9)
+        .concat(
+          <img src={IconChainMore} className="icon icon-chain" key="more" />
+        );
+    }
+    return result;
+  };
   return (
     <div className="assets flex">
       <div className="left">
@@ -83,34 +101,7 @@ const BalanceView = ({ currentAccount }) => {
               placement="bottomLeft"
               overlayClassName="balance-popover"
             >
-              <div className="flex">
-                {chainBalances.length > 9
-                  ? chainBalances
-                      .slice(0, 9)
-                      .map((item) => (
-                        <img
-                          src={item.whiteLogo || item.logo_url}
-                          className="icon icon-chain"
-                          key={item.id}
-                          alt={`${item.name}: $${item.usd_value.toFixed(2)}`}
-                        />
-                      ))
-                      .concat(
-                        <img
-                          src={IconChainMore}
-                          className="icon icon-chain"
-                          key="more"
-                        />
-                      )
-                  : chainBalances.map((item) => (
-                      <img
-                        src={item.whiteLogo || item.logo_url}
-                        className="icon icon-chain"
-                        key={item.id}
-                        alt={`${item.name}: $${item.usd_value.toFixed(2)}`}
-                      />
-                    ))}
-              </div>
+              <div className="flex">{displayChainList()}</div>
             </Popover>
           ) : (
             t('No assets')

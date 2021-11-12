@@ -21,7 +21,7 @@ import {
   KEYRING_TYPE_TEXT,
 } from 'consts';
 import IconEmptyChain from 'ui/assets/chain-logos/empty.svg';
-
+import IconMoreChain from 'ui/assets/more-chain-round-dark.svg';
 interface DisplayChainWithWhiteLogo extends ChainWithBalance {
   logo?: string;
   whiteLogo?: string;
@@ -175,7 +175,26 @@ const AddressItem = memo(
         }
         return '';
       };
-
+      const displayChainList = () => {
+        const result = chainBalances.map((item) => (
+          <img
+            src={item.logo}
+            className="w-16 h-16 mr-6"
+            key={item.id}
+            alt={`${item.name}: $${item.usd_value.toFixed(2)}`}
+            title={`${item.name}: $${item.usd_value.toFixed(2)}`}
+            style={{ opacity: isLoading ? 0 : 1 }}
+          />
+        ));
+        if (result.length > 9) {
+          return result
+            .slice(0, 9)
+            .concat(
+              <img src={IconMoreChain} className="w-16 h-16 mr-6" key="more" />
+            );
+        }
+        return result;
+      };
       return (
         <li
           className={clsx(
@@ -213,16 +232,7 @@ const AddressItem = memo(
               <div className="mt-4 w-full text-left leading-none">
                 <div className="inline-flex relative">
                   {chainBalances.length ? (
-                    chainBalances.map((item) => (
-                      <img
-                        src={item.logo}
-                        className="w-16 h-16 mr-6"
-                        key={item.id}
-                        alt={`${item.name}: $${item.usd_value.toFixed(2)}`}
-                        title={`${item.name}: $${item.usd_value.toFixed(2)}`}
-                        style={{ opacity: isLoading ? 0 : 1 }}
-                      />
-                    ))
+                    displayChainList()
                   ) : (
                     <img
                       className="w-16 h-16"
