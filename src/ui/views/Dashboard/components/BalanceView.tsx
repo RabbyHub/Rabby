@@ -9,7 +9,7 @@ import useConfirmExternalModal from './ConfirmOpenExternalModal';
 import { SvgIconOffline } from 'ui/assets';
 import IconArrowRight from 'ui/assets/arrow-right.svg';
 import IconExternal from 'ui/assets/open-external-gray.svg';
-
+import IconChainMore from 'ui/assets/chain-more.svg';
 const BalanceView = ({ currentAccount }) => {
   const [balance, chainBalances] = useCurrentBalance(
     currentAccount?.address,
@@ -52,7 +52,6 @@ const BalanceView = ({ currentAccount }) => {
         })}
     </ul>
   );
-
   return (
     <div className="assets flex">
       <div className="left">
@@ -85,14 +84,32 @@ const BalanceView = ({ currentAccount }) => {
               overlayClassName="balance-popover"
             >
               <div className="flex">
-                {chainBalances.map((item) => (
-                  <img
-                    src={item.whiteLogo || item.logo_url}
-                    className="icon icon-chain"
-                    key={item.id}
-                    alt={`${item.name}: $${item.usd_value.toFixed(2)}`}
-                  />
-                ))}
+                {chainBalances.length > 9
+                  ? chainBalances
+                      .slice(0, 9)
+                      .map((item) => (
+                        <img
+                          src={item.whiteLogo || item.logo_url}
+                          className="icon icon-chain"
+                          key={item.id}
+                          alt={`${item.name}: $${item.usd_value.toFixed(2)}`}
+                        />
+                      ))
+                      .concat(
+                        <img
+                          src={IconChainMore}
+                          className="icon icon-chain"
+                          key="more"
+                        />
+                      )
+                  : chainBalances.map((item) => (
+                      <img
+                        src={item.whiteLogo || item.logo_url}
+                        className="icon icon-chain"
+                        key={item.id}
+                        alt={`${item.name}: $${item.usd_value.toFixed(2)}`}
+                      />
+                    ))}
               </div>
             </Popover>
           ) : (
