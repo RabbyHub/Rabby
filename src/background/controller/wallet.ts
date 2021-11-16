@@ -665,6 +665,12 @@ export class WalletController extends BaseController {
   updateHighlightWalletList = (list) => {
     return preferenceService.updateWalletSavedList(list);
   };
+  getIsFirstOpen = () => {
+    return preferenceService.getIsFirstOpen();
+  };
+  updateIsFirstOpen = () => {
+    return preferenceService.updateIsFirstOpen();
+  };
 }
 
 export default new WalletController();

@@ -4,7 +4,7 @@ import { keyringService, sessionService, i18n } from './index';
 import { TotalBalanceResponse, TokenItem } from './openapi';
 import { HARDWARE_KEYRING_TYPES } from 'consts';
 import { browser } from 'webextension-polyfill-ts';
-
+const version = process.env.version!.split('/')[0].replace(/[^0-9]/g, '');
 export interface Account {
   type: string;
   address: string;
@@ -23,6 +23,8 @@ interface PreferenceStore {
   isDefaultWallet: boolean;
   lastTimeSendToken: Record<string, TokenItem>;
   walletSavedList: [];
+  currentVersion: string;
+  firstOpen: boolean;
 }
 
 const SUPPORT_LOCALES = ['en', 'zh_CN'];
@@ -51,6 +53,8 @@ class PreferenceService {
         isDefaultWallet: false,
         lastTimeSendToken: {},
         walletSavedList: [],
+        currentVersion: '0',
+        firstOpen: false,
       },
     });
     if (!this.store.locale) {
@@ -242,6 +246,19 @@ class PreferenceService {
 
   updateWalletSavedList = (list: []) => {
     this.store.walletSavedList = list;
+  };
+  getIsFirstOpen = () => {
+    if (
+      !this.store.currentVersion ||
+      version > (this.store.currentVersion || 0)
+    ) {
+      this.store.currentVersion = version;
+      this.store.firstOpen = true;
+    }
+    return this.store.firstOpen;
+  };
+  updateIsFirstOpen = () => {
+    this.store.firstOpen = false;
   };
 }
 
