@@ -23,6 +23,8 @@ import IconCeloLogo from 'ui/assets/chain-logos/celo.svg';
 import IconCeloWhiteLogo from 'ui/assets/chain-logos/celo-white.svg';
 import IconMoonriverLogo from 'ui/assets/chain-logos/movr.svg';
 import IconMoonriverWhiteLogo from 'ui/assets/chain-logos/movr-white.svg';
+import IconCronosLogo from 'ui/assets/chain-logos/cronos.svg';
+import IconCronosWhiteLogo from 'ui/assets/chain-logos/cronos-white.svg';
 import IconEN from 'ui/assets/langs/en.svg';
 import IconZH from 'ui/assets/langs/zh_cn.svg';
 import IconAmber from 'ui/assets/walletlogo/amber.png';
@@ -74,6 +76,7 @@ export enum CHAINS_ENUM {
   OP = 'OP',
   CELO = 'CELO',
   MOVR = 'MOVR',
+  CRO = 'CRO',
 }
 
 export const CHAINS: Record<string, Chain> = {
@@ -257,6 +260,21 @@ export const CHAINS: Record<string, Chain> = {
     scanLink: 'https://moonriver.moonscan.io/tx/_s_',
     nativeTokenLogo:
       'https://static.debank.com/image/chain/logo_url/movr/c66f89fdceaea8d8fce263a1f816d671.png',
+  },
+  [CHAINS_ENUM.CRO]: {
+    id: 25,
+    serverId: 'cro',
+    network: '25',
+    name: 'Cronos',
+    nativeTokenSymbol: 'CRO',
+    nativeTokenAddress: 'cro',
+    enum: CHAINS_ENUM.CRO,
+    logo: IconCronosLogo,
+    whiteLogo: IconCronosWhiteLogo,
+    hex: '0x19',
+    scanLink: 'https://cronos.crypto.org/explorer/tx/_s_',
+    nativeTokenLogo:
+      'https://static.debank.com/image/chain/logo_url/cro/affddd53019ffb9dbad0c724e12500c0.png',
   },
 };
 

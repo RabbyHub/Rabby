@@ -48,6 +48,7 @@ class ChainService {
       CHAINS_ENUM.ARBITRUM,
       CHAINS_ENUM.CELO,
       CHAINS_ENUM.MOVR,
+      CHAINS_ENUM.CRO,
     ];
 
     for (let i = 0; i < needAdd.length; i++) {

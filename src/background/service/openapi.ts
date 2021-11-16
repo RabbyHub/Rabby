@@ -529,6 +529,15 @@ class OpenApiService {
         wrapped_token_id: '',
         symbol: '',
       },
+      {
+        community_id: 25,
+        id: 'cro',
+        logo_url: '',
+        name: '',
+        native_token_id: '',
+        wrapped_token_id: '',
+        symbol: '',
+      },
     ]);
   };
 
