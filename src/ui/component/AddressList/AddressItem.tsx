@@ -190,7 +190,12 @@ const AddressItem = memo(
           return result
             .slice(0, 9)
             .concat(
-              <img src={IconMoreChain} className="w-16 h-16 mr-6" key="more" />
+              <img
+                src={IconMoreChain}
+                className="w-16 h-16 mr-6"
+                key="more"
+                style={{ opacity: isLoading ? 0 : 1 }}
+              />
             );
         }
         return result;
