@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { message } from 'antd';
 import { useTranslation } from 'react-i18next';
-import { find } from 'lodash';
 import { useWallet } from 'ui/utils';
 import { openInternalPageInTab } from 'ui/utils/webapi';
 import Field from '../Field';
