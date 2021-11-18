@@ -665,6 +665,13 @@ export class WalletController extends BaseController {
   updateHighlightWalletList = (list) => {
     return preferenceService.updateWalletSavedList(list);
   };
+  getLastTimeGasSelection = (chainId) => {
+    return preferenceService.getLastTimeGasSelection(chainId);
+  };
+
+  updateLastTimeGasSelection = (chainId, GasLevel) => {
+    return preferenceService.updateLastTimeGasSelection(chainId, GasLevel);
+  };
 }
 
 export default new WalletController();

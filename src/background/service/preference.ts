@@ -1,7 +1,7 @@
 import cloneDeep from 'lodash/cloneDeep';
 import { createPersistStore } from 'background/utils';
 import { keyringService, sessionService, i18n } from './index';
-import { TotalBalanceResponse, TokenItem } from './openapi';
+import { TotalBalanceResponse, TokenItem, GasLevel } from './openapi';
 import { HARDWARE_KEYRING_TYPES } from 'consts';
 import { browser } from 'webextension-polyfill-ts';
 
@@ -23,6 +23,7 @@ interface PreferenceStore {
   isDefaultWallet: boolean;
   lastTimeSendToken: Record<string, TokenItem>;
   walletSavedList: [];
+  gasSelectList: Record<number, GasLevel>;
 }
 
 const SUPPORT_LOCALES = ['en', 'zh_CN'];
@@ -51,6 +52,7 @@ class PreferenceService {
         isDefaultWallet: false,
         lastTimeSendToken: {},
         walletSavedList: [],
+        gasSelectList: {},
       },
     });
     if (!this.store.locale) {
@@ -65,6 +67,9 @@ class PreferenceService {
     }
     if (!this.store.lastTimeSendToken) {
       this.store.lastTimeSendToken = {};
+    }
+    if (!this.store.gasSelectList) {
+      this.store.gasSelectList = {};
     }
   };
 
@@ -242,6 +247,16 @@ class PreferenceService {
 
   updateWalletSavedList = (list: []) => {
     this.store.walletSavedList = list;
+  };
+  getLastTimeGasSelection = (chainId: number) => {
+    return this.store.gasSelectList[chainId];
+  };
+
+  updateLastTimeGasSelection = (chainId: number, gas: GasLevel) => {
+    this.store.gasSelectList = {
+      ...this.store.gasSelectList,
+      [chainId]: gas,
+    };
   };
 }
 
