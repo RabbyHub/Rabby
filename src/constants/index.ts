@@ -25,6 +25,8 @@ import IconMoonriverLogo from 'ui/assets/chain-logos/movr.svg';
 import IconMoonriverWhiteLogo from 'ui/assets/chain-logos/movr-white.svg';
 import IconCronosLogo from 'ui/assets/chain-logos/cronos.svg';
 import IconCronosWhiteLogo from 'ui/assets/chain-logos/cronos-white.svg';
+import IconBobaLogo from 'ui/assets/chain-logos/boba.png';
+import IconBobaWhiteLogo from 'ui/assets/chain-logos/boba-white.svg';
 import IconEN from 'ui/assets/langs/en.svg';
 import IconZH from 'ui/assets/langs/zh_cn.svg';
 import IconAmber from 'ui/assets/walletlogo/amber.png';
@@ -77,6 +79,7 @@ export enum CHAINS_ENUM {
   CELO = 'CELO',
   MOVR = 'MOVR',
   CRO = 'CRO',
+  BOBA = 'BOBA',
 }
 
 export const CHAINS: Record<string, Chain> = {
@@ -275,6 +278,21 @@ export const CHAINS: Record<string, Chain> = {
     scanLink: 'https://cronos.crypto.org/explorer/tx/_s_',
     nativeTokenLogo:
       'https://static.debank.com/image/chain/logo_url/cro/affddd53019ffb9dbad0c724e12500c0.png',
+  },
+  [CHAINS_ENUM.BOBA]: {
+    id: 288,
+    serverId: 'boba',
+    network: '288',
+    name: 'Boba',
+    nativeTokenSymbol: 'ETH',
+    nativeTokenAddress: 'boba',
+    enum: CHAINS_ENUM.BOBA,
+    logo: IconBobaLogo,
+    whiteLogo: IconBobaWhiteLogo,
+    hex: '0x120',
+    scanLink: 'https://blockexplorer.boba.network/tx/_s_',
+    nativeTokenLogo:
+      'https://static.debank.com/image/op_token/logo_url/0x4200000000000000000000000000000000000006/d61441782d4a08a7479d54aea211679e.png',
   },
 };
 
