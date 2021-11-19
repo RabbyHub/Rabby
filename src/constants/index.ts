@@ -285,7 +285,7 @@ export const CHAINS: Record<string, Chain> = {
     network: '288',
     name: 'Boba',
     nativeTokenSymbol: 'ETH',
-    nativeTokenAddress: '0x4200000000000000000000000000000000000006',
+    nativeTokenAddress: 'boba',
     enum: CHAINS_ENUM.BOBA,
     logo: IconBobaLogo,
     whiteLogo: IconBobaWhiteLogo,
