@@ -142,11 +142,6 @@ const GasSelector = ({
       }
     }
   };
-
-  useEffect(() => {
-    formValidator();
-  }, [customGas, afterGasLimit, selectedGas, gasList]);
-
   const loadGasMarket = async () => {
     const list = await wallet.openapi.gasMarket(
       chain.serverId,
@@ -169,13 +164,13 @@ const GasSelector = ({
 
   const handleShowSelectModal = () => {
     setCustomGas(Number(tx.gasPrice) / 1e9);
-    setSelectGas({
-      level: 'custom',
-      price: Number(tx.gasPrice) / 1e9,
-      front_tx_count: 0,
-      estimated_seconds: 0,
-      base_fee: gasList[0].base_fee,
-    });
+    // setSelectGas({
+    //   level: 'custom',
+    //   price: Number(tx.gasPrice) / 1e9,
+    //   front_tx_count: 0,
+    //   estimated_seconds: 0,
+    //   base_fee: gasList[0].base_fee,
+    // });
     setCustomNonce(Number(nonce));
     setModalVisible(true);
   };
@@ -220,7 +215,37 @@ const GasSelector = ({
   const handleClickAdvance = () => {
     setAdvanceExpanded(!advanceExpanded);
   };
-
+  const getLastTimeSavedGas = async () => {
+    const lastTimeGasSelected = await wallet.getLastTimeGasSelection(chainId);
+    console.log(lastTimeGasSelected, 'lasttime gas selection 99999');
+    if (lastTimeGasSelected) {
+      setSelectGas(lastTimeGasSelected);
+    }
+  };
+  const updateGasSelection = async () => {
+    const gas = {
+      gasPrice: selectedGas?.level === 'custom' ? selectedGas?.price : null,
+      gasLevel: selectedGas?.level,
+      lastTimeSelect: selectedGas?.level,
+    };
+    await wallet.updateLastTimeGasSelection(chainId, gas);
+  };
+  const panelSelection = async (gas) => {
+    await setIsLoading(true);
+    if (gas.level === 'custom') {
+      setSelectGas({
+        level: 'custom',
+        price: Number(tx.gasPrice) / 1e9,
+        front_tx_count: 0,
+        estimated_seconds: 0,
+        base_fee: gasList[0].base_fee,
+      });
+    } else {
+      await setSelectGas(gas);
+    }
+    await loadGasMarket();
+    handleConfirmGas();
+  };
   useDebounce(
     () => {
       modalVisible && loadGasMarket();
@@ -232,7 +257,19 @@ const GasSelector = ({
   useEffect(() => {
     setGasLimit(Number(gasLimit));
   }, [gasLimit]);
-
+  useEffect(() => {
+    loadGasMarket();
+  }, []);
+  useEffect(() => {
+    formValidator();
+  }, [customGas, afterGasLimit, selectedGas, gasList]);
+  useEffect(() => {
+    getLastTimeSavedGas();
+  }, []);
+  useEffect(() => {
+    updateGasSelection();
+  }, [selectedGas]);
+  console.log(selectedGas, '!!!!!!!selectedGas');
   if (!isReady)
     return (
       <>
@@ -244,27 +281,67 @@ const GasSelector = ({
         </div>
       </>
     );
-
+  console.log(selectedGas, '>>>>!!!!');
   return (
     <>
       <p className="section-title">{t('gasCostTitle')}</p>
-      <div
-        className="gas-selector gray-section-block"
-        onClick={handleShowSelectModal}
-      >
-        <div className="gas-info">
-          <p className="text-gray-content text-14">
-            {`${gas.estimated_gas_cost_value} ${chain.nativeTokenSymbol}`} ≈ $
-            {gas.estimated_gas_cost_usd_value.toFixed(2)}
-          </p>
-          <p className="text-gray-content text-12">
-            {Number(tx.gasPrice) / 1e9} Gwei -{' '}
-            {formatSeconds(gas.estimated_seconds)}
-          </p>
-        </div>
-        <div className="right">
-          <img src={IconSetting} alt="setting" className="icon icon-setting" />
-        </div>
+      <div className="gas-selector gray-section-block">
+        {isLoading ? (
+          <div className="gas-info">
+            <Skeleton.Input active style={{ width: 200 }} />
+          </div>
+        ) : (
+          <>
+            {' '}
+            <div className="top">
+              <p className="usmoney">
+                ≈ ${gas.estimated_gas_cost_usd_value.toFixed(2)}
+              </p>
+              <p className="gasmoney">
+                {`${gas.estimated_gas_cost_value} ${chain.nativeTokenSymbol}`}
+              </p>
+              <div className="right" onClick={handleShowSelectModal}>
+                <img
+                  src={IconSetting}
+                  alt="setting"
+                  className="icon icon-setting"
+                />
+              </div>
+            </div>
+            <div className="card-container">
+              {gasList.map((gas) => (
+                <div
+                  className={clsx('card', {
+                    active: selectedGas?.level === gas.level,
+                  })}
+                  onClick={() => panelSelection(gas)}
+                >
+                  <div className="gas-level">
+                    {t(GAS_LEVEL_TEXT[gas.level])}
+                  </div>
+                  <div className="cardTitle">
+                    {gas.level === 'custom' ? (
+                      <Input
+                        placeholder="Custom"
+                        value={customGas}
+                        defaultValue={customGas}
+                        onChange={handleCustomGasChange}
+                        onClick={(e) => {
+                          e.stopPropagation();
+                        }}
+                        autoFocus={selectedGas?.level === gas.level}
+                        min={0}
+                        bordered={false}
+                      />
+                    ) : (
+                      gas.price / 1e9
+                    )}
+                  </div>
+                </div>
+              ))}
+            </div>
+          </>
+        )}
       </div>
       <Modal
         visible={modalVisible}
@@ -322,7 +399,7 @@ const GasSelector = ({
                               onClick={(e) => {
                                 e.stopPropagation();
                               }}
-                              autoFocus
+                              autoFocus={selectedGas?.level === gas.level}
                               min={0}
                             />
                           </Form.Item>

@@ -487,7 +487,7 @@
     "message": "合约"
   },
   "gasCostTitle": {
-    "message": "预估 Gas 费用"
+    "message": "预估 Gas 费用(gwei)"
   },
   "gasPriceTitle": {
     "message": "Gas 价格 (Gwei)"
