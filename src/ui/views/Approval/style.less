@@ -651,7 +651,25 @@
     }
     .cardTitle {
       .gas-level;
+      color:#707280 !important;
       font-size: 13px !important;
+      &.active {
+        color: #8697FF !important; 
+      }
+    }
+    .custom-input {
+      margin: 2px auto 0;
+    }
+    .ant-input {
+      text-align: center !important;
+      font-size: 13px !important;
+      &.active {
+        color: #8697FF !important; 
+      }
+    }
+    .ant-input:focus,
+    .ant-input-focused{
+      color: #000000;
     }
   }
 }
@@ -786,7 +804,6 @@
     .tip {
       color: #b4bdcc;
       font-size: 12px;
-      font-style: italic;
       margin-top: 12px;
       margin-bottom: 0;
       .recommend-times {

@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Input, Button, Skeleton, Form } from 'antd';
 import BigNumber from 'bignumber.js';
 import { ValidateStatus } from 'antd/lib/form/FormItem';
@@ -42,7 +42,8 @@ const GasSelector = ({
 }: GasSelectorProps) => {
   const wallet = useWallet();
   const { t } = useTranslation();
-  const [advanceExpanded, setAdvanceExpanded] = useState(false);
+  const customerInputRef = useRef<Input>(null);
+  const [advanceExpanded, setAdvanceExpanded] = useState(true);
   const [afterGasLimit, setGasLimit] = useState<string | number>(
     Number(gasLimit)
   );
@@ -163,15 +164,6 @@ const GasSelector = ({
   };
 
   const handleShowSelectModal = () => {
-    setCustomGas(Number(tx.gasPrice) / 1e9);
-    // setSelectGas({
-    //   level: 'custom',
-    //   price: Number(tx.gasPrice) / 1e9,
-    //   front_tx_count: 0,
-    //   estimated_seconds: 0,
-    //   base_fee: gasList[0].base_fee,
-    // });
-    setCustomNonce(Number(nonce));
     setModalVisible(true);
   };
 
@@ -182,13 +174,13 @@ const GasSelector = ({
         ...selectedGas,
         price: Number(customGas) * 1e9,
         gasLimit: Number(afterGasLimit),
-        nonce: customNonce,
+        nonce: customNonce || Number(nonce),
       });
     } else {
       onChange({
         ...selectedGas,
         gasLimit: Number(afterGasLimit),
-        nonce: customNonce,
+        nonce: customNonce || Number(nonce),
       });
     }
     setModalVisible(false);
@@ -211,28 +203,25 @@ const GasSelector = ({
       setCustomNonce(Number(e.target.value));
     }
   };
-
-  const handleClickAdvance = () => {
-    setAdvanceExpanded(!advanceExpanded);
-  };
-  const getLastTimeSavedGas = async () => {
-    const lastTimeGasSelected = await wallet.getLastTimeGasSelection(chainId);
-    console.log(lastTimeGasSelected, 'lasttime gas selection 99999');
-    if (lastTimeGasSelected) {
-      setSelectGas(lastTimeGasSelected);
-    }
-  };
-  const updateGasSelection = async () => {
-    const gas = {
-      gasPrice: selectedGas?.level === 'custom' ? selectedGas?.price : null,
-      gasLevel: selectedGas?.level,
-      lastTimeSelect: selectedGas?.level,
-    };
-    await wallet.updateLastTimeGasSelection(chainId, gas);
-  };
+  // const getLastTimeSavedGas = async () => {
+  //   const lastTimeGasSelected = await wallet.getLastTimeGasSelection(chainId);
+  //   console.log(lastTimeGasSelected, 'lasttime gas selection 99999');
+  //   if (lastTimeGasSelected) {
+  //     setSelectGas(lastTimeGasSelected);
+  //   }
+  // };
+  // const updateGasSelection = async () => {
+  //   const gas = {
+  //     gasPrice: selectedGas?.level === 'custom' ? selectedGas?.price : null,
+  //     gasLevel: selectedGas?.level,
+  //     lastTimeSelect: selectedGas?.level,
+  //   };
+  //   await wallet.updateLastTimeGasSelection(chainId, gas);
+  // };
   const panelSelection = async (gas) => {
     await setIsLoading(true);
     if (gas.level === 'custom') {
+      setCustomGas(Number(tx.gasPrice) / 1e9);
       setSelectGas({
         level: 'custom',
         price: Number(tx.gasPrice) / 1e9,
@@ -242,9 +231,21 @@ const GasSelector = ({
       });
     } else {
       await setSelectGas(gas);
+      await handleConfirmGas();
     }
-    await loadGasMarket();
-    handleConfirmGas();
+    setIsLoading(false);
+  };
+  const customGasConfirm = async (e) => {
+    await setIsLoading(true);
+    await setSelectGas({
+      level: 'custom',
+      price: Number(e?.target?.value) / 1e9,
+      front_tx_count: 0,
+      estimated_seconds: 0,
+      base_fee: gasList[0].base_fee,
+    });
+    await handleConfirmGas();
+    await setIsLoading(false);
   };
   useDebounce(
     () => {
@@ -262,14 +263,13 @@ const GasSelector = ({
   }, []);
   useEffect(() => {
     formValidator();
-  }, [customGas, afterGasLimit, selectedGas, gasList]);
-  useEffect(() => {
-    getLastTimeSavedGas();
-  }, []);
-  useEffect(() => {
-    updateGasSelection();
-  }, [selectedGas]);
-  console.log(selectedGas, '!!!!!!!selectedGas');
+  }, [afterGasLimit, selectedGas, gasList]);
+  // useEffect(() => {
+  //   getLastTimeSavedGas();
+  // }, []);
+  // useEffect(() => {
+  //   updateGasSelection();
+  // }, [selectedGas]);
   if (!isReady)
     return (
       <>
@@ -281,156 +281,73 @@ const GasSelector = ({
         </div>
       </>
     );
-  console.log(selectedGas, '>>>>!!!!');
   return (
     <>
       <p className="section-title">{t('gasCostTitle')}</p>
       <div className="gas-selector gray-section-block">
-        {isLoading ? (
-          <div className="gas-info">
-            <Skeleton.Input active style={{ width: 200 }} />
+        <div className="top">
+          <p className="usmoney">
+            ≈ ${gas.estimated_gas_cost_usd_value.toFixed(2)}
+          </p>
+          <p className="gasmoney">
+            {`${gas.estimated_gas_cost_value} ${chain.nativeTokenSymbol}`}
+          </p>
+          <div className="right" onClick={handleShowSelectModal}>
+            <img
+              src={IconSetting}
+              alt="setting"
+              className="icon icon-setting"
+            />
           </div>
-        ) : (
-          <>
-            {' '}
-            <div className="top">
-              <p className="usmoney">
-                ≈ ${gas.estimated_gas_cost_usd_value.toFixed(2)}
-              </p>
-              <p className="gasmoney">
-                {`${gas.estimated_gas_cost_value} ${chain.nativeTokenSymbol}`}
-              </p>
-              <div className="right" onClick={handleShowSelectModal}>
-                <img
-                  src={IconSetting}
-                  alt="setting"
-                  className="icon icon-setting"
-                />
+        </div>
+        <div className="card-container">
+          {gasList.map((gas) => (
+            <div
+              className={clsx('card', {
+                active: selectedGas?.level === gas.level,
+              })}
+              onClick={() => panelSelection(gas)}
+            >
+              <div className="gas-level">{t(GAS_LEVEL_TEXT[gas.level])}</div>
+              <div
+                className={clsx('cardTitle', {
+                  'custom-input': gas.level === 'custom',
+                  active: selectedGas?.level === gas.level,
+                })}
+              >
+                {gas.level === 'custom' ? (
+                  <Input
+                    value={customGas}
+                    defaultValue={customGas}
+                    onChange={handleCustomGasChange}
+                    onClick={() => panelSelection(gas)}
+                    onPressEnter={customGasConfirm}
+                    ref={customerInputRef}
+                    autoFocus={selectedGas?.level === gas.level}
+                    min={0}
+                    bordered={false}
+                  />
+                ) : (
+                  gas.price / 1e9
+                )}
               </div>
             </div>
-            <div className="card-container">
-              {gasList.map((gas) => (
-                <div
-                  className={clsx('card', {
-                    active: selectedGas?.level === gas.level,
-                  })}
-                  onClick={() => panelSelection(gas)}
-                >
-                  <div className="gas-level">
-                    {t(GAS_LEVEL_TEXT[gas.level])}
-                  </div>
-                  <div className="cardTitle">
-                    {gas.level === 'custom' ? (
-                      <Input
-                        placeholder="Custom"
-                        value={customGas}
-                        defaultValue={customGas}
-                        onChange={handleCustomGasChange}
-                        onClick={(e) => {
-                          e.stopPropagation();
-                        }}
-                        autoFocus={selectedGas?.level === gas.level}
-                        min={0}
-                        bordered={false}
-                      />
-                    ) : (
-                      gas.price / 1e9
-                    )}
-                  </div>
-                </div>
-              ))}
-            </div>
-          </>
-        )}
+          ))}
+        </div>
       </div>
       <Modal
         visible={modalVisible}
-        title={t('Select Gas Setting')}
+        title={t('Advanced Options')}
         className="gas-modal"
         onCancel={() => setModalVisible(false)}
         okText="Confirm"
         destroyOnClose
       >
         <Form onFinish={handleConfirmGas}>
-          <p className="section-title">{t('gasPriceTitle')}</p>
-          <div className={clsx('gas-selector-panel', { invalid: !!errMsg })}>
-            {gasList.map((gas) => (
-              <FieldCheckbox
-                className="mt-8"
-                checked={selectedGas?.level === gas.level}
-                onChange={(checked: boolean) => handleSelectGas(checked, gas)}
-                showCheckbox={!isLoading}
-                checkboxSize={16}
-              >
-                <div className="gas-content">
-                  {isLoading ? (
-                    <>
-                      <div className="gas-content__info">
-                        <p className="text-gray-title text-13 font-medium leading-none mb-4">
-                          <Skeleton.Input active style={{ width: 80 }} />
-                        </p>
-                        <p className="text-gray-content text-12 mb-0">
-                          <Skeleton.Input active style={{ width: 128 }} />
-                        </p>
-                      </div>
-                    </>
-                  ) : (
-                    <>
-                      <div className="gas-content__info">
-                        <p className="text-gray-title text-13 font-medium leading-none mb-4">
-                          {t(GAS_LEVEL_TEXT[gas.level])}
-                        </p>
-                        <p className="text-gray-content text-12 mb-0">
-                          {formatSeconds(gas.estimated_seconds)} -{' '}
-                          {gas.front_tx_count} {t('txn ahead')}
-                        </p>
-                      </div>
-                      <div className="gas-content__price">
-                        {gas.level === 'custom' ? (
-                          <Form.Item
-                            className="relative input-wrapper mb-0"
-                            validateStatus={validateStatus.customGas.status}
-                          >
-                            <Input
-                              placeholder="Custom"
-                              value={customGas}
-                              defaultValue={customGas}
-                              onChange={handleCustomGasChange}
-                              onClick={(e) => {
-                                e.stopPropagation();
-                              }}
-                              autoFocus={selectedGas?.level === gas.level}
-                              min={0}
-                            />
-                          </Form.Item>
-                        ) : (
-                          gas.price / 1e9
-                        )}
-                      </div>
-                    </>
-                  )}
-                </div>
-              </FieldCheckbox>
-            ))}
-          </div>
           {errMsg && <p className="mt-20 text-red-light mb-0">{errMsg}</p>}
-          <div className="gas-limit mt-20">
+          <div className="gas-limit">
             <p className="section-title flex">
-              <span className="flex-1">
-                {advanceExpanded ? t('GasLimit') : ''}
-              </span>
-              <span
-                className="text-right cursor-pointer"
-                onClick={handleClickAdvance}
-              >
-                {t('Advanced Options')}
-                <img
-                  className={clsx('icon icon-arrow-down inline-block ml-4', {
-                    expanded: advanceExpanded,
-                  })}
-                  src={IconArrowDown}
-                />
-              </span>
+              <span className="flex-1">{t('GasLimit')}</span>
             </p>
             <div
               className={clsx('gas-limit-panel-wrapper', {

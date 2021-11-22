@@ -26,7 +26,9 @@ export default ({
       onClick={onClick}
       style={{ cursor: onClick ? 'pointer' : 'inherit' }}
     >
-      {brandName && <div className="text-13 text-white">{brandName}</div>}
+      {brandName && (
+        <div className="text-13 self-start text-white">{brandName}</div>
+      )}
       <div
         className={cx('address-viewer-text text-12 opacity-60', className)}
         title={address}
