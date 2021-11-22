@@ -392,7 +392,6 @@ const SignTx = ({ params, origin }) => {
       isSend,
     });
   };
-
   const handleGasChange = (gas: GasSelectorResponse) => {
     const beforeNonce = realNonce || tx.nonce;
     const afterNonce = intToHex(gas.nonce);

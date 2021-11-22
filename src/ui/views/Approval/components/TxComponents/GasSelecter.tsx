@@ -6,10 +6,9 @@ import { useTranslation, Trans } from 'react-i18next';
 import { useDebounce } from 'react-use';
 import { CHAINS, GAS_LEVEL_TEXT, MINIMUM_GAS_LIMIT } from 'consts';
 import { GasResult, Tx, GasLevel } from 'background/service/openapi';
-import { formatSeconds, useWallet } from 'ui/utils';
-import { Modal, FieldCheckbox } from 'ui/component';
+import { useWallet } from 'ui/utils';
+import { Modal } from 'ui/component';
 import IconSetting from 'ui/assets/setting-gray.svg';
-import IconArrowDown from 'ui/assets/arrow-down.svg';
 import clsx from 'clsx';
 
 export interface GasSelectorResponse extends GasLevel {
@@ -148,19 +147,13 @@ const GasSelector = ({
       chain.serverId,
       customGas && customGas > 0 ? Number(customGas) * 1e9 : undefined
     );
-    setGasList(
+    await setGasList(
       list.map((item) =>
         item.level === 'custom' ? { ...item, price: item.price / 1e9 } : item
       )
     );
+    await getLastTimeSavedGas();
     setIsLoading(false);
-  };
-
-  const handleSelectGas = (checked: boolean, gas: GasLevel) => {
-    if (!checked || isLoading) {
-      return;
-    }
-    setSelectGas(gas);
   };
 
   const handleShowSelectModal = () => {
@@ -203,26 +196,41 @@ const GasSelector = ({
       setCustomNonce(Number(e.target.value));
     }
   };
-  // const getLastTimeSavedGas = async () => {
-  //   const lastTimeGasSelected = await wallet.getLastTimeGasSelection(chainId);
-  //   console.log(lastTimeGasSelected, 'lasttime gas selection 99999');
-  //   if (lastTimeGasSelected) {
-  //     setSelectGas(lastTimeGasSelected);
-  //   }
-  // };
-  // const updateGasSelection = async () => {
-  //   const gas = {
-  //     gasPrice: selectedGas?.level === 'custom' ? selectedGas?.price : null,
-  //     gasLevel: selectedGas?.level,
-  //     lastTimeSelect: selectedGas?.level,
-  //   };
-  //   await wallet.updateLastTimeGasSelection(chainId, gas);
-  // };
+  const getLastTimeSavedGas = async () => {
+    const {
+      gasPrice,
+      gasLevel,
+      lastTimeSelect,
+    } = await wallet.getLastTimeGasSelection(chainId);
+    if (gasPrice) {
+      setCustomGas(gasPrice);
+    }
+    if (lastTimeSelect === 'gasLevel') {
+      const lastSected = gasList.filter((item) => item.level === gasLevel);
+      setSelectGas(lastSected[0]);
+    } else if (lastTimeSelect === 'gasPrice') {
+      setSelectGas({
+        level: 'custom',
+        price: gasPrice,
+        front_tx_count: 0,
+        estimated_seconds: 0,
+        base_fee: gasList[0].base_fee,
+      });
+    }
+  };
+  const updateGasSelection = async (currentGas) => {
+    const gas = {
+      gasPrice: currentGas?.level === 'custom' ? currentGas?.price : null,
+      gasLevel: currentGas?.level === 'custom' ? null : currentGas?.level,
+      lastTimeSelect: currentGas?.level === 'custom' ? 'gasPrice' : 'gasLevel',
+    };
+    await wallet.updateLastTimeGasSelection(chainId, gas);
+  };
   const panelSelection = async (gas) => {
     await setIsLoading(true);
     if (gas.level === 'custom') {
-      setCustomGas(Number(tx.gasPrice) / 1e9);
-      setSelectGas({
+      await setCustomGas(Number(tx.gasPrice) / 1e9);
+      await setSelectGas({
         level: 'custom',
         price: Number(tx.gasPrice) / 1e9,
         front_tx_count: 0,
@@ -233,6 +241,7 @@ const GasSelector = ({
       await setSelectGas(gas);
       await handleConfirmGas();
     }
+    await updateGasSelection(gas);
     setIsLoading(false);
   };
   const customGasConfirm = async (e) => {
@@ -244,7 +253,15 @@ const GasSelector = ({
       estimated_seconds: 0,
       base_fee: gasList[0].base_fee,
     });
+    await updateGasSelection({
+      level: 'custom',
+      price: Number(e?.target?.value),
+      front_tx_count: 0,
+      estimated_seconds: 0,
+      base_fee: gasList[0].base_fee,
+    });
     await handleConfirmGas();
+
     await setIsLoading(false);
   };
   useDebounce(
@@ -264,12 +281,6 @@ const GasSelector = ({
   useEffect(() => {
     formValidator();
   }, [afterGasLimit, selectedGas, gasList]);
-  // useEffect(() => {
-  //   getLastTimeSavedGas();
-  // }, []);
-  // useEffect(() => {
-  //   updateGasSelection();
-  // }, [selectedGas]);
   if (!isReady)
     return (
       <>

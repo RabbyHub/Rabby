@@ -10,6 +10,13 @@ export interface Account {
   address: string;
   brandName: string;
 }
+export interface GasCache {
+  chainId: {
+    gasPrice: number; // custom cached gas price
+    gasLevel: 'slow' | 'standard' | 'fast'; // cached gasLevel
+    lastTimeSelect: 'gasLevel' | 'gasPrice'; // last time selection, 'gasLevel' | 'gasPrice'
+  };
+}
 interface PreferenceStore {
   currentAccount: Account | undefined | null;
   externalLinkAck: boolean;
@@ -23,7 +30,7 @@ interface PreferenceStore {
   isDefaultWallet: boolean;
   lastTimeSendToken: Record<string, TokenItem>;
   walletSavedList: [];
-  gasSelectList: Record<number, GasLevel>;
+  gasCache: GasCache[];
 }
 
 const SUPPORT_LOCALES = ['en', 'zh_CN'];
@@ -52,7 +59,7 @@ class PreferenceService {
         isDefaultWallet: false,
         lastTimeSendToken: {},
         walletSavedList: [],
-        gasSelectList: {},
+        gasCache: [],
       },
     });
     if (!this.store.locale) {
@@ -68,8 +75,8 @@ class PreferenceService {
     if (!this.store.lastTimeSendToken) {
       this.store.lastTimeSendToken = {};
     }
-    if (!this.store.gasSelectList) {
-      this.store.gasSelectList = {};
+    if (!this.store.gasCache) {
+      this.store.gasCache = [];
     }
   };
 
@@ -249,12 +256,12 @@ class PreferenceService {
     this.store.walletSavedList = list;
   };
   getLastTimeGasSelection = (chainId: number) => {
-    return this.store.gasSelectList[chainId];
+    return this.store.gasCache[chainId];
   };
 
-  updateLastTimeGasSelection = (chainId: number, gas: GasLevel) => {
-    this.store.gasSelectList = {
-      ...this.store.gasSelectList,
+  updateLastTimeGasSelection = (chainId: number, gas: GasCache) => {
+    this.store.gasCache = {
+      ...this.store.gasCache,
       [chainId]: gas,
     };
   };
