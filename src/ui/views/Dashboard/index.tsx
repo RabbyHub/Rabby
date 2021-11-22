@@ -3,7 +3,7 @@ import ClipboardJS from 'clipboard';
 import QRCode from 'qrcode.react';
 import { useHistory } from 'react-router-dom';
 import { useInterval } from 'react-use';
-import { message } from 'antd';
+import { message, Popover } from 'antd';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 import { WALLET_BRAND_CONTENT, KEYRINGS_LOGOS } from 'consts';
@@ -18,13 +18,15 @@ import {
   DefaultWalletAlertBar,
 } from './components';
 import IconSetting from 'ui/assets/settings.svg';
-import { ReactComponent as IconCopy } from 'ui/assets/copy.svg';
+//import { ReactComponent as IconCopy } from 'ui/assets/copy.svg';
 import { ReactComponent as IconQrcode } from 'ui/assets/qrcode.svg';
 import IconSend from 'ui/assets/send.svg';
 import IconHistory from 'ui/assets/history.svg';
 import IconPending from 'ui/assets/pending.svg';
 import IconSuccess from 'ui/assets/success.svg';
 import IconUpAndDown from 'ui/assets/up-and-down.svg';
+import { ReactComponent as IconCopy } from 'ui/assets/urlcopy.svg';
+
 import './style.less';
 
 const Dashboard = () => {
@@ -38,6 +40,7 @@ const Dashboard = () => {
   const [isDefaultWallet, setIsDefaultWallet] = useState(true);
   const [copySuccess, setCopySuccess] = useState(false);
   const [brandName, setBrandName] = useState('');
+  const [hovered, setHovered] = useState(false);
   const handleToggle = () => {
     setModalOpen(!isModalOpen);
   };
@@ -109,7 +112,7 @@ const Dashboard = () => {
   };
 
   const handleCopyCurrentAddress = () => {
-    const clipboard = new ClipboardJS('.main', {
+    const clipboard = new ClipboardJS('.address-popover', {
       text: function () {
         return currentAccount!.address;
       },
@@ -137,6 +140,41 @@ const Dashboard = () => {
   const handleShowQrcode = () => {
     setQrcodeVisible(true);
   };
+  const hoverContent = () => (
+    <div className="flex flex-col">
+      <div className="flex">
+        {' '}
+        {currentAccount && KEYRINGS_LOGOS[currentAccount?.type] ? (
+          <img
+            className="icon icon-account-type w-[28px] h-[28px]"
+            src={KEYRINGS_LOGOS[currentAccount?.type]}
+          />
+        ) : (
+          currentAccount && (
+            <img
+              className="icon icon-account-type w-[28px] h-[28px]"
+              src={WALLET_BRAND_CONTENT[currentAccount?.brandName]?.image}
+            />
+          )
+        )}
+        <div className="text-20 text-black ml-6 mr-6">{brandName}</div>
+      </div>
+      <div className="flex text-12 mt-12">
+        <div className="mr-8">{currentAccount?.address}</div>
+        <IconCopy
+          className={clsx('icon icon-copy ml-7', { success: copySuccess })}
+          onClick={handleCopyCurrentAddress}
+        />
+      </div>
+      <div className="qrcode-container">
+        <QRCode value={currentAccount?.address} size={85} />
+      </div>
+    </div>
+  );
+  const clickContent = <div>This is click content.</div>;
+  const handleHoverChange = (visible) => {
+    setHovered(visible);
+  };
   return (
     <>
       <div
@@ -146,31 +184,44 @@ const Dashboard = () => {
           {currentAccount && (
             <div className="flex header items-center">
               <div className="h-[32px] flex header-wrapper items-center relative">
-                {KEYRINGS_LOGOS[currentAccount?.type] ? (
+                <Popover
+                  style={{ width: 500 }}
+                  content={hoverContent}
+                  trigger="hover"
+                  visible={hovered}
+                  placement="bottomLeft"
+                  overlayClassName="address-popover"
+                  onVisibleChange={handleHoverChange}
+                >
+                  {KEYRINGS_LOGOS[currentAccount?.type] ? (
+                    <img
+                      className="icon icon-account-type w-[20px] h-[20px]"
+                      src={KEYRINGS_LOGOS[currentAccount?.type]}
+                    />
+                  ) : (
+                    <img
+                      className="icon icon-account-type w-[20px] h-[20px]"
+                      src={
+                        WALLET_BRAND_CONTENT[currentAccount?.brandName]?.image
+                      }
+                    />
+                  )}
+                  <div className="text-15 text-white ml-6 mr-6">
+                    {brandName}
+                  </div>
+                  {currentAccount && (
+                    <AddressViewer
+                      address={currentAccount.address}
+                      onClick={handleToggle}
+                      showArrow={false}
+                      className={'text-12 text-white opacity-60'}
+                    />
+                  )}
                   <img
-                    className="icon icon-account-type w-[20px] h-[20px]"
-                    src={KEYRINGS_LOGOS[currentAccount?.type]}
+                    className="icon icon-account-type w-[16px] h-[16px] ml-8"
+                    src={IconUpAndDown}
                   />
-                ) : (
-                  <img
-                    className="icon icon-account-type w-[20px] h-[20px]"
-                    src={WALLET_BRAND_CONTENT[currentAccount?.brandName]?.image}
-                  />
-                )}
-                <div className="text-15 text-white ml-6 mr-6">{brandName}</div>
-                {currentAccount && (
-                  <AddressViewer
-                    address={currentAccount.address}
-                    onClick={handleToggle}
-                    showArrow={false}
-                    className={'text-12 text-white opacity-60'}
-                  />
-                )}
-                <img
-                  className="icon icon-account-type w-[16px] h-[16px] ml-8"
-                  src={IconUpAndDown}
-                />
-                {/* <IconCopy
+                  {/* <IconCopy
                   className={clsx('icon icon-copy', { success: copySuccess })}
                   onClick={handleCopyCurrentAddress}
                 />
@@ -178,6 +229,7 @@ const Dashboard = () => {
                   className="icon icon-qrcode"
                   onClick={handleShowQrcode}
                 /> */}
+                </Popover>
               </div>
               <div className="flex-1" />
               <img
