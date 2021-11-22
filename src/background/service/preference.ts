@@ -1,10 +1,11 @@
 import cloneDeep from 'lodash/cloneDeep';
+import compareVersions from 'compare-versions';
 import { createPersistStore } from 'background/utils';
 import { keyringService, sessionService, i18n } from './index';
 import { TotalBalanceResponse, TokenItem } from './openapi';
 import { HARDWARE_KEYRING_TYPES } from 'consts';
 import { browser } from 'webextension-polyfill-ts';
-const version = process.env.version!.split('/')[0].replace(/[^0-9]/g, '');
+const version = process.env.release || '0';
 export interface Account {
   type: string;
   address: string;
@@ -250,7 +251,7 @@ class PreferenceService {
   getIsFirstOpen = () => {
     if (
       !this.store.currentVersion ||
-      version > (this.store.currentVersion || 0)
+      compareVersions(version, this.store.currentVersion)
     ) {
       this.store.currentVersion = version;
       this.store.firstOpen = true;
