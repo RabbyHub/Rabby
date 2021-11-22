@@ -24,7 +24,7 @@ import IconSend from 'ui/assets/send.svg';
 import IconHistory from 'ui/assets/history.svg';
 import IconPending from 'ui/assets/pending.svg';
 import IconSuccess from 'ui/assets/success.svg';
-
+import IconUpAndDown from 'ui/assets/up-and-down.svg';
 import './style.less';
 
 const Dashboard = () => {
@@ -37,7 +37,7 @@ const Dashboard = () => {
   const [pendingTxCount, setPendingTxCount] = useState(0);
   const [isDefaultWallet, setIsDefaultWallet] = useState(true);
   const [copySuccess, setCopySuccess] = useState(false);
-
+  const [brandName, setBrandName] = useState('');
   const handleToggle = () => {
     setModalOpen(!isModalOpen);
   };
@@ -47,6 +47,11 @@ const Dashboard = () => {
     if (!account) {
       history.replace('/no-address');
       return;
+    }
+    if (account.brandName === 'HD Key Tree') {
+      setBrandName('MNEMONIC');
+    } else {
+      setBrandName(account.brandName);
     }
     setCurrentAccount(account);
   };
@@ -140,31 +145,40 @@ const Dashboard = () => {
         <div className="main">
           {currentAccount && (
             <div className="flex header items-center">
-              {KEYRINGS_LOGOS[currentAccount?.type] ? (
+              <div className="h-[32px] flex header-wrapper items-center relative">
+                {KEYRINGS_LOGOS[currentAccount?.type] ? (
+                  <img
+                    className="icon icon-account-type w-[20px] h-[20px]"
+                    src={KEYRINGS_LOGOS[currentAccount?.type]}
+                  />
+                ) : (
+                  <img
+                    className="icon icon-account-type w-[20px] h-[20px]"
+                    src={WALLET_BRAND_CONTENT[currentAccount?.brandName]?.image}
+                  />
+                )}
+                <div className="text-15 text-white ml-6 mr-6">{brandName}</div>
+                {currentAccount && (
+                  <AddressViewer
+                    address={currentAccount.address}
+                    onClick={handleToggle}
+                    showArrow={false}
+                    className={'text-12 text-white opacity-60'}
+                  />
+                )}
                 <img
-                  className="icon icon-account-type"
-                  src={KEYRINGS_LOGOS[currentAccount?.type]}
+                  className="icon icon-account-type w-[16px] h-[16px] ml-8"
+                  src={IconUpAndDown}
                 />
-              ) : (
-                <img
-                  className="icon icon-account-type"
-                  src={WALLET_BRAND_CONTENT[currentAccount?.brandName]?.image}
+                {/* <IconCopy
+                  className={clsx('icon icon-copy', { success: copySuccess })}
+                  onClick={handleCopyCurrentAddress}
                 />
-              )}
-              {currentAccount && (
-                <AddressViewer
-                  address={currentAccount.address}
-                  onClick={handleToggle}
-                />
-              )}
-              <IconCopy
-                className={clsx('icon icon-copy', { success: copySuccess })}
-                onClick={handleCopyCurrentAddress}
-              />
-              <IconQrcode
-                className="icon icon-qrcode"
-                onClick={handleShowQrcode}
-              />
+                <IconQrcode
+                  className="icon icon-qrcode"
+                  onClick={handleShowQrcode}
+                /> */}
+              </div>
               <div className="flex-1" />
               <img
                 className="icon icon-settings"
