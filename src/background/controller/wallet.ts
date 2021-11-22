@@ -21,7 +21,7 @@ import i18n from 'background/service/i18n';
 import { KEYRING_CLASS, DisplayedKeryring } from 'background/service/keyring';
 import BaseController from './base';
 import { CHAINS_ENUM, CHAINS, INTERNAL_REQUEST_ORIGIN, EVENTS } from 'consts';
-import { Account } from '../service/preference';
+import { Account, ChainGas } from '../service/preference';
 import { ConnectedSite } from '../service/permission';
 import { ExplainTxResponse, TokenItem } from '../service/openapi';
 import DisplayKeyring from '../service/keyring/display';
@@ -669,8 +669,8 @@ export class WalletController extends BaseController {
     return preferenceService.getLastTimeGasSelection(chainId);
   };
 
-  updateLastTimeGasSelection = (chainId, GasLevel) => {
-    return preferenceService.updateLastTimeGasSelection(chainId, GasLevel);
+  updateLastTimeGasSelection = (chainId: string, gas: ChainGas) => {
+    return preferenceService.updateLastTimeGasSelection(chainId, gas);
   };
 }
 

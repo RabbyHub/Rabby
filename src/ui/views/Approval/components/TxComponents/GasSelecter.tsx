@@ -10,7 +10,7 @@ import { useWallet } from 'ui/utils';
 import { Modal } from 'ui/component';
 import IconSetting from 'ui/assets/setting-gray.svg';
 import clsx from 'clsx';
-
+import { ChainGas } from 'background/service/preference';
 export interface GasSelectorResponse extends GasLevel {
   gasLimit: number;
   nonce: number;
@@ -198,9 +198,9 @@ const GasSelector = ({
   };
   const getLastTimeSavedGas = async () => {
     const {
-      gasPrice,
-      gasLevel,
-      lastTimeSelect,
+      gasPrice = null,
+      gasLevel = null,
+      lastTimeSelect = null,
     } = await wallet.getLastTimeGasSelection(chainId);
     if (gasPrice) {
       setCustomGas(gasPrice);
@@ -219,7 +219,7 @@ const GasSelector = ({
     }
   };
   const updateGasSelection = async (currentGas) => {
-    const gas = {
+    const gas: ChainGas = {
       gasPrice: currentGas?.level === 'custom' ? currentGas?.price : null,
       gasLevel: currentGas?.level === 'custom' ? null : currentGas?.level,
       lastTimeSelect: currentGas?.level === 'custom' ? 'gasPrice' : 'gasLevel',
