@@ -33,11 +33,7 @@ class PreferenceService {
   hasOtherProvider = false;
 
   init = async () => {
-    let defaultLang = 'en';
-    const acceptLangs = await this.getAcceptLanguages();
-    if (acceptLangs.length > 0) {
-      defaultLang = acceptLangs[0];
-    }
+    const defaultLang = 'en';
     this.store = await createPersistStore<PreferenceStore>({
       name: 'preference',
       template: {
