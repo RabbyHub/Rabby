@@ -23,6 +23,7 @@ interface PreferenceStore {
   isDefaultWallet: boolean;
   lastTimeSendToken: Record<string, TokenItem>;
   walletSavedList: [];
+  alianNames: Record<string, string>;
 }
 
 const SUPPORT_LOCALES = ['en', 'zh_CN'];
@@ -51,6 +52,7 @@ class PreferenceService {
         isDefaultWallet: false,
         lastTimeSendToken: {},
         walletSavedList: [],
+        alianNames: {},
       },
     });
     if (!this.store.locale) {
@@ -65,6 +67,9 @@ class PreferenceService {
     }
     if (!this.store.lastTimeSendToken) {
       this.store.lastTimeSendToken = {};
+    }
+    if (!this.store.alianNames) {
+      this.store.alianNames = {};
     }
   };
 
@@ -242,6 +247,18 @@ class PreferenceService {
 
   updateWalletSavedList = (list: []) => {
     this.store.walletSavedList = list;
+  };
+  getAlianName = (address: string) => {
+    const key = address.toLowerCase();
+    return this.store.alianNames[key];
+  };
+
+  updateAlianName = (address: string, name: string) => {
+    const key = address.toLowerCase();
+    this.store.alianNames = {
+      ...this.store.alianNames,
+      [key]: name,
+    };
   };
 }
 

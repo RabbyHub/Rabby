@@ -665,6 +665,10 @@ export class WalletController extends BaseController {
   updateHighlightWalletList = (list) => {
     return preferenceService.updateWalletSavedList(list);
   };
+
+  getAlianName = (address: string) => preferenceService.getAlianName(address);
+  updateAlianName = (address: string, name: string) =>
+    preferenceService.updateAlianName(address, name);
 }
 
 export default new WalletController();

@@ -43,7 +43,7 @@ const Dashboard = () => {
   const [brandName, setBrandName] = useState('');
   const [hovered, setHovered] = useState(false);
   const [startEdit, setStartEdit] = useState(false);
-  const [alianName, setAlianName] = useState('');
+  const [alianName, setAlianName] = useState<string>('');
   const handleToggle = () => {
     setModalOpen(!isModalOpen);
   };
@@ -74,6 +74,12 @@ const Dashboard = () => {
 
   const _openInTab = useConfirmExternalModal();
 
+  const getAlianName = async (address: string) => {
+    await wallet.getAlianName(address).then((name) => {
+      console.log(name, 99999);
+      setAlianName(name);
+    });
+  };
   useInterval(() => {
     if (!currentAccount) return;
     getPendingTxCount(currentAccount.address);
@@ -89,6 +95,7 @@ const Dashboard = () => {
   useEffect(() => {
     if (currentAccount) {
       getPendingTxCount(currentAccount.address);
+      getAlianName(currentAccount?.address);
     }
   }, [currentAccount]);
 
@@ -140,14 +147,11 @@ const Dashboard = () => {
     setIsDefaultWallet(isDefault);
   };
 
-  const handleShowQrcode = () => {
-    setQrcodeVisible(true);
-  };
-  const handleAlianNameChange = (e) => {
+  const handleAlianNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setAlianName(e.target.value);
   };
-  const alianNameConfirm = () => {
-    console.log(1111);
+  const alianNameConfirm = async () => {
+    await wallet.updateAlianName(currentAccount?.address, alianName);
   };
   const hoverContent = () => (
     <div className="flex flex-col">
@@ -170,14 +174,16 @@ const Dashboard = () => {
           {startEdit ? (
             <Input
               value={alianName || currentAccount?.brandName}
-              defaultValue={currentAccount?.brandName}
+              defaultValue={alianName || currentAccount?.brandName}
               onChange={handleAlianNameChange}
               onPressEnter={alianNameConfirm}
               autoFocus={startEdit}
               bordered={false}
+              max={20}
+              min={0}
             />
           ) : (
-            brandName
+            alianName || brandName
           )}
         </div>
         <img
@@ -202,6 +208,7 @@ const Dashboard = () => {
   const handleHoverChange = (visible) => {
     setHovered(visible);
   };
+  useEffect;
   return (
     <>
       <div
@@ -234,7 +241,7 @@ const Dashboard = () => {
                     />
                   )}
                   <div className="text-15 text-white ml-6 mr-6">
-                    {brandName}
+                    {alianName || brandName}
                   </div>
                   {currentAccount && (
                     <AddressViewer
