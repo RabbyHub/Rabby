@@ -147,7 +147,7 @@ const GasSelector = ({
       chain.serverId,
       customGas && customGas > 0 ? Number(customGas) * 1e9 : undefined
     );
-    await setGasList(
+    setGasList(
       list.map((item) =>
         item.level === 'custom' ? { ...item, price: item.price / 1e9 } : item
       )
@@ -206,8 +206,8 @@ const GasSelector = ({
       setCustomGas(gasPrice);
     }
     if (lastTimeSelect === 'gasLevel') {
-      const lastSected = gasList.filter((item) => item.level === gasLevel);
-      setSelectGas(lastSected[0]);
+      const lastSelected = gasList.find((item) => item.level === gasLevel);
+      lastSelected && setSelectGas(lastSelected);
     } else if (lastTimeSelect === 'gasPrice') {
       setSelectGas({
         level: 'custom',

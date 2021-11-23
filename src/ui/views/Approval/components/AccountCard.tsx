@@ -55,7 +55,6 @@ const AccountCard = ({
   const icon = getAccountIcon(currentAccount?.type);
 
   if (!currentAccount) return <></>;
-  console.log(currentAccount, '>>>>>');
   return (
     <div className="account-card">
       <div className="account-detail">

@@ -12,7 +12,7 @@ export interface Account {
 }
 export interface ChainGas {
   gasPrice?: number; // custom cached gas price
-  gasLevel?: 'slow' | 'standard' | 'fast'; // cached gasLevel
+  gasLevel?: 'slow' | 'normal' | 'fast'; // cached gasLevel
   lastTimeSelect?: 'gasLevel' | 'gasPrice'; // last time selection, 'gasLevel' | 'gasPrice'
 }
 export interface GasCache {
@@ -31,7 +31,7 @@ interface PreferenceStore {
   isDefaultWallet: boolean;
   lastTimeSendToken: Record<string, TokenItem>;
   walletSavedList: [];
-  gasCache: ChainGas[];
+  gasCache: GasCache;
 }
 
 const SUPPORT_LOCALES = ['en', 'zh_CN'];
@@ -60,7 +60,7 @@ class PreferenceService {
         isDefaultWallet: false,
         lastTimeSendToken: {},
         walletSavedList: [],
-        gasCache: [],
+        gasCache: {},
       },
     });
     if (!this.store.locale) {
@@ -77,7 +77,7 @@ class PreferenceService {
       this.store.lastTimeSendToken = {};
     }
     if (!this.store.gasCache) {
-      this.store.gasCache = [];
+      this.store.gasCache = {};
     }
   };
 
