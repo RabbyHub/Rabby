@@ -3,7 +3,7 @@ import ClipboardJS from 'clipboard';
 import QRCode from 'qrcode.react';
 import { useHistory } from 'react-router-dom';
 import { useInterval } from 'react-use';
-import { message, Popover } from 'antd';
+import { message, Popover, Input } from 'antd';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 import { WALLET_BRAND_CONTENT, KEYRINGS_LOGOS } from 'consts';
@@ -26,6 +26,7 @@ import IconPending from 'ui/assets/pending.svg';
 import IconSuccess from 'ui/assets/success.svg';
 import IconUpAndDown from 'ui/assets/up-and-down.svg';
 import { ReactComponent as IconCopy } from 'ui/assets/urlcopy.svg';
+import IconEditPen from 'ui/assets/editpen.svg';
 
 import './style.less';
 
@@ -41,6 +42,8 @@ const Dashboard = () => {
   const [copySuccess, setCopySuccess] = useState(false);
   const [brandName, setBrandName] = useState('');
   const [hovered, setHovered] = useState(false);
+  const [startEdit, setStartEdit] = useState(false);
+  const [alianName, setAlianName] = useState('');
   const handleToggle = () => {
     setModalOpen(!isModalOpen);
   };
@@ -140,9 +143,15 @@ const Dashboard = () => {
   const handleShowQrcode = () => {
     setQrcodeVisible(true);
   };
+  const handleAlianNameChange = (e) => {
+    setAlianName(e.target.value);
+  };
+  const alianNameConfirm = () => {
+    console.log(1111);
+  };
   const hoverContent = () => (
     <div className="flex flex-col">
-      <div className="flex">
+      <div className="flex items-center">
         {' '}
         {currentAccount && KEYRINGS_LOGOS[currentAccount?.type] ? (
           <img
@@ -157,7 +166,25 @@ const Dashboard = () => {
             />
           )
         )}
-        <div className="text-20 text-black ml-6 mr-6">{brandName}</div>
+        <div className="brand-name">
+          {startEdit ? (
+            <Input
+              value={alianName || currentAccount?.brandName}
+              defaultValue={currentAccount?.brandName}
+              onChange={handleAlianNameChange}
+              onPressEnter={alianNameConfirm}
+              autoFocus={startEdit}
+              bordered={false}
+            />
+          ) : (
+            brandName
+          )}
+        </div>
+        <img
+          className="edit-name"
+          src={IconEditPen}
+          onClick={() => setStartEdit(true)}
+        />
       </div>
       <div className="flex text-12 mt-12">
         <div className="mr-8">{currentAccount?.address}</div>
