@@ -3937,20 +3937,10 @@ bip39@^2.2.0:
     safe-buffer "^5.0.1"
     unorm "^1.3.3"
 
-bip39@^3.0.3:
-  version "3.0.3"
-  resolved "https://registry.yarnpkg.com/bip39/-/bip39-3.0.3.tgz#4a8b79067d6ed2e74f9199ac994a2ab61b176760"
-  integrity sha512-P0dKrz4g0V0BjXfx7d9QNkJ/Txcz/k+hM9TnjqjUaXtuOfAvxXSw2rJw8DX0e3ZPwnK/IgDxoRqf0bvoVCqbMg==
-  dependencies:
-    "@types/node" "11.11.6"
-    create-hash "^1.1.0"
-    pbkdf2 "^3.0.9"
-    randombytes "^2.0.1"
-
 bip39@^3.0.4:
   version "3.0.4"
-  resolved "https://registry.yarnpkg.com/bip39/-/bip39-3.0.4.tgz#5b11fed966840b5e1b8539f0f54ab6392969b2a0"
-  integrity sha512-YZKQlb752TrUWqHWj7XAwCSjYEgGAk+/Aas3V7NyjQeZYsztO8JnQUaCWhcnL4T+jL8nvB8typ2jRPzTlgugNw==
+  resolved "https://r.cnpmjs.org/bip39/download/bip39-3.0.4.tgz#5b11fed966840b5e1b8539f0f54ab6392969b2a0"
+  integrity sha1-WxH+2WaEC14bhTnw9Uq2OSlpsqA=
   dependencies:
     "@types/node" "11.11.6"
     create-hash "^1.1.0"
@@ -5736,8 +5726,8 @@ eth-sig-util@^2.4.4, eth-sig-util@^2.5.0:
 
 eth-sig-util@^3.0.1:
   version "3.0.1"
-  resolved "https://registry.yarnpkg.com/eth-sig-util/-/eth-sig-util-3.0.1.tgz#8753297c83a3f58346bd13547b59c4b2cd110c96"
-  integrity sha512-0Us50HiGGvZgjtWTyAI/+qTzYPMLy5Q451D0Xy68bxq1QMWdoOddDwGvsqcFT27uohKgalM9z/yxplyt+mY2iQ==
+  resolved "https://r.cnpmjs.org/eth-sig-util/download/eth-sig-util-3.0.1.tgz#8753297c83a3f58346bd13547b59c4b2cd110c96"
+  integrity sha1-h1MpfIOj9YNGvRNUe1nEss0RDJY=
   dependencies:
     ethereumjs-abi "^0.6.8"
     ethereumjs-util "^5.1.1"
@@ -5755,6 +5745,16 @@ eth-simple-keyring@^3.5.0:
     ethereumjs-wallet "^0.6.0"
     events "^1.1.1"
     xtend "^4.0.1"
+
+eth-simple-keyring@^4.2.0:
+  version "4.2.0"
+  resolved "https://r.cnpmjs.org/eth-simple-keyring/download/eth-simple-keyring-4.2.0.tgz#c197a4bd4cce7d701b5f3607d0b843112ddb17e3"
+  integrity sha1-wZekvUzOfXAbXzYH0LhDES3bF+M=
+  dependencies:
+    eth-sig-util "^3.0.1"
+    ethereumjs-util "^7.0.9"
+    ethereumjs-wallet "^1.0.1"
+    events "^1.1.1"
 
 ethereum-bloom-filters@^1.0.6:
   version "1.0.9"
@@ -5857,8 +5857,8 @@ ethereumjs-util@^7.0.2, ethereumjs-util@^7.0.9:
 
 ethereumjs-util@^7.1.0, ethereumjs-util@^7.1.3:
   version "7.1.3"
-  resolved "https://registry.yarnpkg.com/ethereumjs-util/-/ethereumjs-util-7.1.3.tgz#b55d7b64dde3e3e45749e4c41288238edec32d23"
-  integrity sha512-y+82tEbyASO0K0X1/SRhbJJoAlfcvq8JbrG4a5cjrOks7HS/36efU/0j2flxCPOUM++HFahk33kr/ZxyC4vNuw==
+  resolved "https://r.cnpmjs.org/ethereumjs-util/download/ethereumjs-util-7.1.3.tgz#b55d7b64dde3e3e45749e4c41288238edec32d23"
+  integrity sha1-tV17ZN3j4+RXSeTEEogjjt7DLSM=
   dependencies:
     "@types/bn.js" "^5.1.0"
     bn.js "^5.1.2"
@@ -5909,8 +5909,8 @@ ethereumjs-wallet@^1.0.1:
 
 ethereumjs-wallet@^1.0.2:
   version "1.0.2"
-  resolved "https://registry.yarnpkg.com/ethereumjs-wallet/-/ethereumjs-wallet-1.0.2.tgz#2c000504b4c71e8f3782dabe1113d192522e99b6"
-  integrity sha512-CCWV4RESJgRdHIvFciVQFnCHfqyhXWchTPlkfp28Qc53ufs+doi5I/cV2+xeK9+qEo25XCWfP9MiL+WEPAZfdA==
+  resolved "https://r.cnpmjs.org/ethereumjs-wallet/download/ethereumjs-wallet-1.0.2.tgz#2c000504b4c71e8f3782dabe1113d192522e99b6"
+  integrity sha1-LAAFBLTHHo83gtq+ERPRklIumbY=
   dependencies:
     aes-js "^3.1.2"
     bs58check "^2.1.2"
@@ -6021,8 +6021,8 @@ events@^1.1.1:
 
 events@^3.0.0, events@^3.2.0, events@^3.3.0:
   version "3.3.0"
-  resolved "https://registry.yarnpkg.com/events/-/events-3.3.0.tgz#31a95ad0a924e2d2c419a813aeb2c4e878ea7400"
-  integrity sha512-mQw+2fkQbALzQ7V0MY0IqdnXNOeTtP4r0lN9z7AAawCXgqea7bDii20AYrIBrFd/Hx0M2Ocz6S111CaFkUcb0Q==
+  resolved "https://r.cnpmjs.org/events/download/events-3.3.0.tgz#31a95ad0a924e2d2c419a813aeb2c4e878ea7400"
+  integrity sha1-Mala0Kkk4tLEGagTrrLE6HjqdAA=
 
 eventsource@^1.0.7:
   version "1.1.0"

@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useLocation, useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import clsx from 'clsx';
-import { Form } from 'antd';
+import { Form, Input } from 'antd';
 import {
   StrayPageWithButton,
   MultiSelectAddressList,
@@ -170,6 +170,22 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
             </p>
           </header>
         )}
+        <div
+          className={clsx(
+            'h-[40px] select-address-wrapper flex items-center',
+            isPopup ? 'w-[400px]' : 'w-[460px]'
+          )}
+        >
+          <div>Start from address</div>
+          <Input
+            className="mr-80"
+            size="small"
+            width={48}
+            height={24}
+            spellCheck={false}
+          />
+          <div className="place-self-end">0 addresses selected</div>
+        </div>
         <div
           className={clsx('overflow-y-auto lg:h-[340px]', {
             'p-20': isPopup,
