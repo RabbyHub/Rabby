@@ -3,12 +3,12 @@ import ClipboardJS from 'clipboard';
 import QRCode from 'qrcode.react';
 import { useHistory } from 'react-router-dom';
 import { useInterval } from 'react-use';
-import { message, Popover, Input } from 'antd';
+import { message, Popover, Input, Button } from 'antd';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
-import { WALLET_BRAND_CONTENT, KEYRINGS_LOGOS } from 'consts';
+import { SORT_WEIGHT } from 'consts';
 import { AddressViewer, Modal } from 'ui/component';
-import { useWallet } from 'ui/utils';
+import { useWallet, getAccountIcon, useHover } from 'ui/utils';
 import { Account } from 'background/service/preference';
 import {
   RecentConnections,
@@ -18,8 +18,6 @@ import {
   DefaultWalletAlertBar,
 } from './components';
 import IconSetting from 'ui/assets/settings.svg';
-//import { ReactComponent as IconCopy } from 'ui/assets/copy.svg';
-import { ReactComponent as IconQrcode } from 'ui/assets/qrcode.svg';
 import IconSend from 'ui/assets/send.svg';
 import IconHistory from 'ui/assets/history.svg';
 import IconPending from 'ui/assets/pending.svg';
@@ -29,7 +27,6 @@ import { ReactComponent as IconCopy } from 'ui/assets/urlcopy.svg';
 import IconEditPen from 'ui/assets/editpen.svg';
 
 import './style.less';
-
 const Dashboard = () => {
   const history = useHistory();
   const wallet = useWallet();
@@ -42,11 +39,14 @@ const Dashboard = () => {
   const [copySuccess, setCopySuccess] = useState(false);
   const [brandName, setBrandName] = useState('');
   const [hovered, setHovered] = useState(false);
+  const [clicked, setClicked] = useState(false);
   const [startEdit, setStartEdit] = useState(false);
   const [alianName, setAlianName] = useState<string>('');
+  const [accountsList, setAccountsList] = useState<Account[]>([]);
   const handleToggle = () => {
     setModalOpen(!isModalOpen);
   };
+  const [isHovering, hoverProps] = useHover();
 
   const getCurrentAccount = async () => {
     const account = await wallet.getCurrentAccount();
@@ -71,12 +71,8 @@ const Dashboard = () => {
     const isDefault = await wallet.isDefaultWallet();
     setIsDefaultWallet(isDefault);
   };
-
-  const _openInTab = useConfirmExternalModal();
-
   const getAlianName = async (address: string) => {
     await wallet.getAlianName(address).then((name) => {
-      console.log(name, 99999);
       setAlianName(name);
     });
   };
@@ -90,6 +86,7 @@ const Dashboard = () => {
       getCurrentAccount();
     }
     checkIsDefaultWallet();
+    getAllKeyrings();
   }, []);
 
   useEffect(() => {
@@ -157,19 +154,11 @@ const Dashboard = () => {
   const hoverContent = () => (
     <div className="flex flex-col">
       <div className="flex items-center">
-        {' '}
-        {currentAccount && KEYRINGS_LOGOS[currentAccount?.type] ? (
+        {currentAccount && (
           <img
-            className="icon icon-account-type w-[28px] h-[28px]"
-            src={KEYRINGS_LOGOS[currentAccount?.type]}
+            className="icon icon-account-type w-[20px] h-[20px]"
+            src={getAccountIcon(currentAccount)}
           />
-        ) : (
-          currentAccount && (
-            <img
-              className="icon icon-account-type w-[28px] h-[28px]"
-              src={WALLET_BRAND_CONTENT[currentAccount?.brandName]?.image}
-            />
-          )
         )}
         <div className="brand-name">
           {startEdit ? (
@@ -205,11 +194,68 @@ const Dashboard = () => {
       </div>
     </div>
   );
-  const clickContent = <div>This is click content.</div>;
+  const clickContent = () => (
+    <div className="flex flex-col">
+      {accountsList.map((item, key) => (
+        <div
+          className={clsx('flex items-center h-[52px]', {
+            'address-active': isHovering,
+          })}
+          {...hoverProps}
+          key={item.address + item.brandName + item.alianName}
+        >
+          {' '}
+          <img
+            className="icon icon-account-type w-[15px] h-[15px]"
+            src={getAccountIcon(item)}
+          />
+          <div className="flex flex-col items-start ml-10">
+            <div className="text-13 text-black text-left">
+              {item?.alianName || item.brandName}
+            </div>
+            <AddressViewer
+              address={item.address}
+              showArrow={false}
+              className={'text-12 text-black opacity-60 text-left'}
+            />
+          </div>
+        </div>
+      ))}
+    </div>
+  );
+  const getAllKeyrings = async () => {
+    const _accounts = await wallet.getAllVisibleAccounts();
+    const allAlianNames = await wallet.getAllAlianName();
+    const templist = _accounts
+      .sort((a, b) => {
+        return SORT_WEIGHT[a.type] - SORT_WEIGHT[b.type];
+      })
+      .map((item) =>
+        item.accounts.map((account) => {
+          return {
+            ...account,
+            type: item.type,
+            alianName: allAlianNames[account.address],
+            keyring: item.keyring,
+          };
+        })
+      )
+      .flat(1);
+    setAccountsList(templist);
+  };
   const handleHoverChange = (visible) => {
     setHovered(visible);
+    setClicked(false);
   };
-  useEffect;
+  const handleClickChange = (visible) => {
+    setClicked(visible);
+    setHovered(false);
+  };
+  const hide = () => {
+    setClicked(false);
+    setHovered(false);
+  };
+  console.log(accountsList, currentAccount, 93333);
   return (
     <>
       <div
@@ -228,42 +274,36 @@ const Dashboard = () => {
                   overlayClassName="address-popover"
                   onVisibleChange={handleHoverChange}
                 >
-                  {KEYRINGS_LOGOS[currentAccount?.type] ? (
+                  <Popover
+                    style={{ width: 200 }}
+                    content={clickContent}
+                    trigger="click"
+                    visible={clicked}
+                    placement="bottomLeft"
+                    overlayClassName="switch-popover"
+                    onVisibleChange={handleClickChange}
+                  >
+                    {
+                      <img
+                        className="icon icon-account-type w-[20px] h-[20px]"
+                        src={getAccountIcon(currentAccount)}
+                      />
+                    }
+                    <div className="text-15 text-white ml-6 mr-6">
+                      {alianName || brandName}
+                    </div>
+                    {currentAccount && (
+                      <AddressViewer
+                        address={currentAccount.address}
+                        showArrow={false}
+                        className={'text-12 text-white opacity-60'}
+                      />
+                    )}
                     <img
-                      className="icon icon-account-type w-[20px] h-[20px]"
-                      src={KEYRINGS_LOGOS[currentAccount?.type]}
+                      className="icon icon-account-type w-[16px] h-[16px] ml-8"
+                      src={IconUpAndDown}
                     />
-                  ) : (
-                    <img
-                      className="icon icon-account-type w-[20px] h-[20px]"
-                      src={
-                        WALLET_BRAND_CONTENT[currentAccount?.brandName]?.image
-                      }
-                    />
-                  )}
-                  <div className="text-15 text-white ml-6 mr-6">
-                    {alianName || brandName}
-                  </div>
-                  {currentAccount && (
-                    <AddressViewer
-                      address={currentAccount.address}
-                      onClick={handleToggle}
-                      showArrow={false}
-                      className={'text-12 text-white opacity-60'}
-                    />
-                  )}
-                  <img
-                    className="icon icon-account-type w-[16px] h-[16px] ml-8"
-                    src={IconUpAndDown}
-                  />
-                  {/* <IconCopy
-                  className={clsx('icon icon-copy', { success: copySuccess })}
-                  onClick={handleCopyCurrentAddress}
-                />
-                <IconQrcode
-                  className="icon icon-qrcode"
-                  onClick={handleShowQrcode}
-                /> */}
+                  </Popover>
                 </Popover>
               </div>
               <div className="flex-1" />

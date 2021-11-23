@@ -669,6 +669,7 @@ export class WalletController extends BaseController {
   getAlianName = (address: string) => preferenceService.getAlianName(address);
   updateAlianName = (address: string, name: string) =>
     preferenceService.updateAlianName(address, name);
+  getAllAlianName = () => preferenceService.getAllAlianName();
 }
 
 export default new WalletController();

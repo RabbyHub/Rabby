@@ -1,5 +1,12 @@
-import { IS_CHROME, CHECK_METAMASK_INSTALLED_URL } from 'consts';
-
+import {
+  IS_CHROME,
+  CHECK_METAMASK_INSTALLED_URL,
+  WALLET_BRAND_CONTENT,
+  KEYRING_CLASS,
+  KEYRINGS_LOGOS,
+  KEYRING_PURPLE_LOGOS,
+} from 'consts';
+import { Account } from 'background/service/preference';
 // eslint-disable-next-line @typescript-eslint/no-empty-function
 export const noop = () => {};
 
@@ -120,4 +127,27 @@ export const ellipsisOverflowedText = (
 export const isSameAddress = (a: string, b: string) => {
   if (!a || !b) return false;
   return a.toLowerCase() === b.toLowerCase();
+};
+export const icons = {
+  mnemonic: KEYRING_PURPLE_LOGOS[KEYRING_CLASS.MNEMONIC],
+  privatekey: KEYRING_PURPLE_LOGOS[KEYRING_CLASS.PRIVATE_KEY],
+  watch: KEYRING_PURPLE_LOGOS[KEYRING_CLASS.WATCH],
+};
+export const getAccountIcon = (account: Account) => {
+  if (account) {
+    if (WALLET_BRAND_CONTENT[account?.brandName]) {
+      return WALLET_BRAND_CONTENT[account?.brandName].image;
+    }
+    switch (account.type) {
+      case KEYRING_CLASS.MNEMONIC || 'HD Key Tree':
+        return icons.mnemonic;
+      case KEYRING_CLASS.PRIVATE_KEY:
+        return icons.privatekey;
+      case KEYRING_CLASS.WATCH:
+        return icons.watch;
+    }
+
+    return KEYRINGS_LOGOS[account.type];
+  }
+  return '';
 };

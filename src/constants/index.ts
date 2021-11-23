@@ -636,3 +636,11 @@ export const SPECIFIC_TEXT_BRAND = {
     i18nKey: 'WatchGuideStep2JADE',
   },
 };
+
+export const SORT_WEIGHT = {
+  [KEYRING_TYPE.HdKeyring]: 1,
+  [KEYRING_TYPE.SimpleKeyring]: 2,
+  [KEYRING_TYPE.HardwareKeyring]: 3,
+  [KEYRING_TYPE.WalletConnectKeyring]: 4,
+  [KEYRING_TYPE.WatchAddressKeyring]: 5,
+};

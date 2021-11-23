@@ -60,6 +60,7 @@ export interface DisplayedKeryring {
     brandName: string;
     type?: string;
     keyring?: DisplayKeyring;
+    alianName?: string;
   }[];
   keyring: DisplayKeyring;
 }

@@ -9,6 +9,7 @@ export interface Account {
   type: string;
   address: string;
   brandName: string;
+  alianName?: string;
 }
 interface PreferenceStore {
   currentAccount: Account | undefined | null;
@@ -252,7 +253,9 @@ class PreferenceService {
     const key = address.toLowerCase();
     return this.store.alianNames[key];
   };
-
+  getAllAlianName = () => {
+    return this.store.alianNames;
+  };
   updateAlianName = (address: string, name: string) => {
     const key = address.toLowerCase();
     this.store.alianNames = {

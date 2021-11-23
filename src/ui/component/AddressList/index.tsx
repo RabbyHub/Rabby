@@ -30,7 +30,7 @@ interface RowProps {
   style?: any;
   others?: any;
 }
-const SORT_WEIGHT = {
+export const SORT_WEIGHT = {
   [KEYRING_TYPE.HdKeyring]: 1,
   [KEYRING_TYPE.SimpleKeyring]: 2,
   [KEYRING_TYPE.HardwareKeyring]: 3,
@@ -128,10 +128,12 @@ const AddressList: any = forwardRef(
         fixedList.current?.scrollToItem(position, 'center');
       }
     }, []);
+    const switchAddressHeight =
+      combinedList.length > 5 ? 400 : combinedList.length * 80;
     return (
       <ul className={`address-group-list ${action}`}>
         <FixedSizeList
-          height={currentAccount ? 400 : 500}
+          height={currentAccount ? switchAddressHeight : 500}
           width="100%"
           itemData={{
             combinedList: combinedList,
