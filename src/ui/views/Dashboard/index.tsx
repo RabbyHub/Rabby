@@ -152,6 +152,7 @@ const Dashboard = () => {
   };
   const alianNameConfirm = async () => {
     await wallet.updateAlianName(currentAccount?.address, alianName);
+    handleHoverChange(false);
   };
   const hoverContent = () => (
     <div className="flex flex-col">
@@ -173,13 +174,13 @@ const Dashboard = () => {
         <div className="brand-name">
           {startEdit ? (
             <Input
-              value={alianName || currentAccount?.brandName}
-              defaultValue={alianName || currentAccount?.brandName}
+              value={alianName}
+              defaultValue={alianName}
               onChange={handleAlianNameChange}
               onPressEnter={alianNameConfirm}
               autoFocus={startEdit}
               bordered={false}
-              max={20}
+              maxLength={20}
               min={0}
             />
           ) : (
