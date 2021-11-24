@@ -30,9 +30,8 @@ import IconBobaWhiteLogo from 'ui/assets/chain-logos/boba-white.svg';
 import IconEN from 'ui/assets/langs/en.svg';
 import IconZH from 'ui/assets/langs/zh_cn.svg';
 import IconAmber from 'ui/assets/walletlogo/amber.png';
-import IconBitBox02 from 'ui/assets/walletlogo/bitbox02.svg';
-import IconBitBox0218 from 'ui/assets/walletlogo/bitbox02-18.svg';
-import IconBitBox0224 from 'ui/assets/walletlogo/bitbox02-24.svg';
+import IconBitBox02 from 'ui/assets/walletlogo/bitbox02.png';
+import IconBitBox02WithBorder from 'ui/assets/walletlogo/bitbox02-24.png';
 import IconCobo from 'ui/assets/walletlogo/cobo.png';
 import IconImtoken from 'ui/assets/walletlogo/imtoken.png';
 import IconJade from 'ui/assets/walletlogo/jade.png';
@@ -558,6 +557,14 @@ export const WALLET_BRAND_CONTENT = {
     image: LogoAmber,
     connectType: BRAND_WALLET_CONNECT_TYPE.WalletConnect,
   },
+  [WALLET_BRAND_TYPES.BITBOX02]: {
+    id: 10,
+    name: 'BitBox02',
+    brand: WALLET_BRAND_TYPES.BITBOX02,
+    icon: IconBitBox02,
+    image: IconBitBox02WithBorder,
+    connectType: BRAND_WALLET_CONNECT_TYPE.BitBox02Connect,
+  },
   [WALLET_BRAND_TYPES.COBO]: {
     id: 1,
     name: 'Cobo Wallet',
@@ -630,21 +637,13 @@ export const WALLET_BRAND_CONTENT = {
     image: LogoTrust,
     connectType: BRAND_WALLET_CONNECT_TYPE.WalletConnect,
   },
-  [WALLET_BRAND_TYPES.BITBOX02]: {
-    id: 10,
-    name: 'BitBox02',
-    brand: WALLET_BRAND_TYPES.BITBOX02,
-    icon: IconBitBox02,
-    image: LogoBitBox02,
-    connectType: BRAND_WALLET_CONNECT_TYPE.BitBox02Connect,
-  },
 };
 
 export const KEYRING_ICONS = {
   [KEYRING_CLASS.MNEMONIC]: IconMnemonic24,
   [KEYRING_CLASS.PRIVATE_KEY]: IconPrivateKey24,
   [KEYRING_CLASS.WATCH]: IconWatch24,
-  [HARDWARE_KEYRING_TYPES.BitBox02.type]: IconBitBox0224,
+  [HARDWARE_KEYRING_TYPES.BitBox02.type]: IconBitBox02,
   [HARDWARE_KEYRING_TYPES.Ledger.type]: IconLedger24,
   [HARDWARE_KEYRING_TYPES.Onekey.type]: IconOneKey24,
   [HARDWARE_KEYRING_TYPES.Trezor.type]: IconTrezor24,
@@ -660,7 +659,7 @@ export const KEYRINGS_LOGOS = {
   [KEYRING_CLASS.MNEMONIC]: LogoMnemonic,
   [KEYRING_CLASS.PRIVATE_KEY]: LogoPrivateKey,
   [KEYRING_CLASS.WATCH]: LogoWatch,
-  [HARDWARE_KEYRING_TYPES.BitBox02.type]: IconBitBox0218,
+  [HARDWARE_KEYRING_TYPES.BitBox02.type]: IconBitBox02WithBorder,
   [HARDWARE_KEYRING_TYPES.Ledger.type]: IconLedger18,
   [HARDWARE_KEYRING_TYPES.Onekey.type]: IconOneKey18,
   [HARDWARE_KEYRING_TYPES.Trezor.type]: IconTrezor24Border,

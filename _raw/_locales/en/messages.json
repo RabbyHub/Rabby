@@ -939,6 +939,9 @@
   "Imported__by__Onekey": {
     "message": "Imported by Onekey"
   },
+  "Imported__by__BitBox02": {
+    "message": "Imported by BitBox02"
+  },
   "Disconnect": {
     "message": "Disconnect"
   }
