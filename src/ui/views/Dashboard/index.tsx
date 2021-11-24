@@ -8,7 +8,7 @@ import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 import { SORT_WEIGHT } from 'consts';
 import { AddressViewer, Modal } from 'ui/component';
-import { useWallet, getAccountIcon, useHover } from 'ui/utils';
+import { useWallet, getAccountIcon } from 'ui/utils';
 import { Account } from 'background/service/preference';
 import {
   RecentConnections,
@@ -37,7 +37,6 @@ const Dashboard = () => {
   const [pendingTxCount, setPendingTxCount] = useState(0);
   const [isDefaultWallet, setIsDefaultWallet] = useState(true);
   const [copySuccess, setCopySuccess] = useState(false);
-  const [brandName, setBrandName] = useState('');
   const [hovered, setHovered] = useState(false);
   const [clicked, setClicked] = useState(false);
   const [startEdit, setStartEdit] = useState(false);
@@ -46,7 +45,6 @@ const Dashboard = () => {
   const handleToggle = () => {
     setModalOpen(!isModalOpen);
   };
-  const [isHovering, hoverProps] = useHover();
 
   const getCurrentAccount = async () => {
     const account = await wallet.getCurrentAccount();
@@ -54,11 +52,7 @@ const Dashboard = () => {
       history.replace('/no-address');
       return;
     }
-    if (account.brandName === 'HD Key Tree') {
-      setBrandName('MNEMONIC');
-    } else {
-      setBrandName(account.brandName);
-    }
+    //account.displayBrandName = BRAND_ALIAN_TYPE_TEXT[account.brandName];
     setCurrentAccount(account);
   };
 
@@ -100,14 +94,11 @@ const Dashboard = () => {
     history.push('/settings');
   };
 
-  const handleChange = async (
-    account: string,
-    type: string,
-    brandName: string
-  ) => {
-    await wallet.changeAccount({ address: account, type, brandName });
-    setCurrentAccount({ address: account, type, brandName });
-    handleToggle();
+  const handleChange = async (account) => {
+    const { address, type, brandName } = account;
+    await wallet.changeAccount({ address, type, brandName });
+    setCurrentAccount({ address, type, brandName });
+    hide();
   };
 
   const handleGotoSend = async () => {
@@ -173,7 +164,7 @@ const Dashboard = () => {
               min={0}
             />
           ) : (
-            alianName || brandName
+            currentAccount?.alianName || currentAccount?.brandName
           )}
         </div>
         <img
@@ -194,35 +185,38 @@ const Dashboard = () => {
       </div>
     </div>
   );
-  const clickContent = () => (
-    <div className="flex flex-col">
-      {accountsList.map((item, key) => (
-        <div
-          className={clsx('flex items-center h-[52px]', {
-            'address-active': isHovering,
-          })}
-          {...hoverProps}
-          key={item.address + item.brandName + item.alianName}
-        >
-          {' '}
-          <img
-            className="icon icon-account-type w-[15px] h-[15px]"
-            src={getAccountIcon(item)}
-          />
-          <div className="flex flex-col items-start ml-10">
-            <div className="text-13 text-black text-left">
-              {item?.alianName || item.brandName}
+  const clickContent = () => {
+    return (
+      <div className="flex flex-col w-[200px]">
+        {accountsList.map((item, key) => {
+          console.log(item, 8888);
+          return (
+            <div
+              className="flex items-center address-item"
+              key={key}
+              onClick={() => handleChange(item)}
+            >
+              {' '}
+              <img
+                className="icon icon-account-type w-[15px] h-[15px]"
+                src={getAccountIcon(item)}
+              />
+              <div className="flex flex-col items-start ml-10">
+                <div className="text-13 text-black text-left">
+                  {item?.alianName || item.brandName}
+                </div>
+                <AddressViewer
+                  address={item.address}
+                  showArrow={false}
+                  className={'text-12 text-black opacity-60 text-left'}
+                />
+              </div>
             </div>
-            <AddressViewer
-              address={item.address}
-              showArrow={false}
-              className={'text-12 text-black opacity-60 text-left'}
-            />
-          </div>
-        </div>
-      ))}
-    </div>
-  );
+          );
+        })}
+      </div>
+    );
+  };
   const getAllKeyrings = async () => {
     const _accounts = await wallet.getAllVisibleAccounts();
     const allAlianNames = await wallet.getAllAlianName();
@@ -234,6 +228,8 @@ const Dashboard = () => {
         item.accounts.map((account) => {
           return {
             ...account,
+            // displayBrandName:
+            //   BRAND_ALIAN_TYPE_TEXT[account.brandName] || account.brandName,
             type: item.type,
             alianName: allAlianNames[account.address],
             keyring: item.keyring,
@@ -290,7 +286,7 @@ const Dashboard = () => {
                       />
                     }
                     <div className="text-15 text-white ml-6 mr-6">
-                      {alianName || brandName}
+                      {currentAccount.alianName || currentAccount.brandName}
                     </div>
                     {currentAccount && (
                       <AddressViewer
