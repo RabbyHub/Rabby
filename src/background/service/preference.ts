@@ -10,6 +10,7 @@ export interface Account {
   address: string;
   brandName: string;
   alianName?: string;
+  displayBrandName?: string;
 }
 interface PreferenceStore {
   currentAccount: Account | undefined | null;

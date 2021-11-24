@@ -306,7 +306,14 @@ export const KEYRING_TYPE_TEXT = {
   [KEYRING_CLASS.HARDWARE.TREZOR]: 'Imported by Trezor',
   [KEYRING_CLASS.HARDWARE.ONEKEY]: 'Imported by Onekey',
 };
-
+export const BRAND_ALIAN_TYPE_TEXT = {
+  [KEYRING_TYPE.HdKeyring]: 'Mnemonic',
+  [KEYRING_TYPE.SimpleKeyring]: 'Private Key',
+  [KEYRING_TYPE.WatchAddressKeyring]: 'Watch Mode',
+  [KEYRING_CLASS.HARDWARE.LEDGER]: 'Ledger',
+  [KEYRING_CLASS.HARDWARE.TREZOR]: 'Trezor',
+  [KEYRING_CLASS.HARDWARE.ONEKEY]: 'Onekey',
+};
 export const HARDWARE_KEYRING_TYPES = {
   Ledger: {
     type: 'Ledger Hardware',
