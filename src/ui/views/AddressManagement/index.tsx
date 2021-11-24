@@ -193,6 +193,7 @@ const AddressManagement = () => {
               </Menu.Item>
             </Menu>
           );
+        case HARDWARE_KEYRING_TYPES.BitBox02.type:
         case HARDWARE_KEYRING_TYPES.Ledger.type:
         case HARDWARE_KEYRING_TYPES.Trezor.type:
         case HARDWARE_KEYRING_TYPES.Onekey.type:

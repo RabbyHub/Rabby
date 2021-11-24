@@ -34,6 +34,7 @@
     "axios-rate-limit": "^1.3.0",
     "bignumber.js": "^9.0.1",
     "bip39": "^3.0.3",
+    "bitbox02-api": "0.11.0",
     "browser-passworder": "^2.0.3",
     "buffer": "^6.0.3",
     "clipboard": "^2.0.8",
