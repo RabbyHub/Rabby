@@ -936,6 +936,9 @@
   "Imported__by__Onekey": {
     "message": "通过 Onekey 导入"
   },
+  "Imported__by__BitBox02": {
+    "message": "通过 BitBox02 导入"
+  },
   "Disconnect": {
     "message": "断开连接"
   }

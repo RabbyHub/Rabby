@@ -2,12 +2,22 @@ import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
 import { StrayPage } from 'ui/component';
-import { SvgIconOnekey, SvgIconTrezor, ImportLedgerIcon } from 'ui/assets';
+import {
+  SvgIconBitBox02,
+  SvgIconOnekey,
+  SvgIconTrezor,
+  ImportLedgerIcon,
+} from 'ui/assets';
 import { IS_CHROME, KEYRING_CLASS } from 'consts';
 
 import './index.css';
 
 const HARDWARES = [
+  {
+    icon: SvgIconBitBox02,
+    name: 'BitBox02',
+    type: 'BITBOX02',
+  },
   {
     icon: ImportLedgerIcon,
     name: 'Ledger',

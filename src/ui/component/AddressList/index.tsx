@@ -10,6 +10,7 @@ import React, {
 import clsx from 'clsx';
 import { findIndex } from 'lodash';
 import { FixedSizeList, areEqual } from 'react-window';
+import { sortBy, unionBy } from 'lodash';
 import { DisplayedKeryring } from 'background/service/keyring';
 import { KEYRING_TYPE } from 'consts';
 import AddressItem, { AddressItemProps } from './AddressItem';
@@ -101,18 +102,18 @@ const AddressList: any = forwardRef(
     useImperativeHandle(ref, () => ({
       updateAllBalance,
     }));
-    const combinedList = list
-      .sort((a, b) => {
-        return SORT_WEIGHT[a.type] - SORT_WEIGHT[b.type];
-      })
-      .map((group) => {
-        const templist = group.accounts.map(
-          (item) =>
-            (item = { ...item, type: group.type, keyring: group.keyring })
-        );
-        return templist;
-      })
-      .flat(1);
+    const combinedList = unionBy(
+      sortBy(list, (item) => SORT_WEIGHT[item.type])
+        .map((group) => {
+          const templist = group.accounts.map(
+            (item) =>
+              (item = { ...item, type: group.type, keyring: group.keyring })
+          );
+          return templist;
+        })
+        .flat(1),
+      (item) => `${item.keyring.type}-${item.address.toLowerCase()}`
+    );
     const itemKey = useCallback(
       (index: number, data: any) =>
         data.combinedList[index].address + data.combinedList[index].brandName,

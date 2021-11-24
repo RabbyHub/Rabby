@@ -25,9 +25,13 @@ import IconMoonriverLogo from 'ui/assets/chain-logos/movr.svg';
 import IconMoonriverWhiteLogo from 'ui/assets/chain-logos/movr-white.svg';
 import IconCronosLogo from 'ui/assets/chain-logos/cronos.svg';
 import IconCronosWhiteLogo from 'ui/assets/chain-logos/cronos-white.svg';
+import IconBobaLogo from 'ui/assets/chain-logos/boba.png';
+import IconBobaWhiteLogo from 'ui/assets/chain-logos/boba-white.svg';
 import IconEN from 'ui/assets/langs/en.svg';
 import IconZH from 'ui/assets/langs/zh_cn.svg';
 import IconAmber from 'ui/assets/walletlogo/amber.png';
+import IconBitBox02 from 'ui/assets/walletlogo/bitbox02.png';
+import IconBitBox02WithBorder from 'ui/assets/walletlogo/bitbox02-24.png';
 import IconCobo from 'ui/assets/walletlogo/cobo.png';
 import IconImtoken from 'ui/assets/walletlogo/imtoken.png';
 import IconJade from 'ui/assets/walletlogo/jade.png';
@@ -57,6 +61,7 @@ import LogoImtoken from 'ui/assets/walletlogo/imTokenLogo.png';
 import LogoCobo from 'ui/assets/walletlogo/CoboLogo.png';
 import LogoAmber from 'ui/assets/walletlogo/AmberLogo.png';
 import LogoOnekey from 'ui/assets/walletlogo/onekey28.png';
+import LogoBitBox02 from 'ui/assets/walletlogo/bitbox02.svg';
 import LogoTrezor from 'ui/assets/walletlogo/Trezor28.png';
 import LogoLedger from 'ui/assets/walletlogo/ledger28.png';
 import LogoMnemonic from 'ui/assets/walletlogo/mnemoniclogo.svg';
@@ -77,6 +82,7 @@ export enum CHAINS_ENUM {
   CELO = 'CELO',
   MOVR = 'MOVR',
   CRO = 'CRO',
+  BOBA = 'BOBA',
 }
 
 export const CHAINS: Record<string, Chain> = {
@@ -276,6 +282,21 @@ export const CHAINS: Record<string, Chain> = {
     nativeTokenLogo:
       'https://static.debank.com/image/chain/logo_url/cro/affddd53019ffb9dbad0c724e12500c0.png',
   },
+  [CHAINS_ENUM.BOBA]: {
+    id: 288,
+    serverId: 'boba',
+    network: '288',
+    name: 'Boba',
+    nativeTokenSymbol: 'ETH',
+    nativeTokenAddress: 'boba',
+    enum: CHAINS_ENUM.BOBA,
+    logo: IconBobaLogo,
+    whiteLogo: IconBobaWhiteLogo,
+    hex: '0x120',
+    scanLink: 'https://blockexplorer.boba.network/tx/_s_',
+    nativeTokenLogo:
+      'https://static.debank.com/image/op_token/logo_url/0x4200000000000000000000000000000000000006/d61441782d4a08a7479d54aea211679e.png',
+  },
 };
 
 export const KEYRING_TYPE = {
@@ -290,6 +311,7 @@ export const KEYRING_CLASS = {
   PRIVATE_KEY: 'Simple Key Pair',
   MNEMONIC: 'HD Key Tree',
   HARDWARE: {
+    BITBOX02: 'BitBox02 Hardware',
     TREZOR: 'Trezor Hardware',
     LEDGER: 'Ledger Hardware',
     ONEKEY: 'Onekey Hardware',
@@ -302,12 +324,17 @@ export const KEYRING_TYPE_TEXT = {
   [KEYRING_TYPE.HdKeyring]: 'Created by Mnemonic',
   [KEYRING_TYPE.SimpleKeyring]: 'Imported by Private Key',
   [KEYRING_TYPE.WatchAddressKeyring]: 'Watch Mode',
+  [KEYRING_CLASS.HARDWARE.BITBOX02]: 'Imported by BitBox02',
   [KEYRING_CLASS.HARDWARE.LEDGER]: 'Imported by Ledger',
   [KEYRING_CLASS.HARDWARE.TREZOR]: 'Imported by Trezor',
   [KEYRING_CLASS.HARDWARE.ONEKEY]: 'Imported by Onekey',
 };
 
 export const HARDWARE_KEYRING_TYPES = {
+  BitBox02: {
+    type: 'BitBox02 Hardware',
+    brandName: 'BitBox02',
+  },
   Ledger: {
     type: 'Ledger Hardware',
     brandName: 'Ledger',
@@ -446,6 +473,7 @@ export enum WATCH_ADDRESS_CONNECT_TYPE {
 
 export enum BRAND_WALLET_CONNECT_TYPE {
   WalletConnect = 'WalletConnect',
+  BitBox02Connect = 'BitBox02Connect',
   LedgerConnect = 'LedgerConnect',
   OneKeyConnect = 'OneKeyConnect',
   TrezorConnect = 'TrezorConnect',
@@ -508,6 +536,7 @@ export const EVENTS = {
 
 export enum WALLET_BRAND_TYPES {
   AMBER = 'AMBER',
+  BITBOX02 = 'BITBOX02',
   COBO = 'COBO',
   IMTOKEN = 'IMTOKEN',
   JADE = 'JADE',
@@ -527,6 +556,14 @@ export const WALLET_BRAND_CONTENT = {
     icon: IconAmber,
     image: LogoAmber,
     connectType: BRAND_WALLET_CONNECT_TYPE.WalletConnect,
+  },
+  [WALLET_BRAND_TYPES.BITBOX02]: {
+    id: 10,
+    name: 'BitBox02',
+    brand: WALLET_BRAND_TYPES.BITBOX02,
+    icon: IconBitBox02,
+    image: IconBitBox02WithBorder,
+    connectType: BRAND_WALLET_CONNECT_TYPE.BitBox02Connect,
   },
   [WALLET_BRAND_TYPES.COBO]: {
     id: 1,
@@ -606,6 +643,7 @@ export const KEYRING_ICONS = {
   [KEYRING_CLASS.MNEMONIC]: IconMnemonic24,
   [KEYRING_CLASS.PRIVATE_KEY]: IconPrivateKey24,
   [KEYRING_CLASS.WATCH]: IconWatch24,
+  [HARDWARE_KEYRING_TYPES.BitBox02.type]: IconBitBox02,
   [HARDWARE_KEYRING_TYPES.Ledger.type]: IconLedger24,
   [HARDWARE_KEYRING_TYPES.Onekey.type]: IconOneKey24,
   [HARDWARE_KEYRING_TYPES.Trezor.type]: IconTrezor24,
@@ -621,6 +659,7 @@ export const KEYRINGS_LOGOS = {
   [KEYRING_CLASS.MNEMONIC]: LogoMnemonic,
   [KEYRING_CLASS.PRIVATE_KEY]: LogoPrivateKey,
   [KEYRING_CLASS.WATCH]: LogoWatch,
+  [HARDWARE_KEYRING_TYPES.BitBox02.type]: IconBitBox02WithBorder,
   [HARDWARE_KEYRING_TYPES.Ledger.type]: IconLedger18,
   [HARDWARE_KEYRING_TYPES.Onekey.type]: IconOneKey18,
   [HARDWARE_KEYRING_TYPES.Trezor.type]: IconTrezor24Border,
