@@ -316,6 +316,13 @@ class ProviderController extends BaseController {
     }
   };
 
+  netVersion = (req) => {
+    return this.ethRpc({
+      ...req,
+      data: { method: 'net_version', params: [] },
+    });
+  };
+
   web3ClientVersion = () => {
     return `Rabby/${process.env.release}`;
   };
