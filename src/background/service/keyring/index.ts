@@ -12,7 +12,8 @@ import {
   hasWalletConnectPageStateCache,
 } from 'background/utils';
 import LedgerBridgeKeyring from './eth-ledger-bridge-keyring';
-import SimpleKeyring from '@rabby-wallet/eth-simple-keyring';
+//import SimpleKeyring from '@rabby-wallet/eth-simple-keyring';
+import SimpleKeyring from './eth-simple-keyring';
 import HdKeyring from '@rabby-wallet/eth-hd-keyring';
 import TrezorKeyring from '@rabby-wallet/eth-trezor-keyring';
 import OnekeyKeyring from './eth-onekey-keyring';

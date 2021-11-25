@@ -176,7 +176,7 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
             isPopup ? 'w-[400px]' : 'w-[460px]'
           )}
         >
-          {/* <div>Start from address</div>
+          <div>Start from address</div>
           <Input
             className="mr-80"
             size="small"
@@ -184,7 +184,7 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
             height={24}
             spellCheck={false}
           />
-          <div className="place-self-end">0 addresses selected</div> */}
+          <div className="place-self-end">0 addresses selected</div>
         </div>
         <div
           className={clsx('overflow-y-auto lg:h-[340px]', {
