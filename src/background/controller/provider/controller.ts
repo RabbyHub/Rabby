@@ -180,14 +180,6 @@ class ProviderController extends BaseController {
     return CHAINS[site?.chain || CHAINS_ENUM.ETH].hex;
   };
 
-  @Reflect.metadata('SAFE', true)
-  netVersion = ({ session }: { session: Session }) => {
-    const origin = session.origin;
-    const site = permissionService.getWithoutUpdate(origin);
-
-    return CHAINS[site?.chain || CHAINS_ENUM.ETH].network;
-  };
-
   @Reflect.metadata('APPROVAL', [
     'SignTx',
     ({
