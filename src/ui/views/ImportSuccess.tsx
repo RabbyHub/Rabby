@@ -94,13 +94,15 @@ const ImportSuccess = ({ isPopup = false }: { isPopup?: boolean }) => {
             'overflow-auto': !isPopup,
           })}
         >
-          {accounts.map((account) => (
+          {accounts.map((account, index) => (
             <AddressItem
               className="mb-12 rounded bg-white py-12 pl-16"
               key={account.address}
               account={account}
               showAssets
               icon={importedIcon}
+              showImportIcon={false}
+              index={index}
             />
           ))}
         </div>

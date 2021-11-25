@@ -1,27 +1,37 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Modal } from 'antd';
+import { Modal, Tabs } from 'antd';
 import { useWallet } from 'ui/utils';
 import { AddressViewer, FieldCheckbox } from '..';
 import { ContactBookItem } from 'background/service/contactBook';
+
 import './style.less';
 
 interface ListModalProps {
   address?: string;
   visible: boolean;
-  onOk(data: ContactBookItem): void;
+  onOk(data: ContactBookItem, type: string): void;
   onCancel(): void;
 }
-
+interface Account {
+  address: string;
+  name: string;
+}
+const { TabPane } = Tabs;
+function callback(key) {
+  console.log(key);
+}
 const ListModal = ({ address, visible, onOk, onCancel }: ListModalProps) => {
   const { t } = useTranslation();
   const wallet = useWallet();
   const [list, setList] = useState<ContactBookItem[]>([]);
-
+  const [alianNames, setAlianNames] = useState({});
   const handleVisibleChange = async () => {
     if (visible) {
       const data = await wallet.listContact();
+      const importedList = await wallet.getAllAlianName();
       setList(data);
+      setAlianNames(importedList);
     }
   };
 
@@ -29,10 +39,9 @@ const ListModal = ({ address, visible, onOk, onCancel }: ListModalProps) => {
     handleVisibleChange();
   }, [visible]);
 
-  const handleConfirm = (data: ContactBookItem) => {
-    onOk(data);
+  const handleConfirm = (data: ContactBookItem, type: string) => {
+    onOk(data, type);
   };
-
   const NoDataUI = (
     <div className="no-contact">
       <img
@@ -56,22 +65,54 @@ const ListModal = ({ address, visible, onOk, onCancel }: ListModalProps) => {
       width="360px"
       centered
     >
-      {list.length > 0
-        ? list.map((item) => (
-            <FieldCheckbox
-              key={item.address}
-              checked={item.address.toLowerCase() === address?.toLowerCase()}
-              onChange={() => handleConfirm(item)}
-            >
-              <div className="contact-info">
-                <p>{item.name}</p>
-                <p>
-                  <AddressViewer address={item.address} />
-                </p>
-              </div>
-            </FieldCheckbox>
-          ))
-        : NoDataUI}
+      <Tabs defaultActiveKey="1" onChange={callback}>
+        <TabPane tab="Tab 1" key="1">
+          {list.length > 0
+            ? list.map((item) => (
+                <FieldCheckbox
+                  key={item.address}
+                  checked={
+                    item.address.toLowerCase() === address?.toLowerCase()
+                  }
+                  onChange={() => handleConfirm(item, 'others')}
+                >
+                  <div className="contact-info">
+                    <p>{item.name}</p>
+                    <p>
+                      <AddressViewer address={item.address} />
+                    </p>
+                  </div>
+                </FieldCheckbox>
+              ))
+            : NoDataUI}
+        </TabPane>
+        <TabPane tab="Tab 2" key="2">
+          {Object.keys(alianNames).length > 0
+            ? Object.keys(alianNames).map((key) => (
+                <FieldCheckbox
+                  key={key}
+                  checked={key.toLowerCase() === address?.toLowerCase()}
+                  onChange={() =>
+                    handleConfirm(
+                      {
+                        address: key,
+                        name: alianNames[key],
+                      },
+                      'my'
+                    )
+                  }
+                >
+                  <div className="contact-info">
+                    <p>{alianNames[key]}</p>
+                    <p>
+                      <AddressViewer address={key} />
+                    </p>
+                  </div>
+                </FieldCheckbox>
+              ))
+            : NoDataUI}
+        </TabPane>
+      </Tabs>
     </Modal>
   );
 };

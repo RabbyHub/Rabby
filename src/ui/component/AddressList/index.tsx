@@ -12,6 +12,8 @@ import { findIndex } from 'lodash';
 import { FixedSizeList, areEqual } from 'react-window';
 import { DisplayedKeryring } from 'background/service/keyring';
 import { KEYRING_TYPE } from 'consts';
+import { useWallet } from 'ui/utils';
+
 import AddressItem, { AddressItemProps } from './AddressItem';
 import './style.less';
 type ACTION = 'management' | 'switch';
@@ -23,6 +25,7 @@ interface AddressListProps {
   hiddenAddresses?: { type: string; address: string }[];
   onClick?(account: string, keyring: any, brandName: string): void;
   currentAccount?: any;
+  alianNames?: any;
 }
 interface RowProps {
   data: any;
@@ -30,7 +33,7 @@ interface RowProps {
   style?: any;
   others?: any;
 }
-export const SORT_WEIGHT = {
+const SORT_WEIGHT = {
   [KEYRING_TYPE.HdKeyring]: 1,
   [KEYRING_TYPE.SimpleKeyring]: 2,
   [KEYRING_TYPE.HardwareKeyring]: 3,
@@ -46,6 +49,7 @@ const Row: React.FC<RowProps> = memo((props) => {
     onClick,
     hiddenAddresses,
     addressItems,
+    updateAllAlianNames,
   } = others;
   const account = combinedList[index];
   return (
@@ -66,6 +70,8 @@ const Row: React.FC<RowProps> = memo((props) => {
           hiddenAddresses={hiddenAddresses}
           currentAccount={currentAccount}
           showAssets
+          updateAllAlianNames={updateAllAlianNames}
+          className="h-[56px]"
           ref={(el) => {
             addressItems.current[index] = el;
           }}
@@ -84,12 +90,14 @@ const AddressList: any = forwardRef(
       onClick,
       hiddenAddresses = [],
       currentAccount,
+      alianNames,
     }: AddressListProps,
     ref
   ) => {
+    const wallet = useWallet();
     const [start, setStart] = useState(0);
     const [end, setEnd] = useState(10);
-
+    const [alianNamesList, setAlianNamesList] = useState(alianNames);
     const addressItems = useRef(new Array(list.length));
     const fixedList = useRef<FixedSizeList>();
     const updateAllBalance = () => {
@@ -97,7 +105,10 @@ const AddressList: any = forwardRef(
         item.updateBalance();
       });
     };
-
+    const updateAllAlianNames = async () => {
+      const allAlianNames = await wallet.getAllAlianName();
+      setAlianNamesList(allAlianNames);
+    };
     useImperativeHandle(ref, () => ({
       updateAllBalance,
     }));
@@ -108,7 +119,12 @@ const AddressList: any = forwardRef(
       .map((group) => {
         const templist = group.accounts.map(
           (item) =>
-            (item = { ...item, type: group.type, keyring: group.keyring })
+            (item = {
+              ...item,
+              alianName: alianNamesList[item.address],
+              type: group.type,
+              keyring: group.keyring,
+            })
         );
         return templist;
       })
@@ -128,6 +144,12 @@ const AddressList: any = forwardRef(
         fixedList.current?.scrollToItem(position, 'center');
       }
     }, []);
+    useEffect(() => {
+      if (currentAccount) {
+        const position = findIndex(combinedList, currentAccount);
+        fixedList.current?.scrollToItem(position, 'center');
+      }
+    }, [alianNamesList]);
     const switchAddressHeight =
       combinedList.length > 5 ? 400 : combinedList.length * 80;
     return (
@@ -143,10 +165,11 @@ const AddressList: any = forwardRef(
               hiddenAddresses,
               addressItems,
               currentAccount,
+              updateAllAlianNames,
             },
           }}
           itemCount={combinedList.length}
-          itemSize={72}
+          itemSize={64}
           itemKey={itemKey}
           ref={fixedList}
           onItemsRendered={onItemsRendered}

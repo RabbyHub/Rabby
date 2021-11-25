@@ -66,7 +66,7 @@ const SendToken = () => {
   const [balanceError, setBalanceError] = useState(null);
   const [balanceWarn, setBalanceWarn] = useState(null);
   const [showContactInfo, setShowContactInfo] = useState(false);
-
+  const [accountType, setAccountType] = useState('');
   const canSubmit =
     isValidAddress(form.getFieldValue('to')) &&
     !balanceError &&
@@ -139,10 +139,11 @@ const SendToken = () => {
     window.close();
   };
 
-  const handleConfirmContact = (data: ContactBookItem | null) => {
+  const handleConfirmContact = (data: ContactBookItem | null, type: string) => {
     setShowEditContactModal(false);
     setShowListContactModal(false);
     setContactInfo(data);
+    setAccountType(type);
     const values = form.getFieldsValue();
     const to = data ? data.address : '';
     if (!data) return;
@@ -179,6 +180,7 @@ const SendToken = () => {
       amount: string;
     }
   ) => {
+    console.log(55555);
     setShowContactInfo(!!to && isValidAddress(to));
     if (!to || !isValidAddress(to)) {
       setEditBtnDisabled(true);
@@ -215,10 +217,13 @@ const SendToken = () => {
     });
     setCacheAmount(resultAmount);
     const addressContact = await wallet.getContactByAddress(to);
-    if (addressContact) {
-      setContactInfo(addressContact);
+    const alianName = await wallet.getAlianName(to);
+    if (addressContact || alianName) {
+      setContactInfo(addressContact || { to, name: alianName });
+      alianName ? setAccountType('my') : setAccountType('others');
     } else if (!addressContact && contactInfo) {
       setContactInfo(null);
+      setAccountType('');
     }
   };
 
@@ -516,6 +521,7 @@ const SendToken = () => {
         visible={showEditContactModal}
         address={form.getFieldValue('to')}
         onOk={handleConfirmContact}
+        accountType={accountType}
         onCancel={handleCancelEditContact}
         isEdit={!!contactInfo}
       />

@@ -10,9 +10,10 @@ import './style.less';
 interface EditModalProps {
   address: string;
   visible: boolean;
-  onOk(data: ContactBookItem | null): void;
+  onOk(data: ContactBookItem | null, type: string): void;
   onCancel(): void;
   isEdit: boolean;
+  accountType: string;
 }
 
 const EditModal = ({
@@ -21,6 +22,7 @@ const EditModal = ({
   onOk,
   onCancel,
   isEdit = true,
+  accountType = 'others',
 }: EditModalProps) => {
   const { t } = useTranslation();
   const wallet = useWallet();
@@ -33,6 +35,7 @@ const EditModal = ({
         address,
         name,
       });
+      wallet.updateAlianName(address, name);
     } else {
       wallet.addContact({
         address,
@@ -44,12 +47,12 @@ const EditModal = ({
         duration: 1,
       });
     }
-    onOk({ address, name });
+    onOk({ address, name }, accountType);
   };
 
   const handleRemoveContact = () => {
     wallet.removeContact(address);
-    onOk(null);
+    onOk(null, accountType);
   };
 
   const strLength = (str) => {
@@ -83,6 +86,8 @@ const EditModal = ({
     if (visible) {
       if (isEdit) {
         const contact = await wallet.getContactByAddress(address);
+        const importName = await wallet.getAlianName(address);
+        console.log(contact, importName, 'asdfasf');
         setName(contact?.name || '');
       } else {
         setName('');
@@ -97,7 +102,6 @@ const EditModal = ({
   useEffect(() => {
     init();
   }, []);
-
   return (
     <Modal
       className="edit-contact-modal"
@@ -131,7 +135,7 @@ const EditModal = ({
           {t('Confirm')}
         </Button>
       </div>
-      {isEdit && (
+      {isEdit && accountType === 'others' && (
         <div className="remove-btn">
           <Button type="link" onClick={handleRemoveContact}>
             {t('Remove from Contacts')}

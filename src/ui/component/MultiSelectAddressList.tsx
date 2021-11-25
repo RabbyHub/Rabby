@@ -3,6 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { FieldCheckbox } from 'ui/component';
 import AddressItem from 'ui/component/AddressList/AddressItem';
 import { useSelectOption } from 'ui/utils';
+import { BRAND_ALIAN_TYPE_TEXT } from 'consts';
 
 interface MultiSelectAddressListArgs {
   accounts: Array<{
@@ -53,11 +54,12 @@ const MultiSelectAddressList = ({
               account={{
                 address: account.address,
                 type,
-                brandName: type,
+                brandName: BRAND_ALIAN_TYPE_TEXT[type],
               }}
               noNeedBalance={!imported}
               showAssets={imported}
               className="select-address-item"
+              editing={false}
             />
           </FieldCheckbox>
         );

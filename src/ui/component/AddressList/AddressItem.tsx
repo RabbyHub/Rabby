@@ -6,7 +6,7 @@ import React, {
   forwardRef,
   memo,
 } from 'react';
-import { Skeleton, Tooltip } from 'antd';
+import { Skeleton, Tooltip, Input } from 'antd';
 import clsx from 'clsx';
 import { useTranslation, Trans } from 'react-i18next';
 import { Account } from 'background/service/preference';
@@ -19,9 +19,12 @@ import {
   KEYRING_ICONS,
   WALLET_BRAND_CONTENT,
   KEYRING_TYPE_TEXT,
+  BRAND_ALIAN_TYPE_TEXT,
 } from 'consts';
 import IconEmptyChain from 'ui/assets/chain-logos/empty.svg';
 import IconMoreChain from 'ui/assets/more-chain-round-dark.svg';
+import IconEditPen from 'ui/assets/editpen.svg';
+import IconCorrect from 'ui/assets/correct.svg';
 interface DisplayChainWithWhiteLogo extends ChainWithBalance {
   logo?: string;
   whiteLogo?: string;
@@ -32,6 +35,7 @@ export interface AddressItemProps {
     address: string;
     type: string;
     brandName: string;
+    alianName?: string;
   };
   keyring?: any;
   ActionButton?: FunctionComponent<{
@@ -46,6 +50,11 @@ export interface AddressItemProps {
   noNeedBalance?: boolean;
   currentAccount?: any;
   icon?: string;
+  showNumber?: boolean;
+  updateAllAlianNames?(): void;
+  index?: number;
+  editing?: boolean;
+  showImportIcon?: boolean;
 }
 
 const formatChain = (item: ChainWithBalance): DisplayChainWithWhiteLogo => {
@@ -125,7 +134,11 @@ const AddressItem = memo(
         onClick,
         noNeedBalance = false,
         currentAccount = null,
+        updateAllAlianNames,
         icon = '',
+        index,
+        editing = true,
+        showImportIcon = true,
       }: AddressItemProps,
       ref
     ) => {
@@ -133,7 +146,10 @@ const AddressItem = memo(
         return null;
       }
       const { t } = useTranslation();
+      const wallet = useWallet();
       const [isLoading, setIsLoading] = useState(false);
+      const [startEdit, setStartEdit] = useState(false);
+      const [alianName, setAlianName] = useState<string>('');
       const [balance, chainBalances, getAddressBalance] = useCurrentBalance(
         account.address,
         false,
@@ -200,13 +216,37 @@ const AddressItem = memo(
         }
         return result;
       };
+      const handleAlianNameChange = (
+        e: React.ChangeEvent<HTMLInputElement>
+      ) => {
+        setAlianName(e.target.value);
+      };
+      const alianNameConfirm = async () => {
+        if (!alianName) {
+          return;
+        }
+        await wallet.updateAlianName(account?.address, alianName);
+        if (editing) {
+          setStartEdit(false);
+          return;
+        } else {
+          if (updateAllAlianNames) {
+            await updateAllAlianNames();
+          }
+        }
+        setStartEdit(false);
+      };
+      const displayName =
+        alianName ||
+        account?.alianName ||
+        (!showImportIcon &&
+          index &&
+          BRAND_ALIAN_TYPE_TEXT[account?.brandName] &&
+          `${BRAND_ALIAN_TYPE_TEXT[account?.brandName]} ${index + 1}`) ||
+        account?.brandName;
       return (
         <li
-          className={clsx(
-            className,
-            { 'no-assets': !showAssets },
-            isCurrentAddress && 'highlight-address'
-          )}
+          className={className}
           onClick={() =>
             onClick && onClick(account.address, keyring, account.brandName)
           }
@@ -217,46 +257,14 @@ const AddressItem = memo(
               isDisabled && 'opacity-40'
             )}
           >
-            <div className="address-info">
-              {showAssets && (
-                <span className="balance">
-                  {isLoading && <Skeleton.Input active />}
-                  <span style={{ opacity: isLoading ? 0 : 1 }}>
-                    ${splitNumberByStep((balance || 0).toFixed(2))}
-                  </span>
-                </span>
-              )}
-              <AddressViewer
-                address={account.address}
-                showArrow={false}
-                className="subtitle"
-              />
-            </div>
-
-            {showAssets && (
-              <div className="mt-4 w-full text-left leading-none">
-                <div className="inline-flex relative">
-                  {chainBalances.length ? (
-                    displayChainList()
-                  ) : (
-                    <img
-                      className="w-16 h-16"
-                      src={IconEmptyChain}
-                      style={{ opacity: isLoading ? 0 : 1 }}
-                    />
-                  )}
-                  {isLoading && <Skeleton.Input active />}
-                </div>
-              </div>
-            )}
-            {icon && <img src={icon} className="item-right-icon" />}
-          </div>
-          {keyring && (
-            <div className="action-button flex items-center flex-shrink-0 cursor-pointer">
+            {showImportIcon && (
               <Tooltip
                 overlayClassName="rectangle addressType__tooltip"
                 placement="topRight"
-                title={formatAddressTooltip(account.type, account.brandName)}
+                title={formatAddressTooltip(
+                  account.type,
+                  BRAND_ALIAN_TYPE_TEXT[account.brandName] || account.brandName
+                )}
               >
                 <img
                   src={
@@ -268,6 +276,52 @@ const AddressItem = memo(
                   })}
                 />
               </Tooltip>
+            )}
+            <div className="address-info">
+              <div className="brand-name flex">
+                {startEdit && editing ? (
+                  <Input
+                    value={
+                      startEdit
+                        ? alianName
+                        : account?.alianName || account?.brandName
+                    }
+                    defaultValue={
+                      alianName || account?.alianName || account?.brandName
+                    }
+                    onChange={handleAlianNameChange}
+                    onPressEnter={alianNameConfirm}
+                    autoFocus={startEdit}
+                    maxLength={20}
+                    min={0}
+                  />
+                ) : (
+                  displayName
+                )}
+                {!startEdit && editing && (
+                  <img
+                    className="edit-name"
+                    src={IconEditPen}
+                    onClick={() => setStartEdit(true)}
+                  />
+                )}
+                {startEdit && editing && (
+                  <img
+                    className="edit-name w-[16px] h-[16px]"
+                    src={IconCorrect}
+                    onClick={alianNameConfirm}
+                  />
+                )}
+              </div>
+              <AddressViewer
+                address={account.address}
+                showArrow={false}
+                className="subtitle"
+              />
+            </div>
+          </div>
+          {keyring && (
+            <div className="action-button flex items-center flex-shrink-0 cursor-pointer">
               {ActionButton && (
                 <ActionButton
                   data={account.address}

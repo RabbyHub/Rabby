@@ -1,9 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import ClipboardJS from 'clipboard';
 import QRCode from 'qrcode.react';
 import { useHistory } from 'react-router-dom';
 import { useInterval } from 'react-use';
-import { message, Popover, Input, Button } from 'antd';
+import { message, Popover, Input } from 'antd';
+import { FixedSizeList } from 'react-window';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 import { SORT_WEIGHT, BRAND_ALIAN_TYPE_TEXT } from 'consts';
@@ -13,7 +14,6 @@ import { Account } from 'background/service/preference';
 import {
   RecentConnections,
   BalanceView,
-  useConfirmExternalModal,
   SwitchAddress,
   DefaultWalletAlertBar,
 } from './components';
@@ -25,12 +25,14 @@ import IconSuccess from 'ui/assets/success.svg';
 import IconUpAndDown from 'ui/assets/up-and-down.svg';
 import { ReactComponent as IconCopy } from 'ui/assets/urlcopy.svg';
 import IconEditPen from 'ui/assets/editpen.svg';
-
+import IconCorrect from 'ui/assets/correct.svg';
 import './style.less';
 const Dashboard = () => {
   const history = useHistory();
   const wallet = useWallet();
   const { t } = useTranslation();
+  const fixedList = useRef<FixedSizeList>();
+
   const [currentAccount, setCurrentAccount] = useState<Account | null>(null);
   const [isModalOpen, setModalOpen] = useState(false);
   const [qrcodeVisible, setQrcodeVisible] = useState(false);
@@ -42,7 +44,6 @@ const Dashboard = () => {
   const [startEdit, setStartEdit] = useState(false);
   const [alianName, setAlianName] = useState<string>('');
   const [accountsList, setAccountsList] = useState<Account[]>([]);
-  const [hoverItem, setHoverItem] = useState(-1);
   const handleToggle = () => {
     setModalOpen(!isModalOpen);
   };
@@ -115,7 +116,12 @@ const Dashboard = () => {
   };
 
   const handleGotoSend = async () => {
-    history.push('/send-token');
+    history.push({
+      pathname: '/send-token',
+      state: {
+        accountsList,
+      },
+    });
   };
 
   const handleGotoHistory = async () => {
@@ -152,6 +158,9 @@ const Dashboard = () => {
     setAlianName(e.target.value);
   };
   const alianNameConfirm = async () => {
+    if (!alianName) {
+      return;
+    }
     await wallet.updateAlianName(currentAccount?.address, alianName);
     await getAllKeyrings();
     handleHoverChange(false);
@@ -168,12 +177,15 @@ const Dashboard = () => {
         <div className="brand-name">
           {startEdit ? (
             <Input
-              value={alianName}
+              value={
+                startEdit
+                  ? alianName
+                  : alianName || currentAccount?.displayBrandName
+              }
               defaultValue={alianName}
               onChange={handleAlianNameChange}
               onPressEnter={alianNameConfirm}
               autoFocus={startEdit}
-              bordered={false}
               maxLength={20}
               min={0}
             />
@@ -181,11 +193,20 @@ const Dashboard = () => {
             alianName || currentAccount?.displayBrandName
           )}
         </div>
-        <img
-          className="edit-name"
-          src={IconEditPen}
-          onClick={() => setStartEdit(true)}
-        />
+        {!startEdit && (
+          <img
+            className="edit-name"
+            src={IconEditPen}
+            onClick={() => setStartEdit(true)}
+          />
+        )}
+        {startEdit && (
+          <img
+            className="edit-name w-[16px] h-[16px]"
+            src={IconCorrect}
+            onClick={alianNameConfirm}
+          />
+        )}
       </div>
       <div className="flex text-12 mt-12">
         <div className="mr-8">{currentAccount?.address}</div>
@@ -199,42 +220,52 @@ const Dashboard = () => {
       </div>
     </div>
   );
+  const Row = (props) => {
+    const { data, index, style } = props;
+    const account = data[index];
+    return (
+      <div
+        className="flex items-center address-item"
+        key={index}
+        style={style}
+        onClick={() => handleChange(account)}
+      >
+        {' '}
+        <img
+          className="icon icon-account-type w-[15px] h-[15px]"
+          src={getAccountIcon(account)}
+        />
+        <div className="flex flex-col items-start ml-10">
+          <div className="text-13 text-black text-left">
+            {account?.alianName ||
+              account?.displayBrandName ||
+              account?.brandName}
+            <AddressViewer
+              address={account?.address}
+              showArrow={false}
+              className={'text-12 text-black opacity-60'}
+            />
+          </div>
+        </div>
+      </div>
+    );
+  };
   const clickContent = () => (
     <div className="flex flex-col w-[200px]">
       {accountsList.length < 2 ? (
         <div> no other address</div>
       ) : (
-        accountsList
-          .filter(
-            (account) =>
-              account.address !== currentAccount?.address ||
-              account.brandName !== currentAccount?.brandName
-          )
-          .map((item, key) => (
-            <div
-              className="flex items-center address-item"
-              key={key}
-              onMouseEnter={() => setHoverItem(key)}
-              onMouseLeave={() => setHoverItem(-1)}
-              onClick={() => handleChange(item)}
-            >
-              {' '}
-              <img
-                className="icon icon-account-type w-[15px] h-[15px]"
-                src={getAccountIcon(item)}
-              />
-              <div className="flex flex-col items-start ml-10">
-                <div className="text-13 text-black text-left">
-                  {item?.alianName || item.displayBrandName || item.brandName}
-                  <AddressViewer
-                    address={item.address}
-                    showArrow={false}
-                    className={'text-12 text-black opacity-60'}
-                  />
-                </div>
-              </div>
-            </div>
-          ))
+        <FixedSizeList
+          height={accountsList.length > 5 ? 308 : accountsList.length * 52}
+          width="100%"
+          itemData={accountsList}
+          itemCount={accountsList.length}
+          itemSize={52}
+          ref={fixedList}
+          //onItemsRendered={onItemsRendered}
+        >
+          {Row}
+        </FixedSizeList>
       )}
     </div>
   );
@@ -247,14 +278,19 @@ const Dashboard = () => {
       })
       .map((item) =>
         item.accounts.map((account) => {
-          return {
-            ...account,
-            displayBrandName:
-              BRAND_ALIAN_TYPE_TEXT[account.brandName] || account.brandName,
-            type: item.type,
-            alianName: allAlianNames[account.address],
-            keyring: item.keyring,
-          };
+          if (
+            account.address! == currentAccount?.address ||
+            account.brandName !== currentAccount?.brandName
+          ) {
+            return {
+              ...account,
+              displayBrandName:
+                BRAND_ALIAN_TYPE_TEXT[account.brandName] || account.brandName,
+              type: item.type,
+              alianName: allAlianNames[account.address],
+              keyring: item.keyring,
+            };
+          }
         })
       )
       .flat(1);
@@ -272,14 +308,6 @@ const Dashboard = () => {
     setClicked(false);
     setHovered(false);
   };
-  console.log(
-    accountsList.filter(
-      (account) =>
-        account.address !== currentAccount?.address ||
-        account.brandName !== currentAccount?.brandName
-    ),
-    93333
-  );
   return (
     <>
       <div

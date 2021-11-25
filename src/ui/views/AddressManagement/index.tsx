@@ -25,6 +25,7 @@ const AddressManagement = () => {
   const wallet = useWallet();
   const { t } = useTranslation();
   const [accounts, setAccounts] = useState<DisplayedKeryring[]>([]);
+  const [alianNames, setAlianNames] = useState<[]>([]);
   const [noAccount, setNoAccount] = useState(false);
   const [hiddenAddresses, setHiddenAddresses] = useState<
     { type: string; address: string }[]
@@ -50,8 +51,10 @@ const AddressManagement = () => {
 
   const getAllKeyrings = async () => {
     const _accounts = await wallet.getAllClassAccounts();
+    const allAlianNames = await wallet.getAllAlianName();
 
     setAccounts(_accounts);
+    setAlianNames(allAlianNames);
   };
 
   const handleViewMnemonics = async () => {
@@ -253,6 +256,7 @@ const AddressManagement = () => {
             ActionButton={AddressActionButton}
             hiddenAddresses={hiddenAddresses}
             onShowMnemonics={handleViewMnemonics}
+            alianNames={alianNames}
           />
           <StrayFooterNav
             hasDivider
