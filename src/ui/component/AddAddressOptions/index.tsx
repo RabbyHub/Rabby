@@ -52,6 +52,10 @@ const AddAddressOptions = () => {
       );
     } else if (item.connectType === 'OneKeyConnect') {
       openInternalPageInTab('import/hardware?connectType=ONEKEY');
+    } else if (item.connectType === 'GnosisConnect') {
+      history.push({
+        pathname: '/import/gnosis',
+      });
     } else {
       history.push({
         pathname: '/import/wallet-connect',

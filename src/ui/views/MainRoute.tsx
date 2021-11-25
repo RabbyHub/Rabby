@@ -15,6 +15,7 @@ import SelectAddress from './SelectAddress';
 import ImportSuccess from './ImportSuccess';
 import ImportHardware from './ImportHardware';
 import ImportLedgerPathSelect from './ImportHardware/LedgerHdPath';
+import ImportGnosis from './ImportGnosisAddress';
 import ConnectLedgerMethodSelect from './ImportHardware/LedgerConnectMethod';
 import Settings from './Settings';
 import ConnectedSites from './ConnectedSites';
@@ -106,7 +107,9 @@ const Main = () => {
         <PrivateRoute exact path="/tx-history">
           <TransactionHistory />
         </PrivateRoute>
-
+        <PrivateRoute exact path="/import/gnosis">
+          <ImportGnosis />
+        </PrivateRoute>
         <PrivateRoute exact path="/add-address">
           <AddAddress />
         </PrivateRoute>

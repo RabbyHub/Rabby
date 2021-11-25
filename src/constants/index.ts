@@ -33,6 +33,7 @@ import IconAmber from 'ui/assets/walletlogo/amber.png';
 import IconCobo from 'ui/assets/walletlogo/cobo.png';
 import IconImtoken from 'ui/assets/walletlogo/imtoken.png';
 import IconJade from 'ui/assets/walletlogo/jade.png';
+import IconGnosis from 'ui/assets/walletlogo/gnosis.png';
 import IconLedger from 'ui/assets/walletlogo/ledger.svg';
 import IconMath from 'ui/assets/walletlogo/math.png';
 import IconOnekey from 'ui/assets/walletlogo/onekey.png';
@@ -467,6 +468,7 @@ export enum BRAND_WALLET_CONNECT_TYPE {
   LedgerConnect = 'LedgerConnect',
   OneKeyConnect = 'OneKeyConnect',
   TrezorConnect = 'TrezorConnect',
+  GnosisConnect = 'GnosisConnect',
 }
 
 export const WATCH_ADDRESS_TYPE_CONTENT = {
@@ -535,6 +537,7 @@ export enum WALLET_BRAND_TYPES {
   TP = 'TP',
   TREZOR = 'TREZOR',
   TRUSTWALLET = 'TRUSTWALLET',
+  GNOSIS = 'GNOSIS',
 }
 
 export const WALLET_BRAND_CONTENT = {
@@ -553,6 +556,14 @@ export const WALLET_BRAND_CONTENT = {
     icon: IconCobo,
     image: LogoCobo,
     connectType: BRAND_WALLET_CONNECT_TYPE.WalletConnect,
+  },
+  [WALLET_BRAND_TYPES.GNOSIS]: {
+    id: 11,
+    name: 'Gnosis Safe',
+    brand: WALLET_BRAND_TYPES.GNOSIS,
+    icon: IconGnosis,
+    image: IconGnosis,
+    connectType: BRAND_WALLET_CONNECT_TYPE.GnosisConnect,
   },
   [WALLET_BRAND_TYPES.IMTOKEN]: {
     id: 2,

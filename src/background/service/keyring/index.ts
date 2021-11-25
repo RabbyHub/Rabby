@@ -18,6 +18,7 @@ import TrezorKeyring from '@rabby-wallet/eth-trezor-keyring';
 import OnekeyKeyring from './eth-onekey-keyring';
 import WatchKeyring from '@rabby-wallet/eth-watch-keyring';
 import WalletConnectKeyring from '@rabby-wallet/eth-walletconnect-keyring';
+import GnosisKeyring from '@rabby-wallet/eth-gnosis-keyring';
 import preference from '../preference';
 import i18n from '../i18n';
 import { KEYRING_TYPE, HARDWARE_KEYRING_TYPES, EVENTS } from 'consts';
@@ -32,6 +33,7 @@ export const KEYRING_SDK_TYPES = {
   OnekeyKeyring,
   WatchKeyring,
   WalletConnectKeyring,
+  GnosisKeyring,
 };
 
 export const KEYRING_CLASS = {
@@ -44,6 +46,7 @@ export const KEYRING_CLASS = {
   },
   WATCH: WatchKeyring.type,
   WALLETCONNECT: WalletConnectKeyring.type,
+  GNOSIS: GnosisKeyring.type,
 };
 
 interface MemStoreState {

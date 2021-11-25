@@ -4,6 +4,7 @@ import { Field, Checkbox } from 'ui/component';
 
 interface FieldCheckboxProps {
   leftIcon?: React.ReactNode;
+  rightSlot?: React.ReactNode;
   children: React.ReactNode;
   disable?: React.ReactNode | boolean;
   checked?: boolean;
@@ -16,6 +17,7 @@ interface FieldCheckboxProps {
 
 const FieldCheckbox = ({
   leftIcon,
+  rightSlot,
   children,
   disable,
   checked,
@@ -58,16 +60,18 @@ const FieldCheckbox = ({
       )}
       leftIcon={leftIcon}
       rightIcon={
-        disable ||
-        (showCheckbox && (
-          <Checkbox
-            checked={_checked}
-            width={`${checkboxSize}px`}
-            height={`${checkboxSize}px`}
-            background="#27C193"
-            onChange={handleToggle}
-          />
-        ))
+        rightSlot
+          ? rightSlot
+          : disable ||
+            (showCheckbox && (
+              <Checkbox
+                checked={_checked}
+                width={`${checkboxSize}px`}
+                height={`${checkboxSize}px`}
+                background="#27C193"
+                onChange={handleToggle}
+              />
+            ))
       }
       onClick={() => {
         handleToggle(!checked);
