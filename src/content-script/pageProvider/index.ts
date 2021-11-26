@@ -226,15 +226,6 @@ export class EthereumProvider extends EventEmitter {
         result = this.selectedAddress || null;
         break;
 
-      // case 'eth_uninstallFilter':
-      //   this.request(payload);
-      //   result = true;
-      //   break;
-
-      case 'net_version':
-        result = this.networkVersion || null;
-        break;
-
       default:
         throw new Error('sync method doesnt support');
     }
