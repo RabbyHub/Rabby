@@ -19,7 +19,7 @@ import TrezorKeyring from '@rabby-wallet/eth-trezor-keyring';
 import OnekeyKeyring from './eth-onekey-keyring';
 import WatchKeyring from '@rabby-wallet/eth-watch-keyring';
 import WalletConnectKeyring from '@rabby-wallet/eth-walletconnect-keyring';
-import GnosisKeyring from '@rabby-wallet/eth-gnosis-keyring';
+import GnosisKeyring from './eth-gnosis-keyring';
 import preference from '../preference';
 import i18n from '../i18n';
 import { KEYRING_TYPE, HARDWARE_KEYRING_TYPES, EVENTS } from 'consts';
@@ -721,7 +721,6 @@ class KeyringService extends EventEmitter {
    */
   async _restoreKeyring(serialized: any): Promise<any> {
     const { type, data } = serialized;
-
     const Keyring = this.getKeyringClassForType(type);
     const keyring = new Keyring();
     await keyring.deserialize(data);

@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useDebounce } from 'react-use';
 import { Input, Form } from 'antd';
 import Safe from '@rabby-wallet/gnosis-sdk';
@@ -31,25 +31,21 @@ const ImportGnosisAddress = () => {
     setCurrentStep(2);
   };
 
-  const handleNextClick = () => {
-    // TODO
-  };
-
   const handleChainChanged = (chain: Chain, checked: boolean) => {
     if (!checked) return;
     setSelectedChain(chain);
   };
 
   const Step2 = () => {
-    const [canFinish, setCanFinish] = useState(false);
     const [address, setAddress] = useState<string>('');
     const [loading, setLoading] = useState(false);
     const [errorMsg, setErrorMsg] = useState('');
+    const [canSubmit, setCanSubmit] = useState(false);
     const [form] = Form.useForm();
 
-    const [run] = useWalletRequest(wallet.importWatchAddress, {
+    const [run] = useWalletRequest(wallet.importGnosisAddress, {
       onSuccess(accounts) {
-        // setDisableKeydown(false);
+        console.log('accounts', accounts);
         history.replace({
           pathname: '/popup/import/success',
           state: {
@@ -59,7 +55,6 @@ const ImportGnosisAddress = () => {
         });
       },
       onError(err) {
-        // setDisableKeydown(false);
         form.setFields([
           {
             name: 'address',
@@ -69,18 +64,22 @@ const ImportGnosisAddress = () => {
       },
     });
 
+    const handleNextClick = () => {
+      run(address, selectedChain!.id.toString());
+    };
+
     const handleValuesChange = (data: { address: string }) => {
       setAddress(data.address);
     };
 
     const validateAddress = async (address) => {
       if (!address) return;
-      setLoading(true);
       if (!isValidAddress(address)) {
         setErrorMsg(t('Not a valid address'));
         return;
       }
       try {
+        setLoading(true);
         const safe = await Safe.getSafeInfo(address, selectedChain!.network);
         switch (safe.version) {
           case '1.3.0':
@@ -90,25 +89,35 @@ const ImportGnosisAddress = () => {
           default:
             throw new Error('Version not supported');
         }
+        setErrorMsg('');
+        setCanSubmit(true);
         setLoading(false);
       } catch (e) {
+        setLoading(false);
         setErrorMsg(`This address does not exist on ${selectedChain!.name}`);
       }
     };
 
-    useDebounce(() => validateAddress(address), 1000, [address]);
+    useDebounce(() => validateAddress(address), 500, [address]);
+
+    useEffect(() => {
+      if (address && isValidAddress(address)) {
+        setLoading(true);
+      }
+    }, [address]);
 
     return (
       <StrayPageWithButton
-        onSubmit={handleStep1Finish}
+        onSubmit={handleNextClick}
         form={form}
         hasBack
         hasDivider
         noPadding
         className="step2"
-        onBackClick={() => setCurrentStep(0)}
-        nextDisabled={loading || !canFinish || !address}
+        onBackClick={() => setCurrentStep(1)}
+        nextDisabled={loading || !canSubmit}
         formProps={{ onValuesChange: handleValuesChange }}
+        nextLoading={loading}
       >
         <header className="create-new-header create-password-header h-[264px]">
           <img

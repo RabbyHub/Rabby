@@ -306,6 +306,7 @@ export const KEYRING_TYPE = {
   HardwareKeyring: 'hardware',
   WatchAddressKeyring: 'Watch Address',
   WalletConnectKeyring: 'WalletConnect',
+  GnosisKeyring: 'Gnosis',
 };
 
 export const KEYRING_CLASS = {
@@ -534,6 +535,10 @@ export const EVENTS = {
     INIT: 'WALLETCONNECT_INIT',
     INITED: 'WALLETCONNECT_INITED',
   },
+  GNOSIS: {
+    TX_BUILT: 'TransactionBuilt',
+    TX_CONFIRMED: 'TransactionConfirmed',
+  },
 };
 
 export enum WALLET_BRAND_TYPES {
@@ -548,7 +553,7 @@ export enum WALLET_BRAND_TYPES {
   TP = 'TP',
   TREZOR = 'TREZOR',
   TRUSTWALLET = 'TRUSTWALLET',
-  GNOSIS = 'GNOSIS',
+  GNOSIS = 'Gnosis',
 }
 
 export const WALLET_BRAND_CONTENT = {

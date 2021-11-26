@@ -154,18 +154,19 @@ export class WalletController extends BaseController {
 
   clearKeyrings = () => keyringService.clearKeyrings();
 
-  importGnosisAddress = async (address) => {
+  importGnosisAddress = async (address: string, networkId: string) => {
     let keyring, isNewKey;
     const keyringType = KEYRING_CLASS.GNOSIS;
     try {
       keyring = this._getKeyringByType(keyringType);
     } catch {
       const GnosisKeyring = keyringService.getKeyringClassForType(keyringType);
-      keyring = new GnosisKeyring();
+      keyring = new GnosisKeyring({});
       isNewKey = true;
     }
 
     keyring.setAccountToAdd(address);
+    keyring.setNetworkId(address, networkId);
     await keyringService.addNewAccount(keyring);
     if (isNewKey) {
       await keyringService.addKeyring(keyring);
