@@ -362,18 +362,54 @@
     width: 200px;
     height: 54px;
     padding-left: 15px;
-    border-bottom: 1px solid #e5e9ef;
+    //border-bottom: 1px solid #e5e9ef;
     transition: background-color 0.3s;
     &:hover {
       background-color: rgba(134, 151, 255, 0.1);
       border: 1px solid #8697ff;
     }
   }
+  .address-item::after {
+    content: '';
+    position: absolute;
+    left: 40px;
+    right:14px;
+    bottom: 0;
+    height: 1px;
+    width: 146px;
+    border-bottom: 1px solid #e5e9ef;
+  }
   .ant-popover-inner-content {
     padding: 0 !important;
     background: #ffffff;
     box-shadow: 0px 12px 20px rgba(0, 0, 0, 0.12);
     border-radius: 6px;
+    .no-other-address {
+      height: 62px;
+      width: 200px;
+      padding: 24px 52px 22px 40px;
+      font-size: 14px;
+      border-radius: 6px;
+      text-align: center;
+      color: #707280;
+    }
+    .pop-add-address {
+      width: 200px;
+      height: 36px;
+      font-size: 12px;
+      text-align: center;
+      background: #ffffff;
+      border-radius: 0px 0px 6px 6px;
+      border-top: 1px solid #e5e9ef;
+      padding: 11px 0 11px 15px;
+      color: #8697ff;
+      &:hover {
+        background-color: rgba(134, 151, 255, 0.1);
+      }
+      img {
+        margin: 2px 11px 2px 0;
+      }
+    }
   }
   .brand-name {
     font-size: 20px;

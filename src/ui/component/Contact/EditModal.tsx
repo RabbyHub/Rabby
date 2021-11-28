@@ -35,7 +35,7 @@ const EditModal = ({
         address,
         name,
       });
-      wallet.updateAlianName(address, name);
+      wallet.updateAlianName(address.toLowerCase(), name);
     } else {
       wallet.addContact({
         address,
@@ -87,7 +87,6 @@ const EditModal = ({
       if (isEdit) {
         const contact = await wallet.getContactByAddress(address);
         const importName = await wallet.getAlianName(address);
-        console.log(contact, importName, 'asdfasf');
         setName(contact?.name || '');
       } else {
         setName('');

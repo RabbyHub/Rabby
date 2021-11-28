@@ -1,5 +1,4 @@
 import React, {
-  useImperativeHandle,
   forwardRef,
   useRef,
   useCallback,
@@ -49,7 +48,6 @@ const Row: React.FC<RowProps> = memo((props) => {
     onClick,
     hiddenAddresses,
     addressItems,
-    updateAllAlianNames,
   } = others;
   const account = combinedList[index];
   return (
@@ -70,7 +68,6 @@ const Row: React.FC<RowProps> = memo((props) => {
           hiddenAddresses={hiddenAddresses}
           currentAccount={currentAccount}
           showAssets
-          updateAllAlianNames={updateAllAlianNames}
           className="h-[56px]"
           ref={(el) => {
             addressItems.current[index] = el;
@@ -100,18 +97,6 @@ const AddressList: any = forwardRef(
     const [alianNamesList, setAlianNamesList] = useState(alianNames);
     const addressItems = useRef(new Array(list.length));
     const fixedList = useRef<FixedSizeList>();
-    const updateAllBalance = () => {
-      addressItems.current.slice(start, end + 1).forEach((item) => {
-        item.updateBalance();
-      });
-    };
-    const updateAllAlianNames = async () => {
-      const allAlianNames = await wallet.getAllAlianName();
-      setAlianNamesList(allAlianNames);
-    };
-    useImperativeHandle(ref, () => ({
-      updateAllBalance,
-    }));
     const combinedList = list
       .sort((a, b) => {
         return SORT_WEIGHT[a.type] - SORT_WEIGHT[b.type];
@@ -165,7 +150,6 @@ const AddressList: any = forwardRef(
               hiddenAddresses,
               addressItems,
               currentAccount,
-              updateAllAlianNames,
             },
           }}
           itemCount={combinedList.length}

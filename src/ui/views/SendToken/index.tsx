@@ -57,7 +57,7 @@ const SendToken = () => {
     time_at: 0,
     amount: 0,
   });
-
+  const [sendAlianName, setSendAlianName] = useState<string | null>(null);
   const [showEditContactModal, setShowEditContactModal] = useState(false);
   const [showListContactModal, setShowListContactModal] = useState(false);
   const [editBtnDisabled, setEditBtnDisabled] = useState(true);
@@ -180,7 +180,6 @@ const SendToken = () => {
       amount: string;
     }
   ) => {
-    console.log(55555);
     setShowContactInfo(!!to && isValidAddress(to));
     if (!to || !isValidAddress(to)) {
       setEditBtnDisabled(true);
@@ -350,7 +349,10 @@ const SendToken = () => {
     }
     loadCurrentToken(needLoadToken, account.address);
   };
-
+  const getAlianName = async () => {
+    const alianName = await wallet.getAlianName(currentAccount?.address);
+    setSendAlianName(alianName);
+  };
   useEffect(() => {
     init();
     return () => {
@@ -358,6 +360,11 @@ const SendToken = () => {
     };
   }, []);
 
+  useEffect(() => {
+    if (currentAccount) {
+      getAlianName();
+    }
+  }, [currentAccount]);
   return (
     <div className="send-token">
       <PageHeader onBack={handleClickBack} forceShowBack>
@@ -381,6 +388,7 @@ const SendToken = () => {
               privatekey: KEYRING_PURPLE_LOGOS[KEYRING_CLASS.PRIVATE_KEY],
               watch: KEYRING_PURPLE_LOGOS[KEYRING_CLASS.WATCH],
             }}
+            alianName={sendAlianName}
           />
           <div className="section-title">
             <span className="section-title__to">{t('To')}</span>

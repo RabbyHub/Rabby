@@ -41,8 +41,25 @@
 }
 
 .list-contact-modal {
+  .ant-modal-close {
+    right: 16px;
+    top: 16px;
+    .ant-modal-close-x {
+      width: 15px;
+      height: 15px;
+      margin-top: 15px !important;
+    }
+  }
   .ant-modal-body {
     height: 431px;
+    padding: 16px 16px 20px;
+
+    .ant-tabs-nav-list {
+      .ant-tabs-tab-btn {
+        font-size: 15px;
+        font-weight: 500;
+      }
+   }
   }
   .no-contact {
     margin-top: 96px;
@@ -51,6 +68,7 @@
       margin: 0 auto 32px auto;
     }
   }
+
   .contact-info {
     p {
       &:nth-child(1) {

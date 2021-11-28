@@ -6,14 +6,13 @@ import React, {
   forwardRef,
   memo,
 } from 'react';
-import { Skeleton, Tooltip, Input } from 'antd';
+import { Tooltip, Input } from 'antd';
 import clsx from 'clsx';
 import { useTranslation, Trans } from 'react-i18next';
 import { Account } from 'background/service/preference';
 import { ChainWithBalance } from 'background/service/openapi';
 import { useWallet, useWalletRequest } from 'ui/utils';
 import { AddressViewer } from 'ui/component';
-import { splitNumberByStep } from 'ui/utils/number';
 import {
   CHAINS,
   KEYRING_ICONS,
@@ -21,8 +20,6 @@ import {
   KEYRING_TYPE_TEXT,
   BRAND_ALIAN_TYPE_TEXT,
 } from 'consts';
-import IconEmptyChain from 'ui/assets/chain-logos/empty.svg';
-import IconMoreChain from 'ui/assets/more-chain-round-dark.svg';
 import IconEditPen from 'ui/assets/editpen.svg';
 import IconCorrect from 'ui/assets/correct.svg';
 interface DisplayChainWithWhiteLogo extends ChainWithBalance {
@@ -36,6 +33,7 @@ export interface AddressItemProps {
     type: string;
     brandName: string;
     alianName?: string;
+    index?: number;
   };
   keyring?: any;
   ActionButton?: FunctionComponent<{
@@ -51,10 +49,11 @@ export interface AddressItemProps {
   currentAccount?: any;
   icon?: string;
   showNumber?: boolean;
-  updateAllAlianNames?(): void;
   index?: number;
   editing?: boolean;
   showImportIcon?: boolean;
+  showIndex?: boolean;
+  importedAccount?: boolean;
 }
 
 const formatChain = (item: ChainWithBalance): DisplayChainWithWhiteLogo => {
@@ -118,7 +117,6 @@ export const useCurrentBalance = (
       });
     }
   }, [account]);
-
   return [balance, chainBalances, getAddressBalance] as const;
 };
 const AddressItem = memo(
@@ -130,15 +128,12 @@ const AddressItem = memo(
         ActionButton,
         hiddenAddresses = [],
         className,
-        showAssets,
         onClick,
-        noNeedBalance = false,
-        currentAccount = null,
-        updateAllAlianNames,
-        icon = '',
         index,
         editing = true,
         showImportIcon = true,
+        showIndex = false,
+        importedAccount = false,
       }: AddressItemProps,
       ref
     ) => {
@@ -147,34 +142,12 @@ const AddressItem = memo(
       }
       const { t } = useTranslation();
       const wallet = useWallet();
-      const [isLoading, setIsLoading] = useState(false);
       const [startEdit, setStartEdit] = useState(false);
       const [alianName, setAlianName] = useState<string>('');
-      const [balance, chainBalances, getAddressBalance] = useCurrentBalance(
-        account.address,
-        false,
-        noNeedBalance
-      );
-
-      const updateBalance = async () => {
-        setIsLoading(true);
-        await getAddressBalance(account.address.toLowerCase());
-        setIsLoading(false);
-      };
-
-      useImperativeHandle(ref, () => ({
-        updateBalance,
-      }));
 
       const isDisabled = hiddenAddresses.find(
         (item) => item.address === account.address && item.type === keyring.type
       );
-
-      const isCurrentAddress =
-        currentAccount?.address === account.address &&
-        currentAccount?.type === account.type &&
-        currentAccount?.brandName === account.brandName;
-
       const formatAddressTooltip = (type: string, brandName: string) => {
         if (KEYRING_TYPE_TEXT[type]) {
           return t(KEYRING_TYPE_TEXT[type]);
@@ -191,59 +164,43 @@ const AddressItem = memo(
         }
         return '';
       };
-      const displayChainList = () => {
-        const result = chainBalances.map((item) => (
-          <img
-            src={item.logo}
-            className="w-16 h-16 mr-6"
-            key={item.id}
-            alt={`${item.name}: $${item.usd_value.toFixed(2)}`}
-            title={`${item.name}: $${item.usd_value.toFixed(2)}`}
-            style={{ opacity: isLoading ? 0 : 1 }}
-          />
-        ));
-        if (result.length > 9) {
-          return result
-            .slice(0, 9)
-            .concat(
-              <img
-                src={IconMoreChain}
-                className="w-16 h-16 mr-6"
-                key="more"
-                style={{ opacity: isLoading ? 0 : 1 }}
-              />
-            );
-        }
-        return result;
-      };
       const handleAlianNameChange = (
         e: React.ChangeEvent<HTMLInputElement>
       ) => {
         setAlianName(e.target.value);
       };
-      const alianNameConfirm = async () => {
+      const alianNameConfirm = async (e) => {
+        e.stopPropagation();
         if (!alianName) {
           return;
         }
-        await wallet.updateAlianName(account?.address, alianName);
+        await updateAlianName(alianName);
         if (editing) {
           setStartEdit(false);
           return;
-        } else {
-          if (updateAllAlianNames) {
-            await updateAllAlianNames();
-          }
         }
         setStartEdit(false);
       };
-      const displayName =
-        alianName ||
-        account?.alianName ||
-        (!showImportIcon &&
-          index &&
-          BRAND_ALIAN_TYPE_TEXT[account?.brandName] &&
-          `${BRAND_ALIAN_TYPE_TEXT[account?.brandName]} ${index + 1}`) ||
-        account?.brandName;
+      const updateAlianName = async (alianName) => {
+        await wallet.updateAlianName(
+          account?.address?.toLowerCase(),
+          alianName
+        );
+      };
+      const displayName = alianName || account?.alianName;
+      useEffect(() => {
+        if (importedAccount) {
+          const alianName = account.index
+            ? `${
+                BRAND_ALIAN_TYPE_TEXT[account?.brandName] || account?.brandName
+              } ${account?.index && account?.index}`
+            : `${
+                BRAND_ALIAN_TYPE_TEXT[account?.brandName] || account?.brandName
+              }`;
+          setAlianName(alianName);
+          updateAlianName(alianName);
+        }
+      }, []);
       return (
         <li
           className={className}
@@ -277,46 +234,55 @@ const AddressItem = memo(
                 />
               </Tooltip>
             )}
-            <div className="address-info">
-              <div className="brand-name flex">
-                {startEdit && editing ? (
-                  <Input
-                    value={
-                      startEdit
-                        ? alianName
-                        : account?.alianName || account?.brandName
-                    }
-                    defaultValue={
-                      alianName || account?.alianName || account?.brandName
-                    }
-                    onChange={handleAlianNameChange}
-                    onPressEnter={alianNameConfirm}
-                    autoFocus={startEdit}
-                    maxLength={20}
-                    min={0}
-                  />
-                ) : (
-                  displayName
-                )}
-                {!startEdit && editing && (
-                  <img
-                    className="edit-name"
-                    src={IconEditPen}
-                    onClick={() => setStartEdit(true)}
-                  />
-                )}
-                {startEdit && editing && (
-                  <img
-                    className="edit-name w-[16px] h-[16px]"
-                    src={IconCorrect}
-                    onClick={alianNameConfirm}
-                  />
-                )}
-              </div>
+            <div className={clsx('address-info', { 'ml-0': !showImportIcon })}>
+              {(showImportIcon || editing) && (
+                <div className="brand-name flex">
+                  {startEdit && editing ? (
+                    <Input
+                      value={
+                        startEdit
+                          ? alianName
+                          : account?.alianName || account?.brandName
+                      }
+                      defaultValue={
+                        alianName || account?.alianName || account?.brandName
+                      }
+                      onChange={handleAlianNameChange}
+                      onPressEnter={alianNameConfirm}
+                      autoFocus={startEdit}
+                      maxLength={20}
+                      min={0}
+                    />
+                  ) : (
+                    displayName
+                  )}
+                  {!startEdit && editing && (
+                    <img
+                      className="edit-name"
+                      src={IconEditPen}
+                      onClick={() => setStartEdit(true)}
+                    />
+                  )}
+                  {startEdit && editing && (
+                    <img
+                      className="edit-name w-[16px] h-[16px]"
+                      src={IconCorrect}
+                      onClick={alianNameConfirm}
+                    />
+                  )}
+                </div>
+              )}
               <AddressViewer
                 address={account.address}
                 showArrow={false}
-                className="subtitle"
+                index={index}
+                showImportIcon={showImportIcon}
+                className={
+                  showImportIcon || !showIndex
+                    ? 'subtitle'
+                    : 'import-color flex'
+                }
+                showIndex={showIndex}
               />
             </div>
           </div>

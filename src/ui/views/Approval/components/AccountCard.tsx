@@ -9,12 +9,14 @@ import { useCurrentBalance } from 'ui/component/AddressList/AddressItem';
 
 const AccountCard = ({
   icons,
+  alianName,
 }: {
   icons?: {
     mnemonic: string;
     privatekey: string;
     watch: string;
   };
+  alianName?: string | null;
 }) => {
   const { t } = useTranslation();
   const wallet = useWallet();
@@ -57,11 +59,17 @@ const AccountCard = ({
   if (!currentAccount) return <></>;
 
   return (
-    <div className="account-card">
-      <p className="title">{t('Current account')}</p>
-      <div className="account-detail">
+    <div className="account-card h-[48px]">
+      <div className="account-detail h-[48px]">
         <img src={icon} className="icon icon-account" />
-        <AddressViewer showArrow={false} address={currentAccount.address} />
+        {alianName ? (
+          <div className="flex flex-col">
+            <div className="send-text">{alianName}</div>
+            <AddressViewer showArrow={false} address={currentAccount.address} />
+          </div>
+        ) : (
+          <AddressViewer showArrow={false} address={currentAccount.address} />
+        )}
         <span className="amount">
           ${splitNumberByStep((balance || 0).toFixed(2))}
         </span>

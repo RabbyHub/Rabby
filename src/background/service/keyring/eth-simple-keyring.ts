@@ -1,5 +1,5 @@
 import Wallet, { hdkey } from 'ethereumjs-wallet';
-import SimpleKeyring from 'eth-simple-keyring';
+import SimpleKeyring from '@rabby-wallet/eth-simple-keyring';
 import * as bip39 from 'bip39';
 import * as sigUtil from 'eth-sig-util';
 
@@ -119,6 +119,19 @@ class HdKeyring extends SimpleKeyring {
   getPreviousPage() {
     return this.__getPage(-1);
   }
+  getAddresses(start: number, end: number) {
+    const from = start;
+    const to = end;
+    const accounts: any[] = [];
+    for (let i = from; i < to; i++) {
+      const [address] = this._addressFromIndex(i);
+      accounts.push({
+        address,
+        index: i + 1,
+      });
+    }
+    return accounts;
+  }
 
   async __getPage(
     increment: number
@@ -143,7 +156,7 @@ class HdKeyring extends SimpleKeyring {
       const [address] = this._addressFromIndex(i);
       accounts.push({
         address,
-        index: i,
+        index: i + 1,
       });
     }
 

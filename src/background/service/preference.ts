@@ -11,6 +11,7 @@ export interface Account {
   brandName: string;
   alianName?: string;
   displayBrandName?: string;
+  index?: number;
 }
 interface PreferenceStore {
   currentAccount: Account | undefined | null;
@@ -26,6 +27,7 @@ interface PreferenceStore {
   lastTimeSendToken: Record<string, TokenItem>;
   walletSavedList: [];
   alianNames: Record<string, string>;
+  isNeedSyncContact: boolean;
 }
 
 const SUPPORT_LOCALES = ['en', 'zh_CN'];
@@ -51,6 +53,7 @@ class PreferenceService {
         lastTimeSendToken: {},
         walletSavedList: [],
         alianNames: {},
+        isNeedSyncContact: true,
       },
     });
     if (!this.store.locale) {
@@ -68,6 +71,9 @@ class PreferenceService {
     }
     if (!this.store.alianNames) {
       this.store.alianNames = {};
+    }
+    if (!this.store.isNeedSyncContact) {
+      this.store.isNeedSyncContact = true;
     }
   };
 
@@ -259,6 +265,12 @@ class PreferenceService {
       ...this.store.alianNames,
       [key]: name,
     };
+  };
+  isNeedSyncContact = () => {
+    return this.store.isNeedSyncContact;
+  };
+  changeSyncContact = () => {
+    this.store.isNeedSyncContact = false;
   };
 }
 

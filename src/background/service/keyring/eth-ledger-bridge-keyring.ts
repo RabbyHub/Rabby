@@ -50,7 +50,7 @@ class LedgerBridgeKeyring extends EventEmitter {
     this.bridgeUrl = null;
     this.type = type;
     this.page = 0;
-    this.perPage = 5;
+    this.perPage = 10;
     this.unlockedAccount = 0;
     this.hdk = new HDKey();
     this.paths = {};
@@ -749,7 +749,18 @@ class LedgerBridgeKeyring extends EventEmitter {
     }
     return accounts;
   }
-
+  async getAddresses(start: number, end: number) {
+    const from = start;
+    const to = end;
+    await this.unlock();
+    let accounts;
+    if (this._isLedgerLiveHdPath()) {
+      accounts = await this._getAccountsBIP44(from, to);
+    } else {
+      accounts = this._getAccountsLegacy(from, to);
+    }
+    return accounts;
+  }
   async _getAccountsBIP44(from, to) {
     const accounts: {
       address: string;
@@ -766,7 +777,7 @@ class LedgerBridgeKeyring extends EventEmitter {
       accounts.push({
         address,
         balance: null,
-        index: i,
+        index: i + 1,
       });
       // PER BIP44
       // "Software should prevent a creation of an account if
@@ -790,7 +801,7 @@ class LedgerBridgeKeyring extends EventEmitter {
       accounts.push({
         address,
         balance: null,
-        index: i,
+        index: i + 1,
       });
       this.paths[ethUtil.toChecksumAddress(address)] = i;
     }

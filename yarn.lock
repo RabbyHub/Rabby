@@ -2128,10 +2128,10 @@
   resolved "https://registry.yarnpkg.com/@polka/url/-/url-1.0.0-next.12.tgz#431ec342a7195622f86688bbda82e3166ce8cb28"
   integrity sha512-6RglhutqrGFMO1MNUXp95RBuYIuc8wTnMAV5MUhLmjTOy78ncwOw7RgeQ/HeymkKXRhZd0s2DNrM1rL7unk3MQ==
 
-"@rabby-wallet/eth-hd-keyring@^3.6.0":
-  version "3.6.0"
-  resolved "https://registry.yarnpkg.com/@rabby-wallet/eth-hd-keyring/-/eth-hd-keyring-3.6.0.tgz#f6c5d458e8a99a66cfc619170baf776b568c2cb4"
-  integrity sha512-ljMi/Z8bsLMYHvZiQKEgJ7l9zGRyLAA6xZhF9EFNfSoyBYDU+6eC+8TLEDyJ7bwkYVI03BXWmrQAOJX4tol19A==
+"@rabby-wallet/eth-hd-keyring@^3.6.5":
+  version "3.6.5"
+  resolved "https://registry.yarnpkg.com/@rabby-wallet/eth-hd-keyring/-/eth-hd-keyring-3.6.5.tgz#de00ca1f530ceafbbcd363c023ec5087be251e72"
+  integrity sha512-l7VqW8Tr/Apt7PPFZlVAJSPpJMGG4YJ4DDDkJA9YzAIJWESpCUJa2clk1sGr40bxtZl1biHqpcQz4ts6asZ0uQ==
   dependencies:
     "@metamask/eth-sig-util" "^4.0.0"
     "@rabby-wallet/eth-simple-keyring" "^4.2.1"
@@ -2152,10 +2152,10 @@
     ethereumjs-wallet "^1.0.2"
     randombytes "^2.1.0"
 
-"@rabby-wallet/eth-trezor-keyring@^1.0.2":
-  version "1.0.2"
-  resolved "https://registry.yarnpkg.com/@rabby-wallet/eth-trezor-keyring/-/eth-trezor-keyring-1.0.2.tgz#865b1aaf79aa0901a25b395ad14ecc24e9afbca1"
-  integrity sha512-VqWcdnf5oeohYslZoWLxug8opY9gpoixRwNdMsmvU9xjP4gxZdyuOHWFmv7m2f1xCqyzbNGsDighe2YD/sEd9Q==
+"@rabby-wallet/eth-trezor-keyring@^1.0.7":
+  version "1.0.7"
+  resolved "https://registry.yarnpkg.com/@rabby-wallet/eth-trezor-keyring/-/eth-trezor-keyring-1.0.7.tgz#95493a2b792ca046c275d0248b9c2fc2c5b2028e"
+  integrity sha512-ISqQTfTRbw6RWblN7CYbpz5pugXZ84bhsU5t9PaWn56C2onz6yUc26cBKFSxpj+a1wQsbiZxwBzRCkPEJAFmsQ==
   dependencies:
     "@bitgo/blake2b" "^3.0.1"
     "@ethereumjs/tx" "^3.1.4"

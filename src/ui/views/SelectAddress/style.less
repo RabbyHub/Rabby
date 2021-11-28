@@ -17,5 +17,35 @@
         margin-top: 0;
       }
     }
+    ::-webkit-scrollbar {
+      display: none;
+    }
+  }
+}
+.select-address-wrapper {
+  background: #ffffff;
+  border-radius: 6px;
+  color: #707280;
+  font-size: 12px;
+  padding: 10px 20px 6px;
+  margin: 0 auto;
+  justify-content: space-between;
+  ::-webkit-scrollbar {
+    display: none; /* Safari and Chrome */
+  }
+  .ant-input {
+    width: 48px;
+    height: 24px;
+    background: #f5f6fa;
+    border: 1px solid #e5e9ef;
+    box-sizing: border-box;
+    &.active {
+      border: 1px solid #f24822;
+    }
+  }
+  .error-message {
+    font-size: 12px;
+    color: #f24822;
+    margin-left: 3px;
   }
 }

@@ -1,13 +1,18 @@
 import React, { useEffect, useState, useRef } from 'react';
 import ClipboardJS from 'clipboard';
 import QRCode from 'qrcode.react';
-import { useHistory } from 'react-router-dom';
+import { useHistory, Link } from 'react-router-dom';
 import { useInterval } from 'react-use';
 import { message, Popover, Input } from 'antd';
 import { FixedSizeList } from 'react-window';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
-import { SORT_WEIGHT, BRAND_ALIAN_TYPE_TEXT } from 'consts';
+import {
+  SORT_WEIGHT,
+  KEYRING_ICONS,
+  WALLET_BRAND_CONTENT,
+  BRAND_ALIAN_TYPE_TEXT,
+} from 'consts';
 import { AddressViewer, Modal } from 'ui/component';
 import { useWallet, getAccountIcon } from 'ui/utils';
 import { Account } from 'background/service/preference';
@@ -26,6 +31,8 @@ import IconUpAndDown from 'ui/assets/up-and-down.svg';
 import { ReactComponent as IconCopy } from 'ui/assets/urlcopy.svg';
 import IconEditPen from 'ui/assets/editpen.svg';
 import IconCorrect from 'ui/assets/correct.svg';
+import IconPlus from 'ui/assets/dashboard-plus.svg';
+
 import './style.less';
 const Dashboard = () => {
   const history = useHistory();
@@ -54,7 +61,6 @@ const Dashboard = () => {
       history.replace('/no-address');
       return;
     }
-    account.displayBrandName = BRAND_ALIAN_TYPE_TEXT[account.brandName];
     setCurrentAccount(account);
   };
 
@@ -82,25 +88,14 @@ const Dashboard = () => {
       getCurrentAccount();
     }
     checkIsDefaultWallet();
-    getAllKeyrings();
   }, []);
 
   useEffect(() => {
     if (currentAccount) {
       getPendingTxCount(currentAccount.address);
-      getAlianName(currentAccount?.address);
-      currentAccount.displayBrandName =
-        BRAND_ALIAN_TYPE_TEXT[currentAccount.brandName];
-      // const sameAddress = accountsList
-      //   .filter((item) => item.address === currentAccount.address)
-      //   .map((account) => {
-      //     return {
-      //       ...account,
-      //       displayBrandName: currentAccount.displayBrandName,
-      //     };
-      //   });
+      getAlianName(currentAccount?.address.toLowerCase());
       setCurrentAccount(currentAccount);
-      //setAccountsList([...accountsList, ...sameAddress])
+      getAllKeyrings();
     }
   }, [currentAccount]);
 
@@ -157,13 +152,17 @@ const Dashboard = () => {
   const handleAlianNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     setAlianName(e.target.value);
   };
-  const alianNameConfirm = async () => {
+  const alianNameConfirm = async (e) => {
+    e.stopPropagation();
     if (!alianName) {
       return;
     }
-    await wallet.updateAlianName(currentAccount?.address, alianName);
-    await getAllKeyrings();
-    handleHoverChange(false);
+    setStartEdit(false);
+    await wallet.updateAlianName(
+      currentAccount?.address?.toLowerCase(),
+      alianName
+    );
+    hide();
   };
   const hoverContent = () => (
     <div className="flex flex-col">
@@ -171,17 +170,16 @@ const Dashboard = () => {
         {currentAccount && (
           <img
             className="icon icon-account-type w-[20px] h-[20px]"
-            src={getAccountIcon(currentAccount)}
+            src={
+              KEYRING_ICONS[currentAccount.type] ||
+              WALLET_BRAND_CONTENT[currentAccount.brandName]?.image
+            }
           />
         )}
         <div className="brand-name">
           {startEdit ? (
             <Input
-              value={
-                startEdit
-                  ? alianName
-                  : alianName || currentAccount?.displayBrandName
-              }
+              value={alianName}
               defaultValue={alianName}
               onChange={handleAlianNameChange}
               onPressEnter={alianNameConfirm}
@@ -190,7 +188,7 @@ const Dashboard = () => {
               min={0}
             />
           ) : (
-            alianName || currentAccount?.displayBrandName
+            alianName
           )}
         </div>
         {!startEdit && (
@@ -232,14 +230,15 @@ const Dashboard = () => {
       >
         {' '}
         <img
-          className="icon icon-account-type w-[15px] h-[15px]"
-          src={getAccountIcon(account)}
+          className="icon icon-account-type w-[20px] h-[20px]"
+          src={
+            KEYRING_ICONS[account.type] ||
+            WALLET_BRAND_CONTENT[account.brandName]?.image
+          }
         />
         <div className="flex flex-col items-start ml-10">
           <div className="text-13 text-black text-left">
-            {account?.alianName ||
-              account?.displayBrandName ||
-              account?.brandName}
+            {account?.alianName}
             <AddressViewer
               address={account?.address}
               showArrow={false}
@@ -252,8 +251,8 @@ const Dashboard = () => {
   };
   const clickContent = () => (
     <div className="flex flex-col w-[200px]">
-      {accountsList.length < 2 ? (
-        <div> no other address</div>
+      {accountsList.length < 1 ? (
+        <div className="no-other-address"> {t('No other address')}</div>
       ) : (
         <FixedSizeList
           height={accountsList.length > 5 ? 308 : accountsList.length * 52}
@@ -262,11 +261,15 @@ const Dashboard = () => {
           itemCount={accountsList.length}
           itemSize={52}
           ref={fixedList}
-          //onItemsRendered={onItemsRendered}
         >
           {Row}
         </FixedSizeList>
       )}
+      <Link to="/add-address" className="pop-add-address flex">
+        {' '}
+        <img className="w-[14px] h-[14px]" src={IconPlus} />
+        <p className="ml-11">{t('Add addresses')}</p>
+      </Link>
     </div>
   );
   const getAllKeyrings = async () => {
@@ -278,22 +281,21 @@ const Dashboard = () => {
       })
       .map((item) =>
         item.accounts.map((account) => {
-          if (
-            account.address! == currentAccount?.address ||
-            account.brandName !== currentAccount?.brandName
-          ) {
-            return {
-              ...account,
-              displayBrandName:
-                BRAND_ALIAN_TYPE_TEXT[account.brandName] || account.brandName,
-              type: item.type,
-              alianName: allAlianNames[account.address],
-              keyring: item.keyring,
-            };
-          }
+          return {
+            ...account,
+            type: item.type,
+            alianName: allAlianNames[account?.address?.toLowerCase()],
+            keyring: item.keyring,
+          };
         })
       )
-      .flat(1);
+      .flat(1)
+      .filter(
+        (item) =>
+          item.address !== currentAccount?.address ||
+          item.brandName !== currentAccount?.brandName
+      );
+    //console.log(templist, currentAccount, 99999);
     setAccountsList(templist);
   };
   const handleHoverChange = (visible) => {
@@ -338,13 +340,14 @@ const Dashboard = () => {
                     {
                       <img
                         className="icon icon-account-type w-[20px] h-[20px]"
-                        src={getAccountIcon(currentAccount)}
+                        src={
+                          KEYRING_ICONS[currentAccount.type] ||
+                          WALLET_BRAND_CONTENT[currentAccount.brandName]?.image
+                        }
                       />
                     }
                     <div className="text-15 text-white ml-6 mr-6">
-                      {alianName ||
-                        currentAccount.displayBrandName ||
-                        currentAccount.brandName}
+                      {alianName}
                     </div>
                     {currentAccount && (
                       <AddressViewer

@@ -265,7 +265,9 @@ const AddressManagement = () => {
             }}
             NextButtonContent={
               <div className="flex items-center h-full justify-center text-15">
-                <SvgIconPlusPrimary className="icon icon-add text-white stroke-current fill-current mr-6" />
+                <SvgIconPlusPrimary
+                  style={{ fontSize: '16px', color: '#8697FF' }}
+                />
                 {t('Add Address')}
               </div>
             }

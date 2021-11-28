@@ -19,6 +19,8 @@ const ImportJson = () => {
         state: {
           accounts,
           title: t('Successfully created'),
+          editing: true,
+          importedAccount: true,
         },
       });
     },

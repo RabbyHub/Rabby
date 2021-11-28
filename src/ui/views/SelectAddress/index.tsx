@@ -3,11 +3,7 @@ import { useLocation, useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import clsx from 'clsx';
 import { Form, Input } from 'antd';
-import {
-  StrayPageWithButton,
-  MultiSelectAddressList,
-  Spin,
-} from 'ui/component';
+import { StrayPageWithButton, MultiSelectAddressList } from 'ui/component';
 import { useWallet, useWalletRequest } from 'ui/utils';
 import { HARDWARE_KEYRING_TYPES } from 'consts';
 import { BIP44_PATH } from '../ImportHardware/LedgerHdPath';
@@ -36,13 +32,26 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
   const [form] = Form.useForm();
   const wallet = useWallet();
   const keyringId = useRef<number | null | undefined>(state.keyringId);
+  const [selectedNumbers, setSelectedNumbers] = useState(0);
+  const [start, setStart] = useState(11);
+  const [end, setEnd] = useState(11);
+  const [loadLength, setLoadLength] = useState(10);
+  const [errorMsg, setErrorMsg] = useState('');
   const [getAccounts, loading] = useWalletRequest(
-    async (firstFlag) => {
+    async (firstFlag, start, end) => {
       return firstFlag
         ? await wallet.requestKeyring(
             keyring,
             'getFirstPage',
             keyringId.current
+          )
+        : end
+        ? await wallet.requestKeyring(
+            keyring,
+            'getAddresses',
+            keyringId.current,
+            start,
+            end
           )
         : await wallet.requestKeyring(
             keyring,
@@ -59,8 +68,9 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
             )
           );
         }
-
         setAccounts(accounts.concat(..._accounts));
+        setStart(accounts.length);
+        setLoadLength(_accounts.length);
       },
       onError(err) {
         console.log('get hardware account error', err);
@@ -94,20 +104,24 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
       wallet.requestKeyring(keyring, 'cleanUp', keyringId.current);
     };
   }, []);
-
+  useEffect(() => {
+    setStart(accounts.length);
+  }, [accounts]);
   const onSubmit = async ({ selectedAddressIndexes }) => {
+    const selectedIndexes = selectedAddressIndexes.map((i) => i - 1);
+
     if (isMnemonics) {
       await wallet.requestKeyring(
         keyring,
         'activeAccounts',
         keyringId.current,
-        selectedAddressIndexes
+        selectedIndexes
       );
       await wallet.addKeyring(keyringId.current);
     } else {
       await wallet.unlockHardwareAccount(
         keyring,
-        selectedAddressIndexes,
+        selectedIndexes,
         keyringId.current
       );
     }
@@ -119,16 +133,36 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
     history.replace({
       pathname: isPopup ? '/popup/import/success' : '/import/success',
       state: {
-        accounts: selectedAddressIndexes.map((i) => ({
+        accounts: selectedIndexes.map((i) => ({
           ...accounts[i],
           brandName: keyring,
           type: keyring,
         })),
         hasDivider: !!isMnemonics,
+        editing: isPopup,
+        showImportIcon: false,
+        isMnemonics,
       },
     });
   };
-
+  const startNumberConfirm = (e) => {
+    e.stopPropagation();
+    if (end > 1000) {
+      setErrorMsg(t('Max 1000'));
+    } else if (accounts.length <= end) {
+      getAccounts(false, start, end + 9);
+    }
+  };
+  const toSpecificNumber = (e: React.ChangeEvent<HTMLInputElement>) => {
+    const currentNumber = parseInt(e.target.value);
+    if (!currentNumber) {
+      setErrorMsg(t('Invalid Number'));
+      return;
+    } else {
+      setErrorMsg(t(''));
+      setEnd(Number(currentNumber));
+    }
+  };
   return (
     <div className="select-address">
       <StrayPageWithButton
@@ -142,12 +176,13 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
               }
             : {
                 title: t('Select Addresses'),
-                subTitle: t('Select the addresses you want to import'),
+                subTitle: t('Select the addresses to view in Rabby'),
                 center: true,
               }
         }
         headerClassName="mb-16"
         onSubmit={onSubmit}
+        nextDisabled={selectedNumbers === 0}
         hasBack
         hasDivider={isMnemonics}
         form={form}
@@ -156,13 +191,8 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
         isScrollContainer={isPopup}
       >
         {isPopup && (
-          <header className="create-new-header create-password-header h-[160px]">
-            <img
-              className="rabby-logo"
-              src="/images/logo-gray.png"
-              alt="rabby logo"
-            />
-            <p className="text-24 mb-4 mt-32 text-white text-center font-bold">
+          <header className="create-new-header create-password-header h-[100px]">
+            <p className="text-24 mb-4 text-white text-center font-bold">
               {t('Select Addresses')}
             </p>
             <p className="text-14 mb-0 mt-4 text-white opacity-80 text-center">
@@ -173,18 +203,27 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
         <div
           className={clsx(
             'h-[40px] select-address-wrapper flex items-center',
-            isPopup ? 'w-[400px]' : 'w-[460px]'
+            isPopup ? 'w-[400px]' : 'w-[460px] mb-20'
           )}
         >
-          <div>Start from address</div>
-          <Input
-            className="mr-80"
-            size="small"
-            width={48}
-            height={24}
-            spellCheck={false}
-          />
-          <div className="place-self-end">0 addresses selected</div>
+          <div className={clsx('flex items-center')}>
+            <p className="pt-12">{t('Start from address')}</p>{' '}
+            <Input
+              className="ml-10"
+              size="small"
+              width={48}
+              height={24}
+              maxLength={4}
+              onChange={toSpecificNumber}
+              onPressEnter={startNumberConfirm}
+              spellCheck={false}
+            />
+            {errorMsg && <p className="error-message pt-12">{errorMsg}</p>}
+          </div>
+
+          <div className="place-self-center">
+            {selectedNumbers} {t('addresses selected')}
+          </div>
         </div>
         <div
           className={clsx('overflow-y-auto lg:h-[340px]', {
@@ -193,18 +232,24 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
           })}
         >
           <Form.Item className="mb-0" name="selectedAddressIndexes">
-            <MultiSelectAddressList
-              accounts={accounts}
-              importedAccounts={importedAccounts}
-              type={keyring}
-            />
+            {accounts.length > 0 && (
+              <MultiSelectAddressList
+                accounts={accounts}
+                importedAccounts={importedAccounts}
+                type={keyring}
+                changeSelectedNumbers={setSelectedNumbers}
+                end={end}
+                loadLength={loadLength}
+                loading={loading}
+                isPopup={isPopup}
+                loadMoreItems={() =>
+                  accounts.length <= 1000
+                    ? getAccounts(false, accounts.length, accounts.length + 9)
+                    : null
+                }
+              />
+            )}
           </Form.Item>
-        </div>
-        <div
-          onClick={() => getAccounts()}
-          className="mt-24 text-blue-light text-15 text-center cursor-pointer"
-        >
-          {loading && <Spin size="small" />} {t('Load More')}
         </div>
       </StrayPageWithButton>
     </div>

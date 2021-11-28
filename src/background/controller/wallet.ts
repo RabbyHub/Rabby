@@ -55,9 +55,23 @@ export class WalletController extends BaseController {
   getApproval = notificationService.getApproval;
   resolveApproval = notificationService.resolveApproval;
   rejectApproval = notificationService.rejectApproval;
-
   unlock = async (password: string) => {
     await keyringService.submitPassword(password);
+    const contacts = await this.listContact();
+    const accounts = await keyringService.getAllTypedAccounts();
+    const isNeedSyncContact = await preferenceService.isNeedSyncContact();
+    if (isNeedSyncContact && contacts.length !== 0 && accounts.length !== 0) {
+      await preferenceService.changeSyncContact();
+      const allAccounts = accounts.map((item) => item.accounts).flat();
+      const sameAddressList = contacts.filter((item) =>
+        allAccounts.find((contact) => contact.address === item.address)
+      );
+      if (sameAddressList.length > 0) {
+        await sameAddressList.map((item) =>
+          this.updateAlianName(item.address, item.name)
+        );
+      }
+    }
     sessionService.broadcastEvent('unlock');
   };
   isUnlocked = () => keyringService.memStore.getState().isUnlocked;
