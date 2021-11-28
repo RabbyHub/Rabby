@@ -6,6 +6,7 @@ export { default as IconNotChecked } from './not-checked.svg';
 export { default as QrScan } from './qr-scan.svg';
 export { default as IconDebank } from './debank.svg';
 
+export { default as IconBitBox02 } from './icon-bitbox02.svg';
 export { default as IconLedger } from './icon-ledger.svg';
 export { default as IconTrezor } from './icon-trezor.svg';
 export { default as IconOnekey } from './icon-onekey.svg';
@@ -15,6 +16,7 @@ export { ReactComponent as SvgIconPlusPrimary } from './plus-primary.svg';
 export { ReactComponent as SvgIconSpin } from './spin.svg';
 export { ReactComponent as SvgIconOffline } from './offline.svg';
 export { ReactComponent as ImportLedgerIcon } from './import-ledger.svg';
+export { ReactComponent as SvgIconBitBox02 } from './icon-bitbox02.svg';
 export { ReactComponent as SvgIconLedger } from './ledger.svg';
 export { ReactComponent as SvgIconTrezor } from './trezor.svg';
 export { ReactComponent as SvgIconOnekey } from './onekey.svg';
