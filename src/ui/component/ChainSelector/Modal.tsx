@@ -56,7 +56,6 @@ const ChainSelectorModal = ({
     eventBus.addEventListener('accountsChanged', accountChangeHandler);
     return () => {
       eventBus.removeEventListerner('accountsChanged', accountChangeHandler);
-      console.log(eventBus.events);
     };
   }, []);
 
