@@ -1,8 +1,9 @@
 import cloneDeep from 'lodash/cloneDeep';
+import eventBus from '@/eventBus';
 import { createPersistStore } from 'background/utils';
 import { keyringService, sessionService, i18n } from './index';
 import { TotalBalanceResponse, TokenItem } from './openapi';
-import { HARDWARE_KEYRING_TYPES } from 'consts';
+import { HARDWARE_KEYRING_TYPES, EVENTS } from 'consts';
 import { browser } from 'webextension-polyfill-ts';
 
 export interface Account {
@@ -168,6 +169,10 @@ class PreferenceService {
     this.store.currentAccount = account;
     if (account) {
       sessionService.broadcastEvent('accountsChanged', [account.address]);
+      eventBus.emit(EVENTS.broadcastToUI, {
+        method: 'accountsChanged',
+        params: account,
+      });
     }
   };
 
