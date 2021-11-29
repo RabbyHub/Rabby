@@ -4,3 +4,5 @@ declare module 'csstype' {
     [index: string]: any;
   }
 }
+
+declare module '*.md';

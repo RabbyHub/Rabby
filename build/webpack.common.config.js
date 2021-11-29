@@ -130,6 +130,10 @@ const config = {
           name: '[name].[ext]',
         },
       },
+      {
+        test: /\.md$/,
+        use: "raw-loader"
+      },
     ],
   },
   plugins: [

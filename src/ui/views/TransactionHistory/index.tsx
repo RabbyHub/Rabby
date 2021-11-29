@@ -382,13 +382,7 @@ const TransactionItem = ({
             ) : (
               <div className="ahead">
                 {txQueues[originTx.hash] ? (
-                  <>
-                    <span className="text-yellow">
-                      {txQueues[originTx.hash].frontTx}
-                    </span>{' '}
-                    {t('tx ahead')} - {Number(originTx.rawTx.gasPrice) / 1e9}{' '}
-                    Gwei{' '}
-                  </>
+                  <>{Number(originTx.rawTx.gasPrice) / 1e9} Gwei </>
                 ) : (
                   t('Unknown')
                 )}
@@ -462,12 +456,7 @@ const TransactionItem = ({
                 <ChildrenTxText tx={tx} originTx={originTx} />
                 <div className="ahead">
                   {txQueues[tx.hash] ? (
-                    <>
-                      <span className="text-yellow">
-                        {txQueues[tx.hash].frontTx}
-                      </span>{' '}
-                      tx ahead - {Number(tx.rawTx.gasPrice) / 1e9} Gwei{' '}
-                    </>
+                    <>{Number(tx.rawTx.gasPrice) / 1e9} Gwei </>
                   ) : (
                     t('Unknown')
                   )}

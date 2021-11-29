@@ -101,6 +101,7 @@ export interface GasResult {
   front_tx_count: number;
   max_gas_cost_usd_value: number;
   max_gas_cost_value: number;
+  fail?: boolean;
 }
 
 export interface GasLevel {

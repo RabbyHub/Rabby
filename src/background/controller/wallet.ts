@@ -27,7 +27,7 @@ import {
   EVENTS,
   BRAND_ALIAN_TYPE_TEXT,
 } from 'consts';
-import { Account } from '../service/preference';
+import { Account, ChainGas } from '../service/preference';
 import { ConnectedSite } from '../service/permission';
 import { ExplainTxResponse, TokenItem } from '../service/openapi';
 import DisplayKeyring from '../service/keyring/display';
@@ -705,6 +705,19 @@ export class WalletController extends BaseController {
   getInitAlianNameStatus = () => preferenceService.getInitAlianNameStatus();
   updateInitAlianNameStatus = () =>
     preferenceService.changeInitAlianNameStatus();
+  getLastTimeGasSelection = (chainId) => {
+    return preferenceService.getLastTimeGasSelection(chainId);
+  };
+
+  updateLastTimeGasSelection = (chainId: string, gas: ChainGas) => {
+    return preferenceService.updateLastTimeGasSelection(chainId, gas);
+  };
+  getIsFirstOpen = () => {
+    return preferenceService.getIsFirstOpen();
+  };
+  updateIsFirstOpen = () => {
+    return preferenceService.updateIsFirstOpen();
+  };
 }
 
 export default new WalletController();
