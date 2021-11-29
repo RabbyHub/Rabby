@@ -20,11 +20,11 @@
         width: 18px;
         height: 18px;
         circle {
-          transition: opacity .2s;
+          transition: opacity 0.2s;
         }
         &:hover {
           circle {
-            opacity: .4;
+            opacity: 0.4;
           }
         }
       }
@@ -38,7 +38,7 @@
         }
         path {
           transform-origin: center center;
-          transition: transform .2s;
+          transition: transform 0.2s;
         }
         &.success {
           path.copy_svg__copy {
@@ -58,7 +58,7 @@
         margin-right: 4px;
       }
       .icon-settings {
-        transition:  transform .2s;
+        transition: transform 0.2s;
         transform: rotate(0deg);
         &:hover {
           transform: rotate(120deg);
@@ -154,7 +154,7 @@
         justify-content: center;
         height: 100%;
         cursor: pointer;
-        transition: background-color .2s;
+        transition: background-color 0.2s;
         position: relative;
         margin-right: 12px;
         &:nth-last-child(1) {
@@ -168,7 +168,7 @@
           top: 4px;
           right: 4px;
           opacity: 0;
-          transition: opacity .2s;
+          transition: opacity 0.2s;
         }
         &:hover {
           background: rgba(19, 20, 26, 0.1);
@@ -225,8 +225,8 @@
   .close-icon {
     width: 72px;
     height: 24px;
-    background: #FFFFFF;
-    border: 0.5px solid #D8DFEB;
+    background: #ffffff;
+    border: 0.5px solid #d8dfeb;
     border-radius: 12px;
     padding: 1px;
     display: flex;
@@ -246,7 +246,7 @@
           height: 12px;
           margin-top: -6px;
           width: 0.5px;
-          background-color: #D8DFEB;
+          background-color: #d8dfeb;
         }
         &:hover {
           background-color: rgba(134, 151, 255, 0.2);
@@ -255,7 +255,7 @@
       &:nth-child(2) {
         border-radius: 0px 12px 12px 0px;
         &:hover {
-          background-color: #F0F2F5;
+          background-color: #f0f2f5;
         }
       }
       .icon {
@@ -378,7 +378,7 @@
   left: 0;
   height: 32px;
   width: 100%;
-  background-color: #8697FF;
+  background-color: #8697ff;
   font-size: 12px;
   color: #fff;
   display: flex;
@@ -393,7 +393,7 @@
     flex: 1;
   }
   .confirm-btn {
-    border: 0.5px solid #FFFFFF;
+    border: 0.5px solid #ffffff;
     border-radius: 2px;
     color: #fff;
     text-align: center;
@@ -401,7 +401,7 @@
     height: 20px;
     line-height: 20px;
     background-color: transparent;
-    transition: background-color .3s;
+    transition: background-color 0.3s;
     &:hover {
       background-color: rgba(255, 255, 255, 0.2);
     }
@@ -414,9 +414,9 @@
   left: 0;
   height: 32px;
   width: 100%;
-  background-color: rgba(242, 156, 27, .2);
+  background-color: rgba(242, 156, 27, 0.2);
   font-size: 12px;
-  color: #F29C1B;
+  color: #f29c1b;
   display: flex;
   align-items: center;
   justify-content: center;
@@ -439,3 +439,25 @@
   }
 }
 
+.first-notice {
+  .ant-modal-header {
+    background: #ffffff;
+    text-align: left;
+    border-bottom: 0;
+  }
+  .ant-modal-title {
+    font-family: Roboto;
+    font-style: normal;
+    font-weight: 500;
+    font-size: 20px;
+    line-height: 23px;
+    color: #13141a;
+    text-align: left;
+  }
+  .ant-modal-content {
+    background-color: #fff;
+    .ant-modal-body {
+      max-height: 420px;
+    }
+  }
+}

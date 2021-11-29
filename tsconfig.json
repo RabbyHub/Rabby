@@ -15,7 +15,8 @@
       "ui/*": ["./src/ui/*"],
       "background/*": ["./src/background/*"],
       "consts": ["./src/constants"],
-      "assets": ["./src/ui/assets"]
+      "assets": ["./src/ui/assets"],
+      "changeLogs": ["./changeLogs"],
     },
     "types": ["chrome", "node", "react", "react-dom", "jest"],
     "jsx": "react",
