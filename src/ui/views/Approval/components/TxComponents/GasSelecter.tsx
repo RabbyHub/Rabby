@@ -198,25 +198,37 @@ const GasSelector = ({
     }
   };
   const getLastTimeSavedGas = async () => {
-    const {
-      gasPrice = null,
-      gasLevel = null,
-      lastTimeSelect = null,
-    } = await wallet.getLastTimeGasSelection(chainId);
-    if (gasPrice) {
-      setCustomGas(gasPrice);
+    const savedGas: ChainGas = await wallet.getLastTimeGasSelection(chainId);
+    if (savedGas?.gasPrice) {
+      setCustomGas(savedGas?.gasPrice);
     }
-    if (lastTimeSelect === 'gasLevel') {
-      const lastSelected = gasList.find((item) => item.level === gasLevel);
+    if (savedGas?.lastTimeSelect && savedGas?.lastTimeSelect === 'gasLevel') {
+      const lastSelected = gasList.find(
+        (item) => item.level === savedGas?.gasLevel
+      );
       lastSelected && setSelectGas(lastSelected);
-    } else if (lastTimeSelect === 'gasPrice') {
+    } else if (
+      savedGas?.lastTimeSelect &&
+      savedGas?.lastTimeSelect === 'gasPrice'
+    ) {
       setSelectGas({
         level: 'custom',
-        price: gasPrice,
+        price: savedGas?.gasPrice || 0,
         front_tx_count: 0,
         estimated_seconds: 0,
         base_fee: gasList[0].base_fee,
       });
+    } else if (gas && !gas?.fail) {
+      setSelectGas({
+        level: 'custom',
+        price: gas?.estimated_gas_cost_usd_value,
+        front_tx_count: gas?.front_tx_count,
+        estimated_seconds: gas?.estimated_seconds,
+        base_fee: gasList[0].base_fee,
+      });
+    } else if (gasList.length > 0) {
+      const gas = gasList.find((item) => item.level === 'fast') || null;
+      setSelectGas(gas);
     }
   };
   const updateGasSelection = async (currentGas) => {
