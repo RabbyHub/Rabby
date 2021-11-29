@@ -20,7 +20,13 @@ import { CacheState } from 'background/service/pageStateCache';
 import i18n from 'background/service/i18n';
 import { KEYRING_CLASS, DisplayedKeryring } from 'background/service/keyring';
 import BaseController from './base';
-import { CHAINS_ENUM, CHAINS, INTERNAL_REQUEST_ORIGIN, EVENTS } from 'consts';
+import {
+  CHAINS_ENUM,
+  CHAINS,
+  INTERNAL_REQUEST_ORIGIN,
+  EVENTS,
+  BRAND_ALIAN_TYPE_TEXT,
+} from 'consts';
 import { Account } from '../service/preference';
 import { ConnectedSite } from '../service/permission';
 import { ExplainTxResponse, TokenItem } from '../service/openapi';
@@ -58,8 +64,20 @@ export class WalletController extends BaseController {
   unlock = async (password: string) => {
     await keyringService.submitPassword(password);
     const contacts = await this.listContact();
+    const needInitAlianNames = await preferenceService.getInitAlianNameStatus();
     const accounts = await keyringService.getAllTypedAccounts();
     const isNeedSyncContact = await preferenceService.isNeedSyncContact();
+    if (!needInitAlianNames && accounts.length > 0) {
+      await preferenceService.changeInitAlianNameStatus();
+      accounts.map((group) => {
+        group.accounts.map((acc, index) => {
+          this.updateAlianName(
+            acc?.address,
+            `${BRAND_ALIAN_TYPE_TEXT[group?.type]} ${index + 1}`
+          );
+        });
+      });
+    }
     if (isNeedSyncContact && contacts.length !== 0 && accounts.length !== 0) {
       await preferenceService.changeSyncContact();
       const allAccounts = accounts.map((item) => item.accounts).flat();
@@ -684,6 +702,9 @@ export class WalletController extends BaseController {
   updateAlianName = (address: string, name: string) =>
     preferenceService.updateAlianName(address, name);
   getAllAlianName = () => preferenceService.getAllAlianName();
+  getInitAlianNameStatus = () => preferenceService.getInitAlianNameStatus();
+  updateInitAlianNameStatus = () =>
+    preferenceService.changeInitAlianNameStatus();
 }
 
 export default new WalletController();

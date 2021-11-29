@@ -28,6 +28,7 @@ interface PreferenceStore {
   walletSavedList: [];
   alianNames: Record<string, string>;
   isNeedSyncContact: boolean;
+  initAlianNames: boolean;
 }
 
 const SUPPORT_LOCALES = ['en', 'zh_CN'];
@@ -54,6 +55,7 @@ class PreferenceService {
         walletSavedList: [],
         alianNames: {},
         isNeedSyncContact: true,
+        initAlianNames: false,
       },
     });
     if (!this.store.locale) {
@@ -74,6 +76,9 @@ class PreferenceService {
     }
     if (!this.store.isNeedSyncContact) {
       this.store.isNeedSyncContact = true;
+    }
+    if (!this.store.initAlianNames) {
+      this.store.initAlianNames = false;
     }
   };
 
@@ -271,6 +276,12 @@ class PreferenceService {
   };
   changeSyncContact = () => {
     this.store.isNeedSyncContact = false;
+  };
+  getInitAlianNameStatus = () => {
+    return this.store.initAlianNames;
+  };
+  changeInitAlianNameStatus = () => {
+    this.store.initAlianNames = true;
   };
 }
 
