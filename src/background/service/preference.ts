@@ -1,9 +1,6 @@
 import cloneDeep from 'lodash/cloneDeep';
-<<<<<<< HEAD
 import eventBus from '@/eventBus';
-=======
 import compareVersions from 'compare-versions';
->>>>>>> develop
 import { createPersistStore } from 'background/utils';
 import { keyringService, sessionService, i18n } from './index';
 import { TotalBalanceResponse, TokenItem } from './openapi';
