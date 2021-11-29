@@ -37,46 +37,48 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
   const [end, setEnd] = useState(11);
   const [loadLength, setLoadLength] = useState(10);
   const [errorMsg, setErrorMsg] = useState('');
-  const [getAccounts, loading] = useWalletRequest(
-    async (firstFlag, start, end) => {
-      return firstFlag
-        ? await wallet.requestKeyring(
-            keyring,
-            'getFirstPage',
-            keyringId.current
-          )
-        : end
-        ? await wallet.requestKeyring(
-            keyring,
-            'getAddresses',
-            keyringId.current,
-            start,
-            end
-          )
-        : await wallet.requestKeyring(
-            keyring,
-            'getNextPage',
-            keyringId.current
-          );
-    },
-    {
-      onSuccess(_accounts) {
-        if (_accounts.length < 5) {
-          throw new Error(
-            t(
-              'You need to make use your last account before you can add a new one'
-            )
-          );
-        }
-        setAccounts(accounts.concat(..._accounts));
-        setStart(accounts.length);
-        setLoadLength(_accounts.length);
-      },
-      onError(err) {
-        console.log('get hardware account error', err);
-      },
+  const getAccounts = async (firstFlag: boolean, start = 0, end = 10) => {
+    const arr: { address: string; index: number }[] = [];
+    const length = accounts.length;
+    for (let i = start; i < end; i++) {
+      arr.push({ address: '', index: length + i + 1 });
     }
-  );
+    setAccounts([...accounts, ...arr]);
+    try {
+      let _accounts: { address: string; index: number }[] = [];
+      if (firstFlag) {
+        _accounts = await wallet.requestKeyring(
+          keyring,
+          'getFirstPage',
+          keyringId.current
+        );
+      } else {
+        _accounts = await wallet.requestKeyring(
+          keyring,
+          'getAddresses',
+          keyringId.current,
+          start,
+          end
+        );
+      }
+      if (_accounts.length < 5) {
+        throw new Error(
+          t(
+            'You need to make use your last account before you can add a new one'
+          )
+        );
+      }
+      console.log(start, end, _accounts);
+      for (let i = 0; i < _accounts.length; i++) {
+        accounts[_accounts[i].index - 1] = _accounts[i];
+      }
+      setAccounts(accounts);
+      setStart(accounts.length);
+      setLoadLength(_accounts.length);
+    } catch (e) {
+      console.log('get hardware account error', e);
+    }
+  };
 
   const init = async () => {
     if (keyringId.current === null || keyringId.current === undefined) {
@@ -150,7 +152,7 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
     if (end > 1000) {
       setErrorMsg(t('Max 1000'));
     } else if (accounts.length <= end) {
-      getAccounts(false, start, end + 9);
+      getAccounts(false, start, end + 10);
     }
   };
   const toSpecificNumber = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -226,7 +228,7 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
           </div>
         </div>
         <div
-          className={clsx('overflow-y-auto lg:h-[340px]', {
+          className={clsx('lg:h-[340px]', {
             'p-20': isPopup,
             'flex-1': isPopup,
           })}
@@ -240,11 +242,10 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
                 changeSelectedNumbers={setSelectedNumbers}
                 end={end}
                 loadLength={loadLength}
-                loading={loading}
                 isPopup={isPopup}
                 loadMoreItems={() =>
                   accounts.length <= 1000
-                    ? getAccounts(false, accounts.length, accounts.length + 9)
+                    ? getAccounts(false, accounts.length, accounts.length + 10)
                     : null
                 }
               />

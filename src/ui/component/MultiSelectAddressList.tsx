@@ -1,5 +1,6 @@
 import React, { useEffect, useRef } from 'react';
-import { FixedSizeList, areEqual } from 'react-window';
+import { chunk } from 'lodash';
+import InfiniteScroll from 'react-infinite-scroll-component';
 import { Skeleton } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { FieldCheckbox } from 'ui/component';
@@ -21,7 +22,6 @@ interface MultiSelectAddressListArgs {
   end?: number;
   loadMoreItems?(): void;
   loadLength?: number;
-  loading?: boolean;
   isPopup?: boolean;
 }
 
@@ -35,41 +35,33 @@ const MultiSelectAddressList = ({
   changeSelectedNumbers,
   loadMoreItems,
   loadLength,
-  loading,
   isPopup,
 }: MultiSelectAddressListArgs) => {
   const { t } = useTranslation();
-  const fixedList = useRef<FixedSizeList>();
   const [_value, , , handleToggle] = useSelectOption<number>({
     onChange,
     value,
     options: accounts.map((x) => x.index),
   });
+
   useEffect(() => {
     changeSelectedNumbers && changeSelectedNumbers(_value.length);
   }, [_value]);
-  useEffect(() => {
-    if (end) {
-      fixedList.current?.scrollToItem(end, 'center');
-    }
-  }, [loadLength, end]);
-  const Row = (props) => {
-    const { data, index, style, isScrolling } = props;
-    const { accounts } = data;
-    //console.log(accounts, 88);
+
+  const Row = ({ account, index }: { account: string; index: number }) => {
     const imported =
       importedAccounts &&
       importedAccounts.length > 0 &&
       importedAccounts
         ?.map((address) => address.toLowerCase())
-        .includes(accounts[index].address.toLowerCase());
+        .includes(account);
+
     const selected = _value.includes(index + 1);
-    return !isScrolling && !loading ? (
-      <div
-        style={style}
-        key={index}
-        className={isPopup ? 'addresses' : 'hard-address'}
-      >
+
+    const loading = !account;
+
+    return !loading ? (
+      <div key={index} className={isPopup ? 'address' : 'hard-address'}>
         <FieldCheckbox
           checked={selected}
           onChange={() => handleToggle(index)}
@@ -87,7 +79,7 @@ const MultiSelectAddressList = ({
         >
           <AddressItem
             account={{
-              address: accounts[index].address,
+              address: account,
               type,
               brandName: BRAND_ALIAN_TYPE_TEXT[type],
             }}
@@ -96,17 +88,13 @@ const MultiSelectAddressList = ({
             className="select-address-item"
             editing={false}
             showImportIcon={false}
-            index={accounts[index].index}
+            index={index}
             showIndex={true}
           />
         </FieldCheckbox>
       </div>
     ) : (
-      <div
-        style={style}
-        key={index}
-        className={isPopup ? 'addresses' : 'hard-address'}
-      >
+      <div key={index} className={isPopup ? 'address' : 'hard-address'}>
         <div
           className={clsx('skeleton items-center', { 'w-[460px]': !isPopup })}
         >
@@ -119,27 +107,62 @@ const MultiSelectAddressList = ({
       </div>
     );
   };
-  const onItemsRendered = ({ overscanStartIndex, overscanStopIndex }) => {
-    if (overscanStopIndex + 5 > accounts.length) {
-      loadMoreItems && loadMoreItems();
-    }
+
+  const Group = ({
+    addresses,
+    index,
+    groupCount = 10,
+  }: {
+    addresses: { address: string; index: number }[];
+    index: number;
+    groupCount: number;
+  }) => {
+    const groupEl = useRef<HTMLDivElement>(null);
+    useEffect(() => {
+      const intersectionObserver = new IntersectionObserver(function (entries) {
+        if (entries[0].intersectionRatio <= 0) return;
+        const isLoaded = !addresses.find(({ address }) => !address);
+        if (isLoaded) return;
+        console.log('in view', index);
+      });
+      // start observing
+      intersectionObserver.observe(groupEl.current!);
+    }, []);
+    return (
+      <div ref={groupEl}>
+        {addresses.map((account) => (
+          <Row account={account.address} index={account.index} />
+        ))}
+      </div>
+    );
   };
+
+  const handleLoadMore = () => {
+    loadMoreItems && loadMoreItems();
+  };
+
   return (
-    <FixedSizeList
-      height={isPopup ? 500 : 340}
-      width={isPopup ? 360 : 460}
-      itemData={{
-        accounts,
+    <div
+      id="scrollableDiv"
+      style={{
+        height: (isPopup ? 360 : 340) + 'px',
+        width: (isPopup ? 360 : 460) + 'px',
+        overflow: 'auto',
       }}
-      itemCount={accounts.length}
-      itemSize={60}
-      ref={fixedList}
-      useIsScrolling
-      onItemsRendered={onItemsRendered}
-      className="no-scrollbars"
     >
-      {Row}
-    </FixedSizeList>
+      <InfiniteScroll
+        hasMore={true}
+        next={handleLoadMore}
+        dataLength={accounts.length}
+        loader={<></>}
+        className="no-scrollbars"
+        scrollableTarget="scrollableDiv"
+      >
+        {chunk(accounts, 10).map((group, groupIndex) => (
+          <Group addresses={group} index={groupIndex} groupCount={10} />
+        ))}
+      </InfiniteScroll>
+    </div>
   );
 };
 
