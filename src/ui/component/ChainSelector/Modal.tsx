@@ -4,7 +4,8 @@ import { useCurrentBalance } from 'ui/component/AddressList/AddressItem';
 import { Chain } from 'background/service/chain';
 import { Account } from 'background/service/preference';
 import { useWallet, splitNumberByStep } from 'ui/utils';
-import { CHAINS_ENUM } from 'consts';
+import { CHAINS_ENUM, EVENTS } from 'consts';
+import eventBus from '@/eventBus';
 import IconChecked from 'ui/assets/checked.svg';
 import IconNotChecked from 'ui/assets/not-checked.svg';
 
@@ -47,6 +48,15 @@ const ChainSelectorModal = ({
 
   useEffect(() => {
     init();
+    const accountChangeHandler = (data) => {
+      if (data && data.address) {
+        setCurrentAccount(data);
+      }
+    };
+    eventBus.addEventListener('accountsChanged', accountChangeHandler);
+    return () => {
+      eventBus.removeEventListerner('accountsChanged', accountChangeHandler);
+    };
   }, []);
 
   return (
