@@ -129,10 +129,12 @@ const AddressList: any = forwardRef(
         fixedList.current?.scrollToItem(position, 'center');
       }
     }, []);
+    const switchAddressHeight =
+      combinedList.length > 5 ? 400 : combinedList.length * 80;
     return (
       <ul className={`address-group-list ${action}`}>
         <FixedSizeList
-          height={currentAccount ? 400 : 500}
+          height={currentAccount ? switchAddressHeight : 500}
           width="100%"
           itemData={{
             combinedList: combinedList,
