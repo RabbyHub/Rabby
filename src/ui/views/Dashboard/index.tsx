@@ -1,4 +1,6 @@
 import React, { useEffect, useState } from 'react';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import ClipboardJS from 'clipboard';
 import QRCode from 'qrcode.react';
 import { useHistory } from 'react-router-dom';
@@ -24,7 +26,7 @@ import IconSend from 'ui/assets/send.svg';
 import IconHistory from 'ui/assets/history.svg';
 import IconPending from 'ui/assets/pending.svg';
 import IconSuccess from 'ui/assets/success.svg';
-
+import { getUpdateContent } from 'changeLogs/index';
 import './style.less';
 
 const Dashboard = () => {
@@ -37,7 +39,8 @@ const Dashboard = () => {
   const [pendingTxCount, setPendingTxCount] = useState(0);
   const [isDefaultWallet, setIsDefaultWallet] = useState(true);
   const [copySuccess, setCopySuccess] = useState(false);
-
+  const [firstNotice, setFirstNotice] = useState(false);
+  const [updateContent, setUpdateContent] = useState('');
   const handleToggle = () => {
     setModalOpen(!isModalOpen);
   };
@@ -123,7 +126,13 @@ const Dashboard = () => {
       clipboard.destroy();
     });
   };
-
+  const checkIfFirstLogin = async () => {
+    const firstOpen = await wallet.getIsFirstOpen();
+    const updateContent = await getUpdateContent();
+    setUpdateContent(updateContent);
+    if (!firstOpen || !updateContent) return;
+    setFirstNotice(firstOpen);
+  };
   const handleDefaultWalletChange = async () => {
     const isDefault = await wallet.isDefaultWallet();
     setIsDefaultWallet(isDefault);
@@ -132,6 +141,14 @@ const Dashboard = () => {
   const handleShowQrcode = () => {
     setQrcodeVisible(true);
   };
+
+  const changeIsFirstLogin = () => {
+    wallet.updateIsFirstOpen();
+    setFirstNotice(false);
+  };
+  useEffect(() => {
+    checkIfFirstLogin();
+  }, []);
   return (
     <>
       <div
@@ -210,6 +227,15 @@ const Dashboard = () => {
             {currentAccount?.address}
           </p>
         </div>
+      </Modal>
+      <Modal
+        visible={firstNotice && updateContent}
+        title="What's new"
+        className="first-notice"
+        onCancel={changeIsFirstLogin}
+        maxHeight="420px"
+      >
+        <ReactMarkdown children={updateContent} remarkPlugins={[remarkGfm]} />
       </Modal>
       {currentAccount && (
         <SwitchAddress

@@ -672,6 +672,12 @@ export class WalletController extends BaseController {
   updateLastTimeGasSelection = (chainId: string, gas: ChainGas) => {
     return preferenceService.updateLastTimeGasSelection(chainId, gas);
   };
+  getIsFirstOpen = () => {
+    return preferenceService.getIsFirstOpen();
+  };
+  updateIsFirstOpen = () => {
+    return preferenceService.updateIsFirstOpen();
+  };
 }
 
 export default new WalletController();

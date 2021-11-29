@@ -24,7 +24,8 @@ const flowContext = flow
     ctx.mapMethod = underline2Camelcase(method);
 
     if (!providerController[ctx.mapMethod]) {
-      if (method.startsWith('eth_')) {
+      // TODO: make rpc whitelist
+      if (method.startsWith('eth_') || method === 'net_version') {
         return providerController.ethRpc(ctx.request);
       }
 

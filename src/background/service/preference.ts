@@ -1,10 +1,11 @@
 import cloneDeep from 'lodash/cloneDeep';
+import compareVersions from 'compare-versions';
 import { createPersistStore } from 'background/utils';
 import { keyringService, sessionService, i18n } from './index';
 import { TotalBalanceResponse, TokenItem, GasLevel } from './openapi';
 import { HARDWARE_KEYRING_TYPES } from 'consts';
 import { browser } from 'webextension-polyfill-ts';
-
+const version = process.env.release || '0';
 export interface Account {
   type: string;
   address: string;
@@ -32,6 +33,8 @@ interface PreferenceStore {
   lastTimeSendToken: Record<string, TokenItem>;
   walletSavedList: [];
   gasCache: GasCache;
+  currentVersion: string;
+  firstOpen: boolean;
 }
 
 const SUPPORT_LOCALES = ['en', 'zh_CN'];
@@ -57,6 +60,8 @@ class PreferenceService {
         lastTimeSendToken: {},
         walletSavedList: [],
         gasCache: {},
+        currentVersion: '0',
+        firstOpen: false,
       },
     });
     if (!this.store.locale) {
@@ -261,6 +266,19 @@ class PreferenceService {
       ...this.store.gasCache,
       [chainId]: gas,
     };
+  };
+  getIsFirstOpen = () => {
+    if (
+      !this.store.currentVersion ||
+      compareVersions(version, this.store.currentVersion)
+    ) {
+      this.store.currentVersion = version;
+      this.store.firstOpen = true;
+    }
+    return this.store.firstOpen;
+  };
+  updateIsFirstOpen = () => {
+    this.store.firstOpen = false;
   };
 }
 

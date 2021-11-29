@@ -180,14 +180,6 @@ class ProviderController extends BaseController {
     return CHAINS[site?.chain || CHAINS_ENUM.ETH].hex;
   };
 
-  @Reflect.metadata('SAFE', true)
-  netVersion = ({ session }: { session: Session }) => {
-    const origin = session.origin;
-    const site = permissionService.getWithoutUpdate(origin);
-
-    return CHAINS[site?.chain || CHAINS_ENUM.ETH].network;
-  };
-
   @Reflect.metadata('APPROVAL', [
     'SignTx',
     ({
@@ -322,6 +314,13 @@ class ProviderController extends BaseController {
       notification.create(undefined, i18n.t('Transaction push failed'), errMsg);
       throw new Error(errMsg);
     }
+  };
+
+  netVersion = (req) => {
+    return this.ethRpc({
+      ...req,
+      data: { method: 'net_version', params: [] },
+    });
   };
 
   web3ClientVersion = () => {
