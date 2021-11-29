@@ -54,6 +54,8 @@ export interface AddressItemProps {
   showImportIcon?: boolean;
   showIndex?: boolean;
   importedAccount?: boolean;
+  isMnemonics?: boolean;
+  currentImportLength?: number;
 }
 
 const formatChain = (item: ChainWithBalance): DisplayChainWithWhiteLogo => {
@@ -134,6 +136,8 @@ const AddressItem = memo(
         showImportIcon = true,
         showIndex = false,
         importedAccount = false,
+        isMnemonics = false,
+        currentImportLength = 1,
       }: AddressItemProps,
       ref
     ) => {
@@ -144,7 +148,7 @@ const AddressItem = memo(
       const wallet = useWallet();
       const [startEdit, setStartEdit] = useState(false);
       const [alianName, setAlianName] = useState<string>('');
-
+      const [importedLength, setImportedLength] = useState(0);
       const isDisabled = hiddenAddresses.find(
         (item) => item.address === account.address && item.type === keyring.type
       );
@@ -188,17 +192,32 @@ const AddressItem = memo(
         );
       };
       const displayName = alianName || account?.alianName;
+      const getImportedLength = async () => {
+        const importedtypeKeyrings = await wallet.getTypedAccounts(
+          account?.type || account?.brandName
+        );
+        if (
+          importedtypeKeyrings.length > 0 &&
+          importedtypeKeyrings?.accounts?.length > 0
+        ) {
+          setImportedLength(
+            importedtypeKeyrings[0]?.accounts?.length - currentImportLength
+          );
+        }
+        const alianName = `${
+          BRAND_ALIAN_TYPE_TEXT[account?.brandName] || account?.brandName
+        } ${
+          importedtypeKeyrings[0]?.accounts?.length -
+          currentImportLength +
+          (index || 0) +
+          1
+        }`;
+        setAlianName(alianName);
+        updateAlianName(alianName);
+      };
       useEffect(() => {
         if (importedAccount) {
-          const alianName = account.index
-            ? `${
-                BRAND_ALIAN_TYPE_TEXT[account?.brandName] || account?.brandName
-              } ${account?.index && account?.index}`
-            : `${
-                BRAND_ALIAN_TYPE_TEXT[account?.brandName] || account?.brandName
-              }`;
-          setAlianName(alianName);
-          updateAlianName(alianName);
+          getImportedLength();
         }
       }, []);
       return (
@@ -233,6 +252,9 @@ const AddressItem = memo(
                   })}
                 />
               </Tooltip>
+            )}
+            {importedAccount && isMnemonics && (
+              <div className="number-index">{account.index}</div>
             )}
             <div className={clsx('address-info', { 'ml-0': !showImportIcon })}>
               {(showImportIcon || editing) && (
@@ -275,7 +297,7 @@ const AddressItem = memo(
               <AddressViewer
                 address={account.address}
                 showArrow={false}
-                index={index}
+                index={account.index || index}
                 showImportIcon={showImportIcon}
                 className={
                   showImportIcon || !showIndex

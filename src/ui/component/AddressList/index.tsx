@@ -106,7 +106,7 @@ const AddressList: any = forwardRef(
           (item) =>
             (item = {
               ...item,
-              alianName: alianNamesList[item.address],
+              alianName: alianNamesList[item.address.toLowerCase()],
               type: group.type,
               keyring: group.keyring,
             })

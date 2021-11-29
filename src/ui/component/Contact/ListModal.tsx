@@ -134,7 +134,7 @@ const ListModal = ({ address, visible, onOk, onCancel }: ListModalProps) => {
                     handleConfirm(
                       {
                         address: account?.address,
-                        name: alianNames[account?.address],
+                        name: alianNames[account?.address?.toLowerCase()],
                       },
                       'my'
                     )
@@ -157,7 +157,7 @@ const ListModal = ({ address, visible, onOk, onCancel }: ListModalProps) => {
                     />
                   </Tooltip>
                   <div className="contact-info ml-12">
-                    <p>{alianNames[account?.address]}</p>
+                    <p>{alianNames[account?.address?.toLowerCase()]}</p>
                     <p>
                       <AddressViewer address={account?.address} />
                     </p>

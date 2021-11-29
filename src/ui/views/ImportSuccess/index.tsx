@@ -49,7 +49,6 @@ const ImportSuccess = ({ isPopup = false }: { isPopup?: boolean }) => {
   const importedIcon =
     KEYRING_ICONS[accounts[0].type] ||
     WALLET_BRAND_CONTENT[accounts[0].brandName]?.image;
-  console.log(accounts, 999999);
   return (
     <StrayPageWithButton
       hasDivider={hasDivider}
@@ -113,10 +112,11 @@ const ImportSuccess = ({ isPopup = false }: { isPopup?: boolean }) => {
               icon={importedIcon}
               showImportIcon={showImportIcon}
               editing={editing}
-              index={account?.index || index}
+              index={index}
               showIndex={!editing}
               importedAccount
-              //updateAllAlianNames={updateAllAlianNames}
+              isMnemonics={isMnemonics}
+              currentImportLength={accounts.length}
             />
           ))}
         </div>
