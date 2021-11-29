@@ -209,7 +209,9 @@ const Dashboard = () => {
       <div className="flex text-12 mt-12">
         <div className="mr-8">{currentAccount?.address}</div>
         <IconCopy
-          className={clsx('icon icon-copy ml-7', { success: copySuccess })}
+          className={clsx('icon icon-copy ml-7 copy-icon', {
+            success: copySuccess,
+          })}
           onClick={handleCopyCurrentAddress}
         />
       </div>
@@ -237,7 +239,7 @@ const Dashboard = () => {
           }
         />
         <div className="flex flex-col items-start ml-10">
-          <div className="text-13 text-black text-left">
+          <div className="text-13 text-black text-left click-name">
             {account?.alianName}
             <AddressViewer
               address={account?.address}
@@ -346,7 +348,7 @@ const Dashboard = () => {
                         }
                       />
                     }
-                    <div className="text-15 text-white ml-6 mr-6">
+                    <div className="text-15 text-white ml-6 mr-6 dashboard-name">
                       {alianName}
                     </div>
                     {currentAccount && (

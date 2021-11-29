@@ -276,7 +276,7 @@ const AddressItem = memo(
                       min={0}
                     />
                   ) : (
-                    displayName
+                    <div className="display-name">{displayName}</div>
                   )}
                   {!startEdit && editing && (
                     <img
