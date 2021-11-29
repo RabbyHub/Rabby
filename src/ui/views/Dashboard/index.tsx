@@ -12,6 +12,7 @@ import {
   KEYRING_ICONS,
   WALLET_BRAND_CONTENT,
   BRAND_ALIAN_TYPE_TEXT,
+  KEYRING_ICONS_WHITE,
 } from 'consts';
 import { AddressViewer, Modal } from 'ui/component';
 import { useWallet, getAccountIcon } from 'ui/utils';
@@ -343,7 +344,7 @@ const Dashboard = () => {
                       <img
                         className="icon icon-account-type w-[20px] h-[20px]"
                         src={
-                          KEYRING_ICONS[currentAccount.type] ||
+                          KEYRING_ICONS_WHITE[currentAccount.type] ||
                           WALLET_BRAND_CONTENT[currentAccount.brandName]?.image
                         }
                       />

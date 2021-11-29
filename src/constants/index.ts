@@ -67,6 +67,9 @@ import LogoLedger from 'ui/assets/walletlogo/ledger28.png';
 import LogoMnemonic from 'ui/assets/walletlogo/mnemoniclogo.svg';
 import LogoPrivateKey from 'ui/assets/walletlogo/privatekeylogo.svg';
 import LogoWatch from 'ui/assets/walletlogo/watchlogo.svg';
+import IconPrivateKeyWhite from 'ui/assets/walletlogo/private-key-white.svg';
+import IconWatchWhite from 'ui/assets/walletlogo/IconWatch-white.svg';
+import IconMnemonicWhite from 'ui/assets/walletlogo/IconMnemonic-white.svg';
 
 export enum CHAINS_ENUM {
   ETH = 'ETH',
@@ -656,6 +659,15 @@ export const KEYRING_ICONS = {
   [HARDWARE_KEYRING_TYPES.Trezor.type]: IconTrezor24,
 };
 
+export const KEYRING_ICONS_WHITE = {
+  [KEYRING_CLASS.MNEMONIC]: IconMnemonicWhite,
+  [KEYRING_CLASS.PRIVATE_KEY]: IconPrivateKeyWhite,
+  [KEYRING_CLASS.WATCH]: IconWatchWhite,
+  [HARDWARE_KEYRING_TYPES.BitBox02.type]: IconBitBox02,
+  [HARDWARE_KEYRING_TYPES.Ledger.type]: IconLedger24,
+  [HARDWARE_KEYRING_TYPES.Onekey.type]: IconOneKey24,
+  [HARDWARE_KEYRING_TYPES.Trezor.type]: IconTrezor24,
+};
 export const KEYRING_PURPLE_LOGOS = {
   [KEYRING_CLASS.MNEMONIC]: IconMnemonicPurple,
   [KEYRING_CLASS.PRIVATE_KEY]: IconPrivateKeyPurple,
