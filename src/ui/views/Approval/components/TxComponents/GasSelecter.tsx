@@ -26,6 +26,7 @@ interface GasSelectorProps {
   recommendGasLimit: number;
   nonce: string;
   disableNonce: boolean;
+  isFristLoad: boolean;
 }
 
 const GasSelector = ({
@@ -38,6 +39,7 @@ const GasSelector = ({
   recommendGasLimit,
   nonce,
   disableNonce,
+  isFristLoad,
 }: GasSelectorProps) => {
   const wallet = useWallet();
   const { t } = useTranslation();
@@ -167,13 +169,13 @@ const GasSelector = ({
         ...selectedGas,
         price: Number(customGas) * 1e9,
         gasLimit: Number(afterGasLimit),
-        nonce: customNonce || Number(nonce),
+        nonce: Number(customNonce || nonce),
       });
     } else {
       onChange({
         ...selectedGas,
         gasLimit: Number(afterGasLimit),
-        nonce: customNonce || Number(nonce),
+        nonce: Number(customNonce || nonce),
       });
     }
     setModalVisible(false);
@@ -182,7 +184,7 @@ const GasSelector = ({
   const handleCustomGasChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.stopPropagation();
     if (/^\d*(\.\d*)?$/.test(e.target.value)) {
-      setCustomGas(e.target.value);
+      setCustomGas(Number(e.target.value));
     }
   };
 
@@ -200,7 +202,7 @@ const GasSelector = ({
   const getLastTimeSavedGas = async () => {
     const savedGas: ChainGas = await wallet.getLastTimeGasSelection(chainId);
     if (savedGas?.gasPrice) {
-      setCustomGas(savedGas?.gasPrice);
+      setCustomGas(Number(savedGas?.gasPrice));
     }
     if (savedGas?.lastTimeSelect && savedGas?.lastTimeSelect === 'gasLevel') {
       const lastSelected = gasList.find(
@@ -295,13 +297,31 @@ const GasSelector = ({
   useEffect(() => {
     formValidator();
   }, [afterGasLimit, selectedGas, gasList]);
-  if (!isReady)
+  if (!isReady && isFristLoad)
     return (
       <>
         <p className="section-title">{t('gasCostTitle')}</p>
         <div className="gas-selector gray-section-block">
           <div className="gas-info">
             <Skeleton.Input active style={{ width: 200 }} />
+          </div>
+          <div className="flex mt-15">
+            <Skeleton.Button
+              active
+              style={{ width: 72, height: 48, marginRight: 4 }}
+            />
+            <Skeleton.Button
+              active
+              style={{ width: 72, height: 48, marginLeft: 4, marginRight: 4 }}
+            />
+            <Skeleton.Button
+              active
+              style={{ width: 72, height: 48, marginLeft: 4, marginRight: 4 }}
+            />
+            <Skeleton.Button
+              active
+              style={{ width: 72, height: 48, marginLeft: 4 }}
+            />
           </div>
         </div>
       </>
@@ -420,7 +440,7 @@ const GasSelector = ({
                 <p className="section-title mt-20">{t('Nonce')}</p>
                 <Form.Item className="gas-limit-panel mb-0" required>
                   <Input
-                    value={customNonce}
+                    value={customNonce || Number(nonce)}
                     onChange={handleCustomNonceChange}
                     bordered={false}
                     disabled={disableNonce}
