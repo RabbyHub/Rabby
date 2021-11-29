@@ -180,6 +180,7 @@ const GasSelector = ({
   };
 
   const handleCustomGasChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    e.stopPropagation();
     if (/^\d*(\.\d*)?$/.test(e.target.value)) {
       setCustomGas(e.target.value);
     }
@@ -226,7 +227,8 @@ const GasSelector = ({
     };
     await wallet.updateLastTimeGasSelection(chainId, gas);
   };
-  const panelSelection = async (gas) => {
+  const panelSelection = async (e, gas) => {
+    e.stopPropagation();
     await setIsLoading(true);
     if (gas.level === 'custom') {
       await setCustomGas(Number(tx.gasPrice) / 1e9);
@@ -295,7 +297,10 @@ const GasSelector = ({
   return (
     <>
       <p className="section-title">{t('gasCostTitle')}</p>
-      <div className="gas-selector gray-section-block">
+      <div
+        className="gas-selector gray-section-block"
+        onClick={handleShowSelectModal}
+      >
         <div className="top">
           <p className="usmoney">
             ≈ ${gas.estimated_gas_cost_usd_value.toFixed(2)}
@@ -317,7 +322,7 @@ const GasSelector = ({
               className={clsx('card', {
                 active: selectedGas?.level === gas.level,
               })}
-              onClick={() => panelSelection(gas)}
+              onClick={(e) => panelSelection(e, gas)}
             >
               <div className="gas-level">{t(GAS_LEVEL_TEXT[gas.level])}</div>
               <div
@@ -331,7 +336,7 @@ const GasSelector = ({
                     value={customGas}
                     defaultValue={customGas}
                     onChange={handleCustomGasChange}
-                    onClick={() => panelSelection(gas)}
+                    onClick={(e) => panelSelection(e, gas)}
                     onPressEnter={customGasConfirm}
                     ref={customerInputRef}
                     autoFocus={selectedGas?.level === gas.level}
