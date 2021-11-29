@@ -295,10 +295,10 @@ const Dashboard = () => {
       .flat(1)
       .filter(
         (item) =>
-          item.address !== currentAccount?.address ||
+          item?.address.toLowerCase() !==
+            currentAccount?.address.toLowerCase() ||
           item.brandName !== currentAccount?.brandName
       );
-    //console.log(templist, currentAccount, 99999);
     setAccountsList(templist);
   };
   const handleHoverChange = (visible) => {

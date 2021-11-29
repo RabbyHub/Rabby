@@ -35,6 +35,7 @@ import provider from './provider';
 import WalletConnectKeyring from '@rabby-wallet/eth-walletconnect-keyring';
 import eventBus from '@/eventBus';
 import { setPageStateCacheWhenPopupClose } from 'background/utils';
+import { groupBy } from 'lodash';
 
 const stashKeyrings: Record<string, any> = {};
 
@@ -69,14 +70,29 @@ export class WalletController extends BaseController {
     const isNeedSyncContact = await preferenceService.isNeedSyncContact();
     if (!needInitAlianNames && accounts.length > 0) {
       await preferenceService.changeInitAlianNameStatus();
-      accounts.map((group) => {
-        group.accounts.map((acc, index) => {
+      const catergoryGroupAccount = accounts.map((item) => ({
+        type: item.type,
+        accounts: item.accounts,
+      }));
+      const catergories = groupBy(catergoryGroupAccount, 'type');
+      const result = Object.keys(catergories)
+        .map((key) =>
+          catergories[key].map((item) =>
+            item.accounts.map((acc) => ({
+              address: acc.address,
+              type: key,
+            }))
+          )
+        )
+        .map((item) => item.flat(1));
+      result.map((group) =>
+        group.map((acc, index) => {
           this.updateAlianName(
             acc?.address,
-            `${BRAND_ALIAN_TYPE_TEXT[group?.type]} ${index + 1}`
+            `${BRAND_ALIAN_TYPE_TEXT[acc?.type]} ${index + 1}`
           );
-        });
-      });
+        })
+      );
     }
     if (isNeedSyncContact && contacts.length !== 0 && accounts.length !== 0) {
       await preferenceService.changeSyncContact();
