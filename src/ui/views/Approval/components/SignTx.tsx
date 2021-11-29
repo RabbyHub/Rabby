@@ -130,6 +130,7 @@ const TxTypeComponent = ({
 
 const SignTx = ({ params, origin }) => {
   const [isReady, setIsReady] = useState(false);
+  const [isFristLoad, setIsFristLoad] = useState(true);
   const [nonceChanged, setNonceChanged] = useState(false);
   const [isWatch, setIsWatch] = useState(false);
   const [txDetail, setTxDetail] = useState<ExplainTxResponse | null>({
@@ -392,8 +393,8 @@ const SignTx = ({ params, origin }) => {
       isSend,
     });
   };
-
   const handleGasChange = (gas: GasSelectorResponse) => {
+    setIsFristLoad(false);
     const beforeNonce = realNonce || tx.nonce;
     const afterNonce = intToHex(gas.nonce);
     setTx({
@@ -485,6 +486,7 @@ const SignTx = ({ params, origin }) => {
             )}
             <GasSelector
               isReady={isReady}
+              isFristLoad={isFristLoad}
               tx={tx}
               gasLimit={gasLimit}
               gas={{

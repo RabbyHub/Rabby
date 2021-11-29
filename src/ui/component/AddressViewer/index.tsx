@@ -9,6 +9,7 @@ interface AddressViewProps {
   ellipsis?: boolean;
   showArrow?: boolean;
   className?: string;
+  brandName?: string;
 }
 
 export default ({
@@ -17,14 +18,21 @@ export default ({
   ellipsis = true,
   showArrow = true,
   className = 'normal',
+  brandName = '',
 }: AddressViewProps) => {
   return (
     <div
-      className="flex items-center"
+      className="flex flex-col items-center"
       onClick={onClick}
       style={{ cursor: onClick ? 'pointer' : 'inherit' }}
     >
-      <div className={cx('address-viewer-text', className)} title={address}>
+      {brandName && (
+        <div className="text-13 self-start text-white">{brandName}</div>
+      )}
+      <div
+        className={cx('address-viewer-text text-12 opacity-60', className)}
+        title={address}
+      >
         {ellipsis ? `${address.slice(0, 6)}...${address.slice(-4)}` : address}
       </div>
       {showArrow && (

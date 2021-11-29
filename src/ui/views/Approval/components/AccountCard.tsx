@@ -55,13 +55,15 @@ const AccountCard = ({
   const icon = getAccountIcon(currentAccount?.type);
 
   if (!currentAccount) return <></>;
-
   return (
     <div className="account-card">
-      <p className="title">{t('Current account')}</p>
       <div className="account-detail">
         <img src={icon} className="icon icon-account" />
-        <AddressViewer showArrow={false} address={currentAccount.address} />
+        <AddressViewer
+          showArrow={false}
+          address={currentAccount.address}
+          brandName={currentAccount.brandName}
+        />
         <span className="amount">
           ${splitNumberByStep((balance || 0).toFixed(2))}
         </span>

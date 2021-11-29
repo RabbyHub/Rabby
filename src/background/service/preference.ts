@@ -12,6 +12,14 @@ export interface Account {
   address: string;
   brandName: string;
 }
+export interface ChainGas {
+  gasPrice?: number; // custom cached gas price
+  gasLevel?: 'slow' | 'normal' | 'fast'; // cached gasLevel
+  lastTimeSelect?: 'gasLevel' | 'gasPrice'; // last time selection, 'gasLevel' | 'gasPrice'
+}
+export interface GasCache {
+  [chainId: string]: ChainGas;
+}
 interface PreferenceStore {
   currentAccount: Account | undefined | null;
   externalLinkAck: boolean;
@@ -25,6 +33,7 @@ interface PreferenceStore {
   isDefaultWallet: boolean;
   lastTimeSendToken: Record<string, TokenItem>;
   walletSavedList: [];
+  gasCache: GasCache;
   currentVersion: string;
   firstOpen: boolean;
 }
@@ -51,6 +60,7 @@ class PreferenceService {
         isDefaultWallet: false,
         lastTimeSendToken: {},
         walletSavedList: [],
+        gasCache: {},
         currentVersion: '0',
         firstOpen: false,
       },
@@ -67,6 +77,9 @@ class PreferenceService {
     }
     if (!this.store.lastTimeSendToken) {
       this.store.lastTimeSendToken = {};
+    }
+    if (!this.store.gasCache) {
+      this.store.gasCache = {};
     }
   };
 
@@ -248,6 +261,16 @@ class PreferenceService {
 
   updateWalletSavedList = (list: []) => {
     this.store.walletSavedList = list;
+  };
+  getLastTimeGasSelection = (chainId: string) => {
+    return this.store.gasCache[chainId];
+  };
+
+  updateLastTimeGasSelection = (chainId: string, gas: ChainGas) => {
+    this.store.gasCache = {
+      ...this.store.gasCache,
+      [chainId]: gas,
+    };
   };
   getIsFirstOpen = () => {
     if (
