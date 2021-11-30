@@ -190,9 +190,11 @@ const GasSelector = ({
         nonce: Number(customNonce || nonce),
       });
     }
+  };
+  const handleModalConfirmGas = () => {
+    handleConfirmGas();
     setModalVisible(false);
   };
-
   const handleCustomGasChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.stopPropagation();
     if (/^\d*(\.\d*)?$/.test(e.target.value)) {
@@ -305,11 +307,11 @@ const GasSelector = ({
   };
   useDebounce(
     () => {
-      modalVisible && loadGasMarket();
+      loadGasMarket();
       handleConfirmGas();
     },
     500,
-    [modalVisible, customGas]
+    [customGas]
   );
 
   useEffect(() => {
@@ -364,7 +366,7 @@ const GasSelector = ({
           <p className="gasmoney">
             {`${gas.estimated_gas_cost_value} ${chain.nativeTokenSymbol}`}
           </p>
-          <div className="right" onClick={handleShowSelectModal}>
+          <div className="right">
             <img
               src={IconSetting}
               alt="setting"
@@ -479,7 +481,7 @@ const GasSelector = ({
               type="primary"
               className="w-[200px]"
               size="large"
-              onClick={handleConfirmGas}
+              onClick={handleModalConfirmGas}
               disabled={
                 !selectedGas ||
                 isLoading ||
