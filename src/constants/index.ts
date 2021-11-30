@@ -320,6 +320,7 @@ export const KEYRING_CLASS = {
   },
   WATCH: 'Watch Address',
   WALLETCONNECT: 'WalletConnect',
+  GNOSIS: 'Gnosis',
 };
 
 export const KEYRING_TYPE_TEXT = {

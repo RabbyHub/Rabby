@@ -29,6 +29,7 @@ export const WaitingSignComponent = {
   // [KEYRING_CLASS.HARDWARE.LEDGER]: 'HardwareWaiting',
   // [KEYRING_CLASS.WATCH]: 'WatchAdrressWaiting',
   [KEYRING_CLASS.WALLETCONNECT]: 'WatchAdrressWaiting',
+  [KEYRING_CLASS.GNOSIS]: 'GnosisWaiting',
 };
 
 const SignText = ({ params }: { params: SignTextProps }) => {

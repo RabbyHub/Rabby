@@ -2,7 +2,7 @@ import { EventEmitter } from 'events';
 import { isAddress } from 'web3-utils';
 import { addHexPrefix, bufferToHex, bufferToInt } from 'ethereumjs-util';
 import Safe from '@rabby-wallet/gnosis-sdk';
-import { SafeTransaction, SafeSignature } from '@gnosis.pm/safe-core-sdk-types';
+import { SafeTransaction } from '@gnosis.pm/safe-core-sdk-types';
 
 export const keyringType = 'Gnosis';
 export const TransactionBuiltEvent = 'TransactionBuilt';

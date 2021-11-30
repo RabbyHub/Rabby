@@ -3,6 +3,7 @@ import { Button, Tooltip } from 'antd';
 import { useTranslation } from 'react-i18next';
 import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
 import { KEYRING_CLASS } from 'consts';
+import { WaitingSignComponent } from './SignText';
 import { useApproval, useWallet } from 'ui/utils';
 import {
   SecurityCheckResponse,
@@ -22,11 +23,6 @@ interface SignTypedDataProps {
     name: string;
   };
 }
-
-export const WaitingSignComponent = {
-  // [KEYRING_CLASS.HARDWARE.LEDGER]: 'HardwareWaiting',
-  [KEYRING_CLASS.WATCH]: 'WatchAdrressWaiting',
-};
 
 const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
   const [, resolveApproval, rejectApproval] = useApproval();

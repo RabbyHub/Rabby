@@ -4,7 +4,6 @@ import { useHistory } from 'react-router-dom';
 import { useTranslation, Trans } from 'react-i18next';
 import { DEFAULT_BRIDGE } from '@rabby-wallet/eth-walletconnect-keyring';
 import {
-  BRAND_WALLET_CONNECT_TYPE,
   CHAINS,
   CHAINS_ENUM,
   WALLETCONNECT_STATUS_MAP,
