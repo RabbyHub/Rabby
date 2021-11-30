@@ -35,6 +35,7 @@ import provider from './provider';
 import WalletConnectKeyring from '@rabby-wallet/eth-walletconnect-keyring';
 import eventBus from '@/eventBus';
 import { setPageStateCacheWhenPopupClose } from 'background/utils';
+import { groupBy } from 'lodash';
 
 const stashKeyrings: Record<string, any> = {};
 
@@ -67,16 +68,48 @@ export class WalletController extends BaseController {
     const needInitAlianNames = await preferenceService.getInitAlianNameStatus();
     const accounts = await keyringService.getAllTypedAccounts();
     const isNeedSyncContact = await preferenceService.isNeedSyncContact();
+    const WalletGroup = accounts.find((item) => item.type === 'WalletConnect');
+    let WalletConnectList;
+    if (WalletGroup && WalletGroup?.accounts?.length > 0) {
+      WalletConnectList = groupBy(WalletGroup.accounts, 'brandName');
+    }
     if (!needInitAlianNames && accounts.length > 0) {
       await preferenceService.changeInitAlianNameStatus();
-      accounts.map((group) => {
-        group.accounts.map((acc, index) => {
-          this.updateAlianName(
-            acc?.address,
-            `${BRAND_ALIAN_TYPE_TEXT[group?.type]} ${index + 1}`
-          );
+      const catergoryGroupAccount = accounts.map((item) => ({
+        type: item.type,
+        accounts: item.accounts,
+      }));
+      if (WalletConnectList) {
+        Object.keys(WalletConnectList).map((key) => {
+          WalletConnectList[key].map((acc, index) => {
+            this.updateAlianName(
+              acc?.address,
+              `${acc?.brandName}  ${index + 1}`
+            );
+          });
         });
-      });
+      }
+      const catergories = groupBy(catergoryGroupAccount, 'type');
+      const result = Object.keys(catergories)
+        .map((key) =>
+          catergories[key].map((item) =>
+            item.accounts.map((acc) => ({
+              address: acc.address,
+              type: key,
+            }))
+          )
+        )
+        .map((item) => item.flat(1));
+      result.map((group) =>
+        group.map((acc, index) => {
+          if (acc.type !== 'WalletConnect') {
+            this.updateAlianName(
+              acc?.address,
+              `${BRAND_ALIAN_TYPE_TEXT[acc?.type]} ${index + 1}`
+            );
+          }
+        })
+      );
     }
     if (isNeedSyncContact && contacts.length !== 0 && accounts.length !== 0) {
       await preferenceService.changeSyncContact();

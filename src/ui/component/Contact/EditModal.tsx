@@ -2,10 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Modal, Input, Button, Form, message } from 'antd';
 import { useWallet } from 'ui/utils';
-import { AddressViewer } from '..';
 import { ContactBookItem } from 'background/service/contactBook';
 import IconSuccess from 'ui/assets/success.svg';
 import './style.less';
+import clsx from 'clsx';
 
 interface EditModalProps {
   address: string;
@@ -86,7 +86,6 @@ const EditModal = ({
     if (visible) {
       if (isEdit) {
         const contact = await wallet.getContactByAddress(address);
-        const importName = await wallet.getAlianName(address);
         setName(contact?.name || '');
       } else {
         setName('');
@@ -103,23 +102,27 @@ const EditModal = ({
   }, []);
   return (
     <Modal
-      className="edit-contact-modal"
+      className={
+        isEdit && accountType === 'others'
+          ? 'edit-contact-modal-with-remove'
+          : 'edit-contact-modal'
+      }
       title={isEdit ? t('Edit address memo') : t('Add address memo')}
       visible={visible}
       onOk={handleConfirm}
       onCancel={onCancel}
       footer={null}
+      transitionName=""
+      maskTransitionName=""
       width="360px"
       destroyOnClose
     >
-      <div className="flex justify-center mb-16">
-        <AddressViewer address={address} showArrow={false} />
-      </div>
       <Form onFinish={handleConfirm}>
         <Input
           autoFocus
           allowClear
           value={name}
+          style={{ background: '#F5F6FA' }}
           onChange={(e) => handleNameChange(e.target.value)}
         />
       </Form>
