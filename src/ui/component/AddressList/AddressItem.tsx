@@ -196,13 +196,20 @@ const AddressItem = memo(
         const importedtypeKeyrings = await wallet.getTypedAccounts(
           account?.type || account?.brandName
         );
-
+        const isWalletConnection = account?.type === 'WalletConnect';
         let allAccountsLength = 0;
         if (importedtypeKeyrings.length > 0) {
-          importedtypeKeyrings.map((item) => {
-            const length = item.accounts.length;
-            allAccountsLength += length;
-          });
+          if (isWalletConnection) {
+            const sameBrandList = importedtypeKeyrings[0].accounts.filter(
+              (acc) => acc.brandName === account.brandName
+            );
+            allAccountsLength += sameBrandList.length;
+          } else {
+            importedtypeKeyrings.map((item) => {
+              const length = item.accounts.length;
+              allAccountsLength += length;
+            });
+          }
           setImportedLength(allAccountsLength - currentImportLength);
         }
         const alianName = `${
