@@ -1,6 +1,6 @@
 .edit-contact-modal {
   .address-viewer-text.normal {
-    color: #5A6066;
+    color: #5a6066;
     font-size: 14px;
     line-height: 16px;
   }
@@ -18,7 +18,7 @@
     color: #161819;
     border-radius: 0;
   }
-  
+
   .remove-btn {
     display: flex;
     justify-content: center;
@@ -53,13 +53,26 @@
   .ant-modal-body {
     height: 431px;
     padding: 16px 16px 20px;
-
+    .ant-tabs-nav {
+      position: fixed;
+      height: 40px;
+      z-index: 10;
+    }
     .ant-tabs-nav-list {
       .ant-tabs-tab-btn {
         font-size: 15px;
         font-weight: 500;
       }
-   }
+    }
+
+    .ant-tabs-content-holder {
+      flex: auto;
+      min-width: 0;
+      min-height: 0;
+      max-height: 350px;
+      margin-top: 60px;
+      overflow-y: auto;
+    }
   }
   .no-contact {
     margin-top: 96px;
