@@ -268,10 +268,10 @@ const Dashboard = () => {
           {Row}
         </FixedSizeList>
       )}
-      <Link to="/add-address" className="pop-add-address flex">
+      <Link to="/add-address" className="pop-add-address flex items-center">
         {' '}
-        <img className="w-[14px] h-[14px]" src={IconPlus} />
-        <p className="ml-11">{t('Add addresses')}</p>
+        <img src={IconPlus} />
+        <p className="mb-0 ml-15 lh-1">{t('Add addresses')}</p>
       </Link>
     </div>
   );

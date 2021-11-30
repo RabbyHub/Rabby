@@ -333,6 +333,7 @@
   .brand-name {
     font-size: 20px;
     color: #13141a;
+    font-weight: 500;
     margin: 2px 7px 0 6px;
     max-width: 200px;
     overflow: hidden;
@@ -396,6 +397,9 @@
       border: 1px solid #8697ff;
       border-radius: 4px;
     }
+    &:nth-last-child(1)::after {
+      border-bottom: 0;
+    }
   }
   .address-item::after {
     content: '';
@@ -406,6 +410,7 @@
     height: 1px;
     width: 146px;
     border-bottom: 1px solid #e5e9ef;
+
   }
   .ant-popover-inner-content {
     padding: 0 !important;
@@ -430,13 +435,20 @@
       background: #ffffff;
       border-radius: 0px 0px 6px 6px;
       border-top: 1px solid #e5e9ef;
-      padding: 11px 0 11px 15px;
+      padding-left: 15px;
       color: #8697ff;
       &:hover {
         background-color: rgba(134, 151, 255, 0.1);
       }
       img {
-        margin: 2px 11px 2px 0;
+        width: 11px;
+        height: 11px;
+        margin-left: 4px;
+      }
+      p{
+        margin-left:15px;
+        margin-bottom: 0;
+        line-height: 14px;
       }
     }
   }
