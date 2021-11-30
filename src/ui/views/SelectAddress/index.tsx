@@ -3,8 +3,9 @@ import { useLocation, useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import clsx from 'clsx';
 import { Form, Input } from 'antd';
+import { cloneDeep } from 'lodash';
 import { StrayPageWithButton, MultiSelectAddressList } from 'ui/component';
-import { useWallet, useWalletRequest } from 'ui/utils';
+import { useWallet } from 'ui/utils';
 import { HARDWARE_KEYRING_TYPES } from 'consts';
 import { BIP44_PATH } from '../ImportHardware/LedgerHdPath';
 import './style.less';
@@ -32,35 +33,52 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
   const [form] = Form.useForm();
   const wallet = useWallet();
   const keyringId = useRef<number | null | undefined>(state.keyringId);
+  const MultiSelectAddressRef = useRef<any>(null);
   const [selectedNumbers, setSelectedNumbers] = useState(0);
-  const [start, setStart] = useState(11);
-  const [end, setEnd] = useState(11);
-  const [loadLength, setLoadLength] = useState(10);
+  const [end, setEnd] = useState(10);
   const [errorMsg, setErrorMsg] = useState('');
-  const [getAccounts, loading] = useWalletRequest(
-    async (firstFlag, start, end) => {
-      return firstFlag
-        ? await wallet.requestKeyring(
+  const loadedMap = useRef<
+    Record<string, { address: string; index: number }[]>
+  >({});
+
+  const getAccounts = async (page: number) => {
+    const arr: {
+      address: string;
+      index: number;
+    }[] = cloneDeep(accounts);
+    for (let i = (page - 1) * 10; i < page * 10; i++) {
+      if (arr[i]) {
+        continue;
+      } else {
+        arr[i] = { address: '', index: i + 1 };
+      }
+    }
+    setAccounts(arr);
+    const thisPage: { address: string; index: number }[] = [];
+    for (let i = (page - 1) * 10; i < page * 10; i++) {
+      thisPage.push(arr[i]);
+    }
+    if (thisPage.every((item) => item.address)) return;
+    try {
+      let _accounts: { address: string; index: number }[] = [];
+      if (loadedMap.current[page]) {
+        _accounts = loadedMap.current[page];
+      } else {
+        if (page === 1) {
+          _accounts = await wallet.requestKeyring(
             keyring,
             'getFirstPage',
             keyringId.current
-          )
-        : end
-        ? await wallet.requestKeyring(
+          );
+        } else {
+          _accounts = await wallet.requestKeyring(
             keyring,
             'getAddresses',
             keyringId.current,
-            start,
-            end
-          )
-        : await wallet.requestKeyring(
-            keyring,
-            'getNextPage',
-            keyringId.current
+            (page - 1) * 10,
+            page * 10
           );
-    },
-    {
-      onSuccess(_accounts) {
+        }
         if (_accounts.length < 5) {
           throw new Error(
             t(
@@ -68,15 +86,17 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
             )
           );
         }
-        setAccounts(accounts.concat(..._accounts));
-        setStart(accounts.length);
-        setLoadLength(_accounts.length);
-      },
-      onError(err) {
-        console.log('get hardware account error', err);
-      },
+      }
+      const tmp = cloneDeep(accounts);
+      for (let i = 0; i < _accounts.length; i++) {
+        tmp[_accounts[i].index - 1] = _accounts[i];
+      }
+      loadedMap.current[page] = _accounts;
+      setAccounts(tmp);
+    } catch (e) {
+      console.log(e);
     }
-  );
+  };
 
   const init = async () => {
     if (keyringId.current === null || keyringId.current === undefined) {
@@ -95,7 +115,7 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
     );
     setImportedAccounts(_importedAccounts);
 
-    getAccounts(true);
+    getAccounts(1);
   };
 
   useEffect(() => {
@@ -104,9 +124,22 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
       wallet.requestKeyring(keyring, 'cleanUp', keyringId.current);
     };
   }, []);
+
   useEffect(() => {
-    setStart(accounts.length);
-  }, [accounts]);
+    if (accounts.length <= 0) return;
+    if (accounts.length < end) {
+      const length = accounts.length;
+      const gap = end - length + 10;
+      let current = 0;
+      const tmp: { address: string; index: number }[] = [];
+      while (current < gap) {
+        tmp.push({ address: '', index: length + current + 1 });
+        current++;
+      }
+      setAccounts([...accounts, ...tmp]);
+    }
+  }, [end]);
+
   const onSubmit = async ({ selectedAddressIndexes }) => {
     const selectedIndexes = selectedAddressIndexes.map((i) => i - 1);
 
@@ -145,24 +178,31 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
       },
     });
   };
+
   const startNumberConfirm = (e) => {
     e.stopPropagation();
     if (end > 1000) {
       setErrorMsg(t('Max 1000'));
-    } else if (accounts.length <= end) {
-      getAccounts(false, start, end + 9);
+    } else {
+      MultiSelectAddressRef.current.scrollTo(end);
     }
   };
+
   const toSpecificNumber = (e: React.ChangeEvent<HTMLInputElement>) => {
     const currentNumber = parseInt(e.target.value);
     if (!currentNumber) {
       setErrorMsg(t('Invalid Number'));
       return;
     } else {
-      setErrorMsg(t(''));
+      setErrorMsg('');
       setEnd(Number(currentNumber));
     }
   };
+
+  const handleLoadPage = async (page: number) => {
+    await getAccounts(page);
+  };
+
   return (
     <div className="select-address">
       <StrayPageWithButton
@@ -189,6 +229,7 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
         footerFixed={false}
         noPadding={isPopup}
         isScrollContainer={isPopup}
+        disableKeyDownEvent
       >
         {isPopup && (
           <header className="create-new-header create-password-header h-[100px]">
@@ -226,7 +267,7 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
           </div>
         </div>
         <div
-          className={clsx('overflow-y-auto lg:h-[340px]', {
+          className={clsx('lg:h-[340px]', {
             'p-20': isPopup,
             'flex-1': isPopup,
           })}
@@ -234,18 +275,15 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
           <Form.Item className="mb-0" name="selectedAddressIndexes">
             {accounts.length > 0 && (
               <MultiSelectAddressList
+                ref={MultiSelectAddressRef}
                 accounts={accounts}
                 importedAccounts={importedAccounts}
                 type={keyring}
                 changeSelectedNumbers={setSelectedNumbers}
-                end={end}
-                loadLength={loadLength}
-                loading={loading}
                 isPopup={isPopup}
-                loadMoreItems={() =>
-                  accounts.length <= 1000
-                    ? getAccounts(false, accounts.length, accounts.length + 9)
-                    : null
+                onLoadPage={handleLoadPage}
+                loadMoreItems={(page: number) =>
+                  accounts.length <= 1000 ? getAccounts(page) : null
                 }
               />
             )}
