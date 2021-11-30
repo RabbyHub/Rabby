@@ -445,7 +445,9 @@ const SignTx = ({ params, origin }) => {
       .find((item) => item.id === chainId);
     const gas = await wallet.openapi.gasMarket(chain!.serverId);
     let lastSelected = 0;
-    if (
+    if (isSpeedUp || isCancel) {
+      lastSelected = -1;
+    } else if (
       lastTimeGas?.lastTimeSelect &&
       lastTimeGas?.lastTimeSelect === 'gasLevel'
     ) {
@@ -461,7 +463,7 @@ const SignTx = ({ params, origin }) => {
       ...tx,
       chainId: chainId || CHAINS[site!.chain].id,
       gasPrice:
-        lastSelected === null
+        lastSelected <= 0
           ? intToHex(parseInt(tx.gasPrice))
           : intToHex(lastSelected),
     });
@@ -513,6 +515,7 @@ const SignTx = ({ params, origin }) => {
               isFristLoad={isFristLoad}
               tx={tx}
               gasLimit={gasLimit}
+              noUpdate={isCancel || isSpeedUp}
               gas={{
                 ...(txDetail
                   ? txDetail.gas

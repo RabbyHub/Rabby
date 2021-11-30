@@ -27,6 +27,7 @@ interface GasSelectorProps {
   nonce: string;
   disableNonce: boolean;
   isFristLoad: boolean;
+  noUpdate: boolean;
 }
 
 const GasSelector = ({
@@ -40,6 +41,7 @@ const GasSelector = ({
   nonce,
   disableNonce,
   isFristLoad,
+  noUpdate,
 }: GasSelectorProps) => {
   const wallet = useWallet();
   const { t } = useTranslation();
@@ -154,7 +156,17 @@ const GasSelector = ({
         item.level === 'custom' ? { ...item, price: item.price / 1e9 } : item
       )
     );
-    await getLastTimeSavedGas();
+    if (noUpdate) {
+      setSelectGas({
+        level: 'custom',
+        price: gas?.estimated_gas_cost_usd_value,
+        front_tx_count: gas?.front_tx_count,
+        estimated_seconds: gas?.estimated_seconds,
+        base_fee: gasList[0].base_fee,
+      });
+    } else {
+      await getLastTimeSavedGas();
+    }
     setIsLoading(false);
   };
 
