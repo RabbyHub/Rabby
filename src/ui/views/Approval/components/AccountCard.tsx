@@ -6,6 +6,7 @@ import { splitNumberByStep } from 'ui/utils/number';
 import { KEYRINGS_LOGOS, WALLET_BRAND_CONTENT, KEYRING_CLASS } from 'consts';
 import { AddressViewer } from 'ui/component';
 import { useCurrentBalance } from 'ui/component/AddressList/AddressItem';
+import clsx from 'clsx';
 
 const AccountCard = ({
   icons,
@@ -21,7 +22,7 @@ const AccountCard = ({
   const { t } = useTranslation();
   const wallet = useWallet();
   const [currentAccount, setCurrentAccount] = useState<Account | null>(null);
-
+  const [currentAccountAlianName, setCurrentAccountAlianName] = useState('');
   const getAccountIcon = (type: string | undefined) => {
     if (currentAccount && type) {
       if (WALLET_BRAND_CONTENT[currentAccount?.brandName]) {
@@ -46,7 +47,11 @@ const AccountCard = ({
 
   const init = async () => {
     const account = await wallet.syncGetCurrentAccount();
+    const alianName = await wallet.getAlianName(
+      account?.address?.toLowerCase()
+    );
     setCurrentAccount(account);
+    setCurrentAccountAlianName(alianName);
   };
 
   useEffect(() => {
@@ -57,18 +62,17 @@ const AccountCard = ({
   const icon = getAccountIcon(currentAccount?.type);
 
   if (!currentAccount) return <></>;
-
   return (
-    <div className="account-card h-[48px]">
-      <div className="account-detail h-[48px]">
+    <div className={clsx('account-card', alianName && 'h-[48px]')}>
+      <div className={clsx('account-detail', alianName && 'h-[48px]')}>
         <img src={icon} className="icon icon-account" />
-        {alianName ? (
+        {(alianName || currentAccountAlianName) && (
           <div className="flex flex-col">
-            <div className="send-text">{alianName}</div>
+            <div className={clsx('send-text', !alianName && 'text-white')}>
+              {alianName || currentAccountAlianName}
+            </div>
             <AddressViewer showArrow={false} address={currentAccount.address} />
           </div>
-        ) : (
-          <AddressViewer showArrow={false} address={currentAccount.address} />
         )}
         <span className="amount">
           ${splitNumberByStep((balance || 0).toFixed(2))}
