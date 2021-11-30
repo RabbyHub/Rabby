@@ -71,7 +71,14 @@ const AccountCard = ({
             <div className={clsx('send-text', !alianName && 'text-white')}>
               {alianName || currentAccountAlianName}
             </div>
-            <AddressViewer showArrow={false} address={currentAccount.address} />
+            <AddressViewer
+              showArrow={false}
+              address={currentAccount.address}
+              className={clsx(
+                'text-12 opacity-60',
+                alianName ? 'opacity-80 send-viewer' : 'text-white'
+              )}
+            />
           </div>
         )}
         <span className="amount">
