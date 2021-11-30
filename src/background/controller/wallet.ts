@@ -68,12 +68,27 @@ export class WalletController extends BaseController {
     const needInitAlianNames = await preferenceService.getInitAlianNameStatus();
     const accounts = await keyringService.getAllTypedAccounts();
     const isNeedSyncContact = await preferenceService.isNeedSyncContact();
+    const WalletGroup = accounts.find((item) => item.type === 'WalletConnect');
+    let WalletConnectList;
+    if (WalletGroup && WalletGroup?.accounts?.length > 0) {
+      WalletConnectList = groupBy(WalletGroup.accounts, 'brandName');
+    }
     if (!needInitAlianNames && accounts.length > 0) {
       await preferenceService.changeInitAlianNameStatus();
       const catergoryGroupAccount = accounts.map((item) => ({
         type: item.type,
         accounts: item.accounts,
       }));
+      if (WalletConnectList) {
+        Object.keys(WalletConnectList).map((key) => {
+          WalletConnectList[key].map((acc, index) => {
+            this.updateAlianName(
+              acc?.address,
+              `${acc?.brandName}  ${index + 1}`
+            );
+          });
+        });
+      }
       const catergories = groupBy(catergoryGroupAccount, 'type');
       const result = Object.keys(catergories)
         .map((key) =>
@@ -87,10 +102,12 @@ export class WalletController extends BaseController {
         .map((item) => item.flat(1));
       result.map((group) =>
         group.map((acc, index) => {
-          this.updateAlianName(
-            acc?.address,
-            `${BRAND_ALIAN_TYPE_TEXT[acc?.type]} ${index + 1}`
-          );
+          if (acc.type !== 'WalletConnect') {
+            this.updateAlianName(
+              acc?.address,
+              `${BRAND_ALIAN_TYPE_TEXT[acc?.type]} ${index + 1}`
+            );
+          }
         })
       );
     }
