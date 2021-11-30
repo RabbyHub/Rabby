@@ -319,7 +319,7 @@ const SignTx = ({ params, origin }) => {
     const chain = Object.keys(CHAINS)
       .map((key) => CHAINS[key])
       .find((item) => item.id === chainId);
-    const gas = await wallet.openapi.gasMarket(chain!.serverId);
+    const gas = await wallet.openapi.gasMarket(chain?.serverId);
     setTx({
       ...tx,
       gasPrice: intToHex(Math.max(...gas.map((item) => parseInt(item.price)))),
@@ -443,7 +443,9 @@ const SignTx = ({ params, origin }) => {
     const chain = Object.keys(CHAINS)
       .map((key) => CHAINS[key])
       .find((item) => item.id === chainId);
-    const gas = await wallet.openapi.gasMarket(chain!.serverId);
+    const gas = await wallet.openapi.gasMarket(
+      chain?.serverId || CHAINS[site!.chain].serverId
+    );
     let lastSelected = 0;
     if (isSpeedUp || isCancel) {
       lastSelected = -1;
@@ -459,13 +461,20 @@ const SignTx = ({ params, origin }) => {
     ) {
       lastSelected = lastTimeGas?.gasPrice * 1e9;
     }
+    let price = 0;
+    if (lastSelected <= 0) {
+      if (tx.gasPrice) {
+        price = parseInt(tx.gasPrice);
+      } else {
+        price = gas.find((item) => item.level === 'fast').price;
+      }
+    } else {
+      price = lastSelected;
+    }
     setTx({
       ...tx,
       chainId: chainId || CHAINS[site!.chain].id,
-      gasPrice:
-        lastSelected <= 0
-          ? intToHex(parseInt(tx.gasPrice))
-          : intToHex(lastSelected),
+      gasPrice: intToHex(price),
     });
     setInited(true);
   };
@@ -477,7 +486,7 @@ const SignTx = ({ params, origin }) => {
   useEffect(() => {
     if (!inited) return;
 
-    if (!tx.gasPrice) {
+    if (!tx.gasPrice && chainId) {
       // use minimum gas as default gas if dapp not set gasPrice
       getDefaultGas();
       return;

@@ -234,14 +234,16 @@ const GasSelector = ({
         estimated_seconds: 0,
         base_fee: gasList[0].base_fee,
       });
-    } else if (gas && !gas?.fail) {
+      setCustomGas(savedGas?.gasPrice || 0);
+    } else if (tx && tx.gasPrice) {
       setSelectGas({
         level: 'custom',
-        price: gas?.estimated_gas_cost_usd_value,
+        price: parseInt(tx.gasPrice) / 1e9,
         front_tx_count: gas?.front_tx_count,
         estimated_seconds: gas?.estimated_seconds,
         base_fee: gasList[0].base_fee,
       });
+      setCustomGas(parseInt(tx.gasPrice) / 1e9);
     } else if (gasList.length > 0) {
       const gas = gasList.find((item) => item.level === 'fast') || null;
       setSelectGas(gas);
@@ -308,7 +310,7 @@ const GasSelector = ({
   useDebounce(
     () => {
       loadGasMarket();
-      handleConfirmGas();
+      !isFristLoad && handleConfirmGas();
     },
     500,
     [customGas]
@@ -317,9 +319,6 @@ const GasSelector = ({
   useEffect(() => {
     setGasLimit(Number(gasLimit));
   }, [gasLimit]);
-  useEffect(() => {
-    loadGasMarket();
-  }, []);
   useEffect(() => {
     formValidator();
   }, [afterGasLimit, selectedGas, gasList]);
@@ -375,21 +374,21 @@ const GasSelector = ({
           </div>
         </div>
         <div className="card-container">
-          {gasList.map((gas) => (
+          {gasList.map((item) => (
             <div
               className={clsx('card', {
-                active: selectedGas?.level === gas.level,
+                active: selectedGas?.level === item.level,
               })}
               onClick={(e) => panelSelection(e, gas)}
             >
-              <div className="gas-level">{t(GAS_LEVEL_TEXT[gas.level])}</div>
+              <div className="gas-level">{t(GAS_LEVEL_TEXT[item.level])}</div>
               <div
                 className={clsx('cardTitle', {
-                  'custom-input': gas.level === 'custom',
-                  active: selectedGas?.level === gas.level,
+                  'custom-input': item.level === 'custom',
+                  active: selectedGas?.level === item.level,
                 })}
               >
-                {gas.level === 'custom' ? (
+                {item.level === 'custom' ? (
                   <Input
                     value={customGas}
                     defaultValue={customGas}
@@ -397,12 +396,12 @@ const GasSelector = ({
                     onClick={(e) => panelSelection(e, gas)}
                     onPressEnter={customGasConfirm}
                     ref={customerInputRef}
-                    autoFocus={selectedGas?.level === gas.level}
+                    autoFocus={selectedGas?.level === item.level}
                     min={0}
                     bordered={false}
                   />
                 ) : (
-                  gas.price / 1e9
+                  item.price / 1e9
                 )}
               </div>
             </div>
