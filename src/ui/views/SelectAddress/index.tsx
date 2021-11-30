@@ -10,12 +10,6 @@ import { HARDWARE_KEYRING_TYPES } from 'consts';
 import { BIP44_PATH } from '../ImportHardware/LedgerHdPath';
 import './style.less';
 
-interface RequestQueueItem {
-  page: number;
-  func(): Promise<void>;
-  promise: null | Promise<void>;
-}
-
 const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
   const history = useHistory();
   const { t } = useTranslation();
@@ -43,28 +37,9 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
   const [selectedNumbers, setSelectedNumbers] = useState(0);
   const [end, setEnd] = useState(10);
   const [errorMsg, setErrorMsg] = useState('');
-  const requestQueue = useRef<RequestQueueItem[]>([]);
-
-  const checkReuqestQueue = () => {
-    if (requestQueue.current.length > 0) {
-      let p: Promise<void>;
-      if (!requestQueue.current[0].promise) {
-        p = requestQueue.current[0].func();
-        requestQueue.current[0] = {
-          ...requestQueue.current[0],
-          promise: p,
-        };
-      } else {
-        p = requestQueue.current[0].promise;
-      }
-      p.finally(() => {
-        if (requestQueue.current[0]?.promise === p) {
-          requestQueue.current.shift();
-        }
-        checkReuqestQueue();
-      });
-    }
-  };
+  const loadedMap = useRef<
+    Record<string, { address: string; index: number }[]>
+  >({});
 
   const getAccounts = async (page: number) => {
     const arr: {
@@ -84,32 +59,43 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
       thisPage.push(arr[i]);
     }
     if (thisPage.every((item) => item.address)) return;
-    let _accounts: { address: string; index: number }[] = [];
-    if (page === 1) {
-      _accounts = await wallet.requestKeyring(
-        keyring,
-        'getFirstPage',
-        keyringId.current
-      );
-    } else {
-      _accounts = await wallet.requestKeyring(
-        keyring,
-        'getAddresses',
-        keyringId.current,
-        (page - 1) * 10,
-        page * 10
-      );
+    try {
+      let _accounts: { address: string; index: number }[] = [];
+      if (loadedMap.current[page]) {
+        _accounts = loadedMap.current[page];
+      } else {
+        if (page === 1) {
+          _accounts = await wallet.requestKeyring(
+            keyring,
+            'getFirstPage',
+            keyringId.current
+          );
+        } else {
+          _accounts = await wallet.requestKeyring(
+            keyring,
+            'getAddresses',
+            keyringId.current,
+            (page - 1) * 10,
+            page * 10
+          );
+        }
+        if (_accounts.length < 5) {
+          throw new Error(
+            t(
+              'You need to make use your last account before you can add a new one'
+            )
+          );
+        }
+      }
+      const tmp = cloneDeep(accounts);
+      for (let i = 0; i < _accounts.length; i++) {
+        tmp[_accounts[i].index - 1] = _accounts[i];
+      }
+      loadedMap.current[page] = _accounts;
+      setAccounts(tmp);
+    } catch (e) {
+      console.log(e);
     }
-    if (_accounts.length < 5) {
-      throw new Error(
-        t('You need to make use your last account before you can add a new one')
-      );
-    }
-    const tmp = cloneDeep(accounts);
-    for (let i = 0; i < _accounts.length; i++) {
-      tmp[_accounts[i].index - 1] = _accounts[i];
-    }
-    setAccounts(tmp);
   };
 
   const init = async () => {
@@ -243,6 +229,7 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
         footerFixed={false}
         noPadding={isPopup}
         isScrollContainer={isPopup}
+        disableKeyDownEvent
       >
         {isPopup && (
           <header className="create-new-header create-password-header h-[100px]">

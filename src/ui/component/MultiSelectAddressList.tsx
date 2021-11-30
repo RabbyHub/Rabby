@@ -53,7 +53,9 @@ const Row = ({
   const imported =
     importedAccounts &&
     importedAccounts.length > 0 &&
-    importedAccounts?.map((address) => address.toLowerCase()).includes(account);
+    importedAccounts
+      ?.map((address) => address.toLowerCase())
+      .includes(account.toLowerCase());
   const selected = value.includes(index + 1);
   const loading = !account;
   const { t } = useTranslation();
@@ -127,17 +129,10 @@ const Group = memo(
     onLoadPage?(page: number): Promise<void>;
   }) => {
     const groupEl = useRef<HTMLDivElement>(null);
-    const addressesRef = useRef<{ address: string; index: number }[]>([]);
-
-    useEffect(() => {
-      addressesRef.current = addresses;
-    }, [addresses]);
 
     useEffect(() => {
       const intersectionObserver = new IntersectionObserver(function (entries) {
         if (entries[0].intersectionRatio <= 0) return;
-        const isLoaded = !addressesRef.current.find(({ address }) => !address);
-        if (isLoaded) return;
         onLoadPage && onLoadPage(index + 1);
       });
       intersectionObserver.observe(groupEl.current!);
@@ -197,7 +192,7 @@ const MultiSelectAddressList = forwardRef(
 
     useImperativeHandle(ref, () => ({
       scrollTo: (index: number) => {
-        const PER_HEIGHT = 64;
+        const PER_HEIGHT = 60;
         if (scrollEl.current) {
           scrollEl.current.scrollTo({
             top: PER_HEIGHT * index,
