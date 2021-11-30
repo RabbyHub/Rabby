@@ -196,22 +196,18 @@ const AddressItem = memo(
         const importedtypeKeyrings = await wallet.getTypedAccounts(
           account?.type || account?.brandName
         );
-        if (
-          importedtypeKeyrings.length > 0 &&
-          importedtypeKeyrings?.accounts?.length > 0
-        ) {
-          setImportedLength(
-            importedtypeKeyrings[0]?.accounts?.length - currentImportLength
-          );
+
+        let allAccountsLength = 0;
+        if (importedtypeKeyrings.length > 0) {
+          importedtypeKeyrings.map((item) => {
+            const length = item.accounts.length;
+            allAccountsLength += length;
+          });
+          setImportedLength(allAccountsLength - currentImportLength);
         }
         const alianName = `${
           BRAND_ALIAN_TYPE_TEXT[account?.brandName] || account?.brandName
-        } ${
-          importedtypeKeyrings[0]?.accounts?.length -
-          currentImportLength +
-          (index || 0) +
-          1
-        }`;
+        } ${allAccountsLength - currentImportLength + (index || 0) + 1}`;
         setAlianName(alianName);
         updateAlianName(alianName);
       };
