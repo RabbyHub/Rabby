@@ -4,9 +4,26 @@
     font-size: 14px;
     line-height: 16px;
   }
+  .ant-modal-content {
+    border-radius: 6px;
+    overflow: hidden;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    left: 0;
+    height: 215px;
+    background: #ffffff;
+    box-shadow: 0px -12px 20px rgba(19, 20, 26, 0.04);
+    border-radius: 16px 16px 0px 0px;
+  }
+  .ant-modal-header {
+    background: #ffffff;
+    border-bottom: 0;
+  }
   .ant-input-affix-wrapper {
     padding: 15px 16px;
     border-radius: 6px;
+    background: #F5F6FA;
     &::before {
       display: none;
     }
@@ -17,6 +34,7 @@
     line-height: 18px;
     color: #161819;
     border-radius: 0;
+    background: #F5F6FA;
   }
 
   .remove-btn {
@@ -39,7 +57,21 @@
     }
   }
 }
-
+.edit-contact-modal-with-remove {
+  .edit-contact-modal;
+  .ant-modal-content {
+    border-radius: 6px;
+    overflow: hidden;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    left: 0;
+    height: 245px;
+    background: #ffffff;
+    box-shadow: 0px -12px 20px rgba(19, 20, 26, 0.04);
+    border-radius: 16px 16px 0px 0px;
+  }
+}
 .list-contact-modal {
   .ant-modal-close {
     right: 16px;

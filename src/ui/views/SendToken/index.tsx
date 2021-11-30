@@ -216,7 +216,7 @@ const SendToken = () => {
     });
     setCacheAmount(resultAmount);
     const addressContact = await wallet.getContactByAddress(to);
-    const alianName = await wallet.getAlianName(to);
+    const alianName = await wallet.getAlianName(to.toLowerCase());
     if (addressContact || alianName) {
       setContactInfo(addressContact || { to, name: alianName });
       alianName ? setAccountType('my') : setAccountType('others');
