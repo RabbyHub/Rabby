@@ -437,9 +437,33 @@ const SignTx = ({ params, origin }) => {
         (item) => item.id === (chainId || CHAINS[site!.chain].id)
       )!
     );
+    const lastTimeGas = await wallet.getLastTimeGasSelection(
+      chainId || CHAINS[site!.chain].id
+    );
+    const chain = Object.keys(CHAINS)
+      .map((key) => CHAINS[key])
+      .find((item) => item.id === chainId);
+    const gas = await wallet.openapi.gasMarket(chain!.serverId);
+    let lastSelected = 0;
+    if (
+      lastTimeGas?.lastTimeSelect &&
+      lastTimeGas?.lastTimeSelect === 'gasLevel'
+    ) {
+      lastSelected = gas.find((item) => item.level === lastTimeGas?.gasLevel)
+        ?.price;
+    } else if (
+      lastTimeGas?.lastTimeSelect &&
+      lastTimeGas?.lastTimeSelect === 'gasPrice'
+    ) {
+      lastSelected = lastTimeGas?.gasPrice * 1e9;
+    }
     setTx({
       ...tx,
       chainId: chainId || CHAINS[site!.chain].id,
+      gasPrice:
+        lastSelected === null
+          ? intToHex(parseInt(tx.gasPrice))
+          : intToHex(lastSelected),
     });
     setInited(true);
   };

@@ -245,19 +245,30 @@ const GasSelector = ({
     e.stopPropagation();
     await setIsLoading(true);
     if (gas.level === 'custom') {
-      await setCustomGas(Number(tx.gasPrice) / 1e9);
+      await setCustomGas(Number(gas.price));
       await setSelectGas({
         level: 'custom',
-        price: Number(tx.gasPrice) / 1e9,
+        price: Number(gas.price),
         front_tx_count: 0,
         estimated_seconds: 0,
         base_fee: gasList[0].base_fee,
       });
+      await updateGasSelection(gas);
+      onChange({
+        ...gas,
+        price: Number(gas.price) * 1e9,
+        gasLimit: Number(afterGasLimit),
+        nonce: Number(customNonce || nonce),
+      });
     } else {
       await setSelectGas(gas);
-      await handleConfirmGas();
+      await updateGasSelection(gas);
+      onChange({
+        ...gas,
+        gasLimit: Number(afterGasLimit),
+        nonce: Number(customNonce || nonce),
+      });
     }
-    await updateGasSelection(gas);
     setIsLoading(false);
   };
   const customGasConfirm = async (e) => {
@@ -283,6 +294,7 @@ const GasSelector = ({
   useDebounce(
     () => {
       modalVisible && loadGasMarket();
+      handleConfirmGas();
     },
     500,
     [modalVisible, customGas]
