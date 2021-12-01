@@ -533,8 +533,9 @@ export class WalletController extends BaseController {
   deriveNewAccountFromMnemonic = async () => {
     const keyring = this._getKeyringByType(KEYRING_CLASS.MNEMONIC);
 
-    await keyringService.addNewAccount(keyring);
+    const result = await keyringService.addNewAccount(keyring);
     this._setCurrentAccountFromKeyring(keyring, -1);
+    return result;
   };
 
   getAccountsCount = async () => {
