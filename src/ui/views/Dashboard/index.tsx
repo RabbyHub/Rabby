@@ -37,6 +37,7 @@ import IconCorrect from 'ui/assets/correct.svg';
 import IconPlus from 'ui/assets/dashboard-plus.svg';
 import { getUpdateContent } from 'changeLogs/index';
 import './style.less';
+import Item from 'antd/lib/list/Item';
 const Dashboard = () => {
   const history = useHistory();
   const wallet = useWallet();
@@ -167,6 +168,20 @@ const Dashboard = () => {
       currentAccount?.address?.toLowerCase(),
       alianName
     );
+    const newAccountList = accountsList.map((item) => {
+      if (
+        item.address.toLowerCase() === currentAccount?.address.toLowerCase()
+      ) {
+        return {
+          ...item,
+          alianName: alianName,
+        };
+      }
+      return item;
+    });
+    if (newAccountList.length > 0) {
+      setAccountsList(newAccountList);
+    }
     hide();
   };
   const checkIfFirstLogin = async () => {
