@@ -7,6 +7,8 @@ import { message, Popover, Input } from 'antd';
 import { FixedSizeList } from 'react-window';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
 import {
   SORT_WEIGHT,
   KEYRING_ICONS,
@@ -33,7 +35,7 @@ import { ReactComponent as IconCopy } from 'ui/assets/urlcopy.svg';
 import IconEditPen from 'ui/assets/editpen.svg';
 import IconCorrect from 'ui/assets/correct.svg';
 import IconPlus from 'ui/assets/dashboard-plus.svg';
-
+import { getUpdateContent } from 'changeLogs/index';
 import './style.less';
 const Dashboard = () => {
   const history = useHistory();
@@ -52,6 +54,8 @@ const Dashboard = () => {
   const [startEdit, setStartEdit] = useState(false);
   const [alianName, setAlianName] = useState<string>('');
   const [accountsList, setAccountsList] = useState<Account[]>([]);
+  const [firstNotice, setFirstNotice] = useState(false);
+  const [updateContent, setUpdateContent] = useState('');
   const handleToggle = () => {
     setModalOpen(!isModalOpen);
   };
@@ -165,6 +169,20 @@ const Dashboard = () => {
     );
     hide();
   };
+  const checkIfFirstLogin = async () => {
+    const firstOpen = await wallet.getIsFirstOpen();
+    const updateContent = await getUpdateContent();
+    setUpdateContent(updateContent);
+    if (!firstOpen || !updateContent) return;
+    setFirstNotice(firstOpen);
+  };
+  const changeIsFirstLogin = () => {
+    wallet.updateIsFirstOpen();
+    setFirstNotice(false);
+  };
+  useEffect(() => {
+    checkIfFirstLogin();
+  }, []);
   const hoverContent = () => (
     <div className="flex flex-col">
       <div className="flex items-center">
@@ -412,14 +430,15 @@ const Dashboard = () => {
           </p>
         </div>
       </Modal>
-      {currentAccount && (
-        <SwitchAddress
-          currentAccount={currentAccount}
-          onChange={handleChange}
-          visible={isModalOpen}
-          onCancel={handleToggle}
-        />
-      )}
+      <Modal
+        visible={firstNotice && updateContent}
+        title="What's new"
+        className="first-notice"
+        onCancel={changeIsFirstLogin}
+        maxHeight="420px"
+      >
+        <ReactMarkdown children={updateContent} remarkPlugins={[remarkGfm]} />
+      </Modal>
     </>
   );
 };
