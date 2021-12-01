@@ -240,18 +240,11 @@ const GasSelector = ({
         base_fee: gasList[0].base_fee,
       });
       setCustomGas((savedGas?.gasPrice && savedGas?.gasPrice / 1e9) || 0);
-    } else if (tx && tx.gasPrice) {
-      setSelectGas({
-        level: 'custom',
-        price: parseInt(tx.gasPrice) / 1e9,
-        front_tx_count: gas?.front_tx_count,
-        estimated_seconds: gas?.estimated_seconds,
-        base_fee: gasList[0].base_fee,
-      });
-      setCustomGas(parseInt(tx.gasPrice) / 1e9);
     } else if (gasList.length > 0) {
       const gas = gasList.find((item) => item.level === 'fast') || null;
       setSelectGas(gas);
+      const customPrice = gas?.price;
+      customPrice && setCustomGas(Number(customPrice) / 1e9);
     }
   };
 

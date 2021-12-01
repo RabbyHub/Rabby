@@ -135,7 +135,7 @@ const SignTx = ({ params, origin }) => {
   const [isFristLoad, setIsFristLoad] = useState(true);
   const [nonceChanged, setNonceChanged] = useState(false);
   const [isWatch, setIsWatch] = useState(false);
-  const [selectedlevel, setSelectedLevel] = useState('custom');
+  const [selectedlevel, setSelectedLevel] = useState('fast');
   const [txDetail, setTxDetail] = useState<ExplainTxResponse | null>({
     balance_change: {
       err_msg: '',
@@ -476,11 +476,7 @@ const SignTx = ({ params, origin }) => {
     }
     let price = 0;
     if (lastSelected <= 0 || lastSelected === undefined) {
-      if (tx.gasPrice) {
-        price = parseInt(tx.gasPrice);
-      } else {
-        price = gas.find((item) => item.level === 'fast').price;
-      }
+      price = gas.find((item) => item.level === 'fast').price;
     } else {
       price = lastSelected;
     }
