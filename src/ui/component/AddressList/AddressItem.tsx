@@ -6,22 +6,22 @@ import React, {
   forwardRef,
   memo,
 } from 'react';
-import { Skeleton, Tooltip } from 'antd';
+import { Tooltip, Input } from 'antd';
 import clsx from 'clsx';
 import { useTranslation, Trans } from 'react-i18next';
 import { Account } from 'background/service/preference';
 import { ChainWithBalance } from 'background/service/openapi';
 import { useWallet, useWalletRequest } from 'ui/utils';
 import { AddressViewer } from 'ui/component';
-import { splitNumberByStep } from 'ui/utils/number';
 import {
   CHAINS,
   KEYRING_ICONS,
   WALLET_BRAND_CONTENT,
   KEYRING_TYPE_TEXT,
+  BRAND_ALIAN_TYPE_TEXT,
 } from 'consts';
-import IconEmptyChain from 'ui/assets/chain-logos/empty.svg';
-import IconMoreChain from 'ui/assets/more-chain-round-dark.svg';
+import IconEditPen from 'ui/assets/editpen.svg';
+import IconCorrect from 'ui/assets/correct.svg';
 interface DisplayChainWithWhiteLogo extends ChainWithBalance {
   logo?: string;
   whiteLogo?: string;
@@ -32,6 +32,8 @@ export interface AddressItemProps {
     address: string;
     type: string;
     brandName: string;
+    alianName?: string;
+    index?: number;
   };
   keyring?: any;
   ActionButton?: FunctionComponent<{
@@ -46,6 +48,15 @@ export interface AddressItemProps {
   noNeedBalance?: boolean;
   currentAccount?: any;
   icon?: string;
+  showNumber?: boolean;
+  index?: number;
+  editing?: boolean;
+  showImportIcon?: boolean;
+  showIndex?: boolean;
+  importedAccount?: boolean;
+  isMnemonics?: boolean;
+  currentImportLength?: number;
+  importedLength?: number;
 }
 
 const formatChain = (item: ChainWithBalance): DisplayChainWithWhiteLogo => {
@@ -109,7 +120,6 @@ export const useCurrentBalance = (
       });
     }
   }, [account]);
-
   return [balance, chainBalances, getAddressBalance] as const;
 };
 const AddressItem = memo(
@@ -121,11 +131,15 @@ const AddressItem = memo(
         ActionButton,
         hiddenAddresses = [],
         className,
-        showAssets,
         onClick,
-        noNeedBalance = false,
-        currentAccount = null,
-        icon = '',
+        index,
+        editing = true,
+        showImportIcon = true,
+        showIndex = false,
+        importedAccount = false,
+        isMnemonics = false,
+        currentImportLength = 1,
+        importedLength = 0,
       }: AddressItemProps,
       ref
     ) => {
@@ -133,32 +147,12 @@ const AddressItem = memo(
         return null;
       }
       const { t } = useTranslation();
-      const [isLoading, setIsLoading] = useState(false);
-      const [balance, chainBalances, getAddressBalance] = useCurrentBalance(
-        account.address,
-        false,
-        noNeedBalance
-      );
-
-      const updateBalance = async () => {
-        setIsLoading(true);
-        await getAddressBalance(account.address.toLowerCase());
-        setIsLoading(false);
-      };
-
-      useImperativeHandle(ref, () => ({
-        updateBalance,
-      }));
-
+      const wallet = useWallet();
+      const [startEdit, setStartEdit] = useState(false);
+      const [alianName, setAlianName] = useState<string>('');
       const isDisabled = hiddenAddresses.find(
         (item) => item.address === account.address && item.type === keyring.type
       );
-
-      const isCurrentAddress =
-        currentAccount?.address === account.address &&
-        currentAccount?.type === account.type &&
-        currentAccount?.brandName === account.brandName;
-
       const formatAddressTooltip = (type: string, brandName: string) => {
         if (KEYRING_TYPE_TEXT[type]) {
           return t(KEYRING_TYPE_TEXT[type]);
@@ -175,38 +169,45 @@ const AddressItem = memo(
         }
         return '';
       };
-      const displayChainList = () => {
-        const result = chainBalances.map((item) => (
-          <img
-            src={item.logo}
-            className="w-16 h-16 mr-6"
-            key={item.id}
-            alt={`${item.name}: $${item.usd_value.toFixed(2)}`}
-            title={`${item.name}: $${item.usd_value.toFixed(2)}`}
-            style={{ opacity: isLoading ? 0 : 1 }}
-          />
-        ));
-        if (result.length > 9) {
-          return result
-            .slice(0, 9)
-            .concat(
-              <img
-                src={IconMoreChain}
-                className="w-16 h-16 mr-6"
-                key="more"
-                style={{ opacity: isLoading ? 0 : 1 }}
-              />
-            );
-        }
-        return result;
+      const handleAlianNameChange = (
+        e: React.ChangeEvent<HTMLInputElement>
+      ) => {
+        setAlianName(e.target.value);
       };
+      const alianNameConfirm = async (e) => {
+        e.stopPropagation();
+        if (!alianName) {
+          return;
+        }
+        await updateAlianName(alianName);
+        if (editing) {
+          setStartEdit(false);
+          return;
+        }
+        setStartEdit(false);
+      };
+      const updateAlianName = async (alianName) => {
+        await wallet.updateAlianName(
+          account?.address?.toLowerCase(),
+          alianName
+        );
+      };
+      const displayName = alianName || account?.alianName;
+      const changeName = async () => {
+        const alianName = `${
+          BRAND_ALIAN_TYPE_TEXT[account?.brandName] || account?.brandName
+        } ${importedLength + (index || 0) + 1}`;
+        setAlianName(alianName);
+        updateAlianName(alianName);
+      };
+      useEffect(() => {
+        if (importedAccount) {
+          changeName();
+        }
+      }, []);
       return (
         <li
-          className={clsx(
-            className,
-            { 'no-assets': !showAssets },
-            isCurrentAddress && 'highlight-address'
-          )}
+          className={className}
           onClick={() =>
             onClick && onClick(account.address, keyring, account.brandName)
           }
@@ -217,46 +218,14 @@ const AddressItem = memo(
               isDisabled && 'opacity-40'
             )}
           >
-            <div className="address-info">
-              {showAssets && (
-                <span className="balance">
-                  {isLoading && <Skeleton.Input active />}
-                  <span style={{ opacity: isLoading ? 0 : 1 }}>
-                    ${splitNumberByStep((balance || 0).toFixed(2))}
-                  </span>
-                </span>
-              )}
-              <AddressViewer
-                address={account.address}
-                showArrow={false}
-                className="subtitle"
-              />
-            </div>
-
-            {showAssets && (
-              <div className="mt-4 w-full text-left leading-none">
-                <div className="inline-flex relative">
-                  {chainBalances.length ? (
-                    displayChainList()
-                  ) : (
-                    <img
-                      className="w-16 h-16"
-                      src={IconEmptyChain}
-                      style={{ opacity: isLoading ? 0 : 1 }}
-                    />
-                  )}
-                  {isLoading && <Skeleton.Input active />}
-                </div>
-              </div>
-            )}
-            {icon && <img src={icon} className="item-right-icon" />}
-          </div>
-          {keyring && (
-            <div className="action-button flex items-center flex-shrink-0 cursor-pointer">
+            {showImportIcon && (
               <Tooltip
                 overlayClassName="rectangle addressType__tooltip"
                 placement="topRight"
-                title={formatAddressTooltip(account.type, account.brandName)}
+                title={formatAddressTooltip(
+                  account.type,
+                  BRAND_ALIAN_TYPE_TEXT[account.brandName] || account.brandName
+                )}
               >
                 <img
                   src={
@@ -268,6 +237,64 @@ const AddressItem = memo(
                   })}
                 />
               </Tooltip>
+            )}
+            {importedAccount && isMnemonics && (
+              <div className="number-index">{account.index}</div>
+            )}
+            <div className={clsx('address-info', { 'ml-0': !showImportIcon })}>
+              {(showImportIcon || editing) && (
+                <div className="brand-name flex">
+                  {startEdit && editing ? (
+                    <Input
+                      value={
+                        startEdit
+                          ? alianName
+                          : account?.alianName || account?.brandName
+                      }
+                      defaultValue={
+                        alianName || account?.alianName || account?.brandName
+                      }
+                      onChange={handleAlianNameChange}
+                      onPressEnter={alianNameConfirm}
+                      autoFocus={startEdit}
+                      maxLength={20}
+                      min={0}
+                    />
+                  ) : (
+                    <div className="display-name">{displayName}</div>
+                  )}
+                  {!startEdit && editing && (
+                    <img
+                      className="edit-name"
+                      src={IconEditPen}
+                      onClick={() => setStartEdit(true)}
+                    />
+                  )}
+                  {startEdit && editing && (
+                    <img
+                      className="edit-name w-[16px] h-[16px]"
+                      src={IconCorrect}
+                      onClick={alianNameConfirm}
+                    />
+                  )}
+                </div>
+              )}
+              <AddressViewer
+                address={account.address}
+                showArrow={false}
+                index={account.index || index}
+                showImportIcon={showImportIcon}
+                className={
+                  showImportIcon || !showIndex
+                    ? 'subtitle'
+                    : 'import-color flex'
+                }
+                showIndex={showIndex}
+              />
+            </div>
+          </div>
+          {keyring && (
+            <div className="action-button flex items-center flex-shrink-0 cursor-pointer">
               {ActionButton && (
                 <ActionButton
                   data={account.address}

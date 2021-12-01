@@ -11,10 +11,13 @@ export interface Account {
   type: string;
   address: string;
   brandName: string;
+  alianName?: string;
+  displayBrandName?: string;
+  index?: number;
 }
 export interface ChainGas {
-  gasPrice?: number; // custom cached gas price
-  gasLevel?: 'slow' | 'normal' | 'fast'; // cached gasLevel
+  gasPrice?: number | null; // custom cached gas price
+  gasLevel?: string | null; // cached gasLevel
   lastTimeSelect?: 'gasLevel' | 'gasPrice'; // last time selection, 'gasLevel' | 'gasPrice'
 }
 export interface GasCache {
@@ -33,6 +36,9 @@ interface PreferenceStore {
   isDefaultWallet: boolean;
   lastTimeSendToken: Record<string, TokenItem>;
   walletSavedList: [];
+  alianNames: Record<string, string>;
+  isNeedSyncContact: boolean;
+  initAlianNames: boolean;
   gasCache: GasCache;
   currentVersion: string;
   firstOpen: boolean;
@@ -60,6 +66,9 @@ class PreferenceService {
         isDefaultWallet: false,
         lastTimeSendToken: {},
         walletSavedList: [],
+        alianNames: {},
+        isNeedSyncContact: true,
+        initAlianNames: false,
         gasCache: {},
         currentVersion: '0',
         firstOpen: false,
@@ -77,6 +86,15 @@ class PreferenceService {
     }
     if (!this.store.lastTimeSendToken) {
       this.store.lastTimeSendToken = {};
+    }
+    if (!this.store.alianNames) {
+      this.store.alianNames = {};
+    }
+    if (!this.store.isNeedSyncContact) {
+      this.store.isNeedSyncContact = true;
+    }
+    if (!this.store.initAlianNames) {
+      this.store.initAlianNames = false;
     }
     if (!this.store.gasCache) {
       this.store.gasCache = {};
@@ -261,6 +279,32 @@ class PreferenceService {
 
   updateWalletSavedList = (list: []) => {
     this.store.walletSavedList = list;
+  };
+  getAlianName = (address: string) => {
+    const key = address.toLowerCase();
+    return this.store.alianNames[key];
+  };
+  getAllAlianName = () => {
+    return this.store.alianNames;
+  };
+  updateAlianName = (address: string, name: string) => {
+    const key = address.toLowerCase();
+    this.store.alianNames = {
+      ...this.store.alianNames,
+      [key]: name,
+    };
+  };
+  isNeedSyncContact = () => {
+    return this.store.isNeedSyncContact;
+  };
+  changeSyncContact = () => {
+    this.store.isNeedSyncContact = false;
+  };
+  getInitAlianNameStatus = () => {
+    return this.store.initAlianNames;
+  };
+  changeInitAlianNameStatus = () => {
+    this.store.initAlianNames = true;
   };
   getLastTimeGasSelection = (chainId: string) => {
     return this.store.gasCache[chainId];

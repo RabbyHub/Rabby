@@ -22,6 +22,8 @@ import {
   Tx,
 } from 'background/service/openapi';
 import { useWallet, useApproval } from 'ui/utils';
+import { ChainGas } from 'background/service/preference';
+
 import Approve from './TxComponents/Approve';
 import Cancel from './TxComponents/Cancel';
 import Sign from './TxComponents/Sign';
@@ -133,6 +135,7 @@ const SignTx = ({ params, origin }) => {
   const [isFristLoad, setIsFristLoad] = useState(true);
   const [nonceChanged, setNonceChanged] = useState(false);
   const [isWatch, setIsWatch] = useState(false);
+  const [selectedlevel, setSelectedLevel] = useState('custom');
   const [txDetail, setTxDetail] = useState<ExplainTxResponse | null>({
     balance_change: {
       err_msg: '',
@@ -319,7 +322,7 @@ const SignTx = ({ params, origin }) => {
     const chain = Object.keys(CHAINS)
       .map((key) => CHAINS[key])
       .find((item) => item.id === chainId);
-    const gas = await wallet.openapi.gasMarket(chain!.serverId);
+    const gas = await wallet.openapi.gasMarket(chain?.serverId);
     setTx({
       ...tx,
       gasPrice: intToHex(Math.max(...gas.map((item) => parseInt(item.price)))),
@@ -329,7 +332,7 @@ const SignTx = ({ params, origin }) => {
   const explain = async () => {
     const currentAccount = await wallet.getCurrentAccount();
     if (currentAccount.type === KEYRING_TYPE.WatchAddressKeyring) {
-      await setIsWatch(true);
+      setIsWatch(true);
     }
     try {
       setIsReady(false);
@@ -369,6 +372,15 @@ const SignTx = ({ params, origin }) => {
         // NOTHING
       }
     }
+    const selectedGas: ChainGas = {
+      lastTimeSelect: selectedlevel === 'custom' ? 'gasPrice' : 'gasLevel',
+    };
+    if (selectedlevel === 'custom') {
+      selectedGas.gasPrice = parseInt(tx?.gasPrice);
+    } else {
+      selectedGas.gasLevel = selectedlevel;
+    }
+    await wallet.updateLastTimeGasSelection(chainId, selectedGas);
     if (currentAccount?.type && WaitingSignComponent[currentAccount.type]) {
       resolveApproval({
         ...tx,
@@ -395,6 +407,7 @@ const SignTx = ({ params, origin }) => {
   };
   const handleGasChange = (gas: GasSelectorResponse) => {
     setIsFristLoad(false);
+    setSelectedLevel(gas.level);
     const beforeNonce = realNonce || tx.nonce;
     const afterNonce = intToHex(gas.nonce);
     setTx({
@@ -437,9 +450,44 @@ const SignTx = ({ params, origin }) => {
         (item) => item.id === (chainId || CHAINS[site!.chain].id)
       )!
     );
+    const lastTimeGas = await wallet.getLastTimeGasSelection(
+      chainId || CHAINS[site!.chain].id
+    );
+    const chain = Object.keys(CHAINS)
+      .map((key) => CHAINS[key])
+      .find((item) => item.id === chainId);
+    const gas = await wallet.openapi.gasMarket(
+      chain?.serverId || CHAINS[site!.chain].serverId
+    );
+    let lastSelected = 0;
+    if (isSpeedUp || isCancel) {
+      lastSelected = -1;
+    } else if (
+      lastTimeGas?.lastTimeSelect &&
+      lastTimeGas?.lastTimeSelect === 'gasLevel'
+    ) {
+      lastSelected = gas.find((item) => item.level === lastTimeGas?.gasLevel)
+        ?.price;
+    } else if (
+      lastTimeGas?.lastTimeSelect &&
+      lastTimeGas?.lastTimeSelect === 'gasPrice'
+    ) {
+      lastSelected = lastTimeGas?.gasPrice;
+    }
+    let price = 0;
+    if (lastSelected <= 0 || lastSelected === undefined) {
+      if (tx.gasPrice) {
+        price = parseInt(tx.gasPrice);
+      } else {
+        price = gas.find((item) => item.level === 'fast').price;
+      }
+    } else {
+      price = lastSelected;
+    }
     setTx({
       ...tx,
       chainId: chainId || CHAINS[site!.chain].id,
+      gasPrice: intToHex(price),
     });
     setInited(true);
   };
@@ -451,7 +499,7 @@ const SignTx = ({ params, origin }) => {
   useEffect(() => {
     if (!inited) return;
 
-    if (!tx.gasPrice) {
+    if (!tx.gasPrice && chainId) {
       // use minimum gas as default gas if dapp not set gasPrice
       getDefaultGas();
       return;
@@ -489,6 +537,7 @@ const SignTx = ({ params, origin }) => {
               isFristLoad={isFristLoad}
               tx={tx}
               gasLimit={gasLimit}
+              noUpdate={isCancel || isSpeedUp}
               gas={{
                 ...(txDetail
                   ? txDetail.gas

@@ -63,6 +63,7 @@ export interface DisplayedKeryring {
     brandName: string;
     type?: string;
     keyring?: DisplayKeyring;
+    alianName?: string;
   }[];
   keyring: DisplayKeyring;
 }
@@ -816,6 +817,8 @@ class KeyringService extends EventEmitter {
   getKeyringForAccount(
     address: string,
     type?: string,
+    start?: number,
+    end?: number,
     includeWatchKeyring = true
   ): Promise<any> {
     const hexed = normalizeAddress(address).toLowerCase();

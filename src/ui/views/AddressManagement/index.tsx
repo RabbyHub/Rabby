@@ -25,6 +25,7 @@ const AddressManagement = () => {
   const wallet = useWallet();
   const { t } = useTranslation();
   const [accounts, setAccounts] = useState<DisplayedKeryring[]>([]);
+  const [alianNames, setAlianNames] = useState<[]>([]);
   const [noAccount, setNoAccount] = useState(false);
   const [hiddenAddresses, setHiddenAddresses] = useState<
     { type: string; address: string }[]
@@ -50,8 +51,10 @@ const AddressManagement = () => {
 
   const getAllKeyrings = async () => {
     const _accounts = await wallet.getAllClassAccounts();
+    const allAlianNames = await wallet.getAllAlianName();
 
     setAccounts(_accounts);
+    setAlianNames(allAlianNames);
   };
 
   const handleViewMnemonics = async () => {
@@ -254,6 +257,7 @@ const AddressManagement = () => {
             ActionButton={AddressActionButton}
             hiddenAddresses={hiddenAddresses}
             onShowMnemonics={handleViewMnemonics}
+            alianNames={alianNames}
           />
           <StrayFooterNav
             hasDivider
@@ -262,7 +266,9 @@ const AddressManagement = () => {
             }}
             NextButtonContent={
               <div className="flex items-center h-full justify-center text-15">
-                <SvgIconPlusPrimary className="icon icon-add text-white stroke-current fill-current mr-6" />
+                <SvgIconPlusPrimary
+                  style={{ fontSize: '16px', color: '#8697FF' }}
+                />
                 {t('Add Address')}
               </div>
             }

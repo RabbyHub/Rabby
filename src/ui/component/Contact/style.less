@@ -1,12 +1,29 @@
 .edit-contact-modal {
   .address-viewer-text.normal {
-    color: #5A6066;
+    color: #5a6066;
     font-size: 14px;
     line-height: 16px;
+  }
+  .ant-modal-content {
+    border-radius: 6px;
+    overflow: hidden;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    left: 0;
+    height: 215px;
+    background: #ffffff;
+    box-shadow: 0px -12px 20px rgba(19, 20, 26, 0.04);
+    border-radius: 16px 16px 0px 0px;
+  }
+  .ant-modal-header {
+    background: #ffffff;
+    border-bottom: 0;
   }
   .ant-input-affix-wrapper {
     padding: 15px 16px;
     border-radius: 6px;
+    background: #F5F6FA;
     &::before {
       display: none;
     }
@@ -17,8 +34,9 @@
     line-height: 18px;
     color: #161819;
     border-radius: 0;
+    background: #F5F6FA;
   }
-  
+
   .remove-btn {
     display: flex;
     justify-content: center;
@@ -39,10 +57,54 @@
     }
   }
 }
-
+.edit-contact-modal-with-remove {
+  .edit-contact-modal;
+  .ant-modal-content {
+    border-radius: 6px;
+    overflow: hidden;
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    left: 0;
+    height: 245px;
+    background: #ffffff;
+    box-shadow: 0px -12px 20px rgba(19, 20, 26, 0.04);
+    border-radius: 16px 16px 0px 0px;
+  }
+}
 .list-contact-modal {
+  .ant-modal-close {
+    right: 16px;
+    top: 16px;
+    .ant-modal-close-x {
+      width: 15px;
+      height: 15px;
+      margin-top: 15px !important;
+    }
+  }
   .ant-modal-body {
     height: 431px;
+    padding: 16px 16px 20px;
+    .ant-tabs-nav {
+      position: fixed;
+      height: 40px;
+      z-index: 10;
+    }
+    .ant-tabs-nav-list {
+      .ant-tabs-tab-btn {
+        font-size: 15px;
+        font-weight: 500;
+      }
+    }
+
+    .ant-tabs-content-holder {
+      flex: auto;
+      min-width: 0;
+      min-height: 0;
+      max-height: 350px;
+      margin-top: 60px;
+      overflow-y: auto;
+    }
   }
   .no-contact {
     margin-top: 96px;
@@ -51,8 +113,13 @@
       margin: 0 auto 32px auto;
     }
   }
+
   .contact-info {
     p {
+      max-width: 190px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
       &:nth-child(1) {
         font-weight: 500;
         font-size: 15px;

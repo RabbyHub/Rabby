@@ -37,11 +37,16 @@ const ImportWatchAddress = () => {
   const [run, loading] = useWalletRequest(wallet.importWatchAddress, {
     onSuccess(accounts) {
       setDisableKeydown(false);
+      const successShowAccounts = accounts.map((item, index) => {
+        return { ...item, index: index + 1 };
+      });
       history.replace({
         pathname: '/popup/import/success',
         state: {
-          accounts,
+          accounts: successShowAccounts,
           title: t('Imported successfully'),
+          editing: true,
+          importedAccount: true,
         },
       });
     },

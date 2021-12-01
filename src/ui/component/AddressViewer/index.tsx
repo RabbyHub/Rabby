@@ -9,7 +9,9 @@ interface AddressViewProps {
   ellipsis?: boolean;
   showArrow?: boolean;
   className?: string;
-  brandName?: string;
+  showImportIcon?: boolean;
+  index?: number;
+  showIndex?: boolean;
 }
 
 export default ({
@@ -18,21 +20,17 @@ export default ({
   ellipsis = true,
   showArrow = true,
   className = 'normal',
-  brandName = '',
+  index = -1,
+  showIndex = false,
 }: AddressViewProps) => {
   return (
     <div
-      className="flex flex-col items-center"
+      className="flex items-center"
       onClick={onClick}
       style={{ cursor: onClick ? 'pointer' : 'inherit' }}
     >
-      {brandName && (
-        <div className="text-13 self-start text-white">{brandName}</div>
-      )}
-      <div
-        className={cx('address-viewer-text text-12 opacity-60', className)}
-        title={address}
-      >
+      <div className={cx('address-viewer-text', className)} title={address}>
+        {showIndex && index > 0 && <div className="number-index">{index}</div>}
         {ellipsis ? `${address.slice(0, 6)}...${address.slice(-4)}` : address}
       </div>
       {showArrow && (

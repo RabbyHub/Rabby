@@ -230,6 +230,10 @@
   "Select__the__addresses__you__want__to__import": {
     "message": "Select the addresses you want to import"
   },
+  "Select__the__addresses__you__to__view__in__Rabby": {
+    "message": "Select the addresses to view in Rabby"
+  },
+  
   "Load__More": {
     "message": "Load More..."
   },
@@ -944,5 +948,17 @@
   },
   "Disconnect": {
     "message": "Disconnect"
+  },
+  "My__accounts": {
+    "message": "My accounts"
+  },
+  "No__other__address": {
+    "message": "No other address"
+  },
+  "Start__from__address": {
+    "message": "Start from address"
+  },
+  "addresses__selected": {
+    "message": "addresses selected"
   }
 }

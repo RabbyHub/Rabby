@@ -639,6 +639,7 @@
     flex-direction: column;
     align-items: center;
     margin: 0 4px;
+    border: 1px solid transparent;
     &.active {
       background: rgba(134, 151, 255, 0.1);
       border: 1px solid #8697ff;
@@ -937,6 +938,18 @@
       width: 20px;
       height: 20px;
       margin-right: 8px;
+    }
+    .send-text{
+      font-size: 13px;
+      color: #8697FF;
+      margin-bottom: 2px;
+      max-width: 180px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .send-viewer {
+      color: #8697ff;
     }
     .amount {
       flex: 1;

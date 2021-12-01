@@ -1,13 +1,20 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import { useTranslation, Trans } from 'react-i18next';
+import { sortBy } from 'lodash';
 import { AddressList, StrayPageWithButton } from 'ui/component';
 import { getUiType } from 'ui/utils';
 import { IconImportSuccess } from 'ui/assets';
 import { Account } from 'background/service/preference';
 import SuccessLogo from 'ui/assets/success-logo.svg';
 import clsx from 'clsx';
-import { KEYRING_ICONS, WALLET_BRAND_CONTENT } from 'consts';
+import {
+  KEYRING_ICONS,
+  WALLET_BRAND_CONTENT,
+  BRAND_ALIAN_TYPE_TEXT,
+} from 'consts';
+import './index.less';
+import wallet from '@/background/controller/wallet';
 const { AddressItem } = AddressList;
 
 const ImportSuccess = ({ isPopup = false }: { isPopup?: boolean }) => {
@@ -18,15 +25,22 @@ const ImportSuccess = ({ isPopup = false }: { isPopup?: boolean }) => {
     title: string;
     brand?: string;
     image?: string;
+    editing?: boolean;
+    showImportIcon?: boolean;
+    isMnemonics?: boolean;
+    importedLength?: number;
   }>();
   const { t } = useTranslation();
   const {
     accounts,
     hasDivider = true,
     title = t('Successfully imported'),
+    editing = false,
+    showImportIcon = false,
+    isMnemonics = false,
+    importedLength = 0,
   } = state;
-
-  const handleNextClick = () => {
+  const handleNextClick = async () => {
     if (getUiType().isTab) {
       window.close();
 
@@ -37,7 +51,6 @@ const ImportSuccess = ({ isPopup = false }: { isPopup?: boolean }) => {
   const importedIcon =
     KEYRING_ICONS[accounts[0].type] ||
     WALLET_BRAND_CONTENT[accounts[0].brandName]?.image;
-
   return (
     <StrayPageWithButton
       hasDivider={hasDivider}
@@ -90,17 +103,23 @@ const ImportSuccess = ({ isPopup = false }: { isPopup?: boolean }) => {
           </>
         )}
         <div
-          className={clsx('lg:w-[460px] lg:h-[200px] sm:pt-20', {
-            'overflow-auto': !isPopup,
-          })}
+          className={clsx('lg:w-[460px] lg:h-[200px] sm:pt-20 success-import')}
         >
-          {accounts.map((account) => (
+          {sortBy(accounts, (item) => item?.index).map((account, index) => (
             <AddressItem
-              className="mb-12 rounded bg-white py-12 pl-16"
+              className="mb-12 rounded bg-white py-12 pl-16 h-[52px] flex"
               key={account.address}
               account={account}
               showAssets
               icon={importedIcon}
+              showImportIcon={showImportIcon}
+              editing={editing}
+              index={index}
+              showIndex={!editing}
+              importedAccount
+              isMnemonics={isMnemonics}
+              currentImportLength={accounts.length}
+              importedLength={importedLength}
             />
           ))}
         </div>

@@ -230,6 +230,9 @@
   "Select__the__addresses__you__want__to__import": {
     "message": "选择想要导入的地址"
   },
+  "Select__the__addresses__you__to__view__in__Rabby": {
+    "message": "选择地址并在Rabby插件中查看"
+  },
   "Load__More": {
     "message": "加载更多..."
   },
@@ -941,5 +944,17 @@
   },
   "Disconnect": {
     "message": "断开连接"
+  },
+  "My__accounts": {
+    "message": "我的账户"
+  },
+  "No__other__address": {
+    "message": "没有其他地址"
+  },
+  "Start__from__address": {
+    "message": "选择开始地址"
+  },
+  "addresses__selected": {
+    "message": "个地址已选择"
   }
 }

@@ -17,6 +17,7 @@
       }
       .icon-copy,
       .icon-qrcode {
+        cursor: pointer;
         width: 18px;
         height: 18px;
         circle {
@@ -29,6 +30,7 @@
         }
       }
       .icon-copy {
+        cursor: pointer;
         margin-left: 13px;
         path.copy_svg__checked {
           transform: scale(0);
@@ -41,6 +43,7 @@
           transition: transform 0.2s;
         }
         &.success {
+          z-index: 10;
           path.copy_svg__copy {
             transform: scale(0);
           }
@@ -58,11 +61,23 @@
         margin-right: 4px;
       }
       .icon-settings {
+        cursor: pointer;
         transition: transform 0.2s;
         transform: rotate(0deg);
         &:hover {
           transform: rotate(120deg);
         }
+      }
+    }
+    .header-wrapper {
+      background: rgba(255, 255, 255, 0.12);
+      backdrop-filter: blur(40px);
+      min-width: 188px;
+      padding: 6px 8px;
+      border-radius: 6px;
+      span {
+        display: flex;
+        align-items: center;
       }
     }
     .assets {
@@ -209,7 +224,9 @@
     }
   }
 }
-
+.copy-icon {
+  cursor: pointer;
+}
 .switch-address-modal {
   .ant-modal-close {
     right: 16px;
@@ -307,7 +324,154 @@
     }
   }
 }
+.address-popover {
+  cursor: pointer;
+  width: 344px;
+  height: 200px;
+  left: 28px !important;
+  z-index: 2 !important;
+  .brand-name {
+    font-size: 20px;
+    color: #13141a;
+    font-weight: 500;
+    margin: 2px 7px 0 6px;
+    max-width: 200px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    .ant-input {
+      width: 102px;
+      height: 24px;
+      background: #f5f6fa;
+      border: 1px solid #e5e9ef;
+      box-sizing: border-box;
+      border-radius: 2px;
+    }
+  }
+  .edit-name {
+    cursor: pointer;
+    width: 11px;
+    height: 11px;
+    margin-left: 7px;
+  }
+  .qrcode-container {
+    width: 100px;
+    height: 100px;
+    margin: 14px 0 16px 0;
+    border: 1px solid #d8dfeb;
+    box-sizing: border-box;
+    border-radius: 8px;
+    padding: 6px 4px 4px 6px;
+  }
+}
+.dashboard-name {
+  max-width: 150px;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+.switch-popover {
+  width: 200px;
+  max-height: 308px;
+  left: 28px !important;
+  .ant-popover-arrow {
+    display: none;
+  }
+  .address-item {
+    cursor: pointer;
+    box-sizing: border-box;
+    border-radius: 4px;
+    width: 200px;
+    height: 54px;
+    padding-left: 15px;
+    border: 1px solid transparent;
+    transition: background-color 0.3s;
+    .click-name {
+      max-width: 150px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    &:hover {
+      background-color: rgba(134, 151, 255, 0.1);
+      border: 1px solid #8697ff;
+      border-radius: 4px;
+    }
+    &:nth-last-child(1)::after {
+      border-bottom: 0;
+    }
+  }
+  .address-item::after {
+    content: '';
+    position: absolute;
+    left: 40px;
+    right: 14px;
+    bottom: 0;
+    height: 1px;
+    width: 146px;
+    border-bottom: 1px solid #e5e9ef;
 
+  }
+  .ant-popover-inner-content {
+    padding: 0 !important;
+    background: #ffffff;
+    box-shadow: 0px 12px 20px rgba(0, 0, 0, 0.12);
+    border-radius: 6px;
+    .no-other-address {
+      height: 62px;
+      width: 200px;
+      padding: 24px 52px 22px 40px;
+      font-size: 14px;
+      border-radius: 6px;
+      text-align: center;
+      color: #707280;
+    }
+    .pop-add-address {
+      cursor: pointer;
+      width: 200px;
+      height: 36px;
+      font-size: 12px;
+      text-align: center;
+      background: #ffffff;
+      border-radius: 0px 0px 6px 6px;
+      border-top: 1px solid #e5e9ef;
+      padding-left: 15px;
+      color: #8697ff;
+      &:hover {
+        background-color: rgba(134, 151, 255, 0.1);
+      }
+      img {
+        width: 11px;
+        height: 11px;
+        margin-left: 4px;
+      }
+      p{
+        margin-left:15px;
+        margin-bottom: 0;
+        line-height: 14px;
+      }
+    }
+  }
+  .brand-name {
+    font-size: 20px;
+    color: #13141a;
+    margin: 2px 7px 0 6px;
+  }
+  .edit-name {
+    width: 11px;
+    height: 11px;
+    margin-left: 7px;
+  }
+  .qrcode-container {
+    width: 100px;
+    height: 100px;
+    margin: 14px 0 16px 0;
+    border: 1px solid #d8dfeb;
+    box-sizing: border-box;
+    border-radius: 8px;
+    padding: 6px 4px 4px 6px;
+  }
+}
 .balance-popover {
   width: 360px;
   left: 50% !important;
@@ -438,7 +602,6 @@
     padding-bottom: 20px;
   }
 }
-
 .first-notice {
   .ant-modal-header {
     background: #ffffff;

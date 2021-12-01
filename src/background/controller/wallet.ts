@@ -20,7 +20,13 @@ import { CacheState } from 'background/service/pageStateCache';
 import i18n from 'background/service/i18n';
 import { KEYRING_CLASS, DisplayedKeryring } from 'background/service/keyring';
 import BaseController from './base';
-import { CHAINS_ENUM, CHAINS, INTERNAL_REQUEST_ORIGIN, EVENTS } from 'consts';
+import {
+  CHAINS_ENUM,
+  CHAINS,
+  INTERNAL_REQUEST_ORIGIN,
+  EVENTS,
+  BRAND_ALIAN_TYPE_TEXT,
+} from 'consts';
 import { Account, ChainGas } from '../service/preference';
 import { ConnectedSite } from '../service/permission';
 import { ExplainTxResponse, TokenItem } from '../service/openapi';
@@ -29,6 +35,7 @@ import provider from './provider';
 import WalletConnectKeyring from '@rabby-wallet/eth-walletconnect-keyring';
 import eventBus from '@/eventBus';
 import { setPageStateCacheWhenPopupClose } from 'background/utils';
+import { groupBy } from 'lodash';
 
 const stashKeyrings: Record<string, any> = {};
 
@@ -55,9 +62,67 @@ export class WalletController extends BaseController {
   getApproval = notificationService.getApproval;
   resolveApproval = notificationService.resolveApproval;
   rejectApproval = notificationService.rejectApproval;
-
   unlock = async (password: string) => {
     await keyringService.submitPassword(password);
+    const contacts = await this.listContact();
+    const needInitAlianNames = await preferenceService.getInitAlianNameStatus();
+    const accounts = await keyringService.getAllTypedAccounts();
+    const isNeedSyncContact = await preferenceService.isNeedSyncContact();
+    const WalletGroup = accounts.find((item) => item.type === 'WalletConnect');
+    let WalletConnectList;
+    if (WalletGroup && WalletGroup?.accounts?.length > 0) {
+      WalletConnectList = groupBy(WalletGroup.accounts, 'brandName');
+    }
+    if (!needInitAlianNames && accounts.length > 0) {
+      await preferenceService.changeInitAlianNameStatus();
+      const catergoryGroupAccount = accounts.map((item) => ({
+        type: item.type,
+        accounts: item.accounts,
+      }));
+      if (WalletConnectList) {
+        Object.keys(WalletConnectList).map((key) => {
+          WalletConnectList[key].map((acc, index) => {
+            this.updateAlianName(
+              acc?.address,
+              `${acc?.brandName}  ${index + 1}`
+            );
+          });
+        });
+      }
+      const catergories = groupBy(catergoryGroupAccount, 'type');
+      const result = Object.keys(catergories)
+        .map((key) =>
+          catergories[key].map((item) =>
+            item.accounts.map((acc) => ({
+              address: acc.address,
+              type: key,
+            }))
+          )
+        )
+        .map((item) => item.flat(1));
+      result.map((group) =>
+        group.map((acc, index) => {
+          if (acc.type !== 'WalletConnect') {
+            this.updateAlianName(
+              acc?.address,
+              `${BRAND_ALIAN_TYPE_TEXT[acc?.type]} ${index + 1}`
+            );
+          }
+        })
+      );
+    }
+    if (isNeedSyncContact && contacts.length !== 0 && accounts.length !== 0) {
+      await preferenceService.changeSyncContact();
+      const allAccounts = accounts.map((item) => item.accounts).flat();
+      const sameAddressList = contacts.filter((item) =>
+        allAccounts.find((contact) => contact.address === item.address)
+      );
+      if (sameAddressList.length > 0) {
+        await sameAddressList.map((item) =>
+          this.updateAlianName(item.address, item.name)
+        );
+      }
+    }
     sessionService.broadcastEvent('unlock');
   };
   isUnlocked = () => keyringService.memStore.getState().isUnlocked;
@@ -665,6 +730,14 @@ export class WalletController extends BaseController {
   updateHighlightWalletList = (list) => {
     return preferenceService.updateWalletSavedList(list);
   };
+
+  getAlianName = (address: string) => preferenceService.getAlianName(address);
+  updateAlianName = (address: string, name: string) =>
+    preferenceService.updateAlianName(address, name);
+  getAllAlianName = () => preferenceService.getAllAlianName();
+  getInitAlianNameStatus = () => preferenceService.getInitAlianNameStatus();
+  updateInitAlianNameStatus = () =>
+    preferenceService.changeInitAlianNameStatus();
   getLastTimeGasSelection = (chainId) => {
     return preferenceService.getLastTimeGasSelection(chainId);
   };
