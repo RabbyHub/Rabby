@@ -195,12 +195,14 @@ const AddressItem = memo(
         );
       };
       const changeName = async () => {
-        const alianName = `${
-          BRAND_ALIAN_TYPE_TEXT[account?.brandName || account?.type] ||
-          account?.brandName
-        } ${importedLength + (index || 0) + 1}`;
-        setAlianName(alianName);
-        updateAlianName(alianName);
+        if (!alianName) {
+          const alianName = `${
+            BRAND_ALIAN_TYPE_TEXT[account?.brandName || account?.type] ||
+            account?.brandName
+          } ${importedLength + (index || 0) + 1}`;
+          setAlianName(alianName);
+          updateAlianName(alianName);
+        }
       };
       useEffect(() => {
         if (importedAccount) {
