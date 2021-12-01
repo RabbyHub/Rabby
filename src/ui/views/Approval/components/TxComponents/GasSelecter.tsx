@@ -6,8 +6,8 @@ import { useTranslation, Trans } from 'react-i18next';
 import { useDebounce } from 'react-use';
 import { CHAINS, GAS_LEVEL_TEXT, MINIMUM_GAS_LIMIT } from 'consts';
 import { GasResult, Tx, GasLevel } from 'background/service/openapi';
-import { useWallet } from 'ui/utils';
 import { Modal } from 'ui/component';
+import { formatTokenAmount } from 'ui/utils/number';
 import IconSetting from 'ui/assets/setting-gray.svg';
 import clsx from 'clsx';
 
@@ -46,16 +46,15 @@ const GasSelector = ({
 }: GasSelectorProps) => {
   const { t } = useTranslation();
   const customerInputRef = useRef<Input>(null);
-  const [advanceExpanded, setAdvanceExpanded] = useState(true);
   const [afterGasLimit, setGasLimit] = useState<string | number>(
     Number(gasLimit)
   );
   const [modalVisible, setModalVisible] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
   const [customGas, setCustomGas] = useState<string | number>(
     Number(tx.gasPrice) / 1e9
   );
   const [customNonce, setCustomNonce] = useState(Number(nonce));
+  const [isFirstTimeLoad, setIsFirstTimeLoad] = useState(true);
   const [errMsg, setErrMsg] = useState(null);
   const [validateStatus, setValidateStatus] = useState<
     Record<string, { status: ValidateStatus; message: string | null }>
@@ -69,8 +68,6 @@ const GasSelector = ({
       message: null,
     },
   });
-  console.log('selectedGas', selectedGas);
-  // const [selectedGas, setSelectGas] = useState<GasLevel | null>(null);
   const chain = Object.values(CHAINS).find((item) => item.id === chainId)!;
 
   const handleSetRecommendTimes = () => {
@@ -168,33 +165,23 @@ const GasSelector = ({
 
   const panelSelection = (e, gas: GasLevel) => {
     e.stopPropagation();
-    setIsLoading(true);
     let target = gas;
+
+    if (gas.level === selectedGas?.level) return;
+
     if (gas.level === 'custom') {
-      if (selectedGas && selectedGas.level !== 'custom') {
+      if (selectedGas && selectedGas.level !== 'custom' && !gas.price) {
         target =
           gasList.find((item) => item.level === selectedGas.level) || gas;
       }
-      setCustomGas(
-        target.level === 'custom'
-          ? Number(target.price)
-          : Number(target.price) / 1e9
-      );
-      // setSelectGas({
-      //   level: 'custom',
-      //   price: Number(target.price) / 1e9,
-      //   front_tx_count: 0,
-      //   estimated_seconds: 0,
-      //   base_fee: gasList[0].base_fee,
-      // });
+      setCustomGas(Number(target.price) / 1e9);
       onChange({
         ...target,
         gasLimit: Number(afterGasLimit),
         nonce: Number(customNonce || nonce),
-        level: target?.level,
+        level: 'custom',
       });
     } else {
-      // setSelectGas(gas);
       onChange({
         ...gas,
         gasLimit: Number(afterGasLimit),
@@ -202,10 +189,8 @@ const GasSelector = ({
         level: gas?.level,
       });
     }
-    setIsLoading(false);
   };
   const customGasConfirm = (e) => {
-    setIsLoading(true);
     const gas = {
       level: 'custom',
       price: Number(e?.target?.value),
@@ -220,11 +205,10 @@ const GasSelector = ({
       nonce: Number(customNonce || nonce),
       level: gas.level,
     });
-    setIsLoading(false);
   };
+
   useDebounce(
     () => {
-      // loadGasMarket();
       isReady && handleConfirmGas();
     },
     500,
@@ -234,10 +218,23 @@ const GasSelector = ({
   useEffect(() => {
     setGasLimit(Number(gasLimit));
   }, [gasLimit]);
+
   useEffect(() => {
     formValidator();
   }, [afterGasLimit, selectedGas, gasList]);
-  if (!isReady)
+
+  useEffect(() => {
+    if (selectedGas?.level !== 'custom') return;
+    setCustomGas(selectedGas.price / 1e9);
+  }, [selectedGas]);
+
+  useEffect(() => {
+    if (isReady && isFirstTimeLoad) {
+      setIsFirstTimeLoad(false);
+    }
+  }, [isReady]);
+
+  if (!isReady && isFirstTimeLoad)
     return (
       <>
         <p className="section-title">{t('gasCostTitle')}</p>
@@ -269,22 +266,25 @@ const GasSelector = ({
   return (
     <>
       <p className="section-title">{t('gasCostTitle')}</p>
-      <div
-        className="gas-selector gray-section-block"
-        onClick={handleShowSelectModal}
-      >
+      <div className="gas-selector gray-section-block">
         <div className="top">
           <p className="usmoney">
             ≈ ${gas.estimated_gas_cost_usd_value.toFixed(2)}
           </p>
           <p className="gasmoney">
-            {`${gas.estimated_gas_cost_value} ${chain.nativeTokenSymbol}`}
+            {`${formatTokenAmount(gas.estimated_gas_cost_value)} ${
+              chain.nativeTokenSymbol
+            }`}
           </p>
           <div className="right">
+            {errMsg && (
+              <p className="text-12 text-red-light mb-0 mr-8">{errMsg}</p>
+            )}
             <img
               src={IconSetting}
               alt="setting"
               className="icon icon-setting"
+              onClick={handleShowSelectModal}
             />
           </div>
         </div>
@@ -332,16 +332,11 @@ const GasSelector = ({
         destroyOnClose
       >
         <Form onFinish={handleConfirmGas}>
-          {errMsg && <p className="mt-20 text-red-light mb-0">{errMsg}</p>}
           <div className="gas-limit">
             <p className="section-title flex">
               <span className="flex-1">{t('GasLimit')}</span>
             </p>
-            <div
-              className={clsx('gas-limit-panel-wrapper', {
-                expanded: advanceExpanded,
-              })}
-            >
+            <div className="expanded gas-limit-panel-wrapper">
               <Form.Item
                 className="gas-limit-panel mb-0"
                 validateStatus={validateStatus.gasLimit.status}
@@ -397,8 +392,7 @@ const GasSelector = ({
               size="large"
               onClick={handleModalConfirmGas}
               disabled={
-                !selectedGas ||
-                isLoading ||
+                !isReady ||
                 validateStatus.customGas.status === 'error' ||
                 validateStatus.gasLimit.status === 'error'
               }

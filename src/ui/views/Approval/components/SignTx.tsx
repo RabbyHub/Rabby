@@ -135,7 +135,6 @@ const SignTx = ({ params, origin }) => {
   const [isReady, setIsReady] = useState(false);
   const [nonceChanged, setNonceChanged] = useState(false);
   const [isWatch, setIsWatch] = useState(false);
-  const [selectedlevel, setSelectedLevel] = useState('custom');
   const [txDetail, setTxDetail] = useState<ExplainTxResponse | null>({
     balance_change: {
       err_msg: '',
@@ -381,6 +380,7 @@ const SignTx = ({ params, origin }) => {
   };
 
   const handleAllow = async (doubleCheck = false) => {
+    if (!selectedGas) return;
     if (!doubleCheck && securityCheckStatus !== 'pass') {
       setShowSecurityCheckDetail(true);
       return;
@@ -403,15 +403,15 @@ const SignTx = ({ params, origin }) => {
         // NOTHING
       }
     }
-    const selectedGas: ChainGas = {
-      lastTimeSelect: selectedlevel === 'custom' ? 'gasPrice' : 'gasLevel',
+    const selected: ChainGas = {
+      lastTimeSelect: selectedGas.level === 'custom' ? 'gasPrice' : 'gasLevel',
     };
-    if (selectedlevel === 'custom') {
-      selectedGas.gasPrice = parseInt(tx?.gasPrice);
+    if (selectedGas.level === 'custom') {
+      selected.gasPrice = parseInt(tx?.gasPrice);
     } else {
-      selectedGas.gasLevel = selectedlevel;
+      selected.gasLevel = selectedGas.level;
     }
-    await wallet.updateLastTimeGasSelection(chainId, selectedGas);
+    await wallet.updateLastTimeGasSelection(chainId, selected);
     if (currentAccount?.type && WaitingSignComponent[currentAccount.type]) {
       resolveApproval({
         ...tx,
@@ -444,6 +444,14 @@ const SignTx = ({ params, origin }) => {
       base_fee: gas.base_fee,
       price: gas.price,
     });
+    if (gas.level === 'custom') {
+      setGasList(
+        gasList.map((item) => {
+          if (item.level === 'custom') return gas;
+          return item;
+        })
+      );
+    }
     const beforeNonce = realNonce || tx.nonce;
     const afterNonce = intToHex(gas.nonce);
     setTx({
@@ -498,15 +506,15 @@ const SignTx = ({ params, origin }) => {
         (item) => item.id === (chainId || CHAINS[site!.chain].id)
       )!
     );
-    const lastTimeGas: ChainGas = await wallet.getLastTimeGasSelection(
+    const lastTimeGas: ChainGas | null = await wallet.getLastTimeGasSelection(
       chainId || CHAINS[site!.chain].id
     );
     const chain = Object.keys(CHAINS)
       .map((key) => CHAINS[key])
-      .find((item) => item.id === chainId)!;
+      .find((item) => item.id === (chainId || CHAINS[site!.chain].id))!;
     let customGasPrice = 0;
     console.log('lastTimeGas', lastTimeGas);
-    if (lastTimeGas.lastTimeSelect === 'gasPrice' && lastTimeGas.gasPrice) {
+    if (lastTimeGas?.lastTimeSelect === 'gasPrice' && lastTimeGas.gasPrice) {
       // use cached gasPrice if exist
       customGasPrice = lastTimeGas.gasPrice;
     }
@@ -530,7 +538,6 @@ const SignTx = ({ params, origin }) => {
       // no cache, use the fast level in gasMarket
       gas = gasList.find((item) => item.level === 'fast')!;
     }
-    console.log('gas', gas);
     setSelectedGas(gas);
     setTx({
       ...tx,
@@ -650,7 +657,10 @@ const SignTx = ({ params, origin }) => {
                         size="large"
                         className="w-[172px]"
                         onClick={() => handleAllow()}
-                        disabled={!isReady}
+                        disabled={
+                          !isReady ||
+                          (selectedGas ? selectedGas.price <= 0 : true)
+                        }
                       >
                         {securityCheckStatus === 'pass'
                           ? t('Sign')
@@ -711,7 +721,10 @@ const SignTx = ({ params, origin }) => {
                         type="primary"
                         size="large"
                         className="w-[172px]"
-                        disabled={!forceProcess}
+                        disabled={
+                          !forceProcess ||
+                          (selectedGas ? selectedGas.price <= 0 : true)
+                        }
                         onClick={() => handleAllow(true)}
                       >
                         {t('Sign')}
