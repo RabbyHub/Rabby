@@ -332,7 +332,7 @@ const SignTx = ({ params, origin }) => {
   const explain = async () => {
     const currentAccount = await wallet.getCurrentAccount();
     if (currentAccount.type === KEYRING_TYPE.WatchAddressKeyring) {
-      await setIsWatch(true);
+      setIsWatch(true);
     }
     try {
       setIsReady(false);
