@@ -81,7 +81,7 @@ const GasSelector = ({
     },
     {
       level: 'custom',
-      price: Number(tx.gasPrice),
+      price: Number(tx.gasPrice) / 1e9, // when level is custom this price is gwei, but when level is not custom, it's wei
       front_tx_count: 0,
       estimated_seconds: 0,
       base_fee: 0,
@@ -193,14 +193,16 @@ const GasSelector = ({
       });
     }
   };
+
   const handleModalConfirmGas = () => {
     handleConfirmGas();
     setModalVisible(false);
   };
+
   const handleCustomGasChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.stopPropagation();
     if (/^\d*(\.\d*)?$/.test(e.target.value)) {
-      setCustomGas(Number(e.target.value));
+      setCustomGas(e.target.value);
     }
   };
 
@@ -215,6 +217,7 @@ const GasSelector = ({
       setCustomNonce(Number(e.target.value));
     }
   };
+
   const getLastTimeSavedGas = async () => {
     const savedGas: ChainGas = await wallet.getLastTimeGasSelection(chainId);
     if (savedGas?.gasPrice) {
@@ -231,12 +234,12 @@ const GasSelector = ({
     ) {
       setSelectGas({
         level: 'custom',
-        price: savedGas?.gasPrice || 0,
+        price: (savedGas?.gasPrice || 0) / 1e9,
         front_tx_count: 0,
         estimated_seconds: 0,
         base_fee: gasList[0].base_fee,
       });
-      setCustomGas( (savedGas?.gasPrice && savedGas?.gasPrice / 1e9) || 0);
+      setCustomGas((savedGas?.gasPrice && savedGas?.gasPrice / 1e9) || 0);
     } else if (tx && tx.gasPrice) {
       setSelectGas({
         level: 'custom',
@@ -251,27 +254,40 @@ const GasSelector = ({
       setSelectGas(gas);
     }
   };
-  const panelSelection = async (e, gas: GasLevel) => {
+
+  const panelSelection = (e, gas: GasLevel) => {
     e.stopPropagation();
-    await setIsLoading(true);
+    setIsLoading(true);
+    let target = gas;
     if (gas.level === 'custom') {
-      await setCustomGas(Number(gas.price));
-      await setSelectGas({
+      if (selectedGas && selectedGas.level !== 'custom') {
+        target =
+          gasList.find((item) => item.level === selectedGas.level) || gas;
+      }
+      setCustomGas(
+        target.level === 'custom'
+          ? Number(target.price)
+          : Number(target.price) / 1e9
+      );
+      setSelectGas({
         level: 'custom',
-        price: Number(gas.price),
+        price: Number(target.price) / 1e9,
         front_tx_count: 0,
         estimated_seconds: 0,
         base_fee: gasList[0].base_fee,
       });
       onChange({
-        ...gas,
-        price: Number(gas.price) / 1e9,
+        ...target,
+        price:
+          target.level === 'custom'
+            ? Number(target.price) * 1e9
+            : Number(target.price),
         gasLimit: Number(afterGasLimit),
         nonce: Number(customNonce || nonce),
-        level: gas?.level,
+        level: target?.level,
       });
     } else {
-      await setSelectGas(gas);
+      setSelectGas(gas);
       onChange({
         ...gas,
         gasLimit: Number(afterGasLimit),
@@ -281,18 +297,24 @@ const GasSelector = ({
     }
     setIsLoading(false);
   };
-  const customGasConfirm = async (e) => {
-    await setIsLoading(true);
-    await setSelectGas({
+  const customGasConfirm = (e) => {
+    setIsLoading(true);
+    const gas = {
       level: 'custom',
-      price: Number(e?.target?.value) / 1e9,
+      price: Number(e?.target?.value),
       front_tx_count: 0,
       estimated_seconds: 0,
       base_fee: gasList[0].base_fee,
+    };
+    setSelectGas(gas);
+    onChange({
+      ...gas,
+      price: Number(gas.price) * 1e9,
+      gasLimit: Number(afterGasLimit),
+      nonce: Number(customNonce || nonce),
+      level: gas.level,
     });
-    await handleConfirmGas();
-
-    await setIsLoading(false);
+    setIsLoading(false);
   };
   useDebounce(
     () => {

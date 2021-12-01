@@ -373,10 +373,13 @@ const SignTx = ({ params, origin }) => {
       }
     }
     const selectedGas: ChainGas = {
-      gasPrice: selectedlevel === 'custom' ? parseInt(tx?.gasPrice) : null,
-      gasLevel: selectedlevel === 'custom' ? null : selectedlevel,
       lastTimeSelect: selectedlevel === 'custom' ? 'gasPrice' : 'gasLevel',
     };
+    if (selectedlevel === 'custom') {
+      selectedGas.gasPrice = parseInt(tx?.gasPrice);
+    } else {
+      selectedGas.gasLevel = selectedlevel;
+    }
     await wallet.updateLastTimeGasSelection(chainId, selectedGas);
     if (currentAccount?.type && WaitingSignComponent[currentAccount.type]) {
       resolveApproval({
