@@ -149,7 +149,9 @@ const AddressItem = memo(
       const { t } = useTranslation();
       const wallet = useWallet();
       const [startEdit, setStartEdit] = useState(false);
-      const [alianName, setAlianName] = useState<string>('');
+      const [alianName, setAlianName] = useState<string>(
+        account?.alianName || ''
+      );
       const isDisabled = hiddenAddresses.find(
         (item) => item.address === account.address && item.type === keyring.type
       );
@@ -192,10 +194,10 @@ const AddressItem = memo(
           alianName
         );
       };
-      const displayName = alianName || account?.alianName;
       const changeName = async () => {
         const alianName = `${
-          BRAND_ALIAN_TYPE_TEXT[account?.brandName] || account?.brandName
+          BRAND_ALIAN_TYPE_TEXT[account?.brandName || account?.type] ||
+          account?.brandName
         } ${importedLength + (index || 0) + 1}`;
         setAlianName(alianName);
         updateAlianName(alianName);
@@ -246,8 +248,8 @@ const AddressItem = memo(
                 <div className="brand-name flex">
                   {startEdit && editing ? (
                     <Input
-                      value={alianName || account?.alianName}
-                      defaultValue={alianName || account?.alianName}
+                      value={alianName}
+                      defaultValue={alianName}
                       onChange={handleAlianNameChange}
                       onPressEnter={alianNameConfirm}
                       autoFocus={startEdit}
@@ -255,7 +257,7 @@ const AddressItem = memo(
                       min={0}
                     />
                   ) : (
-                    <div className="display-name">{displayName}</div>
+                    <div className="display-name">{alianName}</div>
                   )}
                   {!startEdit && editing && (
                     <img
