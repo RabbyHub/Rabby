@@ -56,6 +56,7 @@ export interface AddressItemProps {
   importedAccount?: boolean;
   isMnemonics?: boolean;
   currentImportLength?: number;
+  importedLength?: number;
 }
 
 const formatChain = (item: ChainWithBalance): DisplayChainWithWhiteLogo => {
@@ -138,6 +139,7 @@ const AddressItem = memo(
         importedAccount = false,
         isMnemonics = false,
         currentImportLength = 1,
+        importedLength = 0,
       }: AddressItemProps,
       ref
     ) => {
@@ -148,7 +150,6 @@ const AddressItem = memo(
       const wallet = useWallet();
       const [startEdit, setStartEdit] = useState(false);
       const [alianName, setAlianName] = useState<string>('');
-      const [importedLength, setImportedLength] = useState(0);
       const isDisabled = hiddenAddresses.find(
         (item) => item.address === account.address && item.type === keyring.type
       );
@@ -192,35 +193,16 @@ const AddressItem = memo(
         );
       };
       const displayName = alianName || account?.alianName;
-      const getImportedLength = async () => {
-        const importedtypeKeyrings = await wallet.getTypedAccounts(
-          account?.type || account?.brandName
-        );
-        const isWalletConnection = account?.type === 'WalletConnect';
-        let allAccountsLength = 0;
-        if (importedtypeKeyrings.length > 0) {
-          if (isWalletConnection) {
-            const sameBrandList = importedtypeKeyrings[0].accounts.filter(
-              (acc) => acc.brandName === account.brandName
-            );
-            allAccountsLength += sameBrandList.length;
-          } else {
-            importedtypeKeyrings.map((item) => {
-              const length = item.accounts.length;
-              allAccountsLength += length;
-            });
-          }
-          setImportedLength(allAccountsLength - currentImportLength);
-        }
+      const changeName = async () => {
         const alianName = `${
           BRAND_ALIAN_TYPE_TEXT[account?.brandName] || account?.brandName
-        } ${allAccountsLength - currentImportLength + (index || 0) + 1}`;
+        } ${importedLength + (index || 0) + 1}`;
         setAlianName(alianName);
         updateAlianName(alianName);
       };
       useEffect(() => {
         if (importedAccount) {
-          getImportedLength();
+          changeName();
         }
       }, []);
       return (

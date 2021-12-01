@@ -162,7 +162,6 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
     if (keyring === HARDWARE_KEYRING_TYPES.Ledger.type && isWebUSB) {
       await wallet.requestKeyring(keyring, 'cleanUp', keyringId.current);
     }
-
     history.replace({
       pathname: isPopup ? '/popup/import/success' : '/import/success',
       state: {
@@ -175,12 +174,14 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
         editing: isPopup,
         showImportIcon: false,
         isMnemonics,
+        importedAccount: true,
+        importedLength: importedAccounts && importedAccounts?.length,
       },
     });
   };
 
   const startNumberConfirm = (e) => {
-    e.stopPropagation();
+    e.preventDefault();
     if (end > 1000) {
       setErrorMsg(t('Max 1000'));
     } else {
@@ -202,7 +203,6 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
   const handleLoadPage = async (page: number) => {
     await getAccounts(page);
   };
-
   return (
     <div className="select-address">
       <StrayPageWithButton

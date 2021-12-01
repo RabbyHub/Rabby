@@ -28,6 +28,7 @@ const ImportSuccess = ({ isPopup = false }: { isPopup?: boolean }) => {
     editing?: boolean;
     showImportIcon?: boolean;
     isMnemonics?: boolean;
+    importedLength?: number;
   }>();
   const { t } = useTranslation();
   const {
@@ -37,6 +38,7 @@ const ImportSuccess = ({ isPopup = false }: { isPopup?: boolean }) => {
     editing = false,
     showImportIcon = false,
     isMnemonics = false,
+    importedLength = 0,
   } = state;
   const handleNextClick = async () => {
     if (getUiType().isTab) {
@@ -117,6 +119,7 @@ const ImportSuccess = ({ isPopup = false }: { isPopup?: boolean }) => {
               importedAccount
               isMnemonics={isMnemonics}
               currentImportLength={accounts.length}
+              importedLength={importedLength}
             />
           ))}
         </div>
