@@ -179,9 +179,9 @@ const AddressItem = memo(
         if (!alianName) {
           return;
         }
+        setStartEdit(false);
         await updateAlianName(alianName);
         if (editing) {
-          setStartEdit(false);
           return;
         }
         setStartEdit(false);
@@ -246,14 +246,8 @@ const AddressItem = memo(
                 <div className="brand-name flex">
                   {startEdit && editing ? (
                     <Input
-                      value={
-                        startEdit
-                          ? alianName
-                          : account?.alianName || account?.brandName
-                      }
-                      defaultValue={
-                        alianName || account?.alianName || account?.brandName
-                      }
+                      value={alianName || account?.alianName}
+                      defaultValue={alianName || account?.alianName}
                       onChange={handleAlianNameChange}
                       onPressEnter={alianNameConfirm}
                       autoFocus={startEdit}
