@@ -10,7 +10,7 @@ import { useWallet } from 'ui/utils';
 import { Modal } from 'ui/component';
 import IconSetting from 'ui/assets/setting-gray.svg';
 import clsx from 'clsx';
-import { ChainGas } from 'background/service/preference';
+
 export interface GasSelectorResponse extends GasLevel {
   gasLimit: number;
   nonce: number;
@@ -26,8 +26,9 @@ interface GasSelectorProps {
   recommendGasLimit: number;
   nonce: string;
   disableNonce: boolean;
-  isFristLoad: boolean;
   noUpdate: boolean;
+  gasList: GasLevel[];
+  selectedGas: GasLevel | null;
 }
 
 const GasSelector = ({
@@ -40,10 +41,9 @@ const GasSelector = ({
   recommendGasLimit,
   nonce,
   disableNonce,
-  isFristLoad,
-  noUpdate,
+  gasList,
+  selectedGas,
 }: GasSelectorProps) => {
-  const wallet = useWallet();
   const { t } = useTranslation();
   const customerInputRef = useRef<Input>(null);
   const [advanceExpanded, setAdvanceExpanded] = useState(true);
@@ -57,36 +57,6 @@ const GasSelector = ({
   );
   const [customNonce, setCustomNonce] = useState(Number(nonce));
   const [errMsg, setErrMsg] = useState(null);
-  const [gasList, setGasList] = useState<GasLevel[]>([
-    {
-      level: 'slow',
-      front_tx_count: 0,
-      price: 0,
-      estimated_seconds: 0,
-      base_fee: 0,
-    },
-    {
-      level: 'normal',
-      front_tx_count: 0,
-      price: 0,
-      estimated_seconds: 0,
-      base_fee: 0,
-    },
-    {
-      level: 'fast',
-      front_tx_count: 0,
-      price: 0,
-      estimated_seconds: 0,
-      base_fee: 0,
-    },
-    {
-      level: 'custom',
-      price: Number(tx.gasPrice) / 1e9, // when level is custom this price is gwei, but when level is not custom, it's wei
-      front_tx_count: 0,
-      estimated_seconds: 0,
-      base_fee: 0,
-    },
-  ]);
   const [validateStatus, setValidateStatus] = useState<
     Record<string, { status: ValidateStatus; message: string | null }>
   >({
@@ -99,7 +69,8 @@ const GasSelector = ({
       message: null,
     },
   });
-  const [selectedGas, setSelectGas] = useState<GasLevel | null>(null);
+  console.log('selectedGas', selectedGas);
+  // const [selectedGas, setSelectGas] = useState<GasLevel | null>(null);
   const chain = Object.values(CHAINS).find((item) => item.id === chainId)!;
 
   const handleSetRecommendTimes = () => {
@@ -133,7 +104,7 @@ const GasSelector = ({
         },
       });
     }
-    if (selectedGas && selectedGas.price * 1e9 < gasList[0].base_fee) {
+    if (selectedGas && selectedGas.price < gasList[0].base_fee) {
       setErrMsg(t('Gas price too low'));
     } else {
       setErrMsg(null);
@@ -145,29 +116,6 @@ const GasSelector = ({
         setErrMsg(null);
       }
     }
-  };
-  const loadGasMarket = async () => {
-    const list = await wallet.openapi.gasMarket(
-      chain.serverId,
-      customGas && customGas > 0 ? Number(customGas) * 1e9 : undefined
-    );
-    setGasList(
-      list.map((item) =>
-        item.level === 'custom' ? { ...item, price: item.price / 1e9 } : item
-      )
-    );
-    if (noUpdate) {
-      setSelectGas({
-        level: 'custom',
-        price: gas?.estimated_gas_cost_usd_value,
-        front_tx_count: gas?.front_tx_count,
-        estimated_seconds: gas?.estimated_seconds,
-        base_fee: gasList[0].base_fee,
-      });
-    } else if (!selectedGas) {
-      await getLastTimeSavedGas();
-    }
-    setIsLoading(false);
   };
 
   const handleShowSelectModal = () => {
@@ -218,43 +166,6 @@ const GasSelector = ({
     }
   };
 
-  const getLastTimeSavedGas = async () => {
-    const savedGas: ChainGas = await wallet.getLastTimeGasSelection(chainId);
-    if (savedGas?.gasPrice) {
-      setCustomGas(Number(savedGas?.gasPrice) / 1e9);
-    }
-    if (savedGas?.lastTimeSelect && savedGas?.lastTimeSelect === 'gasLevel') {
-      const lastSelected = gasList.find(
-        (item) => item.level === savedGas?.gasLevel
-      );
-      lastSelected && setSelectGas(lastSelected);
-    } else if (
-      savedGas?.lastTimeSelect &&
-      savedGas?.lastTimeSelect === 'gasPrice'
-    ) {
-      setSelectGas({
-        level: 'custom',
-        price: (savedGas?.gasPrice || 0) / 1e9,
-        front_tx_count: 0,
-        estimated_seconds: 0,
-        base_fee: gasList[0].base_fee,
-      });
-      setCustomGas((savedGas?.gasPrice && savedGas?.gasPrice / 1e9) || 0);
-    } else if (tx && tx.gasPrice) {
-      setSelectGas({
-        level: 'custom',
-        price: parseInt(tx.gasPrice) / 1e9,
-        front_tx_count: gas?.front_tx_count,
-        estimated_seconds: gas?.estimated_seconds,
-        base_fee: gasList[0].base_fee,
-      });
-      setCustomGas(parseInt(tx.gasPrice) / 1e9);
-    } else if (gasList.length > 0) {
-      const gas = gasList.find((item) => item.level === 'fast') || null;
-      setSelectGas(gas);
-    }
-  };
-
   const panelSelection = (e, gas: GasLevel) => {
     e.stopPropagation();
     setIsLoading(true);
@@ -269,25 +180,21 @@ const GasSelector = ({
           ? Number(target.price)
           : Number(target.price) / 1e9
       );
-      setSelectGas({
-        level: 'custom',
-        price: Number(target.price) / 1e9,
-        front_tx_count: 0,
-        estimated_seconds: 0,
-        base_fee: gasList[0].base_fee,
-      });
+      // setSelectGas({
+      //   level: 'custom',
+      //   price: Number(target.price) / 1e9,
+      //   front_tx_count: 0,
+      //   estimated_seconds: 0,
+      //   base_fee: gasList[0].base_fee,
+      // });
       onChange({
         ...target,
-        price:
-          target.level === 'custom'
-            ? Number(target.price) * 1e9
-            : Number(target.price),
         gasLimit: Number(afterGasLimit),
         nonce: Number(customNonce || nonce),
         level: target?.level,
       });
     } else {
-      setSelectGas(gas);
+      // setSelectGas(gas);
       onChange({
         ...gas,
         gasLimit: Number(afterGasLimit),
@@ -306,10 +213,9 @@ const GasSelector = ({
       estimated_seconds: 0,
       base_fee: gasList[0].base_fee,
     };
-    setSelectGas(gas);
     onChange({
       ...gas,
-      price: Number(gas.price) * 1e9,
+      price: Number(gas.price),
       gasLimit: Number(afterGasLimit),
       nonce: Number(customNonce || nonce),
       level: gas.level,
@@ -318,8 +224,8 @@ const GasSelector = ({
   };
   useDebounce(
     () => {
-      loadGasMarket();
-      !isFristLoad && handleConfirmGas();
+      // loadGasMarket();
+      isReady && handleConfirmGas();
     },
     500,
     [customGas]
@@ -331,7 +237,7 @@ const GasSelector = ({
   useEffect(() => {
     formValidator();
   }, [afterGasLimit, selectedGas, gasList]);
-  if (!isReady && isFristLoad)
+  if (!isReady)
     return (
       <>
         <p className="section-title">{t('gasCostTitle')}</p>

@@ -20,6 +20,7 @@ import {
   SecurityCheckResponse,
   SecurityCheckDecision,
   Tx,
+  GasLevel,
 } from 'background/service/openapi';
 import { useWallet, useApproval } from 'ui/utils';
 import { ChainGas } from 'background/service/preference';
@@ -132,7 +133,6 @@ const TxTypeComponent = ({
 
 const SignTx = ({ params, origin }) => {
   const [isReady, setIsReady] = useState(false);
-  const [isFristLoad, setIsFristLoad] = useState(true);
   const [nonceChanged, setNonceChanged] = useState(false);
   const [isWatch, setIsWatch] = useState(false);
   const [selectedlevel, setSelectedLevel] = useState('custom');
@@ -203,6 +203,37 @@ const SignTx = ({ params, origin }) => {
     Object.values(CHAINS).find((item) => item.id === chainId)
   );
   const [inited, setInited] = useState(false);
+  const [selectedGas, setSelectedGas] = useState<GasLevel | null>(null);
+  const [gasList, setGasList] = useState<GasLevel[]>([
+    {
+      level: 'slow',
+      front_tx_count: 0,
+      price: 0,
+      estimated_seconds: 0,
+      base_fee: 0,
+    },
+    {
+      level: 'normal',
+      front_tx_count: 0,
+      price: 0,
+      estimated_seconds: 0,
+      base_fee: 0,
+    },
+    {
+      level: 'fast',
+      front_tx_count: 0,
+      price: 0,
+      estimated_seconds: 0,
+      base_fee: 0,
+    },
+    {
+      level: 'custom',
+      price: 0,
+      front_tx_count: 0,
+      estimated_seconds: 0,
+      base_fee: 0,
+    },
+  ]);
   const [, resolveApproval, rejectApproval] = useApproval();
   const wallet = useWallet();
 
@@ -406,8 +437,13 @@ const SignTx = ({ params, origin }) => {
     });
   };
   const handleGasChange = (gas: GasSelectorResponse) => {
-    setIsFristLoad(false);
-    setSelectedLevel(gas.level);
+    setSelectedGas({
+      level: gas.level,
+      front_tx_count: gas.front_tx_count,
+      estimated_seconds: gas.estimated_seconds,
+      base_fee: gas.base_fee,
+      price: gas.price,
+    });
     const beforeNonce = realNonce || tx.nonce;
     const afterNonce = intToHex(gas.nonce);
     setTx({
@@ -438,6 +474,18 @@ const SignTx = ({ params, origin }) => {
     });
   };
 
+  const loadGasMarket = async (
+    chain: Chain,
+    custom?: number
+  ): Promise<GasLevel[]> => {
+    const list = await wallet.openapi.gasMarket(
+      chain.serverId,
+      custom && custom > 0 ? custom : undefined
+    );
+    setGasList(list);
+    return list;
+  };
+
   const init = async () => {
     const session = params.session;
     const site = await wallet.getConnectedSite(session.origin);
@@ -450,44 +498,44 @@ const SignTx = ({ params, origin }) => {
         (item) => item.id === (chainId || CHAINS[site!.chain].id)
       )!
     );
-    const lastTimeGas = await wallet.getLastTimeGasSelection(
+    const lastTimeGas: ChainGas = await wallet.getLastTimeGasSelection(
       chainId || CHAINS[site!.chain].id
     );
     const chain = Object.keys(CHAINS)
       .map((key) => CHAINS[key])
-      .find((item) => item.id === chainId);
-    const gas = await wallet.openapi.gasMarket(
-      chain?.serverId || CHAINS[site!.chain].serverId
-    );
-    let lastSelected = 0;
+      .find((item) => item.id === chainId)!;
+    let customGasPrice = 0;
+    console.log('lastTimeGas', lastTimeGas);
+    if (lastTimeGas.lastTimeSelect === 'gasPrice' && lastTimeGas.gasPrice) {
+      // use cached gasPrice if exist
+      customGasPrice = lastTimeGas.gasPrice;
+    }
     if (isSpeedUp || isCancel) {
-      lastSelected = -1;
+      // use gasPrice set by dapp when it's a speedup or cancel tx
+      customGasPrice = parseInt(tx.gasPrice);
+    }
+    const gasList = await loadGasMarket(chain, customGasPrice);
+    let gas: GasLevel | null = null;
+    if (isSpeedUp || isCancel || lastTimeGas?.lastTimeSelect === 'gasPrice') {
+      gas = gasList.find((item) => item.level === 'custom')!;
     } else if (
       lastTimeGas?.lastTimeSelect &&
       lastTimeGas?.lastTimeSelect === 'gasLevel'
     ) {
-      lastSelected = gas.find((item) => item.level === lastTimeGas?.gasLevel)
-        ?.price;
-    } else if (
-      lastTimeGas?.lastTimeSelect &&
-      lastTimeGas?.lastTimeSelect === 'gasPrice'
-    ) {
-      lastSelected = lastTimeGas?.gasPrice;
-    }
-    let price = 0;
-    if (lastSelected <= 0 || lastSelected === undefined) {
-      if (tx.gasPrice) {
-        price = parseInt(tx.gasPrice);
-      } else {
-        price = gas.find((item) => item.level === 'fast').price;
-      }
+      const target = gasList.find(
+        (item) => item.level === lastTimeGas?.gasLevel
+      )!;
+      gas = target;
     } else {
-      price = lastSelected;
+      // no cache, use the fast level in gasMarket
+      gas = gasList.find((item) => item.level === 'fast')!;
     }
+    console.log('gas', gas);
+    setSelectedGas(gas);
     setTx({
       ...tx,
       chainId: chainId || CHAINS[site!.chain].id,
-      gasPrice: intToHex(price),
+      gasPrice: intToHex(gas.price),
     });
     setInited(true);
   };
@@ -534,10 +582,11 @@ const SignTx = ({ params, origin }) => {
             )}
             <GasSelector
               isReady={isReady}
-              isFristLoad={isFristLoad}
               tx={tx}
               gasLimit={gasLimit}
               noUpdate={isCancel || isSpeedUp}
+              gasList={gasList}
+              selectedGas={selectedGas}
               gas={{
                 ...(txDetail
                   ? txDetail.gas
