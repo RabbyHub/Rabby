@@ -372,10 +372,9 @@ const SignTx = ({ params, origin }) => {
         // NOTHING
       }
     }
-
     const selectedGas: ChainGas = {
       gasPrice: selectedlevel === 'custom' ? parseInt(tx?.gasPrice) : null,
-      gasLevel: selectedlevel === 'custom' ? undefined : selectedlevel,
+      gasLevel: selectedlevel === 'custom' ? null : selectedlevel,
       lastTimeSelect: selectedlevel === 'custom' ? 'gasPrice' : 'gasLevel',
     };
     await wallet.updateLastTimeGasSelection(chainId, selectedGas);
@@ -470,7 +469,7 @@ const SignTx = ({ params, origin }) => {
       lastTimeGas?.lastTimeSelect &&
       lastTimeGas?.lastTimeSelect === 'gasPrice'
     ) {
-      lastSelected = lastTimeGas?.gasPrice * 1e9;
+      lastSelected = lastTimeGas?.gasPrice;
     }
     let price = 0;
     if (lastSelected <= 0 || lastSelected === undefined) {

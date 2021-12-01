@@ -218,7 +218,7 @@ const GasSelector = ({
   const getLastTimeSavedGas = async () => {
     const savedGas: ChainGas = await wallet.getLastTimeGasSelection(chainId);
     if (savedGas?.gasPrice) {
-      setCustomGas(Number(savedGas?.gasPrice));
+      setCustomGas(Number(savedGas?.gasPrice) / 1e9);
     }
     if (savedGas?.lastTimeSelect && savedGas?.lastTimeSelect === 'gasLevel') {
       const lastSelected = gasList.find(
@@ -236,7 +236,7 @@ const GasSelector = ({
         estimated_seconds: 0,
         base_fee: gasList[0].base_fee,
       });
-      setCustomGas(savedGas?.gasPrice || 0);
+      setCustomGas( (savedGas?.gasPrice && savedGas?.gasPrice / 1e9) || 0);
     } else if (tx && tx.gasPrice) {
       setSelectGas({
         level: 'custom',
@@ -265,7 +265,7 @@ const GasSelector = ({
       });
       onChange({
         ...gas,
-        price: Number(gas.price) * 1e9,
+        price: Number(gas.price) / 1e9,
         gasLimit: Number(afterGasLimit),
         nonce: Number(customNonce || nonce),
         level: gas?.level,
