@@ -135,7 +135,7 @@ const SignTx = ({ params, origin }) => {
   const [isFristLoad, setIsFristLoad] = useState(true);
   const [nonceChanged, setNonceChanged] = useState(false);
   const [isWatch, setIsWatch] = useState(false);
-  const [selectedlevel, setSelectedLevel] = useState('');
+  const [selectedlevel, setSelectedLevel] = useState('custom');
   const [txDetail, setTxDetail] = useState<ExplainTxResponse | null>({
     balance_change: {
       err_msg: '',
