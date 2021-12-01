@@ -16,8 +16,8 @@ export interface Account {
   index?: number;
 }
 export interface ChainGas {
-  gasPrice?: number; // custom cached gas price
-  gasLevel?: 'slow' | 'normal' | 'fast'; // cached gasLevel
+  gasPrice?: number | null; // custom cached gas price
+  gasLevel?: string | null; // cached gasLevel
   lastTimeSelect?: 'gasLevel' | 'gasPrice'; // last time selection, 'gasLevel' | 'gasPrice'
 }
 export interface GasCache {

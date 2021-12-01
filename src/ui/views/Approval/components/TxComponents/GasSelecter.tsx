@@ -164,7 +164,7 @@ const GasSelector = ({
         estimated_seconds: gas?.estimated_seconds,
         base_fee: gasList[0].base_fee,
       });
-    } else {
+    } else if (!selectedGas) {
       await getLastTimeSavedGas();
     }
     setIsLoading(false);
@@ -182,12 +182,14 @@ const GasSelector = ({
         price: Number(customGas) * 1e9,
         gasLimit: Number(afterGasLimit),
         nonce: Number(customNonce || nonce),
+        level: selectedGas.level,
       });
     } else {
       onChange({
         ...selectedGas,
         gasLimit: Number(afterGasLimit),
         nonce: Number(customNonce || nonce),
+        level: selectedGas.level,
       });
     }
   };
@@ -249,15 +251,7 @@ const GasSelector = ({
       setSelectGas(gas);
     }
   };
-  const updateGasSelection = async (currentGas) => {
-    const gas: ChainGas = {
-      gasPrice: currentGas?.level === 'custom' ? currentGas?.price : null,
-      gasLevel: currentGas?.level === 'custom' ? null : currentGas?.level,
-      lastTimeSelect: currentGas?.level === 'custom' ? 'gasPrice' : 'gasLevel',
-    };
-    await wallet.updateLastTimeGasSelection(chainId, gas);
-  };
-  const panelSelection = async (e, gas) => {
+  const panelSelection = async (e, gas: GasLevel) => {
     e.stopPropagation();
     await setIsLoading(true);
     if (gas.level === 'custom') {
@@ -269,20 +263,20 @@ const GasSelector = ({
         estimated_seconds: 0,
         base_fee: gasList[0].base_fee,
       });
-      await updateGasSelection(gas);
       onChange({
         ...gas,
         price: Number(gas.price) * 1e9,
         gasLimit: Number(afterGasLimit),
         nonce: Number(customNonce || nonce),
+        level: gas?.level,
       });
     } else {
       await setSelectGas(gas);
-      await updateGasSelection(gas);
       onChange({
         ...gas,
         gasLimit: Number(afterGasLimit),
         nonce: Number(customNonce || nonce),
+        level: gas?.level,
       });
     }
     setIsLoading(false);
@@ -296,13 +290,13 @@ const GasSelector = ({
       estimated_seconds: 0,
       base_fee: gasList[0].base_fee,
     });
-    await updateGasSelection({
-      level: 'custom',
-      price: Number(e?.target?.value),
-      front_tx_count: 0,
-      estimated_seconds: 0,
-      base_fee: gasList[0].base_fee,
-    });
+    // await updateGasSelection({
+    //   level: 'custom',
+    //   price: Number(e?.target?.value),
+    //   front_tx_count: 0,
+    //   estimated_seconds: 0,
+    //   base_fee: gasList[0].base_fee,
+    // });
     await handleConfirmGas();
 
     await setIsLoading(false);
@@ -379,7 +373,7 @@ const GasSelector = ({
               className={clsx('card', {
                 active: selectedGas?.level === item.level,
               })}
-              onClick={(e) => panelSelection(e, gas)}
+              onClick={(e) => panelSelection(e, item)}
             >
               <div className="gas-level">{t(GAS_LEVEL_TEXT[item.level])}</div>
               <div
@@ -393,7 +387,7 @@ const GasSelector = ({
                     value={customGas}
                     defaultValue={customGas}
                     onChange={handleCustomGasChange}
-                    onClick={(e) => panelSelection(e, gas)}
+                    onClick={(e) => panelSelection(e, item)}
                     onPressEnter={customGasConfirm}
                     ref={customerInputRef}
                     autoFocus={selectedGas?.level === item.level}

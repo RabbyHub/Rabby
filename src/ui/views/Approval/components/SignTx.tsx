@@ -22,6 +22,8 @@ import {
   Tx,
 } from 'background/service/openapi';
 import { useWallet, useApproval } from 'ui/utils';
+import { ChainGas } from 'background/service/preference';
+
 import Approve from './TxComponents/Approve';
 import Cancel from './TxComponents/Cancel';
 import Sign from './TxComponents/Sign';
@@ -133,6 +135,7 @@ const SignTx = ({ params, origin }) => {
   const [isFristLoad, setIsFristLoad] = useState(true);
   const [nonceChanged, setNonceChanged] = useState(false);
   const [isWatch, setIsWatch] = useState(false);
+  const [selectedlevel, setSelectedLevel] = useState('');
   const [txDetail, setTxDetail] = useState<ExplainTxResponse | null>({
     balance_change: {
       err_msg: '',
@@ -369,6 +372,13 @@ const SignTx = ({ params, origin }) => {
         // NOTHING
       }
     }
+
+    const selectedGas: ChainGas = {
+      gasPrice: selectedlevel === 'custom' ? parseInt(tx?.gasPrice) : null,
+      gasLevel: selectedlevel === 'custom' ? undefined : selectedlevel,
+      lastTimeSelect: selectedlevel === 'custom' ? 'gasPrice' : 'gasLevel',
+    };
+    await wallet.updateLastTimeGasSelection(chainId, selectedGas);
     if (currentAccount?.type && WaitingSignComponent[currentAccount.type]) {
       resolveApproval({
         ...tx,
@@ -395,6 +405,7 @@ const SignTx = ({ params, origin }) => {
   };
   const handleGasChange = (gas: GasSelectorResponse) => {
     setIsFristLoad(false);
+    setSelectedLevel(gas.level);
     const beforeNonce = realNonce || tx.nonce;
     const afterNonce = intToHex(gas.nonce);
     setTx({
@@ -462,7 +473,7 @@ const SignTx = ({ params, origin }) => {
       lastSelected = lastTimeGas?.gasPrice * 1e9;
     }
     let price = 0;
-    if (lastSelected <= 0) {
+    if (lastSelected <= 0 || lastSelected === undefined) {
       if (tx.gasPrice) {
         price = parseInt(tx.gasPrice);
       } else {
