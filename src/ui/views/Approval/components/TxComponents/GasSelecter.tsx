@@ -290,13 +290,6 @@ const GasSelector = ({
       estimated_seconds: 0,
       base_fee: gasList[0].base_fee,
     });
-    // await updateGasSelection({
-    //   level: 'custom',
-    //   price: Number(e?.target?.value),
-    //   front_tx_count: 0,
-    //   estimated_seconds: 0,
-    //   base_fee: gasList[0].base_fee,
-    // });
     await handleConfirmGas();
 
     await setIsLoading(false);
