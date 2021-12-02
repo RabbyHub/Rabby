@@ -145,6 +145,7 @@ const SendToken = () => {
     setShowListContactModal(false);
     setContactInfo(data);
     setAccountType(type);
+    setAmountFocus(true);
     const values = form.getFieldsValue();
     const to = data ? data.address : '';
     if (!data) return;
