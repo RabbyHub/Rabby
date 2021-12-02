@@ -149,11 +149,14 @@
     .operation {
       display: flex;
       position: absolute;
-      bottom: 12px;
+      bottom: 0;
       left: 50%;
       transform: translateX(-50%);
       width: 344px;
-      height: 44px;
+      height: 48px;
+      border-radius: 6px 6px 0 0;
+      background: rgba(255, 255, 255, 0.12);
+      backdrop-filter: blur(40px);
       .operation-item {
         flex: 1;
         color: #fff;
@@ -161,19 +164,26 @@
         position: relative;
         padding: 6px;
         width: 166px;
-        background-color: rgba(255, 255, 255, 0.12);
-        backdrop-filter: blur(40px);
-        border-radius: 6px;
+        border-radius: 6px 0 0 0;
         display: flex;
         align-items: center;
         justify-content: center;
         height: 100%;
         cursor: pointer;
-        transition: background-color 0.2s;
         position: relative;
-        margin-right: 12px;
+        &:nth-child(1)::after {
+          content: '';
+          background-color: #ffffff;
+          opacity: 0.2;
+          width: 1px;
+          height: 18px;
+          position: absolute;
+          right: 0;
+        }
         &:nth-last-child(1) {
           margin-right: 0;
+          border-right: 0;
+          border-radius: 0 6px 0 0;
         }
         .icon-external-link {
           width: 10px;
@@ -184,12 +194,6 @@
           right: 4px;
           opacity: 0;
           transition: opacity 0.2s;
-        }
-        &:hover {
-          background: rgba(19, 20, 26, 0.1);
-          .icon-external-link {
-            opacity: 1;
-          }
         }
         .icon {
           width: 20px;
@@ -410,7 +414,6 @@
     height: 1px;
     width: 146px;
     border-bottom: 1px solid #e5e9ef;
-
   }
   .ant-popover-inner-content {
     padding: 0 !important;
@@ -445,8 +448,8 @@
         height: 11px;
         margin-left: 4px;
       }
-      p{
-        margin-left:15px;
+      p {
+        margin-left: 15px;
         margin-bottom: 0;
         line-height: 14px;
       }

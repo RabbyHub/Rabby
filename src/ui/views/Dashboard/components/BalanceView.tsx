@@ -56,7 +56,7 @@ const BalanceView = ({ currentAccount }) => {
     const result = chainBalances.map((item) => (
       <img
         src={item.whiteLogo || item.logo_url}
-        className="icon icon-chain"
+        className="icon icon-chain opacity-60"
         key={item.id}
         alt={`${item.name}: $${item.usd_value.toFixed(2)}`}
       />
@@ -71,9 +71,9 @@ const BalanceView = ({ currentAccount }) => {
     return result;
   };
   return (
-    <div className="assets flex">
+    <div className="assets flex pt-28">
       <div className="left">
-        <div className="amount leading-none" onClick={handleGotoProfile}>
+        <div className="amount leading-none mb-8" onClick={handleGotoProfile}>
           <div className="amount-number">
             <span>${splitNumberByStep((balance || 0).toFixed(2))}</span>
             <img className="icon icon-external-link" src={IconExternal} />
