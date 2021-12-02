@@ -248,6 +248,7 @@ const AddressItem = memo(
                     onChange={handleAlianNameChange}
                     onPressEnter={alianNameConfirm}
                     autoFocus={startEdit}
+                    onBlur={() => setStartEdit(false)}
                     maxLength={20}
                     min={0}
                   />
