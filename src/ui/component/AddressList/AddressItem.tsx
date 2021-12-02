@@ -196,12 +196,19 @@ const AddressItem = memo(
       };
       const changeName = async () => {
         if (!alianName) {
-          const alianName = `${
-            BRAND_ALIAN_TYPE_TEXT[account?.brandName || account?.type] ||
-            account?.brandName
-          } ${importedLength + (index || 0) + 1}`;
-          setAlianName(alianName);
-          updateAlianName(alianName);
+          const existAlianName = await wallet.getAlianName(
+            account?.address?.toLowerCase()
+          );
+          if (existAlianName) {
+            setAlianName(existAlianName);
+          } else {
+            const alianName = `${
+              BRAND_ALIAN_TYPE_TEXT[account?.brandName || account?.type] ||
+              account?.brandName
+            } ${importedLength + (index || 0) + 1}`;
+            setAlianName(alianName);
+            updateAlianName(alianName);
+          }
         }
       };
       useEffect(() => {
