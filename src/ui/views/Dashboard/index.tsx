@@ -204,7 +204,7 @@ const Dashboard = () => {
       <div className="flex items-center">
         {currentAccount && (
           <img
-            className="icon icon-account-type w-[20px] h-[20px]"
+            className="icon icon-account-type w-[32px] h-[32px]"
             src={
               KEYRING_ICONS[currentAccount.type] ||
               WALLET_BRAND_CONTENT[currentAccount.brandName]?.image
@@ -354,9 +354,11 @@ const Dashboard = () => {
   };
   const handleClickChange = (visible) => {
     setClicked(visible);
+    setStartEdit(false);
     setHovered(false);
   };
   const hide = () => {
+    setStartEdit(false);
     setClicked(false);
     setHovered(false);
   };
@@ -373,10 +375,12 @@ const Dashboard = () => {
                   style={{ width: 500 }}
                   content={hoverContent}
                   trigger="hover"
-                  visible={hovered}
+                  visible={hovered && !clicked}
                   placement="bottomLeft"
                   overlayClassName="address-popover"
-                  onVisibleChange={handleHoverChange}
+                  onVisibleChange={(visible) =>
+                    !clicked && handleHoverChange(visible)
+                  }
                 >
                   <Popover
                     style={{ width: 200 }}
