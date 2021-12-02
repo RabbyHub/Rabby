@@ -49,6 +49,8 @@ export interface AddressItemProps {
   importedAccount?: boolean;
   isMnemonics?: boolean;
   importedLength?: number;
+  canEditing?(): void;
+  stopEditing?: boolean;
 }
 
 const formatChain = (item: ChainWithBalance): DisplayChainWithWhiteLogo => {
@@ -129,6 +131,8 @@ const AddressItem = memo(
     importedAccount = false,
     isMnemonics = false,
     importedLength = 0,
+    canEditing,
+    stopEditing = false,
   }: AddressItemProps) => {
     if (!account) {
       return null;
@@ -136,6 +140,7 @@ const AddressItem = memo(
     const { t } = useTranslation();
     const wallet = useWallet();
     const [startEdit, setStartEdit] = useState(false);
+
     const [alianName, setAlianName] = useState<string>(
       account?.alianName || ''
     );
@@ -162,11 +167,12 @@ const AddressItem = memo(
       return '';
     };
     const handleAlianNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      e.stopPropagation();
       setAlianName(e.target.value);
     };
     const alianNameConfirm = async (e) => {
       e.stopPropagation();
-      if (!alianName) {
+      if (!alianName || alianName.trim() === '') {
         return;
       }
       setStartEdit(false);
@@ -205,9 +211,9 @@ const AddressItem = memo(
     return (
       <li
         className={className}
-        onClick={() =>
-          onClick && onClick(account.address, keyring, account.brandName)
-        }
+        onClick={(e) => {
+          onClick && onClick(account.address, keyring, account.brandName);
+        }}
       >
         <div
           className={clsx(
@@ -241,28 +247,32 @@ const AddressItem = memo(
           <div className={clsx('address-info', { 'ml-0': !showImportIcon })}>
             {(showImportIcon || editing) && (
               <div className="brand-name flex">
-                {startEdit && editing ? (
+                {startEdit && !stopEditing && editing ? (
                   <Input
                     value={alianName}
                     defaultValue={alianName}
                     onChange={handleAlianNameChange}
                     onPressEnter={alianNameConfirm}
+                    onClick={(e) => e.stopPropagation()}
                     autoFocus={startEdit}
-                    onBlur={() => setStartEdit(false)}
                     maxLength={20}
                     min={0}
                   />
                 ) : (
                   <div className="display-name">{displayName}</div>
                 )}
-                {!startEdit && editing && (
+                {(!startEdit || stopEditing) && editing && (
                   <img
                     className="edit-name"
                     src={IconEditPen}
-                    onClick={() => setStartEdit(true)}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      canEditing && canEditing();
+                      setStartEdit(true);
+                    }}
                   />
                 )}
-                {startEdit && editing && (
+                {startEdit && !stopEditing && editing && (
                   <img
                     className="edit-name w-[16px] h-[16px]"
                     src={IconCorrect}
