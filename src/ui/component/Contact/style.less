@@ -23,7 +23,7 @@
   .ant-input-affix-wrapper {
     padding: 15px 16px;
     border-radius: 6px;
-    background: #F5F6FA;
+    background: #f5f6fa;
     &::before {
       display: none;
     }
@@ -34,7 +34,7 @@
     line-height: 18px;
     color: #161819;
     border-radius: 0;
-    background: #F5F6FA;
+    background: #f5f6fa;
   }
 
   .remove-btn {
@@ -74,29 +74,48 @@
 }
 .list-contact-modal {
   .ant-modal-close {
-    right: 16px;
-    top: 16px;
+    top: 8px;
     .ant-modal-close-x {
-      width: 15px;
-      height: 15px;
-      margin-top: 15px !important;
+      font-size: 18px;
     }
   }
   .ant-modal-content {
     height: 460px;
   }
   .ant-modal-body {
-    height: 431px;
-    padding: 16px 16px 20px;
+    height: 460px;
+    padding: 16px;
     .ant-tabs-nav {
       position: fixed;
       height: 40px;
       z-index: 10;
     }
     .ant-tabs-nav-list {
+      .ant-tabs-tab {
+        position: relative;
+        display: inline-flex;
+        align-items: center;
+        padding: 12px 0 4px;
+        font-size: 14px;
+        background: transparent;
+        border: 0;
+        outline: none;
+        cursor: pointer;
+    }
+      .ant-tabs-tab + .ant-tabs-tab {
+        margin-left: 20px !important;
+      }
       .ant-tabs-tab-btn {
         font-size: 15px;
         font-weight: 500;
+        color: #707280;
+      }
+      .ant-tabs-tab-active {
+        .ant-tabs-tab-btn {
+          font-size: 15px;
+          font-weight: 500;
+          color: #8697ff;
+        }
       }
     }
 
@@ -104,8 +123,8 @@
       flex: auto;
       min-width: 0;
       min-height: 0;
-      max-height: 350px;
-      margin-top: 60px;
+      max-height: 375px;
+      margin-top: 50px;
       overflow-y: auto;
     }
   }
