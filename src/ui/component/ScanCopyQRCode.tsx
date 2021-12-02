@@ -101,6 +101,7 @@ const ScanCopyQRCode: React.FC<Props> = ({
             className="h-[200px] w-[336px] p-16 m-32 mt-0 mb-24"
             spellCheck={false}
             value={qrcodeURL}
+            disabled={true}
           />
           <img
             src={IconRefresh}
