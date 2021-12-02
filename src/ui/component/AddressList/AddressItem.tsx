@@ -214,7 +214,7 @@ const AddressItem = memo(
         >
           <div
             className={clsx(
-              'flex items-center flex-wrap relative',
+              'flex items-center relative',
               isDisabled && 'opacity-40'
             )}
           >
