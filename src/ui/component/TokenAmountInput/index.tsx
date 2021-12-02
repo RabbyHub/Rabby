@@ -16,6 +16,7 @@ interface TokenAmountInputProps {
   onTokenChange(token: TokenItem): void;
   address: string;
   chainId: string;
+  amountFocus?: boolean;
 }
 
 const TokenAmountInput = ({
@@ -25,6 +26,7 @@ const TokenAmountInput = ({
   onTokenChange,
   address,
   chainId,
+  amountFocus,
 }: TokenAmountInputProps) => {
   const tokenInputRef = useRef<Input>(null);
   const latestChainId = useRef(chainId);
@@ -33,7 +35,9 @@ const TokenAmountInput = ({
   const [isListLoading, setIsListLoading] = useState(true);
   const [tokenSelectorVisible, setTokenSelectorVisible] = useState(false);
   const wallet = useWallet();
-
+  if (amountFocus) {
+    tokenInputRef.current?.focus();
+  }
   const handleCurrentTokenChange = (token: TokenItem) => {
     onChange && onChange('');
     onTokenChange(token);

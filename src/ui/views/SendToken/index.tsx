@@ -67,6 +67,7 @@ const SendToken = () => {
   const [balanceWarn, setBalanceWarn] = useState(null);
   const [showContactInfo, setShowContactInfo] = useState(false);
   const [accountType, setAccountType] = useState('');
+  const [amountFocus, setAmountFocus] = useState(false);
   const canSubmit =
     isValidAddress(form.getFieldValue('to')) &&
     !balanceError &&
@@ -432,6 +433,7 @@ const SendToken = () => {
                   validator(_, value) {
                     if (!value) return Promise.resolve();
                     if (value && isValidAddress(value)) {
+                      setAmountFocus(true);
                       return Promise.resolve();
                     }
                     return Promise.reject(
@@ -475,6 +477,7 @@ const SendToken = () => {
                 token={currentToken}
                 onTokenChange={handleCurrentTokenChange}
                 chainId={CHAINS[chain].serverId}
+                amountFocus={amountFocus}
               />
             )}
           </Form.Item>
