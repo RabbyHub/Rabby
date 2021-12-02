@@ -9,6 +9,8 @@ import WalletConnect from '@walletconnect/client';
 import { StrayPageWithButton } from 'ui/component';
 import { useWallet, useWalletRequest } from 'ui/utils';
 import { openInternalPageInTab } from 'ui/utils/webapi';
+import { KEYRING_CLASS } from 'consts';
+
 import WatchLogo from 'ui/assets/waitcup.svg';
 import IconWalletconnect from 'ui/assets/walletconnect.svg';
 import IconScan from 'ui/assets/scan.svg';
@@ -33,6 +35,7 @@ const ImportWatchAddress = () => {
     name: string;
   }>(null);
   const [tags, setTags] = useState<string[]>([]);
+  const [importedAccounts, setImportedAccounts] = useState<any[]>([]);
 
   const [run, loading] = useWalletRequest(wallet.importWatchAddress, {
     onSuccess(accounts) {
@@ -47,6 +50,7 @@ const ImportWatchAddress = () => {
           title: t('Imported successfully'),
           editing: true,
           importedAccount: true,
+          importedLength: importedAccounts && importedAccounts?.length,
         },
       });
     },
@@ -188,9 +192,15 @@ const ImportWatchAddress = () => {
       history.replace('/');
     }
   };
-
+  const allAccounts = async () => {
+    const importedAccounts = await wallet.getTypedAccounts(KEYRING_CLASS.WATCH);
+    if (importedAccounts && importedAccounts[0]?.accounts) {
+      setImportedAccounts(importedAccounts[0]?.accounts);
+    }
+  };
   useEffect(() => {
     handleLoadCache();
+    allAccounts();
     return () => {
       wallet.clearPageStateCache();
     };

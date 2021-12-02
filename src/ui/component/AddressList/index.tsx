@@ -42,13 +42,7 @@ const SORT_WEIGHT = {
 const Row: React.FC<RowProps> = memo((props) => {
   const { data, index, style } = props;
   const { combinedList, others } = data;
-  const {
-    currentAccount,
-    ActionButton,
-    onClick,
-    hiddenAddresses,
-    addressItems,
-  } = others;
+  const { currentAccount, ActionButton, onClick, hiddenAddresses } = others;
   const account = combinedList[index];
   return (
     <li
@@ -69,9 +63,6 @@ const Row: React.FC<RowProps> = memo((props) => {
           currentAccount={currentAccount}
           showAssets
           className="h-[56px]"
-          ref={(el) => {
-            addressItems.current[index] = el;
-          }}
         />
       </ul>
     </li>

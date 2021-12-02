@@ -1,11 +1,4 @@
-import React, {
-  FunctionComponent,
-  useEffect,
-  useState,
-  useImperativeHandle,
-  forwardRef,
-  memo,
-} from 'react';
+import React, { FunctionComponent, useEffect, useState, memo } from 'react';
 import { Tooltip, Input } from 'antd';
 import clsx from 'clsx';
 import { useTranslation, Trans } from 'react-i18next';
@@ -55,7 +48,6 @@ export interface AddressItemProps {
   showIndex?: boolean;
   importedAccount?: boolean;
   isMnemonics?: boolean;
-  currentImportLength?: number;
   importedLength?: number;
 }
 
@@ -123,191 +115,183 @@ export const useCurrentBalance = (
   return [balance, chainBalances, getAddressBalance] as const;
 };
 const AddressItem = memo(
-  forwardRef(
-    (
-      {
-        account,
-        keyring,
-        ActionButton,
-        hiddenAddresses = [],
-        className,
-        onClick,
-        index,
-        editing = true,
-        showImportIcon = true,
-        showIndex = false,
-        importedAccount = false,
-        isMnemonics = false,
-        currentImportLength = 1,
-        importedLength = 0,
-      }: AddressItemProps,
-      ref
-    ) => {
-      if (!account) {
-        return null;
-      }
-      const { t } = useTranslation();
-      const wallet = useWallet();
-      const [startEdit, setStartEdit] = useState(false);
-      const [alianName, setAlianName] = useState<string>('');
-      const isDisabled = hiddenAddresses.find(
-        (item) => item.address === account.address && item.type === keyring.type
-      );
-      const formatAddressTooltip = (type: string, brandName: string) => {
-        if (KEYRING_TYPE_TEXT[type]) {
-          return t(KEYRING_TYPE_TEXT[type]);
-        }
-        if (WALLET_BRAND_CONTENT[brandName]) {
-          return (
-            <Trans
-              i18nKey="addressTypeTip"
-              values={{
-                type: WALLET_BRAND_CONTENT[brandName].name,
-              }}
-            />
-          );
-        }
-        return '';
-      };
-      const handleAlianNameChange = (
-        e: React.ChangeEvent<HTMLInputElement>
-      ) => {
-        setAlianName(e.target.value);
-      };
-      const alianNameConfirm = async (e) => {
-        e.stopPropagation();
-        if (!alianName) {
-          return;
-        }
-        await updateAlianName(alianName);
-        if (editing) {
-          setStartEdit(false);
-          return;
-        }
-        setStartEdit(false);
-      };
-      const updateAlianName = async (alianName) => {
-        await wallet.updateAlianName(
-          account?.address?.toLowerCase(),
-          alianName
-        );
-      };
-      const displayName = alianName || account?.alianName;
-      const changeName = async () => {
-        const alianName = `${
-          BRAND_ALIAN_TYPE_TEXT[account?.brandName] || account?.brandName
-        } ${importedLength + (index || 0) + 1}`;
-        setAlianName(alianName);
-        updateAlianName(alianName);
-      };
-      useEffect(() => {
-        if (importedAccount) {
-          changeName();
-        }
-      }, []);
-      return (
-        <li
-          className={className}
-          onClick={() =>
-            onClick && onClick(account.address, keyring, account.brandName)
-          }
-        >
-          <div
-            className={clsx(
-              'flex items-center flex-wrap relative',
-              isDisabled && 'opacity-40'
-            )}
-          >
-            {showImportIcon && (
-              <Tooltip
-                overlayClassName="rectangle addressType__tooltip"
-                placement="topRight"
-                title={formatAddressTooltip(
-                  account.type,
-                  BRAND_ALIAN_TYPE_TEXT[account.brandName] || account.brandName
-                )}
-              >
-                <img
-                  src={
-                    KEYRING_ICONS[account.type] ||
-                    WALLET_BRAND_CONTENT[account.brandName]?.image
-                  }
-                  className={clsx('icon icon-hardware', {
-                    'opacity-40': isDisabled,
-                  })}
-                />
-              </Tooltip>
-            )}
-            {importedAccount && isMnemonics && (
-              <div className="number-index">{account.index}</div>
-            )}
-            <div className={clsx('address-info', { 'ml-0': !showImportIcon })}>
-              {(showImportIcon || editing) && (
-                <div className="brand-name flex">
-                  {startEdit && editing ? (
-                    <Input
-                      value={
-                        startEdit
-                          ? alianName
-                          : account?.alianName || account?.brandName
-                      }
-                      defaultValue={
-                        alianName || account?.alianName || account?.brandName
-                      }
-                      onChange={handleAlianNameChange}
-                      onPressEnter={alianNameConfirm}
-                      autoFocus={startEdit}
-                      maxLength={20}
-                      min={0}
-                    />
-                  ) : (
-                    <div className="display-name">{displayName}</div>
-                  )}
-                  {!startEdit && editing && (
-                    <img
-                      className="edit-name"
-                      src={IconEditPen}
-                      onClick={() => setStartEdit(true)}
-                    />
-                  )}
-                  {startEdit && editing && (
-                    <img
-                      className="edit-name w-[16px] h-[16px]"
-                      src={IconCorrect}
-                      onClick={alianNameConfirm}
-                    />
-                  )}
-                </div>
-              )}
-              <AddressViewer
-                address={account.address}
-                showArrow={false}
-                index={account.index || index}
-                showImportIcon={showImportIcon}
-                className={
-                  showImportIcon || !showIndex
-                    ? 'subtitle'
-                    : 'import-color flex'
-                }
-                showIndex={showIndex}
-              />
-            </div>
-          </div>
-          {keyring && (
-            <div className="action-button flex items-center flex-shrink-0 cursor-pointer">
-              {ActionButton && (
-                <ActionButton
-                  data={account.address}
-                  account={account}
-                  keyring={keyring}
-                />
-              )}
-            </div>
-          )}
-        </li>
-      );
+  ({
+    account,
+    keyring,
+    ActionButton,
+    hiddenAddresses = [],
+    className,
+    onClick,
+    index,
+    editing = true,
+    showImportIcon = true,
+    showIndex = false,
+    importedAccount = false,
+    isMnemonics = false,
+    importedLength = 0,
+  }: AddressItemProps) => {
+    if (!account) {
+      return null;
     }
-  )
+    const { t } = useTranslation();
+    const wallet = useWallet();
+    const [startEdit, setStartEdit] = useState(false);
+    const [alianName, setAlianName] = useState<string>(
+      account?.alianName || ''
+    );
+    const isDisabled = hiddenAddresses.find(
+      (item) => item.address === account.address && item.type === keyring.type
+    );
+    const formatAddressTooltip = (type: string, brandName: string) => {
+      if (KEYRING_TYPE_TEXT[type]) {
+        return t(KEYRING_TYPE_TEXT[type]);
+      }
+      if (WALLET_BRAND_CONTENT[brandName]) {
+        return (
+          <Trans
+            i18nKey="addressTypeTip"
+            values={{
+              type: WALLET_BRAND_CONTENT[brandName].name,
+            }}
+          />
+        );
+      }
+      return '';
+    };
+    const handleAlianNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      setAlianName(e.target.value);
+    };
+    const alianNameConfirm = async (e) => {
+      e.stopPropagation();
+      if (!alianName) {
+        return;
+      }
+      setStartEdit(false);
+      await updateAlianName(alianName);
+      if (editing) {
+        return;
+      }
+      setStartEdit(false);
+    };
+    const updateAlianName = async (alianName) => {
+      await wallet.updateAlianName(account?.address?.toLowerCase(), alianName);
+    };
+    const changeName = async () => {
+      if (!alianName) {
+        const existAlianName = await wallet.getAlianName(
+          account?.address?.toLowerCase()
+        );
+        if (existAlianName) {
+          setAlianName(existAlianName);
+        } else {
+          const alianName = `${
+            BRAND_ALIAN_TYPE_TEXT[account?.brandName || account?.type] ||
+            account?.brandName
+          } ${importedLength + (index || 0) + 1}`;
+          setAlianName(alianName);
+          updateAlianName(alianName);
+        }
+      }
+    };
+    useEffect(() => {
+      if (importedAccount) {
+        changeName();
+      }
+    }, []);
+    return (
+      <li
+        className={className}
+        onClick={() =>
+          onClick && onClick(account.address, keyring, account.brandName)
+        }
+      >
+        <div
+          className={clsx(
+            'flex items-center relative',
+            isDisabled && 'opacity-40'
+          )}
+        >
+          {showImportIcon && (
+            <Tooltip
+              overlayClassName="rectangle addressType__tooltip"
+              placement="topRight"
+              title={formatAddressTooltip(
+                account.type,
+                BRAND_ALIAN_TYPE_TEXT[account.brandName] || account.brandName
+              )}
+            >
+              <img
+                src={
+                  KEYRING_ICONS[account.type] ||
+                  WALLET_BRAND_CONTENT[account.brandName]?.image
+                }
+                className={clsx('icon icon-hardware', {
+                  'opacity-40': isDisabled,
+                })}
+              />
+            </Tooltip>
+          )}
+          {importedAccount && isMnemonics && (
+            <div className="number-index">{account.index}</div>
+          )}
+          <div className={clsx('address-info', { 'ml-0': !showImportIcon })}>
+            {(showImportIcon || editing) && (
+              <div className="brand-name flex">
+                {startEdit && editing ? (
+                  <Input
+                    value={alianName}
+                    defaultValue={alianName}
+                    onChange={handleAlianNameChange}
+                    onPressEnter={alianNameConfirm}
+                    autoFocus={startEdit}
+                    maxLength={20}
+                    min={0}
+                  />
+                ) : (
+                  <div className="display-name">{alianName}</div>
+                )}
+                {!startEdit && editing && (
+                  <img
+                    className="edit-name"
+                    src={IconEditPen}
+                    onClick={() => setStartEdit(true)}
+                  />
+                )}
+                {startEdit && editing && (
+                  <img
+                    className="edit-name w-[16px] h-[16px]"
+                    src={IconCorrect}
+                    onClick={alianNameConfirm}
+                  />
+                )}
+              </div>
+            )}
+            <AddressViewer
+              address={account.address}
+              showArrow={false}
+              index={account.index || index}
+              showImportIcon={showImportIcon}
+              className={
+                showImportIcon || !showIndex ? 'subtitle' : 'import-color flex'
+              }
+              showIndex={showIndex}
+            />
+          </div>
+        </div>
+        {keyring && (
+          <div className="action-button flex items-center flex-shrink-0 cursor-pointer">
+            {ActionButton && (
+              <ActionButton
+                data={account.address}
+                account={account}
+                keyring={keyring}
+              />
+            )}
+          </div>
+        )}
+      </li>
+    );
+  }
 );
 
 export default AddressItem;

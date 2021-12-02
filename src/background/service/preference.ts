@@ -37,7 +37,6 @@ interface PreferenceStore {
   lastTimeSendToken: Record<string, TokenItem>;
   walletSavedList: [];
   alianNames: Record<string, string>;
-  isNeedSyncContact: boolean;
   initAlianNames: boolean;
   gasCache: GasCache;
   currentVersion: string;
@@ -67,7 +66,6 @@ class PreferenceService {
         lastTimeSendToken: {},
         walletSavedList: [],
         alianNames: {},
-        isNeedSyncContact: true,
         initAlianNames: false,
         gasCache: {},
         currentVersion: '0',
@@ -89,9 +87,6 @@ class PreferenceService {
     }
     if (!this.store.alianNames) {
       this.store.alianNames = {};
-    }
-    if (!this.store.isNeedSyncContact) {
-      this.store.isNeedSyncContact = true;
     }
     if (!this.store.initAlianNames) {
       this.store.initAlianNames = false;
@@ -293,12 +288,6 @@ class PreferenceService {
       ...this.store.alianNames,
       [key]: name,
     };
-  };
-  isNeedSyncContact = () => {
-    return this.store.isNeedSyncContact;
-  };
-  changeSyncContact = () => {
-    this.store.isNeedSyncContact = false;
   };
   getInitAlianNameStatus = () => {
     return this.store.initAlianNames;

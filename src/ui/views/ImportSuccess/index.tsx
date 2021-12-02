@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import { useTranslation, Trans } from 'react-i18next';
 import { sortBy } from 'lodash';
@@ -8,13 +8,8 @@ import { IconImportSuccess } from 'ui/assets';
 import { Account } from 'background/service/preference';
 import SuccessLogo from 'ui/assets/success-logo.svg';
 import clsx from 'clsx';
-import {
-  KEYRING_ICONS,
-  WALLET_BRAND_CONTENT,
-  BRAND_ALIAN_TYPE_TEXT,
-} from 'consts';
+import { KEYRING_ICONS, WALLET_BRAND_CONTENT } from 'consts';
 import './index.less';
-import wallet from '@/background/controller/wallet';
 const { AddressItem } = AddressList;
 
 const ImportSuccess = ({ isPopup = false }: { isPopup?: boolean }) => {
