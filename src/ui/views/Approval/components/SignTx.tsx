@@ -20,8 +20,11 @@ import {
   SecurityCheckResponse,
   SecurityCheckDecision,
   Tx,
+  GasLevel,
 } from 'background/service/openapi';
 import { useWallet, useApproval } from 'ui/utils';
+import { ChainGas } from 'background/service/preference';
+
 import Approve from './TxComponents/Approve';
 import Cancel from './TxComponents/Cancel';
 import Sign from './TxComponents/Sign';
@@ -199,6 +202,37 @@ const SignTx = ({ params, origin }) => {
     Object.values(CHAINS).find((item) => item.id === chainId)
   );
   const [inited, setInited] = useState(false);
+  const [selectedGas, setSelectedGas] = useState<GasLevel | null>(null);
+  const [gasList, setGasList] = useState<GasLevel[]>([
+    {
+      level: 'slow',
+      front_tx_count: 0,
+      price: 0,
+      estimated_seconds: 0,
+      base_fee: 0,
+    },
+    {
+      level: 'normal',
+      front_tx_count: 0,
+      price: 0,
+      estimated_seconds: 0,
+      base_fee: 0,
+    },
+    {
+      level: 'fast',
+      front_tx_count: 0,
+      price: 0,
+      estimated_seconds: 0,
+      base_fee: 0,
+    },
+    {
+      level: 'custom',
+      price: 0,
+      front_tx_count: 0,
+      estimated_seconds: 0,
+      base_fee: 0,
+    },
+  ]);
   const [, resolveApproval, rejectApproval] = useApproval();
   const wallet = useWallet();
 
@@ -318,7 +352,7 @@ const SignTx = ({ params, origin }) => {
     const chain = Object.keys(CHAINS)
       .map((key) => CHAINS[key])
       .find((item) => item.id === chainId);
-    const gas = await wallet.openapi.gasMarket(chain!.serverId);
+    const gas = await wallet.openapi.gasMarket(chain?.serverId);
     setTx({
       ...tx,
       gasPrice: intToHex(Math.max(...gas.map((item) => parseInt(item.price)))),
@@ -328,7 +362,7 @@ const SignTx = ({ params, origin }) => {
   const explain = async () => {
     const currentAccount = await wallet.getCurrentAccount();
     if (currentAccount.type === KEYRING_TYPE.WatchAddressKeyring) {
-      await setIsWatch(true);
+      setIsWatch(true);
     }
     try {
       setIsReady(false);
@@ -346,6 +380,7 @@ const SignTx = ({ params, origin }) => {
   };
 
   const handleAllow = async (doubleCheck = false) => {
+    if (!selectedGas) return;
     if (!doubleCheck && securityCheckStatus !== 'pass') {
       setShowSecurityCheckDetail(true);
       return;
@@ -368,6 +403,15 @@ const SignTx = ({ params, origin }) => {
         // NOTHING
       }
     }
+    const selected: ChainGas = {
+      lastTimeSelect: selectedGas.level === 'custom' ? 'gasPrice' : 'gasLevel',
+    };
+    if (selectedGas.level === 'custom') {
+      selected.gasPrice = parseInt(tx?.gasPrice);
+    } else {
+      selected.gasLevel = selectedGas.level;
+    }
+    await wallet.updateLastTimeGasSelection(chainId, selected);
     if (currentAccount?.type && WaitingSignComponent[currentAccount.type]) {
       resolveApproval({
         ...tx,
@@ -392,8 +436,22 @@ const SignTx = ({ params, origin }) => {
       isSend,
     });
   };
-
   const handleGasChange = (gas: GasSelectorResponse) => {
+    setSelectedGas({
+      level: gas.level,
+      front_tx_count: gas.front_tx_count,
+      estimated_seconds: gas.estimated_seconds,
+      base_fee: gas.base_fee,
+      price: gas.price,
+    });
+    if (gas.level === 'custom') {
+      setGasList(
+        gasList.map((item) => {
+          if (item.level === 'custom') return gas;
+          return item;
+        })
+      );
+    }
     const beforeNonce = realNonce || tx.nonce;
     const afterNonce = intToHex(gas.nonce);
     setTx({
@@ -424,6 +482,18 @@ const SignTx = ({ params, origin }) => {
     });
   };
 
+  const loadGasMarket = async (
+    chain: Chain,
+    custom?: number
+  ): Promise<GasLevel[]> => {
+    const list = await wallet.openapi.gasMarket(
+      chain.serverId,
+      custom && custom > 0 ? custom : undefined
+    );
+    setGasList(list);
+    return list;
+  };
+
   const init = async () => {
     const session = params.session;
     const site = await wallet.getConnectedSite(session.origin);
@@ -436,9 +506,42 @@ const SignTx = ({ params, origin }) => {
         (item) => item.id === (chainId || CHAINS[site!.chain].id)
       )!
     );
+    const lastTimeGas: ChainGas | null = await wallet.getLastTimeGasSelection(
+      chainId || CHAINS[site!.chain].id
+    );
+    const chain = Object.keys(CHAINS)
+      .map((key) => CHAINS[key])
+      .find((item) => item.id === (chainId || CHAINS[site!.chain].id))!;
+    let customGasPrice = 0;
+    if (lastTimeGas?.lastTimeSelect === 'gasPrice' && lastTimeGas.gasPrice) {
+      // use cached gasPrice if exist
+      customGasPrice = lastTimeGas.gasPrice;
+    }
+    if (isSpeedUp || isCancel) {
+      // use gasPrice set by dapp when it's a speedup or cancel tx
+      customGasPrice = parseInt(tx.gasPrice);
+    }
+    const gasList = await loadGasMarket(chain, customGasPrice);
+    let gas: GasLevel | null = null;
+    if (isSpeedUp || isCancel || lastTimeGas?.lastTimeSelect === 'gasPrice') {
+      gas = gasList.find((item) => item.level === 'custom')!;
+    } else if (
+      lastTimeGas?.lastTimeSelect &&
+      lastTimeGas?.lastTimeSelect === 'gasLevel'
+    ) {
+      const target = gasList.find(
+        (item) => item.level === lastTimeGas?.gasLevel
+      )!;
+      gas = target;
+    } else {
+      // no cache, use the fast level in gasMarket
+      gas = gasList.find((item) => item.level === 'fast')!;
+    }
+    setSelectedGas(gas);
     setTx({
       ...tx,
       chainId: chainId || CHAINS[site!.chain].id,
+      gasPrice: intToHex(gas.price),
     });
     setInited(true);
   };
@@ -450,7 +553,7 @@ const SignTx = ({ params, origin }) => {
   useEffect(() => {
     if (!inited) return;
 
-    if (!tx.gasPrice) {
+    if (!tx.gasPrice && chainId) {
       // use minimum gas as default gas if dapp not set gasPrice
       getDefaultGas();
       return;
@@ -487,6 +590,9 @@ const SignTx = ({ params, origin }) => {
               isReady={isReady}
               tx={tx}
               gasLimit={gasLimit}
+              noUpdate={isCancel || isSpeedUp}
+              gasList={gasList}
+              selectedGas={selectedGas}
               gas={{
                 ...(txDetail
                   ? txDetail.gas
@@ -550,7 +656,10 @@ const SignTx = ({ params, origin }) => {
                         size="large"
                         className="w-[172px]"
                         onClick={() => handleAllow()}
-                        disabled={!isReady}
+                        disabled={
+                          !isReady ||
+                          (selectedGas ? selectedGas.price <= 0 : true)
+                        }
                       >
                         {securityCheckStatus === 'pass'
                           ? t('Sign')
@@ -611,7 +720,10 @@ const SignTx = ({ params, origin }) => {
                         type="primary"
                         size="large"
                         className="w-[172px]"
-                        disabled={!forceProcess}
+                        disabled={
+                          !forceProcess ||
+                          (selectedGas ? selectedGas.price <= 0 : true)
+                        }
                         onClick={() => handleAllow(true)}
                       >
                         {t('Sign')}

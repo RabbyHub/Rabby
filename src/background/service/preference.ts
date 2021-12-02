@@ -1,14 +1,27 @@
 import cloneDeep from 'lodash/cloneDeep';
+import eventBus from '@/eventBus';
+import compareVersions from 'compare-versions';
 import { createPersistStore } from 'background/utils';
 import { keyringService, sessionService, i18n } from './index';
 import { TotalBalanceResponse, TokenItem } from './openapi';
-import { HARDWARE_KEYRING_TYPES } from 'consts';
+import { HARDWARE_KEYRING_TYPES, EVENTS } from 'consts';
 import { browser } from 'webextension-polyfill-ts';
-
+const version = process.env.release || '0';
 export interface Account {
   type: string;
   address: string;
   brandName: string;
+  alianName?: string;
+  displayBrandName?: string;
+  index?: number;
+}
+export interface ChainGas {
+  gasPrice?: number | null; // custom cached gas price
+  gasLevel?: string | null; // cached gasLevel
+  lastTimeSelect?: 'gasLevel' | 'gasPrice'; // last time selection, 'gasLevel' | 'gasPrice'
+}
+export interface GasCache {
+  [chainId: string]: ChainGas;
 }
 interface PreferenceStore {
   currentAccount: Account | undefined | null;
@@ -23,6 +36,11 @@ interface PreferenceStore {
   isDefaultWallet: boolean;
   lastTimeSendToken: Record<string, TokenItem>;
   walletSavedList: [];
+  alianNames: Record<string, string>;
+  initAlianNames: boolean;
+  gasCache: GasCache;
+  currentVersion: string;
+  firstOpen: boolean;
 }
 
 const SUPPORT_LOCALES = ['en', 'zh_CN'];
@@ -47,6 +65,11 @@ class PreferenceService {
         isDefaultWallet: false,
         lastTimeSendToken: {},
         walletSavedList: [],
+        alianNames: {},
+        initAlianNames: false,
+        gasCache: {},
+        currentVersion: '0',
+        firstOpen: false,
       },
     });
     if (!this.store.locale) {
@@ -61,6 +84,15 @@ class PreferenceService {
     }
     if (!this.store.lastTimeSendToken) {
       this.store.lastTimeSendToken = {};
+    }
+    if (!this.store.alianNames) {
+      this.store.alianNames = {};
+    }
+    if (!this.store.initAlianNames) {
+      this.store.initAlianNames = false;
+    }
+    if (!this.store.gasCache) {
+      this.store.gasCache = {};
     }
   };
 
@@ -168,6 +200,10 @@ class PreferenceService {
     this.store.currentAccount = account;
     if (account) {
       sessionService.broadcastEvent('accountsChanged', [account.address]);
+      eventBus.emit(EVENTS.broadcastToUI, {
+        method: 'accountsChanged',
+        params: account,
+      });
     }
   };
 
@@ -238,6 +274,49 @@ class PreferenceService {
 
   updateWalletSavedList = (list: []) => {
     this.store.walletSavedList = list;
+  };
+  getAlianName = (address: string) => {
+    const key = address.toLowerCase();
+    return this.store.alianNames[key];
+  };
+  getAllAlianName = () => {
+    return this.store.alianNames;
+  };
+  updateAlianName = (address: string, name: string) => {
+    const key = address.toLowerCase();
+    this.store.alianNames = {
+      ...this.store.alianNames,
+      [key]: name,
+    };
+  };
+  getInitAlianNameStatus = () => {
+    return this.store.initAlianNames;
+  };
+  changeInitAlianNameStatus = () => {
+    this.store.initAlianNames = true;
+  };
+  getLastTimeGasSelection = (chainId: string) => {
+    return this.store.gasCache[chainId];
+  };
+
+  updateLastTimeGasSelection = (chainId: string, gas: ChainGas) => {
+    this.store.gasCache = {
+      ...this.store.gasCache,
+      [chainId]: gas,
+    };
+  };
+  getIsFirstOpen = () => {
+    if (
+      !this.store.currentVersion ||
+      compareVersions(version, this.store.currentVersion)
+    ) {
+      this.store.currentVersion = version;
+      this.store.firstOpen = true;
+    }
+    return this.store.firstOpen;
+  };
+  updateIsFirstOpen = () => {
+    this.store.firstOpen = false;
   };
 }
 

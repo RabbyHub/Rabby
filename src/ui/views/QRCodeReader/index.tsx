@@ -45,6 +45,7 @@ const ImportHardware = () => {
           accounts,
           title: t('Imported successfully'),
           hasDivider: false,
+          editing: true,
         },
       });
     },

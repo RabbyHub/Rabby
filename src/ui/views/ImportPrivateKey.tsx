@@ -14,11 +14,16 @@ const ImportPrivateKey = () => {
 
   const [run, loading] = useWalletRequest(wallet.importPrivateKey, {
     onSuccess(accounts) {
+      const successShowAccounts = accounts.map((item, index) => {
+        return { ...item, index: index + 1 };
+      });
       history.replace({
         pathname: '/import/success',
         state: {
-          accounts,
+          accounts: successShowAccounts,
           title: t('Successfully created'),
+          editing: true,
+          importedAccount: true,
         },
       });
     },

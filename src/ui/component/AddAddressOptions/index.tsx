@@ -14,7 +14,13 @@ import IconMnemonics from 'ui/assets/walletlogo/mnemonics.svg';
 import IconCreatenewaddr from 'ui/assets/walletlogo/createnewaddr.svg';
 import IconKeystore from 'ui/assets/walletlogo/keystore.svg';
 import IconPrivatekey from 'ui/assets/walletlogo/privatekey.svg';
-import { IS_CHROME, WALLET_BRAND_CONTENT, KEYRING_CLASS } from 'consts';
+import {
+  IS_CHROME,
+  WALLET_BRAND_CONTENT,
+  KEYRING_CLASS,
+  BRAND_ALIAN_TYPE_TEXT,
+} from 'consts';
+
 import clsx from 'clsx';
 const normaltype: string[] = [
   'createAddress',
@@ -67,16 +73,20 @@ const AddAddressOptions = () => {
       });
     }
   };
-  const brandWallet = Object.values(WALLET_BRAND_CONTENT).map((item) => {
-    return {
-      leftIcon: item.image,
-      content: t(item.name),
-      brand: item.brand,
-      connectType: item.connectType,
-      image: item.image,
-      onClick: () => connectRouter(item),
-    };
-  });
+  const brandWallet = Object.values(WALLET_BRAND_CONTENT)
+    .map((item) => {
+      const existBrand = savedWallet.filter((brand) => brand === item.brand);
+      if (existBrand.length > 0) return null;
+      return {
+        leftIcon: item.image,
+        content: t(item.name),
+        brand: item.brand,
+        connectType: item.connectType,
+        image: item.image,
+        onClick: () => connectRouter(item),
+      };
+    })
+    .filter(Boolean);
   const renderData = [
     {
       leftIcon: IconCreatenewaddr,
@@ -84,7 +94,23 @@ const AddAddressOptions = () => {
       brand: 'createAddress',
       onClick: async () => {
         if (await wallet.checkHasMnemonic()) {
-          await wallet.deriveNewAccountFromMnemonic();
+          const account = await wallet.deriveNewAccountFromMnemonic();
+          const allAccounts = await wallet.getTypedAccounts(
+            KEYRING_CLASS.MNEMONIC
+          );
+          let mnemonLengh = 0;
+          if (allAccounts.length > 0) {
+            mnemonLengh = allAccounts[0]?.accounts?.length;
+          }
+          if (account && account.length > 0) {
+            await wallet.updateAlianName(
+              account[0]?.toLowerCase(),
+              `${
+                BRAND_ALIAN_TYPE_TEXT[KEYRING_CLASS.MNEMONIC] +
+                (mnemonLengh + 1)
+              }`
+            );
+          }
           message.success({
             icon: <img src={IconSuccess} className="icon icon-success" />,
             content: t('Successfully created'),
@@ -146,6 +172,14 @@ const AddAddressOptions = () => {
     }
     return [];
   };
+  const displayNormalData = renderData
+    .map((item) => {
+      const existItem = savedWallet.filter((brand) => brand === item.brand);
+      if (existItem.length > 0) return null;
+      return item;
+    })
+    .filter(Boolean);
+
   useEffect(() => {
     init();
   }, [savedWallet]);
@@ -177,46 +211,60 @@ const AddAddressOptions = () => {
             </Field>
           ))}
       </div>
-      <div className="add-address-options">
-        <div className="connect-hint">{t('Connect with')}</div>
-        {brandWallet.map((data, index) => (
+      <div
+        className={clsx(
+          'add-address-options',
+          brandWallet.length === 0 &&
+            displayNormalData.length === 0 &&
+            'hideclass'
+        )}
+      >
+        <div
+          className={clsx(
+            'connect-hint',
+            brandWallet.length === 0 && 'hideclass'
+          )}
+        >
+          {t('Connect with')}
+        </div>
+        {brandWallet.map((data) => (
           <Field
             className="address-options"
-            key={data.content}
-            brand={data.brand}
-            leftIcon={<img src={data.leftIcon} className="icon wallet-icon" />}
+            key={data!.content}
+            brand={data!.brand}
+            leftIcon={<img src={data!.leftIcon} className="icon wallet-icon" />}
             rightIcon={
-              !savedWallet.toString().includes(data.brand) ? (
+              !savedWallet.toString().includes(data!.brand) ? (
                 <img src={IconArrowRight} className="icon icon-arrow-right" />
               ) : null
             }
-            showWalletConnect={data.connectType === 'WalletConnect'}
-            onClick={data.onClick}
+            showWalletConnect={data!.connectType === 'WalletConnect'}
+            onClick={data!.onClick}
             callback={init}
             address
           >
-            {data.content}
+            {data!.content}
           </Field>
         ))}
         <div className="divide-line-list"></div>
-        {renderData.map((data) => {
-          return !showMnemonic && data.brand === 'importviaMnemonic' ? null : (
+        {displayNormalData.map((data) => {
+          return !showMnemonic && data!.brand === 'importviaMnemonic' ? null : (
             <Field
               className="address-options"
-              key={data.content}
-              leftIcon={<img src={data.leftIcon} className="icon" />}
+              key={data!.content}
+              leftIcon={<img src={data!.leftIcon} className="icon" />}
               rightIcon={
-                !savedWallet.toString().includes(data.brand) ? (
+                !savedWallet.toString().includes(data!.brand) ? (
                   <img src={IconArrowRight} className="icon icon-arrow-right" />
                 ) : null
               }
-              brand={data.brand}
-              subText={data.subText}
-              onClick={data.onClick}
+              brand={data!.brand}
+              subText={data!.subText}
+              onClick={data!.onClick}
               callback={init}
               address
             >
-              {data.content}
+              {data!.content}
             </Field>
           );
         })}

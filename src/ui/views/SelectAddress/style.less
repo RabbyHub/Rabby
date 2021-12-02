@@ -5,7 +5,7 @@
       padding-bottom: 40px !important;
     }
 
-    .addresses {
+    .address {
       margin-bottom: 0;
       & > div {
         height: 62px;
@@ -17,13 +17,41 @@
         margin-top: 0;
       }
     }
-  }
-  .select-address-item {
-    .address-viewer-text {
-      font-weight: 500;
-      font-size: 15px;
-      line-height: 18px;
-      color: #3B3E4A;
+    ::-webkit-scrollbar {
+      display: none;
     }
+  }
+}
+.select-address {
+  overflow: hidden;
+  .address {
+    margin-bottom: 8px;
+  }
+}
+.select-address-wrapper {
+  background: #ffffff;
+  border-radius: 6px;
+  color: #707280;
+  font-size: 12px;
+  padding: 10px 20px 6px;
+  margin: 0 auto;
+  justify-content: space-between;
+  ::-webkit-scrollbar {
+    display: none; /* Safari and Chrome */
+  }
+  .ant-input {
+    width: 48px;
+    height: 24px;
+    background: #f5f6fa;
+    border: 1px solid #e5e9ef;
+    box-sizing: border-box;
+    &.active {
+      border: 1px solid #f24822;
+    }
+  }
+  .error-message {
+    font-size: 12px;
+    color: #f24822;
+    margin-left: 3px;
   }
 }

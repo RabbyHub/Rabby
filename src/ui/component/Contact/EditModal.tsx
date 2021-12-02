@@ -2,17 +2,18 @@ import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Modal, Input, Button, Form, message } from 'antd';
 import { useWallet } from 'ui/utils';
-import { AddressViewer } from '..';
 import { ContactBookItem } from 'background/service/contactBook';
 import IconSuccess from 'ui/assets/success.svg';
 import './style.less';
+import clsx from 'clsx';
 
 interface EditModalProps {
   address: string;
   visible: boolean;
-  onOk(data: ContactBookItem | null): void;
+  onOk(data: ContactBookItem | null, type: string): void;
   onCancel(): void;
   isEdit: boolean;
+  accountType: string;
 }
 
 const EditModal = ({
@@ -21,6 +22,7 @@ const EditModal = ({
   onOk,
   onCancel,
   isEdit = true,
+  accountType = 'others',
 }: EditModalProps) => {
   const { t } = useTranslation();
   const wallet = useWallet();
@@ -33,6 +35,7 @@ const EditModal = ({
         address,
         name,
       });
+      wallet.updateAlianName(address.toLowerCase(), name);
     } else {
       wallet.addContact({
         address,
@@ -44,12 +47,12 @@ const EditModal = ({
         duration: 1,
       });
     }
-    onOk({ address, name });
+    onOk({ address, name }, accountType);
   };
 
   const handleRemoveContact = () => {
     wallet.removeContact(address);
-    onOk(null);
+    onOk(null, accountType);
   };
 
   const strLength = (str) => {
@@ -97,26 +100,29 @@ const EditModal = ({
   useEffect(() => {
     init();
   }, []);
-
   return (
     <Modal
-      className="edit-contact-modal"
+      className={
+        isEdit && accountType === 'others'
+          ? 'edit-contact-modal-with-remove'
+          : 'edit-contact-modal'
+      }
       title={isEdit ? t('Edit address memo') : t('Add address memo')}
       visible={visible}
       onOk={handleConfirm}
       onCancel={onCancel}
       footer={null}
+      transitionName=""
+      maskTransitionName=""
       width="360px"
       destroyOnClose
     >
-      <div className="flex justify-center mb-16">
-        <AddressViewer address={address} showArrow={false} />
-      </div>
       <Form onFinish={handleConfirm}>
         <Input
           autoFocus
           allowClear
           value={name}
+          style={{ background: '#F5F6FA' }}
           onChange={(e) => handleNameChange(e.target.value)}
         />
       </Form>
@@ -131,7 +137,7 @@ const EditModal = ({
           {t('Confirm')}
         </Button>
       </div>
-      {isEdit && (
+      {isEdit && accountType === 'others' && (
         <div className="remove-btn">
           <Button type="link" onClick={handleRemoveContact}>
             {t('Remove from Contacts')}

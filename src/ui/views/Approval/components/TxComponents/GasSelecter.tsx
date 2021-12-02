@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { Input, Button, Skeleton, Form } from 'antd';
 import BigNumber from 'bignumber.js';
 import { ValidateStatus } from 'antd/lib/form/FormItem';
@@ -6,10 +6,9 @@ import { useTranslation, Trans } from 'react-i18next';
 import { useDebounce } from 'react-use';
 import { CHAINS, GAS_LEVEL_TEXT, MINIMUM_GAS_LIMIT } from 'consts';
 import { GasResult, Tx, GasLevel } from 'background/service/openapi';
-import { formatSeconds, useWallet } from 'ui/utils';
-import { Modal, FieldCheckbox } from 'ui/component';
+import { Modal } from 'ui/component';
+import { formatTokenAmount } from 'ui/utils/number';
 import IconSetting from 'ui/assets/setting-gray.svg';
-import IconArrowDown from 'ui/assets/arrow-down.svg';
 import clsx from 'clsx';
 
 export interface GasSelectorResponse extends GasLevel {
@@ -27,6 +26,9 @@ interface GasSelectorProps {
   recommendGasLimit: number;
   nonce: string;
   disableNonce: boolean;
+  noUpdate: boolean;
+  gasList: GasLevel[];
+  selectedGas: GasLevel | null;
 }
 
 const GasSelector = ({
@@ -39,50 +41,21 @@ const GasSelector = ({
   recommendGasLimit,
   nonce,
   disableNonce,
+  gasList,
+  selectedGas,
 }: GasSelectorProps) => {
-  const wallet = useWallet();
   const { t } = useTranslation();
-  const [advanceExpanded, setAdvanceExpanded] = useState(false);
+  const customerInputRef = useRef<Input>(null);
   const [afterGasLimit, setGasLimit] = useState<string | number>(
     Number(gasLimit)
   );
   const [modalVisible, setModalVisible] = useState(false);
-  const [isLoading, setIsLoading] = useState(true);
   const [customGas, setCustomGas] = useState<string | number>(
     Number(tx.gasPrice) / 1e9
   );
   const [customNonce, setCustomNonce] = useState(Number(nonce));
+  const [isFirstTimeLoad, setIsFirstTimeLoad] = useState(true);
   const [errMsg, setErrMsg] = useState(null);
-  const [gasList, setGasList] = useState<GasLevel[]>([
-    {
-      level: 'slow',
-      front_tx_count: 0,
-      price: 0,
-      estimated_seconds: 0,
-      base_fee: 0,
-    },
-    {
-      level: 'normal',
-      front_tx_count: 0,
-      price: 0,
-      estimated_seconds: 0,
-      base_fee: 0,
-    },
-    {
-      level: 'fast',
-      front_tx_count: 0,
-      price: 0,
-      estimated_seconds: 0,
-      base_fee: 0,
-    },
-    {
-      level: 'custom',
-      price: Number(tx.gasPrice),
-      front_tx_count: 0,
-      estimated_seconds: 0,
-      base_fee: 0,
-    },
-  ]);
   const [validateStatus, setValidateStatus] = useState<
     Record<string, { status: ValidateStatus; message: string | null }>
   >({
@@ -95,7 +68,6 @@ const GasSelector = ({
       message: null,
     },
   });
-  const [selectedGas, setSelectGas] = useState<GasLevel | null>(null);
   const chain = Object.values(CHAINS).find((item) => item.id === chainId)!;
 
   const handleSetRecommendTimes = () => {
@@ -129,7 +101,7 @@ const GasSelector = ({
         },
       });
     }
-    if (selectedGas && selectedGas.price * 1e9 < gasList[0].base_fee) {
+    if (selectedGas && selectedGas.price < gasList[0].base_fee) {
       setErrMsg(t('Gas price too low'));
     } else {
       setErrMsg(null);
@@ -143,40 +115,7 @@ const GasSelector = ({
     }
   };
 
-  useEffect(() => {
-    formValidator();
-  }, [customGas, afterGasLimit, selectedGas, gasList]);
-
-  const loadGasMarket = async () => {
-    const list = await wallet.openapi.gasMarket(
-      chain.serverId,
-      customGas && customGas > 0 ? Number(customGas) * 1e9 : undefined
-    );
-    setGasList(
-      list.map((item) =>
-        item.level === 'custom' ? { ...item, price: item.price / 1e9 } : item
-      )
-    );
-    setIsLoading(false);
-  };
-
-  const handleSelectGas = (checked: boolean, gas: GasLevel) => {
-    if (!checked || isLoading) {
-      return;
-    }
-    setSelectGas(gas);
-  };
-
   const handleShowSelectModal = () => {
-    setCustomGas(Number(tx.gasPrice) / 1e9);
-    setSelectGas({
-      level: 'custom',
-      price: Number(tx.gasPrice) / 1e9,
-      front_tx_count: 0,
-      estimated_seconds: 0,
-      base_fee: gasList[0].base_fee,
-    });
-    setCustomNonce(Number(nonce));
     setModalVisible(true);
   };
 
@@ -187,19 +126,26 @@ const GasSelector = ({
         ...selectedGas,
         price: Number(customGas) * 1e9,
         gasLimit: Number(afterGasLimit),
-        nonce: customNonce,
+        nonce: Number(customNonce || nonce),
+        level: selectedGas.level,
       });
     } else {
       onChange({
         ...selectedGas,
         gasLimit: Number(afterGasLimit),
-        nonce: customNonce,
+        nonce: Number(customNonce || nonce),
+        level: selectedGas.level,
       });
     }
+  };
+
+  const handleModalConfirmGas = () => {
+    handleConfirmGas();
     setModalVisible(false);
   };
 
   const handleCustomGasChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    e.stopPropagation();
     if (/^\d*(\.\d*)?$/.test(e.target.value)) {
       setCustomGas(e.target.value);
     }
@@ -217,23 +163,79 @@ const GasSelector = ({
     }
   };
 
-  const handleClickAdvance = () => {
-    setAdvanceExpanded(!advanceExpanded);
+  const panelSelection = (e, gas: GasLevel) => {
+    e.stopPropagation();
+    let target = gas;
+
+    if (gas.level === selectedGas?.level) return;
+
+    if (gas.level === 'custom') {
+      if (selectedGas && selectedGas.level !== 'custom' && !gas.price) {
+        target =
+          gasList.find((item) => item.level === selectedGas.level) || gas;
+      }
+      setCustomGas(Number(target.price) / 1e9);
+      onChange({
+        ...target,
+        gasLimit: Number(afterGasLimit),
+        nonce: Number(customNonce || nonce),
+        level: 'custom',
+      });
+      customerInputRef.current?.focus();
+    } else {
+      onChange({
+        ...gas,
+        gasLimit: Number(afterGasLimit),
+        nonce: Number(customNonce || nonce),
+        level: gas?.level,
+      });
+    }
+  };
+  const customGasConfirm = (e) => {
+    const gas = {
+      level: 'custom',
+      price: Number(e?.target?.value),
+      front_tx_count: 0,
+      estimated_seconds: 0,
+      base_fee: gasList[0].base_fee,
+    };
+    onChange({
+      ...gas,
+      price: Number(gas.price),
+      gasLimit: Number(afterGasLimit),
+      nonce: Number(customNonce || nonce),
+      level: gas.level,
+    });
   };
 
   useDebounce(
     () => {
-      modalVisible && loadGasMarket();
+      isReady && handleConfirmGas();
     },
     500,
-    [modalVisible, customGas]
+    [customGas]
   );
 
   useEffect(() => {
     setGasLimit(Number(gasLimit));
   }, [gasLimit]);
 
-  if (!isReady)
+  useEffect(() => {
+    formValidator();
+  }, [afterGasLimit, selectedGas, gasList]);
+
+  useEffect(() => {
+    if (selectedGas?.level !== 'custom') return;
+    setCustomGas(selectedGas.price / 1e9);
+  }, [selectedGas]);
+
+  useEffect(() => {
+    if (isReady && isFirstTimeLoad) {
+      setIsFirstTimeLoad(false);
+    }
+  }, [isReady]);
+
+  if (!isReady && isFirstTimeLoad)
     return (
       <>
         <p className="section-title">{t('gasCostTitle')}</p>
@@ -241,125 +243,102 @@ const GasSelector = ({
           <div className="gas-info">
             <Skeleton.Input active style={{ width: 200 }} />
           </div>
+          <div className="flex mt-15">
+            <Skeleton.Button
+              active
+              style={{ width: 72, height: 48, marginRight: 4 }}
+            />
+            <Skeleton.Button
+              active
+              style={{ width: 72, height: 48, marginLeft: 4, marginRight: 4 }}
+            />
+            <Skeleton.Button
+              active
+              style={{ width: 72, height: 48, marginLeft: 4, marginRight: 4 }}
+            />
+            <Skeleton.Button
+              active
+              style={{ width: 72, height: 48, marginLeft: 4 }}
+            />
+          </div>
         </div>
       </>
     );
-
   return (
     <>
       <p className="section-title">{t('gasCostTitle')}</p>
-      <div
-        className="gas-selector gray-section-block"
-        onClick={handleShowSelectModal}
-      >
-        <div className="gas-info">
-          <p className="text-gray-content text-14">
-            {`${gas.estimated_gas_cost_value} ${chain.nativeTokenSymbol}`} ≈ $
-            {gas.estimated_gas_cost_usd_value.toFixed(2)}
+      <div className="gas-selector gray-section-block">
+        <div className="top">
+          <p className="usmoney">
+            ≈ ${gas.estimated_gas_cost_usd_value.toFixed(2)}
           </p>
-          <p className="text-gray-content text-12">
-            {Number(tx.gasPrice) / 1e9} Gwei -{' '}
-            {formatSeconds(gas.estimated_seconds)}
+          <p className="gasmoney">
+            {`${formatTokenAmount(gas.estimated_gas_cost_value)} ${
+              chain.nativeTokenSymbol
+            }`}
           </p>
+          <div className="right">
+            {errMsg && (
+              <p className="text-12 text-red-light mb-0 mr-8">{errMsg}</p>
+            )}
+            <img
+              src={IconSetting}
+              alt="setting"
+              className="icon icon-setting"
+              onClick={handleShowSelectModal}
+            />
+          </div>
         </div>
-        <div className="right">
-          <img src={IconSetting} alt="setting" className="icon icon-setting" />
+        <div className="card-container">
+          {gasList.map((item) => (
+            <div
+              className={clsx('card cursor-pointer', {
+                active: selectedGas?.level === item.level,
+              })}
+              onClick={(e) => panelSelection(e, item)}
+            >
+              <div className="gas-level">{t(GAS_LEVEL_TEXT[item.level])}</div>
+              <div
+                className={clsx('cardTitle', {
+                  'custom-input': item.level === 'custom',
+                  active: selectedGas?.level === item.level,
+                })}
+              >
+                {item.level === 'custom' ? (
+                  <Input
+                    className="cursor-pointer"
+                    value={customGas}
+                    defaultValue={customGas}
+                    onChange={handleCustomGasChange}
+                    onClick={(e) => panelSelection(e, item)}
+                    onPressEnter={customGasConfirm}
+                    ref={customerInputRef}
+                    autoFocus={selectedGas?.level === item.level}
+                    min={0}
+                    bordered={false}
+                  />
+                ) : (
+                  item.price / 1e9
+                )}
+              </div>
+            </div>
+          ))}
         </div>
       </div>
       <Modal
         visible={modalVisible}
-        title={t('Select Gas Setting')}
+        title={t('Advanced Options')}
         className="gas-modal"
         onCancel={() => setModalVisible(false)}
         okText="Confirm"
         destroyOnClose
       >
         <Form onFinish={handleConfirmGas}>
-          <p className="section-title">{t('gasPriceTitle')}</p>
-          <div className={clsx('gas-selector-panel', { invalid: !!errMsg })}>
-            {gasList.map((gas) => (
-              <FieldCheckbox
-                className="mt-8"
-                checked={selectedGas?.level === gas.level}
-                onChange={(checked: boolean) => handleSelectGas(checked, gas)}
-                showCheckbox={!isLoading}
-                checkboxSize={16}
-              >
-                <div className="gas-content">
-                  {isLoading ? (
-                    <>
-                      <div className="gas-content__info">
-                        <p className="text-gray-title text-13 font-medium leading-none mb-4">
-                          <Skeleton.Input active style={{ width: 80 }} />
-                        </p>
-                        <p className="text-gray-content text-12 mb-0">
-                          <Skeleton.Input active style={{ width: 128 }} />
-                        </p>
-                      </div>
-                    </>
-                  ) : (
-                    <>
-                      <div className="gas-content__info">
-                        <p className="text-gray-title text-13 font-medium leading-none mb-4">
-                          {t(GAS_LEVEL_TEXT[gas.level])}
-                        </p>
-                        <p className="text-gray-content text-12 mb-0">
-                          {formatSeconds(gas.estimated_seconds)} -{' '}
-                          {gas.front_tx_count} {t('txn ahead')}
-                        </p>
-                      </div>
-                      <div className="gas-content__price">
-                        {gas.level === 'custom' ? (
-                          <Form.Item
-                            className="relative input-wrapper mb-0"
-                            validateStatus={validateStatus.customGas.status}
-                          >
-                            <Input
-                              placeholder="Custom"
-                              value={customGas}
-                              defaultValue={customGas}
-                              onChange={handleCustomGasChange}
-                              onClick={(e) => {
-                                e.stopPropagation();
-                              }}
-                              autoFocus
-                              min={0}
-                            />
-                          </Form.Item>
-                        ) : (
-                          gas.price / 1e9
-                        )}
-                      </div>
-                    </>
-                  )}
-                </div>
-              </FieldCheckbox>
-            ))}
-          </div>
-          {errMsg && <p className="mt-20 text-red-light mb-0">{errMsg}</p>}
-          <div className="gas-limit mt-20">
+          <div className="gas-limit">
             <p className="section-title flex">
-              <span className="flex-1">
-                {advanceExpanded ? t('GasLimit') : ''}
-              </span>
-              <span
-                className="text-right cursor-pointer"
-                onClick={handleClickAdvance}
-              >
-                {t('Advanced Options')}
-                <img
-                  className={clsx('icon icon-arrow-down inline-block ml-4', {
-                    expanded: advanceExpanded,
-                  })}
-                  src={IconArrowDown}
-                />
-              </span>
+              <span className="flex-1">{t('GasLimit')}</span>
             </p>
-            <div
-              className={clsx('gas-limit-panel-wrapper', {
-                expanded: advanceExpanded,
-              })}
-            >
+            <div className="expanded gas-limit-panel-wrapper">
               <Form.Item
                 className="gas-limit-panel mb-0"
                 validateStatus={validateStatus.gasLimit.status}
@@ -398,7 +377,7 @@ const GasSelector = ({
                 <p className="section-title mt-20">{t('Nonce')}</p>
                 <Form.Item className="gas-limit-panel mb-0" required>
                   <Input
-                    value={customNonce}
+                    value={customNonce || Number(nonce)}
                     onChange={handleCustomNonceChange}
                     bordered={false}
                     disabled={disableNonce}
@@ -413,10 +392,9 @@ const GasSelector = ({
               type="primary"
               className="w-[200px]"
               size="large"
-              onClick={handleConfirmGas}
+              onClick={handleModalConfirmGas}
               disabled={
-                !selectedGas ||
-                isLoading ||
+                !isReady ||
                 validateStatus.customGas.status === 'error' ||
                 validateStatus.gasLimit.status === 'error'
               }

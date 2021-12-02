@@ -2,8 +2,8 @@ import React, { useState } from 'react';
 import { Button, Tooltip } from 'antd';
 import { useTranslation } from 'react-i18next';
 import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
-import { KEYRING_CLASS } from 'consts';
 import { WaitingSignComponent } from './SignText';
+import { KEYRING_CLASS, KEYRING_TYPE } from 'consts';
 import { useApproval, useWallet } from 'ui/utils';
 import {
   SecurityCheckResponse,
@@ -13,7 +13,7 @@ import SecurityCheckBar from './SecurityCheckBar';
 import SecurityCheckDetail from './SecurityCheckDetail';
 import AccountCard from './AccountCard';
 import IconQuestionMark from 'ui/assets/question-mark-gray.svg';
-
+import IconInfo from 'ui/assets/infoicon.svg';
 interface SignTypedDataProps {
   method: string;
   data: any[];
@@ -28,6 +28,7 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
   const [, resolveApproval, rejectApproval] = useApproval();
   const { t } = useTranslation();
   const wallet = useWallet();
+  const [isWatch, setIsWatch] = useState(false);
   const { data, session, method } = params;
   let parsedMessage = '';
   let _message = '';
@@ -65,6 +66,9 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
   const handleSecurityCheck = async () => {
     setSecurityCheckStatus('loading');
     const currentAccount = await wallet.getCurrentAccount();
+    if (currentAccount.type === KEYRING_TYPE.WatchAddressKeyring) {
+      setIsWatch(true);
+    }
     const dataStr = JSON.stringify(data);
     const check = await wallet.openapi.checkText(
       currentAccount!.address,
@@ -165,19 +169,40 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
           >
             {t('Cancel')}
           </Button>
-          <Button
-            type="primary"
-            size="large"
-            className="w-[172px]"
-            onClick={() => handleAllow()}
-          >
-            {securityCheckStatus === 'pass' || securityCheckStatus === 'pending'
-              ? t('Sign')
-              : t('Continue')}
-          </Button>
+          {isWatch ? (
+            <Tooltip
+              overlayClassName="rectangle watcSign__tooltip"
+              title={t('Use_other_methods')}
+            >
+              <div className="w-[172px] relative flex items-center">
+                <Button
+                  type="primary"
+                  size="large"
+                  className="w-[172px]"
+                  onClick={() => handleAllow()}
+                  disabled={true}
+                >
+                  {t('Proceed')}
+                </Button>
+                <img src={IconInfo} className="absolute right-[40px]" />
+              </div>
+            </Tooltip>
+          ) : (
+            <Button
+              type="primary"
+              size="large"
+              className="w-[172px]"
+              onClick={() => handleAllow()}
+            >
+              {securityCheckStatus === 'pass' ||
+              securityCheckStatus === 'pending'
+                ? t('Sign')
+                : t('Continue')}{' '}
+            </Button>
+          )}
         </div>
       </footer>
-      {securityCheckDetail && (
+      {securityCheckDetail && !isWatch && (
         <SecurityCheckDetail
           visible={showSecurityCheckDetail}
           onCancel={() => setShowSecurityCheckDetail(false)}

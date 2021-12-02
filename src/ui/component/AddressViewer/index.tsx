@@ -9,6 +9,9 @@ interface AddressViewProps {
   ellipsis?: boolean;
   showArrow?: boolean;
   className?: string;
+  showImportIcon?: boolean;
+  index?: number;
+  showIndex?: boolean;
 }
 
 export default ({
@@ -17,6 +20,8 @@ export default ({
   ellipsis = true,
   showArrow = true,
   className = 'normal',
+  index = -1,
+  showIndex = false,
 }: AddressViewProps) => {
   return (
     <div
@@ -25,6 +30,7 @@ export default ({
       style={{ cursor: onClick ? 'pointer' : 'inherit' }}
     >
       <div className={cx('address-viewer-text', className)} title={address}>
+        {showIndex && index > 0 && <div className="number-index">{index}</div>}
         {ellipsis ? `${address.slice(0, 6)}...${address.slice(-4)}` : address}
       </div>
       {showArrow && (

@@ -1,5 +1,4 @@
 import React, {
-  useImperativeHandle,
   forwardRef,
   useRef,
   useCallback,
@@ -10,9 +9,10 @@ import React, {
 import clsx from 'clsx';
 import { findIndex } from 'lodash';
 import { FixedSizeList, areEqual } from 'react-window';
-import { sortBy, unionBy } from 'lodash';
 import { DisplayedKeryring } from 'background/service/keyring';
 import { KEYRING_TYPE } from 'consts';
+import { useWallet } from 'ui/utils';
+
 import AddressItem, { AddressItemProps } from './AddressItem';
 import './style.less';
 type ACTION = 'management' | 'switch';
@@ -24,6 +24,7 @@ interface AddressListProps {
   hiddenAddresses?: { type: string; address: string }[];
   onClick?(account: string, keyring: any, brandName: string): void;
   currentAccount?: any;
+  alianNames?: any;
 }
 interface RowProps {
   data: any;
@@ -41,13 +42,7 @@ const SORT_WEIGHT = {
 const Row: React.FC<RowProps> = memo((props) => {
   const { data, index, style } = props;
   const { combinedList, others } = data;
-  const {
-    currentAccount,
-    ActionButton,
-    onClick,
-    hiddenAddresses,
-    addressItems,
-  } = others;
+  const { currentAccount, ActionButton, onClick, hiddenAddresses } = others;
   const account = combinedList[index];
   return (
     <li
@@ -67,9 +62,7 @@ const Row: React.FC<RowProps> = memo((props) => {
           hiddenAddresses={hiddenAddresses}
           currentAccount={currentAccount}
           showAssets
-          ref={(el) => {
-            addressItems.current[index] = el;
-          }}
+          className="h-[56px]"
         />
       </ul>
     </li>
@@ -85,35 +78,33 @@ const AddressList: any = forwardRef(
       onClick,
       hiddenAddresses = [],
       currentAccount,
+      alianNames,
     }: AddressListProps,
     ref
   ) => {
+    const wallet = useWallet();
     const [start, setStart] = useState(0);
     const [end, setEnd] = useState(10);
-
+    const [alianNamesList, setAlianNamesList] = useState(alianNames);
     const addressItems = useRef(new Array(list.length));
     const fixedList = useRef<FixedSizeList>();
-    const updateAllBalance = () => {
-      addressItems.current.slice(start, end + 1).forEach((item) => {
-        item.updateBalance();
-      });
-    };
-
-    useImperativeHandle(ref, () => ({
-      updateAllBalance,
-    }));
-    const combinedList = unionBy(
-      sortBy(list, (item) => SORT_WEIGHT[item.type])
-        .map((group) => {
-          const templist = group.accounts.map(
-            (item) =>
-              (item = { ...item, type: group.type, keyring: group.keyring })
-          );
-          return templist;
-        })
-        .flat(1),
-      (item) => `${item.keyring.type}-${item.address.toLowerCase()}`
-    );
+    const combinedList = list
+      .sort((a, b) => {
+        return SORT_WEIGHT[a.type] - SORT_WEIGHT[b.type];
+      })
+      .map((group) => {
+        const templist = group.accounts.map(
+          (item) =>
+            (item = {
+              ...item,
+              alianName: alianNamesList[item.address.toLowerCase()],
+              type: group.type,
+              keyring: group.keyring,
+            })
+        );
+        return templist;
+      })
+      .flat(1);
     const itemKey = useCallback(
       (index: number, data: any) =>
         data.combinedList[index].address + data.combinedList[index].brandName,
@@ -129,10 +120,18 @@ const AddressList: any = forwardRef(
         fixedList.current?.scrollToItem(position, 'center');
       }
     }, []);
+    useEffect(() => {
+      if (currentAccount) {
+        const position = findIndex(combinedList, currentAccount);
+        fixedList.current?.scrollToItem(position, 'center');
+      }
+    }, [alianNamesList]);
+    const switchAddressHeight =
+      combinedList.length > 5 ? 400 : combinedList.length * 80;
     return (
       <ul className={`address-group-list ${action}`}>
         <FixedSizeList
-          height={currentAccount ? 400 : 500}
+          height={currentAccount ? switchAddressHeight : 500}
           width="100%"
           itemData={{
             combinedList: combinedList,
@@ -145,7 +144,7 @@ const AddressList: any = forwardRef(
             },
           }}
           itemCount={combinedList.length}
-          itemSize={72}
+          itemSize={64}
           itemKey={itemKey}
           ref={fixedList}
           onItemsRendered={onItemsRendered}

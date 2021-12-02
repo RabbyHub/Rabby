@@ -57,7 +57,7 @@ const SendToken = () => {
     time_at: 0,
     amount: 0,
   });
-
+  const [sendAlianName, setSendAlianName] = useState<string | null>(null);
   const [showEditContactModal, setShowEditContactModal] = useState(false);
   const [showListContactModal, setShowListContactModal] = useState(false);
   const [editBtnDisabled, setEditBtnDisabled] = useState(true);
@@ -66,7 +66,7 @@ const SendToken = () => {
   const [balanceError, setBalanceError] = useState(null);
   const [balanceWarn, setBalanceWarn] = useState(null);
   const [showContactInfo, setShowContactInfo] = useState(false);
-
+  const [accountType, setAccountType] = useState('');
   const canSubmit =
     isValidAddress(form.getFieldValue('to')) &&
     !balanceError &&
@@ -139,10 +139,11 @@ const SendToken = () => {
     window.close();
   };
 
-  const handleConfirmContact = (data: ContactBookItem | null) => {
+  const handleConfirmContact = (data: ContactBookItem | null, type: string) => {
     setShowEditContactModal(false);
     setShowListContactModal(false);
     setContactInfo(data);
+    setAccountType(type);
     const values = form.getFieldsValue();
     const to = data ? data.address : '';
     if (!data) return;
@@ -215,10 +216,13 @@ const SendToken = () => {
     });
     setCacheAmount(resultAmount);
     const addressContact = await wallet.getContactByAddress(to);
-    if (addressContact) {
-      setContactInfo(addressContact);
+    const alianName = await wallet.getAlianName(to.toLowerCase());
+    if (addressContact || alianName) {
+      setContactInfo(addressContact || { to, name: alianName });
+      alianName ? setAccountType('my') : setAccountType('others');
     } else if (!addressContact && contactInfo) {
       setContactInfo(null);
+      setAccountType('');
     }
   };
 
@@ -345,7 +349,10 @@ const SendToken = () => {
     }
     loadCurrentToken(needLoadToken, account.address);
   };
-
+  const getAlianName = async () => {
+    const alianName = await wallet.getAlianName(currentAccount?.address);
+    setSendAlianName(alianName);
+  };
   useEffect(() => {
     init();
     return () => {
@@ -353,6 +360,11 @@ const SendToken = () => {
     };
   }, []);
 
+  useEffect(() => {
+    if (currentAccount) {
+      getAlianName();
+    }
+  }, [currentAccount]);
   return (
     <div className="send-token">
       <PageHeader onBack={handleClickBack} forceShowBack>
@@ -376,6 +388,7 @@ const SendToken = () => {
               privatekey: KEYRING_PURPLE_LOGOS[KEYRING_CLASS.PRIVATE_KEY],
               watch: KEYRING_PURPLE_LOGOS[KEYRING_CLASS.WATCH],
             }}
+            alianName={sendAlianName}
           />
           <div className="section-title">
             <span className="section-title__to">{t('To')}</span>
@@ -516,6 +529,7 @@ const SendToken = () => {
         visible={showEditContactModal}
         address={form.getFieldValue('to')}
         onOk={handleConfirmContact}
+        accountType={accountType}
         onCancel={handleCancelEditContact}
         isEdit={!!contactInfo}
       />

@@ -68,6 +68,9 @@ import LogoLedger from 'ui/assets/walletlogo/ledger28.png';
 import LogoMnemonic from 'ui/assets/walletlogo/mnemoniclogo.svg';
 import LogoPrivateKey from 'ui/assets/walletlogo/privatekeylogo.svg';
 import LogoWatch from 'ui/assets/walletlogo/watchlogo.svg';
+import IconPrivateKeyWhite from 'ui/assets/walletlogo/private-key-white.svg';
+import IconWatchWhite from 'ui/assets/walletlogo/IconWatch-white.svg';
+import IconMnemonicWhite from 'ui/assets/walletlogo/IconMnemonic-white.svg';
 
 export enum CHAINS_ENUM {
   ETH = 'ETH',
@@ -332,7 +335,14 @@ export const KEYRING_TYPE_TEXT = {
   [KEYRING_CLASS.HARDWARE.TREZOR]: 'Imported by Trezor',
   [KEYRING_CLASS.HARDWARE.ONEKEY]: 'Imported by Onekey',
 };
-
+export const BRAND_ALIAN_TYPE_TEXT = {
+  [KEYRING_TYPE.HdKeyring]: 'Mnemonic',
+  [KEYRING_TYPE.SimpleKeyring]: 'Private Key',
+  [KEYRING_TYPE.WatchAddressKeyring]: 'Watch',
+  [KEYRING_CLASS.HARDWARE.LEDGER]: 'Ledger',
+  [KEYRING_CLASS.HARDWARE.TREZOR]: 'Trezor',
+  [KEYRING_CLASS.HARDWARE.ONEKEY]: 'Onekey',
+};
 export const HARDWARE_KEYRING_TYPES = {
   BitBox02: {
     type: 'BitBox02 Hardware',
@@ -482,37 +492,6 @@ export enum BRAND_WALLET_CONNECT_TYPE {
   TrezorConnect = 'TrezorConnect',
   GnosisConnect = 'GnosisConnect',
 }
-
-export const WATCH_ADDRESS_TYPE_CONTENT = {
-  [WATCH_ADDRESS_TYPES.TP]: {
-    id: 0,
-    name: 'TokenPocket',
-    brand: WATH_ADDRESS_BRAND.TP,
-    icon: './images/brand-logos/icon-tp.png',
-    connectType: WATCH_ADDRESS_CONNECT_TYPE.WalletConnect,
-  },
-  [WATCH_ADDRESS_TYPES.IMTOKEN]: {
-    id: 1,
-    name: 'ImToken',
-    brand: WATH_ADDRESS_BRAND.IMTOKEN,
-    icon: './images/brand-logos/icon-imtoken.png',
-    connectType: WATCH_ADDRESS_CONNECT_TYPE.WalletConnect,
-  },
-  // [WATCH_ADDRESS_TYPES.TRUSTWALLET]: {
-  //   id: 2,
-  //   name: 'Trust Wallet',
-  //   brand: WATH_ADDRESS_BRAND.TRUSTWALLET,
-  //   icon: './images/brand-logos/icon-trustwallet.png',
-  //   connectType: WATCH_ADDRESS_CONNECT_TYPE.WalletConnect,
-  // }, disable TrustWallet since walletconnect of TW is white-list based
-  [WATCH_ADDRESS_TYPES.MATHWALLET]: {
-    id: 3,
-    name: 'Math Wallet',
-    brand: WATH_ADDRESS_BRAND.MATHWALLET,
-    icon: './images/brand-logos/icon-mathwallet.png',
-    connectType: WATCH_ADDRESS_CONNECT_TYPE.WalletConnect,
-  },
-};
 
 export const WALLETCONNECT_STATUS_MAP = {
   PENDING: 1,
@@ -666,6 +645,15 @@ export const KEYRING_ICONS = {
   [HARDWARE_KEYRING_TYPES.Trezor.type]: IconTrezor24,
 };
 
+export const KEYRING_ICONS_WHITE = {
+  [KEYRING_CLASS.MNEMONIC]: IconMnemonicWhite,
+  [KEYRING_CLASS.PRIVATE_KEY]: IconPrivateKeyWhite,
+  [KEYRING_CLASS.WATCH]: IconWatchWhite,
+  [HARDWARE_KEYRING_TYPES.BitBox02.type]: IconBitBox02,
+  [HARDWARE_KEYRING_TYPES.Ledger.type]: IconLedger24,
+  [HARDWARE_KEYRING_TYPES.Onekey.type]: IconOneKey24,
+  [HARDWARE_KEYRING_TYPES.Trezor.type]: IconTrezor24,
+};
 export const KEYRING_PURPLE_LOGOS = {
   [KEYRING_CLASS.MNEMONIC]: IconMnemonicPurple,
   [KEYRING_CLASS.PRIVATE_KEY]: IconPrivateKeyPurple,
@@ -691,4 +679,12 @@ export const SPECIFIC_TEXT_BRAND = {
   [WALLET_BRAND_TYPES.JADE]: {
     i18nKey: 'WatchGuideStep2JADE',
   },
+};
+
+export const SORT_WEIGHT = {
+  [KEYRING_TYPE.HdKeyring]: 1,
+  [KEYRING_TYPE.SimpleKeyring]: 2,
+  [KEYRING_TYPE.HardwareKeyring]: 3,
+  [KEYRING_TYPE.WalletConnectKeyring]: 4,
+  [KEYRING_TYPE.WatchAddressKeyring]: 5,
 };

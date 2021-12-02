@@ -2,6 +2,7 @@ import * as ethUtil from 'ethereumjs-util';
 import Wallet, { thirdparty } from 'ethereumjs-wallet';
 import { ethErrors } from 'eth-rpc-errors';
 import * as bip39 from 'bip39';
+import { groupBy } from 'lodash';
 import {
   keyringService,
   preferenceService,
@@ -20,15 +21,25 @@ import { CacheState } from 'background/service/pageStateCache';
 import i18n from 'background/service/i18n';
 import { KEYRING_CLASS, DisplayedKeryring } from 'background/service/keyring';
 import BaseController from './base';
-import { CHAINS_ENUM, CHAINS, INTERNAL_REQUEST_ORIGIN, EVENTS } from 'consts';
-import { Account } from '../service/preference';
+import {
+  CHAINS_ENUM,
+  CHAINS,
+  INTERNAL_REQUEST_ORIGIN,
+  EVENTS,
+  BRAND_ALIAN_TYPE_TEXT,
+  WALLET_BRAND_CONTENT,
+} from 'consts';
+import { Account, ChainGas } from '../service/preference';
 import { ConnectedSite } from '../service/permission';
 import { ExplainTxResponse, TokenItem } from '../service/openapi';
 import DisplayKeyring from '../service/keyring/display';
 import provider from './provider';
 import WalletConnectKeyring from '@rabby-wallet/eth-walletconnect-keyring';
 import eventBus from '@/eventBus';
-import { setPageStateCacheWhenPopupClose } from 'background/utils';
+import {
+  setPageStateCacheWhenPopupClose,
+  isSameAddress,
+} from 'background/utils';
 
 const stashKeyrings: Record<string, any> = {};
 
@@ -56,9 +67,84 @@ export class WalletController extends BaseController {
   resolveApproval = notificationService.resolveApproval;
   rejectApproval = notificationService.rejectApproval;
 
+  initAlianNames = async () => {
+    const contacts = await this.listContact();
+    const keyrings = await keyringService.getAllTypedAccounts();
+    const walletConnectKeyrings = keyrings.filter(
+      (item) => item.type === 'WalletConnect'
+    );
+    const catergoryGroupAccount = keyrings.map((item) => ({
+      type: item.type,
+      accounts: item.accounts,
+    }));
+    let walletConnectList: DisplayedKeryring['accounts'] = [];
+    for (let i = 0; i < walletConnectKeyrings.length; i++) {
+      const keyring = walletConnectKeyrings[i];
+      walletConnectList = [...walletConnectList, ...keyring.accounts];
+    }
+    const groupedWalletConnectList = groupBy(walletConnectList, 'brandName');
+    if (keyrings.length > 0) {
+      await preferenceService.changeInitAlianNameStatus();
+      Object.keys(groupedWalletConnectList).forEach((key) => {
+        groupedWalletConnectList[key].map((acc, index) => {
+          if (
+            contacts.find((contact) =>
+              isSameAddress(contact.address, acc.address)
+            )
+          ) {
+            return;
+          }
+          this.updateAlianName(
+            acc?.address,
+            `${WALLET_BRAND_CONTENT[acc?.brandName]} ${index + 1}`
+          );
+        });
+      });
+      const catergories = groupBy(
+        catergoryGroupAccount.filter((group) => group.type !== 'WalletConnect'),
+        'type'
+      );
+      const result = Object.keys(catergories)
+        .map((key) =>
+          catergories[key].map((item) =>
+            item.accounts.map((acc) => ({
+              address: acc.address,
+              type: key,
+            }))
+          )
+        )
+        .map((item) => item.flat(1));
+      result.forEach((group) =>
+        group.forEach((acc, index) => {
+          this.updateAlianName(
+            acc?.address,
+            `${BRAND_ALIAN_TYPE_TEXT[acc?.type]} ${index + 1}`
+          );
+        })
+      );
+    }
+    if (contacts.length !== 0 && keyrings.length !== 0) {
+      const allAccounts = keyrings.map((item) => item.accounts).flat();
+      const sameAddressList = contacts.filter((item) =>
+        allAccounts.find((contact) =>
+          isSameAddress(contact.address, item.address)
+        )
+      );
+      if (sameAddressList.length > 0) {
+        sameAddressList.forEach((item) =>
+          this.updateAlianName(item.address, item.name)
+        );
+      }
+    }
+  };
+
   unlock = async (password: string) => {
+    const alianNameInited = await preferenceService.getInitAlianNameStatus();
     await keyringService.submitPassword(password);
     sessionService.broadcastEvent('unlock');
+    if (!alianNameInited) {
+      this.initAlianNames();
+    }
   };
   isUnlocked = () => keyringService.memStore.getState().isUnlocked;
 
@@ -488,8 +574,9 @@ export class WalletController extends BaseController {
   deriveNewAccountFromMnemonic = async () => {
     const keyring = this._getKeyringByType(KEYRING_CLASS.MNEMONIC);
 
-    await keyringService.addNewAccount(keyring);
+    const result = await keyringService.addNewAccount(keyring);
     this._setCurrentAccountFromKeyring(keyring, -1);
+    return result;
   };
 
   getAccountsCount = async () => {
@@ -684,6 +771,27 @@ export class WalletController extends BaseController {
 
   updateHighlightWalletList = (list) => {
     return preferenceService.updateWalletSavedList(list);
+  };
+
+  getAlianName = (address: string) => preferenceService.getAlianName(address);
+  updateAlianName = (address: string, name: string) =>
+    preferenceService.updateAlianName(address, name);
+  getAllAlianName = () => preferenceService.getAllAlianName();
+  getInitAlianNameStatus = () => preferenceService.getInitAlianNameStatus();
+  updateInitAlianNameStatus = () =>
+    preferenceService.changeInitAlianNameStatus();
+  getLastTimeGasSelection = (chainId) => {
+    return preferenceService.getLastTimeGasSelection(chainId);
+  };
+
+  updateLastTimeGasSelection = (chainId: string, gas: ChainGas) => {
+    return preferenceService.updateLastTimeGasSelection(chainId, gas);
+  };
+  getIsFirstOpen = () => {
+    return preferenceService.getIsFirstOpen();
+  };
+  updateIsFirstOpen = () => {
+    return preferenceService.updateIsFirstOpen();
   };
 }
 
