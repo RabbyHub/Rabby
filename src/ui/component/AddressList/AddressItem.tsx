@@ -139,6 +139,9 @@ const AddressItem = memo(
     const [alianName, setAlianName] = useState<string>(
       account?.alianName || ''
     );
+    const [displayName, setDisplayName] = useState<string>(
+      account?.alianName || ''
+    );
     const isDisabled = hiddenAddresses.find(
       (item) => item.address === account.address && item.type === keyring.type
     );
@@ -168,6 +171,7 @@ const AddressItem = memo(
       }
       setStartEdit(false);
       await updateAlianName(alianName);
+      setDisplayName(alianName);
       if (editing) {
         return;
       }
@@ -248,7 +252,7 @@ const AddressItem = memo(
                     min={0}
                   />
                 ) : (
-                  <div className="display-name">{alianName}</div>
+                  <div className="display-name">{displayName}</div>
                 )}
                 {!startEdit && editing && (
                   <img
