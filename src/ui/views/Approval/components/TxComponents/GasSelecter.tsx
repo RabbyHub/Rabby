@@ -181,6 +181,7 @@ const GasSelector = ({
         nonce: Number(customNonce || nonce),
         level: 'custom',
       });
+      customerInputRef.current?.focus();
     } else {
       onChange({
         ...gas,
@@ -291,7 +292,7 @@ const GasSelector = ({
         <div className="card-container">
           {gasList.map((item) => (
             <div
-              className={clsx('card', {
+              className={clsx('card cursor-pointer', {
                 active: selectedGas?.level === item.level,
               })}
               onClick={(e) => panelSelection(e, item)}
@@ -305,6 +306,7 @@ const GasSelector = ({
               >
                 {item.level === 'custom' ? (
                   <Input
+                    className="cursor-pointer"
                     value={customGas}
                     defaultValue={customGas}
                     onChange={handleCustomGasChange}

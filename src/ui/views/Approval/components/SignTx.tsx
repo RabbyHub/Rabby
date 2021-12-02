@@ -513,7 +513,6 @@ const SignTx = ({ params, origin }) => {
       .map((key) => CHAINS[key])
       .find((item) => item.id === (chainId || CHAINS[site!.chain].id))!;
     let customGasPrice = 0;
-    console.log('lastTimeGas', lastTimeGas);
     if (lastTimeGas?.lastTimeSelect === 'gasPrice' && lastTimeGas.gasPrice) {
       // use cached gasPrice if exist
       customGasPrice = lastTimeGas.gasPrice;
