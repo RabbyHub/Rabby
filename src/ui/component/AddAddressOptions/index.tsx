@@ -98,7 +98,7 @@ const AddAddressOptions = () => {
           if (allAccounts.length > 0) {
             mnemonLengh = allAccounts[0]?.accounts?.length;
           }
-          if (account.length > 0) {
+          if (account && account.length > 0) {
             await wallet.updateAlianName(
               account[0]?.toLowerCase(),
               `${
