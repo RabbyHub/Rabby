@@ -13,16 +13,14 @@ import {
   SORT_WEIGHT,
   KEYRING_ICONS,
   WALLET_BRAND_CONTENT,
-  BRAND_ALIAN_TYPE_TEXT,
   KEYRING_ICONS_WHITE,
 } from 'consts';
 import { AddressViewer, Modal } from 'ui/component';
-import { useWallet, getAccountIcon } from 'ui/utils';
+import { useWallet } from 'ui/utils';
 import { Account } from 'background/service/preference';
 import {
   RecentConnections,
   BalanceView,
-  SwitchAddress,
   DefaultWalletAlertBar,
 } from './components';
 import IconSetting from 'ui/assets/settings.svg';
@@ -53,6 +51,7 @@ const Dashboard = () => {
   const [clicked, setClicked] = useState(false);
   const [startEdit, setStartEdit] = useState(false);
   const [alianName, setAlianName] = useState<string>('');
+  const [displayName, setDisplayName] = useState<string>('');
   const [accountsList, setAccountsList] = useState<Account[]>([]);
   const [firstNotice, setFirstNotice] = useState(false);
   const [updateContent, setUpdateContent] = useState('');
@@ -81,6 +80,7 @@ const Dashboard = () => {
   const getAlianName = async (address: string) => {
     await wallet.getAlianName(address).then((name) => {
       setAlianName(name);
+      setDisplayName(name);
     });
   };
   useInterval(() => {
@@ -167,6 +167,7 @@ const Dashboard = () => {
       currentAccount?.address?.toLowerCase(),
       alianName
     );
+    setDisplayName(alianName);
     const newAccountList = accountsList.map((item) => {
       if (
         item.address.toLowerCase() === currentAccount?.address.toLowerCase()
@@ -221,7 +222,7 @@ const Dashboard = () => {
               min={0}
             />
           ) : (
-            alianName
+            displayName
           )}
         </div>
         {!startEdit && (
@@ -382,7 +383,7 @@ const Dashboard = () => {
                       />
                     }
                     <div className="text-15 text-white ml-6 mr-6 dashboard-name">
-                      {alianName}
+                      {displayName}
                     </div>
                     {currentAccount && (
                       <AddressViewer
