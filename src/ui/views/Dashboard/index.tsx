@@ -255,13 +255,12 @@ const Dashboard = () => {
           />
         )}
       </div>
-      <div className="flex text-12 mt-12">
+      <div className="flex text-12 mt-12" onClick={handleCopyCurrentAddress}>
         <div className="mr-8 pt-2 lh-14">{currentAccount?.address}</div>
         <IconCopy
           className={clsx('icon icon-copy ml-7 mb-2 copy-icon', {
             success: copySuccess,
           })}
-          onClick={handleCopyCurrentAddress}
         />
       </div>
       <div className="qrcode-container">
