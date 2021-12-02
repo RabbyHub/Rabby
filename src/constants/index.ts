@@ -489,37 +489,6 @@ export enum BRAND_WALLET_CONNECT_TYPE {
   TrezorConnect = 'TrezorConnect',
 }
 
-export const WATCH_ADDRESS_TYPE_CONTENT = {
-  [WATCH_ADDRESS_TYPES.TP]: {
-    id: 0,
-    name: 'TokenPocket',
-    brand: WATH_ADDRESS_BRAND.TP,
-    icon: './images/brand-logos/icon-tp.png',
-    connectType: WATCH_ADDRESS_CONNECT_TYPE.WalletConnect,
-  },
-  [WATCH_ADDRESS_TYPES.IMTOKEN]: {
-    id: 1,
-    name: 'ImToken',
-    brand: WATH_ADDRESS_BRAND.IMTOKEN,
-    icon: './images/brand-logos/icon-imtoken.png',
-    connectType: WATCH_ADDRESS_CONNECT_TYPE.WalletConnect,
-  },
-  // [WATCH_ADDRESS_TYPES.TRUSTWALLET]: {
-  //   id: 2,
-  //   name: 'Trust Wallet',
-  //   brand: WATH_ADDRESS_BRAND.TRUSTWALLET,
-  //   icon: './images/brand-logos/icon-trustwallet.png',
-  //   connectType: WATCH_ADDRESS_CONNECT_TYPE.WalletConnect,
-  // }, disable TrustWallet since walletconnect of TW is white-list based
-  [WATCH_ADDRESS_TYPES.MATHWALLET]: {
-    id: 3,
-    name: 'Math Wallet',
-    brand: WATH_ADDRESS_BRAND.MATHWALLET,
-    icon: './images/brand-logos/icon-mathwallet.png',
-    connectType: WATCH_ADDRESS_CONNECT_TYPE.WalletConnect,
-  },
-};
-
 export const WALLETCONNECT_STATUS_MAP = {
   PENDING: 1,
   CONNECTED: 2,
