@@ -53,6 +53,7 @@ const Dashboard = () => {
   const [clicked, setClicked] = useState(false);
   const [startEdit, setStartEdit] = useState(false);
   const [alianName, setAlianName] = useState<string>('');
+  const [displayName, setDisplayName] = useState<string>('');
   const [accountsList, setAccountsList] = useState<Account[]>([]);
   const [firstNotice, setFirstNotice] = useState(false);
   const [updateContent, setUpdateContent] = useState('');
@@ -81,6 +82,7 @@ const Dashboard = () => {
   const getAlianName = async (address: string) => {
     await wallet.getAlianName(address).then((name) => {
       setAlianName(name);
+      setDisplayName(name);
     });
   };
   useInterval(() => {
@@ -167,6 +169,7 @@ const Dashboard = () => {
       currentAccount?.address?.toLowerCase(),
       alianName
     );
+    setDisplayName(alianName);
     hide();
   };
   const checkIfFirstLogin = async () => {
@@ -207,7 +210,7 @@ const Dashboard = () => {
               min={0}
             />
           ) : (
-            alianName
+            displayName
           )}
         </div>
         {!startEdit && (
@@ -368,7 +371,7 @@ const Dashboard = () => {
                       />
                     }
                     <div className="text-15 text-white ml-6 mr-6 dashboard-name">
-                      {alianName}
+                      {displayName}
                     </div>
                     {currentAccount && (
                       <AddressViewer
