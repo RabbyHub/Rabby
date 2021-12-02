@@ -65,7 +65,7 @@ const Row: React.FC<RowProps> = memo((props) => {
           canEditing={() => setStopEditing(false)}
           stopEditing={stopEditing}
           showAssets
-          className="h-[56px]"
+          className="h-[56px] pl-16"
         />
       </ul>
     </li>
