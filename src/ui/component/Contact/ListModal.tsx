@@ -95,14 +95,13 @@ const ListModal = ({ address, visible, onOk, onCancel }: ListModalProps) => {
     <Modal
       className="list-contact-modal"
       visible={visible}
-      cancelButtonProps={{ style: { display: 'none' } }}
       onCancel={onCancel}
       footer={null}
       width="360px"
       centered
     >
       <Tabs defaultActiveKey="1">
-        <TabPane tab={t('Contacts')} className="text-15" key="1">
+        <TabPane tab={t('Contacts')} className="text-15 tab-class" key="1">
           {list.length > 0
             ? list.map((item) => (
                 <FieldCheckbox
@@ -110,6 +109,8 @@ const ListModal = ({ address, visible, onOk, onCancel }: ListModalProps) => {
                   checked={
                     item.address.toLowerCase() === address?.toLowerCase()
                   }
+                  className="py-8 h-[56px] mb-8 mt-0"
+                  showCheckbox={false}
                   onChange={() => handleConfirm(item, 'others')}
                 >
                   <div className="contact-info">
@@ -122,7 +123,7 @@ const ListModal = ({ address, visible, onOk, onCancel }: ListModalProps) => {
               ))
             : NoDataUI}
         </TabPane>
-        <TabPane tab={t('My accounts')} className="text-15" key="2">
+        <TabPane tab={t('My accounts')} className="text-15 tab-class" key="2">
           {accountList.length > 0
             ? accountList.map((account) => (
                 <FieldCheckbox
@@ -130,6 +131,8 @@ const ListModal = ({ address, visible, onOk, onCancel }: ListModalProps) => {
                   checked={
                     account?.address?.toLowerCase() === address?.toLowerCase()
                   }
+                  className="py-8 h-[56px] mb-8 mt-0"
+                  showCheckbox={false}
                   onChange={() =>
                     handleConfirm(
                       {

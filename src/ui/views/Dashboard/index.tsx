@@ -13,16 +13,14 @@ import {
   SORT_WEIGHT,
   KEYRING_ICONS,
   WALLET_BRAND_CONTENT,
-  BRAND_ALIAN_TYPE_TEXT,
   KEYRING_ICONS_WHITE,
 } from 'consts';
 import { AddressViewer, Modal } from 'ui/component';
-import { useWallet, getAccountIcon } from 'ui/utils';
+import { useWallet } from 'ui/utils';
 import { Account } from 'background/service/preference';
 import {
   RecentConnections,
   BalanceView,
-  SwitchAddress,
   DefaultWalletAlertBar,
 } from './components';
 import IconSetting from 'ui/assets/settings.svg';
@@ -170,6 +168,20 @@ const Dashboard = () => {
       alianName
     );
     setDisplayName(alianName);
+    const newAccountList = accountsList.map((item) => {
+      if (
+        item.address.toLowerCase() === currentAccount?.address.toLowerCase()
+      ) {
+        return {
+          ...item,
+          alianName: alianName,
+        };
+      }
+      return item;
+    });
+    if (newAccountList.length > 0) {
+      setAccountsList(newAccountList);
+    }
     hide();
   };
   const checkIfFirstLogin = async () => {
@@ -262,7 +274,7 @@ const Dashboard = () => {
         />
         <div className="flex flex-col items-start ml-10">
           <div className="text-13 text-black text-left click-name">
-            {account?.alianName}
+            <div className="list-alian-name">{account?.alianName}</div>
             <AddressViewer
               address={account?.address}
               showArrow={false}
