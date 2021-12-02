@@ -44,6 +44,7 @@ const Row: React.FC<RowProps> = memo((props) => {
   const { combinedList, others } = data;
   const { currentAccount, ActionButton, onClick, hiddenAddresses } = others;
   const account = combinedList[index];
+  const [stopEditing, setStopEditing] = useState(false);
   return (
     <li
       className={clsx(
@@ -52,7 +53,7 @@ const Row: React.FC<RowProps> = memo((props) => {
       )}
       style={style}
     >
-      <ul className="addresses">
+      <ul className="addresses" onClick={() => setStopEditing(true)}>
         <AddressItem
           key={account.address + account.brandName}
           account={{ ...account, type: account.type }}
@@ -61,6 +62,8 @@ const Row: React.FC<RowProps> = memo((props) => {
           onClick={onClick}
           hiddenAddresses={hiddenAddresses}
           currentAccount={currentAccount}
+          canEditing={() => setStopEditing(false)}
+          stopEditing={stopEditing}
           showAssets
           className="h-[56px]"
         />
