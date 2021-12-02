@@ -259,7 +259,7 @@ const Dashboard = () => {
         />
         <div className="flex flex-col items-start ml-10">
           <div className="text-13 text-black text-left click-name">
-            {account?.alianName}
+            <div className="list-alian-name">{account?.alianName}</div>
             <AddressViewer
               address={account?.address}
               showArrow={false}
