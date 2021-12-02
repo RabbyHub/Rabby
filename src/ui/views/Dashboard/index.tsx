@@ -155,6 +155,7 @@ const Dashboard = () => {
   };
 
   const handleAlianNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+    e.stopPropagation();
     setAlianName(e.target.value);
   };
   const alianNameConfirm = async (e) => {
@@ -199,7 +200,7 @@ const Dashboard = () => {
     checkIfFirstLogin();
   }, []);
   const hoverContent = () => (
-    <div className="flex flex-col">
+    <div className="flex flex-col" onClick={() => setStartEdit(false)}>
       <div className="flex items-center">
         {currentAccount && (
           <img
@@ -218,26 +219,39 @@ const Dashboard = () => {
               onChange={handleAlianNameChange}
               onPressEnter={alianNameConfirm}
               autoFocus={startEdit}
-              onBlur={() => setStartEdit(false)}
+              onClick={(e) => e.stopPropagation()}
               maxLength={20}
               min={0}
             />
           ) : (
-            displayName
+            <div
+              onClick={(e) => {
+                e.stopPropagation();
+                setStartEdit(true);
+              }}
+            >
+              {displayName}
+            </div>
           )}
         </div>
         {!startEdit && (
           <img
             className="edit-name"
             src={IconEditPen}
-            onClick={() => setStartEdit(true)}
+            onClick={(e) => {
+              e.stopPropagation();
+              setStartEdit(true);
+            }}
           />
         )}
         {startEdit && (
           <img
             className="edit-name w-[16px] h-[16px]"
             src={IconCorrect}
-            onClick={alianNameConfirm}
+            onClick={(e) => {
+              e.stopPropagation();
+              alianNameConfirm(e);
+            }}
           />
         )}
       </div>
