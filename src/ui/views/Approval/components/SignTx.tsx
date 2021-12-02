@@ -9,6 +9,8 @@ import {
 import { Button, Modal, Tooltip, Drawer } from 'antd';
 import { useTranslation } from 'react-i18next';
 import clsx from 'clsx';
+import Safe from '@rabby-wallet/gnosis-sdk';
+import { SafeInfo } from '@rabby-wallet/gnosis-sdk/src/api';
 import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
 import { KEYRING_CLASS, CHAINS, CHAINS_ENUM, KEYRING_TYPE } from 'consts';
 import { Checkbox } from 'ui/component';
@@ -283,6 +285,7 @@ const SignTx = ({ params, origin }) => {
   const [realNonce, setRealNonce] = useState('');
   const [gasLimit, setGasLimit] = useState(gas || params.data[0].gasLimit);
   const [forceProcess, setForceProcess] = useState(false);
+  const [safeInfo, setSafeInfo] = useState<SafeInfo | null>(null);
 
   const checkTx = async (address: string) => {
     try {
@@ -568,9 +571,22 @@ const SignTx = ({ params, origin }) => {
     setInited(true);
   };
 
+  const getSafeInfo = async () => {
+    const currentAccount = wallet.getCurrentAccount();
+    const networkId = wallet.getGnosisNetworkId(currentAccount.address);
+    const safeInfo = await Safe.getSafeInfo(currentAccount.address, networkId);
+    setSafeInfo(safeInfo);
+  };
+
   useEffect(() => {
     init();
   }, []);
+
+  useEffect(() => {
+    if (isGnosis) {
+      getSafeInfo();
+    }
+  }, [isGnosis]);
 
   useEffect(() => {
     if (!inited) return;
@@ -680,8 +696,10 @@ const SignTx = ({ params, origin }) => {
                         onClick={() => handleAllow()}
                         disabled={
                           !isReady ||
-                          (selectedGas ? selectedGas.price <= 0 : true)
+                          (selectedGas ? selectedGas.price <= 0 : true) ||
+                          (isGnosis ? !!safeInfo : false)
                         }
+                        loading={isGnosis ? !!safeInfo : false}
                       >
                         {securityCheckStatus === 'pass'
                           ? t('Sign')
@@ -744,8 +762,10 @@ const SignTx = ({ params, origin }) => {
                         className="w-[172px]"
                         disabled={
                           !forceProcess ||
-                          (selectedGas ? selectedGas.price <= 0 : true)
+                          (selectedGas ? selectedGas.price <= 0 : true) ||
+                          (isGnosis ? !!safeInfo : false)
                         }
+                        loading={isGnosis ? !!safeInfo : false}
                         onClick={() => handleAllow(true)}
                       >
                         {t('Sign')}
@@ -757,15 +777,14 @@ const SignTx = ({ params, origin }) => {
             </footer>
           </>
         )}
-        {isGnosis && (
+        {isGnosis && safeInfo && (
           <Drawer
             placement="bottom"
             height="400px"
             className="gnosis-drawer"
             visible={gnosisDrawerVisible}
           >
-            {/* <GnosisDrawer /> */}
-            <p>test</p>
+            <GnosisDrawer safeInfo={safeInfo} />
           </Drawer>
         )}
         {securityCheckDetail && !isWatch && (

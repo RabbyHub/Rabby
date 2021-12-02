@@ -286,6 +286,25 @@ export class WalletController extends BaseController {
     return networkId;
   };
 
+  getGnosisTransactionHash = () => {
+    const keyring: GnosisKeyring = this._getKeyringByType(KEYRING_CLASS.GNOSIS);
+    if (keyring.currentTransaction) {
+      return keyring.safeInstance?.getTransactionHash(
+        keyring.currentTransaction
+      );
+    }
+    return null;
+  };
+
+  getGnosisTransactionSignatures = () => {
+    const keyring: GnosisKeyring = this._getKeyringByType(KEYRING_CLASS.GNOSIS);
+    if (keyring.currentTransaction) {
+      const sigs = Array.from(keyring.currentTransaction.signatures.values());
+      return sigs.map((sig) => ({ data: sig.data, signer: sig.signer }));
+    }
+    return [];
+  };
+
   importWatchAddress = async (address) => {
     let keyring, isNewKey;
     const keyringType = KEYRING_CLASS.WATCH;
@@ -625,6 +644,10 @@ export class WalletController extends BaseController {
       ...account,
       keyring: new DisplayKeyring(account.keyring),
     }));
+  };
+
+  getAllVisibleAccountsArray: () => Promise<Account[]> = () => {
+    return keyringService.getAllVisibleAccountsArray();
   };
 
   getAllClassAccounts: () => Promise<DisplayedKeryring[]> = async () => {
