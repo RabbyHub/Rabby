@@ -110,6 +110,8 @@ const ListModal = ({ address, visible, onOk, onCancel }: ListModalProps) => {
                   checked={
                     item.address.toLowerCase() === address?.toLowerCase()
                   }
+                  className="py-8 h-[56px] mb-8 mt-0"
+                  showCheckbox={false}
                   onChange={() => handleConfirm(item, 'others')}
                 >
                   <div className="contact-info">
@@ -130,6 +132,8 @@ const ListModal = ({ address, visible, onOk, onCancel }: ListModalProps) => {
                   checked={
                     account?.address?.toLowerCase() === address?.toLowerCase()
                   }
+                  className="py-8 h-[56px] mb-8 mt-0"
+                  showCheckbox={false}
                   onChange={() =>
                     handleConfirm(
                       {
