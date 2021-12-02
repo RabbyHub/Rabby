@@ -2,7 +2,7 @@ import * as ethUtil from 'ethereumjs-util';
 import Wallet, { thirdparty } from 'ethereumjs-wallet';
 import { ethErrors } from 'eth-rpc-errors';
 import * as bip39 from 'bip39';
-import { groupBy } from 'lodash';
+import { add, groupBy } from 'lodash';
 import {
   keyringService,
   preferenceService,
@@ -15,6 +15,7 @@ import {
   transactionHistoryService,
   contactBookService,
 } from 'background/service';
+import buildinProvider from 'background/utils/buildinProvider';
 import { ContactBookItem } from '../service/contactBook';
 import { openIndexPage } from 'background/webapi/tab';
 import { CacheState } from 'background/service/pageStateCache';
@@ -40,6 +41,10 @@ import {
   setPageStateCacheWhenPopupClose,
   isSameAddress,
 } from 'background/utils';
+import GnosisKeyring, {
+  TransactionBuiltEvent,
+  TransactionConfirmedEvent,
+} from '../service/keyring/eth-gnosis-keyring';
 
 const stashKeyrings: Record<string, any> = {};
 
@@ -257,7 +262,28 @@ export class WalletController extends BaseController {
     if (isNewKey) {
       await keyringService.addKeyring(keyring);
     }
+    (keyring as GnosisKeyring).on(TransactionBuiltEvent, (data) => {
+      eventBus.emit(EVENTS.broadcastToUI, {
+        method: TransactionBuiltEvent,
+        params: data,
+      });
+      (keyring as GnosisKeyring).on(TransactionConfirmedEvent, (data) => {
+        eventBus.emit(EVENTS.broadcastToUI, {
+          method: TransactionConfirmedEvent,
+          params: data,
+        });
+      });
+    });
     return this._setCurrentAccountFromKeyring(keyring, -1);
+  };
+
+  getGnosisNetworkId = (address: string) => {
+    const keyring: GnosisKeyring = this._getKeyringByType(KEYRING_CLASS.GNOSIS);
+    const networkId = keyring.networkIdMap[address.toLowerCase()];
+    if (networkId === undefined) {
+      throw new Error(`Address ${address} is not in keyring"`);
+    }
+    return networkId;
   };
 
   importWatchAddress = async (address) => {

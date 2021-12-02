@@ -6,7 +6,7 @@ import {
   addHexPrefix,
   unpadHexString,
 } from 'ethereumjs-util';
-import { Button, Modal, Tooltip } from 'antd';
+import { Button, Modal, Tooltip, Drawer } from 'antd';
 import { useTranslation } from 'react-i18next';
 import clsx from 'clsx';
 import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
@@ -24,7 +24,7 @@ import {
 } from 'background/service/openapi';
 import { useWallet, useApproval } from 'ui/utils';
 import { ChainGas } from 'background/service/preference';
-
+import GnosisDrawer from './TxComponents/GnosisDrawer';
 import Approve from './TxComponents/Approve';
 import Cancel from './TxComponents/Cancel';
 import Sign from './TxComponents/Sign';
@@ -233,6 +233,8 @@ const SignTx = ({ params, origin }) => {
       base_fee: 0,
     },
   ]);
+  const [isGnosis, setIsGnosis] = useState(false);
+  const [gnosisDrawerVisible, setGnosisDrawerVisble] = useState(false);
   const [, resolveApproval, rejectApproval] = useApproval();
   const wallet = useWallet();
 
@@ -380,6 +382,7 @@ const SignTx = ({ params, origin }) => {
   };
 
   const handleAllow = async (doubleCheck = false) => {
+    console.log('handleAllow', doubleCheck);
     if (!selectedGas) return;
     if (!doubleCheck && securityCheckStatus !== 'pass') {
       setShowSecurityCheckDetail(true);
@@ -387,6 +390,7 @@ const SignTx = ({ params, origin }) => {
     }
 
     const currentAccount = await wallet.getCurrentAccount();
+    console.log(currentAccount);
     if (
       currentAccount?.type === KEYRING_CLASS.HARDWARE.LEDGER &&
       !(await wallet.isUseLedgerLive())
@@ -426,6 +430,19 @@ const SignTx = ({ params, origin }) => {
         },
       });
 
+      return;
+    }
+    if (currentAccount.type === KEYRING_TYPE.GnosisKeyring) {
+      setGnosisDrawerVisble(true);
+      // resolveApproval(
+      //   {
+      //     ...tx,
+      //     nonce: realNonce || tx.nonce,
+      //     gas: gasLimit,
+      //     isSend,
+      //   },
+      //   true
+      // );
       return;
     }
 
@@ -497,6 +514,11 @@ const SignTx = ({ params, origin }) => {
   const init = async () => {
     const session = params.session;
     const site = await wallet.getConnectedSite(session.origin);
+    const currentAccount = await wallet.getCurrentAccount();
+
+    if (currentAccount.type === KEYRING_TYPE.GnosisKeyring) {
+      setIsGnosis(true);
+    }
 
     if (!chainId) {
       setChainId(CHAINS[site!.chain].id);
@@ -734,6 +756,17 @@ const SignTx = ({ params, origin }) => {
               )}
             </footer>
           </>
+        )}
+        {isGnosis && (
+          <Drawer
+            placement="bottom"
+            height="400px"
+            className="gnosis-drawer"
+            visible={gnosisDrawerVisible}
+          >
+            {/* <GnosisDrawer /> */}
+            <p>test</p>
+          </Drawer>
         )}
         {securityCheckDetail && !isWatch && (
           <SecurityCheckDetail

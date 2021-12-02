@@ -31,7 +31,8 @@ import { Session } from 'background/service/session';
 import { Tx } from 'background/service/openapi';
 import RpcCache from 'background/utils/rpcCache';
 import Wallet from '../wallet';
-import { CHAINS, CHAINS_ENUM, SAFE_RPC_METHODS } from 'consts';
+import { CHAINS, CHAINS_ENUM, SAFE_RPC_METHODS, KEYRING_TYPE } from 'consts';
+import buildinProvider from 'background/utils/buildinProvider';
 import BaseController from '../base';
 
 interface ApprovalRes extends Tx {
@@ -234,11 +235,19 @@ class ProviderController extends BaseController {
     delete approvalRes.type;
     delete approvalRes.uiRequestComponent;
     const tx = new Transaction(approvalRes);
+    const currentAccount = preferenceService.getCurrentAccount()!;
+    let opts;
+    opts = approvalRes?.extra;
+    if (currentAccount.type === KEYRING_TYPE.GnosisKeyring) {
+      opts = {
+        provider: buildinProvider,
+      };
+    }
     const signedTx = await keyringService.signTransaction(
       keyring,
       tx,
       txParams.from,
-      approvalRes?.extra
+      opts
     );
     const onTranscationSubmitted = (hash: string) => {
       const chain = permissionService.isInternalOrigin(origin)

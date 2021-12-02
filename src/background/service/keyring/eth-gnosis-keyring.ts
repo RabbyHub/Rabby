@@ -6,6 +6,7 @@ import { SafeTransaction } from '@gnosis.pm/safe-core-sdk-types';
 
 export const keyringType = 'Gnosis';
 export const TransactionBuiltEvent = 'TransactionBuilt';
+export const TransactionConfirmedEvent = 'TransactionConfirmed';
 
 interface SignTransactionOptions {
   signatures: string[];
@@ -126,7 +127,7 @@ class GnosisKeyring extends EventEmitter {
     }
     await safe!.confirmTransaction(transaction);
     const threshold = await safe!.getThreshold();
-    this.emit('TransactionConfirmed', {
+    this.emit(TransactionConfirmedEvent, {
       safeAddress,
       data: {
         signatures: transaction.signatures,
@@ -195,11 +196,14 @@ class GnosisKeyring extends EventEmitter {
         networkId
       );
       const safeTransaction = await safe.buildTransaction(tx);
+      console.log('buildTransaction', safeTransaction);
       const transactionHash = await safe.getTransactionHash(safeTransaction);
+      console.log('transactionHash', transactionHash);
       await safe.postTransaction(safeTransaction, transactionHash);
+      console.log('postTransaction');
       this.safeInstance = safe;
       this.currentTransaction = safeTransaction;
-      this.emit('TransactionBuilt', {
+      this.emit(TransactionBuiltEvent, {
         safeAddress: address,
         data: {
           hash: transactionHash,

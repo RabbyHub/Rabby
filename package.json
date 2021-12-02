@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@ethereumjs/tx": "^3.3.2",
+    "@gnosis.pm/safe-core-sdk-types": "^0.1.1",
     "@ledgerhq/hw-app-eth": "^6.0.2",
     "@ledgerhq/hw-transport-webusb": "^6.0.2",
     "@metamask/obs-store": "^6.0.2",
