@@ -494,7 +494,7 @@
     "message": "Contract"
   },
   "gasCostTitle": {
-    "message": "Est. gas cost(gwei)"
+    "message": "Est. gas cost (gwei)"
   },
   "gasPriceTitle": {
     "message": "Gas price (Gwei)"
