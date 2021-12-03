@@ -956,5 +956,11 @@
   },
   "addresses__selected": {
     "message": "个地址已选择"
+  },
+  "Profile": {
+    "message": "账户"
+  },
+  "Coming__soon": {
+    "message": "敬请期待"
   }
 }

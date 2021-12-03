@@ -960,5 +960,12 @@
   },
   "addresses__selected": {
     "message": "addresses selected"
+  },
+  "Profile": {
+    "message": "Profile"
+  },
+  "Coming__soon": {
+    "message": "Coming soon"
   }
+
 }
