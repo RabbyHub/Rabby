@@ -51,6 +51,7 @@ export interface AddressItemProps {
   importedLength?: number;
   canEditing?(): void;
   stopEditing?: boolean;
+  editIndex?(index: number): void;
 }
 
 const formatChain = (item: ChainWithBalance): DisplayChainWithWhiteLogo => {
@@ -133,6 +134,7 @@ const AddressItem = memo(
     importedLength = 0,
     canEditing,
     stopEditing = false,
+    editIndex,
   }: AddressItemProps) => {
     if (!account) {
       return null;
@@ -269,6 +271,7 @@ const AddressItem = memo(
                       e.stopPropagation();
                       canEditing && canEditing();
                       setStartEdit(true);
+                      editIndex && index && editIndex(index);
                     }}
                   />
                 )}
@@ -282,7 +285,7 @@ const AddressItem = memo(
               </div>
             )}
             <AddressViewer
-              address={account.address}
+              address={account?.address?.toLowerCase()}
               showArrow={false}
               index={account.index || index}
               showImportIcon={showImportIcon}
