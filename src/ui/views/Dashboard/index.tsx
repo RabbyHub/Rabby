@@ -3,7 +3,7 @@ import ClipboardJS from 'clipboard';
 import QRCode from 'qrcode.react';
 import { useHistory, Link } from 'react-router-dom';
 import { useInterval } from 'react-use';
-import { message, Popover, Input } from 'antd';
+import { message, Popover, Input, Tooltip } from 'antd';
 import { FixedSizeList } from 'react-window';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
@@ -23,6 +23,7 @@ import {
   BalanceView,
   DefaultWalletAlertBar,
 } from './components';
+import { getUpdateContent } from 'changeLogs/index';
 import IconSetting from 'ui/assets/settings.svg';
 import IconSend from 'ui/assets/send.svg';
 import IconHistory from 'ui/assets/history.svg';
@@ -33,7 +34,8 @@ import { ReactComponent as IconCopy } from 'ui/assets/urlcopy.svg';
 import IconEditPen from 'ui/assets/editpen.svg';
 import IconCorrect from 'ui/assets/correct.svg';
 import IconPlus from 'ui/assets/dashboard-plus.svg';
-import { getUpdateContent } from 'changeLogs/index';
+import IconInfo from 'ui/assets/infomation.png';
+import IconProfile from 'ui/assets/profile.svg';
 import './style.less';
 const Dashboard = () => {
   const history = useHistory();
@@ -372,51 +374,50 @@ const Dashboard = () => {
             <div className="flex header items-center">
               <div className="h-[32px] flex header-wrapper items-center relative">
                 <Popover
-                  style={{ width: 500 }}
-                  content={hoverContent}
-                  trigger="hover"
-                  visible={hovered && !clicked}
+                  style={{ width: 200 }}
+                  content={clickContent}
+                  trigger="click"
+                  visible={clicked}
                   placement="bottomLeft"
-                  overlayClassName="address-popover"
-                  onVisibleChange={(visible) =>
-                    !clicked && handleHoverChange(visible)
-                  }
+                  overlayClassName="switch-popover"
+                  onVisibleChange={handleClickChange}
                 >
-                  <Popover
-                    style={{ width: 200 }}
-                    content={clickContent}
-                    trigger="click"
-                    visible={clicked}
-                    placement="bottomLeft"
-                    overlayClassName="switch-popover"
-                    onVisibleChange={handleClickChange}
-                  >
-                    {
-                      <img
-                        className="icon icon-account-type w-[20px] h-[20px]"
-                        src={
-                          KEYRING_ICONS_WHITE[currentAccount.type] ||
-                          WALLET_BRAND_CONTENT[currentAccount.brandName]?.image
-                        }
-                      />
-                    }
-                    <div className="text-15 text-white ml-6 mr-6 dashboard-name">
-                      {displayName}
-                    </div>
-                    {currentAccount && (
-                      <AddressViewer
-                        address={currentAccount.address}
-                        showArrow={false}
-                        className={'text-12 text-white opacity-60'}
-                      />
-                    )}
+                  {
                     <img
-                      className="icon icon-account-type w-[16px] h-[16px] ml-8"
-                      src={IconUpAndDown}
+                      className="icon icon-account-type w-[20px] h-[20px]"
+                      src={
+                        KEYRING_ICONS_WHITE[currentAccount.type] ||
+                        WALLET_BRAND_CONTENT[currentAccount.brandName]?.image
+                      }
                     />
-                  </Popover>
+                  }
+                  <div className="text-15 text-white ml-6 mr-6 dashboard-name">
+                    {displayName}
+                  </div>
+                  {currentAccount && (
+                    <AddressViewer
+                      address={currentAccount.address}
+                      showArrow={false}
+                      className={'text-12 text-white opacity-60'}
+                    />
+                  )}
+                  <img
+                    className="icon icon-account-type w-[16px] h-[16px] ml-8"
+                    src={IconUpAndDown}
+                  />
                 </Popover>
               </div>
+              <Popover
+                style={{ width: 500 }}
+                content={hoverContent}
+                trigger="hover"
+                visible={hovered}
+                //placement="bottomRight"
+                overlayClassName="address-popover"
+                onVisibleChange={handleHoverChange}
+              >
+                <img src={IconInfo} className="w-[16px] h-[16px]" />
+              </Popover>
               <div className="flex-1" />
               <img
                 className="icon icon-settings"
@@ -427,10 +428,15 @@ const Dashboard = () => {
           )}
           <BalanceView currentAccount={currentAccount} />
           <div className="operation">
-            <div className="operation-item" onClick={handleGotoSend}>
-              <img className="icon icon-send" src={IconSend} />
-              {t('Send')}
-            </div>
+            <Tooltip
+              overlayClassName="rectangle profileType__tooltip"
+              title={t('Coming soon')}
+            >
+              <div className="operation-item opacity-60">
+                <img className="icon icon-send" src={IconProfile} />
+                {t('Profile')}
+              </div>
+            </Tooltip>
             <div className="operation-item" onClick={handleGotoHistory}>
               {pendingTxCount > 0 ? (
                 <div className="pending-count">

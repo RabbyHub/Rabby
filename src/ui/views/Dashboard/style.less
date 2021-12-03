@@ -73,6 +73,7 @@
       background: rgba(255, 255, 255, 0.12);
       backdrop-filter: blur(40px);
       padding: 6px 8px;
+      margin-right: 9px;
       border-radius: 6px;
       cursor: pointer;
       span {
@@ -227,6 +228,16 @@
       margin-top: 22px;
     }
   }
+  .addressType__tooltip {
+    .ant-tooltip-content {
+      transform: translate(5px, 5px);
+      top: 100px !important;
+    }
+    .ant-tooltip-arrow {
+      right: 10px !important;
+      bottom: -30px !important;
+    }
+  }
 }
 .copy-icon {
   cursor: pointer;
@@ -334,6 +345,9 @@
   height: 200px;
   left: 28px !important;
   z-index: 2 !important;
+  .ant-popover-arrow {
+    display: none;
+  }
   .brand-name {
     font-size: 20px;
     color: #13141a;
@@ -371,7 +385,7 @@
   }
 }
 .dashboard-name {
-  max-width: 150px;
+  max-width: 130px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
