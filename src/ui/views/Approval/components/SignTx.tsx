@@ -572,9 +572,12 @@ const SignTx = ({ params, origin }) => {
   };
 
   const getSafeInfo = async () => {
-    const currentAccount = wallet.getCurrentAccount();
-    const networkId = wallet.getGnosisNetworkId(currentAccount.address);
+    const currentAccount = await wallet.getCurrentAccount();
+    console.log('currentAccount', currentAccount);
+    const networkId = await wallet.getGnosisNetworkId(currentAccount.address);
+    console.log('networkId', networkId);
     const safeInfo = await Safe.getSafeInfo(currentAccount.address, networkId);
+    console.log('safeInfo', safeInfo);
     setSafeInfo(safeInfo);
   };
 
@@ -583,6 +586,7 @@ const SignTx = ({ params, origin }) => {
   }, []);
 
   useEffect(() => {
+    console.log('isGnosis', isGnosis);
     if (isGnosis) {
       getSafeInfo();
     }
@@ -697,9 +701,9 @@ const SignTx = ({ params, origin }) => {
                         disabled={
                           !isReady ||
                           (selectedGas ? selectedGas.price <= 0 : true) ||
-                          (isGnosis ? !!safeInfo : false)
+                          (isGnosis ? !safeInfo : false)
                         }
-                        loading={isGnosis ? !!safeInfo : false}
+                        loading={isGnosis ? !safeInfo : false}
                       >
                         {securityCheckStatus === 'pass'
                           ? t('Sign')
@@ -763,9 +767,9 @@ const SignTx = ({ params, origin }) => {
                         disabled={
                           !forceProcess ||
                           (selectedGas ? selectedGas.price <= 0 : true) ||
-                          (isGnosis ? !!safeInfo : false)
+                          (isGnosis ? !safeInfo : false)
                         }
-                        loading={isGnosis ? !!safeInfo : false}
+                        loading={isGnosis ? !safeInfo : false}
                         onClick={() => handleAllow(true)}
                       >
                         {t('Sign')}
