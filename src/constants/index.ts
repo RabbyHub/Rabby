@@ -70,6 +70,8 @@ import LogoWatch from 'ui/assets/walletlogo/watchlogo.svg';
 import IconPrivateKeyWhite from 'ui/assets/walletlogo/private-key-white.svg';
 import IconWatchWhite from 'ui/assets/walletlogo/IconWatch-white.svg';
 import IconMnemonicWhite from 'ui/assets/walletlogo/IconMnemonic-white.svg';
+import LogoLedgerDark from 'ui/assets/walletlogo/ledgerdark.png';
+import LogoLedgerWhite from 'ui/assets/walletlogo/ledgerwhite.png';
 
 export enum CHAINS_ENUM {
   ETH = 'ETH',
@@ -572,8 +574,8 @@ export const WALLET_BRAND_CONTENT = {
     id: 4,
     name: 'Ledger',
     brand: WALLET_BRAND_TYPES.LEDGER,
-    icon: IconLedger,
-    image: LogoLedger,
+    icon: LogoLedgerWhite,
+    image: LogoLedgerDark,
     connectType: BRAND_WALLET_CONNECT_TYPE.LedgerConnect,
   },
   [WALLET_BRAND_TYPES.MATHWALLET]: {
@@ -623,7 +625,7 @@ export const KEYRING_ICONS = {
   [KEYRING_CLASS.PRIVATE_KEY]: IconPrivateKey24,
   [KEYRING_CLASS.WATCH]: IconWatch24,
   [HARDWARE_KEYRING_TYPES.BitBox02.type]: IconBitBox02,
-  [HARDWARE_KEYRING_TYPES.Ledger.type]: IconLedger24,
+  [HARDWARE_KEYRING_TYPES.Ledger.type]: LogoLedgerWhite,
   [HARDWARE_KEYRING_TYPES.Onekey.type]: IconOneKey24,
   [HARDWARE_KEYRING_TYPES.Trezor.type]: IconTrezor24,
 };
@@ -633,7 +635,7 @@ export const KEYRING_ICONS_WHITE = {
   [KEYRING_CLASS.PRIVATE_KEY]: IconPrivateKeyWhite,
   [KEYRING_CLASS.WATCH]: IconWatchWhite,
   [HARDWARE_KEYRING_TYPES.BitBox02.type]: IconBitBox02,
-  [HARDWARE_KEYRING_TYPES.Ledger.type]: IconLedger24,
+  [HARDWARE_KEYRING_TYPES.Ledger.type]: LogoLedgerWhite,
   [HARDWARE_KEYRING_TYPES.Onekey.type]: IconOneKey24,
   [HARDWARE_KEYRING_TYPES.Trezor.type]: IconTrezor24,
 };
@@ -648,7 +650,7 @@ export const KEYRINGS_LOGOS = {
   [KEYRING_CLASS.PRIVATE_KEY]: LogoPrivateKey,
   [KEYRING_CLASS.WATCH]: LogoWatch,
   [HARDWARE_KEYRING_TYPES.BitBox02.type]: IconBitBox02WithBorder,
-  [HARDWARE_KEYRING_TYPES.Ledger.type]: IconLedger18,
+  [HARDWARE_KEYRING_TYPES.Ledger.type]: LogoLedgerWhite,
   [HARDWARE_KEYRING_TYPES.Onekey.type]: IconOneKey18,
   [HARDWARE_KEYRING_TYPES.Trezor.type]: IconTrezor24Border,
 };
