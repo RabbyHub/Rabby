@@ -195,12 +195,14 @@ const AddressItem = memo(
         );
         if (existAlianName) {
           setAlianName(existAlianName);
+          setDisplayName(existAlianName);
         } else {
           const alianName = `${
             BRAND_ALIAN_TYPE_TEXT[account?.brandName || account?.type] ||
             account?.brandName
           } ${importedLength + (index || 0) + 1}`;
           setAlianName(alianName);
+          setDisplayName(alianName);
           updateAlianName(alianName);
         }
       }
