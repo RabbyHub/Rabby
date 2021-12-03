@@ -34,7 +34,7 @@ import { ReactComponent as IconCopy } from 'ui/assets/urlcopy.svg';
 import IconEditPen from 'ui/assets/editpen.svg';
 import IconCorrect from 'ui/assets/correct.svg';
 import IconPlus from 'ui/assets/dashboard-plus.svg';
-import IconInfo from 'ui/assets/infomation.png';
+import IconInfo from 'ui/assets/information.png';
 import IconProfile from 'ui/assets/profile.svg';
 import './style.less';
 const Dashboard = () => {
