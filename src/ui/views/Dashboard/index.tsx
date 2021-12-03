@@ -231,6 +231,7 @@ const Dashboard = () => {
                 e.stopPropagation();
                 setStartEdit(true);
               }}
+              style={{ cursor: 'pointer' }}
             >
               {displayName}
             </div>
@@ -258,7 +259,9 @@ const Dashboard = () => {
         )}
       </div>
       <div className="flex text-12 mt-12" onClick={handleCopyCurrentAddress}>
-        <div className="mr-8 pt-2 lh-14">{currentAccount?.address}</div>
+        <div className="mr-8 pt-2 lh-14" style={{ cursor: 'pointer' }}>
+          {currentAccount?.address}
+        </div>
         <IconCopy
           className={clsx('icon icon-copy ml-7 mb-2 copy-icon', {
             success: copySuccess,
