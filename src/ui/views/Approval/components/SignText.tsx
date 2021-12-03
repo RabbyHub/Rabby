@@ -144,11 +144,11 @@ const SignText = ({ params }: { params: SignTextProps }) => {
         <p className="section-title">
           {t('Sign Text')}
           <span
-            className="float-right text-gray-comment text-12 cursor-pointer flex items-center view-raw"
+            className="float-right text-12 cursor-pointer flex items-center view-raw"
             style={{ lineHeight: '16px !important' }}
             onClick={handleViewRawClick}
           >
-            {t('view Raw')} <img src={IconArrowRight} />
+            {t('View Raw')} <img src={IconArrowRight} />
           </span>
         </p>
         <div className="text-detail-wrapper gray-section-block">

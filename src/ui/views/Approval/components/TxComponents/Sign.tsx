@@ -65,10 +65,10 @@ const Sign = ({ data, chainEnum, raw, isSpeedUp }: SignProps) => {
           values={{ name: chain.name }}
         />
         <span
-          className="float-right text-gray-comment text-12 cursor-pointer flex items-center view-raw"
+          className="float-right text-12 cursor-pointer flex items-center view-raw"
           onClick={handleViewRawClick}
         >
-          {t('view Raw')}
+          {t('View Raw')}
           <img src={IconArrowRight} />
         </span>
       </p>
