@@ -442,10 +442,7 @@ const Dashboard = () => {
               />
             </div>
           )}
-          <BalanceView
-            currentAccount={currentAccount}
-            canHover={!clicked && !hovered}
-          />
+          <BalanceView currentAccount={currentAccount} />
           <div className="operation">
             <Tooltip
               overlayClassName="rectangle profileType__tooltip"
