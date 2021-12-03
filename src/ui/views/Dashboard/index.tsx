@@ -35,7 +35,7 @@ import IconEditPen from 'ui/assets/editpen.svg';
 import IconCorrect from 'ui/assets/correct.svg';
 import IconPlus from 'ui/assets/dashboard-plus.svg';
 import IconInfo from 'ui/assets/information.png';
-import IconProfile from 'ui/assets/profile.svg';
+import IconMoney from 'ui/assets/dashboardMoney.png';
 import './style.less';
 const Dashboard = () => {
   const history = useHistory();
@@ -226,15 +226,7 @@ const Dashboard = () => {
               min={0}
             />
           ) : (
-            <div
-              onClick={(e) => {
-                e.stopPropagation();
-                setStartEdit(true);
-              }}
-              style={{ cursor: 'pointer' }}
-            >
-              {displayName}
-            </div>
+            displayName
           )}
         </div>
         {!startEdit && (
@@ -258,11 +250,10 @@ const Dashboard = () => {
           />
         )}
       </div>
-      <div className="flex text-12 mt-12" onClick={handleCopyCurrentAddress}>
-        <div className="mr-8 pt-2 lh-14" style={{ cursor: 'pointer' }}>
-          {currentAccount?.address}
-        </div>
+      <div className="flex text-12 mt-12">
+        <div className="mr-8 pt-2 lh-14">{currentAccount?.address}</div>
         <IconCopy
+          onClick={handleCopyCurrentAddress}
           className={clsx('icon icon-copy ml-7 mb-2 copy-icon', {
             success: copySuccess,
           })}
@@ -419,7 +410,7 @@ const Dashboard = () => {
                 overlayClassName="address-popover"
                 onVisibleChange={handleHoverChange}
               >
-                <img src={IconInfo} className="w-[16px] h-[16px]" />
+                <img src={IconInfo} className="w-[16px] h-[16px] pointer" />
               </Popover>
               <div className="flex-1" />
               <img
@@ -436,8 +427,8 @@ const Dashboard = () => {
               title={t('Coming soon')}
             >
               <div className="operation-item opacity-60">
-                <img className="icon icon-send" src={IconProfile} />
-                {t('Profile')}
+                <img className="icon icon-send" src={IconMoney} />
+                {t('Portfolio')}
               </div>
             </Tooltip>
             <div className="operation-item" onClick={handleGotoHistory}>

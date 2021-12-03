@@ -966,6 +966,8 @@
   },
   "Coming__soon": {
     "message": "Coming soon"
+  },
+  "Portfolio": {
+    "message": "Portfolio"
   }
-
 }
