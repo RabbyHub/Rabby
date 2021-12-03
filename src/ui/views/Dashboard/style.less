@@ -341,22 +341,15 @@
   }
 }
 .address-popover {
-  cursor: pointer;
   width: 344px;
   height: 200px;
-  left: 28px !important;
-  z-index: 2 !important;
+  left: 0px !important;
+  top: -140px !important;
   .ant-popover-arrow {
     display: none;
   }
-  .click-content-modar {
-    position: absolute;
-    left:0;
-    right:0;
-    width: 500px;
-    height: 800px;
-    background: transparent;
-    z-index: 1;
+  .ant-modal-content {
+    background: #ffffff;
   }
   .brand-name {
     font-size: 20px;
@@ -383,7 +376,6 @@
     width: 11px;
     height: 11px;
     margin-left: 3px;
-    z-index:10;
   }
   .qrcode-container {
     width: 100px;
@@ -405,7 +397,6 @@
   width: 200px;
   max-height: 308px;
   left: 28px !important;
-  z-index:2;
   .click-content-modar {
     position: absolute;
     left:0;
@@ -413,10 +404,6 @@
     width: 500px;
     height: 800px;
     background: transparent;
-    z-index:1;
-  }
-  .click-list{
-    z-index: 10;
   }
   .ant-popover-arrow {
     display: none;
@@ -430,7 +417,6 @@
     padding-left: 15px;
     border: 1px solid transparent;
     transition: background-color 0.3s;
-    z-index: 10;
     .click-name {
       max-width: 130px;
       overflow: hidden;
@@ -490,7 +476,6 @@
       border-top: 1px solid #e5e9ef;
       padding-left: 15px;
       color: #8697ff;
-      z-index: 10;
       &:hover {
         background-color: rgba(134, 151, 255, 0.1);
       }
@@ -510,13 +495,11 @@
     font-size: 20px;
     color: #13141a;
     margin: 2px 7px 0 6px;
-    z-index:10;
   }
   .edit-name {
     width: 11px;
     height: 11px;
     margin-left: 3px;
-    z-index:10;
   }
   .qrcode-container {
     width: 100px;

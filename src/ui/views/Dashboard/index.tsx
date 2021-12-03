@@ -315,7 +315,7 @@ const Dashboard = () => {
           e.stopPropagation();
           setClicked(false);
         }}
-      ></div>
+      />
       <div className="click-list flex flex-col w-[200px]">
         {accountsList.length < 1 ? (
           <div className="no-other-address"> {t('No other address')}</div>
@@ -390,7 +390,6 @@ const Dashboard = () => {
             <div className="flex header items-center">
               <div className="h-[32px] flex header-wrapper items-center relative">
                 <Popover
-                  style={{ width: 200 }}
                   content={clickContent}
                   trigger="click"
                   visible={clicked}
@@ -423,17 +422,11 @@ const Dashboard = () => {
                   />
                 </Popover>
               </div>
-              <Popover
-                style={{ width: 500 }}
-                content={hoverContent}
-                trigger="click"
-                visible={hovered}
-                //placement="bottomRight"
-                overlayClassName="address-popover"
-                onVisibleChange={handleHoverChange}
-              >
-                <img src={IconInfo} className="w-[16px] h-[16px] pointer" />
-              </Popover>
+              <img
+                src={IconInfo}
+                onClick={() => setHovered(true)}
+                className="w-[16px] h-[16px] pointer"
+              />
               <div className="flex-1" />
               <img
                 className="icon icon-settings"
@@ -493,6 +486,76 @@ const Dashboard = () => {
         maxHeight="420px"
       >
         <ReactMarkdown children={updateContent} remarkPlugins={[remarkGfm]} />
+      </Modal>
+      <Modal
+        visible={hovered}
+        closable={false}
+        onCancel={() => setHovered(false)}
+        className="address-popover"
+        width="344px"
+      >
+        <div className="flex flex-col" onClick={() => setStartEdit(false)}>
+          <div className="flex items-center">
+            {currentAccount && (
+              <img
+                className="icon icon-account-type w-[32px] h-[32px]"
+                src={
+                  KEYRING_ICONS[currentAccount.type] ||
+                  WALLET_BRAND_CONTENT[currentAccount.brandName]?.image
+                }
+              />
+            )}
+            <div className="brand-name">
+              {startEdit ? (
+                <Input
+                  value={alianName}
+                  defaultValue={alianName}
+                  onChange={handleAlianNameChange}
+                  onPressEnter={alianNameConfirm}
+                  autoFocus={startEdit}
+                  onClick={(e) => e.stopPropagation()}
+                  maxLength={20}
+                  min={0}
+                  style={{ zIndex: 10 }}
+                />
+              ) : (
+                displayName
+              )}
+            </div>
+            {!startEdit && (
+              <img
+                className="edit-name"
+                src={IconEditPen}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  setStartEdit(true);
+                }}
+              />
+            )}
+            {startEdit && (
+              <img
+                className="edit-name w-[16px] h-[16px]"
+                src={IconCorrect}
+                onClick={(e) => {
+                  e.stopPropagation();
+                  alianNameConfirm(e);
+                }}
+              />
+            )}
+          </div>
+          <div className="flex text-12 mt-12">
+            <div className="mr-8 pt-2 lh-14">{currentAccount?.address}</div>
+            <IconCopy
+              onClick={handleCopyCurrentAddress}
+              className={clsx('icon icon-copy ml-7 mb-2 copy-icon', {
+                success: copySuccess,
+              })}
+            />
+          </div>
+          <div className="qrcode-container">
+            <QRCode value={currentAccount?.address} size={85} />
+          </div>
+        </div>
       </Modal>
     </>
   );
