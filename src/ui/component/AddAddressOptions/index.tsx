@@ -101,10 +101,8 @@ const AddAddressOptions = () => {
           if (account && account.length > 0) {
             await wallet.updateAlianName(
               account[0]?.toLowerCase(),
-              `${
-                BRAND_ALIAN_TYPE_TEXT[KEYRING_CLASS.MNEMONIC] +
-                (mnemonLengh + 1)
-              }`
+              `${BRAND_ALIAN_TYPE_TEXT[KEYRING_CLASS.MNEMONIC]} 
+              ${mnemonLengh + 1}`
             );
           }
           message.success({
