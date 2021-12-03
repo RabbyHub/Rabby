@@ -185,7 +185,6 @@ const Dashboard = () => {
     if (newAccountList.length > 0) {
       setAccountsList(newAccountList);
     }
-    hide();
   };
   const checkIfFirstLogin = async () => {
     const firstOpen = await wallet.getIsFirstOpen();
@@ -202,67 +201,77 @@ const Dashboard = () => {
     checkIfFirstLogin();
   }, []);
   const hoverContent = () => (
-    <div className="flex flex-col" onClick={() => setStartEdit(false)}>
-      <div className="flex items-center">
-        {currentAccount && (
-          <img
-            className="icon icon-account-type w-[32px] h-[32px]"
-            src={
-              KEYRING_ICONS[currentAccount.type] ||
-              WALLET_BRAND_CONTENT[currentAccount.brandName]?.image
-            }
-          />
-        )}
-        <div className="brand-name">
-          {startEdit ? (
-            <Input
-              value={alianName}
-              defaultValue={alianName}
-              onChange={handleAlianNameChange}
-              onPressEnter={alianNameConfirm}
-              autoFocus={startEdit}
-              onClick={(e) => e.stopPropagation()}
-              maxLength={20}
-              min={0}
+    <>
+      <div
+        className="click-content-modar"
+        onClick={(e) => {
+          e.stopPropagation();
+          setHovered(false);
+        }}
+      ></div>
+      <div className="flex flex-col" onClick={() => setStartEdit(false)}>
+        <div className="flex items-center">
+          {currentAccount && (
+            <img
+              className="icon icon-account-type w-[32px] h-[32px]"
+              src={
+                KEYRING_ICONS[currentAccount.type] ||
+                WALLET_BRAND_CONTENT[currentAccount.brandName]?.image
+              }
             />
-          ) : (
-            displayName
+          )}
+          <div className="brand-name">
+            {startEdit ? (
+              <Input
+                value={alianName}
+                defaultValue={alianName}
+                onChange={handleAlianNameChange}
+                onPressEnter={alianNameConfirm}
+                autoFocus={startEdit}
+                onClick={(e) => e.stopPropagation()}
+                maxLength={20}
+                min={0}
+                style={{ zIndex: 10 }}
+              />
+            ) : (
+              displayName
+            )}
+          </div>
+          {!startEdit && (
+            <img
+              className="edit-name"
+              src={IconEditPen}
+              onClick={(e) => {
+                e.stopPropagation();
+                setStartEdit(true);
+              }}
+            />
+          )}
+          {startEdit && (
+            <img
+              className="edit-name w-[16px] h-[16px]"
+              src={IconCorrect}
+              onClick={(e) => {
+                e.stopPropagation();
+                alianNameConfirm(e);
+              }}
+            />
           )}
         </div>
-        {!startEdit && (
-          <img
-            className="edit-name"
-            src={IconEditPen}
-            onClick={(e) => {
-              e.stopPropagation();
-              setStartEdit(true);
-            }}
+        <div className="flex text-12 mt-12">
+          <div className="mr-8 pt-2 lh-14">{currentAccount?.address}</div>
+          <IconCopy
+            onClick={handleCopyCurrentAddress}
+            className={clsx('icon icon-copy ml-7 mb-2 copy-icon', {
+              success: copySuccess,
+            })}
           />
-        )}
-        {startEdit && (
-          <img
-            className="edit-name w-[16px] h-[16px]"
-            src={IconCorrect}
-            onClick={(e) => {
-              e.stopPropagation();
-              alianNameConfirm(e);
-            }}
-          />
-        )}
+        </div>
+        <div className="qrcode-container">
+          <QRCode value={currentAccount?.address} size={85} />
+        </div>
       </div>
-      <div className="flex text-12 mt-12">
-        <div className="mr-8 pt-2 lh-14">{currentAccount?.address}</div>
-        <IconCopy
-          onClick={handleCopyCurrentAddress}
-          className={clsx('icon icon-copy ml-7 mb-2 copy-icon', {
-            success: copySuccess,
-          })}
-        />
-      </div>
-      <div className="qrcode-container">
-        <QRCode value={currentAccount?.address} size={85} />
-      </div>
-    </div>
+    </>
   );
   const Row = (props) => {
     const { data, index, style } = props;
@@ -272,7 +281,10 @@ const Dashboard = () => {
         className="flex items-center address-item"
         key={index}
         style={style}
-        onClick={() => handleChange(account)}
+        onClick={(e) => {
+          e.stopPropagation();
+          handleChange(account);
+        }}
       >
         {' '}
         <img
@@ -296,27 +308,37 @@ const Dashboard = () => {
     );
   };
   const clickContent = () => (
-    <div className="flex flex-col w-[200px]">
-      {accountsList.length < 1 ? (
-        <div className="no-other-address"> {t('No other address')}</div>
-      ) : (
-        <FixedSizeList
-          height={accountsList.length > 5 ? 308 : accountsList.length * 52}
-          width="100%"
-          itemData={accountsList}
-          itemCount={accountsList.length}
-          itemSize={52}
-          ref={fixedList}
-        >
-          {Row}
-        </FixedSizeList>
-      )}
-      <Link to="/add-address" className="pop-add-address flex items-center">
-        {' '}
-        <img src={IconPlus} />
-        <p className="mb-0 ml-15 lh-1">{t('Add addresses')}</p>
-      </Link>
-    </div>
+    <>
+      <div
+        className="click-content-modar"
+        onClick={(e) => {
+          e.stopPropagation();
+          setClicked(false);
+        }}
+      ></div>
+      <div className="click-list flex flex-col w-[200px]">
+        {accountsList.length < 1 ? (
+          <div className="no-other-address"> {t('No other address')}</div>
+        ) : (
+          <FixedSizeList
+            height={accountsList.length > 5 ? 308 : accountsList.length * 52}
+            width="100%"
+            itemData={accountsList}
+            itemCount={accountsList.length}
+            itemSize={52}
+            ref={fixedList}
+            style={{ zIndex: 10 }}
+          >
+            {Row}
+          </FixedSizeList>
+        )}
+        <Link to="/add-address" className="pop-add-address flex items-center">
+          {' '}
+          <img src={IconPlus} />
+          <p className="mb-0 ml-15 lh-1">{t('Add addresses')}</p>
+        </Link>
+      </div>
+    </>
   );
   const getAllKeyrings = async () => {
     const _accounts = await wallet.getAllVisibleAccounts();
@@ -404,7 +426,7 @@ const Dashboard = () => {
               <Popover
                 style={{ width: 500 }}
                 content={hoverContent}
-                trigger="hover"
+                trigger="click"
                 visible={hovered}
                 //placement="bottomRight"
                 overlayClassName="address-popover"
@@ -420,7 +442,10 @@ const Dashboard = () => {
               />
             </div>
           )}
-          <BalanceView currentAccount={currentAccount} />
+          <BalanceView
+            currentAccount={currentAccount}
+            canHover={!clicked && !hovered}
+          />
           <div className="operation">
             <Tooltip
               overlayClassName="rectangle profileType__tooltip"
