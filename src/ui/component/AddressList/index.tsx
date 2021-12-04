@@ -72,7 +72,6 @@ const Row: React.FC<RowProps> = memo((props) => {
           currentAccount={currentAccount}
           canEditing={setStopEditing}
           stopEditing={stopEditing || editIndex !== index}
-          editIndex={setEditIndex}
           index={index}
           showAssets
           className="h-[56px] pl-16"
