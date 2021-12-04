@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import { useTranslation, Trans } from 'react-i18next';
 import { sortBy } from 'lodash';
@@ -46,6 +46,17 @@ const ImportSuccess = ({ isPopup = false }: { isPopup?: boolean }) => {
   const importedIcon =
     KEYRING_ICONS[accounts[0].type] ||
     WALLET_BRAND_CONTENT[accounts[0].brandName]?.image;
+  const [stopEditing, setStopEditing] = useState(true);
+  const [editIndex, setEditIndex] = useState(0);
+  const startEdit = (editing: boolean, index: number) => {
+    if (editing) {
+      setEditIndex(index);
+      setStopEditing(false);
+    } else {
+      setStopEditing(true);
+    }
+  };
+
   return (
     <StrayPageWithButton
       hasDivider={hasDivider}
@@ -73,6 +84,10 @@ const ImportSuccess = ({ isPopup = false }: { isPopup?: boolean }) => {
         </header>
       )}
       <div
+        onClick={(e) => {
+          e.stopPropagation();
+          setStopEditing(true);
+        }}
         className={clsx(
           'flex flex-col lg:justify-center text-center h-[472px] lg:h-auto',
           {
@@ -115,6 +130,8 @@ const ImportSuccess = ({ isPopup = false }: { isPopup?: boolean }) => {
               isMnemonics={isMnemonics}
               currentImportLength={accounts.length}
               importedLength={importedLength}
+              stopEditing={stopEditing || index !== editIndex}
+              canEditing={(editing) => startEdit(editing, index)}
             />
           ))}
         </div>
