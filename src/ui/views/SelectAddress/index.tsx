@@ -146,11 +146,13 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
         editing: isPopup,
         showImportIcon: false,
         isMnemonics,
+        importedAccount: true,
+        importedLength: importedAccounts && importedAccounts?.length,
       },
     });
   };
   const startNumberConfirm = (e) => {
-    e.stopPropagation();
+    e.preventDefault();
     if (end > 1000) {
       setErrorMsg(t('Max 1000'));
     } else if (accounts.length <= end && canLoad) {
@@ -158,6 +160,7 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
     }
   };
   const toSpecificNumber = (e: React.ChangeEvent<HTMLInputElement>) => {
+    e.stopPropagation();
     const currentNumber = parseInt(e.target.value);
     if (!currentNumber) {
       setErrorMsg(t('Invalid Number'));
@@ -192,6 +195,7 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
         form={form}
         footerFixed={false}
         noPadding={isPopup}
+        disableKeyDownEvent
         isScrollContainer={isPopup}
       >
         {isPopup && (
