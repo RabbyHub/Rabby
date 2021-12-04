@@ -29,9 +29,16 @@ export default ({
       onClick={onClick}
       style={{ cursor: onClick ? 'pointer' : 'inherit' }}
     >
-      <div className={cx('address-viewer-text', className)} title={address}>
+      <div
+        className={cx('address-viewer-text', className)}
+        title={address?.toLowerCase()}
+      >
         {showIndex && index > 0 && <div className="number-index">{index}</div>}
-        {ellipsis ? `${address.slice(0, 6)}...${address.slice(-4)}` : address}
+        {ellipsis
+          ? `${address
+              ?.toLowerCase()
+              .slice(0, 6)}...${address?.toLowerCase().slice(-4)}`
+          : address?.toLowerCase()}
       </div>
       {showArrow && (
         <SvgIconArrowDown className="ml-1 cursor-pointer fill-current text-white opacity-80" />
