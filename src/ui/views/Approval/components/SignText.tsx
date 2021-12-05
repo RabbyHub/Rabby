@@ -2,13 +2,14 @@ import React, { useState, useEffect } from 'react';
 import { Button, Tooltip } from 'antd';
 import { useTranslation } from 'react-i18next';
 import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
-import { KEYRING_CLASS, KEYRING_TYPE } from 'consts';
+import { KEYRING_CLASS, KEYRING_TYPE, EVENTS } from 'consts';
 import { useApproval, useWallet } from 'ui/utils';
 import { hex2Text } from 'ui/utils';
 import {
   SecurityCheckResponse,
   SecurityCheckDecision,
 } from 'background/service/openapi';
+import { Account } from 'background/service/preference';
 import { Modal } from 'ui/component';
 import SecurityCheckBar from './SecurityCheckBar';
 import SecurityCheckDetail from './SecurityCheckDetail';
@@ -16,6 +17,7 @@ import AccountCard from './AccountCard';
 import IconQuestionMark from 'ui/assets/question-mark-gray.svg';
 import IconArrowRight from 'ui/assets/arrow-right-gray.svg';
 import IconInfo from 'ui/assets/infoicon.svg';
+import eventBus from '@/eventBus';
 
 interface SignTextProps {
   data: string[];
@@ -24,6 +26,8 @@ interface SignTextProps {
     icon: string;
     name: string;
   };
+  isGnosis?: boolean;
+  account?: Account;
 }
 
 export const WaitingSignComponent = {
@@ -37,7 +41,7 @@ const SignText = ({ params }: { params: SignTextProps }) => {
   const [, resolveApproval, rejectApproval] = useApproval();
   const wallet = useWallet();
   const { t } = useTranslation();
-  const { data, session } = params;
+  const { data, session, isGnosis = false } = params;
   const [hexData] = data;
   const signText = hex2Text(hexData);
   const [showSecurityCheckDetail, setShowSecurityCheckDetail] = useState(false);
@@ -103,6 +107,26 @@ const SignText = ({ params }: { params: SignTextProps }) => {
         // NOTHING
       }
     }
+    if (isGnosis && params.account) {
+      if (WaitingSignComponent[params.account.type]) {
+        // TODO
+      } else {
+        const result = await wallet.signPersonalMessage(
+          params.account.type,
+          params.account.address,
+          params.data[0]
+        );
+        eventBus.emit(EVENTS.broadcastToBackground, {
+          method: EVENTS.GNOSIS.RPC,
+          data: {
+            result,
+            params: data,
+          },
+        });
+      }
+      return;
+    }
+
     if (currentAccount?.type && WaitingSignComponent[currentAccount?.type]) {
       resolveApproval({
         uiRequestComponent: WaitingSignComponent[currentAccount?.type],

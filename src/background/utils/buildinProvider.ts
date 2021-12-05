@@ -1,6 +1,8 @@
 // this script is injected into webpage's context
 import { EventEmitter } from 'events';
 import { providerController } from '../controller';
+import eventBus from '@/eventBus';
+import { EVENTS } from 'consts';
 
 interface StateProvider {
   accounts: string[] | null;
@@ -11,6 +13,9 @@ interface StateProvider {
 }
 
 export class EthereumProvider extends EventEmitter {
+  currentAccount = '';
+  currentAccountType = '';
+  currentAccountBrand = '';
   chainId: string | null = null;
   selectedAddress: string | null = null;
   /**
@@ -59,10 +64,42 @@ export class EthereumProvider extends EventEmitter {
 
   // TODO: support multi request!
   request = async (data) => {
-    return providerController({
-      data,
-      session: { origin: 'https://rabby.io' },
-    });
+    console.log('>> request', data);
+    switch (data.method) {
+      case 'eth_accounts':
+      case 'eth_requestAccounts':
+        return [this.currentAccount];
+      case 'personal_sign':
+        eventBus.emit(EVENTS.broadcastToUI, {
+          method: EVENTS.GNOSIS.RPC,
+          params: {
+            data,
+            account: {
+              address: this.currentAccount,
+              type: this.currentAccountType,
+              brand: this.currentAccountBrand,
+            },
+          },
+        });
+        return new Promise((resolve) => {
+          eventBus.once(EVENTS.GNOSIS.RPC, (res) => {
+            console.log('>>> res', res);
+            if (
+              data.method === 'personal_sign' &&
+              data.params[0] === res.params[0] &&
+              data.params[1] === res.params[1]
+            ) {
+              resolve(res.result);
+            }
+          });
+        });
+        break;
+      default:
+        return providerController({
+          data,
+          session: { origin: 'https://rabby.io' },
+        });
+    }
   };
 
   // shim to matamask legacy api

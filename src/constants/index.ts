@@ -504,6 +504,12 @@ export const WALLETCONNECT_STATUS_MAP = {
 
 export const INTERNAL_REQUEST_ORIGIN = 'https://rabby.io';
 
+export const INTERNAL_REQUEST_SESSION = {
+  name: 'Rabby',
+  origin: INTERNAL_REQUEST_ORIGIN,
+  icon: './images/icon-128.png',
+};
+
 export const INITIAL_OPENAPI_URL = 'https://openapi.debank.com';
 
 export const EVENTS = {
@@ -518,6 +524,7 @@ export const EVENTS = {
   GNOSIS: {
     TX_BUILT: 'TransactionBuilt',
     TX_CONFIRMED: 'TransactionConfirmed',
+    RPC: 'GnosisRPC',
   },
 };
 

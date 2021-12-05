@@ -2,7 +2,8 @@ import * as ethUtil from 'ethereumjs-util';
 import Wallet, { thirdparty } from 'ethereumjs-wallet';
 import { ethErrors } from 'eth-rpc-errors';
 import * as bip39 from 'bip39';
-import { add, groupBy } from 'lodash';
+import { ethers } from 'ethers';
+import { groupBy } from 'lodash';
 import {
   keyringService,
   preferenceService,
@@ -303,6 +304,47 @@ export class WalletController extends BaseController {
       return sigs.map((sig) => ({ data: sig.data, signer: sig.signer }));
     }
     return [];
+  };
+
+  signGnosisTransaction = (account: Account) => {
+    const keyring: GnosisKeyring = this._getKeyringByType(KEYRING_CLASS.GNOSIS);
+    if (keyring.currentTransaction && keyring.safeInstance) {
+      buildinProvider.currentProvider.currentAccount = account.address;
+      buildinProvider.currentProvider.currentAccountType = account.type;
+      buildinProvider.currentProvider.currentAccountBrand = account.brandName;
+      return keyring.confirmTransaction({
+        safeAddress: keyring.safeInstance.safeAddress,
+        transaction: keyring.currentTransaction,
+        networkId: keyring.safeInstance.network,
+        provider: new ethers.providers.Web3Provider(
+          buildinProvider.currentProvider
+        ),
+      });
+    }
+  };
+
+  checkGnosisTransactionCanExec = async () => {
+    const keyring: GnosisKeyring = this._getKeyringByType(KEYRING_CLASS.GNOSIS);
+    if (keyring.currentTransaction && keyring.safeInstance) {
+      const threshold = await keyring.safeInstance.getThreshold();
+      return keyring.currentTransaction.signatures.size >= threshold;
+    }
+    return false;
+  };
+
+  execGnosisTransaction = async (account: Account) => {
+    const keyring: GnosisKeyring = this._getKeyringByType(KEYRING_CLASS.GNOSIS);
+    if (keyring.currentTransaction && keyring.safeInstance) {
+      buildinProvider.currentProvider.currentAccount = account.address;
+      buildinProvider.currentProvider.currentAccountType = account.type;
+      buildinProvider.currentProvider.currentAccountBrand = account.brandName;
+      await keyring.execTransaction({
+        safeAddress: keyring.safeInstance.safeAddress,
+        transaction: keyring.currentTransaction,
+        networkId: keyring.safeInstance.network,
+        provider: buildinProvider,
+      });
+    }
   };
 
   importWatchAddress = async (address) => {
@@ -703,6 +745,17 @@ export class WalletController extends BaseController {
     }
 
     return stashKeyringId;
+  };
+
+  signPersonalMessage = async (
+    type: string,
+    from: string,
+    data: string,
+    options?: any
+  ) => {
+    const keyring = await keyringService.getKeyringForAccount(from, type);
+    console.log('>>> from', from);
+    return keyringService.signPersonalMessage(keyring, { from, data }, options);
   };
 
   requestKeyring = (type, methodName, keyringId: number | null, ...params) => {

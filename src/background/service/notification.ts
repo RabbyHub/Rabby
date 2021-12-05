@@ -59,6 +59,7 @@ class NotificationService {
   getApproval = () => this.approval?.data;
 
   resolveApproval = (data?: any) => {
+    console.log('approval', this.approval);
     this.approval?.resolve(data);
     this.approval = null;
   };

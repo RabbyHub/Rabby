@@ -112,7 +112,7 @@ class GnosisKeyring extends EventEmitter {
     safeAddress: string;
     transaction: SafeTransaction | null;
     networkId: string;
-    provider: any;
+    provider?: any;
   }) {
     let isCurrent = false; // Confirming a stash transaction or not
     if (!transaction) {
@@ -134,7 +134,6 @@ class GnosisKeyring extends EventEmitter {
         threshold,
       },
     });
-    return transaction;
   }
 
   async execTransaction({
@@ -181,9 +180,6 @@ class GnosisKeyring extends EventEmitter {
       const tx = {
         data: this._normalize(transaction.data) || '0x',
         from: address,
-        gas: this._normalize(transaction.gas),
-        gasPrice: bufferToInt(transaction.gasPrice),
-        nonce: bufferToInt(transaction.nonce),
         to: this._normalize(transaction.to),
         value: this._normalize(transaction.value) || '0x0', // prevent 0x
       };
@@ -196,11 +192,9 @@ class GnosisKeyring extends EventEmitter {
         networkId
       );
       const safeTransaction = await safe.buildTransaction(tx);
-      console.log('buildTransaction', safeTransaction);
       const transactionHash = await safe.getTransactionHash(safeTransaction);
-      console.log('transactionHash', transactionHash);
+      await safe.signTransaction(safeTransaction);
       await safe.postTransaction(safeTransaction, transactionHash);
-      console.log('postTransaction');
       this.safeInstance = safe;
       this.currentTransaction = safeTransaction;
       this.emit(TransactionBuiltEvent, {

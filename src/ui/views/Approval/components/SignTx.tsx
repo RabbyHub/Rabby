@@ -25,7 +25,7 @@ import {
   GasLevel,
 } from 'background/service/openapi';
 import { useWallet, useApproval } from 'ui/utils';
-import { ChainGas } from 'background/service/preference';
+import { ChainGas, Account } from 'background/service/preference';
 import GnosisDrawer from './TxComponents/GnosisDrawer';
 import Approve from './TxComponents/Approve';
 import Cancel from './TxComponents/Cancel';
@@ -236,6 +236,9 @@ const SignTx = ({ params, origin }) => {
     },
   ]);
   const [isGnosis, setIsGnosis] = useState(false);
+  const [canExecGnosisTransaction, setCanExecGnosisTransaction] = useState(
+    false
+  );
   const [gnosisDrawerVisible, setGnosisDrawerVisble] = useState(false);
   const [, resolveApproval, rejectApproval] = useApproval();
   const wallet = useWallet();
@@ -384,8 +387,29 @@ const SignTx = ({ params, origin }) => {
     }
   };
 
+  const handleGnosisConfirm = async (account: Account, isNew = true) => {
+    if (canExecGnosisTransaction) {
+      await wallet.execGnosisTransaction();
+    }
+    if (!isNew) {
+      await wallet.signGnosisTransaction(account);
+      return;
+    }
+    resolveApproval(
+      {
+        ...tx,
+        nonce: realNonce || tx.nonce,
+        gas: gasLimit,
+        isSend,
+        extra: {
+          signer: account,
+        },
+      },
+      true
+    );
+  };
+
   const handleAllow = async (doubleCheck = false) => {
-    console.log('handleAllow', doubleCheck);
     if (!selectedGas) return;
     if (!doubleCheck && securityCheckStatus !== 'pass') {
       setShowSecurityCheckDetail(true);
@@ -393,7 +417,6 @@ const SignTx = ({ params, origin }) => {
     }
 
     const currentAccount = await wallet.getCurrentAccount();
-    console.log(currentAccount);
     if (
       currentAccount?.type === KEYRING_CLASS.HARDWARE.LEDGER &&
       !(await wallet.isUseLedgerLive())
@@ -437,15 +460,6 @@ const SignTx = ({ params, origin }) => {
     }
     if (currentAccount.type === KEYRING_TYPE.GnosisKeyring) {
       setGnosisDrawerVisble(true);
-      // resolveApproval(
-      //   {
-      //     ...tx,
-      //     nonce: realNonce || tx.nonce,
-      //     gas: gasLimit,
-      //     isSend,
-      //   },
-      //   true
-      // );
       return;
     }
 
@@ -573,11 +587,10 @@ const SignTx = ({ params, origin }) => {
 
   const getSafeInfo = async () => {
     const currentAccount = await wallet.getCurrentAccount();
-    console.log('currentAccount', currentAccount);
     const networkId = await wallet.getGnosisNetworkId(currentAccount.address);
-    console.log('networkId', networkId);
     const safeInfo = await Safe.getSafeInfo(currentAccount.address, networkId);
-    console.log('safeInfo', safeInfo);
+    const canExec = await wallet.checkGnosisTransactionCanExec();
+    setCanExecGnosisTransaction(canExec);
     setSafeInfo(safeInfo);
   };
 
@@ -586,7 +599,6 @@ const SignTx = ({ params, origin }) => {
   }, []);
 
   useEffect(() => {
-    console.log('isGnosis', isGnosis);
     if (isGnosis) {
       getSafeInfo();
     }
@@ -788,7 +800,12 @@ const SignTx = ({ params, origin }) => {
             className="gnosis-drawer"
             visible={gnosisDrawerVisible}
           >
-            <GnosisDrawer safeInfo={safeInfo} />
+            <GnosisDrawer
+              safeInfo={safeInfo}
+              onCancel={handleCancel}
+              onConfirm={handleGnosisConfirm}
+              canExec={canExecGnosisTransaction}
+            />
           </Drawer>
         )}
         {securityCheckDetail && !isWatch && (

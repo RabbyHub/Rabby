@@ -1,6 +1,7 @@
 import * as Sentry from '@sentry/browser';
 import Transaction from 'ethereumjs-tx';
 import { TransactionFactory } from '@ethereumjs/tx';
+import { ethers } from 'ethers';
 import {
   bufferToHex,
   isHexString,
@@ -239,10 +240,22 @@ class ProviderController extends BaseController {
     let opts;
     opts = approvalRes?.extra;
     if (currentAccount.type === KEYRING_TYPE.GnosisKeyring) {
-      opts = {
-        provider: buildinProvider,
-      };
+      buildinProvider.currentProvider.currentAccount = approvalRes!.extra!.signer.address;
+      buildinProvider.currentProvider.currentAccountType = approvalRes!.extra!.signer.type;
+      buildinProvider.currentProvider.currentAccountBrand = approvalRes!.extra!.signer.brand;
+      try {
+        const provider = new ethers.providers.Web3Provider(
+          buildinProvider.currentProvider
+        );
+        console.log(provider);
+        opts = {
+          provider,
+        };
+      } catch (e) {
+        console.log(e);
+      }
     }
+    console.log('>>> opts', opts);
     const signedTx = await keyringService.signTransaction(
       keyring,
       tx,

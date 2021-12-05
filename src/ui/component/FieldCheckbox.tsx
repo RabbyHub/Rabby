@@ -9,7 +9,7 @@ interface FieldCheckboxProps {
   disable?: React.ReactNode | boolean;
   checked?: boolean;
   defaultChecked?: boolean;
-  onChange?(any): void;
+  onChange?(checked: boolean): void;
   showCheckbox?: boolean;
   className?: string;
   checkboxSize?: number;
