@@ -291,7 +291,7 @@ const Process = ({
 const WatchAddressWaiting = ({ params }: { params: ApprovalParams }) => {
   const wallet = useWallet();
   const [connectStatus, setConnectStatus] = useState(
-    WALLETCONNECT_STATUS_MAP.PENDING
+    WALLETCONNECT_STATUS_MAP.WAITING
   );
   const [connectError, setConnectError] = useState<null | {
     code?: number;
@@ -414,7 +414,7 @@ const WatchAddressWaiting = ({ params }: { params: ApprovalParams }) => {
         <img src={Mask} className="mask" />
       </div>
       <div className="watchaddress-operation">
-        {connectStatus === WALLETCONNECT_STATUS_MAP.PENDING ? (
+        {connectStatus === WALLETCONNECT_STATUS_MAP.PENDING && qrcodeContent ? (
           <Scan
             uri={qrcodeContent}
             chain={chain}
