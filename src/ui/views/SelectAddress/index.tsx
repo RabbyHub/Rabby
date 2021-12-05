@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useLocation, useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import clsx from 'clsx';
-import { Form, Input } from 'antd';
+import { Form, Input, message } from 'antd';
 import { StrayPageWithButton, MultiSelectAddressList } from 'ui/component';
 import { useWallet, useWalletRequest } from 'ui/utils';
 import { HARDWARE_KEYRING_TYPES } from 'consts';
@@ -77,6 +77,7 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
       },
       onError(err) {
         console.log('get hardware account error', err);
+        message.error('Please check the connection with your wallet');
       },
     }
   );
