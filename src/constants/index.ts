@@ -632,7 +632,7 @@ export const KEYRING_ICONS = {
   [KEYRING_CLASS.WATCH]: IconWatch24,
   [HARDWARE_KEYRING_TYPES.BitBox02.type]: IconBitBox02,
   [HARDWARE_KEYRING_TYPES.Ledger.type]: LogoLedgerWhite,
-  [HARDWARE_KEYRING_TYPES.Onekey.type]: IconOneKey24,
+  [HARDWARE_KEYRING_TYPES.Onekey.type]: LogoOnekey,
   [HARDWARE_KEYRING_TYPES.Trezor.type]: IconTrezor24,
 };
 
@@ -642,7 +642,7 @@ export const KEYRING_ICONS_WHITE = {
   [KEYRING_CLASS.WATCH]: IconWatchWhite,
   [HARDWARE_KEYRING_TYPES.BitBox02.type]: IconBitBox02,
   [HARDWARE_KEYRING_TYPES.Ledger.type]: LogoLedgerWhite,
-  [HARDWARE_KEYRING_TYPES.Onekey.type]: IconOneKey24,
+  [HARDWARE_KEYRING_TYPES.Onekey.type]: LogoOnekey,
   [HARDWARE_KEYRING_TYPES.Trezor.type]: IconTrezor24,
 };
 export const KEYRING_PURPLE_LOGOS = {
