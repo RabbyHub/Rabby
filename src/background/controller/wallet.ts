@@ -633,6 +633,15 @@ export class WalletController extends BaseController {
       keyring.useWebUSB(isWebUSB);
     }
 
+    if (
+      type === KEYRING_CLASS.HARDWARE.LEDGER &&
+      !isWebUSB &&
+      stashKeyringId !== null
+    ) {
+      keyring.updateTransportMethod &&
+        (await keyring.updateTransportMethod(true));
+    }
+
     return stashKeyringId;
   };
 

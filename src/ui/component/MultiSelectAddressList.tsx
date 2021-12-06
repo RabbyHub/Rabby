@@ -28,7 +28,7 @@ const Row = (props) => {
   const { data, index, style } = props;
   const { accounts, others } = data;
   const { importedAccounts, _value, loading, isPopup, handleToggle } = others;
-  //console.log(accounts, 88);
+
   const { t } = useTranslation();
   const imported =
     (accounts.length > 0 &&
