@@ -32,10 +32,11 @@ import IconZH from 'ui/assets/langs/zh_cn.svg';
 import IconAmber from 'ui/assets/walletlogo/amber.png';
 import IconBitBox02 from 'ui/assets/walletlogo/bitbox02.png';
 import IconBitBox02WithBorder from 'ui/assets/walletlogo/bitbox02-24.png';
+import IconFireblocks from 'ui/assets/walletlogo/fireblocks.png';
+import IconFireblocksWithBorder from 'ui/assets/walletlogo/fireblocks-border.png';
 import IconCobo from 'ui/assets/walletlogo/cobo.png';
 import IconImtoken from 'ui/assets/walletlogo/imtoken.png';
 import IconJade from 'ui/assets/walletlogo/jade.png';
-import IconLedger from 'ui/assets/walletlogo/ledger.svg';
 import IconMath from 'ui/assets/walletlogo/math.png';
 import IconOnekey from 'ui/assets/walletlogo/onekey.png';
 import IconOneKey18 from 'ui/assets/walletlogo/onekey18.png';
@@ -48,8 +49,6 @@ import IconPrivateKey24 from 'ui/assets/walletlogo/privatekey24.svg';
 import IconPrivateKeyPurple from 'ui/assets/walletlogo/privatekey-purple.svg';
 import IconWatch24 from 'ui/assets/walletlogo/watch24.svg';
 import IconWatchPurple from 'ui/assets/walletlogo/watch-purple.svg';
-import IconLedger24 from 'ui/assets/walletlogo/ledger24.png';
-import IconLedger18 from 'ui/assets/walletlogo/ledger18.png';
 import IconTrezor24 from 'ui/assets/walletlogo/trezor24.png';
 import IconTrezor24Border from 'ui/assets/walletlogo/trezor24-border.png';
 import IconOneKey24 from 'ui/assets/walletlogo/onekey24.png';
@@ -61,9 +60,7 @@ import LogoImtoken from 'ui/assets/walletlogo/imTokenLogo.png';
 import LogoCobo from 'ui/assets/walletlogo/CoboLogo.png';
 import LogoAmber from 'ui/assets/walletlogo/AmberLogo.png';
 import LogoOnekey from 'ui/assets/walletlogo/onekey28.png';
-import LogoBitBox02 from 'ui/assets/walletlogo/bitbox02.svg';
 import LogoTrezor from 'ui/assets/walletlogo/Trezor28.png';
-import LogoLedger from 'ui/assets/walletlogo/ledger28.png';
 import LogoMnemonic from 'ui/assets/walletlogo/mnemoniclogo.svg';
 import LogoPrivateKey from 'ui/assets/walletlogo/privatekeylogo.svg';
 import LogoWatch from 'ui/assets/walletlogo/watchlogo.svg';
@@ -519,6 +516,7 @@ export enum WALLET_BRAND_TYPES {
   AMBER = 'AMBER',
   BITBOX02 = 'BITBOX02',
   COBO = 'COBO',
+  FIREBLOCKS = 'FIREBLOCKS',
   IMTOKEN = 'IMTOKEN',
   JADE = 'JADE',
   LEDGER = 'LEDGER',
@@ -552,6 +550,14 @@ export const WALLET_BRAND_CONTENT = {
     brand: WALLET_BRAND_TYPES.COBO,
     icon: IconCobo,
     image: LogoCobo,
+    connectType: BRAND_WALLET_CONNECT_TYPE.WalletConnect,
+  },
+  [WALLET_BRAND_TYPES.FIREBLOCKS]: {
+    id: 11,
+    name: 'FireBlocks',
+    brand: WALLET_BRAND_TYPES.FIREBLOCKS,
+    icon: IconFireblocks,
+    image: IconFireblocksWithBorder,
     connectType: BRAND_WALLET_CONNECT_TYPE.WalletConnect,
   },
   [WALLET_BRAND_TYPES.IMTOKEN]: {
