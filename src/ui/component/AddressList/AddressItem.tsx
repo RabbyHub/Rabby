@@ -51,6 +51,7 @@ export interface AddressItemProps {
   importedLength?: number;
   canEditing?(editing: boolean): void;
   stopEditing?: boolean;
+  retriveAlianName?(): void;
 }
 
 const formatChain = (item: ChainWithBalance): DisplayChainWithWhiteLogo => {
@@ -133,13 +134,13 @@ const AddressItem = memo(
     importedLength = 0,
     canEditing,
     stopEditing = false,
+    retriveAlianName,
   }: AddressItemProps) => {
     if (!account) {
       return null;
     }
     const { t } = useTranslation();
     const wallet = useWallet();
-
     const [alianName, setAlianName] = useState<string>(
       account?.alianName || ''
     );
@@ -183,6 +184,7 @@ const AddressItem = memo(
     };
     const updateAlianName = async (alianName) => {
       await wallet.updateAlianName(account?.address?.toLowerCase(), alianName);
+      retriveAlianName && retriveAlianName();
     };
     const changeName = async () => {
       if (!alianName) {

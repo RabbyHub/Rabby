@@ -37,6 +37,7 @@ const AddressManagement = () => {
   const [displayList, setDisplayList] = useState([]);
 
   const [alianNames, setAlianNames] = useState<[]>([]);
+  const [retrive, setRetrive] = useState(false);
   const [noAccount, setNoAccount] = useState(false);
   const [stopEditing, setStopEditing] = useState(true);
   const [editIndex, setEditIndex] = useState(0);
@@ -256,7 +257,8 @@ const AddressManagement = () => {
   const fixedList = useRef<FixedSizeList>();
   useEffect(() => {
     getAllKeyrings();
-  }, []);
+    setRetrive(false);
+  }, [retrive]);
 
   const NoAddressUI = (
     <div className="no-address">
@@ -288,6 +290,9 @@ const AddressManagement = () => {
         setStopEditing(true);
       }
     };
+    const retriveAlianName = () => {
+      setRetrive(true);
+    };
     return (
       <li className="address-wrap-with-padding" style={style}>
         <ul className="addresses">
@@ -300,6 +305,7 @@ const AddressManagement = () => {
             index={index}
             stopEditing={!canEdit}
             canEditing={startEdit}
+            retriveAlianName={retriveAlianName}
             className="h-[56px] pl-16"
           />
         </ul>
