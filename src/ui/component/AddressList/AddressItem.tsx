@@ -228,6 +228,9 @@ const AddressItem = memo(
             'flex items-center relative',
             isDisabled && 'opacity-40'
           )}
+          onClick={(e) => {
+            e.stopPropagation();
+          }}
         >
           {showImportIcon && (
             <Tooltip
