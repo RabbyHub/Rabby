@@ -35,6 +35,7 @@ import Wallet from '../wallet';
 import { CHAINS, CHAINS_ENUM, SAFE_RPC_METHODS, KEYRING_TYPE } from 'consts';
 import buildinProvider from 'background/utils/buildinProvider';
 import BaseController from '../base';
+import { Chain } from 'background/service/chain';
 
 interface ApprovalRes extends Tx {
   type?: string;
@@ -77,7 +78,7 @@ const signTypedDataVlidation = ({
 };
 
 class ProviderController extends BaseController {
-  ethRpc = (req) => {
+  ethRpc = (req, forceChainServerId?: string) => {
     const {
       data: { method, params },
       session: { origin },
@@ -95,6 +96,9 @@ class ProviderController extends BaseController {
 
     if (connected) {
       chainServerId = CHAINS[connected.chain].serverId;
+    }
+    if (forceChainServerId) {
+      chainServerId = forceChainServerId;
     }
 
     const currentAddress =

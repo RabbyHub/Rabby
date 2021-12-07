@@ -1,8 +1,11 @@
 // this script is injected into webpage's context
 import { EventEmitter } from 'events';
-import { providerController } from '../controller';
+import providerController from '../controller/provider/controller';
+import preferenceService from 'background/service/preference';
+import wallet from '../controller/wallet';
 import eventBus from '@/eventBus';
-import { EVENTS } from 'consts';
+import { EVENTS, CHAINS, INTERNAL_REQUEST_SESSION } from 'consts';
+import { underline2Camelcase } from 'background/utils';
 
 interface StateProvider {
   accounts: string[] | null;
@@ -64,7 +67,23 @@ export class EthereumProvider extends EventEmitter {
 
   // TODO: support multi request!
   request = async (data) => {
-    console.log('>> request', data);
+    const { method } = data;
+    const request = {
+      data,
+      session: INTERNAL_REQUEST_SESSION,
+    };
+    const mapMethod = underline2Camelcase(method);
+    const currentAccount = preferenceService.getCurrentAccount()!;
+    const networkId = wallet.getGnosisNetworkId(currentAccount.address);
+    const chain = Object.values(CHAINS).find(
+      (item) => item.id.toString() === networkId
+    )!;
+    if (!providerController[mapMethod]) {
+      // TODO: make rpc whitelist
+      if (method.startsWith('eth_') || method === 'net_version') {
+        return providerController.ethRpc(request, chain.serverId);
+      }
+    }
     switch (data.method) {
       case 'eth_accounts':
       case 'eth_requestAccounts':
@@ -83,7 +102,6 @@ export class EthereumProvider extends EventEmitter {
         });
         return new Promise((resolve) => {
           eventBus.once(EVENTS.GNOSIS.RPC, (res) => {
-            console.log('>>> res', res);
             if (
               data.method === 'personal_sign' &&
               data.params[0] === res.params[0] &&
@@ -93,12 +111,10 @@ export class EthereumProvider extends EventEmitter {
             }
           });
         });
-        break;
+      case 'eth_chainId':
+        return chain.hex;
       default:
-        return providerController({
-          data,
-          session: { origin: 'https://rabby.io' },
-        });
+        return providerController[mapMethod](request);
     }
   };
 
