@@ -20,7 +20,7 @@ class BitBox02Keyring extends EventEmitter {
   accounts: string[] = [];
   hdk = new HDKey();
   page = 0;
-  perPage = 5;
+  perPage = 10;
   unlockedAccount = 0;
   paths = {};
   hdPath = '';
@@ -45,7 +45,7 @@ class BitBox02Keyring extends EventEmitter {
     this.hdPath = opts.hdPath || hdPathString;
     this.accounts = opts.accounts || [];
     this.page = opts.page || 0;
-    this.perPage = opts.perPage || 5;
+    this.perPage = 10;
     return Promise.resolve();
   }
 
@@ -162,7 +162,24 @@ class BitBox02Keyring extends EventEmitter {
         accounts.push({
           address,
           balance: null,
-          index: i,
+          index: i + 1,
+        });
+        this.paths[ethUtil.toChecksumAddress(address)] = i;
+      }
+      return accounts;
+    });
+  }
+  async getAddresses(start: number, end: number) {
+    const from = start;
+    const to = end;
+    const accounts: any[] = [];
+    return await this.withDevice(async () => {
+      for (let i = from; i < to; i++) {
+        const address = this._addressFromIndex(pathBase, i);
+        accounts.push({
+          address,
+          balance: null,
+          index: i + 1,
         });
         this.paths[ethUtil.toChecksumAddress(address)] = i;
       }
