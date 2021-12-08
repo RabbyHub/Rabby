@@ -1,12 +1,13 @@
 import { EventEmitter } from 'events';
-import { isAddress } from 'web3-utils';
-import { addHexPrefix, bufferToHex, bufferToInt } from 'ethereumjs-util';
+import { isAddress, toChecksumAddress } from 'web3-utils';
+import { addHexPrefix, bufferToHex } from 'ethereumjs-util';
 import Safe from '@rabby-wallet/gnosis-sdk';
 import { SafeTransaction } from '@gnosis.pm/safe-core-sdk-types';
 
 export const keyringType = 'Gnosis';
 export const TransactionBuiltEvent = 'TransactionBuilt';
 export const TransactionConfirmedEvent = 'TransactionConfirmed';
+export const TransactionReadyForExecEvent = 'TransactionReadyForExec';
 
 interface SignTransactionOptions {
   signatures: string[];
@@ -120,17 +121,21 @@ class GnosisKeyring extends EventEmitter {
       isCurrent = true;
     }
     if (!transaction) throw new Error('No avaliable transaction');
+    const checksumAddress = toChecksumAddress(safeAddress);
     let safe = this.safeInstance;
     if (!isCurrent) {
-      const safeInfo = await Safe.getSafeInfo(safeAddress, networkId);
-      safe = new Safe(safeAddress, safeInfo.version, provider, networkId);
+      const safeInfo = await Safe.getSafeInfo(checksumAddress, networkId);
+      safe = new Safe(checksumAddress, safeInfo.version, provider, networkId);
     }
     await safe!.confirmTransaction(transaction);
     const threshold = await safe!.getThreshold();
     this.emit(TransactionConfirmedEvent, {
       safeAddress,
       data: {
-        signatures: transaction.signatures,
+        signatures: Array.from(transaction.signatures.values()).map((item) => ({
+          data: item.data,
+          signer: item.signer,
+        })),
         threshold,
       },
     });
@@ -153,10 +158,11 @@ class GnosisKeyring extends EventEmitter {
       isCurrent = true;
     }
     if (!transaction) throw new Error('No avaliable transaction');
+    const checksumAddress = toChecksumAddress(safeAddress);
     let safe = this.safeInstance;
     if (!isCurrent) {
-      const safeInfo = await Safe.getSafeInfo(safeAddress, networkId);
-      safe = new Safe(safeAddress, safeInfo.version, provider, networkId);
+      const safeInfo = await Safe.getSafeInfo(checksumAddress, networkId);
+      safe = new Safe(checksumAddress, safeInfo.version, provider, networkId);
     }
     const result = await safe!.executeTransaction(transaction);
     this.onExecedTransaction && this.onExecedTransaction(result.hash);
@@ -177,6 +183,7 @@ class GnosisKeyring extends EventEmitter {
       ) {
         throw new Error('Can not find this address');
       }
+      const checksumAddress = toChecksumAddress(address);
       const tx = {
         data: this._normalize(transaction.data) || '0x',
         from: address,
@@ -184,9 +191,9 @@ class GnosisKeyring extends EventEmitter {
         value: this._normalize(transaction.value) || '0x0', // prevent 0x
       };
       const networkId = this.networkIdMap[address.toLowerCase()];
-      const safeInfo = await Safe.getSafeInfo(address, networkId);
+      const safeInfo = await Safe.getSafeInfo(checksumAddress, networkId);
       const safe = new Safe(
-        address,
+        checksumAddress,
         safeInfo.version,
         opts.provider,
         networkId

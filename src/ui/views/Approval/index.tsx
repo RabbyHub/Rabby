@@ -47,7 +47,6 @@ const Approval = () => {
       setGnosisRPCData(null);
     });
     eventBus.addEventListener(EVENTS.GNOSIS.TX_CONFIRMED, (data) => {
-      console.log(EVENTS.GNOSIS.TX_CONFIRMED, data);
       setGnosisRPCData(null);
     });
   }, []);

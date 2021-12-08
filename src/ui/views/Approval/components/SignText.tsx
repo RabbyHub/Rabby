@@ -121,6 +121,7 @@ const SignText = ({ params }: { params: SignTextProps }) => {
           data: {
             result,
             params: data,
+            method: 'personal_sign',
           },
         });
       }

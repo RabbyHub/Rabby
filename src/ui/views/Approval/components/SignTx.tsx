@@ -12,11 +12,18 @@ import clsx from 'clsx';
 import Safe from '@rabby-wallet/gnosis-sdk';
 import { SafeInfo } from '@rabby-wallet/gnosis-sdk/src/api';
 import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
-import { KEYRING_CLASS, CHAINS, CHAINS_ENUM, KEYRING_TYPE } from 'consts';
+import {
+  KEYRING_CLASS,
+  CHAINS,
+  CHAINS_ENUM,
+  KEYRING_TYPE,
+  EVENTS,
+} from 'consts';
 import { Checkbox } from 'ui/component';
 import AccountCard from './AccountCard';
 import SecurityCheckBar from './SecurityCheckBar';
 import SecurityCheckDetail from './SecurityCheckDetail';
+import eventBus from '@/eventBus';
 import {
   ExplainTxResponse,
   SecurityCheckResponse,
@@ -133,7 +140,22 @@ const TxTypeComponent = ({
   return <></>;
 };
 
-const SignTx = ({ params, origin }) => {
+interface SignTxProps {
+  params: {
+    session: {
+      origin: string;
+      icon: string;
+      name: string;
+    };
+    data: any[];
+    isGnosis?: boolean;
+    account?: Account;
+  };
+  origin: string;
+}
+
+const SignTx = ({ params, origin }: SignTxProps) => {
+  const { isGnosis, account } = params;
   const [isReady, setIsReady] = useState(false);
   const [nonceChanged, setNonceChanged] = useState(false);
   const [isWatch, setIsWatch] = useState(false);
@@ -235,7 +257,7 @@ const SignTx = ({ params, origin }) => {
       base_fee: 0,
     },
   ]);
-  const [isGnosis, setIsGnosis] = useState(false);
+  const [isGnosisAccount, setIsGnosisAccount] = useState(false);
   const [canExecGnosisTransaction, setCanExecGnosisTransaction] = useState(
     false
   );
@@ -368,7 +390,8 @@ const SignTx = ({ params, origin }) => {
   };
 
   const explain = async () => {
-    const currentAccount = await wallet.getCurrentAccount();
+    const currentAccount =
+      isGnosis && account ? account : await wallet.getCurrentAccount();
     if (currentAccount.type === KEYRING_TYPE.WatchAddressKeyring) {
       setIsWatch(true);
     }
@@ -389,7 +412,7 @@ const SignTx = ({ params, origin }) => {
 
   const handleGnosisConfirm = async (account: Account, isNew = true) => {
     if (canExecGnosisTransaction) {
-      await wallet.execGnosisTransaction();
+      await wallet.execGnosisTransaction(account);
     }
     if (!isNew) {
       await wallet.signGnosisTransaction(account);
@@ -416,7 +439,8 @@ const SignTx = ({ params, origin }) => {
       return;
     }
 
-    const currentAccount = await wallet.getCurrentAccount();
+    const currentAccount =
+      isGnosis && account ? account : await wallet.getCurrentAccount();
     if (
       currentAccount?.type === KEYRING_CLASS.HARDWARE.LEDGER &&
       !(await wallet.isUseLedgerLive())
@@ -442,6 +466,31 @@ const SignTx = ({ params, origin }) => {
       selected.gasLevel = selectedGas.level;
     }
     await wallet.updateLastTimeGasSelection(chainId, selected);
+    if (isGnosis && params.account) {
+      if (WaitingSignComponent[params.account.type]) {
+        // TODO
+      } else {
+        const result = await wallet.signTransaction(
+          params.account.type,
+          params.account.address,
+          {
+            ...tx,
+            nonce: realNonce || tx.nonce,
+            gas: gasLimit,
+            isSend, // TODO: fix send symbol
+          }
+        );
+        eventBus.emit(EVENTS.broadcastToBackground, {
+          method: EVENTS.GNOSIS.RPC,
+          data: {
+            result,
+            params: params.data,
+            method: 'eth_sendTransaction',
+          },
+        });
+      }
+      return;
+    }
     if (currentAccount?.type && WaitingSignComponent[currentAccount.type]) {
       resolveApproval({
         ...tx,
@@ -531,10 +580,11 @@ const SignTx = ({ params, origin }) => {
   const init = async () => {
     const session = params.session;
     const site = await wallet.getConnectedSite(session.origin);
-    const currentAccount = await wallet.getCurrentAccount();
+    const currentAccount =
+      isGnosis && account ? account : await wallet.getCurrentAccount();
 
     if (currentAccount.type === KEYRING_TYPE.GnosisKeyring) {
-      setIsGnosis(true);
+      setIsGnosisAccount(true);
     }
 
     if (!chainId) {
@@ -599,10 +649,10 @@ const SignTx = ({ params, origin }) => {
   }, []);
 
   useEffect(() => {
-    if (isGnosis) {
+    if (isGnosisAccount) {
       getSafeInfo();
     }
-  }, [isGnosis]);
+  }, [isGnosisAccount]);
 
   useEffect(() => {
     if (!inited) return;
@@ -713,9 +763,9 @@ const SignTx = ({ params, origin }) => {
                         disabled={
                           !isReady ||
                           (selectedGas ? selectedGas.price <= 0 : true) ||
-                          (isGnosis ? !safeInfo : false)
+                          (isGnosisAccount ? !safeInfo : false)
                         }
-                        loading={isGnosis ? !safeInfo : false}
+                        loading={isGnosisAccount ? !safeInfo : false}
                       >
                         {securityCheckStatus === 'pass'
                           ? t('Sign')
@@ -779,9 +829,9 @@ const SignTx = ({ params, origin }) => {
                         disabled={
                           !forceProcess ||
                           (selectedGas ? selectedGas.price <= 0 : true) ||
-                          (isGnosis ? !safeInfo : false)
+                          (isGnosisAccount ? !safeInfo : false)
                         }
-                        loading={isGnosis ? !safeInfo : false}
+                        loading={isGnosisAccount ? !safeInfo : false}
                         onClick={() => handleAllow(true)}
                       >
                         {t('Sign')}
@@ -793,7 +843,7 @@ const SignTx = ({ params, origin }) => {
             </footer>
           </>
         )}
-        {isGnosis && safeInfo && (
+        {isGnosisAccount && safeInfo && (
           <Drawer
             placement="bottom"
             height="400px"

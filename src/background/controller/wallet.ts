@@ -45,6 +45,7 @@ import {
 import GnosisKeyring, {
   TransactionBuiltEvent,
   TransactionConfirmedEvent,
+  TransactionReadyForExecEvent,
 } from '../service/keyring/eth-gnosis-keyring';
 
 const stashKeyrings: Record<string, any> = {};
@@ -268,12 +269,9 @@ export class WalletController extends BaseController {
         method: TransactionBuiltEvent,
         params: data,
       });
-      (keyring as GnosisKeyring).on(TransactionConfirmedEvent, (data) => {
-        eventBus.emit(EVENTS.broadcastToUI, {
-          method: TransactionConfirmedEvent,
-          params: data,
-        });
-      });
+    });
+    (keyring as GnosisKeyring).on(TransactionConfirmedEvent, () => {
+      this.rejectApproval('User rejected the request.');
     });
     return this._setCurrentAccountFromKeyring(keyring, -1);
   };
@@ -342,7 +340,9 @@ export class WalletController extends BaseController {
         safeAddress: keyring.safeInstance.safeAddress,
         transaction: keyring.currentTransaction,
         networkId: keyring.safeInstance.network,
-        provider: buildinProvider,
+        provider: new ethers.providers.Web3Provider(
+          buildinProvider.currentProvider
+        ),
       });
     }
   };
@@ -754,8 +754,19 @@ export class WalletController extends BaseController {
     options?: any
   ) => {
     const keyring = await keyringService.getKeyringForAccount(from, type);
-    console.log('>>> from', from);
     return keyringService.signPersonalMessage(keyring, { from, data }, options);
+  };
+
+  signTransaction = async (
+    type: string,
+    from: string,
+    data: any,
+    options?: any
+  ) => {
+    const keyring = await keyringService.getKeyringForAccount(from, type);
+    console.log('>>> keyring', keyring);
+    console.log('data', data);
+    return keyringService.signTransaction(keyring, data, options);
   };
 
   requestKeyring = (type, methodName, keyringId: number | null, ...params) => {

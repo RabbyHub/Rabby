@@ -2,6 +2,7 @@
 import { EventEmitter } from 'events';
 import providerController from '../controller/provider/controller';
 import preferenceService from 'background/service/preference';
+import notificationService from 'background/service/notification';
 import wallet from '../controller/wallet';
 import eventBus from '@/eventBus';
 import { EVENTS, CHAINS, INTERNAL_REQUEST_SESSION } from 'consts';
@@ -67,6 +68,7 @@ export class EthereumProvider extends EventEmitter {
 
   // TODO: support multi request!
   request = async (data) => {
+    console.log('>>> request', data);
     const { method } = data;
     const request = {
       data,
@@ -103,7 +105,7 @@ export class EthereumProvider extends EventEmitter {
         return new Promise((resolve) => {
           eventBus.once(EVENTS.GNOSIS.RPC, (res) => {
             if (
-              data.method === 'personal_sign' &&
+              data.method === res.method &&
               data.params[0] === res.params[0] &&
               data.params[1] === res.params[1]
             ) {

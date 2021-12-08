@@ -28,6 +28,7 @@ import i18n from '../i18n';
 import { KEYRING_TYPE, HARDWARE_KEYRING_TYPES, EVENTS } from 'consts';
 import DisplayKeyring from './display';
 import eventBus from '@/eventBus';
+import { notificationService } from '..';
 
 export const KEYRING_SDK_TYPES = {
   SimpleKeyring,
@@ -763,12 +764,9 @@ class KeyringService extends EventEmitter {
           method: TransactionBuiltEvent,
           params: data,
         });
-        (keyring as GnosisKeyring).on(TransactionConfirmedEvent, (data) => {
-          eventBus.emit(EVENTS.broadcastToUI, {
-            method: TransactionConfirmedEvent,
-            params: data,
-          });
-        });
+      });
+      (keyring as GnosisKeyring).on(TransactionConfirmedEvent, () => {
+        notificationService.rejectApproval('User rejected the request.');
       });
     }
     // getAccounts also validates the accounts for some keyrings
