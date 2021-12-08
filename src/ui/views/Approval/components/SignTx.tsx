@@ -155,7 +155,7 @@ interface SignTxProps {
 }
 
 const SignTx = ({ params, origin }: SignTxProps) => {
-  const { isGnosis, account } = params;
+  const { isGnosis, account, session } = params;
   const [isReady, setIsReady] = useState(false);
   const [nonceChanged, setNonceChanged] = useState(false);
   const [isWatch, setIsWatch] = useState(false);
@@ -410,26 +410,19 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     }
   };
 
-  const handleGnosisConfirm = async (account: Account, isNew = true) => {
+  const handleGnosisConfirm = async (account: Account) => {
     if (canExecGnosisTransaction) {
       await wallet.execGnosisTransaction(account);
     }
-    if (!isNew) {
-      await wallet.signGnosisTransaction(account);
-      return;
-    }
-    resolveApproval(
-      {
-        ...tx,
-        nonce: realNonce || tx.nonce,
-        gas: gasLimit,
-        isSend,
-        extra: {
-          signer: account,
-        },
-      },
-      true
-    );
+    await wallet.buildGnosisTransaction(tx.from, account, tx);
+    const hash = await wallet.getGnosisTransactionHash();
+    resolveApproval({
+      data: [hash, account.address],
+      session: params.session,
+      isGnosis: true,
+      account: account,
+      uiRequestComponent: 'SignText',
+    });
   };
 
   const handleAllow = async (doubleCheck = false) => {

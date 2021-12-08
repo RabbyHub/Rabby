@@ -1,3 +1,4 @@
+import Events from 'events';
 import { ethErrors } from 'eth-rpc-errors';
 import { EthereumProviderError } from 'eth-rpc-errors/dist/classes';
 import { winMgr } from 'background/webapi';
@@ -24,12 +25,14 @@ interface Approval {
 
 // something need user approval in window
 // should only open one window, unfocus will close the current notification
-class NotificationService {
+class NotificationService extends Events {
   approval: Approval | null = null;
   notifiWindowId = 0;
   isLocked = false;
 
   constructor() {
+    super();
+
     winMgr.event.on('windowRemoved', (winId: number) => {
       if (winId === this.notifiWindowId) {
         this.notifiWindowId = 0;
@@ -59,14 +62,15 @@ class NotificationService {
   getApproval = () => this.approval?.data;
 
   resolveApproval = (data?: any) => {
-    console.log('approval', this.approval);
     this.approval?.resolve(data);
     this.approval = null;
+    this.emit('resolve', data);
   };
 
   rejectApproval = async (err?: string) => {
     this.approval?.reject(ethErrors.provider.userRejectedRequest<any>(err));
     await this.clear();
+    this.emit('reject', err);
   };
 
   // currently it only support one approval at the same time

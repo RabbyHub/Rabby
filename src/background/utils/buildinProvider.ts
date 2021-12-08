@@ -91,26 +91,21 @@ export class EthereumProvider extends EventEmitter {
       case 'eth_requestAccounts':
         return [this.currentAccount];
       case 'personal_sign':
-        eventBus.emit(EVENTS.broadcastToUI, {
-          method: EVENTS.GNOSIS.RPC,
-          params: {
-            data,
-            account: {
-              address: this.currentAccount,
-              type: this.currentAccountType,
-              brand: this.currentAccountBrand,
-            },
-          },
-        });
-        return new Promise((resolve) => {
-          eventBus.once(EVENTS.GNOSIS.RPC, (res) => {
-            if (
-              data.method === res.method &&
-              data.params[0] === res.params[0] &&
-              data.params[1] === res.params[1]
-            ) {
-              resolve(res.result);
-            }
+        return new Promise((resolve, reject) => {
+          // eventBus.once(EVENTS.GNOSIS.RPC, (res) => {
+          //   if (
+          //     data.method === res.method &&
+          //     data.params[0] === res.params[0] &&
+          //     data.params[1] === res.params[1]
+          //   ) {
+          //     resolve(res.result);
+          //   }
+          // });
+          notificationService.on('resolve', (data) => {
+            resolve(data);
+          });
+          notificationService.on('reject', (err) => {
+            reject(err);
           });
         });
       case 'eth_chainId':

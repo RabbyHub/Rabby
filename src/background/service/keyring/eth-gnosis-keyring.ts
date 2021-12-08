@@ -169,6 +169,35 @@ class GnosisKeyring extends EventEmitter {
     return result.hash;
   }
 
+  async buildTransaction(address: string, transaction, provider) {
+    if (
+      !this.accounts.find(
+        (account) => account.toLowerCase() === address.toLowerCase()
+      )
+    ) {
+      throw new Error('Can not find this address');
+    }
+    const checksumAddress = toChecksumAddress(address);
+    const tx = {
+      data: this._normalize(transaction.data) || '0x',
+      from: address,
+      to: this._normalize(transaction.to),
+      value: this._normalize(transaction.value) || '0x0', // prevent 0x
+    };
+    const networkId = this.networkIdMap[address.toLowerCase()];
+    const safeInfo = await Safe.getSafeInfo(checksumAddress, networkId);
+    const safe = new Safe(
+      checksumAddress,
+      safeInfo.version,
+      provider,
+      networkId
+    );
+    this.safeInstance = safe;
+    const safeTransaction = await safe.buildTransaction(tx);
+    this.currentTransaction = safeTransaction;
+    return safeTransaction;
+  }
+
   async signTransaction(
     address: string,
     transaction,
@@ -183,14 +212,10 @@ class GnosisKeyring extends EventEmitter {
       ) {
         throw new Error('Can not find this address');
       }
-      const checksumAddress = toChecksumAddress(address);
-      const tx = {
-        data: this._normalize(transaction.data) || '0x',
-        from: address,
-        to: this._normalize(transaction.to),
-        value: this._normalize(transaction.value) || '0x0', // prevent 0x
-      };
+      let safeTransaction: SafeTransaction;
+      let transactionHash: string;
       const networkId = this.networkIdMap[address.toLowerCase()];
+      const checksumAddress = toChecksumAddress(address);
       const safeInfo = await Safe.getSafeInfo(checksumAddress, networkId);
       const safe = new Safe(
         checksumAddress,
@@ -198,8 +223,19 @@ class GnosisKeyring extends EventEmitter {
         opts.provider,
         networkId
       );
-      const safeTransaction = await safe.buildTransaction(tx);
-      const transactionHash = await safe.getTransactionHash(safeTransaction);
+      if (this.currentTransaction) {
+        safeTransaction = this.currentTransaction;
+        transactionHash = await safe.getTransactionHash(safeTransaction);
+      } else {
+        const tx = {
+          data: this._normalize(transaction.data) || '0x',
+          from: address,
+          to: this._normalize(transaction.to),
+          value: this._normalize(transaction.value) || '0x0', // prevent 0x
+        };
+        safeTransaction = await safe.buildTransaction(tx);
+        transactionHash = await safe.getTransactionHash(safeTransaction);
+      }
       await safe.signTransaction(safeTransaction);
       await safe.postTransaction(safeTransaction, transactionHash);
       this.safeInstance = safe;

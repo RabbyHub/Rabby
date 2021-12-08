@@ -269,9 +269,12 @@ export class WalletController extends BaseController {
         method: TransactionBuiltEvent,
         params: data,
       });
-    });
-    (keyring as GnosisKeyring).on(TransactionConfirmedEvent, () => {
-      this.rejectApproval('User rejected the request.');
+      (keyring as GnosisKeyring).on(TransactionConfirmedEvent, (data) => {
+        eventBus.emit(EVENTS.broadcastToUI, {
+          method: TransactionConfirmedEvent,
+          params: data,
+        });
+      });
     });
     return this._setCurrentAccountFromKeyring(keyring, -1);
   };
@@ -302,6 +305,26 @@ export class WalletController extends BaseController {
       return sigs.map((sig) => ({ data: sig.data, signer: sig.signer }));
     }
     return [];
+  };
+
+  buildGnosisTransaction = async (
+    safeAddress: string,
+    account: Account,
+    tx
+  ) => {
+    const keyring: GnosisKeyring = this._getKeyringByType(KEYRING_CLASS.GNOSIS);
+    if (keyring) {
+      buildinProvider.currentProvider.currentAccount = account.address;
+      buildinProvider.currentProvider.currentAccountType = account.type;
+      buildinProvider.currentProvider.currentAccountBrand = account.brandName;
+      await keyring.buildTransaction(
+        safeAddress,
+        tx,
+        new ethers.providers.Web3Provider(buildinProvider.currentProvider)
+      );
+    } else {
+      throw new Error('No Gnosis keyring found');
+    }
   };
 
   signGnosisTransaction = (account: Account) => {

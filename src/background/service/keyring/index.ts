@@ -764,9 +764,12 @@ class KeyringService extends EventEmitter {
           method: TransactionBuiltEvent,
           params: data,
         });
-      });
-      (keyring as GnosisKeyring).on(TransactionConfirmedEvent, () => {
-        notificationService.rejectApproval('User rejected the request.');
+        (keyring as GnosisKeyring).on(TransactionConfirmedEvent, (data) => {
+          eventBus.emit(EVENTS.broadcastToUI, {
+            method: TransactionConfirmedEvent,
+            params: data,
+          });
+        });
       });
     }
     // getAccounts also validates the accounts for some keyrings

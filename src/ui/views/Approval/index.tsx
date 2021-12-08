@@ -44,10 +44,10 @@ const Approval = () => {
       setGnosisRPCData(data);
     });
     eventBus.once(EVENTS.GNOSIS.TX_BUILT, () => {
-      setGnosisRPCData(null);
+      rejectApproval();
     });
     eventBus.addEventListener(EVENTS.GNOSIS.TX_CONFIRMED, (data) => {
-      setGnosisRPCData(null);
+      rejectApproval();
     });
   }, []);
 

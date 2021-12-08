@@ -9,11 +9,11 @@ export const useApproval = () => {
 
   const getApproval = wallet.getApproval;
 
-  const resolveApproval = async (data?: any, stay = false) => {
+  const resolveApproval = async (data?: any, stay = false, keep = false) => {
     const approval = await getApproval();
 
     if (approval) {
-      wallet.resolveApproval(data);
+      wallet.resolveApproval(data, keep);
     }
     if (stay) {
       return;
