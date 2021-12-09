@@ -1,0 +1,106 @@
+@import '../../style/var.less';
+
+.queue {
+  .page();
+  display: flex;
+  flex-direction: column;
+  padding: 0 20px;
+  .queue-item {
+    background-color: #fff;
+    border-radius: 6px;
+    padding: 12px;
+    margin-bottom: 10px;
+    &__time {
+      font-size: 12px;
+      line-height: 14px;
+      color: #707280;
+      margin-bottom: 15px;
+    }
+    &__info {
+      margin-bottom: 20px;
+      .tx-explain {
+        display: flex;
+        align-items: center;
+        margin-bottom: 0;
+        & > span {
+          flex: 1;
+          font-weight: 500;
+          font-size: 15px;
+          line-height: 18px;
+          color: #13141A;
+        }
+        .icon-explain {
+          width: 20px;
+          height: 20px;
+          margin-right: 8px;
+        }
+        .tx-explain__view {
+          padding: 4px 12px;
+          border-radius: 2px;
+          font-weight: 500;
+          font-size: 13px;
+          line-height: 15px;
+          color: #FFFFFF;
+          height: auto;
+        }
+      }
+    }
+    &__footer {
+      display: flex;
+      justify-content: center;
+      margin-top: 20px;
+      .submit-btn {
+        width: 172px;
+        font-weight: 500;
+        font-size: 13px;
+        line-height: 15px;
+        text-align: center;
+      }
+    }
+    .tx-confirm {
+      background: #F5F6FA;
+      border-radius: 4px;
+      padding: 12px;
+      .tx-confirm__head {
+        border-bottom: 1px solid #E5E9EF;
+        padding-bottom: 8px;
+        color: #707281;
+        font-size: 12px;
+        line-height: 14px;
+        .number {
+          font-weight: 500;
+          color: #13141A;
+        }
+      }
+      .tx-confirm__list {
+        padding-top: 12px;
+        margin-bottom: 0;
+        li {
+          display: flex;
+          font-size: 13px;
+          line-height: 15px;
+          color: #707280;
+          margin-bottom: 20px;
+          align-items: center;
+          &:nth-last-child(1) {
+            margin-bottom: 0;
+          }
+          &.checked {
+            font-weight: 500;
+            color: #4B4D59;
+          }
+          .tx-confirm__tag {
+            background: #8697FF;
+            border-radius: 2px;
+            padding: 1px 6px;
+            color: #fff;
+            font-size: 12px;
+            line-height: 14px;
+            color: #FFFFFF;
+            margin-left: 8px;
+          }
+        }
+      }
+    }
+  }
+}
