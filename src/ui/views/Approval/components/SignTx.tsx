@@ -155,7 +155,7 @@ interface SignTxProps {
 }
 
 const SignTx = ({ params, origin }: SignTxProps) => {
-  const { isGnosis, account, session } = params;
+  const { isGnosis, account } = params;
   const [isReady, setIsReady] = useState(false);
   const [nonceChanged, setNonceChanged] = useState(false);
   const [isWatch, setIsWatch] = useState(false);

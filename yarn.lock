@@ -2185,6 +2185,15 @@
     "@gnosis.pm/safe-core-sdk-types" "^0.1.1"
     ethereumjs-util "^7.0.10"
 
+"@gnosis.pm/safe-core-sdk@^1.1.1":
+  version "1.1.1"
+  resolved "https://registry.yarnpkg.com/@gnosis.pm/safe-core-sdk/-/safe-core-sdk-1.1.1.tgz#333b416c142358e43c099f5eb6136f0545f867cc"
+  integrity sha512-SApP5EnuIlX6p0RDzz0MHbSR4+Y203Ab6LE6B37IYJBVtQ//cVCWDZU59G7qgbw+eADQ+B9+6h5N7s1p2eO5hA==
+  dependencies:
+    "@gnosis.pm/safe-core-sdk-types" "^0.1.1"
+    "@gnosis.pm/safe-deployments" "^1.4.0"
+    ethereumjs-util "^7.1.3"
+
 "@gnosis.pm/safe-deployments@^1.4.0":
   version "1.4.0"
   resolved "https://registry.yarnpkg.com/@gnosis.pm/safe-deployments/-/safe-deployments-1.4.0.tgz#d49d3d36cc014ef62306d09c0f4761895a17d7a6"
@@ -2556,6 +2565,25 @@
   version "1.0.2"
   resolved "https://registry.yarnpkg.com/@rabby-wallet/gnosis-sdk/-/gnosis-sdk-1.0.2.tgz#b2a02c86850f532b85dfff3524eae9030d212f4b"
   integrity sha512-n2r+uEPw7Bd5w55WZkUyKQUsquNsdDr/lD1Ua4qy3sYYVCuC/m7Fg7atul2kQ0ABkGm6FTpSpBkP88esCZUtIg==
+  dependencies:
+    "@ethersproject/bignumber" "^5.5.0"
+    "@ethersproject/bytes" "^5.5.0"
+    "@ethersproject/contracts" "^5.5.0"
+    "@ethersproject/providers" "^5.5.0"
+    "@ethersproject/solidity" "^5.5.0"
+    "@gnosis.pm/safe-core-sdk" "^1.0.0"
+    "@gnosis.pm/safe-core-sdk-types" "^0.1.1"
+    "@gnosis.pm/safe-deployments" "^1.4.0"
+    axios "^0.24.0"
+    ethereumjs-util "^7.1.3"
+    ethers "^5.5.1"
+    typescript "^4.4.4"
+    web3-core "^1.6.0"
+
+"@rabby-wallet/gnosis-sdk@^1.0.3":
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/@rabby-wallet/gnosis-sdk/-/gnosis-sdk-1.0.3.tgz#842e6a4120e900e5e78cdd08233681bb4ba568c6"
+  integrity sha512-nKk9Y7CORoKJX1e/OXsybZQvUYsIohQ2G9PDlOBN65k4eZtDCg6j5xkN8tynILwxp+E3PLQuJOOG756IyFrpvQ==
   dependencies:
     "@ethersproject/bignumber" "^5.5.0"
     "@ethersproject/bytes" "^5.5.0"

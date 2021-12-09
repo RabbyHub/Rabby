@@ -92,16 +92,8 @@ export class EthereumProvider extends EventEmitter {
         return [this.currentAccount];
       case 'personal_sign':
         return new Promise((resolve, reject) => {
-          // eventBus.once(EVENTS.GNOSIS.RPC, (res) => {
-          //   if (
-          //     data.method === res.method &&
-          //     data.params[0] === res.params[0] &&
-          //     data.params[1] === res.params[1]
-          //   ) {
-          //     resolve(res.result);
-          //   }
-          // });
           notificationService.on('resolve', (data) => {
+            console.log('>>> resolve approval', data);
             resolve(data);
           });
           notificationService.on('reject', (err) => {

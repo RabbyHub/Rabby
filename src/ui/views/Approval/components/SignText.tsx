@@ -17,7 +17,6 @@ import AccountCard from './AccountCard';
 import IconQuestionMark from 'ui/assets/question-mark-gray.svg';
 import IconArrowRight from 'ui/assets/arrow-right-gray.svg';
 import IconInfo from 'ui/assets/infoicon.svg';
-import eventBus from '@/eventBus';
 
 interface SignTextProps {
   data: string[];
@@ -116,14 +115,9 @@ const SignText = ({ params }: { params: SignTextProps }) => {
           params.account.address,
           params.data[0]
         );
-        eventBus.emit(EVENTS.broadcastToBackground, {
-          method: EVENTS.GNOSIS.RPC,
-          data: {
-            result,
-            params: data,
-            method: 'personal_sign',
-          },
-        });
+        await wallet.gnosisAddSignature(params.account.address, result);
+        await wallet.postGnosisTransaction();
+        resolveApproval(result, false, true);
       }
       return;
     }

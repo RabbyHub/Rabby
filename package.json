@@ -12,6 +12,7 @@
   },
   "dependencies": {
     "@ethereumjs/tx": "^3.3.2",
+    "@gnosis.pm/safe-core-sdk": "^1.1.1",
     "@gnosis.pm/safe-core-sdk-types": "^0.1.1",
     "@ledgerhq/hw-app-eth": "^6.0.2",
     "@ledgerhq/hw-transport-webusb": "^6.0.2",
@@ -22,7 +23,7 @@
     "@rabby-wallet/eth-trezor-keyring": "^1.0.8",
     "@rabby-wallet/eth-walletconnect-keyring": "^1.0.7",
     "@rabby-wallet/eth-watch-keyring": "^1.0.0",
-    "@rabby-wallet/gnosis-sdk": "^1.0.2",
+    "@rabby-wallet/gnosis-sdk": "^1.0.3",
     "@sentry/browser": "^6.7.2",
     "@sentry/react": "^6.7.2",
     "@sentry/tracing": "^6.7.2",

@@ -45,7 +45,6 @@ import {
 import GnosisKeyring, {
   TransactionBuiltEvent,
   TransactionConfirmedEvent,
-  TransactionReadyForExecEvent,
 } from '../service/keyring/eth-gnosis-keyring';
 
 const stashKeyrings: Record<string, any> = {};
@@ -327,6 +326,14 @@ export class WalletController extends BaseController {
     }
   };
 
+  postGnosisTransaction = () => {
+    const keyring: GnosisKeyring = this._getKeyringByType(KEYRING_CLASS.GNOSIS);
+    if (!keyring || !keyring.currentTransaction) {
+      throw new Error('No transaction in Gnosis keyring found');
+    }
+    return keyring.postTransaction();
+  };
+
   signGnosisTransaction = (account: Account) => {
     const keyring: GnosisKeyring = this._getKeyringByType(KEYRING_CLASS.GNOSIS);
     if (keyring.currentTransaction && keyring.safeInstance) {
@@ -368,6 +375,15 @@ export class WalletController extends BaseController {
         ),
       });
     }
+  };
+
+  gnosisAddSignature = async (address: string, signature: string) => {
+    const keyring: GnosisKeyring = this._getKeyringByType(KEYRING_CLASS.GNOSIS);
+    if (!keyring) throw new Error('No Gnosis keyring found');
+    if (!keyring.currentTransaction) {
+      throw new Error('No transaction in Gnosis keyring');
+    }
+    await keyring.addSignature(address, signature);
   };
 
   importWatchAddress = async (address) => {
@@ -777,7 +793,13 @@ export class WalletController extends BaseController {
     options?: any
   ) => {
     const keyring = await keyringService.getKeyringForAccount(from, type);
-    return keyringService.signPersonalMessage(keyring, { from, data }, options);
+    const res = await keyringService.signPersonalMessage(
+      keyring,
+      { from, data },
+      options
+    );
+    console.log('>>> res', res);
+    return res;
   };
 
   signTransaction = async (

@@ -26,6 +26,7 @@ import ChainManagement, { StartChainManagement } from './ChainManagement';
 import AddressManagement from './AddressManagement';
 import SwitchLang from './SwitchLang';
 import TransactionHistory from './TransactionHistory';
+import GnosisTransactionQueue from './GnosisTransactionQueue';
 import QRCodeReader from './QRCodeReader';
 import AdvancedSettings from './AdvanceSettings';
 import RequestPermission from './RequestPermission';
@@ -106,6 +107,9 @@ const Main = () => {
         </PrivateRoute>
         <PrivateRoute exact path="/tx-history">
           <TransactionHistory />
+        </PrivateRoute>
+        <PrivateRoute exact path="/gnosis-queue">
+          <GnosisTransactionQueue />
         </PrivateRoute>
         <PrivateRoute exact path="/import/gnosis">
           <ImportGnosis />

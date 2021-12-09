@@ -3,6 +3,11 @@ import { isAddress, toChecksumAddress } from 'web3-utils';
 import { addHexPrefix, bufferToHex } from 'ethereumjs-util';
 import Safe from '@rabby-wallet/gnosis-sdk';
 import { SafeTransaction } from '@gnosis.pm/safe-core-sdk-types';
+import {
+  isTxHashSignedWithPrefix,
+  adjustVInSignature,
+} from '@rabby-wallet/gnosis-sdk/dist/utils';
+import EthSignSignature from '@gnosis.pm/safe-core-sdk/dist/src/utils/signatures/SafeSignature';
 
 export const keyringType = 'Gnosis';
 export const TransactionBuiltEvent = 'TransactionBuilt';
@@ -141,6 +146,19 @@ class GnosisKeyring extends EventEmitter {
     });
   }
 
+  async addSignature(address: string, signature: string) {
+    if (!this.currentTransaction || !this.safeInstance) {
+      throw new Error('No transaction in Gnosis keyring');
+    }
+    const hash = await this.safeInstance.getTransactionHash(
+      this.currentTransaction
+    );
+    const hasPrefix = isTxHashSignedWithPrefix(hash, signature, address);
+    signature = adjustVInSignature(signature, hasPrefix);
+    const sig = new EthSignSignature(address, signature);
+    this.currentTransaction.addSignature(sig);
+  }
+
   async execTransaction({
     safeAddress,
     transaction,
@@ -167,6 +185,14 @@ class GnosisKeyring extends EventEmitter {
     const result = await safe!.executeTransaction(transaction);
     this.onExecedTransaction && this.onExecedTransaction(result.hash);
     return result.hash;
+  }
+
+  async postTransaction() {
+    const safe = this.safeInstance;
+    const safeTransaction = this.currentTransaction;
+    if (!safe || !safeTransaction) return;
+    const transactionHash = await safe.getTransactionHash(safeTransaction);
+    await safe.postTransaction(safeTransaction, transactionHash);
   }
 
   async buildTransaction(address: string, transaction, provider) {
@@ -237,7 +263,6 @@ class GnosisKeyring extends EventEmitter {
         transactionHash = await safe.getTransactionHash(safeTransaction);
       }
       await safe.signTransaction(safeTransaction);
-      await safe.postTransaction(safeTransaction, transactionHash);
       this.safeInstance = safe;
       this.currentTransaction = safeTransaction;
       this.emit(TransactionBuiltEvent, {

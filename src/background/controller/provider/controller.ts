@@ -36,12 +36,15 @@ import { CHAINS, CHAINS_ENUM, SAFE_RPC_METHODS, KEYRING_TYPE } from 'consts';
 import buildinProvider from 'background/utils/buildinProvider';
 import BaseController from '../base';
 import { Chain } from 'background/service/chain';
+import { Account } from 'background/service/preference';
 
 interface ApprovalRes extends Tx {
   type?: string;
   address?: string;
   uiRequestComponent?: string;
   isSend?: boolean;
+  isGnosis?: boolean;
+  account?: Account;
   extra?: Record<string, any>;
 }
 
@@ -244,14 +247,13 @@ class ProviderController extends BaseController {
     let opts;
     opts = approvalRes?.extra;
     if (currentAccount.type === KEYRING_TYPE.GnosisKeyring) {
-      buildinProvider.currentProvider.currentAccount = approvalRes!.extra!.signer.address;
-      buildinProvider.currentProvider.currentAccountType = approvalRes!.extra!.signer.type;
-      buildinProvider.currentProvider.currentAccountBrand = approvalRes!.extra!.signer.brand;
+      buildinProvider.currentProvider.currentAccount = approvalRes!.account!.address;
+      buildinProvider.currentProvider.currentAccountType = approvalRes!.account!.type;
+      buildinProvider.currentProvider.currentAccountBrand = approvalRes!.account!.brandName;
       try {
         const provider = new ethers.providers.Web3Provider(
           buildinProvider.currentProvider
         );
-        console.log(provider);
         opts = {
           provider,
         };
@@ -375,6 +377,8 @@ class ProviderController extends BaseController {
     },
     approvalRes,
   }) => {
+    console.log('personalSign', data);
+    if (!data.params) return;
     data = data = isHexString(data) ? data : stringToHex(data);
     const keyring = await this._checkAddress(from);
 
