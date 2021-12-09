@@ -37,6 +37,7 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
   const [loadLength, setLoadLength] = useState(10);
   const [errorMsg, setErrorMsg] = useState('');
   const [canLoad, setCanLoad] = useState(true);
+  const [spinning, setSpin] = useState(false);
   const isGrid = keyring === HARDWARE_KEYRING_TYPES.GridPlus.type;
   const [getAccounts, loading] = useWalletRequest(
     async (firstFlag, start, end) => {
@@ -114,6 +115,7 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
     setStart(accounts.length);
   }, [accounts]);
   const onSubmit = async ({ selectedAddressIndexes }) => {
+    setSpin(true);
     const selectedIndexes = selectedAddressIndexes.map((i) => i - 1);
 
     if (isMnemonics) {
@@ -135,7 +137,7 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
     if (keyring === HARDWARE_KEYRING_TYPES.Ledger.type && isWebUSB) {
       await wallet.requestKeyring(keyring, 'cleanUp', keyringId.current);
     }
-
+    setSpin(false);
     history.replace({
       pathname: isPopup ? '/popup/import/success' : '/import/success',
       state: {
@@ -216,6 +218,7 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
         noPadding={isPopup}
         disableKeyDownEvent
         isScrollContainer={isPopup}
+        spinning={spinning}
       >
         {isPopup && (
           <header className="create-new-header create-password-header h-[100px]">

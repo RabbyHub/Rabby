@@ -1,6 +1,6 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { FixedSizeList } from 'react-window';
-import { Skeleton } from 'antd';
+import { Skeleton, message } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { FieldCheckbox } from 'ui/component';
 import AddressItem from 'ui/component/AddressList/AddressItem';
@@ -24,21 +24,29 @@ interface MultiSelectAddressListArgs {
   loading?: boolean;
   isPopup?: boolean;
   showSuspend?: boolean;
+  isGrid?: boolean;
 }
 const Row = (props) => {
   const { data, index, style } = props;
   const { accounts, others } = data;
-  const { importedAccounts, _value, isPopup, handleToggle } = others;
+  const {
+    importedAccounts,
+    _value,
+    isPopup,
+    handleToggle,
+    showSuspend,
+    isGrid,
+  } = others;
   const { t } = useTranslation();
   const imported =
-    (accounts.length > 0 &&
-      importedAccounts &&
-      importedAccounts.length > 0 &&
-      importedAccounts
-        ?.map((address) => address.toLowerCase())
-        .includes(index && accounts[index]?.address.toLowerCase())) ||
-    0;
+    accounts.length > 0 &&
+    importedAccounts &&
+    importedAccounts.length > 0 &&
+    importedAccounts
+      ?.map((address) => address.toLowerCase())
+      .includes(accounts[index]?.address?.toLowerCase());
   const selected = _value.includes(index + 1);
+  const canSelect = (!isGrid && _value.length < 5) || selected;
   return accounts[index] && accounts[index]?.address ? (
     <div
       style={style}
@@ -47,7 +55,13 @@ const Row = (props) => {
     >
       <FieldCheckbox
         checked={selected}
-        onChange={() => (index > accounts.length ? null : handleToggle(index))}
+        onChange={() =>
+          !canSelect
+            ? message.info(
+                'Due to the network limition, you can only import 5 accounts once'
+              )
+            : handleToggle(index)
+        }
         disable={
           imported && (
             <span
@@ -105,6 +119,7 @@ const MultiSelectAddressList = ({
   loading,
   isPopup,
   showSuspend,
+  isGrid,
 }: MultiSelectAddressListArgs) => {
   const fixedList = useRef<FixedSizeList>();
   const [_value, , , handleToggle] = useSelectOption<number>({
@@ -138,6 +153,8 @@ const MultiSelectAddressList = ({
             loading,
             isPopup,
             handleToggle,
+            showSuspend,
+            isGrid,
           },
         }}
         itemCount={
