@@ -1,7 +1,8 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useHistory } from 'react-router-dom';
 import { Menu, Dropdown, message } from 'antd';
+import { FixedSizeList } from 'react-window';
 import { KEYRING_TYPE, HARDWARE_KEYRING_TYPES } from 'consts';
 import { useWallet } from 'ui/utils';
 import {
@@ -11,6 +12,7 @@ import {
   Modal,
   StrayFooter,
 } from 'ui/component';
+import AddressItem from 'ui/component/AddressList/AddressItem';
 import { DisplayedKeryring } from 'background/service/keyring';
 import { Account } from 'background/service/preference';
 import DisplayKeyring from 'background/service/keyring/display';
@@ -18,15 +20,27 @@ import { SvgIconPlusPrimary } from 'ui/assets';
 import IconHint from 'ui/assets/hint.png';
 import IconSuccess from 'ui/assets/success.svg';
 import './style.less';
-
+import clsx from 'clsx';
+const SORT_WEIGHT = {
+  [KEYRING_TYPE.HdKeyring]: 1,
+  [KEYRING_TYPE.SimpleKeyring]: 2,
+  [KEYRING_TYPE.HardwareKeyring]: 3,
+  [KEYRING_TYPE.WalletConnectKeyring]: 4,
+  [KEYRING_TYPE.WatchAddressKeyring]: 5,
+};
 const { Nav: StrayFooterNav } = StrayFooter;
 
 const AddressManagement = () => {
   const wallet = useWallet();
   const { t } = useTranslation();
   const [accounts, setAccounts] = useState<DisplayedKeryring[]>([]);
+  const [displayList, setDisplayList] = useState([]);
+
   const [alianNames, setAlianNames] = useState<[]>([]);
+  const [retrive, setRetrive] = useState(false);
   const [noAccount, setNoAccount] = useState(false);
+  const [stopEditing, setStopEditing] = useState(true);
+  const [editIndex, setEditIndex] = useState(0);
   const [hiddenAddresses, setHiddenAddresses] = useState<
     { type: string; address: string }[]
   >([]);
@@ -52,9 +66,28 @@ const AddressManagement = () => {
   const getAllKeyrings = async () => {
     const _accounts = await wallet.getAllClassAccounts();
     const allAlianNames = await wallet.getAllAlianName();
-
     setAccounts(_accounts);
     setAlianNames(allAlianNames);
+    const list = _accounts
+      .sort((a, b) => {
+        return SORT_WEIGHT[a.type] - SORT_WEIGHT[b.type];
+      })
+      .map((group) => {
+        const templist = group.accounts.map(
+          (item) =>
+            (item = {
+              ...item,
+              alianName: allAlianNames[item.address.toLowerCase()],
+              type: group.type,
+              keyring: group.keyring,
+            })
+        );
+        return templist;
+      })
+      .flat(1);
+    if (list.length > 0) {
+      setDisplayList(list);
+    }
   };
 
   const handleViewMnemonics = async () => {
@@ -221,10 +254,11 @@ const AddressManagement = () => {
       </div>
     );
   };
-
+  const fixedList = useRef<FixedSizeList>();
   useEffect(() => {
     getAllKeyrings();
-  }, []);
+    setRetrive(false);
+  }, [retrive]);
 
   const NoAddressUI = (
     <div className="no-address">
@@ -243,22 +277,72 @@ const AddressManagement = () => {
       </Link>
     </div>
   );
-
+  const Row = (props) => {
+    const { data, index, style } = props;
+    const account = data[index];
+    const [canEdit, setCanEdit] = useState(!stopEditing && index === editIndex);
+    const startEdit = (editing: boolean) => {
+      setCanEdit(editing);
+      if (editing) {
+        setEditIndex(index);
+        setStopEditing(false);
+      } else {
+        setStopEditing(true);
+      }
+    };
+    const retriveAlianName = () => {
+      setRetrive(true);
+    };
+    return (
+      <li className="address-wrap-with-padding" style={style}>
+        <ul className="addresses">
+          <AddressItem
+            key={account.address + account.brandName}
+            account={{ ...account, type: account.type }}
+            keyring={account.keyring}
+            ActionButton={AddressActionButton}
+            hiddenAddresses={hiddenAddresses}
+            index={index}
+            stopEditing={!canEdit}
+            canEditing={startEdit}
+            retriveAlianName={retriveAlianName}
+            className="h-[56px] pl-16"
+          />
+        </ul>
+      </li>
+    );
+  };
   return (
-    <div className="address-management">
+    <div
+      className="address-management"
+      onClick={(e) => {
+        e.stopPropagation();
+        setStopEditing(true);
+      }}
+    >
       <PageHeader>{t('Address Management')}</PageHeader>
       {noAccount ? (
         NoAddressUI
       ) : (
         <>
-          <AddressList
-            list={accounts}
-            action="management"
-            ActionButton={AddressActionButton}
-            hiddenAddresses={hiddenAddresses}
-            onShowMnemonics={handleViewMnemonics}
-            alianNames={alianNames}
-          />
+          <ul
+            className={'address-group-list management'}
+            onClick={(e) => {
+              e.stopPropagation();
+              setStopEditing(true);
+            }}
+          >
+            <FixedSizeList
+              height={500}
+              width="100%"
+              itemData={displayList}
+              itemCount={displayList.length}
+              itemSize={64}
+              ref={fixedList}
+            >
+              {Row}
+            </FixedSizeList>
+          </ul>
           <StrayFooterNav
             hasDivider
             onNextClick={() => {

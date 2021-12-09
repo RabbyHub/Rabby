@@ -409,7 +409,7 @@
     "message": "Sign Text"
   },
   "view__Raw": {
-    "message": "view Raw"
+    "message": "View Raw"
   },
   "This__summary__information__is__provide__by__DeBank__OpenAPI": {
     "message": "This summary information is provide by DeBank OpenAPI"
@@ -494,7 +494,7 @@
     "message": "Contract"
   },
   "gasCostTitle": {
-    "message": "Est. gas cost(gwei)"
+    "message": "Est. gas cost (gwei)"
   },
   "gasPriceTitle": {
     "message": "Gas price (Gwei)"
@@ -797,7 +797,7 @@
     "message": "Set Rabby as default wallet"
   },
   "Please__refresh__the__website__your__are__viewing": {
-    "message": "Please refresh the website your are viewing"
+    "message": "Please refresh the website you are viewing"
   },
   "CameraPermissionTitle": {
     "message": "Allow Rabby to access the camera"
@@ -960,5 +960,14 @@
   },
   "addresses__selected": {
     "message": "addresses selected"
+  },
+  "Profile": {
+    "message": "Profile"
+  },
+  "Coming__soon": {
+    "message": "Coming soon"
+  },
+  "Portfolio": {
+    "message": "Portfolio"
   }
 }

@@ -490,7 +490,7 @@
     "message": "合约"
   },
   "gasCostTitle": {
-    "message": "预估 Gas 费用(gwei)"
+    "message": "预估 Gas 费用 (gwei)"
   },
   "gasPriceTitle": {
     "message": "Gas 价格 (Gwei)"
@@ -956,5 +956,14 @@
   },
   "addresses__selected": {
     "message": "个地址已选择"
+  },
+  "Profile": {
+    "message": "账户"
+  },
+  "Coming__soon": {
+    "message": "敬请期待"
+  },
+  "Portfolio": {
+    "message": "投资组合"
   }
 }

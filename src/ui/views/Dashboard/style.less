@@ -72,8 +72,8 @@
     .header-wrapper {
       background: rgba(255, 255, 255, 0.12);
       backdrop-filter: blur(40px);
-      min-width: 188px;
       padding: 6px 8px;
+      margin-right: 9px;
       border-radius: 6px;
       cursor: pointer;
       span {
@@ -228,9 +228,20 @@
       margin-top: 22px;
     }
   }
+  .addressType__tooltip {
+    .ant-tooltip-content {
+      transform: translate(5px, 5px);
+      top: 100px !important;
+    }
+    .ant-tooltip-arrow {
+      right: 10px !important;
+      bottom: -30px !important;
+    }
+  }
 }
 .copy-icon {
   cursor: pointer;
+  z-index: 10;
 }
 .switch-address-modal {
   .ant-modal-close {
@@ -330,11 +341,16 @@
   }
 }
 .address-popover {
-  cursor: pointer;
   width: 344px;
   height: 200px;
-  left: 28px !important;
-  z-index: 2 !important;
+  left: 0px !important;
+  top: -140px !important;
+  .ant-popover-arrow {
+    display: none;
+  }
+  .ant-modal-content {
+    background: #ffffff;
+  }
   .brand-name {
     font-size: 20px;
     color: #13141a;
@@ -346,24 +362,25 @@
     white-space: nowrap;
     cursor: default;
     .ant-input {
-      width: 102px;
+      width: 160px;
       height: 24px;
       background: #f5f6fa;
       border: 1px solid #e5e9ef;
       box-sizing: border-box;
       border-radius: 2px;
+      padding-left: 2px;
     }
   }
   .edit-name {
     cursor: pointer;
     width: 11px;
     height: 11px;
-    margin-left: 7px;
+    margin-left: 3px;
   }
   .qrcode-container {
     width: 100px;
     height: 100px;
-    margin: 14px 0 16px 0;
+    margin: 23px 0 0 0;
     border: 1px solid #d8dfeb;
     box-sizing: border-box;
     border-radius: 8px;
@@ -371,7 +388,7 @@
   }
 }
 .dashboard-name {
-  max-width: 150px;
+  max-width: 130px;
   overflow: hidden;
   text-overflow: ellipsis;
   white-space: nowrap;
@@ -380,6 +397,14 @@
   width: 200px;
   max-height: 308px;
   left: 28px !important;
+  .click-content-modar {
+    position: absolute;
+    left: 200px;
+    top: -300px;
+    width: 200px;
+    height: 1000px;
+    background: transparent;
+  }
   .ant-popover-arrow {
     display: none;
   }
@@ -393,7 +418,7 @@
     border: 1px solid transparent;
     transition: background-color 0.3s;
     .click-name {
-      max-width: 150px;
+      max-width: 130px;
       overflow: hidden;
       text-overflow: ellipsis;
       white-space: nowrap;
@@ -401,6 +426,10 @@
         font-weight: 500;
         font-size: 13px;
         color: #13141a;
+        max-width: 130px;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
       }
     }
     &:hover {
@@ -470,7 +499,7 @@
   .edit-name {
     width: 11px;
     height: 11px;
-    margin-left: 7px;
+    margin-left: 3px;
   }
   .qrcode-container {
     width: 100px;
@@ -633,4 +662,7 @@
       max-height: 420px;
     }
   }
+}
+.pointer{
+  cursor: pointer;
 }

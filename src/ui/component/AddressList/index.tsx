@@ -42,7 +42,16 @@ const SORT_WEIGHT = {
 const Row: React.FC<RowProps> = memo((props) => {
   const { data, index, style } = props;
   const { combinedList, others } = data;
-  const { currentAccount, ActionButton, onClick, hiddenAddresses } = others;
+  const {
+    currentAccount,
+    ActionButton,
+    onClick,
+    hiddenAddresses,
+    stopEditing,
+    setStopEditing,
+    editIndex,
+    setEditIndex,
+  } = others;
   const account = combinedList[index];
   return (
     <li
@@ -61,8 +70,11 @@ const Row: React.FC<RowProps> = memo((props) => {
           onClick={onClick}
           hiddenAddresses={hiddenAddresses}
           currentAccount={currentAccount}
+          canEditing={setStopEditing}
+          stopEditing={stopEditing || editIndex !== index}
+          index={index}
           showAssets
-          className="h-[56px]"
+          className="h-[56px] pl-16"
         />
       </ul>
     </li>
@@ -85,7 +97,10 @@ const AddressList: any = forwardRef(
     const wallet = useWallet();
     const [start, setStart] = useState(0);
     const [end, setEnd] = useState(10);
+    const [editIndex, setEditIndex] = useState(0);
+
     const [alianNamesList, setAlianNamesList] = useState(alianNames);
+    const [stopEditing, setStopEditing] = useState(false);
     const addressItems = useRef(new Array(list.length));
     const fixedList = useRef<FixedSizeList>();
     const combinedList = list
@@ -129,7 +144,10 @@ const AddressList: any = forwardRef(
     const switchAddressHeight =
       combinedList.length > 5 ? 400 : combinedList.length * 80;
     return (
-      <ul className={`address-group-list ${action}`}>
+      <ul
+        className={`address-group-list ${action}`}
+        onClick={() => setStopEditing(true)}
+      >
         <FixedSizeList
           height={currentAccount ? switchAddressHeight : 500}
           width="100%"
@@ -141,6 +159,10 @@ const AddressList: any = forwardRef(
               hiddenAddresses,
               addressItems,
               currentAccount,
+              stopEditing,
+              setStopEditing,
+              editIndex,
+              setEditIndex,
             },
           }}
           itemCount={combinedList.length}

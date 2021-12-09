@@ -49,6 +49,9 @@ export interface AddressItemProps {
   importedAccount?: boolean;
   isMnemonics?: boolean;
   importedLength?: number;
+  canEditing?(editing: boolean): void;
+  stopEditing?: boolean;
+  retriveAlianName?(): void;
 }
 
 const formatChain = (item: ChainWithBalance): DisplayChainWithWhiteLogo => {
@@ -129,14 +132,19 @@ const AddressItem = memo(
     importedAccount = false,
     isMnemonics = false,
     importedLength = 0,
+    canEditing,
+    stopEditing = false,
+    retriveAlianName,
   }: AddressItemProps) => {
     if (!account) {
       return null;
     }
     const { t } = useTranslation();
     const wallet = useWallet();
-    const [startEdit, setStartEdit] = useState(false);
     const [alianName, setAlianName] = useState<string>(
+      account?.alianName || ''
+    );
+    const [displayName, setDisplayName] = useState<string>(
       account?.alianName || ''
     );
     const isDisabled = hiddenAddresses.find(
@@ -159,22 +167,24 @@ const AddressItem = memo(
       return '';
     };
     const handleAlianNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+      e.stopPropagation();
       setAlianName(e.target.value);
     };
     const alianNameConfirm = async (e) => {
       e.stopPropagation();
-      if (!alianName) {
+      if (!alianName || alianName.trim() === '') {
         return;
       }
-      setStartEdit(false);
+      canEditing && canEditing(false);
       await updateAlianName(alianName);
+      setDisplayName(alianName);
       if (editing) {
         return;
       }
-      setStartEdit(false);
     };
     const updateAlianName = async (alianName) => {
       await wallet.updateAlianName(account?.address?.toLowerCase(), alianName);
+      retriveAlianName && retriveAlianName();
     };
     const changeName = async () => {
       if (!alianName) {
@@ -183,15 +193,21 @@ const AddressItem = memo(
         );
         if (existAlianName) {
           setAlianName(existAlianName);
+          setDisplayName(existAlianName);
         } else {
           const alianName = `${
             BRAND_ALIAN_TYPE_TEXT[account?.brandName || account?.type] ||
             account?.brandName
           } ${importedLength + (index || 0) + 1}`;
           setAlianName(alianName);
+          setDisplayName(alianName);
           updateAlianName(alianName);
         }
       }
+    };
+    const inputName = (e) => {
+      e.stopPropagation();
+      canEditing && canEditing(true);
     };
     useEffect(() => {
       if (importedAccount) {
@@ -201,15 +217,20 @@ const AddressItem = memo(
     return (
       <li
         className={className}
-        onClick={() =>
-          onClick && onClick(account.address, keyring, account.brandName)
-        }
+        onClick={(e) => {
+          e.stopPropagation();
+          onClick && onClick(account.address, keyring, account.brandName);
+          canEditing && canEditing(false);
+        }}
       >
         <div
           className={clsx(
             'flex items-center relative',
             isDisabled && 'opacity-40'
           )}
+          onClick={(e) => {
+            e.stopPropagation();
+          }}
         >
           {showImportIcon && (
             <Tooltip
@@ -237,27 +258,28 @@ const AddressItem = memo(
           <div className={clsx('address-info', { 'ml-0': !showImportIcon })}>
             {(showImportIcon || editing) && (
               <div className="brand-name flex">
-                {startEdit && editing ? (
+                {!stopEditing && editing ? (
                   <Input
                     value={alianName}
                     defaultValue={alianName}
                     onChange={handleAlianNameChange}
                     onPressEnter={alianNameConfirm}
-                    autoFocus={startEdit}
+                    onClick={(e) => e.stopPropagation()}
+                    autoFocus={!stopEditing}
                     maxLength={20}
                     min={0}
                   />
                 ) : (
-                  <div className="display-name">{alianName}</div>
+                  <div className="display-name">{displayName}</div>
                 )}
-                {!startEdit && editing && (
+                {stopEditing && editing && (
                   <img
                     className="edit-name"
                     src={IconEditPen}
-                    onClick={() => setStartEdit(true)}
+                    onClick={inputName}
                   />
                 )}
-                {startEdit && editing && (
+                {!stopEditing && editing && (
                   <img
                     className="edit-name w-[16px] h-[16px]"
                     src={IconCorrect}
@@ -267,7 +289,7 @@ const AddressItem = memo(
               </div>
             )}
             <AddressViewer
-              address={account.address}
+              address={account?.address?.toLowerCase()}
               showArrow={false}
               index={account.index || index}
               showImportIcon={showImportIcon}
