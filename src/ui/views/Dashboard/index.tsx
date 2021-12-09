@@ -14,6 +14,7 @@ import {
   KEYRING_ICONS,
   WALLET_BRAND_CONTENT,
   KEYRING_ICONS_WHITE,
+  KEYRING_CLASS,
 } from 'consts';
 import { AddressViewer, Modal } from 'ui/component';
 import { useWallet } from 'ui/utils';
@@ -25,7 +26,6 @@ import {
 } from './components';
 import { getUpdateContent } from 'changeLogs/index';
 import IconSetting from 'ui/assets/settings.svg';
-import IconSend from 'ui/assets/send.svg';
 import IconHistory from 'ui/assets/history.svg';
 import IconPending from 'ui/assets/pending.svg';
 import IconSuccess from 'ui/assets/success.svg';
@@ -36,7 +36,9 @@ import IconCorrect from 'ui/assets/correct.svg';
 import IconPlus from 'ui/assets/dashboard-plus.svg';
 import IconInfo from 'ui/assets/information.png';
 import IconMoney from 'ui/assets/dashboardMoney.png';
+import IconQueue from 'ui/assets/icon-queue.svg';
 import './style.less';
+
 const Dashboard = () => {
   const history = useHistory();
   const wallet = useWallet();
@@ -57,9 +59,7 @@ const Dashboard = () => {
   const [accountsList, setAccountsList] = useState<Account[]>([]);
   const [firstNotice, setFirstNotice] = useState(false);
   const [updateContent, setUpdateContent] = useState('');
-  const handleToggle = () => {
-    setModalOpen(!isModalOpen);
-  };
+  const [isGnosis, setIsGnosis] = useState(false);
 
   const getCurrentAccount = async () => {
     const account = await wallet.getCurrentAccount();
@@ -117,17 +117,12 @@ const Dashboard = () => {
     hide();
   };
 
-  const handleGotoSend = async () => {
-    history.push({
-      pathname: '/send-token',
-      state: {
-        accountsList,
-      },
-    });
-  };
-
   const handleGotoHistory = async () => {
     history.push('/tx-history');
+  };
+
+  const handleGotoQueue = () => {
+    history.push('/gnosis-queue');
   };
 
   const handleCopyCurrentAddress = () => {
@@ -160,6 +155,7 @@ const Dashboard = () => {
     e.stopPropagation();
     setAlianName(e.target.value);
   };
+
   const alianNameConfirm = async (e) => {
     e.stopPropagation();
     if (!alianName) {
@@ -186,6 +182,7 @@ const Dashboard = () => {
       setAccountsList(newAccountList);
     }
   };
+
   const checkIfFirstLogin = async () => {
     const firstOpen = await wallet.getIsFirstOpen();
     const updateContent = await getUpdateContent();
@@ -193,13 +190,23 @@ const Dashboard = () => {
     if (!firstOpen || !updateContent) return;
     setFirstNotice(firstOpen);
   };
+
   const changeIsFirstLogin = () => {
     wallet.updateIsFirstOpen();
     setFirstNotice(false);
   };
+
   useEffect(() => {
     checkIfFirstLogin();
   }, []);
+
+  useEffect(() => {
+    if (currentAccount) {
+      console.log(currentAccount, currentAccount.type === KEYRING_CLASS.GNOSIS);
+      setIsGnosis(currentAccount.type === KEYRING_CLASS.GNOSIS);
+    }
+  }, [currentAccount]);
+
   const Row = (props) => {
     const { data, index, style } = props;
     const account = data[index];
@@ -234,6 +241,7 @@ const Dashboard = () => {
       </div>
     );
   };
+
   const clickContent = () => (
     <>
       <div
@@ -267,6 +275,7 @@ const Dashboard = () => {
       </div>
     </>
   );
+
   const getAllKeyrings = async () => {
     const _accounts = await wallet.getAllVisibleAccounts();
     const allAlianNames = await wallet.getAllAlianName();
@@ -293,20 +302,19 @@ const Dashboard = () => {
       );
     setAccountsList(templist);
   };
-  const handleHoverChange = (visible) => {
-    setHovered(visible);
-    setClicked(false);
-  };
+
   const handleClickChange = (visible) => {
     setClicked(visible);
     setStartEdit(false);
     setHovered(false);
   };
+
   const hide = () => {
     setStartEdit(false);
     setClicked(false);
     setHovered(false);
   };
+
   return (
     <>
       <div
@@ -373,17 +381,24 @@ const Dashboard = () => {
                 {t('Portfolio')}
               </div>
             </Tooltip>
-            <div className="operation-item" onClick={handleGotoHistory}>
-              {pendingTxCount > 0 ? (
-                <div className="pending-count">
-                  <img src={IconPending} className="icon icon-pending" />
-                  {pendingTxCount}
-                </div>
-              ) : (
-                <img className="icon icon-history" src={IconHistory} />
-              )}
-              {t('History')}
-            </div>
+            {isGnosis ? (
+              <div className="operation-item" onClick={handleGotoQueue}>
+                <img className="icon icon-queue" src={IconQueue} />
+                {t('History')}
+              </div>
+            ) : (
+              <div className="operation-item" onClick={handleGotoHistory}>
+                {pendingTxCount > 0 ? (
+                  <div className="pending-count">
+                    <img src={IconPending} className="icon icon-pending" />
+                    {pendingTxCount}
+                  </div>
+                ) : (
+                  <img className="icon icon-history" src={IconHistory} />
+                )}
+                {t('Queue')}
+              </div>
+            )}
           </div>
         </div>
         <RecentConnections />

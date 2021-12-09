@@ -3,6 +3,21 @@ import Safe from '@rabby-wallet/gnosis-sdk';
 import { SafeTransactionItem } from '@rabby-wallet/gnosis-sdk/dist/api';
 import { useWallet } from 'ui/utils';
 
+const GnosisTransactionItem = ({ data }: { data: SafeTransactionItem }) => {
+  const wallet = useWallet();
+
+  const init = () => {
+    // TODO: explain tx
+    // wallet.openapi.
+  };
+
+  useEffect(() => {
+    init();
+  }, []);
+
+  return <div></div>;
+};
+
 const GnosisTransactionQueue = () => {
   const wallet = useWallet();
 
@@ -23,7 +38,7 @@ const GnosisTransactionQueue = () => {
     init();
   }, []);
 
-  return <div></div>;
+  return <div className="queue"></div>;
 };
 
 export default GnosisTransactionQueue;
