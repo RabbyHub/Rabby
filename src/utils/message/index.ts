@@ -59,7 +59,7 @@ abstract class Message extends EventEmitter {
 
       try {
         res = await this.listenCallback(data);
-      } catch (e) {
+      } catch (e: any) {
         err = {
           message: e.message,
           stack: e.stack,

@@ -1,4 +1,4 @@
-import { CHAINS_ENUM, CHAINS } from 'consts';
+import { CHAINS_ENUM, CHAINS } from 'consts/index';
 import {
   permissionService,
   keyringService,

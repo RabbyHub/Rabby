@@ -5,7 +5,7 @@ import {
   permissionService,
 } from 'background/service';
 import { PromiseFlow, underline2Camelcase } from 'background/utils';
-import { EVENTS } from 'consts';
+import { EVENTS } from 'consts/index';
 import providerController from './controller';
 import eventBus from '@/eventBus';
 

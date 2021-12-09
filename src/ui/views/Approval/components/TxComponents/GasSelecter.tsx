@@ -4,7 +4,7 @@ import BigNumber from 'bignumber.js';
 import { ValidateStatus } from 'antd/lib/form/FormItem';
 import { useTranslation, Trans } from 'react-i18next';
 import { useDebounce } from 'react-use';
-import { CHAINS, GAS_LEVEL_TEXT, MINIMUM_GAS_LIMIT } from 'consts';
+import { CHAINS, GAS_LEVEL_TEXT, MINIMUM_GAS_LIMIT } from 'consts/index';
 import { GasResult, Tx, GasLevel } from 'background/service/openapi';
 import { Modal } from 'ui/component';
 import { formatTokenAmount } from 'ui/utils/number';

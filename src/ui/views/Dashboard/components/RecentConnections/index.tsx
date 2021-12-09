@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useWallet, getCurrentConnectSite, openInTab } from 'ui/utils';
 import { ConnectedSite } from 'background/service/permission';
 import { ChainSelector, FallbackSiteLogo } from 'ui/component';
-import { CHAINS_ENUM, CHAINS } from 'consts';
+import { CHAINS_ENUM, CHAINS } from 'consts/index';
 import IconInternet from 'ui/assets/internet.svg';
 import { ReactComponent as IconStar } from 'ui/assets/star.svg';
 import './style.less';

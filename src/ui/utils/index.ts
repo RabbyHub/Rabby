@@ -5,7 +5,7 @@ import {
   KEYRING_CLASS,
   KEYRINGS_LOGOS,
   KEYRING_PURPLE_LOGOS,
-} from 'consts';
+} from 'consts/index';
 import { Account } from 'background/service/preference';
 // eslint-disable-next-line @typescript-eslint/no-empty-function
 export const noop = () => {};

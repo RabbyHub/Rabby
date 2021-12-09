@@ -1,6 +1,6 @@
 import LRU from 'lru-cache';
 import { createPersistStore } from 'background/utils';
-import { CHAINS_ENUM, INTERNAL_REQUEST_ORIGIN } from 'consts';
+import { CHAINS_ENUM, INTERNAL_REQUEST_ORIGIN } from 'consts/index';
 
 export interface ConnectedSite {
   origin: string;

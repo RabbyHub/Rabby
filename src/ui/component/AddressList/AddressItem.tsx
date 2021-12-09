@@ -12,7 +12,7 @@ import {
   WALLET_BRAND_CONTENT,
   KEYRING_TYPE_TEXT,
   BRAND_ALIAN_TYPE_TEXT,
-} from 'consts';
+} from 'consts/index';
 import IconEditPen from 'ui/assets/editpen.svg';
 import IconCorrect from 'ui/assets/correct.svg';
 interface DisplayChainWithWhiteLogo extends ChainWithBalance {

@@ -5,7 +5,7 @@ import { browser } from 'webextension-polyfill-ts';
 import { ethErrors } from 'eth-rpc-errors';
 import { WalletController } from 'background/controller/wallet';
 import { Message } from 'utils';
-import { EVENTS } from 'consts';
+import { EVENTS } from 'consts/index';
 import { storage } from './webapi';
 import {
   permissionService,

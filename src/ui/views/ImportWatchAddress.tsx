@@ -9,7 +9,7 @@ import WalletConnect from '@walletconnect/client';
 import { StrayPageWithButton } from 'ui/component';
 import { useWallet, useWalletRequest } from 'ui/utils';
 import { openInternalPageInTab } from 'ui/utils/webapi';
-import { KEYRING_CLASS } from 'consts';
+import { KEYRING_CLASS } from 'consts/index';
 
 import WatchLogo from 'ui/assets/waitcup.svg';
 import IconWalletconnect from 'ui/assets/walletconnect.svg';

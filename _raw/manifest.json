@@ -57,6 +57,7 @@
   "content_security_policy": "script-src 'self' https://www.google-analytics.com; object-src 'self'",
   "permissions": [
     "storage",
+    "https://wallet.gridplus.io/*",
     "activeTab",
     "notifications"
   ],

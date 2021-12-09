@@ -4,7 +4,7 @@ import compareVersions from 'compare-versions';
 import { createPersistStore } from 'background/utils';
 import { keyringService, sessionService, i18n } from './index';
 import { TotalBalanceResponse, TokenItem } from './openapi';
-import { HARDWARE_KEYRING_TYPES, EVENTS } from 'consts';
+import { HARDWARE_KEYRING_TYPES, EVENTS } from 'consts/index';
 import { browser } from 'webextension-polyfill-ts';
 const version = process.env.release || '0';
 export interface Account {

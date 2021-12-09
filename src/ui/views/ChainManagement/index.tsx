@@ -5,7 +5,7 @@ import { useWallet } from 'ui/utils';
 import { Switch, message, Modal } from 'antd';
 import { PageHeader, Field, StrayPageWithButton } from 'ui/component';
 import { Chain } from 'background/service/chain';
-import { CHAINS, CHAINS_ENUM } from 'consts';
+import { CHAINS, CHAINS_ENUM } from 'consts/index';
 import './style.less';
 
 export const ChainManagementList = ({ inStart = false }) => {

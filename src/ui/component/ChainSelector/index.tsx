@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { CHAINS_ENUM, CHAINS } from 'consts';
+import { CHAINS_ENUM, CHAINS } from 'consts/index';
 import { SvgIconArrowDown } from 'ui/assets';
 import Modal from './Modal';
 

@@ -7,7 +7,7 @@ import {
   KEYRING_ICONS,
   KEYRING_TYPE_TEXT,
   BRAND_ALIAN_TYPE_TEXT,
-} from 'consts';
+} from 'consts/index';
 import { useWallet } from 'ui/utils';
 import { AddressViewer, FieldCheckbox } from '..';
 import { ContactBookItem } from 'background/service/contactBook';

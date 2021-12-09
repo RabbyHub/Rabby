@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { Spin } from 'ui/component';
 import { useCurrentBalance } from 'ui/component/AddressList/AddressItem';
 import { splitNumberByStep } from 'ui/utils';
-import { CHAINS } from 'consts';
+import { CHAINS } from 'consts/index';
 import useConfirmExternalModal from './ConfirmOpenExternalModal';
 import { SvgIconOffline } from 'ui/assets';
 import IconArrowRight from 'ui/assets/arrow-right.svg';

@@ -31,7 +31,7 @@ import { Session } from 'background/service/session';
 import { Tx } from 'background/service/openapi';
 import RpcCache from 'background/utils/rpcCache';
 import Wallet from '../wallet';
-import { CHAINS, CHAINS_ENUM, SAFE_RPC_METHODS } from 'consts';
+import { CHAINS, CHAINS_ENUM, SAFE_RPC_METHODS } from 'consts/index';
 import BaseController from '../base';
 
 interface ApprovalRes extends Tx {
@@ -309,7 +309,7 @@ class ProviderController extends BaseController {
 
       onTranscationSubmitted(hash);
       return hash;
-    } catch (e) {
+    } catch (e: any) {
       const errMsg = e.message || JSON.stringify(e);
       notification.create(undefined, i18n.t('Transaction push failed'), errMsg);
       throw new Error(errMsg);

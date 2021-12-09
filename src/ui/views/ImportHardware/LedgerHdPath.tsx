@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
 import { StrayPageWithButton, FieldCheckbox } from 'ui/component';
 import { useWallet } from 'ui/utils';
-import { IS_AFTER_CHROME91, HARDWARE_KEYRING_TYPES } from 'consts';
+import { IS_AFTER_CHROME91, HARDWARE_KEYRING_TYPES } from 'consts/index';
 
 const LEDGER_LIVE_PATH = "m/44'/60'/0'/0/0";
 const MEW_PATH = "m/44'/60'/0'";
@@ -53,6 +53,7 @@ const LedgerHdPath = () => {
           path: currentPath,
           isWebUSB: !useLedgerLive && isSupportWebUSB,
           keyringId,
+          ledgerLive: useLedgerLive,
         },
       });
     } catch (err) {

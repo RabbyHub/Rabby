@@ -6,7 +6,7 @@ import {
   IS_LINUX,
   KEYRING_TYPE,
   NOT_CLOSE_UNFOCUS_LIST,
-} from 'consts';
+} from 'consts/index';
 import preferenceService from './preference';
 
 interface Approval {

@@ -8,7 +8,7 @@ import { IconImportSuccess } from 'ui/assets';
 import { Account } from 'background/service/preference';
 import SuccessLogo from 'ui/assets/success-logo.svg';
 import clsx from 'clsx';
-import { KEYRING_ICONS, WALLET_BRAND_CONTENT } from 'consts';
+import { KEYRING_ICONS, WALLET_BRAND_CONTENT } from 'consts/index';
 import './index.less';
 const { AddressItem } = AddressList;
 

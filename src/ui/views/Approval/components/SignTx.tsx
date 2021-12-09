@@ -10,7 +10,7 @@ import { Button, Modal, Tooltip } from 'antd';
 import { useTranslation } from 'react-i18next';
 import clsx from 'clsx';
 import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
-import { KEYRING_CLASS, CHAINS, CHAINS_ENUM, KEYRING_TYPE } from 'consts';
+import { KEYRING_CLASS, CHAINS, CHAINS_ENUM, KEYRING_TYPE } from 'consts/index';
 import { Checkbox } from 'ui/component';
 import AccountCard from './AccountCard';
 import SecurityCheckBar from './SecurityCheckBar';
@@ -300,7 +300,7 @@ const SignTx = ({ params, origin }) => {
       setSecurityCheckStatus(res.decision);
       setSecurityCheckAlert(res.alert);
       setSecurityCheckDetail(res);
-    } catch (e) {
+    } catch (e: any) {
       const alert = e.message || JSON.stringify(e);
       setSecurityCheckStatus('danger');
       setSecurityCheckAlert(alert);
@@ -371,7 +371,7 @@ const SignTx = ({ params, origin }) => {
         await checkTx(currentAccount!.address);
       }
       setIsReady(true);
-    } catch (e) {
+    } catch (e: any) {
       Modal.error({
         title: t('Error'),
         content: e.message || JSON.stringify(e),

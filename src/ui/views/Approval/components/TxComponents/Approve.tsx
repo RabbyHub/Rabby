@@ -5,7 +5,7 @@ import BigNumber from 'bignumber.js';
 import { message, Button, Form, Input, Modal } from 'antd';
 import { useTranslation, Trans } from 'react-i18next';
 import { AddressViewer } from 'ui/component';
-import { CHAINS_ENUM, CHAINS } from 'consts';
+import { CHAINS_ENUM, CHAINS } from 'consts/index';
 import { ellipsisOverflowedText } from 'ui/utils';
 import { getCustomTxParamsData } from 'ui/utils/transaction';
 import { splitNumberByStep } from 'ui/utils/number';

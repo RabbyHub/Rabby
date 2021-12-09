@@ -8,7 +8,7 @@ import {
   SvgIconTrezor,
   ImportLedgerIcon,
 } from 'ui/assets';
-import { IS_CHROME, KEYRING_CLASS } from 'consts';
+import { IS_CHROME, KEYRING_CLASS } from 'consts/index';
 
 import './index.css';
 

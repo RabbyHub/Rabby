@@ -12,7 +12,7 @@ import {
   CHAINS_ENUM,
   KEYRING_PURPLE_LOGOS,
   KEYRING_CLASS,
-} from 'consts';
+} from 'consts/index';
 import { Account } from 'background/service/preference';
 import { ContactBookItem } from 'background/service/contactBook';
 import { useWallet } from 'ui/utils';

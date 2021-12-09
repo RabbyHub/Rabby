@@ -4,7 +4,7 @@ import { useCurrentBalance } from 'ui/component/AddressList/AddressItem';
 import { Chain } from 'background/service/chain';
 import { Account } from 'background/service/preference';
 import { useWallet, splitNumberByStep } from 'ui/utils';
-import { CHAINS_ENUM, EVENTS } from 'consts';
+import { CHAINS_ENUM, EVENTS } from 'consts/index';
 import eventBus from '@/eventBus';
 import IconChecked from 'ui/assets/checked.svg';
 import IconNotChecked from 'ui/assets/not-checked.svg';

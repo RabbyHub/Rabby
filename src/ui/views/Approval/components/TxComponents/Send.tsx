@@ -3,7 +3,7 @@ import { message } from 'antd';
 import { Trans, useTranslation } from 'react-i18next';
 import BigNumber from 'bignumber.js';
 import ClipboardJS from 'clipboard';
-import { CHAINS_ENUM, CHAINS } from 'consts';
+import { CHAINS_ENUM, CHAINS } from 'consts/index';
 import { ExplainTxResponse } from 'background/service/openapi';
 import { splitNumberByStep } from 'ui/utils/number';
 import { ellipsisOverflowedText } from 'ui/utils';

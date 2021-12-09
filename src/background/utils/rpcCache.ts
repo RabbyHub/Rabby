@@ -1,4 +1,4 @@
-import { CHAINS } from 'consts';
+import { CHAINS } from 'consts/index';
 
 type CacheState = Map<
   string,

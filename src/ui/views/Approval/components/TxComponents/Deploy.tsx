@@ -1,6 +1,6 @@
 import React from 'react';
 import { useTranslation, Trans } from 'react-i18next';
-import { CHAINS, CHAINS_ENUM } from 'consts';
+import { CHAINS, CHAINS_ENUM } from 'consts/index';
 import { ExplainTxResponse } from 'background/service/openapi';
 import BalanceChange from './BalanceChange';
 import SpeedUpCorner from './SpeedUpCorner';

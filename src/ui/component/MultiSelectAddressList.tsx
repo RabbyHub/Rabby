@@ -1,11 +1,11 @@
-import React, { useEffect, useRef } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { FixedSizeList } from 'react-window';
 import { Skeleton } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { FieldCheckbox } from 'ui/component';
 import AddressItem from 'ui/component/AddressList/AddressItem';
 import { useSelectOption } from 'ui/utils';
-import { BRAND_ALIAN_TYPE_TEXT } from 'consts';
+import { BRAND_ALIAN_TYPE_TEXT } from 'consts/index';
 import './index.less';
 import clsx from 'clsx';
 interface MultiSelectAddressListArgs {
@@ -23,12 +23,12 @@ interface MultiSelectAddressListArgs {
   loadLength?: number;
   loading?: boolean;
   isPopup?: boolean;
+  showSuspend?: boolean;
 }
 const Row = (props) => {
   const { data, index, style } = props;
   const { accounts, others } = data;
-  const { importedAccounts, _value, loading, isPopup, handleToggle } = others;
-
+  const { importedAccounts, _value, isPopup, handleToggle } = others;
   const { t } = useTranslation();
   const imported =
     (accounts.length > 0 &&
@@ -36,10 +36,10 @@ const Row = (props) => {
       importedAccounts.length > 0 &&
       importedAccounts
         ?.map((address) => address.toLowerCase())
-        .includes(accounts[index].address.toLowerCase())) ||
+        .includes(index && accounts[index]?.address.toLowerCase())) ||
     0;
   const selected = _value.includes(index + 1);
-  return !loading && accounts[index] ? (
+  return accounts[index] && accounts[index]?.address ? (
     <div
       style={style}
       key={index}
@@ -47,7 +47,7 @@ const Row = (props) => {
     >
       <FieldCheckbox
         checked={selected}
-        onChange={() => handleToggle(index)}
+        onChange={() => (index > accounts.length ? null : handleToggle(index))}
         disable={
           imported && (
             <span
@@ -104,6 +104,7 @@ const MultiSelectAddressList = ({
   loadLength,
   loading,
   isPopup,
+  showSuspend,
 }: MultiSelectAddressListArgs) => {
   const fixedList = useRef<FixedSizeList>();
   const [_value, , , handleToggle] = useSelectOption<number>({
@@ -125,28 +126,32 @@ const MultiSelectAddressList = ({
     }
   };
   return (
-    <FixedSizeList
-      height={isPopup ? 500 : 340}
-      width={isPopup ? 360 : 460}
-      itemData={{
-        accounts: accounts,
-        others: {
-          importedAccounts,
-          _value,
-          loading,
-          isPopup,
-          handleToggle,
-        },
-      }}
-      itemCount={accounts.length}
-      itemSize={60}
-      ref={fixedList}
-      useIsScrolling
-      onItemsRendered={onItemsRendered}
-      className="no-scrollbars"
-    >
-      {Row}
-    </FixedSizeList>
+    <>
+      <FixedSizeList
+        height={isPopup ? 500 : 340}
+        width={isPopup ? 360 : 460}
+        itemData={{
+          accounts: accounts,
+          others: {
+            importedAccounts,
+            _value,
+            loading,
+            isPopup,
+            handleToggle,
+          },
+        }}
+        itemCount={
+          loading && showSuspend ? accounts.length + 10 : accounts.length
+        }
+        itemSize={60}
+        ref={fixedList}
+        useIsScrolling
+        onItemsRendered={onItemsRendered}
+        className="no-scrollbars"
+      >
+        {Row}
+      </FixedSizeList>
+    </>
   );
 };
 

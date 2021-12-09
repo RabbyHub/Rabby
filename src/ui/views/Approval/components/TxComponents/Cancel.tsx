@@ -5,7 +5,7 @@ import ClipboardJS from 'clipboard';
 import { message } from 'antd';
 import { AddressViewer } from 'ui/component';
 import BalanceChange from './BalanceChange';
-import { CHAINS_ENUM, CHAINS } from 'consts';
+import { CHAINS_ENUM, CHAINS } from 'consts/index';
 import { ExplainTxResponse } from 'background/service/openapi';
 import SpeedUpCorner from './SpeedUpCorner';
 import IconCopy from 'ui/assets/copy-no-border.svg';

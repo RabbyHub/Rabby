@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { useWallet } from 'ui/utils';
 import { PageHeader } from 'ui/component';
 import FieldCheckbox from 'ui/component/FieldCheckbox';
-import { LANGS } from 'consts';
+import { LANGS } from 'consts/index';
 import i18n, { addResourceBundle } from 'src/i18n';
 import './style.less';
 

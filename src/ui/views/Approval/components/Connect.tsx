@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { Chain } from 'background/service/chain';
 import { ChainSelector, Spin, FallbackSiteLogo } from 'ui/component';
 import { useApproval, useWallet } from 'ui/utils';
-import { CHAINS_ENUM } from 'consts';
+import { CHAINS_ENUM } from 'consts/index';
 
 interface ConnectProps {
   params: any;

@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Button, Tooltip } from 'antd';
 import { useTranslation } from 'react-i18next';
 import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
-import { KEYRING_CLASS, KEYRING_TYPE } from 'consts';
+import { KEYRING_CLASS, KEYRING_TYPE } from 'consts/index';
 import { useApproval, useWallet } from 'ui/utils';
 import {
   SecurityCheckResponse,

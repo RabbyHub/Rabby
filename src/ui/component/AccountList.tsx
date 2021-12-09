@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { KEYRING_CLASS } from 'consts';
+import { KEYRING_CLASS } from 'consts/index';
 import { DisplayedKeryring } from 'background/service/keyring';
 import { useWallet } from 'ui/utils';
 

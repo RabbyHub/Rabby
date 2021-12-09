@@ -3,7 +3,7 @@ import { Form, Input, Button, Switch } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { useWallet } from 'ui/utils';
 import { PageHeader, Field, Modal } from 'ui/component';
-import { INITIAL_OPENAPI_URL } from 'consts';
+import { INITIAL_OPENAPI_URL } from 'consts/index';
 import IconArrowRight from 'ui/assets/arrow-right-gray.svg';
 import './style.less';
 const OpenApiModal = ({

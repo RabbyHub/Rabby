@@ -1,6 +1,6 @@
 import { browser, Windows } from 'webextension-polyfill-ts';
 import { EventEmitter } from 'events';
-import { IS_WINDOWS } from 'consts';
+import { IS_WINDOWS } from 'consts/index';
 
 const event = new EventEmitter();
 
