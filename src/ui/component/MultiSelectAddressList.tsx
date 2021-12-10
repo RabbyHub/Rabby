@@ -58,7 +58,7 @@ const Row = (props) => {
         onChange={() =>
           !canSelect
             ? message.error(
-                'Due to the network limitation, you can only import 5 accounts once'
+                'Due to the grid and network limitation, you can only import 5 accounts once'
               )
             : handleToggle(index)
         }
