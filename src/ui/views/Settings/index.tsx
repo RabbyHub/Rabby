@@ -33,11 +33,11 @@ const Settings = () => {
       content: t('Connected websites'),
       onClick: () => history.push('/settings/sites'),
     },
-    {
-      leftIcon: IconSwitch,
-      content: t('Switching languages'),
-      onClick: () => history.push('/settings/switch-lang'),
-    },
+    // {
+    //   leftIcon: IconSwitch,
+    //   content: t('Switching languages'),
+    //   onClick: () => history.push('/settings/switch-lang'),
+    // },
     {
       leftIcon: IconAdvanceOption,
       content: t('Advanced Options'),
