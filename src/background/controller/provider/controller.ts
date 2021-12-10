@@ -261,7 +261,6 @@ class ProviderController extends BaseController {
         console.log(e);
       }
     }
-    console.log('>>> opts', opts);
     const signedTx = await keyringService.signTransaction(
       keyring,
       tx,
@@ -371,20 +370,15 @@ class ProviderController extends BaseController {
         );
     },
   ])
-  personalSign = async ({
-    data: {
-      params: [data, from],
-    },
-    approvalRes,
-  }) => {
-    console.log('personalSign', data);
+  personalSign = async ({ data, approvalRes }) => {
     if (!data.params) return;
-    data = data = isHexString(data) ? data : stringToHex(data);
+    const [string, from] = data.params;
+    const hex = isHexString(string) ? string : stringToHex(string);
     const keyring = await this._checkAddress(from);
 
     return keyringService.signPersonalMessage(
       keyring,
-      { data, from },
+      { data: hex, from },
       approvalRes?.extra
     );
   };

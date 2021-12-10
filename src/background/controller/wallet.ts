@@ -278,6 +278,14 @@ export class WalletController extends BaseController {
     return this._setCurrentAccountFromKeyring(keyring, -1);
   };
 
+  clearGnosisTransaction = () => {
+    const keyring: GnosisKeyring = this._getKeyringByType(KEYRING_CLASS.GNOSIS);
+    if (keyring.currentTransaction || keyring.safeInstance) {
+      keyring.currentTransaction = null;
+      keyring.safeInstance = null;
+    }
+  };
+
   getGnosisNetworkId = (address: string) => {
     const keyring: GnosisKeyring = this._getKeyringByType(KEYRING_CLASS.GNOSIS);
     const networkId = keyring.networkIdMap[address.toLowerCase()];
@@ -375,6 +383,24 @@ export class WalletController extends BaseController {
         ),
       });
     }
+  };
+
+  gnosisAddConfirmation = async (address: string, signature: string) => {
+    const keyring: GnosisKeyring = this._getKeyringByType(KEYRING_CLASS.GNOSIS);
+    if (!keyring) throw new Error('No Gnosis keyring found');
+    if (!keyring.currentTransaction) {
+      throw new Error('No transaction in Gnosis keyring');
+    }
+    await keyring.addConfirmation(address, signature);
+  };
+
+  gnosisAddPureSignature = async (address: string, signature: string) => {
+    const keyring: GnosisKeyring = this._getKeyringByType(KEYRING_CLASS.GNOSIS);
+    if (!keyring) throw new Error('No Gnosis keyring found');
+    if (!keyring.currentTransaction) {
+      throw new Error('No transaction in Gnosis keyring');
+    }
+    await keyring.addPureSignature(address, signature);
   };
 
   gnosisAddSignature = async (address: string, signature: string) => {

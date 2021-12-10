@@ -7,6 +7,7 @@ import {
   SafeInfo,
 } from '@rabby-wallet/gnosis-sdk/dist/api';
 import { useTranslation, Trans } from 'react-i18next';
+import { toChecksumAddress } from 'web3-utils';
 import dayjs from 'dayjs';
 import { ExplainTxResponse } from 'background/service/openapi';
 import { Account } from 'background/service/preference';
@@ -14,9 +15,11 @@ import { intToHex } from 'ethereumjs-util';
 import { useWallet, timeago, isSameAddress } from 'ui/utils';
 import { splitNumberByStep } from 'ui/utils/number';
 import { PageHeader } from 'ui/component';
-import { INTERNAL_REQUEST_ORIGIN } from 'consts';
+import { INTERNAL_REQUEST_ORIGIN, KEYRING_CLASS } from 'consts';
 import IconUnknown from 'ui/assets/icon-unknown.svg';
 import IconUser from 'ui/assets/address-management.svg';
+import IconChecked from 'ui/assets/checked.svg';
+import IconUnCheck from 'ui/assets/uncheck.svg';
 import './style.less';
 
 interface TransactionConfirmationsProps {
@@ -65,9 +68,21 @@ const TransactionConfirmations = ({
             })}
             key={owner}
           >
-            {`${owner.toLowerCase().slice(0, 6)}...${owner
-              .toLowerCase()
-              .slice(-4)}`}
+            <img
+              src={
+                confirmations.find((confirm) =>
+                  isSameAddress(confirm.owner, owner)
+                )
+                  ? IconChecked
+                  : IconUnCheck
+              }
+              className="icon icon-check"
+            />
+            <span title={owner}>
+              {`${owner
+                .toLowerCase()
+                .slice(0, 6)}...${owner.toLowerCase().slice(-4)}`}
+            </span>
             {visibleAccounts.find((account) =>
               isSameAddress(account.address, owner)
             ) ? (
@@ -222,12 +237,64 @@ const GnosisTransactionItem = ({
     setExplain(res);
   };
 
-  const handleView = () => {
-    // TODO
+  const handleView = async () => {
+    const account = await wallet.getCurrentAccount();
+    const params = {
+      chainId: Number(networkId),
+      from: toChecksumAddress(data.safe),
+      to: data.to,
+      data: data.data || '0x',
+      value: `0x${Number(data.value).toString(16)}`,
+      nonce: intToHex(data.nonce),
+    };
+    const tmpBuildAccount: Account = {
+      address: safeInfo.owners[0],
+      type: KEYRING_CLASS.WATCH,
+      brandName: KEYRING_CLASS.WATCH,
+    };
+    await wallet.buildGnosisTransaction(
+      account.address,
+      tmpBuildAccount,
+      params
+    );
+    await Promise.all(
+      data.confirmations.map((confirm) => {
+        return wallet.gnosisAddPureSignature(confirm.owner, confirm.signature);
+      })
+    );
+    wallet.sendRequest({
+      method: 'eth_sendTransaction',
+      params: [params],
+    });
+    window.close();
   };
 
-  const handleSubmit = () => {
-    // TODO
+  const handleSubmit = async () => {
+    const currentAccount = await wallet.getCurrentAccount();
+    const account = {
+      address: '0x5853ed4f26a3fcea565b3fbc698bb19cdf6deb85',
+      type: KEYRING_CLASS.PRIVATE_KEY,
+      brandName: KEYRING_CLASS.PRIVATE_KEY,
+    };
+    const params = {
+      chainId: Number(networkId),
+      from: toChecksumAddress(data.safe),
+      to: data.to,
+      data: data.data || '0x',
+      value: `0x${Number(data.value).toString(16)}`,
+      nonce: intToHex(data.nonce),
+    };
+    await wallet.buildGnosisTransaction(
+      currentAccount.address,
+      account,
+      params
+    );
+    await Promise.all(
+      data.confirmations.map((confirm) => {
+        return wallet.gnosisAddPureSignature(confirm.owner, confirm.signature);
+      })
+    );
+    await wallet.execGnosisTransaction(account);
   };
 
   useEffect(() => {
@@ -236,7 +303,10 @@ const GnosisTransactionItem = ({
 
   return (
     <div className="queue-item">
-      <div className="queue-item__time">{agoText}</div>
+      <div className="queue-item__time">
+        <span>{agoText}</span>
+        <span>nonce: {data.nonce}</span>
+      </div>
       <div className="queue-item__info">
         {explain && (
           <TransactionExplain explain={explain} onView={handleView} />
@@ -288,16 +358,25 @@ const GnosisTransactionQueue = () => {
   return (
     <div className="queue">
       <PageHeader>{t('Queue')}</PageHeader>
-      {transactions.map(
-        (transaction) =>
-          safeInfo && (
-            <GnosisTransactionItem
-              data={transaction}
-              networkId={networkId}
-              safeInfo={safeInfo}
-              key={transaction.safeTxHash}
-            />
-          )
+      {transactions.length > 0 ? (
+        transactions.map(
+          (transaction) =>
+            safeInfo && (
+              <GnosisTransactionItem
+                data={transaction}
+                networkId={networkId}
+                safeInfo={safeInfo}
+                key={transaction.safeTxHash}
+              />
+            )
+        )
+      ) : (
+        <div className="tx-history__empty">
+          <img className="no-data" src="./images/nodata-tx.png" />
+          <p className="text-14 text-gray-content mt-12">
+            {t('No transaction')}
+          </p>
+        </div>
       )}
     </div>
   );

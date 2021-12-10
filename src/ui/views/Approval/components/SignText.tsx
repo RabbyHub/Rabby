@@ -115,8 +115,13 @@ const SignText = ({ params }: { params: SignTextProps }) => {
           params.account.address,
           params.data[0]
         );
-        await wallet.gnosisAddSignature(params.account.address, result);
-        await wallet.postGnosisTransaction();
+        const sigs = await wallet.getGnosisTransactionSignatures();
+        if (sigs.length > 0) {
+          await wallet.gnosisAddConfirmation(params.account.address, result);
+        } else {
+          await wallet.gnosisAddSignature(params.account.address, result);
+          await wallet.postGnosisTransaction();
+        }
         resolveApproval(result, false, true);
       }
       return;

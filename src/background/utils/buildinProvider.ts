@@ -4,7 +4,6 @@ import providerController from '../controller/provider/controller';
 import preferenceService from 'background/service/preference';
 import notificationService from 'background/service/notification';
 import wallet from '../controller/wallet';
-import eventBus from '@/eventBus';
 import { EVENTS, CHAINS, INTERNAL_REQUEST_SESSION } from 'consts';
 import { underline2Camelcase } from 'background/utils';
 
@@ -100,6 +99,25 @@ export class EthereumProvider extends EventEmitter {
             reject(err);
           });
         });
+      case 'eth_sendTransaction':
+        preferenceService.setCurrentAccount({
+          address: this.currentAccount,
+          type: this.currentAccountType,
+          brandName: this.currentAccountBrand,
+        });
+        return wallet
+          .sendRequest({
+            method: 'eth_sendTransaction',
+            params: [
+              {
+                ...data.params[0],
+                chainId: Number(networkId),
+              },
+            ],
+          })
+          .finally(() => {
+            preferenceService.setCurrentAccount(currentAccount);
+          });
       case 'eth_chainId':
         return chain.hex;
       default:

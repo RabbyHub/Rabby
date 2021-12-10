@@ -18,6 +18,7 @@ import {
   CHAINS_ENUM,
   KEYRING_TYPE,
   EVENTS,
+  INTERNAL_REQUEST_ORIGIN,
 } from 'consts';
 import { Checkbox } from 'ui/component';
 import AccountCard from './AccountCard';
@@ -258,9 +259,6 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     },
   ]);
   const [isGnosisAccount, setIsGnosisAccount] = useState(false);
-  const [canExecGnosisTransaction, setCanExecGnosisTransaction] = useState(
-    false
-  );
   const [gnosisDrawerVisible, setGnosisDrawerVisble] = useState(false);
   const [, resolveApproval, rejectApproval] = useApproval();
   const wallet = useWallet();
@@ -411,9 +409,6 @@ const SignTx = ({ params, origin }: SignTxProps) => {
   };
 
   const handleGnosisConfirm = async (account: Account) => {
-    if (canExecGnosisTransaction) {
-      await wallet.execGnosisTransaction(account);
-    }
     await wallet.buildGnosisTransaction(tx.from, account, tx);
     const hash = await wallet.getGnosisTransactionHash();
     resolveApproval({
@@ -632,9 +627,14 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     const currentAccount = await wallet.getCurrentAccount();
     const networkId = await wallet.getGnosisNetworkId(currentAccount.address);
     const safeInfo = await Safe.getSafeInfo(currentAccount.address, networkId);
-    const canExec = await wallet.checkGnosisTransactionCanExec();
-    setCanExecGnosisTransaction(canExec);
     setSafeInfo(safeInfo);
+  };
+
+  const handleIsGnosisAccountChange = async () => {
+    if (params.session.origin !== INTERNAL_REQUEST_ORIGIN) {
+      await wallet.clearGnosisTransaction();
+    }
+    await getSafeInfo();
   };
 
   useEffect(() => {
@@ -643,7 +643,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
 
   useEffect(() => {
     if (isGnosisAccount) {
-      getSafeInfo();
+      handleIsGnosisAccountChange();
     }
   }, [isGnosisAccount]);
 
@@ -847,7 +847,6 @@ const SignTx = ({ params, origin }: SignTxProps) => {
               safeInfo={safeInfo}
               onCancel={handleCancel}
               onConfirm={handleGnosisConfirm}
-              canExec={canExecGnosisTransaction}
             />
           </Drawer>
         )}

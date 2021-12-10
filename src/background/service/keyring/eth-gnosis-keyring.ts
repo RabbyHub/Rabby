@@ -146,6 +146,27 @@ class GnosisKeyring extends EventEmitter {
     });
   }
 
+  async addConfirmation(address: string, signature: string) {
+    if (!this.currentTransaction || !this.safeInstance) {
+      throw new Error('No transaction in Gnosis keyring');
+    }
+    const safe = this.safeInstance;
+    this.addSignature(address, signature);
+    const hash = await safe.getTransactionHash(this.currentTransaction);
+    const sig = this.currentTransaction.signatures.get(address.toLowerCase());
+    if (sig) {
+      await safe.request.confirmTransaction(hash, { signature: sig.data });
+    }
+  }
+
+  async addPureSignature(address: string, signature: string) {
+    if (!this.currentTransaction || !this.safeInstance) {
+      throw new Error('No transaction in Gnosis keyring');
+    }
+    const sig = new EthSignSignature(address, signature);
+    this.currentTransaction.addSignature(sig);
+  }
+
   async addSignature(address: string, signature: string) {
     if (!this.currentTransaction || !this.safeInstance) {
       throw new Error('No transaction in Gnosis keyring');
@@ -230,50 +251,45 @@ class GnosisKeyring extends EventEmitter {
     opts: SignTransactionOptions
   ) {
     // eslint-disable-next-line no-async-promise-executor
-    return new Promise(async (resolve) => {
-      if (
-        !this.accounts.find(
-          (account) => account.toLowerCase() === address.toLowerCase()
-        )
-      ) {
-        throw new Error('Can not find this address');
-      }
-      let safeTransaction: SafeTransaction;
-      let transactionHash: string;
-      const networkId = this.networkIdMap[address.toLowerCase()];
-      const checksumAddress = toChecksumAddress(address);
-      const safeInfo = await Safe.getSafeInfo(checksumAddress, networkId);
-      const safe = new Safe(
-        checksumAddress,
-        safeInfo.version,
-        opts.provider,
-        networkId
-      );
-      if (this.currentTransaction) {
-        safeTransaction = this.currentTransaction;
-        transactionHash = await safe.getTransactionHash(safeTransaction);
-      } else {
-        const tx = {
-          data: this._normalize(transaction.data) || '0x',
-          from: address,
-          to: this._normalize(transaction.to),
-          value: this._normalize(transaction.value) || '0x0', // prevent 0x
-        };
-        safeTransaction = await safe.buildTransaction(tx);
-        transactionHash = await safe.getTransactionHash(safeTransaction);
-      }
-      await safe.signTransaction(safeTransaction);
-      this.safeInstance = safe;
-      this.currentTransaction = safeTransaction;
-      this.emit(TransactionBuiltEvent, {
-        safeAddress: address,
-        data: {
-          hash: transactionHash,
-        },
-      });
-      this.onExecedTransaction = (hash) => {
-        resolve(hash);
+    if (
+      !this.accounts.find(
+        (account) => account.toLowerCase() === address.toLowerCase()
+      )
+    ) {
+      throw new Error('Can not find this address');
+    }
+    let safeTransaction: SafeTransaction;
+    let transactionHash: string;
+    const networkId = this.networkIdMap[address.toLowerCase()];
+    const checksumAddress = toChecksumAddress(address);
+    const safeInfo = await Safe.getSafeInfo(checksumAddress, networkId);
+    const safe = new Safe(
+      checksumAddress,
+      safeInfo.version,
+      opts.provider,
+      networkId
+    );
+    if (this.currentTransaction) {
+      safeTransaction = this.currentTransaction;
+      transactionHash = await safe.getTransactionHash(safeTransaction);
+    } else {
+      const tx = {
+        data: this._normalize(transaction.data) || '0x',
+        from: address,
+        to: this._normalize(transaction.to),
+        value: this._normalize(transaction.value) || '0x0', // prevent 0x
       };
+      safeTransaction = await safe.buildTransaction(tx);
+      transactionHash = await safe.getTransactionHash(safeTransaction);
+    }
+    await safe.signTransaction(safeTransaction);
+    this.safeInstance = safe;
+    this.currentTransaction = safeTransaction;
+    this.emit(TransactionBuiltEvent, {
+      safeAddress: address,
+      data: {
+        hash: transactionHash,
+      },
     });
   }
 

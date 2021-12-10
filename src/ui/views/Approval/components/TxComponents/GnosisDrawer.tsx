@@ -3,8 +3,6 @@ import { useTranslation } from 'react-i18next';
 import { groupBy } from 'lodash';
 import { SafeInfo } from '@rabby-wallet/gnosis-sdk/src/api';
 import { Button } from 'antd';
-// import { EVENTS } from 'consts';
-// import eventBus from '@/eventBus';
 import { Account } from 'background/service/preference';
 import { useWallet, isSameAddress } from 'ui/utils';
 import { KEYRING_TYPE, KEYRING_CLASS } from 'consts';
@@ -13,7 +11,6 @@ import FieldCheckbox from 'ui/component/FieldCheckbox';
 
 interface GnosisDrawerProps {
   safeInfo: SafeInfo;
-  canExec: boolean;
   onCancel(): void;
   onConfirm(account: Account, isNew?: boolean): Promise<void>;
 }
@@ -62,12 +59,7 @@ const AddressItem = ({
   );
 };
 
-const GnosisDrawer = ({
-  safeInfo,
-  onCancel,
-  onConfirm,
-  canExec,
-}: GnosisDrawerProps) => {
+const GnosisDrawer = ({ safeInfo, onCancel, onConfirm }: GnosisDrawerProps) => {
   const wallet = useWallet();
   const { t } = useTranslation();
   const [signatures, setSignatures] = useState<Signature[]>([]);

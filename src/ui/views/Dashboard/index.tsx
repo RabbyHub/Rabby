@@ -384,7 +384,7 @@ const Dashboard = () => {
             {isGnosis ? (
               <div className="operation-item" onClick={handleGotoQueue}>
                 <img className="icon icon-queue" src={IconQueue} />
-                {t('History')}
+                {t('Queue')}
               </div>
             ) : (
               <div className="operation-item" onClick={handleGotoHistory}>
@@ -396,7 +396,7 @@ const Dashboard = () => {
                 ) : (
                   <img className="icon icon-history" src={IconHistory} />
                 )}
-                {t('Queue')}
+                {t('History')}
               </div>
             )}
           </div>
