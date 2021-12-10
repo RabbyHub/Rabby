@@ -8,7 +8,7 @@ import {
   SvgIconLedger,
   SvgIconOnekey,
 } from 'ui/assets';
-import { HARDWARE_KEYRING_TYPES, IS_AFTER_CHROME91 } from 'consts/index';
+import { HARDWARE_KEYRING_TYPES, IS_AFTER_CHROME91 } from 'consts';
 import AccountCard from './AccountCard';
 
 const Hardware = ({

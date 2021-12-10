@@ -5,7 +5,7 @@ import {
 } from 'background/service';
 import { createPersistStore } from 'background/utils';
 import { notification } from 'background/webapi';
-import { CHAINS, CHAINS_ENUM } from 'consts/index';
+import { CHAINS, CHAINS_ENUM } from 'consts';
 import { format } from 'utils';
 
 class Transaction {

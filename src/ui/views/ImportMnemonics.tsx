@@ -4,7 +4,7 @@ import { useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { StrayPageWithButton } from 'ui/component';
 import { useWallet, useWalletRequest } from 'ui/utils';
-import { KEYRING_TYPE } from 'consts/index';
+import { KEYRING_TYPE } from 'consts';
 import MnemonicLogo from 'ui/assets/mnemonic-icon.svg';
 
 const ImportMnemonic = () => {

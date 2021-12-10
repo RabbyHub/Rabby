@@ -5,7 +5,7 @@ import clsx from 'clsx';
 import { Form, Input, message, Skeleton } from 'antd';
 import { StrayPageWithButton, MultiSelectAddressList } from 'ui/component';
 import { useWallet, useWalletRequest } from 'ui/utils';
-import { HARDWARE_KEYRING_TYPES } from 'consts/index';
+import { HARDWARE_KEYRING_TYPES } from 'consts';
 import { BIP44_PATH } from '../ImportHardware/LedgerHdPath';
 import './style.less';
 const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {

@@ -3,7 +3,7 @@ import { message } from 'antd';
 import { Trans, useTranslation } from 'react-i18next';
 import ClipboardJS from 'clipboard';
 import { AddressViewer } from 'ui/component';
-import { CHAINS, CHAINS_ENUM } from 'consts/index';
+import { CHAINS, CHAINS_ENUM } from 'consts';
 import { ExplainTxResponse } from 'background/service/openapi';
 import { Modal } from 'ui/component';
 import BalanceChange from './BalanceChange';

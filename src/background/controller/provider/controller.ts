@@ -31,7 +31,7 @@ import { Session } from 'background/service/session';
 import { Tx } from 'background/service/openapi';
 import RpcCache from 'background/utils/rpcCache';
 import Wallet from '../wallet';
-import { CHAINS, CHAINS_ENUM, SAFE_RPC_METHODS } from 'consts/index';
+import { CHAINS, CHAINS_ENUM, SAFE_RPC_METHODS } from 'consts';
 import BaseController from '../base';
 
 interface ApprovalRes extends Tx {

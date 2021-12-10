@@ -11,7 +11,7 @@ import {
   EVENTS,
   WALLET_BRAND_CONTENT,
   SPECIFIC_TEXT_BRAND,
-} from 'consts/index';
+} from 'consts';
 import { ScanCopyQRCode } from 'ui/component';
 import { Tx } from 'background/service/openapi';
 import { useApproval, useWallet, openInTab } from 'ui/utils';

@@ -19,7 +19,7 @@ import {
   WALLET_BRAND_CONTENT,
   KEYRING_CLASS,
   BRAND_ALIAN_TYPE_TEXT,
-} from 'consts/index';
+} from 'consts';
 
 import clsx from 'clsx';
 const normaltype: string[] = [

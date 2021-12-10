@@ -3,7 +3,7 @@ import { useTranslation } from 'react-i18next';
 import { Link, useHistory } from 'react-router-dom';
 import { Menu, Dropdown, message } from 'antd';
 import { FixedSizeList } from 'react-window';
-import { KEYRING_TYPE, HARDWARE_KEYRING_TYPES } from 'consts/index';
+import { KEYRING_TYPE, HARDWARE_KEYRING_TYPES } from 'consts';
 import { useWallet } from 'ui/utils';
 import {
   AddressList,

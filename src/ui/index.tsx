@@ -8,7 +8,7 @@ import eventBus from '@/eventBus';
 import * as Sentry from '@sentry/react';
 import { Integrations } from '@sentry/tracing';
 import i18n, { addResourceBundle } from 'src/i18n';
-import { EVENTS } from 'consts/index';
+import { EVENTS } from 'consts';
 import '../i18n';
 
 import './style/index.less';

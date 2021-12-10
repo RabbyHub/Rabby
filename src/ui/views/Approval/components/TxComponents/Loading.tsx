@@ -1,7 +1,7 @@
 import React from 'react';
 import { Skeleton } from 'antd';
 import { Trans } from 'react-i18next';
-import { CHAINS, CHAINS_ENUM } from 'consts/index';
+import { CHAINS, CHAINS_ENUM } from 'consts';
 import BalanceChange from './LoadingBalanceChange';
 
 interface SignProps {

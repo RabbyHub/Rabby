@@ -5,7 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { FieldCheckbox } from 'ui/component';
 import AddressItem from 'ui/component/AddressList/AddressItem';
 import { useSelectOption } from 'ui/utils';
-import { BRAND_ALIAN_TYPE_TEXT } from 'consts/index';
+import { BRAND_ALIAN_TYPE_TEXT } from 'consts';
 import './index.less';
 import clsx from 'clsx';
 interface MultiSelectAddressListArgs {

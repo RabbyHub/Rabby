@@ -1,4 +1,4 @@
-import { CHAINS_ENUM, CHAINS } from 'consts/index';
+import { CHAINS_ENUM, CHAINS } from 'consts';
 import { createPersistStore } from 'background/utils';
 import openapi, { ServerChain } from './openapi';
 

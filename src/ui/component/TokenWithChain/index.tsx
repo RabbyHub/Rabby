@@ -1,5 +1,5 @@
 import React from 'react';
-import { CHAINS } from 'consts/index';
+import { CHAINS } from 'consts';
 import { TokenItem } from 'background/service/openapi';
 import IconUnknown from 'ui/assets/token-default.svg';
 import './style.less';

@@ -14,7 +14,7 @@ import {
   KEYRING_ICONS,
   WALLET_BRAND_CONTENT,
   KEYRING_ICONS_WHITE,
-} from 'consts/index';
+} from 'consts';
 import { AddressViewer, Modal } from 'ui/component';
 import { useWallet } from 'ui/utils';
 import { Account } from 'background/service/preference';

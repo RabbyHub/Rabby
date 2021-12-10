@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
 import { StrayPageWithButton, FieldCheckbox } from 'ui/component';
 import { useWallet } from 'ui/utils';
-import { IS_AFTER_CHROME91, IS_CHROME } from 'consts/index';
+import { IS_AFTER_CHROME91, IS_CHROME } from 'consts';
 
 const LEDGER_LIVE = 'LEDGER_LIVE';
 const DIRECTLY = 'DIRECTLY';

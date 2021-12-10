@@ -7,7 +7,7 @@ import { useWallet, useWalletRequest } from 'ui/utils';
 import IconBack from 'ui/assets/gobackwhite.svg';
 import { ScanCopyQRCode } from 'ui/component';
 import eventBus from '@/eventBus';
-import { WALLETCONNECT_STATUS_MAP, EVENTS } from 'consts/index';
+import { WALLETCONNECT_STATUS_MAP, EVENTS } from 'consts';
 import Mask from 'ui/assets/import-mask.png';
 import './style.less';
 import clsx from 'clsx';

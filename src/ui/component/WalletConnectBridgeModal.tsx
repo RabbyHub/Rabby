@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { Form, Input, Button } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { Modal } from 'ui/component';
-import { INITIAL_OPENAPI_URL } from 'consts/index';
+import { INITIAL_OPENAPI_URL } from 'consts';
 
 const OpenApiModal = ({
   value,

@@ -10,7 +10,7 @@ import clsx from 'clsx';
 import { findIndex } from 'lodash';
 import { FixedSizeList, areEqual } from 'react-window';
 import { DisplayedKeryring } from 'background/service/keyring';
-import { KEYRING_TYPE } from 'consts/index';
+import { KEYRING_TYPE } from 'consts';
 import { useWallet } from 'ui/utils';
 
 import AddressItem, { AddressItemProps } from './AddressItem';

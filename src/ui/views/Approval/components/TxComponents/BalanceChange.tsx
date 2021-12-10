@@ -1,7 +1,7 @@
 import React from 'react';
 import clsx from 'clsx';
 import { useTranslation, Trans } from 'react-i18next';
-import { CHAINS_ENUM, CHAINS } from 'consts/index';
+import { CHAINS_ENUM, CHAINS } from 'consts';
 import { BalanceChange as BC } from 'background/service/openapi';
 import { splitNumberByStep } from 'ui/utils/number';
 

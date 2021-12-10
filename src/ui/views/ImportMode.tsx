@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { Tooltip } from 'antd';
 import { StrayPageWithButton, FieldCheckbox } from 'ui/component';
 import { useWallet } from 'ui/utils';
-import { KEYRING_CLASS } from 'consts/index';
+import { KEYRING_CLASS } from 'consts';
 import ImportIcon from 'ui/assets/import-icon.svg';
 
 const ImportMode = () => {

@@ -22,7 +22,7 @@ import {
   TokenItem,
   GasLevel,
 } from 'background/service/openapi';
-import { CHAINS, MINIMUM_GAS_LIMIT } from 'consts/index';
+import { CHAINS, MINIMUM_GAS_LIMIT } from 'consts';
 import { SvgPendingSpin } from 'ui/assets';
 import IconUser from 'ui/assets/address-management.svg';
 import IconUnknown from 'ui/assets/icon-unknown.svg';

@@ -22,7 +22,7 @@ import WatchKeyring from '@rabby-wallet/eth-watch-keyring';
 import WalletConnectKeyring from '@rabby-wallet/eth-walletconnect-keyring';
 import preference from '../preference';
 import i18n from '../i18n';
-import { KEYRING_TYPE, HARDWARE_KEYRING_TYPES, EVENTS } from 'consts/index';
+import { KEYRING_TYPE, HARDWARE_KEYRING_TYPES, EVENTS } from 'consts';
 import DisplayKeyring from './display';
 import eventBus from '@/eventBus';
 export const KEYRING_SDK_TYPES = {
