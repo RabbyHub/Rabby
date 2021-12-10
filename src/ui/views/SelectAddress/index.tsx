@@ -116,7 +116,7 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
   }, [accounts]);
   const onSubmit = async ({ selectedAddressIndexes }) => {
     setSpin(true);
-    const selectedIndexes = selectedAddressIndexes.map((i) => i - 1);
+    const selectedIndexes = selectedAddressIndexes.map((i) => i);
 
     if (isMnemonics) {
       await wallet.requestKeyring(
@@ -275,6 +275,7 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
                 loadLength={loadLength}
                 loading={loading || !canLoad}
                 showSuspend={isGrid || ledgerLive}
+                isGrid={isGrid}
                 isPopup={isPopup}
                 loadMoreItems={() =>
                   accounts.length <= 1000 && canLoad

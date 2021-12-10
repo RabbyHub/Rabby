@@ -45,8 +45,8 @@ const Row = (props) => {
     importedAccounts
       ?.map((address) => address.toLowerCase())
       .includes(accounts[index]?.address?.toLowerCase());
-  const selected = _value.includes(index + 1);
-  const canSelect = (!isGrid && _value.length < 5) || selected;
+  const selected = _value.includes(index);
+  const canSelect = !(isGrid && _value.length >= 5) || selected;
   return accounts[index] && accounts[index]?.address ? (
     <div
       style={style}
@@ -57,8 +57,8 @@ const Row = (props) => {
         checked={selected}
         onChange={() =>
           !canSelect
-            ? message.info(
-                'Due to the network limition, you can only import 5 accounts once'
+            ? message.error(
+                'Due to the network limitation, you can only import 5 accounts once'
               )
             : handleToggle(index)
         }
@@ -125,7 +125,7 @@ const MultiSelectAddressList = ({
   const [_value, , , handleToggle] = useSelectOption<number>({
     onChange,
     value,
-    options: accounts.map((x) => x.index),
+    options: accounts.map((x, index) => index),
   });
   useEffect(() => {
     changeSelectedNumbers && changeSelectedNumbers(_value.length);
