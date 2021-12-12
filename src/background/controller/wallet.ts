@@ -298,9 +298,7 @@ export class WalletController extends BaseController {
   getGnosisTransactionHash = () => {
     const keyring: GnosisKeyring = this._getKeyringByType(KEYRING_CLASS.GNOSIS);
     if (keyring.currentTransaction) {
-      return keyring.safeInstance?.getTransactionHash(
-        keyring.currentTransaction
-      );
+      return keyring.getTransactionHash();
     }
     return null;
   };
@@ -312,6 +310,11 @@ export class WalletController extends BaseController {
       return sigs.map((sig) => ({ data: sig.data, signer: sig.signer }));
     }
     return [];
+  };
+
+  setGnosisTransactionHash = (hash: string) => {
+    const keyring: GnosisKeyring = this._getKeyringByType(KEYRING_CLASS.GNOSIS);
+    keyring.currentTransactionHash = hash;
   };
 
   buildGnosisTransaction = async (

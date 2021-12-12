@@ -40,6 +40,7 @@ class GnosisKeyring extends EventEmitter {
   accountToAdd: string | null = null;
   networkIdMap: Record<string, string> = {};
   currentTransaction: SafeTransaction | null = null;
+  currentTransactionHash: string | null = null;
   onExecedTransaction: ((hash: string) => void) | null = null;
   safeInstance: Safe | null = null;
 
@@ -81,6 +82,15 @@ class GnosisKeyring extends EventEmitter {
 
   async getAccounts() {
     return this.accounts;
+  }
+
+  async getTransactionHash() {
+    if (this.currentTransactionHash) return this.currentTransactionHash;
+    if (!this.safeInstance || !this.currentTransaction) return;
+    const safe = this.safeInstance;
+    const hash = await safe.getTransactionHash(this.currentTransaction);
+    this.currentTransactionHash = hash;
+    return hash;
   }
 
   addAccounts = async () => {
@@ -152,7 +162,7 @@ class GnosisKeyring extends EventEmitter {
     }
     const safe = this.safeInstance;
     this.addSignature(address, signature);
-    const hash = await safe.getTransactionHash(this.currentTransaction);
+    const hash = await this.getTransactionHash();
     const sig = this.currentTransaction.signatures.get(address.toLowerCase());
     if (sig) {
       await safe.request.confirmTransaction(hash, { signature: sig.data });
@@ -171,9 +181,7 @@ class GnosisKeyring extends EventEmitter {
     if (!this.currentTransaction || !this.safeInstance) {
       throw new Error('No transaction in Gnosis keyring');
     }
-    const hash = await this.safeInstance.getTransactionHash(
-      this.currentTransaction
-    );
+    const hash = await this.getTransactionHash();
     const hasPrefix = isTxHashSignedWithPrefix(hash, signature, address);
     signature = adjustVInSignature(signature, hasPrefix);
     const sig = new EthSignSignature(address, signature);
@@ -271,7 +279,7 @@ class GnosisKeyring extends EventEmitter {
     );
     if (this.currentTransaction) {
       safeTransaction = this.currentTransaction;
-      transactionHash = await safe.getTransactionHash(safeTransaction);
+      transactionHash = await this.getTransactionHash();
     } else {
       const tx = {
         data: this._normalize(transaction.data) || '0x',
@@ -280,11 +288,11 @@ class GnosisKeyring extends EventEmitter {
         value: this._normalize(transaction.value) || '0x0', // prevent 0x
       };
       safeTransaction = await safe.buildTransaction(tx);
-      transactionHash = await safe.getTransactionHash(safeTransaction);
+      this.currentTransaction = safeTransaction;
+      transactionHash = await this.getTransactionHash();
     }
     await safe.signTransaction(safeTransaction);
     this.safeInstance = safe;
-    this.currentTransaction = safeTransaction;
     this.emit(TransactionBuiltEvent, {
       safeAddress: address,
       data: {

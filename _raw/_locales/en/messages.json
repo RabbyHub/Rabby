@@ -969,5 +969,8 @@
   },
   "Portfolio": {
     "message": "Portfolio"
+  },
+  "multiSignChainNotMatch": {
+    "message": "Multi-signature addresses are not on this chain and cannot initiate transactions"
   }
 }

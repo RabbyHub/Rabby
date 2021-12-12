@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { groupBy } from 'lodash';
+import clsx from 'clsx';
 import { SafeInfo } from '@rabby-wallet/gnosis-sdk/src/api';
 import { Button } from 'antd';
 import { Account } from 'background/service/preference';
@@ -46,15 +47,17 @@ const AddressItem = ({
 }: AddressItemProps) => {
   return (
     <FieldCheckbox
-      className="item"
+      className={clsx('item', { disabled: !account.type })}
       showCheckbox={!!account.type}
-      // rightSlot={signed ? <span>Signed</span> : undefined}
+      rightSlot={
+        signed ? <span className="text-green text-14">Signed</span> : undefined
+      }
       onChange={(checked) => checked && onSelect(account)}
       checked={checked}
+      disable={!account.type || signed}
     >
       <AddressViewer address={account.address} showArrow={false} />
-      {account.type ? 'You' : 'Not You'}
-      {signed ? 'Signed' : 'Not Signed'}
+      <span className="item-tag">{account.type ? 'You' : 'Not You'}</span>
     </FieldCheckbox>
   );
 };
@@ -65,6 +68,7 @@ const GnosisDrawer = ({ safeInfo, onCancel, onConfirm }: GnosisDrawerProps) => {
   const [signatures, setSignatures] = useState<Signature[]>([]);
   const [ownerAccounts, setOwnerAccounts] = useState<Account[]>([]);
   const [checkedAccount, setCheckedAccount] = useState<Account | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
 
   const sortOwners = async () => {
     const accounts: Account[] = await wallet.getAllVisibleAccountsArray();
@@ -106,6 +110,17 @@ const GnosisDrawer = ({ safeInfo, onCancel, onConfirm }: GnosisDrawerProps) => {
     setCheckedAccount(account);
   };
 
+  const handleConfirm = async () => {
+    try {
+      setIsLoading(true);
+      checkedAccount &&
+        (await onConfirm(checkedAccount, signatures.length <= 0));
+      setIsLoading(false);
+    } catch (e) {
+      setIsLoading(false);
+    }
+  };
+
   const init = async () => {
     const sigs = await wallet.getGnosisTransactionSignatures();
     setSignatures(sigs);
@@ -145,9 +160,7 @@ const GnosisDrawer = ({ safeInfo, onCancel, onConfirm }: GnosisDrawerProps) => {
         </Button>
         <Button
           type="primary"
-          onClick={() =>
-            checkedAccount && onConfirm(checkedAccount, signatures.length <= 0)
-          }
+          onClick={handleConfirm}
           disabled={!checkedAccount}
         >
           {t('Sign')}

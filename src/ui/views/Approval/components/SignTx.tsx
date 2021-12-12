@@ -159,7 +159,8 @@ const SignTx = ({ params, origin }: SignTxProps) => {
   const { isGnosis, account } = params;
   const [isReady, setIsReady] = useState(false);
   const [nonceChanged, setNonceChanged] = useState(false);
-  const [isWatch, setIsWatch] = useState(false);
+  const [canProcess, setCanProcess] = useState(true);
+  const [cantProcessReason, setCantProcessReason] = useState('');
   const [txDetail, setTxDetail] = useState<ExplainTxResponse | null>({
     balance_change: {
       err_msg: '',
@@ -390,9 +391,6 @@ const SignTx = ({ params, origin }: SignTxProps) => {
   const explain = async () => {
     const currentAccount =
       isGnosis && account ? account : await wallet.getCurrentAccount();
-    if (currentAccount.type === KEYRING_TYPE.WatchAddressKeyring) {
-      setIsWatch(true);
-    }
     try {
       setIsReady(false);
       const res = await explainTx(currentAccount!.address);
@@ -409,7 +407,9 @@ const SignTx = ({ params, origin }: SignTxProps) => {
   };
 
   const handleGnosisConfirm = async (account: Account) => {
-    await wallet.buildGnosisTransaction(tx.from, account, tx);
+    if (params.session.origin !== INTERNAL_REQUEST_ORIGIN) {
+      await wallet.buildGnosisTransaction(tx.from, account, tx);
+    }
     const hash = await wallet.getGnosisTransactionHash();
     resolveApproval({
       data: [hash, account.address],
@@ -565,6 +565,26 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     return list;
   };
 
+  const checkCanProcess = async () => {
+    const session = params.session;
+    const currentAccount =
+      isGnosis && account ? account : await wallet.getCurrentAccount();
+    const site = await wallet.getConnectedSite(session.origin);
+
+    if (currentAccount.type === KEYRING_TYPE.WatchAddressKeyring) {
+      setCanProcess(false);
+      setCantProcessReason(t('Use_other_methods'));
+    }
+    if (currentAccount.type === KEYRING_TYPE.GnosisKeyring || isGnosis) {
+      const networkId = await wallet.getGnosisNetworkId(currentAccount.address);
+      console.log(chainId || CHAINS[site!.chain].id, networkId);
+      if ((chainId || CHAINS[site!.chain].id) !== Number(networkId)) {
+        setCanProcess(false);
+        setCantProcessReason(t('multiSignChainNotMatch'));
+      }
+    }
+  };
+
   const init = async () => {
     const session = params.session;
     const site = await wallet.getConnectedSite(session.origin);
@@ -583,6 +603,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
         (item) => item.id === (chainId || CHAINS[site!.chain].id)
       )!
     );
+    checkCanProcess();
     const lastTimeGas: ChainGas | null = await wallet.getLastTimeGasSelection(
       chainId || CHAINS[site!.chain].id
     );
@@ -726,10 +747,10 @@ const SignTx = ({ params, origin }: SignTxProps) => {
                     >
                       {t('Cancel')}
                     </Button>
-                    {isWatch ? (
+                    {!canProcess ? (
                       <Tooltip
                         overlayClassName="rectangle watcSign__tooltip"
-                        title={t('Use_other_methods')}
+                        title={cantProcessReason}
                       >
                         <div className="w-[172px] relative flex items-center">
                           <Button
@@ -793,10 +814,10 @@ const SignTx = ({ params, origin }: SignTxProps) => {
                     >
                       {t('Cancel')}
                     </Button>
-                    {isWatch ? (
+                    {!canProcess ? (
                       <Tooltip
                         overlayClassName="rectangle watcSign__tooltip"
-                        title={t('Use_other_methods')}
+                        title={cantProcessReason}
                       >
                         <div className="w-[172px] relative flex items-center">
                           <Button
@@ -850,7 +871,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
             />
           </Drawer>
         )}
-        {securityCheckDetail && !isWatch && (
+        {securityCheckDetail && (
           <SecurityCheckDetail
             visible={showSecurityCheckDetail}
             onCancel={() => setShowSecurityCheckDetail(false)}

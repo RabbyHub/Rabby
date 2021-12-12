@@ -67,7 +67,6 @@ export class EthereumProvider extends EventEmitter {
 
   // TODO: support multi request!
   request = async (data) => {
-    console.log('>>> request', data);
     const { method } = data;
     const request = {
       data,

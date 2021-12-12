@@ -9,12 +9,14 @@ import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import Safe from '@rabby-wallet/gnosis-sdk';
 import {
   SORT_WEIGHT,
   KEYRING_ICONS,
   WALLET_BRAND_CONTENT,
   KEYRING_ICONS_WHITE,
   KEYRING_CLASS,
+  KEYRING_TYPE,
 } from 'consts';
 import { AddressViewer, Modal } from 'ui/component';
 import { useWallet } from 'ui/utils';
@@ -46,9 +48,9 @@ const Dashboard = () => {
   const fixedList = useRef<FixedSizeList>();
 
   const [currentAccount, setCurrentAccount] = useState<Account | null>(null);
-  const [isModalOpen, setModalOpen] = useState(false);
   const [qrcodeVisible, setQrcodeVisible] = useState(false);
   const [pendingTxCount, setPendingTxCount] = useState(0);
+  const [gnosisPendingCount, setGonisPendingCount] = useState(0);
   const [isDefaultWallet, setIsDefaultWallet] = useState(true);
   const [copySuccess, setCopySuccess] = useState(false);
   const [hovered, setHovered] = useState(false);
@@ -79,14 +81,28 @@ const Dashboard = () => {
     const isDefault = await wallet.isDefaultWallet();
     setIsDefaultWallet(isDefault);
   };
+
   const getAlianName = async (address: string) => {
     await wallet.getAlianName(address).then((name) => {
       setAlianName(name);
       setDisplayName(name);
     });
   };
+
+  const getGnosisPendingCount = async () => {
+    if (!currentAccount) return;
+
+    const network = await wallet.getGnosisNetworkId(currentAccount.address);
+    const txs = await Safe.getPendingTransactions(
+      currentAccount.address,
+      network
+    );
+    setGonisPendingCount(txs.results.length);
+  };
+
   useInterval(() => {
     if (!currentAccount) return;
+    if (currentAccount.type === KEYRING_TYPE.GnosisKeyring) return;
     getPendingTxCount(currentAccount.address);
   }, 30000);
 
@@ -99,7 +115,11 @@ const Dashboard = () => {
 
   useEffect(() => {
     if (currentAccount) {
-      getPendingTxCount(currentAccount.address);
+      if (currentAccount.type === KEYRING_TYPE.GnosisKeyring) {
+        getGnosisPendingCount();
+      } else {
+        getPendingTxCount(currentAccount.address);
+      }
       getAlianName(currentAccount?.address.toLowerCase());
       setCurrentAccount(currentAccount);
       getAllKeyrings();
@@ -383,6 +403,11 @@ const Dashboard = () => {
             </Tooltip>
             {isGnosis ? (
               <div className="operation-item" onClick={handleGotoQueue}>
+                {gnosisPendingCount > 0 && (
+                  <span className="operation-item__count">
+                    {gnosisPendingCount}
+                  </span>
+                )}
                 <img className="icon icon-queue" src={IconQueue} />
                 {t('Queue')}
               </div>

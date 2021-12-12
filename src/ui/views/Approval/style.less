@@ -1276,12 +1276,63 @@
   .ant-drawer-close {
     display: none;
   }
-  .list {
-    .item {
-      background-color: #F5F6FA !important;
-      border: 1px solid #E5E9EF !important;
-      .address-viewer-text.normal {
-        color: #13141A;
+  .gnosis-drawer-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    .title {
+      margin-bottom: 24px;
+      font-weight: 500;
+      font-size: 20px;
+      line-height: 23px;
+      text-align: center;
+      color: #13141A;
+    }
+    .list {
+      flex: 1;
+      overflow: scroll;
+      height: 100%;
+      .item {
+        background-color: #F5F6FA !important;
+        border: 1px solid #E5E9EF !important;
+        opacity: 1 !important;
+        .address-viewer-text.normal {
+          color: #13141A;
+        }
+        .item-tag {
+          background-color: #8697FF;
+          border-radius: 2px;
+          padding: 1px 6px;
+          color: #fff;
+          font-size: 12px;
+          line-height: 14px;
+          margin-left: 6px;
+        }
+        &.disabled {
+          color: #B4BDCC;
+          border-color: transparent !important;
+          .address-viewer-text.normal {
+            color: #B4BDCC;
+          }
+          .item-tag {
+            background-color: #E5E9EF;
+            color: #B4BDCC;
+          }
+        }
+      }
+    }
+    .footer {
+      padding: 20px 0 0;
+      display: flex;
+      justify-content: space-between;
+      .ant-btn {
+        width: 172px;
+        font-weight: 500;
+        font-size: 15px;
+        line-height: 18px;
+        height: 44px;
+        padding: 13px 0;
+        color: #FFFFFF;
       }
     }
   }

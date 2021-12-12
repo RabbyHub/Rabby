@@ -15,6 +15,7 @@ import { intToHex } from 'ethereumjs-util';
 import { useWallet, timeago, isSameAddress } from 'ui/utils';
 import { splitNumberByStep } from 'ui/utils/number';
 import { PageHeader } from 'ui/component';
+import AccountSelectDrawer from 'ui/component/AccountSelectDrawer';
 import { INTERNAL_REQUEST_ORIGIN, KEYRING_CLASS } from 'consts';
 import IconUnknown from 'ui/assets/icon-unknown.svg';
 import IconUser from 'ui/assets/address-management.svg';
@@ -189,10 +190,12 @@ const GnosisTransactionItem = ({
   data,
   networkId,
   safeInfo,
+  onSubmit,
 }: {
   data: SafeTransactionItem;
   networkId: string;
   safeInfo: SafeInfo;
+  onSubmit(data: SafeTransactionItem): void;
 }) => {
   const wallet = useWallet();
   const { t } = useTranslation();
@@ -257,6 +260,7 @@ const GnosisTransactionItem = ({
       tmpBuildAccount,
       params
     );
+    await wallet.setGnosisTransactionHash(data.safeTxHash);
     await Promise.all(
       data.confirmations.map((confirm) => {
         return wallet.gnosisAddPureSignature(confirm.owner, confirm.signature);
@@ -267,34 +271,6 @@ const GnosisTransactionItem = ({
       params: [params],
     });
     window.close();
-  };
-
-  const handleSubmit = async () => {
-    const currentAccount = await wallet.getCurrentAccount();
-    const account = {
-      address: '0x5853ed4f26a3fcea565b3fbc698bb19cdf6deb85',
-      type: KEYRING_CLASS.PRIVATE_KEY,
-      brandName: KEYRING_CLASS.PRIVATE_KEY,
-    };
-    const params = {
-      chainId: Number(networkId),
-      from: toChecksumAddress(data.safe),
-      to: data.to,
-      data: data.data || '0x',
-      value: `0x${Number(data.value).toString(16)}`,
-      nonce: intToHex(data.nonce),
-    };
-    await wallet.buildGnosisTransaction(
-      currentAccount.address,
-      account,
-      params
-    );
-    await Promise.all(
-      data.confirmations.map((confirm) => {
-        return wallet.gnosisAddPureSignature(confirm.owner, confirm.signature);
-      })
-    );
-    await wallet.execGnosisTransaction(account);
   };
 
   useEffect(() => {
@@ -322,7 +298,7 @@ const GnosisTransactionItem = ({
           type="primary"
           size="large"
           className="submit-btn"
-          onClick={handleSubmit}
+          onClick={() => onSubmit(data)}
           disabled={data.confirmations.length < safeInfo.threshold}
         >
           {t('Submit transaction')}
@@ -338,6 +314,11 @@ const GnosisTransactionQueue = () => {
   const [safeInfo, setSafeInfo] = useState<SafeInfo | null>(null);
   const { t } = useTranslation();
   const [transactions, setTransactions] = useState<SafeTransactionItem[]>([]);
+  const [submitDrawerVisible, setSubmitDrawerVisible] = useState(false);
+  const [
+    submitTransaction,
+    setSubmitTransaction,
+  ] = useState<SafeTransactionItem | null>(null);
 
   const init = async () => {
     const account = await wallet.syncGetCurrentAccount();
@@ -349,6 +330,42 @@ const GnosisTransactionQueue = () => {
     setSafeInfo(info);
     setNetworkId(network);
     setTransactions(txs.results);
+  };
+
+  const handleSubmit = async (transaction: SafeTransactionItem) => {
+    setSubmitTransaction(transaction);
+    setSubmitDrawerVisible(true);
+  };
+
+  const handleConfirm = async (account: Account) => {
+    const currentAccount = await wallet.getCurrentAccount();
+    const data = submitTransaction;
+    if (!data) return;
+
+    const params = {
+      chainId: Number(networkId),
+      from: toChecksumAddress(data.safe),
+      to: data.to,
+      data: data.data || '0x',
+      value: `0x${Number(data.value).toString(16)}`,
+      nonce: intToHex(data.nonce),
+    };
+    await wallet.buildGnosisTransaction(
+      currentAccount.address,
+      account,
+      params
+    );
+    await Promise.all(
+      data.confirmations.map((confirm) => {
+        return wallet.gnosisAddPureSignature(confirm.owner, confirm.signature);
+      })
+    );
+    await wallet.execGnosisTransaction(account);
+  };
+
+  const handleCancel = () => {
+    setSubmitDrawerVisible(false);
+    setSubmitTransaction(null);
   };
 
   useEffect(() => {
@@ -367,6 +384,7 @@ const GnosisTransactionQueue = () => {
                 networkId={networkId}
                 safeInfo={safeInfo}
                 key={transaction.safeTxHash}
+                onSubmit={handleSubmit}
               />
             )
         )
@@ -378,6 +396,12 @@ const GnosisTransactionQueue = () => {
           </p>
         </div>
       )}
+      <AccountSelectDrawer
+        visible={submitDrawerVisible}
+        onChange={handleConfirm}
+        title={t('You can submit this transaction using any address')}
+        onCancel={handleCancel}
+      />
     </div>
   );
 };

@@ -55,6 +55,7 @@ const SignText = ({ params }: { params: SignTextProps }) => {
   ] = useState<SecurityCheckResponse | null>(null);
   const [explain, setExplain] = useState('');
   const [isWatch, setIsWatch] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSecurityCheck = async () => {
     setSecurityCheckStatus('loading');
@@ -110,19 +111,25 @@ const SignText = ({ params }: { params: SignTextProps }) => {
       if (WaitingSignComponent[params.account.type]) {
         // TODO
       } else {
-        const result = await wallet.signPersonalMessage(
-          params.account.type,
-          params.account.address,
-          params.data[0]
-        );
-        const sigs = await wallet.getGnosisTransactionSignatures();
-        if (sigs.length > 0) {
-          await wallet.gnosisAddConfirmation(params.account.address, result);
-        } else {
-          await wallet.gnosisAddSignature(params.account.address, result);
-          await wallet.postGnosisTransaction();
+        try {
+          setIsLoading(true);
+          const result = await wallet.signPersonalMessage(
+            params.account.type,
+            params.account.address,
+            params.data[0]
+          );
+          const sigs = await wallet.getGnosisTransactionSignatures();
+          if (sigs.length > 0) {
+            await wallet.gnosisAddConfirmation(params.account.address, result);
+          } else {
+            await wallet.gnosisAddSignature(params.account.address, result);
+            await wallet.postGnosisTransaction();
+          }
+          setIsLoading(false);
+          resolveApproval(result, false, true);
+        } catch (e) {
+          setIsLoading(false);
         }
-        resolveApproval(result, false, true);
       }
       return;
     }
@@ -237,6 +244,7 @@ const SignText = ({ params }: { params: SignTextProps }) => {
               size="large"
               className="w-[172px]"
               onClick={() => handleAllow()}
+              loading={isLoading}
             >
               {securityCheckStatus === 'pass' ||
               securityCheckStatus === 'pending'
