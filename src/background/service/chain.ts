@@ -50,6 +50,7 @@ class ChainService {
       CHAINS_ENUM.MOVR,
       CHAINS_ENUM.CRO,
       CHAINS_ENUM.BOBA,
+      CHAINS_ENUM.METIS,
     ];
 
     for (let i = 0; i < needAdd.length; i++) {
