@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Button } from 'antd';
+import { Button, message, Skeleton } from 'antd';
 import clsx from 'clsx';
 import Safe from '@rabby-wallet/gnosis-sdk';
 import {
@@ -21,6 +21,7 @@ import IconUnknown from 'ui/assets/icon-unknown.svg';
 import IconUser from 'ui/assets/address-management.svg';
 import IconChecked from 'ui/assets/checked.svg';
 import IconUnCheck from 'ui/assets/uncheck.svg';
+import IconLoading from 'ui/assets/loading-round.svg';
 import './style.less';
 
 interface TransactionConfirmationsProps {
@@ -284,8 +285,10 @@ const GnosisTransactionItem = ({
         <span>nonce: {data.nonce}</span>
       </div>
       <div className="queue-item__info">
-        {explain && (
+        {explain ? (
           <TransactionExplain explain={explain} onView={handleView} />
+        ) : (
+          <Skeleton.Button active style={{ width: 336, height: 25 }} />
         )}
       </div>
       <TransactionConfirmations
@@ -319,17 +322,26 @@ const GnosisTransactionQueue = () => {
     submitTransaction,
     setSubmitTransaction,
   ] = useState<SafeTransactionItem | null>(null);
+  const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isLoadFaild, setIsLoadFaild] = useState(false);
 
   const init = async () => {
-    const account = await wallet.syncGetCurrentAccount();
-    const network = await wallet.getGnosisNetworkId(account.address);
-    const [info, txs] = await Promise.all([
-      Safe.getSafeInfo(account.address, network),
-      Safe.getPendingTransactions(account.address, network),
-    ]);
-    setSafeInfo(info);
-    setNetworkId(network);
-    setTransactions(txs.results);
+    try {
+      const account = await wallet.syncGetCurrentAccount();
+      const network = await wallet.getGnosisNetworkId(account.address);
+      const [info, txs] = await Promise.all([
+        Safe.getSafeInfo(account.address, network),
+        Safe.getPendingTransactions(account.address, network),
+      ]);
+      setIsLoading(false);
+      setSafeInfo(info);
+      setNetworkId(network);
+      setTransactions(txs.results);
+    } catch (e) {
+      setIsLoading(false);
+      setIsLoadFaild(true);
+    }
   };
 
   const handleSubmit = async (transaction: SafeTransactionItem) => {
@@ -341,26 +353,35 @@ const GnosisTransactionQueue = () => {
     const currentAccount = await wallet.getCurrentAccount();
     const data = submitTransaction;
     if (!data) return;
-
-    const params = {
-      chainId: Number(networkId),
-      from: toChecksumAddress(data.safe),
-      to: data.to,
-      data: data.data || '0x',
-      value: `0x${Number(data.value).toString(16)}`,
-      nonce: intToHex(data.nonce),
-    };
-    await wallet.buildGnosisTransaction(
-      currentAccount.address,
-      account,
-      params
-    );
-    await Promise.all(
-      data.confirmations.map((confirm) => {
-        return wallet.gnosisAddPureSignature(confirm.owner, confirm.signature);
-      })
-    );
-    await wallet.execGnosisTransaction(account);
+    try {
+      setIsSubmitting(true);
+      const params = {
+        chainId: Number(networkId),
+        from: toChecksumAddress(data.safe),
+        to: data.to,
+        data: data.data || '0x',
+        value: `0x${Number(data.value).toString(16)}`,
+        nonce: intToHex(data.nonce),
+      };
+      await wallet.buildGnosisTransaction(
+        currentAccount.address,
+        account,
+        params
+      );
+      await Promise.all(
+        data.confirmations.map((confirm) => {
+          return wallet.gnosisAddPureSignature(
+            confirm.owner,
+            confirm.signature
+          );
+        })
+      );
+      await wallet.execGnosisTransaction(account);
+      setIsSubmitting(false);
+    } catch (e) {
+      message.error(e.message || JSON.stringify(e));
+      setIsSubmitting(false);
+    }
   };
 
   const handleCancel = () => {
@@ -390,10 +411,31 @@ const GnosisTransactionQueue = () => {
         )
       ) : (
         <div className="tx-history__empty">
-          <img className="no-data" src="./images/nodata-tx.png" />
-          <p className="text-14 text-gray-content mt-12">
-            {t('No transaction')}
-          </p>
+          {isLoading ? (
+            <>
+              <img className="icon icon-loading" src={IconLoading} />
+              <p className="text-14 text-gray-content mt-24">
+                {t('Loading data')}
+              </p>
+            </>
+          ) : isLoadFaild ? (
+            <>
+              <img
+                className="load-faild"
+                src="./images/gnosis-load-faild.png"
+              />
+              <p className="load-faild-desc">
+                {t('GnosisLoadFaildDescription')}
+              </p>
+            </>
+          ) : (
+            <>
+              <img className="no-data" src="./images/nodata-tx.png" />
+              <p className="text-14 text-gray-content mt-12">
+                {t('No transaction')}
+              </p>
+            </>
+          )}
         </div>
       )}
       <AccountSelectDrawer
@@ -401,6 +443,7 @@ const GnosisTransactionQueue = () => {
         onChange={handleConfirm}
         title={t('You can submit this transaction using any address')}
         onCancel={handleCancel}
+        isLoading={isSubmitting}
       />
     </div>
   );

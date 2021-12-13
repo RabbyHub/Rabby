@@ -134,7 +134,9 @@ const GnosisDrawer = ({ safeInfo, onCancel, onConfirm }: GnosisDrawerProps) => {
   return (
     <div className="gnosis-drawer-container">
       <div className="title">
-        {safeInfo.threshold - signatures.length} more confirmation needed
+        {safeInfo.threshold - signatures.length > 0
+          ? 'more confirmation needed'
+          : t('Enough signature collected')}
       </div>
       <div className="list">
         {ownerAccounts.map((owner) => (
@@ -162,6 +164,7 @@ const GnosisDrawer = ({ safeInfo, onCancel, onConfirm }: GnosisDrawerProps) => {
           type="primary"
           onClick={handleConfirm}
           disabled={!checkedAccount}
+          loading={isLoading}
         >
           {t('Sign')}
         </Button>

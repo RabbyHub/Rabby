@@ -13,6 +13,7 @@ interface AccountSelectDrawerProps {
   onCancel(): void;
   title: string;
   visible: boolean;
+  isLoading?: boolean;
 }
 
 interface AccountItemProps {
@@ -61,6 +62,7 @@ const AccountSelectDrawer = ({
   title,
   onCancel,
   visible,
+  isLoading = false,
 }: AccountSelectDrawerProps) => {
   const [checkedAccount, setCheckedAccount] = useState<Account | null>(null);
   const [accounts, setAccounts] = useState<Account[]>([]);
@@ -112,6 +114,7 @@ const AccountSelectDrawer = ({
           type="primary"
           onClick={() => checkedAccount && onChange(checkedAccount)}
           disabled={!checkedAccount}
+          loading={isLoading}
         >
           {t('Sign')}
         </Button>
