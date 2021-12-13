@@ -167,6 +167,8 @@ export interface ExplainTxResponse {
   };
   type_cancel_tx?: any; // TODO
   type_deploy_contract?: any; // TODO
+  is_gnosis?: boolean;
+  gnosis?: any;
 }
 
 interface RPCResponse<T> {
@@ -645,6 +647,126 @@ class OpenApiService {
     address: string,
     update_nonce = false
   ): Promise<ExplainTxResponse> => {
+    return {
+      is_gnosis: true,
+      pre_exec: { success: true, err_msg: '' },
+      support_balance_change: true,
+      balance_change: {
+        success: true,
+        err_msg: '',
+        send_token_list: [],
+        receive_token_list: [
+          {
+            id: 'eth',
+            chain: 'eth',
+            name: 'ETH',
+            symbol: 'ETH',
+            display_symbol: null,
+            optimized_symbol: 'ETH',
+            decimals: 18,
+            logo_url:
+              'https://static.debank.com/image/token/logo_url/eth/935ae4e4d1d12d59a99717a24f2540b5.png',
+            price: 3992.24,
+            is_verified: true,
+            is_core: true,
+            is_wallet: true,
+            time_at: 1483200000.0,
+            amount: 0.01,
+            usd_value: 39.922399999999996,
+          },
+        ],
+        usd_value_change: 39.922399999999996,
+      },
+      gas: {
+        estimated_seconds: 0,
+        estimated_gas_used: 60485,
+        estimated_gas_cost_value: 0.00278231,
+        estimated_gas_cost_usd_value: 11.1099307686,
+      },
+      recommend: { nonce: '0xade', gas: '0xec45' },
+      native_token: {
+        amount: 0,
+        id: 'eth',
+        chain: 'eth',
+        name: 'ETH',
+        symbol: 'ETH',
+        display_symbol: null,
+        optimized_symbol: 'ETH',
+        decimals: 18,
+        logo_url:
+          'https://static.debank.com/image/token/logo_url/eth/935ae4e4d1d12d59a99717a24f2540b5.png',
+        price: 3993.06,
+        is_verified: true,
+        is_core: true,
+        is_wallet: true,
+        time_at: 1483200000.0,
+      },
+      type_call: {
+        action: 'execTransaction',
+        contract: '0x9f18623f08eebecaea7a404c9a6cc451994fa4dc',
+        contract_protocol_name: 'Gnosis Safe',
+        contract_protocol_logo_url:
+          'https://static.debank.com/image/project/logo_url/gnosis_safe/986e0be82c2ceebbf86b1a76498bcdf9.png',
+      },
+      gnosis: {
+        pre_exec: { success: true, err_msg: '' },
+        balance_change: {
+          success: true,
+          err_msg: '',
+          send_token_list: [
+            {
+              id: 'eth',
+              chain: 'eth',
+              name: 'ETH',
+              symbol: 'ETH',
+              display_symbol: null,
+              optimized_symbol: 'ETH',
+              decimals: 18,
+              logo_url:
+                'https://static.debank.com/image/token/logo_url/eth/935ae4e4d1d12d59a99717a24f2540b5.png',
+              price: 3992.24,
+              is_verified: true,
+              is_core: true,
+              is_wallet: true,
+              time_at: 1483200000.0,
+              amount: 0.01,
+              usd_value: 39.922399999999996,
+            },
+          ],
+          receive_token_list: [],
+          usd_value_change: -39.922399999999996,
+        },
+        gas: {
+          estimated_seconds: 0,
+          estimated_gas_used: 21000,
+          estimated_gas_cost_value: 0.000966,
+          estimated_gas_cost_usd_value: 3.8572959599999996,
+        },
+        type_send: {
+          to_addr: '0x5853ed4f26a3fcea565b3fbc698bb19cdf6deb85',
+          token_symbol: 'ETH',
+          token_amount: 0.01,
+          token: {
+            amount: 0,
+            id: 'eth',
+            chain: 'eth',
+            name: 'ETH',
+            symbol: 'ETH',
+            display_symbol: null,
+            optimized_symbol: 'ETH',
+            decimals: 18,
+            logo_url:
+              'https://static.debank.com/image/token/logo_url/eth/935ae4e4d1d12d59a99717a24f2540b5.png',
+            price: 3992.24,
+            is_verified: true,
+            is_core: true,
+            is_wallet: true,
+            time_at: 1483200000.0,
+            raw_amount: 10000000000000000,
+          },
+        },
+      },
+    };
     const config = this.store.config.explain_tx;
     const { data } = await this.request[config.method](config.path, {
       tx,

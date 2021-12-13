@@ -107,6 +107,7 @@ const SignText = ({ params }: { params: SignTextProps }) => {
         // NOTHING
       }
     }
+    console.log(isGnosis, params.account);
     if (isGnosis && params.account) {
       if (WaitingSignComponent[params.account.type]) {
         wallet.signPersonalMessage(

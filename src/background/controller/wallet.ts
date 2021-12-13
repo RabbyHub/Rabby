@@ -831,7 +831,9 @@ export class WalletController extends BaseController {
     data: string,
     options?: any
   ) => {
+    console.log(type, from);
     const keyring = await keyringService.getKeyringForAccount(from, type);
+    console.log('keyring', keyring);
     const res = await keyringService.signPersonalMessage(
       keyring,
       { from, data },

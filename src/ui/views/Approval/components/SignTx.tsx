@@ -80,7 +80,7 @@ const normalizeTxParams = (tx) => {
   return copy;
 };
 
-const TxTypeComponent = ({
+export const TxTypeComponent = ({
   txDetail,
   chain = CHAINS[CHAINS_ENUM.ETH],
   isReady,
@@ -136,6 +136,7 @@ const TxTypeComponent = ({
         raw={raw}
         chainEnum={chain.enum}
         isSpeedUp={isSpeedUp}
+        tx={tx}
       />
     );
   return <></>;
@@ -407,6 +408,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
   };
 
   const handleGnosisConfirm = async (account: Account) => {
+    console.log('account', account);
     if (params.session.origin !== INTERNAL_REQUEST_ORIGIN) {
       await wallet.buildGnosisTransaction(tx.from, account, tx);
     }
