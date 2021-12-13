@@ -109,7 +109,22 @@ const SignText = ({ params }: { params: SignTextProps }) => {
     }
     if (isGnosis && params.account) {
       if (WaitingSignComponent[params.account.type]) {
-        // TODO
+        wallet.signPersonalMessage(
+          params.account.type,
+          params.account.address,
+          params.data[0],
+          {
+            brandName: params.account.brandName,
+          }
+        );
+        resolveApproval({
+          uiRequestComponent: WaitingSignComponent[params.account.type],
+          type: params.account.type,
+          address: params.account.address,
+          data: params.data,
+          isGnosis: true,
+          account: params.account,
+        });
       } else {
         try {
           setIsLoading(true);

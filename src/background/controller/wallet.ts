@@ -30,6 +30,7 @@ import {
   EVENTS,
   BRAND_ALIAN_TYPE_TEXT,
   WALLET_BRAND_CONTENT,
+  KEYRING_TYPE,
 } from 'consts';
 import { Account, ChainGas } from '../service/preference';
 import { ConnectedSite } from '../service/permission';
@@ -836,7 +837,15 @@ export class WalletController extends BaseController {
       { from, data },
       options
     );
-    console.log('>>> res', res);
+    if (type === KEYRING_TYPE.WalletConnectKeyring) {
+      eventBus.emit(EVENTS.broadcastToUI, {
+        method: EVENTS.SIGN_FINISHED,
+        params: {
+          success: true,
+          data: res,
+        },
+      });
+    }
     return res;
   };
 

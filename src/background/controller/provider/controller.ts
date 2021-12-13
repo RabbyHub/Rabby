@@ -375,7 +375,6 @@ class ProviderController extends BaseController {
     const [string, from] = data.params;
     const hex = isHexString(string) ? string : stringToHex(string);
     const keyring = await this._checkAddress(from);
-
     return keyringService.signPersonalMessage(
       keyring,
       { data: hex, from },

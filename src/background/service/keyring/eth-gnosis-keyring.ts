@@ -305,7 +305,8 @@ class GnosisKeyring extends EventEmitter {
     throw new Error('Gnosis address not support signTypedData');
   }
 
-  signPersonalMessage() {
+  signPersonalMessage(...params) {
+    console.log('>>> params', params);
     throw new Error('Gnosis address not support signPersonalMessage');
   }
 

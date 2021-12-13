@@ -151,15 +151,23 @@ const flowContext = flow
           });
         }
       });
-
-    if (uiRequestComponent) {
+    async function requestApprovalLoop({ uiRequestComponent, ...rest }) {
       ctx.request.requestedApproval = true;
-      return await notificationService.requestApproval({
+      const res = await notificationService.requestApproval({
         approvalComponent: uiRequestComponent,
         params: rest,
         origin,
         approvalType,
       });
+      if (res.uiRequestComponent) {
+        return await requestApprovalLoop(res);
+      } else {
+        return res;
+      }
+    }
+    if (uiRequestComponent) {
+      ctx.request.requestedApproval = true;
+      return await requestApprovalLoop({ uiRequestComponent, ...rest });
     }
 
     return requestDefer;

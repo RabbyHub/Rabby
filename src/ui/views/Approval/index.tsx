@@ -43,12 +43,6 @@ const Approval = () => {
     eventBus.addEventListener(EVENTS.GNOSIS.RPC, (data) => {
       setGnosisRPCData(data);
     });
-    // eventBus.once(EVENTS.GNOSIS.TX_BUILT, () => {
-    //   rejectApproval();
-    // });
-    // eventBus.addEventListener(EVENTS.GNOSIS.TX_CONFIRMED, (data) => {
-    //   rejectApproval();
-    // });
   }, []);
 
   if (!approval) return <></>;
