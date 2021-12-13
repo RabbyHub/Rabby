@@ -72,7 +72,7 @@ class PreferenceService {
         firstOpen: false,
       },
     });
-    if (!this.store.locale) {
+    if (!this.store.locale || this.store.locale !== defaultLang) {
       this.store.locale = defaultLang;
     }
     i18n.changeLanguage(this.store.locale);
