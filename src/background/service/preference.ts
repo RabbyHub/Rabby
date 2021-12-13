@@ -43,7 +43,7 @@ interface PreferenceStore {
   firstOpen: boolean;
 }
 
-const SUPPORT_LOCALES = ['en', 'zh_CN'];
+const SUPPORT_LOCALES = ['en'];
 
 class PreferenceService {
   store!: PreferenceStore;
