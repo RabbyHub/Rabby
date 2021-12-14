@@ -4,7 +4,6 @@ import { CHAINS, CHAINS_ENUM } from 'consts';
 import AddressViewer from 'ui/component/AddressViewer';
 import { TxTypeComponent } from '../SignTx';
 import IconGnosis from 'ui/assets/walletlogo/gnosis.png';
-import ImageInteralTransaction from 'ui/assets/internal-transaction.svg';
 
 interface GnosisExplainProps {
   data: ExplainTxResponse;

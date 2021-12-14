@@ -402,17 +402,18 @@
           position: relative;
           .internal-transaction {
             position: absolute;
-            width: 95px;
+            width: 120px;
             text-align: center;
             z-index: 1;
             color: #8697FF;
-            font-size: 10px;
-            top: -9px;
+            font-size: 12px;
+            line-height: 12px;
+            top: -7px;
             left: 12px;
             .bg {
               position: absolute;
-              bottom: 2px;
-              width: 95px;
+              bottom: 1px;
+              width: 100%;
               height: 6px;
               background-color: #EAECFB;
               z-index: -1;
@@ -443,6 +444,11 @@
           }
           .view-raw {
             display: none;
+          }
+          .approve {
+            .edit-btn {
+              display: none;
+            }
           }
         }
       }

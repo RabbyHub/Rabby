@@ -4,7 +4,7 @@ import { Input, Form } from 'antd';
 import Safe from '@rabby-wallet/gnosis-sdk';
 import { useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { CHAINS, CHAINS_ENUM } from 'consts';
+import { CHAINS, CHAINS_ENUM, KEYRING_TYPE } from 'consts';
 import { isValidAddress } from 'ethereumjs-util';
 import { StrayPageWithButton } from 'ui/component';
 import { useWallet, useWalletRequest } from 'ui/utils';
@@ -41,16 +41,19 @@ const ImportGnosisAddress = () => {
     const [loading, setLoading] = useState(false);
     const [errorMsg, setErrorMsg] = useState('');
     const [canSubmit, setCanSubmit] = useState(false);
+    const [importedAccounts, setImportedAccounts] = useState<any[]>([]);
     const [form] = Form.useForm();
 
     const [run] = useWalletRequest(wallet.importGnosisAddress, {
       onSuccess(accounts) {
-        console.log('accounts', accounts);
         history.replace({
           pathname: '/popup/import/success',
           state: {
             accounts,
             title: t('Imported successfully'),
+            editing: true,
+            importedAccount: true,
+            importedLength: importedAccounts && importedAccounts?.length,
           },
         });
       },
@@ -63,6 +66,16 @@ const ImportGnosisAddress = () => {
         ]);
       },
     });
+
+    const init = async () => {
+      const importedAccounts = await wallet.getTypedAccounts(
+        KEYRING_TYPE.GnosisKeyring
+      );
+      console.log(importedAccounts);
+      if (importedAccounts && importedAccounts[0].accounts) {
+        setImportedAccounts(importedAccounts[0].accounts);
+      }
+    };
 
     const handleNextClick = () => {
       run(address, selectedChain!.id.toString());
@@ -105,6 +118,10 @@ const ImportGnosisAddress = () => {
         setLoading(true);
       }
     }, [address]);
+
+    useEffect(() => {
+      init();
+    }, []);
 
     return (
       <StrayPageWithButton

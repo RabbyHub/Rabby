@@ -10,6 +10,7 @@ import { useTranslation } from 'react-i18next';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import Safe from '@rabby-wallet/gnosis-sdk';
+import { SafeInfo } from '@rabby-wallet/gnosis-sdk/dist/api';
 import {
   SORT_WEIGHT,
   KEYRING_ICONS,
@@ -19,7 +20,7 @@ import {
   KEYRING_TYPE,
 } from 'consts';
 import { AddressViewer, Modal } from 'ui/component';
-import { useWallet } from 'ui/utils';
+import { useWallet, isSameAddress } from 'ui/utils';
 import { Account } from 'background/service/preference';
 import {
   RecentConnections,
@@ -41,6 +42,37 @@ import IconMoney from 'ui/assets/dashboardMoney.png';
 import IconQueue from 'ui/assets/icon-queue.svg';
 import './style.less';
 
+const GnosisAdminItem = ({
+  accounts,
+  address,
+}: {
+  accounts: Account[];
+  address: string;
+}) => {
+  const addressInWallet = accounts.find((account) =>
+    isSameAddress(account.address, address)
+  );
+  return (
+    <li>
+      <AddressViewer address={address} showArrow={false} />
+      {addressInWallet ? <div className="address-tag">You</div> : <></>}
+      <div className="address-type">
+        {addressInWallet ? (
+          <img
+            className="icon icon-account-type"
+            src={
+              KEYRING_ICONS[addressInWallet.type] ||
+              WALLET_BRAND_CONTENT[addressInWallet.brandName].image
+            }
+          />
+        ) : (
+          <></>
+        )}
+      </div>
+    </li>
+  );
+};
+
 const Dashboard = () => {
   const history = useHistory();
   const wallet = useWallet();
@@ -48,9 +80,9 @@ const Dashboard = () => {
   const fixedList = useRef<FixedSizeList>();
 
   const [currentAccount, setCurrentAccount] = useState<Account | null>(null);
-  const [qrcodeVisible, setQrcodeVisible] = useState(false);
   const [pendingTxCount, setPendingTxCount] = useState(0);
-  const [gnosisPendingCount, setGonisPendingCount] = useState(0);
+  const [gnosisPendingCount, setGnosisPendingCount] = useState(0);
+  const [safeInfo, setSafeInfo] = useState<SafeInfo | null>(null);
   const [isDefaultWallet, setIsDefaultWallet] = useState(true);
   const [copySuccess, setCopySuccess] = useState(false);
   const [hovered, setHovered] = useState(false);
@@ -93,11 +125,13 @@ const Dashboard = () => {
     if (!currentAccount) return;
 
     const network = await wallet.getGnosisNetworkId(currentAccount.address);
+    const info = await Safe.getSafeInfo(currentAccount.address, network);
     const txs = await Safe.getPendingTransactions(
       currentAccount.address,
       network
     );
-    setGonisPendingCount(txs.results.length);
+    setSafeInfo(info);
+    setGnosisPendingCount(txs.results.length);
   };
 
   useInterval(() => {
@@ -222,7 +256,6 @@ const Dashboard = () => {
 
   useEffect(() => {
     if (currentAccount) {
-      console.log(currentAccount, currentAccount.type === KEYRING_CLASS.GNOSIS);
       setIsGnosis(currentAccount.type === KEYRING_CLASS.GNOSIS);
     }
   }, [currentAccount]);
@@ -432,20 +465,6 @@ const Dashboard = () => {
         )}
       </div>
       <Modal
-        visible={qrcodeVisible}
-        closable={false}
-        onCancel={() => setQrcodeVisible(false)}
-        className="qrcode-modal"
-        width="304px"
-      >
-        <div>
-          <QRCode value={currentAccount?.address} size={254} />
-          <p className="address text-gray-subTitle text-15 font-medium mb-0 font-roboto-mono">
-            {currentAccount?.address}
-          </p>
-        </div>
-      </Modal>
-      <Modal
         visible={firstNotice && updateContent}
         title="What's new"
         className="first-notice"
@@ -462,66 +481,84 @@ const Dashboard = () => {
         width="344px"
       >
         <div className="flex flex-col" onClick={() => setStartEdit(false)}>
-          <div className="flex items-center h-[32px]">
-            {currentAccount && (
-              <img
-                className="icon icon-account-type w-[32px] h-[32px]"
-                src={
-                  KEYRING_ICONS[currentAccount.type] ||
-                  WALLET_BRAND_CONTENT[currentAccount.brandName]?.image
-                }
-              />
-            )}
-            <div className="brand-name">
-              {startEdit ? (
-                <Input
-                  value={alianName}
-                  defaultValue={alianName}
-                  onChange={handleAlianNameChange}
-                  onPressEnter={alianNameConfirm}
-                  autoFocus={startEdit}
-                  onClick={(e) => e.stopPropagation()}
-                  maxLength={20}
-                  min={0}
-                  style={{ zIndex: 10 }}
+          <div className="address-popover__info">
+            <div className="flex items-center h-[32px]">
+              {currentAccount && (
+                <img
+                  className="icon icon-account-type w-[32px] h-[32px]"
+                  src={
+                    KEYRING_ICONS[currentAccount.type] ||
+                    WALLET_BRAND_CONTENT[currentAccount.brandName]?.image
+                  }
                 />
-              ) : (
-                displayName
+              )}
+              <div className="brand-name">
+                {startEdit ? (
+                  <Input
+                    value={alianName}
+                    defaultValue={alianName}
+                    onChange={handleAlianNameChange}
+                    onPressEnter={alianNameConfirm}
+                    autoFocus={startEdit}
+                    onClick={(e) => e.stopPropagation()}
+                    maxLength={20}
+                    min={0}
+                    style={{ zIndex: 10 }}
+                  />
+                ) : (
+                  displayName
+                )}
+              </div>
+              {!startEdit && (
+                <img
+                  className="edit-name"
+                  src={IconEditPen}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setStartEdit(true);
+                  }}
+                />
+              )}
+              {startEdit && (
+                <img
+                  className="edit-name w-[16px] h-[16px]"
+                  src={IconCorrect}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    alianNameConfirm(e);
+                  }}
+                />
               )}
             </div>
-            {!startEdit && (
-              <img
-                className="edit-name"
-                src={IconEditPen}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setStartEdit(true);
-                }}
+            <div className="flex text-12 mt-12">
+              <div className="mr-8 pt-2 lh-14">{currentAccount?.address}</div>
+              <IconCopy
+                onClick={handleCopyCurrentAddress}
+                className={clsx('icon icon-copy ml-7 mb-2 copy-icon', {
+                  success: copySuccess,
+                })}
               />
-            )}
-            {startEdit && (
-              <img
-                className="edit-name w-[16px] h-[16px]"
-                src={IconCorrect}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  alianNameConfirm(e);
-                }}
-              />
-            )}
+            </div>
+            <div className="qrcode-container">
+              <QRCode value={currentAccount?.address} size={85} />
+            </div>
           </div>
-          <div className="flex text-12 mt-12">
-            <div className="mr-8 pt-2 lh-14">{currentAccount?.address}</div>
-            <IconCopy
-              onClick={handleCopyCurrentAddress}
-              className={clsx('icon icon-copy ml-7 mb-2 copy-icon', {
-                success: copySuccess,
-              })}
-            />
-          </div>
-          <div className="qrcode-container">
-            <QRCode value={currentAccount?.address} size={85} />
-          </div>
+          {safeInfo && (
+            <div className="address-popover__gnosis">
+              <h4 className="text-15 mb-4">Admins</h4>
+              <p className="text-black text-12 mb-4">
+                Any transaction requires the confirmation of{' '}
+                <span className="ml-8 font-medium">
+                  {safeInfo.threshold}/{safeInfo.owners.length}
+                </span>
+              </p>
+              <ul className="admin-list">
+                {safeInfo.owners.map((owner) => (
+                  <GnosisAdminItem address={owner} accounts={accountsList} />
+                ))}
+              </ul>
+            </div>
+          )}
         </div>
       </Modal>
     </>

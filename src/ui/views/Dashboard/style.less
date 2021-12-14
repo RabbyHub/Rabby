@@ -401,6 +401,48 @@
     border-radius: 8px;
     padding: 6px 4px 4px 6px;
   }
+  &__gnosis {
+    border-top: 1px solid #E5E9EF;
+    margin-top: 20px;
+    padding-top: 16px;
+    .admin-list {
+      margin: 0;
+      li {
+        padding: 10px 0;
+        display: flex;
+        align-items: center;
+        .address-viewer-text.normal {
+          font-weight: 500;
+          font-size: 13px;
+          line-height: 15px;
+          color: #3B3E4A;
+        }
+        .address-tag {
+          padding: 1px 6px;
+          background-color: #8697FF;
+          border-radius: 2px;
+          margin-left: 16px;
+          color: #fff;
+          font-size: 12px;
+          line-height: 14px;
+        }
+        .address-type {
+          flex: 1;
+          display: flex;
+          justify-content: flex-end;
+          align-items: center;
+          .icon-account-type {
+            opacity: 0.4;
+            width: 24px;
+            height: 24px;
+          }
+        }
+        &:nth-last-child(1) {
+          padding-bottom: 0;
+        }
+      }
+    }
+  }
 }
 .dashboard-name {
   max-width: 130px;

@@ -239,8 +239,7 @@ class GnosisKeyring extends EventEmitter {
       to: this._normalize(transaction.to),
       value: this._normalize(transaction.value) || '0x0', // prevent 0x
       safeTxGas: transaction.safeTxGas,
-      nonce: transaction.nonce ?? Number(transaction.nonce), // TODO: FIXME
-      gasPrice: transaction.gasPrice,
+      nonce: transaction.nonce ? Number(transaction.nonce) : undefined,
       baseGas: transaction.baseGas,
     };
     const networkId = this.networkIdMap[address.toLowerCase()];
@@ -253,6 +252,7 @@ class GnosisKeyring extends EventEmitter {
     );
     this.safeInstance = safe;
     const safeTransaction = await safe.buildTransaction(tx);
+    console.log('safeTransaction', safeTransaction);
     this.currentTransaction = safeTransaction;
     return safeTransaction;
   }
@@ -309,7 +309,7 @@ class GnosisKeyring extends EventEmitter {
     throw new Error('Gnosis address not support signTypedData');
   }
 
-  signPersonalMessage(...params) {
+  signPersonalMessage() {
     throw new Error('Gnosis address not support signPersonalMessage');
   }
 

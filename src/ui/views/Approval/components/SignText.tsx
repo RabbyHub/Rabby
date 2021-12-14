@@ -60,14 +60,15 @@ const SignText = ({ params }: { params: SignTextProps }) => {
   const handleSecurityCheck = async () => {
     setSecurityCheckStatus('loading');
     const currentAccount = await wallet.getCurrentAccount();
+    console.log(currentAccount);
     const check = await wallet.openapi.checkText(
-      currentAccount!.address,
+      isGnosis ? params.account!.address : currentAccount!.address,
       session.origin,
       hexData
     );
     const serverExplain = await wallet.openapi.explainText(
       session.origin,
-      currentAccount!.address,
+      isGnosis ? params.account!.address : currentAccount!.address,
       hexData
     );
     setExplain(serverExplain.comment);
@@ -107,7 +108,6 @@ const SignText = ({ params }: { params: SignTextProps }) => {
         // NOTHING
       }
     }
-    console.log(isGnosis, params.account);
     if (isGnosis && params.account) {
       if (WaitingSignComponent[params.account.type]) {
         wallet.signPersonalMessage(

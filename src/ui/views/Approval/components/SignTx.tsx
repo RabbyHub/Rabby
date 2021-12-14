@@ -408,9 +408,13 @@ const SignTx = ({ params, origin }: SignTxProps) => {
   };
 
   const handleGnosisConfirm = async (account: Account) => {
-    console.log('account', account);
     if (params.session.origin !== INTERNAL_REQUEST_ORIGIN) {
-      await wallet.buildGnosisTransaction(tx.from, account, tx);
+      await wallet.buildGnosisTransaction(tx.from, account, {
+        from: tx.from,
+        to: tx.to,
+        data: tx.data,
+        value: tx.value,
+      });
     }
     const hash = await wallet.getGnosisTransactionHash();
     resolveApproval({
