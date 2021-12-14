@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Button, message, Skeleton } from 'antd';
+import { Button, message, Skeleton, Tooltip } from 'antd';
 import clsx from 'clsx';
 import Safe from '@rabby-wallet/gnosis-sdk';
 import {
@@ -29,6 +29,54 @@ interface TransactionConfirmationsProps {
   threshold: number;
   owners: string[];
 }
+
+export type ConfirmationProps = {
+  owner: string;
+  type: string;
+  hash: string;
+  signature: string | null;
+};
+
+export const EMPTY_DATA = '0x';
+
+export const getPreValidatedSignatures = (
+  from: string,
+  initialString: string = EMPTY_DATA
+): string => {
+  return `${initialString}000000000000000000000000${from.replace(
+    EMPTY_DATA,
+    ''
+  )}000000000000000000000000000000000000000000000000000000000000000001`;
+};
+
+export const generateSignaturesFromTxConfirmations = (
+  confirmations?: ConfirmationProps[]
+): string => {
+  let confirmationsMap = confirmations?.map((value) => {
+    return {
+      signature: value.signature,
+      owner: value.owner.toLowerCase(),
+    };
+  });
+
+  // The constant parts need to be sorted so that the recovered signers are sorted ascending
+  // (natural order) by address (not checksummed).
+  confirmationsMap = confirmationsMap!.sort((ownerA, ownerB) =>
+    ownerA.owner.localeCompare(ownerB.owner)
+  );
+
+  let sigs = '0x';
+  confirmationsMap.forEach(({ signature, owner }) => {
+    if (signature) {
+      sigs += signature.slice(2);
+    } else {
+      // https://docs.gnosis.io/safe/docs/contracts_signatures/#pre-validated-signatures
+      sigs += getPreValidatedSignatures(owner, '');
+    }
+  });
+
+  return sigs;
+};
 
 const TransactionConfirmations = ({
   confirmations,
@@ -297,15 +345,30 @@ const GnosisTransactionItem = ({
         owners={safeInfo.owners}
       />
       <div className="queue-item__footer">
-        <Button
-          type="primary"
-          size="large"
-          className="submit-btn"
-          onClick={() => onSubmit(data)}
-          disabled={data.confirmations.length < safeInfo.threshold}
+        <Tooltip
+          overlayClassName="rectangle"
+          title={
+            data.nonce !== safeInfo.nonce ? (
+              <Trans
+                i18nKey="GnosisLowerNonceNeedExcute"
+                values={{ nonce: safeInfo.nonce }}
+              />
+            ) : null
+          }
         >
-          {t('Submit transaction')}
-        </Button>
+          <Button
+            type="primary"
+            size="large"
+            className="submit-btn"
+            onClick={() => onSubmit(data)}
+            disabled={
+              data.confirmations.length < safeInfo.threshold ||
+              data.nonce !== safeInfo.nonce
+            }
+          >
+            {t('Submit transaction')}
+          </Button>
+        </Tooltip>
       </div>
     </div>
   );
@@ -337,7 +400,13 @@ const GnosisTransactionQueue = () => {
       setIsLoading(false);
       setSafeInfo(info);
       setNetworkId(network);
-      setTransactions(txs.results);
+      setTransactions(
+        txs.results.sort((a, b) => {
+          return dayjs(a.submissionDate).isAfter(dayjs(b.submissionDate))
+            ? -1
+            : 1;
+        })
+      );
     } catch (e) {
       setIsLoading(false);
       setIsLoadFaild(true);
@@ -362,6 +431,9 @@ const GnosisTransactionQueue = () => {
         data: data.data || '0x',
         value: `0x${Number(data.value).toString(16)}`,
         nonce: intToHex(data.nonce),
+        safeTxGas: data.safeTxGas,
+        gasPrice: Number(data.gasPrice),
+        baseGas: data.baseGas,
       };
       await wallet.buildGnosisTransaction(
         currentAccount.address,

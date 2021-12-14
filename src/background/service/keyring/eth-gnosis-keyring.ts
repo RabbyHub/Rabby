@@ -234,10 +234,14 @@ class GnosisKeyring extends EventEmitter {
     }
     const checksumAddress = toChecksumAddress(address);
     const tx = {
-      data: this._normalize(transaction.data) || '0x',
+      data: transaction.data,
       from: address,
       to: this._normalize(transaction.to),
       value: this._normalize(transaction.value) || '0x0', // prevent 0x
+      safeTxGas: transaction.safeTxGas,
+      nonce: transaction.nonce ?? Number(transaction.nonce), // TODO: FIXME
+      gasPrice: transaction.gasPrice,
+      baseGas: transaction.baseGas,
     };
     const networkId = this.networkIdMap[address.toLowerCase()];
     const safeInfo = await Safe.getSafeInfo(checksumAddress, networkId);
@@ -306,7 +310,6 @@ class GnosisKeyring extends EventEmitter {
   }
 
   signPersonalMessage(...params) {
-    console.log('>>> params', params);
     throw new Error('Gnosis address not support signPersonalMessage');
   }
 

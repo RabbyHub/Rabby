@@ -393,12 +393,31 @@
           height: 60px;
           opacity: 0.2;
         }
-        .gonsis-explain {
+        .gnosis-explain {
           background: #EAECFB;
           border: 1px solid #8697FF;
           border-radius: 6px;
           padding: 12px;
           margin-top: 14px;
+          position: relative;
+          .internal-transaction {
+            position: absolute;
+            width: 95px;
+            text-align: center;
+            z-index: 1;
+            color: #8697FF;
+            font-size: 10px;
+            top: -9px;
+            left: 12px;
+            .bg {
+              position: absolute;
+              bottom: 2px;
+              width: 95px;
+              height: 6px;
+              background-color: #EAECFB;
+              z-index: -1;
+            }
+          }
           .gnosis-address {
             display: flex;
             padding-bottom: 13px;
@@ -415,9 +434,15 @@
               height: 18px;
               margin-right: 8px;
             }
-          }          
+          }
           .gray-section-block {
             background-color: #fff;
+          }
+          .balance-change {
+            margin-bottom: 0;
+          }
+          .view-raw {
+            display: none;
           }
         }
       }
@@ -460,7 +485,7 @@
           &:nth-last-child(1) {
             padding-bottom: 16px;
             &::after {
-              .part-border(328px);
+              .part-border(100%);
               bottom: 0;
               left: 50%;
               transform: translateX(-50%);

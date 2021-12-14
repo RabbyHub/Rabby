@@ -1,9 +1,10 @@
 import React from 'react';
 import { ExplainTxResponse, Tx } from 'background/service/openapi';
 import { CHAINS, CHAINS_ENUM } from 'consts';
-import IconGnosis from 'ui/assets/walletlogo/gnosis.png';
 import AddressViewer from 'ui/component/AddressViewer';
 import { TxTypeComponent } from '../SignTx';
+import IconGnosis from 'ui/assets/walletlogo/gnosis.png';
+import ImageInteralTransaction from 'ui/assets/internal-transaction.svg';
 
 interface GnosisExplainProps {
   data: ExplainTxResponse;
@@ -19,7 +20,11 @@ const GnosisExplain = ({ data, chainEnum, raw, tx }: GnosisExplainProps) => {
   };
   console.log(data, tx);
   return (
-    <div className="gonsis-explain">
+    <div className="gnosis-explain">
+      <div className="internal-transaction">
+        Internal transaction
+        <div className="bg" />
+      </div>
       <div className="gnosis-address">
         <img src={IconGnosis} className="icon icon-gnosis" />
         <AddressViewer address={tx.to} showArrow={false} />

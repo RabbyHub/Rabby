@@ -975,5 +975,8 @@
   },
   "GnosisLoadFaildDescription": {
     "message": "Due to the instability of Gnosis Safe server, the data is not available, please check again after 5 minutes"
+  },
+  "GnosisLowerNonceNeedExcute": {
+    "message": "Transaction with nonce {{nonce}} needs to be executed first"
   }
 }
