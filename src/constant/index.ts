@@ -572,7 +572,7 @@ export const WALLET_BRAND_CONTENT = {
   },
   [WALLET_BRAND_TYPES.GRIDPLUS]: {
     id: 12,
-    name: 'Grid Plus',
+    name: 'GridPlus',
     brand: WALLET_BRAND_TYPES.GRIDPLUS,
     icon: IconGridPlus,
     image: IconGridPlus,
