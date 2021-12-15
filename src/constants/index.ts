@@ -523,7 +523,6 @@ export const EVENTS = {
   GNOSIS: {
     TX_BUILT: 'TransactionBuilt',
     TX_CONFIRMED: 'TransactionConfirmed',
-    RPC: 'GnosisRPC',
   },
 };
 

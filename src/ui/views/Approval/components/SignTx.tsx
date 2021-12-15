@@ -17,14 +17,12 @@ import {
   CHAINS,
   CHAINS_ENUM,
   KEYRING_TYPE,
-  EVENTS,
   INTERNAL_REQUEST_ORIGIN,
 } from 'consts';
 import { Checkbox } from 'ui/component';
 import AccountCard from './AccountCard';
 import SecurityCheckBar from './SecurityCheckBar';
 import SecurityCheckDetail from './SecurityCheckDetail';
-import eventBus from '@/eventBus';
 import {
   ExplainTxResponse,
   SecurityCheckResponse,
@@ -460,31 +458,6 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       selected.gasLevel = selectedGas.level;
     }
     await wallet.updateLastTimeGasSelection(chainId, selected);
-    if (isGnosis && params.account) {
-      if (WaitingSignComponent[params.account.type]) {
-        // TODO
-      } else {
-        const result = await wallet.signTransaction(
-          params.account.type,
-          params.account.address,
-          {
-            ...tx,
-            nonce: realNonce || tx.nonce,
-            gas: gasLimit,
-            isSend, // TODO: fix send symbol
-          }
-        );
-        eventBus.emit(EVENTS.broadcastToBackground, {
-          method: EVENTS.GNOSIS.RPC,
-          data: {
-            result,
-            params: params.data,
-            method: 'eth_sendTransaction',
-          },
-        });
-      }
-      return;
-    }
     if (currentAccount?.type && WaitingSignComponent[currentAccount.type]) {
       resolveApproval({
         ...tx,
