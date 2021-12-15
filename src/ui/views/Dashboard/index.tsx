@@ -25,7 +25,6 @@ import {
 } from './components';
 import { getUpdateContent } from 'changeLogs/index';
 import IconSetting from 'ui/assets/settings.svg';
-import IconSend from 'ui/assets/send.svg';
 import IconHistory from 'ui/assets/history.svg';
 import IconPending from 'ui/assets/pending.svg';
 import IconSuccess from 'ui/assets/success.svg';
@@ -44,7 +43,6 @@ const Dashboard = () => {
   const fixedList = useRef<FixedSizeList>();
 
   const [currentAccount, setCurrentAccount] = useState<Account | null>(null);
-  const [isModalOpen, setModalOpen] = useState(false);
   const [qrcodeVisible, setQrcodeVisible] = useState(false);
   const [pendingTxCount, setPendingTxCount] = useState(0);
   const [isDefaultWallet, setIsDefaultWallet] = useState(true);
@@ -57,9 +55,6 @@ const Dashboard = () => {
   const [accountsList, setAccountsList] = useState<Account[]>([]);
   const [firstNotice, setFirstNotice] = useState(false);
   const [updateContent, setUpdateContent] = useState('');
-  const handleToggle = () => {
-    setModalOpen(!isModalOpen);
-  };
 
   const getCurrentAccount = async () => {
     const account = await wallet.getCurrentAccount();
@@ -116,16 +111,6 @@ const Dashboard = () => {
     setCurrentAccount({ address, type, brandName });
     hide();
   };
-
-  const handleGotoSend = async () => {
-    history.push({
-      pathname: '/send-token',
-      state: {
-        accountsList,
-      },
-    });
-  };
-
   const handleGotoHistory = async () => {
     history.push('/tx-history');
   };
@@ -292,10 +277,6 @@ const Dashboard = () => {
           item.brandName !== currentAccount?.brandName
       );
     setAccountsList(templist);
-  };
-  const handleHoverChange = (visible) => {
-    setHovered(visible);
-    setClicked(false);
   };
   const handleClickChange = (visible) => {
     setClicked(visible);

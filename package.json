@@ -16,6 +16,7 @@
     "@ledgerhq/hw-transport-webusb": "^6.0.2",
     "@metamask/obs-store": "^6.0.2",
     "@rabby-wallet/eth-hd-keyring": "^3.6.5",
+    "@rabby-wallet/eth-lattice-keyring": "^0.4.2",
     "@rabby-wallet/eth-simple-keyring": "^4.2.1",
     "@rabby-wallet/eth-trezor-keyring": "^1.0.8",
     "@rabby-wallet/eth-walletconnect-keyring": "^1.0.7",
