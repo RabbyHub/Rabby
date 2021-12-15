@@ -6,9 +6,10 @@ import { Switch, message, Modal } from 'antd';
 import { PageHeader, Field, StrayPageWithButton } from 'ui/component';
 import { Chain } from 'background/service/chain';
 import { CHAINS, CHAINS_ENUM } from 'consts';
+import ChainCard from './components/ChainCard';
 import './style.less';
 
-export const ChainManagementList = ({ inStart = false }) => {
+export const ChainManagementList = ({ inStart = true }) => {
   const wallet = useWallet();
   const { t } = useTranslation();
   const [enableChains, setEnableChains] = useState<Chain[]>([]);
@@ -68,31 +69,31 @@ export const ChainManagementList = ({ inStart = false }) => {
   useEffect(() => {
     init();
   }, []);
-
   return (
-    <>
+    <div className="flex flex-wrap p-4">
       {chains.map((chain) => (
-        <Field
-          key={chain.enum}
-          leftIcon={<img src={chain.logo} className="icon icon-chain" />}
-          unselect
-          rightIcon={
-            <Switch
-              defaultChecked={!!enableChains.find((c) => c.enum === chain.enum)}
-              checked={!!enableChains.find((c) => c.enum === chain.enum)}
-              onChange={(checked) => handleSwitchChain(chain.enum, checked)}
-            />
-          }
-        >
-          <div className="chain-info">
-            <p className="text-13">{chain.name}</p>
-            <p className="text-12">
-              {t('Chain ID')}: {chain.id}
-            </p>
-          </div>
-        </Field>
+        <ChainCard chain={chain} key={chain.id} />
+        // <Field
+        //   key={chain.enum}
+        //   leftIcon={<img src={chain.logo} className="icon icon-chain" />}
+        //   unselect
+        //   rightIcon={
+        //     <Switch
+        //       defaultChecked={!!enableChains.find((c) => c.enum === chain.enum)}
+        //       checked={!!enableChains.find((c) => c.enum === chain.enum)}
+        //       onChange={(checked) => handleSwitchChain(chain.enum, checked)}
+        //     />
+        //   }
+        // >
+        //   <div className="chain-info">
+        //     <p className="text-13">{chain.name}</p>
+        //     <p className="text-12">
+        //       {t('Chain ID')}: {chain.id}
+        //     </p>
+        //   </div>
+        // </Field>
       ))}
-    </>
+    </div>
   );
 };
 
@@ -112,14 +113,9 @@ export const StartChainManagement = () => {
       noPadding
       headerClassName="mb-24"
     >
-      <header className="create-new-header create-password-header h-[140px]">
-        <img
-          className="rabby-logo"
-          src="/images/logo-gray.png"
-          alt="rabby logo"
-        />
-        <p className="text-24 mt-32 mb-0 text-white text-center font-bold">
-          {t('Enable Chains')}
+      <header className="create-new-header create-password-header h-[100px]">
+        <p className="text-20 mt-42 mb-0 text-white text-center font-bold">
+          {t('Pin your frequently used chains')}
         </p>
       </header>
       <div className="chain-management p-20 min-h-full">
