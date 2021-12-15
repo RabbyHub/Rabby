@@ -143,7 +143,7 @@ const ImportGnosisAddress = () => {
             alt="rabby logo"
           />
           <img
-            className="unlock-logo w-[80px] h-[75px] mb-20 mx-auto"
+            className="unlock-logo w-[80px] h-[80px] mb-20 mx-auto"
             src={IconGnosis}
           />
           <p className="text-24 mb-4 mt-0 text-white text-center font-bold">
@@ -159,6 +159,8 @@ const ImportGnosisAddress = () => {
             <Input
               prefix={<img src={selectedChain?.logo} className="w-16 h-16" />}
               size="large"
+              autoFocus
+              placeholder={t('Please input address')}
             />
           </Form.Item>
           <p className="text-pink text-12 mb-0">{errorMsg}</p>
@@ -187,7 +189,7 @@ const ImportGnosisAddress = () => {
             className="unlock-logo w-[80px] h-[75px] mb-20 mx-auto"
             src={IconGnosis}
           />
-          <p className="text-24 mb-4 mt-0 text-white text-center font-bold">
+          <p className="text-24 mb-4 mt-0 text-white text-center font-medium">
             {t('Which chain is your address on')}
           </p>
           <img src="/images/gnosis-mask-1.png" className="mask" />
