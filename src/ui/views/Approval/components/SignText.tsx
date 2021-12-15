@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Tooltip } from 'antd';
+import { Button, Tooltip, message } from 'antd';
 import { useTranslation } from 'react-i18next';
 import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
-import { KEYRING_CLASS, KEYRING_TYPE, EVENTS } from 'consts';
+import { KEYRING_CLASS, KEYRING_TYPE } from 'consts';
 import { useApproval, useWallet } from 'ui/utils';
 import { hex2Text } from 'ui/utils';
 import {
@@ -60,7 +60,6 @@ const SignText = ({ params }: { params: SignTextProps }) => {
   const handleSecurityCheck = async () => {
     setSecurityCheckStatus('loading');
     const currentAccount = await wallet.getCurrentAccount();
-    console.log(currentAccount);
     const check = await wallet.openapi.checkText(
       isGnosis ? params.account!.address : currentAccount!.address,
       session.origin,
@@ -144,6 +143,7 @@ const SignText = ({ params }: { params: SignTextProps }) => {
           setIsLoading(false);
           resolveApproval(result, false, true);
         } catch (e) {
+          message.error(e.message);
           setIsLoading(false);
         }
       }
@@ -187,7 +187,7 @@ const SignText = ({ params }: { params: SignTextProps }) => {
   }, []);
   return (
     <>
-      <AccountCard />
+      <AccountCard account={params.account} />
       <div className="approval-text">
         <p className="section-title">
           {t('Sign Text')}

@@ -17,7 +17,7 @@ const SUPPORT_CHAINS = [
   CHAINS_ENUM.ETH,
   CHAINS_ENUM.BSC,
   CHAINS_ENUM.POLYGON,
-  CHAINS_ENUM.DAI,
+  // CHAINS_ENUM.DAI,
 ];
 
 const ImportGnosisAddress = () => {

@@ -221,7 +221,20 @@ class GnosisKeyring extends EventEmitter {
     const safeTransaction = this.currentTransaction;
     if (!safe || !safeTransaction) return;
     const transactionHash = await safe.getTransactionHash(safeTransaction);
-    await safe.postTransaction(safeTransaction, transactionHash);
+    try {
+      await safe.postTransaction(safeTransaction, transactionHash);
+    } catch (e) {
+      let errMsg = 'Post transaction to Gnosis Server failed';
+      if (e?.response?.data) {
+        const keys = Object.keys(e.response.data);
+        if (Array.isArray(e.response.data[keys[0]])) {
+          errMsg = e.response.data[keys[0]][0];
+        }
+      } else {
+        errMsg = e.message;
+      }
+      throw new Error(errMsg);
+    }
   }
 
   async buildTransaction(address: string, transaction, provider) {
@@ -252,8 +265,10 @@ class GnosisKeyring extends EventEmitter {
     );
     this.safeInstance = safe;
     const safeTransaction = await safe.buildTransaction(tx);
-    console.log('safeTransaction', safeTransaction);
     this.currentTransaction = safeTransaction;
+    this.currentTransactionHash = await safe.getTransactionHash(
+      safeTransaction
+    );
     return safeTransaction;
   }
 
