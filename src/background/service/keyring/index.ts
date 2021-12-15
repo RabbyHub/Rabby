@@ -17,6 +17,7 @@ import SimpleKeyring from '@rabby-wallet/eth-simple-keyring';
 import HdKeyring from '@rabby-wallet/eth-hd-keyring';
 import TrezorKeyring from '@rabby-wallet/eth-trezor-keyring';
 import OnekeyKeyring from './eth-onekey-keyring';
+import LatticeKeyring from '@rabby-wallet/eth-lattice-keyring';
 import WatchKeyring from '@rabby-wallet/eth-watch-keyring';
 import WalletConnectKeyring from '@rabby-wallet/eth-walletconnect-keyring';
 import preference from '../preference';
@@ -24,7 +25,6 @@ import i18n from '../i18n';
 import { KEYRING_TYPE, HARDWARE_KEYRING_TYPES, EVENTS } from 'consts';
 import DisplayKeyring from './display';
 import eventBus from '@/eventBus';
-
 export const KEYRING_SDK_TYPES = {
   SimpleKeyring,
   HdKeyring,
@@ -34,6 +34,7 @@ export const KEYRING_SDK_TYPES = {
   OnekeyKeyring,
   WatchKeyring,
   WalletConnectKeyring,
+  LatticeKeyring,
 };
 
 export const KEYRING_CLASS = {
@@ -44,6 +45,7 @@ export const KEYRING_CLASS = {
     TREZOR: TrezorKeyring.type,
     LEDGER: LedgerBridgeKeyring.type,
     ONEKEY: OnekeyKeyring.type,
+    GRIDPLUS: LatticeKeyring.type,
   },
   WATCH: WatchKeyring.type,
   WALLETCONNECT: WalletConnectKeyring.type,

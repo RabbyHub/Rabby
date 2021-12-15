@@ -2,13 +2,12 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useLocation, useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import clsx from 'clsx';
-import { Form, Input, message } from 'antd';
+import { Form, Input, message, Skeleton } from 'antd';
 import { StrayPageWithButton, MultiSelectAddressList } from 'ui/component';
 import { useWallet, useWalletRequest } from 'ui/utils';
 import { HARDWARE_KEYRING_TYPES } from 'consts';
 import { BIP44_PATH } from '../ImportHardware/LedgerHdPath';
 import './style.less';
-
 const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
   const history = useHistory();
   const { t } = useTranslation();
@@ -18,6 +17,7 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
     isWebUSB?: boolean;
     path?: string;
     keyringId?: number | null;
+    ledgerLive?: boolean;
   }>();
 
   if (!state) {
@@ -25,8 +25,7 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
     return null;
   }
 
-  const { keyring, isMnemonics, isWebUSB, path } = state;
-
+  const { keyring, isMnemonics, isWebUSB, ledgerLive, path } = state;
   const [accounts, setAccounts] = useState<any[]>([]);
   const [importedAccounts, setImportedAccounts] = useState<any[]>([]);
   const [form] = Form.useForm();
@@ -38,6 +37,8 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
   const [loadLength, setLoadLength] = useState(10);
   const [errorMsg, setErrorMsg] = useState('');
   const [canLoad, setCanLoad] = useState(true);
+  const [spinning, setSpin] = useState(false);
+  const isGrid = keyring === HARDWARE_KEYRING_TYPES.GridPlus.type;
   const [getAccounts, loading] = useWalletRequest(
     async (firstFlag, start, end) => {
       setCanLoad(false);
@@ -47,7 +48,7 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
             'getFirstPage',
             keyringId.current
           )
-        : end
+        : end && !isGrid && !ledgerLive
         ? await wallet.requestKeyring(
             keyring,
             'getAddresses',
@@ -78,6 +79,7 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
       onError(err) {
         console.log('get hardware account error', err);
         message.error('Please check the connection with your wallet');
+        setCanLoad(true);
       },
     }
   );
@@ -113,7 +115,8 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
     setStart(accounts.length);
   }, [accounts]);
   const onSubmit = async ({ selectedAddressIndexes }) => {
-    const selectedIndexes = selectedAddressIndexes.map((i) => i - 1);
+    setSpin(true);
+    const selectedIndexes = selectedAddressIndexes.map((i) => i);
 
     if (isMnemonics) {
       await wallet.requestKeyring(
@@ -134,7 +137,7 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
     if (keyring === HARDWARE_KEYRING_TYPES.Ledger.type && isWebUSB) {
       await wallet.requestKeyring(keyring, 'cleanUp', keyringId.current);
     }
-
+    setSpin(false);
     history.replace({
       pathname: isPopup ? '/popup/import/success' : '/import/success',
       state: {
@@ -171,6 +174,23 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
       setEnd(Number(currentNumber));
     }
   };
+  const InitLoading = ({ index }) => {
+    return (
+      <div key={index} className={isPopup ? 'addresses' : 'hard-address'}>
+        <div
+          className={clsx('skeleton items-center', {
+            'w-[460px]': !isPopup,
+          })}
+        >
+          <Skeleton.Input
+            active
+            className="items-center"
+            style={{ width: index % 2 ? 140 : 160 }}
+          />
+        </div>
+      </div>
+    );
+  };
   return (
     <div className="select-address">
       <StrayPageWithButton
@@ -198,6 +218,7 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
         noPadding={isPopup}
         disableKeyDownEvent
         isScrollContainer={isPopup}
+        spinning={spinning}
       >
         {isPopup && (
           <header className="create-new-header create-password-header h-[100px]">
@@ -211,24 +232,27 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
         )}
         <div
           className={clsx(
-            'h-[40px] select-address-wrapper flex items-center',
-            isPopup ? 'w-[400px]' : 'w-[460px] mb-20'
+            'h-[40px] select-address-wrapper flex',
+            isPopup ? 'w-[400px]' : 'w-[460px] mb-20',
+            isGrid || ledgerLive ? 'justify-end' : 'items-center'
           )}
         >
-          <div className={clsx('flex items-center')}>
-            <p className="pt-12">{t('Start from address')}</p>{' '}
-            <Input
-              className="ml-10"
-              size="small"
-              width={48}
-              height={24}
-              maxLength={4}
-              onChange={toSpecificNumber}
-              onPressEnter={startNumberConfirm}
-              spellCheck={false}
-            />
-            {errorMsg && <p className="error-message pt-12">{errorMsg}</p>}
-          </div>
+          {!isGrid && !ledgerLive && (
+            <div className={clsx('flex items-center')}>
+              <p className="pt-12">{t('Start from address')}</p>{' '}
+              <Input
+                className="ml-10"
+                size="small"
+                width={48}
+                height={24}
+                maxLength={4}
+                onChange={toSpecificNumber}
+                onPressEnter={startNumberConfirm}
+                spellCheck={false}
+              />
+              {errorMsg && <p className="error-message pt-12">{errorMsg}</p>}
+            </div>
+          )}
 
           <div className="place-self-center">
             {selectedNumbers} {t('addresses selected')}
@@ -241,7 +265,7 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
           })}
         >
           <Form.Item className="mb-0" name="selectedAddressIndexes">
-            {accounts.length > 0 && (
+            {accounts.length > 0 ? (
               <MultiSelectAddressList
                 accounts={accounts}
                 importedAccounts={importedAccounts}
@@ -249,7 +273,9 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
                 changeSelectedNumbers={setSelectedNumbers}
                 end={end}
                 loadLength={loadLength}
-                loading={loading}
+                loading={loading || !canLoad}
+                showSuspend={isGrid || ledgerLive}
+                isGrid={isGrid}
                 isPopup={isPopup}
                 loadMoreItems={() =>
                   accounts.length <= 1000 && canLoad
@@ -257,6 +283,12 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
                     : null
                 }
               />
+            ) : (
+              <>
+                {new Array(6).fill(null).map((item, index) => (
+                  <InitLoading index={index} />
+                ))}
+              </>
             )}
           </Form.Item>
         </div>

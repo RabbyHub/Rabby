@@ -233,6 +233,7 @@ const AddressManagement = () => {
         case HARDWARE_KEYRING_TYPES.Ledger.type:
         case HARDWARE_KEYRING_TYPES.Trezor.type:
         case HARDWARE_KEYRING_TYPES.Onekey.type:
+        case HARDWARE_KEYRING_TYPES.GridPlus.type:
         case KEYRING_TYPE.WalletConnectKeyring:
         case KEYRING_TYPE.WatchAddressKeyring:
           return (

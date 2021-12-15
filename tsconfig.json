@@ -15,7 +15,7 @@
       "@/*": ["./src/*"],
       "ui/*": ["./src/ui/*"],
       "background/*": ["./src/background/*"],
-      "consts": ["./src/constants"],
+      "consts": ["./src/constant/index"],
       "assets": ["./src/ui/assets"],
       "changeLogs": ["./changeLogs"],
     },
