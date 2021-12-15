@@ -31,7 +31,7 @@ import IconEN from 'ui/assets/langs/en.svg';
 import IconZH from 'ui/assets/langs/zh_cn.svg';
 import IconAmber from 'ui/assets/walletlogo/amber.png';
 import IconBitBox02 from 'ui/assets/walletlogo/bitbox02.png';
-import IconBitBox02WithBorder from 'ui/assets/walletlogo/bitbox02-24.png';
+import IconBitBox02WithBorder from 'ui/assets/walletlogo/bitbox02.png';
 import IconFireblocks from 'ui/assets/walletlogo/fireblocks.png';
 import IconFireblocksWithBorder from 'ui/assets/walletlogo/fireblocks-border.png';
 import IconCobo from 'ui/assets/walletlogo/cobo.png';
@@ -69,7 +69,7 @@ import IconWatchWhite from 'ui/assets/walletlogo/IconWatch-white.svg';
 import IconMnemonicWhite from 'ui/assets/walletlogo/IconMnemonic-white.svg';
 import LogoLedgerDark from 'ui/assets/walletlogo/ledgerdark.png';
 import LogoLedgerWhite from 'ui/assets/walletlogo/ledgerwhite.png';
-
+import IconGridPlus from 'ui/assets/walletlogo/gridplus.png';
 export enum CHAINS_ENUM {
   ETH = 'ETH',
   BSC = 'BSC',
@@ -318,6 +318,7 @@ export const KEYRING_CLASS = {
     TREZOR: 'Trezor Hardware',
     LEDGER: 'Ledger Hardware',
     ONEKEY: 'Onekey Hardware',
+    GRIDPLUS: 'GridPlus Hardware',
   },
   WATCH: 'Watch Address',
   WALLETCONNECT: 'WalletConnect',
@@ -332,6 +333,7 @@ export const KEYRING_TYPE_TEXT = {
   [KEYRING_CLASS.HARDWARE.LEDGER]: 'Imported by Ledger',
   [KEYRING_CLASS.HARDWARE.TREZOR]: 'Imported by Trezor',
   [KEYRING_CLASS.HARDWARE.ONEKEY]: 'Imported by Onekey',
+  [KEYRING_CLASS.HARDWARE.GRIDPLUS]: 'Imported by GridPlus',
 };
 export const BRAND_ALIAN_TYPE_TEXT = {
   [KEYRING_TYPE.HdKeyring]: 'Mnemonic',
@@ -342,6 +344,7 @@ export const BRAND_ALIAN_TYPE_TEXT = {
   [KEYRING_CLASS.HARDWARE.ONEKEY]: 'Onekey',
   [KEYRING_CLASS.HARDWARE.BITBOX02]: 'BitBox02',
   [KEYRING_CLASS.GNOSIS]: 'Gnosis',
+  [KEYRING_CLASS.HARDWARE.GRIDPLUS]: 'GridPlus',
 };
 export const HARDWARE_KEYRING_TYPES = {
   BitBox02: {
@@ -359,6 +362,10 @@ export const HARDWARE_KEYRING_TYPES = {
   Onekey: {
     type: 'Onekey Hardware',
     brandName: 'Onekey',
+  },
+  GridPlus: {
+    type: 'GridPlus Hardware',
+    brandName: 'GridPlus',
   },
 };
 
@@ -491,6 +498,7 @@ export enum BRAND_WALLET_CONNECT_TYPE {
   OneKeyConnect = 'OneKeyConnect',
   TrezorConnect = 'TrezorConnect',
   GnosisConnect = 'GnosisConnect',
+  GridPlusConnect = 'GridPlusConnect',
 }
 
 export const WALLETCONNECT_STATUS_MAP = {
@@ -541,6 +549,7 @@ export enum WALLET_BRAND_TYPES {
   TREZOR = 'TREZOR',
   TRUSTWALLET = 'TRUSTWALLET',
   GNOSIS = 'Gnosis',
+  GRIDPLUS = 'GRIDPLUS',
 }
 
 export const WALLET_BRAND_CONTENT = {
@@ -577,12 +586,20 @@ export const WALLET_BRAND_CONTENT = {
     connectType: BRAND_WALLET_CONNECT_TYPE.WalletConnect,
   },
   [WALLET_BRAND_TYPES.GNOSIS]: {
-    id: 12,
+    id: 13,
     name: 'Gnosis Safe',
     brand: WALLET_BRAND_TYPES.GNOSIS,
     icon: IconGnosis,
     image: IconGnosis,
     connectType: BRAND_WALLET_CONNECT_TYPE.GnosisConnect,
+  },
+  [WALLET_BRAND_TYPES.GRIDPLUS]: {
+    id: 12,
+    name: 'GridPlus',
+    brand: WALLET_BRAND_TYPES.GRIDPLUS,
+    icon: IconGridPlus,
+    image: IconGridPlus,
+    connectType: BRAND_WALLET_CONNECT_TYPE.GridPlusConnect,
   },
   [WALLET_BRAND_TYPES.IMTOKEN]: {
     id: 2,
@@ -658,6 +675,7 @@ export const KEYRING_ICONS = {
   [HARDWARE_KEYRING_TYPES.Ledger.type]: LogoLedgerWhite,
   [HARDWARE_KEYRING_TYPES.Onekey.type]: LogoOnekey,
   [HARDWARE_KEYRING_TYPES.Trezor.type]: IconTrezor24,
+  [HARDWARE_KEYRING_TYPES.GridPlus.type]: IconGridPlus,
 };
 
 export const KEYRING_ICONS_WHITE = {
@@ -668,6 +686,7 @@ export const KEYRING_ICONS_WHITE = {
   [HARDWARE_KEYRING_TYPES.Ledger.type]: LogoLedgerWhite,
   [HARDWARE_KEYRING_TYPES.Onekey.type]: LogoOnekey,
   [HARDWARE_KEYRING_TYPES.Trezor.type]: IconTrezor24,
+  [HARDWARE_KEYRING_TYPES.GridPlus.type]: IconGridPlus,
 };
 export const KEYRING_PURPLE_LOGOS = {
   [KEYRING_CLASS.MNEMONIC]: IconMnemonicPurple,
@@ -683,6 +702,7 @@ export const KEYRINGS_LOGOS = {
   [HARDWARE_KEYRING_TYPES.Ledger.type]: LogoLedgerWhite,
   [HARDWARE_KEYRING_TYPES.Onekey.type]: IconOneKey18,
   [HARDWARE_KEYRING_TYPES.Trezor.type]: IconTrezor24Border,
+  [HARDWARE_KEYRING_TYPES.GridPlus.type]: IconGridPlus,
 };
 
 export const NOT_CLOSE_UNFOCUS_LIST: string[] = [

@@ -52,6 +52,8 @@ const AddAddressOptions = () => {
   const connectRouter = (item) => {
     if (item.connectType === 'BitBox02Connect') {
       openInternalPageInTab('import/hardware?connectType=BITBOX02');
+    } else if (item.connectType === 'GridPlusConnect') {
+      openInternalPageInTab('import/hardware?connectType=GRIDPLUS');
     } else if (item.connectType === 'TrezorConnect') {
       openInternalPageInTab('import/hardware?connectType=TREZOR');
     } else if (item.connectType === 'LedgerConnect') {

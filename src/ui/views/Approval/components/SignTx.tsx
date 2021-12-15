@@ -328,7 +328,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       setSecurityCheckStatus(res.decision);
       setSecurityCheckAlert(res.alert);
       setSecurityCheckDetail(res);
-    } catch (e) {
+    } catch (e: any) {
       const alert = e.message || JSON.stringify(e);
       setSecurityCheckStatus('danger');
       setSecurityCheckAlert(alert);
@@ -397,7 +397,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
         await checkTx(currentAccount!.address);
       }
       setIsReady(true);
-    } catch (e) {
+    } catch (e: any) {
       Modal.error({
         title: t('Error'),
         content: e.message || JSON.stringify(e),

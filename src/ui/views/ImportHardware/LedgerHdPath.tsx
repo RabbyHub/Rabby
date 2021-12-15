@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
+import { message } from 'antd';
 import { useTranslation } from 'react-i18next';
 import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
 import { StrayPageWithButton, FieldCheckbox } from 'ui/component';
@@ -21,6 +22,7 @@ const LedgerHdPath = () => {
   const wallet = useWallet();
   const [currentPath, setCurrentPath] = useState(LEDGER_LIVE_PATH);
   const [spinning, setSpin] = useState(false);
+
   const { t } = useTranslation();
 
   const onSubmit = async () => {
@@ -53,10 +55,14 @@ const LedgerHdPath = () => {
           path: currentPath,
           isWebUSB: !useLedgerLive && isSupportWebUSB,
           keyringId,
+          ledgerLive: useLedgerLive,
         },
       });
     } catch (err) {
       console.log('connect error', err);
+      message.error(
+        'Connection is not available, please try to kill the browser and relaunch again'
+      );
       setSpin(false);
     }
   };
