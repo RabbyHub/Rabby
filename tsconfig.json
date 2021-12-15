@@ -9,6 +9,7 @@
     "noImplicitAny": false,
     "strict": true,
     "esModuleInterop": true,
+    "useUnknownInCatchVariables": false,
     "paths": {
       "utils": ["./src/utils"],
       "@/*": ["./src/*"],
