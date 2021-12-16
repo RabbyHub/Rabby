@@ -82,7 +82,6 @@
       }
     }
     .assets {
-      margin-bottom: 31px;
       padding-top: 32px;
       .left {
         width: 100%;
@@ -158,6 +157,7 @@
       border-radius: 6px 6px 0 0;
       background: rgba(255, 255, 255, 0.12);
       backdrop-filter: blur(40px);
+      padding: 14px 0 14px 22px;
       .operation-item {
         flex: 1;
         color: #fff;
@@ -168,19 +168,11 @@
         border-radius: 6px 0 0 0;
         display: flex;
         align-items: center;
-        justify-content: center;
+        justify-content: flex-start;
         height: 100%;
         cursor: pointer;
         position: relative;
-        &:nth-child(1)::after {
-          content: '';
-          background-color: #ffffff;
-          opacity: 0.2;
-          width: 1px;
-          height: 18px;
-          position: absolute;
-          right: 0;
-        }
+        opacity: 0.8;
         &:nth-last-child(1) {
           margin-right: 0;
           border-right: 0;
@@ -199,7 +191,7 @@
         .icon {
           width: 20px;
           height: 20px;
-          margin-right: 4px;
+          margin-right: 10px;
         }
         .pending-count {
           position: relative;
@@ -220,8 +212,150 @@
             margin: 0;
           }
         }
+        .icon-arrow-right {
+          width: 10px;
+          height: 10px;
+          position: absolute;
+          right: 10px;
+        }
       }
     }
+    .listContainer {
+      display: flex;
+      height: 22px;
+      align-items: center;
+      position: relative;
+      .token {
+        cursor: pointer;
+        font-size: 12px;
+        padding: 4px 12px;
+        line-height: 14px;
+        opacity: 0.9;
+        color: #ffffff;
+        font-weight: normal;
+        background: rgba(255, 255, 255, 0.1);
+        border: 0.5px solid rgba(255, 255, 255, 0.3);
+        box-sizing: border-box;
+        border-radius: 4px;
+        margin: 0 6px;
+        &:nth-child(1) {
+          margin-left: 0;
+        }
+      }
+      .showToken {
+        background: rgba(255, 255, 255, 0.3);
+      }
+    }
+  }
+  .show-chain-bg {
+    background: linear-gradient(111.68deg, #8ba8ff 17.49%, #8c96ff 83.88%);
+    min-height: 100vh;
+  }
+  .tokenList {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    background: rgba(255, 255, 255, 0.1);
+    box-shadow: 0px 8px 20px rgba(35, 37, 130, 0.08);
+    backdrop-filter: blur(80px);
+    border-radius: 6px;
+    margin-top: 12px;
+    height:468px;
+    .search-wrapper{
+      height: 40px;
+      margin: 12px 16px 0 12px;
+      display: flex;
+      align-items: center;
+      .ant-input-affix-wrapper::before {
+        height: 16px;
+        background: rgba(255, 255, 255, 0.1);
+      }
+      .ant-input-affix-wrapper {
+        width: 304px;
+        height:40px;
+        background: rgba(255, 255, 255, 0.1);
+        border: 0.5px solid rgba(255, 255, 255, 0.5);
+        box-sizing: border-box;
+        border-radius: 4px;
+        .ant-input {
+          background: transparent;
+          color: #FFFFFF;
+          &::placeholder {
+            color: #FFFFFF;
+          }
+        }
+      }
+      .ant-input-affix-wrapper-lg {
+        background: rgba(255, 255, 255, 0.1);
+        padding: 12px;
+        border-radius: 4px;
+        .ant-input {
+          border-radius: 0;
+        }
+      }
+      .closeIcon {
+        width: 12px;
+        height: 12px;
+        color: #ffffff;
+        margin-left: 16px;
+      }
+    }
+
+    .token-item {
+      height: 31px;
+      width: 360px;
+      margin: 10px 12px;
+      display: flex;
+      align-items: center;
+      border: 1px solid transparent;
+      &:nth-last-child(1) {
+        padding-bottom: 60px;
+        padding-top: 20px;
+      }
+      .middle {
+        display: flex;
+        width: 100px;
+        flex-direction: column;
+        margin-left: 12px;
+      }
+      .right {
+        text-align: right;
+        display: flex;
+        flex-direction: column;
+        position: absolute;
+        right: 32px;
+      }
+      .add-token-icon {
+        width: 20px;
+        height: 20px;
+      }
+      .token-amount {
+        font-style: normal;
+        font-weight: 500;
+        font-size: 13px;
+        line-height: 15px;
+        margin-bottom: 2px;
+        color: #ffffff;
+      }
+      .token-name {
+        font-style: normal;
+        font-weight: normal;
+        font-size: 12px;
+        line-height: 14px;
+        color: #ffffff;
+        opacity: 0.8;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+    }
+  }
+  .bottom-drawer {
+    position: fixed;
+    bottom: 0;
+    left: 0;
+    width: 400px;
+    height: 40px;
   }
   &.metamask-active {
     .current-connection {
@@ -663,6 +797,6 @@
     }
   }
 }
-.pointer{
+.pointer {
   cursor: pointer;
 }

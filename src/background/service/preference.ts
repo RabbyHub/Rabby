@@ -23,6 +23,9 @@ export interface ChainGas {
 export interface GasCache {
   [chainId: string]: ChainGas;
 }
+export interface addedToken {
+  [address: string]: [];
+}
 interface PreferenceStore {
   currentAccount: Account | undefined | null;
   externalLinkAck: boolean;
@@ -41,6 +44,7 @@ interface PreferenceStore {
   gasCache: GasCache;
   currentVersion: string;
   firstOpen: boolean;
+  addedToken: addedToken;
 }
 
 const SUPPORT_LOCALES = ['en', 'zh_CN'];
@@ -70,6 +74,7 @@ class PreferenceService {
         gasCache: {},
         currentVersion: '0',
         firstOpen: false,
+        addedToken: {},
       },
     });
     if (!this.store.locale) {
@@ -93,6 +98,9 @@ class PreferenceService {
     }
     if (!this.store.gasCache) {
       this.store.gasCache = {};
+    }
+    if (!this.store.addedToken) {
+      this.store.addedToken = {};
     }
   };
 
@@ -317,6 +325,14 @@ class PreferenceService {
   };
   updateIsFirstOpen = () => {
     this.store.firstOpen = false;
+  };
+  getAddedToken = (address: string) => {
+    const key = address.toLowerCase();
+    return this.store.addedToken[key];
+  };
+  updateAddedToken = (address: string, tokenList: []) => {
+    const key = address.toLowerCase();
+    this.store.addedToken[key] = tokenList;
   };
 }
 

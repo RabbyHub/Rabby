@@ -1,6 +1,8 @@
 import React, { useEffect, useState, useRef } from 'react';
 import ClipboardJS from 'clipboard';
 import QRCode from 'qrcode.react';
+import cloneDeep from 'lodash/cloneDeep';
+import BigNumber from 'bignumber.js';
 import { useHistory, Link } from 'react-router-dom';
 import { useInterval } from 'react-use';
 import { message, Popover, Input, Tooltip } from 'antd';
@@ -15,13 +17,16 @@ import {
   WALLET_BRAND_CONTENT,
   KEYRING_ICONS_WHITE,
 } from 'consts';
-import { AddressViewer, Modal } from 'ui/component';
+import { AddressViewer, Modal, TokenWithChain } from 'ui/component';
 import { useWallet } from 'ui/utils';
 import { Account } from 'background/service/preference';
+import { TokenItem, AssetItem } from 'background/service/openapi';
 import {
   RecentConnections,
   BalanceView,
   DefaultWalletAlertBar,
+  TokenList,
+  AssetsList,
 } from './components';
 import { getUpdateContent } from 'changeLogs/index';
 import IconSetting from 'ui/assets/settings.svg';
@@ -36,6 +41,9 @@ import IconCorrect from 'ui/assets/correct.svg';
 import IconPlus from 'ui/assets/dashboard-plus.svg';
 import IconInfo from 'ui/assets/information.png';
 import IconMoney from 'ui/assets/dashboardMoney.png';
+import IconArrowRight from 'ui/assets/arrow-right.svg';
+import IconDrawer from 'ui/assets/drawer.png';
+import IconAddToken from 'ui/assets/addtoken.png';
 import './style.less';
 const Dashboard = () => {
   const history = useHistory();
@@ -57,6 +65,13 @@ const Dashboard = () => {
   const [accountsList, setAccountsList] = useState<Account[]>([]);
   const [firstNotice, setFirstNotice] = useState(false);
   const [updateContent, setUpdateContent] = useState('');
+  const [showChain, setShowChain] = useState(false);
+  const [showToken, setShowToken] = useState(false);
+  const [showAssets, setShowAssets] = useState(false);
+  const [tokens, setTokens] = useState<TokenItem[]>([]);
+  const [searchTokens, setSearchTokens] = useState<TokenItem[]>([]);
+  const [assets, setAssets] = useState<AssetItem[]>([]);
+  const [startSearch, setStartSearch] = useState(false);
   const handleToggle = () => {
     setModalOpen(!isModalOpen);
   };
@@ -197,9 +212,58 @@ const Dashboard = () => {
     wallet.updateIsFirstOpen();
     setFirstNotice(false);
   };
+  const sortTokensByPrice = (tokens: TokenItem[]) => {
+    const copy = cloneDeep(tokens);
+    return copy.sort((a, b) => {
+      return new BigNumber(b.amount)
+        .times(new BigNumber(b.price || 0))
+        .minus(new BigNumber(a.amount).times(new BigNumber(a.price || 0)))
+        .toNumber();
+    });
+  };
+  const sortAssetsByUSDValue = (assets: AssetItem[]) => {
+    const copy = cloneDeep(assets);
+    return copy.sort((a, b) => {
+      return new BigNumber(b.asset_usd_value)
+        .minus(new BigNumber(a.asset_usd_value))
+        .toNumber();
+    });
+  };
+  const handleLoadTokens = async (q?: string) => {
+    const addedToken = await wallet.getAddedToken(currentAccount?.address);
+    let tokens: TokenItem[] = [];
+    if (q) {
+      tokens = sortTokensByPrice(
+        await wallet.openapi.searchToken(currentAccount?.address, q)
+      );
+      if (tokens.length > 0) {
+        setSearchTokens(tokens.filter((item) => !item.is_core));
+      }
+    } else {
+      tokens = sortTokensByPrice(
+        await wallet.openapi.listToken(currentAccount?.address)
+      );
+      if (tokens.length > 0) {
+        setTokens(tokens.filter((item) => item.is_core));
+      }
+    }
+  };
+
+  const handleLoadAssets = async () => {
+    const assets = sortAssetsByUSDValue(
+      await wallet.listChainAssets(currentAccount?.address)
+    );
+    setAssets(assets);
+  };
   useEffect(() => {
     checkIfFirstLogin();
   }, []);
+  useEffect(() => {
+    if (currentAccount) {
+      handleLoadTokens();
+      handleLoadAssets();
+    }
+  }, [currentAccount]);
   const Row = (props) => {
     const { data, index, style } = props;
     const account = data[index];
@@ -307,13 +371,33 @@ const Dashboard = () => {
     setClicked(false);
     setHovered(false);
   };
+  const displayTokenList = () => {
+    if (showToken) {
+      setShowToken(false);
+      setShowChain(false);
+    } else {
+      setShowToken(true);
+      setShowChain(true);
+    }
+    setShowAssets(false);
+  };
+  const displayAssets = () => {
+    if (showAssets) {
+      setShowAssets(false);
+      setShowChain(false);
+    } else {
+      setShowAssets(true);
+      setShowChain(true);
+    }
+    setShowToken(false);
+  };
   return (
     <>
       <div
         className={clsx('dashboard', { 'metamask-active': !isDefaultWallet })}
       >
-        <div className="main">
-          {currentAccount && (
+        <div className={clsx('main', showChain && 'show-chain-bg')}>
+          {currentAccount && !showChain && (
             <div className="flex header items-center">
               <div className="h-[32px] flex header-wrapper items-center relative">
                 <Popover
@@ -362,31 +446,69 @@ const Dashboard = () => {
               />
             </div>
           )}
-          <BalanceView currentAccount={currentAccount} />
-          <div className="operation">
+          <BalanceView currentAccount={currentAccount} showChain={showChain} />
+          <div className={clsx('listContainer', showChain && 'mt-20')}>
+            <div
+              className={clsx('token', showToken && 'showToken')}
+              onClick={displayTokenList}
+            >
+              Token
+            </div>
+            <div
+              className={clsx('token', showAssets && 'showToken')}
+              onClick={displayAssets}
+            >
+              DeFi
+            </div>
             <Tooltip
               overlayClassName="rectangle profileType__tooltip"
               title={t('Coming soon')}
             >
-              <div className="operation-item opacity-60">
-                <img className="icon icon-send" src={IconMoney} />
-                {t('Portfolio')}
-              </div>
+              <div className={clsx('token', 'opacity-60')}>NFT</div>
             </Tooltip>
-            <div className="operation-item" onClick={handleGotoHistory}>
-              {pendingTxCount > 0 ? (
-                <div className="pending-count">
-                  <img src={IconPending} className="icon icon-pending" />
-                  {pendingTxCount}
-                </div>
-              ) : (
-                <img className="icon icon-history" src={IconHistory} />
-              )}
-              {t('History')}
-            </div>
+            {showToken && !startSearch && (
+              <img
+                src={IconAddToken}
+                onClick={() => setStartSearch(true)}
+                className="w-[18px] h-[18px] pointer absolute right-0"
+              />
+            )}
           </div>
+          {!showChain && (
+            <div className="operation">
+              <div className="operation-item" onClick={handleGotoHistory}>
+                {pendingTxCount > 0 ? (
+                  <div className="pending-count">
+                    <img src={IconPending} className="icon icon-pending" />
+                    {pendingTxCount}
+                  </div>
+                ) : (
+                  <img className="icon icon-history" src={IconHistory} />
+                )}
+                {t('Transaction History')}
+                <img className="icon icon-arrow-right" src={IconArrowRight} />
+              </div>
+            </div>
+          )}
+          {showToken && (
+            <TokenList
+              tokens={tokens}
+              searchTokens={searchTokens}
+              startSearch={startSearch}
+              onSearch={handleLoadTokens}
+              closeSearch={() => setStartSearch(false)}
+            />
+          )}
+          {showAssets && <AssetsList assets={assets} />}
+          {showToken && (
+            <img
+              src={IconDrawer}
+              className="bottom-drawer"
+              onClick={displayTokenList}
+            />
+          )}
         </div>
-        <RecentConnections />
+        {!showChain && <RecentConnections />}
         {!isDefaultWallet && (
           <DefaultWalletAlertBar onChange={handleDefaultWalletChange} />
         )}

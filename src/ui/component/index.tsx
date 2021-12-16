@@ -18,3 +18,4 @@ export { default as PrivateRoute } from './PrivateRoute';
 export { default as Modal } from './Modal';
 export { default as Checkbox } from './Checkbox';
 export { default as ScanCopyQRCode } from './ScanCopyQRCode';
+export { default as TokenWithChain } from './TokenWithChain';

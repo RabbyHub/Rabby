@@ -10,7 +10,8 @@ import { SvgIconOffline } from 'ui/assets';
 import IconArrowRight from 'ui/assets/arrow-right.svg';
 import IconExternal from 'ui/assets/open-external-gray.svg';
 import IconChainMore from 'ui/assets/chain-more.svg';
-const BalanceView = ({ currentAccount }) => {
+import clsx from 'clsx';
+const BalanceView = ({ currentAccount, showChain = false }) => {
   const [balance, chainBalances] = useCurrentBalance(
     currentAccount?.address,
     true
@@ -21,37 +22,6 @@ const BalanceView = ({ currentAccount }) => {
   const handleGotoProfile = () => {
     _openInTab(`https://debank.com/profile/${currentAccount?.address}`);
   };
-
-  const balancePopoverContent = (
-    <ul>
-      {chainBalances
-        .sort((a, b) => b.usd_value - a.usd_value)
-        .map((item) => {
-          const totalUSDValue = chainBalances.reduce((res, item) => {
-            return res + item.usd_value;
-          }, 0);
-          const chain = Object.values(CHAINS).find(
-            (v) => v.serverId === item.id
-          )!;
-          const percent = (item.usd_value / totalUSDValue) * 100;
-          return (
-            <li className="flex" key={item.id}>
-              <img className="chain-logo" src={chain?.logo} />
-              <span
-                className="amount"
-                title={'$' + splitNumberByStep(item.usd_value.toFixed(2))}
-              >
-                ${splitNumberByStep(Math.floor(item.usd_value))}
-              </span>
-              <div className="progress">
-                <div className="inner" style={{ width: percent + '%' }}></div>
-              </div>
-              <span className="percent">{Math.floor(percent)}%</span>
-            </li>
-          );
-        })}
-    </ul>
-  );
   const displayChainList = () => {
     const result = chainBalances.map((item) => (
       <img
@@ -71,42 +41,37 @@ const BalanceView = ({ currentAccount }) => {
     return result;
   };
   return (
-    <div className="assets flex pt-28">
+    <div className={clsx('assets flex', showChain && 'pt-0')}>
       <div className="left">
         <div className="amount leading-none mb-8" onClick={handleGotoProfile}>
           <div className="amount-number">
             <span>${splitNumberByStep((balance || 0).toFixed(2))}</span>
             <img className="icon icon-external-link" src={IconExternal} />
           </div>
-          <img className="icon icon-arrow-right" src={IconArrowRight} />
         </div>
-        <div className="extra leading-none flex">
-          {balance === null ? (
-            <>
-              <Spin size="small" iconClassName="text-white" />
-              <span className="ml-4 leading-tight">
-                {t('Asset data loading')}
-              </span>
-            </>
-          ) : isNaN(balance) ? (
-            <>
-              <SvgIconOffline className="mr-4" />
-              <span className="leading-tight">
-                {t('The network is disconnected and no data is obtained')}
-              </span>
-            </>
-          ) : chainBalances.length > 0 ? (
-            <Popover
-              content={balancePopoverContent}
-              placement="bottomLeft"
-              overlayClassName="balance-popover"
-            >
+        {showChain && (
+          <div className="extra leading-none flex">
+            {balance === null ? (
+              <>
+                <Spin size="small" iconClassName="text-white" />
+                <span className="ml-4 leading-tight">
+                  {t('Asset data loading')}
+                </span>
+              </>
+            ) : isNaN(balance) ? (
+              <>
+                <SvgIconOffline className="mr-4" />
+                <span className="leading-tight">
+                  {t('The network is disconnected and no data is obtained')}
+                </span>
+              </>
+            ) : chainBalances.length > 0 ? (
               <div className="flex">{displayChainList()}</div>
-            </Popover>
-          ) : (
-            t('No assets')
-          )}
-        </div>
+            ) : (
+              t('No assets')
+            )}
+          </div>
+        )}
       </div>
     </div>
   );

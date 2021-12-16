@@ -6,12 +6,14 @@ import './style.less';
 
 const TokenWithChain = ({
   token,
+  hideConer,
   width = '28px',
   height = '28px',
 }: {
   token: TokenItem;
   width?: string;
   height?: string;
+  hideConer?: boolean;
 }) => {
   const chainServerId = token.chain;
   const chain = Object.values(CHAINS).find(
@@ -25,7 +27,9 @@ const TokenWithChain = ({
         alt={token.symbol}
         style={{ width, height }}
       />
-      <img className="chain-symbol" src={chain?.logo || IconUnknown} />
+      {(!hideConer || chain?.id !== 1) && (
+        <img className="chain-symbol" src={chain?.logo || IconUnknown} />
+      )}
     </div>
   );
 };
