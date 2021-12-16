@@ -7,6 +7,9 @@
   padding: 0 20px;
   height: 100%;
   overflow: auto;
+  .page-header {
+    z-index: 1;
+  }
   .queue-item {
     background-color: #fff;
     border-radius: 6px;
@@ -126,7 +129,16 @@
     animation: spining 1.5s infinite linear;
   }
   .tx-history__empty {
-    padding-top: 100px;
+    z-index: 0;
+    position: absolute;
+    top: 60px;
+    left: 0;
+    height: calc(100vh - 60px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-top: 0;
+    transform: translateY(-40px);
     .no-data {
       width: 160px;
       height: 160px;
@@ -136,6 +148,7 @@
       height: 100px;
     }
     .load-faild-desc {
+      max-width: 90%;
       padding: 10px 16px;
       font-size: 14px;
       line-height: 20px;
@@ -146,6 +159,7 @@
       box-sizing: border-box;
       border-radius: 4px;
       margin-top: 55px;
+      margin-bottom: 0;
     }
   }
 }

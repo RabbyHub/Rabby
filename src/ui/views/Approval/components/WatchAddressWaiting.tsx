@@ -369,12 +369,14 @@ const WatchAddressWaiting = ({ params }: { params: ApprovalParams }) => {
     setIsSignText(params.isGnosis ? true : approval?.approvalType !== 'SignTx');
     eventBus.addEventListener(EVENTS.SIGN_FINISHED, async (data) => {
       if (data.success) {
-        const sigs = await wallet.getGnosisTransactionSignatures();
-        if (sigs.length > 0) {
-          await wallet.gnosisAddConfirmation(account.address, data.data);
-        } else {
-          await wallet.gnosisAddSignature(account.address, data.data);
-          await wallet.postGnosisTransaction();
+        if (params.isGnosis) {
+          const sigs = await wallet.getGnosisTransactionSignatures();
+          if (sigs.length > 0) {
+            await wallet.gnosisAddConfirmation(account.address, data.data);
+          } else {
+            await wallet.gnosisAddSignature(account.address, data.data);
+            await wallet.postGnosisTransaction();
+          }
         }
         resolveApproval(data.data, !isSignText);
       } else {

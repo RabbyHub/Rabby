@@ -543,7 +543,7 @@ const Dashboard = () => {
               <QRCode value={currentAccount?.address} size={85} />
             </div>
           </div>
-          {safeInfo && (
+          {isGnosis && safeInfo && (
             <div className="address-popover__gnosis">
               <h4 className="text-15 mb-4">Admins</h4>
               <p className="text-black text-12 mb-20">

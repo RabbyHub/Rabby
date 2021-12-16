@@ -905,7 +905,7 @@
     "message": "Connect with"
   },
   "Use_other_methods": {
-    "message": "You are using watch mode, if you need to trade please use other methods."
+    "message": "Cannot sign using current address(Watch Mode / Gnosis Safe)"
   },
   "Proceed": {
     "message": "Proceed"

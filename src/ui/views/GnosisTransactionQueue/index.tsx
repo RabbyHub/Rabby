@@ -521,7 +521,7 @@ const GnosisTransactionQueue = () => {
             <>
               <img className="no-data" src="./images/nodata-tx.png" />
               <p className="text-14 text-gray-content mt-12">
-                {t('No transaction')}
+                {t('No pending transactions')}
               </p>
             </>
           )}

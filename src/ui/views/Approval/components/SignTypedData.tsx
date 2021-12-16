@@ -69,6 +69,9 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
     if (currentAccount.type === KEYRING_TYPE.WatchAddressKeyring) {
       setIsWatch(true);
     }
+    if (currentAccount.type === KEYRING_TYPE.GnosisKeyring) {
+      setIsWatch(true);
+    }
     const dataStr = JSON.stringify(data);
     const check = await wallet.openapi.checkText(
       currentAccount!.address,

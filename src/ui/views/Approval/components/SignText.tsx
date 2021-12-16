@@ -181,6 +181,9 @@ const SignText = ({ params }: { params: SignTextProps }) => {
     if (currentAccount.type === KEYRING_TYPE.WatchAddressKeyring) {
       setIsWatch(true);
     }
+    if (currentAccount.type === KEYRING_TYPE.GnosisKeyring && !params.account) {
+      setIsWatch(true);
+    }
   };
   useEffect(() => {
     checkWachMode();
