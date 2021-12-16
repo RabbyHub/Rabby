@@ -91,6 +91,7 @@ const AccountSelectDrawer = ({
       visible={visible}
       placement="bottom"
       maskClosable
+      onClose={onCancel}
     >
       <div className="title">{title}</div>
       <div className="list">

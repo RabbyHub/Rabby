@@ -846,6 +846,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
             height="400px"
             className="gnosis-drawer"
             visible={gnosisDrawerVisible}
+            onClose={() => setGnosisDrawerVisble(false)}
             maskClosable
           >
             <GnosisDrawer
