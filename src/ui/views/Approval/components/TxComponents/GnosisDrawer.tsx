@@ -47,7 +47,13 @@ const AddressItem = ({
 }: AddressItemProps) => {
   return (
     <FieldCheckbox
-      className={clsx('item', { disabled: !account.type })}
+      className={clsx(
+        'item',
+        !account.type || signed ? 'cursor-default' : 'cursor-pointer',
+        {
+          disabled: !account.type,
+        }
+      )}
       showCheckbox={!!account.type}
       rightSlot={
         signed ? <span className="text-green text-14">Signed</span> : undefined
@@ -135,9 +141,7 @@ const GnosisDrawer = ({ safeInfo, onCancel, onConfirm }: GnosisDrawerProps) => {
     <div className="gnosis-drawer-container">
       <div className="title">
         {safeInfo.threshold - signatures.length > 0
-          ? `${
-              safeInfo.threshold - signatures.length > 0
-            } more confirmation needed`
+          ? `${safeInfo.threshold - signatures.length} more confirmation needed`
           : t('Enough signature collected')}
       </div>
       <div className="list">

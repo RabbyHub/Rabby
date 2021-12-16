@@ -90,6 +90,7 @@ const AccountSelectDrawer = ({
       className="account-select"
       visible={visible}
       placement="bottom"
+      maskClosable
     >
       <div className="title">{title}</div>
       <div className="list">

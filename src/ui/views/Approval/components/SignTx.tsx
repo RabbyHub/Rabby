@@ -521,6 +521,10 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     rejectApproval('User rejected the request.');
   };
 
+  const handleGnosisDrawerCancel = () => {
+    setGnosisDrawerVisble(false);
+  };
+
   const handleForceProcessChange = (checked: boolean) => {
     setForceProcess(checked);
   };
@@ -842,10 +846,11 @@ const SignTx = ({ params, origin }: SignTxProps) => {
             height="400px"
             className="gnosis-drawer"
             visible={gnosisDrawerVisible}
+            maskClosable
           >
             <GnosisDrawer
               safeInfo={safeInfo}
-              onCancel={handleCancel}
+              onCancel={handleGnosisDrawerCancel}
               onConfirm={handleGnosisConfirm}
             />
           </Drawer>

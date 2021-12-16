@@ -546,7 +546,7 @@ const Dashboard = () => {
           {safeInfo && (
             <div className="address-popover__gnosis">
               <h4 className="text-15 mb-4">Admins</h4>
-              <p className="text-black text-12 mb-4">
+              <p className="text-black text-12 mb-20">
                 Any transaction requires the confirmation of{' '}
                 <span className="ml-8 font-medium">
                   {safeInfo.threshold}/{safeInfo.owners.length}

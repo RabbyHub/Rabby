@@ -150,8 +150,10 @@ const TransactionConfirmations = ({
 const TransactionExplain = ({
   explain,
   onView,
+  isViewLoading,
 }: {
   explain: ExplainTxResponse;
+  isViewLoading: boolean;
   onView(): void;
 }) => {
   const { t } = useTranslation();
@@ -228,7 +230,12 @@ const TransactionExplain = ({
     <p className="tx-explain">
       {icon || <img className="icon icon-explain" src={IconUnknown} />}
       <span>{content || t('Unknown Transaction')}</span>
-      <Button type="primary" className="tx-explain__view" onClick={onView}>
+      <Button
+        type="primary"
+        className="tx-explain__view"
+        onClick={onView}
+        loading={isViewLoading}
+      >
         {t('View')}
       </Button>
     </p>
@@ -249,6 +256,7 @@ const GnosisTransactionItem = ({
   const wallet = useWallet();
   const { t } = useTranslation();
   const [explain, setExplain] = useState<ExplainTxResponse | null>(null);
+  const [isLoading, setIsLoading] = useState(false);
   const submitAt = dayjs(data.submissionDate).valueOf();
   const now = dayjs().valueOf();
   const ago = timeago(now, submitAt);
@@ -290,6 +298,7 @@ const GnosisTransactionItem = ({
   };
 
   const handleView = async () => {
+    setIsLoading(true);
     const account = await wallet.getCurrentAccount();
     const params = {
       chainId: Number(networkId),
@@ -298,6 +307,9 @@ const GnosisTransactionItem = ({
       data: data.data || '0x',
       value: `0x${Number(data.value).toString(16)}`,
       nonce: intToHex(data.nonce),
+      safeTxGas: data.safeTxGas,
+      gasPrice: Number(data.gasPrice),
+      baseGas: data.baseGas,
     };
     const tmpBuildAccount: Account = {
       address: safeInfo.owners[0],
@@ -315,6 +327,7 @@ const GnosisTransactionItem = ({
         return wallet.gnosisAddPureSignature(confirm.owner, confirm.signature);
       })
     );
+    setIsLoading(false);
     wallet.sendRequest({
       method: 'eth_sendTransaction',
       params: [params],
@@ -334,7 +347,11 @@ const GnosisTransactionItem = ({
       </div>
       <div className="queue-item__info">
         {explain ? (
-          <TransactionExplain explain={explain} onView={handleView} />
+          <TransactionExplain
+            explain={explain}
+            onView={handleView}
+            isViewLoading={isLoading}
+          />
         ) : (
           <Skeleton.Button active style={{ width: 336, height: 25 }} />
         )}
