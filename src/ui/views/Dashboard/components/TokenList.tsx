@@ -5,15 +5,17 @@ import { useTranslation } from 'react-i18next';
 import { useDebounce } from 'react-use';
 import { TokenWithChain, AddressViewer } from 'ui/component';
 import { splitNumberByStep } from 'ui/utils';
-import { TokenItem } from 'background/service/openapi';
 import IconSearch from 'ui/assets/tokenSearch.png';
 import IconClose from 'ui/assets/searchIconClose.png';
 import IconAddToken from 'ui/assets/addtokenplus.png';
-
+import IconRemoveToken from 'ui/assets/removetoken.png';
 const Row = (props) => {
   const { data, index, style } = props;
-  const { list, startSearch } = data;
+  const { list, startSearch, removeToken, addToken, query, addedToken } = data;
+  const isInitList = !startSearch && !query;
   const token = list[index];
+  const isAdded =
+    addedToken.length > 0 && addedToken.find((item) => item === token.id);
   return (
     <div className="token-item" style={style}>
       <TokenWithChain token={token} hideConer />
@@ -35,7 +37,7 @@ const Row = (props) => {
           )}
         </div>
       </div>
-      {!startSearch ? (
+      {isInitList ? (
         <div className="right">
           <div className="token-amount">
             ${splitNumberByStep((token.amount * token.price || 0)?.toFixed(4))}
@@ -46,7 +48,13 @@ const Row = (props) => {
         </div>
       ) : (
         <div className="right">
-          <img src={IconAddToken} className="add-token-icon" />
+          <img
+            src={isAdded ? IconRemoveToken : IconAddToken}
+            onClick={() =>
+              isAdded ? removeToken(token?.id) : addToken(token?.id)
+            }
+            className="add-token-icon"
+          />
         </div>
       )}
     </div>
@@ -58,11 +66,13 @@ const TokenList = ({
   closeSearch,
   onSearch,
   searchTokens,
+  addedToken,
+  removeToken,
+  addToken,
 }) => {
   const { t } = useTranslation();
   const fixedList = useRef<FixedSizeList>();
-  const [displayTokens, setDisplayTokens] = useState<TokenItem[]>([]);
-  const [query, setQuery] = useState('');
+  const [query, setQuery] = useState<string | null>(null);
   const handleQueryChange = (value: string) => {
     setQuery(value);
   };
@@ -73,7 +83,16 @@ const TokenList = ({
     150,
     [query]
   );
-  console.log(searchTokens, 'searchtoen .....');
+
+  const emptyAdded = startSearch && !query && addedToken.length === 0;
+  const noSeachResult = startSearch && query && searchTokens.length <= 0;
+  const displayAddedToken = addedToken
+    .map((item) => tokens.find((token) => token?.id === item))
+    .filter(Boolean);
+  const close = () => {
+    setQuery(null);
+    closeSearch();
+  };
   return (
     <div className="tokenList">
       {startSearch && (
@@ -83,27 +102,49 @@ const TokenList = ({
             size="large"
             prefix={<img src={IconSearch} className="w-[14px] h-[14px]" />}
             placeholder={t('Search token address')}
-            value={query}
+            value={query || ''}
             onChange={(e) => handleQueryChange(e.target.value)}
             autoFocus
           />
-          <img src={IconClose} className="closeIcon" onClick={closeSearch} />
+          <img src={IconClose} className="closeIcon" onClick={close} />
         </div>
       )}
-      <FixedSizeList
-        height={tokens.length > 12 ? 468 : tokens.length * 42}
-        width="100%"
-        itemData={{
-          list: startSearch ? searchTokens : tokens,
-          startSearch,
-        }}
-        itemCount={startSearch ? searchTokens.length : tokens.length}
-        itemSize={42}
-        ref={fixedList}
-        style={{ zIndex: 10 }}
-      >
-        {Row}
-      </FixedSizeList>
+      {emptyAdded && (
+        <div className="no-added-token">
+          You haven't added any custom tokens yet
+        </div>
+      )}
+      {noSeachResult && <div className="no-added-token">No results</div>}
+      {!emptyAdded && !noSeachResult && (
+        <FixedSizeList
+          height={468}
+          width="100%"
+          itemData={{
+            list: startSearch
+              ? query
+                ? searchTokens
+                : displayAddedToken
+              : tokens,
+            startSearch,
+            addedToken,
+            removeToken,
+            addToken,
+            query,
+          }}
+          itemCount={
+            startSearch
+              ? query
+                ? searchTokens.length
+                : displayAddedToken.length
+              : tokens.length
+          }
+          itemSize={42}
+          ref={fixedList}
+          style={{ zIndex: 10 }}
+        >
+          {Row}
+        </FixedSizeList>
+      )}
     </div>
   );
 };

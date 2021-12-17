@@ -8,7 +8,7 @@ const Row = (props) => {
   const token = data[index];
   return (
     <div className="token-item" style={style}>
-      <TokenWithChain token={token} />
+      <TokenWithChain token={token} height={'24px'} width={'24px'} noRound />
       <div className="middle">
         <div className="token-name text-13">{token.name}</div>
       </div>
@@ -24,9 +24,8 @@ const AssetsList = ({ assets }) => {
   const fixedList = useRef<FixedSizeList>();
   return (
     <div className="tokenList">
-      {/* {startSearch && searchinput} */}
       <FixedSizeList
-        height={assets.length > 12 ? 468 : assets.length * 48}
+        height={468}
         width="100%"
         itemData={assets}
         itemCount={assets.length}

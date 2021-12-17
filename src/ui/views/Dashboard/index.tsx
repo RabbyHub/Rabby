@@ -45,6 +45,7 @@ import IconArrowRight from 'ui/assets/arrow-right.svg';
 import IconDrawer from 'ui/assets/drawer.png';
 import IconAddToken from 'ui/assets/addtoken.png';
 import './style.less';
+import { find } from 'lodash';
 const Dashboard = () => {
   const history = useHistory();
   const wallet = useWallet();
@@ -72,6 +73,7 @@ const Dashboard = () => {
   const [searchTokens, setSearchTokens] = useState<TokenItem[]>([]);
   const [assets, setAssets] = useState<AssetItem[]>([]);
   const [startSearch, setStartSearch] = useState(false);
+  const [addedToken, setAddedToken] = useState<string[]>([]);
   const handleToggle = () => {
     setModalOpen(!isModalOpen);
   };
@@ -229,8 +231,8 @@ const Dashboard = () => {
         .toNumber();
     });
   };
+
   const handleLoadTokens = async (q?: string) => {
-    const addedToken = await wallet.getAddedToken(currentAccount?.address);
     let tokens: TokenItem[] = [];
     if (q) {
       tokens = sortTokensByPrice(
@@ -240,11 +242,22 @@ const Dashboard = () => {
         setSearchTokens(tokens.filter((item) => !item.is_core));
       }
     } else {
+      const defaultTokens = await wallet.openapi.listToken(
+        currentAccount?.address
+      );
+      const localAdded =
+        (await wallet.getAddedToken(currentAccount?.address)) || [];
+      const addedToken = localAdded
+        .map((item) => defaultTokens.find((token) => token.id === item)?.id)
+        .filter(Boolean);
+      setAddedToken(addedToken);
       tokens = sortTokensByPrice(
-        await wallet.openapi.listToken(currentAccount?.address)
+        defaultTokens.filter(
+          (item) => item.is_core || localAdded.includes(item.id)
+        )
       );
       if (tokens.length > 0) {
-        setTokens(tokens.filter((item) => item.is_core));
+        setTokens(tokens);
       }
     }
   };
@@ -391,6 +404,24 @@ const Dashboard = () => {
     }
     setShowToken(false);
   };
+  const hideAllList = () => {
+    setShowAssets(false);
+    setShowChain(false);
+    setShowToken(false);
+  };
+  const removeToken = async (tokenId: string) => {
+    const newTokenList = addedToken.filter((item) => item !== tokenId);
+    setAddedToken(newTokenList);
+    await wallet.updateAddedToken(currentAccount?.address, newTokenList);
+  };
+  const addToken = async (tokenId: string) => {
+    const newTokenList = [...addedToken, tokenId];
+    setAddedToken(newTokenList);
+    await wallet.updateAddedToken(currentAccount?.address, [
+      ...addedToken,
+      tokenId,
+    ]);
+  };
   return (
     <>
       <div
@@ -494,17 +525,23 @@ const Dashboard = () => {
             <TokenList
               tokens={tokens}
               searchTokens={searchTokens}
+              addedToken={addedToken}
               startSearch={startSearch}
+              removeToken={removeToken}
+              addToken={addToken}
               onSearch={handleLoadTokens}
-              closeSearch={() => setStartSearch(false)}
+              closeSearch={() => {
+                setSearchTokens([]);
+                setStartSearch(false);
+              }}
             />
           )}
           {showAssets && <AssetsList assets={assets} />}
-          {showToken && (
+          {(showToken || showAssets) && (
             <img
               src={IconDrawer}
               className="bottom-drawer"
-              onClick={displayTokenList}
+              onClick={hideAllList}
             />
           )}
         </div>
