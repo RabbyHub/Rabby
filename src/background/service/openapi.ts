@@ -548,6 +548,15 @@ class OpenApiService {
         wrapped_token_id: '',
         symbol: '',
       },
+      {
+        community_id: 199,
+        id: 'btt',
+        logo_url: '',
+        name: '',
+        native_token_id: '',
+        wrapped_token_id: '',
+        symbol: '',
+      },
     ]);
   };
 
