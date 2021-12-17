@@ -340,7 +340,13 @@ const GnosisTransactionItem = ({
   }, []);
 
   return (
-    <div className="queue-item">
+    <div
+      className={clsx('queue-item', {
+        canExec:
+          data.confirmations.length < safeInfo.threshold ||
+          data.nonce !== safeInfo.nonce,
+      })}
+    >
       <div className="queue-item__time">
         <span>{agoText}</span>
         <span>nonce: {data.nonce}</span>
