@@ -27,6 +27,8 @@ import IconCronosLogo from 'ui/assets/chain-logos/cronos.svg';
 import IconCronosWhiteLogo from 'ui/assets/chain-logos/cronos-white.svg';
 import IconBobaLogo from 'ui/assets/chain-logos/boba.png';
 import IconBobaWhiteLogo from 'ui/assets/chain-logos/boba-white.svg';
+import IconBttLogo from 'ui/assets/chain-logos/bttc.svg';
+import IconBttWhiteLogo from 'ui/assets/chain-logos/bttc-white.svg';
 import IconEN from 'ui/assets/langs/en.svg';
 import IconZH from 'ui/assets/langs/zh_cn.svg';
 import IconAmber from 'ui/assets/walletlogo/amber.png';
@@ -85,6 +87,7 @@ export enum CHAINS_ENUM {
   MOVR = 'MOVR',
   CRO = 'CRO',
   BOBA = 'BOBA',
+  BTT = 'BTT',
 }
 
 export const CHAINS: Record<string, Chain> = {
@@ -298,6 +301,21 @@ export const CHAINS: Record<string, Chain> = {
     scanLink: 'https://blockexplorer.boba.network/tx/_s_',
     nativeTokenLogo:
       'https://static.debank.com/image/op_token/logo_url/0x4200000000000000000000000000000000000006/d61441782d4a08a7479d54aea211679e.png',
+  },
+  [CHAINS_ENUM.BTT]: {
+    id: 199,
+    serverId: 'btt',
+    network: '199',
+    name: 'BitTorrent',
+    nativeTokenSymbol: 'BTT',
+    nativeTokenAddress: 'btt',
+    enum: CHAINS_ENUM.BTT,
+    logo: IconBttLogo,
+    whiteLogo: IconBttWhiteLogo,
+    hex: '0xc7',
+    scanLink: 'https://scan.bt.io/#/transaction/_s_',
+    nativeTokenLogo:
+      'https://static.debank.com/image/chain/logo_url/btt/2130a8d57ff2a0f3d50a4ec9432897c6.png',
   },
 };
 
