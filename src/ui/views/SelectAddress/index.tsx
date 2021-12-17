@@ -147,7 +147,7 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
           type: keyring,
         })),
         hasDivider: !!isMnemonics,
-        editing: isPopup,
+        editing: true,
         showImportIcon: false,
         isMnemonics,
         importedAccount: true,

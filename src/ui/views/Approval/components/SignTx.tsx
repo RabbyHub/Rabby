@@ -208,6 +208,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       contract_protocol_name: '',
     },
   });
+  const [submitText, setSubmitText] = useState('Proceed');
   const { t } = useTranslation();
   const [
     securityCheckStatus,
@@ -662,6 +663,18 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     explain();
   }, [tx, inited]);
 
+  useEffect(() => {
+    if (isGnosisAccount) {
+      setSubmitText('Proceed');
+      return;
+    }
+    if (securityCheckStatus !== 'pass') {
+      setSubmitText('Continue');
+      return;
+    }
+    setSubmitText('Sign');
+  }, [isGnosisAccount, securityCheckStatus]);
+
   return (
     <>
       <AccountCard />
@@ -764,9 +777,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
                         }
                         loading={isGnosisAccount ? !safeInfo : false}
                       >
-                        {securityCheckStatus === 'pass'
-                          ? t('Sign')
-                          : t('Continue')}
+                        {t(submitText)}
                       </Button>
                     )}
                   </div>

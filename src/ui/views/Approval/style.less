@@ -173,6 +173,8 @@
           font-size: 20px;
           font-weight: 500;
           margin-bottom: 16px;
+          position: relative;
+          z-index: 1;
         }
         p {
           word-break: break-all;
@@ -412,7 +414,7 @@
             left: 12px;
             .bg {
               position: absolute;
-              bottom: 1px;
+              bottom: 0;
               width: 100%;
               height: 6px;
               background-color: #EAECFB;
@@ -425,19 +427,28 @@
             border-bottom: 0.5px solid #B4BDCC;
             margin-bottom: 14px;
             .address-viewer-text.normal {
-              font-weight: 500;
-              font-size: 13px;
-              line-height: 15px;
-              color: #8697FF;
+              font-size: 12px;
+              line-height: 18px;
+              color: #707280;
             }
             .icon-gnosis {
               width: 18px;
               height: 18px;
               margin-right: 8px;
             }
+            .alian-name {
+              color: #4B4D59;
+              font-weight: 500;
+              font-size: 13px;
+              line-height: 18px;
+              margin: 0 8px;
+            }
           }
           .gray-section-block {
             background-color: #fff;
+            .title {
+              font-size: 15px;
+            }
           }
           .balance-change {
             margin-bottom: 0;
