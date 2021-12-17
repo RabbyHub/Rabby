@@ -40,6 +40,7 @@ import IconPlus from 'ui/assets/dashboard-plus.svg';
 import IconInfo from 'ui/assets/information.png';
 import IconMoney from 'ui/assets/dashboardMoney.png';
 import IconQueue from 'ui/assets/icon-queue.svg';
+import IconTagYou from 'ui/assets/tag-you.svg';
 import './style.less';
 
 const GnosisAdminItem = ({
@@ -55,7 +56,11 @@ const GnosisAdminItem = ({
   return (
     <li>
       <AddressViewer address={address} showArrow={false} />
-      {addressInWallet ? <div className="address-tag">You</div> : <></>}
+      {addressInWallet ? (
+        <img src={IconTagYou} className="icon icon-tag" />
+      ) : (
+        <></>
+      )}
       <div className="address-type">
         {addressInWallet ? (
           <img

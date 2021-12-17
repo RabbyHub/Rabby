@@ -22,6 +22,7 @@ import IconUser from 'ui/assets/address-management.svg';
 import IconChecked from 'ui/assets/checked.svg';
 import IconUnCheck from 'ui/assets/uncheck.svg';
 import IconLoading from 'ui/assets/loading-round.svg';
+import IconTagYou from 'ui/assets/tag-you.svg';
 import './style.less';
 
 interface TransactionConfirmationsProps {
@@ -35,47 +36,6 @@ export type ConfirmationProps = {
   type: string;
   hash: string;
   signature: string | null;
-};
-
-export const EMPTY_DATA = '0x';
-
-export const getPreValidatedSignatures = (
-  from: string,
-  initialString: string = EMPTY_DATA
-): string => {
-  return `${initialString}000000000000000000000000${from.replace(
-    EMPTY_DATA,
-    ''
-  )}000000000000000000000000000000000000000000000000000000000000000001`;
-};
-
-export const generateSignaturesFromTxConfirmations = (
-  confirmations?: ConfirmationProps[]
-): string => {
-  let confirmationsMap = confirmations?.map((value) => {
-    return {
-      signature: value.signature,
-      owner: value.owner.toLowerCase(),
-    };
-  });
-
-  // The constant parts need to be sorted so that the recovered signers are sorted ascending
-  // (natural order) by address (not checksummed).
-  confirmationsMap = confirmationsMap!.sort((ownerA, ownerB) =>
-    ownerA.owner.localeCompare(ownerB.owner)
-  );
-
-  let sigs = '0x';
-  confirmationsMap.forEach(({ signature, owner }) => {
-    if (signature) {
-      sigs += signature.slice(2);
-    } else {
-      // https://docs.gnosis.io/safe/docs/contracts_signatures/#pre-validated-signatures
-      sigs += getPreValidatedSignatures(owner, '');
-    }
-  });
-
-  return sigs;
 };
 
 const TransactionConfirmations = ({
@@ -136,7 +96,7 @@ const TransactionConfirmations = ({
             {visibleAccounts.find((account) =>
               isSameAddress(account.address, owner)
             ) ? (
-              <div className="tx-confirm__tag">You</div>
+              <img src={IconTagYou} className="icon-tag" />
             ) : (
               <></>
             )}

@@ -664,12 +664,8 @@ const SignTx = ({ params, origin }: SignTxProps) => {
   }, [tx, inited]);
 
   useEffect(() => {
-    if (isGnosisAccount) {
+    if (isGnosisAccount || securityCheckStatus !== 'pass') {
       setSubmitText('Proceed');
-      return;
-    }
-    if (securityCheckStatus !== 'pass') {
-      setSubmitText('Continue');
       return;
     }
     setSubmitText('Sign');

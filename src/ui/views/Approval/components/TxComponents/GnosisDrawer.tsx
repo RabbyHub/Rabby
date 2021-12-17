@@ -9,6 +9,8 @@ import { useWallet, isSameAddress } from 'ui/utils';
 import { KEYRING_TYPE, KEYRING_CLASS } from 'consts';
 import AddressViewer from 'ui/component/AddressViewer';
 import FieldCheckbox from 'ui/component/FieldCheckbox';
+import IconTagYou from 'ui/assets/tag-you.svg';
+import IconTagNotYou from 'ui/assets/tag-notyou.svg';
 
 interface GnosisDrawerProps {
   safeInfo: SafeInfo;
@@ -63,7 +65,10 @@ const AddressItem = ({
       disable={!account.type || signed}
     >
       <AddressViewer address={account.address} showArrow={false} />
-      <span className="item-tag">{account.type ? 'You' : 'Not You'}</span>
+      <img
+        src={account.type ? IconTagYou : IconTagNotYou}
+        className="icon icon-tag"
+      />
     </FieldCheckbox>
   );
 };
@@ -172,7 +177,7 @@ const GnosisDrawer = ({ safeInfo, onCancel, onConfirm }: GnosisDrawerProps) => {
           disabled={!checkedAccount}
           loading={isLoading}
         >
-          {t('Sign')}
+          {t('Proceed')}
         </Button>
       </div>
     </div>

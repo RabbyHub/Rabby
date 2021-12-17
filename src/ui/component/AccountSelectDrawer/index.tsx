@@ -118,7 +118,7 @@ const AccountSelectDrawer = ({
           disabled={!checkedAccount}
           loading={isLoading}
         >
-          {t('Sign')}
+          {t('Proceed')}
         </Button>
       </div>
     </Drawer>
