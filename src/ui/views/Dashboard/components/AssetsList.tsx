@@ -1,3 +1,4 @@
+import clsx from 'clsx';
 import React, { useRef } from 'react';
 import { FixedSizeList } from 'react-window';
 import { TokenWithChain } from 'ui/component';
@@ -20,10 +21,10 @@ const Row = (props) => {
     </div>
   );
 };
-const AssetsList = ({ assets }) => {
+const AssetsList = ({ assets, defiAnimate }) => {
   const fixedList = useRef<FixedSizeList>();
   return (
-    <div className="tokenList">
+    <div className={clsx('tokenList', defiAnimate)}>
       <FixedSizeList
         height={468}
         width="100%"

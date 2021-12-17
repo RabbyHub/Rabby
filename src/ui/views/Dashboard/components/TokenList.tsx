@@ -9,6 +9,7 @@ import IconSearch from 'ui/assets/tokenSearch.png';
 import IconClose from 'ui/assets/searchIconClose.png';
 import IconAddToken from 'ui/assets/addtokenplus.png';
 import IconRemoveToken from 'ui/assets/removetoken.png';
+import clsx from 'clsx';
 const Row = (props) => {
   const { data, index, style } = props;
   const { list, startSearch, removeToken, addToken, query, addedToken } = data;
@@ -69,6 +70,7 @@ const TokenList = ({
   addedToken,
   removeToken,
   addToken,
+  tokenAnimate,
 }) => {
   const { t } = useTranslation();
   const fixedList = useRef<FixedSizeList>();
@@ -94,7 +96,7 @@ const TokenList = ({
     closeSearch();
   };
   return (
-    <div className="tokenList">
+    <div className={clsx('tokenList', tokenAnimate)}>
       {startSearch && (
         <div className="search-wrapper">
           {' '}

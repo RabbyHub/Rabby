@@ -74,6 +74,8 @@ const Dashboard = () => {
   const [assets, setAssets] = useState<AssetItem[]>([]);
   const [startSearch, setStartSearch] = useState(false);
   const [addedToken, setAddedToken] = useState<string[]>([]);
+  const [defiAnimate, setDefiAnimate] = useState('fadeOut');
+  const [tokenAnimate, setTokenAnimate] = useState('fadeOut');
   const handleToggle = () => {
     setModalOpen(!isModalOpen);
   };
@@ -386,9 +388,17 @@ const Dashboard = () => {
   };
   const displayTokenList = () => {
     if (showToken) {
+      setTokenAnimate('fadeOut');
+      setDefiAnimate('fadeOut');
       setShowToken(false);
       setShowChain(false);
     } else {
+      if (showAssets) {
+        setTokenAnimate('fadeInLeft');
+        setDefiAnimate('fadeOutRight');
+      } else {
+        setTokenAnimate('fadeIn');
+      }
       setShowToken(true);
       setShowChain(true);
     }
@@ -398,7 +408,15 @@ const Dashboard = () => {
     if (showAssets) {
       setShowAssets(false);
       setShowChain(false);
+      setTokenAnimate('fadeOut');
+      setDefiAnimate('fadeOut');
     } else {
+      if (showToken) {
+        setDefiAnimate('fadeInRight');
+        setTokenAnimate('fadeOutLeft');
+      } else {
+        setDefiAnimate('fadeIn');
+      }
       setShowAssets(true);
       setShowChain(true);
     }
@@ -506,7 +524,7 @@ const Dashboard = () => {
             )}
           </div>
           {!showChain && (
-            <div className="operation">
+            <div className={clsx('operation')}>
               <div className="operation-item" onClick={handleGotoHistory}>
                 {pendingTxCount > 0 ? (
                   <div className="pending-count">
@@ -521,22 +539,21 @@ const Dashboard = () => {
               </div>
             </div>
           )}
-          {showToken && (
-            <TokenList
-              tokens={tokens}
-              searchTokens={searchTokens}
-              addedToken={addedToken}
-              startSearch={startSearch}
-              removeToken={removeToken}
-              addToken={addToken}
-              onSearch={handleLoadTokens}
-              closeSearch={() => {
-                setSearchTokens([]);
-                setStartSearch(false);
-              }}
-            />
-          )}
-          {showAssets && <AssetsList assets={assets} />}
+          <TokenList
+            tokens={tokens}
+            searchTokens={searchTokens}
+            addedToken={addedToken}
+            startSearch={startSearch}
+            removeToken={removeToken}
+            addToken={addToken}
+            onSearch={handleLoadTokens}
+            closeSearch={() => {
+              setSearchTokens([]);
+              setStartSearch(false);
+            }}
+            tokenAnimate={tokenAnimate}
+          />
+          <AssetsList assets={assets} defiAnimate={defiAnimate} />
           {(showToken || showAssets) && (
             <img
               src={IconDrawer}
