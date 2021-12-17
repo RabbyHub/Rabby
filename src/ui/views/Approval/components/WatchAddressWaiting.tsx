@@ -3,8 +3,8 @@ import { Button } from 'antd';
 import { useHistory } from 'react-router-dom';
 import { useTranslation, Trans } from 'react-i18next';
 import { DEFAULT_BRIDGE } from '@rabby-wallet/eth-walletconnect-keyring';
+import { Account } from 'background/service/preference';
 import {
-  BRAND_WALLET_CONNECT_TYPE,
   CHAINS,
   CHAINS_ENUM,
   WALLETCONNECT_STATUS_MAP,
@@ -13,13 +13,17 @@ import {
   SPECIFIC_TEXT_BRAND,
 } from 'consts';
 import { ScanCopyQRCode } from 'ui/component';
-import { Tx } from 'background/service/openapi';
 import { useApproval, useWallet, openInTab } from 'ui/utils';
 import eventBus from '@/eventBus';
 import { SvgIconOpenExternal } from 'ui/assets';
 import Mask from 'ui/assets/bg-watchtrade.png';
-interface ApprovalParams extends Tx {
+
+interface ApprovalParams {
   address: string;
+  chainId?: number;
+  isGnosis?: boolean;
+  data?: string[];
+  account?: Account;
 }
 
 type Valueof<T> = T[keyof T];
@@ -31,15 +35,16 @@ const Scan = ({
   bridgeURL,
   onBridgeChange,
   defaultBridge,
+  account,
 }: {
   uri: string;
   chain: CHAINS_ENUM;
   bridgeURL: string;
   defaultBridge: string;
+  account: Account;
   onRefresh(): void;
   onBridgeChange(val: string): void;
 }) => {
-  const wallet = useWallet();
   const [address, setAddress] = useState<string | null>(null);
   const [showURL, setShowURL] = useState(false);
   const [brandName, setBrandName] = useState<string | null>(null);
@@ -50,7 +55,6 @@ const Scan = ({
   };
 
   const init = async () => {
-    const account = await wallet.syncGetCurrentAccount();
     setAddress(account.address);
     setBrandName(account.brandName);
   };
@@ -109,6 +113,7 @@ const Process = ({
   chain,
   result,
   status,
+  account,
   error,
   onRetry,
   onCancel,
@@ -116,11 +121,11 @@ const Process = ({
   chain: CHAINS_ENUM;
   result: string;
   status: Valueof<typeof WALLETCONNECT_STATUS_MAP>;
+  account: Account;
   error: { code?: number; message?: string } | null;
   onRetry(): void;
   onCancel(): void;
 }) => {
-  const wallet = useWallet();
   const [address, setAddress] = useState<null | string>(null);
   const { t } = useTranslation();
   const history = useHistory();
@@ -227,7 +232,6 @@ const Process = ({
   }
 
   const init = async () => {
-    const account = await wallet.syncGetCurrentAccount()!;
     setAddress(account.address);
   };
 
@@ -307,12 +311,18 @@ const WatchAddressWaiting = ({ params }: { params: ApprovalParams }) => {
   const [isSignText, setIsSignText] = useState(false);
   const [brandName, setBrandName] = useState<string | null>(null);
   const [bridgeURL, setBridge] = useState<string>(DEFAULT_BRIDGE);
+  const [currentAccount, setCurrentAccount] = useState<Account | null>(null);
 
   const initWalletConnect = async () => {
-    const account = await wallet.syncGetCurrentAccount()!;
+    const account = params.isGnosis
+      ? params.account
+      : await wallet.syncGetCurrentAccount()!;
     const status = await wallet.getWalletConnectStatus(
       account.address,
       account.brandName
+    );
+    setConnectStatus(
+      status === null ? WALLETCONNECT_STATUS_MAP.PENDING : status
     );
     setBrandName(account!.brandName);
     eventBus.addEventListener(EVENTS.WALLETCONNECT.INITED, ({ uri }) => {
@@ -347,16 +357,27 @@ const WatchAddressWaiting = ({ params }: { params: ApprovalParams }) => {
 
   const init = async () => {
     const approval = await getApproval();
-    const account = await wallet.syncGetCurrentAccount()!;
+    const account = params.isGnosis
+      ? params.account!
+      : await wallet.syncGetCurrentAccount()!;
     const bridge = await wallet.getWalletConnectBridge(
       account.address,
       account.brandName
     );
-
+    setCurrentAccount(account);
     setBridge(bridge || DEFAULT_BRIDGE);
-    setIsSignText(approval?.approvalType !== 'SignTx');
+    setIsSignText(params.isGnosis ? true : approval?.approvalType !== 'SignTx');
     eventBus.addEventListener(EVENTS.SIGN_FINISHED, async (data) => {
       if (data.success) {
+        if (params.isGnosis) {
+          const sigs = await wallet.getGnosisTransactionSignatures();
+          if (sigs.length > 0) {
+            await wallet.gnosisAddConfirmation(account.address, data.data);
+          } else {
+            await wallet.gnosisAddSignature(account.address, data.data);
+            await wallet.postGnosisTransaction();
+          }
+        }
         resolveApproval(data.data, !isSignText);
       } else {
         rejectApproval(data.errorMsg);
@@ -388,7 +409,9 @@ const WatchAddressWaiting = ({ params }: { params: ApprovalParams }) => {
   };
 
   const handleBridgeChange = async (val: string) => {
-    const account = await wallet.syncGetCurrentAccount()!;
+    const account = params.isGnosis
+      ? params.account
+      : await wallet.syncGetCurrentAccount()!;
     setBridge(val);
     eventBus.removeAllEventListeners(EVENTS.WALLETCONNECT.INITED);
     initWalletConnect();
@@ -414,7 +437,9 @@ const WatchAddressWaiting = ({ params }: { params: ApprovalParams }) => {
         <img src={Mask} className="mask" />
       </div>
       <div className="watchaddress-operation">
-        {connectStatus === WALLETCONNECT_STATUS_MAP.PENDING && qrcodeContent ? (
+        {connectStatus === WALLETCONNECT_STATUS_MAP.PENDING &&
+        qrcodeContent &&
+        currentAccount ? (
           <Scan
             uri={qrcodeContent}
             chain={chain}
@@ -422,16 +447,20 @@ const WatchAddressWaiting = ({ params }: { params: ApprovalParams }) => {
             onBridgeChange={handleBridgeChange}
             onRefresh={handleRefreshQrCode}
             defaultBridge={DEFAULT_BRIDGE}
+            account={currentAccount}
           />
         ) : (
-          <Process
-            chain={chain}
-            result={result}
-            status={connectStatus}
-            error={connectError}
-            onRetry={handleRetry}
-            onCancel={handleCancel}
-          />
+          currentAccount && (
+            <Process
+              chain={chain}
+              result={result}
+              status={connectStatus}
+              error={connectError}
+              onRetry={handleRetry}
+              onCancel={handleCancel}
+              account={currentAccount}
+            />
+          )
         )}
       </div>
     </div>

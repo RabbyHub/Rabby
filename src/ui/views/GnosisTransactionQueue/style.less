@@ -1,0 +1,183 @@
+@import '../../style/var.less';
+
+.queue {
+  .page();
+  display: flex;
+  flex-direction: column;
+  padding: 0 20px;
+  height: 100%;
+  overflow: auto;
+  .page-header {
+    z-index: 1;
+  }
+  .queue-item {
+    background-color: #fff;
+    border-radius: 6px;
+    padding: 12px;
+    margin-bottom: 20px;
+    padding-bottom: 20px;
+    &__time {
+      font-size: 12px;
+      line-height: 14px;
+      color: #707280;
+      margin-bottom: 15px;
+      display: flex;
+      justify-content: space-between;
+    }
+    &__info {
+      margin-bottom: 20px;
+      .tx-explain {
+        display: flex;
+        align-items: center;
+        margin-bottom: 0;
+        & > span {
+          flex: 1;
+          font-weight: 500;
+          font-size: 15px;
+          line-height: 18px;
+          color: #13141A;
+        }
+        .icon-explain {
+          width: 20px;
+          height: 20px;
+          margin-right: 8px;
+        }
+        .tx-explain__view {
+          padding: 4px 12px;
+          border-radius: 2px;
+          font-weight: 500;
+          font-size: 13px;
+          line-height: 15px;
+          color: #FFFFFF;
+          height: auto;
+        }
+      }
+    }
+    &__footer {
+      display: flex;
+      justify-content: center;
+      margin-top: 20px;
+      .submit-btn {
+        width: 172px;
+        height: 36px;
+        padding: 0;
+        .ant-btn {
+          width: 172px;
+          height: 36px;
+          padding: 0;
+        }
+        span {
+          font-weight: 500;
+          font-size: 13px;
+          line-height: 15px;
+          text-align: center;
+        }
+      }
+    }
+    .tx-confirm {
+      background: #F5F6FA;
+      border-radius: 4px;
+      padding: 12px;
+      .tx-confirm__head {
+        border-bottom: 1px solid #E5E9EF;
+        padding-bottom: 8px;
+        color: #707281;
+        font-size: 12px;
+        line-height: 14px;
+        .number {
+          font-weight: 500;
+          color: #13141A;
+        }
+      }
+      .tx-confirm__list {
+        padding-top: 12px;
+        margin-bottom: 0;
+        li {
+          display: flex;
+          font-size: 13px;
+          line-height: 15px;
+          color: #707280;
+          margin-bottom: 20px;
+          align-items: center;
+          &:nth-last-child(1) {
+            margin-bottom: 0;
+          }
+          &.checked {
+            font-weight: 500;
+            color: #4B4D59;
+          }
+          .icon-check {
+            width: 16px;
+            height: 16px;
+            margin-right: 8px;
+          }
+          .tx-confirm__tag {
+            color: #8697FF;
+            border: 0.5px solid #8697FF;
+            border-radius: 90px;
+            padding: 2px 7px;
+            font-size: 11px;
+            line-height: 13px;
+            margin-left: 8px;
+          }
+        }
+      }
+    }
+    &.canExec {
+      &::before {
+        display: none;
+      }
+      .tx-explain__view {
+        background-color: rgba(134, 151, 255, 0.2);
+        color: #8697FF;
+        border-color: transparent;
+        text-shadow: none;
+        &:hover {
+          background: rgba(134, 151, 255, 0.2) !important;
+          background-color: rgba(134, 151, 255, 0.2) !important;
+          color: #8697FF !important;
+        }
+        &::before {
+          display: none;
+        }
+      }
+    }
+  }
+  .icon-loading {
+    animation: spining 1.5s infinite linear;
+  }
+  .tx-history__empty {
+    z-index: 0;
+    position: absolute;
+    top: 60px;
+    left: 0;
+    height: calc(100vh - 60px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding-top: 0;
+    transform: translateY(-40px);
+    .no-data {
+      width: 160px;
+      height: 160px;
+    }
+    .load-faild {
+      width: 100px;
+      height: 100px;
+    }
+    .load-faild-desc {
+      max-width: 90%;
+      padding: 10px 16px;
+      font-size: 14px;
+      line-height: 20px;
+      text-align: center;
+      color: #EC5151;
+      background: rgba(242, 72, 34, 0.1);
+      border: 0.5px solid rgba(242, 72, 34, 0.5);
+      box-sizing: border-box;
+      border-radius: 4px;
+      margin-top: 55px;
+      margin-bottom: 0;
+    }
+  }
+}

@@ -229,13 +229,7 @@ const AddressManagement = () => {
               </Menu.Item>
             </Menu>
           );
-        case HARDWARE_KEYRING_TYPES.BitBox02.type:
-        case HARDWARE_KEYRING_TYPES.Ledger.type:
-        case HARDWARE_KEYRING_TYPES.Trezor.type:
-        case HARDWARE_KEYRING_TYPES.Onekey.type:
-        case HARDWARE_KEYRING_TYPES.GridPlus.type:
-        case KEYRING_TYPE.WalletConnectKeyring:
-        case KEYRING_TYPE.WatchAddressKeyring:
+        default:
           return (
             <Menu>
               <Menu.Item onClick={handleDeleteAddress}>
@@ -243,8 +237,6 @@ const AddressManagement = () => {
               </Menu.Item>
             </Menu>
           );
-        default:
-          return <></>;
       }
     };
     return (

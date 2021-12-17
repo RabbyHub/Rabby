@@ -90,6 +90,7 @@ export const StrayPageWithButton = ({
   isScrollContainer = false,
   className,
   disableKeyDownEvent = false,
+  nextLoading = false,
 }: StrayPageWithButtonProps & StrayFooterNavProps) => {
   const { t } = useTranslation();
 
@@ -138,6 +139,7 @@ export const StrayPageWithButton = ({
           onBackClick={onBackClick}
           backDisabled={backDisabled}
           nextDisabled={nextDisabled}
+          nextLoading={nextLoading}
           hasBack={hasBack}
           hasDivider={hasDivider}
           BackButtonContent={t('Back')}

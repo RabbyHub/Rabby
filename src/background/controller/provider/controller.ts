@@ -1,6 +1,7 @@
 import * as Sentry from '@sentry/browser';
 import Transaction from 'ethereumjs-tx';
 import { TransactionFactory } from '@ethereumjs/tx';
+import { ethers } from 'ethers';
 import {
   bufferToHex,
   isHexString,
@@ -31,14 +32,19 @@ import { Session } from 'background/service/session';
 import { Tx } from 'background/service/openapi';
 import RpcCache from 'background/utils/rpcCache';
 import Wallet from '../wallet';
-import { CHAINS, CHAINS_ENUM, SAFE_RPC_METHODS } from 'consts';
+import { CHAINS, CHAINS_ENUM, SAFE_RPC_METHODS, KEYRING_TYPE } from 'consts';
+import buildinProvider from 'background/utils/buildinProvider';
 import BaseController from '../base';
+import { Chain } from 'background/service/chain';
+import { Account } from 'background/service/preference';
 
 interface ApprovalRes extends Tx {
   type?: string;
   address?: string;
   uiRequestComponent?: string;
   isSend?: boolean;
+  isGnosis?: boolean;
+  account?: Account;
   extra?: Record<string, any>;
 }
 
@@ -75,7 +81,7 @@ const signTypedDataVlidation = ({
 };
 
 class ProviderController extends BaseController {
-  ethRpc = (req) => {
+  ethRpc = (req, forceChainServerId?: string) => {
     const {
       data: { method, params },
       session: { origin },
@@ -93,6 +99,9 @@ class ProviderController extends BaseController {
 
     if (connected) {
       chainServerId = CHAINS[connected.chain].serverId;
+    }
+    if (forceChainServerId) {
+      chainServerId = forceChainServerId;
     }
 
     const currentAddress =
@@ -234,11 +243,29 @@ class ProviderController extends BaseController {
     delete approvalRes.type;
     delete approvalRes.uiRequestComponent;
     const tx = new Transaction(approvalRes);
+    const currentAccount = preferenceService.getCurrentAccount()!;
+    let opts;
+    opts = approvalRes?.extra;
+    if (currentAccount.type === KEYRING_TYPE.GnosisKeyring) {
+      buildinProvider.currentProvider.currentAccount = approvalRes!.account!.address;
+      buildinProvider.currentProvider.currentAccountType = approvalRes!.account!.type;
+      buildinProvider.currentProvider.currentAccountBrand = approvalRes!.account!.brandName;
+      try {
+        const provider = new ethers.providers.Web3Provider(
+          buildinProvider.currentProvider
+        );
+        opts = {
+          provider,
+        };
+      } catch (e) {
+        console.log(e);
+      }
+    }
     const signedTx = await keyringService.signTransaction(
       keyring,
       tx,
       txParams.from,
-      approvalRes?.extra
+      opts
     );
     const onTranscationSubmitted = (hash: string) => {
       const chain = permissionService.isInternalOrigin(origin)
@@ -343,18 +370,14 @@ class ProviderController extends BaseController {
         );
     },
   ])
-  personalSign = async ({
-    data: {
-      params: [data, from],
-    },
-    approvalRes,
-  }) => {
-    data = data = isHexString(data) ? data : stringToHex(data);
+  personalSign = async ({ data, approvalRes }) => {
+    if (!data.params) return;
+    const [string, from] = data.params;
+    const hex = isHexString(string) ? string : stringToHex(string);
     const keyring = await this._checkAddress(from);
-
     return keyringService.signPersonalMessage(
       keyring,
-      { data, from },
+      { data: hex, from },
       approvalRes?.extra
     );
   };

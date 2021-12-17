@@ -167,6 +167,8 @@ export interface ExplainTxResponse {
   };
   type_cancel_tx?: any; // TODO
   type_deploy_contract?: any; // TODO
+  is_gnosis?: boolean;
+  gnosis?: ExplainTxResponse;
 }
 
 interface RPCResponse<T> {

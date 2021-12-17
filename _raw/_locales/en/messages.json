@@ -905,7 +905,7 @@
     "message": "Connect with"
   },
   "Use_other_methods": {
-    "message": "You are using watch mode, if you need to trade please use other methods."
+    "message": "Cannot sign using current address(Watch Mode / Gnosis Safe)"
   },
   "Proceed": {
     "message": "Proceed"
@@ -969,5 +969,14 @@
   },
   "Portfolio": {
     "message": "Portfolio"
+  },
+  "multiSignChainNotMatch": {
+    "message": "Multi-signature addresses are not on this chain and cannot initiate transactions"
+  },
+  "GnosisLoadFaildDescription": {
+    "message": "Due to the instability of Gnosis Safe server, the data is not available, please check again after 5 minutes"
+  },
+  "GnosisLowerNonceNeedExcute": {
+    "message": "Transaction with nonce {{nonce}} needs to be executed first"
   }
 }

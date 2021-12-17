@@ -39,6 +39,7 @@ import IconFireblocksWithBorder from 'ui/assets/walletlogo/fireblocks-border.png
 import IconCobo from 'ui/assets/walletlogo/cobo.png';
 import IconImtoken from 'ui/assets/walletlogo/imtoken.png';
 import IconJade from 'ui/assets/walletlogo/jade.png';
+import IconGnosis from 'ui/assets/walletlogo/gnosis.png';
 import IconMath from 'ui/assets/walletlogo/math.png';
 import IconOnekey from 'ui/assets/walletlogo/onekey.png';
 import IconOneKey18 from 'ui/assets/walletlogo/onekey18.png';
@@ -53,7 +54,6 @@ import IconWatch24 from 'ui/assets/walletlogo/watch24.svg';
 import IconWatchPurple from 'ui/assets/walletlogo/watch-purple.svg';
 import IconTrezor24 from 'ui/assets/walletlogo/trezor24.png';
 import IconTrezor24Border from 'ui/assets/walletlogo/trezor24-border.png';
-import IconOneKey24 from 'ui/assets/walletlogo/onekey24.png';
 import LogoTrust from 'ui/assets/walletlogo/TrustWalletLogo.png';
 import LogoTp from 'ui/assets/walletlogo/TokenPocketLogo.png';
 import LogoMath from 'ui/assets/walletlogo/MathWalletLogo.png';
@@ -325,6 +325,7 @@ export const KEYRING_TYPE = {
   HardwareKeyring: 'hardware',
   WatchAddressKeyring: 'Watch Address',
   WalletConnectKeyring: 'WalletConnect',
+  GnosisKeyring: 'Gnosis',
 };
 
 export const KEYRING_CLASS = {
@@ -339,6 +340,7 @@ export const KEYRING_CLASS = {
   },
   WATCH: 'Watch Address',
   WALLETCONNECT: 'WalletConnect',
+  GNOSIS: 'Gnosis',
 };
 
 export const KEYRING_TYPE_TEXT = {
@@ -359,6 +361,7 @@ export const BRAND_ALIAN_TYPE_TEXT = {
   [KEYRING_CLASS.HARDWARE.TREZOR]: 'Trezor',
   [KEYRING_CLASS.HARDWARE.ONEKEY]: 'Onekey',
   [KEYRING_CLASS.HARDWARE.BITBOX02]: 'BitBox02',
+  [KEYRING_CLASS.GNOSIS]: 'Gnosis',
   [KEYRING_CLASS.HARDWARE.GRIDPLUS]: 'GridPlus',
 };
 export const HARDWARE_KEYRING_TYPES = {
@@ -512,6 +515,7 @@ export enum BRAND_WALLET_CONNECT_TYPE {
   LedgerConnect = 'LedgerConnect',
   OneKeyConnect = 'OneKeyConnect',
   TrezorConnect = 'TrezorConnect',
+  GnosisConnect = 'GnosisConnect',
   GridPlusConnect = 'GridPlusConnect',
 }
 
@@ -526,6 +530,12 @@ export const WALLETCONNECT_STATUS_MAP = {
 
 export const INTERNAL_REQUEST_ORIGIN = 'https://rabby.io';
 
+export const INTERNAL_REQUEST_SESSION = {
+  name: 'Rabby',
+  origin: INTERNAL_REQUEST_ORIGIN,
+  icon: './images/icon-128.png',
+};
+
 export const INITIAL_OPENAPI_URL = 'https://openapi.debank.com';
 
 export const EVENTS = {
@@ -536,6 +546,10 @@ export const EVENTS = {
     STATUS_CHANGED: 'WALLETCONNECT_STATUS_CHANGED',
     INIT: 'WALLETCONNECT_INIT',
     INITED: 'WALLETCONNECT_INITED',
+  },
+  GNOSIS: {
+    TX_BUILT: 'TransactionBuilt',
+    TX_CONFIRMED: 'TransactionConfirmed',
   },
 };
 
@@ -552,6 +566,7 @@ export enum WALLET_BRAND_TYPES {
   TP = 'TP',
   TREZOR = 'TREZOR',
   TRUSTWALLET = 'TRUSTWALLET',
+  GNOSIS = 'Gnosis',
   GRIDPLUS = 'GRIDPLUS',
 }
 
@@ -587,6 +602,14 @@ export const WALLET_BRAND_CONTENT = {
     icon: IconFireblocks,
     image: IconFireblocksWithBorder,
     connectType: BRAND_WALLET_CONNECT_TYPE.WalletConnect,
+  },
+  [WALLET_BRAND_TYPES.GNOSIS]: {
+    id: 13,
+    name: 'Gnosis Safe',
+    brand: WALLET_BRAND_TYPES.GNOSIS,
+    icon: IconGnosis,
+    image: IconGnosis,
+    connectType: BRAND_WALLET_CONNECT_TYPE.GnosisConnect,
   },
   [WALLET_BRAND_TYPES.GRIDPLUS]: {
     id: 12,

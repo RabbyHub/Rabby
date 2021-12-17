@@ -173,6 +173,8 @@
           font-size: 20px;
           font-weight: 500;
           margin-bottom: 16px;
+          position: relative;
+          z-index: 1;
         }
         p {
           word-break: break-all;
@@ -393,6 +395,73 @@
           height: 60px;
           opacity: 0.2;
         }
+        .gnosis-explain {
+          background: #EAECFB;
+          border: 1px solid #8697FF;
+          border-radius: 6px;
+          padding: 12px;
+          margin-top: 14px;
+          position: relative;
+          .internal-transaction {
+            position: absolute;
+            width: 120px;
+            text-align: center;
+            z-index: 1;
+            color: #8697FF;
+            font-size: 12px;
+            line-height: 12px;
+            top: -7px;
+            left: 12px;
+            .bg {
+              position: absolute;
+              bottom: 0;
+              width: 100%;
+              height: 6px;
+              background-color: #EAECFB;
+              z-index: -1;
+            }
+          }
+          .gnosis-address {
+            display: flex;
+            padding-bottom: 13px;
+            border-bottom: 0.5px solid #B4BDCC;
+            margin-bottom: 14px;
+            .address-viewer-text.normal {
+              font-size: 12px;
+              line-height: 18px;
+              color: #707280;
+            }
+            .icon-gnosis {
+              width: 18px;
+              height: 18px;
+              margin-right: 8px;
+            }
+            .alian-name {
+              color: #4B4D59;
+              font-weight: 500;
+              font-size: 13px;
+              line-height: 18px;
+              margin: 0 8px;
+            }
+          }
+          .gray-section-block {
+            background-color: #fff;
+            .title {
+              font-size: 15px;
+            }
+          }
+          .balance-change {
+            margin-bottom: 0;
+          }
+          .view-raw {
+            display: none;
+          }
+          .approve {
+            .edit-btn {
+              display: none;
+            }
+          }
+        }
       }
       .balance-change {
         margin-bottom: 20px;
@@ -433,7 +502,7 @@
           &:nth-last-child(1) {
             padding-bottom: 16px;
             &::after {
-              .part-border(328px);
+              .part-border(100%);
               bottom: 0;
               left: 50%;
               transform: translateX(-50%);
@@ -1251,11 +1320,10 @@
 .watcSign__tooltip {
   width: 360px !important;
   left: 15px !important;
-  top: 621px !important;
+  top: 629px !important;
   border-radius: 2px;
   .ant-tooltip-content {
     width: 360px !important;
-    height: 48px !important;
     background-color: rgba(45, 48, 51, 0.95);
     transform: translate(5px, 5px);
   }
@@ -1263,6 +1331,77 @@
     transform: translateX(0);
     left: auto;
     right: 40px;
-    top: 48px;
+    top: 32px;
+  }
+}
+
+.gnosis-drawer {
+  .ant-drawer-content-wrapper {
+    box-shadow: 0px -12px 20px rgb(19 20 26 / 4%);
+    border-radius: 16px 16px 0px 0px;
+    overflow: hidden;
+  }
+  .ant-drawer-close {
+    display: none;
+  }
+  .gnosis-drawer-container {
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+    .title {
+      margin-bottom: 24px;
+      font-weight: 500;
+      font-size: 20px;
+      line-height: 23px;
+      text-align: center;
+      color: #13141A;
+    }
+    .list {
+      flex: 1;
+      overflow: auto;
+      height: 100%;
+      .item {
+        background-color: #F5F6FA !important;
+        border-color: #E5E9EF;
+        opacity: 1 !important;
+        .address-viewer-text.normal {
+          color: #13141A;
+        }
+        .item-tag {
+          border: 0.5px solid #8697FF;
+          border-radius: 90px;
+          padding: 2px 7px;
+          color: #8697FF;
+          font-size: 11px;
+          line-height: 13px;
+          margin-left: 8px;
+        }
+        &.disabled {
+          color: #B4BDCC;
+          border-color: transparent !important;
+          .address-viewer-text.normal {
+            color: #B4BDCC;
+          }
+          .item-tag {
+            border-color: #B4BDCC;
+            color: #B4BDCC;
+          }
+        }
+      }
+    }
+    .footer {
+      padding: 20px 0 0;
+      display: flex;
+      justify-content: space-between;
+      .ant-btn {
+        width: 172px;
+        font-weight: 500;
+        font-size: 15px;
+        line-height: 18px;
+        height: 44px;
+        padding: 13px 0;
+        color: #FFFFFF;
+      }
+    }
   }
 }

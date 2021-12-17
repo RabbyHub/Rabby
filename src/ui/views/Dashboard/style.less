@@ -220,6 +220,21 @@
             margin: 0;
           }
         }
+        &__count {
+          width: 16px;
+          height: 16px;
+          background: linear-gradient(0deg, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)), #EC5151;
+          border: 1px solid #FFFFFF;
+          border-radius: 100%;
+          font-size: 12px;
+          line-height: 14px;
+          color: #FFFFFF;
+          line-height: 16px;
+          position: absolute;
+          top: 8px;
+          right: 32px;
+          text-align: center;
+        }
       }
     }
   }
@@ -385,6 +400,50 @@
     box-sizing: border-box;
     border-radius: 8px;
     padding: 6px 4px 4px 6px;
+  }
+  &__gnosis {
+    border-top: 1px solid #E5E9EF;
+    margin-top: 20px;
+    padding-top: 16px;
+    .admin-list {
+      margin: 0;
+      li {
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        height: 24px;
+        .address-viewer-text.normal {
+          font-weight: 500;
+          font-size: 13px;
+          line-height: 15px;
+          color: #3B3E4A;
+          margin-right: 0;
+        }
+        .address-tag {
+          border: 0.5px solid #8697FF;
+          border-radius: 90px;
+          padding: 2px 7px;
+          color: #8697FF;
+          font-size: 11px;
+          line-height: 13px;
+          margin-left: 8px;
+        }
+        .address-type {
+          flex: 1;
+          display: flex;
+          justify-content: flex-end;
+          align-items: center;
+          .icon-account-type {
+            opacity: 0.4;
+            width: 24px;
+            height: 24px;
+          }
+        }
+        &:nth-last-child(1) {
+          margin-bottom: 0;
+        }
+      }
+    }
   }
 }
 .dashboard-name {
