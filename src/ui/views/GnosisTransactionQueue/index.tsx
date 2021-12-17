@@ -343,8 +343,8 @@ const GnosisTransactionItem = ({
     <div
       className={clsx('queue-item', {
         canExec:
-          data.confirmations.length < safeInfo.threshold ||
-          data.nonce !== safeInfo.nonce,
+          data.confirmations.length >= safeInfo.threshold &&
+          data.nonce === safeInfo.nonce,
       })}
     >
       <div className="queue-item__time">

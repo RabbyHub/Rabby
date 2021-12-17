@@ -107,9 +107,9 @@
             color: #4B4D59;
           }
           .icon-check {
-            width: 12px;
-            height: 12px;
-            margin-right: 6px;
+            width: 16px;
+            height: 16px;
+            margin-right: 8px;
           }
           .tx-confirm__tag {
             color: #8697FF;
@@ -124,10 +124,21 @@
       }
     }
     &.canExec {
+      &::before {
+        display: none;
+      }
       .tx-explain__view {
         background-color: rgba(134, 151, 255, 0.2);
         color: #8697FF;
         border-color: transparent;
+        &:hover {
+          background: rgba(134, 151, 255, 0.2) !important;
+          background-color: rgba(134, 151, 255, 0.2) !important;
+          color: #8697FF !important;
+        }
+        &::before {
+          display: none;
+        }
       }
     }
   }

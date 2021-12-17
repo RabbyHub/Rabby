@@ -164,7 +164,7 @@ const GnosisDrawer = ({ safeInfo, onCancel, onConfirm }: GnosisDrawerProps) => {
       </div>
       <div className="footer">
         <Button type="primary" onClick={onCancel}>
-          {t('Cancel')}
+          {t('Back')}
         </Button>
         <Button
           type="primary"
