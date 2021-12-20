@@ -22,9 +22,9 @@ const BalanceView = ({ currentAccount, showChain = false }) => {
   const _openInTab = useConfirmExternalModal();
   const { t } = useTranslation();
 
-  const handleGotoProfile = () => {
-    _openInTab(`https://debank.com/profile/${currentAccount?.address}`);
-  };
+  // const handleGotoProfile = () => {
+  //   _openInTab(`https://debank.com/profile/${currentAccount?.address}`);
+  // };
   const displayChainList = () => {
     const result = chainBalances.map((item) => (
       <img
@@ -55,13 +55,13 @@ const BalanceView = ({ currentAccount, showChain = false }) => {
   return (
     <div className={clsx('assets flex', numberWrapperAnimation)}>
       <div className="left">
-        <div className={clsx('amount leading-none mb-8', numberAnimation)}>
+        <div className={clsx('amount mb-8', numberAnimation)}>
           <div className={clsx('amount-number')}>
             <span>${splitNumberByStep((balance || 0).toFixed(2))}</span>
           </div>
         </div>
         {showChain && (
-          <div className="extra leading-none flex">
+          <div className="extra flex">
             {balance === null ? (
               <>
                 <Spin size="small" iconClassName="text-white" />

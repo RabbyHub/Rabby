@@ -54,7 +54,7 @@ const Row = (props) => {
             onClick={() =>
               isAdded ? removeToken(token?.id) : addToken(token?.id)
             }
-            className="add-token-icon"
+            className="add-token-icon leading-none"
           />
         </div>
       )}
@@ -142,7 +142,7 @@ const TokenList = ({
           }
           itemSize={42}
           ref={fixedList}
-          style={{ zIndex: 10 }}
+          style={{ zIndex: 10, 'overflow-x': 'hidden' }}
         >
           {Row}
         </FixedSizeList>
