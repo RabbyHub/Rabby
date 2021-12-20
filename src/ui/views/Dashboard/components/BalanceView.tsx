@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Popover } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { Spin } from 'ui/component';
@@ -16,6 +16,9 @@ const BalanceView = ({ currentAccount, showChain = false }) => {
     currentAccount?.address,
     true
   );
+  const [numberAnimation, setNumberAnimation] = useState('');
+  const [numberWrapperAnimation, setNumberWrapperAnimation] = useState('');
+
   const _openInTab = useConfirmExternalModal();
   const { t } = useTranslation();
 
@@ -40,13 +43,21 @@ const BalanceView = ({ currentAccount, showChain = false }) => {
     }
     return result;
   };
+  useEffect(() => {
+    if (showChain) {
+      setNumberAnimation('numberScaleOut');
+      setNumberWrapperAnimation('numberWrapperScaleOut');
+    } else {
+      setNumberAnimation('numberScaleIn');
+      setNumberWrapperAnimation('numberWrapperScaleIn');
+    }
+  }, [showChain]);
   return (
-    <div className={clsx('assets flex', showChain && 'pt-0')}>
+    <div className={clsx('assets flex', numberWrapperAnimation)}>
       <div className="left">
-        <div className="amount leading-none mb-8" onClick={handleGotoProfile}>
-          <div className="amount-number">
+        <div className={clsx('amount leading-none mb-8', numberAnimation)}>
+          <div className={clsx('amount-number')}>
             <span>${splitNumberByStep((balance || 0).toFixed(2))}</span>
-            <img className="icon icon-external-link" src={IconExternal} />
           </div>
         </div>
         {showChain && (

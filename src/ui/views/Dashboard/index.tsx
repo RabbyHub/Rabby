@@ -76,6 +76,9 @@ const Dashboard = () => {
   const [addedToken, setAddedToken] = useState<string[]>([]);
   const [defiAnimate, setDefiAnimate] = useState('fadeOut');
   const [tokenAnimate, setTokenAnimate] = useState('fadeOut');
+  const [drawerAnimate, setDrawerAnimate] = useState('fadeInDrawer');
+  const [topAnimate, setTopAnimate] = useState('');
+  const [connectionAnimation, setConnectionAnimation] = useState('');
   const handleToggle = () => {
     setModalOpen(!isModalOpen);
   };
@@ -390,8 +393,10 @@ const Dashboard = () => {
     if (showToken) {
       setTokenAnimate('fadeOut');
       setDefiAnimate('fadeOut');
+      setConnectionAnimation('fadeInBottom');
       setShowToken(false);
       setShowChain(false);
+      setTopAnimate('fadeInTop');
     } else {
       if (showAssets) {
         setTokenAnimate('fadeInLeft');
@@ -401,6 +406,8 @@ const Dashboard = () => {
       }
       setShowToken(true);
       setShowChain(true);
+      setTopAnimate('fadeOutTop');
+      setConnectionAnimation('fadeOutBottom');
     }
     setShowAssets(false);
   };
@@ -408,8 +415,10 @@ const Dashboard = () => {
     if (showAssets) {
       setShowAssets(false);
       setShowChain(false);
+      setTopAnimate('fadeInTop');
       setTokenAnimate('fadeOut');
       setDefiAnimate('fadeOut');
+      setConnectionAnimation('fadeInBottom');
     } else {
       if (showToken) {
         setDefiAnimate('fadeInRight');
@@ -419,13 +428,23 @@ const Dashboard = () => {
       }
       setShowAssets(true);
       setShowChain(true);
+      setTopAnimate('fadeOutTop');
+      setConnectionAnimation('fadeOutBottom');
     }
     setShowToken(false);
   };
   const hideAllList = () => {
+    if (showAssets) {
+      setDefiAnimate('fadeOut');
+    }
+    if (showToken) {
+      setTokenAnimate('fadeOut');
+    }
     setShowAssets(false);
     setShowChain(false);
     setShowToken(false);
+    setConnectionAnimation('fadeInBottom');
+    setTopAnimate('fadeInTop');
   };
   const removeToken = async (tokenId: string) => {
     const newTokenList = addedToken.filter((item) => item !== tokenId);
@@ -446,8 +465,8 @@ const Dashboard = () => {
         className={clsx('dashboard', { 'metamask-active': !isDefaultWallet })}
       >
         <div className={clsx('main', showChain && 'show-chain-bg')}>
-          {currentAccount && !showChain && (
-            <div className="flex header items-center">
+          {currentAccount && (
+            <div className={clsx('flex header items-center', topAnimate)}>
               <div className="h-[32px] flex header-wrapper items-center relative">
                 <Popover
                   content={clickContent}
@@ -554,15 +573,19 @@ const Dashboard = () => {
             tokenAnimate={tokenAnimate}
           />
           <AssetsList assets={assets} defiAnimate={defiAnimate} />
-          {(showToken || showAssets) && (
-            <img
-              src={IconDrawer}
-              className="bottom-drawer"
-              onClick={hideAllList}
-            />
-          )}
+          <img
+            src={IconDrawer}
+            className={clsx(
+              'bottom-drawer',
+              showToken || showAssets ? 'fadeInDrawer' : null
+            )}
+            onClick={hideAllList}
+          />
         </div>
-        {!showChain && <RecentConnections />}
+        <RecentConnections
+          showChain={showChain}
+          connectionAnimation={connectionAnimation}
+        />
         {!isDefaultWallet && (
           <DefaultWalletAlertBar onChange={handleDefaultWalletChange} />
         )}
