@@ -105,12 +105,16 @@
 
 @keyframes fadeInBottom {
   0% {
-    top: 100%;
+    top: 680px;
     opacity: 0;
+    height: 0;
+    border-radius: 25%;
   }
   100% {
-    top: 33.3%;
+    top: 220px;
     opacity: 1;
+    height: 460px;
+    border-radius: 0;
   }
 }
 @keyframes fadeInDrawer {
@@ -167,11 +171,12 @@
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  background: linear-gradient(118.3deg, #8BA4FF -9.59%, #8082FF 108.51%);
   .main {
     width: 100%;
     height: 220px;
     background: linear-gradient(118.3deg, #8ba4ff -9.59%, #8082ff 108.51%);
-    padding: 20px 28px 0;
+    padding: 20px;
     position: relative;
     overflow: hidden;
     .header {
@@ -245,11 +250,10 @@
       }
     }
     .assets {
-      padding-top: 32px;
+      padding-top: 24px;
       .left {
         width: 100%;
         color: #fff;
-        cursor: pointer;
         p {
           margin: 0;
         }
@@ -467,7 +471,6 @@
     position: absolute;
     top: 220px;
     height: 460px;
-    width: 400px;
     -webkit-animation: fadeInBottom 1s;
     animation: fadeInBottom 1s;
   }
@@ -561,19 +564,25 @@
         height: 12px;
         color: #ffffff;
         margin-left: 16px;
+        .pointer;
       }
     }
 
     .token-item {
       height: 31px;
       width: 360px;
-      margin: 10px 12px;
+      padding: 10px 12px;
       display: flex;
       align-items: center;
       border: 1px solid transparent;
       &:nth-last-child(1) {
-        padding-bottom: 60px;
-        padding-top: 20px;
+        margin-bottom: 60px;
+      }
+      &.hover {
+        background: rgba(255, 255, 255, 0.2);
+        border: 0.5px solid rgba(255, 255, 255, 0.5);
+        box-sizing: border-box;
+        border-radius: 6px;
       }
       .middle {
         display: flex;
@@ -591,6 +600,7 @@
       .add-token-icon {
         width: 20px;
         height: 20px;
+        .pointer;
       }
       .token-amount {
         font-style: normal;
