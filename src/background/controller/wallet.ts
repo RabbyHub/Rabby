@@ -40,6 +40,7 @@ import {
   setPageStateCacheWhenPopupClose,
   isSameAddress,
 } from 'background/utils';
+import { Chain } from '../service/chain';
 
 const stashKeyrings: Record<string, any> = {};
 
@@ -197,7 +198,9 @@ export class WalletController extends BaseController {
   getEnableChains = () => chainService.getEnabledChains();
   enableChain = (id: CHAINS_ENUM) => chainService.enableChain(id);
   disableChain = (id: CHAINS_ENUM) => chainService.disableChain(id);
-
+  getSavedChains = () => preferenceService.getSavedChains();
+  saveChain = (id: string) => preferenceService.saveChain(id);
+  updateChain = (list: string[]) => preferenceService.updateChain(list);
   /* connectedSites */
 
   getConnectedSite = permissionService.getConnectedSite;

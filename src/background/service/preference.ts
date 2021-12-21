@@ -41,6 +41,7 @@ interface PreferenceStore {
   gasCache: GasCache;
   currentVersion: string;
   firstOpen: boolean;
+  pinnedChain: string[];
 }
 
 const SUPPORT_LOCALES = ['en', 'zh_CN'];
@@ -70,6 +71,7 @@ class PreferenceService {
         gasCache: {},
         currentVersion: '0',
         firstOpen: false,
+        pinnedChain: [],
       },
     });
     if (!this.store.locale) {
@@ -93,6 +95,9 @@ class PreferenceService {
     }
     if (!this.store.gasCache) {
       this.store.gasCache = {};
+    }
+    if (!this.store.pinnedChain) {
+      this.store.pinnedChain = [];
     }
   };
 
@@ -318,6 +323,13 @@ class PreferenceService {
   updateIsFirstOpen = () => {
     this.store.firstOpen = false;
   };
+  getSavedChains = () => {
+    return this.store.pinnedChain;
+  };
+  saveChain = (name: string) => {
+    this.store.pinnedChain = [...this.store.pinnedChain, name];
+  };
+  updateChain = (list: string[]) => (this.store.pinnedChain = list);
 }
 
 export default new PreferenceService();
