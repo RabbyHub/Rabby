@@ -1,6 +1,7 @@
 import React from 'react';
 import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
-import ChainCard from './ChainCard';
+import { ChainCard } from 'ui/component';
+
 import '../style.less';
 const ListItem = ({ item, provided, snapshot, removeFromPin }) => {
   return (
@@ -14,6 +15,7 @@ const ListItem = ({ item, provided, snapshot, removeFromPin }) => {
         chain={item}
         key={item.id}
         plus={false}
+        showIcon={true}
         removeFromPin={removeFromPin}
       />
     </div>

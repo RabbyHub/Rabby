@@ -2,13 +2,8 @@ import React, { useState, useEffect } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useWallet } from 'ui/utils';
-import { Switch, message, Modal } from 'antd';
-import { DragDropContext, Droppable, Draggable } from 'react-beautiful-dnd';
-
-import { PageHeader, Field, StrayPageWithButton } from 'ui/component';
+import { PageHeader, StrayPageWithButton, ChainCard } from 'ui/component';
 import { Chain } from 'background/service/chain';
-import { CHAINS, CHAINS_ENUM } from 'consts';
-import ChainCard from './components/ChainCard';
 import DragAndDropList from './components/DragAndDropList';
 import './style.less';
 export const ChainManagementList = ({ inStart = true }) => {
@@ -44,6 +39,7 @@ export const ChainManagementList = ({ inStart = true }) => {
 
   const removeFromPin = async (chainName: string) => {
     const newChain = savedChains.filter((item) => item !== chainName);
+    setSavedChains(newChain);
     await wallet.updateChain(newChain);
     const newSavedChainData = savedChainsData.filter(
       (item) => item.enum !== chainName
@@ -104,6 +100,7 @@ export const ChainManagementList = ({ inStart = true }) => {
                 <ChainCard
                   chain={chain}
                   key={chain.id}
+                  showIcon={true}
                   plus
                   saveToPin={saveToPin}
                 />
