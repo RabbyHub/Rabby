@@ -90,7 +90,7 @@ export const TxTypeComponent = ({
   txDetail: ExplainTxResponse;
   chain: Chain | undefined;
   isReady: boolean;
-  raw: Record<string, string>;
+  raw: Record<string, string | number>;
   onChange(data: Record<string, any>): void;
   tx: Tx;
   isSpeedUp: boolean;
@@ -98,7 +98,12 @@ export const TxTypeComponent = ({
   if (!isReady) return <Loading chainEnum={chain.enum} />;
   if (txDetail.type_deploy_contract)
     return (
-      <Deploy data={txDetail} chainEnum={chain.enum} isSpeedUp={isSpeedUp} />
+      <Deploy
+        data={txDetail}
+        chainEnum={chain.enum}
+        isSpeedUp={isSpeedUp}
+        raw={raw}
+      />
     );
   if (txDetail.type_cancel_tx)
     return (
@@ -107,11 +112,17 @@ export const TxTypeComponent = ({
         chainEnum={chain.enum}
         tx={tx}
         isSpeedUp={isSpeedUp}
+        raw={raw}
       />
     );
   if (txDetail.type_cancel_token_approval)
     return (
-      <Cancel data={txDetail} chainEnum={chain.enum} isSpeedUp={isSpeedUp} />
+      <Cancel
+        data={txDetail}
+        chainEnum={chain.enum}
+        isSpeedUp={isSpeedUp}
+        raw={raw}
+      />
     );
   if (txDetail.type_token_approval)
     return (
@@ -121,11 +132,17 @@ export const TxTypeComponent = ({
         onChange={onChange}
         tx={tx}
         isSpeedUp={isSpeedUp}
+        raw={raw}
       />
     );
   if (txDetail.type_send)
     return (
-      <Send data={txDetail} chainEnum={chain.enum} isSpeedUp={isSpeedUp} />
+      <Send
+        data={txDetail}
+        chainEnum={chain.enum}
+        isSpeedUp={isSpeedUp}
+        raw={raw}
+      />
     );
   if (txDetail.type_call)
     return (
@@ -686,7 +703,11 @@ const SignTx = ({ params, origin }: SignTxProps) => {
                 isReady={isReady}
                 txDetail={txDetail}
                 chain={chain}
-                raw={params.data[0]}
+                raw={{
+                  ...tx,
+                  nonce: realNonce || tx.nonce,
+                  gas: gasLimit,
+                }}
                 onChange={handleTxChange}
                 tx={{
                   ...tx,
