@@ -13,6 +13,8 @@ import { ExplainTxResponse } from 'background/service/openapi';
 import { Account } from 'background/service/preference';
 import { intToHex } from 'ethereumjs-util';
 import { useWallet, timeago, isSameAddress } from 'ui/utils';
+import { validateEOASign, validateETHSign } from 'ui/utils/gnosis';
+import { SafeTransactionDataPartial } from '@gnosis.pm/safe-core-sdk-types';
 import { splitNumberByStep } from 'ui/utils/number';
 import { PageHeader } from 'ui/component';
 import AccountSelectDrawer from 'ui/component/AccountSelectDrawer';
@@ -36,6 +38,31 @@ export type ConfirmationProps = {
   type: string;
   hash: string;
   signature: string | null;
+};
+
+const validateConfirmation = (
+  txHash: string,
+  signature: string,
+  ownerAddress: string,
+  type: string,
+  version: string,
+  safeAddress: string,
+  tx: SafeTransactionDataPartial,
+  networkId: number
+) => {
+  switch (type) {
+    case 'EOA':
+      return validateEOASign(
+        signature,
+        ownerAddress,
+        tx,
+        version,
+        safeAddress,
+        networkId
+      );
+    case 'ETH_SIGN':
+      return validateETHSign(signature, txHash, ownerAddress);
+  }
 };
 
 const TransactionConfirmations = ({
@@ -384,11 +411,38 @@ const GnosisTransactionQueue = () => {
       setSafeInfo(info);
       setNetworkId(network);
       setTransactions(
-        txs.results.sort((a, b) => {
-          return dayjs(a.submissionDate).isAfter(dayjs(b.submissionDate))
-            ? -1
-            : 1;
-        })
+        txs.results
+          .filter((safeTx) => {
+            const tx: SafeTransactionDataPartial = {
+              data: safeTx.data || '0x',
+              gasPrice: safeTx.gasPrice ? Number(safeTx.gasPrice) : 0,
+              gasToken: safeTx.gasToken,
+              refundReceiver: safeTx.refundReceiver,
+              to: safeTx.to,
+              value: safeTx.value,
+              safeTxGas: safeTx.safeTxGas,
+              nonce: safeTx.nonce,
+              operation: safeTx.operation,
+              baseGas: safeTx.baseGas,
+            };
+            return safeTx.confirmations.every((confirm) =>
+              validateConfirmation(
+                safeTx.safeTxHash,
+                confirm.signature,
+                confirm.owner,
+                confirm.signatureType,
+                info.version,
+                info.address,
+                tx,
+                Number(network)
+              )
+            );
+          })
+          .sort((a, b) => {
+            return dayjs(a.submissionDate).isAfter(dayjs(b.submissionDate))
+              ? -1
+              : 1;
+          })
       );
     } catch (e) {
       setIsLoading(false);

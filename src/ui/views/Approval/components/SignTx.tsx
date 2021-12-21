@@ -67,7 +67,7 @@ const normalizeTxParams = (tx) => {
     copy.gas = normalizeHex(copy.gas);
   }
   if ('gasLimit' in copy) {
-    copy.gas = normalizeHex(copy.gas);
+    copy.gas = normalizeHex(copy.gasLimit);
   }
   if ('gasPrice' in copy) {
     copy.gasPrice = normalizeHex(copy.gasPrice);
