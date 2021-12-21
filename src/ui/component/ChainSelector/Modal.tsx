@@ -8,11 +8,13 @@ import { useWallet } from 'ui/utils';
 import { CHAINS_ENUM } from 'consts';
 import eventBus from '@/eventBus';
 import ChainCard from '../ChainCard';
+import clsx from 'clsx';
 interface ChainSelectorModalProps {
   visible: boolean;
   value: CHAINS_ENUM;
   onCancel(): void;
   onChange(val: CHAINS_ENUM): void;
+  connection?: boolean;
 }
 
 const ChainSelectorModal = ({
@@ -20,12 +22,11 @@ const ChainSelectorModal = ({
   onCancel,
   onChange,
   value,
+  connection = false,
 }: ChainSelectorModalProps) => {
   const wallet = useWallet();
   const history = useHistory();
   const [currentAccount, setCurrentAccount] = useState<Account | null>(null);
-  const [, chainBalances] = useCurrentBalance(currentAccount?.address);
-  const [allChains, setAllChains] = useState<Chain[]>([]);
   const [savedChainsData, setSavedChainsData] = useState<Chain[]>([]);
 
   const handleCancel = () => {
@@ -36,7 +37,12 @@ const ChainSelectorModal = ({
     onChange(val);
   };
   const goToChainManagement = () => {
-    history.push('/settings/chain');
+    history.push({
+      pathname: '/settings/chain',
+      state: {
+        connection,
+      },
+    });
   };
   const init = async () => {
     const savedChains = await wallet.getSavedChains();
@@ -47,7 +53,6 @@ const ChainSelectorModal = ({
       })
       .filter(Boolean);
     setSavedChainsData(savedChainsData);
-    setAllChains(getSupportChains);
   };
 
   useEffect(() => {
@@ -69,7 +74,7 @@ const ChainSelectorModal = ({
       closable={false}
       visible={visible}
       onCancel={handleCancel}
-      className="chain-selector__modal"
+      className={clsx('chain-selector__modal', connection && 'connection')}
       transitionName=""
       maskTransitionName=""
     >

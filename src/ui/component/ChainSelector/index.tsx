@@ -38,6 +38,7 @@ const ChainSelector = ({ value, onChange }: ChainSelectorProps) => {
         visible={showSelectorModal}
         onChange={handleChange}
         onCancel={handleCancel}
+        connection
       />
     </>
   );

@@ -1,12 +1,12 @@
 import React, { useState, useEffect } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { useWallet } from 'ui/utils';
 import { PageHeader, StrayPageWithButton, ChainCard } from 'ui/component';
 import { Chain } from 'background/service/chain';
 import DragAndDropList from './components/DragAndDropList';
 import './style.less';
-export const ChainManagementList = ({ inStart = true }) => {
+export const ChainManagementList = ({ inStart = true, connection = false }) => {
   const wallet = useWallet();
   const { t } = useTranslation();
   const [allChains, setAllChains] = useState<Chain[]>([]);
@@ -142,10 +142,16 @@ export const StartChainManagement = () => {
 
 const ChainManagement = () => {
   const { t } = useTranslation();
+  const { state } = useLocation<{
+    connection?: boolean;
+  }>();
+  const { connection = false } = state ?? {};
   return (
     <div className="chain-management">
-      <PageHeader>{t('Chain Management')}</PageHeader>
-      <ChainManagementList />
+      <PageHeader>
+        {t(connection ? 'All Chain' : 'Chain Management')}
+      </PageHeader>
+      <ChainManagementList connection={connection} />
     </div>
   );
 };
