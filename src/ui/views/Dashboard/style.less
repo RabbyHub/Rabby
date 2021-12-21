@@ -366,6 +366,9 @@
   .ant-modal-content {
     background: #ffffff;
   }
+  .ant-modal-body {
+    max-height: 510px;
+  }
   .brand-name {
     font-size: 20px;
     color: #13141a;
@@ -405,6 +408,23 @@
     border-top: 1px solid #E5E9EF;
     margin-top: 20px;
     padding-top: 16px;
+    min-height: 107px;
+    .threshold {
+      color: #13141A;
+    }
+    .loading-wrapper {
+      height: 200px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-direction: column;
+      .icon-loading {
+        width: 28px;
+        height: 28px;
+        animation: spining 1.5s infinite linear;
+        margin-bottom: 12px;
+      }
+    }
     .admin-list {
       margin: 0;
       li {
