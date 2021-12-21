@@ -306,7 +306,7 @@ export const CHAINS: Record<string, Chain> = {
     id: 199,
     serverId: 'btt',
     network: '199',
-    name: 'BitTorrent',
+    name: 'BTTC',
     nativeTokenSymbol: 'BTT',
     nativeTokenAddress: 'btt',
     enum: CHAINS_ENUM.BTT,
