@@ -91,7 +91,6 @@ export class EthereumProvider extends EventEmitter {
       case 'personal_sign':
         return new Promise((resolve, reject) => {
           notificationService.on('resolve', (data) => {
-            console.log('>>> resolve approval', data);
             if (data.uiRequestComponent) return;
             resolve(data);
           });

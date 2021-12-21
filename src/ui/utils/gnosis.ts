@@ -89,12 +89,12 @@ export const validateEOASign = (
       nonce: Number(tx.nonce),
     },
   };
-  console.log('typedData', typedData);
+
   const address = recoverTypedSignature({
     data: typedData as any,
     signature,
     version: SignTypedDataVersion.V4,
   });
-  console.log('address', address);
+
   return isSameAddress(address, owner);
 };

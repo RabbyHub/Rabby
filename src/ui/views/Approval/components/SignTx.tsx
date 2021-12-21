@@ -561,7 +561,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     }
     if (currentAccount.type === KEYRING_TYPE.GnosisKeyring || isGnosis) {
       const networkId = await wallet.getGnosisNetworkId(currentAccount.address);
-      console.log(chainId || CHAINS[site!.chain].id, networkId);
+
       if ((chainId || CHAINS[site!.chain].id) !== Number(networkId)) {
         setCanProcess(false);
         setCantProcessReason(t('multiSignChainNotMatch'));
