@@ -188,6 +188,16 @@ class GnosisKeyring extends EventEmitter {
     this.currentTransaction.addSignature(sig);
   }
 
+  async getOwners(address: string, version: string, provider) {
+    const networkId = this.networkIdMap[address.toLowerCase()];
+    if (!networkId) {
+      throw new Error(`No networkId in keyring for address ${address}`);
+    }
+    const safe = new Safe(address, version, provider, networkId);
+    const owners = await safe.getOwners();
+    return owners;
+  }
+
   async execTransaction({
     safeAddress,
     transaction,

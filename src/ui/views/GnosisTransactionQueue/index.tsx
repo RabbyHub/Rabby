@@ -13,7 +13,11 @@ import { ExplainTxResponse } from 'background/service/openapi';
 import { Account } from 'background/service/preference';
 import { intToHex } from 'ethereumjs-util';
 import { useWallet, timeago, isSameAddress } from 'ui/utils';
-import { validateEOASign, validateETHSign } from 'ui/utils/gnosis';
+import {
+  validateEOASign,
+  validateETHSign,
+  crossCompareOwners,
+} from 'ui/utils/gnosis';
 import { SafeTransactionDataPartial } from '@gnosis.pm/safe-core-sdk-types';
 import { splitNumberByStep } from 'ui/utils/number';
 import { PageHeader } from 'ui/component';
@@ -48,8 +52,10 @@ const validateConfirmation = (
   version: string,
   safeAddress: string,
   tx: SafeTransactionDataPartial,
-  networkId: number
+  networkId: number,
+  owners: string[]
 ) => {
+  if (!owners.find((owner) => isSameAddress(owner, ownerAddress))) return false;
   switch (type) {
     case 'EOA':
       return validateEOASign(
@@ -407,8 +413,17 @@ const GnosisTransactionQueue = () => {
         Safe.getSafeInfo(account.address, network),
         Safe.getPendingTransactions(account.address, network),
       ]);
+      const owners = await wallet.getGnosisOwners(
+        account,
+        account.address,
+        info.version
+      );
+      const comparedOwners = crossCompareOwners(info.owners, owners);
       setIsLoading(false);
-      setSafeInfo(info);
+      setSafeInfo({
+        ...info,
+        owners: comparedOwners,
+      });
       setNetworkId(network);
       setTransactions(
         txs.results
@@ -434,7 +449,8 @@ const GnosisTransactionQueue = () => {
                 info.version,
                 info.address,
                 tx,
-                Number(network)
+                Number(network),
+                comparedOwners
               )
             );
           })
