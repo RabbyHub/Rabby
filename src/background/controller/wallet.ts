@@ -40,7 +40,6 @@ import {
   setPageStateCacheWhenPopupClose,
   isSameAddress,
 } from 'background/utils';
-import { Chain } from '../service/chain';
 
 const stashKeyrings: Record<string, any> = {};
 

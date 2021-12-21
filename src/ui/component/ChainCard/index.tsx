@@ -18,8 +18,6 @@ const ChainCard = ({
   chain: Chain;
   saveToPin?(chain: string): void;
   removeFromPin?(chain: string): void;
-  width?: number;
-  height?: number;
   className?: string;
 }) => {
   const [isHovering, hoverProps] = useHover();
