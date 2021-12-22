@@ -33,11 +33,11 @@ const Settings = () => {
       content: t('Connected websites'),
       onClick: () => history.push('/settings/sites'),
     },
-    {
-      leftIcon: IconSwitch,
-      content: t('Switching languages'),
-      onClick: () => history.push('/settings/switch-lang'),
-    },
+    // {
+    //   leftIcon: IconSwitch,
+    //   content: t('Switching languages'),
+    //   onClick: () => history.push('/settings/switch-lang'),
+    // },
     {
       leftIcon: IconAdvanceOption,
       content: t('Advanced Options'),
@@ -74,7 +74,7 @@ const Settings = () => {
           {data.content}
         </Field>
       ))}
-      <div className="text-12 text-gray-comment text-center mt-40">
+      <div className="text-12 text-gray-comment text-center absolute bottom-[50px] w-full left-0">
         {process.env.version}
       </div>
     </div>

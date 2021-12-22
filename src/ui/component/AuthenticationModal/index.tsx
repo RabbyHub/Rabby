@@ -30,7 +30,7 @@ const AuthenticationModal = ({
       }
       onFinished();
       setVisible(false);
-    } catch (e) {
+    } catch (e: any) {
       form.setFields([
         {
           name: 'password',

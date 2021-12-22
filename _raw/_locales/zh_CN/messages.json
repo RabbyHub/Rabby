@@ -965,5 +965,8 @@
   },
   "Portfolio": {
     "message": "投资组合"
+  },
+  "multiSignChainNotMatch": {
+    "message": "多签地址不在当前链上，无法进行交易"
   }
 }

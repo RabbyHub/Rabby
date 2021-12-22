@@ -17,8 +17,13 @@ import SimpleKeyring from '@rabby-wallet/eth-simple-keyring';
 import HdKeyring from '@rabby-wallet/eth-hd-keyring';
 import TrezorKeyring from '@rabby-wallet/eth-trezor-keyring';
 import OnekeyKeyring from './eth-onekey-keyring';
+import LatticeKeyring from '@rabby-wallet/eth-lattice-keyring';
 import WatchKeyring from '@rabby-wallet/eth-watch-keyring';
 import WalletConnectKeyring from '@rabby-wallet/eth-walletconnect-keyring';
+import GnosisKeyring, {
+  TransactionBuiltEvent,
+  TransactionConfirmedEvent,
+} from './eth-gnosis-keyring';
 import preference from '../preference';
 import i18n from '../i18n';
 import { KEYRING_TYPE, HARDWARE_KEYRING_TYPES, EVENTS } from 'consts';
@@ -34,6 +39,8 @@ export const KEYRING_SDK_TYPES = {
   OnekeyKeyring,
   WatchKeyring,
   WalletConnectKeyring,
+  GnosisKeyring,
+  LatticeKeyring,
 };
 
 export const KEYRING_CLASS = {
@@ -44,9 +51,11 @@ export const KEYRING_CLASS = {
     TREZOR: TrezorKeyring.type,
     LEDGER: LedgerBridgeKeyring.type,
     ONEKEY: OnekeyKeyring.type,
+    GRIDPLUS: LatticeKeyring.type,
   },
   WATCH: WatchKeyring.type,
   WALLETCONNECT: WalletConnectKeyring.type,
+  GNOSIS: GnosisKeyring.type,
 };
 
 interface MemStoreState {
@@ -719,7 +728,6 @@ class KeyringService extends EventEmitter {
    */
   async _restoreKeyring(serialized: any): Promise<any> {
     const { type, data } = serialized;
-
     const Keyring = this.getKeyringClassForType(type);
     const keyring = new Keyring();
     await keyring.deserialize(data);
@@ -749,6 +757,20 @@ class KeyringService extends EventEmitter {
         eventBus.emit(EVENTS.broadcastToUI, {
           method: EVENTS.WALLETCONNECT.STATUS_CHANGED,
           params: data,
+        });
+      });
+    }
+    if (keyring.type === KEYRING_CLASS.GNOSIS) {
+      (keyring as GnosisKeyring).on(TransactionBuiltEvent, (data) => {
+        eventBus.emit(EVENTS.broadcastToUI, {
+          method: TransactionBuiltEvent,
+          params: data,
+        });
+        (keyring as GnosisKeyring).on(TransactionConfirmedEvent, (data) => {
+          eventBus.emit(EVENTS.broadcastToUI, {
+            method: TransactionConfirmedEvent,
+            params: data,
+          });
         });
       });
     }

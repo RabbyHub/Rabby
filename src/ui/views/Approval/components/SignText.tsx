@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { Button, Tooltip } from 'antd';
+import { Button, Tooltip, message } from 'antd';
 import { useTranslation } from 'react-i18next';
 import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
 import { KEYRING_CLASS, KEYRING_TYPE } from 'consts';
@@ -9,6 +9,7 @@ import {
   SecurityCheckResponse,
   SecurityCheckDecision,
 } from 'background/service/openapi';
+import { Account } from 'background/service/preference';
 import { Modal } from 'ui/component';
 import SecurityCheckBar from './SecurityCheckBar';
 import SecurityCheckDetail from './SecurityCheckDetail';
@@ -24,19 +25,22 @@ interface SignTextProps {
     icon: string;
     name: string;
   };
+  isGnosis?: boolean;
+  account?: Account;
 }
 
 export const WaitingSignComponent = {
   // [KEYRING_CLASS.HARDWARE.LEDGER]: 'HardwareWaiting',
   // [KEYRING_CLASS.WATCH]: 'WatchAdrressWaiting',
   [KEYRING_CLASS.WALLETCONNECT]: 'WatchAdrressWaiting',
+  // [KEYRING_CLASS.GNOSIS]: 'GnosisWaiting',
 };
 
 const SignText = ({ params }: { params: SignTextProps }) => {
   const [, resolveApproval, rejectApproval] = useApproval();
   const wallet = useWallet();
   const { t } = useTranslation();
-  const { data, session } = params;
+  const { data, session, isGnosis = false } = params;
   const [hexData] = data;
   const signText = hex2Text(hexData);
   const [showSecurityCheckDetail, setShowSecurityCheckDetail] = useState(false);
@@ -51,18 +55,19 @@ const SignText = ({ params }: { params: SignTextProps }) => {
   ] = useState<SecurityCheckResponse | null>(null);
   const [explain, setExplain] = useState('');
   const [isWatch, setIsWatch] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
 
   const handleSecurityCheck = async () => {
     setSecurityCheckStatus('loading');
     const currentAccount = await wallet.getCurrentAccount();
     const check = await wallet.openapi.checkText(
-      currentAccount!.address,
+      isGnosis ? params.account!.address : currentAccount!.address,
       session.origin,
       hexData
     );
     const serverExplain = await wallet.openapi.explainText(
       session.origin,
-      currentAccount!.address,
+      isGnosis ? params.account!.address : currentAccount!.address,
       hexData
     );
     setExplain(serverExplain.comment);
@@ -102,6 +107,49 @@ const SignText = ({ params }: { params: SignTextProps }) => {
         // NOTHING
       }
     }
+    if (isGnosis && params.account) {
+      if (WaitingSignComponent[params.account.type]) {
+        wallet.signPersonalMessage(
+          params.account.type,
+          params.account.address,
+          params.data[0],
+          {
+            brandName: params.account.brandName,
+          }
+        );
+        resolveApproval({
+          uiRequestComponent: WaitingSignComponent[params.account.type],
+          type: params.account.type,
+          address: params.account.address,
+          data: params.data,
+          isGnosis: true,
+          account: params.account,
+        });
+      } else {
+        try {
+          setIsLoading(true);
+          const result = await wallet.signPersonalMessage(
+            params.account.type,
+            params.account.address,
+            params.data[0]
+          );
+          const sigs = await wallet.getGnosisTransactionSignatures();
+          if (sigs.length > 0) {
+            await wallet.gnosisAddConfirmation(params.account.address, result);
+          } else {
+            await wallet.gnosisAddSignature(params.account.address, result);
+            await wallet.postGnosisTransaction();
+          }
+          setIsLoading(false);
+          resolveApproval(result, false, true);
+        } catch (e) {
+          message.error(e.message);
+          setIsLoading(false);
+        }
+      }
+      return;
+    }
+
     if (currentAccount?.type && WaitingSignComponent[currentAccount?.type]) {
       resolveApproval({
         uiRequestComponent: WaitingSignComponent[currentAccount?.type],
@@ -133,13 +181,16 @@ const SignText = ({ params }: { params: SignTextProps }) => {
     if (currentAccount.type === KEYRING_TYPE.WatchAddressKeyring) {
       setIsWatch(true);
     }
+    if (currentAccount.type === KEYRING_TYPE.GnosisKeyring && !params.account) {
+      setIsWatch(true);
+    }
   };
   useEffect(() => {
     checkWachMode();
   }, []);
   return (
     <>
-      <AccountCard />
+      <AccountCard account={params.account} />
       <div className="approval-text">
         <p className="section-title">
           {t('Sign Text')}
@@ -212,6 +263,7 @@ const SignText = ({ params }: { params: SignTextProps }) => {
               size="large"
               className="w-[172px]"
               onClick={() => handleAllow()}
+              loading={isLoading}
             >
               {securityCheckStatus === 'pass' ||
               securityCheckStatus === 'pending'

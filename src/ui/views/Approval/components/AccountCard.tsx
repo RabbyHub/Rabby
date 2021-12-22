@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
 import { Account } from 'background/service/preference';
 import { useWallet } from 'ui/utils';
 import { splitNumberByStep } from 'ui/utils/number';
@@ -11,6 +10,7 @@ import clsx from 'clsx';
 const AccountCard = ({
   icons,
   alianName,
+  account,
 }: {
   icons?: {
     mnemonic: string;
@@ -18,10 +18,12 @@ const AccountCard = ({
     watch: string;
   };
   alianName?: string | null;
+  account?: Account;
 }) => {
-  const { t } = useTranslation();
   const wallet = useWallet();
-  const [currentAccount, setCurrentAccount] = useState<Account | null>(null);
+  const [currentAccount, setCurrentAccount] = useState<Account | null>(
+    account || null
+  );
   const [currentAccountAlianName, setCurrentAccountAlianName] = useState('');
   const getAccountIcon = (type: string | undefined) => {
     if (currentAccount && type) {
@@ -46,11 +48,11 @@ const AccountCard = ({
   };
 
   const init = async () => {
-    const account = await wallet.syncGetCurrentAccount();
+    const currentAccount = account || (await wallet.syncGetCurrentAccount());
+    setCurrentAccount(currentAccount);
     const alianName = await wallet.getAlianName(
-      account?.address?.toLowerCase()
+      currentAccount?.address?.toLowerCase()
     );
-    setCurrentAccount(account);
     setCurrentAccountAlianName(alianName);
   };
 

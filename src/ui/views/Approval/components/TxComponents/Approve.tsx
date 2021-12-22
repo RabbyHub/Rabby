@@ -5,11 +5,12 @@ import BigNumber from 'bignumber.js';
 import { message, Button, Form, Input, Modal } from 'antd';
 import { useTranslation, Trans } from 'react-i18next';
 import { AddressViewer } from 'ui/component';
-import { CHAINS_ENUM, CHAINS } from 'consts';
-import { ellipsisOverflowedText } from 'ui/utils';
+import { CHAINS_ENUM, CHAINS, KEYRING_TYPE } from 'consts';
+import { ellipsisOverflowedText, useWallet } from 'ui/utils';
 import { getCustomTxParamsData } from 'ui/utils/transaction';
 import { splitNumberByStep } from 'ui/utils/number';
 import { ExplainTxResponse, TokenItem, Tx } from 'background/service/openapi';
+import { Account } from 'background/service/preference';
 import BalanceChange from './BalanceChange';
 import SpeedUpCorner from './SpeedUpCorner';
 import IconCopy from 'ui/assets/copy-no-border.svg';
@@ -111,9 +112,12 @@ const Approve = ({
   tx,
   isSpeedUp,
 }: ApproveProps) => {
+  const wallet = useWallet();
   const detail = data.type_token_approval!;
   const chain = CHAINS[chainEnum];
   const [editApproveModalVisible, setEditApproveModalVisible] = useState(false);
+  const [currentAccount, setCurrentAccount] = useState<Account | null>(null);
+  const [isGnosis, setIsGnosis] = useState(false);
   const { t } = useTranslation();
   const totalTokenPrice = new BigNumber(
     ((detail.token.raw_amount || 0) / Math.pow(10, detail.token.decimals)) *
@@ -161,6 +165,21 @@ const Approve = ({
     });
   };
 
+  const init = async () => {
+    const account = await wallet.getCurrentAccount();
+    setCurrentAccount(account);
+  };
+
+  useEffect(() => {
+    if (currentAccount) {
+      setIsGnosis(currentAccount.type === KEYRING_TYPE.GnosisKeyring);
+    }
+  }, [currentAccount]);
+
+  useEffect(() => {
+    init();
+  }, []);
+
   return (
     <div className="approve">
       <p className="section-title">
@@ -186,9 +205,15 @@ const Approve = ({
                   {ellipsisOverflowedText(detail.token_symbol, 4)}
                 </span>
               </span>
-              <Button type="link" onClick={handleEditApproveAmount}>
-                {t('Edit')}
-              </Button>
+              {!isGnosis && (
+                <Button
+                  type="link"
+                  onClick={handleEditApproveAmount}
+                  className="edit-btn"
+                >
+                  {t('Edit')}
+                </Button>
+              )}
             </p>
             <p
               className="token-value"

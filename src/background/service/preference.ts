@@ -44,7 +44,7 @@ interface PreferenceStore {
   pinnedChain: string[];
 }
 
-const SUPPORT_LOCALES = ['en', 'zh_CN'];
+const SUPPORT_LOCALES = ['en'];
 
 class PreferenceService {
   store!: PreferenceStore;
@@ -74,7 +74,7 @@ class PreferenceService {
         pinnedChain: [],
       },
     });
-    if (!this.store.locale) {
+    if (!this.store.locale || this.store.locale !== defaultLang) {
       this.store.locale = defaultLang;
     }
     i18n.changeLanguage(this.store.locale);

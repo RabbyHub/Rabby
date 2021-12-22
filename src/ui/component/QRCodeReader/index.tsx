@@ -27,7 +27,7 @@ const QRCodeReader = ({
         videoEl.current!
       );
       onSuccess(result.getText());
-    } catch (e) {
+    } catch (e: any) {
       if (!/ended/.test(e.message)) {
         // Magic error message for Video stream has ended before any code could be detected
         onError && onError();

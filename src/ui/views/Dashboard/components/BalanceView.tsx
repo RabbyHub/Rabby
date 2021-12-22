@@ -1,15 +1,16 @@
-import React from 'react';
+import React, { useState, useEffect } from 'react';
 import { Popover } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { Spin } from 'ui/component';
 import { useCurrentBalance } from 'ui/component/AddressList/AddressItem';
-import { splitNumberByStep } from 'ui/utils';
-import { CHAINS } from 'consts';
+import { splitNumberByStep, useWallet } from 'ui/utils';
+import { CHAINS, KEYRING_TYPE, CHAINS_ENUM } from 'consts';
 import useConfirmExternalModal from './ConfirmOpenExternalModal';
 import { SvgIconOffline } from 'ui/assets';
 import IconArrowRight from 'ui/assets/arrow-right.svg';
 import IconExternal from 'ui/assets/open-external-gray.svg';
 import IconChainMore from 'ui/assets/chain-more.svg';
+
 const BalanceView = ({ currentAccount }) => {
   const [balance, chainBalances] = useCurrentBalance(
     currentAccount?.address,
@@ -17,10 +18,37 @@ const BalanceView = ({ currentAccount }) => {
   );
   const _openInTab = useConfirmExternalModal();
   const { t } = useTranslation();
+  const wallet = useWallet();
+  const [isGnosis, setIsGnosis] = useState(false);
+  const [gnosisNetwork, setGnosisNetwork] = useState(CHAINS[CHAINS_ENUM.ETH]);
 
   const handleGotoProfile = () => {
     _openInTab(`https://debank.com/profile/${currentAccount?.address}`);
   };
+
+  const handleIsGnosisChange = async () => {
+    if (!currentAccount) return;
+    const networkId = await wallet.getGnosisNetworkId(currentAccount.address);
+    const network = Object.values(CHAINS).find(
+      (chain) => chain.id === Number(networkId)
+    );
+    if (network) {
+      setGnosisNetwork(network);
+    }
+  };
+
+  useEffect(() => {
+    if (currentAccount) {
+      setIsGnosis(currentAccount.type === KEYRING_TYPE.GnosisKeyring);
+    }
+  }, [currentAccount]);
+
+  useEffect(() => {
+    console.log(isGnosis, currentAccount);
+    if (isGnosis) {
+      handleIsGnosisChange();
+    }
+  }, [isGnosis, currentAccount]);
 
   const balancePopoverContent = (
     <ul>
@@ -53,6 +81,19 @@ const BalanceView = ({ currentAccount }) => {
     </ul>
   );
   const displayChainList = () => {
+    if (isGnosis) {
+      return (
+        <>
+          <img
+            src={gnosisNetwork.whiteLogo || gnosisNetwork.logo}
+            className="icon icon-chain opacity-60"
+          />
+          <span className="ml-2 text-white opacity-40">
+            On {gnosisNetwork.name}
+          </span>
+        </>
+      );
+    }
     const result = chainBalances.map((item) => (
       <img
         src={item.whiteLogo || item.logo_url}
@@ -101,7 +142,7 @@ const BalanceView = ({ currentAccount }) => {
               placement="bottomLeft"
               overlayClassName="balance-popover"
             >
-              <div className="flex">{displayChainList()}</div>
+              <div className="flex items-center">{displayChainList()}</div>
             </Popover>
           ) : (
             t('No assets')

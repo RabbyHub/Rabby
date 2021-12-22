@@ -51,7 +51,7 @@ const WalletConnectTemplate = () => {
     );
     setWalletconnectUri(uri);
     await wallet.setPageStateCache({
-      path: history.location.pathname,
+      path: '/import/wallet-connect',
       params: {},
       states: {
         uri,
