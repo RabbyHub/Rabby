@@ -58,16 +58,24 @@ const validateConfirmation = (
   if (!owners.find((owner) => isSameAddress(owner, ownerAddress))) return false;
   switch (type) {
     case 'EOA':
-      return validateEOASign(
-        signature,
-        ownerAddress,
-        tx,
-        version,
-        safeAddress,
-        networkId
-      );
+      try {
+        return validateEOASign(
+          signature,
+          ownerAddress,
+          tx,
+          version,
+          safeAddress,
+          networkId
+        );
+      } catch (e) {
+        return false;
+      }
     case 'ETH_SIGN':
-      return validateETHSign(signature, txHash, ownerAddress);
+      try {
+        return validateETHSign(signature, txHash, ownerAddress);
+      } catch (e) {
+        return false;
+      }
     default:
       return false;
   }
