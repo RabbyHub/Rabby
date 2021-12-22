@@ -18,7 +18,7 @@ const ImportPrivateKey = () => {
         return { ...item, index: index + 1 };
       });
       history.replace({
-        pathname: '/import/success',
+        pathname: '/popup/import/success',
         state: {
           accounts: successShowAccounts,
           title: t('Successfully created'),
