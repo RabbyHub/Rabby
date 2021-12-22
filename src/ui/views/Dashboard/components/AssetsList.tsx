@@ -1,8 +1,10 @@
 import clsx from 'clsx';
 import React, { useRef } from 'react';
+import { useTranslation } from 'react-i18next';
 import { FixedSizeList } from 'react-window';
 import { TokenWithChain } from 'ui/component';
 import { splitNumberByStep, useHover, openInTab } from 'ui/utils';
+import IconLoading from 'ui/assets/loading.svg';
 
 const Row = (props) => {
   const { data, index, style } = props;
@@ -31,22 +33,34 @@ const Row = (props) => {
     </div>
   );
 };
-const AssetsList = ({ assets, defiAnimate }) => {
+const AssetsList = ({ assets, defiAnimate, startAnimate = false }) => {
+  const { t } = useTranslation();
   const fixedList = useRef<FixedSizeList>();
-
+  if (!startAnimate) {
+    return <></>;
+  }
   return (
     <div className={clsx('tokenList', defiAnimate)}>
-      <FixedSizeList
-        height={468}
-        width="100%"
-        itemData={assets}
-        itemCount={assets.length}
-        itemSize={48}
-        ref={fixedList}
-        style={{ zIndex: 10, 'overflow-x': 'hidden', paddingBottom: 50 }}
-      >
-        {Row}
-      </FixedSizeList>
+      {assets.length <= 0 ? (
+        <>
+          <img className="icon icon-loading" src={IconLoading} />
+          <p className="text-14 text-gray-content mt-24">
+            {t('Loading Tokens')}
+          </p>
+        </>
+      ) : (
+        <FixedSizeList
+          height={468}
+          width="100%"
+          itemData={assets}
+          itemCount={assets.length}
+          itemSize={48}
+          ref={fixedList}
+          style={{ zIndex: 10, 'overflow-x': 'hidden', paddingBottom: 50 }}
+        >
+          {Row}
+        </FixedSizeList>
+      )}
     </div>
   );
 };

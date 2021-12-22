@@ -582,8 +582,13 @@ const Dashboard = () => {
               setStartSearch(false);
             }}
             tokenAnimate={tokenAnimate}
+            startAnimate={startAnimate}
           />
-          <AssetsList assets={assets} defiAnimate={defiAnimate} />
+          <AssetsList
+            assets={assets}
+            defiAnimate={defiAnimate}
+            startAnimate={startAnimate}
+          />
           <img
             src={IconDrawer}
             className={clsx(

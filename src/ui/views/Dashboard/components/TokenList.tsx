@@ -9,6 +9,7 @@ import IconSearch from 'ui/assets/tokenSearch.png';
 import IconClose from 'ui/assets/searchIconClose.png';
 import IconAddToken from 'ui/assets/addtokenplus.png';
 import IconRemoveToken from 'ui/assets/removetoken.png';
+import IconLoading from 'ui/assets/loading.svg';
 import clsx from 'clsx';
 const Row = (props) => {
   const { data, index, style } = props;
@@ -71,6 +72,7 @@ const TokenList = ({
   removeToken,
   addToken,
   tokenAnimate,
+  startAnimate,
 }) => {
   const { t } = useTranslation();
   const fixedList = useRef<FixedSizeList>();
@@ -95,6 +97,9 @@ const TokenList = ({
     setQuery(null);
     closeSearch();
   };
+  if (!startAnimate) {
+    return <></>;
+  }
   return (
     <div className={clsx('tokenList', tokenAnimate)}>
       {startSearch && (
@@ -117,35 +122,45 @@ const TokenList = ({
         </div>
       )}
       {noSeachResult && <div className="no-added-token">No results</div>}
-      {!emptyAdded && !noSeachResult && (
-        <FixedSizeList
-          height={468}
-          width="100%"
-          itemData={{
-            list: startSearch
-              ? query
-                ? searchTokens
-                : displayAddedToken
-              : tokens,
-            startSearch,
-            addedToken,
-            removeToken,
-            addToken,
-            query,
-          }}
-          itemCount={
-            startSearch
-              ? query
-                ? searchTokens.length
-                : displayAddedToken.length
-              : tokens.length
-          }
-          itemSize={52}
-          ref={fixedList}
-          style={{ zIndex: 10, 'overflow-x': 'hidden', paddingBottom: 50 }}
-        >
-          {Row}
-        </FixedSizeList>
+      {tokens.length <= 0 ? (
+        <>
+          <img className="icon icon-loading" src={IconLoading} />
+          <p className="text-14 text-gray-content mt-24">
+            {t('Loading Tokens')}
+          </p>
+        </>
+      ) : (
+        !emptyAdded &&
+        !noSeachResult && (
+          <FixedSizeList
+            height={468}
+            width="100%"
+            itemData={{
+              list: startSearch
+                ? query
+                  ? searchTokens
+                  : displayAddedToken
+                : tokens,
+              startSearch,
+              addedToken,
+              removeToken,
+              addToken,
+              query,
+            }}
+            itemCount={
+              startSearch
+                ? query
+                  ? searchTokens.length
+                  : displayAddedToken.length
+                : tokens.length
+            }
+            itemSize={52}
+            ref={fixedList}
+            style={{ zIndex: 10, 'overflow-x': 'hidden', paddingBottom: 50 }}
+          >
+            {Row}
+          </FixedSizeList>
+        )
       )}
     </div>
   );
