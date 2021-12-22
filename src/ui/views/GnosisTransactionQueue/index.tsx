@@ -68,6 +68,8 @@ const validateConfirmation = (
       );
     case 'ETH_SIGN':
       return validateETHSign(signature, txHash, ownerAddress);
+    default:
+      return false;
   }
 };
 
