@@ -2,16 +2,14 @@ import clsx from 'clsx';
 import React, { useRef } from 'react';
 import { FixedSizeList } from 'react-window';
 import { TokenWithChain } from 'ui/component';
-import { splitNumberByStep, useHover } from 'ui/utils';
-import useConfirmExternalModal from './ConfirmOpenExternalModal';
+import { splitNumberByStep, useHover, openInTab } from 'ui/utils';
 
 const Row = (props) => {
   const { data, index, style } = props;
   const token = data[index];
   const [isHovering, hoverProps] = useHover();
-  const _openInTab = useConfirmExternalModal();
   const handleGotoProfile = () => {
-    _openInTab(token?.site_url);
+    openInTab(token?.site_url);
   };
 
   return (
@@ -23,10 +21,10 @@ const Row = (props) => {
     >
       <TokenWithChain token={token} height={'24px'} width={'24px'} noRound />
       <div className="middle">
-        <div className="token-name text-13">{token.name}</div>
+        <div className="token-name text-13 font-medium">{token.name}</div>
       </div>
       <div className="right">
-        <div className="token-name">
+        <div className="token-name font-medium text-13">
           ${splitNumberByStep((token.asset_usd_value || 0).toFixed(4))}
         </div>
       </div>
@@ -45,7 +43,7 @@ const AssetsList = ({ assets, defiAnimate }) => {
         itemCount={assets.length}
         itemSize={48}
         ref={fixedList}
-        style={{ zIndex: 10, 'overflow-x': 'hidden' }}
+        style={{ zIndex: 10, 'overflow-x': 'hidden', paddingBottom: 50 }}
       >
         {Row}
       </FixedSizeList>

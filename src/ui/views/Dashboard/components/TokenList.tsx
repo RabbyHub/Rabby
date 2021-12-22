@@ -19,7 +19,7 @@ const Row = (props) => {
     addedToken.length > 0 && addedToken.find((item) => item === token.id);
   return (
     <div className="token-item" style={style}>
-      <TokenWithChain token={token} hideConer />
+      <TokenWithChain token={token} hideConer width={'24px'} height={'24px'} />
       <div className="middle">
         <div className="token-amount">
           {startSearch
@@ -44,7 +44,7 @@ const Row = (props) => {
             ${splitNumberByStep((token.amount * token.price || 0)?.toFixed(4))}
           </div>
           <div className="token-name">
-            ${splitNumberByStep((token.price || 0).toFixed(4))}
+            @{splitNumberByStep((token.price || 0).toFixed(4))}
           </div>
         </div>
       ) : (
@@ -54,7 +54,7 @@ const Row = (props) => {
             onClick={() =>
               isAdded ? removeToken(token?.id) : addToken(token?.id)
             }
-            className="add-token-icon leading-none"
+            className="add-token-icon"
           />
         </div>
       )}
@@ -98,7 +98,7 @@ const TokenList = ({
   return (
     <div className={clsx('tokenList', tokenAnimate)}>
       {startSearch && (
-        <div className="search-wrapper">
+        <div className={clsx('search-wrapper', query && 'active')}>
           {' '}
           <Input
             size="large"
@@ -140,9 +140,9 @@ const TokenList = ({
                 : displayAddedToken.length
               : tokens.length
           }
-          itemSize={42}
+          itemSize={52}
           ref={fixedList}
-          style={{ zIndex: 10, 'overflow-x': 'hidden' }}
+          style={{ zIndex: 10, 'overflow-x': 'hidden', paddingBottom: 50 }}
         >
           {Row}
         </FixedSizeList>

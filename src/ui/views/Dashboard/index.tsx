@@ -76,9 +76,10 @@ const Dashboard = () => {
   const [addedToken, setAddedToken] = useState<string[]>([]);
   const [defiAnimate, setDefiAnimate] = useState('fadeOut');
   const [tokenAnimate, setTokenAnimate] = useState('fadeOut');
-  const [drawerAnimate, setDrawerAnimate] = useState('fadeInDrawer');
   const [topAnimate, setTopAnimate] = useState('');
   const [connectionAnimation, setConnectionAnimation] = useState('');
+
+  const [startAnimate, setStartAnimate] = useState(false);
   const handleToggle = () => {
     setModalOpen(!isModalOpen);
   };
@@ -404,6 +405,7 @@ const Dashboard = () => {
       } else {
         setTokenAnimate('fadeIn');
       }
+      setStartAnimate(true);
       setShowToken(true);
       setShowChain(true);
       setTopAnimate('fadeOutTop');
@@ -426,6 +428,7 @@ const Dashboard = () => {
       } else {
         setDefiAnimate('fadeIn');
       }
+      setStartAnimate(true);
       setShowAssets(true);
       setShowChain(true);
       setTopAnimate('fadeOutTop');
@@ -466,7 +469,9 @@ const Dashboard = () => {
       >
         <div className={clsx('main', showChain && 'show-chain-bg')}>
           {currentAccount && (
-            <div className={clsx('flex header items-center', topAnimate)}>
+            <div
+              className={clsx('flex header items-center relative', topAnimate)}
+            >
               <div className="h-[32px] flex header-wrapper items-center relative">
                 <Popover
                   content={clickContent}
@@ -506,7 +511,6 @@ const Dashboard = () => {
                 onClick={() => setHovered(true)}
                 className="w-[16px] h-[16px] pointer"
               />
-              <div className="flex-1" />
               <img
                 className="icon icon-settings"
                 src={IconSetting}
@@ -514,8 +518,12 @@ const Dashboard = () => {
               />
             </div>
           )}
-          <BalanceView currentAccount={currentAccount} showChain={showChain} />
-          <div className={clsx('listContainer', showChain && 'mt-20')}>
+          <BalanceView
+            currentAccount={currentAccount}
+            showChain={showChain}
+            startAnimate={startAnimate}
+          />
+          <div className={clsx('listContainer', showChain && 'mt-10')}>
             <div
               className={clsx('token', showToken && 'showToken')}
               onClick={displayTokenList}
@@ -542,22 +550,25 @@ const Dashboard = () => {
               />
             )}
           </div>
-          {!showChain && (
-            <div className={clsx('operation')}>
-              <div className="operation-item" onClick={handleGotoHistory}>
-                {pendingTxCount > 0 ? (
-                  <div className="pending-count">
-                    <img src={IconPending} className="icon icon-pending" />
-                    {pendingTxCount}
-                  </div>
-                ) : (
-                  <img className="icon icon-history" src={IconHistory} />
-                )}
-                {t('Transaction History')}
-                <img className="icon icon-arrow-right" src={IconArrowRight} />
-              </div>
+          <div
+            className={clsx(
+              'operation',
+              startAnimate ? (showChain ? 'fadeOut' : 'fadeIn') : ''
+            )}
+          >
+            <div className="operation-item" onClick={handleGotoHistory}>
+              {pendingTxCount > 0 ? (
+                <div className="pending-count">
+                  <img src={IconPending} className="icon icon-pending" />
+                  {pendingTxCount}
+                </div>
+              ) : (
+                <img className="icon icon-history" src={IconHistory} />
+              )}
+              {t('Transaction History')}
+              <img className="icon icon-arrow-right" src={IconArrowRight} />
             </div>
-          )}
+          </div>
           <TokenList
             tokens={tokens}
             searchTokens={searchTokens}
@@ -577,7 +588,7 @@ const Dashboard = () => {
             src={IconDrawer}
             className={clsx(
               'bottom-drawer',
-              showToken || showAssets ? 'fadeInDrawer' : null
+              showToken || showAssets ? 'fadeInDrawer' : 'hide'
             )}
             onClick={hideAllList}
           />

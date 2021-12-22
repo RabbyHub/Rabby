@@ -11,7 +11,11 @@ import IconArrowRight from 'ui/assets/arrow-right.svg';
 import IconExternal from 'ui/assets/open-external-gray.svg';
 import IconChainMore from 'ui/assets/chain-more.svg';
 import clsx from 'clsx';
-const BalanceView = ({ currentAccount, showChain = false }) => {
+const BalanceView = ({
+  currentAccount,
+  showChain = false,
+  startAnimate = false,
+}) => {
   const [balance, chainBalances] = useCurrentBalance(
     currentAccount?.address,
     true
@@ -55,34 +59,37 @@ const BalanceView = ({ currentAccount, showChain = false }) => {
   return (
     <div className={clsx('assets flex', numberWrapperAnimation)}>
       <div className="left">
-        <div className={clsx('amount mb-8', numberAnimation)}>
+        <div className={clsx('amount mb-0', numberAnimation)}>
           <div className={clsx('amount-number')}>
             <span>${splitNumberByStep((balance || 0).toFixed(2))}</span>
           </div>
         </div>
-        {showChain && (
-          <div className="extra flex">
-            {balance === null ? (
-              <>
-                <Spin size="small" iconClassName="text-white" />
-                <span className="ml-4 leading-tight">
-                  {t('Asset data loading')}
-                </span>
-              </>
-            ) : isNaN(balance) ? (
-              <>
-                <SvgIconOffline className="mr-4" />
-                <span className="leading-tight">
-                  {t('The network is disconnected and no data is obtained')}
-                </span>
-              </>
-            ) : chainBalances.length > 0 ? (
-              <div className="flex">{displayChainList()}</div>
-            ) : (
-              t('No assets')
-            )}
-          </div>
-        )}
+        <div
+          className={clsx(
+            'extra flex h-[20px]',
+            startAnimate ? (showChain ? 'fadeIn' : 'quickFadeOut') : 'hide'
+          )}
+        >
+          {balance === null ? (
+            <>
+              <Spin size="small" iconClassName="text-white" />
+              <span className="ml-4 leading-tight">
+                {t('Asset data loading')}
+              </span>
+            </>
+          ) : isNaN(balance) ? (
+            <>
+              <SvgIconOffline className="mr-4" />
+              <span className="leading-tight">
+                {t('The network is disconnected and no data is obtained')}
+              </span>
+            </>
+          ) : chainBalances.length > 0 ? (
+            <div className="flex">{displayChainList()}</div>
+          ) : (
+            t('No assets')
+          )}
+        </div>
       </div>
     </div>
   );

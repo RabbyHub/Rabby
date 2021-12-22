@@ -347,6 +347,11 @@ class OpenApiService {
             method: 'GET',
             params: ['id', 'chain_id', 'token_id'],
           },
+          user_portfolio_list: {
+            path: '/v1/user/simple_protocol_list',
+            method: 'GET',
+            params: ['id', 'chain_id'],
+          },
         },
       },
     });
@@ -394,7 +399,6 @@ class OpenApiService {
     const { data } = await this.request.get<Record<string, OpenApiConfigValue>>(
       `${this.store.host}/v1/wallet/config`
     );
-    console.log(data, 1231234124);
     for (const key in data) {
       data[key].method = data[key].method.toLowerCase() as Method;
     }
@@ -784,17 +788,12 @@ class OpenApiService {
   };
 
   listChainAssets = async (id: string): Promise<AssetItem[]> => {
-    const config = this.store.config.protocal_assets;
-    console.log(config, 'config');
-    const { data } = await this.request['get'](
-      '/v1/user/simple_protocol_list',
-      {
-        params: {
-          id,
-        },
-      }
-    );
-    console.log(data, 'data');
+    const config = this.store.config.user_portfolio_list;
+    const { data } = await this.request[config.method](config.path, {
+      params: {
+        id,
+      },
+    });
     return data;
   };
 }
