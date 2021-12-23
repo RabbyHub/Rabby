@@ -71,6 +71,7 @@ export const ChainManagementList = () => {
   useEffect(() => {
     init();
   }, []);
+
   return (
     <>
       <div className="pinned-wrapper">
@@ -83,7 +84,7 @@ export const ChainManagementList = () => {
         {savedChainsData.length === 0 && (
           <div className="no-pinned-container">{t('No pinned Chains')}</div>
         )}
-        <div className="droppable">
+        <div className="droppable flex flex-wrap">
           {savedChainsData.length > 0 && (
             <DragAndDropList
               pinnedChains={savedChainsData}
