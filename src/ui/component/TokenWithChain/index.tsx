@@ -24,11 +24,11 @@ const TokenWithChain = ({
   );
   return (
     <div
-      className={clsx('token-with-chain', noRound && 'rounded-none')}
+      className={clsx('token-with-chain', noRound && 'no-round')}
       style={{ width, height }}
     >
       <img
-        className={clsx('token-symbol', noRound && 'rounded-none')}
+        className={clsx('token-symbol', noRound && 'no-round')}
         src={token.logo_url || IconUnknown}
         alt={token.symbol}
         style={{ width, height }}
