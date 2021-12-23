@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "name": "__MSG_appName__",
   "short_name": "__MSG_appName__",
-  "version": "0.17.0",
+  "version": "0.18.0",
   "default_locale": "en",
   "description": "__MSG_appDescription__",
   "icons": {
@@ -57,6 +57,7 @@
   "content_security_policy": "script-src 'self' https://www.google-analytics.com; object-src 'self'",
   "permissions": [
     "storage",
+    "https://wallet.gridplus.io/*",
     "activeTab",
     "notifications"
   ],

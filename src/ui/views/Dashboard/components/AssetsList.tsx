@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { FixedSizeList } from 'react-window';
 import { TokenWithChain } from 'ui/component';
 import { splitNumberByStep, useHover, openInTab } from 'ui/utils';
-import IconLoading from 'ui/assets/loading.svg';
+import { SvgIconLoading } from 'ui/assets';
 
 const Row = (props) => {
   const { data, index, style } = props;
@@ -42,12 +42,10 @@ const AssetsList = ({ assets, defiAnimate, startAnimate = false }) => {
   return (
     <div className={clsx('tokenList', defiAnimate)}>
       {assets.length <= 0 ? (
-        <>
-          <img className="icon icon-loading" src={IconLoading} />
-          <p className="text-14 text-gray-content mt-24">
-            {t('Loading Tokens')}
-          </p>
-        </>
+        <div className="loadingContainer">
+          <SvgIconLoading className="icon icon-loading" fill="#FFFFFF" />
+          <div className="loading-text">{t('Loading Protocols')}</div>
+        </div>
       ) : (
         <FixedSizeList
           height={468}

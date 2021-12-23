@@ -178,6 +178,8 @@ export interface ExplainTxResponse {
   };
   type_cancel_tx?: any; // TODO
   type_deploy_contract?: any; // TODO
+  is_gnosis?: boolean;
+  gnosis?: ExplainTxResponse;
 }
 
 interface RPCResponse<T> {
@@ -557,6 +559,15 @@ class OpenApiService {
       {
         community_id: 288,
         id: 'boba',
+        logo_url: '',
+        name: '',
+        native_token_id: '',
+        wrapped_token_id: '',
+        symbol: '',
+      },
+      {
+        community_id: 199,
+        id: 'btt',
         logo_url: '',
         name: '',
         native_token_id: '',

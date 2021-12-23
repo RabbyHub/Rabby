@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Button, Tooltip } from 'antd';
 import { useTranslation } from 'react-i18next';
 import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
+import { WaitingSignComponent } from './SignText';
 import { KEYRING_CLASS, KEYRING_TYPE } from 'consts';
 import { useApproval, useWallet } from 'ui/utils';
 import {
@@ -22,11 +23,6 @@ interface SignTypedDataProps {
     name: string;
   };
 }
-
-export const WaitingSignComponent = {
-  // [KEYRING_CLASS.HARDWARE.LEDGER]: 'HardwareWaiting',
-  [KEYRING_CLASS.WATCH]: 'WatchAdrressWaiting',
-};
 
 const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
   const [, resolveApproval, rejectApproval] = useApproval();
@@ -71,6 +67,9 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
     setSecurityCheckStatus('loading');
     const currentAccount = await wallet.getCurrentAccount();
     if (currentAccount.type === KEYRING_TYPE.WatchAddressKeyring) {
+      setIsWatch(true);
+    }
+    if (currentAccount.type === KEYRING_TYPE.GnosisKeyring) {
       setIsWatch(true);
     }
     const dataStr = JSON.stringify(data);

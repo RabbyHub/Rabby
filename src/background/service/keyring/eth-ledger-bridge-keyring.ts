@@ -156,7 +156,7 @@ class LedgerBridgeKeyring extends EventEmitter {
       try {
         this.transport = await TransportWebUSB.create();
         this.app = new LedgerEth(this.transport);
-      } catch (e) {
+      } catch (e: any) {
         if (signing) {
           if (
             e.name === 'TransportWebUSBGestureRequired' ||
@@ -393,7 +393,7 @@ class LedgerBridgeKeyring extends EventEmitter {
         } else {
           throw new Error('Ledger: The transaction signature is not valid');
         }
-      } catch (err) {
+      } catch (err: any) {
         throw new Error(
           err.toString() || 'Ledger: Unknown error while signing transaction'
         );
@@ -465,7 +465,7 @@ class LedgerBridgeKeyring extends EventEmitter {
           );
         }
         return signature;
-      } catch (e) {
+      } catch (e: any) {
         throw new Error(
           e.toString() || 'Ledger: Unknown error while signing message'
         );
@@ -598,7 +598,7 @@ class LedgerBridgeKeyring extends EventEmitter {
           );
         }
         return signature;
-      } catch (e) {
+      } catch (e: any) {
         throw new Error(
           e.toString() || 'Ledger: Unknown error while signing message'
         );

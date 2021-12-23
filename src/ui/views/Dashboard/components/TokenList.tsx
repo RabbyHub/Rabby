@@ -9,7 +9,8 @@ import IconSearch from 'ui/assets/tokenSearch.png';
 import IconClose from 'ui/assets/searchIconClose.png';
 import IconAddToken from 'ui/assets/addtokenplus.png';
 import IconRemoveToken from 'ui/assets/removetoken.png';
-import IconLoading from 'ui/assets/loading.svg';
+import { SvgIconLoading } from 'ui/assets';
+
 import clsx from 'clsx';
 const Row = (props) => {
   const { data, index, style } = props;
@@ -123,12 +124,10 @@ const TokenList = ({
       )}
       {noSeachResult && <div className="no-added-token">No results</div>}
       {tokens.length <= 0 ? (
-        <>
-          <img className="icon icon-loading" src={IconLoading} />
-          <p className="text-14 text-gray-content mt-24">
-            {t('Loading Tokens')}
-          </p>
-        </>
+        <div className="loadingContainer">
+          <SvgIconLoading className="icon icon-loading" fill="#FFFFFF" />
+          <div className="loading-text">{t('Loading Tokens')}</div>
+        </div>
       ) : (
         !emptyAdded &&
         !noSeachResult && (

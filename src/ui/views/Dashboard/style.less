@@ -260,7 +260,7 @@
           margin: 0;
         }
         .amount {
-          //font-size: 32px;
+          font-size: 32px;
           font-weight: bold;
           margin-bottom: 15px;
           display: flex;
@@ -381,6 +381,21 @@
           height: 10px;
           position: absolute;
           right: 10px;
+        }
+        &__count {
+          width: 16px;
+          height: 16px;
+          background: linear-gradient(0deg, rgba(0, 0, 0, 0.2), rgba(0, 0, 0, 0.2)), #EC5151;
+          border: 1px solid #FFFFFF;
+          border-radius: 100%;
+          font-size: 12px;
+          line-height: 14px;
+          color: #FFFFFF;
+          line-height: 16px;
+          position: absolute;
+          top: 8px;
+          right: 32px;
+          text-align: center;
         }
       }
     }
@@ -830,6 +845,45 @@
     border-radius: 8px;
     padding: 6px 4px 4px 6px;
   }
+  &__gnosis {
+    border-top: 1px solid #E5E9EF;
+    margin-top: 20px;
+    padding-top: 16px;
+    .admin-list {
+      margin: 0;
+      li {
+        margin-bottom: 10px;
+        display: flex;
+        align-items: center;
+        height: 24px;
+        .address-viewer-text.normal {
+          font-weight: 500;
+          font-size: 13px;
+          line-height: 15px;
+          color: #3B3E4A;
+          margin-right: 0;
+        }
+        .icon-tag {
+          height: 16px;
+          margin-left: 8px;
+        }
+        .address-type {
+          flex: 1;
+          display: flex;
+          justify-content: flex-end;
+          align-items: center;
+          .icon-account-type {
+            opacity: 0.4;
+            width: 24px;
+            height: 24px;
+          }
+        }
+        &:nth-last-child(1) {
+          margin-bottom: 0;
+        }
+      }
+    }
+  }
 }
 .dashboard-name {
   max-width: 130px;
@@ -1109,4 +1163,20 @@
 }
 .pointer {
   cursor: pointer;
+}
+.loadingContainer {
+  display: flex;
+  justify-content: center;
+  margin: 170px auto;
+  flex-direction: column;
+  .loading-text {
+    margin-top: 18px;
+    color: #ffffff;
+    font-size: 14px;
+    opacity: 0.8;
+  }
+}
+.icon-loading {
+  margin-left: 28px;
+  animation: spining 1.5s infinite linear;
 }
