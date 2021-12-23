@@ -33,7 +33,12 @@ const Row = (props) => {
     </div>
   );
 };
-const AssetsList = ({ assets, defiAnimate, startAnimate = false }) => {
+const AssetsList = ({
+  assets,
+  defiAnimate,
+  startAnimate = false,
+  isloading,
+}) => {
   const { t } = useTranslation();
   const fixedList = useRef<FixedSizeList>();
   if (!startAnimate) {
@@ -41,12 +46,13 @@ const AssetsList = ({ assets, defiAnimate, startAnimate = false }) => {
   }
   return (
     <div className={clsx('tokenList', defiAnimate)}>
-      {assets.length <= 0 ? (
+      {isloading && (
         <div className="loadingContainer">
           <SvgIconLoading className="icon icon-loading" fill="#FFFFFF" />
           <div className="loading-text">{t('Loading Protocols')}</div>
         </div>
-      ) : (
+      )}
+      {!isloading && (
         <FixedSizeList
           height={468}
           width="100%"

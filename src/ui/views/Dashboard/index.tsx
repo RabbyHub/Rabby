@@ -127,8 +127,10 @@ const Dashboard = () => {
 
   const [startAnimate, setStartAnimate] = useState(false);
   const [isGnosis, setIsGnosis] = useState(false);
+  const [isListLoading, setIsListLoading] = useState(true);
+
   const [getAddressBalance] = useWalletRequest(wallet.getAddressBalance, {
-    onSuccess({ total_usd_value, chain_list }) {
+    onSuccess({ total_usd_value }) {
       return total_usd_value;
     },
     onError() {
@@ -318,13 +320,16 @@ const Dashboard = () => {
 
   const handleLoadTokens = async (q?: string) => {
     let tokens: TokenItem[] = [];
+    setIsListLoading(true);
     if (q) {
+      if (q.length !== 42 || !q.startsWith('0x')) return [];
       tokens = sortTokensByPrice(
         await wallet.openapi.searchToken(currentAccount?.address, q)
       );
       if (tokens.length > 0) {
         setSearchTokens(tokens.filter((item) => !item.is_core));
       }
+      setIsListLoading(false);
     } else {
       const defaultTokens = await wallet.openapi.listToken(
         currentAccount?.address
@@ -340,17 +345,18 @@ const Dashboard = () => {
           (item) => item.is_core || localAdded.includes(item.id)
         )
       );
-      if (tokens.length > 0) {
-        setTokens(tokens);
-      }
+      setTokens(tokens);
+      setIsListLoading(false);
     }
   };
 
   const handleLoadAssets = async () => {
+    setIsListLoading(true);
     const assets = sortAssetsByUSDValue(
       await wallet.listChainAssets(currentAccount?.address)
     );
     setAssets(assets);
+    setIsListLoading(false);
   };
   useEffect(() => {
     checkIfFirstLogin();
@@ -578,6 +584,7 @@ const Dashboard = () => {
       tokenId,
     ]);
   };
+  console.log(isListLoading, 'isListLoading');
   return (
     <>
       <div
@@ -716,11 +723,13 @@ const Dashboard = () => {
             }}
             tokenAnimate={tokenAnimate}
             startAnimate={startAnimate}
+            isloading={isListLoading}
           />
           <AssetsList
             assets={assets}
             defiAnimate={defiAnimate}
             startAnimate={startAnimate}
+            isloading={isListLoading}
           />
           <img
             src={IconDrawer}
