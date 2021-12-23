@@ -217,6 +217,7 @@ const Dashboard = () => {
   };
 
   const handleChange = async (account) => {
+    setIsListLoading(true);
     const { address, type, brandName } = account;
     await wallet.changeAccount({ address, type, brandName });
     setCurrentAccount({ address, type, brandName });

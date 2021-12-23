@@ -52,7 +52,7 @@ const AssetsList = ({
           <div className="loading-text">{t('Loading Protocols')}</div>
         </div>
       )}
-      {!isloading && (
+      {!isloading && assets.length > 0 ? (
         <FixedSizeList
           height={468}
           width="100%"
@@ -64,6 +64,11 @@ const AssetsList = ({
         >
           {Row}
         </FixedSizeList>
+      ) : (
+        <div className="no-data">
+          <img className="w-[100px] h-[100px]" src="./images/nodata-tx.png" />
+          <div className="loading-text">{t('No Protocols')}</div>
+        </div>
       )}
     </div>
   );
