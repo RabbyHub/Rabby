@@ -6,7 +6,8 @@ import { PageHeader, StrayPageWithButton, ChainCard } from 'ui/component';
 import { Chain } from 'background/service/chain';
 import DragAndDropList from './components/DragAndDropList';
 import './style.less';
-export const ChainManagementList = ({ inStart = true, connection = false }) => {
+
+export const ChainManagementList = () => {
   const wallet = useWallet();
   const { t } = useTranslation();
   const [allChains, setAllChains] = useState<Chain[]>([]);
@@ -63,25 +64,27 @@ export const ChainManagementList = ({ inStart = true, connection = false }) => {
 
   const updateChainSort = async (chainList: Chain[]) => {
     const newChain = chainList.map((item) => item.enum);
-    await wallet.updateChain(newChain);
     setSavedChainsData(chainList);
+    await wallet.updateChain(newChain);
   };
+
   useEffect(() => {
     init();
   }, []);
+
   return (
     <>
       <div className="pinned-wrapper">
         <div className="flex justify-between items-center">
-          <div className="all-title">Pinned</div>
+          <div className="all-title">{t('Pinned')}</div>
           {savedChainsData.length >= 2 && (
-            <div className="drag-sort">Drag to sort</div>
+            <div className="drag-sort">{t('Drag to sort')}</div>
           )}
         </div>
         {savedChainsData.length === 0 && (
-          <div className="no-pinned-container">No pinned Chains</div>
+          <div className="no-pinned-container">{t('No pinned Chains')}</div>
         )}
-        <div className="droppable">
+        <div className="droppable flex flex-wrap">
           {savedChainsData.length > 0 && (
             <DragAndDropList
               pinnedChains={savedChainsData}
@@ -93,7 +96,7 @@ export const ChainManagementList = ({ inStart = true, connection = false }) => {
       </div>
       {chains.length > 0 && (
         <div className="all-wrapper">
-          <div className="all-title">All</div>
+          <div className="all-title">{t('All')}</div>
           <div className="flex flex-wrap p-8">
             {chains.length > 0 &&
               chains.map((chain) => (
@@ -134,7 +137,7 @@ export const StartChainManagement = () => {
         </p>
       </header>
       <div className="chain-management p-20 min-h-full">
-        <ChainManagementList inStart />
+        <ChainManagementList />
       </div>
     </StrayPageWithButton>
   );
@@ -151,7 +154,7 @@ const ChainManagement = () => {
       <PageHeader>
         {t(connection ? 'All Chain' : 'Chain Management')}
       </PageHeader>
-      <ChainManagementList connection={connection} />
+      <ChainManagementList />
     </div>
   );
 };
