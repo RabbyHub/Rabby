@@ -11,11 +11,9 @@ import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import { find } from 'lodash';
 import Safe from '@rabby-wallet/gnosis-sdk';
 import { SafeInfo } from '@rabby-wallet/gnosis-sdk/dist/api';
 import {
-  SORT_WEIGHT,
   KEYRING_ICONS,
   WALLET_BRAND_CONTENT,
   KEYRING_ICONS_WHITE,
@@ -23,7 +21,13 @@ import {
   KEYRING_TYPE,
 } from 'consts';
 import { AddressViewer, Modal } from 'ui/component';
-import { useWallet, isSameAddress } from 'ui/utils';
+import {
+  useWallet,
+  isSameAddress,
+  useWalletRequest,
+  splitNumberByStep,
+  useHover,
+} from 'ui/utils';
 import { Account } from 'background/service/preference';
 import { TokenItem, AssetItem } from 'background/service/openapi';
 import {
@@ -50,6 +54,7 @@ import IconTagYou from 'ui/assets/tag-you.svg';
 import IconArrowRight from 'ui/assets/arrow-right.svg';
 import IconDrawer from 'ui/assets/drawer.png';
 import IconAddToken from 'ui/assets/addtoken.png';
+import IconAddressCopy from 'ui/assets/address-copy.png';
 import './style.less';
 
 const GnosisAdminItem = ({
@@ -122,7 +127,24 @@ const Dashboard = () => {
 
   const [startAnimate, setStartAnimate] = useState(false);
   const [isGnosis, setIsGnosis] = useState(false);
+  const [getAddressBalance] = useWalletRequest(wallet.getAddressBalance, {
+    onSuccess({ total_usd_value, chain_list }) {
+      return total_usd_value;
+    },
+    onError() {
+      return NaN;
+    },
+  });
 
+  const getCurrentBalance = async (account) => {
+    if (!account) return;
+    const cacheData = await wallet.getAddressCacheBalance(account);
+    if (cacheData) {
+      return cacheData.total_usd_value;
+    } else {
+      getAddressBalance(account.toLowerCase());
+    }
+  };
   const getCurrentAccount = async () => {
     const account = await wallet.getCurrentAccount();
     if (!account) {
@@ -213,7 +235,6 @@ const Dashboard = () => {
         return currentAccount!.address;
       },
     });
-
     clipboard.on('success', () => {
       setCopySuccess(true);
       setTimeout(() => {
@@ -348,6 +369,7 @@ const Dashboard = () => {
   const Row = (props) => {
     const { data, index, style } = props;
     const account = data[index];
+    const [isHovering, hoverProps] = useHover();
     return (
       <div
         className="flex items-center address-item"
@@ -357,6 +379,7 @@ const Dashboard = () => {
           e.stopPropagation();
           handleChange(account);
         }}
+        {...hoverProps}
       >
         {' '}
         <img
@@ -369,11 +392,35 @@ const Dashboard = () => {
         <div className="flex flex-col items-start ml-10">
           <div className="text-13 text-black text-left click-name">
             <div className="list-alian-name">{account?.alianName}</div>
-            <AddressViewer
-              address={account?.address}
-              showArrow={false}
-              className={'text-12 text-black opacity-60'}
-            />
+            <div className="flex items-center">
+              <AddressViewer
+                address={account?.address}
+                showArrow={false}
+                className={'address-color'}
+              />
+              {isHovering && (
+                <img
+                  onClick={(e) => {
+                    e.stopPropagation;
+                    navigator.clipboard.writeText(account?.address);
+                    message.success({
+                      icon: (
+                        <img src={IconSuccess} className="icon icon-success" />
+                      ),
+                      content: t('Copied'),
+                      duration: 0.5,
+                    });
+                  }}
+                  src={IconAddressCopy}
+                  className={clsx('ml-7  w-[14px] h-[14px]', {
+                    success: copySuccess,
+                  })}
+                />
+              )}
+              <div className={'money-color'}>
+                ${splitNumberByStep(Math.floor(account?.balance))}
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -389,16 +436,16 @@ const Dashboard = () => {
           setClicked(false);
         }}
       />
-      <div className="click-list flex flex-col w-[200px]">
-        {accountsList.length < 1 ? (
-          <div className="no-other-address"> {t('No other address')}</div>
+      <div className="click-list flex flex-col w-[233px]">
+        {accountsList.length <= 0 ? (
+          <div className="no-other-address"> {t('No address')}</div>
         ) : (
           <FixedSizeList
             height={accountsList.length > 5 ? 308 : accountsList.length * 52}
             width="100%"
             itemData={accountsList}
             itemCount={accountsList.length}
-            itemSize={52}
+            itemSize={54}
             ref={fixedList}
             style={{ zIndex: 10 }}
           >
@@ -417,10 +464,15 @@ const Dashboard = () => {
   const getAllKeyrings = async () => {
     const _accounts = await wallet.getAllVisibleAccounts();
     const allAlianNames = await wallet.getAllAlianName();
-    const templist = _accounts
-      .sort((a, b) => {
-        return SORT_WEIGHT[a.type] - SORT_WEIGHT[b.type];
-      })
+    const balanceList = async (accounts) => {
+      const balances = accounts.map((n) => getCurrentBalance(n?.address));
+      const result = await Promise.all(balances);
+      return accounts.map((item, index) => ({
+        ...item,
+        balance: result[index],
+      }));
+    };
+    const templist = await _accounts
       .map((item) =>
         item.accounts.map((account) => {
           return {
@@ -431,14 +483,16 @@ const Dashboard = () => {
           };
         })
       )
-      .flat(1)
-      .filter(
-        (item) =>
-          item?.address.toLowerCase() !==
-            currentAccount?.address.toLowerCase() ||
-          item.brandName !== currentAccount?.brandName
-      );
-    setAccountsList(templist);
+      .flat(1);
+    const result = await balanceList(templist);
+    if (result) {
+      const withBalanceList = result.sort((a, b) => {
+        return new BigNumber(b.balance)
+          .minus(new BigNumber(a.balance))
+          .toNumber();
+      });
+      setAccountsList(withBalanceList);
+    }
   };
 
   const handleClickChange = (visible) => {
@@ -527,7 +581,10 @@ const Dashboard = () => {
   return (
     <>
       <div
-        className={clsx('dashboard', { 'metamask-active': !isDefaultWallet })}
+        className={clsx('dashboard', {
+          'metamask-active': !isDefaultWallet,
+          success: copySuccess,
+        })}
       >
         <div className={clsx('main', showChain && 'show-chain-bg')}>
           {currentAccount && (

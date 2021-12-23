@@ -51,7 +51,6 @@ const BalanceView = ({
   }, [currentAccount]);
 
   useEffect(() => {
-    console.log(isGnosis, currentAccount);
     if (isGnosis) {
       handleIsGnosisChange();
     }
