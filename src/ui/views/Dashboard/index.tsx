@@ -602,7 +602,9 @@ const Dashboard = () => {
               overlayClassName="rectangle profileType__tooltip"
               title={t('Coming soon')}
             >
-              <div className={clsx('token', 'opacity-60')}>NFT</div>
+              <div className={clsx('token', 'opacity-60 cursor-default')}>
+                NFT
+              </div>
             </Tooltip>
             {showToken && !startSearch && (
               <img
