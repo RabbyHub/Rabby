@@ -91,7 +91,7 @@ const ChainSelectorModal = ({
                   key={chain.id}
                   showIcon={false}
                   plus={false}
-                  className="w-[176px] h-[56px] pt-14"
+                  className="w-[176px] h-[56px]"
                 />
               </div>
             ))}
