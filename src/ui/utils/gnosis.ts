@@ -49,7 +49,10 @@ export const validateETHSign = (
   txHash: string,
   owner: string
 ) => {
-  const v = parseInt(signature.slice(-2), 16) - 4;
+  let v = parseInt(signature.slice(-2), 16);
+  if (v > 30) {
+    v -= 4;
+  }
   const str = signature.slice(0, -2) + v.toString(16);
   return isSameAddress(
     recoverPersonalSignature({
