@@ -16,9 +16,10 @@ import AddressItem from 'ui/component/AddressList/AddressItem';
 import { DisplayedKeryring } from 'background/service/keyring';
 import { Account } from 'background/service/preference';
 import DisplayKeyring from 'background/service/keyring/display';
-import { SvgIconPlusPrimary } from 'ui/assets';
+import IconPlusAddress from 'ui/assets/addAddress.png';
 import IconHint from 'ui/assets/hint.png';
 import IconSuccess from 'ui/assets/success.svg';
+
 import './style.less';
 import clsx from 'clsx';
 const SORT_WEIGHT = {
@@ -265,7 +266,7 @@ const AddressManagement = () => {
         to="/add-address"
         className="flex no-data-add-btn rounded-md text-15"
       >
-        <SvgIconPlusPrimary className="icon icon-plus text-blue-light stroke-current fill-current" />
+        <img src={IconPlusAddress} className="w-[16px] h-[16px] mr-10" />
         {t('Add addresses')}
       </Link>
     </div>
@@ -343,8 +344,9 @@ const AddressManagement = () => {
             }}
             NextButtonContent={
               <div className="flex items-center h-full justify-center text-15">
-                <SvgIconPlusPrimary
-                  style={{ fontSize: '16px', color: '#8697FF' }}
+                <img
+                  src={IconPlusAddress}
+                  className="w-[16px] h-[16px] mr-10"
                 />
                 {t('Add Address')}
               </div>

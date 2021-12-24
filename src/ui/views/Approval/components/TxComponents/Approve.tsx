@@ -4,7 +4,7 @@ import ClipboardJS from 'clipboard';
 import BigNumber from 'bignumber.js';
 import { message, Button, Form, Input, Modal } from 'antd';
 import { useTranslation, Trans } from 'react-i18next';
-import { AddressViewer } from 'ui/component';
+import { AddressViewer, Modal as ModalComp } from 'ui/component';
 import { CHAINS_ENUM, CHAINS, KEYRING_TYPE } from 'consts';
 import { ellipsisOverflowedText, useWallet } from 'ui/utils';
 import { getCustomTxParamsData } from 'ui/utils/transaction';
@@ -16,6 +16,7 @@ import SpeedUpCorner from './SpeedUpCorner';
 import IconCopy from 'ui/assets/copy-no-border.svg';
 import IconSuccess from 'ui/assets/success.svg';
 import IconUnknownProtocol from 'ui/assets/unknown-protocol.svg';
+import IconArrowRight from 'ui/assets/arrow-right-gray.svg';
 
 interface ApproveProps {
   data: ExplainTxResponse;
@@ -23,6 +24,7 @@ interface ApproveProps {
   onChange(data: Record<string, string>): void;
   tx: Tx;
   isSpeedUp: boolean;
+  raw: Record<string, string | number>;
 }
 
 interface ApproveAmountModalProps {
@@ -111,6 +113,7 @@ const Approve = ({
   onChange,
   tx,
   isSpeedUp,
+  raw,
 }: ApproveProps) => {
   const wallet = useWallet();
   const detail = data.type_token_approval!;
@@ -140,6 +143,23 @@ const Approve = ({
       });
       clipboard.destroy();
     });
+  };
+
+  const handleViewRawClick = () => {
+    try {
+      const content = JSON.stringify(raw, null, 4);
+
+      Modal.info({
+        title: t('Transaction detail'),
+        centered: true,
+        content,
+        cancelText: null,
+        okText: null,
+        className: 'transaction-detail',
+      });
+    } catch (error) {
+      console.log('stringify raw fail', error);
+    }
   };
 
   const handleProtocolLogoLoadFailed = function (
@@ -187,6 +207,13 @@ const Approve = ({
           i18nKey="signTransactionWithChain"
           values={{ name: chain.name }}
         />
+        <span
+          className="float-right text-12 cursor-pointer flex items-center view-raw"
+          onClick={handleViewRawClick}
+        >
+          {t('View Raw')}
+          <img src={IconArrowRight} />
+        </span>
       </p>
       <div className="gray-section-block common-detail-block">
         {isSpeedUp && <SpeedUpCorner />}

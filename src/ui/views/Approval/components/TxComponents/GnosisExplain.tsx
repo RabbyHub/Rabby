@@ -9,7 +9,7 @@ import IconGnosis from 'ui/assets/walletlogo/gnosis.png';
 interface GnosisExplainProps {
   data: ExplainTxResponse;
   chainEnum: CHAINS_ENUM;
-  raw: Record<string, string>;
+  raw: Record<string, string | number>;
   tx: Tx;
 }
 

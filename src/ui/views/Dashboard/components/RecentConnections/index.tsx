@@ -115,7 +115,11 @@ const ConnectionItem = memo(
     pre.item?.isTop === next.item?.isTop
 );
 
-export default () => {
+export default ({
+  onChange,
+}: {
+  onChange(site: ConnectedSite | null | undefined): void;
+}) => {
   const [connections, setConnections] = useState<(ConnectedSite | null)[]>(
     new Array(12).fill(null)
   );
@@ -160,6 +164,10 @@ export default () => {
   useEffect(() => {
     getCurrentSite();
   }, []);
+
+  useEffect(() => {
+    onChange(currentConnect);
+  }, [currentConnect]);
 
   return (
     <div className="recent-connections">

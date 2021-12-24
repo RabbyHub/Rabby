@@ -18,15 +18,18 @@ import {
   KEYRING_ICONS_WHITE,
   KEYRING_CLASS,
   KEYRING_TYPE,
+  CHAINS,
 } from 'consts';
 import { AddressViewer, Modal } from 'ui/component';
 import { useWallet, isSameAddress } from 'ui/utils';
 import { crossCompareOwners } from 'ui/utils/gnosis';
 import { Account } from 'background/service/preference';
+import { ConnectedSite } from 'background/service/permission';
 import {
   RecentConnections,
   BalanceView,
   DefaultWalletAlertBar,
+  GnosisWrongChainAlertBar,
 } from './components';
 import { getUpdateContent } from 'changeLogs/index';
 import IconSetting from 'ui/assets/settings.svg';
@@ -101,6 +104,13 @@ const Dashboard = () => {
   const [firstNotice, setFirstNotice] = useState(false);
   const [updateContent, setUpdateContent] = useState('');
   const [isGnosis, setIsGnosis] = useState(false);
+  const [gnosisNetworkId, setGnosisNetworkId] = useState('1');
+  const [showGnosisWrongChainAlert, setShowGnosisWrongChainAlert] = useState(
+    false
+  );
+  const [currentConnection, setCurrentConnection] = useState<
+    ConnectedSite | null | undefined
+  >(null);
 
   const getCurrentAccount = async () => {
     const account = await wallet.getCurrentAccount();
@@ -132,6 +142,7 @@ const Dashboard = () => {
     if (!currentAccount) return;
 
     const network = await wallet.getGnosisNetworkId(currentAccount.address);
+    setGnosisNetworkId(network);
     const [info, txs] = await Promise.all([
       Safe.getSafeInfo(currentAccount.address, network),
       Safe.getPendingTransactions(currentAccount.address, network),
@@ -383,10 +394,32 @@ const Dashboard = () => {
     setHovered(false);
   };
 
+  const handleCurrentConnectChange = (
+    connection: ConnectedSite | null | undefined
+  ) => {
+    setCurrentConnection(connection);
+  };
+
+  const checkGnosisConnectChain = () => {
+    if (!currentConnection) {
+      setShowGnosisWrongChainAlert(false);
+      return;
+    }
+    const chain = CHAINS[currentConnection.chain];
+    setShowGnosisWrongChainAlert(chain.id.toString() !== gnosisNetworkId);
+  };
+
+  useEffect(() => {
+    checkGnosisConnectChain();
+  }, [currentConnection, gnosisNetworkId]);
+
   return (
     <>
       <div
-        className={clsx('dashboard', { 'metamask-active': !isDefaultWallet })}
+        className={clsx('dashboard', {
+          'metamask-active':
+            !isDefaultWallet || (showGnosisWrongChainAlert && isGnosis),
+        })}
       >
         <div className="main">
           {currentAccount && (
@@ -474,9 +507,12 @@ const Dashboard = () => {
             )}
           </div>
         </div>
-        <RecentConnections />
+        <RecentConnections onChange={handleCurrentConnectChange} />
         {!isDefaultWallet && (
           <DefaultWalletAlertBar onChange={handleDefaultWalletChange} />
+        )}
+        {isDefaultWallet && isGnosis && showGnosisWrongChainAlert && (
+          <GnosisWrongChainAlertBar />
         )}
       </div>
       <Modal

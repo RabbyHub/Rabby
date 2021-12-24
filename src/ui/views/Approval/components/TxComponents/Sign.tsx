@@ -15,7 +15,7 @@ import IconArrowRight from 'ui/assets/arrow-right-gray.svg';
 interface SignProps {
   data: ExplainTxResponse;
   chainEnum: CHAINS_ENUM;
-  raw: Record<string, string>;
+  raw: Record<string, string | number>;
   isSpeedUp: boolean;
   tx: Tx;
 }
