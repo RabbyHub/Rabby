@@ -1,6 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { Modal } from 'ui/component';
+import { Drawer } from 'antd';
+
 import { useCurrentBalance } from 'ui/component/AddressList/AddressItem';
 import { Chain } from 'background/service/chain';
 import { Account } from 'background/service/preference';
@@ -67,16 +69,24 @@ const ChainSelectorModal = ({
       eventBus.removeEventListerner('accountsChanged', accountChangeHandler);
     };
   }, []);
-
+  let maxHeight = Math.round(savedChainsData.length / 2) * 60 + 70;
+  if (connection && maxHeight > 258) {
+    maxHeight = 258;
+  }
   return (
-    <Modal
+    <Drawer
       width="400px"
       closable={false}
+      placement={'bottom'}
       visible={visible}
-      onCancel={handleCancel}
+      onClose={handleCancel}
       className={clsx('chain-selector__modal', connection && 'connection')}
-      transitionName=""
-      maskTransitionName=""
+      contentWrapperStyle={{
+        height: maxHeight > 450 ? 450 : maxHeight < 130 ? 130 : maxHeight,
+      }}
+      drawerStyle={{
+        height: maxHeight > 450 ? 450 : maxHeight < 130 ? 130 : maxHeight,
+      }}
     >
       <>
         {savedChainsData.length === 0 && (
@@ -102,7 +112,7 @@ const ChainSelectorModal = ({
           onClick={goToChainManagement}
         >{`All chains >`}</div>
       </>
-    </Modal>
+    </Drawer>
   );
 };
 

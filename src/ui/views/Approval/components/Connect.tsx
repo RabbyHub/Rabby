@@ -79,7 +79,11 @@ const Connect = ({ params: { icon, origin } }: ConnectProps) => {
             <p className="mb-0 text-12 text-gray-content">
               {t('On this site use chain')}
             </p>
-            <ChainSelector value={defaultChain} onChange={handleChainChange} />
+            <ChainSelector
+              value={defaultChain}
+              onChange={handleChainChange}
+              connection
+            />
           </div>
         </div>
       </div>
