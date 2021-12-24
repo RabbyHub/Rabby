@@ -120,29 +120,35 @@ const AddressList: any = forwardRef(
         return templist;
       })
       .flat(1);
+
     const itemKey = useCallback(
       (index: number, data: any) =>
         data.combinedList[index].address + data.combinedList[index].brandName,
       []
     );
+
     const onItemsRendered = ({ overscanStartIndex, overscanStopIndex }) => {
       setStart(overscanStartIndex);
       setEnd(overscanStopIndex);
     };
+
     useEffect(() => {
       if (currentAccount) {
         const position = findIndex(combinedList, currentAccount);
         fixedList.current?.scrollToItem(position, 'center');
       }
     }, []);
+
     useEffect(() => {
       if (currentAccount) {
         const position = findIndex(combinedList, currentAccount);
         fixedList.current?.scrollToItem(position, 'center');
       }
     }, [alianNamesList]);
+
     const switchAddressHeight =
       combinedList.length > 5 ? 400 : combinedList.length * 80;
+
     return (
       <ul
         className={`address-group-list ${action}`}

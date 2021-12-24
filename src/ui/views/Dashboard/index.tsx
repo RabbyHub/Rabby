@@ -176,6 +176,7 @@ const Dashboard = () => {
   useEffect(() => {
     if (currentAccount) {
       if (currentAccount.type === KEYRING_TYPE.GnosisKeyring) {
+        setSafeInfo(null);
         getGnosisPendingCount();
       } else {
         getPendingTxCount(currentAccount.address);
