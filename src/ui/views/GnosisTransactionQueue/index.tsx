@@ -7,7 +7,7 @@ import {
   SafeInfo,
 } from '@rabby-wallet/gnosis-sdk/dist/api';
 import { useTranslation, Trans } from 'react-i18next';
-import { toChecksumAddress } from 'web3-utils';
+import { toChecksumAddress, numberToHex } from 'web3-utils';
 import dayjs from 'dayjs';
 import { ExplainTxResponse } from 'background/service/openapi';
 import { Account } from 'background/service/preference';
@@ -423,6 +423,25 @@ const GnosisTransactionQueue = () => {
         Safe.getSafeInfo(account.address, network),
         Safe.getPendingTransactions(account.address, network),
       ]);
+      const txHashValidation: boolean[] = [];
+      for (let i = 0; i < txs.results.length; i++) {
+        const safeTx = txs.results[i];
+        const tx: SafeTransactionDataPartial = {
+          data: safeTx.data || '0x',
+          gasPrice: safeTx.gasPrice ? Number(safeTx.gasPrice) : 0,
+          gasToken: safeTx.gasToken,
+          refundReceiver: safeTx.refundReceiver,
+          to: safeTx.to,
+          value: numberToHex(safeTx.value),
+          safeTxGas: safeTx.safeTxGas,
+          nonce: safeTx.nonce,
+          operation: safeTx.operation,
+          baseGas: safeTx.baseGas,
+        };
+        await wallet.buildGnosisTransaction(safeTx.safe, account, tx);
+        const hash = await wallet.getGnosisTransactionHash();
+        txHashValidation.push(hash === safeTx.safeTxHash);
+      }
       const owners = await wallet.getGnosisOwners(
         account,
         account.address,
@@ -437,19 +456,21 @@ const GnosisTransactionQueue = () => {
       setNetworkId(network);
       setTransactions(
         txs.results
-          .filter((safeTx) => {
+          .filter((safeTx, index) => {
+            if (!txHashValidation[index]) return false;
             const tx: SafeTransactionDataPartial = {
               data: safeTx.data || '0x',
               gasPrice: safeTx.gasPrice ? Number(safeTx.gasPrice) : 0,
               gasToken: safeTx.gasToken,
               refundReceiver: safeTx.refundReceiver,
               to: safeTx.to,
-              value: safeTx.value,
+              value: numberToHex(safeTx.value),
               safeTxGas: safeTx.safeTxGas,
               nonce: safeTx.nonce,
               operation: safeTx.operation,
               baseGas: safeTx.baseGas,
             };
+
             return safeTx.confirmations.every((confirm) =>
               validateConfirmation(
                 safeTx.safeTxHash,
@@ -492,7 +513,7 @@ const GnosisTransactionQueue = () => {
         from: toChecksumAddress(data.safe),
         to: data.to,
         data: data.data || '0x',
-        value: `0x${Number(data.value).toString(16)}`,
+        value: numberToHex(data.value),
         nonce: intToHex(data.nonce),
         safeTxGas: data.safeTxGas,
         gasPrice: Number(data.gasPrice),
