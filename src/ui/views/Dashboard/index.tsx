@@ -128,7 +128,7 @@ const Dashboard = () => {
   const [startAnimate, setStartAnimate] = useState(false);
   const [isGnosis, setIsGnosis] = useState(false);
   const [isListLoading, setIsListLoading] = useState(true);
-
+  const [isAssetsLoading, setIsAssetsLoading] = useState(true);
   const [getAddressBalance] = useWalletRequest(wallet.getAddressBalance, {
     onSuccess({ total_usd_value }) {
       return total_usd_value;
@@ -218,6 +218,7 @@ const Dashboard = () => {
 
   const handleChange = async (account) => {
     setIsListLoading(true);
+    setIsAssetsLoading(true);
     const { address, type, brandName } = account;
     await wallet.changeAccount({ address, type, brandName });
     setCurrentAccount({ address, type, brandName });
@@ -352,12 +353,12 @@ const Dashboard = () => {
   };
 
   const handleLoadAssets = async () => {
-    setIsListLoading(true);
+    setIsAssetsLoading(true);
     const assets = sortAssetsByUSDValue(
       await wallet.listChainAssets(currentAccount?.address)
     );
     setAssets(assets);
-    setIsListLoading(false);
+    setIsAssetsLoading(false);
   };
   useEffect(() => {
     checkIfFirstLogin();
@@ -585,7 +586,6 @@ const Dashboard = () => {
       tokenId,
     ]);
   };
-  console.log(isListLoading, 'isListLoading');
   return (
     <>
       <div
@@ -730,7 +730,7 @@ const Dashboard = () => {
             assets={assets}
             defiAnimate={defiAnimate}
             startAnimate={startAnimate}
-            isloading={isListLoading}
+            isloading={isAssetsLoading}
           />
           <img
             src={IconDrawer}

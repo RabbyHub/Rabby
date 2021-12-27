@@ -130,7 +130,7 @@ const TokenList = ({
           <div className="loading-text">{t('Loading Tokens')}</div>
         </div>
       )}
-      {!emptyAdded && !noSeachResult && !isloading && tokens.length > 0 ? (
+      {!startSearch && !isloading && tokens.length > 0 && (
         <FixedSizeList
           height={468}
           width="100%"
@@ -159,7 +159,8 @@ const TokenList = ({
         >
           {Row}
         </FixedSizeList>
-      ) : (
+      )}
+      {!startSearch && !isloading && tokens.length === 0 && (
         <div className="no-data">
           <img className="w-[100px] h-[100px]" src="./images/nodata-tx.png" />
           <div className="loading-text">{t('No Tokens')}</div>
