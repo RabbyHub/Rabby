@@ -1,11 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import { Drawer, Button } from 'antd';
+import BN from 'bignumber.js';
 import { useTranslation } from 'react-i18next';
 import FieldCheckbox from 'ui/component/FieldCheckbox';
 import AddressViewer from 'ui/component/AddressViewer';
 import { Account } from 'background/service/preference';
-import { useWallet, isSameAddress } from 'ui/utils';
-import { KEYRING_TYPE, KEYRING_ICONS, WALLET_BRAND_CONTENT } from 'consts';
+import { useWallet, isSameAddress, formatTokenAmount } from 'ui/utils';
+import {
+  KEYRING_TYPE,
+  KEYRING_ICONS,
+  WALLET_BRAND_CONTENT,
+  CHAINS,
+} from 'consts';
 import './style.less';
 
 interface AccountSelectDrawerProps {
@@ -24,11 +30,29 @@ interface AccountItemProps {
 
 const AccountItem = ({ account, onSelect, checked }: AccountItemProps) => {
   const [alianName, setAlianName] = useState('');
+  const [nativeTokenBalance, setNativeTokenBalance] = useState<null | string>(
+    null
+  );
+  const [nativeTokenSymbol, setNativeTokenSymbol] = useState('ETH');
   const wallet = useWallet();
 
   const init = async () => {
+    const currentAccount = await wallet.getCurrentAccount();
+    const networkId = await wallet.getGnosisNetworkId(currentAccount.address);
     const name = await wallet.getAlianName(account.address);
+    const chain = Object.values(CHAINS).find(
+      (item) => item.id.toString() === networkId + ''
+    )!;
+    setNativeTokenSymbol(chain.nativeTokenSymbol);
     setAlianName(name);
+    const balanceInWei = await wallet.requestETHRpc(
+      {
+        method: 'eth_getBalance',
+        params: [account.address, 'latest'],
+      },
+      chain.serverId
+    );
+    setNativeTokenBalance(new BN(balanceInWei).div(1e18).toFixed());
   };
 
   useEffect(() => {
@@ -49,9 +73,15 @@ const AccountItem = ({ account, onSelect, checked }: AccountItemProps) => {
         }
         className="icon icon-keyring"
       />
-      <div>
-        <p className="alian-name">{alianName}</p>
-        <AddressViewer address={account.address} showArrow={false} />
+      <div className="flex w-full">
+        <div>
+          <p className="alian-name">{alianName}</p>
+          <AddressViewer address={account.address} showArrow={false} />
+        </div>
+        <div className="text-12 text-gray-light native-token-balance">
+          {nativeTokenBalance ? formatTokenAmount(nativeTokenBalance) : 0}{' '}
+          {nativeTokenSymbol}
+        </div>
       </div>
     </FieldCheckbox>
   );

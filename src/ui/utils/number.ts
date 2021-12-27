@@ -21,7 +21,7 @@ export const splitNumberByStep = (
   return int;
 };
 
-export const formatTokenAmount = (amount: number, decimals = 4) => {
+export const formatTokenAmount = (amount: number | string, decimals = 4) => {
   if (!amount) return '0';
   const bn = new BigNumber(amount);
   const str = bn.toFixed();

@@ -978,5 +978,8 @@
   },
   "GnosisLowerNonceNeedExcute": {
     "message": "Transaction with nonce {{nonce}} needs to be executed first"
+  },
+  "GnosisSwitchChainWarning": {
+    "message": "No connected to the right chain of this Gnosis Safe address"
   }
 }

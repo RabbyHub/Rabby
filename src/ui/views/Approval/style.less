@@ -15,6 +15,7 @@
     background-color: #f6f7f9;
     border: 1px solid #d8dfeb;
     border-radius: 6px;
+    width: 100%;
   }
 
   header {
@@ -447,6 +448,7 @@
           }
           .gray-section-block {
             background-color: #fff;
+            width: 100%;
             .title {
               font-size: 15px;
             }
@@ -455,11 +457,22 @@
             margin-bottom: 0;
           }
           .view-raw {
-            display: none;
+            display: none !important;
           }
           .approve {
             .edit-btn {
               display: none;
+            }
+            .token-info {
+              font-size: 13px;
+            }
+            .protocol {
+              .protocol-info__name {
+                font-size: 12px;
+                .address-viewer-text.normal {
+                  font-size: 12px;
+                }
+              }
             }
           }
         }
@@ -470,7 +483,7 @@
     }
     .balance-change {
       .balance-change-content {
-        padding: 14px;
+        padding: 12px 16px;
         ul {
           margin: 0;
           position: relative;
@@ -711,6 +724,12 @@
     align-items: center;
     margin: 0 4px;
     border: 1px solid transparent;
+    &:nth-child(1) {
+      margin-left: 0;
+    }
+    &:nth-last-child(1) {
+      margin-right: 0;
+    }
     &.active {
       background: rgba(134, 151, 255, 0.1);
       border: 1px solid #8697ff;
