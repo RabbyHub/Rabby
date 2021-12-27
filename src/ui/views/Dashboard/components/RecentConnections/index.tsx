@@ -115,7 +115,15 @@ const ConnectionItem = memo(
     pre.item?.isTop === next.item?.isTop
 );
 
-export default ({ showChain, connectionAnimation }) => {
+export default ({
+  onChange,
+  showChain,
+  connectionAnimation,
+}: {
+  onChange(site: ConnectedSite | null | undefined): void;
+  showChain?: boolean;
+  connectionAnimation?: string;
+}) => {
   const [connections, setConnections] = useState<(ConnectedSite | null)[]>(
     new Array(12).fill(null)
   );
@@ -160,6 +168,10 @@ export default ({ showChain, connectionAnimation }) => {
   useEffect(() => {
     getCurrentSite();
   }, []);
+
+  useEffect(() => {
+    onChange(currentConnect);
+  }, [currentConnect]);
 
   return (
     <div className={clsx('recent-connections', connectionAnimation)}>

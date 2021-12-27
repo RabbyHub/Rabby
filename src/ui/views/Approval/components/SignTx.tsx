@@ -67,7 +67,7 @@ const normalizeTxParams = (tx) => {
     copy.gas = normalizeHex(copy.gas);
   }
   if ('gasLimit' in copy) {
-    copy.gas = normalizeHex(copy.gas);
+    copy.gas = normalizeHex(copy.gasLimit);
   }
   if ('gasPrice' in copy) {
     copy.gasPrice = normalizeHex(copy.gasPrice);
@@ -578,7 +578,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     }
     if (currentAccount.type === KEYRING_TYPE.GnosisKeyring || isGnosis) {
       const networkId = await wallet.getGnosisNetworkId(currentAccount.address);
-      console.log(chainId || CHAINS[site!.chain].id, networkId);
+
       if ((chainId || CHAINS[site!.chain].id) !== Number(networkId)) {
         setCanProcess(false);
         setCantProcessReason(t('multiSignChainNotMatch'));

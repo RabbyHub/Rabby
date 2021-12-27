@@ -6,3 +6,4 @@ export { default as MetaMaskConflictAlertBar } from './MetaMaskConflictAlertBar'
 export { default as DefaultWalletAlertBar } from './DefaultWalletAlertBar';
 export { default as TokenList } from './TokenList';
 export { default as AssetsList } from './AssetsList';
+export { default as GnosisWrongChainAlertBar } from './GnosisWrongChainAlertBar';

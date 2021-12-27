@@ -22,6 +22,7 @@ import { openIndexPage } from 'background/webapi/tab';
 import { CacheState } from 'background/service/pageStateCache';
 import i18n from 'background/service/i18n';
 import { KEYRING_CLASS, DisplayedKeryring } from 'background/service/keyring';
+import providerController from './provider/controller';
 import BaseController from './base';
 import {
   CHAINS_ENUM,
@@ -58,6 +59,20 @@ export class WalletController extends BaseController {
   isBooted = () => keyringService.isBooted();
   verifyPassword = (password: string) =>
     keyringService.verifyPassword(password);
+
+  requestETHRpc = (data: { method: string; params: any }, chainId: string) => {
+    return providerController.ethRpc(
+      {
+        data,
+        session: {
+          name: 'Rabby',
+          origin: INTERNAL_REQUEST_ORIGIN,
+          icon: './images/icon-128.png',
+        },
+      },
+      chainId
+    );
+  };
 
   sendRequest = (data) => {
     return provider({
@@ -344,6 +359,23 @@ export class WalletController extends BaseController {
       throw new Error('No transaction in Gnosis keyring found');
     }
     return keyring.postTransaction();
+  };
+
+  getGnosisOwners = (
+    account: Account,
+    safeAddress: string,
+    version: string
+  ) => {
+    const keyring: GnosisKeyring = this._getKeyringByType(KEYRING_CLASS.GNOSIS);
+    if (!keyring) throw new Error('No Gnosis keyring found');
+    buildinProvider.currentProvider.currentAccount = account.address;
+    buildinProvider.currentProvider.currentAccountType = account.type;
+    buildinProvider.currentProvider.currentAccountBrand = account.brandName;
+    return keyring.getOwners(
+      safeAddress,
+      version,
+      new ethers.providers.Web3Provider(buildinProvider.currentProvider)
+    );
   };
 
   signGnosisTransaction = (account: Account) => {
