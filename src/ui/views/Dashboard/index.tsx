@@ -22,6 +22,7 @@ import {
 } from 'consts';
 import { AddressViewer, Modal } from 'ui/component';
 import { useWallet, isSameAddress } from 'ui/utils';
+import { crossCompareOwners } from 'ui/utils/gnosis';
 import { Account } from 'background/service/preference';
 import { ConnectedSite } from 'background/service/permission';
 import {
@@ -44,6 +45,7 @@ import IconInfo from 'ui/assets/information.png';
 import IconMoney from 'ui/assets/dashboardMoney.png';
 import IconQueue from 'ui/assets/icon-queue.svg';
 import IconTagYou from 'ui/assets/tag-you.svg';
+import IconLoading from 'ui/assets/loading-round.svg';
 import './style.less';
 
 const GnosisAdminItem = ({
@@ -141,12 +143,20 @@ const Dashboard = () => {
 
     const network = await wallet.getGnosisNetworkId(currentAccount.address);
     setGnosisNetworkId(network);
-    const info = await Safe.getSafeInfo(currentAccount.address, network);
-    const txs = await Safe.getPendingTransactions(
+    const [info, txs] = await Promise.all([
+      Safe.getSafeInfo(currentAccount.address, network),
+      Safe.getPendingTransactions(currentAccount.address, network),
+    ]);
+    const owners = await wallet.getGnosisOwners(
+      currentAccount,
       currentAccount.address,
-      network
+      info.version
     );
-    setSafeInfo(info);
+    const comparedOwners = crossCompareOwners(owners, info.owners);
+    setSafeInfo({
+      ...info,
+      owners: comparedOwners,
+    });
     setGnosisPendingCount(txs.results.length);
   };
 
@@ -166,6 +176,7 @@ const Dashboard = () => {
   useEffect(() => {
     if (currentAccount) {
       if (currentAccount.type === KEYRING_TYPE.GnosisKeyring) {
+        setSafeInfo(null);
         getGnosisPendingCount();
       } else {
         getPendingTxCount(currentAccount.address);
@@ -584,20 +595,35 @@ const Dashboard = () => {
               <QRCode value={currentAccount?.address} size={85} />
             </div>
           </div>
-          {isGnosis && safeInfo && (
+          {isGnosis && (
             <div className="address-popover__gnosis">
               <h4 className="text-15 mb-4">Admins</h4>
-              <p className="text-black text-12 mb-20">
-                Any transaction requires the confirmation of{' '}
-                <span className="ml-8 font-medium">
-                  {safeInfo.threshold}/{safeInfo.owners.length}
-                </span>
-              </p>
-              <ul className="admin-list">
-                {safeInfo.owners.map((owner) => (
-                  <GnosisAdminItem address={owner} accounts={accountsList} />
-                ))}
-              </ul>
+              {safeInfo ? (
+                <>
+                  <p className="text-black text-12 mb-20">
+                    Any transaction requires the confirmation of{' '}
+                    <span className="ml-8 font-medium threshold">
+                      {safeInfo.threshold}/{safeInfo.owners.length}
+                    </span>
+                  </p>
+                  <ul className="admin-list">
+                    {safeInfo.owners.map((owner, index) => (
+                      <GnosisAdminItem
+                        address={owner}
+                        accounts={accountsList}
+                        key={index}
+                      />
+                    ))}
+                  </ul>
+                </>
+              ) : (
+                <div className="loading-wrapper">
+                  <img src={IconLoading} className="icon icon-loading" />
+                  <p className="text-14 text-gray-light mb-0">
+                    Loading address
+                  </p>
+                </div>
+              )}
             </div>
           )}
         </div>
