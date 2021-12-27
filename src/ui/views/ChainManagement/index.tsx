@@ -1,6 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { CHAINS } from 'consts';
 import { useWallet } from 'ui/utils';
 import { PageHeader, StrayPageWithButton, ChainCard } from 'ui/component';
 import { Chain } from 'background/service/chain';
@@ -10,15 +11,13 @@ import './style.less';
 export const ChainManagementList = () => {
   const wallet = useWallet();
   const { t } = useTranslation();
-  const [allChains, setAllChains] = useState<Chain[]>([]);
-  const [chains, setChains] = useState<Chain[]>([]);
+  const [allChains, setAllChains] = useState<Chain[]>(Object.values(CHAINS));
+  const [chains, setChains] = useState<(Chain | undefined)[]>([]);
   const [savedChains, setSavedChains] = useState<string[]>([]);
   const [savedChainsData, setSavedChainsData] = useState<Chain[]>([]);
   const init = async () => {
     const savedChains = await getPinnedChain();
-    const getSupportChains = await wallet.getSupportChains();
-    setAllChains(getSupportChains);
-    const allChainList = getSupportChains
+    const allChainList = allChains
       .map((item) => {
         if (!savedChains.includes(item.enum)) return item;
       })
@@ -26,7 +25,7 @@ export const ChainManagementList = () => {
     setChains(allChainList);
     const savedChainsData = savedChains
       .map((item) => {
-        return getSupportChains.find((chain) => chain.enum === item);
+        return allChains.find((chain) => chain.enum === item);
       })
       .filter(Boolean);
     setSavedChainsData(savedChainsData);
@@ -55,7 +54,7 @@ export const ChainManagementList = () => {
   const saveToPin = async (chainName: string) => {
     await wallet.saveChain(chainName);
     const newChainData = allChains.find((item) => item.enum === chainName);
-    setChains(chains.filter((item) => item.enum !== chainName));
+    setChains(chains.filter((item) => item?.enum !== chainName));
     setSavedChains([...savedChains, chainName]);
     if (newChainData) {
       setSavedChainsData([...savedChainsData, newChainData]);
@@ -102,7 +101,7 @@ export const ChainManagementList = () => {
               chains.map((chain) => (
                 <ChainCard
                   chain={chain}
-                  key={chain.id}
+                  key={chain?.id}
                   showIcon={true}
                   plus
                   saveToPin={saveToPin}

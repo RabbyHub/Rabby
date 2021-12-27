@@ -18,7 +18,7 @@ const ChainCard = ({
 }: {
   plus: boolean;
   showIcon: boolean;
-  chain: Chain;
+  chain?: Chain;
   saveToPin?(chain: string): void;
   removeFromPin?(chain: string): void;
   className?: string;
@@ -32,7 +32,7 @@ const ChainCard = ({
     transition,
     listeners,
   } = useSortable({
-    id: chain.id + '',
+    id: chain?.id + '',
   });
 
   console.log(transform, transition);
@@ -43,11 +43,11 @@ const ChainCard = ({
   };
 
   const save = () => {
-    saveToPin && saveToPin(chain.enum);
+    saveToPin && saveToPin(chain?.enum || '');
   };
 
   const remove = () => {
-    removeFromPin && removeFromPin(chain.enum);
+    removeFromPin && removeFromPin(chain?.enum || '');
   };
 
   return (
