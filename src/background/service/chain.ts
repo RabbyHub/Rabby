@@ -51,6 +51,7 @@ class ChainService {
       CHAINS_ENUM.CRO,
       CHAINS_ENUM.BOBA,
       CHAINS_ENUM.BTT,
+      CHAINS_ENUM.AURORA,
     ];
 
     for (let i = 0; i < needAdd.length; i++) {
