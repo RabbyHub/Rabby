@@ -84,7 +84,7 @@ const TokenList = ({
   };
   useDebounce(
     () => {
-      onSearch(query);
+      if (query) onSearch(query);
     },
     150,
     [query]

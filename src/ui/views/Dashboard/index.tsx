@@ -720,6 +720,7 @@ const Dashboard = () => {
             onSearch={handleLoadTokens}
             closeSearch={() => {
               setSearchTokens([]);
+              setIsListLoading(false);
               setStartSearch(false);
             }}
             tokenAnimate={tokenAnimate}
