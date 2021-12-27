@@ -22,6 +22,7 @@ import { openIndexPage } from 'background/webapi/tab';
 import { CacheState } from 'background/service/pageStateCache';
 import i18n from 'background/service/i18n';
 import { KEYRING_CLASS, DisplayedKeryring } from 'background/service/keyring';
+import providerController from './provider/controller';
 import BaseController from './base';
 import {
   CHAINS_ENUM,
@@ -58,6 +59,20 @@ export class WalletController extends BaseController {
   isBooted = () => keyringService.isBooted();
   verifyPassword = (password: string) =>
     keyringService.verifyPassword(password);
+
+  requestETHRpc = (data: { method: string; params: any }, chainId: string) => {
+    return providerController.ethRpc(
+      {
+        data,
+        session: {
+          name: 'Rabby',
+          origin: INTERNAL_REQUEST_ORIGIN,
+          icon: './images/icon-128.png',
+        },
+      },
+      chainId
+    );
+  };
 
   sendRequest = (data) => {
     return provider({
