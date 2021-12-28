@@ -10,7 +10,6 @@ import {
   notificationService,
   permissionService,
   sessionService,
-  chainService,
   openapiService,
   pageStateCacheService,
   transactionHistoryService,
@@ -215,8 +214,6 @@ export class WalletController extends BaseController {
     preferenceService.setLastTimeSendToken(address, token);
 
   /* chains */
-  getSupportChains = () => chainService.getSupportChains();
-  getEnableChains = () => chainService.getEnabledChains();
   getSavedChains = () => preferenceService.getSavedChains();
   saveChain = (id: string) => preferenceService.saveChain(id);
   updateChain = (list: string[]) => preferenceService.updateChain(list);

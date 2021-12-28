@@ -1,10 +1,8 @@
 import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import { Modal } from 'ui/component';
 import { Drawer } from 'antd';
 
-import { useCurrentBalance } from 'ui/component/AddressList/AddressItem';
-import { Chain } from 'background/service/chain';
+import { Chain } from 'background/service/openapi';
 import { Account } from 'background/service/preference';
 import { useWallet } from 'ui/utils';
 import { CHAINS_ENUM, CHAINS } from 'consts';

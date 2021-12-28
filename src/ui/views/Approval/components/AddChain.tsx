@@ -3,8 +3,8 @@ import clsx from 'clsx';
 import { Button } from 'antd';
 import { useTranslation, Trans } from 'react-i18next';
 import { intToHex } from 'ethereumjs-util';
-import { CHAINS_ENUM } from 'consts';
-import { Chain } from 'background/service/chain';
+import { CHAINS_ENUM, CHAINS } from 'consts';
+import { Chain } from 'background/service/openapi';
 import { useWallet, useApproval } from 'ui/utils';
 import IconWarning from 'ui/assets/warning.svg';
 
@@ -32,9 +32,7 @@ const AddChain = ({ params }: { params: AddChainProps }) => {
     chainId = chainId.toLowerCase();
   }
 
-  const [supportChains, setSupportChains] = useState<Chain[]>([]);
   const [showChain, setShowChain] = useState<Chain | undefined>(undefined);
-  const [enableChains, setEnableChains] = useState<Chain[]>([]);
   const [defaultChain, setDefaultChain] = useState<CHAINS_ENUM | null>(null);
   const [title, setTitle] = useState('');
   const [content, setContent] = useState<any>('');
@@ -42,27 +40,19 @@ const AddChain = ({ params }: { params: AddChainProps }) => {
   const [inited, setInited] = useState(false);
 
   const init = async () => {
-    setSupportChains(await wallet.getSupportChains());
-    setEnableChains(await wallet.getEnableChains());
     const site = await wallet.getConnectedSite(session.origin)!;
     setDefaultChain(site.chain);
     setInited(true);
   };
 
   useEffect(() => {
-    if (!enableChains.some((chain) => chain.hex === chainId)) {
-      setTitle(t('Enable a Chain'));
-      setContent(t('enableChainContent'));
-      setConfirmBtnText(t('Enable'));
-    } else {
-      setTitle(t('Switch a Chain'));
-      setContent(
-        <Trans i18nKey="switchChainDesc" values={{ name: showChain?.name }} />
-      );
-      setConfirmBtnText(t('Change'));
-    }
-    setShowChain(supportChains.find((chain) => chain.hex === chainId));
-  }, [enableChains, supportChains, defaultChain]);
+    setTitle(t('Switch a Chain'));
+    setContent(
+      <Trans i18nKey="switchChainDesc" values={{ name: showChain?.name }} />
+    );
+    setConfirmBtnText(t('Change'));
+    setShowChain(Object.values(CHAINS).find((chain) => chain.hex === chainId));
+  }, [defaultChain]);
 
   useEffect(() => {
     init();

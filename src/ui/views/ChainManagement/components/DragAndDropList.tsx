@@ -3,7 +3,7 @@ import { DndContext, MeasuringStrategy } from '@dnd-kit/core';
 import { DragEndEvent } from '@dnd-kit/core/dist/types';
 import { SortableContext } from '@dnd-kit/sortable';
 import { ChainCard } from 'ui/component';
-import { Chain } from 'background/service/chain';
+import { Chain } from 'background/service/openapi';
 
 import '../style.less';
 

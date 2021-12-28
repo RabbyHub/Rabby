@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { Chain } from 'background/service/openapi';
 import { ChainSelector, Spin, FallbackSiteLogo } from 'ui/component';
 import { useApproval, useWallet } from 'ui/utils';
-import { CHAINS_ENUM } from 'consts';
+import { CHAINS_ENUM, CHAINS } from 'consts';
 
 interface ConnectProps {
   params: any;
@@ -26,11 +26,10 @@ const Connect = ({ params: { icon, origin } }: ConnectProps) => {
         account!.address,
         origin
       );
-      const enableChains = await wallet.getEnableChains();
       setIsLoading(false);
       let targetChain: Chain | undefined;
       for (let i = 0; i < recommendChains.length; i++) {
-        targetChain = enableChains.find(
+        targetChain = Object.values(CHAINS).find(
           (c) => c.serverId === recommendChains[i].id
         );
         if (targetChain) break;
