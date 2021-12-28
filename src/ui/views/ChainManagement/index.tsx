@@ -11,13 +11,12 @@ import './style.less';
 export const ChainManagementList = () => {
   const wallet = useWallet();
   const { t } = useTranslation();
-  const [allChains, setAllChains] = useState<Chain[]>(Object.values(CHAINS));
   const [chains, setChains] = useState<(Chain | undefined)[]>([]);
   const [savedChains, setSavedChains] = useState<string[]>([]);
   const [savedChainsData, setSavedChainsData] = useState<Chain[]>([]);
   const init = async () => {
     const savedChains = await getPinnedChain();
-    const allChainList = allChains
+    const allChainList = Object.values(CHAINS)
       .map((item) => {
         if (!savedChains.includes(item.enum)) return item;
       })
@@ -25,7 +24,7 @@ export const ChainManagementList = () => {
     setChains(allChainList);
     const savedChainsData = savedChains
       .map((item) => {
-        return allChains.find((chain) => chain.enum === item);
+        return Object.values(CHAINS).find((chain) => chain.enum === item);
       })
       .filter(Boolean);
     setSavedChainsData(savedChainsData);
@@ -45,7 +44,9 @@ export const ChainManagementList = () => {
       (item) => item.enum !== chainName
     );
     setSavedChainsData(newSavedChainData);
-    const newChainData = allChains.find((item) => item.enum === chainName);
+    const newChainData = Object.values(CHAINS).find(
+      (item) => item.enum === chainName
+    );
     if (newChainData) {
       setChains([...chains, newChainData]);
     }
@@ -53,7 +54,9 @@ export const ChainManagementList = () => {
 
   const saveToPin = async (chainName: string) => {
     await wallet.saveChain(chainName);
-    const newChainData = allChains.find((item) => item.enum === chainName);
+    const newChainData = Object.values(CHAINS).find(
+      (item) => item.enum === chainName
+    );
     setChains(chains.filter((item) => item?.enum !== chainName));
     setSavedChains([...savedChains, chainName]);
     if (newChainData) {
