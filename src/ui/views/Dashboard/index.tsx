@@ -118,6 +118,7 @@ const Dashboard = () => {
   const [showChain, setShowChain] = useState(false);
   const [showToken, setShowToken] = useState(false);
   const [showAssets, setShowAssets] = useState(false);
+  const [allTokens, setAllTokens] = useState<TokenItem[]>([]);
   const [tokens, setTokens] = useState<TokenItem[]>([]);
   const [searchTokens, setSearchTokens] = useState<TokenItem[]>([]);
   const [assets, setAssets] = useState<AssetItem[]>([]);
@@ -357,6 +358,7 @@ const Dashboard = () => {
       const defaultTokens = await wallet.openapi.listToken(
         currentAccount?.address
       );
+      setAllTokens(defaultTokens);
       const localAdded =
         (await wallet.getAddedToken(currentAccount?.address)) || [];
       const addedToken = localAdded
@@ -595,13 +597,20 @@ const Dashboard = () => {
     setTopAnimate('fadeInTop');
   };
   const removeToken = async (tokenId: string) => {
-    const newTokenList = addedToken.filter((item) => item !== tokenId);
-    setAddedToken(newTokenList);
-    await wallet.updateAddedToken(currentAccount?.address, newTokenList);
+    const newAddTokenList = addedToken.filter((item) => item !== tokenId);
+    const removeNewTokens = tokens.filter((token) => token.id !== tokenId);
+    setTokens(removeNewTokens);
+    setAddedToken(newAddTokenList);
+    await wallet.updateAddedToken(currentAccount?.address, newAddTokenList);
   };
   const addToken = async (tokenId: string) => {
-    const newTokenList = [...addedToken, tokenId];
-    setAddedToken(newTokenList);
+    const newAddTokenList = [...addedToken, tokenId];
+    const newAddToken = allTokens.find((token) => token.id === tokenId);
+    if (newAddToken) {
+      const newTokenList = [...tokens, newAddToken];
+      setTokens(sortTokensByPrice(newTokenList));
+    }
+    setAddedToken(newAddTokenList);
     await wallet.updateAddedToken(currentAccount?.address, [
       ...addedToken,
       tokenId,
