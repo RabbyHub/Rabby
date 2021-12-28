@@ -1,4 +1,4 @@
-import { Chain } from 'background/service/chain';
+import { Chain } from 'background/service/openapi';
 import IconEthLogo from 'ui/assets/chain-logos/eth.svg';
 import IconEthWhiteLogo from 'ui/assets/chain-logos/eth-white.svg';
 import IconHecoLogo from 'ui/assets/chain-logos/heco.svg';

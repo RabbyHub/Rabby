@@ -10,7 +10,7 @@ import { StrayPageWithButton } from 'ui/component';
 import { useWallet, useWalletRequest } from 'ui/utils';
 import { FieldCheckbox } from 'ui/component';
 import IconGnosis from 'ui/assets/walletlogo/gnosis.png';
-import { Chain } from '@/background/service/chain';
+import { Chain } from '@/background/service/openapi';
 import './style.less';
 
 const SUPPORT_CHAINS = [

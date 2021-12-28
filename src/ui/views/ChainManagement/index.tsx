@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { CHAINS } from 'consts';
 import { useWallet } from 'ui/utils';
 import { PageHeader, StrayPageWithButton, ChainCard } from 'ui/component';
-import { Chain } from 'background/service/chain';
+import { Chain } from 'background/service/openapi';
 import DragAndDropList from './components/DragAndDropList';
 import './style.less';
 
