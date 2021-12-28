@@ -789,7 +789,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
                         onClick={() => handleAllow()}
                         disabled={
                           !isReady ||
-                          (selectedGas ? selectedGas.price <= 0 : true) ||
+                          (selectedGas ? selectedGas.price < 0 : true) ||
                           (isGnosisAccount ? !safeInfo : false)
                         }
                         loading={isGnosisAccount ? !safeInfo : false}
@@ -853,7 +853,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
                         className="w-[172px]"
                         disabled={
                           !forceProcess ||
-                          (selectedGas ? selectedGas.price <= 0 : true) ||
+                          (selectedGas ? selectedGas.price < 0 : true) ||
                           (isGnosisAccount ? !safeInfo : false)
                         }
                         loading={isGnosisAccount ? !safeInfo : false}
