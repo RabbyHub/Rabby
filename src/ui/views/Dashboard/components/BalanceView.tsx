@@ -1,16 +1,13 @@
 import React, { useState, useEffect } from 'react';
-import { Popover } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { Spin } from 'ui/component';
 import { useCurrentBalance } from 'ui/component/AddressList/AddressItem';
 import { splitNumberByStep, useWallet } from 'ui/utils';
 import { CHAINS, KEYRING_TYPE, CHAINS_ENUM } from 'consts';
-import useConfirmExternalModal from './ConfirmOpenExternalModal';
 import { SvgIconOffline } from 'ui/assets';
-import IconArrowRight from 'ui/assets/arrow-right.svg';
-import IconExternal from 'ui/assets/open-external-gray.svg';
 import IconChainMore from 'ui/assets/chain-more.svg';
 import clsx from 'clsx';
+
 const BalanceView = ({
   currentAccount,
   showChain = false,
@@ -23,15 +20,10 @@ const BalanceView = ({
   const [numberAnimation, setNumberAnimation] = useState('');
   const [numberWrapperAnimation, setNumberWrapperAnimation] = useState('');
 
-  const _openInTab = useConfirmExternalModal();
   const { t } = useTranslation();
   const wallet = useWallet();
   const [isGnosis, setIsGnosis] = useState(false);
   const [gnosisNetwork, setGnosisNetwork] = useState(CHAINS[CHAINS_ENUM.ETH]);
-
-  const handleGotoProfile = () => {
-    _openInTab(`https://debank.com/profile/${currentAccount?.address}`);
-  };
 
   const handleIsGnosisChange = async () => {
     if (!currentAccount) return;
@@ -56,36 +48,6 @@ const BalanceView = ({
     }
   }, [isGnosis, currentAccount]);
 
-  const balancePopoverContent = (
-    <ul>
-      {chainBalances
-        .sort((a, b) => b.usd_value - a.usd_value)
-        .map((item) => {
-          const totalUSDValue = chainBalances.reduce((res, item) => {
-            return res + item.usd_value;
-          }, 0);
-          const chain = Object.values(CHAINS).find(
-            (v) => v.serverId === item.id
-          )!;
-          const percent = (item.usd_value / totalUSDValue) * 100;
-          return (
-            <li className="flex" key={item.id}>
-              <img className="chain-logo" src={chain?.logo} />
-              <span
-                className="amount"
-                title={'$' + splitNumberByStep(item.usd_value.toFixed(2))}
-              >
-                ${splitNumberByStep(Math.floor(item.usd_value))}
-              </span>
-              <div className="progress">
-                <div className="inner" style={{ width: percent + '%' }}></div>
-              </div>
-              <span className="percent">{Math.floor(percent)}%</span>
-            </li>
-          );
-        })}
-    </ul>
-  );
   const displayChainList = () => {
     if (isGnosis) {
       return (
