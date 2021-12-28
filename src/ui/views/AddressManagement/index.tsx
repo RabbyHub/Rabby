@@ -3,10 +3,9 @@ import { useTranslation } from 'react-i18next';
 import { Link, useHistory } from 'react-router-dom';
 import { Menu, Dropdown, message } from 'antd';
 import { FixedSizeList } from 'react-window';
-import { KEYRING_TYPE, HARDWARE_KEYRING_TYPES } from 'consts';
+import { KEYRING_TYPE } from 'consts';
 import { useWallet } from 'ui/utils';
 import {
-  AddressList,
   PageHeader,
   AuthenticationModal,
   Modal,
@@ -21,7 +20,7 @@ import IconHint from 'ui/assets/hint.png';
 import IconSuccess from 'ui/assets/success.svg';
 
 import './style.less';
-import clsx from 'clsx';
+
 const SORT_WEIGHT = {
   [KEYRING_TYPE.HdKeyring]: 1,
   [KEYRING_TYPE.SimpleKeyring]: 2,
@@ -240,15 +239,21 @@ const AddressManagement = () => {
           );
       }
     };
+
     return (
       <div className="flex items-center hint">
-        <Dropdown overlay={DropdownOptions} trigger={['click']}>
+        <Dropdown
+          overlay={DropdownOptions}
+          trigger={['click']}
+          getPopupContainer={() => document.querySelector('.scroll-container')!}
+        >
           <img className="cursor-pointer" src={IconHint} />
         </Dropdown>
       </div>
     );
   };
   const fixedList = useRef<FixedSizeList>();
+
   useEffect(() => {
     getAllKeyrings();
     setRetrive(false);
@@ -271,6 +276,7 @@ const AddressManagement = () => {
       </Link>
     </div>
   );
+
   const Row = (props) => {
     const { data, index, style } = props;
     const account = data[index];
@@ -306,6 +312,7 @@ const AddressManagement = () => {
       </li>
     );
   };
+
   return (
     <div
       className="address-management"
@@ -333,6 +340,7 @@ const AddressManagement = () => {
               itemCount={displayList.length}
               itemSize={64}
               ref={fixedList}
+              className="scroll-container"
             >
               {Row}
             </FixedSizeList>
