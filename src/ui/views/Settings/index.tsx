@@ -9,7 +9,6 @@ import IconChainManagement from 'ui/assets/chain-management.svg';
 import IconConnectSitesManagement from 'ui/assets/connect-sites-management.svg';
 import IconArrowRight from 'ui/assets/arrow-right-gray.svg';
 import IconLock from 'ui/assets/lock.svg';
-import IconSwitch from 'ui/assets/switch-lang.svg';
 import IconAdvanceOption from 'ui/assets/advance-option.svg';
 import './style.less';
 
@@ -33,11 +32,6 @@ const Settings = () => {
       content: t('Connected websites'),
       onClick: () => history.push('/settings/sites'),
     },
-    // {
-    //   leftIcon: IconSwitch,
-    //   content: t('Switching languages'),
-    //   onClick: () => history.push('/settings/switch-lang'),
-    // },
     {
       leftIcon: IconAdvanceOption,
       content: t('Advanced Options'),
