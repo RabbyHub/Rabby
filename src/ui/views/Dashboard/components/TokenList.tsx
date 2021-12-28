@@ -95,6 +95,9 @@ const TokenList = ({
   const displayAddedToken = addedToken
     .map((item) => tokens.find((token) => token?.id === item))
     .filter(Boolean);
+  const showList =
+    (!startSearch && !isloading && tokens.length > 0) ||
+    (startSearch && (searchTokens.length > 0 || displayAddedToken.length > 0));
   const close = () => {
     setQuery(null);
     closeSearch();
@@ -130,7 +133,7 @@ const TokenList = ({
           <div className="loading-text">{t('Loading Tokens')}</div>
         </div>
       )}
-      {!startSearch && !isloading && tokens.length > 0 && (
+      {showList && (
         <FixedSizeList
           height={468}
           width="100%"
