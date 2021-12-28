@@ -7,7 +7,7 @@ import { useCurrentBalance } from 'ui/component/AddressList/AddressItem';
 import { Chain } from 'background/service/chain';
 import { Account } from 'background/service/preference';
 import { useWallet } from 'ui/utils';
-import { CHAINS_ENUM } from 'consts';
+import { CHAINS_ENUM, CHAINS } from 'consts';
 import eventBus from '@/eventBus';
 import ChainCard from '../ChainCard';
 import clsx from 'clsx';
@@ -48,10 +48,9 @@ const ChainSelectorModal = ({
   };
   const init = async () => {
     const savedChains = await wallet.getSavedChains();
-    const getSupportChains = await wallet.getSupportChains();
     const savedChainsData = savedChains
       .map((item) => {
-        return getSupportChains.find((chain) => chain.enum === item);
+        return Object.values(CHAINS).find((chain) => chain.enum === item);
       })
       .filter(Boolean);
     setSavedChainsData(savedChainsData);
