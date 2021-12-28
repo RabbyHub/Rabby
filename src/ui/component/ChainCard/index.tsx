@@ -3,7 +3,7 @@ import { useHover } from 'ui/utils';
 import clsx from 'clsx';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import { Chain } from 'background/service/chain';
+import { Chain } from 'background/service/openapi';
 import './style.less';
 import IconAddChain from 'ui/assets/addchain.png';
 import IconChainDelete from 'ui/assets/chain-delete.png';

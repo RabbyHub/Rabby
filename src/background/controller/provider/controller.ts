@@ -18,7 +18,6 @@ import cloneDeep from 'lodash/cloneDeep';
 import {
   keyringService,
   permissionService,
-  chainService,
   sessionService,
   openapiService,
   preferenceService,
@@ -35,7 +34,6 @@ import Wallet from '../wallet';
 import { CHAINS, CHAINS_ENUM, SAFE_RPC_METHODS, KEYRING_TYPE } from 'consts';
 import buildinProvider from 'background/utils/buildinProvider';
 import BaseController from '../base';
-import { Chain } from 'background/service/chain';
 import { Account } from 'background/service/preference';
 
 interface ApprovalRes extends Tx {
@@ -430,24 +428,7 @@ class ProviderController extends BaseController {
     approvalRes,
   }) => this._signTypedData(from, data, 'V4', approvalRes?.extra);
 
-  @Reflect.metadata('APPROVAL', [
-    'AddChain',
-    ({
-      data: {
-        params: [chainParams],
-      },
-      session: { origin },
-    }) => {
-      return (
-        chainService
-          .getEnabledChains()
-          .some((chain) => chain.hex === chainParams.chainId) &&
-        CHAINS[permissionService.getConnectedSite(origin)!.chain]?.hex ===
-          chainParams.chainId
-      );
-    },
-    { height: 390 },
-  ])
+  @Reflect.metadata('APPROVAL', ['AddChain', true, { height: 390 }])
   walletAddEthereumChain = ({
     data: {
       params: [chainParams],
@@ -474,8 +455,6 @@ class ProviderController extends BaseController {
       true
     );
 
-    chainService.enableChain(chain.enum);
-
     sessionService.broadcastEvent(
       'chainChanged',
       {
@@ -487,24 +466,7 @@ class ProviderController extends BaseController {
     return null;
   };
 
-  @Reflect.metadata('APPROVAL', [
-    'AddChain',
-    ({
-      data: {
-        params: [chainParams],
-      },
-      session: { origin },
-    }) => {
-      return (
-        chainService
-          .getEnabledChains()
-          .some((chain) => chain.hex === chainParams.chainId) &&
-        CHAINS[permissionService.getConnectedSite(origin)!.chain]?.hex ===
-          chainParams.chainId
-      );
-    },
-    { height: 390 },
-  ])
+  @Reflect.metadata('APPROVAL', ['AddChain', true, { height: 390 }])
   walletSwitchEthereumChain = this.walletAddEthereumChain;
 
   walletRequestPermissions = ({ data: { params: permissions } }) => {

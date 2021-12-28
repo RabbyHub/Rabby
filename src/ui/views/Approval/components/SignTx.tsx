@@ -29,6 +29,7 @@ import {
   SecurityCheckDecision,
   Tx,
   GasLevel,
+  Chain,
 } from 'background/service/openapi';
 import { useWallet, useApproval } from 'ui/utils';
 import { ChainGas, Account } from 'background/service/preference';
@@ -42,7 +43,6 @@ import Deploy from './TxComponents/Deploy';
 import Loading from './TxComponents/Loading';
 import GasSelector, { GasSelectorResponse } from './TxComponents/GasSelecter';
 import { WaitingSignComponent } from './SignText';
-import { Chain } from 'background/service/chain';
 import IconInfo from 'ui/assets/infoicon.svg';
 
 const normalizeHex = (value: string | number) => {

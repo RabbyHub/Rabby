@@ -7,21 +7,6 @@ interface ChainStore {
   addedChains: CHAINS_ENUM[];
 }
 
-export interface Chain {
-  id: number;
-  name: string;
-  hex: string;
-  logo: string;
-  enum: CHAINS_ENUM;
-  serverId: string;
-  network: string;
-  nativeTokenSymbol: string;
-  whiteLogo?: string;
-  nativeTokenLogo: string;
-  nativeTokenAddress: string;
-  scanLink: string;
-}
-
 class ChainService {
   supportChains: Chain[] = [];
   store: ChainStore | null = null;

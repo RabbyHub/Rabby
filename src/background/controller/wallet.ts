@@ -217,8 +217,6 @@ export class WalletController extends BaseController {
   /* chains */
   getSupportChains = () => chainService.getSupportChains();
   getEnableChains = () => chainService.getEnabledChains();
-  enableChain = (id: CHAINS_ENUM) => chainService.enableChain(id);
-  disableChain = (id: CHAINS_ENUM) => chainService.disableChain(id);
   getSavedChains = () => preferenceService.getSavedChains();
   saveChain = (id: string) => preferenceService.saveChain(id);
   updateChain = (list: string[]) => preferenceService.updateChain(list);
