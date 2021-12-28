@@ -635,7 +635,6 @@ const Dashboard = () => {
   useEffect(() => {
     checkGnosisConnectChain();
   }, [currentConnection, gnosisNetworkId]);
-  console.log(allTokens);
   return (
     <>
       <div
