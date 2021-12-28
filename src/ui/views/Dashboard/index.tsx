@@ -737,18 +737,16 @@ const Dashboard = () => {
                     {gnosisPendingCount}
                   </span>
                 )}
+                <img className="icon icon-arrow-right" src={IconArrowRight} />
                 <img className="icon icon-queue" src={IconQueue} />
                 {t('Queue')}
               </div>
             ) : (
               <div className="operation-item" onClick={handleGotoHistory}>
-                {pendingTxCount > 0 ? (
-                  <div className="pending-count">
-                    <img src={IconPending} className="icon icon-pending" />
-                    {pendingTxCount}
-                  </div>
-                ) : (
-                  <img className="icon icon-history" src={IconHistory} />
+                {pendingTxCount > 0 && (
+                  <span className="operation-item__count__normal">
+                    {`${pendingTxCount} ${t('Pending')}`}
+                  </span>
                 )}
                 {t('Transaction History')}
                 <img className="icon icon-arrow-right" src={IconArrowRight} />
