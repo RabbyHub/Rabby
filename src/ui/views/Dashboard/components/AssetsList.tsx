@@ -21,7 +21,13 @@ const Row = (props) => {
       {...hoverProps}
       onClick={handleGotoProfile}
     >
-      <TokenWithChain token={token} height={'24px'} width={'24px'} noRound />
+      <TokenWithChain
+        token={token}
+        height={'24px'}
+        width={'24px'}
+        noRound
+        hideConer
+      />
       <div className="middle">
         <div className="token-name text-13 font-medium">{token.name}</div>
       </div>
