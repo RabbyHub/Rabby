@@ -635,7 +635,7 @@ const Dashboard = () => {
   useEffect(() => {
     checkGnosisConnectChain();
   }, [currentConnection, gnosisNetworkId]);
-
+  console.log(allTokens);
   return (
     <>
       <div
@@ -815,7 +815,10 @@ const Dashboard = () => {
       <Modal
         visible={hovered}
         closable={false}
-        onCancel={() => setHovered(false)}
+        onCancel={() => {
+          setHovered(false);
+          setStartEdit(false);
+        }}
         className="address-popover"
         width="344px"
       >
