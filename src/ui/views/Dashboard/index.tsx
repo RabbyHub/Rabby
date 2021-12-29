@@ -484,7 +484,10 @@ const Dashboard = () => {
   const balanceList = async (accounts) => {
     return await Promise.all<Account>(
       accounts.map(async (item) => {
-        const balance = await wallet.getAddressCacheBalance(item?.address);
+        let balance = await wallet.getAddressCacheBalance(item?.address);
+        if (!balance) {
+          balance = await wallet.getAddressBalance(item?.address);
+        }
         return {
           ...item,
           balance: balance?.total_usd_value || 0,
