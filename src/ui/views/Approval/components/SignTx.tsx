@@ -6,11 +6,19 @@ import {
   addHexPrefix,
   unpadHexString,
 } from 'ethereumjs-util';
-import { Button, Modal, Tooltip } from 'antd';
+import { Button, Modal, Tooltip, Drawer } from 'antd';
 import { useTranslation } from 'react-i18next';
 import clsx from 'clsx';
+import Safe from '@rabby-wallet/gnosis-sdk';
+import { SafeInfo } from '@rabby-wallet/gnosis-sdk/src/api';
 import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
-import { KEYRING_CLASS, CHAINS, CHAINS_ENUM, KEYRING_TYPE } from 'consts';
+import {
+  KEYRING_CLASS,
+  CHAINS,
+  CHAINS_ENUM,
+  KEYRING_TYPE,
+  INTERNAL_REQUEST_ORIGIN,
+} from 'consts';
 import { Checkbox } from 'ui/component';
 import AccountCard from './AccountCard';
 import SecurityCheckBar from './SecurityCheckBar';
@@ -21,10 +29,12 @@ import {
   SecurityCheckDecision,
   Tx,
   GasLevel,
+  Chain,
 } from 'background/service/openapi';
+import { validateGasPriceRange } from '@/utils/transaction';
 import { useWallet, useApproval } from 'ui/utils';
-import { ChainGas } from 'background/service/preference';
-
+import { ChainGas, Account } from 'background/service/preference';
+import GnosisDrawer from './TxComponents/GnosisDrawer';
 import Approve from './TxComponents/Approve';
 import Cancel from './TxComponents/Cancel';
 import Sign from './TxComponents/Sign';
@@ -34,7 +44,6 @@ import Deploy from './TxComponents/Deploy';
 import Loading from './TxComponents/Loading';
 import GasSelector, { GasSelectorResponse } from './TxComponents/GasSelecter';
 import { WaitingSignComponent } from './SignText';
-import { Chain } from 'background/service/chain';
 import IconInfo from 'ui/assets/infoicon.svg';
 
 const normalizeHex = (value: string | number) => {
@@ -59,7 +68,7 @@ const normalizeTxParams = (tx) => {
     copy.gas = normalizeHex(copy.gas);
   }
   if ('gasLimit' in copy) {
-    copy.gas = normalizeHex(copy.gas);
+    copy.gas = normalizeHex(copy.gasLimit);
   }
   if ('gasPrice' in copy) {
     copy.gasPrice = normalizeHex(copy.gasPrice);
@@ -70,7 +79,7 @@ const normalizeTxParams = (tx) => {
   return copy;
 };
 
-const TxTypeComponent = ({
+export const TxTypeComponent = ({
   txDetail,
   chain = CHAINS[CHAINS_ENUM.ETH],
   isReady,
@@ -82,7 +91,7 @@ const TxTypeComponent = ({
   txDetail: ExplainTxResponse;
   chain: Chain | undefined;
   isReady: boolean;
-  raw: Record<string, string>;
+  raw: Record<string, string | number>;
   onChange(data: Record<string, any>): void;
   tx: Tx;
   isSpeedUp: boolean;
@@ -90,7 +99,12 @@ const TxTypeComponent = ({
   if (!isReady) return <Loading chainEnum={chain.enum} />;
   if (txDetail.type_deploy_contract)
     return (
-      <Deploy data={txDetail} chainEnum={chain.enum} isSpeedUp={isSpeedUp} />
+      <Deploy
+        data={txDetail}
+        chainEnum={chain.enum}
+        isSpeedUp={isSpeedUp}
+        raw={raw}
+      />
     );
   if (txDetail.type_cancel_tx)
     return (
@@ -99,11 +113,17 @@ const TxTypeComponent = ({
         chainEnum={chain.enum}
         tx={tx}
         isSpeedUp={isSpeedUp}
+        raw={raw}
       />
     );
   if (txDetail.type_cancel_token_approval)
     return (
-      <Cancel data={txDetail} chainEnum={chain.enum} isSpeedUp={isSpeedUp} />
+      <Cancel
+        data={txDetail}
+        chainEnum={chain.enum}
+        isSpeedUp={isSpeedUp}
+        raw={raw}
+      />
     );
   if (txDetail.type_token_approval)
     return (
@@ -113,11 +133,17 @@ const TxTypeComponent = ({
         onChange={onChange}
         tx={tx}
         isSpeedUp={isSpeedUp}
+        raw={raw}
       />
     );
   if (txDetail.type_send)
     return (
-      <Send data={txDetail} chainEnum={chain.enum} isSpeedUp={isSpeedUp} />
+      <Send
+        data={txDetail}
+        chainEnum={chain.enum}
+        isSpeedUp={isSpeedUp}
+        raw={raw}
+      />
     );
   if (txDetail.type_call)
     return (
@@ -126,15 +152,32 @@ const TxTypeComponent = ({
         raw={raw}
         chainEnum={chain.enum}
         isSpeedUp={isSpeedUp}
+        tx={tx}
       />
     );
   return <></>;
 };
 
-const SignTx = ({ params, origin }) => {
+interface SignTxProps {
+  params: {
+    session: {
+      origin: string;
+      icon: string;
+      name: string;
+    };
+    data: any[];
+    isGnosis?: boolean;
+    account?: Account;
+  };
+  origin: string;
+}
+
+const SignTx = ({ params, origin }: SignTxProps) => {
+  const { isGnosis, account } = params;
   const [isReady, setIsReady] = useState(false);
   const [nonceChanged, setNonceChanged] = useState(false);
-  const [isWatch, setIsWatch] = useState(false);
+  const [canProcess, setCanProcess] = useState(true);
+  const [cantProcessReason, setCantProcessReason] = useState('');
   const [txDetail, setTxDetail] = useState<ExplainTxResponse | null>({
     balance_change: {
       err_msg: '',
@@ -183,6 +226,7 @@ const SignTx = ({ params, origin }) => {
       contract_protocol_name: '',
     },
   });
+  const [submitText, setSubmitText] = useState('Proceed');
   const { t } = useTranslation();
   const [
     securityCheckStatus,
@@ -233,6 +277,8 @@ const SignTx = ({ params, origin }) => {
       base_fee: 0,
     },
   ]);
+  const [isGnosisAccount, setIsGnosisAccount] = useState(false);
+  const [gnosisDrawerVisible, setGnosisDrawerVisble] = useState(false);
   const [, resolveApproval, rejectApproval] = useApproval();
   const wallet = useWallet();
 
@@ -281,6 +327,7 @@ const SignTx = ({ params, origin }) => {
   const [realNonce, setRealNonce] = useState('');
   const [gasLimit, setGasLimit] = useState(gas || params.data[0].gasLimit);
   const [forceProcess, setForceProcess] = useState(false);
+  const [safeInfo, setSafeInfo] = useState<SafeInfo | null>(null);
 
   const checkTx = async (address: string) => {
     try {
@@ -300,7 +347,7 @@ const SignTx = ({ params, origin }) => {
       setSecurityCheckStatus(res.decision);
       setSecurityCheckAlert(res.alert);
       setSecurityCheckDetail(res);
-    } catch (e) {
+    } catch (e: any) {
       const alert = e.message || JSON.stringify(e);
       setSecurityCheckStatus('danger');
       setSecurityCheckAlert(alert);
@@ -360,10 +407,8 @@ const SignTx = ({ params, origin }) => {
   };
 
   const explain = async () => {
-    const currentAccount = await wallet.getCurrentAccount();
-    if (currentAccount.type === KEYRING_TYPE.WatchAddressKeyring) {
-      setIsWatch(true);
-    }
+    const currentAccount =
+      isGnosis && account ? account : await wallet.getCurrentAccount();
     try {
       setIsReady(false);
       const res = await explainTx(currentAccount!.address);
@@ -371,12 +416,31 @@ const SignTx = ({ params, origin }) => {
         await checkTx(currentAccount!.address);
       }
       setIsReady(true);
-    } catch (e) {
+    } catch (e: any) {
       Modal.error({
         title: t('Error'),
         content: e.message || JSON.stringify(e),
       });
     }
+  };
+
+  const handleGnosisConfirm = async (account: Account) => {
+    if (params.session.origin !== INTERNAL_REQUEST_ORIGIN) {
+      await wallet.buildGnosisTransaction(tx.from, account, {
+        from: tx.from,
+        to: tx.to,
+        data: tx.data,
+        value: tx.value,
+      });
+    }
+    const hash = await wallet.getGnosisTransactionHash();
+    resolveApproval({
+      data: [hash, account.address],
+      session: params.session,
+      isGnosis: true,
+      account: account,
+      uiRequestComponent: 'SignText',
+    });
   };
 
   const handleAllow = async (doubleCheck = false) => {
@@ -386,7 +450,8 @@ const SignTx = ({ params, origin }) => {
       return;
     }
 
-    const currentAccount = await wallet.getCurrentAccount();
+    const currentAccount =
+      isGnosis && account ? account : await wallet.getCurrentAccount();
     if (
       currentAccount?.type === KEYRING_CLASS.HARDWARE.LEDGER &&
       !(await wallet.isUseLedgerLive())
@@ -403,6 +468,17 @@ const SignTx = ({ params, origin }) => {
         // NOTHING
       }
     }
+
+    try {
+      validateGasPriceRange(tx);
+    } catch (e) {
+      Modal.error({
+        title: t('Error'),
+        content: e.message || JSON.stringify(e),
+      });
+      return;
+    }
+
     const selected: ChainGas = {
       lastTimeSelect: selectedGas.level === 'custom' ? 'gasPrice' : 'gasLevel',
     };
@@ -426,6 +502,10 @@ const SignTx = ({ params, origin }) => {
         },
       });
 
+      return;
+    }
+    if (currentAccount.type === KEYRING_TYPE.GnosisKeyring) {
+      setGnosisDrawerVisble(true);
       return;
     }
 
@@ -471,6 +551,10 @@ const SignTx = ({ params, origin }) => {
     rejectApproval('User rejected the request.');
   };
 
+  const handleGnosisDrawerCancel = () => {
+    setGnosisDrawerVisble(false);
+  };
+
   const handleForceProcessChange = (checked: boolean) => {
     setForceProcess(checked);
   };
@@ -494,9 +578,35 @@ const SignTx = ({ params, origin }) => {
     return list;
   };
 
+  const checkCanProcess = async () => {
+    const session = params.session;
+    const currentAccount =
+      isGnosis && account ? account : await wallet.getCurrentAccount();
+    const site = await wallet.getConnectedSite(session.origin);
+
+    if (currentAccount.type === KEYRING_TYPE.WatchAddressKeyring) {
+      setCanProcess(false);
+      setCantProcessReason(t('Use_other_methods'));
+    }
+    if (currentAccount.type === KEYRING_TYPE.GnosisKeyring || isGnosis) {
+      const networkId = await wallet.getGnosisNetworkId(currentAccount.address);
+
+      if ((chainId || CHAINS[site!.chain].id) !== Number(networkId)) {
+        setCanProcess(false);
+        setCantProcessReason(t('multiSignChainNotMatch'));
+      }
+    }
+  };
+
   const init = async () => {
     const session = params.session;
     const site = await wallet.getConnectedSite(session.origin);
+    const currentAccount =
+      isGnosis && account ? account : await wallet.getCurrentAccount();
+
+    if (currentAccount.type === KEYRING_TYPE.GnosisKeyring) {
+      setIsGnosisAccount(true);
+    }
 
     if (!chainId) {
       setChainId(CHAINS[site!.chain].id);
@@ -506,6 +616,7 @@ const SignTx = ({ params, origin }) => {
         (item) => item.id === (chainId || CHAINS[site!.chain].id)
       )!
     );
+    checkCanProcess();
     const lastTimeGas: ChainGas | null = await wallet.getLastTimeGasSelection(
       chainId || CHAINS[site!.chain].id
     );
@@ -546,9 +657,29 @@ const SignTx = ({ params, origin }) => {
     setInited(true);
   };
 
+  const getSafeInfo = async () => {
+    const currentAccount = await wallet.getCurrentAccount();
+    const networkId = await wallet.getGnosisNetworkId(currentAccount.address);
+    const safeInfo = await Safe.getSafeInfo(currentAccount.address, networkId);
+    setSafeInfo(safeInfo);
+  };
+
+  const handleIsGnosisAccountChange = async () => {
+    if (params.session.origin !== INTERNAL_REQUEST_ORIGIN) {
+      await wallet.clearGnosisTransaction();
+    }
+    await getSafeInfo();
+  };
+
   useEffect(() => {
     init();
   }, []);
+
+  useEffect(() => {
+    if (isGnosisAccount) {
+      handleIsGnosisAccountChange();
+    }
+  }, [isGnosisAccount]);
 
   useEffect(() => {
     if (!inited) return;
@@ -560,6 +691,14 @@ const SignTx = ({ params, origin }) => {
     }
     explain();
   }, [tx, inited]);
+
+  useEffect(() => {
+    if (isGnosisAccount || securityCheckStatus !== 'pass') {
+      setSubmitText('Proceed');
+      return;
+    }
+    setSubmitText('Sign');
+  }, [isGnosisAccount, securityCheckStatus]);
 
   return (
     <>
@@ -576,7 +715,11 @@ const SignTx = ({ params, origin }) => {
                 isReady={isReady}
                 txDetail={txDetail}
                 chain={chain}
-                raw={params.data[0]}
+                raw={{
+                  ...tx,
+                  nonce: realNonce || tx.nonce,
+                  gas: gasLimit,
+                }}
                 onChange={handleTxChange}
                 tx={{
                   ...tx,
@@ -629,10 +772,10 @@ const SignTx = ({ params, origin }) => {
                     >
                       {t('Cancel')}
                     </Button>
-                    {isWatch ? (
+                    {!canProcess ? (
                       <Tooltip
                         overlayClassName="rectangle watcSign__tooltip"
-                        title={t('Use_other_methods')}
+                        title={cantProcessReason}
                       >
                         <div className="w-[172px] relative flex items-center">
                           <Button
@@ -658,12 +801,12 @@ const SignTx = ({ params, origin }) => {
                         onClick={() => handleAllow()}
                         disabled={
                           !isReady ||
-                          (selectedGas ? selectedGas.price <= 0 : true)
+                          (selectedGas ? selectedGas.price <= 0 : true) ||
+                          (isGnosisAccount ? !safeInfo : false)
                         }
+                        loading={isGnosisAccount ? !safeInfo : false}
                       >
-                        {securityCheckStatus === 'pass'
-                          ? t('Sign')
-                          : t('Continue')}
+                        {t(submitText)}
                       </Button>
                     )}
                   </div>
@@ -694,10 +837,10 @@ const SignTx = ({ params, origin }) => {
                     >
                       {t('Cancel')}
                     </Button>
-                    {isWatch ? (
+                    {!canProcess ? (
                       <Tooltip
                         overlayClassName="rectangle watcSign__tooltip"
-                        title={t('Use_other_methods')}
+                        title={cantProcessReason}
                       >
                         <div className="w-[172px] relative flex items-center">
                           <Button
@@ -722,8 +865,10 @@ const SignTx = ({ params, origin }) => {
                         className="w-[172px]"
                         disabled={
                           !forceProcess ||
-                          (selectedGas ? selectedGas.price <= 0 : true)
+                          (selectedGas ? selectedGas.price <= 0 : true) ||
+                          (isGnosisAccount ? !safeInfo : false)
                         }
+                        loading={isGnosisAccount ? !safeInfo : false}
                         onClick={() => handleAllow(true)}
                       >
                         {t('Sign')}
@@ -735,7 +880,23 @@ const SignTx = ({ params, origin }) => {
             </footer>
           </>
         )}
-        {securityCheckDetail && !isWatch && (
+        {isGnosisAccount && safeInfo && (
+          <Drawer
+            placement="bottom"
+            height="400px"
+            className="gnosis-drawer"
+            visible={gnosisDrawerVisible}
+            onClose={() => setGnosisDrawerVisble(false)}
+            maskClosable
+          >
+            <GnosisDrawer
+              safeInfo={safeInfo}
+              onCancel={handleGnosisDrawerCancel}
+              onConfirm={handleGnosisConfirm}
+            />
+          </Drawer>
+        )}
+        {securityCheckDetail && (
           <SecurityCheckDetail
             visible={showSecurityCheckDetail}
             onCancel={() => setShowSecurityCheckDetail(false)}

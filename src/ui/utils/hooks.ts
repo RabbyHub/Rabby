@@ -9,11 +9,15 @@ export const useApproval = () => {
 
   const getApproval = wallet.getApproval;
 
-  const resolveApproval = async (data?: any, stay = false) => {
+  const resolveApproval = async (
+    data?: any,
+    stay = false,
+    forceReject = false
+  ) => {
     const approval = await getApproval();
 
     if (approval) {
-      wallet.resolveApproval(data);
+      wallet.resolveApproval(data, forceReject);
     }
     if (stay) {
       return;

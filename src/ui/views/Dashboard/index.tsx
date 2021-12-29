@@ -1,6 +1,8 @@
 import React, { useEffect, useState, useRef } from 'react';
 import ClipboardJS from 'clipboard';
 import QRCode from 'qrcode.react';
+import cloneDeep from 'lodash/cloneDeep';
+import BigNumber from 'bignumber.js';
 import { useHistory, Link } from 'react-router-dom';
 import { useInterval } from 'react-use';
 import { message, Popover, Input, Tooltip } from 'antd';
@@ -9,25 +11,38 @@ import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import Safe from '@rabby-wallet/gnosis-sdk';
+import { SafeInfo } from '@rabby-wallet/gnosis-sdk/dist/api';
 import {
-  SORT_WEIGHT,
   KEYRING_ICONS,
   WALLET_BRAND_CONTENT,
   KEYRING_ICONS_WHITE,
+  KEYRING_CLASS,
+  KEYRING_TYPE,
+  CHAINS,
 } from 'consts';
+import {
+  useWallet,
+  isSameAddress,
+  splitNumberByStep,
+  useHover,
+} from 'ui/utils';
 import { AddressViewer, Modal } from 'ui/component';
-import { useWallet } from 'ui/utils';
+import { crossCompareOwners } from 'ui/utils/gnosis';
 import { Account } from 'background/service/preference';
+import { ConnectedSite } from 'background/service/permission';
+import { TokenItem, AssetItem } from 'background/service/openapi';
+
 import {
   RecentConnections,
   BalanceView,
   DefaultWalletAlertBar,
+  TokenList,
+  AssetsList,
+  GnosisWrongChainAlertBar,
 } from './components';
 import { getUpdateContent } from 'changeLogs/index';
 import IconSetting from 'ui/assets/settings.svg';
-import IconSend from 'ui/assets/send.svg';
-import IconHistory from 'ui/assets/history.svg';
-import IconPending from 'ui/assets/pending.svg';
 import IconSuccess from 'ui/assets/success.svg';
 import IconUpAndDown from 'ui/assets/up-and-down.svg';
 import { ReactComponent as IconCopy } from 'ui/assets/urlcopy.svg';
@@ -35,8 +50,51 @@ import IconEditPen from 'ui/assets/editpen.svg';
 import IconCorrect from 'ui/assets/correct.svg';
 import IconPlus from 'ui/assets/dashboard-plus.svg';
 import IconInfo from 'ui/assets/information.png';
-import IconMoney from 'ui/assets/dashboardMoney.png';
+import IconQueue from 'ui/assets/icon-queue.svg';
+import IconTagYou from 'ui/assets/tag-you.svg';
+import IconArrowRight from 'ui/assets/arrow-right.svg';
+import IconDrawer from 'ui/assets/drawer.png';
+import IconAddToken from 'ui/assets/addtoken.png';
+import IconAddressCopy from 'ui/assets/address-copy.png';
+import { SvgIconLoading } from 'ui/assets';
+
 import './style.less';
+
+const GnosisAdminItem = ({
+  accounts,
+  address,
+}: {
+  accounts: Account[];
+  address: string;
+}) => {
+  const addressInWallet = accounts.find((account) =>
+    isSameAddress(account.address, address)
+  );
+  return (
+    <li>
+      <AddressViewer address={address} showArrow={false} />
+      {addressInWallet ? (
+        <img src={IconTagYou} className="icon icon-tag" />
+      ) : (
+        <></>
+      )}
+      <div className="address-type">
+        {addressInWallet ? (
+          <img
+            className="icon icon-account-type"
+            src={
+              KEYRING_ICONS[addressInWallet.type] ||
+              WALLET_BRAND_CONTENT[addressInWallet.brandName].image
+            }
+          />
+        ) : (
+          <></>
+        )}
+      </div>
+    </li>
+  );
+};
+
 const Dashboard = () => {
   const history = useHistory();
   const wallet = useWallet();
@@ -44,9 +102,9 @@ const Dashboard = () => {
   const fixedList = useRef<FixedSizeList>();
 
   const [currentAccount, setCurrentAccount] = useState<Account | null>(null);
-  const [isModalOpen, setModalOpen] = useState(false);
-  const [qrcodeVisible, setQrcodeVisible] = useState(false);
   const [pendingTxCount, setPendingTxCount] = useState(0);
+  const [gnosisPendingCount, setGnosisPendingCount] = useState(0);
+  const [safeInfo, setSafeInfo] = useState<SafeInfo | null>(null);
   const [isDefaultWallet, setIsDefaultWallet] = useState(true);
   const [copySuccess, setCopySuccess] = useState(false);
   const [hovered, setHovered] = useState(false);
@@ -57,9 +115,32 @@ const Dashboard = () => {
   const [accountsList, setAccountsList] = useState<Account[]>([]);
   const [firstNotice, setFirstNotice] = useState(false);
   const [updateContent, setUpdateContent] = useState('');
-  const handleToggle = () => {
-    setModalOpen(!isModalOpen);
-  };
+  const [showChain, setShowChain] = useState(false);
+  const [showToken, setShowToken] = useState(false);
+  const [showAssets, setShowAssets] = useState(false);
+  const [allTokens, setAllTokens] = useState<TokenItem[]>([]);
+  const [tokens, setTokens] = useState<TokenItem[]>([]);
+  const [searchTokens, setSearchTokens] = useState<TokenItem[]>([]);
+  const [assets, setAssets] = useState<AssetItem[]>([]);
+  const [startSearch, setStartSearch] = useState(false);
+  const [addedToken, setAddedToken] = useState<string[]>([]);
+  const [defiAnimate, setDefiAnimate] = useState('fadeOut');
+  const [tokenAnimate, setTokenAnimate] = useState('fadeOut');
+  const [topAnimate, setTopAnimate] = useState('');
+  const [connectionAnimation, setConnectionAnimation] = useState('');
+
+  const [startAnimate, setStartAnimate] = useState(false);
+  const [isGnosis, setIsGnosis] = useState(false);
+  const [isListLoading, setIsListLoading] = useState(false);
+  const [isAssetsLoading, setIsAssetsLoading] = useState(true);
+  const [loadingAddress, setLoadingAddress] = useState(false);
+  const [gnosisNetworkId, setGnosisNetworkId] = useState('1');
+  const [showGnosisWrongChainAlert, setShowGnosisWrongChainAlert] = useState(
+    false
+  );
+  const [currentConnection, setCurrentConnection] = useState<
+    ConnectedSite | null | undefined
+  >(null);
 
   const getCurrentAccount = async () => {
     const account = await wallet.getCurrentAccount();
@@ -79,14 +160,39 @@ const Dashboard = () => {
     const isDefault = await wallet.isDefaultWallet();
     setIsDefaultWallet(isDefault);
   };
+
   const getAlianName = async (address: string) => {
     await wallet.getAlianName(address).then((name) => {
       setAlianName(name);
       setDisplayName(name);
     });
   };
+
+  const getGnosisPendingCount = async () => {
+    if (!currentAccount) return;
+
+    const network = await wallet.getGnosisNetworkId(currentAccount.address);
+    setGnosisNetworkId(network);
+    const [info, txs] = await Promise.all([
+      Safe.getSafeInfo(currentAccount.address, network),
+      Safe.getPendingTransactions(currentAccount.address, network),
+    ]);
+    const owners = await wallet.getGnosisOwners(
+      currentAccount,
+      currentAccount.address,
+      info.version
+    );
+    const comparedOwners = crossCompareOwners(owners, info.owners);
+    setSafeInfo({
+      ...info,
+      owners: comparedOwners,
+    });
+    setGnosisPendingCount(txs.results.length);
+  };
+
   useInterval(() => {
     if (!currentAccount) return;
+    if (currentAccount.type === KEYRING_TYPE.GnosisKeyring) return;
     getPendingTxCount(currentAccount.address);
   }, 30000);
 
@@ -99,7 +205,12 @@ const Dashboard = () => {
 
   useEffect(() => {
     if (currentAccount) {
-      getPendingTxCount(currentAccount.address);
+      if (currentAccount.type === KEYRING_TYPE.GnosisKeyring) {
+        setSafeInfo(null);
+        getGnosisPendingCount();
+      } else {
+        getPendingTxCount(currentAccount.address);
+      }
       getAlianName(currentAccount?.address.toLowerCase());
       setCurrentAccount(currentAccount);
       getAllKeyrings();
@@ -111,23 +222,20 @@ const Dashboard = () => {
   };
 
   const handleChange = async (account) => {
+    setIsListLoading(true);
+    setIsAssetsLoading(true);
     const { address, type, brandName } = account;
     await wallet.changeAccount({ address, type, brandName });
     setCurrentAccount({ address, type, brandName });
     hide();
   };
 
-  const handleGotoSend = async () => {
-    history.push({
-      pathname: '/send-token',
-      state: {
-        accountsList,
-      },
-    });
-  };
-
   const handleGotoHistory = async () => {
     history.push('/tx-history');
+  };
+
+  const handleGotoQueue = () => {
+    history.push('/gnosis-queue');
   };
 
   const handleCopyCurrentAddress = () => {
@@ -136,7 +244,6 @@ const Dashboard = () => {
         return currentAccount!.address;
       },
     });
-
     clipboard.on('success', () => {
       setCopySuccess(true);
       setTimeout(() => {
@@ -160,6 +267,7 @@ const Dashboard = () => {
     e.stopPropagation();
     setAlianName(e.target.value);
   };
+
   const alianNameConfirm = async (e) => {
     e.stopPropagation();
     if (!alianName) {
@@ -186,6 +294,7 @@ const Dashboard = () => {
       setAccountsList(newAccountList);
     }
   };
+
   const checkIfFirstLogin = async () => {
     const firstOpen = await wallet.getIsFirstOpen();
     const updateContent = await getUpdateContent();
@@ -193,16 +302,87 @@ const Dashboard = () => {
     if (!firstOpen || !updateContent) return;
     setFirstNotice(firstOpen);
   };
+
   const changeIsFirstLogin = () => {
     wallet.updateIsFirstOpen();
     setFirstNotice(false);
   };
+  const sortTokensByPrice = (tokens: TokenItem[]) => {
+    const copy = cloneDeep(tokens);
+    return copy.sort((a, b) => {
+      return new BigNumber(b.amount)
+        .times(new BigNumber(b.price || 0))
+        .minus(new BigNumber(a.amount).times(new BigNumber(a.price || 0)))
+        .toNumber();
+    });
+  };
+  const sortAssetsByUSDValue = (assets: AssetItem[]) => {
+    const copy = cloneDeep(assets);
+    return copy.sort((a, b) => {
+      return new BigNumber(b.asset_usd_value)
+        .minus(new BigNumber(a.asset_usd_value))
+        .toNumber();
+    });
+  };
+
+  const handleLoadTokens = async (q?: string) => {
+    let tokens: TokenItem[] = [];
+    if (q) {
+      if (q.length !== 42 || !q.startsWith('0x')) return [];
+      tokens = sortTokensByPrice(
+        await wallet.openapi.searchToken(currentAccount?.address, q)
+      );
+      if (tokens.length > 0) {
+        setSearchTokens(tokens.filter((item) => !item.is_core));
+      }
+    } else {
+      setIsListLoading(true);
+      const defaultTokens = await wallet.openapi.listToken(
+        currentAccount?.address
+      );
+      setAllTokens(defaultTokens);
+      const localAdded =
+        (await wallet.getAddedToken(currentAccount?.address)) || [];
+      const addedToken = localAdded
+        .map((item) => defaultTokens.find((token) => token.id === item)?.id)
+        .filter(Boolean);
+      setAddedToken(addedToken);
+      tokens = sortTokensByPrice(
+        defaultTokens.filter(
+          (item) => item.is_core || localAdded.includes(item.id)
+        )
+      );
+      setTokens(tokens);
+      setIsListLoading(false);
+    }
+  };
+
+  const handleLoadAssets = async () => {
+    setIsAssetsLoading(true);
+    const assets = sortAssetsByUSDValue(
+      await wallet.listChainAssets(currentAccount?.address)
+    );
+    setAssets(assets);
+    setIsAssetsLoading(false);
+  };
   useEffect(() => {
     checkIfFirstLogin();
   }, []);
+  useEffect(() => {
+    if (currentAccount) {
+      handleLoadTokens();
+      handleLoadAssets();
+    }
+  }, [currentAccount]);
+  useEffect(() => {
+    if (currentAccount) {
+      setIsGnosis(currentAccount.type === KEYRING_CLASS.GNOSIS);
+    }
+  }, [currentAccount]);
   const Row = (props) => {
     const { data, index, style } = props;
     const account = data[index];
+    const [isHovering, hoverProps] = useHover();
     return (
       <div
         className="flex items-center address-item"
@@ -212,6 +392,7 @@ const Dashboard = () => {
           e.stopPropagation();
           handleChange(account);
         }}
+        {...hoverProps}
       >
         {' '}
         <img
@@ -224,16 +405,41 @@ const Dashboard = () => {
         <div className="flex flex-col items-start ml-10">
           <div className="text-13 text-black text-left click-name">
             <div className="list-alian-name">{account?.alianName}</div>
-            <AddressViewer
-              address={account?.address}
-              showArrow={false}
-              className={'text-12 text-black opacity-60'}
-            />
+            <div className="flex items-center">
+              <AddressViewer
+                address={account?.address}
+                showArrow={false}
+                className={'address-color'}
+              />
+              {isHovering && (
+                <img
+                  onClick={(e) => {
+                    e.stopPropagation;
+                    navigator.clipboard.writeText(account?.address);
+                    message.success({
+                      icon: (
+                        <img src={IconSuccess} className="icon icon-success" />
+                      ),
+                      content: t('Copied'),
+                      duration: 0.5,
+                    });
+                  }}
+                  src={IconAddressCopy}
+                  className={clsx('ml-7  w-[16px] h-[16px]', {
+                    success: copySuccess,
+                  })}
+                />
+              )}
+              <div className={'money-color'}>
+                ${splitNumberByStep(Math.floor(account?.balance))}
+              </div>
+            </div>
           </div>
         </div>
       </div>
     );
   };
+
   const clickContent = () => (
     <>
       <div
@@ -243,16 +449,23 @@ const Dashboard = () => {
           setClicked(false);
         }}
       />
-      <div className="click-list flex flex-col w-[200px]">
-        {accountsList.length < 1 ? (
-          <div className="no-other-address"> {t('No other address')}</div>
+      <div className="click-list flex flex-col w-[233px]">
+        {loadingAddress ? (
+          <div className="address-loading">
+            <SvgIconLoading className="icon icon-loading" fill="#707280" />
+            <div className="text-14 text-gray-light">
+              {t('Loading Addresses')}
+            </div>
+          </div>
+        ) : accountsList.length <= 0 ? (
+          <div className="no-other-address"> {t('No address')}</div>
         ) : (
           <FixedSizeList
             height={accountsList.length > 5 ? 308 : accountsList.length * 52}
             width="100%"
             itemData={accountsList}
             itemCount={accountsList.length}
-            itemSize={52}
+            itemSize={54}
             ref={fixedList}
             style={{ zIndex: 10 }}
           >
@@ -267,13 +480,25 @@ const Dashboard = () => {
       </div>
     </>
   );
+  const balanceList = async (accounts) => {
+    return await Promise.all<Account>(
+      accounts.map(async (item) => {
+        let balance = await wallet.getAddressCacheBalance(item?.address);
+        if (!balance) {
+          balance = await wallet.getAddressBalance(item?.address);
+        }
+        return {
+          ...item,
+          balance: balance?.total_usd_value || 0,
+        };
+      })
+    );
+  };
   const getAllKeyrings = async () => {
+    setLoadingAddress(true);
     const _accounts = await wallet.getAllVisibleAccounts();
     const allAlianNames = await wallet.getAllAlianName();
-    const templist = _accounts
-      .sort((a, b) => {
-        return SORT_WEIGHT[a.type] - SORT_WEIGHT[b.type];
-      })
+    const templist = await _accounts
       .map((item) =>
         item.accounts.map((account) => {
           return {
@@ -284,37 +509,142 @@ const Dashboard = () => {
           };
         })
       )
-      .flat(1)
-      .filter(
-        (item) =>
-          item?.address.toLowerCase() !==
-            currentAccount?.address.toLowerCase() ||
-          item.brandName !== currentAccount?.brandName
-      );
-    setAccountsList(templist);
+      .flat(1);
+    const result = await balanceList(templist);
+    setLoadingAddress(false);
+    if (result) {
+      const withBalanceList = result.sort((a, b) => {
+        return new BigNumber(b?.balance || 0)
+          .minus(new BigNumber(a?.balance || 0))
+          .toNumber();
+      });
+      setAccountsList(withBalanceList);
+    }
   };
-  const handleHoverChange = (visible) => {
-    setHovered(visible);
-    setClicked(false);
-  };
+
   const handleClickChange = (visible) => {
     setClicked(visible);
     setStartEdit(false);
     setHovered(false);
   };
+
   const hide = () => {
     setStartEdit(false);
     setClicked(false);
     setHovered(false);
   };
+  const displayTokenList = () => {
+    if (showToken) {
+      setTokenAnimate('fadeOut');
+      setDefiAnimate('fadeOut');
+      setConnectionAnimation('fadeInBottom');
+      setShowToken(false);
+      setShowChain(false);
+      setTopAnimate('fadeInTop');
+    } else {
+      if (showAssets) {
+        setTokenAnimate('fadeInLeft');
+        setDefiAnimate('fadeOutRight');
+      } else {
+        setTokenAnimate('fadeIn');
+      }
+      setStartAnimate(true);
+      setShowToken(true);
+      setShowChain(true);
+      setTopAnimate('fadeOutTop');
+      setConnectionAnimation('fadeOutBottom');
+    }
+    setShowAssets(false);
+  };
+  const displayAssets = () => {
+    if (showAssets) {
+      setShowAssets(false);
+      setShowChain(false);
+      setTopAnimate('fadeInTop');
+      setTokenAnimate('fadeOut');
+      setDefiAnimate('fadeOut');
+      setConnectionAnimation('fadeInBottom');
+    } else {
+      if (showToken) {
+        setDefiAnimate('fadeInRight');
+        setTokenAnimate('fadeOutLeft');
+      } else {
+        setDefiAnimate('fadeIn');
+      }
+      setStartAnimate(true);
+      setShowAssets(true);
+      setShowChain(true);
+      setTopAnimate('fadeOutTop');
+      setConnectionAnimation('fadeOutBottom');
+    }
+    setShowToken(false);
+  };
+  const hideAllList = () => {
+    if (showAssets) {
+      setDefiAnimate('fadeOut');
+    }
+    if (showToken) {
+      setTokenAnimate('fadeOut');
+    }
+    setShowAssets(false);
+    setShowChain(false);
+    setShowToken(false);
+    setConnectionAnimation('fadeInBottom');
+    setTopAnimate('fadeInTop');
+  };
+  const removeToken = async (tokenId: string) => {
+    const newAddTokenList = addedToken.filter((item) => item !== tokenId);
+    const removeNewTokens = tokens.filter((token) => token.id !== tokenId);
+    setTokens(removeNewTokens);
+    setAddedToken(newAddTokenList);
+    await wallet.updateAddedToken(currentAccount?.address, newAddTokenList);
+  };
+  const addToken = async (tokenId: string) => {
+    const newAddTokenList = [...addedToken, tokenId];
+    const newAddToken = allTokens.find((token) => token.id === tokenId);
+    if (newAddToken) {
+      const newTokenList = [...tokens, newAddToken];
+      setTokens(sortTokensByPrice(newTokenList));
+    }
+    setAddedToken(newAddTokenList);
+    await wallet.updateAddedToken(currentAccount?.address, [
+      ...addedToken,
+      tokenId,
+    ]);
+  };
+
+  const handleCurrentConnectChange = (
+    connection: ConnectedSite | null | undefined
+  ) => {
+    setCurrentConnection(connection);
+  };
+
+  const checkGnosisConnectChain = () => {
+    if (!currentConnection) {
+      setShowGnosisWrongChainAlert(false);
+      return;
+    }
+    const chain = CHAINS[currentConnection.chain];
+    setShowGnosisWrongChainAlert(chain.id.toString() !== gnosisNetworkId);
+  };
+
+  useEffect(() => {
+    checkGnosisConnectChain();
+  }, [currentConnection, gnosisNetworkId]);
   return (
     <>
       <div
-        className={clsx('dashboard', { 'metamask-active': !isDefaultWallet })}
+        className={clsx('dashboard', {
+          'metamask-active':
+            !isDefaultWallet || (showGnosisWrongChainAlert && isGnosis),
+          success: copySuccess,
+        })}
       >
-        <div className="main">
+        <div className={clsx('main', showChain && 'show-chain-bg')}>
           {currentAccount && (
-            <div className="flex header items-center">
+            <div
+              className={clsx('flex header items-center relative', topAnimate)}
+            >
               <div className="h-[32px] flex header-wrapper items-center relative">
                 <Popover
                   content={clickContent}
@@ -354,7 +684,6 @@ const Dashboard = () => {
                 onClick={() => setHovered(true)}
                 className="w-[16px] h-[16px] pointer"
               />
-              <div className="flex-1" />
               <img
                 className="icon icon-settings"
                 src={IconSetting}
@@ -362,49 +691,113 @@ const Dashboard = () => {
               />
             </div>
           )}
-          <BalanceView currentAccount={currentAccount} />
-          <div className="operation">
+          <BalanceView
+            currentAccount={currentAccount}
+            showChain={showChain}
+            startAnimate={startAnimate}
+          />
+          <div className={clsx('listContainer', showChain && 'mt-10')}>
+            <div
+              className={clsx('token', showToken && 'showToken')}
+              onClick={displayTokenList}
+            >
+              Token
+            </div>
+            <div
+              className={clsx('token', showAssets && 'showToken')}
+              onClick={displayAssets}
+            >
+              DeFi
+            </div>
             <Tooltip
               overlayClassName="rectangle profileType__tooltip"
               title={t('Coming soon')}
             >
-              <div className="operation-item opacity-60">
-                <img className="icon icon-send" src={IconMoney} />
-                {t('Portfolio')}
+              <div className={clsx('token', 'opacity-60 cursor-default')}>
+                NFT
               </div>
             </Tooltip>
-            <div className="operation-item" onClick={handleGotoHistory}>
-              {pendingTxCount > 0 ? (
-                <div className="pending-count">
-                  <img src={IconPending} className="icon icon-pending" />
-                  {pendingTxCount}
-                </div>
-              ) : (
-                <img className="icon icon-history" src={IconHistory} />
-              )}
-              {t('History')}
-            </div>
+            {showToken && !startSearch && (
+              <img
+                src={IconAddToken}
+                onClick={() => setStartSearch(true)}
+                className="w-[18px] h-[18px] pointer absolute right-0"
+              />
+            )}
           </div>
+          <div
+            className={clsx(
+              'operation',
+              startAnimate ? (showChain ? 'fadeOut' : 'fadeIn') : ''
+            )}
+          >
+            {isGnosis ? (
+              <div className="operation-item" onClick={handleGotoQueue}>
+                {gnosisPendingCount > 0 && (
+                  <span className="operation-item__count">
+                    {gnosisPendingCount}
+                  </span>
+                )}
+                <img className="icon icon-arrow-right" src={IconArrowRight} />
+                <img className="icon icon-queue" src={IconQueue} />
+                {t('Queue')}
+              </div>
+            ) : (
+              <div className="operation-item" onClick={handleGotoHistory}>
+                {pendingTxCount > 0 && (
+                  <span className="operation-item__count__normal">
+                    {`${pendingTxCount} ${t('Pending')}`}
+                  </span>
+                )}
+                {t('Transaction History')}
+                <img className="icon icon-arrow-right" src={IconArrowRight} />
+              </div>
+            )}
+          </div>
+          <TokenList
+            tokens={tokens}
+            searchTokens={searchTokens}
+            addedToken={addedToken}
+            startSearch={startSearch}
+            removeToken={removeToken}
+            addToken={addToken}
+            onSearch={handleLoadTokens}
+            closeSearch={() => {
+              setSearchTokens([]);
+              setIsListLoading(false);
+              setStartSearch(false);
+            }}
+            tokenAnimate={tokenAnimate}
+            startAnimate={startAnimate}
+            isloading={isListLoading}
+          />
+          <AssetsList
+            assets={assets}
+            defiAnimate={defiAnimate}
+            startAnimate={startAnimate}
+            isloading={isAssetsLoading}
+          />
+          <img
+            src={IconDrawer}
+            className={clsx(
+              'bottom-drawer',
+              showToken || showAssets ? 'fadeInDrawer' : 'hide'
+            )}
+            onClick={hideAllList}
+          />
         </div>
-        <RecentConnections />
+        <RecentConnections
+          onChange={handleCurrentConnectChange}
+          showChain={showChain}
+          connectionAnimation={connectionAnimation}
+        />
         {!isDefaultWallet && (
           <DefaultWalletAlertBar onChange={handleDefaultWalletChange} />
         )}
+        {isDefaultWallet && isGnosis && showGnosisWrongChainAlert && (
+          <GnosisWrongChainAlertBar />
+        )}
       </div>
-      <Modal
-        visible={qrcodeVisible}
-        closable={false}
-        onCancel={() => setQrcodeVisible(false)}
-        className="qrcode-modal"
-        width="304px"
-      >
-        <div>
-          <QRCode value={currentAccount?.address} size={254} />
-          <p className="address text-gray-subTitle text-15 font-medium mb-0 font-roboto-mono">
-            {currentAccount?.address}
-          </p>
-        </div>
-      </Modal>
       <Modal
         visible={firstNotice && updateContent}
         title="What's new"
@@ -417,71 +810,110 @@ const Dashboard = () => {
       <Modal
         visible={hovered}
         closable={false}
-        onCancel={() => setHovered(false)}
+        onCancel={() => {
+          setHovered(false);
+          setStartEdit(false);
+        }}
         className="address-popover"
         width="344px"
       >
         <div className="flex flex-col" onClick={() => setStartEdit(false)}>
-          <div className="flex items-center h-[32px]">
-            {currentAccount && (
-              <img
-                className="icon icon-account-type w-[32px] h-[32px]"
-                src={
-                  KEYRING_ICONS[currentAccount.type] ||
-                  WALLET_BRAND_CONTENT[currentAccount.brandName]?.image
-                }
-              />
-            )}
-            <div className="brand-name">
-              {startEdit ? (
-                <Input
-                  value={alianName}
-                  defaultValue={alianName}
-                  onChange={handleAlianNameChange}
-                  onPressEnter={alianNameConfirm}
-                  autoFocus={startEdit}
-                  onClick={(e) => e.stopPropagation()}
-                  maxLength={20}
-                  min={0}
-                  style={{ zIndex: 10 }}
+          <div className="address-popover__info">
+            <div className="flex items-center h-[32px]">
+              {currentAccount && (
+                <img
+                  className="icon icon-account-type w-[32px] h-[32px]"
+                  src={
+                    KEYRING_ICONS[currentAccount.type] ||
+                    WALLET_BRAND_CONTENT[currentAccount.brandName]?.image
+                  }
                 />
-              ) : (
-                displayName
+              )}
+              <div className="brand-name">
+                {startEdit ? (
+                  <Input
+                    value={alianName}
+                    defaultValue={alianName}
+                    onChange={handleAlianNameChange}
+                    onPressEnter={alianNameConfirm}
+                    autoFocus={startEdit}
+                    onClick={(e) => e.stopPropagation()}
+                    maxLength={20}
+                    min={0}
+                    style={{ zIndex: 10 }}
+                  />
+                ) : (
+                  displayName
+                )}
+              </div>
+              {!startEdit && (
+                <img
+                  className="edit-name"
+                  src={IconEditPen}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    setStartEdit(true);
+                  }}
+                />
+              )}
+              {startEdit && (
+                <img
+                  className="edit-name w-[16px] h-[16px]"
+                  src={IconCorrect}
+                  onClick={(e) => {
+                    e.stopPropagation();
+                    alianNameConfirm(e);
+                  }}
+                />
               )}
             </div>
-            {!startEdit && (
-              <img
-                className="edit-name"
-                src={IconEditPen}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  setStartEdit(true);
-                }}
+            <div className="flex text-12 mt-12">
+              <div className="mr-8 pt-2 lh-14">{currentAccount?.address}</div>
+              <IconCopy
+                onClick={handleCopyCurrentAddress}
+                className={clsx('icon icon-copy ml-7 mb-2 copy-icon', {
+                  success: copySuccess,
+                })}
               />
-            )}
-            {startEdit && (
-              <img
-                className="edit-name w-[16px] h-[16px]"
-                src={IconCorrect}
-                onClick={(e) => {
-                  e.stopPropagation();
-                  alianNameConfirm(e);
-                }}
-              />
-            )}
+            </div>
+            <div className="qrcode-container">
+              <QRCode value={currentAccount?.address} size={85} />
+            </div>
           </div>
-          <div className="flex text-12 mt-12">
-            <div className="mr-8 pt-2 lh-14">{currentAccount?.address}</div>
-            <IconCopy
-              onClick={handleCopyCurrentAddress}
-              className={clsx('icon icon-copy ml-7 mb-2 copy-icon', {
-                success: copySuccess,
-              })}
-            />
-          </div>
-          <div className="qrcode-container">
-            <QRCode value={currentAccount?.address} size={85} />
-          </div>
+          {isGnosis && (
+            <div className="address-popover__gnosis">
+              <h4 className="text-15 mb-4">Admins</h4>
+              {safeInfo ? (
+                <>
+                  <p className="text-black text-12 mb-20">
+                    Any transaction requires the confirmation of{' '}
+                    <span className="ml-8 font-medium threshold">
+                      {safeInfo.threshold}/{safeInfo.owners.length}
+                    </span>
+                  </p>
+                  <ul className="admin-list">
+                    {safeInfo.owners.map((owner, index) => (
+                      <GnosisAdminItem
+                        address={owner}
+                        accounts={accountsList}
+                        key={index}
+                      />
+                    ))}
+                  </ul>
+                </>
+              ) : (
+                <div className="loading-wrapper">
+                  <SvgIconLoading
+                    className="icon icon-loading"
+                    fill="#707280"
+                  />
+                  <p className="text-14 text-gray-light mb-0">
+                    Loading address
+                  </p>
+                </div>
+              )}
+            </div>
+          )}
         </div>
       </Modal>
     </>

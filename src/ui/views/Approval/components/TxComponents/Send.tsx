@@ -1,28 +1,39 @@
-import React from 'react';
 import { message } from 'antd';
-import { Trans, useTranslation } from 'react-i18next';
+import { ExplainTxResponse } from 'background/service/openapi';
 import BigNumber from 'bignumber.js';
 import ClipboardJS from 'clipboard';
-import { CHAINS_ENUM, CHAINS } from 'consts';
-import { ExplainTxResponse } from 'background/service/openapi';
-import { splitNumberByStep } from 'ui/utils/number';
-import { ellipsisOverflowedText } from 'ui/utils';
-import BalanceChange from './BalanceChange';
-import SpeedUpCorner from './SpeedUpCorner';
-import AddressViewer from 'ui/component/AddressViewer';
+import { CHAINS, CHAINS_ENUM } from 'consts';
+import React from 'react';
+import { Trans, useTranslation } from 'react-i18next';
+import IconArrowRight from 'ui/assets/arrow-right-gray.svg';
 import IconCopy from 'ui/assets/copy-no-border.svg';
 import IconSuccess from 'ui/assets/success.svg';
+import { AddressViewer } from 'ui/component';
+import { ellipsisOverflowedText } from 'ui/utils';
+import { splitNumberByStep } from 'ui/utils/number';
+import BalanceChange from './BalanceChange';
+import SpeedUpCorner from './SpeedUpCorner';
+import ViewRawModal from './ViewRawModal';
 
 interface SendProps {
   data: ExplainTxResponse;
   chainEnum: CHAINS_ENUM;
   isSpeedUp: boolean;
+  raw: Record<string, string | number>;
 }
 
-const Send = ({ data, chainEnum, isSpeedUp }: SendProps) => {
+const Send = ({ data, chainEnum, isSpeedUp, raw }: SendProps) => {
   const detail = data.type_send!;
   const chain = CHAINS[chainEnum];
   const { t } = useTranslation();
+
+  const handleViewRawClick = () => {
+    ViewRawModal.open({
+      raw,
+      abi: data?.abi,
+    });
+  };
+
   const handleCopyToAddr = () => {
     const clipboard = new ClipboardJS('.send', {
       text: function () {
@@ -47,6 +58,13 @@ const Send = ({ data, chainEnum, isSpeedUp }: SendProps) => {
           i18nKey="signTransactionWithChain"
           values={{ name: chain.name }}
         />
+        <span
+          className="float-right text-12 cursor-pointer flex items-center view-raw"
+          onClick={handleViewRawClick}
+        >
+          {t('View Raw')}
+          <img src={IconArrowRight} />
+        </span>
       </p>
       <div className="gray-section-block common-detail-block">
         {isSpeedUp && <SpeedUpCorner />}

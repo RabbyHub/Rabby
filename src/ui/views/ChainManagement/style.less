@@ -2,7 +2,54 @@
 
 .chain-management {
   .page();
-  padding: 0 28px 20px;
+  padding: 0 20px 20px;
+  .all-wrapper {
+    width: 360px;
+    background: #ffffff;
+    border-radius: 6px;
+    .all-title {
+      font-family: Roboto;
+      font-style: normal;
+      font-weight: 500;
+      font-size: 15px;
+      line-height: 18px;
+      color: #2d3033;
+      padding: 12px 0 0 12px;
+    }
+    .drag-sort {
+      font-style: normal;
+      font-weight: normal;
+      font-size: 14px;
+      line-height: 16px;
+      color: #707280;
+      padding: 13px 12px 0 0;
+    }
+  }
+  .pinned-wrapper {
+    .all-wrapper;
+    min-height: 102px;
+    margin-bottom: 12px;
+    .no-pinned-container {
+      width: 334px;
+      height: 52px;
+      background: #f5f6fa;
+      border-radius: 6px;
+      font-weight: normal;
+      font-size: 12px;
+      line-height: 14px;
+      text-align: center;
+      color: #707280;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      margin: 8px 14px 12px 12px; 
+    }
+    .droppable {
+      padding: 0 12px;
+      margin-top: 8px;
+      overflow: hidden;
+    }
+  }
   .field {
     .icon-chain {
       width: 32px;

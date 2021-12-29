@@ -1,24 +1,27 @@
-import React from 'react';
-import clsx from 'clsx';
-import { useTranslation, Trans } from 'react-i18next';
-import ClipboardJS from 'clipboard';
 import { message } from 'antd';
-import { AddressViewer } from 'ui/component';
-import BalanceChange from './BalanceChange';
-import { CHAINS_ENUM, CHAINS } from 'consts';
 import { ExplainTxResponse } from 'background/service/openapi';
-import SpeedUpCorner from './SpeedUpCorner';
+import ClipboardJS from 'clipboard';
+import clsx from 'clsx';
+import { CHAINS, CHAINS_ENUM } from 'consts';
+import React from 'react';
+import { Trans, useTranslation } from 'react-i18next';
+import IconArrowRight from 'ui/assets/arrow-right-gray.svg';
 import IconCopy from 'ui/assets/copy-no-border.svg';
 import IconSuccess from 'ui/assets/success.svg';
 import IconUnknownProtocol from 'ui/assets/unknown-protocol.svg';
+import { AddressViewer } from 'ui/component';
+import BalanceChange from './BalanceChange';
+import SpeedUpCorner from './SpeedUpCorner';
+import ViewRawModal from './ViewRawModal';
 
 interface CancelProps {
   data: ExplainTxResponse;
   chainEnum: CHAINS_ENUM;
   isSpeedUp: boolean;
+  raw: Record<string, string | number>;
 }
 
-const Cancel = ({ data, chainEnum, isSpeedUp }: CancelProps) => {
+const Cancel = ({ data, chainEnum, isSpeedUp, raw }: CancelProps) => {
   const detail = data.type_cancel_token_approval!;
   const chain = CHAINS[chainEnum];
   const { t } = useTranslation();
@@ -40,6 +43,13 @@ const Cancel = ({ data, chainEnum, isSpeedUp }: CancelProps) => {
     });
   };
 
+  const handleViewRawClick = () => {
+    ViewRawModal.open({
+      raw,
+      abi: data?.abi,
+    });
+  };
+
   const handleProtocolLogoLoadFailed = function (
     e: React.SyntheticEvent<HTMLImageElement>
   ) {
@@ -53,6 +63,13 @@ const Cancel = ({ data, chainEnum, isSpeedUp }: CancelProps) => {
           i18nKey="signTransactionWithChain"
           values={{ name: chain.name }}
         />
+        <span
+          className="float-right text-12 cursor-pointer flex items-center view-raw"
+          onClick={handleViewRawClick}
+        >
+          {t('View Raw')}
+          <img src={IconArrowRight} />
+        </span>
       </p>
       <div className="gray-section-block common-detail-block">
         {isSpeedUp && <SpeedUpCorner />}

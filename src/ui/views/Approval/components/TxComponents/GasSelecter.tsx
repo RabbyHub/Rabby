@@ -55,7 +55,6 @@ const GasSelector = ({
   );
   const [customNonce, setCustomNonce] = useState(Number(nonce));
   const [isFirstTimeLoad, setIsFirstTimeLoad] = useState(true);
-  const [errMsg, setErrMsg] = useState(null);
   const [validateStatus, setValidateStatus] = useState<
     Record<string, { status: ValidateStatus; message: string | null }>
   >({
@@ -100,18 +99,6 @@ const GasSelector = ({
           message: null,
         },
       });
-    }
-    if (selectedGas && selectedGas.price < gasList[0].base_fee) {
-      setErrMsg(t('Gas price too low'));
-    } else {
-      setErrMsg(null);
-    }
-    if (selectedGas?.level === 'custom') {
-      if (Number(customGas) * 1e9 < gasList[0].base_fee) {
-        setErrMsg(t('Gas price too low'));
-      } else {
-        setErrMsg(null);
-      }
     }
   };
 
@@ -278,9 +265,6 @@ const GasSelector = ({
             }`}
           </p>
           <div className="right">
-            {errMsg && (
-              <p className="text-12 text-red-light mb-0 mr-8">{errMsg}</p>
-            )}
             <img
               src={IconSetting}
               alt="setting"

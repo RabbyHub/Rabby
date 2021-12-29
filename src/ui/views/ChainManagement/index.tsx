@@ -1,68 +1,73 @@
 import React, { useState, useEffect } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { CHAINS } from 'consts';
 import { useWallet } from 'ui/utils';
-import { Switch, message, Modal } from 'antd';
-import { PageHeader, Field, StrayPageWithButton } from 'ui/component';
-import { Chain } from 'background/service/chain';
-import { CHAINS, CHAINS_ENUM } from 'consts';
+import { PageHeader, StrayPageWithButton, ChainCard } from 'ui/component';
+import { Chain } from 'background/service/openapi';
+import DragAndDropList from './components/DragAndDropList';
 import './style.less';
 
-export const ChainManagementList = ({ inStart = false }) => {
+export const ChainManagementList = () => {
   const wallet = useWallet();
   const { t } = useTranslation();
-  const [enableChains, setEnableChains] = useState<Chain[]>([]);
-  const [chains, setChains] = useState<Chain[]>([]);
-
-  const disableChain = async (chainEnum: CHAINS_ENUM) => {
-    setEnableChains(enableChains.filter((chain) => chain.enum !== chainEnum));
-    await wallet.disableChain(chainEnum);
+  const [chains, setChains] = useState<(Chain | undefined)[]>([]);
+  const [savedChains, setSavedChains] = useState<string[]>([]);
+  const [savedChainsData, setSavedChainsData] = useState<Chain[]>([]);
+  const init = async () => {
+    const savedChains = await getPinnedChain();
+    const allChainList = Object.values(CHAINS)
+      .map((item) => {
+        if (!savedChains.includes(item.enum)) return item;
+      })
+      .filter(Boolean);
+    setChains(allChainList);
+    const savedChainsData = savedChains
+      .map((item) => {
+        return Object.values(CHAINS).find((chain) => chain.enum === item);
+      })
+      .filter(Boolean);
+    setSavedChainsData(savedChainsData);
   };
 
-  const handleSwitchChain = async (
-    chainEnum: CHAINS_ENUM,
-    checked: boolean
-  ) => {
-    if (checked) {
-      setEnableChains([...enableChains, CHAINS[chainEnum]]);
-      await wallet.enableChain(chainEnum);
-    } else {
-      if (enableChains.length > 1) {
-        if (inStart) {
-          await disableChain(chainEnum);
-          return;
-        }
+  const getPinnedChain = async () => {
+    const savedChains = await wallet.getSavedChains();
+    setSavedChains(savedChains);
+    return savedChains;
+  };
 
-        Modal.confirm({
-          centered: true,
-          title: t('disableChainAlert'),
-          className: 'disable-chain',
-          bodyStyle: {
-            backgroundColor: 'transparent',
-          },
-          okText: t('Disable'),
-          cancelText: t('Cancel'),
-          width: '360px',
-          onOk: async () => {
-            const sites = await wallet.getSitesByDefaultChain(chainEnum);
-            if (sites.length > 0) {
-              sites.forEach((site) => {
-                wallet.removeConnectedSite(site.origin);
-              });
-            }
-
-            await disableChain(chainEnum);
-          },
-        });
-      } else {
-        message.error(t('At least one enabled chain is required'));
-      }
+  const removeFromPin = async (chainName: string) => {
+    const newChain = savedChains.filter((item) => item !== chainName);
+    setSavedChains(newChain);
+    await wallet.updateChain(newChain);
+    const newSavedChainData = savedChainsData.filter(
+      (item) => item.enum !== chainName
+    );
+    setSavedChainsData(newSavedChainData);
+    const newChainData = Object.values(CHAINS).find(
+      (item) => item.enum === chainName
+    );
+    if (newChainData) {
+      setChains([...chains, newChainData]);
     }
   };
 
-  const init = async () => {
-    setEnableChains(await wallet.getEnableChains());
-    setChains(await wallet.getSupportChains());
+  const saveToPin = async (chainName: string) => {
+    await wallet.saveChain(chainName);
+    const newChainData = Object.values(CHAINS).find(
+      (item) => item.enum === chainName
+    );
+    setChains(chains.filter((item) => item?.enum !== chainName));
+    setSavedChains([...savedChains, chainName]);
+    if (newChainData) {
+      setSavedChainsData([...savedChainsData, newChainData]);
+    }
+  };
+
+  const updateChainSort = async (chainList: Chain[]) => {
+    const newChain = chainList.map((item) => item.enum);
+    setSavedChainsData(chainList);
+    await wallet.updateChain(newChain);
   };
 
   useEffect(() => {
@@ -71,27 +76,43 @@ export const ChainManagementList = ({ inStart = false }) => {
 
   return (
     <>
-      {chains.map((chain) => (
-        <Field
-          key={chain.enum}
-          leftIcon={<img src={chain.logo} className="icon icon-chain" />}
-          unselect
-          rightIcon={
-            <Switch
-              defaultChecked={!!enableChains.find((c) => c.enum === chain.enum)}
-              checked={!!enableChains.find((c) => c.enum === chain.enum)}
-              onChange={(checked) => handleSwitchChain(chain.enum, checked)}
+      <div className="pinned-wrapper">
+        <div className="flex justify-between items-center">
+          <div className="all-title">{t('Pinned')}</div>
+          {savedChainsData.length >= 2 && (
+            <div className="drag-sort">{t('Drag to sort')}</div>
+          )}
+        </div>
+        {savedChainsData.length === 0 && (
+          <div className="no-pinned-container">{t('No pinned Chains')}</div>
+        )}
+        <div className="droppable flex flex-wrap">
+          {savedChainsData.length > 0 && (
+            <DragAndDropList
+              pinnedChains={savedChainsData}
+              removeFromPin={removeFromPin}
+              updateChainSort={updateChainSort}
             />
-          }
-        >
-          <div className="chain-info">
-            <p className="text-13">{chain.name}</p>
-            <p className="text-12">
-              {t('Chain ID')}: {chain.id}
-            </p>
+          )}
+        </div>
+      </div>
+      {chains.length > 0 && (
+        <div className="all-wrapper">
+          <div className="all-title">{t('All')}</div>
+          <div className="flex flex-wrap p-8">
+            {chains.length > 0 &&
+              chains.map((chain) => (
+                <ChainCard
+                  chain={chain}
+                  key={chain?.id}
+                  showIcon={true}
+                  plus
+                  saveToPin={saveToPin}
+                />
+              ))}
           </div>
-        </Field>
-      ))}
+        </div>
+      )}
     </>
   );
 };
@@ -112,18 +133,13 @@ export const StartChainManagement = () => {
       noPadding
       headerClassName="mb-24"
     >
-      <header className="create-new-header create-password-header h-[140px]">
-        <img
-          className="rabby-logo"
-          src="/images/logo-gray.png"
-          alt="rabby logo"
-        />
-        <p className="text-24 mt-32 mb-0 text-white text-center font-bold">
-          {t('Enable Chains')}
+      <header className="create-new-header create-password-header h-[100px]">
+        <p className="text-20 mt-42 mb-0 text-white text-center font-bold">
+          {t('Pin your frequently used chains')}
         </p>
       </header>
       <div className="chain-management p-20 min-h-full">
-        <ChainManagementList inStart />
+        <ChainManagementList />
       </div>
     </StrayPageWithButton>
   );
@@ -131,9 +147,15 @@ export const StartChainManagement = () => {
 
 const ChainManagement = () => {
   const { t } = useTranslation();
+  const { state } = useLocation<{
+    connection?: boolean;
+  }>();
+  const { connection = false } = state ?? {};
   return (
     <div className="chain-management">
-      <PageHeader>{t('Chain Management')}</PageHeader>
+      <PageHeader>
+        {t(connection ? 'All Chain' : 'Chain Management')}
+      </PageHeader>
       <ChainManagementList />
     </div>
   );

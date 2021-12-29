@@ -1,4 +1,4 @@
-import { Chain } from 'background/service/chain';
+import { Chain } from 'background/service/openapi';
 import IconEthLogo from 'ui/assets/chain-logos/eth.svg';
 import IconEthWhiteLogo from 'ui/assets/chain-logos/eth-white.svg';
 import IconHecoLogo from 'ui/assets/chain-logos/heco.svg';
@@ -29,16 +29,19 @@ import IconCronosLogo from 'ui/assets/chain-logos/cronos.svg';
 import IconCronosWhiteLogo from 'ui/assets/chain-logos/cronos-white.svg';
 import IconBobaLogo from 'ui/assets/chain-logos/boba.png';
 import IconBobaWhiteLogo from 'ui/assets/chain-logos/boba-white.svg';
+import IconBttLogo from 'ui/assets/chain-logos/bttc.svg';
+import IconBttWhiteLogo from 'ui/assets/chain-logos/bttc-white.svg';
 import IconEN from 'ui/assets/langs/en.svg';
 import IconZH from 'ui/assets/langs/zh_cn.svg';
 import IconAmber from 'ui/assets/walletlogo/amber.png';
 import IconBitBox02 from 'ui/assets/walletlogo/bitbox02.png';
-import IconBitBox02WithBorder from 'ui/assets/walletlogo/bitbox02-24.png';
+import IconBitBox02WithBorder from 'ui/assets/walletlogo/bitbox02.png';
 import IconFireblocks from 'ui/assets/walletlogo/fireblocks.png';
 import IconFireblocksWithBorder from 'ui/assets/walletlogo/fireblocks-border.png';
 import IconCobo from 'ui/assets/walletlogo/cobo.png';
 import IconImtoken from 'ui/assets/walletlogo/imtoken.png';
 import IconJade from 'ui/assets/walletlogo/jade.png';
+import IconGnosis from 'ui/assets/walletlogo/gnosis.png';
 import IconMath from 'ui/assets/walletlogo/math.png';
 import IconOnekey from 'ui/assets/walletlogo/onekey.png';
 import IconOneKey18 from 'ui/assets/walletlogo/onekey18.png';
@@ -70,6 +73,7 @@ import IconWatchWhite from 'ui/assets/walletlogo/IconWatch-white.svg';
 import IconMnemonicWhite from 'ui/assets/walletlogo/IconMnemonic-white.svg';
 import LogoLedgerDark from 'ui/assets/walletlogo/ledgerdark.png';
 import LogoLedgerWhite from 'ui/assets/walletlogo/ledgerwhite.png';
+import IconGridPlus from 'ui/assets/walletlogo/gridplus.png';
 
 export enum CHAINS_ENUM {
   ETH = 'ETH',
@@ -87,6 +91,7 @@ export enum CHAINS_ENUM {
   CRO = 'CRO',
   BOBA = 'BOBA',
   METIS = 'METIS',
+  BTT = 'BTT',
 }
 
 export const CHAINS: Record<string, Chain> = {
@@ -316,6 +321,21 @@ export const CHAINS: Record<string, Chain> = {
     nativeTokenLogo:
       'https://static.debank.com/image/chain/logo_url/metis/b289da32db4d860ebf6fb46a6e41dcfc.png',
   },
+  [CHAINS_ENUM.BTT]: {
+    id: 199,
+    serverId: 'btt',
+    network: '199',
+    name: 'BTTC',
+    nativeTokenSymbol: 'BTT',
+    nativeTokenAddress: 'btt',
+    enum: CHAINS_ENUM.BTT,
+    logo: IconBttLogo,
+    whiteLogo: IconBttWhiteLogo,
+    hex: '0xc7',
+    scanLink: 'https://scan.bt.io/#/transaction/_s_',
+    nativeTokenLogo:
+      'https://static.debank.com/image/chain/logo_url/btt/2130a8d57ff2a0f3d50a4ec9432897c6.png',
+  },
 };
 
 export const KEYRING_TYPE = {
@@ -324,6 +344,7 @@ export const KEYRING_TYPE = {
   HardwareKeyring: 'hardware',
   WatchAddressKeyring: 'Watch Address',
   WalletConnectKeyring: 'WalletConnect',
+  GnosisKeyring: 'Gnosis',
 };
 
 export const KEYRING_CLASS = {
@@ -334,9 +355,11 @@ export const KEYRING_CLASS = {
     TREZOR: 'Trezor Hardware',
     LEDGER: 'Ledger Hardware',
     ONEKEY: 'Onekey Hardware',
+    GRIDPLUS: 'GridPlus Hardware',
   },
   WATCH: 'Watch Address',
   WALLETCONNECT: 'WalletConnect',
+  GNOSIS: 'Gnosis',
 };
 
 export const KEYRING_TYPE_TEXT = {
@@ -347,6 +370,7 @@ export const KEYRING_TYPE_TEXT = {
   [KEYRING_CLASS.HARDWARE.LEDGER]: 'Imported by Ledger',
   [KEYRING_CLASS.HARDWARE.TREZOR]: 'Imported by Trezor',
   [KEYRING_CLASS.HARDWARE.ONEKEY]: 'Imported by Onekey',
+  [KEYRING_CLASS.HARDWARE.GRIDPLUS]: 'Imported by GridPlus',
 };
 export const BRAND_ALIAN_TYPE_TEXT = {
   [KEYRING_TYPE.HdKeyring]: 'Mnemonic',
@@ -356,6 +380,8 @@ export const BRAND_ALIAN_TYPE_TEXT = {
   [KEYRING_CLASS.HARDWARE.TREZOR]: 'Trezor',
   [KEYRING_CLASS.HARDWARE.ONEKEY]: 'Onekey',
   [KEYRING_CLASS.HARDWARE.BITBOX02]: 'BitBox02',
+  [KEYRING_CLASS.GNOSIS]: 'Gnosis',
+  [KEYRING_CLASS.HARDWARE.GRIDPLUS]: 'GridPlus',
 };
 export const HARDWARE_KEYRING_TYPES = {
   BitBox02: {
@@ -373,6 +399,10 @@ export const HARDWARE_KEYRING_TYPES = {
   Onekey: {
     type: 'Onekey Hardware',
     brandName: 'Onekey',
+  },
+  GridPlus: {
+    type: 'GridPlus Hardware',
+    brandName: 'GridPlus',
   },
 };
 
@@ -504,6 +534,8 @@ export enum BRAND_WALLET_CONNECT_TYPE {
   LedgerConnect = 'LedgerConnect',
   OneKeyConnect = 'OneKeyConnect',
   TrezorConnect = 'TrezorConnect',
+  GnosisConnect = 'GnosisConnect',
+  GridPlusConnect = 'GridPlusConnect',
 }
 
 export const WALLETCONNECT_STATUS_MAP = {
@@ -517,6 +549,12 @@ export const WALLETCONNECT_STATUS_MAP = {
 
 export const INTERNAL_REQUEST_ORIGIN = 'https://rabby.io';
 
+export const INTERNAL_REQUEST_SESSION = {
+  name: 'Rabby',
+  origin: INTERNAL_REQUEST_ORIGIN,
+  icon: './images/icon-128.png',
+};
+
 export const INITIAL_OPENAPI_URL = 'https://openapi.debank.com';
 
 export const EVENTS = {
@@ -527,6 +565,10 @@ export const EVENTS = {
     STATUS_CHANGED: 'WALLETCONNECT_STATUS_CHANGED',
     INIT: 'WALLETCONNECT_INIT',
     INITED: 'WALLETCONNECT_INITED',
+  },
+  GNOSIS: {
+    TX_BUILT: 'TransactionBuilt',
+    TX_CONFIRMED: 'TransactionConfirmed',
   },
 };
 
@@ -543,6 +585,8 @@ export enum WALLET_BRAND_TYPES {
   TP = 'TP',
   TREZOR = 'TREZOR',
   TRUSTWALLET = 'TRUSTWALLET',
+  GNOSIS = 'Gnosis',
+  GRIDPLUS = 'GRIDPLUS',
 }
 
 export const WALLET_BRAND_CONTENT = {
@@ -577,6 +621,22 @@ export const WALLET_BRAND_CONTENT = {
     icon: IconFireblocks,
     image: IconFireblocksWithBorder,
     connectType: BRAND_WALLET_CONNECT_TYPE.WalletConnect,
+  },
+  [WALLET_BRAND_TYPES.GNOSIS]: {
+    id: 13,
+    name: 'Gnosis Safe',
+    brand: WALLET_BRAND_TYPES.GNOSIS,
+    icon: IconGnosis,
+    image: IconGnosis,
+    connectType: BRAND_WALLET_CONNECT_TYPE.GnosisConnect,
+  },
+  [WALLET_BRAND_TYPES.GRIDPLUS]: {
+    id: 12,
+    name: 'GridPlus',
+    brand: WALLET_BRAND_TYPES.GRIDPLUS,
+    icon: IconGridPlus,
+    image: IconGridPlus,
+    connectType: BRAND_WALLET_CONNECT_TYPE.GridPlusConnect,
   },
   [WALLET_BRAND_TYPES.IMTOKEN]: {
     id: 2,
@@ -652,6 +712,7 @@ export const KEYRING_ICONS = {
   [HARDWARE_KEYRING_TYPES.Ledger.type]: LogoLedgerWhite,
   [HARDWARE_KEYRING_TYPES.Onekey.type]: LogoOnekey,
   [HARDWARE_KEYRING_TYPES.Trezor.type]: IconTrezor24,
+  [HARDWARE_KEYRING_TYPES.GridPlus.type]: IconGridPlus,
 };
 
 export const KEYRING_ICONS_WHITE = {
@@ -662,6 +723,7 @@ export const KEYRING_ICONS_WHITE = {
   [HARDWARE_KEYRING_TYPES.Ledger.type]: LogoLedgerWhite,
   [HARDWARE_KEYRING_TYPES.Onekey.type]: LogoOnekey,
   [HARDWARE_KEYRING_TYPES.Trezor.type]: IconTrezor24,
+  [HARDWARE_KEYRING_TYPES.GridPlus.type]: IconGridPlus,
 };
 export const KEYRING_PURPLE_LOGOS = {
   [KEYRING_CLASS.MNEMONIC]: IconMnemonicPurple,
@@ -677,6 +739,7 @@ export const KEYRINGS_LOGOS = {
   [HARDWARE_KEYRING_TYPES.Ledger.type]: LogoLedgerWhite,
   [HARDWARE_KEYRING_TYPES.Onekey.type]: IconOneKey18,
   [HARDWARE_KEYRING_TYPES.Trezor.type]: IconTrezor24Border,
+  [HARDWARE_KEYRING_TYPES.GridPlus.type]: IconGridPlus,
 };
 
 export const NOT_CLOSE_UNFOCUS_LIST: string[] = [
@@ -696,4 +759,22 @@ export const SORT_WEIGHT = {
   [KEYRING_TYPE.HardwareKeyring]: 3,
   [KEYRING_TYPE.WalletConnectKeyring]: 4,
   [KEYRING_TYPE.WatchAddressKeyring]: 5,
+};
+
+export const GASPRICE_RANGE = {
+  [CHAINS_ENUM.ETH]: [0, 10000],
+  [CHAINS_ENUM.BOBA]: [0, 1000],
+  [CHAINS_ENUM.OP]: [0, 1000],
+  [CHAINS_ENUM.ARBITRUM]: [0, 1000],
+  [CHAINS_ENUM.BSC]: [0, 1000],
+  [CHAINS_ENUM.AVAX]: [0, 4000],
+  [CHAINS_ENUM.POLYGON]: [0, 250000],
+  [CHAINS_ENUM.FTM]: [0, 360000],
+  [CHAINS_ENUM.DAI]: [0, 500000],
+  [CHAINS_ENUM.OKT]: [0, 15000],
+  [CHAINS_ENUM.HECO]: [0, 50000],
+  [CHAINS_ENUM.CELO]: [0, 100000],
+  [CHAINS_ENUM.MOVR]: [0, 3000],
+  [CHAINS_ENUM.CRO]: [0, 100000],
+  [CHAINS_ENUM.BTT]: [0, 20000000000],
 };

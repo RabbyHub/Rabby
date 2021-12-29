@@ -115,7 +115,15 @@ const ConnectionItem = memo(
     pre.item?.isTop === next.item?.isTop
 );
 
-export default () => {
+export default ({
+  onChange,
+  showChain,
+  connectionAnimation,
+}: {
+  onChange(site: ConnectedSite | null | undefined): void;
+  showChain?: boolean;
+  connectionAnimation?: string;
+}) => {
   const [connections, setConnections] = useState<(ConnectedSite | null)[]>(
     new Array(12).fill(null)
   );
@@ -161,8 +169,12 @@ export default () => {
     getCurrentSite();
   }, []);
 
+  useEffect(() => {
+    onChange(currentConnect);
+  }, [currentConnect]);
+
   return (
-    <div className="recent-connections">
+    <div className={clsx('recent-connections', connectionAnimation)}>
       <div className="mb-[17px] text-12 text-gray-content h-14 text-center">
         {hoverSite}
       </div>

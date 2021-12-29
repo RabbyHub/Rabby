@@ -1,25 +1,26 @@
-import React from 'react';
 import { message } from 'antd';
-import { Trans, useTranslation } from 'react-i18next';
+import { ExplainTxResponse, Tx } from 'background/service/openapi';
 import ClipboardJS from 'clipboard';
-import { AddressViewer } from 'ui/component';
 import { CHAINS, CHAINS_ENUM } from 'consts';
-import { ExplainTxResponse } from 'background/service/openapi';
-import { Modal } from 'ui/component';
-import BalanceChange from './BalanceChange';
-import SpeedUpCorner from './SpeedUpCorner';
+import React from 'react';
+import { Trans, useTranslation } from 'react-i18next';
+import IconArrowRight from 'ui/assets/arrow-right-gray.svg';
 import IconCopy from 'ui/assets/copy-no-border.svg';
 import IconSuccess from 'ui/assets/success.svg';
-import IconArrowRight from 'ui/assets/arrow-right-gray.svg';
-
+import { AddressViewer } from 'ui/component';
+import BalanceChange from './BalanceChange';
+import GnosisExplain from './GnosisExplain';
+import SpeedUpCorner from './SpeedUpCorner';
+import ViewRawModal from './ViewRawModal';
 interface SignProps {
   data: ExplainTxResponse;
   chainEnum: CHAINS_ENUM;
-  raw: Record<string, string>;
+  raw: Record<string, string | number>;
   isSpeedUp: boolean;
+  tx: Tx;
 }
 
-const Sign = ({ data, chainEnum, raw, isSpeedUp }: SignProps) => {
+const Sign = ({ data, chainEnum, raw, isSpeedUp, tx }: SignProps) => {
   const detail = data.type_call!;
   const chain = CHAINS[chainEnum];
   const { t } = useTranslation();
@@ -41,20 +42,10 @@ const Sign = ({ data, chainEnum, raw, isSpeedUp }: SignProps) => {
   };
 
   const handleViewRawClick = () => {
-    try {
-      const content = JSON.stringify(raw, null, 4);
-
-      Modal.info({
-        title: t('Transaction detail'),
-        centered: true,
-        content,
-        cancelText: null,
-        okText: null,
-        className: 'transaction-detail',
-      });
-    } catch (error) {
-      console.log('stringify raw fail', error);
-    }
+    ViewRawModal.open({
+      raw,
+      abi: data?.abi,
+    });
   };
 
   return (
@@ -95,6 +86,17 @@ const Sign = ({ data, chainEnum, raw, isSpeedUp }: SignProps) => {
             />
           </span>
         </div>
+        {data.gnosis && (
+          <GnosisExplain
+            data={{
+              ...data.gnosis,
+              support_balance_change: data.support_balance_change,
+            }}
+            chainEnum={chainEnum}
+            tx={tx}
+            raw={raw}
+          />
+        )}
         {detail.contract_protocol_logo_url && (
           <img
             src={detail.contract_protocol_logo_url}

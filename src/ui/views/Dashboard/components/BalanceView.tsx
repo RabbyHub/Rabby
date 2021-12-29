@@ -1,58 +1,67 @@
-import React from 'react';
-import { Popover } from 'antd';
+import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Spin } from 'ui/component';
 import { useCurrentBalance } from 'ui/component/AddressList/AddressItem';
-import { splitNumberByStep } from 'ui/utils';
-import { CHAINS } from 'consts';
-import useConfirmExternalModal from './ConfirmOpenExternalModal';
+import { splitNumberByStep, useWallet } from 'ui/utils';
+import { CHAINS, KEYRING_TYPE, CHAINS_ENUM } from 'consts';
 import { SvgIconOffline } from 'ui/assets';
-import IconArrowRight from 'ui/assets/arrow-right.svg';
-import IconExternal from 'ui/assets/open-external-gray.svg';
 import IconChainMore from 'ui/assets/chain-more.svg';
-const BalanceView = ({ currentAccount }) => {
+import clsx from 'clsx';
+
+const BalanceView = ({
+  currentAccount,
+  showChain = false,
+  startAnimate = false,
+}) => {
   const [balance, chainBalances] = useCurrentBalance(
     currentAccount?.address,
     true
   );
-  const _openInTab = useConfirmExternalModal();
-  const { t } = useTranslation();
+  const [numberAnimation, setNumberAnimation] = useState('');
+  const [numberWrapperAnimation, setNumberWrapperAnimation] = useState('');
 
-  const handleGotoProfile = () => {
-    _openInTab(`https://debank.com/profile/${currentAccount?.address}`);
+  const { t } = useTranslation();
+  const wallet = useWallet();
+  const [isGnosis, setIsGnosis] = useState(false);
+  const [gnosisNetwork, setGnosisNetwork] = useState(CHAINS[CHAINS_ENUM.ETH]);
+
+  const handleIsGnosisChange = async () => {
+    if (!currentAccount) return;
+    const networkId = await wallet.getGnosisNetworkId(currentAccount.address);
+    const network = Object.values(CHAINS).find(
+      (chain) => chain.id === Number(networkId)
+    );
+    if (network) {
+      setGnosisNetwork(network);
+    }
   };
 
-  const balancePopoverContent = (
-    <ul>
-      {chainBalances
-        .sort((a, b) => b.usd_value - a.usd_value)
-        .map((item) => {
-          const totalUSDValue = chainBalances.reduce((res, item) => {
-            return res + item.usd_value;
-          }, 0);
-          const chain = Object.values(CHAINS).find(
-            (v) => v.serverId === item.id
-          )!;
-          const percent = (item.usd_value / totalUSDValue) * 100;
-          return (
-            <li className="flex" key={item.id}>
-              <img className="chain-logo" src={chain?.logo} />
-              <span
-                className="amount"
-                title={'$' + splitNumberByStep(item.usd_value.toFixed(2))}
-              >
-                ${splitNumberByStep(Math.floor(item.usd_value))}
-              </span>
-              <div className="progress">
-                <div className="inner" style={{ width: percent + '%' }}></div>
-              </div>
-              <span className="percent">{Math.floor(percent)}%</span>
-            </li>
-          );
-        })}
-    </ul>
-  );
+  useEffect(() => {
+    if (currentAccount) {
+      setIsGnosis(currentAccount.type === KEYRING_TYPE.GnosisKeyring);
+    }
+  }, [currentAccount]);
+
+  useEffect(() => {
+    if (isGnosis) {
+      handleIsGnosisChange();
+    }
+  }, [isGnosis, currentAccount]);
+
   const displayChainList = () => {
+    if (isGnosis) {
+      return (
+        <>
+          <img
+            src={gnosisNetwork.whiteLogo || gnosisNetwork.logo}
+            className="icon icon-chain opacity-60"
+          />
+          <span className="ml-2 text-white opacity-40">
+            On {gnosisNetwork.name}
+          </span>
+        </>
+      );
+    }
     const result = chainBalances.map((item) => (
       <img
         src={item.whiteLogo || item.logo_url}
@@ -70,17 +79,39 @@ const BalanceView = ({ currentAccount }) => {
     }
     return result;
   };
+  useEffect(() => {
+    if (showChain) {
+      setNumberAnimation('numberScaleOut');
+      setNumberWrapperAnimation('numberWrapperScaleOut');
+    } else {
+      setNumberAnimation('numberScaleIn');
+      setNumberWrapperAnimation('numberWrapperScaleIn');
+    }
+  }, [showChain]);
   return (
-    <div className="assets flex pt-28">
+    <div
+      className={clsx(
+        'assets flex',
+        startAnimate ? numberWrapperAnimation : ''
+      )}
+    >
       <div className="left">
-        <div className="amount leading-none mb-8" onClick={handleGotoProfile}>
-          <div className="amount-number">
+        <div
+          className={clsx(
+            'amount mb-0',
+            startAnimate ? numberAnimation : 'text-32'
+          )}
+        >
+          <div className={clsx('amount-number', !startAnimate && 'text-32')}>
             <span>${splitNumberByStep((balance || 0).toFixed(2))}</span>
-            <img className="icon icon-external-link" src={IconExternal} />
           </div>
-          <img className="icon icon-arrow-right" src={IconArrowRight} />
         </div>
-        <div className="extra leading-none flex">
+        <div
+          className={clsx(
+            'extra flex h-[20px]',
+            startAnimate ? (showChain ? 'fadeIn' : 'quickFadeOut') : 'hide'
+          )}
+        >
           {balance === null ? (
             <>
               <Spin size="small" iconClassName="text-white" />
@@ -96,13 +127,7 @@ const BalanceView = ({ currentAccount }) => {
               </span>
             </>
           ) : chainBalances.length > 0 ? (
-            <Popover
-              content={balancePopoverContent}
-              placement="bottomLeft"
-              overlayClassName="balance-popover"
-            >
-              <div className="flex">{displayChainList()}</div>
-            </Popover>
+            <div className="flex">{displayChainList()}</div>
           ) : (
             t('No assets')
           )}

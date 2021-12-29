@@ -14,6 +14,7 @@ export interface StrayFooterNavProps {
   onBackClick?(): void;
   backDisabled?: boolean;
   nextDisabled?: boolean;
+  nextLoading?: boolean;
   hasBack?: boolean;
   hasDivider?: boolean;
   className?: string;
@@ -52,6 +53,7 @@ const StrayFooterNav = memo(
     onBackClick,
     backDisabled,
     nextDisabled,
+    nextLoading,
     hasBack = false,
     hasDivider = false,
     NextButtonContent = 'Next',
@@ -95,6 +97,7 @@ const StrayFooterNav = memo(
             size="large"
             className={cx('lg:h-[52px]', hasBack ? 'flex-1' : 'w-[200px]')}
             type="primary"
+            loading={nextLoading}
           >
             {NextButtonContent}
           </Button>

@@ -1,22 +1,34 @@
-import React from 'react';
-import { useTranslation, Trans } from 'react-i18next';
-import { CHAINS, CHAINS_ENUM } from 'consts';
 import { ExplainTxResponse } from 'background/service/openapi';
+import { CHAINS, CHAINS_ENUM } from 'consts';
+import React from 'react';
+import { Trans, useTranslation } from 'react-i18next';
+import IconArrowRight from 'ui/assets/arrow-right-gray.svg';
+import IconDeployContract from 'ui/assets/deploy-contract.svg';
 import BalanceChange from './BalanceChange';
 import SpeedUpCorner from './SpeedUpCorner';
-import IconDeployContract from 'ui/assets/deploy-contract.svg';
+import ViewRawModal from './ViewRawModal';
 
 const Deploy = ({
   chainEnum,
   data,
   isSpeedUp,
+  raw,
 }: {
   chainEnum: CHAINS_ENUM;
   data: ExplainTxResponse;
   isSpeedUp: boolean;
+  raw: Record<string, string | number>;
 }) => {
   const { t } = useTranslation();
   const chain = CHAINS[chainEnum];
+
+  const handleViewRawClick = () => {
+    ViewRawModal.open({
+      raw,
+      abi: data?.abi,
+    });
+  };
+
   return (
     <div className="cancel-tx">
       <p className="section-title">
@@ -24,6 +36,13 @@ const Deploy = ({
           i18nKey="signTransactionWithChain"
           values={{ name: chain.name }}
         />
+        <span
+          className="float-right text-12 cursor-pointer flex items-center view-raw"
+          onClick={handleViewRawClick}
+        >
+          {t('View Raw')}
+          <img src={IconArrowRight} />
+        </span>
       </p>
       <div className="gray-section-block common-detail-block">
         {isSpeedUp && <SpeedUpCorner />}
