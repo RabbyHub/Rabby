@@ -2,7 +2,7 @@ import axios, { Method } from 'axios';
 import rateLimit from 'axios-rate-limit';
 import { ethErrors } from 'eth-rpc-errors';
 import { createPersistStore } from 'background/utils';
-import { CHAINS, INITIAL_OPENAPI_URL } from 'consts';
+import { CHAINS, INITIAL_OPENAPI_URL, CHAINS_ENUM } from 'consts';
 
 interface OpenApiConfigValue {
   path: string;
@@ -13,6 +13,21 @@ interface OpenApiConfigValue {
 interface OpenApiStore {
   host: string;
   config: Record<string, OpenApiConfigValue>;
+}
+
+export interface Chain {
+  id: number;
+  name: string;
+  hex: string;
+  logo: string;
+  enum: CHAINS_ENUM;
+  serverId: string;
+  network: string;
+  nativeTokenSymbol: string;
+  whiteLogo?: string;
+  nativeTokenLogo: string;
+  nativeTokenAddress: string;
+  scanLink: string;
 }
 
 export interface ServerChain {
@@ -92,7 +107,18 @@ export interface TokenItem {
   usd_value?: number;
   raw_amount?: number;
 }
-
+export interface AssetItem {
+  id: string;
+  chain: string;
+  name: string;
+  site_url: string;
+  logo_url: string;
+  has_supported_portfolio: boolean;
+  tvl: number;
+  net_usd_value: number;
+  asset_usd_value: number;
+  debt_usd_value: number;
+}
 export interface GasResult {
   estimated_gas_cost_usd_value: number;
   estimated_gas_cost_value: number;
@@ -121,6 +147,10 @@ export interface BalanceChange {
 }
 
 export interface ExplainTxResponse {
+  abi?: {
+    func: string;
+    params: Array<string[] | number | string>;
+  };
   balance_change: BalanceChange;
   gas: {
     estimated_gas_cost_usd_value: number;
@@ -338,6 +368,11 @@ class OpenApiService {
             method: 'GET',
             params: ['id', 'chain_id', 'token_id'],
           },
+          user_portfolio_list: {
+            path: '/v1/user/simple_protocol_list',
+            method: 'GET',
+            params: ['id', 'chain_id'],
+          },
         },
       },
     });
@@ -385,7 +420,6 @@ class OpenApiService {
     const { data } = await this.request.get<Record<string, OpenApiConfigValue>>(
       `${this.store.host}/v1/wallet/config`
     );
-
     for (const key in data) {
       data[key].method = data[key].method.toLowerCase() as Method;
     }
@@ -553,6 +587,15 @@ class OpenApiService {
       {
         community_id: 199,
         id: 'btt',
+        logo_url: '',
+        name: '',
+        native_token_id: '',
+        wrapped_token_id: '',
+        symbol: '',
+      },
+      {
+        community_id: 1088,
+        id: 'metis',
         logo_url: '',
         name: '',
         native_token_id: '',
@@ -789,6 +832,16 @@ class OpenApiService {
       },
     });
 
+    return data;
+  };
+
+  listChainAssets = async (id: string): Promise<AssetItem[]> => {
+    const config = this.store.config.user_portfolio_list;
+    const { data } = await this.request[config.method](config.path, {
+      params: {
+        id,
+      },
+    });
     return data;
   };
 }

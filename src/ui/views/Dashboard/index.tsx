@@ -1,6 +1,8 @@
 import React, { useEffect, useState, useRef } from 'react';
 import ClipboardJS from 'clipboard';
 import QRCode from 'qrcode.react';
+import cloneDeep from 'lodash/cloneDeep';
+import BigNumber from 'bignumber.js';
 import { useHistory, Link } from 'react-router-dom';
 import { useInterval } from 'react-use';
 import { message, Popover, Input, Tooltip } from 'antd';
@@ -12,7 +14,6 @@ import remarkGfm from 'remark-gfm';
 import Safe from '@rabby-wallet/gnosis-sdk';
 import { SafeInfo } from '@rabby-wallet/gnosis-sdk/dist/api';
 import {
-  SORT_WEIGHT,
   KEYRING_ICONS,
   WALLET_BRAND_CONTENT,
   KEYRING_ICONS_WHITE,
@@ -20,21 +21,28 @@ import {
   KEYRING_TYPE,
   CHAINS,
 } from 'consts';
+import {
+  useWallet,
+  isSameAddress,
+  splitNumberByStep,
+  useHover,
+} from 'ui/utils';
 import { AddressViewer, Modal } from 'ui/component';
-import { useWallet, isSameAddress } from 'ui/utils';
 import { crossCompareOwners } from 'ui/utils/gnosis';
 import { Account } from 'background/service/preference';
 import { ConnectedSite } from 'background/service/permission';
+import { TokenItem, AssetItem } from 'background/service/openapi';
+
 import {
   RecentConnections,
   BalanceView,
   DefaultWalletAlertBar,
+  TokenList,
+  AssetsList,
   GnosisWrongChainAlertBar,
 } from './components';
 import { getUpdateContent } from 'changeLogs/index';
 import IconSetting from 'ui/assets/settings.svg';
-import IconHistory from 'ui/assets/history.svg';
-import IconPending from 'ui/assets/pending.svg';
 import IconSuccess from 'ui/assets/success.svg';
 import IconUpAndDown from 'ui/assets/up-and-down.svg';
 import { ReactComponent as IconCopy } from 'ui/assets/urlcopy.svg';
@@ -42,10 +50,14 @@ import IconEditPen from 'ui/assets/editpen.svg';
 import IconCorrect from 'ui/assets/correct.svg';
 import IconPlus from 'ui/assets/dashboard-plus.svg';
 import IconInfo from 'ui/assets/information.png';
-import IconMoney from 'ui/assets/dashboardMoney.png';
 import IconQueue from 'ui/assets/icon-queue.svg';
 import IconTagYou from 'ui/assets/tag-you.svg';
-import IconLoading from 'ui/assets/loading-round.svg';
+import IconArrowRight from 'ui/assets/arrow-right.svg';
+import IconDrawer from 'ui/assets/drawer.png';
+import IconAddToken from 'ui/assets/addtoken.png';
+import IconAddressCopy from 'ui/assets/address-copy.png';
+import { SvgIconLoading } from 'ui/assets';
+
 import './style.less';
 
 const GnosisAdminItem = ({
@@ -103,7 +115,25 @@ const Dashboard = () => {
   const [accountsList, setAccountsList] = useState<Account[]>([]);
   const [firstNotice, setFirstNotice] = useState(false);
   const [updateContent, setUpdateContent] = useState('');
+  const [showChain, setShowChain] = useState(false);
+  const [showToken, setShowToken] = useState(false);
+  const [showAssets, setShowAssets] = useState(false);
+  const [allTokens, setAllTokens] = useState<TokenItem[]>([]);
+  const [tokens, setTokens] = useState<TokenItem[]>([]);
+  const [searchTokens, setSearchTokens] = useState<TokenItem[]>([]);
+  const [assets, setAssets] = useState<AssetItem[]>([]);
+  const [startSearch, setStartSearch] = useState(false);
+  const [addedToken, setAddedToken] = useState<string[]>([]);
+  const [defiAnimate, setDefiAnimate] = useState('fadeOut');
+  const [tokenAnimate, setTokenAnimate] = useState('fadeOut');
+  const [topAnimate, setTopAnimate] = useState('');
+  const [connectionAnimation, setConnectionAnimation] = useState('');
+
+  const [startAnimate, setStartAnimate] = useState(false);
   const [isGnosis, setIsGnosis] = useState(false);
+  const [isListLoading, setIsListLoading] = useState(false);
+  const [isAssetsLoading, setIsAssetsLoading] = useState(true);
+  const [loadingAddress, setLoadingAddress] = useState(false);
   const [gnosisNetworkId, setGnosisNetworkId] = useState('1');
   const [showGnosisWrongChainAlert, setShowGnosisWrongChainAlert] = useState(
     false
@@ -192,6 +222,8 @@ const Dashboard = () => {
   };
 
   const handleChange = async (account) => {
+    setIsListLoading(true);
+    setIsAssetsLoading(true);
     const { address, type, brandName } = account;
     await wallet.changeAccount({ address, type, brandName });
     setCurrentAccount({ address, type, brandName });
@@ -212,7 +244,6 @@ const Dashboard = () => {
         return currentAccount!.address;
       },
     });
-
     clipboard.on('success', () => {
       setCopySuccess(true);
       setTimeout(() => {
@@ -276,20 +307,82 @@ const Dashboard = () => {
     wallet.updateIsFirstOpen();
     setFirstNotice(false);
   };
+  const sortTokensByPrice = (tokens: TokenItem[]) => {
+    const copy = cloneDeep(tokens);
+    return copy.sort((a, b) => {
+      return new BigNumber(b.amount)
+        .times(new BigNumber(b.price || 0))
+        .minus(new BigNumber(a.amount).times(new BigNumber(a.price || 0)))
+        .toNumber();
+    });
+  };
+  const sortAssetsByUSDValue = (assets: AssetItem[]) => {
+    const copy = cloneDeep(assets);
+    return copy.sort((a, b) => {
+      return new BigNumber(b.asset_usd_value)
+        .minus(new BigNumber(a.asset_usd_value))
+        .toNumber();
+    });
+  };
 
+  const handleLoadTokens = async (q?: string) => {
+    let tokens: TokenItem[] = [];
+    if (q) {
+      if (q.length !== 42 || !q.startsWith('0x')) return [];
+      tokens = sortTokensByPrice(
+        await wallet.openapi.searchToken(currentAccount?.address, q)
+      );
+      if (tokens.length > 0) {
+        setSearchTokens(tokens.filter((item) => !item.is_core));
+      }
+    } else {
+      setIsListLoading(true);
+      const defaultTokens = await wallet.openapi.listToken(
+        currentAccount?.address
+      );
+      setAllTokens(defaultTokens);
+      const localAdded =
+        (await wallet.getAddedToken(currentAccount?.address)) || [];
+      const addedToken = localAdded
+        .map((item) => defaultTokens.find((token) => token.id === item)?.id)
+        .filter(Boolean);
+      setAddedToken(addedToken);
+      tokens = sortTokensByPrice(
+        defaultTokens.filter(
+          (item) => item.is_core || localAdded.includes(item.id)
+        )
+      );
+      setTokens(tokens);
+      setIsListLoading(false);
+    }
+  };
+
+  const handleLoadAssets = async () => {
+    setIsAssetsLoading(true);
+    const assets = sortAssetsByUSDValue(
+      await wallet.listChainAssets(currentAccount?.address)
+    );
+    setAssets(assets);
+    setIsAssetsLoading(false);
+  };
   useEffect(() => {
     checkIfFirstLogin();
   }, []);
-
+  useEffect(() => {
+    if (currentAccount) {
+      handleLoadTokens();
+      handleLoadAssets();
+    }
+  }, [currentAccount]);
   useEffect(() => {
     if (currentAccount) {
       setIsGnosis(currentAccount.type === KEYRING_CLASS.GNOSIS);
     }
   }, [currentAccount]);
-
   const Row = (props) => {
     const { data, index, style } = props;
     const account = data[index];
+    const [isHovering, hoverProps] = useHover();
     return (
       <div
         className="flex items-center address-item"
@@ -299,6 +392,7 @@ const Dashboard = () => {
           e.stopPropagation();
           handleChange(account);
         }}
+        {...hoverProps}
       >
         {' '}
         <img
@@ -311,11 +405,35 @@ const Dashboard = () => {
         <div className="flex flex-col items-start ml-10">
           <div className="text-13 text-black text-left click-name">
             <div className="list-alian-name">{account?.alianName}</div>
-            <AddressViewer
-              address={account?.address}
-              showArrow={false}
-              className={'text-12 text-black opacity-60'}
-            />
+            <div className="flex items-center">
+              <AddressViewer
+                address={account?.address}
+                showArrow={false}
+                className={'address-color'}
+              />
+              {isHovering && (
+                <img
+                  onClick={(e) => {
+                    e.stopPropagation;
+                    navigator.clipboard.writeText(account?.address);
+                    message.success({
+                      icon: (
+                        <img src={IconSuccess} className="icon icon-success" />
+                      ),
+                      content: t('Copied'),
+                      duration: 0.5,
+                    });
+                  }}
+                  src={IconAddressCopy}
+                  className={clsx('ml-7  w-[16px] h-[16px]', {
+                    success: copySuccess,
+                  })}
+                />
+              )}
+              <div className={'money-color'}>
+                ${splitNumberByStep(Math.floor(account?.balance))}
+              </div>
+            </div>
           </div>
         </div>
       </div>
@@ -331,16 +449,23 @@ const Dashboard = () => {
           setClicked(false);
         }}
       />
-      <div className="click-list flex flex-col w-[200px]">
-        {accountsList.length < 1 ? (
-          <div className="no-other-address"> {t('No other address')}</div>
+      <div className="click-list flex flex-col w-[233px]">
+        {loadingAddress ? (
+          <div className="address-loading">
+            <SvgIconLoading className="icon icon-loading" fill="#707280" />
+            <div className="text-14 text-gray-light">
+              {t('Loading Addresses')}
+            </div>
+          </div>
+        ) : accountsList.length <= 0 ? (
+          <div className="no-other-address"> {t('No address')}</div>
         ) : (
           <FixedSizeList
             height={accountsList.length > 5 ? 308 : accountsList.length * 52}
             width="100%"
             itemData={accountsList}
             itemCount={accountsList.length}
-            itemSize={52}
+            itemSize={54}
             ref={fixedList}
             style={{ zIndex: 10 }}
           >
@@ -355,14 +480,25 @@ const Dashboard = () => {
       </div>
     </>
   );
-
+  const balanceList = async (accounts) => {
+    return await Promise.all<Account>(
+      accounts.map(async (item) => {
+        let balance = await wallet.getAddressCacheBalance(item?.address);
+        if (!balance) {
+          balance = await wallet.getAddressBalance(item?.address);
+        }
+        return {
+          ...item,
+          balance: balance?.total_usd_value || 0,
+        };
+      })
+    );
+  };
   const getAllKeyrings = async () => {
+    setLoadingAddress(true);
     const _accounts = await wallet.getAllVisibleAccounts();
     const allAlianNames = await wallet.getAllAlianName();
-    const templist = _accounts
-      .sort((a, b) => {
-        return SORT_WEIGHT[a.type] - SORT_WEIGHT[b.type];
-      })
+    const templist = await _accounts
       .map((item) =>
         item.accounts.map((account) => {
           return {
@@ -373,14 +509,17 @@ const Dashboard = () => {
           };
         })
       )
-      .flat(1)
-      .filter(
-        (item) =>
-          item?.address.toLowerCase() !==
-            currentAccount?.address.toLowerCase() ||
-          item.brandName !== currentAccount?.brandName
-      );
-    setAccountsList(templist);
+      .flat(1);
+    const result = await balanceList(templist);
+    setLoadingAddress(false);
+    if (result) {
+      const withBalanceList = result.sort((a, b) => {
+        return new BigNumber(b?.balance || 0)
+          .minus(new BigNumber(a?.balance || 0))
+          .toNumber();
+      });
+      setAccountsList(withBalanceList);
+    }
   };
 
   const handleClickChange = (visible) => {
@@ -393,6 +532,85 @@ const Dashboard = () => {
     setStartEdit(false);
     setClicked(false);
     setHovered(false);
+  };
+  const displayTokenList = () => {
+    if (showToken) {
+      setTokenAnimate('fadeOut');
+      setDefiAnimate('fadeOut');
+      setConnectionAnimation('fadeInBottom');
+      setShowToken(false);
+      setShowChain(false);
+      setTopAnimate('fadeInTop');
+    } else {
+      if (showAssets) {
+        setTokenAnimate('fadeInLeft');
+        setDefiAnimate('fadeOutRight');
+      } else {
+        setTokenAnimate('fadeIn');
+      }
+      setStartAnimate(true);
+      setShowToken(true);
+      setShowChain(true);
+      setTopAnimate('fadeOutTop');
+      setConnectionAnimation('fadeOutBottom');
+    }
+    setShowAssets(false);
+  };
+  const displayAssets = () => {
+    if (showAssets) {
+      setShowAssets(false);
+      setShowChain(false);
+      setTopAnimate('fadeInTop');
+      setTokenAnimate('fadeOut');
+      setDefiAnimate('fadeOut');
+      setConnectionAnimation('fadeInBottom');
+    } else {
+      if (showToken) {
+        setDefiAnimate('fadeInRight');
+        setTokenAnimate('fadeOutLeft');
+      } else {
+        setDefiAnimate('fadeIn');
+      }
+      setStartAnimate(true);
+      setShowAssets(true);
+      setShowChain(true);
+      setTopAnimate('fadeOutTop');
+      setConnectionAnimation('fadeOutBottom');
+    }
+    setShowToken(false);
+  };
+  const hideAllList = () => {
+    if (showAssets) {
+      setDefiAnimate('fadeOut');
+    }
+    if (showToken) {
+      setTokenAnimate('fadeOut');
+    }
+    setShowAssets(false);
+    setShowChain(false);
+    setShowToken(false);
+    setConnectionAnimation('fadeInBottom');
+    setTopAnimate('fadeInTop');
+  };
+  const removeToken = async (tokenId: string) => {
+    const newAddTokenList = addedToken.filter((item) => item !== tokenId);
+    const removeNewTokens = tokens.filter((token) => token.id !== tokenId);
+    setTokens(removeNewTokens);
+    setAddedToken(newAddTokenList);
+    await wallet.updateAddedToken(currentAccount?.address, newAddTokenList);
+  };
+  const addToken = async (tokenId: string) => {
+    const newAddTokenList = [...addedToken, tokenId];
+    const newAddToken = allTokens.find((token) => token.id === tokenId);
+    if (newAddToken) {
+      const newTokenList = [...tokens, newAddToken];
+      setTokens(sortTokensByPrice(newTokenList));
+    }
+    setAddedToken(newAddTokenList);
+    await wallet.updateAddedToken(currentAccount?.address, [
+      ...addedToken,
+      tokenId,
+    ]);
   };
 
   const handleCurrentConnectChange = (
@@ -413,18 +631,20 @@ const Dashboard = () => {
   useEffect(() => {
     checkGnosisConnectChain();
   }, [currentConnection, gnosisNetworkId]);
-
   return (
     <>
       <div
         className={clsx('dashboard', {
           'metamask-active':
             !isDefaultWallet || (showGnosisWrongChainAlert && isGnosis),
+          success: copySuccess,
         })}
       >
-        <div className="main">
+        <div className={clsx('main', showChain && 'show-chain-bg')}>
           {currentAccount && (
-            <div className="flex header items-center">
+            <div
+              className={clsx('flex header items-center relative', topAnimate)}
+            >
               <div className="h-[32px] flex header-wrapper items-center relative">
                 <Popover
                   content={clickContent}
@@ -464,7 +684,6 @@ const Dashboard = () => {
                 onClick={() => setHovered(true)}
                 className="w-[16px] h-[16px] pointer"
               />
-              <div className="flex-1" />
               <img
                 className="icon icon-settings"
                 src={IconSetting}
@@ -472,17 +691,46 @@ const Dashboard = () => {
               />
             </div>
           )}
-          <BalanceView currentAccount={currentAccount} />
-          <div className="operation">
+          <BalanceView
+            currentAccount={currentAccount}
+            showChain={showChain}
+            startAnimate={startAnimate}
+          />
+          <div className={clsx('listContainer', showChain && 'mt-10')}>
+            <div
+              className={clsx('token', showToken && 'showToken')}
+              onClick={displayTokenList}
+            >
+              Token
+            </div>
+            <div
+              className={clsx('token', showAssets && 'showToken')}
+              onClick={displayAssets}
+            >
+              DeFi
+            </div>
             <Tooltip
               overlayClassName="rectangle profileType__tooltip"
               title={t('Coming soon')}
             >
-              <div className="operation-item opacity-60">
-                <img className="icon icon-send" src={IconMoney} />
-                {t('Portfolio')}
+              <div className={clsx('token', 'opacity-60 cursor-default')}>
+                NFT
               </div>
             </Tooltip>
+            {showToken && !startSearch && (
+              <img
+                src={IconAddToken}
+                onClick={() => setStartSearch(true)}
+                className="w-[18px] h-[18px] pointer absolute right-0"
+              />
+            )}
+          </div>
+          <div
+            className={clsx(
+              'operation',
+              startAnimate ? (showChain ? 'fadeOut' : 'fadeIn') : ''
+            )}
+          >
             {isGnosis ? (
               <div className="operation-item" onClick={handleGotoQueue}>
                 {gnosisPendingCount > 0 && (
@@ -490,25 +738,59 @@ const Dashboard = () => {
                     {gnosisPendingCount}
                   </span>
                 )}
+                <img className="icon icon-arrow-right" src={IconArrowRight} />
                 <img className="icon icon-queue" src={IconQueue} />
                 {t('Queue')}
               </div>
             ) : (
               <div className="operation-item" onClick={handleGotoHistory}>
-                {pendingTxCount > 0 ? (
-                  <div className="pending-count">
-                    <img src={IconPending} className="icon icon-pending" />
-                    {pendingTxCount}
-                  </div>
-                ) : (
-                  <img className="icon icon-history" src={IconHistory} />
+                {pendingTxCount > 0 && (
+                  <span className="operation-item__count__normal">
+                    {`${pendingTxCount} ${t('Pending')}`}
+                  </span>
                 )}
-                {t('History')}
+                {t('Transaction History')}
+                <img className="icon icon-arrow-right" src={IconArrowRight} />
               </div>
             )}
           </div>
+          <TokenList
+            tokens={tokens}
+            searchTokens={searchTokens}
+            addedToken={addedToken}
+            startSearch={startSearch}
+            removeToken={removeToken}
+            addToken={addToken}
+            onSearch={handleLoadTokens}
+            closeSearch={() => {
+              setSearchTokens([]);
+              setIsListLoading(false);
+              setStartSearch(false);
+            }}
+            tokenAnimate={tokenAnimate}
+            startAnimate={startAnimate}
+            isloading={isListLoading}
+          />
+          <AssetsList
+            assets={assets}
+            defiAnimate={defiAnimate}
+            startAnimate={startAnimate}
+            isloading={isAssetsLoading}
+          />
+          <img
+            src={IconDrawer}
+            className={clsx(
+              'bottom-drawer',
+              showToken || showAssets ? 'fadeInDrawer' : 'hide'
+            )}
+            onClick={hideAllList}
+          />
         </div>
-        <RecentConnections onChange={handleCurrentConnectChange} />
+        <RecentConnections
+          onChange={handleCurrentConnectChange}
+          showChain={showChain}
+          connectionAnimation={connectionAnimation}
+        />
         {!isDefaultWallet && (
           <DefaultWalletAlertBar onChange={handleDefaultWalletChange} />
         )}
@@ -528,7 +810,10 @@ const Dashboard = () => {
       <Modal
         visible={hovered}
         closable={false}
-        onCancel={() => setHovered(false)}
+        onCancel={() => {
+          setHovered(false);
+          setStartEdit(false);
+        }}
         className="address-popover"
         width="344px"
       >
@@ -618,7 +903,10 @@ const Dashboard = () => {
                 </>
               ) : (
                 <div className="loading-wrapper">
-                  <img src={IconLoading} className="icon icon-loading" />
+                  <SvgIconLoading
+                    className="icon icon-loading"
+                    fill="#707280"
+                  />
                   <p className="text-14 text-gray-light mb-0">
                     Loading address
                   </p>

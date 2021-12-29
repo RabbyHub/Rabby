@@ -9,9 +9,14 @@ interface ChainSelectorProps {
   value: CHAINS_ENUM;
   onChange(value: CHAINS_ENUM): void;
   direction?: 'top' | 'bottom';
+  connection?: boolean;
 }
 
-const ChainSelector = ({ value, onChange }: ChainSelectorProps) => {
+const ChainSelector = ({
+  value,
+  onChange,
+  connection = false,
+}: ChainSelectorProps) => {
   const [showSelectorModal, setShowSelectorModal] = useState(false);
 
   const handleClickSelector = () => {
@@ -38,6 +43,7 @@ const ChainSelector = ({ value, onChange }: ChainSelectorProps) => {
         visible={showSelectorModal}
         onChange={handleChange}
         onCancel={handleCancel}
+        connection={connection}
       />
     </>
   );

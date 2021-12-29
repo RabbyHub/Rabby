@@ -1,4 +1,4 @@
-import { Chain } from 'background/service/chain';
+import { Chain } from 'background/service/openapi';
 import IconEthLogo from 'ui/assets/chain-logos/eth.svg';
 import IconEthWhiteLogo from 'ui/assets/chain-logos/eth-white.svg';
 import IconHecoLogo from 'ui/assets/chain-logos/heco.svg';
@@ -13,6 +13,8 @@ import IconFantom from 'ui/assets/chain-logos/fantom.svg';
 import IconFantomWhiteLogo from 'ui/assets/chain-logos/fantom-white.svg';
 import IconOKTLogo from 'ui/assets/chain-logos/okex.svg';
 import IconOKTWhiteLogo from 'ui/assets/chain-logos/okex-white.svg';
+import IconMetisLogo from 'ui/assets/chain-logos/metis.svg';
+import IconMetisWhiteLogo from 'ui/assets/chain-logos/metis-white.svg';
 import IconArbitrumLogo from 'ui/assets/chain-logos/arbitrum.svg';
 import IconArbitrumWhiteLogo from 'ui/assets/chain-logos/arbitrum-white.svg';
 import IconOPLogo from 'ui/assets/chain-logos/op.svg';
@@ -74,6 +76,7 @@ import IconMnemonicWhite from 'ui/assets/walletlogo/IconMnemonic-white.svg';
 import LogoLedgerDark from 'ui/assets/walletlogo/ledgerdark.png';
 import LogoLedgerWhite from 'ui/assets/walletlogo/ledgerwhite.png';
 import IconGridPlus from 'ui/assets/walletlogo/gridplus.png';
+
 export enum CHAINS_ENUM {
   ETH = 'ETH',
   BSC = 'BSC',
@@ -89,6 +92,7 @@ export enum CHAINS_ENUM {
   MOVR = 'MOVR',
   CRO = 'CRO',
   BOBA = 'BOBA',
+  METIS = 'METIS',
   BTT = 'BTT',
   AURORA = 'AURORA',
 }
@@ -304,6 +308,21 @@ export const CHAINS: Record<string, Chain> = {
     scanLink: 'https://blockexplorer.boba.network/tx/_s_',
     nativeTokenLogo:
       'https://static.debank.com/image/op_token/logo_url/0x4200000000000000000000000000000000000006/d61441782d4a08a7479d54aea211679e.png',
+  },
+  [CHAINS_ENUM.METIS]: {
+    id: 1088,
+    serverId: 'metis',
+    network: '1088',
+    name: 'Metis',
+    nativeTokenSymbol: 'METIS',
+    nativeTokenAddress: 'metis',
+    enum: CHAINS_ENUM.METIS,
+    logo: IconMetisLogo,
+    whiteLogo: IconMetisWhiteLogo,
+    hex: '0x440',
+    scanLink: 'https://andromeda-explorer.metis.io/tx/_s_',
+    nativeTokenLogo:
+      'https://static.debank.com/image/chain/logo_url/metis/b289da32db4d860ebf6fb46a6e41dcfc.png',
   },
   [CHAINS_ENUM.BTT]: {
     id: 199,
@@ -758,4 +777,22 @@ export const SORT_WEIGHT = {
   [KEYRING_TYPE.HardwareKeyring]: 3,
   [KEYRING_TYPE.WalletConnectKeyring]: 4,
   [KEYRING_TYPE.WatchAddressKeyring]: 5,
+};
+
+export const GASPRICE_RANGE = {
+  [CHAINS_ENUM.ETH]: [0, 10000],
+  [CHAINS_ENUM.BOBA]: [0, 1000],
+  [CHAINS_ENUM.OP]: [0, 1000],
+  [CHAINS_ENUM.ARBITRUM]: [0, 1000],
+  [CHAINS_ENUM.BSC]: [0, 1000],
+  [CHAINS_ENUM.AVAX]: [0, 4000],
+  [CHAINS_ENUM.POLYGON]: [0, 250000],
+  [CHAINS_ENUM.FTM]: [0, 360000],
+  [CHAINS_ENUM.DAI]: [0, 500000],
+  [CHAINS_ENUM.OKT]: [0, 15000],
+  [CHAINS_ENUM.HECO]: [0, 50000],
+  [CHAINS_ENUM.CELO]: [0, 100000],
+  [CHAINS_ENUM.MOVR]: [0, 3000],
+  [CHAINS_ENUM.CRO]: [0, 100000],
+  [CHAINS_ENUM.BTT]: [0, 20000000000],
 };

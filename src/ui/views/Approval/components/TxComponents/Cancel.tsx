@@ -1,17 +1,18 @@
-import React from 'react';
-import clsx from 'clsx';
-import { useTranslation, Trans } from 'react-i18next';
-import ClipboardJS from 'clipboard';
 import { message } from 'antd';
-import { AddressViewer, Modal } from 'ui/component';
-import BalanceChange from './BalanceChange';
-import { CHAINS_ENUM, CHAINS } from 'consts';
 import { ExplainTxResponse } from 'background/service/openapi';
-import SpeedUpCorner from './SpeedUpCorner';
+import ClipboardJS from 'clipboard';
+import clsx from 'clsx';
+import { CHAINS, CHAINS_ENUM } from 'consts';
+import React from 'react';
+import { Trans, useTranslation } from 'react-i18next';
+import IconArrowRight from 'ui/assets/arrow-right-gray.svg';
 import IconCopy from 'ui/assets/copy-no-border.svg';
 import IconSuccess from 'ui/assets/success.svg';
 import IconUnknownProtocol from 'ui/assets/unknown-protocol.svg';
-import IconArrowRight from 'ui/assets/arrow-right-gray.svg';
+import { AddressViewer } from 'ui/component';
+import BalanceChange from './BalanceChange';
+import SpeedUpCorner from './SpeedUpCorner';
+import ViewRawModal from './ViewRawModal';
 
 interface CancelProps {
   data: ExplainTxResponse;
@@ -43,20 +44,10 @@ const Cancel = ({ data, chainEnum, isSpeedUp, raw }: CancelProps) => {
   };
 
   const handleViewRawClick = () => {
-    try {
-      const content = JSON.stringify(raw, null, 4);
-
-      Modal.info({
-        title: t('Transaction detail'),
-        centered: true,
-        content,
-        cancelText: null,
-        okText: null,
-        className: 'transaction-detail',
-      });
-    } catch (error) {
-      console.log('stringify raw fail', error);
-    }
+    ViewRawModal.open({
+      raw,
+      abi: data?.abi,
+    });
   };
 
   const handleProtocolLogoLoadFailed = function (

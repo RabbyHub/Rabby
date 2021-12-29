@@ -4,4 +4,6 @@ export { default as SwitchAddress } from './SwitchAddress';
 export { default as useConfirmExternalModal } from './ConfirmOpenExternalModal';
 export { default as MetaMaskConflictAlertBar } from './MetaMaskConflictAlertBar';
 export { default as DefaultWalletAlertBar } from './DefaultWalletAlertBar';
+export { default as TokenList } from './TokenList';
+export { default as AssetsList } from './AssetsList';
 export { default as GnosisWrongChainAlertBar } from './GnosisWrongChainAlertBar';
