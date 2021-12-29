@@ -877,8 +877,7 @@
       justify-content: center;
       flex-direction: column;
       .icon-loading {
-        width: 28px;
-        height: 28px;
+        transform: scale(0.78);
         animation: spining 1.5s infinite linear;
         margin-bottom: 12px;
       }
@@ -1006,6 +1005,23 @@
       border-radius: 6px;
       text-align: center;
       color: #707280;
+    }
+    .address-loading {
+      display: flex;
+      justify-content: center;
+      margin: 56px auto 52px;
+      flex-direction: column;
+      font-size: 12px;
+      opacity: 0.8;
+      color: #707280;
+      .icon-loading {
+        color: #707280;
+        transform: scale(0.78);
+        animation: spining 1.5s infinite linear;
+        margin-bottom: 12px;
+        margin-left: 42px;
+      }
+
     }
     .pop-add-address {
       cursor: pointer;
@@ -1237,16 +1253,16 @@
   justify-content: center;
   margin: 170px auto;
   flex-direction: column;
+  .icon-loading {
+    margin-left: 30px;
+    animation: spining 1.5s infinite linear;
+  }  
   .loading-text {
     margin-top: 18px;
     color: #ffffff;
     font-size: 14px;
     opacity: 0.8;
   }
-}
-.icon-loading {
-  margin-left: 28px;
-  animation: spining 1.5s infinite linear;
 }
 .no-data {
   display: flex;

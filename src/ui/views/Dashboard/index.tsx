@@ -24,7 +24,6 @@ import {
 import {
   useWallet,
   isSameAddress,
-  useWalletRequest,
   splitNumberByStep,
   useHover,
 } from 'ui/utils';
@@ -57,7 +56,8 @@ import IconArrowRight from 'ui/assets/arrow-right.svg';
 import IconDrawer from 'ui/assets/drawer.png';
 import IconAddToken from 'ui/assets/addtoken.png';
 import IconAddressCopy from 'ui/assets/address-copy.png';
-import IconLoading from 'ui/assets/loading-round.svg';
+import { SvgIconLoading } from 'ui/assets';
+
 import './style.less';
 
 const GnosisAdminItem = ({
@@ -133,24 +133,7 @@ const Dashboard = () => {
   const [isGnosis, setIsGnosis] = useState(false);
   const [isListLoading, setIsListLoading] = useState(true);
   const [isAssetsLoading, setIsAssetsLoading] = useState(true);
-  const [getAddressBalance] = useWalletRequest(wallet.getAddressBalance, {
-    onSuccess({ total_usd_value }) {
-      return total_usd_value;
-    },
-    onError() {
-      return NaN;
-    },
-  });
-
-  const getCurrentBalance = async (account) => {
-    if (!account) return;
-    const cacheData = await wallet.getAddressCacheBalance(account);
-    if (cacheData) {
-      return cacheData.total_usd_value;
-    } else {
-      getAddressBalance(account.toLowerCase());
-    }
-  };
+  const [loadingAddress, setLoadingAddress] = useState(false);
   const [gnosisNetworkId, setGnosisNetworkId] = useState('1');
   const [showGnosisWrongChainAlert, setShowGnosisWrongChainAlert] = useState(
     false
@@ -468,7 +451,14 @@ const Dashboard = () => {
         }}
       />
       <div className="click-list flex flex-col w-[233px]">
-        {accountsList.length <= 0 ? (
+        {loadingAddress ? (
+          <div className="address-loading">
+            <SvgIconLoading className="icon icon-loading" fill="#707280" />
+            <div className="text-14 text-gray-light">
+              {t('Loading Addresses')}
+            </div>
+          </div>
+        ) : accountsList.length <= 0 ? (
           <div className="no-other-address"> {t('No address')}</div>
         ) : (
           <FixedSizeList
@@ -491,18 +481,21 @@ const Dashboard = () => {
       </div>
     </>
   );
-
+  const balanceList = async (accounts) => {
+    return await Promise.all<Account>(
+      accounts.map(async (item) => {
+        const balance = await wallet.getAddressCacheBalance(item?.address);
+        return {
+          ...item,
+          balance: balance?.total_usd_value || 0,
+        };
+      })
+    );
+  };
   const getAllKeyrings = async () => {
+    setLoadingAddress(true);
     const _accounts = await wallet.getAllVisibleAccounts();
     const allAlianNames = await wallet.getAllAlianName();
-    const balanceList = async (accounts) => {
-      const balances = accounts.map((n) => getCurrentBalance(n?.address));
-      const result = await Promise.all(balances);
-      return accounts.map((item, index) => ({
-        ...item,
-        balance: result[index],
-      }));
-    };
     const templist = await _accounts
       .map((item) =>
         item.accounts.map((account) => {
@@ -516,10 +509,11 @@ const Dashboard = () => {
       )
       .flat(1);
     const result = await balanceList(templist);
+    setLoadingAddress(false);
     if (result) {
       const withBalanceList = result.sort((a, b) => {
-        return new BigNumber(b.balance)
-          .minus(new BigNumber(a.balance))
+        return new BigNumber(b?.balance || 0)
+          .minus(new BigNumber(a?.balance || 0))
           .toNumber();
       });
       setAccountsList(withBalanceList);
@@ -907,7 +901,10 @@ const Dashboard = () => {
                 </>
               ) : (
                 <div className="loading-wrapper">
-                  <img src={IconLoading} className="icon icon-loading" />
+                  <SvgIconLoading
+                    className="icon icon-loading"
+                    fill="#707280"
+                  />
                   <p className="text-14 text-gray-light mb-0">
                     Loading address
                   </p>

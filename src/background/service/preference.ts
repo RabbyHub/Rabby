@@ -14,6 +14,7 @@ export interface Account {
   alianName?: string;
   displayBrandName?: string;
   index?: number;
+  balance?: number;
 }
 export interface ChainGas {
   gasPrice?: number | null; // custom cached gas price
