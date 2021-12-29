@@ -27,7 +27,7 @@ import IconUnknown from 'ui/assets/icon-unknown.svg';
 import IconUser from 'ui/assets/address-management.svg';
 import IconChecked from 'ui/assets/checked.svg';
 import IconUnCheck from 'ui/assets/uncheck.svg';
-import IconLoading from 'ui/assets/loading-round.svg';
+import { SvgIconLoading } from 'ui/assets';
 import IconTagYou from 'ui/assets/tag-you.svg';
 import './style.less';
 
@@ -569,7 +569,7 @@ const GnosisTransactionQueue = () => {
         <div className="tx-history__empty">
           {isLoading ? (
             <>
-              <img className="icon icon-loading" src={IconLoading} />
+              <SvgIconLoading className="icon icon-loading" fill="#707280" />
               <p className="text-14 text-gray-content mt-24">
                 {t('Loading data')}
               </p>

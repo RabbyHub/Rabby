@@ -92,7 +92,18 @@ export interface TokenItem {
   usd_value?: number;
   raw_amount?: number;
 }
-
+export interface AssetItem {
+  id: string;
+  chain: string;
+  name: string;
+  site_url: string;
+  logo_url: string;
+  has_supported_portfolio: boolean;
+  tvl: number;
+  net_usd_value: number;
+  asset_usd_value: number;
+  debt_usd_value: number;
+}
 export interface GasResult {
   estimated_gas_cost_usd_value: number;
   estimated_gas_cost_value: number;
@@ -338,6 +349,11 @@ class OpenApiService {
             method: 'GET',
             params: ['id', 'chain_id', 'token_id'],
           },
+          user_portfolio_list: {
+            path: '/v1/user/simple_protocol_list',
+            method: 'GET',
+            params: ['id', 'chain_id'],
+          },
         },
       },
     });
@@ -385,7 +401,6 @@ class OpenApiService {
     const { data } = await this.request.get<Record<string, OpenApiConfigValue>>(
       `${this.store.host}/v1/wallet/config`
     );
-
     for (const key in data) {
       data[key].method = data[key].method.toLowerCase() as Method;
     }
@@ -780,6 +795,16 @@ class OpenApiService {
       },
     });
 
+    return data;
+  };
+
+  listChainAssets = async (id: string): Promise<AssetItem[]> => {
+    const config = this.store.config.user_portfolio_list;
+    const { data } = await this.request[config.method](config.path, {
+      params: {
+        id,
+      },
+    });
     return data;
   };
 }

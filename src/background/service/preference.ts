@@ -14,6 +14,7 @@ export interface Account {
   alianName?: string;
   displayBrandName?: string;
   index?: number;
+  balance?: number;
 }
 export interface ChainGas {
   gasPrice?: number | null; // custom cached gas price
@@ -22,6 +23,9 @@ export interface ChainGas {
 }
 export interface GasCache {
   [chainId: string]: ChainGas;
+}
+export interface addedToken {
+  [address: string]: [];
 }
 interface PreferenceStore {
   currentAccount: Account | undefined | null;
@@ -41,6 +45,7 @@ interface PreferenceStore {
   gasCache: GasCache;
   currentVersion: string;
   firstOpen: boolean;
+  addedToken: addedToken;
 }
 
 const SUPPORT_LOCALES = ['en'];
@@ -70,6 +75,7 @@ class PreferenceService {
         gasCache: {},
         currentVersion: '0',
         firstOpen: false,
+        addedToken: {},
       },
     });
     if (!this.store.locale || this.store.locale !== defaultLang) {
@@ -93,6 +99,9 @@ class PreferenceService {
     }
     if (!this.store.gasCache) {
       this.store.gasCache = {};
+    }
+    if (!this.store.addedToken) {
+      this.store.addedToken = {};
     }
   };
 
@@ -317,6 +326,14 @@ class PreferenceService {
   };
   updateIsFirstOpen = () => {
     this.store.firstOpen = false;
+  };
+  getAddedToken = (address: string) => {
+    const key = address.toLowerCase();
+    return this.store.addedToken[key];
+  };
+  updateAddedToken = (address: string, tokenList: []) => {
+    const key = address.toLowerCase();
+    this.store.addedToken[key] = tokenList;
   };
 }
 
