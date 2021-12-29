@@ -31,6 +31,8 @@ import IconBobaLogo from 'ui/assets/chain-logos/boba.png';
 import IconBobaWhiteLogo from 'ui/assets/chain-logos/boba-white.svg';
 import IconBttLogo from 'ui/assets/chain-logos/bttc.svg';
 import IconBttWhiteLogo from 'ui/assets/chain-logos/bttc-white.svg';
+import IconAuroraLogo from 'ui/assets/chain-logos/aurora.svg';
+import IconAuroraWhiteLogo from 'ui/assets/chain-logos/aurora-white.svg';
 import IconEN from 'ui/assets/langs/en.svg';
 import IconZH from 'ui/assets/langs/zh_cn.svg';
 import IconAmber from 'ui/assets/walletlogo/amber.png';
@@ -92,6 +94,7 @@ export enum CHAINS_ENUM {
   BOBA = 'BOBA',
   METIS = 'METIS',
   BTT = 'BTT',
+  AURORA = 'AURORA',
 }
 
 export const CHAINS: Record<string, Chain> = {
@@ -335,6 +338,21 @@ export const CHAINS: Record<string, Chain> = {
     scanLink: 'https://scan.bt.io/#/transaction/_s_',
     nativeTokenLogo:
       'https://static.debank.com/image/chain/logo_url/btt/2130a8d57ff2a0f3d50a4ec9432897c6.png',
+  },
+  [CHAINS_ENUM.AURORA]: {
+    id: 1313161554,
+    serverId: 'aurora',
+    network: '1313161554',
+    name: 'Aurora',
+    nativeTokenSymbol: 'aETH',
+    nativeTokenAddress: 'aurora',
+    enum: CHAINS_ENUM.AURORA,
+    logo: IconAuroraLogo,
+    whiteLogo: IconAuroraWhiteLogo,
+    hex: '0x4e454152',
+    scanLink: 'https://explorer.mainnet.aurora.dev/tx/_s_',
+    nativeTokenLogo:
+      'https://static.debank.com/image/token/logo_url/eth/935ae4e4d1d12d59a99717a24f2540b5.png',
   },
 };
 
