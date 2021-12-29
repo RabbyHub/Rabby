@@ -72,6 +72,7 @@ import IconMnemonicWhite from 'ui/assets/walletlogo/IconMnemonic-white.svg';
 import LogoLedgerDark from 'ui/assets/walletlogo/ledgerdark.png';
 import LogoLedgerWhite from 'ui/assets/walletlogo/ledgerwhite.png';
 import IconGridPlus from 'ui/assets/walletlogo/gridplus.png';
+
 export enum CHAINS_ENUM {
   ETH = 'ETH',
   BSC = 'BSC',
@@ -740,4 +741,22 @@ export const SORT_WEIGHT = {
   [KEYRING_TYPE.HardwareKeyring]: 3,
   [KEYRING_TYPE.WalletConnectKeyring]: 4,
   [KEYRING_TYPE.WatchAddressKeyring]: 5,
+};
+
+export const GASPRICE_RANGE = {
+  [CHAINS_ENUM.ETH]: [0, 10000],
+  [CHAINS_ENUM.BOBA]: [0, 1000],
+  [CHAINS_ENUM.OP]: [0, 1000],
+  [CHAINS_ENUM.ARBITRUM]: [0, 1000],
+  [CHAINS_ENUM.BSC]: [0, 1000],
+  [CHAINS_ENUM.AVAX]: [0, 4000],
+  [CHAINS_ENUM.POLYGON]: [0, 250000],
+  [CHAINS_ENUM.FTM]: [0, 360000],
+  [CHAINS_ENUM.DAI]: [0, 500000],
+  [CHAINS_ENUM.OKT]: [0, 15000],
+  [CHAINS_ENUM.HECO]: [0, 50000],
+  [CHAINS_ENUM.CELO]: [0, 100000],
+  [CHAINS_ENUM.MOVR]: [0, 3000],
+  [CHAINS_ENUM.CRO]: [0, 100000],
+  [CHAINS_ENUM.BTT]: [0, 20000000000],
 };

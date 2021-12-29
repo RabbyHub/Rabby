@@ -35,6 +35,7 @@ import { CHAINS, CHAINS_ENUM, SAFE_RPC_METHODS, KEYRING_TYPE } from 'consts';
 import buildinProvider from 'background/utils/buildinProvider';
 import BaseController from '../base';
 import { Account } from 'background/service/preference';
+import { validateGasPriceRange } from '@/utils/transaction';
 
 interface ApprovalRes extends Tx {
   type?: string;
@@ -324,6 +325,7 @@ class ProviderController extends BaseController {
       }
     }
     try {
+      validateGasPriceRange(approvalRes);
       const hash = await openapiService.pushTx({
         ...approvalRes,
         r: bufferToHex(signedTx.r),

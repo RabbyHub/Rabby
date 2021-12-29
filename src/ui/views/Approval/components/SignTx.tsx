@@ -31,6 +31,7 @@ import {
   GasLevel,
   Chain,
 } from 'background/service/openapi';
+import { validateGasPriceRange } from '@/utils/transaction';
 import { useWallet, useApproval } from 'ui/utils';
 import { ChainGas, Account } from 'background/service/preference';
 import GnosisDrawer from './TxComponents/GnosisDrawer';
@@ -467,6 +468,17 @@ const SignTx = ({ params, origin }: SignTxProps) => {
         // NOTHING
       }
     }
+
+    try {
+      validateGasPriceRange(tx);
+    } catch (e) {
+      Modal.error({
+        title: t('Error'),
+        content: e.message || JSON.stringify(e),
+      });
+      return;
+    }
+
     const selected: ChainGas = {
       lastTimeSelect: selectedGas.level === 'custom' ? 'gasPrice' : 'gasLevel',
     };
