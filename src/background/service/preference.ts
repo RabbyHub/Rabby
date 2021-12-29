@@ -14,6 +14,7 @@ export interface Account {
   alianName?: string;
   displayBrandName?: string;
   index?: number;
+  balance?: number;
 }
 export interface ChainGas {
   gasPrice?: number | null; // custom cached gas price
@@ -22,6 +23,9 @@ export interface ChainGas {
 }
 export interface GasCache {
   [chainId: string]: ChainGas;
+}
+export interface addedToken {
+  [address: string]: [];
 }
 interface PreferenceStore {
   currentAccount: Account | undefined | null;
@@ -42,6 +46,7 @@ interface PreferenceStore {
   currentVersion: string;
   firstOpen: boolean;
   pinnedChain: string[];
+  addedToken: addedToken;
 }
 
 const SUPPORT_LOCALES = ['en'];
@@ -72,6 +77,7 @@ class PreferenceService {
         currentVersion: '0',
         firstOpen: false,
         pinnedChain: [],
+        addedToken: {},
       },
     });
     if (!this.store.locale || this.store.locale !== defaultLang) {
@@ -98,6 +104,9 @@ class PreferenceService {
     }
     if (!this.store.pinnedChain) {
       this.store.pinnedChain = [];
+    }
+    if (!this.store.addedToken) {
+      this.store.addedToken = {};
     }
   };
 
@@ -330,6 +339,14 @@ class PreferenceService {
     this.store.pinnedChain = [...this.store.pinnedChain, name];
   };
   updateChain = (list: string[]) => (this.store.pinnedChain = list);
+  getAddedToken = (address: string) => {
+    const key = address.toLowerCase();
+    return this.store.addedToken[key];
+  };
+  updateAddedToken = (address: string, tokenList: []) => {
+    const key = address.toLowerCase();
+    this.store.addedToken[key] = tokenList;
+  };
 }
 
 export default new PreferenceService();

@@ -1025,6 +1025,15 @@ export class WalletController extends BaseController {
   updateIsFirstOpen = () => {
     return preferenceService.updateIsFirstOpen();
   };
+  listChainAssets = async (address: string) => {
+    return await openapiService.listChainAssets(address);
+  };
+  getAddedToken = (address: string) => {
+    return preferenceService.getAddedToken(address);
+  };
+  updateAddedToken = (address: string, tokenList: []) => {
+    return preferenceService.updateAddedToken(address, tokenList);
+  };
 }
 
 export default new WalletController();
