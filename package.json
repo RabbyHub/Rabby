@@ -11,6 +11,9 @@
     "pub": "node build/release.js"
   },
   "dependencies": {
+    "@dnd-kit/core": "^4.0.3",
+    "@dnd-kit/sortable": "^5.1.0",
+    "@dnd-kit/utilities": "^3.0.2",
     "@ethereumjs/tx": "^3.3.2",
     "@gnosis.pm/safe-core-sdk": "^1.1.1",
     "@gnosis.pm/safe-core-sdk-types": "^0.1.1",

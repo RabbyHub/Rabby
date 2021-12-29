@@ -45,6 +45,7 @@ interface PreferenceStore {
   gasCache: GasCache;
   currentVersion: string;
   firstOpen: boolean;
+  pinnedChain: string[];
   addedToken: addedToken;
 }
 
@@ -75,6 +76,7 @@ class PreferenceService {
         gasCache: {},
         currentVersion: '0',
         firstOpen: false,
+        pinnedChain: [],
         addedToken: {},
       },
     });
@@ -99,6 +101,9 @@ class PreferenceService {
     }
     if (!this.store.gasCache) {
       this.store.gasCache = {};
+    }
+    if (!this.store.pinnedChain) {
+      this.store.pinnedChain = [];
     }
     if (!this.store.addedToken) {
       this.store.addedToken = {};
@@ -327,6 +332,13 @@ class PreferenceService {
   updateIsFirstOpen = () => {
     this.store.firstOpen = false;
   };
+  getSavedChains = () => {
+    return this.store.pinnedChain;
+  };
+  saveChain = (name: string) => {
+    this.store.pinnedChain = [...this.store.pinnedChain, name];
+  };
+  updateChain = (list: string[]) => (this.store.pinnedChain = list);
   getAddedToken = (address: string) => {
     const key = address.toLowerCase();
     return this.store.addedToken[key];

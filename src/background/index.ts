@@ -12,7 +12,6 @@ import {
   preferenceService,
   sessionService,
   keyringService,
-  chainService,
   openapiService,
   transactionWatchService,
   pageStateCacheService,
@@ -63,7 +62,6 @@ async function restoreAppState() {
   await permissionService.init();
   await preferenceService.init();
   await openapiService.init();
-  await chainService.init();
   await transactionWatchService.init();
   await pageStateCacheService.init();
   await transactionHistoryService.init();

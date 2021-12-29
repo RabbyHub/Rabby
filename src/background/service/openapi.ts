@@ -2,7 +2,7 @@ import axios, { Method } from 'axios';
 import rateLimit from 'axios-rate-limit';
 import { ethErrors } from 'eth-rpc-errors';
 import { createPersistStore } from 'background/utils';
-import { CHAINS, INITIAL_OPENAPI_URL } from 'consts';
+import { CHAINS, INITIAL_OPENAPI_URL, CHAINS_ENUM } from 'consts';
 
 interface OpenApiConfigValue {
   path: string;
@@ -13,6 +13,21 @@ interface OpenApiConfigValue {
 interface OpenApiStore {
   host: string;
   config: Record<string, OpenApiConfigValue>;
+}
+
+export interface Chain {
+  id: number;
+  name: string;
+  hex: string;
+  logo: string;
+  enum: CHAINS_ENUM;
+  serverId: string;
+  network: string;
+  nativeTokenSymbol: string;
+  whiteLogo?: string;
+  nativeTokenLogo: string;
+  nativeTokenAddress: string;
+  scanLink: string;
 }
 
 export interface ServerChain {

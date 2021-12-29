@@ -32,57 +32,66 @@
 }
 
 .chain-selector-options {
-  margin-bottom: -8px;
-  margin-right: -8px;
+  width: 400px;
+  max-height: 376px;
   display: flex;
   flex-wrap: wrap;
-  li {
-    height: 56px;
-    width: 160px;
-    display: flex;
-    padding: 12px;
-    background-color: #fff;
-    border-radius: 6px;
-    cursor: pointer;
-    margin-right: 8px;
-    align-items: center;
-    margin-bottom: 8px;
-    .chain-logo {
-      width: 28px;
-      height: 28px;
-      margin-right: 8px;
-    }
-    .chain-name {
-      color: #3b3e4a;
-      flex: 1;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-    .icon-checked {
-      width: 16px;
-      height: 16px;
-    }
-  }
+  overflow-y: auto;
 }
 
 .chain-selector__modal {
+  .ant-drawer-body {
+    &::-webkit-scrollbar {
+      display: none;
+    }
+  }
+  .ant-drawer-content {
+    border-radius: 16px 16px 0 0;
+  }
+  .no-pinned-container {
+    width: 360px;
+    height: 56px;
+    background: #f5f6fa;
+    border-radius: 6px;
+    font-weight: normal;
+    font-size: 12px;
+    line-height: 14px;
+    text-align: center;
+    color: #707280;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    margin-bottom: 20px;
+  }
+  .cardg {
+    background: #f5f6fa;
+  }
+  .all-chais {
+    font-family: Roboto;
+    font-style: normal;
+    font-weight: normal;
+    font-size: 12px;
+    line-height: 14px;
+    text-align: center;
+    color: #707280;
+    cursor: pointer;
+  }
   .ant-modal-body {
-    padding: 16px;
+    max-height: 450px;
   }
   .tip {
     margin-top: 16px;
   }
 }
-
 .chain-tag-selector {
   width: 116px;
   height: 40px;
-  background: #9BA9FD;
+  background: #9ba9fd;
   border-radius: 6px 6px 0px 0px;
   padding: 8px 6px 8px 12px;
   font-size: 12px;
   line-height: 14px;
-  color: rgba(255, 255, 255, .7);
+  color: rgba(255, 255, 255, 0.7);
   cursor: pointer;
   .chain-tag-selector__name {
     color: #fff;
