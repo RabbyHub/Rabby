@@ -426,7 +426,7 @@ const Dashboard = () => {
                     });
                   }}
                   src={IconAddressCopy}
-                  className={clsx('ml-10  w-[16px] h-[16px]', {
+                  className={clsx('ml-7  w-[16px] h-[16px]', {
                     success: copySuccess,
                   })}
                 />
