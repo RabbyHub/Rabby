@@ -131,7 +131,7 @@ const Dashboard = () => {
 
   const [startAnimate, setStartAnimate] = useState(false);
   const [isGnosis, setIsGnosis] = useState(false);
-  const [isListLoading, setIsListLoading] = useState(true);
+  const [isListLoading, setIsListLoading] = useState(false);
   const [isAssetsLoading, setIsAssetsLoading] = useState(true);
   const [loadingAddress, setLoadingAddress] = useState(false);
   const [gnosisNetworkId, setGnosisNetworkId] = useState('1');
@@ -327,7 +327,6 @@ const Dashboard = () => {
 
   const handleLoadTokens = async (q?: string) => {
     let tokens: TokenItem[] = [];
-    setIsListLoading(true);
     if (q) {
       if (q.length !== 42 || !q.startsWith('0x')) return [];
       tokens = sortTokensByPrice(
@@ -336,8 +335,8 @@ const Dashboard = () => {
       if (tokens.length > 0) {
         setSearchTokens(tokens.filter((item) => !item.is_core));
       }
-      setIsListLoading(false);
     } else {
+      setIsListLoading(true);
       const defaultTokens = await wallet.openapi.listToken(
         currentAccount?.address
       );
