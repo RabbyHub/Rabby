@@ -13,6 +13,8 @@ import IconFantom from 'ui/assets/chain-logos/fantom.svg';
 import IconFantomWhiteLogo from 'ui/assets/chain-logos/fantom-white.svg';
 import IconOKTLogo from 'ui/assets/chain-logos/okex.svg';
 import IconOKTWhiteLogo from 'ui/assets/chain-logos/okex-white.svg';
+import IconMetisLogo from 'ui/assets/chain-logos/metis.svg';
+import IconMetisWhiteLogo from 'ui/assets/chain-logos/metis-white.svg';
 import IconArbitrumLogo from 'ui/assets/chain-logos/arbitrum.svg';
 import IconArbitrumWhiteLogo from 'ui/assets/chain-logos/arbitrum-white.svg';
 import IconOPLogo from 'ui/assets/chain-logos/op.svg';
@@ -88,6 +90,7 @@ export enum CHAINS_ENUM {
   MOVR = 'MOVR',
   CRO = 'CRO',
   BOBA = 'BOBA',
+  METIS = 'METIS',
   BTT = 'BTT',
 }
 
@@ -302,6 +305,21 @@ export const CHAINS: Record<string, Chain> = {
     scanLink: 'https://blockexplorer.boba.network/tx/_s_',
     nativeTokenLogo:
       'https://static.debank.com/image/op_token/logo_url/0x4200000000000000000000000000000000000006/d61441782d4a08a7479d54aea211679e.png',
+  },
+  [CHAINS_ENUM.METIS]: {
+    id: 1088,
+    serverId: 'metis',
+    network: '1088',
+    name: 'Metis',
+    nativeTokenSymbol: 'METIS',
+    nativeTokenAddress: 'metis',
+    enum: CHAINS_ENUM.METIS,
+    logo: IconMetisLogo,
+    whiteLogo: IconMetisWhiteLogo,
+    hex: '0x440',
+    scanLink: 'https://andromeda-explorer.metis.io/tx/_s_',
+    nativeTokenLogo:
+      'https://static.debank.com/image/chain/logo_url/metis/b289da32db4d860ebf6fb46a6e41dcfc.png',
   },
   [CHAINS_ENUM.BTT]: {
     id: 199,
