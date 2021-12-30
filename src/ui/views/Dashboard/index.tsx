@@ -373,8 +373,8 @@ const Dashboard = () => {
   }, []);
   useEffect(() => {
     if (currentAccount) {
-      handleLoadTokens();
-      handleLoadAssets();
+      setTokens([]);
+      setAssets([]);
     }
   }, [currentAccount]);
   useEffect(() => {
@@ -542,6 +542,9 @@ const Dashboard = () => {
     setHovered(false);
   };
   const displayTokenList = () => {
+    if (tokens.length === 0) {
+      handleLoadTokens();
+    }
     if (showToken) {
       setTokenAnimate('fadeOut');
       setDefiAnimate('fadeOut');
@@ -565,6 +568,9 @@ const Dashboard = () => {
     setShowAssets(false);
   };
   const displayAssets = () => {
+    if (assets.length === 0) {
+      handleLoadAssets();
+    }
     if (showAssets) {
       setShowAssets(false);
       setShowChain(false);
