@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
+import { sortBy } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { CHAINS } from 'consts';
 import { useWallet } from 'ui/utils';
@@ -16,11 +17,14 @@ export const ChainManagementList = () => {
   const [savedChainsData, setSavedChainsData] = useState<Chain[]>([]);
   const init = async () => {
     const savedChains = await getPinnedChain();
-    const allChainList = Object.values(CHAINS)
-      .map((item) => {
-        if (!savedChains.includes(item.enum)) return item;
-      })
-      .filter(Boolean);
+    const allChainList = sortBy(
+      Object.values(CHAINS)
+        .map((item) => {
+          if (!savedChains.includes(item.enum)) return item;
+        })
+        .filter(Boolean),
+      (item) => item?.name
+    );
     setChains(allChainList);
     const savedChainsData = savedChains
       .map((item) => {
@@ -48,7 +52,7 @@ export const ChainManagementList = () => {
       (item) => item.enum === chainName
     );
     if (newChainData) {
-      setChains([...chains, newChainData]);
+      setChains(sortBy([...chains, newChainData], (item) => item?.name));
     }
   };
 
