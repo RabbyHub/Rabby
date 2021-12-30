@@ -12,6 +12,7 @@ const BalanceView = ({
   currentAccount,
   showChain = false,
   startAnimate = false,
+  onClick,
 }) => {
   const [balance, chainBalances] = useCurrentBalance(
     currentAccount?.address,
@@ -91,9 +92,10 @@ const BalanceView = ({
   return (
     <div
       className={clsx(
-        'assets flex',
+        'assets flex cursor-pointer',
         startAnimate ? numberWrapperAnimation : ''
       )}
+      onClick={onClick}
     >
       <div className="left">
         <div

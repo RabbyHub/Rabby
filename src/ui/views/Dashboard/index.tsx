@@ -697,6 +697,7 @@ const Dashboard = () => {
             currentAccount={currentAccount}
             showChain={showChain}
             startAnimate={startAnimate}
+            onClick={displayTokenList}
           />
           <div className={clsx('listContainer', showChain && 'mt-10')}>
             <div
