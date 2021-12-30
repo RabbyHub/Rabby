@@ -333,7 +333,7 @@ const Dashboard = () => {
     if (q) {
       if (q.length !== 42 || !q.startsWith('0x')) return [];
       tokens = sortTokensByPrice(
-        await wallet.openapi.searchToken(currentAccount?.address, q)
+        await wallet.openapi.searchToken(currentAccount?.address, q, false)
       );
       if (tokens.length > 0) {
         setSearchTokens(tokens.filter((item) => !item.is_core));
@@ -606,25 +606,26 @@ const Dashboard = () => {
     setConnectionAnimation('fadeInBottom');
     setTopAnimate('fadeInTop');
   };
-  const removeToken = async (tokenId: string) => {
-    const newAddTokenList = addedToken.filter((item) => item !== tokenId);
-    const removeNewTokens = tokens.filter((token) => token.id !== tokenId);
-    setTokens(removeNewTokens);
+  const removeToken = async (removeToken) => {
+    const newAddTokenList = addedToken.filter(
+      (item) => item !== removeToken?.id
+    );
     setAddedToken(newAddTokenList);
     await wallet.updateAddedToken(currentAccount?.address, newAddTokenList);
+    const removeNewTokens = tokens.filter(
+      (token) => token.id !== removeToken?.id
+    );
+    setTokens(removeNewTokens);
   };
-  const addToken = async (tokenId: string) => {
-    const newAddTokenList = [...addedToken, tokenId];
-    const newAddToken = allTokens.find((token) => token.id === tokenId);
-    if (newAddToken) {
-      const newTokenList = [...tokens, newAddToken];
-      setTokens(sortTokensByPrice(newTokenList));
-    }
+  const addToken = async (newAddToken) => {
+    const newAddTokenList = [...addedToken, newAddToken?.id];
     setAddedToken(newAddTokenList);
     await wallet.updateAddedToken(currentAccount?.address, [
       ...addedToken,
-      tokenId,
+      newAddToken?.id,
     ]);
+    const newTokenList = [...tokens, newAddToken];
+    setTokens(sortTokensByPrice(newTokenList));
   };
 
   const handleCurrentConnectChange = (
