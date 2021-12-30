@@ -63,7 +63,10 @@ const ChainCard = ({
       {...attributes}
       style={style}
     >
-      <div className="chain-card" {...listeners}>
+      <div
+        className={clsx('chain-card', !plus && 'cursor-pointer')}
+        {...listeners}
+      >
         <img src={chain?.logo} className="chain-logo" />
         <p className="chain-name">{chain?.name}</p>
       </div>
