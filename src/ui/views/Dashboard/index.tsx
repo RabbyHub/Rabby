@@ -794,9 +794,10 @@ const Dashboard = () => {
         {!isDefaultWallet && (
           <DefaultWalletAlertBar onChange={handleDefaultWalletChange} />
         )}
-        {isDefaultWallet && isGnosis && showGnosisWrongChainAlert && (
-          <GnosisWrongChainAlertBar />
-        )}
+        {isDefaultWallet &&
+          isGnosis &&
+          showGnosisWrongChainAlert &&
+          !showChain && <GnosisWrongChainAlertBar />}
       </div>
       <Modal
         visible={firstNotice && updateContent}
