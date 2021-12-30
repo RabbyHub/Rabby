@@ -35,7 +35,7 @@ const Row = (props) => {
       </div>
       <div className="right">
         <div className="token-name opacity-100 font-medium text-13">
-          ${splitNumberByStep((token.asset_usd_value || 0).toFixed(4))}
+          ${splitNumberByStep((token.asset_usd_value || 0).toFixed(2))}
         </div>
       </div>
     </div>

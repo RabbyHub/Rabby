@@ -43,10 +43,10 @@ const Row = (props) => {
       {isInitList ? (
         <div className="right">
           <div className="token-amount">
-            ${splitNumberByStep((token.amount * token.price || 0)?.toFixed(4))}
+            ${splitNumberByStep((token.amount * token.price || 0)?.toFixed(2))}
           </div>
           <div className="token-name">
-            @{splitNumberByStep((token.price || 0).toFixed(4))}
+            @{splitNumberByStep((token.price || 0).toFixed(2))}
           </div>
         </div>
       ) : (
