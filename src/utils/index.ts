@@ -1,3 +1,5 @@
+import { CHAINS } from '@/constant';
+import { keyBy } from 'lodash';
 import { browser } from 'webextension-polyfill-ts';
 
 import BroadcastChannelMessage from './message/broadcastChannelMessage';
@@ -19,3 +21,11 @@ const format = (str, ...args) => {
 };
 
 export { Message, t, format };
+
+const chainsDict = keyBy(CHAINS, 'serverId');
+export const getChain = (chainId?: string) => {
+  if (!chainId) {
+    return null;
+  }
+  return chainsDict[chainId];
+};

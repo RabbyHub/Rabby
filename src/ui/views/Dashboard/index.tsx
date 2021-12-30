@@ -40,6 +40,7 @@ import {
   TokenList,
   AssetsList,
   GnosisWrongChainAlertBar,
+  NFTListContainer,
 } from './components';
 import { getUpdateContent } from 'changeLogs/index';
 import IconSetting from 'ui/assets/settings.svg';
@@ -118,6 +119,7 @@ const Dashboard = () => {
   const [showChain, setShowChain] = useState(false);
   const [showToken, setShowToken] = useState(false);
   const [showAssets, setShowAssets] = useState(false);
+  const [showNFT, setShowNFT] = useState(false);
   const [allTokens, setAllTokens] = useState<TokenItem[]>([]);
   const [tokens, setTokens] = useState<TokenItem[]>([]);
   const [searchTokens, setSearchTokens] = useState<TokenItem[]>([]);
@@ -709,14 +711,7 @@ const Dashboard = () => {
             >
               DeFi
             </div>
-            <Tooltip
-              overlayClassName="rectangle profileType__tooltip"
-              title={t('Coming soon')}
-            >
-              <div className={clsx('token', 'opacity-60 cursor-default')}>
-                NFT
-              </div>
-            </Tooltip>
+            <div className={clsx('token', showNFT && 'showToken')}>NFT</div>
             {showToken && !startSearch && (
               <img
                 src={IconAddToken}
@@ -771,11 +766,16 @@ const Dashboard = () => {
             startAnimate={startAnimate}
             isloading={isListLoading}
           />
-          <AssetsList
+          {/* <AssetsList
             assets={assets}
             defiAnimate={defiAnimate}
             startAnimate={startAnimate}
             isloading={isAssetsLoading}
+          /> */}
+          <NFTListContainer
+            defiAnimate={defiAnimate}
+            startAnimate={startAnimate}
+            address="0x225558706370bef1760c52e76a07be9c104c98aa"
           />
           <img
             src={IconDrawer}
