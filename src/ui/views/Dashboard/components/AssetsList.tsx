@@ -29,10 +29,12 @@ const Row = (props) => {
         hideConer
       />
       <div className="middle">
-        <div className="token-name text-13 font-medium">{token.name}</div>
+        <div className="token-name opacity-100 text-13 font-medium">
+          {token.name}
+        </div>
       </div>
       <div className="right">
-        <div className="token-name font-medium text-13">
+        <div className="token-name opacity-100 font-medium text-13">
           ${splitNumberByStep((token.asset_usd_value || 0).toFixed(4))}
         </div>
       </div>
