@@ -4,7 +4,9 @@ import { Tx } from 'background/service/openapi';
 export const validateGasPriceRange = (tx: Tx) => {
   const chain = Object.values(CHAINS).find((chain) => chain.id === tx.chainId);
   if (!chain) return true;
-  const [min, max] = GASPRICE_RANGE[chain.enum];
+  const range = GASPRICE_RANGE[chain.enum];
+  if (!range) return true;
+  const [min, max] = range;
   if (Number(tx.gasPrice) / 1e9 < min) throw new Error('GasPrice too low');
   if (Number(tx.gasPrice) / 1e9 > max) throw new Error('GasPrice too high');
   return true;
