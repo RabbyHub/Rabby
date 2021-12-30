@@ -430,7 +430,7 @@ class ProviderController extends BaseController {
     approvalRes,
   }) => this._signTypedData(from, data, 'V4', approvalRes?.extra);
 
-  @Reflect.metadata('APPROVAL', ['AddChain', true, { height: 390 }])
+  @Reflect.metadata('APPROVAL', ['AddChain', null, { height: 390 }])
   walletAddEthereumChain = ({
     data: {
       params: [chainParams],
@@ -468,7 +468,7 @@ class ProviderController extends BaseController {
     return null;
   };
 
-  @Reflect.metadata('APPROVAL', ['AddChain', true, { height: 390 }])
+  @Reflect.metadata('APPROVAL', ['AddChain', null, { height: 390 }])
   walletSwitchEthereumChain = this.walletAddEthereumChain;
 
   walletRequestPermissions = ({ data: { params: permissions } }) => {
