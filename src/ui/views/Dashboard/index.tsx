@@ -215,10 +215,11 @@ const Dashboard = () => {
       }
       getAlianName(currentAccount?.address.toLowerCase());
       setCurrentAccount(currentAccount);
-      getAllKeyrings();
     }
   }, [currentAccount]);
-
+  useEffect(() => {
+    getAllKeyrings();
+  }, []);
   const handleConfig = () => {
     history.push('/settings');
   };
@@ -391,8 +392,10 @@ const Dashboard = () => {
         key={index}
         style={style}
         onClick={(e) => {
-          e.stopPropagation();
-          handleChange(account);
+          const target = e.target as Element;
+          if (target?.id !== 'copyIcon') {
+            handleChange(account);
+          }
         }}
         {...hoverProps}
       >
@@ -427,6 +430,7 @@ const Dashboard = () => {
                     });
                   }}
                   src={IconAddressCopy}
+                  id={'copyIcon'}
                   className={clsx('ml-7  w-[16px] h-[16px]', {
                     success: copySuccess,
                   })}
@@ -445,7 +449,9 @@ const Dashboard = () => {
   const clickContent = () => (
     <>
       <div
-        className="click-content-modar"
+        className={clsx('click-content-modar', {
+          success: copySuccess,
+        })}
         onClick={(e) => {
           e.stopPropagation();
           setClicked(false);
@@ -639,7 +645,6 @@ const Dashboard = () => {
         className={clsx('dashboard', {
           'metamask-active':
             !isDefaultWallet || (showGnosisWrongChainAlert && isGnosis),
-          success: copySuccess,
         })}
       >
         <div className={clsx('main', showChain && 'show-chain-bg')}>
