@@ -35,8 +35,6 @@ const ChainCard = ({
     id: chain?.id + '',
   });
 
-  console.log(transform, transition);
-
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
