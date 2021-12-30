@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { Input } from 'antd';
 import { FixedSizeList } from 'react-window';
 import { useTranslation } from 'react-i18next';
@@ -102,6 +102,11 @@ const TokenList = ({
     setQuery(null);
     closeSearch();
   };
+  useEffect(() => {
+    if (showList && tokenAnimate.includes('fadeIn')) {
+      fixedList.current?.scrollToItem(0);
+    }
+  }, [tokenAnimate, showList]);
   if (!startAnimate) {
     return <></>;
   }

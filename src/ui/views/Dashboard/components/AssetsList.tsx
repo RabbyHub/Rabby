@@ -1,5 +1,5 @@
 import clsx from 'clsx';
-import React, { useRef } from 'react';
+import React, { useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FixedSizeList } from 'react-window';
 import { TokenWithChain } from 'ui/component';
@@ -47,6 +47,11 @@ const AssetsList = ({
 }) => {
   const { t } = useTranslation();
   const fixedList = useRef<FixedSizeList>();
+  useEffect(() => {
+    if (!isloading && assets.length > 0 && defiAnimate.includes('fadeIn')) {
+      fixedList.current?.scrollToItem(0);
+    }
+  }, [defiAnimate, isloading, assets]);
   if (!startAnimate) {
     return <></>;
   }
