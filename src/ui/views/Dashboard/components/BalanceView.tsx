@@ -95,7 +95,6 @@ const BalanceView = ({
         'assets flex cursor-pointer',
         startAnimate ? numberWrapperAnimation : ''
       )}
-      onClick={onClick}
     >
       <div className="left">
         <div
@@ -105,7 +104,9 @@ const BalanceView = ({
           )}
         >
           <div className={clsx('amount-number', !startAnimate && 'text-32')}>
-            <span>${splitNumberByStep((balance || 0).toFixed(2))}</span>
+            <span onClick={onClick}>
+              ${splitNumberByStep((balance || 0).toFixed(2))}
+            </span>
           </div>
         </div>
         <div
