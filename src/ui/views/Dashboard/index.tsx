@@ -56,6 +56,8 @@ import IconArrowRight from 'ui/assets/arrow-right.svg';
 import IconDrawer from 'ui/assets/drawer.png';
 import IconAddToken from 'ui/assets/addtoken.png';
 import IconAddressCopy from 'ui/assets/address-copy.png';
+import IconHistory from 'ui/assets/history.svg';
+
 import { SvgIconLoading } from 'ui/assets';
 
 import './style.less';
@@ -744,12 +746,13 @@ const Dashboard = () => {
               </div>
             ) : (
               <div className="operation-item" onClick={handleGotoHistory}>
+                <img className="icon icon-history" src={IconHistory} />
+                {t('Transaction History')}
                 {pendingTxCount > 0 && (
                   <span className="operation-item__count__normal">
                     {`${pendingTxCount} ${t('Pending')}`}
                   </span>
                 )}
-                {t('Transaction History')}
                 <img className="icon icon-arrow-right" src={IconArrowRight} />
               </div>
             )}
