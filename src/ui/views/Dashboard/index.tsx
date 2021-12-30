@@ -810,7 +810,7 @@ const Dashboard = () => {
           showChain={showChain}
           connectionAnimation={connectionAnimation}
         />
-        {!isDefaultWallet && (
+        {!isDefaultWallet && !showChain && (
           <DefaultWalletAlertBar onChange={handleDefaultWalletChange} />
         )}
         {isDefaultWallet &&
