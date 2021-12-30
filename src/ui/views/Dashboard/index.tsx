@@ -758,7 +758,10 @@ const Dashboard = () => {
               </div>
             ) : (
               <div className="operation-item" onClick={handleGotoHistory}>
-                <img className="icon icon-history" src={IconHistory} />
+                <img
+                  className="icon icon-history w-[24px] h-[24px] mr-8"
+                  src={IconHistory}
+                />
                 {t('Transaction History')}
                 {pendingTxCount > 0 && (
                   <span className="operation-item__count__normal">
