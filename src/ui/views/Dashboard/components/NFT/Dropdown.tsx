@@ -1,7 +1,8 @@
 import { Dropdown, Menu } from 'antd';
 import React from 'react';
-import IconArrowDown from 'ui/assets/arrow-down.svg';
+import IconArrowDown from 'ui/assets/arrow-down-white.svg';
 import IconChecked from 'ui/assets/checked-1.svg';
+import { SvgIconArrowDownTriangle } from 'ui/assets';
 
 const options = [
   {

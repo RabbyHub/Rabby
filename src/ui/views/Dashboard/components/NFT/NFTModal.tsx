@@ -5,6 +5,7 @@ import { Modal } from 'ui/component';
 import { getChain } from 'utils';
 import NFTAvatar from './NFTAvatar';
 import BN from 'bignumber.js';
+import { splitNumberByStep } from '@/ui/utils';
 interface ContentProps {
   data?: NFTItem;
 }
@@ -16,7 +17,7 @@ const calc = (data?: NFTItem) => {
   const price = new BN(data.pay_token.amount)
     .multipliedBy(data.pay_token.price)
     .toFixed(2);
-  return `$${price}`;
+  return `$${splitNumberByStep(price)}`;
 };
 
 const Content = ({ data }: ContentProps) => {
@@ -70,7 +71,7 @@ NFTModal.open = ({ data }: ContentProps) => {
   Modal.info({
     centered: true,
     content: <Content data={data} />,
-    width: 330,
+    width: 334,
     cancelText: null,
     closable: false,
     okText: null,

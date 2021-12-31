@@ -42,10 +42,20 @@ const NFTListContainer = React.forwardRef(
           wallet.openapi.listCollection(),
         ]);
         const dict = keyBy(collections, 'id');
-        const list = data.map((item) => ({
-          ...item,
-          collection: item.collection_id ? dict[item?.collection_id] : null,
-        }));
+        const list = data
+          .map((item) => ({
+            ...item,
+            collection: item.collection_id ? dict[item?.collection_id] : null,
+          }))
+          .sort((a, b) => {
+            if (!a.name) {
+              return 1;
+            }
+            if (!b.name) {
+              return -1;
+            }
+            return a.name > b.name ? 1 : -1;
+          });
         const collectionList = Object.values(
           groupBy(list, 'collection_id')
         ).reduce((r, item) => {

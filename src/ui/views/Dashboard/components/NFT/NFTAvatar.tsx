@@ -4,7 +4,7 @@ import { Image } from 'antd';
 import clsx from 'clsx';
 import React from 'react';
 // import IconImgLoading from 'ui/assets/img-loading.svg';
-import IconImgFail from 'ui/assets/img-fail.svg';
+import IconImgFail from 'ui/assets/img-fail-1.svg';
 import IconNFTDefault from 'ui/assets/nft-default.svg';
 import IconUnknown from 'ui/assets/token-default.svg';
 import IconZoom from 'ui/assets/zoom.svg';
