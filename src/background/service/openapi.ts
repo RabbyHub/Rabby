@@ -119,6 +119,58 @@ export interface AssetItem {
   asset_usd_value: number;
   debt_usd_value: number;
 }
+export interface NFTCollection {
+  create_at: string;
+  id: string;
+  is_core: boolean;
+  name: string;
+  price: number;
+  chain: string;
+  tokens: NFTItem[];
+}
+
+export interface UserCollection {
+  collection: Collection;
+  list: NFTItem[];
+}
+export interface NFTItem {
+  chain: string;
+  id: string;
+  contract_id: string;
+  inner_id: string;
+  token_id: string;
+  name: string;
+  contract_name: string;
+  description: string;
+  usd_price: number;
+  amount: number;
+  collection_id?: string;
+  pay_token: {
+    id: string;
+    name: string;
+    symbol: string;
+    amount: number;
+    logo_url: string;
+    time_at: number;
+    date_at?: string;
+    price?: number;
+  };
+  content_type: 'image' | 'image_url' | 'video_url' | 'audio_url';
+  content: string;
+  detail_url: string;
+  total_supply?: string;
+  collection?: Collection | null;
+}
+
+export interface Collection {
+  id: string;
+  name: string;
+  description: null | string;
+  logo_url: string;
+  is_core: boolean;
+  contract_uuids: string[];
+  create_at: number;
+}
 export interface GasResult {
   estimated_gas_cost_usd_value: number;
   estimated_gas_cost_value: number;
@@ -372,6 +424,16 @@ class OpenApiService {
             path: '/v1/user/simple_protocol_list',
             method: 'GET',
             params: ['id', 'chain_id'],
+          },
+          user_nft_list: {
+            path: '/v1/user/nft_list',
+            method: 'GET',
+            params: ['id', 'chain_id'],
+          },
+          nft_collection_list: {
+            path: '/v1/nft/collections',
+            method: 'GET',
+            params: [],
           },
         },
       },
@@ -841,6 +903,24 @@ class OpenApiService {
       params: {
         id,
       },
+    });
+    return data;
+  };
+
+  listNFT = async (id: string): Promise<NFTItem[]> => {
+    const config = this.store.config.user_nft_list;
+    const { data } = await this.request[config.method](config.path, {
+      params: {
+        id,
+      },
+    });
+    return data;
+  };
+
+  listCollection = async (): Promise<Collection[]> => {
+    const config = this.store.config.nft_collection_list;
+    const { data } = await this.request[config.method](config.path, {
+      params: {},
     });
     return data;
   };
