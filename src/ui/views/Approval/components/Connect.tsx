@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Button } from 'antd';
+import { useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Chain } from 'background/service/openapi';
 import { ChainSelector, Spin, FallbackSiteLogo } from 'ui/component';
@@ -13,6 +14,11 @@ interface ConnectProps {
 }
 
 const Connect = ({ params: { icon, origin } }: ConnectProps) => {
+  const { state } = useLocation<{
+    showChainsModal?: boolean;
+  }>();
+  const { showChainsModal = false } = state ?? {};
+  const [showModal, setShowModal] = useState(showChainsModal);
   const [, resolveApproval, rejectApproval] = useApproval();
   const { t } = useTranslation();
   const wallet = useWallet();
@@ -82,6 +88,7 @@ const Connect = ({ params: { icon, origin } }: ConnectProps) => {
               value={defaultChain}
               onChange={handleChainChange}
               connection
+              showModal={showModal}
             />
           </div>
         </div>

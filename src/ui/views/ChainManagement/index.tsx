@@ -151,13 +151,23 @@ export const StartChainManagement = () => {
 
 const ChainManagement = () => {
   const { t } = useTranslation();
+  const history = useHistory();
   const { state } = useLocation<{
     connection?: boolean;
+    backurl?: string;
   }>();
-  const { connection = false } = state ?? {};
+  const { connection = false, backurl = '' } = state ?? {};
+  const backDashboard = () => {
+    history.push({
+      pathname: backurl,
+      state: {
+        showChainsModal: true,
+      },
+    });
+  };
   return (
     <div className="chain-management">
-      <PageHeader>
+      <PageHeader onBack={backDashboard}>
         {t(connection ? 'All Chain' : 'Chain Management')}
       </PageHeader>
       <ChainManagementList />

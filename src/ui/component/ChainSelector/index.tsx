@@ -10,14 +10,16 @@ interface ChainSelectorProps {
   onChange(value: CHAINS_ENUM): void;
   direction?: 'top' | 'bottom';
   connection?: boolean;
+  showModal?: boolean;
 }
 
 const ChainSelector = ({
   value,
   onChange,
   connection = false,
+  showModal = false,
 }: ChainSelectorProps) => {
-  const [showSelectorModal, setShowSelectorModal] = useState(false);
+  const [showSelectorModal, setShowSelectorModal] = useState(showModal);
 
   const handleClickSelector = () => {
     setShowSelectorModal(true);
