@@ -154,11 +154,12 @@ const ChainManagement = () => {
   const history = useHistory();
   const { state } = useLocation<{
     connection?: boolean;
+    backurl?: string;
   }>();
-  const { connection = false } = state ?? {};
+  const { connection = false, backurl = '' } = state ?? {};
   const backDashboard = () => {
     history.push({
-      pathname: '/dashboard',
+      pathname: backurl,
       state: {
         showChainsModal: true,
       },
