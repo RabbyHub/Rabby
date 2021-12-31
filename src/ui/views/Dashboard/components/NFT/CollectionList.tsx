@@ -12,16 +12,13 @@ export interface NFTListProps {
 }
 
 const CollectionList = ({ isLoading, data }: NFTListProps) => {
-  console.log('colect', data);
   const { t } = useTranslation();
   const fixedList = useRef<VariableSizeList>();
   const [dict, setDict] = useState<Record<string, boolean>>({});
   const itemSize = (index: number) => {
-    const { collection, list } = data[index];
-    const expanded = !!dict[collection.id];
-    console.log(dict);
+    const { list } = data[index];
     const rows = Math.ceil(list.length / 5);
-    if (expanded && list.length > 5) {
+    if (list.length > 5) {
       return 64 * rows + (4 * rows - 1) + 56;
     }
     return 120;

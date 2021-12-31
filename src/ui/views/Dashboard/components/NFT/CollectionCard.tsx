@@ -18,10 +18,10 @@ const CollectionCard = (props: CollectionCardProps) => {
   const { data, index, expaned = false, onChange } = props;
   const { collection, list } = data[index];
 
-  const renderList = useMemo(() => (expaned ? list : list.slice(0, 5)), [
-    list,
-    expaned,
-  ]);
+  // const renderList = useMemo(() => (expaned ? list : list.slice(0, 5)), [
+  //   list,
+  //   expaned,
+  // ]);
 
   return (
     <div className={'collection-card'}>
@@ -33,7 +33,7 @@ const CollectionCard = (props: CollectionCardProps) => {
             <ChainIcon chain={list[0].chain}></ChainIcon>
           )}
         </div>
-        {list.length > 5 && (
+        {/* {list.length > 5 && (
           <div
             className="collection-card-extra cursor-pointer"
             onClick={() => {
@@ -46,10 +46,10 @@ const CollectionCard = (props: CollectionCardProps) => {
               <img src={IconArrowLeft} alt="" />
             )}
           </div>
-        )}
+        )} */}
       </div>
       <div className="collection-card-body">
-        {renderList.map((item) => {
+        {list.map((item) => {
           return (
             <NFTAvatar
               onPreview={() => {
