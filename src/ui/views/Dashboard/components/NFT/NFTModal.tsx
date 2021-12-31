@@ -4,12 +4,24 @@ import React from 'react';
 import { Modal } from 'ui/component';
 import { getChain } from 'utils';
 import NFTAvatar from './NFTAvatar';
+import BN from 'bignumber.js';
 interface ContentProps {
   data?: NFTItem;
 }
 
+const calc = (data?: NFTItem) => {
+  if (!data || !data?.pay_token?.amount || !data?.pay_token?.price) {
+    return '-';
+  }
+  const price = new BN(data.pay_token.amount)
+    .multipliedBy(data.pay_token.price)
+    .toFixed(2);
+  return `$${price}`;
+};
+
 const Content = ({ data }: ContentProps) => {
   const chain = getChain(data?.chain);
+  const price = calc(data);
   return (
     <div className="nft-preview-card">
       <NFTAvatar
@@ -38,11 +50,7 @@ const Content = ({ data }: ContentProps) => {
         </div>
         <div className="nft-preview-card-list-item">
           <div className="nft-preview-card-list-item-label">Last Price</div>
-          <div className="nft-preview-card-list-item-value">
-            {data?.pay_token?.amount && data?.pay_token?.symbol
-              ? `${data?.pay_token?.amount} ${data?.pay_token?.symbol}`
-              : '-'}
-          </div>
+          <div className="nft-preview-card-list-item-value">{price}</div>
         </div>
       </div>
       <Tooltip title="Coming soon">

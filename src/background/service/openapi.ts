@@ -153,6 +153,7 @@ export interface NFTItem {
     logo_url: string;
     time_at: number;
     date_at?: string;
+    price?: number;
   };
   content_type: 'image' | 'image_url' | 'video_url' | 'audio_url';
   content: string;
