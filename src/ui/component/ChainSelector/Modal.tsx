@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 import { Drawer } from 'antd';
 
 import { Chain } from 'background/service/openapi';
@@ -26,6 +26,7 @@ const ChainSelectorModal = ({
 }: ChainSelectorModalProps) => {
   const wallet = useWallet();
   const history = useHistory();
+  const location = useLocation();
   const [currentAccount, setCurrentAccount] = useState<Account | null>(null);
   const [savedChainsData, setSavedChainsData] = useState<Chain[]>([]);
 
@@ -41,6 +42,7 @@ const ChainSelectorModal = ({
       pathname: '/settings/chain',
       state: {
         connection,
+        backurl: history?.location?.pathname,
       },
     });
   };

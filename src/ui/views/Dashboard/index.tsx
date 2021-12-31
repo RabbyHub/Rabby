@@ -3,7 +3,7 @@ import ClipboardJS from 'clipboard';
 import QRCode from 'qrcode.react';
 import cloneDeep from 'lodash/cloneDeep';
 import BigNumber from 'bignumber.js';
-import { useHistory, Link } from 'react-router-dom';
+import { useHistory, useLocation, Link } from 'react-router-dom';
 import { useInterval } from 'react-use';
 import { message, Popover, Input, Tooltip } from 'antd';
 import { FixedSizeList } from 'react-window';
@@ -99,6 +99,11 @@ const GnosisAdminItem = ({
 
 const Dashboard = () => {
   const history = useHistory();
+  const { state } = useLocation<{
+    connection?: boolean;
+    showChainsModal?: boolean;
+  }>();
+  const { connection = false, showChainsModal = false } = state ?? {};
   const wallet = useWallet();
   const { t } = useTranslation();
   const fixedList = useRef<FixedSizeList>();
@@ -148,7 +153,9 @@ const Dashboard = () => {
   const [currentConnection, setCurrentConnection] = useState<
     ConnectedSite | null | undefined
   >(null);
-
+  const [showChainModal, setShowChainModal] = useState(
+    showChainsModal || false
+  );
   const getCurrentAccount = async () => {
     const account = await wallet.getCurrentAccount();
     if (!account) {
@@ -578,6 +585,19 @@ const Dashboard = () => {
     setShowAssets(false);
     setShowNFT(false);
   };
+  const balanceViewClick = () => {
+    if (!showToken && !showAssets) {
+      displayTokenList();
+    } else {
+      setShowToken(false);
+      setShowAssets(false);
+      setShowChain(false);
+      setTokenAnimate('fadeOut');
+      setDefiAnimate('fadeOut');
+      setConnectionAnimation('fadeInBottom');
+      setTopAnimate('fadeInTop');
+    }
+  };
   const displayAssets = () => {
     if (assets.length === 0) {
       handleLoadAssets();
@@ -764,7 +784,7 @@ const Dashboard = () => {
             currentAccount={currentAccount}
             showChain={showChain}
             startAnimate={startAnimate}
-            onClick={displayTokenList}
+            onClick={balanceViewClick}
           />
           <div className={clsx('listContainer', showChain && 'mt-10')}>
             <div
@@ -863,6 +883,7 @@ const Dashboard = () => {
           connectionAnimation={connectionAnimation}
           showDrawer={showToken || showAssets || showNFT}
           hideAllList={hideAllList}
+          showModal={showChainModal}
         />
         {!isDefaultWallet && !showChain && (
           <DefaultWalletAlertBar onChange={handleDefaultWalletChange} />

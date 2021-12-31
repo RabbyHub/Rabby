@@ -10,7 +10,7 @@ interface StrayFooterProps {
 }
 
 export interface StrayFooterNavProps {
-  onNextClick?(): void;
+  onNextClick?(e?: any): void;
   onBackClick?(): void;
   backDisabled?: boolean;
   nextDisabled?: boolean;

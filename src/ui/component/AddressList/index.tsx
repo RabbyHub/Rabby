@@ -50,7 +50,6 @@ const Row: React.FC<RowProps> = memo((props) => {
     stopEditing,
     setStopEditing,
     editIndex,
-    setEditIndex,
   } = others;
   const account = combinedList[index];
   return (
