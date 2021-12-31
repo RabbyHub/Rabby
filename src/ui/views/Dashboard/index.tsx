@@ -586,14 +586,16 @@ const Dashboard = () => {
     setShowNFT(false);
   };
   const balanceViewClick = () => {
-    if (!showToken && !showAssets) {
+    if (!showToken && !showAssets && !showNFT) {
       displayTokenList();
     } else {
       setShowToken(false);
       setShowAssets(false);
       setShowChain(false);
+      setShowNFT(false);
       setTokenAnimate('fadeOut');
       setDefiAnimate('fadeOut');
+      setNFTAnimate('fadeOut');
       setConnectionAnimation('fadeInBottom');
       setTopAnimate('fadeInTop');
     }
