@@ -573,6 +573,19 @@ const Dashboard = () => {
     }
     setShowAssets(false);
   };
+  const balanceViewClick = () => {
+    if (!showToken && !showAssets) {
+      displayTokenList();
+    } else {
+      setShowToken(false);
+      setShowAssets(false);
+      setShowChain(false);
+      setTokenAnimate('fadeOut');
+      setDefiAnimate('fadeOut');
+      setConnectionAnimation('fadeInBottom');
+      setTopAnimate('fadeInTop');
+    }
+  };
   const displayAssets = () => {
     if (assets.length === 0) {
       handleLoadAssets();
@@ -715,7 +728,7 @@ const Dashboard = () => {
             currentAccount={currentAccount}
             showChain={showChain}
             startAnimate={startAnimate}
-            onClick={displayTokenList}
+            onClick={balanceViewClick}
           />
           <div className={clsx('listContainer', showChain && 'mt-10')}>
             <div
