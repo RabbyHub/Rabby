@@ -71,7 +71,7 @@ NFTModal.open = ({ data }: ContentProps) => {
   Modal.info({
     centered: true,
     content: <Content data={data} />,
-    width: 334,
+    width: 336,
     cancelText: null,
     closable: false,
     okText: null,
