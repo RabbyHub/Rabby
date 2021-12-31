@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import { useTranslation, Trans } from 'react-i18next';
 import { sortBy } from 'lodash';
@@ -25,6 +25,7 @@ const ImportSuccess = ({ isPopup = false }: { isPopup?: boolean }) => {
     isMnemonics?: boolean;
     importedLength?: number;
   }>();
+  const addressItems = useRef(new Array(state.accounts.length));
   const { t } = useTranslation();
   const {
     accounts,
@@ -35,7 +36,11 @@ const ImportSuccess = ({ isPopup = false }: { isPopup?: boolean }) => {
     isMnemonics = false,
     importedLength = 0,
   } = state;
-  const handleNextClick = async () => {
+  const handleNextClick = async (e: React.MouseEvent<HTMLElement>) => {
+    e.stopPropagation();
+    if (!stopEditing) {
+      addressItems.current.forEach((item) => item.alianNameConfirm());
+    }
     if (getUiType().isTab) {
       window.close();
 
@@ -132,6 +137,9 @@ const ImportSuccess = ({ isPopup = false }: { isPopup?: boolean }) => {
               importedLength={importedLength}
               stopEditing={stopEditing || index !== editIndex}
               canEditing={(editing) => startEdit(editing, index)}
+              ref={(el) => {
+                addressItems.current[index] = el;
+              }}
             />
           ))}
         </div>
