@@ -46,7 +46,7 @@ const Thumbnail = ({
 };
 
 const Preview = ({ content, type }: Pick<AvatarProps, 'content' | 'type'>) => {
-  if (type && ['image', 'image_url'].includes(type)) {
+  if (type && ['image', 'image_url'].includes(type) && content) {
     return (
       <Image
         src={content}
@@ -63,7 +63,7 @@ const Preview = ({ content, type }: Pick<AvatarProps, 'content' | 'type'>) => {
       ></Image>
     );
   }
-  if (type && ['video_url', 'audio_url'].includes(type)) {
+  if (type && ['video_url', 'audio_url'].includes(type) && content) {
     return (
       <video
         src={content}
