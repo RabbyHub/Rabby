@@ -1,13 +1,14 @@
 import { NFTItem } from '@/background/service/openapi';
-import { CHAINS, CHAINS_ENUM } from '@/constant';
+import { CHAINS_ENUM } from '@/constant';
+import { Image } from 'antd';
 import clsx from 'clsx';
 import React from 'react';
-import IconUnknown from 'ui/assets/token-default.svg';
-import IconZoom from 'ui/assets/zoom.svg';
-import IconNFTDefault from 'ui/assets/nft-default.svg';
 // import IconImgLoading from 'ui/assets/img-loading.svg';
 import IconImgFail from 'ui/assets/img-fail.svg';
-import { Image } from 'antd';
+import IconNFTDefault from 'ui/assets/nft-default.svg';
+import IconUnknown from 'ui/assets/token-default.svg';
+import IconZoom from 'ui/assets/zoom.svg';
+import { getChain } from 'utils';
 
 type AvatarProps = {
   content?: string;
@@ -87,7 +88,7 @@ const NFTAvatar = ({
   onPreview,
   amount,
 }: AvatarProps) => {
-  const logo = CHAINS[chain as CHAINS_ENUM]?.logo || IconUnknown;
+  const logo = getChain(chain)?.logo || IconUnknown;
   const isShowLogo = chain && chain.toUpperCase() !== CHAINS_ENUM.ETH;
 
   return (
@@ -100,7 +101,7 @@ const NFTAvatar = ({
       {amount && amount > 1 && (
         <div className="nft-avatar-count">x{amount}</div>
       )}
-      {isShowLogo && <img src={logo} />}
+      {isShowLogo && <img src={logo} className="nft-avatar-chain" />}
       {thumbnail && onPreview && (
         <div className="nft-avatar-cover" onClick={onPreview}>
           <img src={IconZoom} alt="" />
