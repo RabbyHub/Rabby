@@ -71,7 +71,7 @@ const NFTListContainer = ({
     return <></>;
   }
   return (
-    <div className={clsx('mt-12', animate)}>
+    <div className={clsx('mt-12', animate, animate === 'fadeIn' && 'relative')}>
       {showMenu && (
         <div className="absolute top-[-36px] right-0">
           <Dropdown value={type} onChange={setType} />
