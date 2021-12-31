@@ -19,13 +19,13 @@ const CollectionList = ({ isLoading, data }: NFTListProps) => {
     const { list } = data[index];
     const rows = Math.ceil(list.length / 5);
     if (list.length > 5) {
-      return 64 * rows + (4 * rows - 1) + 56;
+      return 64 * rows + 4 * (rows - 1) + 56;
     }
     return 120;
   };
   if (isLoading) {
     return (
-      <div className="collection-list">
+      <div className="collection-list tokenList">
         <div className="loadingContainer items-center">
           <SvgIconLoading className="icon icon-loading ml-0" fill="#FFFFFF" />
           <div className="loading-text">{t('Loading Collections')}</div>
@@ -33,9 +33,9 @@ const CollectionList = ({ isLoading, data }: NFTListProps) => {
       </div>
     );
   }
-  return (
-    <div className="collection-list">
-      {data.length > 0 ? (
+  if (data.length > 0) {
+    return (
+      <div className="collection-list">
         <VariableSizeList
           height={468}
           width="100%"
@@ -67,12 +67,15 @@ const CollectionList = ({ isLoading, data }: NFTListProps) => {
             );
           }}
         </VariableSizeList>
-      ) : (
-        <div className="no-data">
-          <img className="w-[100px] h-[100px]" src="./images/nodata-tx.png" />
-          <div className="loading-text">{t('No Collections')}</div>
-        </div>
-      )}
+      </div>
+    );
+  }
+  return (
+    <div className="collection-list tokenList">
+      <div className="no-data">
+        <img className="w-[100px] h-[100px]" src="./images/nodata-tx.png" />
+        <div className="loading-text">{t('No Collections')}</div>
+      </div>
     </div>
   );
 };

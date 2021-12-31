@@ -15,18 +15,18 @@ type Props = {
   address?: string;
   startAnimate?: boolean;
   animate?: string;
-  showMenu?: boolean;
+  type?: 'nft' | 'collection';
 };
 
 const NFTListContainer = React.forwardRef(
-  ({ startAnimate, animate, showMenu }: Props, ref) => {
+  ({ startAnimate, animate, type = 'collection' }: Props, ref) => {
     const nftRef = useRef<any>();
     useImperativeHandle(ref, () => ({
       fetchData: (address: string) => {
         return nftRef && nftRef.current(address);
       },
     }));
-    const [type, setType] = useState<'collection' | 'nft'>('collection');
+
     const [isLoading, setIsLoading] = useState(false);
     const [list, setList] = useState<NFTItem[]>([]);
     const [collectionList, setCollectionList] = useState<UserCollection[]>([]);
@@ -90,11 +90,6 @@ const NFTListContainer = React.forwardRef(
       <div
         className={clsx('mt-12', animate, animate === 'fadeIn' && 'relative')}
       >
-        {showMenu && (
-          <div className="absolute top-[-36px] right-0">
-            <Dropdown value={type} onChange={setType} />
-          </div>
-        )}
         {type === 'collection' ? (
           <CollectionList
             data={collectionList}

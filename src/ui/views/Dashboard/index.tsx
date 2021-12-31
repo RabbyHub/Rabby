@@ -61,6 +61,7 @@ import IconHistory from 'ui/assets/history.svg';
 import { SvgIconLoading } from 'ui/assets';
 
 import './style.less';
+import Dropdown from './components/NFT/Dropdown';
 
 const GnosisAdminItem = ({
   accounts,
@@ -140,6 +141,7 @@ const Dashboard = () => {
   const [tokenAnimate, setTokenAnimate] = useState('fadeOut');
   const [topAnimate, setTopAnimate] = useState('');
   const [connectionAnimation, setConnectionAnimation] = useState('');
+  const [nftType, setNFTType] = useState<'collection' | 'nft'>('collection');
 
   const [startAnimate, setStartAnimate] = useState(false);
   const [isGnosis, setIsGnosis] = useState(false);
@@ -723,6 +725,11 @@ const Dashboard = () => {
   useEffect(() => {
     checkGnosisConnectChain();
   }, [currentConnection, gnosisNetworkId]);
+  useEffect(() => {
+    if (!showNFT) {
+      setNFTType('collection');
+    }
+  }, [showNFT]);
   return (
     <>
       <div
@@ -814,6 +821,11 @@ const Dashboard = () => {
                 className="w-[18px] h-[18px] pointer absolute right-0"
               />
             )}
+            {showNFT && (
+              <div className="pointer absolute right-0">
+                <Dropdown value={nftType} onChange={setNFTType} />
+              </div>
+            )}
           </div>
           <div
             className={clsx(
@@ -875,8 +887,8 @@ const Dashboard = () => {
             address={currentAccount?.address}
             animate={nftAnimate}
             startAnimate={startAnimate}
-            showMenu={showNFT}
             ref={nftRef}
+            type={nftType}
           ></NFTListContainer>
         </div>
         <RecentConnections
