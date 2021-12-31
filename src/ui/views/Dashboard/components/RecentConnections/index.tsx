@@ -14,9 +14,11 @@ const CurrentConnection = memo(
   ({
     site,
     onChange,
+    showModal,
   }: {
     site: null | ConnectedSite | undefined;
     onChange(): void;
+    showModal?: boolean;
   }) => {
     const wallet = useWallet();
     const { t } = useTranslation();
@@ -47,6 +49,7 @@ const CurrentConnection = memo(
         <ChainSelector
           value={site!.chain}
           onChange={handleChangeDefaultChain}
+          showModal={showModal}
         />
       </div>
     );
@@ -122,12 +125,14 @@ export default ({
   connectionAnimation,
   showDrawer,
   hideAllList,
+  showModal = false,
 }: {
   onChange(site: ConnectedSite | null | undefined): void;
   showChain?: boolean;
   connectionAnimation?: string;
   showDrawer?: boolean;
   hideAllList?(): void;
+  showModal?: boolean;
 }) => {
   const [connections, setConnections] = useState<(ConnectedSite | null)[]>(
     new Array(12).fill(null)
@@ -204,7 +209,11 @@ export default ({
           />
         ))}
       </div>
-      <CurrentConnection site={currentConnect} onChange={getCurrentSite} />
+      <CurrentConnection
+        site={currentConnect}
+        showModal={showModal}
+        onChange={getCurrentSite}
+      />
     </div>
   );
 };
