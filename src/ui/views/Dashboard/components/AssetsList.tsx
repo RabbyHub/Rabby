@@ -1,5 +1,5 @@
 import clsx from 'clsx';
-import React, { useRef } from 'react';
+import React, { useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FixedSizeList } from 'react-window';
 import { TokenWithChain } from 'ui/component';
@@ -29,11 +29,13 @@ const Row = (props) => {
         hideConer
       />
       <div className="middle">
-        <div className="token-name text-13 font-medium">{token.name}</div>
+        <div className="token-name opacity-100 text-13 font-medium">
+          {token.name}
+        </div>
       </div>
       <div className="right">
-        <div className="token-name font-medium text-13">
-          ${splitNumberByStep((token.asset_usd_value || 0).toFixed(4))}
+        <div className="token-name opacity-100 font-medium text-13">
+          ${splitNumberByStep((token.asset_usd_value || 0).toFixed(2))}
         </div>
       </div>
     </div>
@@ -47,6 +49,11 @@ const AssetsList = ({
 }) => {
   const { t } = useTranslation();
   const fixedList = useRef<FixedSizeList>();
+  useEffect(() => {
+    if (!isloading && assets.length > 0 && defiAnimate.includes('fadeIn')) {
+      fixedList.current?.scrollToItem(0);
+    }
+  }, [defiAnimate, isloading, assets]);
   if (!startAnimate) {
     return <></>;
   }

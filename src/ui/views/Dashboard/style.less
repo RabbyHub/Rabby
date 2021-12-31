@@ -42,7 +42,7 @@
 @keyframes fadeOutRight {
   0% {
     left: 5%;
-    opacity: 1;
+    opacity: 0;
   }
   100% {
     left: 100%;
@@ -53,7 +53,7 @@
 @keyframes fadeOutLeft {
   0% {
     right: 5%;
-    opacity: 1;
+    opacity: 0;
   }
   100% {
     right: 100%;
@@ -62,12 +62,10 @@
 }
 @keyframes fadeOutBottom {
   0% {
-    top: 36.3%;
-    opacity: 1;
+    top: 240px;
   }
   100% {
-    top: 100%;
-    opacity: 0;
+    top: 600px;
   }
 }
 @keyframes fadeOutTop {
@@ -106,7 +104,7 @@
 @keyframes fadeInBottom {
   0% {
     top: 680px;
-    opacity: 0;
+    opacity: 1;
     height: 0;
     border-radius: 25%;
   }
@@ -119,8 +117,8 @@
 }
 @keyframes fadeInDrawer {
   0% {
-    bottom: 33%;
-    opacity: 0.1;
+    bottom: 300px;
+    opacity: 1;
   }
   100% {
     bottom: 0;
@@ -321,13 +319,13 @@
       border-radius: 6px 6px 0 0;
       background: rgba(255, 255, 255, 0.12);
       backdrop-filter: blur(40px);
-      padding: 14px 0 14px 22px;
+      padding: 14px 0 14px 20px;
       .operation-item {
         flex: 1;
         color: #fff;
         font-size: 14px;
         position: relative;
-        padding: 6px;
+        padding: 6px 6px 6px 0;
         width: 166px;
         border-radius: 6px 0 0 0;
         display: flex;
@@ -395,7 +393,7 @@
           line-height: 20px;
           width: 20px;
           height: 20px;
-          right: 30px;
+          right: 36px;
           background: rgba(255, 255, 255, 0.2);
         }
         &__count__normal {
@@ -416,6 +414,7 @@
     .listContainer {
       display: flex;
       height: 22px;
+      margin-top: 8px;
       align-items: center;
       position: relative;
       .token {
@@ -475,36 +474,36 @@
   .fadeLeft {
     position: absolute;
     right: 100%;
-    -webkit-animation: fadeLeft 0.5s;
-    animation: fadeLeft 0.5s;
+    -webkit-animation: fadeLeft 0.3s;
+    animation: fadeLeft 0.3s;
   }
   .fadeInLeft {
     position: absolute;
     right: 5%;
     width: 360px;
-    -webkit-animation: fadeInLeft 0.5s;
-    animation: fadeInLeft 0.5s;
+    -webkit-animation: fadeInLeft 0.3s;
+    animation: fadeInLeft 0.3s;
   }
   .fadeInRight {
     position: absolute;
     left: 5%;
     width: 360px;
-    -webkit-animation: fadeInRight 0.5s;
-    animation: fadeInRight 0.5s;
+    -webkit-animation: fadeInRight 0.3s;
+    animation: fadeInRight 0.3s;
   }
   .fadeOutRight {
     position: absolute;
     left: 100%;
     width: 360px;
-    -webkit-animation: fadeOutRight 0.5s;
-    animation: fadeOutRight 0.5s;
+    -webkit-animation: fadeOutRight 0.3s;
+    animation: fadeOutRight 0.3s;
   }
   .fadeOutLeft {
     position: absolute;
     right: 100%;
     width: 360px;
-    -webkit-animation: fadeOutLeft 0.5s;
-    animation: fadeOutLeft 0.5s;
+    -webkit-animation: fadeOutLeft 0.3s;
+    animation: fadeOutLeft 0.3s;
   }
   .fadeInBottom {
     position: absolute;
@@ -527,7 +526,7 @@
   .fadeOutBottom {
     position: absolute;
     width: 400px;
-    top: 100%;
+    top: 600px;
     -webkit-animation: fadeOutBottom 0.5s;
     animation: fadeOutBottom 0.5s;
   }
@@ -587,6 +586,7 @@
             color: #ffffff;
             &::placeholder {
               color: #ffffff;
+              opacity: 0.5;
             }
           }
         }
@@ -607,6 +607,7 @@
           color: #ffffff;
           &::placeholder {
             color: #ffffff;
+            opacity: 0.5;
           }
         }
       }
@@ -647,7 +648,7 @@
         display: flex;
         width: 100px;
         flex-direction: column;
-        margin-left: 15px;
+        margin-left: 12px;
       }
       .right {
         text-align: right;
@@ -681,6 +682,9 @@
         text-overflow: ellipsis;
         white-space: nowrap;
       }
+      .opacity-100 {
+        opacity: 1;
+      };
     }
     .no-added-token {
       font-weight: normal;
@@ -693,8 +697,8 @@
     }
   }
   .bottom-drawer {
-    position: fixed;
-    bottom: 0;
+    position: absolute;
+    top: -60px;
     left: 0;
     width: 400px;
     height: 60px;
@@ -1258,7 +1262,7 @@
   margin: 170px auto;
   flex-direction: column;
   .icon-loading {
-    margin-left: 30px;
+    margin-left: 36px;
     animation: spining 1.5s infinite linear;
   }  
   .loading-text {

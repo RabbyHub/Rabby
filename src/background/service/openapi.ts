@@ -407,7 +407,7 @@ class OpenApiService {
           token_search: {
             path: '/v1/user/token_search',
             method: 'GET',
-            params: ['id'],
+            params: ['id', 'q'],
           },
           token_list: {
             path: '/v1/user/token_list',
@@ -859,7 +859,7 @@ class OpenApiService {
       params: {
         id,
         q,
-        chain_id: chainId,
+        has_balance: false,
       },
     });
 
