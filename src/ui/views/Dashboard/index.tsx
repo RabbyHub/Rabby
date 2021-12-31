@@ -53,9 +53,10 @@ import IconInfo from 'ui/assets/information.png';
 import IconQueue from 'ui/assets/icon-queue.svg';
 import IconTagYou from 'ui/assets/tag-you.svg';
 import IconArrowRight from 'ui/assets/arrow-right.svg';
-import IconDrawer from 'ui/assets/drawer.png';
 import IconAddToken from 'ui/assets/addtoken.png';
 import IconAddressCopy from 'ui/assets/address-copy.png';
+import IconHistory from 'ui/assets/history.svg';
+
 import { SvgIconLoading } from 'ui/assets';
 
 import './style.less';
@@ -213,10 +214,11 @@ const Dashboard = () => {
       }
       getAlianName(currentAccount?.address.toLowerCase());
       setCurrentAccount(currentAccount);
-      getAllKeyrings();
     }
   }, [currentAccount]);
-
+  useEffect(() => {
+    getAllKeyrings();
+  }, []);
   const handleConfig = () => {
     history.push('/settings');
   };
@@ -330,7 +332,7 @@ const Dashboard = () => {
     if (q) {
       if (q.length !== 42 || !q.startsWith('0x')) return [];
       tokens = sortTokensByPrice(
-        await wallet.openapi.searchToken(currentAccount?.address, q)
+        await wallet.openapi.searchToken(currentAccount?.address, q, false)
       );
       if (tokens.length > 0) {
         setSearchTokens(tokens.filter((item) => !item.is_core));
@@ -370,8 +372,8 @@ const Dashboard = () => {
   }, []);
   useEffect(() => {
     if (currentAccount) {
-      handleLoadTokens();
-      handleLoadAssets();
+      setTokens([]);
+      setAssets([]);
     }
   }, [currentAccount]);
   useEffect(() => {
@@ -389,8 +391,10 @@ const Dashboard = () => {
         key={index}
         style={style}
         onClick={(e) => {
-          e.stopPropagation();
-          handleChange(account);
+          const target = e.target as Element;
+          if (target?.id !== 'copyIcon') {
+            handleChange(account);
+          }
         }}
         {...hoverProps}
       >
@@ -425,6 +429,7 @@ const Dashboard = () => {
                     });
                   }}
                   src={IconAddressCopy}
+                  id={'copyIcon'}
                   className={clsx('ml-7  w-[16px] h-[16px]', {
                     success: copySuccess,
                   })}
@@ -443,7 +448,9 @@ const Dashboard = () => {
   const clickContent = () => (
     <>
       <div
-        className="click-content-modar"
+        className={clsx('click-content-modar', {
+          success: copySuccess,
+        })}
         onClick={(e) => {
           e.stopPropagation();
           setClicked(false);
@@ -534,6 +541,9 @@ const Dashboard = () => {
     setHovered(false);
   };
   const displayTokenList = () => {
+    if (tokens.length === 0) {
+      handleLoadTokens();
+    }
     if (showToken) {
       setTokenAnimate('fadeOut');
       setDefiAnimate('fadeOut');
@@ -557,6 +567,9 @@ const Dashboard = () => {
     setShowAssets(false);
   };
   const displayAssets = () => {
+    if (assets.length === 0) {
+      handleLoadAssets();
+    }
     if (showAssets) {
       setShowAssets(false);
       setShowChain(false);
@@ -592,25 +605,26 @@ const Dashboard = () => {
     setConnectionAnimation('fadeInBottom');
     setTopAnimate('fadeInTop');
   };
-  const removeToken = async (tokenId: string) => {
-    const newAddTokenList = addedToken.filter((item) => item !== tokenId);
-    const removeNewTokens = tokens.filter((token) => token.id !== tokenId);
-    setTokens(removeNewTokens);
+  const removeToken = async (removeToken) => {
+    const newAddTokenList = addedToken.filter(
+      (item) => item !== removeToken?.id
+    );
     setAddedToken(newAddTokenList);
     await wallet.updateAddedToken(currentAccount?.address, newAddTokenList);
+    const removeNewTokens = tokens.filter(
+      (token) => token.id !== removeToken?.id
+    );
+    setTokens(removeNewTokens);
   };
-  const addToken = async (tokenId: string) => {
-    const newAddTokenList = [...addedToken, tokenId];
-    const newAddToken = allTokens.find((token) => token.id === tokenId);
-    if (newAddToken) {
-      const newTokenList = [...tokens, newAddToken];
-      setTokens(sortTokensByPrice(newTokenList));
-    }
+  const addToken = async (newAddToken) => {
+    const newAddTokenList = [...addedToken, newAddToken?.id];
     setAddedToken(newAddTokenList);
     await wallet.updateAddedToken(currentAccount?.address, [
       ...addedToken,
-      tokenId,
+      newAddToken?.id,
     ]);
+    const newTokenList = [...tokens, newAddToken];
+    setTokens(sortTokensByPrice(newTokenList));
   };
 
   const handleCurrentConnectChange = (
@@ -637,7 +651,6 @@ const Dashboard = () => {
         className={clsx('dashboard', {
           'metamask-active':
             !isDefaultWallet || (showGnosisWrongChainAlert && isGnosis),
-          success: copySuccess,
         })}
       >
         <div className={clsx('main', showChain && 'show-chain-bg')}>
@@ -695,6 +708,7 @@ const Dashboard = () => {
             currentAccount={currentAccount}
             showChain={showChain}
             startAnimate={startAnimate}
+            onClick={displayTokenList}
           />
           <div className={clsx('listContainer', showChain && 'mt-10')}>
             <div
@@ -744,12 +758,16 @@ const Dashboard = () => {
               </div>
             ) : (
               <div className="operation-item" onClick={handleGotoHistory}>
+                <img
+                  className="icon icon-history w-[24px] h-[24px] mr-8"
+                  src={IconHistory}
+                />
+                {t('Transaction History')}
                 {pendingTxCount > 0 && (
                   <span className="operation-item__count__normal">
                     {`${pendingTxCount} ${t('Pending')}`}
                   </span>
                 )}
-                {t('Transaction History')}
                 <img className="icon icon-arrow-right" src={IconArrowRight} />
               </div>
             )}
@@ -777,26 +795,21 @@ const Dashboard = () => {
             startAnimate={startAnimate}
             isloading={isAssetsLoading}
           />
-          <img
-            src={IconDrawer}
-            className={clsx(
-              'bottom-drawer',
-              showToken || showAssets ? 'fadeInDrawer' : 'hide'
-            )}
-            onClick={hideAllList}
-          />
         </div>
         <RecentConnections
           onChange={handleCurrentConnectChange}
           showChain={showChain}
           connectionAnimation={connectionAnimation}
+          showDrawer={showToken || showAssets}
+          hideAllList={hideAllList}
         />
-        {!isDefaultWallet && (
+        {!isDefaultWallet && !showChain && (
           <DefaultWalletAlertBar onChange={handleDefaultWalletChange} />
         )}
-        {isDefaultWallet && isGnosis && showGnosisWrongChainAlert && (
-          <GnosisWrongChainAlertBar />
-        )}
+        {isDefaultWallet &&
+          isGnosis &&
+          showGnosisWrongChainAlert &&
+          !showChain && <GnosisWrongChainAlertBar />}
       </div>
       <Modal
         visible={firstNotice && updateContent}

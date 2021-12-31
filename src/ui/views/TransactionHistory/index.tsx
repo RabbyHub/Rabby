@@ -495,25 +495,9 @@ const TransactionHistory = () => {
   useEffect(() => {
     init();
   }, []);
-
-  const handleViewAll = () => {
-    _openInTab(`https://debank.com/profile/${address}/history`);
-  };
-
-  const rightSlotButton = (
-    <a
-      className="header-view-all-transaction"
-      href="javascript:;"
-      onClick={handleViewAll}
-    >
-      {t('View all')}
-      <SvgIconOpenExternal className="icon icon-external" />
-    </a>
-  );
-
   return (
     <div className="tx-history">
-      <PageHeader rightSlot={rightSlotButton}>{t('History')}</PageHeader>
+      <PageHeader>{t('History')}</PageHeader>
       {pendingList.length > 0 && (
         <div className="tx-history__pending">
           {pendingList.map((item) => (
@@ -551,16 +535,6 @@ const TransactionHistory = () => {
           </p>
         </div>
       )}
-      <div className="tx-history__bottom">
-        <a
-          href="javascript:;"
-          className="bottom-view-all-transaction"
-          onClick={handleViewAll}
-        >
-          {t('View all history on DeBank')}
-          <SvgIconOpenExternal className="icon icon-external" />
-        </a>
-      </div>
     </div>
   );
 };

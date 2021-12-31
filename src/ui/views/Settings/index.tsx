@@ -22,11 +22,11 @@ const Settings = () => {
       content: t('AddressManagement'),
       onClick: () => history.push('/settings/address'),
     },
-    {
-      leftIcon: IconChainManagement,
-      content: t('ChainManagement'),
-      onClick: () => history.push('/settings/chain'),
-    },
+    // {
+    //   leftIcon: IconChainManagement,
+    //   content: t('ChainManagement'),
+    //   onClick: () => history.push('/settings/chain'),
+    // },
     {
       leftIcon: IconConnectSitesManagement,
       content: t('Connected websites'),

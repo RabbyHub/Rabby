@@ -1,4 +1,4 @@
-import React, { useRef, useState } from 'react';
+import React, { useRef, useState, useEffect } from 'react';
 import { Input } from 'antd';
 import { FixedSizeList } from 'react-window';
 import { useTranslation } from 'react-i18next';
@@ -43,19 +43,17 @@ const Row = (props) => {
       {isInitList ? (
         <div className="right">
           <div className="token-amount">
-            ${splitNumberByStep((token.amount * token.price || 0)?.toFixed(4))}
+            ${splitNumberByStep((token.amount * token.price || 0)?.toFixed(2))}
           </div>
           <div className="token-name">
-            @{splitNumberByStep((token.price || 0).toFixed(4))}
+            @{splitNumberByStep((token.price || 0).toFixed(2))}
           </div>
         </div>
       ) : (
         <div className="right">
           <img
             src={isAdded ? IconRemoveToken : IconAddToken}
-            onClick={() =>
-              isAdded ? removeToken(token?.id) : addToken(token?.id)
-            }
+            onClick={() => (isAdded ? removeToken(token) : addToken(token))}
             className="add-token-icon"
           />
         </div>
@@ -102,6 +100,11 @@ const TokenList = ({
     setQuery(null);
     closeSearch();
   };
+  useEffect(() => {
+    if (showList && tokenAnimate.includes('fadeIn')) {
+      fixedList.current?.scrollToItem(0);
+    }
+  }, [tokenAnimate, showList]);
   if (!startAnimate) {
     return <></>;
   }

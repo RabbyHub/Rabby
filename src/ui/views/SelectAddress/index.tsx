@@ -167,7 +167,7 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
     e.stopPropagation();
     const currentNumber = parseInt(e.target.value);
     if (!currentNumber) {
-      setErrorMsg(t('Invalid Number'));
+      setEnd(0);
       return;
     } else {
       setErrorMsg(t(''));
@@ -249,6 +249,7 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
                 onChange={toSpecificNumber}
                 onPressEnter={startNumberConfirm}
                 spellCheck={false}
+                value={end}
               />
               {errorMsg && <p className="error-message pt-12">{errorMsg}</p>}
             </div>

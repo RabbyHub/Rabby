@@ -7,6 +7,7 @@ import { ChainSelector, FallbackSiteLogo } from 'ui/component';
 import { CHAINS_ENUM, CHAINS } from 'consts';
 import IconInternet from 'ui/assets/internet.svg';
 import { ReactComponent as IconStar } from 'ui/assets/star.svg';
+import IconDrawer from 'ui/assets/drawer.png';
 import './style.less';
 
 const CurrentConnection = memo(
@@ -119,10 +120,14 @@ export default ({
   onChange,
   showChain,
   connectionAnimation,
+  showDrawer,
+  hideAllList,
 }: {
   onChange(site: ConnectedSite | null | undefined): void;
   showChain?: boolean;
   connectionAnimation?: string;
+  showDrawer?: boolean;
+  hideAllList?(): void;
 }) => {
   const [connections, setConnections] = useState<(ConnectedSite | null)[]>(
     new Array(12).fill(null)
@@ -175,6 +180,13 @@ export default ({
 
   return (
     <div className={clsx('recent-connections', connectionAnimation)}>
+      {showDrawer && (
+        <img
+          src={IconDrawer}
+          className={clsx('bottom-drawer')}
+          onClick={hideAllList}
+        />
+      )}
       <div className="mb-[17px] text-12 text-gray-content h-14 text-center">
         {hoverSite}
       </div>

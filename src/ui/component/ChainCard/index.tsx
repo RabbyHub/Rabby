@@ -35,8 +35,6 @@ const ChainCard = ({
     id: chain?.id + '',
   });
 
-  console.log(transform, transition);
-
   const style = {
     transform: CSS.Transform.toString(transform),
     transition,
@@ -63,10 +61,17 @@ const ChainCard = ({
       {...attributes}
       style={style}
     >
-      <div className="chain-card" {...listeners}>
-        <img src={chain?.logo} className="chain-logo" />
-        <p className="chain-name">{chain?.name}</p>
-      </div>
+      {!plus ? (
+        <div className={clsx('chain-card', 'cursor-pointer')} {...listeners}>
+          <img src={chain?.logo} className="chain-logo" />
+          <p className="chain-name">{chain?.name}</p>
+        </div>
+      ) : (
+        <div className={clsx('chain-card', 'cursor-pointer')} onClick={save}>
+          <img src={chain?.logo} className="chain-logo" />
+          <p className="chain-name">{chain?.name}</p>
+        </div>
+      )}
       {showIcon && (
         <img
           src={plus ? IconAddChain : IconChainDelete}
