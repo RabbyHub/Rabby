@@ -40,6 +40,7 @@ import {
   TokenList,
   AssetsList,
   GnosisWrongChainAlertBar,
+  NFTListContainer,
 } from './components';
 import { getUpdateContent } from 'changeLogs/index';
 import IconSetting from 'ui/assets/settings.svg';
@@ -119,6 +120,7 @@ const Dashboard = () => {
   const [showChain, setShowChain] = useState(false);
   const [showToken, setShowToken] = useState(false);
   const [showAssets, setShowAssets] = useState(false);
+  const [showNFT, setShowNFT] = useState(false);
   const [allTokens, setAllTokens] = useState<TokenItem[]>([]);
   const [tokens, setTokens] = useState<TokenItem[]>([]);
   const [searchTokens, setSearchTokens] = useState<TokenItem[]>([]);
@@ -126,6 +128,7 @@ const Dashboard = () => {
   const [startSearch, setStartSearch] = useState(false);
   const [addedToken, setAddedToken] = useState<string[]>([]);
   const [defiAnimate, setDefiAnimate] = useState('fadeOut');
+  const [nftAnimate, setNFTAnimate] = useState('fadeOut');
   const [tokenAnimate, setTokenAnimate] = useState('fadeOut');
   const [topAnimate, setTopAnimate] = useState('');
   const [connectionAnimation, setConnectionAnimation] = useState('');
@@ -550,11 +553,15 @@ const Dashboard = () => {
       setConnectionAnimation('fadeInBottom');
       setShowToken(false);
       setShowChain(false);
+      setShowNFT(false);
       setTopAnimate('fadeInTop');
     } else {
       if (showAssets) {
         setTokenAnimate('fadeInLeft');
         setDefiAnimate('fadeOutRight');
+      } else if (showNFT) {
+        setTokenAnimate('fadeInLeft');
+        setNFTAnimate('fadeOutRight');
       } else {
         setTokenAnimate('fadeIn');
       }
@@ -565,12 +572,14 @@ const Dashboard = () => {
       setConnectionAnimation('fadeOutBottom');
     }
     setShowAssets(false);
+    setShowNFT(false);
   };
   const displayAssets = () => {
     if (assets.length === 0) {
       handleLoadAssets();
     }
     if (showAssets) {
+      setShowNFT(false);
       setShowAssets(false);
       setShowChain(false);
       setTopAnimate('fadeInTop');
@@ -581,6 +590,9 @@ const Dashboard = () => {
       if (showToken) {
         setDefiAnimate('fadeInRight');
         setTokenAnimate('fadeOutLeft');
+      } else if (showNFT) {
+        setDefiAnimate('fadeInLeft');
+        setNFTAnimate('fadeOutRight');
       } else {
         setDefiAnimate('fadeIn');
       }
@@ -591,6 +603,37 @@ const Dashboard = () => {
       setConnectionAnimation('fadeOutBottom');
     }
     setShowToken(false);
+    setShowNFT(false);
+  };
+  const displayNFTs = () => {
+    if (showNFT) {
+      setShowNFT(false);
+      setShowAssets(false);
+      setShowChain(false);
+      setTopAnimate('fadeInTop');
+      setTokenAnimate('fadeOut');
+      setDefiAnimate('fadeOut');
+      setNFTAnimate('fadeOut');
+      setConnectionAnimation('fadeInBottom');
+    } else {
+      if (showToken) {
+        setNFTAnimate('fadeInRight');
+        setTokenAnimate('fadeOutLeft');
+      } else if (showAssets) {
+        setNFTAnimate('fadeInRight');
+        setDefiAnimate('fadeOutLeft');
+      } else {
+        setNFTAnimate('fadeIn');
+      }
+      setStartAnimate(true);
+      setShowAssets(true);
+      setShowChain(true);
+      setShowNFT(true);
+      setTopAnimate('fadeOutTop');
+      setConnectionAnimation('fadeOutBottom');
+    }
+    setShowToken(false);
+    setShowAssets(false);
   };
   const hideAllList = () => {
     if (showAssets) {
@@ -599,9 +642,13 @@ const Dashboard = () => {
     if (showToken) {
       setTokenAnimate('fadeOut');
     }
+    if (showNFT) {
+      setNFTAnimate('fadeOut');
+    }
     setShowAssets(false);
     setShowChain(false);
     setShowToken(false);
+    setShowNFT(false);
     setConnectionAnimation('fadeInBottom');
     setTopAnimate('fadeInTop');
   };
@@ -723,14 +770,12 @@ const Dashboard = () => {
             >
               DeFi
             </div>
-            <Tooltip
-              overlayClassName="rectangle profileType__tooltip"
-              title={t('Coming soon')}
+            <div
+              className={clsx('token', showNFT && 'showToken')}
+              onClick={displayNFTs}
             >
-              <div className={clsx('token', 'opacity-60 cursor-default')}>
-                NFT
-              </div>
-            </Tooltip>
+              NFT
+            </div>
             {showToken && !startSearch && (
               <img
                 src={IconAddToken}
@@ -795,6 +840,12 @@ const Dashboard = () => {
             startAnimate={startAnimate}
             isloading={isAssetsLoading}
           />
+          <NFTListContainer
+            address={currentAccount?.address}
+            animate={nftAnimate}
+            startAnimate={startAnimate}
+            showMenu={showNFT}
+          ></NFTListContainer>
         </div>
         <RecentConnections
           onChange={handleCurrentConnectChange}

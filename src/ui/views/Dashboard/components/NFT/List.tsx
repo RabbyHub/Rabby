@@ -12,12 +12,18 @@ import Dropdown from './Dropdown';
 import NFTList from './NFTList';
 
 type Props = {
-  address: string;
+  address?: string;
   startAnimate?: boolean;
-  defiAnimate?: string;
+  animate?: string;
+  showMenu?: boolean;
 };
 
-const NFTListContainer = ({ address, startAnimate, defiAnimate }: Props) => {
+const NFTListContainer = ({
+  address,
+  startAnimate,
+  animate,
+  showMenu,
+}: Props) => {
   const [type, setType] = useState<'collection' | 'nft'>('collection');
   const [isLoading, setIsLoading] = useState(false);
   const [list, setList] = useState<NFTItem[]>([]);
@@ -56,19 +62,21 @@ const NFTListContainer = ({ address, startAnimate, defiAnimate }: Props) => {
     }
   };
   useEffect(() => {
-    if (startAnimate) {
+    if (startAnimate && animate?.indexOf('fadeIn') !== -1 && address) {
       fetchData(address);
     }
-  }, [address, startAnimate]);
+  }, [address, startAnimate, animate]);
 
   if (!startAnimate) {
     return <></>;
   }
   return (
-    <div className={clsx('relative mt-12', defiAnimate)}>
-      <div className="absolute top-[-36px] right-0">
-        <Dropdown value={type} onChange={setType} />
-      </div>
+    <div className={clsx('mt-12', animate)}>
+      {showMenu && (
+        <div className="absolute top-[-36px] right-0">
+          <Dropdown value={type} onChange={setType} />
+        </div>
+      )}
       {type === 'collection' ? (
         <CollectionList
           data={collectionList}
