@@ -62,12 +62,10 @@
 }
 @keyframes fadeOutBottom {
   0% {
-    top: 36.3%;
-    opacity: 1;
+    top: 240px;
   }
   100% {
-    top: 100%;
-    opacity: 0;
+    top: 600px;
   }
 }
 @keyframes fadeOutTop {
@@ -106,7 +104,7 @@
 @keyframes fadeInBottom {
   0% {
     top: 680px;
-    opacity: 0;
+    opacity: 1;
     height: 0;
     border-radius: 25%;
   }
@@ -119,8 +117,8 @@
 }
 @keyframes fadeInDrawer {
   0% {
-    bottom: 33%;
-    opacity: 0.1;
+    bottom: 300px;
+    opacity: 1;
   }
   100% {
     bottom: 0;
@@ -528,7 +526,7 @@
   .fadeOutBottom {
     position: absolute;
     width: 400px;
-    top: 100%;
+    top: 600px;
     -webkit-animation: fadeOutBottom 0.5s;
     animation: fadeOutBottom 0.5s;
   }
@@ -699,8 +697,8 @@
     }
   }
   .bottom-drawer {
-    position: fixed;
-    bottom: 0;
+    position: absolute;
+    top: -60px;
     left: 0;
     width: 400px;
     height: 60px;

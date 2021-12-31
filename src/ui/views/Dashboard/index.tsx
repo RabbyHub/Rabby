@@ -53,7 +53,6 @@ import IconInfo from 'ui/assets/information.png';
 import IconQueue from 'ui/assets/icon-queue.svg';
 import IconTagYou from 'ui/assets/tag-you.svg';
 import IconArrowRight from 'ui/assets/arrow-right.svg';
-import IconDrawer from 'ui/assets/drawer.png';
 import IconAddToken from 'ui/assets/addtoken.png';
 import IconAddressCopy from 'ui/assets/address-copy.png';
 import IconHistory from 'ui/assets/history.svg';
@@ -796,19 +795,13 @@ const Dashboard = () => {
             startAnimate={startAnimate}
             isloading={isAssetsLoading}
           />
-          <img
-            src={IconDrawer}
-            className={clsx(
-              'bottom-drawer',
-              showToken || showAssets ? 'fadeInDrawer' : 'hide'
-            )}
-            onClick={hideAllList}
-          />
         </div>
         <RecentConnections
           onChange={handleCurrentConnectChange}
           showChain={showChain}
           connectionAnimation={connectionAnimation}
+          showDrawer={showToken || showAssets}
+          hideAllList={hideAllList}
         />
         {!isDefaultWallet && !showChain && (
           <DefaultWalletAlertBar onChange={handleDefaultWalletChange} />
