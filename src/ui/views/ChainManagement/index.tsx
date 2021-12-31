@@ -88,7 +88,7 @@ export const ChainManagementList = () => {
           )}
         </div>
         {savedChainsData.length === 0 && (
-          <div className="no-pinned-container">{t('No pinned Chains')}</div>
+          <div className="no-pinned-container">{t('No pinned chains')}</div>
         )}
         <div className="droppable flex flex-wrap">
           {savedChainsData.length > 0 && (

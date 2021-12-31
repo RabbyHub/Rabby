@@ -651,6 +651,7 @@ const Dashboard = () => {
     connection: ConnectedSite | null | undefined
   ) => {
     setCurrentConnection(connection);
+    setShowChainModal(false);
   };
 
   const checkGnosisConnectChain = () => {

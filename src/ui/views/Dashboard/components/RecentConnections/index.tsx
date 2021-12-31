@@ -137,6 +137,7 @@ export default ({
   const [connections, setConnections] = useState<(ConnectedSite | null)[]>(
     new Array(12).fill(null)
   );
+  const [localshowModal, setLocalShowModal] = useState(showModal);
   const [currentConnect, setCurrentConnect] = useState<
     ConnectedSite | null | undefined
   >(null);
@@ -156,6 +157,7 @@ export default ({
   const getCurrentSite = useCallback(async () => {
     const current = await getCurrentConnectSite(wallet);
     setCurrentConnect(current);
+    setLocalShowModal(false);
     getConnectedSites();
   }, []);
 
@@ -186,11 +188,10 @@ export default ({
   return (
     <div className={clsx('recent-connections', connectionAnimation)}>
       {showDrawer && (
-        <img
-          src={IconDrawer}
-          className={clsx('bottom-drawer')}
-          onClick={hideAllList}
-        />
+        <>
+          <div onClick={hideAllList} className="click-modal"></div>
+          <img src={IconDrawer} className={clsx('bottom-drawer')} />
+        </>
       )}
       <div className="mb-[17px] text-12 text-gray-content h-14 text-center">
         {hoverSite}
@@ -211,7 +212,7 @@ export default ({
       </div>
       <CurrentConnection
         site={currentConnect}
-        showModal={showModal}
+        showModal={localshowModal}
         onChange={getCurrentSite}
       />
     </div>
