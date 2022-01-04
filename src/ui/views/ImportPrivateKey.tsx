@@ -1,7 +1,9 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Input, Form } from 'antd';
 import { useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { KEYRING_TYPE } from 'consts';
+
 import { StrayPageWithButton } from 'ui/component';
 import { useWallet, useWalletRequest } from 'ui/utils';
 import PrivatekeyIcon from 'ui/assets/privatekey-icon.svg';
@@ -11,6 +13,9 @@ const ImportPrivateKey = () => {
   const wallet = useWallet();
   const [form] = Form.useForm();
   const { t } = useTranslation();
+  const [importedAccountsLength, setImportedAccountsLength] = useState<number>(
+    0
+  );
 
   const [run, loading] = useWalletRequest(wallet.importPrivateKey, {
     onSuccess(accounts) {
@@ -24,6 +29,7 @@ const ImportPrivateKey = () => {
           title: t('Successfully created'),
           editing: true,
           importedAccount: true,
+          importedLength: importedAccountsLength,
         },
       });
     },
@@ -61,6 +67,10 @@ const ImportPrivateKey = () => {
   };
 
   const init = async () => {
+    const importedAccounts = await wallet.getTypedAccounts(
+      KEYRING_TYPE.SimpleKeyring
+    );
+    setImportedAccountsLength(importedAccounts.length);
     if (await wallet.hasPageStateCache()) handleLoadCache();
   };
 
