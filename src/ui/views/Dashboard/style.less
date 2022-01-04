@@ -103,16 +103,14 @@
 
 @keyframes fadeInBottom {
   0% {
-    top: 680px;
+    top: 640px;
     opacity: 1;
     height: 0;
-    border-radius: 25%;
   }
   100% {
     top: 220px;
     opacity: 1;
     height: 460px;
-    border-radius: 0;
   }
 }
 @keyframes fadeInDrawer {
@@ -320,6 +318,7 @@
       background: rgba(255, 255, 255, 0.12);
       backdrop-filter: blur(40px);
       padding: 14px 0 14px 20px;
+      z-index:1;
       .operation-item {
         flex: 1;
         color: #fff;
@@ -520,6 +519,13 @@
     -webkit-animation: fadeInDrawer 0.5s;
     animation: fadeInDrawer 0.5s;
   }
+  .fadeOutDrawer {
+    position: absolute;
+    bottom: 0;
+    opacity: 0;
+    width: 400px;
+    transition: opacity 0.3s;
+  }
   .hide {
     display: none !important;
   }
@@ -698,10 +704,10 @@
   }
   .bottom-drawer {
     position: absolute;
-    top: -60px;
+    top: -40px;
     left: 0;
     width: 400px;
-    height: 60px;
+    height: 40px;
     .pointer;
   }
   &.metamask-active {
