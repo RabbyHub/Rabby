@@ -194,7 +194,9 @@ export default ({
       setDrawerAnimation('fadeInDrawer');
     } else {
       if (drawerAnimation) {
-        setDrawerAnimation('fadeOutDrawer');
+        setTimeout(() => {
+          setDrawerAnimation('fadeOutDrawer');
+        }, 100);
       }
     }
   }, [showDrawer]);
@@ -205,7 +207,7 @@ export default ({
         className={clsx(
           'bottom-drawer',
           drawerAnimation,
-          drawerAnimation ? 'h-[40px]' : 'h-[0]'
+          drawerAnimation === 'fadeInDrawer' ? 'h-[40px] z-10' : 'h-[0] z-0'
         )}
         onClick={hideAllList}
       />
