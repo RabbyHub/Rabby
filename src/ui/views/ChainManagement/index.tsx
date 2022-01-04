@@ -103,7 +103,7 @@ export const ChainManagementList = () => {
       {chains.length > 0 && (
         <div className="all-wrapper">
           <div className="all-title">{t('All')}</div>
-          <div className="flex flex-wrap p-8">
+          <div className="flex flex-wrap mt-8">
             {chains.length > 0 &&
               chains.map((chain) => (
                 <ChainCard
