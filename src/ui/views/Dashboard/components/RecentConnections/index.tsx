@@ -15,10 +15,12 @@ const CurrentConnection = memo(
     site,
     onChange,
     showModal,
+    hideModal,
   }: {
     site: null | ConnectedSite | undefined;
     onChange(): void;
     showModal?: boolean;
+    hideModal(): void;
   }) => {
     const wallet = useWallet();
     const { t } = useTranslation();
@@ -29,6 +31,7 @@ const CurrentConnection = memo(
         chain,
       });
       onChange();
+      hideModal();
     };
 
     const NoConnected = () => (
@@ -157,7 +160,6 @@ export default ({
   const getCurrentSite = useCallback(async () => {
     const current = await getCurrentConnectSite(wallet);
     setCurrentConnect(current);
-    setLocalShowModal(false);
     getConnectedSites();
   }, []);
 
@@ -176,7 +178,9 @@ export default ({
     wallet.unpinConnectedSite(item.origin);
     getConnectedSites();
   };
-
+  const hideModal = () => {
+    setLocalShowModal(false);
+  };
   useEffect(() => {
     getCurrentSite();
   }, []);
@@ -214,6 +218,7 @@ export default ({
         site={currentConnect}
         showModal={localshowModal}
         onChange={getCurrentSite}
+        hideModal={hideModal}
       />
     </div>
   );
