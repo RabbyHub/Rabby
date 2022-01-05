@@ -4,20 +4,16 @@ import React from 'react';
 import { Modal } from 'ui/component';
 import { getChain } from 'utils';
 import NFTAvatar from './NFTAvatar';
-import BN from 'bignumber.js';
 import { splitNumberByStep } from '@/ui/utils';
 interface ContentProps {
   data?: NFTItem;
 }
 
 const calc = (data?: NFTItem) => {
-  if (!data || !data?.pay_token?.amount || !data?.pay_token?.price) {
+  if (!data || data.usd_price == null) {
     return '-';
   }
-  const price = new BN(data.pay_token.amount)
-    .multipliedBy(data.pay_token.price)
-    .toFixed(2);
-  return `$${splitNumberByStep(price)}`;
+  return `$${splitNumberByStep(data.usd_price.toFixed(2))}`;
 };
 
 const Content = ({ data }: ContentProps) => {
