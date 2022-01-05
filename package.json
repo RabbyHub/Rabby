@@ -28,7 +28,7 @@
     "@rabby-wallet/eth-trezor-keyring": "^1.0.8",
     "@rabby-wallet/eth-walletconnect-keyring": "^1.0.7",
     "@rabby-wallet/eth-watch-keyring": "^1.0.0",
-    "@rabby-wallet/gnosis-sdk": "^1.1.0",
+    "@rabby-wallet/gnosis-sdk": "^1.2.0",
     "@sentry/browser": "^6.7.2",
     "@sentry/react": "^6.7.2",
     "@sentry/tracing": "^6.7.2",

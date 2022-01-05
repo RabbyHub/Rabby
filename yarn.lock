@@ -2638,10 +2638,10 @@
     typescript "^4.4.4"
     web3-core "^1.6.0"
 
-"@rabby-wallet/gnosis-sdk@^1.1.0":
-  version "1.1.0"
-  resolved "https://registry.yarnpkg.com/@rabby-wallet/gnosis-sdk/-/gnosis-sdk-1.1.0.tgz#b7b9aad769cdfed3d6789a3a46cd01979ce3a0d6"
-  integrity sha512-G71EehVv4aY1LQaoSZFz/UxGL1ZR8layKMdzRFGnQwO6XsrNxw8pqtLC88j1KbyECQHGNSTP41ombVCX9S+Rxg==
+"@rabby-wallet/gnosis-sdk@^1.2.0":
+  version "1.2.0"
+  resolved "https://registry.yarnpkg.com/@rabby-wallet/gnosis-sdk/-/gnosis-sdk-1.2.0.tgz#7bd7fbaf0c1e4b9969d856ddf1edd3ac5f0f47e7"
+  integrity sha512-s+iARXM+hLDCctlQWGDS0t2/YvONoFlkuqyoPq7WfPVGWuUxKfHkvj2+whlEuyt20YgszUXfOWuLDJ3DdccskA==
   dependencies:
     "@ethersproject/bignumber" "^5.5.0"
     "@ethersproject/bytes" "^5.5.0"
