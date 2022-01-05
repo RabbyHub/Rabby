@@ -119,7 +119,7 @@ const TokenAmountInput = ({
   return (
     <div className="token-amount-input">
       <div className="left" onClick={handleSelectToken}>
-        <TokenWithChain token={token} />
+        <TokenWithChain token={token} hideConer />
         <span className="token-input__symbol" title={token.symbol}>
           {token.symbol}
         </span>

@@ -2,15 +2,24 @@
 
 .token-selector {
   padding-bottom: 0;
-  .ant-modal-body {
-    max-height: 510px;
-    padding-left: 0;
-    padding-right: 0;
-    padding-bottom: 0;
-    padding-top: 12px;
+  .ant-drawer-content-wrapper {
+    box-shadow: 0px -12px 20px rgba(35, 47, 129, 0.1);
+    border-radius: 16px 16px 0px 0px;
+    overflow: hidden;
+    .ant-drawer-body {
+      padding: 18px 0 0;
+    }
+  }
+  .header {
+    font-weight: 500;
+    font-size: 20px;
+    line-height: 23px;
+    text-align: center;
+    color: #161819;
+    margin-bottom: 20px;
   }
   .input-wrapper {
-    width: 328px;
+    width: 360px;
     margin: 0 auto 16px;
     .ant-input-affix-wrapper::before {
       height: 16px;
@@ -18,9 +27,11 @@
     .ant-input-affix-wrapper-lg {
       padding: 12px;
       border-radius: 6px;
-      border: none;
+      border: 1px solid #E5E9EF;
+      background-color: #F5F6FA;
       .ant-input {
         border-radius: 0;
+        background-color: transparent;
       }
     }
   }
@@ -50,13 +61,13 @@
   .token-list {
     position: relative;
     background-color: #fff;
-    height: 417px;
+    height: 482px;
     overflow-y: auto;
     margin: 0;
     li {
       display: flex;
       cursor: pointer;
-      padding: 0 16px;
+      padding: 0 20px;
       & > div {
         &:nth-child(1) {
           width: 120px;
@@ -93,14 +104,20 @@
       }
     }
     li.token-list__header {
+      position: relative;
       cursor: initial;
       font-size: 12px;
       line-height: 14px;
       color: #707880;
       height: 35px;
       align-items: center;
-      border-bottom: 0.5px solid #D8DFEB;
       margin-bottom: 8px;
+      &::after {
+        .part-border(360px);
+        bottom: 0;
+        left: 50%;
+        transform: translateX(-50%);
+      }
       & > div {
         font-size: 12px;
         line-height: 14px;
