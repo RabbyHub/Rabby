@@ -160,7 +160,6 @@ class ProviderController extends BaseController {
     return account;
   };
 
-  @Reflect.metadata('SAFE', true)
   ethAccounts = async ({ session: { origin } }) => {
     if (!permissionService.hasPerssmion(origin)) {
       return [];
@@ -170,7 +169,6 @@ class ProviderController extends BaseController {
     return account ? [account.address] : [];
   };
 
-  @Reflect.metadata('SAFE', true)
   ethCoinbase = async ({ session: { origin } }) => {
     if (!permissionService.hasPerssmion(origin)) {
       return null;
@@ -180,7 +178,6 @@ class ProviderController extends BaseController {
     return account ? account.address : null;
   };
 
-  @Reflect.metadata('SAFE', true)
   ethChainId = ({ session }: { session: Session }) => {
     const origin = session.origin;
     const site = permissionService.getWithoutUpdate(origin);
@@ -350,6 +347,7 @@ class ProviderController extends BaseController {
     });
   };
 
+  @Reflect.metadata('SAFE', true)
   web3ClientVersion = () => {
     return `Rabby/${process.env.release}`;
   };
