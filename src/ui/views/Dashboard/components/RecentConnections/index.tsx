@@ -1,15 +1,59 @@
 import React, { useState, useEffect, memo, useCallback } from 'react';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
+import maxBy from 'lodash/maxBy';
+
 import { useWallet, getCurrentConnectSite, openInTab } from 'ui/utils';
 import { ConnectedSite } from 'background/service/permission';
+import { GasLevel } from 'background/service/openapi';
 import { ChainSelector, FallbackSiteLogo } from 'ui/component';
 import { CHAINS_ENUM, CHAINS } from 'consts';
 import IconInternet from 'ui/assets/internet.svg';
 import { ReactComponent as IconStar } from 'ui/assets/star.svg';
 import IconDrawer from 'ui/assets/drawer.png';
+import IconContacts from 'ui/assets/dashboard/contacts.png';
+import IconSendToken from 'ui/assets/dashboard/sendtoken.png';
+import IconSetting from 'ui/assets/dashboard/setting.png';
+import IconSignedText from 'ui/assets/dashboard/signedtext.png';
+import IconSingedTX from 'ui/assets/dashboard/signedtx.png';
+import IconTransactions from 'ui/assets/dashboard/transactions.png';
+import IconGas from 'ui/assets/dashboard/gas.svg';
+import IconEth from 'ui/assets/dashboard/eth.png';
+
 import './style.less';
 
+const directionPanelData = [
+  {
+    icon: IconSendToken,
+    content: 'send',
+    onClick: () => console.log(111),
+  },
+  {
+    icon: IconSingedTX,
+    content: 'Signed Tx',
+    onClick: () => console.log(111),
+  },
+  {
+    icon: IconSignedText,
+    content: 'Signed Text',
+    onClick: () => console.log(111),
+  },
+  {
+    icon: IconTransactions,
+    content: 'Transactions',
+    onClick: () => console.log(111),
+  },
+  {
+    icon: IconContacts,
+    content: 'Contacts',
+    onClick: () => console.log(111),
+  },
+  {
+    icon: IconSetting,
+    content: 'Settings',
+    onClick: () => console.log(111),
+  },
+];
 const CurrentConnection = memo(
   ({
     site,
@@ -146,6 +190,7 @@ export default ({
     ConnectedSite | null | undefined
   >(null);
   const [hoverSite, setHoverSite] = useState<string | undefined>();
+  const [gasPrice, setGasPrice] = useState<number>(0);
   const wallet = useWallet();
 
   const handleClickConnection = (connection: ConnectedSite | null) => {
@@ -182,8 +227,17 @@ export default ({
   const hideModal = () => {
     setLocalShowModal(false);
   };
+  const getGasPrice = async () => {
+    const marketGas: GasLevel[] = await wallet.openapi.gasMarket('eth');
+    const maxGas = maxBy(marketGas, (level) => level.price)!.price;
+    if (maxGas) {
+      setGasPrice(Number(maxGas / 1e9));
+    }
+  };
+
   useEffect(() => {
     getCurrentSite();
+    getGasPrice();
   }, []);
 
   useEffect(() => {
@@ -211,10 +265,32 @@ export default ({
         )}
         onClick={hideAllList}
       />
-      <div className="mb-[17px] text-12 text-gray-content h-14 text-center">
+      {/* <div className="mb-[17px] text-12 text-gray-content h-14 text-center">
         {hoverSite}
+      </div> */}
+      <div className="pannel">
+        <div className="direction-pannel">
+          {directionPanelData.map((item, index) => (
+            <div key={index} onClick={item.onClick} className="direction">
+              <img src={item.icon} className="images" />
+              <div>{item.content} </div>
+            </div>
+          ))}
+        </div>
+        <div className="price-viewer">
+          <div className="eth-price">
+            <img src={IconEth} className="w-[20px] h-[20px]" />
+            <div className="gasprice">{`$${gasPrice}`}</div>
+            <div className="gwei">Gwei</div>
+          </div>
+          <div className="gas-container">
+            <img src={IconGas} className="w-[16px] h-[16px]" />
+            <div className="gasprice">{`${gasPrice}`}</div>
+            <div className="gwei">Gwei</div>
+          </div>
+        </div>
       </div>
-      <div className="list">
+      {/* <div className="list">
         {connections.map((item, index) => (
           <ConnectionItem
             data-item={item}
@@ -227,7 +303,7 @@ export default ({
             onUnpin={() => handleUnpinWebsite(item)}
           />
         ))}
-      </div>
+      </div> */}
       <CurrentConnection
         site={currentConnect}
         showModal={localshowModal}

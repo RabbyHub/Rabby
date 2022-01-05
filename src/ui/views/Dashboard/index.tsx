@@ -824,7 +824,7 @@ const Dashboard = () => {
               </div>
             )}
           </div>
-          <div
+          {/* <div
             className={clsx(
               'operation',
               startAnimate ? (showChain ? 'fadeOut' : 'fadeIn') : ''
@@ -856,7 +856,7 @@ const Dashboard = () => {
                 <img className="icon icon-arrow-right" src={IconArrowRight} />
               </div>
             )}
-          </div>
+          </div> */}
           <TokenList
             tokens={tokens}
             searchTokens={searchTokens}
