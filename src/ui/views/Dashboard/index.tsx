@@ -155,9 +155,6 @@ const Dashboard = () => {
   const [currentConnection, setCurrentConnection] = useState<
     ConnectedSite | null | undefined
   >(null);
-  const [showChainModal, setShowChainModal] = useState(
-    showChainsModal || false
-  );
   const getCurrentAccount = async () => {
     const account = await wallet.getCurrentAccount();
     if (!account) {
@@ -711,7 +708,6 @@ const Dashboard = () => {
     connection: ConnectedSite | null | undefined
   ) => {
     setCurrentConnection(connection);
-    setShowChainModal(false);
   };
 
   const checkGnosisConnectChain = () => {
@@ -898,7 +894,7 @@ const Dashboard = () => {
           connectionAnimation={connectionAnimation}
           showDrawer={showToken || showAssets || showNFT}
           hideAllList={hideAllList}
-          showModal={showChainModal}
+          showModal={showChainsModal}
         />
         {!isDefaultWallet && !showChain && (
           <DefaultWalletAlertBar onChange={handleDefaultWalletChange} />

@@ -89,7 +89,7 @@ const ChainSelectorModal = ({
     >
       <>
         {savedChainsData.length === 0 && (
-          <div className="no-pinned-container">No pinned Chains</div>
+          <div className="no-pinned-container">No pinned chains</div>
         )}
         {savedChainsData.length > 0 && (
           <ul className="chain-selector-options">

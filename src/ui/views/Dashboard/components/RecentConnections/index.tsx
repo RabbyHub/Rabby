@@ -15,10 +15,12 @@ const CurrentConnection = memo(
     site,
     onChange,
     showModal,
+    hideModal,
   }: {
     site: null | ConnectedSite | undefined;
     onChange(): void;
     showModal?: boolean;
+    hideModal(): void;
   }) => {
     const wallet = useWallet();
     const { t } = useTranslation();
@@ -29,6 +31,7 @@ const CurrentConnection = memo(
         chain,
       });
       onChange();
+      hideModal();
     };
 
     const NoConnected = () => (
@@ -138,6 +141,7 @@ export default ({
     new Array(12).fill(null)
   );
   const [localshowModal, setLocalShowModal] = useState(showModal);
+  const [drawerAnimation, setDrawerAnimation] = useState<string | null>(null);
   const [currentConnect, setCurrentConnect] = useState<
     ConnectedSite | null | undefined
   >(null);
@@ -157,7 +161,6 @@ export default ({
   const getCurrentSite = useCallback(async () => {
     const current = await getCurrentConnectSite(wallet);
     setCurrentConnect(current);
-    setLocalShowModal(false);
     getConnectedSites();
   }, []);
 
@@ -176,7 +179,9 @@ export default ({
     wallet.unpinConnectedSite(item.origin);
     getConnectedSites();
   };
-
+  const hideModal = () => {
+    setLocalShowModal(false);
+  };
   useEffect(() => {
     getCurrentSite();
   }, []);
@@ -184,15 +189,28 @@ export default ({
   useEffect(() => {
     onChange(currentConnect);
   }, [currentConnect]);
-
+  useEffect(() => {
+    if (showDrawer) {
+      setDrawerAnimation('fadeInDrawer');
+    } else {
+      if (drawerAnimation) {
+        setTimeout(() => {
+          setDrawerAnimation('fadeOutDrawer');
+        }, 100);
+      }
+    }
+  }, [showDrawer]);
   return (
     <div className={clsx('recent-connections', connectionAnimation)}>
-      {showDrawer && (
-        <>
-          <div onClick={hideAllList} className="click-modal"></div>
-          <img src={IconDrawer} className={clsx('bottom-drawer')} />
-        </>
-      )}
+      <img
+        src={IconDrawer}
+        className={clsx(
+          'bottom-drawer',
+          drawerAnimation,
+          drawerAnimation === 'fadeInDrawer' ? 'h-[40px] z-10' : 'h-[0] z-0'
+        )}
+        onClick={hideAllList}
+      />
       <div className="mb-[17px] text-12 text-gray-content h-14 text-center">
         {hoverSite}
       </div>
@@ -214,6 +232,7 @@ export default ({
         site={currentConnect}
         showModal={localshowModal}
         onChange={getCurrentSite}
+        hideModal={hideModal}
       />
     </div>
   );
