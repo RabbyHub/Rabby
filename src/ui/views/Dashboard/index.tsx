@@ -43,7 +43,6 @@ import {
   NFTListContainer,
 } from './components';
 import { getUpdateContent } from 'changeLogs/index';
-import IconSetting from 'ui/assets/settings.svg';
 import IconSuccess from 'ui/assets/success.svg';
 import IconUpAndDown from 'ui/assets/up-and-down.svg';
 import { ReactComponent as IconCopy } from 'ui/assets/urlcopy.svg';
@@ -778,11 +777,6 @@ const Dashboard = () => {
                 src={IconInfo}
                 onClick={() => setHovered(true)}
                 className="w-[16px] h-[16px] pointer"
-              />
-              <img
-                className="icon icon-settings"
-                src={IconSetting}
-                onClick={handleConfig}
               />
             </div>
           )}
