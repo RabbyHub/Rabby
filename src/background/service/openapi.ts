@@ -28,6 +28,7 @@ export interface Chain {
   nativeTokenLogo: string;
   nativeTokenAddress: string;
   scanLink: string;
+  selectChainLogo?: string;
 }
 
 export interface ServerChain {

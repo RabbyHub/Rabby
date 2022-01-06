@@ -52,7 +52,8 @@
       padding: 16px 0;
       margin: 16px 0;
       position: relative;
-      .eth-price,.gas-container {
+      .eth-price,
+      .gas-container {
         display: flex;
         justify-content: flex-start;
         flex: 1;
@@ -60,20 +61,20 @@
           font-weight: 500;
           font-size: 15px;
           line-height: 18px;
-          padding:  0 6px 0 8px;
+          padding: 0 6px 0 8px;
           color: #13141a;
         }
         .gwei {
           font-size: 12px;
           text-align: right;
-          color: #27C193;
+          color: #27c193;
         }
       }
       .gas-container {
         position: relative;
         justify-content: flex-end;
         .gasprice {
-          padding:  0 4px 0 10px;
+          padding: 0 4px 0 10px;
         }
         .gwei {
           color: #707280;
@@ -207,20 +208,29 @@
     transform: translateX(-70px);
   }
   .current-connection {
-    width: 344px;
-    height: 56px;
+    position: relative;
+    width: 360px;
+    height: 48px;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-top: 44px;
-    margin-left: -12px;
-    background: #ffffff;
+    margin: 40px 0 23px;
+    background: #f5f6fa;
     border-radius: 6px;
     padding: 12px 16px;
+    .left-corner {
+      position: absolute;
+      left: 0;
+      top: 0;
+      border-top-left-radius: 6px;
+    }
     .connected {
       display: flex;
       align-items: center;
       width: 100%;
+      .arrowColor {
+        color: #8697FF;
+      }
       .logo {
         width: 28px;
         height: 28px;
@@ -249,6 +259,11 @@
           text-overflow: ellipsis;
         }
       }
+      .seperator {
+        height: 20px;
+        margin-left: 12px;
+        border: 1px solid #e5e9ef;
+      }
     }
     .not-connected {
       display: flex;
@@ -256,7 +271,7 @@
       justify-content: center;
       color: #818a99;
       font-size: 12px;
-      margin-bottom: 0;
+      margin: 0 15px 0;
       .icon-no-connect {
         width: 16px;
         height: 16px;
@@ -278,4 +293,10 @@
     margin-bottom: 4px;
     font-weight: 500;
   }
+}
+.no-border-shadow {
+  box-shadow: none;
+  border: 0;
+  background: transparent;
+  padding: 0;
 }

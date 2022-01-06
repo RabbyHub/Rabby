@@ -19,6 +19,7 @@ import IconSingedTX from 'ui/assets/dashboard/signedtx.png';
 import IconTransactions from 'ui/assets/dashboard/transactions.png';
 import IconGas from 'ui/assets/dashboard/gas.svg';
 import IconEth from 'ui/assets/dashboard/eth.png';
+import { ReactComponent as IconLeftConer } from 'ui/assets/dashboard/leftcorner.svg';
 
 import './style.less';
 
@@ -77,32 +78,26 @@ const CurrentConnection = memo(
       onChange();
       hideModal();
     };
-
-    const NoConnected = () => (
-      <p className="not-connected">
-        <img src={IconInternet} className="icon icon-no-connect" />
-        {t('Not connected to current website')}
-      </p>
-    );
-    const Connected = () => (
-      <div className="connected flex">
-        <FallbackSiteLogo url={site!.icon} origin={site!.origin} width="32px" />
-        <div className="info">
-          <p className="origin" title={site!.origin}>
-            {site!.origin}
-          </p>
-          <p className="name">{t('connected')}</p>
-        </div>
-        <ChainSelector
-          value={site!.chain}
-          onChange={handleChangeDefaultChain}
-          showModal={showModal}
-        />
-      </div>
-    );
     return (
       <div className="current-connection">
-        {site ? <Connected /> : <NoConnected />}
+        <IconLeftConer
+          className="left-corner"
+          fill={site ? '#27C193' : '#B4BDCC'}
+        />
+        <div className="connected flex">
+          {site ? (
+            <ChainSelector
+              value={site!.chain}
+              onChange={handleChangeDefaultChain}
+              showModal={showModal}
+              className="no-border-shadow"
+              arrowColor="arrowColor"
+            />
+          ) : (
+            <p className="not-connected">{t('Not connected')}</p>
+          )}
+          <div className="seperator" />
+        </div>
       </div>
     );
   }
@@ -254,6 +249,7 @@ export default ({
       }
     }
   }, [showDrawer]);
+  console.log(connections, '99999');
   return (
     <div className={clsx('recent-connections', connectionAnimation)}>
       <img
