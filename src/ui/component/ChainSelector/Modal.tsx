@@ -94,22 +94,20 @@ const ChainSelectorModal = ({
         {savedChainsData.length > 0 && (
           <ul className="chain-selector-options">
             {savedChainsData.map((chain) => (
-              <div onClick={() => handleChange(chain.enum as CHAINS_ENUM)}>
-                <ChainCard
-                  chain={chain}
-                  key={chain.id}
-                  showIcon={false}
-                  plus={false}
-                  className="w-[176px] h-[56px]"
-                />
-              </div>
+              <ChainCard
+                chain={chain}
+                key={chain.id}
+                showIcon={false}
+                plus={false}
+                className="w-[176px] h-[56px]"
+                onClick={() => handleChange(chain.enum as CHAINS_ENUM)}
+              />
             ))}
           </ul>
         )}
-        <div
-          className="all-chais"
-          onClick={goToChainManagement}
-        >{`All chains >`}</div>
+        <div className="all-chais" onClick={goToChainManagement}>
+          {'All chains >'}
+        </div>
       </>
     </Drawer>
   );
