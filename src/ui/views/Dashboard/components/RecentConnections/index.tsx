@@ -310,7 +310,11 @@ export default ({
                 </div>
               </Tooltip>
             ) : (
-              <div key={index} onClick={item.onClick} className="direction">
+              <div
+                key={index}
+                onClick={item.onClick}
+                className="direction pointer"
+              >
                 <img src={item.icon} className="images" />
                 <div>{item.content} </div>
               </div>
