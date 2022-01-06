@@ -405,7 +405,7 @@ class OpenApiService {
             method: 'GET',
             params: ['text'],
           },
-          token_search: {
+          user_token_search: {
             path: '/v1/user/token_search',
             method: 'GET',
             params: ['id', 'q'],
@@ -434,6 +434,11 @@ class OpenApiService {
             path: '/v1/nft/collections',
             method: 'GET',
             params: [],
+          },
+          user_specific_token_list: {
+            path: '/v1/user/specific_token_list',
+            method: 'POST',
+            params: ['uuids', 'id'],
           },
         },
       },
@@ -855,7 +860,7 @@ class OpenApiService {
     q: string,
     chainId: string
   ): Promise<TokenItem[]> => {
-    const config = this.store.config.token_search;
+    const config = this.store.config.user_token_search;
     const { data } = await this.request[config.method](config.path, {
       params: {
         id,
@@ -889,14 +894,25 @@ class OpenApiService {
     const { data } = await this.request[config.method](config.path, {
       params: {
         id,
-        is_all: true,
+        is_all: false,
         chain_id: chainId,
       },
     });
 
     return data;
   };
+  customListToken = async (
+    uuids: string[],
+    id: string
+  ): Promise<TokenItem[]> => {
+    const config = this.store.config.user_specific_token_list;
+    const { data } = await this.request[config.method](config.path, {
+      id,
+      uuids,
+    });
 
+    return data;
+  };
   listChainAssets = async (id: string): Promise<AssetItem[]> => {
     const config = this.store.config.user_portfolio_list;
     const { data } = await this.request[config.method](config.path, {
