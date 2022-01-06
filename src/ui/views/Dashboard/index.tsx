@@ -684,8 +684,8 @@ const Dashboard = () => {
     setConnectionAnimation('fadeInBottom');
     setTopAnimate('fadeInTop');
   };
-  const removeToken = async (removeToken) => {
-    const uuid = `${removeToken?.chain}:${removeToken?.id}`;
+  const removeToken = async (token: TokenItem) => {
+    const uuid = `${token?.chain}:${token?.id}`;
     const localAdded =
       (await wallet.getAddedToken(currentAccount?.address)) || [];
     const newAddTokenSymbolList = localAdded.filter((item) => item !== uuid);
@@ -693,16 +693,12 @@ const Dashboard = () => {
       currentAccount?.address,
       newAddTokenSymbolList
     );
-    const removeNewTokens = tokens.filter(
-      (token) => token.id !== removeToken?.id
-    );
-    const newAddedTokens = addedToken.filter(
-      (item) => item !== removeToken?.id
-    );
+    const removeNewTokens = tokens.filter((item) => item.id !== token?.id);
+    const newAddedTokens = addedToken.filter((item) => item !== token?.id);
     setTokens(removeNewTokens);
     setAddedToken(newAddedTokens);
   };
-  const addToken = async (newAddToken) => {
+  const addToken = async (newAddToken: TokenItem) => {
     const newAddTokenList = [...addedToken, newAddToken?.id];
     const uuid = `${newAddToken?.chain}:${newAddToken?.id}`;
     const localAdded =
