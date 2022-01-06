@@ -2,7 +2,7 @@
   background-color: #ffffff;
   position: relative;
   flex: 1;
-  padding: 40px 20px;
+  padding: 40px 20px 0;
   .title {
     color: #818a99;
     font-size: 12px;
@@ -13,7 +13,7 @@
     height: 249px;
     display: flex;
     justify-content: flex-start;
-    padding: 13px;
+    padding: 9px 9px 12px;
     flex-direction: column;
     background: #f5f6fa;
     border-radius: 6px;
@@ -21,8 +21,8 @@
     .direction-pannel {
       display: flex;
       flex-wrap: wrap;
-      justify-content: flex-end;
-      .direction {
+      justify-content: center;
+      .disable-direction,.direction {
         width: 106px;
         height: 80px;
         border-radius: 4px;
@@ -30,6 +30,7 @@
         flex-direction: column;
         justify-content: center;
         align-items: center;
+        margin: 4px;
         .images {
           width: 28px;
           height: 28px;
@@ -45,11 +46,17 @@
             #f5f6fa;
         }
       }
+      .disable-direction {
+        opacity:0.5;
+        &:hover {
+          background: transparent;
+        }
+      }
     }
 
     .price-viewer {
       display: flex;
-      padding: 16px 0;
+      padding: 16px 7px;
       margin: 16px 0;
       position: relative;
       .eth-price,
@@ -57,6 +64,7 @@
         display: flex;
         justify-content: flex-start;
         flex: 1;
+        align-items: center;
         .gasprice {
           font-weight: 500;
           font-size: 15px;
@@ -64,10 +72,18 @@
           padding: 0 6px 0 8px;
           color: #13141a;
         }
-        .gwei {
+        .positive {
           font-size: 12px;
           text-align: right;
           color: #27c193;
+        }
+        .depositive {
+          .positive;
+          color: #ec5151;
+        }
+        .even {
+          .positive;
+          color: #707280;
         }
       }
       .gas-container {
@@ -78,6 +94,7 @@
         }
         .gwei {
           color: #707280;
+          line-height: 18px;
         }
       }
       .gas-container::before {
@@ -224,12 +241,107 @@
       top: 0;
       border-top-left-radius: 6px;
     }
+    .connect-wrapper {
+      position: absolute;
+      left: 0;
+      width: 130px;
+      height: 48px;
+      background: transparent;
+      border: 0.5px solid transparent;
+      box-sizing: border-box;
+      border-radius: 6px;
+      &:hover {
+        background: rgba(134, 151, 255, 0.1);
+        border: 0.5px solid #8697ff;
+        box-sizing: border-box;
+        border-radius: 6px;
+      }
+    }
+    .not-connected::after,.connect-wrapper::after {
+      content: '';
+      position: absolute;
+      left: 130px;
+      bottom: 10px;
+      height: 28px;
+      width: 1px;
+      border-right: 1px solid #e5e9ef;
+    }
     .connected {
       display: flex;
       align-items: center;
       width: 100%;
       .arrowColor {
-        color: #8697FF;
+        color: #8697ff;
+      }
+      .right {
+        display: flex;
+        flex: 1;
+        position: absolute;
+        right: 16px;
+        .icon-container {
+          position: relative;
+          margin-right: 8px;
+          display: flex;
+        }
+        .image-item {
+          width: 24px;
+          height: 24px;
+          border-radius: 100%;
+          padding: 1px;
+          background: #ffffff;
+          overflow: hidden;
+          margin-left: -6px;
+          position: relative;
+          .image {
+            width: 22px;
+            height: 22px;
+            border-radius: 100%;
+          }
+          &:first-child {
+            z-index: 6;
+          }
+          &:nth-child(2) {
+            z-index: 5;
+          }
+          &:nth-child(3) {
+            z-index: 4;
+          }
+          &:nth-child(4) {
+            z-index: 3;
+          }
+          &:nth-child(5) {
+            z-index: 2;
+          }
+          &:last-child {
+            z-index: 1;
+            .image {
+              z-index: 0;
+            }
+            .modal {
+              z-index: 1;
+              width: 24px;
+              height: 24px;
+              background: rgba(0, 0, 0, 0.8);
+              border-radius: 100%;
+              position: absolute;
+              top: 0;
+              left: 0;
+              display: flex;
+              justify-content: center;
+              align-items: center;
+              .dot {
+                width: 3px;
+                height: 3px;
+                background: #ffffff;
+                border-radius: 100%;
+                margin: 0 2px;
+              }
+            }
+          }
+          img {
+            width: 100%;
+          }
+        }
       }
       .logo {
         width: 28px;
@@ -295,8 +407,16 @@
   }
 }
 .no-border-shadow {
+  width: 130px;
   box-shadow: none;
   border: 0;
   background: transparent;
-  padding: 0;
+  padding: 0 0 0 20px;
+}
+.direction-tooltip {
+  .ant-tooltip-arrow {
+    transform: translateX(0);
+    left: auto;
+    right: 45px;
+  }
 }

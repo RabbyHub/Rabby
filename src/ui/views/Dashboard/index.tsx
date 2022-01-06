@@ -740,7 +740,7 @@ const Dashboard = () => {
             <div
               className={clsx('flex header items-center relative', topAnimate)}
             >
-              <div className="h-[32px] flex header-wrapper items-center relative">
+              <div className="h-[36px] flex header-wrapper items-center relative">
                 <Popover
                   content={clickContent}
                   trigger="click"

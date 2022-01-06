@@ -436,6 +436,11 @@ class OpenApiService {
             method: 'GET',
             params: [],
           },
+          token_price_change: {
+            path: '/v1/token/price_change',
+            method: 'GET',
+            params: ['token'],
+          },
         },
       },
     });
@@ -923,6 +928,17 @@ class OpenApiService {
     const { data } = await this.request[config.method](config.path, {
       params: {},
     });
+    return data;
+  };
+
+  tokenPrice = async (tokenName: string): Promise<string> => {
+    const config = this.store.config.token_price_change;
+    const { data } = await this.request[config.method](config.path, {
+      params: {
+        token: tokenName,
+      },
+    });
+
     return data;
   };
 }
