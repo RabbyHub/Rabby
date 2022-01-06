@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Modal, Input, Drawer } from 'antd';
+import { Input, Drawer } from 'antd';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 import { useDebounce } from 'react-use';
@@ -17,7 +17,6 @@ interface TokenSelectorProps {
   onConfirm(item: TokenItem): void;
   onCancel(): void;
   onSearch(q: string);
-  onSort(condition: string);
 }
 
 const TokenSelector = ({

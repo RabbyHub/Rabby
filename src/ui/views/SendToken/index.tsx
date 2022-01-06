@@ -83,7 +83,8 @@ const SendToken = () => {
     isValidAddress(form.getFieldValue('to')) &&
     !balanceError &&
     new BigNumber(form.getFieldValue('amount')).isGreaterThan(0) &&
-    !isLoading;
+    !isLoading &&
+    tokenValidationStatus === TOKEN_VALIDATION_STATUS.SUCCESS;
   const isNativeToken = currentToken.id === CHAINS[chain].nativeTokenAddress;
 
   const handleSubmit = async ({
@@ -524,7 +525,6 @@ const SendToken = () => {
           <Form.Item name="amount">
             {currentAccount && (
               <TokenAmountInput
-                address={currentAccount.address}
                 token={currentToken}
                 onTokenChange={handleCurrentTokenChange}
                 chainId={CHAINS[chain].serverId}
