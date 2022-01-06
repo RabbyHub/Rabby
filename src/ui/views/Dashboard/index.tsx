@@ -5,7 +5,7 @@ import cloneDeep from 'lodash/cloneDeep';
 import BigNumber from 'bignumber.js';
 import { useHistory, useLocation, Link } from 'react-router-dom';
 import { useInterval } from 'react-use';
-import { message, Popover, Input, Tooltip } from 'antd';
+import { message, Popover, Input } from 'antd';
 import { FixedSizeList } from 'react-window';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
@@ -34,7 +34,7 @@ import { ConnectedSite } from 'background/service/permission';
 import { TokenItem, AssetItem } from 'background/service/openapi';
 
 import {
-  RecentConnections,
+  ChainAndSiteSelector,
   BalanceView,
   DefaultWalletAlertBar,
   TokenList,
@@ -50,13 +50,9 @@ import IconEditPen from 'ui/assets/editpen.svg';
 import IconCorrect from 'ui/assets/correct.svg';
 import IconPlus from 'ui/assets/dashboard-plus.svg';
 import IconInfo from 'ui/assets/information.png';
-import IconQueue from 'ui/assets/icon-queue.svg';
 import IconTagYou from 'ui/assets/tag-you.svg';
-import IconArrowRight from 'ui/assets/arrow-right.svg';
 import IconAddToken from 'ui/assets/addtoken.png';
 import IconAddressCopy from 'ui/assets/address-copy.png';
-import IconHistory from 'ui/assets/history.svg';
-
 import { SvgIconLoading } from 'ui/assets';
 
 import './style.less';
@@ -103,7 +99,7 @@ const Dashboard = () => {
     connection?: boolean;
     showChainsModal?: boolean;
   }>();
-  const { connection = false, showChainsModal = false } = state ?? {};
+  const { showChainsModal = false } = state ?? {};
   const wallet = useWallet();
   const { t } = useTranslation();
   const fixedList = useRef<FixedSizeList>();
@@ -882,9 +878,8 @@ const Dashboard = () => {
             type={nftType}
           ></NFTListContainer>
         </div>
-        <RecentConnections
+        <ChainAndSiteSelector
           onChange={handleCurrentConnectChange}
-          showChain={showChain}
           connectionAnimation={connectionAnimation}
           showDrawer={showToken || showAssets || showNFT}
           hideAllList={hideAllList}
