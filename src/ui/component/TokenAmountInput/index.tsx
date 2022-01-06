@@ -62,7 +62,6 @@ const TokenAmountInput = ({
   };
 
   const handleLoadTokens = async () => {
-    console.log(chainId);
     let tokens: TokenItem[] = [];
     const currentAccount = await wallet.syncGetCurrentAccount();
     const defaultTokens = await wallet.openapi.listToken(
