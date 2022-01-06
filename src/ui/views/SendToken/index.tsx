@@ -7,12 +7,14 @@ import { useHistory } from 'react-router-dom';
 import { Input, Form, Skeleton, message, Button } from 'antd';
 import abiCoder, { AbiCoder } from 'web3-eth-abi';
 import { isValidAddress, unpadHexString, addHexPrefix } from 'ethereumjs-util';
+import { Contract, providers } from 'ethers';
 import {
   CHAINS,
   CHAINS_ENUM,
   KEYRING_PURPLE_LOGOS,
   KEYRING_CLASS,
 } from 'consts';
+import { ERC20ABI } from 'consts/abi';
 import { Account } from 'background/service/preference';
 import { ContactBookItem } from 'background/service/contactBook';
 import { useWallet } from 'ui/utils';
@@ -28,8 +30,14 @@ import IconContact from 'ui/assets/contact.svg';
 import IconEdit from 'ui/assets/edit-purple.svg';
 import IconCopy from 'ui/assets/copy-no-border.svg';
 import IconSuccess from 'ui/assets/success.svg';
-import { SvgIconPlusPrimary } from 'ui/assets';
+import { SvgIconPlusPrimary, SvgIconLoading, SvgAlert } from 'ui/assets';
 import './style.less';
+
+const TOKEN_VALIDATION_STATUS = {
+  PENDING: 0,
+  SUCCESS: 1,
+  FAILD: 2,
+};
 
 const SendToken = () => {
   const wallet = useWallet();
@@ -68,6 +76,9 @@ const SendToken = () => {
   const [showContactInfo, setShowContactInfo] = useState(false);
   const [accountType, setAccountType] = useState('');
   const [amountFocus, setAmountFocus] = useState(false);
+  const [tokenValidationStatus, setTokenValidationStatus] = useState(
+    TOKEN_VALIDATION_STATUS.PENDING
+  );
   const canSubmit =
     isValidAddress(form.getFieldValue('to')) &&
     !balanceError &&
@@ -351,10 +362,44 @@ const SendToken = () => {
     }
     loadCurrentToken(needLoadToken, account.address);
   };
+
   const getAlianName = async () => {
     const alianName = await wallet.getAlianName(currentAccount?.address);
     setSendAlianName(alianName);
   };
+
+  const validateCurrentToken = async () => {
+    setTokenValidationStatus(TOKEN_VALIDATION_STATUS.PENDING);
+    const chain = Object.values(CHAINS).find(
+      (item) => item.serverId === currentToken.chain
+    );
+    if (!chain) return;
+    if (currentToken.id === chain.nativeTokenAddress) {
+      if (
+        currentToken.symbol !== chain.nativeTokenSymbol ||
+        currentToken.decimals !== chain.nativeTokenDecimals
+      ) {
+        setTokenValidationStatus(TOKEN_VALIDATION_STATUS.FAILD);
+      } else {
+        setTokenValidationStatus(TOKEN_VALIDATION_STATUS.SUCCESS);
+      }
+      return;
+    }
+    const contract = new Contract(
+      currentToken.id,
+      ERC20ABI,
+      new providers.JsonRpcProvider(chain.thridPartyRPC)
+    );
+    const decimals = await contract.decimals();
+    const symbol = await contract.symbol();
+    console.log(symbol, decimals);
+    if (symbol !== currentToken.symbol || decimals !== currentToken.decimals) {
+      setTokenValidationStatus(TOKEN_VALIDATION_STATUS.FAILD);
+    } else {
+      setTokenValidationStatus(TOKEN_VALIDATION_STATUS.SUCCESS);
+    }
+  };
+
   useEffect(() => {
     init();
     return () => {
@@ -363,10 +408,15 @@ const SendToken = () => {
   }, []);
 
   useEffect(() => {
+    validateCurrentToken();
+  }, [currentToken]);
+
+  useEffect(() => {
     if (currentAccount) {
       getAlianName();
     }
   }, [currentAccount]);
+
   return (
     <div className="send-token">
       <PageHeader onBack={handleClickBack} forceShowBack>
@@ -516,6 +566,30 @@ const SendToken = () => {
               </span>
             </div>
           </div>
+          {tokenValidationStatus !== TOKEN_VALIDATION_STATUS.SUCCESS && (
+            <div
+              className={clsx('token-validation', {
+                pending:
+                  tokenValidationStatus === TOKEN_VALIDATION_STATUS.PENDING,
+                faild: tokenValidationStatus === TOKEN_VALIDATION_STATUS.FAILD,
+              })}
+            >
+              {tokenValidationStatus === TOKEN_VALIDATION_STATUS.PENDING ? (
+                <>
+                  <SvgIconLoading
+                    className="icon icon-loading"
+                    viewBox="0 0 36 36"
+                  />
+                  {t('Token information verification in progress')}
+                </>
+              ) : (
+                <>
+                  <SvgAlert className="icon icon-alert" viewBox="0 0 14 14" />
+                  {t('The token information is incorrect')}
+                </>
+              )}
+            </div>
+          )}
         </div>
         <div className="footer flex justify-center">
           <Button

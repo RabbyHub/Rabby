@@ -142,7 +142,7 @@ export const CHAINS: Record<string, Chain> = {
     logo: IconDaiLogo,
     whiteLogo: IconDaiWhiteLogo,
     network: '100',
-    nativeTokenSymbol: 'xDAI',
+    nativeTokenSymbol: 'xDai',
     nativeTokenAddress: 'xdai',
     scanLink: 'https://blockscout.com/xdai/mainnet/tx/_s_',
     nativeTokenLogo:
@@ -343,7 +343,7 @@ export const CHAINS: Record<string, Chain> = {
     serverId: 'metis',
     network: '1088',
     name: 'Metis',
-    nativeTokenSymbol: 'METIS',
+    nativeTokenSymbol: 'Metis',
     nativeTokenAddress: 'metis',
     enum: CHAINS_ENUM.METIS,
     logo: IconMetisLogo,
