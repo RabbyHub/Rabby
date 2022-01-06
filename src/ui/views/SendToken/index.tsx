@@ -393,7 +393,6 @@ const SendToken = () => {
     );
     const decimals = await contract.decimals();
     const symbol = await contract.symbol();
-    console.log(symbol, decimals);
     if (symbol !== currentToken.symbol || decimals !== currentToken.decimals) {
       setTokenValidationStatus(TOKEN_VALIDATION_STATUS.FAILD);
     } else {
