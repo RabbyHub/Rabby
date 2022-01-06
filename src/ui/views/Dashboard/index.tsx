@@ -357,15 +357,17 @@ const Dashboard = () => {
       setAllTokens(defaultTokens);
       const localAdded =
         (await wallet.getAddedToken(currentAccount?.address)) || [];
-      const addedToken = localAdded
-        .map((item) => defaultTokens.find((token) => token.id === item)?.id)
-        .filter(Boolean);
-      setAddedToken(addedToken);
-      tokens = sortTokensByPrice(
-        defaultTokens.filter(
-          (item) => item.is_core || localAdded.includes(item.id)
-        )
+      const localAddedTokens = await wallet.openapi.customListToken(
+        localAdded,
+        currentAccount?.address
       );
+      const addedToken = localAdded.map((item) => {
+        if (item.includes(':')) {
+          return item.split(':')[1];
+        }
+      });
+      setAddedToken(addedToken);
+      tokens = sortTokensByPrice([...defaultTokens, ...localAddedTokens]);
       setTokens(tokens);
       setIsListLoading(false);
     }
@@ -682,23 +684,29 @@ const Dashboard = () => {
     setConnectionAnimation('fadeInBottom');
     setTopAnimate('fadeInTop');
   };
-  const removeToken = async (removeToken) => {
-    const newAddTokenList = addedToken.filter(
-      (item) => item !== removeToken?.id
+  const removeToken = async (token: TokenItem) => {
+    const uuid = `${token?.chain}:${token?.id}`;
+    const localAdded =
+      (await wallet.getAddedToken(currentAccount?.address)) || [];
+    const newAddTokenSymbolList = localAdded.filter((item) => item !== uuid);
+    await wallet.updateAddedToken(
+      currentAccount?.address,
+      newAddTokenSymbolList
     );
-    setAddedToken(newAddTokenList);
-    await wallet.updateAddedToken(currentAccount?.address, newAddTokenList);
-    const removeNewTokens = tokens.filter(
-      (token) => token.id !== removeToken?.id
-    );
+    const removeNewTokens = tokens.filter((item) => item.id !== token?.id);
+    const newAddedTokens = addedToken.filter((item) => item !== token?.id);
     setTokens(removeNewTokens);
+    setAddedToken(newAddedTokens);
   };
-  const addToken = async (newAddToken) => {
+  const addToken = async (newAddToken: TokenItem) => {
     const newAddTokenList = [...addedToken, newAddToken?.id];
+    const uuid = `${newAddToken?.chain}:${newAddToken?.id}`;
+    const localAdded =
+      (await wallet.getAddedToken(currentAccount?.address)) || [];
     setAddedToken(newAddTokenList);
     await wallet.updateAddedToken(currentAccount?.address, [
-      ...addedToken,
-      newAddToken?.id,
+      ...localAdded,
+      uuid,
     ]);
     const newTokenList = [...tokens, newAddToken];
     setTokens(sortTokensByPrice(newTokenList));
