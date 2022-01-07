@@ -83,7 +83,8 @@ module.exports = {
   // A map from regular expressions to module names or to arrays of module names that allow to stub out resources with a single module
   moduleNameMapper: {
     '^utils/(.*)$': '<rootDir>/utils/$1',
-    '^consts/(.*)$': '<rootDir>/src/constants/$1',
+    '^consts/(.*)$': '<rootDir>/src/constant/$1',
+    '^consts': '<rootDir>/src/constant',
     '^@/(.*)$': '<rootDir>/src/$1',
     '^ui/(.*)$': '<rootDir>/src/ui/$1',
     '^background/(.*)$': '<rootDir>/src/background/$1',
@@ -177,6 +178,7 @@ module.exports = {
   // A map from regular expressions to paths to transformers
   transform: {
     '^.+\\.(ts|tsx)$': 'ts-jest',
+    "^.+\\.(svg|png|jpg)$": "<rootDir>/svgTransform.js"
   },
 
   // An array of regexp pattern strings that are matched against all source file paths, matched files will skip transformation
