@@ -178,7 +178,7 @@ export default ({
   const directionPanelData = [
     {
       icon: IconSendToken,
-      content: 'send',
+      content: 'Send',
       onClick: () => history.push('/send-token'),
     },
     {
