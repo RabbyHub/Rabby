@@ -125,8 +125,11 @@ export const CHAINS: Record<string, Chain> = {
     nativeTokenSymbol: 'ETH',
     nativeTokenLogo:
       'https://static.debank.com/image/token/logo_url/eth/935ae4e4d1d12d59a99717a24f2540b5.png',
+    nativeTokenDecimals: 18,
     nativeTokenAddress: 'eth',
     scanLink: 'https://etherscan.io/tx/_s_',
+    thridPartyRPC:
+      'https://mainnet.infura.io/v3/67fed3c058594b7586fec0c1a4d769cc',
   },
   [CHAINS_ENUM.BSC]: {
     id: 56,
@@ -143,6 +146,8 @@ export const CHAINS: Record<string, Chain> = {
     scanLink: 'https://bscscan.com/tx/_s_',
     nativeTokenLogo:
       'https://static.debank.com/image/bsc_token/logo_url/bsc/8bfdeaa46fe9be8f5cd43a53b8d1eea1.png',
+    nativeTokenDecimals: 18,
+    thridPartyRPC: 'https://bsc-dataseed1.binance.org',
   },
   [CHAINS_ENUM.GNOSIS]: {
     id: 100,
@@ -154,11 +159,13 @@ export const CHAINS: Record<string, Chain> = {
     whiteLogo: IconDaiWhiteLogo,
     selectChainLogo: IconDaiChainLogo,
     network: '100',
-    nativeTokenSymbol: 'xDAI',
+    nativeTokenSymbol: 'xDai',
     nativeTokenAddress: 'xdai',
     scanLink: 'https://blockscout.com/xdai/mainnet/tx/_s_',
     nativeTokenLogo:
       'https://static.debank.com/image/xdai_token/logo_url/xdai/1207e67652b691ef3bfe04f89f4b5362.png',
+    nativeTokenDecimals: 18,
+    thridPartyRPC: 'https://rpc.xdaichain.com',
   },
   [CHAINS_ENUM.POLYGON]: {
     id: 137,
@@ -172,9 +179,11 @@ export const CHAINS: Record<string, Chain> = {
     network: '137',
     nativeTokenSymbol: 'MATIC',
     nativeTokenAddress: 'matic',
+    nativeTokenDecimals: 18,
     scanLink: 'https://polygonscan.com/tx/_s_',
     nativeTokenLogo:
       'https://static.debank.com/image/matic_token/logo_url/matic/e5a8a2860ba5cf740a474dcab796dc63.png',
+    thridPartyRPC: 'https://polygon-rpc.com',
   },
   [CHAINS_ENUM.FTM]: {
     id: 250,
@@ -191,6 +200,8 @@ export const CHAINS: Record<string, Chain> = {
     scanLink: 'https://ftmscan.com/tx/_s_',
     nativeTokenLogo:
       'https://static.debank.com/image/token/logo_url/eth/935ae4e4d1d12d59a99717a24f2540b5.png',
+    nativeTokenDecimals: 18,
+    thridPartyRPC: 'https://rpc.ftm.tools',
   },
   [CHAINS_ENUM.OKT]: {
     id: 66,
@@ -207,6 +218,8 @@ export const CHAINS: Record<string, Chain> = {
     scanLink: 'https://www.oklink.com/okexchain/tx/_s_',
     nativeTokenLogo:
       'https://static.debank.com/image/ftm_token/logo_url/ftm/33fdb9c5067e94f3a1b9e78f6fa86984.png',
+    nativeTokenDecimals: 18,
+    thridPartyRPC: 'https://exchainrpc.okex.org',
   },
   [CHAINS_ENUM.HECO]: {
     id: 128,
@@ -223,6 +236,8 @@ export const CHAINS: Record<string, Chain> = {
     scanLink: 'https://hecoinfo.com/tx/_s_',
     nativeTokenLogo:
       'https://static.debank.com/image/heco_token/logo_url/heco/c399dcddde07e1944c4dd8f922832b53.png',
+    nativeTokenDecimals: 18,
+    thridPartyRPC: 'https://http-mainnet.hecochain.com',
   },
   // https://developer.offchainlabs.com/docs/public_testnet#connection-information
   [CHAINS_ENUM.ARBITRUM]: {
@@ -240,6 +255,8 @@ export const CHAINS: Record<string, Chain> = {
     scanLink: 'https://arbiscan.io/tx/_s_',
     nativeTokenLogo:
       'https://static.debank.com/image/arb_token/logo_url/arb/d61441782d4a08a7479d54aea211679e.png',
+    nativeTokenDecimals: 18,
+    thridPartyRPC: 'https://arb1.arbitrum.io/rpc',
   },
   [CHAINS_ENUM.AVAX]: {
     id: 43114,
@@ -256,22 +273,26 @@ export const CHAINS: Record<string, Chain> = {
     scanLink: 'https://snowtrace.io/tx/_s_',
     nativeTokenLogo:
       'https://static.debank.com/image/avax_token/logo_url/avax/0b9c84359c84d6bdd5bfda9c2d4c4a82.png',
+    nativeTokenDecimals: 18,
+    thridPartyRPC: 'https://api.avax.network/ext/bc/C/rpc',
   },
   [CHAINS_ENUM.OP]: {
     id: 10,
     serverId: 'op',
     network: '10',
     name: 'Optimism',
-    nativeTokenSymbol: 'ETH',
     enum: CHAINS_ENUM.OP,
     logo: IconOPLogo,
     whiteLogo: IconOPWhiteLogo,
     selectChainLogo: IconOKTChainLogo,
     hex: '0xa',
     scanLink: 'https://optimistic.etherscan.io/tx/_s_',
-    nativeTokenAddress: '0x4200000000000000000000000000000000000006',
+    nativeTokenSymbol: 'ETH',
+    nativeTokenAddress: 'op',
     nativeTokenLogo:
-      'https://static.debank.com/image/op_token/logo_url/0x4200000000000000000000000000000000000006/d61441782d4a08a7479d54aea211679e.png',
+      'https://static.debank.com/image/op_token/logo_url/op/d61441782d4a08a7479d54aea211679e.png',
+    nativeTokenDecimals: 18,
+    thridPartyRPC: 'https://mainnet.optimism.io',
   },
   [CHAINS_ENUM.CELO]: {
     id: 42220,
@@ -288,6 +309,8 @@ export const CHAINS: Record<string, Chain> = {
     scanLink: 'https://explorer.celo.org/tx/_s_',
     nativeTokenLogo:
       'https://static.debank.com/image/celo_token/logo_url/0x471ece3750da237f93b8e339c536989b8978a438/6f524d91db674876ba0f5767cf0124cc.png',
+    nativeTokenDecimals: 18,
+    thridPartyRPC: 'https://forno.celo.org',
   },
   [CHAINS_ENUM.MOVR]: {
     id: 1285,
@@ -304,6 +327,8 @@ export const CHAINS: Record<string, Chain> = {
     scanLink: 'https://moonriver.moonscan.io/tx/_s_',
     nativeTokenLogo:
       'https://static.debank.com/image/chain/logo_url/movr/c66f89fdceaea8d8fce263a1f816d671.png',
+    nativeTokenDecimals: 18,
+    thridPartyRPC: 'https://rpc.moonriver.moonbeam.network',
   },
   [CHAINS_ENUM.CRO]: {
     id: 25,
@@ -320,6 +345,8 @@ export const CHAINS: Record<string, Chain> = {
     scanLink: 'https://cronos.crypto.org/explorer/tx/_s_',
     nativeTokenLogo:
       'https://static.debank.com/image/chain/logo_url/cro/affddd53019ffb9dbad0c724e12500c0.png',
+    nativeTokenDecimals: 18,
+    thridPartyRPC: 'https://evm-cronos.crypto.org',
   },
   [CHAINS_ENUM.BOBA]: {
     id: 288,
@@ -336,13 +363,15 @@ export const CHAINS: Record<string, Chain> = {
     scanLink: 'https://blockexplorer.boba.network/tx/_s_',
     nativeTokenLogo:
       'https://static.debank.com/image/op_token/logo_url/0x4200000000000000000000000000000000000006/d61441782d4a08a7479d54aea211679e.png',
+    nativeTokenDecimals: 18,
+    thridPartyRPC: 'https://mainnet.boba.network/',
   },
   [CHAINS_ENUM.METIS]: {
     id: 1088,
     serverId: 'metis',
     network: '1088',
     name: 'Metis',
-    nativeTokenSymbol: 'METIS',
+    nativeTokenSymbol: 'Metis',
     nativeTokenAddress: 'metis',
     enum: CHAINS_ENUM.METIS,
     logo: IconMetisLogo,
@@ -352,6 +381,8 @@ export const CHAINS: Record<string, Chain> = {
     scanLink: 'https://andromeda-explorer.metis.io/tx/_s_',
     nativeTokenLogo:
       'https://static.debank.com/image/chain/logo_url/metis/b289da32db4d860ebf6fb46a6e41dcfc.png',
+    nativeTokenDecimals: 18,
+    thridPartyRPC: 'https://andromeda.metis.io/?owner=1088',
   },
   [CHAINS_ENUM.BTT]: {
     id: 199,
@@ -368,13 +399,15 @@ export const CHAINS: Record<string, Chain> = {
     scanLink: 'https://scan.bt.io/#/transaction/_s_',
     nativeTokenLogo:
       'https://static.debank.com/image/chain/logo_url/btt/2130a8d57ff2a0f3d50a4ec9432897c6.png',
+    nativeTokenDecimals: 18,
+    thridPartyRPC: 'https://rpc.bittorrentchain.io/',
   },
   [CHAINS_ENUM.AURORA]: {
     id: 1313161554,
     serverId: 'aurora',
     network: '1313161554',
     name: 'Aurora',
-    nativeTokenSymbol: 'aETH',
+    nativeTokenSymbol: 'AETH',
     nativeTokenAddress: 'aurora',
     enum: CHAINS_ENUM.AURORA,
     logo: IconAuroraLogo,
@@ -384,6 +417,8 @@ export const CHAINS: Record<string, Chain> = {
     scanLink: 'https://explorer.mainnet.aurora.dev/tx/_s_',
     nativeTokenLogo:
       'https://static.debank.com/image/token/logo_url/eth/935ae4e4d1d12d59a99717a24f2540b5.png',
+    nativeTokenDecimals: 18,
+    thridPartyRPC: 'https://mainnet.aurora.dev',
   },
 };
 

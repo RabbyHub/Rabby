@@ -28,6 +28,8 @@ export interface Chain {
   nativeTokenLogo: string;
   nativeTokenAddress: string;
   scanLink: string;
+  thridPartyRPC: string;
+  nativeTokenDecimals: number;
   selectChainLogo?: string;
 }
 
@@ -872,6 +874,7 @@ class OpenApiService {
         id,
         q,
         has_balance: false,
+        chain_id: chainId,
       },
     });
 
