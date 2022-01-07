@@ -14,7 +14,6 @@ interface ChainSelectorProps {
   connection?: boolean;
   showModal?: boolean;
   className?: string;
-  arrowColor?: string;
 }
 
 const ChainSelector = ({
@@ -23,7 +22,6 @@ const ChainSelector = ({
   connection = false,
   showModal = false,
   className = '',
-  arrowColor = '',
 }: ChainSelectorProps) => {
   const [showSelectorModal, setShowSelectorModal] = useState(showModal);
 
@@ -48,10 +46,7 @@ const ChainSelector = ({
         <img src={CHAINS[value]?.selectChainLogo} className="chain-logo" />
         {CHAINS[value]?.name}
         <SvgIconArrowDown
-          className={clsx(
-            'icon icon-arrow-down fill-current',
-            !arrowColor ? 'text-gray-content' : 'arrowColor'
-          )}
+          className={clsx('icon icon-arrow-down fill-current arrowColor')}
         />
       </div>
       <Modal
