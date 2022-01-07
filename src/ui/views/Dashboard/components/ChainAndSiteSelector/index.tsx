@@ -123,7 +123,8 @@ export default ({
 
   const getConnectedSites = async () => {
     const sites = await wallet.getRecentConnectedSites();
-    setConnections(sites.slice(0, 6).filter(Boolean));
+    const topSites = sites.sort((x, y) => y.isTop - x.isTop);
+    setConnections(topSites.slice(0, 6).filter(Boolean));
   };
 
   const getCurrentSite = useCallback(async () => {
