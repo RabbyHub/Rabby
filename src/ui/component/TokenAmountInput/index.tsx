@@ -50,6 +50,7 @@ const TokenAmountInput = ({
 
   const handleSelectToken = () => {
     setTokenSelectorVisible(true);
+    handleLoadTokens();
   };
 
   const sortTokensByPrice = (tokens: TokenItem[]) => {
@@ -63,6 +64,7 @@ const TokenAmountInput = ({
   };
 
   const handleLoadTokens = async () => {
+    setIsListLoading(true);
     let tokens: TokenItem[] = [];
     const currentAccount = await wallet.syncGetCurrentAccount();
     const defaultTokens = await wallet.openapi.listToken(
@@ -86,10 +88,6 @@ const TokenAmountInput = ({
     setOriginTokenList(tokens);
     setTokens(tokens);
     setIsListLoading(false);
-    const existCurrentToken = tokens.find((t) => t.id === token.id);
-    if (existCurrentToken && existCurrentToken.id === latestTokenId.current) {
-      onTokenChange(existCurrentToken);
-    }
   };
 
   const handleSearchTokens = (q: string) => {
@@ -113,7 +111,6 @@ const TokenAmountInput = ({
   useEffect(() => {
     setTokens([]);
     setOriginTokenList([]);
-    handleLoadTokens();
     latestChainId.current = chainId;
   }, [chainId]);
 

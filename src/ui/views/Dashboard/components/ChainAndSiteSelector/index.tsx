@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import maxBy from 'lodash/maxBy';
 import { useHistory } from 'react-router-dom';
 import { Tooltip } from 'antd';
-import { useWallet, getCurrentConnectSite } from 'ui/utils';
+import { useWallet, getCurrentConnectSite, splitNumberByStep } from 'ui/utils';
 import { ConnectedSite } from 'background/service/permission';
 import { GasLevel } from 'background/service/openapi';
 import { ChainSelector, FallbackSiteLogo } from 'ui/component';
@@ -23,6 +23,7 @@ import IconRightGoTo from 'ui/assets/dashboard/selectChain/rightgoto.svg';
 import IconDot from 'ui/assets/dashboard/selectChain/dot.png';
 import './style.less';
 import { RecentConnections, Settings } from '../index';
+
 const CurrentConnection = memo(
   ({
     site,
@@ -253,7 +254,9 @@ export default ({
         <div className="price-viewer">
           <div className="eth-price">
             <img src={IconEth} className="w-[20px] h-[20px]" />
-            <div className="gasprice">{`$${currentPrice}`}</div>
+            <div className="gasprice">{`$${splitNumberByStep(
+              currentPrice
+            )}`}</div>
             <div
               className={
                 percentage > 0
@@ -269,7 +272,7 @@ export default ({
           </div>
           <div className="gas-container">
             <img src={IconGas} className="w-[16px] h-[16px]" />
-            <div className="gasprice">{`${gasPrice}`}</div>
+            <div className="gasprice">{`${splitNumberByStep(gasPrice)}`}</div>
             <div className="gwei">Gwei</div>
           </div>
         </div>
