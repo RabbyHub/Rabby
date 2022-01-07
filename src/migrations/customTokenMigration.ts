@@ -2,9 +2,12 @@ import openapiService from 'background/service/openapi';
 
 export default {
   version: 1,
-  async migrator(data: {
-    preference: { addedToken: Record<string, string[]> };
-  }) {
+  async migrator(
+    data: {
+      preference: { addedToken: Record<string, string[]> };
+    },
+    _mockData?: any
+  ) {
     try {
       const addedTokens: Record<string, string[]> = {};
       for (const addr in data.preference.addedToken) {
@@ -17,21 +20,27 @@ export default {
             token.length === 42 &&
             token.startsWith('0x')
         );
-        const resultTokens: { id: string; chain: string }[] = (
-          await Promise.all(
-            needLoadTokens.map(async (id) => {
-              const tokens = await openapiService.searchToken(addr, id);
-              if (tokens.length > 0) {
-                return {
-                  id: tokens[0].id,
-                  chain: tokens[0].chain,
-                };
-              }
-              return null;
-            })
-          )
-        ).filter((item) => item !== null) as { id: string; chain: string }[];
-
+        console.log();
+        const resultTokens: { id: string; chain: string }[] =
+          process.env.NODE_ENV === 'test'
+            ? _mockData
+            : ((
+                await Promise.all(
+                  needLoadTokens.map(async (id) => {
+                    const tokens = await openapiService.searchToken(addr, id);
+                    if (tokens.length > 0) {
+                      return {
+                        id: tokens[0].id,
+                        chain: tokens[0].chain,
+                      };
+                    }
+                    return null;
+                  })
+                )
+              ).filter((item) => item !== null) as {
+                id: string;
+                chain: string;
+              }[]);
         addedTokens[addr] = addedTokens[addr].map((id) => {
           const target = resultTokens.find((token) => token.id === id);
           if (target) {
