@@ -40,7 +40,7 @@ const RecentConnections = ({
   };
 
   const getConnectedSites = async () => {
-    const sites = await wallet.getRecentConnectedSites();
+    const sites = await wallet.getConnectedSites();
     setConnections(sites.filter((item) => !!item));
   };
 
