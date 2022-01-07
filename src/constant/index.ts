@@ -43,7 +43,7 @@ import IconCronosWhiteLogo from 'ui/assets/chain-logos/cronos-white.svg';
 import IconCronosChainLogo from 'ui/assets/dashboard/selectChain/cronos.svg';
 import IconBobaLogo from 'ui/assets/chain-logos/boba.png';
 import IconBobaWhiteLogo from 'ui/assets/chain-logos/boba-white.svg';
-import IconBobaChainLogo from 'ui/assets/dashboard/selectChain/boba.svg';
+import IconBobaChainLogo from 'ui/assets/dashboard/selectChain/boba-chain.png';
 import IconBttLogo from 'ui/assets/chain-logos/bttc.svg';
 import IconBttWhiteLogo from 'ui/assets/chain-logos/bttc-white.svg';
 import IconBttChainLogo from 'ui/assets/dashboard/selectChain/bttc.svg';

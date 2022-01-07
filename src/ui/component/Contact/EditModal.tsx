@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Drawer, Input, Button, Form, message } from 'antd';
 import { useWallet } from 'ui/utils';
@@ -26,6 +26,7 @@ const EditModal = ({
   const { t } = useTranslation();
   const wallet = useWallet();
   const [name, setName] = useState('');
+  const inputRef = useRef<Input>(null);
 
   const handleConfirm = () => {
     if (!name) return;
@@ -84,10 +85,13 @@ const EditModal = ({
 
   const handleVisibleChange = async () => {
     if (visible) {
+      setTimeout(() => {
+        console.log(inputRef);
+        inputRef?.current?.focus();
+      }, 200);
       if (isEdit) {
         const contact = await wallet.getContactByAddress(address);
         const alianName = await wallet.getAlianName(address);
-        console.log(alianName);
         setName(contact?.name || alianName || '');
       } else {
         setName('');
@@ -114,6 +118,7 @@ const EditModal = ({
       onClose={onCancel}
       placement="bottom"
       height="215px"
+      destroyOnClose
     >
       <Form onFinish={handleConfirm}>
         <Input
@@ -122,6 +127,7 @@ const EditModal = ({
           value={name}
           style={{ background: '#F5F6FA' }}
           onChange={(e) => handleNameChange(e.target.value)}
+          ref={inputRef}
         />
       </Form>
       <div className="flex justify-center">
