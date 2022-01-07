@@ -7,7 +7,7 @@ import { Tooltip } from 'antd';
 import { useWallet, getCurrentConnectSite } from 'ui/utils';
 import { ConnectedSite } from 'background/service/permission';
 import { GasLevel } from 'background/service/openapi';
-import { ChainSelector } from 'ui/component';
+import { ChainSelector, FallbackSiteLogo } from 'ui/component';
 import { CHAINS_ENUM } from 'consts';
 import IconDrawer from 'ui/assets/drawer.png';
 import IconContacts from 'ui/assets/dashboard/contacts.png';
@@ -71,18 +71,25 @@ const CurrentConnection = memo(
 
           <div className="right pointer" onClick={changeURL}>
             <div className="icon-container">
-              {connections.map((item, index) => (
-                <div className="image-item">
-                  <img key={index} src={item?.icon} className="image" />
-                  {index === connections.length - 1 && connections.length >= 6 && (
-                    <div className="modal">
-                      <div className="dot" />
-                      <div className="dot" />
-                      <div className="dot" />
-                    </div>
-                  )}
-                </div>
-              ))}
+              {connections.length > 0 &&
+                connections.map((item, index) => (
+                  <div className="image-item" key={item?.origin}>
+                    <FallbackSiteLogo
+                      url={item?.icon || ''}
+                      origin={item?.origin || ''}
+                      width="22px"
+                      className="image"
+                    />
+                    {index === connections.length - 1 &&
+                      connections.length >= 6 && (
+                        <div className="modal">
+                          <div className="dot" />
+                          <div className="dot" />
+                          <div className="dot" />
+                        </div>
+                      )}
+                  </div>
+                ))}
             </div>
             <img src={IconRightGoTo} className="right-icon" />
           </div>
@@ -123,7 +130,8 @@ export default ({
 
   const getConnectedSites = async () => {
     const sites = await wallet.getRecentConnectedSites();
-    setConnections(sites.slice(0, 6).filter(Boolean));
+    const topSites = sites.sort((x, y) => y.isTop - x.isTop);
+    setConnections(topSites.slice(0, 6).filter(Boolean));
   };
 
   const getCurrentSite = useCallback(async () => {
