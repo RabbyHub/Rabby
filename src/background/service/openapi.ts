@@ -861,11 +861,7 @@ class OpenApiService {
     return data;
   };
 
-  searchToken = async (
-    id: string,
-    q: string,
-    chainId: string
-  ): Promise<TokenItem[]> => {
+  searchToken = async (id: string, q: string): Promise<TokenItem[]> => {
     const config = this.store.config.user_token_search;
     const { data } = await this.request[config.method](config.path, {
       params: {

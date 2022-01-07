@@ -22,6 +22,7 @@ import { providerController, walletController } from './controller';
 import i18n from './service/i18n';
 import rpcCache from './utils/rpcCache';
 import eventBus from '@/eventBus';
+import migrateData from '@/migrations';
 
 const { PortMessage } = Message;
 
@@ -55,13 +56,23 @@ function initAppMeta() {
 }
 
 async function restoreAppState() {
+  const dataVersion = (await browser.storage.local.get('dataVersion'))
+    ?.dataVersion;
+  if (!dataVersion) {
+    await browser.storage.local.set({
+      dataVersion: 0,
+    });
+  }
   const keyringState = await storage.get('keyringState');
   keyringService.loadStore(keyringState);
   keyringService.store.subscribe((value) => storage.set('keyringState', value));
+  await openapiService.init();
+
+  // Init keyring and openapi first since this two service will not be migrated
+  await migrateData(dataVersion);
 
   await permissionService.init();
   await preferenceService.init();
-  await openapiService.init();
   await transactionWatchService.init();
   await pageStateCacheService.init();
   await transactionHistoryService.init();

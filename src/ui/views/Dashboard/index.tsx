@@ -328,7 +328,7 @@ const Dashboard = () => {
     if (q) {
       if (q.length !== 42 || !q.startsWith('0x')) return [];
       tokens = sortTokensByPrice(
-        await wallet.openapi.searchToken(currentAccount?.address, q, false)
+        await wallet.openapi.searchToken(currentAccount?.address, q)
       );
       if (tokens.length > 0) {
         setSearchTokens(tokens.filter((item) => !item.is_core));
