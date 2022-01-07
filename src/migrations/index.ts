@@ -5,7 +5,7 @@ const KEYS = [
   'chains',
   'contactBook',
   'pageStateCache',
-  'premission',
+  'permission',
   'preference',
   'transactions',
   'txHistory',
@@ -17,7 +17,6 @@ const sortedMigrations = Object.values(migrations).sort((a, b) => {
 
 export default async function () {
   let result: any = {};
-  let changed = false;
   const currentDataVersion = (await storage.get('dataVersion')) || 0;
   let dataVersion = currentDataVersion;
 
@@ -37,13 +36,11 @@ export default async function () {
   for (let i = 0; i < sortedMigrations.length; i++) {
     const migration = sortedMigrations[i];
     if (migration.version > currentDataVersion) {
-      changed = true;
       const migrationResult = await migration.migrator(result);
       result = Object.assign({}, result, migrationResult);
       dataVersion = migration.version;
     }
   }
-  if (!changed) return;
   for (const key in result) {
     await storage.set(key, result[key]);
   }
