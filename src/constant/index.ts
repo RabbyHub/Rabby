@@ -80,7 +80,7 @@ import IconGridPlus from 'ui/assets/walletlogo/gridplus.png';
 export enum CHAINS_ENUM {
   ETH = 'ETH',
   BSC = 'BSC',
-  DAI = 'DAI',
+  GNOSIS = 'GNOSIS',
   HECO = 'HECO',
   POLYGON = 'POLYGON',
   FTM = 'FTM',
@@ -128,12 +128,12 @@ export const CHAINS: Record<string, Chain> = {
     nativeTokenLogo:
       'https://static.debank.com/image/bsc_token/logo_url/bsc/8bfdeaa46fe9be8f5cd43a53b8d1eea1.png',
   },
-  [CHAINS_ENUM.DAI]: {
+  [CHAINS_ENUM.GNOSIS]: {
     id: 100,
-    name: 'xDai',
+    name: 'Gnosis',
     serverId: 'xdai',
     hex: '0x64',
-    enum: CHAINS_ENUM.DAI,
+    enum: CHAINS_ENUM.GNOSIS,
     logo: IconDaiLogo,
     whiteLogo: IconDaiWhiteLogo,
     network: '100',
@@ -789,7 +789,7 @@ export const GASPRICE_RANGE = {
   [CHAINS_ENUM.AVAX]: [0, 4000],
   [CHAINS_ENUM.POLYGON]: [0, 250000],
   [CHAINS_ENUM.FTM]: [0, 360000],
-  [CHAINS_ENUM.DAI]: [0, 500000],
+  [CHAINS_ENUM.GNOSIS]: [0, 500000],
   [CHAINS_ENUM.OKT]: [0, 15000],
   [CHAINS_ENUM.HECO]: [0, 50000],
   [CHAINS_ENUM.CELO]: [0, 100000],
