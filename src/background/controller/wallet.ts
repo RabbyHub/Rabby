@@ -89,6 +89,7 @@ export class WalletController extends BaseController {
   rejectApproval = notificationService.rejectApproval;
 
   initAlianNames = async () => {
+    await preferenceService.changeInitAlianNameStatus();
     const contacts = await this.listContact();
     const keyrings = await keyringService.getAllTypedAccounts();
     const walletConnectKeyrings = keyrings.filter(
@@ -105,7 +106,6 @@ export class WalletController extends BaseController {
     }
     const groupedWalletConnectList = groupBy(walletConnectList, 'brandName');
     if (keyrings.length > 0) {
-      await preferenceService.changeInitAlianNameStatus();
       Object.keys(groupedWalletConnectList).forEach((key) => {
         groupedWalletConnectList[key].map((acc, index) => {
           if (
