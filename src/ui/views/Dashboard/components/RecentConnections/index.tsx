@@ -57,7 +57,7 @@ const RecentConnections = ({
 
   return (
     <Popup visible={visible} height={484} onClose={onClose}>
-      <div className="recent-connections">
+      <div className="recent-connections-popup">
         <ConnectionList
           data={pinnedList}
           onFavoriteChange={handleFavoriteChange}
