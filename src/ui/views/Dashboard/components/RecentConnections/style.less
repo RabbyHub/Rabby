@@ -5,7 +5,9 @@
     margin: 0;
   }
   .list {
-    margin-bottom: 16px;
+    &:not(:last-child) {
+      margin-bottom: 16px;
+    }
     &-header {
       display: flex;
       column-gap: 12px;
@@ -57,7 +59,7 @@
         opacity: 0.5;
         background-color: #f5f6fa;
       }
-      &:active {
+      &.is-overlay {
         cursor: grabbing;
       }
       &-content {

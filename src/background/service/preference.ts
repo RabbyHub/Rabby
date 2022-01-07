@@ -25,7 +25,7 @@ export interface GasCache {
   [chainId: string]: ChainGas;
 }
 export interface addedToken {
-  [address: string]: [];
+  [address: string]: string[];
 }
 interface PreferenceStore {
   currentAccount: Account | undefined | null;
@@ -341,7 +341,7 @@ class PreferenceService {
   updateChain = (list: string[]) => (this.store.pinnedChain = list);
   getAddedToken = (address: string) => {
     const key = address.toLowerCase();
-    return this.store.addedToken[key];
+    return this.store.addedToken[key] || [];
   };
   updateAddedToken = (address: string, tokenList: []) => {
     const key = address.toLowerCase();
