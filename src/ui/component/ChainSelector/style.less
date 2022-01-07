@@ -43,12 +43,15 @@
   display: flex;
   flex-wrap: wrap;
   overflow-y: auto;
+  &::-webkit-scrollbar {
+    display: none !important;
+  }
 }
 
 .chain-selector__modal {
   .ant-drawer-body {
     &::-webkit-scrollbar {
-      display: none;
+      display: none !important;
     }
   }
   .ant-drawer-content {
