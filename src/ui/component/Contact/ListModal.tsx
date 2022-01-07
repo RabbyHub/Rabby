@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation, Trans } from 'react-i18next';
-import { Modal, Tabs, Tooltip } from 'antd';
+import { Drawer, Tabs, Tooltip } from 'antd';
 import { unionBy } from 'lodash';
 import {
   WALLET_BRAND_CONTENT,
@@ -92,13 +92,13 @@ const ListModal = ({ address, visible, onOk, onCancel }: ListModalProps) => {
     return '';
   };
   return (
-    <Modal
+    <Drawer
       className="list-contact-modal"
       visible={visible}
-      onCancel={onCancel}
-      footer={null}
-      width="360px"
-      centered
+      onClose={onCancel}
+      title={null}
+      placement="bottom"
+      height="580px"
     >
       <Tabs defaultActiveKey="1">
         <TabPane tab={t('Contacts')} className="text-15 tab-class" key="1">
@@ -116,7 +116,7 @@ const ListModal = ({ address, visible, onOk, onCancel }: ListModalProps) => {
                   <div className="contact-info">
                     <p>{item.name}</p>
                     <p>
-                      <AddressViewer address={item.address} />
+                      <AddressViewer address={item.address} showArrow={false} />
                     </p>
                   </div>
                 </FieldCheckbox>
@@ -162,7 +162,10 @@ const ListModal = ({ address, visible, onOk, onCancel }: ListModalProps) => {
                   <div className="contact-info ml-12">
                     <p>{alianNames[account?.address?.toLowerCase()]}</p>
                     <p>
-                      <AddressViewer address={account?.address} />
+                      <AddressViewer
+                        address={account?.address}
+                        showArrow={false}
+                      />
                     </p>
                   </div>
                 </FieldCheckbox>
@@ -170,7 +173,7 @@ const ListModal = ({ address, visible, onOk, onCancel }: ListModalProps) => {
             : NoDataUI}
         </TabPane>
       </Tabs>
-    </Modal>
+    </Drawer>
   );
 };
 
