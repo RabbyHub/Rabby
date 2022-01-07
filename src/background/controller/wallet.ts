@@ -221,15 +221,11 @@ export class WalletController extends BaseController {
 
   getConnectedSite = permissionService.getConnectedSite;
   getConnectedSites = permissionService.getConnectedSites;
+  setRecentConnectedSites = (sites: ConnectedSite[]) => {
+    permissionService.setRecentConnectedSites(sites);
+  };
   getRecentConnectedSites = () => {
-    const max = 12;
-    let list: (ConnectedSite | null)[] = permissionService.getRecentConnectSites(
-      max
-    );
-    if (list.length < max) {
-      list = [...list, ...Array(max - list.length).fill(null)];
-    }
-    return list;
+    return permissionService.getRecentConnectedSites();
   };
   getCurrentConnectedSite = (tabId: number) => {
     const { origin } = sessionService.getSession(tabId) || {};

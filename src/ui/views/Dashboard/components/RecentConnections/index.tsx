@@ -1,239 +1,90 @@
-import React, { useState, useEffect, memo, useCallback } from 'react';
-import clsx from 'clsx';
-import { useTranslation } from 'react-i18next';
-import { useWallet, getCurrentConnectSite, openInTab } from 'ui/utils';
+import { Popup } from '@/ui/component';
 import { ConnectedSite } from 'background/service/permission';
-import { ChainSelector, FallbackSiteLogo } from 'ui/component';
-import { CHAINS_ENUM, CHAINS } from 'consts';
-import IconInternet from 'ui/assets/internet.svg';
-import { ReactComponent as IconStar } from 'ui/assets/star.svg';
-import IconDrawer from 'ui/assets/drawer.png';
+import React, { useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { openInTab, useWallet } from 'ui/utils';
+import ConnectionList from './ConnectionList';
 import './style.less';
 
-const CurrentConnection = memo(
-  ({
-    site,
-    onChange,
-    showModal,
-    hideModal,
-  }: {
-    site: null | ConnectedSite | undefined;
-    onChange(): void;
-    showModal?: boolean;
-    hideModal(): void;
-  }) => {
-    const wallet = useWallet();
-    const { t } = useTranslation();
+interface RecentConnectionsProps {
+  visible?: boolean;
+  onClose?(): void;
+}
 
-    const handleChangeDefaultChain = (chain: CHAINS_ENUM) => {
-      wallet.updateConnectSite(site!.origin, {
-        ...site!,
-        chain,
-      });
-      onChange();
-      hideModal();
-    };
-
-    const NoConnected = () => (
-      <p className="not-connected">
-        <img src={IconInternet} className="icon icon-no-connect" />
-        {t('Not connected to current website')}
-      </p>
-    );
-    const Connected = () => (
-      <div className="connected flex">
-        <FallbackSiteLogo url={site!.icon} origin={site!.origin} width="32px" />
-        <div className="info">
-          <p className="origin" title={site!.origin}>
-            {site!.origin}
-          </p>
-          <p className="name">{t('connected')}</p>
-        </div>
-        <ChainSelector
-          value={site!.chain}
-          onChange={handleChangeDefaultChain}
-          showModal={showModal}
-        />
-      </div>
-    );
-    return (
-      <div className="current-connection">
-        {site ? <Connected /> : <NoConnected />}
-      </div>
-    );
-  }
-);
-
-const ConnectionItem = memo(
-  ({
-    item,
-    onClick,
-    onPin,
-    onUnpin,
-    onPointerEnter,
-    onPointerLeave,
-  }: {
-    item: ConnectedSite | null;
-    onClick?(): void;
-    onPin?(): void;
-    onUnpin?(): void;
-    onPointerEnter?(): void;
-    onPointerLeave?(): void;
-  }) => {
-    return (
-      <div
-        className="item"
-        onPointerEnter={onPointerEnter}
-        onPointerLeave={onPointerLeave}
-      >
-        {item ? (
-          <>
-            <IconStar
-              className={clsx('pin-website', { block: item.isTop })}
-              fill={item.isTop ? '#8697FF' : 'none'}
-              onClick={item.isTop ? onUnpin : onPin}
-            />
-            <img
-              className="connect-chain"
-              src={CHAINS[item.chain]?.logo}
-              alt={CHAINS[item.chain]?.name}
-            />
-            <div className="logo cursor-pointer">
-              <FallbackSiteLogo
-                url={item.icon}
-                origin={item.origin}
-                width="32px"
-                onClick={onClick}
-                style={{
-                  borderRadius: '4px',
-                }}
-              />
-            </div>
-          </>
-        ) : (
-          <img src="/images/no-recent-connect.png" className="logo" />
-        )}
-      </div>
-    );
-  },
-  (pre, next) =>
-    pre.item?.origin == next.item?.origin &&
-    pre.item?.chain == next.item?.chain &&
-    pre.item?.isTop === next.item?.isTop
-);
-
-export default ({
-  onChange,
-  showChain,
-  connectionAnimation,
-  showDrawer,
-  hideAllList,
-  showModal = false,
-}: {
-  onChange(site: ConnectedSite | null | undefined): void;
-  showChain?: boolean;
-  connectionAnimation?: string;
-  showDrawer?: boolean;
-  hideAllList?(): void;
-  showModal?: boolean;
-}) => {
-  const [connections, setConnections] = useState<(ConnectedSite | null)[]>(
-    new Array(12).fill(null)
-  );
-  const [localshowModal, setLocalShowModal] = useState(showModal);
-  const [drawerAnimation, setDrawerAnimation] = useState<string | null>(null);
-  const [currentConnect, setCurrentConnect] = useState<
-    ConnectedSite | null | undefined
-  >(null);
-  const [hoverSite, setHoverSite] = useState<string | undefined>();
+const RecentConnections = ({
+  visible = false,
+  onClose,
+}: RecentConnectionsProps) => {
+  const { t } = useTranslation();
+  const [connections, setConnections] = useState<ConnectedSite[]>([]);
   const wallet = useWallet();
 
-  const handleClickConnection = (connection: ConnectedSite | null) => {
-    if (!connection) return;
+  const pinnedList = useMemo(() => {
+    return connections
+      .filter((item) => item && item.isTop)
+      .sort((a, b) => (a.order || 0) - (b.order || 0));
+  }, [connections]);
+
+  const recentList = useMemo(() => {
+    return connections.filter((item) => item && !item.isTop);
+  }, [connections]);
+
+  const handleClick = (connection: ConnectedSite) => {
     openInTab(connection.origin);
+  };
+
+  const handleSort = (sites: ConnectedSite[]) => {
+    const list = sites.concat(recentList);
+    setConnections(list);
+    wallet.setRecentConnectedSites(list);
   };
 
   const getConnectedSites = async () => {
     const sites = await wallet.getRecentConnectedSites();
-    setConnections(sites);
+    setConnections(sites.filter((item) => !!item));
   };
 
-  const getCurrentSite = useCallback(async () => {
-    const current = await getCurrentConnectSite(wallet);
-    setCurrentConnect(current);
+  const handleFavoriteChange = (item: ConnectedSite) => {
+    item.isTop
+      ? wallet.unpinConnectedSite(item.origin)
+      : wallet.topConnectedSite(item.origin);
+    getConnectedSites();
+  };
+
+  useEffect(() => {
     getConnectedSites();
   }, []);
 
-  const showHoverSite = (item?: ConnectedSite | null) => {
-    setHoverSite(item?.origin);
-  };
-
-  const handlePinWebsite = (item: ConnectedSite | null) => {
-    if (!item || item.isTop) return;
-    wallet.topConnectedSite(item.origin);
-    getConnectedSites();
-  };
-
-  const handleUnpinWebsite = (item: ConnectedSite | null) => {
-    if (!item || !item.isTop) return;
-    wallet.unpinConnectedSite(item.origin);
-    getConnectedSites();
-  };
-  const hideModal = () => {
-    setLocalShowModal(false);
-  };
-  useEffect(() => {
-    getCurrentSite();
-  }, []);
-
-  useEffect(() => {
-    onChange(currentConnect);
-  }, [currentConnect]);
-  useEffect(() => {
-    if (showDrawer) {
-      setDrawerAnimation('fadeInDrawer');
-    } else {
-      if (drawerAnimation) {
-        setTimeout(() => {
-          setDrawerAnimation('fadeOutDrawer');
-        }, 100);
-      }
-    }
-  }, [showDrawer]);
   return (
-    <div className={clsx('recent-connections', connectionAnimation)}>
-      <img
-        src={IconDrawer}
-        className={clsx(
-          'bottom-drawer',
-          drawerAnimation,
-          drawerAnimation === 'fadeInDrawer' ? 'h-[40px] z-10' : 'h-[0] z-0'
-        )}
-        onClick={hideAllList}
-      />
-      <div className="mb-[17px] text-12 text-gray-content h-14 text-center">
-        {hoverSite}
+    <Popup visible={visible} height={484} onClose={onClose}>
+      <div className="recent-connections">
+        <ConnectionList
+          data={pinnedList}
+          onFavoriteChange={handleFavoriteChange}
+          title={t('Pinned')}
+          empty={t('No pinned dapps')}
+          extra={pinnedList.length > 0 ? t('drag to sort') : null}
+          onClick={handleClick}
+          onSort={handleSort}
+          sort={true}
+        ></ConnectionList>
+        <ConnectionList
+          onClick={handleClick}
+          onFavoriteChange={handleFavoriteChange}
+          data={recentList}
+          title={t('Recent')}
+          empty={
+            <div className="text-center py-[85px] text-gray-comment text-14">
+              <img
+                className="w-[100px] h-[100px]"
+                src="./images/nodata-tx.png"
+              />
+              {t('No dapps')}
+            </div>
+          }
+        ></ConnectionList>
       </div>
-      <div className="list">
-        {connections.map((item, index) => (
-          <ConnectionItem
-            data-item={item}
-            onPointerEnter={() => showHoverSite(item)}
-            onPointerLeave={() => showHoverSite()}
-            item={item}
-            key={item?.origin || index}
-            onClick={() => handleClickConnection(item)}
-            onPin={() => handlePinWebsite(item)}
-            onUnpin={() => handleUnpinWebsite(item)}
-          />
-        ))}
-      </div>
-      <CurrentConnection
-        site={currentConnect}
-        showModal={localshowModal}
-        onChange={getCurrentSite}
-        hideModal={hideModal}
-      />
-    </div>
+    </Popup>
   );
 };
+export default RecentConnections;

@@ -10,6 +10,7 @@ export interface ConnectedSite {
   e?: number;
   isSigned: boolean;
   isTop: boolean;
+  order?: number;
 }
 
 type PermissionStore = {
@@ -102,23 +103,19 @@ class PermissionService {
     return this.lruCache.has(origin);
   };
 
-  getRecentConnectSites = (max = 12) => {
-    const values = this.lruCache?.values() || [];
-    const topSites: ConnectedSite[] = [];
-    const signedSites: ConnectedSite[] = [];
-    const connectedSites: ConnectedSite[] = [];
+  setRecentConnectedSites = (sites: ConnectedSite[]) => {
+    this.lruCache?.load(
+      sites.map((item) => ({
+        e: 0,
+        k: item.origin,
+        v: item,
+      }))
+    );
+    this.sync();
+  };
 
-    for (let i = 0; i < values.length; i++) {
-      const item = values[i];
-      if (item.isTop) {
-        topSites.push(item);
-      } else if (item.isSigned) {
-        signedSites.push(item);
-      } else {
-        connectedSites.push(item);
-      }
-    }
-    return [...topSites, ...signedSites, ...connectedSites].slice(0, max) || [];
+  getRecentConnectedSites = () => {
+    return this.lruCache?.values() || [];
   };
 
   getConnectedSites = () => {
@@ -134,6 +131,7 @@ class PermissionService {
     if (!site || !this.lruCache) return;
     this.updateConnectSite(origin, {
       ...site,
+      order: 0,
       isTop: true,
     });
   };

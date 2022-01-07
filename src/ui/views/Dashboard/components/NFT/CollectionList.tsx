@@ -25,7 +25,7 @@ const CollectionList = ({ isLoading, data }: NFTListProps) => {
   };
   if (isLoading) {
     return (
-      <div className="collection-list tokenList">
+      <div className="collection-list tokenList mt-0">
         <div className="loadingContainer items-center">
           <SvgIconLoading className="icon icon-loading ml-0" fill="#FFFFFF" />
           <div className="loading-text">{t('Loading Collections')}</div>
@@ -71,7 +71,7 @@ const CollectionList = ({ isLoading, data }: NFTListProps) => {
     );
   }
   return (
-    <div className="collection-list tokenList">
+    <div className="collection-list tokenList mt-0">
       <div className="no-data">
         <img className="w-[100px] h-[100px]" src="./images/nodata-tx.png" />
         <div className="loading-text">{t('No Collections')}</div>
