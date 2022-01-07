@@ -52,9 +52,7 @@ const ChainSelector = ({
       >
         <img src={CHAINS[value]?.selectChainLogo} className="chain-logo" />
         {CHAINS[value]?.name}
-        <SvgIconArrowDown
-          className={clsx('icon icon-arrow-down fill-current arrowColor')}
-        />
+        <SvgIconArrowDown className={clsx('icon icon-arrow-down arrowColor')} />
       </div>
       <Modal
         value={value}
