@@ -844,6 +844,7 @@ const Dashboard = () => {
           showDrawer={showToken || showAssets || showNFT}
           hideAllList={hideAllList}
           showModal={showChainsModal}
+          isGnosis={isGnosis}
         />
         {!isDefaultWallet && !showChain && (
           <DefaultWalletAlertBar onChange={handleDefaultWalletChange} />

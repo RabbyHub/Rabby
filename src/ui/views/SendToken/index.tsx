@@ -242,7 +242,8 @@ const SendToken = () => {
     }
   };
 
-  const handleCurrentTokenChange = (token: TokenItem) => {
+  const handleCurrentTokenChange = async (token: TokenItem) => {
+    const account = await wallet.syncGetCurrentAccount();
     const values = form.getFieldsValue();
     if (token.id !== currentToken.id || token.chain !== currentToken.chain) {
       form.setFieldsValue({
@@ -253,6 +254,8 @@ const SendToken = () => {
     setCurrentToken(token);
     setBalanceError(null);
     setBalanceWarn(null);
+    setIsLoading(true);
+    loadCurrentToken(token.id, token.chain, account.address);
   };
 
   const handleClickTokenBalance = () => {
@@ -346,7 +349,7 @@ const SendToken = () => {
         if (cache?.path === history.location.pathname) {
           if (cache.states.values) {
             form.setFieldsValue(cache.states.values);
-            handleFormValuesChange(null, form.getFieldsValue());
+            // handleFormValuesChange(null, form.getFieldsValue());
           }
           if (cache.states.currentToken) {
             setCurrentToken(cache.states.currentToken);
