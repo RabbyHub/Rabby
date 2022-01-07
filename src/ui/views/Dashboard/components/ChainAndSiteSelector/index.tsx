@@ -129,7 +129,6 @@ export default ({
   const getCurrentSite = useCallback(async () => {
     const current = await getCurrentConnectSite(wallet);
     setCurrentConnect(current);
-    getConnectedSites();
   }, []);
   const hideModal = () => {
     setLocalShowModal(false);
@@ -157,7 +156,11 @@ export default ({
     getCurrentSite();
     getGasPrice();
   }, []);
-
+  useEffect(() => {
+    if (!urlVisible) {
+      getConnectedSites();
+    }
+  }, [urlVisible]);
   useEffect(() => {
     onChange(currentConnect);
   }, [currentConnect]);
