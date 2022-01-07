@@ -257,7 +257,7 @@
         border-radius: 6px;
       }
     }
-    .not-connected::after,.connect-wrapper::after {
+    .not-connected::after {
       content: '';
       position: absolute;
       left: 142px;
@@ -407,11 +407,19 @@
   }
 }
 .no-border-shadow {
+  position: relative;
   width: 100%;
   box-shadow: none;
   border: 0;
   background: transparent;
   padding: 0 0 0 10px;
+}
+.no-border-shadow::after {
+  content: '';
+  position: relative;
+  height: 28px;
+  width: 1px;
+  border-right: 1px solid #e5e9ef;
 }
 .direction-tooltip {
   .ant-tooltip-arrow {
