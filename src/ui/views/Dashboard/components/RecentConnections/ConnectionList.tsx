@@ -5,11 +5,12 @@ import {
   MouseSensor,
   useSensor,
   useSensors,
+  DragOverlay,
 } from '@dnd-kit/core';
-import { DragEndEvent } from '@dnd-kit/core/dist/types';
+import { DragEndEvent, DragStartEvent } from '@dnd-kit/core/dist/types';
 import { SortableContext } from '@dnd-kit/sortable';
-import React, { memo, ReactNode } from 'react';
-import ConnectionItem from './ConnectionItem';
+import React, { memo, ReactNode, useState } from 'react';
+import { Item, ConnectionItem } from './ConnectionItem';
 
 interface ConnectionProps {
   title: string;
@@ -33,7 +34,19 @@ const ConnectionList = memo(
     onSort,
     empty,
   }: ConnectionProps) => {
+    const [activeItem, setActiveItem] = useState<ConnectedSite | null>(null);
+    const handleDragStart = (event: DragStartEvent) => {
+      const id = event.active?.id;
+      if (!id) {
+        return;
+      }
+      const result = data.find((item) => item.origin === id);
+      if (result) {
+        setActiveItem(result);
+      }
+    };
     const handleDragEnd = (event: DragEndEvent) => {
+      setActiveItem(null);
       if (!onSort) {
         return;
       }
@@ -48,6 +61,9 @@ const ConnectionList = memo(
       const [removed] = newItems.splice(sourceIndex, 1);
       newItems.splice(destinationIndex, 0, removed);
       onSort(newItems.map((item, index) => ({ ...item, order: index })));
+    };
+    const handleDragCancel = () => {
+      setActiveItem(null);
     };
     const sensors = useSensors(
       useSensor(MouseSensor, {
@@ -65,7 +81,9 @@ const ConnectionList = memo(
         {data && data.length > 0 ? (
           <div className="list-content droppable">
             <DndContext
+              onDragStart={handleDragStart}
               onDragEnd={handleDragEnd}
+              onDragCancel={handleDragCancel}
               sensors={sensors}
               measuring={{ droppable: { strategy: MeasuringStrategy.Always } }}
             >
@@ -84,6 +102,9 @@ const ConnectionList = memo(
                   />
                 ))}
               </SortableContext>
+              <DragOverlay>
+                {activeItem && <Item item={activeItem}></Item>}
+              </DragOverlay>
             </DndContext>
           </div>
         ) : (
