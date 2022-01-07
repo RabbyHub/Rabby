@@ -17,7 +17,6 @@ export default {
             token.length === 42 &&
             token.startsWith('0x')
         );
-        console.log('needLoadTokens', needLoadTokens);
         const resultTokens: { id: string; chain: string }[] = (
           await Promise.all(
             needLoadTokens.map(async (id) => {
@@ -41,7 +40,6 @@ export default {
           return id;
         });
       }
-      console.log('addedTokens', addedTokens);
       return {
         preference: {
           ...data.preference,
