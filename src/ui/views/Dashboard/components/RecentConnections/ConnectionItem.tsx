@@ -8,6 +8,7 @@ import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 
 interface ConnectionItemProps {
+  className?: string;
   item: ConnectedSite;
   sort?: boolean;
   onClick?(): void;
@@ -21,12 +22,18 @@ export const Item = memo(
         item,
         onClick,
         onFavoriteChange,
+        className,
         ...rest
       }: ConnectionItemProps & Record<string, any>,
       ref: React.ForwardedRef<any>
     ) => {
       return (
-        <div className="item" ref={ref} onClick={onClick} {...rest}>
+        <div
+          className={clsx('item', className)}
+          ref={ref}
+          onClick={onClick}
+          {...rest}
+        >
           <div className="logo cursor-pointer">
             <FallbackSiteLogo
               url={item.icon}
@@ -62,7 +69,7 @@ export const Item = memo(
 );
 
 export const ConnectionItem = memo((props: ConnectionItemProps) => {
-  const { item, sort } = props;
+  const { item, sort, className } = props;
   const {
     attributes,
     setNodeRef,
@@ -80,7 +87,7 @@ export const ConnectionItem = memo((props: ConnectionItemProps) => {
   };
   return (
     <Item
-      className={clsx('item', isDragging && 'is-dragging')}
+      className={clsx(className, isDragging && 'is-dragging')}
       ref={setNodeRef}
       {...attributes}
       style={style}
