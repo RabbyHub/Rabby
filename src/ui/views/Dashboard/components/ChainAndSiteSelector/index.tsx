@@ -20,6 +20,7 @@ import IconGas from 'ui/assets/dashboard/gas.svg';
 import IconEth from 'ui/assets/dashboard/eth.png';
 import { ReactComponent as IconLeftConer } from 'ui/assets/dashboard/leftcorner.svg';
 import IconRightGoTo from 'ui/assets/dashboard/selectChain/rightgoto.svg';
+import IconDot from 'ui/assets/dashboard/selectChain/dot.png';
 import './style.less';
 import { RecentConnections, Settings } from '../index';
 const CurrentConnection = memo(
@@ -83,9 +84,7 @@ const CurrentConnection = memo(
                     {index === connections.length - 1 &&
                       connections.length >= 6 && (
                         <div className="modal">
-                          <div className="dot" />
-                          <div className="dot" />
-                          <div className="dot" />
+                          <img src={IconDot} className="dot" />
                         </div>
                       )}
                   </div>
