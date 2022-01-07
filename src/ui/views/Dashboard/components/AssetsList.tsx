@@ -5,6 +5,7 @@ import { FixedSizeList } from 'react-window';
 import { TokenWithChain } from 'ui/component';
 import { splitNumberByStep, useHover, openInTab } from 'ui/utils';
 import { SvgIconLoading } from 'ui/assets';
+import IconOpenDeFi from 'ui/assets/dashboard/opendefi.png';
 
 const Row = (props) => {
   const { data, index, style } = props;
@@ -29,8 +30,11 @@ const Row = (props) => {
         hideConer
       />
       <div className="middle">
-        <div className="token-name opacity-100 text-13 font-medium">
+        <div className="token-name opacity-100 text-13 font-medium flex">
           {token.name}
+          {isHovering && (
+            <img src={IconOpenDeFi} className="w-[14px] h-[14px] ml-8" />
+          )}
         </div>
       </div>
       <div className="right">

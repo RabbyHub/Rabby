@@ -132,7 +132,7 @@ const config = {
       },
       {
         test: /\.md$/,
-        use: "raw-loader"
+        use: 'raw-loader',
       },
     ],
   },
@@ -174,10 +174,8 @@ const config = {
       '#PAGEPROVIDER#': 'pageProvider',
     }),
     new webpack.DefinePlugin({
-      'process.env.version': JSON.stringify(
-        `version: ${version} / ${new Date().toISOString()}`
-      ),
-      'process.env.release': JSON.stringify(version)
+      'process.env.version': JSON.stringify(`version: ${version}`),
+      'process.env.release': JSON.stringify(version),
     }),
   ],
   resolve: {

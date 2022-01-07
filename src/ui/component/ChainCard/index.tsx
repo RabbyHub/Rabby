@@ -15,6 +15,7 @@ const ChainCard = ({
   saveToPin,
   removeFromPin,
   className,
+  onClick,
 }: {
   plus: boolean;
   showIcon: boolean;
@@ -22,6 +23,7 @@ const ChainCard = ({
   saveToPin?(chain: string): void;
   removeFromPin?(chain: string): void;
   className?: string;
+  onClick?(): void;
 }) => {
   const [isHovering, hoverProps] = useHover();
 
@@ -60,6 +62,7 @@ const ChainCard = ({
       ref={setNodeRef}
       {...attributes}
       style={style}
+      onClick={onClick}
     >
       {!plus ? (
         <div className={clsx('chain-card', 'cursor-pointer')} {...listeners}>
