@@ -31,18 +31,27 @@
   }
 }
 
+.hover {
+  background: rgba(134, 151, 255, 0.5);
+  border: 1px solid rgba(134, 151, 255, 0.4);
+  box-shadow: 0px 2px 12px rgba(134, 151, 255, 0.12);
+  border-radius: 5px;
+}
 .chain-selector-options {
   width: 100%;
   max-height: 376px;
   display: flex;
   flex-wrap: wrap;
   overflow-y: auto;
+  &::-webkit-scrollbar {
+    display: none !important;
+  }
 }
 
 .chain-selector__modal {
   .ant-drawer-body {
     &::-webkit-scrollbar {
-      display: none;
+      display: none !important;
     }
   }
   .ant-drawer-content {

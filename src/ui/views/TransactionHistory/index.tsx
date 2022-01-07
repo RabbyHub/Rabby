@@ -497,7 +497,7 @@ const TransactionHistory = () => {
   }, []);
   return (
     <div className="tx-history">
-      <PageHeader>{t('History')}</PageHeader>
+      <PageHeader>{t('Signed Tx')}</PageHeader>
       {pendingList.length > 0 && (
         <div className="tx-history__pending">
           {pendingList.map((item) => (
@@ -530,9 +530,7 @@ const TransactionHistory = () => {
       {completeList.length <= 0 && pendingList.length <= 0 && (
         <div className="tx-history__empty">
           <img className="no-data" src="./images/nodata-tx.png" />
-          <p className="text-14 text-gray-content mt-12">
-            {t('No transaction')}
-          </p>
+          <p className="text-14 text-gray-content mt-12">{t('No signed Tx')}</p>
         </div>
       )}
     </div>
