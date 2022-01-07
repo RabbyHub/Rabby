@@ -1,6 +1,7 @@
 import LRU from 'lru-cache';
 import { createPersistStore } from 'background/utils';
 import { CHAINS_ENUM, INTERNAL_REQUEST_ORIGIN } from 'consts';
+import { max } from 'lodash';
 
 export interface ConnectedSite {
   origin: string;
@@ -126,12 +127,15 @@ class PermissionService {
     return this.lruCache?.get(key);
   };
 
-  topConnectedSite = (origin: string) => {
+  topConnectedSite = (origin: string, order?: number) => {
     const site = this.getConnectedSite(origin);
     if (!site || !this.lruCache) return;
+    order =
+      order ??
+      (max(this.getRecentConnectedSites().map((item) => item.order)) || 0) + 1;
     this.updateConnectSite(origin, {
       ...site,
-      order: 0,
+      order,
       isTop: true,
     });
   };
