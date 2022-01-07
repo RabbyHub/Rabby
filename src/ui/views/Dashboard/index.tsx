@@ -226,9 +226,6 @@ const Dashboard = () => {
   useEffect(() => {
     getAllKeyrings();
   }, []);
-  const handleConfig = () => {
-    history.push('/settings');
-  };
 
   const handleChange = async (account) => {
     setIsListLoading(true);
@@ -237,14 +234,6 @@ const Dashboard = () => {
     await wallet.changeAccount({ address, type, brandName });
     setCurrentAccount({ address, type, brandName });
     hide();
-  };
-
-  const handleGotoHistory = async () => {
-    history.push('/tx-history');
-  };
-
-  const handleGotoQueue = () => {
-    history.push('/gnosis-queue');
   };
 
   const handleCopyCurrentAddress = () => {
@@ -677,23 +666,29 @@ const Dashboard = () => {
     setConnectionAnimation('fadeInBottom');
     setTopAnimate('fadeInTop');
   };
-  const removeToken = async (removeToken) => {
-    const newAddTokenList = addedToken.filter(
-      (item) => item !== removeToken?.id
+  const removeToken = async (token: TokenItem) => {
+    const uuid = `${token?.chain}:${token?.id}`;
+    const localAdded =
+      (await wallet.getAddedToken(currentAccount?.address)) || [];
+    const newAddTokenSymbolList = localAdded.filter((item) => item !== uuid);
+    await wallet.updateAddedToken(
+      currentAccount?.address,
+      newAddTokenSymbolList
     );
-    setAddedToken(newAddTokenList);
-    await wallet.updateAddedToken(currentAccount?.address, newAddTokenList);
-    const removeNewTokens = tokens.filter(
-      (token) => token.id !== removeToken?.id
-    );
+    const removeNewTokens = tokens.filter((item) => item.id !== token?.id);
+    const newAddedTokens = addedToken.filter((item) => item !== token?.id);
     setTokens(removeNewTokens);
+    setAddedToken(newAddedTokens);
   };
-  const addToken = async (newAddToken) => {
+  const addToken = async (newAddToken: TokenItem) => {
     const newAddTokenList = [...addedToken, newAddToken?.id];
+    const uuid = `${newAddToken?.chain}:${newAddToken?.id}`;
+    const localAdded =
+      (await wallet.getAddedToken(currentAccount?.address)) || [];
     setAddedToken(newAddTokenList);
     await wallet.updateAddedToken(currentAccount?.address, [
-      ...addedToken,
-      newAddToken?.id,
+      ...localAdded,
+      uuid,
     ]);
     const newTokenList = [...tokens, newAddToken];
     setTokens(sortTokensByPrice(newTokenList));
@@ -814,39 +809,6 @@ const Dashboard = () => {
               </div>
             )}
           </div>
-          {/* <div
-            className={clsx(
-              'operation',
-              startAnimate ? (showChain ? 'fadeOut' : 'fadeIn') : ''
-            )}
-          >
-            {isGnosis ? (
-              <div className="operation-item" onClick={handleGotoQueue}>
-                {gnosisPendingCount > 0 && (
-                  <span className="operation-item__count">
-                    {gnosisPendingCount}
-                  </span>
-                )}
-                <img className="icon icon-arrow-right" src={IconArrowRight} />
-                <img className="icon icon-queue" src={IconQueue} />
-                {t('Queue')}
-              </div>
-            ) : (
-              <div className="operation-item" onClick={handleGotoHistory}>
-                <img
-                  className="icon icon-history w-[24px] h-[24px] mr-8"
-                  src={IconHistory}
-                />
-                {t('Transaction History')}
-                {pendingTxCount > 0 && (
-                  <span className="operation-item__count__normal">
-                    {`${pendingTxCount} ${t('Pending')}`}
-                  </span>
-                )}
-                <img className="icon icon-arrow-right" src={IconArrowRight} />
-              </div>
-            )}
-          </div> */}
           <TokenList
             tokens={tokens}
             searchTokens={searchTokens}
