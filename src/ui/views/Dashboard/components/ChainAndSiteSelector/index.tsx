@@ -197,7 +197,6 @@ export default ({
       onClick: () => console.log(111),
     },
   ];
-  console.log(connections, '99999');
   return (
     <div className={clsx('recent-connections', connectionAnimation)}>
       <img
