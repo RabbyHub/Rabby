@@ -14,8 +14,9 @@ import { SvgIconLoading } from 'ui/assets';
 import IconSendToken from 'ui/assets/dashboard/tokenlistsend.png';
 import IconSendTokenHover from 'ui/assets/dashboard/hover-tokenlistsend.png';
 import clsx from 'clsx';
-const SendIcon = (token, history) => {
+const SendIcon = (token) => {
   const [isHovering, hoverProps] = useHover();
+  const history = useHistory();
   const goToSend = () => {
     history.push(`/send-token?token=${token?.chain}:${token?.id}`);
   };
@@ -33,15 +34,7 @@ const SendIcon = (token, history) => {
 const Row = (props) => {
   const { data, index, style } = props;
   const [isHovering, hoverProps] = useHover();
-  const {
-    list,
-    startSearch,
-    removeToken,
-    addToken,
-    query,
-    addedToken,
-    history,
-  } = data;
+  const { list, startSearch, removeToken, addToken, query, addedToken } = data;
   const isInitList = !startSearch && !query;
   const token = list[index];
   const isAdded =
@@ -84,7 +77,7 @@ const Row = (props) => {
             </div>
           </div>
         ) : (
-          <SendIcon token={token} history={history} />
+          <SendIcon token={token} />
         )
       ) : (
         <div className="right">
@@ -112,7 +105,6 @@ const TokenList = ({
   isloading,
 }) => {
   const { t } = useTranslation();
-  const history = useHistory();
   const fixedList = useRef<FixedSizeList>();
   const [query, setQuery] = useState<string | null>(null);
   const handleQueryChange = (value: string) => {
@@ -189,7 +181,6 @@ const TokenList = ({
             removeToken,
             addToken,
             query,
-            history,
           }}
           itemCount={
             startSearch
