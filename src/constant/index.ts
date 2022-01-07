@@ -1,38 +1,55 @@
 import { Chain } from 'background/service/openapi';
 import IconEthLogo from 'ui/assets/chain-logos/eth.svg';
 import IconEthWhiteLogo from 'ui/assets/chain-logos/eth-white.svg';
+import IconEthChainLogo from 'ui/assets/dashboard/selectChain/eth.svg';
 import IconHecoLogo from 'ui/assets/chain-logos/heco.svg';
+import IconHecoChainLogo from 'ui/assets/dashboard/selectChain/heco.svg';
 import IconHecoWhiteLogo from 'ui/assets/chain-logos/heco-white.svg';
 import IconBscLogo from 'ui/assets/chain-logos/bsc.svg';
 import IconBscWhiteLogo from 'ui/assets/chain-logos/bsc-white.svg';
+import IconBscChainLogo from 'ui/assets/dashboard/selectChain/bsc.svg';
 import IconDaiLogo from 'ui/assets/chain-logos/dai.svg';
 import IconDaiWhiteLogo from 'ui/assets/chain-logos/dai-white.svg';
+import IconDaiChainLogo from 'ui/assets/dashboard/selectChain/xdai.svg';
 import IconPolygonLogo from 'ui/assets/chain-logos/polygon.svg';
 import IconPolygonWhiteLogo from 'ui/assets/chain-logos/polygon-white.svg';
+import IconPolygonChainLogo from 'ui/assets/dashboard/selectChain/polygon.svg';
 import IconFantom from 'ui/assets/chain-logos/fantom.svg';
 import IconFantomWhiteLogo from 'ui/assets/chain-logos/fantom-white.svg';
+import IconFantomChainLogo from 'ui/assets/dashboard/selectChain/fantom.svg';
 import IconOKTLogo from 'ui/assets/chain-logos/okex.svg';
 import IconOKTWhiteLogo from 'ui/assets/chain-logos/okex-white.svg';
+import IconOKTChainLogo from 'ui/assets/dashboard/selectChain/okex.svg';
 import IconMetisLogo from 'ui/assets/chain-logos/metis.svg';
 import IconMetisWhiteLogo from 'ui/assets/chain-logos/metis-white.svg';
+import IconMetisChainLogo from 'ui/assets/dashboard/selectChain/metis.svg';
 import IconArbitrumLogo from 'ui/assets/chain-logos/arbitrum.svg';
 import IconArbitrumWhiteLogo from 'ui/assets/chain-logos/arbitrum-white.svg';
+import IconArbitrumChainLogo from 'ui/assets/dashboard/selectChain/arbitrum.svg';
 import IconOPLogo from 'ui/assets/chain-logos/op.svg';
 import IconOPWhiteLogo from 'ui/assets/chain-logos/op-white.svg';
+import IconOPChainLogo from 'ui/assets/dashboard/selectChain/optimistic.svg';
 import IconAvaxLogo from 'ui/assets/chain-logos/avax.svg';
 import IconAvaxWhiteLogo from 'ui/assets/chain-logos/avax-white.svg';
+import IconAvaxChainLogo from 'ui/assets/dashboard/selectChain/avalanche.svg';
 import IconCeloLogo from 'ui/assets/chain-logos/celo.svg';
 import IconCeloWhiteLogo from 'ui/assets/chain-logos/celo-white.svg';
+import IconCeloChainLogo from 'ui/assets/dashboard/selectChain/celo.svg';
 import IconMoonriverLogo from 'ui/assets/chain-logos/movr.svg';
 import IconMoonriverWhiteLogo from 'ui/assets/chain-logos/movr-white.svg';
+import IconMoonriverChainLogo from 'ui/assets/dashboard/selectChain/moonriver.svg';
 import IconCronosLogo from 'ui/assets/chain-logos/cronos.svg';
 import IconCronosWhiteLogo from 'ui/assets/chain-logos/cronos-white.svg';
+import IconCronosChainLogo from 'ui/assets/dashboard/selectChain/cronos.svg';
 import IconBobaLogo from 'ui/assets/chain-logos/boba.png';
 import IconBobaWhiteLogo from 'ui/assets/chain-logos/boba-white.svg';
+import IconBobaChainLogo from 'ui/assets/dashboard/selectChain/boba.svg';
 import IconBttLogo from 'ui/assets/chain-logos/bttc.svg';
 import IconBttWhiteLogo from 'ui/assets/chain-logos/bttc-white.svg';
+import IconBttChainLogo from 'ui/assets/dashboard/selectChain/bttc.svg';
 import IconAuroraLogo from 'ui/assets/chain-logos/aurora.svg';
 import IconAuroraWhiteLogo from 'ui/assets/chain-logos/aurora-white.svg';
+import IconAuroraChainLogo from 'ui/assets/dashboard/selectChain/aurora.svg';
 import IconEN from 'ui/assets/langs/en.svg';
 import IconZH from 'ui/assets/langs/zh_cn.svg';
 import IconAmber from 'ui/assets/walletlogo/amber.png';
@@ -51,10 +68,7 @@ import IconTokenpocket from 'ui/assets/walletlogo/tp.png';
 import IconTrezor from 'ui/assets/walletlogo/trezor.png';
 import IconTrust from 'ui/assets/walletlogo/trust.png';
 import IconMnemonicPurple from 'ui/assets/walletlogo/mnemonic-purple.svg';
-import IconMnemonic24 from 'ui/assets/walletlogo/mnemonic24.svg';
-import IconPrivateKey24 from 'ui/assets/walletlogo/privatekey24.svg';
 import IconPrivateKeyPurple from 'ui/assets/walletlogo/privatekey-purple.svg';
-import IconWatch24 from 'ui/assets/walletlogo/watch24.svg';
 import IconWatchPurple from 'ui/assets/walletlogo/watch-purple.svg';
 import IconTrezor24 from 'ui/assets/walletlogo/trezor24.png';
 import IconTrezor24Border from 'ui/assets/walletlogo/trezor24-border.png';
@@ -106,6 +120,7 @@ export const CHAINS: Record<string, Chain> = {
     enum: CHAINS_ENUM.ETH,
     logo: IconEthLogo,
     whiteLogo: IconEthWhiteLogo,
+    selectChainLogo: IconEthChainLogo,
     network: '1',
     nativeTokenSymbol: 'ETH',
     nativeTokenLogo:
@@ -121,6 +136,7 @@ export const CHAINS: Record<string, Chain> = {
     enum: CHAINS_ENUM.BSC,
     logo: IconBscLogo,
     whiteLogo: IconBscWhiteLogo,
+    selectChainLogo: IconBscChainLogo,
     network: '56',
     nativeTokenSymbol: 'BNB',
     nativeTokenAddress: 'bsc',
@@ -136,6 +152,7 @@ export const CHAINS: Record<string, Chain> = {
     enum: CHAINS_ENUM.GNOSIS,
     logo: IconDaiLogo,
     whiteLogo: IconDaiWhiteLogo,
+    selectChainLogo: IconDaiChainLogo,
     network: '100',
     nativeTokenSymbol: 'xDAI',
     nativeTokenAddress: 'xdai',
@@ -151,6 +168,7 @@ export const CHAINS: Record<string, Chain> = {
     enum: CHAINS_ENUM.POLYGON,
     logo: IconPolygonLogo,
     whiteLogo: IconPolygonWhiteLogo,
+    selectChainLogo: IconPolygonChainLogo,
     network: '137',
     nativeTokenSymbol: 'MATIC',
     nativeTokenAddress: 'matic',
@@ -166,6 +184,7 @@ export const CHAINS: Record<string, Chain> = {
     enum: CHAINS_ENUM.FTM,
     logo: IconFantom,
     whiteLogo: IconFantomWhiteLogo,
+    selectChainLogo: IconFantomChainLogo,
     network: '250',
     nativeTokenSymbol: 'FTM',
     nativeTokenAddress: 'ftm',
@@ -180,6 +199,7 @@ export const CHAINS: Record<string, Chain> = {
     enum: CHAINS_ENUM.OKT,
     logo: IconOKTLogo,
     whiteLogo: IconOKTWhiteLogo,
+    selectChainLogo: IconOKTChainLogo,
     hex: '0x42',
     network: '66',
     nativeTokenSymbol: 'OKT',
@@ -195,6 +215,7 @@ export const CHAINS: Record<string, Chain> = {
     enum: CHAINS_ENUM.HECO,
     logo: IconHecoLogo,
     whiteLogo: IconHecoWhiteLogo,
+    selectChainLogo: IconHecoChainLogo,
     hex: '0x80',
     network: '128',
     nativeTokenSymbol: 'HT',
@@ -211,6 +232,7 @@ export const CHAINS: Record<string, Chain> = {
     enum: CHAINS_ENUM.ARBITRUM,
     logo: IconArbitrumLogo,
     whiteLogo: IconArbitrumWhiteLogo,
+    selectChainLogo: IconArbitrumChainLogo,
     hex: '0xa4b1',
     network: '42161',
     nativeTokenSymbol: 'ETH',
@@ -229,6 +251,7 @@ export const CHAINS: Record<string, Chain> = {
     enum: CHAINS_ENUM.AVAX,
     logo: IconAvaxLogo,
     whiteLogo: IconAvaxWhiteLogo,
+    selectChainLogo: IconAvaxChainLogo,
     hex: '0xa86a',
     scanLink: 'https://snowtrace.io/tx/_s_',
     nativeTokenLogo:
@@ -243,6 +266,7 @@ export const CHAINS: Record<string, Chain> = {
     enum: CHAINS_ENUM.OP,
     logo: IconOPLogo,
     whiteLogo: IconOPWhiteLogo,
+    selectChainLogo: IconOKTChainLogo,
     hex: '0xa',
     scanLink: 'https://optimistic.etherscan.io/tx/_s_',
     nativeTokenAddress: '0x4200000000000000000000000000000000000006',
@@ -259,6 +283,7 @@ export const CHAINS: Record<string, Chain> = {
     enum: CHAINS_ENUM.CELO,
     logo: IconCeloLogo,
     whiteLogo: IconCeloWhiteLogo,
+    selectChainLogo: IconCeloChainLogo,
     hex: '0xa4ec',
     scanLink: 'https://explorer.celo.org/tx/_s_',
     nativeTokenLogo:
@@ -274,6 +299,7 @@ export const CHAINS: Record<string, Chain> = {
     enum: CHAINS_ENUM.MOVR,
     logo: IconMoonriverLogo,
     whiteLogo: IconMoonriverWhiteLogo,
+    selectChainLogo: IconMoonriverChainLogo,
     hex: '0x505',
     scanLink: 'https://moonriver.moonscan.io/tx/_s_',
     nativeTokenLogo:
@@ -289,6 +315,7 @@ export const CHAINS: Record<string, Chain> = {
     enum: CHAINS_ENUM.CRO,
     logo: IconCronosLogo,
     whiteLogo: IconCronosWhiteLogo,
+    selectChainLogo: IconCronosChainLogo,
     hex: '0x19',
     scanLink: 'https://cronos.crypto.org/explorer/tx/_s_',
     nativeTokenLogo:
@@ -304,6 +331,7 @@ export const CHAINS: Record<string, Chain> = {
     enum: CHAINS_ENUM.BOBA,
     logo: IconBobaLogo,
     whiteLogo: IconBobaWhiteLogo,
+    selectChainLogo: IconBobaChainLogo,
     hex: '0x120',
     scanLink: 'https://blockexplorer.boba.network/tx/_s_',
     nativeTokenLogo:
@@ -319,6 +347,7 @@ export const CHAINS: Record<string, Chain> = {
     enum: CHAINS_ENUM.METIS,
     logo: IconMetisLogo,
     whiteLogo: IconMetisWhiteLogo,
+    selectChainLogo: IconMetisChainLogo,
     hex: '0x440',
     scanLink: 'https://andromeda-explorer.metis.io/tx/_s_',
     nativeTokenLogo:
@@ -334,6 +363,7 @@ export const CHAINS: Record<string, Chain> = {
     enum: CHAINS_ENUM.BTT,
     logo: IconBttLogo,
     whiteLogo: IconBttWhiteLogo,
+    selectChainLogo: IconBttChainLogo,
     hex: '0xc7',
     scanLink: 'https://scan.bt.io/#/transaction/_s_',
     nativeTokenLogo:
@@ -349,6 +379,7 @@ export const CHAINS: Record<string, Chain> = {
     enum: CHAINS_ENUM.AURORA,
     logo: IconAuroraLogo,
     whiteLogo: IconAuroraWhiteLogo,
+    selectChainLogo: IconAuroraChainLogo,
     hex: '0x4e454152',
     scanLink: 'https://explorer.mainnet.aurora.dev/tx/_s_',
     nativeTokenLogo:
@@ -723,9 +754,9 @@ export const WALLET_BRAND_CONTENT = {
 };
 
 export const KEYRING_ICONS = {
-  [KEYRING_CLASS.MNEMONIC]: IconMnemonic24,
-  [KEYRING_CLASS.PRIVATE_KEY]: IconPrivateKey24,
-  [KEYRING_CLASS.WATCH]: IconWatch24,
+  [KEYRING_CLASS.MNEMONIC]: IconMnemonicPurple,
+  [KEYRING_CLASS.PRIVATE_KEY]: IconPrivateKeyPurple,
+  [KEYRING_CLASS.WATCH]: IconWatchPurple,
   [HARDWARE_KEYRING_TYPES.BitBox02.type]: IconBitBox02,
   [HARDWARE_KEYRING_TYPES.Ledger.type]: LogoLedgerWhite,
   [HARDWARE_KEYRING_TYPES.Onekey.type]: LogoOnekey,

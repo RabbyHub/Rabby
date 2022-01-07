@@ -28,6 +28,7 @@ export interface Chain {
   nativeTokenLogo: string;
   nativeTokenAddress: string;
   scanLink: string;
+  selectChainLogo?: string;
 }
 
 export interface ServerChain {
@@ -434,6 +435,11 @@ class OpenApiService {
             path: '/v1/nft/collections',
             method: 'GET',
             params: [],
+          },
+          token_price_change: {
+            path: '/v1/token/price_change',
+            method: 'GET',
+            params: ['token'],
           },
           user_specific_token_list: {
             path: '/v1/user/specific_token_list',
@@ -938,6 +944,17 @@ class OpenApiService {
     const { data } = await this.request[config.method](config.path, {
       params: {},
     });
+    return data;
+  };
+
+  tokenPrice = async (tokenName: string): Promise<string> => {
+    const config = this.store.config.token_price_change;
+    const { data } = await this.request[config.method](config.path, {
+      params: {
+        token: tokenName,
+      },
+    });
+
     return data;
   };
 }

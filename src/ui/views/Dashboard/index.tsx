@@ -5,7 +5,7 @@ import cloneDeep from 'lodash/cloneDeep';
 import BigNumber from 'bignumber.js';
 import { useHistory, useLocation, Link } from 'react-router-dom';
 import { useInterval } from 'react-use';
-import { message, Popover, Input, Tooltip } from 'antd';
+import { message, Popover, Input } from 'antd';
 import { FixedSizeList } from 'react-window';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
@@ -34,17 +34,15 @@ import { ConnectedSite } from 'background/service/permission';
 import { TokenItem, AssetItem } from 'background/service/openapi';
 
 import {
-  RecentConnections,
+  ChainAndSiteSelector,
   BalanceView,
   DefaultWalletAlertBar,
   TokenList,
   AssetsList,
   GnosisWrongChainAlertBar,
   NFTListContainer,
-  Settings,
 } from './components';
 import { getUpdateContent } from 'changeLogs/index';
-import IconSetting from 'ui/assets/settings.svg';
 import IconSuccess from 'ui/assets/success.svg';
 import IconUpAndDown from 'ui/assets/up-and-down.svg';
 import { ReactComponent as IconCopy } from 'ui/assets/urlcopy.svg';
@@ -52,13 +50,9 @@ import IconEditPen from 'ui/assets/editpen.svg';
 import IconCorrect from 'ui/assets/correct.svg';
 import IconPlus from 'ui/assets/dashboard-plus.svg';
 import IconInfo from 'ui/assets/information.png';
-import IconQueue from 'ui/assets/icon-queue.svg';
 import IconTagYou from 'ui/assets/tag-you.svg';
-import IconArrowRight from 'ui/assets/arrow-right.svg';
 import IconAddToken from 'ui/assets/addtoken.png';
 import IconAddressCopy from 'ui/assets/address-copy.png';
-import IconHistory from 'ui/assets/history.svg';
-
 import { SvgIconLoading } from 'ui/assets';
 
 import './style.less';
@@ -105,7 +99,7 @@ const Dashboard = () => {
     connection?: boolean;
     showChainsModal?: boolean;
   }>();
-  const { connection = false, showChainsModal = false } = state ?? {};
+  const { showChainsModal = false } = state ?? {};
   const wallet = useWallet();
   const { t } = useTranslation();
   const fixedList = useRef<FixedSizeList>();
@@ -232,9 +226,6 @@ const Dashboard = () => {
   useEffect(() => {
     getAllKeyrings();
   }, []);
-  const handleConfig = () => {
-    history.push('/settings');
-  };
 
   const handleChange = async (account) => {
     setIsListLoading(true);
@@ -243,14 +234,6 @@ const Dashboard = () => {
     await wallet.changeAccount({ address, type, brandName });
     setCurrentAccount({ address, type, brandName });
     hide();
-  };
-
-  const handleGotoHistory = async () => {
-    history.push('/tx-history');
-  };
-
-  const handleGotoQueue = () => {
-    history.push('/gnosis-queue');
   };
 
   const handleCopyCurrentAddress = () => {
@@ -358,17 +341,15 @@ const Dashboard = () => {
       setAllTokens(defaultTokens);
       const localAdded =
         (await wallet.getAddedToken(currentAccount?.address)) || [];
-      const localAddedTokens = await wallet.openapi.customListToken(
-        localAdded,
-        currentAccount?.address
-      );
-      const addedToken = localAdded.map((item) => {
-        if (item.includes(':')) {
-          return item.split(':')[1];
-        }
-      });
+      const addedToken = localAdded
+        .map((item) => defaultTokens.find((token) => token.id === item)?.id)
+        .filter(Boolean);
       setAddedToken(addedToken);
-      tokens = sortTokensByPrice([...defaultTokens, ...localAddedTokens]);
+      tokens = sortTokensByPrice(
+        defaultTokens.filter(
+          (item) => item.is_core || localAdded.includes(item.id)
+        )
+      );
       setTokens(tokens);
       setIsListLoading(false);
     }
@@ -749,7 +730,7 @@ const Dashboard = () => {
             <div
               className={clsx('flex header items-center relative', topAnimate)}
             >
-              <div className="h-[32px] flex header-wrapper items-center relative">
+              <div className="h-[36px] flex header-wrapper items-center relative">
                 <Popover
                   content={clickContent}
                   trigger="click"
@@ -787,11 +768,6 @@ const Dashboard = () => {
                 src={IconInfo}
                 onClick={() => setHovered(true)}
                 className="w-[16px] h-[16px] pointer"
-              />
-              <img
-                className="icon icon-settings"
-                src={IconSetting}
-                onClick={handleConfig}
               />
             </div>
           )}
@@ -833,39 +809,6 @@ const Dashboard = () => {
               </div>
             )}
           </div>
-          <div
-            className={clsx(
-              'operation',
-              startAnimate ? (showChain ? 'fadeOut' : 'fadeIn') : ''
-            )}
-          >
-            {isGnosis ? (
-              <div className="operation-item" onClick={handleGotoQueue}>
-                {gnosisPendingCount > 0 && (
-                  <span className="operation-item__count">
-                    {gnosisPendingCount}
-                  </span>
-                )}
-                <img className="icon icon-arrow-right" src={IconArrowRight} />
-                <img className="icon icon-queue" src={IconQueue} />
-                {t('Queue')}
-              </div>
-            ) : (
-              <div className="operation-item" onClick={handleGotoHistory}>
-                <img
-                  className="icon icon-history w-[24px] h-[24px] mr-8"
-                  src={IconHistory}
-                />
-                {t('Transaction History')}
-                {pendingTxCount > 0 && (
-                  <span className="operation-item__count__normal">
-                    {`${pendingTxCount} ${t('Pending')}`}
-                  </span>
-                )}
-                <img className="icon icon-arrow-right" src={IconArrowRight} />
-              </div>
-            )}
-          </div>
           <TokenList
             tokens={tokens}
             searchTokens={searchTokens}
@@ -897,8 +840,13 @@ const Dashboard = () => {
             type={nftType}
           ></NFTListContainer>
         </div>
-        <Settings />
-        <RecentConnections visible={true} />
+        <ChainAndSiteSelector
+          onChange={handleCurrentConnectChange}
+          connectionAnimation={connectionAnimation}
+          showDrawer={showToken || showAssets || showNFT}
+          hideAllList={hideAllList}
+          showModal={showChainsModal}
+        />
         {!isDefaultWallet && !showChain && (
           <DefaultWalletAlertBar onChange={handleDefaultWalletChange} />
         )}

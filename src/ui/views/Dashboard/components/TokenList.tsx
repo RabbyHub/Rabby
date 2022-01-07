@@ -1,26 +1,43 @@
 import React, { useRef, useState, useEffect } from 'react';
+import { useHistory } from 'react-router-dom';
 import { Input } from 'antd';
 import { FixedSizeList } from 'react-window';
 import { useTranslation } from 'react-i18next';
 import { useDebounce } from 'react-use';
 import { TokenWithChain, AddressViewer } from 'ui/component';
-import { splitNumberByStep } from 'ui/utils';
+import { splitNumberByStep, useHover } from 'ui/utils';
 import IconSearch from 'ui/assets/tokenSearch.png';
 import IconClose from 'ui/assets/searchIconClose.png';
 import IconAddToken from 'ui/assets/addtokenplus.png';
 import IconRemoveToken from 'ui/assets/removetoken.png';
 import { SvgIconLoading } from 'ui/assets';
-
+import IconSendToken from 'ui/assets/dashboard/tokenlistsend.png';
 import clsx from 'clsx';
 const Row = (props) => {
   const { data, index, style } = props;
-  const { list, startSearch, removeToken, addToken, query, addedToken } = data;
+  const [isHovering, hoverProps] = useHover();
+  const {
+    list,
+    startSearch,
+    removeToken,
+    addToken,
+    query,
+    addedToken,
+    history,
+  } = data;
   const isInitList = !startSearch && !query;
   const token = list[index];
   const isAdded =
     addedToken.length > 0 && addedToken.find((item) => item === token.id);
+  const goToSend = () => {
+    history.push(`/send-token?token=${token?.chain}:${token?.id}`);
+  };
   return (
-    <div className="token-item" style={style}>
+    <div
+      className={clsx('token-item', isHovering && 'hover')}
+      {...hoverProps}
+      style={style}
+    >
       <TokenWithChain token={token} hideConer width={'24px'} height={'24px'} />
       <div className="middle">
         <div className="token-amount">
@@ -41,14 +58,25 @@ const Row = (props) => {
         </div>
       </div>
       {isInitList ? (
-        <div className="right">
-          <div className="token-amount">
-            ${splitNumberByStep((token.amount * token.price || 0)?.toFixed(2))}
+        !isHovering ? (
+          <div className="right">
+            <div className="token-amount">
+              $
+              {splitNumberByStep((token.amount * token.price || 0)?.toFixed(2))}
+            </div>
+            <div className="token-name">
+              @{splitNumberByStep((token.price || 0).toFixed(2))}
+            </div>
           </div>
-          <div className="token-name">
-            @{splitNumberByStep((token.price || 0).toFixed(2))}
+        ) : (
+          <div className="right">
+            <img
+              src={IconSendToken}
+              className={clsx('w-[36px] h-[36px]', isHovering && 'pointer')}
+              onClick={goToSend}
+            />
           </div>
-        </div>
+        )
       ) : (
         <div className="right">
           <img
@@ -75,6 +103,7 @@ const TokenList = ({
   isloading,
 }) => {
   const { t } = useTranslation();
+  const history = useHistory();
   const fixedList = useRef<FixedSizeList>();
   const [query, setQuery] = useState<string | null>(null);
   const handleQueryChange = (value: string) => {
@@ -151,6 +180,7 @@ const TokenList = ({
             removeToken,
             addToken,
             query,
+            history,
           }}
           itemCount={
             startSearch
