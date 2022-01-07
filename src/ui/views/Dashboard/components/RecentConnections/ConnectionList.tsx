@@ -103,7 +103,9 @@ const ConnectionList = memo(
                 ))}
               </SortableContext>
               <DragOverlay>
-                {activeItem && <Item item={activeItem}></Item>}
+                {activeItem && (
+                  <Item item={activeItem} className="is-overlay"></Item>
+                )}
               </DragOverlay>
             </DndContext>
           </div>
