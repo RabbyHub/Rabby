@@ -89,6 +89,7 @@ export class WalletController extends BaseController {
   rejectApproval = notificationService.rejectApproval;
 
   initAlianNames = async () => {
+    await preferenceService.changeInitAlianNameStatus();
     const contacts = await this.listContact();
     const keyrings = await keyringService.getAllTypedAccounts();
     const walletConnectKeyrings = keyrings.filter(
@@ -105,7 +106,6 @@ export class WalletController extends BaseController {
     }
     const groupedWalletConnectList = groupBy(walletConnectList, 'brandName');
     if (keyrings.length > 0) {
-      await preferenceService.changeInitAlianNameStatus();
       Object.keys(groupedWalletConnectList).forEach((key) => {
         groupedWalletConnectList[key].map((acc, index) => {
           if (
@@ -161,9 +161,10 @@ export class WalletController extends BaseController {
 
   unlock = async (password: string) => {
     const alianNameInited = await preferenceService.getInitAlianNameStatus();
+    const alianNames = await preferenceService.getAllAlianName();
     await keyringService.submitPassword(password);
     sessionService.broadcastEvent('unlock');
-    if (!alianNameInited) {
+    if (!alianNameInited && Object.values(alianNames).length === 0) {
       this.initAlianNames();
     }
   };

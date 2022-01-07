@@ -28,7 +28,7 @@ import IconArbitrumWhiteLogo from 'ui/assets/chain-logos/arbitrum-white.svg';
 import IconArbitrumChainLogo from 'ui/assets/dashboard/selectChain/arbitrum.svg';
 import IconOPLogo from 'ui/assets/chain-logos/op.svg';
 import IconOPWhiteLogo from 'ui/assets/chain-logos/op-white.svg';
-import IconOPChainLogo from 'ui/assets/dashboard/selectChain/optimistic.svg';
+import IconOPChainLogo from 'ui/assets/dashboard/selectChain/optimism.svg';
 import IconAvaxLogo from 'ui/assets/chain-logos/avax.svg';
 import IconAvaxWhiteLogo from 'ui/assets/chain-logos/avax-white.svg';
 import IconAvaxChainLogo from 'ui/assets/dashboard/selectChain/avalanche.svg';
@@ -284,7 +284,7 @@ export const CHAINS: Record<string, Chain> = {
     enum: CHAINS_ENUM.OP,
     logo: IconOPLogo,
     whiteLogo: IconOPWhiteLogo,
-    selectChainLogo: IconOKTChainLogo,
+    selectChainLogo: IconOPChainLogo,
     hex: '0xa',
     scanLink: 'https://optimistic.etherscan.io/tx/_s_',
     nativeTokenSymbol: 'ETH',
