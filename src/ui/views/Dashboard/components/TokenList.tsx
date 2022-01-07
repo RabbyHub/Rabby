@@ -14,7 +14,7 @@ import { SvgIconLoading } from 'ui/assets';
 import IconSendToken from 'ui/assets/dashboard/tokenlistsend.png';
 import IconSendTokenHover from 'ui/assets/dashboard/hover-tokenlistsend.png';
 import clsx from 'clsx';
-const SendIcon = (token) => {
+const SendIcon = ({ token }) => {
   const [isHovering, hoverProps] = useHover();
   const history = useHistory();
   const goToSend = () => {
