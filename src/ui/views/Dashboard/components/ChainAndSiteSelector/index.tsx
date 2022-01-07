@@ -4,12 +4,11 @@ import { useTranslation } from 'react-i18next';
 import maxBy from 'lodash/maxBy';
 import { useHistory } from 'react-router-dom';
 import { Tooltip } from 'antd';
-import { useWallet, getCurrentConnectSite, openInTab } from 'ui/utils';
+import { useWallet, getCurrentConnectSite } from 'ui/utils';
 import { ConnectedSite } from 'background/service/permission';
 import { GasLevel } from 'background/service/openapi';
-import { ChainSelector, FallbackSiteLogo } from 'ui/component';
-import { CHAINS_ENUM, CHAINS } from 'consts';
-import { ReactComponent as IconStar } from 'ui/assets/star.svg';
+import { ChainSelector } from 'ui/component';
+import { CHAINS_ENUM } from 'consts';
 import IconDrawer from 'ui/assets/drawer.png';
 import IconContacts from 'ui/assets/dashboard/contacts.png';
 import IconSendToken from 'ui/assets/dashboard/sendtoken.png';
@@ -61,7 +60,6 @@ const CurrentConnection = memo(
                 onChange={handleChangeDefaultChain}
                 showModal={showModal}
                 className="no-border-shadow"
-                arrowColor="arrowColor"
               />
             </div>
           ) : (
@@ -90,68 +88,8 @@ const CurrentConnection = memo(
     );
   }
 );
-
-const ConnectionItem = memo(
-  ({
-    item,
-    onClick,
-    onPin,
-    onUnpin,
-    onPointerEnter,
-    onPointerLeave,
-  }: {
-    item: ConnectedSite | null;
-    onClick?(): void;
-    onPin?(): void;
-    onUnpin?(): void;
-    onPointerEnter?(): void;
-    onPointerLeave?(): void;
-  }) => {
-    return (
-      <div
-        className="item"
-        onPointerEnter={onPointerEnter}
-        onPointerLeave={onPointerLeave}
-      >
-        {item ? (
-          <>
-            <IconStar
-              className={clsx('pin-website', { block: item.isTop })}
-              fill={item.isTop ? '#8697FF' : 'none'}
-              onClick={item.isTop ? onUnpin : onPin}
-            />
-            <img
-              className="connect-chain"
-              src={CHAINS[item.chain]?.logo}
-              alt={CHAINS[item.chain]?.name}
-            />
-            <div className="logo cursor-pointer">
-              <FallbackSiteLogo
-                url={item.icon}
-                origin={item.origin}
-                width="32px"
-                onClick={onClick}
-                style={{
-                  borderRadius: '4px',
-                }}
-              />
-            </div>
-          </>
-        ) : (
-          <img src="/images/no-recent-connect.png" className="logo" />
-        )}
-      </div>
-    );
-  },
-  (pre, next) =>
-    pre.item?.origin == next.item?.origin &&
-    pre.item?.chain == next.item?.chain &&
-    pre.item?.isTop === next.item?.isTop
-);
-
 export default ({
   onChange,
-  showChain,
   connectionAnimation,
   showDrawer,
   hideAllList,
@@ -175,13 +113,8 @@ export default ({
   const [currentConnect, setCurrentConnect] = useState<
     ConnectedSite | null | undefined
   >(null);
-  const [hoverSite, setHoverSite] = useState<string | undefined>();
   const [gasPrice, setGasPrice] = useState<number>(0);
   const wallet = useWallet();
-  const handleClickConnection = (connection: ConnectedSite | null) => {
-    if (!connection) return;
-    openInTab(connection.origin);
-  };
 
   const getConnectedSites = async () => {
     const sites = await wallet.getRecentConnectedSites();
@@ -193,22 +126,6 @@ export default ({
     setCurrentConnect(current);
     getConnectedSites();
   }, []);
-
-  const showHoverSite = (item?: ConnectedSite | null) => {
-    setHoverSite(item?.origin);
-  };
-
-  const handlePinWebsite = (item: ConnectedSite | null) => {
-    if (!item || item.isTop) return;
-    wallet.topConnectedSite(item.origin);
-    getConnectedSites();
-  };
-
-  const handleUnpinWebsite = (item: ConnectedSite | null) => {
-    if (!item || !item.isTop) return;
-    wallet.unpinConnectedSite(item.origin);
-    getConnectedSites();
-  };
   const hideModal = () => {
     setLocalShowModal(false);
   };
@@ -292,9 +209,6 @@ export default ({
         )}
         onClick={hideAllList}
       />
-      {/* <div className="mb-[17px] text-12 text-gray-content h-14 text-center">
-        {hoverSite}
-      </div> */}
       <div className="pannel">
         <div className="direction-pannel">
           {directionPanelData.map((item, index) =>
@@ -345,20 +259,6 @@ export default ({
           </div>
         </div>
       </div>
-      {/* <div className="list">
-        {connections.map((item, index) => (
-          <ConnectionItem
-            data-item={item}
-            onPointerEnter={() => showHoverSite(item)}
-            onPointerLeave={() => showHoverSite()}
-            item={item}
-            key={item?.origin || index}
-            onClick={() => handleClickConnection(item)}
-            onPin={() => handlePinWebsite(item)}
-            onUnpin={() => handleUnpinWebsite(item)}
-          />
-        ))}
-      </div> */}
       <CurrentConnection
         site={currentConnect}
         showModal={localshowModal}
