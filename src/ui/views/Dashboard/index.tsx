@@ -341,15 +341,17 @@ const Dashboard = () => {
       setAllTokens(defaultTokens);
       const localAdded =
         (await wallet.getAddedToken(currentAccount?.address)) || [];
-      const addedToken = localAdded
-        .map((item) => defaultTokens.find((token) => token.id === item)?.id)
-        .filter(Boolean);
-      setAddedToken(addedToken);
-      tokens = sortTokensByPrice(
-        defaultTokens.filter(
-          (item) => item.is_core || localAdded.includes(item.id)
-        )
+      const localAddedTokens = await wallet.openapi.customListToken(
+        localAdded,
+        currentAccount?.address
       );
+      const addedToken = localAdded.map((item) => {
+        if (item.includes(':')) {
+          return item.split(':')[1];
+        }
+      });
+      setAddedToken(addedToken);
+      tokens = sortTokensByPrice([...defaultTokens, ...localAddedTokens]);
       setTokens(tokens);
       setIsListLoading(false);
     }
