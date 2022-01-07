@@ -870,7 +870,6 @@ class OpenApiService {
         id,
         q,
         has_balance: false,
-        chain_id: chainId,
       },
     });
 
