@@ -56,20 +56,13 @@ function initAppMeta() {
 }
 
 async function restoreAppState() {
-  const dataVersion = (await browser.storage.local.get('dataVersion'))
-    ?.dataVersion;
-  if (!dataVersion) {
-    await browser.storage.local.set({
-      dataVersion: 0,
-    });
-  }
   const keyringState = await storage.get('keyringState');
   keyringService.loadStore(keyringState);
   keyringService.store.subscribe((value) => storage.set('keyringState', value));
   await openapiService.init();
 
   // Init keyring and openapi first since this two service will not be migrated
-  await migrateData(dataVersion);
+  await migrateData();
 
   await permissionService.init();
   await preferenceService.init();
