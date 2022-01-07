@@ -104,6 +104,7 @@ export default ({
   showDrawer,
   hideAllList,
   showModal = false,
+  isGnosis,
 }: {
   onChange(site: ConnectedSite | null | undefined): void;
   showChain?: boolean;
@@ -111,6 +112,7 @@ export default ({
   showDrawer?: boolean;
   hideAllList?(): void;
   showModal?: boolean;
+  isGnosis: boolean;
 }) => {
   const history = useHistory();
   const [connections, setConnections] = useState<(ConnectedSite | null)[]>(
@@ -182,6 +184,7 @@ export default ({
       }
     }
   }, [showDrawer]);
+
   const directionPanelData = [
     {
       icon: IconSendToken,
@@ -190,13 +193,20 @@ export default ({
     },
     {
       icon: IconSingedTX,
-      content: 'Signed Tx',
-      onClick: () => history.push('/tx-history'),
+      content: isGnosis ? 'Queue' : 'Signed Tx',
+      onClick: () => {
+        if (isGnosis) {
+          history.push('/gnosis-queue');
+        } else {
+          history.push('/tx-history');
+        }
+      },
     },
     {
       icon: IconSignedText,
       content: 'Signed Text',
       disabled: true,
+      hideForGnosis: true,
     },
     {
       icon: IconTransactions,
@@ -214,6 +224,7 @@ export default ({
       onClick: changeSetting,
     },
   ];
+
   return (
     <div className={clsx('recent-connections', connectionAnimation)}>
       <img
@@ -227,8 +238,9 @@ export default ({
       />
       <div className="pannel">
         <div className="direction-pannel">
-          {directionPanelData.map((item, index) =>
-            item.disabled ? (
+          {directionPanelData.map((item, index) => {
+            if (item.hideForGnosis && isGnosis) return <></>;
+            return item.disabled ? (
               <Tooltip
                 title={'Coming soon'}
                 overlayClassName="rectangle direction-tooltip"
@@ -248,8 +260,8 @@ export default ({
                 <img src={item.icon} className="images" />
                 <div>{item.content} </div>
               </div>
-            )
-          )}
+            );
+          })}
         </div>
         <div className="price-viewer">
           <div className="eth-price">
