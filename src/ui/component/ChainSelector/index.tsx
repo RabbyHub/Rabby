@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { CHAINS_ENUM, CHAINS } from 'consts';
+import { useHover } from 'ui/utils';
 import { SvgIconArrowDown } from 'ui/assets';
 import Modal from './Modal';
 
@@ -24,6 +25,7 @@ const ChainSelector = ({
   className = '',
 }: ChainSelectorProps) => {
   const [showSelectorModal, setShowSelectorModal] = useState(showModal);
+  const [isHovering, hoverProps] = useHover();
 
   const handleClickSelector = () => {
     setShowSelectorModal(true);
@@ -40,8 +42,13 @@ const ChainSelector = ({
   return (
     <>
       <div
-        className={clsx('chain-selector', className)}
+        className={clsx(
+          'chain-selector',
+          className,
+          !className && isHovering && 'hover'
+        )}
         onClick={handleClickSelector}
+        {...hoverProps}
       >
         <img src={CHAINS[value]?.selectChainLogo} className="chain-logo" />
         {CHAINS[value]?.name}
