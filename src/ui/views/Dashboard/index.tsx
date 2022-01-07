@@ -717,6 +717,10 @@ const Dashboard = () => {
       setNFTType('collection');
     }
   }, [showNFT]);
+  const opacity60 =
+    currentAccount?.type === KEYRING_CLASS.MNEMONIC ||
+    currentAccount?.type === KEYRING_CLASS.PRIVATE_KEY ||
+    currentAccount?.type === KEYRING_CLASS.WATCH;
   return (
     <>
       <div
@@ -741,7 +745,10 @@ const Dashboard = () => {
                 >
                   {
                     <img
-                      className="icon icon-account-type w-[20px] h-[20px]"
+                      className={clsx(
+                        'icon icon-account-type w-[20px] h-[20px]',
+                        opacity60 && 'opacity-60'
+                      )}
                       src={
                         KEYRING_ICONS_WHITE[currentAccount.type] ||
                         WALLET_BRAND_CONTENT[currentAccount.brandName]?.image
