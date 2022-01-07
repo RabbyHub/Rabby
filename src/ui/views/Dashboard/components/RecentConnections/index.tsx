@@ -57,13 +57,13 @@ const RecentConnections = ({
 
   return (
     <Popup visible={visible} height={484} onClose={onClose}>
-      <div className="recent-connections">
+      <div className="recent-connections-popup">
         <ConnectionList
           data={pinnedList}
           onFavoriteChange={handleFavoriteChange}
           title={t('Pinned')}
           empty={t('No pinned dapps')}
-          extra={pinnedList.length > 0 ? t('drag to sort') : null}
+          extra={pinnedList.length > 0 ? t('Drag to sort') : null}
           onClick={handleClick}
           onSort={handleSort}
           sort={true}

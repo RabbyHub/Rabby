@@ -1,11 +1,10 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Modal, Input, Button, Form, message } from 'antd';
+import { Drawer, Input, Button, Form, message } from 'antd';
 import { useWallet } from 'ui/utils';
 import { ContactBookItem } from 'background/service/contactBook';
 import IconSuccess from 'ui/assets/success.svg';
 import './style.less';
-import clsx from 'clsx';
 
 interface EditModalProps {
   address: string;
@@ -78,7 +77,8 @@ const EditModal = ({
   const init = async () => {
     if (isEdit) {
       const contact = await wallet.getContactByAddress(address);
-      setName(contact.name);
+      const alianName = await wallet.getAlianName(address);
+      setName(contact.name || alianName);
     }
   };
 
@@ -86,7 +86,9 @@ const EditModal = ({
     if (visible) {
       if (isEdit) {
         const contact = await wallet.getContactByAddress(address);
-        setName(contact?.name || '');
+        const alianName = await wallet.getAlianName(address);
+        console.log(alianName);
+        setName(contact?.name || alianName || '');
       } else {
         setName('');
       }
@@ -101,7 +103,7 @@ const EditModal = ({
     init();
   }, []);
   return (
-    <Modal
+    <Drawer
       className={
         isEdit && accountType === 'others'
           ? 'edit-contact-modal-with-remove'
@@ -109,13 +111,9 @@ const EditModal = ({
       }
       title={isEdit ? t('Edit address memo') : t('Add address memo')}
       visible={visible}
-      onOk={handleConfirm}
-      onCancel={onCancel}
-      footer={null}
-      transitionName=""
-      maskTransitionName=""
-      width="360px"
-      destroyOnClose
+      onClose={onCancel}
+      placement="bottom"
+      height="215px"
     >
       <Form onFinish={handleConfirm}>
         <Input
@@ -144,7 +142,7 @@ const EditModal = ({
           </Button>
         </div>
       )}
-    </Modal>
+    </Drawer>
   );
 };
 

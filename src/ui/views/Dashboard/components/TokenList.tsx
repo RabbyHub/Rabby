@@ -12,7 +12,24 @@ import IconAddToken from 'ui/assets/addtokenplus.png';
 import IconRemoveToken from 'ui/assets/removetoken.png';
 import { SvgIconLoading } from 'ui/assets';
 import IconSendToken from 'ui/assets/dashboard/tokenlistsend.png';
+import IconSendTokenHover from 'ui/assets/dashboard/hover-tokenlistsend.png';
 import clsx from 'clsx';
+const SendIcon = (token, history) => {
+  const [isHovering, hoverProps] = useHover();
+  const goToSend = () => {
+    history.push(`/send-token?token=${token?.chain}:${token?.id}`);
+  };
+  return (
+    <div className="right">
+      <img
+        {...hoverProps}
+        src={isHovering ? IconSendTokenHover : IconSendToken}
+        className="pointer"
+        onClick={goToSend}
+      />
+    </div>
+  );
+};
 const Row = (props) => {
   const { data, index, style } = props;
   const [isHovering, hoverProps] = useHover();
@@ -29,9 +46,7 @@ const Row = (props) => {
   const token = list[index];
   const isAdded =
     addedToken.length > 0 && addedToken.find((item) => item === token.id);
-  const goToSend = () => {
-    history.push(`/send-token?token=${token?.chain}:${token?.id}`);
-  };
+
   return (
     <div
       className={clsx('token-item', isHovering && 'hover')}
@@ -69,13 +84,7 @@ const Row = (props) => {
             </div>
           </div>
         ) : (
-          <div className="right">
-            <img
-              src={IconSendToken}
-              className={clsx('w-[36px] h-[36px]', isHovering && 'pointer')}
-              onClick={goToSend}
-            />
-          </div>
+          <SendIcon token={token} history={history} />
         )
       ) : (
         <div className="right">

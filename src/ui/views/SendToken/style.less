@@ -25,13 +25,16 @@
         cursor: pointer;
       }
     }
+    &:nth-last-child(1) {
+      padding: 12px;
+    }
   }
   .account-card {
     height: 36px;
     padding: 0;
     background: rgba(134, 151, 255, .1);
     border-radius: 4px;
-    margin-bottom: 24px;
+    margin-bottom: 12px;
     .title {
       display: none;
     }
@@ -46,8 +49,11 @@
       height: 36px;
       width: 100%;
       padding: 10px 12px;
+      .send-text {
+        color: #8697FF !important;
+      }
       .address-viewer-text, .amount {
-        color: #8697FF;
+        color: #8697FF !important;
         font-size: 13px;
         line-height: 15px;
         font-weight: 500;
@@ -213,6 +219,36 @@
       }
     }
   }
+  .token-validation {
+    font-size: 12px;
+    line-height: 14px;
+    color: #FFB020;
+    display: flex;
+    margin-top: 12px;
+    justify-content: center;
+    .icon {
+      width: 12px;
+      height: 12px;
+      margin-right: 6px;
+      &.icon-loading {
+        animation: spining 1.5s infinite linear;
+        path {
+          fill: #FFB020;
+        }
+      }
+      &.icon-alert {
+        path {
+          stroke: #EC5151;
+          &:nth-child(1) {
+            stroke: transparent;
+          }
+        }
+      }
+    }
+    &.faild {
+      color: #EC5151;
+    }
+  }
   .balance-error {
     font-size: 12px;
     line-height: 14px;
@@ -221,7 +257,7 @@
   }
   .footer {
     position: absolute;
-    bottom: 32px;
+    bottom: 20px;
     left: 0;
     width: 100%;
   }

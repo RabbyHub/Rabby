@@ -1,14 +1,14 @@
 import React, { useEffect, useState } from 'react';
-import { Modal, Input } from 'antd';
+import { Input, Drawer } from 'antd';
+import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 import { useDebounce } from 'react-use';
 import TokenWithChain from '../TokenWithChain';
 import { TokenItem } from 'background/service/openapi';
 import { splitNumberByStep, formatTokenAmount } from 'ui/utils/number';
 import IconSearch from 'ui/assets/search.svg';
-import IconLoading from 'ui/assets/loading-big.svg';
+import { SvgIconLoading } from 'ui/assets';
 import './style.less';
-import clsx from 'clsx';
 
 interface TokenSelectorProps {
   visible: boolean;
@@ -17,7 +17,6 @@ interface TokenSelectorProps {
   onConfirm(item: TokenItem): void;
   onCancel(): void;
   onSearch(q: string);
-  onSort(condition: string);
 }
 
 const TokenSelector = ({
@@ -26,19 +25,12 @@ const TokenSelector = ({
   onConfirm,
   onCancel,
   onSearch,
-  onSort,
   isLoading = false,
 }: TokenSelectorProps) => {
   const { t } = useTranslation();
   const [query, setQuery] = useState('');
-  const [sortBy, setSortBy] = useState<'common' | 'all'>('common');
   const [displayList, setDisplayList] = useState<TokenItem[]>(list);
   const [timeoutId, setTimeoutId] = useState<number | null>(null);
-
-  const handleSort = (condition: 'common' | 'all') => {
-    setSortBy(condition);
-    onSort(condition);
-  };
 
   useDebounce(
     () => {
@@ -87,7 +79,6 @@ const TokenSelector = ({
   useEffect(() => {
     if (!visible) {
       setQuery('');
-      handleSort('common');
       setDisplayList([]);
     }
   }, [visible]);
@@ -97,7 +88,7 @@ const TokenSelector = ({
   const NoDataUI = (
     <div className="no-token">
       {isLoading ? (
-        <img className="icon icon-loading" src={IconLoading} />
+        <SvgIconLoading fill="#707280" className="icon icon-loading" />
       ) : (
         <img
           className="no-data-image"
@@ -105,23 +96,21 @@ const TokenSelector = ({
           alt="no site"
         />
       )}
-      <p className="text-gray-content text-14 mt-12 text-center">
+      <p className="text-gray-content text-14 mt-12 text-center mb-0">
         {isLoading ? t('Loading Tokens') : t('No Tokens')}
       </p>
     </div>
   );
 
   return (
-    <Modal
+    <Drawer
       className="token-selector"
-      width="360px"
-      title={t('Select a token')}
+      height="580px"
+      placement="bottom"
       visible={visible}
-      onCancel={onCancel}
-      footer={null}
-      centered
-      destroyOnClose
+      onClose={onCancel}
     >
+      <div className="header">{t('Select a token')}</div>
       <div className="input-wrapper">
         <Input
           size="large"
@@ -132,23 +121,6 @@ const TokenSelector = ({
           autoFocus
         />
       </div>
-      {!query && (
-        <div className="token-sort">
-          <span
-            className={clsx({ active: sortBy === 'common' })}
-            onClick={() => handleSort('common')}
-          >
-            {t('Common')}
-          </span>{' '}
-          /{' '}
-          <span
-            className={clsx({ active: sortBy === 'all' })}
-            onClick={() => handleSort('all')}
-          >
-            {t('All')}
-          </span>
-        </div>
-      )}
       <ul className={clsx('token-list', { empty: isEmpty })}>
         <li className="token-list__header">
           <div>{t('Token')}</div>
@@ -164,7 +136,12 @@ const TokenSelector = ({
                 onClick={() => onConfirm(token)}
               >
                 <div>
-                  <TokenWithChain token={token} width="24px" height="24px" />
+                  <TokenWithChain
+                    token={token}
+                    width="24px"
+                    height="24px"
+                    hideConer
+                  />
                   <span className="symbol">{token.symbol}</span>
                 </div>
                 <div>${splitNumberByStep((token.price || 0).toFixed(2))}</div>
@@ -172,7 +149,7 @@ const TokenSelector = ({
               </li>
             ))}
       </ul>
-    </Modal>
+    </Drawer>
   );
 };
 

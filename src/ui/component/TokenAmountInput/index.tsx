@@ -14,7 +14,6 @@ interface TokenAmountInputProps {
   value?: string;
   onChange?(amount: string): void;
   onTokenChange(token: TokenItem): void;
-  address: string;
   chainId: string;
   amountFocus?: boolean;
 }
@@ -24,12 +23,12 @@ const TokenAmountInput = ({
   value,
   onChange,
   onTokenChange,
-  address,
   chainId,
   amountFocus,
 }: TokenAmountInputProps) => {
   const tokenInputRef = useRef<Input>(null);
   const latestChainId = useRef(chainId);
+  const latestTokenId = useRef(token.id);
   const [tokens, setTokens] = useState<TokenItem[]>([]);
   const [originTokenList, setOriginTokenList] = useState<TokenItem[]>([]);
   const [isListLoading, setIsListLoading] = useState(true);
@@ -63,50 +62,52 @@ const TokenAmountInput = ({
     });
   };
 
-  const sortTokens = (condition: 'common' | 'all', tokens: TokenItem[]) => {
-    const copy = cloneDeep(tokens);
-    if (condition === 'common') {
-      return copy.sort((a, b) => {
-        if (a.is_core && !b.is_core) {
-          return -1;
-        } else if (a.is_core && b.is_core) {
-          return 0;
-        } else if (!a.is_core && b.is_core) {
-          return 1;
-        }
-        return 0;
-      });
-    } else {
-      return copy;
-    }
-  };
-
-  const handleSort = (condition: 'common' | 'all') => {
-    setTokens(sortTokens(condition, originTokenList));
-  };
-
-  const handleLoadTokens = async (q?: string) => {
+  const handleLoadTokens = async () => {
     let tokens: TokenItem[] = [];
-    if (q) {
-      tokens = sortTokensByPrice(
-        await wallet.openapi.searchToken(address, q, chainId)
+    const currentAccount = await wallet.syncGetCurrentAccount();
+    const defaultTokens = await wallet.openapi.listToken(
+      currentAccount?.address,
+      chainId
+    );
+    const localAdded =
+      (await wallet.getAddedToken(currentAccount?.address)).filter((item) => {
+        const [chain] = item.split(':');
+        return chain === chainId;
+      }) || [];
+    let localAddedTokens: TokenItem[] = [];
+    if (localAdded.length > 0) {
+      localAddedTokens = await wallet.openapi.customListToken(
+        localAdded,
+        currentAccount?.address
       );
-    } else {
-      tokens = sortTokensByPrice(
-        await wallet.openapi.listToken(address, chainId)
-      );
-      if (latestChainId.current === chainId) {
-        setOriginTokenList(tokens);
-        setIsListLoading(false);
-      }
     }
-    if (latestChainId.current === chainId) {
-      setTokens(sortTokens('common', tokens));
-      const existCurrentToken = tokens.find((t) => t.id === token.id);
-      if (existCurrentToken) {
-        onTokenChange(existCurrentToken);
-      }
+    if (chainId !== latestChainId.current) return;
+    tokens = sortTokensByPrice([...defaultTokens, ...localAddedTokens]);
+    setOriginTokenList(tokens);
+    setTokens(tokens);
+    setIsListLoading(false);
+    const existCurrentToken = tokens.find((t) => t.id === token.id);
+    if (existCurrentToken && existCurrentToken.id === latestTokenId.current) {
+      onTokenChange(existCurrentToken);
     }
+  };
+
+  const handleSearchTokens = (q: string) => {
+    if (!q) {
+      setTokens(originTokenList);
+      return;
+    }
+    const kw = q.trim();
+    setTokens(
+      originTokenList.filter((token) => {
+        if (kw.length === 42 && kw.startsWith('0x')) {
+          return token.id === kw;
+        } else {
+          const reg = new RegExp(kw);
+          return reg.test(token.name) || reg.test(token.symbol);
+        }
+      })
+    );
   };
 
   useEffect(() => {
@@ -116,10 +117,14 @@ const TokenAmountInput = ({
     latestChainId.current = chainId;
   }, [chainId]);
 
+  useEffect(() => {
+    latestTokenId.current = token.id;
+  }, [token]);
+
   return (
     <div className="token-amount-input">
       <div className="left" onClick={handleSelectToken}>
-        <TokenWithChain token={token} />
+        <TokenWithChain token={token} hideConer />
         <span className="token-input__symbol" title={token.symbol}>
           {token.symbol}
         </span>
@@ -137,8 +142,7 @@ const TokenAmountInput = ({
         list={tokens}
         onConfirm={handleCurrentTokenChange}
         onCancel={handleTokenSelectorClose}
-        onSearch={handleLoadTokens}
-        onSort={handleSort}
+        onSearch={handleSearchTokens}
         isLoading={isListLoading}
       />
     </div>
