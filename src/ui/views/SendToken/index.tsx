@@ -18,6 +18,7 @@ import { ERC20ABI } from 'consts/abi';
 import { Account } from 'background/service/preference';
 import { ContactBookItem } from 'background/service/contactBook';
 import { useWallet } from 'ui/utils';
+import { query2obj } from 'ui/utils/url';
 import { formatTokenAmount, splitNumberByStep } from 'ui/utils/number';
 import AccountCard from '../Approval/components/AccountCard';
 import TokenAmountInput from 'ui/component/TokenAmountInput';
@@ -79,6 +80,7 @@ const SendToken = () => {
   const [tokenValidationStatus, setTokenValidationStatus] = useState(
     TOKEN_VALIDATION_STATUS.PENDING
   );
+
   const canSubmit =
     isValidAddress(form.getFieldValue('to')) &&
     !balanceError &&
@@ -268,25 +270,7 @@ const SendToken = () => {
     const account = await wallet.syncGetCurrentAccount();
     const chain = CHAINS[val];
     setChain(val);
-    loadCurrentToken(
-      {
-        id: chain.nativeTokenAddress,
-        chain: chain.serverId,
-        name: chain.nativeTokenSymbol,
-        symbol: chain.nativeTokenSymbol,
-        display_symbol: null,
-        optimized_symbol: chain.nativeTokenSymbol,
-        decimals: 18,
-        logo_url: chain.nativeTokenLogo,
-        price: 0,
-        is_verified: true,
-        is_core: true,
-        is_wallet: true,
-        time_at: 0,
-        amount: 0,
-      },
-      account.address
-    );
+    loadCurrentToken(chain.nativeTokenAddress, chain.serverId, account.address);
     const values = form.getFieldsValue();
     form.setFieldsValue({
       ...values,
@@ -323,8 +307,12 @@ const SendToken = () => {
     }
   };
 
-  const loadCurrentToken = async (token: TokenItem, address: string) => {
-    const t = await wallet.openapi.getToken(address, token.chain, token.id);
+  const loadCurrentToken = async (
+    id: string,
+    chainId: string,
+    address: string
+  ) => {
+    const t = await wallet.openapi.getToken(address, chainId, id);
     setCurrentToken(t);
     setIsLoading(false);
   };
@@ -337,31 +325,43 @@ const SendToken = () => {
       return;
     }
 
-    const lastTimeToken = await wallet.getLastTimeSendToken(account.address);
-    let needLoadToken: TokenItem = lastTimeToken || currentToken;
-
-    if (lastTimeToken) setCurrentToken(lastTimeToken);
     setCurrentAccount(account);
-    if (await wallet.hasPageStateCache()) {
-      const cache = await wallet.getPageStateCache();
-      if (cache?.path === history.location.pathname) {
-        if (cache.states.values) {
-          form.setFieldsValue(cache.states.values);
-          handleFormValuesChange(null, form.getFieldsValue());
-        }
-        if (cache.states.currentToken) {
-          setCurrentToken(cache.states.currentToken);
-          needLoadToken = cache.states.currentToken;
+
+    const qs = query2obj(history.location.search);
+    if (qs.token) {
+      const [tokenChain, id] = qs.token.split(':');
+      if (!tokenChain || !id) return;
+      const target = Object.values(CHAINS).find(
+        (item) => item.serverId === tokenChain
+      );
+      if (!target) return;
+      setChain(target.enum);
+      loadCurrentToken(id, tokenChain, account.address);
+    } else {
+      const lastTimeToken = await wallet.getLastTimeSendToken(account.address);
+      if (lastTimeToken) setCurrentToken(lastTimeToken);
+      let needLoadToken: TokenItem = lastTimeToken || currentToken;
+      if (await wallet.hasPageStateCache()) {
+        const cache = await wallet.getPageStateCache();
+        if (cache?.path === history.location.pathname) {
+          if (cache.states.values) {
+            form.setFieldsValue(cache.states.values);
+            handleFormValuesChange(null, form.getFieldsValue());
+          }
+          if (cache.states.currentToken) {
+            setCurrentToken(cache.states.currentToken);
+            needLoadToken = cache.states.currentToken;
+          }
         }
       }
+      if (needLoadToken.chain !== CHAINS[chain].serverId) {
+        const target = Object.values(CHAINS).find(
+          (item) => item.serverId === needLoadToken.chain
+        )!;
+        setChain(target.enum);
+      }
+      loadCurrentToken(needLoadToken.id, needLoadToken.chain, account.address);
     }
-    if (needLoadToken.chain !== CHAINS[chain].serverId) {
-      const target = Object.values(CHAINS).find(
-        (item) => item.serverId === needLoadToken.chain
-      )!;
-      setChain(target.enum);
-    }
-    loadCurrentToken(needLoadToken, account.address);
   };
 
   const getAlianName = async () => {
@@ -579,12 +579,12 @@ const SendToken = () => {
                     className="icon icon-loading"
                     viewBox="0 0 36 36"
                   />
-                  {t('Token information verification in progress')}
+                  {t('Veriying token info ...')}
                 </>
               ) : (
                 <>
                   <SvgAlert className="icon icon-alert" viewBox="0 0 14 14" />
-                  {t('The token information is incorrect')}
+                  {t('Token verification failed')}
                 </>
               )}
             </div>

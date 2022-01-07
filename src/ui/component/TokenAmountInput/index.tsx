@@ -28,6 +28,7 @@ const TokenAmountInput = ({
 }: TokenAmountInputProps) => {
   const tokenInputRef = useRef<Input>(null);
   const latestChainId = useRef(chainId);
+  const latestTokenId = useRef(token.id);
   const [tokens, setTokens] = useState<TokenItem[]>([]);
   const [originTokenList, setOriginTokenList] = useState<TokenItem[]>([]);
   const [isListLoading, setIsListLoading] = useState(true);
@@ -86,7 +87,7 @@ const TokenAmountInput = ({
     setTokens(tokens);
     setIsListLoading(false);
     const existCurrentToken = tokens.find((t) => t.id === token.id);
-    if (existCurrentToken) {
+    if (existCurrentToken && existCurrentToken.id === latestTokenId.current) {
       onTokenChange(existCurrentToken);
     }
   };
@@ -115,6 +116,10 @@ const TokenAmountInput = ({
     handleLoadTokens();
     latestChainId.current = chainId;
   }, [chainId]);
+
+  useEffect(() => {
+    latestTokenId.current = token.id;
+  }, [token]);
 
   return (
     <div className="token-amount-input">
