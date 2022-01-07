@@ -116,7 +116,12 @@ class PermissionService {
   };
 
   getRecentConnectedSites = () => {
-    return this.lruCache?.values() || [];
+    const sites = this.lruCache?.values() || [];
+    const pinnedSites = sites
+      .filter((item) => item?.isTop)
+      .sort((a, b) => (a.order || 0) - (b.order || 0));
+    const recentSites = sites.filter((item) => !item.isTop);
+    return [...pinnedSites, ...recentSites];
   };
 
   getConnectedSites = () => {
