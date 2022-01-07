@@ -106,7 +106,7 @@ const ChainSelectorModal = ({
           </ul>
         )}
         <div className="all-chais" onClick={goToChainManagement}>
-          {'All chains >'}
+          <span>{'All chains >'}</span>
         </div>
       </>
     </Drawer>
