@@ -445,46 +445,35 @@ const Dashboard = () => {
   };
 
   const clickContent = () => (
-    <>
-      <div
-        className={clsx('click-content-modar', {
-          success: copySuccess,
-        })}
-        onClick={(e) => {
-          e.stopPropagation();
-          setClicked(false);
-        }}
-      />
-      <div className="click-list flex flex-col w-[233px]">
-        {loadingAddress ? (
-          <div className="address-loading">
-            <SvgIconLoading className="icon icon-loading" fill="#707280" />
-            <div className="text-14 text-gray-light">
-              {t('Loading Addresses')}
-            </div>
+    <div className="click-list flex flex-col w-[233px]">
+      {loadingAddress ? (
+        <div className="address-loading">
+          <SvgIconLoading className="icon icon-loading" fill="#707280" />
+          <div className="text-14 text-gray-light">
+            {t('Loading Addresses')}
           </div>
-        ) : accountsList.length <= 0 ? (
-          <div className="no-other-address"> {t('No address')}</div>
-        ) : (
-          <FixedSizeList
-            height={accountsList.length > 5 ? 308 : accountsList.length * 52}
-            width="100%"
-            itemData={accountsList}
-            itemCount={accountsList.length}
-            itemSize={54}
-            ref={fixedList}
-            style={{ zIndex: 10 }}
-          >
-            {Row}
-          </FixedSizeList>
-        )}
-        <Link to="/add-address" className="pop-add-address flex items-center">
-          {' '}
-          <img src={IconPlus} />
-          <p className="mb-0 ml-15 lh-1">{t('Add addresses')}</p>
-        </Link>
-      </div>
-    </>
+        </div>
+      ) : accountsList.length <= 0 ? (
+        <div className="no-other-address"> {t('No address')}</div>
+      ) : (
+        <FixedSizeList
+          height={accountsList.length > 5 ? 308 : accountsList.length * 52}
+          width="100%"
+          itemData={accountsList}
+          itemCount={accountsList.length}
+          itemSize={54}
+          ref={fixedList}
+          style={{ zIndex: 10 }}
+        >
+          {Row}
+        </FixedSizeList>
+      )}
+      <Link to="/add-address" className="pop-add-address flex items-center">
+        {' '}
+        <img src={IconPlus} />
+        <p className="mb-0 ml-15 lh-1">{t('Add addresses')}</p>
+      </Link>
+    </div>
   );
   const balanceList = async (accounts) => {
     return await Promise.all<Account>(
