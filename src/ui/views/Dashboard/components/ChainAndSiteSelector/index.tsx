@@ -21,6 +21,7 @@ import IconEth from 'ui/assets/dashboard/eth.png';
 import { ReactComponent as IconLeftConer } from 'ui/assets/dashboard/leftcorner.svg';
 import IconRightGoTo from 'ui/assets/dashboard/selectChain/rightgoto.svg';
 import './style.less';
+import { RecentConnections, Settings } from '../index';
 const CurrentConnection = memo(
   ({
     site,
@@ -28,12 +29,14 @@ const CurrentConnection = memo(
     showModal,
     hideModal,
     connections,
+    changeURL,
   }: {
     site: null | ConnectedSite | undefined;
     onChange(): void;
     showModal?: boolean;
     hideModal(): void;
     connections: (ConnectedSite | null)[];
+    changeURL(): void;
   }) => {
     const wallet = useWallet();
     const { t } = useTranslation();
@@ -66,7 +69,7 @@ const CurrentConnection = memo(
             <p className="not-connected">{t('Not connected')}</p>
           )}
 
-          <div className="right pointer">
+          <div className="right pointer" onClick={changeURL}>
             <div className="icon-container">
               {connections.map((item, index) => (
                 <div className="image-item">
@@ -110,6 +113,8 @@ export default ({
   const [percentage, setPercentage] = useState<number>(0);
   const [localshowModal, setLocalShowModal] = useState(showModal);
   const [drawerAnimation, setDrawerAnimation] = useState<string | null>(null);
+  const [urlVisible, setUrlVisible] = useState(false);
+  const [settingVisible, setSettingVisible] = useState(false);
   const [currentConnect, setCurrentConnect] = useState<
     ConnectedSite | null | undefined
   >(null);
@@ -142,7 +147,12 @@ export default ({
       setGasPrice(Number(maxGas / 1e9));
     }
   };
-
+  const changeURL = () => {
+    setUrlVisible(!urlVisible);
+  };
+  const changeSetting = () => {
+    setSettingVisible(!settingVisible);
+  };
   useEffect(() => {
     getCurrentSite();
     getGasPrice();
@@ -177,24 +187,21 @@ export default ({
       icon: IconSignedText,
       content: 'Signed Text',
       disabled: true,
-      onClick: () => console.log(111),
     },
     {
       icon: IconTransactions,
       content: 'Transactions',
       disabled: true,
-      onClick: () => console.log(111),
     },
     {
       icon: IconContacts,
       content: 'Contacts',
       disabled: true,
-      onClick: () => console.log(111),
     },
     {
       icon: IconSetting,
       content: 'Settings',
-      onClick: () => console.log(111),
+      onClick: changeSetting,
     },
   ];
   return (
@@ -225,7 +232,7 @@ export default ({
             ) : (
               <div
                 key={index}
-                onClick={item.onClick}
+                onClick={item?.onClick}
                 className="direction pointer"
               >
                 <img src={item.icon} className="images" />
@@ -264,7 +271,10 @@ export default ({
         onChange={getCurrentSite}
         hideModal={hideModal}
         connections={connections}
+        changeURL={changeURL}
       />
+      <Settings visible={settingVisible} onClose={changeSetting} />
+      <RecentConnections visible={urlVisible} onClose={changeURL} />
     </div>
   );
 };
