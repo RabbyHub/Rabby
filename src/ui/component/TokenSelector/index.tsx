@@ -7,7 +7,7 @@ import TokenWithChain from '../TokenWithChain';
 import { TokenItem } from 'background/service/openapi';
 import { splitNumberByStep, formatTokenAmount } from 'ui/utils/number';
 import IconSearch from 'ui/assets/search.svg';
-import IconLoading from 'ui/assets/loading-big.svg';
+import { SvgIconLoading } from 'ui/assets';
 import './style.less';
 
 interface TokenSelectorProps {
@@ -88,7 +88,7 @@ const TokenSelector = ({
   const NoDataUI = (
     <div className="no-token">
       {isLoading ? (
-        <img className="icon icon-loading" src={IconLoading} />
+        <SvgIconLoading fill="#707280" className="icon icon-loading" />
       ) : (
         <img
           className="no-data-image"
@@ -96,7 +96,7 @@ const TokenSelector = ({
           alt="no site"
         />
       )}
-      <p className="text-gray-content text-14 mt-12 text-center">
+      <p className="text-gray-content text-14 mt-12 text-center mb-0">
         {isLoading ? t('Loading Tokens') : t('No Tokens')}
       </p>
     </div>
