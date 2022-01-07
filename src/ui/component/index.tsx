@@ -20,3 +20,4 @@ export { default as Checkbox } from './Checkbox';
 export { default as ScanCopyQRCode } from './ScanCopyQRCode';
 export { default as ChainCard } from './ChainCard';
 export { default as TokenWithChain } from './TokenWithChain';
+export { default as Popup } from './Popup';

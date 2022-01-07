@@ -5,10 +5,9 @@ import {
 } from '@/background/service/openapi';
 import { useWallet } from '@/ui/utils';
 import clsx from 'clsx';
-import { add, groupBy, keyBy } from 'lodash';
-import React, { useEffect, useImperativeHandle, useRef, useState } from 'react';
+import { groupBy, keyBy } from 'lodash';
+import React, { useImperativeHandle, useRef, useState } from 'react';
 import CollectionList from './CollectionList';
-import Dropdown from './Dropdown';
 import NFTList from './NFTList';
 
 type Props = {
@@ -87,9 +86,7 @@ const NFTListContainer = React.forwardRef(
       return <></>;
     }
     return (
-      <div
-        className={clsx('mt-12', animate, animate === 'fadeIn' && 'relative')}
-      >
+      <div className={clsx('mt-12', animate)}>
         {type === 'collection' ? (
           <CollectionList
             data={collectionList}

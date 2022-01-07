@@ -41,6 +41,7 @@ import {
   AssetsList,
   GnosisWrongChainAlertBar,
   NFTListContainer,
+  Settings,
 } from './components';
 import { getUpdateContent } from 'changeLogs/index';
 import IconSetting from 'ui/assets/settings.svg';
@@ -896,14 +897,8 @@ const Dashboard = () => {
             type={nftType}
           ></NFTListContainer>
         </div>
-        <RecentConnections
-          onChange={handleCurrentConnectChange}
-          showChain={showChain}
-          connectionAnimation={connectionAnimation}
-          showDrawer={showToken || showAssets || showNFT}
-          hideAllList={hideAllList}
-          showModal={showChainsModal}
-        />
+        <Settings />
+        <RecentConnections visible={true} />
         {!isDefaultWallet && !showChain && (
           <DefaultWalletAlertBar onChange={handleDefaultWalletChange} />
         )}
