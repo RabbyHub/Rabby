@@ -158,7 +158,7 @@ const ChainManagement = () => {
   }>();
   const { connection = false, backurl = '' } = state ?? {};
   const backDashboard = () => {
-    history.push({
+    history.replace({
       pathname: backurl,
       state: {
         showChainsModal: true,
