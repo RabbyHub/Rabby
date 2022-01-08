@@ -157,7 +157,7 @@ const ChainManagement = () => {
     backurl?: string;
   }>();
   const { connection = false, backurl = '' } = state ?? {};
-  const backDashboard = () => {
+  const goBack = () => {
     history.replace({
       pathname: backurl,
       state: {
@@ -167,7 +167,7 @@ const ChainManagement = () => {
   };
   return (
     <div className="chain-management">
-      <PageHeader onBack={backDashboard}>
+      <PageHeader onBack={goBack}>
         {t(connection ? 'All Chain' : 'Chain Management')}
       </PageHeader>
       <ChainManagementList />
