@@ -25,7 +25,7 @@ test('should migrate data', () => {
       { id: '0x9a78649501bbbac285ea4187299471b7ad4abd35', chain: 'eth' },
     ])
     .then((result) => {
-      expect(result.preference.addedToken).toEqual({
+      expect(result!.preference.addedToken).toEqual({
         '0x5853ed4f26a3fcea565b3fbc698bb19cdf6deb85': [
           'bsc:0x9a78649501bbaac285ea4187299471b7ad4abd35',
           'cro:0x9a78649501bbaac285ea4187299471b7ad4abd36',
@@ -44,6 +44,6 @@ const data1 = {
 };
 test('do nothing if empty', () => {
   return customTokenMigration.migrator(data1).then((result) => {
-    expect(result.preference.addedToken).toEqual({});
+    expect(result!.preference.addedToken).toEqual({});
   });
 });

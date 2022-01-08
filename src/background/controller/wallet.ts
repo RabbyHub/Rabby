@@ -921,11 +921,6 @@ export class WalletController extends BaseController {
     return this._setCurrentAccountFromKeyring(keyringInstance);
   };
 
-  getWatchAddressPreference = (address: string) =>
-    preferenceService.getWatchAddressPreference(address);
-
-  setWatchAddressPreference = preferenceService.setWatchAddressPreference;
-
   addTxExplainCache = (params: {
     address: string;
     chainId: number;

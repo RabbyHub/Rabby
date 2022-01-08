@@ -9,6 +9,8 @@ export default {
     _mockData?: any
   ) {
     try {
+      if (data.preference === undefined) return undefined;
+
       const addedTokens: Record<string, string[]> = {};
       for (const addr in data.preference.addedToken) {
         addedTokens[addr] = data.preference.addedToken[addr];
@@ -20,7 +22,6 @@ export default {
             token.length === 42 &&
             token.startsWith('0x')
         );
-        console.log();
         const resultTokens: { id: string; chain: string }[] =
           process.env.NODE_ENV === 'test'
             ? _mockData
