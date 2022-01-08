@@ -488,7 +488,7 @@ class OpenApiService {
         }, 5000);
       }
     };
-    await getConfig();
+    getConfig();
   };
 
   getConfig = async () => {
