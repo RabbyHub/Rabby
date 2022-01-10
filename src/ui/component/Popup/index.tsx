@@ -21,6 +21,7 @@ const Popup = ({
     closable={closable}
     placement={placement}
     className={clsx('custom-popup', className)}
+    destroyOnClose
     {...rest}
   >
     {children}
