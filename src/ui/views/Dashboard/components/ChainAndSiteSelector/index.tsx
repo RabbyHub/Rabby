@@ -119,9 +119,7 @@ export default ({
   higherBottom: boolean;
 }) => {
   const history = useHistory();
-  const [connections, setConnections] = useState<(ConnectedSite | null)[]>(
-    new Array(6).fill(null)
-  );
+  const [connections, setConnections] = useState<(ConnectedSite | null)[]>([]);
   const [currentPrice, setCurrentPrice] = useState<number>(0);
   const [percentage, setPercentage] = useState<number>(0);
   const [localshowModal, setLocalShowModal] = useState(showModal);
