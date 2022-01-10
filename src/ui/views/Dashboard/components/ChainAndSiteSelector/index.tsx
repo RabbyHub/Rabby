@@ -93,7 +93,7 @@ const CurrentConnection = memo(
                   </div>
                 ))
               ) : (
-                <div className="no-dapp">No recent Dapps</div>
+                <div className="no-dapp w-[100px]"></div>
               )}
             </div>
             <img src={IconRightGoTo} className="right-icon" />
