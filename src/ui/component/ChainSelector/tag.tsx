@@ -8,11 +8,16 @@ import './style.less';
 interface ChainSelectorProps {
   value: CHAINS_ENUM;
   onChange(value: CHAINS_ENUM): void;
+  showModal: boolean;
   direction?: 'top' | 'bottom';
 }
 
-const ChainSelector = ({ value, onChange }: ChainSelectorProps) => {
-  const [showSelectorModal, setShowSelectorModal] = useState(false);
+const ChainSelector = ({
+  value,
+  onChange,
+  showModal = false,
+}: ChainSelectorProps) => {
+  const [showSelectorModal, setShowSelectorModal] = useState(showModal);
 
   const handleClickSelector = () => {
     setShowSelectorModal(true);
