@@ -9,10 +9,12 @@ import {
 } from '@dnd-kit/core';
 import { DragEndEvent, DragStartEvent } from '@dnd-kit/core/dist/types';
 import { SortableContext } from '@dnd-kit/sortable';
+import clsx from 'clsx';
 import React, { memo, ReactNode, useState } from 'react';
 import { Item, ConnectionItem } from './ConnectionItem';
 
 interface ConnectionProps {
+  className?: string;
   title: string;
   empty?: ReactNode;
   extra?: ReactNode;
@@ -25,6 +27,7 @@ interface ConnectionProps {
 
 const ConnectionList = memo(
   ({
+    className,
     data = [],
     onClick,
     onFavoriteChange,
@@ -73,7 +76,7 @@ const ConnectionList = memo(
       })
     );
     return (
-      <div className="list">
+      <div className={clsx('list', className)}>
         <div className="list-header">
           <div className="list-title">{title}</div>
           <div className="list-extra">{extra}</div>
@@ -110,7 +113,7 @@ const ConnectionList = memo(
             </DndContext>
           </div>
         ) : (
-          <div className="list-empty">{empty}</div>
+          empty
         )}
       </div>
     );
