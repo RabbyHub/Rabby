@@ -32,6 +32,7 @@ const CurrentConnection = memo(
     hideModal,
     connections,
     changeURL,
+    higherBottom = false,
   }: {
     site: null | ConnectedSite | undefined;
     onChange(): void;
@@ -39,6 +40,7 @@ const CurrentConnection = memo(
     hideModal(): void;
     connections: (ConnectedSite | null)[];
     changeURL(): void;
+    higherBottom: boolean;
   }) => {
     const wallet = useWallet();
     const { t } = useTranslation();
@@ -52,7 +54,7 @@ const CurrentConnection = memo(
       hideModal();
     };
     return (
-      <div className="current-connection">
+      <div className={clsx('current-connection', higherBottom && 'mt-10')}>
         <IconLeftConer
           className="left-corner"
           fill={site ? '#27C193' : '#B4BDCC'}
@@ -105,6 +107,7 @@ export default ({
   hideAllList,
   showModal = false,
   isGnosis,
+  higherBottom = false,
 }: {
   onChange(site: ConnectedSite | null | undefined): void;
   showChain?: boolean;
@@ -113,6 +116,7 @@ export default ({
   hideAllList?(): void;
   showModal?: boolean;
   isGnosis: boolean;
+  higherBottom: boolean;
 }) => {
   const history = useHistory();
   const [connections, setConnections] = useState<(ConnectedSite | null)[]>(
@@ -296,6 +300,7 @@ export default ({
         hideModal={hideModal}
         connections={connections}
         changeURL={changeURL}
+        higherBottom={higherBottom}
       />
       <Settings visible={settingVisible} onClose={changeSetting} />
       <RecentConnections visible={urlVisible} onClose={changeURL} />

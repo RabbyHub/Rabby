@@ -712,6 +712,9 @@ const Dashboard = () => {
     currentAccount?.type === KEYRING_CLASS.MNEMONIC ||
     currentAccount?.type === KEYRING_CLASS.PRIVATE_KEY ||
     currentAccount?.type === KEYRING_CLASS.WATCH;
+  const showGnosisAlert =
+    isDefaultWallet && isGnosis && showGnosisWrongChainAlert && !showChain;
+  const showDefaultAlert = !isDefaultWallet && !showChain;
   return (
     <>
       <div
@@ -845,14 +848,12 @@ const Dashboard = () => {
           hideAllList={hideAllList}
           showModal={showChainsModal}
           isGnosis={isGnosis}
+          higherBottom={showDefaultAlert || showGnosisAlert}
         />
-        {!isDefaultWallet && !showChain && (
+        {showDefaultAlert && (
           <DefaultWalletAlertBar onChange={handleDefaultWalletChange} />
         )}
-        {isDefaultWallet &&
-          isGnosis &&
-          showGnosisWrongChainAlert &&
-          !showChain && <GnosisWrongChainAlertBar />}
+        {showGnosisAlert && <GnosisWrongChainAlertBar />}
       </div>
       <Modal
         visible={firstNotice && updateContent}
