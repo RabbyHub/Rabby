@@ -75,7 +75,7 @@ const CurrentConnection = memo(
 
           <div className="right pointer" onClick={changeURL}>
             <div className="icon-container">
-              {connections.length > 0 &&
+              {connections.length > 0 ? (
                 connections.map((item, index) => (
                   <div className="image-item" key={item?.origin}>
                     <FallbackSiteLogo
@@ -91,7 +91,10 @@ const CurrentConnection = memo(
                         </div>
                       )}
                   </div>
-                ))}
+                ))
+              ) : (
+                <div className="no-dapp">No recent Dapps</div>
+              )}
             </div>
             <img src={IconRightGoTo} className="right-icon" />
           </div>
