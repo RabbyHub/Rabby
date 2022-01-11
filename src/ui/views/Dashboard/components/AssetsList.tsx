@@ -71,7 +71,7 @@ const AssetsList = ({
       )}
       {!isloading && assets.length > 0 ? (
         <FixedSizeList
-          height={868}
+          height={468}
           width="100%"
           itemData={assets}
           itemCount={assets.length}
