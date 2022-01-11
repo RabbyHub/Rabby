@@ -3,12 +3,7 @@ import { CHAINS_ENUM } from 'consts';
 
 export default {
   version: 2,
-  async migrator(
-    data: {
-      permission: PermissionStore;
-    },
-    _mockData?: any
-  ): Promise<{ permission: PermissionStore } | undefined> {
+  async migrator(data: { permission: PermissionStore | undefined }) {
     try {
       if (!data.permission) return undefined;
       const hasDai = data.permission.dumpCache.some(
