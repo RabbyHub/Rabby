@@ -1,4 +1,4 @@
-import React, { useRef, useState, useEffect } from 'react';
+import React, { useRef, useState, useEffect, useMemo } from 'react';
 import { useHistory } from 'react-router-dom';
 import { Input } from 'antd';
 import { FixedSizeList } from 'react-window';
@@ -14,36 +14,34 @@ import { SvgIconLoading } from 'ui/assets';
 import IconSendToken from 'ui/assets/dashboard/tokenlistsend.png';
 import IconSendTokenHover from 'ui/assets/dashboard/hover-tokenlistsend.png';
 import clsx from 'clsx';
-const SendIcon = ({ token }) => {
+
+const Row = (props) => {
+  const { data, index, style } = props;
   const [isHovering, hoverProps] = useHover();
+  const {
+    list,
+    startSearch,
+    removeToken,
+    addToken,
+    query,
+    addedToken,
+    hoverData,
+  } = data;
+  const { hoveredRowIndex, setHoveredRowIndex } = hoverData;
+  const isHovered = index === hoveredRowIndex;
+  const isInitList = !startSearch && !query;
+  const token = list[index];
+  const isAdded =
+    addedToken.length > 0 && addedToken.find((item) => item === token.id);
   const history = useHistory();
   const goToSend = () => {
     history.push(`/send-token?token=${token?.chain}:${token?.id}`);
   };
   return (
-    <div className="right">
-      <img
-        {...hoverProps}
-        src={isHovering ? IconSendTokenHover : IconSendToken}
-        className="pointer"
-        onClick={goToSend}
-      />
-    </div>
-  );
-};
-const Row = (props) => {
-  const { data, index, style } = props;
-  const [isHovering, hoverProps] = useHover();
-  const { list, startSearch, removeToken, addToken, query, addedToken } = data;
-  const isInitList = !startSearch && !query;
-  const token = list[index];
-  const isAdded =
-    addedToken.length > 0 && addedToken.find((item) => item === token.id);
-
-  return (
     <div
-      className={clsx('token-item', isHovering && 'hover')}
-      {...hoverProps}
+      className={clsx('token-item', isHovered && 'hover')}
+      onMouseEnter={() => setHoveredRowIndex(index)}
+      onMouseLeave={() => setHoveredRowIndex(null)}
       style={style}
     >
       <TokenWithChain token={token} hideConer width={'24px'} height={'24px'} />
@@ -66,7 +64,7 @@ const Row = (props) => {
         </div>
       </div>
       {isInitList ? (
-        !isHovering ? (
+        !isHovered ? (
           <div className="right">
             <div className="token-amount">
               $
@@ -77,7 +75,14 @@ const Row = (props) => {
             </div>
           </div>
         ) : (
-          <SendIcon token={token} />
+          <div className="right">
+            <img
+              {...hoverProps}
+              src={isHovering ? IconSendTokenHover : IconSendToken}
+              className="pointer"
+              onClick={goToSend}
+            />
+          </div>
         )
       ) : (
         <div className="right">
@@ -117,7 +122,14 @@ const TokenList = ({
     150,
     [query]
   );
-
+  const [hoveredRowIndex, setHoveredRowIndex] = useState(null);
+  const hoverData = useMemo(
+    () => ({
+      hoveredRowIndex,
+      setHoveredRowIndex,
+    }),
+    [hoveredRowIndex]
+  );
   const emptyAdded = startSearch && !query && addedToken.length === 0;
   const noSeachResult = startSearch && query && searchTokens.length <= 0;
   const displayAddedToken = addedToken
@@ -181,6 +193,7 @@ const TokenList = ({
             removeToken,
             addToken,
             query,
+            hoverData,
           }}
           itemCount={
             startSearch

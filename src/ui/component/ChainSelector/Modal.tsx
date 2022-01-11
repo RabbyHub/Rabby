@@ -86,6 +86,7 @@ const ChainSelectorModal = ({
       drawerStyle={{
         height: maxHeight > 450 ? 450 : maxHeight < 130 ? 130 : maxHeight,
       }}
+      destroyOnClose
     >
       <>
         {savedChainsData.length === 0 && (
