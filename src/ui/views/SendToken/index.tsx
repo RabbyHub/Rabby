@@ -3,7 +3,7 @@ import ClipboardJS from 'clipboard';
 import clsx from 'clsx';
 import BigNumber from 'bignumber.js';
 import { useTranslation } from 'react-i18next';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 import { Input, Form, Skeleton, message, Button } from 'antd';
 import abiCoder, { AbiCoder } from 'web3-eth-abi';
 import { isValidAddress, unpadHexString, addHexPrefix } from 'ethereumjs-util';
@@ -47,6 +47,11 @@ const SendToken = () => {
   const { t } = useTranslation();
   const { useForm } = Form;
   const history = useHistory();
+  const { state } = useLocation<{
+    showChainsModal?: boolean;
+  }>();
+  const { showChainsModal = false } = state ?? {};
+
   const [form] = useForm<{ to: string; amount: string }>();
   const [contactInfo, setContactInfo] = useState<null | ContactBookItem>(null);
   const [currentToken, setCurrentToken] = useState<TokenItem>({
@@ -303,11 +308,7 @@ const SendToken = () => {
   };
 
   const handleClickBack = () => {
-    if (history.length > 1) {
-      history.goBack();
-    } else {
-      history.replace('/');
-    }
+    history.replace('/');
   };
 
   const loadCurrentToken = async (
@@ -434,7 +435,11 @@ const SendToken = () => {
           amount: '',
         }}
       >
-        <TagChainSelector value={chain} onChange={handleChainChanged} />
+        <TagChainSelector
+          value={chain}
+          onChange={handleChainChanged}
+          showModal={showChainsModal}
+        />
         <div className="section">
           <div className="section-title">{t('From')}</div>
           <AccountCard

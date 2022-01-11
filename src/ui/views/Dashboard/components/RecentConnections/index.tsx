@@ -62,7 +62,7 @@ const RecentConnections = ({
           data={pinnedList}
           onFavoriteChange={handleFavoriteChange}
           title={t('Pinned')}
-          empty={t('No pinned dapps')}
+          empty={<div className="list-empty">{t('No pinned dapps')}</div>}
           extra={pinnedList.length > 0 ? t('Drag to sort') : null}
           onClick={handleClick}
           onSort={handleSort}
@@ -74,12 +74,14 @@ const RecentConnections = ({
           data={recentList}
           title={t('Recent')}
           empty={
-            <div className="text-center py-[85px] text-gray-comment text-14">
-              <img
-                className="w-[100px] h-[100px]"
-                src="./images/nodata-tx.png"
-              />
-              {t('No dapps')}
+            <div className="list-empty mb-[-24px] rounded-b-none">
+              <div className="text-center pt-[85px] pb-[125px] text-gray-comment text-14">
+                <img
+                  className="w-[100px] h-[100px]"
+                  src="./images/nodata-tx.png"
+                />
+                {t('No dapps')}
+              </div>
             </div>
           }
         ></ConnectionList>
