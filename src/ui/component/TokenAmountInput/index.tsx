@@ -99,9 +99,9 @@ const TokenAmountInput = ({
     setTokens(
       originTokenList.filter((token) => {
         if (kw.length === 42 && kw.startsWith('0x')) {
-          return token.id === kw;
+          return token.id.toLowerCase() === kw.toLowerCase();
         } else {
-          const reg = new RegExp(kw);
+          const reg = new RegExp(kw, 'i');
           return reg.test(token.name) || reg.test(token.symbol);
         }
       })

@@ -31,6 +31,7 @@ const TokenSelector = ({
   const [query, setQuery] = useState('');
   const [displayList, setDisplayList] = useState<TokenItem[]>(list);
   const [timeoutId, setTimeoutId] = useState<number | null>(null);
+  const [isInputActive, setIsInputActive] = useState(false);
 
   useDebounce(
     () => {
@@ -60,6 +61,14 @@ const TokenSelector = ({
       );
       setTimeoutId(tmId);
     }
+  };
+
+  const handleInputFocus = () => {
+    setIsInputActive(true);
+  };
+
+  const handleInputBlur = () => {
+    setIsInputActive(false);
   };
 
   useEffect(() => {
@@ -113,12 +122,15 @@ const TokenSelector = ({
       <div className="header">{t('Select a token')}</div>
       <div className="input-wrapper">
         <Input
+          className={clsx({ active: isInputActive })}
           size="large"
           prefix={<img src={IconSearch} />}
           placeholder={t('Search name or paste address')}
           value={query}
           onChange={(e) => handleQueryChange(e.target.value)}
           autoFocus
+          onFocus={handleInputFocus}
+          onBlur={handleInputBlur}
         />
       </div>
       <ul className={clsx('token-list', { empty: isEmpty })}>
