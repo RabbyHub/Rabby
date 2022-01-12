@@ -210,8 +210,10 @@ export default ({
     {
       icon: IconSignedText,
       content: 'Signed Text',
-      disabled: true,
       hideForGnosis: true,
+      onClick: () => {
+        history.push('/text-history');
+      },
     },
     {
       icon: IconTransactions,

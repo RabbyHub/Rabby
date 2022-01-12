@@ -56,8 +56,9 @@ class PermissionService {
     };
   };
 
-  getHistory = () => {
-    return this.store.history;
+  getHistory = (address: string) => {
+    const list = this.store.history[address.toLowerCase()] || [];
+    return list.sort((a, b) => a.createAt - b.createAt);
   };
 }
 

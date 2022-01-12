@@ -420,7 +420,7 @@ class ProviderController extends BaseController {
     );
     signTextHistoryService.createHistory({
       address: from,
-      text: JSON.stringify(data),
+      text: data,
       origin: session.origin,
       type: 'ethSignTypedData',
     });
@@ -443,7 +443,7 @@ class ProviderController extends BaseController {
     );
     signTextHistoryService.createHistory({
       address: from,
-      text: JSON.stringify(data),
+      text: data,
       origin: session.origin,
       type: 'ethSignTypedDataV1',
     });
@@ -466,7 +466,7 @@ class ProviderController extends BaseController {
     );
     signTextHistoryService.createHistory({
       address: from,
-      text: JSON.stringify(data),
+      text: data,
       origin: session.origin,
       type: 'ethSignTypedDataV3',
     });
@@ -489,7 +489,7 @@ class ProviderController extends BaseController {
     );
     signTextHistoryService.createHistory({
       address: from,
-      text: JSON.stringify(data),
+      text: data,
       origin: session.origin,
       type: 'ethSignTypedDataV4',
     });

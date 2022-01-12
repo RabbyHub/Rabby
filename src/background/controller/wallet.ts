@@ -14,6 +14,7 @@ import {
   pageStateCacheService,
   transactionHistoryService,
   contactBookService,
+  signTextHistoryService,
 } from 'background/service';
 import buildinProvider from 'background/utils/buildinProvider';
 import { ContactBookItem } from '../service/contactBook';
@@ -24,7 +25,6 @@ import { KEYRING_CLASS, DisplayedKeryring } from 'background/service/keyring';
 import providerController from './provider/controller';
 import BaseController from './base';
 import {
-  CHAINS_ENUM,
   CHAINS,
   INTERNAL_REQUEST_ORIGIN,
   EVENTS,
@@ -919,6 +919,10 @@ export class WalletController extends BaseController {
     }
 
     return this._setCurrentAccountFromKeyring(keyringInstance);
+  };
+
+  getSignTextHistory = (address: string) => {
+    return signTextHistoryService.getHistory(address);
   };
 
   addTxExplainCache = (params: {
