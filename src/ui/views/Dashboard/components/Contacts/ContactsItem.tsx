@@ -7,6 +7,7 @@ import React, {
   useImperativeHandle,
 } from 'react';
 import { Tooltip, Input, message } from 'antd';
+import { useHistory } from 'react-router-dom';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 import { useWallet, useHover } from 'ui/utils';
@@ -15,6 +16,8 @@ import IconEditPen from 'ui/assets/editpen.svg';
 import IconCorrect from 'ui/assets/dashboard/contacts/correct.png';
 import IconSuccess from 'ui/assets/success.svg';
 import IconAddressCopy from 'ui/assets/address-copy.png';
+import IconSend from 'ui/assets/dashboard/contacts/send-icon.png';
+
 import { Account } from './index';
 
 export interface ContactsItem {
@@ -48,6 +51,7 @@ const ContactsItem = memo(
       ref: React.ForwardedRef<any>
     ) => {
       const { t } = useTranslation();
+      const history = useHistory();
       const [address, setAddress] = useState<string>(account?.address || '');
       const [alianName, setAlianName] = useState<string>(
         account?.alianName || account?.name || ''
@@ -88,6 +92,13 @@ const ContactsItem = memo(
         );
         console.log(dupicatedName, duplicatedAddress, 4444);
       };
+      const sendToken = () => {
+        history.push(
+          `/send-token?address=${account?.address}&name=${
+            account?.alianName || account?.name
+          }`
+        );
+      };
       return (
         <div className={clsx('contact-item-wrapper', newInput && 'hover')}>
           {newInput ? (
@@ -101,7 +112,7 @@ const ContactsItem = memo(
               autoFocus={newInput}
               maxLength={20}
               min={0}
-              placeholder="Enter Memo"
+              placeholder="Enter Address"
             />
           ) : (
             <AddressViewer
@@ -138,7 +149,7 @@ const ContactsItem = memo(
               onPressEnter={alianNameConfirm}
               onClick={(e) => e.stopPropagation()}
               //autoFocus={!stopEditing}
-              placeholder="Enter Address"
+              placeholder="Enter Memo"
               maxLength={20}
               min={0}
             />
@@ -148,14 +159,9 @@ const ContactsItem = memo(
             </div>
           )}
           {!startEdit && (
-            <img
-              className="edit-name"
-              src={IconEditPen}
-              onClick={(e) => {
-                e.stopPropagation();
-                setEditIndex(index);
-              }}
-            />
+            <div className="edit-name-wrapper">
+              <img className="edit-name" src={IconSend} onClick={sendToken} />
+            </div>
           )}
           {startEdit && (
             <img

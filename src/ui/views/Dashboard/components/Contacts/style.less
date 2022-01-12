@@ -43,8 +43,10 @@
   border: 1px solid #8697ff !important;
   border-radius: 6px;
   .copy-icon,
-  .edit-name {
-    display: block !important;
+  .edit-name-wrapper {
+    display: flex !important;
+    justify-content: center;
+    align-items: center;
   }
 }
 .contact-item-wrapper {
@@ -95,10 +97,27 @@
     height: 16px;
     margin-left: 8px;
   }
-  .edit-name {
+  .edit-name-wrapper {
     display: none;
+    justify-content: center;
+    align-items: center;
     position: absolute;
     right: 16px;
+    width: 28px;
+    height: 28px;
+    padding: 7px;
+    border: 0.5px solid rgba(134, 151, 255, 0.5);
+    box-sizing: border-box;
+    border-radius: 4px;
+    &:hover {
+      background: rgba(134, 151, 255, 0.2);
+      border: 0.5px solid rgba(134, 151, 255, 0.5);
+    }
+    .edit-name {
+      width: 13px;
+      height: 13px;
+      margin: 0;
+    }
   }
   .correct {
     position: absolute;
