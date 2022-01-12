@@ -11,8 +11,8 @@
     "pub": "node build/release.js"
   },
   "dependencies": {
-    "@dnd-kit/core": "^4.0.3",
-    "@dnd-kit/sortable": "^5.1.0",
+    "@dnd-kit/core": "^5.0.1",
+    "@dnd-kit/sortable": "^6.0.0",
     "@dnd-kit/utilities": "^3.0.2",
     "@ethereumjs/tx": "^3.3.2",
     "@gnosis.pm/safe-core-sdk": "^1.1.1",
@@ -37,6 +37,7 @@
     "@walletconnect/client": "^1.5.5",
     "@walletconnect/qrcode-modal": "^1.5.4",
     "@zxing/library": "0.8.0",
+    "ahooks": "^3.1.5",
     "antd": "^4.15.3",
     "assert": "^2.0.0",
     "axios": "^0.21.1",

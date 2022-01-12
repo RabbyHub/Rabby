@@ -216,7 +216,9 @@ export default ({
     {
       icon: IconTransactions,
       content: 'Transactions',
-      disabled: true,
+      onClick: () => {
+        history.push('/history');
+      },
     },
     {
       icon: IconContacts,
