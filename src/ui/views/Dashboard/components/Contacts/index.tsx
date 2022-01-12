@@ -44,25 +44,7 @@ const Contacts = ({ visible, onClose }: ContactsProps) => {
   const init = async () => {
     const listContacts = await wallet.listContact();
     const alianNames = await getAllAlianName();
-    const importAccounts = await wallet.getAllVisibleAccounts();
-    const importAccountsList: Account[] = unionBy(
-      importAccounts
-        .map((item) =>
-          item.accounts.map((acc) => {
-            return {
-              ...acc,
-              type: item.type,
-              alianName: alianNames[acc?.address?.toLowerCase()],
-            };
-          })
-        )
-        .flat(),
-      (item) => item?.address.toLowerCase()
-    );
-    const deduplicatedContacts = listContacts.filter(
-      (item) => !alianNames[item?.address?.toLowerCase()]
-    );
-    setAccounts([...importAccountsList, ...deduplicatedContacts]);
+    setAccounts(listContacts);
   };
   const addNewAccount = () => {
     const newAccount: Account = {
@@ -98,10 +80,6 @@ const Contacts = ({ visible, onClose }: ContactsProps) => {
     if (visible) init();
     fixedList.current?.scrollToItem(0);
   }, [visible]);
-  //   useEffect(() => {
-  //     console.log(33333);
-  //     fixedList.current?.scrollToItem(15, 'center');
-  //   }, [accounts.length]);
   return (
     <>
       <Popup
@@ -141,16 +119,6 @@ const Contacts = ({ visible, onClose }: ContactsProps) => {
           >
             {Row}
           </FixedSizeList>
-          {/* {accounts.map((item, index) => (
-            <ContactsItem
-              key={item?.address || index}
-              account={item}
-              index={index}
-              setEditIndex={setEditIndex}
-              editIndex={editIndex}
-              accounts={accounts}
-            />
-          ))} */}
         </div>
         <img
           src={IconAddAddress}
