@@ -101,6 +101,7 @@ const ContactsItem = memo(
               autoFocus={newInput}
               maxLength={20}
               min={0}
+              placeholder="Enter Memo"
             />
           ) : (
             <AddressViewer
@@ -137,6 +138,7 @@ const ContactsItem = memo(
               onPressEnter={alianNameConfirm}
               onClick={(e) => e.stopPropagation()}
               //autoFocus={!stopEditing}
+              placeholder="Enter Address"
               maxLength={20}
               min={0}
             />
