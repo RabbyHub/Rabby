@@ -16,6 +16,7 @@
     }
     &--content {
       max-height: 120px;
+      min-height: 20px;
       overflow: hidden;
       font-weight: 500;
       font-size: 12px;
@@ -24,6 +25,22 @@
       word-break: break-all;
       white-space: pre-wrap;
       margin-bottom: 12px;
+      position: relative;
+      .icon-gray {
+        position: absolute;
+        bottom: 0;
+        right: 0;
+        width: 20px;
+        height: 20px;
+        display: none;
+        cursor: pointer;
+        user-select: none;
+      }
+      &:hover {
+        .icon-gray {
+          display: block;
+        }
+      }
     }
     &--footer {
       display: flex;
@@ -37,6 +54,18 @@
           margin-right: 8px;
         }
       }
+    }
+  }
+  &__empty {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    .no-data {
+      width: 100px;
+      height: 100px;
+      margin: 135px auto 0;
     }
   }
 }

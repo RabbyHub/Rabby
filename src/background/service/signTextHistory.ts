@@ -58,7 +58,7 @@ class PermissionService {
 
   getHistory = (address: string) => {
     const list = this.store.history[address.toLowerCase()] || [];
-    return list.sort((a, b) => a.createAt - b.createAt);
+    return list.sort((a, b) => (a.createAt - b.createAt > 0 ? -1 : 1));
   };
 }
 
