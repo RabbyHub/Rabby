@@ -14,7 +14,7 @@ export interface ConnectedSite {
   order?: number;
 }
 
-type PermissionStore = {
+export type PermissionStore = {
   dumpCache: ReadonlyArray<LRU.Entry<string, ConnectedSite>>;
 };
 
