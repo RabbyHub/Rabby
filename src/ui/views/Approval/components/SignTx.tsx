@@ -380,7 +380,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     }
     setTxDetail(res);
     const localNonce = (await wallet.getNonceByChain(tx.from, chainId)) || 0;
-    if (updateNonce) {
+    if (updateNonce && !isGnosis) {
       setRealNonce(intToHex(Math.max(Number(res.recommend.nonce), localNonce)));
     } // do not overwrite nonce if from === to(cancel transaction)
     setPreprocessSuccess(res.pre_exec.success);
@@ -426,12 +426,16 @@ const SignTx = ({ params, origin }: SignTxProps) => {
 
   const handleGnosisConfirm = async (account: Account) => {
     if (params.session.origin !== INTERNAL_REQUEST_ORIGIN || isSend) {
-      await wallet.buildGnosisTransaction(tx.from, account, {
+      const params: any = {
         from: tx.from,
         to: tx.to,
         data: tx.data,
         value: tx.value,
-      });
+      };
+      if (nonceChanged) {
+        params.nonce = realNonce;
+      }
+      await wallet.buildGnosisTransaction(tx.from, account, params);
     }
     const hash = await wallet.getGnosisTransactionHash();
     resolveApproval({
@@ -541,7 +545,13 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       nonce: afterNonce,
     });
     setGasLimit(intToHex(gas.gasLimit));
-    setRealNonce(afterNonce);
+    if (!isGnosis) {
+      setRealNonce(afterNonce);
+    } else {
+      if (safeInfo && safeInfo.nonce <= gas.nonce) {
+        setRealNonce(afterNonce);
+      }
+    }
     if (beforeNonce !== afterNonce) {
       setNonceChanged(true);
     }
