@@ -111,6 +111,7 @@ export default ({
   showModal = false,
   isGnosis,
   higherBottom = false,
+  setDashboardReload,
 }: {
   onChange(site: ConnectedSite | null | undefined): void;
   showChain?: boolean;
@@ -120,6 +121,7 @@ export default ({
   showModal?: boolean;
   isGnosis: boolean;
   higherBottom: boolean;
+  setDashboardReload(): void;
 }) => {
   const history = useHistory();
   const [connections, setConnections] = useState<(ConnectedSite | null)[]>([]);
@@ -169,6 +171,7 @@ export default ({
   };
   const changeContacts = () => {
     setContactsVisible(!contactsVisible);
+    setDashboardReload();
   };
   useEffect(() => {
     getCurrentSite();

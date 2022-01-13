@@ -15,7 +15,6 @@
     font-size: 14px;
     line-height: 16px;
     top: 64px;
-    width: 100%;
     text-align: center;
     align-items: flex-start;
     color: #707280;
@@ -37,12 +36,22 @@
   width: 100%;
   background: #f5f6fa;
   border-radius: 6px;
+  padding-bottom: 300px;
+  min-height: 576px;
+  .no-contact {
+    .no-data-image {
+      width: 156px;
+      padding-top: 136px;
+      margin: 0 auto 32px auto;
+    }
+  }
 }
 .hover {
   background: rgba(134, 151, 255, 0.1);
   border: 1px solid #8697ff !important;
   border-radius: 6px;
   .copy-icon,
+  .hint,
   .edit-name-wrapper {
     display: flex !important;
     justify-content: center;
@@ -89,6 +98,10 @@
   }
   .alian-name {
     position: absolute;
+    max-width: 125px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
     margin-left: 188px;
   }
   .copy-icon {
@@ -124,6 +137,13 @@
     right: 12px;
     width: 16px;
     height: 16px;
+  }
+  .hint{
+    display: none; 
+    position: absolute;
+    right: -20px;
+    width: 20px;
+    height: 20px;  
   }
 }
 .popup-settings {

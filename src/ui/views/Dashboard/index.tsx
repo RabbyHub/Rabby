@@ -150,6 +150,7 @@ const Dashboard = () => {
   const [currentConnection, setCurrentConnection] = useState<
     ConnectedSite | null | undefined
   >(null);
+  const [dashboardReload, setDashboardReload] = useState(false);
   const getCurrentAccount = async () => {
     const account = await wallet.getCurrentAccount();
     if (!account) {
@@ -224,9 +225,15 @@ const Dashboard = () => {
     }
   }, [currentAccount]);
   useEffect(() => {
+    if (dashboardReload) {
+      setDashboardReload(false);
+      getCurrentAccount();
+      getAllKeyrings();
+    }
+  }, [dashboardReload]);
+  useEffect(() => {
     getAllKeyrings();
   }, []);
-
   const handleChange = async (account) => {
     setIsListLoading(true);
     setIsAssetsLoading(true);
@@ -715,6 +722,7 @@ const Dashboard = () => {
   const showGnosisAlert =
     isDefaultWallet && isGnosis && showGnosisWrongChainAlert && !showChain;
   const showDefaultAlert = !isDefaultWallet && !showChain;
+
   return (
     <>
       <div
@@ -849,6 +857,7 @@ const Dashboard = () => {
           showModal={showChainsModal}
           isGnosis={isGnosis}
           higherBottom={showDefaultAlert || showGnosisAlert}
+          setDashboardReload={() => setDashboardReload(true)}
         />
         {showDefaultAlert && (
           <DefaultWalletAlertBar onChange={handleDefaultWalletChange} />

@@ -1,10 +1,17 @@
-import React, { useEffect, useState, useRef } from 'react';
-import { Button, DrawerProps } from 'antd';
+import React, {
+  useEffect,
+  useState,
+  useRef,
+  useCallback,
+  useMemo,
+} from 'react';
+import { message, DrawerProps } from 'antd';
 import { unionBy } from 'lodash';
 import { FixedSizeList } from 'react-window';
 
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
+import { ContactBookItem } from 'background/service/contactBook';
 import IconArrowRight from 'ui/assets/arrow-right-gray.svg';
 import IconAdvanceOption from 'ui/assets/icon-setting.svg';
 import IconAddressManagement from 'ui/assets/icon-user.svg';
@@ -13,6 +20,7 @@ import LogoRabby from 'ui/assets/logo-rabby-large.svg';
 import { Field, Popup } from 'ui/component';
 import { useWallet } from 'ui/utils';
 import ContactsItem from './ContactsItem';
+import IconSuccess from 'ui/assets/success.svg';
 import IconAddAddress from 'ui/assets/dashboard/contacts/add-address.png';
 import './style.less';
 
@@ -22,12 +30,6 @@ interface ContactsProps {
 }
 export interface Account {
   address: string;
-  type?: string;
-  brandName?: string;
-  alianName?: string;
-  displayBrandName?: string;
-  index?: number;
-  balance?: number;
   name?: string;
 }
 const Contacts = ({ visible, onClose }: ContactsProps) => {
@@ -37,49 +39,72 @@ const Contacts = ({ visible, onClose }: ContactsProps) => {
   const fixedList = useRef<FixedSizeList>();
 
   const [accounts, setAccounts] = useState<Account[]>([]);
-  const getAllAlianName = async () => {
-    return await wallet.getAllAlianName();
-  };
   const [editIndex, setEditIndex] = useState<number | null>(null);
+  const [canAdd, setCanAdd] = useState(true);
   const init = async () => {
     const listContacts = await wallet.listContact();
-    const alianNames = await getAllAlianName();
     setAccounts(listContacts);
+    setEditIndex(null);
   };
   const addNewAccount = () => {
     const newAccount: Account = {
       address: '',
       name: '',
     };
+    setCanAdd(false);
     setAccounts([...accounts, newAccount]);
     setEditIndex(accounts.length);
     fixedList.current?.scrollToItem(15, 'center');
   };
-
-  const Row = (props) => {
-    const { data, index, style } = props;
-    const { accounts, others } = data;
-    const item = accounts[index];
-    return (
-      <div style={style} key={index}>
-        <ContactsItem
-          key={item?.address || index}
-          account={item}
-          index={index}
-          setEditIndex={setEditIndex}
-          editIndex={editIndex}
-          accounts={accounts}
-        />
-      </div>
-    );
+  const handleDeleteAddress = async (address: string) => {
+    await wallet.removeContact(address);
+    message.success({
+      icon: <img src={IconSuccess} className="icon icon-success" />,
+      content: t('Success deleted contact'),
+      duration: 1,
+    });
+    init();
   };
-  const onItemsRendered = ({ overscanStartIndex, overscanStopIndex }) => {
-    console.log(overscanStartIndex, overscanStopIndex);
+  const handleUpdateContact = async (data: ContactBookItem) => {
+    await wallet.updateContact(data);
+    await init();
+    const alianName = await wallet.getAlianName(data.address);
+    if (alianName) {
+      await wallet.updateAlianName(data?.address?.toLowerCase(), data?.name);
+    }
+    message.success({
+      icon: <img src={IconSuccess} className="icon icon-success" />,
+      content: t('Success modified contact'),
+      duration: 1,
+    });
+  };
+  const addContact = async (data: ContactBookItem) => {
+    await wallet.addContact(data);
+    message.success({
+      icon: <img src={IconSuccess} className="icon icon-success" />,
+      content: t('Added to contact'),
+      duration: 1,
+    });
+    setEditIndex(null);
+    setCanAdd(true);
+    init();
   };
   useEffect(() => {
     if (visible) init();
     fixedList.current?.scrollToItem(0);
   }, [visible]);
+  const NoDataUI = (
+    <div className="no-contact">
+      <img
+        className="no-data-image"
+        src="/images/nodata-site.png"
+        alt="no contact"
+      />
+      <p className="text-gray-content text-14 text-center">
+        {t('No contacts')}
+      </p>
+    </div>
+  );
   return (
     <>
       <Popup
@@ -105,26 +130,29 @@ const Contacts = ({ visible, onClose }: ContactsProps) => {
           <div>Memo</div>
         </div>
         <div className="list-wrapper">
-          <FixedSizeList
-            height={1576}
-            width={360}
-            itemData={{
-              accounts: accounts,
-            }}
-            itemCount={accounts.length}
-            itemSize={48}
-            ref={fixedList}
-            onItemsRendered={onItemsRendered}
-            className="no-scrollbars"
-          >
-            {Row}
-          </FixedSizeList>
+          {accounts.length > 0
+            ? accounts.map((item, index) => (
+                <ContactsItem
+                  key={item.address}
+                  account={item}
+                  index={index}
+                  setEditIndex={setEditIndex}
+                  editIndex={editIndex}
+                  accounts={accounts}
+                  handleDeleteAddress={handleDeleteAddress}
+                  handleUpdateContact={handleUpdateContact}
+                  addContact={addContact}
+                />
+              ))
+            : NoDataUI}
         </div>
-        <img
-          src={IconAddAddress}
-          className="add-address-name"
-          onClick={addNewAccount}
-        />
+        {canAdd && (
+          <img
+            src={IconAddAddress}
+            className="add-address-name"
+            onClick={addNewAccount}
+          />
+        )}
       </Popup>
     </>
   );
