@@ -736,6 +736,7 @@ const Dashboard = () => {
                   placement="bottomLeft"
                   overlayClassName="switch-popover"
                   onVisibleChange={handleClickChange}
+                  destroyTooltipOnHide
                 >
                   {
                     <img
