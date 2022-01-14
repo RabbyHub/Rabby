@@ -8,7 +8,7 @@ import { useInterval } from 'react-use';
 import { message, Popover, Input } from 'antd';
 import { FixedSizeList } from 'react-window';
 import clsx from 'clsx';
-import { useTranslation } from 'react-i18next';
+import { useTranslation, Trans } from 'react-i18next';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import Safe from '@rabby-wallet/gnosis-sdk';
@@ -942,8 +942,17 @@ const Dashboard = () => {
                     }
                   />
                 )}{' '}
-                {currentAccount?.type &&
-                  KEYRING_TYPE_TEXT[currentAccount?.type]}
+                {(currentAccount?.type &&
+                  KEYRING_TYPE_TEXT[currentAccount?.type]) ||
+                  (currentAccount && (
+                    <Trans
+                      i18nKey="addressTypeTip"
+                      values={{
+                        type:
+                          WALLET_BRAND_CONTENT[currentAccount?.brandName]?.name,
+                      }}
+                    />
+                  ))}
               </div>
             </div>
             <div className="qrcode-container">
