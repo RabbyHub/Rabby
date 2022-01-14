@@ -65,7 +65,7 @@ const ChainSelectorModal = ({
     };
     eventBus.addEventListener('accountsChanged', accountChangeHandler);
     return () => {
-      eventBus.removeEventListerner('accountsChanged', accountChangeHandler);
+      eventBus.removeEventListener('accountsChanged', accountChangeHandler);
     };
   }, []);
   let maxHeight = Math.round(savedChainsData.length / 2) * 60 + 70;
