@@ -323,16 +323,23 @@ class ProviderController extends BaseController {
     }
     try {
       validateGasPriceRange(approvalRes);
-      const hash = await openapiService.pushTx({
+      console.log('tx', {
         ...approvalRes,
         r: bufferToHex(signedTx.r),
         s: bufferToHex(signedTx.s),
         v: bufferToHex(signedTx.v),
         value: approvalRes.value || '0x0',
       });
+      // const hash = await openapiService.pushTx({
+      //   ...approvalRes,
+      //   r: bufferToHex(signedTx.r),
+      //   s: bufferToHex(signedTx.s),
+      //   v: bufferToHex(signedTx.v),
+      //   value: approvalRes.value || '0x0',
+      // });
 
-      onTranscationSubmitted(hash);
-      return hash;
+      // onTranscationSubmitted(hash);
+      // return hash;
     } catch (e: any) {
       const errMsg = e.message || JSON.stringify(e);
       notification.create(undefined, i18n.t('Transaction push failed'), errMsg);
