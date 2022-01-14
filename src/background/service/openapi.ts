@@ -177,6 +177,12 @@ export interface Collection {
   contract_uuids: string[];
   create_at: number;
 }
+
+export interface TxDisplayItem extends TxHistoryItem {
+  projectDict: TxHistoryResult['project_dict'];
+  cateDict: TxHistoryResult['cate_dict'];
+  tokenDict: TxHistoryResult['token_dict'];
+}
 export interface TxHistoryItem {
   cate_id: string | null;
   chain: string;

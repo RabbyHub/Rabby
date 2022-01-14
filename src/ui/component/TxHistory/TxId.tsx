@@ -18,7 +18,7 @@ export const TxId = React.memo(({ chain, id }: TxIdProps) => {
     openInTab(link);
   }, [info]);
   return (
-    <div className="tx-id-container">
+    <div className="ui tx-id-container">
       <span className="tx-id-chain">{info?.name || 'Unknown'}</span>
       <a className="tx-id" onClick={handleScanClick}>
         {ellipsis(id)}

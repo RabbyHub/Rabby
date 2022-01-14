@@ -1,13 +1,10 @@
-import { TxHistoryItem } from '@/background/service/openapi';
+import { TxDisplayItem, TxHistoryItem } from '@/background/service/openapi';
 import { sinceTime } from 'ui/utils';
 import clsx from 'clsx';
 import React from 'react';
 import { getChain } from 'utils';
 import { numberWithCommasIsLtOne } from 'ui/utils';
-import { TokenChange } from './TxChange';
-import { TxId } from './TxId';
-import { TxInterAddressExplain } from './TxInterAddressExplain';
-import { TxDisplayItem } from './types';
+import { TokenChange, TxId, TxInterAddressExplain } from '@/ui/component';
 
 type HistoryItemProps = {
   data: TxDisplayItem | TxHistoryItem;
@@ -42,7 +39,7 @@ export const HistoryItem = ({
             <div>
               {' '}
               Gas : {numberWithCommasIsLtOne(data.tx?.eth_gas_fee, 2)}{' '}
-              {chain?.nativeTokenSymbol} (${' '}
+              {chain?.nativeTokenSymbol} ($
               {numberWithCommasIsLtOne(data.tx?.usd_gas_fee ?? 0, 2)})
             </div>
           )}

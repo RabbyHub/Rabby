@@ -1,9 +1,12 @@
-import { TokenItem, TxHistoryItem } from '@/background/service/openapi';
+import {
+  TokenItem,
+  TxDisplayItem,
+  TxHistoryItem,
+} from '@/background/service/openapi';
+import NFTAvatar from '@/ui/views/Dashboard/components/NFT/NFTAvatar';
 import React from 'react';
 import IconUnknown from 'ui/assets/token-default.svg';
 import { numberWithCommasIsLtOne } from 'ui/utils';
-import NFTAvatar from '../Dashboard/components/NFT/NFTAvatar';
-import { TxDisplayItem } from './types';
 
 export function getTokenSymbol(token: TokenItem) {
   return (
@@ -23,7 +26,7 @@ export const TokenChange = ({ data: info, tokenDict }: TokenChangeProps) => {
   }
 
   return (
-    <div className="token-change">
+    <div className="ui token-change">
       {info.sends?.map((v) => {
         const token = tokens[v.token_id];
         const isNft = v.token_id?.length === 32;
@@ -64,9 +67,11 @@ export const TokenChange = ({ data: info, tokenDict }: TokenChangeProps) => {
             >
               -
             </span>
-            {`${
-              isNft ? v.amount : numberWithCommasIsLtOne(v.amount, 2)
-            } ${name}`}
+            <span className="token-change-item-text">
+              {`${
+                isNft ? v.amount : numberWithCommasIsLtOne(v.amount, 2)
+              } ${name}`}
+            </span>
           </div>
         );
       })}
@@ -110,9 +115,11 @@ export const TokenChange = ({ data: info, tokenDict }: TokenChangeProps) => {
             >
               +
             </span>
-            {`${
-              isNft ? v.amount : numberWithCommasIsLtOne(v.amount, 2)
-            } ${name}`}
+            <span className="token-change-item-text">
+              {`${
+                isNft ? v.amount : numberWithCommasIsLtOne(v.amount, 2)
+              } ${name}`}
+            </span>
           </div>
         );
       })}

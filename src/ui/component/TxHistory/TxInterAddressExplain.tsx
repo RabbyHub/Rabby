@@ -1,7 +1,6 @@
-import { TxHistoryItem } from '@/background/service/openapi';
+import { TxDisplayItem, TxHistoryItem } from '@/background/service/openapi';
 import React from 'react';
 import { TxAvatar } from './TxAvatar';
-import { TxDisplayItem } from './types';
 
 const ellipsis = (text: string) => {
   return text.replace(/^(.{6})(.*)(.{4})$/, '$1...$3');
@@ -53,7 +52,7 @@ export const TxInterAddressExplain = ({
   }
 
   return (
-    <div className="tx-explain">
+    <div className="ui tx-explain">
       <TxAvatar
         src={projectDict[data.project_id as string]?.logo_url}
         cateId={data.cate_id}

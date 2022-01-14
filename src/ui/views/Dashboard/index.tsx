@@ -41,6 +41,7 @@ import {
   AssetsList,
   GnosisWrongChainAlertBar,
   NFTListContainer,
+  ExtraLink,
 } from './components';
 import { getUpdateContent } from 'changeLogs/index';
 import IconSuccess from 'ui/assets/success.svg';
@@ -797,6 +798,11 @@ const Dashboard = () => {
             >
               NFT
             </div>
+            {!(showNFT || showToken || showAssets) && (
+              <ExtraLink
+                address={currentAccount?.address as string}
+              ></ExtraLink>
+            )}
             {showToken && !startSearch && (
               <img
                 src={IconAddToken}
@@ -847,6 +853,8 @@ const Dashboard = () => {
           showDrawer={showToken || showAssets || showNFT}
           hideAllList={hideAllList}
           showModal={showChainsModal}
+          pendingTxCount={pendingTxCount}
+          gnosisPendingCount={gnosisPendingCount}
           isGnosis={isGnosis}
           higherBottom={showDefaultAlert || showGnosisAlert}
         />

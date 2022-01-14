@@ -45,8 +45,7 @@ const History = () => {
     {
       target: ref,
       isNoMore: (d) => {
-        const r = (d?.list.length || 0) % PAGE_COUNT != 0;
-        return r;
+        return !d?.list.length || (d?.list.length || 0) % PAGE_COUNT != 0;
       },
     }
   );
@@ -65,7 +64,7 @@ const History = () => {
           key={item.id}
         ></HistoryItem>
       ))}
-      {(loadingMore || loading) && <Loading count={5} />}
+      {(loadingMore || loading) && <Loading count={5} active />}
       {isEmpty && (
         <div className="txs-history__empty">
           <img className="no-data" src="./images/nodata-tx.png" />

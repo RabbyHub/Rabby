@@ -25,7 +25,7 @@
     position: relative;
     background: #ffffff;
     border-radius: 6px;
-    padding: 0 8px;
+    padding: 0 12px;
     &:not(:last-child) {
       margin-bottom: 12px;
     }
@@ -60,32 +60,6 @@
       }
     }
   }
-
-  .tx-explain {
-    display: flex;
-    gap: 8px;
-    align-items: center;
-    overflow: hidden;
-    &-body {
-      display: flex;
-      flex-direction: column;
-      gap: 4px;
-      justify-content: center;
-      overflow: hidden;
-    }
-    &-title,
-    &-desc {
-      white-space: nowrap;
-      overflow: hidden;
-      text-overflow: ellipsis;
-    }
-    &-title {
-      color: #13141a;
-    }
-    &-desc {
-      color: #707280;
-    }
-  }
   .tx-id {
     color: #707280;
     text-decoration: underline;
@@ -102,26 +76,6 @@
     height: 28px;
     border-radius: 2px;
     object-fit: cover;
-  }
-  .token-change {
-    flex-shrink: 0;
-    margin-left: auto;
-    display: flex;
-    flex-direction: column;
-    gap: 4px;
-    &-item {
-      display: flex;
-      color: #4b4d59;
-      &.is-success {
-        color: #27c193;
-      }
-      .token-icon {
-        width: 14px;
-        height: 14px;
-        object-fit: cover;
-        margin-right: 6px;
-      }
-    }
   }
 
   &__empty {
@@ -141,6 +95,9 @@
     background-color: #fff;
     border-radius: 6px;
     padding: 8px 14px 16px;
+    .ant-skeleton-input {
+      background-color: #f5f6fa;
+    }
     &:not(:last-child) {
       margin-bottom: 12px;
     }

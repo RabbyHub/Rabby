@@ -3,7 +3,7 @@ import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 import maxBy from 'lodash/maxBy';
 import { useHistory } from 'react-router-dom';
-import { Tooltip } from 'antd';
+import { Badge, Tooltip } from 'antd';
 import { useWallet, getCurrentConnectSite, splitNumberByStep } from 'ui/utils';
 import { ConnectedSite } from 'background/service/permission';
 import { GasLevel } from 'background/service/openapi';
@@ -21,6 +21,7 @@ import IconEth from 'ui/assets/dashboard/eth.png';
 import { ReactComponent as IconLeftConer } from 'ui/assets/dashboard/leftcorner.svg';
 import IconRightGoTo from 'ui/assets/dashboard/selectChain/rightgoto.svg';
 import IconDot from 'ui/assets/dashboard/selectChain/dot.png';
+import IconQuene from 'ui/assets/dashboard/quene.svg';
 import './style.less';
 import { RecentConnections, Settings } from '../index';
 
@@ -104,6 +105,8 @@ const CurrentConnection = memo(
   }
 );
 export default ({
+  pendingTxCount,
+  gnosisPendingCount,
   onChange,
   connectionAnimation,
   showDrawer,
@@ -120,6 +123,8 @@ export default ({
   showModal?: boolean;
   isGnosis: boolean;
   higherBottom: boolean;
+  pendingTxCount?: number;
+  gnosisPendingCount?: number;
 }) => {
   const history = useHistory();
   const [connections, setConnections] = useState<(ConnectedSite | null)[]>([]);
@@ -197,8 +202,9 @@ export default ({
       onClick: () => history.push('/send-token'),
     },
     {
-      icon: IconSingedTX,
+      icon: isGnosis ? IconQuene : IconSingedTX,
       content: isGnosis ? 'Queue' : 'Signed Tx',
+      badge: isGnosis ? gnosisPendingCount : pendingTxCount,
       onClick: () => {
         if (isGnosis) {
           history.push('/gnosis-queue');
@@ -264,7 +270,13 @@ export default ({
                 onClick={item?.onClick}
                 className="direction pointer"
               >
-                <img src={item.icon} className="images" />
+                {item.badge ? (
+                  <Badge count={2} size="small">
+                    <img src={item.icon} className="images" />
+                  </Badge>
+                ) : (
+                  <img src={item.icon} className="images" />
+                )}
                 <div>{item.content} </div>
               </div>
             );

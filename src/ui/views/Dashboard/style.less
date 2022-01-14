@@ -317,7 +317,7 @@
       background: rgba(255, 255, 255, 0.12);
       backdrop-filter: blur(40px);
       padding: 14px 0 14px 20px;
-      z-index:1;
+      z-index: 1;
       .operation-item {
         flex: 1;
         color: #fff;
@@ -415,6 +415,37 @@
       margin-top: 20px;
       align-items: center;
       position: relative;
+      .extra-link {
+        margin-left: auto;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 1px 8px;
+        border: 0.5px solid rgba(255, 255, 255, 0.5);
+        border-radius: 90px;
+        &-divider {
+          height: 12px;
+          border-left: 0.5px solid rgba(255, 255, 255, 0.4);
+        }
+        &-scan,
+        &-debank {
+          cursor: pointer;
+          width: 20px;
+          height: 20px;
+        }
+        &-scan {
+          background: url('../../assets/dashboard/scan.svg');
+          &:hover {
+            background: url('../../assets/dashboard/scan-white.svg');
+          }
+        }
+        &-debank {
+          background: url('../../assets/dashboard/debank.svg');
+          &:hover {
+            background: url('../../assets/dashboard/debank-white.svg');
+          }
+        }
+      }
       .token {
         cursor: pointer;
         font-size: 14px;
@@ -438,7 +469,6 @@
       .showToken {
         background: rgba(255, 255, 255, 0.3);
       }
-
     }
   }
   .show-chain-bg {
@@ -693,7 +723,7 @@
       }
       .opacity-100 {
         opacity: 1;
-      };
+      }
     }
     .no-added-token {
       font-weight: normal;
@@ -1030,7 +1060,6 @@
         margin-bottom: 12px;
         margin-left: 42px;
       }
-
     }
     .pop-add-address {
       cursor: pointer;
@@ -1265,7 +1294,7 @@
   .icon-loading {
     margin-left: 36px;
     animation: spining 1.5s infinite linear;
-  }  
+  }
   .loading-text {
     margin-top: 18px;
     color: #ffffff;

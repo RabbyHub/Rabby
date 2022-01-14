@@ -29,10 +29,10 @@ export function getTimeSpan(times: number) {
   if (isNaN(+times)) {
     times = 0;
   }
-  const d = parseInt(times / 60 / 60 / 24 + ''); // 倒计时多少天
-  const h = parseInt(((times / 60 / 60) % 24) + ''); // 倒计时多少小时
-  const m = parseInt(((times / 60) % 60) + ''); // 倒计时多少分钟
-  const s = parseInt((times % 60) + ''); // 倒计时多少秒
+  const d = parseInt(times / 60 / 60 / 24 + '');
+  const h = parseInt(((times / 60 / 60) % 24) + '');
+  const m = parseInt(((times / 60) % 60) + '');
+  const s = parseInt((times % 60) + '');
   return {
     d,
     h,
