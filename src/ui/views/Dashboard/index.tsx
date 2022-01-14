@@ -33,7 +33,6 @@ import { crossCompareOwners } from 'ui/utils/gnosis';
 import { Account } from 'background/service/preference';
 import { ConnectedSite } from 'background/service/permission';
 import { TokenItem, AssetItem } from 'background/service/openapi';
-import { ContactBookItem } from 'background/service/contactBook';
 import {
   ChainAndSiteSelector,
   BalanceView,
@@ -62,31 +61,16 @@ import Dropdown from './components/NFT/Dropdown';
 const GnosisAdminItem = ({
   accounts,
   address,
-  contacts,
 }: {
   accounts: Account[];
   address: string;
-  contacts: ContactBookItem[];
 }) => {
   const addressInWallet = accounts.find((account) =>
     isSameAddress(account.address, address)
   );
-  const addressInContacts = contacts.find((contact) =>
-    isSameAddress(contact.address, address)
-  );
   return (
     <li>
-      <NameAndAddress
-        address={address}
-        name={
-          addressInWallet
-            ? addressInWallet?.alianName
-            : addressInContacts
-            ? addressInContacts?.name
-            : ''
-        }
-        nameClass="max-143"
-      />
+      <NameAndAddress address={address} nameClass="max-143" />
       {addressInWallet ? (
         <img src={IconTagYou} className="icon icon-tag" />
       ) : (
@@ -154,7 +138,6 @@ const Dashboard = () => {
     ConnectedSite | null | undefined
   >(null);
   const [dashboardReload, setDashboardReload] = useState(false);
-  const [contacts, setContacts] = useState<ContactBookItem[]>([]);
   const getCurrentAccount = async () => {
     const account = await wallet.getCurrentAccount();
     if (!account) {
@@ -376,10 +359,6 @@ const Dashboard = () => {
     setAssets(assets);
     setIsAssetsLoading(false);
   };
-  const getContacts = async () => {
-    const listContacts = await wallet.listContact();
-    setContacts(listContacts);
-  };
   useEffect(() => {
     checkIfFirstLogin();
   }, []);
@@ -395,9 +374,6 @@ const Dashboard = () => {
       setIsGnosis(currentAccount.type === KEYRING_CLASS.GNOSIS);
     }
   }, [currentAccount]);
-  useEffect(() => {
-    getContacts();
-  }, []);
   const Row = (props) => {
     const { data, index, style } = props;
     const account = data[index];
@@ -985,7 +961,6 @@ const Dashboard = () => {
                       <GnosisAdminItem
                         address={owner}
                         accounts={accountsList}
-                        contacts={contacts}
                         key={index}
                       />
                     ))}

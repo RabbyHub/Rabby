@@ -1,14 +1,16 @@
-import React from 'react';
+import React, { useEffect, useState } from 'react';
 import { message } from 'antd';
+import { useWallet, isSameAddress } from 'ui/utils';
+import { ContactBookItem } from 'background/service/contactBook';
+
 import IconSuccess from 'ui/assets/success.svg';
 import IconAddressCopy from 'ui/assets/address-copy.png';
 
 import './index.less';
 import clsx from 'clsx';
 
-interface NameAndAddress {
+interface NameAndAddressProps {
   className?: string;
-  name?: string;
   address: string;
   nameClass?: string;
   addressClass?: string;
@@ -17,46 +19,64 @@ interface NameAndAddress {
 
 const NameAndAddress = ({
   className = '',
-  name = '',
   address = '',
   nameClass = '',
   addressClass = '',
   noNameClass = '',
-}: NameAndAddress) => (
-  <div className={clsx('name-and-address', className)}>
-    {name && <div className={clsx('name', nameClass)}>{name}</div>}
-    <div
-      className={clsx(
-        name ? 'address' : 'name',
-        addressClass,
-        !name && noNameClass
-      )}
-    >
-      {name
-        ? `(${address
-            ?.toLowerCase()
-            .slice(0, 6)}...${address?.toLowerCase().slice(-4)})`
-        : `${address
-            ?.toLowerCase()
-            .slice(0, 6)}...${address?.toLowerCase().slice(-4)}`}
+}: NameAndAddressProps) => {
+  const wallet = useWallet();
+  const [contacts, setContacts] = useState<ContactBookItem[]>([]);
+  const [alianNames, setAlianNames] = useState({});
+  const alianName = alianNames[address.toLowerCase()];
+  const addressInContacts = contacts.find((contact) =>
+    isSameAddress(contact.address, address)
+  );
+  const init = async () => {
+    const listContacts = await wallet.listContact();
+    const alianNames = await wallet.getAllAlianName();
+    setContacts(listContacts);
+    setAlianNames(alianNames);
+  };
+  const localName = alianName || addressInContacts?.name || '';
+  useEffect(() => {
+    init();
+  }, [address]);
+  return (
+    <div className={clsx('name-and-address', className)}>
+      {localName && <div className={clsx('name', nameClass)}>{localName}</div>}
+      <div
+        className={clsx(
+          localName ? 'address' : 'name',
+          addressClass,
+          !localName && noNameClass
+        )}
+      >
+        {localName
+          ? `(${address
+              ?.toLowerCase()
+              .slice(0, 6)}...${address?.toLowerCase().slice(-4)})`
+          : `${address
+              ?.toLowerCase()
+              .slice(0, 6)}...${address?.toLowerCase().slice(-4)}`}
+      </div>
+      <img
+        onClick={(e) => {
+          e.stopPropagation;
+          navigator.clipboard.writeText(address);
+          message.success({
+            icon: <img src={IconSuccess} className="icon icon-success" />,
+            content: 'Copied',
+            duration: 0.5,
+          });
+        }}
+        src={IconAddressCopy}
+        id={'copyIcon'}
+        className={clsx('w-[16px] h-[16px] ml-6', {
+          success: true,
+        })}
+      />
     </div>
-    <img
-      onClick={(e) => {
-        e.stopPropagation;
-        navigator.clipboard.writeText(address);
-        message.success({
-          icon: <img src={IconSuccess} className="icon icon-success" />,
-          content: 'Copied',
-          duration: 0.5,
-        });
-      }}
-      src={IconAddressCopy}
-      id={'copyIcon'}
-      className={clsx('w-[16px] h-[16px] ml-6', {
-        success: true,
-      })}
-    />
-  </div>
-);
+  );
+};
 
 export default NameAndAddress;

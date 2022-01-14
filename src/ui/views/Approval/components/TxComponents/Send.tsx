@@ -1,12 +1,11 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import { ExplainTxResponse } from 'background/service/openapi';
 import BigNumber from 'bignumber.js';
 import { CHAINS, CHAINS_ENUM } from 'consts';
 import { Trans, useTranslation } from 'react-i18next';
 import IconArrowRight from 'ui/assets/arrow-right-gray.svg';
 import { NameAndAddress } from 'ui/component';
-import { ellipsisOverflowedText, useWallet, isSameAddress } from 'ui/utils';
-import { ContactBookItem } from 'background/service/contactBook';
+import { ellipsisOverflowedText } from 'ui/utils';
 
 import { splitNumberByStep } from 'ui/utils/number';
 import BalanceChange from './BalanceChange';
@@ -23,25 +22,13 @@ interface SendProps {
 const Send = ({ data, chainEnum, isSpeedUp, raw }: SendProps) => {
   const detail = data.type_send!;
   const chain = CHAINS[chainEnum];
-  const [contacts, setContacts] = useState<ContactBookItem[]>([]);
-  const [alianNames, setAlianNames] = useState({});
   const { t } = useTranslation();
-  const wallet = useWallet();
   const handleViewRawClick = () => {
     ViewRawModal.open({
       raw,
       abi: data?.abi,
     });
   };
-  const init = async () => {
-    const listContacts = await wallet.listContact();
-    const alianNames = await wallet.getAllAlianName();
-    setContacts(listContacts);
-    setAlianNames(alianNames);
-  };
-  useEffect(() => {
-    init();
-  }, []);
   return (
     <div className="send">
       <p className="section-title">
@@ -83,17 +70,6 @@ const Send = ({ data, chainEnum, isSpeedUp, raw }: SendProps) => {
             <NameAndAddress
               address={detail.to_addr}
               className="text-13"
-              name={
-                alianNames[detail.to_addr.toLowerCase()]
-                  ? alianNames[detail.to_addr.toLowerCase()]
-                  : contacts.find((contact) =>
-                      isSameAddress(contact.address, detail.to_addr)
-                    )
-                  ? contacts.find((contact) =>
-                      isSameAddress(contact.address, detail.to_addr)
-                    )?.name
-                  : ''
-              }
               nameClass="max-117 text-13"
               addressClass="text-13"
             />

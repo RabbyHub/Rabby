@@ -5,7 +5,6 @@ import clsx from 'clsx';
 import { SafeInfo } from '@rabby-wallet/gnosis-sdk/src/api';
 import { Button } from 'antd';
 import { Account } from 'background/service/preference';
-import { ContactBookItem } from 'background/service/contactBook';
 
 import { useWallet, isSameAddress } from 'ui/utils';
 import { NameAndAddress } from 'ui/component';
@@ -31,8 +30,6 @@ interface AddressItemProps {
   signed: boolean;
   onSelect(account: Account): void;
   checked: boolean;
-  alianNames?: any;
-  contacts: ContactBookItem[];
 }
 
 const ownerPriority = [
@@ -51,8 +48,6 @@ const AddressItem = ({
   signed,
   onSelect,
   checked,
-  alianNames,
-  contacts,
 }: AddressItemProps) => {
   return (
     <FieldCheckbox
@@ -73,17 +68,6 @@ const AddressItem = ({
     >
       <NameAndAddress
         address={account.address}
-        name={
-          alianNames[account.address.toLowerCase()]
-            ? alianNames[account.address.toLowerCase()]
-            : contacts.find((contact) =>
-                isSameAddress(contact.address, account.address)
-              )
-            ? contacts.find((contact) =>
-                isSameAddress(contact.address, account.address)
-              )?.name
-            : ''
-        }
         nameClass={clsx('max-115 text-15', !account.type && 'no-name')}
         addressClass="text-15"
         noNameClass="no-name"
@@ -103,8 +87,6 @@ const GnosisDrawer = ({ safeInfo, onCancel, onConfirm }: GnosisDrawerProps) => {
   const [ownerAccounts, setOwnerAccounts] = useState<Account[]>([]);
   const [checkedAccount, setCheckedAccount] = useState<Account | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-  const [contacts, setContacts] = useState<ContactBookItem[]>([]);
-  const [alianNames, setAlianNames] = useState({});
   const sortOwners = async () => {
     const accounts: Account[] = await wallet.getAllVisibleAccountsArray();
     const owners = safeInfo.owners;
@@ -158,10 +140,6 @@ const GnosisDrawer = ({ safeInfo, onCancel, onConfirm }: GnosisDrawerProps) => {
 
   const init = async () => {
     const sigs = await wallet.getGnosisTransactionSignatures();
-    const listContacts = await wallet.listContact();
-    const alianNames = await wallet.getAllAlianName();
-    setContacts(listContacts);
-    setAlianNames(alianNames);
     setSignatures(sigs);
     sortOwners();
   };
@@ -192,8 +170,6 @@ const GnosisDrawer = ({ safeInfo, onCancel, onConfirm }: GnosisDrawerProps) => {
                 ? isSameAddress(owner.address, checkedAccount.address)
                 : false
             }
-            alianNames={alianNames}
-            contacts={contacts}
           />
         ))}
       </div>

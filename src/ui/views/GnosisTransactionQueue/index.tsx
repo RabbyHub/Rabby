@@ -91,16 +91,8 @@ const TransactionConfirmations = ({
   const { t } = useTranslation();
   const wallet = useWallet();
   const [visibleAccounts, setVisibleAccounts] = useState<Account[]>([]);
-  const [contacts, setContacts] = useState<ContactBookItem[]>([]);
-  const [alianNames, setAlianNames] = useState({});
-
   const init = async () => {
     const accounts = await wallet.getAllVisibleAccountsArray();
-    const listContacts = await wallet.listContact();
-    const alianNames = await wallet.getAllAlianName();
-
-    setContacts(listContacts);
-    setAlianNames(alianNames);
     setVisibleAccounts(accounts);
   };
   useEffect(() => {
@@ -141,17 +133,6 @@ const TransactionConfirmations = ({
             <NameAndAddress
               address={owner}
               className="text-13"
-              name={
-                alianNames[owner.toLowerCase()]
-                  ? alianNames[owner.toLowerCase()]
-                  : contacts.find((contact) =>
-                      isSameAddress(contact.address, owner)
-                    )
-                  ? contacts.find((contact) =>
-                      isSameAddress(contact.address, owner)
-                    )?.name
-                  : ''
-              }
               nameClass="max-129 text-13"
               addressClass="text-13"
               noNameClass="no-name"
