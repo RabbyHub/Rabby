@@ -437,7 +437,8 @@ export const CHAINS: Record<string, Chain> = {
     selectChainLogo: IconMobmChainLogo,
     hex: '0x504',
     scanLink: 'https://blockscout.moonbeam.network/tx/_s_',
-    nativeTokenLogo: '',
+    nativeTokenLogo:
+      'https://static.debank.com/image/mobm_token/logo_url/mobm/a8442077d76b258297181c3e6eb8c9cc.png',
     nativeTokenDecimals: 18,
     thridPartyRPC: 'https://blockscout.moonbeam.network/api/eth-rpc',
   },
