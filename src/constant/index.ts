@@ -50,6 +50,9 @@ import IconBttChainLogo from 'ui/assets/dashboard/selectChain/bttc.svg';
 import IconAuroraLogo from 'ui/assets/chain-logos/aurora.svg';
 import IconAuroraWhiteLogo from 'ui/assets/chain-logos/aurora-white.svg';
 import IconAuroraChainLogo from 'ui/assets/dashboard/selectChain/aurora.svg';
+import IconMobmLogo from 'ui/assets/chain-logos/mobm.svg';
+import IconMobmWhiteLogo from 'ui/assets/chain-logos/mobm-white.svg';
+import IconMobmChainLogo from 'ui/assets/dashboard/selectChain/mobm.svg';
 import IconEN from 'ui/assets/langs/en.svg';
 import IconZH from 'ui/assets/langs/zh_cn.svg';
 import IconAmber from 'ui/assets/walletlogo/amber.png';
@@ -109,6 +112,7 @@ export enum CHAINS_ENUM {
   METIS = 'METIS',
   BTT = 'BTT',
   AURORA = 'AURORA',
+  MOBM = 'MOBM',
 }
 
 export const CHAINS: Record<string, Chain> = {
@@ -419,6 +423,24 @@ export const CHAINS: Record<string, Chain> = {
       'https://static.debank.com/image/token/logo_url/eth/935ae4e4d1d12d59a99717a24f2540b5.png',
     nativeTokenDecimals: 18,
     thridPartyRPC: 'https://mainnet.aurora.dev',
+  },
+  [CHAINS_ENUM.MOBM]: {
+    id: 1284,
+    serverId: 'mobm',
+    network: '1284',
+    name: 'Moonbeam',
+    nativeTokenSymbol: 'GLMR',
+    nativeTokenAddress: 'mobm',
+    enum: CHAINS_ENUM.MOBM,
+    logo: IconMobmLogo,
+    whiteLogo: IconMobmWhiteLogo,
+    selectChainLogo: IconMobmChainLogo,
+    hex: '0x504',
+    scanLink: 'https://blockscout.moonbeam.network/tx/_s_',
+    nativeTokenLogo:
+      'https://static.debank.com/image/mobm_token/logo_url/mobm/a8442077d76b258297181c3e6eb8c9cc.png',
+    nativeTokenDecimals: 18,
+    thridPartyRPC: 'https://blockscout.moonbeam.network/api/eth-rpc',
   },
 };
 

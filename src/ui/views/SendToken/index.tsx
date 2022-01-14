@@ -278,6 +278,22 @@ const SendToken = () => {
     const account = await wallet.syncGetCurrentAccount();
     const chain = CHAINS[val];
     setChain(val);
+    setCurrentToken({
+      id: chain.nativeTokenAddress,
+      decimals: chain.nativeTokenDecimals,
+      logo_url: chain.nativeTokenLogo,
+      symbol: chain.nativeTokenSymbol,
+      display_symbol: chain.nativeTokenSymbol,
+      optimized_symbol: chain.nativeTokenSymbol,
+      is_core: true,
+      is_verified: true,
+      is_wallet: true,
+      amount: 0,
+      price: 0,
+      name: chain.nativeTokenSymbol,
+      chain: chain.serverId,
+      time_at: 0,
+    });
     loadCurrentToken(chain.nativeTokenAddress, chain.serverId, account.address);
     const values = form.getFieldsValue();
     form.setFieldsValue({
