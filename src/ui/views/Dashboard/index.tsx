@@ -20,6 +20,7 @@ import {
   KEYRING_CLASS,
   KEYRING_TYPE,
   CHAINS,
+  KEYRING_TYPE_TEXT,
 } from 'consts';
 import {
   useWallet,
@@ -84,25 +85,13 @@ const GnosisAdminItem = ({
             ? addressInContacts?.name
             : ''
         }
+        nameClass="max-143"
       />
       {addressInWallet ? (
         <img src={IconTagYou} className="icon icon-tag" />
       ) : (
         <></>
       )}
-      <div className="address-type">
-        {addressInWallet ? (
-          <img
-            className="icon icon-account-type"
-            src={
-              KEYRING_ICONS[addressInWallet.type] ||
-              WALLET_BRAND_CONTENT[addressInWallet.brandName].image
-            }
-          />
-        ) : (
-          <></>
-        )}
-      </div>
     </li>
   );
 };
@@ -905,64 +894,76 @@ const Dashboard = () => {
         className="address-popover"
         width="344px"
       >
-        <div className="flex flex-col" onClick={() => setStartEdit(false)}>
+        <div
+          className="flex flex-col items-center"
+          onClick={() => setStartEdit(false)}
+        >
           <div className="address-popover__info">
-            <div className="flex items-center h-[32px]">
-              {currentAccount && (
-                <img
-                  className="icon icon-account-type w-[32px] h-[32px]"
-                  src={
-                    KEYRING_ICONS[currentAccount.type] ||
-                    WALLET_BRAND_CONTENT[currentAccount.brandName]?.image
-                  }
-                />
-              )}
-              <div className="brand-name">
-                {startEdit ? (
-                  <Input
-                    value={alianName}
-                    defaultValue={alianName}
-                    onChange={handleAlianNameChange}
-                    onPressEnter={alianNameConfirm}
-                    autoFocus={startEdit}
-                    onClick={(e) => e.stopPropagation()}
-                    maxLength={20}
-                    min={0}
-                    style={{ zIndex: 10 }}
+            <div className="left-container">
+              <div className="flex items-center w-[188px]">
+                <div className="brand-name">
+                  {startEdit ? (
+                    <Input
+                      value={alianName}
+                      defaultValue={alianName}
+                      onChange={handleAlianNameChange}
+                      onPressEnter={alianNameConfirm}
+                      autoFocus={startEdit}
+                      onClick={(e) => e.stopPropagation()}
+                      maxLength={20}
+                      min={0}
+                      style={{ zIndex: 10 }}
+                    />
+                  ) : (
+                    displayName
+                  )}
+                  {!startEdit && (
+                    <img
+                      className="edit-name"
+                      src={IconEditPen}
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        setStartEdit(true);
+                      }}
+                    />
+                  )}
+                </div>
+                {startEdit && (
+                  <img
+                    className="edit-name w-[16px] h-[16px]"
+                    src={IconCorrect}
+                    onClick={(e) => {
+                      e.stopPropagation();
+                      alianNameConfirm(e);
+                    }}
                   />
-                ) : (
-                  displayName
                 )}
               </div>
-              {!startEdit && (
-                <img
-                  className="edit-name"
-                  src={IconEditPen}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    setStartEdit(true);
-                  }}
+              <div className="address-display">
+                {currentAccount?.address}{' '}
+                <IconCopy
+                  onClick={handleCopyCurrentAddress}
+                  className={clsx(
+                    'icon icon-copy ml-7 mb-2 copy-icon inline-block',
+                    {
+                      success: copySuccess,
+                    }
+                  )}
                 />
-              )}
-              {startEdit && (
-                <img
-                  className="edit-name w-[16px] h-[16px]"
-                  src={IconCorrect}
-                  onClick={(e) => {
-                    e.stopPropagation();
-                    alianNameConfirm(e);
-                  }}
-                />
-              )}
-            </div>
-            <div className="flex text-12 mt-12">
-              <div className="mr-8 pt-2 lh-14">{currentAccount?.address}</div>
-              <IconCopy
-                onClick={handleCopyCurrentAddress}
-                className={clsx('icon icon-copy ml-7 mb-2 copy-icon', {
-                  success: copySuccess,
-                })}
-              />
+              </div>
+              <div className="import">
+                {currentAccount && (
+                  <img
+                    className="icon icon-account-type w-[16px] h-[16px] inline-block mr-6"
+                    src={
+                      KEYRING_ICONS[currentAccount.type] ||
+                      WALLET_BRAND_CONTENT[currentAccount.brandName]?.image
+                    }
+                  />
+                )}{' '}
+                {currentAccount?.type &&
+                  KEYRING_TYPE_TEXT[currentAccount?.type]}
+              </div>
             </div>
             <div className="qrcode-container">
               <QRCode value={currentAccount?.address} size={85} />
@@ -973,7 +974,7 @@ const Dashboard = () => {
               <h4 className="text-15 mb-4">Admins</h4>
               {safeInfo ? (
                 <>
-                  <p className="text-black text-12 mb-20">
+                  <p className="text-black text-12 mb-8">
                     Any transaction requires the confirmation of{' '}
                     <span className="ml-8 font-medium threshold">
                       {safeInfo.threshold}/{safeInfo.owners.length}
