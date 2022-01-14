@@ -519,6 +519,7 @@ const Dashboard = () => {
 
   const handleClickChange = (visible) => {
     setClicked(visible);
+    getAllKeyrings();
     setStartEdit(false);
     setHovered(false);
   };
@@ -736,7 +737,6 @@ const Dashboard = () => {
                   placement="bottomLeft"
                   overlayClassName="switch-popover"
                   onVisibleChange={handleClickChange}
-                  destroyTooltipOnHide
                 >
                   {
                     <img
