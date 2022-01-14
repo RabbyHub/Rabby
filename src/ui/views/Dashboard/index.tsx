@@ -518,6 +518,7 @@ const Dashboard = () => {
 
   const handleClickChange = (visible) => {
     setClicked(visible);
+    getAllKeyrings();
     setStartEdit(false);
     setHovered(false);
   };

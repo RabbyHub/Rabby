@@ -510,7 +510,11 @@ const SendToken = () => {
                 },
               ]}
             >
-              <Input placeholder={t('Enter the address')} autoFocus />
+              <Input
+                placeholder={t('Enter the address')}
+                autoComplete="off"
+                autoFocus
+              />
             </Form.Item>
           </div>
         </div>
