@@ -1,12 +1,12 @@
-import React, { FunctionComponent, useEffect, useState } from 'react';
-import { Tooltip, Input, message, Dropdown, Menu } from 'antd';
+import React, { useEffect, useState } from 'react';
+import ClipboardJS from 'clipboard';
+import { Input, message, Dropdown, Menu } from 'antd';
 import { useHistory } from 'react-router-dom';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
-import { useWallet, useHover } from 'ui/utils';
+import { useWallet } from 'ui/utils';
 import { ContactBookItem } from 'background/service/contactBook';
 import { AddressViewer } from 'ui/component';
-import IconEditPen from 'ui/assets/editpen.svg';
 import IconCorrect from 'ui/assets/dashboard/contacts/correct.png';
 import IconUnCorrect from 'ui/assets/dashboard/contacts/uncorrect.png';
 import IconSuccess from 'ui/assets/success.svg';
@@ -15,7 +15,6 @@ import IconSend from 'ui/assets/dashboard/contacts/send-icon.png';
 import IconHint from 'ui/assets/hint.png';
 
 import { Account } from './index';
-import wallet from '@/background/controller/wallet';
 
 export interface ContactsItem {
   account: {
@@ -141,6 +140,21 @@ const ContactsItem = ({
       `/send-token?address=${account?.address}&name=${account?.name}`
     );
   };
+  const handleCopyContractAddress = () => {
+    const clipboard = new ClipboardJS('.contact-item-wrapper', {
+      text: function () {
+        return account?.address;
+      },
+    });
+    clipboard.on('success', () => {
+      message.success({
+        icon: <img src={IconSuccess} className="icon icon-success" />,
+        content: 'Copied',
+        duration: 0.5,
+      });
+      clipboard.destroy();
+    });
+  };
   const DropdownOptions = () => {
     return (
       <Menu>
@@ -193,15 +207,7 @@ const ContactsItem = ({
 
       {!startEdit && (
         <img
-          onClick={(e) => {
-            e.stopPropagation;
-            navigator.clipboard.writeText(account?.address);
-            message.success({
-              icon: <img src={IconSuccess} className="icon icon-success" />,
-              content: t('Copied'),
-              duration: 0.5,
-            });
-          }}
+          onClick={handleCopyContractAddress}
           src={IconAddressCopy}
           id={'copyIcon'}
           className={clsx('copy-icon', {

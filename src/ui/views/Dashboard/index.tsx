@@ -378,6 +378,21 @@ const Dashboard = () => {
     const { data, index, style } = props;
     const account = data[index];
     const [isHovering, hoverProps] = useHover();
+    const handleCopyContractAddress = () => {
+      const clipboard = new ClipboardJS('.address-item', {
+        text: function () {
+          return account?.address;
+        },
+      });
+      clipboard.on('success', () => {
+        message.success({
+          icon: <img src={IconSuccess} className="icon icon-success" />,
+          content: 'Copied',
+          duration: 0.5,
+        });
+        clipboard.destroy();
+      });
+    };
     return (
       <div
         className="flex items-center address-item"
@@ -410,17 +425,7 @@ const Dashboard = () => {
               />
               {isHovering && (
                 <img
-                  onClick={(e) => {
-                    e.stopPropagation;
-                    navigator.clipboard.writeText(account?.address);
-                    message.success({
-                      icon: (
-                        <img src={IconSuccess} className="icon icon-success" />
-                      ),
-                      content: t('Copied'),
-                      duration: 0.5,
-                    });
-                  }}
+                  onClick={handleCopyContractAddress}
                   src={IconAddressCopy}
                   id={'copyIcon'}
                   className={clsx('ml-7  w-[16px] h-[16px]', {

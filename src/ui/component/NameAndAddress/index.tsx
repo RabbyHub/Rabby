@@ -1,4 +1,5 @@
 import React, { useEffect, useState } from 'react';
+import ClipboardJS from 'clipboard';
 import { message } from 'antd';
 import { useWallet, isSameAddress } from 'ui/utils';
 import { ContactBookItem } from 'background/service/contactBook';
@@ -38,6 +39,22 @@ const NameAndAddress = ({
     setAlianNames(alianNames);
   };
   const localName = alianName || addressInContacts?.name || '';
+  const handleCopyContractAddress = () => {
+    const clipboard = new ClipboardJS('.name-and-address', {
+      text: function () {
+        return address;
+      },
+    });
+
+    clipboard.on('success', () => {
+      message.success({
+        icon: <img src={IconSuccess} className="icon icon-success" />,
+        content: 'Copied',
+        duration: 0.5,
+      });
+      clipboard.destroy();
+    });
+  };
   useEffect(() => {
     init();
   }, [address]);
@@ -60,15 +77,7 @@ const NameAndAddress = ({
               .slice(0, 6)}...${address?.toLowerCase().slice(-4)}`}
       </div>
       <img
-        onClick={(e) => {
-          e.stopPropagation;
-          navigator.clipboard.writeText(address);
-          message.success({
-            icon: <img src={IconSuccess} className="icon icon-success" />,
-            content: 'Copied',
-            duration: 0.5,
-          });
-        }}
+        onClick={handleCopyContractAddress}
         src={IconAddressCopy}
         id={'copyIcon'}
         className={clsx('w-[16px] h-[16px] ml-6', {
