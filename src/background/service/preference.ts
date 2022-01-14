@@ -108,6 +108,21 @@ class PreferenceService {
     if (!this.store.addedToken) {
       this.store.addedToken = {};
     }
+    if (!this.store.externalLinkAck) {
+      this.store.externalLinkAck = false;
+    }
+    if (!this.store.hiddenAddresses) {
+      this.store.hiddenAddresses = [];
+    }
+    if (!this.store.balanceMap) {
+      this.store.balanceMap = {};
+    }
+    if (!this.store.useLedgerLive) {
+      this.store.useLedgerLive = false;
+    }
+    if (!this.store.walletSavedList) {
+      this.store.walletSavedList = [];
+    }
   };
 
   getLastTimeSendToken = (address: string) => {
@@ -149,27 +164,6 @@ class PreferenceService {
 
   getHiddenAddresses = (): Account[] => {
     return cloneDeep(this.store.hiddenAddresses);
-  };
-
-  getWatchAddressPreference = (address: string) => {
-    const key = address.toLowerCase();
-    if (
-      !this.store.watchAddressPreference ||
-      !this.store.watchAddressPreference[key]
-    )
-      return null;
-
-    return this.store.watchAddressPreference[key];
-  };
-
-  setWatchAddressPreference = (address: string, id: number) => {
-    if (!this.store.watchAddressPreference) {
-      this.store.watchAddressPreference = {};
-    }
-    this.store.watchAddressPreference = {
-      ...this.store.watchAddressPreference,
-      [address.toLowerCase()]: id,
-    };
   };
 
   hideAddress = (type: string, address: string, brandName: string) => {
