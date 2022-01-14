@@ -45,6 +45,7 @@ const Contacts = ({ visible, onClose }: ContactsProps) => {
     const listContacts = await wallet.listContact();
     setAccounts(listContacts);
     setEditIndex(null);
+    setCanAdd(true);
   };
   const addNewAccount = () => {
     const newAccount: Account = {
