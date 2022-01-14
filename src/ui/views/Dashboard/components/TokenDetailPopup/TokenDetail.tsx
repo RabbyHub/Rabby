@@ -1,6 +1,7 @@
 import { useInfiniteScroll } from 'ahooks';
 import { Button, message } from 'antd';
 import { TokenItem, TxHistoryResult } from 'background/service/openapi';
+import ClipboardJS from 'clipboard';
 import { last } from 'lodash';
 import React, { useCallback, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -60,6 +61,23 @@ const TokenDetail = ({ token }: { token: TokenItem }) => {
     }
   );
 
+  const handleCopy = (text) => {
+    const clipboard = new ClipboardJS('.token-detail', {
+      text: function () {
+        return text;
+      },
+    });
+
+    clipboard.on('success', () => {
+      message.success({
+        icon: <img src={IconSuccess} className="icon icon-success" />,
+        content: t('Copied'),
+        duration: 0.5,
+      });
+      clipboard.destroy();
+    });
+  };
+
   const isEmpty = (data?.list?.length || 0) <= 0 && !loading;
 
   const isShowAddress = /^0x.{40}$/.test(token.id);
@@ -90,16 +108,8 @@ const TokenDetail = ({ token }: { token: TokenItem }) => {
                 src={IconCopy}
                 className="w-14"
                 alt=""
-                onClick={(e) => {
-                  e.stopPropagation;
-                  navigator.clipboard.writeText(token.id);
-                  message.success({
-                    icon: (
-                      <img src={IconSuccess} className="icon icon-success" />
-                    ),
-                    content: t('Copied'),
-                    duration: 0.5,
-                  });
+                onClick={() => {
+                  handleCopy(token.id);
                 }}
               />
             </div>

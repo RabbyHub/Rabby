@@ -271,7 +271,7 @@ export default ({
                 className="direction pointer"
               >
                 {item.badge ? (
-                  <Badge count={2} size="small">
+                  <Badge count={item.badge} size="small">
                     <img src={item.icon} className="images" />
                   </Badge>
                 ) : (
