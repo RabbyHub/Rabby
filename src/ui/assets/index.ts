@@ -35,3 +35,9 @@ export { default as OperationCard } from './operation-card.png';
 export { ReactComponent as IconNormal } from 'ui/assets/keyring-normal.svg';
 export { ReactComponent as IconHardware } from 'ui/assets/hardware-white.svg';
 export { ReactComponent as IconWatch } from 'ui/assets/watch-white.svg';
+
+export { default as IconSend } from 'ui/assets/icon-send.svg';
+export { default as IconContract } from 'ui/assets/icon-contract.svg';
+export { default as IconContractDeploy } from 'ui/assets/icon-contract-deploy.svg';
+export { default as IconApproval } from 'ui/assets/icon-approval.svg';
+export { default as IconCancel } from 'ui/assets/icon-cancel.svg';

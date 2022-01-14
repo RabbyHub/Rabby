@@ -1,0 +1,108 @@
+.ui {
+  &.tx-explain {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    overflow: hidden;
+    font-size: 12px;
+    line-height: 14px;
+
+    .tx-icon {
+      width: 28px;
+      height: 28px;
+      border-radius: 2px;
+      object-fit: cover;
+    }
+    .tx-explain {
+      &-body {
+        display: flex;
+        flex-direction: column;
+        gap: 4px;
+        justify-content: center;
+        overflow: hidden;
+      }
+      &-title,
+      &-desc {
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+      &-title {
+        color: #13141a;
+      }
+      &-desc {
+        color: #707280;
+      }
+    }
+  }
+  &.tx-id {
+    font-size: 12px;
+    line-height: 14px;
+    .tx-id {
+      color: #707280;
+      text-decoration: underline;
+      &-chain {
+        color: #5a6066;
+        margin-right: 8px;
+      }
+      &-container {
+        margin-left: auto;
+      }
+    }
+  }
+
+  &.token-change {
+    // flex-shrink: 0;
+    margin-left: auto;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    font-size: 12px;
+    line-height: 14px;
+    max-width: 200px;
+    .token-change {
+      &-item {
+        display: flex;
+        color: #4b4d59;
+        justify-content: flex-end;
+        &-text {
+          white-space: nowrap;
+          overflow: hidden;
+          text-overflow: ellipsis;
+        }
+        &.is-success {
+          color: #27c193;
+        }
+        .token-icon {
+          flex-shrink: 0;
+          width: 14px;
+          height: 14px;
+          object-fit: cover;
+          margin-right: 6px;
+        }
+      }
+    }
+  }
+}
+
+// &__empty {
+//   width: 100%;
+//   display: flex;
+//   flex-direction: column;
+//   align-items: center;
+//   justify-content: center;
+//   .no-data {
+//     width: 100px;
+//     height: 100px;
+//     margin: 135px auto 0;
+//   }
+// }
+
+// &-loading {
+//   background-color: #fff;
+//   border-radius: 6px;
+//   padding: 8px 14px 16px;
+//   &:not(:last-child) {
+//     margin-bottom: 12px;
+//   }
+// }

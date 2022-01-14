@@ -50,6 +50,10 @@ const RecentConnections = ({
       : wallet.topConnectedSite(item.origin);
     getConnectedSites();
   };
+  const handleRemove = async (origin: string) => {
+    await wallet.removeConnectedSite(origin);
+    getConnectedSites();
+  };
 
   useEffect(() => {
     getConnectedSites();
@@ -58,17 +62,21 @@ const RecentConnections = ({
   return (
     <Popup visible={visible} height={484} onClose={onClose}>
       <div className="recent-connections-popup">
+        {visible && (
+          <ConnectionList
+            onRemove={handleRemove}
+            data={pinnedList}
+            onFavoriteChange={handleFavoriteChange}
+            title={t('Pinned')}
+            empty={<div className="list-empty">{t('No pinned dapps')}</div>}
+            extra={pinnedList.length > 0 ? t('Drag to sort') : null}
+            onClick={handleClick}
+            onSort={handleSort}
+            sortable={true}
+          ></ConnectionList>
+        )}
         <ConnectionList
-          data={pinnedList}
-          onFavoriteChange={handleFavoriteChange}
-          title={t('Pinned')}
-          empty={<div className="list-empty">{t('No pinned dapps')}</div>}
-          extra={pinnedList.length > 0 ? t('Drag to sort') : null}
-          onClick={handleClick}
-          onSort={handleSort}
-          sort={true}
-        ></ConnectionList>
-        <ConnectionList
+          onRemove={handleRemove}
           onClick={handleClick}
           onFavoriteChange={handleFavoriteChange}
           data={recentList}

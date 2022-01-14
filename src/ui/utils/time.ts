@@ -1,3 +1,5 @@
+import dayjs from 'dayjs';
+
 export const formatSeconds = (secs: number) => {
   if (secs < 60) return `${secs} sec`;
   const min = Math.floor(secs / 60);
@@ -21,4 +23,65 @@ export const timeago = (a: number, b: number) => {
     minute,
     second,
   };
+};
+
+export function getTimeSpan(times: number) {
+  if (isNaN(+times)) {
+    times = 0;
+  }
+  const d = parseInt(times / 60 / 60 / 24 + '');
+  const h = parseInt(((times / 60 / 60) % 24) + '');
+  const m = parseInt(((times / 60) % 60) + '');
+  const s = parseInt((times % 60) + '');
+  return {
+    d,
+    h,
+    m,
+    s,
+  };
+}
+
+export const formatTimeReadable = (timeElapse: number) => {
+  let timeStr = '';
+  const { d, h, m, s } = getTimeSpan(timeElapse);
+
+  if (d) timeStr = `${d} day` + (d > 1 ? 's' : '');
+  if (h && !timeStr) timeStr = `${h} hr` + (h > 1 ? 's' : '');
+  if (m && !timeStr) timeStr = `${m} min` + (m > 1 ? 's' : '');
+  if (!timeStr) timeStr = `${s} sec` + (s > 1 ? 's' : '');
+  return timeStr;
+};
+
+export const getTimeFromNow = (create_at: number) =>
+  formatTimeReadable(Date.now() / 1000 - create_at);
+
+export function fromNow(time: number, currTime?: number) {
+  let successTimeView = '';
+  const successTime = getTimeSpan((currTime || Date.now() / 1000) - time);
+  const { d, h, m, s } = successTime;
+  let str = '';
+  let flag = 0;
+  if (d) {
+    str += `${d}${`day${d > 1 ? 's' : ''}`} `;
+    flag++;
+  }
+  if ((h || flag) && flag < 3) {
+    str += `${h}${`hr${h > 1 ? 's' : ''}`} `;
+    flag++;
+  }
+  if ((m || flag) && flag < 3) {
+    str += `${m}${`min${m > 1 ? 's' : ''}`} `;
+    flag++;
+  }
+  if ((s || flag) && flag < 2) {
+    str += `${s}${`sec${s > 1 ? 's' : ''}`}`;
+  }
+  if (str) successTimeView = str;
+  return successTimeView;
+}
+
+export const sinceTime = (time: number) => {
+  return Date.now() / 1000 - time < 3600 * 24
+    ? `${fromNow(time)} ago`
+    : dayjs(time * 1000).format('YYYY/MM/DD HH:mm');
 };

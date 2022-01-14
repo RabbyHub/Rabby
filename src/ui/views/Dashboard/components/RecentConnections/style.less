@@ -47,6 +47,7 @@
     background-color: #f5f6fa;
     border-radius: 6px;
     .item {
+      position: relative;
       width: 100%;
       display: flex;
       align-items: center;
@@ -55,12 +56,22 @@
       border-radius: 6px;
       border: 1px solid transparent;
       cursor: pointer;
+      .icon-close {
+        position: absolute;
+        left: -21px;
+        top: 50%;
+        transform: translateY(-50%);
+        display: none;
+      }
       &.is-dragging {
         opacity: 0.5;
         background-color: #f5f6fa;
       }
       &.is-overlay {
         cursor: grabbing;
+        .icon-close {
+          display: none !important;
+        }
       }
       &-content {
         font-weight: 500;
@@ -95,6 +106,9 @@
         border: 1px solid #8697ff;
         .pin-website {
           opacity: 1;
+        }
+        .icon-close {
+          display: block;
         }
       }
     }

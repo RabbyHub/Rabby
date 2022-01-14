@@ -415,6 +415,37 @@
       margin-top: 20px;
       align-items: center;
       position: relative;
+      .extra-link {
+        margin-left: auto;
+        display: flex;
+        align-items: center;
+        gap: 8px;
+        padding: 1px 8px;
+        border: 0.5px solid rgba(255, 255, 255, 0.5);
+        border-radius: 90px;
+        &-divider {
+          height: 12px;
+          border-left: 0.5px solid rgba(255, 255, 255, 0.4);
+        }
+        &-scan,
+        &-debank {
+          cursor: pointer;
+          width: 20px;
+          height: 20px;
+        }
+        &-scan {
+          background: url('../../assets/dashboard/scan.svg');
+          &:hover {
+            background: url('../../assets/dashboard/scan-white.svg');
+          }
+        }
+        &-debank {
+          background: url('../../assets/dashboard/debank.svg');
+          &:hover {
+            background: url('../../assets/dashboard/debank-white.svg');
+          }
+        }
+      }
       .token {
         cursor: pointer;
         font-size: 14px;
@@ -908,10 +939,10 @@
       .import {
         display: inline-block;
         position: absolute;
-        color: #B4BDCC;
+        color: #b4bdcc;
         font-size: 12px;
-        height:16px;
-        left:0;
+        height: 16px;
+        left: 0;
         bottom: 0;
       }
     }
@@ -989,7 +1020,6 @@
           border-bottom: 0;
         }
       }
-    
     }
   }
 }

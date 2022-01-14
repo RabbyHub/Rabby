@@ -92,6 +92,9 @@ export interface TotalBalanceResponse {
 }
 
 export interface TokenItem {
+  content_type?: 'image' | 'image_url' | 'video_url' | 'audio_url' | undefined;
+  content?: string | undefined;
+  inner_id?: any;
   amount: number;
   chain: string;
   decimals: number;
@@ -173,6 +176,60 @@ export interface Collection {
   is_core: boolean;
   contract_uuids: string[];
   create_at: number;
+}
+
+export interface TxDisplayItem extends TxHistoryItem {
+  projectDict: TxHistoryResult['project_dict'];
+  cateDict: TxHistoryResult['cate_dict'];
+  tokenDict: TxHistoryResult['token_dict'];
+}
+export interface TxHistoryItem {
+  cate_id: string | null;
+  chain: string;
+  debt_liquidated: null;
+  id: string;
+  other_addr: string;
+  project_id: null | string;
+  receives: {
+    amount: number;
+    from_addr: string;
+    token_id: string;
+  }[];
+  sends: {
+    amount: number;
+    to_addr: string;
+    token_id: string;
+  }[];
+  time_at: number;
+  token_approve: {
+    spender: string;
+    token_id: string;
+    value: number;
+  } | null;
+  tx: {
+    eth_gas_fee: number;
+    from_addr: string;
+    name: string;
+    params: any[];
+    status: number;
+    to_addr: string;
+    usd_gas_fee: number;
+    value: number;
+  } | null;
+}
+export interface TxHistoryResult {
+  cate_dict: Record<string, { id: string; name: string }>;
+  history_list: TxHistoryItem[];
+  project_dict: Record<
+    string,
+    {
+      chain: string;
+      id: string;
+      logo_url: string;
+      name: string;
+    }
+  >;
+  token_dict: Record<string, TokenItem>;
 }
 export interface GasResult {
   estimated_gas_cost_usd_value: number;
@@ -447,6 +504,18 @@ class OpenApiService {
             path: '/v1/user/specific_token_list',
             method: 'POST',
             params: ['uuids', 'id'],
+          },
+          user_history_list: {
+            path: '/v1/user/history_list',
+            method: 'get',
+            params: [
+              'id',
+              'chain_id',
+              'token_id',
+              'coin_id',
+              'start_time',
+              'page_count',
+            ],
           },
         },
       },
@@ -950,6 +1019,21 @@ class OpenApiService {
     const config = this.store.config.nft_collection_list;
     const { data } = await this.request[config.method](config.path, {
       params: {},
+    });
+    return data;
+  };
+
+  listTxHisotry = async (params: {
+    id?: string;
+    chain_id?: string;
+    token_id?: string;
+    coin_id?: string;
+    start_time?: number;
+    page_count?: number;
+  }): Promise<TxHistoryResult[]> => {
+    const config = this.store.config.user_history_list;
+    const { data } = await this.request[config.method](config.path, {
+      params,
     });
     return data;
   };
