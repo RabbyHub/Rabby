@@ -1,15 +1,12 @@
-import { message } from 'antd';
+import React from 'react';
 import { ExplainTxResponse } from 'background/service/openapi';
 import BigNumber from 'bignumber.js';
-import ClipboardJS from 'clipboard';
 import { CHAINS, CHAINS_ENUM } from 'consts';
-import React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import IconArrowRight from 'ui/assets/arrow-right-gray.svg';
-import IconCopy from 'ui/assets/copy-no-border.svg';
-import IconSuccess from 'ui/assets/success.svg';
-import { AddressViewer } from 'ui/component';
+import { NameAndAddress } from 'ui/component';
 import { ellipsisOverflowedText } from 'ui/utils';
+
 import { splitNumberByStep } from 'ui/utils/number';
 import BalanceChange from './BalanceChange';
 import SpeedUpCorner from './SpeedUpCorner';
@@ -26,31 +23,12 @@ const Send = ({ data, chainEnum, isSpeedUp, raw }: SendProps) => {
   const detail = data.type_send!;
   const chain = CHAINS[chainEnum];
   const { t } = useTranslation();
-
   const handleViewRawClick = () => {
     ViewRawModal.open({
       raw,
       abi: data?.abi,
     });
   };
-
-  const handleCopyToAddr = () => {
-    const clipboard = new ClipboardJS('.send', {
-      text: function () {
-        return detail.to_addr;
-      },
-    });
-
-    clipboard.on('success', () => {
-      message.success({
-        icon: <img src={IconSuccess} className="icon icon-success" />,
-        content: t('Copied'),
-        duration: 0.5,
-      });
-      clipboard.destroy();
-    });
-  };
-
   return (
     <div className="send">
       <p className="section-title">
@@ -89,11 +67,11 @@ const Send = ({ data, chainEnum, isSpeedUp, raw }: SendProps) => {
         <div className="block-field contract">
           <span className="label">{t('To address')}</span>
           <span className="value">
-            <AddressViewer address={detail.to_addr} showArrow={false} />
-            <img
-              src={IconCopy}
-              className="icon icon-copy"
-              onClick={handleCopyToAddr}
+            <NameAndAddress
+              address={detail.to_addr}
+              className="text-13"
+              nameClass="max-117 text-13"
+              addressClass="text-13"
             />
           </span>
         </div>

@@ -365,6 +365,14 @@ const SendToken = () => {
         setChain(target.enum);
       }
       loadCurrentToken(needLoadToken.id, needLoadToken.chain, account.address);
+      if (qs.address) {
+        const data: ContactBookItem = {
+          name: qs?.name,
+          address: qs?.address,
+        };
+        const type = 'others';
+        handleConfirmContact(data, type);
+      }
     }
   };
 

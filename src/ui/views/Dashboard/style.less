@@ -317,7 +317,7 @@
       background: rgba(255, 255, 255, 0.12);
       backdrop-filter: blur(40px);
       padding: 14px 0 14px 20px;
-      z-index:1;
+      z-index: 1;
       .operation-item {
         flex: 1;
         color: #fff;
@@ -438,7 +438,6 @@
       .showToken {
         background: rgba(255, 255, 255, 0.3);
       }
-
     }
   }
   .show-chain-bg {
@@ -693,7 +692,7 @@
       }
       .opacity-100 {
         opacity: 1;
-      };
+      }
     }
     .no-added-token {
       font-weight: normal;
@@ -832,9 +831,9 @@
 }
 .address-popover {
   width: 344px;
-  height: 200px;
   left: -8px !important;
   top: -140px !important;
+  height: 200px;
   .ant-popover-arrow {
     display: none;
   }
@@ -843,24 +842,20 @@
   }
   .ant-modal-body {
     max-height: 510px;
+    padding: 8px;
   }
   .brand-name {
-    font-size: 20px;
+    font-size: 16px;
     color: #13141a;
     font-weight: 500;
     margin: 2px 7px 0 6px;
-    max-width: 200px;
-    overflow: hidden;
-    text-overflow: ellipsis;
-    white-space: nowrap;
     cursor: default;
     .ant-input {
-      width: 160px;
-      height: 24px;
-      background: #f5f6fa;
-      border: 1px solid #e5e9ef;
+      width: 167px;
+      height: 28px;
+      background: #e5e9ef;
+      border-radius: 4px;
       box-sizing: border-box;
-      border-radius: 2px;
       padding-left: 2px;
     }
   }
@@ -869,21 +864,66 @@
     width: 11px;
     height: 11px;
     margin-left: 3px;
+    display: inline-block;
+  }
+  .address-container {
+    display: flex;
+    font-size: 12px;
+    margin-top: 12px;
+    .address {
+      margin-right: 8px;
+      padding-top: 2px;
+      max-width: 188px;
+    }
   }
   .qrcode-container {
     width: 100px;
     height: 100px;
-    margin: 23px 0 0 0;
     border: 1px solid #d8dfeb;
     box-sizing: border-box;
     border-radius: 8px;
     padding: 6px 4px 4px 6px;
   }
+  &__info {
+    display: flex;
+    justify-content: center;
+    width: 328px;
+    min-height: 116px;
+    align-items: center;
+    background: #f5f6fa;
+    border-radius: 4px;
+    padding: 8px;
+    .left-container {
+      position: relative;
+      display: flex;
+      flex-direction: column;
+      width: 100%;
+      height: 116px;
+      .address-display {
+        font-size: 12px;
+        color: #707280;
+        width: 185px;
+        margin: 8px 7px 0 6px;
+      }
+      .import {
+        display: inline-block;
+        position: absolute;
+        color: #B4BDCC;
+        font-size: 12px;
+        height:16px;
+        left:0;
+        bottom: 0;
+      }
+    }
+  }
   &__gnosis {
-    border-top: 1px solid #e5e9ef;
-    margin-top: 20px;
+    margin-top: 9px;
     padding-top: 16px;
     min-height: 107px;
+    background: #f5f6fa;
+    border-radius: 4px;
+    width: 328px;
+    padding: 8px;
     .threshold {
       color: #13141a;
     }
@@ -901,11 +941,16 @@
     }
     .admin-list {
       margin: 0;
+      background: #ffffff;
+      border-radius: 4px;
+      width: 100%;
+      padding: 0 7px;
       li {
-        margin-bottom: 10px;
+        position: relative;
         display: flex;
         align-items: center;
-        height: 24px;
+        height: 40px;
+        width: 295px;
         .address-viewer-text.normal {
           font-weight: 500;
           font-size: 13px;
@@ -931,7 +976,20 @@
         &:nth-last-child(1) {
           margin-bottom: 0;
         }
+        &::after {
+          content: '';
+          position: absolute;
+          right: 0;
+          bottom: 0;
+          height: 1px;
+          width: 100%;
+          border-bottom: 1px solid #e5e9ef;
+        }
+        &:nth-last-child(1)::after {
+          border-bottom: 0;
+        }
       }
+    
     }
   }
 }
@@ -1030,7 +1088,6 @@
         margin-bottom: 12px;
         margin-left: 42px;
       }
-
     }
     .pop-add-address {
       cursor: pointer;
@@ -1063,6 +1120,7 @@
     color: #13141a;
     margin: 2px 7px 0 6px;
   }
+
   .edit-name {
     width: 11px;
     height: 11px;
@@ -1265,7 +1323,7 @@
   .icon-loading {
     margin-left: 36px;
     animation: spining 1.5s infinite linear;
-  }  
+  }
   .loading-text {
     margin-top: 18px;
     color: #ffffff;
@@ -1284,4 +1342,10 @@
     font-size: 14px;
     opacity: 0.8;
   }
+}
+.max-143 {
+  max-width: 143px;
+}
+.no-name {
+  color: #707280 !important;
 }
