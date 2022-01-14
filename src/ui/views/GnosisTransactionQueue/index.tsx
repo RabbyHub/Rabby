@@ -106,7 +106,6 @@ const TransactionConfirmations = ({
   useEffect(() => {
     init();
   }, []);
-  console.log(contacts, owners);
   return (
     <div className="tx-confirm">
       <div className="tx-confirm__head">
