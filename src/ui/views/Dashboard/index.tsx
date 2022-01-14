@@ -965,7 +965,7 @@ const Dashboard = () => {
               </div>
             </div>
             <div className="qrcode-container">
-              <QRCode value={currentAccount?.address} size={85} />
+              <QRCode value={currentAccount?.address} size={100} />
             </div>
           </div>
           {isGnosis && (
