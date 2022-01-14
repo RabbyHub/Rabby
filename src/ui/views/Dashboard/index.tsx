@@ -935,7 +935,7 @@ const Dashboard = () => {
               <div className="import">
                 {currentAccount && (
                   <img
-                    className="icon icon-account-type w-[16px] h-[16px] inline-block mr-6"
+                    className="icon icon-account-type w-[16px] h-[16px] pb-1 inline-block"
                     src={
                       KEYRING_ICONS[currentAccount.type] ||
                       WALLET_BRAND_CONTENT[currentAccount.brandName]?.image
