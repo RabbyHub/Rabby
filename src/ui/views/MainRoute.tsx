@@ -27,6 +27,7 @@ import AddressManagement from './AddressManagement';
 import SwitchLang from './SwitchLang';
 import TransactionHistory from './TransactionHistory';
 import History from './History';
+import SignedTextHistory from './SignedTextHistory';
 import GnosisTransactionQueue from './GnosisTransactionQueue';
 import QRCodeReader from './QRCodeReader';
 import AdvancedSettings from './AdvanceSettings';
@@ -111,6 +112,9 @@ const Main = () => {
         </PrivateRoute>
         <PrivateRoute exact path="/history">
           <History />
+        </PrivateRoute>
+        <PrivateRoute exact path="/text-history">
+          <SignedTextHistory />
         </PrivateRoute>
         <PrivateRoute exact path="/gnosis-queue">
           <GnosisTransactionQueue />

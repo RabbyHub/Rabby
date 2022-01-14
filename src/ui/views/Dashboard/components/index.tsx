@@ -11,3 +11,4 @@ export { default as GnosisWrongChainAlertBar } from './GnosisWrongChainAlertBar'
 export { default as ChainAndSiteSelector } from './ChainAndSiteSelector';
 export { default as Settings } from './Settings';
 export { default as ExtraLink } from './ExtraLink';
+export { default as Contacts } from './Contacts';

@@ -22,3 +22,4 @@ export { default as ChainCard } from './ChainCard';
 export { default as TokenWithChain } from './TokenWithChain';
 export { default as Popup } from './Popup';
 export * from './TxHistory';
+export { default as NameAndAddress } from './NameAndAddress';

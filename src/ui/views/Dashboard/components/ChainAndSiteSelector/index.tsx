@@ -8,6 +8,7 @@ import { useWallet, getCurrentConnectSite, splitNumberByStep } from 'ui/utils';
 import { ConnectedSite } from 'background/service/permission';
 import { GasLevel } from 'background/service/openapi';
 import { ChainSelector, FallbackSiteLogo } from 'ui/component';
+import { RecentConnections, Settings, Contacts } from '../index';
 import { CHAINS_ENUM } from 'consts';
 import IconDrawer from 'ui/assets/drawer.png';
 import IconContacts from 'ui/assets/dashboard/contacts.png';
@@ -23,7 +24,6 @@ import IconRightGoTo from 'ui/assets/dashboard/selectChain/rightgoto.svg';
 import IconDot from 'ui/assets/dashboard/selectChain/dot.png';
 import IconQuene from 'ui/assets/dashboard/quene.svg';
 import './style.less';
-import { RecentConnections, Settings } from '../index';
 
 const CurrentConnection = memo(
   ({
@@ -114,6 +114,7 @@ export default ({
   showModal = false,
   isGnosis,
   higherBottom = false,
+  setDashboardReload,
 }: {
   onChange(site: ConnectedSite | null | undefined): void;
   showChain?: boolean;
@@ -125,6 +126,7 @@ export default ({
   higherBottom: boolean;
   pendingTxCount?: number;
   gnosisPendingCount?: number;
+  setDashboardReload(): void;
 }) => {
   const history = useHistory();
   const [connections, setConnections] = useState<(ConnectedSite | null)[]>([]);
@@ -134,6 +136,7 @@ export default ({
   const [drawerAnimation, setDrawerAnimation] = useState<string | null>(null);
   const [urlVisible, setUrlVisible] = useState(false);
   const [settingVisible, setSettingVisible] = useState(false);
+  const [contactsVisible, setContactsVisible] = useState(false);
   const [currentConnect, setCurrentConnect] = useState<
     ConnectedSite | null | undefined
   >(null);
@@ -170,6 +173,10 @@ export default ({
   };
   const changeSetting = () => {
     setSettingVisible(!settingVisible);
+  };
+  const changeContacts = () => {
+    setContactsVisible(!contactsVisible);
+    setDashboardReload();
   };
   useEffect(() => {
     getCurrentSite();
@@ -216,8 +223,10 @@ export default ({
     {
       icon: IconSignedText,
       content: 'Signed Text',
-      disabled: true,
       hideForGnosis: true,
+      onClick: () => {
+        history.push('/text-history');
+      },
     },
     {
       icon: IconTransactions,
@@ -229,7 +238,7 @@ export default ({
     {
       icon: IconContacts,
       content: 'Contacts',
-      disabled: true,
+      onClick: changeContacts,
     },
     {
       icon: IconSetting,
@@ -237,7 +246,6 @@ export default ({
       onClick: changeSetting,
     },
   ];
-
   return (
     <div className={clsx('recent-connections', connectionAnimation)}>
       <img
@@ -253,7 +261,7 @@ export default ({
         <div className="direction-pannel">
           {directionPanelData.map((item, index) => {
             if (item.hideForGnosis && isGnosis) return <></>;
-            return item.disabled ? (
+            return (item as Record<string, any>).disabled ? (
               <Tooltip
                 title={'Coming soon'}
                 overlayClassName="rectangle direction-tooltip"
@@ -318,6 +326,7 @@ export default ({
         higherBottom={higherBottom}
       />
       <Settings visible={settingVisible} onClose={changeSetting} />
+      <Contacts visible={contactsVisible} onClose={changeContacts} />
       <RecentConnections visible={urlVisible} onClose={changeURL} />
     </div>
   );

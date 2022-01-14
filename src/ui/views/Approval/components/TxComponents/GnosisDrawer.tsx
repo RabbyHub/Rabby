@@ -5,9 +5,11 @@ import clsx from 'clsx';
 import { SafeInfo } from '@rabby-wallet/gnosis-sdk/src/api';
 import { Button } from 'antd';
 import { Account } from 'background/service/preference';
+
 import { useWallet, isSameAddress } from 'ui/utils';
+import { NameAndAddress } from 'ui/component';
+
 import { KEYRING_TYPE, KEYRING_CLASS } from 'consts';
-import AddressViewer from 'ui/component/AddressViewer';
 import FieldCheckbox from 'ui/component/FieldCheckbox';
 import IconTagYou from 'ui/assets/tag-you.svg';
 import IconTagNotYou from 'ui/assets/tag-notyou.svg';
@@ -64,7 +66,12 @@ const AddressItem = ({
       checked={checked}
       disable={!account.type || signed}
     >
-      <AddressViewer address={account.address} showArrow={false} />
+      <NameAndAddress
+        address={account.address}
+        nameClass={clsx('max-115 text-15', !account.type && 'no-name')}
+        addressClass="text-15"
+        noNameClass="no-name"
+      />
       <img
         src={account.type ? IconTagYou : IconTagNotYou}
         className="icon icon-tag"
@@ -80,7 +87,6 @@ const GnosisDrawer = ({ safeInfo, onCancel, onConfirm }: GnosisDrawerProps) => {
   const [ownerAccounts, setOwnerAccounts] = useState<Account[]>([]);
   const [checkedAccount, setCheckedAccount] = useState<Account | null>(null);
   const [isLoading, setIsLoading] = useState(false);
-
   const sortOwners = async () => {
     const accounts: Account[] = await wallet.getAllVisibleAccountsArray();
     const owners = safeInfo.owners;
