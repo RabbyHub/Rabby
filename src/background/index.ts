@@ -131,7 +131,7 @@ browser.runtime.onConnect.addListener((port) => {
 
     eventBus.addEventListener(EVENTS.broadcastToUI, boardcastCallback);
     port.onDisconnect.addListener(() => {
-      eventBus.removeEventListerner(EVENTS.broadcastToUI, boardcastCallback);
+      eventBus.removeEventListener(EVENTS.broadcastToUI, boardcastCallback);
     });
 
     return;
