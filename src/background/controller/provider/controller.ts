@@ -24,6 +24,7 @@ import {
   transactionWatchService,
   transactionHistoryService,
   pageStateCacheService,
+  signTextHistoryService,
   i18n,
 } from 'background/service';
 import { notification } from 'background/webapi';
@@ -368,16 +369,23 @@ class ProviderController extends BaseController {
         );
     },
   ])
-  personalSign = async ({ data, approvalRes }) => {
+  personalSign = async ({ data, approvalRes, session }) => {
     if (!data.params) return;
     const [string, from] = data.params;
     const hex = isHexString(string) ? string : stringToHex(string);
     const keyring = await this._checkAddress(from);
-    return keyringService.signPersonalMessage(
+    const result = await keyringService.signPersonalMessage(
       keyring,
       { data: hex, from },
       approvalRes?.extra
     );
+    signTextHistoryService.createHistory({
+      address: from,
+      text: string,
+      origin: session.origin,
+      type: 'personalSign',
+    });
+    return result;
   };
 
   private _signTypedData = async (from, data, version, extra?) => {
@@ -401,32 +409,92 @@ class ProviderController extends BaseController {
     data: {
       params: [data, from],
     },
+    session,
     approvalRes,
-  }) => this._signTypedData(from, data, 'V1', approvalRes?.extra);
+  }) => {
+    const result = await this._signTypedData(
+      from,
+      data,
+      'V1',
+      approvalRes?.extra
+    );
+    signTextHistoryService.createHistory({
+      address: from,
+      text: data,
+      origin: session.origin,
+      type: 'ethSignTypedData',
+    });
+    return result;
+  };
 
   @Reflect.metadata('APPROVAL', ['SignTypedData', v1SignTypedDataVlidation])
   ethSignTypedDataV1 = async ({
     data: {
       params: [data, from],
     },
+    session,
     approvalRes,
-  }) => this._signTypedData(from, data, 'V1', approvalRes?.extra);
+  }) => {
+    const result = await this._signTypedData(
+      from,
+      data,
+      'V1',
+      approvalRes?.extra
+    );
+    signTextHistoryService.createHistory({
+      address: from,
+      text: data,
+      origin: session.origin,
+      type: 'ethSignTypedDataV1',
+    });
+    return result;
+  };
 
   @Reflect.metadata('APPROVAL', ['SignTypedData', signTypedDataVlidation])
   ethSignTypedDataV3 = async ({
     data: {
       params: [from, data],
     },
+    session,
     approvalRes,
-  }) => this._signTypedData(from, data, 'V3', approvalRes?.extra);
+  }) => {
+    const result = await this._signTypedData(
+      from,
+      data,
+      'V3',
+      approvalRes?.extra
+    );
+    signTextHistoryService.createHistory({
+      address: from,
+      text: data,
+      origin: session.origin,
+      type: 'ethSignTypedDataV3',
+    });
+    return result;
+  };
 
   @Reflect.metadata('APPROVAL', ['SignTypedData', signTypedDataVlidation])
   ethSignTypedDataV4 = async ({
     data: {
       params: [from, data],
     },
+    session,
     approvalRes,
-  }) => this._signTypedData(from, data, 'V4', approvalRes?.extra);
+  }) => {
+    const result = await this._signTypedData(
+      from,
+      data,
+      'V4',
+      approvalRes?.extra
+    );
+    signTextHistoryService.createHistory({
+      address: from,
+      text: data,
+      origin: session.origin,
+      type: 'ethSignTypedDataV4',
+    });
+    return result;
+  };
 
   @Reflect.metadata('APPROVAL', [
     'AddChain',
