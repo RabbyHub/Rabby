@@ -11,6 +11,8 @@ import { toChecksumAddress, numberToHex } from 'web3-utils';
 import dayjs from 'dayjs';
 import { ExplainTxResponse } from 'background/service/openapi';
 import { Account } from 'background/service/preference';
+import { ContactBookItem } from 'background/service/contactBook';
+
 import { intToHex } from 'ethereumjs-util';
 import { useWallet, timeago, isSameAddress } from 'ui/utils';
 import {
@@ -20,7 +22,7 @@ import {
 } from 'ui/utils/gnosis';
 import { SafeTransactionDataPartial } from '@gnosis.pm/safe-core-sdk-types';
 import { splitNumberByStep } from 'ui/utils/number';
-import { PageHeader } from 'ui/component';
+import { PageHeader, NameAndAddress } from 'ui/component';
 import AccountSelectDrawer from 'ui/component/AccountSelectDrawer';
 import { INTERNAL_REQUEST_ORIGIN, KEYRING_CLASS } from 'consts';
 import IconUnknown from 'ui/assets/icon-unknown.svg';
@@ -89,16 +91,13 @@ const TransactionConfirmations = ({
   const { t } = useTranslation();
   const wallet = useWallet();
   const [visibleAccounts, setVisibleAccounts] = useState<Account[]>([]);
-
   const init = async () => {
     const accounts = await wallet.getAllVisibleAccountsArray();
     setVisibleAccounts(accounts);
   };
-
   useEffect(() => {
     init();
   }, []);
-
   return (
     <div className="tx-confirm">
       <div className="tx-confirm__head">
@@ -131,11 +130,13 @@ const TransactionConfirmations = ({
               }
               className="icon icon-check"
             />
-            <span title={owner}>
-              {`${owner
-                .toLowerCase()
-                .slice(0, 6)}...${owner.toLowerCase().slice(-4)}`}
-            </span>
+            <NameAndAddress
+              address={owner}
+              className="text-13"
+              nameClass="max-129 text-13"
+              addressClass="text-13"
+              noNameClass="no-name"
+            />
             {visibleAccounts.find((account) =>
               isSameAddress(account.address, owner)
             ) ? (

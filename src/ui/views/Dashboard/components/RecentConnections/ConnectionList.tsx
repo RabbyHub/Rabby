@@ -19,10 +19,11 @@ interface ConnectionProps {
   empty?: ReactNode;
   extra?: ReactNode;
   data?: ConnectedSite[];
-  sort?: boolean;
+  sortable?: boolean;
   onSort?(list: ConnectedSite[]): void;
   onClick?(item: ConnectedSite): void;
   onFavoriteChange?(item: ConnectedSite, value: boolean): void;
+  onRemove?(origin: string): void;
 }
 
 const ConnectionList = memo(
@@ -33,8 +34,9 @@ const ConnectionList = memo(
     onFavoriteChange,
     extra,
     title,
-    sort = false,
+    sortable = false,
     onSort,
+    onRemove,
     empty,
   }: ConnectionProps) => {
     const [activeItem, setActiveItem] = useState<ConnectedSite | null>(null);
@@ -83,19 +85,42 @@ const ConnectionList = memo(
         </div>
         {data && data.length > 0 ? (
           <div className="list-content droppable">
-            <DndContext
-              onDragStart={handleDragStart}
-              onDragEnd={handleDragEnd}
-              onDragCancel={handleDragCancel}
-              sensors={sensors}
-              measuring={{ droppable: { strategy: MeasuringStrategy.Always } }}
-            >
-              <SortableContext
-                items={data.map((item) => ({ ...item, id: item.origin }))}
+            {sortable ? (
+              <DndContext
+                onDragStart={handleDragStart}
+                onDragEnd={handleDragEnd}
+                onDragCancel={handleDragCancel}
+                sensors={sensors}
+                measuring={{
+                  droppable: { strategy: MeasuringStrategy.Always },
+                }}
               >
+                <SortableContext
+                  items={data.map((item) => ({ ...item, id: item.origin }))}
+                >
+                  {data.map((item, index) => (
+                    <ConnectionItem
+                      onRemove={onRemove}
+                      item={item}
+                      key={item?.origin || index}
+                      onFavoriteChange={(v) =>
+                        onFavoriteChange && onFavoriteChange(item, v)
+                      }
+                      onClick={() => onClick && onClick(item)}
+                    />
+                  ))}
+                </SortableContext>
+                <DragOverlay>
+                  {activeItem && (
+                    <Item item={activeItem} className="is-overlay"></Item>
+                  )}
+                </DragOverlay>
+              </DndContext>
+            ) : (
+              <>
                 {data.map((item, index) => (
-                  <ConnectionItem
-                    sort={sort}
+                  <Item
+                    onRemove={onRemove}
                     item={item}
                     key={item?.origin || index}
                     onFavoriteChange={(v) =>
@@ -104,13 +129,8 @@ const ConnectionList = memo(
                     onClick={() => onClick && onClick(item)}
                   />
                 ))}
-              </SortableContext>
-              <DragOverlay>
-                {activeItem && (
-                  <Item item={activeItem} className="is-overlay"></Item>
-                )}
-              </DragOverlay>
-            </DndContext>
+              </>
+            )}
           </div>
         ) : (
           empty

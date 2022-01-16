@@ -31,3 +31,22 @@ export const formatTokenAmount = (amount: number | string, decimals = 4) => {
   }
   return splitNumberByStep(bn.toFixed(decimals));
 };
+
+export const numberWithCommasIsLtOne = (
+  x?: number | string,
+  precision?: number
+) => {
+  if (x === undefined || x === null) {
+    return '-';
+  }
+  if (x === 0) return '0';
+
+  if (x < 0.00005) {
+    return '< 0.0001';
+  }
+  precision = x < 1 ? 4 : precision ?? 2;
+  const parts: string[] = Number(x).toFixed(precision).split('.');
+
+  parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
+  return parts.join('.');
+};

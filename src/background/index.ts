@@ -17,6 +17,7 @@ import {
   pageStateCacheService,
   transactionHistoryService,
   contactBookService,
+  signTextHistoryService,
 } from './service';
 import { providerController, walletController } from './controller';
 import i18n from './service/i18n';
@@ -70,6 +71,7 @@ async function restoreAppState() {
   await pageStateCacheService.init();
   await transactionHistoryService.init();
   await contactBookService.init();
+  await signTextHistoryService.init();
   rpcCache.start();
 
   appStoreLoaded = true;
@@ -131,7 +133,7 @@ browser.runtime.onConnect.addListener((port) => {
 
     eventBus.addEventListener(EVENTS.broadcastToUI, boardcastCallback);
     port.onDisconnect.addListener(() => {
-      eventBus.removeEventListerner(EVENTS.broadcastToUI, boardcastCallback);
+      eventBus.removeEventListener(EVENTS.broadcastToUI, boardcastCallback);
     });
 
     return;

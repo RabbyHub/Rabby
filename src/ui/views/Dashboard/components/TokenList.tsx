@@ -1,4 +1,10 @@
-import React, { useRef, useState, useEffect, useMemo } from 'react';
+import React, {
+  useRef,
+  useState,
+  useEffect,
+  useMemo,
+  useCallback,
+} from 'react';
 import { useHistory } from 'react-router-dom';
 import { Input } from 'antd';
 import { FixedSizeList } from 'react-window';
@@ -14,9 +20,11 @@ import { SvgIconLoading } from 'ui/assets';
 import IconSendToken from 'ui/assets/dashboard/tokenlistsend.png';
 import IconSendTokenHover from 'ui/assets/dashboard/hover-tokenlistsend.png';
 import clsx from 'clsx';
+import { TokenDetailPopup } from './TokenDetailPopup';
+import { TokenItem } from '@/background/service/openapi';
 
 const Row = (props) => {
-  const { data, index, style } = props;
+  const { data, index, style, onTokenClick } = props;
   const [isHovering, hoverProps] = useHover();
   const {
     list,
@@ -33,16 +41,17 @@ const Row = (props) => {
   const token = list[index];
   const isAdded =
     addedToken.length > 0 && addedToken.find((item) => item === token.id);
-  const history = useHistory();
-  const goToSend = () => {
-    history.push(`/send-token?token=${token?.chain}:${token?.id}`);
-  };
+
+  const handleTokenClick = useCallback(() => {
+    onTokenClick && onTokenClick(token);
+  }, [onTokenClick, token]);
   return (
     <div
-      className={clsx('token-item', isHovered && 'hover')}
+      className={clsx('token-item', 'cursor-pointer', isHovered && 'hover')}
       onMouseEnter={() => setHoveredRowIndex(index)}
       onMouseLeave={() => setHoveredRowIndex(null)}
       style={style}
+      onClick={handleTokenClick}
     >
       <TokenWithChain token={token} hideConer width={'24px'} height={'24px'} />
       <div className="middle">
@@ -64,26 +73,14 @@ const Row = (props) => {
         </div>
       </div>
       {isInitList ? (
-        !isHovered ? (
-          <div className="right">
-            <div className="token-amount">
-              $
-              {splitNumberByStep((token.amount * token.price || 0)?.toFixed(2))}
-            </div>
-            <div className="token-name">
-              @{splitNumberByStep((token.price || 0).toFixed(2))}
-            </div>
+        <div className="right">
+          <div className="token-amount">
+            ${splitNumberByStep((token.amount * token.price || 0)?.toFixed(2))}
           </div>
-        ) : (
-          <div className="right">
-            <img
-              {...hoverProps}
-              src={isHovering ? IconSendTokenHover : IconSendToken}
-              className="pointer"
-              onClick={goToSend}
-            />
+          <div className="token-name">
+            @{splitNumberByStep((token.price || 0).toFixed(2))}
           </div>
-        )
+        </div>
       ) : (
         <div className="right">
           <img
@@ -115,6 +112,23 @@ const TokenList = ({
   const handleQueryChange = (value: string) => {
     setQuery(value);
   };
+  const [detail, setDetail] = useState<{
+    visible: boolean;
+    current?: TokenItem | null;
+  }>({
+    visible: false,
+    current: null,
+  });
+
+  const handleTokenClick = useCallback(
+    (token) => {
+      setDetail({
+        visible: true,
+        current: token,
+      });
+    },
+    [setDetail]
+  );
   useDebounce(
     () => {
       if (query) onSearch(query);
@@ -206,7 +220,7 @@ const TokenList = ({
           ref={fixedList}
           style={{ zIndex: 10, 'overflow-x': 'hidden', paddingBottom: 50 }}
         >
-          {Row}
+          {(props) => <Row {...props} onTokenClick={handleTokenClick}></Row>}
         </FixedSizeList>
       )}
       {!startSearch && !isloading && tokens.length === 0 && (
@@ -215,6 +229,16 @@ const TokenList = ({
           <div className="loading-text">{t('No Tokens')}</div>
         </div>
       )}
+      <TokenDetailPopup
+        visible={detail.visible}
+        token={detail.current}
+        onClose={() => {
+          setDetail({
+            visible: false,
+            current: null,
+          });
+        }}
+      ></TokenDetailPopup>
     </div>
   );
 };
