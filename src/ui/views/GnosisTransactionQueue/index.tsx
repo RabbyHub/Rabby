@@ -552,11 +552,6 @@ const GnosisTransactionQueue = () => {
     init();
   }, []);
 
-  useEffect(() => {
-    console.log('transactionsGroup', transactionsGroup);
-    console.log('safeInfo', safeInfo);
-  }, [transactionsGroup, safeInfo]);
-
   return (
     <div className="queue">
       <PageHeader>{t('Queue')}</PageHeader>
