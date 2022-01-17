@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Spin } from 'ui/component';
+import { sortBy } from 'lodash';
+
 import { useCurrentBalance } from 'ui/component/AddressList/AddressItem';
 import { splitNumberByStep, useWallet } from 'ui/utils';
 import { CHAINS, KEYRING_TYPE, CHAINS_ENUM } from 'consts';
@@ -48,7 +50,6 @@ const BalanceView = ({
       handleIsGnosisChange();
     }
   }, [isGnosis, currentAccount]);
-
   const displayChainList = () => {
     if (isGnosis) {
       return (
