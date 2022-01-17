@@ -5,27 +5,23 @@ import React, {
   useMemo,
   useCallback,
 } from 'react';
-import { useHistory } from 'react-router-dom';
 import { Input } from 'antd';
 import { FixedSizeList } from 'react-window';
 import { useTranslation } from 'react-i18next';
 import { useDebounce } from 'react-use';
 import { TokenWithChain, AddressViewer } from 'ui/component';
-import { splitNumberByStep, useHover } from 'ui/utils';
+import { splitNumberByStep } from 'ui/utils';
 import IconSearch from 'ui/assets/tokenSearch.png';
 import IconClose from 'ui/assets/searchIconClose.png';
 import IconAddToken from 'ui/assets/addtokenplus.png';
 import IconRemoveToken from 'ui/assets/removetoken.png';
 import { SvgIconLoading } from 'ui/assets';
-import IconSendToken from 'ui/assets/dashboard/tokenlistsend.png';
-import IconSendTokenHover from 'ui/assets/dashboard/hover-tokenlistsend.png';
 import clsx from 'clsx';
 import { TokenDetailPopup } from './TokenDetailPopup';
 import { TokenItem } from '@/background/service/openapi';
 
 const Row = (props) => {
   const { data, index, style, onTokenClick } = props;
-  const [isHovering, hoverProps] = useHover();
   const {
     list,
     startSearch,

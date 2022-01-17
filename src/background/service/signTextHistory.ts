@@ -51,7 +51,12 @@ class PermissionService {
       ...this.store.history,
       [address.toLowerCase()]: [
         ...history,
-        { site, createAt: Date.now(), text, type },
+        {
+          site,
+          createAt: Date.now(),
+          text: typeof text === 'string' ? text : JSON.stringify(text),
+          type,
+        },
       ],
     };
   };

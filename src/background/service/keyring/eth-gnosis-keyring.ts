@@ -2,7 +2,10 @@ import { EventEmitter } from 'events';
 import { isAddress, toChecksumAddress } from 'web3-utils';
 import { addHexPrefix, bufferToHex } from 'ethereumjs-util';
 import Safe from '@rabby-wallet/gnosis-sdk';
-import { SafeTransaction } from '@gnosis.pm/safe-core-sdk-types';
+import {
+  SafeTransaction,
+  SafeTransactionDataPartial,
+} from '@gnosis.pm/safe-core-sdk-types';
 import {
   isTxHashSignedWithPrefix,
   adjustVInSignature,
@@ -247,7 +250,11 @@ class GnosisKeyring extends EventEmitter {
     }
   }
 
-  async buildTransaction(address: string, transaction, provider) {
+  async buildTransaction(
+    address: string,
+    transaction: SafeTransactionDataPartial,
+    provider
+  ) {
     if (
       !this.accounts.find(
         (account) => account.toLowerCase() === address.toLowerCase()
@@ -264,6 +271,7 @@ class GnosisKeyring extends EventEmitter {
       safeTxGas: transaction.safeTxGas,
       nonce: transaction.nonce ? Number(transaction.nonce) : undefined,
       baseGas: transaction.baseGas,
+      operation: transaction.operation,
     };
     const networkId = this.networkIdMap[address.toLowerCase()];
     const safeInfo = await Safe.getSafeInfo(checksumAddress, networkId);
