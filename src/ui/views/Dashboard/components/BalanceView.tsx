@@ -66,14 +66,14 @@ const BalanceView = ({
     const result = chainBalances.map((item) => (
       <img
         src={item.whiteLogo || item.logo_url}
-        className="icon icon-chain opacity-60"
+        className="icon icon-chain opacity-40"
         key={item.id}
         alt={`${item.name}: $${item.usd_value.toFixed(2)}`}
       />
     ));
-    if (result.length > 9) {
+    if (result.length >= 14) {
       return result
-        .slice(0, 9)
+        .slice(0, 14)
         .concat(
           <img src={IconChainMore} className="icon icon-chain" key="more" />
         );

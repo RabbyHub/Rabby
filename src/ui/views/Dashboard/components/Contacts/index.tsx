@@ -1,23 +1,11 @@
-import React, {
-  useEffect,
-  useState,
-  useRef,
-  useCallback,
-  useMemo,
-} from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import { message, DrawerProps } from 'antd';
-import { unionBy } from 'lodash';
 import { FixedSizeList } from 'react-window';
 
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
 import { ContactBookItem } from 'background/service/contactBook';
-import IconArrowRight from 'ui/assets/arrow-right-gray.svg';
-import IconAdvanceOption from 'ui/assets/icon-setting.svg';
-import IconAddressManagement from 'ui/assets/icon-user.svg';
-import IconLock from 'ui/assets/lock.svg';
-import LogoRabby from 'ui/assets/logo-rabby-large.svg';
-import { Field, Popup } from 'ui/component';
+import { Popup } from 'ui/component';
 import { useWallet } from 'ui/utils';
 import ContactsItem from './ContactsItem';
 import IconSuccess from 'ui/assets/success.svg';
@@ -34,7 +22,6 @@ export interface Account {
 }
 const Contacts = ({ visible, onClose }: ContactsProps) => {
   const wallet = useWallet();
-  const history = useHistory();
   const { t } = useTranslation();
   const fixedList = useRef<FixedSizeList>();
 
@@ -66,13 +53,17 @@ const Contacts = ({ visible, onClose }: ContactsProps) => {
     });
     init();
   };
-  const handleUpdateContact = async (data: ContactBookItem) => {
-    await wallet.updateContact(data);
-    await init();
-    const alianName = await wallet.getAlianName(data.address);
+  const syncAlianName = async (data: ContactBookItem) => {
+    const alianName = await wallet.getAlianName(data.address.toLowerCase());
     if (alianName) {
       await wallet.updateAlianName(data?.address?.toLowerCase(), data?.name);
     }
+  };
+  const handleUpdateContact = async (data: ContactBookItem) => {
+    await wallet.updateContact(data);
+    await syncAlianName(data);
+    await init();
+
     message.success({
       icon: <img src={IconSuccess} className="icon icon-success" />,
       content: t('Success modified contact'),
@@ -81,6 +72,7 @@ const Contacts = ({ visible, onClose }: ContactsProps) => {
   };
   const addContact = async (data: ContactBookItem) => {
     await wallet.addContact(data);
+    await syncAlianName(data);
     message.success({
       icon: <img src={IconSuccess} className="icon icon-success" />,
       content: t('Added to contact'),

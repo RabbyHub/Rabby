@@ -1,4 +1,7 @@
 .contacts-drawer {
+  .ant-drawer-body {
+    padding-top: 0 !important;
+  }
   .ant-drawer-header {
     border-bottom: none;
   }
@@ -76,6 +79,10 @@
     margin-left: 4px;
     margin-right: 32px;
     padding-left: 6px;
+    border: #f5f6fa;
+    &::placeholder {
+        font-size: 12px;
+      }
     &:nth-last-child(1) {
       position: absolute;
       left: 180px !important;
@@ -139,24 +146,24 @@
     width: 16px;
     height: 16px;
   }
-  .hint{
-    display: none; 
+  .hint {
+    display: none;
     position: absolute;
     right: -20px;
     width: 20px;
-    height: 20px;  
+    height: 20px;
   }
 }
 .contact-item-wrapper::after {
-    content: '';
-    position: absolute;
-    left: 12px;
-    right: 0;
-    bottom: 0;
-    height: 1px;
-    width: 336px;
-    border-bottom: 1px solid #e5e9ef;
-  }
+  content: '';
+  position: absolute;
+  left: 12px;
+  right: 0;
+  bottom: 0;
+  height: 1px;
+  width: 336px;
+  border-bottom: 1px solid #e5e9ef;
+}
 .popup-settings {
   display: flex;
   flex-direction: column;
