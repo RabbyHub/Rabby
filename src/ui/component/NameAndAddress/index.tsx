@@ -1,8 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import ClipboardJS from 'clipboard';
 import { message } from 'antd';
-import { useWallet, isSameAddress } from 'ui/utils';
-import { ContactBookItem } from 'background/service/contactBook';
+import { useWallet } from 'ui/utils';
 
 import IconSuccess from 'ui/assets/success.svg';
 import IconAddressCopy from 'ui/assets/address-copy.png';
@@ -26,19 +25,15 @@ const NameAndAddress = ({
   noNameClass = '',
 }: NameAndAddressProps) => {
   const wallet = useWallet();
-  const [contacts, setContacts] = useState<ContactBookItem[]>([]);
-  const [alianNames, setAlianNames] = useState({});
-  const alianName = alianNames[address.toLowerCase()];
-  const addressInContacts = contacts.find((contact) =>
-    isSameAddress(contact.address, address)
-  );
+  const [contact, setContact] = useState('');
+  const [alianName, setAlianName] = useState('');
   const init = async () => {
-    const listContacts = await wallet.listContact();
-    const alianNames = await wallet.getAllAlianName();
-    setContacts(listContacts);
-    setAlianNames(alianNames);
+    const contact = await wallet.getContactByAddress(address);
+    const alianName = await wallet.getAlianName(address);
+    setContact(contact);
+    setAlianName(alianName);
   };
-  const localName = alianName || addressInContacts?.name || '';
+  const localName = alianName || contact || '';
   const handleCopyContractAddress = () => {
     const clipboard = new ClipboardJS('.name-and-address', {
       text: function () {
