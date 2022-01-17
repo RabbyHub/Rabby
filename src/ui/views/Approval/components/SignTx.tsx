@@ -545,7 +545,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       nonce: afterNonce,
     });
     setGasLimit(intToHex(gas.gasLimit));
-    if (!isGnosis) {
+    if (!isGnosisAccount) {
       setRealNonce(afterNonce);
     } else {
       if (safeInfo && safeInfo.nonce <= gas.nonce) {
