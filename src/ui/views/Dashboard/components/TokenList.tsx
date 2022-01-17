@@ -81,7 +81,10 @@ const Row = (props) => {
         <div className="right">
           <img
             src={isAdded ? IconRemoveToken : IconAddToken}
-            onClick={() => (isAdded ? removeToken(token) : addToken(token))}
+            onClick={(e) => {
+              e.stopPropagation();
+              isAdded ? removeToken(token) : addToken(token);
+            }}
             className="add-token-icon"
           />
         </div>
