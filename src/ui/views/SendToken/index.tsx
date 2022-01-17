@@ -360,7 +360,10 @@ const SendToken = () => {
       const target = Object.values(CHAINS).find(
         (item) => item.serverId === tokenChain
       );
-      if (!target) return;
+      if (!target) {
+        loadCurrentToken(currentToken.id, currentToken.chain, account.address);
+        return;
+      }
       setChain(target.enum);
       loadCurrentToken(id, tokenChain, account.address);
     } else {
