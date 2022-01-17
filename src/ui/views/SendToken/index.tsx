@@ -211,9 +211,10 @@ const SendToken = () => {
     if (!/^\d*(\.\d*)?$/.test(amount)) {
       resultAmount = cacheAmount;
     }
-
+    const account = await wallet.syncGetCurrentAccount();
     if (
       isNativeToken &&
+      account.type !== KEYRING_CLASS.GNOSIS &&
       new BigNumber(currentToken.amount)
         .minus(new BigNumber(amount))
         .isLessThan(0.1)

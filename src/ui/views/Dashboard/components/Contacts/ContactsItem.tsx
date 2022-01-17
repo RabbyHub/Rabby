@@ -176,6 +176,11 @@ const ContactsItem = ({
     setAlianName(account?.name || '');
     setAddress(account?.address || '');
   }, [account]);
+  useEffect(() => {
+    if (address.length === 42 && address.startsWith('0x') && newInput) {
+      addressConfirm();
+    }
+  }, [address]);
   return (
     <div className={clsx('contact-item-wrapper', newInput && 'hover')}>
       {addressFocus ? (

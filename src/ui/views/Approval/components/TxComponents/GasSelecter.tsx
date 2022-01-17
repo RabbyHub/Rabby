@@ -217,6 +217,10 @@ const GasSelector = ({
   }, [selectedGas]);
 
   useEffect(() => {
+    setCustomNonce(Number(nonce));
+  }, [nonce]);
+
+  useEffect(() => {
     if (isReady && isFirstTimeLoad) {
       setIsFirstTimeLoad(false);
     }

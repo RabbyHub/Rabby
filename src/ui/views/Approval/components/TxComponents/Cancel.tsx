@@ -6,7 +6,7 @@ import { CHAINS, CHAINS_ENUM } from 'consts';
 import React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import IconArrowRight from 'ui/assets/arrow-right-gray.svg';
-import IconCopy from 'ui/assets/copy-no-border.svg';
+import IconCopy from 'ui/assets/address-copy.png';
 import IconSuccess from 'ui/assets/success.svg';
 import IconUnknownProtocol from 'ui/assets/unknown-protocol.svg';
 import { AddressViewer } from 'ui/component';
