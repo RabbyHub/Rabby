@@ -223,6 +223,11 @@ const Dashboard = () => {
   useEffect(() => {
     getAllKeyrings();
   }, []);
+  useEffect(() => {
+    if (clicked) {
+      getAllKeyrings();
+    }
+  }, [clicked]);
   const handleChange = async (account) => {
     setIsListLoading(true);
     setIsAssetsLoading(true);
@@ -520,7 +525,6 @@ const Dashboard = () => {
 
   const handleClickChange = (visible) => {
     setClicked(visible);
-    getAllKeyrings();
     setStartEdit(false);
     setHovered(false);
   };
