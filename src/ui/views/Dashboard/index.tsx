@@ -535,6 +535,7 @@ const Dashboard = () => {
       handleLoadTokens();
     }
     if (showToken) {
+      setStartSearch(false);
       setTokenAnimate('fadeOut');
       setDefiAnimate('fadeOut');
       setConnectionAnimation('fadeInBottom');
@@ -565,6 +566,7 @@ const Dashboard = () => {
     if (!showToken && !showAssets && !showNFT) {
       displayTokenList();
     } else {
+      setStartSearch(false);
       setShowToken(false);
       setShowAssets(false);
       setShowChain(false);
@@ -652,6 +654,7 @@ const Dashboard = () => {
     if (showNFT) {
       setNFTAnimate('fadeOut');
     }
+    setStartSearch(false);
     setShowAssets(false);
     setShowChain(false);
     setShowToken(false);
