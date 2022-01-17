@@ -1,6 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Spin } from 'ui/component';
+import { sortBy } from 'lodash';
+
 import { useCurrentBalance } from 'ui/component/AddressList/AddressItem';
 import { splitNumberByStep, useWallet } from 'ui/utils';
 import { CHAINS, KEYRING_TYPE, CHAINS_ENUM } from 'consts';
@@ -48,7 +50,6 @@ const BalanceView = ({
       handleIsGnosisChange();
     }
   }, [isGnosis, currentAccount]);
-
   const displayChainList = () => {
     if (isGnosis) {
       return (
@@ -63,14 +64,16 @@ const BalanceView = ({
         </>
       );
     }
-    const result = chainBalances.map((item) => (
-      <img
-        src={item.whiteLogo || item.logo_url}
-        className="icon icon-chain opacity-40"
-        key={item.id}
-        alt={`${item.name}: $${item.usd_value.toFixed(2)}`}
-      />
-    ));
+    const result = sortBy(chainBalances, (item) => item?.usd_value)
+      .reverse()
+      .map((item) => (
+        <img
+          src={item.whiteLogo || item.logo_url}
+          className="icon icon-chain opacity-40"
+          key={item.id}
+          alt={`${item.name}: $${item.usd_value.toFixed(2)}`}
+        />
+      ));
     if (result.length >= 14) {
       return result
         .slice(0, 14)
