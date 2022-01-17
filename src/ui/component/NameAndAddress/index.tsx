@@ -75,7 +75,7 @@ const NameAndAddress = ({
         onClick={handleCopyContractAddress}
         src={IconAddressCopy}
         id={'copyIcon'}
-        className={clsx('w-[16px] h-[16px] ml-6', {
+        className={clsx('w-[16px] h-[16px] ml-6 cursor-pointer', {
           success: true,
         })}
       />
