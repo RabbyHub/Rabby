@@ -1,9 +1,6 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState } from 'react';
 import { message, DrawerProps } from 'antd';
-import { FixedSizeList } from 'react-window';
-
 import { useTranslation } from 'react-i18next';
-import { useHistory } from 'react-router-dom';
 import { ContactBookItem } from 'background/service/contactBook';
 import { Popup } from 'ui/component';
 import { useWallet } from 'ui/utils';
@@ -23,7 +20,6 @@ export interface Account {
 const Contacts = ({ visible, onClose }: ContactsProps) => {
   const wallet = useWallet();
   const { t } = useTranslation();
-  const fixedList = useRef<FixedSizeList>();
 
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [editIndex, setEditIndex] = useState<number | null>(null);
@@ -42,7 +38,6 @@ const Contacts = ({ visible, onClose }: ContactsProps) => {
     setCanAdd(false);
     setAccounts([...accounts, newAccount]);
     setEditIndex(accounts.length);
-    fixedList.current?.scrollToItem(15, 'center');
   };
   const handleDeleteAddress = async (address: string) => {
     await wallet.removeContact(address);
@@ -83,8 +78,11 @@ const Contacts = ({ visible, onClose }: ContactsProps) => {
     init();
   };
   useEffect(() => {
-    if (visible) init();
-    fixedList.current?.scrollToItem(0);
+    if (visible) {
+      init();
+    } else {
+      setAccounts([]);
+    }
   }, [visible]);
   const NoDataUI = (
     <div className="no-contact">
@@ -99,55 +97,53 @@ const Contacts = ({ visible, onClose }: ContactsProps) => {
     </div>
   );
   return (
-    <>
-      <Popup
-        visible={visible}
-        onClose={onClose}
-        title={'Contacts'}
-        bodyStyle={{ height: '100%' }}
-        contentWrapperStyle={{
-          height: 580,
-        }}
-        drawerStyle={{
-          height: 580,
-        }}
-        headerStyle={{
-          height: 92,
-          marginBottom: 6,
-        }}
-        className="contacts-drawer"
-        closable
-      >
-        <div className="header">
-          <div>Address</div>
-          <div>Memo</div>
-        </div>
-        <div className="list-wrapper">
-          {accounts.length > 0
-            ? accounts.map((item, index) => (
-                <ContactsItem
-                  key={item.address}
-                  account={item}
-                  index={index}
-                  setEditIndex={setEditIndex}
-                  editIndex={editIndex}
-                  accounts={accounts}
-                  handleDeleteAddress={handleDeleteAddress}
-                  handleUpdateContact={handleUpdateContact}
-                  addContact={addContact}
-                />
-              ))
-            : NoDataUI}
-        </div>
-        {canAdd && (
-          <img
-            src={IconAddAddress}
-            className="add-address-name"
-            onClick={addNewAccount}
-          />
-        )}
-      </Popup>
-    </>
+    <Popup
+      visible={visible}
+      onClose={onClose}
+      title={'Contacts'}
+      bodyStyle={{ height: '100%' }}
+      contentWrapperStyle={{
+        height: 580,
+      }}
+      drawerStyle={{
+        height: 580,
+      }}
+      headerStyle={{
+        height: 92,
+        marginBottom: 6,
+      }}
+      className="contacts-drawer"
+      closable
+    >
+      <div className="header">
+        <div>Address</div>
+        <div>Memo</div>
+      </div>
+      <div className="list-wrapper">
+        {accounts.length > 0
+          ? accounts.map((item, index) => (
+              <ContactsItem
+                key={item.address}
+                account={item}
+                index={index}
+                setEditIndex={setEditIndex}
+                editIndex={editIndex}
+                accounts={accounts}
+                handleDeleteAddress={handleDeleteAddress}
+                handleUpdateContact={handleUpdateContact}
+                addContact={addContact}
+              />
+            ))
+          : NoDataUI}
+      </div>
+      {canAdd && (
+        <img
+          src={IconAddAddress}
+          className="add-address-name"
+          onClick={addNewAccount}
+        />
+      )}
+    </Popup>
   );
 };
 

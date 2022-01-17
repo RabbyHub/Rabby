@@ -226,7 +226,7 @@ const ContactsItem = ({
           defaultValue={alianName}
           className="name-input"
           onChange={handleAlianNameChange}
-          onPressEnter={alianNameConfirm}
+          onPressEnter={validateAddressAndName}
           onClick={(e) => e.stopPropagation()}
           autoFocus={nameFocus}
           placeholder="Enter Memo"
