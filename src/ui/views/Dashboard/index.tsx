@@ -931,14 +931,13 @@ const Dashboard = () => {
               </div>
               <div className="address-display">
                 {currentAccount?.address}{' '}
-                <IconCopy
+                <img
                   onClick={handleCopyCurrentAddress}
-                  className={clsx(
-                    'icon icon-copy ml-7 mb-2 copy-icon inline-block',
-                    {
-                      success: copySuccess,
-                    }
-                  )}
+                  src={IconAddressCopy}
+                  id={'copyIcon'}
+                  className={clsx('ml-7 inline-block mb-2  w-[16px] h-[16px]', {
+                    success: copySuccess,
+                  })}
                 />
               </div>
               <div className="import">
