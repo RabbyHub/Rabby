@@ -554,7 +554,7 @@ const GnosisTransactionQueue = () => {
 
   return (
     <div className="queue">
-      <PageHeader>{t('Queue')}</PageHeader>
+      <PageHeader fixed>{t('Queue')}</PageHeader>
       {safeInfo && Object.keys(transactionsGroup).length > 0 ? (
         Object.keys(transactionsGroup).map((nonce) =>
           transactionsGroup[nonce].length > 1 ? (

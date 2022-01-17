@@ -497,7 +497,7 @@ const TransactionHistory = () => {
   }, []);
   return (
     <div className="tx-history">
-      <PageHeader>{t('Signed Tx')}</PageHeader>
+      <PageHeader fixed>{t('Signed Tx')}</PageHeader>
       {pendingList.length > 0 && (
         <div className="tx-history__pending">
           {pendingList.map((item) => (

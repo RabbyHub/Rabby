@@ -35,14 +35,14 @@ export const HistoryItem = ({
       </div>
       {(data.tx && data.tx?.eth_gas_fee) || isFailed ? (
         <div className="txs-history-card-footer">
-          {data.tx && data.tx?.eth_gas_fee && (
+          {data.tx && data.tx?.eth_gas_fee ? (
             <div>
               {' '}
               Gas : {numberWithCommasIsLtOne(data.tx?.eth_gas_fee, 2)}{' '}
               {chain?.nativeTokenSymbol} ($
               {numberWithCommasIsLtOne(data.tx?.usd_gas_fee ?? 0, 2)})
             </div>
-          )}
+          ) : null}
           {isFailed && <span className="tx-status is-failed">Failed</span>}
         </div>
       ) : null}

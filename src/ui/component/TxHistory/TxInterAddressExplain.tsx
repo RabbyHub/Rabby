@@ -1,10 +1,7 @@
 import { TxDisplayItem, TxHistoryItem } from '@/background/service/openapi';
 import React from 'react';
+import { NameAndAddress } from '..';
 import { TxAvatar } from './TxAvatar';
-
-const ellipsis = (text: string) => {
-  return text.replace(/^(.{6})(.*)(.{4})$/, '$1...$3');
-};
 
 type TxInterAddressExplainProps = {
   data: TxDisplayItem | TxHistoryItem;
@@ -21,7 +18,15 @@ export const TxInterAddressExplain = ({
   const project = data.project_id ? projectDict[data.project_id] : null;
 
   const projectName = (
-    <span>{project?.name ?? ellipsis(data.other_addr || '')}</span>
+    <span>
+      {project?.name ? (
+        project.name
+      ) : data.other_addr ? (
+        <NameAndAddress address={data.other_addr} />
+      ) : (
+        ''
+      )}
+    </span>
   );
 
   let interAddressExplain;

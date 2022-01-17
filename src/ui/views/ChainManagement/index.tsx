@@ -167,7 +167,9 @@ const ChainManagement = () => {
   };
   return (
     <div className="chain-management">
-      <PageHeader onBack={goBack}>{t('All Chains')}</PageHeader>
+      <PageHeader onBack={goBack} fixed>
+        {t('All Chains')}
+      </PageHeader>
       <ChainManagementList />
     </div>
   );
