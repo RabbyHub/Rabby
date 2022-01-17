@@ -28,8 +28,9 @@ const NameAndAddress = ({
   const [contact, setContact] = useState('');
   const [alianName, setAlianName] = useState('');
   const init = async () => {
-    const contact = await wallet.getContactByAddress(address?.toLowerCase());
-    const alianName = await wallet.getAlianName(address?.toLowerCase());
+    const contact =
+      (await wallet.getContactByAddress(address?.toLowerCase()))?.name || '';
+    const alianName = (await wallet.getAlianName(address?.toLowerCase())) || '';
     setContact(contact);
     setAlianName(alianName);
   };
