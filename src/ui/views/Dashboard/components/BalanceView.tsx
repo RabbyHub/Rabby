@@ -64,8 +64,8 @@ const BalanceView = ({
         </>
       );
     }
-    const result = sortBy(chainBalances, (item) => item?.usd_value)
-      .reverse()
+    const result = chainBalances
+      .sort((a, b) => b.usd_value - a.usd_value)
       .map((item) => (
         <img
           src={item.whiteLogo || item.logo_url}
