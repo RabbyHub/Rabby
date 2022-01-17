@@ -12,7 +12,7 @@ import IconUnCorrect from 'ui/assets/dashboard/contacts/uncorrect.png';
 import IconSuccess from 'ui/assets/success.svg';
 import IconAddressCopy from 'ui/assets/address-copy.png';
 import IconSend from 'ui/assets/dashboard/contacts/send-icon.png';
-import IconHint from 'ui/assets/hint.png';
+import IconHint from 'ui/assets/dashboard/contacts/action.png';
 
 import { Account } from './index';
 
