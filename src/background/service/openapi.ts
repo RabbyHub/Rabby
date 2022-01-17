@@ -112,6 +112,7 @@ export interface TokenItem {
   time_at: number;
   usd_value?: number;
   raw_amount?: number;
+  raw_amount_hex_str?: string;
 }
 export interface AssetItem {
   id: string;

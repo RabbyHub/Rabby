@@ -215,7 +215,8 @@ const SendToken = () => {
     if (
       isNativeToken &&
       account.type !== KEYRING_CLASS.GNOSIS &&
-      new BigNumber(currentToken.amount)
+      new BigNumber(currentToken.raw_amount_hex_str || 0)
+        .div(10 ** currentToken.decimals)
         .minus(new BigNumber(amount))
         .isLessThan(0.1)
     ) {
@@ -225,7 +226,9 @@ const SendToken = () => {
     }
     if (
       new BigNumber(resultAmount || 0).isGreaterThan(
-        new BigNumber(currentToken.amount)
+        new BigNumber(currentToken.raw_amount_hex_str || 0).div(
+          10 ** currentToken.decimals
+        )
       )
     ) {
       setBalanceError(t('Insufficient balance'));
@@ -269,7 +272,9 @@ const SendToken = () => {
     const values = form.getFieldsValue();
     const newValues = {
       ...values,
-      amount: new BigNumber(currentToken.amount).toFixed(),
+      amount: new BigNumber(currentToken.raw_amount_hex_str || 0)
+        .div(10 ** currentToken.decimals)
+        .toFixed(),
     };
     form.setFieldsValue(newValues);
     handleFormValuesChange(null, newValues);
@@ -541,7 +546,12 @@ const SendToken = () => {
               {isLoading ? (
                 <Skeleton.Input active style={{ width: 100 }} />
               ) : (
-                `${t('Balance')}: ${formatTokenAmount(currentToken.amount, 8)}`
+                `${t('Balance')}: ${formatTokenAmount(
+                  new BigNumber(currentToken.raw_amount_hex_str || 0)
+                    .div(10 ** currentToken.decimals)
+                    .toFixed(),
+                  8
+                )}`
               )}
             </div>
             {balanceError || balanceWarn ? (
