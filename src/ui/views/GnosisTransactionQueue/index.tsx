@@ -552,7 +552,7 @@ const GnosisTransactionQueue = () => {
 
   return (
     <div className="queue">
-      <PageHeader>{t('Queue')}</PageHeader>
+      <PageHeader fixed>{t('Queue')}</PageHeader>
       {transactions.length > 0 ? (
         transactions.map(
           (transaction) =>
