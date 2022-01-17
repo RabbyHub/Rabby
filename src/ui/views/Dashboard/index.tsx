@@ -558,6 +558,7 @@ const Dashboard = () => {
       setTopAnimate('fadeOutTop');
       setConnectionAnimation('fadeOutBottom');
     }
+    setStartSearch(false);
     setShowAssets(false);
     setShowNFT(false);
   };
