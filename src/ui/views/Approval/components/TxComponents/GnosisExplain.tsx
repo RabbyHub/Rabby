@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { ExplainTxResponse, Tx } from 'background/service/openapi';
 import { CHAINS, CHAINS_ENUM } from 'consts';
-import AddressViewer from 'ui/component/AddressViewer';
+import { AddressViewer, NameAndAddress } from 'ui/component/index';
 import { TxTypeComponent } from '../SignTx';
 import { useWallet } from 'ui/utils';
 import IconGnosis from 'ui/assets/walletlogo/gnosis.png';
@@ -39,8 +39,12 @@ const GnosisExplain = ({ data, chainEnum, raw, tx }: GnosisExplainProps) => {
       </div>
       <div className="gnosis-address">
         <img src={IconGnosis} className="icon icon-gnosis" />
-        <span className="alian-name">{alianName}</span>
-        <AddressViewer address={tx.to} showArrow={false} />
+        <NameAndAddress
+          address={tx.to}
+          nameClass="alian-name max-117"
+          addressClass="text-13"
+          noNameClass="no-name"
+        />
       </div>
       <TxTypeComponent
         txDetail={data}
