@@ -380,7 +380,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     }
     setTxDetail(res);
     const localNonce = (await wallet.getNonceByChain(tx.from, chainId)) || 0;
-    if (updateNonce) {
+    if (updateNonce && !isGnosisAccount) {
       setRealNonce(intToHex(Math.max(Number(res.recommend.nonce), localNonce)));
     } // do not overwrite nonce if from === to(cancel transaction)
     setPreprocessSuccess(res.pre_exec.success);
@@ -426,12 +426,16 @@ const SignTx = ({ params, origin }: SignTxProps) => {
 
   const handleGnosisConfirm = async (account: Account) => {
     if (params.session.origin !== INTERNAL_REQUEST_ORIGIN || isSend) {
-      await wallet.buildGnosisTransaction(tx.from, account, {
+      const params: any = {
         from: tx.from,
         to: tx.to,
         data: tx.data,
         value: tx.value,
-      });
+      };
+      if (nonceChanged) {
+        params.nonce = realNonce;
+      }
+      await wallet.buildGnosisTransaction(tx.from, account, params);
     }
     const hash = await wallet.getGnosisTransactionHash();
     resolveApproval({
@@ -541,7 +545,15 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       nonce: afterNonce,
     });
     setGasLimit(intToHex(gas.gasLimit));
-    setRealNonce(afterNonce);
+    if (!isGnosisAccount) {
+      setRealNonce(afterNonce);
+    } else {
+      if (safeInfo && safeInfo.nonce <= gas.nonce) {
+        setRealNonce(afterNonce);
+      } else {
+        safeInfo && setRealNonce(`0x${safeInfo.nonce.toString(16)}`);
+      }
+    }
     if (beforeNonce !== afterNonce) {
       setNonceChanged(true);
     }
@@ -598,6 +610,22 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     }
   };
 
+  const getSafeInfo = async () => {
+    const currentAccount = await wallet.getCurrentAccount();
+    const networkId = await wallet.getGnosisNetworkId(currentAccount.address);
+    const safeInfo = await Safe.getSafeInfo(currentAccount.address, networkId);
+    setSafeInfo(safeInfo);
+    if (Number(tx.nonce || 0) < safeInfo.nonce) {
+      setTx({
+        ...tx,
+        nonce: `0x${safeInfo.nonce.toString(16)}`,
+      });
+    }
+    if (Number(realNonce || 0) < safeInfo.nonce) {
+      setRealNonce(`0x${safeInfo.nonce.toString(16)}`);
+    }
+  };
+
   const init = async () => {
     const session = params.session;
     const site = await wallet.getConnectedSite(session.origin);
@@ -606,6 +634,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
 
     if (currentAccount.type === KEYRING_TYPE.GnosisKeyring) {
       setIsGnosisAccount(true);
+      await getSafeInfo();
     }
 
     if (!chainId) {
@@ -657,18 +686,10 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     setInited(true);
   };
 
-  const getSafeInfo = async () => {
-    const currentAccount = await wallet.getCurrentAccount();
-    const networkId = await wallet.getGnosisNetworkId(currentAccount.address);
-    const safeInfo = await Safe.getSafeInfo(currentAccount.address, networkId);
-    setSafeInfo(safeInfo);
-  };
-
   const handleIsGnosisAccountChange = async () => {
     if (params.session.origin !== INTERNAL_REQUEST_ORIGIN) {
       await wallet.clearGnosisTransaction();
     }
-    await getSafeInfo();
   };
 
   useEffect(() => {

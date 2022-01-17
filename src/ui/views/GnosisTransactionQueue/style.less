@@ -138,6 +138,36 @@
       }
     }
   }
+  .queue-group {
+    background-color: #FFFFFF;
+    border: 1px solid #8697FF;
+    border-radius: 6px;
+    margin-bottom: 20px;
+    &__header {
+      display: flex;
+      font-weight: 500;
+      font-size: 12px;
+      line-height: 16px;
+      color: #8697FF;
+      border-bottom: 1px solid #8697FF;
+      padding: 14px 12px;
+      .icon-information {
+        width: 12px;
+        height: 12px;
+        margin-right: 6px;
+        margin-top: 2px;
+      }
+    }
+    .queue-item {
+      border-bottom: 1px solid #8697FF;
+      border-radius: 0;
+      margin-bottom: 0;
+      background-color: transparent;
+      &:nth-last-child(1) {
+        border-bottom: none;
+      }
+    }
+  }
   .icon-loading {
     animation: spining 1.5s infinite linear;
   }

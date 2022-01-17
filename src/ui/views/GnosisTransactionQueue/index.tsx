@@ -9,9 +9,9 @@ import {
 import { useTranslation, Trans } from 'react-i18next';
 import { toChecksumAddress, numberToHex } from 'web3-utils';
 import dayjs from 'dayjs';
+import { groupBy } from 'lodash';
 import { ExplainTxResponse } from 'background/service/openapi';
 import { Account } from 'background/service/preference';
-import { ContactBookItem } from 'background/service/contactBook';
 
 import { intToHex } from 'ethereumjs-util';
 import { useWallet, timeago, isSameAddress } from 'ui/utils';
@@ -31,6 +31,7 @@ import IconChecked from 'ui/assets/checked.svg';
 import IconUnCheck from 'ui/assets/uncheck.svg';
 import { SvgIconLoading } from 'ui/assets';
 import IconTagYou from 'ui/assets/tag-you.svg';
+import IconInformation from 'ui/assets/information.svg';
 import './style.less';
 
 interface TransactionConfirmationsProps {
@@ -406,7 +407,9 @@ const GnosisTransactionQueue = () => {
   const [networkId, setNetworkId] = useState('1');
   const [safeInfo, setSafeInfo] = useState<SafeInfo | null>(null);
   const { t } = useTranslation();
-  const [transactions, setTransactions] = useState<SafeTransactionItem[]>([]);
+  const [transactionsGroup, setTransactionsGroup] = useState<
+    Record<string, SafeTransactionItem[]>
+  >({});
   const [submitDrawerVisible, setSubmitDrawerVisible] = useState(false);
   const [
     submitTransaction,
@@ -455,43 +458,42 @@ const GnosisTransactionQueue = () => {
         owners: comparedOwners,
       });
       setNetworkId(network);
-      setTransactions(
-        txs.results
-          .filter((safeTx, index) => {
-            if (!txHashValidation[index]) return false;
-            const tx: SafeTransactionDataPartial = {
-              data: safeTx.data || '0x',
-              gasPrice: safeTx.gasPrice ? Number(safeTx.gasPrice) : 0,
-              gasToken: safeTx.gasToken,
-              refundReceiver: safeTx.refundReceiver,
-              to: safeTx.to,
-              value: numberToHex(safeTx.value),
-              safeTxGas: safeTx.safeTxGas,
-              nonce: safeTx.nonce,
-              operation: safeTx.operation,
-              baseGas: safeTx.baseGas,
-            };
+      const transactions = txs.results
+        .filter((safeTx, index) => {
+          if (!txHashValidation[index]) return false;
+          const tx: SafeTransactionDataPartial = {
+            data: safeTx.data || '0x',
+            gasPrice: safeTx.gasPrice ? Number(safeTx.gasPrice) : 0,
+            gasToken: safeTx.gasToken,
+            refundReceiver: safeTx.refundReceiver,
+            to: safeTx.to,
+            value: numberToHex(safeTx.value),
+            safeTxGas: safeTx.safeTxGas,
+            nonce: safeTx.nonce,
+            operation: safeTx.operation,
+            baseGas: safeTx.baseGas,
+          };
 
-            return safeTx.confirmations.every((confirm) =>
-              validateConfirmation(
-                safeTx.safeTxHash,
-                confirm.signature,
-                confirm.owner,
-                confirm.signatureType,
-                info.version,
-                info.address,
-                tx,
-                Number(network),
-                comparedOwners
-              )
-            );
-          })
-          .sort((a, b) => {
-            return dayjs(a.submissionDate).isAfter(dayjs(b.submissionDate))
-              ? -1
-              : 1;
-          })
-      );
+          return safeTx.confirmations.every((confirm) =>
+            validateConfirmation(
+              safeTx.safeTxHash,
+              confirm.signature,
+              confirm.owner,
+              confirm.signatureType,
+              info.version,
+              info.address,
+              tx,
+              Number(network),
+              comparedOwners
+            )
+          );
+        })
+        .sort((a, b) => {
+          return dayjs(a.submissionDate).isAfter(dayjs(b.submissionDate))
+            ? -1
+            : 1;
+        });
+      setTransactionsGroup(groupBy(transactions, 'nonce'));
     } catch (e) {
       setIsLoading(false);
       setIsLoadFaild(true);
@@ -553,10 +555,29 @@ const GnosisTransactionQueue = () => {
   return (
     <div className="queue">
       <PageHeader>{t('Queue')}</PageHeader>
-      {transactions.length > 0 ? (
-        transactions.map(
-          (transaction) =>
-            safeInfo && (
+      {safeInfo && Object.keys(transactionsGroup).length > 0 ? (
+        Object.keys(transactionsGroup).map((nonce) =>
+          transactionsGroup[nonce].length > 1 ? (
+            <div className="queue-group">
+              <div className="queue-group__header">
+                <img src={IconInformation} className="icon icon-information" />
+                <span>
+                  These transactions conflict as they use the same nonce.
+                  Executing one will automatically replace the other(s).
+                </span>
+              </div>
+              {transactionsGroup[nonce].map((transaction) => (
+                <GnosisTransactionItem
+                  data={transaction}
+                  networkId={networkId}
+                  safeInfo={safeInfo}
+                  key={transaction.safeTxHash}
+                  onSubmit={handleSubmit}
+                />
+              ))}
+            </div>
+          ) : (
+            transactionsGroup[nonce].map((transaction) => (
               <GnosisTransactionItem
                 data={transaction}
                 networkId={networkId}
@@ -564,7 +585,8 @@ const GnosisTransactionQueue = () => {
                 key={transaction.safeTxHash}
                 onSubmit={handleSubmit}
               />
-            )
+            ))
+          )
         )
       ) : (
         <div className="tx-history__empty">
