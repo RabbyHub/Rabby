@@ -106,7 +106,7 @@ const TokenDetail = ({ token }: { token: TokenItem }) => {
               {ellipsis(token.id)}
               <img
                 src={IconCopy}
-                className="w-14"
+                className="w-14 pointer"
                 alt=""
                 onClick={() => {
                   handleCopy(token.id);

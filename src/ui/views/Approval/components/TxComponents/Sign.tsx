@@ -7,7 +7,7 @@ import { Trans, useTranslation } from 'react-i18next';
 import IconArrowRight from 'ui/assets/arrow-right-gray.svg';
 import IconCopy from 'ui/assets/copy-no-border.svg';
 import IconSuccess from 'ui/assets/success.svg';
-import { AddressViewer } from 'ui/component';
+import { AddressViewer, NameAndAddress } from 'ui/component';
 import BalanceChange from './BalanceChange';
 import GnosisExplain from './GnosisExplain';
 import SpeedUpCorner from './SpeedUpCorner';
@@ -78,11 +78,11 @@ const Sign = ({ data, chainEnum, raw, isSpeedUp, tx }: SignProps) => {
         <div className="block-field contract">
           <span className="label">{t('Contract')}</span>
           <span className="value">
-            <AddressViewer address={detail.contract} showArrow={false} />
-            <img
-              src={IconCopy}
-              className="icon icon-copy"
-              onClick={handleCopySpender}
+            <NameAndAddress
+              address={detail.contract}
+              nameClass="text-15 max-90"
+              addressClass="text-15"
+              noNameClass="no-name"
             />
           </span>
         </div>

@@ -936,9 +936,12 @@ const Dashboard = () => {
                   onClick={handleCopyCurrentAddress}
                   src={IconAddressCopy}
                   id={'copyIcon'}
-                  className={clsx('ml-7 inline-block mb-2  w-[16px] h-[16px]', {
-                    success: copySuccess,
-                  })}
+                  className={clsx(
+                    'ml-7 inline-block mb-2  w-[16px] h-[16px] pointer',
+                    {
+                      success: copySuccess,
+                    }
+                  )}
                 />
               </div>
               <div className="import">
