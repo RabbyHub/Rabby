@@ -54,7 +54,7 @@ const History = () => {
 
   return (
     <div className="txs-history" ref={ref}>
-      <PageHeader>{t('Transactions')}</PageHeader>
+      <PageHeader fixed>{t('Transactions')}</PageHeader>
       {data?.list.map((item) => (
         <HistoryItem
           data={item}

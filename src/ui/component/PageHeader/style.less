@@ -1,6 +1,6 @@
 .page-header {
   display: flex;
-  color: #2D3033;
+  color: #2d3033;
   font-weight: 500;
   font-size: 20px;
   line-height: 23px;
@@ -8,6 +8,19 @@
   margin-bottom: 20px;
   position: relative;
   align-items: center;
+  &-container {
+    height: 72px;
+    flex-shrink: 0;
+  }
+  &-wrap {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    z-index: 10;
+    background-color: #f0f2f5;
+    padding: 0 28px;
+  }
   .icon-back {
     width: 20px;
     height: 20px;

@@ -9,16 +9,18 @@ const PageHeader = ({
   rightSlot,
   onBack,
   forceShowBack,
+  fixed = false,
 }: {
   children: ReactNode;
   canBack?: boolean;
   rightSlot?: ReactNode;
   onBack?(): void;
   forceShowBack?: boolean;
+  fixed?: boolean;
 }) => {
   const history = useHistory();
 
-  return (
+  const Content = (
     <div className="page-header">
       {(forceShowBack || (canBack && history.length > 1)) && (
         <img
@@ -30,6 +32,13 @@ const PageHeader = ({
       <div className="header-content">{children}</div>
       {rightSlot && rightSlot}
     </div>
+  );
+  return fixed ? (
+    <div className="page-header-container">
+      <div className="page-header-wrap">{Content}</div>
+    </div>
+  ) : (
+    Content
   );
 };
 
