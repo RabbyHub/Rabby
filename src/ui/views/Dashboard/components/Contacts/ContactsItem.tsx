@@ -195,7 +195,7 @@ const ContactsItem = ({
         <AddressViewer
           address={address}
           showArrow={false}
-          className={'view-address-color'}
+          className={'view-address-color, cursor-default'}
           onClick={() => {
             if (newInput) {
               setAddressFocus(true);
