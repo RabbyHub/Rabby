@@ -48,7 +48,8 @@ import IconSuccess from 'ui/assets/success.svg';
 import IconUpAndDown from 'ui/assets/up-and-down.svg';
 import { ReactComponent as IconCopy } from 'ui/assets/urlcopy.svg';
 import IconEditPen from 'ui/assets/editpen.svg';
-import IconCorrect from 'ui/assets/correct.svg';
+import IconCorrect from 'ui/assets/dashboard/contacts/correct.png';
+import IconUnCorrect from 'ui/assets/dashboard/contacts/uncorrect.png';
 import IconPlus from 'ui/assets/dashboard-plus.svg';
 import IconInfo from 'ui/assets/information.png';
 import IconTagYou from 'ui/assets/tag-you.svg';
@@ -921,7 +922,7 @@ const Dashboard = () => {
                 {startEdit && (
                   <img
                     className="edit-name w-[16px] h-[16px]"
-                    src={IconCorrect}
+                    src={alianName ? IconCorrect : IconUnCorrect}
                     onClick={(e) => {
                       e.stopPropagation();
                       alianNameConfirm(e);
