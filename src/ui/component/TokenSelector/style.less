@@ -27,15 +27,16 @@
     .ant-input-affix-wrapper-lg {
       padding: 12px;
       border-radius: 6px;
-      border: 1px solid #E5E9EF;
-      background-color: #F5F6FA;
-      transition: border-color .3s;
+      border: 1px solid #e5e9ef;
+      background-color: #f5f6fa;
+      transition: border-color 0.3s;
       .ant-input {
         border-radius: 0;
         background-color: transparent;
       }
-      &:hover, &.active {
-        border-color: #8697FF;
+      &:hover,
+      &.active {
+        border-color: #8697ff;
       }
     }
   }
@@ -49,7 +50,7 @@
     font-size: 12px;
     line-height: 14px;
     span {
-      transition: color .3s;
+      transition: color 0.3s;
       cursor: pointer;
       &:nth-child(1) {
         margin-right: 4px;
@@ -58,14 +59,14 @@
         margin-left: 4px;
       }
       &.active {
-        color: #8697FF;
+        color: #8697ff;
       }
     }
   }
   .token-list {
     position: relative;
     background-color: #fff;
-    height: 482px;
+    height: 461px;
     overflow-y: auto;
     margin: 0;
     li {
@@ -101,14 +102,17 @@
           text-align: right;
           font-size: 13px;
           line-height: 15px;
-          color: #5A6066;
+          color: #5a6066;
           font-weight: 500;
           flex: 1;
         }
       }
     }
     li.token-list__header {
-      position: relative;
+      position: sticky;
+      top: 0;
+      z-index: 1;
+      background-color: #fff;
       cursor: initial;
       font-size: 12px;
       line-height: 14px;
@@ -139,7 +143,7 @@
       border: 1px solid transparent;
       &:hover {
         border-radius: 6px;
-        border-color: #8697FF;
+        border-color: #8697ff;
         background: rgba(134, 151, 255, 0.1);
       }
     }
