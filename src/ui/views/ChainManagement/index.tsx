@@ -137,12 +137,12 @@ export const StartChainManagement = () => {
       noPadding
       headerClassName="mb-24"
     >
-      <header className="create-new-header create-password-header h-[100px]">
+      <header className="create-new-header create-password-header h-[100px] fixed-new-header">
         <p className="text-20 mt-42 mb-0 text-white text-center font-bold">
           {t('Pin your frequently used chains')}
         </p>
       </header>
-      <div className="chain-management p-20 min-h-full">
+      <div className="chain-management inital-chain-management min-h-full">
         <ChainManagementList />
       </div>
     </StrayPageWithButton>
