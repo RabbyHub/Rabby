@@ -117,7 +117,7 @@ const EditModal = ({
       visible={visible}
       onClose={onCancel}
       placement="bottom"
-      height="215px"
+      height={isEdit && accountType === 'others' ? '245px' : '215px'}
       destroyOnClose
     >
       <Form onFinish={handleConfirm}>
