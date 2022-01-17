@@ -9,6 +9,7 @@ import {
 import { Button, Modal, Tooltip, Drawer } from 'antd';
 import { useTranslation } from 'react-i18next';
 import clsx from 'clsx';
+import * as Sentry from '@sentry/browser';
 import Safe from '@rabby-wallet/gnosis-sdk';
 import { SafeInfo } from '@rabby-wallet/gnosis-sdk/src/api';
 import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
@@ -61,20 +62,28 @@ const normalizeHex = (value: string | number) => {
 
 const normalizeTxParams = (tx) => {
   const copy = tx;
-  if ('nonce' in copy) {
-    copy.nonce = normalizeHex(copy.nonce);
-  }
-  if ('gas' in copy) {
-    copy.gas = normalizeHex(copy.gas);
-  }
-  if ('gasLimit' in copy) {
-    copy.gas = normalizeHex(copy.gasLimit);
-  }
-  if ('gasPrice' in copy) {
-    copy.gasPrice = normalizeHex(copy.gasPrice);
-  }
-  if ('value' in copy) {
-    copy.value = addHexPrefix(unpadHexString(copy.value || '0x0'));
+  try {
+    if ('nonce' in copy) {
+      copy.nonce = normalizeHex(copy.nonce);
+    }
+    if ('gas' in copy) {
+      copy.gas = normalizeHex(copy.gas);
+    }
+    if ('gasLimit' in copy) {
+      copy.gas = normalizeHex(copy.gasLimit);
+    }
+    if ('gasPrice' in copy) {
+      copy.gasPrice = normalizeHex(copy.gasPrice);
+    }
+    if ('value' in copy) {
+      copy.value = addHexPrefix(
+        unpadHexString(addHexPrefix(copy.value) || '0x0')
+      );
+    }
+  } catch (e) {
+    Sentry.captureException(
+      new Error(`normalizeTxParams failed, ${JSON.stringify(e)}`)
+    );
   }
   return copy;
 };
