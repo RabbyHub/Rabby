@@ -41,11 +41,6 @@ const Contacts = ({ visible, onClose }: ContactsProps) => {
   };
   const handleDeleteAddress = async (address: string) => {
     await wallet.removeContact(address);
-    message.success({
-      icon: <img src={IconSuccess} className="icon icon-success" />,
-      content: t('Success deleted contact'),
-      duration: 1,
-    });
     init();
   };
   const syncAlianName = async (data: ContactBookItem) => {
@@ -58,12 +53,6 @@ const Contacts = ({ visible, onClose }: ContactsProps) => {
     await wallet.updateContact(data);
     await syncAlianName(data);
     await init();
-
-    message.success({
-      icon: <img src={IconSuccess} className="icon icon-success" />,
-      content: t('Success modified contact'),
-      duration: 1,
-    });
   };
   const addContact = async (data: ContactBookItem) => {
     await wallet.addContact(data);
