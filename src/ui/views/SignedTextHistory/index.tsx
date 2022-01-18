@@ -1,18 +1,16 @@
 import React, { useState, useEffect } from 'react';
 import { message } from 'antd';
 import ClipboardJS from 'clipboard';
-import dayjs from 'dayjs';
 import { useTranslation } from 'react-i18next';
 import { SignTextHistoryItem } from 'background/service/signTextHistory';
 import { FallbackSiteLogo, PageHeader } from '@/ui/component';
-import { useWallet, timeago, hex2Text } from 'ui/utils';
+import { useWallet, hex2Text, sinceTime } from 'ui/utils';
 import IconCopy from 'ui/assets/copy-gray.svg';
 import IconSuccess from 'ui/assets/success.svg';
 import './style.less';
 
 const SignedTextHistoryItem = ({ item }: { item: SignTextHistoryItem }) => {
   const { t } = useTranslation();
-  const relativeTime = timeago(Date.now(), item.createAt);
 
   let formatedContent = '';
   if (item.type === 'personalSign') {
@@ -24,22 +22,6 @@ const SignedTextHistoryItem = ({ item }: { item: SignTextHistoryItem }) => {
       console.log('error', e);
       formatedContent = item.text;
     }
-  }
-  let agotext = '';
-  if (relativeTime.hour <= 0 && relativeTime.minute <= 0) {
-    relativeTime.minute = 1;
-  }
-  if (relativeTime.hour < 24) {
-    if (relativeTime.hour > 0) {
-      agotext += `${relativeTime.hour} h`;
-    }
-    if (relativeTime.minute > 0) {
-      if (agotext) agotext += ' ';
-      agotext += `${relativeTime.minute} ${t('min')}`;
-    }
-    agotext += ` ${t('ago')}`;
-  } else {
-    agotext = dayjs(item.createAt).format('MM/DD HH:mm');
   }
 
   const handleCopyText = () => {
@@ -81,7 +63,7 @@ const SignedTextHistoryItem = ({ item }: { item: SignTextHistoryItem }) => {
           />
           {item.site.origin}
         </div>
-        <div className="time">{agotext}</div>
+        <div className="time">{sinceTime(item.createAt / 1000)}</div>
       </div>
     </div>
   );
