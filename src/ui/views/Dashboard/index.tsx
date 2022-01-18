@@ -891,7 +891,6 @@ const Dashboard = () => {
           setStartEdit(false);
         }}
         className="address-popover"
-        width="344px"
       >
         <div
           className="flex flex-col items-center"
