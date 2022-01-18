@@ -182,7 +182,12 @@ const ContactsItem = ({
     }
   }, [address]);
   return (
-    <div className={clsx('contact-item-wrapper', newInput && 'hover')}>
+    <div
+      className={clsx(
+        'contact-item-wrapper',
+        (newInput || startEdit) && 'hover'
+      )}
+    >
       {addressFocus ? (
         <Input
           value={address}
@@ -210,7 +215,7 @@ const ContactsItem = ({
         />
       )}
 
-      {!startEdit && (
+      {!startEdit && !newInput && (
         <img
           onClick={handleCopyContractAddress}
           src={IconAddressCopy}
@@ -220,7 +225,7 @@ const ContactsItem = ({
           })}
         />
       )}
-      {startEdit && (nameFocus || newInput) ? (
+      {newInput || startEdit ? (
         <Input
           value={alianName}
           defaultValue={alianName}
@@ -245,12 +250,12 @@ const ContactsItem = ({
           {alianName}
         </div>
       )}
-      {!startEdit && (
-        <div className="edit-name-wrapper">
-          <img className="edit-name" src={IconSend} onClick={sendToken} />
+      {!startEdit && !newInput && (
+        <div className="edit-name-wrapper cursor-pointer" onClick={sendToken}>
+          <img className="edit-name" src={IconSend} />
         </div>
       )}
-      {startEdit && (
+      {(startEdit || newInput) && (
         <img
           className="correct cursor-pointer"
           src={alianName && address ? IconCorrect : IconUnCorrect}
