@@ -122,6 +122,9 @@ const AddAddressOptions = () => {
           history.push('/create-mnemonics');
         }
       },
+      subText: showMnemonic
+        ? t('Create a new mnemonic')
+        : t('Create a new address with your mnemonic'),
     },
     {
       leftIcon: IconAddwatchmodo,
