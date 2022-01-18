@@ -58,7 +58,8 @@ export const getTimeFromNow = (create_at: number) =>
 export function fromNow(time: number, currTime?: number) {
   let successTimeView = '';
   const successTime = getTimeSpan((currTime || Date.now() / 1000) - time);
-  const { d, h, m, s } = successTime;
+  if (successTime.h <= 0 && successTime.m <= 0) successTime.m = 1; // At least 1 mins
+  const { d, h, m } = successTime;
   let str = '';
   let flag = 0;
   if (d) {
@@ -66,15 +67,12 @@ export function fromNow(time: number, currTime?: number) {
     flag++;
   }
   if ((h || flag) && flag < 3) {
-    str += `${h}${`hr${h > 1 ? 's' : ''}`} `;
+    str += `${flag > 0 ? ' ' : ''}${h} hour`;
     flag++;
   }
   if ((m || flag) && flag < 3) {
-    str += `${m}${`min${m > 1 ? 's' : ''}`} `;
+    str += `${flag > 0 ? ' ' : ''}${m} min`;
     flag++;
-  }
-  if ((s || flag) && flag < 2) {
-    str += `${s}${`sec${s > 1 ? 's' : ''}`}`;
   }
   if (str) successTimeView = str;
   return successTimeView;

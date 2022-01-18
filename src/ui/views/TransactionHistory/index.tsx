@@ -5,14 +5,12 @@ import { intToHex } from 'ethereumjs-util';
 import clsx from 'clsx';
 import minBy from 'lodash/minBy';
 import maxBy from 'lodash/maxBy';
-import padStart from 'lodash/padStart';
 import { Tooltip } from 'antd';
 import { useWallet, isSameAddress } from 'ui/utils';
 import { splitNumberByStep } from 'ui/utils/number';
-import { timeago } from 'ui/utils/time';
+import { sinceTime } from 'ui/utils';
 import { openInTab } from 'ui/utils/webapi';
 import { PageHeader } from 'ui/component';
-import { useConfirmExternalModal } from '../Dashboard/components';
 import {
   TransactionGroup,
   TransactionHistoryItem,
@@ -160,7 +158,6 @@ const TransactionItem = ({
     !item.isPending &&
     item.txs.length > 1 &&
     isSameAddress(completedTx!.rawTx.from, completedTx!.rawTx.to);
-  const ago = timeago(item.createdAt, Date.now());
   const [txQueues, setTxQueues] = useState<
     Record<
       string,
@@ -181,7 +178,6 @@ const TransactionItem = ({
     ? (item.explain.native_token.price * gasTokenCount).toFixed(2)
     : 0;
   const gasTokenSymbol = hasTokenPrice ? item.explain.native_token.symbol : '';
-  let agoText = '';
 
   const loadTxData = async () => {
     if (gasTokenCount) return;
@@ -252,31 +248,6 @@ const TransactionItem = ({
   useEffect(() => {
     loadTxData();
   }, []);
-
-  if (ago.hour <= 0 && ago.minute <= 0) {
-    ago.minute = 1;
-  }
-  if (ago.hour < 24) {
-    if (ago.hour > 0) {
-      agoText += `${ago.hour} ${t('hour')}`;
-    }
-    if (ago.minute > 0) {
-      if (agoText) agoText += ' ';
-      agoText += `${ago.minute} ${t('min')}`;
-    }
-    agoText += ` ${t('ago')}`;
-  } else {
-    const date = new Date(item.createdAt);
-    agoText = `${date.getMonth() + 1}/${padStart(
-      date.getDate().toString(),
-      2,
-      '0'
-    )} ${padStart(date.getHours().toString(), 2, '0')}:${padStart(
-      date.getMinutes().toString(),
-      2,
-      '0'
-    )}`;
-  }
 
   const handleClickCancel = async () => {
     if (!canCancel) return;
@@ -354,7 +325,9 @@ const TransactionItem = ({
           </div>
         )}
         <div className="tx-id">
-          <span>{item.isPending ? null : agoText}</span>
+          <span>
+            {item.isPending ? null : sinceTime(item.createdAt / 1000)}
+          </span>
           <span>
             {chain.name} #{item.nonce}
           </span>
@@ -473,14 +446,11 @@ const TransactionItem = ({
 const TransactionHistory = () => {
   const wallet = useWallet();
   const { t } = useTranslation();
-  const [address, setAddress] = useState<string | null>(null);
   const [pendingList, setPendingList] = useState<TransactionGroup[]>([]);
   const [completeList, setCompleteList] = useState<TransactionGroup[]>([]);
-  const _openInTab = useConfirmExternalModal();
 
   const init = async () => {
     const account = await wallet.syncGetCurrentAccount()!;
-    setAddress(account.address);
     const { pendings, completeds } = await wallet.getTransactionHistory(
       account.address
     );
