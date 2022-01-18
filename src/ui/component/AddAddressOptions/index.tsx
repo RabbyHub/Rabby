@@ -123,7 +123,7 @@ const AddAddressOptions = () => {
         }
       },
       subText: showMnemonic
-        ? t('Create a new mnemonic')
+        ? t('A new mnemonic will be created')
         : t('Create a new address with your mnemonic'),
     },
     {
