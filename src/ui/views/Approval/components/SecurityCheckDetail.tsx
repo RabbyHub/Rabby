@@ -90,14 +90,21 @@ const SecurityCheckDetail = ({
       setCanSubmit(true);
       return;
     }
-    if (data.forbidden_list.length > 0 && passwordCorrect && forceProcess) {
+    if (
+      data.forbidden_list.length > 0 &&
+      passwordCorrect &&
+      password &&
+      forceProcess
+    ) {
       setCanSubmit(true);
-    } else if (data.danger_list.length > 0 && passwordCorrect) {
-      setCanSubmit(true);
-    } else {
-      setCanSubmit(false);
+      return;
     }
-  }, [data, forceProcess]);
+    if (data.danger_list.length > 0 && passwordCorrect && password) {
+      setCanSubmit(true);
+      return;
+    }
+    setCanSubmit(false);
+  }, [data, forceProcess, password, passwordCorrect]);
 
   return (
     <Drawer
