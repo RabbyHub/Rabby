@@ -199,7 +199,8 @@ const SendToken = () => {
     }: {
       to: string;
       amount: string;
-    }
+    },
+    token?: TokenItem
   ) => {
     setShowContactInfo(!!to && isValidAddress(to));
     if (!to || !isValidAddress(to)) {
@@ -212,11 +213,12 @@ const SendToken = () => {
       resultAmount = cacheAmount;
     }
     const account = await wallet.syncGetCurrentAccount();
+    const targetToken = token || currentToken;
     if (
       isNativeToken &&
       account.type !== KEYRING_CLASS.GNOSIS &&
-      new BigNumber(currentToken.raw_amount_hex_str || 0)
-        .div(10 ** currentToken.decimals)
+      new BigNumber(targetToken.raw_amount_hex_str || 0)
+        .div(10 ** targetToken.decimals)
         .minus(new BigNumber(amount))
         .isLessThan(0.1)
     ) {
@@ -226,8 +228,8 @@ const SendToken = () => {
     }
     if (
       new BigNumber(resultAmount || 0).isGreaterThan(
-        new BigNumber(currentToken.raw_amount_hex_str || 0).div(
-          10 ** currentToken.decimals
+        new BigNumber(targetToken.raw_amount_hex_str || 0).div(
+          10 ** targetToken.decimals
         )
       )
     ) {
@@ -375,7 +377,11 @@ const SendToken = () => {
         if (cache?.path === history.location.pathname) {
           if (cache.states.values) {
             form.setFieldsValue(cache.states.values);
-            // handleFormValuesChange(null, form.getFieldsValue());
+            handleFormValuesChange(
+              null,
+              form.getFieldsValue(),
+              cache.states.currentToken
+            );
           }
           if (cache.states.currentToken) {
             setCurrentToken(cache.states.currentToken);

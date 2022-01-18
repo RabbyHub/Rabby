@@ -57,13 +57,7 @@ const NameAndAddress = ({
   return (
     <div className={clsx('name-and-address', className)}>
       {localName && <div className={clsx('name', nameClass)}>{localName}</div>}
-      <div
-        className={clsx(
-          localName ? 'address' : 'name',
-          addressClass,
-          !localName && noNameClass
-        )}
-      >
+      <div className={clsx('address', addressClass, !localName && noNameClass)}>
         {localName
           ? `(${address
               ?.toLowerCase()
@@ -76,7 +70,7 @@ const NameAndAddress = ({
         onClick={handleCopyContractAddress}
         src={IconAddressCopy}
         id={'copyIcon'}
-        className={clsx('w-[16px] h-[16px] ml-6 cursor-pointer', {
+        className={clsx('w-[16px] h-[16px] ml-4 cursor-pointer', {
           success: true,
         })}
       />
