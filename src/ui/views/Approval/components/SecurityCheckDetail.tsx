@@ -29,6 +29,7 @@ const SecurityCheckDetail = ({
   const { t } = useTranslation();
   const [needPassword, setNeedPassword] = useState(false);
   const [forceProcess, setForceProcess] = useState(false);
+  const [canSubmit, setCanSubmit] = useState(false);
   const [password, setPassword] = useState('');
   const [passwordCorrect, setPasswordCorrect] = useState(true);
   const handleForceProcessChange = (checked: boolean) => {
@@ -38,6 +39,7 @@ const SecurityCheckDetail = ({
     setPassword(val);
   };
   const handleClickSubmit = async () => {
+    if (!canSubmit) return;
     try {
       if (needPassword) {
         await wallet.verifyPassword(password);
@@ -74,10 +76,36 @@ const SecurityCheckDetail = ({
 
   useEffect(() => {
     if (!data) return;
-    if (data.forbidden_list.length > 0 || !preprocessSuccess) {
+    if (
+      data.forbidden_list.length > 0 ||
+      data.danger_list.length > 0 ||
+      !preprocessSuccess
+    ) {
       setNeedPassword(true);
     }
   }, [data, preprocessSuccess]);
+
+  useEffect(() => {
+    if (data.danger_list.length <= 0 && data.forbidden_list.length <= 0) {
+      setCanSubmit(true);
+      return;
+    }
+    if (
+      data.forbidden_list.length > 0 &&
+      passwordCorrect &&
+      password &&
+      forceProcess
+    ) {
+      setCanSubmit(true);
+      return;
+    }
+    if (data.danger_list.length > 0 && passwordCorrect && password) {
+      setCanSubmit(true);
+      return;
+    }
+    setCanSubmit(false);
+  }, [data, forceProcess, password, passwordCorrect]);
+
   return (
     <Drawer
       title="Security Check"
@@ -158,7 +186,7 @@ const SecurityCheckDetail = ({
               </Form>
             </div>
           )}
-          {!preprocessSuccess && (
+          {data.forbidden_list.length > 0 && (
             <div className="force-process">
               <Checkbox
                 checked={forceProcess}
@@ -176,7 +204,7 @@ const SecurityCheckDetail = ({
               type="primary"
               onClick={handleClickSubmit}
               size="large"
-              disabled={!preprocessSuccess && !forceProcess}
+              disabled={!canSubmit}
             >
               {okText}
             </Button>
