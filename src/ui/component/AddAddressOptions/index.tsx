@@ -19,6 +19,7 @@ import {
   WALLET_BRAND_CONTENT,
   KEYRING_CLASS,
   BRAND_ALIAN_TYPE_TEXT,
+  BRAND_WALLET_CONNECT_TYPE,
 } from 'consts';
 
 import clsx from 'clsx';
@@ -49,7 +50,8 @@ const AddAddressOptions = () => {
     const savedTemp: [] = await renderSavedData();
     setSavedWalletData(savedTemp);
   };
-  const connectRouter = (item) => {
+  type Valueof<T> = T[keyof T];
+  const connectRouter = (item: Valueof<typeof WALLET_BRAND_CONTENT>) => {
     if (item.connectType === 'BitBox02Connect') {
       openInternalPageInTab('import/hardware?connectType=BITBOX02');
     } else if (item.connectType === 'GridPlusConnect') {
@@ -65,6 +67,13 @@ const AddAddressOptions = () => {
     } else if (item.connectType === 'GnosisConnect') {
       history.push({
         pathname: '/import/gnosis',
+      });
+    } else if (item.connectType === BRAND_WALLET_CONNECT_TYPE.QRCodeBase) {
+      history.push({
+        pathname: '/import/qrcode',
+        state: {
+          brand: item.brand,
+        },
       });
     } else {
       history.push({
@@ -168,7 +177,7 @@ const AddAddressOptions = () => {
             brand: savedItem!.brand,
             image: savedItem!.image,
             connectType: savedItem!.connectType,
-            onClick: () => connectRouter(savedItem),
+            onClick: () => connectRouter(savedItem!),
           });
         }
       });

@@ -93,6 +93,8 @@ import IconMnemonicWhite from 'ui/assets/walletlogo/IconMnemonic-white.svg';
 import LogoLedgerDark from 'ui/assets/walletlogo/ledgerdark.png';
 import LogoLedgerWhite from 'ui/assets/walletlogo/ledgerwhite.png';
 import IconGridPlus from 'ui/assets/walletlogo/gridplus.png';
+import LogoKeystone from 'ui/assets/walletlogo/keystone.png';
+import LogoKeystoneWithBorder from 'ui/assets/walletlogo/keystone-border.png';
 
 export enum CHAINS_ENUM {
   ETH = 'ETH',
@@ -643,6 +645,7 @@ export enum BRAND_WALLET_CONNECT_TYPE {
   TrezorConnect = 'TrezorConnect',
   GnosisConnect = 'GnosisConnect',
   GridPlusConnect = 'GridPlusConnect',
+  QRCodeBase = 'QRcodeBase',
 }
 
 export const WALLETCONNECT_STATUS_MAP = {
@@ -694,6 +697,7 @@ export enum WALLET_BRAND_TYPES {
   TRUSTWALLET = 'TRUSTWALLET',
   GNOSIS = 'Gnosis',
   GRIDPLUS = 'GRIDPLUS',
+  KEYSTONE = 'Keystone',
 }
 
 export const WALLET_BRAND_CONTENT = {
@@ -760,6 +764,14 @@ export const WALLET_BRAND_CONTENT = {
     icon: IconJade,
     image: LogoJade,
     connectType: BRAND_WALLET_CONNECT_TYPE.WalletConnect,
+  },
+  [WALLET_BRAND_TYPES.KEYSTONE]: {
+    id: 14,
+    name: 'Keystone',
+    brand: WALLET_BRAND_TYPES.KEYSTONE,
+    icon: LogoKeystone,
+    image: LogoKeystoneWithBorder,
+    connectType: BRAND_WALLET_CONNECT_TYPE.QRCodeBase,
   },
   [WALLET_BRAND_TYPES.LEDGER]: {
     id: 4,

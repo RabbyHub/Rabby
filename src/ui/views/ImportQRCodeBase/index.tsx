@@ -1,0 +1,109 @@
+import React, { useState, useEffect } from 'react';
+import { Form } from 'antd';
+import { useHistory } from 'react-router-dom';
+import { useTranslation } from 'react-i18next';
+import QRCodeReader from 'ui/component/QRCodeReader';
+import { StrayPageWithButton } from 'ui/component';
+import { useWallet, useWalletRequest } from 'ui/utils';
+import { openInternalPageInTab } from 'ui/utils/webapi';
+import './style.less';
+
+import KeystoneLogo from 'ui/assets/walletlogo/keystone.png';
+
+const ImportWatchAddress = () => {
+  const { t } = useTranslation();
+  const history = useHistory();
+  const wallet = useWallet();
+  const [form] = Form.useForm();
+
+  const [run, loading] = useWalletRequest(wallet.importWatchAddress, {
+    onSuccess(accounts) {
+      // TODO
+    },
+    onError(err) {
+      // TODO
+    },
+  });
+
+  const handleScanQRCodeSuccess = (data) => {
+    console.log(data);
+  };
+
+  const handleScanQRCodeError = async () => {
+    await wallet.setPageStateCache({
+      path: history.location.pathname,
+      params: {},
+      states: form.getFieldsValue(),
+    });
+    openInternalPageInTab('request-permission?type=camera');
+  };
+
+  const handleLoadCache = async () => {
+    const cache = await wallet.getPageStateCache();
+    if (cache && cache.path === history.location.pathname) {
+      // TODO
+    }
+  };
+
+  const handleNextClick = () => {
+    const address = form.getFieldValue('address');
+    run(address);
+  };
+
+  const handleClickBack = () => {
+    if (history.length > 1) {
+      history.goBack();
+    } else {
+      history.replace('/');
+    }
+  };
+
+  useEffect(() => {
+    handleLoadCache();
+    return () => {
+      wallet.clearPageStateCache();
+    };
+  }, []);
+
+  return (
+    <StrayPageWithButton
+      onSubmit={handleNextClick}
+      spinning={loading}
+      form={form}
+      hasBack
+      hasDivider
+      noPadding
+      className="import-qrcode"
+      onBackClick={handleClickBack}
+    >
+      <header className="create-new-header create-password-header h-[264px]">
+        <img
+          className="rabby-logo"
+          src="/images/logo-gray.png"
+          alt="rabby logo"
+        />
+        <img
+          className="unlock-logo w-[80px] h-[75px] mb-20 mx-auto"
+          src={KeystoneLogo}
+        />
+        <p className="text-24 mb-4 mt-0 text-white text-center font-bold">
+          {t('Keystone')}
+        </p>
+        <p className="text-14 mb-0 mt-4 text-white opacity-80 text-center">
+          {t('Scan the QR code on the Keystone hardware wallet')}
+        </p>
+        <img src="/images/watch-mask.png" className="mask" />
+      </header>
+      <div className="flex justify-center qrcode-scanner">
+        <QRCodeReader
+          width={176}
+          height={176}
+          onSuccess={handleScanQRCodeSuccess}
+          onError={handleScanQRCodeError}
+        />
+      </div>
+    </StrayPageWithButton>
+  );
+};
+
+export default ImportWatchAddress;
