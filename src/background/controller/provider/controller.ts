@@ -406,6 +406,7 @@ class ProviderController extends BaseController {
           cacheExplain
         );
       }
+      console.log('e', e);
       const errMsg = e.message || JSON.stringify(e);
       notification.create(undefined, i18n.t('Transaction push failed'), errMsg);
       throw new Error(errMsg);
@@ -634,7 +635,7 @@ class ProviderController extends BaseController {
 
   walletRequestPermissions = ({ data: { params: permissions } }) => {
     const result: Web3WalletPermission[] = [];
-    if (permissions && 'eth_accounts' in permissions[0]) {
+    if ('eth_accounts' in permissions?.[0]) {
       result.push({ parentCapability: 'eth_accounts' });
     }
     return result;

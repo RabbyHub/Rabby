@@ -11,6 +11,7 @@ import ImportPrivateKey from './ImportPrivateKey';
 import ImportJson from './ImportJson';
 import ImportMnemonics from './ImportMnemonics';
 import ImportWatchAddress from './ImportWatchAddress';
+import ImportQRCodeBase from './ImportQRCodeBase';
 import SelectAddress from './SelectAddress';
 import ImportSuccess from './ImportSuccess';
 import ImportHardware from './ImportHardware';
@@ -99,6 +100,9 @@ const Main = () => {
         </PrivateRoute>
         <PrivateRoute exact path="/import/watch-address">
           <ImportWatchAddress />
+        </PrivateRoute>
+        <PrivateRoute exact path="/import/qrcode">
+          <ImportQRCodeBase />
         </PrivateRoute>
         <PrivateRoute exact path="/import/wallet-connect">
           <WalletConnectTemplate />

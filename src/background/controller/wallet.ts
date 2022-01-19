@@ -45,6 +45,7 @@ import { ExplainTxResponse, TokenItem } from '../service/openapi';
 import DisplayKeyring from '../service/keyring/display';
 import provider from './provider';
 import WalletConnectKeyring from '@rabby-wallet/eth-walletconnect-keyring';
+import QRHardwareKeyring from '../service/keyring/eth-keystone-keyring';
 import eventBus from '@/eventBus';
 import {
   setPageStateCacheWhenPopupClose,
@@ -59,6 +60,12 @@ const stashKeyrings: Record<string, any> = {};
 
 export class WalletController extends BaseController {
   openapi = openapiService;
+  qrHardwareKeyring: QRHardwareKeyring;
+
+  constructor() {
+    super();
+    this.qrHardwareKeyring = new QRHardwareKeyring();
+  }
 
   /* wallet */
   boot = (password) => keyringService.boot(password);
@@ -970,6 +977,22 @@ export class WalletController extends BaseController {
         (await keyring.updateTransportMethod(true));
     }
 
+    return stashKeyringId;
+  };
+
+  submitQRHardwareCryptoHDKey = () => {
+    let keyring, isNewKey;
+    let stashKeyringId: number | null = null;
+    const keyringType = KEYRING_CLASS.QRCODE;
+    try {
+      keyring = this._getKeyringByType(keyringType);
+    } catch {
+      const QRCodeKeyring = keyringService.getKeyringClassForType(keyringType);
+      keyring = new QRCodeKeyring();
+      stashKeyringId = Object.values(stashKeyrings).length;
+      stashKeyrings[stashKeyringId] = keyring;
+    }
+    // TODO
     return stashKeyringId;
   };
 
