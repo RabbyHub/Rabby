@@ -459,7 +459,8 @@ export const CHAINS: Record<string, Chain> = {
     selectChainLogo: IconSbchChainLogo,
     hex: '0x2710',
     scanLink: 'https://www.smartscan.cash/transaction/_s_',
-    nativeTokenLogo: '',
+    nativeTokenLogo:
+      'https://static.debank.com/image/sbch_token/logo_url/sbch/03007b5353bb9e221efb82a6a70d9ec9.png',
     nativeTokenDecimals: 18,
     thridPartyRPC: 'https://rpc-mainnet.smartbch.org',
   },
