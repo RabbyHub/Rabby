@@ -253,8 +253,8 @@
     font-weight: 500;
     font-size: 15px;
     line-height: 18px;
-    color: #13141a;
-    border-bottom: 1px solid #e5e9ef;
+    color: @color-title;
+    border-bottom: 1px solid @color-border;
     padding-top: 16px;
     padding-bottom: 12px;
     white-space: nowrap;
@@ -272,7 +272,7 @@
         font-weight: 500;
         font-size: 12px;
         line-height: 14px;
-        color: #13141a;
+        color: @color-title;
       }
       &-value {
         white-space: nowrap;
@@ -280,20 +280,20 @@
         text-overflow: ellipsis;
         font-size: 12px;
         line-height: 14px;
-        color: #707280;
+        color: @color-comment-1;
       }
     }
   }
   .ant-btn {
-    background-color: #f5f6fa !important;
-    color: #b4bdcc !important;
+    background-color: @color-bg !important;
+    color: @color-comment-2 !important;
     border: none;
     &::before {
       opacity: 0 !important;
     }
     &:hover {
-      background-color: #f5f6fa;
-      color: #b4bdcc;
+      background-color: @color-bg;
+      color: @color-comment-2;
     }
   }
 }

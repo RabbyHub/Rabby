@@ -778,7 +778,7 @@
     width: 72px;
     height: 24px;
     background: #ffffff;
-    border: 0.5px solid #d8dfeb;
+    border: 0.5px solid @color-border;
     border-radius: 12px;
     padding: 1px;
     display: flex;
@@ -798,7 +798,7 @@
           height: 12px;
           margin-top: -6px;
           width: 0.5px;
-          background-color: #d8dfeb;
+          background-color: @color-border;
         }
         &:hover {
           background-color: rgba(134, 151, 255, 0.2);
@@ -807,7 +807,7 @@
       &:nth-child(2) {
         border-radius: 0px 12px 12px 0px;
         &:hover {
-          background-color: #f0f2f5;
+          background-color: @color-bg;
         }
       }
       .icon {
@@ -875,14 +875,14 @@
   }
   .brand-name {
     font-size: 16px;
-    color: #13141a;
+    color: @color-title;
     font-weight: 500;
     margin: 2px 0 0 6px;
     cursor: default;
     .ant-input {
       width: 167px;
       height: 28px;
-      background: #e5e9ef;
+      background: @color-border;
       border-radius: 4px;
       box-sizing: border-box;
       padding-left: 2px;
@@ -908,7 +908,7 @@
   .qrcode-container {
     width: 116px;
     height: 116px;
-    border: 1px solid #d8dfeb;
+    border: 1px solid @color-border;
     box-sizing: border-box;
     border-radius: 8px;
     padding: 6px 4px 4px 6px;
@@ -919,7 +919,7 @@
     width: 100%;
     min-height: 116px;
     align-items: center;
-    background: #f5f6fa;
+    background: @color-bg;
     border-radius: 4px;
     padding: 8px;
     .left-container {
@@ -930,17 +930,17 @@
       height: 116px;
       .address-display {
         font-size: 12px;
-        color: #707280;
+        color: @color-comment-1;
         width: 185px;
         margin: 8px 7px 0 6px;
       }
       .import {
         display: inline-block;
         position: absolute;
-        color: #B4BDCC;
+        color: @color-comment-2;
         font-size: 12px;
-        height:16px;
-        left:6px;
+        height: 16px;
+        left: 6px;
         bottom: 0;
       }
     }
@@ -949,12 +949,12 @@
     margin-top: 9px;
     padding-top: 16px;
     min-height: 107px;
-    background: #f5f6fa;
+    background: @color-bg;
     border-radius: 4px;
     width: 100%;
     padding: 8px;
     .threshold {
-      color: #13141a;
+      color: @color-title;
     }
     .loading-wrapper {
       height: 200px;
@@ -1012,13 +1012,12 @@
           bottom: 0;
           height: 1px;
           width: 100%;
-          border-bottom: 1px solid #e5e9ef;
+          border-bottom: 1px solid @color-border;
         }
         &:nth-last-child(1)::after {
           border-bottom: 0;
         }
       }
-    
     }
   }
 }
@@ -1052,7 +1051,7 @@
       .list-alian-name {
         font-weight: 500;
         font-size: 13px;
-        color: #13141a;
+        color: @color-title;
         max-width: 130px;
         overflow: hidden;
         text-overflow: ellipsis;
@@ -1060,11 +1059,11 @@
       }
     }
     .address-color {
-      color: #b4bdcc;
+      color: @color-comment-2;
       font-size: 12px;
     }
     .money-color {
-      color: #707280;
+      color: @color-comment-1;
       font-size: 12px;
       position: absolute;
       right: 12px;
@@ -1086,7 +1085,7 @@
     bottom: 0;
     height: 1px;
     width: 100%;
-    border-bottom: 1px solid #e5e9ef;
+    border-bottom: 1px solid @color-border;
   }
   .ant-popover-inner-content {
     padding: 0 !important;
@@ -1100,7 +1099,7 @@
       font-size: 14px;
       border-radius: 6px;
       text-align: center;
-      color: #707280;
+      color: @color-comment-1;
     }
     .address-loading {
       display: flex;
@@ -1109,9 +1108,9 @@
       flex-direction: column;
       font-size: 12px;
       opacity: 0.8;
-      color: #707280;
+      color: @color-comment-1;
       .icon-loading {
-        color: #707280;
+        color: @color-comment-1;
         transform: scale(0.78);
         animation: spining 1.5s infinite linear;
         margin-bottom: 12px;
@@ -1126,7 +1125,7 @@
       text-align: center;
       background: #ffffff;
       border-radius: 0px 0px 6px 6px;
-      border-top: 1px solid #e5e9ef;
+      border-top: 1px solid @color-border;
       padding-left: 15px;
       color: #8697ff;
       &:hover {
@@ -1146,7 +1145,7 @@
   }
   .brand-name {
     font-size: 20px;
-    color: #13141a;
+    color: @color-title;
     margin: 2px 7px 0 6px;
   }
 
@@ -1159,7 +1158,7 @@
     width: 100px;
     height: 100px;
     margin: 14px 0 16px 0;
-    border: 1px solid #d8dfeb;
+    border: 1px solid @color-border;
     box-sizing: border-box;
     border-radius: 8px;
     padding: 6px 4px 4px 6px;
@@ -1190,7 +1189,7 @@
         margin-right: 8px;
       }
       .amount {
-        color: #2d3033;
+        color: @color-title;
         font-weight: 500;
         font-size: 13px;
         width: 106px;
@@ -1203,7 +1202,7 @@
         position: relative;
         height: 8px;
         width: 157px;
-        background-color: #d8dfeb;
+        background-color: @color-border;
         border-radius: 10px;
         overflow: hidden;
         .inner {
@@ -1214,7 +1213,7 @@
       }
       .percent {
         flex: 1;
-        color: #818a99;
+        color: @color-comment-1;
         font-size: 13px;
         font-weight: 500;
         text-align: right;
@@ -1331,7 +1330,7 @@
     font-weight: 500;
     font-size: 20px;
     line-height: 23px;
-    color: #13141a;
+    color: @color-title;
     text-align: left;
   }
   .ant-modal-content {
@@ -1376,5 +1375,5 @@
   max-width: 143px;
 }
 .no-name {
-  color: #707280 !important;
+  color: @color-comment-1 !important;
 }

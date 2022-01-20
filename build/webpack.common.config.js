@@ -5,6 +5,7 @@ const ESLintWebpackPlugin = require('eslint-webpack-plugin');
 const tsImportPluginFactory = require('ts-import-plugin');
 const AssetReplacePlugin = require('./plugins/AssetReplacePlugin');
 const { version } = require('../_raw/manifest.json');
+const path = require('path');
 
 const paths = require('./paths');
 
@@ -98,6 +99,12 @@ const config = {
               lessOptions: {
                 javascriptEnabled: true,
               },
+            },
+          },
+          {
+            loader: 'style-resources-loader',
+            options: {
+              patterns: path.resolve(__dirname, '../src/ui/style/var.less'),
             },
           },
         ],

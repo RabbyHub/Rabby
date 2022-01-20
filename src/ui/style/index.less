@@ -6,7 +6,8 @@
 @import './var.less';
 @import './antd-overwrite.less';
 
-html, body {
+html,
+body {
   font-family: 'Roboto', sans-serif;
 }
 
@@ -28,7 +29,7 @@ button:focus {
 }
 
 .subtitle {
-  color: #818a99;
+  color: @color-comment-1;
   font-size: 14px;
   line-height: 14px;
 }
@@ -40,7 +41,7 @@ button:focus {
 
 .create-new-header {
   position: relative;
-  background: linear-gradient(111.24deg, #8BABFF 9.66%, #8094FF 85.59%);
+  background: linear-gradient(111.24deg, #8babff 9.66%, #8094ff 85.59%);
   padding: 32px 20px;
   .rabby-logo {
     width: 84px;
@@ -65,7 +66,7 @@ button:focus {
     display: flex;
     li {
       padding: 5px 10px;
-      border: 1px solid #D8DFEB;
+      border: 1px solid @color-border;
       border-radius: 2px;
       font-size: 12px;
       line-height: 14px;
@@ -81,7 +82,7 @@ button:focus {
     padding: 11px 0;
     font-size: 12px;
     line-height: 14px;
-    color: #2D3033;
+    color: @color-title;
     background-color: #fff;
     border-radius: 6px;
     cursor: pointer;
@@ -104,7 +105,7 @@ button:focus {
     cursor: pointer;
     user-select: none;
     &__inner {
-      background-color: rgba(134, 151, 255, .1);
+      background-color: rgba(134, 151, 255, 0.1);
       border-radius: 4px;
       height: 40px;
       display: flex;
@@ -113,7 +114,7 @@ button:focus {
       justify-content: space-between;
       font-size: 12px;
       line-height: 14px;
-      color: #2D3033;
+      color: @color-title;
     }
   }
   .icon-checked {
@@ -133,57 +134,60 @@ button:focus {
   .ant-modal-content {
     background-color: #fff;
     height: 365px;
-    .guide {
-      color: #2D3033;
-      font-weight: 500;
-      font-size: 15px;
-      line-height: 18px;
-      text-align: center;
-      width: 239px;
-      margin: 0 auto 24px;
+  }
+  .ant-drawer-body {
+    padding-top: 44px;
+  }
+  .guide {
+    color: @color-title;
+    font-weight: 500;
+    font-size: 15px;
+    line-height: 18px;
+    text-align: center;
+    width: 239px;
+    margin: 0 auto 24px;
+  }
+  .symbol {
+    display: flex;
+    justify-content: center;
+    font-weight: 500;
+    font-size: 13px;
+    line-height: 15px;
+    color: #3b99fd;
+    margin-bottom: 16px;
+    .icon {
+      width: 15px;
+      height: 15px;
+      margin-right: 6px;
     }
-    .symbol {
-      display: flex;
-      justify-content: center;
-      font-weight: 500;
-      font-size: 13px;
-      line-height: 15px;
-      color: #3B99FD;
-      margin-bottom: 16px;
-      .icon {
-        width: 15px;
-        height: 15px;
-        margin-right: 6px;
-      }
+  }
+  .qrcode {
+    padding: 10px;
+    border: 1px solid @color-border;
+    border-radius: 12px;
+    margin: 0 auto;
+    width: 200px;
+    canvas {
+      margin: 0;
     }
-    .qrcode {
-      padding: 10px;
-      border: 1px solid #D8DFEB;
-      border-radius: 12px;
-      margin: 0 auto;
-      width: 200px;
-      canvas {
-        margin: 0;
-      }
-      video {
-        margin: 0;
-        object-fit: cover;
-        border-radius: 8px;
-        background-color: #B4BDCC;
-      }
+    video {
+      margin: 0;
+      object-fit: cover;
+      border-radius: 8px;
+      background-color: @color-comment-2;
     }
-    .icon-arrow-down {
-      width: 28px;
-      height: 28px;
-      margin: 13px auto;
-    }
+  }
+  .icon-arrow-down {
+    width: 28px;
+    height: 28px;
+    margin: 13px auto;
   }
 }
 
 .uploader {
   border-color: transparent;
   border-width: 1px;
-  transition: border .2s;
+  transition: border 0.2s;
   &:hover {
     border-color: #b0bdff;
   }

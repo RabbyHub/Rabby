@@ -10,6 +10,8 @@ import {
   AuthenticationModal,
   Modal,
   StrayFooter,
+  Popup,
+  Copy,
 } from 'ui/component';
 import AddressItem from 'ui/component/AddressList/AddressItem';
 import { DisplayedKeryring } from 'background/service/keyring';
@@ -96,13 +98,19 @@ const AddressManagement = () => {
         wallet,
         async validationHandler(password) {
           const mnemonic = await wallet.getMnemonics(password);
-          Modal.info({
+
+          Popup.info({
             title: t('Mnemonic'),
-            centered: true,
-            content: mnemonic,
-            cancelText: null,
-            okText: null,
-            className: 'single-btn',
+            className: 'custom-private-popup',
+            content: (
+              <div className="private-field relative">
+                {mnemonic}
+                <Copy
+                  data={mnemonic}
+                  className="w-16 h-16 absolute bottom-12 right-12"
+                ></Copy>
+              </div>
+            ),
           });
         },
       });
@@ -133,13 +141,18 @@ const AddressManagement = () => {
               address,
               type,
             });
-            Modal.info({
+            Popup.info({
               title: t('Private Key'),
-              centered: true,
-              content: privateKey,
-              cancelText: null,
-              okText: null,
-              className: 'single-btn',
+              className: 'custom-private-popup',
+              content: (
+                <div className="private-field relative">
+                  {privateKey}
+                  <Copy
+                    data={privateKey}
+                    className="w-16 h-16 absolute bottom-12 right-12"
+                  ></Copy>
+                </div>
+              ),
             });
           },
         });

@@ -3,12 +3,12 @@
 .address-management {
   .page();
   height: 100vh;
-  padding: 0 28px 118px;
+  padding-bottom: 118px;
   .address-item-hidden {
-    background: #F0F2F5;
+    background: @color-bg;
     border-radius: 10px;
     padding: 3px 7px;
-    color: #B4BDCC;
+    color: @color-comment-2;
     font-size: 12px;
     margin-right: 12px;
   }
@@ -41,7 +41,7 @@
       padding: 13px;
       margin-top: 100px;
       text-align: center;
-      background-color: rgba(134, 151, 255, .2);
+      background-color: rgba(134, 151, 255, 0.2);
       color: @primary-text-color;
       align-items: center;
       justify-content: center;
@@ -54,5 +54,18 @@
   }
   .hint {
     margin-left: 11px;
+  }
+}
+
+.custom-private-popup {
+  .private-field {
+    border-radius: 6px;
+    background-color: @color-bg;
+    padding: 12px;
+    font-size: 14px;
+    line-height: 20px;
+    color: @color-title;
+    min-height: 160px;
+    overflow: auto;
   }
 }
