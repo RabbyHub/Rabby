@@ -68,7 +68,7 @@ class PreferenceService {
         useLedgerLive: false,
         locale: defaultLang,
         watchAddressPreference: {},
-        isDefaultWallet: false,
+        isDefaultWallet: true,
         lastTimeSendToken: {},
         walletSavedList: [],
         alianNames: {},
