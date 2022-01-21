@@ -335,6 +335,7 @@ class ProviderController extends BaseController {
       onTranscationSubmitted(hash);
       return hash;
     } catch (e: any) {
+      console.log('e', e);
       const errMsg = e.message || JSON.stringify(e);
       notification.create(undefined, i18n.t('Transaction push failed'), errMsg);
       throw new Error(errMsg);

@@ -645,7 +645,7 @@ export enum BRAND_WALLET_CONNECT_TYPE {
   TrezorConnect = 'TrezorConnect',
   GnosisConnect = 'GnosisConnect',
   GridPlusConnect = 'GridPlusConnect',
-  QRCodeBase = 'QRcodeBase',
+  QRCodeBase = 'QR Hardware Wallet Device',
 }
 
 export const WALLETCONNECT_STATUS_MAP = {

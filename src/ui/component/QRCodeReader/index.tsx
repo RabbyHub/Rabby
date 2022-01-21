@@ -1,6 +1,5 @@
 import React, { useEffect, useRef } from 'react';
-import { BrowserQRCodeReader } from '@zxing/library';
-import { BarcodeFormat, DecodeHintType } from '@zxing/library';
+import { BrowserQRCodeReader } from '@zxing/browser';
 import './style.less';
 
 interface QRCodeReaderProps {
@@ -22,28 +21,21 @@ const QRCodeReader = ({
   const controls = useRef<any>(null);
   const init = async () => {
     try {
-      if (isUR) {
-        const hint = new Map();
-        const reader = new BrowserQRCodeReader();
-        controls.current = reader;
-        await reader.getVideoInputDevices();
-        const result = await reader.decodeFromInputVideoDevice(
-          undefined,
-          videoEl.current!
-        );
-        console.log('result', result);
-        onSuccess(result.getText());
-      } else {
-        const reader = new BrowserQRCodeReader();
-        controls.current = reader;
-        await reader.getVideoInputDevices();
-        const result = await reader.decodeFromInputVideoDevice(
-          undefined,
-          videoEl.current!
-        );
-        console.log('result', result);
-        onSuccess(result.getText());
-      }
+      const reader = new BrowserQRCodeReader();
+      controls.current = reader;
+      const devices = await BrowserQRCodeReader.listVideoInputDevices();
+      await reader.decodeFromVideoDevice(
+        devices[0].deviceId,
+        videoEl.current!,
+        (result, error) => {
+          if (error) return;
+          if (result) {
+            onSuccess(result.getText());
+          }
+        }
+      );
+      // console.log('result', result);
+      // onSuccess(result.getText());
     } catch (e: any) {
       if (!/ended/.test(e.message)) {
         // Magic error message for Video stream has ended before any code could be detected

@@ -1,7 +1,8 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import { Form } from 'antd';
 import { useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import { URDecoder } from '@ngraveio/bc-ur';
 import QRCodeReader from 'ui/component/QRCodeReader';
 import { StrayPageWithButton } from 'ui/component';
 import { useWallet, useWalletRequest } from 'ui/utils';
@@ -10,11 +11,12 @@ import './style.less';
 
 import KeystoneLogo from 'ui/assets/walletlogo/keystone.png';
 
-const ImportWatchAddress = () => {
+const ImportQRCodeBase = () => {
   const { t } = useTranslation();
   const history = useHistory();
   const wallet = useWallet();
   const [form] = Form.useForm();
+  const decoder = useRef(new URDecoder());
 
   const [run, loading] = useWalletRequest(wallet.importWatchAddress, {
     onSuccess(accounts) {
@@ -26,7 +28,11 @@ const ImportWatchAddress = () => {
   });
 
   const handleScanQRCodeSuccess = (data) => {
-    console.log(data);
+    decoder.current.receivePart(data);
+    if (decoder.current.isComplete()) {
+      const result = decoder.current.resultUR();
+      result.cbor.toString('hex');
+    }
   };
 
   const handleScanQRCodeError = async () => {
@@ -106,4 +112,4 @@ const ImportWatchAddress = () => {
   );
 };
 
-export default ImportWatchAddress;
+export default ImportQRCodeBase;
