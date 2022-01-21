@@ -10,6 +10,7 @@ export interface TransactionHistoryItem {
   hash: string;
   failed: boolean;
   gasUsed?: number;
+  isSubmitFailed?: boolean;
 }
 
 export interface TransactionGroup {
@@ -20,6 +21,7 @@ export interface TransactionGroup {
   createdAt: number;
   explain: ExplainTxResponse;
   isFailed: boolean;
+  isSubmitFailed?: boolean;
 }
 
 interface TxHistoryStore {
@@ -50,7 +52,51 @@ class TxHistory {
     const normalizedAddress = address.toLowerCase();
     return Object.values(
       this.store.transactions[normalizedAddress] || {}
-    ).filter((item) => item.isPending).length;
+    ).filter((item) => item.isPending && !item.isSubmitFailed).length;
+  }
+
+  addSubmitFailedTransaction(
+    tx: TransactionHistoryItem,
+    explain: TransactionGroup['explain']
+  ) {
+    const nonce = Number(tx.rawTx.nonce);
+    const chainId = tx.rawTx.chainId;
+    const key = `${chainId}-${nonce}`;
+    const from = tx.rawTx.from.toLowerCase();
+
+    if (!this.store.transactions[from]) {
+      this.store.transactions[from] = {};
+    }
+    if (this.store.transactions[from][key]) {
+      const group = this.store.transactions[from][key];
+      group.txs.push(tx);
+      this.store.transactions = {
+        ...this.store.transactions,
+        [from]: {
+          ...this.store.transactions[from],
+          [key]: group,
+        },
+      };
+    } else {
+      this.store.transactions = {
+        ...this.store.transactions,
+        [from]: {
+          ...this.store.transactions[from],
+          [key]: {
+            chainId: tx.rawTx.chainId,
+            nonce,
+            txs: [tx],
+            createdAt: tx.createdAt,
+            isPending: true,
+            explain: explain,
+            isFailed: false,
+            isSubmitFailed: true,
+          },
+        },
+      };
+    }
+
+    this.removeExplainCache(`${from.toLowerCase()}-${chainId}-${nonce}`);
   }
 
   addTx(tx: TransactionHistoryItem, explain: TransactionGroup['explain']) {
@@ -65,6 +111,9 @@ class TxHistory {
     if (this.store.transactions[from][key]) {
       const group = this.store.transactions[from][key];
       group.txs.push(tx);
+      if (group.isSubmitFailed) {
+        group.isSubmitFailed = false;
+      }
       this.store.transactions = {
         ...this.store.transactions,
         [from]: {
@@ -181,7 +230,7 @@ class TxHistory {
     const completeds: TransactionGroup[] = [];
     if (!list) return { pendings: [], completeds: [] };
     for (let i = 0; i < list.length; i++) {
-      if (list[i].isPending) {
+      if (list[i].isPending && !list[i].isSubmitFailed) {
         pendings.push(list[i]);
       } else {
         completeds.push(list[i]);
