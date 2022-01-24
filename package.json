@@ -132,6 +132,7 @@
     "shelljs": "^0.8.4",
     "sinon-chrome": "^3.0.1",
     "style-loader": "^2.0.0",
+    "style-resources-loader": "^1.5.0",
     "tailwindcss": "^2.1.2",
     "ts-import-plugin": "^1.6.7",
     "ts-jest": "^27.1.2",

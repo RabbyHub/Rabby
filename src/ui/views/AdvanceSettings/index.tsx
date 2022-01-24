@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { Form, Input, Button, Switch } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { useWallet } from 'ui/utils';
-import { PageHeader, Field, Modal } from 'ui/component';
+import { PageHeader, Field, Modal, Popup } from 'ui/component';
 import { INITIAL_OPENAPI_URL } from 'consts';
 import IconArrowRight from 'ui/assets/arrow-right-gray.svg';
 import './style.less';
@@ -44,11 +44,12 @@ const OpenApiModal = ({
   }, []);
 
   return (
-    <Modal
+    <Popup
       title={t('Backend Service URL')}
       visible={visible}
-      onCancel={onCancel}
+      onClose={onCancel}
       className="openapi-modal"
+      height={280}
     >
       <Form onFinish={handleSubmit} form={form}>
         <Form.Item
@@ -61,7 +62,13 @@ const OpenApiModal = ({
             },
           ]}
         >
-          <Input placeholder="Host" size="large" autoFocus spellCheck={false} />
+          <Input
+            className="popup-input"
+            placeholder="Host"
+            size="large"
+            autoFocus
+            spellCheck={false}
+          />
         </Form.Item>
         {form.getFieldValue('host') !== INITIAL_OPENAPI_URL && (
           <div className="flex justify-end">
@@ -70,7 +77,7 @@ const OpenApiModal = ({
             </Button>
           </div>
         )}
-        <div className="flex justify-center mt-24">
+        <div className="flex justify-center mt-24 popup-footer">
           <Button
             type="primary"
             size="large"
@@ -81,7 +88,7 @@ const OpenApiModal = ({
           </Button>
         </div>
       </Form>
-    </Modal>
+    </Popup>
   );
 };
 const AdvancedSettings = () => {

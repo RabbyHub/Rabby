@@ -100,20 +100,24 @@ const TokenDetail = ({ token }: { token: TokenItem }) => {
             ></TokenWithChain>
             <div className="token-symbol ml-8">{token.symbol}</div>
           </div>
-          {isShowAddress && (
-            <div className="address">
-              <ChainIcon chain={token.chain}></ChainIcon>
-              {ellipsis(token.id)}
-              <img
-                src={IconCopy}
-                className="w-14 cursor-pointer"
-                alt=""
-                onClick={() => {
-                  handleCopy(token.id);
-                }}
-              />
-            </div>
-          )}
+          <div className="address">
+            <ChainIcon chain={token.chain}></ChainIcon>
+            {isShowAddress ? (
+              <>
+                {ellipsis(token.id)}
+                <img
+                  src={IconCopy}
+                  className="w-14 cursor-pointer"
+                  alt=""
+                  onClick={() => {
+                    handleCopy(token.id);
+                  }}
+                />
+              </>
+            ) : (
+              token?.name
+            )}
+          </div>
         </div>
         <div className="balance">
           <div className="balance-title">My balance</div>

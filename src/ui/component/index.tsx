@@ -23,3 +23,4 @@ export { default as TokenWithChain } from './TokenWithChain';
 export { default as Popup } from './Popup';
 export * from './TxHistory';
 export { default as NameAndAddress } from './NameAndAddress';
+export { default as Copy } from './Copy';

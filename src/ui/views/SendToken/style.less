@@ -32,7 +32,7 @@
   .account-card {
     height: 36px;
     padding: 0;
-    background: rgba(134, 151, 255, .1);
+    background: rgba(134, 151, 255, 0.1);
     border-radius: 4px;
     margin-bottom: 12px;
     .title {
@@ -42,7 +42,7 @@
       width: 18px;
       height: 18px;
       path {
-        fill: #8697FF;
+        fill: #8697ff;
       }
     }
     .account-detail {
@@ -50,10 +50,11 @@
       width: 100%;
       padding: 10px 12px;
       .send-text {
-        color: #8697FF !important;
+        color: #8697ff !important;
       }
-      .address-viewer-text, .amount {
-        color: #8697FF !important;
+      .address-viewer-text,
+      .amount {
+        color: #8697ff !important;
         font-size: 13px;
         line-height: 15px;
         font-weight: 500;
@@ -62,7 +63,7 @@
   }
   .ant-input {
     border: 1px solid transparent;
-    background: #F6F7F9;
+    background: @color-bg;
     border-radius: 4px;
     padding: 10px 12px;
     font-weight: 500;
@@ -74,17 +75,18 @@
     margin: 0;
     &.ant-form-item-has-error {
       .ant-input {
-        border-color: #F24822 !important;
+        border-color: #f24822 !important;
         &:hover {
-          border: 1px solid #F24822;
+          border: 1px solid #f24822;
         }
       }
     }
   }
   .ant-form-item-has-error .ant-input:hover {
-    background: #F6F7F9;
+    background: @color-bg;
   }
-  .ant-form-item-explain, .ant-form-item-extra {
+  .ant-form-item-explain,
+  .ant-form-item-extra {
     min-height: auto;
   }
   .section-title__to {
@@ -96,12 +98,12 @@
     padding: 3px 6px;
     border: 0.5px solid rgba(134, 151, 255, 0.5);
     border-radius: 2px;
-    color: #8697FF;
+    color: #8697ff;
     font-size: 12px;
     line-height: 14px;
     cursor: pointer;
     background-color: transparent;
-    transition: background-color .3s;
+    transition: background-color 0.3s;
     .icon {
       width: 16px;
       height: 16px;
@@ -126,7 +128,7 @@
   }
   .token-input {
     padding: 14px 12px;
-    background: #F6F7F9;
+    background: @color-bg;
     border-radius: 4px;
     font-weight: 500;
     font-size: 15px;
@@ -153,7 +155,7 @@
       }
       &::after {
         content: '';
-        background-color: #D8DFEB;
+        background-color: @color-border;
         width: 0.5px;
         height: 32px;
         position: absolute;
@@ -187,8 +189,8 @@
     transform: translateY(6px);
   }
   .token-info {
-    background: #FAFAFB;
-    border: 1px solid #D8DFEB;
+    background: #fafafb;
+    border: 1px solid @color-border;
     border-radius: 4px;
     padding: 12px;
     border-top: none;
@@ -199,12 +201,12 @@
       justify-content: space-between;
       font-size: 12px;
       line-height: 14px;
-      color: rgba(112, 120, 128, .6);
+      color: rgba(112, 120, 128, 0.6);
       margin-bottom: 8px;
       .address-viewer-text.normal {
         font-size: 12px;
         line-height: 14px;
-        color: rgba(112, 120, 128, .6);
+        color: rgba(112, 120, 128, 0.6);
         font-weight: normal;
         margin-right: 0;
       }
@@ -222,7 +224,7 @@
   .token-validation {
     font-size: 12px;
     line-height: 14px;
-    color: #FFB020;
+    color: #ffb020;
     display: flex;
     margin-top: 12px;
     justify-content: center;
@@ -233,12 +235,12 @@
       &.icon-loading {
         animation: spining 1.5s infinite linear;
         path {
-          fill: #FFB020;
+          fill: #ffb020;
         }
       }
       &.icon-alert {
         path {
-          stroke: #EC5151;
+          stroke: #ec5151;
           &:nth-child(1) {
             stroke: transparent;
           }
@@ -246,13 +248,13 @@
       }
     }
     &.faild {
-      color: #EC5151;
+      color: #ec5151;
     }
   }
   .balance-error {
     font-size: 12px;
     line-height: 14px;
-    color: #F24822;
+    color: #f24822;
     text-align: right;
   }
   .footer {
