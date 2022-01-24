@@ -341,6 +341,22 @@ class ProviderController extends BaseController {
       onTranscationSubmitted(hash);
       return hash;
     } catch (e: any) {
+      const cacheExplain = transactionHistoryService.getExplainCache({
+        address: txParams.from,
+        chainId: Number(approvalRes.chainId),
+        nonce: Number(approvalRes.nonce),
+      });
+      transactionHistoryService.addSubmitFailedTransaction(
+        {
+          rawTx: approvalRes,
+          createdAt: Date.now(),
+          isCompleted: true,
+          hash: '',
+          failed: false,
+          isSubmitFailed: true,
+        },
+        cacheExplain
+      );
       const errMsg = e.message || JSON.stringify(e);
       notification.create(undefined, i18n.t('Transaction push failed'), errMsg);
       throw new Error(errMsg);

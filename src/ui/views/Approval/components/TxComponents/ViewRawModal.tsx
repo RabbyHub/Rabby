@@ -1,7 +1,7 @@
 import { ExplainTxResponse } from '@/background/service/openapi';
 import { Tabs } from 'antd';
 import React from 'react';
-import { Modal } from 'ui/component';
+import { Modal, Popup } from 'ui/component';
 const { TabPane } = Tabs;
 interface ContentProps {
   abi?: ExplainTxResponse['abi'];
@@ -43,11 +43,10 @@ const ViewRawModal = () => {
 };
 
 ViewRawModal.open = ({ raw, abi }: ContentProps) => {
-  Modal.info({
-    centered: true,
+  Popup.info({
+    closable: true,
+    height: 460,
     content: <Content raw={raw} abi={abi} />,
-    cancelText: null,
-    okText: null,
     className: 'view-raw-detail',
   });
 };

@@ -21,7 +21,7 @@ import {
   BRAND_ALIAN_TYPE_TEXT,
 } from 'consts';
 import IconEditPen from 'ui/assets/editpen.svg';
-import IconCorrect from 'ui/assets/correct.svg';
+import IconCorrect from 'ui/assets/dashboard/contacts/correct.png';
 interface DisplayChainWithWhiteLogo extends ChainWithBalance {
   logo?: string;
   whiteLogo?: string;

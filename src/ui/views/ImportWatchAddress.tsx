@@ -6,7 +6,7 @@ import QRCode from 'qrcode.react';
 import QRCodeReader from 'ui/component/QRCodeReader';
 import { isValidAddress } from 'ethereumjs-util';
 import WalletConnect from '@walletconnect/client';
-import { StrayPageWithButton } from 'ui/component';
+import { Popup, StrayPageWithButton } from 'ui/component';
 import { useWallet, useWalletRequest } from 'ui/utils';
 import { openInternalPageInTab } from 'ui/utils/webapi';
 import { KEYRING_CLASS } from 'consts';
@@ -293,12 +293,12 @@ const ImportWatchAddress = () => {
           {t('Scan via PC camera')}
         </div>
       </div>
-      <Modal
+      <Popup
+        height={400}
         className="walletconnect-modal"
         visible={walletconnectModalVisible}
         onCancel={handleWalletconnectModalCancel}
-        footer={null}
-        width={360}
+        // width={360}
       >
         <p className="guide">{t('ScanQRcodesWithWalletConnect')}</p>
         <div className="symbol">
@@ -310,13 +310,13 @@ const ImportWatchAddress = () => {
             <QRCode value={walletconnectUri} size={176} />
           </div>
         )}
-      </Modal>
-      <Modal
+      </Popup>
+      <Popup
+        height={400}
         className="walletconnect-modal"
         visible={QRScanModalVisible}
         onCancel={handleQRScanModalCancel}
-        footer={null}
-        width={360}
+        // width={360}
         destroyOnClose
       >
         <p className="guide">
@@ -331,7 +331,7 @@ const ImportWatchAddress = () => {
             onError={handleScanQRCodeError}
           />
         </div>
-      </Modal>
+      </Popup>
     </StrayPageWithButton>
   );
 };

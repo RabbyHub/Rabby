@@ -4,13 +4,29 @@ module.exports = {
   mode: 'jit',
   purge: ['./src/ui/**/*.{ts,tsx,html}'],
   theme: {
-    spacing: [0, 1, 2, 4, 6, 8, 10, 12, 14, 16, 18, 20, 24, 28, 32, 40, 60, 80].reduce(
-      (m, n) => {
-        m[n] = `${n}px`;
-        return m;
-      },
-      {}
-    ),
+    spacing: [
+      0,
+      1,
+      2,
+      4,
+      6,
+      8,
+      10,
+      12,
+      14,
+      16,
+      18,
+      20,
+      24,
+      28,
+      32,
+      40,
+      60,
+      80,
+    ].reduce((m, n) => {
+      m[n] = `${n}px`;
+      return m;
+    }, {}),
     screens: {
       sm: { max: '600px' },
       lg: { min: '600px' },
@@ -34,14 +50,14 @@ module.exports = {
         DEFAULT: '#AF160E',
       },
       gray: {
-        bg2: '#F6F7F9',
-        bg: '#F0F2F5',
-        divider: '#D8DFEB',
+        bg2: '#F5F6FA',
+        bg: '#F5F6FA',
+        divider: '#E5E9EF',
         comment: '#B4BDCC',
-        content: '#818A99',
-        subTitle: '#525966',
-        title: '#2D3033',
-        light: '#707880'
+        content: '#707280',
+        subTitle: '#4B4D59',
+        title: '#13141A',
+        light: '#707880',
       },
     },
     fontSize: {
@@ -68,7 +84,7 @@ module.exports = {
         '18px',
         {
           lineHeight: '22px',
-        }
+        },
       ],
       20: '20px',
       24: [

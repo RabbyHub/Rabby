@@ -4,10 +4,10 @@
   .page();
   display: flex;
   flex-direction: column;
-  padding: 0 28px 23px;
+  padding: 0 20px 23px;
   &__item {
     position: relative;
-    background: #FFFFFF;
+    background: #ffffff;
     box-shadow: 0px 6px 20px rgba(45, 48, 51, 0.08);
     border-radius: 6px;
     margin-bottom: 12px;
@@ -21,7 +21,7 @@
       font-weight: 500;
       font-size: 15px;
       line-height: 18px;
-      color: #525966;
+      color: @color-body;
       cursor: pointer;
       width: 100%;
       span {
@@ -40,28 +40,28 @@
         display: none;
         margin-left: 6px;
         path {
-          fill: #818A99;
+          fill: @color-comment-1;
         }
       }
       &:hover {
         text-decoration: underline;
         .icon-external {
           display: block;
-        } 
+        }
       }
     }
     .pending {
       position: absolute;
       top: 0;
       left: 12px;
-      background-color: rgba(242, 156, 27, .2);
+      background-color: rgba(242, 156, 27, 0.2);
       border-radius: 0px 0px 4px 4px;
       padding: 5px 10px;
       display: flex;
       justify-content: center;
       align-items: center;
       font-size: 12px;
-      color: #F29C1B;
+      color: #f29c1b;
       .icon-pending-spin {
         width: 12px;
         height: 12px;
@@ -73,7 +73,7 @@
       display: flex;
       justify-content: space-between;
       font-size: 12px;
-      color: #818A99;
+      color: @color-comment-1;
       margin-bottom: 14px;
       line-height: 14px;
     }
@@ -100,7 +100,7 @@
         .hr {
           width: 0.5px;
           height: 12px;
-          background-color: #D8DFEB;
+          background-color: @color-border;
         }
       }
       .pending-detail {
@@ -117,15 +117,15 @@
     }
     .ahead {
       font-size: 14px;
-      color: #7F8A9A;
+      color: #7f8a9a;
     }
     &--children {
-      background: #F6F7F9;
+      background: @color-bg;
       border-radius: 0px 0px 6px 6px;
       padding: 12px;
       font-size: 12px;
       line-height: 14px;
-      color: #818A99;
+      color: @color-comment-1;
       &__item {
         display: flex;
         margin-bottom: 10px;
@@ -140,7 +140,7 @@
         .icon-spin {
           animation: spining 1.5s infinite linear;
           path {
-            fill: #818A99;
+            fill: @color-comment-1;
           }
         }
         &:nth-last-child(1) {
@@ -193,10 +193,11 @@
   }
 }
 
-.header-view-all-transaction, .bottom-view-all-transaction {
+.header-view-all-transaction,
+.bottom-view-all-transaction {
   display: flex;
   font-size: 12px;
-  color: #818A99;
+  color: @color-comment-1;
   align-items: center;
   white-space: nowrap;
   position: absolute;
@@ -205,14 +206,14 @@
   bottom: 0;
   font-weight: normal;
   &:hover {
-    color: #818A99;
+    color: @color-comment-1;
   }
   .icon-external {
     width: 12px;
     height: 12px;
     margin-left: 4px;
     path {
-      fill: #818A99;
+      fill: @color-comment-1;
     }
   }
 }
@@ -220,5 +221,5 @@
 .bottom-view-all-transaction {
   justify-content: center;
   position: static;
-  margin-top: 36px;  
+  margin-top: 36px;
 }

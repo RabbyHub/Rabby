@@ -3,6 +3,7 @@ import { Form, Input, Button } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { Modal } from 'ui/component';
 import { INITIAL_OPENAPI_URL } from 'consts';
+import Popup from './Popup';
 
 const OpenApiModal = ({
   value,
@@ -48,7 +49,8 @@ const OpenApiModal = ({
   }, []);
 
   return (
-    <Modal
+    <Popup
+      height={280}
       title={t('Bridge server URL')}
       visible={visible}
       onCancel={onCancel}
@@ -65,7 +67,13 @@ const OpenApiModal = ({
             },
           ]}
         >
-          <Input placeholder="Host" size="large" autoFocus spellCheck={false} />
+          <Input
+            placeholder="Host"
+            size="large"
+            className="popup-input"
+            autoFocus
+            spellCheck={false}
+          />
         </Form.Item>
         {form.getFieldValue('host') !== INITIAL_OPENAPI_URL && (
           <div className="flex justify-end">
@@ -74,7 +82,7 @@ const OpenApiModal = ({
             </Button>
           </div>
         )}
-        <div className="flex justify-center mt-24">
+        <div className="flex justify-center mt-24 popup-footer">
           <Button
             type="primary"
             size="large"
@@ -85,7 +93,7 @@ const OpenApiModal = ({
           </Button>
         </div>
       </Form>
-    </Modal>
+    </Popup>
   );
 };
 export default OpenApiModal;

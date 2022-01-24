@@ -15,7 +15,7 @@
     }
   }
   .title {
-    color: #818a99;
+    color: @color-comment-1;
     font-size: 12px;
     margin: 0;
   }
@@ -26,7 +26,7 @@
     justify-content: flex-start;
     padding: 9px 9px 12px;
     flex-direction: column;
-    background: #f5f6fa;
+    background: @color-bg;
     border-radius: 6px;
     position: relative;
     .direction-pannel {
@@ -55,7 +55,7 @@
               rgba(0, 0, 0, 0.05),
               rgba(0, 0, 0, 0.05)
             ),
-            #f5f6fa;
+            @color-bg;
         }
       }
       .disable-direction {
@@ -83,7 +83,7 @@
           font-size: 15px;
           line-height: 18px;
           padding: 0 6px 0 8px;
-          color: #13141a;
+          color: @color-title;
         }
         .positive {
           font-size: 12px;
@@ -98,7 +98,7 @@
         }
         .even {
           .positive;
-          color: #707280;
+          color: @color-comment-1;
           padding-top: 2px;
         }
       }
@@ -109,7 +109,7 @@
           padding: 0 4px 0 10px;
         }
         .gwei {
-          color: #707280;
+          color: @color-comment-1;
           line-height: 18px;
         }
       }
@@ -120,7 +120,7 @@
         height: 24px;
         bottom: 0px;
         width: 1px;
-        border-left: 1px solid #e5e9ef;
+        border-left: 1px solid @color-border;
       }
     }
     .price-viewer::before {
@@ -130,7 +130,7 @@
       left: 0px;
       height: 1px;
       width: 338px;
-      border-top: 1px solid #e5e9ef;
+      border-top: 1px solid @color-border;
     }
   }
   .icon-no-data {
@@ -148,7 +148,7 @@
     align-items: center;
     justify-content: center;
     margin: 30px 0 23px;
-    background: #f5f6fa;
+    background: @color-bg;
     border-radius: 6px;
     padding: 12px 16px;
     .left-corner {
@@ -179,7 +179,7 @@
       bottom: 10px;
       height: 28px;
       width: 1px;
-      border-right: 1px solid #e5e9ef;
+      border-right: 1px solid @color-border;
     }
     .connected {
       display: flex;
@@ -255,7 +255,7 @@
         }
         .no-dapp {
           font-size: 12px;
-          color: #707280;
+          color: @color-comment-1;
         }
       }
       .logo {
@@ -273,13 +273,13 @@
           margin-bottom: 0;
         }
         .origin {
-          color: #2d3033;
+          color: @color-title;
           font-size: 13px;
           line-height: 15px;
           font-weight: 500;
         }
         .name {
-          color: #818a99;
+          color: @color-comment-1;
           font-size: 10px;
           white-space: nowrap;
           overflow: hidden;
@@ -291,7 +291,7 @@
       display: flex;
       align-items: center;
       justify-content: center;
-      color: #818a99;
+      color: @color-comment-1;
       font-size: 12px;
       margin: 0 15px 0 10px;
     }
@@ -306,7 +306,7 @@
     word-break: break-all;
   }
   .origin {
-    color: #2d3033;
+    color: @color-title;
     margin-bottom: 4px;
     font-weight: 500;
   }
@@ -324,7 +324,7 @@
   position: relative;
   height: 28px;
   width: 1px;
-  border-right: 1px solid #e5e9ef;
+  border-right: 1px solid @color-border;
 }
 .direction-tooltip {
   .ant-tooltip-arrow {

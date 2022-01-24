@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import ClipboardJS from 'clipboard';
 import { Input, message, Dropdown, Menu } from 'antd';
 import { useHistory } from 'react-router-dom';
@@ -28,6 +28,7 @@ export interface ContactsItem {
   handleDeleteAddress(address: string): void;
   handleUpdateContact(data: ContactBookItem): void;
   addContact(data: ContactBookItem): void;
+  hideNewContact(): void;
 }
 const ContactsItem = ({
   account,
@@ -38,7 +39,10 @@ const ContactsItem = ({
   handleDeleteAddress,
   handleUpdateContact,
   addContact,
+  hideNewContact,
 }: ContactsItem) => {
+  const memoRef = useRef<Input | null>(null);
+  const ref = React.useRef(null);
   const { t } = useTranslation();
   const history = useHistory();
   const wallet = useWallet();
@@ -155,6 +159,7 @@ const ContactsItem = ({
       clipboard.destroy();
     });
   };
+
   const DropdownOptions = () => {
     return (
       <Menu>
@@ -162,6 +167,10 @@ const ContactsItem = ({
           onClick={() => {
             setEditIndex(index);
             setNameFocus(true);
+            memoRef.current?.focus();
+            if (!newInput) {
+              hideNewContact();
+            }
           }}
         >
           {t('Edit address memo')}
@@ -175,7 +184,7 @@ const ContactsItem = ({
   useEffect(() => {
     setAlianName(account?.name || '');
     setAddress(account?.address || '');
-  }, [account]);
+  }, [account, startEdit]);
   useEffect(() => {
     if (address.length === 42 && address.startsWith('0x') && newInput) {
       addressConfirm();
@@ -183,6 +192,7 @@ const ContactsItem = ({
   }, [address]);
   return (
     <div
+      ref={ref}
       className={clsx(
         'contact-item-wrapper',
         (newInput || startEdit) && 'hover'
@@ -227,6 +237,7 @@ const ContactsItem = ({
       )}
       {newInput || startEdit ? (
         <Input
+          ref={memoRef}
           value={alianName}
           defaultValue={alianName}
           className="name-input"
