@@ -273,22 +273,13 @@ provider
         }),
         writable: false,
       });
+      Object.defineProperty(window, 'web3', {
+        value: {
+          currentProvider: window.ethereum,
+        },
+        writable: false,
+      });
     }
   });
-
-if (window.ethereum) {
-  provider.request({
-    method: 'hasOtherProvider',
-    params: [],
-  });
-}
-
-window.ethereum = new Proxy(provider, {
-  deleteProperty: () => true,
-});
-
-window.web3 = {
-  currentProvider: window.ethereum,
-};
 
 window.dispatchEvent(new Event('ethereum#initialized'));

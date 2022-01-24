@@ -36,7 +36,6 @@ import { TokenItem, AssetItem } from 'background/service/openapi';
 import {
   ChainAndSiteSelector,
   BalanceView,
-  DefaultWalletAlertBar,
   TokenList,
   AssetsList,
   GnosisWrongChainAlertBar,
@@ -46,7 +45,6 @@ import {
 import { getUpdateContent } from 'changeLogs/index';
 import IconSuccess from 'ui/assets/success.svg';
 import IconUpAndDown from 'ui/assets/up-and-down.svg';
-import { ReactComponent as IconCopy } from 'ui/assets/urlcopy.svg';
 import IconEditPen from 'ui/assets/editpen.svg';
 import IconCorrect from 'ui/assets/dashboard/contacts/correct.png';
 import IconUnCorrect from 'ui/assets/dashboard/contacts/uncorrect.png';
@@ -99,7 +97,6 @@ const Dashboard = () => {
   const [pendingTxCount, setPendingTxCount] = useState(0);
   const [gnosisPendingCount, setGnosisPendingCount] = useState(0);
   const [safeInfo, setSafeInfo] = useState<SafeInfo | null>(null);
-  const [isDefaultWallet, setIsDefaultWallet] = useState(true);
   const [copySuccess, setCopySuccess] = useState(false);
   const [hovered, setHovered] = useState(false);
   const [clicked, setClicked] = useState(false);
@@ -154,11 +151,6 @@ const Dashboard = () => {
     setPendingTxCount(count);
   };
 
-  const checkIsDefaultWallet = async () => {
-    const isDefault = await wallet.isDefaultWallet();
-    setIsDefaultWallet(isDefault);
-  };
-
   const getAlianName = async (address: string) => {
     await wallet.getAlianName(address).then((name) => {
       setAlianName(name);
@@ -198,7 +190,6 @@ const Dashboard = () => {
     if (!currentAccount) {
       getCurrentAccount();
     }
-    checkIsDefaultWallet();
   }, []);
 
   useEffect(() => {
@@ -255,11 +246,6 @@ const Dashboard = () => {
       });
       clipboard.destroy();
     });
-  };
-
-  const handleDefaultWalletChange = async () => {
-    const isDefault = await wallet.isDefaultWallet();
-    setIsDefaultWallet(isDefault);
   };
 
   const handleAlianNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -722,16 +708,13 @@ const Dashboard = () => {
     currentAccount?.type === KEYRING_CLASS.MNEMONIC ||
     currentAccount?.type === KEYRING_CLASS.PRIVATE_KEY ||
     currentAccount?.type === KEYRING_CLASS.WATCH;
-  const showGnosisAlert =
-    isDefaultWallet && isGnosis && showGnosisWrongChainAlert && !showChain;
-  const showDefaultAlert = !isDefaultWallet && !showChain;
+  const showGnosisAlert = isGnosis && showGnosisWrongChainAlert && !showChain;
 
   return (
     <>
       <div
         className={clsx('dashboard', {
-          'metamask-active':
-            !isDefaultWallet || (showGnosisWrongChainAlert && isGnosis),
+          'metamask-active': showGnosisWrongChainAlert && isGnosis,
         })}
       >
         <div className={clsx('main', showChain && 'show-chain-bg')}>
@@ -866,12 +849,9 @@ const Dashboard = () => {
           pendingTxCount={pendingTxCount}
           gnosisPendingCount={gnosisPendingCount}
           isGnosis={isGnosis}
-          higherBottom={showDefaultAlert || showGnosisAlert}
+          higherBottom={showGnosisAlert}
           setDashboardReload={() => setDashboardReload(true)}
         />
-        {showDefaultAlert && (
-          <DefaultWalletAlertBar onChange={handleDefaultWalletChange} />
-        )}
         {showGnosisAlert && <GnosisWrongChainAlertBar />}
       </div>
       <Modal

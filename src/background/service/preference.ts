@@ -140,6 +140,10 @@ class PreferenceService {
 
   setIsDefaultWallet = (val: boolean) => {
     this.store.isDefaultWallet = val;
+    eventBus.emit(EVENTS.broadcastToUI, {
+      method: 'isDefaultWalletChanged',
+      params: val,
+    });
   };
 
   getIsDefaultWallet = () => {
