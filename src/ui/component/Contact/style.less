@@ -20,7 +20,7 @@
         font-size: 20px;
         line-height: 23px;
         text-align: center;
-        color: #13141A;
+        color: @color-title;
       }
       .ant-drawer-close {
         display: none;
@@ -33,7 +33,7 @@
   .ant-input-affix-wrapper {
     padding: 15px 16px;
     border-radius: 6px;
-    background: #f5f6fa;
+    background: @color-bg;
     &::before {
       display: none;
     }
@@ -44,7 +44,7 @@
     line-height: 18px;
     color: #161819;
     border-radius: 0;
-    background: #f5f6fa;
+    background: @color-bg;
   }
 
   .remove-btn {
@@ -109,14 +109,14 @@
           border: 0;
           outline: none;
           cursor: pointer;
-      }
+        }
         .ant-tabs-tab + .ant-tabs-tab {
           margin-left: 20px !important;
         }
         .ant-tabs-tab-btn {
           font-size: 15px;
           font-weight: 500;
-          color: #707280;
+          color: @color-comment-1;
         }
         .ant-tabs-tab-active {
           .ant-tabs-tab-btn {
@@ -142,9 +142,9 @@
       margin: 0 auto 32px auto;
     }
   }
-  
+
   .field {
-    background-color: #F5F6FA !important;
+    background-color: @color-bg !important;
   }
 
   .contact-info {

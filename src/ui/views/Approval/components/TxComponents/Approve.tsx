@@ -11,7 +11,7 @@ import IconArrowRight from 'ui/assets/arrow-right-gray.svg';
 import IconCopy from 'ui/assets/address-copy.png';
 import IconSuccess from 'ui/assets/success.svg';
 import IconUnknownProtocol from 'ui/assets/unknown-protocol.svg';
-import { AddressViewer } from 'ui/component';
+import { AddressViewer, Popup } from 'ui/component';
 import { ellipsisOverflowedText, useWallet } from 'ui/utils';
 import { splitNumberByStep } from 'ui/utils/number';
 import { getCustomTxParamsData } from 'ui/utils/transaction';
@@ -93,7 +93,7 @@ const ApproveAmountModal = ({
           true
         )}
       </p>
-      <div className="flex justify-center mt-32">
+      <div className="flex justify-center mt-32 popup-footer">
         <Button
           type="primary"
           className="w-[200px]"
@@ -284,22 +284,20 @@ const Approve = ({
         chainEnum={chainEnum}
         isSupport={data.support_balance_change}
       />
-      <Modal
+      <Popup
         visible={editApproveModalVisible}
-        footer={null}
         className="edit-approve-amount-modal"
+        height={280}
         title={t('Amount')}
-        centered
         onCancel={() => setEditApproveModalVisible(false)}
         destroyOnClose
-        width="90%"
       >
         <ApproveAmountModal
           amount={detail.token_amount}
           token={detail.token}
           onChange={handleApproveAmountChange}
         />
-      </Modal>
+      </Popup>
     </div>
   );
 };

@@ -31,7 +31,7 @@
           .address {
             font-weight: normal;
             margin: 0;
-            color: #707280;
+            color: @color-comment-1;
             font-size: 12px;
             line-height: 14px;
           }
@@ -44,10 +44,10 @@
         text-overflow: ellipsis;
       }
       &-title {
-        color: #13141a;
+        color: @color-title;
       }
       &-desc {
-        color: #707280;
+        color: @color-comment-1;
       }
     }
   }
@@ -55,7 +55,7 @@
     font-size: 12px;
     line-height: 14px;
     .tx-id {
-      color: #707280;
+      color: @color-comment-1;
       text-decoration: underline;
       &-chain {
         color: #5a6066;
@@ -95,6 +95,7 @@
           height: 14px;
           object-fit: cover;
           margin-right: 6px;
+          border-radius: 50%;
         }
       }
     }

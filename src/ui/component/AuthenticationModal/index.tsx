@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import * as ReactDOM from 'react-dom';
 import { Input, Form, Button } from 'antd';
-import { Modal } from 'ui/component';
+import { Modal, Popup } from 'ui/component';
 import { WalletController } from 'background/controller/wallet';
 
 interface AuthenticationModalProps {
@@ -45,7 +45,7 @@ const AuthenticationModal = ({
   };
 
   return (
-    <Modal
+    <Popup
       visible={visible}
       title={t('Enter Password')}
       onCancel={handleCancel}
@@ -56,6 +56,7 @@ const AuthenticationModal = ({
           rules={[{ required: true, message: t('Please input password') }]}
         >
           <Input
+            className="popup-input"
             placeholder={t('Password')}
             type="password"
             size="large"
@@ -63,7 +64,7 @@ const AuthenticationModal = ({
             spellCheck={false}
           />
         </Form.Item>
-        <div className="flex justify-center pt-6">
+        <div className="flex justify-center pt-6 popup-footer">
           <Button
             type="primary"
             size="large"
@@ -74,7 +75,7 @@ const AuthenticationModal = ({
           </Button>
         </div>
       </Form>
-    </Modal>
+    </Popup>
   );
 };
 

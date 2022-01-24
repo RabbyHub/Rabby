@@ -1,49 +1,92 @@
-@primary-color: #8697FF;
-@primary-text-color: #8697FF;
-@light-purple: #826FFF;
-@primary-linear: linear-gradient(118.3deg, #8BA4FF -9.59%, #8082FF 108.51%);
+@primary-color: #8697ff;
+@primary-text-color: #8697ff;
+@light-purple: #826fff;
+@primary-linear: linear-gradient(97.59deg, #8ba8ff 0%, #8c96ff 99.49%);
+@primary-disabled-linear: linear-gradient(
+    0deg,
+    rgba(255, 255, 255, 0.4),
+    rgba(255, 255, 255, 0.4)
+  ),
+  #8697ff;
+
+@color-green: #27c193;
+@color-orange: #ffb020;
+@color-red: #ec5151;
+@color-403: #af160e;
+@color-white: #fff;
+@color-black: #000;
+
+@color-title: #13141a;
+@color-body: #4b4d59;
+@color-comment: #707280;
+@color-comment-1: @color-comment;
+@color-comment-2: #b4bdcc;
+@color-bg: #f5f6fa;
+@color-border: #e5e9ef;
 
 /* button */
 @btn-shadow: none;
 @btn-primary-shadow: none;
 @btn-font-weight: 500;
 @btn-font-size-lg: 15px;
-@btn-default-bg: #B4BDCC;
-@btn-default-border: #B4BDCC;
+@btn-default-bg: @color-comment-2;
+@btn-default-border: @color-comment-2;
 @btn-default-color: white;
 
 @btn-height-lg: 44px;
 @btn-padding-horizontal-lg: 13px;
 
 @btn-disable-color: white;
-@btn-disable-bg: #D8DFEB;
-@btn-disable-border: #D8DFEB;
+@btn-disable-bg: @color-border;
+@btn-disable-border: @color-border;
 
 /* input */
 @input-border-color: white;
 @input-padding-vertical-lg: 15px;
 @input-padding-horizontal-lg: 16px;
-@error-color: #F24822;
+@error-color: #f24822;
 
 .part-border(@width: 90%) {
   position: absolute;
   content: '';
   position: absolute;
-  background-color: #D8DFEB;
+  background-color: #d8dfeb;
   height: 0.5px;
   width: @width;
-};
+}
 
 .page() {
   min-height: 100vh;
-  background-color: #F0F2F5;
+  background-color: @color-bg;
+  padding-left: 20px;
+}
+
+/* input */
+@input-border-color: white;
+@input-padding-vertical-lg: 15px;
+@input-padding-horizontal-lg: 16px;
+@error-color: #f24822;
+
+.part-border(@width: 90%) {
+  position: absolute;
+  content: '';
+  position: absolute;
+  background-color: #d8dfeb;
+  height: 0.5px;
+  width: @width;
+}
+
+.page() {
+  min-height: 100vh;
+  background-color: @color-bg;
+  padding-left: 20px;
+  padding-right: 20px;
 }
 
 /* font */
 @font-size-lg: 14px;
 
 @outline-width: 0;
-
 
 /* switch */
 @switch-min-width: 32px;
