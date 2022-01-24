@@ -15,11 +15,8 @@ const Welcome = () => {
     >
       <img
         className="absolute top-[95px] select-none left-[31px] bg-no-repeat bg-cover w-[337px] h-[344px]"
-        src="./images/welcome-image.png"
+        src="./images/welcome-image.svg"
       />
-      <p className="absolute text-18 text-white text-center top-[380px] left-0 slogan">
-        {t('appDescription')}
-      </p>
       <Link to="/password" replace>
         <Button
           size="large"

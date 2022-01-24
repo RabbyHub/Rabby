@@ -34,8 +34,7 @@ const Unlock = () => {
   return (
     <div className="unlock">
       <div className="header">
-        <img src="./images/unlock-image.png" className="image" />
-        <p className="slogan">{t('appDescription')}</p>
+        <img src="./images/welcome-image.svg" className="image" />
       </div>
       <Form
         autoComplete="off"
