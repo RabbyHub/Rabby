@@ -109,36 +109,68 @@
   .approval-text {
     padding: 24px 20px;
     .text-detail-wrapper {
-      padding: 16px;
       padding-bottom: 45px;
       margin: 0 auto;
-      height: 360px;
       position: relative;
+      display: flex;
     }
     .text-detail {
+      padding: 16px;
       white-space: pre-wrap;
       overflow-wrap: break-word;
       line-height: 20px;
       font-size: 14px;
-      height: 299px;
+      // min-height: 356px;
+      height: 400px;
       overflow: auto;
+      flex: 1;
     }
     .text-explain {
       height: 45px;
       left: 20px;
       position: absolute;
       bottom: 0;
+      left: 0;
+      right: 0;
       display: flex;
       align-items: center;
       color: @light-purple;
       font-size: 13px;
       font-weight: 500;
       margin-bottom: 0;
-      margin-top: 14px;
+      // border-top: 1px solid @color-border;
+      padding: 0 16px;
+      gap: 4px;
+      color: @color-comment-1;
+      background-color: fade(@color-comment-1, 10%);
       .icon-question-mark {
-        margin-left: 4px;
-        width: 12px;
-        height: 12px;
+        margin-left: auto;
+        width: 16px;
+        height: 16px;
+        .icon-question-mark {
+          path:first-child {
+            fill: @color-comment-1;
+          }
+        }
+      }
+
+      &.pass {
+        color: @primary-color;
+        background-color: fade(@primary-color, 10%);
+        .icon-question-mark {
+          path:first-child {
+            fill: fade(@primary-color, 60%);
+          }
+        }
+      }
+      &.danger {
+        color: @color-red;
+        background-color: fade(@color-red, 10%);
+        .icon-question-mark {
+          path:first-child {
+            fill: fade(@color-red, 60%);
+          }
+        }
       }
     }
   }
@@ -602,7 +634,7 @@
     bottom: 0;
     left: 0;
     background-color: #fff;
-    border-top: 0.5px solid #d6dfec;
+    border-top: 0.5px solid @color-border;
     width: 100%;
   }
 
@@ -644,10 +676,14 @@
       transform: rotate(-90deg);
     }
     .ant-btn {
-      border: 1px solid #8697ff;
+      border: 1px solid @primary-color;
       border-radius: 12px;
       background-color: #fff;
-      color: #8697ff;
+      color: @primary-color;
+      padding: 4px 12px;
+      font-size: 12px;
+      line-height: 14px;
+      height: 24px;
     }
   }
 }
@@ -1067,9 +1103,10 @@
     align-items: center;
     text-align: center;
     font-size: 12px;
-    border-radius: 16px;
+    border-radius: 2px;
     width: 100%;
     white-space: nowrap;
+    background-color: fade(@color-title, 80%);
   }
   .ant-tooltip-arrow {
     display: none;
