@@ -1,3 +1,5 @@
+@import '../../../../style/var.less';
+
 .popup-settings {
   display: flex;
   flex-direction: column;
@@ -37,11 +39,23 @@
     color: @color-title;
     padding: 0 16px;
     border: 1px solid transparent;
+    &.default-wallet-field {
+      padding-top: 20px;
+      height: 80px;
+      align-items: flex-start;
+      .default-wallet-title {
+        line-height: 20px;
+      }
+    }
     &:hover {
       background-color: rgba(134, 151, 255, 0.2);
       border: 1px solid #8697ff;
     }
-
+    .not-default-tip {
+      color: @color-red;
+      font-size: 12px;
+      line-height: 14px;
+    }
     .left-icon {
       .icon {
         width: 20px;
@@ -53,6 +67,24 @@
         width: 16px;
         height: 16px;
       }
+    }
+  }
+  .openapi-modal {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    left: 0;
+    top: 0;
+    background-color: #fff;
+    transform: translateX(100%);
+    transition: transform .3s;
+    padding: 20px;
+    .page-header {
+      padding-top: 0;
+      margin-bottom: 28px;
+    }
+    &.show {
+      transform: translateX(0);
     }
   }
 }

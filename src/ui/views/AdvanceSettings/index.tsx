@@ -138,11 +138,13 @@ const AdvancedSettings = () => {
           {data.content}
         </Field>
       ))}
-      <OpenApiModal
-        visible={showOpenApiModal}
-        onFinish={() => setShowOpenApiModal(false)}
-        onCancel={() => setShowOpenApiModal(false)}
-      />
+      {showOpenApiModal && (
+        <OpenApiModal
+          visible={showOpenApiModal}
+          onFinish={() => setShowOpenApiModal(false)}
+          onCancel={() => setShowOpenApiModal(false)}
+        />
+      )}
     </div>
   );
 };

@@ -32,11 +32,11 @@ const Settings = () => {
       content: t('Connected websites'),
       onClick: () => history.push('/settings/sites'),
     },
-    {
-      leftIcon: IconAdvanceOption,
-      content: t('Advanced Options'),
-      onClick: () => history.push('/settings/advanced'),
-    },
+    // {
+    //   leftIcon: IconAdvanceOption,
+    //   content: t('Advanced Options'),
+    //   onClick: () => history.push('/settings/advanced'),
+    // },
   ];
 
   const lockWallet = async () => {

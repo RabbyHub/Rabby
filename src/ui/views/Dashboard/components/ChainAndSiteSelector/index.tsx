@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import maxBy from 'lodash/maxBy';
 import { useHistory } from 'react-router-dom';
 import { Badge, Tooltip } from 'antd';
+import eventBus from '@/eventBus';
 import { useWallet, getCurrentConnectSite, splitNumberByStep } from 'ui/utils';
 import { ConnectedSite } from 'background/service/permission';
 import { GasLevel } from 'background/service/openapi';
@@ -23,6 +24,7 @@ import { ReactComponent as IconLeftConer } from 'ui/assets/dashboard/leftcorner.
 import IconRightGoTo from 'ui/assets/dashboard/selectChain/rightgoto.svg';
 import IconDot from 'ui/assets/dashboard/selectChain/dot.png';
 import IconQuene from 'ui/assets/dashboard/quene.svg';
+import IconAlertRed from 'ui/assets/alert-red.svg';
 import './style.less';
 
 const CurrentConnection = memo(
@@ -141,6 +143,7 @@ export default ({
     ConnectedSite | null | undefined
   >(null);
   const [gasPrice, setGasPrice] = useState<number>(0);
+  const [isDefaultWallet, setIsDefaultWallet] = useState(true);
   const wallet = useWallet();
 
   const getConnectedSites = async () => {
@@ -152,9 +155,11 @@ export default ({
     const current = await getCurrentConnectSite(wallet);
     setCurrentConnect(current);
   }, []);
+
   const hideModal = () => {
     setLocalShowModal(false);
   };
+
   const getGasPrice = async () => {
     const marketGas: GasLevel[] = await wallet.openapi.gasMarket('eth');
     const {
@@ -168,28 +173,39 @@ export default ({
       setGasPrice(Number(maxGas / 1e9));
     }
   };
+
   const changeURL = () => {
     setUrlVisible(!urlVisible);
   };
+
   const changeSetting = () => {
     setSettingVisible(!settingVisible);
   };
+
   const changeContacts = () => {
     setContactsVisible(!contactsVisible);
     setDashboardReload();
   };
+
+  const defaultWalletChangeHandler = (val: boolean) => {
+    setIsDefaultWallet(val);
+  };
+
   useEffect(() => {
     getCurrentSite();
     getGasPrice();
   }, []);
+
   useEffect(() => {
     if (!urlVisible) {
       getConnectedSites();
     }
   }, [urlVisible]);
+
   useEffect(() => {
     onChange(currentConnect);
   }, [currentConnect]);
+
   useEffect(() => {
     if (showDrawer) {
       setDrawerAnimation('fadeInDrawer');
@@ -201,6 +217,22 @@ export default ({
       }
     }
   }, [showDrawer]);
+
+  useEffect(() => {
+    wallet.isDefaultWallet().then((result) => {
+      setIsDefaultWallet(result);
+    });
+    eventBus.addEventListener(
+      'isDefaultWalletChanged',
+      defaultWalletChangeHandler
+    );
+    return () => {
+      eventBus.removeEventListener(
+        'isDefaultWalletChanged',
+        defaultWalletChangeHandler
+      );
+    };
+  }, []);
 
   const directionPanelData = [
     {
@@ -244,6 +276,7 @@ export default ({
       icon: IconSetting,
       content: 'Settings',
       onClick: changeSetting,
+      showAlert: !isDefaultWallet,
     },
   ];
   return (
@@ -278,6 +311,9 @@ export default ({
                 onClick={item?.onClick}
                 className="direction pointer"
               >
+                {item.showAlert && (
+                  <img src={IconAlertRed} className="icon icon-alert" />
+                )}
                 {item.badge ? (
                   <Badge count={item.badge} size="small">
                     <img src={item.icon} className="images" />
