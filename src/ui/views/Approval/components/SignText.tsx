@@ -14,9 +14,10 @@ import { Modal } from 'ui/component';
 import SecurityCheckBar from './SecurityCheckBar';
 import SecurityCheckDetail from './SecurityCheckDetail';
 import AccountCard from './AccountCard';
-import IconQuestionMark from 'ui/assets/question-mark-gray.svg';
+import { ReactComponent as IconQuestionMark } from 'ui/assets/question-mark.svg';
 import IconArrowRight from 'ui/assets/arrow-right-gray.svg';
 import IconInfo from 'ui/assets/infoicon.svg';
+import clsx from 'clsx';
 
 interface SignTextProps {
   data: string[];
@@ -54,6 +55,9 @@ const SignText = ({ params }: { params: SignTextProps }) => {
     setSecurityCheckDetail,
   ] = useState<SecurityCheckResponse | null>(null);
   const [explain, setExplain] = useState('');
+  const [explainStatus, setExplainStatus] = useState<
+    'unknown' | 'pass' | 'danger'
+  >('unknown');
   const [isWatch, setIsWatch] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
 
@@ -71,6 +75,7 @@ const SignText = ({ params }: { params: SignTextProps }) => {
       hexData
     );
     setExplain(serverExplain.comment);
+    setExplainStatus(serverExplain.status);
     setSecurityCheckStatus(check.decision);
     setSecurityCheckAlert(check.alert);
     setSecurityCheckDetail(check);
@@ -205,7 +210,7 @@ const SignText = ({ params }: { params: SignTextProps }) => {
         <div className="text-detail-wrapper gray-section-block">
           <div className="text-detail text-gray-subTitle">{signText}</div>
           {explain && (
-            <p className="text-explain">
+            <p className={clsx('text-explain', explainStatus)}>
               {explain}
               <Tooltip
                 placement="top"
@@ -214,10 +219,7 @@ const SignText = ({ params }: { params: SignTextProps }) => {
                   'This summary information is provide by DeBank OpenAPI'
                 )}
               >
-                <img
-                  src={IconQuestionMark}
-                  className="icon icon-question-mark"
-                />
+                <IconQuestionMark className="icon icon-question-mark"></IconQuestionMark>
               </Tooltip>
             </p>
           )}
