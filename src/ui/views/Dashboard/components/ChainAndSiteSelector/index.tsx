@@ -188,7 +188,6 @@ export default ({
   };
 
   const defaultWalletChangeHandler = (val: boolean) => {
-    console.log('setIsDefaultWallet', val);
     setIsDefaultWallet(val);
   };
 
