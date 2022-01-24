@@ -538,11 +538,13 @@ class OpenApiService {
 
       if (code && code !== 200) {
         if (msg) {
+          let err;
           try {
-            throw new Error(JSON.parse(msg.en));
+            err = new Error(JSON.parse(msg));
           } catch (e) {
-            throw new Error(msg.en);
+            err = new Error(msg);
           }
+          throw err;
         }
         throw new Error(response.data);
       }
@@ -554,7 +556,7 @@ class OpenApiService {
         await this.getConfig();
       } catch (e) {
         setTimeout(() => {
-          getConfig(); // reload openapi config if load faild 5s later
+          getConfig(); // reload openapi config if load failed 5s later
         }, 5000);
       }
     };
