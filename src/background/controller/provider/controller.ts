@@ -46,6 +46,7 @@ interface ApprovalRes extends Tx {
   isGnosis?: boolean;
   account?: Account;
   extra?: Record<string, any>;
+  traceId?: string;
 }
 
 interface Web3WalletPermission {
@@ -234,11 +235,13 @@ class ProviderController extends BaseController {
     } = cloneDeep(options);
     const keyring = await this._checkAddress(txParams.from);
     const isSend = !!txParams.isSend;
+    const traceId = approvalRes.traceId;
     delete txParams.isSend;
     delete approvalRes.isSend;
     delete approvalRes.address;
     delete approvalRes.type;
     delete approvalRes.uiRequestComponent;
+    delete approvalRes.traceId;
     const tx = new Transaction(approvalRes);
     const currentAccount = preferenceService.getCurrentAccount()!;
     let opts;
@@ -324,13 +327,17 @@ class ProviderController extends BaseController {
     }
     try {
       validateGasPriceRange(approvalRes);
-      const hash = await openapiService.pushTx({
-        ...approvalRes,
-        r: bufferToHex(signedTx.r),
-        s: bufferToHex(signedTx.s),
-        v: bufferToHex(signedTx.v),
-        value: approvalRes.value || '0x0',
-      });
+      const hash = await openapiService.pushTx(
+        {
+          ...approvalRes,
+          r: bufferToHex(signedTx.r),
+          s: bufferToHex(signedTx.s),
+          v: bufferToHex(signedTx.v),
+          value: approvalRes.value || '0x0',
+        },
+        traceId
+      );
+
       onTranscationSubmitted(hash);
       return hash;
     } catch (e: any) {

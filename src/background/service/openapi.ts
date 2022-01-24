@@ -70,6 +70,7 @@ export interface SecurityCheckResponse {
   danger_list: SecurityCheckItem[];
   warning_list: SecurityCheckItem[];
   forbidden_list: SecurityCheckItem[];
+  trace_id: string;
 }
 
 export interface Tx {
@@ -875,10 +876,11 @@ class OpenApiService {
     return data;
   };
 
-  pushTx = async (tx: Tx) => {
+  pushTx = async (tx: Tx, traceId?: string) => {
     const config = this.store.config.push_tx;
     const { data } = await this.request[config.method](config.path, {
       tx,
+      traceId,
     });
 
     return data;

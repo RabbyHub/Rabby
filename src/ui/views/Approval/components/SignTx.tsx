@@ -366,6 +366,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
         danger_list: [{ id: 1, alert }],
         warning_list: [],
         forbidden_list: [],
+        trace_id: '',
       });
     }
   };
@@ -510,6 +511,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
         uiRequestComponent: WaitingSignComponent[currentAccount.type],
         type: currentAccount.type,
         address: currentAccount.address,
+        traceId: securityCheckDetail?.trace_id,
         extra: {
           brandName: currentAccount.brandName,
         },
@@ -527,6 +529,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       nonce: realNonce || tx.nonce,
       gas: gasLimit,
       isSend,
+      traceId: securityCheckDetail?.trace_id,
     });
   };
   const handleGasChange = (gas: GasSelectorResponse) => {
