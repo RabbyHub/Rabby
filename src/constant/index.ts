@@ -53,6 +53,9 @@ import IconAuroraChainLogo from 'ui/assets/dashboard/selectChain/aurora.svg';
 import IconMobmLogo from 'ui/assets/chain-logos/mobm.svg';
 import IconMobmWhiteLogo from 'ui/assets/chain-logos/mobm-white.svg';
 import IconMobmChainLogo from 'ui/assets/dashboard/selectChain/mobm.svg';
+import IconSbchLogo from 'ui/assets/chain-logos/smartBCH.svg';
+import IconSbchWhiteLogo from 'ui/assets/chain-logos/smartBCH-white.svg';
+import IconSbchChainLogo from 'ui/assets/dashboard/selectChain/smartBCH.svg';
 import IconEN from 'ui/assets/langs/en.svg';
 import IconZH from 'ui/assets/langs/zh_cn.svg';
 import IconAmber from 'ui/assets/walletlogo/amber.png';
@@ -113,6 +116,7 @@ export enum CHAINS_ENUM {
   BTT = 'BTT',
   AURORA = 'AURORA',
   MOBM = 'MOBM',
+  SBCH = 'SBCH',
 }
 
 export const CHAINS: Record<string, Chain> = {
@@ -441,6 +445,24 @@ export const CHAINS: Record<string, Chain> = {
       'https://static.debank.com/image/mobm_token/logo_url/mobm/a8442077d76b258297181c3e6eb8c9cc.png',
     nativeTokenDecimals: 18,
     thridPartyRPC: 'https://blockscout.moonbeam.network/api/eth-rpc',
+  },
+  [CHAINS_ENUM.SBCH]: {
+    id: 10000,
+    serverId: 'sbch',
+    network: '10000',
+    name: 'smartBCH',
+    nativeTokenSymbol: 'BCH',
+    nativeTokenAddress: 'sbch',
+    enum: CHAINS_ENUM.SBCH,
+    logo: IconSbchLogo,
+    whiteLogo: IconSbchWhiteLogo,
+    selectChainLogo: IconSbchChainLogo,
+    hex: '0x2710',
+    scanLink: 'https://www.smartscan.cash/transaction/_s_',
+    nativeTokenLogo:
+      'https://static.debank.com/image/sbch_token/logo_url/sbch/03007b5353bb9e221efb82a6a70d9ec9.png',
+    nativeTokenDecimals: 18,
+    thridPartyRPC: 'https://rpc-mainnet.smartbch.org',
   },
 };
 
