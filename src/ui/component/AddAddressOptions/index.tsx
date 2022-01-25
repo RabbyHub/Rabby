@@ -155,23 +155,30 @@ const AddAddressOptions = () => {
   const renderSavedData = () => {
     if (savedWallet.length > 0) {
       const result = [] as any;
-      savedWallet.map((item) => {
-        if (normaltype.includes(item)) {
-          result.push(renderData.find((data) => data.brand === item));
-        } else {
-          const savedItem = Object.values(WALLET_BRAND_CONTENT).find(
-            (wallet) => wallet.brand.toString() === item
-          );
-          result.push({
-            leftIcon: savedItem!.image || '',
-            content: t(savedItem!.name),
-            brand: savedItem!.brand,
-            image: savedItem!.image,
-            connectType: savedItem!.connectType,
-            onClick: () => connectRouter(savedItem),
-          });
-        }
-      });
+      savedWallet
+        .filter(
+          (item) =>
+            !!Object.values(WALLET_BRAND_CONTENT).find(
+              (wallet) => wallet.brand.toString() === item
+            )
+        )
+        .map((item) => {
+          if (normaltype.includes(item)) {
+            result.push(renderData.find((data) => data.brand === item));
+          } else {
+            const savedItem = Object.values(WALLET_BRAND_CONTENT).find(
+              (wallet) => wallet.brand.toString() === item
+            );
+            result.push({
+              leftIcon: savedItem!.image || '',
+              content: t(savedItem!.name),
+              brand: savedItem!.brand,
+              image: savedItem!.image,
+              connectType: savedItem!.connectType,
+              onClick: () => connectRouter(savedItem),
+            });
+          }
+        });
       return result.sort((a, b) => (a.content > b.content ? 1 : -1));
     }
     return [];

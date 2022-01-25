@@ -157,7 +157,7 @@ const Settings = ({ visible, onClose }: SettingsProps) => {
       content: (
         <div>
           <span className="flex default-wallet-title">
-            {t('Set Rabby as default wallet')}
+            {t('Set Rabby as web3 wallet')}
             {!isDefaultWallet && (
               <img src={IconAlertRed} className="icon icon-alert ml-6" />
             )}
