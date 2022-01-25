@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import * as ReactDOM from 'react-dom';
-import { Input, Form, Button } from 'antd';
-import { Modal, Popup } from 'ui/component';
+import { Button, Form, Input } from 'antd';
 import { WalletController } from 'background/controller/wallet';
+import React, { useEffect, useRef, useState } from 'react';
+import * as ReactDOM from 'react-dom';
+import { useTranslation } from 'react-i18next';
+import { Popup } from 'ui/component';
 
 interface AuthenticationModalProps {
   onFinished(): void;
@@ -18,9 +18,10 @@ const AuthenticationModal = ({
   onCancel,
   wallet,
 }: AuthenticationModalProps) => {
-  const [visible, setVisible] = useState(true);
+  const [visible, setVisible] = useState(false);
   const [form] = Form.useForm();
   const { t } = useTranslation();
+  const inputRef = useRef<Input>(null);
   const handleSubmit = async ({ password }: { password: string }) => {
     try {
       if (validationHandler) {
@@ -44,6 +45,13 @@ const AuthenticationModal = ({
     onCancel();
   };
 
+  useEffect(() => {
+    setTimeout(() => {
+      setVisible(true);
+      inputRef.current?.focus();
+    });
+  }, []);
+
   return (
     <Popup
       visible={visible}
@@ -61,6 +69,7 @@ const AuthenticationModal = ({
             type="password"
             size="large"
             autoFocus
+            ref={inputRef}
             spellCheck={false}
           />
         </Form.Item>
