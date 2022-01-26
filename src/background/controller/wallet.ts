@@ -506,12 +506,11 @@ export class WalletController extends BaseController {
         });
       });
       keyring.on('statusChange', (data) => {
-        if (preferenceService.getPopupOpen()) {
-          eventBus.emit(EVENTS.broadcastToUI, {
-            method: EVENTS.WALLETCONNECT.STATUS_CHANGED,
-            params: data,
-          });
-        } else {
+        eventBus.emit(EVENTS.broadcastToUI, {
+          method: EVENTS.WALLETCONNECT.STATUS_CHANGED,
+          params: data,
+        });
+        if (!preferenceService.getPopupOpen()) {
           setPageStateCacheWhenPopupClose(data);
         }
       });
@@ -599,10 +598,10 @@ export class WalletController extends BaseController {
 
     if (isNewKey) {
       await keyringService.addKeyring(keyring);
-      keyring.removeAllListeners('statucChange');
     }
 
     await keyringService.addNewAccount(keyring);
+    this.clearPageStateCache();
     return this._setCurrentAccountFromKeyring(keyring, -1);
   };
 
