@@ -122,6 +122,9 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
         uiRequestComponent: WaitingSignComponent[currentAccount?.type],
         type: currentAccount.type,
         address: currentAccount.address,
+        extra: {
+          brandName: currentAccount.brandName,
+        },
       });
 
       return;
