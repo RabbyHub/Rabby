@@ -57,6 +57,7 @@ const WalletConnectTemplate = () => {
         uri,
         stashId,
         brand,
+        bridgeURL,
       },
     });
     eventBus.removeAllEventListeners(EVENTS.WALLETCONNECT.STATUS_CHANGED);
@@ -104,6 +105,7 @@ const WalletConnectTemplate = () => {
 
   const init = async () => {
     const cache = await wallet.getPageStateCache();
+    console.log('cache', cache);
     if (cache && cache.path === history.location.pathname) {
       const { states } = cache;
       if (states.uri) setWalletconnectUri(states.uri);
