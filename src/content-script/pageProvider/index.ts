@@ -282,4 +282,14 @@ provider
     }
   });
 
+if (!window.ethereum) {
+  window.ethereum = new Proxy(provider, {
+    deleteProperty: () => true,
+  });
+
+  window.web3 = {
+    currentProvider: window.ethereum,
+  };
+}
+
 window.dispatchEvent(new Event('ethereum#initialized'));
