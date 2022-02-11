@@ -273,12 +273,9 @@ provider
         }),
         writable: false,
       });
-      Object.defineProperty(window, 'web3', {
-        value: {
-          currentProvider: window.ethereum,
-        },
-        writable: false,
-      });
+      window.web3 = {
+        currentProvider: window.ethereum,
+      };
     }
   });
 
