@@ -44,7 +44,7 @@ const Sign = ({ data, chainEnum, raw, isSpeedUp, tx }: SignProps) => {
   const handleViewRawClick = () => {
     ViewRawModal.open({
       raw,
-      abi: data?.abi,
+      abi: data?.abiStr,
     });
   };
 
