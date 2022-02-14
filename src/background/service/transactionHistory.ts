@@ -385,6 +385,22 @@ class TxHistory {
     }
   }
 
+  clearPendingTransactions(address: string) {
+    const transactions = this.store.transactions[address.toLowerCase()];
+    if (!transactions) return;
+    this.store.transactions = {
+      ...this.store.transactions,
+      [address.toLowerCase()]: Object.values(transactions)
+        .filter((transaction) => !transaction.isPending)
+        .reduce((res, current) => {
+          return {
+            ...res,
+            [`${current.chainId}-${current.nonce}`]: current,
+          };
+        }, {}),
+    };
+  }
+
   getNonceByChain(address: string, chainId: number) {
     const list = Object.values(
       this.store.transactions[address.toLowerCase()] || {}
