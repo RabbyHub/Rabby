@@ -27,7 +27,7 @@ const CancelTx = ({
   const handleViewRawClick = () => {
     ViewRawModal.open({
       raw,
-      abi: data?.abi,
+      abi: data?.abiStr,
     });
   };
 
