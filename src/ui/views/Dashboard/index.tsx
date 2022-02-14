@@ -304,8 +304,8 @@ const Dashboard = () => {
   const sortAssetsByUSDValue = (assets: AssetItem[]) => {
     const copy = cloneDeep(assets);
     return copy.sort((a, b) => {
-      return new BigNumber(b.asset_usd_value)
-        .minus(new BigNumber(a.asset_usd_value))
+      return new BigNumber(b.net_usd_value)
+        .minus(new BigNumber(a.net_usd_value))
         .toNumber();
     });
   };

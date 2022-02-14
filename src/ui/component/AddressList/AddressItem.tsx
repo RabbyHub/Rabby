@@ -12,7 +12,7 @@ import { useTranslation, Trans } from 'react-i18next';
 import { Account } from 'background/service/preference';
 import { ChainWithBalance } from 'background/service/openapi';
 import { useWallet, useWalletRequest } from 'ui/utils';
-import { AddressViewer } from 'ui/component';
+import { AddressViewer, Copy } from 'ui/component';
 import {
   CHAINS,
   KEYRING_ICONS,
@@ -317,18 +317,21 @@ const AddressItem = memo(
                   )}
                 </div>
               )}
-              <AddressViewer
-                address={account?.address?.toLowerCase()}
-                showArrow={false}
-                index={account.index || index}
-                showImportIcon={showImportIcon}
-                className={
-                  showImportIcon || !showIndex
-                    ? 'subtitle'
-                    : 'import-color flex'
-                }
-                showIndex={showIndex}
-              />
+              <div className="flex items-center">
+                <AddressViewer
+                  address={account?.address?.toLowerCase()}
+                  showArrow={false}
+                  index={account.index || index}
+                  showImportIcon={showImportIcon}
+                  className={
+                    showImportIcon || !showIndex
+                      ? 'subtitle'
+                      : 'import-color flex'
+                  }
+                  showIndex={showIndex}
+                />
+                <Copy data={account?.address} className="w-16 h-16 ml-4"></Copy>
+              </div>
             </div>
           </div>
           {keyring && (
