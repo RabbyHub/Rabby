@@ -152,7 +152,10 @@ const ResetAccountModal = ({
       content: t('Reset success'),
       duration: 0.5,
     });
-    onFinish();
+    setIsVisible(false);
+    setTimeout(() => {
+      onFinish();
+    }, 500);
   };
 
   useEffect(() => {
