@@ -350,7 +350,7 @@ export const CHAINS: Record<string, Chain> = {
     whiteLogo: IconCronosWhiteLogo,
     selectChainLogo: IconCronosChainLogo,
     hex: '0x19',
-    scanLink: 'https://cronos.crypto.org/explorer/tx/_s_',
+    scanLink: 'https://cronoscan.com/tx/_s_',
     nativeTokenLogo:
       'https://static.debank.com/image/chain/logo_url/cro/affddd53019ffb9dbad0c724e12500c0.png',
     nativeTokenDecimals: 18,
@@ -422,7 +422,7 @@ export const CHAINS: Record<string, Chain> = {
     whiteLogo: IconAuroraWhiteLogo,
     selectChainLogo: IconAuroraChainLogo,
     hex: '0x4e454152',
-    scanLink: 'https://explorer.mainnet.aurora.dev/tx/_s_',
+    scanLink: 'https://aurorascan.dev/tx/_s_',
     nativeTokenLogo:
       'https://static.debank.com/image/token/logo_url/eth/935ae4e4d1d12d59a99717a24f2540b5.png',
     nativeTokenDecimals: 18,
@@ -440,7 +440,7 @@ export const CHAINS: Record<string, Chain> = {
     whiteLogo: IconMobmWhiteLogo,
     selectChainLogo: IconMobmChainLogo,
     hex: '0x504',
-    scanLink: 'https://blockscout.moonbeam.network/tx/_s_',
+    scanLink: 'https://moonscan.io/tx/_s_',
     nativeTokenLogo:
       'https://static.debank.com/image/mobm_token/logo_url/mobm/a8442077d76b258297181c3e6eb8c9cc.png',
     nativeTokenDecimals: 18,
