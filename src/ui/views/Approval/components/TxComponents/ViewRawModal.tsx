@@ -1,10 +1,10 @@
 import { ExplainTxResponse } from '@/background/service/openapi';
 import { Tabs } from 'antd';
 import React from 'react';
-import { Modal, Popup } from 'ui/component';
+import { Popup } from 'ui/component';
 const { TabPane } = Tabs;
 interface ContentProps {
-  abi?: ExplainTxResponse['abi'];
+  abi?: ExplainTxResponse['abiStr'];
   raw: Record<string, string | number>;
 }
 
@@ -26,7 +26,7 @@ const Content = ({ abi, raw }: ContentProps) => {
       )}
       {abi && (
         <TabPane tab="ABI" key="abi">
-          {stringify(abi)}
+          {abi}
         </TabPane>
       )}
       {raw?.data && raw?.data !== '0x' && (

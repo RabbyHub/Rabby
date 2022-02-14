@@ -265,6 +265,7 @@ export interface ExplainTxResponse {
     func: string;
     params: Array<string[] | number | string>;
   };
+  abiStr?: string;
   balance_change: BalanceChange;
   gas: {
     estimated_gas_cost_usd_value: number;

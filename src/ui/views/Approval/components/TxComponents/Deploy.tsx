@@ -25,7 +25,7 @@ const Deploy = ({
   const handleViewRawClick = () => {
     ViewRawModal.open({
       raw,
-      abi: data?.abi,
+      abi: data?.abiStr,
     });
   };
 
