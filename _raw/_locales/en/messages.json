@@ -981,5 +981,11 @@
   },
   "GnosisSwitchChainWarning": {
     "message": "No connected to the right chain of this Gnosis Safe address"
+  },
+  "ResetAccountDescription": {
+    "message": "Resetting your account will clear all your pending transactions.\nThis will not change the balances in your accounts or require you to re-enter your Secret Recovery Phrase."
+  },
+  "ResetAccountWarn": {
+    "message": "Reset account only when necessary"
   }
 }

@@ -624,6 +624,10 @@ export class WalletController extends BaseController {
     return seedWords;
   };
 
+  clearAddressPendingTransactions = (address: string) => {
+    return transactionHistoryService.clearPendingTransactions(address);
+  };
+
   importPrivateKey = async (data) => {
     const privateKey = ethUtil.stripHexPrefix(data);
     const buffer = Buffer.from(privateKey, 'hex');

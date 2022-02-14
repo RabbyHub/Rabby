@@ -1,8 +1,8 @@
-import { Button, DrawerProps, Form, Input } from 'antd';
+import { Button, DrawerProps, Form, Input, message, Switch } from 'antd';
 import React, { useState, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
-import { Switch } from 'antd';
+import clsx from 'clsx';
 import IconArrowRight from 'ui/assets/arrow-right-gray.svg';
 import IconWallet from 'ui/assets/wallet.svg';
 import IconServer from 'ui/assets/server.svg';
@@ -10,11 +10,12 @@ import IconAlertRed from 'ui/assets/alert-red.svg';
 import IconAddressManagement from 'ui/assets/icon-user.svg';
 import IconLock from 'ui/assets/lock.svg';
 import LogoRabby from 'ui/assets/logo-rabby-large.svg';
+import IconReset from 'ui/assets/reset-account.svg';
+import IconSuccess from 'ui/assets/success.svg';
 import { Field, Popup, PageHeader } from 'ui/component';
 import { useWallet } from 'ui/utils';
 import { INITIAL_OPENAPI_URL } from 'consts';
 import './style.less';
-import clsx from 'clsx';
 
 interface SettingsProps {
   visible?: boolean;
@@ -123,12 +124,78 @@ const OpenApiModal = ({
   );
 };
 
+const ResetAccountModal = ({
+  visible,
+  onFinish,
+  onCancel,
+}: {
+  visible: boolean;
+  onFinish(): void;
+  onCancel(): void;
+}) => {
+  const [isVisible, setIsVisible] = useState(false);
+  const wallet = useWallet();
+  const { t } = useTranslation();
+
+  const handleCancel = () => {
+    setIsVisible(false);
+    setTimeout(() => {
+      onCancel();
+    }, 500);
+  };
+
+  const handleResetAccount = async () => {
+    const currentAddress = (await wallet.getCurrentAccount()).address;
+    await wallet.clearAddressPendingTransactions(currentAddress);
+    message.success({
+      icon: <img src={IconSuccess} className="icon icon-success" />,
+      content: t('Reset success'),
+      duration: 0.5,
+    });
+    onFinish();
+  };
+
+  useEffect(() => {
+    setTimeout(() => {
+      setIsVisible(visible);
+    }, 100);
+  }, [visible]);
+
+  return (
+    <div
+      className={clsx('reset-account-modal', {
+        show: isVisible,
+        hidden: !visible,
+      })}
+    >
+      <PageHeader forceShowBack onBack={handleCancel}>
+        {t('Reset Account')}
+      </PageHeader>
+      <div>
+        <p className="reset-account-content">{t('ResetAccountDescription')}</p>
+        <p className="reset-account-warn">{t('ResetAccountWarn')}</p>
+        <div className="flex justify-center mt-24 popup-footer">
+          <Button
+            type="primary"
+            size="large"
+            className="w-[200px]"
+            onClick={handleResetAccount}
+          >
+            {t('Confirm')}
+          </Button>
+        </div>
+      </div>
+    </div>
+  );
+};
+
 const Settings = ({ visible, onClose }: SettingsProps) => {
   const wallet = useWallet();
   const history = useHistory();
   const { t } = useTranslation();
   const [showOpenApiModal, setShowOpenApiModal] = useState(false);
   const [isDefaultWallet, setIsDefaultWallet] = useState(false);
+  const [showResetAccountModal, setShowResetAccountModal] = useState(false);
 
   const handleDefaultWalletChange = (value: boolean) => {
     wallet.setIsDefaultWallet(value);
@@ -177,6 +244,12 @@ const Settings = ({ visible, onClose }: SettingsProps) => {
         />
       ),
     },
+    {
+      leftIcon: IconReset,
+      content: t('Reset Account'),
+      onClick: () => setShowResetAccountModal(true),
+      rightIcon: <img src={IconArrowRight} className="icon icon-arrow-right" />,
+    },
   ];
 
   const lockWallet = async () => {
@@ -193,7 +266,7 @@ const Settings = ({ visible, onClose }: SettingsProps) => {
       <Popup
         visible={visible}
         onClose={onClose}
-        height={400}
+        height={440}
         bodyStyle={{ height: '100%' }}
       >
         <div className="popup-settings">
@@ -235,6 +308,11 @@ const Settings = ({ visible, onClose }: SettingsProps) => {
             visible={showOpenApiModal}
             onFinish={() => setShowOpenApiModal(false)}
             onCancel={() => setShowOpenApiModal(false)}
+          />
+          <ResetAccountModal
+            visible={showResetAccountModal}
+            onFinish={() => setShowResetAccountModal(false)}
+            onCancel={() => setShowResetAccountModal(false)}
           />
         </div>
       </Popup>
