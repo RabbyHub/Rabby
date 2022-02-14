@@ -8,7 +8,6 @@ import { useWallet } from 'ui/utils';
 import {
   PageHeader,
   AuthenticationModal,
-  Modal,
   StrayFooter,
   Popup,
   Copy,
