@@ -133,19 +133,9 @@ const ResetAccountModal = ({
   onFinish(): void;
   onCancel(): void;
 }) => {
-  const { useForm } = Form;
   const [isVisible, setIsVisible] = useState(false);
-  const [form] = useForm<{ host: string }>();
   const wallet = useWallet();
   const { t } = useTranslation();
-
-  const init = async () => {
-    const currentHost = await wallet.openapi.getHost();
-
-    form.setFieldsValue({
-      host: currentHost,
-    });
-  };
 
   const handleCancel = () => {
     setIsVisible(false);
@@ -164,10 +154,6 @@ const ResetAccountModal = ({
     });
     onFinish();
   };
-
-  useEffect(() => {
-    init();
-  }, []);
 
   useEffect(() => {
     setTimeout(() => {
