@@ -13,6 +13,7 @@ import * as Sentry from '@sentry/browser';
 import Safe from '@rabby-wallet/gnosis-sdk';
 import { SafeInfo } from '@rabby-wallet/gnosis-sdk/src/api';
 import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
+import ReactGA from 'react-ga';
 import {
   KEYRING_CLASS,
   CHAINS,
@@ -524,6 +525,12 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       return;
     }
 
+    ReactGA.event({
+      category: 'Transaction',
+      action: 'Submit',
+      label: currentAccount.brandName,
+    });
+
     resolveApproval({
       ...tx,
       nonce: realNonce || tx.nonce,
@@ -643,7 +650,11 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     const site = await wallet.getConnectedSite(session.origin);
     const currentAccount =
       isGnosis && account ? account : await wallet.getCurrentAccount();
-
+    ReactGA.event({
+      category: 'Transaction',
+      action: 'init',
+      label: currentAccount.brandName,
+    });
     if (currentAccount.type === KEYRING_TYPE.GnosisKeyring) {
       setIsGnosisAccount(true);
       await getSafeInfo();
