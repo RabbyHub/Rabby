@@ -2,7 +2,7 @@ import * as ethUtil from 'ethereumjs-util';
 import Wallet, { thirdparty } from 'ethereumjs-wallet';
 import { ethErrors } from 'eth-rpc-errors';
 import * as bip39 from 'bip39';
-import { ethers } from 'ethers';
+import { ethers, Contract, Signer } from 'ethers';
 import { groupBy } from 'lodash';
 import {
   keyringService,
@@ -32,6 +32,7 @@ import {
   WALLET_BRAND_CONTENT,
   KEYRING_TYPE,
 } from 'consts';
+import { ERC20ABI } from 'consts/abi';
 import { Account, ChainGas } from '../service/preference';
 import { ConnectedSite } from '../service/permission';
 import { ExplainTxResponse, TokenItem } from '../service/openapi';
@@ -87,6 +88,30 @@ export class WalletController extends BaseController {
   getApproval = notificationService.getApproval;
   resolveApproval = notificationService.resolveApproval;
   rejectApproval = notificationService.rejectApproval;
+
+  approveToken = async (
+    chainServerId: string,
+    id: string,
+    spender: string,
+    amount: number
+  ) => {
+    const account = await preferenceService.getCurrentAccount();
+    if (!account) throw new Error('no current account');
+    const chainId = Object.values(CHAINS)
+      .find((chain) => chain.serverId === chainServerId)
+      ?.id.toString();
+    if (!chainId) throw new Error('invalid chain id');
+    buildinProvider.currentProvider.currentAccount = account.address;
+    buildinProvider.currentProvider.currentAccountType = account.type;
+    buildinProvider.currentProvider.currentAccountBrand = account.brandName;
+    buildinProvider.currentProvider.chainId = chainId;
+    const provider = new ethers.providers.Web3Provider(
+      buildinProvider.currentProvider
+    );
+    const signer = provider.getSigner();
+    const contract = new Contract(id, ERC20ABI, signer);
+    await contract.approve(spender, amount);
+  };
 
   initAlianNames = async () => {
     await preferenceService.changeInitAlianNameStatus();
