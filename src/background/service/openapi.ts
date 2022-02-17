@@ -115,6 +115,36 @@ export interface TokenItem {
   raw_amount?: number;
   raw_amount_hex_str?: string;
 }
+
+export interface TokenApproval {
+  id: string;
+  name: string;
+  symbol: string;
+  logo_url: string;
+  chain: string;
+  price: number;
+  balance: number;
+  spenders: Spender[];
+  sum_exposure_usd: number;
+  exposure_balance: number;
+}
+
+export interface Spender {
+  id: string;
+  value: number;
+  exposure_usd: number;
+  protocol: {
+    id: string;
+    name: string;
+    logo_url: string;
+    chain: string;
+  };
+  is_contract: boolean;
+  is_open_source: boolean;
+  is_hacked: boolean;
+  is_abandoned: boolean;
+}
+
 export interface AssetItem {
   id: string;
   chain: string;
@@ -519,6 +549,11 @@ class OpenApiService {
               'start_time',
               'page_count',
             ],
+          },
+          token_authorized_list: {
+            path: '/v1/user/token_authorized_list',
+            method: 'get',
+            params: ['id', 'chain_id'],
           },
         },
       },
@@ -1058,6 +1093,25 @@ class OpenApiService {
     const { data } = await this.request[config.method](config.path, {
       params: {
         token: tokenName,
+      },
+    });
+
+    return data;
+  };
+
+  tokenAuthorizedList = async (
+    id: string,
+    chain_id: string
+  ): Promise<TokenApproval[]> => {
+    const config = this.store.config.token_authorized_list || {
+      path: '/v1/user/token_authorized_list',
+      method: 'get',
+      params: ['id', 'chain_id'],
+    };
+    const { data } = await this.request[config.method](config.path, {
+      params: {
+        id,
+        chain_id,
       },
     });
 

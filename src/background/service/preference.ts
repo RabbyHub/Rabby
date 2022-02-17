@@ -3,8 +3,8 @@ import eventBus from '@/eventBus';
 import compareVersions from 'compare-versions';
 import { createPersistStore } from 'background/utils';
 import { keyringService, sessionService, i18n } from './index';
-import { TotalBalanceResponse, TokenItem } from './openapi';
-import { HARDWARE_KEYRING_TYPES, EVENTS } from 'consts';
+import { TotalBalanceResponse, TokenItem, Chain } from './openapi';
+import { HARDWARE_KEYRING_TYPES, EVENTS, CHAINS, CHAINS_ENUM } from 'consts';
 import { browser } from 'webextension-polyfill-ts';
 const version = process.env.release || '0';
 export interface Account {
@@ -47,6 +47,7 @@ interface PreferenceStore {
   firstOpen: boolean;
   pinnedChain: string[];
   addedToken: addedToken;
+  tokenApprovalChain: Record<string, CHAINS_ENUM>;
 }
 
 const SUPPORT_LOCALES = ['en'];
@@ -78,6 +79,7 @@ class PreferenceService {
         firstOpen: false,
         pinnedChain: [],
         addedToken: {},
+        tokenApprovalChain: {},
       },
     });
     if (!this.store.locale || this.store.locale !== defaultLang) {
@@ -123,6 +125,22 @@ class PreferenceService {
     if (!this.store.walletSavedList) {
       this.store.walletSavedList = [];
     }
+    if (!this.store.tokenApprovalChain) {
+      this.store.tokenApprovalChain = {};
+    }
+  };
+
+  getTokenApprovalChain = (address: string) => {
+    const key = address.toLowerCase();
+    return this.store.tokenApprovalChain[key] || CHAINS_ENUM.ETH;
+  };
+
+  setTokenApprovalChain = (address: string, chain: CHAINS_ENUM) => {
+    const key = address.toLowerCase();
+    this.store.tokenApprovalChain = {
+      ...this.store.tokenApprovalChain,
+      [key]: chain,
+    };
   };
 
   getLastTimeSendToken = (address: string) => {

@@ -33,13 +33,13 @@ export const formatTokenAmount = (amount: number | string, decimals = 4) => {
 };
 
 export const numberWithCommasIsLtOne = (
-  x?: number | string,
+  x?: number | string | BigNumber,
   precision?: number
 ) => {
   if (x === undefined || x === null) {
     return '-';
   }
-  if (x === 0) return '0';
+  if (x.toString() === '0') return '0';
 
   if (x < 0.00005) {
     return '< 0.0001';

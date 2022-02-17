@@ -31,6 +31,7 @@ import {
   BRAND_ALIAN_TYPE_TEXT,
   WALLET_BRAND_CONTENT,
   KEYRING_TYPE,
+  CHAINS_ENUM,
 } from 'consts';
 import { ERC20ABI } from 'consts/abi';
 import { Account, ChainGas } from '../service/preference';
@@ -238,6 +239,13 @@ export class WalletController extends BaseController {
     preferenceService.getLastTimeSendToken(address);
   setLastTimeSendToken = (address: string, token: TokenItem) =>
     preferenceService.setLastTimeSendToken(address, token);
+
+  getTokenApprovalChain = (address: string) =>
+    preferenceService.getTokenApprovalChain(address);
+
+  setTokenApprovalChain = (address: string, chain: CHAINS_ENUM) => {
+    preferenceService.setTokenApprovalChain(address, chain);
+  };
 
   /* chains */
   getSavedChains = () => preferenceService.getSavedChains();

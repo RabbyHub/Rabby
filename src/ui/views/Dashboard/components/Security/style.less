@@ -1,0 +1,58 @@
+@import '../../../../style/var.less';
+
+.popup-security {
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
+  height: 100%;
+  .footer {
+    margin-top: 11px;
+    text-align: center;
+    font-size: 14px;
+    line-height: 16px;
+    color: @color-comment-1;
+    img {
+      display: inline-block;
+      width: 64px;
+    }
+  }
+  .field {
+    background: @color-bg;
+    border-radius: 6px;
+    margin-bottom: 12px;
+    font-size: 14px;
+    line-height: 16px;
+    color: @color-title;
+    padding: 0 16px;
+    border: 1px solid transparent;
+    &.default-wallet-field {
+      padding-top: 20px;
+      height: 80px;
+      align-items: flex-start;
+      .default-wallet-title {
+        line-height: 20px;
+      }
+    }
+    &:hover {
+      background-color: rgba(134, 151, 255, 0.2);
+      border: 1px solid #8697ff;
+    }
+    .not-default-tip {
+      color: @color-red;
+      font-size: 12px;
+      line-height: 14px;
+    }
+    .left-icon {
+      .icon {
+        width: 20px;
+        height: 20px;
+      }
+    }
+    .right-icon {
+      .icon {
+        width: 16px;
+        height: 16px;
+      }
+    }
+  }
+}
