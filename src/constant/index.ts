@@ -490,6 +490,11 @@ export const KEYRING_CLASS = {
   GNOSIS: 'Gnosis',
 };
 
+export const KEYRING_WITH_INDEX = [
+  KEYRING_CLASS.HARDWARE.LEDGER,
+  KEYRING_CLASS.HARDWARE.GRIDPLUS,
+];
+
 export const KEYRING_TYPE_TEXT = {
   [KEYRING_TYPE.HdKeyring]: 'Created by Mnemonic',
   [KEYRING_TYPE.SimpleKeyring]: 'Imported by Private Key',
