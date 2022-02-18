@@ -2,7 +2,7 @@
 
 .token-approval {
   .page();
-  padding: 0 16px 20px;
+  padding: 0 16px;
   position: relative;
   .chain-tag-selector {
     margin-bottom: -10px;
@@ -52,6 +52,7 @@
     }
 
     .search {
+      border: 1px solid transparent;
       border-bottom: 1px solid @color-border;
       padding: 10px 12px;
       display: flex;
@@ -63,7 +64,16 @@
         color: #707880;
         opacity: 0.4;
       }
+      &:hover {
+        border: 1px solid #8697ff;
+        box-sizing: border-box;
+        border-radius: 6px;
+      }
     }
+  }
+  &-body {
+    height: 336px;
+    overflow: auto;
   }
   &-item {
     display: flex;
@@ -95,6 +105,7 @@
     }
     &-title {
       max-width: 200px;
+      margin-bottom: 2px;
     }
     &-desc {
       font-size: 12px;
@@ -139,6 +150,7 @@
       margin-bottom: 2px;
       color: #131419;
       .ellipsis();
+      max-width: 300px;
     }
     &-desc {
       font-size: 14px;
@@ -269,6 +281,10 @@
     }
     .ant-input-affix-wrapper::before {
       height: 16px;
+    }
+    .ant-input-affix-wrapper-focused {
+      border-color: #8697ff !important;
+      background-color: rgba(134, 151, 255, 0.1) !important;
     }
     .ant-input-affix-wrapper-lg {
       padding: 12px;

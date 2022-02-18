@@ -1,10 +1,14 @@
-import { TokenApproval } from '@/background/service/openapi';
+import { TokenApproval, TokenItem } from '@/background/service/openapi';
+import { TokenWithChain } from '@/ui/component';
 import { Button } from 'antd';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import IconUnknown from 'ui/assets/icon-unknown.svg';
-import IconUnkownToken from 'ui/assets/token-default.svg';
-import { numberWithCommasIsLtOne, useWallet } from 'ui/utils';
+import IconUnknown from 'ui/assets/icon-unknown-1.svg';
+import {
+  numberWithCommasIsLtOne,
+  splitNumberByStep,
+  useWallet,
+} from 'ui/utils';
 
 interface ApprovalCardProps {
   data: TokenApproval;
@@ -23,16 +27,19 @@ const ApprovalCard = ({ data }: ApprovalCardProps) => {
   return (
     <div className="token-approval-card">
       <div className="token-approval-card-header">
-        <img
-          src={data.logo_url || IconUnkownToken}
-          className="token-approval-card-icon"
-        ></img>
+        <TokenWithChain
+          token={(data as unknown) as TokenItem}
+          width="24px"
+          height="24px"
+          hideConer
+        ></TokenWithChain>
         <div className="overflow-hidden">
           <div className="token-approval-card-title">
-            {numberWithCommasIsLtOne(data.balance, 0)} {data.symbol}
+            {numberWithCommasIsLtOne(data.balance, 4)} {data.symbol}
           </div>
           <div className="token-approval-card-desc">
-            Risk exposure: ${numberWithCommasIsLtOne(data.sum_exposure_usd, 0)}
+            Risk exposure: $
+            {splitNumberByStep(data.sum_exposure_usd.toFixed(2))}
           </div>
         </div>
       </div>
@@ -49,6 +56,7 @@ const ApprovalCard = ({ data }: ApprovalCardProps) => {
                   src={item?.protocol?.logo_url || IconUnknown}
                   className="token-approval-project-item-icon"
                 ></img>
+
                 <div className="max-w-[200px] overflow-hidden">
                   <div className="token-approval-project-item-title">
                     {item?.protocol?.name}
@@ -64,11 +72,11 @@ const ApprovalCard = ({ data }: ApprovalCardProps) => {
                 </div>
                 <div className="token-approval-project-item-right">
                   <div className="token-approval-project-item-risk-usd">
-                    ${numberWithCommasIsLtOne(item.exposure_usd, 0)}
+                    ${splitNumberByStep(item.exposure_usd.toFixed(2))}
                   </div>
                   <div className="token-approval-project-item-risk-amount">
                     {item.value < 1e9
-                      ? `${numberWithCommasIsLtOne(item.value, 0)} ${
+                      ? `${splitNumberByStep(item.value.toFixed(4))} ${
                           data.symbol
                         }`
                       : 'Infinite'}

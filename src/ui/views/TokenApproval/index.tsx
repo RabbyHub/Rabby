@@ -1,4 +1,4 @@
-import { TokenApproval } from '@/background/service/openapi';
+import { TokenApproval, TokenItem } from '@/background/service/openapi';
 import { Account } from '@/background/service/preference';
 import { Tooltip } from 'antd';
 import BigNumber from 'bignumber.js';
@@ -9,10 +9,13 @@ import { useHistory, useLocation } from 'react-router-dom';
 import { ReactComponent as IconArrowRight } from 'ui/assets/arrow-right-gray.svg';
 import IconInfo from 'ui/assets/infoicon.svg';
 import IconSearch from 'ui/assets/search.svg';
-import IconUnknown from 'ui/assets/token-default.svg';
-import { Empty, Loading, PageHeader } from 'ui/component';
+import { Empty, Loading, PageHeader, TokenWithChain } from 'ui/component';
 import TagChainSelector from 'ui/component/ChainSelector/tag';
-import { numberWithCommasIsLtOne, useWallet } from 'ui/utils';
+import {
+  numberWithCommasIsLtOne,
+  splitNumberByStep,
+  useWallet,
+} from 'ui/utils';
 import PopupApprovalCard from './components/PopupApprovalCard';
 import PopupSearch from './components/PopupSearch';
 import './style.less';
@@ -111,12 +114,12 @@ const TokenApproval = () => {
           <div className="card-risk-amount-title">
             <span>{t('Total risk exposure')}</span>
             <Tooltip
-              placement="topRight"
-              overlayClassName="rectangle max-w-[250px]"
+              align={{ offset: [55, 0] }}
+              placement="top"
+              overlayClassName="rectangle max-w-[250px] hide-arrow"
               title={t(
                 'The total amount of assets affected by approval-related security issues'
               )}
-              arrowPointAtCenter
             >
               <div>
                 <img src={IconInfo} alt="" />
@@ -124,10 +127,10 @@ const TokenApproval = () => {
             </Tooltip>
           </div>
           <div className="card-risk-amount-content">
-            ${numberWithCommasIsLtOne(totalRisk, 0)}
+            ${splitNumberByStep(totalRisk.toFixed(2))}
           </div>
         </div>
-        <div className="token-approval-list min-h-[380px]">
+        <div className="token-approval-list">
           <div
             className="search"
             onClick={() => {
@@ -143,48 +146,54 @@ const TokenApproval = () => {
             <div className="column-title">{t('Token/Balance')}</div>
             <div className="column-title">{t('Risk exposure')}</div>
           </div>
-          <Loading loading={loading} className="py-[120px]">
-            {t('Loading')}
-          </Loading>
+          <div className="token-approval-body">
+            <Loading loading={loading} className="py-[120px]">
+              {t('Loading')}
+            </Loading>
 
-          {!loading &&
-            (list.length <= 0 ? (
-              <Empty className="py-[90px]">{t('No Approvals')}</Empty>
-            ) : (
-              list.map((item) => {
-                return (
-                  <div
-                    className="token-approval-item"
-                    key={item.id}
-                    onClick={() => {
-                      setIsShowPopupCard(true);
-                      setCurrent(item);
-                    }}
-                  >
-                    <img
-                      src={item.logo_url || IconUnknown}
-                      className="token-approval-item-icon"
-                    ></img>
-                    <div>
-                      <div className="token-approval-item-title">
-                        {numberWithCommasIsLtOne(item.balance, 0)} {item.symbol}
+            {!loading &&
+              (list.length <= 0 ? (
+                <Empty className="py-[90px]">{t('No Approvals')}</Empty>
+              ) : (
+                list.map((item) => {
+                  return (
+                    <div
+                      className="token-approval-item"
+                      key={item.id}
+                      onClick={() => {
+                        setIsShowPopupCard(true);
+                        setCurrent(item);
+                      }}
+                    >
+                      <TokenWithChain
+                        token={(item as unknown) as TokenItem}
+                        width="24px"
+                        height="24px"
+                        hideConer
+                      ></TokenWithChain>
+                      <div className="ml-2">
+                        <div className="token-approval-item-title">
+                          {numberWithCommasIsLtOne(item.balance, 4)}{' '}
+                          {item.symbol}
+                        </div>
+                        <div className="token-approval-item-desc">
+                          $
+                          {splitNumberByStep(
+                            new BigNumber(item.balance)
+                              .multipliedBy(item.price)
+                              .toFixed(2)
+                          )}
+                        </div>
                       </div>
-                      <div className="token-approval-item-desc">
-                        $
-                        {numberWithCommasIsLtOne(
-                          new BigNumber(item.balance).multipliedBy(item.price),
-                          0
-                        )}
+                      <div className="token-approval-item-risk">
+                        ${splitNumberByStep(item.sum_exposure_usd.toFixed(2))}
                       </div>
+                      <IconArrowRight className="token-approval-item-arrow"></IconArrowRight>
                     </div>
-                    <div className="token-approval-item-risk">
-                      ${numberWithCommasIsLtOne(item.sum_exposure_usd, 0)}
-                    </div>
-                    <IconArrowRight className="token-approval-item-arrow"></IconArrowRight>
-                  </div>
-                );
-              })
-            ))}
+                  );
+                })
+              ))}
+          </div>
         </div>
       </div>
       <PopupSearch
