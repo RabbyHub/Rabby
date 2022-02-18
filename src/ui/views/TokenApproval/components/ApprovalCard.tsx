@@ -2,7 +2,6 @@ import { TokenApproval } from '@/background/service/openapi';
 import { Button } from 'antd';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { useHistory } from 'react-router-dom';
 import IconUnknown from 'ui/assets/icon-unknown.svg';
 import IconUnkownToken from 'ui/assets/token-default.svg';
 import { numberWithCommasIsLtOne, useWallet } from 'ui/utils';
@@ -15,16 +14,10 @@ const ellipsis = (text: string) => {
 };
 
 const ApprovalCard = ({ data }: ApprovalCardProps) => {
-  const history = useHistory();
   const { t } = useTranslation();
   const wallet = useWallet();
   const tokenApprove = (item: TokenApproval['spenders'][0]) => {
     wallet.approveToken(data.chain, data.id, item.id, 0);
-    wallet.setPageStateCache({
-      path: history.location.pathname,
-      params: {},
-      states: {},
-    });
     window.close();
   };
   return (

@@ -86,9 +86,6 @@ const TokenApproval = () => {
 
   useEffect(() => {
     init();
-    return () => {
-      wallet.clearPageStateCache();
-    };
   }, []);
 
   useEffect(() => {
