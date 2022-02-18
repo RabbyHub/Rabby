@@ -146,7 +146,7 @@ class ProviderController extends BaseController {
     }
 
     const _account = await this.getCurrentAccount();
-    const account = _account ? [_account.address] : [];
+    const account = _account ? [_account.address.toLowerCase()] : [];
     sessionService.broadcastEvent('accountsChanged', account);
     const connectSite = permissionService.getConnectedSite(origin);
     if (connectSite) {
@@ -170,7 +170,7 @@ class ProviderController extends BaseController {
     }
 
     const account = await this.getCurrentAccount();
-    return account ? [account.address] : [];
+    return account ? [account.address.toLowerCase()] : [];
   };
 
   ethCoinbase = async ({ session: { origin } }) => {
@@ -179,7 +179,7 @@ class ProviderController extends BaseController {
     }
 
     const account = await this.getCurrentAccount();
-    return account ? account.address : null;
+    return account ? account.address.toLowerCase() : null;
   };
 
   ethChainId = ({ session }: { session: Session }) => {
