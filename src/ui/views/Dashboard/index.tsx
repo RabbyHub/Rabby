@@ -206,6 +206,9 @@ const Dashboard = () => {
   }, [currentAccount]);
   useEffect(() => {
     if (dashboardReload) {
+      if (currentAccount) {
+        getPendingTxCount(currentAccount.address);
+      }
       setDashboardReload(false);
       getCurrentAccount();
       getAllKeyrings();

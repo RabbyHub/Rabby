@@ -182,6 +182,7 @@ export default ({
 
   const changeSetting = () => {
     setSettingVisible(!settingVisible);
+    setDashboardReload();
   };
 
   const changeContacts = () => {
