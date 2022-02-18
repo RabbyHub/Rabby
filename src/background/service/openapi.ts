@@ -550,7 +550,7 @@ class OpenApiService {
               'page_count',
             ],
           },
-          token_authorized_list: {
+          user_token_authorized_list: {
             path: '/v1/user/token_authorized_list',
             method: 'get',
             params: ['id', 'chain_id'],
@@ -1103,11 +1103,7 @@ class OpenApiService {
     id: string,
     chain_id: string
   ): Promise<TokenApproval[]> => {
-    const config = this.store.config.token_authorized_list || {
-      path: '/v1/user/token_authorized_list',
-      method: 'get',
-      params: ['id', 'chain_id'],
-    };
+    const config = this.store.config.user_token_authorized_list;
     const { data } = await this.request[config.method](config.path, {
       params: {
         id,
