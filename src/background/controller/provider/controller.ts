@@ -43,6 +43,8 @@ interface ApprovalRes extends Tx {
   address?: string;
   uiRequestComponent?: string;
   isSend?: boolean;
+  isSpeedUp?: boolean;
+  isCancel?: boolean;
   isGnosis?: boolean;
   account?: Account;
   extra?: Record<string, any>;
@@ -235,6 +237,8 @@ class ProviderController extends BaseController {
     } = cloneDeep(options);
     const keyring = await this._checkAddress(txParams.from);
     const isSend = !!txParams.isSend;
+    const isSpeedUp = !!txParams.isSpeedUp;
+    const isCancel = !!txParams.isCancel;
     const traceId = approvalRes.traceId;
     delete txParams.isSend;
     delete approvalRes.isSend;
@@ -341,22 +345,24 @@ class ProviderController extends BaseController {
       onTranscationSubmitted(hash);
       return hash;
     } catch (e: any) {
-      const cacheExplain = transactionHistoryService.getExplainCache({
-        address: txParams.from,
-        chainId: Number(approvalRes.chainId),
-        nonce: Number(approvalRes.nonce),
-      });
-      transactionHistoryService.addSubmitFailedTransaction(
-        {
-          rawTx: approvalRes,
-          createdAt: Date.now(),
-          isCompleted: true,
-          hash: '',
-          failed: false,
-          isSubmitFailed: true,
-        },
-        cacheExplain
-      );
+      if (!isSpeedUp && !isCancel) {
+        const cacheExplain = transactionHistoryService.getExplainCache({
+          address: txParams.from,
+          chainId: Number(approvalRes.chainId),
+          nonce: Number(approvalRes.nonce),
+        });
+        transactionHistoryService.addSubmitFailedTransaction(
+          {
+            rawTx: approvalRes,
+            createdAt: Date.now(),
+            isCompleted: true,
+            hash: '',
+            failed: false,
+            isSubmitFailed: true,
+          },
+          cacheExplain
+        );
+      }
       const errMsg = e.message || JSON.stringify(e);
       notification.create(undefined, i18n.t('Transaction push failed'), errMsg);
       throw new Error(errMsg);
