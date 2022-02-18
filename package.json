@@ -26,7 +26,7 @@
     "@rabby-wallet/eth-lattice-keyring": "^0.4.2",
     "@rabby-wallet/eth-simple-keyring": "^4.2.1",
     "@rabby-wallet/eth-trezor-keyring": "^1.0.8",
-    "@rabby-wallet/eth-walletconnect-keyring": "^1.0.7",
+    "@rabby-wallet/eth-walletconnect-keyring": "^1.1.0",
     "@rabby-wallet/eth-watch-keyring": "^1.0.0",
     "@rabby-wallet/gnosis-sdk": "^1.2.0",
     "@sentry/browser": "^6.7.2",
