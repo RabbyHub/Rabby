@@ -229,7 +229,9 @@ class PreferenceService {
   setCurrentAccount = (account: Account | null) => {
     this.store.currentAccount = account;
     if (account) {
-      sessionService.broadcastEvent('accountsChanged', [account.address]);
+      sessionService.broadcastEvent('accountsChanged', [
+        account.address.toLowerCase(),
+      ]);
       eventBus.emit(EVENTS.broadcastToUI, {
         method: 'accountsChanged',
         params: account,

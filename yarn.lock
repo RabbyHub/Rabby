@@ -2745,10 +2745,10 @@
     events "^3.3.0"
     web3-utils "^1.6.1"
 
-"@rabby-wallet/eth-hd-keyring@^3.6.5":
-  version "3.6.5"
-  resolved "https://registry.yarnpkg.com/@rabby-wallet/eth-hd-keyring/-/eth-hd-keyring-3.6.5.tgz#de00ca1f530ceafbbcd363c023ec5087be251e72"
-  integrity sha512-l7VqW8Tr/Apt7PPFZlVAJSPpJMGG4YJ4DDDkJA9YzAIJWESpCUJa2clk1sGr40bxtZl1biHqpcQz4ts6asZ0uQ==
+"@rabby-wallet/eth-hd-keyring@^3.6.6":
+  version "3.6.6"
+  resolved "https://registry.yarnpkg.com/@rabby-wallet/eth-hd-keyring/-/eth-hd-keyring-3.6.6.tgz#6c8182efc6ed1093ca672f8afcac7f8d4ebca59e"
+  integrity sha512-vEQPsWkoZOMHNv2afRjjT1Pb8bqe4L8KvAcD0nQPgY6Yp/lR8CfpOxNst85wLMa4H0OIuWNm0m2W1C2J4vyqbg==
   dependencies:
     "@metamask/eth-sig-util" "^4.0.0"
     "@rabby-wallet/eth-simple-keyring" "^4.2.1"
@@ -2792,10 +2792,10 @@
     hdkey "0.8.0"
     trezor-connect "^8.1.26"
 
-"@rabby-wallet/eth-walletconnect-keyring@^1.0.7":
-  version "1.0.7"
-  resolved "https://registry.yarnpkg.com/@rabby-wallet/eth-walletconnect-keyring/-/eth-walletconnect-keyring-1.0.7.tgz#7edab4c1fa27efc30e92017234f7ae6831bb1828"
-  integrity sha512-uR2tidHKz0M93g0mYq8P+PutbChiipyJBN1doJHKVipAc2tlwjh5SQHpgxBQrFRgk8NCEh8gHvIehE/xIveT0A==
+"@rabby-wallet/eth-walletconnect-keyring@^1.1.0":
+  version "1.1.0"
+  resolved "https://registry.yarnpkg.com/@rabby-wallet/eth-walletconnect-keyring/-/eth-walletconnect-keyring-1.1.0.tgz#be9d6ae9437ff3e9e25b8aa8475660cb3c4129ef"
+  integrity sha512-9sNXEKtki3TZcqNZcBxQH/2S3blhLzqlfHxSbw8iqbFsyrIi2fjwBPbVLOd8CdQXF15gUBKBbvTW51cjmWQ+Ig==
   dependencies:
     "@walletconnect/client" "^1.6.6"
     ethereumjs-util "^7.1.3"
