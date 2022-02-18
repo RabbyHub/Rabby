@@ -2,7 +2,7 @@ import * as ethUtil from 'ethereumjs-util';
 import Wallet, { thirdparty } from 'ethereumjs-wallet';
 import { ethErrors } from 'eth-rpc-errors';
 import * as bip39 from 'bip39';
-import { ethers, Contract, Signer } from 'ethers';
+import { ethers, Contract } from 'ethers';
 import { groupBy } from 'lodash';
 import {
   keyringService,
@@ -25,6 +25,7 @@ import { KEYRING_CLASS, DisplayedKeryring } from 'background/service/keyring';
 import providerController from './provider/controller';
 import BaseController from './base';
 import {
+  KEYRING_WITH_INDEX,
   CHAINS,
   INTERNAL_REQUEST_ORIGIN,
   EVENTS,
@@ -213,6 +214,35 @@ export class WalletController extends BaseController {
   };
   clearPageStateCache = () => pageStateCacheService.clear();
   setPageStateCache = (cache: CacheState) => pageStateCacheService.set(cache);
+
+  getIndexByAddress = (address: string, type: string) => {
+    const hasIndex = KEYRING_WITH_INDEX.includes(type);
+    if (!hasIndex) return null;
+    const keyring = keyringService.getKeyringByType(type);
+    if (!keyring) return null;
+    switch (type) {
+      case KEYRING_CLASS.HARDWARE.LEDGER: {
+        const checksummedAddress = ethUtil.toChecksumAddress(address);
+        if (!keyring.accountDetails[checksummedAddress]) return null;
+        const arr = keyring.accountDetails[checksummedAddress].hdPath.split(
+          '/'
+        );
+        return Number(arr[arr.length - 1]);
+      }
+      case KEYRING_CLASS.HARDWARE.GRIDPLUS: {
+        const accountIndices = keyring.accountIndices;
+        const accounts = keyring.accounts;
+        const index = accounts.findIndex(
+          (account) => account.toLowerCase() === address.toLowerCase()
+        );
+        if (index === -1) return null;
+        if (accountIndices.length - 1 < index) return null;
+        return accountIndices[index];
+      }
+      default:
+        return null;
+    }
+  };
 
   getAddressBalance = async (address: string) => {
     const data = await openapiService.getTotalBalance(address);

@@ -22,6 +22,7 @@ import {
   KEYRING_TYPE,
   CHAINS,
   KEYRING_TYPE_TEXT,
+  KEYRING_WITH_INDEX,
 } from 'consts';
 import {
   useWallet,
@@ -372,9 +373,11 @@ const Dashboard = () => {
     }
   }, [currentAccount]);
   const Row = (props) => {
+    const [hdPathIndex, setHDPathIndex] = useState(null);
     const { data, index, style } = props;
     const account = data[index];
     const [isHovering, hoverProps] = useHover();
+
     const handleCopyContractAddress = () => {
       const clipboard = new ClipboardJS('.address-item', {
         text: function () {
@@ -390,6 +393,23 @@ const Dashboard = () => {
         clipboard.destroy();
       });
     };
+
+    const getHDPathIndex = async () => {
+      const index = await wallet.getIndexByAddress(
+        account.address,
+        account.type
+      );
+      if (index !== null) {
+        setHDPathIndex(index + 1);
+      }
+    };
+
+    useEffect(() => {
+      if (KEYRING_WITH_INDEX.includes(account.type)) {
+        getHDPathIndex();
+      }
+    }, []);
+
     return (
       <div
         className="flex items-center address-item"
@@ -413,7 +433,12 @@ const Dashboard = () => {
         />
         <div className="flex flex-col items-start ml-10">
           <div className="text-13 text-black text-left click-name">
-            <div className="list-alian-name">{account?.alianName}</div>
+            <div className="list-alian-name">
+              {account?.alianName}
+              {hdPathIndex && (
+                <span className="address-hdpath-index font-roboto-mono">{`#${hdPathIndex}`}</span>
+              )}
+            </div>
             <div className="flex items-center">
               <AddressViewer
                 address={account?.address}
@@ -750,13 +775,15 @@ const Dashboard = () => {
                   <div className="text-15 text-white ml-6 mr-6 dashboard-name">
                     {displayName}
                   </div>
-                  {currentAccount && (
-                    <AddressViewer
-                      address={currentAccount.address}
-                      showArrow={false}
-                      className={'text-12 text-white opacity-60'}
-                    />
-                  )}
+                  <div className="current-address">
+                    {currentAccount && (
+                      <AddressViewer
+                        address={currentAccount.address}
+                        showArrow={false}
+                        className={'text-12 text-white opacity-60'}
+                      />
+                    )}
+                  </div>
                   <img
                     className="icon icon-account-type w-[16px] h-[16px] ml-8"
                     src={IconUpAndDown}
