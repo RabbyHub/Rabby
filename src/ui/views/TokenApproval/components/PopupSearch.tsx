@@ -25,10 +25,7 @@ const PopupSearch = ({ data, visible, onClose }: PopupSearchProps) => {
     }
     return data
       .map((item) => {
-        if (
-          item.symbol.toLocaleLowerCase().indexOf(query.toLocaleLowerCase()) !==
-          -1
-        ) {
+        if (item.symbol.toLowerCase().indexOf(query.toLowerCase()) !== -1) {
           return item;
         }
 
@@ -36,8 +33,8 @@ const PopupSearch = ({ data, visible, onClose }: PopupSearchProps) => {
           return (
             (spender.protocol &&
               spender.protocol?.name
-                ?.toLocaleLowerCase()
-                .indexOf(query.toLocaleLowerCase()) !== -1) ||
+                ?.toLowerCase()
+                .indexOf(query.toLowerCase()) !== -1) ||
             spender.id === query
           );
         });
@@ -64,7 +61,6 @@ const PopupSearch = ({ data, visible, onClose }: PopupSearchProps) => {
   const handleInputChange = useMemo(
     () =>
       debounce((e: React.ChangeEvent<HTMLInputElement>) => {
-        console.log(e.target.value);
         setQuery(e.target.value);
       }, 500),
     [setQuery]
