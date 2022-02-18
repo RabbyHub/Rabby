@@ -260,6 +260,12 @@ const Settings = ({ visible, onClose }: SettingsProps) => {
     history.push('/unlock');
   };
 
+  const handleClose: DrawerProps['onClose'] = (e) => {
+    setShowOpenApiModal(false);
+    setShowResetAccountModal(false);
+    onClose && onClose(e);
+  };
+
   useEffect(() => {
     init();
   }, []);
@@ -268,7 +274,7 @@ const Settings = ({ visible, onClose }: SettingsProps) => {
     <>
       <Popup
         visible={visible}
-        onClose={onClose}
+        onClose={handleClose}
         height={460}
         bodyStyle={{ height: '100%' }}
       >
