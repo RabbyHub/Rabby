@@ -2,7 +2,7 @@
   background-color: #ffffff;
   position: relative;
   flex: 1;
-  padding: 40px 20px 0;
+  padding: 16px 20px 0;
   .ant-badge {
     .ant-badge-count {
       background-color: #8697ff;
@@ -21,10 +21,11 @@
   }
   .pannel {
     width: 360px;
-    height: 258px;
+    // height: 258px;
     display: flex;
     justify-content: flex-start;
-    padding: 9px 9px 12px;
+    padding: 13px;
+    padding-bottom: 0;
     flex-direction: column;
     background: @color-bg;
     border-radius: 6px;
@@ -32,17 +33,18 @@
     .direction-pannel {
       display: flex;
       flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 8px;
       .disable-direction,
       .direction {
         position: relative;
         width: 106px;
-        height: 80px;
+        height: 72px;
         border-radius: 4px;
         display: flex;
         flex-direction: column;
         justify-content: center;
         align-items: center;
-        margin: 4px;
         font-weight: 500;
         .images {
           width: 28px;
@@ -74,8 +76,7 @@
 
     .price-viewer {
       display: flex;
-      padding: 18px 3px;
-      margin: 16px 0;
+      padding: 11px 3px;
       width: 334px;
       position: relative;
       .eth-price,
@@ -153,7 +154,7 @@
     display: flex;
     align-items: center;
     justify-content: center;
-    margin: 30px 0 23px;
+    margin-top: 16px;
     background: @color-bg;
     border-radius: 6px;
     padding: 12px 16px;

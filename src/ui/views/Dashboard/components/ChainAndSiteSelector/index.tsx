@@ -9,10 +9,11 @@ import { useWallet, getCurrentConnectSite, splitNumberByStep } from 'ui/utils';
 import { ConnectedSite } from 'background/service/permission';
 import { GasLevel } from 'background/service/openapi';
 import { ChainSelector, FallbackSiteLogo } from 'ui/component';
-import { RecentConnections, Settings, Contacts } from '../index';
+import { RecentConnections, Settings, Contacts, Security } from '../index';
 import { CHAINS_ENUM } from 'consts';
 import IconDrawer from 'ui/assets/drawer.png';
 import IconContacts from 'ui/assets/dashboard/contacts.png';
+import IconSecurity from 'ui/assets/dashboard/security.svg';
 import IconSendToken from 'ui/assets/dashboard/sendtoken.png';
 import IconSetting from 'ui/assets/dashboard/setting.png';
 import IconSignedText from 'ui/assets/dashboard/signedtext.png';
@@ -139,6 +140,7 @@ export default ({
   const [urlVisible, setUrlVisible] = useState(false);
   const [settingVisible, setSettingVisible] = useState(false);
   const [contactsVisible, setContactsVisible] = useState(false);
+  const [securityVisible, setSecurityVisible] = useState(false);
   const [currentConnect, setCurrentConnect] = useState<
     ConnectedSite | null | undefined
   >(null);
@@ -185,6 +187,10 @@ export default ({
   const changeContacts = () => {
     setContactsVisible(!contactsVisible);
     setDashboardReload();
+  };
+
+  const changeSecurity = () => {
+    setSecurityVisible(!securityVisible);
   };
 
   const defaultWalletChangeHandler = (val: boolean) => {
@@ -271,6 +277,11 @@ export default ({
       icon: IconContacts,
       content: 'Contacts',
       onClick: changeContacts,
+    },
+    {
+      icon: IconSecurity,
+      content: 'Security',
+      onClick: changeSecurity,
     },
     {
       icon: IconSetting,
@@ -364,6 +375,7 @@ export default ({
       <Settings visible={settingVisible} onClose={changeSetting} />
       <Contacts visible={contactsVisible} onClose={changeContacts} />
       <RecentConnections visible={urlVisible} onClose={changeURL} />
+      <Security visible={securityVisible} onClose={changeSecurity} />
     </div>
   );
 };
