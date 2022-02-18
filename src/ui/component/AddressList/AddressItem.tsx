@@ -19,6 +19,7 @@ import {
   WALLET_BRAND_CONTENT,
   KEYRING_TYPE_TEXT,
   BRAND_ALIAN_TYPE_TEXT,
+  KEYRING_WITH_INDEX,
 } from 'consts';
 import IconEditPen from 'ui/assets/editpen.svg';
 import IconCorrect from 'ui/assets/dashboard/contacts/correct.png';
@@ -221,10 +222,18 @@ const AddressItem = memo(
             setAlianName(existAlianName);
             setDisplayName(existAlianName);
           } else {
-            const alianName = `${
+            let alianName = `${
               BRAND_ALIAN_TYPE_TEXT[account?.brandName || account?.type] ||
               account?.brandName
             } ${importedLength + (index || 0) + 1}`;
+            if (
+              KEYRING_WITH_INDEX.includes(account.type) &&
+              typeof account.index === 'number'
+            ) {
+              alianName = `${
+                BRAND_ALIAN_TYPE_TEXT[account?.brandName || account?.type]
+              } #${account.index + 1}`;
+            }
             setAlianName(alianName);
             setDisplayName(alianName);
             updateAlianName(alianName);
