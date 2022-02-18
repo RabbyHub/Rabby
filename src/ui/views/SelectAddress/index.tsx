@@ -145,7 +145,6 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
           ...accounts[i],
           brandName: keyring,
           type: keyring,
-          index: i,
         })),
         hasDivider: !!isMnemonics,
         editing: true,
