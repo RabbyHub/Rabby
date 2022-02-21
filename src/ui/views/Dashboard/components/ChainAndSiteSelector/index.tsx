@@ -163,16 +163,24 @@ export default ({
   };
 
   const getGasPrice = async () => {
-    const marketGas: GasLevel[] = await wallet.openapi.gasMarket('eth');
-    const {
-      change_percent = 0,
-      last_price = 0,
-    } = await wallet.openapi.tokenPrice('eth');
-    setCurrentPrice(last_price);
-    setPercentage(change_percent);
-    const maxGas = maxBy(marketGas, (level) => level.price)!.price;
-    if (maxGas) {
-      setGasPrice(Number(maxGas / 1e9));
+    try {
+      const marketGas: GasLevel[] = await wallet.openapi.gasMarket('eth');
+      const maxGas = maxBy(marketGas, (level) => level.price)!.price;
+      if (maxGas) {
+        setGasPrice(Number(maxGas / 1e9));
+      }
+    } catch (e) {
+      // DO NOTHING
+    }
+    try {
+      const {
+        change_percent = 0,
+        last_price = 0,
+      } = await wallet.openapi.tokenPrice('eth');
+      setCurrentPrice(last_price);
+      setPercentage(change_percent);
+    } catch (e) {
+      // DO NOTHING
     }
   };
 
