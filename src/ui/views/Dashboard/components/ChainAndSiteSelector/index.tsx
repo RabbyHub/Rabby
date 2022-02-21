@@ -58,7 +58,7 @@ const CurrentConnection = memo(
       hideModal();
     };
     return (
-      <div className={clsx('current-connection', higherBottom && 'mt-10')}>
+      <div className={clsx('current-connection', higherBottom && 'higher')}>
         <IconLeftConer
           className="left-corner"
           fill={site ? '#27C193' : '#B4BDCC'}
@@ -300,7 +300,11 @@ export default ({
     },
   ];
   return (
-    <div className={clsx('recent-connections', connectionAnimation)}>
+    <div
+      className={clsx('recent-connections', connectionAnimation, {
+        lower: higherBottom,
+      })}
+    >
       <img
         src={IconDrawer}
         className={clsx(

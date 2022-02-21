@@ -880,7 +880,7 @@ const Dashboard = () => {
           pendingTxCount={pendingTxCount}
           gnosisPendingCount={gnosisPendingCount}
           isGnosis={isGnosis}
-          higherBottom={showGnosisAlert}
+          higherBottom={isGnosis}
           setDashboardReload={() => setDashboardReload(true)}
         />
         {showGnosisAlert && <GnosisWrongChainAlertBar />}

@@ -148,16 +148,19 @@
     transform: translateX(-70px);
   }
   .current-connection {
-    position: relative;
+    position: absolute;
+    bottom: 20px;
     width: 360px;
     height: 48px;
     display: flex;
     align-items: center;
     justify-content: center;
-    margin-top: 16px;
     background: @color-bg;
     border-radius: 6px;
     padding: 12px 16px;
+    &.higher {
+      bottom: 40px;
+    }
     .left-corner {
       position: absolute;
       left: 0;
@@ -302,6 +305,9 @@
       font-size: 12px;
       margin: 0 15px 0 10px;
     }
+  }
+  &.lower {
+    padding-top: 47px;
   }
 }
 
