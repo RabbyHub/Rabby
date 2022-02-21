@@ -43,6 +43,9 @@ const TokenApproval = () => {
   }, [list]);
 
   const handleChainChanged = (val: CHAINS_ENUM) => {
+    if (val === chain) {
+      return;
+    }
     wallet.setTokenApprovalChain(currentAccount?.address, val);
     setChain(val);
     setList([]);
