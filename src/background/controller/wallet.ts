@@ -222,12 +222,7 @@ export class WalletController extends BaseController {
     if (!keyring) return null;
     switch (type) {
       case KEYRING_CLASS.HARDWARE.LEDGER: {
-        const checksummedAddress = ethUtil.toChecksumAddress(address);
-        if (!keyring.accountDetails[checksummedAddress]) return null;
-        const arr = keyring.accountDetails[checksummedAddress].hdPath.split(
-          '/'
-        );
-        return Number(arr[arr.length - 1]);
+        return keyring.getIndexFromAddress(address);
       }
       case KEYRING_CLASS.HARDWARE.GRIDPLUS: {
         const accountIndices = keyring.accountIndices;
