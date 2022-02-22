@@ -58,7 +58,7 @@ const CurrentConnection = memo(
       hideModal();
     };
     return (
-      <div className={clsx('current-connection', higherBottom && 'mt-10')}>
+      <div className={clsx('current-connection', higherBottom && 'higher')}>
         <IconLeftConer
           className="left-corner"
           fill={site ? '#27C193' : '#B4BDCC'}
@@ -163,16 +163,24 @@ export default ({
   };
 
   const getGasPrice = async () => {
-    const marketGas: GasLevel[] = await wallet.openapi.gasMarket('eth');
-    const {
-      change_percent = 0,
-      last_price = 0,
-    } = await wallet.openapi.tokenPrice('eth');
-    setCurrentPrice(last_price);
-    setPercentage(change_percent);
-    const maxGas = maxBy(marketGas, (level) => level.price)!.price;
-    if (maxGas) {
-      setGasPrice(Number(maxGas / 1e9));
+    try {
+      const marketGas: GasLevel[] = await wallet.openapi.gasMarket('eth');
+      const maxGas = maxBy(marketGas, (level) => level.price)!.price;
+      if (maxGas) {
+        setGasPrice(Number(maxGas / 1e9));
+      }
+    } catch (e) {
+      // DO NOTHING
+    }
+    try {
+      const {
+        change_percent = 0,
+        last_price = 0,
+      } = await wallet.openapi.tokenPrice('eth');
+      setCurrentPrice(last_price);
+      setPercentage(change_percent);
+    } catch (e) {
+      // DO NOTHING
     }
   };
 
@@ -292,7 +300,11 @@ export default ({
     },
   ];
   return (
-    <div className={clsx('recent-connections', connectionAnimation)}>
+    <div
+      className={clsx('recent-connections', connectionAnimation, {
+        lower: higherBottom,
+      })}
+    >
       <img
         src={IconDrawer}
         className={clsx(
