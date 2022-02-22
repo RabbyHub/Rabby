@@ -55,7 +55,10 @@ const PopupSearch = ({ data, visible, onClose }: PopupSearchProps) => {
 
         return null;
       })
-      .filter((item) => item != null) as TokenApproval[];
+      .filter((item) => item != null)
+      .sort((a) =>
+        a?.symbol.toLowerCase() === query.toLowerCase() ? -1 : 1
+      ) as TokenApproval[];
   }, [data, query]);
 
   const handleInputChange = useMemo(
