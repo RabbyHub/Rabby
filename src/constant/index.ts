@@ -138,6 +138,9 @@ export const CHAINS: Record<string, Chain> = {
     scanLink: 'https://etherscan.io/tx/_s_',
     thridPartyRPC:
       'https://mainnet.infura.io/v3/67fed3c058594b7586fec0c1a4d769cc',
+    eip: {
+      '1559': true,
+    },
   },
   [CHAINS_ENUM.BSC]: {
     id: 56,
@@ -156,6 +159,9 @@ export const CHAINS: Record<string, Chain> = {
       'https://static.debank.com/image/bsc_token/logo_url/bsc/8bfdeaa46fe9be8f5cd43a53b8d1eea1.png',
     nativeTokenDecimals: 18,
     thridPartyRPC: 'https://bsc-dataseed1.binance.org',
+    eip: {
+      '1559': false,
+    },
   },
   [CHAINS_ENUM.GNOSIS]: {
     id: 100,
@@ -174,6 +180,9 @@ export const CHAINS: Record<string, Chain> = {
       'https://static.debank.com/image/xdai_token/logo_url/xdai/1207e67652b691ef3bfe04f89f4b5362.png',
     nativeTokenDecimals: 18,
     thridPartyRPC: 'https://rpc.xdaichain.com',
+    eip: {
+      '1559': true,
+    },
   },
   [CHAINS_ENUM.POLYGON]: {
     id: 137,
@@ -192,6 +201,9 @@ export const CHAINS: Record<string, Chain> = {
     nativeTokenLogo:
       'https://static.debank.com/image/matic_token/logo_url/matic/e5a8a2860ba5cf740a474dcab796dc63.png',
     thridPartyRPC: 'https://polygon-rpc.com',
+    eip: {
+      '1559': true,
+    },
   },
   [CHAINS_ENUM.FTM]: {
     id: 250,
@@ -210,6 +222,9 @@ export const CHAINS: Record<string, Chain> = {
       'https://static.debank.com/image/token/logo_url/eth/935ae4e4d1d12d59a99717a24f2540b5.png',
     nativeTokenDecimals: 18,
     thridPartyRPC: 'https://rpc.ftm.tools',
+    eip: {
+      '1559': false,
+    },
   },
   [CHAINS_ENUM.OKT]: {
     id: 66,
@@ -228,6 +243,9 @@ export const CHAINS: Record<string, Chain> = {
       'https://static.debank.com/image/ftm_token/logo_url/ftm/33fdb9c5067e94f3a1b9e78f6fa86984.png',
     nativeTokenDecimals: 18,
     thridPartyRPC: 'https://exchainrpc.okex.org',
+    eip: {
+      '1559': false,
+    },
   },
   [CHAINS_ENUM.HECO]: {
     id: 128,
@@ -246,6 +264,9 @@ export const CHAINS: Record<string, Chain> = {
       'https://static.debank.com/image/heco_token/logo_url/heco/c399dcddde07e1944c4dd8f922832b53.png',
     nativeTokenDecimals: 18,
     thridPartyRPC: 'https://http-mainnet.hecochain.com',
+    eip: {
+      '1559': true,
+    },
   },
   // https://developer.offchainlabs.com/docs/public_testnet#connection-information
   [CHAINS_ENUM.ARBITRUM]: {
@@ -265,6 +286,9 @@ export const CHAINS: Record<string, Chain> = {
       'https://static.debank.com/image/arb_token/logo_url/arb/d61441782d4a08a7479d54aea211679e.png',
     nativeTokenDecimals: 18,
     thridPartyRPC: 'https://arb1.arbitrum.io/rpc',
+    eip: {
+      '1559': false,
+    },
   },
   [CHAINS_ENUM.AVAX]: {
     id: 43114,
@@ -283,6 +307,9 @@ export const CHAINS: Record<string, Chain> = {
       'https://static.debank.com/image/avax_token/logo_url/avax/0b9c84359c84d6bdd5bfda9c2d4c4a82.png',
     nativeTokenDecimals: 18,
     thridPartyRPC: 'https://api.avax.network/ext/bc/C/rpc',
+    eip: {
+      '1559': true,
+    },
   },
   [CHAINS_ENUM.OP]: {
     id: 10,
@@ -301,6 +328,9 @@ export const CHAINS: Record<string, Chain> = {
       'https://static.debank.com/image/op_token/logo_url/op/d61441782d4a08a7479d54aea211679e.png',
     nativeTokenDecimals: 18,
     thridPartyRPC: 'https://mainnet.optimism.io',
+    eip: {
+      '1559': false,
+    },
   },
   [CHAINS_ENUM.CELO]: {
     id: 42220,
@@ -319,6 +349,9 @@ export const CHAINS: Record<string, Chain> = {
       'https://static.debank.com/image/celo_token/logo_url/0x471ece3750da237f93b8e339c536989b8978a438/6f524d91db674876ba0f5767cf0124cc.png',
     nativeTokenDecimals: 18,
     thridPartyRPC: 'https://forno.celo.org',
+    eip: {
+      '1559': false,
+    },
   },
   [CHAINS_ENUM.MOVR]: {
     id: 1285,
@@ -337,6 +370,9 @@ export const CHAINS: Record<string, Chain> = {
       'https://static.debank.com/image/chain/logo_url/movr/c66f89fdceaea8d8fce263a1f816d671.png',
     nativeTokenDecimals: 18,
     thridPartyRPC: 'https://rpc.moonriver.moonbeam.network',
+    eip: {
+      '1559': false,
+    },
   },
   [CHAINS_ENUM.CRO]: {
     id: 25,
@@ -355,6 +391,9 @@ export const CHAINS: Record<string, Chain> = {
       'https://static.debank.com/image/chain/logo_url/cro/affddd53019ffb9dbad0c724e12500c0.png',
     nativeTokenDecimals: 18,
     thridPartyRPC: 'https://evm-cronos.crypto.org',
+    eip: {
+      '1559': false,
+    },
   },
   [CHAINS_ENUM.BOBA]: {
     id: 288,
@@ -373,6 +412,9 @@ export const CHAINS: Record<string, Chain> = {
       'https://static.debank.com/image/op_token/logo_url/0x4200000000000000000000000000000000000006/d61441782d4a08a7479d54aea211679e.png',
     nativeTokenDecimals: 18,
     thridPartyRPC: 'https://mainnet.boba.network/',
+    eip: {
+      '1559': false,
+    },
   },
   [CHAINS_ENUM.METIS]: {
     id: 1088,
@@ -391,6 +433,9 @@ export const CHAINS: Record<string, Chain> = {
       'https://static.debank.com/image/chain/logo_url/metis/b289da32db4d860ebf6fb46a6e41dcfc.png',
     nativeTokenDecimals: 18,
     thridPartyRPC: 'https://andromeda.metis.io/?owner=1088',
+    eip: {
+      '1559': false,
+    },
   },
   [CHAINS_ENUM.BTT]: {
     id: 199,
@@ -409,6 +454,9 @@ export const CHAINS: Record<string, Chain> = {
       'https://static.debank.com/image/chain/logo_url/btt/2130a8d57ff2a0f3d50a4ec9432897c6.png',
     nativeTokenDecimals: 18,
     thridPartyRPC: 'https://rpc.bittorrentchain.io/',
+    eip: {
+      '1559': false,
+    },
   },
   [CHAINS_ENUM.AURORA]: {
     id: 1313161554,
@@ -427,6 +475,9 @@ export const CHAINS: Record<string, Chain> = {
       'https://static.debank.com/image/token/logo_url/eth/935ae4e4d1d12d59a99717a24f2540b5.png',
     nativeTokenDecimals: 18,
     thridPartyRPC: 'https://mainnet.aurora.dev',
+    eip: {
+      '1559': false,
+    },
   },
   [CHAINS_ENUM.MOBM]: {
     id: 1284,
@@ -445,6 +496,9 @@ export const CHAINS: Record<string, Chain> = {
       'https://static.debank.com/image/mobm_token/logo_url/mobm/a8442077d76b258297181c3e6eb8c9cc.png',
     nativeTokenDecimals: 18,
     thridPartyRPC: 'https://blockscout.moonbeam.network/api/eth-rpc',
+    eip: {
+      '1559': false,
+    },
   },
   [CHAINS_ENUM.SBCH]: {
     id: 10000,
@@ -463,6 +517,9 @@ export const CHAINS: Record<string, Chain> = {
       'https://static.debank.com/image/sbch_token/logo_url/sbch/03007b5353bb9e221efb82a6a70d9ec9.png',
     nativeTokenDecimals: 18,
     thridPartyRPC: 'https://rpc-mainnet.smartbch.org',
+    eip: {
+      '1559': false,
+    },
   },
 };
 
@@ -493,6 +550,12 @@ export const KEYRING_CLASS = {
 export const KEYRING_WITH_INDEX = [
   KEYRING_CLASS.HARDWARE.LEDGER,
   KEYRING_CLASS.HARDWARE.GRIDPLUS,
+];
+
+export const SUPPORT_1559_KEYRING_TYPE = [
+  KEYRING_CLASS.HARDWARE.LEDGER,
+  KEYRING_CLASS.PRIVATE_KEY,
+  KEYRING_CLASS.MNEMONIC,
 ];
 
 export const KEYRING_TYPE_TEXT = {

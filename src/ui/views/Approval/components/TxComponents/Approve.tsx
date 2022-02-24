@@ -1,5 +1,10 @@
 import { Button, Form, Input, message, Modal } from 'antd';
-import { ExplainTxResponse, TokenItem, Tx } from 'background/service/openapi';
+import {
+  Eip1559Tx,
+  ExplainTxResponse,
+  TokenItem,
+  Tx,
+} from 'background/service/openapi';
 import { Account } from 'background/service/preference';
 import BigNumber from 'bignumber.js';
 import ClipboardJS from 'clipboard';
@@ -23,7 +28,7 @@ interface ApproveProps {
   data: ExplainTxResponse;
   chainEnum: CHAINS_ENUM;
   onChange(data: Record<string, string>): void;
-  tx: Tx;
+  tx: Tx | Eip1559Tx;
   isSpeedUp: boolean;
   raw: Record<string, string | number>;
 }
