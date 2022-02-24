@@ -406,7 +406,7 @@ class TxHistory {
       this.store.transactions[address.toLowerCase()] || {}
     );
     const maxNonceTx = maxBy(
-      list.filter((item) => item.chainId === chainId),
+      list.filter((item) => item.chainId === chainId && !item.isSubmitFailed),
       (item) => item.nonce
     );
 
