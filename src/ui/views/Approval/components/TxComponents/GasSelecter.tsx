@@ -113,14 +113,14 @@ const GasSelector = ({
         ...selectedGas,
         price: Number(customGas) * 1e9,
         gasLimit: Number(afterGasLimit),
-        nonce: Number(customNonce || nonce),
+        nonce: Number(customNonce),
         level: selectedGas.level,
       });
     } else {
       onChange({
         ...selectedGas,
         gasLimit: Number(afterGasLimit),
-        nonce: Number(customNonce || nonce),
+        nonce: Number(customNonce),
         level: selectedGas.level,
       });
     }
@@ -367,7 +367,7 @@ const GasSelector = ({
                 <Form.Item className="gas-limit-panel mb-0" required>
                   <Input
                     className="popup-input"
-                    value={customNonce || Number(nonce)}
+                    value={customNonce}
                     onChange={handleCustomNonceChange}
                     disabled={disableNonce}
                   />
