@@ -919,6 +919,22 @@ export class WalletController extends BaseController {
     return stashKeyringId;
   };
 
+  submitQRHardwareCryptoHDKey = () => {
+    let keyring, isNewKey;
+    let stashKeyringId: number | null = null;
+    const keyringType = KEYRING_CLASS.QRCODE;
+    try {
+      keyring = this._getKeyringByType(keyringType);
+    } catch {
+      const QRCodeKeyring = keyringService.getKeyringClassForType(keyringType);
+      keyring = new QRCodeKeyring();
+      stashKeyringId = Object.values(stashKeyrings).length;
+      stashKeyrings[stashKeyringId] = keyring;
+    }
+    // TODO
+    return stashKeyringId;
+  };
+
   signPersonalMessage = async (
     type: string,
     from: string,

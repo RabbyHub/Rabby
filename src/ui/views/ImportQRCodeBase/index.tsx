@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from 'react';
 import { Form } from 'antd';
 import { useHistory } from 'react-router-dom';
-import { useTranslation } from 'react-i18next';
+import { composeInitialProps, useTranslation } from 'react-i18next';
 import { URDecoder } from '@ngraveio/bc-ur';
 import QRCodeReader from 'ui/component/QRCodeReader';
 import { StrayPageWithButton } from 'ui/component';
@@ -18,20 +18,22 @@ const ImportQRCodeBase = () => {
   const [form] = Form.useForm();
   const decoder = useRef(new URDecoder());
 
-  const [run, loading] = useWalletRequest(wallet.importWatchAddress, {
-    onSuccess(accounts) {
-      // TODO
-    },
-    onError(err) {
-      // TODO
-    },
-  });
-
   const handleScanQRCodeSuccess = (data) => {
     decoder.current.receivePart(data);
     if (decoder.current.isComplete()) {
       const result = decoder.current.resultUR();
       result.cbor.toString('hex');
+      /* TODO:
+        const stashKeyringId = await wallet.submitQRHardwareCryptoHDKey();
+        history.push({
+          pathname: '/import/select-address',
+          state: {
+            keyring: HARDWARE_KEYRING_TYPES.KeyStone.type,
+            path: currentPath,
+            keyringId
+          },
+        });
+      */
     }
   };
 
@@ -44,18 +46,6 @@ const ImportQRCodeBase = () => {
     openInternalPageInTab('request-permission?type=camera');
   };
 
-  const handleLoadCache = async () => {
-    const cache = await wallet.getPageStateCache();
-    if (cache && cache.path === history.location.pathname) {
-      // TODO
-    }
-  };
-
-  const handleNextClick = () => {
-    const address = form.getFieldValue('address');
-    run(address);
-  };
-
   const handleClickBack = () => {
     if (history.length > 1) {
       history.goBack();
@@ -65,7 +55,6 @@ const ImportQRCodeBase = () => {
   };
 
   useEffect(() => {
-    handleLoadCache();
     return () => {
       wallet.clearPageStateCache();
     };
@@ -73,8 +62,6 @@ const ImportQRCodeBase = () => {
 
   return (
     <StrayPageWithButton
-      onSubmit={handleNextClick}
-      spinning={loading}
       form={form}
       hasBack
       hasDivider

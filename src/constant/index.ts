@@ -543,6 +543,7 @@ export const KEYRING_CLASS = {
     LEDGER: 'Ledger Hardware',
     ONEKEY: 'Onekey Hardware',
     GRIDPLUS: 'GridPlus Hardware',
+    KEYSTONE: 'QR Hardware Wallet Device',
   },
   WATCH: 'Watch Address',
   WALLETCONNECT: 'WalletConnect',
@@ -603,6 +604,10 @@ export const HARDWARE_KEYRING_TYPES = {
   GridPlus: {
     type: 'GridPlus Hardware',
     brandName: 'GridPlus',
+  },
+  KeyStone: {
+    type: 'QR Hardware Wallet Device',
+    brandName: 'KeyStone',
   },
 };
 
