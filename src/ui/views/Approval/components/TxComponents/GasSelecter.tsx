@@ -6,7 +6,7 @@ import { useTranslation, Trans } from 'react-i18next';
 import { useDebounce } from 'react-use';
 import { CHAINS, GAS_LEVEL_TEXT, MINIMUM_GAS_LIMIT } from 'consts';
 import { GasResult, Tx, GasLevel } from 'background/service/openapi';
-import { Modal } from 'ui/component';
+import { Modal, Popup } from 'ui/component';
 import { formatTokenAmount } from 'ui/utils/number';
 import IconSetting from 'ui/assets/setting-gray.svg';
 import clsx from 'clsx';
@@ -113,14 +113,14 @@ const GasSelector = ({
         ...selectedGas,
         price: Number(customGas) * 1e9,
         gasLimit: Number(afterGasLimit),
-        nonce: Number(customNonce || nonce),
+        nonce: Number(customNonce),
         level: selectedGas.level,
       });
     } else {
       onChange({
         ...selectedGas,
         gasLimit: Number(afterGasLimit),
-        nonce: Number(customNonce || nonce),
+        nonce: Number(customNonce),
         level: selectedGas.level,
       });
     }
@@ -313,13 +313,14 @@ const GasSelector = ({
           ))}
         </div>
       </div>
-      <Modal
+      <Popup
+        height={460}
         visible={modalVisible}
         title={t('Advanced Options')}
         className="gas-modal"
         onCancel={() => setModalVisible(false)}
-        okText="Confirm"
         destroyOnClose
+        closable
       >
         <Form onFinish={handleConfirmGas}>
           <div className="gas-limit">
@@ -332,9 +333,9 @@ const GasSelector = ({
                 validateStatus={validateStatus.gasLimit.status}
               >
                 <Input
+                  className="popup-input"
                   value={afterGasLimit}
                   onChange={handleGasLimitChange}
-                  bordered={false}
                 />
               </Form.Item>
               {validateStatus.gasLimit.message ? (
@@ -365,9 +366,9 @@ const GasSelector = ({
                 <p className="section-title mt-20">{t('Nonce')}</p>
                 <Form.Item className="gas-limit-panel mb-0" required>
                   <Input
-                    value={customNonce || Number(nonce)}
+                    className="popup-input"
+                    value={customNonce}
                     onChange={handleCustomNonceChange}
-                    bordered={false}
                     disabled={disableNonce}
                   />
                 </Form.Item>
@@ -375,7 +376,7 @@ const GasSelector = ({
               </div>
             </div>
           </div>
-          <div className="flex justify-center mt-32">
+          <div className="flex justify-center mt-32 popup-footer">
             <Button
               type="primary"
               className="w-[200px]"
@@ -391,7 +392,7 @@ const GasSelector = ({
             </Button>
           </div>
         </Form>
-      </Modal>
+      </Popup>
     </>
   );
 };

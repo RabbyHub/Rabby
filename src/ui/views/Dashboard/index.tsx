@@ -13,6 +13,7 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import Safe from '@rabby-wallet/gnosis-sdk';
 import { SafeInfo } from '@rabby-wallet/gnosis-sdk/dist/api';
+import * as Sentry from '@sentry/browser';
 import {
   KEYRING_ICONS,
   WALLET_BRAND_CONTENT,
@@ -21,6 +22,7 @@ import {
   KEYRING_TYPE,
   CHAINS,
   KEYRING_TYPE_TEXT,
+  KEYRING_WITH_INDEX,
 } from 'consts';
 import {
   useWallet,
@@ -36,7 +38,6 @@ import { TokenItem, AssetItem } from 'background/service/openapi';
 import {
   ChainAndSiteSelector,
   BalanceView,
-  DefaultWalletAlertBar,
   TokenList,
   AssetsList,
   GnosisWrongChainAlertBar,
@@ -46,7 +47,6 @@ import {
 import { getUpdateContent } from 'changeLogs/index';
 import IconSuccess from 'ui/assets/success.svg';
 import IconUpAndDown from 'ui/assets/up-and-down.svg';
-import { ReactComponent as IconCopy } from 'ui/assets/urlcopy.svg';
 import IconEditPen from 'ui/assets/editpen.svg';
 import IconCorrect from 'ui/assets/dashboard/contacts/correct.png';
 import IconUnCorrect from 'ui/assets/dashboard/contacts/uncorrect.png';
@@ -99,7 +99,6 @@ const Dashboard = () => {
   const [pendingTxCount, setPendingTxCount] = useState(0);
   const [gnosisPendingCount, setGnosisPendingCount] = useState(0);
   const [safeInfo, setSafeInfo] = useState<SafeInfo | null>(null);
-  const [isDefaultWallet, setIsDefaultWallet] = useState(true);
   const [copySuccess, setCopySuccess] = useState(false);
   const [hovered, setHovered] = useState(false);
   const [clicked, setClicked] = useState(false);
@@ -154,11 +153,6 @@ const Dashboard = () => {
     setPendingTxCount(count);
   };
 
-  const checkIsDefaultWallet = async () => {
-    const isDefault = await wallet.isDefaultWallet();
-    setIsDefaultWallet(isDefault);
-  };
-
   const getAlianName = async (address: string) => {
     await wallet.getAlianName(address).then((name) => {
       setAlianName(name);
@@ -198,7 +192,6 @@ const Dashboard = () => {
     if (!currentAccount) {
       getCurrentAccount();
     }
-    checkIsDefaultWallet();
   }, []);
 
   useEffect(() => {
@@ -215,6 +208,9 @@ const Dashboard = () => {
   }, [currentAccount]);
   useEffect(() => {
     if (dashboardReload) {
+      if (currentAccount) {
+        getPendingTxCount(currentAccount.address);
+      }
       setDashboardReload(false);
       getCurrentAccount();
       getAllKeyrings();
@@ -255,11 +251,6 @@ const Dashboard = () => {
       });
       clipboard.destroy();
     });
-  };
-
-  const handleDefaultWalletChange = async () => {
-    const isDefault = await wallet.isDefaultWallet();
-    setIsDefaultWallet(isDefault);
   };
 
   const handleAlianNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -318,8 +309,8 @@ const Dashboard = () => {
   const sortAssetsByUSDValue = (assets: AssetItem[]) => {
     const copy = cloneDeep(assets);
     return copy.sort((a, b) => {
-      return new BigNumber(b.asset_usd_value)
-        .minus(new BigNumber(a.asset_usd_value))
+      return new BigNumber(b.net_usd_value)
+        .minus(new BigNumber(a.net_usd_value))
         .toNumber();
     });
   };
@@ -382,9 +373,11 @@ const Dashboard = () => {
     }
   }, [currentAccount]);
   const Row = (props) => {
+    const [hdPathIndex, setHDPathIndex] = useState(null);
     const { data, index, style } = props;
     const account = data[index];
     const [isHovering, hoverProps] = useHover();
+
     const handleCopyContractAddress = () => {
       const clipboard = new ClipboardJS('.address-item', {
         text: function () {
@@ -400,6 +393,23 @@ const Dashboard = () => {
         clipboard.destroy();
       });
     };
+
+    const getHDPathIndex = async () => {
+      const index = await wallet.getIndexByAddress(
+        account.address,
+        account.type
+      );
+      if (index !== null) {
+        setHDPathIndex(index + 1);
+      }
+    };
+
+    useEffect(() => {
+      if (KEYRING_WITH_INDEX.includes(account.type)) {
+        getHDPathIndex();
+      }
+    }, []);
+
     return (
       <div
         className="flex items-center address-item"
@@ -423,7 +433,12 @@ const Dashboard = () => {
         />
         <div className="flex flex-col items-start ml-10">
           <div className="text-13 text-black text-left click-name">
-            <div className="list-alian-name">{account?.alianName}</div>
+            <div className="list-alian-name">
+              {account?.alianName}
+              {hdPathIndex && (
+                <span className="address-hdpath-index font-roboto-mono">{`#${hdPathIndex}`}</span>
+              )}
+            </div>
             <div className="flex items-center">
               <AddressViewer
                 address={account?.address}
@@ -722,16 +737,13 @@ const Dashboard = () => {
     currentAccount?.type === KEYRING_CLASS.MNEMONIC ||
     currentAccount?.type === KEYRING_CLASS.PRIVATE_KEY ||
     currentAccount?.type === KEYRING_CLASS.WATCH;
-  const showGnosisAlert =
-    isDefaultWallet && isGnosis && showGnosisWrongChainAlert && !showChain;
-  const showDefaultAlert = !isDefaultWallet && !showChain;
+  const showGnosisAlert = isGnosis && showGnosisWrongChainAlert && !showChain;
 
   return (
     <>
       <div
         className={clsx('dashboard', {
-          'metamask-active':
-            !isDefaultWallet || (showGnosisWrongChainAlert && isGnosis),
+          'metamask-active': showGnosisWrongChainAlert && isGnosis,
         })}
       >
         <div className={clsx('main', showChain && 'show-chain-bg')}>
@@ -763,13 +775,15 @@ const Dashboard = () => {
                   <div className="text-15 text-white ml-6 mr-6 dashboard-name">
                     {displayName}
                   </div>
-                  {currentAccount && (
-                    <AddressViewer
-                      address={currentAccount.address}
-                      showArrow={false}
-                      className={'text-12 text-white opacity-60'}
-                    />
-                  )}
+                  <div className="current-address">
+                    {currentAccount && (
+                      <AddressViewer
+                        address={currentAccount.address}
+                        showArrow={false}
+                        className={'text-12 text-white opacity-60'}
+                      />
+                    )}
+                  </div>
                   <img
                     className="icon icon-account-type w-[16px] h-[16px] ml-8"
                     src={IconUpAndDown}
@@ -866,12 +880,9 @@ const Dashboard = () => {
           pendingTxCount={pendingTxCount}
           gnosisPendingCount={gnosisPendingCount}
           isGnosis={isGnosis}
-          higherBottom={showDefaultAlert || showGnosisAlert}
+          higherBottom={isGnosis}
           setDashboardReload={() => setDashboardReload(true)}
         />
-        {showDefaultAlert && (
-          <DefaultWalletAlertBar onChange={handleDefaultWalletChange} />
-        )}
         {showGnosisAlert && <GnosisWrongChainAlertBar />}
       </div>
       <Modal

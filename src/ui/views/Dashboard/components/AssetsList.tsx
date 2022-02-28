@@ -77,7 +77,7 @@ const AssetsList = ({
           itemCount={assets.length}
           itemSize={48}
           ref={fixedList}
-          style={{ zIndex: 10, 'overflow-x': 'hidden', paddingBottom: 50 }}
+          style={{ zIndex: 10, overflowX: 'hidden', paddingBottom: 50 }}
         >
           {Row}
         </FixedSizeList>

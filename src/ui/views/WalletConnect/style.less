@@ -1,6 +1,6 @@
 @import '../../style/var.less';
 .wallet-connect {
-  background: #f0f2f5;
+  background: @color-bg;
   position: relative;
   height: 100%;
 }
@@ -16,7 +16,7 @@
     margin: 2px;
     padding: 3px;
     border-radius: 3px;
-    color: #707280;
+    color: @color-comment-1;
     text-align: center;
   }
   .active {
@@ -40,7 +40,7 @@
   align-items: center;
   border-radius: 12px;
   background: #ffffff;
-  border: 1px solid #E5E9EF;
+  border: 1px solid @color-border;
   position: relative;
   .refresh-container {
     position: absolute;
@@ -74,7 +74,6 @@
     color: rgba(0, 0, 0, 0.85);
     background: #ffffff;
     cursor: default;
-
   }
 }
 .icon-copy-wallet {
@@ -93,7 +92,7 @@
   display: flex;
   justify-content: center;
   align-items: center;
-  color: #b4bdcc;
+  color: @color-comment-2;
   font-size: 12px;
   cursor: pointer;
   img {

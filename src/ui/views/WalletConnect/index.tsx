@@ -57,6 +57,7 @@ const WalletConnectTemplate = () => {
         uri,
         stashId,
         brand,
+        bridgeURL,
       },
     });
     eventBus.removeAllEventListeners(EVENTS.WALLETCONNECT.STATUS_CHANGED);

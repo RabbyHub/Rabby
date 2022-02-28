@@ -4,14 +4,16 @@ import { useTranslation } from 'react-i18next';
 import maxBy from 'lodash/maxBy';
 import { useHistory } from 'react-router-dom';
 import { Badge, Tooltip } from 'antd';
+import eventBus from '@/eventBus';
 import { useWallet, getCurrentConnectSite, splitNumberByStep } from 'ui/utils';
 import { ConnectedSite } from 'background/service/permission';
 import { GasLevel } from 'background/service/openapi';
 import { ChainSelector, FallbackSiteLogo } from 'ui/component';
-import { RecentConnections, Settings, Contacts } from '../index';
+import { RecentConnections, Settings, Contacts, Security } from '../index';
 import { CHAINS_ENUM } from 'consts';
 import IconDrawer from 'ui/assets/drawer.png';
 import IconContacts from 'ui/assets/dashboard/contacts.png';
+import IconSecurity from 'ui/assets/dashboard/security.svg';
 import IconSendToken from 'ui/assets/dashboard/sendtoken.png';
 import IconSetting from 'ui/assets/dashboard/setting.png';
 import IconSignedText from 'ui/assets/dashboard/signedtext.png';
@@ -23,6 +25,7 @@ import { ReactComponent as IconLeftConer } from 'ui/assets/dashboard/leftcorner.
 import IconRightGoTo from 'ui/assets/dashboard/selectChain/rightgoto.svg';
 import IconDot from 'ui/assets/dashboard/selectChain/dot.png';
 import IconQuene from 'ui/assets/dashboard/quene.svg';
+import IconAlertRed from 'ui/assets/alert-red.svg';
 import './style.less';
 
 const CurrentConnection = memo(
@@ -55,7 +58,7 @@ const CurrentConnection = memo(
       hideModal();
     };
     return (
-      <div className={clsx('current-connection', higherBottom && 'mt-10')}>
+      <div className={clsx('current-connection', higherBottom && 'higher')}>
         <IconLeftConer
           className="left-corner"
           fill={site ? '#27C193' : '#B4BDCC'}
@@ -137,10 +140,12 @@ export default ({
   const [urlVisible, setUrlVisible] = useState(false);
   const [settingVisible, setSettingVisible] = useState(false);
   const [contactsVisible, setContactsVisible] = useState(false);
+  const [securityVisible, setSecurityVisible] = useState(false);
   const [currentConnect, setCurrentConnect] = useState<
     ConnectedSite | null | undefined
   >(null);
   const [gasPrice, setGasPrice] = useState<number>(0);
+  const [isDefaultWallet, setIsDefaultWallet] = useState(true);
   const wallet = useWallet();
 
   const getConnectedSites = async () => {
@@ -152,44 +157,70 @@ export default ({
     const current = await getCurrentConnectSite(wallet);
     setCurrentConnect(current);
   }, []);
+
   const hideModal = () => {
     setLocalShowModal(false);
   };
+
   const getGasPrice = async () => {
-    const marketGas: GasLevel[] = await wallet.openapi.gasMarket('eth');
-    const {
-      change_percent = 0,
-      last_price = 0,
-    } = await wallet.openapi.tokenPrice('eth');
-    setCurrentPrice(last_price);
-    setPercentage(change_percent);
-    const maxGas = maxBy(marketGas, (level) => level.price)!.price;
-    if (maxGas) {
-      setGasPrice(Number(maxGas / 1e9));
+    try {
+      const marketGas: GasLevel[] = await wallet.openapi.gasMarket('eth');
+      const maxGas = maxBy(marketGas, (level) => level.price)!.price;
+      if (maxGas) {
+        setGasPrice(Number(maxGas / 1e9));
+      }
+    } catch (e) {
+      // DO NOTHING
+    }
+    try {
+      const {
+        change_percent = 0,
+        last_price = 0,
+      } = await wallet.openapi.tokenPrice('eth');
+      setCurrentPrice(last_price);
+      setPercentage(change_percent);
+    } catch (e) {
+      // DO NOTHING
     }
   };
+
   const changeURL = () => {
     setUrlVisible(!urlVisible);
   };
+
   const changeSetting = () => {
     setSettingVisible(!settingVisible);
+    setDashboardReload();
   };
+
   const changeContacts = () => {
     setContactsVisible(!contactsVisible);
     setDashboardReload();
   };
+
+  const changeSecurity = () => {
+    setSecurityVisible(!securityVisible);
+  };
+
+  const defaultWalletChangeHandler = (val: boolean) => {
+    setIsDefaultWallet(val);
+  };
+
   useEffect(() => {
     getCurrentSite();
     getGasPrice();
   }, []);
+
   useEffect(() => {
     if (!urlVisible) {
       getConnectedSites();
     }
   }, [urlVisible]);
+
   useEffect(() => {
     onChange(currentConnect);
   }, [currentConnect]);
+
   useEffect(() => {
     if (showDrawer) {
       setDrawerAnimation('fadeInDrawer');
@@ -201,6 +232,22 @@ export default ({
       }
     }
   }, [showDrawer]);
+
+  useEffect(() => {
+    wallet.isDefaultWallet().then((result) => {
+      setIsDefaultWallet(result);
+    });
+    eventBus.addEventListener(
+      'isDefaultWalletChanged',
+      defaultWalletChangeHandler
+    );
+    return () => {
+      eventBus.removeEventListener(
+        'isDefaultWalletChanged',
+        defaultWalletChangeHandler
+      );
+    };
+  }, []);
 
   const directionPanelData = [
     {
@@ -241,13 +288,23 @@ export default ({
       onClick: changeContacts,
     },
     {
+      icon: IconSecurity,
+      content: 'Security',
+      onClick: changeSecurity,
+    },
+    {
       icon: IconSetting,
       content: 'Settings',
       onClick: changeSetting,
+      showAlert: !isDefaultWallet,
     },
   ];
   return (
-    <div className={clsx('recent-connections', connectionAnimation)}>
+    <div
+      className={clsx('recent-connections', connectionAnimation, {
+        lower: higherBottom,
+      })}
+    >
       <img
         src={IconDrawer}
         className={clsx(
@@ -278,6 +335,9 @@ export default ({
                 onClick={item?.onClick}
                 className="direction pointer"
               >
+                {item.showAlert && (
+                  <img src={IconAlertRed} className="icon icon-alert" />
+                )}
                 {item.badge ? (
                   <Badge count={item.badge} size="small">
                     <img src={item.icon} className="images" />
@@ -328,6 +388,7 @@ export default ({
       <Settings visible={settingVisible} onClose={changeSetting} />
       <Contacts visible={contactsVisible} onClose={changeContacts} />
       <RecentConnections visible={urlVisible} onClose={changeURL} />
+      <Security visible={securityVisible} onClose={changeSecurity} />
     </div>
   );
 };

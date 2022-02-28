@@ -8,7 +8,7 @@ import IconWarning from 'ui/assets/warning.svg';
 import IconDanger from 'ui/assets/danger.svg';
 import IconForbidden from 'ui/assets/forbidden.svg';
 import IconArrowRight from 'ui/assets/arrow-right-gray.svg';
-import IconQuestionMark from 'ui/assets/question-mark.svg';
+import IconQuestionMark from 'ui/assets/question-mark-gray-light.svg';
 
 interface SecurityCheckBarProps {
   status: SecurityCheckDecision;
@@ -27,21 +27,21 @@ const SecurityCheckBar = ({
   const STATUS = {
     pending: {
       name: 'pending',
-      color: '#818A99',
+      color: '#707280',
       clickable: false,
       icon: IconQuestionMark,
       text: t('Security checks have not been executed'),
     },
     loading: {
       name: 'loading',
-      color: '#818A99',
+      color: '#707280',
       clickable: false,
       icon: IconLoading,
       text: t('Checking'),
     },
     pass: {
       name: 'pass',
-      color: '#818A99',
+      color: '#707280',
       clickable: false,
       icon: IconPass,
       text: t('No risk found'),
@@ -85,7 +85,9 @@ const SecurityCheckBar = ({
       <span className="alert">
         {STATUS[status].text || alert}
         {status === 'pending' && (
-          <Button onClick={onCheck}>{t('Check')}</Button>
+          <Button onClick={onCheck} ghost>
+            {t('Check')}
+          </Button>
         )}
       </span>
       {STATUS[status].clickable && (

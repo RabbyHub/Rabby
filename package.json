@@ -1,6 +1,6 @@
 {
   "name": "rabby",
-  "version": "0.21.0",
+  "version": "0.22.0",
   "description": "A browser plugin for DeFi users",
   "scripts": {
     "clean": "mkdir -p dist && rm -rf dist/* && cp -r _raw/* dist",
@@ -28,7 +28,7 @@
     "@rabby-wallet/eth-lattice-keyring": "^0.4.2",
     "@rabby-wallet/eth-simple-keyring": "^4.2.1",
     "@rabby-wallet/eth-trezor-keyring": "^1.0.8",
-    "@rabby-wallet/eth-walletconnect-keyring": "^1.0.7",
+    "@rabby-wallet/eth-walletconnect-keyring": "^1.1.0",
     "@rabby-wallet/eth-watch-keyring": "^1.0.0",
     "@rabby-wallet/gnosis-sdk": "^1.2.0",
     "@sentry/browser": "^6.7.2",
@@ -135,6 +135,7 @@
     "shelljs": "^0.8.4",
     "sinon-chrome": "^3.0.1",
     "style-loader": "^2.0.0",
+    "style-resources-loader": "^1.5.0",
     "tailwindcss": "^2.1.2",
     "ts-import-plugin": "^1.6.7",
     "ts-jest": "^27.1.2",

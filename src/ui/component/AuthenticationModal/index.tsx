@@ -1,9 +1,9 @@
-import React, { useState } from 'react';
-import { useTranslation } from 'react-i18next';
-import * as ReactDOM from 'react-dom';
-import { Input, Form, Button } from 'antd';
-import { Modal } from 'ui/component';
+import { Button, Form, Input } from 'antd';
 import { WalletController } from 'background/controller/wallet';
+import React, { useEffect, useRef, useState } from 'react';
+import * as ReactDOM from 'react-dom';
+import { useTranslation } from 'react-i18next';
+import { Popup } from 'ui/component';
 
 interface AuthenticationModalProps {
   onFinished(): void;
@@ -18,9 +18,10 @@ const AuthenticationModal = ({
   onCancel,
   wallet,
 }: AuthenticationModalProps) => {
-  const [visible, setVisible] = useState(true);
+  const [visible, setVisible] = useState(false);
   const [form] = Form.useForm();
   const { t } = useTranslation();
+  const inputRef = useRef<Input>(null);
   const handleSubmit = async ({ password }: { password: string }) => {
     try {
       if (validationHandler) {
@@ -44,8 +45,15 @@ const AuthenticationModal = ({
     onCancel();
   };
 
+  useEffect(() => {
+    setTimeout(() => {
+      setVisible(true);
+      inputRef.current?.focus();
+    });
+  }, []);
+
   return (
-    <Modal
+    <Popup
       visible={visible}
       title={t('Enter Password')}
       onCancel={handleCancel}
@@ -56,14 +64,16 @@ const AuthenticationModal = ({
           rules={[{ required: true, message: t('Please input password') }]}
         >
           <Input
+            className="popup-input"
             placeholder={t('Password')}
             type="password"
             size="large"
             autoFocus
+            ref={inputRef}
             spellCheck={false}
           />
         </Form.Item>
-        <div className="flex justify-center pt-6">
+        <div className="flex justify-center pt-6 popup-footer">
           <Button
             type="primary"
             size="large"
@@ -74,7 +84,7 @@ const AuthenticationModal = ({
           </Button>
         </div>
       </Form>
-    </Modal>
+    </Popup>
   );
 };
 

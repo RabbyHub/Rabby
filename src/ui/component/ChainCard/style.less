@@ -1,5 +1,5 @@
 .chain-card-wrapper {
-  border: 1px solid #E5E9EF;
+  border: 1px solid @color-border;
   position: relative;
   border-radius: 4px;
   box-sizing: border-box;
@@ -12,12 +12,12 @@
     margin-right: 8px;
   }
   &.pinned {
-    background: #f5f6fa;
+    background: @color-bg;
     border-color: transparent;
   }
   &.hover {
     background: rgba(134, 151, 255, 0.1);
-    border: 1px solid #8697FF;
+    border: 1px solid #8697ff;
   }
   .chain-card {
     width: 100%;
@@ -32,7 +32,7 @@
       font-weight: 500;
       font-size: 15px;
       line-height: 30px;
-      color: #13141A;
+      color: @color-title;
     }
     .chain-logo {
       width: 28px;

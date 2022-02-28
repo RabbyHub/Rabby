@@ -13,6 +13,7 @@ import * as Sentry from '@sentry/browser';
 import Safe from '@rabby-wallet/gnosis-sdk';
 import { SafeInfo } from '@rabby-wallet/gnosis-sdk/src/api';
 import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
+import ReactGA from 'react-ga';
 import {
   KEYRING_CLASS,
   CHAINS,
@@ -366,6 +367,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
         danger_list: [{ id: 1, alert }],
         warning_list: [],
         forbidden_list: [],
+        trace_id: '',
       });
     }
   };
@@ -510,6 +512,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
         uiRequestComponent: WaitingSignComponent[currentAccount.type],
         type: currentAccount.type,
         address: currentAccount.address,
+        traceId: securityCheckDetail?.trace_id,
         extra: {
           brandName: currentAccount.brandName,
         },
@@ -522,11 +525,18 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       return;
     }
 
+    ReactGA.event({
+      category: 'Transaction',
+      action: 'Submit',
+      label: currentAccount.brandName,
+    });
+
     resolveApproval({
       ...tx,
       nonce: realNonce || tx.nonce,
       gas: gasLimit,
       isSend,
+      traceId: securityCheckDetail?.trace_id,
     });
   };
   const handleGasChange = (gas: GasSelectorResponse) => {
@@ -640,7 +650,11 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     const site = await wallet.getConnectedSite(session.origin);
     const currentAccount =
       isGnosis && account ? account : await wallet.getCurrentAccount();
-
+    ReactGA.event({
+      category: 'Transaction',
+      action: 'init',
+      label: currentAccount.brandName,
+    });
     if (currentAccount.type === KEYRING_TYPE.GnosisKeyring) {
       setIsGnosisAccount(true);
       await getSafeInfo();

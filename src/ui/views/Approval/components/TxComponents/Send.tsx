@@ -26,7 +26,7 @@ const Send = ({ data, chainEnum, isSpeedUp, raw }: SendProps) => {
   const handleViewRawClick = () => {
     ViewRawModal.open({
       raw,
-      abi: data?.abi,
+      abi: data?.abiStr,
     });
   };
   return (

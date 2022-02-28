@@ -761,6 +761,27 @@ class LedgerBridgeKeyring extends EventEmitter {
     }
     return accounts;
   }
+
+  getIndexFromAddress(address: string) {
+    const checksummedAddress = ethUtil.toChecksumAddress(address);
+    if (!this.accountDetails[checksummedAddress]) {
+      throw new Error(`Address ${address} not found`);
+    }
+    let index: null | number = null;
+    const { hdPath } = this.accountDetails[checksummedAddress];
+    if (/m\/44'\/60'\/(\d+)'\/0\/0/.test(hdPath)) {
+      const res = hdPath.match(/m\/44'\/60'\/(\d+)'\/0\/0/);
+      if (res && res[1]) {
+        index = parseInt(res[1], 10);
+      }
+    } else {
+      const checksummedAddress = ethUtil.toChecksumAddress(address);
+      const arr = this.accountDetails[checksummedAddress].hdPath.split('/');
+      index = Number(arr[arr.length - 1]);
+    }
+    return index;
+  }
+
   async _getAccountsBIP44(from, to) {
     const accounts: {
       address: string;

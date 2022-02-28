@@ -1,10 +1,10 @@
 import { ExplainTxResponse } from '@/background/service/openapi';
 import { Tabs } from 'antd';
 import React from 'react';
-import { Modal } from 'ui/component';
+import { Popup } from 'ui/component';
 const { TabPane } = Tabs;
 interface ContentProps {
-  abi?: ExplainTxResponse['abi'];
+  abi?: ExplainTxResponse['abiStr'];
   raw: Record<string, string | number>;
 }
 
@@ -26,7 +26,7 @@ const Content = ({ abi, raw }: ContentProps) => {
       )}
       {abi && (
         <TabPane tab="ABI" key="abi">
-          {stringify(abi)}
+          {abi}
         </TabPane>
       )}
       {raw?.data && raw?.data !== '0x' && (
@@ -43,11 +43,10 @@ const ViewRawModal = () => {
 };
 
 ViewRawModal.open = ({ raw, abi }: ContentProps) => {
-  Modal.info({
-    centered: true,
+  Popup.info({
+    closable: true,
+    height: 460,
     content: <Content raw={raw} abi={abi} />,
-    cancelText: null,
-    okText: null,
     className: 'view-raw-detail',
   });
 };

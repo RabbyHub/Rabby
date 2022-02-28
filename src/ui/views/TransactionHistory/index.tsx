@@ -152,7 +152,7 @@ const TransactionItem = ({
   const chain = Object.values(CHAINS).find((c) => c.id === item.chainId)!;
   const originTx = minBy(item.txs, (tx) => tx.createdAt)!;
   const completedTx = item.txs.find((tx) => tx.isCompleted);
-  const isCompleted = !item.isPending;
+  const isCompleted = !item.isPending || item.isSubmitFailed;
   const intervalDelay = item.isPending ? 1000 : null;
   const isCanceled =
     !item.isPending &&
@@ -183,9 +183,15 @@ const TransactionItem = ({
     if (gasTokenCount) return;
 
     const results = await Promise.all(
-      item.txs.map((tx) =>
-        wallet.openapi.getTx(chain.serverId, tx.hash, Number(tx.rawTx.gasPrice))
-      )
+      item.txs
+        .filter((tx) => !tx.isSubmitFailed)
+        .map((tx) =>
+          wallet.openapi.getTx(
+            chain.serverId,
+            tx.hash,
+            Number(tx.rawTx.gasPrice)
+          )
+        )
     );
     let map = {};
     results.forEach(
@@ -239,7 +245,7 @@ const TransactionItem = ({
     }
   };
 
-  if (item.isPending) {
+  if (item.isPending && !item.isSubmitFailed) {
     useInterval(() => {
       loadTxData();
     }, intervalDelay);
@@ -301,6 +307,7 @@ const TransactionItem = ({
   };
 
   const handleOpenScan = () => {
+    if (completedTx?.isSubmitFailed) return;
     let hash = '';
     if (isCompleted) {
       hash = completedTx!.hash;
@@ -311,32 +318,34 @@ const TransactionItem = ({
     openInTab(chain.scanLink.replace(/_s_/, hash));
   };
 
+  const isPending = item.isPending && !item.isSubmitFailed;
+
   return (
     <div
       className={clsx('tx-history__item', {
-        'opacity-50': isCanceled || item.isFailed,
+        'opacity-50': isCanceled || item.isFailed || item.isSubmitFailed,
       })}
     >
       <div className="tx-history__item--main">
-        {item.isPending && (
+        {isPending && (
           <div className="pending">
             <SvgPendingSpin className="icon icon-pending-spin" />
             {t('Pending')}
           </div>
         )}
         <div className="tx-id">
-          <span>
-            {item.isPending ? null : sinceTime(item.createdAt / 1000)}
-          </span>
-          <span>
-            {chain.name} #{item.nonce}
-          </span>
+          <span>{isPending ? null : sinceTime(item.createdAt / 1000)}</span>
+          {!item.isSubmitFailed && (
+            <span>
+              {chain.name} #{item.nonce}
+            </span>
+          )}
         </div>
         <TransactionExplain
           explain={item.explain}
           onOpenScan={handleOpenScan}
         />
-        {item.isPending ? (
+        {isPending ? (
           <div className="tx-footer">
             {item.txs.length > 1 ? (
               <div className="pending-detail">
@@ -394,28 +403,33 @@ const TransactionItem = ({
           </div>
         ) : (
           <div className="tx-footer justify-between text-12">
-            <span className="flex-1 whitespace-nowrap overflow-ellipsis overflow-hidden text-gray-light">
-              Gas:{' '}
-              {gasTokenCount
-                ? `${gasTokenCount.toFixed(
-                    8
-                  )} ${gasTokenSymbol} ($${gasUSDValue})`
-                : txQueues[completedTx!.hash]
-                ? txQueues[completedTx!.hash].tokenCount?.toFixed(8) +
-                  ` ${txQueues[completedTx!.hash].token?.symbol} ($${(
-                    txQueues[completedTx!.hash].tokenCount! *
-                    (txQueues[completedTx!.hash].token?.price || 1)
-                  ).toFixed(2)})`
-                : t('Unknown')}
-            </span>
+            {item.isSubmitFailed ? (
+              <span className="flex-1 whitespace-nowrap overflow-ellipsis overflow-hidden text-gray-light" />
+            ) : (
+              <span className="flex-1 whitespace-nowrap overflow-ellipsis overflow-hidden text-gray-light">
+                Gas:{' '}
+                {gasTokenCount
+                  ? `${gasTokenCount.toFixed(
+                      8
+                    )} ${gasTokenSymbol} ($${gasUSDValue})`
+                  : txQueues[completedTx!.hash]
+                  ? txQueues[completedTx!.hash].tokenCount?.toFixed(8) +
+                    ` ${txQueues[completedTx!.hash].token?.symbol} ($${(
+                      txQueues[completedTx!.hash].tokenCount! *
+                      (txQueues[completedTx!.hash].token?.price || 1)
+                    ).toFixed(2)})`
+                  : t('Unknown')}
+              </span>
+            )}
             <span className="text-red-light">
               {isCanceled && t('Canceled')}
               {item.isFailed && t('Failed')}
+              {item.isSubmitFailed && t('Failed to submit')}
             </span>
           </div>
         )}
       </div>
-      {item.isPending && item.txs.length > 1 && (
+      {isPending && item.txs.length > 1 && (
         <div className="tx-history__item--children">
           {item.txs
             .sort((a, b) => b.createdAt - a.createdAt)

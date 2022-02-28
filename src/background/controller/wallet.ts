@@ -2,7 +2,7 @@ import * as ethUtil from 'ethereumjs-util';
 import Wallet, { thirdparty } from 'ethereumjs-wallet';
 import { ethErrors } from 'eth-rpc-errors';
 import * as bip39 from 'bip39';
-import { ethers } from 'ethers';
+import { ethers, Contract } from 'ethers';
 import { groupBy } from 'lodash';
 import {
   keyringService,
@@ -25,13 +25,16 @@ import { KEYRING_CLASS, DisplayedKeryring } from 'background/service/keyring';
 import providerController from './provider/controller';
 import BaseController from './base';
 import {
+  KEYRING_WITH_INDEX,
   CHAINS,
   INTERNAL_REQUEST_ORIGIN,
   EVENTS,
   BRAND_ALIAN_TYPE_TEXT,
   WALLET_BRAND_CONTENT,
   KEYRING_TYPE,
+  CHAINS_ENUM,
 } from 'consts';
+import { ERC20ABI } from 'consts/abi';
 import { Account, ChainGas } from '../service/preference';
 import { ConnectedSite } from '../service/permission';
 import { ExplainTxResponse, TokenItem } from '../service/openapi';
@@ -94,6 +97,30 @@ export class WalletController extends BaseController {
   getApproval = notificationService.getApproval;
   resolveApproval = notificationService.resolveApproval;
   rejectApproval = notificationService.rejectApproval;
+
+  approveToken = async (
+    chainServerId: string,
+    id: string,
+    spender: string,
+    amount: number
+  ) => {
+    const account = await preferenceService.getCurrentAccount();
+    if (!account) throw new Error('no current account');
+    const chainId = Object.values(CHAINS)
+      .find((chain) => chain.serverId === chainServerId)
+      ?.id.toString();
+    if (!chainId) throw new Error('invalid chain id');
+    buildinProvider.currentProvider.currentAccount = account.address;
+    buildinProvider.currentProvider.currentAccountType = account.type;
+    buildinProvider.currentProvider.currentAccountBrand = account.brandName;
+    buildinProvider.currentProvider.chainId = chainId;
+    const provider = new ethers.providers.Web3Provider(
+      buildinProvider.currentProvider
+    );
+    const signer = provider.getSigner();
+    const contract = new Contract(id, ERC20ABI, signer);
+    await contract.approve(spender, amount);
+  };
 
   initAlianNames = async () => {
     await preferenceService.changeInitAlianNameStatus();
@@ -195,6 +222,30 @@ export class WalletController extends BaseController {
   clearPageStateCache = () => pageStateCacheService.clear();
   setPageStateCache = (cache: CacheState) => pageStateCacheService.set(cache);
 
+  getIndexByAddress = (address: string, type: string) => {
+    const hasIndex = KEYRING_WITH_INDEX.includes(type);
+    if (!hasIndex) return null;
+    const keyring = keyringService.getKeyringByType(type);
+    if (!keyring) return null;
+    switch (type) {
+      case KEYRING_CLASS.HARDWARE.LEDGER: {
+        return keyring.getIndexFromAddress(address);
+      }
+      case KEYRING_CLASS.HARDWARE.GRIDPLUS: {
+        const accountIndices = keyring.accountIndices;
+        const accounts = keyring.accounts;
+        const index = accounts.findIndex(
+          (account) => account.toLowerCase() === address.toLowerCase()
+        );
+        if (index === -1) return null;
+        if (accountIndices.length - 1 < index) return null;
+        return accountIndices[index];
+      }
+      default:
+        return null;
+    }
+  };
+
   getAddressBalance = async (address: string) => {
     const data = await openapiService.getTotalBalance(address);
     preferenceService.updateAddressBalance(address, data);
@@ -220,6 +271,13 @@ export class WalletController extends BaseController {
     preferenceService.getLastTimeSendToken(address);
   setLastTimeSendToken = (address: string, token: TokenItem) =>
     preferenceService.setLastTimeSendToken(address, token);
+
+  getTokenApprovalChain = (address: string) =>
+    preferenceService.getTokenApprovalChain(address);
+
+  setTokenApprovalChain = (address: string, chain: CHAINS_ENUM) => {
+    preferenceService.setTokenApprovalChain(address, chain);
+  };
 
   /* chains */
   getSavedChains = () => preferenceService.getSavedChains();
@@ -513,12 +571,11 @@ export class WalletController extends BaseController {
         });
       });
       keyring.on('statusChange', (data) => {
-        if (preferenceService.getPopupOpen()) {
-          eventBus.emit(EVENTS.broadcastToUI, {
-            method: EVENTS.WALLETCONNECT.STATUS_CHANGED,
-            params: data,
-          });
-        } else {
+        eventBus.emit(EVENTS.broadcastToUI, {
+          method: EVENTS.WALLETCONNECT.STATUS_CHANGED,
+          params: data,
+        });
+        if (!preferenceService.getPopupOpen()) {
           setPageStateCacheWhenPopupClose(data);
         }
       });
@@ -606,10 +663,10 @@ export class WalletController extends BaseController {
 
     if (isNewKey) {
       await keyringService.addKeyring(keyring);
-      keyring.removeAllListeners('statucChange');
     }
 
     await keyringService.addNewAccount(keyring);
+    this.clearPageStateCache();
     return this._setCurrentAccountFromKeyring(keyring, -1);
   };
 
@@ -630,6 +687,10 @@ export class WalletController extends BaseController {
     const seedWords = serialized.mnemonic;
 
     return seedWords;
+  };
+
+  clearAddressPendingTransactions = (address: string) => {
+    return transactionHistoryService.clearPendingTransactions(address);
   };
 
   importPrivateKey = async (data) => {

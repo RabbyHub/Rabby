@@ -43,9 +43,12 @@ interface ApprovalRes extends Tx {
   address?: string;
   uiRequestComponent?: string;
   isSend?: boolean;
+  isSpeedUp?: boolean;
+  isCancel?: boolean;
   isGnosis?: boolean;
   account?: Account;
   extra?: Record<string, any>;
+  traceId?: string;
 }
 
 interface Web3WalletPermission {
@@ -143,7 +146,7 @@ class ProviderController extends BaseController {
     }
 
     const _account = await this.getCurrentAccount();
-    const account = _account ? [_account.address] : [];
+    const account = _account ? [_account.address.toLowerCase()] : [];
     sessionService.broadcastEvent('accountsChanged', account);
     const connectSite = permissionService.getConnectedSite(origin);
     if (connectSite) {
@@ -167,7 +170,7 @@ class ProviderController extends BaseController {
     }
 
     const account = await this.getCurrentAccount();
-    return account ? [account.address] : [];
+    return account ? [account.address.toLowerCase()] : [];
   };
 
   ethCoinbase = async ({ session: { origin } }) => {
@@ -176,7 +179,7 @@ class ProviderController extends BaseController {
     }
 
     const account = await this.getCurrentAccount();
-    return account ? account.address : null;
+    return account ? account.address.toLowerCase() : null;
   };
 
   ethChainId = ({ session }: { session: Session }) => {
@@ -234,11 +237,15 @@ class ProviderController extends BaseController {
     } = cloneDeep(options);
     const keyring = await this._checkAddress(txParams.from);
     const isSend = !!txParams.isSend;
+    const isSpeedUp = !!txParams.isSpeedUp;
+    const isCancel = !!txParams.isCancel;
+    const traceId = approvalRes.traceId;
     delete txParams.isSend;
     delete approvalRes.isSend;
     delete approvalRes.address;
     delete approvalRes.type;
     delete approvalRes.uiRequestComponent;
+    delete approvalRes.traceId;
     const tx = new Transaction(approvalRes);
     const currentAccount = preferenceService.getCurrentAccount()!;
     let opts;
@@ -324,18 +331,38 @@ class ProviderController extends BaseController {
     }
     try {
       validateGasPriceRange(approvalRes);
-      const hash = await openapiService.pushTx({
-        ...approvalRes,
-        r: bufferToHex(signedTx.r),
-        s: bufferToHex(signedTx.s),
-        v: bufferToHex(signedTx.v),
-        value: approvalRes.value || '0x0',
-      });
+      const hash = await openapiService.pushTx(
+        {
+          ...approvalRes,
+          r: bufferToHex(signedTx.r),
+          s: bufferToHex(signedTx.s),
+          v: bufferToHex(signedTx.v),
+          value: approvalRes.value || '0x0',
+        },
+        traceId
+      );
 
       onTranscationSubmitted(hash);
       return hash;
     } catch (e: any) {
-      console.log('e', e);
+      if (!isSpeedUp && !isCancel) {
+        const cacheExplain = transactionHistoryService.getExplainCache({
+          address: txParams.from,
+          chainId: Number(approvalRes.chainId),
+          nonce: Number(approvalRes.nonce),
+        });
+        transactionHistoryService.addSubmitFailedTransaction(
+          {
+            rawTx: approvalRes,
+            createdAt: Date.now(),
+            isCompleted: true,
+            hash: '',
+            failed: false,
+            isSubmitFailed: true,
+          },
+          cacheExplain
+        );
+      }
       const errMsg = e.message || JSON.stringify(e);
       notification.create(undefined, i18n.t('Transaction push failed'), errMsg);
       throw new Error(errMsg);

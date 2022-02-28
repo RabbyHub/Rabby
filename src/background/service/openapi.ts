@@ -70,6 +70,7 @@ export interface SecurityCheckResponse {
   danger_list: SecurityCheckItem[];
   warning_list: SecurityCheckItem[];
   forbidden_list: SecurityCheckItem[];
+  trace_id: string;
 }
 
 export interface Tx {
@@ -114,6 +115,36 @@ export interface TokenItem {
   raw_amount?: number;
   raw_amount_hex_str?: string;
 }
+
+export interface TokenApproval {
+  id: string;
+  name: string;
+  symbol: string;
+  logo_url: string;
+  chain: string;
+  price: number;
+  balance: number;
+  spenders: Spender[];
+  sum_exposure_usd: number;
+  exposure_balance: number;
+}
+
+export interface Spender {
+  id: string;
+  value: number;
+  exposure_usd: number;
+  protocol: {
+    id: string;
+    name: string;
+    logo_url: string;
+    chain: string;
+  };
+  is_contract: boolean;
+  is_open_source: boolean;
+  is_hacked: boolean;
+  is_abandoned: boolean;
+}
+
 export interface AssetItem {
   id: string;
   chain: string;
@@ -264,6 +295,7 @@ export interface ExplainTxResponse {
     func: string;
     params: Array<string[] | number | string>;
   };
+  abiStr?: string;
   balance_change: BalanceChange;
   gas: {
     estimated_gas_cost_usd_value: number;
@@ -518,6 +550,11 @@ class OpenApiService {
               'page_count',
             ],
           },
+          user_token_authorized_list: {
+            path: '/v1/user/token_authorized_list',
+            method: 'get',
+            params: ['id', 'chain_id'],
+          },
         },
       },
     });
@@ -538,11 +575,13 @@ class OpenApiService {
 
       if (code && code !== 200) {
         if (msg) {
+          let err;
           try {
-            throw new Error(JSON.parse(msg.en));
+            err = new Error(JSON.parse(msg));
           } catch (e) {
-            throw new Error(msg.en);
+            err = new Error(msg);
           }
+          throw err;
         }
         throw new Error(response.data);
       }
@@ -554,7 +593,7 @@ class OpenApiService {
         await this.getConfig();
       } catch (e) {
         setTimeout(() => {
-          getConfig(); // reload openapi config if load faild 5s later
+          getConfig(); // reload openapi config if load failed 5s later
         }, 5000);
       }
     };
@@ -765,6 +804,15 @@ class OpenApiService {
         wrapped_token_id: '',
         symbol: '',
       },
+      {
+        community_id: 10000,
+        id: 'sbch',
+        logo_url: '',
+        name: '',
+        native_token_id: '',
+        wrapped_token_id: '',
+        symbol: '',
+      },
     ]);
   };
 
@@ -873,10 +921,11 @@ class OpenApiService {
     return data;
   };
 
-  pushTx = async (tx: Tx) => {
+  pushTx = async (tx: Tx, traceId?: string) => {
     const config = this.store.config.push_tx;
     const { data } = await this.request[config.method](config.path, {
       tx,
+      traceId,
     });
 
     return data;
@@ -1044,6 +1093,21 @@ class OpenApiService {
     const { data } = await this.request[config.method](config.path, {
       params: {
         token: tokenName,
+      },
+    });
+
+    return data;
+  };
+
+  tokenAuthorizedList = async (
+    id: string,
+    chain_id: string
+  ): Promise<TokenApproval[]> => {
+    const config = this.store.config.user_token_authorized_list;
+    const { data } = await this.request[config.method](config.path, {
+      params: {
+        id,
+        chain_id,
       },
     });
 

@@ -273,22 +273,20 @@ provider
         }),
         writable: false,
       });
+      window.web3 = {
+        currentProvider: window.ethereum,
+      };
     }
   });
 
-if (window.ethereum) {
-  provider.request({
-    method: 'hasOtherProvider',
-    params: [],
+if (!window.ethereum) {
+  window.ethereum = new Proxy(provider, {
+    deleteProperty: () => true,
   });
+
+  window.web3 = {
+    currentProvider: window.ethereum,
+  };
 }
-
-window.ethereum = new Proxy(provider, {
-  deleteProperty: () => true,
-});
-
-window.web3 = {
-  currentProvider: window.ethereum,
-};
 
 window.dispatchEvent(new Event('ethereum#initialized'));

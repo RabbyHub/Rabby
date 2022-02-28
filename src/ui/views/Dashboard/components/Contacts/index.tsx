@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { message, DrawerProps } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { ContactBookItem } from 'background/service/contactBook';
@@ -18,6 +18,7 @@ export interface Account {
   name?: string;
 }
 const Contacts = ({ visible, onClose }: ContactsProps) => {
+  const ref = useRef(null);
   const wallet = useWallet();
   const { t } = useTranslation();
 
@@ -66,6 +67,12 @@ const Contacts = ({ visible, onClose }: ContactsProps) => {
     setCanAdd(true);
     init();
   };
+  const hideNewContact = () => {
+    if (!canAdd) {
+      setCanAdd(true);
+      setAccounts(accounts.slice(0, accounts.length - 1));
+    }
+  };
   useEffect(() => {
     if (visible) {
       init();
@@ -108,7 +115,21 @@ const Contacts = ({ visible, onClose }: ContactsProps) => {
         <div>Address</div>
         <div>Memo</div>
       </div>
-      <div className="list-wrapper">
+      <div
+        className="list-wrapper"
+        ref={ref}
+        onClick={(e) => {
+          const isClickOutside = e.target === ref.current;
+          if (!isClickOutside) {
+            return;
+          }
+          hideNewContact();
+          if (editIndex) {
+            setEditIndex(null);
+            init();
+          }
+        }}
+      >
         {accounts.length > 0
           ? accounts.map((item, index) => (
               <ContactsItem
@@ -121,6 +142,7 @@ const Contacts = ({ visible, onClose }: ContactsProps) => {
                 handleDeleteAddress={handleDeleteAddress}
                 handleUpdateContact={handleUpdateContact}
                 addContact={addContact}
+                hideNewContact={hideNewContact}
               />
             ))
           : NoDataUI}

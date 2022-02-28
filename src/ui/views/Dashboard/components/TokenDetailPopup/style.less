@@ -12,31 +12,34 @@
 
   &-header {
     padding: 20px;
-    border-bottom: 1px solid #e5e9ef;
+    border-bottom: 1px solid @color-border;
     position: absolute;
     background-color: #fff;
     top: 0;
     left: 0;
     right: 0;
     z-index: 1;
+    .token-with-chain .chain-symbol {
+      display: none;
+    }
     .token-symbol {
       font-weight: 500;
       font-size: 20px;
       line-height: 23px;
       text-align: center;
-      color: #13141a;
+      color: @color-title;
     }
     .address {
       display: flex;
       align-items: center;
-      background: #f5f6fa;
+      background: @color-bg;
       border-radius: 4px;
       padding: 6px 7px 4px;
       display: flex;
       gap: 6px;
       font-size: 12px;
       line-height: 14px;
-      color: #707280;
+      color: @color-comment-1;
     }
   }
 
@@ -52,14 +55,14 @@
     padding-top: 16px;
     padding-bottom: 20px;
     text-align: center;
-    border-top: 1px solid #f5f6fa;
+    border-top: 1px solid @color-bg;
     background-color: #fff;
   }
 
   .balance {
     font-size: 14px;
     line-height: 16px;
-    color: #707280;
+    color: @color-comment-1;
 
     &-title {
       margin-bottom: 4px;
@@ -73,7 +76,7 @@
       font-weight: bold;
       font-size: 24px;
       line-height: 28px;
-      color: #13141a;
+      color: @color-title;
       &-usd {
         margin-top: 2px;
       }
@@ -86,7 +89,7 @@
   color: #707880;
   &-card {
     position: relative;
-    background: #f5f6fa;
+    background: @color-bg;
     border-radius: 6px;
     padding: 0 12px;
     &:not(:last-child) {
@@ -129,11 +132,11 @@
     }
   }
   &-loading {
-    background: #f5f6fa;
+    background: @color-bg;
     border-radius: 6px;
     padding: 12px 12px 16px;
     .ant-skeleton-input {
-      background-color: #e5e9ef;
+      background-color: @color-border;
     }
     &:not(:last-child) {
       margin-bottom: 8px;
