@@ -1,5 +1,5 @@
 import React from 'react';
-import { Eip1559Tx, ExplainTxResponse, Tx } from 'background/service/openapi';
+import { ExplainTxResponse, Tx } from 'background/service/openapi';
 import { CHAINS, CHAINS_ENUM } from 'consts';
 import { NameAndAddress } from 'ui/component/index';
 import { TxTypeComponent } from '../SignTx';
@@ -9,7 +9,7 @@ interface GnosisExplainProps {
   data: ExplainTxResponse;
   chainEnum: CHAINS_ENUM;
   raw: Record<string, string | number>;
-  tx: Tx | Eip1559Tx;
+  tx: Tx;
 }
 
 const GnosisExplain = ({ data, chainEnum, raw, tx }: GnosisExplainProps) => {

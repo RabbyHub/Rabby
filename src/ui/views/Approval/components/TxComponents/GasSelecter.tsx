@@ -6,7 +6,7 @@ import { ValidateStatus } from 'antd/lib/form/FormItem';
 import { useTranslation, Trans } from 'react-i18next';
 import { useDebounce } from 'react-use';
 import { CHAINS, GAS_LEVEL_TEXT, MINIMUM_GAS_LIMIT } from 'consts';
-import { GasResult, Tx, GasLevel, Eip1559Tx } from 'background/service/openapi';
+import { GasResult, Tx, GasLevel } from 'background/service/openapi';
 import { Popup } from 'ui/component';
 import { formatTokenAmount } from 'ui/utils/number';
 import IconSetting from 'ui/assets/setting-gray.svg';
@@ -21,7 +21,7 @@ interface GasSelectorProps {
   gasLimit: string;
   gas: GasResult;
   chainId: number;
-  tx: Tx | Eip1559Tx;
+  tx: Tx;
   onChange(gas: GasSelectorResponse): void;
   onMaxPriorityFeeChange(fee: number): void;
   isReady: boolean;
@@ -56,7 +56,7 @@ const GasSelector = ({
   );
   const [modalVisible, setModalVisible] = useState(false);
   const [customGas, setCustomGas] = useState<string | number>(
-    Number((tx as Tx).gasPrice || (tx as Eip1559Tx).maxFeePerGas || 0) / 1e9
+    Number(tx.gasPrice || tx.maxFeePerGas || 0) / 1e9
   );
   const [maxPriorityFee, setMaxPriorityFee] = useState<number>(
     selectedGas ? selectedGas.price / 1e9 : 0
@@ -226,7 +226,6 @@ const GasSelector = ({
 
   useEffect(() => {
     if (!selectedGas) return;
-    console.log('selectedGas', selectedGas);
     setMaxPriorityFee(selectedGas.price / 1e9);
     if (selectedGas?.level !== 'custom') return;
     setCustomGas(selectedGas.price / 1e9);
@@ -243,7 +242,6 @@ const GasSelector = ({
   }, [isReady]);
 
   useEffect(() => {
-    console.log('maxPriorityFee', maxPriorityFee);
     onMaxPriorityFeeChange(maxPriorityFee * 1e9);
   }, [maxPriorityFee]);
 
@@ -252,7 +250,7 @@ const GasSelector = ({
       <>
         <p className="section-title">{t('gasCostTitle')}</p>
         <div className="gas-selector gray-section-block">
-          <div className="gas-info">
+          <div className="gas-info mb-12">
             <Skeleton.Input active style={{ width: 200 }} />
           </div>
           <div className="flex mt-15">

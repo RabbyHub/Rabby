@@ -250,7 +250,6 @@ class ProviderController extends BaseController {
     delete approvalRes.type;
     delete approvalRes.uiRequestComponent;
     delete approvalRes.traceId;
-    console.log('approvalRes', approvalRes);
     let tx;
     const is1559 = is1559Tx(approvalRes);
     if (is1559) {
@@ -258,9 +257,12 @@ class ProviderController extends BaseController {
         { chainId: approvalRes.chainId },
         { hardfork: Hardfork.London }
       );
-      tx = FeeMarketEIP1559Transaction.fromTxData(approvalRes as any, {
-        common,
-      });
+      tx = FeeMarketEIP1559Transaction.fromTxData(
+        { ...approvalRes, gasLimit: approvalRes.gas } as any,
+        {
+          common,
+        }
+      );
     } else {
       tx = new Transaction(approvalRes);
     }
@@ -347,9 +349,9 @@ class ProviderController extends BaseController {
       if (!buildTx.v) {
         Sentry.captureException(new Error(`v missed, ${keyring.type}`));
       } else if (!buildTx.s) {
-        Sentry.captureException(new Error(`s midded, ${keyring.type}`));
+        Sentry.captureException(new Error(`s missed, ${keyring.type}`));
       } else if (!buildTx.r) {
-        Sentry.captureException(new Error(`r midded, ${keyring.type}`));
+        Sentry.captureException(new Error(`r missed, ${keyring.type}`));
       } else {
         Sentry.captureException(
           new Error(`invalid signature, ${keyring.type}`)

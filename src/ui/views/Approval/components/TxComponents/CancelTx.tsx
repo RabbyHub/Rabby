@@ -1,4 +1,4 @@
-import { Eip1559Tx, ExplainTxResponse, Tx } from 'background/service/openapi';
+import { ExplainTxResponse, Tx } from 'background/service/openapi';
 import { CHAINS, CHAINS_ENUM } from 'consts';
 import React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
@@ -17,7 +17,7 @@ const CancelTx = ({
 }: {
   chainEnum: CHAINS_ENUM;
   data: ExplainTxResponse;
-  tx: Tx | Eip1559Tx;
+  tx: Tx;
   isSpeedUp: boolean;
   raw: Record<string, string | number>;
 }) => {

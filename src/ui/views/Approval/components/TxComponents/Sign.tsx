@@ -1,4 +1,4 @@
-import { Eip1559Tx, ExplainTxResponse, Tx } from 'background/service/openapi';
+import { ExplainTxResponse, Tx } from 'background/service/openapi';
 import { CHAINS, CHAINS_ENUM } from 'consts';
 import React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
@@ -13,7 +13,7 @@ interface SignProps {
   chainEnum: CHAINS_ENUM;
   raw: Record<string, string | number>;
   isSpeedUp: boolean;
-  tx: Tx | Eip1559Tx;
+  tx: Tx;
 }
 
 const Sign = ({ data, chainEnum, raw, isSpeedUp, tx }: SignProps) => {

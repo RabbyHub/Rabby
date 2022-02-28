@@ -31,15 +31,12 @@ import {
   SecurityCheckResponse,
   SecurityCheckDecision,
   Tx,
-  Eip1559Tx,
   GasLevel,
   Chain,
 } from 'background/service/openapi';
 import {
   validateGasPriceRange,
-  convert1559ToLegacy,
   convertLegacyTo1559,
-  is1559Tx,
 } from '@/utils/transaction';
 import { useWallet, useApproval } from 'ui/utils';
 import { ChainGas, Account } from 'background/service/preference';
@@ -110,7 +107,7 @@ export const TxTypeComponent = ({
   isReady: boolean;
   raw: Record<string, string | number>;
   onChange(data: Record<string, any>): void;
-  tx: Tx | Eip1559Tx;
+  tx: Tx;
   isSpeedUp: boolean;
 }) => {
   if (!isReady) return <Loading chainEnum={chain.enum} />;
@@ -333,7 +330,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     }
     return result;
   };
-  const [tx, setTx] = useState<Tx | Eip1559Tx>({
+  const [tx, setTx] = useState<Tx>({
     chainId,
     data: data || '0x', // can not execute with empty string, use 0x instead
     from,
@@ -498,29 +495,28 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     };
     if (selectedGas.level === 'custom') {
       if (support1559) {
-        selected.gasPrice = parseInt((tx as Eip1559Tx)?.maxFeePerGas);
+        selected.gasPrice = parseInt(tx.maxFeePerGas!);
       } else {
-        selected.gasPrice = parseInt((tx as Tx)?.gasPrice);
+        selected.gasPrice = parseInt(tx.gasPrice!);
       }
     } else {
       selected.gasLevel = selectedGas.level;
     }
     await wallet.updateLastTimeGasSelection(chainId, selected);
-    const transaction = {
+    const transaction: Tx = {
       from: tx.from,
       to: tx.to,
       data: tx.data,
       nonce: tx.nonce,
       value: tx.value,
       chainId: tx.chainId,
+      gas: '',
     };
     if (support1559) {
-      (transaction as Eip1559Tx).maxFeePerGas = (tx as Eip1559Tx).maxFeePerGas;
-      (transaction as Eip1559Tx).maxPriorityFeePerGas = intToHex(
-        maxPriorityFee
-      );
+      transaction.maxFeePerGas = tx.maxFeePerGas;
+      transaction.maxPriorityFeePerGas = intToHex(maxPriorityFee);
     } else {
-      (transaction as Tx).gasPrice = (tx as Tx).gasPrice;
+      (transaction as Tx).gasPrice = tx.gasPrice;
     }
     if (currentAccount?.type && WaitingSignComponent[currentAccount.type]) {
       resolveApproval({
@@ -704,7 +700,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     }
     if (isSpeedUp || isCancel) {
       // use gasPrice set by dapp when it's a speedup or cancel tx
-      customGasPrice = parseInt((tx as Tx).gasPrice);
+      customGasPrice = parseInt(tx.gasPrice!);
     }
     const gasList = await loadGasMarket(chain, customGasPrice);
     let gas: GasLevel | null = null;
