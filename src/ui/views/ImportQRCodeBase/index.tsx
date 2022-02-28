@@ -1,15 +1,17 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Form } from 'antd';
 import { useHistory } from 'react-router-dom';
-import { composeInitialProps, useTranslation } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { URDecoder } from '@ngraveio/bc-ur';
 import QRCodeReader from 'ui/component/QRCodeReader';
 import { StrayPageWithButton } from 'ui/component';
-import { useWallet, useWalletRequest } from 'ui/utils';
+import { useWallet } from 'ui/utils';
 import { openInternalPageInTab } from 'ui/utils/webapi';
 import './style.less';
 
 import KeystoneLogo from 'ui/assets/walletlogo/keystone.png';
+import { HARDWARE_KEYRING_TYPES } from 'consts';
+import QRCodeCheckerDetail from 'ui/views/QRCodeCheckerDetail';
 
 const ImportQRCodeBase = () => {
   const { t } = useTranslation();
@@ -17,23 +19,50 @@ const ImportQRCodeBase = () => {
   const wallet = useWallet();
   const [form] = Form.useForm();
   const decoder = useRef(new URDecoder());
+  const [errorMessage, setErrorMessage] = useState('');
+  const [scan, setScan] = useState(true);
 
-  const handleScanQRCodeSuccess = (data) => {
-    decoder.current.receivePart(data);
-    if (decoder.current.isComplete()) {
-      const result = decoder.current.resultUR();
-      result.cbor.toString('hex');
-      /* TODO:
-        const stashKeyringId = await wallet.submitQRHardwareCryptoHDKey();
+  const showErrorChecker = useMemo(() => {
+    return errorMessage !== '';
+  }, [errorMessage]);
+
+  const handleScanQRCodeSuccess = async (data) => {
+    try {
+      decoder.current.receivePart(data);
+      if (decoder.current.isComplete()) {
+        const result = decoder.current.resultUR();
+        let stashKeyringId;
+        if (result.type === 'crypto-hdkey') {
+          stashKeyringId = await wallet.submitQRHardwareCryptoHDKey(
+            result.cbor.toString('hex')
+          );
+        } else if (result.type === 'crypto-account') {
+          stashKeyringId = await wallet.submitQRHardwareCryptoAccount(
+            result.cbor.toString('hex')
+          );
+        } else {
+          setErrorMessage(
+            t(
+              'Invalid QR code. Please scan the sync QR code of the hardware wallet.'
+            )
+          );
+          return;
+        }
         history.push({
-          pathname: '/import/select-address',
+          pathname: '/popup/import/select-address',
           state: {
-            keyring: HARDWARE_KEYRING_TYPES.KeyStone.type,
-            path: currentPath,
-            keyringId
+            keyring: HARDWARE_KEYRING_TYPES.Keystone.type,
+            keyringId: stashKeyringId,
           },
         });
-      */
+      }
+    } catch (e) {
+      setScan(false);
+      setErrorMessage(
+        t(
+          'Invalid QR code. Please scan the sync QR code of the hardware wallet.'
+        )
+      );
     }
   };
 
@@ -60,6 +89,10 @@ const ImportQRCodeBase = () => {
     };
   }, []);
 
+  const handleScan = () => {
+    setErrorMessage('');
+    setScan(true);
+  };
   return (
     <StrayPageWithButton
       form={form}
@@ -88,12 +121,24 @@ const ImportQRCodeBase = () => {
         <img src="/images/watch-mask.png" className="mask" />
       </header>
       <div className="flex justify-center qrcode-scanner">
-        <QRCodeReader
-          width={176}
-          height={176}
-          onSuccess={handleScanQRCodeSuccess}
-          onError={handleScanQRCodeError}
-        />
+        {scan && (
+          <QRCodeReader
+            width={176}
+            height={176}
+            onSuccess={handleScanQRCodeSuccess}
+            onError={handleScanQRCodeError}
+          />
+        )}
+        {showErrorChecker && (
+          <QRCodeCheckerDetail
+            visible={showErrorChecker}
+            onCancel={handleClickBack}
+            data={errorMessage}
+            onOk={handleScan}
+            okText={t('Try Again')}
+            cancelText={t('Cancel')}
+          />
+        )}
       </div>
     </StrayPageWithButton>
   );

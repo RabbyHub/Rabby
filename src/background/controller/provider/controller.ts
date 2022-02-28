@@ -1,8 +1,8 @@
 import * as Sentry from '@sentry/browser';
-import Transaction from 'ethereumjs-tx';
 import Common, { Hardfork } from '@ethereumjs/common';
 import {
   TransactionFactory,
+  Transaction,
   FeeMarketEIP1559Transaction,
 } from '@ethereumjs/tx';
 import { ethers } from 'ethers';
@@ -406,7 +406,6 @@ class ProviderController extends BaseController {
           cacheExplain
         );
       }
-      console.log('e', e);
       const errMsg = e.message || JSON.stringify(e);
       notification.create(undefined, i18n.t('Transaction push failed'), errMsg);
       throw new Error(errMsg);
@@ -635,7 +634,7 @@ class ProviderController extends BaseController {
 
   walletRequestPermissions = ({ data: { params: permissions } }) => {
     const result: Web3WalletPermission[] = [];
-    if ('eth_accounts' in permissions?.[0]) {
+    if (permissions && 'eth_accounts' in permissions[0]) {
       result.push({ parentCapability: 'eth_accounts' });
     }
     return result;

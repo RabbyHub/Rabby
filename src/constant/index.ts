@@ -611,6 +611,7 @@ export const SUPPORT_1559_KEYRING_TYPE = [
   KEYRING_CLASS.HARDWARE.GRIDPLUS,
   KEYRING_CLASS.PRIVATE_KEY,
   KEYRING_CLASS.MNEMONIC,
+  KEYRING_CLASS.HARDWARE.KEYSTONE,
 ];
 
 export const KEYRING_TYPE_TEXT = {
@@ -634,6 +635,7 @@ export const BRAND_ALIAN_TYPE_TEXT = {
   [KEYRING_CLASS.HARDWARE.BITBOX02]: 'BitBox02',
   [KEYRING_CLASS.GNOSIS]: 'Gnosis',
   [KEYRING_CLASS.HARDWARE.GRIDPLUS]: 'GridPlus',
+  [KEYRING_CLASS.HARDWARE.KEYSTONE]: 'Keystone',
 };
 export const HARDWARE_KEYRING_TYPES = {
   BitBox02: {
@@ -656,9 +658,9 @@ export const HARDWARE_KEYRING_TYPES = {
     type: 'GridPlus Hardware',
     brandName: 'GridPlus',
   },
-  KeyStone: {
+  Keystone: {
     type: 'QR Hardware Wallet Device',
-    brandName: 'KeyStone',
+    brandName: 'Keystone',
   },
 };
 
@@ -814,6 +816,9 @@ export const EVENTS = {
     TX_BUILT: 'TransactionBuilt',
     TX_CONFIRMED: 'TransactionConfirmed',
   },
+  QRHARDWARE: {
+    ACQUIRE_MEMSTORE_SUCCEED: 'ACQUIRE_MEMSTORE_SUCCEED',
+  },
 };
 
 export enum WALLET_BRAND_TYPES {
@@ -905,7 +910,7 @@ export const WALLET_BRAND_CONTENT = {
     name: 'Keystone',
     brand: WALLET_BRAND_TYPES.KEYSTONE,
     icon: LogoKeystone,
-    image: LogoKeystoneWithBorder,
+    image: LogoKeystone,
     connectType: BRAND_WALLET_CONNECT_TYPE.QRCodeBase,
   },
   [WALLET_BRAND_TYPES.LEDGER]: {
@@ -975,6 +980,7 @@ export const KEYRING_ICONS = {
   [HARDWARE_KEYRING_TYPES.Onekey.type]: LogoOnekey,
   [HARDWARE_KEYRING_TYPES.Trezor.type]: IconTrezor24,
   [HARDWARE_KEYRING_TYPES.GridPlus.type]: IconGridPlus,
+  [HARDWARE_KEYRING_TYPES.Keystone.type]: LogoKeystone,
 };
 
 export const KEYRING_ICONS_WHITE = {
@@ -986,6 +992,7 @@ export const KEYRING_ICONS_WHITE = {
   [HARDWARE_KEYRING_TYPES.Onekey.type]: LogoOnekey,
   [HARDWARE_KEYRING_TYPES.Trezor.type]: IconTrezor24,
   [HARDWARE_KEYRING_TYPES.GridPlus.type]: IconGridPlus,
+  [HARDWARE_KEYRING_TYPES.Keystone.type]: LogoKeystone,
 };
 export const KEYRING_PURPLE_LOGOS = {
   [KEYRING_CLASS.MNEMONIC]: IconMnemonicPurple,
@@ -1002,6 +1009,7 @@ export const KEYRINGS_LOGOS = {
   [HARDWARE_KEYRING_TYPES.Onekey.type]: IconOneKey18,
   [HARDWARE_KEYRING_TYPES.Trezor.type]: IconTrezor24Border,
   [HARDWARE_KEYRING_TYPES.GridPlus.type]: IconGridPlus,
+  [HARDWARE_KEYRING_TYPES.Keystone.type]: LogoKeystone,
 };
 
 export const NOT_CLOSE_UNFOCUS_LIST: string[] = [

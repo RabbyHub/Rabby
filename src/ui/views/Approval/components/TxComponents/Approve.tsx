@@ -1,4 +1,4 @@
-import { Button, Form, Input, message, Modal } from 'antd';
+import { Button, Form, Input, message } from 'antd';
 import { ExplainTxResponse, TokenItem, Tx } from 'background/service/openapi';
 import { Account } from 'background/service/preference';
 import BigNumber from 'bignumber.js';
