@@ -328,3 +328,29 @@ textarea {
     padding: 20px 20px 24px;
   }
 }
+
+.ant-slider {
+  margin: 0;
+  .ant-slider-rail {
+    background-color: #E5E9EF;
+  }
+  .ant-slider-track {
+    background-color: #B4BDCC;
+  }
+  .ant-slider-handle {
+    border-color: #B4BDCC;
+    transition: box-shadow .3s;
+  }
+  &:hover {
+    .ant-slider-handle, .ant-slider-handle:not(.ant-tooltip-open) {
+      border-color: #B4BDCC;
+      box-shadow: 0px 2px 6px rgba(28, 31, 53, 0.2);
+    }
+    .ant-slider-rail {
+      background-color: #E5E9EF;
+    }
+    .ant-slider-track {
+      background-color: #B4BDCC;
+    }
+  }
+}

@@ -1,15 +1,16 @@
+import clsx from 'clsx';
 import React, { useEffect, useState, useRef } from 'react';
-import { Input, Button, Skeleton, Form } from 'antd';
+import { Input, Button, Skeleton, Form, Slider, Tooltip } from 'antd';
 import BigNumber from 'bignumber.js';
 import { ValidateStatus } from 'antd/lib/form/FormItem';
 import { useTranslation, Trans } from 'react-i18next';
 import { useDebounce } from 'react-use';
 import { CHAINS, GAS_LEVEL_TEXT, MINIMUM_GAS_LIMIT } from 'consts';
 import { GasResult, Tx, GasLevel } from 'background/service/openapi';
-import { Modal, Popup } from 'ui/component';
+import { Popup } from 'ui/component';
 import { formatTokenAmount } from 'ui/utils/number';
 import IconSetting from 'ui/assets/setting-gray.svg';
-import clsx from 'clsx';
+import IconInfo from 'ui/assets/infoicon.svg';
 
 export interface GasSelectorResponse extends GasLevel {
   gasLimit: number;
@@ -22,6 +23,7 @@ interface GasSelectorProps {
   chainId: number;
   tx: Tx;
   onChange(gas: GasSelectorResponse): void;
+  onMaxPriorityFeeChange(fee: number): void;
   isReady: boolean;
   recommendGasLimit: number;
   nonce: string;
@@ -29,6 +31,7 @@ interface GasSelectorProps {
   noUpdate: boolean;
   gasList: GasLevel[];
   selectedGas: GasLevel | null;
+  is1559: boolean;
 }
 
 const GasSelector = ({
@@ -37,12 +40,14 @@ const GasSelector = ({
   chainId,
   tx,
   onChange,
+  onMaxPriorityFeeChange,
   isReady,
   recommendGasLimit,
   nonce,
   disableNonce,
   gasList,
   selectedGas,
+  is1559,
 }: GasSelectorProps) => {
   const { t } = useTranslation();
   const customerInputRef = useRef<Input>(null);
@@ -51,7 +56,10 @@ const GasSelector = ({
   );
   const [modalVisible, setModalVisible] = useState(false);
   const [customGas, setCustomGas] = useState<string | number>(
-    Number(tx.gasPrice) / 1e9
+    Number(tx.gasPrice || tx.maxFeePerGas || 0) / 1e9
+  );
+  const [maxPriorityFee, setMaxPriorityFee] = useState<number>(
+    selectedGas ? selectedGas.price / 1e9 : 0
   );
   const [customNonce, setCustomNonce] = useState(Number(nonce));
   const [isFirstTimeLoad, setIsFirstTimeLoad] = useState(true);
@@ -178,6 +186,7 @@ const GasSelector = ({
       });
     }
   };
+
   const customGasConfirm = (e) => {
     const gas = {
       level: 'custom',
@@ -193,6 +202,10 @@ const GasSelector = ({
       nonce: Number(customNonce || nonce),
       level: gas.level,
     });
+  };
+
+  const handleMaxPriorityFeeChange = (val: number) => {
+    setMaxPriorityFee(val);
   };
 
   useDebounce(
@@ -212,6 +225,8 @@ const GasSelector = ({
   }, [afterGasLimit, selectedGas, gasList]);
 
   useEffect(() => {
+    if (!selectedGas) return;
+    setMaxPriorityFee(selectedGas.price / 1e9);
     if (selectedGas?.level !== 'custom') return;
     setCustomGas(selectedGas.price / 1e9);
   }, [selectedGas]);
@@ -226,12 +241,16 @@ const GasSelector = ({
     }
   }, [isReady]);
 
+  useEffect(() => {
+    onMaxPriorityFeeChange(maxPriorityFee * 1e9);
+  }, [maxPriorityFee]);
+
   if (!isReady && isFirstTimeLoad)
     return (
       <>
         <p className="section-title">{t('gasCostTitle')}</p>
         <div className="gas-selector gray-section-block">
-          <div className="gas-info">
+          <div className="gas-info mb-12">
             <Skeleton.Input active style={{ width: 200 }} />
           </div>
           <div className="flex mt-15">
@@ -312,6 +331,30 @@ const GasSelector = ({
             </div>
           ))}
         </div>
+        {is1559 && (
+          <div className="priority-slider">
+            <p className="priority-slider__tip">
+              Max Priority Fee: <span>{maxPriorityFee} Gwei</span>
+              <Tooltip
+                title="This chain supports EIP 1559. Setting the Max Priority Fee properly can save gas costs."
+                overlayClassName="rectangle"
+              >
+                <img src={IconInfo} className="icon icon-info" />
+              </Tooltip>
+            </p>
+            <Slider
+              min={0}
+              max={selectedGas ? selectedGas.price / 1e9 : 0}
+              onChange={handleMaxPriorityFeeChange}
+              value={maxPriorityFee}
+              step={1}
+            />
+            <p className="priority-slider__mark">
+              <span>0</span>
+              <span>{selectedGas ? selectedGas.price / 1e9 : 0}</span>
+            </p>
+          </div>
+        )}
       </div>
       <Popup
         height={460}

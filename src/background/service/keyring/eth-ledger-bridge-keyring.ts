@@ -6,8 +6,11 @@ import * as sigUtil from 'eth-sig-util';
 import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
 import Transport from '@ledgerhq/hw-transport';
 import LedgerEth from '@ledgerhq/hw-app-eth';
-import { byContractAddress } from '@ledgerhq/hw-app-eth/erc20';
-import { TransactionFactory } from '@ethereumjs/tx';
+import { is1559Tx } from '@/utils/transaction';
+import {
+  TransactionFactory,
+  FeeMarketEIP1559Transaction,
+} from '@ethereumjs/tx';
 
 const pathBase = 'm';
 const hdPathString = `${pathBase}/44'/60'/0'`;
@@ -329,7 +332,10 @@ class LedgerBridgeKeyring extends EventEmitter {
       tx.v = ethUtil.bufferToHex(tx.getChainId());
       tx.r = '0x00';
       tx.s = '0x00';
-      return this._signTransaction(address, tx, tx.to, (payload) => {
+
+      const rawTxHex = tx.serialize().toString('hex');
+
+      return this._signTransaction(address, rawTxHex, tx.to, (payload) => {
         tx.v = Buffer.from(payload.v, 'hex');
         tx.r = Buffer.from(payload.r, 'hex');
         tx.s = Buffer.from(payload.s, 'hex');
@@ -345,15 +351,11 @@ class LedgerBridgeKeyring extends EventEmitter {
     // forfeiting the benefit of immutability until this happens. We do still
     // return a Transaction that is frozen if the originally provided
     // transaction was also frozen.
-    const unfrozenTx: any = TransactionFactory.fromTxData(tx.toJSON(), {
-      common: tx.common,
-      freeze: false,
-    });
-    unfrozenTx.v = new ethUtil.BN(
-      ethUtil.addHexPrefix(tx.common.chainId()),
-      'hex'
-    );
-    return this._signTransaction(address, unfrozenTx, tx.to.buf, (payload) => {
+    const messageToSign = tx.getMessageToSign(false);
+    const rawTxHex = Buffer.isBuffer(messageToSign)
+      ? messageToSign.toString('hex')
+      : ethUtil.rlp.encode(messageToSign).toString('hex');
+    return this._signTransaction(address, rawTxHex, tx.to.buf, (payload) => {
       // Because tx will be immutable, first get a plain javascript object that
       // represents the transaction. Using txData here as it aligns with the
       // nomenclature of ethereumjs/tx.
@@ -364,28 +366,23 @@ class LedgerBridgeKeyring extends EventEmitter {
       txData.s = ethUtil.addHexPrefix(payload.s);
       // Adopt the 'common' option from the original transaction and set the
       // returned object to be frozen if the original is frozen.
-      return TransactionFactory.fromTxData(txData, {
-        common: tx.common,
-        freeze: Object.isFrozen(tx),
-      });
+      if (is1559Tx(txData)) {
+        return FeeMarketEIP1559Transaction.fromTxData(txData);
+      } else {
+        return TransactionFactory.fromTxData(txData, {
+          common: tx.common,
+          freeze: Object.isFrozen(tx),
+        });
+      }
     });
   }
 
-  async _signTransaction(address, tx, toAddress, handleSigning) {
+  async _signTransaction(address, rawTxHex, toAddress, handleSigning) {
     const hdPath = await this.unlockAccountByAddress(address);
     if (this.isWebUSB) {
-      const to = ethUtil.bufferToHex(toAddress).toLowerCase();
       await this.makeApp(true);
-      if (toAddress) {
-        const isKnownERC20Token = byContractAddress(to);
-        if (isKnownERC20Token)
-          await this.app!.provideERC20TokenInformation(isKnownERC20Token);
-      }
       try {
-        const res = await this.app!.signTransaction(
-          hdPath,
-          tx.serialize().toString('hex')
-        );
+        const res = await this.app!.signTransaction(hdPath, rawTxHex);
         const newOrMutatedTx = handleSigning(res);
         const valid = newOrMutatedTx.verifySignature();
         if (valid) {
@@ -406,7 +403,7 @@ class LedgerBridgeKeyring extends EventEmitter {
           {
             action: 'ledger-sign-transaction',
             params: {
-              tx: tx.serialize().toString('hex'),
+              tx: rawTxHex,
               hdPath,
               to: ethUtil.bufferToHex(toAddress).toLowerCase(),
             },

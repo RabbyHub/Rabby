@@ -20,6 +20,7 @@ import {
   CHAINS_ENUM,
   KEYRING_TYPE,
   INTERNAL_REQUEST_ORIGIN,
+  SUPPORT_1559_KEYRING_TYPE,
 } from 'consts';
 import { Checkbox } from 'ui/component';
 import AccountCard from './AccountCard';
@@ -33,7 +34,10 @@ import {
   GasLevel,
   Chain,
 } from 'background/service/openapi';
-import { validateGasPriceRange } from '@/utils/transaction';
+import {
+  validateGasPriceRange,
+  convertLegacyTo1559,
+} from '@/utils/transaction';
 import { useWallet, useApproval } from 'ui/utils';
 import { ChainGas, Account } from 'background/service/preference';
 import GnosisDrawer from './TxComponents/GnosisDrawer';
@@ -291,6 +295,8 @@ const SignTx = ({ params, origin }: SignTxProps) => {
   const [gnosisDrawerVisible, setGnosisDrawerVisble] = useState(false);
   const [, resolveApproval, rejectApproval] = useApproval();
   const wallet = useWallet();
+  if (!chain) throw new Error('No support chain not found');
+  const [support1559, setSupport1559] = useState(chain.eip['1559']);
 
   const {
     data = '0x',
@@ -338,6 +344,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
   const [gasLimit, setGasLimit] = useState(gas || params.data[0].gasLimit);
   const [forceProcess, setForceProcess] = useState(false);
   const [safeInfo, setSafeInfo] = useState<SafeInfo | null>(null);
+  const [maxPriorityFee, setMaxPriorityFee] = useState(0);
 
   const checkTx = async (address: string) => {
     try {
@@ -404,17 +411,6 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       explain: res,
     });
     return res;
-  };
-
-  const getDefaultGas = async () => {
-    const chain = Object.keys(CHAINS)
-      .map((key) => CHAINS[key])
-      .find((item) => item.id === chainId);
-    const gas = await wallet.openapi.gasMarket(chain?.serverId);
-    setTx({
-      ...tx,
-      gasPrice: intToHex(Math.max(...gas.map((item) => parseInt(item.price)))),
-    });
   };
 
   const explain = async () => {
@@ -498,14 +494,33 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       lastTimeSelect: selectedGas.level === 'custom' ? 'gasPrice' : 'gasLevel',
     };
     if (selectedGas.level === 'custom') {
-      selected.gasPrice = parseInt(tx?.gasPrice);
+      if (support1559) {
+        selected.gasPrice = parseInt(tx.maxFeePerGas!);
+      } else {
+        selected.gasPrice = parseInt(tx.gasPrice!);
+      }
     } else {
       selected.gasLevel = selectedGas.level;
     }
     await wallet.updateLastTimeGasSelection(chainId, selected);
+    const transaction: Tx = {
+      from: tx.from,
+      to: tx.to,
+      data: tx.data,
+      nonce: tx.nonce,
+      value: tx.value,
+      chainId: tx.chainId,
+      gas: '',
+    };
+    if (support1559) {
+      transaction.maxFeePerGas = tx.maxFeePerGas;
+      transaction.maxPriorityFeePerGas = intToHex(maxPriorityFee);
+    } else {
+      (transaction as Tx).gasPrice = tx.gasPrice;
+    }
     if (currentAccount?.type && WaitingSignComponent[currentAccount.type]) {
       resolveApproval({
-        ...tx,
+        ...transaction,
         isSend,
         nonce: realNonce || tx.nonce,
         gas: gasLimit,
@@ -532,13 +547,14 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     });
 
     resolveApproval({
-      ...tx,
+      ...transaction,
       nonce: realNonce || tx.nonce,
       gas: gasLimit,
       isSend,
       traceId: securityCheckDetail?.trace_id,
     });
   };
+
   const handleGasChange = (gas: GasSelectorResponse) => {
     setSelectedGas({
       level: gas.level,
@@ -557,12 +573,21 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     }
     const beforeNonce = realNonce || tx.nonce;
     const afterNonce = intToHex(gas.nonce);
-    setTx({
-      ...tx,
-      gasPrice: intToHex(Math.round(gas.price)),
-      gas: intToHex(gas.gasLimit),
-      nonce: afterNonce,
-    });
+    if (support1559) {
+      setTx({
+        ...tx,
+        maxFeePerGas: intToHex(Math.round(gas.price)),
+        gas: intToHex(gas.gasLimit),
+        nonce: afterNonce,
+      });
+    } else {
+      setTx({
+        ...tx,
+        gasPrice: intToHex(Math.round(gas.price)),
+        gas: intToHex(gas.gasLimit),
+        nonce: afterNonce,
+      });
+    }
     setGasLimit(intToHex(gas.gasLimit));
     if (!isGnosisAccount) {
       setRealNonce(afterNonce);
@@ -576,6 +601,11 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     if (beforeNonce !== afterNonce) {
       setNonceChanged(true);
     }
+  };
+
+  const handleMaxPriorityFeeChange = (fee: number) => {
+    console.log('handleMaxPriorityFeeChange', fee);
+    setMaxPriorityFee(fee);
   };
 
   const handleCancel = () => {
@@ -646,10 +676,10 @@ const SignTx = ({ params, origin }: SignTxProps) => {
   };
 
   const init = async () => {
-    const session = params.session;
-    const site = await wallet.getConnectedSite(session.origin);
     const currentAccount =
       isGnosis && account ? account : await wallet.getCurrentAccount();
+    const is1559 =
+      support1559 && SUPPORT_1559_KEYRING_TYPE.includes(currentAccount.type);
     ReactGA.event({
       category: 'Transaction',
       action: 'init',
@@ -659,22 +689,10 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       setIsGnosisAccount(true);
       await getSafeInfo();
     }
-
-    if (!chainId) {
-      setChainId(CHAINS[site!.chain].id);
-    }
-    setChain(
-      Object.values(CHAINS).find(
-        (item) => item.id === (chainId || CHAINS[site!.chain].id)
-      )!
-    );
     checkCanProcess();
     const lastTimeGas: ChainGas | null = await wallet.getLastTimeGasSelection(
-      chainId || CHAINS[site!.chain].id
+      chainId
     );
-    const chain = Object.keys(CHAINS)
-      .map((key) => CHAINS[key])
-      .find((item) => item.id === (chainId || CHAINS[site!.chain].id))!;
     let customGasPrice = 0;
     if (lastTimeGas?.lastTimeSelect === 'gasPrice' && lastTimeGas.gasPrice) {
       // use cached gasPrice if exist
@@ -682,7 +700,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     }
     if (isSpeedUp || isCancel) {
       // use gasPrice set by dapp when it's a speedup or cancel tx
-      customGasPrice = parseInt(tx.gasPrice);
+      customGasPrice = parseInt(tx.gasPrice!);
     }
     const gasList = await loadGasMarket(chain, customGasPrice);
     let gas: GasLevel | null = null;
@@ -701,11 +719,20 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       gas = gasList.find((item) => item.level === 'fast')!;
     }
     setSelectedGas(gas);
-    setTx({
-      ...tx,
-      chainId: chainId || CHAINS[site!.chain].id,
-      gasPrice: intToHex(gas.price),
-    });
+    setSupport1559(is1559);
+    if (is1559) {
+      setTx(
+        convertLegacyTo1559({
+          ...tx,
+          gasPrice: intToHex(gas.price),
+        })
+      );
+    } else {
+      setTx({
+        ...tx,
+        gasPrice: intToHex(gas.price),
+      });
+    }
     setInited(true);
   };
 
@@ -727,12 +754,6 @@ const SignTx = ({ params, origin }: SignTxProps) => {
 
   useEffect(() => {
     if (!inited) return;
-
-    if (!tx.gasPrice && chainId) {
-      // use minimum gas as default gas if dapp not set gasPrice
-      getDefaultGas();
-      return;
-    }
     explain();
   }, [tx, inited]);
 
@@ -796,8 +817,10 @@ const SignTx = ({ params, origin }: SignTxProps) => {
               recommendGasLimit={Number(txDetail.recommend.gas)}
               chainId={chainId}
               onChange={handleGasChange}
+              onMaxPriorityFeeChange={handleMaxPriorityFeeChange}
               nonce={realNonce || tx.nonce}
               disableNonce={isSpeedUp || isCancel}
+              is1559={support1559}
             />
             <footer className="connect-footer">
               {txDetail && txDetail.pre_exec.success && (

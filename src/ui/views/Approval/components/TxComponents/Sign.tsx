@@ -1,13 +1,9 @@
-import { message } from 'antd';
 import { ExplainTxResponse, Tx } from 'background/service/openapi';
-import ClipboardJS from 'clipboard';
 import { CHAINS, CHAINS_ENUM } from 'consts';
 import React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import IconArrowRight from 'ui/assets/arrow-right-gray.svg';
-import IconCopy from 'ui/assets/copy-no-border.svg';
-import IconSuccess from 'ui/assets/success.svg';
-import { AddressViewer, NameAndAddress } from 'ui/component';
+import { NameAndAddress } from 'ui/component';
 import BalanceChange from './BalanceChange';
 import GnosisExplain from './GnosisExplain';
 import SpeedUpCorner from './SpeedUpCorner';
@@ -24,22 +20,6 @@ const Sign = ({ data, chainEnum, raw, isSpeedUp, tx }: SignProps) => {
   const detail = data.type_call!;
   const chain = CHAINS[chainEnum];
   const { t } = useTranslation();
-  const handleCopySpender = () => {
-    const clipboard = new ClipboardJS('.sign', {
-      text: function () {
-        return detail.contract;
-      },
-    });
-
-    clipboard.on('success', () => {
-      message.success({
-        icon: <img src={IconSuccess} className="icon icon-success" />,
-        content: t('Copied'),
-        duration: 0.5,
-      });
-      clipboard.destroy();
-    });
-  };
 
   const handleViewRawClick = () => {
     ViewRawModal.open({
