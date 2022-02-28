@@ -5,7 +5,7 @@ import {
   permissionService,
 } from 'background/service';
 import { PromiseFlow, underline2Camelcase } from 'background/utils';
-import { EVENTS } from 'consts';
+import { CHAINS, EVENTS } from 'consts';
 import providerController from './controller';
 import eventBus from '@/eventBus';
 
@@ -90,6 +90,18 @@ const flowContext = flow
 
     if (approvalType && (!condition || !condition(ctx.request))) {
       ctx.request.requestedApproval = true;
+      if (approvalType === 'SignTx' && !('chainId' in params[0])) {
+        const site = permissionService.getConnectedSite(origin);
+        if (site) {
+          const chain = Object.values(CHAINS).find(
+            (item) => item.enum === site.chain
+          );
+          if (chain) {
+            params[0].chainId = chain.id;
+          }
+        }
+      }
+      console.log(params[0]);
       ctx.approvalRes = await notificationService.requestApproval(
         {
           approvalComponent: approvalType,

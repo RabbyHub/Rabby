@@ -5,9 +5,6 @@ const config = {
   mode: 'development',
   devtool: 'inline-cheap-module-source-map',
   watch: true,
-  cache: {
-    type: 'filesystem',
-  },
   watchOptions: {
     ignored: ['**/public', '**/node_modules'],
     followSymlinks: false,
