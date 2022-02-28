@@ -31,6 +31,7 @@ export interface Chain {
   thridPartyRPC: string;
   nativeTokenDecimals: number;
   selectChainLogo?: string;
+  eip: Record<string, boolean>;
 }
 
 export interface ServerChain {
@@ -77,8 +78,26 @@ export interface Tx {
   chainId: number;
   data: string;
   from: string;
+  gas?: string;
+  gasLimit?: string;
+  maxFeePerGas?: string;
+  maxPriorityFeePerGas?: string;
+  gasPrice?: string;
+  nonce: string;
+  to: string;
+  value: string;
+  r?: string;
+  s?: string;
+  v?: string;
+}
+
+export interface Eip1559Tx {
+  chainId: number;
+  data: string;
+  from: string;
   gas: string;
-  gasPrice: string;
+  maxFeePerGas: string;
+  maxPriorityFeePerGas: string;
   nonce: string;
   to: string;
   value: string;

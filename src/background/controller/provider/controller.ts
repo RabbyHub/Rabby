@@ -1,6 +1,10 @@
 import * as Sentry from '@sentry/browser';
 import Transaction from 'ethereumjs-tx';
-import { TransactionFactory } from '@ethereumjs/tx';
+import Common, { Hardfork } from '@ethereumjs/common';
+import {
+  TransactionFactory,
+  FeeMarketEIP1559Transaction,
+} from '@ethereumjs/tx';
 import { ethers } from 'ethers';
 import {
   bufferToHex,
@@ -36,7 +40,7 @@ import { CHAINS, CHAINS_ENUM, SAFE_RPC_METHODS, KEYRING_TYPE } from 'consts';
 import buildinProvider from 'background/utils/buildinProvider';
 import BaseController from '../base';
 import { Account } from 'background/service/preference';
-import { validateGasPriceRange } from '@/utils/transaction';
+import { validateGasPriceRange, is1559Tx } from '@/utils/transaction';
 
 interface ApprovalRes extends Tx {
   type?: string;
@@ -246,7 +250,22 @@ class ProviderController extends BaseController {
     delete approvalRes.type;
     delete approvalRes.uiRequestComponent;
     delete approvalRes.traceId;
-    const tx = new Transaction(approvalRes);
+    let tx;
+    const is1559 = is1559Tx(approvalRes);
+    if (is1559) {
+      const common = Common.custom(
+        { chainId: approvalRes.chainId },
+        { hardfork: Hardfork.London }
+      );
+      tx = FeeMarketEIP1559Transaction.fromTxData(
+        { ...approvalRes, gasLimit: approvalRes.gas } as any,
+        {
+          common,
+        }
+      );
+    } else {
+      tx = new Transaction(approvalRes);
+    }
     const currentAccount = preferenceService.getCurrentAccount()!;
     let opts;
     opts = approvalRes?.extra;
@@ -308,21 +327,31 @@ class ProviderController extends BaseController {
       onTranscationSubmitted(signedTx);
       return signedTx;
     }
-    const buildTx = TransactionFactory.fromTxData({
-      ...approvalRes,
-      r: addHexPrefix(signedTx.r),
-      s: addHexPrefix(signedTx.s),
-      v: addHexPrefix(signedTx.v),
-    });
+    let buildTx;
+    if (is1559) {
+      buildTx = FeeMarketEIP1559Transaction.fromTxData({
+        ...(approvalRes as any),
+        r: addHexPrefix(signedTx.r),
+        s: addHexPrefix(signedTx.s),
+        v: addHexPrefix(signedTx.v),
+      });
+    } else {
+      buildTx = TransactionFactory.fromTxData({
+        ...approvalRes,
+        r: addHexPrefix(signedTx.r),
+        s: addHexPrefix(signedTx.s),
+        v: addHexPrefix(signedTx.v),
+      });
+    }
 
     // Report address type(not sensitive information) to sentry when tx signatuure is invalid
     if (!buildTx.verifySignature()) {
       if (!buildTx.v) {
         Sentry.captureException(new Error(`v missed, ${keyring.type}`));
       } else if (!buildTx.s) {
-        Sentry.captureException(new Error(`s midded, ${keyring.type}`));
+        Sentry.captureException(new Error(`s missed, ${keyring.type}`));
       } else if (!buildTx.r) {
-        Sentry.captureException(new Error(`r midded, ${keyring.type}`));
+        Sentry.captureException(new Error(`r missed, ${keyring.type}`));
       } else {
         Sentry.captureException(
           new Error(`invalid signature, ${keyring.type}`)

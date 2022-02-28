@@ -172,7 +172,11 @@ const TransactionItem = ({
   const hasTokenPrice = !!item.explain?.native_token;
   const gasTokenCount =
     hasTokenPrice && completedTx
-      ? (Number(completedTx.rawTx.gasPrice) * (completedTx.gasUsed || 0)) / 1e18
+      ? (Number(
+          completedTx.rawTx.gasPrice || completedTx.rawTx.maxFeePerGas || 0
+        ) *
+          (completedTx.gasUsed || 0)) /
+        1e18
       : 0;
   const gasUSDValue = gasTokenCount
     ? (item.explain.native_token.price * gasTokenCount).toFixed(2)
@@ -189,7 +193,7 @@ const TransactionItem = ({
           wallet.openapi.getTx(
             chain.serverId,
             tx.hash,
-            Number(tx.rawTx.gasPrice)
+            Number(tx.rawTx.gasPrice || tx.rawTx.maxFeePerGas || 0)
           )
         )
     );
@@ -203,7 +207,13 @@ const TransactionItem = ({
               [item.txs[index].hash]: {
                 token,
                 tokenCount:
-                  (gas_used * Number(completedTx!.rawTx.gasPrice)) / 1e18,
+                  (gas_used *
+                    Number(
+                      completedTx!.rawTx.gasPrice ||
+                        completedTx!.rawTx.maxFeePerGas ||
+                        0
+                    )) /
+                  1e18,
                 gasUsed: gas_used,
               },
             };
@@ -214,7 +224,12 @@ const TransactionItem = ({
                 token,
                 gasUsed: completedTx!.gasUsed,
                 tokenCount:
-                  (completedTx!.gasUsed * Number(completedTx!.rawTx.gasPrice)) /
+                  (completedTx!.gasUsed *
+                    Number(
+                      completedTx!.rawTx.gasPrice ||
+                        completedTx!.rawTx.maxFeePerGas ||
+                        0
+                    )) /
                   1e18,
               },
             };
@@ -257,8 +272,12 @@ const TransactionItem = ({
 
   const handleClickCancel = async () => {
     if (!canCancel) return;
-    const maxGasTx = maxBy(item.txs, (tx) => Number(tx.rawTx.gasPrice))!;
-    const maxGasPrice = Number(maxGasTx.rawTx.gasPrice);
+    const maxGasTx = maxBy(item.txs, (tx) =>
+      Number(tx.rawTx.gasPrice || tx.rawTx.maxFeePerGas || 0)
+    )!;
+    const maxGasPrice = Number(
+      maxGasTx.rawTx.gasPrice || maxGasTx.rawTx.maxFeePerGas || 0
+    );
     const chainServerId = Object.values(CHAINS).find(
       (chain) => chain.id === item.chainId
     )!.serverId;
@@ -284,8 +303,12 @@ const TransactionItem = ({
 
   const handleClickSpeedUp = async () => {
     if (!canCancel) return;
-    const maxGasTx = maxBy(item.txs, (tx) => Number(tx.rawTx.gasPrice))!;
-    const maxGasPrice = Number(maxGasTx.rawTx.gasPrice);
+    const maxGasTx = maxBy(item.txs, (tx) =>
+      Number(tx.rawTx.gasPrice || tx.rawTx.maxFeePerGas || 0)
+    )!;
+    const maxGasPrice = Number(
+      maxGasTx.rawTx.gasPrice || maxGasTx.rawTx.maxFeePerGas || 0
+    );
     const chainServerId = Object.values(CHAINS).find(
       (chain) => chain.id === item.chainId
     )!.serverId;
@@ -312,7 +335,9 @@ const TransactionItem = ({
     if (isCompleted) {
       hash = completedTx!.hash;
     } else {
-      const maxGasTx = maxBy(item.txs, (tx) => Number(tx.rawTx.gasPrice))!;
+      const maxGasTx = maxBy(item.txs, (tx) =>
+        Number(tx.rawTx.gasPrice || tx.rawTx.maxFeePerGas || 0)
+      )!;
       hash = maxGasTx.hash;
     }
     openInTab(chain.scanLink.replace(/_s_/, hash));
@@ -364,7 +389,14 @@ const TransactionItem = ({
             ) : (
               <div className="ahead">
                 {txQueues[originTx.hash] ? (
-                  <>{Number(originTx.rawTx.gasPrice) / 1e9} Gwei </>
+                  <>
+                    {Number(
+                      originTx.rawTx.gasPrice ||
+                        originTx.rawTx.maxFeePerGas ||
+                        0
+                    ) / 1e9}{' '}
+                    Gwei{' '}
+                  </>
                 ) : (
                   t('Unknown')
                 )}
@@ -443,7 +475,11 @@ const TransactionItem = ({
                 <ChildrenTxText tx={tx} originTx={originTx} />
                 <div className="ahead">
                   {txQueues[tx.hash] ? (
-                    <>{Number(tx.rawTx.gasPrice) / 1e9} Gwei </>
+                    <>
+                      {Number(tx.rawTx.gasPrice || tx.rawTx.maxFeePerGas || 0) /
+                        1e9}{' '}
+                      Gwei{' '}
+                    </>
                   ) : (
                     t('Unknown')
                   )}
