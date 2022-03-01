@@ -983,7 +983,7 @@
     "message": "No connected to the right chain of this Gnosis Safe address"
   },
   "ResetAccountDescription": {
-    "message": "Resetting your account will clear all your pending transactions.\nThis will not change the balances in your accounts or require you to re-enter your Secret Recovery Phrase."
+    "message": "Resetting your account will clear all your pending transactions. This can help you solve the problem that in some cases the state of the transaction in Rabby does not match the state on-chain.\nThis will not change the balances in your accounts or require you to re-enter your Secret Recovery Phrase. All your assets and accounts information will remain secure."
   },
   "ResetAccountWarn": {
     "message": "Reset account only when necessary"
