@@ -5,6 +5,7 @@ import { useTranslation } from 'react-i18next';
 import { SignTextHistoryItem } from 'background/service/signTextHistory';
 import { FallbackSiteLogo, PageHeader } from '@/ui/component';
 import { useWallet, hex2Text, sinceTime } from 'ui/utils';
+import { openInTab } from 'ui/utils/webapi';
 import IconCopy from 'ui/assets/copy-gray.svg';
 import IconSuccess from 'ui/assets/success.svg';
 import './style.less';
@@ -40,6 +41,10 @@ const SignedTextHistoryItem = ({ item }: { item: SignTextHistoryItem }) => {
     });
   };
 
+  const handleClickLink = (item: SignTextHistoryItem) => {
+    openInTab(item.site.origin);
+  };
+
   return (
     <div className="text-history__item">
       <div className="text-history__item--content">
@@ -61,7 +66,9 @@ const SignedTextHistoryItem = ({ item }: { item: SignTextHistoryItem }) => {
               borderRadius: '2px',
             }}
           />
-          {item.site.origin}
+          <div className="link" onClick={() => handleClickLink(item)}>
+            {item.site.origin}
+          </div>
         </div>
         <div className="time">{sinceTime(item.createAt / 1000)}</div>
       </div>

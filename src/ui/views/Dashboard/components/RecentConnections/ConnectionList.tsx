@@ -10,7 +10,7 @@ import {
 import { DragEndEvent, DragStartEvent } from '@dnd-kit/core/dist/types';
 import { SortableContext } from '@dnd-kit/sortable';
 import clsx from 'clsx';
-import React, { memo, ReactNode, useState } from 'react';
+import React, { memo, ReactNode, useEffect, useState } from 'react';
 import { Item, ConnectionItem } from './ConnectionItem';
 
 interface ConnectionProps {
@@ -40,6 +40,7 @@ const ConnectionList = memo(
     empty,
   }: ConnectionProps) => {
     const [activeItem, setActiveItem] = useState<ConnectedSite | null>(null);
+    const [visible, setVisible] = useState(false);
     const handleDragStart = (event: DragStartEvent) => {
       const id = event.active?.id;
       if (!id) {
@@ -77,13 +78,18 @@ const ConnectionList = memo(
         },
       })
     );
+    useEffect(() => {
+      setTimeout(() => {
+        setVisible(true);
+      });
+    }, []);
     return (
       <div className={clsx('list', className)}>
         <div className="list-header">
           <div className="list-title">{title}</div>
           <div className="list-extra">{extra}</div>
         </div>
-        {data && data.length > 0 ? (
+        {visible && data && data.length > 0 ? (
           <div className="list-content droppable">
             {sortable ? (
               <DndContext
