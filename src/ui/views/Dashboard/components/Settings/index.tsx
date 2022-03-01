@@ -175,7 +175,10 @@ const ResetAccountModal = ({
         {t('Reset Account')}
       </PageHeader>
       <div>
-        <p className="reset-account-content">{t('ResetAccountDescription')}</p>
+        <p className="reset-account-content mb-16">
+          {t('ResetAccountDescription1')}
+        </p>
+        <p className="reset-account-content">{t('ResetAccountDescription2')}</p>
         <p className="reset-account-warn">{t('ResetAccountWarn')}</p>
         <div className="flex justify-center mt-24 popup-footer">
           <Button
