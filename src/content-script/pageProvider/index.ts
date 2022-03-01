@@ -154,7 +154,7 @@ export class EthereumProvider extends EventEmitter {
   };
 
   isConnected = () => {
-    return this._isConnected;
+    return true;
   };
 
   // TODO: support multi request!
