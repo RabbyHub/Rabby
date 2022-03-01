@@ -478,7 +478,7 @@ const Dashboard = () => {
         <div className="no-other-address"> {t('No address')}</div>
       ) : (
         <FixedSizeList
-          height={accountsList.length > 5 ? 308 : accountsList.length * 52}
+          height={accountsList.length > 5 ? 308 : accountsList.length * 54}
           width="100%"
           itemData={accountsList}
           itemCount={accountsList.length}
