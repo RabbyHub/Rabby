@@ -393,8 +393,8 @@
   "Warning": {
     "message": "Warning"
   },
-  "Enter__passward__to__continue__your__transaction": {
-    "message": "Enter passward to continue your transaction"
+  "Enter__password__to__continue__your__transaction": {
+    "message": "Enter password to continue your transaction"
   },
   "Confirm": {
     "message": "Confirm"

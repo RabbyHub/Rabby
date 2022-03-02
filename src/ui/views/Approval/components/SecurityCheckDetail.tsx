@@ -167,7 +167,7 @@ const SecurityCheckDetail = ({
         <div className="footer">
           {needPassword && (
             <div className="input-password">
-              <p>{t('Enter passward to continue your transaction')}</p>
+              <p>{t('Enter password to continue your transaction')}</p>
               <Form onFinish={handleClickSubmit}>
                 <Form.Item
                   name="password"
