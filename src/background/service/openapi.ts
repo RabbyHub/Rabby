@@ -407,7 +407,7 @@ class OpenApiService {
     axios.create({
       headers: {
         'X-Client': 'Rabby',
-        'X-Version': process.env.release,
+        'X-Version': process.env.release!,
       },
     }),
     { maxRPS }
@@ -583,7 +583,7 @@ class OpenApiService {
         baseURL: this.store.host,
         headers: {
           'X-Client': 'Rabby',
-          'X-Version': process.env.release,
+          'X-Version': process.env.release!,
         },
       }),
       { maxRPS }
