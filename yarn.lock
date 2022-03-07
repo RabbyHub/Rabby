@@ -4382,10 +4382,10 @@ bip66@^1.1.5:
   dependencies:
     safe-buffer "^5.0.1"
 
-bitbox02-api@0.11.0:
-  version "0.11.0"
-  resolved "https://registry.yarnpkg.com/bitbox02-api/-/bitbox02-api-0.11.0.tgz#9b11e3be8665a616372ba5bbeddc9c76eb355fba"
-  integrity sha512-/eiSRKtLgfkbrl43ZhQXaoQpUzu5WJ/W3WPYyV2X2XPFIXUFohdLEOlubeI62bUTuMfe85TS8/nz0tZ97hhRYA==
+bitbox02-api@0.14.0:
+  version "0.14.0"
+  resolved "https://registry.yarnpkg.com/bitbox02-api/-/bitbox02-api-0.14.0.tgz#1032b3dcc2478c06d72ebb8a291b91904f6daf1a"
+  integrity sha512-VJt8RKizXK4HRDuh3dNL5Rsl0TNtYkND2IN+ZtVz5SIwAh8TLrjsKTYEGJKPVb4d/FXzEyI1OZMv35MpVyi4zQ==
 
 bitwise@^2.0.4:
   version "2.1.0"
