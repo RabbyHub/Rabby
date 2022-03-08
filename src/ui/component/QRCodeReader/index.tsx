@@ -48,7 +48,7 @@ const QRCodeReader = ({
     init();
     return () => {
       if (controls.current) {
-        controls.current.stopContinuousDecode();
+        controls.current.stop();
         controls.current.reset();
         controls.current = null;
       }

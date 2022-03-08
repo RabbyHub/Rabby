@@ -18,22 +18,20 @@ const ImportQRCodeBase = () => {
   const [form] = Form.useForm();
   const decoder = useRef(new URDecoder());
 
-  const handleScanQRCodeSuccess = (data) => {
+  const handleScanQRCodeSuccess = async (data) => {
     decoder.current.receivePart(data);
     if (decoder.current.isComplete()) {
       const result = decoder.current.resultUR();
-      result.cbor.toString('hex');
-      /* TODO:
-        const stashKeyringId = await wallet.submitQRHardwareCryptoHDKey();
-        history.push({
-          pathname: '/import/select-address',
-          state: {
-            keyring: HARDWARE_KEYRING_TYPES.KeyStone.type,
-            path: currentPath,
-            keyringId
-          },
-        });
-      */
+      const stashKeyringId = await wallet.submitQRHardwareCryptoHDKey(
+        result.cbor.toString('hex')
+      );
+      history.push({
+        pathname: '/import/select-address',
+        state: {
+          keyring: HARDWARE_KEYRING_TYPES.KeyStone.type,
+          keyringId: stashKeyringId,
+        },
+      });
     }
   };
 
@@ -89,8 +87,8 @@ const ImportQRCodeBase = () => {
       </header>
       <div className="flex justify-center qrcode-scanner">
         <QRCodeReader
-          width={176}
-          height={176}
+          width={250}
+          height={250}
           onSuccess={handleScanQRCodeSuccess}
           onError={handleScanQRCodeError}
         />

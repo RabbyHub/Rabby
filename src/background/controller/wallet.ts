@@ -919,8 +919,8 @@ export class WalletController extends BaseController {
     return stashKeyringId;
   };
 
-  submitQRHardwareCryptoHDKey = () => {
-    let keyring, isNewKey;
+  submitQRHardwareCryptoHDKey = async (cbor: string) => {
+    let keyring;
     let stashKeyringId: number | null = null;
     const keyringType = KEYRING_CLASS.QRCODE;
     try {

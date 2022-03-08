@@ -3,3 +3,4 @@ dist
 .yarn
 .DS_Store
 yarn-error
+.idea
