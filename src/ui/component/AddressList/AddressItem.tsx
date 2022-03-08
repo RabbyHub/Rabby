@@ -217,9 +217,16 @@ const AddressItem = memo(
           const existAlianName = await wallet.getAlianName(
             account?.address?.toLowerCase()
           );
+          const existContact = await wallet.getContactByAddress(
+            account?.address?.toLowerCase()
+          );
           if (existAlianName) {
             setAlianName(existAlianName);
             setDisplayName(existAlianName);
+          } else if (existContact) {
+            setAlianName(existContact.name);
+            setDisplayName(existContact.name);
+            updateAlianName(existContact.name);
           } else {
             const alianName = `${
               BRAND_ALIAN_TYPE_TEXT[account?.brandName || account?.type] ||

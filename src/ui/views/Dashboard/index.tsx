@@ -13,7 +13,6 @@ import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import Safe from '@rabby-wallet/gnosis-sdk';
 import { SafeInfo } from '@rabby-wallet/gnosis-sdk/dist/api';
-import * as Sentry from '@sentry/browser';
 import {
   KEYRING_ICONS,
   WALLET_BRAND_CONTENT,

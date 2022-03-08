@@ -29,6 +29,7 @@ import i18n from '../i18n';
 import { KEYRING_TYPE, HARDWARE_KEYRING_TYPES, EVENTS } from 'consts';
 import DisplayKeyring from './display';
 import eventBus from '@/eventBus';
+import { isSameAddress } from 'background/utils';
 
 export const KEYRING_SDK_TYPES = {
   SimpleKeyring,
@@ -939,6 +940,27 @@ class KeyringService extends EventEmitter {
     });
 
     return result;
+  }
+
+  async getAllAdresses() {
+    const keyrings = await this.getAllTypedAccounts();
+    const result: { address: string; type: string; brandName: string }[] = [];
+    keyrings.forEach((accountGroup) => {
+      result.push(
+        ...accountGroup.accounts.map((account) => ({
+          address: account.address,
+          brandName: account.brandName,
+          type: accountGroup.type,
+        }))
+      );
+    });
+
+    return result;
+  }
+
+  async hasAddress(address: string) {
+    const addresses = await this.getAllAdresses();
+    return !!addresses.find((item) => isSameAddress(item.address, address));
   }
 
   /**

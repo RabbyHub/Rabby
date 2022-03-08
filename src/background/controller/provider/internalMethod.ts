@@ -3,6 +3,7 @@ import {
   permissionService,
   keyringService,
   preferenceService,
+  widgetService,
 } from 'background/service';
 import providerController from './controller';
 
@@ -49,10 +50,19 @@ const isDefaultWallet = () => {
   return preferenceService.getIsDefaultWallet();
 };
 
+const isWidgetDisabled = ({
+  data: {
+    params: [name],
+  },
+}) => {
+  return widgetService.isWidgetDisabled(name);
+};
+
 export default {
   tabCheckin,
   getProviderState,
   providerOverwrite,
   hasOtherProvider,
   isDefaultWallet,
+  isWidgetDisabled,
 };

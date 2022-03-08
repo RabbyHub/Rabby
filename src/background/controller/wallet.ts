@@ -15,13 +15,17 @@ import {
   transactionHistoryService,
   contactBookService,
   signTextHistoryService,
+  widgetService,
 } from 'background/service';
 import buildinProvider from 'background/utils/buildinProvider';
 import { ContactBookItem } from '../service/contactBook';
 import { openIndexPage } from 'background/webapi/tab';
 import { CacheState } from 'background/service/pageStateCache';
 import i18n from 'background/service/i18n';
-import { KEYRING_CLASS, DisplayedKeryring } from 'background/service/keyring';
+import keyring, {
+  KEYRING_CLASS,
+  DisplayedKeryring,
+} from 'background/service/keyring';
 import providerController from './provider/controller';
 import BaseController from './base';
 import {
@@ -749,6 +753,9 @@ export class WalletController extends BaseController {
 
   removeAddress = async (address: string, type: string, brand?: string) => {
     await keyringService.removeAccount(address, type, brand);
+    if (!(await keyringService.hasAddress(address))) {
+      preferenceService.removeAlianName(address);
+    }
     preferenceService.removeAddressBalance(address);
     const current = preferenceService.getCurrentAccount();
     if (
@@ -1090,6 +1097,15 @@ export class WalletController extends BaseController {
   };
   updateAddedToken = (address: string, tokenList: []) => {
     return preferenceService.updateAddedToken(address, tokenList);
+  };
+  getWidgets = () => {
+    return widgetService.getWidgets();
+  };
+  enableWidget = (name: string) => {
+    widgetService.enableWidget(name);
+  };
+  disableWidget = (name: string) => {
+    widgetService.disableWidget(name);
   };
 }
 

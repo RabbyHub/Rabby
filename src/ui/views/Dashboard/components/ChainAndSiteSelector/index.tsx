@@ -9,13 +9,20 @@ import { useWallet, getCurrentConnectSite, splitNumberByStep } from 'ui/utils';
 import { ConnectedSite } from 'background/service/permission';
 import { GasLevel } from 'background/service/openapi';
 import { ChainSelector, FallbackSiteLogo } from 'ui/component';
-import { RecentConnections, Settings, Contacts, Security } from '../index';
+import {
+  RecentConnections,
+  Settings,
+  Contacts,
+  Security,
+  Widget,
+} from '../index';
 import { CHAINS_ENUM } from 'consts';
 import IconDrawer from 'ui/assets/drawer.png';
 import IconContacts from 'ui/assets/dashboard/contacts.png';
 import IconSecurity from 'ui/assets/dashboard/security.svg';
 import IconSendToken from 'ui/assets/dashboard/sendtoken.png';
 import IconSetting from 'ui/assets/dashboard/setting.png';
+import IconWidget from 'ui/assets/dashboard/widget.svg';
 import IconSignedText from 'ui/assets/dashboard/signedtext.png';
 import IconSingedTX from 'ui/assets/dashboard/signedtx.png';
 import IconTransactions from 'ui/assets/dashboard/transactions.png';
@@ -139,6 +146,7 @@ export default ({
   const [drawerAnimation, setDrawerAnimation] = useState<string | null>(null);
   const [urlVisible, setUrlVisible] = useState(false);
   const [settingVisible, setSettingVisible] = useState(false);
+  const [widgetVisible, setWidgetVisible] = useState(false);
   const [contactsVisible, setContactsVisible] = useState(false);
   const [securityVisible, setSecurityVisible] = useState(false);
   const [currentConnect, setCurrentConnect] = useState<
@@ -191,6 +199,10 @@ export default ({
   const changeSetting = () => {
     setSettingVisible(!settingVisible);
     setDashboardReload();
+  };
+
+  const changeWidget = () => {
+    setWidgetVisible(!widgetVisible);
   };
 
   const changeContacts = () => {
@@ -293,6 +305,11 @@ export default ({
       onClick: changeSecurity,
     },
     {
+      icon: IconWidget,
+      content: 'Widget',
+      onClick: changeWidget,
+    },
+    {
       icon: IconSetting,
       content: 'Settings',
       onClick: changeSetting,
@@ -300,11 +317,7 @@ export default ({
     },
   ];
   return (
-    <div
-      className={clsx('recent-connections', connectionAnimation, {
-        lower: higherBottom,
-      })}
-    >
+    <div className={clsx('recent-connections', connectionAnimation)}>
       <img
         src={IconDrawer}
         className={clsx(
@@ -383,12 +396,13 @@ export default ({
         hideModal={hideModal}
         connections={connections}
         changeURL={changeURL}
-        higherBottom={higherBottom}
+        higherBottom={false}
       />
       <Settings visible={settingVisible} onClose={changeSetting} />
       <Contacts visible={contactsVisible} onClose={changeContacts} />
       <RecentConnections visible={urlVisible} onClose={changeURL} />
       <Security visible={securityVisible} onClose={changeSecurity} />
+      <Widget visible={widgetVisible} onClose={changeWidget} />
     </div>
   );
 };

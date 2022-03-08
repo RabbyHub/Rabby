@@ -6,6 +6,7 @@ import PushEventHandlers from './pushEventHandlers';
 import { domReadyCall, $ } from './utils';
 import ReadyPromise from './readyPromise';
 import DedupePromise from './dedupePromise';
+import { DEXPriceComparison, isUrlMatched } from '@rabby-wallet/widgets';
 
 declare const channelName;
 
@@ -252,9 +253,6 @@ export class EthereumProvider extends EventEmitter {
 declare global {
   interface Window {
     ethereum: EthereumProvider;
-    web3: {
-      currentProvider: EthereumProvider;
-    };
   }
 }
 
@@ -276,6 +274,22 @@ provider
       window.web3 = {
         currentProvider: window.ethereum,
       };
+      const widgets = [DEXPriceComparison];
+      widgets.forEach((Widget) => {
+        provider
+          .request({
+            method: 'isWidgetDisabled',
+            params: [Widget.widgetName],
+          })
+          .then((isDisabled) => {
+            if (!isDisabled) {
+              const rule = isUrlMatched(location.href, Widget.include);
+              if (rule) {
+                new Widget(rule);
+              }
+            }
+          });
+      });
     }
   });
 
