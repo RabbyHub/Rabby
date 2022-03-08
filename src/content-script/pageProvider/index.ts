@@ -274,6 +274,22 @@ provider
       window.web3 = {
         currentProvider: window.ethereum,
       };
+      const widgets = [DEXPriceComparison];
+      widgets.forEach((Widget) => {
+        provider
+          .request({
+            method: 'isWidgetDisabled',
+            params: [Widget.widgetName],
+          })
+          .then((isDisabled) => {
+            if (!isDisabled) {
+              const rule = isUrlMatched(location.href, Widget.include);
+              if (rule) {
+                new Widget(rule);
+              }
+            }
+          });
+      });
     }
   });
 
@@ -288,20 +304,3 @@ if (!window.ethereum) {
 }
 
 window.dispatchEvent(new Event('ethereum#initialized'));
-
-const widgets = [DEXPriceComparison];
-widgets.forEach((Widget) => {
-  provider
-    .request({
-      method: 'isWidgetDisabled',
-      params: [Widget.widgetName],
-    })
-    .then((isDisabled) => {
-      if (!isDisabled) {
-        const rule = isUrlMatched(location.href, Widget.include);
-        if (rule) {
-          new Widget(rule);
-        }
-      }
-    });
-});

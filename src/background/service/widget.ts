@@ -12,7 +12,7 @@ export interface WidgetItem {
 
 interface WidgetServiceStore {
   widgets: WidgetItem[];
-  disableWidgets: string[];
+  enableWidgets: string[];
 }
 
 class WidgetService {
@@ -26,7 +26,7 @@ class WidgetService {
         include: DEXPriceComparison.include,
       },
     ],
-    disableWidgets: [],
+    enableWidgets: [],
   };
 
   init = async () => {
@@ -42,7 +42,7 @@ class WidgetService {
             include: DEXPriceComparison.include,
           },
         ],
-        disableWidgets: [],
+        enableWidgets: [],
       },
     });
     this.store = storage || this.store;
@@ -52,27 +52,26 @@ class WidgetService {
     const widgets = this.store.widgets;
     return widgets.map((widget) => ({
       ...widget,
-      disabled: this.store.disableWidgets.includes(widget.name),
+      disabled: !this.store.enableWidgets.includes(widget.name),
     }));
   };
 
   disableWidget = (name: string) => {
-    console.log(name, this.store.disableWidgets);
-    if (!this.store.disableWidgets.includes(name)) {
-      this.store.disableWidgets = [...this.store.disableWidgets, name];
+    if (this.store.enableWidgets.includes(name)) {
+      this.store.enableWidgets = this.store.enableWidgets.filter((item) => {
+        return item !== name;
+      });
     }
   };
 
   enableWidget = (name: string) => {
-    if (this.store.disableWidgets.includes(name)) {
-      this.store.disableWidgets = this.store.disableWidgets.filter(
-        (item) => item !== name
-      );
+    if (!this.store.enableWidgets.includes(name)) {
+      this.store.enableWidgets = [...this.store.enableWidgets, name];
     }
   };
 
   isWidgetDisabled = (name: string) => {
-    return this.store.disableWidgets.includes(name);
+    return !this.store.enableWidgets.includes(name);
   };
 }
 
