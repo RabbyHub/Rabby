@@ -9,4 +9,5 @@ export { default as pageStateCacheService } from './pageStateCache';
 export { default as transactionHistoryService } from './transactionHistory';
 export { default as contactBookService } from './contactBook';
 export { default as signTextHistoryService } from './signTextHistory';
+export { default as widgetService } from './widget';
 export { default as i18n } from './i18n';

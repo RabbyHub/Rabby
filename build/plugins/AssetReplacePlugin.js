@@ -35,11 +35,11 @@ class AssetReplacePlugin {
               // github.com/webpack/webpack-sources/blob/master/lib/ConcatSource.js
               const content = compilation.assets[assetName]?.source();
 
-              return (source) =>
-                source.replace(
-                  new RegExp(`['"]?${k}['"]?`, 'g'),
-                  JSON.stringify(content)
-                );
+              return (source) => {
+                return source
+                  .split(new RegExp(`['"]?${k}['"]?`))
+                  .join(JSON.stringify(content));
+              };
             })
             .reduce((m, n) => (content) => n(m(content)));
 

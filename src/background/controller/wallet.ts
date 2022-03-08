@@ -15,6 +15,7 @@ import {
   transactionHistoryService,
   contactBookService,
   signTextHistoryService,
+  widgetService,
 } from 'background/service';
 import buildinProvider from 'background/utils/buildinProvider';
 import { ContactBookItem } from '../service/contactBook';
@@ -1090,6 +1091,15 @@ export class WalletController extends BaseController {
   };
   updateAddedToken = (address: string, tokenList: []) => {
     return preferenceService.updateAddedToken(address, tokenList);
+  };
+  getWidgets = () => {
+    return widgetService.getWidgets();
+  };
+  enableWidget = (name: string) => {
+    widgetService.enableWidget(name);
+  };
+  disableWidget = (name: string) => {
+    widgetService.disableWidget(name);
   };
 }
 
