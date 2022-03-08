@@ -2537,10 +2537,10 @@
     typescript "^4.4.4"
     web3-core "^1.6.0"
 
-"@rabby-wallet/widgets@^1.0.5":
-  version "1.0.5"
-  resolved "https://registry.yarnpkg.com/@rabby-wallet/widgets/-/widgets-1.0.5.tgz#cec5bde737afc9c65d35921af644f78b69b3d875"
-  integrity sha512-6kyOy4rIQ94k7IlNdpvsEKjLUseWVv047qvlebJaQpukQ+bYeEPwHEbW15nZdvUJVpX5KKnyHhKzteb7Mtml0Q==
+"@rabby-wallet/widgets@^1.0.7":
+  version "1.0.7"
+  resolved "https://registry.yarnpkg.com/@rabby-wallet/widgets/-/widgets-1.0.7.tgz#4b7682cfe7b995fcdfc75c53e00dad11dba8c43c"
+  integrity sha512-EsldO7IjFa91lOVjiVsakICgCS4CyohTUFxl1WmLyN6GUxNBAr8W6aJftCRMqJA85rAWkjdRo6abRfCq0fm+Qw==
   dependencies:
     bignumber.js "^9.0.2"
 

@@ -23,7 +23,7 @@ const WidgetDetailModal = ({
 }: {
   widget: WidgetItem | null;
   visible: boolean;
-  onFinish(): void;
+  onFinish(close: boolean): void;
   onCancel(): void;
 }) => {
   const [isVisible, setIsVisible] = useState(false);
@@ -38,27 +38,23 @@ const WidgetDetailModal = ({
   };
 
   const handleStatusChange = async (enable: boolean) => {
-    console.log(widget, enable);
     if (!widget) return;
     if (enable) {
       await wallet.enableWidget(widget.name);
       message.success({
         icon: <img src={IconSuccess} className="icon icon-success" />,
-        content: t('Disable success'),
+        content: t('Enable success'),
         duration: 0.5,
       });
     } else {
       await wallet.disableWidget(widget.name);
       message.success({
         icon: <img src={IconSuccess} className="icon icon-success" />,
-        content: t('Enable success'),
+        content: t('Disable success'),
         duration: 0.5,
       });
     }
-    setIsVisible(false);
-    setTimeout(() => {
-      onFinish();
-    }, 500);
+    onFinish(false);
   };
 
   useEffect(() => {
@@ -78,9 +74,9 @@ const WidgetDetailModal = ({
         {widget?.name}
       </PageHeader>
       <div>
-        <p className="widget-detail-desc mb-16">{widget?.description}</p>
+        <p className="widget-detail-desc">{widget?.description}</p>
         <p className="widget-detail-subtitle">
-          This feature will insert content to the following websites:
+          This feature will inject content to the following websites:
         </p>
         <ul>
           {widget?.include.map((item) => (
@@ -99,15 +95,23 @@ const WidgetDetailModal = ({
 const Widget = ({ visible, onClose }: WidgetProps) => {
   const [widgets, setWidgets] = useState<WidgetItem[]>([]);
   const [currentWidget, setCurrentWidget] = useState<WidgetItem | null>(null);
+  const [currentWidgetIndex, setCurrentWidgetIndex] = useState<number | null>(
+    null
+  );
   const wallet = useWallet();
   const [showWidgetDetailModal, setShowWidgetDetailModal] = useState(false);
 
-  const init = async () => {
-    setWidgets(await wallet.getWidgets());
+  const init = async (isUpdate = false) => {
+    const list = await wallet.getWidgets();
+    setWidgets(list);
+    if (isUpdate && currentWidgetIndex !== null) {
+      setCurrentWidget(list[currentWidgetIndex]);
+    }
   };
 
-  const handleClickWidget = (widget) => {
+  const handleClickWidget = (widget, index) => {
     setCurrentWidget(widget);
+    setCurrentWidgetIndex(index);
     setShowWidgetDetailModal(true);
   };
 
@@ -116,9 +120,11 @@ const Widget = ({ visible, onClose }: WidgetProps) => {
     onClose && onClose(e);
   };
 
-  const handleFinish = () => {
-    init();
-    setShowWidgetDetailModal(false);
+  const handleFinish = (close = true) => {
+    init(true);
+    if (close) {
+      setShowWidgetDetailModal(false);
+    }
   };
 
   useEffect(() => {
@@ -149,7 +155,10 @@ const Widget = ({ visible, onClose }: WidgetProps) => {
                 key={index}
                 leftIcon={<img src={data.image} className="icon" />}
                 rightIcon={
-                  <div className="flex" onClick={() => handleClickWidget(data)}>
+                  <div
+                    className="flex"
+                    onClick={() => handleClickWidget(data, index)}
+                  >
                     {data.disabled ? (
                       <span className="text-gray-comment mr-4 text-14">
                         Disabled
@@ -165,7 +174,7 @@ const Widget = ({ visible, onClose }: WidgetProps) => {
                     />
                   </div>
                 }
-                onClick={() => handleClickWidget(data)}
+                onClick={() => handleClickWidget(data, index)}
               >
                 {data.name}
               </Field>
@@ -176,7 +185,7 @@ const Widget = ({ visible, onClose }: WidgetProps) => {
             visible={showWidgetDetailModal}
             widget={currentWidget}
             onFinish={handleFinish}
-            onCancel={() => setShowWidgetDetailModal(false)}
+            onCancel={handleFinish}
           />
         </div>
       </Popup>

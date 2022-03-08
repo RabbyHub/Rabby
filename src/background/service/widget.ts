@@ -11,21 +11,20 @@ export interface WidgetItem {
 }
 
 interface WidgetServiceStore {
-  widgets: WidgetItem[];
   enableWidgets: string[];
 }
 
 class WidgetService {
+  widgets: WidgetItem[] = [
+    {
+      name: DEXPriceComparison.widgetName,
+      image: DEXPriceComparison.image,
+      description: DEXPriceComparison.description,
+      version: DEXPriceComparison.version,
+      include: DEXPriceComparison.include,
+    },
+  ];
   store: WidgetServiceStore = {
-    widgets: [
-      {
-        name: DEXPriceComparison.widgetName,
-        image: DEXPriceComparison.image,
-        description: DEXPriceComparison.description,
-        version: DEXPriceComparison.version,
-        include: DEXPriceComparison.include,
-      },
-    ],
     enableWidgets: [],
   };
 
@@ -33,23 +32,17 @@ class WidgetService {
     const storage = await createPersistStore<WidgetServiceStore>({
       name: 'widgets',
       template: {
-        widgets: [
-          {
-            name: DEXPriceComparison.widgetName,
-            image: DEXPriceComparison.image,
-            description: DEXPriceComparison.description,
-            version: DEXPriceComparison.version,
-            include: DEXPriceComparison.include,
-          },
-        ],
         enableWidgets: [],
       },
     });
     this.store = storage || this.store;
+    if (!this.store.enableWidgets) {
+      this.store.enableWidgets = [];
+    }
   };
 
   getWidgets = () => {
-    const widgets = this.store.widgets;
+    const widgets = this.widgets;
     return widgets.map((widget) => ({
       ...widget,
       disabled: !this.store.enableWidgets.includes(widget.name),
