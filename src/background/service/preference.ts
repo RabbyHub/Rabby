@@ -3,9 +3,10 @@ import eventBus from '@/eventBus';
 import compareVersions from 'compare-versions';
 import { createPersistStore } from 'background/utils';
 import { keyringService, sessionService, i18n } from './index';
-import { TotalBalanceResponse, TokenItem, Chain } from './openapi';
-import { HARDWARE_KEYRING_TYPES, EVENTS, CHAINS, CHAINS_ENUM } from 'consts';
+import { TotalBalanceResponse, TokenItem } from './openapi';
+import { HARDWARE_KEYRING_TYPES, EVENTS, CHAINS_ENUM } from 'consts';
 import { browser } from 'webextension-polyfill-ts';
+
 const version = process.env.release || '0';
 export interface Account {
   type: string;
@@ -326,6 +327,13 @@ class PreferenceService {
   };
   changeInitAlianNameStatus = () => {
     this.store.initAlianNames = true;
+  };
+  removeAlianName = (address: string) => {
+    if (this.store.alianNames[address.toLowerCase()]) {
+      const map = cloneDeep(this.store.alianNames);
+      delete map[address.toLowerCase()];
+      this.store.alianNames = map;
+    }
   };
   getLastTimeGasSelection = (chainId: string) => {
     return this.store.gasCache[chainId];
