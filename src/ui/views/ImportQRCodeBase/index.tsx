@@ -10,6 +10,7 @@ import { openInternalPageInTab } from 'ui/utils/webapi';
 import './style.less';
 
 import KeystoneLogo from 'ui/assets/walletlogo/keystone.png';
+import { HARDWARE_KEYRING_TYPES } from 'consts';
 
 const ImportQRCodeBase = () => {
   const { t } = useTranslation();

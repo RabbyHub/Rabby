@@ -37,7 +37,7 @@ import {
 import { ERC20ABI } from 'consts/abi';
 import { Account, ChainGas } from '../service/preference';
 import { ConnectedSite } from '../service/permission';
-import { ExplainTxResponse, TokenItem } from '../service/openapi';
+import { ExplainTxResponse, TokenItem, Tx } from '../service/openapi';
 import DisplayKeyring from '../service/keyring/display';
 import provider from './provider';
 import WalletConnectKeyring from '@rabby-wallet/eth-walletconnect-keyring';
@@ -928,11 +928,23 @@ export class WalletController extends BaseController {
     } catch {
       const QRCodeKeyring = keyringService.getKeyringClassForType(keyringType);
       keyring = new QRCodeKeyring();
+      await keyring.submitCryptoHDKey(cbor);
       stashKeyringId = Object.values(stashKeyrings).length;
       stashKeyrings[stashKeyringId] = keyring;
     }
-    // TODO
     return stashKeyringId;
+  };
+
+  getQRHardwareSignRequestUR = async (address: string, tx: Tx) => {
+    try {
+      const keyring = await keyringService.getKeyringForAccount(
+        address,
+        KEYRING_CLASS.QRCODE
+      );
+      return await keyring.getSignRequestUR(address, tx);
+    } catch (e) {
+      console.error(`signQRHardwareTransaction with error ${e}`);
+    }
   };
 
   signPersonalMessage = async (
