@@ -186,6 +186,7 @@ class ProviderController extends BaseController {
     return account ? account.address.toLowerCase() : null;
   };
 
+  @Reflect.metadata('SAFE', true)
   ethChainId = ({ session }: { session: Session }) => {
     const origin = session.origin;
     const site = permissionService.getWithoutUpdate(origin);
@@ -397,7 +398,7 @@ class ProviderController extends BaseController {
       throw new Error(errMsg);
     }
   };
-
+  @Reflect.metadata('SAFE', true)
   netVersion = (req) => {
     return this.ethRpc({
       ...req,
@@ -647,6 +648,7 @@ class ProviderController extends BaseController {
     });
   };
 
+  @Reflect.metadata('SAFE', true)
   netListening = () => {
     return true;
   };
