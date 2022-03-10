@@ -695,7 +695,6 @@ class KeyringService extends EventEmitter {
 
     await this.clearKeyrings();
     const vault = await this.encryptor.decrypt(password, encryptedVault);
-    this.password = password;
     // TODO: FIXME
     await Promise.all(Array.from(vault).map(this._restoreKeyring.bind(this)));
     await this._updateMemStoreKeyrings();
