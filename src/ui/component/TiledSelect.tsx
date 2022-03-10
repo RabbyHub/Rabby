@@ -65,7 +65,7 @@ const TiledSelect = ({
             <div
               style={{ lineHeight: '27px' }}
               className="rounded-lg bg-gray-bg text-13 text-gray-title mr-8 h-[28px] px-10 mb-8 float-left inline-block cursor-pointer"
-              key={v}
+              key={i}
               onClick={() => handleRemove(i)}
             >
               <span className="mr-8">{v}</span>
@@ -96,7 +96,7 @@ const TiledSelect = ({
                 ? 'bg-gray-bg text-gray-comment border-gray-divider'
                 : 'bg-white text-gray-title border-white'
             )}
-            key={o}
+            key={i}
             onClick={() => handleClickOption(i)}
           >
             {o}
