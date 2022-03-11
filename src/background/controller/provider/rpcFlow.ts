@@ -101,7 +101,6 @@ const flowContext = flow
           }
         }
       }
-      console.log(params[0]);
       ctx.approvalRes = await notificationService.requestApproval(
         {
           approvalComponent: approvalType,
