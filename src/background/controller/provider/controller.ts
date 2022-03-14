@@ -40,7 +40,11 @@ import { CHAINS, CHAINS_ENUM, SAFE_RPC_METHODS, KEYRING_TYPE } from 'consts';
 import buildinProvider from 'background/utils/buildinProvider';
 import BaseController from '../base';
 import { Account } from 'background/service/preference';
-import { validateGasPriceRange, is1559Tx } from '@/utils/transaction';
+import {
+  validateGasPriceRange,
+  is1559Tx,
+  convert1559ToLegacy,
+} from '@/utils/transaction';
 
 interface ApprovalRes extends Tx {
   type?: string;
@@ -252,18 +256,27 @@ class ProviderController extends BaseController {
     delete approvalRes.uiRequestComponent;
     delete approvalRes.traceId;
     let tx;
-    const is1559 = is1559Tx(approvalRes);
+    let is1559 = is1559Tx(approvalRes);
     if (is1559) {
-      const common = Common.custom(
-        { chainId: approvalRes.chainId },
-        { hardfork: Hardfork.London }
-      );
-      tx = FeeMarketEIP1559Transaction.fromTxData(
-        { ...approvalRes, gasLimit: approvalRes.gas } as any,
-        {
-          common,
-        }
-      );
+      if (approvalRes.maxFeePerGas === approvalRes.maxPriorityFeePerGas) {
+        // fallback to legacy transaction if maxFeePerGas is equal to maxPriorityFeePerGas
+        tx = new Transaction(convert1559ToLegacy(approvalRes));
+        is1559 = false;
+        approvalRes.gasPrice = approvalRes.maxFeePerGas;
+        delete approvalRes.maxFeePerGas;
+        delete approvalRes.maxPriorityFeePerGas;
+      } else {
+        const common = Common.custom(
+          { chainId: approvalRes.chainId },
+          { hardfork: Hardfork.London }
+        );
+        tx = FeeMarketEIP1559Transaction.fromTxData(
+          { ...approvalRes, gasLimit: approvalRes.gas } as any,
+          {
+            common,
+          }
+        );
+      }
     } else {
       tx = new Transaction(approvalRes);
     }
