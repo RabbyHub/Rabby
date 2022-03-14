@@ -26,6 +26,9 @@ import IconMetisChainLogo from 'ui/assets/dashboard/selectChain/metis.svg';
 import IconArbitrumLogo from 'ui/assets/chain-logos/arbitrum.svg';
 import IconArbitrumWhiteLogo from 'ui/assets/chain-logos/arbitrum-white.svg';
 import IconArbitrumChainLogo from 'ui/assets/dashboard/selectChain/arbitrum.svg';
+import IconHarmonyLogo from 'ui/assets/chain-logos/harmony.svg';
+import IconHarmonyWhiteLogo from 'ui/assets/chain-logos/harmony-white.svg';
+import IconHarmonyChainLogo from 'ui/assets/dashboard/selectChain/harmony.svg';
 import IconOPLogo from 'ui/assets/chain-logos/op.svg';
 import IconOPWhiteLogo from 'ui/assets/chain-logos/op-white.svg';
 import IconOPChainLogo from 'ui/assets/dashboard/selectChain/optimism.svg';
@@ -117,6 +120,7 @@ export enum CHAINS_ENUM {
   AURORA = 'AURORA',
   MOBM = 'MOBM',
   SBCH = 'SBCH',
+  HMY = 'HMY',
 }
 
 export const CHAINS: Record<string, Chain> = {
@@ -517,6 +521,27 @@ export const CHAINS: Record<string, Chain> = {
       'https://static.debank.com/image/sbch_token/logo_url/sbch/03007b5353bb9e221efb82a6a70d9ec9.png',
     nativeTokenDecimals: 18,
     thridPartyRPC: 'https://rpc-mainnet.smartbch.org',
+    eip: {
+      '1559': false,
+    },
+  },
+  [CHAINS_ENUM.HMY]: {
+    id: 1666600000,
+    serverId: 'hmy',
+    network: '1666600000',
+    name: 'Harmony',
+    nativeTokenSymbol: 'ONE',
+    nativeTokenAddress: 'hmy',
+    enum: CHAINS_ENUM.HMY,
+    logo: IconHarmonyLogo,
+    whiteLogo: IconHarmonyWhiteLogo,
+    selectChainLogo: IconHarmonyChainLogo,
+    hex: '0x63564c40',
+    scanLink: 'https://explorer.harmony.one/tx/_s_',
+    nativeTokenLogo:
+      'https://static.debank.com/image/chain/logo_url/hmy/734c003023531e31c636ae25d5a73172.png',
+    nativeTokenDecimals: 18,
+    thridPartyRPC: 'https://a.api.s0.t.hmny.io',
     eip: {
       '1559': false,
     },
