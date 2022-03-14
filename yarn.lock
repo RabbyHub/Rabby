@@ -2504,10 +2504,10 @@
     ethereumjs-util "^7.0.9"
     ethereumjs-wallet "^1.0.1"
 
-"@rabby-wallet/eth-lattice-keyring@^0.4.2":
-  version "0.4.2"
-  resolved "https://registry.yarnpkg.com/@rabby-wallet/eth-lattice-keyring/-/eth-lattice-keyring-0.4.2.tgz#5b02f494deee67306d272d98f84838e8f0b4446d"
-  integrity sha512-8ecMqdwuAL66FI28apPywL19Xo5vTSpqxqNLNpO3jh8AGVFKQLA1NrDyxYMg+UzxRMHIG1/TIO97Uus9FW9Kwg==
+"@rabby-wallet/eth-lattice-keyring@^0.4.3":
+  version "0.4.3"
+  resolved "https://registry.yarnpkg.com/@rabby-wallet/eth-lattice-keyring/-/eth-lattice-keyring-0.4.3.tgz#579734730b9eca01bbb7484d3e922bb4082bff87"
+  integrity sha512-YXKM/4VP06LiNAeLH3esNetxLpIiiWaPN9q0/7p0/dTPvSo/J65oPUEcQmvsn66JkBdc+u4S07+AOgk1EFAFBA==
   dependencies:
     "@ethereumjs/common" "^2.4.0"
     "@ethereumjs/tx" "^3.1.1"
