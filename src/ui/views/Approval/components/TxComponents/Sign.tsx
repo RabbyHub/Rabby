@@ -1,4 +1,5 @@
 import { ExplainTxResponse, Tx } from 'background/service/openapi';
+import clsx from 'clsx';
 import { CHAINS, CHAINS_ENUM } from 'consts';
 import React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
@@ -8,6 +9,7 @@ import BalanceChange from './BalanceChange';
 import GnosisExplain from './GnosisExplain';
 import SpeedUpCorner from './SpeedUpCorner';
 import ViewRawModal from './ViewRawModal';
+import { ReactComponent as IconUnknownProtocol } from 'ui/assets/unknown-protocol.svg';
 interface SignProps {
   data: ExplainTxResponse;
   chainEnum: CHAINS_ENUM;
@@ -27,6 +29,8 @@ const Sign = ({ data, chainEnum, raw, isSpeedUp, tx }: SignProps) => {
       abi: data?.abiStr,
     });
   };
+
+  const isUnknown = !data?.abi && !detail.action;
 
   return (
     <div className="sign">
@@ -51,9 +55,14 @@ const Sign = ({ data, chainEnum, raw, isSpeedUp, tx }: SignProps) => {
             {detail.contract_protocol_name || t('Unknown Protocol')}
           </span>
         </div>
-        <div className="block-field">
+        <div className={clsx('block-field', isUnknown ? 'has-msg' : '')}>
           <span className="label">{t('Action')}</span>
-          <span className="value">{detail.action || t('Unknown Action')}</span>
+          <span className="value">
+            {detail.action || t('Unknown Action')}
+            {isUnknown && (
+              <div className="msg-warning">Please submit with caution</div>
+            )}
+          </span>
         </div>
         <div className="block-field contract">
           <span className="label">{t('Contract')}</span>
@@ -83,6 +92,12 @@ const Sign = ({ data, chainEnum, raw, isSpeedUp, tx }: SignProps) => {
             className="contract-logo"
           />
         )}
+        {!detail.contract_protocol_logo_url && isUnknown ? (
+          <IconUnknownProtocol
+            className="contract-logo-unknown"
+            viewBox="0 0 36 36"
+          />
+        ) : null}
       </div>
       <BalanceChange
         data={data.balance_change}

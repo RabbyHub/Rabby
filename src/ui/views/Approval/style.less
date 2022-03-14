@@ -382,6 +382,9 @@
         .block-field {
           display: flex;
           margin-bottom: 16px;
+          &.has-msg {
+            margin-bottom: 20px;
+          }
           .label {
             color: @color-comment-1;
             font-size: 14px;
@@ -397,6 +400,14 @@
             white-space: nowrap;
             text-overflow: ellipsis;
             overflow: hidden;
+          }
+          .msg-warning {
+            color: @color-orange;
+            margin-top: 2px;
+            font-weight: 400;
+            font-size: 12px;
+            line-height: 14px;
+            position: absolute;
           }
           &.contract {
             margin-bottom: 0;
@@ -420,7 +431,8 @@
             }
           }
         }
-        .contract-logo {
+        .contract-logo,
+        .contract-logo-unknown {
           position: absolute;
           right: 16px;
           top: 16px;
@@ -428,6 +440,16 @@
           height: 60px;
           opacity: 0.2;
         }
+        .contract-logo-unknown {
+          opacity: 0.3;
+          circle {
+            fill: #dbe2f2;
+          }
+          path {
+            fill: #8b93a7;
+          }
+        }
+
         .gnosis-explain {
           background: #eaecfb;
           border: 1px solid #8697ff;
@@ -746,7 +768,7 @@
     display: flex;
     justify-content: space-between;
     width: 100%;
-  
+
     .card {
       width: 76px;
       height: 48px;
@@ -800,7 +822,7 @@
       }
     }
   }
-  
+
   .gas-selector-panel {
     .field-slot {
       margin-left: 0;
@@ -878,7 +900,7 @@
       font-size: 12px;
       line-height: 14px;
       span {
-        color: #8697FF;
+        color: #8697ff;
         font-weight: 500;
         margin-left: 2px;
       }
