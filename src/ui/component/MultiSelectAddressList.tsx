@@ -136,6 +136,7 @@ const MultiSelectAddressList = ({
     }
   }, [loadLength, end]);
   const onItemsRendered = ({ overscanStartIndex, overscanStopIndex }) => {
+    if (overscanStopIndex < accounts.length - 1) return;
     if (overscanStopIndex + 5 > accounts.length) {
       loadMoreItems && loadMoreItems();
     }

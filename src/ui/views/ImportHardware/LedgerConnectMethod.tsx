@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
+import TransportWebHID from '@ledgerhq/hw-transport-webhid';
 import { StrayPageWithButton, FieldCheckbox } from 'ui/component';
 import { useWallet } from 'ui/utils';
 import { IS_AFTER_CHROME91, IS_CHROME } from 'consts';
@@ -41,7 +41,7 @@ const LedgerConnectMethod = () => {
   };
 
   const checkWebUSBSupport = async () => {
-    const support = await TransportWebUSB.isSupported();
+    const support = await TransportWebHID.isSupported();
     setSupportWebUSB(support);
   };
 

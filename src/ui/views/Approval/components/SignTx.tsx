@@ -12,7 +12,7 @@ import clsx from 'clsx';
 import * as Sentry from '@sentry/browser';
 import Safe from '@rabby-wallet/gnosis-sdk';
 import { SafeInfo } from '@rabby-wallet/gnosis-sdk/src/api';
-import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
+import TransportWebHID from '@ledgerhq/hw-transport-webhid';
 import ReactGA from 'react-ga';
 import {
   KEYRING_CLASS,
@@ -468,13 +468,8 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       !(await wallet.isUseLedgerLive())
     ) {
       try {
-        const keyring = await wallet.connectHardware(
-          KEYRING_CLASS.HARDWARE.LEDGER
-        );
-        if (keyring.isWebUSB) {
-          const transport = await TransportWebUSB.create();
-          await transport.close();
-        }
+        const transport = await TransportWebHID.create();
+        await transport.close();
       } catch (e) {
         // NOTHING
       }
