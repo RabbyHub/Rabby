@@ -38,7 +38,7 @@ import {
   KEYRING_TYPE,
   CHAINS_ENUM,
 } from 'consts';
-import { ERC20ABI } from 'consts/abi';
+import { ERC20ABI, ERC1155ABI, ERC721ABI } from 'consts/abi';
 import { Account, ChainGas } from '../service/preference';
 import { ConnectedSite } from '../service/permission';
 import { ExplainTxResponse, TokenItem } from '../service/openapi';
@@ -117,6 +117,53 @@ export class WalletController extends BaseController {
     const signer = provider.getSigner();
     const contract = new Contract(id, ERC20ABI, signer);
     await contract.approve(spender, amount);
+  };
+
+  approveNFT = async ({
+    chainServerId,
+    contractId,
+    spender,
+    abi,
+    tokenId,
+    isApprovedForAll,
+  }: {
+    chainServerId: string;
+    contractId: string;
+    spender: string;
+    abi: 'ERC721' | 'ERC1155';
+    isApprovedForAll: boolean;
+    tokenId: string | null | undefined;
+  }) => {
+    const account = await preferenceService.getCurrentAccount();
+    if (!account) throw new Error('no current account');
+    const chainId = Object.values(CHAINS)
+      .find((chain) => chain.serverId === chainServerId)
+      ?.id.toString();
+    if (!chainId) throw new Error('invalid chain id');
+    buildinProvider.currentProvider.currentAccount = account.address;
+    buildinProvider.currentProvider.currentAccountType = account.type;
+    buildinProvider.currentProvider.currentAccountBrand = account.brandName;
+    buildinProvider.currentProvider.chainId = chainId;
+    const provider = new ethers.providers.Web3Provider(
+      buildinProvider.currentProvider
+    );
+    const signer = provider.getSigner();
+    if (abi === 'ERC721') {
+      const contract = new Contract(contractId, ERC721ABI, signer);
+      if (isApprovedForAll) {
+        await contract.setApprovalForAll(spender, false);
+      } else {
+        await contract.approve(
+          '0x0000000000000000000000000000000000000000',
+          tokenId
+        );
+      }
+    } else if (abi === 'ERC1155') {
+      const contract = new Contract(contractId, ERC1155ABI, signer);
+      await contract.setApprovalForAll(spender, false);
+    } else {
+      throw new Error('unknown contract abi');
+    }
   };
 
   initAlianNames = async () => {
@@ -274,6 +321,13 @@ export class WalletController extends BaseController {
 
   setTokenApprovalChain = (address: string, chain: CHAINS_ENUM) => {
     preferenceService.setTokenApprovalChain(address, chain);
+  };
+
+  getNFTApprovalChain = (address: string) =>
+    preferenceService.getNFTApprovalChain(address);
+
+  setNFTApprovalChain = (address: string, chain: CHAINS_ENUM) => {
+    preferenceService.setNFTApprovalChain(address, chain);
   };
 
   /* chains */

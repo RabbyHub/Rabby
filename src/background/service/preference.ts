@@ -49,6 +49,7 @@ interface PreferenceStore {
   pinnedChain: string[];
   addedToken: addedToken;
   tokenApprovalChain: Record<string, CHAINS_ENUM>;
+  nftApprovalChain: Record<string, CHAINS_ENUM>;
 }
 
 const SUPPORT_LOCALES = ['en'];
@@ -81,6 +82,7 @@ class PreferenceService {
         pinnedChain: [],
         addedToken: {},
         tokenApprovalChain: {},
+        nftApprovalChain: {},
       },
     });
     if (!this.store.locale || this.store.locale !== defaultLang) {
@@ -129,6 +131,9 @@ class PreferenceService {
     if (!this.store.tokenApprovalChain) {
       this.store.tokenApprovalChain = {};
     }
+    if (!this.store.nftApprovalChain) {
+      this.store.nftApprovalChain = {};
+    }
   };
 
   getTokenApprovalChain = (address: string) => {
@@ -140,6 +145,19 @@ class PreferenceService {
     const key = address.toLowerCase();
     this.store.tokenApprovalChain = {
       ...this.store.tokenApprovalChain,
+      [key]: chain,
+    };
+  };
+
+  getNFTApprovalChain = (address: string) => {
+    const key = address.toLowerCase();
+    return this.store.nftApprovalChain[key] || CHAINS_ENUM.ETH;
+  };
+
+  setNFTApprovalChain = (address: string, chain: CHAINS_ENUM) => {
+    const key = address.toLowerCase();
+    this.store.nftApprovalChain = {
+      ...this.store.nftApprovalChain,
       [key]: chain,
     };
   };
