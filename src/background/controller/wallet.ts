@@ -119,7 +119,7 @@ export class WalletController extends BaseController {
     await contract.approve(spender, amount);
   };
 
-  approveNFT = async ({
+  revokeNFTApprove = async ({
     chainServerId,
     contractId,
     spender,
