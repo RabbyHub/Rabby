@@ -52,9 +52,6 @@ const ImportHardware = () => {
     }
 
     try {
-      // setSpin(true);
-      // const keyring = await wallet.connectHardware(hardware, BIP44_PATH, true);
-      // setSpin(false);
       history.push({
         pathname: '/import/select-address',
         state: {
