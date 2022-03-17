@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Tooltip, message } from 'antd';
 import { useTranslation } from 'react-i18next';
-import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
+import TransportWebHID from '@ledgerhq/hw-transport-webhid';
 import { KEYRING_CLASS, KEYRING_TYPE } from 'consts';
 import { useApproval, useWallet } from 'ui/utils';
 import { hex2Text } from 'ui/utils';
@@ -101,13 +101,8 @@ const SignText = ({ params }: { params: SignTextProps }) => {
       !(await wallet.isUseLedgerLive())
     ) {
       try {
-        const keyring = await wallet.connectHardware(
-          KEYRING_CLASS.HARDWARE.LEDGER
-        );
-        if (keyring.isWebUSB) {
-          const transport = await TransportWebUSB.create();
-          await transport.close();
-        }
+        const transport = await TransportWebHID.create();
+        await transport.close();
       } catch (e) {
         // NOTHING
       }

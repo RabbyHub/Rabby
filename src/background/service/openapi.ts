@@ -135,6 +135,51 @@ export interface TokenItem {
   raw_amount_hex_str?: string;
 }
 
+export interface NFTApprovalResponse {
+  tokens: NFTApproval[];
+  contracts: NFTApprovalContract[];
+  total: string;
+}
+
+export interface NFTApprovalContract {
+  chain: string;
+  contract_name: string;
+  contract_id: string;
+  amount: string;
+  spender: Spender;
+  is_erc721: boolean;
+  is_erc1155: boolean;
+}
+
+export interface NFTApprovalSpender {
+  id: string;
+  protocol: {
+    id: string;
+    name: string;
+    logo_url: string;
+    chain: string;
+  } | null;
+}
+
+export interface NFTApproval {
+  id: string;
+  contract_id: string;
+  inner_id: string;
+  chain: string;
+  name: null;
+  symbol: string;
+  description: null;
+  content_type: 'image' | 'image_url' | 'video_url' | 'audio_url' | undefined;
+  content: string;
+  total_supply: number;
+  detail_url: string;
+  contract_name: string;
+  is_erc721: boolean;
+  is_erc1155: boolean;
+  amount: string;
+  spender: Spender;
+}
+
 export interface TokenApproval {
   id: string;
   name: string;
@@ -574,6 +619,11 @@ class OpenApiService {
             method: 'get',
             params: ['id', 'chain_id'],
           },
+          user_nft_authorized_list: {
+            path: '/v1/user/nft_authorized_list',
+            method: 'GET',
+            params: ['id', 'chain_id'],
+          },
         },
       },
     });
@@ -835,6 +885,15 @@ class OpenApiService {
       {
         community_id: 122,
         id: 'fuse',
+        logo_url: '',
+        name: '',
+        native_token_id: '',
+        wrapped_token_id: '',
+        symbol: '',
+      },
+      {
+        community_id: 1666600000,
+        id: 'hmy',
         logo_url: '',
         name: '',
         native_token_id: '',
@@ -1132,6 +1191,21 @@ class OpenApiService {
     chain_id: string
   ): Promise<TokenApproval[]> => {
     const config = this.store.config.user_token_authorized_list;
+    const { data } = await this.request[config.method](config.path, {
+      params: {
+        id,
+        chain_id,
+      },
+    });
+
+    return data;
+  };
+
+  userNFTAuthorizedList = async (
+    id: string,
+    chain_id: string
+  ): Promise<NFTApprovalResponse> => {
+    const config = this.store.config.user_nft_authorized_list;
     const { data } = await this.request[config.method](config.path, {
       params: {
         id,

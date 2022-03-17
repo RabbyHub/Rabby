@@ -21,6 +21,7 @@ import Settings from './Settings';
 import ConnectedSites from './ConnectedSites';
 import Approval from './Approval';
 import TokenApproval from './TokenApproval';
+import NFTApproval from './NFTApproval';
 import CreateMnemonics from './CreateMnemonics';
 import AddAddress from './AddAddress';
 import ChainManagement, { StartChainManagement } from './ChainManagement';
@@ -131,6 +132,9 @@ const Main = () => {
         </PrivateRoute>
         <PrivateRoute exact path="/token-approval">
           <TokenApproval />
+        </PrivateRoute>
+        <PrivateRoute exact path="/nft-approval">
+          <NFTApproval />
         </PrivateRoute>
         <PrivateRoute exact path="/settings">
           <Settings />

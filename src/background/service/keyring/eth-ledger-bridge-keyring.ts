@@ -3,7 +3,7 @@ import { EventEmitter } from 'events';
 import HDKey from 'hdkey';
 import * as ethUtil from 'ethereumjs-util';
 import * as sigUtil from 'eth-sig-util';
-import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
+import TransportWebHID from '@ledgerhq/hw-transport-webhid';
 import Transport from '@ledgerhq/hw-transport';
 import LedgerEth from '@ledgerhq/hw-app-eth';
 import { is1559Tx } from '@/utils/transaction';
@@ -157,7 +157,7 @@ class LedgerBridgeKeyring extends EventEmitter {
   async makeApp(signing = false) {
     if (!this.app && this.isWebUSB) {
       try {
-        this.transport = await TransportWebUSB.create();
+        this.transport = await TransportWebHID.create();
         this.app = new LedgerEth(this.transport);
       } catch (e: any) {
         if (signing) {
