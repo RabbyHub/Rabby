@@ -883,6 +883,15 @@ class OpenApiService {
         symbol: '',
       },
       {
+        community_id: 122,
+        id: 'fuse',
+        logo_url: '',
+        name: '',
+        native_token_id: '',
+        wrapped_token_id: '',
+        symbol: '',
+      },
+      {
         community_id: 1666600000,
         id: 'hmy',
         logo_url: '',

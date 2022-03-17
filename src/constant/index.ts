@@ -59,6 +59,9 @@ import IconMobmChainLogo from 'ui/assets/dashboard/selectChain/mobm.svg';
 import IconSbchLogo from 'ui/assets/chain-logos/smartBCH.svg';
 import IconSbchWhiteLogo from 'ui/assets/chain-logos/smartBCH-white.svg';
 import IconSbchChainLogo from 'ui/assets/dashboard/selectChain/smartBCH.svg';
+import IconFuseLogo from 'ui/assets/chain-logos/fuse.svg';
+import IconFuseWhiteLogo from 'ui/assets/chain-logos/fuse-white.svg';
+import IconFuseChainLogo from 'ui/assets/dashboard/selectChain/fuse.svg';
 import IconEN from 'ui/assets/langs/en.svg';
 import IconZH from 'ui/assets/langs/zh_cn.svg';
 import IconAmber from 'ui/assets/walletlogo/amber.png';
@@ -120,6 +123,7 @@ export enum CHAINS_ENUM {
   AURORA = 'AURORA',
   MOBM = 'MOBM',
   SBCH = 'SBCH',
+  FUSE = 'FUSE',
   HMY = 'HMY',
 }
 
@@ -521,6 +525,27 @@ export const CHAINS: Record<string, Chain> = {
       'https://static.debank.com/image/sbch_token/logo_url/sbch/03007b5353bb9e221efb82a6a70d9ec9.png',
     nativeTokenDecimals: 18,
     thridPartyRPC: 'https://rpc-mainnet.smartbch.org',
+    eip: {
+      '1559': false,
+    },
+  },
+  [CHAINS_ENUM.FUSE]: {
+    id: 122,
+    serverId: 'fuse',
+    network: '122',
+    name: 'Fuse',
+    nativeTokenSymbol: 'FUSE',
+    nativeTokenAddress: 'fuse',
+    enum: CHAINS_ENUM.FUSE,
+    logo: IconFuseLogo,
+    whiteLogo: IconFuseWhiteLogo,
+    selectChainLogo: IconFuseChainLogo,
+    hex: '0x7a',
+    scanLink: 'https://explorer.fuse.io/tx/_s_',
+    nativeTokenLogo:
+      'https://static.debank.com/image/chain/logo_url/fuse/ea4c9e12e7f646d42aa8fb07ab8dfec8.png',
+    nativeTokenDecimals: 18,
+    thridPartyRPC: 'https://rpc.fuse.io',
     eip: {
       '1559': false,
     },
