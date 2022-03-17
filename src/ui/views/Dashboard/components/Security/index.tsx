@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
 import IconArrowRight from 'ui/assets/arrow-right-gray.svg';
 import IconTokenApproval from 'ui/assets/icon-token-approval.svg';
-import LogoRabby from 'ui/assets/logo-rabby-large.svg';
+import IconNFTApproval from 'ui/assets/nft-approval.svg';
 import { Field, Popup } from 'ui/component';
 import './style.less';
 
@@ -24,6 +24,12 @@ const Security = ({ visible, onClose }: SecurityProps) => {
       content: t('Token Approval'),
       onClick: () => history.push('/token-approval'),
     },
+    {
+      leftIcon: IconNFTApproval,
+      rightIcon: <img src={IconArrowRight} className="icon icon-arrow-right" />,
+      content: t('NFT Approval'),
+      onClick: () => history.push('/nft-approval'),
+    },
   ];
 
   return (
@@ -31,7 +37,7 @@ const Security = ({ visible, onClose }: SecurityProps) => {
       <Popup
         visible={visible}
         onClose={onClose}
-        height={180}
+        height={245}
         bodyStyle={{ height: '100%', paddingBottom: 0, paddingTop: 12 }}
         title="Security"
       >

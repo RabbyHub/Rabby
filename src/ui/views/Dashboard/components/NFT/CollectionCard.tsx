@@ -60,7 +60,6 @@ const CollectionCard = (props: CollectionCardProps) => {
               type={item.content_type}
               amount={item.amount}
               content={item.content}
-              chain={item.chain}
               key={item.id}
             ></NFTAvatar>
           );
