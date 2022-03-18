@@ -77,13 +77,6 @@ const LedgerConnectMethod = () => {
           >
             <div>
               <p className="my-0">{path.name}</p>
-              {path.value === DIRECTLY && IS_AFTER_CHROME91 && (
-                <p className="mt-4 mb-0 text-red-light text-12">
-                  {t(
-                    'Ledger Blue is not supported by Chrome 91 and above versions'
-                  )}
-                </p>
-              )}
             </div>
           </FieldCheckbox>
         ))}
