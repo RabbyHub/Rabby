@@ -79,12 +79,14 @@ export const useCurrentBalance = (
 ) => {
   const wallet = useWallet();
   const [balance, setBalance] = useState<number | null>(null);
+  let isCanceled = false;
   const [chainBalances, setChainBalances] = useState<
     DisplayChainWithWhiteLogo[]
   >([]);
 
   const [getAddressBalance] = useWalletRequest(wallet.getAddressBalance, {
     onSuccess({ total_usd_value, chain_list }) {
+      if (isCanceled) return;
       setBalance(total_usd_value);
       setChainBalances(
         chain_list.filter((item) => item.usd_value > 0).map(formatChain)
@@ -121,6 +123,9 @@ export const useCurrentBalance = (
         );
       });
     }
+    return () => {
+      isCanceled = true;
+    };
   }, [account]);
   return [balance, chainBalances, getAddressBalance] as const;
 };
