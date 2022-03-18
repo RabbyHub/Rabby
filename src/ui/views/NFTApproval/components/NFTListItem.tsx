@@ -20,7 +20,7 @@ const NFTListItem = ({ item, onDecline }: NFTListItemProps) => {
         chain={item.chain}
       ></NFTAvatar>
       <div className="list-item-body">
-        <div className="list-item-title">{item.name || '-'}</div>
+        <div className="list-item-title">{item.name || 'Unknown NFT'}</div>
         <div className="list-item-desc">{item.amount} NFT</div>
       </div>
       <div className="list-item-extra">

@@ -14,7 +14,8 @@ const NFTContractListItem = ({ item, onDecline }: NFTContractListItemProps) => {
     <div className="list-item">
       <div className="list-item-body">
         <div className="list-item-title">
-          {item.contract_name || '-'} ({getAmountText(item?.amount || 0)})
+          {item.contract_name || 'Unknown NFT'} (
+          {getAmountText(item?.amount || 0)})
         </div>
         <div className="list-item-desc">{ellipsis(item.contract_id)}</div>
       </div>

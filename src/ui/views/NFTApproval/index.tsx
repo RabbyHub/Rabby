@@ -169,7 +169,7 @@ const NFTApproval = () => {
           </div>
         </div>
         <Tabs>
-          <TabPane tab="Contracts" key="1">
+          <TabPane tab={t('By Contract')} key="1">
             <NFTContractList
               data={data?.contracts}
               loading={loading}
@@ -181,7 +181,7 @@ const NFTApproval = () => {
               }}
             ></NFTContractList>
           </TabPane>
-          <TabPane tab="NFTs" key="2">
+          <TabPane tab={t('By NFT')} key="2">
             <NFTList
               data={data?.tokens}
               loading={loading}
