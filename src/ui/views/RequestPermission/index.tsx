@@ -1,7 +1,7 @@
 import React, { useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Button } from 'antd';
-import TransportWebHID from '@ledgerhq/hw-transport-webhid';
+import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
 import { StrayPage } from 'ui/component';
 import { query2obj } from 'ui/utils/url';
 
@@ -35,7 +35,7 @@ const RequestPermission = () => {
     if (type === 'ledger') {
       const parent = window.opener;
       try {
-        const transport = await TransportWebHID.create();
+        const transport = await TransportWebUSB.create();
         await transport.close();
         if (parent) {
           window.postMessage({ success: true }, '*');
