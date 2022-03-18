@@ -78,6 +78,7 @@ import IconOnekey from 'ui/assets/walletlogo/onekey.png';
 import IconOneKey18 from 'ui/assets/walletlogo/onekey18.png';
 import IconTokenpocket from 'ui/assets/walletlogo/tp.png';
 import IconTrezor from 'ui/assets/walletlogo/trezor.png';
+import IconMetaMask from 'ui/assets/walletlogo/metamask.png';
 import IconTrust from 'ui/assets/walletlogo/trust.png';
 import IconMnemonicPurple from 'ui/assets/walletlogo/mnemonic-purple.svg';
 import IconPrivateKeyPurple from 'ui/assets/walletlogo/privatekey-purple.svg';
@@ -759,20 +760,6 @@ export const SAFE_RPC_METHODS = [
 
 export const MINIMUM_GAS_LIMIT = 21000;
 
-export enum WATH_ADDRESS_BRAND {
-  TP = 'TP',
-  IMTOKEN = 'IMTOKEN',
-  TRUSTWALLET = 'TRUSTWALLET',
-  MATHWALLET = 'MATHWALLET',
-}
-
-export enum WATCH_ADDRESS_TYPES {
-  TP = 'TP',
-  IMTOKEN = 'IMTOKEN',
-  TRUSTWALLET = 'TRUSTWALLET',
-  MATHWALLET = 'MATHWALLET',
-}
-
 export enum WATCH_ADDRESS_CONNECT_TYPE {
   WalletConnect = 'WalletConnect',
 }
@@ -836,6 +823,7 @@ export enum WALLET_BRAND_TYPES {
   TRUSTWALLET = 'TRUSTWALLET',
   GNOSIS = 'Gnosis',
   GRIDPLUS = 'GRIDPLUS',
+  METAMASK = 'MetaMask',
 }
 
 export const WALLET_BRAND_CONTENT = {
@@ -910,6 +898,14 @@ export const WALLET_BRAND_CONTENT = {
     icon: LogoLedgerWhite,
     image: LogoLedgerDark,
     connectType: BRAND_WALLET_CONNECT_TYPE.LedgerConnect,
+  },
+  [WALLET_BRAND_TYPES.METAMASK]: {
+    id: 14,
+    name: 'MetaMask Mobile',
+    brand: WALLET_BRAND_TYPES.METAMASK,
+    icon: IconMetaMask,
+    image: IconMetaMask,
+    connectType: BRAND_WALLET_CONNECT_TYPE.WalletConnect,
   },
   [WALLET_BRAND_TYPES.MATHWALLET]: {
     id: 5,
