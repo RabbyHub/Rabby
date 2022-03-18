@@ -105,12 +105,8 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
     }
     const currentAccount = await wallet.getCurrentAccount();
     if (currentAccount?.type === KEYRING_CLASS.HARDWARE.LEDGER) {
-      try {
-        const transport = await TransportWebHID.create();
-        await transport.close();
-      } catch (e) {
-        // NOTHING
-      }
+      const transport = await TransportWebHID.create();
+      await transport.close();
     }
     if (currentAccount?.type && WaitingSignComponent[currentAccount?.type]) {
       resolveApproval({

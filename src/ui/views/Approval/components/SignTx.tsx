@@ -467,12 +467,8 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       currentAccount?.type === KEYRING_CLASS.HARDWARE.LEDGER &&
       !(await wallet.isUseLedgerLive())
     ) {
-      try {
-        const transport = await TransportWebHID.create();
-        await transport.close();
-      } catch (e) {
-        // NOTHING
-      }
+      const transport = await TransportWebHID.create();
+      await transport.close();
     }
 
     try {
