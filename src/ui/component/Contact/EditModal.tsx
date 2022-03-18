@@ -86,7 +86,6 @@ const EditModal = ({
   const handleVisibleChange = async () => {
     if (visible) {
       setTimeout(() => {
-        console.log(inputRef);
         inputRef?.current?.focus();
       }, 200);
       if (isEdit) {

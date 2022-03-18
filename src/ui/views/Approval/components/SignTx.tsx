@@ -537,8 +537,6 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       label: currentAccount.brandName,
     });
 
-    console.log('resolve approval');
-
     resolveApproval({
       ...transaction,
       nonce: realNonce || tx.nonce,

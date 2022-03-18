@@ -71,7 +71,6 @@ const ImportGnosisAddress = () => {
       const importedAccounts = await wallet.getTypedAccounts(
         KEYRING_TYPE.GnosisKeyring
       );
-      console.log(importedAccounts);
       if (importedAccounts && importedAccounts[0].accounts) {
         setImportedAccounts(importedAccounts[0].accounts);
       }
