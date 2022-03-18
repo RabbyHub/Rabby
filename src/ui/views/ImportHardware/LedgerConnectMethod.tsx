@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import TransportWebHID from '@ledgerhq/hw-transport-webhid';
+import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
 import { StrayPageWithButton, FieldCheckbox } from 'ui/component';
 import { useWallet } from 'ui/utils';
 import { IS_AFTER_CHROME91, IS_CHROME } from 'consts';
@@ -41,7 +41,7 @@ const LedgerConnectMethod = () => {
   };
 
   const checkWebUSBSupport = async () => {
-    const support = await TransportWebHID.isSupported();
+    const support = await TransportWebUSB.isSupported();
     setSupportWebUSB(support);
   };
 
@@ -77,6 +77,13 @@ const LedgerConnectMethod = () => {
           >
             <div>
               <p className="my-0">{path.name}</p>
+              {path.value === DIRECTLY && IS_AFTER_CHROME91 && (
+                <p className="mt-4 mb-0 text-red-light text-12">
+                  {t(
+                    'Ledger Blue is not supported by Chrome 91 and above versions'
+                  )}
+                </p>
+              )}
             </div>
           </FieldCheckbox>
         ))}

@@ -12,7 +12,7 @@ import clsx from 'clsx';
 import * as Sentry from '@sentry/browser';
 import Safe from '@rabby-wallet/gnosis-sdk';
 import { SafeInfo } from '@rabby-wallet/gnosis-sdk/src/api';
-import TransportWebHID from '@ledgerhq/hw-transport-webhid';
+import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
 import ReactGA from 'react-ga';
 import {
   KEYRING_CLASS,
@@ -467,7 +467,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       currentAccount?.type === KEYRING_CLASS.HARDWARE.LEDGER &&
       !(await wallet.isUseLedgerLive())
     ) {
-      const transport = await TransportWebHID.create();
+      const transport = await TransportWebUSB.create();
       await transport.close();
     }
 
@@ -537,6 +537,8 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       label: currentAccount.brandName,
     });
 
+    console.log('resolve approval');
+
     resolveApproval({
       ...transaction,
       nonce: realNonce || tx.nonce,
@@ -595,7 +597,6 @@ const SignTx = ({ params, origin }: SignTxProps) => {
   };
 
   const handleMaxPriorityFeeChange = (fee: number) => {
-    console.log('handleMaxPriorityFeeChange', fee);
     setMaxPriorityFee(fee);
   };
 
