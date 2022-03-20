@@ -467,8 +467,13 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       currentAccount?.type === KEYRING_CLASS.HARDWARE.LEDGER &&
       !(await wallet.isUseLedgerLive())
     ) {
-      const transport = await TransportWebUSB.create();
-      await transport.close();
+      try {
+        const transport = await TransportWebUSB.create();
+        await transport.close();
+      } catch (e) {
+        // ignore transport create error when ledger is not connected, it works but idk why
+        console.log(e);
+      }
     }
 
     try {

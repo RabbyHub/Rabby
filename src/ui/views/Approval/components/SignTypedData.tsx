@@ -105,8 +105,13 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
     }
     const currentAccount = await wallet.getCurrentAccount();
     if (currentAccount?.type === KEYRING_CLASS.HARDWARE.LEDGER) {
-      const transport = await TransportWebUSB.create();
-      await transport.close();
+      try {
+        const transport = await TransportWebUSB.create();
+        await transport.close();
+      } catch (e) {
+        // ignore transport create error when ledger is not connected, it works but idk why
+        console.log(e);
+      }
     }
     if (currentAccount?.type && WaitingSignComponent[currentAccount?.type]) {
       resolveApproval({
