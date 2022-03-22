@@ -1,8 +1,8 @@
 import * as Sentry from '@sentry/browser';
+import Transaction from 'ethereumjs-tx';
 import Common, { Hardfork } from '@ethereumjs/common';
 import {
   TransactionFactory,
-  Transaction,
   FeeMarketEIP1559Transaction,
 } from '@ethereumjs/tx';
 import { ethers } from 'ethers';

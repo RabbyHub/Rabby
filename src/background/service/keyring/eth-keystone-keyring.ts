@@ -1,5 +1,7 @@
 import { MetaMaskKeyring } from '@keystonehq/metamask-airgapped-keyring';
 import { toChecksumAddress } from 'ethereumjs-util';
+import { Transaction as LegacyTransaction } from 'ethereumjs-tx';
+import { Transaction } from '@ethereumjs/tx';
 
 const pathBase = 'm';
 
@@ -48,5 +50,15 @@ export default class KeystoneKeyring extends MetaMaskKeyring {
       this.indexes[toChecksumAddress(address)] = i;
     }
     return accounts;
+  }
+
+  async signTransaction(address: string, tx: any): Promise<any> {
+    let ethTx = tx;
+    if (tx.type === undefined) {
+      ethTx = Transaction.fromSerializedTx(
+        (tx as LegacyTransaction).serialize()
+      );
+    }
+    return super.signTransaction(address, ethTx);
   }
 }
