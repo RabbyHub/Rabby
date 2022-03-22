@@ -906,7 +906,7 @@ export const WALLET_BRAND_CONTENT = {
     connectType: BRAND_WALLET_CONNECT_TYPE.WalletConnect,
   },
   [WALLET_BRAND_TYPES.KEYSTONE]: {
-    id: 14,
+    id: 15,
     name: 'Keystone',
     brand: WALLET_BRAND_TYPES.KEYSTONE,
     icon: LogoKeystone,
