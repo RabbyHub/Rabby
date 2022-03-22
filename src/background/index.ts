@@ -25,6 +25,7 @@ import i18n from './service/i18n';
 import rpcCache from './utils/rpcCache';
 import eventBus from '@/eventBus';
 import migrateData from '@/migrations';
+import stats from '@/stats';
 
 const { PortMessage } = Message;
 
@@ -182,3 +183,13 @@ window.wallet = new Proxy(walletController, {
     return Reflect.get(target, propKey, receiver);
   },
 });
+
+storage
+  .byteInUse()
+  .then((byte) => {
+    console.log('byte', byte);
+    stats.report('byteInUse', { value: byte });
+  })
+  .catch(() => {
+    // IGNORE
+  });
