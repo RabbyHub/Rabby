@@ -624,6 +624,7 @@ export const KEYRING_TYPE_TEXT = {
   [KEYRING_CLASS.HARDWARE.ONEKEY]: 'Imported by Onekey',
   [KEYRING_CLASS.HARDWARE.GRIDPLUS]: 'Imported by GridPlus',
   [KEYRING_CLASS.GNOSIS]: 'Imported by Gnosis Safe',
+  [KEYRING_CLASS.HARDWARE.KEYSTONE]: 'Imported by Keystone',
 };
 export const BRAND_ALIAN_TYPE_TEXT = {
   [KEYRING_TYPE.HdKeyring]: 'Mnemonic',

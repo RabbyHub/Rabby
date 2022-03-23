@@ -249,12 +249,14 @@ class ProviderController extends BaseController {
     const isSpeedUp = !!txParams.isSpeedUp;
     const isCancel = !!txParams.isCancel;
     const traceId = approvalRes.traceId;
+    const extra = approvalRes.extra;
     delete txParams.isSend;
     delete approvalRes.isSend;
     delete approvalRes.address;
     delete approvalRes.type;
     delete approvalRes.uiRequestComponent;
     delete approvalRes.traceId;
+    delete approvalRes.extra;
     let tx;
     let is1559 = is1559Tx(approvalRes);
     if (is1559) {
@@ -282,7 +284,7 @@ class ProviderController extends BaseController {
     }
     const currentAccount = preferenceService.getCurrentAccount()!;
     let opts;
-    opts = approvalRes?.extra;
+    opts = extra;
     if (currentAccount.type === KEYRING_TYPE.GnosisKeyring) {
       buildinProvider.currentProvider.currentAccount = approvalRes!.account!.address;
       buildinProvider.currentProvider.currentAccountType = approvalRes!.account!.type;
