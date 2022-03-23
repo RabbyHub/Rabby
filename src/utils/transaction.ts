@@ -22,7 +22,7 @@ export const convert1559ToLegacy = (tx) => {
     to: tx.to,
     value: tx.value,
     data: tx.data,
-    gas: tx.gas,
+    gasLimit: tx.gas,
     gasPrice: tx.maxFeePerGas,
     nonce: tx.nonce,
   };
