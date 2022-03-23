@@ -919,6 +919,24 @@
   "QR__code": {
     "message": "QR code"
   },
+  "Get__Signature": {
+    "message": "Get Signature"
+  },
+  "KesytoneMismatchedSignId": {
+    "message": "Incongruent transaction data. Please check the transaction details."
+  },
+  "KeystoneSignRequestSubtitle": {
+    "message": "Scan the QR code on the Keystone hardware wallet"
+  },
+  "unknownQrCode": {
+    "message": "Error: We couldn't identify that QR code"
+  },
+  "KeystoneUnknownWalletQRCode": {
+    "message": "Invalid QR code. Please scan the sync QR code of the hardware wallet."
+  },
+  "KeystoneSignRequestDescription": {
+    "message": "After you’ve signed with your wallet, click on 'Get Signature' to receive the signature"
+  },
   "URL": {
     "message": "URL"
   },

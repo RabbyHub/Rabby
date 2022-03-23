@@ -35,6 +35,7 @@ export const WaitingSignComponent = {
   // [KEYRING_CLASS.WATCH]: 'WatchAdrressWaiting',
   [KEYRING_CLASS.WALLETCONNECT]: 'WatchAdrressWaiting',
   // [KEYRING_CLASS.GNOSIS]: 'GnosisWaiting',
+  [KEYRING_CLASS.HARDWARE.KEYSTONE]: 'QRHardWareWaiting',
 };
 
 const SignText = ({ params }: { params: SignTextProps }) => {

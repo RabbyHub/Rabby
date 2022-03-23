@@ -22,10 +22,7 @@ import { ContactBookItem } from '../service/contactBook';
 import { openIndexPage } from 'background/webapi/tab';
 import { CacheState } from 'background/service/pageStateCache';
 import i18n from 'background/service/i18n';
-import keyring, {
-  KEYRING_CLASS,
-  DisplayedKeryring,
-} from 'background/service/keyring';
+import { KEYRING_CLASS, DisplayedKeryring } from 'background/service/keyring';
 import providerController from './provider/controller';
 import BaseController from './base';
 import {
@@ -54,6 +51,10 @@ import GnosisKeyring, {
   TransactionBuiltEvent,
   TransactionConfirmedEvent,
 } from '../service/keyring/eth-gnosis-keyring';
+import KeystoneKeyring, {
+  AcquireMemeStoreData,
+  MemStoreDataReady,
+} from '../service/keyring/eth-keystone-keyring';
 
 const stashKeyrings: Record<string, any> = {};
 
@@ -973,6 +974,69 @@ export class WalletController extends BaseController {
     return stashKeyringId;
   };
 
+  acquireKeystoneMemStoreData = async () => {
+    const keyringType = KEYRING_CLASS.QRCODE;
+    const keyring: KeystoneKeyring = this._getKeyringByType(keyringType);
+    if (keyring) {
+      keyring.getInteraction().on(MemStoreDataReady, (request) => {
+        eventBus.emit(EVENTS.broadcastToUI, {
+          method: EVENTS.QRHARDWARE.ACQUIRE_MEMSTORE_SUCCEED,
+          params: {
+            request,
+          },
+        });
+      });
+      keyring.getInteraction().emit(AcquireMemeStoreData);
+    }
+  };
+
+  submitQRHardwareCryptoHDKey = async (cbor: string) => {
+    let keyring;
+    let stashKeyringId: number | null = null;
+    const keyringType = KEYRING_CLASS.QRCODE;
+    try {
+      keyring = this._getKeyringByType(keyringType);
+    } catch {
+      const keystoneKeyring = keyringService.getKeyringClassForType(
+        keyringType
+      );
+      keyring = new keystoneKeyring();
+      stashKeyringId = Object.values(stashKeyrings).length;
+      stashKeyrings[stashKeyringId] = keyring;
+    }
+    keyring.readKeyring();
+    await keyring.submitCryptoHDKey(cbor);
+    return stashKeyringId;
+  };
+
+  submitQRHardwareCryptoAccount = async (cbor: string) => {
+    let keyring;
+    let stashKeyringId: number | null = null;
+    const keyringType = KEYRING_CLASS.QRCODE;
+    try {
+      keyring = this._getKeyringByType(keyringType);
+    } catch {
+      const keystoneKeyring = keyringService.getKeyringClassForType(
+        keyringType
+      );
+      keyring = new keystoneKeyring();
+      stashKeyringId = Object.values(stashKeyrings).length;
+      stashKeyrings[stashKeyringId] = keyring;
+    }
+    keyring.readKeyring();
+    await keyring.submitCryptoAccount(cbor);
+    return stashKeyringId;
+  };
+
+  submitQRHardwareSignature = async (requestId: string, cbor: string) => {
+    const account = await preferenceService.getCurrentAccount();
+    const keyring = await keyringService.getKeyringForAccount(
+      account!.address,
+      KEYRING_CLASS.QRCODE
+    );
+    return await keyring.submitSignature(requestId, cbor);
+  };
+
   signPersonalMessage = async (
     type: string,
     from: string,
@@ -1004,7 +1068,7 @@ export class WalletController extends BaseController {
     options?: any
   ) => {
     const keyring = await keyringService.getKeyringForAccount(from, type);
-    return keyringService.signTransaction(keyring, data, options);
+    return keyringService.signTransaction(keyring, data, from, options);
   };
 
   requestKeyring = (type, methodName, keyringId: number | null, ...params) => {
