@@ -4,9 +4,10 @@ import { useTranslation } from 'react-i18next';
 import TransportWebHID from '@ledgerhq/hw-transport-webhid';
 import { StrayPageWithButton } from 'ui/component';
 import { hasConnectedLedgerDevice } from '@/utils';
-import { IS_CHROME } from 'consts';
+import { IS_CHROME, HARDWARE_KEYRING_TYPES } from 'consts';
+import './style.less';
 
-const LedgerConnectMethod = () => {
+const LedgerConnect = () => {
   const history = useHistory();
   const [spinning, setSpinning] = useState(true);
   const [supportWebHID, setSupportWebHID] = useState(IS_CHROME);
@@ -15,24 +16,46 @@ const LedgerConnectMethod = () => {
 
   const onSubmit = async () => {
     if (!supportWebHID) {
-      // TODO use Ledger Live Bridge
+      history.push({
+        pathname: '/import/select-address',
+        state: {
+          keyring: HARDWARE_KEYRING_TYPES.Ledger.type,
+          isWebHID: false,
+          ledgerLive: true,
+        },
+      });
     } else {
       if (hasConnectedLedger) {
-        // TODO redirect to select address
+        history.push({
+          pathname: '/import/select-address',
+          state: {
+            keyring: HARDWARE_KEYRING_TYPES.Ledger.type,
+            isWebHID: true,
+            ledgerLive: false,
+          },
+        });
       } else {
-        // TODO redirect to permission request
+        history.push({
+          pathname: '/request-permission',
+          search: '?type=ledger',
+        });
       }
     }
   };
 
   const init = async () => {
-    setSupportWebHID(await TransportWebHID.isSupported());
-    setHasConnectedLedger(await hasConnectedLedgerDevice());
+    const support = await TransportWebHID.isSupported();
+    const hasDevice = await hasConnectedLedgerDevice();
+    setSupportWebHID(support);
+    setHasConnectedLedger(hasDevice);
     setSpinning(false);
   };
 
   useEffect(() => {
     init();
+    return () => {
+      console.log('unmount');
+    };
   }, []);
 
   return (
@@ -43,11 +66,11 @@ const LedgerConnectMethod = () => {
       }}
       headerClassName="mb-40"
       onSubmit={onSubmit}
-      hasBack
+      hasBack={false}
       spinning={spinning}
       footerFixed={false}
     >
-      <div className="w-[300px]">
+      <div className="connect-ledger">
         <ul>
           <li>1. Plug your Ledger wallet into your computer</li>
           <li>2. Unlock Ledger and open the Ethereum app</li>
@@ -58,4 +81,4 @@ const LedgerConnectMethod = () => {
   );
 };
 
-export default LedgerConnectMethod;
+export default LedgerConnect;

@@ -2,19 +2,22 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useLocation, useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import clsx from 'clsx';
-import { Form, Input, message, Skeleton } from 'antd';
+import { Form, Input, message, Skeleton, Select } from 'antd';
 import { StrayPageWithButton, MultiSelectAddressList } from 'ui/component';
 import { useWallet, useWalletRequest } from 'ui/utils';
-import { HARDWARE_KEYRING_TYPES } from 'consts';
-import { BIP44_PATH } from '../ImportHardware/LedgerHdPath';
+import { HARDWARE_KEYRING_TYPES, HDPaths } from 'consts';
+import { BIP44_PATH, LEDGER_LIVE_PATH } from '../ImportHardware/LedgerHdPath';
 import './style.less';
+
+const { Option } = Select;
+
 const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
   const history = useHistory();
   const { t } = useTranslation();
   const { state } = useLocation<{
     keyring: string;
     isMnemonics?: boolean;
-    isWebUSB?: boolean;
+    isWebHID?: boolean;
     path?: string;
     keyringId?: number | null;
     ledgerLive?: boolean;
@@ -25,7 +28,7 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
     return null;
   }
 
-  const { keyring, isMnemonics, isWebUSB, ledgerLive, path } = state;
+  const { keyring, isMnemonics, isWebHID, ledgerLive, path } = state;
   const [accounts, setAccounts] = useState<any[]>([]);
   const [importedAccounts, setImportedAccounts] = useState<any[]>([]);
   const [form] = Form.useForm();
@@ -39,6 +42,8 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
   const [canLoad, setCanLoad] = useState(true);
   const [spinning, setSpin] = useState(false);
   const isGrid = keyring === HARDWARE_KEYRING_TYPES.GridPlus.type;
+  const isLedger = keyring === HARDWARE_KEYRING_TYPES.Ledger.type;
+
   const [getAccounts, loading] = useWalletRequest(
     async (firstFlag, start, end) => {
       setCanLoad(false);
@@ -77,7 +82,6 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
         setLoadLength(_accounts.length);
       },
       onError(err) {
-        console.log('get hardware account error', err);
         message.error('Please check the connection with your wallet');
         setCanLoad(true);
       },
@@ -88,8 +92,12 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
     if (keyringId.current === null || keyringId.current === undefined) {
       const stashKeyringId = await wallet.connectHardware({
         type: keyring,
-        hdPath: path || BIP44_PATH,
-        isWebUSB,
+        hdPath:
+          path ||
+          (keyring === HARDWARE_KEYRING_TYPES.Ledger.type
+            ? LEDGER_LIVE_PATH
+            : BIP44_PATH),
+        isWebHID,
       });
       keyringId.current = stashKeyringId;
     }
@@ -111,9 +119,16 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
       wallet.requestKeyring(keyring, 'cleanUp', keyringId.current);
     };
   }, []);
+
   useEffect(() => {
     setStart(accounts.length);
   }, [accounts]);
+
+  const handleHDPathChange = (v) => {
+    console.log(v);
+    // TODO
+  };
+
   const onSubmit = async ({ selectedAddressIndexes }) => {
     setSpin(true);
     const selectedIndexes = selectedAddressIndexes.map((i) => i);
@@ -134,7 +149,7 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
       );
     }
 
-    if (keyring === HARDWARE_KEYRING_TYPES.Ledger.type && isWebUSB) {
+    if (keyring === HARDWARE_KEYRING_TYPES.Ledger.type && isWebHID) {
       await wallet.requestKeyring(keyring, 'cleanUp', keyringId.current);
     }
     setSpin(false);
@@ -155,6 +170,7 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
       },
     });
   };
+
   const startNumberConfirm = (e) => {
     e.preventDefault();
     if (end > 1000) {
@@ -163,6 +179,7 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
       getAccounts(false, start, end + 9);
     }
   };
+
   const toSpecificNumber = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.stopPropagation();
     const currentNumber = parseInt(e.target.value);
@@ -174,6 +191,7 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
       setEnd(Number(currentNumber));
     }
   };
+
   const InitLoading = ({ index }) => {
     return (
       <div key={index} className={isPopup ? 'addresses' : 'hard-address'}>
@@ -191,6 +209,7 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
       </div>
     );
   };
+
   return (
     <div className="select-address">
       <StrayPageWithButton
@@ -203,8 +222,7 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
                 subTitle: t('Select the addresses you want to import'),
               }
             : {
-                title: t('Select Addresses'),
-                subTitle: t('Select the addresses to view in Rabby'),
+                title: t('Select the addresses to use in Rabby'),
                 center: true,
               }
         }
@@ -229,6 +247,19 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
               {t('Select the addresses you want to import')}
             </p>
           </header>
+        )}
+        {isLedger && (
+          <div className="select-hd-path">
+            {t('SelectHDPath')}
+            <Select defaultValue={path} onChange={handleHDPathChange}>
+              <Option value="jack">Jack</Option>
+              <Option value="lucy">Lucy</Option>
+              <Option value="disabled" disabled>
+                Disabled
+              </Option>
+              <Option value="Yiminghe">yiminghe</Option>
+            </Select>
+          </div>
         )}
         <div
           className={clsx(

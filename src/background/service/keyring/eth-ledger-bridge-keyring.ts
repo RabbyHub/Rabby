@@ -43,7 +43,7 @@ class LedgerBridgeKeyring extends EventEmitter {
   hdPath: any;
   accounts: any;
   delayedPromise: any;
-  isWebUSB: boolean;
+  isWebHID: boolean;
   transport: null | Transport;
   app: null | LedgerEth;
   static type: string;
@@ -62,7 +62,7 @@ class LedgerBridgeKeyring extends EventEmitter {
     this.implementFullBIP44 = false;
     this.deserialize(opts);
     this.msgQueue = [];
-    this.isWebUSB = false;
+    this.isWebHID = false;
     this.transport = null;
     this.app = null;
 
@@ -77,7 +77,7 @@ class LedgerBridgeKeyring extends EventEmitter {
       accountDetails: this.accountDetails,
       bridgeUrl: this.bridgeUrl,
       implementFullBIP44: false,
-      isWebUSB: this.isWebUSB,
+      isWebUSB: this.isWebHID,
     });
   }
 
@@ -86,8 +86,8 @@ class LedgerBridgeKeyring extends EventEmitter {
     this.bridgeUrl = BRIDGE_URL;
     this.accounts = opts.accounts || [];
     this.accountDetails = opts.accountDetails || {};
-    this.isWebUSB = opts.isWebUSB;
-    if (this.isWebUSB) {
+    this.isWebHID = opts.isWebHID;
+    if (this.isWebHID) {
       this.makeApp();
     }
     if (!opts.accountDetails) {
@@ -155,7 +155,7 @@ class LedgerBridgeKeyring extends EventEmitter {
   }
 
   async makeApp(signing = false) {
-    if (!this.app && this.isWebUSB) {
+    if (!this.app && this.isWebHID) {
       try {
         this.transport = await TransportWebHID.create();
         this.app = new LedgerEth(this.transport);
@@ -198,7 +198,7 @@ class LedgerBridgeKeyring extends EventEmitter {
       return 'already unlocked';
     }
     const path = hdPath ? this._toLedgerPath(hdPath) : this.hdPath;
-    if (this.isWebUSB) {
+    if (this.isWebHID) {
       await this.makeApp();
       const res = await this.app!.getAddress(path, false, true);
       const { address, publicKey, chainCode } = res;
@@ -379,7 +379,7 @@ class LedgerBridgeKeyring extends EventEmitter {
 
   async _signTransaction(address, rawTxHex, toAddress, handleSigning) {
     const hdPath = await this.unlockAccountByAddress(address);
-    if (this.isWebUSB) {
+    if (this.isWebHID) {
       await this.makeApp(true);
       try {
         const res = await this.app!.signTransaction(hdPath, rawTxHex);
@@ -435,7 +435,7 @@ class LedgerBridgeKeyring extends EventEmitter {
 
   // For personal_sign, we need to prefix the message:
   async signPersonalMessage(withAccount, message) {
-    if (this.isWebUSB) {
+    if (this.isWebHID) {
       try {
         await this.makeApp(true);
         const hdPath = await this.unlockAccountByAddress(withAccount);
@@ -568,7 +568,7 @@ class LedgerBridgeKeyring extends EventEmitter {
     ).toString('hex');
 
     const hdPath = await this.unlockAccountByAddress(withAccount);
-    if (this.isWebUSB) {
+    if (this.isWebHID) {
       try {
         await this.makeApp(true);
         const res = await this.app!.signEIP712HashedMessage(
@@ -665,8 +665,8 @@ class LedgerBridgeKeyring extends EventEmitter {
     this._setupIframe();
   }
 
-  useWebUSB(value: boolean) {
-    this.isWebUSB = value;
+  useWebHID(value: boolean) {
+    this.isWebHID = value;
   }
 
   /* PRIVATE METHODS */

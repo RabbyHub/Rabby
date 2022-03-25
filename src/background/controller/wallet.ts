@@ -932,12 +932,12 @@ export class WalletController extends BaseController {
     type,
     hdPath,
     needUnlock = false,
-    isWebUSB = false,
+    isWebHID = false,
   }: {
     type: string;
     hdPath?: string;
     needUnlock?: boolean;
-    isWebUSB?: boolean;
+    isWebHID?: boolean;
   }) => {
     let keyring;
     let stashKeyringId: number | null = null;
@@ -958,13 +958,13 @@ export class WalletController extends BaseController {
       await keyring.unlock();
     }
 
-    if (keyring.useWebUSB) {
-      keyring.useWebUSB(isWebUSB);
+    if (keyring.useWebHID) {
+      keyring.useWebHID(isWebHID);
     }
 
     if (
       type === KEYRING_CLASS.HARDWARE.LEDGER &&
-      !isWebUSB &&
+      !isWebHID &&
       stashKeyringId !== null
     ) {
       keyring.updateTransportMethod &&

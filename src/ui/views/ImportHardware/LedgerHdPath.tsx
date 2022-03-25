@@ -7,7 +7,7 @@ import { StrayPageWithButton, FieldCheckbox } from 'ui/component';
 import { useWallet } from 'ui/utils';
 import { IS_AFTER_CHROME91, HARDWARE_KEYRING_TYPES } from 'consts';
 
-const LEDGER_LIVE_PATH = "m/44'/60'/0'/0/0";
+export const LEDGER_LIVE_PATH = "m/44'/60'/0'/0/0";
 const MEW_PATH = "m/44'/60'/0'";
 export const BIP44_PATH = "m/44'/60'/0'/0";
 
