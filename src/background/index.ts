@@ -5,7 +5,7 @@ import { browser } from 'webextension-polyfill-ts';
 import { ethErrors } from 'eth-rpc-errors';
 import { WalletController } from 'background/controller/wallet';
 import { Message } from 'utils';
-import { EVENTS } from 'consts';
+import { CHAINS, EVENTS } from 'consts';
 import { storage } from './webapi';
 import {
   permissionService,
@@ -25,6 +25,8 @@ import i18n from './service/i18n';
 import rpcCache from './utils/rpcCache';
 import eventBus from '@/eventBus';
 import migrateData from '@/migrations';
+import createSubscription from './controller/provider/subscriptionManager';
+import buildinProvider from 'background/utils/buildinProvider';
 
 const { PortMessage } = Message;
 
@@ -148,6 +150,18 @@ browser.runtime.onConnect.addListener((port) => {
   }
 
   const pm = new PortMessage(port);
+  const provider = buildinProvider.currentProvider;
+  const subscriptionManager = createSubscription(provider);
+
+  subscriptionManager.events.on('notification', (message) => {
+    pm.send('message', {
+      event: 'message',
+      data: {
+        type: message.method,
+        data: message.params,
+      },
+    });
+  });
 
   pm.listen(async (data) => {
     if (!appStoreLoaded) {
@@ -163,7 +177,20 @@ browser.runtime.onConnect.addListener((port) => {
       pm.send('message', { event, data });
     };
 
+    if (subscriptionManager.methods[data?.method]) {
+      const connectSite = permissionService.getConnectedSite(session.origin);
+      if (connectSite) {
+        const chain = CHAINS[connectSite.chain];
+        provider.chainId = chain.network;
+      }
+      return subscriptionManager.methods[data.method].call(null, req);
+    }
+
     return providerController(req);
+  });
+
+  port.onDisconnect.addListener(() => {
+    subscriptionManager.destroy();
   });
 });
 
