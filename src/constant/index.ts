@@ -29,9 +29,9 @@ import IconArbitrumChainLogo from 'ui/assets/dashboard/selectChain/arbitrum.svg'
 import IconHarmonyLogo from 'ui/assets/chain-logos/harmony.svg';
 import IconHarmonyWhiteLogo from 'ui/assets/chain-logos/harmony-white.svg';
 import IconAstarChainLogo from 'ui/assets/dashboard/selectChain/harmony.svg';
-import IconAstarLogo from 'ui/assets/chain-logos/astar.svg';
+import IconAstarLogo from 'ui/assets/chain-logos/astar.png';
 import IconAstarWhiteLogo from 'ui/assets/chain-logos/astar-white.svg';
-import IconHarmonyChainLogo from 'ui/assets/dashboard/selectChain/astar.svg';
+import IconHarmonyChainLogo from 'ui/assets/dashboard/selectChain/astar1.png';
 import IconOPLogo from 'ui/assets/chain-logos/op.svg';
 import IconOPWhiteLogo from 'ui/assets/chain-logos/op-white.svg';
 import IconOPChainLogo from 'ui/assets/dashboard/selectChain/optimism.svg';
