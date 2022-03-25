@@ -62,6 +62,9 @@ import IconSbchChainLogo from 'ui/assets/dashboard/selectChain/smartBCH.svg';
 import IconFuseLogo from 'ui/assets/chain-logos/fuse.svg';
 import IconFuseWhiteLogo from 'ui/assets/chain-logos/fuse-white.svg';
 import IconFuseChainLogo from 'ui/assets/dashboard/selectChain/fuse.svg';
+import IconPalmLogo from 'ui/assets/chain-logos/palm1.png';
+import IconPalmWhiteLogo from 'ui/assets/chain-logos/palm-white.svg';
+import IconPalmChainLogo from 'ui/assets/dashboard/selectChain/palm.png';
 import IconEN from 'ui/assets/langs/en.svg';
 import IconZH from 'ui/assets/langs/zh_cn.svg';
 import IconAmber from 'ui/assets/walletlogo/amber.png';
@@ -128,6 +131,7 @@ export enum CHAINS_ENUM {
   SBCH = 'SBCH',
   FUSE = 'FUSE',
   HMY = 'HMY',
+  PALM = 'PALM',
 }
 
 export const CHAINS: Record<string, Chain> = {
@@ -570,6 +574,28 @@ export const CHAINS: Record<string, Chain> = {
       'https://static.debank.com/image/chain/logo_url/hmy/734c003023531e31c636ae25d5a73172.png',
     nativeTokenDecimals: 18,
     thridPartyRPC: 'https://a.api.s0.t.hmny.io',
+    eip: {
+      '1559': false,
+    },
+  },
+  [CHAINS_ENUM.PALM]: {
+    id: 11297108109,
+    serverId: 'palm',
+    network: '11297108109',
+    name: 'Palm',
+    nativeTokenSymbol: 'PALM',
+    nativeTokenAddress: 'palm',
+    enum: CHAINS_ENUM.PALM,
+    logo: IconPalmLogo,
+    whiteLogo: IconPalmWhiteLogo,
+    selectChainLogo: IconPalmChainLogo,
+    hex: '0x2a15c308d',
+    scanLink: 'https://explorer.palm.io/tx/_s_',
+    nativeTokenLogo:
+      'https://static.debank.com/image/chain/logo_url/palm/45160297f72604eef509ebb3d0d468e7.png',
+    nativeTokenDecimals: 18,
+    thridPartyRPC:
+      'https://palm-mainnet.infura.io/v3/da5fbfafcca14b109e2665290681e267',
     eip: {
       '1559': false,
     },
