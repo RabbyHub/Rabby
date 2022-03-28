@@ -141,7 +141,7 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
 
   const onSubmit = async ({ selectedAddressIndexes }) => {
     setSpin(true);
-    const selectedIndexes = selectedAddressIndexes.map((i) => i.index);
+    const selectedIndexes = selectedAddressIndexes.map((i) => i.index - 1);
 
     if (isMnemonics) {
       await wallet.requestKeyring(
