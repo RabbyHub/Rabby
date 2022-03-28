@@ -1,20 +1,19 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import TransportWebHID from '@ledgerhq/hw-transport-webhid';
 import { StrayPageWithButton } from 'ui/component';
 import { hasConnectedLedgerDevice } from '@/utils';
-import { IS_CHROME, HARDWARE_KEYRING_TYPES } from 'consts';
+import { HARDWARE_KEYRING_TYPES } from 'consts';
 import './style.less';
 
 const LedgerConnect = () => {
   const history = useHistory();
-  const [spinning, setSpinning] = useState(true);
-  const [supportWebHID, setSupportWebHID] = useState(IS_CHROME);
-  const [hasConnectedLedger, setHasConnectedLedger] = useState(false);
   const { t } = useTranslation();
 
   const onSubmit = async () => {
+    const supportWebHID = await TransportWebHID.isSupported();
+    const hasConnectedLedger = await hasConnectedLedgerDevice();
     if (!supportWebHID) {
       history.push({
         pathname: '/import/select-address',
@@ -43,18 +42,6 @@ const LedgerConnect = () => {
     }
   };
 
-  const init = async () => {
-    const support = await TransportWebHID.isSupported();
-    const hasDevice = await hasConnectedLedgerDevice();
-    setSupportWebHID(support);
-    setHasConnectedLedger(hasDevice);
-    setSpinning(false);
-  };
-
-  useEffect(() => {
-    init();
-  }, []);
-
   return (
     <StrayPageWithButton
       header={{
@@ -64,7 +51,6 @@ const LedgerConnect = () => {
       headerClassName="mb-40"
       onSubmit={onSubmit}
       hasBack={false}
-      spinning={spinning}
       footerFixed={false}
     >
       <div className="connect-ledger">
