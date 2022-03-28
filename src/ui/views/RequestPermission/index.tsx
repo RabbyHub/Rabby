@@ -10,9 +10,7 @@ import { HARDWARE_KEYRING_TYPES } from 'consts';
 import './style.less';
 
 const RequestPermission = () => {
-  console.log('hello');
   const type = query2obj(window.location.href).type;
-  console.log('type', type);
   const { t } = useTranslation();
   const history = useHistory();
   const needConfirm = type === 'ledger';
@@ -72,7 +70,6 @@ const RequestPermission = () => {
   };
 
   useEffect(() => {
-    console.log('needCofnirm', needConfirm);
     !needConfirm && init();
   }, []);
 

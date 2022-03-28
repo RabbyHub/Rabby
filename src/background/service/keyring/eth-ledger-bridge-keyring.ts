@@ -53,7 +53,7 @@ class LedgerBridgeKeyring extends EventEmitter {
     this.bridgeUrl = null;
     this.type = type;
     this.page = 0;
-    this.perPage = 10;
+    this.perPage = 5;
     this.unlockedAccount = 0;
     this.hdk = new HDKey();
     this.paths = {};

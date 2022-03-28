@@ -2,11 +2,16 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useLocation, useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import clsx from 'clsx';
-import { Form, Input, message, Skeleton, Select } from 'antd';
-import { StrayPageWithButton, MultiSelectAddressList } from 'ui/component';
+import { Form, Input, message, Select } from 'antd';
+import {
+  StrayPageWithButton,
+  MultiSelectAddressList,
+  LoadingOverlay,
+} from 'ui/component';
 import { useWallet, useWalletRequest } from 'ui/utils';
 import { HARDWARE_KEYRING_TYPES, HDPaths } from 'consts';
 import { BIP44_PATH, LEDGER_LIVE_PATH } from '../ImportHardware/LedgerHdPath';
+import Pagination from './components/Pagination';
 import './style.less';
 
 const { Option } = Select;
@@ -28,25 +33,31 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
     return null;
   }
 
-  const { keyring, isMnemonics, isWebHID, ledgerLive, path } = state;
+  const {
+    keyring,
+    isMnemonics,
+    isWebHID,
+    ledgerLive,
+    path = LEDGER_LIVE_PATH,
+  } = state;
   const [accounts, setAccounts] = useState<any[]>([]);
   const [importedAccounts, setImportedAccounts] = useState<any[]>([]);
   const [form] = Form.useForm();
   const wallet = useWallet();
   const keyringId = useRef<number | null | undefined>(state.keyringId);
-  const [selectedNumbers, setSelectedNumbers] = useState(0);
-  const [start, setStart] = useState(11);
+  const [selectedAccounts, setSelectedAcounts] = useState<
+    { address: string; index: number }[]
+  >([]);
   const [end, setEnd] = useState(1);
-  const [loadLength, setLoadLength] = useState(10);
+  const [currentPage, setCurrentPage] = useState(1);
   const [errorMsg, setErrorMsg] = useState('');
-  const [canLoad, setCanLoad] = useState(true);
-  const [spinning, setSpin] = useState(false);
+  const [spinning, setSpin] = useState(true);
   const isGrid = keyring === HARDWARE_KEYRING_TYPES.GridPlus.type;
   const isLedger = keyring === HARDWARE_KEYRING_TYPES.Ledger.type;
 
-  const [getAccounts, loading] = useWalletRequest(
+  const [getAccounts] = useWalletRequest(
     async (firstFlag, start, end) => {
-      setCanLoad(false);
+      setSpin(true);
       return firstFlag
         ? await wallet.requestKeyring(
             keyring,
@@ -76,14 +87,12 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
             )
           );
         }
-        setCanLoad(true);
-        setAccounts(accounts.concat(..._accounts));
-        setStart(accounts.length);
-        setLoadLength(_accounts.length);
+        setSpin(false);
+        setAccounts(_accounts);
       },
       onError(err) {
         message.error('Please check the connection with your wallet');
-        setCanLoad(true);
+        setSpin(false);
       },
     }
   );
@@ -108,9 +117,7 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
       keyringId.current
     );
     setImportedAccounts(_importedAccounts);
-    if (canLoad) {
-      getAccounts(true);
-    }
+    getAccounts(true);
   };
 
   useEffect(() => {
@@ -120,18 +127,21 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
     };
   }, []);
 
-  useEffect(() => {
-    setStart(accounts.length);
-  }, [accounts]);
+  const handleHDPathChange = async (v: string) => {
+    await wallet.requestKeyring(keyring, 'setHdPath', keyringId.current, v);
+    getAccounts(true);
+  };
 
-  const handleHDPathChange = (v) => {
-    console.log(v);
-    // TODO
+  const handlePageChange = async (page: number) => {
+    const start = 5 * (page - 1);
+    const end = 5 * (page - 1) + 5;
+    await getAccounts(false, start, end);
+    setCurrentPage(page);
   };
 
   const onSubmit = async ({ selectedAddressIndexes }) => {
     setSpin(true);
-    const selectedIndexes = selectedAddressIndexes.map((i) => i);
+    const selectedIndexes = selectedAddressIndexes.map((i) => i.index);
 
     if (isMnemonics) {
       await wallet.requestKeyring(
@@ -156,8 +166,8 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
     history.replace({
       pathname: isPopup ? '/popup/import/success' : '/import/success',
       state: {
-        accounts: selectedIndexes.map((i) => ({
-          ...accounts[i],
+        accounts: selectedAccounts.map((account) => ({
+          ...account,
           brandName: keyring,
           type: keyring,
         })),
@@ -173,11 +183,13 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
 
   const startNumberConfirm = (e) => {
     e.preventDefault();
-    if (end > 1000) {
-      setErrorMsg(t('Max 1000'));
-    } else if (accounts.length <= end && canLoad) {
-      getAccounts(false, start, end + 9);
+    let page = 1;
+    if (end % 5 === 0) {
+      page = end / 5;
+    } else {
+      page = Math.floor(end / 5) + 1;
     }
+    handlePageChange(page);
   };
 
   const toSpecificNumber = (e: React.ChangeEvent<HTMLInputElement>) => {
@@ -192,22 +204,8 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
     }
   };
 
-  const InitLoading = ({ index }) => {
-    return (
-      <div key={index} className={isPopup ? 'addresses' : 'hard-address'}>
-        <div
-          className={clsx('skeleton items-center', {
-            'w-[460px]': !isPopup,
-          })}
-        >
-          <Skeleton.Input
-            active
-            className="items-center"
-            style={{ width: index % 2 ? 140 : 160 }}
-          />
-        </div>
-      </div>
-    );
+  const handleSelectChange = (res: { address: string; index: number }[]) => {
+    setSelectedAcounts(res);
   };
 
   return (
@@ -228,7 +226,7 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
         }
         headerClassName="mb-16"
         onSubmit={onSubmit}
-        nextDisabled={selectedNumbers === 0}
+        nextDisabled={selectedAccounts.length === 0}
         hasBack
         hasDivider={isMnemonics}
         form={form}
@@ -236,7 +234,6 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
         noPadding={isPopup}
         disableKeyDownEvent
         isScrollContainer={isPopup}
-        spinning={spinning}
       >
         {isPopup && (
           <header className="create-new-header create-password-header h-[100px]">
@@ -249,22 +246,24 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
           </header>
         )}
         {isLedger && (
-          <div className="select-hd-path">
+          <div className="select-hdpath">
             {t('SelectHDPath')}
-            <Select defaultValue={path} onChange={handleHDPathChange}>
-              <Option value="jack">Jack</Option>
-              <Option value="lucy">Lucy</Option>
-              <Option value="disabled" disabled>
-                Disabled
-              </Option>
-              <Option value="Yiminghe">yiminghe</Option>
+            <Select
+              defaultValue={path}
+              onChange={handleHDPathChange}
+              dropdownMatchSelectWidth={180}
+              dropdownClassName="select-hdpath-dropdown"
+            >
+              {HDPaths[keyring].map((path) => {
+                return <Option value={path.value}>{path.name}</Option>;
+              })}
             </Select>
           </div>
         )}
         <div
           className={clsx(
             'h-[40px] select-address-wrapper flex',
-            isPopup ? 'w-[400px]' : 'w-[460px] mb-20',
+            isPopup ? 'w-[400px]' : 'w-[460px]',
             isGrid || ledgerLive ? 'justify-end' : 'items-center'
           )}
         >
@@ -276,7 +275,7 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
                 size="small"
                 width={48}
                 height={24}
-                maxLength={4}
+                maxLength={6}
                 onChange={toSpecificNumber}
                 onPressEnter={startNumberConfirm}
                 spellCheck={false}
@@ -287,44 +286,30 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
           )}
 
           <div className="place-self-center">
-            {selectedNumbers} {t('addresses selected')}
+            {selectedAccounts.length} {t('addresses selected')}
           </div>
         </div>
         <div
-          className={clsx('overflow-y-auto lg:h-[340px]', {
+          className={clsx('overflow-y-auto lg:h-[290px] flex justify-center', {
             'p-20': isPopup,
             'flex-1': isPopup,
           })}
         >
-          <Form.Item className="mb-0" name="selectedAddressIndexes">
-            {accounts.length > 0 ? (
-              <MultiSelectAddressList
-                accounts={accounts}
-                importedAccounts={importedAccounts}
-                type={keyring}
-                changeSelectedNumbers={setSelectedNumbers}
-                end={end}
-                loadLength={loadLength}
-                loading={loading || !canLoad}
-                showSuspend={isGrid || ledgerLive}
-                isGrid={isGrid}
-                isPopup={isPopup}
-                loadMoreItems={() =>
-                  accounts.length <= 1000 && canLoad
-                    ? getAccounts(false, accounts.length, accounts.length + 9)
-                    : null
-                }
-              />
-            ) : (
-              <>
-                {new Array(6).fill(null).map((item, index) => (
-                  <InitLoading index={index} />
-                ))}
-              </>
-            )}
+          <Form.Item
+            className="mb-0 lg:w-[460px]"
+            name="selectedAddressIndexes"
+          >
+            <MultiSelectAddressList
+              accounts={accounts}
+              importedAccounts={importedAccounts}
+              type={keyring}
+              onChange={handleSelectChange}
+            />
           </Form.Item>
         </div>
+        <Pagination current={currentPage} onChange={handlePageChange} />
       </StrayPageWithButton>
+      <LoadingOverlay hidden={!spinning} />
     </div>
   );
 };

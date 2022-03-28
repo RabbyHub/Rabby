@@ -977,7 +977,7 @@
     "message": "No other address"
   },
   "Start__from__address": {
-    "message": "Start from address"
+    "message": "Start from address #"
   },
   "addresses__selected": {
     "message": "addresses selected"

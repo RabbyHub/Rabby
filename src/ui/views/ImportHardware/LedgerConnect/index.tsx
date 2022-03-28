@@ -53,9 +53,6 @@ const LedgerConnect = () => {
 
   useEffect(() => {
     init();
-    return () => {
-      console.log('unmount');
-    };
   }, []);
 
   return (
