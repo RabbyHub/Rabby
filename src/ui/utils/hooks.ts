@@ -27,12 +27,14 @@ export const useApproval = () => {
     });
   };
 
-  const rejectApproval = async (err?) => {
+  const rejectApproval = async (err?, stay = false) => {
     const approval = await getApproval();
     if (approval) {
-      await wallet.rejectApproval(err);
+      await wallet.rejectApproval(err, stay);
     }
-    history.push('/');
+    if (!stay) {
+      history.push('/');
+    }
   };
 
   useEffect(() => {

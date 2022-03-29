@@ -6,3 +6,4 @@ export { default as HardwareWaiting } from './HardwareWaiting';
 export { default as WatchAdrressWaiting } from './WatchAddressWaiting';
 export { default as AddChain } from './AddChain';
 export { default as QRHardWareWaiting } from './QRHardWareWaiting';
+export { default as LedgerHardwareWaiting } from './LedgerHardwareWaiting';

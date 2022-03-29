@@ -2408,16 +2408,6 @@
     "@ledgerhq/hw-transport" "^6.24.1"
     "@ledgerhq/logs" "^6.10.0"
 
-"@ledgerhq/hw-transport-webusb@^6.24.1":
-  version "6.24.1"
-  resolved "https://registry.yarnpkg.com/@ledgerhq/hw-transport-webusb/-/hw-transport-webusb-6.24.1.tgz#9267b6cb23ba991ce3a5debb15d162125a772b1b"
-  integrity sha512-+bAkVF/5MbbGIXobtmc5st/gFEjSRqACk+UPJGSxT21Z2SVm+FgG0Bui5wy24H+Ts/tC4IA3Mff8cz4PGbZhPA==
-  dependencies:
-    "@ledgerhq/devices" "^6.24.1"
-    "@ledgerhq/errors" "^6.10.0"
-    "@ledgerhq/hw-transport" "^6.24.1"
-    "@ledgerhq/logs" "^6.10.0"
-
 "@ledgerhq/hw-transport@^6.24.1":
   version "6.24.1"
   resolved "https://registry.yarnpkg.com/@ledgerhq/hw-transport/-/hw-transport-6.24.1.tgz#5e787268e6d5ce4f9f0d53b0d520c1f071c2d1ae"
@@ -2578,10 +2568,10 @@
     events "^3.3.0"
     web3-utils "^1.6.1"
 
-"@rabby-wallet/eth-hd-keyring@^3.6.5":
-  version "3.6.5"
-  resolved "https://registry.yarnpkg.com/@rabby-wallet/eth-hd-keyring/-/eth-hd-keyring-3.6.5.tgz#de00ca1f530ceafbbcd363c023ec5087be251e72"
-  integrity sha512-l7VqW8Tr/Apt7PPFZlVAJSPpJMGG4YJ4DDDkJA9YzAIJWESpCUJa2clk1sGr40bxtZl1biHqpcQz4ts6asZ0uQ==
+"@rabby-wallet/eth-hd-keyring@^3.6.8":
+  version "3.6.8"
+  resolved "https://registry.yarnpkg.com/@rabby-wallet/eth-hd-keyring/-/eth-hd-keyring-3.6.8.tgz#27c2e7b8bd3ce452dfb22058bdfcb5d61879dfbc"
+  integrity sha512-qYh1u/c3Zi9sAyXs4YmnBu4d3SENCQ5qRSM+8o14Sw0OPavOMfbuDK2nVjaunAqxhwyQbAvHxLtzXRmi74Lueg==
   dependencies:
     "@metamask/eth-sig-util" "^4.0.0"
     "@rabby-wallet/eth-simple-keyring" "^4.2.1"
@@ -2590,10 +2580,10 @@
     ethereumjs-util "^7.0.9"
     ethereumjs-wallet "^1.0.1"
 
-"@rabby-wallet/eth-lattice-keyring@^0.4.3":
-  version "0.4.3"
-  resolved "https://registry.yarnpkg.com/@rabby-wallet/eth-lattice-keyring/-/eth-lattice-keyring-0.4.3.tgz#579734730b9eca01bbb7484d3e922bb4082bff87"
-  integrity sha512-YXKM/4VP06LiNAeLH3esNetxLpIiiWaPN9q0/7p0/dTPvSo/J65oPUEcQmvsn66JkBdc+u4S07+AOgk1EFAFBA==
+"@rabby-wallet/eth-lattice-keyring@^0.4.4":
+  version "0.4.4"
+  resolved "https://registry.yarnpkg.com/@rabby-wallet/eth-lattice-keyring/-/eth-lattice-keyring-0.4.4.tgz#b34ae6a2d819b794efc6183f4929bf8156323634"
+  integrity sha512-i7/qX2TwT8EFmGvYExVDydJ/bi7/jpLaigXDYR4ru+mZRhFZTKHuX+7JNjIsoxPrivuAZQso1Fdb5RUVabYUAQ==
   dependencies:
     "@ethereumjs/common" "^2.4.0"
     "@ethereumjs/tx" "^3.1.1"
@@ -2613,10 +2603,10 @@
     ethereumjs-wallet "^1.0.2"
     randombytes "^2.1.0"
 
-"@rabby-wallet/eth-trezor-keyring@^1.0.12":
-  version "1.0.12"
-  resolved "https://registry.yarnpkg.com/@rabby-wallet/eth-trezor-keyring/-/eth-trezor-keyring-1.0.12.tgz#e254659cd1877f22432ed91dffc3cd73f676cc9d"
-  integrity sha512-10gJh554Yp/hc7uE/eP95jFliD/RBVoAxogjafUWJJNN6MA/jio1qPUilC0Vvc7jJkWED/DDilYqjQvrZaZj0Q==
+"@rabby-wallet/eth-trezor-keyring@^1.0.13":
+  version "1.0.13"
+  resolved "https://registry.yarnpkg.com/@rabby-wallet/eth-trezor-keyring/-/eth-trezor-keyring-1.0.13.tgz#0d85c4db0cb1b80a98e590d186f86b62fa30c36a"
+  integrity sha512-B2Cnx1V/nmt4cqeMV3obarBoEGs7HuhQX24fc2A26rwIYJZkNA+ryLUtSX0yDt2CUoqJBM/R1Pc7aCGxibXDNA==
   dependencies:
     "@bitgo/blake2b" "^3.0.1"
     "@ethereumjs/tx" "^3.1.4"
@@ -3496,6 +3486,11 @@
   version "2.0.6"
   resolved "https://r.cnpmjs.org/@types/unist/download/@types/unist-2.0.6.tgz#250a7b16c3b91f672a24552ec64678eeb1d3a08d"
   integrity sha1-JQp7FsO5H2cqJFUuxkZ47rHToI0=
+
+"@types/w3c-web-hid@^1.0.3":
+  version "1.0.3"
+  resolved "https://registry.yarnpkg.com/@types/w3c-web-hid/-/w3c-web-hid-1.0.3.tgz#e08587a7d737f8654ea6bc0a88689ce5d3ce2d19"
+  integrity sha512-eTQRkPd2JukZfS9+kRtrBAaTCCb6waGh5X8BJHmH1MiVQPLMYwm4+EvhwFfOo9SDna15o9dFAwmWwN6r/YM53A==
 
 "@types/ws@^7.2.0":
   version "7.4.7"

@@ -28,6 +28,9 @@ import IconArbitrumWhiteLogo from 'ui/assets/chain-logos/arbitrum-white.svg';
 import IconArbitrumChainLogo from 'ui/assets/dashboard/selectChain/arbitrum.svg';
 import IconHarmonyLogo from 'ui/assets/chain-logos/harmony.svg';
 import IconHarmonyWhiteLogo from 'ui/assets/chain-logos/harmony-white.svg';
+import IconAstarChainLogo from 'ui/assets/dashboard/selectChain/astar1.png';
+import IconAstarLogo from 'ui/assets/chain-logos/astar.png';
+import IconAstarWhiteLogo from 'ui/assets/chain-logos/astar-white.svg';
 import IconHarmonyChainLogo from 'ui/assets/dashboard/selectChain/harmony.svg';
 import IconOPLogo from 'ui/assets/chain-logos/op.svg';
 import IconOPWhiteLogo from 'ui/assets/chain-logos/op-white.svg';
@@ -132,6 +135,7 @@ export enum CHAINS_ENUM {
   FUSE = 'FUSE',
   HMY = 'HMY',
   PALM = 'PALM',
+  ASTAR = 'ASTAR',
 }
 
 export const CHAINS: Record<string, Chain> = {
@@ -600,6 +604,27 @@ export const CHAINS: Record<string, Chain> = {
       '1559': false,
     },
   },
+  [CHAINS_ENUM.ASTAR]: {
+    id: 592,
+    serverId: 'astar',
+    network: '592',
+    name: 'Astar',
+    nativeTokenSymbol: 'ASTR',
+    nativeTokenAddress: 'astar',
+    enum: CHAINS_ENUM.ASTAR,
+    logo: IconAstarLogo,
+    whiteLogo: IconAstarWhiteLogo,
+    selectChainLogo: IconAstarChainLogo,
+    hex: '0x250',
+    scanLink: 'https://blockscout.com/astar/tx/_s_',
+    nativeTokenLogo:
+      'https://static.debank.com/image/chain/logo_url/astar/a827be92d88617a918ea060a9a6f1572.png',
+    nativeTokenDecimals: 18,
+    thridPartyRPC: 'https://rpc.astar.network:8545',
+    eip: {
+      '1559': false,
+    },
+  },
 };
 
 export const KEYRING_TYPE = {
@@ -846,6 +871,9 @@ export const EVENTS = {
   QRHARDWARE: {
     ACQUIRE_MEMSTORE_SUCCEED: 'ACQUIRE_MEMSTORE_SUCCEED',
   },
+  LEDGER: {
+    REJECTED: 'LEDGER_REJECTED',
+  },
 };
 
 export enum WALLET_BRAND_TYPES {
@@ -1076,4 +1104,12 @@ export const GASPRICE_RANGE = {
   [CHAINS_ENUM.CRO]: [0, 100000],
   [CHAINS_ENUM.BTT]: [0, 20000000000],
   [CHAINS_ENUM.METIS]: [0, 3000],
+};
+
+export const HDPaths = {
+  [HARDWARE_KEYRING_TYPES.Ledger.type]: [
+    { name: 'Ledger Live', value: "m/44'/60'/0'/0/0" },
+    { name: 'Legacy (MEW / MyCrypto)', value: "m/44'/60'/0'" },
+    { name: 'BIP44 Standard', value: "m/44'/60'/0'/0" },
+  ],
 };
