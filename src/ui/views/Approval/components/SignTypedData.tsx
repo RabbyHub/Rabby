@@ -34,6 +34,7 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
   const [isLedger, setIsLedger] = useState(false);
   const [useLedgerLive, setUseLedgerLive] = useState(false);
   const [hasConnectedLedgerHID, setHasConnectedLedgerHID] = useState(false);
+  const [submitText, setSubmitText] = useState('Proceed');
 
   const { data, session, method } = params;
   let parsedMessage = '';
@@ -146,6 +147,17 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
     init();
   }, []);
 
+  useEffect(() => {
+    if (
+      isLedger ||
+      (securityCheckStatus !== 'pass' && securityCheckStatus !== 'pending')
+    ) {
+      setSubmitText('Proceed');
+      return;
+    }
+    setSubmitText('Sign');
+  }, [securityCheckStatus, isLedger]);
+
   return (
     <>
       <AccountCard />
@@ -217,10 +229,7 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
               onClick={() => handleAllow()}
               disabled={isLedger && !useLedgerLive && !hasConnectedLedgerHID}
             >
-              {securityCheckStatus === 'pass' ||
-              securityCheckStatus === 'pending'
-                ? t('Sign')
-                : t('Continue')}{' '}
+              {submitText}
             </Button>
           )}
         </div>

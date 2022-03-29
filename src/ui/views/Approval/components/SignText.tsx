@@ -60,6 +60,7 @@ const SignText = ({ params }: { params: SignTextProps }) => {
   const [explainStatus, setExplainStatus] = useState<
     'unknown' | 'pass' | 'danger'
   >('unknown');
+  const [submitText, setSubmitText] = useState('Proceed');
   const [isWatch, setIsWatch] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isLedger, setIsLedger] = useState(false);
@@ -169,6 +170,7 @@ const SignText = ({ params }: { params: SignTextProps }) => {
       className: 'transaction-detail',
     });
   };
+
   const checkWachMode = async () => {
     const currentAccount = await wallet.getCurrentAccount();
     setIsLedger(currentAccount?.type === KEYRING_CLASS.HARDWARE.LEDGER);
@@ -181,9 +183,21 @@ const SignText = ({ params }: { params: SignTextProps }) => {
       setIsWatch(true);
     }
   };
+
   useEffect(() => {
     checkWachMode();
   }, []);
+
+  useEffect(() => {
+    if (
+      isLedger ||
+      (securityCheckStatus !== 'pass' && securityCheckStatus !== 'pending')
+    ) {
+      setSubmitText('Proceed');
+      return;
+    }
+    setSubmitText('Sign');
+  }, [securityCheckStatus, isLedger]);
 
   return (
     <>
@@ -263,10 +277,7 @@ const SignText = ({ params }: { params: SignTextProps }) => {
               loading={isLoading}
               disabled={isLedger && !useLedgerLive && !hasConnectedLedgerHID}
             >
-              {securityCheckStatus === 'pass' ||
-              securityCheckStatus === 'pending'
-                ? t('Sign')
-                : t('Continue')}
+              {submitText}
             </Button>
           )}
         </div>
