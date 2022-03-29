@@ -28,6 +28,9 @@ import IconArbitrumWhiteLogo from 'ui/assets/chain-logos/arbitrum-white.svg';
 import IconArbitrumChainLogo from 'ui/assets/dashboard/selectChain/arbitrum.svg';
 import IconHarmonyLogo from 'ui/assets/chain-logos/harmony.svg';
 import IconHarmonyWhiteLogo from 'ui/assets/chain-logos/harmony-white.svg';
+import IconAstarChainLogo from 'ui/assets/dashboard/selectChain/astar1.png';
+import IconAstarLogo from 'ui/assets/chain-logos/astar.png';
+import IconAstarWhiteLogo from 'ui/assets/chain-logos/astar-white.svg';
 import IconHarmonyChainLogo from 'ui/assets/dashboard/selectChain/harmony.svg';
 import IconOPLogo from 'ui/assets/chain-logos/op.svg';
 import IconOPWhiteLogo from 'ui/assets/chain-logos/op-white.svg';
@@ -128,6 +131,7 @@ export enum CHAINS_ENUM {
   SBCH = 'SBCH',
   FUSE = 'FUSE',
   HMY = 'HMY',
+  ASTAR = 'ASTAR',
 }
 
 export const CHAINS: Record<string, Chain> = {
@@ -570,6 +574,27 @@ export const CHAINS: Record<string, Chain> = {
       'https://static.debank.com/image/chain/logo_url/hmy/734c003023531e31c636ae25d5a73172.png',
     nativeTokenDecimals: 18,
     thridPartyRPC: 'https://a.api.s0.t.hmny.io',
+    eip: {
+      '1559': false,
+    },
+  },
+  [CHAINS_ENUM.ASTAR]: {
+    id: 592,
+    serverId: 'astar',
+    network: '592',
+    name: 'Astar',
+    nativeTokenSymbol: 'ASTR',
+    nativeTokenAddress: 'astar',
+    enum: CHAINS_ENUM.ASTAR,
+    logo: IconAstarLogo,
+    whiteLogo: IconAstarWhiteLogo,
+    selectChainLogo: IconAstarChainLogo,
+    hex: '0x250',
+    scanLink: 'https://blockscout.com/astar/tx/_s_',
+    nativeTokenLogo:
+      'https://static.debank.com/image/chain/logo_url/astar/a827be92d88617a918ea060a9a6f1572.png',
+    nativeTokenDecimals: 18,
+    thridPartyRPC: 'https://rpc.astar.network:8545',
     eip: {
       '1559': false,
     },
