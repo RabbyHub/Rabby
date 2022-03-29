@@ -306,6 +306,7 @@ class ProviderController extends BaseController {
       txParams.from,
       opts
     );
+    if (currentAccount.type === KEYRING_TYPE.GnosisKeyring) return;
     const onTranscationSubmitted = (hash: string) => {
       const chain = permissionService.isInternalOrigin(origin)
         ? Object.values(CHAINS).find(

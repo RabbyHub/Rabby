@@ -1055,15 +1055,13 @@ export class WalletController extends BaseController {
       { from, data },
       options
     );
-    if (type === KEYRING_TYPE.WalletConnectKeyring) {
-      eventBus.emit(EVENTS.broadcastToUI, {
-        method: EVENTS.SIGN_FINISHED,
-        params: {
-          success: true,
-          data: res,
-        },
-      });
-    }
+    eventBus.emit(EVENTS.broadcastToUI, {
+      method: EVENTS.SIGN_FINISHED,
+      params: {
+        success: true,
+        data: res,
+      },
+    });
     return res;
   };
 
