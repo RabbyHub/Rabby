@@ -194,6 +194,19 @@ export class EthereumProvider extends EventEmitter {
 
   // shim to matamask legacy api
   sendAsync = (payload, callback) => {
+    if (Array.isArray(payload)) {
+      return Promise.all(
+        payload.map(
+          (item) =>
+            new Promise((resolve) => {
+              this.sendAsync(item, (err, res) => {
+                // ignore error
+                resolve(res);
+              });
+            })
+        )
+      ).then((result) => callback(null, result));
+    }
     const { method, params, ...rest } = payload;
     this.request({ method, params })
       .then((result) => callback(null, { ...rest, method, result }))

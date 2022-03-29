@@ -22,10 +22,7 @@ import { ContactBookItem } from '../service/contactBook';
 import { openIndexPage } from 'background/webapi/tab';
 import { CacheState } from 'background/service/pageStateCache';
 import i18n from 'background/service/i18n';
-import keyring, {
-  KEYRING_CLASS,
-  DisplayedKeryring,
-} from 'background/service/keyring';
+import { KEYRING_CLASS, DisplayedKeryring } from 'background/service/keyring';
 import providerController from './provider/controller';
 import BaseController from './base';
 import {
@@ -54,6 +51,10 @@ import GnosisKeyring, {
   TransactionBuiltEvent,
   TransactionConfirmedEvent,
 } from '../service/keyring/eth-gnosis-keyring';
+import KeystoneKeyring, {
+  AcquireMemeStoreData,
+  MemStoreDataReady,
+} from '../service/keyring/eth-keystone-keyring';
 
 const stashKeyrings: Record<string, any> = {};
 
@@ -922,7 +923,13 @@ export class WalletController extends BaseController {
     preferenceService.setCurrentAccount(account);
   };
 
-  isUseLedgerLive = () => preferenceService.isUseLedgerLive();
+  isUseLedgerLive = () => {
+    const keyring = keyringService.getKeyringByType(
+      KEYRING_CLASS.HARDWARE.LEDGER
+    );
+    if (!keyring) return false;
+    return !keyring.isWebHID;
+  };
 
   updateUseLedgerLive = async (value: boolean) =>
     preferenceService.updateUseLedgerLive(value);
@@ -931,12 +938,12 @@ export class WalletController extends BaseController {
     type,
     hdPath,
     needUnlock = false,
-    isWebUSB = false,
+    isWebHID = false,
   }: {
     type: string;
     hdPath?: string;
     needUnlock?: boolean;
-    isWebUSB?: boolean;
+    isWebHID?: boolean;
   }) => {
     let keyring;
     let stashKeyringId: number | null = null;
@@ -957,13 +964,13 @@ export class WalletController extends BaseController {
       await keyring.unlock();
     }
 
-    if (keyring.useWebUSB) {
-      keyring.useWebUSB(isWebUSB);
+    if (keyring.useWebHID) {
+      keyring.useWebHID(isWebHID);
     }
 
     if (
       type === KEYRING_CLASS.HARDWARE.LEDGER &&
-      !isWebUSB &&
+      !isWebHID &&
       stashKeyringId !== null
     ) {
       keyring.updateTransportMethod &&
@@ -971,6 +978,69 @@ export class WalletController extends BaseController {
     }
 
     return stashKeyringId;
+  };
+
+  acquireKeystoneMemStoreData = async () => {
+    const keyringType = KEYRING_CLASS.QRCODE;
+    const keyring: KeystoneKeyring = this._getKeyringByType(keyringType);
+    if (keyring) {
+      keyring.getInteraction().on(MemStoreDataReady, (request) => {
+        eventBus.emit(EVENTS.broadcastToUI, {
+          method: EVENTS.QRHARDWARE.ACQUIRE_MEMSTORE_SUCCEED,
+          params: {
+            request,
+          },
+        });
+      });
+      keyring.getInteraction().emit(AcquireMemeStoreData);
+    }
+  };
+
+  submitQRHardwareCryptoHDKey = async (cbor: string) => {
+    let keyring;
+    let stashKeyringId: number | null = null;
+    const keyringType = KEYRING_CLASS.QRCODE;
+    try {
+      keyring = this._getKeyringByType(keyringType);
+    } catch {
+      const keystoneKeyring = keyringService.getKeyringClassForType(
+        keyringType
+      );
+      keyring = new keystoneKeyring();
+      stashKeyringId = Object.values(stashKeyrings).length;
+      stashKeyrings[stashKeyringId] = keyring;
+    }
+    keyring.readKeyring();
+    await keyring.submitCryptoHDKey(cbor);
+    return stashKeyringId;
+  };
+
+  submitQRHardwareCryptoAccount = async (cbor: string) => {
+    let keyring;
+    let stashKeyringId: number | null = null;
+    const keyringType = KEYRING_CLASS.QRCODE;
+    try {
+      keyring = this._getKeyringByType(keyringType);
+    } catch {
+      const keystoneKeyring = keyringService.getKeyringClassForType(
+        keyringType
+      );
+      keyring = new keystoneKeyring();
+      stashKeyringId = Object.values(stashKeyrings).length;
+      stashKeyrings[stashKeyringId] = keyring;
+    }
+    keyring.readKeyring();
+    await keyring.submitCryptoAccount(cbor);
+    return stashKeyringId;
+  };
+
+  submitQRHardwareSignature = async (requestId: string, cbor: string) => {
+    const account = await preferenceService.getCurrentAccount();
+    const keyring = await keyringService.getKeyringForAccount(
+      account!.address,
+      KEYRING_CLASS.QRCODE
+    );
+    return await keyring.submitSignature(requestId, cbor);
   };
 
   signPersonalMessage = async (
@@ -985,15 +1055,13 @@ export class WalletController extends BaseController {
       { from, data },
       options
     );
-    if (type === KEYRING_TYPE.WalletConnectKeyring) {
-      eventBus.emit(EVENTS.broadcastToUI, {
-        method: EVENTS.SIGN_FINISHED,
-        params: {
-          success: true,
-          data: res,
-        },
-      });
-    }
+    eventBus.emit(EVENTS.broadcastToUI, {
+      method: EVENTS.SIGN_FINISHED,
+      params: {
+        success: true,
+        data: res,
+      },
+    });
     return res;
   };
 
@@ -1004,7 +1072,7 @@ export class WalletController extends BaseController {
     options?: any
   ) => {
     const keyring = await keyringService.getKeyringForAccount(from, type);
-    return keyringService.signTransaction(keyring, data, options);
+    return keyringService.signTransaction(keyring, data, from, options);
   };
 
   requestKeyring = (type, methodName, keyringId: number | null, ...params) => {

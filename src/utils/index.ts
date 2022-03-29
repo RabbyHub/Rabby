@@ -1,6 +1,7 @@
 import { CHAINS } from '@/constant';
 import { keyBy } from 'lodash';
 import { browser } from 'webextension-polyfill-ts';
+import { ledgerUSBVendorId } from '@ledgerhq/devices';
 
 import BroadcastChannelMessage from './message/broadcastChannelMessage';
 import PortMessage from './message/portMessage';
@@ -28,4 +29,11 @@ export const getChain = (chainId?: string) => {
     return null;
   }
   return chainsDict[chainId];
+};
+
+export const hasConnectedLedgerDevice = async () => {
+  const devices = await navigator.hid.getDevices();
+  return (
+    devices.filter((device) => device.vendorId === ledgerUSBVendorId).length > 0
+  );
 };

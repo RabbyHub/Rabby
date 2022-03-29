@@ -3,7 +3,7 @@ import { EventEmitter } from 'events';
 import HDKey from 'hdkey';
 import * as ethUtil from 'ethereumjs-util';
 import * as sigUtil from 'eth-sig-util';
-import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
+import TransportWebHID from '@ledgerhq/hw-transport-webhid';
 import Transport from '@ledgerhq/hw-transport';
 import LedgerEth from '@ledgerhq/hw-app-eth';
 import { is1559Tx } from '@/utils/transaction';
@@ -11,6 +11,8 @@ import {
   TransactionFactory,
   FeeMarketEIP1559Transaction,
 } from '@ethereumjs/tx';
+import eventBus from '@/eventBus';
+import { EVENTS } from 'consts';
 
 const pathBase = 'm';
 const hdPathString = `${pathBase}/44'/60'/0'`;
@@ -43,9 +45,13 @@ class LedgerBridgeKeyring extends EventEmitter {
   hdPath: any;
   accounts: any;
   delayedPromise: any;
-  isWebUSB: boolean;
+  isWebHID: boolean;
   transport: null | Transport;
   app: null | LedgerEth;
+  resolvePromise: null | ((value: any) => void) = null;
+  rejectPromise: null | ((value: any) => void) = null;
+  onSendTransaction: null | (() => Promise<any>) = null;
+  isWebUSB: boolean;
   static type: string;
   constructor(opts = {}) {
     super();
@@ -53,7 +59,7 @@ class LedgerBridgeKeyring extends EventEmitter {
     this.bridgeUrl = null;
     this.type = type;
     this.page = 0;
-    this.perPage = 10;
+    this.perPage = 5;
     this.unlockedAccount = 0;
     this.hdk = new HDKey();
     this.paths = {};
@@ -62,8 +68,9 @@ class LedgerBridgeKeyring extends EventEmitter {
     this.implementFullBIP44 = false;
     this.deserialize(opts);
     this.msgQueue = [];
-    this.isWebUSB = false;
+    this.isWebHID = false;
     this.transport = null;
+    this.isWebUSB = false;
     this.app = null;
 
     this.iframeLoaded = false;
@@ -77,7 +84,7 @@ class LedgerBridgeKeyring extends EventEmitter {
       accountDetails: this.accountDetails,
       bridgeUrl: this.bridgeUrl,
       implementFullBIP44: false,
-      isWebUSB: this.isWebUSB,
+      isWebHID: this.isWebHID,
     });
   }
 
@@ -86,8 +93,11 @@ class LedgerBridgeKeyring extends EventEmitter {
     this.bridgeUrl = BRIDGE_URL;
     this.accounts = opts.accounts || [];
     this.accountDetails = opts.accountDetails || {};
-    this.isWebUSB = opts.isWebUSB;
-    if (this.isWebUSB) {
+    this.isWebHID = opts.isWebHID;
+    if (opts.isWebUSB) {
+      this.isWebHID = opts.isWebUSB;
+    }
+    if (this.isWebHID) {
       this.makeApp();
     }
     if (!opts.accountDetails) {
@@ -155,9 +165,9 @@ class LedgerBridgeKeyring extends EventEmitter {
   }
 
   async makeApp(signing = false) {
-    if (!this.app && this.isWebUSB) {
+    if (!this.app && this.isWebHID) {
       try {
-        this.transport = await TransportWebUSB.create();
+        this.transport = await TransportWebHID.create();
         this.app = new LedgerEth(this.transport);
       } catch (e: any) {
         if (signing) {
@@ -198,7 +208,7 @@ class LedgerBridgeKeyring extends EventEmitter {
       return 'already unlocked';
     }
     const path = hdPath ? this._toLedgerPath(hdPath) : this.hdPath;
-    if (this.isWebUSB) {
+    if (this.isWebHID) {
       await this.makeApp();
       const res = await this.app!.getAddress(path, false, true);
       const { address, publicKey, chainCode } = res;
@@ -317,69 +327,99 @@ class LedgerBridgeKeyring extends EventEmitter {
     });
   }
 
+  resend() {
+    this.onSendTransaction && this.onSendTransaction();
+  }
+
   // tx is an instance of the ethereumjs-transaction class.
   signTransaction(address, tx) {
-    // transactions built with older versions of ethereumjs-tx have a
-    // getChainId method that newer versions do not. Older versions are mutable
-    // while newer versions default to being immutable. Expected shape and type
-    // of data for v, r and s differ (Buffer (old) vs BN (new))
-    if (typeof tx.getChainId === 'function') {
-      // In this version of ethereumjs-tx we must add the chainId in hex format
-      // to the initial v value. The chainId must be included in the serialized
-      // transaction which is only communicated to ethereumjs-tx in this
-      // value. In newer versions the chainId is communicated via the 'Common'
-      // object.
-      tx.v = ethUtil.bufferToHex(tx.getChainId());
-      tx.r = '0x00';
-      tx.s = '0x00';
+    return new Promise((resolve, reject) => {
+      this.resolvePromise = resolve;
+      this.rejectPromise = reject;
+      this.onSendTransaction = async () => {
+        // transactions built with older versions of ethereumjs-tx have a
+        // getChainId method that newer versions do not. Older versions are mutable
+        // while newer versions default to being immutable. Expected shape and type
+        // of data for v, r and s differ (Buffer (old) vs BN (new))
+        if (typeof tx.getChainId === 'function') {
+          // In this version of ethereumjs-tx we must add the chainId in hex format
+          // to the initial v value. The chainId must be included in the serialized
+          // transaction which is only communicated to ethereumjs-tx in this
+          // value. In newer versions the chainId is communicated via the 'Common'
+          // object.
+          tx.v = ethUtil.bufferToHex(tx.getChainId());
+          tx.r = '0x00';
+          tx.s = '0x00';
 
-      const rawTxHex = tx.serialize().toString('hex');
+          const rawTxHex = tx.serialize().toString('hex');
 
-      return this._signTransaction(address, rawTxHex, tx.to, (payload) => {
-        tx.v = Buffer.from(payload.v, 'hex');
-        tx.r = Buffer.from(payload.r, 'hex');
-        tx.s = Buffer.from(payload.s, 'hex');
-        return tx;
-      });
-    }
-    // For transactions created by newer versions of @ethereumjs/tx
-    // Note: https://github.com/ethereumjs/ethereumjs-monorepo/issues/1188
-    // It is not strictly necessary to do this additional setting of the v
-    // value. We should be able to get the correct v value in serialization
-    // if the above issue is resolved. Until then this must be set before
-    // calling .serialize(). Note we are creating a temporarily mutable object
-    // forfeiting the benefit of immutability until this happens. We do still
-    // return a Transaction that is frozen if the originally provided
-    // transaction was also frozen.
-    const messageToSign = tx.getMessageToSign(false);
-    const rawTxHex = Buffer.isBuffer(messageToSign)
-      ? messageToSign.toString('hex')
-      : ethUtil.rlp.encode(messageToSign).toString('hex');
-    return this._signTransaction(address, rawTxHex, tx.to.buf, (payload) => {
-      // Because tx will be immutable, first get a plain javascript object that
-      // represents the transaction. Using txData here as it aligns with the
-      // nomenclature of ethereumjs/tx.
-      const txData = tx.toJSON();
-      // The fromTxData utility expects v,r and s to be hex prefixed
-      txData.v = ethUtil.addHexPrefix(payload.v);
-      txData.r = ethUtil.addHexPrefix(payload.r);
-      txData.s = ethUtil.addHexPrefix(payload.s);
-      // Adopt the 'common' option from the original transaction and set the
-      // returned object to be frozen if the original is frozen.
-      if (is1559Tx(txData)) {
-        return FeeMarketEIP1559Transaction.fromTxData(txData);
-      } else {
-        return TransactionFactory.fromTxData(txData, {
-          common: tx.common,
-          freeze: Object.isFrozen(tx),
-        });
-      }
+          this._signTransaction(address, rawTxHex, tx.to, (payload) => {
+            tx.v = Buffer.from(payload.v, 'hex');
+            tx.r = Buffer.from(payload.r, 'hex');
+            tx.s = Buffer.from(payload.s, 'hex');
+            return tx;
+          })
+            .then(this.resolvePromise)
+            .catch((e) => {
+              setTimeout(() => {
+                eventBus.emit(EVENTS.broadcastToUI, {
+                  method: EVENTS.LEDGER.REJECTED,
+                  params: e.toString() || 'Ledger: Unknown error',
+                });
+              }, 500);
+            });
+          return;
+        }
+        // For transactions created by newer versions of @ethereumjs/tx
+        // Note: https://github.com/ethereumjs/ethereumjs-monorepo/issues/1188
+        // It is not strictly necessary to do this additional setting of the v
+        // value. We should be able to get the correct v value in serialization
+        // if the above issue is resolved. Until then this must be set before
+        // calling .serialize(). Note we are creating a temporarily mutable object
+        // forfeiting the benefit of immutability until this happens. We do still
+        // return a Transaction that is frozen if the originally provided
+        // transaction was also frozen.
+        const messageToSign = tx.getMessageToSign(false);
+        const rawTxHex = Buffer.isBuffer(messageToSign)
+          ? messageToSign.toString('hex')
+          : ethUtil.rlp.encode(messageToSign).toString('hex');
+        this._signTransaction(address, rawTxHex, tx.to.buf, (payload) => {
+          // Because tx will be immutable, first get a plain javascript object that
+          // represents the transaction. Using txData here as it aligns with the
+          // nomenclature of ethereumjs/tx.
+          const txData = tx.toJSON();
+          // The fromTxData utility expects v,r and s to be hex prefixed
+          txData.v = ethUtil.addHexPrefix(payload.v);
+          txData.r = ethUtil.addHexPrefix(payload.r);
+          txData.s = ethUtil.addHexPrefix(payload.s);
+          // Adopt the 'common' option from the original transaction and set the
+          // returned object to be frozen if the original is frozen.
+          if (is1559Tx(txData)) {
+            return FeeMarketEIP1559Transaction.fromTxData(txData);
+          } else {
+            return TransactionFactory.fromTxData(txData, {
+              common: tx.common,
+              freeze: Object.isFrozen(tx),
+            });
+          }
+        })
+          .then(this.resolvePromise)
+          .catch((e) => {
+            setTimeout(() => {
+              eventBus.emit(EVENTS.broadcastToUI, {
+                method: EVENTS.LEDGER.REJECTED,
+                params: e.toString() || 'Ledger: Unknown error',
+              });
+            }, 500);
+          });
+      };
+      this.onSendTransaction();
     });
   }
 
   async _signTransaction(address, rawTxHex, toAddress, handleSigning) {
     const hdPath = await this.unlockAccountByAddress(address);
-    if (this.isWebUSB) {
+    if (this.isWebHID) {
       await this.makeApp(true);
       try {
         const res = await this.app!.signTransaction(hdPath, rawTxHex);
@@ -435,44 +475,53 @@ class LedgerBridgeKeyring extends EventEmitter {
 
   // For personal_sign, we need to prefix the message:
   async signPersonalMessage(withAccount, message) {
-    if (this.isWebUSB) {
-      try {
-        await this.makeApp(true);
-        const hdPath = await this.unlockAccountByAddress(withAccount);
-        const res = await this.app!.signPersonalMessage(
-          hdPath,
-          ethUtil.stripHexPrefix(message)
-        );
-        let v: string | number = res.v - 27;
-        v = v.toString(16);
-        if (v.length < 2) {
-          v = `0${v}`;
-        }
-        const signature = `0x${res.r}${res.s}${v}`;
-        const addressSignedWith = sigUtil.recoverPersonalSignature({
-          data: message,
-          sig: signature,
-        });
-        if (
-          ethUtil.toChecksumAddress(addressSignedWith) !==
-          ethUtil.toChecksumAddress(withAccount)
-        ) {
-          throw new Error(
-            'Ledger: The signature doesnt match the right address'
-          );
-        }
-        return signature;
-      } catch (e: any) {
-        throw new Error(
-          e.toString() || 'Ledger: Unknown error while signing message'
-        );
-      } finally {
-        this.cleanUp();
-      }
-    } else {
-      return new Promise((resolve, reject) => {
-        this.unlockAccountByAddress(withAccount)
-          .then((hdPath) => {
+    return new Promise((resolve, reject) => {
+      this.resolvePromise = resolve;
+      this.rejectPromise = reject;
+      this.onSendTransaction = async () => {
+        if (this.isWebHID) {
+          try {
+            await this.makeApp(true);
+            const hdPath = await this.unlockAccountByAddress(withAccount);
+            const res = await this.app!.signPersonalMessage(
+              hdPath,
+              ethUtil.stripHexPrefix(message)
+            );
+            let v: string | number = res.v - 27;
+            v = v.toString(16);
+            if (v.length < 2) {
+              v = `0${v}`;
+            }
+            const signature = `0x${res.r}${res.s}${v}`;
+            const addressSignedWith = sigUtil.recoverPersonalSignature({
+              data: message,
+              sig: signature,
+            });
+            if (
+              ethUtil.toChecksumAddress(addressSignedWith) !==
+              ethUtil.toChecksumAddress(withAccount)
+            ) {
+              throw new Error(
+                'Ledger: The signature doesnt match the right address'
+              );
+            }
+            this.resolvePromise!(signature);
+          } catch (e: any) {
+            setTimeout(() => {
+              eventBus.emit(EVENTS.broadcastToUI, {
+                method: EVENTS.LEDGER.REJECTED,
+                params:
+                  e.toString() || 'Ledger: Unknown error while signing message',
+              });
+            }, 500);
+            throw new Error(
+              e.toString() || 'Ledger: Unknown error while signing message'
+            );
+          } finally {
+            this.cleanUp();
+          }
+        } else {
+          this.unlockAccountByAddress(withAccount).then((hdPath) => {
             this._sendMessage(
               {
                 action: 'ledger-sign-personal-message',
@@ -497,27 +546,35 @@ class LedgerBridgeKeyring extends EventEmitter {
                     ethUtil.toChecksumAddress(addressSignedWith) !==
                     ethUtil.toChecksumAddress(withAccount)
                   ) {
-                    reject(
-                      new Error(
-                        'Ledger: The signature doesnt match the right address'
-                      )
+                    eventBus.emit(EVENTS.broadcastToUI, {
+                      method: EVENTS.LEDGER.REJECTED,
+                      params:
+                        'Ledger: The signature doesnt match the right address',
+                    });
+                    throw new Error(
+                      'Ledger: The signature doesnt match the right address'
                     );
                   }
-                  resolve(signature);
+                  this.resolvePromise!(signature);
                 } else {
-                  reject(
-                    new Error(
+                  eventBus.emit(EVENTS.broadcastToUI, {
+                    method: EVENTS.LEDGER.REJECTED,
+                    params:
                       payload.error ||
-                        'Ledger: Unknown error while signing message'
-                    )
+                      'Ledger: Unknown error while signing message',
+                  });
+                  throw new Error(
+                    payload.error ||
+                      'Ledger: Unknown error while signing message'
                   );
                 }
               }
             );
-          })
-          .catch(reject);
-      });
-    }
+          });
+        }
+      };
+      this.onSendTransaction();
+    });
   }
 
   async unlockAccountByAddress(address) {
@@ -541,107 +598,130 @@ class LedgerBridgeKeyring extends EventEmitter {
   }
 
   async signTypedData(withAccount, data, options: any = {}) {
-    const isV4 = options.version === 'V4';
-    if (!isV4) {
-      throw new Error(
-        'Ledger: Only version 4 of typed data signing is supported'
-      );
-    }
-
-    const {
-      domain,
-      types,
-      primaryType,
-      message,
-    } = sigUtil.TypedDataUtils.sanitizeData(data);
-    const domainSeparatorHex = sigUtil.TypedDataUtils.hashStruct(
-      'EIP712Domain',
-      domain,
-      types,
-      isV4
-    ).toString('hex');
-    const hashStructMessageHex = sigUtil.TypedDataUtils.hashStruct(
-      primaryType as string,
-      message,
-      types,
-      isV4
-    ).toString('hex');
-
-    const hdPath = await this.unlockAccountByAddress(withAccount);
-    if (this.isWebUSB) {
-      try {
-        await this.makeApp(true);
-        const res = await this.app!.signEIP712HashedMessage(
-          hdPath,
-          domainSeparatorHex,
-          hashStructMessageHex
-        );
-        let v: any = res.v - 27;
-        v = v.toString(16);
-        if (v.length < 2) {
-          v = `0${v}`;
-        }
-        const signature = `0x${res.r}${res.s}${v}`;
-        const addressSignedWith = sigUtil.recoverTypedSignature_v4({
-          data,
-          sig: signature,
-        });
-        if (
-          ethUtil.toChecksumAddress(addressSignedWith) !==
-          ethUtil.toChecksumAddress(withAccount)
-        ) {
+    return new Promise((resolve, reject) => {
+      this.resolvePromise = resolve;
+      this.rejectPromise = reject;
+      this.onSendTransaction = async () => {
+        const isV4 = options.version === 'V4';
+        if (!isV4) {
           throw new Error(
-            'Ledger: The signature doesnt match the right address'
+            'Ledger: Only version 4 of typed data signing is supported'
           );
         }
-        return signature;
-      } catch (e: any) {
-        throw new Error(
-          e.toString() || 'Ledger: Unknown error while signing message'
-        );
-      } finally {
-        this.cleanUp();
-      }
-    } else {
-      const { success, payload } = await new Promise((resolve) => {
-        this._sendMessage(
-          {
-            action: 'ledger-sign-typed-data',
-            params: {
+
+        const {
+          domain,
+          types,
+          primaryType,
+          message,
+        } = sigUtil.TypedDataUtils.sanitizeData(data);
+        const domainSeparatorHex = sigUtil.TypedDataUtils.hashStruct(
+          'EIP712Domain',
+          domain,
+          types,
+          isV4
+        ).toString('hex');
+        const hashStructMessageHex = sigUtil.TypedDataUtils.hashStruct(
+          primaryType as string,
+          message,
+          types,
+          isV4
+        ).toString('hex');
+
+        const hdPath = await this.unlockAccountByAddress(withAccount);
+        if (this.isWebHID) {
+          try {
+            await this.makeApp(true);
+            const res = await this.app!.signEIP712HashedMessage(
               hdPath,
               domainSeparatorHex,
-              hashStructMessageHex,
-            },
-          },
-          (result) => resolve(result)
-        );
-      });
+              hashStructMessageHex
+            );
+            let v: any = res.v - 27;
+            v = v.toString(16);
+            if (v.length < 2) {
+              v = `0${v}`;
+            }
+            const signature = `0x${res.r}${res.s}${v}`;
+            const addressSignedWith = sigUtil.recoverTypedSignature_v4({
+              data,
+              sig: signature,
+            });
+            if (
+              ethUtil.toChecksumAddress(addressSignedWith) !==
+              ethUtil.toChecksumAddress(withAccount)
+            ) {
+              eventBus.emit(EVENTS.broadcastToUI, {
+                method: EVENTS.LEDGER.REJECTED,
+                params: 'Ledger: The signature doesnt match the right address',
+              });
+              throw new Error(
+                'Ledger: The signature doesnt match the right address'
+              );
+            }
+            this.resolvePromise!(signature);
+          } catch (e: any) {
+            setTimeout(() => {
+              eventBus.emit(EVENTS.broadcastToUI, {
+                method: EVENTS.LEDGER.REJECTED,
+                params:
+                  e.toString() || 'Ledger: Unknown error while signing message',
+              });
+            }, 500);
+            throw new Error(
+              e.toString() || 'Ledger: Unknown error while signing message'
+            );
+          } finally {
+            this.cleanUp();
+          }
+        } else {
+          const { success, payload } = await new Promise((resolve) => {
+            this._sendMessage(
+              {
+                action: 'ledger-sign-typed-data',
+                params: {
+                  hdPath,
+                  domainSeparatorHex,
+                  hashStructMessageHex,
+                },
+              },
+              (result) => resolve(result)
+            );
+          });
 
-      if (success) {
-        let v: any = payload.v - 27;
-        v = v.toString(16);
-        if (v.length < 2) {
-          v = `0${v}`;
-        }
-        const signature = `0x${payload.r}${payload.s}${v}`;
-        const addressSignedWith = sigUtil.recoverTypedSignature_v4({
-          data,
-          sig: signature,
-        });
-        if (
-          ethUtil.toChecksumAddress(addressSignedWith) !==
-          ethUtil.toChecksumAddress(withAccount)
-        ) {
+          if (success) {
+            let v: any = payload.v - 27;
+            v = v.toString(16);
+            if (v.length < 2) {
+              v = `0${v}`;
+            }
+            const signature = `0x${payload.r}${payload.s}${v}`;
+            const addressSignedWith = sigUtil.recoverTypedSignature_v4({
+              data,
+              sig: signature,
+            });
+            if (
+              ethUtil.toChecksumAddress(addressSignedWith) !==
+              ethUtil.toChecksumAddress(withAccount)
+            ) {
+              throw new Error(
+                'Ledger: The signature doesnt match the right address'
+              );
+            }
+            this.resolvePromise!(signature);
+          }
+          eventBus.emit(EVENTS.broadcastToUI, {
+            method: EVENTS.LEDGER.REJECTED,
+            params:
+              payload.error || 'Ledger: Unknown error while signing message',
+          });
           throw new Error(
-            'Ledger: The signature doesnt match the right address'
+            payload.error || 'Ledger: Unknown error while signing message'
           );
         }
-        return signature;
-      }
-      throw new Error(
-        payload.error || 'Ledger: Unknown error while signing message'
-      );
-    }
+      };
+      this.onSendTransaction();
+    });
   }
 
   exportAccount() {
@@ -665,8 +745,8 @@ class LedgerBridgeKeyring extends EventEmitter {
     this._setupIframe();
   }
 
-  useWebUSB(value: boolean) {
-    this.isWebUSB = value;
+  useWebHID(value: boolean) {
+    this.isWebHID = value;
   }
 
   /* PRIVATE METHODS */

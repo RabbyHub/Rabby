@@ -11,7 +11,6 @@ import { findIndex } from 'lodash';
 import { FixedSizeList, areEqual } from 'react-window';
 import { DisplayedKeryring } from 'background/service/keyring';
 import { KEYRING_TYPE } from 'consts';
-import { useWallet } from 'ui/utils';
 
 import AddressItem, { AddressItemProps } from './AddressItem';
 import './style.less';
@@ -93,7 +92,6 @@ const AddressList: any = forwardRef(
     }: AddressListProps,
     ref
   ) => {
-    const wallet = useWallet();
     const [start, setStart] = useState(0);
     const [end, setEnd] = useState(10);
     const [editIndex, setEditIndex] = useState(0);

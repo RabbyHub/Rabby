@@ -915,6 +915,24 @@
   "QR__code": {
     "message": "二维码"
   },
+  "Get__Signature": {
+    "message": "获取签名"
+  },
+  "KesytoneMismatchedSignId": {
+    "message": "扫描的签名二维码不属于当前交易，请检查交易详情后重试。"
+  },
+  "KeystoneSignRequestSubtitle": {
+    "message": "用硬件钱包扫描二维码"
+  },
+  "unknownQrCode": {
+    "message": "错误：无法识别该二维码"
+  },
+  "KeystoneUnknownWalletQRCode": {
+    "message": "请扫描硬件钱包的同步二维码。"
+  },
+  "KeystoneSignRequestDescription": {
+    "message": "硬件钱包扫描上方二维码完成签名后，点击“获取签名”按钮扫描已签名的二维码"
+  },
   "URL": {
     "message": "链接"
   },

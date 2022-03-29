@@ -33,7 +33,7 @@ export default ({
         className={cx('address-viewer-text', className)}
         title={address?.toLowerCase()}
       >
-        {showIndex && index > 0 && <div className="number-index">{index}</div>}
+        {showIndex && index >= 0 && <div className="number-index">{index}</div>}
         {ellipsis
           ? `${address
               ?.toLowerCase()

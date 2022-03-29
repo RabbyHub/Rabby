@@ -102,6 +102,23 @@
     }
   }
 
+  .ledger-webhid-alert {
+    background: rgba(242, 156, 27, 0.08);
+    border: 1px solid rgba(242, 156, 27, 0.2);
+    border-radius: 4px;
+    font-size: 13px;
+    line-height: 20px;
+    color: #FFB020;
+    padding: 12px;
+    margin-bottom: 20px;
+    p {
+      margin-bottom: 0;
+      a {
+        color: #FFB020;
+      }
+    }
+  }
+
   .approval-chain {
     padding-top: 40px;
   }
@@ -994,7 +1011,7 @@
   }
 }
 
-.security-check-drawer {
+.security-check-drawer, .signature-qr-checker-drawer {
   .ant-drawer-header {
     border: none;
     padding: 20px 20px 8px;
@@ -1016,7 +1033,7 @@
   }
 }
 
-.security-check-detail {
+.security-check-detail, .signature-qr-checker-detail {
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -1249,7 +1266,86 @@
     }
   }
 }
-
+.ledger-waiting {
+  &__nav {
+    width: 100%;
+    margin-bottom: 60px;
+  }
+  &__header {
+    h1 {
+      font-weight: bold;
+      font-size: 24px;
+      line-height: 28px;
+      text-align: center;
+      margin-bottom: 8px;
+    }
+    p {
+      font-size: 14px;
+      line-height: 16px;
+      text-align: center;
+      color: #4B4D59;
+      margin-bottom: 46px;
+    }
+  }
+  &__container {
+    padding: 0 28px;
+  }
+  &__tip {
+    font-size: 13px;
+    line-height: 28px;
+    color: #13141A;
+    margin-top: 24px;
+    p {
+      margin-bottom: 0;
+    }
+    &-resend {
+      margin-top: 90px;
+    }
+  }
+  &__result {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-top: 73px;
+    .icon-chain {
+      width: 20px;
+      margin-right: 8px;
+    }
+    .tx-hash {
+      color: @color-body;
+      font-weight: 500;
+      font-size: 15px;
+      line-height: 18px;
+      text-decoration: underline;
+    }
+    .icon-external {
+      display: inline-block;
+      margin-left: 8px;
+      path {
+        fill: @color-comment-1;
+      }
+    }
+  }
+  &__footer {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    .ant-btn-link {
+      color: @color-comment-1;
+      margin-top: 12px;
+      &:hover {
+        color: @color-comment-1;
+        background-color: transparent;
+      }
+      &::before {
+        display: none;
+      }
+      span {
+        text-decoration: underline;
+      }
+    }
+  }
+}
 .watchaddress {
   height: 100%;
   display: flex;

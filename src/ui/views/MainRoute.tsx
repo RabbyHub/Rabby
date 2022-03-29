@@ -11,12 +11,13 @@ import ImportPrivateKey from './ImportPrivateKey';
 import ImportJson from './ImportJson';
 import ImportMnemonics from './ImportMnemonics';
 import ImportWatchAddress from './ImportWatchAddress';
+import ImportQRCodeBase from './ImportQRCodeBase';
 import SelectAddress from './SelectAddress';
 import ImportSuccess from './ImportSuccess';
 import ImportHardware from './ImportHardware';
 import ImportLedgerPathSelect from './ImportHardware/LedgerHdPath';
 import ImportGnosis from './ImportGnosisAddress';
-import ConnectLedgerMethodSelect from './ImportHardware/LedgerConnectMethod';
+import ConnectLedger from './ImportHardware/LedgerConnect';
 import Settings from './Settings';
 import ConnectedSites from './ConnectedSites';
 import Approval from './Approval';
@@ -92,13 +93,16 @@ const Main = () => {
           <ImportHardware />
         </PrivateRoute>
         <PrivateRoute exact path="/import/hardware/ledger-connect">
-          <ConnectLedgerMethodSelect />
+          <ConnectLedger />
         </PrivateRoute>
         <PrivateRoute exact path="/import/hardware/ledger">
           <ImportLedgerPathSelect />
         </PrivateRoute>
         <PrivateRoute exact path="/import/watch-address">
           <ImportWatchAddress />
+        </PrivateRoute>
+        <PrivateRoute exact path="/import/qrcode">
+          <ImportQRCodeBase />
         </PrivateRoute>
         <PrivateRoute exact path="/import/wallet-connect">
           <WalletConnectTemplate />

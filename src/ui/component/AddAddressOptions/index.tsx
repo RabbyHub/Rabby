@@ -19,9 +19,11 @@ import {
   WALLET_BRAND_CONTENT,
   KEYRING_CLASS,
   BRAND_ALIAN_TYPE_TEXT,
+  BRAND_WALLET_CONNECT_TYPE,
 } from 'consts';
 
 import clsx from 'clsx';
+
 const normaltype: string[] = [
   'createAddress',
   'addWatchMode',
@@ -36,6 +38,7 @@ const AddAddressOptions = () => {
   const [savedWallet, setSavedWallet] = useState([]);
   const [savedWalletData, setSavedWalletData] = useState([]);
   const [showMnemonic, setShowMnemonic] = useState(false);
+  const [keystoneInited, setKeystoneInited] = useState(false);
   const init = async () => {
     const walletSavedList = await wallet.getHighlightWalletList();
     const filterdlist = walletSavedList.filter(Boolean);
@@ -46,10 +49,17 @@ const AddAddressOptions = () => {
     if (accounts.length <= 0) {
       setShowMnemonic(true);
     }
+    const keystoneAccounts = await wallet.getTypedAccounts(
+      KEYRING_CLASS.HARDWARE.KEYSTONE
+    );
+    if (keystoneAccounts.length > 0) {
+      setKeystoneInited(true);
+    }
     const savedTemp: [] = await renderSavedData();
     setSavedWalletData(savedTemp);
   };
-  const connectRouter = (item) => {
+  type Valueof<T> = T[keyof T];
+  const connectRouter = (item: Valueof<typeof WALLET_BRAND_CONTENT>) => {
     if (item.connectType === 'BitBox02Connect') {
       openInternalPageInTab('import/hardware?connectType=BITBOX02');
     } else if (item.connectType === 'GridPlusConnect') {
@@ -66,6 +76,22 @@ const AddAddressOptions = () => {
       history.push({
         pathname: '/import/gnosis',
       });
+    } else if (item.connectType === BRAND_WALLET_CONNECT_TYPE.QRCodeBase) {
+      if (keystoneInited) {
+        history.push({
+          pathname: '/popup/import/select-address',
+          state: {
+            keyring: KEYRING_CLASS.HARDWARE.KEYSTONE,
+          },
+        });
+      } else {
+        history.push({
+          pathname: '/import/qrcode',
+          state: {
+            brand: item.brand,
+          },
+        });
+      }
     } else {
       history.push({
         pathname: '/import/wallet-connect',
@@ -168,7 +194,7 @@ const AddAddressOptions = () => {
             brand: savedItem!.brand,
             image: savedItem!.image,
             connectType: savedItem!.connectType,
-            onClick: () => connectRouter(savedItem),
+            onClick: () => connectRouter(savedItem!),
           });
         }
       });
