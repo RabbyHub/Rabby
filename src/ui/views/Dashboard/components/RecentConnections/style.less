@@ -25,6 +25,10 @@
     &-extra {
       margin-left: auto;
       flex-shrink: 0;
+      a {
+        text-decoration-line: underline;
+        color: @color-comment-1;
+      }
     }
     &-empty {
       min-height: 52px;
@@ -61,7 +65,10 @@
         left: -21px;
         top: 50%;
         transform: translateY(-50%);
-        display: none;
+        opacity: 0;
+        &:hover {
+          opacity: 1;
+        }
       }
       &.is-dragging {
         opacity: 0.5;
@@ -108,7 +115,7 @@
           opacity: 1;
         }
         .icon-close {
-          display: block;
+          opacity: 1;
         }
       }
     }
@@ -244,5 +251,43 @@
     color: @color-title;
     margin-bottom: 4px;
     font-weight: 500;
+  }
+}
+
+.recent-connections-confirm-modal.ant-modal-confirm {
+  .ant-modal-close-x {
+    width: 46px;
+    height: 46px;
+  }
+  .ant-modal-close-x svg path {
+    fill: @color-comment-2;
+  }
+  .ant-modal {
+    &-content {
+      background-color: #fff;
+    }
+  }
+  .ant-modal-body {
+    padding: 36px 20px 24px;
+  }
+  .ant-modal-confirm-body .ant-modal-confirm-content {
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 22px;
+    text-align: center;
+    color: @color-body;
+    padding: 0;
+    margin: 0;
+    min-height: initial;
+  }
+  .ant-modal-confirm-btns {
+    margin-top: 28px;
+    display: flex !important;
+    justify-content: center;
+
+    .ant-btn {
+      height: 40px;
+      width: 160px;
+    }
   }
 }
