@@ -763,12 +763,12 @@ const SignTx = ({ params, origin }: SignTxProps) => {
   }, [tx, inited]);
 
   useEffect(() => {
-    if (isGnosisAccount || securityCheckStatus !== 'pass') {
+    if (isLedger || isGnosisAccount || securityCheckStatus !== 'pass') {
       setSubmitText('Proceed');
       return;
     }
     setSubmitText('Sign');
-  }, [isGnosisAccount, securityCheckStatus]);
+  }, [isGnosisAccount, securityCheckStatus, isLedger]);
   const approvalTxStyle: Record<string, string> = {};
   if (isLedger && !useLedgerLive && !hasConnectedLedgerHID) {
     approvalTxStyle.paddingBottom = '230px';

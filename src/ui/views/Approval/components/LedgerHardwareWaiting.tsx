@@ -28,16 +28,19 @@ const LedgerHardwareWaiting = ({ params }: { params: ApprovalParams }) => {
     [WALLETCONNECT_STATUS_MAP.WAITING]: {
       color: '#8697FF',
       content: 'Please Sign on Your Ledger',
+      signTextContent: 'Please Sign on Your Ledger',
       image: '/images/ledger-status/plug.jpg',
     },
     [WALLETCONNECT_STATUS_MAP.SIBMITTED]: {
       content: 'Transaction submitted',
+      signTextContent: 'Signed',
       color: '#27C193',
       desc: 'Your transaction has been submitted',
       image: '/images/ledger-status/success.jpg',
     },
     [WALLETCONNECT_STATUS_MAP.FAILD]: {
       content: 'Transaction rejected',
+      signTextContent: 'Rejected',
       color: '#EC5151',
       image: '/images/ledger-status/failed.jpg',
     },
@@ -130,9 +133,9 @@ const LedgerHardwareWaiting = ({ params }: { params: ApprovalParams }) => {
               marginBottom: `${currentHeader.desc ? '8px' : '70px'}`,
             }}
           >
-            {currentHeader.content}
+            {isSignText ? currentHeader.signTextContent : currentHeader.content}
           </h1>
-          {currentHeader.desc && <p>{currentHeader.desc}</p>}
+          {currentHeader.desc && !isSignText && <p>{currentHeader.desc}</p>}
         </div>
         <img src={currentHeader.image} className="ledger-waiting__status" />
         {connectStatus === WALLETCONNECT_STATUS_MAP.WAITING && (
