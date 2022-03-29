@@ -25,6 +25,7 @@ import i18n from './service/i18n';
 import rpcCache from './utils/rpcCache';
 import eventBus from '@/eventBus';
 import migrateData from '@/migrations';
+import stats from '@/stats';
 import createSubscription from './controller/provider/subscriptionManager';
 import buildinProvider from 'background/utils/buildinProvider';
 
@@ -209,3 +210,12 @@ window.wallet = new Proxy(walletController, {
     return Reflect.get(target, propKey, receiver);
   },
 });
+
+storage
+  .byteInUse()
+  .then((byte) => {
+    stats.report('byteInUse', { value: byte });
+  })
+  .catch(() => {
+    // IGNORE
+  });

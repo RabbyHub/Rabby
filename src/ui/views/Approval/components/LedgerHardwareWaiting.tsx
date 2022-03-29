@@ -11,6 +11,7 @@ import {
 } from 'consts';
 import { useApproval, useWallet, openInTab } from 'ui/utils';
 import eventBus from '@/eventBus';
+import stats from '@/stats';
 import { SvgIconOpenExternal } from 'ui/assets';
 
 interface ApprovalParams {
@@ -93,6 +94,11 @@ const LedgerHardwareWaiting = ({ params }: { params: ApprovalParams }) => {
             await wallet.postGnosisTransaction();
           }
         }
+        stats.report('signTransaction', {
+          type: account.brandName,
+          chainId: chain.serverId,
+          is1559: chain.eip['1559'],
+        });
         ReactGA.event({
           category: 'Transaction',
           action: 'Submit',

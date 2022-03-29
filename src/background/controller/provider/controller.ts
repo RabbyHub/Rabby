@@ -45,6 +45,7 @@ import {
   is1559Tx,
   convert1559ToLegacy,
 } from '@/utils/transaction';
+import stats from '@/stats';
 
 interface ApprovalRes extends Tx {
   type?: string;
@@ -317,6 +318,11 @@ class ProviderController extends BaseController {
         address: txParams.from,
         chainId: Number(approvalRes.chainId),
         nonce: Number(approvalRes.nonce),
+      });
+      stats.report('submitTransaction', {
+        type: currentAccount.brandName,
+        chainId: CHAINS[chain].serverId,
+        is1559,
       });
       if (isSend) {
         pageStateCacheService.clear();

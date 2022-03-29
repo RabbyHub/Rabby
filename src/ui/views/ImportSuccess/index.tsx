@@ -1,14 +1,15 @@
-import React, { useState, useRef } from 'react';
+import React, { useState, useRef, useEffect } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import { useTranslation, Trans } from 'react-i18next';
 import { sortBy } from 'lodash';
 import { AddressList, StrayPageWithButton } from 'ui/component';
 import { getUiType } from 'ui/utils';
-import { IconImportSuccess } from 'ui/assets';
 import { Account } from 'background/service/preference';
-import SuccessLogo from 'ui/assets/success-logo.svg';
 import clsx from 'clsx';
-import { KEYRING_ICONS, WALLET_BRAND_CONTENT } from 'consts';
+import stats from '@/stats';
+import { KEYRING_ICONS, WALLET_BRAND_CONTENT, KEYRING_CLASS } from 'consts';
+import { IconImportSuccess } from 'ui/assets';
+import SuccessLogo from 'ui/assets/success-logo.svg';
 import './index.less';
 const { AddressItem } = AddressList;
 
@@ -61,6 +62,14 @@ const ImportSuccess = ({ isPopup = false }: { isPopup?: boolean }) => {
       setStopEditing(true);
     }
   };
+
+  useEffect(() => {
+    if (Object.values(KEYRING_CLASS.HARDWARE).includes(accounts[0].type)) {
+      stats.report('importHardware', {
+        type: accounts[0].type,
+      });
+    }
+  }, []);
 
   return (
     <StrayPageWithButton

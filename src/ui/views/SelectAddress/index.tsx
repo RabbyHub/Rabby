@@ -8,6 +8,7 @@ import {
   MultiSelectAddressList,
   LoadingOverlay,
 } from 'ui/component';
+import stats from '@/stats';
 import { useWallet, useWalletRequest } from 'ui/utils';
 import { HARDWARE_KEYRING_TYPES, HDPaths } from 'consts';
 import { BIP44_PATH, LEDGER_LIVE_PATH } from '../ImportHardware/LedgerHdPath';
@@ -122,6 +123,11 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
 
   useEffect(() => {
     init();
+    if (!isMnemonics) {
+      stats.report('connectHardware', {
+        type: keyring,
+      });
+    }
     return () => {
       wallet.requestKeyring(keyring, 'cleanUp', keyringId.current);
     };

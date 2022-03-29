@@ -17,6 +17,7 @@ import { ScanCopyQRCode } from 'ui/component';
 import { useApproval, useWallet, openInTab } from 'ui/utils';
 import eventBus from '@/eventBus';
 import { SvgIconOpenExternal } from 'ui/assets';
+import stats from '@/stats';
 import Mask from 'ui/assets/bg-watchtrade.png';
 
 interface ApprovalParams {
@@ -379,6 +380,11 @@ const WatchAddressWaiting = ({ params }: { params: ApprovalParams }) => {
             await wallet.postGnosisTransaction();
           }
         }
+        stats.report('signTransaction', {
+          type: account.brandName,
+          chainId: CHAINS[chain].serverId,
+          is1559: false,
+        });
         ReactGA.event({
           category: 'Transaction',
           action: 'Submit',
