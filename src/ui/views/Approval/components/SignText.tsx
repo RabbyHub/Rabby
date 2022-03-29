@@ -1,10 +1,9 @@
 import React, { useState, useEffect } from 'react';
 import { Button, Tooltip, message } from 'antd';
 import { useTranslation } from 'react-i18next';
-import TransportWebHID from '@ledgerhq/hw-transport-webhid';
+import clsx from 'clsx';
 import { KEYRING_CLASS, KEYRING_TYPE } from 'consts';
-import { useApproval, useWallet } from 'ui/utils';
-import { hex2Text } from 'ui/utils';
+import { useApproval, useWallet, hex2Text } from 'ui/utils';
 import {
   SecurityCheckResponse,
   SecurityCheckDecision,
@@ -14,10 +13,11 @@ import { Modal } from 'ui/component';
 import SecurityCheckBar from './SecurityCheckBar';
 import SecurityCheckDetail from './SecurityCheckDetail';
 import AccountCard from './AccountCard';
+import { hasConnectedLedgerDevice } from '@/utils';
+import LedgerWebHIDAlert from './LedgerWebHIDAlert';
 import { ReactComponent as IconQuestionMark } from 'ui/assets/question-mark.svg';
 import IconArrowRight from 'ui/assets/arrow-right-gray.svg';
 import IconInfo from 'ui/assets/infoicon.svg';
-import clsx from 'clsx';
 
 interface SignTextProps {
   data: string[];
@@ -36,6 +36,7 @@ export const WaitingSignComponent = {
   [KEYRING_CLASS.WALLETCONNECT]: 'WatchAdrressWaiting',
   // [KEYRING_CLASS.GNOSIS]: 'GnosisWaiting',
   [KEYRING_CLASS.HARDWARE.KEYSTONE]: 'QRHardWareWaiting',
+  [KEYRING_CLASS.HARDWARE.LEDGER]: 'LedgerHardwareWaiting',
 };
 
 const SignText = ({ params }: { params: SignTextProps }) => {
@@ -61,6 +62,9 @@ const SignText = ({ params }: { params: SignTextProps }) => {
   >('unknown');
   const [isWatch, setIsWatch] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
+  const [isLedger, setIsLedger] = useState(false);
+  const [useLedgerLive, setUseLedgerLive] = useState(false);
+  const [hasConnectedLedgerHID, setHasConnectedLedgerHID] = useState(false);
 
   const handleSecurityCheck = async () => {
     setSecurityCheckStatus('loading');
@@ -97,18 +101,6 @@ const SignText = ({ params }: { params: SignTextProps }) => {
       return;
     }
     const currentAccount = await wallet.getCurrentAccount();
-    if (
-      currentAccount?.type === KEYRING_CLASS.HARDWARE.LEDGER &&
-      !(await wallet.isUseLedgerLive())
-    ) {
-      try {
-        const transport = await TransportWebHID.create();
-        await transport.close();
-      } catch (e) {
-        // ignore transport create error when ledger is not connected, it works but idk why
-        console.log(e);
-      }
-    }
     if (isGnosis && params.account) {
       if (WaitingSignComponent[params.account.type]) {
         wallet.signPersonalMessage(
@@ -151,7 +143,6 @@ const SignText = ({ params }: { params: SignTextProps }) => {
       }
       return;
     }
-
     if (currentAccount?.type && WaitingSignComponent[currentAccount?.type]) {
       resolveApproval({
         uiRequestComponent: WaitingSignComponent[currentAccount?.type],
@@ -180,6 +171,9 @@ const SignText = ({ params }: { params: SignTextProps }) => {
   };
   const checkWachMode = async () => {
     const currentAccount = await wallet.getCurrentAccount();
+    setIsLedger(currentAccount?.type === KEYRING_CLASS.HARDWARE.LEDGER);
+    setUseLedgerLive(await wallet.isUseLedgerLive());
+    setHasConnectedLedgerHID(await hasConnectedLedgerDevice());
     if (currentAccount.type === KEYRING_TYPE.WatchAddressKeyring) {
       setIsWatch(true);
     }
@@ -190,6 +184,7 @@ const SignText = ({ params }: { params: SignTextProps }) => {
   useEffect(() => {
     checkWachMode();
   }, []);
+  console.log(isLedger, useLedgerLive, hasConnectedLedgerHID);
   return (
     <>
       <AccountCard account={params.account} />
@@ -223,6 +218,9 @@ const SignText = ({ params }: { params: SignTextProps }) => {
         </div>
       </div>
       <footer>
+        {isLedger && !useLedgerLive && !hasConnectedLedgerHID && (
+          <LedgerWebHIDAlert />
+        )}
         <SecurityCheckBar
           status={securityCheckStatus}
           alert={securityCheckAlert}
@@ -263,6 +261,7 @@ const SignText = ({ params }: { params: SignTextProps }) => {
               className="w-[172px]"
               onClick={() => handleAllow()}
               loading={isLoading}
+              disabled={isLedger && !useLedgerLive && !hasConnectedLedgerHID}
             >
               {securityCheckStatus === 'pass' ||
               securityCheckStatus === 'pending'

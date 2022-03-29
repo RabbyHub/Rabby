@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Button } from 'antd';
@@ -6,11 +6,15 @@ import TransportWebHID from '@ledgerhq/hw-transport-webhid';
 import { StrayPage } from 'ui/component';
 import { query2obj } from 'ui/utils/url';
 import { HARDWARE_KEYRING_TYPES } from 'consts';
+import IconSuccess from 'ui/assets/success-large.svg';
 
 import './style.less';
 
 const RequestPermission = () => {
-  const type = query2obj(window.location.href).type;
+  const [showSuccess, setShowSuccess] = useState(false);
+  const qs = query2obj(window.location.href);
+  const type = qs.type;
+  const from = qs.from;
   const { t } = useTranslation();
   const history = useHistory();
   const needConfirm = type === 'ledger';
@@ -22,7 +26,7 @@ const RequestPermission = () => {
     },
     ledger: {
       title: t('AllowRabbyPermissionsTitle'),
-      desc: [t('LedgerPermission1'), t('LedgerPermission2')],
+      desc: [t('LedgerPermission1')],
       tip: t('LedgerPermissionTip'),
     },
   };
@@ -41,6 +45,10 @@ const RequestPermission = () => {
       try {
         const transport = await TransportWebHID.create();
         await transport.close();
+        if (from && from === 'approval') {
+          setShowSuccess(true);
+          return;
+        }
         if (parent) {
           window.postMessage({ success: true }, '*');
         } else {
@@ -75,34 +83,47 @@ const RequestPermission = () => {
 
   return (
     <StrayPage
-      header={{
-        title: PERMISSIONS[type].title,
-        center: true,
-      }}
+      header={
+        showSuccess
+          ? undefined
+          : {
+              title: PERMISSIONS[type].title,
+              center: true,
+            }
+      }
       headerClassName="mb-28"
       className="request-permission-wrapper"
     >
-      <ul className="request-permission">
-        {PERMISSIONS[type].desc.map((content, index) => {
-          return (
-            <li key={index}>
-              {index + 1}. {content}
-            </li>
-          );
-        })}
-      </ul>
-      {PERMISSIONS[type].tip && (
-        <p className="permission-tip">{PERMISSIONS[type].tip}</p>
-      )}
-      {needConfirm && (
-        <div className="btn-footer">
-          <Button size="large" onClick={handleCancel}>
-            {t('Cancel')}
-          </Button>
-          <Button type="primary" size="large" onClick={init}>
-            {t('Allow')}
+      {showSuccess ? (
+        <div className="authorize-success">
+          <img src={IconSuccess} className="icon icon-success" />
+          <h1>Permissions Authorized</h1>
+          <p>Now you can re-initiate your transaction.</p>
+          <Button type="primary" size="large" onClick={() => window.close()}>
+            {t('OK')}
           </Button>
         </div>
+      ) : (
+        <>
+          <ul className="request-permission">
+            {PERMISSIONS[type].desc.map((content, index) => {
+              return <li key={index}>· {content}</li>;
+            })}
+          </ul>
+          {PERMISSIONS[type].tip && (
+            <p className="permission-tip">{PERMISSIONS[type].tip}</p>
+          )}
+          {needConfirm && (
+            <div className="btn-footer">
+              <Button size="large" onClick={handleCancel}>
+                {t('Cancel')}
+              </Button>
+              <Button type="primary" size="large" onClick={init}>
+                {t('Allow')}
+              </Button>
+            </div>
+          )}
+        </>
       )}
     </StrayPage>
   );

@@ -923,7 +923,13 @@ export class WalletController extends BaseController {
     preferenceService.setCurrentAccount(account);
   };
 
-  isUseLedgerLive = () => preferenceService.isUseLedgerLive();
+  isUseLedgerLive = () => {
+    const keyring = keyringService.getKeyringByType(
+      KEYRING_CLASS.HARDWARE.LEDGER
+    );
+    if (!keyring) return false;
+    return !keyring.isWebHID;
+  };
 
   updateUseLedgerLive = async (value: boolean) =>
     preferenceService.updateUseLedgerLive(value);

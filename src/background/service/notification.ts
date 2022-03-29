@@ -71,9 +71,9 @@ class NotificationService extends Events {
     this.emit('resolve', data);
   };
 
-  rejectApproval = async (err?: string) => {
+  rejectApproval = async (err?: string, stay = false) => {
     this.approval?.reject(ethErrors.provider.userRejectedRequest<any>(err));
-    await this.clear();
+    await this.clear(stay);
     this.emit('reject', err);
   };
 
@@ -104,9 +104,9 @@ class NotificationService extends Events {
     });
   };
 
-  clear = async () => {
+  clear = async (stay = false) => {
     this.approval = null;
-    if (this.notifiWindowId) {
+    if (this.notifiWindowId && !stay) {
       await winMgr.remove(this.notifiWindowId);
       this.notifiWindowId = 0;
     }

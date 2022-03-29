@@ -875,10 +875,7 @@
     "message": "Allow Rabby permissions to:"
   },
   "LedgerPermission1": {
-    "message": "Read public keys from Ledger"
-  },
-  "LedgerPermission2": {
-    "message": "Prepare Ledger for transaction and data signing"
+    "message": "Connect to a HID divice"
   },
   "LedgerPermissionTip": {
     "message": "Please click \"Allow\" below and authorize access to your Ledger in the following pop-up window."
