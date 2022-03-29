@@ -34,6 +34,7 @@ import {
   GasLevel,
   Chain,
 } from 'background/service/openapi';
+import stats from '@/stats';
 import { hasConnectedLedgerDevice } from '@/utils';
 import {
   validateGasPriceRange,
@@ -528,6 +529,12 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       return;
     }
 
+    stats.report('signTransaction', {
+      type: currentAccount.brandName,
+      chainId: chain.serverId,
+      is1559: support1559,
+    });
+
     ReactGA.event({
       category: 'Transaction',
       action: 'Submit',
@@ -670,11 +677,19 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     setIsLedger(currentAccount?.type === KEYRING_CLASS.HARDWARE.LEDGER);
     setUseLedgerLive(await wallet.isUseLedgerLive());
     setHasConnectedLedgerHID(await hasConnectedLedgerDevice());
+
+    stats.report('createTransaction', {
+      type: currentAccount.brandName,
+      chainId: chain.serverId,
+      is1559: is1559,
+    });
+
     ReactGA.event({
       category: 'Transaction',
       action: 'init',
       label: currentAccount.brandName,
     });
+
     if (currentAccount.type === KEYRING_TYPE.GnosisKeyring) {
       setIsGnosisAccount(true);
       await getSafeInfo();
