@@ -360,6 +360,14 @@ export class WalletController extends BaseController {
       data.origin
     );
   };
+  removeAllRecentConnectedSites = () => {
+    const sites = permissionService
+      .getRecentConnectedSites()
+      .filter((item) => !item.isTop);
+    sites.forEach((item) => {
+      this.removeConnectedSite(item.origin);
+    });
+  };
   removeConnectedSite = (origin: string) => {
     sessionService.broadcastEvent('accountsChanged', [], origin);
     permissionService.removeConnectedSite(origin);

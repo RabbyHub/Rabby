@@ -1,4 +1,4 @@
-import { Popup } from '@/ui/component';
+import { Modal, Popup } from '@/ui/component';
 import { ConnectedSite } from 'background/service/permission';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -55,6 +55,33 @@ const RecentConnections = ({
     getConnectedSites();
   };
 
+  const removeAll = async () => {
+    try {
+      await wallet.removeAllRecentConnectedSites();
+    } catch (e) {
+      console.error(e);
+    }
+    getConnectedSites();
+  };
+
+  const handleRemoveAll = async () => {
+    Modal.info({
+      className: 'recent-connections-confirm-modal',
+      centered: true,
+      closable: true,
+      okText: t('Confirm'),
+      width: 320,
+      onOk: removeAll,
+      content: (
+        <div>
+          {t(
+            'All recently connected DApps will be disconnected and removed. All your pinned DApps will remain and not be removed.'
+          )}
+        </div>
+      ),
+    });
+  };
+
   useEffect(() => {
     getConnectedSites();
   }, []);
@@ -81,6 +108,11 @@ const RecentConnections = ({
           onFavoriteChange={handleFavoriteChange}
           data={recentList}
           title={t('Recent')}
+          extra={
+            recentList.length > 0 ? (
+              <a onClick={handleRemoveAll}>{t('Remove all')}</a>
+            ) : null
+          }
           empty={
             <div className="list-empty mb-[-24px] rounded-b-none">
               <div className="text-center pt-[85px] pb-[125px] text-gray-comment text-14">
