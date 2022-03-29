@@ -976,20 +976,20 @@ export const WALLET_BRAND_CONTENT = {
     image: LogoLedgerDark,
     connectType: BRAND_WALLET_CONNECT_TYPE.LedgerConnect,
   },
-  [WALLET_BRAND_TYPES.METAMASK]: {
-    id: 14,
-    name: 'MetaMask Mobile',
-    brand: WALLET_BRAND_TYPES.METAMASK,
-    icon: IconMetaMask,
-    image: IconMetaMask,
-    connectType: BRAND_WALLET_CONNECT_TYPE.WalletConnect,
-  },
   [WALLET_BRAND_TYPES.MATHWALLET]: {
     id: 5,
     name: 'Math Wallet',
     brand: WALLET_BRAND_TYPES.MATHWALLET,
     icon: IconMath,
     image: LogoMath,
+    connectType: BRAND_WALLET_CONNECT_TYPE.WalletConnect,
+  },
+  [WALLET_BRAND_TYPES.METAMASK]: {
+    id: 14,
+    name: 'MetaMask Mobile',
+    brand: WALLET_BRAND_TYPES.METAMASK,
+    icon: IconMetaMask,
+    image: IconMetaMask,
     connectType: BRAND_WALLET_CONNECT_TYPE.WalletConnect,
   },
   [WALLET_BRAND_TYPES.ONEKEY]: {
