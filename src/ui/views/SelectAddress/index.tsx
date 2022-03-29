@@ -136,6 +136,8 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
   const handleHDPathChange = async (v: string) => {
     await wallet.requestKeyring(keyring, 'setHdPath', keyringId.current, v);
     getAccounts(true);
+    setCurrentPage(1);
+    setEnd(1);
   };
 
   const handlePageChange = async (page: number) => {
