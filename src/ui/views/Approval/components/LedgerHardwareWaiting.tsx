@@ -72,6 +72,9 @@ const LedgerHardwareWaiting = ({ params }: { params: ApprovalParams }) => {
   };
 
   const init = async () => {
+    const account = params.isGnosis
+      ? params.account!
+      : await wallet.syncGetCurrentAccount()!;
     const approval = await getApproval();
     setIsSignText(params.isGnosis ? true : approval?.approvalType !== 'SignTx');
     eventBus.addEventListener(EVENTS.LEDGER.REJECTED, async () => {
@@ -81,6 +84,15 @@ const LedgerHardwareWaiting = ({ params }: { params: ApprovalParams }) => {
       if (data.success) {
         setConnectStatus(WALLETCONNECT_STATUS_MAP.SIBMITTED);
         setResult(data.data);
+        if (params.isGnosis) {
+          const sigs = await wallet.getGnosisTransactionSignatures();
+          if (sigs.length > 0) {
+            await wallet.gnosisAddConfirmation(account.address, data.data);
+          } else {
+            await wallet.gnosisAddSignature(account.address, data.data);
+            await wallet.postGnosisTransaction();
+          }
+        }
         ReactGA.event({
           category: 'Transaction',
           action: 'Submit',

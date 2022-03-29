@@ -184,7 +184,7 @@ const SignText = ({ params }: { params: SignTextProps }) => {
   useEffect(() => {
     checkWachMode();
   }, []);
-  console.log(isLedger, useLedgerLive, hasConnectedLedgerHID);
+
   return (
     <>
       <AccountCard account={params.account} />
