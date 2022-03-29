@@ -820,6 +820,9 @@ export const EVENTS = {
   QRHARDWARE: {
     ACQUIRE_MEMSTORE_SUCCEED: 'ACQUIRE_MEMSTORE_SUCCEED',
   },
+  LEDGER: {
+    REJECTED: 'LEDGER_REJECTED',
+  },
 };
 
 export enum WALLET_BRAND_TYPES {
@@ -1050,4 +1053,12 @@ export const GASPRICE_RANGE = {
   [CHAINS_ENUM.CRO]: [0, 100000],
   [CHAINS_ENUM.BTT]: [0, 20000000000],
   [CHAINS_ENUM.METIS]: [0, 3000],
+};
+
+export const HDPaths = {
+  [HARDWARE_KEYRING_TYPES.Ledger.type]: [
+    { name: 'Ledger Live', value: "m/44'/60'/0'/0/0" },
+    { name: 'Legacy (MEW / MyCrypto)', value: "m/44'/60'/0'" },
+    { name: 'BIP44 Standard', value: "m/44'/60'/0'/0" },
+  ],
 };
