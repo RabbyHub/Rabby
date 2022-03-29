@@ -115,9 +115,6 @@ const RequestPermission = () => {
           )}
           {needConfirm && (
             <div className="btn-footer">
-              <Button size="large" onClick={handleCancel}>
-                {t('Cancel')}
-              </Button>
               <Button type="primary" size="large" onClick={init}>
                 {t('Allow')}
               </Button>
