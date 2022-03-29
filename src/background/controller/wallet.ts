@@ -360,9 +360,12 @@ export class WalletController extends BaseController {
       data.origin
     );
   };
-  batchRemoveConnectedSite = (origins: string[]) => {
-    origins.forEach((origin) => {
-      this.removeConnectedSite(origin);
+  removeAllRecentConnectedSites = () => {
+    const sites = permissionService
+      .getRecentConnectedSites()
+      .filter((item) => !item.isTop);
+    sites.forEach((item) => {
+      this.removeConnectedSite(item.origin);
     });
   };
   removeConnectedSite = (origin: string) => {

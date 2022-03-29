@@ -57,9 +57,7 @@ const RecentConnections = ({
 
   const removeAll = async () => {
     try {
-      await wallet.batchRemoveConnectedSite(
-        recentList.map((item) => item.origin)
-      );
+      await wallet.removeAllRecentConnectedSites();
     } catch (e) {
       console.error(e);
     }
