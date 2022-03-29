@@ -2,6 +2,7 @@ import { MetaMaskKeyring } from '@keystonehq/metamask-airgapped-keyring';
 import { toChecksumAddress } from 'ethereumjs-util';
 import { Transaction as LegacyTransaction } from 'ethereumjs-tx';
 import { Transaction } from '@ethereumjs/tx';
+import Common, { Hardfork } from '@ethereumjs/common';
 
 const pathBase = 'm';
 
@@ -55,8 +56,11 @@ export default class KeystoneKeyring extends MetaMaskKeyring {
   async signTransaction(address: string, tx: any): Promise<any> {
     let ethTx = tx;
     if (tx.type === undefined) {
+      const chainId = tx.getChainId();
+      const common = Common.custom({ chainId }, { hardfork: Hardfork.London });
       ethTx = Transaction.fromSerializedTx(
-        (tx as LegacyTransaction).serialize()
+        (tx as LegacyTransaction).serialize(),
+        { common }
       );
     }
     return super.signTransaction(address, ethTx);
