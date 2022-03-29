@@ -72,6 +72,7 @@ const RecentConnections = ({
       okText: t('Confirm'),
       width: 320,
       onOk: removeAll,
+      autoFocusButton: null,
       content: (
         <div>
           {t(
