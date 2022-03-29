@@ -1,7 +1,7 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Button, Tooltip } from 'antd';
 import { useTranslation } from 'react-i18next';
-import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
+import TransportWebHID from '@ledgerhq/hw-transport-webhid';
 import { WaitingSignComponent } from './SignText';
 import { KEYRING_CLASS, KEYRING_TYPE } from 'consts';
 import { useApproval, useWallet } from 'ui/utils';
@@ -12,6 +12,8 @@ import {
 import SecurityCheckBar from './SecurityCheckBar';
 import SecurityCheckDetail from './SecurityCheckDetail';
 import AccountCard from './AccountCard';
+import { hasConnectedLedgerDevice } from '@/utils';
+import LedgerWebHIDAlert from './LedgerWebHIDAlert';
 import IconQuestionMark from 'ui/assets/question-mark-gray.svg';
 import IconInfo from 'ui/assets/infoicon.svg';
 interface SignTypedDataProps {
@@ -29,6 +31,10 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
   const { t } = useTranslation();
   const wallet = useWallet();
   const [isWatch, setIsWatch] = useState(false);
+  const [isLedger, setIsLedger] = useState(false);
+  const [useLedgerLive, setUseLedgerLive] = useState(false);
+  const [hasConnectedLedgerHID, setHasConnectedLedgerHID] = useState(false);
+
   const { data, session, method } = params;
   let parsedMessage = '';
   let _message = '';
@@ -106,7 +112,7 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
     const currentAccount = await wallet.getCurrentAccount();
     if (currentAccount?.type === KEYRING_CLASS.HARDWARE.LEDGER) {
       try {
-        const transport = await TransportWebUSB.create();
+        const transport = await TransportWebHID.create();
         await transport.close();
       } catch (e) {
         // ignore transport create error when ledger is not connected, it works but idk why
@@ -128,6 +134,17 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
 
     resolveApproval({});
   };
+
+  const init = async () => {
+    const currentAccount = await wallet.getCurrentAccount();
+    setIsLedger(currentAccount?.type === KEYRING_CLASS.HARDWARE.LEDGER);
+    setUseLedgerLive(await wallet.isUseLedgerLive());
+    setHasConnectedLedgerHID(await hasConnectedLedgerDevice());
+  };
+
+  useEffect(() => {
+    init();
+  }, []);
 
   return (
     <>
@@ -156,6 +173,9 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
         </div>
       </div>
       <footer>
+        {isLedger && !useLedgerLive && !hasConnectedLedgerHID && (
+          <LedgerWebHIDAlert />
+        )}
         <SecurityCheckBar
           status={securityCheckStatus}
           alert={securityCheckAlert}
@@ -195,6 +215,7 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
               size="large"
               className="w-[172px]"
               onClick={() => handleAllow()}
+              disabled={isLedger && !useLedgerLive && !hasConnectedLedgerHID}
             >
               {securityCheckStatus === 'pass' ||
               securityCheckStatus === 'pending'

@@ -2,12 +2,12 @@ import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { message } from 'antd';
 import { useTranslation } from 'react-i18next';
-import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
+import TransportWebHID from '@ledgerhq/hw-transport-webhid';
 import { StrayPageWithButton, FieldCheckbox } from 'ui/component';
 import { useWallet } from 'ui/utils';
 import { IS_AFTER_CHROME91, HARDWARE_KEYRING_TYPES } from 'consts';
 
-const LEDGER_LIVE_PATH = "m/44'/60'/0'/0/0";
+export const LEDGER_LIVE_PATH = "m/44'/60'/0'/0/0";
 const MEW_PATH = "m/44'/60'/0'";
 export const BIP44_PATH = "m/44'/60'/0'/0";
 
@@ -31,7 +31,7 @@ const LedgerHdPath = () => {
     }
     setSpin(true);
     const useLedgerLive = await wallet.isUseLedgerLive();
-    const isSupportWebUSB = await TransportWebUSB.isSupported();
+    const isSupportWebUSB = await TransportWebHID.isSupported();
     const keyringId = await wallet.connectHardware({
       type: HARDWARE_KEYRING_TYPES.Ledger.type,
       hdPath: currentPath,
@@ -44,7 +44,7 @@ const LedgerHdPath = () => {
           'cleanUp',
           keyringId
         );
-        const transport = await TransportWebUSB.create();
+        const transport = await TransportWebHID.create();
         await transport.close();
       }
       setSpin(false);

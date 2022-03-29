@@ -18,7 +18,7 @@ export type RequestSignPayload = {
 };
 
 export default class KeystoneKeyring extends MetaMaskKeyring {
-  perPage = 10;
+  perPage = 5;
   memStoreData: RequestSignPayload | undefined;
   constructor() {
     super();

@@ -1,0 +1,39 @@
+@import '../../style/var.less';
+
+.loading-overlay {
+  width: 100vw;
+  height: 100vh;
+  position: fixed;
+  left: 0;
+  top: 0;
+  background: rgba(240, 242, 245, .5);
+  opacity: 1;
+  transition: overlay .3s;
+  z-index: 999;
+  &.hidden {
+    opacity: 0;
+  }
+  &__content {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    transform: translate(-50%, -50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    .icon-loading {
+      animation: spining 1.5s infinite;
+      margin-bottom: 16px;
+      path {
+        fill: #707280;
+      }
+    }
+    p {
+      margin-bottom: 0;
+      font-weight: 500;
+      font-size: 15px;
+      line-height: 18px;
+      color: #707280;
+    }
+  }
+}

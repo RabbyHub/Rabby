@@ -12,7 +12,6 @@ import clsx from 'clsx';
 import * as Sentry from '@sentry/browser';
 import Safe from '@rabby-wallet/gnosis-sdk';
 import { SafeInfo } from '@rabby-wallet/gnosis-sdk/src/api';
-import TransportWebUSB from '@ledgerhq/hw-transport-webusb';
 import ReactGA from 'react-ga';
 import {
   KEYRING_CLASS,
@@ -24,6 +23,7 @@ import {
 } from 'consts';
 import { Checkbox } from 'ui/component';
 import AccountCard from './AccountCard';
+import LedgerWebHIDAlert from './LedgerWebHIDAlert';
 import SecurityCheckBar from './SecurityCheckBar';
 import SecurityCheckDetail from './SecurityCheckDetail';
 import {
@@ -34,6 +34,7 @@ import {
   GasLevel,
   Chain,
 } from 'background/service/openapi';
+import { hasConnectedLedgerDevice } from '@/utils';
 import {
   validateGasPriceRange,
   convertLegacyTo1559,
@@ -297,6 +298,9 @@ const SignTx = ({ params, origin }: SignTxProps) => {
   const wallet = useWallet();
   if (!chain) throw new Error('No support chain not found');
   const [support1559, setSupport1559] = useState(chain.eip['1559']);
+  const [isLedger, setIsLedger] = useState(false);
+  const [useLedgerLive, setUseLedgerLive] = useState(false);
+  const [hasConnectedLedgerHID, setHasConnectedLedgerHID] = useState(false);
 
   const {
     data = '0x',
@@ -463,18 +467,6 @@ const SignTx = ({ params, origin }: SignTxProps) => {
 
     const currentAccount =
       isGnosis && account ? account : await wallet.getCurrentAccount();
-    if (
-      currentAccount?.type === KEYRING_CLASS.HARDWARE.LEDGER &&
-      !(await wallet.isUseLedgerLive())
-    ) {
-      try {
-        const transport = await TransportWebUSB.create();
-        await transport.close();
-      } catch (e) {
-        // ignore transport create error when ledger is not connected, it works but idk why
-        console.log(e);
-      }
-    }
 
     try {
       validateGasPriceRange(tx);
@@ -675,6 +667,9 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       isGnosis && account ? account : await wallet.getCurrentAccount();
     const is1559 =
       support1559 && SUPPORT_1559_KEYRING_TYPE.includes(currentAccount.type);
+    setIsLedger(currentAccount?.type === KEYRING_CLASS.HARDWARE.LEDGER);
+    setUseLedgerLive(await wallet.isUseLedgerLive());
+    setHasConnectedLedgerHID(await hasConnectedLedgerDevice());
     ReactGA.event({
       category: 'Transaction',
       action: 'init',
@@ -759,7 +754,10 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     }
     setSubmitText('Sign');
   }, [isGnosisAccount, securityCheckStatus]);
-
+  const approvalTxStyle: Record<string, string> = {};
+  if (isLedger && !useLedgerLive && !hasConnectedLedgerHID) {
+    approvalTxStyle.paddingBottom = '230px';
+  }
   return (
     <>
       <AccountCard />
@@ -767,6 +765,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
         className={clsx('approval-tx', {
           'pre-process-failed': !preprocessSuccess,
         })}
+        style={approvalTxStyle}
       >
         {txDetail && (
           <>
@@ -820,6 +819,9 @@ const SignTx = ({ params, origin }: SignTxProps) => {
             <footer className="connect-footer">
               {txDetail && txDetail.pre_exec.success && (
                 <>
+                  {isLedger && !useLedgerLive && !hasConnectedLedgerHID && (
+                    <LedgerWebHIDAlert />
+                  )}
                   <SecurityCheckBar
                     status={securityCheckStatus}
                     alert={securityCheckAlert}
@@ -864,7 +866,8 @@ const SignTx = ({ params, origin }: SignTxProps) => {
                         disabled={
                           !isReady ||
                           (selectedGas ? selectedGas.price < 0 : true) ||
-                          (isGnosisAccount ? !safeInfo : false)
+                          (isGnosisAccount ? !safeInfo : false) ||
+                          (isLedger && !useLedgerLive && !hasConnectedLedgerHID)
                         }
                         loading={isGnosisAccount ? !safeInfo : false}
                       >
@@ -876,20 +879,27 @@ const SignTx = ({ params, origin }: SignTxProps) => {
               )}
               {txDetail && !txDetail.pre_exec.success && (
                 <>
-                  <p className="text-gray-subTitle mb-8 text-15 font-medium">
-                    {t('Preexecution failed')}
-                  </p>
-                  <p className="text-gray-content text-14 mb-20">
-                    {txDetail.pre_exec.err_msg}
-                  </p>
-                  <div className="force-process">
-                    <Checkbox
-                      checked={forceProcess}
-                      onChange={(e) => handleForceProcessChange(e)}
-                    >
-                      {t('processAnyway')}
-                    </Checkbox>
-                  </div>
+                  {isLedger && !useLedgerLive && !hasConnectedLedgerHID && (
+                    <LedgerWebHIDAlert />
+                  )}
+                  {!(isLedger && !useLedgerLive && !hasConnectedLedgerHID) && (
+                    <>
+                      <p className="text-gray-subTitle mb-8 text-15 font-medium">
+                        {t('Preexecution failed')}
+                      </p>
+                      <p className="text-gray-content text-14 mb-20">
+                        {txDetail.pre_exec.err_msg}
+                      </p>
+                      <div className="force-process">
+                        <Checkbox
+                          checked={forceProcess}
+                          onChange={(e) => handleForceProcessChange(e)}
+                        >
+                          {t('processAnyway')}
+                        </Checkbox>
+                      </div>
+                    </>
+                  )}
                   <div className="action-buttons flex justify-between">
                     <Button
                       type="primary"
@@ -928,7 +938,8 @@ const SignTx = ({ params, origin }: SignTxProps) => {
                         disabled={
                           !forceProcess ||
                           (selectedGas ? selectedGas.price < 0 : true) ||
-                          (isGnosisAccount ? !safeInfo : false)
+                          (isGnosisAccount ? !safeInfo : false) ||
+                          (isLedger && !useLedgerLive && !hasConnectedLedgerHID)
                         }
                         loading={isGnosisAccount ? !safeInfo : false}
                         onClick={() => handleAllow(true)}

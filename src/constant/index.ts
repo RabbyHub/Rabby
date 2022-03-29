@@ -28,6 +28,9 @@ import IconArbitrumWhiteLogo from 'ui/assets/chain-logos/arbitrum-white.svg';
 import IconArbitrumChainLogo from 'ui/assets/dashboard/selectChain/arbitrum.svg';
 import IconHarmonyLogo from 'ui/assets/chain-logos/harmony.svg';
 import IconHarmonyWhiteLogo from 'ui/assets/chain-logos/harmony-white.svg';
+import IconAstarChainLogo from 'ui/assets/dashboard/selectChain/astar1.png';
+import IconAstarLogo from 'ui/assets/chain-logos/astar.png';
+import IconAstarWhiteLogo from 'ui/assets/chain-logos/astar-white.svg';
 import IconHarmonyChainLogo from 'ui/assets/dashboard/selectChain/harmony.svg';
 import IconOPLogo from 'ui/assets/chain-logos/op.svg';
 import IconOPWhiteLogo from 'ui/assets/chain-logos/op-white.svg';
@@ -62,6 +65,9 @@ import IconSbchChainLogo from 'ui/assets/dashboard/selectChain/smartBCH.svg';
 import IconFuseLogo from 'ui/assets/chain-logos/fuse.svg';
 import IconFuseWhiteLogo from 'ui/assets/chain-logos/fuse-white.svg';
 import IconFuseChainLogo from 'ui/assets/dashboard/selectChain/fuse.svg';
+import IconPalmLogo from 'ui/assets/chain-logos/palm1.png';
+import IconPalmWhiteLogo from 'ui/assets/chain-logos/palm-white.svg';
+import IconPalmChainLogo from 'ui/assets/dashboard/selectChain/palm.png';
 import IconEN from 'ui/assets/langs/en.svg';
 import IconZH from 'ui/assets/langs/zh_cn.svg';
 import IconAmber from 'ui/assets/walletlogo/amber.png';
@@ -128,6 +134,8 @@ export enum CHAINS_ENUM {
   SBCH = 'SBCH',
   FUSE = 'FUSE',
   HMY = 'HMY',
+  PALM = 'PALM',
+  ASTAR = 'ASTAR',
 }
 
 export const CHAINS: Record<string, Chain> = {
@@ -574,6 +582,49 @@ export const CHAINS: Record<string, Chain> = {
       '1559': false,
     },
   },
+  [CHAINS_ENUM.PALM]: {
+    id: 11297108109,
+    serverId: 'palm',
+    network: '11297108109',
+    name: 'Palm',
+    nativeTokenSymbol: 'PALM',
+    nativeTokenAddress: 'palm',
+    enum: CHAINS_ENUM.PALM,
+    logo: IconPalmLogo,
+    whiteLogo: IconPalmWhiteLogo,
+    selectChainLogo: IconPalmChainLogo,
+    hex: '0x2a15c308d',
+    scanLink: 'https://explorer.palm.io/tx/_s_',
+    nativeTokenLogo:
+      'https://static.debank.com/image/chain/logo_url/palm/45160297f72604eef509ebb3d0d468e7.png',
+    nativeTokenDecimals: 18,
+    thridPartyRPC:
+      'https://palm-mainnet.infura.io/v3/da5fbfafcca14b109e2665290681e267',
+    eip: {
+      '1559': false,
+    },
+  },
+  [CHAINS_ENUM.ASTAR]: {
+    id: 592,
+    serverId: 'astar',
+    network: '592',
+    name: 'Astar',
+    nativeTokenSymbol: 'ASTR',
+    nativeTokenAddress: 'astar',
+    enum: CHAINS_ENUM.ASTAR,
+    logo: IconAstarLogo,
+    whiteLogo: IconAstarWhiteLogo,
+    selectChainLogo: IconAstarChainLogo,
+    hex: '0x250',
+    scanLink: 'https://blockscout.com/astar/tx/_s_',
+    nativeTokenLogo:
+      'https://static.debank.com/image/chain/logo_url/astar/a827be92d88617a918ea060a9a6f1572.png',
+    nativeTokenDecimals: 18,
+    thridPartyRPC: 'https://rpc.astar.network:8545',
+    eip: {
+      '1559': false,
+    },
+  },
 };
 
 export const KEYRING_TYPE = {
@@ -820,6 +871,9 @@ export const EVENTS = {
   QRHARDWARE: {
     ACQUIRE_MEMSTORE_SUCCEED: 'ACQUIRE_MEMSTORE_SUCCEED',
   },
+  LEDGER: {
+    REJECTED: 'LEDGER_REJECTED',
+  },
 };
 
 export enum WALLET_BRAND_TYPES {
@@ -1050,4 +1104,12 @@ export const GASPRICE_RANGE = {
   [CHAINS_ENUM.CRO]: [0, 100000],
   [CHAINS_ENUM.BTT]: [0, 20000000000],
   [CHAINS_ENUM.METIS]: [0, 3000],
+};
+
+export const HDPaths = {
+  [HARDWARE_KEYRING_TYPES.Ledger.type]: [
+    { name: 'Ledger Live', value: "m/44'/60'/0'/0/0" },
+    { name: 'Legacy (MEW / MyCrypto)', value: "m/44'/60'/0'" },
+    { name: 'BIP44 Standard', value: "m/44'/60'/0'/0" },
+  ],
 };
