@@ -248,7 +248,7 @@ export const CHAINS: Record<string, Chain> = {
   [CHAINS_ENUM.OKT]: {
     id: 66,
     serverId: 'okt',
-    name: 'OEC',
+    name: 'OKC',
     enum: CHAINS_ENUM.OKT,
     logo: IconOKTLogo,
     whiteLogo: IconOKTWhiteLogo,
