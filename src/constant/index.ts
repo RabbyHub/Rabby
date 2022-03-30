@@ -68,6 +68,9 @@ import IconFuseChainLogo from 'ui/assets/dashboard/selectChain/fuse.svg';
 import IconPalmLogo from 'ui/assets/chain-logos/palm1.png';
 import IconPalmWhiteLogo from 'ui/assets/chain-logos/palm-white.svg';
 import IconPalmChainLogo from 'ui/assets/dashboard/selectChain/palm.png';
+import IconShidenLogo from 'ui/assets/chain-logos/shiden.svg';
+import IconShidenWhiteLogo from 'ui/assets/chain-logos/shiden-white.svg';
+import IconShidenChainLogo from 'ui/assets/dashboard/selectChain/shiden.svg';
 import IconEN from 'ui/assets/langs/en.svg';
 import IconZH from 'ui/assets/langs/zh_cn.svg';
 import IconAmber from 'ui/assets/walletlogo/amber.png';
@@ -136,6 +139,7 @@ export enum CHAINS_ENUM {
   HMY = 'HMY',
   PALM = 'PALM',
   ASTAR = 'ASTAR',
+  SDN = 'SDN',
 }
 
 export const CHAINS: Record<string, Chain> = {
@@ -621,6 +625,27 @@ export const CHAINS: Record<string, Chain> = {
       'https://static.debank.com/image/chain/logo_url/astar/a827be92d88617a918ea060a9a6f1572.png',
     nativeTokenDecimals: 18,
     thridPartyRPC: 'https://rpc.astar.network:8545',
+    eip: {
+      '1559': false,
+    },
+  },
+  [CHAINS_ENUM.SDN]: {
+    id: 336,
+    serverId: 'sdn',
+    network: '336',
+    name: 'Shiden',
+    nativeTokenSymbol: 'SDN',
+    nativeTokenAddress: 'sdn',
+    enum: CHAINS_ENUM.SDN,
+    logo: IconShidenLogo,
+    whiteLogo: IconShidenWhiteLogo,
+    selectChainLogo: IconShidenChainLogo,
+    hex: '0x150',
+    scanLink: 'https://blockscout.com/shiden/tx/_s_',
+    nativeTokenLogo:
+      'https://static.debank.com/image/chain/logo_url/sdn/9b5bcaa0d5f102548f925e968a5e7a25.png',
+    nativeTokenDecimals: 18,
+    thridPartyRPC: 'https://evm.shiden.astar.network',
     eip: {
       '1559': false,
     },
