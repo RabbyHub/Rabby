@@ -875,7 +875,7 @@
     "message": "Allow Rabby permissions to:"
   },
   "LedgerPermission1": {
-    "message": "Connect to a HID divice"
+    "message": "Connect to a HID device"
   },
   "LedgerPermissionTip": {
     "message": "Please click \"Allow\" below and authorize access to your Ledger in the following pop-up window."
