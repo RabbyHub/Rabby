@@ -17,6 +17,8 @@ export type RequestSignPayload = {
   };
 };
 
+type PagedAccount = { address: string; balance: any; index: number };
+
 export default class KeystoneKeyring extends MetaMaskKeyring {
   perPage = 5;
   memStoreData: RequestSignPayload | undefined;
@@ -46,7 +48,7 @@ export default class KeystoneKeyring extends MetaMaskKeyring {
       accounts.push({
         address,
         balance: null,
-        index: i,
+        index: i + 1,
       });
       this.indexes[toChecksumAddress(address)] = i;
     }
@@ -64,5 +66,17 @@ export default class KeystoneKeyring extends MetaMaskKeyring {
       );
     }
     return super.signTransaction(address, ethTx);
+  }
+
+  async getFirstPage(): Promise<PagedAccount[]> {
+    const pagedAccount = await super.getFirstPage();
+    pagedAccount.forEach((account) => (account.index += 1));
+    return pagedAccount;
+  }
+
+  async getNextPage(): Promise<PagedAccount[]> {
+    const pagedAccount = await super.getNextPage();
+    pagedAccount.forEach((account) => (account.index += 1));
+    return pagedAccount;
   }
 }
