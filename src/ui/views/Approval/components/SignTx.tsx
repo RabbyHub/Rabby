@@ -45,6 +45,8 @@ import { ChainGas, Account } from 'background/service/preference';
 import GnosisDrawer from './TxComponents/GnosisDrawer';
 import Approve from './TxComponents/Approve';
 import Cancel from './TxComponents/Cancel';
+import CancelNFTCollection from './TxComponents/CancelNFTCollection';
+import CancelNFT from './TxComponents/CancelNFT';
 import Sign from './TxComponents/Sign';
 import CancelTx from './TxComponents/CancelTx';
 import Send from './TxComponents/Send';
@@ -53,6 +55,9 @@ import Loading from './TxComponents/Loading';
 import GasSelector, { GasSelectorResponse } from './TxComponents/GasSelecter';
 import { WaitingSignComponent } from './SignText';
 import IconInfo from 'ui/assets/infoicon.svg';
+import ApproveNFTCollection from './TxComponents/ApproveNFTCollection';
+import ApproveNFT from './TxComponents/ApproveNFT';
+import SendNFT from './TxComponents/sendNFT';
 
 const normalizeHex = (value: string | number) => {
   if (typeof value === 'number') {
@@ -132,9 +137,54 @@ export const TxTypeComponent = ({
         raw={raw}
       />
     );
+  if (txDetail.type_cancel_single_nft_approval)
+    return (
+      <CancelNFT
+        data={txDetail}
+        chainEnum={chain.enum}
+        isSpeedUp={isSpeedUp}
+        raw={raw}
+      />
+    );
+  if (txDetail.type_cancel_nft_collection_approval)
+    return (
+      <CancelNFTCollection
+        data={txDetail}
+        chainEnum={chain.enum}
+        isSpeedUp={isSpeedUp}
+        raw={raw}
+      />
+    );
   if (txDetail.type_cancel_token_approval)
     return (
       <Cancel
+        data={txDetail}
+        chainEnum={chain.enum}
+        isSpeedUp={isSpeedUp}
+        raw={raw}
+      />
+    );
+  if (txDetail.type_single_nft_approval)
+    return (
+      <ApproveNFT
+        data={txDetail}
+        chainEnum={chain.enum}
+        isSpeedUp={isSpeedUp}
+        raw={raw}
+      />
+    );
+  if (txDetail.type_nft_collection_approval)
+    return (
+      <ApproveNFTCollection
+        data={txDetail}
+        chainEnum={chain.enum}
+        isSpeedUp={isSpeedUp}
+        raw={raw}
+      />
+    );
+  if (txDetail.type_nft_send)
+    return (
+      <SendNFT
         data={txDetail}
         chainEnum={chain.enum}
         isSpeedUp={isSpeedUp}

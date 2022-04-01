@@ -19,16 +19,18 @@ type AvatarProps = {
   style?: React.CSSProperties;
   onPreview?: () => void;
   amount?: number;
+  unknown?: string;
 };
 
 const Thumbnail = ({
   content,
   type,
-}: Pick<AvatarProps, 'content' | 'type'>) => {
+  unknown,
+}: Pick<AvatarProps, 'content' | 'type' | 'unknown'>) => {
   const src =
     type && ['image', 'image_url'].includes(type) && content
       ? content
-      : IconNFTDefault;
+      : unknown || IconNFTDefault;
   return (
     <Image
       src={src}
@@ -86,6 +88,7 @@ const NFTAvatar = ({
   className,
   style,
   onPreview,
+  unknown,
   amount,
 }: AvatarProps) => {
   const logo = getChain(chain)?.logo || IconUnknown;
@@ -94,7 +97,7 @@ const NFTAvatar = ({
   return (
     <div className={clsx('nft-avatar', className)} style={style}>
       {thumbnail ? (
-        <Thumbnail content={content} type={type} />
+        <Thumbnail content={content} type={type} unknown={unknown} />
       ) : (
         <Preview content={content} type={type}></Preview>
       )}
