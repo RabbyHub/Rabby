@@ -29,7 +29,7 @@ import {
   splitNumberByStep,
   useHover,
 } from 'ui/utils';
-import { AddressViewer, Modal, NameAndAddress } from 'ui/component';
+import { AddressViewer, Copy, Modal, NameAndAddress } from 'ui/component';
 import { crossCompareOwners } from 'ui/utils/gnosis';
 import { Account } from 'background/service/preference';
 import { ConnectedSite } from 'background/service/permission';
@@ -54,6 +54,7 @@ import IconInfo from 'ui/assets/information.png';
 import IconTagYou from 'ui/assets/tag-you.svg';
 import IconAddToken from 'ui/assets/addtoken.png';
 import IconAddressCopy from 'ui/assets/address-copy.png';
+import IconCopy from 'ui/assets/icon-copy.svg';
 import { SvgIconLoading } from 'ui/assets';
 
 import './style.less';
@@ -792,8 +793,13 @@ const Dashboard = () => {
               <img
                 src={IconInfo}
                 onClick={() => setHovered(true)}
-                className="w-[16px] h-[16px] pointer"
+                className="w-[18px] h-[18px] mr-12 pointer"
               />
+              <Copy
+                data={currentAccount.address}
+                className="w-18"
+                icon={IconCopy}
+              ></Copy>
             </div>
           )}
           <BalanceView
