@@ -223,6 +223,14 @@ export const ERC20ABI = [
 
 export const ERC721ABI = [
   {
+    constant: true,
+    inputs: [],
+    name: 'name',
+    outputs: [{ name: '', type: 'string' }],
+    payable: false,
+    type: 'function',
+  },
+  {
     constant: false,
     inputs: [
       { internalType: 'address', name: 'to', type: 'address' },
@@ -415,6 +423,14 @@ export const ERC721ABI = [
 ];
 
 export const ERC1155ABI = [
+  {
+    constant: true,
+    inputs: [],
+    name: 'name',
+    outputs: [{ name: '', type: 'string' }],
+    payable: false,
+    type: 'function',
+  },
   {
     anonymous: false,
     inputs: [

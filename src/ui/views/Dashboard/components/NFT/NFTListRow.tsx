@@ -1,6 +1,7 @@
 import { NFTItem } from '@/background/service/openapi';
+import { Modal } from 'antd';
 import clsx from 'clsx';
-import React from 'react';
+import React, { useState } from 'react';
 import { useHover } from 'ui/utils';
 import NFTAvatar from './NFTAvatar';
 import NFTModal from './NFTModal';
@@ -12,19 +13,21 @@ export interface NFTListRowProps {
   style: React.CSSProperties;
 }
 const NFTListRow = (props: NFTListRowProps) => {
+  const [modalVisible, setModalVisible] = useState(false);
   const { data, index, style } = props;
   const item = data[index];
   const [isHovering, hoverProps] = useHover();
+
+  const handleToggleModal = () => {
+    setModalVisible(!modalVisible);
+  };
+
   return (
     <div
       className={clsx('nft-list-row pointer', isHovering && 'hover')}
       style={style}
       {...hoverProps}
-      onClick={() => {
-        NFTModal.open({
-          data: item,
-        });
-      }}
+      onClick={handleToggleModal}
     >
       <div className="nft-list-row-avatar">
         <NFTAvatar
@@ -43,6 +46,19 @@ const NFTListRow = (props: NFTListRowProps) => {
       <div className="nft-list-row-extra">
         {item.amount > 1 && <div className="tag">x{item.amount}</div>}
       </div>
+      <Modal
+        visible={modalVisible}
+        centered
+        width={336}
+        cancelText={null}
+        closable={false}
+        okText={null}
+        footer={null}
+        className="nft-modal"
+        onCancel={handleToggleModal}
+      >
+        <NFTModal data={item} />
+      </Modal>
     </div>
   );
 };
