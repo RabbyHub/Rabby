@@ -1,18 +1,17 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import ClipboardJS from 'clipboard';
 import clsx from 'clsx';
 import BigNumber from 'bignumber.js';
 import { useTranslation } from 'react-i18next';
 import { useHistory, useLocation } from 'react-router-dom';
-import { Input, Form, Skeleton, message, Button, Tooltip } from 'antd';
-import abiCoder, { AbiCoder } from 'web3-eth-abi';
-import { isValidAddress, unpadHexString, addHexPrefix } from 'ethereumjs-util';
+import { Input, Form, message, Button } from 'antd';
+import { isValidAddress } from 'ethereumjs-util';
 import { Contract, providers } from 'ethers';
 import {
   CHAINS,
-  CHAINS_ENUM,
   KEYRING_PURPLE_LOGOS,
   KEYRING_CLASS,
+  CHAINS_ENUM,
 } from 'consts';
 import { ERC721ABI, ERC1155ABI } from 'consts/abi';
 import { Account } from 'background/service/preference';
@@ -47,14 +46,17 @@ const SendNFT = () => {
   }>();
   const { t } = useTranslation();
   const [currentAccount, setCurrentAccount] = useState<Account | null>(null);
-  const chain = Object.values(CHAINS).find(
-    (item) => item.serverId === state.nftItem.chain
-  )?.enum;
-
-  if (!chain) {
-    history.replace('/');
-    return <></>;
-  }
+  const [nftItem, setNftItem] = useState<NFTItem | null>(
+    state?.nftItem || null
+  );
+  const [chain, setChain] = useState<CHAINS_ENUM | undefined>(
+    state?.nftItem
+      ? Object.values(CHAINS).find(
+          (item) => item.serverId === state.nftItem.chain
+        )?.enum
+      : undefined
+  );
+  const amountInputEl = useRef<any>(null);
 
   const { useForm } = Form;
 
@@ -64,27 +66,21 @@ const SendNFT = () => {
   const [showEditContactModal, setShowEditContactModal] = useState(false);
   const [showListContactModal, setShowListContactModal] = useState(false);
   const [editBtnDisabled, setEditBtnDisabled] = useState(true);
-  const [cacheAmount, setCacheAmount] = useState('0');
-  const [isLoading, setIsLoading] = useState(true);
-  const [balanceError, setBalanceError] = useState(null);
-  const [balanceWarn, setBalanceWarn] = useState(null);
   const [showContactInfo, setShowContactInfo] = useState(false);
   const [accountType, setAccountType] = useState('');
-  const [amountFocus, setAmountFocus] = useState(false);
   const [tokenValidationStatus, setTokenValidationStatus] = useState(
     TOKEN_VALIDATION_STATUS.PENDING
   );
 
   const canSubmit =
     isValidAddress(form.getFieldValue('to')) &&
-    !balanceError &&
     new BigNumber(form.getFieldValue('amount')).isGreaterThan(0) &&
-    !isLoading &&
     tokenValidationStatus === TOKEN_VALIDATION_STATUS.SUCCESS;
 
   const handleCopyContractAddress = () => {
     const clipboard = new ClipboardJS('.send-nft', {
       text: function () {
+        if (!nftItem) return '';
         return nftItem.contract_id;
       },
     });
@@ -103,20 +99,17 @@ const SendNFT = () => {
     _,
     {
       to,
-      amount,
     }: {
       to: string;
       amount: number;
     }
   ) => {
-    console.log(to, amount);
     setShowContactInfo(!!to && isValidAddress(to));
     if (!to || !isValidAddress(to)) {
       setEditBtnDisabled(true);
     } else {
       setEditBtnDisabled(false);
     }
-    const account = await wallet.syncGetCurrentAccount();
     const addressContact = await wallet.getContactByAddress(to);
     const alianName = await wallet.getAlianName(to.toLowerCase());
     if (addressContact || alianName) {
@@ -135,20 +128,28 @@ const SendNFT = () => {
     to: string;
     amount: number;
   }) => {
-    // await wallet.setLastTimeSendToken(currentAccount!.address, currentToken);
-    // await wallet.setPageStateCache({
-    //   path: history.location.pathname,
-    //   params: {},
-    //   states: {
-    //     values: form.getFieldsValue(),
-    //     currentToken,
-    //   },
-    // });
-    // wallet.sendRequest({
-    //   method: 'eth_sendTransaction',
-    //   params: [params],
-    // });
-    // window.close();
+    if (!nftItem) return;
+    await wallet.setPageStateCache({
+      path: history.location.pathname,
+      params: {},
+      states: {
+        values: form.getFieldsValue(),
+        nftItem,
+      },
+    });
+    try {
+      await wallet.transferNFT({
+        to,
+        amount,
+        tokenId: nftItem.inner_id,
+        chainServerId: nftItem.chain,
+        contractId: nftItem.contract_id,
+        abi: nftItem.is1155 ? 'ERC1155' : 'ERC721',
+      });
+      window.close();
+    } catch (e) {
+      message.error(e.message);
+    }
   };
 
   const handleConfirmContact = (data: ContactBookItem | null, type: string) => {
@@ -156,7 +157,6 @@ const SendNFT = () => {
     setShowListContactModal(false);
     setContactInfo(data);
     setAccountType(type);
-    setAmountFocus(true);
     const values = form.getFieldsValue();
     const to = data ? data.address : '';
     if (!data) return;
@@ -168,6 +168,7 @@ const SendNFT = () => {
       ...values,
       to,
     });
+    amountInputEl.current && amountInputEl.current.focus();
   };
 
   const handleCancelEditContact = () => {
@@ -188,6 +189,20 @@ const SendNFT = () => {
   };
 
   const init = async () => {
+    if (!nftItem) {
+      if (await wallet.hasPageStateCache()) {
+        const cache = await wallet.getPageStateCache();
+        if (cache?.path === history.location.pathname) {
+          if (cache.states.values) {
+            form.setFieldsValue(cache.states.values);
+            handleFormValuesChange(null, cache.states.values);
+          }
+          if (cache.states.nftItem) {
+            setNftItem(cache.states.nftItem);
+          }
+        }
+      }
+    }
     const account = await wallet.syncGetCurrentAccount();
 
     if (!account) {
@@ -196,8 +211,6 @@ const SendNFT = () => {
     }
 
     setCurrentAccount(account);
-
-    await validateNFT();
   };
 
   const getAlianName = async () => {
@@ -206,11 +219,12 @@ const SendNFT = () => {
   };
 
   const validateNFT = async () => {
+    if (!nftItem) return;
     setTokenValidationStatus(TOKEN_VALIDATION_STATUS.PENDING);
     const contract = new Contract(
       nftItem.contract_id,
       nftItem.is1155 ? ERC1155ABI : ERC721ABI,
-      new providers.JsonRpcProvider(CHAINS[chain].thridPartyRPC)
+      new providers.JsonRpcProvider(CHAINS[chain!].thridPartyRPC)
     );
     const name = await contract.name();
     if (name === nftItem.contract_name) {
@@ -233,174 +247,191 @@ const SendNFT = () => {
     }
   }, [currentAccount]);
 
-  const { nftItem } = state;
-
-  nftItem.is1155 = false;
+  useEffect(() => {
+    if (nftItem) {
+      if (!chain) {
+        const nftChain = Object.values(CHAINS).find(
+          (item) => item.serverId === nftItem.chain
+        )?.enum;
+        if (!nftChain) {
+          history.replace('/');
+        } else {
+          setChain(nftChain);
+        }
+      } else {
+        validateNFT();
+      }
+    }
+  }, [nftItem, chain]);
 
   return (
     <div className="send-nft">
       <PageHeader onBack={handleClickBack} forceShowBack>
         {t('Send NFT')}
       </PageHeader>
-      <Form
-        form={form}
-        onFinish={handleSubmit}
-        initialValues={{
-          to: '',
-          amount: 1,
-        }}
-        onValuesChange={handleFormValuesChange}
-      >
-        <TagChainSelector value={chain} readonly />
-        <div className="section">
-          <div className="section-title">{t('From')}</div>
-          <AccountCard
-            icons={{
-              mnemonic: KEYRING_PURPLE_LOGOS[KEYRING_CLASS.MNEMONIC],
-              privatekey: KEYRING_PURPLE_LOGOS[KEYRING_CLASS.PRIVATE_KEY],
-              watch: KEYRING_PURPLE_LOGOS[KEYRING_CLASS.WATCH],
-            }}
-            alianName={sendAlianName}
-          />
-          <div className="section-title">
-            <span className="section-title__to">{t('To')}</span>
-            <div className="flex flex-1 justify-end items-center">
-              {showContactInfo && (
-                <div
-                  className={clsx('contact-info', {
-                    disabled: editBtnDisabled,
-                  })}
-                  onClick={handleEditContact}
-                >
-                  {contactInfo ? (
-                    <>
-                      <img src={IconEdit} className="icon icon-edit" />
-                      <span>{contactInfo.name}</span>
-                    </>
-                  ) : (
-                    <>
-                      <SvgIconPlusPrimary
-                        className="icon icon-add"
-                        fill="#8697FF"
-                      />
-                      <span>{t('Add contact')}</span>
-                    </>
-                  )}
-                </div>
-              )}
-              <img
-                className="icon icon-contact"
-                src={IconContact}
-                onClick={handleListContact}
-              />
-            </div>
-          </div>
-          <div className="to-address">
-            <Form.Item
-              name="to"
-              rules={[
-                { required: true, message: t('Please input address') },
-                {
-                  validator(_, value) {
-                    if (!value) return Promise.resolve();
-                    if (value && isValidAddress(value)) {
-                      setAmountFocus(true);
-                      return Promise.resolve();
-                    }
-                    return Promise.reject(
-                      new Error(t('This address is invalid'))
-                    );
-                  },
-                },
-              ]}
-            >
-              <Input
-                placeholder={t('Enter the address')}
-                autoComplete="off"
-                autoFocus
-              />
-            </Form.Item>
-          </div>
-        </div>
-        <div className="section">
-          <div className="nft-info flex">
-            <NFTAvatar
-              type={nftItem.content_type}
-              content={nftItem.content}
-              className="w-[72px] h-[72px]"
+      {nftItem && (
+        <Form
+          form={form}
+          onFinish={handleSubmit}
+          initialValues={{
+            to: '',
+            amount: 1,
+          }}
+          onValuesChange={handleFormValuesChange}
+        >
+          {chain && <TagChainSelector value={chain!} readonly />}
+          <div className="section">
+            <div className="section-title">{t('From')}</div>
+            <AccountCard
+              icons={{
+                mnemonic: KEYRING_PURPLE_LOGOS[KEYRING_CLASS.MNEMONIC],
+                privatekey: KEYRING_PURPLE_LOGOS[KEYRING_CLASS.PRIVATE_KEY],
+                watch: KEYRING_PURPLE_LOGOS[KEYRING_CLASS.WATCH],
+              }}
+              alianName={sendAlianName}
             />
-            <div className="nft-info__detail">
-              <h3>{nftItem.name}</h3>
-              <p>
-                <span className="field-name">Collection</span>
-                <span className="value">{nftItem.collection?.name || '-'}</span>
-              </p>
-              <p>
-                <span className="field-name">Contract</span>
-                <span className="value">
-                  <AddressViewer
-                    address={nftItem.contract_id}
-                    showArrow={false}
-                  />
-                  <img
-                    src={IconCopy}
-                    className="icon icon-copy"
-                    onClick={handleCopyContractAddress}
-                  />
-                </span>
-              </p>
+            <div className="section-title">
+              <span className="section-title__to">{t('To')}</span>
+              <div className="flex flex-1 justify-end items-center">
+                {showContactInfo && (
+                  <div
+                    className={clsx('contact-info', {
+                      disabled: editBtnDisabled,
+                    })}
+                    onClick={handleEditContact}
+                  >
+                    {contactInfo ? (
+                      <>
+                        <img src={IconEdit} className="icon icon-edit" />
+                        <span>{contactInfo.name}</span>
+                      </>
+                    ) : (
+                      <>
+                        <SvgIconPlusPrimary
+                          className="icon icon-add"
+                          fill="#8697FF"
+                        />
+                        <span>{t('Add contact')}</span>
+                      </>
+                    )}
+                  </div>
+                )}
+                <img
+                  className="icon icon-contact"
+                  src={IconContact}
+                  onClick={handleListContact}
+                />
+              </div>
+            </div>
+            <div className="to-address">
+              <Form.Item
+                name="to"
+                rules={[
+                  { required: true, message: t('Please input address') },
+                  {
+                    validator(_, value) {
+                      if (!value) return Promise.resolve();
+                      if (value && isValidAddress(value)) {
+                        return Promise.resolve();
+                      }
+                      return Promise.reject(
+                        new Error(t('This address is invalid'))
+                      );
+                    },
+                  },
+                ]}
+              >
+                <Input
+                  placeholder={t('Enter the address')}
+                  autoComplete="off"
+                  autoFocus
+                />
+              </Form.Item>
             </div>
           </div>
-          <div className="section-footer">
-            <span>Send amount</span>
-
-            <Form.Item name="amount">
-              <NumberInput
-                max={nftItem.amount}
-                nftItem={nftItem}
-                disabled={!nftItem.is1155}
+          <div className="section">
+            <div className="nft-info flex">
+              <NFTAvatar
+                type={nftItem.content_type}
+                content={nftItem.content}
+                className="w-[72px] h-[72px]"
               />
-            </Form.Item>
-          </div>
-        </div>
+              <div className="nft-info__detail">
+                <h3>{nftItem.name}</h3>
+                <p>
+                  <span className="field-name">Collection</span>
+                  <span className="value">
+                    {nftItem.collection?.name || '-'}
+                  </span>
+                </p>
+                <p>
+                  <span className="field-name">Contract</span>
+                  <span className="value">
+                    <AddressViewer
+                      address={nftItem.contract_id}
+                      showArrow={false}
+                    />
+                    <img
+                      src={IconCopy}
+                      className="icon icon-copy"
+                      onClick={handleCopyContractAddress}
+                    />
+                  </span>
+                </p>
+              </div>
+            </div>
+            <div className="section-footer">
+              <span>Send amount</span>
 
-        {tokenValidationStatus !== TOKEN_VALIDATION_STATUS.SUCCESS && (
-          <div
-            className={clsx('token-validation', {
-              pending:
-                tokenValidationStatus === TOKEN_VALIDATION_STATUS.PENDING,
-              faild: tokenValidationStatus === TOKEN_VALIDATION_STATUS.FAILD,
-            })}
-          >
-            {tokenValidationStatus === TOKEN_VALIDATION_STATUS.PENDING ? (
-              <>
-                <SvgIconLoading
-                  className="icon icon-loading"
-                  viewBox="0 0 36 36"
+              <Form.Item name="amount">
+                <NumberInput
+                  max={nftItem.amount}
+                  nftItem={nftItem}
+                  disabled={!nftItem.is1155}
+                  ref={amountInputEl}
                 />
-                {t('Veriying token info ...')}
-              </>
-            ) : (
-              <>
-                <SvgAlert className="icon icon-alert" viewBox="0 0 14 14" />
-                {t('Token verification failed')}
-              </>
-            )}
+              </Form.Item>
+            </div>
           </div>
-        )}
 
-        <div className="footer flex justify-center">
-          <Button
-            disabled={!canSubmit}
-            type="primary"
-            htmlType="submit"
-            size="large"
-            className="w-[200px]"
-          >
-            {t('Send')}
-          </Button>
-        </div>
-      </Form>
+          {tokenValidationStatus !== TOKEN_VALIDATION_STATUS.SUCCESS && (
+            <div
+              className={clsx('token-validation', {
+                pending:
+                  tokenValidationStatus === TOKEN_VALIDATION_STATUS.PENDING,
+                faild: tokenValidationStatus === TOKEN_VALIDATION_STATUS.FAILD,
+              })}
+            >
+              {tokenValidationStatus === TOKEN_VALIDATION_STATUS.PENDING ? (
+                <>
+                  <SvgIconLoading
+                    className="icon icon-loading"
+                    viewBox="0 0 36 36"
+                  />
+                  {t('Veriying token info ...')}
+                </>
+              ) : (
+                <>
+                  <SvgAlert className="icon icon-alert" viewBox="0 0 14 14" />
+                  {t('Token verification failed')}
+                </>
+              )}
+            </div>
+          )}
+
+          <div className="footer flex justify-center">
+            <Button
+              disabled={!canSubmit}
+              type="primary"
+              htmlType="submit"
+              size="large"
+              className="w-[200px]"
+            >
+              {t('Send')}
+            </Button>
+          </div>
+        </Form>
+      )}
       <ContactEditModal
         visible={showEditContactModal}
         address={form.getFieldValue('to')}
