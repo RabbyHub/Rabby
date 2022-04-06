@@ -138,7 +138,7 @@ const SendNFT = () => {
       },
     });
     try {
-      await wallet.transferNFT({
+      wallet.transferNFT({
         to,
         amount,
         tokenId: nftItem.inner_id,
@@ -265,7 +265,7 @@ const SendNFT = () => {
   }, [nftItem, chain]);
 
   return (
-    <div className="send-nft">
+    <div className="transfer-nft">
       <PageHeader onBack={handleClickBack} forceShowBack>
         {t('Send NFT')}
       </PageHeader>
