@@ -210,7 +210,7 @@ const GasSelector = ({
 
   useDebounce(
     () => {
-      isReady && handleConfirmGas();
+      (isReady || !isFirstTimeLoad) && handleConfirmGas();
     },
     500,
     [customGas]
