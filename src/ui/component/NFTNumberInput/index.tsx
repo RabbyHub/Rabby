@@ -40,7 +40,6 @@ const NumberInput = forwardRef<InputRef, Props>(
 
     useImperativeHandle(ref, () => ({
       focus: () => {
-        console.log(inputEl);
         inputEl.current && inputEl.current.focus();
       },
     }));
@@ -62,10 +61,10 @@ const NumberInput = forwardRef<InputRef, Props>(
         />
         <Tooltip
           overlayClassName={clsx('rectangle send-nft-tooltip', {
-            is1155: nftItem.is1155,
+            is1155: nftItem.is_erc1155,
           })}
           title={
-            nftItem.is1155
+            nftItem.is_erc1155
               ? `Your balance is ${nftItem.amount}`
               : 'Only one NFT of ERC 721 can be sent at a time'
           }

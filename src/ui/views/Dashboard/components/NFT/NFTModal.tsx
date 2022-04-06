@@ -1,5 +1,5 @@
 import { NFTItem } from '@/background/service/openapi';
-import { Button } from 'antd';
+import { Button, Tooltip } from 'antd';
 import React from 'react';
 import { useHistory } from 'react-router-dom';
 import { getChain } from 'utils';
@@ -62,23 +62,26 @@ const NFTModal = ({ data }: ContentProps) => {
           <div className="nft-preview-card-list-item-value">{price}</div>
         </div>
       </div>
-      <Button block size="large" onClick={handleClickSend}>
-        Send
-      </Button>
+      <Tooltip
+        title={
+          !data?.is_erc1155 && !data?.is_erc721
+            ? 'Only ERC 721 and ERC 1155 NFTs are supported for now'
+            : null
+        }
+        overlayClassName="rectangle"
+      >
+        <Button
+          block
+          size="large"
+          type="primary"
+          onClick={handleClickSend}
+          disabled={!data?.is_erc1155 && !data?.is_erc721}
+        >
+          Send
+        </Button>
+      </Tooltip>
     </div>
   );
 };
-
-// NFTModal.open = ({ data }: ContentProps) => {
-//   Modal.info({
-//     centered: true,
-//     content: <Content data={data} />,
-//     width: 336,
-//     cancelText: null,
-//     closable: false,
-//     okText: null,
-//     className: 'nft-modal',
-//   });
-// };
 
 export default NFTModal;

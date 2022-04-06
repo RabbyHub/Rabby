@@ -144,7 +144,7 @@ const SendNFT = () => {
         tokenId: nftItem.inner_id,
         chainServerId: nftItem.chain,
         contractId: nftItem.contract_id,
-        abi: nftItem.is1155 ? 'ERC1155' : 'ERC721',
+        abi: nftItem.is_erc1155 ? 'ERC1155' : 'ERC721',
       });
       window.close();
     } catch (e) {
@@ -223,7 +223,7 @@ const SendNFT = () => {
     setTokenValidationStatus(TOKEN_VALIDATION_STATUS.PENDING);
     const contract = new Contract(
       nftItem.contract_id,
-      nftItem.is1155 ? ERC1155ABI : ERC721ABI,
+      nftItem.is_erc1155 ? ERC1155ABI : ERC721ABI,
       new providers.JsonRpcProvider(CHAINS[chain!].thridPartyRPC)
     );
     const name = await contract.name();
@@ -387,7 +387,7 @@ const SendNFT = () => {
                 <NumberInput
                   max={nftItem.amount}
                   nftItem={nftItem}
-                  disabled={!nftItem.is1155}
+                  disabled={!nftItem.is_erc1155}
                   ref={amountInputEl}
                 />
               </Form.Item>
