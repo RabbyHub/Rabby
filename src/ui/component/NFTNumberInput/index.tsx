@@ -23,7 +23,13 @@ const NumberInput = forwardRef<InputRef, Props>(
     ref
   ) => {
     const handleInputValueChange = (e) => {
-      onChange && onChange(e.traget.value);
+      if (
+        /^\d*$/.test(e.target.value) &&
+        max &&
+        Number(e.target.value) <= max
+      ) {
+        onChange && onChange(Number(e.target.value));
+      }
     };
 
     const handleMinus = () => {
