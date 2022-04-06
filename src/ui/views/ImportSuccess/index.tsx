@@ -26,6 +26,7 @@ const ImportSuccess = ({ isPopup = false }: { isPopup?: boolean }) => {
     isMnemonics?: boolean;
     importedLength?: number;
   }>();
+  console.log(state);
   const addressItems = useRef(new Array(state.accounts.length));
   const { t } = useTranslation();
   const {

@@ -1232,11 +1232,12 @@ class OpenApiService {
     return data;
   };
 
-  listNFT = async (id: string): Promise<NFTItem[]> => {
+  listNFT = async (id: string, isAll = true): Promise<NFTItem[]> => {
     const config = this.store.config.user_nft_list;
     const { data } = await this.request[config.method](config.path, {
       params: {
         id,
+        is_all: isAll,
       },
     });
     return data;

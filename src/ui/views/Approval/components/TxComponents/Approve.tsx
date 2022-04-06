@@ -30,11 +30,13 @@ interface ApproveProps {
 
 interface ApproveAmountModalProps {
   amount: number;
+  balance: string | undefined | null;
   token: TokenItem;
   onChange(value: string): void;
 }
 
 const ApproveAmountModal = ({
+  balance,
   amount,
   token,
   onChange,
@@ -82,17 +84,30 @@ const ApproveAmountModal = ({
           autoFocus
         />
       </Form.Item>
-      <p
-        className="est-approve-price"
-        title={splitNumberByStep(new BigNumber(tokenPrice).toFixed(2))}
-      >
-        ≈ $
-        {ellipsisOverflowedText(
-          splitNumberByStep(new BigNumber(tokenPrice).toFixed(2)),
-          18,
-          true
+      <div className="approve-amount-footer">
+        <span
+          className="est-approve-price"
+          title={splitNumberByStep(new BigNumber(tokenPrice).toFixed(2))}
+        >
+          ≈ $
+          {ellipsisOverflowedText(
+            splitNumberByStep(new BigNumber(tokenPrice).toFixed(2)),
+            18,
+            true
+          )}
+        </span>
+        {balance && (
+          <span
+            className="token-approve-balance"
+            title={splitNumberByStep(balance)}
+            onClick={() => {
+              setCustomAmount(balance);
+            }}
+          >
+            {splitNumberByStep(new BigNumber(balance).toFixed(4))}
+          </span>
         )}
-      </p>
+      </div>
       <div className="flex justify-center mt-32 popup-footer">
         <Button
           type="primary"
@@ -121,6 +136,7 @@ const Approve = ({
   const chain = CHAINS[chainEnum];
   const [editApproveModalVisible, setEditApproveModalVisible] = useState(false);
   const [currentAccount, setCurrentAccount] = useState<Account | null>(null);
+  const [balance, setBalance] = useState<string | null>(null);
   const [isGnosis, setIsGnosis] = useState(false);
   const { t } = useTranslation();
   const totalTokenPrice = new BigNumber(
@@ -181,11 +197,28 @@ const Approve = ({
     setCurrentAccount(account);
   };
 
+  const fetchBalance = async () => {
+    const userToken: TokenItem = await wallet.openapi.getToken(
+      currentAccount?.address,
+      detail.token.chain,
+      detail.token.id
+    );
+    setBalance(
+      new BigNumber(userToken.raw_amount_hex_str || 0)
+        .div(new BigNumber(10).pow(userToken.decimals))
+        .toFixed()
+    );
+  };
+
   useEffect(() => {
     if (currentAccount) {
       setIsGnosis(currentAccount.type === KEYRING_TYPE.GnosisKeyring);
     }
   }, [currentAccount]);
+
+  useEffect(() => {
+    fetchBalance();
+  }, [currentAccount, detail]);
 
   useEffect(() => {
     init();
@@ -293,6 +326,7 @@ const Approve = ({
         destroyOnClose
       >
         <ApproveAmountModal
+          balance={balance}
           amount={detail.token_amount}
           token={detail.token}
           onChange={handleApproveAmountChange}
