@@ -32,7 +32,6 @@ import {
   EVENTS,
   BRAND_ALIAN_TYPE_TEXT,
   WALLET_BRAND_CONTENT,
-  KEYRING_TYPE,
   CHAINS_ENUM,
 } from 'consts';
 import { ERC20ABI, ERC1155ABI, ERC721ABI } from 'consts/abi';
@@ -118,6 +117,50 @@ export class WalletController extends BaseController {
     const signer = provider.getSigner();
     const contract = new Contract(id, ERC20ABI, signer);
     await contract.approve(spender, amount);
+  };
+
+  transferNFT = async ({
+    to,
+    chainServerId,
+    contractId,
+    abi,
+    tokenId,
+    amount,
+  }: {
+    to: string;
+    chainServerId: string;
+    contractId: string;
+    abi: 'ERC721' | 'ERC1155';
+    tokenId: string;
+    amount?: number;
+  }) => {
+    const account = await preferenceService.getCurrentAccount();
+    if (!account) throw new Error('no current account');
+    const chainId = Object.values(CHAINS)
+      .find((chain) => chain.serverId === chainServerId)
+      ?.id.toString();
+    if (!chainId) throw new Error('invalid chain id');
+    buildinProvider.currentProvider.currentAccount = account.address;
+    buildinProvider.currentProvider.currentAccountType = account.type;
+    buildinProvider.currentProvider.currentAccountBrand = account.brandName;
+    buildinProvider.currentProvider.chainId = chainId;
+    const provider = new ethers.providers.Web3Provider(
+      buildinProvider.currentProvider
+    );
+    const signer = provider.getSigner();
+    if (abi === 'ERC721') {
+      const contract = new Contract(contractId, ERC721ABI, signer);
+      await contract['safeTransferFrom(address,address,uint256)'](
+        account.address,
+        to,
+        tokenId
+      );
+    } else if (abi === 'ERC1155') {
+      const contract = new Contract(contractId, ERC1155ABI, signer);
+      await contract.safeTransferFrom(account.address, to, tokenId, amount, []);
+    } else {
+      throw new Error('unknown contract abi');
+    }
   };
 
   revokeNFTApprove = async ({

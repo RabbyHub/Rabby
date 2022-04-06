@@ -262,6 +262,8 @@ export interface NFTItem {
   detail_url: string;
   total_supply?: string;
   collection?: Collection | null;
+  is_erc1155?: boolean;
+  is_erc721: boolean;
 }
 
 export interface Collection {

@@ -7,28 +7,33 @@ import './style.less';
 
 interface ChainSelectorProps {
   value: CHAINS_ENUM;
-  onChange(value: CHAINS_ENUM): void;
-  showModal: boolean;
+  onChange?(value: CHAINS_ENUM): void;
+  readonly?: boolean;
+  showModal?: boolean;
   direction?: 'top' | 'bottom';
 }
 
 const ChainSelector = ({
   value,
   onChange,
+  readonly = false,
   showModal = false,
 }: ChainSelectorProps) => {
   const [showSelectorModal, setShowSelectorModal] = useState(showModal);
 
   const handleClickSelector = () => {
+    if (readonly) return;
     setShowSelectorModal(true);
   };
 
   const handleCancel = () => {
+    if (readonly) return;
     setShowSelectorModal(false);
   };
 
   const handleChange = (value: CHAINS_ENUM) => {
-    onChange(value);
+    if (readonly) return;
+    onChange && onChange(value);
     setShowSelectorModal(false);
   };
 
@@ -39,14 +44,18 @@ const ChainSelector = ({
         <span className="chain-tag-selector__name flex-1">
           {CHAINS[value].name}
         </span>
-        <SvgIconArrowDownTriangle className="icon icon-arrow-down" />
+        {!readonly && (
+          <SvgIconArrowDownTriangle className="icon icon-arrow-down" />
+        )}
       </div>
-      <Modal
-        value={value}
-        visible={showSelectorModal}
-        onChange={handleChange}
-        onCancel={handleCancel}
-      />
+      {!readonly && (
+        <Modal
+          value={value}
+          visible={showSelectorModal}
+          onChange={handleChange}
+          onCancel={handleCancel}
+        />
+      )}
     </>
   );
 };
