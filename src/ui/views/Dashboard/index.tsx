@@ -93,8 +93,6 @@ const Dashboard = () => {
   const { t } = useTranslation();
   const fixedList = useRef<FixedSizeList>();
 
-  const nftRef = useRef<any>();
-
   const [currentAccount, setCurrentAccount] = useState<Account | null>(null);
   const [pendingTxCount, setPendingTxCount] = useState(0);
   const [gnosisPendingCount, setGnosisPendingCount] = useState(0);
@@ -116,7 +114,6 @@ const Dashboard = () => {
   const [tokens, setTokens] = useState<TokenItem[]>([]);
   const [searchTokens, setSearchTokens] = useState<TokenItem[]>([]);
   const [assets, setAssets] = useState<AssetItem[]>([]);
-  const [nfts, setNFTs] = useState<number[]>([]);
   const [startSearch, setStartSearch] = useState(false);
   const [addedToken, setAddedToken] = useState<string[]>([]);
   const [defiAnimate, setDefiAnimate] = useState('fadeOut');
@@ -364,7 +361,6 @@ const Dashboard = () => {
     if (currentAccount) {
       setTokens([]);
       setAssets([]);
-      setNFTs([]);
     }
   }, [currentAccount]);
   useEffect(() => {
@@ -630,11 +626,6 @@ const Dashboard = () => {
     setShowNFT(false);
   };
   const displayNFTs = () => {
-    if (nfts.length === 0 && nftRef.current.fetchData) {
-      nftRef.current?.fetchData(currentAccount?.address)?.then(() => {
-        setNFTs([1]);
-      });
-    }
     if (showNFT) {
       setShowNFT(false);
       setShowAssets(false);
@@ -872,7 +863,6 @@ const Dashboard = () => {
             address={currentAccount?.address}
             animate={nftAnimate}
             startAnimate={startAnimate}
-            ref={nftRef}
             type={nftType}
           ></NFTListContainer>
         </div>
