@@ -27,15 +27,32 @@ const create = async ({ url, ...rest }): Promise<number | undefined> => {
   const top = cTop! + BROWSER_HEADER;
   const left = cLeft! + width! - WINDOW_SIZE.width;
 
-  const win = await browser.windows.create({
-    focused: true,
-    url,
-    type: 'popup',
-    top,
-    left,
-    ...WINDOW_SIZE,
-    ...rest,
-  });
+  const currentWindow = await browser.windows.getCurrent();
+  let win;
+  if (currentWindow.state === 'fullscreen') {
+    // browser.windows.create not pass state to chrome
+    win = await chrome.windows.create({
+      focused: true,
+      url,
+      type: 'popup',
+      ...rest,
+      width: undefined,
+      height: undefined,
+      left: undefined,
+      top: undefined,
+      state: 'fullscreen',
+    });
+  } else {
+    win = await browser.windows.create({
+      focused: true,
+      url,
+      type: 'popup',
+      top,
+      left,
+      ...WINDOW_SIZE,
+      ...rest,
+    });
+  }
 
   // shim firefox
   if (win.left !== left) {
