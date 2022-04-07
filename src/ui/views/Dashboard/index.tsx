@@ -784,7 +784,7 @@ const Dashboard = () => {
               <img
                 src={IconInfo}
                 onClick={() => setHovered(true)}
-                className="w-[18px] h-[18px] mr-[12px] pointer"
+                className="w-[18px] h-[18px] mr-12 pointer"
               />
               <Copy
                 data={currentAccount.address}
