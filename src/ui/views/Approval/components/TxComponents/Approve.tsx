@@ -104,7 +104,7 @@ const ApproveAmountModal = ({
               setCustomAmount(balance);
             }}
           >
-            {splitNumberByStep(new BigNumber(balance).toFixed(4))}
+            Balance: {splitNumberByStep(new BigNumber(balance).toFixed(4))}
           </span>
         )}
       </div>
