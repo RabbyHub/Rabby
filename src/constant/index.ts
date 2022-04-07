@@ -71,6 +71,9 @@ import IconPalmChainLogo from 'ui/assets/dashboard/selectChain/palm.png';
 import IconShidenLogo from 'ui/assets/chain-logos/shiden.svg';
 import IconShidenWhiteLogo from 'ui/assets/chain-logos/shiden-white.svg';
 import IconShidenChainLogo from 'ui/assets/dashboard/selectChain/shiden.svg';
+import IconKlaytnLogo from 'ui/assets/chain-logos/klaytn.svg';
+import IconKlaytnWhiteLogo from 'ui/assets/chain-logos/klaytn-white.svg';
+import IconKlaytnChainLogo from 'ui/assets/dashboard/selectChain/klaytn.svg';
 import IconEN from 'ui/assets/langs/en.svg';
 import IconZH from 'ui/assets/langs/zh_cn.svg';
 import IconAmber from 'ui/assets/walletlogo/amber.png';
@@ -113,7 +116,6 @@ import LogoLedgerDark from 'ui/assets/walletlogo/ledgerdark.png';
 import LogoLedgerWhite from 'ui/assets/walletlogo/ledgerwhite.png';
 import IconGridPlus from 'ui/assets/walletlogo/gridplus.png';
 import LogoKeystone from 'ui/assets/walletlogo/keystone.png';
-import LogoKeystoneWithBorder from 'ui/assets/walletlogo/keystone-border.png';
 
 export enum CHAINS_ENUM {
   ETH = 'ETH',
@@ -140,6 +142,7 @@ export enum CHAINS_ENUM {
   PALM = 'PALM',
   ASTAR = 'ASTAR',
   SDN = 'SDN',
+  KLAY = 'KLAY',
 }
 
 export const CHAINS: Record<string, Chain> = {
@@ -646,6 +649,27 @@ export const CHAINS: Record<string, Chain> = {
       'https://static.debank.com/image/chain/logo_url/sdn/9b5bcaa0d5f102548f925e968a5e7a25.png',
     nativeTokenDecimals: 18,
     thridPartyRPC: 'https://evm.shiden.astar.network',
+    eip: {
+      '1559': false,
+    },
+  },
+  [CHAINS_ENUM.KLAY]: {
+    id: 8217,
+    serverId: 'klay',
+    network: '8217',
+    name: 'Klaytn',
+    nativeTokenSymbol: 'KLAY',
+    nativeTokenAddress: 'klay',
+    enum: CHAINS_ENUM.KLAY,
+    logo: IconKlaytnLogo,
+    whiteLogo: IconKlaytnWhiteLogo,
+    selectChainLogo: IconKlaytnChainLogo,
+    hex: '0x2019',
+    scanLink: 'https://scope.klaytn.com/tx/_s_',
+    nativeTokenLogo:
+      'https://static.debank.com/image/chain/logo_url/klay/1df018b8493cb97c50b7e390ef63cba4.png',
+    nativeTokenDecimals: 18,
+    thridPartyRPC: 'https://public-node-api.klaytnapi.com/v1/cypress',
     eip: {
       '1559': false,
     },
