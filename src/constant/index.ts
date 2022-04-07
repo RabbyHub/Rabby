@@ -160,7 +160,7 @@ export const CHAINS: Record<string, Chain> = {
     nativeTokenAddress: 'eth',
     scanLink: 'https://etherscan.io/tx/_s_',
     thridPartyRPC:
-      'https://mainnet.infura.io/v3/67fed3c058594b7586fec0c1a4d769cc',
+      'https://eth-mainnet.alchemyapi.io/v2/hVcflvG3Hp3ufTgyfj-s9govLX5OYluf',
     eip: {
       '1559': true,
     },
