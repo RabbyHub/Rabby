@@ -8,10 +8,11 @@ import IconSuccess from 'ui/assets/success.svg';
 interface CopyProps {
   className?: string;
   data: string;
+  icon?: string;
   style?: React.CSSProperties;
 }
 
-const Copy = ({ data, className, style }: CopyProps) => {
+const Copy = ({ data, className, style, icon }: CopyProps) => {
   const ref = useRef<HTMLImageElement>(null);
 
   useEffect(() => {
@@ -29,12 +30,12 @@ const Copy = ({ data, className, style }: CopyProps) => {
       });
     });
     return () => clipboard.destroy();
-  }, []);
+  }, [data]);
 
   return (
     <img
       ref={ref}
-      src={IconAddressCopy}
+      src={icon || IconAddressCopy}
       id={'copyIcon'}
       className={clsx('js-copy cursor-pointer', className)}
       style={style}

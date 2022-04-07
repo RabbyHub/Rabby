@@ -29,7 +29,7 @@ import {
   splitNumberByStep,
   useHover,
 } from 'ui/utils';
-import { AddressViewer, Modal, NameAndAddress } from 'ui/component';
+import { AddressViewer, Copy, Modal, NameAndAddress } from 'ui/component';
 import { crossCompareOwners } from 'ui/utils/gnosis';
 import { Account } from 'background/service/preference';
 import { ConnectedSite } from 'background/service/permission';
@@ -54,6 +54,7 @@ import IconInfo from 'ui/assets/information.png';
 import IconTagYou from 'ui/assets/tag-you.svg';
 import IconAddToken from 'ui/assets/addtoken.png';
 import IconAddressCopy from 'ui/assets/address-copy.png';
+import IconCopy from 'ui/assets/icon-copy.svg';
 import { SvgIconLoading } from 'ui/assets';
 
 import './style.less';
@@ -92,8 +93,6 @@ const Dashboard = () => {
   const { t } = useTranslation();
   const fixedList = useRef<FixedSizeList>();
 
-  const nftRef = useRef<any>();
-
   const [currentAccount, setCurrentAccount] = useState<Account | null>(null);
   const [pendingTxCount, setPendingTxCount] = useState(0);
   const [gnosisPendingCount, setGnosisPendingCount] = useState(0);
@@ -115,7 +114,6 @@ const Dashboard = () => {
   const [tokens, setTokens] = useState<TokenItem[]>([]);
   const [searchTokens, setSearchTokens] = useState<TokenItem[]>([]);
   const [assets, setAssets] = useState<AssetItem[]>([]);
-  const [nfts, setNFTs] = useState<number[]>([]);
   const [startSearch, setStartSearch] = useState(false);
   const [addedToken, setAddedToken] = useState<string[]>([]);
   const [defiAnimate, setDefiAnimate] = useState('fadeOut');
@@ -363,7 +361,6 @@ const Dashboard = () => {
     if (currentAccount) {
       setTokens([]);
       setAssets([]);
-      setNFTs([]);
     }
   }, [currentAccount]);
   useEffect(() => {
@@ -629,11 +626,6 @@ const Dashboard = () => {
     setShowNFT(false);
   };
   const displayNFTs = () => {
-    if (nfts.length === 0 && nftRef.current.fetchData) {
-      nftRef.current?.fetchData(currentAccount?.address)?.then(() => {
-        setNFTs([1]);
-      });
-    }
     if (showNFT) {
       setShowNFT(false);
       setShowAssets(false);
@@ -792,8 +784,13 @@ const Dashboard = () => {
               <img
                 src={IconInfo}
                 onClick={() => setHovered(true)}
-                className="w-[16px] h-[16px] pointer"
+                className="w-[18px] h-[18px] mr-12 pointer"
               />
+              <Copy
+                data={currentAccount.address}
+                className="w-18"
+                icon={IconCopy}
+              ></Copy>
             </div>
           )}
           <BalanceView
@@ -866,7 +863,6 @@ const Dashboard = () => {
             address={currentAccount?.address}
             animate={nftAnimate}
             startAnimate={startAnimate}
-            ref={nftRef}
             type={nftType}
           ></NFTListContainer>
         </div>
