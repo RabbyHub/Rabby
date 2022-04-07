@@ -4,6 +4,7 @@
     border-bottom: 1px solid #E5E9EF;
     .nft-avatar {
       margin-right: 12px;
+      border: none;
     }
     &__detail {
       flex: 1;
@@ -39,16 +40,27 @@
       }
     }
   }
+  .section {
+    margin-bottom: 16px;
+  }
   .section-footer {
     display: flex;
     justify-content: space-between;
+    align-items: center;
     font-weight: 400;
     font-size: 12px;
     line-height: 14px;
     color: #4B4D59;
     margin-top: 20px;
+    .ant-input {
+      padding: 0;
+      text-align: center;
+    }
   }
   .token-validation {
     margin-top: 32px;
+  }
+  .footer {
+    bottom: 32px;
   }
 }
