@@ -799,7 +799,7 @@ const Dashboard = () => {
             startAnimate={startAnimate}
             onClick={balanceViewClick}
           />
-          <div className={clsx('listContainer', showChain && 'mt-10')}>
+          <div className={clsx('listContainer', showChain && 'mt-20')}>
             <div
               className={clsx('token', showToken && 'showToken')}
               onClick={displayTokenList}

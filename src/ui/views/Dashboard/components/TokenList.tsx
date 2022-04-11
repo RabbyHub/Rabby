@@ -15,6 +15,7 @@ import IconSearch from 'ui/assets/tokenSearch.png';
 import IconClose from 'ui/assets/searchIconClose.png';
 import IconAddToken from 'ui/assets/addtokenplus.png';
 import IconRemoveToken from 'ui/assets/removetoken.png';
+import IconArrowUp from 'ui/assets/arrow-up.svg';
 import { SvgIconLoading } from 'ui/assets';
 import clsx from 'clsx';
 import { TokenDetailPopup } from './TokenDetailPopup';
@@ -80,6 +81,27 @@ const Row = (props) => {
     </div>
   );
 };
+
+const useFilterList = (tokens) => {
+  const [isFilter, setIsFilter] = useState(true);
+  const total = useMemo(
+    () => tokens.reduce((t, item) => t + (item.amount * item.price || 0), 0),
+    [tokens]
+  );
+  const filterPrice = total / 100;
+  const filterList = useMemo(() => {
+    return isFilter
+      ? tokens.filter((item) => item.amount * item.price >= filterPrice)
+      : tokens;
+  }, [isFilter, tokens]);
+
+  return {
+    isFilter,
+    setIsFilter,
+    filterPrice,
+    filterList,
+  };
+};
 const TokenList = ({
   tokens,
   startSearch,
@@ -96,6 +118,11 @@ const TokenList = ({
   const { t } = useTranslation();
   const fixedList = useRef<FixedSizeList>();
   const [query, setQuery] = useState<string | null>(null);
+
+  const { filterList, isFilter, setIsFilter, filterPrice } = useFilterList(
+    tokens
+  );
+
   const handleQueryChange = (value: string) => {
     setQuery(value);
   };
@@ -138,6 +165,7 @@ const TokenList = ({
   useEffect(() => {
     if (showList && tokenAnimate.includes('fadeIn')) {
       fixedList.current?.scrollToItem(0);
+      setIsFilter(true);
     }
   }, [tokenAnimate, showList]);
   if (!startAnimate) {
@@ -173,14 +201,14 @@ const TokenList = ({
       )}
       {showList && (
         <FixedSizeList
-          height={468}
+          height={380}
           width="100%"
           itemData={{
             list: startSearch
               ? query
                 ? searchTokens
                 : displayAddedToken
-              : tokens,
+              : filterList,
             startSearch,
             addedToken,
             removeToken,
@@ -192,14 +220,33 @@ const TokenList = ({
               ? query
                 ? searchTokens.length
                 : displayAddedToken.length
-              : tokens.length
+              : filterList.length
           }
           itemSize={52}
           ref={fixedList}
-          style={{ zIndex: 10, 'overflow-x': 'hidden', paddingBottom: 50 }}
+          style={{ zIndex: 10, overflowX: 'hidden', paddingBottom: 50 }}
         >
           {(props) => <Row {...props} onTokenClick={handleTokenClick}></Row>}
         </FixedSizeList>
+      )}
+      {showList && !startSearch && (
+        <div className="filter" onClick={() => setIsFilter((v) => !v)}>
+          {isFilter ? (
+            <div className="flex justify-center items-center">
+              {`Small deposits are hidden(<1% net worth: $${splitNumberByStep(
+                (filterPrice || 0).toFixed(0)
+              )})`}
+              <img src={IconArrowUp} className="rotate-180"></img>
+            </div>
+          ) : (
+            <div className="flex justify-center items-center">
+              {`Hide small deposits(<1% net worth: $${splitNumberByStep(
+                (filterPrice || 0).toFixed(0)
+              )})`}
+              <img src={IconArrowUp}></img>
+            </div>
+          )}
+        </div>
       )}
       {!startSearch && !isloading && tokens.length === 0 && (
         <div className="no-data">
