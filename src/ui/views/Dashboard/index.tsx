@@ -59,6 +59,7 @@ import { SvgIconLoading } from 'ui/assets';
 
 import './style.less';
 import Dropdown from './components/NFT/Dropdown';
+import { getChain } from 'utils';
 
 const GnosisAdminItem = ({
   accounts,
@@ -341,7 +342,7 @@ const Dashboard = () => {
       });
       setAddedToken(addedToken);
       tokens = sortTokensByPrice([...defaultTokens, ...localAddedTokens]);
-      setTokens(tokens);
+      setTokens(tokens.filter((token) => getChain(token.chain)));
       setIsListLoading(false);
     }
   };
@@ -799,7 +800,7 @@ const Dashboard = () => {
             startAnimate={startAnimate}
             onClick={balanceViewClick}
           />
-          <div className={clsx('listContainer', showChain && 'mt-10')}>
+          <div className={clsx('listContainer', showChain && 'mt-20')}>
             <div
               className={clsx('token', showToken && 'showToken')}
               onClick={displayTokenList}

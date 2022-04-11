@@ -7,6 +7,7 @@ import { useWallet } from '@/ui/utils';
 import clsx from 'clsx';
 import { groupBy, keyBy } from 'lodash';
 import React, { useEffect, useMemo, useState } from 'react';
+import { getChain } from 'utils';
 import CollectionList from './CollectionList';
 import NFTList from './NFTList';
 
@@ -40,6 +41,7 @@ const NFTListContainer = ({
       ]);
       const dict = keyBy(collections, 'id');
       const list = data
+        .filter((item) => getChain(item.chain))
         .map((item) => ({
           ...item,
           collection: item.collection_id ? dict[item?.collection_id] : null,
