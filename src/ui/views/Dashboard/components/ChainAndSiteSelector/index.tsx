@@ -3,7 +3,7 @@ import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 import maxBy from 'lodash/maxBy';
 import { useHistory } from 'react-router-dom';
-import { Badge, Tooltip } from 'antd';
+import { Badge, Tooltip, Skeleton } from 'antd';
 import eventBus from '@/eventBus';
 import { useWallet, getCurrentConnectSite, splitNumberByStep } from 'ui/utils';
 import { ConnectedSite } from 'background/service/permission';
@@ -141,6 +141,7 @@ export default ({
   const history = useHistory();
   const [connections, setConnections] = useState<(ConnectedSite | null)[]>([]);
   const [currentPrice, setCurrentPrice] = useState<number>(0);
+  const [currentPriceLoading, setCurrentPriceLoading] = useState(false);
   const [percentage, setPercentage] = useState<number>(0);
   const [localshowModal, setLocalShowModal] = useState(showModal);
   const [drawerAnimation, setDrawerAnimation] = useState<string | null>(null);
@@ -153,6 +154,7 @@ export default ({
     ConnectedSite | null | undefined
   >(null);
   const [gasPrice, setGasPrice] = useState<number>(0);
+  const [gasPriceLoading, setGasPriceLoading] = useState(false);
   const [isDefaultWallet, setIsDefaultWallet] = useState(true);
   const wallet = useWallet();
 
@@ -172,24 +174,35 @@ export default ({
 
   const getGasPrice = async () => {
     try {
+      setGasPriceLoading(true);
       const marketGas: GasLevel[] = await wallet.openapi.gasMarket('eth');
       const maxGas = maxBy(marketGas, (level) => level.price)!.price;
       if (maxGas) {
         setGasPrice(Number(maxGas / 1e9));
       }
+      setGasPriceLoading(false);
     } catch (e) {
       // DO NOTHING
     }
+  };
+
+  const getETHPrice = async () => {
     try {
+      setCurrentPriceLoading(true);
       const {
         change_percent = 0,
         last_price = 0,
       } = await wallet.openapi.tokenPrice('eth');
       setCurrentPrice(last_price);
       setPercentage(change_percent);
+      setCurrentPriceLoading(false);
     } catch (e) {
       // DO NOTHING
     }
+  };
+  const getPrice = () => {
+    getGasPrice();
+    getETHPrice();
   };
 
   const changeURL = () => {
@@ -220,7 +233,7 @@ export default ({
 
   useEffect(() => {
     getCurrentSite();
-    getGasPrice();
+    getPrice();
   }, []);
 
   useEffect(() => {
@@ -366,26 +379,40 @@ export default ({
         <div className="price-viewer">
           <div className="eth-price">
             <img src={IconEth} className="w-[20px] h-[20px]" />
-            <div className="gasprice">{`$${splitNumberByStep(
-              currentPrice
-            )}`}</div>
-            <div
-              className={
-                percentage > 0
-                  ? 'positive'
-                  : percentage === 0
-                  ? 'even'
-                  : 'depositive'
-              }
-            >
-              {percentage >= 0 && '+'}
-              {percentage?.toFixed(2)}%
-            </div>
+            {currentPriceLoading ? (
+              <Skeleton.Button active={true} />
+            ) : (
+              <>
+                <div className="gasprice">{`$${splitNumberByStep(
+                  currentPrice
+                )}`}</div>
+                <div
+                  className={
+                    percentage > 0
+                      ? 'positive'
+                      : percentage === 0
+                      ? 'even'
+                      : 'depositive'
+                  }
+                >
+                  {percentage >= 0 && '+'}
+                  {percentage?.toFixed(2)}%
+                </div>
+              </>
+            )}
           </div>
           <div className="gas-container">
             <img src={IconGas} className="w-[16px] h-[16px]" />
-            <div className="gasprice">{`${splitNumberByStep(gasPrice)}`}</div>
-            <div className="gwei">Gwei</div>
+            {gasPriceLoading ? (
+              <Skeleton.Button active={true} />
+            ) : (
+              <>
+                <div className="gasprice">{`${splitNumberByStep(
+                  gasPrice
+                )}`}</div>
+                <div className="gwei">Gwei</div>
+              </>
+            )}
           </div>
         </div>
       </div>
