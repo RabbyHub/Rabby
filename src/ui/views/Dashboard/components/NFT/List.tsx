@@ -26,6 +26,7 @@ const NFTListContainer = ({
   const [isLoading, setIsLoading] = useState(false);
   const [list, setList] = useState<NFTItem[]>([]);
   const [collectionList, setCollectionList] = useState<UserCollection[]>([]);
+  const [idx, setIdx] = useState(1);
   const wallet = useWallet();
 
   const fetchCollection = useMemo(() => wallet.openapi.listCollection(), []);
@@ -79,17 +80,19 @@ const NFTListContainer = ({
   useEffect(() => {
     setList([]);
     setCollectionList([]);
+    setIdx(idx + 1);
   }, [address]);
+
   useEffect(() => {
     if (address && animate?.indexOf('fadeIn') !== -1) {
-      if (type === 'nft' && list.length <= 0) {
+      if (type === 'nft') {
         fetchData(address, true);
       }
-      if (type === 'collection' && collectionList.length <= 0) {
+      if (type === 'collection') {
         fetchData(address, false);
       }
     }
-  }, [address, type, list, collectionList, animate]);
+  }, [address, type, animate, idx]);
 
   if (!startAnimate) {
     return <></>;
