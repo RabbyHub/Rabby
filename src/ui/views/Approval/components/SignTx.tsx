@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { ReactNode, useEffect, useState } from 'react';
 import {
   intToHex,
   isHexString,
@@ -6,6 +6,8 @@ import {
   addHexPrefix,
   unpadHexString,
 } from 'ethereumjs-util';
+import IconWatch from 'ui/assets/walletlogo/watch-purple.svg';
+import IconGnosis from 'ui/assets/walletlogo/gnosis.png';
 import { Button, Modal, Tooltip, Drawer } from 'antd';
 import { useTranslation } from 'react-i18next';
 import clsx from 'clsx';
@@ -243,7 +245,10 @@ const SignTx = ({ params, origin }: SignTxProps) => {
   const [isReady, setIsReady] = useState(false);
   const [nonceChanged, setNonceChanged] = useState(false);
   const [canProcess, setCanProcess] = useState(true);
-  const [cantProcessReason, setCantProcessReason] = useState('');
+  const [
+    cantProcessReason,
+    setCantProcessReason,
+  ] = useState<ReactNode | null>();
   const [txDetail, setTxDetail] = useState<ExplainTxResponse | null>({
     balance_change: {
       err_msg: '',
@@ -697,14 +702,26 @@ const SignTx = ({ params, origin }: SignTxProps) => {
 
     if (currentAccount.type === KEYRING_TYPE.WatchAddressKeyring) {
       setCanProcess(false);
-      setCantProcessReason(t('Use_other_methods'));
+      setCantProcessReason(
+        <div className="flex items-center gap-8">
+          <img src={IconWatch} alt="" className="w-[24px]" />
+          {t(
+            'The current address is in Watch Mode. If you want to continue, please import it.'
+          )}
+        </div>
+      );
     }
     if (currentAccount.type === KEYRING_TYPE.GnosisKeyring || isGnosis) {
       const networkId = await wallet.getGnosisNetworkId(currentAccount.address);
 
       if ((chainId || CHAINS[site!.chain].id) !== Number(networkId)) {
         setCanProcess(false);
-        setCantProcessReason(t('multiSignChainNotMatch'));
+        setCantProcessReason(
+          <div className="flex items-center gap-8">
+            <img src={IconGnosis} alt="" className="w-[24px]" />
+            {t('multiSignChainNotMatch')}
+          </div>
+        );
       }
     }
   };
@@ -820,37 +837,26 @@ const SignTx = ({ params, origin }: SignTxProps) => {
 
   useEffect(() => {
     (async () => {
-      if (['danger', 'forbidden'].includes(securityCheckStatus)) {
-        setSubmitText('Continue');
-        return;
-      }
       const currentAccount = await wallet.getCurrentAccount();
       if (
-        [KEYRING_CLASS.MNEMONIC, KEYRING_CLASS.PRIVATE_KEY].includes(
-          currentAccount.type
-        )
+        [
+          KEYRING_CLASS.MNEMONIC,
+          KEYRING_CLASS.PRIVATE_KEY,
+          KEYRING_CLASS.WATCH,
+        ].includes(currentAccount.type)
       ) {
         setSubmitText('Sign');
-        return;
+        setCheckText('Sign');
+      } else {
+        setSubmitText('Proceed');
+        setCheckText('Proceed');
       }
-      setSubmitText('Proceed');
+      if (['danger', 'forbidden'].includes(securityCheckStatus)) {
+        setSubmitText('Continue');
+      }
     })();
   }, [securityCheckStatus]);
 
-  useEffect(() => {
-    (async () => {
-      const currentAccount = await wallet.getCurrentAccount();
-      if (
-        [KEYRING_CLASS.MNEMONIC, KEYRING_CLASS.PRIVATE_KEY].includes(
-          currentAccount.type
-        )
-      ) {
-        setCheckText('Sign');
-        return;
-      }
-      setCheckText('Proceed');
-    })();
-  }, []);
   const approvalTxStyle: Record<string, string> = {};
   if (isLedger && !useLedgerLive && !hasConnectedLedgerHID) {
     approvalTxStyle.paddingBottom = '230px';
@@ -946,7 +952,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
                             onClick={() => handleAllow()}
                             disabled={true}
                           >
-                            {t('Proceed')}
+                            {t(submitText)}
                           </Button>
                           <img
                             src={IconInfo}

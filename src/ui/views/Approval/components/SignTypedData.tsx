@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { ReactNode, useEffect, useState } from 'react';
 import { Button, Tooltip } from 'antd';
 import { useTranslation } from 'react-i18next';
 import TransportWebHID from '@ledgerhq/hw-transport-webhid';
@@ -16,6 +16,8 @@ import { hasConnectedLedgerDevice } from '@/utils';
 import LedgerWebHIDAlert from './LedgerWebHIDAlert';
 import IconQuestionMark from 'ui/assets/question-mark-gray.svg';
 import IconInfo from 'ui/assets/infoicon.svg';
+import IconWatch from 'ui/assets/walletlogo/watch-purple.svg';
+import IconGnosis from 'ui/assets/walletlogo/gnosis.png';
 interface SignTypedDataProps {
   method: string;
   data: any[];
@@ -36,6 +38,10 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
   const [hasConnectedLedgerHID, setHasConnectedLedgerHID] = useState(false);
   const [submitText, setSubmitText] = useState('Proceed');
   const [checkText, setCheckText] = useState('Sign');
+  const [
+    cantProcessReason,
+    setCantProcessReason,
+  ] = useState<ReactNode | null>();
 
   const { data, session, method } = params;
   let parsedMessage = '';
@@ -71,15 +77,36 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
   ] = useState<SecurityCheckResponse | null>(null);
   const [explain, setExplain] = useState('');
 
-  const handleSecurityCheck = async () => {
-    setSecurityCheckStatus('loading');
+  const checkWachMode = async () => {
     const currentAccount = await wallet.getCurrentAccount();
     if (currentAccount.type === KEYRING_TYPE.WatchAddressKeyring) {
       setIsWatch(true);
+      setCantProcessReason(
+        <div className="flex items-center gap-8">
+          <img src={IconWatch} alt="" className="w-[24px]" />
+          {t(
+            'The current address is in Watch Mode. If you want to continue, please import it.'
+          )}
+        </div>
+      );
     }
     if (currentAccount.type === KEYRING_TYPE.GnosisKeyring) {
       setIsWatch(true);
+      setCantProcessReason(
+        <div className="flex items-center gap-8">
+          <img src={IconGnosis} alt="" className="w-[24px]" />
+          {t(
+            'This is a Gnosis Safe address, and it cannot be used to sign text.'
+          )}
+        </div>
+      );
     }
+  };
+
+  const handleSecurityCheck = async () => {
+    setSecurityCheckStatus('loading');
+    const currentAccount = await wallet.getCurrentAccount();
+
     const dataStr = JSON.stringify(data);
     const check = await wallet.openapi.checkText(
       currentAccount!.address,
@@ -146,41 +173,30 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
 
   useEffect(() => {
     init();
+    checkWachMode();
   }, []);
 
   useEffect(() => {
     (async () => {
-      if (['danger', 'forbidden'].includes(securityCheckStatus)) {
-        setSubmitText('Continue');
-        return;
-      }
       const currentAccount = await wallet.getCurrentAccount();
       if (
-        [KEYRING_CLASS.MNEMONIC, KEYRING_CLASS.PRIVATE_KEY].includes(
-          currentAccount.type
-        )
+        [
+          KEYRING_CLASS.MNEMONIC,
+          KEYRING_CLASS.PRIVATE_KEY,
+          KEYRING_CLASS.WATCH,
+        ].includes(currentAccount.type)
       ) {
         setSubmitText('Sign');
-        return;
+        setCheckText('Sign');
+      } else {
+        setSubmitText('Proceed');
+        setCheckText('Proceed');
       }
-      setSubmitText('Proceed');
+      if (['danger', 'forbidden'].includes(securityCheckStatus)) {
+        setSubmitText('Continue');
+      }
     })();
   }, [securityCheckStatus]);
-
-  useEffect(() => {
-    (async () => {
-      const currentAccount = await wallet.getCurrentAccount();
-      if (
-        [KEYRING_CLASS.MNEMONIC, KEYRING_CLASS.PRIVATE_KEY].includes(
-          currentAccount.type
-        )
-      ) {
-        setCheckText('Sign');
-        return;
-      }
-      setCheckText('Proceed');
-    })();
-  }, []);
 
   return (
     <>
@@ -230,7 +246,7 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
           {isWatch ? (
             <Tooltip
               overlayClassName="rectangle watcSign__tooltip"
-              title={t('Use_other_methods')}
+              title={cantProcessReason}
             >
               <div className="w-[172px] relative flex items-center">
                 <Button
@@ -240,7 +256,7 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
                   onClick={() => handleAllow()}
                   disabled={true}
                 >
-                  {t('Proceed')}
+                  {t('Sign')}
                 </Button>
                 <img src={IconInfo} className="absolute right-[40px]" />
               </div>
