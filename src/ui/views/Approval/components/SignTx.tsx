@@ -293,6 +293,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     },
   });
   const [submitText, setSubmitText] = useState('Proceed');
+  const [checkText, setCheckText] = useState('Sign');
   const { t } = useTranslation();
   const [
     securityCheckStatus,
@@ -813,12 +814,40 @@ const SignTx = ({ params, origin }: SignTxProps) => {
   }, [tx, inited]);
 
   useEffect(() => {
-    if (isLedger || isGnosisAccount || securityCheckStatus !== 'pass') {
+    (async () => {
+      if (['danger', 'forbidden'].includes(securityCheckStatus)) {
+        setSubmitText('Continue');
+        return;
+      }
+      const currentAccount = await wallet.getCurrentAccount();
+      if (
+        [KEYRING_CLASS.MNEMONIC, KEYRING_CLASS.PRIVATE_KEY].includes(
+          currentAccount.type
+        )
+      ) {
+        setSubmitText('Sign');
+        return;
+      }
       setSubmitText('Proceed');
-      return;
-    }
-    setSubmitText('Sign');
-  }, [isGnosisAccount, securityCheckStatus, isLedger]);
+    })();
+  }, [securityCheckStatus]);
+
+  useEffect(() => {
+    (async () => {
+      const currentAccount = await wallet.getCurrentAccount();
+      if (
+        [
+          KEYRING_CLASS.MNEMONIC,
+          KEYRING_CLASS.PRIVATE_KEY,
+          KEYRING_CLASS.WATCH,
+        ].includes(currentAccount.type)
+      ) {
+        setCheckText('Sign');
+        return;
+      }
+      setCheckText('Proceed');
+    })();
+  }, []);
   const approvalTxStyle: Record<string, string> = {};
   if (isLedger && !useLedgerLive && !hasConnectedLedgerHID) {
     approvalTxStyle.paddingBottom = '230px';
@@ -987,7 +1016,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
                             onClick={() => handleAllow()}
                             disabled={true}
                           >
-                            {t('Proceed')}
+                            {t(submitText)}
                           </Button>
                           <img
                             src={IconInfo}
@@ -1009,7 +1038,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
                         loading={isGnosisAccount ? !safeInfo : false}
                         onClick={() => handleAllow(true)}
                       >
-                        {t('Sign')}
+                        {t(submitText)}
                       </Button>
                     )}
                   </div>
@@ -1040,7 +1069,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
             onCancel={() => setShowSecurityCheckDetail(false)}
             data={securityCheckDetail}
             onOk={() => handleAllow(true)}
-            okText={t('Sign')}
+            okText={t(checkText)}
             cancelText={t('Cancel')}
             preprocessSuccess={preprocessSuccess}
           />
