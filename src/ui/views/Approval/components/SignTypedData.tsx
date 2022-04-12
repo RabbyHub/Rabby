@@ -35,6 +35,7 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
   const [useLedgerLive, setUseLedgerLive] = useState(false);
   const [hasConnectedLedgerHID, setHasConnectedLedgerHID] = useState(false);
   const [submitText, setSubmitText] = useState('Proceed');
+  const [checkText, setCheckText] = useState('Sign');
 
   const { data, session, method } = params;
   let parsedMessage = '';
@@ -148,15 +149,38 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
   }, []);
 
   useEffect(() => {
-    if (
-      isLedger ||
-      (securityCheckStatus !== 'pass' && securityCheckStatus !== 'pending')
-    ) {
+    (async () => {
+      if (['danger', 'forbidden'].includes(securityCheckStatus)) {
+        setSubmitText('Continue');
+        return;
+      }
+      const currentAccount = await wallet.getCurrentAccount();
+      if (
+        [KEYRING_CLASS.MNEMONIC, KEYRING_CLASS.PRIVATE_KEY].includes(
+          currentAccount.type
+        )
+      ) {
+        setSubmitText('Sign');
+        return;
+      }
       setSubmitText('Proceed');
-      return;
-    }
-    setSubmitText('Sign');
-  }, [securityCheckStatus, isLedger]);
+    })();
+  }, [securityCheckStatus]);
+
+  useEffect(() => {
+    (async () => {
+      const currentAccount = await wallet.getCurrentAccount();
+      if (
+        [KEYRING_CLASS.MNEMONIC, KEYRING_CLASS.PRIVATE_KEY].includes(
+          currentAccount.type
+        )
+      ) {
+        setCheckText('Sign');
+        return;
+      }
+      setCheckText('Proceed');
+    })();
+  }, []);
 
   return (
     <>
@@ -240,7 +264,7 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
           onCancel={() => setShowSecurityCheckDetail(false)}
           data={securityCheckDetail}
           onOk={() => handleAllow(true)}
-          okText={t('Sign')}
+          okText={t(checkText)}
           cancelText={t('Cancel')}
         />
       )}
