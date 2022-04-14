@@ -173,13 +173,15 @@ const SignText = ({ params }: { params: SignTextProps }) => {
 
   const checkWachMode = async () => {
     const currentAccount = await wallet.getCurrentAccount();
-    setIsLedger(currentAccount?.type === KEYRING_CLASS.HARDWARE.LEDGER);
+    const accountType =
+      isGnosis && params.account ? params.account.type : currentAccount?.type;
+    setIsLedger(accountType === KEYRING_CLASS.HARDWARE.LEDGER);
     setUseLedgerLive(await wallet.isUseLedgerLive());
     setHasConnectedLedgerHID(await hasConnectedLedgerDevice());
-    if (currentAccount.type === KEYRING_TYPE.WatchAddressKeyring) {
+    if (accountType === KEYRING_TYPE.WatchAddressKeyring) {
       setIsWatch(true);
     }
-    if (currentAccount.type === KEYRING_TYPE.GnosisKeyring && !params.account) {
+    if (accountType === KEYRING_TYPE.GnosisKeyring && !params.account) {
       setIsWatch(true);
     }
   };
