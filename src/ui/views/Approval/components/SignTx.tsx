@@ -487,6 +487,11 @@ const SignTx = ({ params, origin }: SignTxProps) => {
   };
 
   const handleGnosisConfirm = async (account: Account) => {
+    stats.report('signTransaction', {
+      type: KEYRING_TYPE.GnosisKeyring,
+      chainId: chain.serverId,
+      is1559: support1559,
+    });
     if (params.session.origin !== INTERNAL_REQUEST_ORIGIN || isSend) {
       const params: any = {
         from: tx.from,
@@ -579,7 +584,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       return;
     }
 
-    stats.report('signTransaction', {
+    await wallet.reportStats('signTransaction', {
       type: currentAccount.brandName,
       chainId: chain.serverId,
       is1559: support1559,

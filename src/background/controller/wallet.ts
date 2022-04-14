@@ -54,6 +54,7 @@ import KeystoneKeyring, {
   AcquireMemeStoreData,
   MemStoreDataReady,
 } from '../service/keyring/eth-keystone-keyring';
+import stats from '@/stats';
 
 const stashKeyrings: Record<string, any> = {};
 
@@ -1279,6 +1280,10 @@ export class WalletController extends BaseController {
   };
   disableWidget = (name: string) => {
     widgetService.disableWidget(name);
+  };
+
+  reportStats = (name: string, params: Record<string, string | number>) => {
+    stats.report(name, params);
   };
 }
 
