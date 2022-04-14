@@ -26,6 +26,7 @@ import NFTApproval from './NFTApproval';
 import CreateMnemonics from './CreateMnemonics';
 import AddAddress from './AddAddress';
 import ChainManagement, { StartChainManagement } from './ChainManagement';
+import ChainList from './ChainList';
 import AddressManagement from './AddressManagement';
 import SwitchLang from './SwitchLang';
 import TransactionHistory from './TransactionHistory';
@@ -152,6 +153,9 @@ const Main = () => {
         </PrivateRoute>
         <PrivateRoute exact path="/settings/chain">
           <ChainManagement />
+        </PrivateRoute>
+        <PrivateRoute exact path="/settings/chain-list">
+          <ChainList />
         </PrivateRoute>
         <PrivateRoute exact path="/settings/switch-lang">
           <SwitchLang />
