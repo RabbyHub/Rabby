@@ -3,6 +3,7 @@ import rateLimit from 'axios-rate-limit';
 import { ethErrors } from 'eth-rpc-errors';
 import { createPersistStore } from 'background/utils';
 import { CHAINS, INITIAL_OPENAPI_URL, CHAINS_ENUM } from 'consts';
+import { getChain } from 'utils';
 
 interface OpenApiConfigValue {
   path: string;
@@ -1207,7 +1208,7 @@ class OpenApiService {
       },
     });
 
-    return data;
+    return data?.filter((token) => getChain(token.chain));
   };
 
   getToken = async (
@@ -1237,7 +1238,7 @@ class OpenApiService {
       },
     });
 
-    return data;
+    return data?.filter((token) => getChain(token.chain));
   };
   customListToken = async (
     uuids: string[],
@@ -1249,7 +1250,7 @@ class OpenApiService {
       uuids,
     });
 
-    return data;
+    return data?.filter((token) => getChain(token.chain));
   };
   listChainAssets = async (id: string): Promise<AssetItem[]> => {
     const config = this.store.config.user_portfolio_list;
@@ -1269,7 +1270,7 @@ class OpenApiService {
         is_all: isAll,
       },
     });
-    return data;
+    return data?.filter((nft) => getChain(nft.chain));
   };
 
   listCollection = async (): Promise<Collection[]> => {
