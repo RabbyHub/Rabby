@@ -484,7 +484,7 @@
   .fadeIn {
     opacity: 1;
     width: 360px;
-    height: 468px;
+    height: 424px;
     -webkit-animation: fadeIn 0.5s;
     animation: fadeIn 0.5s;
   }
@@ -598,6 +598,97 @@
     padding-top: 20px;
     transition: adding-top 0.5s;
   }
+  .token-list {
+    margin-top: 20px;
+    height: 424px;
+    overflow: auto;
+    .group {
+      margin-bottom: 20px;
+      &-title {
+        font-weight: 700;
+        font-size: 12px;
+        line-height: 14px;
+        color: #ffffff;
+        opacity: 0.6;
+        margin-bottom: 4px;
+      }
+      &-list {
+        background: rgba(255, 255, 255, 0.1);
+        box-shadow: 0px 8px 20px rgba(35, 37, 130, 0.08);
+        backdrop-filter: blur(80px);
+        border-radius: 6px;
+      }
+    }
+    .token-item {
+      padding: 10px 12px;
+      display: flex;
+      align-items: center;
+      border: 1px solid transparent;
+      &:hover {
+        background: rgba(255, 255, 255, 0.2);
+        border: 1px solid #ffffff !important;
+        box-sizing: border-box;
+        border-radius: 6px;
+      }
+      .middle {
+        display: flex;
+        flex-direction: column;
+        margin-left: 12px;
+      }
+      .right {
+        text-align: right;
+        display: flex;
+        flex-direction: column;
+        position: absolute;
+        right: 12px;
+        img {
+          width: 30px;
+          height: 30px;
+        }
+      }
+      .add-token-icon {
+        width: 20px !important;
+        height: 20px !important;
+        .pointer;
+      }
+      .token-amount {
+        font-style: normal;
+        font-weight: 500;
+        font-size: 13px;
+        line-height: 15px;
+        margin-bottom: 2px;
+        color: #ffffff;
+      }
+      .token-name {
+        width: 200px;
+        font-style: normal;
+        font-weight: normal;
+        font-size: 12px;
+        line-height: 14px;
+        color: #ffffff;
+        opacity: 0.8;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+      }
+      .opacity-100 {
+        opacity: 1;
+      }
+    }
+    .filter {
+      font-weight: 400;
+      font-size: 12px;
+      line-height: 14px;
+      text-decoration: underline;
+
+      color: #ffffff;
+      text-align: center;
+      padding: 8px 0;
+      width: 100%;
+      cursor: pointer;
+      opacity: 0.6;
+    }
+  }
   .tokenList {
     display: flex;
     flex-direction: column;
@@ -607,7 +698,7 @@
     backdrop-filter: blur(80px);
     border-radius: 6px;
     margin-top: 12px;
-    height: 468px;
+    height: 424px;
     .search-wrapper {
       height: 40px;
       margin: 12px 16px 20px 12px;
@@ -666,6 +757,20 @@
         margin-left: 16px;
         .pointer;
       }
+    }
+
+    .filter {
+      font-weight: 400;
+      font-size: 12px;
+      line-height: 14px;
+      text-decoration: underline;
+
+      color: #ffffff;
+      text-align: center;
+      padding-top: 12px;
+      width: 100%;
+      cursor: pointer;
+      opacity: 0.6;
     }
 
     .token-item {

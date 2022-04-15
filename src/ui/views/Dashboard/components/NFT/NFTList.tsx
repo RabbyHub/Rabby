@@ -28,7 +28,7 @@ const NFTList = ({ isLoading, data }: NFTListProps) => {
     <div className="nft-list">
       {data.length > 0 ? (
         <FixedSizeList
-          height={468}
+          height={424}
           width="100%"
           itemData={data}
           itemCount={data?.length}
