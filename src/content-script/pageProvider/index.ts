@@ -7,7 +7,7 @@ import { domReadyCall, $ } from './utils';
 import ReadyPromise from './readyPromise';
 import DedupePromise from './dedupePromise';
 import { DEXPriceComparison, isUrlMatched } from '@rabby-wallet/widgets';
-import { switchChainInterceptor } from './interceptors/switchChain';
+import { switchChainNotice } from './interceptors/switchChain';
 
 declare const channelName;
 
@@ -174,13 +174,6 @@ export class EthereumProvider extends EventEmitter {
       throw ethErrors.rpc.invalidRequest();
     }
 
-    const interceptors: Interceptor[] = [switchChainInterceptor];
-
-    data = interceptors.reduce(
-      (config, item) => (item.onRequest ? item.onRequest(config) : config),
-      data
-    );
-
     this._requestPromiseCheckVisibility();
 
     return this._requestPromise.call(() => {
@@ -190,11 +183,6 @@ export class EthereumProvider extends EventEmitter {
 
       return this._bcm
         .request(data)
-        .then((res) =>
-          interceptors.reduce((r, item) => {
-            return item.onResponse ? item.onResponse(r, data) : r;
-          }, res)
-        )
         .then((res) => {
           if (data.method !== 'eth_call') {
             log('[request: success]', data.method, res);
@@ -332,6 +320,8 @@ if (!window.ethereum) {
   window.web3 = {
     currentProvider: window.ethereum,
   };
+
+  window.ethereum.on('chainChanged', switchChainNotice);
 }
 
 window.dispatchEvent(new Event('ethereum#initialized'));

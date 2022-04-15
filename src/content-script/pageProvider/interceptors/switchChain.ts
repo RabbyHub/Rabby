@@ -14,6 +14,13 @@ export const switchChainInterceptor = {
   },
 };
 
+export const switchChainNotice = (chainId: string) => {
+  const chain = Object.values(CHAINS).find((item) => item.hex === chainId);
+  Notification.open({
+    content: 'Switched to ' + chain?.name || 'Unkown',
+  });
+};
+
 class Notification {
   styles = `
     .rabby-notification {
