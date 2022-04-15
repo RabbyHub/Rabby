@@ -26,12 +26,6 @@ const useFilterList = (tokens: TokenItem[]) => {
     });
   };
 
-  const total = useMemo(() => {
-    return tokens.reduce((t, token) => {
-      return t + (token.amount * token.price || 0);
-    }, 0);
-  }, [tokens]);
-
   const list = useMemo(() => {
     return Object.entries(_.groupBy(tokens, 'chain'))
       .map(([chainId, list]) => {
@@ -44,12 +38,12 @@ const useFilterList = (tokens: TokenItem[]) => {
           serverId: chain ? chain.serverId : chainId,
           total: sum,
           isShowExpand: list.some(
-            (token) => (token.amount * token.price || 0) < total * 0.01
+            (token) => (token.amount * token.price || 0) < sum * 0.01
           ),
           tokens: isExpand(chainId)
             ? list
             : list.filter(
-                (token) => (token.amount * token.price || 0) >= total * 0.01
+                (token) => (token.amount * token.price || 0) >= sum * 0.01
               ),
         };
       })
