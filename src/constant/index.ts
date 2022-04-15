@@ -65,7 +65,7 @@ import IconSbchChainLogo from 'ui/assets/dashboard/selectChain/smartBCH.svg';
 import IconFuseLogo from 'ui/assets/chain-logos/fuse.svg';
 import IconFuseWhiteLogo from 'ui/assets/chain-logos/fuse-white.svg';
 import IconFuseChainLogo from 'ui/assets/dashboard/selectChain/fuse.svg';
-import IconPalmLogo from 'ui/assets/chain-logos/palm1.png';
+import IconPalmLogo from 'ui/assets/chain-logos/palm.svg';
 import IconPalmWhiteLogo from 'ui/assets/chain-logos/palm-white.svg';
 import IconPalmChainLogo from 'ui/assets/dashboard/selectChain/palm.png';
 import IconShidenLogo from 'ui/assets/chain-logos/shiden.svg';

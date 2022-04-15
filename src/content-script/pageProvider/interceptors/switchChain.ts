@@ -26,7 +26,7 @@ class Notification {
     .rabby-notification {
       position: fixed;
       z-index: 1010;
-      top: 25px;
+      top: 60px;
       right: 42px;
     }
     .rabby-notification-content {
