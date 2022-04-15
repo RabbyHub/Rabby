@@ -10,6 +10,7 @@ const ChainList = () => {
     history.goBack();
   };
   const list = useMemo(() => Object.values(CHAINS), []);
+
   return (
     <div className="page-chain-list">
       <PageHeader onBack={goBack} fixed>
@@ -24,6 +25,7 @@ const ChainList = () => {
             </div>
           );
         })}
+        {list.length % 2 !== 0 && <div className="chain-list-item"></div>}
       </div>
     </div>
   );
