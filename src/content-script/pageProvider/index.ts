@@ -7,6 +7,7 @@ import { domReadyCall, $ } from './utils';
 import ReadyPromise from './readyPromise';
 import DedupePromise from './dedupePromise';
 import { DEXPriceComparison, isUrlMatched } from '@rabby-wallet/widgets';
+import { switchChainNotice } from './interceptors/switchChain';
 
 declare const channelName;
 
@@ -19,6 +20,11 @@ const log = (event, ...args) => {
     );
   }
 };
+
+export interface Interceptor {
+  onRequest?: (data: any) => any;
+  onResponse?: (res: any, data: any) => any;
+}
 
 interface StateProvider {
   accounts: string[] | null;
@@ -314,6 +320,8 @@ if (!window.ethereum) {
   window.web3 = {
     currentProvider: window.ethereum,
   };
+
+  window.ethereum.on('chainChanged', switchChainNotice);
 }
 
 window.dispatchEvent(new Event('ethereum#initialized'));
