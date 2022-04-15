@@ -222,13 +222,14 @@ button:focus {
   margin: 0;
 }
 
-// to fix tailwind
-.gap-8 {
-  gap: 8px !important;
-}
-.gap-6 {
-  gap: 6px !important;
-}
-.mr-12 {
-  margin-right: 12px !important;
+@media (min-width: 401px) {
+  html.page-notification {
+    background: #f9f9f9;
+    overflow: hidden;
+    body {
+      max-width: 400px;
+      margin: 0 auto;
+      transform: translateZ(0);
+    }
+  }
 }
