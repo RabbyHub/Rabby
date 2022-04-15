@@ -113,7 +113,7 @@ const BalanceView = ({
         </div>
         <div
           className={clsx(
-            'extra flex h-[20px]',
+            'extra flex h-[20px] mt-4',
             startAnimate ? (showChain ? 'fadeIn' : 'quickFadeOut') : 'hide'
           )}
         >
