@@ -1,4 +1,5 @@
 import { Modal, Popup } from '@/ui/component';
+import { message } from 'antd';
 import { ConnectedSite } from 'background/service/permission';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -53,6 +54,10 @@ const RecentConnections = ({
   const handleRemove = async (origin: string) => {
     await wallet.removeConnectedSite(origin);
     getConnectedSites();
+    message.success({
+      icon: <i />,
+      content: <span className="text-white">{t('Disconnected')}</span>,
+    });
   };
 
   const removeAll = async () => {
@@ -62,6 +67,10 @@ const RecentConnections = ({
       console.error(e);
     }
     getConnectedSites();
+    message.success({
+      icon: <i />,
+      content: <span className="text-white">{t('Disconnected')}</span>,
+    });
   };
 
   const handleRemoveAll = async () => {
@@ -69,15 +78,16 @@ const RecentConnections = ({
       className: 'recent-connections-confirm-modal',
       centered: true,
       closable: true,
-      okText: t('Confirm'),
+      okText: t('Disconnect All'),
       width: 320,
       onOk: removeAll,
       autoFocusButton: null,
       content: (
         <div>
-          {t(
-            'All recently connected DApps will be disconnected and removed. All your pinned DApps will remain and not be removed.'
-          )}
+          <div className="title">
+            Disconnect recently used <strong>{recentList.length}</strong> DApps
+          </div>
+          <div className="desc">Pinned DApps will remain connected</div>
         </div>
       ),
     });
@@ -111,7 +121,7 @@ const RecentConnections = ({
           title={t('Recent')}
           extra={
             recentList.length > 0 ? (
-              <a onClick={handleRemoveAll}>{t('Remove all')}</a>
+              <a onClick={handleRemoveAll}>{t('Disconnect all')}</a>
             ) : null
           }
           empty={

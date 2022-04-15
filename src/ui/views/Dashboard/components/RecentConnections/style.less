@@ -155,6 +155,9 @@
       opacity: 0;
       width: 16px;
       height: 16px;
+      path {
+        stroke: #707280;
+      }
       &.is-active {
         opacity: 1;
         fill: #ffb020;
@@ -268,7 +271,25 @@
     }
   }
   .ant-modal-body {
-    padding: 36px 20px 24px;
+    padding: 44px 20px 24px;
+    .title {
+      font-weight: 500;
+      font-size: 15px;
+      line-height: 22px;
+      text-align: center;
+      color: @color-title;
+      margin-bottom: 8px;
+      strong {
+        color: @primary-color;
+      }
+    }
+    .desc {
+      font-weight: 400;
+      font-size: 12px;
+      line-height: 14px;
+      text-align: center;
+      color: @color-body;
+    }
   }
   .ant-modal-confirm-body .ant-modal-confirm-content {
     font-weight: 400;
@@ -281,7 +302,7 @@
     min-height: initial;
   }
   .ant-modal-confirm-btns {
-    margin-top: 28px;
+    margin-top: 36px;
     display: flex !important;
     justify-content: center;
 
