@@ -6,14 +6,13 @@ import { useTranslation } from 'react-i18next';
 import { Link, useHistory } from 'react-router-dom';
 import IconArrowRight from 'ui/assets/arrow-right-gray.svg';
 import { ReactComponent as IconCheckbox } from 'ui/assets/dashboard/checkbox.svg';
-import IconConflict from 'ui/assets/dashboard/conflict.svg';
+import IconWallet from 'ui/assets/wallet.svg';
 import IconMetamask from 'ui/assets/dashboard/icon-metamask.svg';
 import IconRabby from 'ui/assets/dashboard/rabby.svg';
 import IconAddressManagement from 'ui/assets/icon-user.svg';
 import IconLock from 'ui/assets/lock.svg';
 import LogoRabby from 'ui/assets/logo-rabby-large.svg';
 import IconReset from 'ui/assets/reset-account.svg';
-import IconServer from 'ui/assets/server.svg';
 import IconSuccess from 'ui/assets/success.svg';
 import { Field, PageHeader, Popup } from 'ui/component';
 import { useWallet } from 'ui/utils';
@@ -183,10 +182,12 @@ const ResolveConflictModal = ({
       })}
     >
       <PageHeader forceShowBack onBack={handleCancel}>
-        {t('Resolve conflict with MetaMask')}
+        {t('Resolve conflicts with MetaMask')}
       </PageHeader>
       <Field
-        className="mb-[20px]"
+        className={clsx('mb-[20px]', {
+          checked: isDefaultWallet,
+        })}
         onClick={() => handleDefaultWalletChange(true)}
         leftIcon={
           <IconCheckbox
@@ -205,7 +206,9 @@ const ResolveConflictModal = ({
         </div>
       </Field>
       <Field
-        className="metamask"
+        className={clsx('metamask', {
+          checked: !isDefaultWallet,
+        })}
         onClick={() => handleDefaultWalletChange(false)}
         leftIcon={
           <IconCheckbox
@@ -334,7 +337,7 @@ const Settings = ({ visible, onClose }: SettingsProps) => {
     // },
     {
       className: clsx({ 'default-wallet-field': !isDefaultWallet }),
-      leftIcon: IconConflict,
+      leftIcon: IconWallet,
       onClick: () => setShowResolveConflictModal(true),
       content: (
         <div>

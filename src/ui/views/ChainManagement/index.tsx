@@ -20,10 +20,11 @@ export const ChainManagementList = () => {
     const allChainList = sortBy(
       Object.values(CHAINS)
         .map((item) => {
-          if (!savedChains.includes(item.enum)) return item;
+          if (!savedChains.includes(item.enum))
+            return { ...item, sortName: item.name.toLowerCase() };
         })
         .filter(Boolean),
-      (item) => item?.name
+      (item) => item?.sortName
     );
     setChains(allChainList);
     const savedChainsData = savedChains
