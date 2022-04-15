@@ -128,9 +128,11 @@ const OpenApiModal = ({
 const ResolveConflictModal = ({
   visible,
   onCancel,
+  onChange,
 }: {
   visible: boolean;
   onCancel(): void;
+  onChange(v: boolean): void;
 }) => {
   const [isVisible, setIsVisible] = useState(false);
   const wallet = useWallet();
@@ -141,6 +143,7 @@ const ResolveConflictModal = ({
     if (isDefaultWallet === value) {
       return;
     }
+    onChange(value);
     wallet.setIsDefaultWallet(value);
     setIsDefaultWallet(value);
     message.success({
@@ -433,8 +436,10 @@ const Settings = ({ visible, onClose }: SettingsProps) => {
           <ResolveConflictModal
             visible={showResolveConflictModal}
             onCancel={() => {
-              init();
               setShowResolveConflictModal(false);
+            }}
+            onChange={(v) => {
+              setIsDefaultWallet(v);
             }}
           />
           <ResetAccountModal
