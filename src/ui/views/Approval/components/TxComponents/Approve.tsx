@@ -217,7 +217,9 @@ const Approve = ({
   }, [currentAccount]);
 
   useEffect(() => {
-    fetchBalance();
+    if (currentAccount) {
+      fetchBalance();
+    }
   }, [currentAccount, detail]);
 
   useEffect(() => {
