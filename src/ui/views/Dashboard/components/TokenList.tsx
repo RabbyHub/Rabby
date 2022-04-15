@@ -15,15 +15,10 @@ import IconSearch from 'ui/assets/tokenSearch.png';
 import IconClose from 'ui/assets/searchIconClose.png';
 import IconAddToken from 'ui/assets/addtokenplus.png';
 import IconRemoveToken from 'ui/assets/removetoken.png';
-import IconArrowUp from 'ui/assets/arrow-up.svg';
 import { SvgIconLoading } from 'ui/assets';
 import clsx from 'clsx';
-import { TokenDetailPopup } from '../TokenDetailPopup';
+import { TokenDetailPopup } from './TokenDetailPopup';
 import { TokenItem } from '@/background/service/openapi';
-import _ from 'lodash';
-import { getChain } from 'utils';
-import { TokenGroup } from './TokenGroup';
-import { TokenGroupList } from './TokenGroupList';
 
 const Row = (props) => {
   const { data, index, style, onTokenClick } = props;
@@ -85,7 +80,6 @@ const Row = (props) => {
     </div>
   );
 };
-
 const TokenList = ({
   tokens,
   startSearch,
@@ -102,7 +96,6 @@ const TokenList = ({
   const { t } = useTranslation();
   const fixedList = useRef<FixedSizeList>();
   const [query, setQuery] = useState<string | null>(null);
-
   const handleQueryChange = (value: string) => {
     setQuery(value);
   };
@@ -147,30 +140,8 @@ const TokenList = ({
       fixedList.current?.scrollToItem(0);
     }
   }, [tokenAnimate, showList]);
-
   if (!startAnimate) {
     return <></>;
-  }
-  if (showList && !startSearch) {
-    return (
-      <>
-        <TokenGroupList
-          data={tokens}
-          className={tokenAnimate}
-          onTokenClick={handleTokenClick}
-        ></TokenGroupList>
-        <TokenDetailPopup
-          visible={detail.visible}
-          token={detail.current}
-          onClose={() => {
-            setDetail({
-              visible: false,
-              current: null,
-            });
-          }}
-        ></TokenDetailPopup>
-      </>
-    );
   }
   return (
     <div className={clsx('tokenList', tokenAnimate)}>
@@ -200,9 +171,9 @@ const TokenList = ({
           <div className="loading-text">{t('Loading Tokens')}</div>
         </div>
       )}
-      {showList && startSearch && (
+      {showList && (
         <FixedSizeList
-          height={380}
+          height={468}
           width="100%"
           itemData={{
             list: startSearch
@@ -230,7 +201,6 @@ const TokenList = ({
           {(props) => <Row {...props} onTokenClick={handleTokenClick}></Row>}
         </FixedSizeList>
       )}
-
       {!startSearch && !isloading && tokens.length === 0 && (
         <div className="no-data">
           <img className="w-[100px] h-[100px]" src="./images/nodata-tx.png" />
