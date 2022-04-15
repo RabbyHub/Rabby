@@ -326,12 +326,12 @@ const Settings = ({ visible, onClose }: SettingsProps) => {
       content: t('AddressManagement'),
       onClick: () => history.push('/settings/address'),
     },
-    {
-      leftIcon: IconServer,
-      content: t('Backend Service URL'),
-      onClick: () => setShowOpenApiModal(true),
-      rightIcon: <img src={IconArrowRight} className="icon icon-arrow-right" />,
-    },
+    // {
+    //   leftIcon: IconServer,
+    //   content: t('Backend Service URL'),
+    //   onClick: () => setShowOpenApiModal(true),
+    //   rightIcon: <img src={IconArrowRight} className="icon icon-arrow-right" />,
+    // },
     {
       className: clsx({ 'default-wallet-field': !isDefaultWallet }),
       leftIcon: IconConflict,
