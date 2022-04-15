@@ -397,7 +397,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     value,
   });
   const [realNonce, setRealNonce] = useState('');
-  const [gasLimit, setGasLimit] = useState(gas || params.data[0].gasLimit);
+  const [gasLimit, setGasLimit] = useState<string | undefined>(undefined);
   const [forceProcess, setForceProcess] = useState(false);
   const [safeInfo, setSafeInfo] = useState<SafeInfo | null>(null);
   const [maxPriorityFee, setMaxPriorityFee] = useState(0);
@@ -874,7 +874,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
                 raw={{
                   ...tx,
                   nonce: realNonce || tx.nonce,
-                  gas: gasLimit,
+                  gas: gasLimit!,
                 }}
                 onChange={handleTxChange}
                 tx={{

@@ -18,7 +18,7 @@ export interface GasSelectorResponse extends GasLevel {
 }
 
 interface GasSelectorProps {
-  gasLimit: string;
+  gasLimit: string | undefined;
   gas: GasResult;
   chainId: number;
   tx: Tx;
