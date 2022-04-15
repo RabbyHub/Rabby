@@ -1,42 +1,19 @@
 import clsx from 'clsx';
-import React, { useRef, useEffect, useMemo, useState } from 'react';
+import React, { useRef, useEffect } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FixedSizeList } from 'react-window';
 import { TokenWithChain } from 'ui/component';
 import { splitNumberByStep, useHover, openInTab } from 'ui/utils';
 import { SvgIconLoading } from 'ui/assets';
 import IconOpenDeFi from 'ui/assets/dashboard/opendefi.png';
-import IconArrowUp from 'ui/assets/arrow-up.svg';
 
 const Row = (props) => {
-  const { data, index, style, isFilter, setIsFilter } = props;
+  const { data, index, style } = props;
   const token = data[index];
   const [isHovering, hoverProps] = useHover();
   const handleGotoProfile = () => {
     openInTab(token?.site_url);
   };
-
-  if (token.isShowFilter) {
-    return (
-      <div
-        className="filter"
-        style={style}
-        onClick={() => setIsFilter((v) => !v)}
-      >
-        {isFilter ? (
-          <div className="flex justify-center items-center">
-            {'Small deposits are hidden (<1%)'}
-            <img src={IconArrowUp} className="rotate-180"></img>
-          </div>
-        ) : (
-          <div className="flex justify-center items-center">
-            {'Hide small deposits (<1%)'}
-            <img src={IconArrowUp}></img>
-          </div>
-        )}
-      </div>
-    );
-  }
 
   return (
     <div
@@ -68,37 +45,6 @@ const Row = (props) => {
     </div>
   );
 };
-const useFilterList = (assets) => {
-  const [isFilter, setIsFilter] = useState(true);
-  const total = useMemo(
-    () => assets.reduce((t, item) => (item.net_usd_value || 0) + t, 0),
-    [assets]
-  );
-  const filterPrice = total / 100;
-  const isShowFilter = assets.some((item) => item.net_usd_value < filterPrice);
-
-  const filterList = useMemo(() => {
-    let result = isFilter
-      ? assets.filter((item) => item.net_usd_value >= filterPrice)
-      : assets;
-    if (isShowFilter) {
-      result = result.concat([
-        {
-          isShowFilter: true,
-        },
-      ]);
-    }
-    return result;
-  }, [isFilter, assets, isShowFilter]);
-
-  return {
-    isFilter,
-    setIsFilter,
-    filterList,
-    filterPrice,
-    isShowFilter,
-  };
-};
 const AssetsList = ({
   assets,
   defiAnimate,
@@ -107,13 +53,9 @@ const AssetsList = ({
 }) => {
   const { t } = useTranslation();
   const fixedList = useRef<FixedSizeList>();
-  const { isFilter, setIsFilter, filterList, isShowFilter } = useFilterList(
-    assets
-  );
   useEffect(() => {
     if (!isloading && assets.length > 0 && defiAnimate.includes('fadeIn')) {
       fixedList.current?.scrollToItem(0);
-      setIsFilter(true);
     }
   }, [defiAnimate, isloading, assets]);
   if (!startAnimate) {
@@ -128,25 +70,17 @@ const AssetsList = ({
         </div>
       )}
       {!isloading && assets.length > 0 ? (
-        <>
-          <FixedSizeList
-            height={424}
-            width="100%"
-            itemData={filterList}
-            itemCount={filterList.length}
-            itemSize={48}
-            ref={fixedList}
-            style={{ zIndex: 10, overflowX: 'hidden' }}
-          >
-            {(props) =>
-              Row({
-                ...props,
-                isFilter,
-                setIsFilter,
-              })
-            }
-          </FixedSizeList>
-        </>
+        <FixedSizeList
+          height={468}
+          width="100%"
+          itemData={assets}
+          itemCount={assets.length}
+          itemSize={48}
+          ref={fixedList}
+          style={{ zIndex: 10, overflowX: 'hidden', paddingBottom: 50 }}
+        >
+          {Row}
+        </FixedSizeList>
       ) : (
         <div className="no-data">
           <img className="w-[100px] h-[100px]" src="./images/nodata-tx.png" />
