@@ -36,12 +36,12 @@ export const TokenGroup = ({
           <div className="filter" onClick={() => onExpand && onExpand(!expand)}>
             {!expand ? (
               <div className="flex justify-center items-center">
-                {'Small deposits are hidden(<1% )'}
+                {'Small assets are hidden (<1%)'}
                 <img src={IconArrowUp} className="rotate-180"></img>
               </div>
             ) : (
               <div className="flex justify-center items-center">
-                {'Hide small deposits(<1% ）'}
+                {'Hide small assets (<1%)'}
                 <img src={IconArrowUp}></img>
               </div>
             )}

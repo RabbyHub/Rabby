@@ -59,11 +59,14 @@ const useFilterList = (assets) => {
       : assets;
   }, [isFilter, assets]);
 
+  const isShowFilter = assets.some((item) => item.net_usd_value < filterPrice);
+
   return {
     isFilter,
     setIsFilter,
     filterList,
     filterPrice,
+    isShowFilter,
   };
 };
 const AssetsList = ({
@@ -74,7 +77,7 @@ const AssetsList = ({
 }) => {
   const { t } = useTranslation();
   const fixedList = useRef<FixedSizeList>();
-  const { isFilter, setIsFilter, filterList, filterPrice } = useFilterList(
+  const { isFilter, setIsFilter, filterList, isShowFilter } = useFilterList(
     assets
   );
   useEffect(() => {
@@ -107,19 +110,21 @@ const AssetsList = ({
           >
             {Row}
           </FixedSizeList>
-          <div className="filter" onClick={() => setIsFilter((v) => !v)}>
-            {isFilter ? (
-              <div className="flex justify-center items-center">
-                {'Small deposits are hidden(<1% ) '}
-                <img src={IconArrowUp} className="rotate-180"></img>
-              </div>
-            ) : (
-              <div className="flex justify-center items-center">
-                {'Hide small deposits(<1%)'}
-                <img src={IconArrowUp}></img>
-              </div>
-            )}
-          </div>
+          {isShowFilter && (
+            <div className="filter" onClick={() => setIsFilter((v) => !v)}>
+              {isFilter ? (
+                <div className="flex justify-center items-center">
+                  {'Small deposits are hidden (<1%)'}
+                  <img src={IconArrowUp} className="rotate-180"></img>
+                </div>
+              ) : (
+                <div className="flex justify-center items-center">
+                  {'Hide small deposits (<1%)'}
+                  <img src={IconArrowUp}></img>
+                </div>
+              )}
+            </div>
+          )}
         </>
       ) : (
         <div className="no-data">
