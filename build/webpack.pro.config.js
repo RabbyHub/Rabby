@@ -5,9 +5,6 @@ const path = require('path');
 const config = {
   mode: 'production',
   devtool: false,
-  cache: {
-    type: 'filesystem',
-  },
   performance: {
     maxEntrypointSize: 2500000,
     maxAssetSize: 2500000,

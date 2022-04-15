@@ -107,7 +107,7 @@ const VerifyMnemonics = ({
     const accounts = await wallet.createKeyringWithMnemonics(mnemonics);
 
     history.replace({
-      pathname: '/import/success',
+      pathname: '/popup/import/success',
       state: {
         accounts,
         title: t('Successfully created'),
