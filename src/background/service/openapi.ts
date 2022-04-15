@@ -547,12 +547,12 @@ class OpenApiService {
         config: {
           get_supported_chains: {
             path: '/v1/wallet/supported_chains',
-            method: 'get',
+            method: 'GET',
             params: [],
           },
           get_total_balance: {
             path: '/v1/user/total_balance',
-            method: 'get',
+            method: 'GET',
             params: ['id'],
           },
           get_total_balance_v2: {
@@ -562,57 +562,57 @@ class OpenApiService {
           },
           get_pending_tx_count: {
             path: '/v1/wallet/pending_tx_count',
-            method: 'get',
+            method: 'GET',
             params: ['user_addr'],
           },
           recommend_chains: {
             path: '/v1/wallet/recommend_chains',
-            method: 'get',
+            method: 'GET',
             params: ['user_addr', 'origin'],
           },
           explain_origin: {
             path: '/v1/wallet/explain_origin',
-            method: 'get',
+            method: 'GET',
             params: ['user_addr', 'origin'],
           },
           check_origin: {
             path: '/v1/wallet/check_origin',
-            method: 'get',
+            method: 'GET',
             params: ['user_addr', 'origin'],
           },
           explain_text: {
             path: '/v1/wallet/explain_text',
-            method: 'post',
+            method: 'POST',
             params: ['user_addr', 'origin', 'text'],
           },
           check_text: {
             path: '/v1/wallet/check_text',
-            method: 'post',
+            method: 'POST',
             params: ['user_addr', 'origin', 'text'],
           },
           explain_tx: {
             path: '/v1/wallet/explain_tx',
-            method: 'post',
+            method: 'POST',
             params: ['user_addr', 'origin', 'tx', 'update_nonce'],
           },
           check_tx: {
             path: '/v1/wallet/check_tx',
-            method: 'post',
+            method: 'POST',
             params: ['user_addr', 'origin', 'tx'],
           },
           gas_market: {
             path: '/v1/wallet/gas_market',
-            method: 'get',
+            method: 'GET',
             params: ['chain_id', 'custom_price'],
           },
           push_tx: {
             path: '/v1/wallet/push_tx',
-            method: 'post',
+            method: 'POST',
             params: ['chain_id', 'tx'],
           },
           eth_rpc: {
             path: 'v1/wallet/eth_rpc',
-            method: 'post',
+            method: 'POST',
             params: ['chain_id', 'method', 'params'],
           },
           get_tx: {
@@ -620,25 +620,31 @@ class OpenApiService {
             method: 'GET',
             params: ['chain_id', 'tx_id', 'gas_price'],
           },
-          ens: {
-            path: 'v1/wallet/ens',
-            method: 'GET',
-            params: ['text'],
-          },
-          user_token_search: {
+          ens: { path: 'v1/wallet/ens', method: 'GET', params: ['text'] },
+          token_search: {
             path: '/v1/user/token_search',
             method: 'GET',
-            params: ['id', 'q'],
+            params: ['id', 'chain_id', 'q', 'has_balance'],
           },
           token_list: {
             path: '/v1/user/token_list',
             method: 'GET',
-            params: ['id', 'is_all'],
+            params: ['id', 'chain_id', 'is_all', 'has_balance'],
+          },
+          nft_collection_list: {
+            path: '/v1/nft/collections',
+            method: 'GET',
+            params: [],
           },
           user_token: {
             path: '/v1/user/token',
             method: 'GET',
             params: ['id', 'chain_id', 'token_id'],
+          },
+          user_protocol: {
+            path: '/v1/user/protocol',
+            method: 'GET',
+            params: ['id', 'protocol_id'],
           },
           user_portfolio_list: {
             path: '/v1/user/simple_protocol_list',
@@ -650,10 +656,10 @@ class OpenApiService {
             method: 'GET',
             params: ['id', 'chain_id'],
           },
-          nft_collection_list: {
-            path: '/v1/nft/collections',
+          user_token_search: {
+            path: '/v1/user/token_search',
             method: 'GET',
-            params: [],
+            params: ['id', 'chain_id', 'q', 'has_balance'],
           },
           token_price_change: {
             path: '/v1/token/price_change',
@@ -663,11 +669,11 @@ class OpenApiService {
           user_specific_token_list: {
             path: '/v1/user/specific_token_list',
             method: 'POST',
-            params: ['uuids', 'id'],
+            params: ['id', 'uuids'],
           },
           user_history_list: {
             path: '/v1/user/history_list',
-            method: 'get',
+            method: 'GET',
             params: [
               'id',
               'chain_id',
@@ -679,7 +685,7 @@ class OpenApiService {
           },
           user_token_authorized_list: {
             path: '/v1/user/token_authorized_list',
-            method: 'get',
+            method: 'GET',
             params: ['id', 'chain_id'],
           },
           user_nft_authorized_list: {
@@ -687,9 +693,23 @@ class OpenApiService {
             method: 'GET',
             params: ['id', 'chain_id'],
           },
+          swap_check: {
+            path: '/v1/wallet/swap_check',
+            method: 'GET',
+            params: [
+              'id',
+              'chain_id',
+              'dex_id',
+              'pay_token_id',
+              'pay_token_amount',
+              'receive_token_id',
+            ],
+          },
         },
       },
     });
+
+    this.store.host = INITIAL_OPENAPI_URL;
 
     this.request = rateLimit(
       axios.create({

@@ -902,7 +902,7 @@ export const INTERNAL_REQUEST_SESSION = {
   icon: './images/icon-128.png',
 };
 
-export const INITIAL_OPENAPI_URL = 'https://openapi.debank.com';
+export const INITIAL_OPENAPI_URL = 'https://api.rabby.io';
 
 export const EVENTS = {
   broadcastToUI: 'broadcastToUI',
