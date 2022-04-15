@@ -1,7 +1,6 @@
-import { UserCollection } from '@/background/service/openapi';
-import React, { useMemo } from 'react';
-import IconArrowDown from 'ui/assets/arrow-down-circle.svg';
-import IconArrowLeft from 'ui/assets/arrow-left-circle.svg';
+import { UserCollection, NFTItem } from '@/background/service/openapi';
+import React, { useState } from 'react';
+import { Modal } from 'antd';
 import ChainIcon from './ChainIcon';
 import NFTAvatar from './NFTAvatar';
 import NFTModal from './NFTModal';
@@ -15,13 +14,20 @@ export interface CollectionCardProps {
   expaned?: boolean;
 }
 const CollectionCard = (props: CollectionCardProps) => {
-  const { data, index, expaned = false, onChange } = props;
+  const { data, index } = props;
   const { collection, list } = data[index];
+  const [nftItem, setNFTItem] = useState<NFTItem | null>(null);
+  const [modalVisible, setModalVisible] = useState(false);
 
-  // const renderList = useMemo(() => (expaned ? list : list.slice(0, 5)), [
-  //   list,
-  //   expaned,
-  // ]);
+  const handleHideModal = () => {
+    setModalVisible(false);
+    setNFTItem(null);
+  };
+
+  const handleShowModal = (item: NFTItem) => {
+    setNFTItem(item);
+    setModalVisible(true);
+  };
 
   return (
     <div className={'collection-card'}>
@@ -33,38 +39,33 @@ const CollectionCard = (props: CollectionCardProps) => {
             <ChainIcon chain={list[0].chain}></ChainIcon>
           )}
         </div>
-        {/* {list.length > 5 && (
-          <div
-            className="collection-card-extra cursor-pointer"
-            onClick={() => {
-              onChange && onChange(collection.id, !expaned);
-            }}
-          >
-            {expaned ? (
-              <img src={IconArrowDown} alt="" />
-            ) : (
-              <img src={IconArrowLeft} alt="" />
-            )}
-          </div>
-        )} */}
       </div>
       <div className="collection-card-body">
         {list.map((item) => {
           return (
             <NFTAvatar
-              onPreview={() => {
-                NFTModal.open({
-                  data: item,
-                });
-              }}
+              onPreview={() => handleShowModal(item)}
               type={item.content_type}
               amount={item.amount}
               content={item.content}
               key={item.id}
-            ></NFTAvatar>
+            />
           );
         })}
       </div>
+      <Modal
+        visible={modalVisible}
+        centered
+        width={336}
+        cancelText={null}
+        closable={false}
+        okText={null}
+        footer={null}
+        className="nft-modal"
+        onCancel={handleHideModal}
+      >
+        {nftItem && <NFTModal data={nftItem} />}
+      </Modal>
     </div>
   );
 };

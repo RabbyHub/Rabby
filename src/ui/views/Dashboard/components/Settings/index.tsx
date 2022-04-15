@@ -1,20 +1,20 @@
 import { Button, DrawerProps, Form, Input, message, Switch } from 'antd';
-import React, { useState, useEffect } from 'react';
-import { useTranslation } from 'react-i18next';
-import { useHistory } from 'react-router-dom';
 import clsx from 'clsx';
-import IconArrowRight from 'ui/assets/arrow-right-gray.svg';
-import IconWallet from 'ui/assets/wallet.svg';
-import IconServer from 'ui/assets/server.svg';
+import { CHAINS, INITIAL_OPENAPI_URL } from 'consts';
+import React, { useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { Link, useHistory } from 'react-router-dom';
 import IconAlertRed from 'ui/assets/alert-red.svg';
+import IconArrowRight from 'ui/assets/arrow-right-gray.svg';
 import IconAddressManagement from 'ui/assets/icon-user.svg';
 import IconLock from 'ui/assets/lock.svg';
 import LogoRabby from 'ui/assets/logo-rabby-large.svg';
 import IconReset from 'ui/assets/reset-account.svg';
+import IconServer from 'ui/assets/server.svg';
 import IconSuccess from 'ui/assets/success.svg';
-import { Field, Popup, PageHeader } from 'ui/component';
+import IconWallet from 'ui/assets/wallet.svg';
+import { Field, PageHeader, Popup } from 'ui/component';
 import { useWallet } from 'ui/utils';
-import { INITIAL_OPENAPI_URL } from 'consts';
 import './style.less';
 
 interface SettingsProps {
@@ -314,7 +314,12 @@ const Settings = ({ visible, onClose }: SettingsProps) => {
           </div>
           <footer className="footer">
             <img src={LogoRabby} alt="" />
-            <div>{process.env.version}</div>
+            <div>
+              {process.env.version} /{' '}
+              <Link to="/settings/chain-list" className="underline">
+                {Object.values(CHAINS).length} chains supported
+              </Link>
+            </div>
           </footer>
           <OpenApiModal
             visible={showOpenApiModal}

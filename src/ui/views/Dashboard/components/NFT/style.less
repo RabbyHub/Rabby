@@ -234,7 +234,7 @@
     border-radius: 12px;
   }
   .ant-modal-body {
-    padding: 0 !important;
+    padding: 12px 12px 16px;
     max-height: unset !important;
   }
   .ant-modal-confirm-content {
@@ -263,11 +263,15 @@
   }
   &-list {
     padding-top: 12px;
+    margin-bottom: 16px;
     &-item {
       display: flex;
       align-items: center;
       justify-content: space-between;
-      min-height: 26px;
+      margin-bottom: 12px;
+      &:nth-last-child(1) {
+        margin-bottom: 0;
+      }
       &-label {
         font-weight: 500;
         font-size: 12px;
@@ -282,18 +286,6 @@
         line-height: 14px;
         color: @color-comment-1;
       }
-    }
-  }
-  .ant-btn {
-    background-color: @color-bg !important;
-    color: @color-comment-2 !important;
-    border: none;
-    &::before {
-      opacity: 0 !important;
-    }
-    &:hover {
-      background-color: @color-bg;
-      color: @color-comment-2;
     }
   }
 }

@@ -26,6 +26,7 @@ import NFTApproval from './NFTApproval';
 import CreateMnemonics from './CreateMnemonics';
 import AddAddress from './AddAddress';
 import ChainManagement, { StartChainManagement } from './ChainManagement';
+import ChainList from './ChainList';
 import AddressManagement from './AddressManagement';
 import SwitchLang from './SwitchLang';
 import TransactionHistory from './TransactionHistory';
@@ -36,6 +37,7 @@ import QRCodeReader from './QRCodeReader';
 import AdvancedSettings from './AdvanceSettings';
 import RequestPermission from './RequestPermission';
 import SendToken from './SendToken';
+import SendNFT from './SendNFT';
 import WalletConnectTemplate from './WalletConnect';
 ReactGA.initialize('UA-199755108-1');
 // eslint-disable-next-line @typescript-eslint/no-empty-function
@@ -111,7 +113,7 @@ const Main = () => {
           <ImportSuccess isPopup />
         </PrivateRoute>
         <PrivateRoute exact path="/import/success">
-          <ImportSuccess />
+          <ImportSuccess isPopup />
         </PrivateRoute>
         <PrivateRoute exact path="/tx-history">
           <TransactionHistory />
@@ -152,6 +154,9 @@ const Main = () => {
         <PrivateRoute exact path="/settings/chain">
           <ChainManagement />
         </PrivateRoute>
+        <PrivateRoute exact path="/settings/chain-list">
+          <ChainList />
+        </PrivateRoute>
         <PrivateRoute exact path="/settings/switch-lang">
           <SwitchLang />
         </PrivateRoute>
@@ -166,6 +171,9 @@ const Main = () => {
         </PrivateRoute>
         <PrivateRoute exact path="/send-token">
           <SendToken />
+        </PrivateRoute>
+        <PrivateRoute exact path="/send-nft">
+          <SendNFT />
         </PrivateRoute>
       </Switch>
     </>

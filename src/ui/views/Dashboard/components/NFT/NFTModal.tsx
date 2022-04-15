@@ -1,10 +1,11 @@
 import { NFTItem } from '@/background/service/openapi';
 import { Button, Tooltip } from 'antd';
 import React from 'react';
-import { Modal } from 'ui/component';
+import { useHistory } from 'react-router-dom';
 import { getChain } from 'utils';
 import NFTAvatar from './NFTAvatar';
 import { splitNumberByStep } from '@/ui/utils';
+
 interface ContentProps {
   data?: NFTItem;
 }
@@ -16,9 +17,20 @@ const calc = (data?: NFTItem) => {
   return `$${splitNumberByStep(data.usd_price.toFixed(2))}`;
 };
 
-const Content = ({ data }: ContentProps) => {
+const NFTModal = ({ data }: ContentProps) => {
   const chain = getChain(data?.chain);
   const price = calc(data);
+  const history = useHistory();
+
+  const handleClickSend = () => {
+    history.push({
+      pathname: '/send-nft',
+      state: {
+        nftItem: data,
+      },
+    });
+  };
+
   return (
     <div className="nft-preview-card">
       <NFTAvatar
@@ -50,29 +62,26 @@ const Content = ({ data }: ContentProps) => {
           <div className="nft-preview-card-list-item-value">{price}</div>
         </div>
       </div>
-      <Tooltip title="Coming soon">
-        <Button block size="large" disabled>
+      <Tooltip
+        title={
+          !data?.is_erc1155 && !data?.is_erc721
+            ? 'Only ERC 721 and ERC 1155 NFTs are supported for now'
+            : null
+        }
+        overlayClassName="rectangle"
+      >
+        <Button
+          block
+          size="large"
+          type="primary"
+          onClick={handleClickSend}
+          disabled={!data?.is_erc1155 && !data?.is_erc721}
+        >
           Send
         </Button>
       </Tooltip>
     </div>
   );
-};
-
-const NFTModal = () => {
-  return null;
-};
-
-NFTModal.open = ({ data }: ContentProps) => {
-  Modal.info({
-    centered: true,
-    content: <Content data={data} />,
-    width: 336,
-    cancelText: null,
-    closable: false,
-    okText: null,
-    className: 'nft-modal',
-  });
 };
 
 export default NFTModal;

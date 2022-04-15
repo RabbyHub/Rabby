@@ -108,13 +108,13 @@
     border-radius: 4px;
     font-size: 13px;
     line-height: 20px;
-    color: #FFB020;
+    color: #ffb020;
     padding: 12px;
     margin-bottom: 20px;
     p {
       margin-bottom: 0;
       a {
-        color: #FFB020;
+        color: #ffb020;
       }
     }
   }
@@ -209,7 +209,12 @@
     }
     .send,
     .approve,
+    .approve-nft,
+    .approve-nft-collection,
     .cancel,
+    .cancel-nft-collection,
+    .cancel-nft,
+    .send-nft,
     .cancel-tx {
       .balance-change {
         margin-bottom: 20px;
@@ -389,6 +394,117 @@
         color: @color-comment-1;
         font-size: 12px;
         line-height: 14px;
+      }
+    }
+    .approve-nft,
+    .approve-nft-collection,
+    .cancel-nft-collection,
+    .send-nft,
+    .cancel-nft {
+      .nft-collection {
+        padding: 16px 12px;
+        background: rgba(134, 151, 255, 0.1);
+        border: 1px solid #8697ff;
+        box-sizing: border-box;
+        border-radius: 6px;
+        margin-bottom: 12px;
+        .rabby-list .item .value {
+          .ellipsis();
+        }
+      }
+      .nft-card {
+        padding: 13px 15px;
+        background: rgba(134, 151, 255, 0.1);
+        border: 1px solid #8697ff;
+        box-sizing: border-box;
+        border-radius: 4px;
+        display: flex;
+        gap: 12px;
+        margin-bottom: 20px;
+        align-items: center;
+
+        .nft-avatar {
+          border: none;
+          width: 60px;
+          height: 60px;
+          flex-shrink: 0;
+        }
+        &-content {
+          overflow: hidden;
+        }
+        &-title {
+          font-weight: 500;
+          font-size: 15px;
+          line-height: 18px;
+          color: #13141a;
+          margin-bottom: 8px;
+          .ellipsis();
+        }
+        .rabby-list {
+          .item {
+            &:not(:last-child) {
+              margin-bottom: 8px;
+            }
+            .label {
+              font-weight: 400;
+              font-size: 12px;
+              line-height: 14px;
+              color: #707280;
+              min-width: 60px;
+            }
+            .value {
+              font-weight: 500;
+              font-size: 12px;
+              line-height: 14px;
+              color: #4b4d59;
+              .ellipsis();
+            }
+          }
+        }
+      }
+      .rabby-list {
+        .item {
+          display: flex;
+          align-items: center;
+
+          &:not(:last-child) {
+            margin-bottom: 12px;
+          }
+          .label {
+            font-weight: 400;
+            font-size: 14px;
+            line-height: 16px;
+            color: @color-comment-1;
+            min-width: 90px;
+            margin-right: 5px;
+          }
+          .value {
+            font-weight: 500;
+            font-size: 15px;
+            line-height: 18px;
+            color: @color-title;
+            .logo {
+              width: 24px;
+              height: 24px;
+              object-fit: cover;
+              border-radius: 50%;
+            }
+            .name {
+              font-weight: 500;
+              font-size: 13px;
+              line-height: 15px;
+              color: @color-body;
+              .ellipsis();
+              max-width: 80px;
+            }
+            .address {
+              font-weight: 500;
+              font-size: 13px;
+              line-height: 15px;
+              color: #707280;
+            }
+          }
+        }
       }
     }
     .sign {
@@ -1011,7 +1127,8 @@
   }
 }
 
-.security-check-drawer, .signature-qr-checker-drawer {
+.security-check-drawer,
+.signature-qr-checker-drawer {
   .ant-drawer-header {
     border: none;
     padding: 20px 20px 8px;
@@ -1033,7 +1150,8 @@
   }
 }
 
-.security-check-detail, .signature-qr-checker-detail {
+.security-check-detail,
+.signature-qr-checker-detail {
   display: flex;
   flex-direction: column;
   height: 100%;
@@ -1227,11 +1345,23 @@
     padding: 14px;
     margin-bottom: 0;
   }
+  .approve-amount-footer {
+    display: flex;
+    margin-top: 12px;
+  }
   .est-approve-price {
-    margin: 8px 0 0 0;
     color: @color-comment-1;
     font-size: 12px;
+    line-height: 14px;
+    margin-right: auto;
+  }
+  .token-approve-balance {
+    font-size: 12px;
+    line-height: 14px;
     text-align: right;
+    text-decoration-line: underline;
+    color: @color-comment-1;
+    cursor: pointer;
   }
   .ant-input-group-wrapper {
     position: relative;
@@ -1250,6 +1380,7 @@
       padding-right: 0;
     }
     &::after {
+      display: none;
       content: '';
       position: absolute;
       background: linear-gradient(
@@ -1283,7 +1414,7 @@
       font-size: 14px;
       line-height: 16px;
       text-align: center;
-      color: #4B4D59;
+      color: #4b4d59;
       margin-bottom: 46px;
     }
   }
@@ -1293,7 +1424,7 @@
   &__tip {
     font-size: 13px;
     line-height: 28px;
-    color: #13141A;
+    color: #13141a;
     margin-top: 24px;
     p {
       margin-bottom: 0;

@@ -80,6 +80,11 @@ const LedgerHardwareWaiting = ({ params }: { params: ApprovalParams }) => {
       ? params.account!
       : await wallet.syncGetCurrentAccount()!;
     const approval = await getApproval();
+    stats.report('signTransaction', {
+      type: account.brandName,
+      chainId: chain.serverId,
+      is1559: chain.eip['1559'],
+    });
     setIsSignText(params.isGnosis ? true : approval?.approvalType !== 'SignTx');
     eventBus.addEventListener(EVENTS.LEDGER.REJECTED, async () => {
       setConnectStatus(WALLETCONNECT_STATUS_MAP.FAILD);
@@ -97,11 +102,6 @@ const LedgerHardwareWaiting = ({ params }: { params: ApprovalParams }) => {
             await wallet.postGnosisTransaction();
           }
         }
-        stats.report('signTransaction', {
-          type: account.brandName,
-          chainId: chain.serverId,
-          is1559: chain.eip['1559'],
-        });
         ReactGA.event({
           category: 'Transaction',
           action: 'Submit',

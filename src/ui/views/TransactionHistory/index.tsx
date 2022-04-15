@@ -414,21 +414,31 @@ const TransactionItem = ({
                 autoAdjustOverflow={false}
               >
                 <div className="flex items-center">
-                  <img
-                    className={clsx('icon icon-action', {
-                      'cursor-not-allowed': !canCancel,
-                    })}
-                    src={IconSpeedup}
-                    onClick={handleClickSpeedUp}
-                  />
+                  <Tooltip
+                    title={canCancel ? 'Speed up' : null}
+                    overlayClassName="rectangle"
+                  >
+                    <img
+                      className={clsx('icon icon-action', {
+                        'cursor-not-allowed': !canCancel,
+                      })}
+                      src={IconSpeedup}
+                      onClick={handleClickSpeedUp}
+                    />
+                  </Tooltip>
                   <div className="hr" />
-                  <img
-                    className={clsx('icon icon-action', {
-                      'cursor-not-allowed': !canCancel,
-                    })}
-                    src={IconCancel}
-                    onClick={handleClickCancel}
-                  />
+                  <Tooltip
+                    title={canCancel ? 'Cancel' : null}
+                    overlayClassName="rectangle"
+                  >
+                    <img
+                      className={clsx('icon icon-action', {
+                        'cursor-not-allowed': !canCancel,
+                      })}
+                      src={IconCancel}
+                      onClick={handleClickCancel}
+                    />
+                  </Tooltip>
                 </div>
               </Tooltip>
             </div>

@@ -6,7 +6,7 @@ import React, { forwardRef, memo, useMemo } from 'react';
 import { ReactComponent as IconStar } from 'ui/assets/star-1.svg';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
-import IconClose from 'ui/assets/icon-close.svg';
+import IconDisconnect from 'ui/assets/icon-disconnect.svg';
 
 interface ConnectionItemProps {
   className?: string;
@@ -38,7 +38,7 @@ export const Item = memo(
         >
           <img
             className="icon-close"
-            src={IconClose}
+            src={IconDisconnect}
             onClick={(e) => {
               e.preventDefault();
               e.stopPropagation();

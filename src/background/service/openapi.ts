@@ -262,6 +262,8 @@ export interface NFTItem {
   detail_url: string;
   total_supply?: string;
   collection?: Collection | null;
+  is_erc1155?: boolean;
+  is_erc721: boolean;
 }
 
 export interface Collection {
@@ -353,7 +355,19 @@ export interface BalanceChange {
   success: boolean;
   usd_value_change: number;
 }
-
+interface NFTContractItem {
+  id: string;
+  chain: string;
+  name: string;
+  symbol: string;
+  is_core: boolean;
+  time_at: number;
+  collection: {
+    id: string;
+    name: string;
+    create_at: number;
+  };
+}
 export interface ExplainTxResponse {
   abi?: {
     func: string;
@@ -408,6 +422,55 @@ export interface ExplainTxResponse {
   type_deploy_contract?: any; // TODO
   is_gnosis?: boolean;
   gnosis?: ExplainTxResponse;
+  type_cancel_single_nft_approval?: {
+    spender: string;
+    spender_protocol_name: null;
+    spender_protocol_logo_url: string;
+    token_symbol: null;
+    is_nft: boolean;
+    nft: NFTItem;
+  };
+  type_cancel_nft_collection_approval?: {
+    spender: string;
+    spender_protocol_name: string;
+    spender_protocol_logo_url: string;
+    token_symbol: string;
+    is_nft: boolean;
+    nft_contract: NFTContractItem;
+    token: TokenItem;
+  };
+  type_nft_collection_approval?: {
+    spender: string;
+    spender_protocol_name: string;
+    spender_protocol_logo_url: string;
+    token_symbol: string;
+    is_nft: boolean;
+    nft_contract: NFTContractItem;
+    token: TokenItem;
+    token_amount: number;
+    is_infinity: boolean;
+  };
+  type_single_nft_approval?: {
+    spender: string;
+    spender_protocol_name: string;
+    spender_protocol_logo_url: string;
+    token_symbol: string;
+    is_nft: boolean;
+    nft: NFTItem;
+    token: TokenItem;
+    token_amount: number;
+    is_infinity: boolean;
+  };
+  type_nft_send?: {
+    spender: string;
+    spender_protocol_name: null;
+    spender_protocol_logo_url: string;
+    token_symbol: string;
+    token_amount: number;
+    is_infinity: boolean;
+    is_nft: boolean;
+    nft: NFTItem;
+  };
 }
 
 interface RPCResponse<T> {
@@ -918,6 +981,24 @@ class OpenApiService {
         wrapped_token_id: '',
         symbol: '',
       },
+      {
+        community_id: 336,
+        id: 'sdn',
+        logo_url: '',
+        name: '',
+        native_token_id: '',
+        wrapped_token_id: '',
+        symbol: '',
+      },
+      {
+        community_id: 8217,
+        id: 'klay',
+        logo_url: '',
+        name: '',
+        native_token_id: '',
+        wrapped_token_id: '',
+        symbol: '',
+      },
     ]);
   };
 
@@ -1160,11 +1241,12 @@ class OpenApiService {
     return data;
   };
 
-  listNFT = async (id: string): Promise<NFTItem[]> => {
+  listNFT = async (id: string, isAll = true): Promise<NFTItem[]> => {
     const config = this.store.config.user_nft_list;
     const { data } = await this.request[config.method](config.path, {
       params: {
         id,
+        is_all: isAll,
       },
     });
     return data;

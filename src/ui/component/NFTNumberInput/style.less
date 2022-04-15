@@ -1,0 +1,57 @@
+.number-input {
+  display: flex;
+  height: 24px;
+  input::-webkit-outer-spin-button, input::-webkit-inner-spin-button {
+    -webkit-appearance: none;
+  }
+  input[type="number"]{
+    -moz-appearance: textfield;
+  }
+  .ant-input {
+    width: 37px;
+    height: 100%;
+    background: transparent;
+    border-radius: 0;
+    border: 0.5px solid #B4BDCC;
+    &:hover, &:focus, .ant-input-focused {
+      border-right-width: 0.5px !important;
+    }
+    &[disabled]:hover {
+      border-color: #B4BDCC;
+    }
+  }
+  .action {
+    font-size: 18px;
+    width: 24px;
+    height: 24px;
+    line-height: 24px;
+    text-align: center;
+    color: #4B4D59;
+    border: 0.5px solid #B4BDCC;
+    user-select: none;
+    cursor: pointer;
+    &.disabled {
+      color: #B4BDCC;
+      cursor: not-allowed;
+    }
+    &.left {
+      border-right: none;
+      border-radius: 2px 0px 0px 2px;
+    }
+    &.right {
+      border-left: none;
+      border-radius: 0px 2px 2px 0px;
+    }
+  }
+}
+
+.send-nft-tooltip {
+  .ant-tooltip-arrow {
+    transform: translateX(90px);
+  }
+  &.is1155 {
+    .ant-tooltip-arrow {
+      transform: translateX(12px);
+    }
+  }
+}
