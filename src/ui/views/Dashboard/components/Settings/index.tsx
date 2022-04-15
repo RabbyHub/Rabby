@@ -7,7 +7,7 @@ import { Link, useHistory } from 'react-router-dom';
 import IconArrowRight from 'ui/assets/arrow-right-gray.svg';
 import { ReactComponent as IconCheckbox } from 'ui/assets/dashboard/checkbox.svg';
 import IconConflict from 'ui/assets/dashboard/conflict.svg';
-import IconMetamask from 'ui/assets/dashboard/icon-metamask.png';
+import IconMetamask from 'ui/assets/dashboard/icon-metamask.svg';
 import IconRabby from 'ui/assets/dashboard/rabby.svg';
 import IconAddressManagement from 'ui/assets/icon-user.svg';
 import IconLock from 'ui/assets/lock.svg';
@@ -146,7 +146,11 @@ const ResolveConflictModal = ({
     setIsDefaultWallet(value);
     message.success({
       icon: <span></span>,
-      content: <span className="text-white">Please refresh the page</span>,
+      content: (
+        <span className="text-white">
+          {t("Please refresh the webpage you're viewing")}
+        </span>
+      ),
     });
   };
 
@@ -193,7 +197,7 @@ const ResolveConflictModal = ({
       >
         <div className="field-main">
           <div className="field-title">
-            Prefer Rabby <img src={IconRabby} alt="" />
+            Prefer Rabby <img src={IconRabby} className="w-[20px]" alt="" />
           </div>
           <div className="field-desc">
             Use Rabby to connect DApps and submit transactions.
@@ -212,7 +216,8 @@ const ResolveConflictModal = ({
       >
         <div className="field-main">
           <div className="field-title">
-            Prefer MetaMask <img src={IconMetamask} alt="" />
+            Prefer MetaMask{' '}
+            <img src={IconMetamask} className="w-[20px]" alt="" />
           </div>
           <div className="field-desc">
             Use MetaMask to connect DApps and submit transactions. Rabby's
@@ -334,7 +339,7 @@ const Settings = ({ visible, onClose }: SettingsProps) => {
       content: (
         <div>
           <span className="flex default-wallet-title">
-            {t('Resolve conflict with MetaMask')}
+            {t('Resolve conflicts with MetaMask')}
           </span>
           {!isDefaultWallet && (
             <p className="not-default-tip">

@@ -9,12 +9,34 @@ import IconOpenDeFi from 'ui/assets/dashboard/opendefi.png';
 import IconArrowUp from 'ui/assets/arrow-up.svg';
 
 const Row = (props) => {
-  const { data, index, style } = props;
+  const { data, index, style, isFilter, setIsFilter } = props;
   const token = data[index];
   const [isHovering, hoverProps] = useHover();
   const handleGotoProfile = () => {
     openInTab(token?.site_url);
   };
+
+  if (token.isShowFilter) {
+    return (
+      <div
+        className="filter"
+        style={style}
+        onClick={() => setIsFilter((v) => !v)}
+      >
+        {isFilter ? (
+          <div className="flex justify-center items-center">
+            {'Small deposits are hidden (<1%)'}
+            <img src={IconArrowUp} className="rotate-180"></img>
+          </div>
+        ) : (
+          <div className="flex justify-center items-center">
+            {'Hide small deposits (<1%)'}
+            <img src={IconArrowUp}></img>
+          </div>
+        )}
+      </div>
+    );
+  }
 
   return (
     <div
@@ -53,13 +75,21 @@ const useFilterList = (assets) => {
     [assets]
   );
   const filterPrice = total / 100;
+  const isShowFilter = assets.some((item) => item.net_usd_value < filterPrice);
+
   const filterList = useMemo(() => {
-    return isFilter
+    let result = isFilter
       ? assets.filter((item) => item.net_usd_value >= filterPrice)
       : assets;
-  }, [isFilter, assets]);
-
-  const isShowFilter = assets.some((item) => item.net_usd_value < filterPrice);
+    if (isShowFilter) {
+      result = result.concat([
+        {
+          isShowFilter: true,
+        },
+      ]);
+    }
+    return result;
+  }, [isFilter, assets, isShowFilter]);
 
   return {
     isFilter,
@@ -100,31 +130,22 @@ const AssetsList = ({
       {!isloading && assets.length > 0 ? (
         <>
           <FixedSizeList
-            height={380}
+            height={424}
             width="100%"
             itemData={filterList}
             itemCount={filterList.length}
             itemSize={48}
             ref={fixedList}
-            style={{ zIndex: 10, overflowX: 'hidden', paddingBottom: 50 }}
+            style={{ zIndex: 10, overflowX: 'hidden' }}
           >
-            {Row}
+            {(props) =>
+              Row({
+                ...props,
+                isFilter,
+                setIsFilter,
+              })
+            }
           </FixedSizeList>
-          {isShowFilter && (
-            <div className="filter" onClick={() => setIsFilter((v) => !v)}>
-              {isFilter ? (
-                <div className="flex justify-center items-center">
-                  {'Small deposits are hidden (<1%)'}
-                  <img src={IconArrowUp} className="rotate-180"></img>
-                </div>
-              ) : (
-                <div className="flex justify-center items-center">
-                  {'Hide small deposits (<1%)'}
-                  <img src={IconArrowUp}></img>
-                </div>
-              )}
-            </div>
-          )}
         </>
       ) : (
         <div className="no-data">
