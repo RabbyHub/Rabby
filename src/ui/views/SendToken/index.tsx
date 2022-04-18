@@ -19,6 +19,7 @@ import { Account } from 'background/service/preference';
 import { ContactBookItem } from 'background/service/contactBook';
 import { useWallet } from 'ui/utils';
 import { query2obj } from 'ui/utils/url';
+import { getTokenSymbol } from 'ui/utils/token';
 import { formatTokenAmount, splitNumberByStep } from 'ui/utils/number';
 import AccountCard from '../Approval/components/AccountCard';
 import TokenAmountInput from 'ui/component/TokenAmountInput';
@@ -435,7 +436,11 @@ const SendToken = () => {
       new providers.JsonRpcProvider(chain.thridPartyRPC)
     );
     const decimals = await contract.decimals();
-    const symbol = await contract.symbol();
+    const symbol = await getTokenSymbol(
+      currentToken.id,
+      new providers.JsonRpcProvider(chain.thridPartyRPC)
+    );
+    console.log('symbol', symbol);
     if (symbol !== currentToken.symbol || decimals !== currentToken.decimals) {
       setTokenValidationStatus(TOKEN_VALIDATION_STATUS.FAILD);
     } else {
