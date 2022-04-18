@@ -14,6 +14,7 @@ import IconLock from 'ui/assets/lock.svg';
 import LogoRabby from 'ui/assets/logo-rabby-large.svg';
 import IconReset from 'ui/assets/reset-account.svg';
 import IconSuccess from 'ui/assets/success.svg';
+import IconServer from 'ui/assets/server.svg';
 import { Field, PageHeader, Popup } from 'ui/component';
 import { useWallet } from 'ui/utils';
 import './style.less';
