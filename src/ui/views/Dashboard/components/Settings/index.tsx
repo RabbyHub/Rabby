@@ -14,6 +14,7 @@ import IconLock from 'ui/assets/lock.svg';
 import LogoRabby from 'ui/assets/logo-rabby-large.svg';
 import IconReset from 'ui/assets/reset-account.svg';
 import IconSuccess from 'ui/assets/success.svg';
+import IconServer from 'ui/assets/server.svg';
 import { Field, PageHeader, Popup } from 'ui/component';
 import { useWallet } from 'ui/utils';
 import './style.less';
@@ -332,12 +333,7 @@ const Settings = ({ visible, onClose }: SettingsProps) => {
       content: t('AddressManagement'),
       onClick: () => history.push('/settings/address'),
     },
-    // {
-    //   leftIcon: IconServer,
-    //   content: t('Backend Service URL'),
-    //   onClick: () => setShowOpenApiModal(true),
-    //   rightIcon: <img src={IconArrowRight} className="icon icon-arrow-right" />,
-    // },
+
     {
       className: clsx({ 'default-wallet-field': !isDefaultWallet }),
       leftIcon: IconWallet,
@@ -363,6 +359,15 @@ const Settings = ({ visible, onClose }: SettingsProps) => {
       rightIcon: <img src={IconArrowRight} className="icon icon-arrow-right" />,
     },
   ];
+
+  if (process.env.DEBUG) {
+    renderData.splice(1, 0, {
+      leftIcon: IconServer,
+      content: t('Backend Service URL'),
+      onClick: () => setShowOpenApiModal(true),
+      rightIcon: <img src={IconArrowRight} className="icon icon-arrow-right" />,
+    } as typeof renderData[0]);
+  }
 
   const lockWallet = async () => {
     await wallet.lockWallet();

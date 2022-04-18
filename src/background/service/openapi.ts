@@ -710,7 +710,9 @@ class OpenApiService {
       },
     });
 
-    this.store.host = INITIAL_OPENAPI_URL;
+    if (!process.env.DEBUG) {
+      this.store.host = INITIAL_OPENAPI_URL;
+    }
 
     this.request = rateLimit(
       axios.create({
