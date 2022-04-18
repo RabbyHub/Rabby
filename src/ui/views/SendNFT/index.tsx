@@ -6,18 +6,18 @@ import { useTranslation } from 'react-i18next';
 import { useHistory, useLocation } from 'react-router-dom';
 import { Input, Form, message, Button } from 'antd';
 import { isValidAddress } from 'ethereumjs-util';
-import { Contract, providers } from 'ethers';
+import { providers } from 'ethers';
 import {
   CHAINS,
   KEYRING_PURPLE_LOGOS,
   KEYRING_CLASS,
   CHAINS_ENUM,
 } from 'consts';
-import { ERC721ABI, ERC1155ABI } from 'consts/abi';
 import { Account } from 'background/service/preference';
 import { NFTItem } from '@/background/service/openapi';
 import { ContactBookItem } from 'background/service/contactBook';
 import { useWallet } from 'ui/utils';
+import { getTokenName } from 'ui/utils/token';
 import AccountCard from '../Approval/components/AccountCard';
 import TagChainSelector from 'ui/component/ChainSelector/tag';
 import { PageHeader, AddressViewer } from 'ui/component';
@@ -221,12 +221,10 @@ const SendNFT = () => {
   const validateNFT = async () => {
     if (!nftItem) return;
     setTokenValidationStatus(TOKEN_VALIDATION_STATUS.PENDING);
-    const contract = new Contract(
+    const name = await getTokenName(
       nftItem.contract_id,
-      nftItem.is_erc1155 ? ERC1155ABI : ERC721ABI,
       new providers.JsonRpcProvider(CHAINS[chain!].thridPartyRPC)
     );
-    const name = await contract.name();
     if (name === nftItem.contract_name) {
       setTokenValidationStatus(TOKEN_VALIDATION_STATUS.SUCCESS);
     } else {
