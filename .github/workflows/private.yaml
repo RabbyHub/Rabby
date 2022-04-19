@@ -1,0 +1,73 @@
+name: Triger Private Build
+
+on:
+  pull_request:
+    types: [opened, synchronize, reopened]
+  push:
+    branches:
+      - develop
+    tags:
+      - v*
+
+jobs:
+  create-new-private-build:
+    runs-on: ubuntu-latest
+    outputs:
+      ref_name: ${{ steps.generate-private-info.outputs.ref_name }}
+      sha1: ${{ steps.generate-private-info.outputs.sha1 }}
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+      - name: Generate The Private Build Info
+        id: generate-private-info
+        run: |
+          branch_name=${{ github.ref_name }}
+          origin_sha=${{ github.sha }}
+          if [ '${{ github.event_name }}' == 'pull_request' ] && [ $branch_name != *"pull"* ]; then
+            branch_name="pull/${branch_name}"
+          fi
+          sha1=${origin_sha:0:7}
+          echo "::set-output name=ref_name::${branch_name}"
+          echo "::set-output name=sha1::${sha1}"
+  triger-private-build:
+    runs-on: ubuntu-latest
+    needs: create-new-private-build
+    steps:
+      - uses: tibdex/github-app-token@v1
+        id: generate-token
+        with:
+          app_id: ${{ secrets.PRIVATE_DEPLOY_BUILD_BOT_APP_ID }}
+          private_key: ${{ secrets.PRIVATE_BUILD_BOT_APP_SECRET }}
+          repository: "DeBankDeFi/rabby-mainfest"
+      - name: Checkout code
+        uses: actions/checkout@v2
+        with:
+          repository: "DeBankDeFi/rabby-mainfest"
+          token: ${{ steps.generate-token.outputs.token }}
+          fetch-depth: 0
+          ref: main
+      - name: Update Build Version
+        run: |
+          rm -rf Build && echo -e "enable_build ${{needs.create-new-private-build.outputs.ref_name}} ${{needs.create-new-private-build.outputs.sha1}}\n" >> Build
+      - name: Create Pull Request
+        uses: peter-evans/create-pull-request@v3
+        id: cpr
+        with:
+          title: ":rocket: Deploy The ${{needs.create-new-private-build.outputs.sha1}} in ${{needs.create-new-private-build.outputs.ref_name}} branch"
+          commit-message: ":rocket: Deploy The ${{needs.create-new-private-build.outputs.sha1}} in ${{needs.create-new-private-build.outputs.ref_name}} branch"
+          token: ${{ steps.generate-token.outputs.token }}
+          body: |
+            :rocket: Deploy The ${{needs.create-new-private-build.outputs.sha1}} in ${{needs.create-new-private-build.outputs.ref_name}} branch
+          delete-branch: true
+          branch: release/production
+
+      - name: Enable Pull Request Automerge
+        if: steps.cpr.outputs.pull-request-operation == 'created'
+        uses: peter-evans/enable-pull-request-automerge@v1
+        with:
+          token: ${{ steps.generate-token.outputs.token }}
+          repository: "DeBankDeFi/rabby-mainfest"
+          pull-request-number: ${{ steps.cpr.outputs.pull-request-number }}
+          merge-method: rebase
