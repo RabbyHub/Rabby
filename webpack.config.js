@@ -4,6 +4,7 @@ const commonConfig = require('./build/webpack.common.config');
 const configs = {
   dev: require('./build/webpack.dev.config'),
   pro: require('./build/webpack.pro.config'),
+  debug: require('./build/webpack.debug.config'),
 };
 
 const config = (env) => {
