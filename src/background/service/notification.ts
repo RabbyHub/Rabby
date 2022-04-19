@@ -3,6 +3,7 @@ import { ethErrors } from 'eth-rpc-errors';
 import { EthereumProviderError } from 'eth-rpc-errors/dist/classes';
 import { winMgr } from 'background/webapi';
 import {
+  CHAINS,
   IS_CHROME,
   IS_LINUX,
   KEYRING_TYPE,
@@ -100,6 +101,16 @@ class NotificationService extends Events {
         reject,
       };
 
+      if (data?.params?.method === 'wallet_switchEthereumChain') {
+        const chainId = data.params?.data?.[0]?.chainId;
+        const chain = Object.values(CHAINS).find(
+          (chain) => chain.hex === chainId
+        );
+        if (chain) {
+          this.resolveApproval(null);
+          return;
+        }
+      }
       this.openNotification(winProps);
     });
   };

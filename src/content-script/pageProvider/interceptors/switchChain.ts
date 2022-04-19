@@ -6,7 +6,7 @@ export const switchChainInterceptor = {
       const chainId = data.params && data.params[0]?.chainId;
       const chain = Object.values(CHAINS).find((item) => item.hex === chainId);
       Notification.open({
-        content: 'Switched to ' + chain?.name,
+        content: `Switched to <span class="rabby-strong">${chain?.name}</span> for the current DApp`,
       });
     }
 
@@ -17,7 +17,7 @@ export const switchChainInterceptor = {
 export const switchChainNotice = (chainId: string) => {
   const chain = Object.values(CHAINS).find((item) => item.hex === chainId);
   Notification.open({
-    content: 'Switched to ' + chain?.name || 'Unkown',
+    content: `Switched to <span class="rabby-strong">${chain?.name}</span> for the current DApp`,
   });
 };
 
@@ -30,7 +30,7 @@ class Notification {
       right: 42px;
     }
     .rabby-notification-content {
-      width: 230px;
+      min-width: 230px;
       height: 44px;
       background: #FFFFFF;
       border: 1px solid #8697FF;
@@ -53,6 +53,9 @@ class Notification {
 
     .rabby-notification-icon {
       width: 20px;
+    }
+    .rabby-strong {
+      font-weight: bold;
     }
     
   `;
