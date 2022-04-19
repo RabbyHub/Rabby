@@ -9,7 +9,14 @@ const ChainList = () => {
   const goBack = () => {
     history.goBack();
   };
-  const list = useMemo(() => Object.values(CHAINS), []);
+  const list = useMemo(
+    () =>
+      Object.values(CHAINS).sort((a, b) => {
+        if (a.name.toLowerCase() < b.name.toLowerCase()) return -1;
+        return 1;
+      }),
+    []
+  );
 
   return (
     <div className="page-chain-list">
