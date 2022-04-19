@@ -1,27 +1,28 @@
+import { TokenItem } from '@/background/service/openapi';
+import { Input } from 'antd';
+import clsx from 'clsx';
 import React, {
-  useRef,
-  useState,
+  useCallback,
   useEffect,
   useMemo,
-  useCallback,
+  useRef,
+  useState,
 } from 'react';
-import { Input } from 'antd';
-import { FixedSizeList } from 'react-window';
 import { useTranslation } from 'react-i18next';
 import { useDebounce } from 'react-use';
-import { TokenWithChain, AddressViewer } from 'ui/component';
-import { splitNumberByStep } from 'ui/utils';
-import IconSearch from 'ui/assets/tokenSearch.png';
-import IconClose from 'ui/assets/searchIconClose.png';
-import IconAddToken from 'ui/assets/addtokenplus.png';
-import IconRemoveToken from 'ui/assets/removetoken.png';
+import { FixedSizeList } from 'react-window';
 import { SvgIconLoading } from 'ui/assets';
-import clsx from 'clsx';
+import IconAddToken from 'ui/assets/addtokenplus.png';
+import IconArrowUp from 'ui/assets/arrow-up.svg';
+import IconRemoveToken from 'ui/assets/removetoken.png';
+import IconClose from 'ui/assets/searchIconClose.png';
+import IconSearch from 'ui/assets/tokenSearch.png';
+import { AddressViewer, TokenWithChain } from 'ui/component';
+import { splitNumberByStep } from 'ui/utils';
 import { TokenDetailPopup } from './TokenDetailPopup';
-import { TokenItem } from '@/background/service/openapi';
 
 const Row = (props) => {
-  const { data, index, style, onTokenClick } = props;
+  const { data, index, style, onTokenClick, isExpand, setIsExpand } = props;
   const { list, startSearch, removeToken, addToken, query, addedToken } = data;
   const isInitList = !startSearch && !query;
   const token = list[index];
@@ -31,6 +32,29 @@ const Row = (props) => {
   const handleTokenClick = useCallback(() => {
     onTokenClick && onTokenClick(token);
   }, [onTokenClick, token]);
+
+  if (token.isShowExpand) {
+    return (
+      <div
+        className="filter"
+        style={style}
+        onClick={() => setIsExpand((v) => !v)}
+      >
+        {!isExpand ? (
+          <div className="flex justify-center items-center">
+            {'Small assets are hidden (<1%)'}
+            <img src={IconArrowUp} className="rotate-180"></img>
+          </div>
+        ) : (
+          <div className="flex justify-center items-center">
+            {'Hide small assets (<1%)'}
+            <img src={IconArrowUp}></img>
+          </div>
+        )}
+      </div>
+    );
+  }
+
   return (
     <div
       className={clsx('token-item', 'cursor-pointer')}
@@ -80,6 +104,39 @@ const Row = (props) => {
     </div>
   );
 };
+const useExpandList = (tokens) => {
+  const [isExpand, setIsExpand] = useState(false);
+  const total = useMemo(
+    () => tokens.reduce((t, item) => (item.amount * item.price || 0) + t, 0),
+    [tokens]
+  );
+  const filterPrice = total / 100;
+  const isShowExpand = tokens.some(
+    (item) => (item.amount * item.price || 0) < filterPrice
+  );
+
+  const filterList = useMemo(() => {
+    let result = isExpand
+      ? tokens
+      : tokens.filter((item) => (item.amount * item.price || 0) >= filterPrice);
+    if (isShowExpand) {
+      result = result.concat([
+        {
+          isShowExpand: true,
+        },
+      ]);
+    }
+    return result;
+  }, [isExpand, tokens, isShowExpand]);
+
+  return {
+    isExpand,
+    setIsExpand,
+    filterList,
+    filterPrice,
+    isShowExpand,
+  };
+};
 const TokenList = ({
   tokens,
   startSearch,
@@ -99,6 +156,7 @@ const TokenList = ({
   const handleQueryChange = (value: string) => {
     setQuery(value);
   };
+  const { isExpand, setIsExpand, filterList } = useExpandList(tokens);
   const [detail, setDetail] = useState<{
     visible: boolean;
     current?: TokenItem | null;
@@ -138,6 +196,7 @@ const TokenList = ({
   useEffect(() => {
     if (showList && tokenAnimate.includes('fadeIn')) {
       fixedList.current?.scrollToItem(0);
+      setIsExpand(false);
     }
   }, [tokenAnimate, showList]);
   if (!startAnimate) {
@@ -180,7 +239,7 @@ const TokenList = ({
               ? query
                 ? searchTokens
                 : displayAddedToken
-              : tokens,
+              : filterList,
             startSearch,
             addedToken,
             removeToken,
@@ -192,13 +251,20 @@ const TokenList = ({
               ? query
                 ? searchTokens.length
                 : displayAddedToken.length
-              : tokens.length
+              : filterList.length
           }
           itemSize={52}
           ref={fixedList}
-          style={{ zIndex: 10, overflowX: 'hidden', paddingBottom: 50 }}
+          style={{ zIndex: 10, overflowX: 'hidden' }}
         >
-          {(props) => <Row {...props} onTokenClick={handleTokenClick}></Row>}
+          {(props) => (
+            <Row
+              {...props}
+              isExpand={isExpand}
+              setIsExpand={setIsExpand}
+              onTokenClick={handleTokenClick}
+            ></Row>
+          )}
         </FixedSizeList>
       )}
       {!startSearch && !isloading && tokens.length === 0 && (
