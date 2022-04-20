@@ -74,6 +74,9 @@ import IconShidenChainLogo from 'ui/assets/dashboard/selectChain/shiden.svg';
 import IconKlaytnLogo from 'ui/assets/chain-logos/klaytn.svg';
 import IconKlaytnWhiteLogo from 'ui/assets/chain-logos/klaytn-white.svg';
 import IconKlaytnChainLogo from 'ui/assets/dashboard/selectChain/klaytn.svg';
+import IconIotxLogo from 'ui/assets/chain-logos/iotx.svg';
+import IconIotxWhiteLogo from 'ui/assets/chain-logos/iotx-white.svg';
+import IconIotxChainLogo from 'ui/assets/dashboard/selectChain/iotx.svg';
 import IconEN from 'ui/assets/langs/en.svg';
 import IconZH from 'ui/assets/langs/zh_cn.svg';
 import IconAmber from 'ui/assets/walletlogo/amber.png';
@@ -143,6 +146,7 @@ export enum CHAINS_ENUM {
   ASTAR = 'ASTAR',
   SDN = 'SDN',
   KLAY = 'KLAY',
+  IOTX = 'IOTX',
 }
 
 export const CHAINS: Record<string, Chain> = {
@@ -670,6 +674,27 @@ export const CHAINS: Record<string, Chain> = {
       'https://static.debank.com/image/chain/logo_url/klay/1df018b8493cb97c50b7e390ef63cba4.png',
     nativeTokenDecimals: 18,
     thridPartyRPC: 'https://public-node-api.klaytnapi.com/v1/cypress',
+    eip: {
+      '1559': false,
+    },
+  },
+  [CHAINS_ENUM.IOTX]: {
+    id: 4689,
+    serverId: 'iotx',
+    network: '4689',
+    name: 'IoTeX',
+    nativeTokenSymbol: 'IOTX',
+    nativeTokenAddress: 'iotx',
+    enum: CHAINS_ENUM.IOTX,
+    logo: IconIotxLogo,
+    whiteLogo: IconIotxWhiteLogo,
+    selectChainLogo: IconIotxChainLogo,
+    hex: '0x1251',
+    scanLink: 'https://iotexscan.io/tx/_s_',
+    nativeTokenLogo:
+      'https://static.debank.com/image/chain/logo_url/iotx/d3be2cd8677f86bd9ab7d5f3701afcc9.png',
+    nativeTokenDecimals: 18,
+    thridPartyRPC: 'https://babel-api.mainnet.iotex.io',
     eip: {
       '1559': false,
     },
