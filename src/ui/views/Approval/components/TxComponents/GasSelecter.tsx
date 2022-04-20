@@ -32,6 +32,7 @@ interface GasSelectorProps {
   gasList: GasLevel[];
   selectedGas: GasLevel | null;
   is1559: boolean;
+  isHardware: boolean;
 }
 
 const GasSelector = ({
@@ -48,6 +49,7 @@ const GasSelector = ({
   gasList,
   selectedGas,
   is1559,
+  isHardware,
 }: GasSelectorProps) => {
   const { t } = useTranslation();
   const customerInputRef = useRef<Input>(null);
@@ -61,6 +63,7 @@ const GasSelector = ({
   const [maxPriorityFee, setMaxPriorityFee] = useState<number>(
     selectedGas ? selectedGas.price / 1e9 : 0
   );
+  const [isReal1559, setIsReal1559] = useState(false);
   const [customNonce, setCustomNonce] = useState(Number(nonce));
   const [isFirstTimeLoad, setIsFirstTimeLoad] = useState(true);
   const [validateStatus, setValidateStatus] = useState<
@@ -245,6 +248,23 @@ const GasSelector = ({
     onMaxPriorityFeeChange(maxPriorityFee * 1e9);
   }, [maxPriorityFee]);
 
+  useEffect(() => {
+    if (!is1559) return;
+    if (selectedGas?.level === 'custom') {
+      if (Number(customGas) !== maxPriorityFee) {
+        setIsReal1559(true);
+      } else {
+        setIsReal1559(false);
+      }
+    } else if (selectedGas) {
+      if (selectedGas?.price / 1e9 !== maxPriorityFee) {
+        setIsReal1559(true);
+      } else {
+        setIsReal1559(false);
+      }
+    }
+  }, [maxPriorityFee, selectedGas, customGas, is1559]);
+
   if (!isReady && isFirstTimeLoad)
     return (
       <>
@@ -353,6 +373,12 @@ const GasSelector = ({
               <span>0</span>
               <span>{selectedGas ? selectedGas.price / 1e9 : 0}</span>
             </p>
+          </div>
+        )}
+        {isReal1559 && isHardware && (
+          <div className="hardware-1559-tip">
+            Make sure your hardware wallet firmware has been upgraded to the
+            version that supports EIP 1559
           </div>
         )}
       </div>
