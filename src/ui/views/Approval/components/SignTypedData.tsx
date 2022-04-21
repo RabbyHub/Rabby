@@ -4,7 +4,7 @@ import { useTranslation } from 'react-i18next';
 import TransportWebHID from '@ledgerhq/hw-transport-webhid';
 import { WaitingSignComponent } from './SignText';
 import { KEYRING_CLASS, KEYRING_TYPE } from 'consts';
-import { useApproval, useWallet } from 'ui/utils';
+import { openInternalPageInTab, useApproval, useWallet } from 'ui/utils';
 import {
   SecurityCheckResponse,
   SecurityCheckDecision,
@@ -84,9 +84,21 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
       setCantProcessReason(
         <div className="flex items-center gap-8">
           <img src={IconWatch} alt="" className="w-[24px]" />
-          {t(
-            'The current address is in Watch Mode. If you want to continue, please import it.'
-          )}
+          <div>
+            The currrent address is in Watch Mode. If your want to continue,
+            please{' '}
+            <a
+              href=""
+              onClick={async (e) => {
+                e.preventDefault();
+                await rejectApproval('User rejected the request.', true);
+                openInternalPageInTab('no-address');
+              }}
+            >
+              import it
+            </a>{' '}
+            again using another mode.
+          </div>
         </div>
       );
     }

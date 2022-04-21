@@ -3,11 +3,18 @@
   background: @color-bg;
   position: relative;
   height: 100%;
+  overflow: auto;
+  padding-bottom: 36px;
+}
+@media (min-width: 401px) {
+  .wallet-connect .goback {
+    display: none;
+  }
 }
 .button-container {
   width: 148px;
   height: 32px;
-  margin: 26px 126px;
+  margin: 32px auto 24px;
   background: #ffffff;
   display: flex;
   div {
@@ -34,7 +41,7 @@
 .qrcode {
   width: 200px;
   height: 200px;
-  margin: 0 100px 24px;
+  margin: 0 auto 24px;
   display: flex;
   justify-content: center;
   align-items: center;
@@ -80,13 +87,13 @@
   width: 16px;
   height: 16px;
   position: absolute;
-  right: 48px;
-  bottom: 42px;
+  right: 16px;
+  bottom: 16px;
 }
 .icon-refresh-wallet {
   .icon-copy-wallet;
   position: absolute;
-  right: 78px;
+  right: 46px;
 }
 .change-bridge {
   display: flex;

@@ -85,7 +85,7 @@ const TiledSelect = ({
           </div>
         )}
       </div>
-      <div className="flex justify-between flex-wrap -mr-8 clear-left">
+      <div className="flex justify-between flex-wrap clear-left">
         {options.map((o, i) => (
           <div
             style={{ lineHeight: '32px' }}

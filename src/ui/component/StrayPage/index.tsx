@@ -67,6 +67,7 @@ interface StrayPageWithButtonProps {
   noPadding?: boolean;
   isScrollContainer?: boolean;
   disableKeyDownEvent?: boolean;
+  custom?: boolean;
 }
 
 export const StrayPageWithButton = ({
@@ -91,6 +92,7 @@ export const StrayPageWithButton = ({
   className,
   disableKeyDownEvent = false,
   nextLoading = false,
+  custom = false,
 }: StrayPageWithButtonProps & StrayFooterNavProps) => {
   const { t } = useTranslation();
 
@@ -113,6 +115,38 @@ export const StrayPageWithButton = ({
       document.removeEventListener('keydown', handleKeyDown);
     };
   }, [handleKeyDown]);
+
+  if (custom) {
+    return (
+      <div className={className}>
+        <Form
+          className={clsx('sm:pb-[98px] lg:pb-[72px]', {
+            'scroll-container': isScrollContainer,
+          })}
+          autoComplete="off"
+          {...formProps}
+          onFinish={onSubmit}
+          initialValues={initialValues}
+          form={form}
+        >
+          {children}
+          <StrayFooter.Nav
+            footerFixed={footerFixed}
+            onNextClick={onNextClick}
+            onBackClick={onBackClick}
+            backDisabled={backDisabled}
+            nextDisabled={nextDisabled}
+            nextLoading={nextLoading}
+            hasBack={hasBack}
+            hasDivider={hasDivider}
+            BackButtonContent={t('Back')}
+            NextButtonContent={NextButtonContent || t('Next')}
+            className="z-10 footer"
+          />
+        </Form>
+      </div>
+    );
+  }
 
   return (
     <StrayPage

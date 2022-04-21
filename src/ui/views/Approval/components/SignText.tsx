@@ -3,7 +3,12 @@ import { Button, Tooltip, message } from 'antd';
 import { useTranslation } from 'react-i18next';
 import clsx from 'clsx';
 import { KEYRING_CLASS, KEYRING_TYPE } from 'consts';
-import { useApproval, useWallet, hex2Text } from 'ui/utils';
+import {
+  useApproval,
+  useWallet,
+  hex2Text,
+  openInternalPageInTab,
+} from 'ui/utils';
 import {
   SecurityCheckResponse,
   SecurityCheckDecision,
@@ -190,9 +195,21 @@ const SignText = ({ params }: { params: SignTextProps }) => {
       setCantProcessReason(
         <div className="flex items-center gap-8">
           <img src={IconWatch} alt="" className="w-[24px]" />
-          {t(
-            'The current address is in Watch Mode. If you want to continue, please import it.'
-          )}
+          <div>
+            The currrent address is in Watch Mode. If your want to continue,
+            please{' '}
+            <a
+              href=""
+              onClick={async (e) => {
+                e.preventDefault();
+                await rejectApproval('User rejected the request.', true);
+                openInternalPageInTab('no-address');
+              }}
+            >
+              import it
+            </a>{' '}
+            again using another mode.
+          </div>
         </div>
       );
     }

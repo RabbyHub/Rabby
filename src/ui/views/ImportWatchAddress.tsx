@@ -1,5 +1,5 @@
 import React, { useState, useRef, useMemo, useEffect } from 'react';
-import { Input, Form, Modal } from 'antd';
+import { Input, Form } from 'antd';
 import { useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import QRCode from 'qrcode.react';
@@ -18,6 +18,9 @@ import IconScan from 'ui/assets/scan.svg';
 import IconArrowDown from 'ui/assets/big-arrow-down.svg';
 import IconEnter from 'ui/assets/enter.svg';
 import IconChecked from 'ui/assets/checked.svg';
+import { useMedia } from 'react-use';
+import clsx from 'clsx';
+import { Modal } from 'ui/component';
 
 const ImportWatchAddress = () => {
   const { t } = useTranslation();
@@ -37,6 +40,9 @@ const ImportWatchAddress = () => {
   }>(null);
   const [tags, setTags] = useState<string[]>([]);
   const [importedAccounts, setImportedAccounts] = useState<any[]>([]);
+  const isWide = useMedia('(min-width: 401px)');
+
+  const ModalComponent = isWide ? Modal : Popup;
 
   const [run, loading] = useWalletRequest(wallet.importWatchAddress, {
     onSuccess(accounts) {
@@ -209,13 +215,14 @@ const ImportWatchAddress = () => {
 
   return (
     <StrayPageWithButton
+      custom={isWide}
       onSubmit={handleNextClick}
       spinning={loading}
       form={form}
       hasBack
       hasDivider
       noPadding
-      className="import-watchmode"
+      className={clsx('import-watchmode', isWide && 'rabby-stray-page')}
       formProps={{
         onValuesChange: handleValuesChange,
       }}
@@ -223,11 +230,13 @@ const ImportWatchAddress = () => {
       onBackClick={handleClickBack}
     >
       <header className="create-new-header create-password-header h-[264px]">
-        <img
-          className="rabby-logo"
-          src="/images/logo-gray.png"
-          alt="rabby logo"
-        />
+        <div className="rabby-container">
+          <img
+            className="rabby-logo"
+            src="/images/logo-gray.png"
+            alt="rabby logo"
+          />
+        </div>
         <img
           className="unlock-logo w-[80px] h-[75px] mb-20 mx-auto"
           src={WatchLogo}
@@ -240,61 +249,64 @@ const ImportWatchAddress = () => {
         </p>
         <img src="/images/watch-mask.png" className="mask" />
       </header>
-      <div className="relative">
-        <Form.Item
-          className="pt-32 px-20"
-          name="address"
-          rules={[{ required: true, message: t('Please input address') }]}
-        >
-          <Input
-            placeholder="Address / ENS"
-            size="large"
-            maxLength={44}
-            autoFocus
-            spellCheck={false}
-            suffix={
-              ensResult ? (
-                <img src={IconChecked} className="icon icon-checked" />
-              ) : null
-            }
-          />
-        </Form.Item>
-        {tags.length > 0 && (
-          <ul className="tags">
-            {tags.map((tag) => (
-              <li key={tag}>{tag}</li>
-            ))}
-          </ul>
-        )}
-        {ensResult && (
-          <div
-            className="ens-search"
-            onClick={() => handleConfirmENS(ensResult.addr)}
+      <div className="rabby-container">
+        <div className="relative">
+          <Form.Item
+            className="pt-32 px-20"
+            name="address"
+            rules={[{ required: true, message: t('Please input address') }]}
           >
-            <div className="ens-search__inner">
-              {ensResult.addr}
-              <img className="icon icon-enter" src={IconEnter} />
+            <Input
+              placeholder="Address / ENS"
+              size="large"
+              maxLength={44}
+              autoFocus
+              spellCheck={false}
+              suffix={
+                ensResult ? (
+                  <img src={IconChecked} className="icon icon-checked" />
+                ) : null
+              }
+            />
+          </Form.Item>
+          {tags.length > 0 && (
+            <ul className="tags">
+              {tags.map((tag) => (
+                <li key={tag}>{tag}</li>
+              ))}
+            </ul>
+          )}
+          {ensResult && (
+            <div
+              className="ens-search"
+              onClick={() => handleConfirmENS(ensResult.addr)}
+            >
+              <div className="ens-search__inner">
+                {ensResult.addr}
+                <img className="icon icon-enter" src={IconEnter} />
+              </div>
             </div>
+          )}
+        </div>
+        <div className="flex justify-between px-20">
+          <div
+            className="w-[172px] import-watchmode__button"
+            onClick={handleImportByWalletconnect}
+          >
+            <img src={IconWalletconnect} className="icon icon-walletconnect" />
+            {t('Scan via mobile wallet')}
           </div>
-        )}
-      </div>
-      <div className="flex justify-between px-20">
-        <div
-          className="w-[172px] import-watchmode__button"
-          onClick={handleImportByWalletconnect}
-        >
-          <img src={IconWalletconnect} className="icon icon-walletconnect" />
-          {t('Scan via mobile wallet')}
-        </div>
-        <div
-          className="w-[172px] import-watchmode__button"
-          onClick={handleImportByQrcode}
-        >
-          <img src={IconScan} className="icon icon-walletconnect" />
-          {t('Scan via PC camera')}
+          <div
+            className="w-[172px] import-watchmode__button"
+            onClick={handleImportByQrcode}
+          >
+            <img src={IconScan} className="icon icon-walletconnect" />
+            {t('Scan via PC camera')}
+          </div>
         </div>
       </div>
-      <Popup
+      <ModalComponent
+        closable={false}
         height={400}
         className="walletconnect-modal"
         visible={walletconnectModalVisible}
@@ -311,8 +323,9 @@ const ImportWatchAddress = () => {
             <QRCode value={walletconnectUri} size={176} />
           </div>
         )}
-      </Popup>
-      <Popup
+      </ModalComponent>
+      <ModalComponent
+        closable={false}
         height={400}
         className="walletconnect-modal"
         visible={QRScanModalVisible}
@@ -332,7 +345,7 @@ const ImportWatchAddress = () => {
             onError={handleScanQRCodeError}
           />
         </div>
-      </Popup>
+      </ModalComponent>
     </StrayPageWithButton>
   );
 };

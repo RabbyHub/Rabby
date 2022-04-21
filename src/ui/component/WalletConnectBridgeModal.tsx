@@ -4,6 +4,7 @@ import { useTranslation } from 'react-i18next';
 import { Modal } from 'ui/component';
 import { INITIAL_OPENAPI_URL } from 'consts';
 import Popup from './Popup';
+import { useMedia } from 'react-use';
 
 const OpenApiModal = ({
   value,
@@ -21,6 +22,8 @@ const OpenApiModal = ({
   const { useForm } = Form;
   const [form] = useForm<{ host: string }>();
   const { t } = useTranslation();
+  const isWide = useMedia('(min-width: 401px)');
+  const ModalComponent = isWide ? Modal : Popup;
 
   const init = async () => {
     form.setFieldsValue({
@@ -49,12 +52,13 @@ const OpenApiModal = ({
   }, []);
 
   return (
-    <Popup
+    <ModalComponent
       height={280}
+      closable={false}
       title={t('Bridge server URL')}
       visible={visible}
       onCancel={onCancel}
-      className="openapi-modal"
+      className="openapi-modal rabby-modal"
     >
       <Form onFinish={handleSubmit} form={form}>
         <Form.Item
@@ -93,7 +97,7 @@ const OpenApiModal = ({
           </Button>
         </div>
       </Form>
-    </Popup>
+    </ModalComponent>
   );
 };
 export default OpenApiModal;

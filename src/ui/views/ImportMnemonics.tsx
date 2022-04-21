@@ -6,12 +6,15 @@ import { StrayPageWithButton } from 'ui/component';
 import { useWallet, useWalletRequest } from 'ui/utils';
 import { KEYRING_TYPE } from 'consts';
 import MnemonicLogo from 'ui/assets/mnemonic-icon.svg';
+import clsx from 'clsx';
+import { useMedia } from 'react-use';
 
 const ImportMnemonic = () => {
   const history = useHistory();
   const wallet = useWallet();
   const [form] = Form.useForm();
   const { t } = useTranslation();
+  const isWide = useMedia('(min-width: 401px)');
 
   const [run, loading] = useWalletRequest(wallet.generateKeyringWithMnemonic, {
     onSuccess(stashKeyringId) {
@@ -71,6 +74,8 @@ const ImportMnemonic = () => {
 
   return (
     <StrayPageWithButton
+      custom={isWide}
+      className={clsx(isWide && 'rabby-stray-page')}
       spinning={loading}
       form={form}
       formProps={{
@@ -84,31 +89,35 @@ const ImportMnemonic = () => {
       backDisabled={false}
     >
       <header className="create-new-header create-password-header h-[234px]">
-        <img
-          className="rabby-logo"
-          src="/images/logo-gray.png"
-          alt="rabby logo"
-        />
-        <img
-          className="unlock-logo w-[128px] h-[128px] mx-auto"
-          src={MnemonicLogo}
-        />
-        <p className="text-24 mb-4 mt-0 text-white text-center font-bold">
-          {t('Enter Your Mnemonic')}
-        </p>
+        <div className="rabby-container">
+          <img
+            className="rabby-logo"
+            src="/images/logo-gray.png"
+            alt="rabby logo"
+          />
+          <img
+            className="unlock-logo w-[128px] h-[128px] mx-auto"
+            src={MnemonicLogo}
+          />
+          <p className="text-24 mb-4 mt-0 text-white text-center font-bold">
+            {t('Enter Your Mnemonic')}
+          </p>
+        </div>
         <img src="/images/mnemonic-mask.png" className="mask" />
       </header>
-      <div className="pt-32 px-20">
-        <Form.Item
-          name="mnemonics"
-          rules={[{ required: true, message: t('Please input Mnemonics') }]}
-        >
-          <Input.TextArea
-            className="h-[124px] p-16"
-            placeholder={t('Mnemonics words')}
-            spellCheck={false}
-          />
-        </Form.Item>
+      <div className="rabby-container">
+        <div className="pt-32 px-20">
+          <Form.Item
+            name="mnemonics"
+            rules={[{ required: true, message: t('Please input Mnemonics') }]}
+          >
+            <Input.TextArea
+              className="h-[124px] p-16"
+              placeholder={t('Mnemonics words')}
+              spellCheck={false}
+            />
+          </Form.Item>
+        </div>
       </div>
     </StrayPageWithButton>
   );

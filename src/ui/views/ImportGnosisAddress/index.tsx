@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { useDebounce } from 'react-use';
+import { useDebounce, useMedia } from 'react-use';
 import { Input, Form } from 'antd';
 import Safe from '@rabby-wallet/gnosis-sdk';
 import { useHistory } from 'react-router-dom';
@@ -12,6 +12,7 @@ import { FieldCheckbox } from 'ui/component';
 import IconGnosis from 'ui/assets/walletlogo/gnosis.png';
 import { Chain } from '@/background/service/openapi';
 import './style.less';
+import clsx from 'clsx';
 
 const SUPPORT_CHAINS = [
   CHAINS_ENUM.ETH,
@@ -43,6 +44,7 @@ const ImportGnosisAddress = () => {
     const [canSubmit, setCanSubmit] = useState(false);
     const [importedAccounts, setImportedAccounts] = useState<any[]>([]);
     const [form] = Form.useForm();
+    const isWide = useMedia('(min-width: 401px)');
 
     const [run] = useWalletRequest(wallet.importGnosisAddress, {
       onSuccess(accounts) {
@@ -124,115 +126,126 @@ const ImportGnosisAddress = () => {
 
     return (
       <StrayPageWithButton
+        custom={isWide}
+        className={clsx('step2', isWide && 'rabby-stray-page')}
         onSubmit={handleNextClick}
         form={form}
         hasBack
         hasDivider
         noPadding
-        className="step2"
         onBackClick={() => setCurrentStep(1)}
         nextDisabled={loading || !canSubmit}
         formProps={{ onValuesChange: handleValuesChange }}
         nextLoading={loading}
       >
         <header className="create-new-header create-password-header h-[264px]">
-          <img
-            className="rabby-logo"
-            src="/images/logo-gray.png"
-            alt="rabby logo"
-          />
-          <img
-            className="unlock-logo w-[80px] h-[80px] mb-20 mx-auto"
-            src={IconGnosis}
-          />
-          <p className="text-24 mb-4 mt-0 text-white text-center font-bold">
-            {t('Gnosis Safe')}
-          </p>
-          <p className="text-14 mb-0 mt-4 text-white opacity-80 text-center">
-            {t('Add address')}
-          </p>
+          <div className="rabby-container">
+            <img
+              className="rabby-logo"
+              src="/images/logo-gray.png"
+              alt="rabby logo"
+            />
+            <img
+              className="unlock-logo w-[80px] h-[80px] mb-20 mx-auto"
+              src={IconGnosis}
+            />
+            <p className="text-24 mb-4 mt-0 text-white text-center font-bold">
+              {t('Gnosis Safe')}
+            </p>
+            <p className="text-14 mb-0 mt-4 text-white opacity-80 text-center">
+              {t('Add address')}
+            </p>
+          </div>
           <img src="/images/gnosis-mask-2.png" className="mask" />
         </header>
-        <div className="relative p-20">
-          <Form.Item name="address" className="mb-8">
-            <Input
-              prefix={<img src={selectedChain?.logo} className="w-16 h-16" />}
-              size="large"
-              autoFocus
-              placeholder={t('Please input address')}
-            />
-          </Form.Item>
-          <p className="text-pink text-12 mb-0">{errorMsg}</p>
+        <div className="rabby-container">
+          <div className="relative p-20">
+            <Form.Item name="address" className="mb-8">
+              <Input
+                prefix={<img src={selectedChain?.logo} className="w-16 h-16" />}
+                size="large"
+                autoFocus
+                placeholder={t('Please input address')}
+              />
+            </Form.Item>
+            <p className="text-pink text-12 mb-0">{errorMsg}</p>
+          </div>
         </div>
       </StrayPageWithButton>
     );
   };
 
   const Step1 = () => {
+    const isWide = useMedia('(min-width: 401px)');
     return (
       <StrayPageWithButton
+        custom={isWide}
+        className={clsx('step1', isWide && 'rabby-stray-page')}
         onSubmit={handleStep1Finish}
         hasBack
         hasDivider
         noPadding
-        className="step1"
         nextDisabled={selectedChain === null}
       >
         <header className="create-new-header create-password-header h-[200px]">
-          <img
-            className="rabby-logo"
-            src="/images/logo-gray.png"
-            alt="rabby logo"
-          />
-          <img
-            className="unlock-logo w-[80px] h-[80px] mb-20 mx-auto"
-            src={IconGnosis}
-          />
-          <p className="text-24 mb-4 mt-0 text-white text-center font-medium">
-            {t('Which chain is your address on')}
-          </p>
+          <div className="rabby-container">
+            <img
+              className="rabby-logo"
+              src="/images/logo-gray.png"
+              alt="rabby logo"
+            />
+            <img
+              className="unlock-logo w-[80px] h-[80px] mb-20 mx-auto"
+              src={IconGnosis}
+            />
+            <p className="text-24 mb-4 mt-0 text-white text-center font-medium">
+              {t('Which chain is your address on')}
+            </p>
+          </div>
           <img src="/images/gnosis-mask-1.png" className="mask" />
         </header>
-        <div className="relative p-20">
-          {Object.values(CHAINS)
-            .sort((a, b) => {
-              if (
-                SUPPORT_CHAINS.includes(a.enum) &&
-                !SUPPORT_CHAINS.includes(b.enum)
-              ) {
-                return -1;
-              }
-              if (
-                SUPPORT_CHAINS.includes(b.enum) &&
-                !SUPPORT_CHAINS.includes(a.enum)
-              ) {
-                return 1;
-              }
-              return 0;
-            })
-            .map((chain) => (
-              <FieldCheckbox
-                key={chain.network}
-                leftIcon={<img src={chain.logo} className="w-28 h-28" />}
-                rightSlot={
-                  SUPPORT_CHAINS.find(
-                    (item) => item === chain.enum
-                  ) ? undefined : (
-                    <span className="text-black text-12">Coming soon</span>
-                  )
+        <div className="rabby-container">
+          <div className="relative p-20">
+            {Object.values(CHAINS)
+              .sort((a, b) => {
+                if (
+                  SUPPORT_CHAINS.includes(a.enum) &&
+                  !SUPPORT_CHAINS.includes(b.enum)
+                ) {
+                  return -1;
                 }
-                showCheckbox={
-                  !!SUPPORT_CHAINS.find((item) => item === chain.enum)
+                if (
+                  SUPPORT_CHAINS.includes(b.enum) &&
+                  !SUPPORT_CHAINS.includes(a.enum)
+                ) {
+                  return 1;
                 }
-                disable={!SUPPORT_CHAINS.find((item) => item === chain.enum)}
-                checked={selectedChain?.network === chain.network}
-                onChange={(checked: boolean) =>
-                  handleChainChanged(chain, checked)
-                }
-              >
-                {chain.name}
-              </FieldCheckbox>
-            ))}
+                return 0;
+              })
+              .map((chain) => (
+                <FieldCheckbox
+                  key={chain.network}
+                  leftIcon={<img src={chain.logo} className="w-28 h-28" />}
+                  rightSlot={
+                    SUPPORT_CHAINS.find(
+                      (item) => item === chain.enum
+                    ) ? undefined : (
+                      <span className="text-black text-12">Coming soon</span>
+                    )
+                  }
+                  showCheckbox={
+                    !!SUPPORT_CHAINS.find((item) => item === chain.enum)
+                  }
+                  disable={!SUPPORT_CHAINS.find((item) => item === chain.enum)}
+                  checked={selectedChain?.network === chain.network}
+                  onChange={(checked: boolean) =>
+                    handleChainChanged(chain, checked)
+                  }
+                >
+                  {chain.name}
+                </FieldCheckbox>
+              ))}
+          </div>
         </div>
       </StrayPageWithButton>
     );

@@ -1,23 +1,18 @@
 import React from 'react';
-import { Link } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { AddAddressOptions } from 'ui/component';
-import IconSetting from 'ui/assets/settings.svg';
 import './style.less';
 
 const NoAddress = () => {
   const { t } = useTranslation();
   return (
     <div className="no-address bg-gray-bg">
-      <div className="h-[60px] header px-24 top-0">
-        <div className="flex justify-between mb-4 items-center">
+      <div className="h-[60px] header top-0">
+        <div className="flex justify-between mb-4 items-center rabby-container px-[20px]">
           <div className="text-20 text-white">{t('Please add an address')}</div>
-          <Link to="/settings">
-            <img className="icon icon-settings" src={IconSetting} />
-          </Link>
         </div>
       </div>
-      <div className="options mt-[60px]">
+      <div className="options mt-[60px] rabby-container">
         <AddAddressOptions />
       </div>
     </div>

@@ -7,6 +7,8 @@ import { KEYRING_TYPE } from 'consts';
 import { StrayPageWithButton } from 'ui/component';
 import { useWallet, useWalletRequest } from 'ui/utils';
 import PrivatekeyIcon from 'ui/assets/privatekey-icon.svg';
+import { useMedia } from 'react-use';
+import clsx from 'clsx';
 
 const ImportPrivateKey = () => {
   const history = useHistory();
@@ -16,6 +18,7 @@ const ImportPrivateKey = () => {
   const [importedAccountsLength, setImportedAccountsLength] = useState<number>(
     0
   );
+  const isWide = useMedia('(min-width: 401px)');
 
   const [run, loading] = useWalletRequest(wallet.importPrivateKey, {
     onSuccess(accounts) {
@@ -83,12 +86,14 @@ const ImportPrivateKey = () => {
 
   return (
     <StrayPageWithButton
+      custom={isWide}
       spinning={loading}
       form={form}
       onSubmit={({ key }) => run(key)}
       hasBack
       hasDivider
       noPadding
+      className={clsx(isWide && 'rabby-stray-page')}
       formProps={{
         onValuesChange: handleValuesChange,
       }}
@@ -96,11 +101,13 @@ const ImportPrivateKey = () => {
       backDisabled={false}
     >
       <header className="create-new-header create-password-header h-[234px]">
-        <img
-          className="rabby-logo"
-          src="/images/logo-gray.png"
-          alt="rabby logo"
-        />
+        <div className="rabby-container">
+          <img
+            className="rabby-logo"
+            src="/images/logo-gray.png"
+            alt="rabby logo"
+          />
+        </div>
         <img
           className="unlock-logo w-[128px] h-[128px] mx-auto"
           src={PrivatekeyIcon}
@@ -110,18 +117,20 @@ const ImportPrivateKey = () => {
         </p>
         <img src="/images/private-mask.png" className="mask" />
       </header>
-      <div className="pt-32 px-20">
-        <Form.Item
-          name="key"
-          rules={[{ required: true, message: t('Please input Private key') }]}
-        >
-          <Input
-            placeholder={t('Private key')}
-            size="large"
-            autoFocus
-            spellCheck={false}
-          />
-        </Form.Item>
+      <div className="rabby-container">
+        <div className="pt-32 px-20">
+          <Form.Item
+            name="key"
+            rules={[{ required: true, message: t('Please input Private key') }]}
+          >
+            <Input
+              placeholder={t('Private key')}
+              size="large"
+              autoFocus
+              spellCheck={false}
+            />
+          </Form.Item>
+        </div>
       </div>
     </StrayPageWithButton>
   );

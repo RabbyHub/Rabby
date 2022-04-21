@@ -59,6 +59,27 @@ button:focus {
   }
 }
 
+@media (min-width: 401px) {
+  .rabby-stray-page {
+    background-color: #f5f6fa;
+    height: 100%;
+
+    .footer {
+      background-color: #fff;
+      bottom: 0 !important;
+
+      & > div {
+        width: 400px !important;
+        margin: 0 auto;
+        border-top: 0;
+        .ant-btn {
+          height: 44px !important;
+        }
+      }
+    }
+  }
+}
+
 .import-watchmode {
   .tags {
     margin: -8px 0 16px;
@@ -231,5 +252,17 @@ button:focus {
       margin: 0 auto;
       transform: translateZ(0);
     }
+  }
+}
+
+.rabby-container {
+  width: 100%;
+}
+
+@media (min-width: 401px) {
+  .rabby-container {
+    width: 400px;
+    margin-left: auto;
+    margin-right: auto;
   }
 }

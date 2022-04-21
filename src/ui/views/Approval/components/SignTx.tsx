@@ -42,7 +42,7 @@ import {
   validateGasPriceRange,
   convertLegacyTo1559,
 } from '@/utils/transaction';
-import { useWallet, useApproval } from 'ui/utils';
+import { useWallet, useApproval, openInternalPageInTab } from 'ui/utils';
 import { ChainGas, Account } from 'background/service/preference';
 import GnosisDrawer from './TxComponents/GnosisDrawer';
 import Approve from './TxComponents/Approve';
@@ -705,9 +705,21 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       setCantProcessReason(
         <div className="flex items-center gap-8">
           <img src={IconWatch} alt="" className="w-[24px]" />
-          {t(
-            'The current address is in Watch Mode. If you want to continue, please import it.'
-          )}
+          <div>
+            The currrent address is in Watch Mode. If your want to continue,
+            please{' '}
+            <a
+              href=""
+              onClick={async (e) => {
+                e.preventDefault();
+                await rejectApproval('User rejected the request.', true);
+                openInternalPageInTab('no-address');
+              }}
+            >
+              import it
+            </a>{' '}
+            again using another mode.
+          </div>
         </div>
       );
     }
@@ -943,6 +955,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
                       <Tooltip
                         overlayClassName="rectangle watcSign__tooltip"
                         title={cantProcessReason}
+                        placement="topRight"
                       >
                         <div className="w-[172px] relative flex items-center">
                           <Button
@@ -1016,6 +1029,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
                       <Tooltip
                         overlayClassName="rectangle watcSign__tooltip"
                         title={cantProcessReason}
+                        placement="topRight"
                       >
                         <div className="w-[172px] relative flex items-center">
                           <Button

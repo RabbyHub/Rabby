@@ -944,6 +944,12 @@ export enum WALLET_BRAND_TYPES {
   KEYSTONE = 'Keystone',
 }
 
+enum WALLET_BRAND_CATEGORY {
+  MOBILE = 'mobile',
+  HARDWARE = 'hardware',
+  INSTITUTIONAL = 'institutional',
+}
+
 export const WALLET_BRAND_CONTENT = {
   [WALLET_BRAND_TYPES.AMBER]: {
     id: 0,
@@ -952,6 +958,7 @@ export const WALLET_BRAND_CONTENT = {
     icon: IconAmber,
     image: LogoAmber,
     connectType: BRAND_WALLET_CONNECT_TYPE.WalletConnect,
+    category: WALLET_BRAND_CATEGORY.INSTITUTIONAL,
   },
   [WALLET_BRAND_TYPES.BITBOX02]: {
     id: 10,
@@ -960,6 +967,7 @@ export const WALLET_BRAND_CONTENT = {
     icon: IconBitBox02,
     image: IconBitBox02WithBorder,
     connectType: BRAND_WALLET_CONNECT_TYPE.BitBox02Connect,
+    category: WALLET_BRAND_CATEGORY.HARDWARE,
   },
   [WALLET_BRAND_TYPES.COBO]: {
     id: 1,
@@ -968,6 +976,7 @@ export const WALLET_BRAND_CONTENT = {
     icon: IconCobo,
     image: LogoCobo,
     connectType: BRAND_WALLET_CONNECT_TYPE.WalletConnect,
+    category: WALLET_BRAND_CATEGORY.INSTITUTIONAL,
   },
   [WALLET_BRAND_TYPES.FIREBLOCKS]: {
     id: 11,
@@ -976,6 +985,7 @@ export const WALLET_BRAND_CONTENT = {
     icon: IconFireblocks,
     image: IconFireblocksWithBorder,
     connectType: BRAND_WALLET_CONNECT_TYPE.WalletConnect,
+    category: WALLET_BRAND_CATEGORY.INSTITUTIONAL,
   },
   [WALLET_BRAND_TYPES.GNOSIS]: {
     id: 13,
@@ -984,6 +994,7 @@ export const WALLET_BRAND_CONTENT = {
     icon: IconGnosis,
     image: IconGnosis,
     connectType: BRAND_WALLET_CONNECT_TYPE.GnosisConnect,
+    category: WALLET_BRAND_CATEGORY.INSTITUTIONAL,
   },
   [WALLET_BRAND_TYPES.GRIDPLUS]: {
     id: 12,
@@ -992,6 +1003,7 @@ export const WALLET_BRAND_CONTENT = {
     icon: IconGridPlus,
     image: IconGridPlus,
     connectType: BRAND_WALLET_CONNECT_TYPE.GridPlusConnect,
+    category: WALLET_BRAND_CATEGORY.HARDWARE,
   },
   [WALLET_BRAND_TYPES.IMTOKEN]: {
     id: 2,
@@ -1000,6 +1012,7 @@ export const WALLET_BRAND_CONTENT = {
     icon: IconImtoken,
     image: LogoImtoken,
     connectType: BRAND_WALLET_CONNECT_TYPE.WalletConnect,
+    category: WALLET_BRAND_CATEGORY.MOBILE,
   },
   [WALLET_BRAND_TYPES.JADE]: {
     id: 3,
@@ -1008,6 +1021,7 @@ export const WALLET_BRAND_CONTENT = {
     icon: IconJade,
     image: LogoJade,
     connectType: BRAND_WALLET_CONNECT_TYPE.WalletConnect,
+    category: WALLET_BRAND_CATEGORY.INSTITUTIONAL,
   },
   [WALLET_BRAND_TYPES.KEYSTONE]: {
     id: 15,
@@ -1016,6 +1030,7 @@ export const WALLET_BRAND_CONTENT = {
     icon: LogoKeystone,
     image: LogoKeystone,
     connectType: BRAND_WALLET_CONNECT_TYPE.QRCodeBase,
+    category: WALLET_BRAND_CATEGORY.HARDWARE,
   },
   [WALLET_BRAND_TYPES.LEDGER]: {
     id: 4,
@@ -1024,6 +1039,7 @@ export const WALLET_BRAND_CONTENT = {
     icon: LogoLedgerWhite,
     image: LogoLedgerDark,
     connectType: BRAND_WALLET_CONNECT_TYPE.LedgerConnect,
+    category: WALLET_BRAND_CATEGORY.HARDWARE,
   },
   [WALLET_BRAND_TYPES.MATHWALLET]: {
     id: 5,
@@ -1032,6 +1048,7 @@ export const WALLET_BRAND_CONTENT = {
     icon: IconMath,
     image: LogoMath,
     connectType: BRAND_WALLET_CONNECT_TYPE.WalletConnect,
+    category: WALLET_BRAND_CATEGORY.MOBILE,
   },
   [WALLET_BRAND_TYPES.METAMASK]: {
     id: 14,
@@ -1040,6 +1057,7 @@ export const WALLET_BRAND_CONTENT = {
     icon: IconMetaMask,
     image: IconMetaMask,
     connectType: BRAND_WALLET_CONNECT_TYPE.WalletConnect,
+    category: WALLET_BRAND_CATEGORY.MOBILE,
   },
   [WALLET_BRAND_TYPES.ONEKEY]: {
     id: 6,
@@ -1048,6 +1066,7 @@ export const WALLET_BRAND_CONTENT = {
     icon: IconOnekey,
     image: LogoOnekey,
     connectType: BRAND_WALLET_CONNECT_TYPE.OneKeyConnect,
+    category: WALLET_BRAND_CATEGORY.HARDWARE,
   },
   [WALLET_BRAND_TYPES.TP]: {
     id: 7,
@@ -1056,6 +1075,7 @@ export const WALLET_BRAND_CONTENT = {
     icon: IconTokenpocket,
     image: LogoTp,
     connectType: BRAND_WALLET_CONNECT_TYPE.WalletConnect,
+    category: WALLET_BRAND_CATEGORY.MOBILE,
   },
   [WALLET_BRAND_TYPES.TREZOR]: {
     id: 8,
@@ -1064,6 +1084,7 @@ export const WALLET_BRAND_CONTENT = {
     icon: IconTrezor,
     image: LogoTrezor,
     connectType: BRAND_WALLET_CONNECT_TYPE.TrezorConnect,
+    category: WALLET_BRAND_CATEGORY.HARDWARE,
   },
   [WALLET_BRAND_TYPES.TRUSTWALLET]: {
     id: 9,
@@ -1072,6 +1093,7 @@ export const WALLET_BRAND_CONTENT = {
     icon: IconTrust,
     image: LogoTrust,
     connectType: BRAND_WALLET_CONNECT_TYPE.WalletConnect,
+    category: WALLET_BRAND_CATEGORY.MOBILE,
   },
 };
 
