@@ -143,20 +143,25 @@ const SendToken = () => {
         )
       );
     }
-    await wallet.setLastTimeSendToken(currentAccount!.address, currentToken);
-    await wallet.setPageStateCache({
-      path: history.location.pathname,
-      params: {},
-      states: {
-        values: form.getFieldsValue(),
-        currentToken,
-      },
-    });
-    wallet.sendRequest({
-      method: 'eth_sendTransaction',
-      params: [params],
-    });
-    window.close();
+    try {
+      await wallet.setLastTimeSendToken(currentAccount!.address, currentToken);
+      await wallet.setPageStateCache({
+        path: history.location.pathname,
+        params: {},
+        states: {
+          values: form.getFieldsValue(),
+          currentToken,
+        },
+      });
+      await wallet.sendRequest({
+        method: 'eth_sendTransaction',
+        params: [params],
+      });
+      window.close();
+    } catch (e) {
+      message.error(e.message);
+      console.error(e);
+    }
   };
 
   const handleConfirmContact = (data: ContactBookItem | null, type: string) => {

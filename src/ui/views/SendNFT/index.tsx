@@ -138,7 +138,7 @@ const SendNFT = () => {
       },
     });
     try {
-      wallet.transferNFT({
+      await wallet.transferNFT({
         to,
         amount,
         tokenId: nftItem.inner_id,
