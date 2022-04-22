@@ -210,7 +210,7 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
       </div>
       <footer>
         {isLedger && !useLedgerLive && !hasConnectedLedgerHID && (
-          <LedgerWebHIDAlert />
+          <LedgerWebHIDAlert connected={hasConnectedLedgerHID} />
         )}
         <SecurityCheckBar
           status={securityCheckStatus}

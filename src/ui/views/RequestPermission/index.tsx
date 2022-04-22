@@ -5,6 +5,7 @@ import { Button } from 'antd';
 import TransportWebHID from '@ledgerhq/hw-transport-webhid';
 import { StrayPage } from 'ui/component';
 import { query2obj } from 'ui/utils/url';
+import { useWallet } from 'ui/utils';
 import { HARDWARE_KEYRING_TYPES } from 'consts';
 import IconSuccess from 'ui/assets/success-large.svg';
 
@@ -17,6 +18,7 @@ const RequestPermission = () => {
   const from = qs.from;
   const { t } = useTranslation();
   const history = useHistory();
+  const wallet = useWallet();
   const needConfirm = type === 'ledger';
 
   const PERMISSIONS = {
@@ -45,6 +47,7 @@ const RequestPermission = () => {
       try {
         const transport = await TransportWebHID.create();
         await transport.close();
+        await wallet.authorizeLedgerHIDPermission();
         if (from && from === 'approval') {
           setShowSuccess(true);
           return;

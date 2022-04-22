@@ -48,6 +48,7 @@ class LedgerBridgeKeyring extends EventEmitter {
   isWebHID: boolean;
   transport: null | Transport;
   app: null | LedgerEth;
+  hasHIDPermission: null | boolean;
   resolvePromise: null | ((value: any) => void) = null;
   rejectPromise: null | ((value: any) => void) = null;
   onSendTransaction: null | (() => Promise<any>) = null;
@@ -66,12 +67,13 @@ class LedgerBridgeKeyring extends EventEmitter {
     this.iframe = null;
     this.network = 'mainnet';
     this.implementFullBIP44 = false;
-    this.deserialize(opts);
+    this.hasHIDPermission = null;
     this.msgQueue = [];
     this.isWebHID = false;
     this.transport = null;
     this.isWebUSB = false;
     this.app = null;
+    this.deserialize(opts);
 
     this.iframeLoaded = false;
     this._setupIframe();
@@ -85,6 +87,7 @@ class LedgerBridgeKeyring extends EventEmitter {
       bridgeUrl: this.bridgeUrl,
       implementFullBIP44: false,
       isWebHID: this.isWebHID,
+      hasHIDPermission: this.hasHIDPermission,
     });
   }
 
@@ -94,6 +97,9 @@ class LedgerBridgeKeyring extends EventEmitter {
     this.accounts = opts.accounts || [];
     this.accountDetails = opts.accountDetails || {};
     this.isWebHID = opts.isWebHID;
+    if (opts.hasHIDPermission !== undefined) {
+      this.hasHIDPermission = opts.hasHIDPermission;
+    }
     if (opts.isWebUSB) {
       this.isWebHID = opts.isWebUSB;
     }
@@ -857,6 +863,10 @@ class LedgerBridgeKeyring extends EventEmitter {
       index = Number(arr[arr.length - 1]);
     }
     return index;
+  }
+
+  authorizeHIDPermission() {
+    this.hasHIDPermission = true;
   }
 
   async _getAccountsBIP44(from, to) {

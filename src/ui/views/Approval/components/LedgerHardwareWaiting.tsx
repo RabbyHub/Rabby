@@ -9,7 +9,12 @@ import {
   EVENTS,
   KEYRING_CLASS,
 } from 'consts';
-import { useApproval, useWallet, openInTab } from 'ui/utils';
+import {
+  useApproval,
+  useWallet,
+  openInTab,
+  openInternalPageInTab,
+} from 'ui/utils';
 import eventBus from '@/eventBus';
 import stats from '@/stats';
 import { SvgIconOpenExternal } from 'ui/assets';
@@ -86,7 +91,11 @@ const LedgerHardwareWaiting = ({ params }: { params: ApprovalParams }) => {
       is1559: chain.eip['1559'],
     });
     setIsSignText(params.isGnosis ? true : approval?.approvalType !== 'SignTx');
-    eventBus.addEventListener(EVENTS.LEDGER.REJECTED, async () => {
+    eventBus.addEventListener(EVENTS.LEDGER.REJECTED, async (data) => {
+      if (/DisconnectedDeviceDuringOperation/i.test(data)) {
+        await rejectApproval('User rejected the request.');
+        openInternalPageInTab('request-permission?type=ledger&from=approval');
+      }
       setConnectStatus(WALLETCONNECT_STATUS_MAP.FAILD);
     });
     eventBus.addEventListener(EVENTS.SIGN_FINISHED, async (data) => {
@@ -107,6 +116,11 @@ const LedgerHardwareWaiting = ({ params }: { params: ApprovalParams }) => {
           action: 'Submit',
           label: KEYRING_CLASS.HARDWARE.LEDGER,
         });
+        const hasPermission = await wallet.checkLedgerHasHIDPermission();
+        const isUseLedgerLive = await wallet.isUseLedgerLive();
+        if (!hasPermission && !isUseLedgerLive) {
+          await wallet.authorizeLedgerHIDPermission();
+        }
         resolveApproval(data.data, !isSignText);
       } else {
         setConnectStatus(WALLETCONNECT_STATUS_MAP.FAILD);
