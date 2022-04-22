@@ -272,7 +272,7 @@ const SignText = ({ params }: { params: SignTextProps }) => {
             <p className={clsx('text-explain', explainStatus)}>
               {explain}
               <Tooltip
-                placement="top"
+                placement="topRight"
                 overlayClassName="text-explain-tooltip"
                 title={t(
                   'This summary information is provide by DeBank OpenAPI'
@@ -305,6 +305,7 @@ const SignText = ({ params }: { params: SignTextProps }) => {
           </Button>
           {isWatch ? (
             <Tooltip
+              placement="topRight"
               overlayClassName="rectangle watcSign__tooltip"
               title={cantProcessReason}
             >

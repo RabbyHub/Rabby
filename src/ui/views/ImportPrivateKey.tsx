@@ -100,22 +100,22 @@ const ImportPrivateKey = () => {
       onBackClick={handleClickBack}
       backDisabled={false}
     >
-      <header className="create-new-header create-password-header h-[234px]">
+      <header className="create-new-header create-password-header res h-[234px]">
         <div className="rabby-container">
           <img
             className="rabby-logo"
             src="/images/logo-gray.png"
             alt="rabby logo"
           />
+          <img
+            className="unlock-logo w-[128px] h-[128px] mx-auto"
+            src={PrivatekeyIcon}
+          />
+          <p className="text-24 mb-4 mt-0 text-white text-center font-bold">
+            {t('Enter Your Private Key')}
+          </p>
+          <img src="/images/private-mask.png" className="mask" />
         </div>
-        <img
-          className="unlock-logo w-[128px] h-[128px] mx-auto"
-          src={PrivatekeyIcon}
-        />
-        <p className="text-24 mb-4 mt-0 text-white text-center font-bold">
-          {t('Enter Your Private Key')}
-        </p>
-        <img src="/images/private-mask.png" className="mask" />
       </header>
       <div className="rabby-container">
         <div className="pt-32 px-20">

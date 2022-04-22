@@ -221,7 +221,7 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
             <p className="text-explain">
               {explain}
               <Tooltip
-                placement="top"
+                placement="topRight"
                 overlayClassName="text-explain-tooltip"
                 title={t(
                   'This summary information is provide by DeBank OpenAPI'
@@ -257,6 +257,7 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
           </Button>
           {isWatch ? (
             <Tooltip
+              placement="topRight"
               overlayClassName="rectangle watcSign__tooltip"
               title={cantProcessReason}
             >

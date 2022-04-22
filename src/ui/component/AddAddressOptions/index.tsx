@@ -285,7 +285,7 @@ const AddAddressOptions = () => {
       >
         {renderList.map((item) => {
           return (
-            <>
+            <div key={item.key}>
               <div className={clsx('connect-hint')}>{item.title}</div>
               {item.values?.map((data) => (
                 <Field
@@ -311,7 +311,7 @@ const AddAddressOptions = () => {
                   {data!.content}
                 </Field>
               ))}
-            </>
+            </div>
           );
         })}
         <div className="divide-line-list"></div>

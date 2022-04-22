@@ -138,7 +138,7 @@ const ImportGnosisAddress = () => {
         formProps={{ onValuesChange: handleValuesChange }}
         nextLoading={loading}
       >
-        <header className="create-new-header create-password-header h-[264px]">
+        <header className="create-new-header create-password-header h-[264px] res">
           <div className="rabby-container">
             <img
               className="rabby-logo"
@@ -155,8 +155,8 @@ const ImportGnosisAddress = () => {
             <p className="text-14 mb-0 mt-4 text-white opacity-80 text-center">
               {t('Add address')}
             </p>
+            <img src="/images/gnosis-mask-2.png" className="mask" />
           </div>
-          <img src="/images/gnosis-mask-2.png" className="mask" />
         </header>
         <div className="rabby-container">
           <div className="relative p-20">
@@ -187,7 +187,7 @@ const ImportGnosisAddress = () => {
         noPadding
         nextDisabled={selectedChain === null}
       >
-        <header className="create-new-header create-password-header h-[200px]">
+        <header className="create-new-header create-password-header h-[200px] res">
           <div className="rabby-container">
             <img
               className="rabby-logo"
@@ -201,8 +201,8 @@ const ImportGnosisAddress = () => {
             <p className="text-24 mb-4 mt-0 text-white text-center font-medium">
               {t('Which chain is your address on')}
             </p>
+            <img src="/images/gnosis-mask-1.png" className="mask" />
           </div>
-          <img src="/images/gnosis-mask-1.png" className="mask" />
         </header>
         <div className="rabby-container">
           <div className="relative p-20">

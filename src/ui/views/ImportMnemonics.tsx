@@ -88,7 +88,7 @@ const ImportMnemonic = () => {
       onBackClick={handleClickBack}
       backDisabled={false}
     >
-      <header className="create-new-header create-password-header h-[234px]">
+      <header className="create-new-header create-password-header h-[234px] res">
         <div className="rabby-container">
           <img
             className="rabby-logo"
@@ -102,8 +102,8 @@ const ImportMnemonic = () => {
           <p className="text-24 mb-4 mt-0 text-white text-center font-bold">
             {t('Enter Your Mnemonic')}
           </p>
+          <img src="/images/mnemonic-mask.png" className="mask" />
         </div>
-        <img src="/images/mnemonic-mask.png" className="mask" />
       </header>
       <div className="rabby-container">
         <div className="pt-32 px-20">

@@ -229,25 +229,25 @@ const ImportWatchAddress = () => {
       disableKeyDownEvent={disableKeydown}
       onBackClick={handleClickBack}
     >
-      <header className="create-new-header create-password-header h-[264px]">
+      <header className="create-new-header create-password-header h-[264px] res">
         <div className="rabby-container">
           <img
             className="rabby-logo"
             src="/images/logo-gray.png"
             alt="rabby logo"
           />
+          <img
+            className="unlock-logo w-[80px] h-[75px] mb-20 mx-auto"
+            src={WatchLogo}
+          />
+          <p className="text-24 mb-4 mt-0 text-white text-center font-bold">
+            {t('Watch Mode')}
+          </p>
+          <p className="text-14 mb-0 mt-4 text-white opacity-80 text-center">
+            {t('Enter an address without providing private key')}
+          </p>
+          <img src="/images/watch-mask.png" className="mask" />
         </div>
-        <img
-          className="unlock-logo w-[80px] h-[75px] mb-20 mx-auto"
-          src={WatchLogo}
-        />
-        <p className="text-24 mb-4 mt-0 text-white text-center font-bold">
-          {t('Watch Mode')}
-        </p>
-        <p className="text-14 mb-0 mt-4 text-white opacity-80 text-center">
-          {t('Enter an address without providing private key')}
-        </p>
-        <img src="/images/watch-mask.png" className="mask" />
       </header>
       <div className="rabby-container">
         <div className="relative">

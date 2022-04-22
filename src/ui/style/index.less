@@ -43,6 +43,21 @@ button:focus {
   position: relative;
   background: linear-gradient(111.24deg, #8babff 9.66%, #8094ff 85.59%);
   padding: 32px 20px;
+  &.res {
+    padding: 0;
+
+    .mask {
+      width: unset;
+      max-width: none;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+    .rabby-container {
+      padding: 32px 20px;
+      height: 100%;
+      position: relative;
+    }
+  }
   .rabby-logo {
     width: 84px;
     height: 24px;

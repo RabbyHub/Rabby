@@ -12,6 +12,7 @@ import { IconImportSuccess } from 'ui/assets';
 import SuccessLogo from 'ui/assets/success-logo.svg';
 import './index.less';
 import { useMedia } from 'react-use';
+import Mask from 'ui/assets/import-mask.png';
 const { AddressItem } = AddressList;
 
 const ImportSuccess = ({ isPopup = false }: { isPopup?: boolean }) => {
@@ -84,9 +85,9 @@ const ImportSuccess = ({ isPopup = false }: { isPopup?: boolean }) => {
       noPadding={isPopup}
       isScrollContainer={isPopup}
     >
-      {isPopup && (
-        <header className="create-new-header create-password-header h-[264px]">
-          <div className="rabby-container">
+      {isPopup &&
+        (!isWide ? (
+          <header className="create-new-header create-password-header h-[264px]">
             <img
               className="rabby-logo"
               src="/images/logo-gray.png"
@@ -99,10 +100,22 @@ const ImportSuccess = ({ isPopup = false }: { isPopup?: boolean }) => {
             <p className="text-24 mb-4 mt-0 text-white text-center font-bold">
               {t('Imported successfully')}
             </p>
+            <img src="/images/success-mask.png" className="mask" />
+          </header>
+        ) : (
+          <div className="create-new-header create-password-header h-[220px]">
+            <div className="rabby-container">
+              <img
+                className="unlock-logo w-[128px] h-[128px] mx-auto"
+                src={SuccessLogo}
+              />
+              <p className="text-24 mb-4 mt-0 text-white text-center font-bold">
+                {t('Imported successfully')}
+              </p>
+            </div>
+            <img src={Mask} className="mask" />
           </div>
-          <img src="/images/success-mask.png" className="mask" />
-        </header>
-      )}
+        ))}
       <div className="rabby-container">
         <div
           onClick={(e) => {

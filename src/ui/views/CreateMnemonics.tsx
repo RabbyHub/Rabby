@@ -42,7 +42,11 @@ const DisplayMnemonic = ({ mnemonics, onNextClick }) => {
 
   const handleBackClick = async () => {
     await wallet.removePreMnemonics();
-    history.replace('/');
+    if (history.length > 1) {
+      history.goBack();
+    } else {
+      history.replace('/');
+    }
   };
 
   return (
