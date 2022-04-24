@@ -9,17 +9,19 @@ import {
   LoadingOverlay,
 } from 'ui/component';
 import stats from '@/stats';
-import { useWallet, useWalletRequest } from 'ui/utils';
+import { getUiType, useWallet, useWalletRequest } from 'ui/utils';
 import { HARDWARE_KEYRING_TYPES, HDPaths } from 'consts';
 import { BIP44_PATH, LEDGER_LIVE_PATH } from '../ImportHardware/LedgerHdPath';
 import Pagination from './components/Pagination';
 import './style.less';
+import { useMedia } from 'react-use';
 
 const { Option } = Select;
 
 const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
   const history = useHistory();
   const { t } = useTranslation();
+  const isWide = useMedia('(min-width: 401px)');
   const { state } = useLocation<{
     keyring: string;
     isMnemonics?: boolean;
@@ -30,7 +32,15 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
   }>();
 
   if (!state) {
-    history.replace('/dashboard');
+    if (getUiType().isTab) {
+      if (history.length) {
+        history.goBack();
+      } else {
+        window.close();
+      }
+    } else {
+      history.replace('/dashboard');
+    }
     return null;
   }
 
@@ -219,6 +229,8 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
   return (
     <div className="select-address">
       <StrayPageWithButton
+        custom={isPopup && isWide}
+        className={clsx(isPopup && isWide && 'rabby-stray-page')}
         header={
           isPopup
             ? undefined
@@ -245,12 +257,14 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
       >
         {isPopup && (
           <header className="create-new-header create-password-header h-[100px]">
-            <p className="text-24 mb-4 text-white text-center font-bold">
-              {t('Select Addresses')}
-            </p>
-            <p className="text-14 mb-0 mt-4 text-white opacity-80 text-center">
-              {t('Select the addresses you want to import')}
-            </p>
+            <div className="rabby-container">
+              <p className="text-24 mb-4 text-white text-center font-bold">
+                {t('Select Addresses')}
+              </p>
+              <p className="text-14 mb-0 mt-4 text-white opacity-80 text-center">
+                {t('Select the addresses you want to import')}
+              </p>
+            </div>
           </header>
         )}
         {isLedger && (
@@ -297,23 +311,22 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
             {selectedAccounts.length} {t('addresses selected')}
           </div>
         </div>
-        <div
-          className={clsx('overflow-y-auto lg:h-[290px] flex justify-center', {
-            'p-20': isPopup,
-            'flex-1': isPopup,
-          })}
-        >
-          <Form.Item
-            className="mb-0 lg:w-[460px]"
-            name="selectedAddressIndexes"
+        <div className="rabby-container">
+          <div
+            className={clsx('overflow-y-auto flex justify-center', {
+              'p-20': isPopup,
+              'flex-1': isPopup,
+            })}
           >
-            <MultiSelectAddressList
-              accounts={accounts}
-              importedAccounts={importedAccounts}
-              type={keyring}
-              onChange={handleSelectChange}
-            />
-          </Form.Item>
+            <Form.Item className="mb-0 flex-1" name="selectedAddressIndexes">
+              <MultiSelectAddressList
+                accounts={accounts}
+                importedAccounts={importedAccounts}
+                type={keyring}
+                onChange={handleSelectChange}
+              />
+            </Form.Item>
+          </div>
         </div>
         <Pagination current={currentPage} onChange={handlePageChange} />
       </StrayPageWithButton>

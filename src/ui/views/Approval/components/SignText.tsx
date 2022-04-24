@@ -1,9 +1,14 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, ReactNode } from 'react';
 import { Button, Tooltip, message } from 'antd';
 import { useTranslation } from 'react-i18next';
 import clsx from 'clsx';
 import { KEYRING_CLASS, KEYRING_TYPE } from 'consts';
-import { useApproval, useWallet, hex2Text } from 'ui/utils';
+import {
+  useApproval,
+  useWallet,
+  hex2Text,
+  openInternalPageInTab,
+} from 'ui/utils';
 import {
   SecurityCheckResponse,
   SecurityCheckDecision,
@@ -18,6 +23,8 @@ import LedgerWebHIDAlert from './LedgerWebHIDAlert';
 import { ReactComponent as IconQuestionMark } from 'ui/assets/question-mark.svg';
 import IconArrowRight from 'ui/assets/arrow-right-gray.svg';
 import IconInfo from 'ui/assets/infoicon.svg';
+import IconWatch from 'ui/assets/walletlogo/watch-purple.svg';
+import IconGnosis from 'ui/assets/walletlogo/gnosis.png';
 
 interface SignTextProps {
   data: string[];
@@ -67,6 +74,10 @@ const SignText = ({ params }: { params: SignTextProps }) => {
   const [isLedger, setIsLedger] = useState(false);
   const [useLedgerLive, setUseLedgerLive] = useState(false);
   const [hasConnectedLedgerHID, setHasConnectedLedgerHID] = useState(false);
+  const [
+    cantProcessReason,
+    setCantProcessReason,
+  ] = useState<ReactNode | null>();
 
   const handleSecurityCheck = async () => {
     setSecurityCheckStatus('loading');
@@ -181,9 +192,37 @@ const SignText = ({ params }: { params: SignTextProps }) => {
     setHasConnectedLedgerHID(await hasConnectedLedgerDevice());
     if (accountType === KEYRING_TYPE.WatchAddressKeyring) {
       setIsWatch(true);
+      setCantProcessReason(
+        <div className="flex items-center gap-8">
+          <img src={IconWatch} alt="" className="w-[24px]" />
+          <div>
+            The currrent address is in Watch Mode. If your want to continue,
+            please{' '}
+            <a
+              href=""
+              onClick={async (e) => {
+                e.preventDefault();
+                await rejectApproval('User rejected the request.', true);
+                openInternalPageInTab('no-address');
+              }}
+            >
+              import it
+            </a>{' '}
+            again using another mode.
+          </div>
+        </div>
+      );
     }
     if (accountType === KEYRING_TYPE.GnosisKeyring && !params.account) {
       setIsWatch(true);
+      setCantProcessReason(
+        <div className="flex items-center gap-8">
+          <img src={IconGnosis} alt="" className="w-[24px]" />
+          {t(
+            'This is a Gnosis Safe address, and it cannot be used to sign text.'
+          )}
+        </div>
+      );
     }
   };
 
@@ -193,37 +232,25 @@ const SignText = ({ params }: { params: SignTextProps }) => {
 
   useEffect(() => {
     (async () => {
-      if (['danger', 'forbidden'].includes(securityCheckStatus)) {
-        setSubmitText('Continue');
-        return;
-      }
       const currentAccount = await wallet.getCurrentAccount();
       if (
-        [KEYRING_CLASS.MNEMONIC, KEYRING_CLASS.PRIVATE_KEY].includes(
-          currentAccount.type
-        )
+        [
+          KEYRING_CLASS.MNEMONIC,
+          KEYRING_CLASS.PRIVATE_KEY,
+          KEYRING_CLASS.WATCH,
+        ].includes(currentAccount.type)
       ) {
         setSubmitText('Sign');
-        return;
+        setCheckText('Sign');
+      } else {
+        setSubmitText('Proceed');
+        setCheckText('Proceed');
       }
-      setSubmitText('Proceed');
+      if (['danger', 'forbidden'].includes(securityCheckStatus)) {
+        setSubmitText('Continue');
+      }
     })();
   }, [securityCheckStatus]);
-
-  useEffect(() => {
-    (async () => {
-      const currentAccount = await wallet.getCurrentAccount();
-      if (
-        [KEYRING_CLASS.MNEMONIC, KEYRING_CLASS.PRIVATE_KEY].includes(
-          currentAccount.type
-        )
-      ) {
-        setCheckText('Sign');
-        return;
-      }
-      setCheckText('Proceed');
-    })();
-  }, []);
 
   return (
     <>
@@ -245,7 +272,7 @@ const SignText = ({ params }: { params: SignTextProps }) => {
             <p className={clsx('text-explain', explainStatus)}>
               {explain}
               <Tooltip
-                placement="top"
+                placement="topRight"
                 overlayClassName="text-explain-tooltip"
                 title={t(
                   'This summary information is provide by DeBank OpenAPI'
@@ -278,8 +305,9 @@ const SignText = ({ params }: { params: SignTextProps }) => {
           </Button>
           {isWatch ? (
             <Tooltip
+              placement="topRight"
               overlayClassName="rectangle watcSign__tooltip"
-              title={t('Use_other_methods')}
+              title={cantProcessReason}
             >
               <div className="w-[172px] relative flex items-center">
                 <Button
@@ -289,7 +317,7 @@ const SignText = ({ params }: { params: SignTextProps }) => {
                   onClick={() => handleAllow()}
                   disabled={true}
                 >
-                  {t('Proceed')}
+                  {t('Sign')}
                 </Button>
                 <img src={IconInfo} className="absolute right-[40px]" />
               </div>
@@ -303,7 +331,7 @@ const SignText = ({ params }: { params: SignTextProps }) => {
               loading={isLoading}
               disabled={isLedger && !useLedgerLive && !hasConnectedLedgerHID}
             >
-              {submitText}
+              {t(submitText)}
             </Button>
           )}
         </div>

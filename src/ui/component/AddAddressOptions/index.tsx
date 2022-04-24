@@ -2,7 +2,7 @@ import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { message } from 'antd';
 import { useTranslation } from 'react-i18next';
-import { useWallet } from 'ui/utils';
+import { getUiType, useWallet } from 'ui/utils';
 import { openInternalPageInTab } from 'ui/utils/webapi';
 import Field from '../Field';
 import IconArrowRight from 'ui/assets/bookmark.svg';
@@ -23,6 +23,7 @@ import {
 } from 'consts';
 
 import clsx from 'clsx';
+import _ from 'lodash';
 
 const normaltype: string[] = [
   'createAddress',
@@ -112,9 +113,35 @@ const AddAddressOptions = () => {
         connectType: item.connectType,
         image: item.image,
         onClick: () => connectRouter(item),
+        category: item.category,
       };
     })
     .filter(Boolean);
+
+  const wallets = _.groupBy(brandWallet, 'category');
+
+  const renderList = [
+    {
+      title: 'Connect with Hardware Wallets',
+      key: 'hardware',
+    },
+    {
+      title: 'Connect with Institutional Wallets',
+      key: 'institutional',
+    },
+    {
+      title: 'Connect with Mobile Wallet Apps',
+      key: 'mobile',
+    },
+  ]
+    .map((item) => {
+      return {
+        ...item,
+        values: wallets[item.key],
+      };
+    })
+    .filter((item) => item.values);
+
   const renderData = [
     {
       leftIcon: IconCreatenewaddr,
@@ -142,6 +169,13 @@ const AddAddressOptions = () => {
             icon: <img src={IconSuccess} className="icon icon-success" />,
             content: t('Successfully created'),
           });
+
+          if (getUiType().isTab) {
+            setTimeout(() => {
+              window.close();
+            }, 2000);
+            return;
+          }
 
           history.push('/dashboard');
         } else {
@@ -249,33 +283,37 @@ const AddAddressOptions = () => {
             'hideclass'
         )}
       >
-        <div
-          className={clsx(
-            'connect-hint',
-            brandWallet.length === 0 && 'hideclass'
-          )}
-        >
-          {t('Connect with')}
-        </div>
-        {brandWallet.map((data) => (
-          <Field
-            className="address-options"
-            key={data!.content}
-            brand={data!.brand}
-            leftIcon={<img src={data!.leftIcon} className="icon wallet-icon" />}
-            rightIcon={
-              !savedWallet.toString().includes(data!.brand) ? (
-                <img src={IconArrowRight} className="icon icon-arrow-right" />
-              ) : null
-            }
-            showWalletConnect={data!.connectType === 'WalletConnect'}
-            onClick={data!.onClick}
-            callback={init}
-            address
-          >
-            {data!.content}
-          </Field>
-        ))}
+        {renderList.map((item) => {
+          return (
+            <div key={item.key}>
+              <div className={clsx('connect-hint')}>{item.title}</div>
+              {item.values?.map((data) => (
+                <Field
+                  className="address-options"
+                  key={data!.content}
+                  brand={data!.brand}
+                  leftIcon={
+                    <img src={data!.leftIcon} className="icon wallet-icon" />
+                  }
+                  rightIcon={
+                    !savedWallet.toString().includes(data!.brand) ? (
+                      <img
+                        src={IconArrowRight}
+                        className="icon icon-arrow-right"
+                      />
+                    ) : null
+                  }
+                  showWalletConnect={data!.connectType === 'WalletConnect'}
+                  onClick={data!.onClick}
+                  callback={init}
+                  address
+                >
+                  {data!.content}
+                </Field>
+              ))}
+            </div>
+          );
+        })}
         <div className="divide-line-list"></div>
         {displayNormalData.map((data) => {
           return !showMnemonic && data!.brand === 'importviaMnemonic' ? null : (

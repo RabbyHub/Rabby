@@ -64,6 +64,7 @@ const MultiSelectAddressList = ({
             key={account.index}
             checked={checked}
             onChange={() => handleToggle(account)}
+            className="lg:w-full"
             disable={
               imported && (
                 <span className="rounded-full bg-gray-bg text-gray-comment text-12 px-[5px] py-[3px]">

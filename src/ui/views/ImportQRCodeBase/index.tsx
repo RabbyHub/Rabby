@@ -12,6 +12,8 @@ import './style.less';
 import KeystoneLogo from 'ui/assets/walletlogo/keystone.png';
 import { HARDWARE_KEYRING_TYPES } from 'consts';
 import QRCodeCheckerDetail from 'ui/views/QRCodeCheckerDetail';
+import clsx from 'clsx';
+import { useMedia } from 'react-use';
 
 const ImportQRCodeBase = () => {
   const { t } = useTranslation();
@@ -21,6 +23,7 @@ const ImportQRCodeBase = () => {
   const decoder = useRef(new URDecoder());
   const [errorMessage, setErrorMessage] = useState('');
   const [scan, setScan] = useState(true);
+  const isWide = useMedia('(min-width: 401px)');
 
   const showErrorChecker = useMemo(() => {
     return errorMessage !== '';
@@ -95,30 +98,33 @@ const ImportQRCodeBase = () => {
   };
   return (
     <StrayPageWithButton
+      custom={isWide}
       form={form}
       hasBack
       hasDivider
       noPadding
-      className="import-qrcode"
+      className={clsx('import-qrcode', isWide && 'rabby-stray-page')}
       onBackClick={handleClickBack}
     >
-      <header className="create-new-header create-password-header h-[264px]">
-        <img
-          className="rabby-logo"
-          src="/images/logo-gray.png"
-          alt="rabby logo"
-        />
-        <img
-          className="unlock-logo w-[80px] h-[75px] mb-20 mx-auto"
-          src={KeystoneLogo}
-        />
-        <p className="text-24 mb-4 mt-0 text-white text-center font-bold">
-          {t('Keystone')}
-        </p>
-        <p className="text-14 mb-0 mt-4 text-white opacity-80 text-center">
-          {t('Scan the QR code on the Keystone hardware wallet')}
-        </p>
-        <img src="/images/watch-mask.png" className="mask" />
+      <header className="create-new-header create-password-header h-[264px] res">
+        <div className="rabby-container">
+          <img
+            className="rabby-logo"
+            src="/images/logo-gray.png"
+            alt="rabby logo"
+          />
+          <img
+            className="unlock-logo w-[80px] h-[75px] mb-20 mx-auto"
+            src={KeystoneLogo}
+          />
+          <p className="text-24 mb-4 mt-0 text-white text-center font-bold">
+            {t('Keystone')}
+          </p>
+          <p className="text-14 mb-0 mt-4 text-white opacity-80 text-center">
+            {t('Scan the QR code on the Keystone hardware wallet')}
+          </p>
+          <img src="/images/watch-mask.png" className="mask" />
+        </div>
       </header>
       <div className="flex justify-center qrcode-scanner">
         {scan && (

@@ -96,9 +96,9 @@ const ScanCopyQRCode: React.FC<Props> = ({
         </div>
       )}
       {showURL && (
-        <div className="url-container">
+        <div className="url-container mx-auto w-[336px] mt-0 mb-24">
           <Input.TextArea
-            className="h-[200px] w-[336px] p-16 m-32 mt-0 mb-24"
+            className="h-[200px] w-[336px] p-16 block"
             spellCheck={false}
             value={qrcodeURL}
             disabled={true}
