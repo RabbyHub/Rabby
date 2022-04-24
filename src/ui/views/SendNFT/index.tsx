@@ -406,7 +406,7 @@ const SendNFT = () => {
                     className="icon icon-loading"
                     viewBox="0 0 36 36"
                   />
-                  {t('Veriying token info ...')}
+                  {t('Verifying token info ...')}
                 </>
               ) : (
                 <>
