@@ -4,6 +4,7 @@ import { ethErrors } from 'eth-rpc-errors';
 import * as bip39 from 'bip39';
 import { ethers, Contract } from 'ethers';
 import { groupBy } from 'lodash';
+import abiCoder, { AbiCoder } from 'web3-eth-abi';
 import {
   keyringService,
   preferenceService,
@@ -34,7 +35,7 @@ import {
   WALLET_BRAND_CONTENT,
   CHAINS_ENUM,
 } from 'consts';
-import { ERC20ABI, ERC1155ABI, ERC721ABI } from 'consts/abi';
+import { ERC1155ABI, ERC721ABI } from 'consts/abi';
 import { Account, ChainGas } from '../service/preference';
 import { ConnectedSite } from '../service/permission';
 import { ExplainTxResponse, TokenItem } from '../service/openapi';
@@ -104,20 +105,46 @@ export class WalletController extends BaseController {
   ) => {
     const account = await preferenceService.getCurrentAccount();
     if (!account) throw new Error('no current account');
-    const chainId = Object.values(CHAINS)
-      .find((chain) => chain.serverId === chainServerId)
-      ?.id.toString();
+    const chainId = Object.values(CHAINS).find(
+      (chain) => chain.serverId === chainServerId
+    )?.id;
     if (!chainId) throw new Error('invalid chain id');
-    buildinProvider.currentProvider.currentAccount = account.address;
-    buildinProvider.currentProvider.currentAccountType = account.type;
-    buildinProvider.currentProvider.currentAccountBrand = account.brandName;
-    buildinProvider.currentProvider.chainId = chainId;
-    const provider = new ethers.providers.Web3Provider(
-      buildinProvider.currentProvider
-    );
-    const signer = provider.getSigner();
-    const contract = new Contract(id, ERC20ABI, signer);
-    await contract.approve(spender, amount);
+    await this.sendRequest({
+      method: 'eth_sendTransaction',
+      params: [
+        {
+          from: account.address,
+          to: id,
+          chainId: chainId,
+          data: ((abiCoder as unknown) as AbiCoder).encodeFunctionCall(
+            {
+              constant: false,
+              inputs: [
+                {
+                  name: '_spender',
+                  type: 'address',
+                },
+                {
+                  name: '_value',
+                  type: 'uint256',
+                },
+              ],
+              name: 'approve',
+              outputs: [
+                {
+                  name: '',
+                  type: 'bool',
+                },
+              ],
+              payable: false,
+              stateMutability: 'nonpayable',
+              type: 'function',
+            },
+            [spender, amount] as any
+          ),
+        },
+      ],
+    });
   };
 
   transferNFT = async ({
@@ -181,31 +208,100 @@ export class WalletController extends BaseController {
   }) => {
     const account = await preferenceService.getCurrentAccount();
     if (!account) throw new Error('no current account');
-    const chainId = Object.values(CHAINS)
-      .find((chain) => chain.serverId === chainServerId)
-      ?.id.toString();
+    const chainId = Object.values(CHAINS).find(
+      (chain) => chain.serverId === chainServerId
+    )?.id;
     if (!chainId) throw new Error('invalid chain id');
-    buildinProvider.currentProvider.currentAccount = account.address;
-    buildinProvider.currentProvider.currentAccountType = account.type;
-    buildinProvider.currentProvider.currentAccountBrand = account.brandName;
-    buildinProvider.currentProvider.chainId = chainId;
-    const provider = new ethers.providers.Web3Provider(
-      buildinProvider.currentProvider
-    );
-    const signer = provider.getSigner();
     if (abi === 'ERC721') {
-      const contract = new Contract(contractId, ERC721ABI, signer);
       if (isApprovedForAll) {
-        await contract.setApprovalForAll(spender, false);
+        await this.sendRequest({
+          method: 'eth_sendTransaction',
+          params: [
+            {
+              from: account.address,
+              to: contractId,
+              chainId: chainId,
+              data: ((abiCoder as unknown) as AbiCoder).encodeFunctionCall(
+                {
+                  inputs: [
+                    {
+                      internalType: 'address',
+                      name: 'operator',
+                      type: 'address',
+                    },
+                    {
+                      internalType: 'bool',
+                      name: 'approved',
+                      type: 'bool',
+                    },
+                  ],
+                  name: 'setApprovalForAll',
+                  outputs: [],
+                  stateMutability: 'nonpayable',
+                  type: 'function',
+                },
+                [spender, false] as any
+              ),
+            },
+          ],
+        });
       } else {
-        await contract.approve(
-          '0x0000000000000000000000000000000000000000',
-          tokenId
-        );
+        await this.sendRequest({
+          method: 'eth_sendTransaction',
+          params: [
+            {
+              from: account.address,
+              to: contractId,
+              chainId: chainId,
+              data: ((abiCoder as unknown) as AbiCoder).encodeFunctionCall(
+                {
+                  constant: false,
+                  inputs: [
+                    { internalType: 'address', name: 'to', type: 'address' },
+                    {
+                      internalType: 'uint256',
+                      name: 'tokenId',
+                      type: 'uint256',
+                    },
+                  ],
+                  name: 'approve',
+                  outputs: [],
+                  payable: false,
+                  stateMutability: 'nonpayable',
+                  type: 'function',
+                },
+                ['0x0000000000000000000000000000000000000000', tokenId] as any
+              ),
+            },
+          ],
+        });
       }
     } else if (abi === 'ERC1155') {
-      const contract = new Contract(contractId, ERC1155ABI, signer);
-      await contract.setApprovalForAll(spender, false);
+      await this.sendRequest({
+        method: 'eth_sendTransaction',
+        params: [
+          {
+            from: account.address,
+            to: contractId,
+            data: ((abiCoder as unknown) as AbiCoder).encodeFunctionCall(
+              {
+                constant: false,
+                inputs: [
+                  { internalType: 'address', name: 'to', type: 'address' },
+                  { internalType: 'bool', name: 'approved', type: 'bool' },
+                ],
+                name: 'setApprovalForAll',
+                outputs: [],
+                payable: false,
+                stateMutability: 'nonpayable',
+                type: 'function',
+              },
+              [spender, false] as any
+            ),
+            chainId,
+          },
+        ],
+      });
     } else {
       throw new Error('unknown contract abi');
     }
