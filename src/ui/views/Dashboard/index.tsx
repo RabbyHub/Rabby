@@ -510,13 +510,16 @@ const Dashboard = () => {
     setLoadingAddress(true);
     const _accounts = await wallet.getAllVisibleAccounts();
     const allAlianNames = await wallet.getAllAlianName();
+    const allContactNames = await wallet.getContactsByMap();
     const templist = await _accounts
       .map((item) =>
         item.accounts.map((account) => {
           return {
             ...account,
             type: item.type,
-            alianName: allAlianNames[account?.address?.toLowerCase()],
+            alianName:
+              allContactNames[account?.address?.toLowerCase()]?.name ||
+              allAlianNames[account?.address?.toLowerCase()],
             keyring: item.keyring,
           };
         })

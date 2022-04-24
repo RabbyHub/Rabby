@@ -1204,14 +1204,23 @@ export class WalletController extends BaseController {
 
   addContact = (data: ContactBookItem) => {
     contactBookService.addContact(data);
+    const alianName = preferenceService.getAlianName(data.address);
+    if (alianName) {
+      preferenceService.updateAlianName(data.address, data.name);
+    }
   };
   updateContact = (data: ContactBookItem) => {
     contactBookService.updateContact(data);
+    const alianName = preferenceService.getAlianName(data.address);
+    if (alianName) {
+      preferenceService.updateAlianName(data.address, data.name);
+    }
   };
   removeContact = (address: string) => {
     contactBookService.removeContact(address);
   };
   listContact = () => contactBookService.listContacts();
+  getContactsByMap = () => contactBookService.getContactsByMap();
   getContactByAddress = (address: string) =>
     contactBookService.getContactByAddress(address);
 
@@ -1243,9 +1252,20 @@ export class WalletController extends BaseController {
     return preferenceService.updateWalletSavedList(list);
   };
 
-  getAlianName = (address: string) => preferenceService.getAlianName(address);
-  updateAlianName = (address: string, name: string) =>
+  getAlianName = (address: string) => {
+    const alianName = preferenceService.getAlianName(address);
+    const contactName = contactBookService.getContactByAddress(address)?.name;
+    return contactName || alianName;
+  };
+
+  updateAlianName = (address: string, name: string) => {
     preferenceService.updateAlianName(address, name);
+    contactBookService.updateContact({
+      name,
+      address,
+    });
+  };
+
   getAllAlianName = () => preferenceService.getAllAlianName();
   getInitAlianNameStatus = () => preferenceService.getInitAlianNameStatus();
   updateInitAlianNameStatus = () =>

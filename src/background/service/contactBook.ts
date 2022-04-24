@@ -37,6 +37,10 @@ class ContactBook {
     const list = Object.values(this.store);
     return list.filter((item): item is ContactBookItem => !!item) || [];
   };
+
+  getContactsByMap = () => {
+    return this.store;
+  };
 }
 
 export default new ContactBook();
