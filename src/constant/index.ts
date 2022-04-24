@@ -77,6 +77,9 @@ import IconKlaytnChainLogo from 'ui/assets/dashboard/selectChain/klaytn.svg';
 import IconIotxLogo from 'ui/assets/chain-logos/iotx.svg';
 import IconIotxWhiteLogo from 'ui/assets/chain-logos/iotx-white.svg';
 import IconIotxChainLogo from 'ui/assets/dashboard/selectChain/iotx.svg';
+import IconRSKLogo from 'ui/assets/chain-logos/rsk.svg';
+import IconRSKWhiteLogo from 'ui/assets/chain-logos/rsk-white.svg';
+import IconRSKChainLogo from 'ui/assets/dashboard/selectChain/rsk.svg';
 import IconEN from 'ui/assets/langs/en.svg';
 import IconZH from 'ui/assets/langs/zh_cn.svg';
 import IconAmber from 'ui/assets/walletlogo/amber.png';
@@ -147,6 +150,7 @@ export enum CHAINS_ENUM {
   SDN = 'SDN',
   KLAY = 'KLAY',
   IOTX = 'IOTX',
+  RSK = 'RSK',
 }
 
 export const CHAINS: Record<string, Chain> = {
@@ -699,6 +703,27 @@ export const CHAINS: Record<string, Chain> = {
       '1559': false,
     },
   },
+  [CHAINS_ENUM.RSK]: {
+    id: 30,
+    serverId: 'rsk',
+    network: '30',
+    name: 'RSK',
+    nativeTokenSymbol: 'RBTC',
+    nativeTokenAddress: 'rsk',
+    enum: CHAINS_ENUM.RSK,
+    logo: IconRSKLogo,
+    whiteLogo: IconRSKWhiteLogo,
+    selectChainLogo: IconRSKChainLogo,
+    hex: '0x1e',
+    scanLink: 'https://explorer.rsk.co/tx/_s_',
+    nativeTokenLogo:
+      'https://static.debank.com/image/chain/logo_url/rsk/2958b02ef823097b70fac99f39889e2e.png',
+    nativeTokenDecimals: 18,
+    thridPartyRPC: 'https://public-node.rsk.co',
+    eip: {
+      '1559': false,
+    },
+  },
 };
 
 export const KEYRING_TYPE = {
@@ -737,6 +762,8 @@ export const SUPPORT_1559_KEYRING_TYPE = [
   KEYRING_CLASS.PRIVATE_KEY,
   KEYRING_CLASS.MNEMONIC,
   KEYRING_CLASS.HARDWARE.KEYSTONE,
+  KEYRING_CLASS.HARDWARE.TREZOR,
+  KEYRING_CLASS.HARDWARE.ONEKEY,
 ];
 
 export const KEYRING_TYPE_TEXT = {

@@ -85,9 +85,16 @@ const flowContext = flow
       },
       mapMethod,
     } = ctx;
-    const [approvalType, condition, { height = 770 } = {}] =
+    const [approvalType, condition, { height = 680 } = {}] =
       Reflect.getMetadata('APPROVAL', providerController, mapMethod) || [];
-
+    const minHeight = 500;
+    let windowHeight = height;
+    if (screen.availHeight < 880) {
+      windowHeight = screen.availHeight - 200;
+    }
+    if (windowHeight < minHeight) {
+      windowHeight = minHeight;
+    }
     if (approvalType && (!condition || !condition(ctx.request))) {
       ctx.request.requestedApproval = true;
       if (approvalType === 'SignTx' && !('chainId' in params[0])) {
@@ -111,7 +118,7 @@ const flowContext = flow
           },
           origin,
         },
-        { height }
+        { height: windowHeight }
       );
       if (isSignApproval(approvalType)) {
         permissionService.updateConnectSite(origin, { isSigned: true }, true);

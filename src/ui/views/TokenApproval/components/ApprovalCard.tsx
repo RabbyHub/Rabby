@@ -1,6 +1,6 @@
 import { TokenApproval, TokenItem } from '@/background/service/openapi';
 import { TokenWithChain } from '@/ui/component';
-import { Button } from 'antd';
+import { Button, message } from 'antd';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import IconUnknown from 'ui/assets/icon-unknown-1.svg';
@@ -20,9 +20,13 @@ const ellipsis = (text: string) => {
 const ApprovalCard = ({ data }: ApprovalCardProps) => {
   const { t } = useTranslation();
   const wallet = useWallet();
-  const tokenApprove = (item: TokenApproval['spenders'][0]) => {
-    wallet.approveToken(data.chain, data.id, item.id, 0);
-    window.close();
+  const tokenApprove = async (item: TokenApproval['spenders'][0]) => {
+    try {
+      await wallet.approveToken(data.chain, data.id, item.id, 0);
+      window.close();
+    } catch (e) {
+      message.error(e.message);
+    }
   };
   return (
     <div className="token-approval-card">

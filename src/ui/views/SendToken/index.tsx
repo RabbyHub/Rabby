@@ -7,18 +7,18 @@ import { useHistory, useLocation } from 'react-router-dom';
 import { Input, Form, Skeleton, message, Button } from 'antd';
 import abiCoder, { AbiCoder } from 'web3-eth-abi';
 import { isValidAddress, unpadHexString, addHexPrefix } from 'ethereumjs-util';
-import { Contract, providers } from 'ethers';
+import { providers } from 'ethers';
 import {
   CHAINS,
   CHAINS_ENUM,
   KEYRING_PURPLE_LOGOS,
   KEYRING_CLASS,
 } from 'consts';
-import { ERC20ABI } from 'consts/abi';
 import { Account } from 'background/service/preference';
 import { ContactBookItem } from 'background/service/contactBook';
 import { useWallet } from 'ui/utils';
 import { query2obj } from 'ui/utils/url';
+import { getTokenSymbol, geTokenDecimals } from 'ui/utils/token';
 import { formatTokenAmount, splitNumberByStep } from 'ui/utils/number';
 import AccountCard from '../Approval/components/AccountCard';
 import TokenAmountInput from 'ui/component/TokenAmountInput';
@@ -143,20 +143,25 @@ const SendToken = () => {
         )
       );
     }
-    await wallet.setLastTimeSendToken(currentAccount!.address, currentToken);
-    await wallet.setPageStateCache({
-      path: history.location.pathname,
-      params: {},
-      states: {
-        values: form.getFieldsValue(),
-        currentToken,
-      },
-    });
-    wallet.sendRequest({
-      method: 'eth_sendTransaction',
-      params: [params],
-    });
-    window.close();
+    try {
+      await wallet.setLastTimeSendToken(currentAccount!.address, currentToken);
+      await wallet.setPageStateCache({
+        path: history.location.pathname,
+        params: {},
+        states: {
+          values: form.getFieldsValue(),
+          currentToken,
+        },
+      });
+      await wallet.sendRequest({
+        method: 'eth_sendTransaction',
+        params: [params],
+      });
+      window.close();
+    } catch (e) {
+      message.error(e.message);
+      console.error(e);
+    }
   };
 
   const handleConfirmContact = (data: ContactBookItem | null, type: string) => {
@@ -429,17 +434,26 @@ const SendToken = () => {
       }
       return;
     }
-    const contract = new Contract(
-      currentToken.id,
-      ERC20ABI,
-      new providers.JsonRpcProvider(chain.thridPartyRPC)
-    );
-    const decimals = await contract.decimals();
-    const symbol = await contract.symbol();
-    if (symbol !== currentToken.symbol || decimals !== currentToken.decimals) {
+    try {
+      const decimals = await geTokenDecimals(
+        currentToken.id,
+        new providers.JsonRpcProvider(chain.thridPartyRPC)
+      );
+      const symbol = await getTokenSymbol(
+        currentToken.id,
+        new providers.JsonRpcProvider(chain.thridPartyRPC)
+      );
+      if (
+        symbol !== currentToken.symbol ||
+        decimals !== currentToken.decimals
+      ) {
+        setTokenValidationStatus(TOKEN_VALIDATION_STATUS.FAILD);
+      } else {
+        setTokenValidationStatus(TOKEN_VALIDATION_STATUS.SUCCESS);
+      }
+    } catch (e) {
       setTokenValidationStatus(TOKEN_VALIDATION_STATUS.FAILD);
-    } else {
-      setTokenValidationStatus(TOKEN_VALIDATION_STATUS.SUCCESS);
+      throw e;
     }
   };
 

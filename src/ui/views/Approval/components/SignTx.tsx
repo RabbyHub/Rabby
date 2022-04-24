@@ -20,6 +20,7 @@ import {
   KEYRING_TYPE,
   INTERNAL_REQUEST_ORIGIN,
   SUPPORT_1559_KEYRING_TYPE,
+  HARDWARE_KEYRING_TYPES,
 } from 'consts';
 import { Checkbox } from 'ui/component';
 import AccountCard from './AccountCard';
@@ -313,6 +314,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     Object.values(CHAINS).find((item) => item.id === chainId)
   );
   const [inited, setInited] = useState(false);
+  const [isHardware, setIsHardware] = useState(false);
   const [selectedGas, setSelectedGas] = useState<GasLevel | null>(null);
   const [gasList, setGasList] = useState<GasLevel[]>([
     {
@@ -733,6 +735,11 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     setIsLedger(currentAccount?.type === KEYRING_CLASS.HARDWARE.LEDGER);
     setUseLedgerLive(await wallet.isUseLedgerLive());
     setHasConnectedLedgerHID(await hasConnectedLedgerDevice());
+    setIsHardware(
+      !!Object.values(HARDWARE_KEYRING_TYPES).find(
+        (item) => item.type === currentAccount.type
+      )
+    );
 
     stats.report('createTransaction', {
       type: currentAccount.brandName,
@@ -912,6 +919,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
               nonce={realNonce || tx.nonce}
               disableNonce={isSpeedUp || isCancel}
               is1559={support1559}
+              isHardware={isHardware}
             />
             <footer className="connect-footer">
               {txDetail && txDetail.pre_exec.success && (
