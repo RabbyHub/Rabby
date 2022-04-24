@@ -1379,7 +1379,19 @@ export class WalletController extends BaseController {
     });
   };
 
-  getAllAlianName = () => preferenceService.getAllAlianName();
+  getAllAlianName = () => {
+    const alianNames = preferenceService.getAllAlianName();
+    const contactNames = contactBookService.getContactsByMap();
+    for (const key in contactNames) {
+      if (alianNames[key.toLowerCase()]) {
+        alianNames[key.toLowerCase()] = (contactNames[
+          key
+        ] as ContactBookItem).name;
+      }
+    }
+    return alianNames;
+  };
+
   getInitAlianNameStatus = () => preferenceService.getInitAlianNameStatus();
   updateInitAlianNameStatus = () =>
     preferenceService.changeInitAlianNameStatus();
