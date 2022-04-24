@@ -284,7 +284,7 @@ const SignText = ({ params }: { params: SignTextProps }) => {
           )}
         </div>
       </div>
-      <footer>
+      <footer className="approval-text__footer">
         {isLedger && !useLedgerLive && !hasConnectedLedgerHID && (
           <LedgerWebHIDAlert connected={hasConnectedLedgerHID} />
         )}
