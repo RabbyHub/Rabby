@@ -116,7 +116,7 @@ const ImportSuccess = ({ isPopup = false }: { isPopup?: boolean }) => {
             <img src={Mask} className="mask" />
           </div>
         ))}
-      <div className="rabby-container">
+      <div className={clsx(isPopup && 'rabby-container')}>
         <div
           onClick={(e) => {
             e.stopPropagation();
@@ -147,7 +147,10 @@ const ImportSuccess = ({ isPopup = false }: { isPopup?: boolean }) => {
             </>
           )}
           <div
-            className={clsx('lg:w-[460px] lg:h-[200px] pt-20 success-import')}
+            className={clsx(
+              'pt-20 success-import',
+              !isPopup && 'lg:h-[200px] lg:w-[460px]'
+            )}
           >
             {sortBy(accounts, (item) => item?.index).map((account, index) => (
               <AddressItem
