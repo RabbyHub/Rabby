@@ -54,7 +54,7 @@
       ]
     }
   ],
-  "content_security_policy": "script-src 'self' 'sha256-89okGBDzrqG/2tnXIGieb+KJaxIAJ9Caxf5lUBbQ5t0=' https://bam.nr-data.net https://js-agent.newrelic.com https://www.google-analytics.com; object-src 'self'",
+  "content_security_policy": "script-src 'self' 'sha256-r9iA6XlhxIxoHwKG6ktAWjAdAhwy5aIwNuNTRbDQ6Lo=' https://bam.nr-data.net https://js-agent.newrelic.com https://www.google-analytics.com; object-src 'self'",
   "permissions": [
     "storage",
     "unlimitedStorage",
