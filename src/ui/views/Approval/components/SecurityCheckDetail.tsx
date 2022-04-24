@@ -114,7 +114,7 @@ const SecurityCheckDetail = ({
       visible={visible}
       destroyOnClose
       onClose={onCancel}
-      height={620}
+      height={window.innerHeight - 60}
       closeIcon={
         <img src={IconArrowRight} className="w-14 icon icon-drawer-close" />
       }
