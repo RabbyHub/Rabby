@@ -37,7 +37,7 @@ const CollectionList = ({ isLoading, data }: NFTListProps) => {
     return (
       <div className="collection-list">
         <VariableSizeList
-          height={424}
+          height={468}
           width="100%"
           itemData={data}
           itemCount={data?.length}
