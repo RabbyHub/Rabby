@@ -85,7 +85,7 @@ const flowContext = flow
       },
       mapMethod,
     } = ctx;
-    const [approvalType, condition, { height = 680 } = {}] =
+    const [approvalType, condition, { height = 710 } = {}] =
       Reflect.getMetadata('APPROVAL', providerController, mapMethod) || [];
     const minHeight = 500;
     let windowHeight = height;
