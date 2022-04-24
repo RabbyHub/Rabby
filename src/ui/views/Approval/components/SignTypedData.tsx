@@ -238,7 +238,7 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
           )}
         </div>
       </div>
-      <footer>
+      <footer className="approval-text__footer">
         {isLedger && !useLedgerLive && !hasConnectedLedgerHID && (
           <LedgerWebHIDAlert connected={hasConnectedLedgerHID} />
         )}
