@@ -200,6 +200,7 @@ const SignText = ({ params }: { params: SignTextProps }) => {
             please{' '}
             <a
               href=""
+              className="underline"
               onClick={async (e) => {
                 e.preventDefault();
                 await rejectApproval('User rejected the request.', true);
@@ -306,7 +307,10 @@ const SignText = ({ params }: { params: SignTextProps }) => {
           {isWatch ? (
             <Tooltip
               placement="topRight"
-              overlayClassName="rectangle watcSign__tooltip"
+              overlayClassName={clsx(
+                'rectangle watcSign__tooltip',
+                'watcSign__tooltip-Sign'
+              )}
               title={cantProcessReason}
             >
               <div className="w-[172px] relative flex items-center">
@@ -319,7 +323,10 @@ const SignText = ({ params }: { params: SignTextProps }) => {
                 >
                   {t('Sign')}
                 </Button>
-                <img src={IconInfo} className="absolute right-[40px]" />
+                <img
+                  src={IconInfo}
+                  className={clsx('absolute right-[40px]', 'icon-submit-Sign')}
+                />
               </div>
             </Tooltip>
           ) : (

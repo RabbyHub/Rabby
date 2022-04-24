@@ -255,7 +255,7 @@ const TokenList = ({
           }
           itemSize={52}
           ref={fixedList}
-          style={{ zIndex: 10, overflowX: 'hidden' }}
+          style={{ zIndex: 10, overflowX: 'hidden', paddingBottom: 50 }}
         >
           {(props) => (
             <Row

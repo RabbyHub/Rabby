@@ -712,6 +712,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
             please{' '}
             <a
               href=""
+              className="underline"
               onClick={async (e) => {
                 e.preventDefault();
                 await rejectApproval('User rejected the request.', true);
@@ -961,7 +962,10 @@ const SignTx = ({ params, origin }: SignTxProps) => {
                     </Button>
                     {!canProcess ? (
                       <Tooltip
-                        overlayClassName="rectangle watcSign__tooltip"
+                        overlayClassName={clsx(
+                          'rectangle watcSign__tooltip',
+                          `watcSign__tooltip-${submitText}`
+                        )}
                         title={cantProcessReason}
                         placement="topRight"
                       >
@@ -977,7 +981,10 @@ const SignTx = ({ params, origin }: SignTxProps) => {
                           </Button>
                           <img
                             src={IconInfo}
-                            className="absolute right-[40px]"
+                            className={clsx(
+                              'absolute right-[40px]',
+                              `icon-submit-${submitText}`
+                            )}
                           />
                         </div>
                       </Tooltip>
@@ -1035,7 +1042,10 @@ const SignTx = ({ params, origin }: SignTxProps) => {
                     </Button>
                     {!canProcess ? (
                       <Tooltip
-                        overlayClassName="rectangle watcSign__tooltip"
+                        overlayClassName={clsx(
+                          'rectangle watcSign__tooltip',
+                          `watcSign__tooltip-${submitText}`
+                        )}
                         title={cantProcessReason}
                         placement="topRight"
                       >
@@ -1051,7 +1061,10 @@ const SignTx = ({ params, origin }: SignTxProps) => {
                           </Button>
                           <img
                             src={IconInfo}
-                            className="absolute right-[40px]"
+                            className={clsx(
+                              'absolute right-[40px]',
+                              `icon-submit-${submitText}`
+                            )}
                           />
                         </div>
                       </Tooltip>

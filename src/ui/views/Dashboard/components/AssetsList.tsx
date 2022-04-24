@@ -128,13 +128,13 @@ const AssetsList = ({
       {!isloading && assets.length > 0 ? (
         <>
           <FixedSizeList
-            height={424}
+            height={468}
             width="100%"
             itemData={filterList}
             itemCount={filterList.length}
             itemSize={48}
             ref={fixedList}
-            style={{ zIndex: 10, overflowX: 'hidden' }}
+            style={{ zIndex: 10, overflowX: 'hidden', paddingBottom: 50 }}
           >
             {(props) => (
               <Row {...props} isExpand={isExpand} setIsExpand={setIsExpand} />
