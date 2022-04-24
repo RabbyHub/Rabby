@@ -76,7 +76,7 @@ const ImportMnemonic = () => {
       formProps={{
         onValuesChange: handleValuesChange,
       }}
-      onSubmit={({ mnemonics }) => run(mnemonics)}
+      onSubmit={({ mnemonics }) => run(mnemonics.trim())}
       hasBack
       hasDivider
       noPadding
