@@ -74,6 +74,9 @@ import IconShidenChainLogo from 'ui/assets/dashboard/selectChain/shiden.svg';
 import IconKlaytnLogo from 'ui/assets/chain-logos/klaytn.svg';
 import IconKlaytnWhiteLogo from 'ui/assets/chain-logos/klaytn-white.svg';
 import IconKlaytnChainLogo from 'ui/assets/dashboard/selectChain/klaytn.svg';
+import IconRSKLogo from 'ui/assets/chain-logos/rsk.svg';
+import IconRSKWhiteLogo from 'ui/assets/chain-logos/rsk-white.svg';
+import IconRSKChainLogo from 'ui/assets/dashboard/selectChain/rsk.svg';
 import IconEN from 'ui/assets/langs/en.svg';
 import IconZH from 'ui/assets/langs/zh_cn.svg';
 import IconAmber from 'ui/assets/walletlogo/amber.png';
@@ -143,6 +146,7 @@ export enum CHAINS_ENUM {
   ASTAR = 'ASTAR',
   SDN = 'SDN',
   KLAY = 'KLAY',
+  RSK = 'RSK',
 }
 
 export const CHAINS: Record<string, Chain> = {
@@ -670,6 +674,27 @@ export const CHAINS: Record<string, Chain> = {
       'https://static.debank.com/image/chain/logo_url/klay/1df018b8493cb97c50b7e390ef63cba4.png',
     nativeTokenDecimals: 18,
     thridPartyRPC: 'https://public-node-api.klaytnapi.com/v1/cypress',
+    eip: {
+      '1559': false,
+    },
+  },
+  [CHAINS_ENUM.RSK]: {
+    id: 30,
+    serverId: 'rsk',
+    network: '30',
+    name: 'RSK',
+    nativeTokenSymbol: 'RBTC',
+    nativeTokenAddress: 'rsk',
+    enum: CHAINS_ENUM.RSK,
+    logo: IconRSKLogo,
+    whiteLogo: IconRSKWhiteLogo,
+    selectChainLogo: IconRSKChainLogo,
+    hex: '0x1e',
+    scanLink: 'https://explorer.rsk.co/tx/_s_',
+    nativeTokenLogo:
+      'https://static.debank.com/image/chain/logo_url/rsk/2958b02ef823097b70fac99f39889e2e.png',
+    nativeTokenDecimals: 18,
+    thridPartyRPC: 'https://public-node.rsk.co',
     eip: {
       '1559': false,
     },
