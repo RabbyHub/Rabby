@@ -18,6 +18,7 @@ import IconQuestionMark from 'ui/assets/question-mark-gray.svg';
 import IconInfo from 'ui/assets/infoicon.svg';
 import IconWatch from 'ui/assets/walletlogo/watch-purple.svg';
 import IconGnosis from 'ui/assets/walletlogo/gnosis.png';
+import clsx from 'clsx';
 interface SignTypedDataProps {
   method: string;
   data: any[];
@@ -89,6 +90,7 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
             please{' '}
             <a
               href=""
+              className="underline"
               onClick={async (e) => {
                 e.preventDefault();
                 await rejectApproval('User rejected the request.', true);
@@ -258,7 +260,10 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
           {isWatch ? (
             <Tooltip
               placement="topRight"
-              overlayClassName="rectangle watcSign__tooltip"
+              overlayClassName={clsx(
+                'rectangle watcSign__tooltip',
+                'watcSign__tooltip-Sign'
+              )}
               title={cantProcessReason}
             >
               <div className="w-[172px] relative flex items-center">
@@ -271,7 +276,10 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
                 >
                   {t('Sign')}
                 </Button>
-                <img src={IconInfo} className="absolute right-[40px]" />
+                <img
+                  src={IconInfo}
+                  className={clsx('absolute right-[40px]', 'icon-submit-Sign')}
+                />
               </div>
             </Tooltip>
           ) : (
