@@ -6,7 +6,7 @@ export const switchChainInterceptor = {
       const chainId = data.params && data.params[0]?.chainId;
       const chain = Object.values(CHAINS).find((item) => item.hex === chainId);
       Notification.open({
-        content: `Switched to <span class="rabby-strong">${chain?.name}</span> for the current DApp`,
+        content: `Switched to <span class="rabby-strong">${chain?.name}</span> for the current Dapp`,
       });
     }
 
@@ -17,7 +17,7 @@ export const switchChainInterceptor = {
 export const switchChainNotice = (chainId: string) => {
   const chain = Object.values(CHAINS).find((item) => item.hex === chainId);
   Notification.open({
-    content: `Switched to <span class="rabby-strong">${chain?.name}</span> for the current DApp`,
+    content: `Switched to <span class="rabby-strong">${chain?.name}</span> for the current Dapp`,
   });
 };
 
