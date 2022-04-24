@@ -311,7 +311,7 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
             {selectedAccounts.length} {t('addresses selected')}
           </div>
         </div>
-        <div className="rabby-container">
+        <div className={clsx(isPopup && 'rabby-container')}>
           <div
             className={clsx('overflow-y-auto flex justify-center', {
               'p-20': isPopup,
