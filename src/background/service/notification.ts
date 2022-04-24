@@ -101,7 +101,11 @@ class NotificationService extends Events {
         reject,
       };
 
-      if (data?.params?.method === 'wallet_switchEthereumChain') {
+      if (
+        ['wallet_switchEthereumChain', 'wallet_addEthereumChain'].includes(
+          data?.params?.method
+        )
+      ) {
         const chainId = data.params?.data?.[0]?.chainId;
         const chain = Object.values(CHAINS).find(
           (chain) => chain.hex === chainId
