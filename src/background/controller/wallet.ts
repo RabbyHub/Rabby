@@ -1079,6 +1079,23 @@ export class WalletController extends BaseController {
     return !keyring.isWebHID;
   };
 
+  authorizeLedgerHIDPermission = async () => {
+    const keyring = keyringService.getKeyringByType(
+      KEYRING_CLASS.HARDWARE.LEDGER
+    );
+    if (!keyring) throw new Error('No Ledger keyring found');
+    await keyring.authorizeHIDPermission();
+    await keyringService.persistAllKeyrings();
+  };
+
+  checkLedgerHasHIDPermission = () => {
+    const keyring = keyringService.getKeyringByType(
+      KEYRING_CLASS.HARDWARE.LEDGER
+    );
+    if (!keyring) return false;
+    return keyring.hasHIDPermission;
+  };
+
   updateUseLedgerLive = async (value: boolean) =>
     preferenceService.updateUseLedgerLive(value);
 

@@ -943,7 +943,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
               {txDetail && txDetail.pre_exec.success && (
                 <>
                   {isLedger && !useLedgerLive && !hasConnectedLedgerHID && (
-                    <LedgerWebHIDAlert />
+                    <LedgerWebHIDAlert connected={hasConnectedLedgerHID} />
                   )}
                   <SecurityCheckBar
                     status={securityCheckStatus}
@@ -1004,7 +1004,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
               {txDetail && !txDetail.pre_exec.success && (
                 <>
                   {isLedger && !useLedgerLive && !hasConnectedLedgerHID && (
-                    <LedgerWebHIDAlert />
+                    <LedgerWebHIDAlert connected={hasConnectedLedgerHID} />
                   )}
                   {!(isLedger && !useLedgerLive && !hasConnectedLedgerHID) && (
                     <>

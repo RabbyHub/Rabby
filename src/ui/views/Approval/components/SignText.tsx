@@ -286,7 +286,7 @@ const SignText = ({ params }: { params: SignTextProps }) => {
       </div>
       <footer>
         {isLedger && !useLedgerLive && !hasConnectedLedgerHID && (
-          <LedgerWebHIDAlert />
+          <LedgerWebHIDAlert connected={hasConnectedLedgerHID} />
         )}
         <SecurityCheckBar
           status={securityCheckStatus}
