@@ -290,9 +290,11 @@ provider
         }),
         writable: false,
       });
-      window.web3 = {
-        currentProvider: window.ethereum,
-      };
+      if (!window.web3) {
+        window.web3 = {
+          currentProvider: window.ethereum,
+        };
+      }
       const widgets = [DEXPriceComparison];
       widgets.forEach((Widget) => {
         provider
@@ -317,9 +319,11 @@ if (!window.ethereum) {
     deleteProperty: () => true,
   });
 
-  window.web3 = {
-    currentProvider: window.ethereum,
-  };
+  if (!window.web3) {
+    window.web3 = {
+      currentProvider: window.ethereum,
+    };
+  }
 
   window.ethereum.on('chainChanged', switchChainNotice);
 }
