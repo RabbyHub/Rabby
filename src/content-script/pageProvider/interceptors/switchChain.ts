@@ -74,10 +74,12 @@ class Notification {
   };
 
   static instance?: Notification | null;
+  static id?: any;
+  static close?: (() => void) | null;
 
   static open = ({ content }) => {
     if (Notification.instance) {
-      return;
+      Notification.close?.();
     }
     const instance = new Notification();
     instance.content = content;
@@ -94,10 +96,14 @@ class Notification {
     const close = () => {
       document.head.removeChild(style);
       document.body.removeChild(div);
+      clearTimeout(Notification.id);
       Notification.instance = null;
+      Notification.id = null;
+      Notification.close = null;
     };
 
-    setTimeout(close, 3000);
+    Notification.id = setTimeout(close, 3000);
+    Notification.close = close;
 
     return {
       close,
