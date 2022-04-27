@@ -1040,6 +1040,15 @@ class OpenApiService {
         wrapped_token_id: '',
         symbol: '',
       },
+      {
+        community_id: 888,
+        id: 'wan',
+        logo_url: '',
+        name: '',
+        native_token_id: '',
+        wrapped_token_id: '',
+        symbol: '',
+      },
     ]);
   };
 

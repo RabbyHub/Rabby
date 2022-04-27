@@ -80,6 +80,9 @@ import IconIotxChainLogo from 'ui/assets/dashboard/selectChain/iotx.svg';
 import IconRSKLogo from 'ui/assets/chain-logos/rsk.svg';
 import IconRSKWhiteLogo from 'ui/assets/chain-logos/rsk-white.svg';
 import IconRSKChainLogo from 'ui/assets/dashboard/selectChain/rsk.svg';
+import IconWanChainLogo from 'ui/assets/dashboard/selectChain/rsk.svg';
+import IconWanLogo from 'ui/assets/chain-logos/wanchain.svg';
+import IconWanWhiteLogo from 'ui/assets/chain-logos/wanchain-white.svg';
 import IconEN from 'ui/assets/langs/en.svg';
 import IconZH from 'ui/assets/langs/zh_cn.svg';
 import IconAmber from 'ui/assets/walletlogo/amber.png';
@@ -151,6 +154,7 @@ export enum CHAINS_ENUM {
   KLAY = 'KLAY',
   IOTX = 'IOTX',
   RSK = 'RSK',
+  WAN = 'WAN',
 }
 
 export const CHAINS: Record<string, Chain> = {
@@ -720,6 +724,27 @@ export const CHAINS: Record<string, Chain> = {
       'https://static.debank.com/image/chain/logo_url/rsk/2958b02ef823097b70fac99f39889e2e.png',
     nativeTokenDecimals: 18,
     thridPartyRPC: 'https://public-node.rsk.co',
+    eip: {
+      '1559': false,
+    },
+  },
+  [CHAINS_ENUM.WAN]: {
+    id: 888,
+    serverId: 'wan',
+    network: '888',
+    name: 'Wanchain',
+    nativeTokenSymbol: 'WAN',
+    nativeTokenAddress: 'wan',
+    enum: CHAINS_ENUM.WAN,
+    logo: IconWanLogo,
+    whiteLogo: IconWanWhiteLogo,
+    selectChainLogo: IconWanChainLogo,
+    hex: '0x378',
+    scanLink: 'https://www.wanscan.org/tx/_s_',
+    nativeTokenLogo:
+      'https://static.debank.com/image/chain/logo_url/wan/f3aa8b31414732ea5e026e05665146e6.png',
+    nativeTokenDecimals: 18,
+    thridPartyRPC: 'https://gwan-ssl.wandevs.org:56891',
     eip: {
       '1559': false,
     },
