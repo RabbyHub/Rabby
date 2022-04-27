@@ -478,6 +478,7 @@ export class WalletController extends BaseController {
   /* connectedSites */
 
   getConnectedSite = permissionService.getConnectedSite;
+  getSite = permissionService.getSite;
   getConnectedSites = permissionService.getConnectedSites;
   setRecentConnectedSites = (sites: ConnectedSite[]) => {
     permissionService.setRecentConnectedSites(sites);
@@ -485,9 +486,41 @@ export class WalletController extends BaseController {
   getRecentConnectedSites = () => {
     return permissionService.getRecentConnectedSites();
   };
+  getCurrentSite = (tabId: number): ConnectedSite | null => {
+    const { origin, name, icon } = sessionService.getSession(tabId) || {};
+    if (!origin) {
+      return null;
+    }
+    const site = permissionService.getSite(origin);
+    if (site) {
+      return site;
+    }
+    return {
+      origin,
+      name,
+      icon,
+      chain: CHAINS_ENUM.ETH,
+      isConnected: false,
+      isSigned: false,
+      isTop: false,
+    };
+  };
   getCurrentConnectedSite = (tabId: number) => {
     const { origin } = sessionService.getSession(tabId) || {};
     return permissionService.getWithoutUpdate(origin);
+  };
+  setSite = (data: ConnectedSite) => {
+    permissionService.setSite(data);
+    if (data.isConnected) {
+      sessionService.broadcastEvent(
+        'chainChanged',
+        {
+          chain: CHAINS[data.chain].hex,
+          networkVersion: CHAINS[data.chain].network,
+        },
+        data.origin
+      );
+    }
   };
   updateConnectSite = (origin: string, data: ConnectedSite) => {
     permissionService.updateConnectSite(origin, data);
