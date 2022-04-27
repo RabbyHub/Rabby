@@ -8,6 +8,7 @@ import { HARDWARE_KEYRING_TYPES, EVENTS, CHAINS_ENUM } from 'consts';
 import { browser } from 'webextension-polyfill-ts';
 
 const version = process.env.release || '0';
+
 export interface Account {
   type: string;
   address: string;
@@ -17,18 +18,22 @@ export interface Account {
   index?: number;
   balance?: number;
 }
+
 export interface ChainGas {
   gasPrice?: number | null; // custom cached gas price
   gasLevel?: string | null; // cached gasLevel
   lastTimeSelect?: 'gasLevel' | 'gasPrice'; // last time selection, 'gasLevel' | 'gasPrice'
 }
+
 export interface GasCache {
   [chainId: string]: ChainGas;
 }
+
 export interface addedToken {
   [address: string]: string[];
 }
-interface PreferenceStore {
+
+export interface PreferenceStore {
   currentAccount: Account | undefined | null;
   externalLinkAck: boolean;
   hiddenAddresses: Account[];
@@ -41,7 +46,7 @@ interface PreferenceStore {
   isDefaultWallet: boolean;
   lastTimeSendToken: Record<string, TokenItem>;
   walletSavedList: [];
-  alianNames: Record<string, string>;
+  alianNames?: Record<string, string>;
   initAlianNames: boolean;
   gasCache: GasCache;
   currentVersion: string;
@@ -97,9 +102,6 @@ class PreferenceService {
     }
     if (!this.store.lastTimeSendToken) {
       this.store.lastTimeSendToken = {};
-    }
-    if (!this.store.alianNames) {
-      this.store.alianNames = {};
     }
     if (!this.store.initAlianNames) {
       this.store.initAlianNames = false;
@@ -326,32 +328,11 @@ class PreferenceService {
   updateWalletSavedList = (list: []) => {
     this.store.walletSavedList = list;
   };
-  getAlianName = (address: string) => {
-    const key = address.toLowerCase();
-    return this.store.alianNames[key];
-  };
-  getAllAlianName = () => {
-    return this.store.alianNames;
-  };
-  updateAlianName = (address: string, name: string) => {
-    const key = address.toLowerCase();
-    this.store.alianNames = {
-      ...this.store.alianNames,
-      [key]: name,
-    };
-  };
   getInitAlianNameStatus = () => {
     return this.store.initAlianNames;
   };
   changeInitAlianNameStatus = () => {
     this.store.initAlianNames = true;
-  };
-  removeAlianName = (address: string) => {
-    if (this.store.alianNames[address.toLowerCase()]) {
-      const map = cloneDeep(this.store.alianNames);
-      delete map[address.toLowerCase()];
-      this.store.alianNames = map;
-    }
   };
   getLastTimeGasSelection = (chainId: string) => {
     return this.store.gasCache[chainId];

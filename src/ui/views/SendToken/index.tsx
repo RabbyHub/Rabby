@@ -248,10 +248,9 @@ const SendToken = () => {
     });
     setCacheAmount(resultAmount);
     const addressContact = await wallet.getContactByAddress(to);
-    const alianName = await wallet.getAlianName(to.toLowerCase());
-    if (addressContact || alianName) {
-      setContactInfo(addressContact || { to, name: alianName });
-      alianName ? setAccountType('my') : setAccountType('others');
+    if (addressContact) {
+      setContactInfo(addressContact);
+      addressContact.isAlias ? setAccountType('my') : setAccountType('others');
     } else if (!addressContact && contactInfo) {
       setContactInfo(null);
       setAccountType('');
@@ -405,6 +404,8 @@ const SendToken = () => {
         const data: ContactBookItem = {
           name: qs?.name,
           address: qs?.address,
+          isAlias: false,
+          isContact: true,
         };
         const type = 'others';
         handleConfirmContact(data, type);
@@ -413,8 +414,8 @@ const SendToken = () => {
   };
 
   const getAlianName = async () => {
-    const alianName = await wallet.getAlianName(currentAccount?.address);
-    setSendAlianName(alianName);
+    const contact = await wallet.getContactByAddress(currentAccount?.address);
+    setSendAlianName(contact.name);
   };
 
   const validateCurrentToken = async () => {

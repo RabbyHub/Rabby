@@ -37,7 +37,6 @@ const AddressManagement = () => {
   const [accounts, setAccounts] = useState<DisplayedKeryring[]>([]);
   const [displayList, setDisplayList] = useState([]);
 
-  const [alianNames, setAlianNames] = useState<[]>([]);
   const [retrive, setRetrive] = useState(false);
   const [noAccount, setNoAccount] = useState(false);
   const [stopEditing, setStopEditing] = useState(true);
@@ -66,9 +65,8 @@ const AddressManagement = () => {
 
   const getAllKeyrings = async () => {
     const _accounts = await wallet.getAllClassAccounts();
-    const allAlianNames = await wallet.getAllAlianName();
+    const allAlianNames = await wallet.getContactsByMap();
     setAccounts(_accounts);
-    setAlianNames(allAlianNames);
     const list = _accounts
       .sort((a, b) => {
         return SORT_WEIGHT[a.type] - SORT_WEIGHT[b.type];
@@ -78,7 +76,7 @@ const AddressManagement = () => {
           (item) =>
             (item = {
               ...item,
-              alianName: allAlianNames[item.address.toLowerCase()],
+              alianName: allAlianNames[item.address.toLowerCase()].name,
               type: group.type,
               keyring: group.keyring,
             })

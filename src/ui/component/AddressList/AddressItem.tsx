@@ -210,25 +210,20 @@ const AddressItem = memo(
       }));
 
       const updateAlianName = async (alianName) => {
-        await wallet.updateAlianName(
-          account?.address?.toLowerCase(),
-          alianName
-        );
+        await wallet.updateContact({
+          address: account?.address?.toLowerCase(),
+          name: alianName,
+          isAlias: true,
+        });
         retriveAlianName && retriveAlianName();
       };
 
       const changeName = async () => {
         if (!alianName) {
-          const existAlianName = await wallet.getAlianName(
-            account?.address?.toLowerCase()
-          );
           const existContact = await wallet.getContactByAddress(
             account?.address?.toLowerCase()
           );
-          if (existAlianName) {
-            setAlianName(existAlianName);
-            setDisplayName(existAlianName);
-          } else if (existContact) {
+          if (existContact) {
             setAlianName(existContact.name);
             setDisplayName(existContact.name);
             updateAlianName(existContact.name);

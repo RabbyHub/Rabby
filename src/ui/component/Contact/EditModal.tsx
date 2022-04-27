@@ -28,16 +28,17 @@ const EditModal = ({
   const [name, setName] = useState('');
   const inputRef = useRef<Input>(null);
 
-  const handleConfirm = () => {
+  const handleConfirm = async () => {
     if (!name) return;
+    const origin = await wallet.getContactByAddress(address);
     if (isEdit) {
-      wallet.updateContact({
+      await wallet.updateContact({
+        ...origin,
         address,
         name,
       });
-      wallet.updateAlianName(address.toLowerCase(), name);
     } else {
-      wallet.addContact({
+      await wallet.addContact({
         address,
         name,
       });
@@ -47,7 +48,7 @@ const EditModal = ({
         duration: 1,
       });
     }
-    onOk({ address, name }, accountType);
+    onOk({ ...origin, address, name }, accountType);
   };
 
   const handleRemoveContact = () => {
@@ -78,8 +79,7 @@ const EditModal = ({
   const init = async () => {
     if (isEdit) {
       const contact = await wallet.getContactByAddress(address);
-      const alianName = await wallet.getAlianName(address);
-      setName(contact.name || alianName);
+      setName(contact.name);
     }
   };
 
@@ -90,8 +90,7 @@ const EditModal = ({
       }, 200);
       if (isEdit) {
         const contact = await wallet.getContactByAddress(address);
-        const alianName = await wallet.getAlianName(address);
-        setName(contact?.name || alianName || '');
+        setName(contact?.name || '');
       } else {
         setName('');
       }

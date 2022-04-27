@@ -111,10 +111,9 @@ const SendNFT = () => {
       setEditBtnDisabled(false);
     }
     const addressContact = await wallet.getContactByAddress(to);
-    const alianName = await wallet.getAlianName(to.toLowerCase());
-    if (addressContact || alianName) {
-      setContactInfo(addressContact || { to, name: alianName });
-      alianName ? setAccountType('my') : setAccountType('others');
+    if (addressContact) {
+      setContactInfo(addressContact);
+      addressContact.isAlias ? setAccountType('my') : setAccountType('others');
     } else if (!addressContact && contactInfo) {
       setContactInfo(null);
       setAccountType('');
@@ -214,8 +213,8 @@ const SendNFT = () => {
   };
 
   const getAlianName = async () => {
-    const alianName = await wallet.getAlianName(currentAccount?.address);
-    setSendAlianName(alianName);
+    const contact = await wallet.getContactByAddress(currentAccount?.address);
+    setSendAlianName(contact.name);
   };
 
   const validateNFT = async () => {

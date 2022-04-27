@@ -10,7 +10,10 @@ import {
 } from 'consts';
 import { useWallet } from 'ui/utils';
 import { AddressViewer, FieldCheckbox } from '..';
-import { ContactBookItem } from 'background/service/contactBook';
+import {
+  ContactBookItem,
+  ContactBookStore,
+} from 'background/service/contactBook';
 
 import './style.less';
 
@@ -30,12 +33,11 @@ const ListModal = ({ address, visible, onOk, onCancel }: ListModalProps) => {
   const { t } = useTranslation();
   const wallet = useWallet();
   const [list, setList] = useState<ContactBookItem[]>([]);
-  const [alianNames, setAlianNames] = useState({});
+  const [contactMap, setContactMap] = useState<ContactBookStore>({});
   const [accountList, setAccountList] = useState<Account[]>([]);
   const handleVisibleChange = async () => {
     if (visible) {
-      const data = await wallet.listContact();
-      const importedList = await wallet.getAllAlianName();
+      const data = await wallet.getContactsByMap();
       const importAccounts = await wallet.getAllVisibleAccounts();
       const importAccountsList: Account[] = unionBy(
         importAccounts
@@ -51,8 +53,8 @@ const ListModal = ({ address, visible, onOk, onCancel }: ListModalProps) => {
         (item) => item?.address.toLowerCase()
       );
       setAccountList(importAccountsList);
-      setList(data);
-      setAlianNames(importedList);
+      setContactMap(data);
+      setList(Object.values(data));
     }
   };
 
@@ -135,10 +137,7 @@ const ListModal = ({ address, visible, onOk, onCancel }: ListModalProps) => {
                   showCheckbox={false}
                   onChange={() =>
                     handleConfirm(
-                      {
-                        address: account?.address,
-                        name: alianNames[account?.address?.toLowerCase()],
-                      },
+                      contactMap[account.address.toLowerCase()]!,
                       'my'
                     )
                   }
@@ -160,7 +159,7 @@ const ListModal = ({ address, visible, onOk, onCancel }: ListModalProps) => {
                     />
                   </Tooltip>
                   <div className="contact-info ml-12">
-                    <p>{alianNames[account?.address?.toLowerCase()]}</p>
+                    <p>{contactMap[account?.address?.toLowerCase()]}</p>
                     <p>
                       <AddressViewer
                         address={account?.address}

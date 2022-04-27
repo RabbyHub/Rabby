@@ -26,7 +26,7 @@ const Contacts = ({ visible, onClose }: ContactsProps) => {
   const [editIndex, setEditIndex] = useState<number | null>(null);
   const [canAdd, setCanAdd] = useState(true);
   const init = async () => {
-    const listContacts = await wallet.listContact();
+    const listContacts = await wallet.listContact(false);
     setAccounts(listContacts);
     setEditIndex(null);
     setCanAdd(true);
@@ -44,20 +44,12 @@ const Contacts = ({ visible, onClose }: ContactsProps) => {
     await wallet.removeContact(address);
     init();
   };
-  const syncAlianName = async (data: ContactBookItem) => {
-    const alianName = await wallet.getAlianName(data.address.toLowerCase());
-    if (alianName) {
-      await wallet.updateAlianName(data?.address?.toLowerCase(), data?.name);
-    }
-  };
   const handleUpdateContact = async (data: ContactBookItem) => {
     await wallet.updateContact(data);
-    await syncAlianName(data);
     await init();
   };
   const addContact = async (data: ContactBookItem) => {
     await wallet.addContact(data);
-    await syncAlianName(data);
     message.success({
       icon: <img src={IconSuccess} className="icon icon-success" />,
       content: t('Added to contact'),

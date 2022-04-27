@@ -65,17 +65,11 @@ const ContactsItem = ({
   };
   const addressConfirm = async (e?: any) => {
     e && e.stopPropagation();
-    if (!addressValid) return;
-    const importedName = await wallet.getAlianName(address.toLowerCase());
-    if (importedName) {
-      setAlianName(importedName);
+    if (!addressValid()) return;
+    const contact = await wallet.getContactByAddress(address.toLowerCase());
+    if (contact) {
+      setAlianName(contact.name);
     }
-    return true;
-  };
-  const alianNameConfirm = (e?: any) => {
-    e && e.stopPropagation();
-
-    setNameFocus(false);
     return true;
   };
   const addressValid = () => {
@@ -101,6 +95,9 @@ const ContactsItem = ({
     return true;
   };
   const validateAddressAndName = async () => {
+    const contact: ContactBookItem = await wallet.getContactByAddress(
+      address.toLowerCase()
+    );
     if (!alianName || !address) {
       return;
     }
@@ -129,6 +126,7 @@ const ContactsItem = ({
     }
     if (!addressValid() || !nameValid()) return;
     const data: ContactBookItem = {
+      ...contact,
       name: alianName,
       address: address.toLowerCase(),
     };

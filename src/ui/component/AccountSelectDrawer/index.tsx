@@ -39,12 +39,12 @@ const AccountItem = ({ account, onSelect, checked }: AccountItemProps) => {
   const init = async () => {
     const currentAccount = await wallet.getCurrentAccount();
     const networkId = await wallet.getGnosisNetworkId(currentAccount.address);
-    const name = await wallet.getAlianName(account.address);
+    const contact = await wallet.getContactByAddress(account.address);
     const chain = Object.values(CHAINS).find(
       (item) => item.id.toString() === networkId + ''
     )!;
     setNativeTokenSymbol(chain.nativeTokenSymbol);
-    setAlianName(name);
+    setAlianName(contact.name);
     const balanceInWei = await wallet.requestETHRpc(
       {
         method: 'eth_getBalance',
