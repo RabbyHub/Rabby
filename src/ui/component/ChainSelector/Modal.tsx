@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { ReactNode, useEffect, useState } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import { Drawer } from 'antd';
 
@@ -15,9 +15,11 @@ interface ChainSelectorModalProps {
   onCancel(): void;
   onChange(val: CHAINS_ENUM): void;
   connection?: boolean;
+  title?: ReactNode;
 }
 
 const ChainSelectorModal = ({
+  title,
   visible,
   onCancel,
   onChange,
@@ -68,12 +70,15 @@ const ChainSelectorModal = ({
       eventBus.removeEventListener('accountsChanged', accountChangeHandler);
     };
   }, []);
-  let maxHeight = Math.round(savedChainsData.length / 2) * 60 + 70;
+  let maxHeight =
+    Math.round(savedChainsData.length / 2) * 60 + 70 + (title ? 56 : 0);
+  const range = [130, 450].map((item) => item + (title ? 56 : 0));
   if (connection && maxHeight > 258) {
     maxHeight = 258;
   }
   return (
     <Drawer
+      title={title}
       width="400px"
       closable={false}
       placement={'bottom'}
@@ -81,10 +86,20 @@ const ChainSelectorModal = ({
       onClose={handleCancel}
       className={clsx('chain-selector__modal', connection && 'connection')}
       contentWrapperStyle={{
-        height: maxHeight > 450 ? 450 : maxHeight < 130 ? 130 : maxHeight,
+        height:
+          maxHeight > range[1]
+            ? range[1]
+            : maxHeight < range[0]
+            ? range[0]
+            : maxHeight,
       }}
       drawerStyle={{
-        height: maxHeight > 450 ? 450 : maxHeight < 130 ? 130 : maxHeight,
+        height:
+          maxHeight > range[1]
+            ? range[1]
+            : maxHeight < range[0]
+            ? range[0]
+            : maxHeight,
       }}
       destroyOnClose
     >

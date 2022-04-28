@@ -3,7 +3,7 @@ import rateLimit from 'axios-rate-limit';
 import { ethErrors } from 'eth-rpc-errors';
 import { createPersistStore } from 'background/utils';
 import { CHAINS, INITIAL_OPENAPI_URL, CHAINS_ENUM } from 'consts';
-import { getChain } from 'utils';
+import { getChain } from '../../utils';
 
 interface OpenApiConfigValue {
   path: string;

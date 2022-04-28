@@ -1,119 +1,36 @@
-import React, { useState, useEffect, memo, useCallback } from 'react';
-import clsx from 'clsx';
-import { useTranslation } from 'react-i18next';
-import maxBy from 'lodash/maxBy';
-import { useHistory } from 'react-router-dom';
-import { Badge, Tooltip, Skeleton } from 'antd';
 import eventBus from '@/eventBus';
-import { useWallet, getCurrentConnectSite, splitNumberByStep } from 'ui/utils';
-import { ConnectedSite } from 'background/service/permission';
+import { Badge, Skeleton, Tooltip } from 'antd';
 import { GasLevel } from 'background/service/openapi';
-import { ChainSelector, FallbackSiteLogo } from 'ui/component';
-import {
-  RecentConnections,
-  Settings,
-  Contacts,
-  Security,
-  Widget,
-} from '../index';
-import { CHAINS_ENUM } from 'consts';
-import IconDrawer from 'ui/assets/drawer.png';
+import { ConnectedSite } from 'background/service/permission';
+import clsx from 'clsx';
+import maxBy from 'lodash/maxBy';
+import React, { useCallback, useEffect, useState } from 'react';
+import { useHistory } from 'react-router-dom';
+import IconAlertRed from 'ui/assets/alert-red.svg';
+import IconDapps from 'ui/assets/dapps.svg';
 import IconContacts from 'ui/assets/dashboard/contacts.png';
+import IconEth from 'ui/assets/dashboard/eth.png';
+import IconGas from 'ui/assets/dashboard/gas.svg';
+import IconQuene from 'ui/assets/dashboard/quene.svg';
 import IconSecurity from 'ui/assets/dashboard/security.svg';
 import IconSendToken from 'ui/assets/dashboard/sendtoken.png';
 import IconSetting from 'ui/assets/dashboard/setting.png';
-import IconWidget from 'ui/assets/dashboard/widget.svg';
 import IconSignedText from 'ui/assets/dashboard/signedtext.png';
 import IconSingedTX from 'ui/assets/dashboard/signedtx.png';
 import IconTransactions from 'ui/assets/dashboard/transactions.png';
-import IconGas from 'ui/assets/dashboard/gas.svg';
-import IconEth from 'ui/assets/dashboard/eth.png';
-import { ReactComponent as IconLeftConer } from 'ui/assets/dashboard/leftcorner.svg';
-import IconRightGoTo from 'ui/assets/dashboard/selectChain/rightgoto.svg';
-import IconDot from 'ui/assets/dashboard/selectChain/dot.png';
-import IconQuene from 'ui/assets/dashboard/quene.svg';
-import IconAlertRed from 'ui/assets/alert-red.svg';
+import IconWidget from 'ui/assets/dashboard/widget.svg';
+import IconDrawer from 'ui/assets/drawer.png';
+import { getCurrentConnectSite, splitNumberByStep, useWallet } from 'ui/utils';
+import { CurrentConnection } from '../CurrentConnection';
+import {
+  Contacts,
+  RecentConnections,
+  Security,
+  Settings,
+  Widget,
+} from '../index';
 import './style.less';
 
-const CurrentConnection = memo(
-  ({
-    site,
-    onChange,
-    showModal,
-    hideModal,
-    connections,
-    changeURL,
-    higherBottom = false,
-  }: {
-    site: null | ConnectedSite | undefined;
-    onChange(): void;
-    showModal?: boolean;
-    hideModal(): void;
-    connections: (ConnectedSite | null)[];
-    changeURL(): void;
-    higherBottom: boolean;
-  }) => {
-    const wallet = useWallet();
-    const { t } = useTranslation();
-
-    const handleChangeDefaultChain = (chain: CHAINS_ENUM) => {
-      wallet.updateConnectSite(site!.origin, {
-        ...site!,
-        chain,
-      });
-      onChange();
-      hideModal();
-    };
-    return (
-      <div className={clsx('current-connection', higherBottom && 'higher')}>
-        <IconLeftConer
-          className="left-corner"
-          fill={site ? '#27C193' : '#B4BDCC'}
-        />
-        <div className="connected flex">
-          {site ? (
-            <div className="connect-wrapper">
-              <ChainSelector
-                value={site!.chain}
-                onChange={handleChangeDefaultChain}
-                showModal={showModal}
-                className="no-border-shadow"
-              />
-            </div>
-          ) : (
-            <p className="not-connected">{t('Not connected')}</p>
-          )}
-
-          <div className="right pointer" onClick={changeURL}>
-            <div className="icon-container">
-              {connections.length > 0 ? (
-                connections.map((item, index) => (
-                  <div className="image-item" key={item?.origin}>
-                    <FallbackSiteLogo
-                      url={item?.icon || ''}
-                      origin={item?.origin || ''}
-                      width="22px"
-                      className="image"
-                    />
-                    {index === connections.length - 1 &&
-                      connections.length >= 6 && (
-                        <div className="modal">
-                          <img src={IconDot} className="dot" />
-                        </div>
-                      )}
-                  </div>
-                ))
-              ) : (
-                <div className="no-dapp w-[100px]"></div>
-              )}
-            </div>
-            <img src={IconRightGoTo} className="right-icon" />
-          </div>
-        </div>
-      </div>
-    );
-  }
-);
 export default ({
   pendingTxCount,
   gnosisPendingCount,
@@ -308,6 +225,13 @@ export default ({
       },
     },
     {
+      icon: IconDapps,
+      content: 'Dapps',
+      onClick: () => {
+        changeURL();
+      },
+    },
+    {
       icon: IconContacts,
       content: 'Contacts',
       onClick: changeContacts,
@@ -416,15 +340,7 @@ export default ({
           </div>
         </div>
       </div>
-      <CurrentConnection
-        site={currentConnect}
-        showModal={localshowModal}
-        onChange={getCurrentSite}
-        hideModal={hideModal}
-        connections={connections}
-        changeURL={changeURL}
-        higherBottom={false}
-      />
+      <CurrentConnection />
       <Settings visible={settingVisible} onClose={changeSetting} />
       <Contacts visible={contactsVisible} onClose={changeContacts} />
       <RecentConnections visible={urlVisible} onClose={changeURL} />
