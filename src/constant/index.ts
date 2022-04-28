@@ -80,7 +80,7 @@ import IconIotxChainLogo from 'ui/assets/dashboard/selectChain/iotx.svg';
 import IconRSKLogo from 'ui/assets/chain-logos/rsk.svg';
 import IconRSKWhiteLogo from 'ui/assets/chain-logos/rsk-white.svg';
 import IconRSKChainLogo from 'ui/assets/dashboard/selectChain/rsk.svg';
-import IconWanChainLogo from 'ui/assets/dashboard/selectChain/rsk.svg';
+import IconWanChainLogo from 'ui/assets/dashboard/selectChain/wanchain.svg';
 import IconWanLogo from 'ui/assets/chain-logos/wanchain.svg';
 import IconWanWhiteLogo from 'ui/assets/chain-logos/wanchain-white.svg';
 import IconEN from 'ui/assets/langs/en.svg';
