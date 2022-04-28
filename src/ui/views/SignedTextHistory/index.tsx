@@ -3,7 +3,7 @@ import { message } from 'antd';
 import ClipboardJS from 'clipboard';
 import { useTranslation } from 'react-i18next';
 import { SignTextHistoryItem } from 'background/service/signTextHistory';
-import { FallbackSiteLogo, PageHeader } from '@/ui/component';
+import { Empty, FallbackSiteLogo, PageHeader } from '@/ui/component';
 import { useWallet, hex2Text, sinceTime } from 'ui/utils';
 import { openInTab } from 'ui/utils/webapi';
 import IconCopy from 'ui/assets/copy-gray.svg';
@@ -98,12 +98,11 @@ const SignedTextHistory = () => {
         <SignedTextHistoryItem item={item} />
       ))}
       {textHistory.length <= 0 && (
-        <div className="text-history__empty">
-          <img className="no-data" src="./images/nodata-tx.png" />
-          <p className="text-14 text-gray-content mt-12">
-            {t('No signed Text')}
-          </p>
-        </div>
+        <Empty
+          title={t('No signed texts yet')}
+          desc={t('All texts signed via Rabby will be listed here.')}
+          className="pt-[108px]"
+        ></Empty>
       )}
     </div>
   );

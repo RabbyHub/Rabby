@@ -17,7 +17,7 @@ import IconArrowUp from 'ui/assets/arrow-up.svg';
 import IconRemoveToken from 'ui/assets/removetoken.png';
 import IconClose from 'ui/assets/searchIconClose.png';
 import IconSearch from 'ui/assets/tokenSearch.png';
-import { AddressViewer, TokenWithChain } from 'ui/component';
+import { AddressViewer, Empty, TokenWithChain } from 'ui/component';
 import { splitNumberByStep } from 'ui/utils';
 import { TokenDetailPopup } from './TokenDetailPopup';
 
@@ -224,6 +224,11 @@ const TokenList = ({
         </div>
       )}
       {noSeachResult && <div className="no-added-token">No results</div>}
+      {startSearch && query && searchTokens.length > 0 && (
+        <div className="no-added-token absolute m-0 top-[166px] left-0 right-0">
+          The token rabby has been supported
+        </div>
+      )}
       {isloading && (
         <div className="loadingContainer">
           <SvgIconLoading className="icon icon-loading" fill="#FFFFFF" />
@@ -268,10 +273,14 @@ const TokenList = ({
         </FixedSizeList>
       )}
       {!startSearch && !isloading && tokens.length === 0 && (
-        <div className="no-data">
-          <img className="w-[100px] h-[100px]" src="./images/nodata-tx.png" />
-          <div className="loading-text">{t('No Tokens')}</div>
-        </div>
+        <Empty
+          desc={
+            <span className="text-white opacity-80">
+              {t('No token assets')}
+            </span>
+          }
+          className="pt-[120px] w-full"
+        ></Empty>
       )}
       <TokenDetailPopup
         visible={detail.visible}

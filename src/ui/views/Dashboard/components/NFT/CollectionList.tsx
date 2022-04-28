@@ -1,4 +1,5 @@
 import { UserCollection } from '@/background/service/openapi';
+import { Empty } from '@/ui/component';
 import React, { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { VariableSizeList } from 'react-window';
@@ -72,10 +73,14 @@ const CollectionList = ({ isLoading, data }: NFTListProps) => {
   }
   return (
     <div className="collection-list tokenList mt-0">
-      <div className="no-data">
-        <img className="w-[100px] h-[100px]" src="./images/nodata-tx.png" />
-        <div className="loading-text">{t('No Collections')}</div>
-      </div>
+      <Empty
+        desc={
+          <span className="text-white opacity-80">
+            {t('No NFTs found in supported Collections')}
+          </span>
+        }
+        className="pt-[120px] w-full"
+      ></Empty>
     </div>
   );
 };

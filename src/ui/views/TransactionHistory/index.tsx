@@ -10,7 +10,7 @@ import { useWallet, isSameAddress } from 'ui/utils';
 import { splitNumberByStep } from 'ui/utils/number';
 import { sinceTime } from 'ui/utils';
 import { openInTab } from 'ui/utils/webapi';
-import { PageHeader } from 'ui/component';
+import { PageHeader, Empty } from 'ui/component';
 import {
   TransactionGroup,
   TransactionHistoryItem,
@@ -558,10 +558,11 @@ const TransactionHistory = () => {
         </div>
       )}
       {completeList.length <= 0 && pendingList.length <= 0 && (
-        <div className="tx-history__empty">
-          <img className="no-data" src="./images/nodata-tx.png" />
-          <p className="text-14 text-gray-content mt-12">{t('No signed Tx')}</p>
-        </div>
+        <Empty
+          title={t('No signed transactions yet')}
+          desc={t('All transactions signed via Rabby will be listed here.')}
+          className="pt-[108px]"
+        ></Empty>
       )}
     </div>
   );
