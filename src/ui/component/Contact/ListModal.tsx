@@ -10,14 +10,17 @@ import {
 } from 'consts';
 import { useWallet } from 'ui/utils';
 import { AddressViewer, FieldCheckbox } from '..';
-import { ContactBookItem } from 'background/service/contactBook';
+import {
+  UIContactBookItem,
+  ContactBookStore,
+} from 'background/service/contactBook';
 
 import './style.less';
 
 interface ListModalProps {
   address?: string;
   visible: boolean;
-  onOk(data: ContactBookItem, type: string): void;
+  onOk(data: UIContactBookItem, type: string): void;
   onCancel(): void;
 }
 interface Account {
@@ -29,7 +32,8 @@ const { TabPane } = Tabs;
 const ListModal = ({ address, visible, onOk, onCancel }: ListModalProps) => {
   const { t } = useTranslation();
   const wallet = useWallet();
-  const [list, setList] = useState<ContactBookItem[]>([]);
+  const [alianNamesMap, setAlianNamesMap] = useState<ContactBookStore>({});
+  const [list, setList] = useState<UIContactBookItem[]>([]);
   const [alianNames, setAlianNames] = useState({});
   const [accountList, setAccountList] = useState<Account[]>([]);
   const handleVisibleChange = async () => {
@@ -51,6 +55,15 @@ const ListModal = ({ address, visible, onOk, onCancel }: ListModalProps) => {
         (item) => item?.address.toLowerCase()
       );
       setAccountList(importAccountsList);
+      setAlianNamesMap(
+        importedList.reduce(
+          (res, item) => ({
+            ...res,
+            [item.address.toLowerCase()]: item,
+          }),
+          {}
+        )
+      );
       setList(data);
       setAlianNames(importedList);
     }
@@ -60,7 +73,7 @@ const ListModal = ({ address, visible, onOk, onCancel }: ListModalProps) => {
     handleVisibleChange();
   }, [visible]);
 
-  const handleConfirm = (data: ContactBookItem, type: string) => {
+  const handleConfirm = (data: UIContactBookItem, type: string) => {
     onOk(data, type);
   };
   const NoDataUI = (
@@ -160,7 +173,9 @@ const ListModal = ({ address, visible, onOk, onCancel }: ListModalProps) => {
                     />
                   </Tooltip>
                   <div className="contact-info ml-12">
-                    <p>{alianNames[account?.address?.toLowerCase()]}</p>
+                    <p>
+                      {alianNamesMap[account?.address?.toLowerCase()]?.name}
+                    </p>
                     <p>
                       <AddressViewer
                         address={account?.address}

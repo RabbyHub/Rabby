@@ -15,7 +15,7 @@ import {
   KEYRING_CLASS,
 } from 'consts';
 import { Account } from 'background/service/preference';
-import { ContactBookItem } from 'background/service/contactBook';
+import { UIContactBookItem } from 'background/service/contactBook';
 import { useWallet } from 'ui/utils';
 import { query2obj } from 'ui/utils/url';
 import { getTokenSymbol, geTokenDecimals } from 'ui/utils/token';
@@ -53,7 +53,9 @@ const SendToken = () => {
   const { showChainsModal = false } = state ?? {};
 
   const [form] = useForm<{ to: string; amount: string }>();
-  const [contactInfo, setContactInfo] = useState<null | ContactBookItem>(null);
+  const [contactInfo, setContactInfo] = useState<null | UIContactBookItem>(
+    null
+  );
   const [currentToken, setCurrentToken] = useState<TokenItem>({
     id: 'eth',
     chain: 'eth',
@@ -164,7 +166,10 @@ const SendToken = () => {
     }
   };
 
-  const handleConfirmContact = (data: ContactBookItem | null, type: string) => {
+  const handleConfirmContact = (
+    data: UIContactBookItem | null,
+    type: string
+  ) => {
     setShowEditContactModal(false);
     setShowListContactModal(false);
     setContactInfo(data);
@@ -402,7 +407,7 @@ const SendToken = () => {
       }
       loadCurrentToken(needLoadToken.id, needLoadToken.chain, account.address);
       if (qs.address) {
-        const data: ContactBookItem = {
+        const data = {
           name: qs?.name,
           address: qs?.address,
         };

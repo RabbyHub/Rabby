@@ -5,7 +5,7 @@ import { useHistory } from 'react-router-dom';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 import { useWallet } from 'ui/utils';
-import { ContactBookItem } from 'background/service/contactBook';
+import { UIContactBookItem } from 'background/service/contactBook';
 import { AddressViewer } from 'ui/component';
 import IconCorrect from 'ui/assets/dashboard/contacts/correct.png';
 import IconUnCorrect from 'ui/assets/dashboard/contacts/uncorrect.png';
@@ -26,8 +26,8 @@ export interface ContactsItem {
   editIndex: number | null;
   accounts: Account[];
   handleDeleteAddress(address: string): void;
-  handleUpdateContact(data: ContactBookItem): void;
-  addContact(data: ContactBookItem): void;
+  handleUpdateContact(data: UIContactBookItem): void;
+  addContact(data: UIContactBookItem): void;
   hideNewContact(): void;
 }
 const ContactsItem = ({
@@ -70,12 +70,6 @@ const ContactsItem = ({
     if (importedName) {
       setAlianName(importedName);
     }
-    return true;
-  };
-  const alianNameConfirm = (e?: any) => {
-    e && e.stopPropagation();
-
-    setNameFocus(false);
     return true;
   };
   const addressValid = () => {
@@ -128,7 +122,7 @@ const ContactsItem = ({
       return;
     }
     if (!addressValid() || !nameValid()) return;
-    const data: ContactBookItem = {
+    const data: UIContactBookItem = {
       name: alianName,
       address: address.toLowerCase(),
     };

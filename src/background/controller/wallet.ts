@@ -380,10 +380,12 @@ export class WalletController extends BaseController {
 
   unlock = async (password: string) => {
     const alianNameInited = await preferenceService.getInitAlianNameStatus();
-    const alianNames = await preferenceService.getAllAlianName();
+    const alianNames = contactBookService
+      .listContacts()
+      .filter((item) => item.isAlias);
     await keyringService.submitPassword(password);
     sessionService.broadcastEvent('unlock');
-    if (!alianNameInited && Object.values(alianNames).length === 0) {
+    if (!alianNameInited && alianNames.length === 0) {
       this.initAlianNames();
     }
   };
@@ -990,7 +992,7 @@ export class WalletController extends BaseController {
   removeAddress = async (address: string, type: string, brand?: string) => {
     await keyringService.removeAccount(address, type, brand);
     if (!(await keyringService.hasAddress(address))) {
-      preferenceService.removeAlianName(address);
+      contactBookService.removeAlias(address);
     }
     preferenceService.removeAddressBalance(address);
     const current = preferenceService.getCurrentAccount();
@@ -1350,22 +1352,21 @@ export class WalletController extends BaseController {
 
   addContact = (data: ContactBookItem) => {
     contactBookService.addContact(data);
-    const alianName = preferenceService.getAlianName(data.address);
-    if (alianName) {
-      preferenceService.updateAlianName(data.address, data.name);
-    }
   };
   updateContact = (data: ContactBookItem) => {
     contactBookService.updateContact(data);
-    const alianName = preferenceService.getAlianName(data.address);
-    if (alianName) {
-      preferenceService.updateAlianName(data.address, data.name);
-    }
   };
   removeContact = (address: string) => {
     contactBookService.removeContact(address);
   };
-  listContact = () => contactBookService.listContacts();
+  listContact = (includeAlias = true) => {
+    const list = contactBookService.listContacts();
+    if (includeAlias) {
+      return list;
+    } else {
+      return list.filter((item) => !item.isAlias);
+    }
+  };
   getContactsByMap = () => contactBookService.getContactsByMap();
   getContactByAddress = (address: string) =>
     contactBookService.getContactByAddress(address);
@@ -1399,30 +1400,19 @@ export class WalletController extends BaseController {
   };
 
   getAlianName = (address: string) => {
-    const alianName = preferenceService.getAlianName(address);
     const contactName = contactBookService.getContactByAddress(address)?.name;
-    return contactName || alianName;
+    return contactName;
   };
 
   updateAlianName = (address: string, name: string) => {
-    preferenceService.updateAlianName(address, name);
-    contactBookService.updateContact({
+    contactBookService.updateAlias({
       name,
       address,
     });
   };
 
   getAllAlianName = () => {
-    const alianNames = preferenceService.getAllAlianName();
-    const contactNames = contactBookService.getContactsByMap();
-    for (const key in contactNames) {
-      if (alianNames[key.toLowerCase()]) {
-        alianNames[key.toLowerCase()] = (contactNames[
-          key
-        ] as ContactBookItem).name;
-      }
-    }
-    return alianNames;
+    return contactBookService.listAlias();
   };
 
   getInitAlianNameStatus = () => preferenceService.getInitAlianNameStatus();
