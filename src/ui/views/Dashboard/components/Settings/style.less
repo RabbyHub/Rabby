@@ -34,12 +34,15 @@
   .field {
     background: @color-bg;
     border-radius: 6px;
-    margin-bottom: 12px;
+    margin-bottom: 8px;
     font-size: 14px;
     line-height: 16px;
     color: @color-title;
     padding: 0 16px;
     border: 1px solid transparent;
+    & + .field {
+      margin-top: 8px;
+    }
     &.default-wallet-field {
       padding-top: 20px;
       height: 72px;
@@ -48,7 +51,8 @@
         line-height: 20px;
       }
     }
-    &:hover, &.checked {
+    &:hover,
+    &.checked {
       background-color: rgba(134, 151, 255, 0.2);
       border: 1px solid #8697ff;
     }
@@ -144,7 +148,8 @@
         }
       }
 
-      &.metamask:hover, &.metamask.checked {
+      &.metamask:hover,
+      &.metamask.checked {
         background: rgba(246, 133, 27, 0.1);
         border: 1px solid #f6851b;
         box-sizing: border-box;

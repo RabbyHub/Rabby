@@ -136,7 +136,7 @@ const Widget = ({ visible, onClose }: WidgetProps) => {
       <Popup
         visible={visible}
         onClose={handleClose}
-        height={280}
+        height={240}
         bodyStyle={{ height: '100%', padding: 0 }}
       >
         <div className="popup-widget">

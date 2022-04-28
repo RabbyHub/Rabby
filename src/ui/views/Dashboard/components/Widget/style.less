@@ -5,19 +5,23 @@
   &__header {
     width: 100%;
     height: 100px;
-    background: linear-gradient(180deg, rgba(134, 146, 255, 0.3) 0%, rgba(134, 146, 255, 0) 91.69%);
+    background: linear-gradient(
+      180deg,
+      rgba(134, 146, 255, 0.3) 0%,
+      rgba(134, 146, 255, 0) 91.69%
+    );
     padding-top: 32px;
     display: flex;
     flex-direction: column;
     align-items: center;
-    margin-bottom: 27px;
+    margin-bottom: 10px;
     border-radius: 16px 16px 0px 0px;
     &-title {
       font-weight: 500;
       font-size: 20px;
       line-height: 23px;
       text-align: center;
-      color: #13141A;
+      color: #13141a;
       margin-bottom: 8px;
       display: flex;
       align-items: center;
@@ -40,8 +44,8 @@
     position: relative;
     padding: 0 20px;
     .field {
-      min-height: 52px;
-      background-color: #F5F6FA;
+      min-height: 56px;
+      background-color: #f5f6fa;
       border-radius: 6px;
       border: 1px solid transparent;
       &:hover {
@@ -62,7 +66,8 @@
       text-align: center;
       color: #707280;
       left: 0;
-      bottom: 24px;
+      bottom: 20px;
+      margin: 0;
     }
   }
   .widget-detail-modal {
@@ -84,25 +89,25 @@
       margin-bottom: 32px;
       font-size: 14px;
       line-height: 20px;
-      color: #4B4D59;
+      color: #4b4d59;
       white-space: pre-wrap;
     }
     .widget-detail-subtitle {
       font-weight: bold;
       font-size: 12px;
       line-height: 14px;
-      color: #13141A;
+      color: #13141a;
       margin-bottom: 8px;
     }
     ul {
       li {
         padding: 12px;
         padding-left: 24px;
-        background: #F5F6FA;
+        background: #f5f6fa;
         border-radius: 6px;
         font-size: 12px;
         line-height: 14px;
-        color: #4B4D59;
+        color: #4b4d59;
         margin-bottom: 8px;
         position: relative;
         &::before {
@@ -110,7 +115,7 @@
           position: absolute;
           width: 3px;
           height: 3px;
-          background-color: #4B4D59;
+          background-color: #4b4d59;
           left: 12px;
           top: 50%;
           transform: translateY(-50%);
@@ -126,11 +131,11 @@
     }
     .popup-footer {
       bottom: 0;
-      background: #F5F6FA;
+      background: #f5f6fa;
       padding: 20px;
       font-size: 15px;
       line-height: 18px;
-      color: #13141A;
+      color: #13141a;
       font-weight: 500;
     }
     &.show {
