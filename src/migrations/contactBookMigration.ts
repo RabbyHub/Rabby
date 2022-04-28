@@ -5,7 +5,7 @@ import {
 } from 'background/service/contactBook';
 
 export default {
-  version: 3,
+  version: 4,
   async migrator(data: {
     preference: PreferenceStore | undefined;
     contactBook: ContactBookStore | undefined;

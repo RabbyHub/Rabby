@@ -42,7 +42,6 @@ const createPersistStore = async <T extends object>({
       },
 
       deleteProperty(target, prop) {
-        console.log('deleteProperty', prop);
         if (Reflect.has(target, prop)) {
           Reflect.deleteProperty(target, prop);
 
