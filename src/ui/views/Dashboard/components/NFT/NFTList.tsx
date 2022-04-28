@@ -1,4 +1,5 @@
 import { NFTItem } from '@/background/service/openapi';
+import { Empty } from '@/ui/component';
 import React, { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FixedSizeList } from 'react-window';
@@ -39,12 +40,14 @@ const NFTList = ({ isLoading, data }: NFTListProps) => {
           {NFTListRow}
         </FixedSizeList>
       ) : (
-        <div className="no-data">
-          <img className="w-[100px] h-[100px]" src="./images/nodata-tx.png" />
-          <div className="loading-text">
-            {t("You haven't gotten any NFT yet")}
-          </div>
-        </div>
+        <Empty
+          desc={
+            <span className="text-white opacity-80">
+              {t("You haven't gotten any NFT yet")}
+            </span>
+          }
+          className="pt-[120px] w-full"
+        ></Empty>
       )}
     </div>
   );

@@ -5,7 +5,7 @@ import { FixedSizeList } from 'react-window';
 import { SvgIconLoading } from 'ui/assets';
 import IconArrowUp from 'ui/assets/arrow-up.svg';
 import IconOpenDeFi from 'ui/assets/dashboard/opendefi.png';
-import { TokenWithChain } from 'ui/component';
+import { Empty, TokenWithChain } from 'ui/component';
 import { openInTab, splitNumberByStep, useHover } from 'ui/utils';
 
 const Row = (props) => {
@@ -142,10 +142,14 @@ const AssetsList = ({
           </FixedSizeList>
         </>
       ) : (
-        <div className="no-data">
-          <img className="w-[100px] h-[100px]" src="./images/nodata-tx.png" />
-          <div className="loading-text">{t('No Protocols')}</div>
-        </div>
+        <Empty
+          desc={
+            <span className="text-white opacity-80">
+              {t('No assets found in supported DeFi protocols')}
+            </span>
+          }
+          className="pt-[120px] w-full"
+        ></Empty>
       )}
     </div>
   );

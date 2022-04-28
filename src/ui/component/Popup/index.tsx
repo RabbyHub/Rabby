@@ -3,6 +3,10 @@ import clsx from 'clsx';
 import React, { ReactNode } from 'react';
 import ReactDOM from 'react-dom';
 import './index.less';
+import { SvgIconCross } from 'ui/assets';
+const closeIcon = (
+  <SvgIconCross className="w-14 fill-current text-gray-content" />
+);
 
 interface PopupProps extends DrawerProps {
   onCancel?(): void;
@@ -24,6 +28,7 @@ const Popup = ({
     placement={placement}
     className={clsx('custom-popup', className)}
     destroyOnClose
+    closeIcon={closeIcon}
     {...rest}
   >
     {children}
