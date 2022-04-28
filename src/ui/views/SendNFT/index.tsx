@@ -15,7 +15,7 @@ import {
 } from 'consts';
 import { Account } from 'background/service/preference';
 import { NFTItem } from '@/background/service/openapi';
-import { ContactBookItem } from 'background/service/contactBook';
+import { UIContactBookItem } from 'background/service/contactBook';
 import { useWallet } from 'ui/utils';
 import { getTokenName } from 'ui/utils/token';
 import AccountCard from '../Approval/components/AccountCard';
@@ -61,7 +61,9 @@ const SendNFT = () => {
   const { useForm } = Form;
 
   const [form] = useForm<{ to: string; amount: number }>();
-  const [contactInfo, setContactInfo] = useState<null | ContactBookItem>(null);
+  const [contactInfo, setContactInfo] = useState<null | UIContactBookItem>(
+    null
+  );
   const [sendAlianName, setSendAlianName] = useState<string | null>(null);
   const [showEditContactModal, setShowEditContactModal] = useState(false);
   const [showListContactModal, setShowListContactModal] = useState(false);
@@ -111,9 +113,10 @@ const SendNFT = () => {
       setEditBtnDisabled(false);
     }
     const addressContact = await wallet.getContactByAddress(to);
-    if (addressContact) {
-      setContactInfo(addressContact);
-      addressContact.isAlias ? setAccountType('my') : setAccountType('others');
+    const alianName = await wallet.getAlianName(to.toLowerCase());
+    if (addressContact || alianName) {
+      setContactInfo(addressContact || { to, name: alianName });
+      alianName ? setAccountType('my') : setAccountType('others');
     } else if (!addressContact && contactInfo) {
       setContactInfo(null);
       setAccountType('');
@@ -151,7 +154,10 @@ const SendNFT = () => {
     }
   };
 
-  const handleConfirmContact = (data: ContactBookItem | null, type: string) => {
+  const handleConfirmContact = (
+    data: UIContactBookItem | null,
+    type: string
+  ) => {
     setShowEditContactModal(false);
     setShowListContactModal(false);
     setContactInfo(data);
@@ -213,8 +219,8 @@ const SendNFT = () => {
   };
 
   const getAlianName = async () => {
-    const contact = await wallet.getContactByAddress(currentAccount?.address);
-    setSendAlianName(contact.name);
+    const alianName = await wallet.getAlianName(currentAccount?.address);
+    setSendAlianName(alianName);
   };
 
   const validateNFT = async () => {

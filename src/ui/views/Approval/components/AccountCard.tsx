@@ -50,10 +50,10 @@ const AccountCard = ({
   const init = async () => {
     const currentAccount = account || (await wallet.syncGetCurrentAccount());
     setCurrentAccount(currentAccount);
-    const contact = await wallet.getContactByAddress(
+    const alianName = await wallet.getAlianName(
       currentAccount?.address?.toLowerCase()
     );
-    setCurrentAccountAlianName(contact.name);
+    setCurrentAccountAlianName(alianName);
   };
 
   useEffect(() => {

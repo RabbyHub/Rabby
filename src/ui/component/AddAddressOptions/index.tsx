@@ -158,13 +158,12 @@ const AddAddressOptions = () => {
             mnemonLengh = allAccounts[0]?.accounts?.length;
           }
           if (account && account.length > 0) {
-            await wallet.updateContact({
-              address: account[0]?.toLowerCase(),
-              name: `${BRAND_ALIAN_TYPE_TEXT[KEYRING_CLASS.MNEMONIC]} ${
+            await wallet.updateAlianName(
+              account[0]?.toLowerCase(),
+              `${BRAND_ALIAN_TYPE_TEXT[KEYRING_CLASS.MNEMONIC]} ${
                 mnemonLengh + 1
-              }`,
-              isAlias: true,
-            });
+              }`
+            );
           }
           message.success({
             icon: <img src={IconSuccess} className="icon icon-success" />,

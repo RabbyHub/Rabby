@@ -7,6 +7,11 @@ export interface ContactBookItem {
   isContact: boolean;
 }
 
+export interface UIContactBookItem {
+  name: string;
+  address: string;
+}
+
 export type ContactBookStore = Record<string, ContactBookItem | undefined>;
 
 class ContactBook {
@@ -23,12 +28,16 @@ class ContactBook {
     return this.store[address.toLowerCase()];
   };
 
-  addContact = (data: ContactBookItem) => {
-    this.store[data.address.toLowerCase()] = data;
-  };
-
   removeContact = (address: string) => {
-    this.store[address.toLowerCase()] = undefined;
+    const key = address.toLowerCase();
+    if (!this.store[key]) return;
+    if (this.store[key]?.isAlias) {
+      this.store[key] = Object.assign({}, this.store[key], {
+        isContact: false,
+      });
+    } else {
+      delete this.store[key];
+    }
   };
 
   updateContact = (data: ContactBookItem) => {
@@ -36,25 +45,77 @@ class ContactBook {
       this.store[data.address.toLowerCase()] = Object.assign(
         {},
         this.store[data.address.toLowerCase()],
-        data
+        {
+          name: data.name,
+          address: data.address,
+          isContact: true,
+        }
       );
     } else {
-      this.store[data.address.toLowerCase()] = data;
+      this.store[data.address.toLowerCase()] = {
+        name: data.name,
+        address: data.address,
+        isContact: true,
+        isAlias: false,
+      };
     }
   };
 
+  addContact = this.updateContact;
+
   listContacts = (): ContactBookItem[] => {
     const list = Object.values(this.store);
-    return list.filter((item): item is ContactBookItem => !!item) || [];
+    return (
+      list.filter((item): item is ContactBookItem => !!item?.isContact) || []
+    );
   };
+
+  listAlias = () => {
+    return Object.values(this.store).filter((item) => item?.isAlias);
+  };
+
+  updateAlias = (data: { address: string; name: string }) => {
+    const key = data.address.toLowerCase();
+    if (this.store[key]) {
+      this.store[key] = Object.assign({}, this.store[key], {
+        name: data.name,
+        address: data.address,
+        isAlias: true,
+      });
+    } else {
+      this.store[key] = {
+        name: data.name,
+        address: data.address,
+        isAlias: true,
+        isContact: false,
+      };
+    }
+  };
+
+  addAlias = this.updateAlias;
 
   removeAlias = (address: string) => {
     const key = address.toLowerCase();
     if (!this.store[key]) return;
-    this.store[key]!.isAlias = false;
+    if (this.store[key]!.isContact) {
+      this.store[key]! = Object.assign({}, this.store[key], {
+        isAlias: false,
+      });
+    } else {
+      delete this.store[key];
+    }
   };
 
   getContactsByMap = () => {
+    Object.values(this.store)
+      .filter((item) => item?.isContact)
+      .reduce(
+        (res, item) => ({
+          ...res,
+          [item!.address.toLowerCase()]: item,
+        }),
+        {}
+      );
     return this.store;
   };
 }

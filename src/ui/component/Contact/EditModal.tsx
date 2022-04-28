@@ -2,14 +2,14 @@ import React, { useEffect, useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Drawer, Input, Button, Form, message } from 'antd';
 import { useWallet } from 'ui/utils';
-import { ContactBookItem } from 'background/service/contactBook';
+import { UIContactBookItem } from 'background/service/contactBook';
 import IconSuccess from 'ui/assets/success.svg';
 import './style.less';
 
 interface EditModalProps {
   address: string;
   visible: boolean;
-  onOk(data: ContactBookItem | null, type: string): void;
+  onOk(data: UIContactBookItem | null, type: string): void;
   onCancel(): void;
   isEdit: boolean;
   accountType: string;
@@ -28,17 +28,16 @@ const EditModal = ({
   const [name, setName] = useState('');
   const inputRef = useRef<Input>(null);
 
-  const handleConfirm = async () => {
+  const handleConfirm = () => {
     if (!name) return;
-    const origin = await wallet.getContactByAddress(address);
     if (isEdit) {
-      await wallet.updateContact({
-        ...origin,
+      wallet.updateContact({
         address,
         name,
       });
+      wallet.updateAlianName(address.toLowerCase(), name);
     } else {
-      await wallet.addContact({
+      wallet.addContact({
         address,
         name,
       });
@@ -48,7 +47,7 @@ const EditModal = ({
         duration: 1,
       });
     }
-    onOk({ ...origin, address, name }, accountType);
+    onOk({ address, name }, accountType);
   };
 
   const handleRemoveContact = () => {
@@ -79,7 +78,8 @@ const EditModal = ({
   const init = async () => {
     if (isEdit) {
       const contact = await wallet.getContactByAddress(address);
-      setName(contact.name);
+      const alianName = await wallet.getAlianName(address);
+      setName(contact.name || alianName);
     }
   };
 
@@ -90,7 +90,8 @@ const EditModal = ({
       }, 200);
       if (isEdit) {
         const contact = await wallet.getContactByAddress(address);
-        setName(contact?.name || '');
+        const alianName = await wallet.getAlianName(address);
+        setName(contact?.name || alianName || '');
       } else {
         setName('');
       }

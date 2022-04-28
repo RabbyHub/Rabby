@@ -151,9 +151,9 @@ const Dashboard = () => {
   };
 
   const getAlianName = async (address: string) => {
-    await wallet.getContactByAddress(address).then((contact) => {
-      setAlianName(contact.name);
-      setDisplayName(contact.name);
+    await wallet.getAlianName(address).then((name) => {
+      setAlianName(name);
+      setDisplayName(name);
     });
   };
 
@@ -261,11 +261,10 @@ const Dashboard = () => {
       return;
     }
     setStartEdit(false);
-    await wallet.updateContact({
-      address: currentAccount?.address?.toLowerCase(),
-      name: alianName,
-      isAlias: true,
-    });
+    await wallet.updateAlianName(
+      currentAccount?.address?.toLowerCase(),
+      alianName
+    );
     setDisplayName(alianName);
     const newAccountList = accountsList.map((item) => {
       if (
@@ -510,6 +509,7 @@ const Dashboard = () => {
   const getAllKeyrings = async () => {
     setLoadingAddress(true);
     const _accounts = await wallet.getAllVisibleAccounts();
+    const allAlianNames = await wallet.getAllAlianName();
     const allContactNames = await wallet.getContactsByMap();
     const templist = await _accounts
       .map((item) =>
@@ -517,7 +517,9 @@ const Dashboard = () => {
           return {
             ...account,
             type: item.type,
-            alianName: allContactNames[account?.address?.toLowerCase()]?.name,
+            alianName:
+              allContactNames[account?.address?.toLowerCase()]?.name ||
+              allAlianNames[account?.address?.toLowerCase()],
             keyring: item.keyring,
           };
         })

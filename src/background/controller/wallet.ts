@@ -334,12 +334,10 @@ export class WalletController extends BaseController {
           ) {
             return;
           }
-          this.updateContact({
-            address: acc?.address,
-            name: `${WALLET_BRAND_CONTENT[acc?.brandName]} ${index + 1}`,
-            isAlias: true,
-            isContact: false,
-          });
+          this.updateAlianName(
+            acc?.address,
+            `${WALLET_BRAND_CONTENT[acc?.brandName]} ${index + 1}`
+          );
         });
       });
       const catergories = groupBy(
@@ -358,12 +356,10 @@ export class WalletController extends BaseController {
         .map((item) => item.flat(1));
       result.forEach((group) =>
         group.forEach((acc, index) => {
-          this.updateContact({
-            address: acc?.address,
-            name: `${BRAND_ALIAN_TYPE_TEXT[acc?.type]} ${index + 1}`,
-            isAlias: true,
-            isContact: false,
-          });
+          this.updateAlianName(
+            acc?.address,
+            `${BRAND_ALIAN_TYPE_TEXT[acc?.type]} ${index + 1}`
+          );
         })
       );
     }
@@ -376,12 +372,7 @@ export class WalletController extends BaseController {
       );
       if (sameAddressList.length > 0) {
         sameAddressList.forEach((item) =>
-          this.updateContact({
-            address: item.address,
-            name: item.name,
-            isAlias: true,
-            isContact: true,
-          })
+          this.updateAlianName(item.address, item.name)
         );
       }
     }
@@ -1373,6 +1364,22 @@ export class WalletController extends BaseController {
 
   updateHighlightWalletList = (list) => {
     return preferenceService.updateWalletSavedList(list);
+  };
+
+  getAlianName = (address: string) => {
+    const contactName = contactBookService.getContactByAddress(address)?.name;
+    return contactName;
+  };
+
+  updateAlianName = (address: string, name: string) => {
+    contactBookService.updateAlias({
+      name,
+      address,
+    });
+  };
+
+  getAllAlianName = () => {
+    return contactBookService.listAlias();
   };
 
   getInitAlianNameStatus = () => preferenceService.getInitAlianNameStatus();

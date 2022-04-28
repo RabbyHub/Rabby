@@ -11,7 +11,7 @@ import {
 import { useWallet } from 'ui/utils';
 import { AddressViewer, FieldCheckbox } from '..';
 import {
-  ContactBookItem,
+  UIContactBookItem,
   ContactBookStore,
 } from 'background/service/contactBook';
 
@@ -20,7 +20,7 @@ import './style.less';
 interface ListModalProps {
   address?: string;
   visible: boolean;
-  onOk(data: ContactBookItem, type: string): void;
+  onOk(data: UIContactBookItem, type: string): void;
   onCancel(): void;
 }
 interface Account {
@@ -32,12 +32,14 @@ const { TabPane } = Tabs;
 const ListModal = ({ address, visible, onOk, onCancel }: ListModalProps) => {
   const { t } = useTranslation();
   const wallet = useWallet();
-  const [list, setList] = useState<ContactBookItem[]>([]);
-  const [contactMap, setContactMap] = useState<ContactBookStore>({});
+  const [alianNamesMap, setAlianNamesMap] = useState<ContactBookStore>({});
+  const [list, setList] = useState<UIContactBookItem[]>([]);
+  const [alianNames, setAlianNames] = useState({});
   const [accountList, setAccountList] = useState<Account[]>([]);
   const handleVisibleChange = async () => {
     if (visible) {
-      const data = await wallet.getContactsByMap();
+      const data = await wallet.listContact();
+      const importedList = await wallet.getAllAlianName();
       const importAccounts = await wallet.getAllVisibleAccounts();
       const importAccountsList: Account[] = unionBy(
         importAccounts
@@ -53,8 +55,17 @@ const ListModal = ({ address, visible, onOk, onCancel }: ListModalProps) => {
         (item) => item?.address.toLowerCase()
       );
       setAccountList(importAccountsList);
-      setContactMap(data);
-      setList(Object.values(data));
+      setAlianNamesMap(
+        importedList.reduce(
+          (res, item) => ({
+            ...res,
+            [item.address.toLowerCase()]: item,
+          }),
+          {}
+        )
+      );
+      setList(data);
+      setAlianNames(importedList);
     }
   };
 
@@ -62,7 +73,7 @@ const ListModal = ({ address, visible, onOk, onCancel }: ListModalProps) => {
     handleVisibleChange();
   }, [visible]);
 
-  const handleConfirm = (data: ContactBookItem, type: string) => {
+  const handleConfirm = (data: UIContactBookItem, type: string) => {
     onOk(data, type);
   };
   const NoDataUI = (
@@ -137,7 +148,10 @@ const ListModal = ({ address, visible, onOk, onCancel }: ListModalProps) => {
                   showCheckbox={false}
                   onChange={() =>
                     handleConfirm(
-                      contactMap[account.address.toLowerCase()]!,
+                      {
+                        address: account?.address,
+                        name: alianNames[account?.address?.toLowerCase()],
+                      },
                       'my'
                     )
                   }
@@ -159,7 +173,9 @@ const ListModal = ({ address, visible, onOk, onCancel }: ListModalProps) => {
                     />
                   </Tooltip>
                   <div className="contact-info ml-12">
-                    <p>{contactMap[account?.address?.toLowerCase()]}</p>
+                    <p>
+                      {alianNamesMap[account?.address?.toLowerCase()]?.name}
+                    </p>
                     <p>
                       <AddressViewer
                         address={account?.address}

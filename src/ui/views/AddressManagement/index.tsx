@@ -65,7 +65,14 @@ const AddressManagement = () => {
 
   const getAllKeyrings = async () => {
     const _accounts = await wallet.getAllClassAccounts();
-    const allAlianNames = await wallet.getContactsByMap();
+    const allAlianNames = await wallet.getAllAlianName();
+    const alianNamesMap = allAlianNames.reduce(
+      (res, item) => ({
+        ...res,
+        [item.address.toLowerCase()]: item.name,
+      }),
+      {}
+    );
     setAccounts(_accounts);
     const list = _accounts
       .sort((a, b) => {
@@ -76,7 +83,7 @@ const AddressManagement = () => {
           (item) =>
             (item = {
               ...item,
-              alianName: allAlianNames[item.address.toLowerCase()].name,
+              alianName: alianNamesMap[item.address.toLowerCase()],
               type: group.type,
               keyring: group.keyring,
             })
