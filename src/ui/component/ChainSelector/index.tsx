@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { ReactNode, useState } from 'react';
 import { CHAINS_ENUM, CHAINS } from 'consts';
 import { useHover } from 'ui/utils';
 import { SvgIconArrowDown } from 'ui/assets';
@@ -15,9 +15,11 @@ interface ChainSelectorProps {
   connection?: boolean;
   showModal?: boolean;
   className?: string;
+  title?: ReactNode;
 }
 
 const ChainSelector = ({
+  title,
   value,
   onChange,
   connection = false,
@@ -55,6 +57,7 @@ const ChainSelector = ({
         <SvgIconArrowDown className={clsx('icon icon-arrow-down arrowColor')} />
       </div>
       <Modal
+        title={title}
         value={value}
         visible={showSelectorModal}
         onChange={handleChange}
