@@ -109,7 +109,7 @@ class PermissionService {
     this.sync();
   };
 
-  hasPerssmion = (origin) => {
+  hasPermission = (origin) => {
     if (!this.lruCache) return;
     if (origin === INTERNAL_REQUEST_ORIGIN) return true;
 

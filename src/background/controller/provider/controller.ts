@@ -100,7 +100,7 @@ class ProviderController extends BaseController {
     } = req;
 
     if (
-      !permissionService.hasPerssmion(origin) &&
+      !permissionService.hasPermission(origin) &&
       !SAFE_RPC_METHODS.includes(method)
     ) {
       throw ethErrors.provider.unauthorized();
@@ -150,7 +150,7 @@ class ProviderController extends BaseController {
   };
 
   ethRequestAccounts = async ({ session: { origin } }) => {
-    if (!permissionService.hasPerssmion(origin)) {
+    if (!permissionService.hasPermission(origin)) {
       throw ethErrors.provider.unauthorized();
     }
 
@@ -174,7 +174,7 @@ class ProviderController extends BaseController {
   };
 
   ethAccounts = async ({ session: { origin } }) => {
-    if (!permissionService.hasPerssmion(origin)) {
+    if (!permissionService.hasPermission(origin)) {
       return [];
     }
 
@@ -183,7 +183,7 @@ class ProviderController extends BaseController {
   };
 
   ethCoinbase = async ({ session: { origin } }) => {
-    if (!permissionService.hasPerssmion(origin)) {
+    if (!permissionService.hasPermission(origin)) {
       return null;
     }
 
