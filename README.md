@@ -85,4 +85,4 @@ it's used by 3 pages which share the same js code, but the template html is diff
 
 ## Thanks
 
-Thanks for contributions from MetaMask team to browser extension wallet community, Rabby use (or fork) them to make Rabby better.
+Thanks for contributions from MetaMask team to browser extension wallet community, Rabby uses (or forks) them to make Rabby better.
