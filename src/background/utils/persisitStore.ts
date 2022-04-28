@@ -30,10 +30,6 @@ const createPersistStore = async <T extends object>({
   const createProxy = <A extends object>(obj: A): A =>
     new Proxy(obj, {
       set(target, prop, value) {
-        if (typeof value === 'object' && value !== null) {
-          target[prop] = createProxy(value);
-        }
-
         target[prop] = value;
 
         persistStorage(name, target);
