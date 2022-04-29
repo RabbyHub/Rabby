@@ -91,14 +91,18 @@ const Row = (props) => {
         </div>
       ) : (
         <div className="right">
-          <img
-            src={isAdded ? IconRemoveToken : IconAddToken}
-            onClick={(e) => {
-              e.stopPropagation();
-              isAdded ? removeToken(token) : addToken(token);
-            }}
-            className="add-token-icon"
-          />
+          {token.is_core ? (
+            <span className="token-extra">Enabled by default</span>
+          ) : (
+            <img
+              src={isAdded ? IconRemoveToken : IconAddToken}
+              onClick={(e) => {
+                e.stopPropagation();
+                isAdded ? removeToken(token) : addToken(token);
+              }}
+              className="add-token-icon"
+            />
+          )}
         </div>
       )}
     </div>
@@ -224,11 +228,6 @@ const TokenList = ({
         </div>
       )}
       {noSeachResult && <div className="no-added-token">No results</div>}
-      {startSearch && query && searchTokens.length > 0 && (
-        <div className="no-added-token absolute m-0 top-[166px] left-0 right-0">
-          The token rabby has been supported
-        </div>
-      )}
       {isloading && (
         <div className="loadingContainer">
           <SvgIconLoading className="icon icon-loading" fill="#FFFFFF" />

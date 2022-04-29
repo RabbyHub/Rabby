@@ -68,11 +68,14 @@ const History = () => {
       {(loadingMore || loading) && <Loading count={5} active />}
       {isEmpty && (
         <Empty
-          title={t('No transactions found on')}
+          title={t('No transactions')}
           desc={
-            <Link className="underline" to="/settings/chain-list">
-              {t('supported chains')}
-            </Link>
+            <span>
+              No transactions found on{' '}
+              <Link className="underline" to="/settings/chain-list">
+                {t('supported chains')}
+              </Link>
+            </span>
           }
           className="pt-[108px]"
         ></Empty>
