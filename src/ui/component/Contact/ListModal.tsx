@@ -150,7 +150,8 @@ const ListModal = ({ address, visible, onOk, onCancel }: ListModalProps) => {
                     handleConfirm(
                       {
                         address: account?.address,
-                        name: alianNames[account?.address?.toLowerCase()],
+                        name: alianNamesMap[account?.address?.toLowerCase()]!
+                          .name,
                       },
                       'my'
                     )
