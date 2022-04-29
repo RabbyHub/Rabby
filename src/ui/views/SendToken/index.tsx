@@ -32,6 +32,7 @@ import IconEdit from 'ui/assets/edit-purple.svg';
 import IconCopy from 'ui/assets/copy-no-border.svg';
 import IconSuccess from 'ui/assets/success.svg';
 import { SvgIconPlusPrimary, SvgIconLoading, SvgAlert } from 'ui/assets';
+import IconArrowHeader from 'ui/assets/arrow-container-header.svg';
 import './style.less';
 
 const TOKEN_VALIDATION_STATUS = {
@@ -584,17 +585,7 @@ const SendToken = () => {
             </div>
             {balanceError || balanceWarn ? (
               <div className="balance-error">{balanceError || balanceWarn}</div>
-            ) : (
-              <div className="token-price">
-                ≈ $
-                {splitNumberByStep(
-                  (
-                    (form.getFieldValue('amount') || 0) * currentToken.price ||
-                    0
-                  ).toFixed(2)
-                )}
-              </div>
-            )}
+            ) : null}
           </div>
           <Form.Item name="amount">
             {currentAccount && (
@@ -606,8 +597,17 @@ const SendToken = () => {
               />
             )}
           </Form.Item>
-          <div className="token-info__header" />
+          <div className="token-price">
+            ≈ $
+            {splitNumberByStep(
+              (
+                (form.getFieldValue('amount') || 0) * currentToken.price || 0
+              ).toFixed(2)
+            )}
+          </div>
+
           <div className="token-info">
+            <div className="token-info__header" />
             {!isNativeToken ? (
               <div className="section-field">
                 <span>{t('Contract Address')}</span>
