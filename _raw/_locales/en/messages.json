@@ -703,6 +703,18 @@
   "ApproveExplain": {
     "message": "Approve {{count}} {{token}} for {{protocol}}"
   },
+  "CancelNFTCollectionApprovalExplain": {
+    "message": "Cancel NFT Collection Approval for {{protocol}}"
+  },
+  "CancelSingleNFTApprovalExplain": {
+    "message": "Cancel Single NFT Approval for {{protocol}}"
+  },
+  "SingleNFTApprovalExplain": {
+    "message": "Single NFT Approval for {{protocol}}"
+  },
+  "NFTCollectionApprovalExplain": {
+    "message": "NFT Collection Approval for {{protocol}}"
+  },
   "PendingDetailTip": {
     "message": "Only one transaction will be completed, and it is almost always the one with the highest gas price"
   },

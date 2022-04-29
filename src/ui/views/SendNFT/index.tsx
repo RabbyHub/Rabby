@@ -80,7 +80,7 @@ const SendNFT = () => {
     tokenValidationStatus === TOKEN_VALIDATION_STATUS.SUCCESS;
 
   const handleCopyContractAddress = () => {
-    const clipboard = new ClipboardJS('.send-nft', {
+    const clipboard = new ClipboardJS('.transfer-nft', {
       text: function () {
         if (!nftItem) return '';
         return nftItem.contract_id;

@@ -42,9 +42,93 @@ const TransactionExplain = ({
     <img className="icon icon-explain" src={IconUnknown} />
   );
   let content: string | React.ReactNode = t('Unknown Transaction');
-
   if (explain) {
-    if (explain.type_cancel_token_approval) {
+    if (explain.type_cancel_nft_collection_approval) {
+      icon = (
+        <img
+          src={
+            explain.type_cancel_nft_collection_approval
+              .spender_protocol_logo_url || IconUnknown
+          }
+          className="icon icon-explain"
+        />
+      );
+      content = (
+        <Trans
+          i18nKey="CancelNFTCollectionApprovalExplain"
+          values={{
+            protocol:
+              explain.type_cancel_nft_collection_approval
+                .spender_protocol_name || t('UnknownProtocol'),
+          }}
+        />
+      );
+    } else if (explain.type_nft_collection_approval) {
+      icon = (
+        <img
+          src={
+            explain.type_nft_collection_approval.spender_protocol_logo_url ||
+            IconUnknown
+          }
+          className="icon icon-explain"
+        />
+      );
+      content = (
+        <Trans
+          i18nKey="NFTCollectionApprovalExplain"
+          values={{
+            protocol:
+              explain.type_nft_collection_approval.spender_protocol_name ||
+              t('UnknownProtocol'),
+          }}
+        />
+      );
+    } else if (explain.type_cancel_single_nft_approval) {
+      icon = (
+        <img
+          src={
+            explain.type_cancel_single_nft_approval.spender_protocol_logo_url ||
+            IconUnknown
+          }
+          className="icon icon-explain"
+        />
+      );
+      content = (
+        <Trans
+          i18nKey="CancelSingleNFTApprovalExplain"
+          values={{
+            protocol:
+              explain.type_cancel_single_nft_approval.spender_protocol_name ||
+              t('UnknownProtocol'),
+          }}
+        />
+      );
+    } else if (explain.type_single_nft_approval) {
+      icon = (
+        <img
+          src={
+            explain.type_single_nft_approval.spender_protocol_logo_url ||
+            IconUnknown
+          }
+          className="icon icon-explain"
+        />
+      );
+      content = (
+        <Trans
+          i18nKey="SingleNFTApprovalExplain"
+          values={{
+            protocol:
+              explain.type_single_nft_approval.spender_protocol_name ||
+              t('UnknownProtocol'),
+          }}
+        />
+      );
+    } else if (explain.type_nft_send) {
+      icon = <img className="icon icon-explain" src={IconUser} />;
+      content = `${t('Send')} ${splitNumberByStep(
+        explain.type_nft_send.token_amount
+      )} NFT`;
+    } else if (explain.type_cancel_token_approval) {
       icon = (
         <img
           src={
@@ -65,8 +149,7 @@ const TransactionExplain = ({
           }}
         />
       );
-    }
-    if (explain.type_token_approval) {
+    } else if (explain.type_token_approval) {
       icon = (
         <img
           src={
@@ -89,14 +172,12 @@ const TransactionExplain = ({
           }}
         />
       );
-    }
-    if (explain.type_send) {
+    } else if (explain.type_send) {
       icon = <img className="icon icon-explain" src={IconUser} />;
       content = `${t('Send')} ${splitNumberByStep(
         explain.type_send.token_amount
       )} ${explain.type_send.token_symbol}`;
-    }
-    if (explain.type_call) {
+    } else if (explain.type_call) {
       icon = (
         <img
           src={explain.type_call.contract_protocol_logo_url || IconUnknown}
