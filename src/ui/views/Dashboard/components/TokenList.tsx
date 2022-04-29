@@ -17,7 +17,7 @@ import IconArrowUp from 'ui/assets/arrow-up.svg';
 import IconRemoveToken from 'ui/assets/removetoken.png';
 import IconClose from 'ui/assets/searchIconClose.png';
 import IconSearch from 'ui/assets/tokenSearch.png';
-import { AddressViewer, TokenWithChain } from 'ui/component';
+import { AddressViewer, Empty, TokenWithChain } from 'ui/component';
 import { splitNumberByStep } from 'ui/utils';
 import { TokenDetailPopup } from './TokenDetailPopup';
 
@@ -91,14 +91,18 @@ const Row = (props) => {
         </div>
       ) : (
         <div className="right">
-          <img
-            src={isAdded ? IconRemoveToken : IconAddToken}
-            onClick={(e) => {
-              e.stopPropagation();
-              isAdded ? removeToken(token) : addToken(token);
-            }}
-            className="add-token-icon"
-          />
+          {token.is_core ? (
+            <span className="token-extra">Enabled by default</span>
+          ) : (
+            <img
+              src={isAdded ? IconRemoveToken : IconAddToken}
+              onClick={(e) => {
+                e.stopPropagation();
+                isAdded ? removeToken(token) : addToken(token);
+              }}
+              className="add-token-icon"
+            />
+          )}
         </div>
       )}
     </div>
@@ -268,10 +272,14 @@ const TokenList = ({
         </FixedSizeList>
       )}
       {!startSearch && !isloading && tokens.length === 0 && (
-        <div className="no-data">
-          <img className="w-[100px] h-[100px]" src="./images/nodata-tx.png" />
-          <div className="loading-text">{t('No Tokens')}</div>
-        </div>
+        <Empty
+          desc={
+            <span className="text-white opacity-80">
+              {t('No token assets')}
+            </span>
+          }
+          className="pt-[120px] w-full"
+        ></Empty>
       )}
       <TokenDetailPopup
         visible={detail.visible}

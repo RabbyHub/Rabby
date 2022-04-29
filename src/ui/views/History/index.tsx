@@ -3,7 +3,8 @@ import { TxHistoryResult } from 'background/service/openapi';
 import { last } from 'lodash';
 import React, { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { PageHeader } from 'ui/component';
+import { Link } from 'react-router-dom';
+import { Empty, PageHeader } from 'ui/component';
 import { useWallet } from 'ui/utils';
 import { HistoryItem } from './HistoryItem';
 import { Loading } from './Loading';
@@ -66,12 +67,18 @@ const History = () => {
       ))}
       {(loadingMore || loading) && <Loading count={5} active />}
       {isEmpty && (
-        <div className="txs-history__empty">
-          <img className="no-data" src="./images/nodata-tx.png" />
-          <p className="text-14 text-gray-content mt-12">
-            {t('No Transactions')}
-          </p>
-        </div>
+        <Empty
+          title={t('No transactions')}
+          desc={
+            <span>
+              No transactions found on{' '}
+              <Link className="underline" to="/settings/chain-list">
+                {t('supported chains')}
+              </Link>
+            </span>
+          }
+          className="pt-[108px]"
+        ></Empty>
       )}
     </div>
   );

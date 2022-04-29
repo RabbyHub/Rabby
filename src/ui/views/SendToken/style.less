@@ -1,8 +1,9 @@
 @import '../../style/var.less';
 
-.send-token, .transfer-nft {
+.send-token,
+.transfer-nft {
   .page();
-  padding: 0 16px 20px;
+  padding: 0 20px 20px 20px;
   position: relative;
   .chain-tag-selector {
     margin-bottom: -10px;
@@ -27,6 +28,18 @@
     }
     &:nth-last-child(1) {
       padding: 12px;
+    }
+
+    .token-amount-input {
+      margin-bottom: 0;
+    }
+    .token-price {
+      padding: 8px 0;
+      font-weight: 400;
+      font-size: 12px;
+      line-height: 14px;
+      text-align: right;
+      color: #707280;
     }
   }
   .account-card {
@@ -180,13 +193,15 @@
     }
   }
   .token-info__header {
-    width: 100%;
-    height: 15px;
+    position: absolute;
+    left: -1px;
+    right: -1px;
+    top: -15px;
+    height: 21px;
     background: url(../../assets/arrow-container-header.svg);
     background-size: cover;
     background-repeat: no-repeat;
     z-index: 0;
-    transform: translateY(6px);
   }
   .token-info {
     background: #fafafb;

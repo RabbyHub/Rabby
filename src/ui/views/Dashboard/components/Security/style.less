@@ -6,7 +6,10 @@
   overflow: auto;
   height: 100%;
   .footer {
-    margin-top: 11px;
+    position: absolute;
+    bottom: 20px;
+    left: 0;
+    right: 0;
     text-align: center;
     font-size: 12px;
     line-height: 14px;
@@ -19,13 +22,16 @@
   .field {
     background: @color-bg;
     border-radius: 6px;
-    margin-bottom: 12px;
+    margin-bottom: 8px;
     font-size: 14px;
     line-height: 16px;
     color: @color-title;
     padding: 0 16px;
     border: 1px solid transparent;
-    min-height: 52px;
+    min-height: 58px;
+    & + .field {
+      margin-top: 8px;
+    }
     &.default-wallet-field {
       padding-top: 20px;
       height: 80px;

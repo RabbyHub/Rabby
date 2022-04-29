@@ -37,8 +37,8 @@ const Security = ({ visible, onClose }: SecurityProps) => {
       <Popup
         visible={visible}
         onClose={onClose}
-        height={245}
-        bodyStyle={{ height: '100%', paddingBottom: 0, paddingTop: 12 }}
+        height={240}
+        bodyStyle={{ height: '100%', paddingBottom: 0 }}
         title="Security"
       >
         <div className="popup-security">

@@ -1,4 +1,4 @@
-import { Modal, Popup } from '@/ui/component';
+import { Empty, Modal, Popup } from '@/ui/component';
 import { message } from 'antd';
 import { ConnectedSite } from 'background/service/permission';
 import React, { useEffect, useMemo, useState } from 'react';
@@ -98,7 +98,13 @@ const RecentConnections = ({
   }, []);
 
   return (
-    <Popup visible={visible} height={484} onClose={onClose}>
+    <Popup
+      visible={visible}
+      height={580}
+      onClose={onClose}
+      title="Dapps"
+      closable
+    >
       <div className="recent-connections-popup">
         {visible && (
           <ConnectionList
@@ -118,7 +124,7 @@ const RecentConnections = ({
           onClick={handleClick}
           onFavoriteChange={handleFavoriteChange}
           data={recentList}
-          title={t('Recent')}
+          title={t('Recently connected')}
           extra={
             recentList.length > 0 ? (
               <a onClick={handleRemoveAll}>{t('Disconnect all')}</a>
@@ -126,13 +132,10 @@ const RecentConnections = ({
           }
           empty={
             <div className="list-empty mb-[-24px] rounded-b-none">
-              <div className="text-center pt-[85px] pb-[125px] text-gray-comment text-14">
-                <img
-                  className="w-[100px] h-[100px]"
-                  src="./images/nodata-tx.png"
-                />
-                {t('No dapps')}
-              </div>
+              <Empty
+                desc={t('No recently connected Dapps')}
+                className="pt-[68px] pb-[181px]"
+              ></Empty>
             </div>
           }
         ></ConnectionList>

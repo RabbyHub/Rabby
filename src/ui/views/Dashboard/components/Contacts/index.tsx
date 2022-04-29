@@ -8,6 +8,11 @@ import ContactsItem from './ContactsItem';
 import IconSuccess from 'ui/assets/success.svg';
 import IconAddAddress from 'ui/assets/dashboard/contacts/add-address.png';
 import './style.less';
+import { SvgIconCross } from 'ui/assets';
+
+const closeIcon = (
+  <SvgIconCross className="w-14 fill-current text-gray-content" />
+);
 
 interface ContactsProps {
   visible?: boolean;
@@ -98,6 +103,7 @@ const Contacts = ({ visible, onClose }: ContactsProps) => {
       onClose={onClose}
       title={'Contacts'}
       bodyStyle={{ height: '100%' }}
+      closeIcon={closeIcon}
       contentWrapperStyle={{
         height: 580,
       }}
