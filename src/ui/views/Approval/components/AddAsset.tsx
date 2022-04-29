@@ -34,7 +34,7 @@ const AddAsset = ({ params }: { params: AddAssetProps }) => {
             src={IconWarning}
             className="w-[84px] h-[84px] mb-[39px] mx-auto"
           />
-          <div className="text-gray-title text-16 leading-[24px] w-[320px] mx-auto font-medium text-center">
+          <div className="text-gray-title text-[16px] leading-[24px] w-[320px] mx-auto font-medium text-center">
             {t('Rabby does not support adding tokens in this way for now')}
           </div>
         </>

@@ -22,6 +22,7 @@
     display: flex;
     align-items: center;
     gap: 8px;
+    overflow: hidden;
     &.is-empty {
       .site-icon {
         width: 20px;
@@ -46,15 +47,14 @@
       border-radius: 50%;
     }
     &-content {
-      flex-grow: 1;
-      flex-shrink: 0;
+      flex: 1;
+      overflow: hidden;
     }
     &-name {
       font-weight: 400;
       font-size: 13px;
       line-height: 15px;
       color: @color-title;
-      max-width: 163px;
       margin-bottom: 2px;
       .ellipsis();
     }
