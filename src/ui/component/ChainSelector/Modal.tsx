@@ -71,7 +71,7 @@ const ChainSelectorModal = ({
     };
   }, []);
   let maxHeight =
-    Math.round(savedChainsData.length / 2) * 60 + 70 + (title ? 56 : 0);
+    Math.round(savedChainsData.length / 2) * 64 + 70 + (title ? 56 : 0);
   const range = [130, 450].map((item) => item + (title ? 56 : 0));
   if (connection && maxHeight > 258) {
     maxHeight = 258;
