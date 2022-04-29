@@ -85,11 +85,11 @@ const flowContext = flow
       },
       mapMethod,
     } = ctx;
-    const [approvalType, condition, { height = 710 } = {}] =
+    const [approvalType, condition, { height = 800 } = {}] =
       Reflect.getMetadata('APPROVAL', providerController, mapMethod) || [];
     const minHeight = 500;
     let windowHeight = height;
-    if (screen.availHeight < 880) {
+    if (screen.availHeight < 1000) {
       windowHeight = screen.availHeight - 200;
     }
     if (windowHeight < minHeight) {
