@@ -1,36 +1,37 @@
 /**
  * @jest-environment jsdom
  */
-import daiChainMigration from '../../src/migrations/daiChainMigration';
-import { ConnectedSite, PermissionStore } from 'background/service/permission';
+import { PermissionStore } from 'background/service/permission';
 import { CHAINS_ENUM } from 'consts';
+import connectedSiteMigration from '@/migrations/connectedSiteMigration';
 
-const data: { permission: PermissionStore } = {
+const data = {
   permission: {
     dumpCache: [
       {
         e: 0,
         k: 'https://rabby.io',
         v: {
-          chain: 'DAI' as CHAINS_ENUM,
+          chain: 'BSC' as CHAINS_ENUM,
           icon: '',
           isSigned: false,
           isTop: false,
           name: 'Rabby',
           origin: 'https://rabby.io',
-        } as ConnectedSite,
+        },
       },
       {
         e: 0,
         k: 'https://uniswap.com',
         v: {
-          chain: 'DAI' as CHAINS_ENUM,
+          chain: 'FTM' as CHAINS_ENUM,
           icon: '',
           isSigned: false,
           isTop: false,
           name: 'Rabby',
           origin: 'https://rabby.io',
-        } as ConnectedSite,
+          isConnected: false,
+        },
       },
       {
         e: 0,
@@ -42,37 +43,40 @@ const data: { permission: PermissionStore } = {
           isTop: false,
           name: 'Rabby',
           origin: 'https://rabby.io',
-        } as ConnectedSite,
+          isConnected: true,
+        },
       },
     ],
   },
-};
+} as { permission: PermissionStore };
 
 test('should migrate data', () => {
-  return daiChainMigration.migrator(data).then((result) => {
+  return connectedSiteMigration.migrator(data).then((result) => {
     expect(result!.permission!.dumpCache).toEqual([
       {
         e: 0,
         k: 'https://rabby.io',
         v: {
-          chain: 'GNOSIS' as CHAINS_ENUM,
+          chain: 'BSC' as CHAINS_ENUM,
           icon: '',
           isSigned: false,
           isTop: false,
           name: 'Rabby',
           origin: 'https://rabby.io',
+          isConnected: true,
         },
       },
       {
         e: 0,
         k: 'https://uniswap.com',
         v: {
-          chain: 'GNOSIS' as CHAINS_ENUM,
+          chain: 'FTM' as CHAINS_ENUM,
           icon: '',
           isSigned: false,
           isTop: false,
           name: 'Rabby',
           origin: 'https://rabby.io',
+          isConnected: false,
         },
       },
       {
@@ -85,6 +89,7 @@ test('should migrate data', () => {
           isTop: false,
           name: 'Rabby',
           origin: 'https://rabby.io',
+          isConnected: true,
         },
       },
     ]);
@@ -92,7 +97,7 @@ test('should migrate data', () => {
 });
 
 test('return undefined for new user', () => {
-  daiChainMigration
+  connectedSiteMigration
     .migrator({ permission: undefined })
     .then((result) => expect(result).toBeUndefined());
 });

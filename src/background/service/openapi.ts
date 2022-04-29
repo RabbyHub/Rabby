@@ -3,7 +3,7 @@ import rateLimit from 'axios-rate-limit';
 import { ethErrors } from 'eth-rpc-errors';
 import { createPersistStore } from 'background/utils';
 import { CHAINS, INITIAL_OPENAPI_URL, CHAINS_ENUM } from 'consts';
-import { getChain } from 'utils';
+import { getChain } from '../../utils';
 
 interface OpenApiConfigValue {
   path: string;
@@ -1043,6 +1043,15 @@ class OpenApiService {
       {
         community_id: 888,
         id: 'wan',
+        logo_url: '',
+        name: '',
+        native_token_id: '',
+        wrapped_token_id: '',
+        symbol: '',
+      },
+      {
+        community_id: 321,
+        id: 'kcc',
         logo_url: '',
         name: '',
         native_token_id: '',

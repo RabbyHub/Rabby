@@ -2,14 +2,14 @@ import React, { useEffect, useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Drawer, Input, Button, Form, message } from 'antd';
 import { useWallet } from 'ui/utils';
-import { ContactBookItem } from 'background/service/contactBook';
+import { UIContactBookItem } from 'background/service/contactBook';
 import IconSuccess from 'ui/assets/success.svg';
 import './style.less';
 
 interface EditModalProps {
   address: string;
   visible: boolean;
-  onOk(data: ContactBookItem | null, type: string): void;
+  onOk(data: UIContactBookItem | null, type: string): void;
   onCancel(): void;
   isEdit: boolean;
   accountType: string;

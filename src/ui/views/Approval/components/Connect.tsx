@@ -27,6 +27,12 @@ const Connect = ({ params: { icon, origin } }: ConnectProps) => {
 
   const init = async () => {
     const account = await wallet.getCurrentAccount();
+    const site = await wallet.getSite(origin);
+    if (site) {
+      setDefaultChain(site.chain);
+      setIsLoading(false);
+      return;
+    }
     try {
       const recommendChains = await wallet.openapi.getRecommendChains(
         account!.address,

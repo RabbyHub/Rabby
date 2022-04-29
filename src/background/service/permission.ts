@@ -12,6 +12,7 @@ export interface ConnectedSite {
   isSigned: boolean;
   isTop: boolean;
   order?: number;
+  isConnected: boolean;
 }
 
 export type PermissionStore = {
@@ -52,6 +53,16 @@ class PermissionService {
     return this.lruCache.peek(key);
   };
 
+  getSite = (origin: string) => {
+    return this.lruCache?.get(origin);
+  };
+
+  setSite = (site: ConnectedSite) => {
+    if (!this.lruCache) return;
+    this.lruCache.set(site.origin, site);
+    this.sync();
+  };
+
   addConnectedSite = (
     origin: string,
     name: string,
@@ -68,6 +79,7 @@ class PermissionService {
       chain: defaultChain,
       isSigned,
       isTop: false,
+      isConnected: true,
     });
     this.sync();
   };
@@ -101,22 +113,35 @@ class PermissionService {
     if (!this.lruCache) return;
     if (origin === INTERNAL_REQUEST_ORIGIN) return true;
 
-    return this.lruCache.has(origin);
+    const site = this.lruCache.get(origin);
+    return site && site.isConnected;
   };
 
   setRecentConnectedSites = (sites: ConnectedSite[]) => {
     this.lruCache?.load(
-      sites.map((item) => ({
-        e: 0,
-        k: item.origin,
-        v: item,
-      }))
+      sites
+        .map((item) => ({
+          e: 0,
+          k: item.origin,
+          v: item,
+        }))
+        .concat(
+          (this.lruCache?.values() || [])
+            .filter((item) => !item.isConnected)
+            .map((item) => ({
+              e: 0,
+              k: item.origin,
+              v: item,
+            }))
+        )
     );
     this.sync();
   };
 
   getRecentConnectedSites = () => {
-    const sites = this.lruCache?.values() || [];
+    const sites = (this.lruCache?.values() || []).filter(
+      (item) => item.isConnected
+    );
     const pinnedSites = sites
       .filter((item) => item?.isTop)
       .sort((a, b) => (a.order || 0) - (b.order || 0));
@@ -125,11 +150,14 @@ class PermissionService {
   };
 
   getConnectedSites = () => {
-    return this.lruCache?.values() || [];
+    return (this.lruCache?.values() || []).filter((item) => item.isConnected);
   };
 
   getConnectedSite = (key: string) => {
-    return this.lruCache?.get(key);
+    const site = this.lruCache?.get(key);
+    if (site && site.isConnected) {
+      return site;
+    }
   };
 
   topConnectedSite = (origin: string, order?: number) => {
@@ -156,8 +184,14 @@ class PermissionService {
 
   removeConnectedSite = (origin: string) => {
     if (!this.lruCache) return;
-
-    this.lruCache.del(origin);
+    const site = this.getConnectedSite(origin);
+    if (!site) {
+      return;
+    }
+    this.setSite({
+      ...site,
+      isConnected: false,
+    });
     this.sync();
   };
 

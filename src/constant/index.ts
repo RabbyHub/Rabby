@@ -83,6 +83,9 @@ import IconRSKChainLogo from 'ui/assets/dashboard/selectChain/rsk.svg';
 import IconWanChainLogo from 'ui/assets/dashboard/selectChain/wanchain.svg';
 import IconWanLogo from 'ui/assets/chain-logos/wanchain.svg';
 import IconWanWhiteLogo from 'ui/assets/chain-logos/wanchain-white.svg';
+import IconKCCLogo from 'ui/assets/chain-logos/kcc.svg';
+import IconKCCWhiteLogo from 'ui/assets/chain-logos/kcc-white.svg';
+import IconKCCChainLogo from 'ui/assets/dashboard/selectChain/kcc.svg';
 import IconEN from 'ui/assets/langs/en.svg';
 import IconZH from 'ui/assets/langs/zh_cn.svg';
 import IconAmber from 'ui/assets/walletlogo/amber.png';
@@ -155,6 +158,7 @@ export enum CHAINS_ENUM {
   IOTX = 'IOTX',
   RSK = 'RSK',
   WAN = 'WAN',
+  KCC = 'KCC',
 }
 
 export const CHAINS: Record<string, Chain> = {
@@ -745,6 +749,27 @@ export const CHAINS: Record<string, Chain> = {
       'https://static.debank.com/image/chain/logo_url/wan/f3aa8b31414732ea5e026e05665146e6.png',
     nativeTokenDecimals: 18,
     thridPartyRPC: 'https://gwan-ssl.wandevs.org:56891',
+    eip: {
+      '1559': false,
+    },
+  },
+  [CHAINS_ENUM.KCC]: {
+    id: 321,
+    serverId: 'kcc',
+    network: '321',
+    name: 'KCC',
+    nativeTokenSymbol: 'KCS',
+    nativeTokenAddress: 'kcc',
+    enum: CHAINS_ENUM.KCC,
+    logo: IconKCCLogo,
+    whiteLogo: IconKCCWhiteLogo,
+    selectChainLogo: IconKCCChainLogo,
+    hex: '0x141',
+    scanLink: 'https://explorer.kcc.io/tx/_s_',
+    nativeTokenLogo:
+      'https://static.debank.com/image/chain/logo_url/kcc/3a5a4ef7d5f1db1e53880d70219d75b6.png',
+    nativeTokenDecimals: 18,
+    thridPartyRPC: 'https://rpc-mainnet.kcc.network',
     eip: {
       '1559': false,
     },
