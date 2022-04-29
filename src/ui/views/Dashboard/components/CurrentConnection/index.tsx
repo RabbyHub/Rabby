@@ -1,7 +1,7 @@
 import { message, Tooltip } from 'antd';
 import { ConnectedSite } from 'background/service/permission';
 import clsx from 'clsx';
-import { CHAINS, CHAINS_ENUM } from 'consts';
+import { CHAINS_ENUM } from 'consts';
 import React, { memo, useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import IconDisconnect from 'ui/assets/icon-disconnect.svg';
@@ -36,17 +36,6 @@ export const CurrentConnection = memo(() => {
       ...site!,
       chain,
     };
-    if (!site?.isConnected) {
-      const chainName = CHAINS[chain].name;
-      message.success({
-        icon: <i />,
-        content: (
-          <span className="text-white">
-            {t(`${chainName} has been selected for the current Dapp`)}
-          </span>
-        ),
-      });
-    }
     setSite(_site);
     setVisible(false);
     await wallet.setSite(_site);
@@ -109,7 +98,9 @@ export const CurrentConnection = memo(() => {
         title={
           <div>
             <div className="chain-selector-tips">
-              Select a chain to connect for:
+              {site?.isConnected
+                ? 'Switch the chain connected to'
+                : 'Select a chain to connect for'}
             </div>
             <div className="chain-selector-site">{site?.origin}</div>
           </div>
