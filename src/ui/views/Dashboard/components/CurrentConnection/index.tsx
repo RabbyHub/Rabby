@@ -98,7 +98,9 @@ export const CurrentConnection = memo(() => {
         title={
           <div>
             <div className="chain-selector-tips">
-              Select a chain to connect for:
+              {site?.isConnected
+                ? 'Switch the chain connected to'
+                : 'Select a chain to connect for'}
             </div>
             <div className="chain-selector-site">{site?.origin}</div>
           </div>
