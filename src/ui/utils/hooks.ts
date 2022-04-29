@@ -27,10 +27,10 @@ export const useApproval = () => {
     });
   };
 
-  const rejectApproval = async (err?, stay = false) => {
+  const rejectApproval = async (err?, stay = false, isInternal = false) => {
     const approval = await getApproval();
     if (approval) {
-      await wallet.rejectApproval(err, stay);
+      await wallet.rejectApproval(err, stay, isInternal);
     }
     if (!stay) {
       history.push('/');

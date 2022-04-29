@@ -610,6 +610,13 @@ class LedgerBridgeKeyring extends EventEmitter {
       this.onSendTransaction = async () => {
         const isV4 = options.version === 'V4';
         if (!isV4) {
+          setTimeout(() => {
+            eventBus.emit(EVENTS.broadcastToUI, {
+              method: EVENTS.LEDGER.REJECT_APPROVAL,
+              params:
+                'Ledger: Only version 4 of typed data signing is supported',
+            });
+          }, 500);
           throw new Error(
             'Ledger: Only version 4 of typed data signing is supported'
           );

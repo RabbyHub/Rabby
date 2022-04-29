@@ -974,6 +974,7 @@ export const EVENTS = {
   },
   LEDGER: {
     REJECTED: 'LEDGER_REJECTED',
+    REJECT_APPROVAL: 'LEDGER_REJECT_APPROVAL',
   },
 };
 

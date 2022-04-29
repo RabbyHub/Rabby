@@ -91,6 +91,9 @@ const LedgerHardwareWaiting = ({ params }: { params: ApprovalParams }) => {
       is1559: chain.eip['1559'],
     });
     setIsSignText(params.isGnosis ? true : approval?.approvalType !== 'SignTx');
+    eventBus.addEventListener(EVENTS.LEDGER.REJECT_APPROVAL, (data) => {
+      rejectApproval(data, true, true);
+    });
     eventBus.addEventListener(EVENTS.LEDGER.REJECTED, async (data) => {
       if (/DisconnectedDeviceDuringOperation/i.test(data)) {
         await rejectApproval('User rejected the request.');

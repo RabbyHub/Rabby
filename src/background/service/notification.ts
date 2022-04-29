@@ -72,8 +72,13 @@ class NotificationService extends Events {
     this.emit('resolve', data);
   };
 
-  rejectApproval = async (err?: string, stay = false) => {
-    this.approval?.reject(ethErrors.provider.userRejectedRequest<any>(err));
+  rejectApproval = async (err?: string, stay = false, isInternal = false) => {
+    if (isInternal) {
+      this.approval?.reject(ethErrors.rpc.internal(err));
+    } else {
+      this.approval?.reject(ethErrors.provider.userRejectedRequest<any>(err));
+    }
+
     await this.clear(stay);
     this.emit('reject', err);
   };
