@@ -380,9 +380,7 @@ export class WalletController extends BaseController {
 
   unlock = async (password: string) => {
     const alianNameInited = await preferenceService.getInitAlianNameStatus();
-    const alianNames = contactBookService
-      .listContacts()
-      .filter((item) => item.isAlias);
+    const alianNames = contactBookService.listAlias();
     await keyringService.submitPassword(password);
     sessionService.broadcastEvent('unlock');
     if (!alianNameInited && alianNames.length === 0) {
