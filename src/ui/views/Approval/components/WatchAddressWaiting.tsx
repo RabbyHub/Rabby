@@ -163,11 +163,11 @@ const Process = ({
       break;
     case WALLETCONNECT_STATUS_MAP.WAITING:
       image = './images/connection-waiting.png';
-      title = t('Waiting for signature');
+      title = t('Please sign on your phone');
       titleColor = '#8697FF';
       description = (
         <p className="text-gray-content text-14 text-center">
-          {t('Please sign on your phone')}
+          {t('Waiting for signature')}
         </p>
       );
       break;
@@ -265,12 +265,7 @@ const Process = ({
         status === WALLETCONNECT_STATUS_MAP.WAITING ||
         status === WALLETCONNECT_STATUS_MAP.REJECTED) && (
         <div className="watchaddress-process__buttons">
-          <Button
-            className="w-[200px]"
-            type="primary"
-            onClick={handleRetry}
-            size="large"
-          >
+          <Button type="link" onClick={handleRetry}>
             {t('Retry')}
           </Button>
           <Button type="link" onClick={handleCancel}>
