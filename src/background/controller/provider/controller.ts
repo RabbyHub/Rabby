@@ -641,6 +641,13 @@ class ProviderController extends BaseController {
   ])
   walletSwitchEthereumChain = this.walletAddEthereumChain;
 
+  @Reflect.metadata('APPROVAL', ['AddAsset', () => null, { height: 390 }])
+  walletWatchAsset = () => {
+    throw new Error(
+      'Rabby does not support adding tokens in this way for now.'
+    );
+  };
+
   walletRequestPermissions = ({ data: { params: permissions } }) => {
     const result: Web3WalletPermission[] = [];
     if (permissions && 'eth_accounts' in permissions[0]) {
