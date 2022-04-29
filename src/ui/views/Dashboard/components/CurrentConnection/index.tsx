@@ -5,8 +5,8 @@ import { CHAINS, CHAINS_ENUM } from 'consts';
 import React, { memo, useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import IconDisconnect from 'ui/assets/icon-disconnect.svg';
-import IconSiteDefault from 'ui/assets/site-default.svg';
-import { ChainSelector } from 'ui/component';
+import IconDapps from 'ui/assets/dapps.svg';
+import { ChainSelector, FallbackSiteLogo } from 'ui/component';
 import { getCurrentTab, useWallet } from 'ui/utils';
 import './style.less';
 
@@ -42,9 +42,7 @@ export const CurrentConnection = memo(() => {
         icon: <i />,
         content: (
           <span className="text-white">
-            {t(
-              `${chainName} has been selected as the chain to the current site`
-            )}
+            {t(`${chainName} has been selected for the current Dapp`)}
           </span>
         ),
       });
@@ -58,9 +56,14 @@ export const CurrentConnection = memo(() => {
     getCurrentSite();
   }, []);
 
-  const Content = (
+  const Content = site && (
     <div className="site">
-      <img src={site?.icon} className="site-icon" alt="" />
+      <FallbackSiteLogo
+        url={site.icon}
+        origin={site.origin}
+        width="28px"
+        className="site-icon"
+      ></FallbackSiteLogo>
       <div className="site-content">
         <div className="site-name" title={site?.origin}>
           {site?.origin}
@@ -97,11 +100,7 @@ export const CurrentConnection = memo(() => {
         )
       ) : (
         <div className="site is-empty">
-          <img
-            src={IconSiteDefault}
-            className="site-icon rounded-none"
-            alt=""
-          />
+          <img src={IconDapps} className="site-icon" alt="" />
           <div className="site-content">No Dapp found</div>
         </div>
       )}
