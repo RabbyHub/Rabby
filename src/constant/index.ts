@@ -491,7 +491,7 @@ export const CHAINS: Record<string, Chain> = {
     whiteLogo: IconBttWhiteLogo,
     selectChainLogo: IconBttChainLogo,
     hex: '0xc7',
-    scanLink: 'https://scan.bt.io/#/transaction/_s_',
+    scanLink: 'https://bttcscan.com/tx/_s_',
     nativeTokenLogo:
       'https://static.debank.com/image/chain/logo_url/btt/2130a8d57ff2a0f3d50a4ec9432897c6.png',
     nativeTokenDecimals: 18,
