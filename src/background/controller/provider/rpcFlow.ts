@@ -60,7 +60,7 @@ const flowContext = flow
       mapMethod,
     } = ctx;
     if (!Reflect.getMetadata('SAFE', providerController, mapMethod)) {
-      if (!permissionService.hasPerssmion(origin)) {
+      if (!permissionService.hasPermission(origin)) {
         ctx.request.requestedApproval = true;
         const { defaultChain } = await notificationService.requestApproval(
           {

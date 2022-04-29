@@ -1,7 +1,6 @@
 import React, { ReactNode, FunctionComponent, useEffect, useMemo } from 'react';
 import cx from 'clsx';
 import { Form, FormInstance, FormProps } from 'antd';
-import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 import { SvgIconSlogon } from 'assets';
 import StrayHeader, { StrayHeaderProps } from '../StrayHeader';
@@ -120,7 +119,7 @@ export const StrayPageWithButton = ({
     return (
       <div className={className}>
         <Form
-          className={clsx('sm:pb-[98px] lg:pb-[72px]', {
+          className={cx('sm:pb-[98px] lg:pb-[72px]', {
             'scroll-container': isScrollContainer,
           })}
           autoComplete="off"
@@ -157,7 +156,7 @@ export const StrayPageWithButton = ({
       className={className}
     >
       <Form
-        className={clsx('sm:pb-[98px] lg:pb-[72px]', {
+        className={cx('sm:pb-[98px] lg:pb-[72px]', {
           'scroll-container': isScrollContainer,
         })}
         autoComplete="off"

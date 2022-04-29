@@ -49,7 +49,7 @@ const deleteSession = (id) => {
 const broadcastEvent = (ev, data?, origin?) => {
   let sessions: any[] = [];
   sessionMap.forEach((session, key) => {
-    if (permissionService.hasPerssmion(session.origin)) {
+    if (permissionService.hasPermission(session.origin)) {
       sessions.push({
         key,
         ...session,
