@@ -12,6 +12,7 @@ const config = {
   plugins: [
     new webpack.DefinePlugin({
       'process.env.BUILD_ENV': JSON.stringify('DEV'),
+      'process.env.DEBUG': true,
     }),
   ],
 };

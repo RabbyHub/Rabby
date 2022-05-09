@@ -55,6 +55,7 @@ import KeystoneKeyring, {
   AcquireMemeStoreData,
   MemStoreDataReady,
 } from '../service/keyring/eth-keystone-keyring';
+import WatchKeyring from '@rabby-wallet/eth-watch-keyring';
 import stats from '@/stats';
 
 const stashKeyrings: Record<string, any> = {};
@@ -985,6 +986,23 @@ export class WalletController extends BaseController {
     if (current?.address === address && current.type === type) {
       this.resetCurrentAccount();
     }
+  };
+
+  clearWatchMode = async () => {
+    const keyrings: WatchKeyring[] = await keyringService.getKeyringsByType(
+      KEYRING_CLASS.WATCH
+    );
+    let addresses: string[] = [];
+    for (let i = 0; i < keyrings.length; i++) {
+      const keyring = keyrings[i];
+      const accounts = await keyring.getAccounts();
+      addresses = [...addresses, ...accounts];
+    }
+    await Promise.all(
+      addresses.map((address) =>
+        this.removeAddress(address, KEYRING_CLASS.WATCH)
+      )
+    );
   };
 
   removeAddress = async (address: string, type: string, brand?: string) => {
