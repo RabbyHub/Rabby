@@ -235,14 +235,14 @@ const SendNFT = () => {
       if (name === nftItem.contract_name) {
         setTokenValidationStatus(TOKEN_VALIDATION_STATUS.SUCCESS);
       } else {
-        Sentry.captureException('NFT validation failed', (scope) => {
+        Sentry.captureException(new Error('NFT validation failed'), (scope) => {
           scope.setTag('id', `${nftItem.chain}-${nftItem.contract_id}`);
           return scope;
         });
         setTokenValidationStatus(TOKEN_VALIDATION_STATUS.FAILD);
       }
     } catch (e) {
-      Sentry.captureException('NFT validation failed', (scope) => {
+      Sentry.captureException(new Error('NFT validation failed'), (scope) => {
         scope.setTag('id', `${nftItem.chain}-${nftItem.contract_id}`);
         return scope;
       });
