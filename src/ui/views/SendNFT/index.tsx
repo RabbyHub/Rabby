@@ -1,4 +1,5 @@
 import React, { useState, useEffect, useRef } from 'react';
+import * as Sentry from '@sentry/browser';
 import ClipboardJS from 'clipboard';
 import clsx from 'clsx';
 import BigNumber from 'bignumber.js';
@@ -225,14 +226,26 @@ const SendNFT = () => {
 
   const validateNFT = async () => {
     if (!nftItem) return;
-    setTokenValidationStatus(TOKEN_VALIDATION_STATUS.PENDING);
-    const name = await getTokenName(
-      nftItem.contract_id,
-      new providers.JsonRpcProvider(CHAINS[chain!].thridPartyRPC)
-    );
-    if (name === nftItem.contract_name) {
-      setTokenValidationStatus(TOKEN_VALIDATION_STATUS.SUCCESS);
-    } else {
+    try {
+      setTokenValidationStatus(TOKEN_VALIDATION_STATUS.PENDING);
+      const name = await getTokenName(
+        nftItem.contract_id,
+        new providers.JsonRpcProvider(CHAINS[chain!].thridPartyRPC)
+      );
+      if (name === nftItem.contract_name) {
+        setTokenValidationStatus(TOKEN_VALIDATION_STATUS.SUCCESS);
+      } else {
+        Sentry.captureException('NFT validation failed', (scope) => {
+          scope.setTag('id', `${nftItem.chain}-${nftItem.contract_id}`);
+          return scope;
+        });
+        setTokenValidationStatus(TOKEN_VALIDATION_STATUS.FAILD);
+      }
+    } catch (e) {
+      Sentry.captureException('NFT validation failed', (scope) => {
+        scope.setTag('id', `${nftItem.chain}-${nftItem.contract_id}`);
+        return scope;
+      });
       setTokenValidationStatus(TOKEN_VALIDATION_STATUS.FAILD);
     }
   };
