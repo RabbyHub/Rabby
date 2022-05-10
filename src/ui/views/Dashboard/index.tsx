@@ -2,6 +2,7 @@ import React, { useEffect, useState, useRef } from 'react';
 import ClipboardJS from 'clipboard';
 import QRCode from 'qrcode.react';
 import cloneDeep from 'lodash/cloneDeep';
+import uniqBy from 'lodash/uniqBy';
 import BigNumber from 'bignumber.js';
 import { useHistory, useLocation, Link } from 'react-router-dom';
 import { useInterval } from 'react-use';
@@ -338,7 +339,11 @@ const Dashboard = () => {
         }
       });
       setAddedToken(addedToken);
-      tokens = sortTokensByPrice([...defaultTokens, ...localAddedTokens]);
+      tokens = sortTokensByPrice(
+        uniqBy([...defaultTokens, ...localAddedTokens], (token) => {
+          return `${token.chain}-${token.id}`;
+        })
+      );
       setTokens(tokens);
       setIsListLoading(false);
     }
