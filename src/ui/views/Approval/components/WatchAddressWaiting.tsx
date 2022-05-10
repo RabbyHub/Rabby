@@ -261,7 +261,8 @@ const Process = ({
           </a>
         </div>
       )}
-      {(status === WALLETCONNECT_STATUS_MAP.FAILD ||
+      {(status === WALLETCONNECT_STATUS_MAP.CONNECTED ||
+        status === WALLETCONNECT_STATUS_MAP.FAILD ||
         status === WALLETCONNECT_STATUS_MAP.WAITING ||
         status === WALLETCONNECT_STATUS_MAP.REJECTED) && (
         <div className="watchaddress-process__buttons">
