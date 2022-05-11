@@ -86,6 +86,8 @@ import IconWanWhiteLogo from 'ui/assets/chain-logos/wanchain-white.svg';
 import IconKCCLogo from 'ui/assets/chain-logos/kcc.svg';
 import IconKCCWhiteLogo from 'ui/assets/chain-logos/kcc-white.svg';
 import IconKCCChainLogo from 'ui/assets/dashboard/selectChain/kcc.svg';
+import IconSongbirdLogo from 'ui/assets/chain-logos/songbird.png';
+import IconSongbirdWhiteLogo from 'ui/assets/chain-logos/songbird-white.svg';
 import IconEN from 'ui/assets/langs/en.svg';
 import IconZH from 'ui/assets/langs/zh_cn.svg';
 import IconAmber from 'ui/assets/walletlogo/amber.png';
@@ -159,6 +161,7 @@ export enum CHAINS_ENUM {
   RSK = 'RSK',
   WAN = 'WAN',
   KCC = 'KCC',
+  SGB = 'SGB',
 }
 
 export const CHAINS: Record<string, Chain> = {
@@ -770,6 +773,27 @@ export const CHAINS: Record<string, Chain> = {
       'https://static.debank.com/image/chain/logo_url/kcc/3a5a4ef7d5f1db1e53880d70219d75b6.png',
     nativeTokenDecimals: 18,
     thridPartyRPC: 'https://rpc-mainnet.kcc.network',
+    eip: {
+      '1559': false,
+    },
+  },
+  [CHAINS_ENUM.SGB]: {
+    id: 19,
+    serverId: 'sgb',
+    network: '19',
+    name: 'Songbird',
+    nativeTokenSymbol: 'SGB',
+    nativeTokenAddress: 'sgb',
+    enum: CHAINS_ENUM.SGB,
+    logo: IconSongbirdLogo,
+    whiteLogo: IconSongbirdWhiteLogo,
+    selectChainLogo: IconSongbirdLogo,
+    hex: '0x13',
+    scanLink: 'https://songbird-explorer.flare.network/tx/_s_',
+    nativeTokenLogo:
+      'https://static.debank.com/image/chain/logo_url/sgb/619f46d574d62a50bdfd9f0e2f47ddc1.png',
+    nativeTokenDecimals: 18,
+    thridPartyRPC: 'https://songbird.towolabs.com/rpc',
     eip: {
       '1559': false,
     },
