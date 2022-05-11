@@ -88,6 +88,8 @@ import IconKCCWhiteLogo from 'ui/assets/chain-logos/kcc-white.svg';
 import IconKCCChainLogo from 'ui/assets/dashboard/selectChain/kcc.svg';
 import IconSongbirdLogo from 'ui/assets/chain-logos/songbird.png';
 import IconSongbirdWhiteLogo from 'ui/assets/chain-logos/songbird-white.svg';
+import IconEvmosLogo from 'ui/assets/chain-logos/evmos.svg';
+import IconEvmosWhiteLogo from 'ui/assets/chain-logos/evmos-white.svg';
 import IconEN from 'ui/assets/langs/en.svg';
 import IconZH from 'ui/assets/langs/zh_cn.svg';
 import IconAmber from 'ui/assets/walletlogo/amber.png';
@@ -162,6 +164,7 @@ export enum CHAINS_ENUM {
   WAN = 'WAN',
   KCC = 'KCC',
   SGB = 'SGB',
+  EVMOS = 'EVMOS',
 }
 
 export const CHAINS: Record<string, Chain> = {
@@ -794,6 +797,27 @@ export const CHAINS: Record<string, Chain> = {
       'https://static.debank.com/image/chain/logo_url/sgb/619f46d574d62a50bdfd9f0e2f47ddc1.png',
     nativeTokenDecimals: 18,
     thridPartyRPC: 'https://songbird.towolabs.com/rpc',
+    eip: {
+      '1559': false,
+    },
+  },
+  [CHAINS_ENUM.EVMOS]: {
+    id: 9001,
+    serverId: 'evmos',
+    network: '9001',
+    name: 'Evmos',
+    nativeTokenSymbol: 'EVMOS',
+    nativeTokenAddress: 'evmos',
+    enum: CHAINS_ENUM.EVMOS,
+    logo: IconEvmosLogo,
+    whiteLogo: IconEvmosWhiteLogo,
+    selectChainLogo: IconEvmosLogo,
+    hex: '0x2329',
+    scanLink: 'https://evm.evmos.org/tx/_s_',
+    nativeTokenLogo:
+      'https://static.debank.com/image/chain/logo_url/evmos/26e038b4d5475d5a4b92f7fc08bdabc9.png',
+    nativeTokenDecimals: 18,
+    thridPartyRPC: 'https://eth.bd.evmos.org:8545',
     eip: {
       '1559': false,
     },
