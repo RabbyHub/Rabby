@@ -106,11 +106,10 @@ class ProviderController extends BaseController {
       throw ethErrors.provider.unauthorized();
     }
 
-    const connected = permissionService.getConnectedSite(origin);
+    const site = permissionService.getSite(origin);
     let chainServerId = CHAINS[CHAINS_ENUM.ETH].serverId;
-
-    if (connected) {
-      chainServerId = CHAINS[connected.chain].serverId;
+    if (site) {
+      chainServerId = CHAINS[site.chain].serverId;
     }
     if (forceChainServerId) {
       chainServerId = forceChainServerId;
