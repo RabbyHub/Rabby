@@ -1,4 +1,4 @@
-import { Button, DrawerProps, Form, Input, message } from 'antd';
+import { Button, DrawerProps, Form, Input, message, Modal } from 'antd';
 import clsx from 'clsx';
 import { CHAINS, INITIAL_OPENAPI_URL } from 'consts';
 import React, { useEffect, useState } from 'react';
@@ -23,6 +23,8 @@ interface SettingsProps {
   visible?: boolean;
   onClose?: DrawerProps['onClose'];
 }
+
+const { confirm } = Modal;
 
 const OpenApiModal = ({
   visible,
@@ -327,6 +329,16 @@ const Settings = ({ visible, onClose }: SettingsProps) => {
     setIsDefaultWallet(await wallet.isDefaultWallet());
   };
 
+  const handleClickClearWatchMode = () => {
+    confirm({
+      title: 'Warning',
+      content: 'Do you make sure to delete all Watch Mode address?',
+      onOk() {
+        wallet.clearWatchMode();
+      },
+    });
+  };
+
   const renderData = [
     {
       leftIcon: IconAddressManagement,
@@ -366,6 +378,13 @@ const Settings = ({ visible, onClose }: SettingsProps) => {
       content: t('Backend Service URL'),
       onClick: () => setShowOpenApiModal(true),
       rightIcon: <img src={IconArrowRight} className="icon icon-arrow-right" />,
+    } as typeof renderData[0]);
+  }
+
+  if (process.env.DEBUG) {
+    renderData.push({
+      content: t('Clear Watch Mode'),
+      onClick: handleClickClearWatchMode,
     } as typeof renderData[0]);
   }
 
