@@ -52,7 +52,7 @@ const ChainSelector = ({
         onClick={handleClickSelector}
         {...hoverProps}
       >
-        <img src={CHAINS[value]?.selectChainLogo} className="chain-logo" />
+        <img src={CHAINS[value]?.logo} className="chain-logo" />
         {CHAINS[value]?.name}
         <SvgIconArrowDown className={clsx('icon icon-arrow-down arrowColor')} />
       </div>
