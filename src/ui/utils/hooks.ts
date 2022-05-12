@@ -2,6 +2,7 @@ import { useEffect, useRef, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useWallet } from './WalletContext';
 import { getUiType } from './index';
+import { useCopyToClipboard } from 'react-use';
 
 export const useApproval = () => {
   const wallet = useWallet();
@@ -200,4 +201,29 @@ export const useHover = ({
       },
     },
   ];
+};
+
+export const useCopy = (options?: {
+  onSuccess?: (value: any) => void;
+  onError?: (e: any) => void;
+}) => {
+  const { onSuccess, onError } = options || {};
+  const [state, copy] = useCopyToClipboard();
+
+  useEffect(() => {
+    if (onSuccess && state.value) {
+      onSuccess(state.value);
+    }
+  }, [state, onSuccess]);
+
+  useEffect(() => {
+    if (onError && state.error) {
+      onError(state.error);
+    }
+  }, [state, onError]);
+
+  return {
+    copy,
+    state,
+  };
 };

@@ -16,11 +16,15 @@ import IconSecurity from 'ui/assets/dashboard/security.svg';
 import IconSendToken from 'ui/assets/dashboard/sendtoken.png';
 import IconSetting from 'ui/assets/dashboard/setting.png';
 import IconActivities from 'ui/assets/dashboard/activities.svg';
+import IconSignedText from 'ui/assets/dashboard/signedtext.png';
+import IconReceive from 'ui/assets/dashboard/receive.svg';
+import IconSingedTX from 'ui/assets/dashboard/signedtx.png';
 import IconTransactions from 'ui/assets/dashboard/transactions.png';
 import IconWidget from 'ui/assets/dashboard/widget.svg';
 import IconDrawer from 'ui/assets/drawer.png';
 import { getCurrentConnectSite, splitNumberByStep, useWallet } from 'ui/utils';
 import { CurrentConnection } from '../CurrentConnection';
+import ChainSelectorModal from 'ui/component/ChainSelector/Modal';
 import {
   Contacts,
   RecentConnections,
@@ -29,6 +33,7 @@ import {
   Widget,
 } from '../index';
 import './style.less';
+import { CHAINS_ENUM } from '@/constant';
 
 export default ({
   pendingTxCount,
@@ -71,6 +76,7 @@ export default ({
   const [gasPrice, setGasPrice] = useState<number>(0);
   const [gasPriceLoading, setGasPriceLoading] = useState(false);
   const [isDefaultWallet, setIsDefaultWallet] = useState(true);
+  const [isShowReceiveModal, setIsShowReceiveModal] = useState(false);
   const wallet = useWallet();
 
   const getConnectedSites = async () => {
@@ -201,6 +207,13 @@ export default ({
       icon: IconSendToken,
       content: 'Send',
       onClick: () => history.push('/send-token'),
+    },
+    {
+      icon: IconReceive,
+      content: 'Receive',
+      onClick: () => {
+        setIsShowReceiveModal(true);
+      },
     },
     isGnosis
       ? {
@@ -344,6 +357,20 @@ export default ({
         </div>
       </div>
       <CurrentConnection />
+      <ChainSelectorModal
+        offset={-22}
+        className="receive-chain-select-modal"
+        value={CHAINS_ENUM.ETH}
+        title="Select the chain to receive assets"
+        visible={isShowReceiveModal}
+        onChange={(chain) => {
+          history.push(`/receive?chain=${chain}`);
+          setIsShowReceiveModal(false);
+        }}
+        onCancel={() => {
+          setIsShowReceiveModal(false);
+        }}
+      />
       <Settings visible={settingVisible} onClose={changeSetting} />
       <Contacts visible={contactsVisible} onClose={changeContacts} />
       <RecentConnections visible={urlVisible} onClose={changeURL} />

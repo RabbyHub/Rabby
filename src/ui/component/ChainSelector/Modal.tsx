@@ -16,6 +16,8 @@ interface ChainSelectorModalProps {
   onChange(val: CHAINS_ENUM): void;
   connection?: boolean;
   title?: ReactNode;
+  className?: string;
+  offset?: number;
 }
 
 const ChainSelectorModal = ({
@@ -25,6 +27,8 @@ const ChainSelectorModal = ({
   onChange,
   value,
   connection = false,
+  className,
+  offset,
 }: ChainSelectorModalProps) => {
   const wallet = useWallet();
   const history = useHistory();
@@ -84,22 +88,26 @@ const ChainSelectorModal = ({
       placement={'bottom'}
       visible={visible}
       onClose={handleCancel}
-      className={clsx('chain-selector__modal', connection && 'connection')}
+      className={clsx(
+        'chain-selector__modal',
+        connection && 'connection',
+        className
+      )}
       contentWrapperStyle={{
         height:
-          maxHeight > range[1]
+          (maxHeight > range[1]
             ? range[1]
             : maxHeight < range[0]
             ? range[0]
-            : maxHeight,
+            : maxHeight) + (offset || 0),
       }}
       drawerStyle={{
         height:
-          maxHeight > range[1]
+          (maxHeight > range[1]
             ? range[1]
             : maxHeight < range[0]
             ? range[0]
-            : maxHeight,
+            : maxHeight) + (offset || 0),
       }}
       destroyOnClose
     >
