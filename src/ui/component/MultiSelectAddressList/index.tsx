@@ -79,9 +79,9 @@ const MultiSelectAddressList = ({
               </span>
               <span
                 className="text-15 font-medium text-gray-title"
-                title={account.address}
+                title={account.address.toLowerCase()}
               >
-                {ellipsis(account.address)}
+                {ellipsis(account.address.toLowerCase())}
               </span>
             </div>
           </FieldCheckbox>
