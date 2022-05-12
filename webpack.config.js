@@ -5,6 +5,7 @@ const configs = {
   dev: require('./build/webpack.dev.config'),
   pro: require('./build/webpack.pro.config'),
   debug: require('./build/webpack.debug.config'),
+  sourcemap: require('./build/webpack.sourcemap.config'),
 };
 
 const config = (env) => {

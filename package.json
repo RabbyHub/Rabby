@@ -7,6 +7,7 @@
     "build:dev": "npm run clean && TAILWIND_MODE=watch webpack --progress --env config=dev",
     "build:pro": "npm run clean && webpack --progress --env config=pro",
     "build:debug": "npm run clean && webpack --progress --env config=debug",
+    "build:sourcemap": "npm run clean && webpack --progress --env config=sourcemap",
     "lint:fix": "eslint --fix --ext .js,.jsx,.ts,.tsx ./src",
     "test": "jest",
     "pub": "node build/release.js"
@@ -102,6 +103,7 @@
     "webextension-polyfill-ts": "^0.25.0"
   },
   "devDependencies": {
+    "@sentry/webpack-plugin": "^1.18.9",
     "@svgr/webpack": "^5.5.0",
     "@types/chrome": "^0.0.143",
     "@types/events": "^3.0.0",
