@@ -1,5 +1,6 @@
 /* eslint-disable @typescript-eslint/ban-types */
 import { EventEmitter } from 'events';
+import * as Sentry from '@sentry/browser';
 import HDKey from 'hdkey';
 import * as ethUtil from 'ethereumjs-util';
 import * as sigUtil from 'eth-sig-util';
@@ -198,6 +199,7 @@ class LedgerBridgeKeyring extends EventEmitter {
             });
           }
         }
+        Sentry.captureException(e);
       }
     }
   }
