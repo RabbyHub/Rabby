@@ -8,7 +8,7 @@
   align-items: center;
   background: @color-bg;
   border-radius: 6px;
-  padding: 8px 8px 8px 12px;
+  padding: 10px 8px 10px 12px;
   gap: 18px;
 
   &-tooltip {
@@ -44,7 +44,7 @@
       flex-shrink: 0;
       width: 28px;
       height: 28px;
-      border-radius: 50%;
+      border-radius: 4px;
     }
     &-content {
       flex: 1;
@@ -80,8 +80,14 @@
   .chain-selector {
     margin-left: auto;
     background-color: transparent;
-    height: 40px;
+    height: 36px;
     padding-left: 8px;
+
+    .chain-logo {
+      width: 20px;
+      height: 20px;
+      margin-right: 6px;
+    }
     &.disabled {
       opacity: 0.4;
       pointer-events: none;
