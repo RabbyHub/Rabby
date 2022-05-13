@@ -118,6 +118,7 @@ const Receive = () => {
       return;
     }
     const modal = Modal.info({
+      maskClosable: false,
       closable: false,
       className: 'page-receive-modal',
       content: (
