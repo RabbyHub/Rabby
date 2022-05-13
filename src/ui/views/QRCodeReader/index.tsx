@@ -43,7 +43,7 @@ const ImportHardware = () => {
         pathname: '/popup/import/success',
         state: {
           accounts,
-          title: t('Imported successfully'),
+          title: t('Imported Successfully'),
           hasDivider: false,
           editing: true,
         },

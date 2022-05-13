@@ -29,7 +29,7 @@ const ImportPrivateKey = () => {
         pathname: '/popup/import/success',
         state: {
           accounts: successShowAccounts,
-          title: t('Successfully created'),
+          title: t('Created Successfully'),
           editing: true,
           importedAccount: true,
           importedLength: importedAccountsLength,

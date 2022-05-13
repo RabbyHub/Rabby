@@ -54,7 +54,7 @@ const ImportWatchAddress = () => {
         pathname: '/popup/import/success',
         state: {
           accounts: successShowAccounts,
-          title: t('Imported successfully'),
+          title: t('Imported Successfully'),
           editing: true,
           importedAccount: true,
           importedLength: importedAccounts && importedAccounts?.length,
