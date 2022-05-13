@@ -30,7 +30,7 @@ const Activities = () => {
           <TransactionHistory />
         </Tabs.TabPane>
         <Tabs.TabPane
-          tab={<span className="text-13 tab-title">{t('Signed Text')}</span>}
+          tab={<span className="text-13 tab-title">{t('Signed Texts')}</span>}
           key="signed_text"
         >
           <SignedTextHistory />
