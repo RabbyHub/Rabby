@@ -9,12 +9,21 @@ import IconDapps from 'ui/assets/dapps.svg';
 import { ChainSelector, FallbackSiteLogo } from 'ui/component';
 import { getCurrentTab, useWallet } from 'ui/utils';
 import './style.less';
+import { useLocation } from 'react-router-dom';
 
 export const CurrentConnection = memo(() => {
-  const [visible, setVisible] = useState(false);
   const wallet = useWallet();
   const { t } = useTranslation();
   const [site, setSite] = useState<ConnectedSite>();
+  const { state } = useLocation<{
+    trigger?: string;
+    showChainsModal?: boolean;
+  }>();
+  const { showChainsModal = false, trigger } = state ?? {};
+
+  const [visible, setVisible] = useState(
+    trigger === 'current-connection' && showChainsModal
+  );
 
   const getCurrentSite = useCallback(async () => {
     const tab = await getCurrentTab();
@@ -94,6 +103,7 @@ export const CurrentConnection = memo(() => {
         </div>
       )}
       <ChainSelector
+        trigger="current-connection"
         className={clsx(!site && 'disabled')}
         title={
           <div>

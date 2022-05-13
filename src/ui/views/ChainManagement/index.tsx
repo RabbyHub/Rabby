@@ -156,13 +156,15 @@ const ChainManagement = () => {
   const { state } = useLocation<{
     connection?: boolean;
     backurl?: string;
+    trigger?: string;
   }>();
-  const { connection = false, backurl = '' } = state ?? {};
+  const { connection = false, backurl = '', trigger } = state ?? {};
   const goBack = () => {
     history.replace({
       pathname: backurl,
       state: {
         showChainsModal: true,
+        trigger,
       },
     });
   };

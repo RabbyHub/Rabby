@@ -44,7 +44,7 @@ const NameAndAddress = ({
 
     clipboard.on('success', () => {
       message.success({
-        duration: 1,
+        duration: 3,
         icon: <i />,
         content: (
           <div>

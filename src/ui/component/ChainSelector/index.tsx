@@ -16,6 +16,7 @@ interface ChainSelectorProps {
   showModal?: boolean;
   className?: string;
   title?: ReactNode;
+  trigger?: string;
 }
 
 const ChainSelector = ({
@@ -25,6 +26,7 @@ const ChainSelector = ({
   connection = false,
   showModal = false,
   className = '',
+  trigger,
 }: ChainSelectorProps) => {
   const [showSelectorModal, setShowSelectorModal] = useState(showModal);
   const [isHovering, hoverProps] = useHover();
@@ -63,6 +65,7 @@ const ChainSelector = ({
         onChange={handleChange}
         onCancel={handleCancel}
         connection={connection}
+        trigger={trigger}
       />
     </>
   );
