@@ -25,7 +25,14 @@ class ContactBook {
   };
 
   getContactByAddress = (address: string) => {
-    return this.store[address.toLowerCase()];
+    const contact = this.store[address.toLowerCase()];
+    if (contact) {
+      return {
+        ...contact,
+        address: contact.address.toLowerCase(),
+      };
+    }
+    return contact;
   };
 
   removeContact = (address: string) => {
@@ -47,14 +54,14 @@ class ContactBook {
         this.store[data.address.toLowerCase()],
         {
           name: data.name,
-          address: data.address,
+          address: data.address.toLowerCase(),
           isContact: true,
         }
       );
     } else {
       this.store[data.address.toLowerCase()] = {
         name: data.name,
-        address: data.address,
+        address: data.address.toLowerCase(),
         isContact: true,
         isAlias: false,
       };
@@ -66,12 +73,22 @@ class ContactBook {
   listContacts = (): ContactBookItem[] => {
     const list = Object.values(this.store);
     return (
-      list.filter((item): item is ContactBookItem => !!item?.isContact) || []
+      list
+        .map((item) => ({
+          ...item,
+          address: item?.address.toLowerCase(),
+        }))
+        .filter((item): item is ContactBookItem => !!item?.isContact) || []
     );
   };
 
   listAlias = () => {
-    return Object.values(this.store).filter((item) => item?.isAlias);
+    return Object.values(this.store)
+      .map((item) => ({
+        ...item,
+        address: item?.address.toLowerCase(),
+      }))
+      .filter((item) => item?.isAlias);
   };
 
   updateAlias = (data: { address: string; name: string }) => {
@@ -79,13 +96,13 @@ class ContactBook {
     if (this.store[key]) {
       this.store[key] = Object.assign({}, this.store[key], {
         name: data.name,
-        address: data.address,
+        address: data.address.toLowerCase(),
         isAlias: true,
       });
     } else {
       this.store[key] = {
         name: data.name,
-        address: data.address,
+        address: data.address.toLowerCase(),
         isAlias: true,
         isContact: false,
       };
@@ -112,7 +129,10 @@ class ContactBook {
       .reduce(
         (res, item) => ({
           ...res,
-          [item!.address.toLowerCase()]: item,
+          [item!.address.toLowerCase()]: {
+            ...item,
+            address: item?.address.toLowerCase(),
+          },
         }),
         {}
       );

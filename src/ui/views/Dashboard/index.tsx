@@ -950,7 +950,7 @@ const Dashboard = () => {
                 )}
               </div>
               <div className="address-display">
-                {currentAccount?.address}{' '}
+                {currentAccount?.address.toLowerCase()}{' '}
                 <img
                   onClick={handleCopyCurrentAddress}
                   src={IconAddressCopy}
