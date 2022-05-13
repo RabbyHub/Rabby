@@ -1134,7 +1134,7 @@ export class WalletController extends BaseController {
     const keyring = keyringService.getKeyringByType(
       KEYRING_CLASS.HARDWARE.LEDGER
     );
-    if (!keyring) throw new Error('No Ledger keyring found');
+    if (!keyring) return;
     await keyring.authorizeHIDPermission();
     await keyringService.persistAllKeyrings();
   };
