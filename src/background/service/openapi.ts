@@ -5,15 +5,8 @@ import { createPersistStore } from 'background/utils';
 import { CHAINS, INITIAL_OPENAPI_URL, CHAINS_ENUM } from 'consts';
 import { getChain } from '../../utils';
 
-interface OpenApiConfigValue {
-  path: string;
-  method: Method;
-  params?: string[];
-}
-
 interface OpenApiStore {
   host: string;
-  config: Record<string, OpenApiConfigValue>;
 }
 
 export interface Chain {
@@ -545,168 +538,6 @@ class OpenApiService {
       name: 'openapi',
       template: {
         host: INITIAL_OPENAPI_URL,
-        config: {
-          get_supported_chains: {
-            path: '/v1/wallet/supported_chains',
-            method: 'GET',
-            params: [],
-          },
-          get_total_balance: {
-            path: '/v1/user/total_balance',
-            method: 'GET',
-            params: ['id'],
-          },
-          get_total_balance_v2: {
-            path: '/v1/user/total_balance_v2',
-            method: 'GET',
-            params: ['id'],
-          },
-          get_pending_tx_count: {
-            path: '/v1/wallet/pending_tx_count',
-            method: 'GET',
-            params: ['user_addr'],
-          },
-          recommend_chains: {
-            path: '/v1/wallet/recommend_chains',
-            method: 'GET',
-            params: ['user_addr', 'origin'],
-          },
-          explain_origin: {
-            path: '/v1/wallet/explain_origin',
-            method: 'GET',
-            params: ['user_addr', 'origin'],
-          },
-          check_origin: {
-            path: '/v1/wallet/check_origin',
-            method: 'GET',
-            params: ['user_addr', 'origin'],
-          },
-          explain_text: {
-            path: '/v1/wallet/explain_text',
-            method: 'POST',
-            params: ['user_addr', 'origin', 'text'],
-          },
-          check_text: {
-            path: '/v1/wallet/check_text',
-            method: 'POST',
-            params: ['user_addr', 'origin', 'text'],
-          },
-          explain_tx: {
-            path: '/v1/wallet/explain_tx',
-            method: 'POST',
-            params: ['user_addr', 'origin', 'tx', 'update_nonce'],
-          },
-          check_tx: {
-            path: '/v1/wallet/check_tx',
-            method: 'POST',
-            params: ['user_addr', 'origin', 'tx'],
-          },
-          gas_market: {
-            path: '/v1/wallet/gas_market',
-            method: 'GET',
-            params: ['chain_id', 'custom_price'],
-          },
-          push_tx: {
-            path: '/v1/wallet/push_tx',
-            method: 'POST',
-            params: ['chain_id', 'tx'],
-          },
-          eth_rpc: {
-            path: 'v1/wallet/eth_rpc',
-            method: 'POST',
-            params: ['chain_id', 'method', 'params'],
-          },
-          get_tx: {
-            path: 'v1/wallet/get_tx',
-            method: 'GET',
-            params: ['chain_id', 'tx_id', 'gas_price'],
-          },
-          ens: { path: 'v1/wallet/ens', method: 'GET', params: ['text'] },
-          token_search: {
-            path: '/v1/user/token_search',
-            method: 'GET',
-            params: ['id', 'chain_id', 'q', 'has_balance'],
-          },
-          token_list: {
-            path: '/v1/user/token_list',
-            method: 'GET',
-            params: ['id', 'chain_id', 'is_all', 'has_balance'],
-          },
-          nft_collection_list: {
-            path: '/v1/nft/collections',
-            method: 'GET',
-            params: [],
-          },
-          user_token: {
-            path: '/v1/user/token',
-            method: 'GET',
-            params: ['id', 'chain_id', 'token_id'],
-          },
-          user_protocol: {
-            path: '/v1/user/protocol',
-            method: 'GET',
-            params: ['id', 'protocol_id'],
-          },
-          user_portfolio_list: {
-            path: '/v1/user/simple_protocol_list',
-            method: 'GET',
-            params: ['id', 'chain_id'],
-          },
-          user_nft_list: {
-            path: '/v1/user/nft_list',
-            method: 'GET',
-            params: ['id', 'chain_id'],
-          },
-          user_token_search: {
-            path: '/v1/user/token_search',
-            method: 'GET',
-            params: ['id', 'chain_id', 'q', 'has_balance'],
-          },
-          token_price_change: {
-            path: '/v1/token/price_change',
-            method: 'GET',
-            params: ['token'],
-          },
-          user_specific_token_list: {
-            path: '/v1/user/specific_token_list',
-            method: 'POST',
-            params: ['id', 'uuids'],
-          },
-          user_history_list: {
-            path: '/v1/user/history_list',
-            method: 'GET',
-            params: [
-              'id',
-              'chain_id',
-              'token_id',
-              'coin_id',
-              'start_time',
-              'page_count',
-            ],
-          },
-          user_token_authorized_list: {
-            path: '/v1/user/token_authorized_list',
-            method: 'GET',
-            params: ['id', 'chain_id'],
-          },
-          user_nft_authorized_list: {
-            path: '/v1/user/nft_authorized_list',
-            method: 'GET',
-            params: ['id', 'chain_id'],
-          },
-          swap_check: {
-            path: '/v1/wallet/swap_check',
-            method: 'GET',
-            params: [
-              'id',
-              'chain_id',
-              'dex_id',
-              'pay_token_id',
-              'pay_token_amount',
-              'receive_token_id',
-            ],
-          },
-        },
       },
     });
 
@@ -743,50 +574,23 @@ class OpenApiService {
       return response;
     });
     this._mountMethods();
-    const getConfig = async () => {
-      try {
-        await this.getConfig();
-      } catch (e) {
-        setTimeout(() => {
-          getConfig(); // reload openapi config if load failed 5s later
-        }, 5000);
-      }
-    };
-    getConfig();
-  };
-
-  getConfig = async () => {
-    const { data } = await this.request.get<Record<string, OpenApiConfigValue>>(
-      `${this.store.host}/v1/wallet/config`
-    );
-    for (const key in data) {
-      data[key].method = data[key].method.toLowerCase() as Method;
-    }
-
-    this.store.config = data;
   };
 
   private _mountMethods = () => {
-    const config = this.store.config.eth_rpc;
-    if (!config) {
-      return;
-    }
-
     this.ethRpc = (chain_id, { origin = 'rabby', method, params }) => {
-      return this.request[config.method](
-        `${config.path}?origin=${origin}&method=${method}`,
-        {
+      return this.request
+        .post(`/v1/wallet/eth_rpc?origin=${origin}&method=${method}`, {
           chain_id,
           method,
           params,
-        }
-      ).then(({ data }: { data: RPCResponse<any> }) => {
-        if (data?.error) {
-          throw data.error;
-        }
+        })
+        .then(({ data }: { data: RPCResponse<any> }) => {
+          if (data?.error) {
+            throw data.error;
+          }
 
-        return data?.result;
-      });
+          return data?.result;
+        });
     };
   };
 
@@ -1083,8 +887,7 @@ class OpenApiService {
     address: string,
     origin: string
   ): Promise<ServerChain[]> => {
-    const config = this.store.config.recommend_chains;
-    const { data } = await this.request[config.method](config.path, {
+    const { data } = await this.request.get('/v1/wallet/recommend_chains', {
       params: {
         user_addr: address,
         origin,
@@ -1094,8 +897,7 @@ class OpenApiService {
   };
 
   getTotalBalance = async (address: string): Promise<TotalBalanceResponse> => {
-    const config = this.store.config.get_total_balance_v2;
-    const { data } = await this.request[config.method](config.path, {
+    const { data } = await this.request.get('/v1/user/total_balance_v2', {
       params: {
         id: address,
       },
@@ -1112,8 +914,7 @@ class OpenApiService {
   getPendingCount = async (
     address: string
   ): Promise<{ total_count: number; chains: ChainWithPendingCount[] }> => {
-    const config = this.store.config.get_pending_tx_count;
-    const { data } = await this.request[config.method](config.path, {
+    const { data } = await this.request.get('/v1/wallet/pending_tx_count', {
       params: {
         user_addr: address,
       },
@@ -1125,8 +926,7 @@ class OpenApiService {
     address: string,
     origin: string
   ): Promise<SecurityCheckResponse> => {
-    const config = this.store.config.check_origin;
-    const { data } = await this.request[config.method](config.path, {
+    const { data } = await this.request.get('/v1/wallet/check_origin', {
       params: {
         user_addr: address,
         origin,
@@ -1141,8 +941,7 @@ class OpenApiService {
     origin: string,
     text: string
   ): Promise<SecurityCheckResponse> => {
-    const config = this.store.config.check_text;
-    const { data } = await this.request[config.method](config.path, {
+    const { data } = await this.request.post('/v1/wallet/check_text', {
       user_addr: address,
       origin,
       text,
@@ -1156,8 +955,7 @@ class OpenApiService {
     address: string,
     update_nonce = false
   ): Promise<SecurityCheckResponse> => {
-    const config = this.store.config.check_tx;
-    const { data } = await this.request[config.method](config.path, {
+    const { data } = await this.request.post('/v1/wallet/check_tx', {
       user_addr: address,
       origin,
       tx,
@@ -1173,8 +971,7 @@ class OpenApiService {
     address: string,
     update_nonce = false
   ): Promise<ExplainTxResponse> => {
-    const config = this.store.config.explain_tx;
-    const { data } = await this.request[config.method](config.path, {
+    const { data } = await this.request.post('/v1/wallet/explain_tx', {
       tx,
       user_addr: address,
       origin,
@@ -1185,8 +982,7 @@ class OpenApiService {
   };
 
   pushTx = async (tx: Tx, traceId?: string) => {
-    const config = this.store.config.push_tx;
-    const { data } = await this.request[config.method](config.path, {
+    const { data } = await this.request.post('/v1/wallet/push_tx', {
       tx,
       traceId,
     });
@@ -1199,8 +995,7 @@ class OpenApiService {
     address: string,
     text: string
   ): Promise<{ comment: string }> => {
-    const config = this.store.config.explain_text;
-    const { data } = await this.request[config.method](config.path, {
+    const { data } = await this.request.post('/v1/wallet/explain_text', {
       user_addr: address,
       origin,
       text,
@@ -1213,8 +1008,7 @@ class OpenApiService {
     chainId: string,
     customGas?: number
   ): Promise<GasLevel[]> => {
-    const config = this.store.config.gas_market;
-    const { data } = await this.request[config.method](config.path, {
+    const { data } = await this.request.get('/v1/wallet/gas_market', {
       params: {
         chain_id: chainId,
         custom_price: customGas,
@@ -1229,8 +1023,7 @@ class OpenApiService {
     hash: string,
     gasPrice: number
   ): Promise<GetTxResponse> => {
-    const config = this.store.config.get_tx;
-    const { data } = await this.request[config.method](config.path, {
+    const { data } = await this.request.get('/v1/wallet/get_tx', {
       params: {
         chain_id: chainId,
         gas_price: gasPrice,
@@ -1244,8 +1037,7 @@ class OpenApiService {
   getEnsAddressByName = async (
     name: string
   ): Promise<{ addr: string; name: string }> => {
-    const config = this.store.config.ens;
-    const { data } = await this.request[config.method](config.path, {
+    const { data } = await this.request.get('/v1/wallet/ens', {
       params: {
         text: name,
       },
@@ -1255,8 +1047,7 @@ class OpenApiService {
   };
 
   searchToken = async (id: string, q: string): Promise<TokenItem[]> => {
-    const config = this.store.config.user_token_search;
-    const { data } = await this.request[config.method](config.path, {
+    const { data } = await this.request.get('/v1/user/token_search', {
       params: {
         id,
         q,
@@ -1272,8 +1063,7 @@ class OpenApiService {
     chainId: string,
     tokenId: string
   ): Promise<TokenItem> => {
-    const config = this.store.config.user_token;
-    const { data } = await this.request[config.method](config.path, {
+    const { data } = await this.request.get('/v1/user/token', {
       params: {
         id,
         chain_id: chainId,
@@ -1285,8 +1075,7 @@ class OpenApiService {
   };
 
   listToken = async (id: string, chainId: string): Promise<TokenItem[]> => {
-    const config = this.store.config.token_list;
-    const { data } = await this.request[config.method](config.path, {
+    const { data } = await this.request.get('/v1/user/token_list', {
       params: {
         id,
         is_all: false,
@@ -1296,21 +1085,21 @@ class OpenApiService {
 
     return data?.filter((token) => getChain(token.chain));
   };
+
   customListToken = async (
     uuids: string[],
     id: string
   ): Promise<TokenItem[]> => {
-    const config = this.store.config.user_specific_token_list;
-    const { data } = await this.request[config.method](config.path, {
+    const { data } = await this.request.post('/v1/user/specific_token_list', {
       id,
       uuids,
     });
 
     return data?.filter((token) => getChain(token.chain));
   };
+
   listChainAssets = async (id: string): Promise<AssetItem[]> => {
-    const config = this.store.config.user_portfolio_list;
-    const { data } = await this.request[config.method](config.path, {
+    const { data } = await this.request.get('/v1/user/simple_protocol_list', {
       params: {
         id,
       },
@@ -1319,8 +1108,7 @@ class OpenApiService {
   };
 
   listNFT = async (id: string, isAll = true): Promise<NFTItem[]> => {
-    const config = this.store.config.user_nft_list;
-    const { data } = await this.request[config.method](config.path, {
+    const { data } = await this.request.get('/v1/user/nft_list', {
       params: {
         id,
         is_all: isAll,
@@ -1330,8 +1118,7 @@ class OpenApiService {
   };
 
   listCollection = async (): Promise<Collection[]> => {
-    const config = this.store.config.nft_collection_list;
-    const { data } = await this.request[config.method](config.path, {
+    const { data } = await this.request.get('/v1/nft/collections', {
       params: {},
     });
     return data;
@@ -1345,16 +1132,14 @@ class OpenApiService {
     start_time?: number;
     page_count?: number;
   }): Promise<TxHistoryResult[]> => {
-    const config = this.store.config.user_history_list;
-    const { data } = await this.request[config.method](config.path, {
+    const { data } = await this.request.get('/v1/user/history_list', {
       params,
     });
     return data;
   };
 
   tokenPrice = async (tokenName: string): Promise<string> => {
-    const config = this.store.config.token_price_change;
-    const { data } = await this.request[config.method](config.path, {
+    const { data } = await this.request.get('/v1/token/price_change', {
       params: {
         token: tokenName,
       },
@@ -1367,8 +1152,7 @@ class OpenApiService {
     id: string,
     chain_id: string
   ): Promise<TokenApproval[]> => {
-    const config = this.store.config.user_token_authorized_list;
-    const { data } = await this.request[config.method](config.path, {
+    const { data } = await this.request.get('/v1/user/token_authorized_list', {
       params: {
         id,
         chain_id,
@@ -1382,8 +1166,7 @@ class OpenApiService {
     id: string,
     chain_id: string
   ): Promise<NFTApprovalResponse> => {
-    const config = this.store.config.user_nft_authorized_list;
-    const { data } = await this.request[config.method](config.path, {
+    const { data } = await this.request.get('/v1/user/nft_authorized_list', {
       params: {
         id,
         chain_id,
