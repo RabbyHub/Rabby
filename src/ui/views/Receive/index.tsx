@@ -1,29 +1,27 @@
+import { Modal } from '@/ui/component';
 import { Button, message } from 'antd';
 import { Account } from 'background/service/preference';
+import ClipboardJS from 'clipboard';
 import {
   CHAINS,
-  CHAINS_ENUM,
-  KEYRINGS_LOGOS,
   KEYRING_CLASS,
-  KEYRING_ICONS,
   KEYRING_ICONS_WHITE,
   WALLET_BRAND_CONTENT,
 } from 'consts';
 import QRCode from 'qrcode.react';
-import React, { useEffect, useMemo, useState } from 'react';
-import { useSSR, useTranslation } from 'react-i18next';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
 import { ReactComponent as IconBack } from 'ui/assets/back.svg';
 import IconCopy from 'ui/assets/icon-copy-1.svg';
-import IconEye from 'ui/assets/icon-eye.svg';
 import IconEyeHide from 'ui/assets/icon-eye-hide.svg';
-import IconLogo from 'ui/assets/rabby-white-large.svg';
+import IconEye from 'ui/assets/icon-eye.svg';
+import IconSuccess from 'ui/assets/icon-success-1.svg';
 import IconWarning from 'ui/assets/icon-warning-large.svg';
-import { splitNumberByStep, useCopy, useWallet } from 'ui/utils';
+import IconLogo from 'ui/assets/rabby-white-large.svg';
+import { splitNumberByStep, useWallet } from 'ui/utils';
 import { query2obj } from 'ui/utils/url';
 import './style.less';
-import { Modal } from '@/ui/component';
-import IconSuccess from 'ui/assets/icon-success-1.svg';
 
 const useAccount = () => {
   const wallet = useWallet();
@@ -74,8 +72,19 @@ const Receive = () => {
   const history = useHistory();
   const [isShowAccount, setIsShowAccount] = useState(true);
 
-  const { copy } = useCopy({
-    onSuccess(value) {
+  const ref = useRef<HTMLButtonElement>(null);
+
+  const account = useAccount();
+  const title = useReceiveTitle(history.location.search);
+
+  useEffect(() => {
+    const clipboard = new ClipboardJS(ref.current!, {
+      text: function () {
+        return account.address || '';
+      },
+    });
+
+    clipboard.on('success', () => {
       message.success({
         duration: 1,
         icon: <i />,
@@ -85,14 +94,13 @@ const Receive = () => {
               <img src={IconSuccess} alt="" />
               Copied
             </div>
-            <div className="text-white">{value}</div>
+            <div className="text-white">{account.address}</div>
           </div>
         ),
       });
-    },
-  });
-  const account = useAccount();
-  const title = useReceiveTitle(history.location.search);
+    });
+    return () => clipboard.destroy();
+  }, [account.address]);
 
   const init = async () => {
     const account = await wallet.syncGetCurrentAccount();
@@ -202,14 +210,7 @@ const Receive = () => {
           {account?.address && <QRCode value={account.address} size={175} />}
         </div>
         <div className="qr-card-address">{account?.address}</div>
-        <button
-          type="button"
-          className="qr-card-btn"
-          onClick={() => {
-            const a = copy(account?.address || '');
-            console.log(a);
-          }}
-        >
+        <button type="button" className="qr-card-btn" ref={ref}>
           <img src={IconCopy} alt="" className="icon-copy" />
           Copy address
         </button>
