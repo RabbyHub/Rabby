@@ -10,9 +10,10 @@ interface CopyProps {
   data: string;
   icon?: string;
   style?: React.CSSProperties;
+  variant?: 'address';
 }
 
-const Copy = ({ data, className, style, icon }: CopyProps) => {
+const Copy = ({ data, className, style, icon, variant }: CopyProps) => {
   const ref = useRef<HTMLImageElement>(null);
 
   useEffect(() => {
@@ -23,11 +24,27 @@ const Copy = ({ data, className, style, icon }: CopyProps) => {
     });
 
     clipboard.on('success', () => {
-      message.success({
-        icon: <img src={IconSuccess} className="icon icon-success" />,
-        content: 'Copied',
-        duration: 0.5,
-      });
+      if (variant === 'address') {
+        message.success({
+          duration: 1,
+          icon: <i />,
+          content: (
+            <div>
+              <div className="flex gap-4 mb-4">
+                <img src={IconSuccess} alt="" />
+                Copied
+              </div>
+              <div className="text-white">{data}</div>
+            </div>
+          ),
+        });
+      } else {
+        message.success({
+          icon: <img src={IconSuccess} className="icon icon-success" />,
+          content: 'Copied',
+          duration: 0.5,
+        });
+      }
     });
     return () => clipboard.destroy();
   }, [data]);

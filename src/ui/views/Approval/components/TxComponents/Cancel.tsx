@@ -35,9 +35,17 @@ const Cancel = ({ data, chainEnum, isSpeedUp, raw }: CancelProps) => {
 
     clipboard.on('success', () => {
       message.success({
-        icon: <img src={IconSuccess} className="icon icon-success" />,
-        content: t('Copied'),
-        duration: 0.5,
+        duration: 1,
+        icon: <i />,
+        content: (
+          <div>
+            <div className="flex gap-4 mb-4">
+              <img src={IconSuccess} alt="" />
+              Copied
+            </div>
+            <div className="text-white">{detail.spender}</div>
+          </div>
+        ),
       });
       clipboard.destroy();
     });

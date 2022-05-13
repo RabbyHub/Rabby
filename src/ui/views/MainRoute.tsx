@@ -37,6 +37,7 @@ import AdvancedSettings from './AdvanceSettings';
 import RequestPermission from './RequestPermission';
 import SendToken from './SendToken';
 import SendNFT from './SendNFT';
+import Receive from './Receive/index';
 import WalletConnectTemplate from './WalletConnect';
 ReactGA.initialize('UA-199755108-1');
 // eslint-disable-next-line @typescript-eslint/no-empty-function
@@ -170,6 +171,9 @@ const Main = () => {
         </PrivateRoute>
         <PrivateRoute exact path="/send-nft">
           <SendNFT />
+        </PrivateRoute>
+        <PrivateRoute exact path="/receive">
+          <Receive />
         </PrivateRoute>
       </Switch>
     </>

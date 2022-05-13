@@ -335,7 +335,11 @@ const AddressItem = memo(
                   }
                   showIndex={showIndex}
                 />
-                <Copy data={account?.address} className="w-16 h-16 ml-4"></Copy>
+                <Copy
+                  variant="address"
+                  data={account?.address}
+                  className="w-16 h-16 ml-4"
+                ></Copy>
               </div>
             </div>
           </div>
