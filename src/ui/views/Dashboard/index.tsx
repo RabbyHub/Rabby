@@ -12,6 +12,9 @@ import clsx from 'clsx';
 import { useTranslation, Trans } from 'react-i18next';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
+import { connect, useDispatch, useSelector } from 'react-redux';
+import type { RabbyRootState, RabbyDispatch } from '@/ui/store';
+
 import Safe from '@rabby-wallet/gnosis-sdk';
 import { SafeInfo } from '@rabby-wallet/gnosis-sdk/dist/api';
 import {
@@ -84,6 +87,16 @@ const GnosisAdminItem = ({
 };
 
 const Dashboard = () => {
+  const { currentAccount, alianName, pendingTxCount } = useSelector(
+    (state: RabbyRootState) => ({
+      currentAccount: state.account.currentAccount,
+      alianName: state.account.alianName,
+      pendingTxCount: state.viewDashboard.pendingTransactionCount,
+    })
+  );
+
+  const rDispatch = useDispatch<RabbyDispatch>();
+
   const history = useHistory();
   const { state } = useLocation<{
     connection?: boolean;
@@ -94,15 +107,12 @@ const Dashboard = () => {
   const { t } = useTranslation();
   const fixedList = useRef<FixedSizeList>();
 
-  const [currentAccount, setCurrentAccount] = useState<Account | null>(null);
-  const [pendingTxCount, setPendingTxCount] = useState(0);
   const [gnosisPendingCount, setGnosisPendingCount] = useState(0);
   const [safeInfo, setSafeInfo] = useState<SafeInfo | null>(null);
   const [copySuccess, setCopySuccess] = useState(false);
   const [hovered, setHovered] = useState(false);
   const [clicked, setClicked] = useState(false);
   const [startEdit, setStartEdit] = useState(false);
-  const [alianName, setAlianName] = useState<string>('');
   const [displayName, setDisplayName] = useState<string>('');
   const [accountsList, setAccountsList] = useState<Account[]>([]);
   const [firstNotice, setFirstNotice] = useState(false);
@@ -111,7 +121,6 @@ const Dashboard = () => {
   const [showToken, setShowToken] = useState(false);
   const [showAssets, setShowAssets] = useState(false);
   const [showNFT, setShowNFT] = useState(false);
-  const [allTokens, setAllTokens] = useState<TokenItem[]>([]);
   const [tokens, setTokens] = useState<TokenItem[]>([]);
   const [searchTokens, setSearchTokens] = useState<TokenItem[]>([]);
   const [assets, setAssets] = useState<AssetItem[]>([]);
@@ -138,24 +147,11 @@ const Dashboard = () => {
   >(null);
   const [dashboardReload, setDashboardReload] = useState(false);
   const getCurrentAccount = async () => {
-    const account = await wallet.getCurrentAccount();
+    const account = await rDispatch.account.getCurrentAccountAsync();
     if (!account) {
       history.replace('/no-address');
       return;
     }
-    setCurrentAccount(account);
-  };
-
-  const getPendingTxCount = async (address: string) => {
-    const count = await wallet.getPendingCount(address);
-    setPendingTxCount(count);
-  };
-
-  const getAlianName = async (address: string) => {
-    await wallet.getAlianName(address).then((name) => {
-      setAlianName(name);
-      setDisplayName(name);
-    });
   };
 
   const getGnosisPendingCount = async () => {
@@ -183,7 +179,8 @@ const Dashboard = () => {
   useInterval(() => {
     if (!currentAccount) return;
     if (currentAccount.type === KEYRING_TYPE.GnosisKeyring) return;
-    getPendingTxCount(currentAccount.address);
+
+    rDispatch.viewDashboard.getPendingTxCountAsync(currentAccount.address);
   }, 30000);
 
   useEffect(() => {
@@ -198,16 +195,19 @@ const Dashboard = () => {
         setSafeInfo(null);
         getGnosisPendingCount();
       } else {
-        getPendingTxCount(currentAccount.address);
+        rDispatch.viewDashboard.getPendingTxCountAsync(currentAccount.address);
       }
-      getAlianName(currentAccount?.address.toLowerCase());
-      setCurrentAccount(currentAccount);
+      rDispatch.account
+        .getAlianNameAsync(currentAccount?.address.toLowerCase())
+        .then((name) => {
+          setDisplayName(name);
+        });
     }
   }, [currentAccount]);
   useEffect(() => {
     if (dashboardReload) {
       if (currentAccount) {
-        getPendingTxCount(currentAccount.address);
+        rDispatch.viewDashboard.getPendingTxCountAsync(currentAccount.address);
       }
       setDashboardReload(false);
       getCurrentAccount();
@@ -222,12 +222,11 @@ const Dashboard = () => {
       getAllKeyrings();
     }
   }, [clicked]);
-  const handleChange = async (account) => {
+  const handleChange = async (account: Account) => {
     setIsListLoading(true);
     setIsAssetsLoading(true);
     const { address, type, brandName } = account;
-    await wallet.changeAccount({ address, type, brandName });
-    setCurrentAccount({ address, type, brandName });
+    rDispatch.account.changeAccountAsync({ address, type, brandName });
     hide();
   };
 
@@ -261,7 +260,7 @@ const Dashboard = () => {
 
   const handleAlianNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.stopPropagation();
-    setAlianName(e.target.value);
+    rDispatch.account.setField({ alianName: e.target.value });
   };
 
   const alianNameConfirm = async (e) => {
@@ -334,7 +333,6 @@ const Dashboard = () => {
       const defaultTokens = await wallet.openapi.listToken(
         currentAccount?.address
       );
-      setAllTokens(defaultTokens);
       const localAdded =
         (await wallet.getAddedToken(currentAccount?.address)) || [];
       const localAddedTokens = await wallet.openapi.customListToken(
@@ -1047,4 +1045,4 @@ const Dashboard = () => {
   );
 };
 
-export default Dashboard;
+export default connect()(Dashboard);

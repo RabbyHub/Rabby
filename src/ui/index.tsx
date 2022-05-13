@@ -1,6 +1,7 @@
 // import './wdyr';
 import React from 'react';
 import ReactDOM from 'react-dom';
+import { Provider } from 'react-redux';
 import Views from './views';
 import { Message } from '@/utils';
 import { getUITypeName } from 'ui/utils';
@@ -9,6 +10,11 @@ import * as Sentry from '@sentry/react';
 import { Integrations } from '@sentry/tracing';
 import i18n, { addResourceBundle } from 'src/i18n';
 import { EVENTS } from 'consts';
+
+import type { WalletController } from 'ui/utils/WalletContext';
+
+import store from './store';
+
 import '../i18n';
 
 import './style/index.less';
@@ -94,7 +100,7 @@ const portMessageChannel = new PortMessage();
 
 portMessageChannel.connect(getUITypeName());
 
-const wallet: Record<string, any> = new Proxy(
+const wallet = new Proxy(
   {},
   {
     get(obj, key) {
@@ -126,7 +132,7 @@ const wallet: Record<string, any> = new Proxy(
       }
     },
   }
-);
+) as WalletController;
 
 portMessageChannel.listen((data) => {
   if (data.type === 'broadcast') {
@@ -142,9 +148,16 @@ eventBus.addEventListener(EVENTS.broadcastToBackground, (data) => {
   });
 });
 
+store.dispatch.app.initWallet({ wallet });
+
 wallet.getLocale().then((locale) => {
   addResourceBundle(locale).then(() => {
     i18n.changeLanguage(locale);
-    ReactDOM.render(<Views wallet={wallet} />, document.getElementById('root'));
+    ReactDOM.render(
+      <Provider store={store}>
+        <Views wallet={wallet} />
+      </Provider>,
+      document.getElementById('root')
+    );
   });
 });
