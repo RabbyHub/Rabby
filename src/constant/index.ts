@@ -957,11 +957,6 @@ export const LANGS = [
     label: 'English',
     icon: IconEN,
   },
-  {
-    value: 'zh_CN',
-    label: '中文',
-    icon: IconZH,
-  },
 ];
 
 export const CHECK_METAMASK_INSTALLED_URL = {
