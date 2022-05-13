@@ -18,6 +18,7 @@ interface ChainSelectorModalProps {
   title?: ReactNode;
   className?: string;
   offset?: number;
+  trigger?: string;
 }
 
 const ChainSelectorModal = ({
@@ -29,6 +30,7 @@ const ChainSelectorModal = ({
   connection = false,
   className,
   offset,
+  trigger,
 }: ChainSelectorModalProps) => {
   const wallet = useWallet();
   const history = useHistory();
@@ -49,6 +51,7 @@ const ChainSelectorModal = ({
       state: {
         connection,
         backurl: history?.location?.pathname,
+        trigger,
       },
     });
   };

@@ -70,7 +70,7 @@ const TokenDetail = ({ token }: { token: TokenItem }) => {
 
     clipboard.on('success', () => {
       message.success({
-        duration: 1,
+        duration: 3,
         icon: <i />,
         content: (
           <div>
@@ -177,7 +177,7 @@ const TokenDetail = ({ token }: { token: TokenItem }) => {
           type="primary"
           ghost
           size="large"
-          className="w-[172px]"
+          className="w-[172px] rabby-btn-ghost"
           onClick={goToReceive}
         >
           {t('Receive')}

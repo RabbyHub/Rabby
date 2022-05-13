@@ -243,7 +243,7 @@ const Dashboard = () => {
         setCopySuccess(false);
       }, 1000);
       message.success({
-        duration: 1,
+        duration: 3,
         icon: <i />,
         content: (
           <div>

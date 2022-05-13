@@ -86,7 +86,7 @@ const Receive = () => {
 
     clipboard.on('success', () => {
       message.success({
-        duration: 1,
+        duration: 3,
         icon: <i />,
         content: (
           <div>
@@ -124,9 +124,9 @@ const Receive = () => {
         <div>
           <img className="icon" src={IconWarning} alt="" />
           <div className="content">
-            This is a Watch Mode address,
+            This is a Watch Mode address.
             <br />
-            are you sure use it to receive ?
+            Are you sure to use it to receive assets?
           </div>
           <div className="footer">
             <Button
@@ -141,6 +141,7 @@ const Receive = () => {
             </Button>
             <Button
               type="primary"
+              className="rabby-btn-ghost"
               ghost
               block
               onClick={() => {

@@ -5,7 +5,7 @@ import { ConnectedSite } from 'background/service/permission';
 import clsx from 'clsx';
 import maxBy from 'lodash/maxBy';
 import React, { useCallback, useEffect, useState } from 'react';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 import IconAlertRed from 'ui/assets/alert-red.svg';
 import IconDapps from 'ui/assets/dapps.svg';
 import IconContacts from 'ui/assets/dashboard/contacts.png';
@@ -75,7 +75,14 @@ export default ({
   const [gasPrice, setGasPrice] = useState<number>(0);
   const [gasPriceLoading, setGasPriceLoading] = useState(false);
   const [isDefaultWallet, setIsDefaultWallet] = useState(true);
-  const [isShowReceiveModal, setIsShowReceiveModal] = useState(false);
+  const { state } = useLocation<{
+    trigger?: string;
+    showChainsModal?: boolean;
+  }>();
+  const { showChainsModal = false, trigger } = state ?? {};
+  const [isShowReceiveModal, setIsShowReceiveModal] = useState(
+    trigger === 'receive' && showChainsModal
+  );
   const wallet = useWallet();
 
   const getConnectedSites = async () => {
@@ -364,6 +371,7 @@ export default ({
       </div>
       <CurrentConnection />
       <ChainSelectorModal
+        trigger="receive"
         offset={-22}
         className="receive-chain-select-modal"
         value={CHAINS_ENUM.ETH}
