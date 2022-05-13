@@ -76,7 +76,11 @@ const CancelNFT = ({ data, chainEnum, isSpeedUp, raw }: CancelNFTProps) => {
                 <div className="label">Contract</div>
                 <div className="value flex items-center gap-6">
                   {ellipsis(detail.nft?.contract_id)}
-                  <Copy data={detail.nft?.contract_id} className="w-16"></Copy>
+                  <Copy
+                    variant="address"
+                    data={detail.nft?.contract_id}
+                    className="w-16"
+                  ></Copy>
                 </div>
               </div>
             </div>
@@ -96,7 +100,11 @@ const CancelNFT = ({ data, chainEnum, isSpeedUp, raw }: CancelNFTProps) => {
               </div>
               <div className="address flex gap-6">
                 {ellipsis(detail.spender)}
-                <Copy data={detail.spender} className="w-16"></Copy>
+                <Copy
+                  variant="address"
+                  data={detail.spender}
+                  className="w-16"
+                ></Copy>
               </div>
             </div>
           </div>

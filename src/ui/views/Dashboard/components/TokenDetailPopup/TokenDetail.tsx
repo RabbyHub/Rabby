@@ -70,9 +70,17 @@ const TokenDetail = ({ token }: { token: TokenItem }) => {
 
     clipboard.on('success', () => {
       message.success({
-        icon: <img src={IconSuccess} className="icon icon-success" />,
-        content: t('Copied'),
-        duration: 0.5,
+        duration: 1,
+        icon: <i />,
+        content: (
+          <div>
+            <div className="flex gap-4 mb-4">
+              <img src={IconSuccess} alt="" />
+              Copied
+            </div>
+            <div className="text-white">{text}</div>
+          </div>
+        ),
       });
       clipboard.destroy();
     });
@@ -85,6 +93,10 @@ const TokenDetail = ({ token }: { token: TokenItem }) => {
   const history = useHistory();
   const goToSend = useCallback(() => {
     history.push(`/send-token?token=${token?.chain}:${token?.id}`);
+  }, [history, token]);
+
+  const goToReceive = useCallback(() => {
+    history.push(`/receive?chain=${token?.chain}&token=${token?.symbol}`);
   }, [history, token]);
 
   return (
@@ -160,6 +172,15 @@ const TokenDetail = ({ token }: { token: TokenItem }) => {
           onClick={goToSend}
         >
           {t('Send')}
+        </Button>
+        <Button
+          type="primary"
+          ghost
+          size="large"
+          className="w-[172px]"
+          onClick={goToReceive}
+        >
+          {t('Receive')}
         </Button>
       </div>
     </div>

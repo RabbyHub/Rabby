@@ -146,9 +146,17 @@ const ContactsItem = ({
     });
     clipboard.on('success', () => {
       message.success({
-        icon: <img src={IconSuccess} className="icon icon-success" />,
-        content: 'Copied',
-        duration: 0.5,
+        duration: 1,
+        icon: <i />,
+        content: (
+          <div>
+            <div className="flex gap-4 mb-4">
+              <img src={IconSuccess} alt="" />
+              Copied
+            </div>
+            <div className="text-white">{account?.address}</div>
+          </div>
+        ),
       });
       clipboard.destroy();
     });

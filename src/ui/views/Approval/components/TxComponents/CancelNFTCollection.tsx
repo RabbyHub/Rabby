@@ -70,7 +70,11 @@ const CancelNFTCollection = ({
               <div className="label">Contract</div>
               <div className="value flex items-center gap-6">
                 {ellipsis(detail.nft_contract?.id)}
-                <Copy data={detail.nft_contract?.id} className="w-16"></Copy>
+                <Copy
+                  variant="address"
+                  data={detail.nft_contract?.id}
+                  className="w-16"
+                ></Copy>
               </div>
             </div>
           </div>
@@ -89,7 +93,11 @@ const CancelNFTCollection = ({
               </div>
               <div className="address flex gap-6">
                 {ellipsis(detail.spender)}
-                <Copy data={detail.spender} className="w-16"></Copy>
+                <Copy
+                  variant="address"
+                  data={detail.spender}
+                  className="w-16"
+                ></Copy>
               </div>
             </div>
           </div>
