@@ -1,5 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import ClipboardJS from 'clipboard';
+import * as Sentry from '@sentry/browser';
 import clsx from 'clsx';
 import BigNumber from 'bignumber.js';
 import { useTranslation } from 'react-i18next';
@@ -32,7 +33,6 @@ import IconEdit from 'ui/assets/edit-purple.svg';
 import IconCopy from 'ui/assets/copy-no-border.svg';
 import IconSuccess from 'ui/assets/success.svg';
 import { SvgIconPlusPrimary, SvgIconLoading, SvgAlert } from 'ui/assets';
-import IconArrowHeader from 'ui/assets/arrow-container-header.svg';
 import './style.less';
 
 const TOKEN_VALIDATION_STATUS = {
@@ -434,6 +434,13 @@ const SendToken = () => {
         currentToken.symbol !== chain.nativeTokenSymbol ||
         currentToken.decimals !== chain.nativeTokenDecimals
       ) {
+        Sentry.captureException(
+          new Error('Token validation failed'),
+          (scope) => {
+            scope.setTag('id', `${currentToken.chain}-${currentToken.id}`);
+            return scope;
+          }
+        );
         setTokenValidationStatus(TOKEN_VALIDATION_STATUS.FAILD);
       } else {
         setTokenValidationStatus(TOKEN_VALIDATION_STATUS.SUCCESS);
@@ -453,11 +460,22 @@ const SendToken = () => {
         symbol !== currentToken.symbol ||
         decimals !== currentToken.decimals
       ) {
+        Sentry.captureException(
+          new Error('Token validation failed'),
+          (scope) => {
+            scope.setTag('id', `${currentToken.chain}-${currentToken.id}`);
+            return scope;
+          }
+        );
         setTokenValidationStatus(TOKEN_VALIDATION_STATUS.FAILD);
       } else {
         setTokenValidationStatus(TOKEN_VALIDATION_STATUS.SUCCESS);
       }
     } catch (e) {
+      Sentry.captureException(new Error('Token validation failed'), (scope) => {
+        scope.setTag('id', `${currentToken.chain}-${currentToken.id}`);
+        return scope;
+      });
       setTokenValidationStatus(TOKEN_VALIDATION_STATUS.FAILD);
       throw e;
     }
