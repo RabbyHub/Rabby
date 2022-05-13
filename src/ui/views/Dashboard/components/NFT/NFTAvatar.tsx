@@ -27,6 +27,17 @@ const Thumbnail = ({
   type,
   unknown,
 }: Pick<AvatarProps, 'content' | 'type' | 'unknown'>) => {
+  if (type && ['video_url'].includes(type) && content) {
+    return (
+      <video
+        src={content}
+        preload="metadata"
+        className="nft-avatar-image"
+        controlsList="nodownload nofullscreen noplaybackrate"
+        disablePictureInPicture
+      />
+    );
+  }
   const src =
     type && ['image', 'image_url'].includes(type) && content
       ? content
