@@ -89,10 +89,6 @@ restoreAppState();
 
 // for page provider
 browser.runtime.onConnect.addListener((port) => {
-  if (appStoreLoaded) {
-    openapiService.getConfig();
-  }
-
   if (
     port.name === 'popup' ||
     port.name === 'notification' ||
