@@ -167,7 +167,7 @@ const AddAddressOptions = () => {
           }
           message.success({
             icon: <img src={IconSuccess} className="icon icon-success" />,
-            content: t('Successfully created'),
+            content: t('Created successfully'),
           });
 
           if (getUiType().isTab) {

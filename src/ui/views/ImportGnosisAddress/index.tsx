@@ -52,7 +52,7 @@ const ImportGnosisAddress = () => {
           pathname: '/popup/import/success',
           state: {
             accounts,
-            title: t('Imported successfully'),
+            title: t('Imported Successfully'),
             editing: true,
             importedAccount: true,
             importedLength: importedAccounts && importedAccounts?.length,

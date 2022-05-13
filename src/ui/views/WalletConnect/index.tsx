@@ -32,7 +32,7 @@ const WalletConnectTemplate = () => {
           brand: brand.brand,
           image: brand.image,
           editing: true,
-          title: t('Imported successfully'),
+          title: t('Imported Successfully'),
           importedAccount: true,
         },
       });
