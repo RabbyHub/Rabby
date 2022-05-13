@@ -16,9 +16,8 @@ import IconSecurity from 'ui/assets/dashboard/security.svg';
 import IconSendToken from 'ui/assets/dashboard/sendtoken.png';
 import IconSetting from 'ui/assets/dashboard/setting.png';
 import IconActivities from 'ui/assets/dashboard/activities.svg';
-import IconSignedText from 'ui/assets/dashboard/signedtext.png';
+import IconActivitiesPending from 'ui/assets/dashboard/activities-pending.svg';
 import IconReceive from 'ui/assets/dashboard/receive.svg';
-import IconSingedTX from 'ui/assets/dashboard/signedtx.png';
 import IconTransactions from 'ui/assets/dashboard/transactions.png';
 import IconWidget from 'ui/assets/dashboard/widget.svg';
 import IconDrawer from 'ui/assets/drawer.png';
@@ -200,6 +199,7 @@ export default ({
     content: string;
     onClick: import('react').MouseEventHandler<HTMLElement>;
     badge?: number;
+    iconSpin?: boolean;
     hideForGnosis?: boolean;
     showAlert?: boolean;
   }[] = [
@@ -225,9 +225,10 @@ export default ({
           },
         }
       : {
-          icon: IconActivities,
+          icon: pendingTxCount ? IconActivitiesPending : IconActivities,
           content: 'Activities',
           badge: pendingTxCount,
+          iconSpin: !!pendingTxCount,
           onClick: () => {
             history.push('/activities');
           },
@@ -306,7 +307,12 @@ export default ({
                 )}
                 {item.badge ? (
                   <Badge count={item.badge} size="small">
-                    <img src={item.icon} className="images" />
+                    <img
+                      src={item.icon}
+                      className={[item.iconSpin && 'icon-spin', 'images']
+                        .filter(Boolean)
+                        .join(' ')}
+                    />
                   </Badge>
                 ) : (
                   <img src={item.icon} className="images" />
