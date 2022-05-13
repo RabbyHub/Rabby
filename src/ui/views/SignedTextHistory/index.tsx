@@ -93,7 +93,6 @@ const SignedTextHistory = () => {
 
   return (
     <div className="text-history">
-      <PageHeader fixed>{t('Signed Text')}</PageHeader>
       {textHistory.map((item) => (
         <SignedTextHistoryItem item={item} />
       ))}

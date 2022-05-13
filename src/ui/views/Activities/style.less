@@ -1,0 +1,46 @@
+@import '../../style/var.less';
+
+.activities {
+  .page();
+  display: flex;
+  flex-direction: column;
+
+  .activities_tabs.ant-tabs .ant-tabs-top > .ant-tabs-nav {
+    margin-bottom: 20px;
+  }
+  
+  .activities_tabs.ant-tabs .ant-tabs-nav-wrap .ant-tabs-nav-list {
+    width: 100%;
+    border-radius: 4px;
+    overflow: hidden;
+
+    .ant-tabs-tab {
+      width: 100%;
+      flex-shrink: 1;
+      height: 36px;
+    }
+
+    .ant-tabs-tab + .ant-tabs-tab {
+      margin-left: 0;
+    }
+
+    .ant-tabs-tab-btn {
+      width: 100%;
+      text-align: center;
+    }
+  }
+
+  .activities_tabs.ant-tabs .ant-tabs-tab {
+    background-color: #e5e9ef;
+    .tab-title {
+      color: #707280;
+    }
+    
+    &.ant-tabs-tab-active {
+      background-color: @primary-color;
+      .tab-title {
+        color: white;
+      }
+    }
+  }
+}

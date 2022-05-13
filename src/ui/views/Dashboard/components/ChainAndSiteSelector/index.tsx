@@ -15,8 +15,7 @@ import IconQuene from 'ui/assets/dashboard/quene.svg';
 import IconSecurity from 'ui/assets/dashboard/security.svg';
 import IconSendToken from 'ui/assets/dashboard/sendtoken.png';
 import IconSetting from 'ui/assets/dashboard/setting.png';
-import IconSignedText from 'ui/assets/dashboard/signedtext.png';
-import IconSingedTX from 'ui/assets/dashboard/signedtx.png';
+import IconActivities from 'ui/assets/dashboard/activities.svg';
 import IconTransactions from 'ui/assets/dashboard/transactions.png';
 import IconWidget from 'ui/assets/dashboard/widget.svg';
 import IconDrawer from 'ui/assets/drawer.png';
@@ -40,7 +39,6 @@ export default ({
   hideAllList,
   showModal = false,
   isGnosis,
-  higherBottom = false,
   setDashboardReload,
 }: {
   onChange(site: ConnectedSite | null | undefined): void;
@@ -191,32 +189,36 @@ export default ({
     };
   }, []);
 
-  const directionPanelData = [
+  const directionPanelData: {
+    icon: string;
+    content: string;
+    onClick: import('react').MouseEventHandler<HTMLElement>;
+    badge?: number;
+    hideForGnosis?: boolean;
+    showAlert?: boolean;
+  }[] = [
     {
       icon: IconSendToken,
       content: 'Send',
       onClick: () => history.push('/send-token'),
     },
-    {
-      icon: isGnosis ? IconQuene : IconSingedTX,
-      content: isGnosis ? 'Queue' : 'Signed Tx',
-      badge: isGnosis ? gnosisPendingCount : pendingTxCount,
-      onClick: () => {
-        if (isGnosis) {
-          history.push('/gnosis-queue');
-        } else {
-          history.push('/tx-history');
+    isGnosis
+      ? {
+          icon: IconQuene,
+          content: 'Queue',
+          badge: gnosisPendingCount,
+          onClick: () => {
+            history.push('/gnosis-queue');
+          },
         }
-      },
-    },
-    {
-      icon: IconSignedText,
-      content: 'Signed Text',
-      hideForGnosis: true,
-      onClick: () => {
-        history.push('/text-history');
-      },
-    },
+      : {
+          icon: IconActivities,
+          content: 'Activities',
+          badge: pendingTxCount,
+          onClick: () => {
+            history.push('/activities');
+          },
+        },
     {
       icon: IconTransactions,
       content: 'Transactions',
@@ -252,7 +254,8 @@ export default ({
       onClick: changeSetting,
       showAlert: !isDefaultWallet,
     },
-  ];
+  ].filter(Boolean);
+
   return (
     <div className={clsx('recent-connections', connectionAnimation)}>
       <img
