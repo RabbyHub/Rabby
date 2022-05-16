@@ -10,6 +10,7 @@ import IconCopy from 'ui/assets/address-copy.png';
 import IconSuccess from 'ui/assets/success.svg';
 import { TokenWithChain } from 'ui/component';
 import { splitNumberByStep, useWallet } from 'ui/utils';
+import { getChain } from 'utils';
 import ChainIcon from '../NFT/ChainIcon';
 import { HistoryItem } from './HistoryItem';
 import { Loading } from './Loading';
@@ -96,7 +97,9 @@ const TokenDetail = ({ token }: { token: TokenItem }) => {
   }, [history, token]);
 
   const goToReceive = useCallback(() => {
-    history.push(`/receive?chain=${token?.chain}&token=${token?.symbol}`);
+    history.push(
+      `/receive?chain=${getChain(token?.chain)?.enum}&token=${token?.symbol}`
+    );
   }, [history, token]);
 
   return (

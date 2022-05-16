@@ -59,7 +59,7 @@ const useAccount = () => {
 };
 
 const useReceiveTitle = (search: string) => {
-  const qs = useMemo(() => query2obj(search), []);
+  const qs = useMemo(() => query2obj(search), [search]);
   const chain = CHAINS[qs.chain]?.name || 'Ethereum';
   const token = qs.token || 'assets';
 
