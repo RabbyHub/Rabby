@@ -12,8 +12,7 @@ import clsx from 'clsx';
 import { useTranslation, Trans } from 'react-i18next';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import { connect, useDispatch, useSelector } from 'react-redux';
-import type { RabbyRootState, RabbyDispatch } from '@/ui/store';
+import { connectStore, useRabbyStore } from '@/ui/store';
 
 import Safe from '@rabby-wallet/gnosis-sdk';
 import { SafeInfo } from '@rabby-wallet/gnosis-sdk/dist/api';
@@ -87,15 +86,14 @@ const GnosisAdminItem = ({
 };
 
 const Dashboard = () => {
+  const { dispatch: rDispatch, useSelector } = useRabbyStore();
   const { currentAccount, alianName, pendingTxCount } = useSelector(
-    (state: RabbyRootState) => ({
+    (state) => ({
       currentAccount: state.account.currentAccount,
       alianName: state.account.alianName,
       pendingTxCount: state.viewDashboard.pendingTransactionCount,
     })
   );
-
-  const rDispatch = useDispatch<RabbyDispatch>();
 
   const history = useHistory();
   const { state } = useLocation<{
@@ -1045,4 +1043,4 @@ const Dashboard = () => {
   );
 };
 
-export default connect()(Dashboard);
+export default connectStore()(Dashboard);
