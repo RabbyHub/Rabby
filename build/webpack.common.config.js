@@ -3,7 +3,6 @@ const HtmlWebpackPlugin = require('html-webpack-plugin');
 const TSConfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 const ESLintWebpackPlugin = require('eslint-webpack-plugin');
 const tsImportPluginFactory = require('ts-import-plugin');
-const AssetReplacePlugin = require('./plugins/AssetReplacePlugin');
 const { version } = require('../_raw/manifest.json');
 const path = require('path');
 
@@ -13,7 +12,7 @@ const config = {
   entry: {
     background: paths.rootResolve('src/background/index.ts'),
     'content-script': paths.rootResolve('src/content-script/index.ts'),
-    pageProvider: paths.rootResolve('src/content-script/pageProvider/index.ts'),
+    pageProvider: paths.rootResolve('node_modules/@rabby-wallet/page-provider/dist/index.js'),
     ui: paths.rootResolve('src/ui/index.tsx'),
   },
   output: {
@@ -176,9 +175,6 @@ const config = {
       Buffer: ['buffer', 'Buffer'],
       process: 'process',
       dayjs: 'dayjs',
-    }),
-    new AssetReplacePlugin({
-      '#PAGEPROVIDER#': 'pageProvider',
     }),
     new webpack.DefinePlugin({
       'process.env.version': JSON.stringify(`version: ${version}`),
