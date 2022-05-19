@@ -106,7 +106,7 @@ import IconOnekey from 'ui/assets/walletlogo/onekey.png';
 import IconOneKey18 from 'ui/assets/walletlogo/onekey18.png';
 import IconTokenpocket from 'ui/assets/walletlogo/tp.png';
 import IconTrezor from 'ui/assets/walletlogo/trezor.png';
-import IconMetaMask from 'ui/assets/walletlogo/metamask.png';
+import IconMetaMask from 'ui/assets/walletlogo/metamask.svg';
 import IconTrust from 'ui/assets/walletlogo/trust.png';
 import IconMnemonicPurple from 'ui/assets/walletlogo/mnemonic-purple.svg';
 import IconPrivateKeyPurple from 'ui/assets/walletlogo/privatekey-purple.svg';
