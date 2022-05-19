@@ -201,7 +201,7 @@ export default ({
     };
   }, []);
 
-  const directionPanelData: {
+  type IPanelItem = {
     icon: string;
     content: string;
     onClick: import('react').MouseEventHandler<HTMLElement>;
@@ -209,73 +209,106 @@ export default ({
     iconSpin?: boolean;
     hideForGnosis?: boolean;
     showAlert?: boolean;
-  }[] = [
-    {
+  };
+
+  const panelItems = {
+    send: {
       icon: IconSendToken,
       content: 'Send',
       onClick: () => history.push('/send-token'),
     },
-    {
+    receive: {
       icon: IconReceive,
       content: 'Receive',
       onClick: () => {
         setIsShowReceiveModal(true);
       },
     },
-    isGnosis
-      ? {
-          icon: IconQuene,
-          content: 'Queue',
-          badge: gnosisPendingCount,
-          onClick: () => {
-            history.push('/gnosis-queue');
-          },
-        }
-      : {
-          icon: pendingTxCount ? IconActivitiesPending : IconActivities,
-          content: 'Activities',
-          badge: pendingTxCount,
-          iconSpin: !!pendingTxCount,
-          onClick: () => {
-            history.push('/activities');
-          },
-        },
-    {
+    queue: {
+      icon: IconQuene,
+      content: 'Queue',
+      badge: gnosisPendingCount,
+      onClick: () => {
+        history.push('/gnosis-queue');
+      },
+    },
+    activities: {
+      icon: pendingTxCount ? IconActivitiesPending : IconActivities,
+      content: 'Activities',
+      badge: pendingTxCount,
+      iconSpin: !!pendingTxCount,
+      onClick: () => {
+        history.push('/activities');
+      },
+    },
+    transactions: {
       icon: IconTransactions,
       content: 'Transactions',
       onClick: () => {
         history.push('/history');
       },
     },
-    {
+    dapps: {
       icon: IconDapps,
       content: 'Dapps',
       onClick: () => {
         changeURL();
       },
     },
-    {
+    contacts: {
       icon: IconContacts,
       content: 'Contacts',
       onClick: changeContacts,
     },
-    {
+    security: {
       icon: IconSecurity,
       content: 'Security',
       onClick: changeSecurity,
     },
-    {
+    widget: {
       icon: IconWidget,
       content: 'Widget',
       onClick: changeWidget,
     },
-    {
+    settings: {
       icon: IconSetting,
       content: 'Settings',
       onClick: changeSetting,
       showAlert: !isDefaultWallet,
     },
-  ].filter(Boolean);
+  };
+
+  let pickedPanelKeys: (keyof typeof panelItems)[] = [];
+
+  if (isGnosis) {
+    pickedPanelKeys = [
+      'send',
+      'receive',
+      'queue',
+      'transactions',
+      'dapps',
+      'contacts',
+      'security',
+      'widget',
+      'settings',
+    ];
+  } else {
+    pickedPanelKeys = [
+      'send',
+      'receive',
+      'activities',
+      'transactions',
+      'dapps',
+      'contacts',
+      'security',
+      'widget',
+      'settings',
+    ];
+  }
+
+  const directionPanelData: IPanelItem[] = pickedPanelKeys.map(
+    (key) => panelItems[key]
+  );
 
   return (
     <div className={clsx('recent-connections', connectionAnimation)}>
