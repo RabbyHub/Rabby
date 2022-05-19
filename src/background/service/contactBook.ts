@@ -124,18 +124,6 @@ class ContactBook {
   };
 
   getContactsByMap = () => {
-    Object.values(this.store)
-      .filter((item) => item?.isContact)
-      .reduce(
-        (res, item) => ({
-          ...res,
-          [item!.address.toLowerCase()]: {
-            ...item,
-            address: item?.address.toLowerCase(),
-          },
-        }),
-        {}
-      );
     return this.store;
   };
 }

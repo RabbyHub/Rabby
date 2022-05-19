@@ -1,14 +1,27 @@
 import type { Account } from '@/background/service/preference';
 import { createModel } from '@rematch/core';
+import { DisplayedKeryring } from 'background/service/keyring';
 import { RootModel } from '.';
+
+interface AccountState {
+  currentAccount: null | Account;
+  visiableAccounts: Account[];
+  hiddenAccounts: Account[];
+  alianName: string;
+  keyrings: DisplayedKeryring[];
+}
 
 export const account = createModel<RootModel>()({
   name: 'account',
-  state: {
-    currentAccount: null as null | Account,
 
+  state: {
+    currentAccount: null,
     alianName: '',
-  },
+    visiableAccounts: [],
+    hiddenAccounts: [],
+    keyrings: [],
+  } as AccountState,
+
   reducers: {
     setField(state, payload: Partial<typeof state>) {
       return Object.keys(payload).reduce(
@@ -19,6 +32,7 @@ export const account = createModel<RootModel>()({
         { ...state }
       );
     },
+
     setCurrentAccount(
       state,
       payload: { currentAccount: typeof state.currentAccount }
@@ -26,6 +40,7 @@ export const account = createModel<RootModel>()({
       return { ...state, currentAccount: payload.currentAccount };
     },
   },
+
   effects: (dispatch) => ({
     async getCurrentAccountAsync(_?: any, store?) {
       const account: Account = await store.app.wallet.getCurrentAccount<Account>();
@@ -35,6 +50,7 @@ export const account = createModel<RootModel>()({
 
       return account;
     },
+
     async changeAccountAsync(account: Account, store) {
       const { address, type, brandName } = account;
       const nextVal: Account = { address, type, brandName };
@@ -42,11 +58,36 @@ export const account = createModel<RootModel>()({
       await store.app.wallet.changeAccount(nextVal);
       dispatch.account.setCurrentAccount({ currentAccount: nextVal });
     },
+
     async getAlianNameAsync(address: string, store) {
       const name = await store.app.wallet.getAlianName<string>(address);
 
       dispatch.account.setField({ alianName: name });
       return name;
+    },
+
+    async getAllClassAccountsAsync(_, store) {
+      const keyrings = await store.app.wallet.getAllClassAccounts<
+        DisplayedKeryring[]
+      >();
+      dispatch.account.setField({ keyrings });
+      return keyrings;
+    },
+
+    async getAllVisibleAccountsAsync(_, store) {
+      const visiableAccounts = await store.app.wallet.getAllVisibleAccounts<
+        Account[]
+      >();
+      dispatch.account.setField({ visiableAccounts });
+      return visiableAccounts;
+    },
+
+    async getAllHiddenAccountsAsync(_, store) {
+      const hiddenAccounts = await store.app.wallet.getHiddenAddresses<
+        Account[]
+      >();
+      dispatch.account.setField({ hiddenAccounts });
+      return hiddenAccounts;
     },
   }),
 });
