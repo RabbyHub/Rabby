@@ -12,7 +12,7 @@ import clsx from 'clsx';
 import { useTranslation, Trans } from 'react-i18next';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import { connectStore, useRabbyStore } from '@/ui/store';
+import { connectStore, useRabbyStore, useGetter } from 'ui/store';
 
 import Safe from '@rabby-wallet/gnosis-sdk';
 import { SafeInfo } from '@rabby-wallet/gnosis-sdk/dist/api';
@@ -180,6 +180,9 @@ const Dashboard = () => {
 
     rDispatch.viewDashboard.getPendingTxCountAsync(currentAccount.address);
   }, 30000);
+
+  const d = useGetter((s) => s.viewDashboard.double);
+  console.log(d);
 
   useEffect(() => {
     if (!currentAccount) {

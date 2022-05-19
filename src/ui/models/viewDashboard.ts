@@ -6,6 +6,9 @@ export const viewDashboard = createModel<RootModel>()({
   state: {
     pendingTransactionCount: 0,
   },
+  selectors: {
+    double: () => (state) => state.viewDashboard.pendingTransactionCount * 2,
+  },
   reducers: {
     setField(state, payload: Partial<typeof state>) {
       return Object.keys(payload).reduce(
