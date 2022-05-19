@@ -288,8 +288,8 @@ export default ({
       'transactions',
       'dapps',
       'contacts',
-      'security',
       'widget',
+      'security',
       'settings',
     ];
   } else {
