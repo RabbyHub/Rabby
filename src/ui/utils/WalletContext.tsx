@@ -5,10 +5,10 @@ import { Object } from 'ts-toolbelt';
 export type WalletController = Object.Merge<
   {
     openapi: {
-      [key: string]: (...params: any) => Promise<any>;
+      [key: string]: <T = any>(...params: any) => Promise<T>;
     };
   },
-  Record<string, (...params: any) => Promise<any>>
+  Record<string, <T = any>(...params: any) => Promise<T>>
 >;
 
 const WalletContext = createContext<{
