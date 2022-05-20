@@ -1,4 +1,11 @@
 import { permissionService } from 'background/service';
+import { Object } from 'ts-toolbelt';
+
+export interface SessionProp {
+  origin: string;
+  icon: string;
+  name: string;
+}
 
 export class Session {
   origin = '';
@@ -7,13 +14,13 @@ export class Session {
 
   name = '';
 
-  constructor(data) {
+  constructor(data?: SessionProp | null) {
     if (data) {
       this.setProp(data);
     }
   }
 
-  setProp({ origin, icon, name }) {
+  setProp({ origin, icon, name }: SessionProp) {
     this.origin = origin;
     this.icon = icon;
     this.name = name;
@@ -21,13 +28,13 @@ export class Session {
 }
 
 // for each tab
-const sessionMap = new Map();
+const sessionMap = new Map<number, SessionProp | null>();
 
-const getSession = (id) => {
+const getSession = (id: number) => {
   return sessionMap.get(id);
 };
 
-const getOrCreateSession = (id) => {
+const getOrCreateSession = (id: number) => {
   if (sessionMap.has(id)) {
     return getSession(id);
   }
@@ -35,10 +42,10 @@ const getOrCreateSession = (id) => {
   return createSession(id, null);
 };
 
-const createSession = (id, data) => {
+const createSession = (id: number, data?: null | SessionProp) => {
   const session = new Session(data);
   sessionMap.set(id, session);
-
+  console.log(session);
   return session;
 };
 
@@ -46,10 +53,10 @@ const deleteSession = (id) => {
   sessionMap.delete(id);
 };
 
-const broadcastEvent = (ev, data?, origin?) => {
+const broadcastEvent = (ev, data?, origin?: string) => {
   let sessions: any[] = [];
   sessionMap.forEach((session, key) => {
-    if (permissionService.hasPermission(session.origin)) {
+    if (session && permissionService.hasPermission(session.origin)) {
       sessions.push({
         key,
         ...session,
