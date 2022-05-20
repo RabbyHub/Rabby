@@ -1,6 +1,7 @@
 import type { Account } from '@/background/service/preference';
 import { createModel } from '@rematch/core';
 import { DisplayedKeryring } from 'background/service/keyring';
+import { TotalBalanceResponse } from 'background/service/openapi';
 import { RootModel } from '.';
 
 interface AccountState {
@@ -9,6 +10,9 @@ interface AccountState {
   hiddenAccounts: Account[];
   alianName: string;
   keyrings: DisplayedKeryring[];
+  balanceMap: {
+    [address: string]: TotalBalanceResponse;
+  };
 }
 
 export const account = createModel<RootModel>()({
@@ -20,6 +24,7 @@ export const account = createModel<RootModel>()({
     visiableAccounts: [],
     hiddenAccounts: [],
     keyrings: [],
+    balanceMap: {},
   } as AccountState,
 
   reducers: {
