@@ -31,6 +31,8 @@ export function useRabbyStore() {
   };
 }
 
+export const useRabbySelector: TypedUseSelectorHook<RabbyRootState> = useSelector;
+
 export function useGetter<Selected = unknown>(
   selector: (
     select: RabbyStore['select']

@@ -6,6 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { openInTab, useWallet } from 'ui/utils';
 import ConnectionList from './ConnectionList';
 import './style.less';
+import { useRabbySelector, useRabbyStore } from 'ui/store';
 
 interface RecentConnectionsProps {
   visible?: boolean;
@@ -17,8 +18,8 @@ const RecentConnections = ({
   onClose,
 }: RecentConnectionsProps) => {
   const { t } = useTranslation();
-  const [connections, setConnections] = useState<ConnectedSite[]>([]);
-  const wallet = useWallet();
+  const { dispatch, useSelector } = useRabbyStore();
+  const connections = useSelector((state) => state.permission.websites);
 
   const pinnedList = useMemo(() => {
     return connections
@@ -36,24 +37,16 @@ const RecentConnections = ({
 
   const handleSort = (sites: ConnectedSite[]) => {
     const list = sites.concat(recentList);
-    setConnections(list);
-    wallet.setRecentConnectedSites(list);
-  };
-
-  const getConnectedSites = async () => {
-    const sites = await wallet.getConnectedSites();
-    setConnections(sites.filter((item) => !!item));
+    dispatch.permission.reorderWebsites(list);
   };
 
   const handleFavoriteChange = (item: ConnectedSite) => {
     item.isTop
-      ? wallet.unpinConnectedSite(item.origin)
-      : wallet.topConnectedSite(item.origin);
-    getConnectedSites();
+      ? dispatch.permission.unFavoriteWebsite(item.origin)
+      : dispatch.permission.favoriteWebsite(item.origin);
   };
   const handleRemove = async (origin: string) => {
-    await wallet.removeConnectedSite(origin);
-    getConnectedSites();
+    await dispatch.permission.removeWebsite(origin);
     message.success({
       icon: <i />,
       content: <span className="text-white">{t('Disconnected')}</span>,
@@ -62,11 +55,10 @@ const RecentConnections = ({
 
   const removeAll = async () => {
     try {
-      await wallet.removeAllRecentConnectedSites();
+      await dispatch.permission.clearAll();
     } catch (e) {
       console.error(e);
     }
-    getConnectedSites();
     message.success({
       icon: <i />,
       content: <span className="text-white">{t('Disconnected')}</span>,
@@ -94,7 +86,7 @@ const RecentConnections = ({
   };
 
   useEffect(() => {
-    getConnectedSites();
+    dispatch.permission.getWebsites();
   }, []);
 
   return (

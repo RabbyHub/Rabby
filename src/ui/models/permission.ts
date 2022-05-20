@@ -26,23 +26,31 @@ export const permission = createModel<RootModel>()({
   },
 
   effects: (dispatch) => ({
-    getWebsites(_, store) {
-      // TODO
+    async getWebsites(_?: any, store?) {
+      const sites = await store.app.wallet.getConnectedSites();
+      dispatch.permission.setField({
+        websites: sites,
+      });
     },
-    removeWebsite(origin: string, store) {
-      // TODO
+    async removeWebsite(origin: string, store) {
+      await store.app.wallet.removeConnectedSite(origin);
+      await dispatch.permission.getWebsites();
     },
-    favoriteWebsite(origin: string, store) {
-      // TODO
+    async favoriteWebsite(origin: string, store) {
+      await store.app.wallet.topConnectedSite(origin);
+      await dispatch.permission.getWebsites();
     },
-    unFavoriteWbsite(origin: string, store) {
-      // TODO
+    async unFavoriteWebsite(origin: string, store) {
+      await store.app.wallet.unpinConnectedSite(origin);
+      await dispatch.permission.getWebsites();
     },
-    clearAll() {
-      // TODO
+    async clearAll(_?: any, store?) {
+      await store.app.wallet.removeAllRecentConnectedSites();
+      await dispatch.permission.getWebsites();
     },
-    reorderWebsites(websites: ConnectedSite[], store) {
-      // TODO
+    async reorderWebsites(websites: ConnectedSite[], store) {
+      await store.app.wallet.setRecentConnectedSites(websites);
+      await dispatch.permission.getWebsites();
     },
   }),
 });

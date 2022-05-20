@@ -50,7 +50,7 @@ export const contactBook = createModel<RootModel>()({
     },
 
     async removeContact(address: string, store) {
-      await store.app.wallet.removeContact();
+      await store.app.wallet.removeContact(address);
       await dispatch.contactBook.getContactBookAsync();
     },
 
