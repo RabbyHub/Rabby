@@ -1,5 +1,4 @@
 import type { WalletController } from 'ui/utils/WalletContext';
-import type { Account } from '@/background/service/preference';
 import { createModel } from '@rematch/core';
 import { RootModel } from '.';
 
