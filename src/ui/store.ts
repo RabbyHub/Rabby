@@ -3,8 +3,8 @@ import type { RematchDispatch, RematchRootState } from '@rematch/core';
 import { models, RootModel } from './models';
 import {
   connect,
-  useDispatch,
-  useSelector,
+  useDispatch as _useDispatch,
+  useSelector as _useSelector,
   EqualityFn,
   useStore,
   TypedUseSelectorHook,
@@ -12,6 +12,7 @@ import {
 import selectPlugin from '@rematch/select';
 
 const store = init<RootModel>({ models, plugins: [selectPlugin()] });
+console.log(store);
 
 export type RabbyStore = typeof store;
 export type RabbyDispatch = RematchDispatch<RootModel>;
@@ -20,18 +21,19 @@ export type RabbyRootState = RematchRootState<RootModel>;
 export { connect as connectStore };
 
 export function useRabbyStore() {
-  const dispatch = useDispatch<RabbyDispatch>();
+  const dispatch = _useDispatch<RabbyDispatch>();
 
   return {
     dispatch,
     useSelector: <Selected = unknown>(
       selector: (state: RabbyRootState) => Selected,
       equalityFn?: EqualityFn<Selected> | undefined
-    ) => useSelector(selector, equalityFn),
+    ) => _useSelector(selector, equalityFn),
   };
 }
 
-export const useRabbySelector: TypedUseSelectorHook<RabbyRootState> = useSelector;
+export const useSelector: TypedUseSelectorHook<RabbyRootState> = _useSelector;
+export const useDispatch = () => _useDispatch<RabbyDispatch>();
 
 export function useGetter<Selected = unknown>(
   selector: (

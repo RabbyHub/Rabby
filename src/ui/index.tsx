@@ -149,6 +149,7 @@ eventBus.addEventListener(EVENTS.broadcastToBackground, (data) => {
 });
 
 store.dispatch.app.initWallet({ wallet });
+store.dispatch.account.init();
 
 wallet.getLocale().then((locale) => {
   addResourceBundle(locale).then(() => {

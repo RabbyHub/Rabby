@@ -5,6 +5,8 @@ import { account } from './account';
 import { contactBook } from './contactBook';
 import { viewDashboard } from './viewDashboard';
 import { permission } from './permission';
+import { preference } from './preference';
+import { openapi } from './openapi';
 
 export interface RootModel extends Models<RootModel> {
   app: typeof app;
@@ -12,6 +14,8 @@ export interface RootModel extends Models<RootModel> {
   contactBook: typeof contactBook;
   viewDashboard: typeof viewDashboard;
   permission: typeof permission;
+  preference: typeof preference;
+  openapi: typeof openapi;
 }
 
 export const models: RootModel = {
@@ -20,4 +24,6 @@ export const models: RootModel = {
   contactBook,
   viewDashboard,
   permission,
+  preference,
+  openapi,
 };

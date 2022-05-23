@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { openInTab, useWallet } from 'ui/utils';
 import ConnectionList from './ConnectionList';
 import './style.less';
-import { useRabbySelector, useRabbyStore } from 'ui/store';
+import { useSelector, useRabbyStore } from 'ui/store';
 
 interface RecentConnectionsProps {
   visible?: boolean;

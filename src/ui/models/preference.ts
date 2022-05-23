@@ -52,6 +52,55 @@ export const preference = createModel<RootModel>()({
   },
 
   effects: (dispatch) => ({
-    // TODO
+    init() {
+      return this.fetchPreference();
+    },
+    async fetchPreference(key?: string, store?) {
+      const value = await store.app.wallet.getPreference(key);
+      if (key) {
+        this.setField({
+          key: value,
+        });
+      } else {
+        this.setField(value);
+      }
+    },
+    async getIsDefaultWallet(_?, store?) {
+      const isDefaultWallet = await store.app.wallet.isDefaultWallet();
+      this.setField({
+        isDefaultWallet,
+      });
+    },
+
+    async setIsDefaultWallet(isDefault: boolean, store?) {
+      await store.app.wallet.setIsDefaultWallet(isDefault);
+      this.getIsDefaultWallet();
+    },
+
+    async getTokenApprovalChain(address: string, store?) {
+      address = address.toLowerCase();
+      const chain = await store.app.wallet.getTokenApprovalChain(address);
+
+      this.setField({
+        tokenApprovalChain: {
+          ...store.preference.tokenApprovalChain,
+          [address]: chain,
+        },
+      });
+    },
+    async setTokenApprovalChain(
+      {
+        address,
+        chain,
+      }: {
+        address: string;
+        chain: CHAINS_ENUM;
+      },
+      store?
+    ) {
+      await store.app.wallet.setTokenApprovalChain(address, chain);
+
+      this.getTokenApprovalChain(address);
+    },
   }),
 });

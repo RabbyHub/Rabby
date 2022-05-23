@@ -47,4 +47,12 @@ const useWallet = () => {
   return wallet;
 };
 
-export { WalletProvider, useWallet };
+const useWalletNext = () => {
+  const { wallet } = (useContext(WalletContext) as unknown) as {
+    wallet: WalletControllerType;
+  };
+
+  return wallet;
+};
+
+export { WalletProvider, useWallet, useWalletNext };

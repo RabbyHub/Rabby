@@ -1352,6 +1352,10 @@ export class WalletController extends BaseController {
   getNonceByChain = (address: string, chainId: number) =>
     transactionHistoryService.getNonceByChain(address, chainId);
 
+  getPreference = (key?: string) => {
+    return preferenceService.getPreference(key);
+  };
+
   setIsDefaultWallet = (val: boolean) =>
     preferenceService.setIsDefaultWallet(val);
   isDefaultWallet = () => preferenceService.getIsDefaultWallet();
