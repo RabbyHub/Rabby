@@ -17,7 +17,7 @@ import {
 } from 'consts';
 import { Account } from 'background/service/preference';
 import { UIContactBookItem } from 'background/service/contactBook';
-import { useWallet } from 'ui/utils';
+import { useWallet, useWalletOld } from 'ui/utils';
 import { query2obj } from 'ui/utils/url';
 import { getTokenSymbol, geTokenDecimals } from 'ui/utils/token';
 import { formatTokenAmount, splitNumberByStep } from 'ui/utils/number';
@@ -42,7 +42,7 @@ const TOKEN_VALIDATION_STATUS = {
 };
 
 const SendToken = () => {
-  const wallet = useWallet();
+  const wallet = useWalletOld();
   const [currentAccount, setCurrentAccount] = useState<Account | null>(null);
   const [chain, setChain] = useState(CHAINS_ENUM.ETH);
   const { t } = useTranslation();

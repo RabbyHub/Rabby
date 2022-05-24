@@ -4,7 +4,7 @@ import { message } from 'antd';
 import { useTranslation } from 'react-i18next';
 import TransportWebHID from '@ledgerhq/hw-transport-webhid';
 import { StrayPageWithButton, FieldCheckbox } from 'ui/component';
-import { useWallet } from 'ui/utils';
+import { useWallet, useWalletOld } from 'ui/utils';
 import { IS_AFTER_CHROME91, HARDWARE_KEYRING_TYPES } from 'consts';
 
 export const LEDGER_LIVE_PATH = "m/44'/60'/0'/0/0";
@@ -19,7 +19,7 @@ const HD_PATHS = [
 
 const LedgerHdPath = () => {
   const history = useHistory();
-  const wallet = useWallet();
+  const wallet = useWalletOld();
   const [currentPath, setCurrentPath] = useState(LEDGER_LIVE_PATH);
   const [spinning, setSpin] = useState(false);
 

@@ -17,7 +17,7 @@ import {
 import { Account } from 'background/service/preference';
 import { NFTItem } from '@/background/service/openapi';
 import { UIContactBookItem } from 'background/service/contactBook';
-import { useWallet } from 'ui/utils';
+import { useWallet, useWalletOld } from 'ui/utils';
 import { getTokenName } from 'ui/utils/token';
 import AccountCard from '../Approval/components/AccountCard';
 import TagChainSelector from 'ui/component/ChainSelector/tag';
@@ -40,7 +40,7 @@ const TOKEN_VALIDATION_STATUS = {
 };
 
 const SendNFT = () => {
-  const wallet = useWallet();
+  const wallet = useWalletOld();
   const history = useHistory();
   const { state } = useLocation<{
     nftItem: NFTItem;

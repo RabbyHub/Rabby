@@ -5,7 +5,7 @@ import styled from 'styled-components';
 import { sortBy } from 'lodash';
 import { StrayPageWithButton } from 'ui/component';
 import DisplayAddressItem from './components/DisplayAddressItem';
-import { useWallet, useWalletRequest } from 'ui/utils';
+import { useWalletOld as useWallet, useWalletRequest } from 'ui/utils';
 import { Account } from 'background/service/preference';
 import clsx from 'clsx';
 import { KEYRING_TYPE } from 'consts';

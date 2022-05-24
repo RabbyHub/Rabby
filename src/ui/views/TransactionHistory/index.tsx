@@ -29,6 +29,7 @@ import IconSpeedup from 'ui/assets/speedup.svg';
 import IconQuestionMark from 'ui/assets/question-mark-black.svg';
 import { SvgIconOpenExternal } from 'ui/assets';
 import './style.less';
+import { Account } from '@/background/service/preference';
 
 const TransactionExplain = ({
   explain,
@@ -591,7 +592,7 @@ const TransactionHistory = () => {
   const [completeList, setCompleteList] = useState<TransactionGroup[]>([]);
 
   const init = async () => {
-    const account = await wallet.syncGetCurrentAccount()!;
+    const account = await wallet.syncGetCurrentAccount<Account>()!;
     const { pendings, completeds } = await wallet.getTransactionHistory(
       account.address
     );
