@@ -10,7 +10,7 @@ export type WalletControllerType = Object.Merge<
     ) => any
       ? <T = ReturnType<WalletControllerClass[key]>>(
           ...args: Parameters<WalletControllerClass[key]>
-        ) => Promise<T>
+        ) => T extends Promise<any> ? T : Promise<T>
       : WalletControllerClass[key];
   },
   Record<string, <T = any>(...params: any) => Promise<T>>
@@ -39,7 +39,10 @@ const WalletProvider = ({
   <WalletContext.Provider value={{ wallet }}>{children}</WalletContext.Provider>
 );
 
-const useWallet = () => {
+/**
+ * @deprecated The method should not be used
+ */
+const useWalletOld = () => {
   const { wallet } = useContext(WalletContext) as {
     wallet: WalletController;
   };
@@ -47,7 +50,7 @@ const useWallet = () => {
   return wallet;
 };
 
-const useWalletNext = () => {
+const useWallet = () => {
   const { wallet } = (useContext(WalletContext) as unknown) as {
     wallet: WalletControllerType;
   };
@@ -55,4 +58,4 @@ const useWalletNext = () => {
   return wallet;
 };
 
-export { WalletProvider, useWallet, useWalletNext };
+export { WalletProvider, useWalletOld, useWallet };

@@ -7,12 +7,12 @@ import { useTranslation } from 'react-i18next';
 import IconDisconnect from 'ui/assets/icon-disconnect.svg';
 import IconDapps from 'ui/assets/dapps.svg';
 import { ChainSelector, FallbackSiteLogo } from 'ui/component';
-import { getCurrentTab, useWallet } from 'ui/utils';
+import { getCurrentTab, useWallet, useWalletOld } from 'ui/utils';
 import './style.less';
 import { useLocation } from 'react-router-dom';
 
 export const CurrentConnection = memo(() => {
-  const wallet = useWallet();
+  const wallet = useWalletOld();
   const { t } = useTranslation();
   const [site, setSite] = useState<ConnectedSite>();
   const { state } = useLocation<{

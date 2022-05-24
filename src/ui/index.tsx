@@ -150,15 +150,18 @@ eventBus.addEventListener(EVENTS.broadcastToBackground, (data) => {
 
 store.dispatch.app.initWallet({ wallet });
 store.dispatch.account.init();
+store.dispatch.preference.init();
 
-wallet.getLocale().then((locale) => {
-  addResourceBundle(locale).then(() => {
-    i18n.changeLanguage(locale);
-    ReactDOM.render(
-      <Provider store={store}>
-        <Views wallet={wallet} />
-      </Provider>,
-      document.getElementById('root')
-    );
-  });
-});
+// wallet.getLocale().then((locale) => {
+// addResourceBundle(locale).then(() => {
+// i18n.changeLanguage(locale);
+// setTimeout(() => {
+ReactDOM.render(
+  <Provider store={store}>
+    <Views wallet={wallet} />
+  </Provider>,
+  document.getElementById('root')
+);
+// });
+//   });
+// });

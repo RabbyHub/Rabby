@@ -21,7 +21,12 @@ import IconReceive from 'ui/assets/dashboard/receive.svg';
 import IconTransactions from 'ui/assets/dashboard/transactions.png';
 import IconWidget from 'ui/assets/dashboard/widget.svg';
 import IconDrawer from 'ui/assets/drawer.png';
-import { getCurrentConnectSite, splitNumberByStep, useWallet } from 'ui/utils';
+import {
+  getCurrentConnectSite,
+  splitNumberByStep,
+  useWallet,
+  useWalletOld,
+} from 'ui/utils';
 import { CurrentConnection } from '../CurrentConnection';
 import ChainSelectorModal from 'ui/component/ChainSelector/Modal';
 import {
@@ -83,7 +88,7 @@ export default ({
   const [isShowReceiveModal, setIsShowReceiveModal] = useState(
     trigger === 'receive' && showChainsModal
   );
-  const wallet = useWallet();
+  const wallet = useWalletOld();
 
   const getConnectedSites = async () => {
     const sites = await wallet.getRecentConnectedSites();

@@ -14,14 +14,14 @@ import TagChainSelector from 'ui/component/ChainSelector/tag';
 import {
   numberWithCommasIsLtOne,
   splitNumberByStep,
-  useWalletNext,
+  useWallet,
 } from 'ui/utils';
 import PopupApprovalCard from './components/PopupApprovalCard';
 import PopupSearch from './components/PopupSearch';
 import './style.less';
 
 const TokenApproval = () => {
-  const wallet = useWalletNext();
+  const wallet = useWallet();
   const [list, setList] = useState<TokenApproval[]>([]);
   const [loading, setLoading] = useState(false);
   const [isShowSearch, setIsShowSearch] = useState(false);
@@ -36,10 +36,11 @@ const TokenApproval = () => {
 
   const dispatch = useDispatch();
   const account = useSelector((state) => state.account.currentAccount);
-  const chain = useSelector((state) =>
-    account?.address
-      ? state.preference.tokenApprovalChain[account?.address]
-      : null
+  const chain = useSelector(
+    (state) =>
+      state.preference.tokenApprovalChain[
+        account?.address?.toLowerCase() || ''
+      ] || CHAINS_ENUM.ETH
   );
 
   const totalRisk = useMemo(() => {
@@ -64,7 +65,7 @@ const TokenApproval = () => {
     history.replace('/');
   };
 
-  const fetchData = async (chain) => {
+  const fetchData = async () => {
     if (!account || !chain) {
       return;
     }
@@ -85,14 +86,8 @@ const TokenApproval = () => {
   };
 
   useEffect(() => {
-    if (account?.address) {
-      dispatch.preference.getTokenApprovalChain(account?.address);
-    }
-  }, [account]);
-
-  useEffect(() => {
-    fetchData(chain);
-  }, [chain]);
+    fetchData();
+  }, [account, chain]);
 
   if (!chain) {
     return null;

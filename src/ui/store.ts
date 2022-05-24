@@ -10,6 +10,7 @@ import {
   TypedUseSelectorHook,
 } from 'react-redux';
 import selectPlugin from '@rematch/select';
+import { useCallback } from 'react';
 
 const store = init<RootModel>({ models, plugins: [selectPlugin()] });
 console.log(store);
@@ -42,5 +43,12 @@ export function useGetter<Selected = unknown>(
 ) {
   // const store = useStore() as RabbyStore;
   return useSelector(selector(store.select));
+}
+
+export function useAccount() {
+  const account = useSelector((state) => state.account.currentAccount);
+  const dispatch = useDispatch();
+  const setAccount = dispatch.account.setCurrentAccount;
+  return [account, setAccount] as const;
 }
 export default store;

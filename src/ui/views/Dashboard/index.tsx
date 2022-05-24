@@ -31,6 +31,7 @@ import {
   isSameAddress,
   splitNumberByStep,
   useHover,
+  useWalletOld,
 } from 'ui/utils';
 import { AddressViewer, Copy, Modal, NameAndAddress } from 'ui/component';
 import { crossCompareOwners } from 'ui/utils/gnosis';
@@ -101,7 +102,7 @@ const Dashboard = () => {
     showChainsModal?: boolean;
   }>();
   const { showChainsModal = false } = state ?? {};
-  const wallet = useWallet();
+  const wallet = useWalletOld();
   const { t } = useTranslation();
   const fixedList = useRef<FixedSizeList>();
 
@@ -340,11 +341,13 @@ const Dashboard = () => {
         localAdded,
         currentAccount?.address
       );
-      const addedToken = localAdded.map((item) => {
-        if (item.includes(':')) {
-          return item.split(':')[1];
-        }
-      });
+      const addedToken = localAdded
+        .map((item) => {
+          if (item.includes(':')) {
+            return item.split(':')[1];
+          }
+        })
+        .filter((item): item is string => item != undefined);
       setAddedToken(addedToken);
       tokens = sortTokensByPrice(
         uniqBy([...defaultTokens, ...localAddedTokens], (token) => {

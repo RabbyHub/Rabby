@@ -1457,7 +1457,7 @@ export class WalletController extends BaseController {
   getAddedToken = (address: string) => {
     return preferenceService.getAddedToken(address);
   };
-  updateAddedToken = (address: string, tokenList: []) => {
+  updateAddedToken = (address: string, tokenList: string[]) => {
     return preferenceService.updateAddedToken(address, tokenList);
   };
   getWidgets = () => {

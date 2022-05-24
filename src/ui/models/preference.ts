@@ -53,13 +53,13 @@ export const preference = createModel<RootModel>()({
 
   effects: (dispatch) => ({
     init() {
-      return this.fetchPreference();
+      return this.getPreference();
     },
-    async fetchPreference(key?: string, store?) {
+    async getPreference(key?: keyof PreferenceState, store?) {
       const value = await store.app.wallet.getPreference(key);
       if (key) {
         this.setField({
-          key: value,
+          [key]: value,
         });
       } else {
         this.setField(value);
@@ -101,6 +101,20 @@ export const preference = createModel<RootModel>()({
       await store.app.wallet.setTokenApprovalChain(address, chain);
 
       this.getTokenApprovalChain(address);
+    },
+    async setNFTApprovalChain(
+      {
+        address,
+        chain,
+      }: {
+        address: string;
+        chain: CHAINS_ENUM;
+      },
+      store?
+    ) {
+      await store.app.wallet.setNFTApprovalChain(address, chain);
+
+      dispatch.preference.getPreference('nftApprovalChain');
     },
   }),
 });

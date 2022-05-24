@@ -3,14 +3,14 @@ import { useHistory, useLocation } from 'react-router-dom';
 import { sortBy } from 'lodash';
 import { useTranslation } from 'react-i18next';
 import { CHAINS } from 'consts';
-import { useWallet } from 'ui/utils';
+import { useWallet, useWalletOld } from 'ui/utils';
 import { PageHeader, StrayPageWithButton, ChainCard } from 'ui/component';
 import { Chain } from 'background/service/openapi';
 import DragAndDropList from './components/DragAndDropList';
 import './style.less';
 
 export const ChainManagementList = () => {
-  const wallet = useWallet();
+  const wallet = useWalletOld();
   const { t } = useTranslation();
   const [chains, setChains] = useState<(Chain | undefined)[]>([]);
   const [savedChains, setSavedChains] = useState<string[]>([]);

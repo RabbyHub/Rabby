@@ -4,7 +4,7 @@ import { Link, useHistory } from 'react-router-dom';
 import { Menu, Dropdown, message } from 'antd';
 import { FixedSizeList } from 'react-window';
 import { KEYRING_TYPE } from 'consts';
-import { useWallet } from 'ui/utils';
+import { useWallet, useWalletOld } from 'ui/utils';
 import {
   PageHeader,
   AuthenticationModal,
@@ -32,7 +32,7 @@ const SORT_WEIGHT = {
 const { Nav: StrayFooterNav } = StrayFooter;
 
 const AddressManagement = () => {
-  const wallet = useWallet();
+  const wallet = useWalletOld();
   const { t } = useTranslation();
   const [accounts, setAccounts] = useState<DisplayedKeryring[]>([]);
   const [displayList, setDisplayList] = useState([]);
