@@ -139,7 +139,7 @@ export const StartChainManagement = () => {
       headerClassName="mb-24"
     >
       <header className="create-new-header create-password-header h-[100px] fixed-new-header">
-        <p className="text-20 mt-42 mb-0 text-white text-center font-bold">
+        <p className="text-20 mt-42 mb-0 text-black text-center font-bold">
           {t('Pin your frequently used chains')}
         </p>
       </header>
