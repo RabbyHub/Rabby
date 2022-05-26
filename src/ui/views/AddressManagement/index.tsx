@@ -96,12 +96,12 @@ const AddressManagement = () => {
     }
   };
 
-  const handleViewMnemonics = async () => {
+  const handleViewMnemonics = async (address: string) => {
     try {
       await AuthenticationModal({
         wallet,
         async validationHandler(password) {
-          const mnemonic = await wallet.getMnemonics(password);
+          const mnemonic = await wallet.getMnemonics(password, address);
 
           Popup.info({
             title: t('Mnemonic'),
@@ -224,7 +224,7 @@ const AddressManagement = () => {
               >
                 {t('View private key')}
               </Menu.Item>
-              <Menu.Item onClick={() => handleViewMnemonics()}>
+              <Menu.Item onClick={() => handleViewMnemonics(data)}>
                 {t('View Mnemonic')}
               </Menu.Item>
             </Menu>

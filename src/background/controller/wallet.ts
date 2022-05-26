@@ -914,9 +914,12 @@ export class WalletController extends BaseController {
     return await keyring.exportAccount(address);
   };
 
-  getMnemonics = async (password: string) => {
+  getMnemonics = async (password: string, address: string) => {
     await this.verifyPassword(password);
-    const keyring = this._getKeyringByType(KEYRING_CLASS.MNEMONIC);
+    const keyring = await keyringService.getKeyringForAccount(
+      address,
+      KEYRING_CLASS.MNEMONIC
+    );
     const serialized = await keyring.serialize();
     const seedWords = serialized.mnemonic;
 
