@@ -3,27 +3,18 @@ import { nanoid } from 'nanoid';
 
 const channelName = nanoid();
 
-const injectScript = (type: 'src' | 'content', content: string) => {
-  // the script element with src won't execute immediately
-  // use inline script element instead!
-  const container = document.head || document.documentElement;
-  const ele = document.createElement('script');
-  // in prevent of webpack optimized code do some magic(e.g. double/sigle quote wrap),
-  // seperate content assignment to two line
-  // use AssetReplacePlugin to replace pageprovider content
-  // let content = `var channelName = '${channelName}';`;
-  // content += '#PAGEPROVIDER#';
-  if (type === 'src') {
-    ele.setAttribute('src', content);
-  } else {
-    ele.textContent = content;
-  }
-  container.insertBefore(ele, container.children[0]);
-  container.removeChild(ele);
-};
-
-injectScript('content', `var channelName = '${channelName}';`);
-injectScript('src', chrome.runtime.getURL('pageProvider.js'));
+// the script element with src won't execute immediately
+// use inline script element instead!
+const container = document.head || document.documentElement;
+const ele = document.createElement('script');
+// in prevent of webpack optimized code do some magic(e.g. double/sigle quote wrap),
+// seperate content assignment to two line
+// use AssetReplacePlugin to replace pageprovider content
+let content = `var channelName = '${channelName}';`;
+content += '#PAGEPROVIDER#';
+ele.textContent = content;
+container.insertBefore(ele, container.children[0]);
+container.removeChild(ele);
 
 const { BroadcastChannelMessage, PortMessage } = Message;
 

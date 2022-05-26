@@ -63,7 +63,6 @@
     "notifications"
   ],
   "web_accessible_resources": [
-    "user-media-permission.html",
-    "pageProvider.js"
+    "user-media-permission.html"
   ]
 }
