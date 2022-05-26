@@ -40,10 +40,13 @@ module.exports = {
         light: '#8697FF',
         DEFAULT: '#796BFD',
       },
-      black: '#707280',
+      yellow: {
+        light: '#FFE05C',
+        DEFAULT: '#FFD523',
+      },
+      black: '#0A0D10',
       green: '#27C193',
       white: colors.white,
-      yellow: '#F29C1B',
       pink: '#F24822',
       red: {
         light: '#F24822',

@@ -7,20 +7,19 @@ const Welcome = () => {
   const { t } = useTranslation();
   return (
     <div
-      className="h-full pt-[482px] relative welcome"
-      style={{
-        backgroundImage:
-          'linear-gradient(101.58deg, #8BB2FF 1.04%, #7A7CFF 90.78%)',
-      }}
+      className="h-full pt-[482px] relative"
+      style={{ backgroundColor: '#FFD523' }}
     >
-      <img
-        className="absolute top-[95px] select-none left-[31px] bg-no-repeat bg-cover w-[337px] h-[344px]"
-        src="./images/welcome-image.svg"
-      />
+      <div className="flex items-center justify-center absolute top-[95px] w-full">
+        <img
+          className=" select-none bg-no-repeat bg-cover w-[200px] h-[344px]"
+          src="./images/duckyscan-logo.svg"
+        />
+      </div>
       <Link to="/password" replace>
         <Button
           size="large"
-          className="w-[288px] h-[48px] block mx-auto text-blue-light bg-white border-none"
+          className="w-[288px] h-[48px] block mx-auto text-black bg-white text-12 border-none focus:bg-yellow-light"
         >
           {t('Get Started')}
         </Button>

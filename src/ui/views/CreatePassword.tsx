@@ -50,18 +50,18 @@ const CreatePassword = () => {
     >
       <header className="create-new-header create-password-header h-[264px]">
         <img
-          className="rabby-logo"
-          src="/images/logo-gray.png"
-          alt="rabby logo"
+          className="rabby-logo relative z-10"
+          src="/images/duckyscan-logo-horizontal-white.png"
+          alt="duckyscan-logo"
         />
         <img
-          className="unlock-logo w-[128px] h-[128px] mx-auto"
+          className="unlock-logo w-[128px] h-[128px] mx-auto relative z-10"
           src={UnlockLogo}
         />
-        <p className="text-24 mb-4 mt-0 text-white text-center font-bold">
+        <p className="text-24 mb-4 mt-0 text-black text-center font-bold relative z-10">
           {t('Set Unlock Password')}
         </p>
-        <p className="text-14 mb-0 mt-4 text-white opacity-80 text-center">
+        <p className="text-14 mb-0 mt-4 text-black opacity-80 text-center relative z-10">
           {t('This password will be used to unlock your wallet')}
         </p>
         <img src="/images/create-password-mask.png" className="mask" />
