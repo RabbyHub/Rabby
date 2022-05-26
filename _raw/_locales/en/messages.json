@@ -1,10 +1,10 @@
 {
   "appName": {
-    "message": "Rabby",
+    "message": "Ducky",
     "description": "The name of the application"
   },
   "appDescription": {
-    "message": "A better browser plugin for DeFi users",
+    "message": "Let Ducky Make Blockchain Simple",
     "description": "The description of the application"
   },
   "Send": {
@@ -233,7 +233,7 @@
   "Select__the__addresses__you__to__use__in__Rabby": {
     "message": "Select the addresses to use in Rabby"
   },
-  
+
   "Load__More": {
     "message": "Load More..."
   },
