@@ -46,7 +46,7 @@ import {
 } from './components';
 import { getUpdateContent } from 'changeLogs/index';
 import IconSuccess from 'ui/assets/success.svg';
-import IconUpAndDown from 'ui/assets/up-and-down.svg';
+import IconUpAndDown from 'ui/assets/up-and-down-black.svg';
 import IconEditPen from 'ui/assets/editpen.svg';
 import IconCorrect from 'ui/assets/dashboard/contacts/correct.png';
 import IconUnCorrect from 'ui/assets/dashboard/contacts/uncorrect.png';
@@ -785,7 +785,7 @@ const Dashboard = () => {
                       }
                     />
                   }
-                  <div className="text-15 text-white ml-6 mr-6 dashboard-name">
+                  <div className="text-15 text-black ml-6 mr-6 dashboard-name">
                     {displayName}
                   </div>
                   <div className="current-address">
@@ -793,7 +793,7 @@ const Dashboard = () => {
                       <AddressViewer
                         address={currentAccount.address}
                         showArrow={false}
-                        className={'text-12 text-white opacity-60'}
+                        className={'text-12 text-black opacity-60'}
                       />
                     )}
                   </div>
@@ -806,12 +806,12 @@ const Dashboard = () => {
               <img
                 src={IconInfo}
                 onClick={() => setHovered(true)}
-                className="w-[18px] h-[18px] mr-12 pointer"
+                className="w-[24px] h-[24px] mr-12 pointer"
               />
               <Copy
                 variant="address"
                 data={currentAccount.address}
-                className="w-18"
+                className="w-24"
                 icon={IconCopy}
               ></Copy>
             </div>
@@ -842,9 +842,11 @@ const Dashboard = () => {
               NFT
             </div>
             {!(showNFT || showToken || showAssets) && (
-              <ExtraLink
-                address={currentAccount?.address as string}
-              ></ExtraLink>
+              <>
+                <ExtraLink
+                  address={currentAccount?.address as string}
+                ></ExtraLink>
+              </>
             )}
             {showToken && !startSearch && (
               <img

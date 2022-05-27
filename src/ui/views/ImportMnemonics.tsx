@@ -92,14 +92,14 @@ const ImportMnemonic = () => {
         <div className="rabby-container">
           <img
             className="rabby-logo"
-            src="/images/logo-gray.png"
+            src="/images/duckyscan-logo-horizontal-white.png"
             alt="rabby logo"
           />
           <img
             className="unlock-logo w-[128px] h-[128px] mx-auto"
             src={MnemonicLogo}
           />
-          <p className="text-24 mb-4 mt-0 text-white text-center font-bold">
+          <p className="text-24 mb-4 mt-0 text-center text-black font-bold">
             {t('Enter Your Mnemonic')}
           </p>
           <img src="/images/mnemonic-mask.png" className="mask" />

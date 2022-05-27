@@ -7,19 +7,19 @@ import maxBy from 'lodash/maxBy';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import IconAlertRed from 'ui/assets/alert-red.svg';
-import IconDapps from 'ui/assets/dapps.svg';
-import IconContacts from 'ui/assets/dashboard/contacts.png';
+import IconDapps from 'ui/assets/dashboard/ducky-icons/dapps.svg';
+import IconContacts from 'ui/assets/dashboard/ducky-icons/contacts.svg';
 import IconEth from 'ui/assets/dashboard/eth.png';
 import IconGas from 'ui/assets/dashboard/gas.svg';
 import IconQuene from 'ui/assets/dashboard/quene.svg';
-import IconSecurity from 'ui/assets/dashboard/security.svg';
-import IconSendToken from 'ui/assets/dashboard/sendtoken.png';
-import IconSetting from 'ui/assets/dashboard/setting.png';
-import IconActivities from 'ui/assets/dashboard/activities.svg';
-import IconActivitiesPending from 'ui/assets/dashboard/activities-pending.svg';
-import IconReceive from 'ui/assets/dashboard/receive.svg';
-import IconTransactions from 'ui/assets/dashboard/transactions.png';
-import IconWidget from 'ui/assets/dashboard/widget.svg';
+import IconSecurity from 'ui/assets/dashboard/ducky-icons/security.svg';
+import IconSendToken from 'ui/assets/dashboard/ducky-icons/send.svg';
+import IconSetting from 'ui/assets/dashboard/ducky-icons/setting.svg';
+import IconActivities from 'ui/assets/dashboard/ducky-icons/send.svg';
+import IconActivitiesPending from 'ui/assets/dashboard/ducky-icons/activities.svg';
+import IconReceive from 'ui/assets/dashboard/ducky-icons/receive.svg';
+import IconTransactions from 'ui/assets/dashboard/ducky-icons/transaction.svg';
+import IconWidget from 'ui/assets/dashboard/ducky-icons/widget.svg';
 import IconDrawer from 'ui/assets/drawer.png';
 import { getCurrentConnectSite, splitNumberByStep, useWallet } from 'ui/utils';
 import { CurrentConnection } from '../CurrentConnection';
@@ -309,6 +309,8 @@ export default ({
   const directionPanelData: IPanelItem[] = pickedPanelKeys.map(
     (key) => panelItems[key]
   );
+
+  console.log('directionPanelData', directionPanelData);
 
   return (
     <div className={clsx('recent-connections', connectionAnimation)}>
