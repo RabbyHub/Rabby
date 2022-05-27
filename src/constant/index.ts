@@ -23,6 +23,8 @@ import IconAstarLogo from 'ui/assets/chain-logos/astar.png';
 import IconAstarWhiteLogo from 'ui/assets/chain-logos/astar-white.svg';
 import IconOPLogo from 'ui/assets/chain-logos/op.svg';
 import IconOPWhiteLogo from 'ui/assets/chain-logos/op-white.svg';
+import IconJfinLogo from 'ui/assets/chain-logos/jfin.svg';
+import IconJfinWhiteLogo from 'ui/assets/chain-logos/jfin-white.svg';
 import IconAvaxLogo from 'ui/assets/chain-logos/avax.svg';
 import IconAvaxWhiteLogo from 'ui/assets/chain-logos/avax-white.svg';
 import IconCeloLogo from 'ui/assets/chain-logos/celo.svg';
@@ -107,6 +109,7 @@ import LogoKeystone from 'ui/assets/walletlogo/keystone.png';
 export enum CHAINS_ENUM {
   ETH = 'ETH',
   BSC = 'BSC',
+  BSC_TESTNET = 'BSC_TESTNET',
   GNOSIS = 'GNOSIS',
   HECO = 'HECO',
   POLYGON = 'POLYGON',
@@ -137,6 +140,7 @@ export enum CHAINS_ENUM {
   SGB = 'SGB',
   EVMOS = 'EVMOS',
   DFK = 'DFK',
+  JFIN = 'JFIN',
 }
 
 export const CHAINS: Record<string, Chain> = {
@@ -154,7 +158,7 @@ export const CHAINS: Record<string, Chain> = {
       'https://static.debank.com/image/token/logo_url/eth/935ae4e4d1d12d59a99717a24f2540b5.png',
     nativeTokenDecimals: 18,
     nativeTokenAddress: 'eth',
-    scanLink: 'https://etherscan.io/tx/_s_',
+    scanLink: 'https://duckyscan.com/tx/_s_',
     thridPartyRPC:
       'https://eth-mainnet.alchemyapi.io/v2/hVcflvG3Hp3ufTgyfj-s9govLX5OYluf',
     eip: {
@@ -172,11 +176,31 @@ export const CHAINS: Record<string, Chain> = {
     network: '56',
     nativeTokenSymbol: 'BNB',
     nativeTokenAddress: 'bsc',
-    scanLink: 'https://bscscan.com/tx/_s_',
+    scanLink: 'https://bnb.duckyscan.com/tx/_s_',
     nativeTokenLogo:
       'https://static.debank.com/image/bsc_token/logo_url/bsc/8bfdeaa46fe9be8f5cd43a53b8d1eea1.png',
     nativeTokenDecimals: 18,
     thridPartyRPC: 'https://bsc-dataseed1.binance.org',
+    eip: {
+      '1559': false,
+    },
+  },
+  [CHAINS_ENUM.BSC_TESTNET]: {
+    id: 97,
+    name: 'BNB Smart Chain Testnet',
+    serverId: 'bsc',
+    hex: '0x64',
+    enum: CHAINS_ENUM.BSC_TESTNET,
+    logo: IconBscLogo,
+    whiteLogo: IconBscWhiteLogo,
+    network: '97',
+    nativeTokenSymbol: 'BNB',
+    nativeTokenAddress: 'bsc',
+    scanLink: 'https://testnet.bnb.duckyscan.com/tx/_s_',
+    nativeTokenLogo:
+      'https://static.debank.com/image/bsc_token/logo_url/bsc/8bfdeaa46fe9be8f5cd43a53b8d1eea1.png',
+    nativeTokenDecimals: 18,
+    thridPartyRPC: 'https://data-seed-prebsc-1-s3.binance.org',
     eip: {
       '1559': false,
     },
@@ -782,6 +806,25 @@ export const CHAINS: Record<string, Chain> = {
     thridPartyRPC: 'https://subnets.avax.network/defi-kingdoms/dfk-chain/rpc',
     eip: {
       '1559': false,
+    },
+  },
+  [CHAINS_ENUM.JFIN]: {
+    id: 3501,
+    serverId: 'jfin',
+    name: 'JFIN',
+    hex: '0xDAD',
+    enum: CHAINS_ENUM.JFIN,
+    logo: IconJfinLogo,
+    whiteLogo: IconJfinWhiteLogo,
+    network: '3501',
+    nativeTokenSymbol: 'JFIN',
+    nativeTokenLogo: '',
+    nativeTokenDecimals: 18,
+    nativeTokenAddress: 'jfin',
+    scanLink: 'https://jfin.duckyscan.com/tx/_s_',
+    thridPartyRPC: 'https://rpc-ar.jfinchain.com',
+    eip: {
+      '1559': true,
     },
   },
 };
