@@ -15,7 +15,7 @@ const BalanceView = ({
   startAnimate = false,
   onClick,
 }) => {
-  const [balance, chainBalances] = useCurrentBalance(
+  const [balance, chainBalances, _, success] = useCurrentBalance(
     currentAccount?.address,
     true
   );
@@ -124,7 +124,7 @@ const BalanceView = ({
                 {t('Asset data loading')}
               </span>
             </>
-          ) : isNaN(balance) ? (
+          ) : !success ? (
             <>
               <SvgIconOffline className="mr-4" />
               <span className="leading-tight">
