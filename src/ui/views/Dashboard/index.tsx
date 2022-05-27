@@ -12,7 +12,12 @@ import clsx from 'clsx';
 import { useTranslation, Trans } from 'react-i18next';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import { connectStore, useRabbyStore, useGetter } from 'ui/store';
+import {
+  connectStore,
+  useRabbyDispatch,
+  useRabbySelector,
+  useRabbyGetter,
+} from 'ui/store';
 
 import Safe from '@rabby-wallet/gnosis-sdk';
 import { SafeInfo } from '@rabby-wallet/gnosis-sdk/dist/api';
@@ -87,8 +92,8 @@ const GnosisAdminItem = ({
 };
 
 const Dashboard = () => {
-  const { dispatch: rDispatch, useSelector } = useRabbyStore();
-  const { currentAccount, alianName, pendingTxCount } = useSelector(
+  const rDispatch = useRabbyDispatch();
+  const { currentAccount, alianName, pendingTxCount } = useRabbySelector(
     (state) => ({
       currentAccount: state.account.currentAccount,
       alianName: state.account.alianName,
@@ -182,7 +187,7 @@ const Dashboard = () => {
     rDispatch.viewDashboard.getPendingTxCountAsync(currentAccount.address);
   }, 30000);
 
-  const d = useGetter((s) => s.viewDashboard.double);
+  const d = useRabbyGetter((s) => s.viewDashboard.double);
   console.log(d);
 
   useEffect(() => {
@@ -787,7 +792,10 @@ const Dashboard = () => {
                       }
                     />
                   }
-                  <div className="text-15 text-white ml-6 mr-6 dashboard-name">
+                  <div
+                    className="text-15 text-white ml-6 mr-6 dashboard-name"
+                    title={displayName}
+                  >
                     {displayName}
                   </div>
                   <div className="current-address">

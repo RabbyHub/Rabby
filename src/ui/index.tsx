@@ -40,6 +40,13 @@ Sentry.init({
   // We recommend adjusting this value in production
   tracesSampleRate: 1.0,
   environment,
+  ignoreErrors: [
+    'ResizeObserver loop limit exceeded',
+    'ResizeObserver loop completed with undelivered notifications',
+    'Network Error',
+    'Request limit exceeded.',
+    'Non-Error promise rejection captured with keys: code, message',
+  ],
 });
 
 // For fix chrome extension render problem in external screen
@@ -149,8 +156,7 @@ eventBus.addEventListener(EVENTS.broadcastToBackground, (data) => {
 });
 
 store.dispatch.app.initWallet({ wallet });
-store.dispatch.account.init();
-store.dispatch.preference.init();
+store.dispatch.app.initBizStore();
 
 // wallet.getLocale().then((locale) => {
 // addResourceBundle(locale).then(() => {

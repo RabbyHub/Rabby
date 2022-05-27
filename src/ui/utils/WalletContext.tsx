@@ -3,6 +3,8 @@ import { createContext, useContext } from 'react';
 import { Object } from 'ts-toolbelt';
 import { WalletController as WalletControllerClass } from 'background/controller/wallet';
 
+// TODO: implement here but not used now to avoid too much ts checker error.
+// we will use it on almost biz store ready.
 export type WalletControllerType = Object.Merge<
   {
     [key in keyof WalletControllerClass]: WalletControllerClass[key] extends (
@@ -43,7 +45,7 @@ const WalletProvider = ({
  * @deprecated The method should not be used
  */
 const useWalletOld = () => {
-  const { wallet } = useContext(WalletContext) as {
+  const { wallet } = (useContext(WalletContext) as unknown) as {
     wallet: WalletController;
   };
 

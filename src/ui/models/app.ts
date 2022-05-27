@@ -35,4 +35,13 @@ export const app = createModel<RootModel>()({
       };
     },
   },
+  effects: (dispatch) => ({
+    /**
+     * @description call other biz domain's init methods here
+     */
+    initBizStore() {
+      dispatch.account.init();
+      dispatch.preference.init();
+    },
+  }),
 });

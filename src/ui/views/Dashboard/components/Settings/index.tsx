@@ -18,7 +18,7 @@ import IconServer from 'ui/assets/server.svg';
 import { Field, PageHeader, Popup } from 'ui/component';
 import { useWallet, useWalletOld } from 'ui/utils';
 import './style.less';
-import { useDispatch, useSelector } from '@/ui/store';
+import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 
 interface SettingsProps {
   visible?: boolean;
@@ -41,8 +41,8 @@ const OpenApiModal = ({
   const [form] = useForm<{ host: string }>();
   const { t } = useTranslation();
 
-  const host = useSelector((state) => state.openapi.host);
-  const dispatch = useDispatch();
+  const host = useRabbySelector((state) => state.openapi.host);
+  const dispatch = useRabbyDispatch();
 
   const handleSubmit = async ({ host }: { host: string }) => {
     await dispatch.openapi.setHost(host);
@@ -140,10 +140,10 @@ const ResolveConflictModal = ({
 }) => {
   const [isVisible, setIsVisible] = useState(false);
   const { t } = useTranslation();
-  const isDefaultWallet = useSelector(
+  const isDefaultWallet = useRabbySelector(
     (state) => state.preference.isDefaultWallet
   );
-  const dispatch = useDispatch();
+  const dispatch = useRabbyDispatch();
   const setIsDefaultWallet = useCallback(
     (value: boolean) => {
       dispatch.preference.setIsDefaultWallet(value);
@@ -324,8 +324,8 @@ const Settings = ({ visible, onClose }: SettingsProps) => {
   const [showResolveConflictModal, setShowResolveConflictModal] = useState(
     false
   );
-  const dispatch = useDispatch();
-  const isDefaultWallet = useSelector(
+  const dispatch = useRabbyDispatch();
+  const isDefaultWallet = useRabbySelector(
     (state) => state.preference.isDefaultWallet
   );
   const [showResetAccountModal, setShowResetAccountModal] = useState(false);

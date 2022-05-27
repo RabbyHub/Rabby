@@ -1,4 +1,4 @@
-import { useAccount } from '@/ui/store';
+import { useAccount } from '@/ui/store-hooks';
 import { useInfiniteScroll } from 'ahooks';
 import { TxHistoryResult } from 'background/service/openapi';
 import { last } from 'lodash';

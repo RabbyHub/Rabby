@@ -1,5 +1,5 @@
 import { TokenApproval, TokenItem } from '@/background/service/openapi';
-import { useDispatch, useSelector } from '@/ui/store';
+import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { Tooltip } from 'antd';
 import BigNumber from 'bignumber.js';
 import { CHAINS, CHAINS_ENUM } from 'consts';
@@ -34,9 +34,9 @@ const TokenApproval = () => {
   }>();
   const { showChainsModal = false } = state ?? {};
 
-  const dispatch = useDispatch();
-  const account = useSelector((state) => state.account.currentAccount);
-  const chain = useSelector(
+  const dispatch = useRabbyDispatch();
+  const account = useRabbySelector((state) => state.account.currentAccount);
+  const chain = useRabbySelector(
     (state) =>
       state.preference.tokenApprovalChain[
         account?.address?.toLowerCase() || ''

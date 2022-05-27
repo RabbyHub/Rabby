@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { openInTab, useWallet } from 'ui/utils';
 import ConnectionList from './ConnectionList';
 import './style.less';
-import { useSelector, useRabbyStore } from 'ui/store';
+import { useRabbyDispatch, useRabbySelector } from 'ui/store';
 
 interface RecentConnectionsProps {
   visible?: boolean;
@@ -18,8 +18,8 @@ const RecentConnections = ({
   onClose,
 }: RecentConnectionsProps) => {
   const { t } = useTranslation();
-  const { dispatch, useSelector } = useRabbyStore();
-  const connections = useSelector((state) => state.permission.websites);
+  const dispatch = useRabbyDispatch();
+  const connections = useRabbySelector((state) => state.permission.websites);
 
   const pinnedList = useMemo(() => {
     return connections

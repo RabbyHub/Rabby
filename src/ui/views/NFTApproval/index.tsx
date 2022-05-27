@@ -4,7 +4,7 @@ import {
   NFTApprovalResponse,
 } from '@/background/service/openapi';
 import { Account } from '@/background/service/preference';
-import { useDispatch, useSelector } from '@/ui/store';
+import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { message, Tabs, Tooltip } from 'antd';
 import { CHAINS, CHAINS_ENUM } from 'consts';
 import React, { useEffect, useState } from 'react';
@@ -33,10 +33,10 @@ const NFTApproval = () => {
   }>();
   const { showChainsModal = false } = state ?? {};
 
-  const account = useSelector((state) => state.account.currentAccount);
-  const dispatch = useDispatch();
+  const account = useRabbySelector((state) => state.account.currentAccount);
+  const dispatch = useRabbyDispatch();
 
-  const chain = useSelector(
+  const chain = useRabbySelector(
     (state) =>
       state.preference.nftApprovalChain[
         account?.address?.toLowerCase() || ''
