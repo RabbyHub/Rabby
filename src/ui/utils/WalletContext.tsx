@@ -1,14 +1,30 @@
 import React, { ReactNode } from 'react';
 import { createContext, useContext } from 'react';
 import { Object } from 'ts-toolbelt';
+import { WalletController as WalletControllerClass } from 'background/controller/wallet';
+
+// TODO: implement here but not used now to avoid too much ts checker error.
+// we will use it on almost biz store ready.
+export type WalletControllerType = Object.Merge<
+  {
+    [key in keyof WalletControllerClass]: WalletControllerClass[key] extends (
+      ...args: any
+    ) => any
+      ? <T = ReturnType<WalletControllerClass[key]>>(
+          ...args: Parameters<WalletControllerClass[key]>
+        ) => T extends Promise<any> ? T : Promise<T>
+      : WalletControllerClass[key];
+  },
+  Record<string, <T = any>(...params: any) => Promise<T>>
+>;
 
 export type WalletController = Object.Merge<
   {
     openapi: {
-      [key: string]: (...params: any) => Promise<any>;
+      [key: string]: <T = any>(...params: any) => Promise<T>;
     };
   },
-  Record<string, (...params: any) => Promise<any>>
+  Record<string, <T = any>(...params: any) => Promise<T>>
 >;
 
 const WalletContext = createContext<{
@@ -26,7 +42,7 @@ const WalletProvider = ({
 );
 
 const useWallet = () => {
-  const { wallet } = useContext(WalletContext) as {
+  const { wallet } = (useContext(WalletContext) as unknown) as {
     wallet: WalletController;
   };
 
