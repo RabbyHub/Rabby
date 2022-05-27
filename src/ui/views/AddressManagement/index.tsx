@@ -166,6 +166,11 @@ const AddressManagement = () => {
     };
 
     const handleDeleteAddress = async () => {
+      const totalCount = await wallet.getAccountsCount();
+      if (totalCount <= 1) {
+        message.error(t('Keep at least one address in wallet'));
+        return;
+      }
       await wallet.removeAddress(data, keyring.type, account.brandName);
       message.success({
         icon: <img src={IconSuccess} className="icon icon-success" />,
