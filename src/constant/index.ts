@@ -187,7 +187,7 @@ export const CHAINS: Record<string, Chain> = {
   },
   [CHAINS_ENUM.BSC_TESTNET]: {
     id: 97,
-    name: 'BNB Smart Chain Testnet',
+    name: 'BSC Testnet',
     serverId: 'bsc',
     hex: '0x64',
     enum: CHAINS_ENUM.BSC_TESTNET,
