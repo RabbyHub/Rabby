@@ -34,6 +34,13 @@ Sentry.init({
   // We recommend adjusting this value in production
   tracesSampleRate: 1.0,
   environment,
+  ignoreErrors: [
+    'ResizeObserver loop limit exceeded',
+    'ResizeObserver loop completed with undelivered notifications',
+    'Network Error',
+    'Request limit exceeded.',
+    'Non-Error promise rejection captured with keys: code, message',
+  ],
 });
 
 // For fix chrome extension render problem in external screen
