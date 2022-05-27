@@ -785,7 +785,10 @@ const Dashboard = () => {
                       }
                     />
                   }
-                  <div className="text-15 text-white ml-6 mr-6 dashboard-name">
+                  <div
+                    className="text-15 text-white ml-6 mr-6 dashboard-name"
+                    title={displayName}
+                  >
                     {displayName}
                   </div>
                   <div className="current-address">
