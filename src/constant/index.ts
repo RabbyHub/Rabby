@@ -62,6 +62,9 @@ import IconSongbirdWhiteLogo from 'ui/assets/chain-logos/songbird-white.svg';
 import IconEvmosLogo from 'ui/assets/chain-logos/evmos.svg';
 import IconEvmosWhiteLogo from 'ui/assets/chain-logos/evmos-white.svg';
 import IconDFKLogo from 'ui/assets/chain-logos/dfk.svg';
+import iconDFKWhiteLogo from 'ui/assets/chain-logos/dfk-white.svg';
+import IconTelosLogo from 'ui/assets/chain-logos/telos.svg';
+import IconTelosWhiteLogo from 'ui/assets/chain-logos/telos-white.svg';
 import IconEN from 'ui/assets/langs/en.svg';
 import IconAmber from 'ui/assets/walletlogo/amber.png';
 import IconBitBox02 from 'ui/assets/walletlogo/bitbox02.png';
@@ -137,6 +140,7 @@ export enum CHAINS_ENUM {
   SGB = 'SGB',
   EVMOS = 'EVMOS',
   DFK = 'DFK',
+  TLOS = 'TLOS',
 }
 
 export const CHAINS: Record<string, Chain> = {
@@ -772,7 +776,7 @@ export const CHAINS: Record<string, Chain> = {
     nativeTokenAddress: 'dfk',
     enum: CHAINS_ENUM.DFK,
     logo: IconDFKLogo,
-    whiteLogo: IconDFKLogo,
+    whiteLogo: iconDFKWhiteLogo,
     hex: '0xd2af',
     scanLink:
       'https://subnets.avax.network/defi-kingdoms/dfk-chain/explorer/tx/_s_',
@@ -780,6 +784,27 @@ export const CHAINS: Record<string, Chain> = {
       'https://static.debank.com/image/chain/logo_url/dfk/233867c089c5b71be150aa56003f3f7a.png',
     nativeTokenDecimals: 18,
     thridPartyRPC: 'https://subnets.avax.network/defi-kingdoms/dfk-chain/rpc',
+    eip: {
+      '1559': false,
+    },
+  },
+  [CHAINS_ENUM.TLOS]: {
+    id: 40,
+    serverId: 'tlos',
+    network: '40',
+    name: 'Telos',
+    nativeTokenSymbol: 'TLOS',
+    nativeTokenAddress: 'tlos',
+    enum: CHAINS_ENUM.TLOS,
+    logo: IconTelosLogo,
+    whiteLogo: IconTelosWhiteLogo,
+    hex: '0x28',
+    scanLink:
+      'https://www.teloscan.io/tx/0x0f163f04c16628a1cd603e3d13a20a683ec4f5518e4b498d0ae3187989d95ee2/_s_',
+    nativeTokenLogo:
+      'https://static.debank.com/image/chain/logo_url/telos/f9f7493def4c08ed222540bebd8ce87a.png',
+    nativeTokenDecimals: 18,
+    thridPartyRPC: 'https://mainnet.telos.net/evm',
     eip: {
       '1559': false,
     },
