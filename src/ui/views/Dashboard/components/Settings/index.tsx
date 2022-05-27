@@ -11,7 +11,7 @@ import IconMetamask from 'ui/assets/dashboard/icon-metamask.svg';
 import IconRabby from 'ui/assets/dashboard/rabby.svg';
 import IconAddressManagement from 'ui/assets/icon-user.svg';
 import IconLock from 'ui/assets/lock.svg';
-import LogoRabby from 'ui/assets/logo-rabby-large.svg';
+import LogoDucky from 'ui/assets/ducky-logo-white-large.svg';
 import IconReset from 'ui/assets/reset-account.svg';
 import IconSuccess from 'ui/assets/success.svg';
 import IconServer from 'ui/assets/server.svg';
@@ -444,7 +444,7 @@ const Settings = ({ visible, onClose }: SettingsProps) => {
             ))}
           </div>
           <footer className="footer">
-            <img src={LogoRabby} alt="" />
+            <img src={LogoDucky} alt="" />
             <div>
               {process.env.version} /{' '}
               <Link to="/settings/chain-list" className="underline">

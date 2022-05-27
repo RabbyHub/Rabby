@@ -90,14 +90,14 @@ const ImportSuccess = ({ isPopup = false }: { isPopup?: boolean }) => {
           <header className="create-new-header create-password-header h-[264px]">
             <img
               className="rabby-logo"
-              src="/images/logo-gray.png"
+              src="/images/duckyscan-logo-horizontal-white.png"
               alt="rabby logo"
             />
             <img
               className="unlock-logo w-[128px] h-[128px] mx-auto"
               src={SuccessLogo}
             />
-            <p className="text-24 mb-4 mt-0 text-white text-center font-bold">
+            <p className="text-24 mb-4 mt-0 text-black text-center font-bold">
               {t('Imported Successfully')}
             </p>
             <img src="/images/success-mask.png" className="mask" />
