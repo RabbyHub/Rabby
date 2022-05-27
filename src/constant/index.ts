@@ -799,8 +799,7 @@ export const CHAINS: Record<string, Chain> = {
     logo: IconTelosLogo,
     whiteLogo: IconTelosWhiteLogo,
     hex: '0x28',
-    scanLink:
-      'https://www.teloscan.io/tx/0x0f163f04c16628a1cd603e3d13a20a683ec4f5518e4b498d0ae3187989d95ee2/_s_',
+    scanLink: 'https://www.teloscan.io/tx/_s_',
     nativeTokenLogo:
       'https://static.debank.com/image/chain/logo_url/telos/f9f7493def4c08ed222540bebd8ce87a.png',
     nativeTokenDecimals: 18,
