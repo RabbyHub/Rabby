@@ -1082,7 +1082,19 @@ enum WALLET_BRAND_CATEGORY {
   INSTITUTIONAL = 'institutional',
 }
 
-export const WALLET_BRAND_CONTENT = {
+export type IWalletBrandContent = {
+  id: number;
+  name: string;
+  brand: WALLET_BRAND_TYPES;
+  icon: string;
+  image: string;
+  connectType: BRAND_WALLET_CONNECT_TYPE;
+  category: WALLET_BRAND_CATEGORY;
+};
+
+export const WALLET_BRAND_CONTENT: {
+  [K in WALLET_BRAND_TYPES]: IWalletBrandContent;
+} = {
   [WALLET_BRAND_TYPES.AMBER]: {
     id: 0,
     name: 'Amber',

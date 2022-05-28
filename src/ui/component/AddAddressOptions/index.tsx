@@ -20,31 +20,34 @@ import {
   KEYRING_CLASS,
   BRAND_ALIAN_TYPE_TEXT,
   BRAND_WALLET_CONNECT_TYPE,
+  IWalletBrandContent,
 } from 'consts';
 
 import clsx from 'clsx';
 import _ from 'lodash';
 
-const normaltype: string[] = [
+const normaltype = [
   'createAddress',
   'addWatchMode',
-  'imporPrivateKey',
+  'importPrivateKey',
   'importviaMnemonic',
   'importKeystore',
-];
+] as const;
 const AddAddressOptions = () => {
   const history = useHistory();
   const wallet = useWallet();
   const { t } = useTranslation();
   const [savedWallet, setSavedWallet] = useState([]);
-  const [savedWalletData, setSavedWalletData] = useState([]);
+  const [savedWalletData, setSavedWalletData] = useState<ISavedWalletData[]>(
+    []
+  );
   const [showMnemonic, setShowMnemonic] = useState(false);
   const [keystoneInited, setKeystoneInited] = useState(false);
   const init = async () => {
     const walletSavedList = await wallet.getHighlightWalletList();
     const filterdlist = walletSavedList.filter(Boolean);
     if (filterdlist.toString() !== savedWallet.toString()) {
-      await setSavedWallet(filterdlist);
+      setSavedWallet(filterdlist);
     }
     const accounts = await wallet.getTypedAccounts(KEYRING_CLASS.MNEMONIC);
     if (accounts.length <= 0) {
@@ -56,7 +59,7 @@ const AddAddressOptions = () => {
     if (keystoneAccounts.length > 0) {
       setKeystoneInited(true);
     }
-    const savedTemp: [] = await renderSavedData();
+    const savedTemp = renderSavedData();
     setSavedWalletData(savedTemp);
   };
   type Valueof<T> = T[keyof T];
@@ -142,7 +145,14 @@ const AddAddressOptions = () => {
     })
     .filter((item) => item.values);
 
-  const renderData = [
+  type IRenderItem = {
+    leftIcon: string;
+    brand: string;
+    content: string;
+    onClick: () => void;
+    subText?: undefined;
+  };
+  const renderData: IRenderItem[] = [
     {
       leftIcon: IconCreatenewaddr,
       content: t('createAddress'),
@@ -195,7 +205,7 @@ const AddAddressOptions = () => {
     },
     {
       leftIcon: IconPrivatekey,
-      brand: 'imporPrivateKey',
+      brand: 'importPrivateKey',
       content: t('Import Private Key'),
       onClick: () => history.push('/import/key'),
     },
@@ -212,12 +222,18 @@ const AddAddressOptions = () => {
       onClick: () => history.push('/import/json'),
     },
   ];
+  type ISavedWalletData = IRenderItem & {
+    image?: IWalletBrandContent['image'];
+    connectType?: IWalletBrandContent['connectType'];
+  };
   const renderSavedData = () => {
     if (savedWallet.length > 0) {
-      const result = [] as any;
+      const result: ISavedWalletData[] = [];
       savedWallet.map((item) => {
         if (normaltype.includes(item)) {
-          result.push(renderData.find((data) => data.brand === item));
+          result.push(
+            renderData.find((data) => data.brand === item) as IRenderItem
+          );
         } else {
           const savedItem = Object.values(WALLET_BRAND_CONTENT).find(
             (wallet) => wallet.brand.toString() === item
