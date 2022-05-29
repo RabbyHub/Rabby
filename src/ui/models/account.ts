@@ -1,4 +1,5 @@
 import type { Account } from '@/background/service/preference';
+import { KEYRING_CLASS } from '@/constant';
 import { createModel } from '@rematch/core';
 import { DisplayedKeryring } from 'background/service/keyring';
 import { TotalBalanceResponse } from 'background/service/openapi';
@@ -13,6 +14,8 @@ interface AccountState {
   balanceMap: {
     [address: string]: TotalBalanceResponse;
   };
+
+  mnemonicAccounts: Account[];
 }
 
 export const account = createModel<RootModel>()({
@@ -25,6 +28,7 @@ export const account = createModel<RootModel>()({
     hiddenAccounts: [],
     keyrings: [],
     balanceMap: {},
+    mnemonicAccounts: [],
   } as AccountState,
 
   reducers: {
@@ -44,6 +48,14 @@ export const account = createModel<RootModel>()({
     ) {
       return { ...state, currentAccount: payload.currentAccount };
     },
+  },
+
+  selectors: (slice) => {
+    return {
+      isShowMnemonic() {
+        return slice((account) => account.mnemonicAccounts.length <= 0);
+      },
+    };
   },
 
   effects: (dispatch) => ({
@@ -96,6 +108,13 @@ export const account = createModel<RootModel>()({
       >();
       dispatch.account.setField({ hiddenAccounts });
       return hiddenAccounts;
+    },
+
+    async getTypedMnemonicAccountsAsync(_?, store?) {
+      const mnemonicAccounts = await store.app.wallet.getTypedAccounts(
+        KEYRING_CLASS.MNEMONIC
+      );
+      dispatch.account.setField({ mnemonicAccounts });
     },
   }),
 });

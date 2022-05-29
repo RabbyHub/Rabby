@@ -911,7 +911,7 @@
     "message": "Full experience without importing private keys"
   },
   "Import__Private__Key": {
-    "message": "Import by Private Key"
+    "message": "Import Private Key"
   },
   "Connect__with": {
     "message": "Connect with"

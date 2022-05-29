@@ -9,11 +9,13 @@ import IconArrowRight from 'ui/assets/bookmark.svg';
 import IconHighLight from 'ui/assets/walletlogo/highlightstar.svg';
 import IconSuccess from 'ui/assets/success.svg';
 import './style.less';
-import IconAddwatchmodo from 'ui/assets/walletlogo/addwatchmode.svg';
-import IconMnemonics from 'ui/assets/walletlogo/mnemonics.svg';
 import IconCreatenewaddr from 'ui/assets/walletlogo/createnewaddr.svg';
-import IconKeystore from 'ui/assets/walletlogo/keystore.svg';
-import IconPrivatekey from 'ui/assets/walletlogo/privatekey.svg';
+import IconImportAdress from 'ui/assets/walletlogo/import-address.svg';
+
+import IconAddwatchmodo from 'ui/assets/walletlogo/addwatchmode.svg';
+
+import { useIsShowMnemonic } from 'ui/store-hooks';
+
 import {
   IS_CHROME,
   WALLET_BRAND_CONTENT,
@@ -25,14 +27,9 @@ import {
 
 import clsx from 'clsx';
 import _ from 'lodash';
+import { connectStore } from '@/ui/store';
 
-const normaltype = [
-  'createAddress',
-  'addWatchMode',
-  'importPrivateKey',
-  'importviaMnemonic',
-  'importKeystore',
-] as const;
+const normaltype = ['createAddress', 'importAddress', 'addWatchMode'] as const;
 const AddAddressOptions = () => {
   const history = useHistory();
   const wallet = useWallet();
@@ -41,7 +38,7 @@ const AddAddressOptions = () => {
   const [savedWalletData, setSavedWalletData] = useState<ISavedWalletData[]>(
     []
   );
-  const [showMnemonic, setShowMnemonic] = useState(false);
+  const isShowMnemonic = useIsShowMnemonic();
   const [keystoneInited, setKeystoneInited] = useState(false);
   const init = async () => {
     const walletSavedList = await wallet.getHighlightWalletList();
@@ -49,10 +46,7 @@ const AddAddressOptions = () => {
     if (filterdlist.toString() !== savedWallet.toString()) {
       setSavedWallet(filterdlist);
     }
-    const accounts = await wallet.getTypedAccounts(KEYRING_CLASS.MNEMONIC);
-    if (accounts.length <= 0) {
-      setShowMnemonic(true);
-    }
+
     const keystoneAccounts = await wallet.getTypedAccounts(
       KEYRING_CLASS.HARDWARE.KEYSTONE
     );
@@ -192,9 +186,15 @@ const AddAddressOptions = () => {
           history.push('/create-mnemonics');
         }
       },
-      subText: showMnemonic
+      subText: isShowMnemonic
         ? t('A new mnemonic will be created')
         : t('Create a new address with your mnemonic'),
+    },
+    {
+      leftIcon: IconImportAdress,
+      brand: 'importAddress',
+      content: 'Import Address',
+      onClick: () => history.push('/import/entry-import-address'),
     },
     {
       leftIcon: IconAddwatchmodo,
@@ -202,24 +202,6 @@ const AddAddressOptions = () => {
       content: t('Add Watch Mode Address'),
       subText: t('Add address without private keys'),
       onClick: () => history.push('/import/watch-address'),
-    },
-    {
-      leftIcon: IconPrivatekey,
-      brand: 'importPrivateKey',
-      content: t('Import Private Key'),
-      onClick: () => history.push('/import/key'),
-    },
-    {
-      leftIcon: IconMnemonics,
-      brand: 'importviaMnemonic',
-      content: t('Import via Mnemonic'),
-      onClick: () => history.push('/import/mnemonics'),
-    },
-    {
-      leftIcon: IconKeystore,
-      brand: 'importKeystore',
-      content: t('Import Your Keystore'),
-      onClick: () => history.push('/import/json'),
     },
   ];
   type ISavedWalletData = IRenderItem & {
@@ -332,24 +314,31 @@ const AddAddressOptions = () => {
         })}
         <div className="divide-line-list"></div>
         {displayNormalData.map((data) => {
-          return !showMnemonic && data!.brand === 'importviaMnemonic' ? null : (
-            <Field
-              className="address-options"
-              key={data!.content}
-              leftIcon={<img src={data!.leftIcon} className="icon" />}
-              rightIcon={
-                !savedWallet.toString().includes(data!.brand) ? (
-                  <img src={IconArrowRight} className="icon icon-arrow-right" />
-                ) : null
-              }
-              brand={data!.brand}
-              subText={data!.subText}
-              onClick={data!.onClick}
-              callback={init}
-              address
-            >
-              {data!.content}
-            </Field>
+          return (
+            <React.Fragment key={data!.content}>
+              {data?.brand === 'addWatchMode' && (
+                <div className="divide-line-list"></div>
+              )}
+              <Field
+                className="address-options"
+                leftIcon={<img src={data!.leftIcon} className="icon" />}
+                rightIcon={
+                  !savedWallet.toString().includes(data!.brand) ? (
+                    <img
+                      src={IconArrowRight}
+                      className="icon icon-arrow-right"
+                    />
+                  ) : null
+                }
+                brand={data!.brand}
+                subText={data!.subText}
+                onClick={data!.onClick}
+                callback={init}
+                address
+              >
+                {data!.content}
+              </Field>
+            </React.Fragment>
           );
         })}
       </div>
@@ -357,4 +346,4 @@ const AddAddressOptions = () => {
   );
 };
 
-export default AddAddressOptions;
+export default connectStore()(AddAddressOptions);

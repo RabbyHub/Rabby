@@ -10,6 +10,7 @@ import ImportMode from './ImportMode';
 import ImportPrivateKey from './ImportPrivateKey';
 import ImportJson from './ImportJson';
 import ImportMnemonics from './ImportMnemonics';
+import EntryImportAddress from './EntryImportAddress';
 import ImportWatchAddress from './ImportWatchAddress';
 import ImportQRCodeBase from './ImportQRCodeBase';
 import SelectAddress from './SelectAddress';
@@ -75,6 +76,9 @@ const Main = () => {
         </PrivateRoute>
         <PrivateRoute exact path="/import">
           <ImportMode />
+        </PrivateRoute>
+        <PrivateRoute exact path="/import/entry-import-address">
+          <EntryImportAddress />
         </PrivateRoute>
         <PrivateRoute exact path="/import/key">
           <ImportPrivateKey />
