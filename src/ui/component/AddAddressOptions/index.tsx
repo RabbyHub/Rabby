@@ -152,43 +152,44 @@ const AddAddressOptions = () => {
       content: t('createAddress'),
       brand: 'createAddress',
       onClick: async () => {
-        if (await wallet.checkHasMnemonic()) {
-          const account = await wallet.deriveNewAccountFromMnemonic();
-          const allAccounts = await wallet.getTypedAccounts(
-            KEYRING_CLASS.MNEMONIC
-          );
-          let mnemonLengh = 0;
-          if (allAccounts.length > 0) {
-            mnemonLengh = allAccounts[0]?.accounts?.length;
-          }
-          if (account && account.length > 0) {
-            await wallet.updateAlianName(
-              account[0]?.toLowerCase(),
-              `${BRAND_ALIAN_TYPE_TEXT[KEYRING_CLASS.MNEMONIC]} ${
-                mnemonLengh + 1
-              }`
-            );
-          }
-          message.success({
-            icon: <img src={IconSuccess} className="icon icon-success" />,
-            content: t('Created successfully'),
-          });
+        history.push('/mnemonics/create');
+        // if (await wallet.checkHasMnemonic()) {
+        //   const account = await wallet.deriveNewAccountFromMnemonic();
+        //   const allAccounts = await wallet.getTypedAccounts(
+        //     KEYRING_CLASS.MNEMONIC
+        //   );
+        //   let mnemonLengh = 0;
+        //   if (allAccounts.length > 0) {
+        //     mnemonLengh = allAccounts[0]?.accounts?.length;
+        //   }
+        //   if (account && account.length > 0) {
+        //     await wallet.updateAlianName(
+        //       account[0]?.toLowerCase(),
+        //       `${BRAND_ALIAN_TYPE_TEXT[KEYRING_CLASS.MNEMONIC]} ${
+        //         mnemonLengh + 1
+        //       }`
+        //     );
+        //   }
+        //   message.success({
+        //     icon: <img src={IconSuccess} className="icon icon-success" />,
+        //     content: t('Created successfully'),
+        //   });
 
-          if (getUiType().isTab) {
-            setTimeout(() => {
-              window.close();
-            }, 2000);
-            return;
-          }
+        //   if (getUiType().isTab) {
+        //     setTimeout(() => {
+        //       window.close();
+        //     }, 2000);
+        //     return;
+        //   }
 
-          history.push('/dashboard');
-        } else {
-          history.push('/create-mnemonics');
-        }
+        //   history.push('/dashboard');
+        // } else {
+        //   history.push('/mnemonics/create');
+        // }
       },
-      subText: isShowMnemonic
-        ? t('A new mnemonic will be created')
-        : t('Create a new address with your mnemonic'),
+      // subText: isShowMnemonic
+      //   ? t('A new mnemonic will be created')
+      //   : t('Create a new address with your mnemonic'),
     },
     {
       leftIcon: IconImportAdress,
