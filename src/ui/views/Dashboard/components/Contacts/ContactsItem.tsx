@@ -1,4 +1,5 @@
 import React, { useEffect, useRef, useState } from 'react';
+import styled from 'styled-components';
 import ClipboardJS from 'clipboard';
 import { Input, message, Dropdown, Menu } from 'antd';
 import { useHistory } from 'react-router-dom';
@@ -15,7 +16,115 @@ import IconSend from 'ui/assets/dashboard/contacts/send-icon.png';
 import IconHint from 'ui/assets/dashboard/contacts/action.png';
 
 import { Account } from './index';
+import LessPalette from '@/ui/style/var-defs';
 
+const Wrapper = styled.div`
+  width: 100%;
+  height: 48px;
+  padding: 0 12px;
+  border: 1px solid transparent;
+  border-radius: 6px;
+
+  display: flex;
+  align-items: center;
+  position: relative;
+  .ant-input {
+    position: relative;
+    width: 144px;
+    height: 36px;
+    background: ${LessPalette['@color-bg']};
+    border-radius: 4px;
+    margin-left: 4px;
+    margin-right: 32px;
+    padding-left: 6px;
+    border: ${LessPalette['@color-bg']};
+    &::placeholder {
+      font-size: 12px;
+    }
+    &:nth-last-child(1) {
+      position: absolute;
+      left: 180px !important;
+      margin: 0 !important;
+      padding-left: 6px;
+    }
+  }
+  .address-input {
+    position: absolute;
+    left: 6px !important;
+    margin: 0 !important;
+    padding-left: 6px !important;
+  }
+  .name-input {
+    position: absolute;
+    left: 180px !important;
+    margin: 0 !important;
+    padding-left: 8px !important;
+  }
+  .view-address-color {
+    color: ${LessPalette['@color-title']};
+    flex: 1;
+    padding-left: 12px;
+  }
+  .alian-name {
+    position: absolute;
+    max-width: 125px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    margin-left: 176px;
+  }
+  .copy-icon {
+    display: none;
+    width: 16px;
+    height: 16px;
+    margin-left: 6px;
+  }
+  .edit-name-wrapper {
+    display: none;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    right: 16px;
+    width: 28px;
+    height: 28px;
+    padding: 7px;
+    border: 0.5px solid rgba(134, 151, 255, 0.5);
+    box-sizing: border-box;
+    border-radius: 4px;
+    &:hover {
+      background: rgba(134, 151, 255, 0.2);
+      border: 0.5px solid rgba(134, 151, 255, 0.5);
+    }
+    .edit-name {
+      width: 13px;
+      height: 13px;
+      margin: 0;
+    }
+  }
+  .correct {
+    position: absolute;
+    right: 12px;
+    width: 16px;
+    height: 16px;
+  }
+  .hint {
+    display: none;
+    position: absolute;
+    right: -20px;
+    width: 20px;
+    height: 20px;
+  }
+  ::after {
+    content: '';
+    position: absolute;
+    left: 12px;
+    right: 0;
+    bottom: 0;
+    height: 1px;
+    width: 336px;
+    border-bottom: ${LessPalette['@color-border']};
+  }
+`;
 export interface ContactsItem {
   account: {
     address: string;
@@ -193,7 +302,7 @@ const ContactsItem = ({
     }
   }, [address]);
   return (
-    <div
+    <Wrapper
       ref={ref}
       className={clsx(
         'contact-item-wrapper',
@@ -282,7 +391,7 @@ const ContactsItem = ({
       >
         <img className="cursor-pointer hint" src={IconHint} />
       </Dropdown>
-    </div>
+    </Wrapper>
   );
 };
 
