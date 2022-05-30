@@ -5,7 +5,7 @@ import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import { Chain } from 'background/service/openapi';
 import './style.less';
-import IconAddChain from 'ui/assets/addchain.png';
+import IconAddChain from 'ui/assets/addchain.svg';
 import IconChainDelete from 'ui/assets/chain-delete.png';
 
 const ChainCard = ({
