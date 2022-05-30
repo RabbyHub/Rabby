@@ -1,8 +1,8 @@
 {
-  "manifest_version": 2,
+  "manifest_version": 3,
   "name": "Ducky Wallet",
   "short_name": "Ducky Wallet",
-  "version": "0.32.0",
+  "version": "0.0.1",
   "default_locale": "en",
   "description": "",
   "icons": {
@@ -43,13 +43,11 @@
       "js": ["vendor/trezor/trezor-content-script.js"]
     }
   ],
-  "content_security_policy": "script-src 'self' 'sha256-OocOJT2vDG5puZ6dCp0pzp4FiqlV4FYvX0v2kBcXMIg=' https://bam.eu01.nr-data.net https://js-agent.newrelic.com https://www.google-analytics.com; object-src 'self'",
-  "permissions": [
-    "storage",
-    "unlimitedStorage",
-    "https://wallet.gridplus.io/*",
-    "activeTab",
-    "notifications"
-  ],
-  "web_accessible_resources": ["user-media-permission.html"]
+  "content_security_policy": {
+    "script-src": "'self' 'sha256-OocOJT2vDG5puZ6dCp0pzp4FiqlV4FYvX0v2kBcXMIg=' https://bam.eu01.nr-data.net https://js-agent.newrelic.com https://www.google-analytics.com",
+    "object-src": "'self'"
+  },
+  "permissions": ["storage", "unlimitedStorage", "activeTab", "notifications"],
+  "host_permissions": ["https://wallet.gridplus.io/*"],
+  "web_accessible_resources": [{ "resources": ["user-media-permission.html"] }]
 }
