@@ -258,10 +258,10 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
         {isPopup && (
           <header className="create-new-header create-password-header h-[100px]">
             <div className="rabby-container">
-              <p className="text-24 mb-4 text-white text-center font-bold">
+              <p className="text-24 mb-4 text-black text-center font-bold">
                 {t('Select Addresses')}
               </p>
-              <p className="text-14 mb-0 mt-4 text-white opacity-80 text-center">
+              <p className="text-14 mb-0 mt-4 text-black opacity-80 text-center">
                 {t('Select the addresses you want to import')}
               </p>
             </div>
