@@ -90,8 +90,8 @@ const ImportSuccess = ({ isPopup = false }: { isPopup?: boolean }) => {
           <header className="create-new-header create-password-header h-[264px]">
             <img
               className="rabby-logo"
-              src="/images/duckyscan-logo-horizontal-white.png"
-              alt="rabby logo"
+              src="/images/duckyscan-logo-horizontal-white.svg"
+              alt="duckyscan logo"
             />
             <img
               className="unlock-logo w-[128px] h-[128px] mx-auto"

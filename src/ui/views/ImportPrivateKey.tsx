@@ -104,14 +104,14 @@ const ImportPrivateKey = () => {
         <div className="rabby-container">
           <img
             className="rabby-logo"
-            src="/images/logo-gray.png"
-            alt="rabby logo"
+            src="/images/duckyscan-logo-horizontal-white.svg"
+            alt="duckyscan logo"
           />
           <img
             className="unlock-logo w-[128px] h-[128px] mx-auto"
             src={PrivatekeyIcon}
           />
-          <p className="text-24 mb-4 mt-0 text-white text-center font-bold">
+          <p className="text-24 mb-4 mt-0 text-black text-center font-bold">
             {t('Enter Your Private Key')}
           </p>
           <img src="/images/private-mask.png" className="mask" />
