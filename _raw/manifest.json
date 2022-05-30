@@ -1,10 +1,10 @@
 {
   "manifest_version": 2,
-  "name": "__MSG_appName__",
-  "short_name": "__MSG_appName__",
+  "name": "Ducky Wallet",
+  "short_name": "Ducky Wallet",
   "version": "0.32.0",
   "default_locale": "en",
-  "description": "__MSG_appDescription__",
+  "description": "",
   "icons": {
     "16": "images/icon-16.png",
     "19": "images/icon-19.png",
@@ -23,10 +23,10 @@
       "48": "images/icon-48.png",
       "128": "images/icon-128.png"
     },
-    "default_title": "Rabby",
+    "default_title": "Ducky Wallet",
     "default_popup": "popup.html"
   },
-  "author": "https://rabby.io/",
+  "author": "https://www.duckyscan.com/",
   "background": {
     "page": "background.html",
     "persistent": true
@@ -34,24 +34,13 @@
   "content_scripts": [
     {
       "all_frames": true,
-      "js": [
-        "webextension-polyfill.js",
-        "content-script.js"
-      ],
-      "matches": [
-        "file://*/*",
-        "http://*/*",
-        "https://*/*"
-      ],
+      "js": ["webextension-polyfill.js", "content-script.js"],
+      "matches": ["file://*/*", "http://*/*", "https://*/*"],
       "run_at": "document_start"
     },
     {
-      "matches": [
-        "*://connect.trezor.io/*/popup.html"
-      ],
-      "js": [
-        "vendor/trezor/trezor-content-script.js"
-      ]
+      "matches": ["*://connect.trezor.io/*/popup.html"],
+      "js": ["vendor/trezor/trezor-content-script.js"]
     }
   ],
   "content_security_policy": "script-src 'self' 'sha256-OocOJT2vDG5puZ6dCp0pzp4FiqlV4FYvX0v2kBcXMIg=' https://bam.eu01.nr-data.net https://js-agent.newrelic.com https://www.google-analytics.com; object-src 'self'",
@@ -62,7 +51,5 @@
     "activeTab",
     "notifications"
   ],
-  "web_accessible_resources": [
-    "user-media-permission.html"
-  ]
+  "web_accessible_resources": ["user-media-permission.html"]
 }
