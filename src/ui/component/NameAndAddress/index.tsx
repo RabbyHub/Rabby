@@ -64,8 +64,15 @@ const NameAndAddress = ({
   }, [address]);
   return (
     <div className={clsx('name-and-address', className)}>
-      {localName && <div className={clsx('name', nameClass)}>{localName}</div>}
-      <div className={clsx('address', addressClass, !localName && noNameClass)}>
+      {localName && (
+        <div className={clsx('name', nameClass)} title={localName}>
+          {localName}
+        </div>
+      )}
+      <div
+        className={clsx('address', addressClass, !localName && noNameClass)}
+        title={address.toLowerCase()}
+      >
         {localName
           ? `(${address
               ?.toLowerCase()

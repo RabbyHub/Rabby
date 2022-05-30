@@ -47,6 +47,9 @@ export const account = createModel<RootModel>()({
   },
 
   effects: (dispatch) => ({
+    init() {
+      return this.getCurrentAccountAsync();
+    },
     async getCurrentAccountAsync(_?: any, store?) {
       const account: Account = await store.app.wallet.getCurrentAccount<Account>();
       if (account) {

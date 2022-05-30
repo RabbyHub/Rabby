@@ -1,6 +1,6 @@
 {
   "name": "rabby",
-  "version": "0.31.0",
+  "version": "0.32.1",
   "description": "A browser plugin for DeFi users",
   "scripts": {
     "clean": "mkdir -p dist && rm -rf dist/* && cp -r _raw/* dist",
@@ -39,6 +39,7 @@
     "@rabby-wallet/gnosis-sdk": "^1.2.0",
     "@rabby-wallet/widgets": "^1.0.8",
     "@rematch/core": "^2.2.0",
+    "@rematch/select": "^3.1.2",
     "@sentry/browser": "^6.7.2",
     "@sentry/react": "^6.7.2",
     "@sentry/tracing": "^6.7.2",
