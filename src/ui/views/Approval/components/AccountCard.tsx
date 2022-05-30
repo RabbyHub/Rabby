@@ -48,9 +48,8 @@ const AccountCard = ({
   };
 
   const init = async () => {
-    const currentAccount =
-      account || (await wallet.syncGetCurrentAccount<Account | null>());
-    setCurrentAccount(currentAccount);
+    const currentAccount = account || (await wallet.syncGetCurrentAccount());
+    setCurrentAccount(currentAccount || null);
     const alianName = await wallet.getAlianName(
       currentAccount?.address?.toLowerCase()
     );

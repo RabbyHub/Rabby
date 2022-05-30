@@ -180,13 +180,15 @@ class TxHistory {
     const { txs } = target;
     try {
       const results = await Promise.all(
-        txs.map((tx) =>
-          openapiService.getTx(
-            chain.serverId,
-            tx.hash,
-            Number(tx.rawTx.gasPrice)
+        txs
+          .filter((tx) => !!tx)
+          .map((tx) =>
+            openapiService.getTx(
+              chain.serverId,
+              tx.hash,
+              Number(tx.rawTx.gasPrice)
+            )
           )
-        )
       );
       const completed = results.find(
         (result) => result.code === 0 && result.status !== 0

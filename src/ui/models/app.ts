@@ -26,7 +26,18 @@ export const app = createModel<RootModel>()({
         return state;
       }
 
-      return { ...state, wallet: payload.wallet };
+      return {
+        ...state,
+        wallet: (payload.wallet as unknown) as WalletController,
+      };
     },
   },
+  effects: (dispatch) => ({
+    /**
+     * @description call other biz domain's init methods here
+     */
+    initBizStore() {
+      dispatch.account.init();
+    },
+  }),
 });
