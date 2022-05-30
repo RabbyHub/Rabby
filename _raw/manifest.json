@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "name": "Ducky Wallet",
   "short_name": "Ducky Wallet",
-  "version": "0.32.0",
+  "version": "0.0.1",
   "default_locale": "en",
   "description": "",
   "icons": {
