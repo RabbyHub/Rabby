@@ -15,7 +15,7 @@
     "128": "images/icon-128.png",
     "512": "images/icon-512.png"
   },
-  "browser_action": {
+  "action": {
     "default_icon": {
       "16": "images/icon-16.png",
       "19": "images/icon-19.png",
@@ -28,8 +28,7 @@
   },
   "author": "https://www.duckyscan.com/",
   "background": {
-    "page": "background.html",
-    "persistent": true
+    "service_worker": "background.html"
   },
   "content_scripts": [
     {
@@ -48,6 +47,8 @@
     "object-src": "'self'"
   },
   "permissions": ["storage", "unlimitedStorage", "activeTab", "notifications"],
-  "host_permissions": ["https://wallet.gridplus.io/*"],
-  "web_accessible_resources": [{ "resources": ["user-media-permission.html"] }]
+  "host_permissions": ["https://wallet.gridplus.io/*", "*://*/*"],
+  "web_accessible_resources": [
+    { "resources": ["user-media-permission.html"], "matches": ["<all_urls>"] }
+  ]
 }

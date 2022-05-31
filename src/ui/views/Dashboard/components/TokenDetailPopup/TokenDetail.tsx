@@ -160,7 +160,7 @@ const TokenDetail = ({ token }: { token: TokenItem }) => {
         {(loadingMore || loading) && <Loading count={5} active />}
         {isEmpty && (
           <div className="token-txs-history__empty">
-            <img className="no-data" src="./images/nodata-tx.png" />
+            <img className="no-data" src="./images/nodata-tx.svg" />
             <p className="text-14 text-gray-content mt-12">
               {t('No Transactions')}
             </p>

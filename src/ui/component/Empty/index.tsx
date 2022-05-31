@@ -13,7 +13,7 @@ interface EmptyProps {
 const Empty = ({ className, style, children, title, desc }: EmptyProps) => {
   return (
     <div className={clsx('rabby-empty', className)} style={style}>
-      <img className="rabby-empty-image" src="./images/nodata-tx.png" />
+      <img className="rabby-empty-image" src="./images/nodata-tx.svg" />
       <div className="rabby-empty-content">
         {title && <div className="rabby-empty-title">{title}</div>}
         <div className="rabby-empty-desc">{children ? children : desc}</div>

@@ -80,7 +80,7 @@ const ListModal = ({ address, visible, onOk, onCancel }: ListModalProps) => {
     <div className="no-contact">
       <img
         className="no-data-image"
-        src="/images/nodata-site.png"
+        src="/images/nodata-site.svg"
         alt="no contact"
       />
       <p className="text-gray-content text-14 text-center">

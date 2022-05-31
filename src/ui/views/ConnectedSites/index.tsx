@@ -30,7 +30,7 @@ const ConnectedSites = () => {
     <div className="no-site">
       <img
         className="no-data-image"
-        src="/images/nodata-site.png"
+        src="/images/nodata-site.svg"
         alt="no site"
       />
       <p className="text-gray-content text-14">{t('No data')}</p>
