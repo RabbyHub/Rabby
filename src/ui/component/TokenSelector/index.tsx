@@ -101,7 +101,7 @@ const TokenSelector = ({
       ) : (
         <img
           className="no-data-image"
-          src="/images/nodata-tx.png"
+          src="/images/nodata-tx.svg"
           alt="no site"
         />
       )}

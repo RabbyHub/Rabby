@@ -89,7 +89,7 @@ const Contacts = ({ visible, onClose }: ContactsProps) => {
     <div className="no-contact">
       <img
         className="no-data-image"
-        src="/images/nodata-site.png"
+        src="/images/nodata-site.svg"
         alt="no contact"
       />
       <p className="text-gray-content text-14 text-center">
