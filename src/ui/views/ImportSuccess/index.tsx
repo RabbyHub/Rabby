@@ -98,7 +98,7 @@ const ImportSuccess = ({ isPopup = false }: { isPopup?: boolean }) => {
               src={SuccessLogo}
             />
             <p className="text-24 mb-4 mt-0 text-white text-center font-bold">
-              {t('Imported Successfully')}
+              {title || t('Imported Successfully')}
             </p>
             <img src="/images/success-mask.png" className="mask" />
           </header>
@@ -110,7 +110,7 @@ const ImportSuccess = ({ isPopup = false }: { isPopup?: boolean }) => {
                 src={SuccessLogo}
               />
               <p className="text-24 mb-4 mt-0 text-white text-center font-bold">
-                {t('Imported Successfully')}
+                {title || t('Imported Successfully')}
               </p>
             </div>
             <img src={Mask} className="mask" />
