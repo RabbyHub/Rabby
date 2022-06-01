@@ -47,6 +47,7 @@ const ImportJson = () => {
       hasBack
       hasDivider
       noPadding
+      nextDisabled={!isUpload}
     >
       <header className="create-new-header create-password-header h-[264px]">
         <div className="rabby-container">
