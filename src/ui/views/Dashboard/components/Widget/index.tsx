@@ -160,13 +160,11 @@ const Widget = ({ visible, onClose }: WidgetProps) => {
                     onClick={() => handleClickWidget(data, index)}
                   >
                     {data.disabled ? (
-                      <span className="text-gray-comment mr-4 text-14">
+                      <span className="mr-4 text-gray-comment text-14">
                         Disabled
                       </span>
                     ) : (
-                      <span className="text-blue-light mr-4 text-14">
-                        Enabled
-                      </span>
+                      <span className="mr-4 text-yellow text-14">Enabled</span>
                     )}
                     <img
                       src={IconArrowRight}
