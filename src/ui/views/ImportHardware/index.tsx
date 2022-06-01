@@ -81,11 +81,11 @@ const ImportHardware = () => {
           const Icon = hardware.icon;
           return (
             <div
-              className="w-[100px] mr-[80px] text-center active:text-blue-light"
+              className="w-[100px] mr-[80px] text-center active:text-yellow"
               key={hardware.name}
               onClick={() => navSelectAddress(hardware.type)}
             >
-              <div className="rounded-full h-[100px] bg-white border border-white hover:border-blue-light overflow-hidden">
+              <div className="rounded-full h-[100px] bg-white border border-white hover:border-yellow overflow-hidden">
                 <Icon className="hardware-icon" />
               </div>
               <div className="mt-20 font-medium text-20">{hardware.name}</div>
