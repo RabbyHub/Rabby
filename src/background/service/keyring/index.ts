@@ -852,7 +852,6 @@ class KeyringService extends EventEmitter {
     let keyrings = type
       ? this.keyrings.filter((keyring) => keyring.type === type)
       : this.keyrings;
-    console.log(keyrings);
     if (!includeWatchKeyring) {
       keyrings = keyrings.filter(
         (keyring) => keyring.type !== KEYRING_TYPE.WatchAddressKeyring
