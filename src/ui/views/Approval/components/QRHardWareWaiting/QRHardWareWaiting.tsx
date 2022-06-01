@@ -28,7 +28,7 @@ const QRHardWareWaiting = () => {
   const wallet = useWallet();
   const init = useCallback(async () => {
     const approval = await getApproval();
-    setIsSignText(approval?.approvalType !== 'SignTx');
+    setIsSignText(approval?.data.approvalType !== 'SignTx');
     eventBus.addEventListener(
       EVENTS.QRHARDWARE.ACQUIRE_MEMSTORE_SUCCEED,
       ({ request }) => {

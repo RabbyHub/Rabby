@@ -364,7 +364,9 @@ const WatchAddressWaiting = ({ params }: { params: ApprovalParams }) => {
     );
     setCurrentAccount(account);
     setBridge(bridge || DEFAULT_BRIDGE);
-    setIsSignText(params.isGnosis ? true : approval?.approvalType !== 'SignTx');
+    setIsSignText(
+      params.isGnosis ? true : approval?.data.approvalType !== 'SignTx'
+    );
     stats.report('signTransaction', {
       type: account.brandName,
       chainId: CHAINS[chain].serverId,

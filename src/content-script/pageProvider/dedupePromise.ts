@@ -13,7 +13,7 @@ class DedupePromise {
       throw ethErrors.rpc.transactionRejected(
         'there is a pending request, please request after it resolved'
       );
-    }
+    } // TODO: remove this logic after multi approval avaliable
 
     return new Promise((resolve) => {
       this._tasks[key] = (this._tasks[key] || 0) + 1;
