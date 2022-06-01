@@ -183,7 +183,7 @@
     "message": "Click to upload again"
   },
   "Import__Your__Keystore": {
-    "message": "Import Key Store"
+    "message": "Import Your Store"
   },
   "passwordMinimumLengthAlert": {
     "message": "Password can’t be less than {{length}} letters"

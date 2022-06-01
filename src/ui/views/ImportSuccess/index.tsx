@@ -116,7 +116,7 @@ const ImportSuccess = ({ isPopup = false }: { isPopup?: boolean }) => {
             <img src={Mask} className="mask" />
           </div>
         ))}
-      <div className={clsx(isPopup && 'rabby-container')}>
+      <div className={clsx(isPopup && 'rabby-container', 'overflow-auto')}>
         <div
           onClick={(e) => {
             e.stopPropagation();

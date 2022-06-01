@@ -1,20 +1,129 @@
 import React, { useEffect } from 'react';
-import { Form, Input } from 'antd';
+import { Form, FormInstance, Input } from 'antd';
 import { useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import styled from 'styled-components';
+
 import { StrayPageWithButton } from 'ui/component';
 import { useWallet, useWalletRequest } from 'ui/utils';
 import { KEYRING_TYPE } from 'consts';
-import MnemonicLogo from 'ui/assets/mnemonic-icon.svg';
 import clsx from 'clsx';
 import { useMedia } from 'react-use';
+import LessPalette from 'ui/style/var-defs';
+import { searchByPrefix } from 'ui/utils/smart-completion';
+import useDebounceValue from 'ui/hooks/useDebounceValue';
 
-const ImportMnemonic = () => {
+const TipTextList = styled.ol`
+  list-style-type: decimal;
+
+  > li {
+    font-weight: 400;
+    color: ${LessPalette['@color-body']};
+    line-height: 20px;
+  }
+
+  > li + li {
+    margin-top: 4px;
+  }
+`;
+
+const BAR_H = 48;
+
+const TextAreaBar = styled.div`
+  position: absolute;
+  width: 100%;
+  height: ${BAR_H}px;
+  display: flex;
+  bottom: 0;
+  align-items: center;
+  justify-content: flex-start;
+
+  .work-item-box {
+    width: ${(1 / 4) * 100}%;
+    flex-shrink: 1;
+    padding-left: 8px;
+    padding-right: 8px;
+  }
+
+  .work-item {
+    max-width: 80px;
+    height: 36px;
+    text-align: center;
+    line-height: 36px;
+
+    display: block;
+    background-color: ${LessPalette['@color-bg']};
+    border-radius: 4px;
+
+    overflow: hidden;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+  }
+`;
+
+function isStrEnglish(w: string) {
+  return /^([a-z]|[A-Z])+$/.test(w);
+}
+type IFormStates = {
+  mnemonics: string;
+};
+function useTypingMnemonics(form: FormInstance<IFormStates>) {
+  const [mnemonics, setMnemonics] = React.useState<string | null>('');
+  const [currentWords, _setCurrentWords] = React.useState<string[]>([]);
+
+  const debouncedMnemonics = useDebounceValue(mnemonics, 250);
+  const { mnemonicsList, lastTypingWord } = React.useMemo(() => {
+    const mnemonicsList = debouncedMnemonics?.split(' ') || [];
+    const lastTypingWord = mnemonicsList.pop() || '';
+
+    return { mnemonicsList, lastTypingWord };
+  }, [debouncedMnemonics]);
+
+  const setCurrentWords = React.useCallback(
+    (val: string[]) => {
+      form.setFields([
+        {
+          value: form.getFieldValue('mnemonics'),
+          name: 'mnemonics',
+          ...(lastTypingWord &&
+            isStrEnglish(lastTypingWord) &&
+            !val?.length && {
+              errors: [
+                lastTypingWord + ' is an illegal seed phrase, please check!',
+              ],
+            }),
+        },
+      ]);
+
+      _setCurrentWords(val);
+    },
+    [lastTypingWord, form]
+  );
+
+  React.useEffect(() => {
+    if (!lastTypingWord || !isStrEnglish(lastTypingWord)) {
+      setCurrentWords([]);
+      return;
+    }
+
+    const words = searchByPrefix(lastTypingWord);
+    setCurrentWords([...(words || [])]);
+  }, [lastTypingWord]);
+
+  return {
+    currentWords,
+    setMnemonics,
+    allMnemonicsSet: mnemonicsList.length === 12,
+  };
+}
+
+const ImportMnemonics = () => {
   const history = useHistory();
   const wallet = useWallet();
-  const [form] = Form.useForm();
+  const [form] = Form.useForm<IFormStates>();
   const { t } = useTranslation();
   const isWide = useMedia('(min-width: 401px)');
+  const { setMnemonics, currentWords } = useTypingMnemonics(form);
 
   const [run, loading] = useWalletRequest(wallet.generateKeyringWithMnemonic, {
     onSuccess(stashKeyringId) {
@@ -37,35 +146,16 @@ const ImportMnemonic = () => {
     },
   });
 
-  const handleLoadCache = async () => {
-    const cache = await wallet.getPageStateCache();
-    if (cache && cache.path === history.location.pathname) {
-      form.setFieldsValue(cache.states);
-    }
-  };
-
-  const handleValuesChange = (states) => {
-    wallet.setPageStateCache({
-      path: history.location.pathname,
-      params: {},
-      states,
-    });
-  };
-
-  const handleClickBack = () => {
-    if (history.length > 1) {
-      history.goBack();
-    } else {
-      history.replace('/');
-    }
-  };
-
-  const init = async () => {
-    if (await wallet.hasPageStateCache()) handleLoadCache();
-  };
-
   useEffect(() => {
-    init();
+    (async () => {
+      if (await wallet.hasPageStateCache()) {
+        const cache = await wallet.getPageStateCache();
+        if (cache && cache.path === history.location.pathname) {
+          setMnemonics(form.getFieldValue('mnemonics'));
+          form.setFieldsValue(cache.states);
+        }
+      }
+    })();
 
     return () => {
       wallet.clearPageStateCache();
@@ -79,48 +169,71 @@ const ImportMnemonic = () => {
       spinning={loading}
       form={form}
       formProps={{
-        onValuesChange: handleValuesChange,
+        onValuesChange: (states) => {
+          setMnemonics(states.mnemonics);
+          wallet.setPageStateCache({
+            path: history.location.pathname,
+            params: {},
+            states,
+          });
+        },
       }}
       onSubmit={({ mnemonics }) => run(mnemonics.trim())}
       hasBack
       hasDivider
       noPadding
-      onBackClick={handleClickBack}
+      onBackClick={() => {
+        if (history.length > 1) {
+          history.goBack();
+        } else {
+          history.replace('/');
+        }
+      }}
       backDisabled={false}
     >
-      <header className="create-new-header create-password-header h-[234px] res">
-        <div className="rabby-container">
-          <img
-            className="rabby-logo"
-            src="/images/logo-gray.png"
-            alt="rabby logo"
-          />
-          <img
-            className="unlock-logo w-[128px] h-[128px] mx-auto"
-            src={MnemonicLogo}
-          />
-          <p className="text-24 mb-4 mt-0 text-white text-center font-bold">
-            {t('Enter Your Mnemonic')}
-          </p>
-          <img src="/images/mnemonic-mask.png" className="mask" />
-        </div>
+      <header className="create-new-header import-mnemonics-header h-[60px] leading-[60px] py-0">
+        <h2 className="text-20 mb-0 mt-0 text-white text-center font-medium">
+          {t('Import Seed Phrase')}
+        </h2>
       </header>
       <div className="rabby-container">
         <div className="pt-32 px-20">
           <Form.Item
             name="mnemonics"
+            className="relative"
             rules={[{ required: true, message: t('Please input Mnemonics') }]}
           >
-            <Input.TextArea
-              className="h-[124px] p-16"
-              placeholder={t('Mnemonics words')}
-              spellCheck={false}
-            />
+            <div>
+              <Input.TextArea
+                className={`h-[128px] p-16 pb-${BAR_H}`}
+                placeholder={t('Enter your Seed Phrase, distinguish by space')}
+                spellCheck={false}
+              />
+              <TextAreaBar>
+                {currentWords.map((word, idx) => {
+                  return (
+                    <div key={`word-${word}-${idx}`} className="work-item-box">
+                      <span className="work-item">{word}</span>
+                    </div>
+                  );
+                })}
+              </TextAreaBar>
+            </div>
           </Form.Item>
+          <TipTextList className="text-14 pl-20 mt-35">
+            <li>
+              The seed phrase you import will only be stored on the front end of
+              your browser and will not be uploaded to Rabby's servers.
+            </li>
+            <li>
+              After you uninstall Rabby or uninstall your browser, the seed
+              phrase will be deleted and Rabby cannot help you recover them.
+            </li>
+          </TipTextList>
         </div>
       </div>
     </StrayPageWithButton>
   );
 };
 
-export default ImportMnemonic;
+export default ImportMnemonics;
