@@ -26,3 +26,23 @@ export const getStyledComponentId = (
 };
 
 export const styid = getStyledComponentId;
+
+export const fadeColor = ({
+  hex = '#000',
+  fade = 0,
+}: {
+  hex?: string | ((props: any) => string);
+  fade?: number;
+}) => {
+  if (typeof hex === 'function') {
+    return (props: any) => fadeColor({ hex: hex(props), fade });
+  }
+  let c: any = hex.replace('#', '').split('');
+  if (c.length === 3) {
+    c = [c[0], c[0], c[1], c[1], c[2], c[2]];
+  }
+  c = `0x${c.join('')}`;
+  return `rgba(${(c >> 16) & 255}, ${(c >> 8) & 255}, ${c & 255}, ${
+    fade / 100
+  })`;
+};

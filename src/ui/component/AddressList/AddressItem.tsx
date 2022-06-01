@@ -22,6 +22,7 @@ import {
 } from 'consts';
 import IconEditPen from 'ui/assets/editpen.svg';
 import IconCorrect from 'ui/assets/dashboard/contacts/correct.png';
+import { makeAlianNameName } from '@/ui/utils/account';
 interface DisplayChainWithWhiteLogo extends ChainWithBalance {
   logo?: string;
   whiteLogo?: string;
@@ -228,10 +229,22 @@ const AddressItem = memo(
             setAlianName(existAlianName);
             setDisplayName(existAlianName);
           } else {
-            const alianName = `${
+            let alianName = `${
               BRAND_ALIAN_TYPE_TEXT[account?.brandName || account?.type] ||
               account?.brandName
             } ${importedLength + (index || 0) + 1}`;
+
+            if (importedAccount) {
+              alianName = makeAlianNameName({
+                brandName: `${
+                  BRAND_ALIAN_TYPE_TEXT[account?.brandName || account?.type] ||
+                  account?.brandName
+                }`,
+                keyringCount: Math.max(importedLength, 1),
+                keyringIndex: index || 0,
+              });
+            }
+
             setAlianName(alianName);
             setDisplayName(alianName);
             updateAlianName(alianName);

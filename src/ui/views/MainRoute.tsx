@@ -1,5 +1,5 @@
 import React from 'react';
-import { Switch, Route } from 'react-router-dom';
+import { Switch, Route, Redirect } from 'react-router-dom';
 import ReactGA, { ga } from 'react-ga';
 import { PrivateRoute } from 'ui/component';
 
@@ -71,7 +71,11 @@ const Main = () => {
         <PrivateRoute exact path="/start-chain-management">
           <StartChainManagement />
         </PrivateRoute>
-        <PrivateRoute exact path="/create-mnemonics">
+        <PrivateRoute exact path="/mnemonics/risk-check">
+          <CreateMnemonics />
+        </PrivateRoute>
+        <Redirect exact path="/create-mnemonics" to="/mnemonics/create" />
+        <PrivateRoute exact path="/mnemonics/create">
           <CreateMnemonics />
         </PrivateRoute>
         <PrivateRoute exact path="/import">

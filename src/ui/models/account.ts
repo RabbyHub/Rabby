@@ -86,7 +86,7 @@ export const account = createModel<RootModel>()({
       return name;
     },
 
-    async getAllClassAccountsAsync(_, store) {
+    async getAllClassAccountsAsync(_?, store?) {
       const keyrings = await store.app.wallet.getAllClassAccounts<
         DisplayedKeryring[]
       >();

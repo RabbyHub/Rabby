@@ -200,12 +200,6 @@
   "Repeat__Password": {
     "message": "Repeat Password"
   },
-  "backupMnemonicTip": {
-    "message": "Make sure you have backed up your mnemonics properly before clicking Next. Don't tell anyone the mnemonic."
-  },
-  "backupMnemonicAlert": {
-    "message": "Be sure to save the mnemonic phrase, it cannot be retrieved after loss！"
-  },
   "Back__Up__Your__Mnemonic": {
     "message": "Back Up Your Mnemonic"
   },
@@ -549,9 +543,6 @@
   },
   "View__private__key": {
     "message": "View private key"
-  },
-  "Wrong__mnemonic__word": {
-    "message": "Wrong mnemonic word"
   },
   "otherWalletConflictAlert": {
     "message": "Disable other browser wallet to avoid conflicts"
