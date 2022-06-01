@@ -21,7 +21,7 @@ const ImportJson = () => {
         pathname: '/popup/import/success',
         state: {
           accounts,
-          title: t('Created Successfully'),
+          title: t('Imported Successfully'),
           editing: true,
           importedAccount: true,
         },
