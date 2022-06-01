@@ -79,6 +79,7 @@ export interface DisplayedKeryring {
     alianName?: string;
   }[];
   keyring: DisplayKeyring;
+  byImport?: boolean;
 }
 
 class KeyringService extends EventEmitter {
@@ -851,6 +852,7 @@ class KeyringService extends EventEmitter {
     let keyrings = type
       ? this.keyrings.filter((keyring) => keyring.type === type)
       : this.keyrings;
+    console.log(keyrings);
     if (!includeWatchKeyring) {
       keyrings = keyrings.filter(
         (keyring) => keyring.type !== KEYRING_TYPE.WatchAddressKeyring
@@ -911,6 +913,7 @@ class KeyringService extends EventEmitter {
                 )
             ),
         keyring,
+        byImport: keyring.byImport,
       };
     });
   }

@@ -23,7 +23,10 @@ import { ContactBookItem } from '../service/contactBook';
 import { openIndexPage } from 'background/webapi/tab';
 import { CacheState } from 'background/service/pageStateCache';
 import i18n from 'background/service/i18n';
-import { KEYRING_CLASS, DisplayedKeryring } from 'background/service/keyring';
+import keyring, {
+  KEYRING_CLASS,
+  DisplayedKeryring,
+} from 'background/service/keyring';
 import providerController from './provider/controller';
 import BaseController from './base';
 import {
@@ -1033,16 +1036,25 @@ export class WalletController extends BaseController {
     }
   };
 
+  getKeyringByMnemonic = (mnemonic: string) => {
+    return keyringService.keyrings.find((item) => {
+      return item.type === KEYRING_CLASS.MNEMONIC && item.mnemonic === mnemonic;
+    });
+  };
+
   generateKeyringWithMnemonic = (mnemonic) => {
     if (!bip39.validateMnemonic(mnemonic)) {
       throw new Error(i18n.t('mnemonic phrase is invalid'));
     }
+    // If import twice use same kerying
+    let keyring = this.getKeyringByMnemonic(mnemonic);
+    if (!keyring) {
+      const Keyring = keyringService.getKeyringClassForType(
+        KEYRING_CLASS.MNEMONIC
+      );
 
-    const Keyring = keyringService.getKeyringClassForType(
-      KEYRING_CLASS.MNEMONIC
-    );
-
-    const keyring = new Keyring({ mnemonic });
+      keyring = new Keyring({ mnemonic });
+    }
 
     const stashId = Object.values(stashKeyrings).length;
     stashKeyrings[stashId] = keyring;
@@ -1057,10 +1069,16 @@ export class WalletController extends BaseController {
     return stashId;
   };
 
-  addKeyring = async (keyringId) => {
+  addKeyring = async (keyringId: string, byImport = true) => {
     const keyring = stashKeyrings[keyringId];
     if (keyring) {
-      await keyringService.addKeyring(keyring);
+      keyring.byImport = byImport;
+      // If keyring exits, just save
+      if (keyringService.keyrings.find((item) => item === keyring)) {
+        await keyringService.persistAllKeyrings();
+      } else {
+        await keyringService.addKeyring(keyring);
+      }
       this._setCurrentAccountFromKeyring(keyring);
     } else {
       throw new Error('failed to addKeyring, keyring is undefined');

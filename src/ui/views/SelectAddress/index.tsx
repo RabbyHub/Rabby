@@ -74,20 +74,20 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
         ? await wallet.requestKeyring(
             keyring,
             'getFirstPage',
-            keyringId.current || null
+            keyringId.current ?? null
           )
         : end && !isGrid && !ledgerLive
         ? await wallet.requestKeyring(
             keyring,
             'getAddresses',
-            keyringId.current || null,
+            keyringId.current ?? null,
             start,
             end
           )
         : await wallet.requestKeyring(
             keyring,
             'getNextPage',
-            keyringId.current || null
+            keyringId.current ?? null
           );
     },
     {
@@ -140,7 +140,7 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
       });
     }
     return () => {
-      wallet.requestKeyring(keyring, 'cleanUp', keyringId.current || null);
+      wallet.requestKeyring(keyring, 'cleanUp', keyringId.current ?? null);
     };
   }, []);
 
@@ -148,7 +148,7 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
     await wallet.requestKeyring(
       keyring,
       'setHdPath',
-      keyringId.current || null,
+      keyringId.current ?? null,
       v
     );
     getAccounts(true);
@@ -171,7 +171,7 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
       await wallet.requestKeyring(
         keyring,
         'activeAccounts',
-        keyringId.current || null,
+        keyringId.current ?? null,
         selectedIndexes
       );
       await wallet.addKeyring(keyringId.current);
@@ -187,7 +187,7 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
       await wallet.requestKeyring(
         keyring,
         'cleanUp',
-        keyringId.current || null
+        keyringId.current ?? null
       );
     }
     setSpin(false);
