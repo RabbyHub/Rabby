@@ -1096,6 +1096,9 @@ export class WalletController extends BaseController {
     }
   };
 
+  /**
+   * @deprecated
+   */
   deriveNewAccountFromMnemonic = async () => {
     const keyring = this._getKeyringByType(KEYRING_CLASS.MNEMONIC);
 
