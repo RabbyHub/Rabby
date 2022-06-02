@@ -39,9 +39,6 @@ const ConfirmMnemonics = ({ isPopup = false }: { isPopup?: boolean }) => {
     (s) => s.importMnemonics.stashKeyringId
   );
 
-  console.error('[feat] stashKeyringId', stashKeyringId);
-  console.error('[feat] state', state);
-
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [importedAccounts, setImportedAccounts] = useState<any[]>([]);
   const importedAddresses = React.useMemo(() => {
