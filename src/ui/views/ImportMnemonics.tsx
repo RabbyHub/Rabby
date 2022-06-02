@@ -167,7 +167,9 @@ const ImportMnemonics = () => {
       form.setFields([
         {
           name: 'mnemonics',
-          errors: [err?.message || t('Not a valid mnemonic')],
+          errors: [
+            err?.message || t('The seed phrase is invalid, please check!'),
+          ],
         },
       ]);
     },

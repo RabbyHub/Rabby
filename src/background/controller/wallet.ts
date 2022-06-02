@@ -1044,7 +1044,7 @@ export class WalletController extends BaseController {
 
   generateKeyringWithMnemonic = (mnemonic) => {
     if (!bip39.validateMnemonic(mnemonic)) {
-      throw new Error(i18n.t('mnemonic phrase is invalid'));
+      throw new Error(i18n.t('The seed phrase is invalid, please check!'));
     }
     // If import twice use same kerying
     let keyring = this.getKeyringByMnemonic(mnemonic);

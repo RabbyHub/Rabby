@@ -215,7 +215,9 @@ class KeyringService extends EventEmitter {
    */
   createKeyringWithMnemonics(seed: string): Promise<any> {
     if (!bip39.validateMnemonic(seed)) {
-      return Promise.reject(new Error(i18n.t('mnemonic phrase is invalid')));
+      return Promise.reject(
+        new Error(i18n.t('The seed phrase is invalid, please check!'))
+      );
     }
 
     let keyring;
