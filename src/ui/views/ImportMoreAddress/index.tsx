@@ -40,9 +40,7 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
     return null;
   }
 
-  const {
-    keyringId,
-  } = state;
+  const { keyringId } = state;
 
   const [accounts, setAccounts] = useState<any[]>([]);
   const [importedAccounts, setImportedAccounts] = useState<any[]>([]);
@@ -121,7 +119,11 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
   useEffect(() => {
     init();
     return () => {
-      wallet.requestKeyring(KEYRING_TYPE.HdKeyring, 'cleanUp', keyringId ?? null);
+      wallet.requestKeyring(
+        KEYRING_TYPE.HdKeyring,
+        'cleanUp',
+        keyringId ?? null
+      );
     };
   }, []);
 
@@ -147,7 +149,7 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
   const onSubmit = async () => {
     setSpin(true);
     const selectedIndexes = selectedAccounts.map((i) => i.index - 1);
-    
+
     await wallet.requestKeyring(
       KEYRING_TYPE.HdKeyring,
       'activeAccounts',
@@ -212,9 +214,9 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
           isPopup
             ? undefined
             : {
-              secondTitle: t('Select Addresses'),
-              subTitle: t('Select the addresses you want to import'),
-            }
+                secondTitle: t('Select Addresses'),
+                subTitle: t('Select the addresses you want to import'),
+              }
         }
         headerClassName="mb-16"
         onSubmit={onSubmit}
