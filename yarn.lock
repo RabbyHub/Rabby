@@ -2692,10 +2692,10 @@
     events "^3.3.0"
     web3-utils "^1.6.1"
 
-"@rabby-wallet/eth-hd-keyring@^3.6.8":
-  version "3.6.8"
-  resolved "https://registry.yarnpkg.com/@rabby-wallet/eth-hd-keyring/-/eth-hd-keyring-3.6.8.tgz#27c2e7b8bd3ce452dfb22058bdfcb5d61879dfbc"
-  integrity sha512-qYh1u/c3Zi9sAyXs4YmnBu4d3SENCQ5qRSM+8o14Sw0OPavOMfbuDK2nVjaunAqxhwyQbAvHxLtzXRmi74Lueg==
+"@rabby-wallet/eth-hd-keyring@^3.6.9":
+  version "3.6.9"
+  resolved "https://registry.yarnpkg.com/@rabby-wallet/eth-hd-keyring/-/eth-hd-keyring-3.6.9.tgz#e577c69defd86d9f2a397b6dda8f407b37f5bfe7"
+  integrity sha512-fUrMdmC7fAQuNkvTDUh4AK3iQpWkUVM7ytfBz1jWLaDws55XuRbN3QzyIxAegO1SI2Eph4yb5v5LoQcNdYEdqw==
   dependencies:
     "@metamask/eth-sig-util" "^4.0.0"
     "@rabby-wallet/eth-simple-keyring" "^4.2.1"
