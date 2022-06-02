@@ -14,6 +14,7 @@ import SuccessLogo from 'ui/assets/success-logo.svg';
 import './index.less';
 import { useMedia } from 'react-use';
 import Mask from 'ui/assets/import-mask.png';
+import { connectStore, useRabbyDispatch, useRabbySelector } from '@/ui/store';
 
 const ImportSuccess = ({ isPopup = false }: { isPopup?: boolean }) => {
   const history = useHistory();
@@ -40,6 +41,17 @@ const ImportSuccess = ({ isPopup = false }: { isPopup?: boolean }) => {
     isMnemonics = false,
     importedLength = 0,
   } = state;
+
+  const dispatch = useRabbyDispatch();
+  const mnemonicsCounter = useRabbySelector(
+    (s) => s.importMnemonics.mnemonicsCounter
+  );
+  React.useEffect(() => {
+    if (isMnemonics) {
+      dispatch.importMnemonics.getMnemonicsCounterAsync();
+    }
+  }, [isMnemonics]);
+
   const handleNextClick = async (e: React.MouseEvent<HTMLElement>) => {
     e.stopPropagation();
     if (!stopEditing) {
@@ -165,6 +177,9 @@ const ImportSuccess = ({ isPopup = false }: { isPopup?: boolean }) => {
                 showIndex={!editing}
                 importedAccount
                 isMnemonics={isMnemonics}
+                {...(typeof mnemonicsCounter === 'number' && {
+                  mnemonicsCounter,
+                })}
                 importedLength={importedLength}
                 stopEditing={stopEditing || index !== editIndex}
                 canEditing={(editing) => startEdit(editing, index)}
@@ -180,4 +195,4 @@ const ImportSuccess = ({ isPopup = false }: { isPopup?: boolean }) => {
   );
 };
 
-export default ImportSuccess;
+export default connectStore()(ImportSuccess);

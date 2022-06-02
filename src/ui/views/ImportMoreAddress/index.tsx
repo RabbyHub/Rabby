@@ -155,6 +155,7 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
         hasDivider: true,
         editing: true,
         showImportIcon: false,
+        isMnemonics: true,
         importedAccount: true,
         importedLength: importedAccounts && importedAccounts?.length,
       },
