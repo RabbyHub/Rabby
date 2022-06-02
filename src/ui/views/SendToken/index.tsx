@@ -1,6 +1,5 @@
 import React, { useState, useEffect } from 'react';
 import ClipboardJS from 'clipboard';
-import * as Sentry from '@sentry/browser';
 import clsx from 'clsx';
 import BigNumber from 'bignumber.js';
 import { useTranslation } from 'react-i18next';
@@ -442,13 +441,6 @@ const SendToken = () => {
         currentToken.symbol !== chain.nativeTokenSymbol ||
         currentToken.decimals !== chain.nativeTokenDecimals
       ) {
-        Sentry.captureException(
-          new Error('Token validation failed'),
-          (scope) => {
-            scope.setTag('id', `${currentToken.chain}-${currentToken.id}`);
-            return scope;
-          }
-        );
         setTokenValidationStatus(TOKEN_VALIDATION_STATUS.FAILD);
       } else {
         setTokenValidationStatus(TOKEN_VALIDATION_STATUS.SUCCESS);
@@ -468,22 +460,11 @@ const SendToken = () => {
         symbol !== currentToken.symbol ||
         decimals !== currentToken.decimals
       ) {
-        Sentry.captureException(
-          new Error('Token validation failed'),
-          (scope) => {
-            scope.setTag('id', `${currentToken.chain}-${currentToken.id}`);
-            return scope;
-          }
-        );
         setTokenValidationStatus(TOKEN_VALIDATION_STATUS.FAILD);
       } else {
         setTokenValidationStatus(TOKEN_VALIDATION_STATUS.SUCCESS);
       }
     } catch (e) {
-      Sentry.captureException(new Error('Token validation failed'), (scope) => {
-        scope.setTag('id', `${currentToken.chain}-${currentToken.id}`);
-        return scope;
-      });
       setTokenValidationStatus(TOKEN_VALIDATION_STATUS.FAILD);
       throw e;
     }
@@ -537,7 +518,7 @@ const SendToken = () => {
           />
           <div className="section-title">
             <span className="section-title__to">{t('To')}</span>
-            <div className="flex flex-1 justify-end items-center">
+            <div className="flex items-center justify-end flex-1">
               {showContactInfo && (
                 <div
                   className={clsx('contact-info', {
@@ -596,7 +577,7 @@ const SendToken = () => {
           </div>
         </div>
         <div className="section">
-          <div className="section-title flex justify-between">
+          <div className="flex justify-between section-title">
             <div className="token-balance" onClick={handleClickTokenBalance}>
               {isLoading ? (
                 <Skeleton.Input active style={{ width: 100 }} />
@@ -691,7 +672,7 @@ const SendToken = () => {
             </div>
           )}
         </div>
-        <div className="footer flex justify-center">
+        <div className="flex justify-center footer">
           <Button
             disabled={!canSubmit}
             type="primary"

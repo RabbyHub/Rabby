@@ -1,6 +1,4 @@
 import 'reflect-metadata';
-import * as Sentry from '@sentry/browser';
-import { Integrations } from '@sentry/tracing';
 import { browser } from 'webextension-polyfill-ts';
 import { ethErrors } from 'eth-rpc-errors';
 import { WalletController } from 'background/controller/wallet';
@@ -179,21 +177,21 @@ browser.runtime.onConnect.addListener((port) => {
   });
 });
 
-declare global {
-  interface Window {
-    wallet: WalletController;
-  }
-}
+// declare global {
+//   interface Window {
+//     wallet: WalletController;
+//   }
+// }
 
 // for popup operate
-window.wallet = new Proxy(walletController, {
-  get(target, propKey, receiver) {
-    if (!appStoreLoaded) {
-      throw ethErrors.provider.disconnected();
-    }
-    return Reflect.get(target, propKey, receiver);
-  },
-});
+// window.wallet = new Proxy(walletController, {
+//   get(target, propKey, receiver) {
+//     if (!appStoreLoaded) {
+//       throw ethErrors.provider.disconnected();
+//     }
+//     return Reflect.get(target, propKey, receiver);
+//   },
+// });
 
 storage
   .byteInUse()

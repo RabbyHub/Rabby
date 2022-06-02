@@ -11,10 +11,8 @@ import IconGnosis from 'ui/assets/walletlogo/gnosis.png';
 import { Button, Modal, Tooltip, Drawer } from 'antd';
 import { useTranslation } from 'react-i18next';
 import clsx from 'clsx';
-import * as Sentry from '@sentry/browser';
 import Safe from '@rabby-wallet/gnosis-sdk';
 import { SafeInfo } from '@rabby-wallet/gnosis-sdk/src/api';
-import ReactGA from 'react-ga';
 import {
   KEYRING_CLASS,
   CHAINS,
@@ -96,9 +94,7 @@ const normalizeTxParams = (tx) => {
       );
     }
   } catch (e) {
-    Sentry.captureException(
-      new Error(`normalizeTxParams failed, ${JSON.stringify(e)}`)
-    );
+    // DO NOTHING BUT CATCH ERROR
   }
   return copy;
 };
@@ -598,12 +594,6 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       is1559: support1559,
     });
 
-    ReactGA.event({
-      category: 'Transaction',
-      action: 'Submit',
-      label: currentAccount.brandName,
-    });
-
     resolveApproval({
       ...transaction,
       nonce: realNonce || tx.nonce,
@@ -777,12 +767,6 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       is1559: is1559,
     });
 
-    ReactGA.event({
-      category: 'Transaction',
-      action: 'init',
-      label: currentAccount.brandName,
-    });
-
     if (currentAccount.type === KEYRING_TYPE.GnosisKeyring) {
       setIsGnosisAccount(true);
       await getSafeInfo();
@@ -951,7 +935,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
                     alert={securityCheckAlert}
                     onClick={() => setShowSecurityCheckDetail(true)}
                   />
-                  <div className="action-buttons flex justify-between relative">
+                  <div className="relative flex justify-between action-buttons">
                     <Button
                       type="primary"
                       size="large"
@@ -1015,10 +999,10 @@ const SignTx = ({ params, origin }: SignTxProps) => {
                   )}
                   {!(isLedger && !useLedgerLive && !hasConnectedLedgerHID) && (
                     <>
-                      <p className="text-gray-subTitle mb-8 text-15 font-medium">
+                      <p className="mb-8 font-medium text-gray-subTitle text-15">
                         {t('Preexecution failed')}
                       </p>
-                      <p className="text-gray-content text-14 mb-20">
+                      <p className="mb-20 text-gray-content text-14">
                         {txDetail.pre_exec.err_msg}
                       </p>
                       <div className="force-process">
@@ -1031,7 +1015,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
                       </div>
                     </>
                   )}
-                  <div className="action-buttons flex justify-between">
+                  <div className="flex justify-between action-buttons">
                     <Button
                       type="primary"
                       size="large"

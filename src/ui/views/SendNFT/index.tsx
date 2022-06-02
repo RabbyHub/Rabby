@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef } from 'react';
-import * as Sentry from '@sentry/browser';
 import ClipboardJS from 'clipboard';
 import clsx from 'clsx';
 import BigNumber from 'bignumber.js';
@@ -243,19 +242,12 @@ const SendNFT = () => {
       if (name === nftItem.contract_name) {
         setTokenValidationStatus(TOKEN_VALIDATION_STATUS.SUCCESS);
       } else {
-        Sentry.captureException(new Error('NFT validation failed'), (scope) => {
-          scope.setTag('id', `${nftItem.chain}-${nftItem.contract_id}`);
-          return scope;
-        });
         setTokenValidationStatus(TOKEN_VALIDATION_STATUS.FAILD);
       }
     } catch (e) {
-      Sentry.captureException(new Error('NFT validation failed'), (scope) => {
-        scope.setTag('id', `${nftItem.chain}-${nftItem.contract_id}`);
-        return scope;
-      });
-      setTokenValidationStatus(TOKEN_VALIDATION_STATUS.FAILD);
+      // DO NOTHING BUT CATCH ERROR
     }
+    setTokenValidationStatus(TOKEN_VALIDATION_STATUS.FAILD);
   };
 
   useEffect(() => {
@@ -316,7 +308,7 @@ const SendNFT = () => {
             />
             <div className="section-title">
               <span className="section-title__to">{t('To')}</span>
-              <div className="flex flex-1 justify-end items-center">
+              <div className="flex items-center justify-end flex-1">
                 {showContactInfo && (
                   <div
                     className={clsx('contact-info', {
@@ -374,7 +366,7 @@ const SendNFT = () => {
             </div>
           </div>
           <div className="section">
-            <div className="nft-info flex">
+            <div className="flex nft-info">
               <NFTAvatar
                 type={nftItem.content_type}
                 content={nftItem.content}
@@ -443,7 +435,7 @@ const SendNFT = () => {
             </div>
           )}
 
-          <div className="footer flex justify-center">
+          <div className="flex justify-center footer">
             <Button
               disabled={!canSubmit}
               type="primary"

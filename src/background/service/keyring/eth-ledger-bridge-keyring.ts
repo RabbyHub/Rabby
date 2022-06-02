@@ -1,6 +1,5 @@
 /* eslint-disable @typescript-eslint/ban-types */
 import { EventEmitter } from 'events';
-import * as Sentry from '@sentry/browser';
 import HDKey from 'hdkey';
 import * as ethUtil from 'ethereumjs-util';
 import * as sigUtil from 'eth-sig-util';
@@ -28,6 +27,8 @@ const NETWORK_API_URLS = {
   rinkeby: 'https://api-rinkeby.etherscan.io',
   mainnet: 'https://api.etherscan.io',
 };
+
+declare const clients: any;
 
 class LedgerBridgeKeyring extends EventEmitter {
   accountDetails: {};
@@ -199,7 +200,6 @@ class LedgerBridgeKeyring extends EventEmitter {
             });
           }
         }
-        Sentry.captureException(e);
       }
     }
   }
@@ -992,7 +992,7 @@ class LedgerBridgeKeyring extends EventEmitter {
 
   async _hasPreviousTransactions(address) {
     const apiUrl = this._getApiUrl();
-    const response = await window.fetch(
+    const response = await fetch(
       `${apiUrl}/api?module=account&action=txlist&address=${address}&tag=latest&page=1&offset=1`
     );
     const parsedResponse = await response.json();

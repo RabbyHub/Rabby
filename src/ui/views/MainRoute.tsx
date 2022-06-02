@@ -1,6 +1,5 @@
 import React from 'react';
 import { Switch, Route } from 'react-router-dom';
-import ReactGA, { ga } from 'react-ga';
 import { PrivateRoute } from 'ui/component';
 
 import Welcome from './Welcome';
@@ -39,23 +38,11 @@ import SendToken from './SendToken';
 import SendNFT from './SendNFT';
 import Receive from './Receive/index';
 import WalletConnectTemplate from './WalletConnect';
-ReactGA.initialize('UA-199755108-1');
-// eslint-disable-next-line @typescript-eslint/no-empty-function
-ga('set', 'checkProtocolTask', function () {});
-ga('set', 'appName', 'Ducky');
-ga('set', 'appVersion', process.env.release);
-ga('require', 'displayfeatures');
-
-const LogPageView = () => {
-  ReactGA.pageview(window.location.hash);
-
-  return null;
-};
 
 const Main = () => {
   return (
     <>
-      <Route path="/" component={LogPageView} />
+      {/* <Route path="/" component={null} /> */}
       <Switch>
         <Route exact path="/welcome">
           <Welcome />

@@ -1,7 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { Button } from 'antd';
 import { useTranslation } from 'react-i18next';
-import ReactGA from 'react-ga';
 import { Account } from 'background/service/preference';
 import {
   CHAINS,
@@ -114,11 +113,6 @@ const LedgerHardwareWaiting = ({ params }: { params: ApprovalParams }) => {
             await wallet.postGnosisTransaction();
           }
         }
-        ReactGA.event({
-          category: 'Transaction',
-          action: 'Submit',
-          label: KEYRING_CLASS.HARDWARE.LEDGER,
-        });
         const hasPermission = await wallet.checkLedgerHasHIDPermission();
         const isUseLedgerLive = await wallet.isUseLedgerLive();
         if (!hasPermission && !isUseLedgerLive) {

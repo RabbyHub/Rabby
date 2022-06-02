@@ -2,7 +2,6 @@ import React, { useEffect, useState } from 'react';
 import { Button } from 'antd';
 import { useHistory } from 'react-router-dom';
 import { useTranslation, Trans } from 'react-i18next';
-import ReactGA from 'react-ga';
 import { DEFAULT_BRIDGE } from '@rabby-wallet/eth-walletconnect-keyring';
 import { Account } from 'background/service/preference';
 import {
@@ -156,7 +155,7 @@ const Process = ({
       title = t('Connected successfully');
       titleColor = '#27C193';
       description = (
-        <p className="text-gray-content text-14 text-center">
+        <p className="text-center text-gray-content text-14">
           {t('Sending transaction to your phone')}
         </p>
       );
@@ -166,7 +165,7 @@ const Process = ({
       title = t('Please sign on your phone');
       titleColor = '#8697FF';
       description = (
-        <p className="text-gray-content text-14 text-center">
+        <p className="text-center text-gray-content text-14">
           {t('Waiting for signature')}
         </p>
       );
@@ -216,7 +215,7 @@ const Process = ({
       title = t('watch Transaction submitted');
       titleColor = '#27C193';
       description = (
-        <p className="text-gray-content text-14 text-center">
+        <p className="text-center text-gray-content text-14">
           {t('Your transaction has been submitted')}
         </p>
       );
@@ -370,11 +369,6 @@ const WatchAddressWaiting = ({ params }: { params: ApprovalParams }) => {
       chainId: CHAINS[chain].serverId,
       is1559: false,
     });
-    ReactGA.event({
-      category: 'Transaction',
-      action: 'Submit',
-      label: account.brandName,
-    });
     eventBus.addEventListener(EVENTS.SIGN_FINISHED, async (data) => {
       if (data.success) {
         if (params.isGnosis) {
@@ -433,12 +427,12 @@ const WatchAddressWaiting = ({ params }: { params: ApprovalParams }) => {
   return (
     <div className="watchaddress">
       <div className="watchaddress-header">
-        <div className="flex item-center justify-center icon-header">
+        <div className="flex justify-center item-center icon-header">
           <img
             className="w-[28px] h-[28px]"
             src={brandName && WALLET_BRAND_CONTENT[brandName]!.image}
           />
-          <div className="text-24 ml-10">
+          <div className="ml-10 text-24">
             {t(brandName && WALLET_BRAND_CONTENT[brandName]!.name)}
           </div>
         </div>

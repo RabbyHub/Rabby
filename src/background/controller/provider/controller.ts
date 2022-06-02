@@ -1,4 +1,3 @@
-import * as Sentry from '@sentry/browser';
 import Transaction from 'ethereumjs-tx';
 import Common, { Hardfork } from '@ethereumjs/common';
 import {
@@ -365,20 +364,6 @@ class ProviderController extends BaseController {
       });
     }
 
-    // Report address type(not sensitive information) to sentry when tx signatuure is invalid
-    if (!buildTx.verifySignature()) {
-      if (!buildTx.v) {
-        Sentry.captureException(new Error(`v missed, ${keyring.type}`));
-      } else if (!buildTx.s) {
-        Sentry.captureException(new Error(`s missed, ${keyring.type}`));
-      } else if (!buildTx.r) {
-        Sentry.captureException(new Error(`r missed, ${keyring.type}`));
-      } else {
-        Sentry.captureException(
-          new Error(`invalid signature, ${keyring.type}`)
-        );
-      }
-    }
     try {
       validateGasPriceRange(approvalRes);
       const hash = await openapiService.pushTx(
