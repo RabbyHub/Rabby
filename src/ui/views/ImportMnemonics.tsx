@@ -152,14 +152,12 @@ const ImportMnemonics = () => {
   const [run, loading] = useWalletRequest(wallet.generateKeyringWithMnemonic, {
     onSuccess(stashKeyringId) {
       dispatch.importMnemonics.setField({
-        stashKeyringId: stashKeyringId || null,
+        stashKeyringId: stashKeyringId ?? null,
       });
       history.push({
         pathname: '/popup/import/confirm-mnemonics',
         state: {
-          keyring: KEYRING_TYPE.HdKeyring,
-          keyringId: stashKeyringId,
-          isMnemonics: true,
+          stashKeyringId,
         },
       });
     },

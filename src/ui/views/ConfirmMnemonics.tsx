@@ -32,15 +32,15 @@ const ConfirmMnemonics = ({ isPopup = false }: { isPopup?: boolean }) => {
   const { t } = useTranslation();
   const isWide = useMedia('(min-width: 401px)');
   const { state } = useLocation<{
-    keyringId?: number | null;
+    stashKeyringId?: number | null;
   }>();
 
   const stashKeyringId = useRabbySelector(
     (s) => s.importMnemonics.stashKeyringId
   );
 
-  const exKeyringId = state?.keyringId || stashKeyringId;
-  const keyringIdRef = useRef<number | null | undefined>(exKeyringId);
+  console.error('[feat] stashKeyringId', stashKeyringId);
+  console.error('[feat] state', state);
 
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [importedAccounts, setImportedAccounts] = useState<any[]>([]);
@@ -60,20 +60,20 @@ const ConfirmMnemonics = ({ isPopup = false }: { isPopup?: boolean }) => {
         ? await wallet.requestKeyring(
             KEYRING_TYPE.HdKeyring,
             'getFirstPage',
-            keyringIdRef.current ?? null
+            stashKeyringId ?? null
           )
         : end
         ? await wallet.requestKeyring(
             KEYRING_TYPE.HdKeyring,
             'getAddresses',
-            keyringIdRef.current ?? null,
+            stashKeyringId ?? null,
             start,
             end
           )
         : await wallet.requestKeyring(
             KEYRING_TYPE.HdKeyring,
             'getNextPage',
-            keyringIdRef.current ?? null
+            stashKeyringId ?? null
           );
     },
     {
@@ -100,7 +100,7 @@ const ConfirmMnemonics = ({ isPopup = false }: { isPopup?: boolean }) => {
       const _importedAccounts = await wallet.requestKeyring(
         KEYRING_TYPE.HdKeyring,
         'getAccounts',
-        keyringIdRef.current
+        stashKeyringId
       );
       setImportedAccounts(_importedAccounts);
       getAccounts(true);
@@ -110,7 +110,7 @@ const ConfirmMnemonics = ({ isPopup = false }: { isPopup?: boolean }) => {
       wallet.requestKeyring(
         KEYRING_TYPE.HdKeyring,
         'cleanUp',
-        keyringIdRef.current ?? null
+        stashKeyringId ?? null
       );
     };
   }, []);
