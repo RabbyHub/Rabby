@@ -2,7 +2,7 @@ import React, { useState, useEffect, useRef } from 'react';
 import { useLocation, useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import clsx from 'clsx';
-import { Form, Input, message, Select } from 'antd';
+import { Form, Input, message } from 'antd';
 import {
   StrayPageWithButton,
   MultiSelectAddressList,
@@ -10,14 +10,11 @@ import {
 } from 'ui/component';
 import type { ISelectAccountItem } from 'ui/component/MultiSelectAddressList';
 import { getUiType, useWallet, useWalletRequest } from 'ui/utils';
-import { HARDWARE_KEYRING_TYPES, KEYRING_TYPE } from 'consts';
-import { LEDGER_LIVE_PATH } from '../ImportHardware/LedgerHdPath';
+import { KEYRING_TYPE } from 'consts';
 import Pagination from './components/Pagination';
 import './style.less';
 import { useMedia } from 'react-use';
 import type { Account } from '@/background/service/preference';
-
-const { Option } = Select;
 
 const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
   const history = useHistory();
@@ -126,18 +123,6 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
       );
     };
   }, []);
-
-  const handleHDPathChange = async (v: string) => {
-    await wallet.requestKeyring(
-      KEYRING_TYPE.HdKeyring,
-      'setHdPath',
-      keyringId ?? null,
-      v
-    );
-    getAccounts(true);
-    setCurrentPage(1);
-    setEnd(1);
-  };
 
   const handlePageChange = async (page: number) => {
     const start = 5 * (page - 1);
