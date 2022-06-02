@@ -16,7 +16,7 @@ import Mask from 'ui/assets/import-mask.png';
 import IconArrowRight from 'ui/assets/import/import-arrow-right.svg';
 
 import { message } from 'antd';
-import { useRabbySelector } from '../store';
+import { useRabbyDispatch, useRabbySelector } from '../store';
 
 const AddressWrapper = styled.div`
   & {
@@ -31,13 +31,12 @@ const ConfirmMnemonics = ({ isPopup = false }: { isPopup?: boolean }) => {
   const history = useHistory();
   const { t } = useTranslation();
   const isWide = useMedia('(min-width: 401px)');
-  const { state } = useLocation<{
-    stashKeyringId?: number | null;
-  }>();
 
-  const stashKeyringId = useRabbySelector(
-    (s) => s.importMnemonics.stashKeyringId
-  );
+  const dispatch = useRabbyDispatch();
+  const { stashKeyringId, mnemonicsCounter } = useRabbySelector((s) => ({
+    stashKeyringId: s.importMnemonics.stashKeyringId,
+    mnemonicsCounter: s.importMnemonics.mnemonicsCounter,
+  }));
 
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [importedAccounts, setImportedAccounts] = useState<any[]>([]);
@@ -93,6 +92,8 @@ const ConfirmMnemonics = ({ isPopup = false }: { isPopup?: boolean }) => {
   );
 
   useEffect(() => {
+    dispatch.importMnemonics.getMnemonicsCounterAsync();
+
     (async () => {
       const _importedAccounts = await wallet.requestKeyring(
         KEYRING_TYPE.HdKeyring,
@@ -112,7 +113,7 @@ const ConfirmMnemonics = ({ isPopup = false }: { isPopup?: boolean }) => {
     };
   }, []);
 
-  const importedIcon =
+  const accountIcon =
     KEYRING_ICONS[accounts[0]?.type] ||
     WALLET_BRAND_CONTENT[accounts[0]?.brandName]?.image;
 
@@ -249,13 +250,16 @@ const ConfirmMnemonics = ({ isPopup = false }: { isPopup?: boolean }) => {
                   key={account.address}
                   account={account}
                   showAssets
-                  icon={importedIcon}
+                  icon={accountIcon}
                   showImportIcon={false}
                   editing={editing}
                   index={index}
                   showIndex={!editing}
                   importedAccount
                   isMnemonics={true}
+                  {...(typeof mnemonicsCounter === 'number' && {
+                    mnemonicsCounter,
+                  })}
                   // importedLength={importedLength}
                   // stopEditing={stopEditing || index !== editIndex}
                   // canEditing={(editing) => startEdit(editing, index)}

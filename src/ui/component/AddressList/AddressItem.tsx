@@ -50,6 +50,7 @@ export interface AddressItemProps {
   showImportIcon?: boolean;
   showIndex?: boolean;
   importedAccount?: boolean;
+  mnemonicsCounter?: number;
   isMnemonics?: boolean;
   importedLength?: number;
   canEditing?(editing: boolean): void;
@@ -72,6 +73,7 @@ const AddressItem = memo(
         showImportIcon = true,
         showIndex = false,
         importedAccount = false,
+        mnemonicsCounter = -1,
         isMnemonics = false,
         importedLength = 0,
         canEditing,
@@ -162,7 +164,7 @@ const AddressItem = memo(
             if (isMnemonics) {
               alianName = makeAlianNameName({
                 brandName: `${BRAND_ALIAN_TYPE_TEXT[KEYRING_TYPE.HdKeyring]}`,
-                keyringCount: Math.max(importedLength, 1),
+                keyringCount: Math.max(mnemonicsCounter + 1, 1),
                 keyringIndex: index || 0,
               });
             }
