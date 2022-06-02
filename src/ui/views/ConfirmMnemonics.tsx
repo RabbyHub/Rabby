@@ -39,9 +39,6 @@ const ConfirmMnemonics = ({ isPopup = false }: { isPopup?: boolean }) => {
     (s) => s.importMnemonics.stashKeyringId
   );
 
-  console.error('[feat] stashKeyringId', stashKeyringId);
-  console.error('[feat] state', state);
-
   const [accounts, setAccounts] = useState<Account[]>([]);
   const [importedAccounts, setImportedAccounts] = useState<any[]>([]);
   const importedAddresses = React.useMemo(() => {
@@ -86,7 +83,7 @@ const ConfirmMnemonics = ({ isPopup = false }: { isPopup?: boolean }) => {
           );
         }
         setSpin(false);
-        setAccounts(_accounts);
+        setAccounts(_accounts.slice(0, 1));
       },
       onError(err) {
         message.error('Please check the connection with your wallet');

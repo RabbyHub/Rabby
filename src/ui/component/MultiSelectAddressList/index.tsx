@@ -30,7 +30,6 @@ const MultiSelectAddressList = ({
 }: MultiSelectAddressListArgs) => {
   const { t } = useTranslation();
   const [selected, setSelected] = useState<ISelectAccountItem[]>(value || []);
-  console.error('[feat] selected, value', selected, value);
 
   const handleRemove = (index: number) => {
     setSelected(selected.filter((item) => item.index !== index));
