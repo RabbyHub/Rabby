@@ -83,7 +83,7 @@ const ConfirmMnemonics = ({ isPopup = false }: { isPopup?: boolean }) => {
           );
         }
         setSpin(false);
-        setAccounts(_accounts);
+        setAccounts(_accounts.slice(0, 1));
       },
       onError(err) {
         message.error('Please check the connection with your wallet');
