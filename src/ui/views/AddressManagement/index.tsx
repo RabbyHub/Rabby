@@ -104,7 +104,7 @@ const AddressManagement = () => {
           const mnemonic = await wallet.getMnemonics(password, address);
 
           Popup.info({
-            title: t('Mnemonic'),
+            title: t('Seed Phrase'),
             className: 'custom-private-popup',
             content: (
               <div className="private-field relative">
@@ -225,7 +225,7 @@ const AddressManagement = () => {
                 {t('View private key')}
               </Menu.Item>
               <Menu.Item onClick={() => handleViewMnemonics(data)}>
-                {t('View Mnemonic')}
+                {t('View Seed Phrase')}
               </Menu.Item>
             </Menu>
           );

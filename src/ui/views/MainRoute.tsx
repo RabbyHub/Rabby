@@ -14,6 +14,8 @@ import EntryImportAddress from './EntryImportAddress';
 import ImportWatchAddress from './ImportWatchAddress';
 import ImportQRCodeBase from './ImportQRCodeBase';
 import SelectAddress from './SelectAddress';
+import ConfirmMnemonics from './ConfirmMnemonics';
+import ImportMoreAddress from './ImportMoreAddress';
 import ImportSuccess from './ImportSuccess';
 import ImportHardware from './ImportHardware';
 import ImportLedgerPathSelect from './ImportHardware/LedgerHdPath';
@@ -98,6 +100,18 @@ const Main = () => {
         </PrivateRoute>
         <PrivateRoute exact path="/import/select-address">
           <SelectAddress />
+        </PrivateRoute>
+        <PrivateRoute exact path="/popup/import/confirm-mnemonics">
+          <ConfirmMnemonics isPopup />
+        </PrivateRoute>
+        <PrivateRoute exact path="/import/confirm-mnemonics">
+          <ConfirmMnemonics />
+        </PrivateRoute>
+        <PrivateRoute exact path="/popup/import/import-more-address">
+          <ImportMoreAddress isPopup />
+        </PrivateRoute>
+        <PrivateRoute exact path="/import/import-more-address">
+          <ImportMoreAddress />
         </PrivateRoute>
         <PrivateRoute exact path="/import/hardware">
           <ImportHardware />

@@ -851,7 +851,7 @@ export const SUPPORT_1559_KEYRING_TYPE = [
 ];
 
 export const KEYRING_TYPE_TEXT = {
-  [KEYRING_TYPE.HdKeyring]: 'Created by Mnemonic',
+  [KEYRING_TYPE.HdKeyring]: 'Created by Seed Phrase',
   [KEYRING_TYPE.SimpleKeyring]: 'Imported by Private Key',
   [KEYRING_TYPE.WatchAddressKeyring]: 'Watch Mode',
   [KEYRING_CLASS.HARDWARE.BITBOX02]: 'Imported by BitBox02',
@@ -863,7 +863,7 @@ export const KEYRING_TYPE_TEXT = {
   [KEYRING_CLASS.HARDWARE.KEYSTONE]: 'Imported by Keystone',
 };
 export const BRAND_ALIAN_TYPE_TEXT = {
-  [KEYRING_TYPE.HdKeyring]: 'Mnemonic',
+  [KEYRING_TYPE.HdKeyring]: 'Seed Phrase',
   [KEYRING_TYPE.SimpleKeyring]: 'Private Key',
   [KEYRING_TYPE.WatchAddressKeyring]: 'Watch',
   [KEYRING_CLASS.HARDWARE.LEDGER]: 'Ledger',

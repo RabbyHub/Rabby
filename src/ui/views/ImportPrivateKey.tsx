@@ -120,7 +120,7 @@ const ImportPrivateKey = () => {
             rules={[{ required: true, message: t('Please input Private key') }]}
           >
             <Input.TextArea
-              className={`h-[128px] p-16`}
+              className={'h-[128px] p-16'}
               placeholder={t('Enter your Private key')}
               autoFocus
               spellCheck={false}

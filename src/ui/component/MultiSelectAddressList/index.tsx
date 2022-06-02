@@ -4,13 +4,13 @@ import { FieldCheckbox } from 'ui/component';
 import { ellipsis } from 'ui/utils/address';
 import './style.less';
 
-interface SelectAccountItem {
+export interface ISelectAccountItem {
   address: string;
   index: number;
 }
 
 interface MultiSelectAddressListArgs {
-  accounts: SelectAccountItem[];
+  accounts: ISelectAccountItem[];
   type: string;
   onChange?(
     arg: {
@@ -18,7 +18,7 @@ interface MultiSelectAddressListArgs {
       index: number;
     }[]
   ): void;
-  value?: SelectAccountItem[];
+  value?: ISelectAccountItem[];
   importedAccounts?: string[];
 }
 
@@ -29,17 +29,18 @@ const MultiSelectAddressList = ({
   importedAccounts,
 }: MultiSelectAddressListArgs) => {
   const { t } = useTranslation();
-  const [selected, setSelected] = useState<SelectAccountItem[]>(value || []);
+  const [selected, setSelected] = useState<ISelectAccountItem[]>(value || []);
+  console.error('[feat] selected, value', selected, value);
 
   const handleRemove = (index: number) => {
     setSelected(selected.filter((item) => item.index !== index));
   };
 
-  const handleChoose = (account: SelectAccountItem) => {
+  const handleChoose = (account: ISelectAccountItem) => {
     setSelected([...selected, account]);
   };
 
-  const handleToggle = (account: SelectAccountItem) => {
+  const handleToggle = (account: ISelectAccountItem) => {
     const inIdxs = selected.findIndex((item) => item.index === account.index);
     if (inIdxs !== -1) {
       handleRemove(account.index);
@@ -49,16 +50,24 @@ const MultiSelectAddressList = ({
   };
 
   useEffect(() => {
-    onChange && onChange(selected);
+    setSelected(value || []);
+  }, [value]);
+
+  useEffect(() => {
+    onChange?.(selected);
   }, [selected]);
+
+  const importedAddresses = React.useMemo(() => {
+    return new Set(
+      ...(importedAccounts || []).map((address) => address.toLowerCase())
+    );
+  }, [importedAccounts]);
 
   return (
     <ul className="multiselect-address">
       {accounts.map((account) => {
         const checked = !!selected.find((item) => item.index === account.index);
-        const imported = importedAccounts
-          ?.map((address) => address.toLowerCase())
-          .includes(account.address.toLowerCase());
+        const imported = importedAddresses.has(account.address.toLowerCase());
         return (
           <FieldCheckbox
             key={account.index}

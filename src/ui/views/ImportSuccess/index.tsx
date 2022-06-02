@@ -2,7 +2,8 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import { useTranslation, Trans } from 'react-i18next';
 import { sortBy } from 'lodash';
-import { AddressList, StrayPageWithButton } from 'ui/component';
+import { StrayPageWithButton } from 'ui/component';
+import AddressItem from 'ui/component/AddressList/AddressItem';
 import { getUiType } from 'ui/utils';
 import { Account } from 'background/service/preference';
 import clsx from 'clsx';
@@ -13,7 +14,6 @@ import SuccessLogo from 'ui/assets/success-logo.svg';
 import './index.less';
 import { useMedia } from 'react-use';
 import Mask from 'ui/assets/import-mask.png';
-const { AddressItem } = AddressList;
 
 const ImportSuccess = ({ isPopup = false }: { isPopup?: boolean }) => {
   const history = useHistory();
@@ -165,7 +165,6 @@ const ImportSuccess = ({ isPopup = false }: { isPopup?: boolean }) => {
                 showIndex={!editing}
                 importedAccount
                 isMnemonics={isMnemonics}
-                currentImportLength={accounts.length}
                 importedLength={importedLength}
                 stopEditing={stopEditing || index !== editIndex}
                 canEditing={(editing) => startEdit(editing, index)}

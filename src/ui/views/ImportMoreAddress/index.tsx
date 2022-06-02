@@ -56,14 +56,13 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
 
   const [accounts, setAccounts] = useState<any[]>([]);
   const [importedAccounts, setImportedAccounts] = useState<any[]>([]);
-  const [form] = Form.useForm<{
-    selectedAddressIndexes: ISelectAccountItem[];
-  }>();
+
   const wallet = useWallet();
   const keyringId = useRef<number | null | undefined>(state.keyringId);
   const [selectedAccounts, setSelectedAcounts] = useState<ISelectAccountItem[]>(
     []
   );
+
   const [end, setEnd] = useState(1);
   const [currentPage, setCurrentPage] = useState(1);
   const [errorMsg, setErrorMsg] = useState('');
@@ -105,6 +104,15 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
         }
         setSpin(false);
         setAccounts(_accounts);
+
+        if (isMnemonics && _accounts[0]) {
+          setSelectedAcounts([
+            {
+              address: _accounts[0].address,
+              index: _accounts[0].index as number,
+            },
+          ]);
+        }
       },
       onError(err) {
         message.error('Please check the connection with your wallet');
@@ -167,13 +175,9 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
     setCurrentPage(page);
   };
 
-  const onSubmit = async ({
-    selectedAddressIndexes,
-  }: {
-    selectedAddressIndexes: ISelectAccountItem[];
-  }) => {
+  const onSubmit = async () => {
     setSpin(true);
-    const selectedIndexes = selectedAddressIndexes.map((i) => i.index - 1);
+    const selectedIndexes = selectedAccounts.map((i) => i.index - 1);
 
     if (isMnemonics) {
       await wallet.requestKeyring(
@@ -247,7 +251,7 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
   };
 
   return (
-    <div className="select-address">
+    <div className="impore-more-address">
       <StrayPageWithButton
         custom={isPopup && isWide}
         className={clsx(isPopup && isWide && 'rabby-stray-page')}
@@ -269,17 +273,16 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
         nextDisabled={selectedAccounts.length === 0}
         hasBack
         hasDivider={isMnemonics}
-        form={form}
         footerFixed={false}
         noPadding={isPopup}
         disableKeyDownEvent
         isScrollContainer={isPopup}
       >
         {isPopup && (
-          <header className="create-new-header create-password-header h-[100px]">
+          <header className="create-new-header import-more-address-header py-18 h-[80px]">
             <div className="rabby-container">
-              <p className="text-24 mb-4 text-white text-center font-bold">
-                {t('Select Addresses')}
+              <p className="text-20 mb-4 text-white text-center font-bold">
+                {t('Import more address')}
               </p>
               <p className="text-14 mb-0 mt-4 text-white opacity-80 text-center">
                 {t('Select the addresses you want to import')}
@@ -304,7 +307,7 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
         )}
         <div
           className={clsx(
-            'h-[40px] select-address-wrapper flex',
+            'h-[40px] impore-more-address-wrapper flex',
             isPopup ? 'w-[400px]' : 'w-[460px]',
             isGrid || ledgerLive ? 'justify-end' : 'items-center'
           )}
@@ -338,11 +341,12 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
               'flex-1': isPopup,
             })}
           >
-            <Form.Item className="mb-0 flex-1" name="selectedAddressIndexes">
+            <Form.Item className="mb-0 flex-1">
               <MultiSelectAddressList
                 accounts={accounts}
                 importedAccounts={importedAccounts}
                 type={keyring}
+                value={selectedAccounts}
                 onChange={handleSelectChange}
               />
             </Form.Item>

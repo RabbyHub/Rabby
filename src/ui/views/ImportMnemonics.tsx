@@ -12,6 +12,7 @@ import { useMedia } from 'react-use';
 import LessPalette from 'ui/style/var-defs';
 import { searchByPrefix } from 'ui/utils/smart-completion';
 import useDebounceValue from 'ui/hooks/useDebounceValue';
+import { connectStore, useRabbyDispatch } from '../store';
 
 const TipTextList = styled.ol`
   list-style-type: decimal;
@@ -146,10 +147,15 @@ const ImportMnemonics = () => {
     isLastTypingWordFull,
   } = useTypingMnemonics(form);
 
+  const dispatch = useRabbyDispatch();
+
   const [run, loading] = useWalletRequest(wallet.generateKeyringWithMnemonic, {
     onSuccess(stashKeyringId) {
+      dispatch.importMnemonics.setField({
+        stashKeyringId: stashKeyringId || null,
+      });
       history.push({
-        pathname: '/popup/import/select-address',
+        pathname: '/popup/import/confirm-mnemonics',
         state: {
           keyring: KEYRING_TYPE.HdKeyring,
           keyringId: stashKeyringId,
@@ -222,7 +228,9 @@ const ImportMnemonics = () => {
           <div className="relative">
             <Form.Item
               name="mnemonics"
-              rules={[{ required: true, message: t('Please input Mnemonics') }]}
+              rules={[
+                { required: true, message: t('Please input Seed Phrase') },
+              ]}
             >
               <Input.TextArea
                 className={`h-[128px] p-16 pb-${BAR_H}`}
@@ -264,4 +272,4 @@ const ImportMnemonics = () => {
   );
 };
 
-export default ImportMnemonics;
+export default connectStore()(ImportMnemonics);
