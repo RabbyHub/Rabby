@@ -150,11 +150,7 @@ class NotificationService extends Events {
 
     const approval = this.currentApproval;
 
-    if (approval && this.approvals.length > 1) {
-      this.deleteApproval(approval);
-    } else {
-      await this.clear();
-    }
+    this.deleteApproval(approval);
 
     this.currentApproval = null;
 
