@@ -139,7 +139,7 @@ const ConfirmMnemonics = ({ isPopup = false }: { isPopup?: boolean }) => {
           KEYRING_TYPE.HdKeyring,
           'activeAccounts',
           stashKeyringId,
-          accounts.map((acc) => acc.index)
+          accounts.map((acc) => (acc.index as number) - 1)
         );
         await wallet.addKeyring(stashKeyringId);
 
