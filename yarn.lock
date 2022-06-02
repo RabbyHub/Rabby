@@ -3619,6 +3619,11 @@
   dependencies:
     "@types/node" "*"
 
+"@types/semver-compare@^1.0.1":
+  version "1.0.1"
+  resolved "https://registry.yarnpkg.com/@types/semver-compare/-/semver-compare-1.0.1.tgz#17d1dc62c516c133ab01efb7803a537ee6eaf3d5"
+  integrity sha512-wx2LQVvKlEkhXp/HoKIZ/aSL+TvfJdKco8i0xJS3aR877mg4qBHzNT6+B5a61vewZHo79EdZavskGnRXEC2H6A==
+
 "@types/serve-index@^1.9.1":
   version "1.9.1"
   resolved "https://registry.yarnpkg.com/@types/serve-index/-/serve-index-1.9.1.tgz#1b5e85370a192c01ec6cec4735cf2917337a6278"
@@ -6721,10 +6726,10 @@ eth-hd-keyring@^3.5.0:
     events "^1.1.1"
     xtend "^4.0.1"
 
-eth-json-rpc-filters@^4.2.2:
-  version "4.2.2"
-  resolved "https://registry.yarnpkg.com/eth-json-rpc-filters/-/eth-json-rpc-filters-4.2.2.tgz#eb35e1dfe9357ace8a8908e7daee80b2cd60a10d"
-  integrity sha512-DGtqpLU7bBg63wPMWg1sCpkKCf57dJ+hj/k3zF26anXMzkmtSBDExL8IhUu7LUd34f0Zsce3PYNO2vV2GaTzaw==
+eth-json-rpc-filters@^5.0.0:
+  version "5.0.0"
+  resolved "https://registry.yarnpkg.com/eth-json-rpc-filters/-/eth-json-rpc-filters-5.0.0.tgz#4de032f5d8ec9fd8d2dc63b6bf38ed7095b5163f"
+  integrity sha512-oU05/bxJBUjEGO0ujSNALvgMwQ50uHuex0zkhsOCWnl3ISdWm0Ni4J0ZIjW44ZQrgXy8Nd1vkywGW2RFvcmE1w==
   dependencies:
     "@metamask/safe-event-emitter" "^2.0.0"
     async-mutex "^0.2.6"
@@ -11965,6 +11970,11 @@ selfsigned@^2.0.0:
   integrity sha512-cUdFiCbKoa1mZ6osuJs2uDHrs0k0oprsKveFiiaBKCNq3SYyb5gs2HxhQyDNLCmL51ZZThqi4YNDpCK6GOP1iQ==
   dependencies:
     node-forge "^1.2.0"
+
+semver-compare@^1.0.0:
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/semver-compare/-/semver-compare-1.0.0.tgz#0dee216a1c941ab37e9efb1788f6afc5ff5537fc"
+  integrity sha1-De4hahyUGrN+nvsXiPavxf9VN/w=
 
 "semver@2 || 3 || 4 || 5", semver@^5.6.0:
   version "5.7.1"

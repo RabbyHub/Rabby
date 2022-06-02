@@ -4,7 +4,7 @@ import { message } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { getUiType, useWallet } from 'ui/utils';
 import { openInternalPageInTab } from 'ui/utils/webapi';
-import Field from '../Field';
+import Field from './Field';
 import IconArrowRight from 'ui/assets/bookmark.svg';
 import IconHighLight from 'ui/assets/walletlogo/highlightstar.svg';
 import IconSuccess from 'ui/assets/success.svg';

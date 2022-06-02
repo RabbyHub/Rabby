@@ -38,7 +38,8 @@
         "validate": true
       }
     ],
-    "outDir": "./dist"
+    "outDir": "./dist",
+    "sourceMap": true
   },
   "exclude": ["./node_modules"],
   "include": ["src", "__tests__"]
