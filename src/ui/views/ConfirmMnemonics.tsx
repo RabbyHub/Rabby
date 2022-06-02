@@ -121,7 +121,6 @@ const ConfirmMnemonics = ({ isPopup = false }: { isPopup?: boolean }) => {
 
   const handleGotoImportMoreAddress = React.useCallback(() => {
     history.push({
-      // pathname: '/popup/import/select-address',
       pathname: '/popup/import/import-more-address',
       state: {
         keyring: KEYRING_TYPE.HdKeyring,

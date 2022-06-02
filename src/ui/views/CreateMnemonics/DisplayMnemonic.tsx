@@ -31,7 +31,6 @@ const MnemonicsMask = styled.div`
   height: 100%;
   top: 0;
   left: 0;
-  backdrop-filter: blur(120px);
   opacity: 0.9;
 `;
 
@@ -131,7 +130,10 @@ const DisplayMnemonic = () => {
                 {t('Click to show Seed Phrase')}
               </p>
             </MnemonicsMask>
-            <div className="rounded-[6px] flex items-center">
+            <div
+              className="rounded-[6px] flex items-center"
+              style={masked ? { filter: 'blur(3px)' } : {}}
+            >
               <WordsMatrix
                 focusable={false}
                 closable={false}

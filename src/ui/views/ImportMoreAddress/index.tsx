@@ -9,10 +9,9 @@ import {
   LoadingOverlay,
 } from 'ui/component';
 import type { ISelectAccountItem } from 'ui/component/MultiSelectAddressList';
-import stats from '@/stats';
 import { getUiType, useWallet, useWalletRequest } from 'ui/utils';
-import { HARDWARE_KEYRING_TYPES, HDPaths } from 'consts';
-import { BIP44_PATH, LEDGER_LIVE_PATH } from '../ImportHardware/LedgerHdPath';
+import { HARDWARE_KEYRING_TYPES, KEYRING_TYPE } from 'consts';
+import { LEDGER_LIVE_PATH } from '../ImportHardware/LedgerHdPath';
 import Pagination from './components/Pagination';
 import './style.less';
 import { useMedia } from 'react-use';
@@ -25,12 +24,7 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
   const { t } = useTranslation();
   const isWide = useMedia('(min-width: 401px)');
   const { state } = useLocation<{
-    keyring: string;
-    isMnemonics?: boolean;
-    isWebHID?: boolean;
-    path?: string;
     keyringId?: number | null;
-    ledgerLive?: boolean;
   }>();
 
   if (!state) {
@@ -47,18 +41,13 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
   }
 
   const {
-    keyring,
-    isMnemonics,
-    isWebHID,
-    ledgerLive,
-    path = LEDGER_LIVE_PATH,
+    keyringId,
   } = state;
 
   const [accounts, setAccounts] = useState<any[]>([]);
   const [importedAccounts, setImportedAccounts] = useState<any[]>([]);
 
   const wallet = useWallet();
-  const keyringId = useRef<number | null | undefined>(state.keyringId);
   const [selectedAccounts, setSelectedAcounts] = useState<ISelectAccountItem[]>(
     []
   );
@@ -67,30 +56,28 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [errorMsg, setErrorMsg] = useState('');
   const [spinning, setSpin] = useState(true);
-  const isGrid = keyring === HARDWARE_KEYRING_TYPES.GridPlus.type;
-  const isLedger = keyring === HARDWARE_KEYRING_TYPES.Ledger.type;
 
   const [getAccounts] = useWalletRequest(
     async (firstFlag, start?, end?): Promise<Account[]> => {
       setSpin(true);
       return firstFlag
         ? await wallet.requestKeyring(
-            keyring,
+            KEYRING_TYPE.HdKeyring,
             'getFirstPage',
-            keyringId.current ?? null
+            keyringId ?? null
           )
-        : end && !isGrid && !ledgerLive
+        : end
         ? await wallet.requestKeyring(
-            keyring,
+            KEYRING_TYPE.HdKeyring,
             'getAddresses',
-            keyringId.current ?? null,
+            keyringId ?? null,
             start,
             end
           )
         : await wallet.requestKeyring(
-            keyring,
+            KEYRING_TYPE.HdKeyring,
             'getNextPage',
-            keyringId.current ?? null
+            keyringId ?? null
           );
     },
     {
@@ -105,7 +92,7 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
         setSpin(false);
         setAccounts(_accounts);
 
-        if (firstFlag && isMnemonics && _accounts[0]) {
+        if (firstFlag && _accounts[0]) {
           setSelectedAcounts([
             {
               address: _accounts[0].address,
@@ -122,23 +109,10 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
   );
 
   const init = async () => {
-    if (keyringId.current === null || keyringId.current === undefined) {
-      const stashKeyringId = await wallet.connectHardware({
-        type: keyring,
-        hdPath:
-          path ||
-          (keyring === HARDWARE_KEYRING_TYPES.Ledger.type
-            ? LEDGER_LIVE_PATH
-            : BIP44_PATH),
-        isWebHID,
-      });
-      keyringId.current = stashKeyringId;
-    }
-
     const _importedAccounts = await wallet.requestKeyring(
-      keyring,
+      KEYRING_TYPE.HdKeyring,
       'getAccounts',
-      keyringId.current
+      keyringId
     );
     setImportedAccounts(_importedAccounts);
     getAccounts(true);
@@ -146,21 +120,16 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
 
   useEffect(() => {
     init();
-    if (!isMnemonics) {
-      stats.report('connectHardware', {
-        type: keyring,
-      });
-    }
     return () => {
-      wallet.requestKeyring(keyring, 'cleanUp', keyringId.current ?? null);
+      wallet.requestKeyring(KEYRING_TYPE.HdKeyring, 'cleanUp', keyringId ?? null);
     };
   }, []);
 
   const handleHDPathChange = async (v: string) => {
     await wallet.requestKeyring(
-      keyring,
+      KEYRING_TYPE.HdKeyring,
       'setHdPath',
-      keyringId.current ?? null,
+      keyringId ?? null,
       v
     );
     getAccounts(true);
@@ -178,43 +147,27 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
   const onSubmit = async () => {
     setSpin(true);
     const selectedIndexes = selectedAccounts.map((i) => i.index - 1);
+    
+    await wallet.requestKeyring(
+      KEYRING_TYPE.HdKeyring,
+      'activeAccounts',
+      keyringId ?? null,
+      selectedIndexes
+    );
+    await wallet.addKeyring(keyringId);
 
-    if (isMnemonics) {
-      await wallet.requestKeyring(
-        keyring,
-        'activeAccounts',
-        keyringId.current ?? null,
-        selectedIndexes
-      );
-      await wallet.addKeyring(keyringId.current);
-    } else {
-      await wallet.unlockHardwareAccount(
-        keyring,
-        selectedIndexes,
-        keyringId.current
-      );
-    }
-
-    if (keyring === HARDWARE_KEYRING_TYPES.Ledger.type && isWebHID) {
-      await wallet.requestKeyring(
-        keyring,
-        'cleanUp',
-        keyringId.current ?? null
-      );
-    }
     setSpin(false);
     history.replace({
       pathname: isPopup ? '/popup/import/success' : '/import/success',
       state: {
         accounts: selectedAccounts.map((account) => ({
           ...account,
-          brandName: keyring,
-          type: keyring,
+          brandName: KEYRING_TYPE.HdKeyring,
+          type: KEYRING_TYPE.HdKeyring,
         })),
-        hasDivider: !!isMnemonics,
+        hasDivider: true,
         editing: true,
         showImportIcon: false,
-        isMnemonics,
         importedAccount: true,
         importedLength: importedAccounts && importedAccounts?.length,
       },
@@ -258,21 +211,16 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
         header={
           isPopup
             ? undefined
-            : isMnemonics
-            ? {
-                secondTitle: t('Select Addresses'),
-                subTitle: t('Select the addresses you want to import'),
-              }
             : {
-                title: t('Select the addresses to use in Rabby'),
-                center: true,
-              }
+              secondTitle: t('Select Addresses'),
+              subTitle: t('Select the addresses you want to import'),
+            }
         }
         headerClassName="mb-16"
         onSubmit={onSubmit}
         nextDisabled={selectedAccounts.length === 0}
         hasBack
-        hasDivider={isMnemonics}
+        hasDivider
         footerFixed={false}
         noPadding={isPopup}
         disableKeyDownEvent
@@ -290,45 +238,28 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
             </div>
           </header>
         )}
-        {isLedger && (
-          <div className="select-hdpath">
-            {t('SelectHDPath')}
-            <Select
-              defaultValue={path}
-              onChange={handleHDPathChange}
-              dropdownMatchSelectWidth={180}
-              dropdownClassName="select-hdpath-dropdown"
-            >
-              {HDPaths[keyring].map((path) => {
-                return <Option value={path.value}>{path.name}</Option>;
-              })}
-            </Select>
-          </div>
-        )}
         <div
           className={clsx(
             'h-[40px] impore-more-address-wrapper flex',
             isPopup ? 'w-[400px]' : 'w-[460px]',
-            isGrid || ledgerLive ? 'justify-end' : 'items-center'
+            'items-center'
           )}
         >
-          {!isGrid && !ledgerLive && (
-            <div className={clsx('flex items-center')}>
-              <p className="pt-12">{t('Start from address')}</p>{' '}
-              <Input
-                className="ml-10"
-                size="small"
-                width={48}
-                height={24}
-                maxLength={6}
-                onChange={toSpecificNumber}
-                onPressEnter={startNumberConfirm}
-                spellCheck={false}
-                value={end}
-              />
-              {errorMsg && <p className="error-message pt-12">{errorMsg}</p>}
-            </div>
-          )}
+          <div className={clsx('flex items-center')}>
+            <p className="pt-12">{t('Start from address')}</p>{' '}
+            <Input
+              className="ml-10"
+              size="small"
+              width={48}
+              height={24}
+              maxLength={6}
+              onChange={toSpecificNumber}
+              onPressEnter={startNumberConfirm}
+              spellCheck={false}
+              value={end}
+            />
+            {errorMsg && <p className="error-message pt-12">{errorMsg}</p>}
+          </div>
 
           <div className="place-self-center">
             {selectedAccounts.length} {t('addresses selected')}
@@ -345,7 +276,7 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
               <MultiSelectAddressList
                 accounts={accounts}
                 importedAccounts={importedAccounts}
-                type={keyring}
+                type={KEYRING_TYPE.HdKeyring}
                 value={selectedAccounts}
                 onChange={handleSelectChange}
               />
