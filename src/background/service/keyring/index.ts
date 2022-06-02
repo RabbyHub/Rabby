@@ -26,7 +26,6 @@ import GnosisKeyring, {
   TransactionConfirmedEvent,
 } from './eth-gnosis-keyring';
 import preference from '../preference';
-import i18n from '../i18n';
 import { KEYRING_TYPE, HARDWARE_KEYRING_TYPES, EVENTS } from 'consts';
 import DisplayKeyring from './display';
 import eventBus from '@/eventBus';
@@ -168,7 +167,7 @@ class KeyringService extends EventEmitter {
 
   async generatePreMnemonic(): Promise<string> {
     if (!this.password) {
-      throw new Error(i18n.t('you need to unlock wallet first'));
+      throw new Error('you need to unlock wallet first');
     }
     const mnemonic = this.generateMnemonic();
     const preMnemonics = await this.encryptor.encrypt(this.password, mnemonic);
@@ -193,7 +192,7 @@ class KeyringService extends EventEmitter {
     }
 
     if (!this.password) {
-      throw new Error(i18n.t('you need to unlock wallet first'));
+      throw new Error('you need to unlock wallet first');
     }
 
     return await this.encryptor.decrypt(
@@ -214,7 +213,7 @@ class KeyringService extends EventEmitter {
    */
   createKeyringWithMnemonics(seed: string): Promise<any> {
     if (!bip39.validateMnemonic(seed)) {
-      return Promise.reject(new Error(i18n.t('mnemonic phrase is invalid')));
+      return Promise.reject(new Error('mnemonic phrase is invalid'));
     }
 
     let keyring;
@@ -314,7 +313,7 @@ class KeyringService extends EventEmitter {
   async verifyPassword(password: string): Promise<void> {
     const encryptedBooted = this.store.getState().booted;
     if (!encryptedBooted) {
-      throw new Error(i18n.t('Cannot unlock without a previous vault'));
+      throw new Error('Cannot unlock without a previous vault');
     }
     await this.encryptor.decrypt(password, encryptedBooted);
   }
@@ -395,7 +394,7 @@ class KeyringService extends EventEmitter {
     });
 
     return isIncluded
-      ? Promise.reject(new Error(i18n.t('duplicateAccount')))
+      ? Promise.reject(new Error('duplicateAccount'))
       : Promise.resolve(newAccountArray);
   }
 
@@ -693,7 +692,7 @@ class KeyringService extends EventEmitter {
   async unlockKeyrings(password: string): Promise<any[]> {
     const encryptedVault = this.store.getState().vault;
     if (!encryptedVault) {
-      throw new Error(i18n.t('Cannot unlock without a previous vault'));
+      throw new Error('Cannot unlock without a previous vault');
     }
 
     await this.clearKeyrings();

@@ -5,36 +5,11 @@ import Views from './views';
 import { Message } from '@/utils';
 import { getUITypeName } from 'ui/utils';
 import eventBus from '@/eventBus';
-import * as Sentry from '@sentry/react';
-import { Integrations } from '@sentry/tracing';
 import i18n, { addResourceBundle } from 'src/i18n';
 import { EVENTS } from 'consts';
 import '../i18n';
 
 import './style/index.less';
-
-let environment = 'production';
-
-if (process.env.DEBUG) {
-  environment = 'debug';
-}
-
-if (process.env.NODE_ENV === 'development') {
-  environment = 'development';
-}
-
-Sentry.init({
-  dsn:
-    'https://e871ee64a51b4e8c91ea5fa50b67be6b@o460488.ingest.sentry.io/5831390',
-  integrations: [new Integrations.BrowserTracing()],
-  release: process.env.release,
-
-  // Set tracesSampleRate to 1.0 to capture 100%
-  // of transactions for performance monitoring.
-  // We recommend adjusting this value in production
-  tracesSampleRate: 1.0,
-  environment,
-});
 
 // For fix chrome extension render problem in external screen
 if (
@@ -78,7 +53,7 @@ function initAppMeta() {
   head?.appendChild(icon);
   const name = document.createElement('meta');
   name.name = 'name';
-  name.content = 'Rabby';
+  name.content = 'Ducky Wallet';
   head?.appendChild(name);
   const description = document.createElement('meta');
   description.name = 'description';

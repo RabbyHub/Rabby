@@ -2,7 +2,7 @@ import cloneDeep from 'lodash/cloneDeep';
 import eventBus from '@/eventBus';
 import compareVersions from 'compare-versions';
 import { createPersistStore } from 'background/utils';
-import { keyringService, sessionService, i18n } from './index';
+import { keyringService, sessionService } from './index';
 import { TotalBalanceResponse, TokenItem } from './openapi';
 import { HARDWARE_KEYRING_TYPES, EVENTS, CHAINS_ENUM } from 'consts';
 import { browser } from 'webextension-polyfill-ts';
@@ -93,7 +93,6 @@ class PreferenceService {
     if (!this.store.locale || this.store.locale !== defaultLang) {
       this.store.locale = defaultLang;
     }
-    i18n.changeLanguage(this.store.locale);
     if (
       this.store.isDefaultWallet === undefined ||
       this.store.isDefaultWallet === null
@@ -198,11 +197,12 @@ class PreferenceService {
   };
 
   getAcceptLanguages = async () => {
-    let langs = await browser.i18n.getAcceptLanguages();
-    if (!langs) langs = [];
-    return langs
-      .map((lang) => lang.replace(/-/g, '_'))
-      .filter((lang) => SUPPORT_LOCALES.includes(lang));
+    // let langs = await browser.i18n.getAcceptLanguages();
+    // if (!langs) langs = [];
+    // return langs
+    //   .map((lang) => lang.replace(/-/g, '_'))
+    //   .filter((lang) => SUPPORT_LOCALES.includes(lang));
+    return ['en'];
   };
 
   getHiddenAddresses = (): Account[] => {
@@ -301,8 +301,8 @@ class PreferenceService {
   };
 
   setLocale = (locale: string) => {
-    this.store.locale = locale;
-    i18n.changeLanguage(locale);
+    // this.store.locale = locale;
+    // i18n.changeLanguage(locale);
   };
 
   updateUseLedgerLive = async (value: boolean) => {

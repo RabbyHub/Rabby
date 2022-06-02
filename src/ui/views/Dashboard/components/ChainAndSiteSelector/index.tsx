@@ -310,8 +310,6 @@ export default ({
     (key) => panelItems[key]
   );
 
-  console.log('directionPanelData', directionPanelData);
-
   return (
     <div className={clsx('recent-connections', connectionAnimation)}>
       <img

@@ -29,7 +29,6 @@ import {
   transactionHistoryService,
   pageStateCacheService,
   signTextHistoryService,
-  i18n,
 } from 'background/service';
 import { notification } from 'background/webapi';
 import { Session } from 'background/service/session';
@@ -415,7 +414,7 @@ class ProviderController extends BaseController {
         );
       }
       const errMsg = e.message || JSON.stringify(e);
-      notification.create(undefined, i18n.t('Transaction push failed'), errMsg);
+      notification.create(undefined, 'Transaction push failed', errMsg);
       throw new Error(errMsg);
     }
   };

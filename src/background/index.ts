@@ -21,7 +21,6 @@ import {
   widgetService,
 } from './service';
 import { providerController, walletController } from './controller';
-import i18n from './service/i18n';
 import rpcCache from './utils/rpcCache';
 import eventBus from '@/eventBus';
 import migrateData from '@/migrations';
@@ -33,32 +32,21 @@ const { PortMessage } = Message;
 
 let appStoreLoaded = false;
 
-Sentry.init({
-  dsn:
-    'https://e871ee64a51b4e8c91ea5fa50b67be6b@o460488.ingest.sentry.io/5831390',
-  integrations: [new Integrations.BrowserTracing()],
-  release: process.env.release,
-  // Set tracesSampleRate to 1.0 to capture 100%
-  // of transactions for performance monitoring.
-  // We recommend adjusting this value in production
-  tracesSampleRate: 1.0,
-});
-
-function initAppMeta() {
-  const head = document.querySelector('head');
-  const icon = document.createElement('link');
-  icon.href = 'https://rabby.io/assets/images/logo-128.png';
-  icon.rel = 'icon';
-  head?.appendChild(icon);
-  const name = document.createElement('meta');
-  name.name = 'name';
-  name.content = 'Rabby';
-  head?.appendChild(name);
-  const description = document.createElement('meta');
-  description.name = 'description';
-  description.content = i18n.t('appDescription');
-  head?.appendChild(description);
-}
+// function initAppMeta() {
+//   const head = document.querySelector('head');
+//   const icon = document.createElement('link');
+//   icon.href = 'https://rabby.io/assets/images/logo-128.png';
+//   icon.rel = 'icon';
+//   head?.appendChild(icon);
+//   const name = document.createElement('meta');
+//   name.name = 'name';
+//   name.content = 'Ducky Wallet';
+//   head?.appendChild(name);
+//   const description = document.createElement('meta');
+//   description.name = 'description';
+//   description.content = 'appDescription';
+//   head?.appendChild(description);
+// }
 
 async function restoreAppState() {
   const keyringState = await storage.get('keyringState');
@@ -82,7 +70,7 @@ async function restoreAppState() {
   appStoreLoaded = true;
 
   transactionWatchService.roll();
-  initAppMeta();
+  // initAppMeta();
 }
 
 restoreAppState();

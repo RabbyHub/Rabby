@@ -198,6 +198,7 @@ const config = {
   },
   stats: 'minimal',
   optimization: {
+    runtimeChunk: true,
     splitChunks: {
       cacheGroups: {
         'webextension-polyfill': {
