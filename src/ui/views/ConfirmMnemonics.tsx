@@ -13,6 +13,7 @@ import { IconImportSuccess } from 'ui/assets';
 import ConfirmMnemonicsLogo from 'ui/assets/confirm-mnemonics.svg';
 import { useMedia } from 'react-use';
 import Mask from 'ui/assets/import-mask.png';
+import IconArrowRight from 'ui/assets/import/import-arrow-right.svg';
 
 import { message } from 'antd';
 import { useRabbySelector } from '../store';
@@ -275,7 +276,8 @@ const ConfirmMnemonics = ({ isPopup = false }: { isPopup?: boolean }) => {
               className="cursor-pointer text-12 leading-14"
               onClick={handleGotoImportMoreAddress}
             >
-              {t('Import more address')}
+              <span>{t('Import more address')}</span>
+              <img className="inline-block" src={IconArrowRight} />
             </span>
           </div>
         </div>
