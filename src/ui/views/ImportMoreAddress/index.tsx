@@ -94,7 +94,7 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
           );
     },
     {
-      onSuccess(_accounts) {
+      onSuccess(_accounts, { args: [firstFlag] }) {
         if (_accounts.length < 5) {
           throw new Error(
             t(
@@ -105,7 +105,7 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
         setSpin(false);
         setAccounts(_accounts);
 
-        if (isMnemonics && _accounts[0]) {
+        if (firstFlag && isMnemonics && _accounts[0]) {
           setSelectedAcounts([
             {
               address: _accounts[0].address,

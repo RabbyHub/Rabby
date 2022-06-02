@@ -124,7 +124,7 @@ export const useWalletRequest = <TReqArgs extends any[] = any[], TRet = any>(
     onSuccess,
     onError,
   }: {
-    onSuccess?(ret: TRet): void;
+    onSuccess?(ret: TRet, opts: { args: TReqArgs }): void;
     onError?(arg: Error): void;
   }
 ) => {
@@ -148,7 +148,7 @@ export const useWalletRequest = <TReqArgs extends any[] = any[], TRet = any>(
         return;
       }
       setRes(_res);
-      onSuccess && onSuccess(_res);
+      onSuccess && onSuccess(_res, { args });
     } catch (err) {
       if (!mounted.current) {
         return;
