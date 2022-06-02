@@ -1058,14 +1058,14 @@ export class WalletController extends BaseController {
       throw new Error('You’ve already imported this seed phrase');
     }
 
-    const stashId = Object.values(stashKeyrings).length;
+    const stashId = Object.values(stashKeyrings).length + 1;
     stashKeyrings[stashId] = keyring;
 
     return stashId;
   };
 
   addKyeringToStash = (keyring) => {
-    const stashId = Object.values(stashKeyrings).length;
+    const stashId = Object.values(stashKeyrings).length + 1;
     stashKeyrings[stashId] = keyring;
 
     return stashId;
@@ -1194,7 +1194,7 @@ export class WalletController extends BaseController {
     } catch {
       const Keyring = keyringService.getKeyringClassForType(type);
       keyring = new Keyring();
-      stashKeyringId = Object.values(stashKeyrings).length;
+      stashKeyringId = Object.values(stashKeyrings).length + 1;
       stashKeyrings[stashKeyringId] = keyring;
     }
 
@@ -1249,7 +1249,7 @@ export class WalletController extends BaseController {
         keyringType
       );
       keyring = new keystoneKeyring();
-      stashKeyringId = Object.values(stashKeyrings).length;
+      stashKeyringId = Object.values(stashKeyrings).length + 1;
       stashKeyrings[stashKeyringId] = keyring;
     }
     keyring.readKeyring();
@@ -1268,7 +1268,7 @@ export class WalletController extends BaseController {
         keyringType
       );
       keyring = new keystoneKeyring();
-      stashKeyringId = Object.values(stashKeyrings).length;
+      stashKeyringId = Object.values(stashKeyrings).length + 1;
       stashKeyrings[stashKeyringId] = keyring;
     }
     keyring.readKeyring();
