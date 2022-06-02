@@ -19,6 +19,7 @@ import {
   WALLET_BRAND_CONTENT,
   KEYRING_TYPE_TEXT,
   BRAND_ALIAN_TYPE_TEXT,
+  KEYRING_TYPE,
 } from 'consts';
 import IconEditPen from 'ui/assets/editpen.svg';
 import IconCorrect from 'ui/assets/dashboard/contacts/correct.png';
@@ -225,6 +226,7 @@ const AddressItem = memo(
           const existAlianName = await wallet.getAlianName(
             account?.address?.toLowerCase()
           );
+
           if (existAlianName) {
             setAlianName(existAlianName);
             setDisplayName(existAlianName);
@@ -234,12 +236,9 @@ const AddressItem = memo(
               account?.brandName
             } ${importedLength + (index || 0) + 1}`;
 
-            if (importedAccount) {
+            if (isMnemonics) {
               alianName = makeAlianNameName({
-                brandName: `${
-                  BRAND_ALIAN_TYPE_TEXT[account?.brandName || account?.type] ||
-                  account?.brandName
-                }`,
+                brandName: `${BRAND_ALIAN_TYPE_TEXT[KEYRING_TYPE.HdKeyring]}`,
                 keyringCount: Math.max(importedLength, 1),
                 keyringIndex: index || 0,
               });

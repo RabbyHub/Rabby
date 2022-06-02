@@ -43,6 +43,7 @@ const TextAreaBar = styled.div`
     flex-shrink: 1;
     padding-left: 8px;
     padding-right: 8px;
+    cursor: pointer;
   }
 
   .work-item {
@@ -72,11 +73,11 @@ function useTypingMnemonics(form: FormInstance<IFormStates>) {
   const [currentWords, _setCurrentWords] = React.useState<string[]>([]);
 
   const debouncedMnemonics = useDebounceValue(mnemonics, 250);
-  const { mnemonicsList, lastTypingWord } = React.useMemo(() => {
+  const { lastTypingWord } = React.useMemo(() => {
     const mnemonicsList = debouncedMnemonics?.split(' ') || [];
     const lastTypingWord = mnemonicsList.pop() || '';
 
-    return { mnemonicsList, lastTypingWord };
+    return { lastTypingWord };
   }, [debouncedMnemonics]);
 
   const setCurrentWords = React.useCallback(
@@ -100,6 +101,20 @@ function useTypingMnemonics(form: FormInstance<IFormStates>) {
     [lastTypingWord, form]
   );
 
+  const setLastMnemonicsPart = React.useCallback(
+    (word) => {
+      const parts = mnemonics?.split(' ') || [];
+      parts.pop();
+      parts.push(word);
+      const nextVal = parts.join(' ');
+      setMnemonics(nextVal);
+      form.setFieldsValue({ mnemonics: nextVal });
+
+      return nextVal;
+    },
+    [mnemonics, form]
+  );
+
   React.useEffect(() => {
     if (!lastTypingWord || !isStrEnglish(lastTypingWord)) {
       setCurrentWords([]);
@@ -113,7 +128,8 @@ function useTypingMnemonics(form: FormInstance<IFormStates>) {
   return {
     currentWords,
     setMnemonics,
-    allMnemonicsSet: mnemonicsList.length === 12,
+    setLastMnemonicsPart,
+    isLastTypingWordFull: currentWords.includes(lastTypingWord),
   };
 }
 
@@ -123,7 +139,12 @@ const ImportMnemonics = () => {
   const [form] = Form.useForm<IFormStates>();
   const { t } = useTranslation();
   const isWide = useMedia('(min-width: 401px)');
-  const { setMnemonics, currentWords } = useTypingMnemonics(form);
+  const {
+    setMnemonics,
+    currentWords,
+    setLastMnemonicsPart,
+    isLastTypingWordFull,
+  } = useTypingMnemonics(form);
 
   const [run, loading] = useWalletRequest(wallet.generateKeyringWithMnemonic, {
     onSuccess(stashKeyringId) {
@@ -198,28 +219,35 @@ const ImportMnemonics = () => {
       </header>
       <div className="rabby-container">
         <div className="pt-32 px-20">
-          <Form.Item
-            name="mnemonics"
-            className="relative"
-            rules={[{ required: true, message: t('Please input Mnemonics') }]}
-          >
-            <div>
+          <div className="relative">
+            <Form.Item
+              name="mnemonics"
+              rules={[{ required: true, message: t('Please input Mnemonics') }]}
+            >
               <Input.TextArea
                 className={`h-[128px] p-16 pb-${BAR_H}`}
                 placeholder={t('Enter your Seed Phrase, distinguish by space')}
                 spellCheck={false}
               />
+            </Form.Item>
+            {!isLastTypingWordFull && (
               <TextAreaBar>
                 {currentWords.map((word, idx) => {
                   return (
-                    <div key={`word-${word}-${idx}`} className="work-item-box">
+                    <div
+                      key={`word-${word}-${idx}`}
+                      className="work-item-box"
+                      onClick={() => {
+                        setLastMnemonicsPart(word);
+                      }}
+                    >
                       <span className="work-item">{word}</span>
                     </div>
                   );
                 })}
               </TextAreaBar>
-            </div>
-          </Form.Item>
+            )}
+          </div>
           <TipTextList className="text-14 pl-20 mt-35">
             <li>
               The seed phrase you import will only be stored on the front end of
