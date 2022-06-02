@@ -4,7 +4,7 @@ import { useWallet } from 'ui/utils';
 import { splitNumberByStep } from 'ui/utils/number';
 import { KEYRINGS_LOGOS, WALLET_BRAND_CONTENT, KEYRING_CLASS } from 'consts';
 import { AddressViewer } from 'ui/component';
-import { useCurrentBalance } from 'ui/component/AddressList/AddressItem';
+import useCurrentBalance from 'ui/hooks/useCurrentBalance';
 import clsx from 'clsx';
 
 const AccountCard = ({
