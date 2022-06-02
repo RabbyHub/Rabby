@@ -1054,6 +1054,8 @@ export class WalletController extends BaseController {
       );
 
       keyring = new Keyring({ mnemonic });
+    } else {
+      throw new Error('You’ve already imported this seed phrase');
     }
 
     const stashId = Object.values(stashKeyrings).length;
