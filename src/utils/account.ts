@@ -1,7 +1,5 @@
 import { BRAND_ALIAN_TYPE_TEXT, KEYRING_CLASS, KEYRING_TYPE } from 'consts';
 
-// TODO: REMOVE ME
-
 export function generateAliasName({
   keyringType,
   brandName,
@@ -17,6 +15,10 @@ export function generateAliasName({
     return `${BRAND_ALIAN_TYPE_TEXT[KEYRING_TYPE.HdKeyring]} ${
       keyringCount || 1
     } #${addressCount || 1}`;
+  } else if (keyringType === KEYRING_TYPE.SimpleKeyring) {
+    return `${BRAND_ALIAN_TYPE_TEXT[keyringType] || brandName} ${
+      keyringCount + 1
+    }`;
   } else {
     if (brandName) {
       return `${BRAND_ALIAN_TYPE_TEXT[brandName] || brandName} ${

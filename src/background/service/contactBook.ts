@@ -16,7 +16,7 @@ export type ContactBookStore = Record<string, ContactBookItem | undefined>;
 
 class ContactBook {
   store!: ContactBookStore;
-  cache!: ContactBookStore;
+  cache: ContactBookStore = {};
 
   init = async () => {
     this.store = await createPersistStore<ContactBookStore>({
