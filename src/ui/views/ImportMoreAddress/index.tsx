@@ -175,6 +175,7 @@ const ImportMoreAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
           dispatch.importMnemonics.setSelectedIndexes({
             indexes: [...draftIndexes],
           });
+          dispatch.importMnemonics.clearDraftIndexes();
 
           history.replace({
             pathname: isPopup
@@ -184,6 +185,8 @@ const ImportMoreAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
           });
         }}
         onBackClick={() => {
+          dispatch.importMnemonics.clearDraftIndexes();
+          
           history.replace({
             pathname: isPopup
               ? '/popup/import/mnemonics-confirm'

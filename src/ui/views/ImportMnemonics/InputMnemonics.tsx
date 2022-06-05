@@ -150,7 +150,7 @@ const ImportMnemonics = () => {
 
   const [run, loading] = useWalletRequest(wallet.generateKeyringWithMnemonic, {
     onSuccess(stashKeyringId) {
-      dispatch.importMnemonics.setField({
+      dispatch.importMnemonics.switchKeyring({
         stashKeyringId: stashKeyringId ?? null,
       });
       history.push({

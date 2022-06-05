@@ -116,6 +116,7 @@ const ConfirmMnemonics = ({ isPopup = false }: { isPopup?: boolean }) => {
   }, [backFromImportMoreAddress]);
 
   const handleGotoImportMoreAddress = React.useCallback(() => {
+    dispatch.importMnemonics.beforeImportMoreAddresses();
     history.replace({
       pathname: '/popup/import/mnemonics-import-more-address',
     });

@@ -6,33 +6,33 @@ import type { Account } from 'background/service/preference';
 import { makeAlianName } from '../utils/account';
 
 interface IState {
-  stashKeyringId: number | null;
   mnemonicsCounter: number;
+  queriedAccounts: Record<Exclude<Account['index'], undefined>, Account>;
+
+  stashKeyringId: number | null;
   importingAccounts: Account[];
   importedAddresses: Set<Account['address']>;
+  selectedAddressesIndexes: Set<Exclude<Account['index'], void>>;
   draftIndexes: Set<Exclude<Account['index'], void>>;
-  queriedAccounts: Record<Exclude<Account['index'], undefined>, Account>;
+}
+
+const makeInitValues = () => {
+  return {
+    mnemonicsCounter: -1,
+    queriedAccounts: {},
+
+    stashKeyringId: null,
+    importingAccounts: [],
+    importedAddresses: new Set(),
+    selectedAddressesIndexes: new Set(),
+    draftIndexes: new Set(),
+  } as IState;
 }
 
 export const importMnemonics = createModel<RootModel>()({
   name: 'importMnemonics',
 
-  state: {
-    /**
-     * @description current importing keyring's id
-     */
-    stashKeyringId: null,
-
-    mnemonicsCounter: -1,
-
-    importingAccounts: [],
-
-    importedAddresses: new Set(),
-
-    draftIndexes: new Set(),
-
-    queriedAccounts: {},
-  } as IState,
+  state: makeInitValues(),
 
   reducers: {
     setField(state, payload: Partial<typeof state>) {
@@ -51,6 +51,17 @@ export const importMnemonics = createModel<RootModel>()({
   },
 
   effects: (dispatch) => ({
+    switchKeyring (payload: { stashKeyringId: IState['stashKeyringId'] }) {
+      const initValues = makeInitValues();
+
+      dispatch.importMnemonics.setField({
+        importingAccounts: initValues.importingAccounts,
+        importedAddresses: initValues.importedAddresses,
+        draftIndexes: initValues.draftIndexes,
+        stashKeyringId: payload.stashKeyringId,
+      })
+    },
+
     async getMnemonicsCounterAsync(_?, store?) {
       const typedAccounts = await store.app.wallet.getAllClassAccounts();
       const len = typedAccounts.filter(
@@ -151,7 +162,21 @@ export const importMnemonics = createModel<RootModel>()({
 
       dispatch.importMnemonics.setField({
         importingAccounts,
+        selectedAddressesIndexes,
       });
+    },
+
+    beforeImportMoreAddresses(_?, store?) {
+      const selectedAddressesIndexes = store.importMnemonics.selectedAddressesIndexes;
+      dispatch.importMnemonics.setField({
+        draftIndexes: new Set([...selectedAddressesIndexes]),
+      })
+    },
+
+    clearDraftIndexes () {
+      dispatch.importMnemonics.setField({
+        draftIndexes: new Set(),
+      })
     },
 
     async confirmAllImportingAccountsAsync(_?, store?) {
