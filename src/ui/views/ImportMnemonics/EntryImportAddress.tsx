@@ -16,8 +16,6 @@ import { useMedia } from 'react-use';
 import clsx from 'clsx';
 import { connectStore } from '@/ui/store';
 
-import './index.less';
-
 const EntryImportAddress = () => {
   const { t } = useTranslation();
   const history = useHistory();

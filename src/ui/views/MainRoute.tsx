@@ -9,12 +9,14 @@ import CreatePassword from './CreatePassword';
 import ImportMode from './ImportMode';
 import ImportPrivateKey from './ImportPrivateKey';
 import ImportJson from './ImportJson';
-import ImportMnemonics from './ImportMnemonics';
-import EntryImportAddress from './EntryImportAddress';
+
+import InputMnemonics from './ImportMnemonics/InputMnemonics';
+import EntryImportAddress from './ImportMnemonics/EntryImportAddress';
+import ConfirmMnemonics from './ImportMnemonics/ConfirmMnemonics';
+
 import ImportWatchAddress from './ImportWatchAddress';
 import ImportQRCodeBase from './ImportQRCodeBase';
 import SelectAddress from './SelectAddress';
-import ConfirmMnemonics from './ConfirmMnemonics';
 import ImportMoreAddress from './ImportMoreAddress';
 import ImportSuccess from './ImportSuccess';
 import ImportHardware from './ImportHardware';
@@ -93,25 +95,25 @@ const Main = () => {
           <ImportJson />
         </PrivateRoute>
         <PrivateRoute exact path="/import/mnemonics">
-          <ImportMnemonics />
+          <InputMnemonics />
+        </PrivateRoute>
+        <PrivateRoute exact path="/popup/import/mnemonics-confirm">
+          <ConfirmMnemonics isPopup />
+        </PrivateRoute>
+        <PrivateRoute exact path="/import/mnemonics-confirm">
+          <ConfirmMnemonics />
+        </PrivateRoute>
+        <PrivateRoute exact path="/popup/import/mnemonics-import-more-address">
+          <ImportMoreAddress isPopup />
+        </PrivateRoute>
+        <PrivateRoute exact path="/import/mnemonics-import-more-address">
+          <ImportMoreAddress />
         </PrivateRoute>
         <PrivateRoute exact path="/popup/import/select-address">
           <SelectAddress isPopup />
         </PrivateRoute>
         <PrivateRoute exact path="/import/select-address">
           <SelectAddress />
-        </PrivateRoute>
-        <PrivateRoute exact path="/popup/import/confirm-mnemonics">
-          <ConfirmMnemonics isPopup />
-        </PrivateRoute>
-        <PrivateRoute exact path="/import/confirm-mnemonics">
-          <ConfirmMnemonics />
-        </PrivateRoute>
-        <PrivateRoute exact path="/popup/import/import-more-address">
-          <ImportMoreAddress isPopup />
-        </PrivateRoute>
-        <PrivateRoute exact path="/import/import-more-address">
-          <ImportMoreAddress />
         </PrivateRoute>
         <PrivateRoute exact path="/import/hardware">
           <ImportHardware />

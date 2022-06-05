@@ -16,7 +16,7 @@ import Mask from 'ui/assets/import-mask.png';
 import IconArrowRight from 'ui/assets/import/import-arrow-right.svg';
 
 import { message } from 'antd';
-import { useRabbyDispatch, useRabbySelector } from '../store';
+import { useRabbyDispatch, useRabbySelector } from '../../store';
 
 const AddressWrapper = styled.div`
   & {
@@ -119,7 +119,7 @@ const ConfirmMnemonics = ({ isPopup = false }: { isPopup?: boolean }) => {
 
   const handleGotoImportMoreAddress = React.useCallback(() => {
     history.push({
-      pathname: '/popup/import/import-more-address',
+      pathname: '/popup/import/mnemonics-import-more-address',
       state: {
         keyring: KEYRING_TYPE.HdKeyring,
         keyringId: stashKeyringId,

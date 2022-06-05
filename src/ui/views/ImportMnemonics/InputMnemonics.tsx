@@ -6,13 +6,12 @@ import styled from 'styled-components';
 
 import { StrayPageWithButton } from 'ui/component';
 import { useWallet, useWalletRequest } from 'ui/utils';
-import { KEYRING_TYPE } from 'consts';
 import clsx from 'clsx';
 import { useMedia } from 'react-use';
 import LessPalette from 'ui/style/var-defs';
 import { searchByPrefix } from 'ui/utils/smart-completion';
 import useDebounceValue from 'ui/hooks/useDebounceValue';
-import { connectStore, useRabbyDispatch } from '../store';
+import { connectStore, useRabbyDispatch } from '../../store';
 
 const TipTextList = styled.ol`
   list-style-type: decimal;
@@ -155,7 +154,7 @@ const ImportMnemonics = () => {
         stashKeyringId: stashKeyringId ?? null,
       });
       history.push({
-        pathname: '/popup/import/confirm-mnemonics',
+        pathname: '/popup/import/mnemonics-confirm',
         state: {
           stashKeyringId,
         },
