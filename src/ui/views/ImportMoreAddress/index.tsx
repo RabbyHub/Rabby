@@ -8,44 +8,53 @@ import {
   MultiSelectAddressList,
   LoadingOverlay,
 } from 'ui/component';
-import type { ISelectAccountItem } from 'ui/component/MultiSelectAddressList';
-import { getUiType, useWallet, useWalletRequest } from 'ui/utils';
+import { useWallet, useWalletRequest } from 'ui/utils';
 import { KEYRING_TYPE } from 'consts';
 import Pagination from './components/Pagination';
 import './style.less';
 import { useMedia } from 'react-use';
 import type { Account } from '@/background/service/preference';
+import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 
-const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
+const ImportMoreAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
   const history = useHistory();
   const { t } = useTranslation();
+  const wallet = useWallet();
   const isWide = useMedia('(min-width: 401px)');
-  const { state } = useLocation<{
-    keyringId?: number | null;
-  }>();
 
-  if (!state) {
-    if (getUiType().isTab) {
-      if (history.length) {
-        history.goBack();
-      } else {
-        window.close();
-      }
-    } else {
-      history.replace('/dashboard');
-    }
-    return null;
-  }
+  const { keyringId, importedAddresses, draftIndexes } = useRabbySelector(
+    (s) => ({
+      keyringId: s.importMnemonics.stashKeyringId,
+      importedAddresses: s.importMnemonics.importedAddresses,
+      draftIndexes: s.importMnemonics.draftIndexes,
+    })
+  );
 
-  const { keyringId } = state;
+  const dispatch = useRabbyDispatch();
 
   const [accounts, setAccounts] = useState<any[]>([]);
-  const [importedAccounts, setImportedAccounts] = useState<any[]>([]);
 
-  const wallet = useWallet();
-  const [selectedAccounts, setSelectedAcounts] = useState<ISelectAccountItem[]>(
-    []
-  );
+  const otherPageIndexes = React.useMemo(() => {
+    const indexes = new Set([...draftIndexes]);
+    accounts.forEach((account) => {
+      indexes.delete(account.index);
+    });
+    return indexes;
+  }, [accounts, draftIndexes]);
+
+  const handleSelectChange = (
+    saccounts: { address: string; index: number }[]
+  ) => {
+    dispatch.importMnemonics.setField({
+      draftIndexes: new Set([
+        ...otherPageIndexes,
+        ...saccounts.map((account) => account.index),
+      ]),
+    });
+  };
+  const selectedAccounts = React.useMemo(() => {
+    return accounts.filter((item) => draftIndexes.has(item.index));
+  }, [accounts, draftIndexes]);
 
   const [end, setEnd] = useState(1);
   const [currentPage, setCurrentPage] = useState(1);
@@ -76,7 +85,7 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
           );
     },
     {
-      onSuccess(_accounts, { args: [firstFlag] }) {
+      onSuccess(_accounts) {
         if (_accounts.length < 5) {
           throw new Error(
             t(
@@ -86,15 +95,9 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
         }
         setSpin(false);
         setAccounts(_accounts);
-
-        if (firstFlag && _accounts[0]) {
-          setSelectedAcounts([
-            {
-              address: _accounts[0].address,
-              index: _accounts[0].index as number,
-            },
-          ]);
-        }
+        dispatch.importMnemonics.putQuriedAccountsByIndex({
+          accounts: _accounts,
+        });
       },
       onError(err) {
         message.error('Please check the connection with your wallet');
@@ -103,63 +106,30 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
     }
   );
 
-  const init = async () => {
-    const _importedAccounts = await wallet.requestKeyring(
-      KEYRING_TYPE.HdKeyring,
-      'getAccounts',
-      keyringId
-    );
-    setImportedAccounts(_importedAccounts);
-    getAccounts(true);
-  };
-
+  const mountedRef = useRef(false);
   useEffect(() => {
-    init();
+    mountedRef.current = true;
+
+    if (!keyringId) return;
+
+    (async () => {
+      await dispatch.importMnemonics.getImportedAccountsAsync({ keyringId });
+
+      if (!mountedRef.current) return;
+      getAccounts(true);
+    })();
+
     return () => {
-      wallet.requestKeyring(
-        KEYRING_TYPE.HdKeyring,
-        'cleanUp',
-        keyringId ?? null
-      );
+      mountedRef.current = false;
+      dispatch.importMnemonics.cleanUpImportedInfoAsync({ keyringId });
     };
-  }, []);
+  }, [keyringId]);
 
   const handlePageChange = async (page: number) => {
     const start = 5 * (page - 1);
     const end = 5 * (page - 1) + 5;
     await getAccounts(false, start, end);
     setCurrentPage(page);
-  };
-
-  const onSubmit = async () => {
-    setSpin(true);
-    const selectedIndexes = selectedAccounts.map((i) => i.index - 1);
-
-    await wallet.requestKeyring(
-      KEYRING_TYPE.HdKeyring,
-      'activeAccounts',
-      keyringId ?? null,
-      selectedIndexes
-    );
-    await wallet.addKeyring(keyringId);
-
-    setSpin(false);
-    history.replace({
-      pathname: isPopup ? '/popup/import/success' : '/import/success',
-      state: {
-        accounts: selectedAccounts.map((account) => ({
-          ...account,
-          brandName: KEYRING_TYPE.HdKeyring,
-          type: KEYRING_TYPE.HdKeyring,
-        })),
-        hasDivider: true,
-        editing: true,
-        showImportIcon: false,
-        isMnemonics: true,
-        importedAccount: true,
-        importedLength: importedAccounts && importedAccounts?.length,
-      },
-    });
   };
 
   const startNumberConfirm: React.ComponentProps<
@@ -187,10 +157,6 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
     }
   };
 
-  const handleSelectChange = (res: { address: string; index: number }[]) => {
-    setSelectedAcounts(res);
-  };
-
   return (
     <div className="impore-more-address">
       <StrayPageWithButton
@@ -205,8 +171,27 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
               }
         }
         headerClassName="mb-16"
-        onSubmit={onSubmit}
-        nextDisabled={selectedAccounts.length === 0}
+        onSubmit={() => {
+          dispatch.importMnemonics.setSelectedIndexes({
+            indexes: [...draftIndexes],
+          });
+
+          history.replace({
+            pathname: isPopup
+              ? '/popup/import/mnemonics-confirm'
+              : '/import/mnemonics-confirm',
+            state: { backFromImportMoreAddress: true },
+          });
+        }}
+        onBackClick={() => {
+          history.replace({
+            pathname: isPopup
+              ? '/popup/import/mnemonics-confirm'
+              : '/import/mnemonics-confirm',
+            state: { backFromImportMoreAddress: true },
+          });
+        }}
+        nextDisabled={draftIndexes.size === 0}
         hasBack
         hasDivider
         footerFixed={false}
@@ -250,7 +235,7 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
           </div>
 
           <div className="place-self-center">
-            {selectedAccounts.length} {t('addresses selected')}
+            {draftIndexes.size} {t('addresses selected')}
           </div>
         </div>
         <div className={clsx(isPopup && 'rabby-container')}>
@@ -263,7 +248,7 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
             <Form.Item className="mb-0 flex-1">
               <MultiSelectAddressList
                 accounts={accounts}
-                importedAccounts={importedAccounts}
+                importedAccounts={[...importedAddresses]}
                 type={KEYRING_TYPE.HdKeyring}
                 value={selectedAccounts}
                 onChange={handleSelectChange}
@@ -278,4 +263,4 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
   );
 };
 
-export default SelectAddress;
+export default ImportMoreAddress;

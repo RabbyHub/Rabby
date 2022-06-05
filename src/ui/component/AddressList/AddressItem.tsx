@@ -21,7 +21,7 @@ import {
 } from 'consts';
 import IconEditPen from 'ui/assets/editpen.svg';
 import IconCorrect from 'ui/assets/dashboard/contacts/correct.png';
-import { makeAlianNameName } from '@/ui/utils/account';
+import { makeAlianName } from '@/ui/utils/account';
 
 export interface AddressItemProps {
   account: {
@@ -162,7 +162,7 @@ const AddressItem = memo(
             } ${importedLength + (index || 0) + 1}`;
 
             if (isMnemonics) {
-              alianName = makeAlianNameName({
+              alianName = makeAlianName({
                 brandName: `${BRAND_ALIAN_TYPE_TEXT[KEYRING_TYPE.HdKeyring]}`,
                 keyringCount: Math.max(mnemonicsCounter + 1, 1),
                 keyringIndex: index || 0,

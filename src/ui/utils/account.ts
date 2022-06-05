@@ -1,4 +1,4 @@
-export function makeAlianNameName({
+export function makeAlianName({
   brandName,
   keyringCount = 1,
   keyringIndex = 0,
