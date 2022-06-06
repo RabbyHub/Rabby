@@ -19,7 +19,7 @@ import {
   widgetService,
 } from 'background/service';
 import buildinProvider from 'background/utils/buildinProvider';
-import { ContactBookItem } from '../service/contactBook';
+import contactBook, { ContactBookItem } from '../service/contactBook';
 import { openIndexPage } from 'background/webapi/tab';
 import { CacheState } from 'background/service/pageStateCache';
 import i18n from 'background/service/i18n';
@@ -1495,6 +1495,10 @@ export class WalletController extends BaseController {
       // TODO: add index property into eth-hd-keyring
     }
   };
+
+  updateCacheAlias = contactBook.updateCacheAlias;
+
+  getCacheAlias = contactBook.getCacheAlias;
 
   async generateAliasForMnmonicAddress(keyringId: string, ids: number[]) {
     const keyring = stashKeyrings[keyringId];
