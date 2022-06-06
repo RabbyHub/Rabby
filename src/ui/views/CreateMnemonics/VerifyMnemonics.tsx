@@ -12,6 +12,9 @@ import {
   useRabbyGetter,
   useRabbySelector,
 } from 'ui/store';
+import { generateAliasName } from '@/utils/account';
+import { BRAND_ALIAN_TYPE_TEXT, KEYRING_TYPE } from '@/constant';
+import { Account } from '@/background/service/preference';
 
 const VerifyMnemonics = () => {
   const history = useHistory();
@@ -45,16 +48,43 @@ const VerifyMnemonics = () => {
         setErrMsg(t('Verification failed'));
         return;
       }
-      wallet.createKeyringWithMnemonics(mnemonics).then((accounts) => {
-        history.replace({
-          pathname: '/popup/import/success',
-          state: {
-            accounts,
-            title: t('Created Successfully'),
-            editing: true,
-          },
+      wallet
+        .createKeyringWithMnemonics(mnemonics)
+        .then(async (accounts: Account[]) => {
+          const keyring = await wallet.getKeyringByMnemonic(mnemonics);
+
+          const newAccounts = await Promise.all(
+            accounts.map(async (account) => {
+              const alianName = generateAliasName({
+                keyringType: KEYRING_TYPE.HdKeyring,
+                brandName: `${BRAND_ALIAN_TYPE_TEXT[KEYRING_TYPE.HdKeyring]}`,
+                keyringCount: Math.max(keyring.index, 0),
+                addressCount: 0,
+              });
+
+              await wallet.updateAlianName(
+                account?.address?.toLowerCase(),
+                alianName
+              );
+
+              return {
+                ...account,
+                alianName,
+              };
+            })
+          );
+
+          history.replace({
+            pathname: '/popup/import/success',
+            state: {
+              accounts: newAccounts,
+              title: t('Created Successfully'),
+              editing: true,
+            },
+          });
+
+          dispatch.createMnemonics.reset();
         });
-      });
     },
     [mnemonics]
   );

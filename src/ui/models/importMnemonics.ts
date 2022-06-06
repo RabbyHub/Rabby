@@ -1,15 +1,18 @@
 import { createModel } from '@rematch/core';
 
-import { BRAND_ALIAN_TYPE_TEXT, KEYRING_TYPE } from '@/constant';
+import { KEYRING_TYPE } from '@/constant';
 import { RootModel } from '.';
 import type { Account } from 'background/service/preference';
+import { ContactBookItem } from '@/background/service/contactBook';
+
+export type ISimpleAccount = Pick<Account, 'address' | 'alianName' | 'index'>;
 
 interface IState {
   mnemonicsCounter: number;
   queriedAccounts: Record<Exclude<Account['index'], undefined>, Account>;
 
   stashKeyringId: number | null;
-  importingAccounts: Account[];
+  importingAccounts: ISimpleAccount[];
   importedAddresses: Set<Account['address']>;
   selectedAddressesIndexes: Set<Exclude<Account['index'], void>>;
   draftIndexes: Set<Exclude<Account['index'], void>>;
@@ -126,37 +129,36 @@ export const importMnemonics = createModel<RootModel>()({
       }
     },
 
-    setSelectedIndexes(
-      payload: { indexes: Exclude<Account['index'], void>[] },
+    async setSelectedIndexes(
+      payload: {
+        keyringId: number | null;
+        indexes: Exclude<Account['index'], void>[];
+      },
       store
     ) {
       const selectedAddressesIndexes = new Set(payload.indexes);
 
-      const keyringCount = Math.max(
-        store.importMnemonics.mnemonicsCounter + 1,
-        1
+      await store.app.wallet.generateAliasCacheForMnemonicAddress(
+        payload.keyringId,
+        [...selectedAddressesIndexes].map((index) => index - 1)
       );
-
-      const importedAddresses = store.importMnemonics.importedAddresses;
       const queriedAccounts = store.importMnemonics.queriedAccounts;
 
-      const importingAccounts = [...selectedAddressesIndexes].map(
-        (index, idx) => {
+      const importingAccounts = await Promise.all(
+        [...selectedAddressesIndexes].map(async (index) => {
           const account = queriedAccounts[index];
-          // const alianName =
-          //   // TODO: to see if account has original alianName
-          //   account.alianName ||
-          //   makeAlianName({
-          //     brandName: `${BRAND_ALIAN_TYPE_TEXT[KEYRING_TYPE.HdKeyring]}`,
-          //     keyringCount,
-          //     keyringIndex: importedAddresses.size + idx,
-          //   });
+          const address = (
+            await store.app.wallet.getCacheAlias<ContactBookItem>(
+              account.address
+            )
+          ).name;
 
           return {
-            ...account,
-            // alianName,
+            address: account.address,
+            index: account.index,
+            alianName: address,
           };
-        }
+        })
       );
 
       dispatch.importMnemonics.setField({

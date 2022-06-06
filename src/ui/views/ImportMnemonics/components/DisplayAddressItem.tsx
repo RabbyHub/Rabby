@@ -23,8 +23,6 @@ const AddressViewer = styled.div`
 export interface DisplayAddressItemProps {
   account: {
     address: string;
-    type: string;
-    brandName: string;
     alianName?: string;
     index?: number;
   };

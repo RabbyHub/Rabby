@@ -171,8 +171,9 @@ const ImportMoreAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
               }
         }
         headerClassName="mb-16"
-        onSubmit={() => {
-          dispatch.importMnemonics.setSelectedIndexes({
+        onSubmit={async () => {
+          await dispatch.importMnemonics.setSelectedIndexes({
+            keyringId,
             indexes: [...draftIndexes],
           });
           dispatch.importMnemonics.clearDraftIndexes();

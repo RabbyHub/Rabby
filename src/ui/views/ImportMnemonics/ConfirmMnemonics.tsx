@@ -89,6 +89,7 @@ const ConfirmMnemonics = ({ isPopup = false }: { isPopup?: boolean }) => {
         }
         setSpin(false);
         dispatch.importMnemonics.setSelectedIndexes({
+          keyringId: stashKeyringId,
           indexes: [_accounts[0].index as number],
         });
       },

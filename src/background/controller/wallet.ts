@@ -1500,7 +1500,7 @@ export class WalletController extends BaseController {
 
   getCacheAlias = contactBookService.getCacheAlias;
 
-  async generateAliasForMnmonicAddress(keyringId: string, ids: number[]) {
+  async generateAliasCacheForMnemonicAddress(keyringId: string, ids: number[]) {
     const keyring = stashKeyrings[keyringId];
     if (keyring) {
       const accounts = ids
@@ -1522,11 +1522,10 @@ export class WalletController extends BaseController {
             alias,
           };
         });
-      console.log(accounts);
       return accounts;
     } else {
       throw new Error(
-        'failed to generateAliasForMnmonicAddress, keyring is undefined'
+        'failed to generateAliasCacheForMnemonicAddress, keyring is undefined'
       );
     }
   }

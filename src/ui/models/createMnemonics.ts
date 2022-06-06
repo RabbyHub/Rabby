@@ -75,5 +75,9 @@ export const createMnemonics = createModel<RootModel>()({
     async stepTo(step: IState['step'], store) {
       dispatch.createMnemonics.setField({ step });
     },
+
+    reset() {
+      dispatch.createMnemonics.stepTo('risk-check');
+    },
   }),
 });
