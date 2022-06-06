@@ -150,11 +150,11 @@ const DisplayMnemonic = () => {
           )}
           <TipTextList className="text-14 pl-20">
             <li>
-              Do not backup and save by screenshots or network transmission
+              Do not backup and save by screenshots or network transmission.
             </li>
             <li>
               Do not share the seed phrase with others, as having the seed
-              phrase is the same as having control of the asset
+              phrase is the same as having control of the asset.
             </li>
             <li>
               Do not uninstall Rabby easily in any case, after uninstallation,
