@@ -10,11 +10,9 @@ import { Tooltip, Input } from 'antd';
 import clsx from 'clsx';
 import { useTranslation, Trans } from 'react-i18next';
 import { Account } from 'background/service/preference';
-import { ChainWithBalance } from 'background/service/openapi';
-import { useWallet, useWalletRequest } from 'ui/utils';
+import { useWallet } from 'ui/utils';
 import { AddressViewer, Copy } from 'ui/component';
 import {
-  CHAINS,
   KEYRING_ICONS,
   WALLET_BRAND_CONTENT,
   KEYRING_TYPE_TEXT,
@@ -22,10 +20,6 @@ import {
 } from 'consts';
 import IconEditPen from 'ui/assets/editpen.svg';
 import IconCorrect from 'ui/assets/dashboard/contacts/correct.png';
-interface DisplayChainWithWhiteLogo extends ChainWithBalance {
-  logo?: string;
-  whiteLogo?: string;
-}
 
 export interface AddressItemProps {
   account: {
@@ -54,83 +48,13 @@ export interface AddressItemProps {
   showImportIcon?: boolean;
   showIndex?: boolean;
   importedAccount?: boolean;
+  mnemonicsCounter?: number;
   isMnemonics?: boolean;
   importedLength?: number;
   canEditing?(editing: boolean): void;
   stopEditing?: boolean;
   retriveAlianName?(): void;
 }
-
-const formatChain = (item: ChainWithBalance): DisplayChainWithWhiteLogo => {
-  const chainsArray = Object.values(CHAINS);
-  const chain = chainsArray.find((chain) => chain.id === item.community_id);
-
-  return {
-    ...item,
-    logo: chain?.logo || item.logo_url,
-    whiteLogo: chain?.whiteLogo,
-  };
-};
-
-export const useCurrentBalance = (
-  account: string | undefined,
-  update = false,
-  noNeedBalance = false
-) => {
-  const wallet = useWallet();
-  const [balance, setBalance] = useState<number | null>(null);
-  const [success, setSuccess] = useState(true);
-  let isCanceled = false;
-  const [chainBalances, setChainBalances] = useState<
-    DisplayChainWithWhiteLogo[]
-  >([]);
-
-  const [getAddressBalance] = useWalletRequest(wallet.getAddressBalance, {
-    onSuccess({ total_usd_value, chain_list }) {
-      if (isCanceled) return;
-      setBalance(total_usd_value);
-      setSuccess(true);
-      setChainBalances(
-        chain_list.filter((item) => item.usd_value > 0).map(formatChain)
-      );
-    },
-    onError() {
-      setSuccess(false);
-    },
-  });
-
-  const getCurrentBalance = async () => {
-    if (!account || noNeedBalance) return;
-    const cacheData = await wallet.getAddressCacheBalance(account);
-    if (cacheData) {
-      setBalance(cacheData.total_usd_value);
-      if (update) {
-        getAddressBalance(account.toLowerCase());
-      }
-    } else {
-      getAddressBalance(account.toLowerCase());
-    }
-  };
-
-  useEffect(() => {
-    getCurrentBalance();
-    if (!noNeedBalance) {
-      wallet.getAddressCacheBalance(account).then((cache) => {
-        setChainBalances(
-          cache
-            ? cache.chain_list
-                .filter((item) => item.usd_value > 0)
-                .map(formatChain)
-            : []
-        );
-      });
-    }
-    return () => {
-      isCanceled = true;
-    };
-  }, [account]);
-  return [balance, chainBalances, getAddressBalance, success] as const;
-};
 
 const AddressItem = memo(
   forwardRef(
@@ -148,7 +72,6 @@ const AddressItem = memo(
         showIndex = false,
         importedAccount = false,
         isMnemonics = false,
-        importedLength = 0,
         canEditing,
         stopEditing = false,
         retriveAlianName,
@@ -219,35 +142,19 @@ const AddressItem = memo(
         retriveAlianName && retriveAlianName();
       };
 
-      const changeName = async () => {
-        if (!alianName) {
-          const existAlianName = await wallet.getAlianName(
-            account?.address?.toLowerCase()
-          );
-          if (existAlianName) {
-            setAlianName(existAlianName);
-            setDisplayName(existAlianName);
-          } else {
-            const alianName = `${
-              BRAND_ALIAN_TYPE_TEXT[account?.brandName || account?.type] ||
-              account?.brandName
-            } ${importedLength + (index || 0) + 1}`;
-            setAlianName(alianName);
-            setDisplayName(alianName);
-            updateAlianName(alianName);
-          }
-        }
-      };
-
       const inputName = (e) => {
         e.stopPropagation();
         canEditing && canEditing(true);
       };
 
       useEffect(() => {
-        if (importedAccount) {
-          changeName();
-        }
+        (async () => {
+          if (!alianName) {
+            const alias = await wallet.getAlianName(account.address);
+            setAlianName(alias);
+            setDisplayName(alias);
+          }
+        })();
       }, []);
 
       return (

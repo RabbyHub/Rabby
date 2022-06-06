@@ -2,7 +2,8 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import { useTranslation, Trans } from 'react-i18next';
 import { sortBy } from 'lodash';
-import { AddressList, StrayPageWithButton } from 'ui/component';
+import { StrayPageWithButton } from 'ui/component';
+import AddressItem from 'ui/component/AddressList/AddressItem';
 import { getUiType } from 'ui/utils';
 import { Account } from 'background/service/preference';
 import clsx from 'clsx';
@@ -13,7 +14,7 @@ import SuccessLogo from 'ui/assets/success-logo.svg';
 import './index.less';
 import { useMedia } from 'react-use';
 import Mask from 'ui/assets/import-mask.png';
-const { AddressItem } = AddressList;
+import { connectStore, useRabbyDispatch, useRabbySelector } from '@/ui/store';
 
 const ImportSuccess = ({ isPopup = false }: { isPopup?: boolean }) => {
   const history = useHistory();
@@ -40,6 +41,17 @@ const ImportSuccess = ({ isPopup = false }: { isPopup?: boolean }) => {
     isMnemonics = false,
     importedLength = 0,
   } = state;
+
+  const dispatch = useRabbyDispatch();
+  const mnemonicsCounter = useRabbySelector(
+    (s) => s.importMnemonics.mnemonicsCounter
+  );
+  React.useEffect(() => {
+    if (isMnemonics) {
+      dispatch.importMnemonics.getMnemonicsCounterAsync();
+    }
+  }, [isMnemonics]);
+
   const handleNextClick = async (e: React.MouseEvent<HTMLElement>) => {
     e.stopPropagation();
     if (!stopEditing) {
@@ -98,7 +110,7 @@ const ImportSuccess = ({ isPopup = false }: { isPopup?: boolean }) => {
               src={SuccessLogo}
             />
             <p className="text-24 mb-4 mt-0 text-white text-center font-bold">
-              {t('Imported Successfully')}
+              {title || t('Imported Successfully')}
             </p>
             <img src="/images/success-mask.png" className="mask" />
           </header>
@@ -110,13 +122,13 @@ const ImportSuccess = ({ isPopup = false }: { isPopup?: boolean }) => {
                 src={SuccessLogo}
               />
               <p className="text-24 mb-4 mt-0 text-white text-center font-bold">
-                {t('Imported Successfully')}
+                {title || t('Imported Successfully')}
               </p>
             </div>
             <img src={Mask} className="mask" />
           </div>
         ))}
-      <div className={clsx(isPopup && 'rabby-container')}>
+      <div className={clsx(isPopup && 'rabby-container', 'overflow-auto')}>
         <div
           onClick={(e) => {
             e.stopPropagation();
@@ -165,7 +177,9 @@ const ImportSuccess = ({ isPopup = false }: { isPopup?: boolean }) => {
                 showIndex={!editing}
                 importedAccount
                 isMnemonics={isMnemonics}
-                currentImportLength={accounts.length}
+                {...(typeof mnemonicsCounter === 'number' && {
+                  mnemonicsCounter,
+                })}
                 importedLength={importedLength}
                 stopEditing={stopEditing || index !== editIndex}
                 canEditing={(editing) => startEdit(editing, index)}
@@ -181,4 +195,4 @@ const ImportSuccess = ({ isPopup = false }: { isPopup?: boolean }) => {
   );
 };
 
-export default ImportSuccess;
+export default connectStore()(ImportSuccess);

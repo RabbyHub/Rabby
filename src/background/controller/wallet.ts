@@ -23,7 +23,10 @@ import { ContactBookItem } from '../service/contactBook';
 import { openIndexPage } from 'background/webapi/tab';
 import { CacheState } from 'background/service/pageStateCache';
 import i18n from 'background/service/i18n';
-import { KEYRING_CLASS, DisplayedKeryring } from 'background/service/keyring';
+import keyring, {
+  KEYRING_CLASS,
+  DisplayedKeryring,
+} from 'background/service/keyring';
 import providerController from './provider/controller';
 import BaseController from './base';
 import {
@@ -34,6 +37,7 @@ import {
   BRAND_ALIAN_TYPE_TEXT,
   WALLET_BRAND_CONTENT,
   CHAINS_ENUM,
+  KEYRING_TYPE,
 } from 'consts';
 import { ERC1155ABI, ERC721ABI } from 'consts/abi';
 import { Account, ChainGas } from '../service/preference';
@@ -57,6 +61,7 @@ import KeystoneKeyring, {
 } from '../service/keyring/eth-keystone-keyring';
 import WatchKeyring from '@rabby-wallet/eth-watch-keyring';
 import stats from '@/stats';
+import { generateAliasName } from '@/utils/account';
 
 const stashKeyrings: Record<string, any> = {};
 
@@ -914,9 +919,12 @@ export class WalletController extends BaseController {
     return await keyring.exportAccount(address);
   };
 
-  getMnemonics = async (password: string) => {
+  getMnemonics = async (password: string, address: string) => {
     await this.verifyPassword(password);
-    const keyring = this._getKeyringByType(KEYRING_CLASS.MNEMONIC);
+    const keyring = await keyringService.getKeyringForAccount(
+      address,
+      KEYRING_CLASS.MNEMONIC
+    );
     const serialized = await keyring.serialize();
     const seedWords = serialized.mnemonic;
 
@@ -1030,34 +1038,52 @@ export class WalletController extends BaseController {
     }
   };
 
-  generateKeyringWithMnemonic = (mnemonic) => {
+  getKeyringByMnemonic = (mnemonic: string) => {
+    return keyringService.keyrings.find((item) => {
+      return item.type === KEYRING_CLASS.MNEMONIC && item.mnemonic === mnemonic;
+    });
+  };
+
+  generateKeyringWithMnemonic = async (mnemonic) => {
     if (!bip39.validateMnemonic(mnemonic)) {
-      throw new Error(i18n.t('mnemonic phrase is invalid'));
+      throw new Error(i18n.t('The seed phrase is invalid, please check!'));
+    }
+    // If import twice use same kerying
+    let keyring = this.getKeyringByMnemonic(mnemonic);
+    if (!keyring) {
+      const Keyring = keyringService.getKeyringClassForType(
+        KEYRING_CLASS.MNEMONIC
+      );
+
+      keyring = new Keyring({ mnemonic });
+      keyringService.updateHdKeyringIndex(keyring);
+    } else {
+      throw new Error('You’ve already imported this seed phrase');
     }
 
-    const Keyring = keyringService.getKeyringClassForType(
-      KEYRING_CLASS.MNEMONIC
-    );
-
-    const keyring = new Keyring({ mnemonic });
-
-    const stashId = Object.values(stashKeyrings).length;
+    const stashId = Object.values(stashKeyrings).length + 1;
     stashKeyrings[stashId] = keyring;
 
     return stashId;
   };
 
   addKyeringToStash = (keyring) => {
-    const stashId = Object.values(stashKeyrings).length;
+    const stashId = Object.values(stashKeyrings).length + 1;
     stashKeyrings[stashId] = keyring;
 
     return stashId;
   };
 
-  addKeyring = async (keyringId) => {
+  addKeyring = async (keyringId: string, byImport = true) => {
     const keyring = stashKeyrings[keyringId];
     if (keyring) {
-      await keyringService.addKeyring(keyring);
+      keyring.byImport = byImport;
+      // If keyring exits, just save
+      if (keyringService.keyrings.find((item) => item === keyring)) {
+        await keyringService.persistAllKeyrings();
+      } else {
+        await keyringService.addKeyring(keyring);
+      }
       this._setCurrentAccountFromKeyring(keyring);
     } else {
       throw new Error('failed to addKeyring, keyring is undefined');
@@ -1075,6 +1101,9 @@ export class WalletController extends BaseController {
     }
   };
 
+  /**
+   * @deprecated
+   */
   deriveNewAccountFromMnemonic = async () => {
     const keyring = this._getKeyringByType(KEYRING_CLASS.MNEMONIC);
 
@@ -1168,7 +1197,7 @@ export class WalletController extends BaseController {
     } catch {
       const Keyring = keyringService.getKeyringClassForType(type);
       keyring = new Keyring();
-      stashKeyringId = Object.values(stashKeyrings).length;
+      stashKeyringId = Object.values(stashKeyrings).length + 1;
       stashKeyrings[stashKeyringId] = keyring;
     }
 
@@ -1223,7 +1252,7 @@ export class WalletController extends BaseController {
         keyringType
       );
       keyring = new keystoneKeyring();
-      stashKeyringId = Object.values(stashKeyrings).length;
+      stashKeyringId = Object.values(stashKeyrings).length + 1;
       stashKeyrings[stashKeyringId] = keyring;
     }
     keyring.readKeyring();
@@ -1242,7 +1271,7 @@ export class WalletController extends BaseController {
         keyringType
       );
       keyring = new keystoneKeyring();
-      stashKeyringId = Object.values(stashKeyrings).length;
+      stashKeyringId = Object.values(stashKeyrings).length + 1;
       stashKeyrings[stashKeyringId] = keyring;
     }
     keyring.readKeyring();
@@ -1430,6 +1459,76 @@ export class WalletController extends BaseController {
   getAllAlianName = () => {
     return contactBookService.listAlias();
   };
+
+  generateCacheAliasNames = async ({
+    addresses,
+    keyringType,
+  }: {
+    addresses: string[];
+    keyringType: string;
+  }) => {
+    if (addresses.length <= 0)
+      throw new Error('[GenerateCacheAliasNames]: need at least one address');
+    const firstAddress = addresses[0];
+    const keyrings = await this.getTypedAccounts(keyringType);
+    const keyring = await keyringService.getKeyringForAccount(
+      firstAddress,
+      keyringType
+    );
+    if (!keyring) {
+      const aliases: { address: string; alias: string }[] = [];
+      for (let i = 0; i < addresses.length; i++) {
+        const alias = generateAliasName({
+          keyringType,
+          keyringCount: keyrings.length,
+          addressCount: i,
+        });
+        aliases.push({
+          address: addresses[i],
+          alias,
+        });
+      }
+      aliases.forEach(({ address, alias }) => {
+        contactBookService.updateCacheAlias({ address, name: alias });
+      });
+    } else {
+      // TODO: add index property into eth-hd-keyring
+    }
+  };
+
+  updateCacheAlias = contactBookService.updateCacheAlias;
+
+  getCacheAlias = contactBookService.getCacheAlias;
+
+  async generateAliasCacheForMnemonicAddress(keyringId: string, ids: number[]) {
+    const keyring = stashKeyrings[keyringId];
+    if (keyring) {
+      const accounts = ids
+        .sort((a, b) => a - b)
+        .map((id, index) => {
+          const address = keyring._addressFromIndex(id)[0];
+          const alias = generateAliasName({
+            keyringType: KEYRING_TYPE.HdKeyring,
+            keyringCount: keyring.index,
+            addressCount: index,
+          });
+          contactBookService.updateCacheAlias({
+            address: address,
+            name: alias,
+          });
+          return {
+            address: address,
+            id,
+            alias,
+          };
+        });
+      return accounts;
+    } else {
+      throw new Error(
+        'failed to generateAliasCacheForMnemonicAddress, keyring is undefined'
+      );
+    }
+  }
 
   getInitAlianNameStatus = () => preferenceService.getInitAlianNameStatus();
   updateInitAlianNameStatus = () =>

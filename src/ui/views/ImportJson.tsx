@@ -21,7 +21,7 @@ const ImportJson = () => {
         pathname: '/popup/import/success',
         state: {
           accounts,
-          title: t('Created Successfully'),
+          title: t('Imported Successfully'),
           editing: true,
           importedAccount: true,
         },
@@ -47,6 +47,7 @@ const ImportJson = () => {
       hasBack
       hasDivider
       noPadding
+      nextDisabled={!isUpload}
     >
       <header className="create-new-header create-password-header h-[264px]">
         <div className="rabby-container">

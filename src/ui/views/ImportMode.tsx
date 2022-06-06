@@ -30,12 +30,12 @@ const ImportMode = () => {
     if (accounts.length <= 0) {
       modes.splice(1, 0, {
         name: 'mnemonics',
-        label: t('Import via Mnemonic'),
+        label: t('Import via Seed Phrase'),
       });
     } else {
       modes.push({
         name: 'mnemonics',
-        label: t('Import via Mnemonic'),
+        label: t('Import via Seed Phrase'),
         disabled: true,
         tip: t('MnemonicDisableTip'),
       });

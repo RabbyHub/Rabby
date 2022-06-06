@@ -78,7 +78,7 @@
     "message": "Lock"
   },
   "Mnemonic": {
-    "message": "Mnemonic"
+    "message": "Seed Phrase"
   },
   "Private__Key": {
     "message": "Private Key"
@@ -170,11 +170,8 @@
   "Enter__Your__Mnemonic": {
     "message": "Enter Your Mnemonic"
   },
-  "Please__input__Mnemonics": {
-    "message": "Please input Mnemonics"
-  },
-  "Mnemonics__words": {
-    "message": "Mnemonics words"
+  "Please__input__Seed__Phrase": {
+    "message": "Please input Seed Phrase"
   },
   "Select__the__keystore__file__you__want__to__import__and__enter__the__corresponding__password": {
     "message": "Select the keystore file you want to import and enter the corresponding password"
@@ -183,7 +180,7 @@
     "message": "Click to upload again"
   },
   "Import__Your__Keystore": {
-    "message": "Import Key Store"
+    "message": "Import Your Store"
   },
   "passwordMinimumLengthAlert": {
     "message": "Password can’t be less than {{length}} letters"
@@ -199,12 +196,6 @@
   },
   "Repeat__Password": {
     "message": "Repeat Password"
-  },
-  "backupMnemonicTip": {
-    "message": "Make sure you have backed up your mnemonics properly before clicking Next. Don't tell anyone the mnemonic."
-  },
-  "backupMnemonicAlert": {
-    "message": "Be sure to save the mnemonic phrase, it cannot be retrieved after loss！"
   },
   "Back__Up__Your__Mnemonic": {
     "message": "Back Up Your Mnemonic"
@@ -224,8 +215,8 @@
   "You__need__to__make__use__your__last__account__before__you__can__add__a__new__one": {
     "message": "You need to make use your last account before you can add a new one."
   },
-  "Select__Addresses": {
-    "message": "Select Addresses"
+  "Import__More__Addresses": {
+    "message": "Import more address"
   },
   "Select__the__addresses__you__want__to__import": {
     "message": "Select the addresses you want to import"
@@ -550,9 +541,6 @@
   "View__private__key": {
     "message": "View private key"
   },
-  "Wrong__mnemonic__word": {
-    "message": "Wrong mnemonic word"
-  },
   "otherWalletConflictAlert": {
     "message": "Disable other browser wallet to avoid conflicts"
   },
@@ -572,7 +560,7 @@
     "message": "Gas limit"
   },
   "MnemonicDisableTip": {
-    "message": "Cannot Import via Mnemonics for there is already one in the wallet"
+    "message": "Cannot Import via Seed Phrase for there is already one in the wallet"
   },
   "Token__Approval": {
     "message": "Token Approval"
@@ -911,7 +899,7 @@
     "message": "Full experience without importing private keys"
   },
   "Import__Private__Key": {
-    "message": "Import by Private Key"
+    "message": "Import Private Key"
   },
   "Connect__with": {
     "message": "Connect with"
