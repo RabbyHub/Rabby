@@ -1056,6 +1056,7 @@ export class WalletController extends BaseController {
       );
 
       keyring = new Keyring({ mnemonic });
+      keyringService.updateHdKeyringIndex(keyring);
     } else {
       throw new Error('You’ve already imported this seed phrase');
     }
@@ -1494,6 +1495,37 @@ export class WalletController extends BaseController {
       // TODO: add index property into eth-hd-keyring
     }
   };
+
+  async generateAliasForMnmonicAddress(keyringId: string, ids: number[]) {
+    const keyring = stashKeyrings[keyringId];
+    if (keyring) {
+      const accounts = ids
+        .sort((a, b) => a - b)
+        .map((id, index) => {
+          const address = keyring._addressFromIndex(id)[0];
+          const alias = generateAliasName({
+            keyringType: KEYRING_TYPE.HdKeyring,
+            keyringCount: keyring.index + 1,
+            addressCount: index + 1,
+          });
+          contactBookService.updateCacheAlias({
+            address: address,
+            name: alias,
+          });
+          return {
+            address: address,
+            id,
+            alias,
+          };
+        });
+      console.log(accounts);
+      return accounts;
+    } else {
+      throw new Error(
+        'failed to generateAliasForMnmonicAddress, keyring is undefined'
+      );
+    }
+  }
 
   getInitAlianNameStatus = () => preferenceService.getInitAlianNameStatus();
   updateInitAlianNameStatus = () =>

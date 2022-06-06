@@ -20,7 +20,9 @@ import OnekeyKeyring from './eth-onekey-keyring';
 import LatticeKeyring from '@rabby-wallet/eth-lattice-keyring';
 import WatchKeyring from '@rabby-wallet/eth-watch-keyring';
 import KeystoneKeyring from './eth-keystone-keyring';
-import WalletConnectKeyring from '@rabby-wallet/eth-walletconnect-keyring';
+import WalletConnectKeyring, {
+  keyringType,
+} from '@rabby-wallet/eth-walletconnect-keyring';
 import GnosisKeyring, {
   TransactionBuiltEvent,
   TransactionConfirmedEvent,
@@ -275,6 +277,20 @@ class KeyringService extends EventEmitter {
       });
   }
 
+  updateHdKeyringIndex(keyring) {
+    if (keyring.type !== KEYRING_TYPE.HdKeyring) {
+      return;
+    }
+    if (this.keyrings.find((item) => item === keyring)) {
+      return;
+    }
+    const keryings = this.keyrings.filter(
+      (item) => item.type === KEYRING_TYPE.HdKeyring
+    );
+    keyring.index =
+      Math.max(...keryings.map((item) => item.index), keryings.length - 1) + 1;
+  }
+
   /**
    * Set Locked
    * This method deallocates all secrets, and effectively locks MetaMask.
@@ -352,6 +368,7 @@ class KeyringService extends EventEmitter {
   addNewKeyring(type: string, opts?: unknown): Promise<any> {
     const Keyring = this.getKeyringClassForType(type);
     const keyring = new Keyring(opts);
+    this.updateHdKeyringIndex(keyring);
     return this.addKeyring(keyring);
   }
 
