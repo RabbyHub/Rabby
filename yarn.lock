@@ -2692,9 +2692,10 @@
     events "^3.3.0"
     web3-utils "^1.6.1"
 
-"@rabby-wallet/eth-hd-keyring@git+ssh://git@github.com:RabbyHub/eth-hd-keyring.git#feat/index":
-  version "3.6.9"
-  resolved "git+ssh://git@github.com:RabbyHub/eth-hd-keyring.git#abac87690331b3c5cfc789b7935c269ba185d664"
+"@rabby-wallet/eth-hd-keyring@^3.6.10":
+  version "3.6.10"
+  resolved "https://registry.yarnpkg.com/@rabby-wallet/eth-hd-keyring/-/eth-hd-keyring-3.6.10.tgz#9e613c3401cca64e9b7b0d39e463ac8a577a8651"
+  integrity sha512-/sBfTFLYpMDgfv+wdf8FpV3Pkzq4Ax4Zp6ehRvtJzbsi+3LcDXuT+dxoymyOaA8S5afTneDzE2sVlN/qiWSbJA==
   dependencies:
     "@metamask/eth-sig-util" "^4.0.0"
     "@rabby-wallet/eth-simple-keyring" "^4.2.1"
