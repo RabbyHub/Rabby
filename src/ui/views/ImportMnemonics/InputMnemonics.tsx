@@ -179,7 +179,10 @@ const ImportMnemonics = () => {
       if (await wallet.hasPageStateCache()) {
         const cache = await wallet.getPageStateCache();
         if (cache && cache.path === history.location.pathname) {
-          form.setFieldsValue(cache.states);
+          form.setFieldsValue({
+            ...cache.states,
+            mnemonics: '',
+          });
           setMnemonics(form.getFieldValue('mnemonics'));
         }
       }
