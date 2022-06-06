@@ -10,7 +10,7 @@ import { HistoryItem } from './HistoryItem';
 import { Loading } from './Loading';
 import './style.less';
 
-const PAGE_COUNT = 100;
+const PAGE_COUNT = 10;
 
 const History = () => {
   const wallet = useWallet();
