@@ -16,8 +16,6 @@ import { useMedia } from 'react-use';
 import clsx from 'clsx';
 import { connectStore } from '@/ui/store';
 
-import './index.less';
-
 const EntryImportAddress = () => {
   const { t } = useTranslation();
   const history = useHistory();
@@ -62,7 +60,6 @@ const EntryImportAddress = () => {
               <img src={IconEntryRightIcon} className="right-chevron-icon" />
             }
             onClick={() => history.push('/import/mnemonics')}
-            unselect
           >
             {t('Import Seed Phrase')}
           </Field>
@@ -74,7 +71,6 @@ const EntryImportAddress = () => {
               <img src={IconEntryRightIcon} className="right-chevron-icon" />
             }
             onClick={() => history.push('/import/key')}
-            unselect
           >
             {t('Import Private Key')}
           </Field>
@@ -86,7 +82,6 @@ const EntryImportAddress = () => {
               <img src={IconEntryRightIcon} className="right-chevron-icon" />
             }
             onClick={() => history.push('/import/json')}
-            unselect
           >
             {t('Import Keystore')}
           </Field>

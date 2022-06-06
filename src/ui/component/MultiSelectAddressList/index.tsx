@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FieldCheckbox } from 'ui/component';
 import { ellipsis } from 'ui/utils/address';
@@ -26,17 +26,21 @@ const MultiSelectAddressList = ({
   accounts,
   onChange,
   value,
-  importedAccounts,
+  importedAccounts = [],
 }: MultiSelectAddressListArgs) => {
   const { t } = useTranslation();
   const [selected, setSelected] = useState<ISelectAccountItem[]>(value || []);
 
   const handleRemove = (index: number) => {
-    setSelected(selected.filter((item) => item.index !== index));
+    const nextVal = selected.filter((item) => item.index !== index);
+    setSelected(nextVal);
+    onChange?.(nextVal);
   };
 
   const handleChoose = (account: ISelectAccountItem) => {
-    setSelected([...selected, account]);
+    const nextVal = [...selected, account];
+    setSelected(nextVal);
+    onChange?.(nextVal);
   };
 
   const handleToggle = (account: ISelectAccountItem) => {
@@ -52,13 +56,9 @@ const MultiSelectAddressList = ({
     setSelected(value || []);
   }, [value]);
 
-  useEffect(() => {
-    onChange?.(selected);
-  }, [selected]);
-
   const importedAddresses = React.useMemo(() => {
     return new Set(
-      ...(importedAccounts || []).map((address) => address.toLowerCase())
+      (importedAccounts || []).map((address) => address.toLowerCase())
     );
   }, [importedAccounts]);
 

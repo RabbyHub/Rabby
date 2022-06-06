@@ -4,11 +4,11 @@ import { useTranslation, Trans } from 'react-i18next';
 import styled from 'styled-components';
 import { sortBy } from 'lodash';
 import { StrayPageWithButton } from 'ui/component';
-import AddressItem from 'ui/component/AddressList/AddressItem';
+import DisplayAddressItem from './components/DisplayAddressItem';
 import { useWallet, useWalletRequest } from 'ui/utils';
 import { Account } from 'background/service/preference';
 import clsx from 'clsx';
-import { KEYRING_ICONS, WALLET_BRAND_CONTENT, KEYRING_TYPE } from 'consts';
+import { KEYRING_TYPE } from 'consts';
 import { IconImportSuccess } from 'ui/assets';
 import ConfirmMnemonicsLogo from 'ui/assets/confirm-mnemonics.svg';
 import { useMedia } from 'react-use';
@@ -16,7 +16,7 @@ import Mask from 'ui/assets/import-mask.png';
 import IconArrowRight from 'ui/assets/import/import-arrow-right.svg';
 
 import { message } from 'antd';
-import { useRabbyDispatch, useRabbySelector } from '../store';
+import { useRabbyDispatch, useRabbySelector } from '../../store';
 
 const AddressWrapper = styled.div`
   & {
@@ -33,18 +33,21 @@ const ConfirmMnemonics = ({ isPopup = false }: { isPopup?: boolean }) => {
   const isWide = useMedia('(min-width: 401px)');
 
   const dispatch = useRabbyDispatch();
-  const { stashKeyringId, mnemonicsCounter } = useRabbySelector((s) => ({
+  const {
+    importingAccounts,
+    importedAddresses,
+    stashKeyringId,
+  } = useRabbySelector((s) => ({
+    importingAccounts: s.importMnemonics.importingAccounts,
+    importedAddresses: s.importMnemonics.importedAddresses,
     stashKeyringId: s.importMnemonics.stashKeyringId,
-    mnemonicsCounter: s.importMnemonics.mnemonicsCounter,
   }));
 
-  const [accounts, setAccounts] = useState<Account[]>([]);
-  const [importedAccounts, setImportedAccounts] = useState<any[]>([]);
-  const importedAddresses = React.useMemo(() => {
-    return new Set(
-      ...(importedAccounts || []).map((address) => address.toLowerCase())
-    );
-  }, [importedAccounts]);
+  const {
+    state: { backFromImportMoreAddress },
+  } = useLocation<{
+    backFromImportMoreAddress?: boolean;
+  }>();
 
   const wallet = useWallet();
   const [, setSpin] = useState(true);
@@ -74,6 +77,9 @@ const ConfirmMnemonics = ({ isPopup = false }: { isPopup?: boolean }) => {
     },
     {
       onSuccess(_accounts) {
+        dispatch.importMnemonics.putQuriedAccountsByIndex({
+          accounts: _accounts,
+        });
         if (_accounts.length < 5) {
           throw new Error(
             t(
@@ -82,7 +88,9 @@ const ConfirmMnemonics = ({ isPopup = false }: { isPopup?: boolean }) => {
           );
         }
         setSpin(false);
-        setAccounts(_accounts.slice(0, 1));
+        dispatch.importMnemonics.setSelectedIndexes({
+          indexes: [_accounts[0].index as number],
+        });
       },
       onError(err) {
         message.error('Please check the connection with your wallet');
@@ -93,40 +101,26 @@ const ConfirmMnemonics = ({ isPopup = false }: { isPopup?: boolean }) => {
 
   useEffect(() => {
     dispatch.importMnemonics.getMnemonicsCounterAsync();
+    dispatch.importMnemonics.getImportedAccountsAsync({
+      keyringId: stashKeyringId,
+    });
 
-    (async () => {
-      const _importedAccounts = await wallet.requestKeyring(
-        KEYRING_TYPE.HdKeyring,
-        'getAccounts',
-        stashKeyringId
-      );
-      setImportedAccounts(_importedAccounts);
-      getAccounts(true);
-    })();
+    if (backFromImportMoreAddress) return;
+    getAccounts(true);
 
     return () => {
-      wallet.requestKeyring(
-        KEYRING_TYPE.HdKeyring,
-        'cleanUp',
-        stashKeyringId ?? null
-      );
+      dispatch.importMnemonics.cleanUpImportedInfoAsync({
+        keyringId: stashKeyringId,
+      });
     };
-  }, []);
-
-  const accountIcon =
-    KEYRING_ICONS[accounts[0]?.type] ||
-    WALLET_BRAND_CONTENT[accounts[0]?.brandName]?.image;
+  }, [backFromImportMoreAddress]);
 
   const handleGotoImportMoreAddress = React.useCallback(() => {
-    history.push({
-      pathname: '/popup/import/import-more-address',
-      state: {
-        keyring: KEYRING_TYPE.HdKeyring,
-        keyringId: stashKeyringId,
-        isMnemonics: true,
-      },
+    dispatch.importMnemonics.beforeImportMoreAddresses();
+    history.replace({
+      pathname: '/popup/import/mnemonics-import-more-address',
     });
-  }, [stashKeyringId]);
+  }, []);
 
   return (
     <StrayPageWithButton
@@ -135,21 +129,22 @@ const ConfirmMnemonics = ({ isPopup = false }: { isPopup?: boolean }) => {
       hasDivider
       NextButtonContent={t('OK')}
       onNextClick={async () => {
+        await dispatch.importMnemonics.confirmAllImportingAccountsAsync();
         await wallet.requestKeyring(
           KEYRING_TYPE.HdKeyring,
           'activeAccounts',
           stashKeyringId,
-          accounts.map((acc) => (acc.index as number) - 1)
+          importingAccounts.map((acc) => (acc.index as number) - 1)
         );
         await wallet.addKeyring(stashKeyringId);
 
         history.replace({
           pathname: isPopup ? '/popup/import/success' : '/import/success',
           state: {
-            accounts: accounts.map((account) => ({
-              // ...account,
+            accounts: importingAccounts.map((account) => ({
               address: account.address,
               index: account.index,
+              alianName: account.alianName,
               brandName: KEYRING_TYPE.HdKeyring,
               type: KEYRING_TYPE.HdKeyring,
             })),
@@ -158,7 +153,7 @@ const ConfirmMnemonics = ({ isPopup = false }: { isPopup?: boolean }) => {
             showImportIcon: false,
             isMnemonics: true,
             importedAccount: true,
-            importedLength: importedAccounts && importedAccounts?.length,
+            importedLength: importedAddresses?.size,
           },
         });
       }}
@@ -225,52 +220,36 @@ const ConfirmMnemonics = ({ isPopup = false }: { isPopup?: boolean }) => {
               <div className="text-title text-15 mb-12">
                 <Trans
                   i18nKey="AddressCount"
-                  values={{ count: accounts?.length }}
+                  values={{ count: importingAccounts?.length }}
                 />
               </div>
             </>
           )}
           <AddressWrapper
             className={clsx(
-              'pt-20 confirm-mnemonics',
+              'confirm-mnemonics',
               !isPopup && 'lg:h-[200px] lg:w-[460px]'
             )}
           >
-            {sortBy(accounts, (item) => item?.index).map((account, index) => {
-              // TODO: use imported to show
-              const imported = importedAddresses.has(
-                account.address.toLowerCase()
-              );
-              // TODO: replace `AddressItem` with new Component
-              const editing = true;
+            {sortBy(importingAccounts, (item) => item?.index).map(
+              (account, index) => {
+                // TODO: use imported to show
+                const imported = importedAddresses.has(
+                  account.address.toLowerCase()
+                );
 
-              return (
-                <AddressItem
-                  className="mb-12 rounded bg-white pt-10 pb-14 pl-16 h-[62px] flex"
-                  key={account.address}
-                  account={account}
-                  showAssets
-                  icon={accountIcon}
-                  showImportIcon={false}
-                  editing={editing}
-                  index={index}
-                  showIndex={!editing}
-                  importedAccount
-                  isMnemonics={true}
-                  {...(typeof mnemonicsCounter === 'number' && {
-                    mnemonicsCounter,
-                  })}
-                  // importedLength={importedLength}
-                  // stopEditing={stopEditing || index !== editIndex}
-                  // canEditing={(editing) => startEdit(editing, index)}
-                  // ref={(el) => {
-                  //   addressItems.current[index] = el;
-                  // }}
-                />
-              );
-            })}
+                return (
+                  <DisplayAddressItem
+                    className="mb-12 rounded bg-white pt-10 pb-14 pl-16 h-[62px] flex"
+                    key={account.address}
+                    account={account}
+                    index={index}
+                  />
+                );
+              }
+            )}
           </AddressWrapper>
-          <div className="mt-12 flex items-center justify-end">
+          <div className="flex items-center justify-end">
             <span
               style={{ color: '#8697ff ' }}
               className="cursor-pointer text-12 leading-14"
