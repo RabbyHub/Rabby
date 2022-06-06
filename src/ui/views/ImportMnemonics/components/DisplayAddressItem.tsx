@@ -30,67 +30,63 @@ export interface DisplayAddressItemProps {
   index?: number;
 }
 
-const DisplayAddressItem = forwardRef(
-  ({ account, className }: DisplayAddressItemProps) => {
-    if (!account) {
-      return null;
-    }
-    const [alianName, setAlianName] = useState<string>(
-      account?.alianName || ''
-    );
-    const dispatch = useRabbyDispatch();
-    useDebounce(
-      () => {
-        dispatch.importMnemonics.setImportingAccountAlianNameByIndex({
-          index: account.index,
-          alianName,
-        });
-      },
-      250,
-      [alianName, account]
-    );
+const DisplayAddressItem = ({
+  account,
+  className,
+}: DisplayAddressItemProps) => {
+  if (!account) {
+    return null;
+  }
+  const [alianName, setAlianName] = useState<string>(account?.alianName || '');
+  const dispatch = useRabbyDispatch();
+  useDebounce(
+    () => {
+      dispatch.importMnemonics.setImportingAccountAlianNameByIndex({
+        index: account.index,
+        alianName,
+      });
+    },
+    250,
+    [alianName, account]
+  );
 
-    const address = account?.address?.toLowerCase() || '';
+  const address = account?.address?.toLowerCase() || '';
 
-    return (
-      <li className={className}>
-        <div
-          className={clsx('flex items-center relative')}
-          onClick={(e) => {
-            e.stopPropagation();
-          }}
-        >
-          <div className="number-index">{account.index}</div>
-          <div className={clsx('address-info', 'ml-0')}>
-            <div className="brand-name flex">
-              <Input
-                value={alianName}
-                defaultValue={alianName}
-                onChange={(e) => {
-                  e.stopPropagation();
-                  setAlianName(e.target.value);
-                }}
-                onClick={(e) => e.stopPropagation()}
-                autoFocus
-                maxLength={20}
-                min={0}
-              />
-            </div>
-            <div className="flex items-center">
-              <AddressViewer className="flex items-center">
-                <div
-                  className={'flex items-center address-name'}
-                  title={address}
-                >
-                  {`${address.slice(0, 6)}...${address.slice(-4)}`}
-                </div>
-              </AddressViewer>
-            </div>
+  return (
+    <li className={className}>
+      <div
+        className={clsx('flex items-center relative')}
+        onClick={(e) => {
+          e.stopPropagation();
+        }}
+      >
+        <div className="number-index">{account.index}</div>
+        <div className={clsx('address-info', 'ml-0')}>
+          <div className="brand-name flex">
+            <Input
+              value={alianName}
+              defaultValue={alianName}
+              onChange={(e) => {
+                e.stopPropagation();
+                setAlianName(e.target.value);
+              }}
+              onClick={(e) => e.stopPropagation()}
+              autoFocus
+              maxLength={20}
+              min={0}
+            />
+          </div>
+          <div className="flex items-center">
+            <AddressViewer className="flex items-center">
+              <div className={'flex items-center address-name'} title={address}>
+                {`${address.slice(0, 6)}...${address.slice(-4)}`}
+              </div>
+            </AddressViewer>
           </div>
         </div>
-      </li>
-    );
-  }
-);
+      </div>
+    </li>
+  );
+};
 
 export default DisplayAddressItem;
