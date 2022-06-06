@@ -65,6 +65,8 @@ import IconDFKLogo from 'ui/assets/chain-logos/dfk.svg';
 import iconDFKWhiteLogo from 'ui/assets/chain-logos/dfk-white.svg';
 import IconTelosLogo from 'ui/assets/chain-logos/telos.svg';
 import IconTelosWhiteLogo from 'ui/assets/chain-logos/telos-white.svg';
+import IconSwmLogo from 'ui/assets/chain-logos/swimmer.svg';
+import IconSwmWhiteLogo from 'ui/assets/chain-logos/swimmer-white.svg';
 import IconEN from 'ui/assets/langs/en.svg';
 import IconAmber from 'ui/assets/walletlogo/amber.png';
 import IconBitBox02 from 'ui/assets/walletlogo/bitbox02.png';
@@ -141,6 +143,7 @@ export enum CHAINS_ENUM {
   EVMOS = 'EVMOS',
   DFK = 'DFK',
   TLOS = 'TLOS',
+  SWM = 'SWM',
 }
 
 export const CHAINS: Record<string, Chain> = {
@@ -804,6 +807,26 @@ export const CHAINS: Record<string, Chain> = {
       'https://static.debank.com/image/chain/logo_url/telos/f9f7493def4c08ed222540bebd8ce87a.png',
     nativeTokenDecimals: 18,
     thridPartyRPC: 'https://mainnet.telos.net/evm',
+    eip: {
+      '1559': false,
+    },
+  },
+  [CHAINS_ENUM.SWM]: {
+    id: 73772,
+    serverId: 'swm',
+    network: '73772',
+    name: 'Swimmer',
+    nativeTokenSymbol: 'TUS',
+    nativeTokenAddress: 'swm',
+    enum: CHAINS_ENUM.SWM,
+    logo: IconSwmLogo,
+    whiteLogo: IconSwmWhiteLogo,
+    hex: '0x1202c',
+    scanLink: 'https://subnets.avax.network/swimmer/mainnet/explorer/tx/_s_',
+    nativeTokenLogo:
+      'https://static.debank.com/image/chain/logo_url/swm/361526e901cb506ef7074c3678ce769a.png',
+    nativeTokenDecimals: 18,
+    thridPartyRPC: 'https://avax-cra-rpc.gateway.pokt.network',
     eip: {
       '1559': false,
     },
