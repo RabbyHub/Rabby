@@ -164,9 +164,10 @@ class KeyringService extends EventEmitter {
         const keyrings = await this.getAllTypedAccounts();
         const alias = generateAliasName({
           keyringType: KEYRING_TYPE.SimpleKeyring,
-          keyringCount: keyrings.filter(
-            (keyring) => keyring.type === KEYRING_TYPE.SimpleKeyring
-          ).length,
+          keyringCount:
+            keyrings.filter(
+              (keyring) => keyring.type === KEYRING_TYPE.SimpleKeyring
+            ).length - 1,
         });
         contactBook.addAlias({
           address,
@@ -446,10 +447,30 @@ class KeyringService extends EventEmitter {
     let _accounts;
     return selectedKeyring
       .addAccounts(1)
+      .then(() => {
+        if (selectedKeyring.getAccountsWithBrand) {
+          return selectedKeyring.getAccountsWithBrand();
+        } else {
+          return selectedKeyring.getAccounts();
+        }
+      })
       .then((accounts) => {
-        accounts.forEach((hexAccount) => {
-          this.setAddressAlias(hexAccount, selectedKeyring);
-          this.emit('newAccount', hexAccount);
+        const allAccounts = accounts.map((account) => ({
+          address: normalizeAddress(
+            typeof account === 'string' ? account : account.address
+          ),
+          brandName:
+            typeof account === 'string'
+              ? selectedKeyring.type
+              : account.brandName,
+        }));
+        allAccounts.forEach((account) => {
+          this.setAddressAlias(
+            account.address,
+            selectedKeyring,
+            account.brandName
+          );
+          this.emit('newAccount', account.address);
         });
         _accounts = accounts;
       })
@@ -459,7 +480,7 @@ class KeyringService extends EventEmitter {
       .then(() => _accounts);
   }
 
-  async setAddressAlias(address: string, keyring) {
+  async setAddressAlias(address: string, keyring, brandName: string) {
     const cacheAlias = contactBook.getCacheAlias(address);
     const existAlias = contactBook.getContactByAddress(address);
     if (!existAlias) {
@@ -469,8 +490,9 @@ class KeyringService extends EventEmitter {
       } else {
         const accounts = await keyring.getAccounts();
         const alias = generateAliasName({
+          brandName,
           keyringType: keyring.type,
-          addressCount: accounts.length, // TODO: change 1 to real count of accounts if this function can add multiple accounts
+          addressCount: accounts.length - 1, // TODO: change 1 to real count of accounts if this function can add multiple accounts
         });
         contactBook.addAlias({
           address,
