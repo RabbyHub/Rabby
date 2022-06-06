@@ -3,7 +3,6 @@ import { createModel } from '@rematch/core';
 import { BRAND_ALIAN_TYPE_TEXT, KEYRING_TYPE } from '@/constant';
 import { RootModel } from '.';
 import type { Account } from 'background/service/preference';
-import { makeAlianName } from '../utils/account';
 
 interface IState {
   mnemonicsCounter: number;
@@ -27,7 +26,7 @@ const makeInitValues = () => {
     selectedAddressesIndexes: new Set(),
     draftIndexes: new Set(),
   } as IState;
-}
+};
 
 export const importMnemonics = createModel<RootModel>()({
   name: 'importMnemonics',
@@ -51,7 +50,7 @@ export const importMnemonics = createModel<RootModel>()({
   },
 
   effects: (dispatch) => ({
-    switchKeyring (payload: { stashKeyringId: IState['stashKeyringId'] }) {
+    switchKeyring(payload: { stashKeyringId: IState['stashKeyringId'] }) {
       const initValues = makeInitValues();
 
       dispatch.importMnemonics.setField({
@@ -59,7 +58,7 @@ export const importMnemonics = createModel<RootModel>()({
         importedAddresses: initValues.importedAddresses,
         draftIndexes: initValues.draftIndexes,
         stashKeyringId: payload.stashKeyringId,
-      })
+      });
     },
 
     async getMnemonicsCounterAsync(_?, store?) {
@@ -144,18 +143,18 @@ export const importMnemonics = createModel<RootModel>()({
       const importingAccounts = [...selectedAddressesIndexes].map(
         (index, idx) => {
           const account = queriedAccounts[index];
-          const alianName =
-            // TODO: to see if account has original alianName
-            account.alianName ||
-            makeAlianName({
-              brandName: `${BRAND_ALIAN_TYPE_TEXT[KEYRING_TYPE.HdKeyring]}`,
-              keyringCount,
-              keyringIndex: importedAddresses.size + idx,
-            });
+          // const alianName =
+          //   // TODO: to see if account has original alianName
+          //   account.alianName ||
+          //   makeAlianName({
+          //     brandName: `${BRAND_ALIAN_TYPE_TEXT[KEYRING_TYPE.HdKeyring]}`,
+          //     keyringCount,
+          //     keyringIndex: importedAddresses.size + idx,
+          //   });
 
           return {
             ...account,
-            alianName,
+            // alianName,
           };
         }
       );
@@ -167,16 +166,17 @@ export const importMnemonics = createModel<RootModel>()({
     },
 
     beforeImportMoreAddresses(_?, store?) {
-      const selectedAddressesIndexes = store.importMnemonics.selectedAddressesIndexes;
+      const selectedAddressesIndexes =
+        store.importMnemonics.selectedAddressesIndexes;
       dispatch.importMnemonics.setField({
         draftIndexes: new Set([...selectedAddressesIndexes]),
-      })
+      });
     },
 
-    clearDraftIndexes () {
+    clearDraftIndexes() {
       dispatch.importMnemonics.setField({
         draftIndexes: new Set(),
-      })
+      });
     },
 
     async confirmAllImportingAccountsAsync(_?, store?) {

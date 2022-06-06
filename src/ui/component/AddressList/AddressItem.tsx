@@ -17,11 +17,9 @@ import {
   WALLET_BRAND_CONTENT,
   KEYRING_TYPE_TEXT,
   BRAND_ALIAN_TYPE_TEXT,
-  KEYRING_TYPE,
 } from 'consts';
 import IconEditPen from 'ui/assets/editpen.svg';
 import IconCorrect from 'ui/assets/dashboard/contacts/correct.png';
-import { makeAlianName } from '@/ui/utils/account';
 
 export interface AddressItemProps {
   account: {
@@ -73,9 +71,7 @@ const AddressItem = memo(
         showImportIcon = true,
         showIndex = false,
         importedAccount = false,
-        mnemonicsCounter = -1,
         isMnemonics = false,
-        importedLength = 0,
         canEditing,
         stopEditing = false,
         retriveAlianName,
@@ -146,45 +142,19 @@ const AddressItem = memo(
         retriveAlianName && retriveAlianName();
       };
 
-      const changeName = async () => {
-        if (!alianName) {
-          const existAlianName = await wallet.getAlianName(
-            account?.address?.toLowerCase()
-          );
-
-          if (existAlianName) {
-            setAlianName(existAlianName);
-            setDisplayName(existAlianName);
-          } else {
-            let alianName = `${
-              BRAND_ALIAN_TYPE_TEXT[account?.brandName || account?.type] ||
-              account?.brandName
-            } ${importedLength + (index || 0) + 1}`;
-
-            if (isMnemonics) {
-              alianName = makeAlianName({
-                brandName: `${BRAND_ALIAN_TYPE_TEXT[KEYRING_TYPE.HdKeyring]}`,
-                keyringCount: Math.max(mnemonicsCounter + 1, 1),
-                keyringIndex: index || 0,
-              });
-            }
-
-            setAlianName(alianName);
-            setDisplayName(alianName);
-            updateAlianName(alianName);
-          }
-        }
-      };
-
       const inputName = (e) => {
         e.stopPropagation();
         canEditing && canEditing(true);
       };
 
       useEffect(() => {
-        if (importedAccount) {
-          changeName();
-        }
+        (async () => {
+          if (!alianName) {
+            const alias = await wallet.getAlianName(account.address);
+            setAlianName(alias);
+            setDisplayName(alias);
+          }
+        })();
       }, []);
 
       return (

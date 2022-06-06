@@ -31,6 +31,8 @@ import { KEYRING_TYPE, HARDWARE_KEYRING_TYPES, EVENTS } from 'consts';
 import DisplayKeyring from './display';
 import eventBus from '@/eventBus';
 import { isSameAddress } from 'background/utils';
+import contactBook from '../contactBook';
+import { generateAliasName } from '@/utils/account';
 
 export const KEYRING_SDK_TYPES = {
   SimpleKeyring,
@@ -154,8 +156,20 @@ class KeyringService extends EventEmitter {
 
     return this.persistAllKeyrings()
       .then(this.addNewKeyring.bind(this, 'Simple Key Pair', [privateKey]))
-      .then((_keyring) => {
+      .then(async (_keyring) => {
         keyring = _keyring;
+        const [address] = await keyring.getAccounts();
+        const keyrings = await this.getAllTypedAccounts();
+        const alias = generateAliasName({
+          keyringType: KEYRING_TYPE.SimpleKeyring,
+          keyringCount: keyrings.filter(
+            (keyring) => keyring.type === KEYRING_TYPE.SimpleKeyring
+          ).length,
+        });
+        contactBook.addAlias({
+          address,
+          name: alias,
+        });
         return this.persistAllKeyrings.bind(this);
       })
       .then(this.setUnlocked.bind(this))
@@ -417,6 +431,7 @@ class KeyringService extends EventEmitter {
       .addAccounts(1)
       .then((accounts) => {
         accounts.forEach((hexAccount) => {
+          this.setAddressAlias(hexAccount, selectedKeyring);
           this.emit('newAccount', hexAccount);
         });
         _accounts = accounts;
@@ -425,6 +440,31 @@ class KeyringService extends EventEmitter {
       .then(this._updateMemStoreKeyrings.bind(this))
       .then(this.fullUpdate.bind(this))
       .then(() => _accounts);
+  }
+
+  async setAddressAlias(address: string, keyring) {
+    const cacheAlias = contactBook.getCacheAlias(address);
+    const existAlias = contactBook.getContactByAddress(address);
+    if (!existAlias) {
+      if (cacheAlias) {
+        contactBook.removeCacheAlias(address);
+        contactBook.addAlias(cacheAlias);
+      } else {
+        const accounts = await keyring.getAccounts();
+        const alias = generateAliasName({
+          keyringType: keyring.type,
+          addressCount: accounts.length, // TODO: change 1 to real count of accounts if this function can add multiple accounts
+        });
+        contactBook.addAlias({
+          address,
+          name: alias,
+        });
+      }
+    } else {
+      if (!existAlias.isAlias) {
+        contactBook.updateAlias(existAlias);
+      }
+    }
   }
 
   /**

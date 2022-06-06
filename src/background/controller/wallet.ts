@@ -37,6 +37,7 @@ import {
   BRAND_ALIAN_TYPE_TEXT,
   WALLET_BRAND_CONTENT,
   CHAINS_ENUM,
+  KEYRING_TYPE,
 } from 'consts';
 import { ERC1155ABI, ERC721ABI } from 'consts/abi';
 import { Account, ChainGas } from '../service/preference';
@@ -60,6 +61,7 @@ import KeystoneKeyring, {
 } from '../service/keyring/eth-keystone-keyring';
 import WatchKeyring from '@rabby-wallet/eth-watch-keyring';
 import stats from '@/stats';
+import { generateAliasName } from '@/utils/account';
 
 const stashKeyrings: Record<string, any> = {};
 
@@ -1042,7 +1044,7 @@ export class WalletController extends BaseController {
     });
   };
 
-  generateKeyringWithMnemonic = (mnemonic) => {
+  generateKeyringWithMnemonic = async (mnemonic) => {
     if (!bip39.validateMnemonic(mnemonic)) {
       throw new Error(i18n.t('The seed phrase is invalid, please check!'));
     }
@@ -1455,6 +1457,42 @@ export class WalletController extends BaseController {
 
   getAllAlianName = () => {
     return contactBookService.listAlias();
+  };
+
+  generateCacheAliasNames = async ({
+    addresses,
+    keyringType,
+  }: {
+    addresses: string[];
+    keyringType: string;
+  }) => {
+    if (addresses.length <= 0)
+      throw new Error('[GenerateCacheAliasNames]: need at least one address');
+    const firstAddress = addresses[0];
+    const keyrings = await this.getTypedAccounts(keyringType);
+    const keyring = await keyringService.getKeyringForAccount(
+      firstAddress,
+      keyringType
+    );
+    if (!keyring) {
+      const aliases: { address: string; alias: string }[] = [];
+      for (let i = 0; i < addresses.length; i++) {
+        const alias = generateAliasName({
+          keyringType,
+          keyringCount: keyrings.length + 1,
+          addressCount: i + 1,
+        });
+        aliases.push({
+          address: addresses[i],
+          alias,
+        });
+      }
+      aliases.forEach(({ address, alias }) => {
+        contactBookService.updateCacheAlias({ address, name: alias });
+      });
+    } else {
+      // TODO: add index property into eth-hd-keyring
+    }
   };
 
   getInitAlianNameStatus = () => preferenceService.getInitAlianNameStatus();
