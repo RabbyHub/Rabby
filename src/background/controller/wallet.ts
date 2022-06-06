@@ -1480,8 +1480,8 @@ export class WalletController extends BaseController {
       for (let i = 0; i < addresses.length; i++) {
         const alias = generateAliasName({
           keyringType,
-          keyringCount: keyrings.length + 1,
-          addressCount: i + 1,
+          keyringCount: keyrings.length,
+          addressCount: i,
         });
         aliases.push({
           address: addresses[i],
@@ -1509,8 +1509,8 @@ export class WalletController extends BaseController {
           const address = keyring._addressFromIndex(id)[0];
           const alias = generateAliasName({
             keyringType: KEYRING_TYPE.HdKeyring,
-            keyringCount: keyring.index + 1,
-            addressCount: index + 1,
+            keyringCount: keyring.index,
+            addressCount: index,
           });
           contactBookService.updateCacheAlias({
             address: address,
