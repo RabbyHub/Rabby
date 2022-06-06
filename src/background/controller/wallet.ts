@@ -1044,7 +1044,7 @@ export class WalletController extends BaseController {
     });
   };
 
-  generateKeyringWithMnemonic = (mnemonic) => {
+  generateKeyringWithMnemonic = async (mnemonic) => {
     if (!bip39.validateMnemonic(mnemonic)) {
       throw new Error(i18n.t('The seed phrase is invalid, please check!'));
     }
