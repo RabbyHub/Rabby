@@ -222,13 +222,17 @@ const AddAddressOptions = () => {
     }
     return [];
   };
-  const displayNormalData = renderData
-    .map((item) => {
-      const existItem = savedWallet.filter((brand) => brand === item.brand);
-      if (existItem.length > 0) return null;
-      return item;
-    })
-    .filter(Boolean);
+  const { displayNormalData, showStaticDivideLine } = React.useMemo(() => {
+    const displayNormalData = renderData
+      .map((item) => {
+        const existItem = savedWallet.filter((brand) => brand === item.brand);
+        if (existItem.length > 0) return null;
+        return item;
+      })
+      .filter(Boolean);
+    const showStaticDivideLine = displayNormalData.length >= 1;
+    return { displayNormalData, showStaticDivideLine };
+  }, [renderData]);
 
   useEffect(() => {
     init();
@@ -300,11 +304,11 @@ const AddAddressOptions = () => {
             </div>
           );
         })}
-        <div className="divide-line-list"></div>
-        {displayNormalData.map((data) => {
+        {showStaticDivideLine && <div className="divide-line-list"></div>}
+        {displayNormalData.map((data, idx) => {
           return (
             <React.Fragment key={data!.content}>
-              {data?.brand === 'addWatchMode' && (
+              {data?.brand === 'addWatchMode' && idx !== 0 && (
                 <div className="divide-line-list"></div>
               )}
               <Field

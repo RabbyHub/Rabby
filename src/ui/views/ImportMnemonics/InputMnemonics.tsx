@@ -254,6 +254,7 @@ const ImportMnemonics = () => {
                 placeholder={t('Enter your Seed Phrase, distinguish by space')}
                 spellCheck={false}
                 ref={inputRef}
+                autoFocus
               />
             </Form.Item>
             {!isLastTypingWordFull && (
