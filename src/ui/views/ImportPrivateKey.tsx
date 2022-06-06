@@ -44,7 +44,7 @@ const ImportPrivateKey = () => {
         pathname: '/popup/import/success',
         state: {
           accounts: successShowAccounts,
-          title: t('Created Successfully'),
+          title: t('Imported Successfully'),
           editing: true,
           importedAccount: true,
           importedLength: importedAccountsLength,
@@ -128,12 +128,12 @@ const ImportPrivateKey = () => {
           </Form.Item>
           <TipTextList className="text-14 pl-20 mt-35">
             <li>
-              The seed phrase you import will only be stored on the front end of
+              The private key you import will only be stored on the front end of
               your browser and will not be uploaded to Rabby's servers.
             </li>
             <li>
-              After you uninstall Rabby or uninstall your browser, the seed
-              phrase will be deleted and Rabby cannot help you recover them.
+              After you uninstall Rabby or uninstall your browser, the private
+              key will be deleted and Rabby cannot recover it for you.
             </li>
           </TipTextList>
         </div>
