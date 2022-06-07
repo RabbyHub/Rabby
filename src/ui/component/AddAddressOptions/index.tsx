@@ -20,7 +20,6 @@ import {
   IS_CHROME,
   WALLET_BRAND_CONTENT,
   KEYRING_CLASS,
-  BRAND_ALIAN_TYPE_TEXT,
   BRAND_WALLET_CONNECT_TYPE,
   IWalletBrandContent,
 } from 'consts';
@@ -29,7 +28,32 @@ import clsx from 'clsx';
 import _ from 'lodash';
 import { connectStore } from '@/ui/store';
 
-const normaltype = ['createAddress', 'importAddress', 'addWatchMode'] as const;
+const BULTINS_TYPES = [
+  { type: 'createAddress' as const },
+  { type: 'importAddress' as const },
+  { type: 'addWatchMode' as const },
+
+  { type: 'imporPrivateKey' as const, deprecated: true },
+  { type: 'importviaMnemonic' as const, deprecated: true },
+  { type: 'importKeystore' as const, deprecated: true },
+];
+
+const { normalTypes, deprecatedTypes } = BULTINS_TYPES.reduce(
+  (accu, item) => {
+    if (item.deprecated) {
+      accu.deprecatedTypes.push(item.type);
+    } else {
+      accu.normalTypes.push(item.type);
+    }
+
+    return accu;
+  },
+  {
+    normalTypes: [] as typeof BULTINS_TYPES[number]['type'][],
+    deprecatedTypes: [] as typeof BULTINS_TYPES[number]['type'][],
+  }
+);
+
 const AddAddressOptions = () => {
   const history = useHistory();
   const wallet = useWallet();
@@ -38,7 +62,6 @@ const AddAddressOptions = () => {
   const [savedWalletData, setSavedWalletData] = useState<ISavedWalletData[]>(
     []
   );
-  const isShowMnemonic = useIsShowMnemonic();
   const [keystoneInited, setKeystoneInited] = useState(false);
   const init = async () => {
     const walletSavedList = await wallet.getHighlightWalletList();
@@ -153,43 +176,7 @@ const AddAddressOptions = () => {
       brand: 'createAddress',
       onClick: async () => {
         history.push('/mnemonics/create');
-        // if (await wallet.checkHasMnemonic()) {
-        //   const account = await wallet.deriveNewAccountFromMnemonic();
-        //   const allAccounts = await wallet.getTypedAccounts(
-        //     KEYRING_CLASS.MNEMONIC
-        //   );
-        //   let mnemonLengh = 0;
-        //   if (allAccounts.length > 0) {
-        //     mnemonLengh = allAccounts[0]?.accounts?.length;
-        //   }
-        //   if (account && account.length > 0) {
-        //     await wallet.updateAlianName(
-        //       account[0]?.toLowerCase(),
-        //       `${BRAND_ALIAN_TYPE_TEXT[KEYRING_CLASS.MNEMONIC]} ${
-        //         mnemonLengh + 1
-        //       }`
-        //     );
-        //   }
-        //   message.success({
-        //     icon: <img src={IconSuccess} className="icon icon-success" />,
-        //     content: t('Created successfully'),
-        //   });
-
-        //   if (getUiType().isTab) {
-        //     setTimeout(() => {
-        //       window.close();
-        //     }, 2000);
-        //     return;
-        //   }
-
-        //   history.push('/dashboard');
-        // } else {
-        //   history.push('/mnemonics/create');
-        // }
       },
-      // subText: isShowMnemonic
-      //   ? t('A new mnemonic will be created')
-      //   : t('Create a new address with your mnemonic'),
     },
     {
       leftIcon: IconImportAdress,
@@ -213,11 +200,11 @@ const AddAddressOptions = () => {
     if (savedWallet.length > 0) {
       const result: ISavedWalletData[] = [];
       savedWallet.map((item) => {
-        if (normaltype.includes(item)) {
+        if (normalTypes.includes(item)) {
           result.push(
             renderData.find((data) => data.brand === item) as IRenderItem
           );
-        } else {
+        } else if (!deprecatedTypes.includes(item)) {
           const savedItem = Object.values(WALLET_BRAND_CONTENT).find(
             (wallet) => wallet.brand.toString() === item
           );
@@ -235,13 +222,17 @@ const AddAddressOptions = () => {
     }
     return [];
   };
-  const displayNormalData = renderData
-    .map((item) => {
-      const existItem = savedWallet.filter((brand) => brand === item.brand);
-      if (existItem.length > 0) return null;
-      return item;
-    })
-    .filter(Boolean);
+  const { displayNormalData, showStaticDivideLine } = React.useMemo(() => {
+    const displayNormalData = renderData
+      .map((item) => {
+        const existItem = savedWallet.filter((brand) => brand === item.brand);
+        if (existItem.length > 0) return null;
+        return item;
+      })
+      .filter(Boolean);
+    const showStaticDivideLine = displayNormalData.length >= 1;
+    return { displayNormalData, showStaticDivideLine };
+  }, [renderData]);
 
   useEffect(() => {
     init();
@@ -313,11 +304,11 @@ const AddAddressOptions = () => {
             </div>
           );
         })}
-        <div className="divide-line-list"></div>
-        {displayNormalData.map((data) => {
+        {showStaticDivideLine && <div className="divide-line-list"></div>}
+        {displayNormalData.map((data, idx) => {
           return (
             <React.Fragment key={data!.content}>
-              {data?.brand === 'addWatchMode' && (
+              {data?.brand === 'addWatchMode' && idx !== 0 && (
                 <div className="divide-line-list"></div>
               )}
               <Field

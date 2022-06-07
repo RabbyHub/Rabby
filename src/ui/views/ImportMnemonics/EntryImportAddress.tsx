@@ -1,6 +1,7 @@
 import React from 'react';
 import { useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
+import styled from 'styled-components';
 import { Field, StrayPage } from 'ui/component';
 
 import EntryImportAddressLogo from 'ui/assets/import/entry-import-address.svg';
@@ -15,6 +16,18 @@ import IconEntryRightIcon from 'ui/assets/import/entry-right-icon.svg';
 import { useMedia } from 'react-use';
 import clsx from 'clsx';
 import { connectStore } from '@/ui/store';
+import LessPalette from '@/ui/style/var-defs';
+
+const ActionEntries = styled.div`
+  .action-item {
+    border: 1px solid #ffffff;
+
+    &:hover {
+      border-color: ${LessPalette['@primary-color']};
+      background: rgba(134, 151, 255, 0.1);
+    }
+  }
+`;
 
 const EntryImportAddress = () => {
   const { t } = useTranslation();
@@ -33,7 +46,7 @@ const EntryImportAddress = () => {
             src={EntryImportAddressLogo}
           />
           <div
-            className="absolute left-20 top-20 w-20 h-20 cusor-pointer"
+            className="absolute left-20 top-20 w-20 h-20 cursor-pointer"
             onClick={() => history.goBack()}
           >
             <img
@@ -52,9 +65,9 @@ const EntryImportAddress = () => {
         </div>
       </header>
       <div className="rabby-container pt-32">
-        <div className="import-action-entries px-20">
+        <ActionEntries className="import-action-entries px-20">
           <Field
-            className="w-[100%] mb-12"
+            className="w-[100%] mb-12 action-item"
             leftIcon={<img src={IconMnemonics} className={clsx('icon')} />}
             rightIcon={
               <img src={IconEntryRightIcon} className="right-chevron-icon" />
@@ -65,7 +78,7 @@ const EntryImportAddress = () => {
           </Field>
 
           <Field
-            className="w-[100%] mb-12"
+            className="w-[100%] mb-12 action-item"
             leftIcon={<img src={IconPrivatekey} className={clsx('icon')} />}
             rightIcon={
               <img src={IconEntryRightIcon} className="right-chevron-icon" />
@@ -76,7 +89,7 @@ const EntryImportAddress = () => {
           </Field>
 
           <Field
-            className="w-[100%] mb-12"
+            className="w-[100%] mb-12 action-item"
             leftIcon={<img src={IconKeystore} className={clsx('icon')} />}
             rightIcon={
               <img src={IconEntryRightIcon} className="right-chevron-icon" />
@@ -85,7 +98,7 @@ const EntryImportAddress = () => {
           >
             {t('Import Keystore')}
           </Field>
-        </div>
+        </ActionEntries>
       </div>
     </StrayPage>
   );

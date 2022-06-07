@@ -140,9 +140,6 @@
   "Address": {
     "message": "Address"
   },
-  "Successfully__imported": {
-    "message": "Successfully imported"
-  },
   "AddressCount": {
     "message": "{{count}} addresses"
   },

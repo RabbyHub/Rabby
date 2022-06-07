@@ -35,7 +35,7 @@ const ImportSuccess = ({ isPopup = false }: { isPopup?: boolean }) => {
   const {
     accounts,
     hasDivider = true,
-    title = t('Successfully imported'),
+    title = t('Imported Successfully'),
     editing = false,
     showImportIcon = false,
     isMnemonics = false,

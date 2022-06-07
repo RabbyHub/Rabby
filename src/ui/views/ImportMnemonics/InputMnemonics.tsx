@@ -101,14 +101,25 @@ function useTypingMnemonics(form: FormInstance<IFormStates>) {
     [lastTypingWord, form]
   );
 
+  const inputRef = React.useRef<HTMLTextAreaElement | null>(null);
+  const inputTimerRef = React.useRef<any>(null);
+
   const setLastMnemonicsPart = React.useCallback(
     (word) => {
       const parts = mnemonics?.split(' ') || [];
       parts.pop();
       parts.push(word);
-      const nextVal = parts.join(' ');
+      const nextVal = parts.join(' ') + ' ';
       setMnemonics(nextVal);
       form.setFieldsValue({ mnemonics: nextVal });
+
+      if (inputTimerRef.current) clearTimeout(inputTimerRef.current);
+      inputTimerRef.current = setTimeout(() => {
+        inputRef.current?.focus();
+
+        clearTimeout(inputTimerRef.current);
+        inputTimerRef.current = null;
+      }, 200);
 
       return nextVal;
     },
@@ -130,6 +141,7 @@ function useTypingMnemonics(form: FormInstance<IFormStates>) {
     setMnemonics,
     setLastMnemonicsPart,
     isLastTypingWordFull: currentWords.includes(lastTypingWord),
+    inputRef,
   };
 }
 
@@ -144,6 +156,7 @@ const ImportMnemonics = () => {
     currentWords,
     setLastMnemonicsPart,
     isLastTypingWordFull,
+    inputRef,
   } = useTypingMnemonics(form);
 
   const dispatch = useRabbyDispatch();
@@ -240,6 +253,8 @@ const ImportMnemonics = () => {
                 className={`h-[128px] p-16 pb-${BAR_H}`}
                 placeholder={t('Enter your Seed Phrase, distinguish by space')}
                 spellCheck={false}
+                ref={inputRef}
+                autoFocus
               />
             </Form.Item>
             {!isLastTypingWordFull && (

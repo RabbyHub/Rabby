@@ -151,6 +151,9 @@ const RiskCheck = () => {
           </RiskTipText>
           <QuestionsWrapper>
             {questionChecks.map((q) => {
+              const handleClickItem = () => {
+                toggleCheckedByIndex(q.index);
+              };
               return (
                 <Field
                   key={`item-${q.index}`}
@@ -165,13 +168,11 @@ const RiskCheck = () => {
                       width={'20px'}
                       height={'20px'}
                       background="#27C193"
-                      // onChange={handleToggle}
+                      onChange={handleClickItem}
                     />
                   }
                   rightIcon={null}
-                  onClick={() => {
-                    toggleCheckedByIndex(q.index);
-                  }}
+                  onClick={handleClickItem}
                 >
                   {q.content}
                 </Field>
