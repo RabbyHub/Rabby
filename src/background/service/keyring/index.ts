@@ -162,17 +162,19 @@ class KeyringService extends EventEmitter {
         keyring = _keyring;
         const [address] = await keyring.getAccounts();
         const keyrings = await this.getAllTypedAccounts();
-        const alias = generateAliasName({
-          keyringType: KEYRING_TYPE.SimpleKeyring,
-          keyringCount:
-            keyrings.filter(
-              (keyring) => keyring.type === KEYRING_TYPE.SimpleKeyring
-            ).length - 1,
-        });
-        contactBook.addAlias({
-          address,
-          name: alias,
-        });
+        if (!contactBook.getContactByAddress(address)) {
+          const alias = generateAliasName({
+            keyringType: KEYRING_TYPE.SimpleKeyring,
+            keyringCount:
+              keyrings.filter(
+                (keyring) => keyring.type === KEYRING_TYPE.SimpleKeyring
+              ).length - 1,
+          });
+          contactBook.addAlias({
+            address,
+            name: alias,
+          });
+        }
         return this.persistAllKeyrings.bind(this);
       })
       .then(this.setUnlocked.bind(this))
