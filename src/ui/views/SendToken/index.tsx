@@ -14,6 +14,7 @@ import {
   CHAINS_ENUM,
   KEYRING_PURPLE_LOGOS,
   KEYRING_CLASS,
+  MINIMUM_GAS_LIMIT,
 } from 'consts';
 import { Account } from 'background/service/preference';
 import { UIContactBookItem } from 'background/service/contactBook';
@@ -24,10 +25,12 @@ import { formatTokenAmount, splitNumberByStep } from 'ui/utils/number';
 import AccountCard from '../Approval/components/AccountCard';
 import TokenAmountInput from 'ui/component/TokenAmountInput';
 import TagChainSelector from 'ui/component/ChainSelector/tag';
-import { TokenItem } from 'background/service/openapi';
+import { GasLevel, GasResult, TokenItem } from 'background/service/openapi';
 import { PageHeader, AddressViewer } from 'ui/component';
 import ContactEditModal from 'ui/component/Contact/EditModal';
 import ContactListModal from 'ui/component/Contact/ListModal';
+import GasReserved from './components/GasReserved';
+import GasSelector from './components/GasSelector';
 import IconContact from 'ui/assets/contact.svg';
 import IconEdit from 'ui/assets/edit-purple.svg';
 import IconCopy from 'ui/assets/copy-no-border.svg';
@@ -46,6 +49,7 @@ const SendToken = () => {
   const [currentAccount, setCurrentAccount] = useState<Account | null>(null);
   const [chain, setChain] = useState(CHAINS_ENUM.ETH);
   const { t } = useTranslation();
+  const [tokenAmountForGas, setTokenAmountForGas] = useState('0');
   const { useForm } = Form;
   const history = useHistory();
   const { state } = useLocation<{
@@ -74,6 +78,7 @@ const SendToken = () => {
     time_at: 0,
     amount: 0,
   });
+  const [gasList, setGasList] = useState<GasLevel[]>([]);
   const [sendAlianName, setSendAlianName] = useState<string | null>(null);
   const [showEditContactModal, setShowEditContactModal] = useState(false);
   const [showListContactModal, setShowListContactModal] = useState(false);
@@ -82,9 +87,14 @@ const SendToken = () => {
   const [isLoading, setIsLoading] = useState(true);
   const [balanceError, setBalanceError] = useState(null);
   const [balanceWarn, setBalanceWarn] = useState(null);
+  const [showGasReserved, setShowGasReserved] = useState(false);
   const [showContactInfo, setShowContactInfo] = useState(false);
   const [accountType, setAccountType] = useState('');
   const [amountFocus, setAmountFocus] = useState(false);
+  const [gasSelectorVisible, setGasSelectorVisible] = useState(false);
+  const [selectedGasLevel, setSelectedGasLevel] = useState<GasLevel | null>(
+    null
+  );
   const [tokenValidationStatus, setTokenValidationStatus] = useState(
     TOKEN_VALIDATION_STATUS.PENDING
   );
@@ -223,20 +233,19 @@ const SendToken = () => {
     if (!/^\d*(\.\d*)?$/.test(amount)) {
       resultAmount = cacheAmount;
     }
-    const account = await wallet.syncGetCurrentAccount();
     const targetToken = token || currentToken;
-    if (
-      isNativeToken &&
-      account.type !== KEYRING_CLASS.GNOSIS &&
-      new BigNumber(targetToken.raw_amount_hex_str || 0)
-        .div(10 ** targetToken.decimals)
-        .minus(new BigNumber(amount))
-        .isLessThan(0.1)
-    ) {
-      setBalanceWarn(t('Gas fee reservation required'));
-    } else {
-      setBalanceWarn(null);
-    }
+    // if (
+    //   isNativeToken &&
+    //   account.type !== KEYRING_CLASS.GNOSIS &&
+    //   new BigNumber(targetToken.raw_amount_hex_str || 0)
+    //     .div(10 ** targetToken.decimals)
+    //     .minus(new BigNumber(amount))
+    //     .isLessThan(0.1)
+    // ) {
+    //   setBalanceWarn(t('Gas fee reservation required'));
+    // } else {
+    //   setBalanceWarn(null);
+    // }
     if (
       new BigNumber(resultAmount || 0).isGreaterThan(
         new BigNumber(targetToken.raw_amount_hex_str || 0).div(
@@ -265,6 +274,9 @@ const SendToken = () => {
   };
 
   const handleCurrentTokenChange = async (token: TokenItem) => {
+    if (showGasReserved) {
+      setShowGasReserved(false);
+    }
     const account = await wallet.syncGetCurrentAccount();
     const values = form.getFieldsValue();
     if (token.id !== currentToken.id || token.chain !== currentToken.chain) {
@@ -280,14 +292,34 @@ const SendToken = () => {
     loadCurrentToken(token.id, token.chain, account.address);
   };
 
-  const handleClickTokenBalance = () => {
+  const handleClickTokenBalance = async () => {
     if (isLoading) return;
+    const tokenBalance = new BigNumber(
+      currentToken.raw_amount_hex_str || 0
+    ).div(10 ** currentToken.decimals);
+    let amount = tokenBalance.toFixed();
+
+    if (isNativeToken) {
+      const list: GasLevel[] = await wallet.openapi.gasMarket(
+        CHAINS[chain].serverId
+      );
+      setGasList(list);
+      let instant = list[0];
+      for (let i = 1; i < list.length; i++) {
+        if (list[i].price > instant.price) {
+          instant = list[i];
+        }
+      }
+      const gasTokenAmount = handleGasChange(instant);
+      const tokenForSend = tokenBalance.minus(gasTokenAmount);
+      amount = tokenForSend.toFixed();
+      setShowGasReserved(true);
+    }
+
     const values = form.getFieldsValue();
     const newValues = {
       ...values,
-      amount: new BigNumber(currentToken.raw_amount_hex_str || 0)
-        .div(10 ** currentToken.decimals)
-        .toFixed(),
+      amount,
     };
     form.setFieldsValue(newValues);
     handleFormValuesChange(null, newValues);
@@ -489,6 +521,23 @@ const SendToken = () => {
     }
   };
 
+  const handleClickGasReserved = () => {
+    setGasSelectorVisible(true);
+  };
+
+  const handleGasSelectorClose = () => {
+    setGasSelectorVisible(false);
+  };
+
+  const handleGasChange = (gas: GasLevel) => {
+    setSelectedGasLevel(gas);
+    const gasTokenAmount = new BigNumber(gas.price)
+      .times(MINIMUM_GAS_LIMIT)
+      .div(1e18);
+    setTokenAmountForGas(gasTokenAmount.toFixed());
+    return gasTokenAmount;
+  };
+
   useEffect(() => {
     init();
     return () => {
@@ -609,9 +658,16 @@ const SendToken = () => {
                 )}`
               )}
             </div>
-            {balanceError || balanceWarn ? (
+            {showGasReserved && (
+              <GasReserved
+                token={currentToken}
+                amount={tokenAmountForGas}
+                onClickAmount={handleClickGasReserved}
+              />
+            )}
+            {/* {balanceError || balanceWarn ? (
               <div className="balance-error">{balanceError || balanceWarn}</div>
-            ) : null}
+            ) : null} */}
           </div>
           <Form.Item name="amount">
             {currentAccount && (
@@ -716,6 +772,19 @@ const SendToken = () => {
         onCancel={() => setShowListContactModal(false)}
         onOk={handleConfirmContact}
         address={form.getFieldValue('to')}
+      />
+
+      <GasSelector
+        visible={gasSelectorVisible}
+        onClose={handleGasSelectorClose}
+        chainId={CHAINS[chain].id}
+        onChange={(val) => {
+          setGasSelectorVisible(false);
+          handleGasChange(val);
+        }}
+        gasList={gasList}
+        gas={selectedGasLevel}
+        token={currentToken}
       />
     </div>
   );
