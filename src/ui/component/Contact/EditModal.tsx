@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Drawer, Input, Button, Form, message } from 'antd';
-import { useWallet } from 'ui/utils';
+import { useWallet, useWalletOld } from 'ui/utils';
 import { UIContactBookItem } from 'background/service/contactBook';
 import IconSuccess from 'ui/assets/success.svg';
 import './style.less';
@@ -24,7 +24,7 @@ const EditModal = ({
   accountType = 'others',
 }: EditModalProps) => {
   const { t } = useTranslation();
-  const wallet = useWallet();
+  const wallet = useWalletOld();
   const [name, setName] = useState('');
   const inputRef = useRef<Input>(null);
 

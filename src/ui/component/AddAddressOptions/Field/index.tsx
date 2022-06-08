@@ -1,6 +1,6 @@
 import React, { ReactNode } from 'react';
 import cx from 'clsx';
-import { useWallet, useHover } from 'ui/utils';
+import { useWalletOld as useWallet, useHover } from 'ui/utils';
 import './style.less';
 import IconWalletConnect from 'ui/assets/walletlogo/walletconnect.png';
 interface FieldProps {

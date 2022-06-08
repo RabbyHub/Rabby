@@ -8,6 +8,7 @@ import {
   useWallet,
   hex2Text,
   openInternalPageInTab,
+  useWalletOld,
 } from 'ui/utils';
 import {
   SecurityCheckResponse,
@@ -48,7 +49,7 @@ export const WaitingSignComponent = {
 
 const SignText = ({ params }: { params: SignTextProps }) => {
   const [, resolveApproval, rejectApproval] = useApproval();
-  const wallet = useWallet();
+  const wallet = useWalletOld();
   const { t } = useTranslation();
   const { data, session, isGnosis = false } = params;
   const [hexData] = data;

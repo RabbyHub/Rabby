@@ -12,7 +12,7 @@ import { useHistory, useLocation } from 'react-router-dom';
 import IconInfo from 'ui/assets/infoicon.svg';
 import { PageHeader } from 'ui/component';
 import TagChainSelector from 'ui/component/ChainSelector/tag';
-import { useWallet } from 'ui/utils';
+import { useWalletOld as useWallet } from 'ui/utils';
 import NFTContractList from './components/NFTContractList';
 import NFTList from './components/NFTList';
 import PopupSearch from './components/PopupSearch';

@@ -4,7 +4,12 @@ import { useTranslation } from 'react-i18next';
 import TransportWebHID from '@ledgerhq/hw-transport-webhid';
 import { WaitingSignComponent } from './SignText';
 import { KEYRING_CLASS, KEYRING_TYPE } from 'consts';
-import { openInternalPageInTab, useApproval, useWallet } from 'ui/utils';
+import {
+  openInternalPageInTab,
+  useApproval,
+  useWallet,
+  useWalletOld,
+} from 'ui/utils';
 import {
   SecurityCheckResponse,
   SecurityCheckDecision,
@@ -32,7 +37,7 @@ interface SignTypedDataProps {
 const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
   const [, resolveApproval, rejectApproval] = useApproval();
   const { t } = useTranslation();
-  const wallet = useWallet();
+  const wallet = useWalletOld();
   const [isWatch, setIsWatch] = useState(false);
   const [isLedger, setIsLedger] = useState(false);
   const [useLedgerLive, setUseLedgerLive] = useState(false);

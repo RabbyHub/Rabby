@@ -3,7 +3,7 @@ import { message } from 'antd';
 import { useHistory, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { DEFAULT_BRIDGE } from '@rabby-wallet/eth-walletconnect-keyring';
-import { useWallet, useWalletRequest } from 'ui/utils';
+import { useWalletOld as useWallet, useWalletRequest } from 'ui/utils';
 import IconBack from 'ui/assets/gobackwhite.svg';
 import { ScanCopyQRCode } from 'ui/component';
 import eventBus from '@/eventBus';

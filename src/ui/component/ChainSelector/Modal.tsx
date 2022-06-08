@@ -4,7 +4,7 @@ import { Drawer } from 'antd';
 
 import { Chain } from 'background/service/openapi';
 import { Account } from 'background/service/preference';
-import { useWallet } from 'ui/utils';
+import { useWallet, useWalletOld } from 'ui/utils';
 import { CHAINS_ENUM, CHAINS } from 'consts';
 import eventBus from '@/eventBus';
 import ChainCard from '../ChainCard';
@@ -32,7 +32,7 @@ const ChainSelectorModal = ({
   offset,
   trigger,
 }: ChainSelectorModalProps) => {
-  const wallet = useWallet();
+  const wallet = useWalletOld();
   const history = useHistory();
   const location = useLocation();
   const [currentAccount, setCurrentAccount] = useState<Account | null>(null);

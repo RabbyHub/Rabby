@@ -9,6 +9,7 @@ import { openInTab } from 'ui/utils/webapi';
 import IconCopy from 'ui/assets/copy-gray.svg';
 import IconSuccess from 'ui/assets/success.svg';
 import './style.less';
+import { Account } from '@/background/service/preference';
 
 const SignedTextHistoryItem = ({ item }: { item: SignTextHistoryItem }) => {
   const { t } = useTranslation();
@@ -82,7 +83,7 @@ const SignedTextHistory = () => {
   const [textHistory, setTextHistory] = useState<SignTextHistoryItem[]>([]);
 
   const init = async () => {
-    const account = await wallet.getCurrentAccount();
+    const account = await wallet.getCurrentAccount<Account>();
     const history = await wallet.getSignTextHistory(account.address);
     setTextHistory(history);
   };

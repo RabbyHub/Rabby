@@ -8,7 +8,7 @@ import {
   KEYRING_TYPE_TEXT,
   BRAND_ALIAN_TYPE_TEXT,
 } from 'consts';
-import { useWallet } from 'ui/utils';
+import { useWallet, useWalletOld } from 'ui/utils';
 import { AddressViewer, FieldCheckbox } from '..';
 import {
   UIContactBookItem,
@@ -31,7 +31,7 @@ interface Account {
 const { TabPane } = Tabs;
 const ListModal = ({ address, visible, onOk, onCancel }: ListModalProps) => {
   const { t } = useTranslation();
-  const wallet = useWallet();
+  const wallet = useWalletOld();
   const [alianNamesMap, setAlianNamesMap] = useState<ContactBookStore>({});
   const [list, setList] = useState<UIContactBookItem[]>([]);
   const [alianNames, setAlianNames] = useState({});

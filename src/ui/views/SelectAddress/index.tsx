@@ -10,7 +10,11 @@ import {
 } from 'ui/component';
 import type { ISelectAccountItem } from 'ui/component/MultiSelectAddressList';
 import stats from '@/stats';
-import { getUiType, useWallet, useWalletRequest } from 'ui/utils';
+import {
+  getUiType,
+  useWalletOld as useWallet,
+  useWalletRequest,
+} from 'ui/utils';
 import { HARDWARE_KEYRING_TYPES, HDPaths } from 'consts';
 import { BIP44_PATH, LEDGER_LIVE_PATH } from '../ImportHardware/LedgerHdPath';
 import Pagination from './components/Pagination';

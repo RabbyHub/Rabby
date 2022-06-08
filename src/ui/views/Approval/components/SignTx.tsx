@@ -1,66 +1,66 @@
-import React, { ReactNode, useEffect, useState } from 'react';
+import stats from '@/stats';
+import { hasConnectedLedgerDevice } from '@/utils';
 import {
-  intToHex,
-  isHexString,
-  isHexPrefixed,
-  addHexPrefix,
-  unpadHexString,
-} from 'ethereumjs-util';
-import IconWatch from 'ui/assets/walletlogo/watch-purple.svg';
-import IconGnosis from 'ui/assets/walletlogo/gnosis.png';
-import { Button, Modal, Tooltip, Drawer } from 'antd';
-import { useTranslation } from 'react-i18next';
-import clsx from 'clsx';
-import * as Sentry from '@sentry/browser';
+  convertLegacyTo1559,
+  validateGasPriceRange,
+} from '@/utils/transaction';
 import Safe from '@rabby-wallet/gnosis-sdk';
 import { SafeInfo } from '@rabby-wallet/gnosis-sdk/src/api';
-import ReactGA from 'react-ga';
+import * as Sentry from '@sentry/browser';
+import { Button, Drawer, Modal, Tooltip } from 'antd';
 import {
-  KEYRING_CLASS,
+  Chain,
+  ExplainTxResponse,
+  GasLevel,
+  SecurityCheckDecision,
+  SecurityCheckResponse,
+  Tx,
+} from 'background/service/openapi';
+import { Account, ChainGas } from 'background/service/preference';
+import clsx from 'clsx';
+import {
   CHAINS,
   CHAINS_ENUM,
-  KEYRING_TYPE,
-  INTERNAL_REQUEST_ORIGIN,
-  SUPPORT_1559_KEYRING_TYPE,
   HARDWARE_KEYRING_TYPES,
+  INTERNAL_REQUEST_ORIGIN,
+  KEYRING_CLASS,
+  KEYRING_TYPE,
+  SUPPORT_1559_KEYRING_TYPE,
 } from 'consts';
+import {
+  addHexPrefix,
+  intToHex,
+  isHexPrefixed,
+  isHexString,
+  unpadHexString,
+} from 'ethereumjs-util';
+import React, { ReactNode, useEffect, useState } from 'react';
+import ReactGA from 'react-ga';
+import { useTranslation } from 'react-i18next';
+import IconInfo from 'ui/assets/infoicon.svg';
+import IconGnosis from 'ui/assets/walletlogo/gnosis.png';
+import IconWatch from 'ui/assets/walletlogo/watch-purple.svg';
 import { Checkbox } from 'ui/component';
+import { openInternalPageInTab, useApproval, useWalletOld } from 'ui/utils';
 import AccountCard from './AccountCard';
 import LedgerWebHIDAlert from './LedgerWebHIDAlert';
 import SecurityCheckBar from './SecurityCheckBar';
 import SecurityCheckDetail from './SecurityCheckDetail';
-import {
-  ExplainTxResponse,
-  SecurityCheckResponse,
-  SecurityCheckDecision,
-  Tx,
-  GasLevel,
-  Chain,
-} from 'background/service/openapi';
-import stats from '@/stats';
-import { hasConnectedLedgerDevice } from '@/utils';
-import {
-  validateGasPriceRange,
-  convertLegacyTo1559,
-} from '@/utils/transaction';
-import { useWallet, useApproval, openInternalPageInTab } from 'ui/utils';
-import { ChainGas, Account } from 'background/service/preference';
-import GnosisDrawer from './TxComponents/GnosisDrawer';
-import Approve from './TxComponents/Approve';
-import Cancel from './TxComponents/Cancel';
-import CancelNFTCollection from './TxComponents/CancelNFTCollection';
-import CancelNFT from './TxComponents/CancelNFT';
-import Sign from './TxComponents/Sign';
-import CancelTx from './TxComponents/CancelTx';
-import Send from './TxComponents/Send';
-import Deploy from './TxComponents/Deploy';
-import Loading from './TxComponents/Loading';
-import GasSelector, { GasSelectorResponse } from './TxComponents/GasSelecter';
 import { WaitingSignComponent } from './SignText';
-import IconInfo from 'ui/assets/infoicon.svg';
-import ApproveNFTCollection from './TxComponents/ApproveNFTCollection';
+import Approve from './TxComponents/Approve';
 import ApproveNFT from './TxComponents/ApproveNFT';
+import ApproveNFTCollection from './TxComponents/ApproveNFTCollection';
+import Cancel from './TxComponents/Cancel';
+import CancelNFT from './TxComponents/CancelNFT';
+import CancelNFTCollection from './TxComponents/CancelNFTCollection';
+import CancelTx from './TxComponents/CancelTx';
+import Deploy from './TxComponents/Deploy';
+import GasSelector, { GasSelectorResponse } from './TxComponents/GasSelecter';
+import GnosisDrawer from './TxComponents/GnosisDrawer';
+import Loading from './TxComponents/Loading';
+import Send from './TxComponents/Send';
 import SendNFT from './TxComponents/sendNFT';
+import Sign from './TxComponents/Sign';
 
 const normalizeHex = (value: string | number) => {
   if (typeof value === 'number') {
@@ -354,7 +354,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
   const [isGnosisAccount, setIsGnosisAccount] = useState(false);
   const [gnosisDrawerVisible, setGnosisDrawerVisble] = useState(false);
   const [, resolveApproval, rejectApproval] = useApproval();
-  const wallet = useWallet();
+  const wallet = useWalletOld();
   if (!chain) throw new Error('No support chain not found');
   const [support1559, setSupport1559] = useState(chain.eip['1559']);
   const [isLedger, setIsLedger] = useState(false);
