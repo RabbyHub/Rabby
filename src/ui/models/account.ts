@@ -15,7 +15,7 @@ interface AccountState {
     [address: string]: TotalBalanceResponse;
   };
 
-  mnemonicAccounts: Account[];
+  mnemonicAccounts: DisplayedKeryring[];
 }
 
 export const account = createModel<RootModel>()({

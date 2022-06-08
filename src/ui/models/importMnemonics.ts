@@ -136,6 +136,13 @@ export const importMnemonics = createModel<RootModel>()({
       },
       store
     ) {
+      if (payload.keyringId === null) {
+        console.warn(
+          '[importMnemonics::setSelectedIndexes] keyringId is null, but number expected'
+        );
+        return;
+      }
+
       const selectedAddressesIndexes = new Set(payload.indexes);
 
       await store.app.wallet.generateAliasCacheForMnemonicAddress(
@@ -187,7 +194,7 @@ export const importMnemonics = createModel<RootModel>()({
         importingAccounts.map((account) => {
           return store.app.wallet.updateAlianName(
             account.address?.toLowerCase(),
-            account.alianName
+            account.alianName || ''
           );
         })
       );

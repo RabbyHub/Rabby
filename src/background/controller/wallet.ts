@@ -63,7 +63,7 @@ import WatchKeyring from '@rabby-wallet/eth-watch-keyring';
 import stats from '@/stats';
 import { generateAliasName } from '@/utils/account';
 
-const stashKeyrings: Record<string, any> = {};
+const stashKeyrings: Record<string | number, any> = {};
 
 export class WalletController extends BaseController {
   openapi = openapiService;
@@ -1500,7 +1500,10 @@ export class WalletController extends BaseController {
 
   getCacheAlias = contactBookService.getCacheAlias;
 
-  async generateAliasCacheForMnemonicAddress(keyringId: string, ids: number[]) {
+  async generateAliasCacheForMnemonicAddress(
+    keyringId: keyof typeof stashKeyrings,
+    ids: number[]
+  ) {
     const keyring = stashKeyrings[keyringId];
     if (keyring) {
       const accounts = ids
