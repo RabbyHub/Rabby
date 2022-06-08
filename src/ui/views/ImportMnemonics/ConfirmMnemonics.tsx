@@ -6,7 +6,6 @@ import { sortBy } from 'lodash';
 import { StrayPageWithButton } from 'ui/component';
 import DisplayAddressItem from './components/DisplayAddressItem';
 import { useWalletOld as useWallet, useWalletRequest } from 'ui/utils';
-import { Account } from 'background/service/preference';
 import clsx from 'clsx';
 import { KEYRING_TYPE } from 'consts';
 import { IconImportSuccess } from 'ui/assets';
@@ -16,7 +15,11 @@ import Mask from 'ui/assets/import-mask.png';
 import IconArrowRight from 'ui/assets/import/import-arrow-right.svg';
 
 import { message } from 'antd';
-import { useRabbyDispatch, useRabbySelector } from '../../store';
+import {
+  useRabbyDispatch,
+  useRabbyGetter,
+  useRabbySelector,
+} from '../../store';
 
 const AddressWrapper = styled.div`
   & {
@@ -33,85 +36,45 @@ const ConfirmMnemonics = ({ isPopup = false }: { isPopup?: boolean }) => {
   const isWide = useMedia('(min-width: 401px)');
 
   const dispatch = useRabbyDispatch();
-  const {
-    importingAccounts,
-    importedAddresses,
-    stashKeyringId,
-  } = useRabbySelector((s) => ({
-    importingAccounts: s.importMnemonics.importingAccounts,
+  const { confirmingAccounts, importedAddresses } = useRabbySelector((s) => ({
+    confirmingAccounts: s.importMnemonics.confirmingAccounts,
     importedAddresses: s.importMnemonics.importedAddresses,
     stashKeyringId: s.importMnemonics.stashKeyringId,
   }));
+  const accountsToImport = useRabbyGetter(
+    (s) => s.importMnemonics.accountsToImport
+  );
 
-  const {
-    state: { backFromImportMoreAddress },
-  } = useLocation<{
+  const { state: { backFromImportMoreAddress } = {} } = useLocation<{
     backFromImportMoreAddress?: boolean;
   }>();
 
-  const wallet = useWallet();
-  const [, setSpin] = useState(true);
+  const [getAccounts] = useWalletRequest(dispatch.importMnemonics.getAccounts, {
+    onSuccess(accounts) {
+      if (accounts.length < 5) {
+        throw new Error(
+          t(
+            'You need to make use your last account before you can add a new one'
+          )
+        );
+      }
 
-  const [getAccounts] = useWalletRequest(
-    async (firstFlag, start?, end?): Promise<Account[]> => {
-      setSpin(true);
-      return firstFlag
-        ? await wallet.requestKeyring(
-            KEYRING_TYPE.HdKeyring,
-            'getFirstPage',
-            stashKeyringId ?? null
-          )
-        : end
-        ? await wallet.requestKeyring(
-            KEYRING_TYPE.HdKeyring,
-            'getAddresses',
-            stashKeyringId ?? null,
-            start,
-            end
-          )
-        : await wallet.requestKeyring(
-            KEYRING_TYPE.HdKeyring,
-            'getNextPage',
-            stashKeyringId ?? null
-          );
+      dispatch.importMnemonics.setSelectedAccounts([accounts[0].address]);
     },
-    {
-      onSuccess(_accounts) {
-        dispatch.importMnemonics.putQuriedAccountsByIndex({
-          accounts: _accounts,
-        });
-        if (_accounts.length < 5) {
-          throw new Error(
-            t(
-              'You need to make use your last account before you can add a new one'
-            )
-          );
-        }
-        setSpin(false);
-        dispatch.importMnemonics.setSelectedIndexes({
-          keyringId: stashKeyringId,
-          indexes: [_accounts[0].index as number],
-        });
-      },
-      onError(err) {
-        message.error('Please check the connection with your wallet');
-        setSpin(false);
-      },
-    }
-  );
+    onError(err) {
+      message.error('Please check the connection with your wallet');
+    },
+  });
 
   useEffect(() => {
-    dispatch.importMnemonics.getImportedAccountsAsync({
-      keyringId: stashKeyringId,
-    });
+    dispatch.importMnemonics.getImportedAccountsAsync();
 
-    if (backFromImportMoreAddress) return;
-    getAccounts(true);
+    if (!backFromImportMoreAddress) {
+      getAccounts({ firstFlag: true });
+    }
 
     return () => {
-      dispatch.importMnemonics.cleanUpImportedInfoAsync({
-        keyringId: stashKeyringId,
-      });
+      dispatch.importMnemonics.cleanUpImportedInfoAsync();
     };
   }, [backFromImportMoreAddress]);
 
@@ -122,26 +85,23 @@ const ConfirmMnemonics = ({ isPopup = false }: { isPopup?: boolean }) => {
     });
   }, []);
 
+  const noAnyAccountsToImport = !accountsToImport.length;
+
   return (
     <StrayPageWithButton
       custom={isWide}
       className={clsx(isWide && 'rabby-stray-page')}
       hasDivider
+      hasBack={noAnyAccountsToImport}
+      nextDisabled={noAnyAccountsToImport}
       NextButtonContent={t('OK')}
       onNextClick={async () => {
         await dispatch.importMnemonics.confirmAllImportingAccountsAsync();
-        await wallet.requestKeyring(
-          KEYRING_TYPE.HdKeyring,
-          'activeAccounts',
-          stashKeyringId,
-          importingAccounts.map((acc) => (acc.index as number) - 1)
-        );
-        await wallet.addKeyring(stashKeyringId);
 
         history.replace({
           pathname: isPopup ? '/popup/import/success' : '/import/success',
           state: {
-            accounts: importingAccounts.map((account) => ({
+            accounts: accountsToImport.map((account) => ({
               address: account.address,
               index: account.index,
               alianName: account.alianName,
@@ -220,7 +180,7 @@ const ConfirmMnemonics = ({ isPopup = false }: { isPopup?: boolean }) => {
               <div className="text-title text-15 mb-12">
                 <Trans
                   i18nKey="AddressCount"
-                  values={{ count: importingAccounts?.length }}
+                  values={{ count: confirmingAccounts?.length }}
                 />
               </div>
             </>
@@ -231,19 +191,18 @@ const ConfirmMnemonics = ({ isPopup = false }: { isPopup?: boolean }) => {
               !isPopup && 'lg:h-[200px] lg:w-[460px]'
             )}
           >
-            {sortBy(importingAccounts, (item) => item?.index).map(
-              (account, index) => {
-                // TODO: use imported to show
+            {sortBy(confirmingAccounts, (item) => item?.index).map(
+              (account) => {
                 const imported = importedAddresses.has(
                   account.address.toLowerCase()
                 );
 
                 return (
                   <DisplayAddressItem
-                    className="mb-12 rounded bg-white pt-10 pb-14 pl-16 h-[62px] flex"
+                    className="mb-12 rounded bg-white pt-10 pb-14 px-16 h-[62px] flex"
                     key={account.address}
                     account={account}
-                    index={index}
+                    imported={imported}
                   />
                 );
               }
