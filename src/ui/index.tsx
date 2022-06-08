@@ -11,7 +11,7 @@ import { Integrations } from '@sentry/tracing';
 import i18n, { addResourceBundle } from 'src/i18n';
 import { EVENTS } from 'consts';
 
-import type { WalletController } from 'ui/utils/WalletContext';
+import type { WalletControllerType } from 'ui/utils/WalletContext';
 
 import store from './store';
 
@@ -139,7 +139,7 @@ const wallet = new Proxy(
       }
     },
   }
-) as WalletController;
+) as WalletControllerType;
 
 portMessageChannel.listen((data) => {
   if (data.type === 'broadcast') {
