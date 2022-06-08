@@ -58,7 +58,7 @@ const VerifyMnemonics = () => {
               const alianName = generateAliasName({
                 keyringType: KEYRING_TYPE.HdKeyring,
                 brandName: `${BRAND_ALIAN_TYPE_TEXT[KEYRING_TYPE.HdKeyring]}`,
-                keyringCount: Math.max(keyring.index, 0),
+                keyringCount: Math.max(keyring!.index, 0),
                 addressCount: 0,
               });
 

@@ -1038,13 +1038,15 @@ export class WalletController extends BaseController {
     }
   };
 
-  getKeyringByMnemonic = (mnemonic: string) => {
+  getKeyringByMnemonic = (
+    mnemonic: string
+  ): (DisplayedKeryring & { index: number }) | undefined => {
     return keyringService.keyrings.find((item) => {
       return item.type === KEYRING_CLASS.MNEMONIC && item.mnemonic === mnemonic;
     });
   };
 
-  generateKeyringWithMnemonic = async (mnemonic) => {
+  generateKeyringWithMnemonic = async (mnemonic: string) => {
     if (!bip39.validateMnemonic(mnemonic)) {
       throw new Error(i18n.t('The seed phrase is invalid, please check!'));
     }

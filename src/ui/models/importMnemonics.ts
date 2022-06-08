@@ -4,11 +4,12 @@ import { KEYRING_TYPE } from '@/constant';
 import { RootModel } from '.';
 import type { Account } from 'background/service/preference';
 import { ContactBookItem } from '@/background/service/contactBook';
+import { DisplayedKeryring } from '@/background/service/keyring';
 
 export type ISimpleAccount = Pick<Account, 'address' | 'alianName' | 'index'>;
 
 interface IState {
-  mnemonicsCounter: number;
+  keyring: DisplayedKeryring | null;
   queriedAccounts: Record<Exclude<Account['index'], undefined>, Account>;
 
   stashKeyringId: number | null;
@@ -20,7 +21,7 @@ interface IState {
 
 const makeInitValues = () => {
   return {
-    mnemonicsCounter: -1,
+    keyring: null,
     queriedAccounts: {},
 
     stashKeyringId: null,
@@ -62,15 +63,6 @@ export const importMnemonics = createModel<RootModel>()({
         draftIndexes: initValues.draftIndexes,
         stashKeyringId: payload.stashKeyringId,
       });
-    },
-
-    async getMnemonicsCounterAsync(_?, store?) {
-      const typedAccounts = await store.app.wallet.getAllClassAccounts();
-      const len = typedAccounts.filter(
-        (list) => list.keyring.type === KEYRING_TYPE.HdKeyring
-      ).length;
-
-      dispatch.importMnemonics.setField({ mnemonicsCounter: len });
     },
 
     async getImportedAccountsAsync(

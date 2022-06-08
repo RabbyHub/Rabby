@@ -101,7 +101,6 @@ const ConfirmMnemonics = ({ isPopup = false }: { isPopup?: boolean }) => {
   );
 
   useEffect(() => {
-    dispatch.importMnemonics.getMnemonicsCounterAsync();
     dispatch.importMnemonics.getImportedAccountsAsync({
       keyringId: stashKeyringId,
     });

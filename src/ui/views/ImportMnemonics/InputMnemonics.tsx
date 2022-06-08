@@ -186,8 +186,6 @@ const ImportMnemonics = () => {
   });
 
   useEffect(() => {
-    dispatch.importMnemonics.getMnemonicsCounterAsync();
-
     (async () => {
       if (await wallet.hasPageStateCache()) {
         const cache = await wallet.getPageStateCache();
