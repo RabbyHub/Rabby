@@ -1105,6 +1105,15 @@
     &:nth-last-child(1)::after {
       border-bottom: 0;
     }
+    [data-action='copyIcon'], .favorite-star {
+      display: none;
+    }
+  
+    &:hover .favorite-star,
+    &:hover [data-action='copyIcon'],
+    &.favorited .favorite-star {
+      display: inline-block;
+    }
   }
   .address-item::before,
   .address-item:last-child::after {

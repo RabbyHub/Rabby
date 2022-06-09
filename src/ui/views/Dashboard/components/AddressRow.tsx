@@ -9,7 +9,7 @@ import IconAddressCopy from 'ui/assets/address-copy.png';
 import IconFavStarFilled from 'ui/assets/dashboard/favstar-filled.svg';
 import IconFavStar from 'ui/assets/dashboard/favstar.svg';
 
-import { splitNumberByStep, useHover, useWallet } from 'ui/utils';
+import { splitNumberByStep, useWallet } from 'ui/utils';
 import { message } from 'antd';
 import {
   KEYRING_ICONS,
@@ -41,7 +41,6 @@ function AddressRow({
   const [hdPathIndex, setHDPathIndex] = React.useState(null);
   const account = data[index];
   const favorited = highlightedAddresses.has(account.address);
-  const [isHovering, hoverProps] = useHover();
 
   const handleCopyContractAddress = () => {
     const clipboard = new ClipboardJS('.address-item', {
@@ -82,16 +81,18 @@ function AddressRow({
 
   return (
     <div
-      className="flex items-center address-item"
+      className={clsx(
+        'flex items-center address-item',
+        favorited && 'favorited'
+      )}
       key={index}
       style={style}
       onClick={(e) => {
-        const target = e.target as Element;
-        if (target?.id !== 'copyIcon') {
+        const target = e.target as HTMLElement;
+        if (target?.dataset?.action !== 'copyIcon') {
           handleClickChange?.(account);
         }
       }}
-      {...hoverProps}
     >
       {' '}
       <img
@@ -110,7 +111,7 @@ function AddressRow({
                 <span className="address-hdpath-index font-roboto-mono">{`#${hdPathIndex}`}</span>
               )}
             </div>
-            <span className="ml-[3px] inline-block">
+            <span className={clsx('ml-[3px] favorite-star')}>
               <img
                 onClick={(e) => {
                   e.stopPropagation();
@@ -130,16 +131,14 @@ function AddressRow({
               showArrow={false}
               className={'address-color'}
             />
-            {isHovering && (
-              <img
-                onClick={handleCopyContractAddress}
-                src={IconAddressCopy}
-                id={'copyIcon'}
-                className={clsx('ml-7 w-[16px] h-[16px]', {
-                  success: copiedSuccess,
-                })}
-              />
-            )}
+            <img
+              onClick={handleCopyContractAddress}
+              src={IconAddressCopy}
+              data-action={'copyIcon'}
+              className={clsx('ml-7 w-[16px] h-[16px]', {
+                success: copiedSuccess,
+              })}
+            />
             <div className={'money-color'}>
               ${splitNumberByStep(Math.floor(account?.balance || 0))}
             </div>
