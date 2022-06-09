@@ -22,15 +22,8 @@ import {
   KEYRING_TYPE,
   CHAINS,
   KEYRING_TYPE_TEXT,
-  KEYRING_WITH_INDEX,
 } from 'consts';
-import {
-  useWallet,
-  isSameAddress,
-  splitNumberByStep,
-  useHover,
-  useWalletOld,
-} from 'ui/utils';
+import { isSameAddress, useWalletOld } from 'ui/utils';
 import { AddressViewer, Copy, Modal, NameAndAddress } from 'ui/component';
 import { crossCompareOwners } from 'ui/utils/gnosis';
 import { Account } from 'background/service/preference';
@@ -61,6 +54,7 @@ import { SvgIconLoading } from 'ui/assets';
 
 import './style.less';
 import Dropdown from './components/NFT/Dropdown';
+import AddressRow from './components/AddressRow';
 
 const GnosisAdminItem = ({
   accounts,
@@ -382,106 +376,6 @@ const Dashboard = () => {
       setIsGnosis(currentAccount.type === KEYRING_CLASS.GNOSIS);
     }
   }, [currentAccount]);
-  const Row = (props) => {
-    const [hdPathIndex, setHDPathIndex] = useState(null);
-    const { data, index, style } = props;
-    const account = data[index];
-    const [isHovering, hoverProps] = useHover();
-
-    const handleCopyContractAddress = () => {
-      const clipboard = new ClipboardJS('.address-item', {
-        text: function () {
-          return account?.address;
-        },
-      });
-      clipboard.on('success', () => {
-        message.success({
-          duration: 1,
-          icon: <i />,
-          content: (
-            <div>
-              <div className="flex gap-4 mb-4">
-                <img src={IconSuccess} alt="" />
-                Copied
-              </div>
-              <div className="text-white">{account?.address}</div>
-            </div>
-          ),
-        });
-        clipboard.destroy();
-      });
-    };
-
-    const getHDPathIndex = async () => {
-      const index = await wallet.getIndexByAddress(
-        account.address,
-        account.type
-      );
-      if (index !== null) {
-        setHDPathIndex(index + 1);
-      }
-    };
-
-    useEffect(() => {
-      if (KEYRING_WITH_INDEX.includes(account.type)) {
-        getHDPathIndex();
-      }
-    }, []);
-
-    return (
-      <div
-        className="flex items-center address-item"
-        key={index}
-        style={style}
-        onClick={(e) => {
-          const target = e.target as Element;
-          if (target?.id !== 'copyIcon') {
-            handleChange(account);
-          }
-        }}
-        {...hoverProps}
-      >
-        {' '}
-        <img
-          className="icon icon-account-type w-[20px] h-[20px]"
-          src={
-            KEYRING_ICONS[account.type] ||
-            WALLET_BRAND_CONTENT[account.brandName]?.image
-          }
-        />
-        <div className="flex flex-col items-start ml-10">
-          <div className="text-13 text-black text-left click-name">
-            <div className="list-alian-name">
-              {account?.alianName}
-              {hdPathIndex && (
-                <span className="address-hdpath-index font-roboto-mono">{`#${hdPathIndex}`}</span>
-              )}
-            </div>
-            <div className="flex items-center">
-              <AddressViewer
-                address={account?.address}
-                showArrow={false}
-                className={'address-color'}
-              />
-              {isHovering && (
-                <img
-                  onClick={handleCopyContractAddress}
-                  src={IconAddressCopy}
-                  id={'copyIcon'}
-                  className={clsx('ml-7  w-[16px] h-[16px]', {
-                    success: copySuccess,
-                  })}
-                />
-              )}
-              <div className={'money-color'}>
-                ${splitNumberByStep(Math.floor(account?.balance))}
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  };
 
   const clickContent = () => (
     <div className="click-list flex flex-col w-[233px]">
@@ -504,7 +398,21 @@ const Dashboard = () => {
           ref={fixedList}
           style={{ zIndex: 10 }}
         >
-          {Row}
+          {(props: {
+            data: Account[];
+            index: number;
+            style: React.StyleHTMLAttributes<HTMLDivElement>;
+          }) => {
+            return (
+              <AddressRow
+                data={props.data}
+                index={props.index}
+                style={props.style}
+                copiedSuccess={copySuccess}
+                handleClickChange={handleChange}
+              />
+            );
+          }}
         </FixedSizeList>
       )}
       <Link to="/add-address" className="pop-add-address flex items-center">
