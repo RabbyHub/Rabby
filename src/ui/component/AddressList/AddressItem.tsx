@@ -48,7 +48,6 @@ export interface AddressItemProps {
   showImportIcon?: boolean;
   showIndex?: boolean;
   importedAccount?: boolean;
-  mnemonicsCounter?: number;
   isMnemonics?: boolean;
   importedLength?: number;
   canEditing?(editing: boolean): void;

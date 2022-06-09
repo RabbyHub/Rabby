@@ -161,33 +161,39 @@ const ImportMnemonics = () => {
 
   const dispatch = useRabbyDispatch();
 
-  const [run, loading] = useWalletRequest(wallet.generateKeyringWithMnemonic, {
-    onSuccess(stashKeyringId) {
+  const [run, loading] = useWalletRequest(
+    async (mnemonics: string) => {
+      const {
+        keyringId: stashKeyringId,
+        isExistedKR,
+      } = await wallet.generateKeyringWithMnemonic(mnemonics);
+
       dispatch.importMnemonics.switchKeyring({
-        stashKeyringId: stashKeyringId ?? null,
-      });
-      history.push({
-        pathname: '/popup/import/mnemonics-confirm',
-        state: {
-          stashKeyringId,
-        },
+        finalMnemonics: mnemonics,
+        isExistedKeyring: isExistedKR,
+        stashKeyringId,
       });
     },
-    onError(err) {
-      form.setFields([
-        {
-          name: 'mnemonics',
-          errors: [
-            err?.message || t('The seed phrase is invalid, please check!'),
-          ],
-        },
-      ]);
-    },
-  });
+    {
+      onSuccess() {
+        history.push({
+          pathname: '/popup/import/mnemonics-confirm',
+        });
+      },
+      onError(err) {
+        form.setFields([
+          {
+            name: 'mnemonics',
+            errors: [
+              err?.message || t('The seed phrase is invalid, please check!'),
+            ],
+          },
+        ]);
+      },
+    }
+  );
 
   useEffect(() => {
-    dispatch.importMnemonics.getMnemonicsCounterAsync();
-
     (async () => {
       if (await wallet.hasPageStateCache()) {
         const cache = await wallet.getPageStateCache();

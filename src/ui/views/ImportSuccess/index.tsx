@@ -42,16 +42,6 @@ const ImportSuccess = ({ isPopup = false }: { isPopup?: boolean }) => {
     importedLength = 0,
   } = state;
 
-  const dispatch = useRabbyDispatch();
-  const mnemonicsCounter = useRabbySelector(
-    (s) => s.importMnemonics.mnemonicsCounter
-  );
-  React.useEffect(() => {
-    if (isMnemonics) {
-      dispatch.importMnemonics.getMnemonicsCounterAsync();
-    }
-  }, [isMnemonics]);
-
   const handleNextClick = async (e: React.MouseEvent<HTMLElement>) => {
     e.stopPropagation();
     if (!stopEditing) {
@@ -177,9 +167,6 @@ const ImportSuccess = ({ isPopup = false }: { isPopup?: boolean }) => {
                 showIndex={!editing}
                 importedAccount
                 isMnemonics={isMnemonics}
-                {...(typeof mnemonicsCounter === 'number' && {
-                  mnemonicsCounter,
-                })}
                 importedLength={importedLength}
                 stopEditing={stopEditing || index !== editIndex}
                 canEditing={(editing) => startEdit(editing, index)}

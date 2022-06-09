@@ -13,122 +13,95 @@ import { KEYRING_TYPE } from 'consts';
 import Pagination from './components/Pagination';
 import './style.less';
 import { useMedia } from 'react-use';
-import type { Account } from '@/background/service/preference';
-import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
+import { useRabbyDispatch, useRabbyGetter, useRabbySelector } from '@/ui/store';
 
 const ImportMoreAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
   const history = useHistory();
   const { t } = useTranslation();
-  const wallet = useWallet();
   const isWide = useMedia('(min-width: 401px)');
 
-  const { keyringId, importedAddresses, draftIndexes } = useRabbySelector(
+  const { importedAddresses, draftAddressSelection } = useRabbySelector(
     (s) => ({
-      keyringId: s.importMnemonics.stashKeyringId,
       importedAddresses: s.importMnemonics.importedAddresses,
-      draftIndexes: s.importMnemonics.draftIndexes,
+      draftAddressSelection: s.importMnemonics.draftAddressSelection,
     })
+  );
+  const countDraftSelected = useRabbyGetter(
+    (s) => s.importMnemonics.countDraftSelected
   );
 
   const dispatch = useRabbyDispatch();
 
   const [accounts, setAccounts] = useState<any[]>([]);
 
-  const otherPageIndexes = React.useMemo(() => {
-    const indexes = new Set([...draftIndexes]);
+  const otherPageAddresses = React.useMemo(() => {
+    const addresses = new Set([...draftAddressSelection]);
     accounts.forEach((account) => {
-      indexes.delete(account.index);
+      addresses.delete(account.address);
     });
-    return indexes;
-  }, [accounts, draftIndexes]);
+    return addresses;
+  }, [accounts, draftAddressSelection]);
 
   const handleSelectChange = (
     saccounts: { address: string; index: number }[]
   ) => {
     dispatch.importMnemonics.setField({
-      draftIndexes: new Set([
-        ...otherPageIndexes,
-        ...saccounts.map((account) => account.index),
-      ]),
+      draftAddressSelection: new Set(
+        [
+          ...otherPageAddresses,
+          ...saccounts.map((account) => account.address),
+        ].filter((v) => !importedAddresses.has(v))
+      ),
     });
   };
   const selectedAccounts = React.useMemo(() => {
-    return accounts.filter((item) => draftIndexes.has(item.index));
-  }, [accounts, draftIndexes]);
+    return accounts.filter((item) => draftAddressSelection.has(item.address));
+  }, [accounts, draftAddressSelection]);
 
   const [end, setEnd] = useState(1);
   const [currentPage, setCurrentPage] = useState(1);
   const [errorMsg, setErrorMsg] = useState('');
   const [spinning, setSpin] = useState(true);
 
-  const [getAccounts] = useWalletRequest(
-    async (firstFlag, start?, end?): Promise<Account[]> => {
-      setSpin(true);
-      return firstFlag
-        ? await wallet.requestKeyring(
-            KEYRING_TYPE.HdKeyring,
-            'getFirstPage',
-            keyringId ?? null
+  const [getAccounts] = useWalletRequest(dispatch.importMnemonics.getAccounts, {
+    onSuccess(accounts) {
+      if (accounts.length < 5) {
+        throw new Error(
+          t(
+            'You need to make use your last account before you can add a new one'
           )
-        : end
-        ? await wallet.requestKeyring(
-            KEYRING_TYPE.HdKeyring,
-            'getAddresses',
-            keyringId ?? null,
-            start,
-            end
-          )
-        : await wallet.requestKeyring(
-            KEYRING_TYPE.HdKeyring,
-            'getNextPage',
-            keyringId ?? null
-          );
+        );
+      }
+      setSpin(false);
+      setAccounts(accounts);
     },
-    {
-      onSuccess(_accounts) {
-        if (_accounts.length < 5) {
-          throw new Error(
-            t(
-              'You need to make use your last account before you can add a new one'
-            )
-          );
-        }
-        setSpin(false);
-        setAccounts(_accounts);
-        dispatch.importMnemonics.putQuriedAccountsByIndex({
-          accounts: _accounts,
-        });
-      },
-      onError(err) {
-        message.error('Please check the connection with your wallet');
-        setSpin(false);
-      },
-    }
-  );
+    onError(err) {
+      message.error('Please check the connection with your wallet');
+      setSpin(false);
+    },
+  });
 
   const mountedRef = useRef(false);
   useEffect(() => {
     mountedRef.current = true;
 
-    if (!keyringId) return;
-
     (async () => {
-      await dispatch.importMnemonics.getImportedAccountsAsync({ keyringId });
+      await dispatch.importMnemonics.getImportedAccountsAsync();
 
       if (!mountedRef.current) return;
-      getAccounts(true);
+      getAccounts({ firstFlag: true });
     })();
 
     return () => {
       mountedRef.current = false;
-      dispatch.importMnemonics.cleanUpImportedInfoAsync({ keyringId });
+      dispatch.importMnemonics.cleanUpImportedInfoAsync();
     };
-  }, [keyringId]);
+  }, []);
 
   const handlePageChange = async (page: number) => {
     const start = 5 * (page - 1);
     const end = 5 * (page - 1) + 5;
-    await getAccounts(false, start, end);
+    await getAccounts({ start, end });
     setCurrentPage(page);
   };
 
@@ -172,11 +145,10 @@ const ImportMoreAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
         }
         headerClassName="mb-16"
         onSubmit={async () => {
-          await dispatch.importMnemonics.setSelectedIndexes({
-            keyringId,
-            indexes: [...draftIndexes],
-          });
-          dispatch.importMnemonics.clearDraftIndexes();
+          await dispatch.importMnemonics.setSelectedAccounts([
+            ...draftAddressSelection,
+          ]);
+          dispatch.importMnemonics.clearDraftAddresses();
 
           history.replace({
             pathname: isPopup
@@ -186,7 +158,7 @@ const ImportMoreAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
           });
         }}
         onBackClick={() => {
-          dispatch.importMnemonics.clearDraftIndexes();
+          dispatch.importMnemonics.clearDraftAddresses();
 
           history.replace({
             pathname: isPopup
@@ -195,7 +167,7 @@ const ImportMoreAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
             state: { backFromImportMoreAddress: true },
           });
         }}
-        nextDisabled={draftIndexes.size === 0}
+        nextDisabled={countDraftSelected === 0}
         hasBack
         hasDivider
         footerFixed={false}
@@ -239,7 +211,7 @@ const ImportMoreAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
           </div>
 
           <div className="place-self-center">
-            {draftIndexes.size} {t('addresses selected')}
+            {countDraftSelected} {t('addresses selected')}
           </div>
         </div>
         <div className={clsx(isPopup && 'rabby-container')}>

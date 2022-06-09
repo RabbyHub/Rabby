@@ -6,6 +6,7 @@ import clsx from 'clsx';
 
 import LessPalette from '@/ui/style/var-defs';
 import { useRabbyDispatch } from '@/ui/store';
+import { useTranslation } from 'react-i18next';
 
 const AddressViewer = styled.div`
   .address-name {
@@ -27,16 +28,18 @@ export interface DisplayAddressItemProps {
     index?: number;
   };
   className?: string;
-  index?: number;
+  imported?: boolean;
 }
 
 const DisplayAddressItem = ({
   account,
   className,
+  imported,
 }: DisplayAddressItemProps) => {
   if (!account) {
     return null;
   }
+  const { t } = useTranslation();
   const [alianName, setAlianName] = useState<string>(account?.alianName || '');
   const dispatch = useRabbyDispatch();
   useDebounce(
@@ -55,34 +58,44 @@ const DisplayAddressItem = ({
   return (
     <li className={className}>
       <div
-        className={clsx('flex items-center relative')}
-        onClick={(e) => {
-          e.stopPropagation();
-        }}
+        className={clsx('flex items-center justify-between w-[100%] relative')}
       >
-        <div className="number-index">{account.index}</div>
-        <div className={clsx('address-info', 'ml-0')}>
-          <div className="brand-name flex">
-            <Input
-              value={alianName}
-              defaultValue={alianName}
-              onChange={(e) => {
-                e.stopPropagation();
-                setAlianName(e.target.value);
-              }}
-              onClick={(e) => e.stopPropagation()}
-              autoFocus
-              maxLength={20}
-              min={0}
-            />
+        <div className="flex items-center relative">
+          <div className="number-index">{account.index}</div>
+          <div className={clsx('address-info', 'ml-0')}>
+            <div className="brand-name flex">
+              <Input
+                value={alianName}
+                defaultValue={alianName}
+                onChange={(e) => {
+                  e.stopPropagation();
+                  setAlianName(e.target.value);
+                }}
+                onClick={(e) => e.stopPropagation()}
+                autoFocus
+                maxLength={20}
+                min={0}
+                disabled={imported}
+              />
+            </div>
+            <div className="flex items-center">
+              <AddressViewer className="flex items-center">
+                <div
+                  className={'flex items-center address-name'}
+                  title={address}
+                >
+                  {`${address.slice(0, 6)}...${address.slice(-4)}`}
+                </div>
+              </AddressViewer>
+            </div>
           </div>
-          <div className="flex items-center">
-            <AddressViewer className="flex items-center">
-              <div className={'flex items-center address-name'} title={address}>
-                {`${address.slice(0, 6)}...${address.slice(-4)}`}
-              </div>
-            </AddressViewer>
-          </div>
+        </div>
+        <div>
+          {imported && (
+            <span className="rounded-full bg-gray-bg text-gray-comment text-12 px-[5px] py-[3px]">
+              {t('Imported')}
+            </span>
+          )}
         </div>
       </div>
     </li>
