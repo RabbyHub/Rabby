@@ -802,7 +802,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     }
     const gasList = await loadGasMarket(chain, customGasPrice);
     let gas: GasLevel | null = null;
-    console.log(isSend && customGasPrice);
+
     if (
       (isSend && customGasPrice) ||
       isSpeedUp ||
@@ -822,7 +822,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       // no cache, use the fast level in gasMarket
       gas = gasList.find((item) => item.level === 'fast')!;
     }
-    console.log('gas', gas);
+
     setSelectedGas(gas);
     setSupport1559(is1559);
     if (is1559) {
