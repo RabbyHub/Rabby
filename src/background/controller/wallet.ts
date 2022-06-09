@@ -1052,6 +1052,10 @@ export class WalletController extends BaseController {
     }
     // If import twice use same kerying
     let keyring = this.getKeyringByMnemonic(mnemonic);
+    const result = {
+      keyringId: null as number | null,
+      isExistedKR: false,
+    };
     if (!keyring) {
       const Keyring = keyringService.getKeyringClassForType(
         KEYRING_CLASS.MNEMONIC
@@ -1059,12 +1063,12 @@ export class WalletController extends BaseController {
 
       keyring = new Keyring({ mnemonic });
       keyringService.updateHdKeyringIndex(keyring);
+      result.keyringId = this.addKeyringToStash(keyring);
+    } else {
+      result.isExistedKR = true;
     }
 
-    return {
-      isExistedKR: keyringService.keyrings.some((item) => item === keyring),
-      keyringId: this.addKeyringToStash(keyring),
-    };
+    return result;
   };
 
   addKeyringToStash = (keyring) => {
@@ -1345,6 +1349,22 @@ export class WalletController extends BaseController {
     }
   };
 
+  requestHDKeyringByMnemonics = (
+    mnemonics: string,
+    methodName: string,
+    ...params: any[]
+  ) => {
+    const keyring = this.getKeyringByMnemonic(mnemonics);
+    if (!keyring) {
+      throw new Error(
+        'failed to requestHDKeyringByMnemonics, no keyring found.'
+      );
+    }
+    if (keyring[methodName]) {
+      return keyring[methodName].call(keyring, ...params);
+    }
+  };
+
   unlockHardwareAccount = async (keyring, indexes, keyringId) => {
     let keyringInstance: any = null;
     try {
@@ -1542,17 +1562,19 @@ export class WalletController extends BaseController {
   }
 
   async generateAliasCacheForExistedMnemonic(
-    keyringId: keyof typeof stashKeyrings,
+    mnemonic: string,
     addresses: string[]
   ) {
-    const keyring = stashKeyrings[keyringId];
+    const keyring = keyringService.keyrings.find((item) => {
+      return item.type === KEYRING_CLASS.MNEMONIC && item.mnemonic === mnemonic;
+    });
     if (!keyring) {
       throw new Error(
         'failed to generateAliasCacheForExistedMnemonic, no keyring found.'
       );
     }
 
-    const importedAccounts = await keyring.getAccounts();
+    const importedAccounts = await (keyring as any).getAccounts();
     const adressIndexStart = importedAccounts.length;
 
     for (let i = 0; i < addresses.length; i++) {

@@ -9,6 +9,7 @@ export type ISimpleAccount = Pick<Account, 'address' | 'alianName' | 'index'>;
 
 interface IState {
   isExistedKeyring: boolean;
+  finalMnemonics: string;
   stashKeyringId: number | null;
 
   queriedAccountsByAddress: Record<
@@ -26,6 +27,7 @@ interface IState {
 const makeInitValues = () => {
   return {
     isExistedKeyring: false,
+    finalMnemonics: '',
     stashKeyringId: null,
 
     queriedAccountsByAddress: {},
@@ -78,10 +80,17 @@ export const importMnemonics = createModel<RootModel>()({
 
   effects: (dispatch) => ({
     switchKeyring(payload: {
+      finalMnemonics: IState['finalMnemonics'];
       isExistedKeyring: IState['isExistedKeyring'];
       stashKeyringId: IState['stashKeyringId'];
     }) {
       const initValues = makeInitValues();
+
+      if (payload.isExistedKeyring && !payload.finalMnemonics) {
+        throw new Error(
+          '[imporetMnemonics::switchKeyring] finalMnemonics is required if keyring existed!'
+        );
+      }
 
       dispatch.importMnemonics.setField({
         confirmingAccounts: initValues.confirmingAccounts,
@@ -89,19 +98,22 @@ export const importMnemonics = createModel<RootModel>()({
 
         draftAddressSelection: initValues.draftAddressSelection,
 
+        finalMnemonics: payload.finalMnemonics || '',
         stashKeyringId: payload.stashKeyringId ?? null,
         isExistedKeyring: payload.isExistedKeyring ?? false,
       });
     },
 
     async getImportedAccountsAsync(_?: void, store?) {
-      const importedAccounts = await store.app.wallet.requestKeyring<
-        Account['address'][]
-      >(
-        KEYRING_TYPE.HdKeyring,
-        'getAccounts',
-        store.importMnemonics.stashKeyringId ?? null
-      );
+      const importedAccounts = !store.importMnemonics.isExistedKeyring
+        ? await store.app.wallet.requestKeyring<Account['address'][]>(
+            KEYRING_TYPE.HdKeyring,
+            'getAccounts',
+            store.importMnemonics.stashKeyringId ?? null
+          )
+        : await store.app.wallet.requestHDKeyringByMnemonics<
+            Account['address'][]
+          >(store.importMnemonics.finalMnemonics, 'getAccounts');
 
       dispatch.importMnemonics.setField({
         importedAddresses: new Set(
@@ -111,11 +123,18 @@ export const importMnemonics = createModel<RootModel>()({
     },
 
     async cleanUpImportedInfoAsync(_?: void, store?) {
-      store.app.wallet.requestKeyring(
-        KEYRING_TYPE.HdKeyring,
-        'cleanUp',
-        store.importMnemonics.stashKeyringId ?? null
-      );
+      if (!store.importMnemonics.isExistedKeyring) {
+        store.app.wallet.requestKeyring(
+          KEYRING_TYPE.HdKeyring,
+          'cleanUp',
+          store.importMnemonics.stashKeyringId ?? null
+        );
+      } else {
+        store.app.wallet.requestHDKeyringByMnemonics(
+          store.importMnemonics.finalMnemonics,
+          'cleanUp'
+        );
+      }
     },
 
     async getAccounts(
@@ -125,32 +144,53 @@ export const importMnemonics = createModel<RootModel>()({
       const { firstFlag = false, start, end } = payload;
 
       const wallet = store.app.wallet;
-      const stashKeyringId = store.importMnemonics.stashKeyringId;
+      let accounts: Account[];
+      if (!store.importMnemonics.isExistedKeyring) {
+        const stashKeyringId = store.importMnemonics.stashKeyringId;
 
-      const accounts: Account[] = firstFlag
-        ? await wallet.requestKeyring(
-            KEYRING_TYPE.HdKeyring,
-            'getFirstPage',
-            stashKeyringId ?? null
-          )
-        : end
-        ? await wallet.requestKeyring(
-            KEYRING_TYPE.HdKeyring,
-            'getAddresses',
-            stashKeyringId ?? null,
-            start,
-            end
-          )
-        : await wallet.requestKeyring(
-            KEYRING_TYPE.HdKeyring,
-            'getNextPage',
-            stashKeyringId ?? null
-          );
+        accounts = firstFlag
+          ? await wallet.requestKeyring(
+              KEYRING_TYPE.HdKeyring,
+              'getFirstPage',
+              stashKeyringId ?? null
+            )
+          : end
+          ? await wallet.requestKeyring(
+              KEYRING_TYPE.HdKeyring,
+              'getAddresses',
+              stashKeyringId ?? null,
+              start,
+              end
+            )
+          : await wallet.requestKeyring(
+              KEYRING_TYPE.HdKeyring,
+              'getNextPage',
+              stashKeyringId ?? null
+            );
+      } else {
+        const finalMnemonics = store.importMnemonics.finalMnemonics;
+
+        accounts = firstFlag
+          ? await wallet.requestHDKeyringByMnemonics(
+              finalMnemonics,
+              'getFirstPage'
+            )
+          : end
+          ? await wallet.requestHDKeyringByMnemonics(
+              finalMnemonics,
+              'getAddresses',
+              start,
+              end
+            )
+          : await wallet.requestHDKeyringByMnemonics(
+              finalMnemonics,
+              'getNextPage'
+            );
+      }
 
       dispatch.importMnemonics.memorizeQuriedAccounts({
         accounts,
       });
-
       return accounts;
     },
 
@@ -207,7 +247,7 @@ export const importMnemonics = createModel<RootModel>()({
           (addr) => !importedAddresses.has(addr)
         );
         await store.app.wallet.generateAliasCacheForExistedMnemonic(
-          stashKeyringId,
+          store.importMnemonics.finalMnemonics,
           addressesUnImporeted
         );
       } else {
@@ -265,14 +305,20 @@ export const importMnemonics = createModel<RootModel>()({
         (account) => !importedAddresses.has(account.address)
       );
 
-      await store.app.wallet.requestKeyring(
-        KEYRING_TYPE.HdKeyring,
-        'activeAccounts',
-        stashKeyringId ?? null,
-        accountsToImport.map((acc) => (acc.index as number) - 1)
-      );
-      if (stashKeyringId) {
-        await store.app.wallet.addKeyring(stashKeyringId);
+      if (!store.importMnemonics.isExistedKeyring) {
+        await store.app.wallet.requestKeyring(
+          KEYRING_TYPE.HdKeyring,
+          'activeAccounts',
+          stashKeyringId ?? null,
+          accountsToImport.map((acc) => (acc.index as number) - 1)
+        );
+        await store.app.wallet.addKeyring(stashKeyringId!);
+      } else {
+        await store.app.wallet.requestHDKeyringByMnemonics(
+          store.importMnemonics.finalMnemonics,
+          'activeAccounts',
+          accountsToImport.map((acc) => (acc.index as number) - 1)
+        );
       }
 
       await Promise.all(

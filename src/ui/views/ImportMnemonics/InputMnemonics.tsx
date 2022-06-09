@@ -169,6 +169,7 @@ const ImportMnemonics = () => {
       } = await wallet.generateKeyringWithMnemonic(mnemonics);
 
       dispatch.importMnemonics.switchKeyring({
+        finalMnemonics: mnemonics,
         isExistedKeyring: isExistedKR,
         stashKeyringId,
       });
