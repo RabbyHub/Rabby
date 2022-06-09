@@ -796,13 +796,19 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       // use cached gasPrice if exist
       customGasPrice = lastTimeGas.gasPrice;
     }
-    if (isSpeedUp || isCancel) {
+    if (isSpeedUp || isCancel || (isSend && tx.gasPrice)) {
       // use gasPrice set by dapp when it's a speedup or cancel tx
       customGasPrice = parseInt(tx.gasPrice!);
     }
     const gasList = await loadGasMarket(chain, customGasPrice);
     let gas: GasLevel | null = null;
-    if (isSpeedUp || isCancel || lastTimeGas?.lastTimeSelect === 'gasPrice') {
+    console.log(isSend && customGasPrice);
+    if (
+      (isSend && customGasPrice) ||
+      isSpeedUp ||
+      isCancel ||
+      lastTimeGas?.lastTimeSelect === 'gasPrice'
+    ) {
       gas = gasList.find((item) => item.level === 'custom')!;
     } else if (
       lastTimeGas?.lastTimeSelect &&
@@ -816,6 +822,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       // no cache, use the fast level in gasMarket
       gas = gasList.find((item) => item.level === 'fast')!;
     }
+    console.log('gas', gas);
     setSelectedGas(gas);
     setSupport1559(is1559);
     if (is1559) {

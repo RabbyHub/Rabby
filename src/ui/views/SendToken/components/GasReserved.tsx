@@ -12,6 +12,9 @@ const GasReservedDiv = styled.div`
   text-align: right;
   color: #707280;
   flex: 1;
+  display: flex;
+  align-items: center;
+  justify-content: flex-end;
 `;
 
 const TokenAmount = styled.span`
@@ -33,7 +36,7 @@ const GasReserved = ({ amount, token, onClickAmount }: GasReservedProps) => {
     <GasReservedDiv>
       Reserved{' '}
       <TokenAmount title={amount} onClick={onClickAmount}>
-        {formatTokenAmount(amount)}
+        {formatTokenAmount(amount, 3)}
       </TokenAmount>
       {token.symbol} for gas cost
     </GasReservedDiv>
