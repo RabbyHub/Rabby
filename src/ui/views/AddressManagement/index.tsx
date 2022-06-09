@@ -12,7 +12,7 @@ import {
   Popup,
   Copy,
 } from 'ui/component';
-import AddressItem from 'ui/component/AddressList/AddressItem';
+import AddressItem from './AddressItem';
 import { DisplayedKeryring } from 'background/service/keyring';
 import { Account } from 'background/service/preference';
 import DisplayKeyring from 'background/service/keyring/display';
@@ -21,6 +21,7 @@ import IconHint from 'ui/assets/hint.png';
 import IconSuccess from 'ui/assets/success.svg';
 
 import './style.less';
+import { obj2query } from '@/ui/utils/url';
 
 const SORT_WEIGHT = {
   [KEYRING_TYPE.HdKeyring]: 1,
@@ -46,14 +47,6 @@ const AddressManagement = () => {
   >([]);
   const history = useHistory();
 
-  const init = async () => {
-    setHiddenAddresses(await wallet.getHiddenAddresses());
-  };
-
-  useEffect(() => {
-    init();
-  }, []);
-
   useEffect(() => {
     let count = 0;
     const c = accounts.reduce((res, item) => {
@@ -63,16 +56,11 @@ const AddressManagement = () => {
     setNoAccount(count <= 0);
   }, [accounts]);
 
+  // todo
   const getAllKeyrings = async () => {
     const _accounts = await wallet.getAllClassAccounts();
-    const allAlianNames = await wallet.getAllAlianName();
-    const alianNamesMap = allAlianNames.reduce(
-      (res, item) => ({
-        ...res,
-        [item.address.toLowerCase()]: item.name,
-      }),
-      {}
-    );
+    console.log(_accounts);
+
     setAccounts(_accounts);
     const list = _accounts
       .sort((a, b) => {
@@ -83,9 +71,9 @@ const AddressManagement = () => {
           (item) =>
             (item = {
               ...item,
-              alianName: alianNamesMap[item.address.toLowerCase()],
               type: group.type,
               keyring: group.keyring,
+              byImport: group.byImport,
             })
         );
         return templist;
@@ -96,190 +84,11 @@ const AddressManagement = () => {
     }
   };
 
-  const handleViewMnemonics = async (address: string) => {
-    try {
-      await AuthenticationModal({
-        wallet,
-        async validationHandler(password) {
-          const mnemonic = await wallet.getMnemonics(password, address);
-
-          Popup.info({
-            title: t('Seed Phrase'),
-            className: 'custom-private-popup',
-            content: (
-              <div className="private-field relative">
-                {mnemonic}
-                <Copy
-                  data={mnemonic}
-                  className="w-16 h-16 absolute bottom-12 right-12"
-                ></Copy>
-              </div>
-            ),
-          });
-        },
-      });
-    } catch (e) {
-      // NOTHING
-    }
-  };
-
-  const AddressActionButton = ({
-    data,
-    keyring,
-    account,
-  }: {
-    data: string;
-    keyring: DisplayKeyring;
-    account: Account;
-  }) => {
-    const isHidden = hiddenAddresses.find(
-      (item) => item.type === keyring.type && item.address === data
-    );
-
-    const handlleViewPrivateKey = async (address: string, type: string) => {
-      try {
-        await AuthenticationModal({
-          wallet,
-          async validationHandler(password) {
-            const privateKey = await wallet.getPrivateKey(password, {
-              address,
-              type,
-            });
-            Popup.info({
-              title: t('Private Key'),
-              className: 'custom-private-popup',
-              content: (
-                <div className="private-field relative">
-                  {privateKey}
-                  <Copy
-                    data={privateKey}
-                    className="w-16 h-16 absolute bottom-12 right-12"
-                  ></Copy>
-                </div>
-              ),
-            });
-          },
-        });
-      } catch (e) {
-        // NOTHING
-      }
-    };
-
-    const handleDeleteAddress = async () => {
-      const totalCount = await wallet.getAccountsCount();
-      if (totalCount <= 1) {
-        message.error(t('Keep at least one address in wallet'));
-        return;
-      }
-      await wallet.removeAddress(data, keyring.type, account.brandName);
-      message.success({
-        icon: <img src={IconSuccess} className="icon icon-success" />,
-        content: t('removed'),
-        duration: 0.5,
-      });
-      getAllKeyrings();
-    };
-
-    const handleToggleAddressVisible = async () => {
-      if (isHidden) {
-        setHiddenAddresses(
-          hiddenAddresses.filter(
-            (item) => item.type !== keyring.type || item.address !== data
-          )
-        );
-        await wallet.showAddress(keyring.type, data);
-      } else {
-        const totalCount = await wallet.getAccountsCount();
-        if (hiddenAddresses.length >= totalCount - 1) {
-          message.error(t('Keep at least one address visible'));
-          return;
-        }
-        setHiddenAddresses([
-          ...hiddenAddresses,
-          { type: keyring.type, address: data },
-        ]);
-        await wallet.hideAddress(keyring.type, data);
-      }
-    };
-
-    const DropdownOptions = () => {
-      switch (keyring.type) {
-        case KEYRING_TYPE.HdKeyring:
-          return (
-            <Menu>
-              <Menu.Item onClick={handleToggleAddressVisible}>
-                {t(
-                  `${
-                    hiddenAddresses.find(
-                      (item) =>
-                        item.address === data && item.type === keyring.type
-                    )
-                      ? 'Show'
-                      : 'Hide'
-                  } address`
-                )}
-              </Menu.Item>
-              <Menu.Item
-                onClick={() => handlleViewPrivateKey(data, keyring.type)}
-              >
-                {t('View private key')}
-              </Menu.Item>
-              <Menu.Item onClick={() => handleViewMnemonics(data)}>
-                {t('View Seed Phrase')}
-              </Menu.Item>
-            </Menu>
-          );
-        case KEYRING_TYPE.SimpleKeyring:
-          return (
-            <Menu>
-              <Menu.Item onClick={handleToggleAddressVisible}>
-                {t(
-                  `${
-                    hiddenAddresses.find(
-                      (item) =>
-                        item.address === data && item.type === keyring.type
-                    )
-                      ? 'Show'
-                      : 'Hide'
-                  } address`
-                )}
-              </Menu.Item>
-              <Menu.Item
-                onClick={() => handlleViewPrivateKey(data, keyring.type)}
-              >
-                {t('View private key')}
-              </Menu.Item>
-            </Menu>
-          );
-        default:
-          return (
-            <Menu>
-              <Menu.Item onClick={handleDeleteAddress}>
-                {t('Delete address')}
-              </Menu.Item>
-            </Menu>
-          );
-      }
-    };
-
-    return (
-      <div className="flex items-center hint">
-        <Dropdown
-          overlay={DropdownOptions}
-          trigger={['click']}
-          getPopupContainer={() => document.querySelector('.scroll-container')!}
-        >
-          <img className="cursor-pointer" src={IconHint} />
-        </Dropdown>
-      </div>
-    );
-  };
   const fixedList = useRef<FixedSizeList>();
 
   useEffect(() => {
     getAllKeyrings();
-    setRetrive(false);
-  }, [retrive]);
+  }, []);
 
   const NoAddressUI = (
     <div className="no-address">
@@ -302,59 +111,36 @@ const AddressManagement = () => {
   const Row = (props) => {
     const { data, index, style } = props;
     const account = data[index];
-    const [canEdit, setCanEdit] = useState(!stopEditing && index === editIndex);
-    const startEdit = (editing: boolean) => {
-      setCanEdit(editing);
-      if (editing) {
-        setEditIndex(index);
-        setStopEditing(false);
-      } else {
-        setStopEditing(true);
-      }
-    };
-    const retriveAlianName = () => {
-      setRetrive(true);
-    };
+
     return (
-      <li className="address-wrap-with-padding" style={style}>
-        <ul className="addresses">
-          <AddressItem
-            key={account.address + account.brandName}
-            account={{ ...account, type: account.type }}
-            keyring={account.keyring}
-            ActionButton={AddressActionButton}
-            hiddenAddresses={hiddenAddresses}
-            index={index}
-            stopEditing={!canEdit}
-            canEditing={startEdit}
-            retriveAlianName={retriveAlianName}
-            className="h-[56px] pl-16"
-          />
-        </ul>
-      </li>
+      <div className="address-wrap-with-padding" style={style}>
+        <AddressItem
+          address={account.address}
+          type={account.type}
+          brandName={account.brandName}
+          onClick={() => {
+            history.push(
+              `/settings/address-detail?${obj2query({
+                address: account.address,
+                type: account.type,
+                brandName: account.brandName,
+                byImport: account.byImport || '',
+              })}`
+            );
+          }}
+        />
+      </div>
     );
   };
 
   return (
-    <div
-      className="address-management"
-      onClick={(e) => {
-        e.stopPropagation();
-        setStopEditing(true);
-      }}
-    >
+    <div className="page-address-management">
       <PageHeader>{t('Address Management')}</PageHeader>
       {noAccount ? (
         NoAddressUI
       ) : (
         <>
-          <ul
-            className={'address-group-list management'}
-            onClick={(e) => {
-              e.stopPropagation();
-              setStopEditing(true);
-            }}
-          >
+          <div className={'address-group-list management'}>
             <FixedSizeList
               height={500}
               width="100%"
@@ -366,7 +152,7 @@ const AddressManagement = () => {
             >
               {Row}
             </FixedSizeList>
-          </ul>
+          </div>
           <StrayFooterNav
             hasDivider
             onNextClick={() => {

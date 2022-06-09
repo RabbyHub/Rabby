@@ -248,7 +248,7 @@ const ContactsItem = ({
           onClick={(e) => e.stopPropagation()}
           autoFocus={nameFocus}
           placeholder="Enter Memo"
-          maxLength={20}
+          maxLength={50}
           min={0}
         />
       ) : (

@@ -210,8 +210,12 @@ class PreferenceService {
       .filter((lang) => SUPPORT_LOCALES.includes(lang));
   };
 
+  /**
+   * @deprecated
+   */
   getHiddenAddresses = (): Account[] => {
-    return cloneDeep(this.store.hiddenAddresses);
+    return [];
+    // return cloneDeep(this.store.hiddenAddresses);
   };
 
   hideAddress = (type: string, address: string, brandName: string) => {

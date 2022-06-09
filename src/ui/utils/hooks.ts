@@ -1,7 +1,9 @@
-import { useEffect, useRef, useState } from 'react';
+import { KEYRING_TYPE } from './../../constant/index';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useWallet } from './WalletContext';
 import { getUiType } from './index';
+import { KEYRING_TYPE_TEXT, WALLET_BRAND_CONTENT } from '@/constant';
 
 export const useApproval = () => {
   const wallet = useWallet();
@@ -200,4 +202,69 @@ export const useHover = ({
       },
     },
   ];
+};
+
+export const useAlias = (address: string) => {
+  const wallet = useWallet();
+  const [name, setName] = useState<string>();
+  useEffect(() => {
+    if (address) {
+      wallet.getAlianName(address).then(setName);
+    }
+  }, [address]);
+
+  const updateAlias = useCallback(
+    async (alias: string) => {
+      await wallet.updateAlianName(address, alias);
+      setName(alias);
+    },
+    [address, wallet]
+  );
+
+  return [name, updateAlias] as const;
+};
+
+export const useBalance = (address: string) => {
+  const [cacheBalance, setCacheBalance] = useState<number>();
+  const [balance, setBalance] = useState<number>();
+  const wallet = useWallet();
+  useEffect(() => {
+    let flag = true;
+    setBalance(undefined);
+    setCacheBalance(undefined);
+    if (address) {
+      wallet
+        .getAddressCacheBalance(address)
+        .then((d) => flag && setCacheBalance(d.total_usd_value));
+      wallet
+        .getAddressBalance(address)
+        .then((d) => flag && setBalance(d.total_usd_value));
+    }
+    return () => {
+      flag = false;
+    };
+  }, [address]);
+
+  return [balance ?? cacheBalance] as const;
+};
+
+export const useAddressSource = ({
+  type,
+  brandName,
+  byImport = false,
+}: {
+  type: string;
+  brandName: string;
+  byImport?: boolean;
+}) => {
+  if (byImport === true && KEYRING_TYPE.HdKeyring === type) {
+    return 'Imported by Seed Phrase';
+  }
+  if (KEYRING_TYPE_TEXT[type]) {
+    return KEYRING_TYPE_TEXT[type];
+  }
+  if (WALLET_BRAND_CONTENT[brandName]) {
+    return WALLET_BRAND_CONTENT[brandName].name;
+  }
+  return '';
 };
