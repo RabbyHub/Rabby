@@ -29,15 +29,6 @@ import { crossCompareOwners } from 'ui/utils/gnosis';
 import { Account } from 'background/service/preference';
 import { ConnectedSite } from 'background/service/permission';
 import { TokenItem, AssetItem } from 'background/service/openapi';
-import {
-  ChainAndSiteSelector,
-  BalanceView,
-  TokenList,
-  AssetsList,
-  GnosisWrongChainAlertBar,
-  NFTListContainer,
-  ExtraLink,
-} from './components';
 import { getUpdateContent } from 'changeLogs/index';
 import IconSuccess from 'ui/assets/success.svg';
 import IconUpAndDown from 'ui/assets/up-and-down.svg';
@@ -52,7 +43,18 @@ import IconAddressCopy from 'ui/assets/address-copy.png';
 import IconCopy from 'ui/assets/icon-copy.svg';
 import { SvgIconLoading } from 'ui/assets';
 
+import { connectStore, useRabbyDispatch } from 'ui/store';
+
 import './style.less';
+import {
+  ChainAndSiteSelector,
+  BalanceView,
+  TokenList,
+  AssetsList,
+  GnosisWrongChainAlertBar,
+  NFTListContainer,
+  ExtraLink,
+} from './components';
 import Dropdown from './components/NFT/Dropdown';
 import AddressRow from './components/AddressRow';
 
@@ -88,6 +90,8 @@ const Dashboard = () => {
   const wallet = useWalletOld();
   const { t } = useTranslation();
   const fixedList = useRef<FixedSizeList>();
+
+  const dispatch = useRabbyDispatch();
 
   const [currentAccount, setCurrentAccount] = useState<Account | null>(null);
   const [pendingTxCount, setPendingTxCount] = useState(0);
@@ -438,6 +442,7 @@ const Dashboard = () => {
   };
   const getAllKeyrings = async () => {
     setLoadingAddress(true);
+    await dispatch.viewDashboard.getHilightedAddressesAsync();
     const _accounts = await wallet.getAllVisibleAccounts();
     const allAlianNames = await wallet.getAllAlianName();
     const allContactNames = await wallet.getContactsByMap();
@@ -961,4 +966,4 @@ const Dashboard = () => {
   );
 };
 
-export default Dashboard;
+export default connectStore()(Dashboard);

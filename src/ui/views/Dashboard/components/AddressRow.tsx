@@ -6,6 +6,8 @@ import { Account } from '@/background/service/preference';
 
 import IconSuccess from 'ui/assets/success.svg';
 import IconAddressCopy from 'ui/assets/address-copy.png';
+import IconFavStarFilled from 'ui/assets/dashboard/favstar-filled.svg';
+import IconFavStar from 'ui/assets/dashboard/favstar.svg';
 
 import { splitNumberByStep, useHover, useWallet } from 'ui/utils';
 import { message } from 'antd';
@@ -15,8 +17,9 @@ import {
   WALLET_BRAND_CONTENT,
 } from '@/constant';
 import { AddressViewer } from '@/ui/component';
+import { connectStore, useRabbyDispatch, useRabbySelector } from '@/ui/store';
 
-export default function AddressRow({
+function AddressRow({
   data,
   index,
   style,
@@ -30,8 +33,14 @@ export default function AddressRow({
   handleClickChange?: (account: Account) => any;
 }) {
   const wallet = useWallet();
+  const { highlightedAddresses } = useRabbySelector((s) => ({
+    ...s.viewDashboard,
+  }));
+  const dispatch = useRabbyDispatch();
+
   const [hdPathIndex, setHDPathIndex] = React.useState(null);
   const account = data[index];
+  const favorited = highlightedAddresses.has(account.address);
   const [isHovering, hoverProps] = useHover();
 
   const handleCopyContractAddress = () => {
@@ -92,13 +101,28 @@ export default function AddressRow({
           WALLET_BRAND_CONTENT[account.brandName]?.image
         }
       />
-      <div className="flex flex-col items-start ml-10">
+      <div className="flex flex-col items-start ml-10 relative w-[100%]">
         <div className="text-13 text-black text-left click-name">
-          <div className="list-alian-name">
-            {account?.alianName}
-            {hdPathIndex && (
-              <span className="address-hdpath-index font-roboto-mono">{`#${hdPathIndex}`}</span>
-            )}
+          <div className="flex items-center w-[100%]">
+            <div className="list-alian-name">
+              {account?.alianName}
+              {hdPathIndex && (
+                <span className="address-hdpath-index font-roboto-mono">{`#${hdPathIndex}`}</span>
+              )}
+            </div>
+            <span className="ml-[3px] inline-block">
+              <img
+                onClick={(e) => {
+                  e.stopPropagation();
+                  if (account?.address)
+                    dispatch.viewDashboard.toggleHighlightedAddressAsync({
+                      address: account?.address,
+                    });
+                }}
+                src={favorited ? IconFavStarFilled : IconFavStar}
+                className={clsx('w-[12px] h-[12px]')}
+              />
+            </span>
           </div>
           <div className="flex items-center">
             <AddressViewer
@@ -111,7 +135,7 @@ export default function AddressRow({
                 onClick={handleCopyContractAddress}
                 src={IconAddressCopy}
                 id={'copyIcon'}
-                className={clsx('ml-7  w-[16px] h-[16px]', {
+                className={clsx('ml-7 w-[16px] h-[16px]', {
                   success: copiedSuccess,
                 })}
               />
@@ -125,3 +149,5 @@ export default function AddressRow({
     </div>
   );
 }
+
+export default connectStore()(AddressRow);

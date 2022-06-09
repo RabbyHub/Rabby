@@ -45,7 +45,8 @@ export interface PreferenceStore {
   watchAddressPreference: Record<string, number>;
   isDefaultWallet: boolean;
   lastTimeSendToken: Record<string, TokenItem>;
-  walletSavedList: [];
+  highligtedAddresses: Account['address'][];
+  walletSavedList: any[];
   alianNames?: Record<string, string>;
   initAlianNames: boolean;
   gasCache: GasCache;
@@ -78,6 +79,7 @@ class PreferenceService {
         watchAddressPreference: {},
         isDefaultWallet: true,
         lastTimeSendToken: {},
+        highligtedAddresses: [],
         walletSavedList: [],
         alianNames: {},
         initAlianNames: false,
@@ -126,6 +128,9 @@ class PreferenceService {
     }
     if (!this.store.useLedgerLive) {
       this.store.useLedgerLive = false;
+    }
+    if (!this.store.highligtedAddresses) {
+      this.store.highligtedAddresses = [];
     }
     if (!this.store.walletSavedList) {
       this.store.walletSavedList = [];
@@ -321,13 +326,21 @@ class PreferenceService {
   isUseLedgerLive = () => {
     return this.store.useLedgerLive;
   };
+
+  getHighlightedAddresses = () => {
+    return this.store.highligtedAddresses || [];
+  };
+  updateHighlightedAddresses = (list: string[]) => {
+    this.store.highligtedAddresses = list;
+  };
+
   getWalletSavedList = () => {
     return this.store.walletSavedList || [];
   };
-
-  updateWalletSavedList = (list: []) => {
+  updateWalletSavedList = (list: any[]) => {
     this.store.walletSavedList = list;
   };
+
   getInitAlianNameStatus = () => {
     return this.store.initAlianNames;
   };
