@@ -23,7 +23,7 @@ import {
   CHAINS,
   KEYRING_TYPE_TEXT,
 } from 'consts';
-import { isSameAddress, useWalletOld } from 'ui/utils';
+import { isSameAddress, useWalletOld, useWallet } from 'ui/utils';
 import { AddressViewer, Copy, Modal, NameAndAddress } from 'ui/component';
 import { crossCompareOwners } from 'ui/utils/gnosis';
 import { Account } from 'background/service/preference';
@@ -42,8 +42,7 @@ import IconAddToken from 'ui/assets/addtoken.png';
 import IconAddressCopy from 'ui/assets/address-copy.png';
 import IconCopy from 'ui/assets/icon-copy.svg';
 import { SvgIconLoading } from 'ui/assets';
-
-import { connectStore, useRabbyDispatch } from 'ui/store';
+import { connectStore, useRabbyDispatch, useRabbySelector } from 'ui/store';
 
 import './style.less';
 import {
@@ -91,6 +90,29 @@ const Dashboard = () => {
   const { t } = useTranslation();
   const fixedList = useRef<FixedSizeList>();
 
+  const {
+    accountsList,
+    highlightedAddresses,
+    loadingAddress,
+  } = useRabbySelector((s) => ({
+    ...s.viewDashboard,
+  }));
+  const { sortedAccountsList } = React.useMemo(() => {
+    const restAccounts = [...accountsList];
+    const highlightedAccounts: typeof accountsList = [];
+
+    highlightedAddresses.forEach((addr) => {
+      const idx = restAccounts.findIndex((account) => account.address === addr);
+      if (idx > -1) {
+        highlightedAccounts.push(restAccounts[idx]);
+        restAccounts.splice(idx, 1);
+      }
+    });
+
+    return {
+      sortedAccountsList: highlightedAccounts.concat(restAccounts),
+    };
+  }, [accountsList, highlightedAddresses]);
   const dispatch = useRabbyDispatch();
 
   const [currentAccount, setCurrentAccount] = useState<Account | null>(null);
@@ -103,7 +125,6 @@ const Dashboard = () => {
   const [startEdit, setStartEdit] = useState(false);
   const [alianName, setAlianName] = useState<string>('');
   const [displayName, setDisplayName] = useState<string>('');
-  const [accountsList, setAccountsList] = useState<Account[]>([]);
   const [firstNotice, setFirstNotice] = useState(false);
   const [updateContent, setUpdateContent] = useState('');
   const [showChain, setShowChain] = useState(false);
@@ -127,7 +148,6 @@ const Dashboard = () => {
   const [isGnosis, setIsGnosis] = useState(false);
   const [isListLoading, setIsListLoading] = useState(false);
   const [isAssetsLoading, setIsAssetsLoading] = useState(true);
-  const [loadingAddress, setLoadingAddress] = useState(false);
   const [gnosisNetworkId, setGnosisNetworkId] = useState('1');
   const [showGnosisWrongChainAlert, setShowGnosisWrongChainAlert] = useState(
     false
@@ -210,15 +230,18 @@ const Dashboard = () => {
       }
       setDashboardReload(false);
       getCurrentAccount();
-      getAllKeyrings();
+      dispatch.viewDashboard.getAllAccountsToDisplay();
     }
   }, [dashboardReload]);
   useEffect(() => {
-    getAllKeyrings();
+    (async () => {
+      await dispatch.viewDashboard.getHilightedAddressesAsync();
+      dispatch.viewDashboard.getAllAccountsToDisplay();
+    })();
   }, []);
   useEffect(() => {
     if (clicked) {
-      getAllKeyrings();
+      dispatch.viewDashboard.getAllAccountsToDisplay();
     }
   }, [clicked]);
   const handleChange = async (account) => {
@@ -286,7 +309,7 @@ const Dashboard = () => {
       return item;
     });
     if (newAccountList.length > 0) {
-      setAccountsList(newAccountList);
+      dispatch.viewDashboard.setField({ accountsList: newAccountList });
     }
   };
 
@@ -390,14 +413,16 @@ const Dashboard = () => {
             {t('Loading Addresses')}
           </div>
         </div>
-      ) : accountsList.length <= 0 ? (
+      ) : sortedAccountsList.length <= 0 ? (
         <div className="no-other-address"> {t('No address')}</div>
       ) : (
         <FixedSizeList
-          height={accountsList.length > 5 ? 308 : accountsList.length * 54}
+          height={
+            sortedAccountsList.length > 5 ? 308 : sortedAccountsList.length * 54
+          }
           width="100%"
-          itemData={accountsList}
-          itemCount={accountsList.length}
+          itemData={sortedAccountsList}
+          itemCount={sortedAccountsList.length}
           itemSize={54}
           ref={fixedList}
           style={{ zIndex: 10 }}
@@ -426,53 +451,8 @@ const Dashboard = () => {
       </Link>
     </div>
   );
-  const balanceList = async (accounts) => {
-    return await Promise.all<Account>(
-      accounts.map(async (item) => {
-        let balance = await wallet.getAddressCacheBalance(item?.address);
-        if (!balance) {
-          balance = await wallet.getAddressBalance(item?.address);
-        }
-        return {
-          ...item,
-          balance: balance?.total_usd_value || 0,
-        };
-      })
-    );
-  };
-  const getAllKeyrings = async () => {
-    setLoadingAddress(true);
-    await dispatch.viewDashboard.getHilightedAddressesAsync();
-    const _accounts = await wallet.getAllVisibleAccounts();
-    const allAlianNames = await wallet.getAllAlianName();
-    const allContactNames = await wallet.getContactsByMap();
-    const templist = await _accounts
-      .map((item) =>
-        item.accounts.map((account) => {
-          return {
-            ...account,
-            type: item.type,
-            alianName:
-              allContactNames[account?.address?.toLowerCase()]?.name ||
-              allAlianNames[account?.address?.toLowerCase()],
-            keyring: item.keyring,
-          };
-        })
-      )
-      .flat(1);
-    const result = await balanceList(templist);
-    setLoadingAddress(false);
-    if (result) {
-      const withBalanceList = result.sort((a, b) => {
-        return new BigNumber(b?.balance || 0)
-          .minus(new BigNumber(a?.balance || 0))
-          .toNumber();
-      });
-      setAccountsList(withBalanceList);
-    }
-  };
 
-  const handleClickChange = (visible) => {
+  const handleClickChange = (visible: boolean) => {
     setClicked(visible);
     setStartEdit(false);
     setHovered(false);
@@ -941,7 +921,7 @@ const Dashboard = () => {
                     {safeInfo.owners.map((owner, index) => (
                       <GnosisAdminItem
                         address={owner}
-                        accounts={accountsList}
+                        accounts={sortedAccountsList}
                         key={index}
                       />
                     ))}
