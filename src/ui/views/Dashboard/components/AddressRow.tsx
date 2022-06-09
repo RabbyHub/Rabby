@@ -18,6 +18,7 @@ import {
 } from '@/constant';
 import { AddressViewer } from '@/ui/component';
 import { connectStore, useRabbyDispatch, useRabbySelector } from '@/ui/store';
+import useIsMountedRef from '@/ui/hooks/useMountedRef';
 
 function AddressRow({
   data,
@@ -38,11 +39,10 @@ function AddressRow({
   }));
   const dispatch = useRabbyDispatch();
 
-  const [hdPathIndex, setHDPathIndex] = React.useState(null);
   const account = data[index];
   const favorited = highlightedAddresses.has(account.address);
 
-  const handleCopyContractAddress = () => {
+  const handleCopyContractAddress = React.useCallback(() => {
     const clipboard = new ClipboardJS('.address-item', {
       text: function () {
         return account?.address;
@@ -64,20 +64,20 @@ function AddressRow({
       });
       clipboard.destroy();
     });
-  };
+  }, [account]);
 
-  const getHDPathIndex = async () => {
-    const index = await wallet.getIndexByAddress(account.address, account.type);
-    if (index !== null) {
-      setHDPathIndex(index + 1);
-    }
-  };
-
+  const isMountedRef = useIsMountedRef();
+  const [hdPathIndex, setHDPathIndex] = React.useState(null);
   React.useEffect(() => {
     if (KEYRING_WITH_INDEX.includes(account.type)) {
-      getHDPathIndex();
+      wallet.getIndexByAddress(account.address, account.type).then((index) => {
+        if (!isMountedRef.current) return;
+        if (index !== null) {
+          setHDPathIndex(index + 1);
+        }
+      });
     }
-  }, []);
+  }, [account]);
 
   return (
     <div
