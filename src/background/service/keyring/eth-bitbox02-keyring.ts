@@ -7,6 +7,7 @@ import { browser } from 'webextension-polyfill-ts';
 import { BitBox02API, getDevicePath, constants } from 'bitbox02-api';
 
 import * as ethUtil from 'ethereumjs-util';
+import * as sigUtil from '@metamask/eth-sig-util';
 import * as HDKey from 'hdkey';
 
 const hdPathString = "m/44'/60'/0'/0";
@@ -247,14 +248,43 @@ class BitBox02Keyring extends EventEmitter {
         Buffer.from(result.s),
         Buffer.from(result.v),
       ]);
+
       const sigHex = `0x${sig.toString('hex')}`;
       return sigHex;
     });
   }
 
-  signTypedData(): Promise<any> {
-    // Waiting on bitbox02 to enable this
-    return Promise.reject(new Error('Not supported on this device'));
+  async signTypedData(withAccount, data, options: any = {}) {
+    if (options.version !== 'V4') {
+      throw new Error(
+        `Only version 4 of typed data signing is supported. Provided version: ${options.version}`
+      );
+    }
+    return await this.withDevice(async (bitbox02) => {
+      const result = await bitbox02.ethSignTypedMessage({
+        chainId: data.domain.chainId || 1,
+        keypath: this._pathFromAddress(withAccount),
+        message: data,
+      });
+      const sig = Buffer.concat([
+        Buffer.from(result.r),
+        Buffer.from(result.s),
+        Buffer.from(result.v),
+      ]);
+      const sigHex = `0x${sig.toString('hex')}`;
+      const addressSignedWith = sigUtil.recoverTypedSignature({
+        data,
+        signature: sigHex,
+        version: options.version,
+      });
+      if (
+        ethUtil.toChecksumAddress(addressSignedWith) !==
+        ethUtil.toChecksumAddress(withAccount)
+      ) {
+        throw new Error('The signature doesnt match the right address');
+      }
+      return sigHex;
+    });
   }
 
   exportAccount(): Promise<any> {
