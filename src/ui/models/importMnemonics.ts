@@ -97,6 +97,7 @@ export const importMnemonics = createModel<RootModel>()({
         importedAddresses: initValues.importedAddresses,
 
         draftAddressSelection: initValues.draftAddressSelection,
+        queriedAccountsByAddress: initValues.queriedAccountsByAddress,
 
         finalMnemonics: payload.finalMnemonics || '',
         stashKeyringId: payload.stashKeyringId ?? null,
