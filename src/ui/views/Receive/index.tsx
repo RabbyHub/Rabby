@@ -34,7 +34,7 @@ const useAccount = () => {
   useEffect(() => {
     wallet.syncGetCurrentAccount().then((a) => {
       setAccount(a);
-      setAddress(a.address.toLowerCase());
+      setAddress(a!.address.toLowerCase());
     });
   }, []);
   useEffect(() => {
@@ -43,7 +43,7 @@ const useAccount = () => {
 
       wallet
         .getAddressCacheBalance(address)
-        .then((d) => setCacheBalance(d.total_usd_value));
+        .then((d) => setCacheBalance(d!.total_usd_value));
       wallet
         .getAddressBalance(address)
         .then((d) => setBalance(d.total_usd_value));

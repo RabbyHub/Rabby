@@ -7,7 +7,7 @@ import { RootModel } from '.';
 
 interface AccountState {
   currentAccount: null | Account;
-  visiableAccounts: Account[];
+  visibleAccounts: DisplayedKeryring[];
   hiddenAccounts: Account[];
   alianName: string;
   keyrings: DisplayedKeryring[];
@@ -24,7 +24,7 @@ export const account = createModel<RootModel>()({
   state: {
     currentAccount: null,
     alianName: '',
-    visiableAccounts: [],
+    visibleAccounts: [],
     hiddenAccounts: [],
     keyrings: [],
     balanceMap: {},
@@ -95,11 +95,9 @@ export const account = createModel<RootModel>()({
     },
 
     async getAllVisibleAccountsAsync(_, store) {
-      const visiableAccounts = await store.app.wallet.getAllVisibleAccounts<
-        Account[]
-      >();
-      dispatch.account.setField({ visiableAccounts });
-      return visiableAccounts;
+      const visibleAccounts = await store.app.wallet.getAllVisibleAccounts();
+      dispatch.account.setField({ visibleAccounts });
+      return visibleAccounts;
     },
 
     async getAllHiddenAccountsAsync(_, store) {
