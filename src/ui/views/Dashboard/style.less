@@ -1061,7 +1061,7 @@
     box-sizing: border-box;
     border-radius: 4px;
     width: 233px;
-    height: 54px;
+    height: 52px;
     padding-left: 15px;
     border: 1px solid transparent;
     transition: background-color 0.3s;
@@ -1072,7 +1072,7 @@
       white-space: nowrap;
       .list-alian-name {
         font-weight: 500;
-        font-size: 13px;
+        font-size: 14px;
         color: @color-title;
         max-width: 130px;
         overflow: hidden;
@@ -1106,15 +1106,24 @@
       border-bottom: 0;
     }
   }
-  .address-item::after {
+  .address-item::before,
+  .address-item:last-child::after {
     content: '';
     position: absolute;
     left: 40px;
     right: 0;
-    bottom: 0;
     height: 1px;
     width: 100%;
     border-bottom: 1px solid @color-border;
+  }
+  .address-item::before { top: 0; }
+  .address-item:last-child::after { bottom: 0; }
+
+  .address-item:hover::before,
+  .address-item:hover + .address-item::before,
+  .address-item:first-child::before,
+  .address-item:last-child:hover::after {
+    display: none;
   }
   .ant-popover-inner-content {
     padding: 0 !important;
