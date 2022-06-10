@@ -4,7 +4,7 @@ import { Link, useHistory } from 'react-router-dom';
 import { FixedSizeList } from 'react-window';
 import { PageHeader, StrayFooter } from 'ui/component';
 import AddressItem from './AddressItem';
-import IconPlusAddress from 'ui/assets/addAddress.png';
+import IconPlusAddress from 'ui/assets/addchain.png';
 import IconStar from 'ui/assets/icon-star.svg';
 import IconStarFill from 'ui/assets/icon-star-fill.svg';
 
@@ -78,7 +78,7 @@ const AddressManagement = () => {
         className="flex no-data-add-btn rounded-md text-15"
       >
         <img src={IconPlusAddress} className="w-[16px] h-[16px] mr-10" />
-        {t('Add addresses')}
+        {t('Add address')}
       </Link>
     </div>
   );

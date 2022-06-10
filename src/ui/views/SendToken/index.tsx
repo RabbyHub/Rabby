@@ -253,8 +253,9 @@ const SendToken = () => {
     if (!/^\d*(\.\d*)?$/.test(amount)) {
       resultAmount = cacheAmount;
     }
+
     if (amount !== cacheAmount) {
-      if (showGasReserved) {
+      if (showGasReserved && Number(resultAmount) > 0) {
         setShowGasReserved(false);
       } else if (isNativeToken) {
         if (
@@ -269,6 +270,7 @@ const SendToken = () => {
         }
       }
     }
+
     if (
       new BigNumber(resultAmount || 0).isGreaterThan(
         new BigNumber(targetToken.raw_amount_hex_str || 0).div(
@@ -317,6 +319,7 @@ const SendToken = () => {
 
   const handleClickTokenBalance = async () => {
     if (isLoading) return;
+    if (showGasReserved) return;
     const tokenBalance = new BigNumber(
       currentToken.raw_amount_hex_str || 0
     ).div(10 ** currentToken.decimals);
@@ -335,9 +338,12 @@ const SendToken = () => {
             instant = list[i];
           }
         }
-        const gasTokenAmount = handleGasChange(instant);
+        const gasTokenAmount = handleGasChange(instant, false);
         const tokenForSend = tokenBalance.minus(gasTokenAmount);
-        amount = tokenForSend.toFixed();
+        amount = tokenForSend.gt(0) ? tokenForSend.toFixed() : '0';
+        if (tokenForSend.lt(0)) {
+          setShowGasReserved(false);
+        }
       } catch (e) {
         setBalanceWarn(t('Gas fee reservation required'));
         setShowGasReserved(false);
@@ -379,6 +385,7 @@ const SendToken = () => {
       ...values,
       amount: '',
     });
+    setShowGasReserved(false);
     handleFormValuesChange(null, {
       ...values,
       amount: '',
@@ -557,12 +564,26 @@ const SendToken = () => {
     setGasSelectorVisible(false);
   };
 
-  const handleGasChange = (gas: GasLevel) => {
+  const handleGasChange = (gas: GasLevel, updateTokenAmount = true) => {
     setSelectedGasLevel(gas);
     const gasTokenAmount = new BigNumber(gas.price)
       .times(MINIMUM_GAS_LIMIT)
       .div(1e18);
     setTokenAmountForGas(gasTokenAmount.toFixed());
+    if (updateTokenAmount) {
+      const values = form.getFieldsValue();
+      const diffValue = new BigNumber(currentToken.raw_amount_hex_str || 0)
+        .div(10 ** currentToken.decimals)
+        .minus(gasTokenAmount);
+      if (diffValue.lt(0)) {
+        setShowGasReserved(false);
+      }
+      const newValues = {
+        ...values,
+        amount: diffValue.gt(0) ? diffValue.toFixed() : '0',
+      };
+      form.setFieldsValue(newValues);
+    }
     return gasTokenAmount;
   };
 
@@ -690,7 +711,9 @@ const SendToken = () => {
                   4
                 )}`
               )}
-              <MaxButton onClick={handleClickTokenBalance}>MAX</MaxButton>
+              {currentToken.amount > 0 && (
+                <MaxButton onClick={handleClickTokenBalance}>MAX</MaxButton>
+              )}
             </div>
             {showGasReserved &&
               (selectedGasLevel ? (
@@ -816,6 +839,7 @@ const SendToken = () => {
         onClose={handleGasSelectorClose}
         chainId={CHAINS[chain].id}
         onChange={(val) => {
+          setAmountFocus(false);
           setGasSelectorVisible(false);
           handleGasChange(val);
         }}
