@@ -48,7 +48,7 @@ const AddressBackup = () => {
           }}
         >
           <img src={IconMaskIcon} className="w-[44px] h-[44px]" />
-          <p className="mt-[16px] mb-0 text-white">
+          <p className="mt-[16px] mb-0 text-white py-[15px]">
             {t('Click to show private key QR Code')}
           </p>
         </div>
@@ -72,7 +72,7 @@ const AddressBackup = () => {
         ) : (
           <>
             {data}
-            <Copy icon={IconCopy} data={'abc'} className="icon-copy"></Copy>
+            <Copy icon={IconCopy} data={data} className="icon-copy"></Copy>
           </>
         )}
       </div>

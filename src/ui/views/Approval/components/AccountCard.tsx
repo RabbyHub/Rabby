@@ -70,7 +70,10 @@ const AccountCard = ({
         <img src={icon} className="icon icon-account" />
         {(alianName || currentAccountAlianName) && (
           <div className="flex flex-col">
-            <div className={clsx('send-text', !alianName && 'text-white')}>
+            <div
+              className={clsx('send-text', !alianName && 'text-white')}
+              title={alianName || currentAccountAlianName}
+            >
               {alianName || currentAccountAlianName}
             </div>
             <AddressViewer

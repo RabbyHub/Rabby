@@ -327,7 +327,12 @@ const SendNFT = () => {
                     {contactInfo ? (
                       <>
                         <img src={IconEdit} className="icon icon-edit" />
-                        <span>{contactInfo.name}</span>
+                        <span
+                          title={contactInfo.name}
+                          className="inline-block align-middle truncate max-w-[240px]"
+                        >
+                          {contactInfo.name}
+                        </span>
                       </>
                     ) : (
                       <>

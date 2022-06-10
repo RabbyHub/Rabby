@@ -254,6 +254,7 @@ const ContactsItem = ({
       ) : (
         <div
           className="alian-name"
+          title={alianName}
           onClick={() => {
             if (startEdit) {
               setNameFocus(true);
