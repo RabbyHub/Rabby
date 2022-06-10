@@ -58,7 +58,7 @@ const AddAddressOptions = () => {
   const history = useHistory();
   const wallet = useWallet();
   const { t } = useTranslation();
-  const [savedWallet, setSavedWallet] = useState([]);
+  const [savedWallet, setSavedWallet] = useState<any[]>([]);
   const [savedWalletData, setSavedWalletData] = useState<ISavedWalletData[]>(
     []
   );

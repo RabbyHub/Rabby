@@ -1464,6 +1464,14 @@ export class WalletController extends BaseController {
     return [_account];
   }
 
+  getHighlightedAddresses = () => {
+    return preferenceService.getHighlightedAddresses();
+  };
+
+  updateHighlightedAddresses = (list: string[]) => {
+    return preferenceService.updateHighlightedAddresses(list);
+  };
+
   getHighlightWalletList = () => {
     return preferenceService.getWalletSavedList();
   };

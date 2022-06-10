@@ -84,8 +84,8 @@ import IconTokenpocket from 'ui/assets/walletlogo/tp.png';
 import IconTrezor from 'ui/assets/walletlogo/trezor.png';
 import IconMetaMask from 'ui/assets/walletlogo/metamask.svg';
 import IconTrust from 'ui/assets/walletlogo/trust.png';
-import IconMnemonicPurple from 'ui/assets/walletlogo/mnemonic-purple.svg';
-import IconPrivateKeyPurple from 'ui/assets/walletlogo/privatekey-purple.svg';
+import IconMnemonicInk from 'ui/assets/walletlogo/mnemonic-ink.svg';
+import IconPrivateKeyInk from 'ui/assets/walletlogo/privatekey-ink.svg';
 import IconWatchPurple from 'ui/assets/walletlogo/watch-purple.svg';
 import IconTrezor24 from 'ui/assets/walletlogo/trezor24.png';
 import IconTrezor24Border from 'ui/assets/walletlogo/trezor24-border.png';
@@ -1265,8 +1265,8 @@ export const WALLET_BRAND_CONTENT: {
 };
 
 export const KEYRING_ICONS = {
-  [KEYRING_CLASS.MNEMONIC]: IconMnemonicPurple,
-  [KEYRING_CLASS.PRIVATE_KEY]: IconPrivateKeyPurple,
+  [KEYRING_CLASS.MNEMONIC]: IconMnemonicInk,
+  [KEYRING_CLASS.PRIVATE_KEY]: IconPrivateKeyInk,
   [KEYRING_CLASS.WATCH]: IconWatchPurple,
   [HARDWARE_KEYRING_TYPES.BitBox02.type]: IconBitBox02,
   [HARDWARE_KEYRING_TYPES.Ledger.type]: LogoLedgerWhite,
@@ -1288,8 +1288,8 @@ export const KEYRING_ICONS_WHITE = {
   [HARDWARE_KEYRING_TYPES.Keystone.type]: LogoKeystone,
 };
 export const KEYRING_PURPLE_LOGOS = {
-  [KEYRING_CLASS.MNEMONIC]: IconMnemonicPurple,
-  [KEYRING_CLASS.PRIVATE_KEY]: IconPrivateKeyPurple,
+  [KEYRING_CLASS.MNEMONIC]: IconMnemonicInk,
+  [KEYRING_CLASS.PRIVATE_KEY]: IconPrivateKeyInk,
   [KEYRING_CLASS.WATCH]: IconWatchPurple,
 };
 

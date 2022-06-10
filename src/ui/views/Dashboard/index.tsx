@@ -22,29 +22,13 @@ import {
   KEYRING_TYPE,
   CHAINS,
   KEYRING_TYPE_TEXT,
-  KEYRING_WITH_INDEX,
 } from 'consts';
-import {
-  useWallet,
-  isSameAddress,
-  splitNumberByStep,
-  useHover,
-  useWalletOld,
-} from 'ui/utils';
+import { isSameAddress, useWalletOld, useWallet } from 'ui/utils';
 import { AddressViewer, Copy, Modal, NameAndAddress } from 'ui/component';
 import { crossCompareOwners } from 'ui/utils/gnosis';
 import { Account } from 'background/service/preference';
 import { ConnectedSite } from 'background/service/permission';
 import { TokenItem, AssetItem } from 'background/service/openapi';
-import {
-  ChainAndSiteSelector,
-  BalanceView,
-  TokenList,
-  AssetsList,
-  GnosisWrongChainAlertBar,
-  NFTListContainer,
-  ExtraLink,
-} from './components';
 import { getUpdateContent } from 'changeLogs/index';
 import IconSuccess from 'ui/assets/success.svg';
 import IconUpAndDown from 'ui/assets/up-and-down.svg';
@@ -58,9 +42,20 @@ import IconAddToken from 'ui/assets/addtoken.png';
 import IconAddressCopy from 'ui/assets/address-copy.png';
 import IconCopy from 'ui/assets/icon-copy.svg';
 import { SvgIconLoading } from 'ui/assets';
+import { connectStore, useRabbyDispatch, useRabbySelector } from 'ui/store';
 
 import './style.less';
+import {
+  ChainAndSiteSelector,
+  BalanceView,
+  TokenList,
+  AssetsList,
+  GnosisWrongChainAlertBar,
+  NFTListContainer,
+  ExtraLink,
+} from './components';
 import Dropdown from './components/NFT/Dropdown';
+import AddressRow from './components/AddressRow';
 
 const GnosisAdminItem = ({
   accounts,
@@ -95,6 +90,31 @@ const Dashboard = () => {
   const { t } = useTranslation();
   const fixedList = useRef<FixedSizeList>();
 
+  const {
+    accountsList,
+    highlightedAddresses,
+    loadingAddress,
+  } = useRabbySelector((s) => ({
+    ...s.viewDashboard,
+  }));
+  const { sortedAccountsList } = React.useMemo(() => {
+    const restAccounts = [...accountsList];
+    const highlightedAccounts: typeof accountsList = [];
+
+    highlightedAddresses.forEach((addr) => {
+      const idx = restAccounts.findIndex((account) => account.address === addr);
+      if (idx > -1) {
+        highlightedAccounts.push(restAccounts[idx]);
+        restAccounts.splice(idx, 1);
+      }
+    });
+
+    return {
+      sortedAccountsList: highlightedAccounts.concat(restAccounts),
+    };
+  }, [accountsList, highlightedAddresses]);
+  const dispatch = useRabbyDispatch();
+
   const [currentAccount, setCurrentAccount] = useState<Account | null>(null);
   const [pendingTxCount, setPendingTxCount] = useState(0);
   const [gnosisPendingCount, setGnosisPendingCount] = useState(0);
@@ -105,7 +125,6 @@ const Dashboard = () => {
   const [startEdit, setStartEdit] = useState(false);
   const [alianName, setAlianName] = useState<string>('');
   const [displayName, setDisplayName] = useState<string>('');
-  const [accountsList, setAccountsList] = useState<Account[]>([]);
   const [firstNotice, setFirstNotice] = useState(false);
   const [updateContent, setUpdateContent] = useState('');
   const [showChain, setShowChain] = useState(false);
@@ -129,7 +148,6 @@ const Dashboard = () => {
   const [isGnosis, setIsGnosis] = useState(false);
   const [isListLoading, setIsListLoading] = useState(false);
   const [isAssetsLoading, setIsAssetsLoading] = useState(true);
-  const [loadingAddress, setLoadingAddress] = useState(false);
   const [gnosisNetworkId, setGnosisNetworkId] = useState('1');
   const [showGnosisWrongChainAlert, setShowGnosisWrongChainAlert] = useState(
     false
@@ -212,15 +230,18 @@ const Dashboard = () => {
       }
       setDashboardReload(false);
       getCurrentAccount();
-      getAllKeyrings();
+      dispatch.viewDashboard.getAllAccountsToDisplay();
     }
   }, [dashboardReload]);
   useEffect(() => {
-    getAllKeyrings();
+    (async () => {
+      await dispatch.viewDashboard.getHilightedAddressesAsync();
+      dispatch.viewDashboard.getAllAccountsToDisplay();
+    })();
   }, []);
   useEffect(() => {
     if (clicked) {
-      getAllKeyrings();
+      dispatch.viewDashboard.getAllAccountsToDisplay();
     }
   }, [clicked]);
   const handleChange = async (account) => {
@@ -288,7 +309,7 @@ const Dashboard = () => {
       return item;
     });
     if (newAccountList.length > 0) {
-      setAccountsList(newAccountList);
+      dispatch.viewDashboard.setField({ accountsList: newAccountList });
     }
   };
 
@@ -382,106 +403,6 @@ const Dashboard = () => {
       setIsGnosis(currentAccount.type === KEYRING_CLASS.GNOSIS);
     }
   }, [currentAccount]);
-  const Row = (props) => {
-    const [hdPathIndex, setHDPathIndex] = useState(null);
-    const { data, index, style } = props;
-    const account = data[index];
-    const [isHovering, hoverProps] = useHover();
-
-    const handleCopyContractAddress = () => {
-      const clipboard = new ClipboardJS('.address-item', {
-        text: function () {
-          return account?.address;
-        },
-      });
-      clipboard.on('success', () => {
-        message.success({
-          duration: 1,
-          icon: <i />,
-          content: (
-            <div>
-              <div className="flex gap-4 mb-4">
-                <img src={IconSuccess} alt="" />
-                Copied
-              </div>
-              <div className="text-white">{account?.address}</div>
-            </div>
-          ),
-        });
-        clipboard.destroy();
-      });
-    };
-
-    const getHDPathIndex = async () => {
-      const index = await wallet.getIndexByAddress(
-        account.address,
-        account.type
-      );
-      if (index !== null) {
-        setHDPathIndex(index + 1);
-      }
-    };
-
-    useEffect(() => {
-      if (KEYRING_WITH_INDEX.includes(account.type)) {
-        getHDPathIndex();
-      }
-    }, []);
-
-    return (
-      <div
-        className="flex items-center address-item"
-        key={index}
-        style={style}
-        onClick={(e) => {
-          const target = e.target as Element;
-          if (target?.id !== 'copyIcon') {
-            handleChange(account);
-          }
-        }}
-        {...hoverProps}
-      >
-        {' '}
-        <img
-          className="icon icon-account-type w-[20px] h-[20px]"
-          src={
-            KEYRING_ICONS[account.type] ||
-            WALLET_BRAND_CONTENT[account.brandName]?.image
-          }
-        />
-        <div className="flex flex-col items-start ml-10">
-          <div className="text-13 text-black text-left click-name">
-            <div className="list-alian-name">
-              {account?.alianName}
-              {hdPathIndex && (
-                <span className="address-hdpath-index font-roboto-mono">{`#${hdPathIndex}`}</span>
-              )}
-            </div>
-            <div className="flex items-center">
-              <AddressViewer
-                address={account?.address}
-                showArrow={false}
-                className={'address-color'}
-              />
-              {isHovering && (
-                <img
-                  onClick={handleCopyContractAddress}
-                  src={IconAddressCopy}
-                  id={'copyIcon'}
-                  className={clsx('ml-7  w-[16px] h-[16px]', {
-                    success: copySuccess,
-                  })}
-                />
-              )}
-              <div className={'money-color'}>
-                ${splitNumberByStep(Math.floor(account?.balance))}
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  };
 
   const clickContent = () => (
     <div className="click-list flex flex-col w-[233px]">
@@ -492,19 +413,35 @@ const Dashboard = () => {
             {t('Loading Addresses')}
           </div>
         </div>
-      ) : accountsList.length <= 0 ? (
+      ) : sortedAccountsList.length <= 0 ? (
         <div className="no-other-address"> {t('No address')}</div>
       ) : (
         <FixedSizeList
-          height={accountsList.length > 5 ? 308 : accountsList.length * 54}
+          height={
+            sortedAccountsList.length > 5 ? 308 : sortedAccountsList.length * 54
+          }
           width="100%"
-          itemData={accountsList}
-          itemCount={accountsList.length}
+          itemData={sortedAccountsList}
+          itemCount={sortedAccountsList.length}
           itemSize={54}
           ref={fixedList}
           style={{ zIndex: 10 }}
         >
-          {Row}
+          {(props: {
+            data: Account[];
+            index: number;
+            style: React.StyleHTMLAttributes<HTMLDivElement>;
+          }) => {
+            return (
+              <AddressRow
+                data={props.data}
+                index={props.index}
+                style={props.style}
+                copiedSuccess={copySuccess}
+                handleClickChange={handleChange}
+              />
+            );
+          }}
         </FixedSizeList>
       )}
       <Link to="/add-address" className="pop-add-address flex items-center">
@@ -514,52 +451,8 @@ const Dashboard = () => {
       </Link>
     </div>
   );
-  const balanceList = async (accounts) => {
-    return await Promise.all<Account>(
-      accounts.map(async (item) => {
-        let balance = await wallet.getAddressCacheBalance(item?.address);
-        if (!balance) {
-          balance = await wallet.getAddressBalance(item?.address);
-        }
-        return {
-          ...item,
-          balance: balance?.total_usd_value || 0,
-        };
-      })
-    );
-  };
-  const getAllKeyrings = async () => {
-    setLoadingAddress(true);
-    const _accounts = await wallet.getAllVisibleAccounts();
-    const allAlianNames = await wallet.getAllAlianName();
-    const allContactNames = await wallet.getContactsByMap();
-    const templist = await _accounts
-      .map((item) =>
-        item.accounts.map((account) => {
-          return {
-            ...account,
-            type: item.type,
-            alianName:
-              allContactNames[account?.address?.toLowerCase()]?.name ||
-              allAlianNames[account?.address?.toLowerCase()],
-            keyring: item.keyring,
-          };
-        })
-      )
-      .flat(1);
-    const result = await balanceList(templist);
-    setLoadingAddress(false);
-    if (result) {
-      const withBalanceList = result.sort((a, b) => {
-        return new BigNumber(b?.balance || 0)
-          .minus(new BigNumber(a?.balance || 0))
-          .toNumber();
-      });
-      setAccountsList(withBalanceList);
-    }
-  };
 
-  const handleClickChange = (visible) => {
+  const handleClickChange = (visible: boolean) => {
     setClicked(visible);
     setStartEdit(false);
     setHovered(false);
@@ -1028,7 +921,7 @@ const Dashboard = () => {
                     {safeInfo.owners.map((owner, index) => (
                       <GnosisAdminItem
                         address={owner}
-                        accounts={accountsList}
+                        accounts={sortedAccountsList}
                         key={index}
                       />
                     ))}
@@ -1053,4 +946,4 @@ const Dashboard = () => {
   );
 };
 
-export default Dashboard;
+export default connectStore()(Dashboard);
