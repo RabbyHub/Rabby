@@ -1,24 +1,10 @@
-import React, { useEffect, useState, useRef, useMemo } from 'react';
+import React, { useEffect, useRef, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useHistory } from 'react-router-dom';
-import { Menu, Dropdown, message } from 'antd';
 import { FixedSizeList } from 'react-window';
-import { KEYRING_TYPE } from 'consts';
-import { useWallet, useWalletOld } from 'ui/utils';
-import {
-  PageHeader,
-  AuthenticationModal,
-  StrayFooter,
-  Popup,
-  Copy,
-} from 'ui/component';
+import { PageHeader, StrayFooter } from 'ui/component';
 import AddressItem from './AddressItem';
-import { DisplayedKeryring } from 'background/service/keyring';
-import { Account } from 'background/service/preference';
-import DisplayKeyring from 'background/service/keyring/display';
 import IconPlusAddress from 'ui/assets/addAddress.png';
-import IconHint from 'ui/assets/hint.png';
-import IconSuccess from 'ui/assets/success.svg';
 import IconStar from 'ui/assets/icon-star.svg';
 import IconStarFill from 'ui/assets/icon-star-fill.svg';
 
@@ -26,17 +12,9 @@ import './style.less';
 import { obj2query } from '@/ui/utils/url';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 
-const SORT_WEIGHT = {
-  [KEYRING_TYPE.HdKeyring]: 1,
-  [KEYRING_TYPE.SimpleKeyring]: 2,
-  [KEYRING_TYPE.HardwareKeyring]: 3,
-  [KEYRING_TYPE.WalletConnectKeyring]: 4,
-  [KEYRING_TYPE.WatchAddressKeyring]: 5,
-};
 const { Nav: StrayFooterNav } = StrayFooter;
 
 const AddressManagement = () => {
-  const wallet = useWalletOld();
   const { t } = useTranslation();
   const history = useHistory();
 
