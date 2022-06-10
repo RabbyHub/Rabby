@@ -300,13 +300,17 @@ const GasSelector = ({
       <div className="gas-selector gray-section-block">
         <div className="top">
           <p className="usmoney">
-            ≈ ${gas.estimated_gas_cost_usd_value.toFixed(2)}
+            {gas.fail
+              ? 'Gas fee calculation failure'
+              : `≈ ${gas.estimated_gas_cost_usd_value.toFixed(2)}`}
           </p>
-          <p className="gasmoney">
-            {`${formatTokenAmount(gas.estimated_gas_cost_value)} ${
-              chain.nativeTokenSymbol
-            }`}
-          </p>
+          {!gas.fail && (
+            <p className="gasmoney">
+              {`${formatTokenAmount(gas.estimated_gas_cost_value)} ${
+                chain.nativeTokenSymbol
+              }`}
+            </p>
+          )}
           <div className="right">
             <img
               src={IconSetting}

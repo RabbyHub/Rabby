@@ -132,6 +132,7 @@ const TokenAmountInput = ({
           ref={tokenInputRef}
           value={value}
           onChange={(e) => onChange && onChange(e.target.value)}
+          title={value}
         />
       </div>
       <TokenSelector

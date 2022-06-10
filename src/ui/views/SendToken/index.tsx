@@ -8,12 +8,14 @@ import { useHistory, useLocation } from 'react-router-dom';
 import { Input, Form, Skeleton, message, Button } from 'antd';
 import abiCoder, { AbiCoder } from 'web3-eth-abi';
 import { isValidAddress, unpadHexString, addHexPrefix } from 'ethereumjs-util';
+import styled from 'styled-components';
 import { providers } from 'ethers';
 import {
   CHAINS,
   CHAINS_ENUM,
   KEYRING_PURPLE_LOGOS,
   KEYRING_CLASS,
+  MINIMUM_GAS_LIMIT,
 } from 'consts';
 import { Account } from 'background/service/preference';
 import { UIContactBookItem } from 'background/service/contactBook';
@@ -24,10 +26,12 @@ import { formatTokenAmount, splitNumberByStep } from 'ui/utils/number';
 import AccountCard from '../Approval/components/AccountCard';
 import TokenAmountInput from 'ui/component/TokenAmountInput';
 import TagChainSelector from 'ui/component/ChainSelector/tag';
-import { TokenItem } from 'background/service/openapi';
+import { GasLevel, GasResult, TokenItem } from 'background/service/openapi';
 import { PageHeader, AddressViewer } from 'ui/component';
 import ContactEditModal from 'ui/component/Contact/EditModal';
 import ContactListModal from 'ui/component/Contact/ListModal';
+import GasReserved from './components/GasReserved';
+import GasSelector from './components/GasSelector';
 import IconContact from 'ui/assets/contact.svg';
 import IconEdit from 'ui/assets/edit-purple.svg';
 import IconCopy from 'ui/assets/copy-no-border.svg';
@@ -41,11 +45,24 @@ const TOKEN_VALIDATION_STATUS = {
   FAILD: 2,
 };
 
+const MaxButton = styled.div`
+  padding: 4px 5px;
+  background: rgba(134, 151, 255, 0.1);
+  border-radius: 2px;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 14px;
+  color: #8697ff;
+  margin-left: 6px;
+  cursor: pointer;
+`;
+
 const SendToken = () => {
   const wallet = useWalletOld();
   const [currentAccount, setCurrentAccount] = useState<Account | null>(null);
   const [chain, setChain] = useState(CHAINS_ENUM.ETH);
   const { t } = useTranslation();
+  const [tokenAmountForGas, setTokenAmountForGas] = useState('0');
   const { useForm } = Form;
   const history = useHistory();
   const { state } = useLocation<{
@@ -74,17 +91,23 @@ const SendToken = () => {
     time_at: 0,
     amount: 0,
   });
+  const [gasList, setGasList] = useState<GasLevel[]>([]);
   const [sendAlianName, setSendAlianName] = useState<string | null>(null);
   const [showEditContactModal, setShowEditContactModal] = useState(false);
   const [showListContactModal, setShowListContactModal] = useState(false);
   const [editBtnDisabled, setEditBtnDisabled] = useState(true);
   const [cacheAmount, setCacheAmount] = useState('0');
   const [isLoading, setIsLoading] = useState(true);
-  const [balanceError, setBalanceError] = useState(null);
-  const [balanceWarn, setBalanceWarn] = useState(null);
+  const [balanceError, setBalanceError] = useState<string | null>(null);
+  const [balanceWarn, setBalanceWarn] = useState<string | null>(null);
+  const [showGasReserved, setShowGasReserved] = useState(false);
   const [showContactInfo, setShowContactInfo] = useState(false);
   const [accountType, setAccountType] = useState('');
   const [amountFocus, setAmountFocus] = useState(false);
+  const [gasSelectorVisible, setGasSelectorVisible] = useState(false);
+  const [selectedGasLevel, setSelectedGasLevel] = useState<GasLevel | null>(
+    null
+  );
   const [tokenValidationStatus, setTokenValidationStatus] = useState(
     TOKEN_VALIDATION_STATUS.PENDING
   );
@@ -145,6 +168,9 @@ const SendToken = () => {
           )
         )
       );
+      if (showGasReserved) {
+        params.gasPrice = selectedGasLevel?.price;
+      }
     }
     try {
       await wallet.setLastTimeSendToken(currentAccount!.address, currentToken);
@@ -213,6 +239,7 @@ const SendToken = () => {
     },
     token?: TokenItem
   ) => {
+    const targetToken = token || currentToken;
     setShowContactInfo(!!to && isValidAddress(to));
     if (!to || !isValidAddress(to)) {
       setEditBtnDisabled(true);
@@ -223,19 +250,21 @@ const SendToken = () => {
     if (!/^\d*(\.\d*)?$/.test(amount)) {
       resultAmount = cacheAmount;
     }
-    const account = await wallet.syncGetCurrentAccount();
-    const targetToken = token || currentToken;
-    if (
-      isNativeToken &&
-      account.type !== KEYRING_CLASS.GNOSIS &&
-      new BigNumber(targetToken.raw_amount_hex_str || 0)
-        .div(10 ** targetToken.decimals)
-        .minus(new BigNumber(amount))
-        .isLessThan(0.1)
-    ) {
-      setBalanceWarn(t('Gas fee reservation required'));
-    } else {
-      setBalanceWarn(null);
+    if (amount !== cacheAmount) {
+      if (showGasReserved) {
+        setShowGasReserved(false);
+      } else if (isNativeToken) {
+        if (
+          new BigNumber(targetToken.raw_amount_hex_str || 0)
+            .div(10 ** targetToken.decimals)
+            .minus(resultAmount)
+            .lt(0.1)
+        ) {
+          setBalanceWarn(t('Gas fee reservation required'));
+        } else {
+          setBalanceWarn(null);
+        }
+      }
     }
     if (
       new BigNumber(resultAmount || 0).isGreaterThan(
@@ -265,6 +294,9 @@ const SendToken = () => {
   };
 
   const handleCurrentTokenChange = async (token: TokenItem) => {
+    if (showGasReserved) {
+      setShowGasReserved(false);
+    }
     const account = await wallet.syncGetCurrentAccount();
     const values = form.getFieldsValue();
     if (token.id !== currentToken.id || token.chain !== currentToken.chain) {
@@ -280,14 +312,39 @@ const SendToken = () => {
     loadCurrentToken(token.id, token.chain, account.address);
   };
 
-  const handleClickTokenBalance = () => {
+  const handleClickTokenBalance = async () => {
     if (isLoading) return;
+    const tokenBalance = new BigNumber(
+      currentToken.raw_amount_hex_str || 0
+    ).div(10 ** currentToken.decimals);
+    let amount = tokenBalance.toFixed();
+
+    if (isNativeToken) {
+      setShowGasReserved(true);
+      try {
+        const list: GasLevel[] = await wallet.openapi.gasMarket(
+          CHAINS[chain].serverId
+        );
+        setGasList(list);
+        let instant = list[0];
+        for (let i = 1; i < list.length; i++) {
+          if (list[i].price > instant.price) {
+            instant = list[i];
+          }
+        }
+        const gasTokenAmount = handleGasChange(instant);
+        const tokenForSend = tokenBalance.minus(gasTokenAmount);
+        amount = tokenForSend.toFixed();
+      } catch (e) {
+        setBalanceWarn(t('Gas fee reservation required'));
+        setShowGasReserved(false);
+      }
+    }
+
     const values = form.getFieldsValue();
     const newValues = {
       ...values,
-      amount: new BigNumber(currentToken.raw_amount_hex_str || 0)
-        .div(10 ** currentToken.decimals)
-        .toFixed(),
+      amount,
     };
     form.setFieldsValue(newValues);
     handleFormValuesChange(null, newValues);
@@ -489,6 +546,23 @@ const SendToken = () => {
     }
   };
 
+  const handleClickGasReserved = () => {
+    setGasSelectorVisible(true);
+  };
+
+  const handleGasSelectorClose = () => {
+    setGasSelectorVisible(false);
+  };
+
+  const handleGasChange = (gas: GasLevel) => {
+    setSelectedGasLevel(gas);
+    const gasTokenAmount = new BigNumber(gas.price)
+      .times(MINIMUM_GAS_LIMIT)
+      .div(1e18);
+    setTokenAmountForGas(gasTokenAmount.toFixed());
+    return gasTokenAmount;
+  };
+
   useEffect(() => {
     init();
     return () => {
@@ -597,7 +671,7 @@ const SendToken = () => {
         </div>
         <div className="section">
           <div className="section-title flex justify-between">
-            <div className="token-balance" onClick={handleClickTokenBalance}>
+            <div className="token-balance">
               {isLoading ? (
                 <Skeleton.Input active style={{ width: 100 }} />
               ) : (
@@ -605,11 +679,22 @@ const SendToken = () => {
                   new BigNumber(currentToken.raw_amount_hex_str || 0)
                     .div(10 ** currentToken.decimals)
                     .toFixed(),
-                  8
+                  4
                 )}`
               )}
+              <MaxButton onClick={handleClickTokenBalance}>MAX</MaxButton>
             </div>
-            {balanceError || balanceWarn ? (
+            {showGasReserved &&
+              (selectedGasLevel ? (
+                <GasReserved
+                  token={currentToken}
+                  amount={tokenAmountForGas}
+                  onClickAmount={handleClickGasReserved}
+                />
+              ) : (
+                <Skeleton.Input active style={{ width: 180 }} />
+              ))}
+            {!showGasReserved && (balanceError || balanceWarn) ? (
               <div className="balance-error">{balanceError || balanceWarn}</div>
             ) : null}
           </div>
@@ -716,6 +801,19 @@ const SendToken = () => {
         onCancel={() => setShowListContactModal(false)}
         onOk={handleConfirmContact}
         address={form.getFieldValue('to')}
+      />
+
+      <GasSelector
+        visible={gasSelectorVisible}
+        onClose={handleGasSelectorClose}
+        chainId={CHAINS[chain].id}
+        onChange={(val) => {
+          setGasSelectorVisible(false);
+          handleGasChange(val);
+        }}
+        gasList={gasList}
+        gas={selectedGasLevel}
+        token={currentToken}
       />
     </div>
   );
