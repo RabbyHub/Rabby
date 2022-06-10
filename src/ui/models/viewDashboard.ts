@@ -90,6 +90,7 @@ export const viewDashboard = createModel<RootModel>()({
               return {
                 ...account,
                 type: item.type,
+                byImport: item.byImport,
                 alianName:
                   allContactNames[account?.address?.toLowerCase()]?.name ||
                   allAlianNames[account?.address?.toLowerCase()],

@@ -1,4 +1,4 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useState, useRef, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useHistory } from 'react-router-dom';
 import { Menu, Dropdown, message } from 'antd';
@@ -24,6 +24,7 @@ import IconStarFill from 'ui/assets/icon-star-fill.svg';
 
 import './style.less';
 import { obj2query } from '@/ui/utils/url';
+import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 
 const SORT_WEIGHT = {
   [KEYRING_TYPE.HdKeyring]: 1,
@@ -37,60 +38,46 @@ const { Nav: StrayFooterNav } = StrayFooter;
 const AddressManagement = () => {
   const wallet = useWalletOld();
   const { t } = useTranslation();
-  const [accounts, setAccounts] = useState<DisplayedKeryring[]>([]);
-  const [displayList, setDisplayList] = useState([]);
-
-  const [retrive, setRetrive] = useState(false);
-  const [noAccount, setNoAccount] = useState(false);
-  const [stopEditing, setStopEditing] = useState(true);
-  const [editIndex, setEditIndex] = useState(0);
-  const [hiddenAddresses, setHiddenAddresses] = useState<
-    { type: string; address: string }[]
-  >([]);
   const history = useHistory();
 
+  // todo: store redesign
+  const {
+    accountsList,
+    highlightedAddresses,
+    loadingAddress,
+  } = useRabbySelector((s) => ({
+    ...s.viewDashboard,
+  }));
+  const { sortedAccountsList } = React.useMemo(() => {
+    const restAccounts = [...accountsList];
+    const highlightedAccounts: typeof accountsList = [];
+
+    highlightedAddresses.forEach((addr) => {
+      const idx = restAccounts.findIndex((account) => account.address === addr);
+      if (idx > -1) {
+        highlightedAccounts.push(restAccounts[idx]);
+        restAccounts.splice(idx, 1);
+      }
+    });
+
+    return {
+      sortedAccountsList: highlightedAccounts.concat(restAccounts),
+    };
+  }, [accountsList, highlightedAddresses]);
+
+  const noAccount = useMemo(() => {
+    return sortedAccountsList.length <= 0 && !loadingAddress;
+  }, [sortedAccountsList, loadingAddress]);
+
+  const dispatch = useRabbyDispatch();
+
   useEffect(() => {
-    let count = 0;
-    const c = accounts.reduce((res, item) => {
-      return res + item.accounts.length;
-    }, 0);
-    count = c;
-    setNoAccount(count <= 0);
-  }, [accounts]);
-
-  // todo
-  const getAllKeyrings = async () => {
-    const _accounts = await wallet.getAllClassAccounts();
-    console.log(_accounts);
-
-    setAccounts(_accounts);
-    const list = _accounts
-      .sort((a, b) => {
-        return SORT_WEIGHT[a.type] - SORT_WEIGHT[b.type];
-      })
-      .map((group) => {
-        const templist = group.accounts.map(
-          (item) =>
-            (item = {
-              ...item,
-              type: group.type,
-              keyring: group.keyring,
-              byImport: group.byImport,
-            })
-        );
-        return templist;
-      })
-      .flat(1);
-    if (list.length > 0) {
-      setDisplayList(list);
-    }
-  };
+    dispatch.viewDashboard.getHilightedAddressesAsync().then(() => {
+      dispatch.viewDashboard.getAllAccountsToDisplay();
+    });
+  }, []);
 
   const fixedList = useRef<FixedSizeList>();
-
-  useEffect(() => {
-    getAllKeyrings();
-  }, []);
 
   const NoAddressUI = (
     <div className="no-address">
@@ -113,6 +100,7 @@ const AddressManagement = () => {
   const Row = (props) => {
     const { data, index, style } = props;
     const account = data[index];
+    const favorited = highlightedAddresses.has(account.address);
 
     return (
       <div className="address-wrap-with-padding" style={style}>
@@ -121,9 +109,21 @@ const AddressManagement = () => {
           type={account.type}
           brandName={account.brandName}
           extra={
-            <>
-              <img src={IconStar} alt="" />
-            </>
+            <div
+              className="cursor-pointer"
+              onClick={(e) => {
+                e.stopPropagation();
+                dispatch.viewDashboard.toggleHighlightedAddressAsync({
+                  address: account.address,
+                });
+              }}
+            >
+              {favorited ? (
+                <img src={IconStarFill} alt="" />
+              ) : (
+                <img src={IconStar} className="icon-star" alt="" />
+              )}
+            </div>
           }
           onClick={() => {
             history.push(
@@ -151,8 +151,8 @@ const AddressManagement = () => {
             <FixedSizeList
               height={500}
               width="100%"
-              itemData={displayList}
-              itemCount={displayList.length}
+              itemData={sortedAccountsList}
+              itemCount={sortedAccountsList.length}
               itemSize={64}
               ref={fixedList}
               className="scroll-container"

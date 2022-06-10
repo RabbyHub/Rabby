@@ -97,7 +97,9 @@ export const AddressDelete = ({
       duration: 0.5,
     });
     setVisible(false);
-    history.goBack();
+    setTimeout(() => {
+      history.goBack();
+    }, 500);
   };
 
   return (
