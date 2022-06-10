@@ -78,9 +78,9 @@ export const viewDashboard = createModel<RootModel>()({
         allAlianNames,
         allContactNames,
       ] = await Promise.all([
-        await store.app.wallet.getAllVisibleAccounts(),
-        await store.app.wallet.getAllAlianName(),
-        await store.app.wallet.getContactsByMap(),
+        store.app.wallet.getAllVisibleAccounts(),
+        store.app.wallet.getAllAlianName(),
+        store.app.wallet.getContactsByMap(),
       ]);
 
       const result = await Promise.all<IDisplayedAccountWithBalance>(
