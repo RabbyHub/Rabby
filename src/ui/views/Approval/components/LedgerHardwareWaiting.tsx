@@ -8,6 +8,7 @@ import {
   WALLETCONNECT_STATUS_MAP,
   EVENTS,
   KEYRING_CLASS,
+  KEYRING_CATEGORY_MAP,
 } from 'consts';
 import {
   useApproval,
@@ -89,7 +90,7 @@ const LedgerHardwareWaiting = ({ params }: { params: ApprovalParams }) => {
     stats.report('signTransaction', {
       type: account.brandName,
       chainId: chain.serverId,
-      is1559: chain.eip['1559'],
+      category: KEYRING_CATEGORY_MAP[account.type],
     });
     setIsSignText(params.isGnosis ? true : approval?.approvalType !== 'SignTx');
     eventBus.addEventListener(EVENTS.LEDGER.REJECT_APPROVAL, (data) => {

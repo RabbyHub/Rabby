@@ -12,6 +12,7 @@ import {
   EVENTS,
   WALLET_BRAND_CONTENT,
   SPECIFIC_TEXT_BRAND,
+  KEYRING_CATEGORY_MAP,
 } from 'consts';
 import { ScanCopyQRCode } from 'ui/component';
 import { useApproval, useWallet, openInTab, useWalletOld } from 'ui/utils';
@@ -368,7 +369,7 @@ const WatchAddressWaiting = ({ params }: { params: ApprovalParams }) => {
     stats.report('signTransaction', {
       type: account.brandName,
       chainId: CHAINS[chain].serverId,
-      is1559: false,
+      category: KEYRING_CATEGORY_MAP[account.type],
     });
     ReactGA.event({
       category: 'Transaction',

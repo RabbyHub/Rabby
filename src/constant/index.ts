@@ -1351,3 +1351,25 @@ export const HDPaths = {
     { name: 'BIP44 Standard', value: "m/44'/60'/0'/0" },
   ],
 };
+
+export enum KEYRING_CATEGORY {
+  Mnemonic = 'Mnemonic',
+  PrivateKey = 'PrivateKey',
+  WatchMode = 'WatchMode',
+  Contract = 'Contract',
+  Hardware = 'Hardware',
+  WalletConnect = 'WalletConnect',
+}
+
+export const KEYRING_CATEGORY_MAP = {
+  [KEYRING_CLASS.MNEMONIC]: KEYRING_CATEGORY.Mnemonic,
+  [KEYRING_CLASS.PRIVATE_KEY]: KEYRING_CATEGORY.PrivateKey,
+  [KEYRING_CLASS.WATCH]: KEYRING_CATEGORY.WatchMode,
+  [KEYRING_CLASS.HARDWARE.LEDGER]: KEYRING_CATEGORY.Hardware,
+  [KEYRING_CLASS.HARDWARE.TREZOR]: KEYRING_CATEGORY.Hardware,
+  [KEYRING_CLASS.HARDWARE.BITBOX02]: KEYRING_CATEGORY.Hardware,
+  [KEYRING_CLASS.HARDWARE.KEYSTONE]: KEYRING_CATEGORY.Hardware,
+  [KEYRING_CLASS.HARDWARE.GRIDPLUS]: KEYRING_CATEGORY.Hardware,
+  [KEYRING_CLASS.WALLETCONNECT]: KEYRING_CATEGORY.WalletConnect,
+  [KEYRING_CLASS.GNOSIS]: KEYRING_CATEGORY.Contract,
+};
