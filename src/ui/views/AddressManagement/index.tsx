@@ -31,8 +31,12 @@ const AddressManagement = () => {
     const restAccounts = [...accountsList];
     let highlightedAccounts: typeof accountsList = [];
 
-    highlightedAddresses.forEach((addr) => {
-      const idx = restAccounts.findIndex((account) => account.address === addr);
+    highlightedAddresses.forEach((highlighted) => {
+      const idx = restAccounts.findIndex(
+        (account) =>
+          account.address === highlighted.address &&
+          account.brandName === highlighted.brandName
+      );
       if (idx > -1) {
         highlightedAccounts.push(restAccounts[idx]);
         restAccounts.splice(idx, 1);
@@ -81,7 +85,11 @@ const AddressManagement = () => {
   const Row = (props) => {
     const { data, index, style } = props;
     const account = data[index];
-    const favorited = highlightedAddresses.has(account.address);
+    const favorited = highlightedAddresses.some(
+      (highlighted) =>
+        account.address === highlighted.address &&
+        account.brandName === highlighted.brandName
+    );
 
     return (
       <div className="address-wrap-with-padding" style={style}>
@@ -97,6 +105,7 @@ const AddressManagement = () => {
                 e.stopPropagation();
                 dispatch.viewDashboard.toggleHighlightedAddressAsync({
                   address: account.address,
+                  brandName: account.brandName,
                 });
               }}
             >

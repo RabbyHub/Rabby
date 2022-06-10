@@ -102,8 +102,12 @@ const Dashboard = () => {
     const restAccounts = [...accountsList];
     let highlightedAccounts: typeof accountsList = [];
 
-    highlightedAddresses.forEach((addr) => {
-      const idx = restAccounts.findIndex((account) => account.address === addr);
+    highlightedAddresses.forEach((highlighted) => {
+      const idx = restAccounts.findIndex(
+        (account) =>
+          account.address === highlighted.address &&
+          account.brandName === highlighted.brandName
+      );
       if (idx > -1) {
         highlightedAccounts.push(restAccounts[idx]);
         restAccounts.splice(idx, 1);
