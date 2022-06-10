@@ -75,6 +75,7 @@ export const AddressInfo = ({ address, type, brandName, source }: Props) => {
                 autoFocus
                 allowClear
                 spellCheck={false}
+                autoComplete="off"
                 maxLength={50}
               ></Input>
             </Form.Item>

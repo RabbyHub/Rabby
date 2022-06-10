@@ -173,7 +173,7 @@ const AddressDeleteModal = ({
       onClose={onClose}
     >
       <div className="desc">
-        This address is a {source} address, rabby does not store the private key
+        This address is a {source} address, Rabby does not store the private key
         or seed phrase for this address, you can just delete it
       </div>
       <footer className="footer flex gap-[16px]">
