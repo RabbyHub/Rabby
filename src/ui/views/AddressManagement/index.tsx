@@ -19,6 +19,8 @@ import DisplayKeyring from 'background/service/keyring/display';
 import IconPlusAddress from 'ui/assets/addAddress.png';
 import IconHint from 'ui/assets/hint.png';
 import IconSuccess from 'ui/assets/success.svg';
+import IconStar from 'ui/assets/icon-star.svg';
+import IconStarFill from 'ui/assets/icon-star-fill.svg';
 
 import './style.less';
 import { obj2query } from '@/ui/utils/url';
@@ -118,6 +120,11 @@ const AddressManagement = () => {
           address={account.address}
           type={account.type}
           brandName={account.brandName}
+          extra={
+            <>
+              <img src={IconStar} alt="" />
+            </>
+          }
           onClick={() => {
             history.push(
               `/settings/address-detail?${obj2query({

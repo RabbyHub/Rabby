@@ -9,6 +9,7 @@ import {
 import React, {
   memo,
   MouseEventHandler,
+  ReactNode,
   useEffect,
   useRef,
   useState,
@@ -26,11 +27,19 @@ export interface AddressItemProps {
   type: string;
   brandName: string;
   className?: string;
+  extra?: ReactNode;
   onClick: MouseEventHandler<HTMLDivElement>;
 }
 
 const AddressItem = memo(
-  ({ address, type, brandName, className, onClick }: AddressItemProps) => {
+  ({
+    address,
+    type,
+    brandName,
+    className,
+    onClick,
+    extra,
+  }: AddressItemProps) => {
     const { t } = useTranslation();
     const formatAddressTooltip = (type: string, brandName: string) => {
       if (KEYRING_TYPE_TEXT[type]) {
@@ -103,7 +112,9 @@ const AddressItem = memo(
                   <img
                     className="w-[16px] h-[16px] flex-shrink-0"
                     src={IconCorrect}
-                    onClick={() => {
+                    onClick={(e) => {
+                      e.preventDefault();
+                      e.stopPropagation();
                       setIsEdit(false);
                       setAlias(inputRef.current?.state.value);
                     }}
@@ -111,11 +122,14 @@ const AddressItem = memo(
                 </>
               ) : (
                 <>
-                  <div className="rabby-address-item-alias">{alias}</div>
+                  <div className="rabby-address-item-alias" title={alias}>
+                    {alias}
+                  </div>
                   <img
-                    className="icon-edit w-[14px] h-[14px] flex-shrink-0"
+                    className="icon-edit w-[12px] h-[12px] flex-shrink-0"
                     src={IconEditPen}
-                    onClick={() => {
+                    onClick={(e) => {
+                      e.stopPropagation();
                       setIsEdit(true);
                     }}
                   />
@@ -130,6 +144,7 @@ const AddressItem = memo(
               className={'subtitle'}
             />
             <Copy
+              onClick={(e) => e.stopPropagation()}
               icon={IconCopy}
               variant="address"
               data={address}
@@ -138,14 +153,7 @@ const AddressItem = memo(
           </div>
         </div>
 
-        <div className="rabby-address-item-extra">
-          <IconStar
-            className="icon-star"
-            width={20}
-            height={20}
-            viewBox="0 0 16 16"
-          ></IconStar>
-        </div>
+        <div className="rabby-address-item-extra">{extra}</div>
         <div className="rabby-address-item-arrow">
           <IconArrowRight
             width={20}

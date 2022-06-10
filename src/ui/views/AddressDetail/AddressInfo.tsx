@@ -100,7 +100,7 @@ export const AddressInfo = ({ address, type, brandName, source }: Props) => {
         <div className="rabby-list-item-content pr-11">
           <div className="rabby-list-item-label">
             Address
-            <div className="rabby-list-item-desc flex gap-4">
+            <div className="rabby-list-item-desc flex gap-4 text-[13px]">
               {address}
               <img
                 src={IconCopy}
@@ -141,7 +141,7 @@ export const AddressInfo = ({ address, type, brandName, source }: Props) => {
           <div className="rabby-list-item-extra">
             <Popover
               placement="bottomLeft"
-              trigger="click"
+              // trigger="click"
               overlayClassName="page-address-detail-qrcode-popover"
               align={{
                 offset: [-16, 6],
