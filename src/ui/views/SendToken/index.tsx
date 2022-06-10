@@ -254,18 +254,20 @@ const SendToken = () => {
       resultAmount = cacheAmount;
     }
 
-    if (showGasReserved && Number(resultAmount) > 0) {
-      setShowGasReserved(false);
-    } else if (isNativeToken) {
-      if (
-        new BigNumber(targetToken.raw_amount_hex_str || 0)
-          .div(10 ** targetToken.decimals)
-          .minus(resultAmount)
-          .lt(0.1)
-      ) {
-        setBalanceWarn(t('Gas fee reservation required'));
-      } else {
-        setBalanceWarn(null);
+    if (amount !== cacheAmount) {
+      if (showGasReserved && Number(resultAmount) > 0) {
+        setShowGasReserved(false);
+      } else if (isNativeToken) {
+        if (
+          new BigNumber(targetToken.raw_amount_hex_str || 0)
+            .div(10 ** targetToken.decimals)
+            .minus(resultAmount)
+            .lt(0.1)
+        ) {
+          setBalanceWarn(t('Gas fee reservation required'));
+        } else {
+          setBalanceWarn(null);
+        }
       }
     }
 
@@ -709,7 +711,9 @@ const SendToken = () => {
                   4
                 )}`
               )}
-              <MaxButton onClick={handleClickTokenBalance}>MAX</MaxButton>
+              {currentToken.amount > 0 && (
+                <MaxButton onClick={handleClickTokenBalance}>MAX</MaxButton>
+              )}
             </div>
             {showGasReserved &&
               (selectedGasLevel ? (
