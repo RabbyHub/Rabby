@@ -1,6 +1,5 @@
-import React, { useState, forwardRef } from 'react';
+import React, { useState } from 'react';
 import { useDebounce } from 'react-use';
-import { Input } from 'antd';
 import styled from 'styled-components';
 import clsx from 'clsx';
 
@@ -19,6 +18,21 @@ const AddressViewer = styled.div`
     width: 12px;
     flex-shrink: 0;
   }
+`;
+
+const BrandName = styled.div`
+  font-weight: 500;
+  font-size: 15px;
+  line-height: 18px;
+  color: ${LessPalette['@color-title']};
+`;
+
+const NumberIndex = styled.div`
+  font-weight: normal;
+  font-size: 12px;
+  color: ${LessPalette['@color-comment-2']};
+  width: 36px;
+  text-align: left;
 `;
 
 export interface DisplayAddressItemProps {
@@ -56,15 +70,16 @@ const DisplayAddressItem = ({
   const address = account?.address?.toLowerCase() || '';
 
   return (
-    <li className={className}>
+    <li className={clsx(className)}>
       <div
         className={clsx('flex items-center justify-between w-[100%] relative')}
       >
         <div className="flex items-center relative">
-          <div className="number-index">{account.index}</div>
+          <NumberIndex>{account.index}</NumberIndex>
           <div className={clsx('address-info', 'ml-0')}>
-            <div className="brand-name flex">
-              <Input
+            <BrandName>
+              {alianName}
+              {/* <Input
                 value={alianName}
                 defaultValue={alianName}
                 onChange={(e) => {
@@ -76,8 +91,8 @@ const DisplayAddressItem = ({
                 maxLength={20}
                 min={0}
                 disabled
-              />
-            </div>
+              /> */}
+            </BrandName>
             <div className="flex items-center">
               <AddressViewer className="flex items-center">
                 <div
