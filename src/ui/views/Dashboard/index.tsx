@@ -836,12 +836,14 @@ const Dashboard = () => {
                       onPressEnter={alianNameConfirm}
                       autoFocus={startEdit}
                       onClick={(e) => e.stopPropagation()}
-                      maxLength={20}
+                      maxLength={50}
                       min={0}
                       style={{ zIndex: 10 }}
                     />
                   ) : (
-                    displayName
+                    <span title={displayName} className="alias">
+                      {displayName}
+                    </span>
                   )}
                   {!startEdit && (
                     <img

@@ -44,6 +44,9 @@ import SendToken from './SendToken';
 import SendNFT from './SendNFT';
 import Receive from './Receive/index';
 import WalletConnectTemplate from './WalletConnect';
+import AddressDetail from './AddressDetail';
+import AddressBackupMnemonics from './AddressBackup/Mnemonics';
+import AddressBackupPrivateKey from './AddressBackup/PrivateKey';
 ReactGA.initialize('UA-199755108-1');
 // eslint-disable-next-line @typescript-eslint/no-empty-function
 ga('set', 'checkProtocolTask', function () {});
@@ -168,6 +171,15 @@ const Main = () => {
         </PrivateRoute>
         <PrivateRoute exact path="/settings/address">
           <AddressManagement />
+        </PrivateRoute>
+        <PrivateRoute exact path="/settings/address-detail">
+          <AddressDetail />
+        </PrivateRoute>
+        <PrivateRoute exact path="/settings/address-backup/private-key">
+          <AddressBackupPrivateKey />
+        </PrivateRoute>
+        <PrivateRoute exact path="/settings/address-backup/mneonics">
+          <AddressBackupMnemonics />
         </PrivateRoute>
         <PrivateRoute exact path="/settings/sites">
           <ConnectedSites />

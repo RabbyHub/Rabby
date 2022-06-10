@@ -105,7 +105,7 @@ function AddressRow({
       <div className="flex flex-col items-start ml-10 relative w-[100%]">
         <div className="text-13 text-black text-left click-name">
           <div className="flex items-center w-[100%]">
-            <div className="list-alian-name">
+            <div className="list-alian-name" title={account?.alianName}>
               {account?.alianName}
               {hdPathIndex && (
                 <span className="address-hdpath-index font-roboto-mono">{`#${hdPathIndex}`}</span>

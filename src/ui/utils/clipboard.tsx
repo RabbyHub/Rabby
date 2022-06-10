@@ -1,3 +1,6 @@
+import { message } from 'antd';
+import React from 'react';
+import IconSuccess from 'ui/assets/success.svg';
 function fallbackCopyTextToClipboard(text: string) {
   const textArea = document.createElement('textarea');
   textArea.value = text;
@@ -30,4 +33,21 @@ export async function copyTextToClipboard(text: string) {
     return;
   }
   return navigator.clipboard.writeText(text);
+}
+
+export async function copyAddress(address: string) {
+  await copyTextToClipboard(address);
+  message.success({
+    duration: 3,
+    icon: <i />,
+    content: (
+      <div>
+        <div className="flex gap-4 mb-4">
+          <img src={IconSuccess} alt="" />
+          Copied
+        </div>
+        <div className="text-white">{address}</div>
+      </div>
+    ),
+  });
 }
