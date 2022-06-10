@@ -35,6 +35,7 @@ import {
   isHexString,
   unpadHexString,
 } from 'ethereumjs-util';
+import BigNumber from 'bignumber.js';
 import React, { ReactNode, useEffect, useState } from 'react';
 import ReactGA from 'react-ga';
 import { useTranslation } from 'react-i18next';
@@ -444,7 +445,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
   };
 
   const explainTx = async (address: string) => {
-    const res = await wallet.openapi.explainTx(
+    const res: ExplainTxResponse = await wallet.openapi.explainTx(
       {
         ...tx,
         nonce: tx.nonce || '0x1', // set a mock nonce for explain if dapp not set it
@@ -458,7 +459,10 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     );
     if (!gasLimit) {
       // use server response gas limit
-      setGasLimit(res.recommend.gas);
+      const recommendGasLimit = new BigNumber(res.recommend.gas)
+        .times(1.5)
+        .toFixed(0);
+      setGasLimit(intToHex(Number(recommendGasLimit)));
     }
     setTxDetail(res);
     const localNonce = (await wallet.getNonceByChain(tx.from, chainId)) || 0;
