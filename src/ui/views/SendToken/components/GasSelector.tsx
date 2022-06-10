@@ -131,7 +131,7 @@ const GasSelector = ({
   return (
     <Popup
       height={400}
-      title="Est. gas cost (gwei)"
+      title="Set Gas Price (Gwei)"
       visible={visible}
       onClose={onClose}
       placement="bottom"
@@ -139,8 +139,8 @@ const GasSelector = ({
       closable={false}
     >
       <Description>
-        Reserved the gas price as Instant's standard and you can adjust it , the
-        remainder of gas cost will be used as the amount of send
+        The gas cost will be reserved from the transfer amount based on the gas
+        price you set
       </Description>
       <div className="gas-selector gray-section-block">
         <div className="top">

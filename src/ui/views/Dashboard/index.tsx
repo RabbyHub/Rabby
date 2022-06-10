@@ -56,6 +56,7 @@ import {
 } from './components';
 import Dropdown from './components/NFT/Dropdown';
 import AddressRow from './components/AddressRow';
+import { sortAccountsByBalance } from '@/ui/utils/account';
 
 const GnosisAdminItem = ({
   accounts,
@@ -95,19 +96,26 @@ const Dashboard = () => {
     highlightedAddresses,
     loadingAddress,
   } = useRabbySelector((s) => ({
-    ...s.viewDashboard,
+    ...s.accountToDisplay,
+    highlightedAddresses: s.addressManagement.highlightedAddresses,
   }));
   const { sortedAccountsList } = React.useMemo(() => {
     const restAccounts = [...accountsList];
-    const highlightedAccounts: typeof accountsList = [];
+    let highlightedAccounts: typeof accountsList = [];
 
-    highlightedAddresses.forEach((addr) => {
-      const idx = restAccounts.findIndex((account) => account.address === addr);
+    highlightedAddresses.forEach((highlighted) => {
+      const idx = restAccounts.findIndex(
+        (account) =>
+          account.address === highlighted.address &&
+          account.brandName === highlighted.brandName
+      );
       if (idx > -1) {
         highlightedAccounts.push(restAccounts[idx]);
         restAccounts.splice(idx, 1);
       }
     });
+
+    highlightedAccounts = sortAccountsByBalance(highlightedAccounts);
 
     return {
       sortedAccountsList: highlightedAccounts.concat(restAccounts),
@@ -230,18 +238,18 @@ const Dashboard = () => {
       }
       setDashboardReload(false);
       getCurrentAccount();
-      dispatch.viewDashboard.getAllAccountsToDisplay();
+      dispatch.accountToDisplay.getAllAccountsToDisplay();
     }
   }, [dashboardReload]);
   useEffect(() => {
     (async () => {
-      await dispatch.viewDashboard.getHilightedAddressesAsync();
-      dispatch.viewDashboard.getAllAccountsToDisplay();
+      await dispatch.addressManagement.getHilightedAddressesAsync();
+      dispatch.accountToDisplay.getAllAccountsToDisplay();
     })();
   }, []);
   useEffect(() => {
     if (clicked) {
-      dispatch.viewDashboard.getAllAccountsToDisplay();
+      dispatch.accountToDisplay.getAllAccountsToDisplay();
     }
   }, [clicked]);
   const handleChange = async (account) => {
@@ -309,7 +317,7 @@ const Dashboard = () => {
       return item;
     });
     if (newAccountList.length > 0) {
-      dispatch.viewDashboard.setField({ accountsList: newAccountList });
+      dispatch.accountToDisplay.setField({ accountsList: newAccountList });
     }
   };
 

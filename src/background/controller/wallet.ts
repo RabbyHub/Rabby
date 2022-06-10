@@ -40,7 +40,7 @@ import {
   KEYRING_TYPE,
 } from 'consts';
 import { ERC1155ABI, ERC721ABI } from 'consts/abi';
-import { Account, ChainGas } from '../service/preference';
+import { Account, ChainGas, IHighlightedAddress } from '../service/preference';
 import { ConnectedSite } from '../service/permission';
 import { ExplainTxResponse, TokenItem } from '../service/openapi';
 import DisplayKeyring from '../service/keyring/display';
@@ -1497,7 +1497,7 @@ export class WalletController extends BaseController {
     return preferenceService.getHighlightedAddresses();
   };
 
-  updateHighlightedAddresses = (list: string[]) => {
+  updateHighlightedAddresses = (list: IHighlightedAddress[]) => {
     return preferenceService.updateHighlightedAddresses(list);
   };
 

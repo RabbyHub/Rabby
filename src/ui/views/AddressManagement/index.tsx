@@ -11,6 +11,7 @@ import IconStarFill from 'ui/assets/icon-star-fill.svg';
 import './style.less';
 import { obj2query } from '@/ui/utils/url';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
+import { sortAccountsByBalance } from '@/ui/utils/account';
 
 const { Nav: StrayFooterNav } = StrayFooter;
 
@@ -24,19 +25,26 @@ const AddressManagement = () => {
     highlightedAddresses,
     loadingAddress,
   } = useRabbySelector((s) => ({
-    ...s.viewDashboard,
+    ...s.accountToDisplay,
+    highlightedAddresses: s.addressManagement.highlightedAddresses,
   }));
   const { sortedAccountsList } = React.useMemo(() => {
     const restAccounts = [...accountsList];
-    const highlightedAccounts: typeof accountsList = [];
+    let highlightedAccounts: typeof accountsList = [];
 
-    highlightedAddresses.forEach((addr) => {
-      const idx = restAccounts.findIndex((account) => account.address === addr);
+    highlightedAddresses.forEach((highlighted) => {
+      const idx = restAccounts.findIndex(
+        (account) =>
+          account.address === highlighted.address &&
+          account.brandName === highlighted.brandName
+      );
       if (idx > -1) {
         highlightedAccounts.push(restAccounts[idx]);
         restAccounts.splice(idx, 1);
       }
     });
+
+    highlightedAccounts = sortAccountsByBalance(highlightedAccounts);
 
     return {
       sortedAccountsList: highlightedAccounts.concat(restAccounts),
@@ -50,8 +58,8 @@ const AddressManagement = () => {
   const dispatch = useRabbyDispatch();
 
   useEffect(() => {
-    dispatch.viewDashboard.getHilightedAddressesAsync().then(() => {
-      dispatch.viewDashboard.getAllAccountsToDisplay();
+    dispatch.addressManagement.getHilightedAddressesAsync().then(() => {
+      dispatch.accountToDisplay.getAllAccountsToDisplay();
     });
   }, []);
 
@@ -78,7 +86,11 @@ const AddressManagement = () => {
   const Row = (props) => {
     const { data, index, style } = props;
     const account = data[index];
-    const favorited = highlightedAddresses.has(account.address);
+    const favorited = highlightedAddresses.some(
+      (highlighted) =>
+        account.address === highlighted.address &&
+        account.brandName === highlighted.brandName
+    );
 
     return (
       <div className="address-wrap-with-padding" style={style}>
@@ -92,8 +104,9 @@ const AddressManagement = () => {
               className="cursor-pointer"
               onClick={(e) => {
                 e.stopPropagation();
-                dispatch.viewDashboard.toggleHighlightedAddressAsync({
+                dispatch.addressManagement.toggleHighlightedAddressAsync({
                   address: account.address,
+                  brandName: account.brandName,
                 });
               }}
             >

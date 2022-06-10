@@ -92,7 +92,10 @@ const ConfirmMnemonics = ({ isPopup = false }: { isPopup?: boolean }) => {
       custom={isWide}
       className={clsx(isWide && 'rabby-stray-page')}
       hasDivider
-      hasBack={noAnyAccountsToImport}
+      hasBack
+      onBackClick={() => {
+        history.goBack();
+      }}
       nextDisabled={noAnyAccountsToImport}
       NextButtonContent={t('OK')}
       onNextClick={async () => {
@@ -156,13 +159,11 @@ const ConfirmMnemonics = ({ isPopup = false }: { isPopup?: boolean }) => {
         <div
           onClick={(e) => {
             e.stopPropagation();
-            // setStopEditing(true);
           }}
           className={clsx(
             'flex flex-col lg:justify-center text-center lg:h-auto',
             {
               'flex-1': isPopup,
-              // 'overflow-auto': isPopup,
               'px-20': isPopup,
               'py-20': isPopup,
             }

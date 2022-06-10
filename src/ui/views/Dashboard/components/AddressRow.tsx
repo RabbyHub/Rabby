@@ -35,12 +35,16 @@ function AddressRow({
 }) {
   const wallet = useWallet();
   const { highlightedAddresses } = useRabbySelector((s) => ({
-    ...s.viewDashboard,
+    highlightedAddresses: s.addressManagement.highlightedAddresses,
   }));
   const dispatch = useRabbyDispatch();
 
   const account = data[index];
-  const favorited = highlightedAddresses.has(account.address);
+  const favorited = highlightedAddresses.some(
+    (highlighted) =>
+      account.address === highlighted.address &&
+      account.brandName === highlighted.brandName
+  );
 
   const handleCopyContractAddress = React.useCallback(() => {
     const clipboard = new ClipboardJS('.address-item', {
@@ -115,9 +119,10 @@ function AddressRow({
               <img
                 onClick={(e) => {
                   e.stopPropagation();
-                  if (account?.address)
-                    dispatch.viewDashboard.toggleHighlightedAddressAsync({
-                      address: account?.address,
+                  if (account)
+                    dispatch.addressManagement.toggleHighlightedAddressAsync({
+                      address: account.address,
+                      brandName: account.brandName,
                     });
                 }}
                 src={favorited ? IconFavStarFilled : IconFavStar}

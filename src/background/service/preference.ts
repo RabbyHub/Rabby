@@ -33,6 +33,10 @@ export interface addedToken {
   [address: string]: string[];
 }
 
+export type IHighlightedAddress = {
+  brandName: Account['brandName'];
+  address: Account['address'];
+};
 export interface PreferenceStore {
   currentAccount: Account | undefined | null;
   externalLinkAck: boolean;
@@ -45,7 +49,7 @@ export interface PreferenceStore {
   watchAddressPreference: Record<string, number>;
   isDefaultWallet: boolean;
   lastTimeSendToken: Record<string, TokenItem>;
-  highligtedAddresses: Account['address'][];
+  highligtedAddresses: IHighlightedAddress[];
   walletSavedList: any[];
   alianNames?: Record<string, string>;
   initAlianNames: boolean;
@@ -332,9 +336,11 @@ class PreferenceService {
   };
 
   getHighlightedAddresses = () => {
-    return this.store.highligtedAddresses || [];
+    return (this.store.highligtedAddresses || []).filter(
+      (item) => !!item.brandName && !!item.address
+    );
   };
-  updateHighlightedAddresses = (list: string[]) => {
+  updateHighlightedAddresses = (list: IHighlightedAddress[]) => {
     this.store.highligtedAddresses = list;
   };
 

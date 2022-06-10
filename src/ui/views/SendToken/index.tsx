@@ -55,6 +55,9 @@ const MaxButton = styled.div`
   color: #8697ff;
   margin-left: 6px;
   cursor: pointer;
+  &:hover {
+    background: rgba(134, 151, 255, 0.2);
+  }
 `;
 
 const SendToken = () => {
@@ -675,7 +678,7 @@ const SendToken = () => {
           </div>
         </div>
         <div className="section">
-          <div className="section-title flex justify-between">
+          <div className="section-title flex justify-between items-center">
             <div className="token-balance">
               {isLoading ? (
                 <Skeleton.Input active style={{ width: 100 }} />
