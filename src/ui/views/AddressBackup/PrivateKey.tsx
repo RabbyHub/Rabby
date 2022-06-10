@@ -48,7 +48,7 @@ const AddressBackup = () => {
           }}
         >
           <img src={IconMaskIcon} className="w-[44px] h-[44px]" />
-          <p className="mt-[16px] mb-0 text-white py-[15px]">
+          <p className="mt-[16px] mb-0 text-white px-[15px]">
             {t('Click to show private key QR Code')}
           </p>
         </div>
@@ -58,7 +58,7 @@ const AddressBackup = () => {
           style={masked ? { filter: 'blur(3px)' } : {}}
         ></QRCode>
       </div>
-      <div className="private-key mb-[34px]">
+      <div className="private-key mb-[24px]">
         {!isShowPrivateKey ? (
           <div
             className="private-key-mask"
@@ -77,14 +77,14 @@ const AddressBackup = () => {
         )}
       </div>
 
-      <div className="footer">
+      <div className="footer pb-[24px]">
         <Button
           type="primary"
           size="large"
           className="w-[200px]"
           onClick={() => history.goBack()}
         >
-          Completed
+          Done
         </Button>
       </div>
     </div>
