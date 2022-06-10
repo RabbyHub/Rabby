@@ -7,6 +7,7 @@ import { DisplayedKeryring } from '@/background/service/keyring';
 type IDisplayedAccount = Required<DisplayedKeryring['accounts'][number]>;
 type IDisplayedAccountWithBalance = IDisplayedAccount & {
   balance: number;
+  byImport?: boolean;
 };
 
 type IState = {
