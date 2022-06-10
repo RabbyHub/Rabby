@@ -1365,6 +1365,35 @@ export class WalletController extends BaseController {
     }
   };
 
+  activeAndPersistAccountsByMnemonics = async (
+    mnemonics: string,
+    accountsToImport: Required<
+      Pick<Account, 'address' | 'alianName' | 'index'>
+    >[]
+  ) => {
+    const keyring = this.getKeyringByMnemonic(mnemonics);
+    if (!keyring) {
+      throw new Error(
+        '[activeAndPersistAccountsByMnemonics] no keyring found.'
+      );
+    }
+    await this.requestHDKeyringByMnemonics(
+      mnemonics,
+      'activeAccounts',
+      accountsToImport.map((acc) => acc.index! - 1)
+    );
+
+    await keyringService.persistAllKeyrings();
+    const accounts: string[] = await (keyring as any).getAccounts();
+
+    const _account = {
+      address: accountsToImport[0].address,
+      type: keyring.type,
+      brandName: keyring.type,
+    };
+    preferenceService.setCurrentAccount(_account);
+  };
+
   unlockHardwareAccount = async (keyring, indexes, keyringId) => {
     let keyringInstance: any = null;
     try {
