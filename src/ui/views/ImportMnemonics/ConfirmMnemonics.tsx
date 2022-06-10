@@ -92,7 +92,10 @@ const ConfirmMnemonics = ({ isPopup = false }: { isPopup?: boolean }) => {
       custom={isWide}
       className={clsx(isWide && 'rabby-stray-page')}
       hasDivider
-      hasBack={noAnyAccountsToImport}
+      hasBack
+      onBackClick={() => {
+        history.goBack();
+      }}
       nextDisabled={noAnyAccountsToImport}
       NextButtonContent={t('OK')}
       onNextClick={async () => {
