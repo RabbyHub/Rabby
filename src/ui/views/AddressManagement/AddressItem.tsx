@@ -108,6 +108,7 @@ const AddressItem = memo(
                       setIsEdit(false);
                       setAlias(inputRef.current?.state.value);
                     }}
+                    autoFocus
                     onClick={(e) => e.stopPropagation()}
                     maxLength={50}
                     min={0}
