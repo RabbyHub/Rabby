@@ -3,9 +3,10 @@ import { createModel } from '@rematch/core';
 import { KEYRING_TYPE } from '@/constant';
 import { RootModel } from '.';
 import type { Account } from 'background/service/preference';
-import { ContactBookItem } from '@/background/service/contactBook';
 
-export type ISimpleAccount = Pick<Account, 'address' | 'alianName' | 'index'>;
+export type ISimpleAccount = Required<
+  Pick<Account, 'address' | 'alianName' | 'index'>
+>;
 
 interface IState {
   isExistedKeyring: boolean;
@@ -273,7 +274,7 @@ export const importMnemonics = createModel<RootModel>()({
 
           return {
             address: account.address,
-            index: account.index,
+            index: account.index!,
             alianName: alianName,
           };
         })
@@ -315,10 +316,9 @@ export const importMnemonics = createModel<RootModel>()({
         );
         await store.app.wallet.addKeyring(stashKeyringId!);
       } else {
-        await store.app.wallet.requestHDKeyringByMnemonics(
+        await store.app.wallet.activeAndPersistAccountsByMnemonics(
           store.importMnemonics.finalMnemonics,
-          'activeAccounts',
-          accountsToImport.map((acc) => (acc.index as number) - 1)
+          accountsToImport
         );
       }
 
