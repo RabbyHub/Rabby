@@ -35,7 +35,7 @@ function AddressRow({
 }) {
   const wallet = useWallet();
   const { highlightedAddresses } = useRabbySelector((s) => ({
-    ...s.viewDashboard,
+    highlightedAddresses: s.addressManagement.highlightedAddresses,
   }));
   const dispatch = useRabbyDispatch();
 
@@ -120,7 +120,7 @@ function AddressRow({
                 onClick={(e) => {
                   e.stopPropagation();
                   if (account)
-                    dispatch.viewDashboard.toggleHighlightedAddressAsync({
+                    dispatch.addressManagement.toggleHighlightedAddressAsync({
                       address: account.address,
                       brandName: account.brandName,
                     });

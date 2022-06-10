@@ -96,7 +96,8 @@ const Dashboard = () => {
     highlightedAddresses,
     loadingAddress,
   } = useRabbySelector((s) => ({
-    ...s.viewDashboard,
+    ...s.accountToDisplay,
+    highlightedAddresses: s.addressManagement.highlightedAddresses,
   }));
   const { sortedAccountsList } = React.useMemo(() => {
     const restAccounts = [...accountsList];
@@ -237,18 +238,18 @@ const Dashboard = () => {
       }
       setDashboardReload(false);
       getCurrentAccount();
-      dispatch.viewDashboard.getAllAccountsToDisplay();
+      dispatch.accountToDisplay.getAllAccountsToDisplay();
     }
   }, [dashboardReload]);
   useEffect(() => {
     (async () => {
-      await dispatch.viewDashboard.getHilightedAddressesAsync();
-      dispatch.viewDashboard.getAllAccountsToDisplay();
+      await dispatch.addressManagement.getHilightedAddressesAsync();
+      dispatch.accountToDisplay.getAllAccountsToDisplay();
     })();
   }, []);
   useEffect(() => {
     if (clicked) {
-      dispatch.viewDashboard.getAllAccountsToDisplay();
+      dispatch.accountToDisplay.getAllAccountsToDisplay();
     }
   }, [clicked]);
   const handleChange = async (account) => {
@@ -316,7 +317,7 @@ const Dashboard = () => {
       return item;
     });
     if (newAccountList.length > 0) {
-      dispatch.viewDashboard.setField({ accountsList: newAccountList });
+      dispatch.accountToDisplay.setField({ accountsList: newAccountList });
     }
   };
 

@@ -25,7 +25,8 @@ const AddressManagement = () => {
     highlightedAddresses,
     loadingAddress,
   } = useRabbySelector((s) => ({
-    ...s.viewDashboard,
+    ...s.accountToDisplay,
+    highlightedAddresses: s.addressManagement.highlightedAddresses,
   }));
   const { sortedAccountsList } = React.useMemo(() => {
     const restAccounts = [...accountsList];
@@ -57,8 +58,8 @@ const AddressManagement = () => {
   const dispatch = useRabbyDispatch();
 
   useEffect(() => {
-    dispatch.viewDashboard.getHilightedAddressesAsync().then(() => {
-      dispatch.viewDashboard.getAllAccountsToDisplay();
+    dispatch.addressManagement.getHilightedAddressesAsync().then(() => {
+      dispatch.accountToDisplay.getAllAccountsToDisplay();
     });
   }, []);
 
@@ -103,7 +104,7 @@ const AddressManagement = () => {
               className="cursor-pointer"
               onClick={(e) => {
                 e.stopPropagation();
-                dispatch.viewDashboard.toggleHighlightedAddressAsync({
+                dispatch.addressManagement.toggleHighlightedAddressAsync({
                   address: account.address,
                   brandName: account.brandName,
                 });

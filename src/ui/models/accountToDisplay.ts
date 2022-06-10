@@ -3,7 +3,6 @@ import { createModel } from '@rematch/core';
 import { RootModel } from '.';
 import { DisplayedKeryring } from '@/background/service/keyring';
 import { sortAccountsByBalance } from '../utils/account';
-import { Account, IHighlightedAddress } from '@/background/service/preference';
 
 type IDisplayedAccount = Required<DisplayedKeryring['accounts'][number]>;
 type IDisplayedAccountWithBalance = IDisplayedAccount & {
@@ -12,17 +11,13 @@ type IDisplayedAccountWithBalance = IDisplayedAccount & {
 };
 
 type IState = {
-  highlightedAddresses: IHighlightedAddress[];
-
   loadingAddress: boolean;
   accountsList: IDisplayedAccountWithBalance[];
 };
 
-export const viewDashboard = createModel<RootModel>()({
-  name: 'viewDashboard',
+export const accountToDisplay = createModel<RootModel>()({
+  name: 'accountToDisplay',
   state: {
-    highlightedAddresses: [],
-
     loadingAddress: false,
     accountsList: [],
   } as IState,
@@ -38,59 +33,8 @@ export const viewDashboard = createModel<RootModel>()({
     },
   },
   effects: (dispatch) => ({
-    async getHilightedAddressesAsync(_?, store?) {
-      const addrs = await store.app.wallet.getHighlightedAddresses();
-
-      dispatch.viewDashboard.setField({
-        highlightedAddresses: addrs,
-      });
-    },
-
-    async toggleHighlightedAddressAsync(
-      payload: {
-        brandName: Account['brandName'];
-        address: Account['address'];
-        nextPinned?: boolean;
-      },
-      store?
-    ) {
-      const { highlightedAddresses } = store.viewDashboard;
-      const {
-        nextPinned = !highlightedAddresses.some(
-          (highlighted) =>
-            highlighted.address === payload.address &&
-            highlighted.brandName === payload.brandName
-        ),
-      } = payload;
-
-      const addrs = [...highlightedAddresses];
-      const newItem = {
-        brandName: payload.brandName,
-        address: payload.address,
-      };
-      if (nextPinned) {
-        addrs.unshift(newItem);
-        await store.app.wallet.updateHighlightedAddresses(addrs);
-      } else {
-        const toggleIdx = addrs.findIndex(
-          (addr) =>
-            addr.brandName === payload.brandName &&
-            addr.address === payload.address
-        );
-        if (toggleIdx > -1) {
-          addrs.splice(toggleIdx, 1);
-        }
-        await store.app.wallet.updateHighlightedAddresses(addrs);
-      }
-
-      dispatch.viewDashboard.setField({
-        highlightedAddresses: addrs,
-      });
-      dispatch.viewDashboard.getHilightedAddressesAsync();
-    },
-
     async getAllAccountsToDisplay(_?, store?) {
-      dispatch.viewDashboard.setField({ loadingAddress: true });
+      dispatch.accountToDisplay.setField({ loadingAddress: true });
 
       const [
         displayedKeyrings,
@@ -131,11 +75,11 @@ export const viewDashboard = createModel<RootModel>()({
             };
           })
       );
-      dispatch.viewDashboard.setField({ loadingAddress: false });
+      dispatch.accountToDisplay.setField({ loadingAddress: false });
 
       if (result) {
         const withBalanceList = sortAccountsByBalance(result);
-        dispatch.viewDashboard.setField({ accountsList: withBalanceList });
+        dispatch.accountToDisplay.setField({ accountsList: withBalanceList });
       }
     },
   }),
