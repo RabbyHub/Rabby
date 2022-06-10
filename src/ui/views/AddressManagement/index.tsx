@@ -78,7 +78,7 @@ const AddressManagement = () => {
         className="flex no-data-add-btn rounded-md text-15"
       >
         <img src={IconPlusAddress} className="w-[16px] h-[16px] mr-10" />
-        {t('Add addresses')}
+        {t('Add address')}
       </Link>
     </div>
   );

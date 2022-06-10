@@ -839,6 +839,7 @@ const SendToken = () => {
         onClose={handleGasSelectorClose}
         chainId={CHAINS[chain].id}
         onChange={(val) => {
+          setAmountFocus(false);
           setGasSelectorVisible(false);
           handleGasChange(val);
         }}
