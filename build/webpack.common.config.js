@@ -7,7 +7,8 @@ const AssetReplacePlugin = require('./plugins/AssetReplacePlugin');
 const { version } = require('../_raw/manifest.json');
 const path = require('path');
 
-const createStyledComponentsTransformer = require('typescript-plugin-styled-components').default;
+const createStyledComponentsTransformer = require('typescript-plugin-styled-components')
+  .default;
 
 const isEnvDevelopment = process.env.NODE_ENV !== 'production';
 
@@ -89,11 +90,11 @@ const config = {
                     ssr: true, // always enable it to make all styled generated component has id.
                     displayName: isEnvDevelopment,
                     minify: false, // it's still an experimental feature
-                    componentIdPrefix: 'rabby-'
+                    componentIdPrefix: 'rabby-',
                   }),
                 ],
               }),
-            }
+            },
           },
         ],
       },
@@ -123,9 +124,9 @@ const config = {
             options: {
               patterns: [
                 path.resolve(__dirname, '../src/ui/style/var.less'),
-                path.resolve(__dirname, '../src/ui/style/mixin.less')
+                path.resolve(__dirname, '../src/ui/style/mixin.less'),
               ],
-              injector: 'append'
+              injector: 'append',
             },
           },
         ],

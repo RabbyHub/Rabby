@@ -1,7 +1,7 @@
 import { message } from 'antd';
 import ClipboardJS from 'clipboard';
 import clsx from 'clsx';
-import React, { useEffect, useRef } from 'react';
+import React, { MouseEventHandler, useEffect, useRef } from 'react';
 import IconAddressCopy from 'ui/assets/address-copy.png';
 import IconSuccess from 'ui/assets/success.svg';
 
@@ -11,9 +11,17 @@ interface CopyProps {
   icon?: string;
   style?: React.CSSProperties;
   variant?: 'address';
+  onClick?: MouseEventHandler;
 }
 
-const Copy = ({ data, className, style, icon, variant }: CopyProps) => {
+const Copy = ({
+  data,
+  className,
+  style,
+  icon,
+  variant,
+  onClick,
+}: CopyProps) => {
   const ref = useRef<HTMLImageElement>(null);
 
   useEffect(() => {
@@ -52,6 +60,7 @@ const Copy = ({ data, className, style, icon, variant }: CopyProps) => {
   return (
     <img
       ref={ref}
+      onClick={onClick}
       src={icon || IconAddressCopy}
       id={'copyIcon'}
       className={clsx('js-copy cursor-pointer', className)}

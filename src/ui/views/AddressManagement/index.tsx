@@ -1,280 +1,61 @@
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useEffect, useRef, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useHistory } from 'react-router-dom';
-import { Menu, Dropdown, message } from 'antd';
 import { FixedSizeList } from 'react-window';
-import { KEYRING_TYPE } from 'consts';
-import { useWallet, useWalletOld } from 'ui/utils';
-import {
-  PageHeader,
-  AuthenticationModal,
-  StrayFooter,
-  Popup,
-  Copy,
-} from 'ui/component';
-import AddressItem from 'ui/component/AddressList/AddressItem';
-import { DisplayedKeryring } from 'background/service/keyring';
-import { Account } from 'background/service/preference';
-import DisplayKeyring from 'background/service/keyring/display';
+import { PageHeader, StrayFooter } from 'ui/component';
+import AddressItem from './AddressItem';
 import IconPlusAddress from 'ui/assets/addAddress.png';
-import IconHint from 'ui/assets/hint.png';
-import IconSuccess from 'ui/assets/success.svg';
+import IconStar from 'ui/assets/icon-star.svg';
+import IconStarFill from 'ui/assets/icon-star-fill.svg';
 
 import './style.less';
+import { obj2query } from '@/ui/utils/url';
+import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 
-const SORT_WEIGHT = {
-  [KEYRING_TYPE.HdKeyring]: 1,
-  [KEYRING_TYPE.SimpleKeyring]: 2,
-  [KEYRING_TYPE.HardwareKeyring]: 3,
-  [KEYRING_TYPE.WalletConnectKeyring]: 4,
-  [KEYRING_TYPE.WatchAddressKeyring]: 5,
-};
 const { Nav: StrayFooterNav } = StrayFooter;
 
 const AddressManagement = () => {
-  const wallet = useWalletOld();
   const { t } = useTranslation();
-  const [accounts, setAccounts] = useState<DisplayedKeryring[]>([]);
-  const [displayList, setDisplayList] = useState([]);
-
-  const [retrive, setRetrive] = useState(false);
-  const [noAccount, setNoAccount] = useState(false);
-  const [stopEditing, setStopEditing] = useState(true);
-  const [editIndex, setEditIndex] = useState(0);
-  const [hiddenAddresses, setHiddenAddresses] = useState<
-    { type: string; address: string }[]
-  >([]);
   const history = useHistory();
 
-  const init = async () => {
-    setHiddenAddresses(await wallet.getHiddenAddresses());
-  };
+  // todo: store redesign
+  const {
+    accountsList,
+    highlightedAddresses,
+    loadingAddress,
+  } = useRabbySelector((s) => ({
+    ...s.viewDashboard,
+  }));
+  const { sortedAccountsList } = React.useMemo(() => {
+    const restAccounts = [...accountsList];
+    const highlightedAccounts: typeof accountsList = [];
+
+    highlightedAddresses.forEach((addr) => {
+      const idx = restAccounts.findIndex((account) => account.address === addr);
+      if (idx > -1) {
+        highlightedAccounts.push(restAccounts[idx]);
+        restAccounts.splice(idx, 1);
+      }
+    });
+
+    return {
+      sortedAccountsList: highlightedAccounts.concat(restAccounts),
+    };
+  }, [accountsList, highlightedAddresses]);
+
+  const noAccount = useMemo(() => {
+    return sortedAccountsList.length <= 0 && !loadingAddress;
+  }, [sortedAccountsList, loadingAddress]);
+
+  const dispatch = useRabbyDispatch();
 
   useEffect(() => {
-    init();
+    dispatch.viewDashboard.getHilightedAddressesAsync().then(() => {
+      dispatch.viewDashboard.getAllAccountsToDisplay();
+    });
   }, []);
 
-  useEffect(() => {
-    let count = 0;
-    const c = accounts.reduce((res, item) => {
-      return res + item.accounts.length;
-    }, 0);
-    count = c;
-    setNoAccount(count <= 0);
-  }, [accounts]);
-
-  const getAllKeyrings = async () => {
-    const _accounts = await wallet.getAllClassAccounts();
-    const allAlianNames = await wallet.getAllAlianName();
-    const alianNamesMap = allAlianNames.reduce(
-      (res, item) => ({
-        ...res,
-        [item.address.toLowerCase()]: item.name,
-      }),
-      {}
-    );
-    setAccounts(_accounts);
-    const list = _accounts
-      .sort((a, b) => {
-        return SORT_WEIGHT[a.type] - SORT_WEIGHT[b.type];
-      })
-      .map((group) => {
-        const templist = group.accounts.map(
-          (item) =>
-            (item = {
-              ...item,
-              alianName: alianNamesMap[item.address.toLowerCase()],
-              type: group.type,
-              keyring: group.keyring,
-            })
-        );
-        return templist;
-      })
-      .flat(1);
-    if (list.length > 0) {
-      setDisplayList(list);
-    }
-  };
-
-  const handleViewMnemonics = async (address: string) => {
-    try {
-      await AuthenticationModal({
-        wallet,
-        async validationHandler(password) {
-          const mnemonic = await wallet.getMnemonics(password, address);
-
-          Popup.info({
-            title: t('Seed Phrase'),
-            className: 'custom-private-popup',
-            content: (
-              <div className="private-field relative">
-                {mnemonic}
-                <Copy
-                  data={mnemonic}
-                  className="w-16 h-16 absolute bottom-12 right-12"
-                ></Copy>
-              </div>
-            ),
-          });
-        },
-      });
-    } catch (e) {
-      // NOTHING
-    }
-  };
-
-  const AddressActionButton = ({
-    data,
-    keyring,
-    account,
-  }: {
-    data: string;
-    keyring: DisplayKeyring;
-    account: Account;
-  }) => {
-    const isHidden = hiddenAddresses.find(
-      (item) => item.type === keyring.type && item.address === data
-    );
-
-    const handlleViewPrivateKey = async (address: string, type: string) => {
-      try {
-        await AuthenticationModal({
-          wallet,
-          async validationHandler(password) {
-            const privateKey = await wallet.getPrivateKey(password, {
-              address,
-              type,
-            });
-            Popup.info({
-              title: t('Private Key'),
-              className: 'custom-private-popup',
-              content: (
-                <div className="private-field relative">
-                  {privateKey}
-                  <Copy
-                    data={privateKey}
-                    className="w-16 h-16 absolute bottom-12 right-12"
-                  ></Copy>
-                </div>
-              ),
-            });
-          },
-        });
-      } catch (e) {
-        // NOTHING
-      }
-    };
-
-    const handleDeleteAddress = async () => {
-      await wallet.removeAddress(data, keyring.type, account.brandName);
-      message.success({
-        icon: <img src={IconSuccess} className="icon icon-success" />,
-        content: t('removed'),
-        duration: 0.5,
-      });
-      getAllKeyrings();
-    };
-
-    const handleToggleAddressVisible = async () => {
-      if (isHidden) {
-        setHiddenAddresses(
-          hiddenAddresses.filter(
-            (item) => item.type !== keyring.type || item.address !== data
-          )
-        );
-        await wallet.showAddress(keyring.type, data);
-      } else {
-        const totalCount = await wallet.getAccountsCount();
-        if (hiddenAddresses.length >= totalCount - 1) {
-          message.error(t('Keep at least one address visible'));
-          return;
-        }
-        setHiddenAddresses([
-          ...hiddenAddresses,
-          { type: keyring.type, address: data },
-        ]);
-        await wallet.hideAddress(keyring.type, data);
-      }
-    };
-
-    const DropdownOptions = () => {
-      switch (keyring.type) {
-        case KEYRING_TYPE.HdKeyring:
-          return (
-            <Menu>
-              <Menu.Item onClick={handleToggleAddressVisible}>
-                {t(
-                  `${
-                    hiddenAddresses.find(
-                      (item) =>
-                        item.address === data && item.type === keyring.type
-                    )
-                      ? 'Show'
-                      : 'Hide'
-                  } address`
-                )}
-              </Menu.Item>
-              <Menu.Item
-                onClick={() => handlleViewPrivateKey(data, keyring.type)}
-              >
-                {t('View private key')}
-              </Menu.Item>
-              <Menu.Item onClick={() => handleViewMnemonics(data)}>
-                {t('View Seed Phrase')}
-              </Menu.Item>
-            </Menu>
-          );
-        case KEYRING_TYPE.SimpleKeyring:
-          return (
-            <Menu>
-              <Menu.Item onClick={handleToggleAddressVisible}>
-                {t(
-                  `${
-                    hiddenAddresses.find(
-                      (item) =>
-                        item.address === data && item.type === keyring.type
-                    )
-                      ? 'Show'
-                      : 'Hide'
-                  } address`
-                )}
-              </Menu.Item>
-              <Menu.Item
-                onClick={() => handlleViewPrivateKey(data, keyring.type)}
-              >
-                {t('View private key')}
-              </Menu.Item>
-            </Menu>
-          );
-        default:
-          return (
-            <Menu>
-              <Menu.Item onClick={handleDeleteAddress}>
-                {t('Delete address')}
-              </Menu.Item>
-            </Menu>
-          );
-      }
-    };
-
-    return (
-      <div className="flex items-center hint">
-        <Dropdown
-          overlay={DropdownOptions}
-          trigger={['click']}
-          getPopupContainer={() => document.querySelector('.scroll-container')!}
-        >
-          <img className="cursor-pointer" src={IconHint} />
-        </Dropdown>
-      </div>
-    );
-  };
   const fixedList = useRef<FixedSizeList>();
-
-  useEffect(() => {
-    getAllKeyrings();
-    setRetrive(false);
-  }, [retrive]);
 
   const NoAddressUI = (
     <div className="no-address">
@@ -297,71 +78,67 @@ const AddressManagement = () => {
   const Row = (props) => {
     const { data, index, style } = props;
     const account = data[index];
-    const [canEdit, setCanEdit] = useState(!stopEditing && index === editIndex);
-    const startEdit = (editing: boolean) => {
-      setCanEdit(editing);
-      if (editing) {
-        setEditIndex(index);
-        setStopEditing(false);
-      } else {
-        setStopEditing(true);
-      }
-    };
-    const retriveAlianName = () => {
-      setRetrive(true);
-    };
+    const favorited = highlightedAddresses.has(account.address);
+
     return (
-      <li className="address-wrap-with-padding" style={style}>
-        <ul className="addresses">
-          <AddressItem
-            key={account.address + account.brandName}
-            account={{ ...account, type: account.type }}
-            keyring={account.keyring}
-            ActionButton={AddressActionButton}
-            hiddenAddresses={hiddenAddresses}
-            index={index}
-            stopEditing={!canEdit}
-            canEditing={startEdit}
-            retriveAlianName={retriveAlianName}
-            className="h-[56px] pl-16"
-          />
-        </ul>
-      </li>
+      <div className="address-wrap-with-padding" style={style}>
+        <AddressItem
+          address={account.address}
+          type={account.type}
+          brandName={account.brandName}
+          alias={account.alianName}
+          extra={
+            <div
+              className="cursor-pointer"
+              onClick={(e) => {
+                e.stopPropagation();
+                dispatch.viewDashboard.toggleHighlightedAddressAsync({
+                  address: account.address,
+                });
+              }}
+            >
+              {favorited ? (
+                <img src={IconStarFill} alt="" />
+              ) : (
+                <img src={IconStar} className="icon-star" alt="" />
+              )}
+            </div>
+          }
+          onClick={() => {
+            history.push(
+              `/settings/address-detail?${obj2query({
+                address: account.address,
+                type: account.type,
+                brandName: account.brandName,
+                byImport: account.byImport || '',
+              })}`
+            );
+          }}
+        />
+      </div>
     );
   };
 
   return (
-    <div
-      className="address-management"
-      onClick={(e) => {
-        e.stopPropagation();
-        setStopEditing(true);
-      }}
-    >
+    <div className="page-address-management">
       <PageHeader>{t('Address Management')}</PageHeader>
       {noAccount ? (
         NoAddressUI
       ) : (
         <>
-          <ul
-            className={'address-group-list management'}
-            onClick={(e) => {
-              e.stopPropagation();
-              setStopEditing(true);
-            }}
-          >
+          <div className={'address-group-list management'}>
             <FixedSizeList
               height={500}
               width="100%"
-              itemData={displayList}
-              itemCount={displayList.length}
+              itemData={sortedAccountsList}
+              itemCount={sortedAccountsList.length}
               itemSize={64}
               ref={fixedList}
               className="scroll-container"
             >
               {Row}
             </FixedSizeList>
-          </ul>
+          </div>
           <StrayFooterNav
             hasDivider
             onNextClick={() => {

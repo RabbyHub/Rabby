@@ -208,7 +208,7 @@ const AddressItem = memo(
                       onPressEnter={alianNameConfirm}
                       onClick={(e) => e.stopPropagation()}
                       autoFocus={!stopEditing}
-                      maxLength={20}
+                      maxLength={50}
                       min={0}
                     />
                   ) : (
