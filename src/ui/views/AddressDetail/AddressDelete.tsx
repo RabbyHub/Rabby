@@ -25,14 +25,14 @@ function useQuestionsCheck() {
       {
         index: 1 as const,
         content: t(
-          'If I delete the address, the private key of the address will be deleted together and Rabby cannot recover it for me'
+          'I understand that if I delete this address, the corresponding Private Key & Seed Phrase of this address will be deleted and Rabby will NOT be able to recover it.'
         ),
         checked: false,
       },
       {
         index: 2 as const,
         content: t(
-          'I have done a backup of the private key or seed phrase before deleting the address'
+          "I confirm that I have backuped the private key or Seed Phrase and I'm ready to delete it now."
         ),
         checked: false,
       },
@@ -93,7 +93,7 @@ export const AddressDelete = ({
     await wallet.removeAddress(address, type, brandName);
     message.success({
       icon: <img src={IconSuccess} className="icon icon-success" />,
-      content: t('removed'),
+      content: t('Deleted'),
       duration: 0.5,
     });
     setVisible(false);

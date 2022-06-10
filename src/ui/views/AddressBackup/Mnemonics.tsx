@@ -52,11 +52,11 @@ const AddressBackup = () => {
       <header>Backup Seed Phrase</header>
       <div className="alert mb-[34px]">
         <InfoCircleOutlined />
-        The Seed Phrase is your asset credentials, which will be lost if lost or
-        known by others. Please view it in a secure environment and keep it
-        carefully.
+        This Seed Phrase is the credential to your assets. DO NOT lose it or
+        reveal it to others, otherwise you might lose your assets forever.
+        Please view it in a secure environment and keep it carefully.
       </div>
-      <div className="mb-[84px]">
+      <div className="mb-[74px]">
         <div className="relative">
           <div
             onClick={() => setMasked(false)}
@@ -87,14 +87,14 @@ const AddressBackup = () => {
           {'Copy seed phrase'}
         </div>
       </div>
-      <div className="footer">
+      <div className="footer pb-[24px]">
         <Button
           type="primary"
           size="large"
           className="w-[200px]"
           onClick={() => history.goBack()}
         >
-          Completed
+          Done
         </Button>
       </div>
     </div>
