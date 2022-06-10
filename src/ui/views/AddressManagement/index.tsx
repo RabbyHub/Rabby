@@ -11,6 +11,7 @@ import IconStarFill from 'ui/assets/icon-star-fill.svg';
 import './style.less';
 import { obj2query } from '@/ui/utils/url';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
+import { sortAccountsByBalance } from '@/ui/utils/account';
 
 const { Nav: StrayFooterNav } = StrayFooter;
 
@@ -28,7 +29,7 @@ const AddressManagement = () => {
   }));
   const { sortedAccountsList } = React.useMemo(() => {
     const restAccounts = [...accountsList];
-    const highlightedAccounts: typeof accountsList = [];
+    let highlightedAccounts: typeof accountsList = [];
 
     highlightedAddresses.forEach((addr) => {
       const idx = restAccounts.findIndex((account) => account.address === addr);
@@ -37,6 +38,8 @@ const AddressManagement = () => {
         restAccounts.splice(idx, 1);
       }
     });
+
+    highlightedAccounts = sortAccountsByBalance(highlightedAccounts);
 
     return {
       sortedAccountsList: highlightedAccounts.concat(restAccounts),

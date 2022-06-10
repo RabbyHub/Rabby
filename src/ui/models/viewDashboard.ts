@@ -1,8 +1,8 @@
-import BigNumber from 'bignumber.js';
 import { createModel } from '@rematch/core';
 
 import { RootModel } from '.';
 import { DisplayedKeryring } from '@/background/service/keyring';
+import { sortAccountsByBalance } from '../utils/account';
 
 type IDisplayedAccount = Required<DisplayedKeryring['accounts'][number]>;
 type IDisplayedAccountWithBalance = IDisplayedAccount & {
@@ -116,11 +116,7 @@ export const viewDashboard = createModel<RootModel>()({
       dispatch.viewDashboard.setField({ loadingAddress: false });
 
       if (result) {
-        const withBalanceList = result.sort((a, b) => {
-          return new BigNumber(b?.balance || 0)
-            .minus(new BigNumber(a?.balance || 0))
-            .toNumber();
-        });
+        const withBalanceList = sortAccountsByBalance(result);
         dispatch.viewDashboard.setField({ accountsList: withBalanceList });
       }
     },

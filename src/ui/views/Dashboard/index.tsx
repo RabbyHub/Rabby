@@ -56,6 +56,7 @@ import {
 } from './components';
 import Dropdown from './components/NFT/Dropdown';
 import AddressRow from './components/AddressRow';
+import { sortAccountsByBalance } from '@/ui/utils/account';
 
 const GnosisAdminItem = ({
   accounts,
@@ -99,7 +100,7 @@ const Dashboard = () => {
   }));
   const { sortedAccountsList } = React.useMemo(() => {
     const restAccounts = [...accountsList];
-    const highlightedAccounts: typeof accountsList = [];
+    let highlightedAccounts: typeof accountsList = [];
 
     highlightedAddresses.forEach((addr) => {
       const idx = restAccounts.findIndex((account) => account.address === addr);
@@ -108,6 +109,8 @@ const Dashboard = () => {
         restAccounts.splice(idx, 1);
       }
     });
+
+    highlightedAccounts = sortAccountsByBalance(highlightedAccounts);
 
     return {
       sortedAccountsList: highlightedAccounts.concat(restAccounts),
