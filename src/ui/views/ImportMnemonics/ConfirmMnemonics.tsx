@@ -1,17 +1,15 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import { useTranslation, Trans } from 'react-i18next';
 import styled from 'styled-components';
 import { sortBy } from 'lodash';
 import { StrayPageWithButton } from 'ui/component';
 import DisplayAddressItem from './components/DisplayAddressItem';
-import { useWalletOld as useWallet, useWalletRequest } from 'ui/utils';
+import { useWalletRequest } from 'ui/utils';
 import clsx from 'clsx';
 import { KEYRING_TYPE } from 'consts';
 import { IconImportSuccess } from 'ui/assets';
 import ConfirmMnemonicsLogo from 'ui/assets/confirm-mnemonics.svg';
-import { useMedia } from 'react-use';
-import Mask from 'ui/assets/import-mask.png';
 import IconArrowRight from 'ui/assets/import/import-arrow-right.svg';
 
 import { message } from 'antd';
@@ -33,7 +31,6 @@ const AddressWrapper = styled.div`
 const ConfirmMnemonics = ({ isPopup = false }: { isPopup?: boolean }) => {
   const history = useHistory();
   const { t } = useTranslation();
-  const isWide = useMedia('(min-width: 401px)');
 
   const dispatch = useRabbyDispatch();
   const { confirmingAccounts, importedAddresses } = useRabbySelector((s) => ({
@@ -89,8 +86,6 @@ const ConfirmMnemonics = ({ isPopup = false }: { isPopup?: boolean }) => {
 
   return (
     <StrayPageWithButton
-      custom={isWide}
-      className={clsx(isWide && 'rabby-stray-page')}
       hasDivider
       hasBack
       onBackClick={() => {
@@ -124,37 +119,23 @@ const ConfirmMnemonics = ({ isPopup = false }: { isPopup?: boolean }) => {
       noPadding={isPopup}
       isScrollContainer={isPopup}
     >
-      {isPopup &&
-        (!isWide ? (
-          <header className="create-new-header create-password-header h-[264px]">
-            <img
-              className="rabby-logo"
-              src="/images/logo-gray.png"
-              alt="rabby logo"
-            />
-            <img
-              className="unlock-logo w-[100px] h-[100px] mx-auto"
-              src={ConfirmMnemonicsLogo}
-            />
-            <p className="text-24 mb-4 mt-0 text-white text-center font-bold">
-              {t('Import the following address')}
-            </p>
-            <img src="/images/success-mask.png" className="mask" />
-          </header>
-        ) : (
-          <div className="create-new-header create-password-header h-[220px]">
-            <div className="rabby-container">
-              <img
-                className="unlock-logo w-[100px] h-[100px] mx-auto"
-                src={ConfirmMnemonicsLogo}
-              />
-              <p className="text-24 mb-4 mt-0 text-white text-center font-bold">
-                {t('Import the following address')}
-              </p>
-            </div>
-            <img src={Mask} className="mask" />
-          </div>
-        ))}
+      {isPopup && (
+        <header className="create-new-header create-password-header h-[234px]">
+          <img
+            className="rabby-logo"
+            src="/images/logo-gray.png"
+            alt="rabby logo"
+          />
+          <img
+            className="w-[100px] h-[100px] mx-auto"
+            src={ConfirmMnemonicsLogo}
+          />
+          <p className="text-24 mb-4 mt-0 text-white text-center font-bold absolute left-0 w-[100%] mx-auto bottom-[24px]">
+            {t('Import the following address')}
+          </p>
+          <img src="/images/success-mask.png" className="mask" />
+        </header>
+      )}
       <div className={clsx(isPopup && 'rabby-container', 'overflow-auto')}>
         <div
           onClick={(e) => {
@@ -200,7 +181,7 @@ const ConfirmMnemonics = ({ isPopup = false }: { isPopup?: boolean }) => {
 
                 return (
                   <DisplayAddressItem
-                    className="mb-12 rounded bg-white pt-10 pb-14 px-16 h-[62px] flex"
+                    className="mb-12 rounded bg-white pt-14 pb-14 pl-12 pr-16 h-[62px] flex items-center"
                     key={account.address}
                     account={account}
                     imported={imported}
