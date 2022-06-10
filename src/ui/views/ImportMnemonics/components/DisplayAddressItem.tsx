@@ -75,7 +75,7 @@ const DisplayAddressItem = ({
                 autoFocus
                 maxLength={20}
                 min={0}
-                disabled={imported}
+                disabled
               />
             </div>
             <div className="flex items-center">
