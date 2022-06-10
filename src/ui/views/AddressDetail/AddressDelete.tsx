@@ -207,12 +207,14 @@ const AddressDeleteCheckModal = ({
     reset,
   } = useQuestionsCheck();
   const { t } = useTranslation();
+  const [isShowConfirm, setIsShowConfirm] = useState(false);
 
   useEffect(() => {
-    reset();
+    if (!visible) {
+      reset();
+      setIsShowConfirm(false);
+    }
   }, [visible]);
-
-  const [isShowConfirm, setIsShowConfirm] = useState(false);
 
   return (
     <Popup
@@ -338,7 +340,7 @@ const EnterPasswordModal = ({
           </Form.Item>
           <footer className="footer flex gap-[16px]">
             <Button type="primary" size="large" block onClick={onClose}>
-              Cancel
+              Back
             </Button>
             <Button
               type="primary"

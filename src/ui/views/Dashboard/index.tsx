@@ -841,7 +841,9 @@ const Dashboard = () => {
                       style={{ zIndex: 10 }}
                     />
                   ) : (
-                    displayName
+                    <span title={displayName} className="alias">
+                      {displayName}
+                    </span>
                   )}
                   {!startEdit && (
                     <img

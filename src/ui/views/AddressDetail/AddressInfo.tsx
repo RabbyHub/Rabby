@@ -122,7 +122,9 @@ export const AddressInfo = ({ address, type, brandName, source }: Props) => {
             className="rabby-list-item-extra flex gap-[10px]"
             onClick={handleEditMemo}
           >
-            <div className="ellipsis">{alias}</div>
+            <div className="ellipsis" title={alias}>
+              {alias}
+            </div>
             <img src={IconPen} className="cursor-pointer" alt="" />
           </div>
         </div>

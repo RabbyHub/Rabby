@@ -28,6 +28,7 @@ export interface AddressItemProps {
   brandName: string;
   className?: string;
   extra?: ReactNode;
+  alias?: string;
   onClick: MouseEventHandler<HTMLDivElement>;
 }
 
@@ -38,6 +39,7 @@ const AddressItem = memo(
     brandName,
     className,
     onClick,
+    alias: aliasName,
     extra,
   }: AddressItemProps) => {
     const { t } = useTranslation();
@@ -59,7 +61,8 @@ const AddressItem = memo(
     };
 
     const [isEdit, setIsEdit] = useState(false);
-    const [alias, setAlias] = useAlias(address);
+    const [_alias, setAlias] = useAlias(address);
+    const alias = _alias || aliasName;
     const inputRef = useRef<Input>(null);
     const titleRef = useRef<HTMLDivElement>(null);
 

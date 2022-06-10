@@ -108,6 +108,7 @@ const AddressManagement = () => {
           address={account.address}
           type={account.type}
           brandName={account.brandName}
+          alias={account.alianName}
           extra={
             <div
               className="cursor-pointer"
