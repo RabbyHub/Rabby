@@ -93,7 +93,7 @@ export const AddressDelete = ({
     await wallet.removeAddress(address, type, brandName);
     message.success({
       icon: <img src={IconSuccess} className="icon icon-success" />,
-      content: t('removed'),
+      content: t('Deleted'),
       duration: 0.5,
     });
     setVisible(false);
