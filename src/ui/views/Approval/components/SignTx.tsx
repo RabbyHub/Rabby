@@ -26,6 +26,7 @@ import {
   KEYRING_CLASS,
   KEYRING_TYPE,
   SUPPORT_1559_KEYRING_TYPE,
+  KEYRING_CATEGORY_MAP,
 } from 'consts';
 import {
   addHexPrefix,
@@ -497,8 +498,8 @@ const SignTx = ({ params, origin }: SignTxProps) => {
   const handleGnosisConfirm = async (account: Account) => {
     stats.report('signTransaction', {
       type: KEYRING_TYPE.GnosisKeyring,
+      category: KEYRING_CATEGORY_MAP[KEYRING_CLASS.GNOSIS],
       chainId: chain.serverId,
-      is1559: support1559,
     });
     if (params.session.origin !== INTERNAL_REQUEST_ORIGIN || isSend) {
       const params: any = {
@@ -773,8 +774,8 @@ const SignTx = ({ params, origin }: SignTxProps) => {
 
     stats.report('createTransaction', {
       type: currentAccount.brandName,
+      category: KEYRING_CATEGORY_MAP[currentAccount.type],
       chainId: chain.serverId,
-      is1559: is1559,
     });
 
     ReactGA.event({
