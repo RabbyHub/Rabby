@@ -36,7 +36,7 @@ const GasReserved = ({ amount, token, onClickAmount }: GasReservedProps) => {
     <GasReservedDiv>
       Reserved{' '}
       <TokenAmount title={amount} onClick={onClickAmount}>
-        {formatTokenAmount(amount, 3)}
+        {formatTokenAmount(amount, 4)}
       </TokenAmount>
       {token.symbol} for gas cost
     </GasReservedDiv>

@@ -383,6 +383,7 @@ const SendToken = () => {
       ...values,
       amount: '',
     });
+    setShowGasReserved(false);
     handleFormValuesChange(null, {
       ...values,
       amount: '',
