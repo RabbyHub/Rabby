@@ -214,9 +214,7 @@ const Dashboard = () => {
   }, 30000);
 
   useEffect(() => {
-    if (!currentAccount) {
-      getCurrentAccount();
-    }
+    getCurrentAccount();
   }, []);
 
   useEffect(() => {
