@@ -1,15 +1,10 @@
-import Safe from '@rabby-wallet/gnosis-sdk';
-import { SafeInfo } from '@rabby-wallet/gnosis-sdk/dist/api';
 import { Input, message, Popover } from 'antd';
 import { AssetItem, TokenItem } from 'background/service/openapi';
-import { ConnectedSite } from 'background/service/permission';
 import { Account } from 'background/service/preference';
 import BigNumber from 'bignumber.js';
-import { getUpdateContent } from 'changeLogs/index';
 import ClipboardJS from 'clipboard';
 import clsx from 'clsx';
 import {
-  CHAINS,
   KEYRING_CLASS,
   KEYRING_ICONS,
   KEYRING_ICONS_WHITE,
@@ -40,9 +35,13 @@ import IconSuccess from 'ui/assets/success.svg';
 import IconTagYou from 'ui/assets/tag-you.svg';
 import IconUpAndDown from 'ui/assets/up-and-down.svg';
 import { AddressViewer, Copy, Modal, NameAndAddress } from 'ui/component';
-import { connectStore, useRabbyDispatch, useRabbySelector } from 'ui/store';
+import {
+  connectStore,
+  useRabbyDispatch,
+  useRabbyGetter,
+  useRabbySelector,
+} from 'ui/store';
 import { isSameAddress, useWalletOld } from 'ui/utils';
-import { crossCompareOwners } from 'ui/utils/gnosis';
 import {
   AssetsList,
   BalanceView,
@@ -112,6 +111,10 @@ const Dashboard = () => {
     ...s.appVersion,
   }));
 
+  const { gnosisPendingCount, safeInfo } = useRabbySelector((s) => ({
+    ...s.chains,
+  }));
+
   const { sortedAccountsList } = React.useMemo(() => {
     const restAccounts = [...accountsList];
     let highlightedAccounts: typeof accountsList = [];
@@ -135,8 +138,6 @@ const Dashboard = () => {
     };
   }, [accountsList, highlightedAddresses]);
 
-  const [gnosisPendingCount, setGnosisPendingCount] = useState(0);
-  const [safeInfo, setSafeInfo] = useState<SafeInfo | null>(null);
   const [copySuccess, setCopySuccess] = useState(false);
   const [hovered, setHovered] = useState(false);
   const [clicked, setClicked] = useState(false);
@@ -160,16 +161,10 @@ const Dashboard = () => {
   const [nftType, setNFTType] = useState<'collection' | 'nft'>('collection');
 
   const [startAnimate, setStartAnimate] = useState(false);
-  const [isGnosis, setIsGnosis] = useState(false);
+  const isGnosis = useRabbyGetter((s) => s.chains.isCurrentAccountGnosis);
   const [isListLoading, setIsListLoading] = useState(false);
   const [isAssetsLoading, setIsAssetsLoading] = useState(true);
-  const [gnosisNetworkId, setGnosisNetworkId] = useState('1');
-  const [showGnosisWrongChainAlert, setShowGnosisWrongChainAlert] = useState(
-    false
-  );
-  const [currentConnection, setCurrentConnection] = useState<
-    ConnectedSite | null | undefined
-  >(null);
+
   const [dashboardReload, setDashboardReload] = useState(false);
   const getCurrentAccount = async () => {
     const account = await dispatch.account.getCurrentAccountAsync();
@@ -186,28 +181,6 @@ const Dashboard = () => {
     });
   };
 
-  const getGnosisPendingCount = async () => {
-    if (!currentAccount) return;
-
-    const network = await wallet.getGnosisNetworkId(currentAccount.address);
-    setGnosisNetworkId(network);
-    const [info, txs] = await Promise.all([
-      Safe.getSafeInfo(currentAccount.address, network),
-      Safe.getPendingTransactions(currentAccount.address, network),
-    ]);
-    const owners = await wallet.getGnosisOwners(
-      currentAccount,
-      currentAccount.address,
-      info.version
-    );
-    const comparedOwners = crossCompareOwners(owners, info.owners);
-    setSafeInfo({
-      ...info,
-      owners: comparedOwners,
-    });
-    setGnosisPendingCount(txs.results.length);
-  };
-
   useInterval(() => {
     if (!currentAccount) return;
     if (currentAccount.type === KEYRING_TYPE.GnosisKeyring) return;
@@ -222,8 +195,10 @@ const Dashboard = () => {
   useEffect(() => {
     if (currentAccount) {
       if (currentAccount.type === KEYRING_TYPE.GnosisKeyring) {
-        setSafeInfo(null);
-        getGnosisPendingCount();
+        dispatch.chains.setField({
+          safeInfo: null,
+        });
+        dispatch.chains.getGnosisPendingCountAsync();
       } else {
         dispatch.transactions.getPendingTxCountAsync(currentAccount.address);
       }
@@ -388,11 +363,6 @@ const Dashboard = () => {
     if (currentAccount) {
       setTokens([]);
       setAssets([]);
-    }
-  }, [currentAccount]);
-  useEffect(() => {
-    if (currentAccount) {
-      setIsGnosis(currentAccount.type === KEYRING_CLASS.GNOSIS);
     }
   }, [currentAccount]);
 
@@ -611,29 +581,14 @@ const Dashboard = () => {
     setTokens(sortTokensByPrice(newTokenList));
   };
 
-  const handleCurrentConnectChange = (
-    connection: ConnectedSite | null | undefined
-  ) => {
-    setCurrentConnection(connection);
-  };
-
-  const checkGnosisConnectChain = () => {
-    if (!currentConnection) {
-      setShowGnosisWrongChainAlert(false);
-      return;
-    }
-    const chain = CHAINS[currentConnection.chain];
-    setShowGnosisWrongChainAlert(chain.id.toString() !== gnosisNetworkId);
-  };
-
-  useEffect(() => {
-    checkGnosisConnectChain();
-  }, [currentConnection, gnosisNetworkId]);
   useEffect(() => {
     if (!showNFT) {
       setNFTType('collection');
     }
   }, [showNFT]);
+  const showGnosisWrongChainAlert = useRabbyGetter(
+    (s) => s.chains.isShowGnosisWrongChainAlert
+  );
   const opacity60 =
     currentAccount?.type === KEYRING_CLASS.MNEMONIC ||
     currentAccount?.type === KEYRING_CLASS.PRIVATE_KEY ||
@@ -781,7 +736,9 @@ const Dashboard = () => {
           ></NFTListContainer>
         </div>
         <ChainAndSiteSelector
-          onChange={handleCurrentConnectChange}
+          onChange={(currentConnection) => {
+            dispatch.chains.setField({ currentConnection });
+          }}
           connectionAnimation={connectionAnimation}
           showDrawer={showToken || showAssets || showNFT}
           hideAllList={hideAllList}
