@@ -89,13 +89,16 @@ const Dashboard = () => {
   const { showChainsModal = false } = state ?? {};
   const wallet = useWalletOld();
   const { t } = useTranslation();
+  const dispatch = useRabbyDispatch();
   const fixedList = useRef<FixedSizeList>();
 
   const {
+    currentAccount,
     accountsList,
     highlightedAddresses,
     loadingAddress,
   } = useRabbySelector((s) => ({
+    currentAccount: s.account.currentAccount,
     ...s.accountToDisplay,
     highlightedAddresses: s.addressManagement.highlightedAddresses,
   }));
@@ -121,9 +124,7 @@ const Dashboard = () => {
       sortedAccountsList: highlightedAccounts.concat(restAccounts),
     };
   }, [accountsList, highlightedAddresses]);
-  const dispatch = useRabbyDispatch();
 
-  const [currentAccount, setCurrentAccount] = useState<Account | null>(null);
   const [pendingTxCount, setPendingTxCount] = useState(0);
   const [gnosisPendingCount, setGnosisPendingCount] = useState(0);
   const [safeInfo, setSafeInfo] = useState<SafeInfo | null>(null);
@@ -165,12 +166,11 @@ const Dashboard = () => {
   >(null);
   const [dashboardReload, setDashboardReload] = useState(false);
   const getCurrentAccount = async () => {
-    const account = await wallet.getCurrentAccount();
+    const account = await dispatch.account.getCurrentAccountAsync();
     if (!account) {
       history.replace('/no-address');
       return;
     }
-    setCurrentAccount(account);
   };
 
   const getPendingTxCount = async (address: string) => {
@@ -228,7 +228,6 @@ const Dashboard = () => {
         getPendingTxCount(currentAccount.address);
       }
       getAlianName(currentAccount?.address.toLowerCase());
-      setCurrentAccount(currentAccount);
     }
   }, [currentAccount]);
   useEffect(() => {
@@ -252,12 +251,10 @@ const Dashboard = () => {
       dispatch.accountToDisplay.getAllAccountsToDisplay();
     }
   }, [clicked]);
-  const handleChange = async (account) => {
+  const handleChange = async (account: Account) => {
     setIsListLoading(true);
     setIsAssetsLoading(true);
-    const { address, type, brandName } = account;
-    await wallet.changeAccount({ address, type, brandName });
-    setCurrentAccount({ address, type, brandName });
+    await dispatch.account.changeAccountAsync(account);
     hide();
   };
 

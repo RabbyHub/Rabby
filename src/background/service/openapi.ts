@@ -842,7 +842,7 @@ class OpenApiService {
     coin_id?: string;
     start_time?: number;
     page_count?: number;
-  }): Promise<TxHistoryResult[]> => {
+  }): Promise<TxHistoryResult> => {
     const { data } = await this.request.get('/v1/user/history_list', {
       params,
     });
