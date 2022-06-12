@@ -14,7 +14,7 @@ import SuccessLogo from 'ui/assets/success-logo.svg';
 import './index.less';
 import { useMedia } from 'react-use';
 import Mask from 'ui/assets/import-mask.png';
-import { connectStore, useRabbyDispatch, useRabbySelector } from '@/ui/store';
+import { connectStore, useRabbyDispatch } from '@/ui/store';
 
 const ImportSuccess = ({ isPopup = false }: { isPopup?: boolean }) => {
   const history = useHistory();
@@ -29,6 +29,7 @@ const ImportSuccess = ({ isPopup = false }: { isPopup?: boolean }) => {
     isMnemonics?: boolean;
     importedLength?: number;
   }>();
+  const dispatch = useRabbyDispatch();
   const addressItems = useRef(new Array(state.accounts.length));
   const { t } = useTranslation();
   const isWide = useMedia('(min-width: 401px)') && isPopup;
@@ -74,6 +75,8 @@ const ImportSuccess = ({ isPopup = false }: { isPopup?: boolean }) => {
         type: accounts[0].type,
       });
     }
+
+    dispatch.account.getCurrentAccountAsync();
   }, []);
 
   return (
