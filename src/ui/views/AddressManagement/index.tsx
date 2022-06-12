@@ -23,7 +23,7 @@ const AddressManagement = () => {
   const {
     accountsList,
     highlightedAddresses,
-    loadingAddress,
+    loadingAccounts,
   } = useRabbySelector((s) => ({
     ...s.accountToDisplay,
     highlightedAddresses: s.addressManagement.highlightedAddresses,
@@ -52,8 +52,8 @@ const AddressManagement = () => {
   }, [accountsList, highlightedAddresses]);
 
   const noAccount = useMemo(() => {
-    return sortedAccountsList.length <= 0 && !loadingAddress;
-  }, [sortedAccountsList, loadingAddress]);
+    return sortedAccountsList.length <= 0 && !loadingAccounts;
+  }, [sortedAccountsList, loadingAccounts]);
 
   const dispatch = useRabbyDispatch();
 

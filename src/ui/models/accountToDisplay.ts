@@ -11,14 +11,14 @@ type IDisplayedAccountWithBalance = IDisplayedAccount & {
 };
 
 type IState = {
-  loadingAddress: boolean;
+  loadingAccounts: boolean;
   accountsList: IDisplayedAccountWithBalance[];
 };
 
 export const accountToDisplay = createModel<RootModel>()({
   name: 'accountToDisplay',
   state: {
-    loadingAddress: false,
+    loadingAccounts: false,
     accountsList: [],
   } as IState,
   reducers: {
@@ -34,7 +34,7 @@ export const accountToDisplay = createModel<RootModel>()({
   },
   effects: (dispatch) => ({
     async getAllAccountsToDisplay(_?, store?) {
-      dispatch.accountToDisplay.setField({ loadingAddress: true });
+      dispatch.accountToDisplay.setField({ loadingAccounts: true });
 
       const [
         displayedKeyrings,
@@ -75,7 +75,7 @@ export const accountToDisplay = createModel<RootModel>()({
             };
           })
       );
-      dispatch.accountToDisplay.setField({ loadingAddress: false });
+      dispatch.accountToDisplay.setField({ loadingAccounts: false });
 
       if (result) {
         const withBalanceList = sortAccountsByBalance(result);

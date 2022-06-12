@@ -95,11 +95,12 @@ const Dashboard = () => {
   const {
     currentAccount,
     accountsList,
+    loadingAccounts,
     highlightedAddresses,
-    loadingAddress,
   } = useRabbySelector((s) => ({
     currentAccount: s.account.currentAccount,
-    ...s.accountToDisplay,
+    accountsList: s.accountToDisplay.accountsList,
+    loadingAccounts: s.accountToDisplay.loadingAccounts,
     highlightedAddresses: s.addressManagement.highlightedAddresses,
   }));
 
@@ -407,7 +408,7 @@ const Dashboard = () => {
 
   const clickContent = () => (
     <div className="click-list flex flex-col w-[233px]">
-      {loadingAddress ? (
+      {loadingAccounts ? (
         <div className="address-loading">
           <SvgIconLoading className="icon icon-loading" fill="#707280" />
           <div className="text-14 text-gray-light">
