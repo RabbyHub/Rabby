@@ -27,6 +27,7 @@ import {
   KEYRING_TYPE,
   SUPPORT_1559_KEYRING_TYPE,
   KEYRING_CATEGORY_MAP,
+  MINIMUM_GAS_LIMIT,
 } from 'consts';
 import {
   addHexPrefix,
@@ -459,9 +460,15 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     );
     if (!gasLimit) {
       // use server response gas limit
-      const recommendGasLimit = new BigNumber(res.recommend.gas)
-        .times(1.5)
-        .toFixed(0);
+      let recommendGasLimit = '0';
+      const gasLimitFromDapp = tx.gas || tx.gasLimit;
+      if (isSend && gasLimitFromDapp) {
+        recommendGasLimit = new BigNumber(gasLimitFromDapp).toFixed(0);
+      } else {
+        recommendGasLimit = new BigNumber(res.recommend.gas)
+          .times(1.5)
+          .toFixed(0);
+      }
       setGasLimit(intToHex(Number(recommendGasLimit)));
     }
     setTxDetail(res);
@@ -600,7 +607,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     await wallet.reportStats('signTransaction', {
       type: currentAccount.brandName,
       chainId: chain.serverId,
-      is1559: support1559,
+      category: KEYRING_CATEGORY_MAP[currentAccount.type],
     });
 
     ReactGA.event({

@@ -256,6 +256,7 @@ class ProviderController extends BaseController {
     const isCancel = !!txParams.isCancel;
     const traceId = approvalRes.traceId;
     const extra = approvalRes.extra;
+    let signedTransactionSuccess = false;
     delete txParams.isSend;
     delete approvalRes.isSend;
     delete approvalRes.address;
@@ -318,6 +319,7 @@ class ProviderController extends BaseController {
         opts
       );
       if (currentAccount.type === KEYRING_TYPE.GnosisKeyring) {
+        signedTransactionSuccess = true;
         stats.report('signedTransaction', {
           type: currentAccount.brandName,
           chainId: CHAINS[chain].serverId,
@@ -395,6 +397,7 @@ class ProviderController extends BaseController {
           );
         }
       }
+      signedTransactionSuccess = true;
       stats.report('signedTransaction', {
         type: currentAccount.brandName,
         chainId: CHAINS[chain].serverId,
@@ -450,12 +453,14 @@ class ProviderController extends BaseController {
         throw new Error(errMsg);
       }
     } catch (e) {
-      stats.report('signedTransaction', {
-        type: currentAccount.brandName,
-        chainId: CHAINS[chain].serverId,
-        category: KEYRING_CATEGORY_MAP[currentAccount.type],
-        success: false,
-      });
+      if (!signedTransactionSuccess) {
+        stats.report('signedTransaction', {
+          type: currentAccount.brandName,
+          chainId: CHAINS[chain].serverId,
+          category: KEYRING_CATEGORY_MAP[currentAccount.type],
+          success: false,
+        });
+      }
       throw new Error(e);
     }
   };

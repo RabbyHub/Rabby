@@ -7,7 +7,12 @@ import { useTranslation } from 'react-i18next';
 import { useHistory, useLocation } from 'react-router-dom';
 import { Input, Form, Skeleton, message, Button } from 'antd';
 import abiCoder, { AbiCoder } from 'web3-eth-abi';
-import { isValidAddress, unpadHexString, addHexPrefix } from 'ethereumjs-util';
+import {
+  isValidAddress,
+  unpadHexString,
+  addHexPrefix,
+  intToHex,
+} from 'ethereumjs-util';
 import styled from 'styled-components';
 import { providers } from 'ethers';
 import {
@@ -19,14 +24,14 @@ import {
 } from 'consts';
 import { Account } from 'background/service/preference';
 import { UIContactBookItem } from 'background/service/contactBook';
-import { useWallet, useWalletOld } from 'ui/utils';
+import { useWalletOld } from 'ui/utils';
 import { query2obj } from 'ui/utils/url';
 import { getTokenSymbol, geTokenDecimals } from 'ui/utils/token';
 import { formatTokenAmount, splitNumberByStep } from 'ui/utils/number';
 import AccountCard from '../Approval/components/AccountCard';
 import TokenAmountInput from 'ui/component/TokenAmountInput';
 import TagChainSelector from 'ui/component/ChainSelector/tag';
-import { GasLevel, GasResult, TokenItem } from 'background/service/openapi';
+import { GasLevel, TokenItem } from 'background/service/openapi';
 import { PageHeader, AddressViewer } from 'ui/component';
 import ContactEditModal from 'ui/component/Contact/EditModal';
 import ContactListModal from 'ui/component/Contact/ListModal';
@@ -171,6 +176,7 @@ const SendToken = () => {
           )
         )
       );
+      params.gas = intToHex(21000);
       if (showGasReserved) {
         params.gasPrice = selectedGasLevel?.price;
       }
