@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
+import { Approval } from 'background/service/notification';
 import { useWallet, useApproval } from 'ui/utils';
 import * as ApprovalComponent from './components';
 import './style.less';
@@ -9,7 +10,7 @@ const Approval = () => {
   // const [account, setAccount] = useState('');
   const wallet = useWallet();
   const [getApproval, , rejectApproval] = useApproval();
-  const [approval, setApproval] = useState<any>(null);
+  const [approval, setApproval] = useState<Approval | null>(null);
 
   const init = async () => {
     const approval = await getApproval();
@@ -18,8 +19,9 @@ const Approval = () => {
       return null;
     }
     setApproval(approval);
-    if (approval.origin || approval.params.origin) {
-      document.title = approval.origin || approval.params.origin;
+    if (approval.data.origin || approval.data.params?.session.origin) {
+      document.title =
+        approval.data.origin || approval.data.params!.session.origin;
     }
     const account = await wallet.getCurrentAccount();
     if (!account) {
@@ -33,7 +35,8 @@ const Approval = () => {
   }, []);
 
   if (!approval) return <></>;
-  const { approvalComponent, params, origin, requestDefer } = approval;
+  const { data } = approval;
+  const { approvalComponent, params, origin, requestDefer } = data;
   const CurrentApprovalComponent = ApprovalComponent[approvalComponent];
 
   return (
