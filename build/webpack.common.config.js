@@ -130,7 +130,15 @@ const config = {
       },
       {
         test: /\.svg$/,
-        use: ['@svgr/webpack', 'url-loader'],
+        use: [
+          '@svgr/webpack',
+          {
+            loader: 'url-loader',
+            options: {
+              limit: false,
+            },
+          },
+        ],
       },
       {
         test: /\.(png|jpe?g|gif)$/i,
