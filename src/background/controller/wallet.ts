@@ -515,7 +515,7 @@ export class WalletController extends BaseController {
   getCurrentConnectedSite = (tabId: number) => {
     const session = sessionService.getSession(tabId);
     if (session) {
-      return permissionService.getWithoutUpdate(origin);
+      return permissionService.getWithoutUpdate(session.origin);
     } else {
       return null;
     }
