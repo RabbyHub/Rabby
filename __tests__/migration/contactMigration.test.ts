@@ -51,6 +51,7 @@ const data: { preference: PreferenceStore; contactBook } = {
     pinnedChain: [],
     tokenApprovalChain: {},
     useLedgerLive: false,
+    highligtedAddresses: [],
     walletSavedList: [],
     watchAddressPreference: {},
   },
@@ -110,6 +111,7 @@ test('should migrate data', () => {
       pinnedChain: [],
       tokenApprovalChain: {},
       useLedgerLive: false,
+      highligtedAddresses: [],
       walletSavedList: [],
       watchAddressPreference: {},
     });
@@ -181,6 +183,7 @@ test('should migrate when no alians', () => {
       pinnedChain: [],
       tokenApprovalChain: {},
       useLedgerLive: false,
+      highligtedAddresses: [],
       walletSavedList: [],
       watchAddressPreference: {},
     },
@@ -238,6 +241,7 @@ test('should migrate when no alians', () => {
       pinnedChain: [],
       tokenApprovalChain: {},
       useLedgerLive: false,
+      highligtedAddresses: [],
       walletSavedList: [],
       watchAddressPreference: {},
     });
@@ -306,6 +310,7 @@ test('should migrate when no contacts', () => {
       pinnedChain: [],
       tokenApprovalChain: {},
       useLedgerLive: false,
+      highligtedAddresses: [],
       walletSavedList: [],
       watchAddressPreference: {},
     },
@@ -354,6 +359,7 @@ test('should migrate when no contacts', () => {
       pinnedChain: [],
       tokenApprovalChain: {},
       useLedgerLive: false,
+      highligtedAddresses: [],
       walletSavedList: [],
       watchAddressPreference: {},
     });

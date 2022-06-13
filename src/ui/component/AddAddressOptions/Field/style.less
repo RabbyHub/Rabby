@@ -1,0 +1,49 @@
+.address-option-field {
+  display: flex;
+  padding: 0 12px;
+  min-height: 56px;
+  justify-content: space-between;
+  background: #ffffff;
+  border-radius: 6px;
+  align-items: center;
+
+  .field-slot {
+    display: flex;
+    align-items: center;
+    flex: 1;
+    overflow: hidden;
+  }
+  .field-slot-address {
+    flex-direction: column;
+    align-items: flex-start;
+  }
+  .sub-text {
+    font-size: 12px;
+    color: @color-comment-1;
+  }
+  .left-icon {
+    margin-right: 12px;
+  }
+  .left-icon-address {
+    margin-right: 12px;
+    position: relative;
+    .corner-icon {
+      width: 16px;
+      height: 16px;
+      position: absolute;
+      left: 16px;
+      top: -4px;
+    }
+  }
+
+  .left-icon,
+  .right-icon {
+    flex-shrink: 0;
+    display: flex;
+    align-items: center;
+  }
+
+  & + .field {
+    margin-top: 12px;
+  }
+}

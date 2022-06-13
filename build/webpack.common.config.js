@@ -7,6 +7,11 @@ const AssetReplacePlugin = require('./plugins/AssetReplacePlugin');
 const { version } = require('../_raw/manifest.json');
 const path = require('path');
 
+const createStyledComponentsTransformer = require('typescript-plugin-styled-components')
+  .default;
+
+const isEnvDevelopment = process.env.NODE_ENV !== 'production';
+
 const paths = require('./paths');
 
 const config = {
@@ -79,6 +84,19 @@ const config = {
           },
           {
             loader: 'ts-loader',
+            options: {
+              getCustomTransformers: () => ({
+                before: [
+                  // @see https://github.com/Igorbek/typescript-plugin-styled-components#ts-loader
+                  createStyledComponentsTransformer({
+                    ssr: true, // always enable it to make all styled generated component has id.
+                    displayName: isEnvDevelopment,
+                    minify: false, // it's still an experimental feature
+                    componentIdPrefix: 'rabby-',
+                  }),
+                ],
+              }),
+            },
           },
         ],
       },
@@ -106,7 +124,11 @@ const config = {
           {
             loader: 'style-resources-loader',
             options: {
-              patterns: path.resolve(__dirname, '../src/ui/style/var.less'),
+              patterns: [
+                path.resolve(__dirname, '../src/ui/style/var.less'),
+                path.resolve(__dirname, '../src/ui/style/mixin.less'),
+              ],
+              injector: 'append',
             },
           },
         ],

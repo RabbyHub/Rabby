@@ -33,6 +33,10 @@ export interface addedToken {
   [address: string]: string[];
 }
 
+export type IHighlightedAddress = {
+  brandName: Account['brandName'];
+  address: Account['address'];
+};
 export interface PreferenceStore {
   currentAccount: Account | undefined | null;
   externalLinkAck: boolean;
@@ -45,7 +49,8 @@ export interface PreferenceStore {
   watchAddressPreference: Record<string, number>;
   isDefaultWallet: boolean;
   lastTimeSendToken: Record<string, TokenItem>;
-  walletSavedList: [];
+  highligtedAddresses: IHighlightedAddress[];
+  walletSavedList: any[];
   alianNames?: Record<string, string>;
   initAlianNames: boolean;
   gasCache: GasCache;
@@ -78,6 +83,7 @@ class PreferenceService {
         watchAddressPreference: {},
         isDefaultWallet: true,
         lastTimeSendToken: {},
+        highligtedAddresses: [],
         walletSavedList: [],
         alianNames: {},
         initAlianNames: false,
@@ -126,6 +132,9 @@ class PreferenceService {
     }
     if (!this.store.useLedgerLive) {
       this.store.useLedgerLive = false;
+    }
+    if (!this.store.highligtedAddresses) {
+      this.store.highligtedAddresses = [];
     }
     if (!this.store.walletSavedList) {
       this.store.walletSavedList = [];
@@ -209,8 +218,12 @@ class PreferenceService {
       .filter((lang) => SUPPORT_LOCALES.includes(lang));
   };
 
+  /**
+   * @deprecated
+   */
   getHiddenAddresses = (): Account[] => {
-    return cloneDeep(this.store.hiddenAddresses);
+    return [];
+    // return cloneDeep(this.store.hiddenAddresses);
   };
 
   hideAddress = (type: string, address: string, brandName: string) => {
@@ -325,13 +338,23 @@ class PreferenceService {
   isUseLedgerLive = () => {
     return this.store.useLedgerLive;
   };
+
+  getHighlightedAddresses = () => {
+    return (this.store.highligtedAddresses || []).filter(
+      (item) => !!item.brandName && !!item.address
+    );
+  };
+  updateHighlightedAddresses = (list: IHighlightedAddress[]) => {
+    this.store.highligtedAddresses = list;
+  };
+
   getWalletSavedList = () => {
     return this.store.walletSavedList || [];
   };
-
-  updateWalletSavedList = (list: []) => {
+  updateWalletSavedList = (list: any[]) => {
     this.store.walletSavedList = list;
   };
+
   getInitAlianNameStatus = () => {
     return this.store.initAlianNames;
   };

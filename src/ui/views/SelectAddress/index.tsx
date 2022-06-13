@@ -8,13 +8,19 @@ import {
   MultiSelectAddressList,
   LoadingOverlay,
 } from 'ui/component';
+import type { ISelectAccountItem } from 'ui/component/MultiSelectAddressList';
 import stats from '@/stats';
-import { getUiType, useWallet, useWalletOld, useWalletRequest } from 'ui/utils';
+import {
+  getUiType,
+  useWalletOld as useWallet,
+  useWalletRequest,
+} from 'ui/utils';
 import { HARDWARE_KEYRING_TYPES, HDPaths } from 'consts';
 import { BIP44_PATH, LEDGER_LIVE_PATH } from '../ImportHardware/LedgerHdPath';
 import Pagination from './components/Pagination';
 import './style.less';
 import { useMedia } from 'react-use';
+import type { Account } from '@/background/service/preference';
 
 const { Option } = Select;
 
@@ -51,14 +57,17 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
     ledgerLive,
     path = LEDGER_LIVE_PATH,
   } = state;
+
   const [accounts, setAccounts] = useState<any[]>([]);
   const [importedAccounts, setImportedAccounts] = useState<any[]>([]);
-  const [form] = Form.useForm();
-  const wallet = useWalletOld();
+  const [form] = Form.useForm<{
+    selectedAddressIndexes: ISelectAccountItem[];
+  }>();
+  const wallet = useWallet();
   const keyringId = useRef<number | null | undefined>(state.keyringId);
-  const [selectedAccounts, setSelectedAcounts] = useState<
-    { address: string; index: number }[]
-  >([]);
+  const [selectedAccounts, setSelectedAcounts] = useState<ISelectAccountItem[]>(
+    []
+  );
   const [end, setEnd] = useState(1);
   const [currentPage, setCurrentPage] = useState(1);
   const [errorMsg, setErrorMsg] = useState('');
@@ -67,26 +76,26 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
   const isLedger = keyring === HARDWARE_KEYRING_TYPES.Ledger.type;
 
   const [getAccounts] = useWalletRequest(
-    async (firstFlag, start, end) => {
+    async (firstFlag, start?, end?): Promise<Account[]> => {
       setSpin(true);
       return firstFlag
         ? await wallet.requestKeyring(
             keyring,
             'getFirstPage',
-            keyringId.current
+            keyringId.current ?? null
           )
         : end && !isGrid && !ledgerLive
         ? await wallet.requestKeyring(
             keyring,
             'getAddresses',
-            keyringId.current,
+            keyringId.current ?? null,
             start,
             end
           )
         : await wallet.requestKeyring(
             keyring,
             'getNextPage',
-            keyringId.current
+            keyringId.current ?? null
           );
     },
     {
@@ -139,12 +148,17 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
       });
     }
     return () => {
-      wallet.requestKeyring(keyring, 'cleanUp', keyringId.current);
+      wallet.requestKeyring(keyring, 'cleanUp', keyringId.current ?? null);
     };
   }, []);
 
   const handleHDPathChange = async (v: string) => {
-    await wallet.requestKeyring(keyring, 'setHdPath', keyringId.current, v);
+    await wallet.requestKeyring(
+      keyring,
+      'setHdPath',
+      keyringId.current ?? null,
+      v
+    );
     getAccounts(true);
     setCurrentPage(1);
     setEnd(1);
@@ -157,7 +171,11 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
     setCurrentPage(page);
   };
 
-  const onSubmit = async ({ selectedAddressIndexes }) => {
+  const onSubmit = async ({
+    selectedAddressIndexes,
+  }: {
+    selectedAddressIndexes: ISelectAccountItem[];
+  }) => {
     setSpin(true);
     const selectedIndexes = selectedAddressIndexes.map((i) => i.index - 1);
 
@@ -165,7 +183,7 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
       await wallet.requestKeyring(
         keyring,
         'activeAccounts',
-        keyringId.current,
+        keyringId.current ?? null,
         selectedIndexes
       );
       await wallet.addKeyring(keyringId.current);
@@ -178,7 +196,11 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
     }
 
     if (keyring === HARDWARE_KEYRING_TYPES.Ledger.type && isWebHID) {
-      await wallet.requestKeyring(keyring, 'cleanUp', keyringId.current);
+      await wallet.requestKeyring(
+        keyring,
+        'cleanUp',
+        keyringId.current ?? null
+      );
     }
     setSpin(false);
     history.replace({
@@ -199,7 +221,9 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
     });
   };
 
-  const startNumberConfirm = (e) => {
+  const startNumberConfirm: React.ComponentProps<
+    typeof Input
+  >['onPressEnter'] = (e) => {
     e.preventDefault();
     let page = 1;
     if (end % 5 === 0) {

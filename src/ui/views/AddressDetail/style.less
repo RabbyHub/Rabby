@@ -1,0 +1,123 @@
+@import '../../style/mixin.less';
+
+.page-address-detail {
+  .page();
+  height: 100vh;
+
+  &-qrcode-popover {
+    width: 160px;
+    height: 160px;
+    .ant-popover-inner-content {
+      padding: 10px;
+    }
+    .ant-popover-arrow {
+      right: 26px !important;
+    }
+  }
+  .rabby-list {
+    border-radius: 6px;
+    background-color: #fff;
+    margin-bottom: 20px;
+    &-item {
+      padding-left: 16px;
+
+      &-label {
+        font-weight: 500;
+        font-size: 14px;
+        line-height: 16px;
+        color: @color-title;
+        gap: 4px;
+        display: flex;
+        flex-direction: column;
+        margin-right: auto;
+      }
+
+      &-desc,
+      &-extra {
+        font-weight: 400;
+        font-size: 14px;
+        line-height: 16px;
+        color: @color-body;
+      }
+      &-extra {
+        max-width: 254px;
+      }
+      .ellipsis {
+        .ellipsis();
+      }
+      &-arrow {
+        svg {
+          path {
+            fill: @color-comment-1;
+          }
+        }
+      }
+      &-content {
+        padding: 12px 16px 12px 0;
+        border-bottom: 1px solid #e5e9ef;
+        border-bottom: 0.5px solid #e5e9ef;
+        display: flex;
+        min-height: 56px;
+        align-items: center;
+      }
+      &:last-child {
+        .rabby-list-item-content {
+          border: none;
+        }
+      }
+    }
+  }
+}
+
+.address-delete-modal {
+  .desc {
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 20px;
+    color: @color-body;
+    margin-bottom: 32px;
+  }
+  .field {
+    background: @color-bg;
+    border-radius: 6px;
+    padding: 16px 12px;
+
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 18px;
+    color: @color-title;
+  }
+  .footer {
+    position: absolute;
+    bottom: 0;
+    left: 0;
+    right: 0;
+    padding: 0 20px 24px;
+  }
+
+  .enter-password-modal {
+    position: absolute;
+    top: 0;
+    right: 0;
+    bottom: 0;
+    left: 0;
+    background-color: #fff;
+    padding: 20px 20px 24px;
+    transform: translateX(100%);
+    transition: 0.3s;
+    border-radius: 16px 16px 0px 0px;
+
+    &.show {
+      transform: translateX(0);
+    }
+
+    .title {
+      font-weight: 500;
+      font-size: 20px;
+      line-height: 23px;
+      text-align: center;
+      color: @color-body;
+      margin-bottom: 28px;
+    }
+  }
+}

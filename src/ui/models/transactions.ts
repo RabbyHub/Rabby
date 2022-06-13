@@ -1,13 +1,15 @@
 import { createModel } from '@rematch/core';
+
 import { RootModel } from '.';
 
-export const viewDashboard = createModel<RootModel>()({
-  name: 'viewDashboard',
-  state: {
+type IState = {
+  pendingTransactionCount: number;
+};
+
+export const transactions = createModel<RootModel>()({
+  name: 'transactions',
+  state: <IState>{
     pendingTransactionCount: 0,
-  },
-  selectors: {
-    double: () => (state) => state.viewDashboard.pendingTransactionCount * 2,
   },
   reducers: {
     setField(state, payload: Partial<typeof state>) {
@@ -21,9 +23,9 @@ export const viewDashboard = createModel<RootModel>()({
     },
   },
   effects: (dispatch) => ({
-    async getPendingTxCountAsync(address: string, state) {
-      const count = await state.app.wallet.getPendingCount<number>(address);
-      dispatch.viewDashboard.setField({ pendingTransactionCount: count });
+    async getPendingTxCountAsync(address: string, store) {
+      const count = await store.app.wallet.getPendingCount<number>(address);
+      dispatch.transactions.setField({ pendingTransactionCount: count });
     },
   }),
 });

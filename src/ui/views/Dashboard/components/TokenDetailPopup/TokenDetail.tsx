@@ -16,7 +16,7 @@ import { HistoryItem } from './HistoryItem';
 import { Loading } from './Loading';
 import './style.less';
 
-const PAGE_COUNT = 100;
+const PAGE_COUNT = 10;
 const ellipsis = (text: string) => {
   return text.replace(/^(.{6})(.*)(.{4})$/, '$1...$3');
 };

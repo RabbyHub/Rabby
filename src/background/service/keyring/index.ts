@@ -20,7 +20,9 @@ import OnekeyKeyring from './eth-onekey-keyring';
 import LatticeKeyring from '@rabby-wallet/eth-lattice-keyring';
 import WatchKeyring from '@rabby-wallet/eth-watch-keyring';
 import KeystoneKeyring from './eth-keystone-keyring';
-import WalletConnectKeyring from '@rabby-wallet/eth-walletconnect-keyring';
+import WalletConnectKeyring, {
+  keyringType,
+} from '@rabby-wallet/eth-walletconnect-keyring';
 import GnosisKeyring, {
   TransactionBuiltEvent,
   TransactionConfirmedEvent,
@@ -31,6 +33,8 @@ import { KEYRING_TYPE, HARDWARE_KEYRING_TYPES, EVENTS } from 'consts';
 import DisplayKeyring from './display';
 import eventBus from '@/eventBus';
 import { isSameAddress } from 'background/utils';
+import contactBook from '../contactBook';
+import { generateAliasName } from '@/utils/account';
 
 export const KEYRING_SDK_TYPES = {
   SimpleKeyring,
@@ -79,6 +83,7 @@ export interface DisplayedKeryring {
     alianName?: string;
   }[];
   keyring: DisplayKeyring;
+  byImport?: boolean;
 }
 
 class KeyringService extends EventEmitter {
@@ -153,8 +158,23 @@ class KeyringService extends EventEmitter {
 
     return this.persistAllKeyrings()
       .then(this.addNewKeyring.bind(this, 'Simple Key Pair', [privateKey]))
-      .then((_keyring) => {
+      .then(async (_keyring) => {
         keyring = _keyring;
+        const [address] = await keyring.getAccounts();
+        const keyrings = await this.getAllTypedAccounts();
+        if (!contactBook.getContactByAddress(address)) {
+          const alias = generateAliasName({
+            keyringType: KEYRING_TYPE.SimpleKeyring,
+            keyringCount:
+              keyrings.filter(
+                (keyring) => keyring.type === KEYRING_TYPE.SimpleKeyring
+              ).length - 1,
+          });
+          contactBook.addAlias({
+            address,
+            name: alias,
+          });
+        }
         return this.persistAllKeyrings.bind(this);
       })
       .then(this.setUnlocked.bind(this))
@@ -214,7 +234,9 @@ class KeyringService extends EventEmitter {
    */
   createKeyringWithMnemonics(seed: string): Promise<any> {
     if (!bip39.validateMnemonic(seed)) {
-      return Promise.reject(new Error(i18n.t('mnemonic phrase is invalid')));
+      return Promise.reject(
+        new Error(i18n.t('The seed phrase is invalid, please check!'))
+      );
     }
 
     let keyring;
@@ -256,6 +278,20 @@ class KeyringService extends EventEmitter {
       .then(() => {
         return keyring;
       });
+  }
+
+  updateHdKeyringIndex(keyring) {
+    if (keyring.type !== KEYRING_TYPE.HdKeyring) {
+      return;
+    }
+    if (this.keyrings.find((item) => item === keyring)) {
+      return;
+    }
+    const keryings = this.keyrings.filter(
+      (item) => item.type === KEYRING_TYPE.HdKeyring
+    );
+    keyring.index =
+      Math.max(...keryings.map((item) => item.index), keryings.length - 1) + 1;
   }
 
   /**
@@ -335,6 +371,7 @@ class KeyringService extends EventEmitter {
   addNewKeyring(type: string, opts?: unknown): Promise<any> {
     const Keyring = this.getKeyringClassForType(type);
     const keyring = new Keyring(opts);
+    this.updateHdKeyringIndex(keyring);
     return this.addKeyring(keyring);
   }
 
@@ -412,9 +449,30 @@ class KeyringService extends EventEmitter {
     let _accounts;
     return selectedKeyring
       .addAccounts(1)
+      .then(() => {
+        if (selectedKeyring.getAccountsWithBrand) {
+          return selectedKeyring.getAccountsWithBrand();
+        } else {
+          return selectedKeyring.getAccounts();
+        }
+      })
       .then((accounts) => {
-        accounts.forEach((hexAccount) => {
-          this.emit('newAccount', hexAccount);
+        const allAccounts = accounts.map((account) => ({
+          address: normalizeAddress(
+            typeof account === 'string' ? account : account.address
+          ),
+          brandName:
+            typeof account === 'string'
+              ? selectedKeyring.type
+              : account.brandName,
+        }));
+        allAccounts.forEach((account) => {
+          this.setAddressAlias(
+            account.address,
+            selectedKeyring,
+            account.brandName
+          );
+          this.emit('newAccount', account.address);
         });
         _accounts = accounts;
       })
@@ -422,6 +480,32 @@ class KeyringService extends EventEmitter {
       .then(this._updateMemStoreKeyrings.bind(this))
       .then(this.fullUpdate.bind(this))
       .then(() => _accounts);
+  }
+
+  async setAddressAlias(address: string, keyring, brandName: string) {
+    const cacheAlias = contactBook.getCacheAlias(address);
+    const existAlias = contactBook.getContactByAddress(address);
+    if (!existAlias) {
+      if (cacheAlias) {
+        contactBook.removeCacheAlias(address);
+        contactBook.addAlias(cacheAlias);
+      } else {
+        const accounts = await keyring.getAccounts();
+        const alias = generateAliasName({
+          brandName,
+          keyringType: keyring.type,
+          addressCount: accounts.length - 1, // TODO: change 1 to real count of accounts if this function can add multiple accounts
+        });
+        contactBook.addAlias({
+          address,
+          name: alias,
+        });
+      }
+    } else {
+      if (!existAlias.isAlias) {
+        contactBook.updateAlias(existAlias);
+      }
+    }
   }
 
   /**
@@ -911,6 +995,7 @@ class KeyringService extends EventEmitter {
                 )
             ),
         keyring,
+        byImport: keyring.byImport,
       };
     });
   }

@@ -1,9 +1,79 @@
-@import '../../style/var.less';
+@import '../../style/mixin.less';
 
-.address-management {
+.page-address-management {
   .page();
   height: 100vh;
   padding-bottom: 118px;
+
+  .rabby-address-item {
+    border-radius: 6px;
+    background-color: #fff;
+    border: 1px solid transparent;
+    cursor: pointer;
+    padding: 10px 16px;
+    display: flex;
+    align-items: center;
+    width: 100%;
+
+    &:hover {
+      border: 1px solid #8697ff;
+      .icon-star {
+        opacity: 1;
+      }
+    }
+
+    &-icon {
+      width: 28px;
+      height: 28px;
+      margin-right: 12px;
+    }
+
+    &-content {
+      flex: 1;
+      margin-right: auto;
+    }
+    &-title {
+      font-weight: 500;
+      font-size: 15px;
+      line-height: 18px;
+      color: @color-title;
+      margin-bottom: 2px;
+
+      display: flex;
+      gap: 6px;
+      align-items: center;
+    }
+    .ant-input {
+      width: 160px;
+      height: 24px;
+      background: @color-bg;
+      border: 1px solid @color-border;
+      box-sizing: border-box;
+      border-radius: 2px;
+      padding-left: 2px;
+
+      &:focus {
+        border-color: #b0bdff;
+      }
+    }
+    &-alias {
+      .ellipsis();
+      max-width: 180px;
+    }
+    &-extra {
+      margin-right: 16px;
+      margin-left: 16px;
+    }
+    .icon-star {
+      opacity: 0;
+    }
+    &-arrow {
+      svg path {
+        fill: #707280;
+      }
+    }
+  }
+
   .address-item-hidden {
     background: @color-bg;
     border-radius: 10px;

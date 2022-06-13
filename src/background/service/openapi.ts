@@ -608,7 +608,7 @@ class OpenApiService {
   };
 
   getTotalBalance = async (address: string): Promise<TotalBalanceResponse> => {
-    const { data } = await this.request.get('/v1/user/total_balance_v2', {
+    const { data } = await this.request.get('/v1/user/total_balance', {
       params: {
         id: address,
       },
@@ -842,7 +842,7 @@ class OpenApiService {
     coin_id?: string;
     start_time?: number;
     page_count?: number;
-  }): Promise<TxHistoryResult[]> => {
+  }): Promise<TxHistoryResult> => {
     const { data } = await this.request.get('/v1/user/history_list', {
       params,
     });

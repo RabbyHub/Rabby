@@ -24,13 +24,13 @@ import LogoLedgerWhite from 'ui/assets/walletlogo/ledgerwhite.png';
 import IconMath from 'ui/assets/walletlogo/math.png';
 import LogoMath from 'ui/assets/walletlogo/MathWalletLogo.png';
 import IconMetaMask from 'ui/assets/walletlogo/metamask.svg';
-import IconMnemonicPurple from 'ui/assets/walletlogo/mnemonic-purple.svg';
+import IconMnemonicInk from 'ui/assets/walletlogo/mnemonic-ink.svg';
 import LogoMnemonic from 'ui/assets/walletlogo/mnemoniclogo.svg';
 import IconOnekey from 'ui/assets/walletlogo/onekey.png';
 import IconOneKey18 from 'ui/assets/walletlogo/onekey18.png';
 import LogoOnekey from 'ui/assets/walletlogo/onekey28.png';
 import IconPrivateKeyWhite from 'ui/assets/walletlogo/private-key-white.svg';
-import IconPrivateKeyPurple from 'ui/assets/walletlogo/privatekey-purple.svg';
+import IconPrivateKeyInk from 'ui/assets/walletlogo/privatekey-ink.svg';
 import LogoPrivateKey from 'ui/assets/walletlogo/privatekeylogo.svg';
 import LogoTp from 'ui/assets/walletlogo/TokenPocketLogo.png';
 import IconTokenpocket from 'ui/assets/walletlogo/tp.png';
@@ -86,7 +86,7 @@ export const SUPPORT_1559_KEYRING_TYPE = [
 ];
 
 export const KEYRING_TYPE_TEXT = {
-  [KEYRING_TYPE.HdKeyring]: 'Created by Mnemonic',
+  [KEYRING_TYPE.HdKeyring]: 'Created by Seed Phrase',
   [KEYRING_TYPE.SimpleKeyring]: 'Imported by Private Key',
   [KEYRING_TYPE.WatchAddressKeyring]: 'Watch Mode',
   [KEYRING_CLASS.HARDWARE.BITBOX02]: 'Imported by BitBox02',
@@ -98,7 +98,7 @@ export const KEYRING_TYPE_TEXT = {
   [KEYRING_CLASS.HARDWARE.KEYSTONE]: 'Imported by Keystone',
 };
 export const BRAND_ALIAN_TYPE_TEXT = {
-  [KEYRING_TYPE.HdKeyring]: 'Mnemonic',
+  [KEYRING_TYPE.HdKeyring]: 'Seed Phrase',
   [KEYRING_TYPE.SimpleKeyring]: 'Private Key',
   [KEYRING_TYPE.WatchAddressKeyring]: 'Watch',
   [KEYRING_CLASS.HARDWARE.LEDGER]: 'Ledger',
@@ -317,7 +317,19 @@ enum WALLET_BRAND_CATEGORY {
   INSTITUTIONAL = 'institutional',
 }
 
-export const WALLET_BRAND_CONTENT = {
+export type IWalletBrandContent = {
+  id: number;
+  name: string;
+  brand: WALLET_BRAND_TYPES;
+  icon: string;
+  image: string;
+  connectType: BRAND_WALLET_CONNECT_TYPE;
+  category: WALLET_BRAND_CATEGORY;
+};
+
+export const WALLET_BRAND_CONTENT: {
+  [K in WALLET_BRAND_TYPES]: IWalletBrandContent;
+} = {
   [WALLET_BRAND_TYPES.AMBER]: {
     id: 0,
     name: 'Amber',
@@ -465,8 +477,8 @@ export const WALLET_BRAND_CONTENT = {
 };
 
 export const KEYRING_ICONS = {
-  [KEYRING_CLASS.MNEMONIC]: IconMnemonicPurple,
-  [KEYRING_CLASS.PRIVATE_KEY]: IconPrivateKeyPurple,
+  [KEYRING_CLASS.MNEMONIC]: IconMnemonicInk,
+  [KEYRING_CLASS.PRIVATE_KEY]: IconPrivateKeyInk,
   [KEYRING_CLASS.WATCH]: IconWatchPurple,
   [HARDWARE_KEYRING_TYPES.BitBox02.type]: IconBitBox02,
   [HARDWARE_KEYRING_TYPES.Ledger.type]: LogoLedgerWhite,
@@ -488,8 +500,8 @@ export const KEYRING_ICONS_WHITE = {
   [HARDWARE_KEYRING_TYPES.Keystone.type]: LogoKeystone,
 };
 export const KEYRING_PURPLE_LOGOS = {
-  [KEYRING_CLASS.MNEMONIC]: IconMnemonicPurple,
-  [KEYRING_CLASS.PRIVATE_KEY]: IconPrivateKeyPurple,
+  [KEYRING_CLASS.MNEMONIC]: IconMnemonicInk,
+  [KEYRING_CLASS.PRIVATE_KEY]: IconPrivateKeyInk,
   [KEYRING_CLASS.WATCH]: IconWatchPurple,
 };
 
@@ -550,4 +562,26 @@ export const HDPaths = {
     { name: 'Legacy (MEW / MyCrypto)', value: "m/44'/60'/0'" },
     { name: 'BIP44 Standard', value: "m/44'/60'/0'/0" },
   ],
+};
+
+export enum KEYRING_CATEGORY {
+  Mnemonic = 'Mnemonic',
+  PrivateKey = 'PrivateKey',
+  WatchMode = 'WatchMode',
+  Contract = 'Contract',
+  Hardware = 'Hardware',
+  WalletConnect = 'WalletConnect',
+}
+
+export const KEYRING_CATEGORY_MAP = {
+  [KEYRING_CLASS.MNEMONIC]: KEYRING_CATEGORY.Mnemonic,
+  [KEYRING_CLASS.PRIVATE_KEY]: KEYRING_CATEGORY.PrivateKey,
+  [KEYRING_CLASS.WATCH]: KEYRING_CATEGORY.WatchMode,
+  [KEYRING_CLASS.HARDWARE.LEDGER]: KEYRING_CATEGORY.Hardware,
+  [KEYRING_CLASS.HARDWARE.TREZOR]: KEYRING_CATEGORY.Hardware,
+  [KEYRING_CLASS.HARDWARE.BITBOX02]: KEYRING_CATEGORY.Hardware,
+  [KEYRING_CLASS.HARDWARE.KEYSTONE]: KEYRING_CATEGORY.Hardware,
+  [KEYRING_CLASS.HARDWARE.GRIDPLUS]: KEYRING_CATEGORY.Hardware,
+  [KEYRING_CLASS.WALLETCONNECT]: KEYRING_CATEGORY.WalletConnect,
+  [KEYRING_CLASS.GNOSIS]: KEYRING_CATEGORY.Contract,
 };

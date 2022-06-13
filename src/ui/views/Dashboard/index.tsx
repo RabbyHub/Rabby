@@ -15,7 +15,6 @@ import {
   KEYRING_ICONS_WHITE,
   KEYRING_TYPE,
   KEYRING_TYPE_TEXT,
-  KEYRING_WITH_INDEX,
   WALLET_BRAND_CONTENT,
 } from 'consts';
 import cloneDeep from 'lodash/cloneDeep';
@@ -41,18 +40,8 @@ import IconSuccess from 'ui/assets/success.svg';
 import IconTagYou from 'ui/assets/tag-you.svg';
 import IconUpAndDown from 'ui/assets/up-and-down.svg';
 import { AddressViewer, Copy, Modal, NameAndAddress } from 'ui/component';
-import {
-  connectStore,
-  useRabbyDispatch,
-  useRabbyGetter,
-  useRabbySelector,
-} from 'ui/store';
-import {
-  isSameAddress,
-  splitNumberByStep,
-  useHover,
-  useWalletOld,
-} from 'ui/utils';
+import { connectStore, useRabbyDispatch, useRabbySelector } from 'ui/store';
+import { isSameAddress, useWalletOld } from 'ui/utils';
 import { crossCompareOwners } from 'ui/utils/gnosis';
 import {
   AssetsList,
@@ -65,6 +54,9 @@ import {
 } from './components';
 import Dropdown from './components/NFT/Dropdown';
 import './style.less';
+
+import AddressRow from './components/AddressRow';
+import { sortAccountsByBalance } from '@/ui/utils/account';
 
 const GnosisAdminItem = ({
   accounts,
@@ -89,15 +81,6 @@ const GnosisAdminItem = ({
 };
 
 const Dashboard = () => {
-  const rDispatch = useRabbyDispatch();
-  const { currentAccount, alianName, pendingTxCount } = useRabbySelector(
-    (state) => ({
-      currentAccount: state.account.currentAccount,
-      alianName: state.account.alianName,
-      pendingTxCount: state.viewDashboard.pendingTransactionCount,
-    })
-  );
-
   const history = useHistory();
   const { state } = useLocation<{
     connection?: boolean;
@@ -106,7 +89,46 @@ const Dashboard = () => {
   const { showChainsModal = false } = state ?? {};
   const wallet = useWalletOld();
   const { t } = useTranslation();
+  const dispatch = useRabbyDispatch();
   const fixedList = useRef<FixedSizeList>();
+
+  const {
+    currentAccount,
+    accountsList,
+    highlightedAddresses,
+    loadingAddress,
+  } = useRabbySelector((s) => ({
+    currentAccount: s.account.currentAccount,
+    ...s.accountToDisplay,
+    highlightedAddresses: s.addressManagement.highlightedAddresses,
+  }));
+
+  const { pendingTransactionCount: pendingTxCount } = useRabbySelector((s) => ({
+    ...s.transactions,
+  }));
+
+  const { sortedAccountsList } = React.useMemo(() => {
+    const restAccounts = [...accountsList];
+    let highlightedAccounts: typeof accountsList = [];
+
+    highlightedAddresses.forEach((highlighted) => {
+      const idx = restAccounts.findIndex(
+        (account) =>
+          account.address === highlighted.address &&
+          account.brandName === highlighted.brandName
+      );
+      if (idx > -1) {
+        highlightedAccounts.push(restAccounts[idx]);
+        restAccounts.splice(idx, 1);
+      }
+    });
+
+    highlightedAccounts = sortAccountsByBalance(highlightedAccounts);
+
+    return {
+      sortedAccountsList: highlightedAccounts.concat(restAccounts),
+    };
+  }, [accountsList, highlightedAddresses]);
 
   const [gnosisPendingCount, setGnosisPendingCount] = useState(0);
   const [safeInfo, setSafeInfo] = useState<SafeInfo | null>(null);
@@ -114,8 +136,8 @@ const Dashboard = () => {
   const [hovered, setHovered] = useState(false);
   const [clicked, setClicked] = useState(false);
   const [startEdit, setStartEdit] = useState(false);
+  const [alianName, setAlianName] = useState<string>('');
   const [displayName, setDisplayName] = useState<string>('');
-  const [accountsList, setAccountsList] = useState<Account[]>([]);
   const [firstNotice, setFirstNotice] = useState(false);
   const [updateContent, setUpdateContent] = useState('');
   const [showChain, setShowChain] = useState(false);
@@ -138,7 +160,6 @@ const Dashboard = () => {
   const [isGnosis, setIsGnosis] = useState(false);
   const [isListLoading, setIsListLoading] = useState(false);
   const [isAssetsLoading, setIsAssetsLoading] = useState(true);
-  const [loadingAddress, setLoadingAddress] = useState(false);
   const [gnosisNetworkId, setGnosisNetworkId] = useState('1');
   const [showGnosisWrongChainAlert, setShowGnosisWrongChainAlert] = useState(
     false
@@ -148,11 +169,18 @@ const Dashboard = () => {
   >(null);
   const [dashboardReload, setDashboardReload] = useState(false);
   const getCurrentAccount = async () => {
-    const account = await rDispatch.account.getCurrentAccountAsync();
+    const account = await dispatch.account.getCurrentAccountAsync();
     if (!account) {
       history.replace('/no-address');
       return;
     }
+  };
+
+  const getAlianName = async (address: string) => {
+    await wallet.getAlianName(address).then((name) => {
+      setAlianName(name);
+      setDisplayName(name);
+    });
   };
 
   const getGnosisPendingCount = async () => {
@@ -181,16 +209,11 @@ const Dashboard = () => {
     if (!currentAccount) return;
     if (currentAccount.type === KEYRING_TYPE.GnosisKeyring) return;
 
-    rDispatch.viewDashboard.getPendingTxCountAsync(currentAccount.address);
+    dispatch.transactions.getPendingTxCountAsync(currentAccount.address);
   }, 30000);
 
-  const d = useRabbyGetter((s) => s.viewDashboard.double);
-  console.log(d);
-
   useEffect(() => {
-    if (!currentAccount) {
-      getCurrentAccount();
-    }
+    getCurrentAccount();
   }, []);
 
   useEffect(() => {
@@ -199,38 +222,36 @@ const Dashboard = () => {
         setSafeInfo(null);
         getGnosisPendingCount();
       } else {
-        rDispatch.viewDashboard.getPendingTxCountAsync(currentAccount.address);
+        dispatch.transactions.getPendingTxCountAsync(currentAccount.address);
       }
-      rDispatch.account
-        .getAlianNameAsync(currentAccount?.address.toLowerCase())
-        .then((name) => {
-          setDisplayName(name);
-        });
+      getAlianName(currentAccount?.address.toLowerCase());
     }
   }, [currentAccount]);
   useEffect(() => {
     if (dashboardReload) {
       if (currentAccount) {
-        rDispatch.viewDashboard.getPendingTxCountAsync(currentAccount.address);
+        dispatch.transactions.getPendingTxCountAsync(currentAccount.address);
       }
       setDashboardReload(false);
       getCurrentAccount();
-      getAllKeyrings();
+      dispatch.accountToDisplay.getAllAccountsToDisplay();
     }
   }, [dashboardReload]);
   useEffect(() => {
-    getAllKeyrings();
+    (async () => {
+      await dispatch.addressManagement.getHilightedAddressesAsync();
+      dispatch.accountToDisplay.getAllAccountsToDisplay();
+    })();
   }, []);
   useEffect(() => {
     if (clicked) {
-      getAllKeyrings();
+      dispatch.accountToDisplay.getAllAccountsToDisplay();
     }
   }, [clicked]);
   const handleChange = async (account: Account) => {
     setIsListLoading(true);
     setIsAssetsLoading(true);
-    const { address, type, brandName } = account;
-    rDispatch.account.changeAccountAsync({ address, type, brandName });
+    await dispatch.account.changeAccountAsync(account);
     hide();
   };
 
@@ -264,7 +285,7 @@ const Dashboard = () => {
 
   const handleAlianNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.stopPropagation();
-    rDispatch.account.setField({ alianName: e.target.value });
+    dispatch.account.setField({ alianName: e.target.value });
   };
 
   const alianNameConfirm = async (e) => {
@@ -290,7 +311,7 @@ const Dashboard = () => {
       return item;
     });
     if (newAccountList.length > 0) {
-      setAccountsList(newAccountList);
+      dispatch.accountToDisplay.setField({ accountsList: newAccountList });
     }
   };
 
@@ -383,106 +404,6 @@ const Dashboard = () => {
       setIsGnosis(currentAccount.type === KEYRING_CLASS.GNOSIS);
     }
   }, [currentAccount]);
-  const Row = (props) => {
-    const [hdPathIndex, setHDPathIndex] = useState(null);
-    const { data, index, style } = props;
-    const account = data[index];
-    const [isHovering, hoverProps] = useHover();
-
-    const handleCopyContractAddress = () => {
-      const clipboard = new ClipboardJS('.address-item', {
-        text: function () {
-          return account?.address;
-        },
-      });
-      clipboard.on('success', () => {
-        message.success({
-          duration: 1,
-          icon: <i />,
-          content: (
-            <div>
-              <div className="flex gap-4 mb-4">
-                <img src={IconSuccess} alt="" />
-                Copied
-              </div>
-              <div className="text-white">{account?.address}</div>
-            </div>
-          ),
-        });
-        clipboard.destroy();
-      });
-    };
-
-    const getHDPathIndex = async () => {
-      const index = await wallet.getIndexByAddress(
-        account.address,
-        account.type
-      );
-      if (index !== null) {
-        setHDPathIndex(index + 1);
-      }
-    };
-
-    useEffect(() => {
-      if (KEYRING_WITH_INDEX.includes(account.type)) {
-        getHDPathIndex();
-      }
-    }, []);
-
-    return (
-      <div
-        className="flex items-center address-item"
-        key={index}
-        style={style}
-        onClick={(e) => {
-          const target = e.target as Element;
-          if (target?.id !== 'copyIcon') {
-            handleChange(account);
-          }
-        }}
-        {...hoverProps}
-      >
-        {' '}
-        <img
-          className="icon icon-account-type w-[20px] h-[20px]"
-          src={
-            KEYRING_ICONS[account.type] ||
-            WALLET_BRAND_CONTENT[account.brandName]?.image
-          }
-        />
-        <div className="flex flex-col items-start ml-10">
-          <div className="text-13 text-black text-left click-name">
-            <div className="list-alian-name">
-              {account?.alianName}
-              {hdPathIndex && (
-                <span className="address-hdpath-index font-roboto-mono">{`#${hdPathIndex}`}</span>
-              )}
-            </div>
-            <div className="flex items-center">
-              <AddressViewer
-                address={account?.address}
-                showArrow={false}
-                className={'address-color'}
-              />
-              {isHovering && (
-                <img
-                  onClick={handleCopyContractAddress}
-                  src={IconAddressCopy}
-                  id={'copyIcon'}
-                  className={clsx('ml-7  w-[16px] h-[16px]', {
-                    success: copySuccess,
-                  })}
-                />
-              )}
-              <div className={'money-color'}>
-                ${splitNumberByStep(Math.floor(account?.balance))}
-              </div>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  };
 
   const clickContent = () => (
     <div className="click-list flex flex-col w-[233px]">
@@ -493,19 +414,35 @@ const Dashboard = () => {
             {t('Loading Addresses')}
           </div>
         </div>
-      ) : accountsList.length <= 0 ? (
+      ) : sortedAccountsList.length <= 0 ? (
         <div className="no-other-address"> {t('No address')}</div>
       ) : (
         <FixedSizeList
-          height={accountsList.length > 5 ? 308 : accountsList.length * 54}
+          height={
+            sortedAccountsList.length > 5 ? 308 : sortedAccountsList.length * 54
+          }
           width="100%"
-          itemData={accountsList}
-          itemCount={accountsList.length}
+          itemData={sortedAccountsList}
+          itemCount={sortedAccountsList.length}
           itemSize={54}
           ref={fixedList}
           style={{ zIndex: 10 }}
         >
-          {Row}
+          {(props: {
+            data: Account[];
+            index: number;
+            style: React.StyleHTMLAttributes<HTMLDivElement>;
+          }) => {
+            return (
+              <AddressRow
+                data={props.data}
+                index={props.index}
+                style={props.style}
+                copiedSuccess={copySuccess}
+                handleClickChange={handleChange}
+              />
+            );
+          }}
         </FixedSizeList>
       )}
       <Link to="/add-address" className="pop-add-address flex items-center">
@@ -515,52 +452,8 @@ const Dashboard = () => {
       </Link>
     </div>
   );
-  const balanceList = async (accounts) => {
-    return await Promise.all<Account>(
-      accounts.map(async (item) => {
-        let balance = await wallet.getAddressCacheBalance(item?.address);
-        if (!balance) {
-          balance = await wallet.getAddressBalance(item?.address);
-        }
-        return {
-          ...item,
-          balance: balance?.total_usd_value || 0,
-        };
-      })
-    );
-  };
-  const getAllKeyrings = async () => {
-    setLoadingAddress(true);
-    const _accounts = await wallet.getAllVisibleAccounts();
-    const allAlianNames = await wallet.getAllAlianName();
-    const allContactNames = await wallet.getContactsByMap();
-    const templist = await _accounts
-      .map((item) =>
-        item.accounts.map((account) => {
-          return {
-            ...account,
-            type: item.type,
-            alianName:
-              allContactNames[account?.address?.toLowerCase()]?.name ||
-              allAlianNames[account?.address?.toLowerCase()],
-            keyring: item.keyring,
-          };
-        })
-      )
-      .flat(1);
-    const result = await balanceList(templist);
-    setLoadingAddress(false);
-    if (result) {
-      const withBalanceList = result.sort((a, b) => {
-        return new BigNumber(b?.balance || 0)
-          .minus(new BigNumber(a?.balance || 0))
-          .toNumber();
-      });
-      setAccountsList(withBalanceList);
-    }
-  };
 
-  const handleClickChange = (visible) => {
+  const handleClickChange = (visible: boolean) => {
     setClicked(visible);
     setStartEdit(false);
     setHovered(false);
@@ -944,12 +837,14 @@ const Dashboard = () => {
                       onPressEnter={alianNameConfirm}
                       autoFocus={startEdit}
                       onClick={(e) => e.stopPropagation()}
-                      maxLength={20}
+                      maxLength={50}
                       min={0}
                       style={{ zIndex: 10 }}
                     />
                   ) : (
-                    displayName
+                    <span title={displayName} className="alias">
+                      {displayName}
+                    </span>
                   )}
                   {!startEdit && (
                     <img
@@ -1029,7 +924,7 @@ const Dashboard = () => {
                     {safeInfo.owners.map((owner, index) => (
                       <GnosisAdminItem
                         address={owner}
-                        accounts={accountsList}
+                        accounts={sortedAccountsList}
                         key={index}
                       />
                     ))}

@@ -1,8 +1,10 @@
-import { useEffect, useRef, useState } from 'react';
+import { KEYRING_TYPE } from './../../constant/index';
+import { useEffect, useRef, useState, useCallback } from 'react';
 import { useHistory } from 'react-router-dom';
 import { Approval } from 'background/service/notification';
 import { useWallet } from './WalletContext';
 import { getUiType } from './index';
+import { KEYRING_TYPE_TEXT, WALLET_BRAND_CONTENT } from '@/constant';
 
 export const useApproval = () => {
   const wallet = useWallet();
@@ -119,14 +121,14 @@ export const useSelectOption = <T>({
   ] as const;
 };
 
-export const useWalletRequest = (
-  requestFn,
+export const useWalletRequest = <TReqArgs extends any[] = any[], TRet = any>(
+  requestFn: (...args: TReqArgs) => TRet | Promise<TRet>,
   {
     onSuccess,
     onError,
   }: {
-    onSuccess?(arg: any): void;
-    onError?(arg: any): void;
+    onSuccess?(ret: TRet, opts: { args: TReqArgs }): void;
+    onError?(arg: Error): void;
   }
 ) => {
   const mounted = useRef(false);
@@ -141,7 +143,7 @@ export const useWalletRequest = (
   const [res, setRes] = useState<any>();
   const [err, setErr] = useState<any>();
 
-  const run = async (...args) => {
+  const run = async (...args: TReqArgs) => {
     setLoading(true);
     try {
       const _res = await Promise.resolve(requestFn(...args));
@@ -149,7 +151,7 @@ export const useWalletRequest = (
         return;
       }
       setRes(_res);
-      onSuccess && onSuccess(_res);
+      onSuccess && onSuccess(_res, { args });
     } catch (err) {
       if (!mounted.current) {
         return;
@@ -201,4 +203,69 @@ export const useHover = ({
       },
     },
   ];
+};
+
+export const useAlias = (address: string) => {
+  const wallet = useWallet();
+  const [name, setName] = useState<string>();
+  useEffect(() => {
+    if (address) {
+      wallet.getAlianName(address).then(setName);
+    }
+  }, [address]);
+
+  const updateAlias = useCallback(
+    async (alias: string) => {
+      await wallet.updateAlianName(address, alias);
+      setName(alias);
+    },
+    [address, wallet]
+  );
+
+  return [name, updateAlias] as const;
+};
+
+export const useBalance = (address: string) => {
+  const [cacheBalance, setCacheBalance] = useState<number>();
+  const [balance, setBalance] = useState<number>();
+  const wallet = useWallet();
+  useEffect(() => {
+    let flag = true;
+    setBalance(undefined);
+    setCacheBalance(undefined);
+    if (address) {
+      wallet
+        .getAddressCacheBalance(address)
+        .then((d) => flag && setCacheBalance(d?.total_usd_value || 0));
+      wallet
+        .getAddressBalance(address)
+        .then((d) => flag && setBalance(d.total_usd_value));
+    }
+    return () => {
+      flag = false;
+    };
+  }, [address]);
+
+  return [balance ?? cacheBalance] as const;
+};
+
+export const useAddressSource = ({
+  type,
+  brandName,
+  byImport = false,
+}: {
+  type: string;
+  brandName: string;
+  byImport?: boolean;
+}) => {
+  if (byImport === true && KEYRING_TYPE.HdKeyring === type) {
+    return 'Imported by Seed Phrase';
+  }
+  if (KEYRING_TYPE_TEXT[type]) {
+    return KEYRING_TYPE_TEXT[type];
+  }
+  if (WALLET_BRAND_CONTENT[brandName]) {
+    return WALLET_BRAND_CONTENT[brandName].name;
+  }
+  return '';
 };

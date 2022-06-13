@@ -1,4 +1,4 @@
-@import '../../style/var.less';
+@import '../../style/mixin.less';
 
 .send-token,
 .transfer-nft {
@@ -22,8 +22,6 @@
       .token-balance {
         display: flex;
         align-items: center;
-        text-decoration: underline;
-        cursor: pointer;
       }
     }
     &:nth-last-child(1) {
@@ -277,5 +275,13 @@
     bottom: 20px;
     left: 0;
     width: 100%;
+  }
+}
+
+.send-token-gas-selector {
+  .gas-selector {
+    background: #F5F6FA;
+    border: 1px solid #E5E9EF;
+    border-radius: 6px;
   }
 }

@@ -1,17 +1,19 @@
-import { useAccount } from '@/ui/store-hooks';
-import { useInfiniteScroll } from 'ahooks';
-import { TxHistoryResult } from 'background/service/openapi';
-import { last } from 'lodash';
 import React, { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link } from 'react-router-dom';
+import { last } from 'lodash';
+
+import { connectStore } from '@/ui/store';
+import { useAccount } from '@/ui/store-hooks';
+import { useInfiniteScroll } from 'ahooks';
+import { TxHistoryResult } from 'background/service/openapi';
 import { Empty, PageHeader } from 'ui/component';
 import { useWallet, useWalletOld } from 'ui/utils';
 import { HistoryItem } from './HistoryItem';
 import { Loading } from './Loading';
 import './style.less';
 
-const PAGE_COUNT = 100;
+const PAGE_COUNT = 10;
 
 const History = () => {
   const wallet = useWalletOld();
@@ -86,4 +88,4 @@ const History = () => {
   );
 };
 
-export default History;
+export default connectStore()(History);

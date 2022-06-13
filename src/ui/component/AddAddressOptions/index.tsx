@@ -4,59 +4,79 @@ import { message } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { getUiType, useWallet } from 'ui/utils';
 import { openInternalPageInTab } from 'ui/utils/webapi';
-import Field from '../Field';
+import Field from './Field';
 import IconArrowRight from 'ui/assets/bookmark.svg';
 import IconHighLight from 'ui/assets/walletlogo/highlightstar.svg';
 import IconSuccess from 'ui/assets/success.svg';
 import './style.less';
-import IconAddwatchmodo from 'ui/assets/walletlogo/addwatchmode.svg';
-import IconMnemonics from 'ui/assets/walletlogo/mnemonics.svg';
 import IconCreatenewaddr from 'ui/assets/walletlogo/createnewaddr.svg';
-import IconKeystore from 'ui/assets/walletlogo/keystore.svg';
-import IconPrivatekey from 'ui/assets/walletlogo/privatekey.svg';
+import IconImportAdress from 'ui/assets/walletlogo/import-address.svg';
+
+import IconAddwatchmodo from 'ui/assets/walletlogo/addwatchmode.svg';
+
+import { useIsShowMnemonic } from 'ui/store-hooks';
+
 import {
   IS_CHROME,
   WALLET_BRAND_CONTENT,
   KEYRING_CLASS,
-  BRAND_ALIAN_TYPE_TEXT,
   BRAND_WALLET_CONNECT_TYPE,
+  IWalletBrandContent,
 } from 'consts';
 
 import clsx from 'clsx';
 import _ from 'lodash';
+import { connectStore } from '@/ui/store';
 
-const normaltype: string[] = [
-  'createAddress',
-  'addWatchMode',
-  'imporPrivateKey',
-  'importviaMnemonic',
-  'importKeystore',
+const BULTINS_TYPES = [
+  { type: 'createAddress' as const },
+  { type: 'importAddress' as const },
+  { type: 'addWatchMode' as const },
+
+  { type: 'imporPrivateKey' as const, deprecated: true },
+  { type: 'importviaMnemonic' as const, deprecated: true },
+  { type: 'importKeystore' as const, deprecated: true },
 ];
+
+const { normalTypes, deprecatedTypes } = BULTINS_TYPES.reduce(
+  (accu, item) => {
+    if (item.deprecated) {
+      accu.deprecatedTypes.push(item.type);
+    } else {
+      accu.normalTypes.push(item.type);
+    }
+
+    return accu;
+  },
+  {
+    normalTypes: [] as typeof BULTINS_TYPES[number]['type'][],
+    deprecatedTypes: [] as typeof BULTINS_TYPES[number]['type'][],
+  }
+);
+
 const AddAddressOptions = () => {
   const history = useHistory();
   const wallet = useWallet();
   const { t } = useTranslation();
-  const [savedWallet, setSavedWallet] = useState([]);
-  const [savedWalletData, setSavedWalletData] = useState([]);
-  const [showMnemonic, setShowMnemonic] = useState(false);
+  const [savedWallet, setSavedWallet] = useState<any[]>([]);
+  const [savedWalletData, setSavedWalletData] = useState<ISavedWalletData[]>(
+    []
+  );
   const [keystoneInited, setKeystoneInited] = useState(false);
   const init = async () => {
     const walletSavedList = await wallet.getHighlightWalletList();
     const filterdlist = walletSavedList.filter(Boolean);
     if (filterdlist.toString() !== savedWallet.toString()) {
-      await setSavedWallet(filterdlist);
+      setSavedWallet(filterdlist);
     }
-    const accounts = await wallet.getTypedAccounts(KEYRING_CLASS.MNEMONIC);
-    if (accounts.length <= 0) {
-      setShowMnemonic(true);
-    }
+
     const keystoneAccounts = await wallet.getTypedAccounts(
       KEYRING_CLASS.HARDWARE.KEYSTONE
     );
     if (keystoneAccounts.length > 0) {
       setKeystoneInited(true);
     }
-    const savedTemp: [] = await renderSavedData();
+    const savedTemp = renderSavedData();
     setSavedWalletData(savedTemp);
   };
   type Valueof<T> = T[keyof T];
@@ -142,49 +162,27 @@ const AddAddressOptions = () => {
     })
     .filter((item) => item.values);
 
-  const renderData = [
+  type IRenderItem = {
+    leftIcon: string;
+    brand: string;
+    content: string;
+    onClick: () => void;
+    subText?: undefined;
+  };
+  const renderData: IRenderItem[] = [
     {
       leftIcon: IconCreatenewaddr,
       content: t('createAddress'),
       brand: 'createAddress',
       onClick: async () => {
-        if (await wallet.checkHasMnemonic()) {
-          const account = await wallet.deriveNewAccountFromMnemonic();
-          const allAccounts = await wallet.getTypedAccounts(
-            KEYRING_CLASS.MNEMONIC
-          );
-          let mnemonLengh = 0;
-          if (allAccounts.length > 0) {
-            mnemonLengh = allAccounts[0]?.accounts?.length;
-          }
-          if (account && account.length > 0) {
-            await wallet.updateAlianName(
-              account[0]?.toLowerCase(),
-              `${BRAND_ALIAN_TYPE_TEXT[KEYRING_CLASS.MNEMONIC]} ${
-                mnemonLengh + 1
-              }`
-            );
-          }
-          message.success({
-            icon: <img src={IconSuccess} className="icon icon-success" />,
-            content: t('Created successfully'),
-          });
-
-          if (getUiType().isTab) {
-            setTimeout(() => {
-              window.close();
-            }, 2000);
-            return;
-          }
-
-          history.push('/dashboard');
-        } else {
-          history.push('/create-mnemonics');
-        }
+        history.push('/mnemonics/create');
       },
-      subText: showMnemonic
-        ? t('A new mnemonic will be created')
-        : t('Create a new address with your mnemonic'),
+    },
+    {
+      leftIcon: IconImportAdress,
+      brand: 'importAddress',
+      content: 'Import Address',
+      onClick: () => history.push('/import/entry-import-address'),
     },
     {
       leftIcon: IconAddwatchmodo,
@@ -193,32 +191,20 @@ const AddAddressOptions = () => {
       subText: t('Add address without private keys'),
       onClick: () => history.push('/import/watch-address'),
     },
-    {
-      leftIcon: IconPrivatekey,
-      brand: 'imporPrivateKey',
-      content: t('Import Private Key'),
-      onClick: () => history.push('/import/key'),
-    },
-    {
-      leftIcon: IconMnemonics,
-      brand: 'importviaMnemonic',
-      content: t('Import via Mnemonic'),
-      onClick: () => history.push('/import/mnemonics'),
-    },
-    {
-      leftIcon: IconKeystore,
-      brand: 'importKeystore',
-      content: t('Import Your Keystore'),
-      onClick: () => history.push('/import/json'),
-    },
   ];
+  type ISavedWalletData = IRenderItem & {
+    image?: IWalletBrandContent['image'];
+    connectType?: IWalletBrandContent['connectType'];
+  };
   const renderSavedData = () => {
     if (savedWallet.length > 0) {
-      const result = [] as any;
+      const result: ISavedWalletData[] = [];
       savedWallet.map((item) => {
-        if (normaltype.includes(item)) {
-          result.push(renderData.find((data) => data.brand === item));
-        } else {
+        if (normalTypes.includes(item)) {
+          result.push(
+            renderData.find((data) => data.brand === item) as IRenderItem
+          );
+        } else if (!deprecatedTypes.includes(item)) {
           const savedItem = Object.values(WALLET_BRAND_CONTENT).find(
             (wallet) => wallet.brand.toString() === item
           );
@@ -236,13 +222,17 @@ const AddAddressOptions = () => {
     }
     return [];
   };
-  const displayNormalData = renderData
-    .map((item) => {
-      const existItem = savedWallet.filter((brand) => brand === item.brand);
-      if (existItem.length > 0) return null;
-      return item;
-    })
-    .filter(Boolean);
+  const { displayNormalData, showStaticDivideLine } = React.useMemo(() => {
+    const displayNormalData = renderData
+      .map((item) => {
+        const existItem = savedWallet.filter((brand) => brand === item.brand);
+        if (existItem.length > 0) return null;
+        return item;
+      })
+      .filter(Boolean);
+    const showStaticDivideLine = displayNormalData.length >= 1;
+    return { displayNormalData, showStaticDivideLine };
+  }, [renderData]);
 
   useEffect(() => {
     init();
@@ -314,26 +304,33 @@ const AddAddressOptions = () => {
             </div>
           );
         })}
-        <div className="divide-line-list"></div>
-        {displayNormalData.map((data) => {
-          return !showMnemonic && data!.brand === 'importviaMnemonic' ? null : (
-            <Field
-              className="address-options"
-              key={data!.content}
-              leftIcon={<img src={data!.leftIcon} className="icon" />}
-              rightIcon={
-                !savedWallet.toString().includes(data!.brand) ? (
-                  <img src={IconArrowRight} className="icon icon-arrow-right" />
-                ) : null
-              }
-              brand={data!.brand}
-              subText={data!.subText}
-              onClick={data!.onClick}
-              callback={init}
-              address
-            >
-              {data!.content}
-            </Field>
+        {showStaticDivideLine && <div className="divide-line-list"></div>}
+        {displayNormalData.map((data, idx) => {
+          return (
+            <React.Fragment key={data!.content}>
+              {data?.brand === 'addWatchMode' && idx !== 0 && (
+                <div className="divide-line-list"></div>
+              )}
+              <Field
+                className="address-options"
+                leftIcon={<img src={data!.leftIcon} className="icon" />}
+                rightIcon={
+                  !savedWallet.toString().includes(data!.brand) ? (
+                    <img
+                      src={IconArrowRight}
+                      className="icon icon-arrow-right"
+                    />
+                  ) : null
+                }
+                brand={data!.brand}
+                subText={data!.subText}
+                onClick={data!.onClick}
+                callback={init}
+                address
+              >
+                {data!.content}
+              </Field>
+            </React.Fragment>
           );
         })}
       </div>
@@ -341,4 +338,4 @@ const AddAddressOptions = () => {
   );
 };
 
-export default AddAddressOptions;
+export default connectStore()(AddAddressOptions);

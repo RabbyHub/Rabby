@@ -26,6 +26,8 @@ import {
   KEYRING_CLASS,
   KEYRING_TYPE,
   SUPPORT_1559_KEYRING_TYPE,
+  KEYRING_CATEGORY_MAP,
+  MINIMUM_GAS_LIMIT,
 } from 'consts';
 import {
   addHexPrefix,
@@ -34,6 +36,7 @@ import {
   isHexString,
   unpadHexString,
 } from 'ethereumjs-util';
+import BigNumber from 'bignumber.js';
 import React, { ReactNode, useEffect, useState } from 'react';
 import ReactGA from 'react-ga';
 import { useTranslation } from 'react-i18next';
@@ -443,7 +446,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
   };
 
   const explainTx = async (address: string) => {
-    const res = await wallet.openapi.explainTx(
+    const res: ExplainTxResponse = await wallet.openapi.explainTx(
       {
         ...tx,
         nonce: tx.nonce || '0x1', // set a mock nonce for explain if dapp not set it
@@ -457,7 +460,16 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     );
     if (!gasLimit) {
       // use server response gas limit
-      setGasLimit(res.recommend.gas);
+      let recommendGasLimit = '0';
+      const gasLimitFromDapp = tx.gas || tx.gasLimit;
+      if (isSend && gasLimitFromDapp) {
+        recommendGasLimit = new BigNumber(gasLimitFromDapp).toFixed(0);
+      } else {
+        recommendGasLimit = new BigNumber(res.recommend.gas)
+          .times(1.5)
+          .toFixed(0);
+      }
+      setGasLimit(intToHex(Number(recommendGasLimit)));
     }
     setTxDetail(res);
     const localNonce = (await wallet.getNonceByChain(tx.from, chainId)) || 0;
@@ -497,8 +509,8 @@ const SignTx = ({ params, origin }: SignTxProps) => {
   const handleGnosisConfirm = async (account: Account) => {
     stats.report('signTransaction', {
       type: KEYRING_TYPE.GnosisKeyring,
+      category: KEYRING_CATEGORY_MAP[KEYRING_CLASS.GNOSIS],
       chainId: chain.serverId,
-      is1559: support1559,
     });
     if (params.session.origin !== INTERNAL_REQUEST_ORIGIN || isSend) {
       const params: any = {
@@ -595,7 +607,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     await wallet.reportStats('signTransaction', {
       type: currentAccount.brandName,
       chainId: chain.serverId,
-      is1559: support1559,
+      category: KEYRING_CATEGORY_MAP[currentAccount.type],
     });
 
     ReactGA.event({
@@ -773,8 +785,8 @@ const SignTx = ({ params, origin }: SignTxProps) => {
 
     stats.report('createTransaction', {
       type: currentAccount.brandName,
+      category: KEYRING_CATEGORY_MAP[currentAccount.type],
       chainId: chain.serverId,
-      is1559: is1559,
     });
 
     ReactGA.event({
@@ -796,13 +808,19 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       // use cached gasPrice if exist
       customGasPrice = lastTimeGas.gasPrice;
     }
-    if (isSpeedUp || isCancel) {
+    if (isSpeedUp || isCancel || (isSend && tx.gasPrice)) {
       // use gasPrice set by dapp when it's a speedup or cancel tx
       customGasPrice = parseInt(tx.gasPrice!);
     }
     const gasList = await loadGasMarket(chain, customGasPrice);
     let gas: GasLevel | null = null;
-    if (isSpeedUp || isCancel || lastTimeGas?.lastTimeSelect === 'gasPrice') {
+
+    if (
+      (isSend && customGasPrice) ||
+      isSpeedUp ||
+      isCancel ||
+      lastTimeGas?.lastTimeSelect === 'gasPrice'
+    ) {
       gas = gasList.find((item) => item.level === 'custom')!;
     } else if (
       lastTimeGas?.lastTimeSelect &&
@@ -816,6 +834,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       // no cache, use the fast level in gasMarket
       gas = gasList.find((item) => item.level === 'fast')!;
     }
+
     setSelectedGas(gas);
     setSupport1559(is1559);
     if (is1559) {

@@ -1,0 +1,32 @@
+@import "./var.less";
+
+.ellipsis() {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.part-border(@width: 90%) {
+  position: absolute;
+  content: '';
+  position: absolute;
+  background-color: #d8dfeb;
+  height: 0.5px;
+  width: @width;
+}
+
+.page() {
+  min-height: 100vh;
+  background-color: @color-bg;
+  padding-left: 20px;
+  padding-right: 20px;
+}
+
+@keyframes spining {
+  0% {
+    transform: rotate(0deg);
+  }
+  100% {
+    transform: rotate(360deg);
+  }
+}

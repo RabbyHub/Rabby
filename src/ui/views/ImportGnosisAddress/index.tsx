@@ -1,6 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { useDebounce, useMedia } from 'react-use';
 import { Input, Form } from 'antd';
+import semver from 'semver-compare';
 import Safe from '@rabby-wallet/gnosis-sdk';
 import { useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
@@ -95,13 +96,8 @@ const ImportGnosisAddress = () => {
       try {
         setLoading(true);
         const safe = await Safe.getSafeInfo(address, selectedChain!.network);
-        switch (safe.version) {
-          case '1.3.0':
-          case '1.2.0':
-          case '1.1.1':
-            break;
-          default:
-            throw new Error('Version not supported');
+        if (semver(safe.version, '1.1.1') < 0) {
+          throw new Error('Version not supported');
         }
         setErrorMsg('');
         setCanSubmit(true);

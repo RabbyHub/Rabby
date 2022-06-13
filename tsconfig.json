@@ -24,8 +24,22 @@
     "jsx": "react",
     "allowSyntheticDefaultImports": true,
     "allowJs": true,
-    "plugins": [{ "transform": "typescript-transform-paths", "afterDeclarations": true }],
-    "outDir": "./dist"
+    "plugins": [
+      {
+        "transform": "typescript-transform-paths",
+        "afterDeclarations": true
+      },
+      {
+        "name": "typescript-styled-plugin",
+        "tags": [
+          "styled",
+          "css",
+        ],
+        "validate": true
+      }
+    ],
+    "outDir": "./dist",
+    "sourceMap": true
   },
   "exclude": ["./node_modules"],
   "include": ["src", "__tests__"]

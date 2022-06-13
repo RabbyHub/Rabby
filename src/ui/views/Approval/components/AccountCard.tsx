@@ -4,7 +4,7 @@ import { useWallet, useWalletOld } from 'ui/utils';
 import { splitNumberByStep } from 'ui/utils/number';
 import { KEYRINGS_LOGOS, WALLET_BRAND_CONTENT, KEYRING_CLASS } from 'consts';
 import { AddressViewer } from 'ui/component';
-import { useCurrentBalance } from 'ui/component/AddressList/AddressItem';
+import useCurrentBalance from 'ui/hooks/useCurrentBalance';
 import clsx from 'clsx';
 
 const AccountCard = ({
@@ -70,7 +70,10 @@ const AccountCard = ({
         <img src={icon} className="icon icon-account" />
         {(alianName || currentAccountAlianName) && (
           <div className="flex flex-col">
-            <div className={clsx('send-text', !alianName && 'text-white')}>
+            <div
+              className={clsx('send-text', !alianName && 'text-white')}
+              title={alianName || currentAccountAlianName}
+            >
               {alianName || currentAccountAlianName}
             </div>
             <AddressViewer

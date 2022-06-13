@@ -10,7 +10,7 @@ const manifest = fs.readJSONSync(manifestPath);
 
 const config = {
   mode: 'production',
-  devtool: false,
+  devtool: 'sourcemap',
   performance: {
     maxEntrypointSize: 2500000,
     maxAssetSize: 2500000,

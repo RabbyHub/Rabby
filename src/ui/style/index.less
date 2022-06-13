@@ -56,6 +56,7 @@ button:focus {
       padding: 32px 20px;
       height: 100%;
       position: relative;
+      overflow: hidden;
     }
   }
   .rabby-logo {
@@ -289,4 +290,7 @@ button:focus {
   &::before {
     opacity: 0;
   }
+}
+.rabby-btn-ghost.ant-btn-primary.ant-btn-background-ghost:disabled {
+  color: #8697ff !important;
 }

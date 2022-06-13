@@ -2,7 +2,8 @@ import React, { useState, useRef, useEffect } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import { useTranslation, Trans } from 'react-i18next';
 import { sortBy } from 'lodash';
-import { AddressList, StrayPageWithButton } from 'ui/component';
+import { StrayPageWithButton } from 'ui/component';
+import AddressItem from 'ui/component/AddressList/AddressItem';
 import { getUiType } from 'ui/utils';
 import { Account } from 'background/service/preference';
 import clsx from 'clsx';
@@ -13,7 +14,7 @@ import SuccessLogo from 'ui/assets/success-logo.svg';
 import './index.less';
 import { useMedia } from 'react-use';
 import Mask from 'ui/assets/import-mask.png';
-const { AddressItem } = AddressList;
+import { connectStore, useRabbyDispatch } from '@/ui/store';
 
 const ImportSuccess = ({ isPopup = false }: { isPopup?: boolean }) => {
   const history = useHistory();
@@ -28,18 +29,20 @@ const ImportSuccess = ({ isPopup = false }: { isPopup?: boolean }) => {
     isMnemonics?: boolean;
     importedLength?: number;
   }>();
+  const dispatch = useRabbyDispatch();
   const addressItems = useRef(new Array(state.accounts.length));
   const { t } = useTranslation();
   const isWide = useMedia('(min-width: 401px)') && isPopup;
   const {
     accounts,
     hasDivider = true,
-    title = t('Successfully imported'),
+    title = t('Imported Successfully'),
     editing = false,
     showImportIcon = false,
     isMnemonics = false,
     importedLength = 0,
   } = state;
+
   const handleNextClick = async (e: React.MouseEvent<HTMLElement>) => {
     e.stopPropagation();
     if (!stopEditing) {
@@ -72,6 +75,8 @@ const ImportSuccess = ({ isPopup = false }: { isPopup?: boolean }) => {
         type: accounts[0].type,
       });
     }
+
+    dispatch.account.getCurrentAccountAsync();
   }, []);
 
   return (
@@ -98,7 +103,7 @@ const ImportSuccess = ({ isPopup = false }: { isPopup?: boolean }) => {
               src={SuccessLogo}
             />
             <p className="text-24 mb-4 mt-0 text-white text-center font-bold">
-              {t('Imported Successfully')}
+              {title || t('Imported Successfully')}
             </p>
             <img src="/images/success-mask.png" className="mask" />
           </header>
@@ -110,13 +115,13 @@ const ImportSuccess = ({ isPopup = false }: { isPopup?: boolean }) => {
                 src={SuccessLogo}
               />
               <p className="text-24 mb-4 mt-0 text-white text-center font-bold">
-                {t('Imported Successfully')}
+                {title || t('Imported Successfully')}
               </p>
             </div>
             <img src={Mask} className="mask" />
           </div>
         ))}
-      <div className={clsx(isPopup && 'rabby-container')}>
+      <div className={clsx(isPopup && 'rabby-container', 'overflow-auto')}>
         <div
           onClick={(e) => {
             e.stopPropagation();
@@ -165,7 +170,6 @@ const ImportSuccess = ({ isPopup = false }: { isPopup?: boolean }) => {
                 showIndex={!editing}
                 importedAccount
                 isMnemonics={isMnemonics}
-                currentImportLength={accounts.length}
                 importedLength={importedLength}
                 stopEditing={stopEditing || index !== editIndex}
                 canEditing={(editing) => startEdit(editing, index)}
@@ -181,4 +185,4 @@ const ImportSuccess = ({ isPopup = false }: { isPopup?: boolean }) => {
   );
 };
 
-export default ImportSuccess;
+export default connectStore()(ImportSuccess);

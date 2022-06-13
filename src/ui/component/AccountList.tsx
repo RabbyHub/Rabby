@@ -6,7 +6,7 @@ import { useWallet, useWalletOld } from 'ui/utils';
 const ADDRESS_TYPES = [
   {
     type: KEYRING_CLASS.MNEMONIC,
-    name: 'Mnemonics address',
+    name: 'Seed Phrase address',
   },
   {
     type: KEYRING_CLASS.PRIVATE_KEY,

@@ -36,7 +36,13 @@ import { Session } from 'background/service/session';
 import { Tx } from 'background/service/openapi';
 import RpcCache from 'background/utils/rpcCache';
 import Wallet from '../wallet';
-import { CHAINS, CHAINS_ENUM, SAFE_RPC_METHODS, KEYRING_TYPE } from 'consts';
+import {
+  CHAINS,
+  CHAINS_ENUM,
+  SAFE_RPC_METHODS,
+  KEYRING_TYPE,
+  KEYRING_CATEGORY_MAP,
+} from 'consts';
 import buildinProvider from 'background/utils/buildinProvider';
 import BaseController from '../base';
 import { Account } from 'background/service/preference';
@@ -250,6 +256,7 @@ class ProviderController extends BaseController {
     const isCancel = !!txParams.isCancel;
     const traceId = approvalRes.traceId;
     const extra = approvalRes.extra;
+    let signedTransactionSuccess = false;
     delete txParams.isSend;
     delete approvalRes.isSend;
     delete approvalRes.address;
@@ -300,123 +307,161 @@ class ProviderController extends BaseController {
         console.log(e);
       }
     }
-    const signedTx = await keyringService.signTransaction(
-      keyring,
-      tx,
-      txParams.from,
-      opts
-    );
-    if (currentAccount.type === KEYRING_TYPE.GnosisKeyring) return;
-    const onTranscationSubmitted = (hash: string) => {
-      const chain = permissionService.isInternalOrigin(origin)
-        ? Object.values(CHAINS).find(
-            (chain) => chain.id === approvalRes.chainId
-          )!.enum
-        : permissionService.getConnectedSite(origin)!.chain;
-      const cacheExplain = transactionHistoryService.getExplainCache({
-        address: txParams.from,
-        chainId: Number(approvalRes.chainId),
-        nonce: Number(approvalRes.nonce),
-      });
-      stats.report('submitTransaction', {
-        type: currentAccount.brandName,
-        chainId: CHAINS[chain].serverId,
-        is1559,
-      });
-      if (isSend) {
-        pageStateCacheService.clear();
-      }
-      transactionHistoryService.addTx(
-        {
-          rawTx: approvalRes,
-          createdAt: Date.now(),
-          isCompleted: false,
-          hash,
-          failed: false,
-        },
-        cacheExplain
-      );
-      transactionWatchService.addTx(
-        `${txParams.from}_${approvalRes.nonce}_${chain}`,
-        {
-          nonce: approvalRes.nonce,
-          hash,
-          chain,
-        }
-      );
-    };
-    if (typeof signedTx === 'string') {
-      onTranscationSubmitted(signedTx);
-      return signedTx;
-    }
-    let buildTx;
-    if (is1559) {
-      buildTx = FeeMarketEIP1559Transaction.fromTxData({
-        ...(approvalRes as any),
-        r: addHexPrefix(signedTx.r),
-        s: addHexPrefix(signedTx.s),
-        v: addHexPrefix(signedTx.v),
-      });
-    } else {
-      buildTx = TransactionFactory.fromTxData({
-        ...approvalRes,
-        r: addHexPrefix(signedTx.r),
-        s: addHexPrefix(signedTx.s),
-        v: addHexPrefix(signedTx.v),
-      });
-    }
-
-    // Report address type(not sensitive information) to sentry when tx signatuure is invalid
-    if (!buildTx.verifySignature()) {
-      if (!buildTx.v) {
-        Sentry.captureException(new Error(`v missed, ${keyring.type}`));
-      } else if (!buildTx.s) {
-        Sentry.captureException(new Error(`s missed, ${keyring.type}`));
-      } else if (!buildTx.r) {
-        Sentry.captureException(new Error(`r missed, ${keyring.type}`));
-      } else {
-        Sentry.captureException(
-          new Error(`invalid signature, ${keyring.type}`)
-        );
-      }
-    }
+    const chain = permissionService.isInternalOrigin(origin)
+      ? Object.values(CHAINS).find((chain) => chain.id === approvalRes.chainId)!
+          .enum
+      : permissionService.getConnectedSite(origin)!.chain;
     try {
-      validateGasPriceRange(approvalRes);
-      const hash = await openapiService.pushTx(
-        {
-          ...approvalRes,
-          r: bufferToHex(signedTx.r),
-          s: bufferToHex(signedTx.s),
-          v: bufferToHex(signedTx.v),
-          value: approvalRes.value || '0x0',
-        },
-        traceId
+      const signedTx = await keyringService.signTransaction(
+        keyring,
+        tx,
+        txParams.from,
+        opts
       );
-
-      onTranscationSubmitted(hash);
-      return hash;
-    } catch (e: any) {
-      if (!isSpeedUp && !isCancel) {
+      if (currentAccount.type === KEYRING_TYPE.GnosisKeyring) {
+        signedTransactionSuccess = true;
+        stats.report('signedTransaction', {
+          type: currentAccount.brandName,
+          chainId: CHAINS[chain].serverId,
+          category: KEYRING_CATEGORY_MAP[currentAccount.type],
+          success: true,
+        });
+        return;
+      }
+      const onTranscationSubmitted = (hash: string) => {
         const cacheExplain = transactionHistoryService.getExplainCache({
           address: txParams.from,
           chainId: Number(approvalRes.chainId),
           nonce: Number(approvalRes.nonce),
         });
-        transactionHistoryService.addSubmitFailedTransaction(
+        stats.report('submitTransaction', {
+          type: currentAccount.brandName,
+          chainId: CHAINS[chain].serverId,
+          category: KEYRING_CATEGORY_MAP[currentAccount.type],
+          success: true,
+        });
+        if (isSend) {
+          pageStateCacheService.clear();
+        }
+        transactionHistoryService.addTx(
           {
             rawTx: approvalRes,
             createdAt: Date.now(),
-            isCompleted: true,
-            hash: '',
+            isCompleted: false,
+            hash,
             failed: false,
-            isSubmitFailed: true,
           },
           cacheExplain
         );
+        transactionWatchService.addTx(
+          `${txParams.from}_${approvalRes.nonce}_${chain}`,
+          {
+            nonce: approvalRes.nonce,
+            hash,
+            chain,
+          }
+        );
+      };
+      if (typeof signedTx === 'string') {
+        onTranscationSubmitted(signedTx);
+        return signedTx;
       }
-      const errMsg = e.message || JSON.stringify(e);
-      notification.create(undefined, i18n.t('Transaction push failed'), errMsg);
-      throw new Error(errMsg);
+      let buildTx;
+      if (is1559) {
+        buildTx = FeeMarketEIP1559Transaction.fromTxData({
+          ...(approvalRes as any),
+          r: addHexPrefix(signedTx.r),
+          s: addHexPrefix(signedTx.s),
+          v: addHexPrefix(signedTx.v),
+        });
+      } else {
+        buildTx = TransactionFactory.fromTxData({
+          ...approvalRes,
+          r: addHexPrefix(signedTx.r),
+          s: addHexPrefix(signedTx.s),
+          v: addHexPrefix(signedTx.v),
+        });
+      }
+
+      // Report address type(not sensitive information) to sentry when tx signatuure is invalid
+      if (!buildTx.verifySignature()) {
+        if (!buildTx.v) {
+          Sentry.captureException(new Error(`v missed, ${keyring.type}`));
+        } else if (!buildTx.s) {
+          Sentry.captureException(new Error(`s missed, ${keyring.type}`));
+        } else if (!buildTx.r) {
+          Sentry.captureException(new Error(`r missed, ${keyring.type}`));
+        } else {
+          Sentry.captureException(
+            new Error(`invalid signature, ${keyring.type}`)
+          );
+        }
+      }
+      signedTransactionSuccess = true;
+      stats.report('signedTransaction', {
+        type: currentAccount.brandName,
+        chainId: CHAINS[chain].serverId,
+        category: KEYRING_CATEGORY_MAP[currentAccount.type],
+        success: true,
+      });
+      try {
+        validateGasPriceRange(approvalRes);
+        const hash = await openapiService.pushTx(
+          {
+            ...approvalRes,
+            r: bufferToHex(signedTx.r),
+            s: bufferToHex(signedTx.s),
+            v: bufferToHex(signedTx.v),
+            value: approvalRes.value || '0x0',
+          },
+          traceId
+        );
+
+        onTranscationSubmitted(hash);
+        return hash;
+      } catch (e: any) {
+        stats.report('submitTransaction', {
+          type: currentAccount.brandName,
+          chainId: CHAINS[chain].serverId,
+          category: KEYRING_CATEGORY_MAP[currentAccount.type],
+          success: false,
+        });
+        if (!isSpeedUp && !isCancel) {
+          const cacheExplain = transactionHistoryService.getExplainCache({
+            address: txParams.from,
+            chainId: Number(approvalRes.chainId),
+            nonce: Number(approvalRes.nonce),
+          });
+          transactionHistoryService.addSubmitFailedTransaction(
+            {
+              rawTx: approvalRes,
+              createdAt: Date.now(),
+              isCompleted: true,
+              hash: '',
+              failed: false,
+              isSubmitFailed: true,
+            },
+            cacheExplain
+          );
+        }
+        const errMsg = e.message || JSON.stringify(e);
+        notification.create(
+          undefined,
+          i18n.t('Transaction push failed'),
+          errMsg
+        );
+        throw new Error(errMsg);
+      }
+    } catch (e) {
+      if (!signedTransactionSuccess) {
+        stats.report('signedTransaction', {
+          type: currentAccount.brandName,
+          chainId: CHAINS[chain].serverId,
+          category: KEYRING_CATEGORY_MAP[currentAccount.type],
+          success: false,
+        });
+      }
+      throw new Error(e);
     }
   };
   @Reflect.metadata('SAFE', true)

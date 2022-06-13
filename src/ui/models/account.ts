@@ -1,4 +1,5 @@
 import type { Account } from '@/background/service/preference';
+import { KEYRING_CLASS } from '@/constant';
 import { createModel } from '@rematch/core';
 import { DisplayedKeryring } from 'background/service/keyring';
 import { TotalBalanceResponse } from 'background/service/openapi';
@@ -6,13 +7,15 @@ import { RootModel } from '.';
 
 interface AccountState {
   currentAccount: null | Account;
-  visiableAccounts: Account[];
+  visibleAccounts: DisplayedKeryring[];
   hiddenAccounts: Account[];
   alianName: string;
   keyrings: DisplayedKeryring[];
   balanceMap: {
     [address: string]: TotalBalanceResponse;
   };
+
+  mnemonicAccounts: DisplayedKeryring[];
 }
 
 export const account = createModel<RootModel>()({
@@ -21,10 +24,11 @@ export const account = createModel<RootModel>()({
   state: {
     currentAccount: null,
     alianName: '',
-    visiableAccounts: [],
+    visibleAccounts: [],
     hiddenAccounts: [],
     keyrings: [],
     balanceMap: {},
+    mnemonicAccounts: [],
   } as AccountState,
 
   reducers: {
@@ -44,6 +48,14 @@ export const account = createModel<RootModel>()({
     ) {
       return { ...state, currentAccount: payload.currentAccount };
     },
+  },
+
+  selectors: (slice) => {
+    return {
+      isShowMnemonic() {
+        return slice((account) => account.mnemonicAccounts.length <= 0);
+      },
+    };
   },
 
   effects: (dispatch) => ({
@@ -74,7 +86,7 @@ export const account = createModel<RootModel>()({
       return name;
     },
 
-    async getAllClassAccountsAsync(_, store) {
+    async getAllClassAccountsAsync(_?, store?) {
       const keyrings = await store.app.wallet.getAllClassAccounts<
         DisplayedKeryring[]
       >();
@@ -83,11 +95,9 @@ export const account = createModel<RootModel>()({
     },
 
     async getAllVisibleAccountsAsync(_, store) {
-      const visiableAccounts = await store.app.wallet.getAllVisibleAccounts<
-        Account[]
-      >();
-      dispatch.account.setField({ visiableAccounts });
-      return visiableAccounts;
+      const visibleAccounts = await store.app.wallet.getAllVisibleAccounts();
+      dispatch.account.setField({ visibleAccounts });
+      return visibleAccounts;
     },
 
     async getAllHiddenAccountsAsync(_, store) {
@@ -96,6 +106,13 @@ export const account = createModel<RootModel>()({
       >();
       dispatch.account.setField({ hiddenAccounts });
       return hiddenAccounts;
+    },
+
+    async getTypedMnemonicAccountsAsync(_?, store?) {
+      const mnemonicAccounts = await store.app.wallet.getTypedAccounts(
+        KEYRING_CLASS.MNEMONIC
+      );
+      dispatch.account.setField({ mnemonicAccounts });
     },
   }),
 });
