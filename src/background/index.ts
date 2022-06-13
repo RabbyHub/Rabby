@@ -166,16 +166,14 @@ browser.runtime.onConnect.addListener((port) => {
     }
 
     const sessionId = port.sender?.tab?.id;
-    const session = sessionService.getOrCreateSession(sessionId);
+    const session = sessionService.getOrCreateSession(sessionId!);
 
     const req = { data, session };
     // for background push to respective page
-    req.session.pushMessage = (event, data) => {
-      pm.send('message', { event, data });
-    };
+    req.session!.setPortMessage(pm);
 
     if (subscriptionManager.methods[data?.method]) {
-      const connectSite = permissionService.getConnectedSite(session.origin);
+      const connectSite = permissionService.getConnectedSite(session!.origin);
       if (connectSite) {
         const chain = CHAINS[connectSite.chain];
         provider.chainId = chain.network;

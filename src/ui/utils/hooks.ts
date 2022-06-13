@@ -1,5 +1,6 @@
 import { useEffect, useRef, useState } from 'react';
 import { useHistory } from 'react-router-dom';
+import { Approval } from 'background/service/notification';
 import { useWallet } from './WalletContext';
 import { getUiType } from './index';
 
@@ -7,7 +8,7 @@ export const useApproval = () => {
   const wallet = useWallet();
   const history = useHistory();
 
-  const getApproval = wallet.getApproval;
+  const getApproval: () => Promise<Approval> = wallet.getApproval;
 
   const resolveApproval = async (
     data?: any,

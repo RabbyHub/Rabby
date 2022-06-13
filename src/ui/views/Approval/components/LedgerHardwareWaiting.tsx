@@ -91,7 +91,9 @@ const LedgerHardwareWaiting = ({ params }: { params: ApprovalParams }) => {
       chainId: chain.serverId,
       is1559: chain.eip['1559'],
     });
-    setIsSignText(params.isGnosis ? true : approval?.approvalType !== 'SignTx');
+    setIsSignText(
+      params.isGnosis ? true : approval?.data.approvalType !== 'SignTx'
+    );
     eventBus.addEventListener(EVENTS.LEDGER.REJECT_APPROVAL, (data) => {
       rejectApproval(data, true, true);
     });

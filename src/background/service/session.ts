@@ -1,4 +1,12 @@
 import { permissionService } from 'background/service';
+import { Object } from 'ts-toolbelt';
+import PortMessage from '@/utils/message/portMessage';
+
+export interface SessionProp {
+  origin: string;
+  icon: string;
+  name: string;
+}
 
 export class Session {
   origin = '';
@@ -7,13 +15,25 @@ export class Session {
 
   name = '';
 
-  constructor(data) {
+  pm: PortMessage | null = null;
+
+  pushMessage(event, data) {
+    if (this.pm) {
+      this.pm.send('message', { event, data });
+    }
+  }
+
+  constructor(data?: SessionProp | null) {
     if (data) {
       this.setProp(data);
     }
   }
 
-  setProp({ origin, icon, name }) {
+  setPortMessage(pm: PortMessage) {
+    this.pm = pm;
+  }
+
+  setProp({ origin, icon, name }: SessionProp) {
     this.origin = origin;
     this.icon = icon;
     this.name = name;
@@ -21,13 +41,13 @@ export class Session {
 }
 
 // for each tab
-const sessionMap = new Map();
+const sessionMap = new Map<number, Session | null>();
 
-const getSession = (id) => {
+const getSession = (id: number) => {
   return sessionMap.get(id);
 };
 
-const getOrCreateSession = (id) => {
+const getOrCreateSession = (id: number) => {
   if (sessionMap.has(id)) {
     return getSession(id);
   }
@@ -35,7 +55,7 @@ const getOrCreateSession = (id) => {
   return createSession(id, null);
 };
 
-const createSession = (id, data) => {
+const createSession = (id: number, data?: null | SessionProp) => {
   const session = new Session(data);
   sessionMap.set(id, session);
 
@@ -46,25 +66,25 @@ const deleteSession = (id) => {
   sessionMap.delete(id);
 };
 
-const broadcastEvent = (ev, data?, origin?) => {
-  let sessions: any[] = [];
+const broadcastEvent = (ev, data?, origin?: string) => {
+  let sessions: { key: number; data: Session }[] = [];
   sessionMap.forEach((session, key) => {
-    if (permissionService.hasPermission(session.origin)) {
+    if (session && permissionService.hasPermission(session.origin)) {
       sessions.push({
         key,
-        ...session,
+        data: session,
       });
     }
   });
 
   // same origin
   if (origin) {
-    sessions = sessions.filter((session) => session.origin === origin);
+    sessions = sessions.filter((session) => session.data.origin === origin);
   }
 
   sessions.forEach((session) => {
     try {
-      session.pushMessage?.(ev, data);
+      session.data.pushMessage?.(ev, data);
     } catch (e) {
       if (sessionMap.has(session.key)) {
         deleteSession(session.key);

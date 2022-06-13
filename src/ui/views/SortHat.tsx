@@ -3,6 +3,7 @@ import { useEffect, useState } from 'react';
 import { Redirect } from 'react-router-dom';
 import { useWallet, getUiType, useApproval, useWalletOld } from 'ui/utils';
 import { Spin } from 'ui/component';
+import { Approval } from 'background/service/notification';
 
 const SortHat = () => {
   const wallet = useWalletOld();
@@ -14,8 +15,7 @@ const SortHat = () => {
     const UIType = getUiType();
     const isInNotification = UIType.isNotification;
     const isInTab = UIType.isTab;
-    let approval = await getApproval();
-
+    let approval: Approval | undefined = await getApproval();
     if (isInNotification && !approval) {
       window.close();
       return;
