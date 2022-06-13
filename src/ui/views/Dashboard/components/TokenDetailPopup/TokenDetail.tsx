@@ -9,7 +9,7 @@ import { useHistory } from 'react-router-dom';
 import IconCopy from 'ui/assets/address-copy.png';
 import IconSuccess from 'ui/assets/success.svg';
 import { TokenWithChain } from 'ui/component';
-import { splitNumberByStep, useWallet } from 'ui/utils';
+import { splitNumberByStep, useWallet, useWalletOld } from 'ui/utils';
 import { getChain } from 'utils';
 import ChainIcon from '../NFT/ChainIcon';
 import { HistoryItem } from './HistoryItem';
@@ -22,7 +22,7 @@ const ellipsis = (text: string) => {
 };
 
 const TokenDetail = ({ token }: { token: TokenItem }) => {
-  const wallet = useWallet();
+  const wallet = useWalletOld();
   const { t } = useTranslation();
 
   const ref = useRef<HTMLDivElement | null>(null);

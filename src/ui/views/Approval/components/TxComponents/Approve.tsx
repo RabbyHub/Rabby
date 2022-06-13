@@ -12,7 +12,7 @@ import IconCopy from 'ui/assets/address-copy.png';
 import IconSuccess from 'ui/assets/success.svg';
 import IconUnknownProtocol from 'ui/assets/unknown-protocol.svg';
 import { AddressViewer, Popup } from 'ui/component';
-import { ellipsisOverflowedText, useWallet } from 'ui/utils';
+import { ellipsisOverflowedText, useWallet, useWalletOld } from 'ui/utils';
 import { splitNumberByStep } from 'ui/utils/number';
 import { getCustomTxParamsData } from 'ui/utils/transaction';
 import BalanceChange from './BalanceChange';
@@ -131,7 +131,7 @@ const Approve = ({
   isSpeedUp,
   raw,
 }: ApproveProps) => {
-  const wallet = useWallet();
+  const wallet = useWalletOld();
   const detail = data.type_token_approval!;
   const chain = CHAINS[chainEnum];
   const [editApproveModalVisible, setEditApproveModalVisible] = useState(false);

@@ -3,7 +3,7 @@ import { Input } from 'antd';
 import cloneDeep from 'lodash/cloneDeep';
 import BigNumber from 'bignumber.js';
 import { TokenItem } from 'background/service/openapi';
-import { useWallet } from 'ui/utils';
+import { useWallet, useWalletOld } from 'ui/utils';
 import TokenWithChain from '../TokenWithChain';
 import TokenSelector from '../TokenSelector';
 import IconArrowDown from 'ui/assets/arrow-down-triangle.svg';
@@ -33,7 +33,7 @@ const TokenAmountInput = ({
   const [originTokenList, setOriginTokenList] = useState<TokenItem[]>([]);
   const [isListLoading, setIsListLoading] = useState(true);
   const [tokenSelectorVisible, setTokenSelectorVisible] = useState(false);
-  const wallet = useWallet();
+  const wallet = useWalletOld();
   if (amountFocus) {
     tokenInputRef.current?.focus();
   }

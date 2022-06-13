@@ -9,7 +9,7 @@ import {
   LoadingOverlay,
 } from 'ui/component';
 import stats from '@/stats';
-import { getUiType, useWallet, useWalletRequest } from 'ui/utils';
+import { getUiType, useWallet, useWalletOld, useWalletRequest } from 'ui/utils';
 import { HARDWARE_KEYRING_TYPES, HDPaths } from 'consts';
 import { BIP44_PATH, LEDGER_LIVE_PATH } from '../ImportHardware/LedgerHdPath';
 import Pagination from './components/Pagination';
@@ -54,7 +54,7 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
   const [accounts, setAccounts] = useState<any[]>([]);
   const [importedAccounts, setImportedAccounts] = useState<any[]>([]);
   const [form] = Form.useForm();
-  const wallet = useWallet();
+  const wallet = useWalletOld();
   const keyringId = useRef<number | null | undefined>(state.keyringId);
   const [selectedAccounts, setSelectedAcounts] = useState<
     { address: string; index: number }[]

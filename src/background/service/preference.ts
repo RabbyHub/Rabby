@@ -138,6 +138,10 @@ class PreferenceService {
     }
   };
 
+  getPreference = (key?: string) => {
+    return key ? this.store[key] : this.store;
+  };
+
   getTokenApprovalChain = (address: string) => {
     const key = address.toLowerCase();
     return this.store.tokenApprovalChain[key] || CHAINS_ENUM.ETH;
@@ -368,7 +372,7 @@ class PreferenceService {
     const key = address.toLowerCase();
     return this.store.addedToken[key] || [];
   };
-  updateAddedToken = (address: string, tokenList: []) => {
+  updateAddedToken = (address: string, tokenList: string[]) => {
     const key = address.toLowerCase();
     this.store.addedToken[key] = tokenList;
   };

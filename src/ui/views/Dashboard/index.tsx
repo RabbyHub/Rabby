@@ -1,67 +1,70 @@
-import React, { useEffect, useState, useRef } from 'react';
-import ClipboardJS from 'clipboard';
-import QRCode from 'qrcode.react';
-import cloneDeep from 'lodash/cloneDeep';
-import uniqBy from 'lodash/uniqBy';
-import BigNumber from 'bignumber.js';
-import { useHistory, useLocation, Link } from 'react-router-dom';
-import { useInterval } from 'react-use';
-import { message, Popover, Input } from 'antd';
-import { FixedSizeList } from 'react-window';
-import clsx from 'clsx';
-import { useTranslation, Trans } from 'react-i18next';
-import ReactMarkdown from 'react-markdown';
-import remarkGfm from 'remark-gfm';
-import { connectStore, useRabbyDispatch, useRabbySelector } from '@/ui/store';
-
 import Safe from '@rabby-wallet/gnosis-sdk';
 import { SafeInfo } from '@rabby-wallet/gnosis-sdk/dist/api';
+import { Input, message, Popover } from 'antd';
+import { AssetItem, TokenItem } from 'background/service/openapi';
+import { ConnectedSite } from 'background/service/permission';
+import { Account } from 'background/service/preference';
+import BigNumber from 'bignumber.js';
+import { getUpdateContent } from 'changeLogs/index';
+import ClipboardJS from 'clipboard';
+import clsx from 'clsx';
 import {
-  KEYRING_ICONS,
-  WALLET_BRAND_CONTENT,
-  KEYRING_ICONS_WHITE,
-  KEYRING_CLASS,
-  KEYRING_TYPE,
   CHAINS,
+  KEYRING_CLASS,
+  KEYRING_ICONS,
+  KEYRING_ICONS_WHITE,
+  KEYRING_TYPE,
   KEYRING_TYPE_TEXT,
   KEYRING_WITH_INDEX,
+  WALLET_BRAND_CONTENT,
 } from 'consts';
+import cloneDeep from 'lodash/cloneDeep';
+import uniqBy from 'lodash/uniqBy';
+import QRCode from 'qrcode.react';
+import React, { useEffect, useRef, useState } from 'react';
+import { Trans, useTranslation } from 'react-i18next';
+import ReactMarkdown from 'react-markdown';
+import { Link, useHistory, useLocation } from 'react-router-dom';
+import { useInterval } from 'react-use';
+import { FixedSizeList } from 'react-window';
+import remarkGfm from 'remark-gfm';
+import { SvgIconLoading } from 'ui/assets';
+import IconAddressCopy from 'ui/assets/address-copy.png';
+import IconAddToken from 'ui/assets/addtoken.png';
+import IconPlus from 'ui/assets/dashboard-plus.svg';
+import IconCorrect from 'ui/assets/dashboard/contacts/correct.png';
+import IconUnCorrect from 'ui/assets/dashboard/contacts/uncorrect.png';
+import IconEditPen from 'ui/assets/editpen.svg';
+import IconCopy from 'ui/assets/icon-copy.svg';
+import IconInfo from 'ui/assets/information.png';
+import IconSuccess from 'ui/assets/success.svg';
+import IconTagYou from 'ui/assets/tag-you.svg';
+import IconUpAndDown from 'ui/assets/up-and-down.svg';
+import { AddressViewer, Copy, Modal, NameAndAddress } from 'ui/component';
 import {
-  useWallet,
+  connectStore,
+  useRabbyDispatch,
+  useRabbyGetter,
+  useRabbySelector,
+} from 'ui/store';
+import {
   isSameAddress,
   splitNumberByStep,
   useHover,
+  useWalletOld,
 } from 'ui/utils';
-import { AddressViewer, Copy, Modal, NameAndAddress } from 'ui/component';
 import { crossCompareOwners } from 'ui/utils/gnosis';
-import { Account } from 'background/service/preference';
-import { ConnectedSite } from 'background/service/permission';
-import { TokenItem, AssetItem } from 'background/service/openapi';
 import {
-  ChainAndSiteSelector,
-  BalanceView,
-  TokenList,
   AssetsList,
+  BalanceView,
+  ChainAndSiteSelector,
+  ExtraLink,
   GnosisWrongChainAlertBar,
   NFTListContainer,
-  ExtraLink,
+  TokenList,
 } from './components';
-import { getUpdateContent } from 'changeLogs/index';
-import IconSuccess from 'ui/assets/success.svg';
-import IconUpAndDown from 'ui/assets/up-and-down.svg';
-import IconEditPen from 'ui/assets/editpen.svg';
-import IconCorrect from 'ui/assets/dashboard/contacts/correct.png';
-import IconUnCorrect from 'ui/assets/dashboard/contacts/uncorrect.png';
-import IconPlus from 'ui/assets/dashboard-plus.svg';
-import IconInfo from 'ui/assets/information.png';
-import IconTagYou from 'ui/assets/tag-you.svg';
-import IconAddToken from 'ui/assets/addtoken.png';
-import IconAddressCopy from 'ui/assets/address-copy.png';
-import IconCopy from 'ui/assets/icon-copy.svg';
-import { SvgIconLoading } from 'ui/assets';
-
-import './style.less';
 import Dropdown from './components/NFT/Dropdown';
+import './style.less';
 
 const GnosisAdminItem = ({
   accounts,
@@ -101,7 +104,7 @@ const Dashboard = () => {
     showChainsModal?: boolean;
   }>();
   const { showChainsModal = false } = state ?? {};
-  const wallet = useWallet();
+  const wallet = useWalletOld();
   const { t } = useTranslation();
   const fixedList = useRef<FixedSizeList>();
 
@@ -180,6 +183,9 @@ const Dashboard = () => {
 
     rDispatch.viewDashboard.getPendingTxCountAsync(currentAccount.address);
   }, 30000);
+
+  const d = useRabbyGetter((s) => s.viewDashboard.double);
+  console.log(d);
 
   useEffect(() => {
     if (!currentAccount) {
@@ -337,11 +343,13 @@ const Dashboard = () => {
         localAdded,
         currentAccount?.address
       );
-      const addedToken = localAdded.map((item) => {
-        if (item.includes(':')) {
-          return item.split(':')[1];
-        }
-      });
+      const addedToken = localAdded
+        .map((item) => {
+          if (item.includes(':')) {
+            return item.split(':')[1];
+          }
+        })
+        .filter((item): item is string => item != undefined);
       setAddedToken(addedToken);
       tokens = sortTokensByPrice(
         uniqBy([...defaultTokens, ...localAddedTokens], (token) => {

@@ -5,7 +5,12 @@ import { useTranslation } from 'react-i18next';
 import FieldCheckbox from 'ui/component/FieldCheckbox';
 import AddressViewer from 'ui/component/AddressViewer';
 import { Account } from 'background/service/preference';
-import { useWallet, isSameAddress, formatTokenAmount } from 'ui/utils';
+import {
+  useWallet,
+  isSameAddress,
+  formatTokenAmount,
+  useWalletOld,
+} from 'ui/utils';
 import {
   KEYRING_TYPE,
   KEYRING_ICONS,
@@ -34,7 +39,7 @@ const AccountItem = ({ account, onSelect, checked }: AccountItemProps) => {
     null
   );
   const [nativeTokenSymbol, setNativeTokenSymbol] = useState('ETH');
-  const wallet = useWallet();
+  const wallet = useWalletOld();
 
   const init = async () => {
     const currentAccount = await wallet.getCurrentAccount();

@@ -1,5 +1,5 @@
 import { TokenApproval, TokenItem } from '@/background/service/openapi';
-import { Account } from '@/background/service/preference';
+import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { Tooltip } from 'antd';
 import BigNumber from 'bignumber.js';
 import { CHAINS, CHAINS_ENUM } from 'consts';
@@ -22,8 +22,6 @@ import './style.less';
 
 const TokenApproval = () => {
   const wallet = useWallet();
-  const [chain, setChain] = useState<CHAINS_ENUM | null>(null);
-  const [currentAccount, setCurrentAccount] = useState<Account | null>(null);
   const [list, setList] = useState<TokenApproval[]>([]);
   const [loading, setLoading] = useState(false);
   const [isShowSearch, setIsShowSearch] = useState(false);
@@ -36,6 +34,15 @@ const TokenApproval = () => {
   }>();
   const { showChainsModal = false } = state ?? {};
 
+  const dispatch = useRabbyDispatch();
+  const account = useRabbySelector((state) => state.account.currentAccount);
+  const chain = useRabbySelector(
+    (state) =>
+      state.preference.tokenApprovalChain[
+        account?.address?.toLowerCase() || ''
+      ] || CHAINS_ENUM.ETH
+  );
+
   const totalRisk = useMemo(() => {
     return list.reduce((sum, item) => {
       return new BigNumber(item.sum_exposure_usd).plus(sum);
@@ -43,11 +50,14 @@ const TokenApproval = () => {
   }, [list]);
 
   const handleChainChanged = (val: CHAINS_ENUM) => {
-    if (val === chain) {
+    if (val === chain || !account?.address) {
       return;
     }
-    wallet.setTokenApprovalChain(currentAccount?.address, val);
-    setChain(val);
+    dispatch.preference.setTokenApprovalChain({
+      address: account.address,
+      chain: val,
+    });
+
     setList([]);
   };
 
@@ -55,23 +65,8 @@ const TokenApproval = () => {
     history.replace('/');
   };
 
-  const init = async () => {
-    const account = await wallet.syncGetCurrentAccount();
-    const chain: CHAINS_ENUM = await wallet.getTokenApprovalChain(
-      account.address
-    );
-    setCurrentAccount(account);
-    setChain(chain);
-  };
-
-  const fetchData = async (chain) => {
-    const account = await wallet.syncGetCurrentAccount();
-
-    if (!account) {
-      history.replace('/');
-      return;
-    }
-    if (!chain) {
+  const fetchData = async () => {
+    if (!account || !chain) {
       return;
     }
 
@@ -91,12 +86,8 @@ const TokenApproval = () => {
   };
 
   useEffect(() => {
-    init();
-  }, []);
-
-  useEffect(() => {
-    fetchData(chain);
-  }, [chain]);
+    fetchData();
+  }, [account, chain]);
 
   if (!chain) {
     return null;

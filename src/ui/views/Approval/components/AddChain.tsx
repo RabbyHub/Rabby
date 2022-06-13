@@ -5,7 +5,7 @@ import { useTranslation, Trans } from 'react-i18next';
 import { intToHex } from 'ethereumjs-util';
 import { CHAINS_ENUM, CHAINS } from 'consts';
 import { Chain } from 'background/service/openapi';
-import { useWallet, useApproval } from 'ui/utils';
+import { useWallet, useApproval, useWalletOld } from 'ui/utils';
 import IconWarning from 'ui/assets/warning.svg';
 
 interface AddChainProps {
@@ -20,7 +20,7 @@ interface AddChainProps {
 }
 
 const AddChain = ({ params }: { params: AddChainProps }) => {
-  const wallet = useWallet();
+  const wallet = useWalletOld();
   const [, resolveApproval, rejectApproval] = useApproval();
   const { t } = useTranslation();
 

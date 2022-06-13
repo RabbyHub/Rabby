@@ -14,7 +14,7 @@ import { ExplainTxResponse } from 'background/service/openapi';
 import { Account } from 'background/service/preference';
 
 import { intToHex } from 'ethereumjs-util';
-import { useWallet, timeago, isSameAddress } from 'ui/utils';
+import { useWallet, timeago, isSameAddress, useWalletOld } from 'ui/utils';
 import {
   validateEOASign,
   validateETHSign,
@@ -90,7 +90,7 @@ const TransactionConfirmations = ({
   owners,
 }: TransactionConfirmationsProps) => {
   const { t } = useTranslation();
-  const wallet = useWallet();
+  const wallet = useWalletOld();
   const [visibleAccounts, setVisibleAccounts] = useState<Account[]>([]);
   const init = async () => {
     const accounts = await wallet.getAllVisibleAccountsArray();
@@ -258,7 +258,7 @@ const GnosisTransactionItem = ({
   safeInfo: SafeInfo;
   onSubmit(data: SafeTransactionItem): void;
 }) => {
-  const wallet = useWallet();
+  const wallet = useWalletOld();
   const { t } = useTranslation();
   const [explain, setExplain] = useState<ExplainTxResponse | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -403,7 +403,7 @@ const GnosisTransactionItem = ({
 };
 
 const GnosisTransactionQueue = () => {
-  const wallet = useWallet();
+  const wallet = useWalletOld();
   const [networkId, setNetworkId] = useState('1');
   const [safeInfo, setSafeInfo] = useState<SafeInfo | null>(null);
   const { t } = useTranslation();

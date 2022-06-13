@@ -14,6 +14,7 @@ import {
   useWallet,
   openInTab,
   openInternalPageInTab,
+  useWalletOld,
 } from 'ui/utils';
 import eventBus from '@/eventBus';
 import stats from '@/stats';
@@ -28,7 +29,7 @@ interface ApprovalParams {
 }
 
 const LedgerHardwareWaiting = ({ params }: { params: ApprovalParams }) => {
-  const wallet = useWallet();
+  const wallet = useWalletOld();
   const statusHeaders = {
     [WALLETCONNECT_STATUS_MAP.WAITING]: {
       color: '#8697FF',

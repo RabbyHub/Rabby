@@ -4,6 +4,7 @@ import {
   NFTApprovalResponse,
 } from '@/background/service/openapi';
 import { Account } from '@/background/service/preference';
+import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { message, Tabs, Tooltip } from 'antd';
 import { CHAINS, CHAINS_ENUM } from 'consts';
 import React, { useEffect, useState } from 'react';
@@ -12,7 +13,7 @@ import { useHistory, useLocation } from 'react-router-dom';
 import IconInfo from 'ui/assets/infoicon.svg';
 import { PageHeader } from 'ui/component';
 import TagChainSelector from 'ui/component/ChainSelector/tag';
-import { useWallet } from 'ui/utils';
+import { useWallet, useWalletOld } from 'ui/utils';
 import NFTContractList from './components/NFTContractList';
 import NFTList from './components/NFTList';
 import PopupSearch from './components/PopupSearch';
@@ -21,9 +22,7 @@ import { getAmountText } from './utils';
 const { TabPane } = Tabs;
 
 const NFTApproval = () => {
-  const wallet = useWallet();
-  const [chain, setChain] = useState<CHAINS_ENUM | null>(null);
-  const [currentAccount, setCurrentAccount] = useState<Account | null>(null);
+  const wallet = useWalletOld();
   const [loading, setLoading] = useState(false);
   const [isShowSearch, setIsShowSearch] = useState(false);
   const [data, setData] = useState<NFTApprovalResponse | null>(null);
@@ -34,12 +33,24 @@ const NFTApproval = () => {
   }>();
   const { showChainsModal = false } = state ?? {};
 
+  const account = useRabbySelector((state) => state.account.currentAccount);
+  const dispatch = useRabbyDispatch();
+
+  const chain = useRabbySelector(
+    (state) =>
+      state.preference.nftApprovalChain[
+        account?.address?.toLowerCase() || ''
+      ] || CHAINS_ENUM.ETH
+  );
+
   const handleChainChanged = (val: CHAINS_ENUM) => {
-    if (val === chain) {
+    if (val === chain || !account?.address) {
       return;
     }
-    wallet.setNFTApprovalChain(currentAccount?.address, val);
-    setChain(val);
+    dispatch.preference.setNFTApprovalChain({
+      address: account?.address,
+      chain: val,
+    });
     setData(null);
   };
 
@@ -47,23 +58,8 @@ const NFTApproval = () => {
     history.replace('/');
   };
 
-  const init = async () => {
-    const account = await wallet.syncGetCurrentAccount();
-    const chain: CHAINS_ENUM = await wallet.getNFTApprovalChain(
-      account.address
-    );
-    setCurrentAccount(account);
-    setChain(chain);
-  };
-
-  const fetchData = async (chain) => {
-    const account = await wallet.syncGetCurrentAccount();
-
-    if (!account) {
-      history.replace('/');
-      return;
-    }
-    if (!chain) {
+  const fetchData = async () => {
+    if (!account || !chain) {
       return;
     }
 
@@ -126,12 +122,8 @@ const NFTApproval = () => {
   };
 
   useEffect(() => {
-    init();
-  }, []);
-
-  useEffect(() => {
-    fetchData(chain);
-  }, [chain]);
+    fetchData();
+  }, [chain, account]);
 
   if (!chain) {
     return null;

@@ -1357,6 +1357,10 @@ export class WalletController extends BaseController {
   getNonceByChain = (address: string, chainId: number) =>
     transactionHistoryService.getNonceByChain(address, chainId);
 
+  getPreference = (key?: string) => {
+    return preferenceService.getPreference(key);
+  };
+
   setIsDefaultWallet = (val: boolean) =>
     preferenceService.setIsDefaultWallet(val);
   isDefaultWallet = () => preferenceService.getIsDefaultWallet();
@@ -1458,7 +1462,7 @@ export class WalletController extends BaseController {
   getAddedToken = (address: string) => {
     return preferenceService.getAddedToken(address);
   };
-  updateAddedToken = (address: string, tokenList: []) => {
+  updateAddedToken = (address: string, tokenList: string[]) => {
     return preferenceService.updateAddedToken(address, tokenList);
   };
   getWidgets = () => {

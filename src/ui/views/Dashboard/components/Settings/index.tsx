@@ -1,7 +1,7 @@
 import { Button, DrawerProps, Form, Input, message, Modal } from 'antd';
 import clsx from 'clsx';
 import { CHAINS, INITIAL_OPENAPI_URL } from 'consts';
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useHistory } from 'react-router-dom';
 import IconArrowRight from 'ui/assets/arrow-right-gray.svg';
@@ -16,8 +16,9 @@ import IconReset from 'ui/assets/reset-account.svg';
 import IconSuccess from 'ui/assets/success.svg';
 import IconServer from 'ui/assets/server.svg';
 import { Field, PageHeader, Popup } from 'ui/component';
-import { useWallet } from 'ui/utils';
+import { useWallet, useWalletOld } from 'ui/utils';
 import './style.less';
+import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 
 interface SettingsProps {
   visible?: boolean;
@@ -38,19 +39,13 @@ const OpenApiModal = ({
   const { useForm } = Form;
   const [isVisible, setIsVisible] = useState(false);
   const [form] = useForm<{ host: string }>();
-  const wallet = useWallet();
   const { t } = useTranslation();
 
-  const init = async () => {
-    const currentHost = await wallet.openapi.getHost();
-
-    form.setFieldsValue({
-      host: currentHost,
-    });
-  };
+  const host = useRabbySelector((state) => state.openapi.host);
+  const dispatch = useRabbyDispatch();
 
   const handleSubmit = async ({ host }: { host: string }) => {
-    await wallet.openapi.setHost(host);
+    await dispatch.openapi.setHost(host);
     setIsVisible(false);
     setTimeout(() => {
       onFinish();
@@ -71,8 +66,14 @@ const OpenApiModal = ({
   };
 
   useEffect(() => {
-    init();
-  }, []);
+    form.setFieldsValue({
+      host,
+    });
+  }, [form, host]);
+
+  useEffect(() => {
+    dispatch.openapi.getHost();
+  }, [dispatch]);
 
   useEffect(() => {
     setTimeout(() => {
@@ -135,19 +136,28 @@ const ResolveConflictModal = ({
 }: {
   visible: boolean;
   onCancel(): void;
-  onChange(v: boolean): void;
+  onChange?(v: boolean): void;
 }) => {
   const [isVisible, setIsVisible] = useState(false);
-  const wallet = useWallet();
   const { t } = useTranslation();
-  const [isDefaultWallet, setIsDefaultWallet] = useState(false);
+  const isDefaultWallet = useRabbySelector(
+    (state) => state.preference.isDefaultWallet
+  );
+  const dispatch = useRabbyDispatch();
+  const setIsDefaultWallet = useCallback(
+    (value: boolean) => {
+      dispatch.preference.setIsDefaultWallet(value);
+    },
+    [dispatch]
+  );
 
   const handleDefaultWalletChange = (value: boolean) => {
     if (isDefaultWallet === value) {
       return;
     }
-    onChange(value);
-    wallet.setIsDefaultWallet(value);
+    if (onChange) {
+      onChange(value);
+    }
     setIsDefaultWallet(value);
     message.success({
       icon: <span></span>,
@@ -159,20 +169,12 @@ const ResolveConflictModal = ({
     });
   };
 
-  const init = async () => {
-    setIsDefaultWallet(await wallet.isDefaultWallet());
-  };
-
   const handleCancel = () => {
     setIsVisible(false);
     setTimeout(() => {
       onCancel();
     }, 500);
   };
-
-  useEffect(() => {
-    init();
-  }, []);
 
   useEffect(() => {
     setTimeout(() => {
@@ -253,7 +255,7 @@ const ResetAccountModal = ({
   onCancel(): void;
 }) => {
   const [isVisible, setIsVisible] = useState(false);
-  const wallet = useWallet();
+  const wallet = useWalletOld();
   const { t } = useTranslation();
 
   const handleCancel = () => {
@@ -322,11 +324,14 @@ const Settings = ({ visible, onClose }: SettingsProps) => {
   const [showResolveConflictModal, setShowResolveConflictModal] = useState(
     false
   );
-  const [isDefaultWallet, setIsDefaultWallet] = useState(false);
+  const dispatch = useRabbyDispatch();
+  const isDefaultWallet = useRabbySelector(
+    (state) => state.preference.isDefaultWallet
+  );
   const [showResetAccountModal, setShowResetAccountModal] = useState(false);
 
   const init = async () => {
-    setIsDefaultWallet(await wallet.isDefaultWallet());
+    dispatch.preference.getIsDefaultWallet();
   };
 
   const handleClickClearWatchMode = () => {
@@ -461,9 +466,6 @@ const Settings = ({ visible, onClose }: SettingsProps) => {
             visible={showResolveConflictModal}
             onCancel={() => {
               setShowResolveConflictModal(false);
-            }}
-            onChange={(v) => {
-              setIsDefaultWallet(v);
             }}
           />
           <ResetAccountModal

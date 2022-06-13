@@ -26,10 +26,12 @@ export const openapi = createModel<RootModel>()({
 
   effects: (dispatch) => ({
     async getHost(_?, store?) {
-      // TODO
+      const host = await store.app.wallet.openapi.getHost();
+      this.setField({ host });
     },
-    async setHost() {
-      // TODO
+    async setHost(host: string, store) {
+      await store.app.wallet.openapi.setHost(host);
+      this.getHost();
     },
   }),
 });

@@ -1,12 +1,12 @@
 import React from 'react';
 import { useEffect, useState } from 'react';
 import { Redirect } from 'react-router-dom';
-import { useWallet, getUiType, useApproval } from 'ui/utils';
+import { useWallet, getUiType, useApproval, useWalletOld } from 'ui/utils';
 import { Spin } from 'ui/component';
 import { Approval } from 'background/service/notification';
 
 const SortHat = () => {
-  const wallet = useWallet();
+  const wallet = useWalletOld();
   const [to, setTo] = useState('');
   // eslint-disable-next-line prefer-const
   let [getApproval, , rejectApproval] = useApproval();

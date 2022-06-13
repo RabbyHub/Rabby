@@ -14,7 +14,7 @@ import {
   SPECIFIC_TEXT_BRAND,
 } from 'consts';
 import { ScanCopyQRCode } from 'ui/component';
-import { useApproval, useWallet, openInTab } from 'ui/utils';
+import { useApproval, useWallet, openInTab, useWalletOld } from 'ui/utils';
 import eventBus from '@/eventBus';
 import { SvgIconOpenExternal } from 'ui/assets';
 import stats from '@/stats';
@@ -291,7 +291,7 @@ const Process = ({
 };
 
 const WatchAddressWaiting = ({ params }: { params: ApprovalParams }) => {
-  const wallet = useWallet();
+  const wallet = useWalletOld();
   const [connectStatus, setConnectStatus] = useState(
     WALLETCONNECT_STATUS_MAP.WAITING
   );

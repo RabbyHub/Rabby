@@ -1,6 +1,6 @@
 import React, { ReactNode } from 'react';
 import cx from 'clsx';
-import { useWallet, useHover } from 'ui/utils';
+import { useWallet, useHover, useWalletOld } from 'ui/utils';
 import './style.less';
 import IconWalletConnect from 'ui/assets/walletlogo/walletconnect.png';
 interface FieldProps {
@@ -30,7 +30,7 @@ const Field = ({
   unselect,
   address,
 }: FieldProps) => {
-  const wallet = useWallet();
+  const wallet = useWalletOld();
   const [isHovering, hoverProps] = useHover();
 
   const saveWallet = async (e) => {
