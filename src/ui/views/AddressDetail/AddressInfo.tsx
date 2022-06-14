@@ -42,7 +42,7 @@ export const AddressInfo = ({ address, type, brandName, source }: Props) => {
       inputRef.current?.focus();
     }, 50);
     const { destroy } = Popup.info({
-      title: 'Edit address memo',
+      title: 'Edit address note',
       height: 215,
       content: (
         <div className="pt-[4px]">
@@ -65,13 +65,13 @@ export const AddressInfo = ({ address, type, brandName, source }: Props) => {
             <Form.Item
               name="memo"
               className="h-[80px] mb-0"
-              rules={[{ required: true, message: 'Please input address memo' }]}
+              rules={[{ required: true, message: 'Please input address note' }]}
             >
               <Input
                 ref={inputRef}
                 className="popup-input h-[48px]"
                 size="large"
-                placeholder="Please input address memo"
+                placeholder="Please input address note"
                 autoFocus
                 allowClear
                 spellCheck={false}
@@ -118,7 +118,7 @@ export const AddressInfo = ({ address, type, brandName, source }: Props) => {
       </div>
       <div className="rabby-list-item">
         <div className="rabby-list-item-content">
-          <div className="rabby-list-item-label">Memo</div>
+          <div className="rabby-list-item-label">Address Note</div>
           <div
             className="rabby-list-item-extra flex gap-[10px]"
             onClick={handleEditMemo}
