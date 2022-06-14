@@ -115,7 +115,7 @@ function AddressRow({
                 <span className="address-hdpath-index font-roboto-mono">{`#${hdPathIndex}`}</span>
               )}
             </div>
-            <span className={clsx('ml-[3px] favorite-star')}>
+            <span className={clsx('ml-[3px] favorite-star flex-shrink-0')}>
               <img
                 onClick={(e) => {
                   e.stopPropagation();
