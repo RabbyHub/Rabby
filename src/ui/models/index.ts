@@ -1,6 +1,7 @@
 import { Models } from '@rematch/core';
 
 import { app } from './app';
+import { appVersion } from './appVersion';
 import { account } from './account';
 import { permission } from './permission';
 import { preference } from './preference';
@@ -14,6 +15,7 @@ import { transactions } from './transactions';
 
 export interface RootModel extends Models<RootModel> {
   app: typeof app;
+  appVersion: typeof appVersion;
   account: typeof account;
   permission: typeof permission;
   preference: typeof preference;
@@ -28,6 +30,7 @@ export interface RootModel extends Models<RootModel> {
 
 export const models: RootModel = {
   app,
+  appVersion,
   account,
   permission,
   preference,

@@ -108,6 +108,10 @@ const Dashboard = () => {
     ...s.transactions,
   }));
 
+  const { firstNotice, updateContent } = useRabbySelector((s) => ({
+    ...s.appVersion,
+  }));
+
   const { sortedAccountsList } = React.useMemo(() => {
     const restAccounts = [...accountsList];
     let highlightedAccounts: typeof accountsList = [];
@@ -139,8 +143,6 @@ const Dashboard = () => {
   const [startEdit, setStartEdit] = useState(false);
   const [alianName, setAlianName] = useState<string>('');
   const [displayName, setDisplayName] = useState<string>('');
-  const [firstNotice, setFirstNotice] = useState(false);
-  const [updateContent, setUpdateContent] = useState('');
   const [showChain, setShowChain] = useState(false);
   const [showToken, setShowToken] = useState(false);
   const [showAssets, setShowAssets] = useState(false);
@@ -316,18 +318,6 @@ const Dashboard = () => {
     }
   };
 
-  const checkIfFirstLogin = async () => {
-    const firstOpen = await wallet.getIsFirstOpen();
-    const updateContent = await getUpdateContent();
-    setUpdateContent(updateContent);
-    if (!firstOpen || !updateContent) return;
-    setFirstNotice(firstOpen);
-  };
-
-  const changeIsFirstLogin = () => {
-    wallet.updateIsFirstOpen();
-    setFirstNotice(false);
-  };
   const sortTokensByPrice = (tokens: TokenItem[]) => {
     const copy = cloneDeep(tokens);
     return copy.sort((a, b) => {
@@ -392,7 +382,7 @@ const Dashboard = () => {
     setIsAssetsLoading(false);
   };
   useEffect(() => {
-    checkIfFirstLogin();
+    dispatch.appVersion.checkIfFirstLoginAsync();
   }, []);
   useEffect(() => {
     if (currentAccount) {
@@ -808,7 +798,9 @@ const Dashboard = () => {
         visible={firstNotice && updateContent}
         title="What's new"
         className="first-notice"
-        onCancel={changeIsFirstLogin}
+        onCancel={() => {
+          dispatch.appVersion.afterFirstLogin();
+        }}
         maxHeight="420px"
       >
         <ReactMarkdown children={updateContent} remarkPlugins={[remarkGfm]} />
