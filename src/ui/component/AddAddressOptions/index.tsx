@@ -1,25 +1,21 @@
 import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import { message } from 'antd';
 import { useTranslation } from 'react-i18next';
-import { getUiType, useWallet } from 'ui/utils';
+import { useWallet } from 'ui/utils';
 import { openInternalPageInTab } from 'ui/utils/webapi';
 import Field from './Field';
 import IconArrowRight from 'ui/assets/bookmark.svg';
 import IconHighLight from 'ui/assets/walletlogo/highlightstar.svg';
-import IconSuccess from 'ui/assets/success.svg';
+
 import './style.less';
 import IconCreatenewaddr from 'ui/assets/walletlogo/createnewaddr.svg';
 import IconImportAdress from 'ui/assets/walletlogo/import-address.svg';
 
 import IconAddwatchmodo from 'ui/assets/walletlogo/addwatchmode.svg';
 
-import { useIsShowMnemonic } from 'ui/store-hooks';
-
 import {
   IS_CHROME,
   WALLET_BRAND_CONTENT,
-  KEYRING_CLASS,
   BRAND_WALLET_CONNECT_TYPE,
   IWalletBrandContent,
 } from 'consts';
@@ -62,19 +58,11 @@ const AddAddressOptions = () => {
   const [savedWalletData, setSavedWalletData] = useState<ISavedWalletData[]>(
     []
   );
-  const [keystoneInited, setKeystoneInited] = useState(false);
   const init = async () => {
     const walletSavedList = await wallet.getHighlightWalletList();
     const filterdlist = walletSavedList.filter(Boolean);
     if (filterdlist.toString() !== savedWallet.toString()) {
       setSavedWallet(filterdlist);
-    }
-
-    const keystoneAccounts = await wallet.getTypedAccounts(
-      KEYRING_CLASS.HARDWARE.KEYSTONE
-    );
-    if (keystoneAccounts.length > 0) {
-      setKeystoneInited(true);
     }
     const savedTemp = renderSavedData();
     setSavedWalletData(savedTemp);
@@ -98,21 +86,12 @@ const AddAddressOptions = () => {
         pathname: '/import/gnosis',
       });
     } else if (item.connectType === BRAND_WALLET_CONNECT_TYPE.QRCodeBase) {
-      if (keystoneInited) {
-        history.push({
-          pathname: '/popup/import/select-address',
-          state: {
-            keyring: KEYRING_CLASS.HARDWARE.KEYSTONE,
-          },
-        });
-      } else {
-        history.push({
-          pathname: '/import/qrcode',
-          state: {
-            brand: item.brand,
-          },
-        });
-      }
+      history.push({
+        pathname: '/import/qrcode',
+        state: {
+          brand: item.brand,
+        },
+      });
     } else {
       history.push({
         pathname: '/import/wallet-connect',

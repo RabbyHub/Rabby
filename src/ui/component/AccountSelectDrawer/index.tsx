@@ -73,8 +73,8 @@ const AccountItem = ({ account, onSelect, checked }: AccountItemProps) => {
     >
       <img
         src={
-          KEYRING_ICONS[account.type] ||
-          WALLET_BRAND_CONTENT[account.brandName]?.image
+          WALLET_BRAND_CONTENT[account.brandName]?.image ||
+          KEYRING_ICONS[account.type]
         }
         className="icon icon-keyring"
       />
