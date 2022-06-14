@@ -108,6 +108,8 @@ import LogoLedgerDark from 'ui/assets/walletlogo/ledgerdark.png';
 import LogoLedgerWhite from 'ui/assets/walletlogo/ledgerwhite.png';
 import IconGridPlus from 'ui/assets/walletlogo/gridplus.png';
 import LogoKeystone from 'ui/assets/walletlogo/keystone.png';
+import LogoDefiant from 'ui/assets/walletlogo/defiant.png';
+import LogoDefiantWhite from 'ui/assets/walletlogo/defiant-white.png';
 
 export enum CHAINS_ENUM {
   ETH = 'ETH',
@@ -1097,6 +1099,7 @@ export enum WALLET_BRAND_TYPES {
   GRIDPLUS = 'GRIDPLUS',
   METAMASK = 'MetaMask',
   KEYSTONE = 'Keystone',
+  DEFIANT = 'Defiant',
 }
 
 enum WALLET_BRAND_CATEGORY {
@@ -1144,6 +1147,15 @@ export const WALLET_BRAND_CONTENT: {
     image: LogoCobo,
     connectType: BRAND_WALLET_CONNECT_TYPE.WalletConnect,
     category: WALLET_BRAND_CATEGORY.INSTITUTIONAL,
+  },
+  [WALLET_BRAND_TYPES.DEFIANT]: {
+    id: 17,
+    name: 'Defiant',
+    brand: WALLET_BRAND_TYPES.DEFIANT,
+    icon: LogoDefiant,
+    image: LogoDefiantWhite,
+    connectType: BRAND_WALLET_CONNECT_TYPE.WalletConnect,
+    category: WALLET_BRAND_CATEGORY.MOBILE,
   },
   [WALLET_BRAND_TYPES.FIREBLOCKS]: {
     id: 11,
