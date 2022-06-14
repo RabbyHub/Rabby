@@ -175,7 +175,7 @@ const ContactsItem = ({
             }
           }}
         >
-          {t('Edit address memo')}
+          {t('Edit address note')}
         </Menu.Item>
         <Menu.Item onClick={() => handleDeleteAddress(account?.address)}>
           {t('Delete address')}
@@ -247,7 +247,7 @@ const ContactsItem = ({
           onPressEnter={validateAddressAndName}
           onClick={(e) => e.stopPropagation()}
           autoFocus={nameFocus}
-          placeholder="Enter Memo"
+          placeholder="Enter Note"
           maxLength={50}
           min={0}
         />
