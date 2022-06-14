@@ -3,7 +3,8 @@ import { CHAINS } from '@/constant';
 import { FallbackSiteLogo } from '@/ui/component';
 import clsx from 'clsx';
 import React, { forwardRef, memo, useMemo } from 'react';
-import { ReactComponent as IconStar } from 'ui/assets/star-1.svg';
+import IconStar from 'ui/assets/icon-star.svg';
+import IconStarFill from 'ui/assets/icon-star-fill.svg';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import IconDisconnect from 'ui/assets/icon-disconnect.svg';
@@ -71,8 +72,10 @@ export const Item = memo(
               onFavoriteChange && onFavoriteChange(!item.isTop);
             }}
           >
-            <IconStar
-              className={clsx('pin-website', { 'is-active': item.isTop })}
+            <img
+              src={item.isTop ? IconStarFill : IconStar}
+              className={clsx('pin-website', item.isTop && 'is-active')}
+              alt=""
             />
           </div>
         </div>
