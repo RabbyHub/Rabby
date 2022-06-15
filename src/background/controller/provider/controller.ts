@@ -747,6 +747,56 @@ class ProviderController extends BaseController {
 
     return keyring;
   };
+
+  @Reflect.metadata('APPROVAL', [
+    'GetPublicKey',
+    ({
+      data: {
+        params: [address],
+      },
+      session: { origin },
+    }) => {
+      const account = preferenceService.getCurrentAccount();
+
+      if (address?.toLowerCase() !== account?.address?.toLowerCase()) {
+        throw ethErrors.rpc.invalidParams({
+          message:
+            'Invalid parameters: must use the current user address to sign',
+        });
+      }
+    },
+    { height: 390 },
+  ])
+  ethGetEncryptionPublicKey = async ({
+    data: {
+      params: [address],
+    },
+    session: { origin },
+    approvalRes,
+  }) => {
+    return approvalRes?.data;
+  };
+
+  @Reflect.metadata('APPROVAL', [
+    'Decrypt',
+    ({
+      data: {
+        params: [message, address],
+      },
+      session: { origin },
+    }) => {
+      return null;
+    },
+  ])
+  ethDecrypt = async ({
+    data: {
+      params: [message, address],
+    },
+    session: { origin },
+    approvalRes,
+  }) => {
+    return approvalRes.data;
+  };
 }
 
 export default new ProviderController();

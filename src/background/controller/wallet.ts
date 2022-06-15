@@ -1327,6 +1327,37 @@ export class WalletController extends BaseController {
     return keyringService.signTransaction(keyring, data, from, options);
   };
 
+  decryptMessage = async ({
+    type,
+    from,
+    data,
+    options,
+  }: {
+    type: string;
+    from: string;
+    data: any;
+    options?: any;
+  }) => {
+    const stripped = ethUtil.stripHexPrefix(data);
+    const buff = Buffer.from(stripped, 'hex');
+    data = JSON.parse(buff.toString('utf8'));
+    const keyring = await keyringService.getKeyringForAccount(from, type);
+    return keyring.decryptMessage(from, data, options);
+  };
+
+  getEncryptionPublicKey = async ({
+    address,
+    type,
+    options,
+  }: {
+    address: string;
+    type: string;
+    options?: any;
+  }) => {
+    const keyring = await keyringService.getKeyringForAccount(address, type);
+    return keyring.getEncryptionPublicKey(address, options);
+  };
+
   requestKeyring = (
     type: string,
     methodName: string,

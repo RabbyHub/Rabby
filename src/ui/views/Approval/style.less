@@ -79,6 +79,107 @@
     }
   }
 
+  .approval-public-key {
+    .content {
+      padding: 20px 20px 28px;
+    }
+    .site {
+      background: #f6f7f9;
+      border-radius: 6px;
+      padding: 10px 16px;
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      margin-bottom: 20px;
+      &-icon {
+        border-radius: 4px;
+      }
+      &-origin {
+        font-weight: 500;
+        font-size: 15px;
+        line-height: 18px;
+        color: @color-title;
+        .ellipsis();
+      }
+    }
+    .desc {
+      font-weight: 500;
+      font-size: 15px;
+      line-height: 20px;
+      text-align: center;
+      color: @color-title;
+    }
+    .footer {
+      .ant-btn {
+        width: 172px;
+      }
+    }
+  }
+
+  .approval-decrypt {
+    .content {
+      padding: 20px 20px 28px;
+    }
+
+    .desc {
+      font-weight: 400;
+      font-size: 14px;
+      line-height: 20px;
+      color: @color-comment-1;
+      margin-bottom: 20px;
+    }
+    .data {
+      background: @color-bg;
+      border: 1px solid @color-border;
+      border-radius: 6px;
+      overflow: auto;
+      height: 350px;
+      word-break: break-all;
+      position: relative;
+      padding-bottom: 40px;
+      .data-content {
+        height: 100%;
+        overflow: auto;
+        padding: 16px;
+      }
+      &-mask {
+        background: rgba(0, 0, 0, 0.9);
+        opacity: 0.9;
+        backdrop-filter: blur(120px);
+        border-radius: 6px;
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        align-items: center;
+
+        font-weight: 400;
+        font-size: 14px;
+        line-height: 18px;
+        text-align: center;
+        color: #ffffff;
+
+        position: absolute;
+        left: 0;
+        bottom: 0;
+        right: 0;
+        top: 0;
+        z-index: 10;
+        cursor: pointer;
+      }
+      .icon-copy {
+        position: absolute;
+        right: 12px;
+        bottom: 12px;
+        cursor: pointer;
+      }
+    }
+    .footer {
+      .ant-btn {
+        width: 172px;
+      }
+    }
+  }
+
   .site-card {
     width: 100%;
     background-color: @color-bg;
