@@ -492,8 +492,9 @@ export class WalletController extends BaseController {
   getRecentConnectedSites = () => {
     return permissionService.getRecentConnectedSites();
   };
-  getCurrentSite = (tabId: number): ConnectedSite | null => {
-    const { origin, name, icon } = sessionService.getSession(tabId) || {};
+  getCurrentSite = (tabId: number, domain: string): ConnectedSite | null => {
+    const { origin, name, icon } =
+      sessionService.getSession(`${tabId}-${domain}`) || {};
     if (!origin) {
       return null;
     }
@@ -511,9 +512,13 @@ export class WalletController extends BaseController {
       isTop: false,
     };
   };
-  getCurrentConnectedSite = (tabId: number) => {
-    const { origin } = sessionService.getSession(tabId) || {};
-    return permissionService.getWithoutUpdate(origin);
+  getCurrentConnectedSite = (tabId: number, domain: string) => {
+    const session = sessionService.getSession(`${tabId}-${domain}`);
+    if (session) {
+      return permissionService.getWithoutUpdate(session.origin);
+    } else {
+      return null;
+    }
   };
   setSite = (data: ConnectedSite) => {
     permissionService.setSite(data);
