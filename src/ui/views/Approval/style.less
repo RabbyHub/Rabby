@@ -224,8 +224,9 @@
     .cancel-nft,
     .send-nft,
     .cancel-tx {
-      .balance-change {
-        margin-bottom: 20px;
+      .balance-change + .nft-bc,
+      .nft-bc + .balance-change {
+        margin-top: 20px;
       }
       .common-detail-block {
         min-height: 120px;
@@ -319,6 +320,10 @@
             }
           }
         }
+      }
+
+      & + .section-gas-cost {
+        margin-top: 32px;
       }
     }
     .send {

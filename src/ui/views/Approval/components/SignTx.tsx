@@ -261,7 +261,9 @@ const SignTx = ({ params, origin }: SignTxProps) => {
   const [txDetail, setTxDetail] = useState<ExplainTxResponse | null>({
     balance_change: {
       err_msg: '',
+      receive_nft_list: [],
       receive_token_list: [],
+      send_nft_list: [],
       send_token_list: [],
       success: true,
       usd_value_change: 0,
