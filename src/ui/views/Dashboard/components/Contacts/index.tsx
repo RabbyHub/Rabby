@@ -119,7 +119,7 @@ const Contacts = ({ visible, onClose }: ContactsProps) => {
     >
       <div className="header">
         <div>Address</div>
-        <div>Memo</div>
+        <div>Note</div>
       </div>
       <div
         className="list-wrapper"

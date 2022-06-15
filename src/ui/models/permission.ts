@@ -49,6 +49,9 @@ export const permission = createModel<RootModel>()({
       await dispatch.permission.getWebsites();
     },
     async reorderWebsites(websites: ConnectedSite[], store) {
+      dispatch.permission.setField({
+        websites,
+      });
       await store.app.wallet.setRecentConnectedSites(websites);
       await dispatch.permission.getWebsites();
     },

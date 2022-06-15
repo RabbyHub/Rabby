@@ -19,7 +19,6 @@ import { ReactComponent as IconArrowRight } from 'ui/assets/arrow-right-gray.svg
 import IconCopy from 'ui/assets/component/icon-copy.svg';
 import IconCorrect from 'ui/assets/dashboard/contacts/correct.png';
 import IconEditPen from 'ui/assets/editpen.svg';
-import { ReactComponent as IconStar } from 'ui/assets/star-1.svg';
 import { AddressViewer, Copy } from 'ui/component';
 import { useAlias } from 'ui/utils';
 export interface AddressItemProps {

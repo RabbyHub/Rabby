@@ -12,6 +12,7 @@ import './style.less';
 import { obj2query } from '@/ui/utils/url';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { sortAccountsByBalance } from '@/ui/utils/account';
+import clsx from 'clsx';
 
 const { Nav: StrayFooterNav } = StrayFooter;
 
@@ -101,7 +102,7 @@ const AddressManagement = () => {
           alias={account.alianName}
           extra={
             <div
-              className="cursor-pointer"
+              className={clsx('icon-star', favorited && 'is-active')}
               onClick={(e) => {
                 e.stopPropagation();
                 dispatch.addressManagement.toggleHighlightedAddressAsync({
@@ -113,7 +114,7 @@ const AddressManagement = () => {
               {favorited ? (
                 <img src={IconStarFill} alt="" />
               ) : (
-                <img src={IconStar} className="icon-star" alt="" />
+                <img src={IconStar} alt="" />
               )}
             </div>
           }
