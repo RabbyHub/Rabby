@@ -44,7 +44,12 @@ import IconInfo from 'ui/assets/infoicon.svg';
 import IconGnosis from 'ui/assets/walletlogo/gnosis.png';
 import IconWatch from 'ui/assets/walletlogo/watch-purple.svg';
 import { Checkbox } from 'ui/component';
-import { openInternalPageInTab, useApproval, useWalletOld } from 'ui/utils';
+import {
+  openInternalPageInTab,
+  useApproval,
+  useWalletOld,
+  useWallet,
+} from 'ui/utils';
 import AccountCard from './AccountCard';
 import LedgerWebHIDAlert from './LedgerWebHIDAlert';
 import SecurityCheckBar from './SecurityCheckBar';
@@ -241,7 +246,7 @@ interface SignTxProps {
     isGnosis?: boolean;
     account?: Account;
   };
-  origin: string;
+  origin?: string;
 }
 
 const SignTx = ({ params, origin }: SignTxProps) => {
@@ -357,7 +362,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
   const [isGnosisAccount, setIsGnosisAccount] = useState(false);
   const [gnosisDrawerVisible, setGnosisDrawerVisble] = useState(false);
   const [, resolveApproval, rejectApproval] = useApproval();
-  const wallet = useWalletOld();
+  const wallet = useWallet();
   if (!chain) throw new Error('No support chain not found');
   const [support1559, setSupport1559] = useState(chain.eip['1559']);
   const [isLedger, setIsLedger] = useState(false);
@@ -423,7 +428,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
           value: tx.value || '0x0',
           gas: tx.gas || '',
         }, // set a mock nonce for check if dapp not set it
-        origin,
+        origin || '',
         address,
         !(nonce && tx.from === tx.to)
       );
@@ -454,7 +459,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
         value: tx.value || '0x0',
         gas: tx.gas || '', // set gas limit if dapp not set
       },
-      origin,
+      origin || '',
       address,
       updateNonce
     );
@@ -490,12 +495,12 @@ const SignTx = ({ params, origin }: SignTxProps) => {
 
   const explain = async () => {
     const currentAccount =
-      isGnosis && account ? account : await wallet.getCurrentAccount();
+      isGnosis && account ? account : (await wallet.getCurrentAccount())!;
     try {
       setIsReady(false);
-      const res = await explainTx(currentAccount!.address);
+      const res = await explainTx(currentAccount.address);
       if (res.pre_exec.success) {
-        await checkTx(currentAccount!.address);
+        await checkTx(currentAccount.address);
       }
       setIsReady(true);
     } catch (e: any) {
@@ -542,7 +547,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     }
 
     const currentAccount =
-      isGnosis && account ? account : await wallet.getCurrentAccount();
+      isGnosis && account ? account : (await wallet.getCurrentAccount())!;
 
     try {
       validateGasPriceRange(tx);
@@ -711,7 +716,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
   const checkCanProcess = async () => {
     const session = params.session;
     const currentAccount =
-      isGnosis && account ? account : await wallet.getCurrentAccount();
+      isGnosis && account ? account : (await wallet.getCurrentAccount())!;
     const site = await wallet.getConnectedSite(session.origin);
 
     if (currentAccount.type === KEYRING_TYPE.WatchAddressKeyring) {
@@ -754,7 +759,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
   };
 
   const getSafeInfo = async () => {
-    const currentAccount = await wallet.getCurrentAccount();
+    const currentAccount = (await wallet.getCurrentAccount())!;
     const networkId = await wallet.getGnosisNetworkId(currentAccount.address);
     const safeInfo = await Safe.getSafeInfo(currentAccount.address, networkId);
     setSafeInfo(safeInfo);
@@ -771,7 +776,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
 
   const init = async () => {
     const currentAccount =
-      isGnosis && account ? account : await wallet.getCurrentAccount();
+      isGnosis && account ? account : (await wallet.getCurrentAccount())!;
     const is1559 =
       support1559 && SUPPORT_1559_KEYRING_TYPE.includes(currentAccount.type);
     setIsLedger(currentAccount?.type === KEYRING_CLASS.HARDWARE.LEDGER);
@@ -876,7 +881,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
 
   useEffect(() => {
     (async () => {
-      const currentAccount = await wallet.getCurrentAccount();
+      const currentAccount = (await wallet.getCurrentAccount())!;
       if (
         [
           KEYRING_CLASS.MNEMONIC,
