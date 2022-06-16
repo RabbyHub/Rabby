@@ -1286,10 +1286,14 @@ export class WalletController extends BaseController {
     return stashKeyringId;
   };
 
-  submitQRHardwareSignature = async (requestId: string, cbor: string) => {
+  submitQRHardwareSignature = async (
+    requestId: string,
+    cbor: string,
+    address?: string
+  ) => {
     const account = await preferenceService.getCurrentAccount();
     const keyring = await keyringService.getKeyringForAccount(
-      account!.address,
+      address ? address : account!.address,
       KEYRING_CLASS.QRCODE
     );
     return await keyring.submitSignature(requestId, cbor);

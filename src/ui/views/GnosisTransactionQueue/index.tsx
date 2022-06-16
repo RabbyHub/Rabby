@@ -14,7 +14,7 @@ import { ExplainTxResponse } from 'background/service/openapi';
 import { Account } from 'background/service/preference';
 
 import { intToHex } from 'ethereumjs-util';
-import { useWallet, timeago, isSameAddress, useWalletOld } from 'ui/utils';
+import { timeago, isSameAddress, useWalletOld } from 'ui/utils';
 import {
   validateEOASign,
   validateETHSign,

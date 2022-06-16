@@ -365,17 +365,20 @@ const WatchAddressWaiting = ({ params }: { params: ApprovalParams }) => {
     );
     setCurrentAccount(account);
     setBridge(bridge || DEFAULT_BRIDGE);
-    setIsSignText(params.isGnosis ? true : approval?.approvalType !== 'SignTx');
-    stats.report('signTransaction', {
-      type: account.brandName,
-      chainId: CHAINS[chain].serverId,
-      category: KEYRING_CATEGORY_MAP[account.type],
-    });
-    ReactGA.event({
-      category: 'Transaction',
-      action: 'Submit',
-      label: account.brandName,
-    });
+    const isText = params.isGnosis ? true : approval?.approvalType !== 'SignTx';
+    setIsSignText(isText);
+    if (!isText) {
+      stats.report('signTransaction', {
+        type: account.brandName,
+        chainId: CHAINS[chain].serverId,
+        category: KEYRING_CATEGORY_MAP[account.type],
+      });
+      ReactGA.event({
+        category: 'Transaction',
+        action: 'Submit',
+        label: account.brandName,
+      });
+    }
     eventBus.addEventListener(EVENTS.SIGN_FINISHED, async (data) => {
       if (data.success) {
         if (params.isGnosis) {
@@ -387,8 +390,22 @@ const WatchAddressWaiting = ({ params }: { params: ApprovalParams }) => {
             await wallet.postGnosisTransaction();
           }
         }
+        if (!isSignText) {
+          stats.report('signedTransaction', {
+            type: account.brandName,
+            chainId: CHAINS[chain].serverId,
+            category: KEYRING_CATEGORY_MAP[account.type],
+            success: true,
+          });
+        }
         resolveApproval(data.data, !isSignText);
       } else {
+        stats.report('signedTransaction', {
+          type: account.brandName,
+          chainId: CHAINS[chain].serverId,
+          category: KEYRING_CATEGORY_MAP[account.type],
+          success: false,
+        });
         rejectApproval(data.errorMsg);
       }
     });
