@@ -9,13 +9,13 @@ import LessPalette from '@/ui/style/var-defs';
 import { getChain } from 'utils';
 import clsx from 'clsx';
 
-const PreviewCard = styled.div`
-  &.nft-txpreview-modal {
-    .ant-modal-body {
-      padding: 12px;
-    }
+const PreviewModal = styled(Modal)`
+  .ant-modal-body {
+    padding: 12px;
   }
+`;
 
+const PreviewCard = styled.div`
   .nft-avatar {
     width: 100%;
     height: 306px;
@@ -73,7 +73,7 @@ export default function ModalPreviewNFTItem({
   }, [collectProperty]);
 
   return (
-    <Modal
+    <PreviewModal
       {...props}
       visible={!!nft}
       centered
@@ -115,6 +115,6 @@ export default function ModalPreviewNFTItem({
         </div> */}
         </div>
       </PreviewCard>
-    </Modal>
+    </PreviewModal>
   );
 }
