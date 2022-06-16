@@ -34,29 +34,33 @@ const GetEncryptionPublicKey = ({ params }: ConnectProps) => {
   }, [rejectApproval]);
 
   const decrypt = async () => {
+    const account = await wallet.getCurrentAccount();
+    const res = await wallet.decryptMessage({
+      type: account!.type,
+      from: account!.address,
+      data: msg,
+    });
+    return res;
+  };
+
+  const handleDecrypt = async () => {
     try {
-      const account = await wallet.getCurrentAccount();
-      const res = await wallet.decryptMessage({
-        type: account!.type,
-        from: account!.address,
-        data: msg,
-      });
-      return res;
+      const data = await decrypt();
+      setResult(data);
     } catch (e) {
       message.error(e.message);
     }
   };
 
-  const handleDecrypt = async () => {
-    const data = await decrypt();
-    setResult(data);
-  };
-
   const handleAllow = async () => {
-    const data = await decrypt();
-    resolveApproval({
-      data,
-    });
+    try {
+      const data = await decrypt();
+      resolveApproval({
+        data,
+      });
+    } catch (e) {
+      message.error(e.message);
+    }
   };
 
   const init = async () => {
