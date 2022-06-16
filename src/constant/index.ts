@@ -25,6 +25,8 @@ import IconOPLogo from 'ui/assets/chain-logos/op.svg';
 import IconOPWhiteLogo from 'ui/assets/chain-logos/op-white.svg';
 import IconAvaxLogo from 'ui/assets/chain-logos/avax.svg';
 import IconAvaxWhiteLogo from 'ui/assets/chain-logos/avax-white.svg';
+import IconRoseLogo from 'ui/assets/chain-logos/rose.svg';
+import IconRoseWhiteLogo from 'ui/assets/chain-logos/rose-white.svg';
 import IconCeloLogo from 'ui/assets/chain-logos/celo.svg';
 import IconCeloWhiteLogo from 'ui/assets/chain-logos/celo-white.svg';
 import IconMoonriverLogo from 'ui/assets/chain-logos/movr.svg';
@@ -125,6 +127,7 @@ export enum CHAINS_ENUM {
   CRO = 'CRO',
   BOBA = 'BOBA',
   METIS = 'METIS',
+  OASIS = 'OASIS',
   BTT = 'BTT',
   AURORA = 'AURORA',
   MOBM = 'MOBM',
@@ -325,6 +328,26 @@ export const CHAINS: Record<string, Chain> = {
       'https://static.debank.com/image/avax_token/logo_url/avax/0b9c84359c84d6bdd5bfda9c2d4c4a82.png',
     nativeTokenDecimals: 18,
     thridPartyRPC: 'https://api.avax.network/ext/bc/C/rpc',
+    eip: {
+      '1559': true,
+    },
+  },
+  [CHAINS_ENUM.OASIS]: {
+    id: 42262,
+    serverId: 'rose',
+    network: '42262',
+    name: 'Oasis',
+    nativeTokenSymbol: 'ROSE',
+    nativeTokenAddress: 'rose',
+    enum: CHAINS_ENUM.OASIS,
+    logo: IconRoseLogo,
+    whiteLogo: IconRoseWhiteLogo,
+    hex: '0xa516',
+    scanLink: 'https://snowtrace.io/tx/_s_',
+    nativeTokenLogo:
+      'https://static.debank.com/image/eth_nft/local_url/dc7b906c0339dba8edf5618663400eb7/92e27fe3ad418bbd166836ab8de85603.png',
+    nativeTokenDecimals: 18,
+    thridPartyRPC: 'https://emerald.oasis.dev',
     eip: {
       '1559': true,
     },
