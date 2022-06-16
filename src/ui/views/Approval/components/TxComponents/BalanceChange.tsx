@@ -10,6 +10,7 @@ import NFTAvatar from '@/ui/views/Dashboard/components/NFT/NFTAvatar';
 import IconQuestion from 'ui/assets/approval/question.svg';
 
 import LessPalette from '@/ui/style/var-defs';
+import ModalPreviewNFTItem from '@/ui/component/ModalPreviewNFTItem';
 
 const NFTListCountLimit = 5;
 const NFCBalanceChangeWrapper = styled.div`
@@ -163,51 +164,65 @@ function NFTList({
 }) {
   if (!list?.length) return null;
 
+  const [focusingNFT, setFocusingNFT] = React.useState<
+    typeof list[number] | null
+  >(null);
+
   const restCount = Math.max(0, list.length - NFTListCountLimit);
 
   return (
-    <div className="nft-bc-image-list">
-      {list.map((nft, idx) => {
-        if (idx > NFTListCountLimit) return null;
-        const isExtraItem = idx === NFTListCountLimit;
+    <>
+      <div className="nft-bc-image-list">
+        {list.map((nft, idx) => {
+          if (idx > NFTListCountLimit) return null;
+          const isExtraItem = idx === NFTListCountLimit;
 
-        return (
-          <div
-            key={nft.id}
-            className={clsx(
-              'nft-item-container',
-              isExtraItem && 'is-extra-item'
-            )}
-          >
-            <div className="nft-item-wrapper">
-              {isExtraItem && restCount && (
-                <div className="nft-extra-item-mask">+ {restCount}</div>
+          return (
+            <div
+              key={nft.id}
+              className={clsx(
+                'nft-item-container',
+                isExtraItem && 'is-extra-item'
               )}
-              <a
-                title={nft.name}
-                href={nft.detail_url}
-                target="_blank"
-                className="nft-detail-anchor"
-              >
-                <div className="nft-inner-hover-mask">
-                  {nft.total_supply > 1 && (
-                    <span className="nft-supplycount-badge">
-                      x {nft.total_supply}
-                    </span>
-                  )}
-                </div>
-                <NFTAvatar
-                  className="nft-item-avatar"
-                  thumbnail
-                  content={nft?.content}
-                  type={nft?.content_type}
-                />
-              </a>
+            >
+              <div className="nft-item-wrapper">
+                {isExtraItem && restCount && (
+                  <div className="nft-extra-item-mask">+ {restCount}</div>
+                )}
+                <span
+                  title={nft.name}
+                  className="nft-detail-anchor"
+                  onClick={() => {
+                    setFocusingNFT(nft);
+                  }}
+                >
+                  <div className="nft-inner-hover-mask">
+                    {nft.total_supply > 1 && (
+                      <span className="nft-supplycount-badge">
+                        x {nft.total_supply}
+                      </span>
+                    )}
+                  </div>
+                  <NFTAvatar
+                    onPreview={() => setFocusingNFT(nft)}
+                    className="nft-item-avatar"
+                    thumbnail
+                    content={nft?.content}
+                    type={nft?.content_type}
+                  />
+                </span>
+              </div>
             </div>
-          </div>
-        );
-      })}
-    </div>
+          );
+        })}
+      </div>
+      {focusingNFT && (
+        <ModalPreviewNFTItem
+          nft={focusingNFT}
+          onCancel={() => setFocusingNFT(null)}
+        />
+      )}
+    </>
   );
 }
 
