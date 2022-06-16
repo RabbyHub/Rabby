@@ -129,14 +129,14 @@ export interface TokenItem {
   raw_amount_hex_str?: string;
 }
 
-interface TransferingNFCItem {
+export interface TransferingNFTItem {
   chain: string;
   collection: {
     id: string;
     name: string;
     create_at: number;
     chains: string[];
-  }[];
+  };
   content: string;
   content_type: NFTItem['content_type'];
   contract_id: string;
@@ -363,9 +363,9 @@ export interface GasLevel {
 
 export interface BalanceChange {
   err_msg: string;
-  receive_nft_list: TransferingNFCItem[];
+  receive_nft_list: TransferingNFTItem[];
   receive_token_list: TokenItem[];
-  send_nft_list: TransferingNFCItem[];
+  send_nft_list: TransferingNFTItem[];
   send_token_list: TokenItem[];
   success: boolean;
   usd_value_change: number;
