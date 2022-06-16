@@ -487,10 +487,10 @@ function BalanceChange({
   isSupport: boolean;
   chainEnum: CHAINS_ENUM;
 }) {
-  const hasNFCChange =
+  const hasNFTChange =
     data.receive_nft_list.length > 0 || data.send_nft_list.length > 0;
 
-  if (hasNFCChange) {
+  if (hasNFTChange) {
     return (
       <>
         <NFTBalanceChange
