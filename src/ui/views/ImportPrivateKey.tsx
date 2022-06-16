@@ -109,24 +109,25 @@ const ImportPrivateKey = () => {
       backDisabled={false}
     >
       <header className="create-new-header import-privatekey-header h-[60px] leading-[60px] py-0">
-        <h2 className="text-20 mb-0 mt-0 text-white text-center font-medium">
+        <h2 className="mt-0 mb-0 font-medium text-center text-white text-20">
           {t('Import Your Private Key')}
         </h2>
       </header>
       <div className="rabby-container">
-        <div className="pt-32 px-20">
+        <div className="px-20 pt-32">
           <Form.Item
             name="key"
             rules={[{ required: true, message: t('Please input Private key') }]}
           >
-            <Input.TextArea
-              className={'h-[128px] p-16'}
+            <Input
+              className={'h-[52px] p-16'}
               placeholder={t('Enter your Private key')}
               autoFocus
               spellCheck={false}
+              type="password"
             />
           </Form.Item>
-          <TipTextList className="text-14 pl-20 mt-35">
+          <TipTextList className="pl-20 text-14 mt-35">
             <li>
               The private key you import will only be stored on the front end of
               your browser and will not be uploaded to Rabby's servers.
