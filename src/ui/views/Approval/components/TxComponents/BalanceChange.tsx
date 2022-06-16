@@ -226,7 +226,6 @@ function NFTList({
   );
 }
 
-const IMG_NFT_TYPES = ['image_url', 'image'];
 const NFTBalanceChange = ({
   data,
   isSupport,
@@ -249,18 +248,14 @@ const NFTBalanceChange = ({
     countSendNft,
     sendNftList,
   } = React.useMemo(() => {
-    const sendNftList = data.send_nft_list.filter((item) =>
-      IMG_NFT_TYPES.includes(item.content_type)
-    );
+    const sendNftList = data.send_nft_list.slice(0);
     const countSendNft = sendNftList.reduce(
       (accu, item) => accu + item.total_supply,
       0
     );
     const hasTransferedOut = sendNftList.length > 0;
 
-    const receiveNftList = data.receive_nft_list.filter((item) =>
-      IMG_NFT_TYPES.includes(item.content_type)
-    );
+    const receiveNftList = data.receive_nft_list.slice(0);
     const countReceives = receiveNftList.reduce(
       (accu, item) => accu + item.total_supply,
       0
