@@ -146,6 +146,7 @@ export interface TransferingNFTItem {
   inner_id: string;
   name: string;
   total_supply: number;
+  amount: number;
 }
 
 export interface NFTApprovalResponse {
