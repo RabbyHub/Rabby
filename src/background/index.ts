@@ -31,6 +31,7 @@ import migrateData from '@/migrations';
 import stats from '@/stats';
 import createSubscription from './controller/provider/subscriptionManager';
 import buildinProvider from 'background/utils/buildinProvider';
+import dayjs from 'dayjs';
 ReactGA.initialize('UA-199755108-3');
 // eslint-disable-next-line @typescript-eslint/no-empty-function
 ga('set', 'checkProtocolTask', function () {});
@@ -94,37 +95,46 @@ async function restoreAppState() {
   initAppMeta();
 }
 
-restoreAppState().then(() => {
-  setInterval(async () => {
-    const time = preferenceService.getSendLogTime();
-    if (time + 24 * 60 * 60 * 1000 > Date.now()) {
-      return;
+restoreAppState();
+{
+  let interval;
+  keyringService.on('unlock', () => {
+    if (interval) {
+      clearInterval();
     }
-    const accounts = await walletController.getAccounts();
-    const list = accounts.map((account) => {
-      const category = KEYRING_CATEGORY_MAP[account.type];
-      const action = account.brandName;
-      const label =
-        (walletController.getAddressCacheBalance(account.address)
-          ?.total_usd_value || 0) <= 0;
-      return {
-        category,
-        action,
-        label: JSON.stringify(!!label),
-      };
-    });
-    const groups = groupBy(list, (item) => {
-      return `${item.category}_${item.action}_${item.label}`;
-    });
-    Object.values(groups).forEach((group) => {
-      ReactGA.event({
-        ...group[0],
-        value: group.length,
+    const sendEvent = async () => {
+      const time = preferenceService.getSendLogTime();
+      if (dayjs(time).isSame(Date.now(), 'day')) {
+        return;
+      }
+      const accounts = await walletController.getAccounts();
+      const list = accounts.map((account) => {
+        const category = KEYRING_CATEGORY_MAP[account.type];
+        const action = account.brandName;
+        const label =
+          (walletController.getAddressCacheBalance(account.address)
+            ?.total_usd_value || 0) <= 0;
+        return {
+          category,
+          action,
+          label: JSON.stringify(!!label),
+        };
       });
-    });
-    preferenceService.updateSendLogTime(Date.now());
-  }, 5 * 60 * 1000);
-});
+      const groups = groupBy(list, (item) => {
+        return `${item.category}_${item.action}_${item.label}`;
+      });
+      Object.values(groups).forEach((group) => {
+        ReactGA.event({
+          ...group[0],
+          value: group.length,
+        });
+      });
+      preferenceService.updateSendLogTime(Date.now());
+    };
+    sendEvent();
+    interval = setInterval(sendEvent, 5 * 60 * 1000);
+  });
+}
 
 // for page provider
 browser.runtime.onConnect.addListener((port) => {
