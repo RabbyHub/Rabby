@@ -4,13 +4,12 @@ import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 import Views from './views';
 import { Message } from '@/utils';
-import { getUiType, getUITypeName } from 'ui/utils';
+import { getUITypeName } from 'ui/utils';
 import eventBus from '@/eventBus';
 import * as Sentry from '@sentry/react';
 import { Integrations } from '@sentry/tracing';
 import i18n, { addResourceBundle } from 'src/i18n';
 import { EVENTS } from 'consts';
-import ReactGA from 'react-ga';
 
 import type { WalletControllerType } from 'ui/utils/WalletContext';
 
@@ -165,14 +164,3 @@ ReactDOM.render(
   </Provider>,
   document.getElementById('root')
 );
-
-{
-  const UIType = getUiType();
-  if (UIType.isNotification || UIType.isPop) {
-    ReactGA.event({
-      category: 'User',
-      action: 'active',
-      label: UIType.isPop ? 'popup' : 'request',
-    });
-  }
-}

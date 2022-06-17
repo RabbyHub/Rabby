@@ -1,3 +1,4 @@
+import { groupBy } from 'lodash';
 import 'reflect-metadata';
 import * as Sentry from '@sentry/browser';
 import ReactGA, { ga } from 'react-ga';
@@ -6,7 +7,7 @@ import { browser } from 'webextension-polyfill-ts';
 import { ethErrors } from 'eth-rpc-errors';
 import { WalletController } from 'background/controller/wallet';
 import { Message } from 'utils';
-import { CHAINS, EVENTS } from 'consts';
+import { CHAINS, EVENTS, KEYRING_CATEGORY_MAP } from 'consts';
 import { storage } from './webapi';
 import {
   permissionService,
@@ -93,7 +94,37 @@ async function restoreAppState() {
   initAppMeta();
 }
 
-restoreAppState();
+restoreAppState().then(() => {
+  setInterval(async () => {
+    const time = preferenceService.getSendLogTime();
+    if (time + 24 * 60 * 60 * 1000 > Date.now()) {
+      return;
+    }
+    const accounts = await walletController.getAccounts();
+    const list = accounts.map((account) => {
+      const category = KEYRING_CATEGORY_MAP[account.type];
+      const action = account.brandName;
+      const label =
+        (walletController.getAddressCacheBalance(account.address)
+          ?.total_usd_value || 0) <= 0;
+      return {
+        category,
+        action,
+        label: JSON.stringify(!!label),
+      };
+    });
+    const groups = groupBy(list, (item) => {
+      return `${item.category}_${item.action}_${item.label}`;
+    });
+    Object.values(groups).forEach((group) => {
+      ReactGA.event({
+        ...group[0],
+        value: group.length,
+      });
+    });
+    preferenceService.updateSendLogTime(Date.now());
+  }, 5 * 60 * 1000);
+});
 
 // for page provider
 browser.runtime.onConnect.addListener((port) => {
