@@ -727,20 +727,8 @@ const SignTx = ({ params, origin }: SignTxProps) => {
         <div className="flex items-center gap-8">
           <img src={IconWatch} alt="" className="w-[24px]" />
           <div>
-            The currrent address is in Watch Mode. If your want to continue,
-            please{' '}
-            <a
-              href=""
-              className="underline"
-              onClick={async (e) => {
-                e.preventDefault();
-                await rejectApproval('User rejected the request.', true);
-                openInternalPageInTab('no-address');
-              }}
-            >
-              import it
-            </a>{' '}
-            again using another mode.
+            The current address is in Watch Mode. If your want to continue,
+            please import it again using another mode.
           </div>
         </div>
       );
