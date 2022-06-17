@@ -134,6 +134,13 @@ restoreAppState();
     sendEvent();
     interval = setInterval(sendEvent, 5 * 60 * 1000);
   });
+
+  keyringService.on('lock', () => {
+    if (interval) {
+      clearInterval(interval);
+      interval = null;
+    }
+  });
 }
 
 // for page provider
