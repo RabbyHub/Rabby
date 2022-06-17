@@ -37,11 +37,6 @@ ga('set', 'appName', 'Rabby');
 ga('set', 'appVersion', process.env.release);
 ga('require', 'displayfeatures');
 
-ReactGA.event({
-  category: 'User',
-  action: 'init',
-});
-
 const { PortMessage } = Message;
 
 let appStoreLoaded = false;

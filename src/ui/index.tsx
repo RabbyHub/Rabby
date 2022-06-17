@@ -167,12 +167,12 @@ ReactDOM.render(
 );
 
 {
-  const label = getUITypeName();
-  if (label && label !== 'tab') {
+  const UIType = getUiType();
+  if (UIType.isNotification || UIType.isPop) {
     ReactGA.event({
       category: 'User',
       action: 'active',
-      label,
+      label: UIType.isPop ? 'popup' : 'request',
     });
   }
 }
