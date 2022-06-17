@@ -1,6 +1,8 @@
+import useBalanceChange from '@/ui/hooks/useBalanceChange';
 import { ellipsis } from '@/ui/utils/address';
 import NFTAvatar from '@/ui/views/Dashboard/components/NFT/NFTAvatar';
 import { ExplainTxResponse } from 'background/service/openapi';
+import clsx from 'clsx';
 import { CHAINS, CHAINS_ENUM } from 'consts';
 import React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
@@ -37,8 +39,15 @@ const CancelNFT = ({ data, chainEnum, isSpeedUp, raw }: CancelNFTProps) => {
     e.currentTarget.src = IconUnknownProtocol;
   };
 
+  const bfInfo = useBalanceChange(data);
+
   return (
-    <div className="cancel-nft">
+    <div
+      className={clsx(
+        'cancel-nft',
+        bfInfo.belowBlockIsEmpty && 'below-bc-block-empty'
+      )}
+    >
       <p className="section-title">
         <Trans
           i18nKey="signTransactionWithChain"

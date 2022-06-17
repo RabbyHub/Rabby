@@ -11,6 +11,7 @@ import IconQuestion from 'ui/assets/approval/question.svg';
 
 import LessPalette from '@/ui/style/var-defs';
 import ModalPreviewNFTItem from '@/ui/component/ModalPreviewNFTItem';
+import useBalanceChange from '@/ui/hooks/useBalanceChange';
 
 const NFTListCountLimit = 5;
 const NFCBalanceChangeWrapper = styled.div`
@@ -278,7 +279,9 @@ const NFTBalanceChange = ({
   const chain = CHAINS[chainEnum];
 
   return (
-    <NFCBalanceChangeWrapper className="nft-bc">
+    <NFCBalanceChangeWrapper
+      className={clsx('nft-bc', !hasChange && 'no-change-detected')}
+    >
       {!hasChange && (
         <p className="section-title flex flex-start items-center">
           <span className="mr-[3px]">
@@ -380,8 +383,9 @@ const TokenBalanceChange = ({
       hasChange,
     };
   }, [data]);
+
   return (
-    <div className="balance-change">
+    <div className={clsx('balance-change', !hasChange && 'no-change-detected')}>
       {hasChange ? (
         <p className="section-title flex justify-between">
           <span>{t('token balance change')}</span>
@@ -482,38 +486,34 @@ function BalanceChange({
   isSupport: boolean;
   chainEnum: CHAINS_ENUM;
 }) {
-  const hasNFTChange =
-    data.receive_nft_list.length > 0 || data.send_nft_list.length > 0;
-
-  if (hasNFTChange) {
-    return (
-      <>
-        <NFTBalanceChange
-          data={data}
-          isSupport={isSupport}
-          chainEnum={chainEnum}
-        />
-        <TokenBalanceChange
-          data={data}
-          isSupport={isSupport}
-          chainEnum={chainEnum}
-        />
-      </>
-    );
-  }
+  const bcInfo = useBalanceChange({ balance_change: data });
 
   return (
     <>
-      <TokenBalanceChange
-        data={data}
-        isSupport={isSupport}
-        chainEnum={chainEnum}
-      />
-      <NFTBalanceChange
-        data={data}
-        isSupport={isSupport}
-        chainEnum={chainEnum}
-      />
+      {bcInfo.renderBlocks.map((block, idx) => {
+        switch (block) {
+          case 'nft-bc':
+            return (
+              <NFTBalanceChange
+                key={`b-${block}-${idx}`}
+                data={data}
+                isSupport={isSupport}
+                chainEnum={chainEnum}
+              />
+            );
+          case 'token-bc':
+            return (
+              <TokenBalanceChange
+                key={`b-${block}-${idx}`}
+                data={data}
+                isSupport={isSupport}
+                chainEnum={chainEnum}
+              />
+            );
+          default:
+            return null;
+        }
+      })}
     </>
   );
 }

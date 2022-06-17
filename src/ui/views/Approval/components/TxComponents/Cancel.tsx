@@ -13,6 +13,7 @@ import { AddressViewer } from 'ui/component';
 import BalanceChange from './BalanceChange';
 import SpeedUpCorner from './SpeedUpCorner';
 import ViewRawModal from './ViewRawModal';
+import useBalanceChange from '@/ui/hooks/useBalanceChange';
 
 interface CancelProps {
   data: ExplainTxResponse;
@@ -64,8 +65,15 @@ const Cancel = ({ data, chainEnum, isSpeedUp, raw }: CancelProps) => {
     e.currentTarget.src = IconUnknownProtocol;
   };
 
+  const bfInfo = useBalanceChange(data);
+
   return (
-    <div className="cancel">
+    <div
+      className={clsx(
+        'cancel',
+        bfInfo.belowBlockIsEmpty && 'below-bc-block-empty'
+      )}
+    >
       <p className="section-title">
         <Trans
           i18nKey="signTransactionWithChain"
