@@ -112,7 +112,7 @@ const EditModal = ({
           ? 'edit-contact-modal-with-remove'
           : 'edit-contact-modal'
       }
-      title={isEdit ? t('Edit address memo') : t('Add address memo')}
+      title={isEdit ? t('Edit address note') : t('Add address note')}
       visible={visible}
       onClose={onCancel}
       placement="bottom"

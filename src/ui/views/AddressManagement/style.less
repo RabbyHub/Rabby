@@ -60,12 +60,17 @@
       .ellipsis();
       max-width: 180px;
     }
-    &-extra {
-      margin-right: 16px;
-      margin-left: 16px;
-    }
     .icon-star {
+      cursor: pointer;
+      border-right: 1px solid #e5e9ef;
+      border-right: 0.5px solid #e5e9ef;
+      padding-right: 12px;
+      padding-left: 12px;
+      margin-right: 12px;
       opacity: 0;
+      &.is-active {
+        opacity: 1;
+      }
     }
     &-arrow {
       svg path {
