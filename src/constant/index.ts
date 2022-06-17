@@ -95,6 +95,7 @@ import LogoMath from 'ui/assets/walletlogo/MathWalletLogo.png';
 import LogoJade from 'ui/assets/walletlogo/JadeLogo.png';
 import LogoImtoken from 'ui/assets/walletlogo/imTokenLogo.png';
 import LogoCobo from 'ui/assets/walletlogo/CoboLogo.png';
+import LogoCoolWallet from 'ui/assets/walletlogo/coolwallet.png';
 import LogoAmber from 'ui/assets/walletlogo/AmberLogo.png';
 import LogoOnekey from 'ui/assets/walletlogo/onekey28.png';
 import LogoTrezor from 'ui/assets/walletlogo/Trezor28.png';
@@ -1099,6 +1100,7 @@ export enum WALLET_BRAND_TYPES {
   GRIDPLUS = 'GRIDPLUS',
   METAMASK = 'MetaMask',
   KEYSTONE = 'Keystone',
+  COOLWALLET = 'CoolWallet',
   DEFIANT = 'Defiant',
 }
 
@@ -1147,6 +1149,15 @@ export const WALLET_BRAND_CONTENT: {
     image: LogoCobo,
     connectType: BRAND_WALLET_CONNECT_TYPE.WalletConnect,
     category: WALLET_BRAND_CATEGORY.INSTITUTIONAL,
+  },
+  [WALLET_BRAND_TYPES.COOLWALLET]: {
+    id: 16,
+    name: 'CoolWallet',
+    brand: WALLET_BRAND_TYPES.COOLWALLET,
+    icon: LogoCoolWallet,
+    image: LogoCoolWallet,
+    connectType: BRAND_WALLET_CONNECT_TYPE.QRCodeBase,
+    category: WALLET_BRAND_CATEGORY.HARDWARE,
   },
   [WALLET_BRAND_TYPES.DEFIANT]: {
     id: 17,

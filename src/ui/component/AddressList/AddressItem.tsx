@@ -185,8 +185,8 @@ const AddressItem = memo(
               >
                 <img
                   src={
-                    KEYRING_ICONS[account.type] ||
-                    WALLET_BRAND_CONTENT[account.brandName]?.image
+                    WALLET_BRAND_CONTENT[account.brandName]?.image ||
+                    KEYRING_ICONS[account.type]
                   }
                   className={clsx('icon icon-hardware', {
                     'opacity-40': isDisabled,

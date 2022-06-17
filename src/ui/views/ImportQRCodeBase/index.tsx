@@ -1,6 +1,6 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Form } from 'antd';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { URDecoder } from '@ngraveio/bc-ur';
 import QRCodeReader from 'ui/component/QRCodeReader';
@@ -9,11 +9,12 @@ import { useWallet } from 'ui/utils';
 import { openInternalPageInTab } from 'ui/utils/webapi';
 import './style.less';
 
-import KeystoneLogo from 'ui/assets/walletlogo/keystone.png';
-import { HARDWARE_KEYRING_TYPES } from 'consts';
+import { HARDWARE_KEYRING_TYPES, WALLET_BRAND_CONTENT } from 'consts';
 import QRCodeCheckerDetail from 'ui/views/QRCodeCheckerDetail';
 import clsx from 'clsx';
 import { useMedia } from 'react-use';
+
+type Valueof<T> = T[keyof T];
 
 const ImportQRCodeBase = () => {
   const { t } = useTranslation();
@@ -24,6 +25,12 @@ const ImportQRCodeBase = () => {
   const [errorMessage, setErrorMessage] = useState('');
   const [scan, setScan] = useState(true);
   const isWide = useMedia('(min-width: 401px)');
+  const { state } = useLocation<{
+    brand: string;
+  }>();
+
+  const brandInfo: Valueof<typeof WALLET_BRAND_CONTENT> =
+    WALLET_BRAND_CONTENT[state.brand] || WALLET_BRAND_CONTENT.Keystone;
 
   const showErrorChecker = useMemo(() => {
     return errorMessage !== '';
@@ -56,6 +63,7 @@ const ImportQRCodeBase = () => {
           state: {
             keyring: HARDWARE_KEYRING_TYPES.Keystone.type,
             keyringId: stashKeyringId,
+            brand: state.brand,
           },
         });
       }
@@ -115,13 +123,13 @@ const ImportQRCodeBase = () => {
           />
           <img
             className="unlock-logo w-[80px] h-[75px] mb-20 mx-auto"
-            src={KeystoneLogo}
+            src={brandInfo.image}
           />
           <p className="text-24 mb-4 mt-0 text-white text-center font-bold">
-            {t('Keystone')}
+            {brandInfo.name}
           </p>
           <p className="text-14 mb-0 mt-4 text-white opacity-80 text-center">
-            {t('Scan the QR code on the Keystone hardware wallet')}
+            {`Scan the QR code on the ${brandInfo.name} hardware wallet`}
           </p>
           <img src="/images/watch-mask.png" className="mask" />
         </div>

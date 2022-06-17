@@ -33,11 +33,17 @@ const QRHardWareWaiting = ({ params }) => {
   const [isSignText, setIsSignText] = useState(false);
   const history = useHistory();
   const wallet = useWallet();
+  const [walletBrandContent, setWalletBrandContent] = useState(
+    WALLET_BRAND_CONTENT[WALLET_BRAND_TYPES.KEYSTONE]
+  );
   const chain = Object.values(CHAINS).find(
     (item) => item.id === (params.chainId || 1)
   )!.enum;
   const init = useCallback(async () => {
     const approval = await getApproval();
+    const account = await wallet.syncGetCurrentAccount()!;
+    if (!account) return;
+    setWalletBrandContent(WALLET_BRAND_CONTENT[account.brandName]);
     setIsSignText(params.isGnosis ? true : approval?.approvalType !== 'SignTx');
     eventBus.addEventListener(
       EVENTS.QRHARDWARE.ACQUIRE_MEMSTORE_SUCCEED,
@@ -88,7 +94,6 @@ const QRHardWareWaiting = ({ params }) => {
     return errorMessage !== '' && status == QRHARDWARE_STATUS.SIGN;
   }, [errorMessage]);
 
-  const walletBrandContent = WALLET_BRAND_CONTENT[WALLET_BRAND_TYPES.KEYSTONE];
   return (
     <StrayPageWithButton
       hasBack
