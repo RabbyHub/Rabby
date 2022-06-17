@@ -623,8 +623,8 @@ const Dashboard = () => {
                         opacity60 && 'opacity-60'
                       )}
                       src={
-                        KEYRING_ICONS_WHITE[currentAccount.type] ||
-                        WALLET_BRAND_CONTENT[currentAccount.brandName]?.image
+                        WALLET_BRAND_CONTENT[currentAccount.brandName]?.image ||
+                        KEYRING_ICONS_WHITE[currentAccount.type]
                       }
                     />
                   }

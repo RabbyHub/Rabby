@@ -8,3 +8,5 @@ export { default as AddChain } from './AddChain';
 export { default as QRHardWareWaiting } from './QRHardWareWaiting';
 export { default as LedgerHardwareWaiting } from './LedgerHardwareWaiting';
 export { default as AddAsset } from './AddAsset';
+export { default as GetPublicKey } from './GetPublicKey';
+export { default as Decrypt } from './Decrypt';

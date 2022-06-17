@@ -38,18 +38,17 @@ interface TaskStore {
   tasks: Task[];
 }
 
+type IApprovalComponents = typeof import('@/ui/views/Approval/components');
+type IApprovalComponent = IApprovalComponents[keyof IApprovalComponents];
+
 export interface Approval {
   id: number;
   taskId: number | null;
   data: {
     state: number;
-    params?: {
-      data: TaskParams;
-      method: string;
-      session: Session;
-    };
+    params?: import('react').ComponentProps<IApprovalComponent>['params'];
     origin?: string;
-    approvalComponent: string;
+    approvalComponent: keyof IApprovalComponents;
     requestDefer?: Promise<any>;
     approvalType: string;
   };

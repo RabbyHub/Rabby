@@ -26,7 +26,7 @@ export interface ChainGas {
 }
 
 export interface GasCache {
-  [chainId: string]: ChainGas;
+  [chainId: string | number]: ChainGas;
 }
 
 export interface addedToken {
@@ -361,11 +361,11 @@ class PreferenceService {
   changeInitAlianNameStatus = () => {
     this.store.initAlianNames = true;
   };
-  getLastTimeGasSelection = (chainId: string) => {
+  getLastTimeGasSelection = (chainId: keyof GasCache) => {
     return this.store.gasCache[chainId];
   };
 
-  updateLastTimeGasSelection = (chainId: string, gas: ChainGas) => {
+  updateLastTimeGasSelection = (chainId: keyof GasCache, gas: ChainGas) => {
     this.store.gasCache = {
       ...this.store.gasCache,
       [chainId]: gas,

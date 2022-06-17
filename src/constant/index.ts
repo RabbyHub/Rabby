@@ -37,11 +37,14 @@ import IconTokenpocket from 'ui/assets/walletlogo/tp.png';
 import IconTrezor from 'ui/assets/walletlogo/trezor.png';
 import IconTrezor24Border from 'ui/assets/walletlogo/trezor24-border.png';
 import IconTrezor24 from 'ui/assets/walletlogo/trezor24.png';
+import LogoTrust from 'ui/assets/walletlogo/TrustWalletLogo.png';
+import LogoCoolWallet from 'ui/assets/walletlogo/coolwallet.png';
 import LogoTrezor from 'ui/assets/walletlogo/Trezor28.png';
 import IconTrust from 'ui/assets/walletlogo/trust.png';
-import LogoTrust from 'ui/assets/walletlogo/TrustWalletLogo.png';
 import IconWatchPurple from 'ui/assets/walletlogo/watch-purple.svg';
 import LogoWatch from 'ui/assets/walletlogo/watchlogo.svg';
+import LogoDefiant from 'ui/assets/walletlogo/defiant.png';
+import LogoDefiantWhite from 'ui/assets/walletlogo/defiant-white.png';
 
 export { CHAINS, CHAINS_ENUM };
 
@@ -309,6 +312,8 @@ export enum WALLET_BRAND_TYPES {
   GRIDPLUS = 'GRIDPLUS',
   METAMASK = 'MetaMask',
   KEYSTONE = 'Keystone',
+  COOLWALLET = 'CoolWallet',
+  DEFIANT = 'Defiant',
 }
 
 enum WALLET_BRAND_CATEGORY {
@@ -356,6 +361,24 @@ export const WALLET_BRAND_CONTENT: {
     image: LogoCobo,
     connectType: BRAND_WALLET_CONNECT_TYPE.WalletConnect,
     category: WALLET_BRAND_CATEGORY.INSTITUTIONAL,
+  },
+  [WALLET_BRAND_TYPES.COOLWALLET]: {
+    id: 16,
+    name: 'CoolWallet',
+    brand: WALLET_BRAND_TYPES.COOLWALLET,
+    icon: LogoCoolWallet,
+    image: LogoCoolWallet,
+    connectType: BRAND_WALLET_CONNECT_TYPE.QRCodeBase,
+    category: WALLET_BRAND_CATEGORY.HARDWARE,
+  },
+  [WALLET_BRAND_TYPES.DEFIANT]: {
+    id: 17,
+    name: 'Defiant',
+    brand: WALLET_BRAND_TYPES.DEFIANT,
+    icon: LogoDefiant,
+    image: LogoDefiantWhite,
+    connectType: BRAND_WALLET_CONNECT_TYPE.WalletConnect,
+    category: WALLET_BRAND_CATEGORY.MOBILE,
   },
   [WALLET_BRAND_TYPES.FIREBLOCKS]: {
     id: 11,
@@ -578,6 +601,7 @@ export const KEYRING_CATEGORY_MAP = {
   [KEYRING_CLASS.PRIVATE_KEY]: KEYRING_CATEGORY.PrivateKey,
   [KEYRING_CLASS.WATCH]: KEYRING_CATEGORY.WatchMode,
   [KEYRING_CLASS.HARDWARE.LEDGER]: KEYRING_CATEGORY.Hardware,
+  [KEYRING_CLASS.HARDWARE.ONEKEY]: KEYRING_CATEGORY.Hardware,
   [KEYRING_CLASS.HARDWARE.TREZOR]: KEYRING_CATEGORY.Hardware,
   [KEYRING_CLASS.HARDWARE.BITBOX02]: KEYRING_CATEGORY.Hardware,
   [KEYRING_CLASS.HARDWARE.KEYSTONE]: KEYRING_CATEGORY.Hardware,

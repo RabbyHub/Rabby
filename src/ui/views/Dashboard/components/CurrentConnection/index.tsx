@@ -7,9 +7,10 @@ import { useTranslation } from 'react-i18next';
 import IconDisconnect from 'ui/assets/icon-disconnect.svg';
 import IconDapps from 'ui/assets/dapps.svg';
 import { ChainSelector, FallbackSiteLogo } from 'ui/component';
-import { getCurrentTab, useWallet, useWalletOld } from 'ui/utils';
+import { getCurrentTab, useWalletOld } from 'ui/utils';
 import './style.less';
 import { useLocation } from 'react-router-dom';
+import { getOriginFromUrl } from '@/utils';
 
 export const CurrentConnection = memo(() => {
   const wallet = useWalletOld();
@@ -27,7 +28,9 @@ export const CurrentConnection = memo(() => {
 
   const getCurrentSite = useCallback(async () => {
     const tab = await getCurrentTab();
-    const current = await wallet.getCurrentSite(tab.id);
+    if (!tab.id || !tab.url) return;
+    const domain = getOriginFromUrl(tab.url);
+    const current = await wallet.getCurrentSite(tab.id, domain);
     setSite(current);
   }, []);
 

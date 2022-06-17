@@ -176,8 +176,8 @@ const Receive = () => {
               <img
                 className="account-icon opacity-60"
                 src={
-                  KEYRING_ICONS_WHITE[account.type as string] ||
-                  WALLET_BRAND_CONTENT[account.brandName as string]?.image
+                  WALLET_BRAND_CONTENT[account.brandName as string]?.image ||
+                  KEYRING_ICONS_WHITE[account.type as string]
                 }
               />
               <div className="account-content">

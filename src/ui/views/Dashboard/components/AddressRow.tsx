@@ -102,8 +102,8 @@ function AddressRow({
       <img
         className="icon icon-account-type w-[20px] h-[20px]"
         src={
-          KEYRING_ICONS[account.type] ||
-          WALLET_BRAND_CONTENT[account.brandName]?.image
+          WALLET_BRAND_CONTENT[account.brandName]?.image ||
+          KEYRING_ICONS[account.type]
         }
       />
       <div className="flex flex-col items-start ml-10 relative w-[100%]">

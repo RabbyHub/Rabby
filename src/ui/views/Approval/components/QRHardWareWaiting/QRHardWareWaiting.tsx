@@ -1,7 +1,14 @@
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import stats from '@/stats';
 import Player from './Player';
 import Reader from './Reader';
-import { EVENTS, WALLET_BRAND_CONTENT, WALLET_BRAND_TYPES } from 'consts';
+import {
+  CHAINS,
+  EVENTS,
+  KEYRING_CATEGORY_MAP,
+  WALLET_BRAND_CONTENT,
+  WALLET_BRAND_TYPES,
+} from 'consts';
 import { useTranslation } from 'react-i18next';
 import { StrayPageWithButton } from 'ui/component';
 import eventBus from '@/eventBus';
@@ -15,7 +22,7 @@ enum QRHARDWARE_STATUS {
   SIGN,
 }
 
-const QRHardWareWaiting = () => {
+const QRHardWareWaiting = ({ params }) => {
   const [status, setStatus] = useState<QRHARDWARE_STATUS>(
     QRHARDWARE_STATUS.SYNC
   );
@@ -26,9 +33,20 @@ const QRHardWareWaiting = () => {
   const [isSignText, setIsSignText] = useState(false);
   const history = useHistory();
   const wallet = useWallet();
+  const [walletBrandContent, setWalletBrandContent] = useState(
+    WALLET_BRAND_CONTENT[WALLET_BRAND_TYPES.KEYSTONE]
+  );
+  const chain = Object.values(CHAINS).find(
+    (item) => item.id === (params.chainId || 1)
+  )!.enum;
   const init = useCallback(async () => {
     const approval = await getApproval();
-    setIsSignText(approval?.data.approvalType !== 'SignTx');
+    const account = await wallet.syncGetCurrentAccount()!;
+    if (!account) return;
+    setWalletBrandContent(WALLET_BRAND_CONTENT[account.brandName]);
+    setIsSignText(
+      params.isGnosis ? true : approval?.data.approvalType !== 'SignTx'
+    );
     eventBus.addEventListener(
       EVENTS.QRHARDWARE.ACQUIRE_MEMSTORE_SUCCEED,
       ({ request }) => {
@@ -59,16 +77,25 @@ const QRHardWareWaiting = () => {
   const handleCancel = () => {
     rejectApproval('User rejected the request.');
   };
-  const handleRequestSignature = () => {
-    setErrorMessage('');
-    setStatus(QRHARDWARE_STATUS.SIGN);
+  const handleRequestSignature = async () => {
+    const account = await wallet.syncGetCurrentAccount()!;
+    if (account) {
+      if (!isSignText) {
+        stats.report('signTransaction', {
+          type: account.brandName,
+          chainId: CHAINS[chain].serverId,
+          category: KEYRING_CATEGORY_MAP[account.type],
+        });
+      }
+      setErrorMessage('');
+      setStatus(QRHARDWARE_STATUS.SIGN);
+    }
   };
 
   const showErrorChecker = useMemo(() => {
     return errorMessage !== '' && status == QRHARDWARE_STATUS.SIGN;
   }, [errorMessage]);
 
-  const walletBrandContent = WALLET_BRAND_CONTENT[WALLET_BRAND_TYPES.KEYSTONE];
   return (
     <StrayPageWithButton
       hasBack
@@ -109,6 +136,7 @@ const QRHardWareWaiting = () => {
           <Reader
             requestId={signPayload?.requestId}
             setErrorMessage={setErrorMessage}
+            address={params?.account?.address}
           />
         )}
         {showErrorChecker && (

@@ -35,6 +35,7 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
     path?: string;
     keyringId?: number | null;
     ledgerLive?: boolean;
+    brand?: string;
   }>();
 
   if (!state) {
@@ -56,6 +57,7 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
     isWebHID,
     ledgerLive,
     path = LEDGER_LIVE_PATH,
+    brand,
   } = state;
 
   const [accounts, setAccounts] = useState<any[]>([]);
@@ -179,6 +181,15 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
     setSpin(true);
     const selectedIndexes = selectedAddressIndexes.map((i) => i.index - 1);
 
+    if (brand) {
+      await wallet.requestKeyring(
+        keyring,
+        'setCurrentBrand',
+        keyringId.current ?? null,
+        brand
+      );
+    }
+
     if (isMnemonics) {
       await wallet.requestKeyring(
         keyring,
@@ -202,6 +213,7 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
         keyringId.current ?? null
       );
     }
+
     setSpin(false);
     history.replace({
       pathname: isPopup ? '/popup/import/success' : '/import/success',

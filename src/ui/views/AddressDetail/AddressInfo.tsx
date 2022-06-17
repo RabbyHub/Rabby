@@ -9,13 +9,7 @@ import IconPen from 'ui/assets/editpen.svg';
 import './style.less';
 import { copyAddress } from '@/ui/utils/clipboard';
 import { useForm } from 'antd/lib/form/Form';
-import {
-  KEYRING_ICONS,
-  KEYRING_ICONS_WHITE,
-  KEYRING_TYPE,
-  KEYRING_TYPE_TEXT,
-  WALLET_BRAND_CONTENT,
-} from '@/constant';
+import { KEYRING_ICONS, WALLET_BRAND_CONTENT } from '@/constant';
 import { useLocation } from 'react-router-dom';
 
 type Props = {

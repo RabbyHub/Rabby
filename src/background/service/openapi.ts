@@ -129,6 +129,25 @@ export interface TokenItem {
   raw_amount_hex_str?: string;
 }
 
+export interface TransferingNFTItem {
+  chain: string;
+  collection: {
+    id: string;
+    name: string;
+    create_at: number;
+    chains: string[];
+  };
+  content: string;
+  content_type: NFTItem['content_type'];
+  contract_id: string;
+  description: string | null;
+  detail_url: string;
+  id: string;
+  inner_id: string;
+  name: string;
+  total_supply: number;
+}
+
 export interface NFTApprovalResponse {
   tokens: NFTApproval[];
   contracts: NFTApprovalContract[];
@@ -344,7 +363,9 @@ export interface GasLevel {
 
 export interface BalanceChange {
   err_msg: string;
+  receive_nft_list: TransferingNFTItem[];
   receive_token_list: TokenItem[];
+  send_nft_list: TransferingNFTItem[];
   send_token_list: TokenItem[];
   success: boolean;
   usd_value_change: number;

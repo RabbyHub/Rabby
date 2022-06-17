@@ -2,7 +2,10 @@ import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { Approval } from 'background/service/notification';
 import { useWallet, useApproval } from 'ui/utils';
+import { IExtractFromPromise } from '@/ui/utils/type';
+
 import * as ApprovalComponent from './components';
+
 import './style.less';
 
 const Approval = () => {
@@ -10,7 +13,11 @@ const Approval = () => {
   // const [account, setAccount] = useState('');
   const wallet = useWallet();
   const [getApproval, , rejectApproval] = useApproval();
-  const [approval, setApproval] = useState<Approval | null>(null);
+  type IApproval = Exclude<
+    IExtractFromPromise<ReturnType<typeof getApproval>>,
+    void
+  >;
+  const [approval, setApproval] = useState<IApproval | null>(null);
 
   const init = async () => {
     const approval = await getApproval();

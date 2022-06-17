@@ -1,53 +1,29 @@
-import KeyringService from './index';
+import { Account } from '../preference';
 
 class DisplayKeyring {
-  accounts: string[] = [];
   type = '';
 
   constructor(keyring) {
-    this.accounts = keyring.accounts;
+    this.getAccounts = keyring.getAccounts?.bind(keyring);
+    this.activeAccounts = keyring.activeAccounts?.bind(keyring);
+    this.getFirstPage = keyring.getFirstPage?.bind(keyring);
+    this.getNextPage = keyring.getNextPage?.bind(keyring);
+    this.unlock = keyring.unlock?.bind(keyring);
+    this.getAccountsWithBrand = keyring.getAccountsWithBrand?.bind(keyring);
     this.type = keyring.type;
   }
 
-  async unlock(): Promise<void> {
-    const keyring = await KeyringService.getKeyringForAccount(
-      this.accounts[0],
-      this.type
-    );
-    return keyring.unlock();
-  }
+  unlock: () => Promise<void>;
 
-  async getFirstPage() {
-    const keyring = await KeyringService.getKeyringForAccount(
-      this.accounts[0],
-      this.type
-    );
-    return await keyring.getFirstPage();
-  }
+  getFirstPage: () => Promise<string[]>;
 
-  async getNextPage() {
-    const keyring = await KeyringService.getKeyringForAccount(
-      this.accounts[0],
-      this.type
-    );
-    return await keyring.getNextPage();
-  }
+  getNextPage: () => Promise<string[]>;
 
-  async getAccounts() {
-    const keyring = await KeyringService.getKeyringForAccount(
-      this.accounts[0],
-      this.type
-    );
-    return await keyring.getAccounts();
-  }
+  getAccounts: () => Promise<string[]>;
 
-  async activeAccounts(indexes: number[]): Promise<string[]> {
-    const keyring = await KeyringService.getKeyringForAccount(
-      this.accounts[0],
-      this.type
-    );
-    return keyring.activeAccounts(indexes);
-  }
+  getAccountsWithBrand: () => Promise<Account[]>;
+
+  activeAccounts: (indexes: number[]) => Promise<string[]>;
 }
 
 export default DisplayKeyring;

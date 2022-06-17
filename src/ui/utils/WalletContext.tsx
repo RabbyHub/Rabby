@@ -2,8 +2,7 @@ import React, { ReactNode } from 'react';
 import { createContext, useContext } from 'react';
 import { Object } from 'ts-toolbelt';
 import { WalletController as WalletControllerClass } from 'background/controller/wallet';
-
-type IExtractFromPromise<T> = T extends Promise<infer U> ? U : T;
+import { IExtractFromPromise } from './type';
 
 // TODO: implement here but not used now to avoid too much ts checker error.
 // we will use it on almost biz store ready.

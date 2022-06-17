@@ -8,7 +8,7 @@ import { openInternalPageInTab, useWallet } from 'ui/utils';
 import { useHistory } from 'react-router-dom';
 import { Form } from 'antd';
 
-const Reader = ({ requestId, setErrorMessage }) => {
+const Reader = ({ requestId, setErrorMessage, address }) => {
   const { t } = useTranslation();
   const decoder = useRef(new URDecoder());
   const wallet = useWallet();
@@ -26,7 +26,8 @@ const Reader = ({ requestId, setErrorMessage }) => {
         if (signId === requestId) {
           return await wallet.submitQRHardwareSignature(
             signId,
-            ur.cbor.toString('hex')
+            ur.cbor.toString('hex'),
+            address
           );
         }
         setErrorMessage(t('KesytoneMismatchedSignId'));

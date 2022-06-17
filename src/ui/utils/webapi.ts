@@ -1,5 +1,6 @@
 import { Tabs, browser, Windows } from 'webextension-polyfill-ts';
 import { WalletController } from './index';
+import { getOriginFromUrl } from '@/utils';
 
 export const getCurrentTab = async (): Promise<Tabs.Tab> => {
   const tabs = await browser.tabs.query({ active: true, currentWindow: true });
@@ -8,9 +9,10 @@ export const getCurrentTab = async (): Promise<Tabs.Tab> => {
 };
 
 export const getCurrentConnectSite = async (wallet: WalletController) => {
-  const { id } = await getCurrentTab();
-  if (!id) return null;
-  return wallet.getCurrentConnectedSite(id);
+  const { id, url } = await getCurrentTab();
+  if (!id || !url) return null;
+
+  return wallet.getCurrentConnectedSite(id, getOriginFromUrl(url));
 };
 
 export const openInTab = async (

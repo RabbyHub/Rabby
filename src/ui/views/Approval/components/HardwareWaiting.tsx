@@ -16,7 +16,7 @@ const Hardware = ({
   requestDefer,
 }: {
   params: { type: string };
-  requestDefer: Promise<any>;
+  requestDefer?: Promise<any>;
 }) => {
   const [, resolveApproval, rejectApproval] = useApproval();
   const { t } = useTranslation();
@@ -26,7 +26,7 @@ const Hardware = ({
     .find((item) => item.type === type);
   const wallet = useWallet();
   const useLedgerLive = wallet.isUseLedgerLive();
-  requestDefer.then(resolveApproval).catch(rejectApproval);
+  requestDefer?.then(resolveApproval).catch(rejectApproval);
 
   const Icon = () => {
     switch (type) {

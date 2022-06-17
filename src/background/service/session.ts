@@ -41,33 +41,33 @@ export class Session {
 }
 
 // for each tab
-const sessionMap = new Map<number, Session | null>();
+const sessionMap = new Map<string, Session | null>();
 
-const getSession = (id: number) => {
-  return sessionMap.get(id);
+const getSession = (key: string) => {
+  return sessionMap.get(key);
 };
 
-const getOrCreateSession = (id: number) => {
-  if (sessionMap.has(id)) {
-    return getSession(id);
+const getOrCreateSession = (id: number, origin: string) => {
+  if (sessionMap.has(`${id}-${origin}`)) {
+    return getSession(`${id}-${origin}`);
   }
 
-  return createSession(id, null);
+  return createSession(`${id}-${origin}`, null);
 };
 
-const createSession = (id: number, data?: null | SessionProp) => {
+const createSession = (key: string, data?: null | SessionProp) => {
   const session = new Session(data);
-  sessionMap.set(id, session);
+  sessionMap.set(key, session);
 
   return session;
 };
 
-const deleteSession = (id) => {
-  sessionMap.delete(id);
+const deleteSession = (key: string) => {
+  sessionMap.delete(key);
 };
 
 const broadcastEvent = (ev, data?, origin?: string) => {
-  let sessions: { key: number; data: Session }[] = [];
+  let sessions: { key: string; data: Session }[] = [];
   sessionMap.forEach((session, key) => {
     if (session && permissionService.hasPermission(session.origin)) {
       sessions.push({
