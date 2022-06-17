@@ -418,16 +418,19 @@
           }
         }
       }
-
-      .balance-change {
-        margin-bottom: 20px;
+      .token-balance-change + .nft-bc,
+      .nft-bc, .token-balance-change {
+        margin-top: 20px;
       }
-      .balance-change.no-change-detected,
+      .token-balance-change.no-change-detected,
       .nft-bc.no-change-detected {
         margin-bottom: 0;
         .section-title {
           margin-bottom: 0;
         }
+      }
+      & + .section-gas-cost {
+        margin-top: 20px;
       }
       &.below-bc-block-empty + .section-gas-cost {
         margin-top: 32px;
@@ -759,7 +762,7 @@
               font-size: 15px;
             }
           }
-          .balance-change {
+          .token-balance-change {
             margin-bottom: 0;
           }
           .view-raw {
@@ -783,18 +786,18 @@
           }
         }
       }
-      .balance-change {
+      .loading-balance-change {
         margin-bottom: 20px;
       }
     }
 
-    .balance-change + .nft-bc,
-    .nft-bc + .balance-change {
+    .token-balance-change + .nft-bc,
+    .nft-bc + .token-balance-change {
       margin-top: 20px;
     }
 
-    .balance-change {
-      .balance-change-content {
+    .token-balance-change {
+      .token-balance-change-content {
         padding: 12px 16px;
         ul {
           margin: 0;

@@ -16,9 +16,9 @@ export default function useBalanceChange({
       balance_change.send_token_list.length > 0;
     const noAnyChange = !hasNFTChange && !hasTokenChange;
 
-    const renderBlocks = hasNFTChange
-      ? (['nft-bc', 'token-bc'] as const)
-      : (['token-bc', 'nft-bc'] as const);
+    const renderBlocks = hasTokenChange
+      ? (['token-bc', 'nft-bc'] as const)
+      : (['nft-bc', 'token-bc'] as const);
 
     const belowBlockIsEmpty = !hasTokenChange || !hasNFTChange;
 

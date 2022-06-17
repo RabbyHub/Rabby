@@ -129,6 +129,7 @@ export const TxTypeComponent = ({
   isSpeedUp: boolean;
 }) => {
   if (!isReady) return <Loading chainEnum={chain.enum} />;
+
   if (txDetail.type_deploy_contract)
     return (
       <Deploy

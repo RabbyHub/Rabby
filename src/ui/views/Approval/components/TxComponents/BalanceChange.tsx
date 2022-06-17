@@ -385,7 +385,12 @@ const TokenBalanceChange = ({
   }, [data]);
 
   return (
-    <div className={clsx('balance-change', !hasChange && 'no-change-detected')}>
+    <div
+      className={clsx(
+        'token-balance-change',
+        !hasChange && 'no-change-detected'
+      )}
+    >
       {hasChange ? (
         <p className="section-title flex justify-between">
           <span>{t('token balance change')}</span>
@@ -398,7 +403,7 @@ const TokenBalanceChange = ({
         </p>
       )}
       {isSuccess && hasChange && (
-        <div className="gray-section-block balance-change-content">
+        <div className="gray-section-block token-balance-change-content">
           <div>
             {sendTokenList && sendTokenList.length > 0 && (
               <ul>
