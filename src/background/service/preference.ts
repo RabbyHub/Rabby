@@ -60,6 +60,7 @@ export interface PreferenceStore {
   addedToken: addedToken;
   tokenApprovalChain: Record<string, CHAINS_ENUM>;
   nftApprovalChain: Record<string, CHAINS_ENUM>;
+  sendLogTime?: number;
 }
 
 const SUPPORT_LOCALES = ['en'];
@@ -94,6 +95,7 @@ class PreferenceService {
         addedToken: {},
         tokenApprovalChain: {},
         nftApprovalChain: {},
+        sendLogTime: 0,
       },
     });
     if (!this.store.locale || this.store.locale !== defaultLang) {
@@ -144,6 +146,9 @@ class PreferenceService {
     }
     if (!this.store.nftApprovalChain) {
       this.store.nftApprovalChain = {};
+    }
+    if (!this.store.sendLogTime) {
+      this.store.sendLogTime = 0;
     }
   };
 
@@ -398,6 +403,12 @@ class PreferenceService {
   updateAddedToken = (address: string, tokenList: string[]) => {
     const key = address.toLowerCase();
     this.store.addedToken[key] = tokenList;
+  };
+  getSendLogTime = () => {
+    return this.store.sendLogTime || 0;
+  };
+  updateSendLogTime = (time: number) => {
+    this.store.sendLogTime = time;
   };
 }
 
