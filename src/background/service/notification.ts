@@ -16,7 +16,7 @@ interface Approval {
     state: number;
     params?: any;
     origin?: string;
-    approvalComponent: string;
+    approvalComponent: keyof typeof import('@/ui/views/Approval/components');
     requestDefer?: Promise<any>;
     approvalType: string;
   };

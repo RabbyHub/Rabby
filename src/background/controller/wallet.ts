@@ -23,10 +23,7 @@ import { ContactBookItem } from '../service/contactBook';
 import { openIndexPage } from 'background/webapi/tab';
 import { CacheState } from 'background/service/pageStateCache';
 import i18n from 'background/service/i18n';
-import keyring, {
-  KEYRING_CLASS,
-  DisplayedKeryring,
-} from 'background/service/keyring';
+import { KEYRING_CLASS, DisplayedKeryring } from 'background/service/keyring';
 import providerController from './provider/controller';
 import BaseController from './base';
 import {
@@ -40,7 +37,7 @@ import {
   KEYRING_TYPE,
 } from 'consts';
 import { ERC1155ABI, ERC721ABI } from 'consts/abi';
-import { Account, ChainGas, IHighlightedAddress } from '../service/preference';
+import { Account, IHighlightedAddress } from '../service/preference';
 import { ConnectedSite } from '../service/permission';
 import { ExplainTxResponse, TokenItem } from '../service/openapi';
 import DisplayKeyring from '../service/keyring/display';
@@ -1662,11 +1659,17 @@ export class WalletController extends BaseController {
   getInitAlianNameStatus = () => preferenceService.getInitAlianNameStatus();
   updateInitAlianNameStatus = () =>
     preferenceService.changeInitAlianNameStatus();
-  getLastTimeGasSelection = (chainId) => {
+  getLastTimeGasSelection = (
+    ...[chainId]: Parameters<typeof preferenceService.getLastTimeGasSelection>
+  ) => {
     return preferenceService.getLastTimeGasSelection(chainId);
   };
 
-  updateLastTimeGasSelection = (chainId: string, gas: ChainGas) => {
+  updateLastTimeGasSelection = (
+    ...[chainId, gas]: Parameters<
+      typeof preferenceService.updateLastTimeGasSelection
+    >
+  ) => {
     return preferenceService.updateLastTimeGasSelection(chainId, gas);
   };
   getIsFirstOpen = () => {

@@ -9,8 +9,8 @@ import { CHAINS_ENUM, CHAINS } from 'consts';
 
 interface ConnectProps {
   params: any;
-  onChainChange(chain: CHAINS_ENUM): void;
-  defaultChain: CHAINS_ENUM;
+  onChainChange?(chain: CHAINS_ENUM): void;
+  defaultChain?: CHAINS_ENUM;
 }
 
 const Connect = ({ params: { icon, origin } }: ConnectProps) => {
