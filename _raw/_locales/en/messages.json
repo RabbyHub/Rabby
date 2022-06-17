@@ -440,7 +440,7 @@
     "message": "Est. token balance change"
   },
   "nft__balance__change": {
-    "message": "Est. nft balance change"
+    "message": "Est. NFT balance change"
   },
   "no__token__balance__change__detected": {
     "message": "No token balance change detected"
