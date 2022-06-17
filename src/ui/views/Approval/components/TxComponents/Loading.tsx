@@ -2,7 +2,7 @@ import React from 'react';
 import { Skeleton } from 'antd';
 import { Trans } from 'react-i18next';
 import { CHAINS, CHAINS_ENUM } from 'consts';
-import BalanceChange from './LoadingBalanceChange';
+import LoadingBalanceChange from './LoadingBalanceChange';
 
 interface SignProps {
   chainEnum: CHAINS_ENUM;
@@ -30,7 +30,7 @@ const Loading = ({ chainEnum }: SignProps) => {
           <Skeleton.Input active style={{ width: 120 }} />
         </div>
       </div>
-      <BalanceChange />
+      <LoadingBalanceChange />
     </div>
   );
 };
