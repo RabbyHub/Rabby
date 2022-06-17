@@ -1,4 +1,6 @@
+import useBalanceChange from '@/ui/hooks/useBalanceChange';
 import { ExplainTxResponse, Tx } from 'background/service/openapi';
+import clsx from 'clsx';
 import { CHAINS, CHAINS_ENUM } from 'consts';
 import React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
@@ -31,8 +33,15 @@ const CancelTx = ({
     });
   };
 
+  const bfInfo = useBalanceChange(data);
+
   return (
-    <div className="cancel-tx">
+    <div
+      className={clsx(
+        'cancel-tx',
+        bfInfo.belowBlockIsEmpty && 'below-bc-block-empty'
+      )}
+    >
       <p className="section-title">
         <Trans
           i18nKey="signTransactionWithChain"
