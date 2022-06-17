@@ -9,7 +9,7 @@ import { Empty, TokenWithChain } from 'ui/component';
 import { openInTab, splitNumberByStep, useHover } from 'ui/utils';
 
 const Row = (props) => {
-  const { data, index, style, isExpand, setIsExpand } = props;
+  const { data, index, style, isExpand, setIsExpand, totalHidden } = props;
   const token = data[index];
   const [isHovering, hoverProps] = useHover();
   const handleGotoProfile = () => {
@@ -25,12 +25,14 @@ const Row = (props) => {
       >
         {!isExpand ? (
           <div className="flex justify-center items-center">
-            {'Small deposits are hidden (<1%)'}
+            {`$${splitNumberByStep(
+              totalHidden.toFixed(0)
+            )} deposits are hidden`}
             <img src={IconArrowUp} className="rotate-180"></img>
           </div>
         ) : (
           <div className="flex justify-center items-center">
-            {'Hide small deposits (<1%)'}
+            {'Hide small deposits'}
             <img src={IconArrowUp}></img>
           </div>
         )}
@@ -68,16 +70,48 @@ const Row = (props) => {
     </div>
   );
 };
+
+const calcFilterPrice = (assets) => {
+  const total = assets.reduce((t, item) => (item.net_usd_value || 0) + t, 0);
+  return Math.min(total / 100, 1000);
+};
+const calcIsShowExpand = (assets) => {
+  const filterPrice = calcFilterPrice(assets);
+  if (assets.length < 15) {
+    return false;
+  }
+  if (
+    assets.filter((item) => (item.net_usd_value || 0) < filterPrice).length < 3
+  ) {
+    return false;
+  }
+  return true;
+};
+
 const useExpandList = (assets) => {
   const [isExpand, setIsExpand] = useState(false);
   const total = useMemo(
     () => assets.reduce((t, item) => (item.net_usd_value || 0) + t, 0),
     [assets]
   );
-  const filterPrice = total / 100;
-  const isShowExpand = assets.some((item) => item.net_usd_value < filterPrice);
+  const filterPrice = useMemo(() => calcFilterPrice(assets), [assets]);
+  const isShowExpand = useMemo(() => calcIsShowExpand(assets), [assets]);
+  const totalHidden = useMemo(
+    () =>
+      assets.reduce((t, item) => {
+        const price = item.net_usd_value || 0;
+        if (price < filterPrice) {
+          return t + price;
+        }
+        return t;
+      }, 0),
+    [assets, filterPrice]
+  );
 
   const filterList = useMemo(() => {
+    if (!isShowExpand) {
+      return assets;
+    }
     let result = isExpand
       ? assets
       : assets.filter((item) => item.net_usd_value >= filterPrice);
@@ -89,7 +123,7 @@ const useExpandList = (assets) => {
       ]);
     }
     return result;
-  }, [isExpand, assets, isShowExpand]);
+  }, [isExpand, assets, isShowExpand, filterPrice]);
 
   return {
     isExpand,
@@ -97,6 +131,7 @@ const useExpandList = (assets) => {
     filterList,
     filterPrice,
     isShowExpand,
+    totalHidden,
   };
 };
 const AssetsList = ({
@@ -107,7 +142,9 @@ const AssetsList = ({
 }) => {
   const { t } = useTranslation();
   const fixedList = useRef<FixedSizeList>();
-  const { isExpand, setIsExpand, filterList } = useExpandList(assets);
+  const { isExpand, setIsExpand, filterList, totalHidden } = useExpandList(
+    assets
+  );
   useEffect(() => {
     if (!isloading && assets.length > 0 && defiAnimate.includes('fadeIn')) {
       fixedList.current?.scrollToItem(0);
@@ -137,7 +174,12 @@ const AssetsList = ({
             style={{ zIndex: 10, overflowX: 'hidden', paddingBottom: 50 }}
           >
             {(props) => (
-              <Row {...props} isExpand={isExpand} setIsExpand={setIsExpand} />
+              <Row
+                {...props}
+                isExpand={isExpand}
+                setIsExpand={setIsExpand}
+                totalHidden={totalHidden}
+              />
             )}
           </FixedSizeList>
         </>

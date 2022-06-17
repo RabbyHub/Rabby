@@ -439,6 +439,12 @@
   "token__balance__change": {
     "message": "Est. token balance change"
   },
+  "no__token__balance__change__detected": {
+    "message": "No token balance change detected"
+  },
+  "no__nft__balance__change__detected": {
+    "message": "No NFT balance change detected"
+  },
   "Total__value__change": {
     "message": "Total value change"
   },
@@ -447,6 +453,12 @@
   },
   "No__Changes": {
     "message": "No Changes"
+  },
+  "ntfWillBeReceived": {
+    "message": "{{countDesc}} will be received"
+  },
+  "ntfWillBeTransferedOut": {
+    "message": "{{countDesc}} will be transferred out"
   },
   "cancelApprovalTitle": {
     "message": "Cancel {{symbol}} Approval for"

@@ -109,6 +109,8 @@ import LogoLedgerDark from 'ui/assets/walletlogo/ledgerdark.png';
 import LogoLedgerWhite from 'ui/assets/walletlogo/ledgerwhite.png';
 import IconGridPlus from 'ui/assets/walletlogo/gridplus.png';
 import LogoKeystone from 'ui/assets/walletlogo/keystone.png';
+import LogoDefiant from 'ui/assets/walletlogo/defiant.png';
+import LogoDefiantWhite from 'ui/assets/walletlogo/defiant-white.png';
 
 export enum CHAINS_ENUM {
   ETH = 'ETH',
@@ -1099,6 +1101,7 @@ export enum WALLET_BRAND_TYPES {
   METAMASK = 'MetaMask',
   KEYSTONE = 'Keystone',
   COOLWALLET = 'CoolWallet',
+  DEFIANT = 'Defiant',
 }
 
 enum WALLET_BRAND_CATEGORY {
@@ -1155,6 +1158,15 @@ export const WALLET_BRAND_CONTENT: {
     image: LogoCoolWallet,
     connectType: BRAND_WALLET_CONNECT_TYPE.QRCodeBase,
     category: WALLET_BRAND_CATEGORY.HARDWARE,
+  },
+  [WALLET_BRAND_TYPES.DEFIANT]: {
+    id: 17,
+    name: 'Defiant',
+    brand: WALLET_BRAND_TYPES.DEFIANT,
+    icon: LogoDefiant,
+    image: LogoDefiantWhite,
+    connectType: BRAND_WALLET_CONNECT_TYPE.WalletConnect,
+    category: WALLET_BRAND_CATEGORY.MOBILE,
   },
   [WALLET_BRAND_TYPES.FIREBLOCKS]: {
     id: 11,
@@ -1377,6 +1389,7 @@ export const KEYRING_CATEGORY_MAP = {
   [KEYRING_CLASS.PRIVATE_KEY]: KEYRING_CATEGORY.PrivateKey,
   [KEYRING_CLASS.WATCH]: KEYRING_CATEGORY.WatchMode,
   [KEYRING_CLASS.HARDWARE.LEDGER]: KEYRING_CATEGORY.Hardware,
+  [KEYRING_CLASS.HARDWARE.ONEKEY]: KEYRING_CATEGORY.Hardware,
   [KEYRING_CLASS.HARDWARE.TREZOR]: KEYRING_CATEGORY.Hardware,
   [KEYRING_CLASS.HARDWARE.BITBOX02]: KEYRING_CATEGORY.Hardware,
   [KEYRING_CLASS.HARDWARE.KEYSTONE]: KEYRING_CATEGORY.Hardware,

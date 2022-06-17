@@ -268,7 +268,7 @@ const GasSelector = ({
   if (!isReady && isFirstTimeLoad)
     return (
       <>
-        <p className="section-title">{t('gasCostTitle')}</p>
+        <p className="section-title section-gas-cost">{t('gasCostTitle')}</p>
         <div className="gas-selector gray-section-block">
           <div className="gas-info mb-12">
             <Skeleton.Input active style={{ width: 200 }} />
@@ -296,7 +296,7 @@ const GasSelector = ({
     );
   return (
     <>
-      <p className="section-title">{t('gasCostTitle')}</p>
+      <p className="section-title section-gas-cost">{t('gasCostTitle')}</p>
       <div className="gas-selector gray-section-block">
         <div className="top">
           <p className="usmoney">
@@ -321,8 +321,9 @@ const GasSelector = ({
           </div>
         </div>
         <div className="card-container">
-          {gasList.map((item) => (
+          {gasList.map((item, idx) => (
             <div
+              key={`gas-item-${item.level}-${idx}`}
               className={clsx('card cursor-pointer', {
                 active: selectedGas?.level === item.level,
               })}

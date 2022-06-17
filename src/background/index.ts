@@ -22,6 +22,7 @@ import {
 } from './service';
 import { providerController, walletController } from './controller';
 import i18n from './service/i18n';
+import { getOriginFromUrl } from '@/utils';
 import rpcCache from './utils/rpcCache';
 import eventBus from '@/eventBus';
 import migrateData from '@/migrations';
@@ -166,7 +167,11 @@ browser.runtime.onConnect.addListener((port) => {
     }
 
     const sessionId = port.sender?.tab?.id;
-    const session = sessionService.getOrCreateSession(sessionId);
+    if (sessionId === undefined || !port.sender?.url) {
+      return;
+    }
+    const origin = getOriginFromUrl(port.sender.url);
+    const session = sessionService.getOrCreateSession(sessionId, origin);
 
     const req = { data, session };
     // for background push to respective page
@@ -186,7 +191,7 @@ browser.runtime.onConnect.addListener((port) => {
     return providerController(req);
   });
 
-  port.onDisconnect.addListener(() => {
+  port.onDisconnect.addListener((port) => {
     subscriptionManager.destroy();
   });
 });
@@ -196,16 +201,6 @@ declare global {
     wallet: WalletController;
   }
 }
-
-// for popup operate
-window.wallet = new Proxy(walletController, {
-  get(target, propKey, receiver) {
-    if (!appStoreLoaded) {
-      throw ethErrors.provider.disconnected();
-    }
-    return Reflect.get(target, propKey, receiver);
-  },
-});
 
 storage
   .byteInUse()

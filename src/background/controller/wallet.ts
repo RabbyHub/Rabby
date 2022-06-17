@@ -23,10 +23,7 @@ import { ContactBookItem } from '../service/contactBook';
 import { openIndexPage } from 'background/webapi/tab';
 import { CacheState } from 'background/service/pageStateCache';
 import i18n from 'background/service/i18n';
-import keyring, {
-  KEYRING_CLASS,
-  DisplayedKeryring,
-} from 'background/service/keyring';
+import { KEYRING_CLASS, DisplayedKeryring } from 'background/service/keyring';
 import providerController from './provider/controller';
 import BaseController from './base';
 import {
@@ -40,7 +37,7 @@ import {
   KEYRING_TYPE,
 } from 'consts';
 import { ERC1155ABI, ERC721ABI } from 'consts/abi';
-import { Account, ChainGas, IHighlightedAddress } from '../service/preference';
+import { Account, IHighlightedAddress } from '../service/preference';
 import { ConnectedSite } from '../service/permission';
 import { ExplainTxResponse, TokenItem } from '../service/openapi';
 import DisplayKeyring from '../service/keyring/display';
@@ -492,8 +489,9 @@ export class WalletController extends BaseController {
   getRecentConnectedSites = () => {
     return permissionService.getRecentConnectedSites();
   };
-  getCurrentSite = (tabId: number): ConnectedSite | null => {
-    const { origin, name, icon } = sessionService.getSession(tabId) || {};
+  getCurrentSite = (tabId: number, domain: string): ConnectedSite | null => {
+    const { origin, name, icon } =
+      sessionService.getSession(`${tabId}-${domain}`) || {};
     if (!origin) {
       return null;
     }
@@ -511,9 +509,13 @@ export class WalletController extends BaseController {
       isTop: false,
     };
   };
-  getCurrentConnectedSite = (tabId: number) => {
-    const { origin } = sessionService.getSession(tabId) || {};
-    return permissionService.getWithoutUpdate(origin);
+  getCurrentConnectedSite = (tabId: number, domain: string) => {
+    const session = sessionService.getSession(`${tabId}-${domain}`);
+    if (session) {
+      return permissionService.getWithoutUpdate(session.origin);
+    } else {
+      return null;
+    }
   };
   setSite = (data: ConnectedSite) => {
     permissionService.setSite(data);
@@ -1287,10 +1289,14 @@ export class WalletController extends BaseController {
     return stashKeyringId;
   };
 
-  submitQRHardwareSignature = async (requestId: string, cbor: string) => {
+  submitQRHardwareSignature = async (
+    requestId: string,
+    cbor: string,
+    address?: string
+  ) => {
     const account = await preferenceService.getCurrentAccount();
     const keyring = await keyringService.getKeyringForAccount(
-      account!.address,
+      address ? address : account!.address,
       KEYRING_CLASS.QRCODE
     );
     return await keyring.submitSignature(requestId, cbor);
@@ -1326,6 +1332,37 @@ export class WalletController extends BaseController {
   ) => {
     const keyring = await keyringService.getKeyringForAccount(from, type);
     return keyringService.signTransaction(keyring, data, from, options);
+  };
+
+  decryptMessage = async ({
+    type,
+    from,
+    data,
+    options,
+  }: {
+    type: string;
+    from: string;
+    data: any;
+    options?: any;
+  }) => {
+    const stripped = ethUtil.stripHexPrefix(data);
+    const buff = Buffer.from(stripped, 'hex');
+    data = JSON.parse(buff.toString('utf8'));
+    const keyring = await keyringService.getKeyringForAccount(from, type);
+    return keyring.decryptMessage(from, data, options);
+  };
+
+  getEncryptionPublicKey = async ({
+    address,
+    type,
+    options,
+  }: {
+    address: string;
+    type: string;
+    options?: any;
+  }) => {
+    const keyring = await keyringService.getKeyringForAccount(address, type);
+    return keyring.getEncryptionPublicKey(address, options);
   };
 
   requestKeyring = (
@@ -1632,11 +1669,17 @@ export class WalletController extends BaseController {
   getInitAlianNameStatus = () => preferenceService.getInitAlianNameStatus();
   updateInitAlianNameStatus = () =>
     preferenceService.changeInitAlianNameStatus();
-  getLastTimeGasSelection = (chainId) => {
+  getLastTimeGasSelection = (
+    ...[chainId]: Parameters<typeof preferenceService.getLastTimeGasSelection>
+  ) => {
     return preferenceService.getLastTimeGasSelection(chainId);
   };
 
-  updateLastTimeGasSelection = (chainId: string, gas: ChainGas) => {
+  updateLastTimeGasSelection = (
+    ...[chainId, gas]: Parameters<
+      typeof preferenceService.updateLastTimeGasSelection
+    >
+  ) => {
     return preferenceService.updateLastTimeGasSelection(chainId, gas);
   };
   getIsFirstOpen = () => {

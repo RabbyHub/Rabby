@@ -27,12 +27,12 @@ const getSession = (id) => {
   return sessionMap.get(id);
 };
 
-const getOrCreateSession = (id) => {
-  if (sessionMap.has(id)) {
-    return getSession(id);
+const getOrCreateSession = (id, origin) => {
+  if (sessionMap.has(`${id}-${origin}`)) {
+    return getSession(`${id}-${origin}`);
   }
 
-  return createSession(id, null);
+  return createSession(`${id}-${origin}`, null);
 };
 
 const createSession = (id, data) => {
