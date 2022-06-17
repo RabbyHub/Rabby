@@ -22,7 +22,15 @@ import { splitNumberByStep } from 'ui/utils';
 import { TokenDetailPopup } from './TokenDetailPopup';
 
 const Row = (props) => {
-  const { data, index, style, onTokenClick, isExpand, setIsExpand } = props;
+  const {
+    data,
+    index,
+    style,
+    onTokenClick,
+    isExpand,
+    setIsExpand,
+    totalHidden,
+  } = props;
   const { list, startSearch, removeToken, addToken, query, addedToken } = data;
   const isInitList = !startSearch && !query;
   const token = list[index];
@@ -42,12 +50,12 @@ const Row = (props) => {
       >
         {!isExpand ? (
           <div className="flex justify-center items-center">
-            {'Small assets are hidden (<1%)'}
+            {`$${splitNumberByStep(totalHidden.toFixed(0))} assets are hidden`}
             <img src={IconArrowUp} className="rotate-180"></img>
           </div>
         ) : (
           <div className="flex justify-center items-center">
-            {'Hide small assets (<1%)'}
+            {'Hide small assets'}
             <img src={IconArrowUp}></img>
           </div>
         )}
@@ -108,18 +116,47 @@ const Row = (props) => {
     </div>
   );
 };
+
+const calcFilterPrice = (tokens) => {
+  const total = tokens.reduce(
+    (t, item) => (item.amount * item.price || 0) + t,
+    0
+  );
+  return Math.min(total / 100, 1000);
+};
+const calcIsShowExpand = (tokens) => {
+  const filterPrice = calcFilterPrice(tokens);
+  if (tokens.length < 15) {
+    return false;
+  }
+  if (
+    tokens.filter((item) => (item.amount * item.price || 0) < filterPrice)
+      .length < 3
+  ) {
+    return false;
+  }
+  return true;
+};
 const useExpandList = (tokens) => {
   const [isExpand, setIsExpand] = useState(false);
-  const total = useMemo(
-    () => tokens.reduce((t, item) => (item.amount * item.price || 0) + t, 0),
-    [tokens]
-  );
-  const filterPrice = total / 100;
-  const isShowExpand = tokens.some(
-    (item) => (item.amount * item.price || 0) < filterPrice
-  );
+  const filterPrice = useMemo(() => calcFilterPrice(tokens), [tokens]);
+  const isShowExpand = useMemo(() => calcIsShowExpand(tokens), [tokens]);
 
+  const totalHidden = useMemo(
+    () =>
+      tokens.reduce((t, item) => {
+        const price = item.amount * item.price || 0;
+        if (price < filterPrice) {
+          return t + price;
+        }
+        return t;
+      }, 0),
+    [tokens, filterPrice]
+  );
   const filterList = useMemo(() => {
+    if (!isShowExpand) {
+      return tokens;
+    }
     let result = isExpand
       ? tokens
       : tokens.filter((item) => (item.amount * item.price || 0) >= filterPrice);
@@ -131,7 +168,7 @@ const useExpandList = (tokens) => {
       ]);
     }
     return result;
-  }, [isExpand, tokens, isShowExpand]);
+  }, [isExpand, tokens, isShowExpand, filterPrice]);
 
   return {
     isExpand,
@@ -139,6 +176,7 @@ const useExpandList = (tokens) => {
     filterList,
     filterPrice,
     isShowExpand,
+    totalHidden,
   };
 };
 const TokenList = ({
@@ -160,7 +198,9 @@ const TokenList = ({
   const handleQueryChange = (value: string) => {
     setQuery(value);
   };
-  const { isExpand, setIsExpand, filterList } = useExpandList(tokens);
+  const { isExpand, setIsExpand, filterList, totalHidden } = useExpandList(
+    tokens
+  );
   const [detail, setDetail] = useState<{
     visible: boolean;
     current?: TokenItem | null;
@@ -264,6 +304,7 @@ const TokenList = ({
           {(props) => (
             <Row
               {...props}
+              totalHidden={totalHidden}
               isExpand={isExpand}
               setIsExpand={setIsExpand}
               onTokenClick={handleTokenClick}
