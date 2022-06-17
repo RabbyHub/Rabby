@@ -4,12 +4,13 @@ import ReactDOM from 'react-dom';
 import { Provider } from 'react-redux';
 import Views from './views';
 import { Message } from '@/utils';
-import { getUITypeName } from 'ui/utils';
+import { getUiType, getUITypeName } from 'ui/utils';
 import eventBus from '@/eventBus';
 import * as Sentry from '@sentry/react';
 import { Integrations } from '@sentry/tracing';
 import i18n, { addResourceBundle } from 'src/i18n';
 import { EVENTS } from 'consts';
+import ReactGA from 'react-ga';
 
 import type { WalletControllerType } from 'ui/utils/WalletContext';
 
@@ -164,3 +165,14 @@ ReactDOM.render(
   </Provider>,
   document.getElementById('root')
 );
+
+{
+  const label = getUITypeName();
+  if (label && label !== 'tab') {
+    ReactGA.event({
+      category: 'User',
+      action: 'active',
+      label,
+    });
+  }
+}

@@ -1,5 +1,6 @@
 import 'reflect-metadata';
 import * as Sentry from '@sentry/browser';
+import ReactGA, { ga } from 'react-ga';
 import { Integrations } from '@sentry/tracing';
 import { browser } from 'webextension-polyfill-ts';
 import { ethErrors } from 'eth-rpc-errors';
@@ -29,6 +30,17 @@ import migrateData from '@/migrations';
 import stats from '@/stats';
 import createSubscription from './controller/provider/subscriptionManager';
 import buildinProvider from 'background/utils/buildinProvider';
+ReactGA.initialize('UA-199755108-3');
+// eslint-disable-next-line @typescript-eslint/no-empty-function
+ga('set', 'checkProtocolTask', function () {});
+ga('set', 'appName', 'Rabby');
+ga('set', 'appVersion', process.env.release);
+ga('require', 'displayfeatures');
+
+ReactGA.event({
+  category: 'User',
+  action: 'init',
+});
 
 const { PortMessage } = Message;
 
