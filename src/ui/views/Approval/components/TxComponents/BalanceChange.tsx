@@ -11,6 +11,7 @@ import IconQuestion from 'ui/assets/approval/question.svg';
 
 import LessPalette from '@/ui/style/var-defs';
 import ModalPreviewNFTItem from '@/ui/component/ModalPreviewNFTItem';
+import useBalanceChange from '@/ui/hooks/useBalanceChange';
 
 const NFTListCountLimit = 5;
 const NFCBalanceChangeWrapper = styled.div`
@@ -86,13 +87,15 @@ const NFCBalanceChangeWrapper = styled.div`
     cursor: pointer;
 
     .nft-supplycount-badge {
-      width: 21px;
+      min-width: 21px;
       height: 14px;
       background: rgba(0, 0, 0, 0.8);
       border-radius: 2px;
       position: absolute;
       top: 4px;
       right: 4px;
+      padding-left: 2px;
+      padding-right: 2px;
       display: flex;
       align-items: center;
       justify-content: center;
@@ -197,9 +200,9 @@ function NFTList({
                   }}
                 >
                   <div className="nft-inner-hover-mask">
-                    {nft.total_supply > 1 && (
+                    {(nft.amount || 0) > 1 && (
                       <span className="nft-supplycount-badge">
-                        x {nft.total_supply}
+                        x {nft.amount}
                       </span>
                     )}
                   </div>
@@ -239,30 +242,31 @@ const NFTBalanceChange = ({
   const isSuccess = (data.success || !data.success) && isSupport;
   const errorMessage = data.err_msg;
 
+  const { hasNFTChange: hasChange } = useBalanceChange({
+    balance_change: data,
+  });
+
   const {
     hasReceives,
     countReceives,
     receiveNftList,
-    hasChange,
     hasTransferedOut,
     countSendNft,
     sendNftList,
   } = React.useMemo(() => {
     const sendNftList = data.send_nft_list.slice(0);
     const countSendNft = sendNftList.reduce(
-      (accu, item) => accu + item.total_supply,
+      (accu, item) => accu + (item.amount || 0),
       0
     );
     const hasTransferedOut = sendNftList.length > 0;
 
     const receiveNftList = data.receive_nft_list.slice(0);
     const countReceives = receiveNftList.reduce(
-      (accu, item) => accu + item.total_supply,
+      (accu, item) => accu + (item.amount || 0),
       0
     );
     const hasReceives = receiveNftList.length > 0;
-
-    const hasChange = receiveNftList.length > 0 || sendNftList.length > 0;
 
     return {
       hasReceives,
@@ -271,14 +275,15 @@ const NFTBalanceChange = ({
       hasTransferedOut,
       countSendNft,
       sendNftList,
-      hasChange,
     };
   }, [data]);
 
   const chain = CHAINS[chainEnum];
 
   return (
-    <NFCBalanceChangeWrapper className="nft-bc">
+    <NFCBalanceChangeWrapper
+      className={clsx('nft-bc', !hasChange && 'no-change-detected')}
+    >
       {!hasChange && (
         <p className="section-title flex flex-start items-center">
           <span className="mr-[3px]">
@@ -305,7 +310,7 @@ const NFTBalanceChange = ({
               i18nKey={'ntfWillBeReceived'}
               values={{
                 countDesc:
-                  countReceives > 1 ? `${countReceives} NFTs` : '1 NFT',
+                  countReceives <= 1 ? '1 NFT' : `${countReceives} NFTs`,
               }}
             />
           </h3>
@@ -320,7 +325,7 @@ const NFTBalanceChange = ({
             <Trans
               i18nKey={'ntfWillBeTransferedOut'}
               values={{
-                countDesc: countSendNft > 1 ? `${countSendNft} NFTs` : '1 NFT',
+                countDesc: countSendNft <= 1 ? '1 NFT' : `${countSendNft} NFTs`,
               }}
             />
           </h3>
@@ -359,29 +364,35 @@ const TokenBalanceChange = ({
   const errorMessage = data.err_msg;
   const chain = CHAINS[chainEnum];
 
+  const { hasTokenChange: hasChange } = useBalanceChange({
+    balance_change: data,
+  });
+
   const {
     receiveTokenList,
     sendTokenList,
     isUSDValueChangePositive,
     isUSDValueChangeNegative,
-    hasChange,
   } = React.useMemo(() => {
     const receiveTokenList = data.receive_token_list;
     const sendTokenList = data.send_token_list;
     const isUSDValueChangePositive = data.usd_value_change > 0;
     const isUSDValueChangeNegative = data.usd_value_change < 0;
-    const hasChange =
-      data.receive_token_list.length > 0 || data.send_token_list.length > 0;
     return {
       receiveTokenList,
       sendTokenList,
       isUSDValueChangePositive,
       isUSDValueChangeNegative,
-      hasChange,
     };
   }, [data]);
+
   return (
-    <div className="balance-change">
+    <div
+      className={clsx(
+        'token-balance-change',
+        !hasChange && 'no-change-detected'
+      )}
+    >
       {hasChange ? (
         <p className="section-title flex justify-between">
           <span>{t('token balance change')}</span>
@@ -394,7 +405,7 @@ const TokenBalanceChange = ({
         </p>
       )}
       {isSuccess && hasChange && (
-        <div className="gray-section-block balance-change-content">
+        <div className="gray-section-block token-balance-change-content">
           <div>
             {sendTokenList && sendTokenList.length > 0 && (
               <ul>
@@ -482,38 +493,34 @@ function BalanceChange({
   isSupport: boolean;
   chainEnum: CHAINS_ENUM;
 }) {
-  const hasNFTChange =
-    data.receive_nft_list.length > 0 || data.send_nft_list.length > 0;
-
-  if (hasNFTChange) {
-    return (
-      <>
-        <NFTBalanceChange
-          data={data}
-          isSupport={isSupport}
-          chainEnum={chainEnum}
-        />
-        <TokenBalanceChange
-          data={data}
-          isSupport={isSupport}
-          chainEnum={chainEnum}
-        />
-      </>
-    );
-  }
+  const { renderBlocks } = useBalanceChange({ balance_change: data });
 
   return (
     <>
-      <TokenBalanceChange
-        data={data}
-        isSupport={isSupport}
-        chainEnum={chainEnum}
-      />
-      <NFTBalanceChange
-        data={data}
-        isSupport={isSupport}
-        chainEnum={chainEnum}
-      />
+      {renderBlocks.map((block, idx) => {
+        switch (block) {
+          case 'nft-bc':
+            return (
+              <NFTBalanceChange
+                key={`b-${block}-${idx}`}
+                data={data}
+                isSupport={isSupport}
+                chainEnum={chainEnum}
+              />
+            );
+          case 'token-bc':
+            return (
+              <TokenBalanceChange
+                key={`b-${block}-${idx}`}
+                data={data}
+                isSupport={isSupport}
+                chainEnum={chainEnum}
+              />
+            );
+          default:
+            return null;
+        }
+      })}
     </>
   );
 }

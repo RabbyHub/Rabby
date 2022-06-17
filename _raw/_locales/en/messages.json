@@ -439,6 +439,9 @@
   "token__balance__change": {
     "message": "Est. token balance change"
   },
+  "nft__balance__change": {
+    "message": "Est. NFT balance change"
+  },
   "no__token__balance__change__detected": {
     "message": "No token balance change detected"
   },
@@ -903,6 +906,9 @@
   },
   "Add__Watch__Mode__Address": {
     "message": "Add Watch Mode Address"
+  },
+  "Add__address__without__private__keys": {
+    "message": "Full experience without importing private keys"
   },
   "Import__Private__Key": {
     "message": "Import Private Key"

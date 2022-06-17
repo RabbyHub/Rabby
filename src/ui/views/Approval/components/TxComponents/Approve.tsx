@@ -18,6 +18,7 @@ import { getCustomTxParamsData } from 'ui/utils/transaction';
 import BalanceChange from './BalanceChange';
 import SpeedUpCorner from './SpeedUpCorner';
 import ViewRawModal from './ViewRawModal';
+import useBalanceChange from '@/ui/hooks/useBalanceChange';
 
 interface ApproveProps {
   data: ExplainTxResponse;
@@ -234,8 +235,15 @@ const Approve = ({
     init();
   }, []);
 
+  const bfInfo = useBalanceChange(data);
+
   return (
-    <div className="approve">
+    <div
+      className={clsx(
+        'approve',
+        bfInfo.belowBlockIsEmpty && 'below-bc-block-empty'
+      )}
+    >
       <p className="section-title">
         <Trans
           i18nKey="signTransactionWithChain"
