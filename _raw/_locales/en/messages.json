@@ -904,9 +904,6 @@
   "Add__Watch__Mode__Address": {
     "message": "Add Watch Mode Address"
   },
-  "Add__address__without__private__keys": {
-    "message": "Full experience without importing private keys"
-  },
   "Import__Private__Key": {
     "message": "Import Private Key"
   },
