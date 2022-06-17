@@ -167,7 +167,6 @@ const AddAddressOptions = () => {
       leftIcon: IconAddwatchmodo,
       brand: 'addWatchMode',
       content: t('Add Watch Mode Address'),
-      subText: t('Add address without private keys'),
       onClick: () => history.push('/import/watch-address'),
     },
   ];
