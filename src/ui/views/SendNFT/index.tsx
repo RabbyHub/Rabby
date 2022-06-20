@@ -5,6 +5,7 @@ import clsx from 'clsx';
 import BigNumber from 'bignumber.js';
 import { useTranslation } from 'react-i18next';
 import { useHistory, useLocation } from 'react-router-dom';
+import ReactGA from 'react-ga';
 import { Input, Form, message, Button } from 'antd';
 import { isValidAddress } from 'ethereumjs-util';
 import { providers } from 'ethers';
@@ -149,6 +150,12 @@ const SendNFT = () => {
       },
     });
     try {
+      ReactGA.event({
+        category: 'Send',
+        action: 'createTx',
+        label: [chain as string, currentAccount?.brandName, 'nft'].join('|'),
+      });
+
       await wallet.transferNFT({
         to,
         amount,

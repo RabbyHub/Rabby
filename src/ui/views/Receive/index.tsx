@@ -9,9 +9,16 @@ import {
   WALLET_BRAND_CONTENT,
 } from 'consts';
 import QRCode from 'qrcode.react';
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, {
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
+import ReactGA from 'react-ga';
 import { ReactComponent as IconBack } from 'ui/assets/back.svg';
 import IconCopy from 'ui/assets/icon-copy-1.svg';
 import IconEyeHide from 'ui/assets/icon-eye-hide.svg';
@@ -85,6 +92,11 @@ const Receive = () => {
     });
 
     clipboard.on('success', () => {
+      ReactGA.event({
+        category: 'Receive',
+        action: 'copyAddress',
+        label: [account?.brandName, account?.type].join('|'),
+      });
       message.success({
         duration: 3,
         icon: <i />,
@@ -113,6 +125,13 @@ const Receive = () => {
   useEffect(() => {
     init();
   }, []);
+  useLayoutEffect(() => {
+    ReactGA.event({
+      category: 'Receive',
+      action: 'getQRCode',
+      label: [account?.brandName, account?.type].join('|'),
+    });
+  }, [account?.address]);
   useEffect(() => {
     if (account?.type !== KEYRING_CLASS.WATCH) {
       return;

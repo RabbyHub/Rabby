@@ -69,6 +69,7 @@ import Loading from './TxComponents/Loading';
 import Send from './TxComponents/Send';
 import SendNFT from './TxComponents/sendNFT';
 import Sign from './TxComponents/Sign';
+import { varyTxSignType } from '@/ui/utils/transaction';
 
 const normalizeHex = (value: string | number) => {
   if (typeof value === 'number') {
@@ -371,6 +372,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
   const [isLedger, setIsLedger] = useState(false);
   const [useLedgerLive, setUseLedgerLive] = useState(false);
   const [hasConnectedLedgerHID, setHasConnectedLedgerHID] = useState(false);
+  const signTypeInfo = varyTxSignType(txDetail);
 
   const {
     data = '0x',
@@ -616,6 +618,19 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       type: currentAccount.brandName,
       chainId: chain.serverId,
       category: KEYRING_CATEGORY_MAP[currentAccount.type],
+    });
+
+    ReactGA.event({
+      category: 'Send',
+      action: 'signTx',
+      label: [
+        currentAccount.brandName,
+        signTypeInfo.isNFT ? 'nftChange' : 'noNftChange',
+        signTypeInfo.isToken ? 'tokenChange' : 'noTokenChange',
+        chain.name,
+      ]
+        .filter(Boolean)
+        .join('|'),
     });
 
     ReactGA.event({
