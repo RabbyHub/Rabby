@@ -276,6 +276,10 @@ declare global {
 }
 
 const provider = new EthereumProvider();
+let cacheOtherProvider: EthereumProvider | null = null;
+const rabbyProvider = new Proxy(provider, {
+  deleteProperty: () => true,
+});
 
 provider
   .request({
@@ -283,16 +287,20 @@ provider
     params: [],
   })
   .then((isDefaultWallet) => {
-    if (isDefaultWallet) {
+    let finalProvider: EthereumProvider | null = null;
+    if (isDefaultWallet || !cacheOtherProvider) {
+      finalProvider = rabbyProvider;
       Object.defineProperty(window, 'ethereum', {
-        value: new Proxy(provider, {
-          deleteProperty: () => true,
-        }),
-        writable: false,
+        set() {
+          return finalProvider;
+        },
+        get() {
+          return finalProvider;
+        },
       });
       if (!window.web3) {
         window.web3 = {
-          currentProvider: window.ethereum,
+          currentProvider: rabbyProvider,
         };
       }
       const widgets = [DEXPriceComparison];
@@ -311,12 +319,25 @@ provider
             }
           });
       });
+    } else {
+      finalProvider = cacheOtherProvider;
     }
+    Object.keys(finalProvider).forEach((key) => {
+      window.ethereum[key] = (finalProvider as EthereumProvider)[key];
+    });
   });
 
 if (!window.ethereum) {
-  window.ethereum = new Proxy(provider, {
-    deleteProperty: () => true,
+  window.ethereum = rabbyProvider;
+
+  Object.defineProperty(window, 'ethereum', {
+    set(val) {
+      cacheOtherProvider = val;
+      return rabbyProvider;
+    },
+    get() {
+      return rabbyProvider;
+    },
   });
 
   if (!window.web3) {
@@ -326,6 +347,8 @@ if (!window.ethereum) {
   }
 
   window.ethereum.on('chainChanged', switchChainNotice);
+} else {
+  cacheOtherProvider = window.ethereum;
 }
 
 window.dispatchEvent(new Event('ethereum#initialized'));
