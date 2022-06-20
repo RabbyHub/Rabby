@@ -1,6 +1,8 @@
 import { NFTApproval } from '@/background/service/openapi';
 import { Empty, Loading } from '@/ui/component';
+import { connectStore, useRabbySelector } from '@/ui/store';
 import React from 'react';
+import ReactGA from 'react-ga';
 import { useTranslation } from 'react-i18next';
 import IconSearch from 'ui/assets/search.svg';
 import NFTListItem from './NFTListItem';
@@ -14,6 +16,8 @@ interface ApprovalCardProps {
 
 const NFTList = ({ data, loading, onSearch, onDecline }: ApprovalCardProps) => {
   const { t } = useTranslation();
+  const currentAccount = useRabbySelector((s) => s.account.currentAccount);
+
   return (
     <div className="list">
       <div className="search" onClick={onSearch}>
@@ -35,7 +39,14 @@ const NFTList = ({ data, loading, onSearch, onDecline }: ApprovalCardProps) => {
           data?.map((item) => (
             <NFTListItem
               item={item}
-              onDecline={onDecline}
+              onDecline={(item) => {
+                ReactGA.event({
+                  category: 'Security',
+                  action: 'startDeclineNFTApproval',
+                  label: [item.chain, currentAccount?.brandName].join('|'),
+                });
+                onDecline(item);
+              }}
               key={item.id}
             ></NFTListItem>
           ))}
@@ -44,4 +55,4 @@ const NFTList = ({ data, loading, onSearch, onDecline }: ApprovalCardProps) => {
   );
 };
 
-export default NFTList;
+export default connectStore()(NFTList);

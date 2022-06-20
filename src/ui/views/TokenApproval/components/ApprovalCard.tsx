@@ -3,12 +3,14 @@ import { TokenWithChain } from '@/ui/component';
 import { Button, message } from 'antd';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
+import ReactGA from 'react-ga';
 import IconUnknown from 'ui/assets/icon-unknown-1.svg';
 import {
   numberWithCommasIsLtOne,
   splitNumberByStep,
   useWallet,
 } from 'ui/utils';
+import { connectStore, useRabbySelector } from '@/ui/store';
 
 interface ApprovalCardProps {
   data: TokenApproval;
@@ -20,8 +22,15 @@ const ellipsis = (text: string) => {
 const ApprovalCard = ({ data }: ApprovalCardProps) => {
   const { t } = useTranslation();
   const wallet = useWallet();
+  const currentAccount = useRabbySelector((s) => s.account.currentAccount);
+
   const tokenApprove = async (item: TokenApproval['spenders'][0]) => {
     try {
+      ReactGA.event({
+        category: 'Security',
+        action: 'startDeclineTokenApproval',
+        label: [data.chain, currentAccount?.brandName].join('|'),
+      });
       await wallet.approveToken(data.chain, data.id, item.id, 0);
       window.close();
     } catch (e) {
@@ -107,4 +116,4 @@ const ApprovalCard = ({ data }: ApprovalCardProps) => {
   );
 };
 
-export default ApprovalCard;
+export default connectStore()(ApprovalCard);

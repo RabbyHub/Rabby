@@ -621,12 +621,12 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     });
 
     ReactGA.event({
-      category: 'Send',
-      action: 'signTx',
+      category: signTypeInfo.gaCategory,
+      action: signTypeInfo.gaAction,
       label: [
         currentAccount.brandName,
-        signTypeInfo.isNFT ? 'nftChange' : 'noNftChange',
-        signTypeInfo.isToken ? 'tokenChange' : 'noTokenChange',
+        signTypeInfo.isNFT ? 'nft' : 'no-nft',
+        signTypeInfo.isToken ? 'token' : 'no-token',
         chain.name,
       ]
         .filter(Boolean)
