@@ -290,6 +290,9 @@ provider
     let finalProvider: EthereumProvider | null = null;
     if (isDefaultWallet || !cacheOtherProvider) {
       finalProvider = rabbyProvider;
+      Object.keys(finalProvider).forEach((key) => {
+        window.ethereum[key] = (finalProvider as EthereumProvider)[key];
+      });
       Object.defineProperty(window, 'ethereum', {
         set() {
           return finalProvider;
@@ -321,24 +324,14 @@ provider
       });
     } else {
       finalProvider = cacheOtherProvider;
+      Object.keys(finalProvider).forEach((key) => {
+        window.ethereum[key] = (finalProvider as EthereumProvider)[key];
+      });
     }
-    Object.keys(finalProvider).forEach((key) => {
-      window.ethereum[key] = (finalProvider as EthereumProvider)[key];
-    });
   });
 
 if (!window.ethereum) {
   window.ethereum = rabbyProvider;
-
-  Object.defineProperty(window, 'ethereum', {
-    set(val) {
-      cacheOtherProvider = val;
-      return rabbyProvider;
-    },
-    get() {
-      return rabbyProvider;
-    },
-  });
 
   if (!window.web3) {
     window.web3 = {
