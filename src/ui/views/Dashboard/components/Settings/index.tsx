@@ -128,121 +128,6 @@ const OpenApiModal = ({
   );
 };
 
-const ResolveConflictModal = ({
-  visible,
-  onCancel,
-  onChange,
-}: {
-  visible: boolean;
-  onCancel(): void;
-  onChange(v: boolean): void;
-}) => {
-  const [isVisible, setIsVisible] = useState(false);
-  const wallet = useWallet();
-  const { t } = useTranslation();
-  const [isDefaultWallet, setIsDefaultWallet] = useState(false);
-
-  const handleDefaultWalletChange = (value: boolean) => {
-    if (isDefaultWallet === value) {
-      return;
-    }
-    onChange(value);
-    wallet.setIsDefaultWallet(value);
-    setIsDefaultWallet(value);
-    message.success({
-      icon: <span></span>,
-      content: (
-        <span className="text-white">
-          {t("Please refresh the webpage you're viewing")}
-        </span>
-      ),
-    });
-  };
-
-  const init = async () => {
-    setIsDefaultWallet(await wallet.isDefaultWallet());
-  };
-
-  const handleCancel = () => {
-    setIsVisible(false);
-    setTimeout(() => {
-      onCancel();
-    }, 500);
-  };
-
-  useEffect(() => {
-    init();
-  }, []);
-
-  useEffect(() => {
-    setTimeout(() => {
-      setIsVisible(visible);
-    }, 100);
-  }, [visible]);
-
-  return (
-    <div
-      className={clsx('resolve-conflict-modal', {
-        show: isVisible,
-        hidden: !visible,
-      })}
-    >
-      <PageHeader forceShowBack onBack={handleCancel}>
-        {t('Resolve conflicts with MetaMask')}
-      </PageHeader>
-      <Field
-        className={clsx('mb-[20px]', {
-          checked: isDefaultWallet,
-        })}
-        onClick={() => handleDefaultWalletChange(true)}
-        leftIcon={
-          <IconCheckbox
-            className={clsx(isDefaultWallet ? 'checked' : null)}
-          ></IconCheckbox>
-        }
-        rightIcon={null}
-      >
-        <div className="field-main">
-          <div className="field-title">
-            Prefer Rabby <img src={IconRabby} className="w-[20px]" alt="" />
-          </div>
-          <div className="field-desc">
-            Use Rabby to connect DApps and submit transactions.
-          </div>
-        </div>
-      </Field>
-      <Field
-        className={clsx('metamask', {
-          checked: !isDefaultWallet,
-        })}
-        onClick={() => handleDefaultWalletChange(false)}
-        leftIcon={
-          <IconCheckbox
-            className={clsx(!isDefaultWallet ? 'checked' : null)}
-          ></IconCheckbox>
-        }
-        rightIcon={null}
-      >
-        <div className="field-main">
-          <div className="field-title">
-            Prefer MetaMask{' '}
-            <img src={IconMetamask} className="w-[20px]" alt="" />
-          </div>
-          <div className="field-desc">
-            Use MetaMask to connect DApps and submit transactions. Rabby's
-            pre-sign features will not be available.
-          </div>
-        </div>
-      </Field>
-      {!isDefaultWallet && (
-        <div className="tips">
-          *Choosing this will prevent Rabby's pre-sign features from working
-        </div>
-      )}
-    </div>
-  );
-};
-
 const ResetAccountModal = ({
   visible,
   onFinish,
@@ -319,15 +204,7 @@ const Settings = ({ visible, onClose }: SettingsProps) => {
   const history = useHistory();
   const { t } = useTranslation();
   const [showOpenApiModal, setShowOpenApiModal] = useState(false);
-  const [showResolveConflictModal, setShowResolveConflictModal] = useState(
-    false
-  );
-  const [isDefaultWallet, setIsDefaultWallet] = useState(false);
   const [showResetAccountModal, setShowResetAccountModal] = useState(false);
-
-  const init = async () => {
-    setIsDefaultWallet(await wallet.isDefaultWallet());
-  };
 
   const handleClickClearWatchMode = () => {
     confirm({
@@ -346,24 +223,6 @@ const Settings = ({ visible, onClose }: SettingsProps) => {
       onClick: () => history.push('/settings/address'),
     },
 
-    {
-      className: clsx({ 'default-wallet-field': !isDefaultWallet }),
-      leftIcon: IconWallet,
-      onClick: () => setShowResolveConflictModal(true),
-      content: (
-        <div>
-          <span className="flex default-wallet-title">
-            {t('Resolve conflicts with MetaMask')}
-          </span>
-          {!isDefaultWallet && (
-            <p className="not-default-tip">
-              {t('Rabby is currently not working properly')}
-            </p>
-          )}
-        </div>
-      ),
-      rightIcon: <img src={IconArrowRight} className="icon icon-arrow-right" />,
-    },
     {
       leftIcon: IconReset,
       content: t('Reset Account'),
@@ -395,14 +254,9 @@ const Settings = ({ visible, onClose }: SettingsProps) => {
 
   const handleClose: DrawerProps['onClose'] = (e) => {
     setShowOpenApiModal(false);
-    setShowResolveConflictModal(false);
     setShowResetAccountModal(false);
     onClose && onClose(e);
   };
-
-  useEffect(() => {
-    init();
-  }, []);
 
   return (
     <>
@@ -437,7 +291,6 @@ const Settings = ({ visible, onClose }: SettingsProps) => {
                   )
                 }
                 onClick={data.onClick}
-                className={data.className}
               >
                 {data.content}
               </Field>
@@ -456,15 +309,6 @@ const Settings = ({ visible, onClose }: SettingsProps) => {
             visible={showOpenApiModal}
             onFinish={() => setShowOpenApiModal(false)}
             onCancel={() => setShowOpenApiModal(false)}
-          />
-          <ResolveConflictModal
-            visible={showResolveConflictModal}
-            onCancel={() => {
-              setShowResolveConflictModal(false);
-            }}
-            onChange={(v) => {
-              setIsDefaultWallet(v);
-            }}
           />
           <ResetAccountModal
             visible={showResetAccountModal}
