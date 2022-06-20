@@ -2,6 +2,7 @@ import { NFTItem } from '@/background/service/openapi';
 import { Modal } from 'antd';
 import clsx from 'clsx';
 import React, { useState } from 'react';
+import ReactGA from 'react-ga';
 import { useHover } from 'ui/utils';
 import NFTAvatar from './NFTAvatar';
 import NFTModal from './NFTModal';
@@ -19,6 +20,13 @@ const NFTListRow = (props: NFTListRowProps) => {
   const [isHovering, hoverProps] = useHover();
 
   const handleToggleModal = () => {
+    if (!modalVisible) {
+      ReactGA.ga({
+        category: 'ViewAssets',
+        action: 'viewNFTDetail',
+        label: item?.collection ? 'collection' : 'other',
+      });
+    }
     setModalVisible(!modalVisible);
   };
 

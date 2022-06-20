@@ -2,6 +2,7 @@ import clsx from 'clsx';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FixedSizeList } from 'react-window';
+import ReactGA from 'react-ga';
 import { SvgIconLoading } from 'ui/assets';
 import IconArrowUp from 'ui/assets/arrow-up.svg';
 import IconOpenDeFi from 'ui/assets/dashboard/opendefi.png';
@@ -13,6 +14,11 @@ const Row = (props) => {
   const token = data[index];
   const [isHovering, hoverProps] = useHover();
   const handleGotoProfile = () => {
+    ReactGA.ga({
+      category: 'ViewAssets',
+      action: 'viewDefiDetail',
+      label: token?.id,
+    });
     openInTab(token?.site_url);
   };
 
