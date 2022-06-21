@@ -29,6 +29,7 @@ import IconLogo from 'ui/assets/rabby-white-large.svg';
 import { splitNumberByStep, useWallet } from 'ui/utils';
 import { query2obj } from 'ui/utils/url';
 import './style.less';
+import { getKRCategoryByBrandname } from '@/utils/transaction';
 
 const useAccount = () => {
   const wallet = useWallet();
@@ -95,7 +96,11 @@ const Receive = () => {
       ReactGA.event({
         category: 'Receive',
         action: 'copyAddress',
-        label: [account?.brandName, account?.type].join('|'),
+        label: [
+          getKRCategoryByBrandname(account?.brandName),
+          account?.brandName,
+          account?.type,
+        ].join('|'),
       });
       message.success({
         duration: 3,
@@ -129,7 +134,11 @@ const Receive = () => {
     ReactGA.event({
       category: 'Receive',
       action: 'getQRCode',
-      label: [account?.brandName, account?.type].join('|'),
+      label: [
+        getKRCategoryByBrandname(account?.brandName),
+        account?.brandName,
+        account?.type,
+      ].join('|'),
     });
   }, [account?.address]);
   useEffect(() => {

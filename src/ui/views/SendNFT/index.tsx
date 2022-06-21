@@ -33,6 +33,7 @@ import IconCopy from 'ui/assets/copy-no-border.svg';
 import IconSuccess from 'ui/assets/success.svg';
 import { SvgIconPlusPrimary, SvgIconLoading, SvgAlert } from 'ui/assets';
 import './style.less';
+import { getKRCategoryByBrandname } from '@/utils/transaction';
 
 const TOKEN_VALIDATION_STATUS = {
   PENDING: 0,
@@ -153,7 +154,12 @@ const SendNFT = () => {
       ReactGA.event({
         category: 'Send',
         action: 'createTx',
-        label: [chain as string, currentAccount?.brandName, 'nft'].join('|'),
+        label: [
+          chain as string,
+          getKRCategoryByBrandname(currentAccount?.brandName),
+          currentAccount?.brandName,
+          'nft',
+        ].join('|'),
       });
 
       await wallet.transferNFT({

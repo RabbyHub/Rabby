@@ -8,16 +8,23 @@ import IconArrowUp from 'ui/assets/arrow-up.svg';
 import IconOpenDeFi from 'ui/assets/dashboard/opendefi.png';
 import { Empty, TokenWithChain } from 'ui/component';
 import { openInTab, splitNumberByStep, useHover } from 'ui/utils';
+import { getKRCategoryByBrandname } from '@/utils/transaction';
+import { connectStore, useRabbySelector } from '@/ui/store';
 
-const Row = (props) => {
+const _Row = (props) => {
   const { data, index, style, isExpand, setIsExpand, totalHidden } = props;
   const token = data[index];
   const [isHovering, hoverProps] = useHover();
+  const currentAccount = useRabbySelector((s) => s.account.currentAccount);
   const handleGotoProfile = () => {
     ReactGA.ga({
       category: 'ViewAssets',
       action: 'viewDefiDetail',
-      label: token?.id,
+      label: [
+        getKRCategoryByBrandname(currentAccount?.brandName),
+        currentAccount?.brandName,
+        token?.id,
+      ].join('|'),
     });
     openInTab(token?.site_url);
   };
@@ -76,6 +83,8 @@ const Row = (props) => {
     </div>
   );
 };
+
+const Row = connectStore()(_Row);
 
 const calcFilterPrice = (assets) => {
   const total = assets.reduce((t, item) => (item.net_usd_value || 0) + t, 0);

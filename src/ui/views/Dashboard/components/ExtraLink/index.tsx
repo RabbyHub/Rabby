@@ -1,5 +1,6 @@
 import { connectStore, useRabbySelector } from '@/ui/store';
 import { openInTab } from '@/ui/utils';
+import { getKRCategoryByBrandname } from '@/utils/transaction';
 import clsx from 'clsx';
 import React, { useCallback } from 'react';
 import ReactGA from 'react-ga';
@@ -16,7 +17,10 @@ const ExtraLink = ({ className, address }: ExtraLinkProps) => {
     ReactGA.event({
       category: 'ViewAssets',
       action: 'goToDebank',
-      label: currentAccount?.brandName,
+      label: [
+        getKRCategoryByBrandname(currentAccount?.brandName),
+        currentAccount?.brandName,
+      ].join('|'),
     });
     setTimeout(() => {
       openInTab(`https://debank.com/profile/${address}`);
@@ -26,7 +30,10 @@ const ExtraLink = ({ className, address }: ExtraLinkProps) => {
     ReactGA.event({
       category: 'ViewAssets',
       action: 'goToEtherscan',
-      label: currentAccount?.brandName,
+      label: [
+        getKRCategoryByBrandname(currentAccount?.brandName),
+        currentAccount?.brandName,
+      ].join('|'),
     });
     setTimeout(() => {
       openInTab(`https://etherscan.io/address/${address}`);

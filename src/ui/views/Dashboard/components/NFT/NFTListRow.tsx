@@ -1,4 +1,6 @@
 import { NFTItem } from '@/background/service/openapi';
+import { connectStore, useRabbySelector } from '@/ui/store';
+import { getKRCategoryByBrandname } from '@/utils/transaction';
 import { Modal } from 'antd';
 import clsx from 'clsx';
 import React, { useState } from 'react';
@@ -19,12 +21,18 @@ const NFTListRow = (props: NFTListRowProps) => {
   const item = data[index];
   const [isHovering, hoverProps] = useHover();
 
+  const currentAccount = useRabbySelector((s) => s.account.currentAccount);
+
   const handleToggleModal = () => {
     if (!modalVisible) {
       ReactGA.ga({
         category: 'ViewAssets',
         action: 'viewNFTDetail',
-        label: item?.collection ? 'collection' : 'other',
+        label: [
+          getKRCategoryByBrandname(currentAccount?.brandName),
+          currentAccount?.brandName,
+          item?.collection ? 'collection' : 'other',
+        ],
       });
     }
     setModalVisible(!modalVisible);
@@ -71,4 +79,4 @@ const NFTListRow = (props: NFTListRowProps) => {
   );
 };
 
-export default NFTListRow;
+export default connectStore()(NFTListRow);

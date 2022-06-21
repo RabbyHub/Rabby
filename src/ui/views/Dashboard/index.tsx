@@ -58,6 +58,7 @@ import {
 import Dropdown from './components/NFT/Dropdown';
 import AddressRow from './components/AddressRow';
 import { sortAccountsByBalance } from '@/ui/utils/account';
+import { getKRCategoryByBrandname } from '@/utils/transaction';
 
 const GnosisAdminItem = ({
   accounts,
@@ -712,14 +713,20 @@ const Dashboard = () => {
                 ReactGA.event({
                   category: 'ViewAssets',
                   action: 'openTotal',
-                  label: currentAccount?.brandName,
+                  label: [
+                    getKRCategoryByBrandname(currentAccount?.brandName),
+                    currentAccount?.brandName,
+                  ].join('|'),
                 });
                 displayTokenList();
               } else {
                 ReactGA.event({
                   category: 'ViewAssets',
                   action: 'closeTotal',
-                  label: currentAccount?.brandName,
+                  label: [
+                    getKRCategoryByBrandname(currentAccount?.brandName),
+                    currentAccount?.brandName,
+                  ].join('|'),
                 });
                 setStartSearch(false);
                 setShowToken(false);
@@ -741,9 +748,11 @@ const Dashboard = () => {
                 ReactGA.event({
                   category: 'ViewAssets',
                   action: 'clickHeadToken',
-                  label: `${currentAccount?.brandName}|${
-                    !showToken ? 'open' : 'close'
-                  }`,
+                  label: [
+                    getKRCategoryByBrandname(currentAccount?.brandName),
+                    currentAccount?.brandName,
+                    !showToken ? 'open' : 'close',
+                  ].join('|'),
                 });
                 displayTokenList();
               }}
@@ -756,9 +765,11 @@ const Dashboard = () => {
                 ReactGA.event({
                   category: 'ViewAssets',
                   action: 'clickHeadDefi',
-                  label: `${currentAccount?.brandName}|${
-                    !showAssets ? 'open' : 'close'
-                  }`,
+                  label: [
+                    getKRCategoryByBrandname(currentAccount?.brandName),
+                    currentAccount?.brandName,
+                    !showAssets ? 'open' : 'close',
+                  ].join('|'),
                 });
                 displayAssets();
               }}
@@ -771,9 +782,11 @@ const Dashboard = () => {
                 ReactGA.event({
                   category: 'ViewAssets',
                   action: 'clickHeadNFT',
-                  label: `${currentAccount?.brandName}|${
-                    !showNFT ? 'open' : 'close'
-                  }`,
+                  label: [
+                    getKRCategoryByBrandname(currentAccount?.brandName),
+                    currentAccount?.brandName,
+                    !showNFT ? 'open' : 'close',
+                  ].join('|'),
                 });
                 displayNFTs();
               }}
@@ -800,9 +813,13 @@ const Dashboard = () => {
                     ReactGA.ga({
                       category: 'ViewAssets',
                       action: 'switchNFTFilter',
-                      label: nftType === 'collection' ? 'collections' : 'all',
+                      label: [
+                        getKRCategoryByBrandname(currentAccount?.brandName),
+                        currentAccount?.brandName,
+                        nftType === 'collection' ? 'collections' : 'all',
+                      ].join('|'),
                     });
-                    setNFTType(nftType);
+                    setNFTType(nextVal);
                   }}
                 />
               </div>

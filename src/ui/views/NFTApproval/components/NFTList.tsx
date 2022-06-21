@@ -1,6 +1,7 @@
 import { NFTApproval } from '@/background/service/openapi';
 import { Empty, Loading } from '@/ui/component';
 import { connectStore, useRabbySelector } from '@/ui/store';
+import { getKRCategoryByBrandname } from '@/utils/transaction';
 import React from 'react';
 import ReactGA from 'react-ga';
 import { useTranslation } from 'react-i18next';
@@ -43,7 +44,11 @@ const NFTList = ({ data, loading, onSearch, onDecline }: ApprovalCardProps) => {
                 ReactGA.event({
                   category: 'Security',
                   action: 'startDeclineNFTApproval',
-                  label: [item.chain, currentAccount?.brandName].join('|'),
+                  label: [
+                    item.chain,
+                    getKRCategoryByBrandname(currentAccount?.brandName),
+                    currentAccount?.brandName,
+                  ].join('|'),
                 });
                 onDecline(item);
               }}

@@ -44,6 +44,7 @@ import IconCopy from 'ui/assets/copy-no-border.svg';
 import IconSuccess from 'ui/assets/success.svg';
 import { SvgIconPlusPrimary, SvgIconLoading, SvgAlert } from 'ui/assets';
 import './style.less';
+import { getKRCategoryByBrandname } from '@/utils/transaction';
 
 const TOKEN_VALIDATION_STATUS = {
   PENDING: 0,
@@ -195,7 +196,12 @@ const SendToken = () => {
       ReactGA.event({
         category: 'Send',
         action: 'createTx',
-        label: [chain.name, currentAccount?.brandName, 'token'].join('|'),
+        label: [
+          chain.name,
+          getKRCategoryByBrandname(currentAccount?.brandName),
+          currentAccount?.brandName,
+          'token',
+        ].join('|'),
       });
       await wallet.sendRequest({
         method: 'eth_sendTransaction',

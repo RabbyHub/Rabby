@@ -1,5 +1,5 @@
 import { isHexString } from 'ethereumjs-util';
-import { CHAINS, GASPRICE_RANGE } from 'consts';
+import { CHAINS, GASPRICE_RANGE, KEYRING_CATEGORY_MAP } from 'consts';
 import { Tx } from 'background/service/openapi';
 
 export const validateGasPriceRange = (tx: Tx) => {
@@ -46,3 +46,7 @@ export const is1559Tx = (tx: Tx) => {
   if (!('maxFeePerGas' in tx) || !('maxPriorityFeePerGas' in tx)) return false;
   return isHexString(tx.maxFeePerGas!) && isHexString(tx.maxPriorityFeePerGas!);
 };
+
+export function getKRCategoryByBrandname(brandName?: string) {
+  return KEYRING_CATEGORY_MAP[brandName as any] || null;
+}

@@ -9,6 +9,7 @@ import IconNFTApproval from 'ui/assets/nft-approval.svg';
 import { Field, Popup } from 'ui/component';
 import './style.less';
 import { connectStore, useRabbyDispatch, useRabbySelector } from '@/ui/store';
+import { getKRCategoryByBrandname } from '@/utils/transaction';
 
 interface SecurityProps {
   visible?: boolean;
@@ -35,7 +36,10 @@ const Security = ({ visible, onClose }: SecurityProps) => {
         ReactGA.event({
           category: 'Security',
           action: 'clickTokenApproval',
-          label: [currentAccount?.brandName].join('|'),
+          label: [
+            getKRCategoryByBrandname(currentAccount?.brandName),
+            currentAccount?.brandName,
+          ].join('|'),
         });
         history.push('/token-approval');
       },
@@ -48,7 +52,10 @@ const Security = ({ visible, onClose }: SecurityProps) => {
         ReactGA.event({
           category: 'Security',
           action: 'clickNFTApproval',
-          label: [currentAccount?.brandName].join('|'),
+          label: [
+            getKRCategoryByBrandname(currentAccount?.brandName),
+            currentAccount?.brandName,
+          ].join('|'),
         });
         history.push('/nft-approval');
       },
