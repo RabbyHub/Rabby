@@ -295,6 +295,10 @@ provider
       });
       Object.defineProperty(window, 'ethereum', {
         set() {
+          provider.request({
+            method: 'hasOtherProvider',
+            params: [],
+          });
           return finalProvider;
         },
         get() {
@@ -342,6 +346,10 @@ if (!window.ethereum) {
   window.ethereum.on('chainChanged', switchChainNotice);
 } else {
   cacheOtherProvider = window.ethereum;
+  provider.request({
+    method: 'hasOtherProvider',
+    params: [],
+  });
 }
 
 window.dispatchEvent(new Event('ethereum#initialized'));
