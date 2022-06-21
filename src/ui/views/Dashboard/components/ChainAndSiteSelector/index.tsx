@@ -221,7 +221,7 @@ export default ({
     send: {
       icon: IconSendToken,
       content: 'Send',
-      onClick: () => history.push('/send-token'),
+      onClick: () => history.push('/send-token?rbisource=dashboard'),
     },
     receive: {
       icon: IconReceive,

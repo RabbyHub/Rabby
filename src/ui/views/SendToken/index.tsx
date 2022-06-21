@@ -45,6 +45,7 @@ import IconSuccess from 'ui/assets/success.svg';
 import { SvgIconPlusPrimary, SvgIconLoading, SvgAlert } from 'ui/assets';
 import './style.less';
 import { getKRCategoryByBrandname } from '@/utils/transaction';
+import { filterRbiSource, useRbiSource } from '@/ui/utils/ga-event';
 
 const TOKEN_VALIDATION_STATUS = {
   PENDING: 0,
@@ -78,6 +79,8 @@ const SendToken = () => {
   const { state } = useLocation<{
     showChainsModal?: boolean;
   }>();
+
+  const rbisource = useRbiSource();
   const { showChainsModal = false } = state ?? {};
 
   const [form] = useForm<{ to: string; amount: string }>();
@@ -201,11 +204,20 @@ const SendToken = () => {
           getKRCategoryByBrandname(currentAccount?.brandName),
           currentAccount?.brandName,
           'token',
-        ].join('|'),
+          filterRbiSource('sendToken', rbisource) && rbisource, // mark source module of `sendToken`
+        ]
+          .filter(Boolean)
+          .join('|'),
       });
+
       await wallet.sendRequest({
         method: 'eth_sendTransaction',
-        params: [params],
+        params: [
+          params,
+          {
+            $rabbyInternalSignSource: 'sendToken',
+          },
+        ],
       });
       window.close();
     } catch (e) {

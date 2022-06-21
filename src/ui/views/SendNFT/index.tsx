@@ -34,6 +34,7 @@ import IconSuccess from 'ui/assets/success.svg';
 import { SvgIconPlusPrimary, SvgIconLoading, SvgAlert } from 'ui/assets';
 import './style.less';
 import { getKRCategoryByBrandname } from '@/utils/transaction';
+import { filterRbiSource, useRbiSource } from '@/ui/utils/ga-event';
 
 const TOKEN_VALIDATION_STATUS = {
   PENDING: 0,
@@ -48,6 +49,8 @@ const SendNFT = () => {
     nftItem: NFTItem;
   }>();
   const { t } = useTranslation();
+  const rbisource = useRbiSource();
+
   const [currentAccount, setCurrentAccount] = useState<Account | null>(null);
   const [nftItem, setNftItem] = useState<NFTItem | null>(
     state?.nftItem || null
@@ -159,7 +162,10 @@ const SendNFT = () => {
           getKRCategoryByBrandname(currentAccount?.brandName),
           currentAccount?.brandName,
           'nft',
-        ].join('|'),
+          filterRbiSource('sendNFT', rbisource) && rbisource,
+        ]
+          .filter(Boolean)
+          .join('|'),
       });
 
       await wallet.transferNFT({

@@ -5,6 +5,7 @@ import { useHistory } from 'react-router-dom';
 import { getChain } from 'utils';
 import NFTAvatar from './NFTAvatar';
 import { splitNumberByStep } from '@/ui/utils';
+import { IGAEventSource } from '@/ui/utils/ga-event';
 
 interface ContentProps {
   data?: NFTItem;
@@ -27,6 +28,7 @@ const NFTModal = ({ data }: ContentProps) => {
       pathname: '/send-nft',
       state: {
         nftItem: data,
+        rbisource: 'nftdetail' as IGAEventSource.ISendNFT,
       },
     });
   };

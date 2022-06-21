@@ -93,7 +93,9 @@ const TokenDetail = ({ token }: { token: TokenItem }) => {
 
   const history = useHistory();
   const goToSend = useCallback(() => {
-    history.push(`/send-token?token=${token?.chain}:${token?.id}`);
+    history.push(
+      `/send-token?rbisource=tokendetail&token=${token?.chain}:${token?.id}`
+    );
   }, [history, token]);
 
   const goToReceive = useCallback(() => {
