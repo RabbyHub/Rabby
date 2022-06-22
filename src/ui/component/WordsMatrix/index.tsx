@@ -1,11 +1,14 @@
 import React from 'react';
 import styled, { css } from 'styled-components';
+import clsx from 'clsx';
+
 import LessPalette from '@/ui/style/var-defs';
 
 import { styid } from 'ui/utils/styled';
 
 import IconCloseSvg from 'ui/assets/close-icon.svg';
-import clsx from 'clsx';
+
+import MnemonicsInputs from './MnemonicsInputs';
 
 const ITEM_H = 208 / 4;
 const ROW_COUNT = 3;
@@ -108,15 +111,6 @@ const MatrixWrapper = styled.div.withConfig<{
   }
 `;
 
-function mapWords(words: string[]) {
-  return words.map((w) => {
-    return {
-      text: w || '',
-      checked: false,
-    };
-  });
-}
-
 function WordsMatrix({
   className,
   rowCount = ROW_COUNT,
@@ -138,12 +132,12 @@ function WordsMatrix({
   closable?: boolean;
   onCloseWord?: (_: { word: string; index: number }) => any;
 }>) {
-  const [checkedWords, setCheckedWords] = React.useState<
-    { text: string; checked: boolean }[]
-  >(mapWords(words));
+  const [checkedWords, setCheckedWords] = React.useState<string[]>(
+    words.slice()
+  );
 
   React.useEffect(() => {
-    setCheckedWords(mapWords(words));
+    setCheckedWords(words.slice());
   }, [words]);
 
   return (
@@ -151,31 +145,31 @@ function WordsMatrix({
       className={clsx('rounded-[6px] bg-white text-center', className)}
       rowCount={rowCount}
     >
-      {checkedWords.map((item, idx) => {
+      {checkedWords.map((word, idx) => {
         const number = idx + 1;
-        const clearable = closable && !!item.text.trim();
+        const clearable = closable && !!word.trim();
         const errored = errorIndexes.includes(idx);
 
         return (
           <div
-            key={`word-item-${item.text}-${idx}`}
+            key={`word-item-${word}-${idx}`}
             className={clsx('matrix-word-item')}
             onClick={() => {
               if (focusable) {
-                onFocusWord?.({ word: item.text, index: idx });
+                onFocusWord?.({ word: word, index: idx });
               }
             }}
           >
             {!errored && focusingIndex === idx && <FocusingBox />}
             {errored && <ErrorBox />}
             <NumberFlag>{number}.</NumberFlag>
-            <span className="text">{item.text}</span>
+            <span className="text">{word}</span>
 
             {clearable && (
               <div
                 className="close-icon-wrapper"
                 onClick={(evt) => {
-                  onCloseWord?.({ word: item.text, index: idx });
+                  onCloseWord?.({ word: word, index: idx });
                   evt.stopPropagation();
                 }}
               >
@@ -188,5 +182,7 @@ function WordsMatrix({
     </MatrixWrapper>
   );
 }
+
+WordsMatrix.MnemonicsInputs = MnemonicsInputs;
 
 export default WordsMatrix;

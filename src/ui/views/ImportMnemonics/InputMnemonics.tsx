@@ -9,9 +9,30 @@ import { useWallet, useWalletRequest } from 'ui/utils';
 import clsx from 'clsx';
 import { useMedia } from 'react-use';
 import LessPalette from 'ui/style/var-defs';
-import { searchByPrefix } from 'ui/utils/smart-completion';
-import useDebounceValue from 'ui/hooks/useDebounceValue';
 import { connectStore, useRabbyDispatch } from '../../store';
+import WordsMatrix from '@/ui/component/WordsMatrix';
+
+const Toptip = styled.div`
+  background: rgba(134, 151, 255, 0.1);
+  border-radius: 4px;
+  padding: 9px 15px;
+
+  font-style: normal;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 14px;
+
+  color: ${LessPalette['@primary-color']};
+`;
+
+const FormItemWrapper = styled.div`
+  .mnemonics-with-error {
+    .ant-form-item-control-input
+      + .ant-form-item-explain.ant-form-item-explain-error {
+      display: none;
+    }
+  }
+`;
 
 const TipTextList = styled.ol`
   list-style-type: decimal;
@@ -27,137 +48,15 @@ const TipTextList = styled.ol`
   }
 `;
 
-const BAR_H = 48;
-
-const TextAreaBar = styled.div`
-  position: absolute;
-  width: 100%;
-  height: ${BAR_H}px;
-  display: flex;
-  bottom: 0;
-  align-items: center;
-  justify-content: flex-start;
-
-  .work-item-box {
-    width: ${(1 / 4) * 100}%;
-    flex-shrink: 1;
-    padding-left: 8px;
-    padding-right: 8px;
-    cursor: pointer;
-  }
-
-  .work-item {
-    max-width: 80px;
-    height: 36px;
-    text-align: center;
-    line-height: 36px;
-
-    display: block;
-    background-color: ${LessPalette['@color-bg']};
-    border-radius: 4px;
-
-    overflow: hidden;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-  }
-`;
-
-function isStrEnglish(w: string) {
-  return /^([a-z]|[A-Z])+$/.test(w);
-}
 type IFormStates = {
   mnemonics: string;
 };
-function useTypingMnemonics(form: FormInstance<IFormStates>) {
-  const [mnemonics, setMnemonics] = React.useState<string | null>('');
-  const [currentWords, _setCurrentWords] = React.useState<string[]>([]);
-
-  const debouncedMnemonics = useDebounceValue(mnemonics, 250);
-  const { lastTypingWord } = React.useMemo(() => {
-    const mnemonicsList = debouncedMnemonics?.split(' ') || [];
-    const lastTypingWord = mnemonicsList.pop() || '';
-
-    return { lastTypingWord };
-  }, [debouncedMnemonics]);
-
-  const setCurrentWords = React.useCallback(
-    (val: string[]) => {
-      form.setFields([
-        {
-          value: form.getFieldValue('mnemonics'),
-          name: 'mnemonics',
-          ...(lastTypingWord &&
-            isStrEnglish(lastTypingWord) &&
-            !val?.length && {
-              errors: [
-                lastTypingWord + ' is an illegal seed phrase, please check!',
-              ],
-            }),
-        },
-      ]);
-
-      _setCurrentWords(val);
-    },
-    [lastTypingWord, form]
-  );
-
-  const inputRef = React.useRef<HTMLTextAreaElement | null>(null);
-  const inputTimerRef = React.useRef<any>(null);
-
-  const setLastMnemonicsPart = React.useCallback(
-    (word) => {
-      const parts = mnemonics?.split(' ') || [];
-      parts.pop();
-      parts.push(word);
-      const nextVal = parts.join(' ') + ' ';
-      setMnemonics(nextVal);
-      form.setFieldsValue({ mnemonics: nextVal });
-
-      if (inputTimerRef.current) clearTimeout(inputTimerRef.current);
-      inputTimerRef.current = setTimeout(() => {
-        inputRef.current?.focus();
-
-        clearTimeout(inputTimerRef.current);
-        inputTimerRef.current = null;
-      }, 200);
-
-      return nextVal;
-    },
-    [mnemonics, form]
-  );
-
-  React.useEffect(() => {
-    if (!lastTypingWord || !isStrEnglish(lastTypingWord)) {
-      setCurrentWords([]);
-      return;
-    }
-
-    const words = searchByPrefix(lastTypingWord);
-    setCurrentWords([...(words || [])]);
-  }, [lastTypingWord]);
-
-  return {
-    currentWords,
-    setMnemonics,
-    setLastMnemonicsPart,
-    isLastTypingWordFull: currentWords.includes(lastTypingWord),
-    inputRef,
-  };
-}
-
 const ImportMnemonics = () => {
   const history = useHistory();
   const wallet = useWallet();
   const [form] = Form.useForm<IFormStates>();
   const { t } = useTranslation();
   const isWide = useMedia('(min-width: 401px)');
-  const {
-    setMnemonics,
-    currentWords,
-    setLastMnemonicsPart,
-    isLastTypingWordFull,
-    inputRef,
-  } = useTypingMnemonics(form);
 
   const dispatch = useRabbyDispatch();
 
@@ -176,18 +75,21 @@ const ImportMnemonics = () => {
     },
     {
       onSuccess() {
+        setErrMsgs([]);
         history.push({
           pathname: '/popup/import/mnemonics-confirm',
         });
       },
       onError(err) {
+        // nothing but reset form errors
         form.setFields([
           {
             name: 'mnemonics',
-            errors: [
-              err?.message || t('The seed phrase is invalid, please check!'),
-            ],
+            value: form.getFieldValue('mnemonics'),
           },
+        ]);
+        setErrMsgs([
+          err?.message || t('The seed phrase is invalid, please check!'),
         ]);
       },
     }
@@ -202,7 +104,6 @@ const ImportMnemonics = () => {
             ...cache.states,
             mnemonics: '',
           });
-          setMnemonics(form.getFieldValue('mnemonics'));
         }
       }
     })();
@@ -212,6 +113,8 @@ const ImportMnemonics = () => {
     };
   }, []);
 
+  const [errMsgs, setErrMsgs] = React.useState<string[]>();
+
   return (
     <StrayPageWithButton
       custom={isWide}
@@ -220,7 +123,7 @@ const ImportMnemonics = () => {
       form={form}
       formProps={{
         onValuesChange: (states) => {
-          setMnemonics(states.mnemonics);
+          setErrMsgs([]);
           wallet.setPageStateCache({
             path: history.location.pathname,
             params: {},
@@ -228,7 +131,19 @@ const ImportMnemonics = () => {
           });
         },
       }}
-      onSubmit={({ mnemonics }) => run(mnemonics.trim())}
+      onSubmit={({ mnemonics }) => run(mnemonics)}
+      onNextClick={() => {
+        form
+          .validateFields(['mnemonics'])
+          .then(() => {
+            setErrMsgs([]);
+          })
+          .catch(({ errorFields }) => {
+            const errMsgs = form.getFieldError('mnemonics');
+
+            setErrMsgs(errMsgs);
+          });
+      }}
       hasBack
       hasDivider
       noPadding
@@ -247,48 +162,32 @@ const ImportMnemonics = () => {
         </h2>
       </header>
       <div className="rabby-container">
-        <div className="pt-32 px-20">
-          <div className="relative">
+        <div className="pt-20 px-20">
+          <Toptip className="mb-[20px]">
+            You can paste your entire secret recovery phrase in any field
+          </Toptip>
+          <FormItemWrapper className="relative">
             <Form.Item
               name="mnemonics"
+              className={clsx(
+                'mb-[12px]',
+                errMsgs?.length && 'mnemonics-with-error'
+              )}
               rules={[
                 { required: true, message: t('Please input Seed Phrase') },
               ]}
             >
-              <Input.TextArea
-                className={`h-[128px] p-16 pb-${BAR_H}`}
-                placeholder={t('Enter your Seed Phrase, distinguish by space')}
-                spellCheck={false}
-                ref={inputRef}
-                autoFocus
-              />
+              <WordsMatrix.MnemonicsInputs errMsgs={errMsgs} />
             </Form.Item>
-            {!isLastTypingWordFull && (
-              <TextAreaBar>
-                {currentWords.map((word, idx) => {
-                  return (
-                    <div
-                      key={`word-${word}-${idx}`}
-                      className="work-item-box"
-                      onClick={() => {
-                        setLastMnemonicsPart(word);
-                      }}
-                    >
-                      <span className="work-item">{word}</span>
-                    </div>
-                  );
-                })}
-              </TextAreaBar>
-            )}
-          </div>
+          </FormItemWrapper>
           <TipTextList className="text-14 pl-20 mt-35">
             <li>
               The seed phrase you import will only be stored on the front end of
               your browser and will not be uploaded to Rabby's servers.
             </li>
             <li>
-              After you uninstall Rabby or uninstall your browser, the seed
-              phrase will be deleted and Rabby cannot help you recover them.
+              After you uninstall Rabby or your browser, the seed phrase will be
+              deleted and cannot be recovered.
             </li>
           </TipTextList>
         </div>
