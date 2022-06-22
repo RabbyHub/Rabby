@@ -32,12 +32,21 @@ import stats from '@/stats';
 import createSubscription from './controller/provider/subscriptionManager';
 import buildinProvider from 'background/utils/buildinProvider';
 import dayjs from 'dayjs';
+import utc from 'dayjs/plugin/utc';
+
 ReactGA.initialize('UA-199755108-3');
 // eslint-disable-next-line @typescript-eslint/no-empty-function
 ga('set', 'checkProtocolTask', function () {});
 ga('set', 'appName', 'Rabby');
 ga('set', 'appVersion', process.env.release);
 ga('require', 'displayfeatures');
+
+dayjs.extend(utc);
+
+ReactGA.event({
+  category: 'User',
+  action: 'enable',
+});
 
 const { PortMessage } = Message;
 
@@ -104,9 +113,10 @@ restoreAppState();
     }
     const sendEvent = async () => {
       const time = preferenceService.getSendLogTime();
-      if (dayjs(time).isSame(Date.now(), 'day')) {
+      if (dayjs(time).utc().isSame(dayjs().utc(), 'day')) {
         return;
       }
+
       const accounts = await walletController.getAccounts();
       const list = accounts.map((account) => {
         const category = KEYRING_CATEGORY_MAP[account.type];
@@ -117,7 +127,7 @@ restoreAppState();
         return {
           category,
           action,
-          label: JSON.stringify(!!label),
+          label: label ? 'empty' : 'notEmpty',
         };
       });
       const groups = groupBy(list, (item) => {

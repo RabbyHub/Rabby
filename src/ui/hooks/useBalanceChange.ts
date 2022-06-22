@@ -2,11 +2,23 @@ import { useMemo } from 'react';
 
 import { ExplainTxResponse } from '@/background/service/openapi';
 
+function getDefaultValues() {
+  return {
+    hasNFTChange: false,
+    hasTokenChange: false,
+    noAnyChange: true,
+    belowBlockIsEmpty: false,
+    renderBlocks: ['token-bc', 'nft-bc'] as const,
+  };
+}
+
 export default function useBalanceChange({
   balance_change,
 }: {
-  balance_change: ExplainTxResponse['balance_change'];
+  balance_change?: ExplainTxResponse['balance_change'] | null;
 }) {
+  if (!balance_change) return getDefaultValues();
+
   return useMemo(() => {
     const hasNFTChange =
       balance_change.receive_nft_list.length > 0 ||

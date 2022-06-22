@@ -4,6 +4,12 @@ import { Account } from 'background/service/preference';
 import BigNumber from 'bignumber.js';
 import ClipboardJS from 'clipboard';
 import clsx from 'clsx';
+import { useTranslation, Trans } from 'react-i18next';
+import ReactMarkdown from 'react-markdown';
+import remarkGfm from 'remark-gfm';
+import ReactGA from 'react-ga';
+import Safe from '@rabby-wallet/gnosis-sdk';
+import { SafeInfo } from '@rabby-wallet/gnosis-sdk/dist/api';
 import {
   KEYRING_CLASS,
   KEYRING_ICONS,
@@ -16,12 +22,9 @@ import cloneDeep from 'lodash/cloneDeep';
 import uniqBy from 'lodash/uniqBy';
 import QRCode from 'qrcode.react';
 import React, { useEffect, useRef, useState } from 'react';
-import { Trans, useTranslation } from 'react-i18next';
-import ReactMarkdown from 'react-markdown';
 import { Link, useHistory, useLocation } from 'react-router-dom';
 import { useInterval } from 'react-use';
 import { FixedSizeList } from 'react-window';
-import remarkGfm from 'remark-gfm';
 import { SvgIconLoading } from 'ui/assets';
 import IconAddressCopy from 'ui/assets/address-copy.png';
 import IconAddToken from 'ui/assets/addtoken.png';
@@ -56,6 +59,7 @@ import './style.less';
 
 import AddressRow from './components/AddressRow';
 import { sortAccountsByBalance } from '@/ui/utils/account';
+import { getKRCategoryByBrandname } from '@/utils/transaction';
 
 const GnosisAdminItem = ({
   accounts,
@@ -458,22 +462,6 @@ const Dashboard = () => {
     setShowAssets(false);
     setShowNFT(false);
   };
-  const balanceViewClick = () => {
-    if (!showToken && !showAssets && !showNFT) {
-      displayTokenList();
-    } else {
-      setStartSearch(false);
-      setShowToken(false);
-      setShowAssets(false);
-      setShowChain(false);
-      setShowNFT(false);
-      setTokenAnimate('fadeOut');
-      setDefiAnimate('fadeOut');
-      setNFTAnimate('fadeOut');
-      setConnectionAnimation('fadeInBottom');
-      setTopAnimate('fadeInTop');
-    }
-  };
   const displayAssets = () => {
     if (assets.length === 0) {
       handleLoadAssets();
@@ -666,24 +654,88 @@ const Dashboard = () => {
             currentAccount={currentAccount}
             showChain={showChain}
             startAnimate={startAnimate}
-            onClick={balanceViewClick}
+            onClick={() => {
+              if (!showToken && !showAssets && !showNFT) {
+                ReactGA.event({
+                  category: 'ViewAssets',
+                  action: 'openTotal',
+                  label: [
+                    getKRCategoryByBrandname(currentAccount?.brandName),
+                    currentAccount?.brandName,
+                  ].join('|'),
+                });
+                displayTokenList();
+              } else {
+                ReactGA.event({
+                  category: 'ViewAssets',
+                  action: 'closeTotal',
+                  label: [
+                    getKRCategoryByBrandname(currentAccount?.brandName),
+                    currentAccount?.brandName,
+                  ].join('|'),
+                });
+                setStartSearch(false);
+                setShowToken(false);
+                setShowAssets(false);
+                setShowChain(false);
+                setShowNFT(false);
+                setTokenAnimate('fadeOut');
+                setDefiAnimate('fadeOut');
+                setNFTAnimate('fadeOut');
+                setConnectionAnimation('fadeInBottom');
+                setTopAnimate('fadeInTop');
+              }
+            }}
           />
           <div className={clsx('listContainer', showChain && 'mt-10')}>
             <div
               className={clsx('token', showToken && 'showToken')}
-              onClick={displayTokenList}
+              onClick={() => {
+                ReactGA.event({
+                  category: 'ViewAssets',
+                  action: 'clickHeadToken',
+                  label: [
+                    getKRCategoryByBrandname(currentAccount?.brandName),
+                    currentAccount?.brandName,
+                    !showToken ? 'open' : 'close',
+                  ].join('|'),
+                });
+                displayTokenList();
+              }}
             >
               Token
             </div>
             <div
               className={clsx('token', showAssets && 'showToken')}
-              onClick={displayAssets}
+              onClick={() => {
+                ReactGA.event({
+                  category: 'ViewAssets',
+                  action: 'clickHeadDefi',
+                  label: [
+                    getKRCategoryByBrandname(currentAccount?.brandName),
+                    currentAccount?.brandName,
+                    !showAssets ? 'open' : 'close',
+                  ].join('|'),
+                });
+                displayAssets();
+              }}
             >
               DeFi
             </div>
             <div
               className={clsx('token', showNFT && 'showToken')}
-              onClick={displayNFTs}
+              onClick={() => {
+                ReactGA.event({
+                  category: 'ViewAssets',
+                  action: 'clickHeadNFT',
+                  label: [
+                    getKRCategoryByBrandname(currentAccount?.brandName),
+                    currentAccount?.brandName,
+                    !showNFT ? 'open' : 'close',
+                  ].join('|'),
+                });
+                displayNFTs();
+              }}
             >
               NFT
             </div>
@@ -701,7 +753,21 @@ const Dashboard = () => {
             )}
             {showNFT && (
               <div className="pointer absolute right-0">
-                <Dropdown value={nftType} onChange={setNFTType} />
+                <Dropdown
+                  value={nftType}
+                  onChange={(nextVal: typeof nftType) => {
+                    ReactGA.ga({
+                      category: 'ViewAssets',
+                      action: 'switchNFTFilter',
+                      label: [
+                        getKRCategoryByBrandname(currentAccount?.brandName),
+                        currentAccount?.brandName,
+                        nftType === 'collection' ? 'collections' : 'all',
+                      ].join('|'),
+                    });
+                    setNFTType(nextVal);
+                  }}
+                />
               </div>
             )}
           </div>

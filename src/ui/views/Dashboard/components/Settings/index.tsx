@@ -4,6 +4,7 @@ import { CHAINS, INITIAL_OPENAPI_URL } from 'consts';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useHistory } from 'react-router-dom';
+import ReactGA from 'react-ga';
 import IconArrowRight from 'ui/assets/arrow-right-gray.svg';
 import { ReactComponent as IconCheckbox } from 'ui/assets/dashboard/checkbox.svg';
 import IconWallet from 'ui/assets/wallet.svg';
@@ -348,13 +349,27 @@ const Settings = ({ visible, onClose }: SettingsProps) => {
     {
       leftIcon: IconAddressManagement,
       content: t('AddressManagement'),
-      onClick: () => history.push('/settings/address'),
+      onClick: () => {
+        ReactGA.event({
+          category: 'Setting',
+          action: 'clickToUse',
+          label: 'adddressManagement',
+        });
+        history.push('/settings/address');
+      },
     },
 
     {
       className: clsx({ 'default-wallet-field': !isDefaultWallet }),
       leftIcon: IconWallet,
-      onClick: () => setShowResolveConflictModal(true),
+      onClick: () => {
+        ReactGA.event({
+          category: 'Setting',
+          action: 'clickToUse',
+          label: 'resolveConflictsWithMetamask',
+        });
+        setShowResolveConflictModal(true);
+      },
       content: (
         <div>
           <span className="flex default-wallet-title">
@@ -372,7 +387,14 @@ const Settings = ({ visible, onClose }: SettingsProps) => {
     {
       leftIcon: IconReset,
       content: t('Reset Account'),
-      onClick: () => setShowResetAccountModal(true),
+      onClick: () => {
+        ReactGA.event({
+          category: 'Setting',
+          action: 'clickToUse',
+          label: 'resetAccount',
+        });
+        setShowResetAccountModal(true);
+      },
       rightIcon: <img src={IconArrowRight} className="icon icon-arrow-right" />,
     },
   ];
@@ -394,6 +416,11 @@ const Settings = ({ visible, onClose }: SettingsProps) => {
   }
 
   const lockWallet = async () => {
+    ReactGA.event({
+      category: 'Setting',
+      action: 'clickToUse',
+      label: 'lockWallet',
+    });
     await wallet.lockWallet();
     history.push('/unlock');
   };

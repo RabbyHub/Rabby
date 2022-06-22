@@ -3,6 +3,7 @@ import { message } from 'antd';
 import { ConnectedSite } from 'background/service/permission';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import ReactGA from 'react-ga';
 import { openInTab, useWallet } from 'ui/utils';
 import ConnectionList from './ConnectionList';
 import './style.less';
@@ -32,6 +33,12 @@ const RecentConnections = ({
   }, [connections]);
 
   const handleClick = (connection: ConnectedSite) => {
+    ReactGA.event({
+      category: 'Dapps',
+      action: 'openDapp',
+      label: connection.origin,
+    });
+
     openInTab(connection.origin);
   };
 
@@ -41,12 +48,29 @@ const RecentConnections = ({
   };
 
   const handleFavoriteChange = (item: ConnectedSite) => {
-    item.isTop
-      ? dispatch.permission.unFavoriteWebsite(item.origin)
-      : dispatch.permission.favoriteWebsite(item.origin);
+    if (item.isTop) {
+      dispatch.permission.unFavoriteWebsite(item.origin);
+      ReactGA.event({
+        category: 'Dapps',
+        action: 'unfavoriteDapp',
+        label: item.origin,
+      });
+    } else {
+      dispatch.permission.favoriteWebsite(item.origin);
+      ReactGA.event({
+        category: 'Dapps',
+        action: 'favoriteDapp',
+        label: item.origin,
+      });
+    }
   };
   const handleRemove = async (origin: string) => {
     await dispatch.permission.removeWebsite(origin);
+    ReactGA.event({
+      category: 'Dapps',
+      action: 'disconnectDapp',
+      label: origin,
+    });
     message.success({
       icon: <i />,
       content: <span className="text-white">{t('Disconnected')}</span>,
@@ -56,6 +80,10 @@ const RecentConnections = ({
   const removeAll = async () => {
     try {
       await dispatch.permission.clearAll();
+      ReactGA.event({
+        category: 'Dapps',
+        action: 'disconnectAllDapps',
+      });
     } catch (e) {
       console.error(e);
     }

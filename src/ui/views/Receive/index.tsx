@@ -9,9 +9,16 @@ import {
   WALLET_BRAND_CONTENT,
 } from 'consts';
 import QRCode from 'qrcode.react';
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, {
+  useEffect,
+  useLayoutEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
+import ReactGA from 'react-ga';
 import { ReactComponent as IconBack } from 'ui/assets/back.svg';
 import IconCopy from 'ui/assets/icon-copy-1.svg';
 import IconEyeHide from 'ui/assets/icon-eye-hide.svg';
@@ -22,6 +29,8 @@ import IconLogo from 'ui/assets/rabby-white-large.svg';
 import { splitNumberByStep, useWallet } from 'ui/utils';
 import { query2obj } from 'ui/utils/url';
 import './style.less';
+import { getKRCategoryByBrandname } from '@/utils/transaction';
+import { filterRbiSource, useRbiSource } from '@/ui/utils/ga-event';
 
 const useAccount = () => {
   const wallet = useWallet();
@@ -68,8 +77,8 @@ const useReceiveTitle = (search: string) => {
 
 const Receive = () => {
   const wallet = useWallet();
-  const { t } = useTranslation();
   const history = useHistory();
+  const rbisource = useRbiSource();
   const [isShowAccount, setIsShowAccount] = useState(true);
 
   const ref = useRef<HTMLButtonElement>(null);
@@ -85,6 +94,15 @@ const Receive = () => {
     });
 
     clipboard.on('success', () => {
+      ReactGA.event({
+        category: 'Receive',
+        action: 'copyAddress',
+        label: [
+          getKRCategoryByBrandname(account?.brandName),
+          account?.brandName,
+          account?.type,
+        ].join('|'),
+      });
       message.success({
         duration: 3,
         icon: <i />,
@@ -113,6 +131,18 @@ const Receive = () => {
   useEffect(() => {
     init();
   }, []);
+  useLayoutEffect(() => {
+    ReactGA.event({
+      category: 'Receive',
+      action: 'getQRCode',
+      label: [
+        getKRCategoryByBrandname(account?.brandName),
+        account?.brandName,
+        account?.type,
+        filterRbiSource('Receive', rbisource) && rbisource,
+      ].join('|'),
+    });
+  }, [account?.address]);
   useEffect(() => {
     if (account?.type !== KEYRING_CLASS.WATCH) {
       return;
