@@ -12,16 +12,22 @@ const DefaultWalletSetting = () => {
   const [visible, setVisible] = useState(false);
   const [isConflict, setIsConflict] = useState(false);
   const [isDefault, setIsDefault] = useState(true);
+  const [needCheck, setNeedCheck] = useState(true);
   const wallet = useWallet();
 
   const init = () => {
     wallet.isDefaultWallet().then(setIsDefault);
     wallet.getHasOtherProvider().then(setIsConflict);
+    wallet.getNeedSwitchWalletCheck().then(setNeedCheck);
   };
 
   const handleFlip = async (e) => {
     e.preventDefault();
-    setVisible(true);
+    if (needCheck) {
+      setVisible(true);
+    } else {
+      handleSubmit();
+    }
   };
 
   const handleSubmit = async () => {
@@ -69,7 +75,15 @@ const DefaultWalletSetting = () => {
             MetaMask as your default wallet.
           </div>
           <div className="checkbox">
-            <Checkbox checked={true} width={'16px'} height={'16px'}>
+            <Checkbox
+              checked={!needCheck}
+              width={'16px'}
+              height={'16px'}
+              onChange={(v) => {
+                wallet.updateNeedSwitchWalletCheck(!v);
+                setNeedCheck(!v);
+              }}
+            >
               Do not remind me again
             </Checkbox>
           </div>
@@ -123,7 +137,15 @@ const DefaultWalletSetting = () => {
           Rabby as your default wallet.
         </div>
         <div className="checkbox">
-          <Checkbox checked={true} width={'16px'} height={'16px'}>
+          <Checkbox
+            checked={!needCheck}
+            width={'16px'}
+            height={'16px'}
+            onChange={(v) => {
+              wallet.updateNeedSwitchWalletCheck(!v);
+              setNeedCheck(!v);
+            }}
+          >
             Do not remind me again
           </Checkbox>
         </div>

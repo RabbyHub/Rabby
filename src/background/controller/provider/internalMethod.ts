@@ -1,3 +1,4 @@
+import { setPopupIcon } from './../../utils/index';
 import { CHAINS_ENUM, CHAINS } from 'consts';
 import {
   permissionService,
@@ -43,6 +44,8 @@ const providerOverwrite = ({
 
 const hasOtherProvider = () => {
   preferenceService.setHasOtherProvider(true);
+  const isRabby = preferenceService.getIsDefaultWallet();
+  setPopupIcon(isRabby ? 'rabby' : 'metamask');
   return true;
 };
 

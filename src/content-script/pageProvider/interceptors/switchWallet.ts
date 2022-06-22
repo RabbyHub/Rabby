@@ -5,7 +5,7 @@ import notice from '../notice';
 
 let instance: ReturnType<typeof notice> | null;
 
-export const switchWalletNotice = (type: 'Rabby' | 'Metamask') => {
+export const switchWalletNotice = (type: 'rabby' | 'metamask') => {
   if (instance) {
     instance.hide();
     instance = null;
@@ -16,10 +16,10 @@ export const switchWalletNotice = (type: 'Rabby' | 'Metamask') => {
     className: 'rabby-notice-default-wallet',
     content: `<div style="display: flex; align-items: center; gap: 12px;">
       <img style="width: 28px;" src="${
-        type === 'Rabby' ? IconRabby : IconMetamask
+        type === 'rabby' ? IconRabby : IconMetamask
       }"/>
       <div>
-        <div><span style="font-weight: bold;">${type}</span> is your default wallet now. </div>
+        <div><span style="font-weight: bold; text-transform: capitalize;">${type}</span> is your default wallet now. </div>
         <div>
         Please <a
           href="javascript:window.location.reload();"

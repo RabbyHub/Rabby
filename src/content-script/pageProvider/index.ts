@@ -46,9 +46,13 @@ export class EthereumProvider extends EventEmitter {
   isRabby = true;
   isMetaMask = true;
 
+  _isReady = false;
   _isConnected = false;
   _initialized = false;
   _isUnlocked = false;
+
+  _cacheRequestsBeforeReady: any[] = [];
+  _cacheEventListenersBeforeReady: [string | symbol, () => any][] = [];
 
   _state: StateProvider = {
     accounts: null,
@@ -119,7 +123,7 @@ export class EthereumProvider extends EventEmitter {
         accounts,
         networkVersion,
         isUnlocked,
-      }: any = await this.request({
+      }: any = await this.requestInternalMethods({
         method: 'getProviderState',
       });
       if (isUnlocked) {
@@ -167,6 +171,16 @@ export class EthereumProvider extends EventEmitter {
 
   // TODO: support multi request!
   request = async (data) => {
+    if (!this._isReady) {
+      const promise = new Promise((resolve, reject) => {
+        this._cacheRequestsBeforeReady.push({
+          data,
+          resolve,
+          reject,
+        });
+      });
+      return promise;
+    }
     return this._dedupePromise.call(data.method, () => this._request(data));
   };
 
@@ -197,6 +211,10 @@ export class EthereumProvider extends EventEmitter {
           throw serializeError(err);
         });
     });
+  };
+
+  requestInternalMethods = (data) => {
+    return this._dedupePromise.call(data.method, () => this._request(data));
   };
 
   // shim to matamask legacy api
@@ -268,6 +286,14 @@ export class EthereumProvider extends EventEmitter {
       this[_method] = () => this.request({ method });
     }
   };
+
+  on = (event: string | symbol, handler: (...args: any[]) => void) => {
+    if (!this._isReady) {
+      this._cacheEventListenersBeforeReady.push([event, handler]);
+      return this;
+    }
+    return super.on(event, handler);
+  };
 }
 
 declare global {
@@ -283,11 +309,9 @@ const rabbyProvider = new Proxy(provider, {
 });
 
 provider
-  .request({
-    method: 'isDefaultWallet',
-    params: [],
-  })
+  .requestInternalMethods({ method: 'isDefaultWallet' })
   .then((isDefaultWallet) => {
+    rabbyProvider.on('defaultWalletChanged', switchWalletNotice);
     let finalProvider: EthereumProvider | null = null;
     if (isDefaultWallet || !cacheOtherProvider) {
       finalProvider = rabbyProvider;
@@ -296,7 +320,7 @@ provider
       });
       Object.defineProperty(window, 'ethereum', {
         set() {
-          provider.request({
+          provider.requestInternalMethods({
             method: 'hasOtherProvider',
             params: [],
           });
@@ -311,6 +335,8 @@ provider
           currentProvider: rabbyProvider,
         };
       }
+      finalProvider._isReady = true;
+      finalProvider.on('chainChanged', switchChainNotice);
       const widgets = [DEXPriceComparison];
       widgets.forEach((Widget) => {
         provider
@@ -332,26 +358,46 @@ provider
       Object.keys(finalProvider).forEach((key) => {
         window.ethereum[key] = (finalProvider as EthereumProvider)[key];
       });
+      provider._cacheEventListenersBeforeReady.forEach(([event, handler]) => {
+        (finalProvider as EthereumProvider).on(event, handler);
+      });
+      provider._cacheRequestsBeforeReady.forEach(
+        ({ resolve, reject, data }) => {
+          (finalProvider as EthereumProvider)
+            .request(data)
+            .then(resolve)
+            .catch(reject);
+        }
+      );
     }
   });
 
-if (!window.ethereum) {
-  window.ethereum = rabbyProvider;
-
-  if (!window.web3) {
-    window.web3 = {
-      currentProvider: window.ethereum,
-    };
-  }
-} else {
+if (window.ethereum) {
   cacheOtherProvider = window.ethereum;
-  provider.request({
+  provider.requestInternalMethods({
     method: 'hasOtherProvider',
     params: [],
   });
 }
 
-window.ethereum.on('chainChanged', switchChainNotice);
-window.ethereum.on('defaultWalletChanged', switchWalletNotice);
+window.ethereum = rabbyProvider;
+
+Object.defineProperty(window, 'ethereum', {
+  set() {
+    provider.requestInternalMethods({
+      method: 'hasOtherProvider',
+      params: [],
+    });
+  },
+  get() {
+    return rabbyProvider;
+  },
+});
+
+if (!window.web3) {
+  window.web3 = {
+    currentProvider: window.ethereum,
+  };
+}
 
 window.dispatchEvent(new Event('ethereum#initialized'));
