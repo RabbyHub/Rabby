@@ -5,6 +5,7 @@ import clsx from 'clsx';
 import BigNumber from 'bignumber.js';
 import { useTranslation } from 'react-i18next';
 import { useHistory, useLocation } from 'react-router-dom';
+import ReactGA from 'react-ga';
 import { Input, Form, message, Button } from 'antd';
 import { isValidAddress } from 'ethereumjs-util';
 import { providers } from 'ethers';
@@ -32,6 +33,8 @@ import IconCopy from 'ui/assets/copy-no-border.svg';
 import IconSuccess from 'ui/assets/success.svg';
 import { SvgIconPlusPrimary, SvgIconLoading, SvgAlert } from 'ui/assets';
 import './style.less';
+import { getKRCategoryByBrandname } from '@/utils/transaction';
+import { filterRbiSource, useRbiSource } from '@/ui/utils/ga-event';
 
 const TOKEN_VALIDATION_STATUS = {
   PENDING: 0,
@@ -46,6 +49,8 @@ const SendNFT = () => {
     nftItem: NFTItem;
   }>();
   const { t } = useTranslation();
+  const rbisource = useRbiSource();
+
   const [currentAccount, setCurrentAccount] = useState<Account | null>(null);
   const [nftItem, setNftItem] = useState<NFTItem | null>(
     state?.nftItem || null
@@ -149,6 +154,20 @@ const SendNFT = () => {
       },
     });
     try {
+      ReactGA.event({
+        category: 'Send',
+        action: 'createTx',
+        label: [
+          chain as string,
+          getKRCategoryByBrandname(currentAccount?.brandName),
+          currentAccount?.brandName,
+          'nft',
+          filterRbiSource('sendNFT', rbisource) && rbisource,
+        ]
+          .filter(Boolean)
+          .join('|'),
+      });
+
       await wallet.transferNFT({
         to,
         amount,

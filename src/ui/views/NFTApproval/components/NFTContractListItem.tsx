@@ -1,7 +1,10 @@
 import { NFTApprovalContract } from '@/background/service/openapi';
+import { connectStore, useRabbySelector } from '@/ui/store';
 import { ellipsis } from '@/ui/utils/address';
+import { getKRCategoryByBrandname } from '@/utils/transaction';
 import { Button } from 'antd';
 import React from 'react';
+import ReactGA from 'react-ga';
 import { getAmountText } from '../utils';
 
 interface NFTContractListItemProps {
@@ -10,6 +13,8 @@ interface NFTContractListItemProps {
 }
 
 const NFTContractListItem = ({ item, onDecline }: NFTContractListItemProps) => {
+  const currentAccount = useRabbySelector((s) => s.account.currentAccount);
+
   return (
     <div className="list-item">
       <div className="list-item-body">
@@ -34,6 +39,15 @@ const NFTContractListItem = ({ item, onDecline }: NFTContractListItemProps) => {
           shape="round"
           size="small"
           onClick={() => {
+            ReactGA.event({
+              category: 'Security',
+              action: 'startDeclineNFTApproval',
+              label: [
+                item.chain,
+                getKRCategoryByBrandname(currentAccount?.brandName),
+                currentAccount?.brandName,
+              ].join('|'),
+            });
             onDecline(item);
           }}
         >
@@ -44,4 +58,4 @@ const NFTContractListItem = ({ item, onDecline }: NFTContractListItemProps) => {
   );
 };
 
-export default NFTContractListItem;
+export default connectStore()(NFTContractListItem);

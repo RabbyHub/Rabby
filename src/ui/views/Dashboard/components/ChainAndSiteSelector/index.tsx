@@ -6,6 +6,7 @@ import clsx from 'clsx';
 import maxBy from 'lodash/maxBy';
 import React, { useCallback, useEffect, useState } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
+import ReactGA from 'react-ga';
 import IconAlertRed from 'ui/assets/alert-red.svg';
 import IconDapps from 'ui/assets/dapps.svg';
 import IconContacts from 'ui/assets/dashboard/contacts.png';
@@ -220,7 +221,7 @@ export default ({
     send: {
       icon: IconSendToken,
       content: 'Send',
-      onClick: () => history.push('/send-token'),
+      onClick: () => history.push('/send-token?rbisource=dashboard'),
     },
     receive: {
       icon: IconReceive,
@@ -311,10 +312,6 @@ export default ({
     ];
   }
 
-  const directionPanelData: IPanelItem[] = pickedPanelKeys.map(
-    (key) => panelItems[key]
-  );
-
   return (
     <div className={clsx('recent-connections', connectionAnimation)}>
       <img
@@ -328,7 +325,8 @@ export default ({
       />
       <div className="pannel">
         <div className="direction-pannel">
-          {directionPanelData.map((item, index) => {
+          {pickedPanelKeys.map((panelKey, index) => {
+            const item = panelItems[panelKey] as IPanelItem;
             if (item.hideForGnosis && isGnosis) return <></>;
             return (item as Record<string, any>).disabled ? (
               <Tooltip
@@ -344,7 +342,14 @@ export default ({
             ) : (
               <div
                 key={index}
-                onClick={item?.onClick}
+                onClick={(evt) => {
+                  ReactGA.event({
+                    category: 'Dashboard',
+                    action: 'clickEntry',
+                    label: panelKey,
+                  });
+                  item?.onClick(evt);
+                }}
                 className="direction pointer"
               >
                 {item.showAlert && (
@@ -416,7 +421,7 @@ export default ({
         title="Select the chain to receive assets"
         visible={isShowReceiveModal}
         onChange={(chain) => {
-          history.push(`/receive?chain=${chain}`);
+          history.push(`/receive?rbisource=dashboard&chain=${chain}`);
           setIsShowReceiveModal(false);
         }}
         onCancel={() => {

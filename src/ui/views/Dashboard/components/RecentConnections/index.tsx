@@ -3,6 +3,7 @@ import { message } from 'antd';
 import { ConnectedSite } from 'background/service/permission';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
+import ReactGA from 'react-ga';
 import { openInTab, useWallet } from 'ui/utils';
 import ConnectionList from './ConnectionList';
 import './style.less';
@@ -31,6 +32,12 @@ const RecentConnections = ({
   }, [connections]);
 
   const handleClick = (connection: ConnectedSite) => {
+    ReactGA.event({
+      category: 'Dapps',
+      action: 'openDapp',
+      label: connection.origin,
+    });
+
     openInTab(connection.origin);
   };
 
@@ -46,13 +53,31 @@ const RecentConnections = ({
   };
 
   const handleFavoriteChange = (item: ConnectedSite) => {
-    item.isTop
-      ? wallet.unpinConnectedSite(item.origin)
-      : wallet.topConnectedSite(item.origin);
+    if (item.isTop) {
+      wallet.unpinConnectedSite(item.origin);
+      ReactGA.event({
+        category: 'Dapps',
+        action: 'unfavoriteDapp',
+        label: item.origin,
+      });
+    } else {
+      wallet.topConnectedSite(item.origin);
+      ReactGA.event({
+        category: 'Dapps',
+        action: 'favoriteDapp',
+        label: item.origin,
+      });
+    }
+
     getConnectedSites();
   };
   const handleRemove = async (origin: string) => {
     await wallet.removeConnectedSite(origin);
+    ReactGA.event({
+      category: 'Dapps',
+      action: 'disconnectDapp',
+      label: origin,
+    });
     getConnectedSites();
     message.success({
       icon: <i />,
@@ -63,6 +88,10 @@ const RecentConnections = ({
   const removeAll = async () => {
     try {
       await wallet.removeAllRecentConnectedSites();
+      ReactGA.event({
+        category: 'Dapps',
+        action: 'disconnectAllDapps',
+      });
     } catch (e) {
       console.error(e);
     }
