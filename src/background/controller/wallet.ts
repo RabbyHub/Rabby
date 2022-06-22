@@ -1476,8 +1476,16 @@ export class WalletController extends BaseController {
   getNonceByChain = (address: string, chainId: number) =>
     transactionHistoryService.getNonceByChain(address, chainId);
 
-  setIsDefaultWallet = (val: boolean) =>
+  setIsDefaultWallet = (val: boolean) => {
     preferenceService.setIsDefaultWallet(val);
+    const hasOtherProvider = preferenceService.getHasOtherProvider();
+    if (hasOtherProvider) {
+      sessionService.broadcastEvent(
+        'defaultWalletChanged',
+        val ? 'Rabby' : 'Metamask'
+      );
+    }
+  };
   isDefaultWallet = () => preferenceService.getIsDefaultWallet();
 
   private _getKeyringByType(type) {

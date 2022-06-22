@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import './style.less';
 import IconDefaultRabby from 'ui/assets/icon-default-rabby.svg';
 import IconDefaultMetamask from 'ui/assets/icon-default-metamask.svg';
@@ -6,22 +6,38 @@ import IconRabby from 'ui/assets/dashboard/rabby.svg';
 import IconMetamask from 'ui/assets/dashboard/icon-metamask.svg';
 import { Checkbox, Popup } from '@/ui/component';
 import { Button } from 'antd';
+import { useWallet } from '@/ui/utils';
 
 const DefaultWalletSetting = () => {
   const [visible, setVisible] = useState(false);
-  // todo
-  const { isConflict, isRabby } = {
-    isConflict: true,
-    isRabby: false,
+  const [isConflict, setIsConflict] = useState(false);
+  const [isDefault, setIsDefault] = useState(true);
+  const wallet = useWallet();
+
+  const init = () => {
+    wallet.isDefaultWallet().then(setIsDefault);
+    wallet.getHasOtherProvider().then(setIsConflict);
   };
-  const handleFlip = (e) => {
+
+  const handleFlip = async (e) => {
     e.preventDefault();
     setVisible(true);
   };
+
+  const handleSubmit = async () => {
+    await wallet.setIsDefaultWallet(!isDefault);
+    setIsDefault(!isDefault);
+    setVisible(false);
+  };
+
+  useEffect(() => {
+    init();
+  }, []);
+
   if (!isConflict) {
     return null;
   }
-  if (isRabby) {
+  if (isDefault) {
     return (
       <>
         <div className="rabby-default-wallet-setting">
@@ -68,7 +84,7 @@ const DefaultWalletSetting = () => {
             >
               Cancel
             </Button>
-            <Button type="primary" block size="large">
+            <Button type="primary" block size="large" onClick={handleSubmit}>
               Confirm
             </Button>
           </div>
@@ -122,7 +138,7 @@ const DefaultWalletSetting = () => {
           >
             Cancel
           </Button>
-          <Button type="primary" block size="large">
+          <Button type="primary" block size="large" onClick={handleSubmit}>
             Confirm
           </Button>
         </div>

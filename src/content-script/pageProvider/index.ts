@@ -8,6 +8,7 @@ import ReadyPromise from './readyPromise';
 import DedupePromise from './dedupePromise';
 import { DEXPriceComparison, isUrlMatched } from '@rabby-wallet/widgets';
 import { switchChainNotice } from './interceptors/switchChain';
+import { switchWalletNotice } from './interceptors/switchWallet';
 
 declare const channelName;
 
@@ -342,8 +343,6 @@ if (!window.ethereum) {
       currentProvider: window.ethereum,
     };
   }
-
-  window.ethereum.on('chainChanged', switchChainNotice);
 } else {
   cacheOtherProvider = window.ethereum;
   provider.request({
@@ -351,5 +350,8 @@ if (!window.ethereum) {
     params: [],
   });
 }
+
+window.ethereum.on('chainChanged', switchChainNotice);
+window.ethereum.on('defaultWalletChanged', switchWalletNotice);
 
 window.dispatchEvent(new Event('ethereum#initialized'));

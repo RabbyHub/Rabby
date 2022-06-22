@@ -5,8 +5,7 @@ import notice from '../notice';
 
 let instance: ReturnType<typeof notice> | null;
 
-export const switchWalletNotice = (chainId: string) => {
-  const chain = Object.values(CHAINS).find((item) => item.hex === chainId);
+export const switchWalletNotice = (type: 'Rabby' | 'Metamask') => {
   if (instance) {
     instance.hide();
     instance = null;
@@ -16,9 +15,11 @@ export const switchWalletNotice = (chainId: string) => {
     timeout: 0,
     className: 'rabby-notice-default-wallet',
     content: `<div style="display: flex; align-items: center; gap: 12px;">
-      <img style="width: 28px;" src="${IconRabby}"/>
+      <img style="width: 28px;" src="${
+        type === 'Rabby' ? IconRabby : IconMetamask
+      }"/>
       <div>
-        <div><span style="font-weight: bold;">MetaMask</span> is your default wallet now. </div>
+        <div><span style="font-weight: bold;">${type}</span> is your default wallet now. </div>
         <div>
         Please <a
           href="javascript:window.location.reload();"
