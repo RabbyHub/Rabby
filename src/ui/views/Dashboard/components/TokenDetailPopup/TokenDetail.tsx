@@ -100,7 +100,9 @@ const TokenDetail = ({ token }: { token: TokenItem }) => {
 
   const goToReceive = useCallback(() => {
     history.push(
-      `/receive?chain=${getChain(token?.chain)?.enum}&token=${token?.symbol}`
+      `/receive?rbisource=tokendetail&chain=${
+        getChain(token?.chain)?.enum
+      }&token=${token?.symbol}`
     );
   }, [history, token]);
 

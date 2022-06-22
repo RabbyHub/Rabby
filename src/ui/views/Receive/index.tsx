@@ -30,6 +30,7 @@ import { splitNumberByStep, useWallet } from 'ui/utils';
 import { query2obj } from 'ui/utils/url';
 import './style.less';
 import { getKRCategoryByBrandname } from '@/utils/transaction';
+import { filterRbiSource, useRbiSource } from '@/ui/utils/ga-event';
 
 const useAccount = () => {
   const wallet = useWallet();
@@ -76,8 +77,8 @@ const useReceiveTitle = (search: string) => {
 
 const Receive = () => {
   const wallet = useWallet();
-  const { t } = useTranslation();
   const history = useHistory();
+  const rbisource = useRbiSource();
   const [isShowAccount, setIsShowAccount] = useState(true);
 
   const ref = useRef<HTMLButtonElement>(null);
@@ -138,6 +139,7 @@ const Receive = () => {
         getKRCategoryByBrandname(account?.brandName),
         account?.brandName,
         account?.type,
+        filterRbiSource('Receive', rbisource) && rbisource,
       ].join('|'),
     });
   }, [account?.address]);

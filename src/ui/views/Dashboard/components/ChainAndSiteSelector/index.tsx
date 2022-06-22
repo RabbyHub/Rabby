@@ -421,7 +421,7 @@ export default ({
         title="Select the chain to receive assets"
         visible={isShowReceiveModal}
         onChange={(chain) => {
-          history.push(`/receive?chain=${chain}`);
+          history.push(`/receive?rbisource=dashboard&chain=${chain}`);
           setIsShowReceiveModal(false);
         }}
         onCancel={() => {

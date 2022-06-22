@@ -6,10 +6,11 @@ import { query2obj } from './url';
 export namespace IGAEventSource {
   export type ISendToken = 'dashboard' | 'contact' | 'tokendetail';
   export type ISendNFT = 'nftdetail';
+  export type IReceive = 'dashboard' | 'tokendetail';
 }
 
 export function filterRbiSource(
-  _case: 'sendToken' | 'sendNFT',
+  _case: 'sendToken' | 'sendNFT' | 'Receive',
   rbisource: string
 ) {
   switch (_case) {
@@ -28,6 +29,14 @@ export function filterRbiSource(
           return null;
         case 'nftdetail':
           return rbisource as IGAEventSource.ISendNFT;
+      }
+    case 'Receive':
+      switch (rbisource) {
+        default:
+          return null;
+        case 'dashboard':
+        case 'tokendetail':
+          return rbisource as IGAEventSource.IReceive;
       }
   }
 
