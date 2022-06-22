@@ -358,18 +358,16 @@ provider
       Object.keys(finalProvider).forEach((key) => {
         window.ethereum[key] = (finalProvider as EthereumProvider)[key];
       });
-      provider._cacheEventListenersBeforeReady.forEach(([event, handler]) => {
-        (finalProvider as EthereumProvider).on(event, handler);
-      });
-      provider._cacheRequestsBeforeReady.forEach(
-        ({ resolve, reject, data }) => {
-          (finalProvider as EthereumProvider)
-            .request(data)
-            .then(resolve)
-            .catch(reject);
-        }
-      );
     }
+    provider._cacheEventListenersBeforeReady.forEach(([event, handler]) => {
+      (finalProvider as EthereumProvider).on(event, handler);
+    });
+    provider._cacheRequestsBeforeReady.forEach(({ resolve, reject, data }) => {
+      (finalProvider as EthereumProvider)
+        .request(data)
+        .then(resolve)
+        .catch(reject);
+    });
   });
 
 if (window.ethereum) {
@@ -383,11 +381,12 @@ if (window.ethereum) {
 window.ethereum = rabbyProvider;
 
 Object.defineProperty(window, 'ethereum', {
-  set() {
+  set(val) {
     provider.requestInternalMethods({
       method: 'hasOtherProvider',
       params: [],
     });
+    cacheOtherProvider = val;
   },
   get() {
     return rabbyProvider;
