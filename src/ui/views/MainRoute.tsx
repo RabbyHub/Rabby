@@ -1,4 +1,4 @@
-import React from 'react';
+import React, { useEffect } from 'react';
 import { Switch, Route, Redirect } from 'react-router-dom';
 import ReactGA, { ga } from 'react-ga';
 import { PrivateRoute } from 'ui/component';
@@ -47,24 +47,13 @@ import WalletConnectTemplate from './WalletConnect';
 import AddressDetail from './AddressDetail';
 import AddressBackupMnemonics from './AddressBackup/Mnemonics';
 import AddressBackupPrivateKey from './AddressBackup/PrivateKey';
-import { getUiType } from '../utils';
+import { getUiType, useWallet } from '../utils';
 ReactGA.initialize('UA-199755108-1');
 // eslint-disable-next-line @typescript-eslint/no-empty-function
 ga('set', 'checkProtocolTask', function () {});
 ga('set', 'appName', 'Rabby');
 ga('set', 'appVersion', process.env.release);
 ga('require', 'displayfeatures');
-
-{
-  const UIType = getUiType();
-  if (UIType.isNotification || UIType.isPop) {
-    ReactGA.event({
-      category: 'User',
-      action: 'active',
-      label: UIType.isPop ? 'popup' : 'request',
-    });
-  }
-}
 
 const LogPageView = () => {
   ReactGA.pageview(window.location.hash);
@@ -73,6 +62,24 @@ const LogPageView = () => {
 };
 
 const Main = () => {
+  const wallet = useWallet();
+
+  useEffect(() => {
+    (async () => {
+      const UIType = getUiType();
+      if (UIType.isNotification || UIType.isPop) {
+        const hasOtherProvider = await wallet.getHasOtherProvider();
+        ReactGA.event({
+          category: 'User',
+          action: 'active',
+          label: UIType.isPop
+            ? `popup|${hasOtherProvider ? 'hasMetaMask' : 'noMetaMask'}`
+            : `request|${hasOtherProvider ? 'hasMetaMask' : 'noMetaMask'}`,
+        });
+      }
+    })();
+  }, []);
+
   return (
     <>
       <Route path="/" component={LogPageView} />

@@ -1,7 +1,7 @@
 import React from 'react';
 import { useEffect, useState } from 'react';
 import { Redirect } from 'react-router-dom';
-import { useWallet, getUiType, useApproval, useWalletOld } from 'ui/utils';
+import { getUiType, useApproval, useWalletOld } from 'ui/utils';
 import { Spin } from 'ui/component';
 
 const SortHat = () => {
