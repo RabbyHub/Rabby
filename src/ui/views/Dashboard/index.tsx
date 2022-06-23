@@ -96,11 +96,13 @@ const Dashboard = () => {
   const fixedList = useRef<FixedSizeList>();
 
   const {
+    alianName,
     currentAccount,
     accountsList,
     loadingAccounts,
     highlightedAddresses,
   } = useRabbySelector((s) => ({
+    alianName: s.account.alianName,
     currentAccount: s.account.currentAccount,
     accountsList: s.accountToDisplay.accountsList,
     loadingAccounts: s.accountToDisplay.loadingAccounts,
@@ -146,7 +148,6 @@ const Dashboard = () => {
   const [hovered, setHovered] = useState(false);
   const [clicked, setClicked] = useState(false);
   const [startEdit, setStartEdit] = useState(false);
-  const [alianName, setAlianName] = useState<string>('');
   const [displayName, setDisplayName] = useState<string>('');
   const [showChain, setShowChain] = useState(false);
   const [showToken, setShowToken] = useState(false);
@@ -178,13 +179,6 @@ const Dashboard = () => {
     }
   };
 
-  const getAlianName = async (address: string) => {
-    await wallet.getAlianName(address).then((name) => {
-      setAlianName(name);
-      setDisplayName(name);
-    });
-  };
-
   useInterval(() => {
     if (!currentAccount) return;
     if (currentAccount.type === KEYRING_TYPE.GnosisKeyring) return;
@@ -206,7 +200,13 @@ const Dashboard = () => {
       } else {
         dispatch.transactions.getPendingTxCountAsync(currentAccount.address);
       }
-      getAlianName(currentAccount?.address.toLowerCase());
+
+      wallet
+        .getAlianName(currentAccount?.address.toLowerCase())
+        .then((name) => {
+          dispatch.account.setField({ alianName: name });
+          setDisplayName(name);
+        });
     }
   }, [currentAccount]);
   useEffect(() => {
