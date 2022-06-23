@@ -11,6 +11,7 @@ import React, {
 import { useTranslation } from 'react-i18next';
 import { useDebounce } from 'react-use';
 import { FixedSizeList } from 'react-window';
+import ReactGA from 'react-ga';
 import { SvgIconLoading } from 'ui/assets';
 import IconAddToken from 'ui/assets/addtokenplus.png';
 import IconArrowUp from 'ui/assets/arrow-up.svg';
@@ -214,6 +215,11 @@ const TokenList = ({
       setDetail({
         visible: true,
         current: token,
+      });
+      ReactGA.ga({
+        category: 'ViewAssets',
+        action: 'viewTokenDetail',
+        label: token?.id,
       });
     },
     [setDetail]

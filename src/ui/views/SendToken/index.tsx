@@ -5,6 +5,7 @@ import clsx from 'clsx';
 import BigNumber from 'bignumber.js';
 import { useTranslation } from 'react-i18next';
 import { useHistory, useLocation } from 'react-router-dom';
+import ReactGA from 'react-ga';
 import { Input, Form, Skeleton, message, Button } from 'antd';
 import abiCoder, { AbiCoder } from 'web3-eth-abi';
 import {
@@ -43,6 +44,8 @@ import IconCopy from 'ui/assets/copy-no-border.svg';
 import IconSuccess from 'ui/assets/success.svg';
 import { SvgIconPlusPrimary, SvgIconLoading, SvgAlert } from 'ui/assets';
 import './style.less';
+import { getKRCategoryByBrandname } from '@/utils/transaction';
+import { filterRbiSource, useRbiSource } from '@/ui/utils/ga-event';
 
 const TOKEN_VALIDATION_STATUS = {
   PENDING: 0,
@@ -76,6 +79,8 @@ const SendToken = () => {
   const { state } = useLocation<{
     showChainsModal?: boolean;
   }>();
+
+  const rbisource = useRbiSource();
   const { showChainsModal = false } = state ?? {};
 
   const [form] = useForm<{ to: string; amount: string }>();
@@ -191,9 +196,28 @@ const SendToken = () => {
           currentToken,
         },
       });
+      ReactGA.event({
+        category: 'Send',
+        action: 'createTx',
+        label: [
+          chain.name,
+          getKRCategoryByBrandname(currentAccount?.brandName),
+          currentAccount?.brandName,
+          'token',
+          filterRbiSource('sendToken', rbisource) && rbisource, // mark source module of `sendToken`
+        ]
+          .filter(Boolean)
+          .join('|'),
+      });
+
       await wallet.sendRequest({
         method: 'eth_sendTransaction',
-        params: [params],
+        params: [
+          params,
+          {
+            $rabbyInternalSignSource: 'sendToken',
+          },
+        ],
       });
       window.close();
     } catch (e) {

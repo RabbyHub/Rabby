@@ -2,11 +2,14 @@ import { DrawerProps } from 'antd';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
+import ReactGA from 'react-ga';
 import IconArrowRight from 'ui/assets/arrow-right-gray.svg';
 import IconTokenApproval from 'ui/assets/icon-token-approval.svg';
 import IconNFTApproval from 'ui/assets/nft-approval.svg';
 import { Field, Popup } from 'ui/component';
 import './style.less';
+import { connectStore, useRabbyDispatch, useRabbySelector } from '@/ui/store';
+import { getKRCategoryByBrandname } from '@/utils/transaction';
 
 interface SecurityProps {
   visible?: boolean;
@@ -16,19 +19,46 @@ interface SecurityProps {
 const Security = ({ visible, onClose }: SecurityProps) => {
   const history = useHistory();
   const { t } = useTranslation();
+  const currentAccount = useRabbySelector((s) => s.account.currentAccount);
+  const dispatch = useRabbyDispatch();
+  React.useEffect(() => {
+    if (visible) {
+      dispatch.account.getCurrentAccountAsync();
+    }
+  }, [visible]);
 
   const renderData = [
     {
       leftIcon: IconTokenApproval,
       rightIcon: <img src={IconArrowRight} className="icon icon-arrow-right" />,
       content: t('Token Approval'),
-      onClick: () => history.push('/token-approval'),
+      onClick: () => {
+        ReactGA.event({
+          category: 'Security',
+          action: 'clickTokenApproval',
+          label: [
+            getKRCategoryByBrandname(currentAccount?.brandName),
+            currentAccount?.brandName,
+          ].join('|'),
+        });
+        history.push('/token-approval');
+      },
     },
     {
       leftIcon: IconNFTApproval,
       rightIcon: <img src={IconArrowRight} className="icon icon-arrow-right" />,
       content: t('NFT Approval'),
-      onClick: () => history.push('/nft-approval'),
+      onClick: () => {
+        ReactGA.event({
+          category: 'Security',
+          action: 'clickNFTApproval',
+          label: [
+            getKRCategoryByBrandname(currentAccount?.brandName),
+            currentAccount?.brandName,
+          ].join('|'),
+        });
+        history.push('/nft-approval');
+      },
     },
   ];
 
@@ -63,4 +93,4 @@ const Security = ({ visible, onClose }: SecurityProps) => {
   );
 };
 
-export default Security;
+export default connectStore()(Security);

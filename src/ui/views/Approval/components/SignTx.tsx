@@ -2,6 +2,7 @@ import stats from '@/stats';
 import { hasConnectedLedgerDevice } from '@/utils';
 import {
   convertLegacyTo1559,
+  getKRCategoryByBrandname,
   validateGasPriceRange,
 } from '@/utils/transaction';
 import Safe from '@rabby-wallet/gnosis-sdk';
@@ -69,6 +70,7 @@ import Loading from './TxComponents/Loading';
 import Send from './TxComponents/Send';
 import SendNFT from './TxComponents/sendNFT';
 import Sign from './TxComponents/Sign';
+import { varyTxSignType } from '@/ui/utils/transaction';
 
 const normalizeHex = (value: string | number) => {
   if (typeof value === 'number') {
@@ -110,6 +112,30 @@ const normalizeTxParams = (tx) => {
   }
   return copy;
 };
+
+function normalizeTxInternalCtx(ctx?: any, isNFT?: boolean) {
+  let internalSignSource:
+    | 'transactionHistory'
+    | 'sendToken'
+    | 'sendNFT'
+    | 'gnosisTxQueue'
+    | undefined;
+  if (isNFT) {
+    internalSignSource = 'sendNFT';
+  } else {
+    try {
+      const { $rabbyInternalSignSource } = ctx || {};
+
+      internalSignSource = $rabbyInternalSignSource as any;
+    } catch (e) {
+      Sentry.captureException(
+        new Error(`normalizeTxInternalCtx failed, ${JSON.stringify(e)}`)
+      );
+    }
+  }
+
+  return { internalSignSource };
+}
 
 export const TxTypeComponent = ({
   txDetail,
@@ -236,14 +262,14 @@ export const TxTypeComponent = ({
   return <></>;
 };
 
-interface SignTxProps {
+interface SignTxProps<TData extends any[] = any[]> {
   params: {
     session: {
       origin: string;
       icon: string;
       name: string;
     };
-    data: any[];
+    data: TData;
     isGnosis?: boolean;
     account?: Account;
   };
@@ -371,6 +397,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
   const [isLedger, setIsLedger] = useState(false);
   const [useLedgerLive, setUseLedgerLive] = useState(false);
   const [hasConnectedLedgerHID, setHasConnectedLedgerHID] = useState(false);
+  const signTypeInfo = varyTxSignType(txDetail);
 
   const {
     data = '0x',
@@ -617,6 +644,28 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       chainId: chain.serverId,
       category: KEYRING_CATEGORY_MAP[currentAccount.type],
     });
+
+    const { internalSignSource } = normalizeTxInternalCtx(
+      params.data[1],
+      signTypeInfo.isNFT
+    );
+    switch (internalSignSource) {
+      default:
+        break;
+      case 'sendToken':
+      case 'sendNFT':
+        ReactGA.event({
+          category: signTypeInfo.gaCategory,
+          action: signTypeInfo.gaAction,
+          label: [
+            chain.name,
+            getKRCategoryByBrandname(currentAccount.brandName),
+            currentAccount.brandName,
+            internalSignSource === 'sendToken' ? 'token' : 'nft',
+          ].join('|'),
+        });
+        break;
+    }
 
     ReactGA.event({
       category: 'Transaction',

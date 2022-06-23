@@ -135,7 +135,7 @@ const ContactsItem = ({
   };
   const sendToken = () => {
     history.push(
-      `/send-token?address=${account?.address}&name=${account?.name}`
+      `/send-token?rbisource=contact&address=${account?.address}&name=${account?.name}`
     );
   };
   const handleCopyContractAddress = () => {
