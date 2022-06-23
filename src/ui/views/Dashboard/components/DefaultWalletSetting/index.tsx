@@ -114,7 +114,7 @@ const DefaultWalletSetting = () => {
           alt=""
           className="w-[24px] h-[24px] mr-[8px]"
         />
-        Metamask is in use and Rabby is banned
+        MetaMask is in use and Rabby is banned
         <a href="#" onClick={handleFlip}>
           Flip
         </a>

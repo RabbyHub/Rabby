@@ -1,6 +1,5 @@
 import { CHAINS } from '@/constant';
 import IconRabby from 'ui/assets/dashboard/rabby.svg';
-import IconMetamask from 'ui/assets/dashboard/icon-metamask.svg';
 import notice from '../notice';
 
 let instance: ReturnType<typeof notice> | null;

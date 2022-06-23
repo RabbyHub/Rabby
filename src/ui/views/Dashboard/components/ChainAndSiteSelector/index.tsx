@@ -272,8 +272,8 @@ export default ({
       'transactions',
       'dapps',
       'contacts',
-      'widget',
       'security',
+      'widget',
       'settings',
     ];
   } else {
@@ -284,8 +284,8 @@ export default ({
       'transactions',
       'dapps',
       'contacts',
-      'security',
       'widget',
+      'security',
       'settings',
     ];
   }
