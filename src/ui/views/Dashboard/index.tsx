@@ -8,8 +8,6 @@ import { useTranslation, Trans } from 'react-i18next';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import ReactGA from 'react-ga';
-import Safe from '@rabby-wallet/gnosis-sdk';
-import { SafeInfo } from '@rabby-wallet/gnosis-sdk/dist/api';
 import {
   KEYRING_CLASS,
   KEYRING_ICONS,
@@ -49,10 +47,11 @@ import {
   AssetsList,
   BalanceView,
   ChainAndSiteSelector,
-  ExtraLink,
   GnosisWrongChainAlertBar,
   NFTListContainer,
   TokenList,
+  ExtraLink,
+  DefaultWalletSetting,
 } from './components';
 import Dropdown from './components/NFT/Dropdown';
 import './style.less';
@@ -961,6 +960,7 @@ const Dashboard = () => {
           )}
         </div>
       </Modal>
+      {!(showToken || showAssets || showNFT) && <DefaultWalletSetting />}
     </>
   );
 };

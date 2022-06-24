@@ -80,7 +80,6 @@ export default ({
   >(null);
   const [gasPrice, setGasPrice] = useState<number>(0);
   const [gasPriceLoading, setGasPriceLoading] = useState(false);
-  const [isDefaultWallet, setIsDefaultWallet] = useState(true);
   const { state } = useLocation<{
     trigger?: string;
     showChainsModal?: boolean;
@@ -160,10 +159,6 @@ export default ({
     setSecurityVisible(!securityVisible);
   };
 
-  const defaultWalletChangeHandler = (val: boolean) => {
-    setIsDefaultWallet(val);
-  };
-
   useEffect(() => {
     getCurrentSite();
     getPrice();
@@ -190,22 +185,6 @@ export default ({
       }
     }
   }, [showDrawer]);
-
-  useEffect(() => {
-    wallet.isDefaultWallet().then((result) => {
-      setIsDefaultWallet(result);
-    });
-    eventBus.addEventListener(
-      'isDefaultWalletChanged',
-      defaultWalletChangeHandler
-    );
-    return () => {
-      eventBus.removeEventListener(
-        'isDefaultWalletChanged',
-        defaultWalletChangeHandler
-      );
-    };
-  }, []);
 
   type IPanelItem = {
     icon: string;
@@ -280,7 +259,6 @@ export default ({
       icon: IconSetting,
       content: 'Settings',
       onClick: changeSetting,
-      showAlert: !isDefaultWallet,
     },
   };
 
@@ -294,8 +272,8 @@ export default ({
       'transactions',
       'dapps',
       'contacts',
-      'widget',
       'security',
+      'widget',
       'settings',
     ];
   } else {
@@ -306,8 +284,8 @@ export default ({
       'transactions',
       'dapps',
       'contacts',
-      'security',
       'widget',
+      'security',
       'settings',
     ];
   }

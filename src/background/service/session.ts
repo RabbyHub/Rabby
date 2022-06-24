@@ -1,5 +1,4 @@
 import { permissionService } from 'background/service';
-import { Object } from 'ts-toolbelt';
 import PortMessage from '@/utils/message/portMessage';
 
 export interface SessionProp {

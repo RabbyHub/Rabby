@@ -850,9 +850,11 @@ class OpenApiService {
     return data?.filter((nft) => getChain(nft.chain));
   };
 
-  listCollection = async (): Promise<Collection[]> => {
+  listCollection = async (params: {
+    collection_ids: string;
+  }): Promise<Collection[]> => {
     const { data } = await this.request.get('/v1/nft/collections', {
-      params: {},
+      params,
     });
     return data;
   };

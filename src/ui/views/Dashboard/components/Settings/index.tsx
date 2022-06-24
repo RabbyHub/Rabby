@@ -1,15 +1,11 @@
 import { Button, DrawerProps, Form, Input, message, Modal } from 'antd';
 import clsx from 'clsx';
 import { CHAINS, INITIAL_OPENAPI_URL } from 'consts';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useHistory } from 'react-router-dom';
 import ReactGA from 'react-ga';
 import IconArrowRight from 'ui/assets/arrow-right-gray.svg';
-import { ReactComponent as IconCheckbox } from 'ui/assets/dashboard/checkbox.svg';
-import IconWallet from 'ui/assets/wallet.svg';
-import IconMetamask from 'ui/assets/dashboard/icon-metamask.svg';
-import IconRabby from 'ui/assets/dashboard/rabby.svg';
 import IconAddressManagement from 'ui/assets/icon-user.svg';
 import IconLock from 'ui/assets/lock.svg';
 import LogoRabby from 'ui/assets/logo-rabby-large.svg';
@@ -130,122 +126,6 @@ const OpenApiModal = ({
   );
 };
 
-const ResolveConflictModal = ({
-  visible,
-  onCancel,
-  onChange,
-}: {
-  visible: boolean;
-  onCancel(): void;
-  onChange?(v: boolean): void;
-}) => {
-  const [isVisible, setIsVisible] = useState(false);
-  const { t } = useTranslation();
-  const isDefaultWallet = useRabbySelector(
-    (state) => state.preference.isDefaultWallet
-  );
-  const dispatch = useRabbyDispatch();
-  const setIsDefaultWallet = useCallback(
-    (value: boolean) => {
-      dispatch.preference.setIsDefaultWallet(value);
-    },
-    [dispatch]
-  );
-
-  const handleDefaultWalletChange = (value: boolean) => {
-    if (isDefaultWallet === value) {
-      return;
-    }
-    if (onChange) {
-      onChange(value);
-    }
-    setIsDefaultWallet(value);
-    message.success({
-      icon: <span></span>,
-      content: (
-        <span className="text-white">
-          {t("Please refresh the webpage you're viewing")}
-        </span>
-      ),
-    });
-  };
-
-  const handleCancel = () => {
-    setIsVisible(false);
-    setTimeout(() => {
-      onCancel();
-    }, 500);
-  };
-
-  useEffect(() => {
-    setTimeout(() => {
-      setIsVisible(visible);
-    }, 100);
-  }, [visible]);
-
-  return (
-    <div
-      className={clsx('resolve-conflict-modal', {
-        show: isVisible,
-        hidden: !visible,
-      })}
-    >
-      <PageHeader forceShowBack onBack={handleCancel}>
-        {t('Resolve conflicts with MetaMask')}
-      </PageHeader>
-      <Field
-        className={clsx('mb-[20px]', {
-          checked: isDefaultWallet,
-        })}
-        onClick={() => handleDefaultWalletChange(true)}
-        leftIcon={
-          <IconCheckbox
-            className={clsx(isDefaultWallet ? 'checked' : null)}
-          ></IconCheckbox>
-        }
-        rightIcon={null}
-      >
-        <div className="field-main">
-          <div className="field-title">
-            Prefer Rabby <img src={IconRabby} className="w-[20px]" alt="" />
-          </div>
-          <div className="field-desc">
-            Use Rabby to connect DApps and submit transactions.
-          </div>
-        </div>
-      </Field>
-      <Field
-        className={clsx('metamask', {
-          checked: !isDefaultWallet,
-        })}
-        onClick={() => handleDefaultWalletChange(false)}
-        leftIcon={
-          <IconCheckbox
-            className={clsx(!isDefaultWallet ? 'checked' : null)}
-          ></IconCheckbox>
-        }
-        rightIcon={null}
-      >
-        <div className="field-main">
-          <div className="field-title">
-            Prefer MetaMask{' '}
-            <img src={IconMetamask} className="w-[20px]" alt="" />
-          </div>
-          <div className="field-desc">
-            Use MetaMask to connect DApps and submit transactions. Rabby's
-            pre-sign features will not be available.
-          </div>
-        </div>
-      </Field>
-      {!isDefaultWallet && (
-        <div className="tips">
-          *Choosing this will prevent Rabby's pre-sign features from working
-        </div>
-      )}
-    </div>
-  );
-};
-
 const ResetAccountModal = ({
   visible,
   onFinish,
@@ -322,18 +202,7 @@ const Settings = ({ visible, onClose }: SettingsProps) => {
   const history = useHistory();
   const { t } = useTranslation();
   const [showOpenApiModal, setShowOpenApiModal] = useState(false);
-  const [showResolveConflictModal, setShowResolveConflictModal] = useState(
-    false
-  );
-  const dispatch = useRabbyDispatch();
-  const isDefaultWallet = useRabbySelector(
-    (state) => state.preference.isDefaultWallet
-  );
   const [showResetAccountModal, setShowResetAccountModal] = useState(false);
-
-  const init = async () => {
-    dispatch.preference.getIsDefaultWallet();
-  };
 
   const handleClickClearWatchMode = () => {
     confirm({
@@ -359,31 +228,6 @@ const Settings = ({ visible, onClose }: SettingsProps) => {
       },
     },
 
-    {
-      className: clsx({ 'default-wallet-field': !isDefaultWallet }),
-      leftIcon: IconWallet,
-      onClick: () => {
-        ReactGA.event({
-          category: 'Setting',
-          action: 'clickToUse',
-          label: 'resolveConflictsWithMetamask',
-        });
-        setShowResolveConflictModal(true);
-      },
-      content: (
-        <div>
-          <span className="flex default-wallet-title">
-            {t('Resolve conflicts with MetaMask')}
-          </span>
-          {!isDefaultWallet && (
-            <p className="not-default-tip">
-              {t('Rabby is currently not working properly')}
-            </p>
-          )}
-        </div>
-      ),
-      rightIcon: <img src={IconArrowRight} className="icon icon-arrow-right" />,
-    },
     {
       leftIcon: IconReset,
       content: t('Reset Account'),
@@ -427,14 +271,9 @@ const Settings = ({ visible, onClose }: SettingsProps) => {
 
   const handleClose: DrawerProps['onClose'] = (e) => {
     setShowOpenApiModal(false);
-    setShowResolveConflictModal(false);
     setShowResetAccountModal(false);
     onClose && onClose(e);
   };
-
-  useEffect(() => {
-    init();
-  }, []);
 
   return (
     <>
@@ -469,7 +308,6 @@ const Settings = ({ visible, onClose }: SettingsProps) => {
                   )
                 }
                 onClick={data.onClick}
-                className={data.className}
               >
                 {data.content}
               </Field>
@@ -488,12 +326,6 @@ const Settings = ({ visible, onClose }: SettingsProps) => {
             visible={showOpenApiModal}
             onFinish={() => setShowOpenApiModal(false)}
             onCancel={() => setShowOpenApiModal(false)}
-          />
-          <ResolveConflictModal
-            visible={showResolveConflictModal}
-            onCancel={() => {
-              setShowResolveConflictModal(false);
-            }}
           />
           <ResetAccountModal
             visible={showResetAccountModal}

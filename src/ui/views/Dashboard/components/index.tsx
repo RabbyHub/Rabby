@@ -14,3 +14,4 @@ export { default as ExtraLink } from './ExtraLink';
 export { default as Contacts } from './Contacts';
 export { default as Security } from './Security';
 export { default as Widget } from './Widget';
+export { default as DefaultWalletSetting } from './DefaultWalletSetting';

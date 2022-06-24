@@ -302,7 +302,7 @@ const GasSelector = ({
           <p className="usmoney">
             {gas.fail
               ? 'Gas fee calculation failure'
-              : `≈ ${gas.estimated_gas_cost_usd_value.toFixed(2)}`}
+              : `≈ $${gas.estimated_gas_cost_usd_value.toFixed(2)}`}
           </p>
           {!gas.fail && (
             <p className="gasmoney">

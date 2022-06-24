@@ -1,14 +1,15 @@
 import cloneDeep from 'lodash/cloneDeep';
 import { preferenceService, keyringService } from 'background/service';
 import { Account } from 'background/service/preference';
+import { isSameAddress } from 'background/utils';
 
 class BaseController {
   getCurrentAccount = async () => {
     let account = preferenceService.getCurrentAccount();
     if (account) {
       const accounts = await this.getAccounts();
-      const matchAcct = accounts.find(
-        (acct) => account!.address === acct.address
+      const matchAcct = accounts.find((acct) =>
+        isSameAddress(account!.address, acct.address)
       );
       if (!matchAcct) account = undefined;
     }
