@@ -262,7 +262,12 @@ class PreferenceService {
   };
 
   getCurrentAccount = (): Account | undefined | null => {
-    return cloneDeep(this.store.currentAccount);
+    const account = cloneDeep(this.store.currentAccount);
+    if (!account) return account;
+    return {
+      ...account,
+      address: account.address.toLowerCase(),
+    };
   };
 
   setCurrentAccount = (account: Account | null) => {
