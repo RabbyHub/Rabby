@@ -218,7 +218,7 @@ function MnemonicsInputs({
     (vals: string[]) => {
       const words = fillMatrix(vals.slice(0, mnemonicsCount), mnemonicsCount);
       _setInputTexts(words);
-      onChange?.(words.join(' ').trim());
+      onChange?.(words.join(' '));
       verRef.current++;
     },
     [onChange, mnemonicsCount]
