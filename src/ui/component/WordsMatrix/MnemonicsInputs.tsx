@@ -136,24 +136,24 @@ const HeadToolbar = styled.div`
 
 const HINT_BAR_H = 48;
 const HintsAreaBar = styled.div`
-  // position: absolute;
-  width: 100%;
   height: ${HINT_BAR_H}px;
   display: flex;
   bottom: 0;
   align-items: center;
   justify-content: flex-start;
+  margin-left: -4px;
+  margin-right: -4px;
 
   .work-item-box {
     width: ${(1 / 4) * 100}%;
     flex-shrink: 1;
-    padding-left: 8px;
-    padding-right: 8px;
+    padding-left: 4px;
+    padding-right: 4px;
     cursor: pointer;
   }
 
   .work-item {
-    max-width: 80px;
+    width: 100%;
     height: 36px;
     text-align: center;
     line-height: 36px;
