@@ -54,6 +54,7 @@ import {
   GnosisWrongChainAlertBar,
   NFTListContainer,
   ExtraLink,
+  DefaultWalletSetting,
 } from './components';
 import Dropdown from './components/NFT/Dropdown';
 import AddressRow from './components/AddressRow';
@@ -1011,6 +1012,7 @@ const Dashboard = () => {
           )}
         </div>
       </Modal>
+      {!(showToken || showAssets || showNFT) && <DefaultWalletSetting />}
     </>
   );
 };

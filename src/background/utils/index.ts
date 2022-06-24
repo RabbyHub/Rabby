@@ -88,3 +88,17 @@ export const hasWalletConnectPageStateCache = () => {
 export const isSameAddress = (a: string, b: string) => {
   return a.toLowerCase() === b.toLowerCase();
 };
+
+export const setPopupIcon = (type: 'default' | 'rabby' | 'metamask') => {
+  const icons = [16, 19, 32, 48, 128].reduce((res, size) => {
+    if (type === 'default') {
+      res[size] = `images/icon-${size}.png`;
+    } else {
+      res[size] = `images/icon-default-${type}-${size}.png`;
+    }
+    return res;
+  }, {});
+  return chrome.browserAction.setIcon({
+    path: icons,
+  });
+};

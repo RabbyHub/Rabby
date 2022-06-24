@@ -58,7 +58,7 @@ export const CurrentConnection = memo(() => {
   }, []);
 
   const Content = site && (
-    <div className="site">
+    <div className="site mr-[18px]">
       <FallbackSiteLogo
         url={site.icon}
         origin={site.origin}
@@ -102,7 +102,7 @@ export const CurrentConnection = memo(() => {
       ) : (
         <div className="site is-empty">
           <img src={IconDapps} className="site-icon" alt="" />
-          <div className="site-content">No Dapp found</div>
+          <div className="site-content">No Dapp found, refresh web page</div>
         </div>
       )}
       <ChainSelector

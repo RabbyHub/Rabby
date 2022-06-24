@@ -47,6 +47,7 @@ import eventBus from '@/eventBus';
 import {
   setPageStateCacheWhenPopupClose,
   isSameAddress,
+  setPopupIcon,
 } from 'background/utils';
 import GnosisKeyring, {
   TransactionBuiltEvent,
@@ -1476,8 +1477,19 @@ export class WalletController extends BaseController {
   getNonceByChain = (address: string, chainId: number) =>
     transactionHistoryService.getNonceByChain(address, chainId);
 
-  setIsDefaultWallet = (val: boolean) =>
+  setIsDefaultWallet = (val: boolean) => {
     preferenceService.setIsDefaultWallet(val);
+    const hasOtherProvider = preferenceService.getHasOtherProvider();
+    if (hasOtherProvider) {
+      sessionService.broadcastEvent(
+        'defaultWalletChanged',
+        val ? 'rabby' : 'metamask'
+      );
+      setPopupIcon(val ? 'rabby' : 'metamask');
+    } else {
+      setPopupIcon('default');
+    }
+  };
   isDefaultWallet = () => preferenceService.getIsDefaultWallet();
 
   private _getKeyringByType(type) {
@@ -1710,6 +1722,9 @@ export class WalletController extends BaseController {
   reportStats = (name: string, params: Record<string, string | number>) => {
     stats.report(name, params);
   };
+  getNeedSwitchWalletCheck = preferenceService.getNeedSwitchWalletCheck;
+
+  updateNeedSwitchWalletCheck = preferenceService.updateNeedSwitchWalletCheck;
 }
 
 export default new WalletController();

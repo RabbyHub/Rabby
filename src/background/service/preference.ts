@@ -61,6 +61,7 @@ export interface PreferenceStore {
   tokenApprovalChain: Record<string, CHAINS_ENUM>;
   nftApprovalChain: Record<string, CHAINS_ENUM>;
   sendLogTime?: number;
+  needSwitchWalletCheck?: boolean;
 }
 
 const SUPPORT_LOCALES = ['en'];
@@ -96,6 +97,7 @@ class PreferenceService {
         tokenApprovalChain: {},
         nftApprovalChain: {},
         sendLogTime: 0,
+        needSwitchWalletCheck: true,
       },
     });
     if (!this.store.locale || this.store.locale !== defaultLang) {
@@ -149,6 +151,9 @@ class PreferenceService {
     }
     if (!this.store.sendLogTime) {
       this.store.sendLogTime = 0;
+    }
+    if (this.store.needSwitchWalletCheck == null) {
+      this.store.needSwitchWalletCheck = true;
     }
   };
 
@@ -410,6 +415,15 @@ class PreferenceService {
   };
   updateSendLogTime = (time: number) => {
     this.store.sendLogTime = time;
+  };
+  getNeedSwitchWalletCheck = () => {
+    if (this.store.needSwitchWalletCheck == null) {
+      return true;
+    }
+    return this.store.needSwitchWalletCheck;
+  };
+  updateNeedSwitchWalletCheck = (value: boolean) => {
+    this.store.needSwitchWalletCheck = value;
   };
 }
 
