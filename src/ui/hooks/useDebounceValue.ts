@@ -5,12 +5,13 @@ export default function useDebounceValue<T>(value: T, delay = 1000) {
 
   useEffect(() => {
     const handler = setTimeout(() => {
+      if (debouncedValue === value) return;
       setDebouncedValue(value);
     }, delay);
 
     return () => {
       clearTimeout(handler);
     };
-  }, [value, delay]);
+  }, [debouncedValue, value, delay]);
   return debouncedValue;
 }
