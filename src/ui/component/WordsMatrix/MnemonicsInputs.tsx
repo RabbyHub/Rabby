@@ -15,6 +15,8 @@ import useTypingMnemonics from '@/ui/hooks/useTypingMnemonics';
 import DebouncedInput from '../DebouncedInput';
 import { isTryingToPaste } from '@/ui/utils/keyboard';
 
+import './MnemonicsInputs.less';
+
 const ITEM_H = 208 / 4;
 const ROW_COUNT = 3;
 
@@ -261,21 +263,24 @@ function MnemonicsInputs({
         <Dropdown
           trigger={['click']}
           overlay={
-            <Menu>
+            <Menu className="mnemonics-input-menu py-8px rounded-[4px]">
               {MNEMONICS_COUNTS.map((count) => {
                 return (
                   <Menu.Item
+                    className="h-[38px] py-0 px-[8px] hover:bg-transparent"
                     key={`countSelector-${count}`}
                     style={{ color: LessPalette['@color-body'] }}
                     onClick={() => {
                       setMnemonicsCount(count);
                     }}
                   >
-                    I have{' '}
-                    <b style={{ color: LessPalette['@primary-color'] }}>
-                      {count}
-                    </b>{' '}
-                    Seed Phrase
+                    <div className="text-wrapper">
+                      I have{' '}
+                      <b style={{ color: LessPalette['@primary-color'] }}>
+                        {count}
+                      </b>{' '}
+                      Seed Phrase
+                    </div>
                   </Menu.Item>
                 );
               })}
