@@ -1012,7 +1012,7 @@ const Dashboard = () => {
           )}
         </div>
       </Modal>
-      <DefaultWalletSetting />
+      {!(showToken || showAssets || showNFT) && <DefaultWalletSetting />}
     </>
   );
 };
