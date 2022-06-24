@@ -15,6 +15,8 @@ import useTypingMnemonics from '@/ui/hooks/useTypingMnemonics';
 import DebouncedInput from '../DebouncedInput';
 import { isTryingToPaste } from '@/ui/utils/keyboard';
 
+import './MnemonicsInputs.less';
+
 const ITEM_H = 208 / 4;
 const ROW_COUNT = 3;
 
@@ -94,7 +96,7 @@ const MatrixWrapper = styled.div.withConfig<{
     align-items: flex-end;
     cursor: pointer;
     visibility: hidden;
-    z-index: 11;
+    z-index: 9;
 
     > img {
       width: 12px;
@@ -107,7 +109,7 @@ const MatrixWrapper = styled.div.withConfig<{
   }
 
   .matrix-word-item.is-mnemonics-input ${styid(NumberFlag)} {
-    z-index: 11;
+    z-index: 9;
   }
   /* for MnemonicsInputs :end */
 `;
@@ -134,24 +136,24 @@ const HeadToolbar = styled.div`
 
 const HINT_BAR_H = 48;
 const HintsAreaBar = styled.div`
-  // position: absolute;
-  width: 100%;
   height: ${HINT_BAR_H}px;
   display: flex;
   bottom: 0;
   align-items: center;
   justify-content: flex-start;
+  margin-left: -4px;
+  margin-right: -4px;
 
   .work-item-box {
     width: ${(1 / 4) * 100}%;
     flex-shrink: 1;
-    padding-left: 8px;
-    padding-right: 8px;
+    padding-left: 4px;
+    padding-right: 4px;
     cursor: pointer;
   }
 
   .work-item {
-    max-width: 80px;
+    width: 100%;
     height: 36px;
     text-align: center;
     line-height: 36px;
@@ -218,7 +220,7 @@ function MnemonicsInputs({
     (vals: string[]) => {
       const words = fillMatrix(vals.slice(0, mnemonicsCount), mnemonicsCount);
       _setInputTexts(words);
-      onChange?.(words.join(' ').trim());
+      onChange?.(words.join(' '));
       verRef.current++;
     },
     [onChange, mnemonicsCount]
@@ -261,21 +263,24 @@ function MnemonicsInputs({
         <Dropdown
           trigger={['click']}
           overlay={
-            <Menu>
+            <Menu className="mnemonics-input-menu py-8px rounded-[4px]">
               {MNEMONICS_COUNTS.map((count) => {
                 return (
                   <Menu.Item
+                    className="h-[38px] py-0 px-[8px] hover:bg-transparent"
                     key={`countSelector-${count}`}
                     style={{ color: LessPalette['@color-body'] }}
                     onClick={() => {
                       setMnemonicsCount(count);
                     }}
                   >
-                    I have{' '}
-                    <b style={{ color: LessPalette['@primary-color'] }}>
-                      {count}
-                    </b>{' '}
-                    Seed Phrase
+                    <div className="text-wrapper">
+                      I have a{' '}
+                      <b style={{ color: LessPalette['@primary-color'] }}>
+                        {count}
+                      </b>
+                      -word phrase
+                    </div>
                   </Menu.Item>
                 );
               })}
@@ -283,7 +288,7 @@ function MnemonicsInputs({
           }
         >
           <div className="left flex items-center cursor-pointer">
-            <span>I have {mnemonicsCount} Seed Phrase</span>
+            <span>I have a {mnemonicsCount}-word phrase</span>
             <img className="ml-[2px]" src={IconCaretDown} />
           </div>
         </Dropdown>

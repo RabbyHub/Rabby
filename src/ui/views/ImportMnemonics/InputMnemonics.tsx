@@ -134,16 +134,12 @@ const ImportMnemonics = () => {
       }}
       onSubmit={({ mnemonics }: { mnemonics: string }) => run(mnemonics)}
       onNextClick={() => {
-        form
-          .validateFields(['mnemonics'])
-          .then(() => {
-            setErrMsgs([]);
-          })
-          .catch(({ errorFields }) => {
-            const errMsgs = form.getFieldError('mnemonics');
-
-            setErrMsgs(errMsgs);
-          });
+        const mnemonics = form.getFieldValue('mnemonics');
+        if (!mnemonics) {
+          setErrMsgs([t('Please enter the seed phrase')]);
+          return;
+        }
+        setErrMsgs([]);
       }}
       hasBack
       hasDivider
@@ -174,9 +170,6 @@ const ImportMnemonics = () => {
                 'mb-[12px]',
                 errMsgs?.length && 'mnemonics-with-error'
               )}
-              rules={[
-                { required: true, message: t('Please input Seed Phrase') },
-              ]}
             >
               <WordsMatrix.MnemonicsInputs errMsgs={errMsgs} />
             </Form.Item>
