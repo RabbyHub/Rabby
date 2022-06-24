@@ -94,7 +94,7 @@ const MatrixWrapper = styled.div.withConfig<{
     align-items: flex-end;
     cursor: pointer;
     visibility: hidden;
-    z-index: 11;
+    z-index: 9;
 
     > img {
       width: 12px;
@@ -107,7 +107,7 @@ const MatrixWrapper = styled.div.withConfig<{
   }
 
   .matrix-word-item.is-mnemonics-input ${styid(NumberFlag)} {
-    z-index: 11;
+    z-index: 9;
   }
   /* for MnemonicsInputs :end */
 `;
