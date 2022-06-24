@@ -5,7 +5,7 @@ import IconDefaultMetamask from 'ui/assets/icon-default-metamask.svg';
 import IconRabby from 'ui/assets/dashboard/rabby.svg';
 import IconMetamask from 'ui/assets/dashboard/icon-metamask.svg';
 import { Checkbox, Popup } from '@/ui/component';
-import { Button } from 'antd';
+import { Button, message } from 'antd';
 import { useWallet } from '@/ui/utils';
 
 const DefaultWalletSetting = () => {
@@ -34,6 +34,13 @@ const DefaultWalletSetting = () => {
     await wallet.setIsDefaultWallet(!isDefault);
     setIsDefault(!isDefault);
     setVisible(false);
+    message.success({
+      icon: <i />,
+      content: (
+        <span className="text-white">Refresh the web page to take effect</span>
+      ),
+      duration: 2,
+    });
   };
 
   useEffect(() => {
@@ -50,7 +57,7 @@ const DefaultWalletSetting = () => {
           <img
             src={IconDefaultRabby}
             alt=""
-            className="w-[24px] h-[24px] mr-[8px]"
+            className="w-[20px] h-[20px] mr-[8px]"
           />
           Rabby is in use and Metamask is banned
           <a href="#" onClick={handleFlip}>
@@ -112,7 +119,7 @@ const DefaultWalletSetting = () => {
         <img
           src={IconDefaultMetamask}
           alt=""
-          className="w-[24px] h-[24px] mr-[8px]"
+          className="w-[20px] h-[20px] mr-[8px]"
         />
         MetaMask is in use and Rabby is banned
         <a href="#" onClick={handleFlip}>
