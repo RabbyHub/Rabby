@@ -8,7 +8,7 @@ import { useAccount } from '@/ui/store-hooks';
 import { useInfiniteScroll } from 'ahooks';
 import { TxHistoryResult } from 'background/service/openapi';
 import { Empty, PageHeader } from 'ui/component';
-import { useWallet } from 'ui/utils';
+import { useWallet, useWalletOld } from 'ui/utils';
 import { HistoryItem } from './HistoryItem';
 import { Loading } from './Loading';
 import './style.less';
@@ -16,7 +16,7 @@ import './style.less';
 const PAGE_COUNT = 10;
 
 const History = () => {
-  const wallet = useWallet();
+  const wallet = useWalletOld();
   const { t } = useTranslation();
 
   const ref = useRef<HTMLDivElement | null>(null);

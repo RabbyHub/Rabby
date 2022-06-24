@@ -502,8 +502,8 @@ export class WalletController extends BaseController {
     }
     return {
       origin,
-      name,
-      icon,
+      name: name!,
+      icon: icon!,
       chain: CHAINS_ENUM.ETH,
       isConnected: false,
       isSigned: false,
@@ -1476,6 +1476,10 @@ export class WalletController extends BaseController {
     transactionHistoryService.getPendingCount(address);
   getNonceByChain = (address: string, chainId: number) =>
     transactionHistoryService.getNonceByChain(address, chainId);
+
+  getPreference = (key?: string) => {
+    return preferenceService.getPreference(key);
+  };
 
   setIsDefaultWallet = (val: boolean) => {
     preferenceService.setIsDefaultWallet(val);

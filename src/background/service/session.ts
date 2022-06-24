@@ -1,4 +1,11 @@
 import { permissionService } from 'background/service';
+import PortMessage from '@/utils/message/portMessage';
+
+export interface SessionProp {
+  origin: string;
+  icon: string;
+  name: string;
+}
 
 export class Session {
   origin = '';
@@ -7,13 +14,25 @@ export class Session {
 
   name = '';
 
-  constructor(data) {
+  pm: PortMessage | null = null;
+
+  pushMessage(event, data) {
+    if (this.pm) {
+      this.pm.send('message', { event, data });
+    }
+  }
+
+  constructor(data?: SessionProp | null) {
     if (data) {
       this.setProp(data);
     }
   }
 
-  setProp({ origin, icon, name }) {
+  setPortMessage(pm: PortMessage) {
+    this.pm = pm;
+  }
+
+  setProp({ origin, icon, name }: SessionProp) {
     this.origin = origin;
     this.icon = icon;
     this.name = name;
@@ -21,13 +40,13 @@ export class Session {
 }
 
 // for each tab
-const sessionMap = new Map();
+const sessionMap = new Map<string, Session | null>();
 
-const getSession = (id) => {
-  return sessionMap.get(id);
+const getSession = (key: string) => {
+  return sessionMap.get(key);
 };
 
-const getOrCreateSession = (id, origin) => {
+const getOrCreateSession = (id: number, origin: string) => {
   if (sessionMap.has(`${id}-${origin}`)) {
     return getSession(`${id}-${origin}`);
   }
@@ -35,36 +54,36 @@ const getOrCreateSession = (id, origin) => {
   return createSession(`${id}-${origin}`, null);
 };
 
-const createSession = (id, data) => {
+const createSession = (key: string, data?: null | SessionProp) => {
   const session = new Session(data);
-  sessionMap.set(id, session);
+  sessionMap.set(key, session);
 
   return session;
 };
 
-const deleteSession = (id) => {
-  sessionMap.delete(id);
+const deleteSession = (key: string) => {
+  sessionMap.delete(key);
 };
 
-const broadcastEvent = (ev, data?, origin?) => {
-  let sessions: any[] = [];
+const broadcastEvent = (ev, data?, origin?: string) => {
+  let sessions: { key: string; data: Session }[] = [];
   sessionMap.forEach((session, key) => {
-    if (permissionService.hasPermission(session.origin)) {
+    if (session && permissionService.hasPermission(session.origin)) {
       sessions.push({
         key,
-        ...session,
+        data: session,
       });
     }
   });
 
   // same origin
   if (origin) {
-    sessions = sessions.filter((session) => session.origin === origin);
+    sessions = sessions.filter((session) => session.data.origin === origin);
   }
 
   sessions.forEach((session) => {
     try {
-      session.pushMessage?.(ev, data);
+      session.data.pushMessage?.(ev, data);
     } catch (e) {
       if (sessionMap.has(session.key)) {
         deleteSession(session.key);

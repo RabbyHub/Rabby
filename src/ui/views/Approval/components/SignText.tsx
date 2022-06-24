@@ -222,7 +222,7 @@ const SignText = ({ params }: { params: SignTextProps }) => {
 
   useEffect(() => {
     (async () => {
-      const currentAccount = await wallet.getCurrentAccount();
+      const currentAccount = await wallet.getCurrentAccount<Account>();
       if (
         [
           KEYRING_CLASS.MNEMONIC,

@@ -1,5 +1,6 @@
 import React, { useEffect, useState } from 'react';
 import { useHistory } from 'react-router-dom';
+import { Approval } from 'background/service/notification';
 import { useWallet, useApproval } from 'ui/utils';
 import { IExtractFromPromise } from '@/ui/utils/type';
 
@@ -25,8 +26,9 @@ const Approval = () => {
       return null;
     }
     setApproval(approval);
-    if (approval.origin || approval.params.origin) {
-      document.title = approval.origin || approval.params.origin;
+    if (approval.data.origin || approval.data.params?.session.origin) {
+      document.title =
+        approval.data.origin || approval.data.params!.session.origin;
     }
     const account = await wallet.getCurrentAccount();
     if (!account) {
@@ -40,7 +42,8 @@ const Approval = () => {
   }, []);
 
   if (!approval) return <></>;
-  const { approvalComponent, params, origin, requestDefer } = approval;
+  const { data } = approval;
+  const { approvalComponent, params, origin, requestDefer } = data;
   const CurrentApprovalComponent = ApprovalComponent[approvalComponent];
 
   return (

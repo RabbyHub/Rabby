@@ -18,7 +18,9 @@ const config = {
   entry: {
     background: paths.rootResolve('src/background/index.ts'),
     'content-script': paths.rootResolve('src/content-script/index.ts'),
-    pageProvider: paths.rootResolve('src/content-script/pageProvider/index.ts'),
+    pageProvider: paths.rootResolve(
+      'node_modules/@rabby-wallet/page-provider/dist/index.js'
+    ),
     ui: paths.rootResolve('src/ui/index.tsx'),
   },
   output: {
@@ -150,7 +152,15 @@ const config = {
       },
       {
         test: /\.svg$/,
-        use: ['@svgr/webpack', 'url-loader'],
+        use: [
+          '@svgr/webpack',
+          {
+            loader: 'url-loader',
+            options: {
+              limit: false,
+            },
+          },
+        ],
       },
       {
         test: /\.(png|jpe?g|gif)$/i,

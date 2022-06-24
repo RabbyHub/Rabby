@@ -1,6 +1,7 @@
 import { KEYRING_TYPE } from './../../constant/index';
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { useHistory } from 'react-router-dom';
+import { Approval } from 'background/service/notification';
 import { useWallet } from './WalletContext';
 import { getUiType } from './index';
 import { KEYRING_TYPE_TEXT, WALLET_BRAND_CONTENT } from '@/constant';
@@ -9,7 +10,7 @@ export const useApproval = () => {
   const wallet = useWallet();
   const history = useHistory();
 
-  const getApproval = wallet.getApproval;
+  const getApproval: () => Promise<Approval> = wallet.getApproval;
 
   const resolveApproval = async (
     data?: any,

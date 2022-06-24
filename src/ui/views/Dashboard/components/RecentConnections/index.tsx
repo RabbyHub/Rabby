@@ -7,6 +7,7 @@ import ReactGA from 'react-ga';
 import { openInTab, useWallet } from 'ui/utils';
 import ConnectionList from './ConnectionList';
 import './style.less';
+import { useRabbyDispatch, useRabbySelector } from 'ui/store';
 
 interface RecentConnectionsProps {
   visible?: boolean;
@@ -18,8 +19,8 @@ const RecentConnections = ({
   onClose,
 }: RecentConnectionsProps) => {
   const { t } = useTranslation();
-  const [connections, setConnections] = useState<ConnectedSite[]>([]);
-  const wallet = useWallet();
+  const dispatch = useRabbyDispatch();
+  const connections = useRabbySelector((state) => state.permission.websites);
 
   const pinnedList = useMemo(() => {
     return connections
@@ -43,42 +44,33 @@ const RecentConnections = ({
 
   const handleSort = (sites: ConnectedSite[]) => {
     const list = sites.concat(recentList);
-    setConnections(list);
-    wallet.setRecentConnectedSites(list);
-  };
-
-  const getConnectedSites = async () => {
-    const sites = await wallet.getConnectedSites();
-    setConnections(sites.filter((item) => !!item));
+    dispatch.permission.reorderWebsites(list);
   };
 
   const handleFavoriteChange = (item: ConnectedSite) => {
     if (item.isTop) {
-      wallet.unpinConnectedSite(item.origin);
+      dispatch.permission.unFavoriteWebsite(item.origin);
       ReactGA.event({
         category: 'Dapps',
         action: 'unfavoriteDapp',
         label: item.origin,
       });
     } else {
-      wallet.topConnectedSite(item.origin);
+      dispatch.permission.favoriteWebsite(item.origin);
       ReactGA.event({
         category: 'Dapps',
         action: 'favoriteDapp',
         label: item.origin,
       });
     }
-
-    getConnectedSites();
   };
   const handleRemove = async (origin: string) => {
-    await wallet.removeConnectedSite(origin);
+    await dispatch.permission.removeWebsite(origin);
     ReactGA.event({
       category: 'Dapps',
       action: 'disconnectDapp',
       label: origin,
     });
-    getConnectedSites();
     message.success({
       icon: <i />,
       content: <span className="text-white">{t('Disconnected')}</span>,
@@ -87,7 +79,7 @@ const RecentConnections = ({
 
   const removeAll = async () => {
     try {
-      await wallet.removeAllRecentConnectedSites();
+      await dispatch.permission.clearAll();
       ReactGA.event({
         category: 'Dapps',
         action: 'disconnectAllDapps',
@@ -95,7 +87,6 @@ const RecentConnections = ({
     } catch (e) {
       console.error(e);
     }
-    getConnectedSites();
     message.success({
       icon: <i />,
       content: <span className="text-white">{t('Disconnected')}</span>,
@@ -123,7 +114,7 @@ const RecentConnections = ({
   };
 
   useEffect(() => {
-    getConnectedSites();
+    dispatch.permission.getWebsites();
   }, []);
 
   return (

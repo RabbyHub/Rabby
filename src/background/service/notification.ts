@@ -10,13 +10,45 @@ import {
   NOT_CLOSE_UNFOCUS_LIST,
 } from 'consts';
 import preferenceService from './preference';
+import { createPersistStore } from 'background/utils';
+import { Session } from './session';
 
-interface Approval {
+interface TransactionParams {
+  from?: string;
+  to: string;
+  gas?: string;
+  gasLimit?: string;
+  gasPrice?: string;
+  maxFeePeerGas?: string;
+  maxPriorityFeePeerGas?: string;
+  data?: string;
+  value?: string;
+}
+
+type TextMessageParams = string[];
+
+type TaskParams = TransactionParams[] | TextMessageParams;
+
+interface Task {
+  params: TaskParams;
+  id: number;
+}
+
+interface TaskStore {
+  tasks: Task[];
+}
+
+type IApprovalComponents = typeof import('@/ui/views/Approval/components');
+type IApprovalComponent = IApprovalComponents[keyof IApprovalComponents];
+
+export interface Approval {
+  id: number;
+  taskId: number | null;
   data: {
     state: number;
-    params?: any;
+    params?: import('react').ComponentProps<IApprovalComponent>['params'];
     origin?: string;
-    approvalComponent: keyof typeof import('@/ui/views/Approval/components');
+    approvalComponent: keyof IApprovalComponents;
     requestDefer?: Promise<any>;
     approvalType: string;
   };
@@ -27,9 +59,13 @@ interface Approval {
 // something need user approval in window
 // should only open one window, unfocus will close the current notification
 class NotificationService extends Events {
-  approval: Approval | null = null;
+  currentApproval: Approval | null = null;
+  approvals: Approval[] = [];
   notifiWindowId = 0;
   isLocked = false;
+  store: TaskStore = {
+    tasks: [],
+  };
 
   constructor() {
     super();
@@ -60,52 +96,109 @@ class NotificationService extends Events {
     });
   }
 
-  getApproval = () => this.approval?.data;
+  init = async () => {
+    const storage = await createPersistStore<TaskStore>({
+      name: 'tasks',
+      template: {
+        tasks: [],
+      },
+    });
 
-  resolveApproval = (data?: any, forceReject = false) => {
-    if (forceReject) {
-      this.approval?.reject(new EthereumProviderError(4001, 'User Cancel'));
-    } else {
-      this.approval?.resolve(data);
+    this.store = storage || this.store;
+
+    if (!this.store.tasks) {
+      this.store.tasks = [];
     }
-    this.approval = null;
+
+    // TODO: set the latest task as currentApproval
+  };
+
+  createTask = (task: TaskParams) => {
+    const id = this.store.tasks.length;
+
+    this.store.tasks.push({
+      id,
+      params: task,
+    });
+  };
+
+  deleteTask = (id: number) => {
+    this.store.tasks = this.store.tasks.filter((task) => task.id !== id);
+  };
+
+  deleteApproval = (approval) => {
+    if (approval && this.approvals.length > 1) {
+      const index = this.approvals.findIndex((item) => item.id === approval.id);
+      this.approvals.splice(index, 1);
+    } else {
+      this.currentApproval = null;
+      this.approvals = [];
+    }
+  };
+
+  getApproval = () => this.currentApproval;
+
+  resolveApproval = async (data?: any, forceReject = false) => {
+    if (forceReject) {
+      this.currentApproval?.reject(
+        new EthereumProviderError(4001, 'User Cancel')
+      );
+    } else {
+      this.currentApproval?.resolve(data);
+    }
+
+    const approval = this.currentApproval;
+
+    this.deleteApproval(approval);
+
+    this.currentApproval = null;
+
     this.emit('resolve', data);
   };
 
   rejectApproval = async (err?: string, stay = false, isInternal = false) => {
     if (isInternal) {
-      this.approval?.reject(ethErrors.rpc.internal(err));
+      this.currentApproval?.reject(ethErrors.rpc.internal(err));
     } else {
-      this.approval?.reject(ethErrors.provider.userRejectedRequest<any>(err));
-    }
-
-    await this.clear(stay);
-    this.emit('reject', err);
-  };
-
-  // currently it only support one approval at the same time
-  requestApproval = async (data, winProps?): Promise<any> => {
-    // if the request comes into while user approving
-    if (this.approval) {
-      throw ethErrors.provider.userRejectedRequest(
-        'please request after current approval resolve'
+      this.currentApproval?.reject(
+        ethErrors.provider.userRejectedRequest<any>(err)
       );
     }
 
-    // if (preferenceService.getPopupOpen()) {
-    //   this.approval = null;
-    //   throw ethErrors.provider.userRejectedRequest(
-    //     'please request after user close current popup'
-    //   );
-    // }
+    const approval = this.currentApproval;
+    if (approval && approval.taskId !== null) {
+      this.deleteTask(approval.taskId);
+    }
 
+    if (approval && this.approvals.length > 1) {
+      this.deleteApproval(approval);
+    } else {
+      await this.clear(stay);
+    }
+    this.emit('reject', err);
+  };
+
+  requestApproval = async (data, winProps?): Promise<any> => {
+    if (this.currentApproval) {
+      throw ethErrors.provider.userRejectedRequest(
+        'please request after current approval resolve'
+      );
+    } // TODO: remove this logic after multi approval avaliable
     return new Promise((resolve, reject) => {
-      this.approval = {
+      let taskId: number | null = null;
+      if (['SignTx', 'SignText', 'SignTypedData'].includes(data.approvalType)) {
+        taskId = this.store.tasks.length;
+        this.createTask(data.params);
+      }
+      const approval: Approval = {
+        taskId,
+        id: this.approvals.length,
         data,
         resolve,
         reject,
       };
-
+      this.approvals.push(approval);
+      this.currentApproval = approval;
       if (
         ['wallet_switchEthereumChain', 'wallet_addEthereumChain'].includes(
           data?.params?.method
@@ -125,7 +218,8 @@ class NotificationService extends Events {
   };
 
   clear = async (stay = false) => {
-    this.approval = null;
+    this.approvals = [];
+    this.currentApproval = null;
     if (this.notifiWindowId && !stay) {
       await winMgr.remove(this.notifiWindowId);
       this.notifiWindowId = 0;

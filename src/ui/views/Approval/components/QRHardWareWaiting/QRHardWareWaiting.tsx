@@ -44,7 +44,9 @@ const QRHardWareWaiting = ({ params }) => {
     const account = await wallet.syncGetCurrentAccount()!;
     if (!account) return;
     setWalletBrandContent(WALLET_BRAND_CONTENT[account.brandName]);
-    setIsSignText(params.isGnosis ? true : approval?.approvalType !== 'SignTx');
+    setIsSignText(
+      params.isGnosis ? true : approval?.data.approvalType !== 'SignTx'
+    );
     eventBus.addEventListener(
       EVENTS.QRHARDWARE.ACQUIRE_MEMSTORE_SUCCEED,
       ({ request }) => {

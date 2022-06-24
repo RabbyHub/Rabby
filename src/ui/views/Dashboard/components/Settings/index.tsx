@@ -6,10 +6,6 @@ import { useTranslation } from 'react-i18next';
 import { Link, useHistory } from 'react-router-dom';
 import ReactGA from 'react-ga';
 import IconArrowRight from 'ui/assets/arrow-right-gray.svg';
-import { ReactComponent as IconCheckbox } from 'ui/assets/dashboard/checkbox.svg';
-import IconWallet from 'ui/assets/wallet.svg';
-import IconMetamask from 'ui/assets/dashboard/icon-metamask.svg';
-import IconRabby from 'ui/assets/dashboard/rabby.svg';
 import IconAddressManagement from 'ui/assets/icon-user.svg';
 import IconLock from 'ui/assets/lock.svg';
 import LogoRabby from 'ui/assets/logo-rabby-large.svg';
@@ -19,6 +15,7 @@ import IconServer from 'ui/assets/server.svg';
 import { Field, PageHeader, Popup } from 'ui/component';
 import { useWallet, useWalletOld } from 'ui/utils';
 import './style.less';
+import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 
 interface SettingsProps {
   visible?: boolean;
@@ -39,19 +36,13 @@ const OpenApiModal = ({
   const { useForm } = Form;
   const [isVisible, setIsVisible] = useState(false);
   const [form] = useForm<{ host: string }>();
-  const wallet = useWallet();
   const { t } = useTranslation();
 
-  const init = async () => {
-    const currentHost = await wallet.openapi.getHost();
-
-    form.setFieldsValue({
-      host: currentHost,
-    });
-  };
+  const host = useRabbySelector((state) => state.openapi.host);
+  const dispatch = useRabbyDispatch();
 
   const handleSubmit = async ({ host }: { host: string }) => {
-    await wallet.openapi.setHost(host);
+    await dispatch.openapi.setHost(host);
     setIsVisible(false);
     setTimeout(() => {
       onFinish();
@@ -72,8 +63,14 @@ const OpenApiModal = ({
   };
 
   useEffect(() => {
-    init();
-  }, []);
+    form.setFieldsValue({
+      host,
+    });
+  }, [form, host]);
+
+  useEffect(() => {
+    dispatch.openapi.getHost();
+  }, [dispatch]);
 
   useEffect(() => {
     setTimeout(() => {

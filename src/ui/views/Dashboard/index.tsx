@@ -1,62 +1,61 @@
-import React, { useEffect, useState, useRef } from 'react';
-import ClipboardJS from 'clipboard';
-import QRCode from 'qrcode.react';
-import cloneDeep from 'lodash/cloneDeep';
-import uniqBy from 'lodash/uniqBy';
+import { Input, message, Popover } from 'antd';
+import { AssetItem, TokenItem } from 'background/service/openapi';
+import { Account } from 'background/service/preference';
 import BigNumber from 'bignumber.js';
-import { useHistory, useLocation, Link } from 'react-router-dom';
-import { useInterval } from 'react-use';
-import { message, Popover, Input } from 'antd';
-import { FixedSizeList } from 'react-window';
+import ClipboardJS from 'clipboard';
 import clsx from 'clsx';
 import { useTranslation, Trans } from 'react-i18next';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
 import ReactGA from 'react-ga';
-import Safe from '@rabby-wallet/gnosis-sdk';
-import { SafeInfo } from '@rabby-wallet/gnosis-sdk/dist/api';
 import {
-  KEYRING_ICONS,
-  WALLET_BRAND_CONTENT,
-  KEYRING_ICONS_WHITE,
   KEYRING_CLASS,
+  KEYRING_ICONS,
+  KEYRING_ICONS_WHITE,
   KEYRING_TYPE,
-  CHAINS,
   KEYRING_TYPE_TEXT,
+  WALLET_BRAND_CONTENT,
 } from 'consts';
-import { isSameAddress, useWalletOld, useWallet } from 'ui/utils';
-import { AddressViewer, Copy, Modal, NameAndAddress } from 'ui/component';
-import { crossCompareOwners } from 'ui/utils/gnosis';
-import { Account } from 'background/service/preference';
-import { ConnectedSite } from 'background/service/permission';
-import { TokenItem, AssetItem } from 'background/service/openapi';
-import { getUpdateContent } from 'changeLogs/index';
-import IconSuccess from 'ui/assets/success.svg';
-import IconUpAndDown from 'ui/assets/up-and-down.svg';
-import IconEditPen from 'ui/assets/editpen.svg';
+import cloneDeep from 'lodash/cloneDeep';
+import uniqBy from 'lodash/uniqBy';
+import QRCode from 'qrcode.react';
+import React, { useEffect, useRef, useState } from 'react';
+import { Link, useHistory, useLocation } from 'react-router-dom';
+import { useInterval } from 'react-use';
+import { FixedSizeList } from 'react-window';
+import { SvgIconLoading } from 'ui/assets';
+import IconAddressCopy from 'ui/assets/address-copy.png';
+import IconAddToken from 'ui/assets/addtoken.png';
+import IconPlus from 'ui/assets/dashboard-plus.svg';
 import IconCorrect from 'ui/assets/dashboard/contacts/correct.png';
 import IconUnCorrect from 'ui/assets/dashboard/contacts/uncorrect.png';
-import IconPlus from 'ui/assets/dashboard-plus.svg';
-import IconInfo from 'ui/assets/information.png';
-import IconTagYou from 'ui/assets/tag-you.svg';
-import IconAddToken from 'ui/assets/addtoken.png';
-import IconAddressCopy from 'ui/assets/address-copy.png';
+import IconEditPen from 'ui/assets/editpen.svg';
 import IconCopy from 'ui/assets/icon-copy.svg';
-import { SvgIconLoading } from 'ui/assets';
-import { connectStore, useRabbyDispatch, useRabbySelector } from 'ui/store';
-
-import './style.less';
+import IconInfo from 'ui/assets/information.png';
+import IconSuccess from 'ui/assets/success.svg';
+import IconTagYou from 'ui/assets/tag-you.svg';
+import IconUpAndDown from 'ui/assets/up-and-down.svg';
+import { AddressViewer, Copy, Modal, NameAndAddress } from 'ui/component';
 import {
-  ChainAndSiteSelector,
-  BalanceView,
-  TokenList,
+  connectStore,
+  useRabbyDispatch,
+  useRabbyGetter,
+  useRabbySelector,
+} from 'ui/store';
+import { isSameAddress, useWalletOld } from 'ui/utils';
+import {
   AssetsList,
+  BalanceView,
+  ChainAndSiteSelector,
   GnosisWrongChainAlertBar,
   NFTListContainer,
+  TokenList,
   ExtraLink,
   DefaultWalletSetting,
 } from './components';
 import Dropdown from './components/NFT/Dropdown';
+import './style.less';
+
 import AddressRow from './components/AddressRow';
 import { sortAccountsByBalance } from '@/ui/utils/account';
 import { getKRCategoryByBrandname } from '@/utils/transaction';
@@ -96,15 +95,31 @@ const Dashboard = () => {
   const fixedList = useRef<FixedSizeList>();
 
   const {
+    alianName,
     currentAccount,
     accountsList,
+    loadingAccounts,
     highlightedAddresses,
-    loadingAddress,
   } = useRabbySelector((s) => ({
+    alianName: s.account.alianName,
     currentAccount: s.account.currentAccount,
-    ...s.accountToDisplay,
+    accountsList: s.accountToDisplay.accountsList,
+    loadingAccounts: s.accountToDisplay.loadingAccounts,
     highlightedAddresses: s.addressManagement.highlightedAddresses,
   }));
+
+  const { pendingTransactionCount: pendingTxCount } = useRabbySelector((s) => ({
+    ...s.transactions,
+  }));
+
+  const { firstNotice, updateContent } = useRabbySelector((s) => ({
+    ...s.appVersion,
+  }));
+
+  const { gnosisPendingCount, safeInfo } = useRabbySelector((s) => ({
+    ...s.chains,
+  }));
+
   const { sortedAccountsList } = React.useMemo(() => {
     const restAccounts = [...accountsList];
     let highlightedAccounts: typeof accountsList = [];
@@ -128,22 +143,15 @@ const Dashboard = () => {
     };
   }, [accountsList, highlightedAddresses]);
 
-  const [pendingTxCount, setPendingTxCount] = useState(0);
-  const [gnosisPendingCount, setGnosisPendingCount] = useState(0);
-  const [safeInfo, setSafeInfo] = useState<SafeInfo | null>(null);
   const [copySuccess, setCopySuccess] = useState(false);
   const [hovered, setHovered] = useState(false);
   const [clicked, setClicked] = useState(false);
   const [startEdit, setStartEdit] = useState(false);
-  const [alianName, setAlianName] = useState<string>('');
   const [displayName, setDisplayName] = useState<string>('');
-  const [firstNotice, setFirstNotice] = useState(false);
-  const [updateContent, setUpdateContent] = useState('');
   const [showChain, setShowChain] = useState(false);
   const [showToken, setShowToken] = useState(false);
   const [showAssets, setShowAssets] = useState(false);
   const [showNFT, setShowNFT] = useState(false);
-  const [allTokens, setAllTokens] = useState<TokenItem[]>([]);
   const [tokens, setTokens] = useState<TokenItem[]>([]);
   const [searchTokens, setSearchTokens] = useState<TokenItem[]>([]);
   const [assets, setAssets] = useState<AssetItem[]>([]);
@@ -157,16 +165,10 @@ const Dashboard = () => {
   const [nftType, setNFTType] = useState<'collection' | 'nft'>('collection');
 
   const [startAnimate, setStartAnimate] = useState(false);
-  const [isGnosis, setIsGnosis] = useState(false);
+  const isGnosis = useRabbyGetter((s) => s.chains.isCurrentAccountGnosis);
   const [isListLoading, setIsListLoading] = useState(false);
   const [isAssetsLoading, setIsAssetsLoading] = useState(true);
-  const [gnosisNetworkId, setGnosisNetworkId] = useState('1');
-  const [showGnosisWrongChainAlert, setShowGnosisWrongChainAlert] = useState(
-    false
-  );
-  const [currentConnection, setCurrentConnection] = useState<
-    ConnectedSite | null | undefined
-  >(null);
+
   const [dashboardReload, setDashboardReload] = useState(false);
   const getCurrentAccount = async () => {
     const account = await dispatch.account.getCurrentAccountAsync();
@@ -176,44 +178,11 @@ const Dashboard = () => {
     }
   };
 
-  const getPendingTxCount = async (address: string) => {
-    const count = await wallet.getPendingCount(address);
-    setPendingTxCount(count);
-  };
-
-  const getAlianName = async (address: string) => {
-    await wallet.getAlianName(address).then((name) => {
-      setAlianName(name);
-      setDisplayName(name);
-    });
-  };
-
-  const getGnosisPendingCount = async () => {
-    if (!currentAccount) return;
-
-    const network = await wallet.getGnosisNetworkId(currentAccount.address);
-    setGnosisNetworkId(network);
-    const [info, txs] = await Promise.all([
-      Safe.getSafeInfo(currentAccount.address, network),
-      Safe.getPendingTransactions(currentAccount.address, network),
-    ]);
-    const owners = await wallet.getGnosisOwners(
-      currentAccount,
-      currentAccount.address,
-      info.version
-    );
-    const comparedOwners = crossCompareOwners(owners, info.owners);
-    setSafeInfo({
-      ...info,
-      owners: comparedOwners,
-    });
-    setGnosisPendingCount(txs.results.length);
-  };
-
   useInterval(() => {
     if (!currentAccount) return;
     if (currentAccount.type === KEYRING_TYPE.GnosisKeyring) return;
-    getPendingTxCount(currentAccount.address);
+
+    dispatch.transactions.getPendingTxCountAsync(currentAccount.address);
   }, 30000);
 
   useEffect(() => {
@@ -223,18 +192,26 @@ const Dashboard = () => {
   useEffect(() => {
     if (currentAccount) {
       if (currentAccount.type === KEYRING_TYPE.GnosisKeyring) {
-        setSafeInfo(null);
-        getGnosisPendingCount();
+        dispatch.chains.setField({
+          safeInfo: null,
+        });
+        dispatch.chains.getGnosisPendingCountAsync();
       } else {
-        getPendingTxCount(currentAccount.address);
+        dispatch.transactions.getPendingTxCountAsync(currentAccount.address);
       }
-      getAlianName(currentAccount?.address.toLowerCase());
+
+      wallet
+        .getAlianName(currentAccount?.address.toLowerCase())
+        .then((name) => {
+          dispatch.account.setField({ alianName: name });
+          setDisplayName(name);
+        });
     }
   }, [currentAccount]);
   useEffect(() => {
     if (dashboardReload) {
       if (currentAccount) {
-        getPendingTxCount(currentAccount.address);
+        dispatch.transactions.getPendingTxCountAsync(currentAccount.address);
       }
       setDashboardReload(false);
       getCurrentAccount();
@@ -289,7 +266,7 @@ const Dashboard = () => {
 
   const handleAlianNameChange = (e: React.ChangeEvent<HTMLInputElement>) => {
     e.stopPropagation();
-    setAlianName(e.target.value);
+    dispatch.account.setField({ alianName: e.target.value });
   };
 
   const alianNameConfirm = async (e) => {
@@ -319,18 +296,6 @@ const Dashboard = () => {
     }
   };
 
-  const checkIfFirstLogin = async () => {
-    const firstOpen = await wallet.getIsFirstOpen();
-    const updateContent = await getUpdateContent();
-    setUpdateContent(updateContent);
-    if (!firstOpen || !updateContent) return;
-    setFirstNotice(firstOpen);
-  };
-
-  const changeIsFirstLogin = () => {
-    wallet.updateIsFirstOpen();
-    setFirstNotice(false);
-  };
   const sortTokensByPrice = (tokens: TokenItem[]) => {
     const copy = cloneDeep(tokens);
     return copy.sort((a, b) => {
@@ -362,7 +327,6 @@ const Dashboard = () => {
       const defaultTokens = await wallet.openapi.listToken(
         currentAccount?.address
       );
-      setAllTokens(defaultTokens);
       const localAdded =
         (await wallet.getAddedToken(currentAccount?.address)) || [];
       const localAddedTokens = await wallet.openapi.customListToken(
@@ -396,7 +360,7 @@ const Dashboard = () => {
     setIsAssetsLoading(false);
   };
   useEffect(() => {
-    checkIfFirstLogin();
+    dispatch.appVersion.checkIfFirstLoginAsync();
   }, []);
   useEffect(() => {
     if (currentAccount) {
@@ -404,15 +368,10 @@ const Dashboard = () => {
       setAssets([]);
     }
   }, [currentAccount]);
-  useEffect(() => {
-    if (currentAccount) {
-      setIsGnosis(currentAccount.type === KEYRING_CLASS.GNOSIS);
-    }
-  }, [currentAccount]);
 
   const clickContent = () => (
     <div className="click-list flex flex-col w-[233px]">
-      {loadingAddress ? (
+      {loadingAccounts ? (
         <div className="address-loading">
           <SvgIconLoading className="icon icon-loading" fill="#707280" />
           <div className="text-14 text-gray-light">
@@ -609,29 +568,14 @@ const Dashboard = () => {
     setTokens(sortTokensByPrice(newTokenList));
   };
 
-  const handleCurrentConnectChange = (
-    connection: ConnectedSite | null | undefined
-  ) => {
-    setCurrentConnection(connection);
-  };
-
-  const checkGnosisConnectChain = () => {
-    if (!currentConnection) {
-      setShowGnosisWrongChainAlert(false);
-      return;
-    }
-    const chain = CHAINS[currentConnection.chain];
-    setShowGnosisWrongChainAlert(chain.id.toString() !== gnosisNetworkId);
-  };
-
-  useEffect(() => {
-    checkGnosisConnectChain();
-  }, [currentConnection, gnosisNetworkId]);
   useEffect(() => {
     if (!showNFT) {
       setNFTType('collection');
     }
   }, [showNFT]);
+  const showGnosisWrongChainAlert = useRabbyGetter(
+    (s) => s.chains.isShowGnosisWrongChainAlert
+  );
   const opacity60 =
     currentAccount?.type === KEYRING_CLASS.MNEMONIC ||
     currentAccount?.type === KEYRING_CLASS.PRIVATE_KEY ||
@@ -857,7 +801,9 @@ const Dashboard = () => {
           ></NFTListContainer>
         </div>
         <ChainAndSiteSelector
-          onChange={handleCurrentConnectChange}
+          onChange={(currentConnection) => {
+            dispatch.chains.setField({ currentConnection });
+          }}
           connectionAnimation={connectionAnimation}
           showDrawer={showToken || showAssets || showNFT}
           hideAllList={hideAllList}
@@ -874,7 +820,9 @@ const Dashboard = () => {
         visible={firstNotice && updateContent}
         title="What's new"
         className="first-notice"
-        onCancel={changeIsFirstLogin}
+        onCancel={() => {
+          dispatch.appVersion.afterFirstLogin();
+        }}
         maxHeight="420px"
       >
         <ReactMarkdown children={updateContent} remarkPlugins={[remarkGfm]} />

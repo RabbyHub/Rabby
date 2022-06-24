@@ -92,7 +92,9 @@ const LedgerHardwareWaiting = ({ params }: { params: ApprovalParams }) => {
       chainId: chain.serverId,
       category: KEYRING_CATEGORY_MAP[account.type],
     });
-    setIsSignText(params.isGnosis ? true : approval?.approvalType !== 'SignTx');
+    setIsSignText(
+      params.isGnosis ? true : approval?.data.approvalType !== 'SignTx'
+    );
     eventBus.addEventListener(EVENTS.LEDGER.REJECT_APPROVAL, (data) => {
       rejectApproval(data, true, true);
     });
