@@ -9,12 +9,12 @@ import useDebounceValue from '@/ui/hooks/useDebounceValue';
 const DebouncedInput = React.forwardRef(
   (
     {
-      debounceValue = 250,
+      debounce = 250,
       ...props
     }: Omit<InputProps, 'value' | 'onChange'> & {
       value?: string;
       onChange?: (value: string) => any;
-      debounceValue?: number;
+      debounce?: number;
     },
     ref
   ) => {
@@ -29,10 +29,13 @@ const DebouncedInput = React.forwardRef(
 
     React.useEffect(() => {
       _setValue(props.value || '');
-      if (props.autoFocus) inputRef.current?.focus();
     }, [props.value]);
 
-    const debouncedValue = useDebounceValue(value, debounceValue);
+    React.useEffect(() => {
+      if (props.autoFocus) inputRef.current?.focus();
+    }, [props.autoFocus]);
+
+    const debouncedValue = useDebounceValue(value, debounce);
     React.useEffect(() => {
       props.onChange?.(debouncedValue);
     }, [debouncedValue]);

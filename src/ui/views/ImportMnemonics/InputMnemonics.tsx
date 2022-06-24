@@ -26,7 +26,8 @@ const Toptip = styled.div`
 `;
 
 const FormItemWrapper = styled.div`
-  .mnemonics-with-error {
+  .mnemonics-with-error,
+  .ant-form-item-has-error {
     .ant-form-item-control-input
       + .ant-form-item-explain.ant-form-item-explain-error {
       display: none;
@@ -131,7 +132,7 @@ const ImportMnemonics = () => {
           });
         },
       }}
-      onSubmit={({ mnemonics }) => run(mnemonics)}
+      onSubmit={({ mnemonics }: { mnemonics: string }) => run(mnemonics)}
       onNextClick={() => {
         form
           .validateFields(['mnemonics'])
@@ -164,7 +165,7 @@ const ImportMnemonics = () => {
       <div className="rabby-container">
         <div className="pt-20 px-20">
           <Toptip className="mb-[20px]">
-            You can paste your entire secret recovery phrase in any field
+            You can paste your entire secret recovery phrase in 1st field
           </Toptip>
           <FormItemWrapper className="relative">
             <Form.Item

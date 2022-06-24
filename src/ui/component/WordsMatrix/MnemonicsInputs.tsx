@@ -13,6 +13,7 @@ import IconClearAll from './icon-clear-all.svg';
 import clsx from 'clsx';
 import useTypingMnemonics from '@/ui/hooks/useTypingMnemonics';
 import DebouncedInput from '../DebouncedInput';
+import { isTryingToPaste } from '@/ui/utils/keyboard';
 
 const ITEM_H = 208 / 4;
 const ROW_COUNT = 3;
@@ -22,15 +23,6 @@ const NumberFlag = styled.div`
   font-weight: 400;
   font-size: 12px;
   height: 14px;
-`;
-
-const FocusingBox = styled.div`
-  border: 1px solid ${LessPalette['@primary-color']};
-  border-radius: 6px;
-`;
-
-const ErrorBox = styled(FocusingBox)`
-  border-color: ${LessPalette['@error-color']};
 `;
 
 const MatrixWrapper = styled.div.withConfig<{
@@ -74,14 +66,6 @@ const MatrixWrapper = styled.div.withConfig<{
     }}
   }
 
-  ${styid(FocusingBox)}, ${styid(ErrorBox)} {
-    width: 100%;
-    height: 100%;
-    position: absolute;
-    top: 0;
-    left: 0;
-  }
-
   ${styid(NumberFlag)} {
     position: absolute;
     top: 8px;
@@ -93,6 +77,11 @@ const MatrixWrapper = styled.div.withConfig<{
     height: 100%;
     display: inline-block;
     line-height: ${ITEM_H}px;
+    &:hover,
+    &:focus,
+    &.ant-input-focused {
+      border-color: ${LessPalette['@primary-color']};
+    }
   }
   .visible-switch-icon-wrapper {
     position: absolute;
@@ -177,7 +166,7 @@ const HintsAreaBar = styled.div`
   }
 `;
 
-const DFLT_FOCUSING = { index: 0, visible: false };
+const DFLT_FOCUSING = { index: -1, visible: false };
 type IMnemonicsCount = 12 | 15 | 18 | 21 | 24;
 const MNEMONICS_COUNTS: IMnemonicsCount[] = [12, 15, 18, 21, 24];
 
@@ -206,54 +195,58 @@ function MnemonicsInputs({
   const [mnemonicsCount, setMnemonicsCount] = React.useState<IMnemonicsCount>(
     12
   );
-  const { words, wordPlaceHolders } = React.useMemo(() => {
+  const { wordPlaceHolders } = React.useMemo(() => {
     return {
-      words: value.split(' ').slice(0, mnemonicsCount),
       wordPlaceHolders: Array(mnemonicsCount).fill(undefined) as undefined[],
     };
-  }, [value, mnemonicsCount]);
+  }, [mnemonicsCount]);
 
-  const [inputTexts, _setInputTexts] = React.useState<string[]>(
-    fillMatrix(words, mnemonicsCount)
-  );
-  const setInputTexts = React.useCallback(
-    (vals: string[]) => {
-      const words = vals.slice(0, mnemonicsCount);
-      _setInputTexts(words);
-      onChange?.(words.join(' '));
-    },
-    [onChange, mnemonicsCount]
-  );
   const [focusing, setFocusing] = React.useState<{
     index: number;
     visible: boolean;
   }>({ ...DFLT_FOCUSING });
 
+  const [inputTexts, _setInputTexts] = React.useState<string[]>(
+    fillMatrix(value.split(' '), mnemonicsCount)
+  );
+  React.useEffect(() => {
+    _setInputTexts(fillMatrix(value.split(' '), mnemonicsCount));
+  }, [value, mnemonicsCount]);
+  const verRef = React.useRef(0);
+  const ver = `ver-${verRef.current}-${mnemonicsCount}`;
+  const setInputTexts = React.useCallback(
+    (vals: string[]) => {
+      const words = fillMatrix(vals.slice(0, mnemonicsCount), mnemonicsCount);
+      _setInputTexts(words);
+      onChange?.(words.join(' ').trim());
+      verRef.current++;
+    },
+    [onChange, mnemonicsCount]
+  );
+
   const clearAll = React.useCallback(() => {
-    setInputTexts(fillMatrix([], mnemonicsCount));
+    setInputTexts([]);
     setFocusing({ ...DFLT_FOCUSING });
+    setMnemonics('');
   }, [mnemonicsCount]);
 
   const onWordUpdated = React.useCallback(
     (idx: number, word: string) => {
       const words = word.split(' ');
-      let newInputTexts = inputTexts.slice(0, idx);
-      for (let i = 0, flag = i + idx; i < words.length; i++) {
-        flag = i + idx;
-        if (flag >= mnemonicsCount) break;
-        newInputTexts[flag] = inputTexts[flag] || words[i];
-      }
-      if (newInputTexts.length < mnemonicsCount) {
-        newInputTexts = newInputTexts.concat(
-          inputTexts.slice(newInputTexts.length)
-        );
+
+      let newInputTexts = inputTexts.slice(0);
+      for (let i = 0; i < words.length; i++) {
+        newInputTexts[idx + i] = words[i];
       }
 
       newInputTexts = newInputTexts.slice(0, mnemonicsCount);
-
       setInputTexts(newInputTexts);
+
+      if (focusing.index === idx) {
+        setMnemonics(word);
+      }
     },
-    [inputTexts, mnemonicsCount]
+    [focusing, inputTexts, mnemonicsCount]
   );
 
   const {
@@ -311,8 +304,8 @@ function MnemonicsInputs({
         {wordPlaceHolders.map((_, idx) => {
           const word = inputTexts[idx] || '';
           const number = idx + 1;
-          const errored = errorIndexes.includes(idx);
 
+          const isCurrentFocusing = focusing.index === idx;
           const isCurrentVisible = focusing.visible && focusing.index === idx;
 
           return (
@@ -321,18 +314,32 @@ function MnemonicsInputs({
               className={clsx('matrix-word-item is-mnemonics-input')}
               onClick={() => {
                 setFocusing({ index: idx, visible: isCurrentVisible });
+                setMnemonics(word);
               }}
             >
-              {!errored && focusing.index === idx && <FocusingBox />}
-              {errored && <ErrorBox />}
               <DebouncedInput
-                className="mnemonics-input px-[28px]"
+                debounce={150}
+                key={`word-input-${ver}-${word}-${idx}`}
+                className={clsx(
+                  'mnemonics-input px-[28px]',
+                  isCurrentFocusing && 'ant-input-focused'
+                )}
                 type={isCurrentVisible ? 'text' : 'password'}
                 value={word}
-                autoFocus={focusing.index === idx}
-                onChange={(text) => {
+                autoFocus={isCurrentFocusing}
+                onKeyDownCapture={(e) => {
+                  if (isTryingToPaste(e)) {
+                    const input = e.target as HTMLInputElement;
+                    input.select();
+                  }
+                }}
+                onContextMenu={(e) => {
+                  const input = e.target as HTMLInputElement;
+                  input.select();
+                }}
+                onChange={(text: string) => {
                   const newVal = text.trim();
-                  setMnemonics(newVal);
+
                   if (newVal === word) return;
 
                   onWordUpdated(idx, newVal);
@@ -371,6 +378,7 @@ function MnemonicsInputs({
                     const newInputTexts = inputTexts.slice();
                     newInputTexts[focusing.index] = word;
                     setInputTexts(newInputTexts);
+                    setMnemonics(word);
                   }}
                 >
                   <span className="work-item">{word}</span>
