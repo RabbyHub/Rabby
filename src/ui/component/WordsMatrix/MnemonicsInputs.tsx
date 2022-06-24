@@ -275,11 +275,11 @@ function MnemonicsInputs({
                     }}
                   >
                     <div className="text-wrapper">
-                      I have{' '}
+                      I have a{' '}
                       <b style={{ color: LessPalette['@primary-color'] }}>
                         {count}
-                      </b>{' '}
-                      Seed Phrase
+                      </b>
+                      -word phrase
                     </div>
                   </Menu.Item>
                 );
@@ -288,7 +288,7 @@ function MnemonicsInputs({
           }
         >
           <div className="left flex items-center cursor-pointer">
-            <span>I have {mnemonicsCount} Seed Phrase</span>
+            <span>I have a {mnemonicsCount}-word phrase</span>
             <img className="ml-[2px]" src={IconCaretDown} />
           </div>
         </Dropdown>
