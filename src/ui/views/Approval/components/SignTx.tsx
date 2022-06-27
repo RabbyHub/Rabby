@@ -495,15 +495,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     );
     if (!gasLimit) {
       // use server response gas limit
-      let recommendGasLimit = '0';
-      const gasLimitFromDapp = tx.gas || tx.gasLimit;
-      if (isSend && gasLimitFromDapp) {
-        recommendGasLimit = new BigNumber(gasLimitFromDapp).toFixed(0);
-      } else {
-        recommendGasLimit = new BigNumber(res.recommend.gas)
-          .times(1.5)
-          .toFixed(0);
-      }
+      const recommendGasLimit = new BigNumber(res.recommend.gas).toFixed(0);
       setGasLimit(intToHex(Number(recommendGasLimit)));
     }
     setTxDetail(res);
