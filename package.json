@@ -113,6 +113,7 @@
     "webextension-polyfill-ts": "^0.25.0"
   },
   "devDependencies": {
+    "@lavamoat/allow-scripts": "^2.0.3",
     "@sentry/webpack-plugin": "^1.18.9",
     "@svgr/webpack": "^5.5.0",
     "@types/chrome": "^0.0.143",
@@ -177,5 +178,22 @@
   },
   "keywords": [],
   "author": "",
-  "license": "LGPL"
+  "license": "LGPL",
+  "lavamoat": {
+    "allowScripts": {
+      "@keystonehq/metamask-airgapped-keyring>@keystonehq/base-eth-keyring>hdkey>secp256k1": false,
+      "@keystonehq/metamask-airgapped-keyring>@keystonehq/bc-ur-registry-eth>hdkey>secp256k1": false,
+      "@rabby-wallet/eth-lattice-keyring>gridplus-sdk": false,
+      "@rabby-wallet/eth-trezor-keyring>trezor-connect>@trezor/transport>protobufjs": false,
+      "@rabby-wallet/eth-trezor-keyring>trezor-connect>@trezor/utxo-lib>blake-hash": false,
+      "@rabby-wallet/eth-trezor-keyring>trezor-connect>@trezor/utxo-lib>tiny-secp256k1": false,
+      "@sentry/webpack-plugin>@sentry/cli": false,
+      "ethereumjs-util>ethereum-cryptography>keccak": false,
+      "hdkey>secp256k1": false,
+      "secp256k1": false,
+      "styled-components": false,
+      "webpack-dev-server>ws>bufferutil": false,
+      "webpack-dev-server>ws>utf-8-validate": false
+    }
+  }
 }
