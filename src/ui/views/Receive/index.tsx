@@ -85,6 +85,10 @@ const Receive = () => {
 
   const account = useAccount();
   const title = useReceiveTitle(history.location.search);
+  const qs = useMemo(() => query2obj(history.location.search), [
+    history.location.search,
+  ]);
+  const chain = CHAINS[qs.chain]?.name ?? 'Ethereum';
 
   useEffect(() => {
     const clipboard = new ClipboardJS(ref.current!, {
@@ -101,6 +105,7 @@ const Receive = () => {
           getKRCategoryByBrandname(account?.brandName),
           account?.brandName,
           account?.type,
+          chain,
         ].join('|'),
       });
       message.success({
@@ -131,17 +136,20 @@ const Receive = () => {
   useEffect(() => {
     init();
   }, []);
-  useLayoutEffect(() => {
-    ReactGA.event({
-      category: 'Receive',
-      action: 'getQRCode',
-      label: [
-        getKRCategoryByBrandname(account?.brandName),
-        account?.brandName,
-        account?.type,
-        filterRbiSource('Receive', rbisource) && rbisource,
-      ].join('|'),
-    });
+  useEffect(() => {
+    if (account?.address) {
+      ReactGA.event({
+        category: 'Receive',
+        action: 'getQRCode',
+        label: [
+          getKRCategoryByBrandname(account?.brandName),
+          account?.brandName,
+          account?.type,
+          filterRbiSource('Receive', rbisource) && rbisource,
+          chain,
+        ].join('|'),
+      });
+    }
   }, [account?.address]);
   useEffect(() => {
     if (account?.type !== KEYRING_CLASS.WATCH) {
