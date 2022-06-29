@@ -8,11 +8,17 @@ interface TokenDetailProps {
   visible?: boolean;
   onClose?(): void;
   token?: TokenItem | null;
+  addToken(token: TokenItem): void;
+  removeToken(token: TokenItem): void;
+  variant?: 'add';
 }
 export const TokenDetailPopup = ({
   token,
   visible,
   onClose,
+  addToken,
+  removeToken,
+  variant,
 }: TokenDetailProps) => {
   return (
     <Popup
@@ -22,7 +28,14 @@ export const TokenDetailPopup = ({
       onClose={onClose}
       className="token-detail-popup"
     >
-      {visible && token && <TokenDetail token={token}></TokenDetail>}
+      {visible && token && (
+        <TokenDetail
+          token={token}
+          addToken={addToken}
+          removeToken={removeToken}
+          variant={variant}
+        ></TokenDetail>
+      )}
     </Popup>
   );
 };

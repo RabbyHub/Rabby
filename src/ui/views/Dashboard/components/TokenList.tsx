@@ -1,5 +1,5 @@
 import { TokenItem } from '@/background/service/openapi';
-import { Input } from 'antd';
+import { Input, message } from 'antd';
 import clsx from 'clsx';
 import React, {
   useCallback,
@@ -8,15 +8,13 @@ import React, {
   useRef,
   useState,
 } from 'react';
+import ReactGA from 'react-ga';
 import { useTranslation } from 'react-i18next';
 import { useDebounce } from 'react-use';
 import { FixedSizeList } from 'react-window';
-import ReactGA from 'react-ga';
 import { SvgIconLoading } from 'ui/assets';
-import IconAddToken from 'ui/assets/addtokenplus.png';
+import IconArrowRight from 'ui/assets/arrow-right.svg';
 import IconArrowUp from 'ui/assets/arrow-up.svg';
-import IconRemoveToken from 'ui/assets/removetoken.png';
-import IconClose from 'ui/assets/searchIconClose.png';
 import IconSearch from 'ui/assets/tokenSearch.png';
 import { AddressViewer, Empty, TokenWithChain } from 'ui/component';
 import { splitNumberByStep } from 'ui/utils';
@@ -100,18 +98,7 @@ const Row = (props) => {
         </div>
       ) : (
         <div className="right">
-          {token.is_core ? (
-            <span className="token-extra">Enabled by default</span>
-          ) : (
-            <img
-              src={isAdded ? IconRemoveToken : IconAddToken}
-              onClick={(e) => {
-                e.stopPropagation();
-                isAdded ? removeToken(token) : addToken(token);
-              }}
-              className="add-token-icon"
-            />
-          )}
+          <img className="w-[16px] h-[16px]" src={IconArrowRight} />
         </div>
       )}
     </div>
@@ -205,25 +192,27 @@ const TokenList = ({
   const [detail, setDetail] = useState<{
     visible: boolean;
     current?: TokenItem | null;
+    varaint?: 'add';
   }>({
     visible: false,
     current: null,
   });
 
-  const handleTokenClick = useCallback(
-    (token) => {
-      setDetail({
-        visible: true,
-        current: token,
-      });
-      ReactGA.ga({
-        category: 'ViewAssets',
-        action: 'viewTokenDetail',
-        label: token?.id,
-      });
-    },
-    [setDetail]
-  );
+  const handleTokenClick = (token) => {
+    const isAdded =
+      addedToken.length > 0 && addedToken.find((item) => item === token.id);
+    setDetail({
+      visible: true,
+      current: token,
+      varaint: !isAdded && startSearch ? 'add' : undefined,
+    });
+    ReactGA.ga({
+      category: 'ViewAssets',
+      action: 'viewTokenDetail',
+      label: token?.id,
+    });
+  };
+
   useDebounce(
     () => {
       if (query) onSearch(query);
@@ -239,16 +228,18 @@ const TokenList = ({
   const showList =
     (!startSearch && !isloading && tokens.length > 0) ||
     (startSearch && (searchTokens.length > 0 || displayAddedToken.length > 0));
-  const close = () => {
-    setQuery(null);
-    closeSearch();
-  };
   useEffect(() => {
     if (showList && tokenAnimate.includes('fadeIn')) {
       fixedList.current?.scrollToItem(0);
       setIsExpand(false);
     }
   }, [tokenAnimate, showList]);
+  useEffect(() => {
+    if (!startSearch) {
+      setQuery(null);
+      closeSearch();
+    }
+  }, [startSearch]);
   if (!startAnimate) {
     return <></>;
   }
@@ -256,7 +247,6 @@ const TokenList = ({
     <div className={clsx('tokenList', tokenAnimate)}>
       {startSearch && (
         <div className={clsx('search-wrapper', query && 'active')}>
-          {' '}
           <Input
             size="large"
             prefix={<img src={IconSearch} className="w-[14px] h-[14px]" />}
@@ -265,12 +255,6 @@ const TokenList = ({
             onChange={(e) => handleQueryChange(e.target.value)}
             autoFocus
           />
-          <img src={IconClose} className="closeIcon" onClick={close} />
-        </div>
-      )}
-      {emptyAdded && (
-        <div className="no-added-token">
-          You haven't added any custom tokens yet
         </div>
       )}
       {noSeachResult && <div className="no-added-token">No results</div>}
@@ -285,11 +269,7 @@ const TokenList = ({
           height={468}
           width="100%"
           itemData={{
-            list: startSearch
-              ? query
-                ? searchTokens
-                : displayAddedToken
-              : filterList,
+            list: startSearch ? (query ? searchTokens : []) : filterList,
             startSearch,
             addedToken,
             removeToken,
@@ -300,7 +280,7 @@ const TokenList = ({
             startSearch
               ? query
                 ? searchTokens.length
-                : displayAddedToken.length
+                : [].length
               : filterList.length
           }
           itemSize={52}
@@ -331,6 +311,23 @@ const TokenList = ({
       <TokenDetailPopup
         visible={detail.visible}
         token={detail.current}
+        addToken={async (token) => {
+          await addToken(token);
+          message.success('Added successfully');
+          setDetail({
+            visible: false,
+            current: null,
+          });
+        }}
+        removeToken={async (token) => {
+          await removeToken(token);
+          message.success('Removed successfully');
+          setDetail({
+            visible: false,
+            current: null,
+          });
+        }}
+        variant={detail.varaint}
         onClose={() => {
           setDetail({
             visible: false,

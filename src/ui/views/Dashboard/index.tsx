@@ -743,13 +743,22 @@ const Dashboard = () => {
                 address={currentAccount?.address as string}
               ></ExtraLink>
             )}
-            {showToken && !startSearch && (
-              <img
-                src={IconAddToken}
-                onClick={() => setStartSearch(true)}
-                className="w-[18px] h-[18px] pointer absolute right-0"
-              />
-            )}
+            {showToken ? (
+              !startSearch ? (
+                <img
+                  src={IconAddToken}
+                  onClick={() => setStartSearch(true)}
+                  className="w-[18px] h-[18px] pointer absolute right-0"
+                />
+              ) : (
+                <span
+                  onClick={() => setStartSearch(false)}
+                  className="text-white text-[12px] underline pointer absolute right-0 opacity-80"
+                >
+                  Cancel
+                </span>
+              )
+            ) : null}
             {showNFT && (
               <div className="pointer absolute right-0">
                 <Dropdown
