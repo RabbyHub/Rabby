@@ -94,7 +94,7 @@ const normalizeTxParams = (tx) => {
     if ('gasPrice' in copy && isStringOrNumber(copy.gasPrice)) {
       copy.gasPrice = normalizeHex(copy.gasPrice);
     }
-    if ('value' in copy && isStringOrNumber(copy.value)) {
+    if ('value' in copy) {
       copy.value = addHexPrefix(
         unpadHexString(addHexPrefix(copy.value) || '0x0')
       );
