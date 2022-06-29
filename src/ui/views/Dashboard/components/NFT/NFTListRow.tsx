@@ -25,14 +25,14 @@ const NFTListRow = (props: NFTListRowProps) => {
 
   const handleToggleModal = () => {
     if (!modalVisible) {
-      ReactGA.ga({
+      ReactGA.event({
         category: 'ViewAssets',
         action: 'viewNFTDetail',
         label: [
           getKRCategoryByBrandname(currentAccount?.brandName),
           currentAccount?.brandName,
           item?.collection ? 'collection' : 'other',
-        ],
+        ].join('|'),
       });
     }
     setModalVisible(!modalVisible);

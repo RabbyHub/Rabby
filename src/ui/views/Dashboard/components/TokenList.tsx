@@ -216,7 +216,7 @@ const TokenList = ({
         visible: true,
         current: token,
       });
-      ReactGA.ga({
+      ReactGA.event({
         category: 'ViewAssets',
         action: 'viewTokenDetail',
         label: token?.id,

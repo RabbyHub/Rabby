@@ -755,7 +755,7 @@ const Dashboard = () => {
                 <Dropdown
                   value={nftType}
                   onChange={(nextVal: typeof nftType) => {
-                    ReactGA.ga({
+                    ReactGA.event({
                       category: 'ViewAssets',
                       action: 'switchNFTFilter',
                       label: [

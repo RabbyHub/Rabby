@@ -17,7 +17,7 @@ const _Row = (props) => {
   const [isHovering, hoverProps] = useHover();
   const currentAccount = useRabbySelector((s) => s.account.currentAccount);
   const handleGotoProfile = () => {
-    ReactGA.ga({
+    ReactGA.event({
       category: 'ViewAssets',
       action: 'viewDefiDetail',
       label: [
