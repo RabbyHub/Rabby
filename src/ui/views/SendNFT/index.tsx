@@ -33,7 +33,7 @@ import IconCopy from 'ui/assets/copy-no-border.svg';
 import IconSuccess from 'ui/assets/success.svg';
 import { SvgIconPlusPrimary, SvgIconLoading, SvgAlert } from 'ui/assets';
 import './style.less';
-import { getKRCategoryByBrandname } from '@/utils/transaction';
+import { getKRCategoryByType } from '@/utils/transaction';
 import { filterRbiSource, useRbiSource } from '@/ui/utils/ga-event';
 
 const TOKEN_VALIDATION_STATUS = {
@@ -159,13 +159,11 @@ const SendNFT = () => {
         action: 'createTx',
         label: [
           chain as string,
-          getKRCategoryByBrandname(currentAccount?.brandName),
+          getKRCategoryByType(currentAccount?.type),
           currentAccount?.brandName,
           'nft',
           filterRbiSource('sendNFT', rbisource) && rbisource,
-        ]
-          .filter(Boolean)
-          .join('|'),
+        ].join('|'),
       });
 
       await wallet.transferNFT({

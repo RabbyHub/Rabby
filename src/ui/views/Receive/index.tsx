@@ -29,7 +29,7 @@ import IconLogo from 'ui/assets/rabby-white-large.svg';
 import { splitNumberByStep, useWallet } from 'ui/utils';
 import { query2obj } from 'ui/utils/url';
 import './style.less';
-import { getKRCategoryByBrandname } from '@/utils/transaction';
+import { getKRCategoryByType } from '@/utils/transaction';
 import { filterRbiSource, useRbiSource } from '@/ui/utils/ga-event';
 
 const useAccount = () => {
@@ -102,7 +102,7 @@ const Receive = () => {
         category: 'Receive',
         action: 'copyAddress',
         label: [
-          getKRCategoryByBrandname(account?.brandName),
+          getKRCategoryByType(account?.type),
           account?.brandName,
           account?.type,
           chain,
@@ -142,7 +142,7 @@ const Receive = () => {
         category: 'Receive',
         action: 'getQRCode',
         label: [
-          getKRCategoryByBrandname(account?.brandName),
+          getKRCategoryByType(account?.type),
           account?.brandName,
           account?.type,
           filterRbiSource('Receive', rbisource) && rbisource,

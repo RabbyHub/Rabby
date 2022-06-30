@@ -1,8 +1,9 @@
 import stats from '@/stats';
+import { varyTxSignType } from '@/ui/utils/transaction';
 import { hasConnectedLedgerDevice } from '@/utils';
 import {
   convertLegacyTo1559,
-  getKRCategoryByBrandname,
+  getKRCategoryByType,
   validateGasPriceRange,
 } from '@/utils/transaction';
 import Safe from '@rabby-wallet/gnosis-sdk';
@@ -18,17 +19,17 @@ import {
   Tx,
 } from 'background/service/openapi';
 import { Account, ChainGas } from 'background/service/preference';
+import BigNumber from 'bignumber.js';
 import clsx from 'clsx';
 import {
   CHAINS,
   CHAINS_ENUM,
   HARDWARE_KEYRING_TYPES,
   INTERNAL_REQUEST_ORIGIN,
+  KEYRING_CATEGORY_MAP,
   KEYRING_CLASS,
   KEYRING_TYPE,
   SUPPORT_1559_KEYRING_TYPE,
-  KEYRING_CATEGORY_MAP,
-  MINIMUM_GAS_LIMIT,
 } from 'consts';
 import {
   addHexPrefix,
@@ -37,7 +38,6 @@ import {
   isHexString,
   unpadHexString,
 } from 'ethereumjs-util';
-import BigNumber from 'bignumber.js';
 import React, { ReactNode, useEffect, useState } from 'react';
 import ReactGA from 'react-ga';
 import { useTranslation } from 'react-i18next';
@@ -45,12 +45,7 @@ import IconInfo from 'ui/assets/infoicon.svg';
 import IconGnosis from 'ui/assets/walletlogo/gnosis.png';
 import IconWatch from 'ui/assets/walletlogo/watch-purple.svg';
 import { Checkbox } from 'ui/component';
-import {
-  openInternalPageInTab,
-  useApproval,
-  useWalletOld,
-  useWallet,
-} from 'ui/utils';
+import { useApproval, useWallet } from 'ui/utils';
 import AccountCard from './AccountCard';
 import LedgerWebHIDAlert from './LedgerWebHIDAlert';
 import SecurityCheckBar from './SecurityCheckBar';
@@ -70,7 +65,6 @@ import Loading from './TxComponents/Loading';
 import Send from './TxComponents/Send';
 import SendNFT from './TxComponents/sendNFT';
 import Sign from './TxComponents/Sign';
-import { varyTxSignType } from '@/ui/utils/transaction';
 
 const normalizeHex = (value: string | number) => {
   if (typeof value === 'number') {
@@ -651,7 +645,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
           action: signTypeInfo.gaAction,
           label: [
             chain.name,
-            getKRCategoryByBrandname(currentAccount.brandName),
+            getKRCategoryByType(currentAccount.type),
             currentAccount.brandName,
             internalSignSource === 'sendToken' ? 'token' : 'nft',
           ].join('|'),

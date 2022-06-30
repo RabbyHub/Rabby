@@ -1,6 +1,6 @@
 import { NFTItem } from '@/background/service/openapi';
 import { connectStore, useRabbySelector } from '@/ui/store';
-import { getKRCategoryByBrandname } from '@/utils/transaction';
+import { getKRCategoryByType } from '@/utils/transaction';
 import { Modal } from 'antd';
 import clsx from 'clsx';
 import React, { useState } from 'react';
@@ -29,7 +29,7 @@ const NFTListRow = (props: NFTListRowProps) => {
         category: 'ViewAssets',
         action: 'viewNFTDetail',
         label: [
-          getKRCategoryByBrandname(currentAccount?.brandName),
+          getKRCategoryByType(currentAccount?.type),
           currentAccount?.brandName,
           item?.collection ? 'collection' : 'other',
         ].join('|'),

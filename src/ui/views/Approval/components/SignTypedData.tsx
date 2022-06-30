@@ -25,7 +25,7 @@ import IconWatch from 'ui/assets/walletlogo/watch-purple.svg';
 import IconGnosis from 'ui/assets/walletlogo/gnosis.png';
 import clsx from 'clsx';
 import ReactGA from 'react-ga';
-import { getKRCategoryByBrandname } from '@/utils/transaction';
+import { getKRCategoryByType } from '@/utils/transaction';
 interface SignTypedDataProps {
   method: string;
   data: any[];
@@ -124,7 +124,7 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
       category: 'SignText',
       action: action,
       label: [
-        getKRCategoryByBrandname(currentAccount.brandName),
+        getKRCategoryByType(currentAccount.type),
         currentAccount.brandName,
       ].join('|'),
       transport: 'beacon',

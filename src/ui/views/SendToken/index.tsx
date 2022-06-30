@@ -44,7 +44,7 @@ import IconCopy from 'ui/assets/copy-no-border.svg';
 import IconSuccess from 'ui/assets/success.svg';
 import { SvgIconPlusPrimary, SvgIconLoading, SvgAlert } from 'ui/assets';
 import './style.less';
-import { getKRCategoryByBrandname } from '@/utils/transaction';
+import { getKRCategoryByType } from '@/utils/transaction';
 import { filterRbiSource, useRbiSource } from '@/ui/utils/ga-event';
 
 const TOKEN_VALIDATION_STATUS = {
@@ -201,13 +201,11 @@ const SendToken = () => {
         action: 'createTx',
         label: [
           chain.name,
-          getKRCategoryByBrandname(currentAccount?.brandName),
+          getKRCategoryByType(currentAccount?.type),
           currentAccount?.brandName,
           'token',
           filterRbiSource('sendToken', rbisource) && rbisource, // mark source module of `sendToken`
-        ]
-          .filter(Boolean)
-          .join('|'),
+        ].join('|'),
       });
 
       await wallet.sendRequest({

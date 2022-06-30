@@ -47,6 +47,6 @@ export const is1559Tx = (tx: Tx) => {
   return isHexString(tx.maxFeePerGas!) && isHexString(tx.maxPriorityFeePerGas!);
 };
 
-export function getKRCategoryByBrandname(brandName?: string) {
-  return KEYRING_CATEGORY_MAP[brandName as any] || null;
+export function getKRCategoryByType(type?: string) {
+  return KEYRING_CATEGORY_MAP[type as any] || null;
 }
