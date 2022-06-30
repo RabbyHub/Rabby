@@ -38,6 +38,7 @@ export const app = createModel<RootModel>()({
      */
     initBizStore() {
       dispatch.account.init();
+      dispatch.preference.init();
     },
   }),
 });

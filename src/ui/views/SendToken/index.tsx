@@ -210,12 +210,14 @@ const SendToken = () => {
 
       await wallet.sendRequest({
         method: 'eth_sendTransaction',
-        params: [
-          params,
-          {
-            $rabbyInternalSignSource: 'sendToken',
+        params: [params],
+        $ctx: {
+          ga: {
+            category: 'Send',
+            source: 'sendToken',
+            trigger: filterRbiSource('sendToken', rbisource) && rbisource, // mark source module of `sendToken`
           },
-        ],
+        },
       });
       window.close();
     } catch (e) {

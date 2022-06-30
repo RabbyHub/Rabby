@@ -105,7 +105,8 @@ export class WalletController extends BaseController {
     chainServerId: string,
     id: string,
     spender: string,
-    amount: number
+    amount: number,
+    $ctx?: any
   ) => {
     const account = await preferenceService.getCurrentAccount();
     if (!account) throw new Error('no current account');
@@ -114,6 +115,7 @@ export class WalletController extends BaseController {
     )?.id;
     if (!chainId) throw new Error('invalid chain id');
     await this.sendRequest({
+      $ctx,
       method: 'eth_sendTransaction',
       params: [
         {
@@ -151,21 +153,24 @@ export class WalletController extends BaseController {
     });
   };
 
-  transferNFT = async ({
-    to,
-    chainServerId,
-    contractId,
-    abi,
-    tokenId,
-    amount,
-  }: {
-    to: string;
-    chainServerId: string;
-    contractId: string;
-    abi: 'ERC721' | 'ERC1155';
-    tokenId: string;
-    amount?: number;
-  }) => {
+  transferNFT = async (
+    {
+      to,
+      chainServerId,
+      contractId,
+      abi,
+      tokenId,
+      amount,
+    }: {
+      to: string;
+      chainServerId: string;
+      contractId: string;
+      abi: 'ERC721' | 'ERC1155';
+      tokenId: string;
+      amount?: number;
+    },
+    $ctx?: any
+  ) => {
     const account = await preferenceService.getCurrentAccount();
     if (!account) throw new Error('no current account');
     const chainId = Object.values(CHAINS)
@@ -176,40 +181,59 @@ export class WalletController extends BaseController {
     buildinProvider.currentProvider.currentAccountType = account.type;
     buildinProvider.currentProvider.currentAccountBrand = account.brandName;
     buildinProvider.currentProvider.chainId = chainId;
+    buildinProvider.currentProvider.$ctx = $ctx;
+
     const provider = new ethers.providers.Web3Provider(
       buildinProvider.currentProvider
     );
+
     const signer = provider.getSigner();
-    if (abi === 'ERC721') {
-      const contract = new Contract(contractId, ERC721ABI, signer);
-      await contract['safeTransferFrom(address,address,uint256)'](
-        account.address,
-        to,
-        tokenId
-      );
-    } else if (abi === 'ERC1155') {
-      const contract = new Contract(contractId, ERC1155ABI, signer);
-      await contract.safeTransferFrom(account.address, to, tokenId, amount, []);
-    } else {
-      throw new Error('unknown contract abi');
+
+    try {
+      if (abi === 'ERC721') {
+        const contract = new Contract(contractId, ERC721ABI, signer);
+        await contract['safeTransferFrom(address,address,uint256)'](
+          account.address,
+          to,
+          tokenId
+        );
+      } else if (abi === 'ERC1155') {
+        const contract = new Contract(contractId, ERC1155ABI, signer);
+        await contract.safeTransferFrom(
+          account.address,
+          to,
+          tokenId,
+          amount,
+          []
+        );
+      } else {
+        throw new Error('unknown contract abi');
+      }
+      buildinProvider.currentProvider.$ctx = undefined;
+    } catch (e) {
+      buildinProvider.currentProvider.$ctx = undefined;
+      throw e;
     }
   };
 
-  revokeNFTApprove = async ({
-    chainServerId,
-    contractId,
-    spender,
-    abi,
-    tokenId,
-    isApprovedForAll,
-  }: {
-    chainServerId: string;
-    contractId: string;
-    spender: string;
-    abi: 'ERC721' | 'ERC1155';
-    isApprovedForAll: boolean;
-    tokenId: string | null | undefined;
-  }) => {
+  revokeNFTApprove = async (
+    {
+      chainServerId,
+      contractId,
+      spender,
+      abi,
+      tokenId,
+      isApprovedForAll,
+    }: {
+      chainServerId: string;
+      contractId: string;
+      spender: string;
+      abi: 'ERC721' | 'ERC1155';
+      isApprovedForAll: boolean;
+      tokenId: string | null | undefined;
+    },
+    $ctx?: any
+  ) => {
     const account = await preferenceService.getCurrentAccount();
     if (!account) throw new Error('no current account');
     const chainId = Object.values(CHAINS).find(
@@ -219,6 +243,7 @@ export class WalletController extends BaseController {
     if (abi === 'ERC721') {
       if (isApprovedForAll) {
         await this.sendRequest({
+          $ctx,
           method: 'eth_sendTransaction',
           params: [
             {
@@ -251,6 +276,7 @@ export class WalletController extends BaseController {
         });
       } else {
         await this.sendRequest({
+          $ctx,
           method: 'eth_sendTransaction',
           params: [
             {
@@ -282,6 +308,7 @@ export class WalletController extends BaseController {
       }
     } else if (abi === 'ERC1155') {
       await this.sendRequest({
+        $ctx,
         method: 'eth_sendTransaction',
         params: [
           {

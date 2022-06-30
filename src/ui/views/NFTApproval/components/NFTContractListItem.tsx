@@ -5,6 +5,7 @@ import { getKRCategoryByType } from '@/utils/transaction';
 import { Button } from 'antd';
 import React from 'react';
 import ReactGA from 'react-ga';
+import { getChain } from 'utils';
 import { getAmountText } from '../utils';
 
 interface NFTContractListItemProps {
@@ -43,7 +44,7 @@ const NFTContractListItem = ({ item, onDecline }: NFTContractListItemProps) => {
               category: 'Security',
               action: 'startDeclineNFTApproval',
               label: [
-                item.chain,
+                getChain(item.chain)?.name,
                 getKRCategoryByType(currentAccount?.type),
                 currentAccount?.brandName,
               ].join('|'),

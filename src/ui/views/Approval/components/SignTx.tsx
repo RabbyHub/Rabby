@@ -1,4 +1,5 @@
 import stats from '@/stats';
+import { filterRbiSource } from '@/ui/utils/ga-event';
 import { varyTxSignType } from '@/ui/utils/transaction';
 import { hasConnectedLedgerDevice } from '@/utils';
 import {
@@ -113,6 +114,8 @@ function normalizeTxInternalCtx(ctx?: any, isNFT?: boolean) {
     | 'sendToken'
     | 'sendNFT'
     | 'gnosisTxQueue'
+    | 'tokenApproval'
+    | 'nftApproval'
     | undefined;
   if (isNFT) {
     internalSignSource = 'sendNFT';
@@ -266,6 +269,7 @@ interface SignTxProps<TData extends any[] = any[]> {
     data: TData;
     isGnosis?: boolean;
     account?: Account;
+    $ctx?: any;
   };
   origin?: string;
 }
@@ -391,7 +395,62 @@ const SignTx = ({ params, origin }: SignTxProps) => {
   const [isLedger, setIsLedger] = useState(false);
   const [useLedgerLive, setUseLedgerLive] = useState(false);
   const [hasConnectedLedgerHID, setHasConnectedLedgerHID] = useState(false);
-  const signTypeInfo = varyTxSignType(txDetail);
+
+  const gaEvent = async (type: 'allow' | 'cancel') => {
+    const ga:
+      | {
+          category: 'Send' | 'Security';
+          source: 'sendNFT' | 'sendToken' | 'nftApproval' | 'tokenApproval';
+          trigger: string;
+        }
+      | undefined = params?.$ctx?.ga;
+    if (!ga) {
+      return;
+    }
+    const { category, source, trigger } = ga;
+    const currentAccount =
+      isGnosis && account ? account : (await wallet.getCurrentAccount())!;
+
+    if (category === 'Send') {
+      ReactGA.event({
+        category,
+        action: type === 'cancel' ? 'cancelSignTx' : 'signTx',
+        label: [
+          chain.name,
+          getKRCategoryByType(currentAccount.type),
+          currentAccount.brandName,
+          source === 'sendNFT' ? 'nft' : 'token',
+          trigger,
+        ].join('|'),
+        transport: 'beacon',
+      });
+    } else if (category === 'Security') {
+      let action = '';
+      if (type === 'cancel') {
+        if (source === 'nftApproval') {
+          action = 'cancelSignDeclineNFTApproval';
+        } else {
+          action = 'cancelSignDeclineTokenApproval';
+        }
+      } else {
+        if (source === 'nftApproval') {
+          action = 'signDeclineNFTApproval';
+        } else {
+          action = 'signDeclineTokenApproval';
+        }
+      }
+      ReactGA.event({
+        category,
+        action,
+        label: [
+          chain.name,
+          getKRCategoryByType(currentAccount.type),
+          currentAccount.brandName,
+        ].join('|'),
+        transport: 'beacon',
+      });
+    }
+  };
 
   const {
     data = '0x',
@@ -631,34 +690,13 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       category: KEYRING_CATEGORY_MAP[currentAccount.type],
     });
 
-    const { internalSignSource } = normalizeTxInternalCtx(
-      params.data[1],
-      signTypeInfo.isNFT
-    );
-    switch (internalSignSource) {
-      default:
-        break;
-      case 'sendToken':
-      case 'sendNFT':
-        ReactGA.event({
-          category: signTypeInfo.gaCategory,
-          action: signTypeInfo.gaAction,
-          label: [
-            chain.name,
-            getKRCategoryByType(currentAccount.type),
-            currentAccount.brandName,
-            internalSignSource === 'sendToken' ? 'token' : 'nft',
-          ].join('|'),
-        });
-        break;
-    }
+    gaEvent('allow');
 
     ReactGA.event({
       category: 'Transaction',
       action: 'Submit',
       label: currentAccount.brandName,
     });
-
     resolveApproval({
       ...transaction,
       nonce: realNonce || tx.nonce,
@@ -721,6 +759,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
   };
 
   const handleCancel = () => {
+    gaEvent('cancel');
     rejectApproval('User rejected the request.');
   };
 

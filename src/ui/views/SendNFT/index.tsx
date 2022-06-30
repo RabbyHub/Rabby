@@ -168,14 +168,23 @@ const SendNFT = () => {
         ].join('|'),
       });
 
-      await wallet.transferNFT({
-        to,
-        amount,
-        tokenId: nftItem.inner_id,
-        chainServerId: nftItem.chain,
-        contractId: nftItem.contract_id,
-        abi: nftItem.is_erc1155 ? 'ERC1155' : 'ERC721',
-      });
+      await wallet.transferNFT(
+        {
+          to,
+          amount,
+          tokenId: nftItem.inner_id,
+          chainServerId: nftItem.chain,
+          contractId: nftItem.contract_id,
+          abi: nftItem.is_erc1155 ? 'ERC1155' : 'ERC721',
+        },
+        {
+          ga: {
+            category: 'Send',
+            source: 'sendNFT',
+            trigger: filterRbiSource('sendNFT', rbisource) && rbisource,
+          },
+        }
+      );
       window.close();
     } catch (e) {
       message.error(e.message);

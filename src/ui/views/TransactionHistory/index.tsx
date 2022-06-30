@@ -378,9 +378,6 @@ const TransactionItem = ({
           gas: intToHex(MINIMUM_GAS_LIMIT),
           isCancel: true,
         },
-        {
-          $rabbyInternalSignSource: 'transactionHistory',
-        },
       ],
     });
     window.close();
@@ -408,9 +405,6 @@ const TransactionItem = ({
             Math.round(Math.max(maxGasPrice * 2, maxGasMarketPrice))
           ),
           isSpeedUp: true,
-        },
-        {
-          $rabbyInternalSignSource: 'transactionHistory',
         },
       ],
     });

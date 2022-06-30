@@ -335,7 +335,7 @@ const GnosisTransactionItem = ({
     setIsLoading(false);
     wallet.sendRequest({
       method: 'eth_sendTransaction',
-      params: [params, { $rabbyInternalSignSource: 'gnosisTxQueue' }],
+      params: [params],
     });
     window.close();
   };
