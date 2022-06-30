@@ -178,8 +178,9 @@ class ProviderController extends BaseController {
     return account;
   };
 
+  @Reflect.metadata('SAFE', true)
   ethAccounts = async ({ session: { origin } }) => {
-    if (!permissionService.hasPermission(origin)) {
+    if (!permissionService.hasPermission(origin) || !Wallet.isUnlocked()) {
       return [];
     }
 
