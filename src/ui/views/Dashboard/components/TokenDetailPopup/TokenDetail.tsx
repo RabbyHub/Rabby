@@ -225,7 +225,7 @@ const TokenDetail = ({
                   </div>
                 ) : (
                   <Tooltip
-                    title="Cannot add a token with a balance of 0"
+                    title="Cannot add a token with 0 balance"
                     placement="bottomLeft"
                     overlayClassName={clsx('rectangle')}
                   >
