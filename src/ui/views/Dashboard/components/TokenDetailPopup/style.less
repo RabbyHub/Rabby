@@ -13,7 +13,7 @@
   &-header {
     padding: 20px;
     border-bottom: 1px solid @color-border;
-    position: absolute;
+    position: sticky;
     background-color: #fff;
     border-radius: 16px 16px 0 0;
     top: 0;
@@ -42,10 +42,50 @@
       line-height: 14px;
       color: @color-comment-1;
     }
+
+    .remove {
+      margin-left: 12px;
+      background: #e5e9ef;
+      border-radius: 2.6666px;
+      padding: 4px;
+      cursor: pointer;
+    }
+
+    .alert {
+      background: rgba(39, 193, 147, 0.2);
+      border-radius: 6px;
+      padding: 16px;
+      margin-top: 20px;
+      font-weight: 400;
+
+      font-size: 14px;
+      line-height: 18px;
+      color: #27c193;
+
+      &-primary {
+        background: rgba(134, 151, 255, 0.2);
+        color: #8697ff;
+        display: flex;
+        align-items: center;
+
+        &-btn {
+          flex-shrink: 0;
+          margin-left: auto;
+          background: #8697ff;
+          border-radius: 4px;
+          width: 36px;
+          height: 36px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          cursor: pointer;
+        }
+      }
+    }
   }
 
   &-body {
-    padding: 152px 20px 100px;
+    padding: 20px 20px 100px;
   }
 
   &-footer {
@@ -146,5 +186,22 @@
     &:not(:last-child) {
       margin-bottom: 8px;
     }
+  }
+}
+
+.token-detail-remove-modal {
+  .ant-modal-body {
+    background-color: #fff !important;
+  }
+  .ant-modal-confirm-content.ant-modal-confirm-content {
+    padding-top: 14px;
+    padding-bottom: 4px;
+    margin-bottom: 0;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 18px;
+    text-align: center;
+
+    color: #4b4d59;
   }
 }

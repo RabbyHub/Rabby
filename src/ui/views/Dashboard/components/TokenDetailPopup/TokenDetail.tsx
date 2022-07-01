@@ -1,14 +1,17 @@
 import { useInfiniteScroll } from 'ahooks';
-import { Button, message } from 'antd';
+import { Button, message, Tooltip } from 'antd';
 import { TokenItem, TxHistoryResult } from 'background/service/openapi';
 import ClipboardJS from 'clipboard';
+import clsx from 'clsx';
 import { last } from 'lodash';
 import React, { useCallback, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
 import IconCopy from 'ui/assets/address-copy.png';
+import IconPlus from 'ui/assets/plus.svg';
 import IconSuccess from 'ui/assets/success.svg';
-import { TokenWithChain } from 'ui/component';
+import IconTrash from 'ui/assets/trash.svg';
+import { Modal, Popup, TokenWithChain } from 'ui/component';
 import { splitNumberByStep, useWallet, useWalletOld } from 'ui/utils';
 import { getChain } from 'utils';
 import ChainIcon from '../NFT/ChainIcon';
@@ -21,7 +24,20 @@ const ellipsis = (text: string) => {
   return text.replace(/^(.{6})(.*)(.{4})$/, '$1...$3');
 };
 
-const TokenDetail = ({ token }: { token: TokenItem }) => {
+interface TokenDetailProps {
+  onClose?(): void;
+  token: TokenItem;
+  addToken(token: TokenItem): void;
+  removeToken(token: TokenItem): void;
+  variant?: 'add';
+}
+
+const TokenDetail = ({
+  token,
+  addToken,
+  removeToken,
+  variant,
+}: TokenDetailProps) => {
   const wallet = useWalletOld();
   const { t } = useTranslation();
 
@@ -87,6 +103,33 @@ const TokenDetail = ({ token }: { token: TokenItem }) => {
     });
   };
 
+  const handleRemove = async (token: TokenItem) => {
+    const { destroy } = Modal.info({
+      closable: true,
+      className: 'token-detail-remove-modal',
+      width: 320,
+      content: (
+        <div>
+          <div className="mb-[16px]">
+            This will only stop the token from being visible in Rabby and will
+            not affect its balance
+          </div>
+          <Button
+            type="primary"
+            size="large"
+            className="w-[170px]"
+            onClick={async () => {
+              await removeToken(token);
+              destroy();
+            }}
+          >
+            Remove
+          </Button>
+        </div>
+      ),
+    });
+  };
+
   const isEmpty = (data?.list?.length || 0) <= 0 && !loading;
 
   const isShowAddress = /^0x.{40}$/.test(token.id);
@@ -137,9 +180,19 @@ const TokenDetail = ({ token }: { token: TokenItem }) => {
               token?.name
             )}
           </div>
+          {!token.is_core && variant !== 'add' ? (
+            <div
+              className="remove"
+              onClick={() => {
+                handleRemove(token);
+              }}
+            >
+              <img src={IconTrash} alt="" />
+            </div>
+          ) : null}
         </div>
         <div className="balance">
-          <div className="balance-title">My balance</div>
+          <div className="balance-title">{token?.name} balance</div>
           <div className="balance-content">
             <div className="balance-value">
               {splitNumberByStep((token.amount || 0)?.toFixed(4))}
@@ -150,6 +203,41 @@ const TokenDetail = ({ token }: { token: TokenItem }) => {
             </div>
           </div>
         </div>
+        {variant === 'add' && (
+          <>
+            {token.is_core ? (
+              <div className="alert">
+                This token is supported by default. It will show up in your
+                wallet as long as balance &gt; 0.
+              </div>
+            ) : (
+              <div className="alert alert-primary">
+                This token is not verified. Please do your <br />
+                own research before you add it.
+                {token.amount > 0 ? (
+                  <div
+                    className="alert-primary-btn"
+                    onClick={() => {
+                      addToken(token);
+                    }}
+                  >
+                    <img src={IconPlus} alt="" />
+                  </div>
+                ) : (
+                  <Tooltip
+                    title="Cannot add a token with 0 balance"
+                    placement="bottomLeft"
+                    overlayClassName={clsx('rectangle')}
+                  >
+                    <div className="alert-primary-btn opacity-20 cursor-not-allowed">
+                      <img src={IconPlus} alt="" />
+                    </div>
+                  </Tooltip>
+                )}
+              </div>
+            )}
+          </>
+        )}
       </div>
       <div className="token-detail-body token-txs-history">
         {data?.list.map((item) => (
