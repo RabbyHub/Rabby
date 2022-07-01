@@ -208,7 +208,7 @@ const TokenDetail = ({
             {token.is_core ? (
               <div className="alert">
                 This token is supported by default. It will show up in your
-                wallet as long as there is a balance.
+                wallet as long as balance > 0.
               </div>
             ) : (
               <div className="alert alert-primary">
