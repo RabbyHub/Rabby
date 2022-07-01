@@ -25,7 +25,7 @@ const NFTModal = ({ data }: ContentProps) => {
 
   const handleClickSend = () => {
     history.push({
-      pathname: `/send-nft`,
+      pathname: '/send-nft',
       state: {
         nftItem: data,
       },
