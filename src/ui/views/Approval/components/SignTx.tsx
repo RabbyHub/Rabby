@@ -28,7 +28,6 @@ import {
   KEYRING_TYPE,
   SUPPORT_1559_KEYRING_TYPE,
   KEYRING_CATEGORY_MAP,
-  MINIMUM_GAS_LIMIT,
 } from 'consts';
 import {
   addHexPrefix,
@@ -45,12 +44,7 @@ import IconInfo from 'ui/assets/infoicon.svg';
 import IconGnosis from 'ui/assets/walletlogo/gnosis.png';
 import IconWatch from 'ui/assets/walletlogo/watch-purple.svg';
 import { Checkbox } from 'ui/component';
-import {
-  openInternalPageInTab,
-  useApproval,
-  useWalletOld,
-  useWallet,
-} from 'ui/utils';
+import { useApproval, useWallet, isStringOrNumber } from 'ui/utils';
 import AccountCard from './AccountCard';
 import LedgerWebHIDAlert from './LedgerWebHIDAlert';
 import SecurityCheckBar from './SecurityCheckBar';
@@ -88,16 +82,16 @@ const normalizeHex = (value: string | number) => {
 const normalizeTxParams = (tx) => {
   const copy = tx;
   try {
-    if ('nonce' in copy) {
+    if ('nonce' in copy && isStringOrNumber(copy.nonce)) {
       copy.nonce = normalizeHex(copy.nonce);
     }
-    if ('gas' in copy) {
+    if ('gas' in copy && isStringOrNumber(copy.gas)) {
       copy.gas = normalizeHex(copy.gas);
     }
-    if ('gasLimit' in copy) {
+    if ('gasLimit' in copy && isStringOrNumber(copy.gasLimit)) {
       copy.gas = normalizeHex(copy.gasLimit);
     }
-    if ('gasPrice' in copy) {
+    if ('gasPrice' in copy && isStringOrNumber(copy.gasPrice)) {
       copy.gasPrice = normalizeHex(copy.gasPrice);
     }
     if ('value' in copy) {

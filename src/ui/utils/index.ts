@@ -128,11 +128,13 @@ export const isSameAddress = (a: string, b: string) => {
   if (!a || !b) return false;
   return a.toLowerCase() === b.toLowerCase();
 };
+
 export const icons = {
   mnemonic: KEYRING_PURPLE_LOGOS[KEYRING_CLASS.MNEMONIC],
   privatekey: KEYRING_PURPLE_LOGOS[KEYRING_CLASS.PRIVATE_KEY],
   watch: KEYRING_PURPLE_LOGOS[KEYRING_CLASS.WATCH],
 };
+
 export const getAccountIcon = (account: Account) => {
   if (account) {
     if (WALLET_BRAND_CONTENT[account?.brandName]) {
@@ -150,4 +152,8 @@ export const getAccountIcon = (account: Account) => {
     return KEYRINGS_LOGOS[account.type];
   }
   return '';
+};
+
+export const isStringOrNumber = (data) => {
+  return typeof data === 'string' || typeof data === 'number';
 };
