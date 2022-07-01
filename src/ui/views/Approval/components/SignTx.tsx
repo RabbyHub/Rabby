@@ -1,5 +1,6 @@
 import stats from '@/stats';
 import { hasConnectedLedgerDevice } from '@/utils';
+import { openInternalPageInTab } from 'ui/utils/webapi';
 import {
   convertLegacyTo1559,
   getKRCategoryByBrandname,
