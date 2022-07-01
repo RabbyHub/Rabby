@@ -8,7 +8,7 @@ import IconArrowUp from 'ui/assets/arrow-up.svg';
 import IconOpenDeFi from 'ui/assets/dashboard/opendefi.png';
 import { Empty, TokenWithChain } from 'ui/component';
 import { openInTab, splitNumberByStep, useHover } from 'ui/utils';
-import { getKRCategoryByBrandname } from '@/utils/transaction';
+import { getKRCategoryByType } from '@/utils/transaction';
 import { connectStore, useRabbySelector } from '@/ui/store';
 
 const _Row = (props) => {
@@ -17,11 +17,11 @@ const _Row = (props) => {
   const [isHovering, hoverProps] = useHover();
   const currentAccount = useRabbySelector((s) => s.account.currentAccount);
   const handleGotoProfile = () => {
-    ReactGA.ga({
+    ReactGA.event({
       category: 'ViewAssets',
       action: 'viewDefiDetail',
       label: [
-        getKRCategoryByBrandname(currentAccount?.brandName),
+        getKRCategoryByType(currentAccount?.type),
         currentAccount?.brandName,
         token?.id,
       ].join('|'),

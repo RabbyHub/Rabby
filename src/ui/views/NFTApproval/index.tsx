@@ -91,28 +91,44 @@ const NFTApproval = () => {
           : contract?.is_erc1155
           ? 'ERC1155'
           : '';
-        await wallet.revokeNFTApprove({
-          chainServerId: contract?.chain,
-          contractId: contract?.contract_id,
-          spender: contract?.spender.id,
-          abi,
-          tokenId: token?.inner_id,
-          isApprovedForAll: true,
-        });
+        await wallet.revokeNFTApprove(
+          {
+            chainServerId: contract?.chain,
+            contractId: contract?.contract_id,
+            spender: contract?.spender.id,
+            abi,
+            tokenId: token?.inner_id,
+            isApprovedForAll: true,
+          },
+          {
+            ga: {
+              category: 'Security',
+              source: 'nftApproval',
+            },
+          }
+        );
       } else if (token) {
         const abi = token?.is_erc721
           ? 'ERC721'
           : token?.is_erc1155
           ? 'ERC1155'
           : '';
-        await wallet.revokeNFTApprove({
-          chainServerId: token?.chain,
-          contractId: token?.contract_id,
-          spender: token?.spender?.id,
-          abi,
-          tokenId: token?.inner_id,
-          isApprovedForAll: false,
-        });
+        await wallet.revokeNFTApprove(
+          {
+            chainServerId: token?.chain,
+            contractId: token?.contract_id,
+            spender: token?.spender?.id,
+            abi,
+            tokenId: token?.inner_id,
+            isApprovedForAll: false,
+          },
+          {
+            ga: {
+              category: 'Security',
+              source: 'nftApproval',
+            },
+          }
+        );
       }
       window.close();
     } catch (e) {

@@ -1,10 +1,11 @@
 import { NFTApprovalContract } from '@/background/service/openapi';
 import { connectStore, useRabbySelector } from '@/ui/store';
 import { ellipsis } from '@/ui/utils/address';
-import { getKRCategoryByBrandname } from '@/utils/transaction';
+import { getKRCategoryByType } from '@/utils/transaction';
 import { Button } from 'antd';
 import React from 'react';
 import ReactGA from 'react-ga';
+import { getChain } from 'utils';
 import { getAmountText } from '../utils';
 
 interface NFTContractListItemProps {
@@ -43,8 +44,8 @@ const NFTContractListItem = ({ item, onDecline }: NFTContractListItemProps) => {
               category: 'Security',
               action: 'startDeclineNFTApproval',
               label: [
-                item.chain,
-                getKRCategoryByBrandname(currentAccount?.brandName),
+                getChain(item.chain)?.name,
+                getKRCategoryByType(currentAccount?.type),
                 currentAccount?.brandName,
               ].join('|'),
             });

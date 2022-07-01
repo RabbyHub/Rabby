@@ -26,6 +26,8 @@ export class EthereumProvider extends EventEmitter {
   currentAccountBrand = '';
   chainId: string | null = null;
   selectedAddress: string | null = null;
+  $ctx?: any;
+
   /**
    * The network ID of the currently connected Ethereum chain.
    * @deprecated
@@ -116,6 +118,7 @@ export class EthereumProvider extends EventEmitter {
         });
         return wallet
           .sendRequest({
+            $ctx: this.$ctx,
             method: 'eth_sendTransaction',
             params: [
               {

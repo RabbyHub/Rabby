@@ -27,6 +27,9 @@ import IconInfo from 'ui/assets/infoicon.svg';
 import IconWatch from 'ui/assets/walletlogo/watch-purple.svg';
 import IconGnosis from 'ui/assets/walletlogo/gnosis.png';
 
+import ReactGA from 'react-ga';
+import { getKRCategoryByType } from '@/utils/transaction';
+
 interface SignTextProps {
   data: string[];
   session: {
@@ -100,7 +103,27 @@ const SignText = ({ params }: { params: SignTextProps }) => {
     setSecurityCheckDetail(check);
   };
 
+  const gaEvent = async (
+    action:
+      | 'createSignText'
+      | 'startSignText'
+      | 'completeSignText'
+      | 'cancelSignText'
+  ) => {
+    const currentAccount = await wallet.getCurrentAccount<Account>();
+    ReactGA.event({
+      category: 'SignText',
+      action: action,
+      label: [
+        getKRCategoryByType(currentAccount.type),
+        currentAccount.brandName,
+      ].join('|'),
+      transport: 'beacon',
+    });
+  };
+
   const handleCancel = () => {
+    gaEvent('cancelSignText');
     rejectApproval('User rejected the request.');
   };
 
@@ -115,6 +138,8 @@ const SignText = ({ params }: { params: SignTextProps }) => {
       return;
     }
     const currentAccount = await wallet.getCurrentAccount();
+    gaEvent('startSignText');
+
     if (isGnosis && params.account) {
       if (WaitingSignComponent[params.account.type]) {
         wallet.signPersonalMessage(
@@ -171,6 +196,7 @@ const SignText = ({ params }: { params: SignTextProps }) => {
     }
 
     resolveApproval({});
+    gaEvent('completeSignText');
   };
 
   const handleViewRawClick = () => {
@@ -253,6 +279,10 @@ const SignText = ({ params }: { params: SignTextProps }) => {
       }
     })();
   }, [securityCheckStatus]);
+
+  useEffect(() => {
+    gaEvent('createSignText');
+  }, []);
 
   return (
     <>

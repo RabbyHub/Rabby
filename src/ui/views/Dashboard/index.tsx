@@ -58,7 +58,7 @@ import './style.less';
 
 import AddressRow from './components/AddressRow';
 import { sortAccountsByBalance } from '@/ui/utils/account';
-import { getKRCategoryByBrandname } from '@/utils/transaction';
+import { getKRCategoryByType } from '@/utils/transaction';
 
 const GnosisAdminItem = ({
   accounts,
@@ -659,7 +659,7 @@ const Dashboard = () => {
                   category: 'ViewAssets',
                   action: 'openTotal',
                   label: [
-                    getKRCategoryByBrandname(currentAccount?.brandName),
+                    getKRCategoryByType(currentAccount?.type),
                     currentAccount?.brandName,
                   ].join('|'),
                 });
@@ -669,7 +669,7 @@ const Dashboard = () => {
                   category: 'ViewAssets',
                   action: 'closeTotal',
                   label: [
-                    getKRCategoryByBrandname(currentAccount?.brandName),
+                    getKRCategoryByType(currentAccount?.type),
                     currentAccount?.brandName,
                   ].join('|'),
                 });
@@ -694,7 +694,7 @@ const Dashboard = () => {
                   category: 'ViewAssets',
                   action: 'clickHeadToken',
                   label: [
-                    getKRCategoryByBrandname(currentAccount?.brandName),
+                    getKRCategoryByType(currentAccount?.type),
                     currentAccount?.brandName,
                     !showToken ? 'open' : 'close',
                   ].join('|'),
@@ -711,7 +711,7 @@ const Dashboard = () => {
                   category: 'ViewAssets',
                   action: 'clickHeadDefi',
                   label: [
-                    getKRCategoryByBrandname(currentAccount?.brandName),
+                    getKRCategoryByType(currentAccount?.type),
                     currentAccount?.brandName,
                     !showAssets ? 'open' : 'close',
                   ].join('|'),
@@ -728,7 +728,7 @@ const Dashboard = () => {
                   category: 'ViewAssets',
                   action: 'clickHeadNFT',
                   label: [
-                    getKRCategoryByBrandname(currentAccount?.brandName),
+                    getKRCategoryByType(currentAccount?.type),
                     currentAccount?.brandName,
                     !showNFT ? 'open' : 'close',
                   ].join('|'),
@@ -755,11 +755,11 @@ const Dashboard = () => {
                 <Dropdown
                   value={nftType}
                   onChange={(nextVal: typeof nftType) => {
-                    ReactGA.ga({
+                    ReactGA.event({
                       category: 'ViewAssets',
                       action: 'switchNFTFilter',
                       label: [
-                        getKRCategoryByBrandname(currentAccount?.brandName),
+                        getKRCategoryByType(currentAccount?.type),
                         currentAccount?.brandName,
                         nftType === 'collection' ? 'collections' : 'all',
                       ].join('|'),

@@ -24,6 +24,8 @@ import IconInfo from 'ui/assets/infoicon.svg';
 import IconWatch from 'ui/assets/walletlogo/watch-purple.svg';
 import IconGnosis from 'ui/assets/walletlogo/gnosis.png';
 import clsx from 'clsx';
+import ReactGA from 'react-ga';
+import { getKRCategoryByType } from '@/utils/transaction';
 interface SignTypedDataProps {
   method: string;
   data: any[];
@@ -122,6 +124,25 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
     }
   };
 
+  const gaEvent = async (
+    action:
+      | 'createSignText'
+      | 'startSignText'
+      | 'completeSignText'
+      | 'cancelSignText'
+  ) => {
+    const currentAccount = await wallet.getCurrentAccount();
+    ReactGA.event({
+      category: 'SignText',
+      action: action,
+      label: [
+        getKRCategoryByType(currentAccount.type),
+        currentAccount.brandName,
+      ].join('|'),
+      transport: 'beacon',
+    });
+  };
+
   const handleSecurityCheck = async () => {
     setSecurityCheckStatus('loading');
     const currentAccount = await wallet.getCurrentAccount();
@@ -144,6 +165,7 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
   };
 
   const handleCancel = () => {
+    gaEvent('cancelSignText');
     rejectApproval('User rejected the request.');
   };
 
@@ -158,6 +180,7 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
       return;
     }
     const currentAccount = await wallet.getCurrentAccount();
+    gaEvent('startSignText');
     if (currentAccount?.type === KEYRING_CLASS.HARDWARE.LEDGER) {
       try {
         const transport = await TransportWebHID.create();
@@ -181,6 +204,7 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
     }
 
     resolveApproval({});
+    gaEvent('completeSignText');
   };
 
   const init = async () => {
@@ -193,6 +217,7 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
   useEffect(() => {
     init();
     checkWachMode();
+    gaEvent('createSignText');
   }, []);
 
   useEffect(() => {

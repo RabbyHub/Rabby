@@ -46,11 +46,6 @@ dayjs.extend(utc);
 
 setPopupIcon('default');
 
-ReactGA.event({
-  category: 'User',
-  action: 'enable',
-});
-
 const { PortMessage } = Message;
 
 let appStoreLoaded = false;
@@ -158,6 +153,10 @@ restoreAppState();
 
 // for page provider
 browser.runtime.onConnect.addListener((port) => {
+  ReactGA.event({
+    category: 'User',
+    action: 'enable',
+  });
   if (
     port.name === 'popup' ||
     port.name === 'notification' ||
