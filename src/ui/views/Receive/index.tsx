@@ -102,10 +102,10 @@ const Receive = () => {
         category: 'Receive',
         action: 'copyAddress',
         label: [
+          chain,
           getKRCategoryByType(account?.type),
           account?.brandName,
-          account?.type,
-          chain,
+          filterRbiSource('Receive', rbisource) && rbisource,
         ].join('|'),
       });
       message.success({
@@ -142,11 +142,10 @@ const Receive = () => {
         category: 'Receive',
         action: 'getQRCode',
         label: [
+          chain,
           getKRCategoryByType(account?.type),
           account?.brandName,
-          account?.type,
           filterRbiSource('Receive', rbisource) && rbisource,
-          chain,
         ].join('|'),
       });
     }
