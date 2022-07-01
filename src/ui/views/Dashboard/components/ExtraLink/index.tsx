@@ -1,6 +1,6 @@
 import { connectStore, useRabbySelector } from '@/ui/store';
 import { openInTab } from '@/ui/utils';
-import { getKRCategoryByBrandname } from '@/utils/transaction';
+import { getKRCategoryByType } from '@/utils/transaction';
 import clsx from 'clsx';
 import React, { useCallback } from 'react';
 import ReactGA from 'react-ga';
@@ -18,27 +18,27 @@ const ExtraLink = ({ className, address }: ExtraLinkProps) => {
       category: 'ViewAssets',
       action: 'goToDebank',
       label: [
-        getKRCategoryByBrandname(currentAccount?.brandName),
+        getKRCategoryByType(currentAccount?.type),
         currentAccount?.brandName,
       ].join('|'),
     });
     setTimeout(() => {
       openInTab(`https://debank.com/profile/${address}`);
     }, 200);
-  }, [address]);
+  }, [address, currentAccount]);
   const handleScanClick = useCallback(() => {
     ReactGA.event({
       category: 'ViewAssets',
       action: 'goToEtherscan',
       label: [
-        getKRCategoryByBrandname(currentAccount?.brandName),
+        getKRCategoryByType(currentAccount?.type),
         currentAccount?.brandName,
       ].join('|'),
     });
     setTimeout(() => {
       openInTab(`https://etherscan.io/address/${address}`);
     }, 200);
-  }, [address]);
+  }, [address, currentAccount]);
   return (
     <div className={clsx('extra-link', className)}>
       <div className="extra-link-debank" onClick={handleDebankClick}></div>

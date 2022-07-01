@@ -28,8 +28,8 @@ const NFTModal = ({ data }: ContentProps) => {
       pathname: '/send-nft',
       state: {
         nftItem: data,
-        rbisource: 'nftdetail' as IGAEventSource.ISendNFT,
       },
+      search: `?rbisource=${'nftdetail' as IGAEventSource.ISendNFT}`,
     });
   };
 

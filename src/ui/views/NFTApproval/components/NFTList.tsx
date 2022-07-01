@@ -1,11 +1,12 @@
 import { NFTApproval } from '@/background/service/openapi';
 import { Empty, Loading } from '@/ui/component';
 import { connectStore, useRabbySelector } from '@/ui/store';
-import { getKRCategoryByBrandname } from '@/utils/transaction';
+import { getKRCategoryByType } from '@/utils/transaction';
 import React from 'react';
 import ReactGA from 'react-ga';
 import { useTranslation } from 'react-i18next';
 import IconSearch from 'ui/assets/search.svg';
+import { getChain } from 'utils';
 import NFTListItem from './NFTListItem';
 
 interface ApprovalCardProps {
@@ -45,8 +46,8 @@ const NFTList = ({ data, loading, onSearch, onDecline }: ApprovalCardProps) => {
                   category: 'Security',
                   action: 'startDeclineNFTApproval',
                   label: [
-                    item.chain,
-                    getKRCategoryByBrandname(currentAccount?.brandName),
+                    getChain(item.chain)?.name,
+                    getKRCategoryByType(currentAccount?.type),
                     currentAccount?.brandName,
                   ].join('|'),
                 });

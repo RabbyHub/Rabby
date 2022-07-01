@@ -206,7 +206,7 @@ const TokenList = ({
       current: token,
       varaint: !isAdded && startSearch ? 'add' : undefined,
     });
-    ReactGA.ga({
+    ReactGA.event({
       category: 'ViewAssets',
       action: 'viewTokenDetail',
       label: token?.id,

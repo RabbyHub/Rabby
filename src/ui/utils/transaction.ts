@@ -86,7 +86,6 @@ export function varyTxSignType(txDetail: ExplainTxResponse | null) {
     // nothing to do
   }
   if (
-    txDetail?.type_cancel_tx ||
     txDetail?.type_cancel_token_approval ||
     txDetail?.type_cancel_single_nft_approval ||
     txDetail?.type_cancel_nft_collection_approval

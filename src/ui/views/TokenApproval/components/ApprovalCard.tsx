@@ -11,7 +11,8 @@ import {
   useWallet,
 } from 'ui/utils';
 import { connectStore, useRabbySelector } from '@/ui/store';
-import { getKRCategoryByBrandname } from '@/utils/transaction';
+import { getKRCategoryByType } from '@/utils/transaction';
+import { getChain } from 'utils';
 
 interface ApprovalCardProps {
   data: TokenApproval;
@@ -31,12 +32,17 @@ const ApprovalCard = ({ data }: ApprovalCardProps) => {
         category: 'Security',
         action: 'startDeclineTokenApproval',
         label: [
-          data.chain,
-          getKRCategoryByBrandname(currentAccount?.brandName),
+          getChain(data.chain)?.name,
+          getKRCategoryByType(currentAccount?.type),
           currentAccount?.brandName,
         ].join('|'),
       });
-      await wallet.approveToken(data.chain, data.id, item.id, 0);
+      await wallet.approveToken(data.chain, data.id, item.id, 0, {
+        ga: {
+          category: 'Security',
+          source: 'tokenApproval',
+        },
+      });
       window.close();
     } catch (e) {
       message.error(e.message);

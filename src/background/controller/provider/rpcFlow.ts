@@ -136,6 +136,7 @@ const flowContext = flow
         {
           approvalComponent: approvalType,
           params: {
+            $ctx: ctx?.request?.data?.$ctx,
             method,
             data: params,
             session: { origin, name, icon },

@@ -33,7 +33,7 @@ import IconCopy from 'ui/assets/copy-no-border.svg';
 import IconSuccess from 'ui/assets/success.svg';
 import { SvgIconPlusPrimary, SvgIconLoading, SvgAlert } from 'ui/assets';
 import './style.less';
-import { getKRCategoryByBrandname } from '@/utils/transaction';
+import { getKRCategoryByType } from '@/utils/transaction';
 import { filterRbiSource, useRbiSource } from '@/ui/utils/ga-event';
 
 const TOKEN_VALIDATION_STATUS = {
@@ -62,6 +62,8 @@ const SendNFT = () => {
         )?.enum
       : undefined
   );
+  const chainName = CHAINS[chain as string]?.name;
+
   const amountInputEl = useRef<any>(null);
 
   const { useForm } = Form;
@@ -158,24 +160,31 @@ const SendNFT = () => {
         category: 'Send',
         action: 'createTx',
         label: [
-          chain as string,
-          getKRCategoryByBrandname(currentAccount?.brandName),
+          chainName,
+          getKRCategoryByType(currentAccount?.type),
           currentAccount?.brandName,
           'nft',
           filterRbiSource('sendNFT', rbisource) && rbisource,
-        ]
-          .filter(Boolean)
-          .join('|'),
+        ].join('|'),
       });
 
-      await wallet.transferNFT({
-        to,
-        amount,
-        tokenId: nftItem.inner_id,
-        chainServerId: nftItem.chain,
-        contractId: nftItem.contract_id,
-        abi: nftItem.is_erc1155 ? 'ERC1155' : 'ERC721',
-      });
+      await wallet.transferNFT(
+        {
+          to,
+          amount,
+          tokenId: nftItem.inner_id,
+          chainServerId: nftItem.chain,
+          contractId: nftItem.contract_id,
+          abi: nftItem.is_erc1155 ? 'ERC1155' : 'ERC721',
+        },
+        {
+          ga: {
+            category: 'Send',
+            source: 'sendNFT',
+            trigger: filterRbiSource('sendNFT', rbisource) && rbisource,
+          },
+        }
+      );
       window.close();
     } catch (e) {
       message.error(e.message);

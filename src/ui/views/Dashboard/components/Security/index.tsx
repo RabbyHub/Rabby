@@ -9,7 +9,7 @@ import IconNFTApproval from 'ui/assets/nft-approval.svg';
 import { Field, Popup } from 'ui/component';
 import './style.less';
 import { connectStore, useRabbyDispatch, useRabbySelector } from '@/ui/store';
-import { getKRCategoryByBrandname } from '@/utils/transaction';
+import { getKRCategoryByType } from '@/utils/transaction';
 
 interface SecurityProps {
   visible?: boolean;
@@ -37,7 +37,7 @@ const Security = ({ visible, onClose }: SecurityProps) => {
           category: 'Security',
           action: 'clickTokenApproval',
           label: [
-            getKRCategoryByBrandname(currentAccount?.brandName),
+            getKRCategoryByType(currentAccount?.type),
             currentAccount?.brandName,
           ].join('|'),
         });
@@ -53,7 +53,7 @@ const Security = ({ visible, onClose }: SecurityProps) => {
           category: 'Security',
           action: 'clickNFTApproval',
           label: [
-            getKRCategoryByBrandname(currentAccount?.brandName),
+            getKRCategoryByType(currentAccount?.type),
             currentAccount?.brandName,
           ].join('|'),
         });

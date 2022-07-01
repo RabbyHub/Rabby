@@ -29,7 +29,7 @@ import IconLogo from 'ui/assets/rabby-white-large.svg';
 import { splitNumberByStep, useWallet } from 'ui/utils';
 import { query2obj } from 'ui/utils/url';
 import './style.less';
-import { getKRCategoryByBrandname } from '@/utils/transaction';
+import { getKRCategoryByType } from '@/utils/transaction';
 import { filterRbiSource, useRbiSource } from '@/ui/utils/ga-event';
 
 const useAccount = () => {
@@ -85,6 +85,10 @@ const Receive = () => {
 
   const account = useAccount();
   const title = useReceiveTitle(history.location.search);
+  const qs = useMemo(() => query2obj(history.location.search), [
+    history.location.search,
+  ]);
+  const chain = CHAINS[qs.chain]?.name ?? 'Ethereum';
 
   useEffect(() => {
     const clipboard = new ClipboardJS(ref.current!, {
@@ -98,9 +102,10 @@ const Receive = () => {
         category: 'Receive',
         action: 'copyAddress',
         label: [
-          getKRCategoryByBrandname(account?.brandName),
+          chain,
+          getKRCategoryByType(account?.type),
           account?.brandName,
-          account?.type,
+          filterRbiSource('Receive', rbisource) && rbisource,
         ].join('|'),
       });
       message.success({
@@ -131,17 +136,19 @@ const Receive = () => {
   useEffect(() => {
     init();
   }, []);
-  useLayoutEffect(() => {
-    ReactGA.event({
-      category: 'Receive',
-      action: 'getQRCode',
-      label: [
-        getKRCategoryByBrandname(account?.brandName),
-        account?.brandName,
-        account?.type,
-        filterRbiSource('Receive', rbisource) && rbisource,
-      ].join('|'),
-    });
+  useEffect(() => {
+    if (account?.address) {
+      ReactGA.event({
+        category: 'Receive',
+        action: 'getQRCode',
+        label: [
+          chain,
+          getKRCategoryByType(account?.type),
+          account?.brandName,
+          filterRbiSource('Receive', rbisource) && rbisource,
+        ].join('|'),
+      });
+    }
   }, [account?.address]);
   useEffect(() => {
     if (account?.type !== KEYRING_CLASS.WATCH) {
