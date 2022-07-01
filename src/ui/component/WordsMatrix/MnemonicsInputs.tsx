@@ -226,6 +226,13 @@ function MnemonicsInputs({
     [onChange, mnemonicsCount]
   );
 
+  React.useEffect(() => {
+    setFocusing({
+      index: 0,
+      visible: false,
+    });
+  }, []);
+
   const clearAll = React.useCallback(() => {
     setInputTexts([]);
     setFocusing({ ...DFLT_FOCUSING });
