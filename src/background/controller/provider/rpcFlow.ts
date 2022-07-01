@@ -14,6 +14,8 @@ const isSignApproval = (type: string) => {
   return SIGN_APPROVALS.includes(type);
 };
 
+const lockedOrigins = new Set<string>();
+
 const flow = new PromiseFlow();
 const flowContext = flow
   .use(async (ctx, next) => {
@@ -38,14 +40,32 @@ const flowContext = flow
     return next();
   })
   .use(async (ctx, next) => {
-    const { mapMethod } = ctx;
+    const {
+      mapMethod,
+      request: {
+        session: { origin },
+      },
+    } = ctx;
+
     if (!Reflect.getMetadata('SAFE', providerController, mapMethod)) {
       // check lock
       const isUnlock = keyringService.memStore.getState().isUnlocked;
 
       if (!isUnlock) {
+        if (lockedOrigins.has(origin)) {
+          throw ethErrors.rpc.resourceNotFound(
+            'Already processing unlock. Please wait.'
+          );
+        }
         ctx.request.requestedApproval = true;
-        await notificationService.requestApproval({ lock: true });
+        lockedOrigins.add(origin);
+        try {
+          await notificationService.requestApproval({ lock: true });
+          lockedOrigins.delete(origin);
+        } catch (e) {
+          lockedOrigins.delete(origin);
+          throw e;
+        }
       }
     }
 

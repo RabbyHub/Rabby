@@ -33,6 +33,7 @@ import createSubscription from './controller/provider/subscriptionManager';
 import buildinProvider from 'background/utils/buildinProvider';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
+import { setPopupIcon } from './utils';
 
 ReactGA.initialize('UA-199755108-3');
 // eslint-disable-next-line @typescript-eslint/no-empty-function
@@ -42,6 +43,8 @@ ga('set', 'appVersion', process.env.release);
 ga('require', 'displayfeatures');
 
 dayjs.extend(utc);
+
+setPopupIcon('default');
 
 const { PortMessage } = Message;
 

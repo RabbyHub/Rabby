@@ -2,6 +2,7 @@ import stats from '@/stats';
 import { filterRbiSource } from '@/ui/utils/ga-event';
 import { varyTxSignType } from '@/ui/utils/transaction';
 import { hasConnectedLedgerDevice } from '@/utils';
+import { openInternalPageInTab } from 'ui/utils/webapi';
 import {
   convertLegacyTo1559,
   getKRCategoryByType,
@@ -27,10 +28,10 @@ import {
   CHAINS_ENUM,
   HARDWARE_KEYRING_TYPES,
   INTERNAL_REQUEST_ORIGIN,
-  KEYRING_CATEGORY_MAP,
   KEYRING_CLASS,
   KEYRING_TYPE,
   SUPPORT_1559_KEYRING_TYPE,
+  KEYRING_CATEGORY_MAP,
 } from 'consts';
 import {
   addHexPrefix,
@@ -46,7 +47,7 @@ import IconInfo from 'ui/assets/infoicon.svg';
 import IconGnosis from 'ui/assets/walletlogo/gnosis.png';
 import IconWatch from 'ui/assets/walletlogo/watch-purple.svg';
 import { Checkbox } from 'ui/component';
-import { useApproval, useWallet } from 'ui/utils';
+import { useApproval, useWallet, isStringOrNumber } from 'ui/utils';
 import AccountCard from './AccountCard';
 import LedgerWebHIDAlert from './LedgerWebHIDAlert';
 import SecurityCheckBar from './SecurityCheckBar';
@@ -83,16 +84,16 @@ const normalizeHex = (value: string | number) => {
 const normalizeTxParams = (tx) => {
   const copy = tx;
   try {
-    if ('nonce' in copy) {
+    if ('nonce' in copy && isStringOrNumber(copy.nonce)) {
       copy.nonce = normalizeHex(copy.nonce);
     }
-    if ('gas' in copy) {
+    if ('gas' in copy && isStringOrNumber(copy.gas)) {
       copy.gas = normalizeHex(copy.gas);
     }
-    if ('gasLimit' in copy) {
+    if ('gasLimit' in copy && isStringOrNumber(copy.gasLimit)) {
       copy.gas = normalizeHex(copy.gasLimit);
     }
-    if ('gasPrice' in copy) {
+    if ('gasPrice' in copy && isStringOrNumber(copy.gasPrice)) {
       copy.gasPrice = normalizeHex(copy.gasPrice);
     }
     if ('value' in copy) {
@@ -803,7 +804,19 @@ const SignTx = ({ params, origin }: SignTxProps) => {
           <img src={IconWatch} alt="" className="w-[24px]" />
           <div>
             The current address is in Watch Mode. If your want to continue,
-            please import it again using another mode.
+            please{' '}
+            <a
+              href=""
+              className="underline"
+              onClick={async (e) => {
+                e.preventDefault();
+                await rejectApproval('User rejected the request.', true);
+                openInternalPageInTab('no-address');
+              }}
+            >
+              import it
+            </a>{' '}
+            again using another mode.
           </div>
         </div>
       );

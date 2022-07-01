@@ -69,6 +69,7 @@ const QRCodeReader = ({
         display: canplay ? 'block' : 'none',
         width: `${width}px`,
         height: `${height}px`,
+        filter: 'blur(4px)',
       }}
       ref={videoEl}
       className="qrcode-reader-comp"
