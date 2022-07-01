@@ -4,7 +4,10 @@ import { Modal } from 'antd';
 import ChainIcon from './ChainIcon';
 import NFTAvatar from './NFTAvatar';
 import NFTModal from './NFTModal';
+import ReactGA from 'react-ga';
 import './style.less';
+import { getKRCategoryByType } from '@/utils/transaction';
+import { useAccount } from '@/ui/store-hooks';
 
 export interface CollectionCardProps {
   data: UserCollection[];
@@ -18,6 +21,7 @@ const CollectionCard = (props: CollectionCardProps) => {
   const { collection, list } = data[index];
   const [nftItem, setNFTItem] = useState<NFTItem | null>(null);
   const [modalVisible, setModalVisible] = useState(false);
+  const [currentAccount] = useAccount();
 
   const handleHideModal = () => {
     setModalVisible(false);
@@ -27,6 +31,15 @@ const CollectionCard = (props: CollectionCardProps) => {
   const handleShowModal = (item: NFTItem) => {
     setNFTItem(item);
     setModalVisible(true);
+    ReactGA.event({
+      category: 'ViewAssets',
+      action: 'viewNFTDetail',
+      label: [
+        getKRCategoryByType(currentAccount?.type),
+        currentAccount?.brandName,
+        item?.collection ? 'true' : 'false',
+      ].join('|'),
+    });
   };
 
   return (

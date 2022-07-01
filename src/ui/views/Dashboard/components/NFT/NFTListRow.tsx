@@ -31,7 +31,7 @@ const NFTListRow = (props: NFTListRowProps) => {
         label: [
           getKRCategoryByType(currentAccount?.type),
           currentAccount?.brandName,
-          item?.collection ? 'collection' : 'other',
+          item?.collection ? 'true' : 'false',
         ].join('|'),
       });
     }
