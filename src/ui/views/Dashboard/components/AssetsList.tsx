@@ -25,6 +25,7 @@ const _Row = (props) => {
         currentAccount?.brandName,
         token?.id,
       ].join('|'),
+      transport: 'beacon',
     });
     openInTab(token?.site_url);
   };

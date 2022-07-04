@@ -37,6 +37,7 @@ const RecentConnections = ({
       category: 'Dapps',
       action: 'openDapp',
       label: connection.origin,
+      transport: 'beacon',
     });
 
     openInTab(connection.origin);

@@ -21,6 +21,7 @@ const ExtraLink = ({ className, address }: ExtraLinkProps) => {
         getKRCategoryByType(currentAccount?.type),
         currentAccount?.brandName,
       ].join('|'),
+      transport: 'beacon',
     });
     setTimeout(() => {
       openInTab(`https://debank.com/profile/${address}`);
@@ -34,6 +35,7 @@ const ExtraLink = ({ className, address }: ExtraLinkProps) => {
         getKRCategoryByType(currentAccount?.type),
         currentAccount?.brandName,
       ].join('|'),
+      transport: 'beacon',
     });
     setTimeout(() => {
       openInTab(`https://etherscan.io/address/${address}`);
