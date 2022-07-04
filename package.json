@@ -31,6 +31,7 @@
     "@metamask/eth-sig-util": "^4.0.0",
     "@metamask/obs-store": "^6.0.2",
     "@ngraveio/bc-ur": "^1.1.6",
+    "@onekeyfe/connect": "^8.7.7-extended",
     "@rabby-wallet/eth-gnosis-keyring": "^0.0.1",
     "@rabby-wallet/eth-hd-keyring": "^3.6.11",
     "@rabby-wallet/eth-lattice-keyring": "^0.4.4",
