@@ -1187,6 +1187,10 @@ export class WalletController extends BaseController {
 
   changeAccount = (account: Account) => {
     preferenceService.setCurrentAccount(account);
+    if (notificationService.currentApproval) {
+      notificationService.rejectAllApprovals();
+      notificationService.clear();
+    }
   };
 
   isUseLedgerLive = () => {
