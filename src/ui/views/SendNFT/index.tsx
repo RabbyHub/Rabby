@@ -168,7 +168,7 @@ const SendNFT = () => {
         ].join('|'),
       });
 
-      await wallet.transferNFT(
+      wallet.transferNFT(
         {
           to,
           amount,
