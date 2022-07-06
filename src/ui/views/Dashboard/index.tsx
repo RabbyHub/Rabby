@@ -260,6 +260,14 @@ const Dashboard = () => {
           </div>
         ),
       });
+      ReactGA.event({
+        category: 'AccountInfo',
+        action: 'popupCopyAddress',
+        label: [
+          getKRCategoryByType(currentAccount?.type),
+          currentAccount?.brandName,
+        ].join('|'),
+      });
       clipboard.destroy();
     });
   };
@@ -638,10 +646,30 @@ const Dashboard = () => {
               </div>
               <img
                 src={IconInfo}
-                onClick={() => setHovered(true)}
+                onClick={() => {
+                  setHovered(true);
+                  ReactGA.event({
+                    category: 'AccountInfo',
+                    action: 'getQRCode',
+                    label: [
+                      getKRCategoryByType(currentAccount?.type),
+                      currentAccount?.brandName,
+                    ].join('|'),
+                  });
+                }}
                 className="w-[18px] h-[18px] mr-12 pointer"
               />
               <Copy
+                onClick={() => {
+                  ReactGA.event({
+                    category: 'AccountInfo',
+                    action: 'copyAddress',
+                    label: [
+                      getKRCategoryByType(currentAccount?.type),
+                      currentAccount?.brandName,
+                    ].join('|'),
+                  });
+                }}
                 variant="address"
                 data={currentAccount.address}
                 className="w-18"
