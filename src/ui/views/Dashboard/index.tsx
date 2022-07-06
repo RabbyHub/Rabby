@@ -57,6 +57,7 @@ import Dropdown from './components/NFT/Dropdown';
 import './style.less';
 
 import AddressRow from './components/AddressRow';
+import PendingApproval from './components/PendingApproval';
 import { sortAccountsByBalance } from '@/ui/utils/account';
 import { getKRCategoryByType } from '@/utils/transaction';
 
@@ -163,6 +164,7 @@ const Dashboard = () => {
   const [topAnimate, setTopAnimate] = useState('');
   const [connectionAnimation, setConnectionAnimation] = useState('');
   const [nftType, setNFTType] = useState<'collection' | 'nft'>('collection');
+  const [pendingApprovalCount, setPendingApprovalCount] = useState(0);
 
   const [startAnimate, setStartAnimate] = useState(false);
   const isGnosis = useRabbyGetter((s) => s.chains.isCurrentAccountGnosis);
@@ -208,6 +210,7 @@ const Dashboard = () => {
         });
     }
   }, [currentAccount]);
+
   useEffect(() => {
     if (dashboardReload) {
       if (currentAccount) {
@@ -218,12 +221,16 @@ const Dashboard = () => {
       dispatch.accountToDisplay.getAllAccountsToDisplay();
     }
   }, [dashboardReload]);
+
   useEffect(() => {
     (async () => {
       await dispatch.addressManagement.getHilightedAddressesAsync();
       dispatch.accountToDisplay.getAllAccountsToDisplay();
+      const pendingCount = await wallet.getPendingApprovalCount();
+      setPendingApprovalCount(pendingCount);
     })();
   }, []);
+
   useEffect(() => {
     if (clicked) {
       dispatch.accountToDisplay.getAllAccountsToDisplay();
@@ -970,6 +977,9 @@ const Dashboard = () => {
         </div>
       </Modal>
       {!(showToken || showAssets || showNFT) && <DefaultWalletSetting />}
+      {pendingApprovalCount > 0 && (
+        <PendingApproval count={pendingApprovalCount} />
+      )}
     </>
   );
 };

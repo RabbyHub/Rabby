@@ -11,6 +11,7 @@ import {
 } from 'consts';
 import preferenceService from './preference';
 import { createPersistStore } from 'background/utils';
+import { browser } from 'webextension-polyfill-ts';
 
 interface Task {
   approval: Approval;
@@ -103,6 +104,21 @@ class NotificationService extends Events {
       }));
     }
     this.currentApproval = this.approvals[0];
+  };
+
+  activeFirstApproval = () => {
+    if (this.notifiWindowId) {
+      browser.windows.update(this.notifiWindowId, {
+        focused: true,
+      });
+      return;
+    }
+
+    if (this.approvals.length < 0) return;
+
+    const approval = this.approvals[0];
+    this.currentApproval = approval;
+    this.openNotification(approval.winProps);
   };
 
   createTask = (approval: Approval) => {
@@ -214,7 +230,13 @@ class NotificationService extends Events {
       if (!this.currentApproval) {
         this.currentApproval = approval;
       }
-      this.openNotification(approval.winProps);
+      if (this.notifiWindowId) {
+        browser.windows.update(this.notifiWindowId, {
+          focused: true,
+        });
+      } else {
+        this.openNotification(approval.winProps);
+      }
       if (
         ['wallet_switchEthereumChain', 'wallet_addEthereumChain'].includes(
           data?.params?.method
