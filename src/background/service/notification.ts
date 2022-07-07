@@ -60,25 +60,6 @@ class NotificationService extends Events {
         this.rejectAllApprovals();
       }
     });
-
-    winMgr.event.on('windowFocusChange', (winId: number) => {
-      const account = preferenceService.getCurrentAccount()!;
-      if (this.notifiWindowId && winId !== this.notifiWindowId) {
-        if (process.env.NODE_ENV === 'production') {
-          if (
-            (IS_CHROME &&
-              winId === chrome.windows.WINDOW_ID_NONE &&
-              IS_LINUX) ||
-            (account?.type === KEYRING_TYPE.WalletConnectKeyring &&
-              NOT_CLOSE_UNFOCUS_LIST.includes(account.brandName))
-          ) {
-            // Wired issue: When notification popuped, will focus to -1 first then focus on notification
-            return;
-          }
-          this.rejectApproval();
-        }
-      }
-    });
   }
 
   init = async () => {
