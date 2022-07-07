@@ -31,7 +31,12 @@ const SortHat = () => {
       return;
     }
 
-    if ((await wallet.hasPageStateCache()) && !isInNotification && !isInTab) {
+    if (
+      (await wallet.hasPageStateCache()) &&
+      !isInNotification &&
+      !isInTab &&
+      !approval
+    ) {
       const cache = await wallet.getPageStateCache()!;
       setTo(cache.path);
       return;

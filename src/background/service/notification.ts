@@ -2,14 +2,7 @@ import Events from 'events';
 import { ethErrors } from 'eth-rpc-errors';
 import { EthereumProviderError } from 'eth-rpc-errors/dist/classes';
 import { winMgr } from 'background/webapi';
-import {
-  CHAINS,
-  IS_CHROME,
-  IS_LINUX,
-  KEYRING_TYPE,
-  NOT_CLOSE_UNFOCUS_LIST,
-} from 'consts';
-import preferenceService from './preference';
+import { CHAINS } from 'consts';
 import { createPersistStore } from 'background/utils';
 import { browser } from 'webextension-polyfill-ts';
 
