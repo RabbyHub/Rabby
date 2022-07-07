@@ -1,6 +1,5 @@
 import EventEmitter from 'events';
 import OneKeyConnect from '@onekeyfe/js-sdk';
-import transformTypedData from '@onekeyfe/js-sdk/lib/plugins/ethereum/typedData';
 import * as ethUtil from 'ethereumjs-util';
 import Transaction from 'ethereumjs-tx';
 import HDKey from 'hdkey';
@@ -314,51 +313,103 @@ class OneKeyKeyring extends EventEmitter {
     });
   }
 
-  async signTypedData(address, data, { version }) {
-    const dataWithHashes = transformTypedData(data, version === 'V4');
-
-    // set default values for signTypedData
-    // Trezor is stricter than @metamask/eth-sig-util in what it accepts
-    const {
-      types: { EIP712Domain = [], ...otherTypes } = {},
-      message = {},
-      domain = {},
-      primaryType,
-      // snake_case since Trezor uses Protobuf naming conventions here
-      domain_separator_hash, // eslint-disable-line camelcase
-      message_hash, // eslint-disable-line camelcase
-    } = dataWithHashes;
-
-    // This is necessary to avoid popup collision
-    // between the unlock & sign trezor popups
-    const status = await this.unlock();
-    await wait(status === 'just unlocked' ? DELAY_BETWEEN_POPUPS : 0);
-    const params = {
-      path: this._pathFromAddress(address),
-      data: {
-        types: { EIP712Domain, ...otherTypes },
-        message,
-        domain,
-        primaryType,
-      },
-      metamask_v4_compat: true,
-      // Trezor 1 only supports blindly signing hashes
-      domain_separator_hash,
-      message_hash,
-    };
-
-    const response = await OneKeyConnect.ethereumSignTypedData(params);
-
-    if (response.success) {
-      if (ethUtil.toChecksumAddress(address) !== response.payload.address) {
-        throw new Error('signature doesnt match the right address');
-      }
-      return response.payload.signature;
+  async signTypedData(address, data, opts) {
+    switch (opts.version) {
+      case 'V1':
+        return this.signTypedData_v1(address, data, opts);
+      case 'V3':
+        return this.signTypedData_v3_v4(address, data, opts);
+      case 'V4':
+        return this.signTypedData_v3_v4(address, data, opts);
+      default:
+        return this.signTypedData_v1(address, data, opts);
     }
+  }
 
-    throw new Error(
-      (response.payload && response.payload.error) || 'Unknown error'
-    );
+  signTypedData_v1(address, typedData, opts = {}) {
+    // Waiting on trezor to enable this
+    return Promise.reject(new Error('Not supported on this device'));
+  }
+
+  // personal_signTypedData, signs data along with the schema
+  signTypedData_v3_v4(
+    address,
+    typedData,
+    opts: { version?: 'V3' | 'V4' } = {}
+  ) {
+    return new Promise((resolve, reject) => {
+      const { version = 'V4' } = opts;
+      this.unlock()
+        .then((status) => {
+          setTimeout(
+            (_) => {
+              try {
+                OneKeyConnect.ethereumSignMessageEIP712({
+                  path: this._pathFromAddress(address),
+                  version,
+                  data: typedData,
+                })
+                  .then((response) => {
+                    if (response.success) {
+                      if (
+                        response.payload.address !==
+                        ethUtil.toChecksumAddress(address)
+                      ) {
+                        reject(
+                          new Error('signature doesnt match the right address')
+                        );
+                      }
+                      const signature = `0x${response.payload.signature}`;
+                      resolve(signature);
+                    } else {
+                      let code =
+                        (response.payload && response.payload.code) || '';
+                      const message =
+                        (response.payload && response.payload.error) || '';
+                      let errorMsg =
+                        (response.payload && response.payload.error) ||
+                        'Unknown error';
+
+                      let errorUrl = '';
+                      if (message.includes('EIP712Domain')) {
+                        code = 'EIP712_DOMAIN_NOT_SUPPORT';
+                      } else if (message.includes('EIP712')) {
+                        code = 'EIP712_BLIND_SIGN_DISABLED';
+                        errorUrl =
+                          'https://help.onekey.so/hc/zh-cn/articles/4406637762959';
+                      }
+                      if (code === 'Failure_UnexpectedMessage') {
+                        code = 'EIP712_FIRMWARE_NOT_SUPPORT';
+                        errorMsg = 'Not supported on this device';
+                      }
+
+                      const error = new Error(
+                        JSON.stringify({
+                          code,
+                          errorMsg,
+                        })
+                      );
+                      reject(error);
+                    }
+                  })
+                  .catch((e) => {
+                    console.log('Error while trying to sign a message ', e);
+                    reject(new Error((e && e.toString()) || 'Unknown error'));
+                  });
+              } catch (e) {
+                reject(new Error((e && e.toString()) || 'Unknown error'));
+              }
+              // This is necessary to avoid popup collision
+              // between the unlock & sign trezor popups
+            },
+            status === 'just unlocked' ? DELAY_BETWEEN_POPUPS : 0
+          );
+        })
+        .catch((e) => {
+          console.log('Error while trying to sign a message ', e);
+          reject(new Error((e && e.toString()) || 'Unknown error'));
+        });
+    });
   }
 
   exportAccount(): Promise<any> {
