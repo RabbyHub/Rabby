@@ -412,6 +412,16 @@ const Dashboard = () => {
                 style={props.style}
                 copiedSuccess={copySuccess}
                 handleClickChange={handleChange}
+                onCopy={(account) => {
+                  ReactGA.event({
+                    category: 'AccountInfo',
+                    action: 'selectCopyAddress',
+                    label: [
+                      getKRCategoryByType(account?.type),
+                      account?.brandName,
+                    ].join('|'),
+                  });
+                }}
               />
             );
           }}
@@ -663,7 +673,7 @@ const Dashboard = () => {
                 onClick={() => {
                   ReactGA.event({
                     category: 'AccountInfo',
-                    action: 'copyAddress',
+                    action: 'headCopyAddress',
                     label: [
                       getKRCategoryByType(currentAccount?.type),
                       currentAccount?.brandName,
