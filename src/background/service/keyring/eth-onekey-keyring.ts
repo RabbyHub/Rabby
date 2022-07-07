@@ -1,5 +1,6 @@
 import EventEmitter from 'events';
-import OneKeyConnect from '@onekeyfe/connect';
+import OneKeyConnect from '@onekeyfe/js-sdk';
+import transformTypedData from '@onekeyfe/js-sdk/lib/plugins/ethereum/typedData';
 import * as ethUtil from 'ethereumjs-util';
 import Transaction from 'ethereumjs-tx';
 import HDKey from 'hdkey';
@@ -314,15 +315,39 @@ class OneKeyKeyring extends EventEmitter {
   }
 
   async signTypedData(address, data, { version }) {
+    const dataWithHashes = transformTypedData(data, version === 'V4');
+
+    // set default values for signTypedData
+    // Trezor is stricter than @metamask/eth-sig-util in what it accepts
+    const {
+      types: { EIP712Domain = [], ...otherTypes } = {},
+      message = {},
+      domain = {},
+      primaryType,
+      // snake_case since Trezor uses Protobuf naming conventions here
+      domain_separator_hash, // eslint-disable-line camelcase
+      message_hash, // eslint-disable-line camelcase
+    } = dataWithHashes;
+
+    // This is necessary to avoid popup collision
+    // between the unlock & sign trezor popups
     const status = await this.unlock();
     await wait(status === 'just unlocked' ? DELAY_BETWEEN_POPUPS : 0);
-    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-    // @ts-ignore
-    const response = await OneKeyConnect.ethereumSignMessage712({
+    const params = {
       path: this._pathFromAddress(address),
-      version,
-      data,
-    });
+      data: {
+        types: { EIP712Domain, ...otherTypes },
+        message,
+        domain,
+        primaryType,
+      },
+      metamask_v4_compat: true,
+      // Trezor 1 only supports blindly signing hashes
+      domain_separator_hash,
+      message_hash,
+    };
+
+    const response = await OneKeyConnect.ethereumSignTypedData(params);
 
     if (response.success) {
       if (ethUtil.toChecksumAddress(address) !== response.payload.address) {

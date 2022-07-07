@@ -2669,10 +2669,10 @@
     tiny-worker "^2.3.0"
     ws "^7.4.0"
 
-"@onekeyfe/connect@^8.7.7-extended":
-  version "8.7.7-extended"
-  resolved "https://registry.yarnpkg.com/@onekeyfe/connect/-/connect-8.7.7-extended.tgz#377295c69bb1fae84aa46e8c1b3472923793ef18"
-  integrity sha512-adEGKZf/EN9Vazfb9rM28fNlH35bPXajdXM3w58m/EPMB8bHSpQKeKkH3RPOXzKJwCxWdbagdaA+807dYujsEw==
+"@onekeyfe/js-sdk@^1.1.6":
+  version "1.1.6"
+  resolved "https://registry.yarnpkg.com/@onekeyfe/js-sdk/-/js-sdk-1.1.6.tgz#e8a45a8c673de0953746ac4dc315ac86127f0426"
+  integrity sha512-pNqQWwJ5LoWn1Du7bGGvZzMMpb0odO9zKq7o0wD1vbqLzXFZQnrj2DblJ5n+kRqtxjktEdELvLlsQJw9OMq5zA==
   dependencies:
     "@babel/runtime" "^7.12.5"
     "@conflux-dev/conflux-address-js" "^1.3.12"
@@ -5241,9 +5241,9 @@ blake-hash@^2.0.0:
   dependencies:
     nanoassert "^1.0.0"
 
-"blake2b@git+https://github.com/BitGo/blake2b.git#6268e6dd678661e0acc4359e9171b97eb1ebf8ac":
+"blake2b@https://github.com/BitGo/blake2b#6268e6dd678661e0acc4359e9171b97eb1ebf8ac":
   version "2.1.3"
-  resolved "git+https://github.com/BitGo/blake2b.git#6268e6dd678661e0acc4359e9171b97eb1ebf8ac"
+  resolved "https://github.com/BitGo/blake2b#6268e6dd678661e0acc4359e9171b97eb1ebf8ac"
   dependencies:
     blake2b-wasm "https://github.com/BitGo/blake2b-wasm#193cdb71656c1a6c7f89b05d0327bb9b758d071b"
     nanoassert "^1.0.0"
