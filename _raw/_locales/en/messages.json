@@ -102,7 +102,7 @@
     "message": "No address"
   },
   "Add__addresses": {
-    "message": "Add addresses"
+    "message": "Add address"
   },
   "Address__Management": {
     "message": "Address Management"
@@ -221,7 +221,7 @@
   "Select__the__addresses__you__to__use__in__Rabby": {
     "message": "Select the addresses to use in Rabby"
   },
-  
+
   "Load__More": {
     "message": "Load More..."
   },
@@ -887,7 +887,7 @@
     "message": "Allow Rabby permissions to:"
   },
   "LedgerPermission1": {
-    "message": "Connect to a HID device"
+    "message": "Connect to an HID device"
   },
   "LedgerPermissionTip": {
     "message": "Please click \"Allow\" below and authorize access to your Ledger in the following pop-up window."
