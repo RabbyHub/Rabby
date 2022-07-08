@@ -53,7 +53,6 @@ const create = async ({ url, ...rest }): Promise<number | undefined> => {
   if (currentWindow.state === 'fullscreen') {
     // browser.windows.create not pass state to chrome
     win = await createFullScreenWindow({ url, ...rest });
-    console.log('create via chrome', win);
   } else {
     win = await browser.windows.create({
       focused: true,
@@ -65,7 +64,6 @@ const create = async ({ url, ...rest }): Promise<number | undefined> => {
       ...rest,
     });
   }
-  console.log('win', win);
   // shim firefox
   if (win.left !== left && currentWindow.state !== 'fullscreen') {
     await browser.windows.update(win.id!, { left, top });

@@ -76,8 +76,8 @@ class NotificationService extends Events {
         data: task.approval.data,
         winProps: task.approval.winProps,
       }));
+      this.currentApproval = this.approvals[0];
     }
-    this.currentApproval = this.approvals[0];
   };
 
   activeFirstApproval = () => {
