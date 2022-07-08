@@ -15,6 +15,7 @@ const isSignApproval = (type: string) => {
 };
 
 const lockedOrigins = new Set<string>();
+const connectOrigins = new Set<string>();
 
 const flow = new PromiseFlow();
 const flowContext = flow
@@ -81,16 +82,27 @@ const flowContext = flow
     } = ctx;
     if (!Reflect.getMetadata('SAFE', providerController, mapMethod)) {
       if (!permissionService.hasPermission(origin)) {
+        if (connectOrigins.has(origin)) {
+          throw ethErrors.rpc.resourceNotFound(
+            'Already processing connect. Please wait.'
+          );
+        }
         ctx.request.requestedApproval = true;
-        const { defaultChain } = await notificationService.requestApproval(
-          {
-            params: { origin, name, icon },
-            approvalComponent: 'Connect',
-          },
-          { height: 390 }
-        );
-
-        permissionService.addConnectedSite(origin, name, icon, defaultChain);
+        connectOrigins.add(origin);
+        try {
+          const { defaultChain } = await notificationService.requestApproval(
+            {
+              params: { origin, name, icon },
+              approvalComponent: 'Connect',
+            },
+            { height: 390 }
+          );
+          connectOrigins.delete(origin);
+          permissionService.addConnectedSite(origin, name, icon, defaultChain);
+        } catch (e) {
+          connectOrigins.delete(origin);
+          throw e;
+        }
       }
     }
 

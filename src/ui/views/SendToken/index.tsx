@@ -208,7 +208,7 @@ const SendToken = () => {
         ].join('|'),
       });
 
-      await wallet.sendRequest({
+      wallet.sendRequest({
         method: 'eth_sendTransaction',
         params: [params],
         $ctx: {

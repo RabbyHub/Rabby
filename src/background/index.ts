@@ -21,6 +21,7 @@ import {
   contactBookService,
   signTextHistoryService,
   widgetService,
+  notificationService,
 } from './service';
 import { providerController, walletController } from './controller';
 import i18n from './service/i18n';
@@ -94,6 +95,7 @@ async function restoreAppState() {
   await contactBookService.init();
   await signTextHistoryService.init();
   await widgetService.init();
+  await notificationService.init();
   rpcCache.start();
 
   appStoreLoaded = true;

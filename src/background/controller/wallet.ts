@@ -99,7 +99,9 @@ export class WalletController extends BaseController {
 
   getApproval = notificationService.getApproval;
   resolveApproval = notificationService.resolveApproval;
-  rejectApproval = notificationService.rejectApproval;
+  rejectApproval = (err?: string, stay = false, isInternal = false) => {
+    return notificationService.rejectApproval(err, stay, isInternal);
+  };
 
   approveToken = async (
     chainServerId: string,
@@ -407,6 +409,14 @@ export class WalletController extends BaseController {
         );
       }
     }
+  };
+
+  getPendingApprovalCount = () => {
+    return notificationService.approvals.length;
+  };
+
+  activeFirstApproval = () => {
+    notificationService.activeFirstApproval();
   };
 
   unlock = async (password: string) => {
@@ -1187,6 +1197,10 @@ export class WalletController extends BaseController {
 
   changeAccount = (account: Account) => {
     preferenceService.setCurrentAccount(account);
+    if (notificationService.currentApproval) {
+      notificationService.rejectAllApprovals();
+      notificationService.clear();
+    }
   };
 
   isUseLedgerLive = () => {

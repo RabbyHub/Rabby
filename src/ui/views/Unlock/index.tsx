@@ -1,7 +1,8 @@
 import React, { useEffect, useRef } from 'react';
 import { Input, Form, Button } from 'antd';
 import { useTranslation } from 'react-i18next';
-import { useWallet, useApproval, useWalletRequest } from 'ui/utils';
+import { useHistory } from 'react-router-dom';
+import { useWallet, useApproval, useWalletRequest, getUiType } from 'ui/utils';
 
 import './style.less';
 
@@ -10,7 +11,9 @@ const Unlock = () => {
   const [, resolveApproval] = useApproval();
   const [form] = Form.useForm();
   const inputEl = useRef<Input>(null);
+  const UiType = getUiType();
   const { t } = useTranslation();
+  const history = useHistory();
 
   useEffect(() => {
     if (!inputEl.current) return;
@@ -19,7 +22,11 @@ const Unlock = () => {
 
   const [run] = useWalletRequest(wallet.unlock, {
     onSuccess() {
-      resolveApproval();
+      if (UiType.isNotification) {
+        resolveApproval();
+      } else {
+        history.replace('/');
+      }
     },
     onError(err) {
       form.setFields([
