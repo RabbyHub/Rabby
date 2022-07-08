@@ -37,12 +37,32 @@ export interface Approval {
 // should only open one window, unfocus will close the current notification
 class NotificationService extends Events {
   currentApproval: Approval | null = null;
-  approvals: Approval[] = [];
+  _approvals: Approval[] = [];
   notifiWindowId = 0;
   isLocked = false;
   store: TaskStore = {
     tasks: [],
   };
+
+  get approvals() {
+    return this._approvals;
+  }
+
+  set approvals(val: Approval[]) {
+    this._approvals = val;
+    if (val.length <= 0) {
+      browser.browserAction.setBadgeText({
+        text: null,
+      });
+    } else {
+      browser.browserAction.setBadgeText({
+        text: val.length + '',
+      });
+      browser.browserAction.setBadgeBackgroundColor({
+        color: '#FE815F',
+      });
+    }
+  }
 
   constructor() {
     super();
@@ -122,8 +142,7 @@ class NotificationService extends Events {
 
   deleteApproval = (approval) => {
     if (approval && this.approvals.length > 1) {
-      const index = this.approvals.findIndex((item) => item.id === approval.id);
-      this.approvals.splice(index, 1);
+      this.approvals = this.approvals.filter((item) => approval.id !== item.id);
     } else {
       this.currentApproval = null;
       this.approvals = [];
@@ -200,7 +219,7 @@ class NotificationService extends Events {
       ) {
         this.createTask(approval);
       }
-      this.approvals.push(approval);
+      this.approvals = [...this.approvals, approval];
       if (!this.currentApproval) {
         this.currentApproval = approval;
       }
