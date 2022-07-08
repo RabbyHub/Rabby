@@ -411,6 +411,14 @@ export class WalletController extends BaseController {
     }
   };
 
+  getPendingApprovalCount = () => {
+    return notificationService.approvals.length;
+  };
+
+  activeFirstApproval = () => {
+    notificationService.activeFirstApproval();
+  };
+
   unlock = async (password: string) => {
     const alianNameInited = await preferenceService.getInitAlianNameStatus();
     const alianNames = contactBookService.listAlias();
@@ -1189,6 +1197,10 @@ export class WalletController extends BaseController {
 
   changeAccount = (account: Account) => {
     preferenceService.setCurrentAccount(account);
+    if (notificationService.currentApproval) {
+      notificationService.rejectAllApprovals();
+      notificationService.clear();
+    }
   };
 
   isUseLedgerLive = () => {

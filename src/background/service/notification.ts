@@ -2,35 +2,12 @@ import Events from 'events';
 import { ethErrors } from 'eth-rpc-errors';
 import { EthereumProviderError } from 'eth-rpc-errors/dist/classes';
 import { winMgr } from 'background/webapi';
-import {
-  CHAINS,
-  IS_CHROME,
-  IS_LINUX,
-  KEYRING_TYPE,
-  NOT_CLOSE_UNFOCUS_LIST,
-} from 'consts';
-import preferenceService from './preference';
+import { CHAINS } from 'consts';
 import { createPersistStore } from 'background/utils';
-import { Session } from './session';
-
-interface TransactionParams {
-  from?: string;
-  to: string;
-  gas?: string;
-  gasLimit?: string;
-  gasPrice?: string;
-  maxFeePeerGas?: string;
-  maxPriorityFeePeerGas?: string;
-  data?: string;
-  value?: string;
-}
-
-type TextMessageParams = string[];
-
-type TaskParams = TransactionParams[] | TextMessageParams;
+import { browser } from 'webextension-polyfill-ts';
 
 interface Task {
-  params: TaskParams;
+  approval: Approval;
   id: number;
 }
 
@@ -45,15 +22,15 @@ export interface Approval {
   id: number;
   taskId: number | null;
   data: {
-    state: number;
     params?: import('react').ComponentProps<IApprovalComponent>['params'];
     origin?: string;
     approvalComponent: keyof IApprovalComponents;
     requestDefer?: Promise<any>;
-    approvalType: string;
+    approvalType?: string;
   };
-  resolve(params?: any): void;
-  reject(err: EthereumProviderError<any>): void;
+  winProps: any;
+  resolve?(params?: any): void;
+  reject?(err: EthereumProviderError<any>): void;
 }
 
 // something need user approval in window
@@ -73,25 +50,7 @@ class NotificationService extends Events {
     winMgr.event.on('windowRemoved', (winId: number) => {
       if (winId === this.notifiWindowId) {
         this.notifiWindowId = 0;
-      }
-    });
-
-    winMgr.event.on('windowFocusChange', (winId: number) => {
-      const account = preferenceService.getCurrentAccount()!;
-      if (this.notifiWindowId && winId !== this.notifiWindowId) {
-        if (process.env.NODE_ENV === 'production') {
-          if (
-            (IS_CHROME &&
-              winId === chrome.windows.WINDOW_ID_NONE &&
-              IS_LINUX) ||
-            (account?.type === KEYRING_TYPE.WalletConnectKeyring &&
-              NOT_CLOSE_UNFOCUS_LIST.includes(account.brandName))
-          ) {
-            // Wired issue: When notification popuped, will focus to -1 first then focus on notification
-            return;
-          }
-          this.rejectApproval();
-        }
+        this.rejectAllApprovals();
       }
     });
   }
@@ -110,16 +69,51 @@ class NotificationService extends Events {
       this.store.tasks = [];
     }
 
-    // TODO: set the latest task as currentApproval
+    if (this.store.tasks.length > 0) {
+      this.approvals = this.store.tasks.map((task) => ({
+        taskId: task.id,
+        id: task.approval.id,
+        data: task.approval.data,
+        winProps: task.approval.winProps,
+      }));
+      this.currentApproval = this.approvals[0];
+    }
   };
 
-  createTask = (task: TaskParams) => {
-    const id = this.store.tasks.length;
+  activeFirstApproval = () => {
+    if (this.notifiWindowId) {
+      browser.windows.update(this.notifiWindowId, {
+        focused: true,
+      });
+      return;
+    }
 
-    this.store.tasks.push({
-      id,
-      params: task,
-    });
+    if (this.approvals.length < 0) return;
+
+    const approval = this.approvals[0];
+    this.currentApproval = approval;
+    this.openNotification(approval.winProps);
+  };
+
+  createTask = (approval: Approval) => {
+    const id = approval.taskId!;
+    this.store.tasks = [
+      ...this.store.tasks,
+      {
+        id,
+        approval: {
+          id: approval.id,
+          taskId: approval.taskId,
+          data: {
+            params: approval.data.params,
+            origin: approval.data.origin,
+            approvalComponent: approval.data.approvalComponent,
+            approvalType: approval.data.approvalType,
+          },
+          winProps: approval.winProps,
+        },
+      },
+    ];
   };
 
   deleteTask = (id: number) => {
@@ -140,29 +134,39 @@ class NotificationService extends Events {
 
   resolveApproval = async (data?: any, forceReject = false) => {
     if (forceReject) {
-      this.currentApproval?.reject(
-        new EthereumProviderError(4001, 'User Cancel')
-      );
+      this.currentApproval?.reject &&
+        this.currentApproval?.reject(
+          new EthereumProviderError(4001, 'User Cancel')
+        );
     } else {
-      this.currentApproval?.resolve(data);
+      this.currentApproval?.resolve && this.currentApproval?.resolve(data);
     }
 
     const approval = this.currentApproval;
 
     this.deleteApproval(approval);
 
-    this.currentApproval = null;
+    if (approval && approval.taskId !== null) {
+      this.deleteTask(approval.taskId);
+    }
+    if (this.approvals.length > 0) {
+      this.currentApproval = this.approvals[0];
+    } else {
+      this.currentApproval = null;
+    }
 
     this.emit('resolve', data);
   };
 
   rejectApproval = async (err?: string, stay = false, isInternal = false) => {
     if (isInternal) {
-      this.currentApproval?.reject(ethErrors.rpc.internal(err));
+      this.currentApproval?.reject &&
+        this.currentApproval?.reject(ethErrors.rpc.internal(err));
     } else {
-      this.currentApproval?.reject(
-        ethErrors.provider.userRejectedRequest<any>(err)
-      );
+      this.currentApproval?.reject &&
+        this.currentApproval?.reject(
+          ethErrors.provider.userRejectedRequest<any>(err)
+        );
     }
 
     const approval = this.currentApproval;
@@ -172,6 +176,7 @@ class NotificationService extends Events {
 
     if (approval && this.approvals.length > 1) {
       this.deleteApproval(approval);
+      this.currentApproval = this.approvals[0];
     } else {
       await this.clear(stay);
     }
@@ -179,26 +184,33 @@ class NotificationService extends Events {
   };
 
   requestApproval = async (data, winProps?): Promise<any> => {
-    if (this.currentApproval) {
-      throw ethErrors.provider.userRejectedRequest(
-        'please request after current approval resolve'
-      );
-    } // TODO: remove this logic after multi approval avaliable
     return new Promise((resolve, reject) => {
-      let taskId: number | null = null;
-      if (['SignTx', 'SignText', 'SignTypedData'].includes(data.approvalType)) {
-        taskId = this.store.tasks.length;
-        this.createTask(data.params);
-      }
       const approval: Approval = {
-        taskId,
+        taskId: this.store.tasks.length,
         id: this.approvals.length,
         data,
+        winProps,
         resolve,
         reject,
       };
+      if (
+        ['SignTx', 'SignText', 'SignTypedData'].includes(
+          data.approvalComponent || ''
+        )
+      ) {
+        this.createTask(approval);
+      }
       this.approvals.push(approval);
-      this.currentApproval = approval;
+      if (!this.currentApproval) {
+        this.currentApproval = approval;
+      }
+      if (this.notifiWindowId) {
+        browser.windows.update(this.notifiWindowId, {
+          focused: true,
+        });
+      } else {
+        this.openNotification(approval.winProps);
+      }
       if (
         ['wallet_switchEthereumChain', 'wallet_addEthereumChain'].includes(
           data?.params?.method
@@ -213,7 +225,6 @@ class NotificationService extends Events {
           return;
         }
       }
-      this.openNotification(winProps);
     });
   };
 
