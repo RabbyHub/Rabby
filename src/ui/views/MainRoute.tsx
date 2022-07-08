@@ -6,47 +6,8 @@ import { PrivateRoute } from 'ui/component';
 import Welcome from './Welcome';
 import NoAddress from './NoAddress';
 import CreatePassword from './CreatePassword';
-import ImportMode from './ImportMode';
-import ImportPrivateKey from './ImportPrivateKey';
-import ImportJson from './ImportJson';
-
-import InputMnemonics from './ImportMnemonics/InputMnemonics';
-import EntryImportAddress from './ImportMnemonics/EntryImportAddress';
-import ConfirmMnemonics from './ImportMnemonics/ConfirmMnemonics';
-
-import ImportWatchAddress from './ImportWatchAddress';
-import ImportQRCodeBase from './ImportQRCodeBase';
-import SelectAddress from './SelectAddress';
-import ImportMoreAddress from './ImportMoreAddress';
-import ImportSuccess from './ImportSuccess';
-import ImportHardware from './ImportHardware';
-import ImportLedgerPathSelect from './ImportHardware/LedgerHdPath';
-import ImportGnosis from './ImportGnosisAddress';
-import ConnectLedger from './ImportHardware/LedgerConnect';
-import Settings from './Settings';
-import ConnectedSites from './ConnectedSites';
 import Approval from './Approval';
-import TokenApproval from './TokenApproval';
-import NFTApproval from './NFTApproval';
-import CreateMnemonics from './CreateMnemonics';
-import AddAddress from './AddAddress';
 import ChainManagement, { StartChainManagement } from './ChainManagement';
-import ChainList from './ChainList';
-import AddressManagement from './AddressManagement';
-import SwitchLang from './SwitchLang';
-import Activities from './Activities';
-import History from './History';
-import GnosisTransactionQueue from './GnosisTransactionQueue';
-import QRCodeReader from './QRCodeReader';
-import AdvancedSettings from './AdvanceSettings';
-import RequestPermission from './RequestPermission';
-import SendToken from './SendToken';
-import SendNFT from './SendNFT';
-import Receive from './Receive/index';
-import WalletConnectTemplate from './WalletConnect';
-import AddressDetail from './AddressDetail';
-import AddressBackupMnemonics from './AddressBackup/Mnemonics';
-import AddressBackupPrivateKey from './AddressBackup/PrivateKey';
 import { getUiType, useWallet } from '../utils';
 ReactGA.initialize('UA-199755108-1');
 // eslint-disable-next-line @typescript-eslint/no-empty-function
@@ -60,6 +21,58 @@ const LogPageView = () => {
 
   return null;
 };
+
+const History = React.lazy(() => import('./History'));
+const Activities = React.lazy(() => import('./Activities'));
+const ChainList = React.lazy(() => import('./ChainList'));
+const AddressManagement = React.lazy(() => import('./AddressManagement'));
+const ImportLedgerPathSelect = React.lazy(
+  () => import('./ImportHardware/LedgerHdPath')
+);
+const AddAddress = React.lazy(() => import('./AddAddress'));
+const CreateMnemonics = React.lazy(() => import('./CreateMnemonics'));
+const TokenApproval = React.lazy(() => import('./TokenApproval'));
+const NFTApproval = React.lazy(() => import('./NFTApproval'));
+const SendToken = React.lazy(() => import('./SendToken'));
+const SendNFT = React.lazy(() => import('./SendNFT'));
+const GnosisTransactionQueue = React.lazy(
+  () => import('./GnosisTransactionQueue')
+);
+const ConnectLedger = React.lazy(
+  () => import('./ImportHardware/LedgerConnect')
+);
+const QRCodeReader = React.lazy(() => import('./QRCodeReader'));
+const AdvancedSettings = React.lazy(() => import('./AdvanceSettings'));
+const RequestPermission = React.lazy(() => import('./RequestPermission'));
+const Receive = React.lazy(() => import('./Receive/index'));
+const WalletConnectTemplate = React.lazy(() => import('./WalletConnect'));
+const AddressDetail = React.lazy(() => import('./AddressDetail'));
+const AddressBackupMnemonics = React.lazy(
+  () => import('./AddressBackup/Mnemonics')
+);
+const AddressBackupPrivateKey = React.lazy(
+  () => import('./AddressBackup/PrivateKey')
+);
+const ImportWatchAddress = React.lazy(() => import('./ImportWatchAddress'));
+const ImportQRCodeBase = React.lazy(() => import('./ImportQRCodeBase'));
+const SelectAddress = React.lazy(() => import('./SelectAddress'));
+const ImportMoreAddress = React.lazy(() => import('./ImportMoreAddress'));
+const ImportSuccess = React.lazy(() => import('./ImportSuccess'));
+const ImportHardware = React.lazy(() => import('./ImportHardware'));
+const ImportGnosis = React.lazy(() => import('./ImportGnosisAddress'));
+const ImportMode = React.lazy(() => import('./ImportMode'));
+const ImportPrivateKey = React.lazy(() => import('./ImportPrivateKey'));
+const ImportJson = React.lazy(() => import('./ImportJson'));
+const InputMnemonics = React.lazy(
+  () => import('./ImportMnemonics/InputMnemonics')
+);
+const EntryImportAddress = React.lazy(
+  () => import('./ImportMnemonics/EntryImportAddress')
+);
+const ConfirmMnemonics = React.lazy(
+  () => import('./ImportMnemonics/ConfirmMnemonics')
+);
+const ConnectedSites = React.lazy(() => import('./ConnectedSites'));
 
 const Main = () => {
   const wallet = useWallet();
@@ -185,9 +198,6 @@ const Main = () => {
         <PrivateRoute exact path="/nft-approval">
           <NFTApproval />
         </PrivateRoute>
-        <PrivateRoute exact path="/settings">
-          <Settings />
-        </PrivateRoute>
         <PrivateRoute exact path="/settings/address">
           <AddressManagement />
         </PrivateRoute>
@@ -208,9 +218,6 @@ const Main = () => {
         </PrivateRoute>
         <PrivateRoute exact path="/settings/chain-list">
           <ChainList />
-        </PrivateRoute>
-        <PrivateRoute exact path="/settings/switch-lang">
-          <SwitchLang />
         </PrivateRoute>
         <PrivateRoute exact path="/settings/advanced">
           <AdvancedSettings />
