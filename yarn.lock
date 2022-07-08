@@ -2825,10 +2825,10 @@
     typescript "^4.4.4"
     web3-core "^1.6.0"
 
-"@rabby-wallet/page-provider@^0.1.4":
-  version "0.1.4"
-  resolved "https://registry.yarnpkg.com/@rabby-wallet/page-provider/-/page-provider-0.1.4.tgz#993458b96b24e6ecda6b1f58e2ed365bbe9f1fa1"
-  integrity sha512-7/O2XfeM3o1chA6If4ZtdBZLIpd5joe8ui1xJYgJresRAjefkXkgXfEJRzJeP+tW4bCEZazyLHOKGpBlHtjYOQ==
+"@rabby-wallet/page-provider@^0.1.5":
+  version "0.1.5"
+  resolved "https://registry.yarnpkg.com/@rabby-wallet/page-provider/-/page-provider-0.1.5.tgz#5d6ca4e9606bed808304647d0dc4a5c73679a5e2"
+  integrity sha512-ZrLuEfY/hWMBqHwj+33owKVXykJHLKjiV/CkoBGhjWZRhBH5+vb/Rid3qZnCtnFV0iCeMFcMChcQ7tRDCwAErw==
   dependencies:
     "@debank/common" "^0.1.1"
     "@ledgerhq/devices" "^6.27.1"
