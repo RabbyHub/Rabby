@@ -26,6 +26,7 @@ import IconGnosis from 'ui/assets/walletlogo/gnosis.png';
 import clsx from 'clsx';
 import ReactGA from 'react-ga';
 import { getKRCategoryByType } from '@/utils/transaction';
+import { underline2Camelcase } from '@/background/utils';
 interface SignTypedDataProps {
   method: string;
   data: any[];
@@ -124,22 +125,20 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
     }
   };
 
-  const gaEvent = async (
+  const report = async (
     action:
       | 'createSignText'
       | 'startSignText'
-      | 'completeSignText'
       | 'cancelSignText'
+      | 'completeSignText',
+    extra?: Record<string, any>
   ) => {
     const currentAccount = await wallet.getCurrentAccount();
-    ReactGA.event({
-      category: 'SignText',
-      action: action,
-      label: [
-        getKRCategoryByType(currentAccount.type),
-        currentAccount.brandName,
-      ].join('|'),
-      transport: 'beacon',
+    await wallet.reportStats(action, {
+      type: currentAccount.brandName,
+      category: getKRCategoryByType(currentAccount.type),
+      method: underline2Camelcase(params.method),
+      ...extra,
     });
   };
 
@@ -165,7 +164,7 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
   };
 
   const handleCancel = () => {
-    gaEvent('cancelSignText');
+    report('cancelSignText');
     rejectApproval('User rejected the request.');
   };
 
@@ -180,7 +179,7 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
       return;
     }
     const currentAccount = await wallet.getCurrentAccount();
-    gaEvent('startSignText');
+    report('startSignText');
     if (currentAccount?.type === KEYRING_CLASS.HARDWARE.LEDGER) {
       try {
         const transport = await TransportWebHID.create();
@@ -204,7 +203,6 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
     }
 
     resolveApproval({});
-    gaEvent('completeSignText');
   };
 
   const init = async () => {
@@ -217,7 +215,7 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
   useEffect(() => {
     init();
     checkWachMode();
-    gaEvent('createSignText');
+    report('createSignText');
   }, []);
 
   useEffect(() => {

@@ -29,6 +29,9 @@ import IconGnosis from 'ui/assets/walletlogo/gnosis.png';
 
 import ReactGA from 'react-ga';
 import { getKRCategoryByType } from '@/utils/transaction';
+import stats from '@/stats';
+import { underline2Camelcase } from '@/background/utils';
+import { P } from 'ts-toolbelt/out/Object/_api';
 
 interface SignTextProps {
   data: string[];
@@ -39,6 +42,7 @@ interface SignTextProps {
   };
   isGnosis?: boolean;
   account?: Account;
+  method?: string;
 }
 
 export const WaitingSignComponent = {
@@ -122,8 +126,25 @@ const SignText = ({ params }: { params: SignTextProps }) => {
     });
   };
 
+  const report = async (
+    action:
+      | 'createSignText'
+      | 'startSignText'
+      | 'cancelSignText'
+      | 'completeSignText',
+    extra?: Record<string, any>
+  ) => {
+    const currentAccount = await wallet.getCurrentAccount<Account>();
+    await wallet.reportStats(action, {
+      type: currentAccount.brandName,
+      category: getKRCategoryByType(currentAccount.type),
+      method: 'personalSign',
+      ...extra,
+    });
+  };
+
   const handleCancel = () => {
-    gaEvent('cancelSignText');
+    report('cancelSignText');
     rejectApproval('User rejected the request.');
   };
 
@@ -138,8 +159,8 @@ const SignText = ({ params }: { params: SignTextProps }) => {
       return;
     }
     const currentAccount = await wallet.getCurrentAccount();
-    gaEvent('startSignText');
 
+    report('startSignText');
     if (isGnosis && params.account) {
       if (WaitingSignComponent[params.account.type]) {
         wallet.signPersonalMessage(
@@ -166,6 +187,9 @@ const SignText = ({ params }: { params: SignTextProps }) => {
             params.account.address,
             params.data[0]
           );
+          report('completeSignText', {
+            success: true,
+          });
           const sigs = await wallet.getGnosisTransactionSignatures();
           if (sigs.length > 0) {
             await wallet.gnosisAddConfirmation(params.account.address, result);
@@ -178,6 +202,9 @@ const SignText = ({ params }: { params: SignTextProps }) => {
         } catch (e) {
           message.error(e.message);
           setIsLoading(false);
+          report('completeSignText', {
+            success: false,
+          });
         }
       }
       return;
@@ -194,9 +221,7 @@ const SignText = ({ params }: { params: SignTextProps }) => {
 
       return;
     }
-
     resolveApproval({});
-    gaEvent('completeSignText');
   };
 
   const handleViewRawClick = () => {
@@ -282,6 +307,7 @@ const SignText = ({ params }: { params: SignTextProps }) => {
 
   useEffect(() => {
     gaEvent('createSignText');
+    report('createSignText');
   }, []);
 
   return (

@@ -663,6 +663,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     } else {
       (transaction as Tx).gasPrice = tx.gasPrice;
     }
+    gaEvent('allow');
     if (currentAccount?.type && WaitingSignComponent[currentAccount.type]) {
       resolveApproval({
         ...transaction,
@@ -690,8 +691,6 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       chainId: chain.serverId,
       category: KEYRING_CATEGORY_MAP[currentAccount.type],
     });
-
-    gaEvent('allow');
 
     ReactGA.event({
       category: 'Transaction',
