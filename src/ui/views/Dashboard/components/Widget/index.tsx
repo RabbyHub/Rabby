@@ -43,14 +43,14 @@ const WidgetDetailModal = ({
       await wallet.enableWidget(widget.name);
       message.success({
         icon: <img src={IconSuccess} className="icon icon-success" />,
-        content: t('Enable success'),
+        content: t('Enabled'),
         duration: 0.5,
       });
     } else {
       await wallet.disableWidget(widget.name);
       message.success({
         icon: <img src={IconSuccess} className="icon icon-success" />,
-        content: t('Disable success'),
+        content: t('Disabled'),
         duration: 0.5,
       });
     }

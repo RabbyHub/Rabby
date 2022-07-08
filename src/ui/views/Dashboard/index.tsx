@@ -437,7 +437,7 @@ const Dashboard = () => {
       <Link to="/add-address" className="pop-add-address flex items-center">
         {' '}
         <img src={IconPlus} />
-        <p className="mb-0 ml-15 lh-1">{t('Add addresses')}</p>
+        <p className="mb-0 ml-15 lh-1">{t('Add address')}</p>
       </Link>
     </div>
   );
