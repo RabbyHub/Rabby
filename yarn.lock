@@ -2921,6 +2921,13 @@
   dependencies:
     bignumber.js "^9.0.2"
 
+"@rabby-wallet/widgets@^1.0.9":
+  version "1.0.9"
+  resolved "https://registry.yarnpkg.com/@rabby-wallet/widgets/-/widgets-1.0.9.tgz#91d55bb4488f847636174783e3da73433d5fd298"
+  integrity sha512-Cv7954YiHWXIBVzE5Q1JGIlJQjRdmFEV4LJEXznt5NqeOKh1A7uUcQO4vCDc6foCjWwAUfsjo3fPlOJ/9WwMIg==
+  dependencies:
+    bignumber.js "^9.0.2"
+
 "@rematch/core@^2.2.0":
   version "2.2.0"
   resolved "https://registry.yarnpkg.com/@rematch/core/-/core-2.2.0.tgz#c4e6cc9d369d341afe2345842f43c255b7a44e90"
