@@ -204,9 +204,10 @@ class NotificationService extends Events {
 
   requestApproval = async (data, winProps?): Promise<any> => {
     return new Promise((resolve, reject) => {
+      const uuid = Date.now();
       const approval: Approval = {
-        taskId: this.store.tasks.length,
-        id: this.approvals.length,
+        taskId: uuid,
+        id: uuid,
         data,
         winProps,
         resolve,
@@ -219,10 +220,17 @@ class NotificationService extends Events {
       ) {
         this.createTask(approval);
       }
-      this.approvals = [...this.approvals, approval];
-      if (!this.currentApproval) {
+
+      if (data.isUnshift) {
+        this.approvals = [approval, ...this.approvals];
         this.currentApproval = approval;
+      } else {
+        this.approvals = [...this.approvals, approval];
+        if (!this.currentApproval) {
+          this.currentApproval = approval;
+        }
       }
+
       if (this.notifiWindowId) {
         browser.windows.update(this.notifiWindowId, {
           focused: true,
