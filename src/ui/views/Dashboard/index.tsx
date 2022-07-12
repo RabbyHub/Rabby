@@ -260,6 +260,14 @@ const Dashboard = () => {
           </div>
         ),
       });
+      ReactGA.event({
+        category: 'AccountInfo',
+        action: 'popupCopyAddress',
+        label: [
+          getKRCategoryByType(currentAccount?.type),
+          currentAccount?.brandName,
+        ].join('|'),
+      });
       clipboard.destroy();
     });
   };
@@ -404,6 +412,16 @@ const Dashboard = () => {
                 style={props.style}
                 copiedSuccess={copySuccess}
                 handleClickChange={handleChange}
+                onCopy={(account) => {
+                  ReactGA.event({
+                    category: 'AccountInfo',
+                    action: 'selectCopyAddress',
+                    label: [
+                      getKRCategoryByType(account?.type),
+                      account?.brandName,
+                    ].join('|'),
+                  });
+                }}
               />
             );
           }}
@@ -412,7 +430,7 @@ const Dashboard = () => {
       <Link to="/add-address" className="pop-add-address flex items-center">
         {' '}
         <img src={IconPlus} />
-        <p className="mb-0 ml-15 lh-1">{t('Add addresses')}</p>
+        <p className="mb-0 ml-15 lh-1">{t('Add address')}</p>
       </Link>
     </div>
   );
@@ -638,10 +656,30 @@ const Dashboard = () => {
               </div>
               <img
                 src={IconInfo}
-                onClick={() => setHovered(true)}
+                onClick={() => {
+                  setHovered(true);
+                  ReactGA.event({
+                    category: 'AccountInfo',
+                    action: 'getQRCode',
+                    label: [
+                      getKRCategoryByType(currentAccount?.type),
+                      currentAccount?.brandName,
+                    ].join('|'),
+                  });
+                }}
                 className="w-[18px] h-[18px] mr-12 pointer"
               />
               <Copy
+                onClick={() => {
+                  ReactGA.event({
+                    category: 'AccountInfo',
+                    action: 'headCopyAddress',
+                    label: [
+                      getKRCategoryByType(currentAccount?.type),
+                      currentAccount?.brandName,
+                    ].join('|'),
+                  });
+                }}
                 variant="address"
                 data={currentAccount.address}
                 className="w-18"

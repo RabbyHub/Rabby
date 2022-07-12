@@ -19,6 +19,27 @@ const WINDOW_SIZE = {
   height: 600,
 };
 
+const createFullScreenWindow = ({ url, ...rest }) => {
+  return new Promise((resolve) => {
+    chrome.windows.create(
+      {
+        focused: true,
+        url,
+        type: 'popup',
+        ...rest,
+        width: undefined,
+        height: undefined,
+        left: undefined,
+        top: undefined,
+        state: 'fullscreen',
+      },
+      (win) => {
+        resolve(win);
+      }
+    );
+  });
+};
+
 const create = async ({ url, ...rest }): Promise<number | undefined> => {
   const { top: cTop, left: cLeft, width } = await browser.windows.getCurrent({
     windowTypes: ['normal'],
@@ -31,17 +52,7 @@ const create = async ({ url, ...rest }): Promise<number | undefined> => {
   let win;
   if (currentWindow.state === 'fullscreen') {
     // browser.windows.create not pass state to chrome
-    win = await chrome.windows.create({
-      focused: true,
-      url,
-      type: 'popup',
-      ...rest,
-      width: undefined,
-      height: undefined,
-      left: undefined,
-      top: undefined,
-      state: 'fullscreen',
-    });
+    win = await createFullScreenWindow({ url, ...rest });
   } else {
     win = await browser.windows.create({
       focused: true,
@@ -53,9 +64,8 @@ const create = async ({ url, ...rest }): Promise<number | undefined> => {
       ...rest,
     });
   }
-
   // shim firefox
-  if (win.left !== left) {
+  if (win.left !== left && currentWindow.state !== 'fullscreen') {
     await browser.windows.update(win.id!, { left, top });
   }
 

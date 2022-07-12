@@ -91,7 +91,7 @@ const NFTApproval = () => {
           : contract?.is_erc1155
           ? 'ERC1155'
           : '';
-        await wallet.revokeNFTApprove(
+        wallet.revokeNFTApprove(
           {
             chainServerId: contract?.chain,
             contractId: contract?.contract_id,
@@ -113,7 +113,7 @@ const NFTApproval = () => {
           : token?.is_erc1155
           ? 'ERC1155'
           : '';
-        await wallet.revokeNFTApprove(
+        wallet.revokeNFTApprove(
           {
             chainServerId: token?.chain,
             contractId: token?.contract_id,

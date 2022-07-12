@@ -37,7 +37,7 @@ const ApprovalCard = ({ data }: ApprovalCardProps) => {
           currentAccount?.brandName,
         ].join('|'),
       });
-      await wallet.approveToken(data.chain, data.id, item.id, 0, {
+      wallet.approveToken(data.chain, data.id, item.id, 0, {
         ga: {
           category: 'Security',
           source: 'tokenApproval',

@@ -121,7 +121,7 @@ const QRHardWareWaiting = ({ params }) => {
           {t(walletBrandContent.name)}
         </p>
         <p className="text-14 mb-0 mt-4 text-white opacity-80 text-center">
-          {t('KeystoneSignRequestSubtitle')}
+          Scan the QR code on the {walletBrandContent.name} hardware wallet
         </p>
         <img src="/images/watch-mask.png" className="mask" />
       </header>

@@ -7,7 +7,7 @@ const AddAddress = () => {
   const { t } = useTranslation();
   return (
     <div className="add-address">
-      <PageHeader fixed>{t('Add addresses')}</PageHeader>
+      <PageHeader fixed>{t('Add address')}</PageHeader>
       <AddAddressOptions />
     </div>
   );

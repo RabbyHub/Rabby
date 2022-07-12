@@ -1,6 +1,4 @@
 import stats from '@/stats';
-import { filterRbiSource } from '@/ui/utils/ga-event';
-import { varyTxSignType } from '@/ui/utils/transaction';
 import { hasConnectedLedgerDevice } from '@/utils';
 import { openInternalPageInTab } from 'ui/utils/webapi';
 import {
@@ -108,32 +106,6 @@ const normalizeTxParams = (tx) => {
   }
   return copy;
 };
-
-function normalizeTxInternalCtx(ctx?: any, isNFT?: boolean) {
-  let internalSignSource:
-    | 'transactionHistory'
-    | 'sendToken'
-    | 'sendNFT'
-    | 'gnosisTxQueue'
-    | 'tokenApproval'
-    | 'nftApproval'
-    | undefined;
-  if (isNFT) {
-    internalSignSource = 'sendNFT';
-  } else {
-    try {
-      const { $rabbyInternalSignSource } = ctx || {};
-
-      internalSignSource = $rabbyInternalSignSource as any;
-    } catch (e) {
-      Sentry.captureException(
-        new Error(`normalizeTxInternalCtx failed, ${JSON.stringify(e)}`)
-      );
-    }
-  }
-
-  return { internalSignSource };
-}
 
 export const TxTypeComponent = ({
   txDetail,
@@ -663,6 +635,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     } else {
       (transaction as Tx).gasPrice = tx.gasPrice;
     }
+    gaEvent('allow');
     if (currentAccount?.type && WaitingSignComponent[currentAccount.type]) {
       resolveApproval({
         ...transaction,
@@ -690,8 +663,6 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       chainId: chain.serverId,
       category: KEYRING_CATEGORY_MAP[currentAccount.type],
     });
-
-    gaEvent('allow');
 
     ReactGA.event({
       category: 'Transaction',

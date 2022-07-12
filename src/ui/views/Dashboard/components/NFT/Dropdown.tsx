@@ -27,7 +27,12 @@ const NFTDropdown = ({ value, onChange }: NFTDropdownProps) => {
   const menu = (
     <Menu
       className="rabby-dropdown-menu"
-      onClick={(e) => onChange(e.key as NFTDropdownProps['value'])}
+      onClick={(e) => {
+        const v = e.key as NFTDropdownProps['value'];
+        if (v !== value) {
+          onChange(v);
+        }
+      }}
     >
       {options.map((option) => (
         <Menu.Item key={option.value} className="rabby-dropdown-menu-item">

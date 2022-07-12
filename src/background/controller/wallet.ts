@@ -99,7 +99,9 @@ export class WalletController extends BaseController {
 
   getApproval = notificationService.getApproval;
   resolveApproval = notificationService.resolveApproval;
-  rejectApproval = notificationService.rejectApproval;
+  rejectApproval = (err?: string, stay = false, isInternal = false) => {
+    return notificationService.rejectApproval(err, stay, isInternal);
+  };
 
   approveToken = async (
     chainServerId: string,

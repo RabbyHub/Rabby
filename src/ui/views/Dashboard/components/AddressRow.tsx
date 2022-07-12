@@ -26,12 +26,14 @@ function AddressRow({
   style,
   copiedSuccess = false,
   handleClickChange,
+  onCopy,
 }: {
   data: Account[];
   index: number;
   style: React.StyleHTMLAttributes<HTMLDivElement>;
   copiedSuccess?: boolean;
   handleClickChange?: (account: Account) => any;
+  onCopy?: (account: Account) => void;
 }) {
   const wallet = useWallet();
   const { highlightedAddresses } = useRabbySelector((s) => ({
@@ -53,6 +55,9 @@ function AddressRow({
       },
     });
     clipboard.on('success', () => {
+      if (onCopy) {
+        onCopy(account);
+      }
       message.success({
         duration: 1,
         icon: <i />,
@@ -68,7 +73,7 @@ function AddressRow({
       });
       clipboard.destroy();
     });
-  }, [account]);
+  }, [account, onCopy]);
 
   const isMountedRef = useIsMountedRef();
   const [hdPathIndex, setHDPathIndex] = React.useState(null);

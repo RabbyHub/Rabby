@@ -226,6 +226,18 @@ class NotificationService extends Events {
     }
   };
 
+  rejectAllApprovals = () => {
+    this.approvals.forEach((approval) => {
+      approval.reject &&
+        approval.reject(
+          new EthereumProviderError(4001, 'User rejected the request.')
+        );
+    });
+    this.approvals = [];
+    this.currentApproval = null;
+    this.store.tasks = [];
+  };
+
   unLock = () => {
     this.isLocked = false;
   };
