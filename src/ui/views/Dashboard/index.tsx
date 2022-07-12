@@ -808,7 +808,7 @@ const Dashboard = () => {
                       label: [
                         getKRCategoryByType(currentAccount?.type),
                         currentAccount?.brandName,
-                        nftType === 'collection' ? 'collections' : 'all',
+                        nextVal === 'collection' ? 'collections' : 'all',
                       ].join('|'),
                     });
                     setNFTType(nextVal);
