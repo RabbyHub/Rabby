@@ -1,37 +1,32 @@
-import React, { useState, useEffect, ReactNode } from 'react';
-import { Button, Tooltip, message } from 'antd';
-import { useTranslation } from 'react-i18next';
-import clsx from 'clsx';
-import { KEYRING_CLASS, KEYRING_TYPE } from 'consts';
+import { hasConnectedLedgerDevice } from '@/utils';
+import { Button, message, Tooltip } from 'antd';
 import {
-  useApproval,
-  useWallet,
-  hex2Text,
-  openInternalPageInTab,
-  useWalletOld,
-} from 'ui/utils';
-import {
-  SecurityCheckResponse,
   SecurityCheckDecision,
+  SecurityCheckResponse,
 } from 'background/service/openapi';
 import { Account } from 'background/service/preference';
-import { Modal } from 'ui/component';
-import SecurityCheckBar from './SecurityCheckBar';
-import SecurityCheckDetail from './SecurityCheckDetail';
-import AccountCard from './AccountCard';
-import { hasConnectedLedgerDevice } from '@/utils';
-import LedgerWebHIDAlert from './LedgerWebHIDAlert';
-import { ReactComponent as IconQuestionMark } from 'ui/assets/question-mark.svg';
+import clsx from 'clsx';
+import { KEYRING_CLASS, KEYRING_TYPE } from 'consts';
+import React, { ReactNode, useEffect, useState } from 'react';
+import { useTranslation } from 'react-i18next';
 import IconArrowRight from 'ui/assets/arrow-right-gray.svg';
 import IconInfo from 'ui/assets/infoicon.svg';
-import IconWatch from 'ui/assets/walletlogo/watch-purple.svg';
+import { ReactComponent as IconQuestionMark } from 'ui/assets/question-mark.svg';
 import IconGnosis from 'ui/assets/walletlogo/gnosis.png';
+import IconWatch from 'ui/assets/walletlogo/watch-purple.svg';
+import { Modal } from 'ui/component';
+import {
+  hex2Text,
+  openInternalPageInTab,
+  useApproval,
+  useWalletOld,
+} from 'ui/utils';
+import AccountCard from './AccountCard';
+import LedgerWebHIDAlert from './LedgerWebHIDAlert';
+import SecurityCheckBar from './SecurityCheckBar';
+import SecurityCheckDetail from './SecurityCheckDetail';
 
-import ReactGA from 'react-ga';
 import { getKRCategoryByType } from '@/utils/transaction';
-import stats from '@/stats';
-import { underline2Camelcase } from '@/background/utils';
-import { P } from 'ts-toolbelt/out/Object/_api';
 
 interface SignTextProps {
   data: string[];
@@ -107,25 +102,6 @@ const SignText = ({ params }: { params: SignTextProps }) => {
     setSecurityCheckDetail(check);
   };
 
-  const gaEvent = async (
-    action:
-      | 'createSignText'
-      | 'startSignText'
-      | 'completeSignText'
-      | 'cancelSignText'
-  ) => {
-    const currentAccount = await wallet.getCurrentAccount<Account>();
-    ReactGA.event({
-      category: 'SignText',
-      action: action,
-      label: [
-        getKRCategoryByType(currentAccount.type),
-        currentAccount.brandName,
-      ].join('|'),
-      transport: 'beacon',
-    });
-  };
-
   const report = async (
     action:
       | 'createSignText'
@@ -134,7 +110,12 @@ const SignText = ({ params }: { params: SignTextProps }) => {
       | 'completeSignText',
     extra?: Record<string, any>
   ) => {
-    const currentAccount = await wallet.getCurrentAccount<Account>();
+    const currentAccount = isGnosis
+      ? params.account
+      : await wallet.getCurrentAccount<Account>();
+    if (!currentAccount) {
+      return;
+    }
     await wallet.reportStats(action, {
       type: currentAccount.brandName,
       category: getKRCategoryByType(currentAccount.type),
@@ -306,7 +287,6 @@ const SignText = ({ params }: { params: SignTextProps }) => {
   }, [securityCheckStatus]);
 
   useEffect(() => {
-    gaEvent('createSignText');
     report('createSignText');
   }, []);
 
