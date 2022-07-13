@@ -3,16 +3,11 @@ import { ethErrors } from 'eth-rpc-errors';
 import { EthereumProviderError } from 'eth-rpc-errors/dist/classes';
 import { winMgr } from 'background/webapi';
 import { CHAINS } from 'consts';
-import { createPersistStore } from 'background/utils';
 import { browser } from 'webextension-polyfill-ts';
 
 interface Task {
   approval: Approval;
   id: number;
-}
-
-interface TaskStore {
-  tasks: Task[];
 }
 
 type IApprovalComponents = typeof import('@/ui/views/Approval/components');
@@ -40,9 +35,6 @@ class NotificationService extends Events {
   _approvals: Approval[] = [];
   notifiWindowId = 0;
   isLocked = false;
-  store: TaskStore = {
-    tasks: [],
-  };
 
   get approvals() {
     return this._approvals;
@@ -75,31 +67,6 @@ class NotificationService extends Events {
     });
   }
 
-  init = async () => {
-    const storage = await createPersistStore<TaskStore>({
-      name: 'tasks',
-      template: {
-        tasks: [],
-      },
-    });
-
-    this.store = storage || this.store;
-
-    if (!this.store.tasks) {
-      this.store.tasks = [];
-    }
-
-    if (this.store.tasks.length > 0) {
-      this.approvals = this.store.tasks.map((task) => ({
-        taskId: task.id,
-        id: task.approval.id,
-        data: task.approval.data,
-        winProps: task.approval.winProps,
-      }));
-      this.currentApproval = this.approvals[0];
-    }
-  };
-
   activeFirstApproval = () => {
     if (this.notifiWindowId) {
       browser.windows.update(this.notifiWindowId, {
@@ -113,31 +80,6 @@ class NotificationService extends Events {
     const approval = this.approvals[0];
     this.currentApproval = approval;
     this.openNotification(approval.winProps);
-  };
-
-  createTask = (approval: Approval) => {
-    const id = approval.taskId!;
-    this.store.tasks = [
-      ...this.store.tasks,
-      {
-        id,
-        approval: {
-          id: approval.id,
-          taskId: approval.taskId,
-          data: {
-            params: approval.data.params,
-            origin: approval.data.origin,
-            approvalComponent: approval.data.approvalComponent,
-            approvalType: approval.data.approvalType,
-          },
-          winProps: approval.winProps,
-        },
-      },
-    ];
-  };
-
-  deleteTask = (id: number) => {
-    this.store.tasks = this.store.tasks.filter((task) => task.id !== id);
   };
 
   deleteApproval = (approval) => {
@@ -165,9 +107,6 @@ class NotificationService extends Events {
 
     this.deleteApproval(approval);
 
-    if (approval && approval.taskId !== null) {
-      this.deleteTask(approval.taskId);
-    }
     if (this.approvals.length > 0) {
       this.currentApproval = this.approvals[0];
     } else {
@@ -189,9 +128,6 @@ class NotificationService extends Events {
     }
 
     const approval = this.currentApproval;
-    if (approval && approval.taskId !== null) {
-      this.deleteTask(approval.taskId);
-    }
 
     if (approval && this.approvals.length > 1) {
       this.deleteApproval(approval);
@@ -213,13 +149,6 @@ class NotificationService extends Events {
         resolve,
         reject,
       };
-      if (
-        ['SignTx', 'SignText', 'SignTypedData'].includes(
-          data.approvalComponent || ''
-        )
-      ) {
-        this.createTask(approval);
-      }
 
       if (data.isUnshift) {
         this.approvals = [approval, ...this.approvals];
@@ -273,7 +202,6 @@ class NotificationService extends Events {
     });
     this.approvals = [];
     this.currentApproval = null;
-    this.store.tasks = [];
   };
 
   unLock = () => {
