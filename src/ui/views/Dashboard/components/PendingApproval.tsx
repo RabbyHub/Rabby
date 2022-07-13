@@ -54,14 +54,15 @@ const PendingApproval = ({ count }: { count: number }) => {
     <Overlay>
       <Inner>
         <TextContent>
-          <NumberText>{count}</NumberText> transactions need to sign
+          <NumberText>{count}</NumberText>{' '}
+          {count === 1 ? 'transaction needs' : 'transactions need'} to sign
         </TextContent>
         <Button
           className="w-[200px] h-[40px] rounded"
           type="primary"
           onClick={handleActiveApproval}
         >
-          View first one
+          {count === 1 ? 'View' : 'View first one'}
         </Button>
       </Inner>
     </Overlay>
