@@ -100,7 +100,7 @@ export const isMetaMaskActive = async () => {
   if (!url) return false;
 
   try {
-    const res = await window.fetch(url);
+    const res = await fetch(url);
     await res.text();
 
     return true;
