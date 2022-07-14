@@ -89,7 +89,6 @@ const Main = () => {
       }
     })();
   }, []);
-
   return (
     <>
       <Route path="/" component={LogPageView} />
