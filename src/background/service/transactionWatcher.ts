@@ -130,7 +130,7 @@ class TransactionWatcher {
     const nextTimeout = tx.createdTime && this._findFrequency(tx.createdTime);
 
     if (nextTimeout) {
-      this.timers[id] = window.setTimeout(() => {
+      this.timers[id] = setTimeout(() => {
         this.checkStatus(id).then((txReceipt) => {
           if (txReceipt) {
             this.notify(id, txReceipt);
