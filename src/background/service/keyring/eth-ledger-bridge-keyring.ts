@@ -992,7 +992,7 @@ class LedgerBridgeKeyring extends EventEmitter {
 
   async _hasPreviousTransactions(address) {
     const apiUrl = this._getApiUrl();
-    const response = await window.fetch(
+    const response = await fetch(
       `${apiUrl}/api?module=account&action=txlist&address=${address}&tag=latest&page=1&offset=1`
     );
     const parsedResponse = await response.json();
