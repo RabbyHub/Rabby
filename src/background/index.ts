@@ -1,7 +1,6 @@
 import { groupBy } from 'lodash';
 import 'reflect-metadata';
 import * as Sentry from '@sentry/browser';
-import ReactGA, { ga } from 'react-ga';
 import { Integrations } from '@sentry/tracing';
 import { browser } from 'webextension-polyfill-ts';
 import { ethErrors } from 'eth-rpc-errors';
@@ -36,12 +35,12 @@ import utc from 'dayjs/plugin/utc';
 import { setPopupIcon } from './utils';
 import { getSentryEnv } from '@/utils/env';
 
-ReactGA.initialize('UA-199755108-3');
-// eslint-disable-next-line @typescript-eslint/no-empty-function
-ga('set', 'checkProtocolTask', function () {});
-ga('set', 'appName', 'Rabby');
-ga('set', 'appVersion', process.env.release);
-ga('require', 'displayfeatures');
+// ReactGA.initialize('UA-199755108-3');
+// // eslint-disable-next-line @typescript-eslint/no-empty-function
+// ga('set', 'checkProtocolTask', function () {});
+// ga('set', 'appName', 'Rabby');
+// ga('set', 'appVersion', process.env.release);
+// ga('require', 'displayfeatures');
 
 dayjs.extend(utc);
 
@@ -155,12 +154,12 @@ restoreAppState();
       const groups = groupBy(list, (item) => {
         return `${item.category}_${item.action}_${item.label}`;
       });
-      Object.values(groups).forEach((group) => {
-        ReactGA.event({
-          ...group[0],
-          value: group.length,
-        });
-      });
+      // Object.values(groups).forEach((group) => {
+      //   ReactGA.event({
+      //     ...group[0],
+      //     value: group.length,
+      //   });
+      // });
       preferenceService.updateSendLogTime(Date.now());
     };
     sendEvent();
