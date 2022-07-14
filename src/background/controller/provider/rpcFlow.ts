@@ -17,6 +17,13 @@ const isSignApproval = (type: string) => {
 const lockedOrigins = new Set<string>();
 const connectOrigins = new Set<string>();
 
+let screenAvailHeight = 0;
+eventBus.addEventListener(EVENTS.UIToBackground, (data) => {
+  if (data.method === 'getScreen') {
+    screenAvailHeight = data.params.availHeight;
+  }
+});
+
 const flow = new PromiseFlow();
 const flowContext = flow
   .use(async (ctx, next) => {
@@ -124,8 +131,8 @@ const flowContext = flow
       windowHeight = options.height;
     } else {
       const minHeight = 500;
-      if (screen.availHeight < 1000) {
-        windowHeight = screen.availHeight - 200;
+      if (screenAvailHeight < 1000) {
+        windowHeight = screenAvailHeight - 200;
       }
       if (windowHeight < minHeight) {
         windowHeight = minHeight;
