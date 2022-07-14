@@ -323,7 +323,7 @@ class PreferenceService {
   };
 
   getCurrentAccount = (): Account | undefined | null => {
-    const account = cloneDeep(this.store.currentAccount);
+    const account = cloneDeep(this.store?.currentAccount);
     if (!account) return account;
     return {
       ...account,
