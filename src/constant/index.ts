@@ -277,6 +277,7 @@ export const EVENTS = {
   broadcastToUI: 'broadcastToUI',
   broadcastToBackground: 'broadcastToBackground',
   TX_COMPLETED: 'TX_COMPLETED',
+  UIToBackground: 'UIToBackground',
   SIGN_FINISHED: 'SIGN_FINISHED',
   WALLETCONNECT: {
     STATUS_CHANGED: 'WALLETCONNECT_STATUS_CHANGED',
