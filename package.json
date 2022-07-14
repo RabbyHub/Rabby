@@ -54,6 +54,7 @@
     "@types/lodash": "^4.14.172",
     "@types/styled-components": "^5.1.25",
     "@types/w3c-web-hid": "^1.0.3",
+    "@vespaiach/axios-fetch-adapter": "^0.3.0",
     "@zxing/browser": "^0.0.10",
     "@zxing/library": "0.8.0",
     "ahooks": "^3.1.5",
@@ -120,7 +121,7 @@
   "devDependencies": {
     "@sentry/webpack-plugin": "^1.18.9",
     "@svgr/webpack": "^5.5.0",
-    "@types/chrome": "^0.0.143",
+    "@types/chrome": "^0.0.193",
     "@types/events": "^3.0.0",
     "@types/jest": "^27.4.0",
     "@types/koa-compose": "^3.2.5",
