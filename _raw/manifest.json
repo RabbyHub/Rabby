@@ -1,5 +1,5 @@
 {
-  "manifest_version": 2,
+  "manifest_version": 3,
   "name": "__MSG_appName__",
   "short_name": "__MSG_appName__",
   "version": "0.59.0",
@@ -15,7 +15,7 @@
     "128": "images/icon-128.png",
     "512": "images/icon-512.png"
   },
-  "browser_action": {
+  "action": {
     "default_icon": {
       "16": "images/icon-16.png",
       "19": "images/icon-19.png",
@@ -28,21 +28,13 @@
   },
   "author": "https://rabby.io/",
   "background": {
-    "page": "background.html",
-    "persistent": true
+    "service_worker": "sw.js"
   },
   "content_scripts": [
     {
       "all_frames": true,
-      "js": [
-        "webextension-polyfill.js",
-        "content-script.js"
-      ],
-      "matches": [
-        "file://*/*",
-        "http://*/*",
-        "https://*/*"
-      ],
+      "js": ["webextension-polyfill.js", "content-script.js"],
+      "matches": ["file://*/*", "http://*/*", "https://*/*"],
       "run_at": "document_start"
     },
     {
@@ -50,20 +42,23 @@
         "*://connect.trezor.io/*/popup.html",
         "https://connect.onekey.so/popup.html"
       ],
-      "js": [
-        "vendor/trezor/trezor-content-script.js"
-      ]
+      "js": ["vendor/trezor/trezor-content-script.js"]
     }
   ],
   "content_security_policy": "script-src 'self' 'wasm-eval' https://www.google-analytics.com; object-src 'self'",
   "permissions": [
     "storage",
+    "scripting",
+    "alarms",
     "unlimitedStorage",
-    "https://wallet.gridplus.io/*",
     "activeTab",
     "notifications"
   ],
+  "host_permissions": ["<all_urls>"],
   "web_accessible_resources": [
-    "user-media-permission.html"
+    {
+      "resources": ["user-media-permission.html", "pageProvider.js"],
+      "matches": ["<all_urls>"]
+    }
   ]
 }
