@@ -7,7 +7,7 @@ import {
   widgetService,
 } from 'background/service';
 import providerController from './controller';
-import ReactGA from 'react-ga';
+// import ReactGA from 'react-ga';
 
 const tabCheckin = ({
   data: {
@@ -47,10 +47,10 @@ const hasOtherProvider = () => {
   preferenceService.setHasOtherProvider(true);
   const isRabby = preferenceService.getIsDefaultWallet();
   setPopupIcon(isRabby ? 'rabby' : 'metamask');
-  ReactGA.event({
-    category: 'User',
-    action: 'hasMetaMask',
-  });
+  // ReactGA.event({
+  //   category: 'User',
+  //   action: 'hasMetaMask',
+  // });
   return true;
 };
 
