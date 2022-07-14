@@ -260,6 +260,14 @@ browser.runtime.onConnect.addListener((port) => {
       throw ethErrors.provider.disconnected();
     }
 
+    if (data.type === EVENTS.UIToBackground) {
+      eventBus.emit(data.type, {
+        method: data.method,
+        params: data.params,
+      });
+      return;
+    }
+
     const sessionId = port.sender?.tab?.id;
     if (sessionId === undefined || !port.sender?.url) {
       return;
