@@ -4,6 +4,7 @@ import { ethErrors } from 'eth-rpc-errors';
 import { createPersistStore } from 'background/utils';
 import { CHAINS, INITIAL_OPENAPI_URL, CHAINS_ENUM } from 'consts';
 import { getChain } from '../../utils';
+import fetchAdapter from '@vespaiach/axios-fetch-adapter';
 
 interface OpenApiStore {
   host: string;
@@ -546,6 +547,7 @@ class OpenApiService {
 
   request = rateLimit(
     axios.create({
+      adapter: fetchAdapter,
       headers: {
         'X-Client': 'Rabby',
         'X-Version': process.env.release!,
@@ -586,6 +588,7 @@ class OpenApiService {
 
     this.request = rateLimit(
       axios.create({
+        adapter: fetchAdapter,
         baseURL: this.store.host,
         headers: {
           'X-Client': 'Rabby',
