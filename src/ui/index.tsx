@@ -158,9 +158,11 @@ eventBus.addEventListener(EVENTS.broadcastToBackground, (data) => {
 store.dispatch.app.initWallet({ wallet });
 store.dispatch.app.initBizStore();
 
-ReactDOM.render(
-  <Provider store={store}>
-    <Views wallet={wallet} />
-  </Provider>,
-  document.getElementById('root')
-);
+window.addEventListener('DOMContentLoaded', () => {
+  ReactDOM.render(
+    <Provider store={store}>
+      <Views wallet={wallet} />
+    </Provider>,
+    document.getElementById('root')
+  );
+});
