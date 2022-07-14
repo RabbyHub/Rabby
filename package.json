@@ -15,7 +15,7 @@
   },
   "dependencies": {
     "@debank/common": "^0.2.1",
-    "@debank/festats": "1.0.0",
+    "@debank/festats": "^1.0.1",
     "@dnd-kit/core": "^5.0.1",
     "@dnd-kit/sortable": "^6.0.0",
     "@dnd-kit/utilities": "^3.0.2",
@@ -51,6 +51,7 @@
     "@types/lodash": "^4.14.172",
     "@types/styled-components": "^5.1.25",
     "@types/w3c-web-hid": "^1.0.3",
+    "@vespaiach/axios-fetch-adapter": "^0.3.0",
     "@walletconnect/client": "^1.5.5",
     "@zxing/browser": "^0.0.10",
     "@zxing/library": "0.8.0",
@@ -116,7 +117,7 @@
   "devDependencies": {
     "@sentry/webpack-plugin": "^1.18.9",
     "@svgr/webpack": "^5.5.0",
-    "@types/chrome": "^0.0.143",
+    "@types/chrome": "^0.0.193",
     "@types/events": "^3.0.0",
     "@types/jest": "^27.4.0",
     "@types/koa-compose": "^3.2.5",
