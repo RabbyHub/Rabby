@@ -22,7 +22,6 @@ import {
   widgetService,
 } from './service';
 import { providerController, walletController } from './controller';
-import i18n from './service/i18n';
 import { getOriginFromUrl } from '@/utils';
 import rpcCache from './utils/rpcCache';
 import eventBus from '@/eventBus';
@@ -73,21 +72,21 @@ Sentry.init({
   environment: getSentryEnv(),
 });
 
-function initAppMeta() {
-  const head = document.querySelector('head');
-  const icon = document.createElement('link');
-  icon.href = 'https://rabby.io/assets/images/logo-128.png';
-  icon.rel = 'icon';
-  head?.appendChild(icon);
-  const name = document.createElement('meta');
-  name.name = 'name';
-  name.content = 'Rabby';
-  head?.appendChild(name);
-  const description = document.createElement('meta');
-  description.name = 'description';
-  description.content = i18n.t('appDescription');
-  head?.appendChild(description);
-}
+// function initAppMeta() {
+//   const head = document.querySelector('head');
+//   const icon = document.createElement('link');
+//   icon.href = 'https://rabby.io/assets/images/logo-128.png';
+//   icon.rel = 'icon';
+//   head?.appendChild(icon);
+//   const name = document.createElement('meta');
+//   name.name = 'name';
+//   name.content = 'Rabby';
+//   head?.appendChild(name);
+//   const description = document.createElement('meta');
+//   description.name = 'description';
+//   description.content = i18n.t('appDescription');
+//   head?.appendChild(description);
+// }
 
 async function restoreAppState() {
   const keyringState = await storage.get('keyringState');
@@ -111,7 +110,7 @@ async function restoreAppState() {
   appStoreLoaded = true;
 
   transactionWatchService.roll();
-  initAppMeta();
+  // initAppMeta();
 }
 
 restoreAppState();
