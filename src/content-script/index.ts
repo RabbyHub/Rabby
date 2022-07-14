@@ -1,5 +1,7 @@
 import { Message } from 'utils';
 import { nanoid } from 'nanoid';
+import { browser } from 'webextension-polyfill-ts';
+import { EVENTS } from '@/constant';
 
 const channelName = nanoid();
 
@@ -26,6 +28,12 @@ const bcm = new BroadcastChannelMessage(channelName).listen((data) =>
 
 // background notification
 pm.on('message', (data) => bcm.send('message', data));
+
+pm.request({
+  type: EVENTS.UIToBackground,
+  method: 'getScreen',
+  params: { availHeight: screen.availHeight },
+});
 
 document.addEventListener('beforeunload', () => {
   bcm.dispose();
