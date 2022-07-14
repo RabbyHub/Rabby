@@ -25,6 +25,8 @@ class PortMessage extends Message {
       }
     });
 
+    this.port.onDisconnect.addListener(() => this.connect(name));
+
     return this;
   };
 
