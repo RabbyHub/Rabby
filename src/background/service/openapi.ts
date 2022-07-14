@@ -2,6 +2,7 @@ import { INITIAL_OPENAPI_URL } from '@/constant';
 import { OpenApiService } from '@debank/rabby-api';
 import { createPersistStore } from 'background/utils';
 export * from '@debank/rabby-api/dist/types';
+import fetchAdapter from '@vespaiach/axios-fetch-adapter';
 
 const service = new OpenApiService({
   store: await createPersistStore({
@@ -10,6 +11,7 @@ const service = new OpenApiService({
       host: INITIAL_OPENAPI_URL,
     },
   }),
+  adapter: fetchAdapter,
 });
 
 export default service;
