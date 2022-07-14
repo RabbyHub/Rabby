@@ -3,7 +3,8 @@ import { nanoid } from 'nanoid';
 import { browser } from 'webextension-polyfill-ts';
 import { EVENTS } from '@/constant';
 
-const channelName = nanoid();
+// XXX: This is a temporary solution to shim the legacy API.
+const channelName = '1';
 
 // the script element with src won't execute immediately
 // use inline script element instead!
@@ -12,9 +13,11 @@ const ele = document.createElement('script');
 // in prevent of webpack optimized code do some magic(e.g. double/sigle quote wrap),
 // seperate content assignment to two line
 // use AssetReplacePlugin to replace pageprovider content
-let content = `var channelName = '${channelName}';`;
-content += '#PAGEPROVIDER#';
-ele.textContent = content;
+// let content = `var channelName = '${channelName}';`;
+// content += '#PAGEPROVIDER#';
+// ele.textContent = content;
+
+ele.setAttribute('src', browser.runtime.getURL('pageProvider.js'));
 container.insertBefore(ele, container.children[0]);
 container.removeChild(ele);
 
