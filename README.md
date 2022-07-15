@@ -53,6 +53,13 @@ Run `yarn build:dev` to develop with file watching and development log(you can s
 
 Run `yarn build:pro` to build a production package, it's in dist folder
 
+### Development in Manifest V3
+
+```sh
+yarn build:dev:mv3
+yarn build:pro:mv3
+```
+
 ### Language
 
 1. Copy `_raw/_locales/en/messages.json` to `_raw/_locales/${localCode}/messages.json` (Find your locale code in [https://en.wikipedia.org/wiki/Language_localisation#Language_tags_and_codes](https://en.wikipedia.org/wiki/Language_localisation#Language_tags_and_codes))
