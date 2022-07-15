@@ -2,6 +2,7 @@ import { Message } from 'utils';
 import { nanoid } from 'nanoid';
 import { browser } from 'webextension-polyfill-ts';
 import { EVENTS } from '@/constant';
+import { isManifestV3 } from '@/utils/mv3';
 
 // XXX: This is a temporary solution to shim the legacy API.
 const channelName = '1';
@@ -10,14 +11,17 @@ const channelName = '1';
 // use inline script element instead!
 const container = document.head || document.documentElement;
 const ele = document.createElement('script');
-// in prevent of webpack optimized code do some magic(e.g. double/sigle quote wrap),
-// seperate content assignment to two line
-// use AssetReplacePlugin to replace pageprovider content
-// let content = `var channelName = '${channelName}';`;
-// content += '#PAGEPROVIDER#';
-// ele.textContent = content;
 
-ele.setAttribute('src', browser.runtime.getURL('pageProvider.js'));
+if (isManifestV3()) {
+  ele.setAttribute('src', browser.runtime.getURL('pageProvider.js'));
+} else {
+  // in prevent of webpack optimized code do some magic(e.g. double/sigle quote wrap),
+  // seperate content assignment to two line
+  // use AssetReplacePlugin to replace pageprovider content
+  let content = `var channelName = '${channelName}';`;
+  content += '#PAGEPROVIDER#';
+  ele.textContent = content;
+}
 container.insertBefore(ele, container.children[0]);
 container.removeChild(ele);
 
