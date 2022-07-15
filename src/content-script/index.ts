@@ -1,7 +1,11 @@
 import { Message } from 'utils';
 import { browser } from 'webextension-polyfill-ts';
 import { EVENTS } from '@/constant';
+<<<<<<< HEAD
 import { nanoid } from 'nanoid';
+=======
+import { isManifestV3 } from '@/utils/mv3';
+>>>>>>> 957fa5c0 (chore: supports mv2 and mv3)
 
 const channelName = nanoid();
 
@@ -33,7 +37,16 @@ const initListener = (channelName: string) => {
 const container = document.head || document.documentElement;
 const ele = document.createElement('script');
 
-ele.setAttribute('src', browser.runtime.getURL('pageProvider.js'));
+if (isManifestV3()) {
+  ele.setAttribute('src', browser.runtime.getURL('pageProvider.js'));
+} else {
+  // in prevent of webpack optimized code do some magic(e.g. double/sigle quote wrap),
+  // seperate content assignment to two line
+  // use AssetReplacePlugin to replace pageprovider content
+  let content = `var channelName = '${channelName}';`;
+  content += '#PAGEPROVIDER#';
+  ele.textContent = content;
+}
 container.insertBefore(ele, container.children[0]);
 container.removeChild(ele);
 initListener(channelName);

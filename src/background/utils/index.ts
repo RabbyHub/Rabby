@@ -1,8 +1,13 @@
 import { isManifestV3 } from '@/utils/mv3';
+<<<<<<< HEAD
 import WalletConnectKeyring from '@rabby-wallet/eth-walletconnect-keyring';
 import * as ethUtil from 'ethereumjs-util';
 import { browser } from 'webextension-polyfill-ts';
 import i18n from '../service/i18n';
+=======
+import * as ethUtil from 'ethereumjs-util';
+import { browser } from 'webextension-polyfill-ts';
+>>>>>>> 957fa5c0 (chore: supports mv2 and mv3)
 import pageStateCache from '../service/pageStateCache';
 export { default as createPersistStore } from './persisitStore';
 
@@ -112,6 +117,7 @@ export const setPopupIcon = (type: 'default' | 'rabby' | 'metamask') => {
       path: icons,
     });
   }
+<<<<<<< HEAD
 };
 
 export const walletConnectClientMeta = {
@@ -125,4 +131,6 @@ export const setWalletConnectClientMeta = (keyring: WalletConnectKeyring) => {
     clientMeta: walletConnectClientMeta,
   } as any);
   return keyring;
+=======
+>>>>>>> 957fa5c0 (chore: supports mv2 and mv3)
 };
