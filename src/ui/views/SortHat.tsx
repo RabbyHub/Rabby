@@ -62,7 +62,11 @@ const SortHat = () => {
     loadView();
   }, []);
 
-  return <Spin spinning={!to}>{to && <Redirect to={to} />}</Spin>;
+  return (
+    <div className="h-full flex items-center justify-center">
+      <Spin spinning={!to}>{to && <Redirect to={to} />}</Spin>
+    </div>
+  );
 };
 
 export default SortHat;
