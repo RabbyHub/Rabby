@@ -9,23 +9,16 @@ const SortHat = () => {
   const wallet = useWalletOld();
   const [to, setTo] = useState('');
   // eslint-disable-next-line prefer-const
-  let [getApproval, , rejectApproval] = useApproval();
+  let [getApproval] = useApproval();
 
   const loadView = async () => {
     const UIType = getUiType();
     const isInNotification = UIType.isNotification;
     const isInTab = UIType.isTab;
-    let approval: Approval | undefined = await getApproval();
+    const approval: Approval | undefined = await getApproval();
     if (isInNotification && !approval) {
       window.close();
       return;
-    }
-
-    if (!isInNotification) {
-      // chrome.window.windowFocusChange won't fire when
-      // click popup in the meanwhile notification is present
-      await rejectApproval();
-      approval = undefined;
     }
 
     if (!(await wallet.isBooted())) {
@@ -38,7 +31,12 @@ const SortHat = () => {
       return;
     }
 
-    if ((await wallet.hasPageStateCache()) && !isInNotification && !isInTab) {
+    if (
+      (await wallet.hasPageStateCache()) &&
+      !isInNotification &&
+      !isInTab &&
+      !approval
+    ) {
       const cache = await wallet.getPageStateCache()!;
       setTo(cache.path);
       return;
@@ -53,7 +51,7 @@ const SortHat = () => {
 
     if (!currentAccount) {
       setTo('/no-address');
-    } else if (approval) {
+    } else if (approval && isInNotification) {
       setTo('/approval');
     } else {
       setTo('/dashboard');

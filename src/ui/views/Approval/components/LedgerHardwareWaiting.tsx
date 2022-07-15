@@ -128,7 +128,11 @@ const LedgerHardwareWaiting = ({ params }: { params: ApprovalParams }) => {
         if (!hasPermission && !isUseLedgerLive) {
           await wallet.authorizeLedgerHIDPermission();
         }
-        resolveApproval(data.data, !isSignText);
+        const pendingApprovalCount = await wallet.getPendingApprovalCount();
+        resolveApproval(
+          data.data,
+          pendingApprovalCount > 1 ? false : !isSignText
+        );
       } else {
         setConnectStatus(WALLETCONNECT_STATUS_MAP.FAILD);
       }
