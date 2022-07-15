@@ -526,6 +526,7 @@ class ProviderController extends BaseController {
         method: 'personalSign',
         success: false,
       });
+      throw e;
     }
   };
 
@@ -581,6 +582,7 @@ class ProviderController extends BaseController {
         method: 'ethSignTypedData',
         success: false,
       });
+      throw e;
     }
   };
 
@@ -620,6 +622,7 @@ class ProviderController extends BaseController {
         method: 'ethSignTypedDataV1',
         success: false,
       });
+      throw e;
     }
   };
 
@@ -659,6 +662,7 @@ class ProviderController extends BaseController {
         method: 'ethSignTypedDataV3',
         success: false,
       });
+      throw e;
     }
   };
 
@@ -698,6 +702,7 @@ class ProviderController extends BaseController {
         method: 'ethSignTypedDataV4',
         success: false,
       });
+      throw e;
     }
   };
 

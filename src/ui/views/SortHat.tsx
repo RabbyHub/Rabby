@@ -38,7 +38,7 @@ const SortHat = () => {
       !approval
     ) {
       const cache = await wallet.getPageStateCache()!;
-      setTo(cache.path);
+      setTo(cache.path + (cache.search || ''));
       return;
     }
 

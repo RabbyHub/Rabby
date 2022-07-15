@@ -149,6 +149,7 @@ const SendNFT = () => {
     if (!nftItem) return;
     await wallet.setPageStateCache({
       path: history.location.pathname,
+      search: history.location.search,
       params: {},
       states: {
         values: form.getFieldsValue(),
