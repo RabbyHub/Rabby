@@ -9,8 +9,10 @@ import { useTranslation } from 'react-i18next';
 
 const AddressViewer = styled.div`
   .address-name {
-    font-size: 12px;
-    color: ${LessPalette['@color-comment']};
+    color: ${LessPalette['@color-title']};
+    font-weight: 500;
+    font-size: 15px;
+    line-height: 18px;
   }
 
   .number-index {
@@ -18,13 +20,6 @@ const AddressViewer = styled.div`
     width: 12px;
     flex-shrink: 0;
   }
-`;
-
-const BrandName = styled.div`
-  font-weight: 500;
-  font-size: 15px;
-  line-height: 18px;
-  color: ${LessPalette['@color-title']};
 `;
 
 const NumberIndex = styled.div`
@@ -77,22 +72,6 @@ const DisplayAddressItem = ({
         <div className="flex items-center relative">
           <NumberIndex>{account.index}</NumberIndex>
           <div className={clsx('address-info', 'ml-0')}>
-            <BrandName>
-              {alianName}
-              {/* <Input
-                value={alianName}
-                defaultValue={alianName}
-                onChange={(e) => {
-                  e.stopPropagation();
-                  setAlianName(e.target.value);
-                }}
-                onClick={(e) => e.stopPropagation()}
-                autoFocus
-                maxLength={20}
-                min={0}
-                disabled
-              /> */}
-            </BrandName>
             <div className="flex items-center">
               <AddressViewer className="flex items-center">
                 <div

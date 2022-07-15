@@ -181,7 +181,7 @@ const ConfirmMnemonics = ({ isPopup = false }: { isPopup?: boolean }) => {
 
                 return (
                   <DisplayAddressItem
-                    className="mb-12 rounded bg-white pt-14 pb-14 pl-12 pr-16 h-[62px] flex items-center"
+                    className="mb-12 rounded bg-white pt-14 pb-14 pl-12 pr-16 h-[52px] flex items-center"
                     key={account.address}
                     account={account}
                     imported={imported}
