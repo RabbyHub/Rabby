@@ -12,7 +12,6 @@ import {
 } from 'consts';
 import {
   useApproval,
-  useWallet,
   openInTab,
   openInternalPageInTab,
   useWalletOld,
@@ -96,7 +95,7 @@ const LedgerHardwareWaiting = ({ params }: { params: ApprovalParams }) => {
       params.isGnosis ? true : approval?.data.approvalType !== 'SignTx'
     );
     eventBus.addEventListener(EVENTS.LEDGER.REJECT_APPROVAL, (data) => {
-      rejectApproval(data, true, true);
+      rejectApproval(data, false, true);
     });
     eventBus.addEventListener(EVENTS.LEDGER.REJECTED, async (data) => {
       if (/DisconnectedDeviceDuringOperation/i.test(data)) {
