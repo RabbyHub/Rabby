@@ -54,14 +54,14 @@ class NotificationService extends Events {
   set approvals(val: Approval[]) {
     this._approvals = val;
     if (val.length <= 0) {
-      browser.browserAction.setBadgeText({
+      browser.action.setBadgeText({
         text: null,
       });
     } else {
-      browser.browserAction.setBadgeText({
+      browser.action.setBadgeText({
         text: val.length + '',
       });
-      browser.browserAction.setBadgeBackgroundColor({
+      browser.action.setBadgeBackgroundColor({
         color: '#FE815F',
       });
     }
