@@ -32,13 +32,14 @@ import buildinProvider from 'background/utils/buildinProvider';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import { setPopupIcon } from './utils';
+import ReactGA from 'react-ga';
 
-// ReactGA.initialize('UA-199755108-3');
-// // eslint-disable-next-line @typescript-eslint/no-empty-function
-// ga('set', 'checkProtocolTask', function () {});
-// ga('set', 'appName', 'Rabby');
-// ga('set', 'appVersion', process.env.release);
-// ga('require', 'displayfeatures');
+ReactGA.initialize('UA-199755108-3', { debug: true });
+// eslint-disable-next-line @typescript-eslint/no-empty-function
+ReactGA.set({ checkProtocolTask: function () {} });
+ReactGA.set({ appName: 'Rabby' });
+ReactGA.set({ appVersion: process.env.release });
+// ReactGA.plugin.require('displayfeatures');
 
 dayjs.extend(utc);
 
@@ -140,12 +141,12 @@ restoreAppState();
       const groups = groupBy(list, (item) => {
         return `${item.category}_${item.action}_${item.label}`;
       });
-      // Object.values(groups).forEach((group) => {
-      //   ReactGA.event({
-      //     ...group[0],
-      //     value: group.length,
-      //   });
-      // });
+      Object.values(groups).forEach((group) => {
+        ReactGA.event({
+          ...group[0],
+          value: group.length,
+        });
+      });
       preferenceService.updateSendLogTime(Date.now());
     };
     sendEvent();
@@ -162,10 +163,10 @@ restoreAppState();
 
 // for page provider
 browser.runtime.onConnect.addListener((port) => {
-  // ReactGA.event({
-  //   category: 'User',
-  //   action: 'enable',
-  // });
+  ReactGA.event({
+    category: 'User',
+    action: 'enable',
+  });
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   port._timer = setTimeout(forceReconnect, 250e3, port);
