@@ -116,5 +116,26 @@ export const preference = createModel<RootModel>()({
 
       dispatch.preference.getPreference('nftApprovalChain');
     },
+    async addPinnedChain(chain: CHAINS_ENUM, store?) {
+      if (store.preference.pinnedChain.includes(chain)) {
+        return;
+      }
+      await store.app.wallet.saveChain(chain);
+      dispatch.preference.getPreference('pinnedChain');
+    },
+    async removePinnedChain(chain: CHAINS_ENUM, store?) {
+      const list = store.preference.pinnedChain.filter(
+        (item) => item !== chain
+      );
+      await store.app.wallet.updateChain(list);
+      dispatch.preference.getPreference('pinnedChain');
+    },
+    async updatePinnedChainList(chains: CHAINS_ENUM[], store?) {
+      dispatch.preference.setField({
+        pinnedChain: chains,
+      });
+      await store.app.wallet.updateChain(chains);
+      dispatch.preference.getPreference('pinnedChain');
+    },
   }),
 });

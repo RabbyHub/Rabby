@@ -392,8 +392,6 @@ export default ({
       </div>
       <CurrentConnection />
       <ChainSelectorModal
-        trigger="receive"
-        offset={-22}
         className="receive-chain-select-modal"
         value={CHAINS_ENUM.ETH}
         title="Select the chain to receive assets"

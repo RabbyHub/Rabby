@@ -106,7 +106,6 @@ export const CurrentConnection = memo(() => {
         </div>
       )}
       <ChainSelector
-        trigger="current-connection"
         className={clsx(!site && 'disabled')}
         title={
           <div>

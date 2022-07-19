@@ -1,14 +1,13 @@
-import React, { ReactNode, useEffect, useState } from 'react';
-import { useHistory, useLocation } from 'react-router-dom';
-import { Drawer } from 'antd';
+import { Drawer, Input } from 'antd';
+import React, { ReactNode, useCallback, useEffect, useState } from 'react';
 
+import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { Chain } from 'background/service/openapi';
-import { Account } from 'background/service/preference';
-import { useWallet, useWalletOld } from 'ui/utils';
-import { CHAINS_ENUM, CHAINS } from 'consts';
-import eventBus from '@/eventBus';
-import ChainCard from '../ChainCard';
 import clsx from 'clsx';
+import { CHAINS, CHAINS_ENUM } from 'consts';
+import IconSearch from 'ui/assets/search.svg';
+import Empty from '../Empty';
+import { SelectChainList } from './components/SelectChainList';
 interface ChainSelectorModalProps {
   visible: boolean;
   value: CHAINS_ENUM;
@@ -17,9 +16,50 @@ interface ChainSelectorModalProps {
   connection?: boolean;
   title?: ReactNode;
   className?: string;
-  offset?: number;
-  trigger?: string;
 }
+
+const useSetup = () => {
+  const [search, setSearch] = useState('');
+  const pinned = useRabbySelector((state) => state.preference.pinnedChain);
+  const dispatch = useRabbyDispatch();
+
+  const _pinnedList = pinned.map((chain) => CHAINS[chain]);
+  const _all = Object.values(CHAINS).sort((a, b) => (a.name > b.name ? 1 : -1));
+
+  const handleStarChange = (chain: CHAINS_ENUM, value) => {
+    if (value) {
+      dispatch.preference.addPinnedChain(chain);
+    } else {
+      dispatch.preference.removePinnedChain(chain);
+    }
+  };
+  const handleSort = (chains: Chain[]) => {
+    dispatch.preference.updatePinnedChainList(chains.map((item) => item.enum));
+  };
+  const searchChains = useCallback((list: Chain[], input: string) => {
+    input = input?.trim().toLowerCase();
+    if (!input) {
+      return list;
+    }
+    return list.filter((item) =>
+      [item.name, item.enum, item.nativeTokenSymbol].some((item) =>
+        item.toLowerCase().includes(input)
+      )
+    );
+  }, []);
+  const pinnedList = search?.trim() ? [] : _pinnedList;
+  const all = searchChains(_all, search);
+
+  return {
+    pinnedList,
+    all,
+    handleStarChange,
+    handleSort,
+    search,
+    setSearch,
+    pinned,
+  };
+};
 
 const ChainSelectorModal = ({
   title,
@@ -29,15 +69,7 @@ const ChainSelectorModal = ({
   value,
   connection = false,
   className,
-  offset,
-  trigger,
 }: ChainSelectorModalProps) => {
-  const wallet = useWalletOld();
-  const history = useHistory();
-  const location = useLocation();
-  const [currentAccount, setCurrentAccount] = useState<Account | null>(null);
-  const [savedChainsData, setSavedChainsData] = useState<Chain[]>([]);
-
   const handleCancel = () => {
     onCancel();
   };
@@ -45,48 +77,28 @@ const ChainSelectorModal = ({
   const handleChange = (val: CHAINS_ENUM) => {
     onChange(val);
   };
-  const goToChainManagement = () => {
-    history.push({
-      pathname: '/settings/chain',
-      state: {
-        connection,
-        backurl: history?.location?.pathname,
-        trigger,
-      },
-    });
-  };
-  const init = async () => {
-    const savedChains = await wallet.getSavedChains();
-    const savedChainsData = savedChains
-      .map((item) => {
-        return Object.values(CHAINS).find((chain) => chain.enum === item);
-      })
-      .filter(Boolean);
-    setSavedChainsData(savedChainsData);
-  };
+
+  const {
+    all,
+    pinnedList,
+    handleStarChange,
+    handleSort,
+    search,
+    setSearch,
+    pinned,
+  } = useSetup();
 
   useEffect(() => {
-    init();
-    const accountChangeHandler = (data) => {
-      if (data && data.address) {
-        setCurrentAccount(data);
-      }
-    };
-    eventBus.addEventListener('accountsChanged', accountChangeHandler);
-    return () => {
-      eventBus.removeEventListener('accountsChanged', accountChangeHandler);
-    };
-  }, []);
-  let maxHeight =
-    Math.round(savedChainsData.length / 2) * 64 + 74 + (title ? 56 : 0);
-  const range = [130, 450].map((item) => item + (title ? 56 : 0));
-  if (connection && maxHeight > 258) {
-    maxHeight = 258;
-  }
+    if (!visible) {
+      setSearch('');
+    }
+  }, [visible]);
+
   return (
     <Drawer
       title={title}
       width="400px"
+      height={440}
       closable={false}
       placement={'bottom'}
       visible={visible}
@@ -96,46 +108,44 @@ const ChainSelectorModal = ({
         connection && 'connection',
         className
       )}
-      contentWrapperStyle={{
-        height:
-          (maxHeight > range[1]
-            ? range[1]
-            : maxHeight < range[0]
-            ? range[0]
-            : maxHeight) + (offset || 0),
-      }}
-      drawerStyle={{
-        height:
-          (maxHeight > range[1]
-            ? range[1]
-            : maxHeight < range[0]
-            ? range[0]
-            : maxHeight) + (offset || 0),
-      }}
       destroyOnClose
     >
-      <>
-        {savedChainsData.length === 0 && (
-          <div className="no-pinned-container">No pinned chains</div>
-        )}
-        {savedChainsData.length > 0 && (
-          <ul className="chain-selector-options">
-            {savedChainsData.map((chain) => (
-              <ChainCard
-                chain={chain}
-                key={chain.id}
-                showIcon={false}
-                plus={false}
-                className="w-[176px] h-[56px]"
-                onClick={() => handleChange(chain.enum as CHAINS_ENUM)}
-              />
-            ))}
-          </ul>
-        )}
-        <div className="all-chais" onClick={goToChainManagement}>
-          <span>{'All chains >'}</span>
-        </div>
-      </>
+      <header className={title ? 'pt-[8px]' : 'pt-[20px]'}>
+        <Input
+          prefix={<img src={IconSearch} />}
+          placeholder="Search chain"
+          onChange={(e) => setSearch(e.target.value)}
+          value={search}
+          allowClear
+          // autoFocus
+          // ref={inputRef}
+        />
+      </header>
+      <div className="chain-selector__modal-content">
+        <SelectChainList
+          data={pinnedList}
+          sortable
+          pinned={pinned as CHAINS_ENUM[]}
+          onStarChange={handleStarChange}
+          onSort={handleSort}
+          onChange={handleChange}
+          value={value}
+        ></SelectChainList>
+        <SelectChainList
+          data={all}
+          value={
+            pinnedList.find((item) => item.enum === value) ? undefined : value
+          }
+          pinned={search.trim() ? (pinned as CHAINS_ENUM[]) : []}
+          onStarChange={handleStarChange}
+          onChange={handleChange}
+        ></SelectChainList>
+        {pinnedList.length === 0 && all.length === 0 ? (
+          <div className="select-chain-list pt-[70px] pb-[120px]">
+            <Empty>No chains</Empty>
+          </div>
+        ) : null}
+      </div>
     </Drawer>
   );
 };
