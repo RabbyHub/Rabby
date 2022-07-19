@@ -27,25 +27,25 @@ if (process.env.NODE_ENV === 'development') {
   environment = 'development';
 }
 
-Sentry.init({
-  dsn:
-    'https://e871ee64a51b4e8c91ea5fa50b67be6b@o460488.ingest.sentry.io/5831390',
-  integrations: [new Integrations.BrowserTracing()],
-  release: process.env.release,
+// Sentry.init({
+//   dsn:
+//     'https://e871ee64a51b4e8c91ea5fa50b67be6b@o460488.ingest.sentry.io/5831390',
+//   integrations: [new Integrations.BrowserTracing()],
+//   release: process.env.release,
 
-  // Set tracesSampleRate to 1.0 to capture 100%
-  // of transactions for performance monitoring.
-  // We recommend adjusting this value in production
-  tracesSampleRate: 1.0,
-  environment,
-  ignoreErrors: [
-    'ResizeObserver loop limit exceeded',
-    'ResizeObserver loop completed with undelivered notifications',
-    'Network Error',
-    'Request limit exceeded.',
-    'Non-Error promise rejection captured with keys: code, message',
-  ],
-});
+//   // Set tracesSampleRate to 1.0 to capture 100%
+//   // of transactions for performance monitoring.
+//   // We recommend adjusting this value in production
+//   tracesSampleRate: 1.0,
+//   environment,
+//   ignoreErrors: [
+//     'ResizeObserver loop limit exceeded',
+//     'ResizeObserver loop completed with undelivered notifications',
+//     'Network Error',
+//     'Request limit exceeded.',
+//     'Non-Error promise rejection captured with keys: code, message',
+//   ],
+// });
 
 function initAppMeta() {
   const head = document.querySelector('head');
