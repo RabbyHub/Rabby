@@ -49,15 +49,22 @@ import AddressBackupMnemonics from './AddressBackup/Mnemonics';
 import AddressBackupPrivateKey from './AddressBackup/PrivateKey';
 import Swap from './Swap';
 import { getUiType, useWallet } from '../utils';
+<<<<<<< HEAD
 import SwapQuotes from './SwapQuote';
 
+=======
+>>>>>>> c7ef3a56 (feat: enable ga in popup)
 ReactGA.initialize('UA-199755108-1', {
   gaAddress: chrome.runtime.getURL('/vendor/ga.js'),
 });
 // eslint-disable-next-line @typescript-eslint/no-empty-function
 ga('set', 'checkProtocolTask', function () {});
 ga('set', 'appName', 'Rabby');
+<<<<<<< HEAD
 ga('set', 'appVersion', process.env.release ?? 'ff');
+=======
+ga('set', 'appVersion', process.env.release);
+>>>>>>> c7ef3a56 (feat: enable ga in popup)
 ga('require', 'displayfeatures');
 
 const LogPageView = () => {
@@ -84,6 +91,7 @@ const Main = () => {
       }
     })();
   }, []);
+
   return (
     <>
       <Route path="/" component={LogPageView} />
