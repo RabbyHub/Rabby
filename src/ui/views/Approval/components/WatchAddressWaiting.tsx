@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useRef, useState } from 'react';
 import { Button } from 'antd';
 import { useHistory } from 'react-router-dom';
 import { useTranslation, Trans } from 'react-i18next';
@@ -307,7 +307,7 @@ const WatchAddressWaiting = ({ params }: { params: ApprovalParams }) => {
     (item) => item.id === (params.chainId || 1)
   )!.enum;
   const { t } = useTranslation();
-  const [isSignText, setIsSignText] = useState(false);
+  const isSignTextRef = useRef(false);
   const [brandName, setBrandName] = useState<string | null>(null);
   const [bridgeURL, setBridge] = useState<string>(DEFAULT_BRIDGE);
   const [currentAccount, setCurrentAccount] = useState<Account | null>(null);
@@ -368,7 +368,7 @@ const WatchAddressWaiting = ({ params }: { params: ApprovalParams }) => {
     const isText = params.isGnosis
       ? true
       : approval?.data.approvalType !== 'SignTx';
-    setIsSignText(isText);
+    isSignTextRef.current = isText;
     if (!isText) {
       stats.report('signTransaction', {
         type: account.brandName,
@@ -392,7 +392,7 @@ const WatchAddressWaiting = ({ params }: { params: ApprovalParams }) => {
             await wallet.postGnosisTransaction();
           }
         }
-        if (!isSignText) {
+        if (!isSignTextRef.current) {
           stats.report('signedTransaction', {
             type: account.brandName,
             chainId: CHAINS[chain].serverId,
@@ -400,7 +400,7 @@ const WatchAddressWaiting = ({ params }: { params: ApprovalParams }) => {
             success: true,
           });
         }
-        resolveApproval(data.data, !isSignText);
+        resolveApproval(data.data, !isSignTextRef.current);
       } else {
         stats.report('signedTransaction', {
           type: account.brandName,
