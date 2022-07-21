@@ -36,17 +36,23 @@ const useSetup = () => {
   const handleSort = (chains: Chain[]) => {
     dispatch.preference.updatePinnedChainList(chains.map((item) => item.enum));
   };
-  const searchChains = useCallback((list: Chain[], input: string) => {
-    input = input?.trim().toLowerCase();
-    if (!input) {
-      return list;
-    }
-    return list.filter((item) =>
-      [item.name, item.enum, item.nativeTokenSymbol].some((item) =>
-        item.toLowerCase().includes(input)
-      )
-    );
-  }, []);
+  const searchChains = useCallback(
+    (list: Chain[], input: string) => {
+      input = input?.trim().toLowerCase();
+      if (!input) {
+        return list;
+      }
+      const res = list.filter((item) =>
+        [item.name, item.enum, item.nativeTokenSymbol].some((item) =>
+          item.toLowerCase().includes(input)
+        )
+      );
+      return res
+        .filter((item) => pinned.includes(item.enum))
+        .concat(res.filter((item) => !pinned.includes(item.enum)));
+    },
+    [pinned]
+  );
   const pinnedList = search?.trim() ? [] : _pinnedList;
   const all = searchChains(_all, search);
 
@@ -117,8 +123,6 @@ const ChainSelectorModal = ({
           onChange={(e) => setSearch(e.target.value)}
           value={search}
           allowClear
-          // autoFocus
-          // ref={inputRef}
         />
       </header>
       <div className="chain-selector__modal-content">
@@ -136,7 +140,7 @@ const ChainSelectorModal = ({
           value={
             pinnedList.find((item) => item.enum === value) ? undefined : value
           }
-          pinned={search.trim() ? (pinned as CHAINS_ENUM[]) : []}
+          pinned={pinned as CHAINS_ENUM[]}
           onStarChange={handleStarChange}
           onChange={handleChange}
         ></SelectChainList>
