@@ -40,7 +40,7 @@ const useSetup = () => {
     (list: Chain[], input: string) => {
       input = input?.trim().toLowerCase();
       if (!input) {
-        return list;
+        return list.filter((item) => !pinned.includes(item.enum));
       }
       const res = list.filter((item) =>
         [item.name, item.enum, item.nativeTokenSymbol].some((item) =>
