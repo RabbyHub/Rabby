@@ -36,6 +36,7 @@ import utc from 'dayjs/plugin/utc';
 import { setPopupIcon, wait } from './utils';
 import { getSentryEnv } from '@/utils/env';
 import { matomoRequestEvent } from '@/utils/matomo-request';
+import ReactGA from 'react-ga';
 
 dayjs.extend(utc);
 
