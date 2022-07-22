@@ -59,7 +59,14 @@ const SortHat = () => {
   };
 
   useEffect(() => {
-    loadView();
+    loadView().finally(() => {
+      setTimeout(() => {
+        const skeleton = document.querySelector('#skeleton');
+        if (skeleton) {
+          document.head.removeChild(skeleton);
+        }
+      }, 50);
+    });
   }, []);
 
   return (
