@@ -137,9 +137,7 @@ const ChainSelectorModal = ({
         ></SelectChainList>
         <SelectChainList
           data={all}
-          value={
-            pinnedList.find((item) => item.enum === value) ? undefined : value
-          }
+          value={value}
           pinned={pinned as CHAINS_ENUM[]}
           onStarChange={handleStarChange}
           onChange={handleChange}
