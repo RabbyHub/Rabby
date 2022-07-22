@@ -32,14 +32,7 @@ import buildinProvider from 'background/utils/buildinProvider';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import { setPopupIcon } from './utils';
-import ReactGA from 'react-ga';
-
-ReactGA.initialize('UA-199755108-3', { debug: true });
-// eslint-disable-next-line @typescript-eslint/no-empty-function
-ReactGA.set({ checkProtocolTask: function () {} });
-ReactGA.set({ appName: 'Rabby' });
-ReactGA.set({ appVersion: process.env.release });
-// ReactGA.plugin.require('displayfeatures');
+import { gaRequestEvent } from './utils/ga-request';
 
 dayjs.extend(utc);
 
@@ -142,7 +135,7 @@ restoreAppState();
         return `${item.category}_${item.action}_${item.label}`;
       });
       Object.values(groups).forEach((group) => {
-        ReactGA.event({
+        gaRequestEvent({
           ...group[0],
           value: group.length,
         });
@@ -163,7 +156,7 @@ restoreAppState();
 
 // for page provider
 browser.runtime.onConnect.addListener((port) => {
-  ReactGA.event({
+  gaRequestEvent({
     category: 'User',
     action: 'enable',
   });
