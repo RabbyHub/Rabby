@@ -1,7 +1,12 @@
 import EventEmitter from 'events';
-import OneKeyConnect from '@onekeyfe/js-sdk';
+import OneKeyConnect from '@onekeyfe/connect';
 import * as ethUtil from 'ethereumjs-util';
-import Transaction from 'ethereumjs-tx';
+import {
+  TransactionFactory,
+  TypedTransaction,
+  Transaction,
+  FeeMarketEIP1559Transaction,
+} from '@ethereumjs/tx';
 import HDKey from 'hdkey';
 
 const keyringType = 'Onekey Hardware';
@@ -197,7 +202,7 @@ class OneKeyKeyring extends EventEmitter {
   }
 
   // tx is an instance of the ethereumjs-transaction class.
-  signTransaction(address: string, tx: Transaction): Promise<any> {
+  signTransaction(address: string, tx: TypedTransaction): Promise<any> {
     return new Promise((resolve, reject) => {
       this.unlock()
         .then((status) => {
@@ -206,25 +211,32 @@ class OneKeyKeyring extends EventEmitter {
               OneKeyConnect.ethereumSignTransaction({
                 path: this._pathFromAddress(address),
                 transaction: {
-                  to: this._normalize(tx.to),
-                  value: this._normalize(tx.value),
+                  to: tx.to!.toString(),
+                  value: `0x${tx.value.toString('hex')}`,
                   data: this._normalize(tx.data),
-                  chainId: tx._chainId,
-                  nonce: this._normalize(tx.nonce),
-                  gasLimit: this._normalize(tx.gasLimit),
-                  gasPrice: this._normalize(tx.gasPrice),
+                  chainId: tx.common.chainIdBN().toNumber(),
+                  nonce: `0x${tx.nonce.toString('hex')}`,
+                  gasLimit: `0x${tx.gasLimit.toString('hex')}`,
+                  gasPrice: `0x${
+                    (tx as Transaction).gasPrice
+                      ? (tx as Transaction).gasPrice.toString('hex')
+                      : (tx as FeeMarketEIP1559Transaction).maxFeePerGas.toString(
+                          'hex'
+                        )
+                  }`,
                 },
               })
-                .then((response: any) => {
+                .then((response) => {
                   if (response.success) {
-                    tx.v = response.payload.v;
-                    tx.r = response.payload.r;
-                    tx.s = response.payload.s;
+                    const txData = tx.toJSON();
+                    txData.v = response.payload.v;
+                    txData.r = response.payload.r;
+                    txData.s = response.payload.s;
 
-                    const signedTx = new Transaction(tx);
+                    const signedTx = TransactionFactory.fromTxData(txData);
 
                     const addressSignedWith = ethUtil.toChecksumAddress(
-                      `0x${signedTx.from.toString('hex')}`
+                      address
                     );
                     const correctAddress = ethUtil.toChecksumAddress(address);
                     if (addressSignedWith !== correctAddress) {
