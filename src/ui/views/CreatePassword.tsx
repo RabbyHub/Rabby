@@ -16,7 +16,7 @@ const CreatePassword = () => {
 
   const [run, loading] = useWalletRequest(wallet.boot, {
     onSuccess() {
-      history.replace('/start-chain-management');
+      history.replace('/no-address');
     },
     onError(err) {
       form.setFields([

@@ -91,6 +91,14 @@ const Connect = ({ params: { icon, origin } }: ConnectProps) => {
               {t('On this site use chain')}
             </p>
             <ChainSelector
+              title={
+                <div>
+                  <div className="chain-selector-tips">
+                    Select a chain to connect for
+                  </div>
+                  <div className="chain-selector-site">{origin}</div>
+                </div>
+              }
               value={defaultChain}
               onChange={handleChainChange}
               connection

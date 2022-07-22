@@ -52,6 +52,27 @@
 }
 
 .chain-selector__modal {
+  .ant-drawer-content-wrapper {
+    max-height: calc(100vh - 40px);
+  }
+  header {
+    padding-top: 8px;
+    padding-bottom: 24px;
+    position: sticky;
+    top: 0;
+    z-index: 1;
+    background-color: #fff;
+    .ant-input-affix-wrapper {
+      border: 1px solid #e5e9ef;
+      border-radius: 6px;
+      height: 36px;
+    }
+
+    .ant-input-affix-wrapper:focus,
+    .ant-input-affix-wrapper-focused {
+      border-color: #b0bdff;
+    }
+  }
   .ant-drawer-header {
     padding: 12px 20px;
     background: linear-gradient(
@@ -59,6 +80,7 @@
       #eff1ff 0%,
       rgba(238, 234, 255, 0) 111.46%
     );
+    border: none;
     .chain-selector-tips {
       font-weight: 400;
       font-size: 12px;
@@ -74,6 +96,7 @@
     }
   }
   .ant-drawer-body {
+    padding-top: 0 !important;
     &::-webkit-scrollbar {
       display: none !important;
     }
@@ -144,6 +167,68 @@
       width: 14px;
       height: 14px;
       fill: #fff;
+    }
+  }
+}
+
+.select-chain {
+  &-list {
+    background: #f5f6fa;
+    border-radius: 6px;
+    & + & {
+      margin-top: 24px;
+    }
+  }
+  &-item {
+    display: flex;
+    align-items: center;
+    padding: 14px 16px;
+    cursor: pointer;
+    border-radius: 4px;
+    position: relative;
+    border: 1px solid transparent;
+    &::after {
+      content: '';
+      position: absolute;
+      bottom: -1px;
+      left: 16px;
+      right: 16px;
+      border-bottom: 1px solid @color-border;
+    }
+
+    &-icon {
+      width: 24px;
+      height: 24px;
+    }
+    &-name {
+      font-weight: 500;
+      font-size: 15px;
+      line-height: 18px;
+      color: @color-title;
+      margin-left: 12px;
+    }
+    &-star {
+      margin-left: 8px;
+      path:last-child {
+        stroke: #b4bdcc;
+      }
+    }
+    &-checked {
+      margin-left: auto;
+    }
+    &:hover {
+      // background: rgba(134, 151, 255, 0.1);
+      background-color: #dce0f9;
+      border: 1px solid #8697ff;
+      &::after {
+        display: none;
+      }
+      .select-chain-item-star path:last-child {
+        stroke: #707280;
+      }
+    }
+    &:last-child::after {
+      display: none;
     }
   }
 }
