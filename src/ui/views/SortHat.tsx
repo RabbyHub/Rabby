@@ -10,9 +10,9 @@ const SortHat = () => {
   const [to, setTo] = useState('');
   // eslint-disable-next-line prefer-const
   let [getApproval] = useApproval();
+  const UIType = getUiType();
 
   const loadView = async () => {
-    const UIType = getUiType();
     const isInNotification = UIType.isNotification;
     const isInTab = UIType.isTab;
     const approval: Approval | undefined = await getApproval();
@@ -64,7 +64,14 @@ const SortHat = () => {
 
   return (
     <div className="h-full flex items-center justify-center">
-      <Spin spinning={!to}>{to && <Redirect to={to} />}</Spin>
+      {UIType.isPop ? (
+        <>
+          <img src="/images/skeleton.svg"></img>
+          {to && <Redirect to={to} />}
+        </>
+      ) : (
+        <Spin spinning={!to}>{to && <Redirect to={to} />}</Spin>
+      )}
     </div>
   );
 };
