@@ -34,6 +34,7 @@ import utc from 'dayjs/plugin/utc';
 import { setPopupIcon } from './utils';
 import { getSentryEnv } from '@/utils/env';
 import ReactGA from 'react-ga';
+import { gaRequestEvent } from './utils/ga-request';
 
 ReactGA.initialize('UA-199755108-3', { debug: true });
 // eslint-disable-next-line @typescript-eslint/no-empty-function
@@ -155,7 +156,7 @@ restoreAppState();
         return `${item.category}_${item.action}_${item.label}`;
       });
       Object.values(groups).forEach((group) => {
-        ReactGA.event({
+        gaRequestEvent({
           ...group[0],
           value: group.length,
         });
@@ -176,7 +177,7 @@ restoreAppState();
 
 // for page provider
 browser.runtime.onConnect.addListener((port) => {
-  ReactGA.event({
+  gaRequestEvent({
     category: 'User',
     action: 'enable',
   });
