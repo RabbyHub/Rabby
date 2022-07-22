@@ -26,7 +26,7 @@ const Approval = () => {
       return null;
     }
     setApproval(approval);
-    if (approval.data.origin || approval.data.params?.session.origin) {
+    if (approval.data.origin || approval.data.params?.session?.origin) {
       document.title =
         approval.data.origin || approval.data.params!.session.origin;
     }
