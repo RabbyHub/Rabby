@@ -160,13 +160,6 @@ class NotificationService extends Events {
         }
       }
 
-      if (this.notifiWindowId) {
-        browser.windows.update(this.notifiWindowId, {
-          focused: true,
-        });
-      } else {
-        this.openNotification(approval.winProps);
-      }
       if (
         ['wallet_switchEthereumChain', 'wallet_addEthereumChain'].includes(
           data?.params?.method
@@ -180,6 +173,14 @@ class NotificationService extends Events {
           this.resolveApproval(null);
           return;
         }
+      }
+
+      if (this.notifiWindowId) {
+        browser.windows.update(this.notifiWindowId, {
+          focused: true,
+        });
+      } else {
+        this.openNotification(approval.winProps);
       }
     });
   };
