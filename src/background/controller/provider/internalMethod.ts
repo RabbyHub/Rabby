@@ -6,7 +6,7 @@ import {
   preferenceService,
 } from 'background/service';
 import providerController from './controller';
-import ReactGA from 'react-ga';
+import { gaRequestEvent } from '@/background/utils/ga-request';
 
 const networkIdMap: {
   [key: string]: string;
@@ -58,7 +58,7 @@ const hasOtherProvider = () => {
   preferenceService.setHasOtherProvider(true);
   const isRabby = preferenceService.getIsDefaultWallet();
   setPopupIcon(isRabby ? 'rabby' : 'metamask');
-  ReactGA.event({
+  gaRequestEvent({
     category: 'User',
     action: 'hasMetaMask',
   });
