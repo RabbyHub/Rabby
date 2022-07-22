@@ -65,10 +65,7 @@ const SortHat = () => {
   return (
     <div className="h-full flex items-center justify-center">
       {UIType.isPop ? (
-        <>
-          <img src="/images/skeleton.svg"></img>
-          {to && <Redirect to={to} />}
-        </>
+        <>{to && <Redirect to={to} />}</>
       ) : (
         <Spin spinning={!to}>{to && <Redirect to={to} />}</Spin>
       )}
