@@ -10,6 +10,7 @@ import transactionHistoryService from './transactionHistory';
 import preferenceService from './preference';
 import stats from '@/stats';
 import BigNumber from 'bignumber.js';
+import { isManifestV3 } from '@/utils/mv3';
 
 type IApprovalComponents = typeof import('@/ui/views/Approval/components');
 type IApprovalComponent = IApprovalComponents[keyof IApprovalComponents];
@@ -53,17 +54,32 @@ class NotificationService extends Events {
 
   set approvals(val: Approval[]) {
     this._approvals = val;
-    if (val.length <= 0) {
-      browser.action.setBadgeText({
-        text: null,
-      });
+    if (isManifestV3()) {
+      if (val.length <= 0) {
+        browser.action.setBadgeText({
+          text: null,
+        });
+      } else {
+        browser.action.setBadgeText({
+          text: val.length + '',
+        });
+        browser.action.setBadgeBackgroundColor({
+          color: '#FE815F',
+        });
+      }
     } else {
-      browser.action.setBadgeText({
-        text: val.length + '',
-      });
-      browser.action.setBadgeBackgroundColor({
-        color: '#FE815F',
-      });
+      if (val.length <= 0) {
+        browser.browserAction.setBadgeText({
+          text: null,
+        });
+      } else {
+        browser.browserAction.setBadgeText({
+          text: val.length + '',
+        });
+        browser.browserAction.setBadgeBackgroundColor({
+          color: '#FE815F',
+        });
+      }
     }
   }
 

@@ -54,5 +54,9 @@
     "activeTab",
     "notifications"
   ],
-  "web_accessible_resources": ["user-media-permission.html"]
+  "web_accessible_resources": [
+    "user-media-permission.html",
+    "pageProvider.js",
+    "vendor/ga.js"
+  ]
 }
