@@ -51,7 +51,7 @@ class NotificationService extends Events {
     if (isManifestV3()) {
       if (val.length <= 0) {
         browser.action.setBadgeText({
-          text: null,
+          text: '',
         });
       } else {
         browser.action.setBadgeText({
