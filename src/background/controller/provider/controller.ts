@@ -1,5 +1,4 @@
 import * as Sentry from '@sentry/browser';
-import Transaction from 'ethereumjs-tx';
 import Common, { Hardfork } from '@ethereumjs/common';
 import {
   TransactionFactory,
@@ -265,31 +264,28 @@ class ProviderController extends BaseController {
     delete approvalRes.uiRequestComponent;
     delete approvalRes.traceId;
     delete approvalRes.extra;
-    let tx;
     let is1559 = is1559Tx(approvalRes);
-    if (is1559) {
-      if (approvalRes.maxFeePerGas === approvalRes.maxPriorityFeePerGas) {
-        // fallback to legacy transaction if maxFeePerGas is equal to maxPriorityFeePerGas
-        tx = new Transaction(convert1559ToLegacy(approvalRes));
-        is1559 = false;
-        approvalRes.gasPrice = approvalRes.maxFeePerGas;
-        delete approvalRes.maxFeePerGas;
-        delete approvalRes.maxPriorityFeePerGas;
-      } else {
-        const common = Common.custom(
-          { chainId: approvalRes.chainId },
-          { hardfork: Hardfork.London }
-        );
-        tx = FeeMarketEIP1559Transaction.fromTxData(
-          { ...approvalRes, gasLimit: approvalRes.gas } as any,
-          {
-            common,
-          }
-        );
-      }
-    } else {
-      tx = new Transaction(approvalRes);
+    if (
+      is1559 &&
+      approvalRes.maxFeePerGas === approvalRes.maxPriorityFeePerGas
+    ) {
+      // fallback to legacy transaction if maxFeePerGas is equal to maxPriorityFeePerGas
+      approvalRes.gasPrice = approvalRes.maxFeePerGas;
+      delete approvalRes.maxFeePerGas;
+      delete approvalRes.maxPriorityFeePerGas;
+      is1559 = false;
     }
+    const common = Common.custom(
+      { chainId: approvalRes.chainId },
+      { hardfork: Hardfork.London }
+    );
+    const txData = { ...approvalRes, gasLimit: approvalRes.gas };
+    if (is1559) {
+      txData.type = '0x2';
+    }
+    const tx = TransactionFactory.fromTxData(txData, {
+      common,
+    });
     const currentAccount = preferenceService.getCurrentAccount()!;
     let opts;
     opts = extra;
@@ -367,22 +363,12 @@ class ProviderController extends BaseController {
         onTranscationSubmitted(signedTx);
         return signedTx;
       }
-      let buildTx;
-      if (is1559) {
-        buildTx = FeeMarketEIP1559Transaction.fromTxData({
-          ...(approvalRes as any),
-          r: addHexPrefix(signedTx.r),
-          s: addHexPrefix(signedTx.s),
-          v: addHexPrefix(signedTx.v),
-        });
-      } else {
-        buildTx = TransactionFactory.fromTxData({
-          ...approvalRes,
-          r: addHexPrefix(signedTx.r),
-          s: addHexPrefix(signedTx.s),
-          v: addHexPrefix(signedTx.v),
-        });
-      }
+      const buildTx = TransactionFactory.fromTxData({
+        ...approvalRes,
+        r: addHexPrefix(signedTx.r),
+        s: addHexPrefix(signedTx.s),
+        v: addHexPrefix(signedTx.v),
+      });
 
       // Report address type(not sensitive information) to sentry when tx signatuure is invalid
       if (!buildTx.verifySignature()) {

@@ -1,7 +1,5 @@
 import 'regenerator-runtime/runtime';
 import EventEmitter from 'events';
-import Transaction from 'ethereumjs-tx';
-
 import { browser } from 'webextension-polyfill-ts';
 
 import { BitBox02API, getDevicePath, constants } from 'bitbox02-api';
@@ -9,6 +7,13 @@ import { BitBox02API, getDevicePath, constants } from 'bitbox02-api';
 import * as ethUtil from 'ethereumjs-util';
 import * as sigUtil from '@metamask/eth-sig-util';
 import * as HDKey from 'hdkey';
+import {
+  TypedTransaction,
+  FeeMarketEIP1559Transaction,
+  Transaction,
+  JsonTx,
+  TransactionFactory,
+} from '@ethereumjs/tx';
 
 const hdPathString = "m/44'/60'/0'/0";
 const keyringType = 'BitBox02 Hardware';
@@ -204,26 +209,38 @@ class BitBox02Keyring extends EventEmitter {
   }
 
   // tx is an instance of the ethereumjs-transaction class.
-  async signTransaction(address, tx) {
+  async signTransaction(address, tx: TypedTransaction) {
     return await this.withDevice(async (bitbox02) => {
+      const txData: JsonTx = {
+        to: tx.to!.toString(),
+        value: `0x${tx.value.toString('hex')}`,
+        data: this._normalize(tx.data),
+        nonce: `0x${tx.nonce.toString('hex')}`,
+        gasLimit: `0x${tx.gasLimit.toString('hex')}`,
+        gasPrice: `0x${
+          (tx as Transaction).gasPrice
+            ? (tx as Transaction).gasPrice.toString('hex')
+            : (tx as FeeMarketEIP1559Transaction).maxFeePerGas.toString('hex')
+        }`,
+      };
       const result = await bitbox02.ethSignTransaction({
         keypath: this._pathFromAddress(address),
-        chainId: tx._chainId,
+        chainId: tx.common.chainIdBN().toNumber(),
         tx: {
-          nonce: tx.nonce,
-          gasPrice: tx.gasPrice,
-          gasLimit: tx.gasLimit,
-          to: tx.to,
-          value: tx.value,
+          nonce: tx.nonce.toArrayLike(Buffer),
+          gasPrice: (tx as Transaction).gasPrice.toArrayLike(Buffer),
+          gasLimit: tx.gasLimit.toArrayLike(Buffer),
+          to: tx.to?.toBuffer(),
+          value: tx.value.toArrayLike(Buffer),
           data: tx.data,
         },
       });
-      tx.r = Buffer.from(result.r);
-      tx.s = Buffer.from(result.s);
-      tx.v = Buffer.from(result.v);
-      const signedTx = new Transaction(tx);
+      txData.r = result.r;
+      txData.s = result.s;
+      txData.v = result.v;
+      const signedTx = TransactionFactory.fromTxData(txData);
       const addressSignedWith = ethUtil.toChecksumAddress(
-        `0x${signedTx.from.toString('hex')}`
+        signedTx.getSenderAddress().toString()
       );
       const correctAddress = ethUtil.toChecksumAddress(address);
       if (addressSignedWith !== correctAddress) {
