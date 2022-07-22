@@ -1,6 +1,7 @@
-const ANALYTICS_PATH = 'https://www.google-analytics.com/collect';
 import { storage } from 'background/webapi';
 import { nanoid } from 'nanoid';
+
+const ANALYTICS_PATH = 'https://www.google-analytics.com/collect';
 
 async function postData(url = '', data: RequestInit['body']) {
   const response = await fetch(url, {
