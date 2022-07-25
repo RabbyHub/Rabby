@@ -1,4 +1,6 @@
+import { isManifestV3 } from '@/utils/mv3';
 import * as ethUtil from 'ethereumjs-util';
+import { browser } from 'webextension-polyfill-ts';
 import pageStateCache from '../service/pageStateCache';
 export { default as createPersistStore } from './persisitStore';
 
@@ -92,13 +94,20 @@ export const isSameAddress = (a: string, b: string) => {
 export const setPopupIcon = (type: 'default' | 'rabby' | 'metamask') => {
   const icons = [16, 19, 32, 48, 128].reduce((res, size) => {
     if (type === 'default') {
-      res[size] = `images/icon-${size}.png`;
+      res[size] = `/images/icon-${size}.png`;
     } else {
-      res[size] = `images/icon-default-${type}-${size}.png`;
+      res[size] = `/images/icon-default-${type}-${size}.png`;
     }
     return res;
   }, {});
-  return chrome.browserAction.setIcon({
-    path: icons,
-  });
+
+  if (isManifestV3()) {
+    return browser.action.setIcon({
+      path: icons,
+    });
+  } else {
+    return browser.browserAction.setIcon({
+      path: icons,
+    });
+  }
 };

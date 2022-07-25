@@ -48,11 +48,13 @@ import AddressDetail from './AddressDetail';
 import AddressBackupMnemonics from './AddressBackup/Mnemonics';
 import AddressBackupPrivateKey from './AddressBackup/PrivateKey';
 import { getUiType, useWallet } from '../utils';
-ReactGA.initialize('UA-199755108-1');
+ReactGA.initialize('UA-199755108-1', {
+  gaAddress: chrome.runtime.getURL('/vendor/ga.js'),
+});
 // eslint-disable-next-line @typescript-eslint/no-empty-function
 ga('set', 'checkProtocolTask', function () {});
 ga('set', 'appName', 'Rabby');
-ga('set', 'appVersion', process.env.release);
+ga('set', 'appVersion', process.env.release ?? 'ff');
 ga('require', 'displayfeatures');
 
 const LogPageView = () => {

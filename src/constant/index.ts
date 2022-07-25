@@ -276,6 +276,7 @@ export const INITIAL_OPENAPI_URL = 'https://api.rabby.io';
 export const EVENTS = {
   broadcastToUI: 'broadcastToUI',
   broadcastToBackground: 'broadcastToBackground',
+  UIToBackground: 'UIToBackground',
   SIGN_FINISHED: 'SIGN_FINISHED',
   WALLETCONNECT: {
     STATUS_CHANGED: 'WALLETCONNECT_STATUS_CHANGED',

@@ -4,7 +4,7 @@ const TSConfigPathsPlugin = require('tsconfig-paths-webpack-plugin');
 const ESLintWebpackPlugin = require('eslint-webpack-plugin');
 const tsImportPluginFactory = require('ts-import-plugin');
 const AssetReplacePlugin = require('./plugins/AssetReplacePlugin');
-const { version } = require('../_raw/manifest.json');
+const CopyPlugin = require('copy-webpack-plugin');
 const path = require('path');
 
 const createStyledComponentsTransformer = require('typescript-plugin-styled-components')
@@ -18,9 +18,7 @@ const config = {
   entry: {
     background: paths.rootResolve('src/background/index.ts'),
     'content-script': paths.rootResolve('src/content-script/index.ts'),
-    pageProvider: paths.rootResolve(
-      'node_modules/@rabby-wallet/page-provider/dist/index.js'
-    ),
+    pageProvider: paths.rootResolve('src/content-script/pageProvider/index.ts'),
     ui: paths.rootResolve('src/ui/index.tsx'),
   },
   output: {
@@ -213,8 +211,18 @@ const config = {
       '#PAGEPROVIDER#': 'pageProvider',
     }),
     new webpack.DefinePlugin({
-      'process.env.version': JSON.stringify(`version: ${version}`),
-      'process.env.release': JSON.stringify(version),
+      'process.env.version': JSON.stringify(`version: ${process.env.VERSION}`),
+      'process.env.release': JSON.stringify(process.env.VERSION),
+    }),
+    new CopyPlugin({
+      patterns: [
+        {
+          from: process.env.ENABLE_MV3
+            ? paths.rootResolve('src/manifest/mv3/manifest.json')
+            : paths.rootResolve('src/manifest/mv2/manifest.json'),
+          to: paths.dist,
+        },
+      ],
     }),
   ],
   resolve: {

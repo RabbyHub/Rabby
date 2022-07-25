@@ -11,6 +11,9 @@ import {
   CHAINS_ENUM,
 } from 'consts';
 import { underline2Camelcase } from 'background/utils';
+import { browser } from 'webextension-polyfill-ts';
+import { getCurrentTab } from '@/ui/utils';
+import { isManifestV3 } from '@/utils/mv3';
 
 interface StateProvider {
   accounts: string[] | null;
@@ -210,7 +213,19 @@ export class EthereumProvider extends EventEmitter {
 
 const provider = new EthereumProvider();
 
-window.dispatchEvent(new Event('ethereum#initialized'));
+if (isManifestV3()) {
+  getCurrentTab().then((tab) => {
+    if (!tab?.id) return;
+    browser.scripting.executeScript({
+      target: { tabId: tab.id },
+      func: () => {
+        window.dispatchEvent(new Event('ethereum#initialized'));
+      },
+    });
+  });
+} else {
+  window.dispatchEvent(new Event('ethereum#initialized'));
+}
 
 export default {
   currentProvider: new Proxy(provider, {

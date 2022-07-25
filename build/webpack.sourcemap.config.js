@@ -4,10 +4,6 @@ const fs = require('fs-extra');
 // const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
 const SentryCliPlugin = require('@sentry/webpack-plugin');
 
-const PROJECT_ROOT = path.resolve(__dirname, '..');
-const manifestPath = path.resolve(PROJECT_ROOT, '_raw', 'manifest.json');
-const manifest = fs.readJSONSync(manifestPath);
-
 const config = {
   mode: 'production',
   devtool: 'sourcemap',
@@ -25,7 +21,7 @@ const config = {
       ignoreFile: '.sentrycliignore',
       ignore: ['node_modules', 'webpack.config.js'],
       configFile: 'sentry.properties',
-      release: manifest.version,
+      release: process.env.VERSION,
     }),
   ],
 };

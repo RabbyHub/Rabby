@@ -1,7 +1,6 @@
 import { groupBy } from 'lodash';
 import 'reflect-metadata';
 import * as Sentry from '@sentry/browser';
-import ReactGA, { ga } from 'react-ga';
 import { Integrations } from '@sentry/tracing';
 import { browser } from 'webextension-polyfill-ts';
 import { ethErrors } from 'eth-rpc-errors';
@@ -23,7 +22,6 @@ import {
   widgetService,
 } from './service';
 import { providerController, walletController } from './controller';
-import i18n from './service/i18n';
 import { getOriginFromUrl } from '@/utils';
 import rpcCache from './utils/rpcCache';
 import eventBus from '@/eventBus';
@@ -34,13 +32,7 @@ import buildinProvider from 'background/utils/buildinProvider';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import { setPopupIcon } from './utils';
-
-ReactGA.initialize('UA-199755108-3');
-// eslint-disable-next-line @typescript-eslint/no-empty-function
-ga('set', 'checkProtocolTask', function () {});
-ga('set', 'appName', 'Rabby');
-ga('set', 'appVersion', process.env.release);
-ga('require', 'displayfeatures');
+import { gaRequestEvent } from './utils/ga-request';
 
 dayjs.extend(utc);
 
@@ -50,10 +42,21 @@ const { PortMessage } = Message;
 
 let appStoreLoaded = false;
 
+function forceReconnect(port) {
+  deleteTimer(port);
+  port.disconnect();
+}
+function deleteTimer(port) {
+  if (port._timer) {
+    clearTimeout(port._timer);
+    delete port._timer;
+  }
+}
+
 Sentry.init({
   dsn:
     'https://e871ee64a51b4e8c91ea5fa50b67be6b@o460488.ingest.sentry.io/5831390',
-  integrations: [new Integrations.BrowserTracing()],
+  // integrations: [new Integrations.BrowserTracing()],
   release: process.env.release,
   // Set tracesSampleRate to 1.0 to capture 100%
   // of transactions for performance monitoring.
@@ -61,21 +64,21 @@ Sentry.init({
   tracesSampleRate: 1.0,
 });
 
-function initAppMeta() {
-  const head = document.querySelector('head');
-  const icon = document.createElement('link');
-  icon.href = 'https://rabby.io/assets/images/logo-128.png';
-  icon.rel = 'icon';
-  head?.appendChild(icon);
-  const name = document.createElement('meta');
-  name.name = 'name';
-  name.content = 'Rabby';
-  head?.appendChild(name);
-  const description = document.createElement('meta');
-  description.name = 'description';
-  description.content = i18n.t('appDescription');
-  head?.appendChild(description);
-}
+// function initAppMeta() {
+//   const head = document.querySelector('head');
+//   const icon = document.createElement('link');
+//   icon.href = 'https://rabby.io/assets/images/logo-128.png';
+//   icon.rel = 'icon';
+//   head?.appendChild(icon);
+//   const name = document.createElement('meta');
+//   name.name = 'name';
+//   name.content = 'Rabby';
+//   head?.appendChild(name);
+//   const description = document.createElement('meta');
+//   description.name = 'description';
+//   description.content = i18n.t('appDescription');
+//   head?.appendChild(description);
+// }
 
 async function restoreAppState() {
   const keyringState = await storage.get('keyringState');
@@ -99,7 +102,7 @@ async function restoreAppState() {
   appStoreLoaded = true;
 
   transactionWatchService.roll();
-  initAppMeta();
+  // initAppMeta();
 }
 
 restoreAppState();
@@ -132,7 +135,7 @@ restoreAppState();
         return `${item.category}_${item.action}_${item.label}`;
       });
       Object.values(groups).forEach((group) => {
-        ReactGA.event({
+        gaRequestEvent({
           ...group[0],
           value: group.length,
         });
@@ -153,10 +156,14 @@ restoreAppState();
 
 // for page provider
 browser.runtime.onConnect.addListener((port) => {
-  ReactGA.event({
+  gaRequestEvent({
     category: 'User',
     action: 'enable',
   });
+  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+  // @ts-ignore
+  port._timer = setTimeout(forceReconnect, 250e3, port);
+  port.onDisconnect.addListener(deleteTimer);
   if (
     port.name === 'popup' ||
     port.name === 'notification' ||
@@ -231,6 +238,14 @@ browser.runtime.onConnect.addListener((port) => {
   pm.listen(async (data) => {
     if (!appStoreLoaded) {
       throw ethErrors.provider.disconnected();
+    }
+
+    if (data.type === EVENTS.UIToBackground) {
+      eventBus.emit(data.type, {
+        method: data.method,
+        params: data.params,
+      });
+      return;
     }
 
     const sessionId = port.sender?.tab?.id;

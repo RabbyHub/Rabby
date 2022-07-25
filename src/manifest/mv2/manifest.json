@@ -2,7 +2,7 @@
   "manifest_version": 2,
   "name": "__MSG_appName__",
   "short_name": "__MSG_appName__",
-  "version": "0.40.0",
+  "version": "0.38.0",
   "default_locale": "en",
   "description": "__MSG_appDescription__",
   "icons": {
@@ -34,15 +34,8 @@
   "content_scripts": [
     {
       "all_frames": true,
-      "js": [
-        "webextension-polyfill.js",
-        "content-script.js"
-      ],
-      "matches": [
-        "file://*/*",
-        "http://*/*",
-        "https://*/*"
-      ],
+      "js": ["webextension-polyfill.js", "content-script.js"],
+      "matches": ["file://*/*", "http://*/*", "https://*/*"],
       "run_at": "document_start"
     },
     {
@@ -50,9 +43,7 @@
         "*://connect.trezor.io/*/popup.html",
         "https://connect.onekey.so/popup.html"
       ],
-      "js": [
-        "vendor/trezor/trezor-content-script.js"
-      ]
+      "js": ["vendor/trezor/trezor-content-script.js"]
     }
   ],
   "content_security_policy": "script-src 'self' 'sha256-OocOJT2vDG5puZ6dCp0pzp4FiqlV4FYvX0v2kBcXMIg=' https://bam.eu01.nr-data.net https://js-agent.newrelic.com https://www.google-analytics.com; object-src 'self'",
@@ -64,6 +55,8 @@
     "notifications"
   ],
   "web_accessible_resources": [
-    "user-media-permission.html"
+    "user-media-permission.html",
+    "pageProvider.js",
+    "vendor/ga.js"
   ]
 }
