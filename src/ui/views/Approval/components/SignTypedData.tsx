@@ -134,6 +134,15 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
     extra?: Record<string, any>
   ) => {
     const currentAccount = await wallet.getCurrentAccount();
+    ReactGA.event({
+      category: 'SignText',
+      action: action,
+      label: [
+        getKRCategoryByType(currentAccount.type),
+        currentAccount.brandName,
+      ].join('|'),
+      transport: 'beacon',
+    });
     await wallet.reportStats(action, {
       type: currentAccount.brandName,
       category: getKRCategoryByType(currentAccount.type),
