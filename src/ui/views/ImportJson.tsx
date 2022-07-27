@@ -53,7 +53,7 @@ const ImportJson = () => {
         <div className="rabby-container">
           <img
             className="rabby-logo"
-            src="/images/logo-gray.png"
+            src="/images/logo-white.svg"
             alt="rabby logo"
           />
           <p className="text-24 mb-4 mt-32 text-white text-center font-bold">
