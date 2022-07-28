@@ -103,7 +103,7 @@ class PreferenceService {
     if (!this.store.locale || this.store.locale !== defaultLang) {
       this.store.locale = defaultLang;
     }
-    // i18n.changeLanguage(this.store.locale);
+    i18n.changeLanguage(this.store.locale);
     if (
       this.store.isDefaultWallet === undefined ||
       this.store.isDefaultWallet === null

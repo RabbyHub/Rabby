@@ -285,7 +285,6 @@ describe('keyringService', () => {
 
       const wallet = Wallet.fromPrivateKey(Buffer.from(privateAppKey, 'hex'));
       const recoveredAddress = `0x${wallet.getAddress().toString('hex')}`;
-      console.log('111', appKeyAddress);
 
       expect(recoveredAddress).toBe(appKeyAddress);
       expect(privateAppKey).not.toBe(privateKey);
