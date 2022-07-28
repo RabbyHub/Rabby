@@ -1,0 +1,26 @@
+# Submit the extension to browser marketplace
+
+name: Submit
+
+on:
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Release tag to submit, i.e v1.0.0'
+        required: true
+
+jobs:
+  # Prepare node modules. Reuse cache if available
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Download Github Release Assets
+        uses: plasmo-corp/download-release-asset@v1.0.0
+        with:
+          files: Rabby_*
+          tag: ${{ github.event.inputs.tag }}
+      - name: Browser Plugin Publish
+        uses: plasmo-corp/bpp@v1
+        with:
+          artifact: "Rabby_${{ github.event.inputs.tag }}.zip"
+          keys: ${{ secrets.SUBMIT_KEYS }}
