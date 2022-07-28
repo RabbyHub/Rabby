@@ -82,7 +82,8 @@ module.exports = {
 
   // A map from regular expressions to module names or to arrays of module names that allow to stub out resources with a single module
   moduleNameMapper: {
-    '^utils/(.*)$': '<rootDir>/utils/$1',
+    '^utils/(.*)$': '<rootDir>/src/utils/$1',
+    '^utils': '<rootDir>/src/utils',
     '^consts/(.*)$': '<rootDir>/src/constant/$1',
     '^consts': '<rootDir>/src/constant',
     '^@/(.*)$': '<rootDir>/src/$1',
@@ -130,9 +131,7 @@ module.exports = {
   // runner: "jest-runner",
 
   // The paths to modules that run some code to configure or set up the testing environment before each test
-  setupFiles: [
-    '<rootDir>/__tests__/setupTests.ts'
-  ],
+  setupFiles: ['<rootDir>/__tests__/setupTests.ts'],
 
   // A list of paths to modules that run some code to configure or set up the testing framework before each test
   // setupFilesAfterEnv: [],
@@ -175,10 +174,22 @@ module.exports = {
   // Setting this value to "fake" allows the use of fake timers for functions such as "setTimeout"
   // timers: "real",
 
+  transformIgnorePatterns: [
+    '<rootDir>/node_modules/(?!@debank/common|@rabby-wallet)',
+  ],
+
+  globals: {
+    'ts-jest': {
+      tsconfig: {
+        allowJs: true,
+      },
+    },
+  },
+
   // A map from regular expressions to paths to transformers
   transform: {
-    '^.+\\.(ts|tsx)$': 'ts-jest',
-    "^.+\\.(svg|png|jpg)$": "<rootDir>/svgTransform.js"
+    '^.+\\.[tj]s$': 'ts-jest',
+    '^.+\\.(svg|png|jpg)$': '<rootDir>/svgTransform.js',
   },
 
   // An array of regexp pattern strings that are matched against all source file paths, matched files will skip transformation

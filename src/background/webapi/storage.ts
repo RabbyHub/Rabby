@@ -8,9 +8,9 @@ const get = async (prop?) => {
   }
 
   const result = await browser.storage.local.get(null);
-  cacheMap = new Map(Object.entries(result).map(([k, v]) => [k, v]));
+  cacheMap = new Map(Object.entries(result ?? {}).map(([k, v]) => [k, v]));
 
-  return prop ? result[prop] : result;
+  return prop ? result?.[prop] : result;
 };
 
 const set = async (prop, value): Promise<void> => {

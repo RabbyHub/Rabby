@@ -31,10 +31,12 @@ export const addResourceBundle = async (locale: string) => {
   i18n.addResourceBundle(locale, 'translations', bundle);
 };
 
-addResourceBundle('en');
+if (process.env.NODE_ENV !== 'test') {
+  addResourceBundle('en');
 
-i18n.on('languageChanged', function (lng) {
-  addResourceBundle(lng);
-});
+  i18n.on('languageChanged', function (lng) {
+    addResourceBundle(lng);
+  });
+}
 
 export default i18n;

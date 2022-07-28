@@ -86,7 +86,7 @@ export interface DisplayedKeryring {
   byImport?: boolean;
 }
 
-class KeyringService extends EventEmitter {
+export class KeyringService extends EventEmitter {
   //
   // PUBLIC METHODS
   //
