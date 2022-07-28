@@ -1,6 +1,5 @@
 import { KeyringService } from 'background/service/keyring';
 import sinon from 'sinon';
-import { strict as assert } from 'assert';
 import mockEncryptor from './mock-encryptor';
 import contactBook from '@/background/service/contactBook';
 import { normalizeAddress } from '@/background/utils';
@@ -9,14 +8,6 @@ import Wallet from 'ethereumjs-wallet';
 const password = 'password123';
 const walletOneSeedWords =
   'puzzle seed penalty soldier say clay field arctic metal hen cage runway';
-const walletOneAddresses = ['0xef35ca8ebb9669a35c31b5f6f249a9941a812ac1'];
-const walletTwoSeedWords =
-  'urge letter protect palace city barely security section midnight wealth south deer';
-
-const walletTwoAddresses = [
-  '0xbbafcf3d00fb625b65bb1497c94bf42c1f4b3e78',
-  '0x49dd2653f38f75d40fdbd51e83b9c9724c87f7eb',
-];
 
 describe('KeyringService setup', () => {
   let keyringService;
