@@ -27,6 +27,7 @@ import SecurityCheckBar from './SecurityCheckBar';
 import SecurityCheckDetail from './SecurityCheckDetail';
 
 import { getKRCategoryByType } from '@/utils/transaction';
+import ReactGA from 'react-ga';
 
 interface SignTextProps {
   data: string[];
@@ -116,6 +117,15 @@ const SignText = ({ params }: { params: SignTextProps }) => {
     if (!currentAccount) {
       return;
     }
+    ReactGA.event({
+      category: 'SignText',
+      action: action,
+      label: [
+        getKRCategoryByType(currentAccount.type),
+        currentAccount.brandName,
+      ].join('|'),
+      transport: 'beacon',
+    });
     await wallet.reportStats(action, {
       type: currentAccount.brandName,
       category: getKRCategoryByType(currentAccount.type),

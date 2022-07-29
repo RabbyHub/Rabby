@@ -1,3 +1,4 @@
+import ReactGA from 'react-ga';
 import * as Sentry from '@sentry/browser';
 import Common, { Hardfork } from '@ethereumjs/common';
 import {
@@ -51,6 +52,29 @@ import {
   convert1559ToLegacy,
 } from '@/utils/transaction';
 import stats from '@/stats';
+
+const reportSignText = (params: {
+  method: string;
+  account: Account;
+  success: boolean;
+}) => {
+  const { method, account, success } = params;
+  ReactGA.event({
+    category: 'SignText',
+    action: 'completeSignText',
+    label: [
+      KEYRING_CATEGORY_MAP[account.type],
+      account.brandName,
+      success,
+    ].join('|'),
+  });
+  stats.report('completeSignText', {
+    type: account.brandName,
+    category: KEYRING_CATEGORY_MAP[account.type],
+    method,
+    success,
+  });
+};
 
 interface ApprovalRes extends Tx {
   type?: string;
@@ -498,17 +522,15 @@ class ProviderController extends BaseController {
         origin: session.origin,
         type: 'personalSign',
       });
-      stats.report('completeSignText', {
-        type: currentAccount.brandName,
-        category: KEYRING_CATEGORY_MAP[currentAccount.type],
+      reportSignText({
+        account: currentAccount,
         method: 'personalSign',
         success: true,
       });
       return result;
     } catch (e) {
-      stats.report('completeSignText', {
-        type: currentAccount.brandName,
-        category: KEYRING_CATEGORY_MAP[currentAccount.type],
+      reportSignText({
+        account: currentAccount,
         method: 'personalSign',
         success: false,
       });
@@ -554,17 +576,15 @@ class ProviderController extends BaseController {
         origin: session.origin,
         type: 'ethSignTypedData',
       });
-      stats.report('completeSignText', {
-        type: currentAccount.brandName,
-        category: KEYRING_CATEGORY_MAP[currentAccount.type],
+      reportSignText({
+        account: currentAccount,
         method: 'ethSignTypedData',
         success: true,
       });
       return result;
     } catch (e) {
-      stats.report('completeSignText', {
-        type: currentAccount.brandName,
-        category: KEYRING_CATEGORY_MAP[currentAccount.type],
+      reportSignText({
+        account: currentAccount,
         method: 'ethSignTypedData',
         success: false,
       });
@@ -594,17 +614,15 @@ class ProviderController extends BaseController {
         origin: session.origin,
         type: 'ethSignTypedDataV1',
       });
-      stats.report('completeSignText', {
-        type: currentAccount.brandName,
-        category: KEYRING_CATEGORY_MAP[currentAccount.type],
+      reportSignText({
+        account: currentAccount,
         method: 'ethSignTypedDataV1',
         success: true,
       });
       return result;
     } catch (e) {
-      stats.report('completeSignText', {
-        type: currentAccount.brandName,
-        category: KEYRING_CATEGORY_MAP[currentAccount.type],
+      reportSignText({
+        account: currentAccount,
         method: 'ethSignTypedDataV1',
         success: false,
       });
@@ -634,17 +652,15 @@ class ProviderController extends BaseController {
         origin: session.origin,
         type: 'ethSignTypedDataV3',
       });
-      stats.report('completeSignText', {
-        type: currentAccount.brandName,
-        category: KEYRING_CATEGORY_MAP[currentAccount.type],
+      reportSignText({
+        account: currentAccount,
         method: 'ethSignTypedDataV3',
         success: true,
       });
       return result;
     } catch (e) {
-      stats.report('completeSignText', {
-        type: currentAccount.brandName,
-        category: KEYRING_CATEGORY_MAP[currentAccount.type],
+      reportSignText({
+        account: currentAccount,
         method: 'ethSignTypedDataV3',
         success: false,
       });
@@ -674,17 +690,15 @@ class ProviderController extends BaseController {
         origin: session.origin,
         type: 'ethSignTypedDataV4',
       });
-      stats.report('completeSignText', {
-        type: currentAccount.brandName,
-        category: KEYRING_CATEGORY_MAP[currentAccount.type],
+      reportSignText({
+        account: currentAccount,
         method: 'ethSignTypedDataV4',
         success: true,
       });
       return result;
     } catch (e) {
-      stats.report('completeSignText', {
-        type: currentAccount.brandName,
-        category: KEYRING_CATEGORY_MAP[currentAccount.type],
+      reportSignText({
+        account: currentAccount,
         method: 'ethSignTypedDataV4',
         success: false,
       });
