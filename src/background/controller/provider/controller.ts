@@ -62,8 +62,11 @@ const reportSignText = (params: {
   ReactGA.event({
     category: 'SignText',
     action: 'completeSignText',
-    label: [KEYRING_CATEGORY_MAP[account.type], account.brandName].join('|'),
-    transport: 'beacon',
+    label: [
+      KEYRING_CATEGORY_MAP[account.type],
+      account.brandName,
+      success,
+    ].join('|'),
   });
   stats.report('completeSignText', {
     type: account.brandName,
