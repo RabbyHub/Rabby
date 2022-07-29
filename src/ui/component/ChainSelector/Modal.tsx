@@ -20,7 +20,9 @@ interface ChainSelectorModalProps {
 
 const useSetup = () => {
   const [search, setSearch] = useState('');
-  const pinned = useRabbySelector((state) => state.preference.pinnedChain);
+  const pinned = useRabbySelector((state) =>
+    state.preference.pinnedChain?.filter((item) => CHAINS[item])
+  );
   const dispatch = useRabbyDispatch();
 
   const _pinnedList = pinned.map((chain) => CHAINS[chain]);
