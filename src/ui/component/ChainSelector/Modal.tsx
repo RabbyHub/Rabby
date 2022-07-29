@@ -58,6 +58,10 @@ const useSetup = () => {
   const pinnedList = search?.trim() ? [] : _pinnedList;
   const all = searchChains(_all, search);
 
+  useEffect(() => {
+    dispatch.preference.getPreference('pinnedChain');
+  }, [dispatch]);
+
   return {
     pinnedList,
     all,
