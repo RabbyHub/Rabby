@@ -2,7 +2,7 @@ import React, { ReactNode, FunctionComponent, useEffect, useMemo } from 'react';
 import cx from 'clsx';
 import { Form, FormInstance, FormProps } from 'antd';
 import { useTranslation } from 'react-i18next';
-import { SvgIconSlogon } from 'assets';
+import { ReactComponent as SvgIconSlogon } from 'ui/assets/logo.svg';
 import StrayHeader, { StrayHeaderProps } from '../StrayHeader';
 import StrayFooter, { StrayFooterNavProps } from '../StrayFooter';
 import Spin from '../Spin';
@@ -36,7 +36,7 @@ const StrayPage = ({
       className
     )}
   >
-    <SvgIconSlogon className="absolute left-14 top-[-48px] hidden lg:block" />
+    <SvgIconSlogon className="absolute top-[-48px] hidden lg:block" />
     <Spin spinning={spinning} size="large">
       <div className={cx({ 'sm:px-20': !noPadding }, 'h-full flex flex-col')}>
         {header && (

@@ -233,7 +233,7 @@ const ImportWatchAddress = () => {
         <div className="rabby-container">
           <img
             className="rabby-logo"
-            src="/images/logo-gray.png"
+            src="/images/logo-white.svg"
             alt="rabby logo"
           />
           <img

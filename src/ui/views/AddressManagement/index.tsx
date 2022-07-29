@@ -5,6 +5,7 @@ import { FixedSizeList } from 'react-window';
 import { PageHeader, StrayFooter } from 'ui/component';
 import AddressItem from './AddressItem';
 import IconPlusAddress from 'ui/assets/addchain.png';
+import IconPlusAddress1 from 'ui/assets/addAddress.png';
 import IconStar from 'ui/assets/icon-star.svg';
 import IconStarFill from 'ui/assets/icon-star-fill.svg';
 
@@ -161,7 +162,7 @@ const AddressManagement = () => {
             NextButtonContent={
               <div className="flex items-center h-full justify-center text-15">
                 <img
-                  src={IconPlusAddress}
+                  src={IconPlusAddress1}
                   className="w-[16px] h-[16px] mr-10"
                 />
                 {t('Add Address')}
