@@ -1,5 +1,4 @@
 // import './wdyr';
-import { browser } from 'webextension-polyfill-ts';
 import './style/index.less';
 
 // For fix chrome extension render problem in external screen
@@ -35,14 +34,6 @@ if (
     }
   });
 }
-
-// fixed https://github.com/RabbyHub/Rabby/issues/771
-// adjust zoom when page zoom is not 1
-browser.tabs.getZoom().then((zoom) => {
-  if (zoom !== 1) {
-    (document.querySelector('html')?.style as any).zoom = 1 / zoom;
-  }
-});
 
 setTimeout(() => {
   import('./app');
