@@ -5,11 +5,6 @@ import { winMgr } from 'background/webapi';
 import { CHAINS } from 'consts';
 import { browser } from 'webextension-polyfill-ts';
 
-interface Task {
-  approval: Approval;
-  id: number;
-}
-
 type IApprovalComponents = typeof import('@/ui/views/Approval/components');
 type IApprovalComponent = IApprovalComponents[keyof IApprovalComponents];
 
@@ -27,6 +22,12 @@ export interface Approval {
   resolve?(params?: any): void;
   reject?(err: EthereumProviderError<any>): void;
 }
+
+const QUEUE_APPROVAL_COMPONENTS_WHITELIST = [
+  'SignTx',
+  'SignText',
+  'SignTypedData',
+];
 
 // something need user approval in window
 // should only open one window, unfocus will close the current notification
@@ -63,6 +64,19 @@ class NotificationService extends Events {
       if (winId === this.notifiWindowId) {
         this.notifiWindowId = 0;
         this.rejectAllApprovals();
+      }
+    });
+
+    winMgr.event.on('windowFocusChange', (winId: number) => {
+      if (this.notifiWindowId && winId !== this.notifiWindowId) {
+        if (
+          this.currentApproval &&
+          !QUEUE_APPROVAL_COMPONENTS_WHITELIST.includes(
+            this.currentApproval.data.approvalComponent
+          )
+        ) {
+          this.rejectApproval();
+        }
       }
     });
   }
@@ -149,6 +163,27 @@ class NotificationService extends Events {
         resolve,
         reject,
       };
+
+      if (
+        !QUEUE_APPROVAL_COMPONENTS_WHITELIST.includes(data.approvalComponent)
+      ) {
+        if (this.currentApproval) {
+          throw ethErrors.provider.userRejectedRequest(
+            'please request after current approval resolve'
+          );
+        }
+      } else {
+        if (
+          this.currentApproval &&
+          !QUEUE_APPROVAL_COMPONENTS_WHITELIST.includes(
+            this.currentApproval.data.approvalComponent
+          )
+        ) {
+          throw ethErrors.provider.userRejectedRequest(
+            'please request after current approval resolve'
+          );
+        }
+      }
 
       if (data.isUnshift) {
         this.approvals = [approval, ...this.approvals];
