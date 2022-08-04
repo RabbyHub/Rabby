@@ -1,6 +1,7 @@
 const webpack = require('webpack');
 const path = require('path');
 // const BundleAnalyzerPlugin = require('webpack-bundle-analyzer').BundleAnalyzerPlugin;
+const TerserPlugin = require('terser-webpack-plugin');
 
 const config = {
   mode: 'production',
@@ -15,6 +16,19 @@ const config = {
       'process.env.BUILD_ENV': JSON.stringify('PRO'),
     }),
   ],
+
+  optimization: {
+    minimize: true,
+    minimizer: [
+      new TerserPlugin({
+        terserOptions: {
+          compress: {
+            pure_funcs: ['console.log'],
+          },
+        },
+      }),
+    ],
+  },
 };
 
 module.exports = config;
