@@ -64,59 +64,62 @@ const ApproveNFTCollection = ({
           <img src={IconArrowRight} />
         </span>
       </p>
-      <div className="gray-section-block common-detail-block">
-        {isSpeedUp && <SpeedUpCorner />}
-        <p className="title">{t('NFT Collection Approval')}</p>
-        <div className="nft-collection">
-          <div className="rabby-list">
-            <div className="item">
-              <div className="label">Collection</div>
-              <div className="value">
-                {detail.nft_contract?.collection?.name || t('Unknown')}
+      <div className="action-card">
+        <div className="common-detail-block">
+          {isSpeedUp && <SpeedUpCorner />}
+          <p className="title">{t('NFT Collection Approval')}</p>
+          <div className="nft-collection">
+            <div className="rabby-list">
+              <div className="item">
+                <div className="label">Collection</div>
+                <div className="value">
+                  {detail.nft_contract?.collection?.name || t('Unknown')}
+                </div>
+              </div>
+              <div className="item">
+                <div className="label">Contract</div>
+                <div className="value flex items-center gap-6">
+                  {ellipsis(detail.nft_contract?.id)}
+                  <Copy
+                    variant="address"
+                    data={detail.nft_contract?.id}
+                    className="w-16"
+                  ></Copy>
+                </div>
               </div>
             </div>
+          </div>
+          <div className="rabby-list px-[13px]">
             <div className="item">
-              <div className="label">Contract</div>
-              <div className="value flex items-center gap-6">
-                {ellipsis(detail.nft_contract?.id)}
-                <Copy
-                  variant="address"
-                  data={detail.nft_contract?.id}
-                  className="w-16"
-                ></Copy>
+              <div className="label">Approve to</div>
+              <div className="value flex items-center gap-8">
+                <img
+                  className="logo"
+                  src={detail.spender_protocol_logo_url || IconUnknownProtocol}
+                  onError={handleProtocolLogoLoadFailed}
+                />
+                <div className="name">
+                  {detail.spender_protocol_name || t('Unknown')}
+                </div>
+                <div className="address flex gap-6">
+                  {ellipsis(detail.spender)}
+                  <Copy
+                    variant="address"
+                    data={detail.spender}
+                    className="w-16"
+                  ></Copy>
+                </div>
               </div>
             </div>
           </div>
         </div>
-        <div className="rabby-list px-[13px]">
-          <div className="item">
-            <div className="label">Approve to</div>
-            <div className="value flex items-center gap-8">
-              <img
-                className="logo"
-                src={detail.spender_protocol_logo_url || IconUnknownProtocol}
-                onError={handleProtocolLogoLoadFailed}
-              />
-              <div className="name">
-                {detail.spender_protocol_name || t('Unknown')}
-              </div>
-              <div className="address flex gap-6">
-                {ellipsis(detail.spender)}
-                <Copy
-                  variant="address"
-                  data={detail.spender}
-                  className="w-16"
-                ></Copy>
-              </div>
-            </div>
-          </div>
-        </div>
+        <BalanceChange
+          version={data.pre_exec_version}
+          data={data.balance_change}
+          chainEnum={chainEnum}
+          isSupport={data.support_balance_change}
+        />
       </div>
-      <BalanceChange
-        data={data.balance_change}
-        chainEnum={chainEnum}
-        isSupport={data.support_balance_change}
-      />
     </div>
   );
 };

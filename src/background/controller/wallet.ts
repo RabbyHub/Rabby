@@ -1,3 +1,4 @@
+import { BigNumber } from 'bignumber.js';
 import * as ethUtil from 'ethereumjs-util';
 import Wallet, { thirdparty } from 'ethereumjs-wallet';
 import { ethErrors } from 'eth-rpc-errors';
@@ -5,6 +6,7 @@ import * as bip39 from 'bip39';
 import { ethers, Contract } from 'ethers';
 import { groupBy } from 'lodash';
 import abiCoder, { AbiCoder } from 'web3-eth-abi';
+import * as optimismContracts from '@eth-optimism/contracts';
 import {
   keyringService,
   preferenceService,
@@ -60,6 +62,8 @@ import KeystoneKeyring, {
 import WatchKeyring from '@rabby-wallet/eth-watch-keyring';
 import stats from '@/stats';
 import { generateAliasName } from '@/utils/account';
+import { intToHex } from 'ethereumjs-util';
+import buildUnserializedTransaction from '@/utils/optimism/buildUnserializedTransaction.js';
 
 const stashKeyrings: Record<string | number, any> = {};
 
@@ -153,6 +157,41 @@ export class WalletController extends BaseController {
         },
       ],
     });
+  };
+
+  fetchEstimatedL1Fee = async (
+    txMeta: Record<string, any> & {
+      txParams: any;
+    }
+  ) => {
+    const account = await preferenceService.getCurrentAccount();
+    if (!account) throw new Error('no current account');
+    buildinProvider.currentProvider.currentAccount = account.address;
+    buildinProvider.currentProvider.currentAccountType = account.type;
+    buildinProvider.currentProvider.currentAccountBrand = account.brandName;
+    buildinProvider.currentProvider.chainId = CHAINS['OP'].network;
+
+    const provider = new ethers.providers.Web3Provider(
+      buildinProvider.currentProvider
+    );
+
+    const signer = provider.getSigner();
+    const OVMGasPriceOracle = optimismContracts
+      .getContractFactory('OVM_GasPriceOracle')
+      .attach(optimismContracts.predeploys.OVM_GasPriceOracle);
+    const abi = JSON.parse(
+      OVMGasPriceOracle.interface.format(
+        ethers.utils.FormatTypes.json
+      ) as string
+    );
+
+    const contract = new Contract(OVMGasPriceOracle.address, abi, signer);
+    const serializedTransaction = buildUnserializedTransaction(
+      txMeta
+    ).serialize();
+
+    const res = await contract.getL1Fee(serializedTransaction);
+    return res.toHexString();
   };
 
   transferNFT = async (

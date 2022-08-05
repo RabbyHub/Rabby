@@ -12,20 +12,32 @@ import IconQuestion from 'ui/assets/approval/question.svg';
 import LessPalette from '@/ui/style/var-defs';
 import ModalPreviewNFTItem from '@/ui/component/ModalPreviewNFTItem';
 import useBalanceChange from '@/ui/hooks/useBalanceChange';
+import IconUnknown from 'ui/assets/token-default.svg';
+import IconMore from 'ui/assets/more.svg';
+import { ReactComponent as IconRcWarning } from 'ui/assets/icon-warning.svg';
 
-const NFTListCountLimit = 5;
+const NFTListCountLimit = 7;
 const NFCBalanceChangeWrapper = styled.div`
-  .nft-bc-content {
-    padding: 12px 16px;
-    .nft-bc-image-list {
-      margin: 0;
-      padding: 0;
-      margin-bottom: 2px;
-      position: relative;
-      display: flex;
-      align-items: center;
-      flex-wrap: nowrap;
-    }
+  .nft-balance-change {
+    display: flex;
+    align-items: center;
+  }
+  .nft-balance-change-count {
+    font-weight: 500;
+    font-size: 15px;
+    line-height: 18px;
+    color: #13141a;
+  }
+  .nft-bc-image-list {
+    margin: 0;
+    padding: 0;
+    margin-bottom: 2px;
+    position: relative;
+    display: flex;
+    align-items: center;
+    flex-wrap: nowrap;
+    margin-right: 12px;
+    gap: 4px;
   }
 
   .nft-item-container {
@@ -34,7 +46,6 @@ const NFCBalanceChangeWrapper = styled.div`
     align-items: center;
     justify-content: flex-start;
     flex-shrink: 0;
-    max-width: ${(1 / (NFTListCountLimit + 1)) * 100}%;
     position: relative;
   }
 
@@ -42,7 +53,7 @@ const NFCBalanceChangeWrapper = styled.div`
     .nft-item-avatar {
       width: 100%;
       height: 100%;
-      border: 1px solid #ffffff;
+      border: none;
     }
 
     &:not(.is-extra-item):hover .nft-item-wrapper .nft-item-avatar {
@@ -52,14 +63,14 @@ const NFCBalanceChangeWrapper = styled.div`
 
   .nft-item-wrapper {
     display: block;
-    width: 48px;
-    height: 48px;
+    width: 28px;
+    height: 28px;
     position: relative;
     overflow: hidden;
-    border-radius: 4px;
+    border-radius: 2px;
 
     .nft-extra-item-mask {
-      background-color: rgba(0, 0, 0, 0.8);
+      background-color: rgba(0, 0, 0, 0.6);
       position: absolute;
       width: 100%;
       height: 100%;
@@ -73,7 +84,7 @@ const NFCBalanceChangeWrapper = styled.div`
   }
 
   .nft-item-container + .nft-item-container {
-    padding-left: 8px;
+    // padding-left: 8px;
   }
 
   .nft-item-container.is-extra-item .nft-inner-hover-mask {
@@ -148,15 +159,11 @@ const NFCBalanceChangeWrapper = styled.div`
     }
   }
 
-  .nft-balance-change_error {
+  .nft-balance-change-error {
     width: 100%;
-    background: rgba(242, 156, 27, 0.1);
-    border-radius: 4px;
-    color: #f29c1b;
-    border: 1px solid rgba(242, 156, 27, 0.2);
     font-size: 14px;
-    padding: 14px 16px;
-    word-break: break-all;
+    line-height: 16px;
+    color: #4b4d59;
   }
 `;
 
@@ -190,7 +197,9 @@ function NFTList({
             >
               <div className="nft-item-wrapper">
                 {isExtraItem && restCount && (
-                  <div className="nft-extra-item-mask">+ {restCount}</div>
+                  <div className="nft-extra-item-mask">
+                    <img src={IconMore} alt="" />
+                  </div>
                 )}
                 <span
                   title={nft.name}
@@ -233,18 +242,14 @@ const NFTBalanceChange = ({
   data,
   isSupport,
   chainEnum,
+  type,
 }: {
   data: IBalanceChange;
   isSupport: boolean;
   chainEnum: CHAINS_ENUM;
+  type: 'receive' | 'send';
 }) => {
   const { t } = useTranslation();
-  const isSuccess = (data.success || !data.success) && isSupport;
-  const errorMessage = data.err_msg;
-
-  const { hasNFTChange: hasChange } = useBalanceChange({
-    balance_change: data,
-  });
 
   const {
     hasReceives,
@@ -280,93 +285,53 @@ const NFTBalanceChange = ({
 
   const chain = CHAINS[chainEnum];
 
-  return (
-    <NFCBalanceChangeWrapper
-      className={clsx('nft-bc', !hasChange && 'no-change-detected')}
-    >
-      {!hasChange && (
-        <p className="section-title flex flex-start items-center">
-          <span className="mr-[3px]">
-            {t('no nft balance change detected')}
-          </span>
-          <Tooltip
-            placement="bottom"
-            overlay={<>Only supports detection of ERC 721 and ERC 1155.</>}
-            overlayClassName="disable-ant-overwrite"
-            overlayInnerStyle={{
-              fontSize: '12px',
-              lineHeight: '14px',
-              padding: '6px 10px',
-            }}
-          >
-            <img className="w-[9.5px] h-[9.5px]" src={IconQuestion} />
-          </Tooltip>
-        </p>
-      )}
-      {isSuccess && hasReceives && (
-        <div className="nft-bc-section received">
-          <h3 className="nft-bc-title mb-8">
-            <Trans
-              i18nKey={'ntfWillBeReceived'}
-              values={{
-                countDesc:
-                  countReceives <= 1 ? '1 NFT' : `${countReceives} NFTs`,
-              }}
-            />
-          </h3>
-          <div className="gray-section-block nft-bc-content">
-            {<NFTList list={receiveNftList} />}
+  if (type === 'receive' && hasReceives) {
+    return (
+      <NFCBalanceChangeWrapper className="nft-balance-change">
+        <div className="nft-balance-change">
+          <NFTList list={receiveNftList} />
+          <div className="nft-balance-change-count">
+            + {countReceives} {countReceives > 1 ? t('NFTs') : t('NFT')}
           </div>
         </div>
-      )}
-      {isSuccess && hasTransferedOut && (
-        <div className="nft-bc-section transfered-out">
-          <h3 className="nft-bc-title mb-8">
-            <Trans
-              i18nKey={'ntfWillBeTransferedOut'}
-              values={{
-                countDesc: countSendNft <= 1 ? '1 NFT' : `${countSendNft} NFTs`,
-              }}
-            />
-          </h3>
-          <div className="gray-section-block nft-bc-content">
-            <NFTList list={sendNftList} />
+      </NFCBalanceChangeWrapper>
+    );
+  }
+  if (type === 'send' && hasTransferedOut) {
+    return (
+      <NFCBalanceChangeWrapper className="nft-balance-change">
+        <div className="nft-balance-change">
+          <NFTList list={sendNftList} />
+          <div className="nft-balance-change-count">
+            - {countSendNft} {countSendNft > 1 ? t('NFTs') : t('NFT')}
           </div>
         </div>
-      )}
-      {!isSuccess && (
-        <div className="nft-balance-change_error">
-          {!data.success ? (
-            errorMessage
-          ) : (
-            <Trans
-              i18nKey="balanceChangeNotSupport"
-              values={{ name: chain.name }}
-            />
-          )}
-        </div>
-      )}
-    </NFCBalanceChangeWrapper>
-  );
+      </NFCBalanceChangeWrapper>
+    );
+  }
+  return null;
 };
 
-const TokenBalanceChange = ({
+const BalanceChange = ({
   data,
   isSupport,
   chainEnum,
+  version,
 }: {
   data: IBalanceChange;
   isSupport: boolean;
   chainEnum: CHAINS_ENUM;
+  version: 'v0' | 'v1' | 'v2';
 }) => {
   const { t } = useTranslation();
-  const isSuccess = data.success && isSupport;
-  const errorMessage = data.err_msg;
+  const isSuccess = data.success;
   const chain = CHAINS[chainEnum];
 
-  const { hasTokenChange: hasChange } = useBalanceChange({
+  const { hasTokenChange, hasNFTChange } = useBalanceChange({
     balance_change: data,
   });
+
+  const hasChange = hasNFTChange || hasTokenChange;
 
   const {
     receiveTokenList,
@@ -386,6 +351,25 @@ const TokenBalanceChange = ({
     };
   }, [data]);
 
+  if (version === 'v0') {
+    return null;
+  }
+
+  if (version === 'v1' && data.error) {
+    return (
+      <div className="token-balance-change">
+        <div className="balance-change-error items-center">
+          <IconRcWarning className="balance-change-error-icon"></IconRcWarning>
+          <div className="balance-change-error-content">
+            <div className="balance-change-error-title">
+              Fail to fetch balance change
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   return (
     <div
       className={clsx(
@@ -393,136 +377,89 @@ const TokenBalanceChange = ({
         !hasChange && 'no-change-detected'
       )}
     >
-      {hasChange ? (
-        <p className="section-title flex justify-between">
-          <span>{t('token balance change')}</span>
-        </p>
-      ) : (
+      {!hasChange && !data.error && (
         <p className="section-title flex flex-start items-center">
-          <span className="mr-[3px]">
-            {t('no token balance change detected')}
-          </span>
+          <span className="mr-[3px]">{t('No balance change found')}</span>
         </p>
       )}
       {isSuccess && hasChange && (
-        <div className="gray-section-block token-balance-change-content">
-          <div>
-            {sendTokenList && sendTokenList.length > 0 && (
-              <ul>
-                {sendTokenList.map((token) => (
-                  <li key={token.id}>
-                    <div className="first-line">
-                      <span className="token-symbol" title={token.symbol}>
-                        {token.symbol}
-                      </span>
-                      <span
-                        className="token-amount"
-                        title={`- ${splitNumberByStep(token.amount)}`}
-                      >
-                        -{splitNumberByStep(token.amount)}
-                      </span>
-                    </div>
-                    <div className="second-line">
-                      ${splitNumberByStep(token.usd_value!.toFixed(2))}
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            )}
-            {receiveTokenList && receiveTokenList.length > 0 && (
-              <ul>
-                {receiveTokenList.map((token) => (
-                  <li key={token.id}>
-                    <div className="first-line">
-                      <span className="token-symbol" title={token.symbol}>
-                        {token.symbol}
-                      </span>
-                      <span
-                        className="token-amount"
-                        title={`+ ${splitNumberByStep(token.amount)}`}
-                      >
-                        +{splitNumberByStep(token.amount)}
-                      </span>
-                    </div>
-                    <div className="second-line">
-                      ${splitNumberByStep(token.usd_value!.toFixed(2))}
-                    </div>
-                  </li>
-                ))}
-              </ul>
-            )}
-          </div>
-          <div className="total-balance-change">
-            <span className="token-symbol">{t('Total value change')}</span>
-            <span
-              className={clsx('usd-value-change', {
-                'text-gray-subTitle': !data.usd_value_change,
-                green: isUSDValueChangePositive,
-                red: isUSDValueChangeNegative,
-              })}
-              title={splitNumberByStep(data.usd_value_change)}
-            >
-              {isUSDValueChangePositive ? '+' : '-'}$
+        <div className="token-balance-change-content">
+          <div className="token-balance-change-content-header">
+            <span>{t('Est. token balance change')}</span>
+            <span className="token-change-total">
+              {isUSDValueChangePositive ? '+' : '-'} $
               {splitNumberByStep(Math.abs(data.usd_value_change).toFixed(2))}
             </span>
           </div>
+          <div>
+            <div className="token-change-list">
+              {sendTokenList &&
+                sendTokenList.length > 0 &&
+                sendTokenList.map((token) => (
+                  <div key={token.id} className="token-change-item">
+                    <img
+                      src={token.logo_url || IconUnknown}
+                      className="token-change-logo"
+                      alt=""
+                    />
+                    <span className="token-change-amount" title={token.symbol}>
+                      - {splitNumberByStep(token.amount)} {token.symbol}
+                    </span>
+                    <span className="token-change-price">
+                      ${splitNumberByStep(token.usd_value!.toFixed(2))}
+                    </span>
+                  </div>
+                ))}
+              <NFTBalanceChange
+                type="send"
+                data={data}
+                isSupport={isSupport}
+                chainEnum={chainEnum}
+              ></NFTBalanceChange>
+              {receiveTokenList &&
+                receiveTokenList.length > 0 &&
+                receiveTokenList.map((token) => (
+                  <div key={token.id} className="token-change-item">
+                    <img
+                      src={token.logo_url || IconUnknown}
+                      className="token-change-logo"
+                      alt=""
+                    />
+                    <span className="token-change-amount" title={token.symbol}>
+                      + {splitNumberByStep(token.amount)} {token.symbol}
+                    </span>
+                    <span className="token-change-price">
+                      ${splitNumberByStep(token.usd_value!.toFixed(2))}
+                    </span>
+                  </div>
+                ))}
+              <NFTBalanceChange
+                type="receive"
+                data={data}
+                isSupport={isSupport}
+                chainEnum={chainEnum}
+              ></NFTBalanceChange>
+            </div>
+          </div>
         </div>
       )}
-      {!isSuccess && (
-        <div className="balance-change_error">
-          {!data.success ? (
-            errorMessage
-          ) : (
-            <Trans
-              i18nKey="balanceChangeNotSupport"
-              values={{ name: chain.name }}
-            />
-          )}
+      {!data.success && (
+        <div className="balance-change-error">
+          <IconRcWarning className="balance-change-error-icon"></IconRcWarning>
+          <div className="balance-change-error-content">
+            <div className="balance-change-error-title">
+              Fail to fetch balance change
+            </div>
+            {data.error && (
+              <div className="balance-change-error-desc">
+                {data.error.msg} #{data.error.code}
+              </div>
+            )}
+          </div>
         </div>
       )}
     </div>
   );
 };
-
-function BalanceChange({
-  data,
-  isSupport,
-  chainEnum,
-}: {
-  data: IBalanceChange;
-  isSupport: boolean;
-  chainEnum: CHAINS_ENUM;
-}) {
-  const { renderBlocks } = useBalanceChange({ balance_change: data });
-
-  return (
-    <>
-      {renderBlocks.map((block, idx) => {
-        switch (block) {
-          case 'nft-bc':
-            return (
-              <NFTBalanceChange
-                key={`b-${block}-${idx}`}
-                data={data}
-                isSupport={isSupport}
-                chainEnum={chainEnum}
-              />
-            );
-          case 'token-bc':
-            return (
-              <TokenBalanceChange
-                key={`b-${block}-${idx}`}
-                data={data}
-                isSupport={isSupport}
-                chainEnum={chainEnum}
-              />
-            );
-          default:
-            return null;
-        }
-      })}
-    </>
-  );
-}
 
 export default BalanceChange;

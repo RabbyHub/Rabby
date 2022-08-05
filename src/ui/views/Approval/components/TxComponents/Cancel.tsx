@@ -87,46 +87,49 @@ const Cancel = ({ data, chainEnum, isSpeedUp, raw }: CancelProps) => {
           <img src={IconArrowRight} />
         </span>
       </p>
-      <div className="gray-section-block common-detail-block">
-        {isSpeedUp && <SpeedUpCorner />}
-        <p className="title">
-          <Trans
-            i18nKey="cancelApprovalTitle"
-            values={{ symbol: detail.token_symbol }}
-          />
-        </p>
-        <div className="protocol">
-          {detail.spender_protocol_logo_url && (
-            <img
-              className="protocol-logo"
-              src={detail.spender_protocol_logo_url || IconUnknownProtocol}
-              onError={handleProtocolLogoLoadFailed}
+      <div className="action-card">
+        <div className="common-detail-block">
+          {isSpeedUp && <SpeedUpCorner />}
+          <p className="title">
+            <Trans
+              i18nKey="cancelApprovalTitle"
+              values={{ symbol: detail.token_symbol }}
             />
-          )}
-          <div className="protocol-info">
-            <p
-              className={clsx('protocol-info__name', {
-                'text-gray-content': !detail.spender_protocol_name,
-              })}
-            >
-              {detail.spender_protocol_name || t('UnknownProtocol')}
-            </p>
-            <div className="protocol-info__spender">
-              <AddressViewer address={detail.spender} showArrow={false} />
+          </p>
+          <div className="protocol">
+            {detail.spender_protocol_logo_url && (
               <img
-                src={IconCopy}
-                className="icon icon-copy"
-                onClick={handleCopySpender}
+                className="protocol-logo"
+                src={detail.spender_protocol_logo_url || IconUnknownProtocol}
+                onError={handleProtocolLogoLoadFailed}
               />
+            )}
+            <div className="protocol-info">
+              <p
+                className={clsx('protocol-info__name', {
+                  'text-gray-content': !detail.spender_protocol_name,
+                })}
+              >
+                {detail.spender_protocol_name || t('UnknownProtocol')}
+              </p>
+              <div className="protocol-info__spender">
+                <AddressViewer address={detail.spender} showArrow={false} />
+                <img
+                  src={IconCopy}
+                  className="icon icon-copy"
+                  onClick={handleCopySpender}
+                />
+              </div>
             </div>
           </div>
         </div>
+        <BalanceChange
+          version={data.pre_exec_version}
+          data={data.balance_change}
+          chainEnum={chainEnum}
+          isSupport={data.support_balance_change}
+        />
       </div>
-      <BalanceChange
-        data={data.balance_change}
-        chainEnum={chainEnum}
-        isSupport={data.support_balance_change}
-      />
     </div>
   );
 };

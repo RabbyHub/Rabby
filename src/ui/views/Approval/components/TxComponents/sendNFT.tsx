@@ -54,63 +54,67 @@ const SendNFT = ({ data, chainEnum, isSpeedUp, raw }: SendNFTProps) => {
           <img src={IconArrowRight} />
         </span>
       </p>
-      <div className="gray-section-block common-detail-block">
-        {isSpeedUp && <SpeedUpCorner />}
-        <p className="title">
-          Send {detail.token_amount} {detail.token_amount > 1 ? 'NFTs' : 'NFT'}
-        </p>
-        <div className="nft-card">
-          <NFTAvatar
-            type={detail.nft?.content_type}
-            content={detail.nft?.content}
-            unknown={IconUnknownNFT}
-          ></NFTAvatar>
-          <div className="nft-card-content">
-            <div className="nft-card-title">
-              {detail.nft?.name || t('Unknown')}
-            </div>
-            <div className="rabby-list">
-              <div className="item">
-                <div className="label">Collection</div>
-                <div className="value">
-                  {detail.nft?.collection?.name || t('Unknown')}
+      <div className="action-card">
+        <div className="common-detail-block">
+          {isSpeedUp && <SpeedUpCorner />}
+          <p className="title">
+            Send {detail.token_amount}{' '}
+            {detail.token_amount > 1 ? 'NFTs' : 'NFT'}
+          </p>
+          <div className="nft-card">
+            <NFTAvatar
+              type={detail.nft?.content_type}
+              content={detail.nft?.content}
+              unknown={IconUnknownNFT}
+            ></NFTAvatar>
+            <div className="nft-card-content">
+              <div className="nft-card-title">
+                {detail.nft?.name || t('Unknown')}
+              </div>
+              <div className="rabby-list">
+                <div className="item">
+                  <div className="label">Collection</div>
+                  <div className="value">
+                    {detail.nft?.collection?.name || t('Unknown')}
+                  </div>
+                </div>
+                <div className="item">
+                  <div className="label">Contract</div>
+                  <div className="value flex items-center gap-6">
+                    {ellipsis(detail.nft?.contract_id)}
+                    <Copy
+                      variant="address"
+                      data={detail.nft?.contract_id}
+                      className="w-16"
+                    ></Copy>
+                  </div>
                 </div>
               </div>
-              <div className="item">
-                <div className="label">Contract</div>
-                <div className="value flex items-center gap-6">
-                  {ellipsis(detail.nft?.contract_id)}
-                  <Copy
-                    variant="address"
-                    data={detail.nft?.contract_id}
-                    className="w-16"
-                  ></Copy>
+            </div>
+          </div>
+          <div className="rabby-list">
+            <div className="item">
+              <div className="label">To address</div>
+              <div className="value flex items-center gap-8">
+                <div className="address flex gap-6">
+                  <NameAndAddress
+                    address={detail.spender}
+                    className="text-13"
+                    nameClass="max-117 text-13"
+                    addressClass="text-13"
+                  />
                 </div>
               </div>
             </div>
           </div>
         </div>
-        <div className="rabby-list">
-          <div className="item">
-            <div className="label">To address</div>
-            <div className="value flex items-center gap-8">
-              <div className="address flex gap-6">
-                <NameAndAddress
-                  address={detail.spender}
-                  className="text-13"
-                  nameClass="max-117 text-13"
-                  addressClass="text-13"
-                />
-              </div>
-            </div>
-          </div>
-        </div>
+        <BalanceChange
+          version={data.pre_exec_version}
+          data={data.balance_change}
+          chainEnum={chainEnum}
+          isSupport={data.support_balance_change}
+        />
       </div>
-      <BalanceChange
-        data={data.balance_change}
-        chainEnum={chainEnum}
-        isSupport={data.support_balance_change}
-      />
     </div>
   );
 };

@@ -257,84 +257,87 @@ const Approve = ({
           <img src={IconArrowRight} />
         </span>
       </p>
-      <div className="gray-section-block common-detail-block">
-        {isSpeedUp && <SpeedUpCorner />}
-        <p className="title">{t('Token Approval')}</p>
-        <div className="block-field">
-          <span className="label">{t('Amount')}</span>
-          <div className="value">
-            <p className="token-info" title={splitNumberByStep(tokenAmount)}>
-              <span>
-                {ellipsisOverflowedText(
-                  splitNumberByStep(tokenAmount),
-                  15,
-                  true
-                )}{' '}
-                <span title={detail.token_symbol}>
-                  {ellipsisOverflowedText(detail.token_symbol, 4)}
+      <div className="action-card">
+        <div className="common-detail-block">
+          {isSpeedUp && <SpeedUpCorner />}
+          <p className="title">{t('Token Approval')}</p>
+          <div className="block-field">
+            <span className="label">{t('Amount')}</span>
+            <div className="value">
+              <p className="token-info" title={splitNumberByStep(tokenAmount)}>
+                <span>
+                  {ellipsisOverflowedText(
+                    splitNumberByStep(tokenAmount),
+                    15,
+                    true
+                  )}{' '}
+                  <span title={detail.token_symbol}>
+                    {ellipsisOverflowedText(detail.token_symbol, 4)}
+                  </span>
                 </span>
-              </span>
-              {!isGnosis && (
-                <Button
-                  type="link"
-                  onClick={handleEditApproveAmount}
-                  className="edit-btn"
-                >
-                  {t('Edit')}
-                </Button>
-              )}
-            </p>
-            <p
-              className="token-value"
-              title={splitNumberByStep(totalTokenPrice)}
-            >
-              ≈ $
-              {ellipsisOverflowedText(
-                splitNumberByStep(totalTokenPrice),
-                18,
-                true
-              )}
-            </p>
-          </div>
-        </div>
-        <div className="block-field mb-0">
-          <span className="label flex items-center">{t('Approve to')}</span>
-          <div className="value protocol">
-            {detail.spender_protocol_logo_url && (
-              <img
-                className="protocol-logo"
-                src={detail.spender_protocol_logo_url || IconUnknownProtocol}
-                onError={handleProtocolLogoLoadFailed}
-              />
-            )}
-            <div className="protocol-info">
-              <p
-                className={clsx('protocol-info__name flex', {
-                  'text-gray-content': !detail.spender_protocol_name,
-                })}
-              >
-                {ellipsisOverflowedText(
-                  detail.spender_protocol_name || t('UnknownProtocol'),
-                  10
+                {!isGnosis && (
+                  <Button
+                    type="link"
+                    onClick={handleEditApproveAmount}
+                    className="edit-btn"
+                  >
+                    {t('Edit')}
+                  </Button>
                 )}
-                <span className="protocol-info__spender">
-                  <AddressViewer address={detail.spender} showArrow={false} />
-                  <img
-                    src={IconCopy}
-                    className="icon icon-copy"
-                    onClick={handleCopySpender}
-                  />
-                </span>
+              </p>
+              <p
+                className="token-value"
+                title={splitNumberByStep(totalTokenPrice)}
+              >
+                ≈ $
+                {ellipsisOverflowedText(
+                  splitNumberByStep(totalTokenPrice),
+                  18,
+                  true
+                )}
               </p>
             </div>
           </div>
+          <div className="block-field mb-0">
+            <span className="label flex items-center">{t('Approve to')}</span>
+            <div className="value protocol">
+              {detail.spender_protocol_logo_url && (
+                <img
+                  className="protocol-logo"
+                  src={detail.spender_protocol_logo_url || IconUnknownProtocol}
+                  onError={handleProtocolLogoLoadFailed}
+                />
+              )}
+              <div className="protocol-info">
+                <p
+                  className={clsx('protocol-info__name flex', {
+                    'text-gray-content': !detail.spender_protocol_name,
+                  })}
+                >
+                  {ellipsisOverflowedText(
+                    detail.spender_protocol_name || t('UnknownProtocol'),
+                    10
+                  )}
+                  <span className="protocol-info__spender">
+                    <AddressViewer address={detail.spender} showArrow={false} />
+                    <img
+                      src={IconCopy}
+                      className="icon icon-copy"
+                      onClick={handleCopySpender}
+                    />
+                  </span>
+                </p>
+              </div>
+            </div>
+          </div>
         </div>
+        <BalanceChange
+          version={data.pre_exec_version}
+          data={data.balance_change}
+          chainEnum={chainEnum}
+          isSupport={data.support_balance_change}
+        />
       </div>
-      <BalanceChange
-        data={data.balance_change}
-        chainEnum={chainEnum}
-        isSupport={data.support_balance_change}
-      />
       <Popup
         visible={editApproveModalVisible}
         className="edit-approve-amount-modal"

@@ -1,16 +1,16 @@
-import clsx from 'clsx';
-import React, { useEffect, useState, useRef } from 'react';
-import { Input, Button, Skeleton, Form, Slider, Tooltip } from 'antd';
-import BigNumber from 'bignumber.js';
+import { Button, Form, Input, Skeleton, Slider, Tooltip } from 'antd';
 import { ValidateStatus } from 'antd/lib/form/FormItem';
-import { useTranslation, Trans } from 'react-i18next';
-import { useDebounce } from 'react-use';
+import { GasLevel, Tx } from 'background/service/openapi';
+import BigNumber from 'bignumber.js';
+import clsx from 'clsx';
 import { CHAINS, GAS_LEVEL_TEXT, MINIMUM_GAS_LIMIT } from 'consts';
-import { GasResult, Tx, GasLevel } from 'background/service/openapi';
+import React, { useEffect, useRef, useState } from 'react';
+import { Trans, useTranslation } from 'react-i18next';
+import { useDebounce } from 'react-use';
+import IconArrowDown from 'ui/assets/arrow-down.svg';
+import IconInfo from 'ui/assets/infoicon.svg';
 import { Popup } from 'ui/component';
 import { formatTokenAmount } from 'ui/utils/number';
-import IconSetting from 'ui/assets/setting-gray.svg';
-import IconInfo from 'ui/assets/infoicon.svg';
 
 export interface GasSelectorResponse extends GasLevel {
   gasLimit: number;
@@ -19,7 +19,10 @@ export interface GasSelectorResponse extends GasLevel {
 
 interface GasSelectorProps {
   gasLimit: string | undefined;
-  gas: GasResult;
+  gas: {
+    estimated_gas_cost_value: number;
+    estimated_gas_cost_usd_value: number;
+  };
   chainId: number;
   tx: Tx;
   onChange(gas: GasSelectorResponse): void;
@@ -78,6 +81,7 @@ const GasSelector = ({
       message: null,
     },
   });
+  const [isShowAdvanced, setIsShowAdvanced] = useState(false);
   const chain = Object.values(CHAINS).find((item) => item.id === chainId)!;
 
   const handleSetRecommendTimes = () => {
@@ -265,207 +269,239 @@ const GasSelector = ({
     }
   }, [maxPriorityFee, selectedGas, customGas, is1559]);
 
+  useEffect(() => {
+    if (!modalVisible) {
+      setIsShowAdvanced(false);
+    }
+  }, [modalVisible]);
+
   if (!isReady && isFirstTimeLoad)
     return (
       <>
-        <p className="section-title section-gas-cost">{t('gasCostTitle')}</p>
-        <div className="gas-selector gray-section-block">
-          <div className="gas-info mb-12">
-            <Skeleton.Input active style={{ width: 200 }} />
-          </div>
-          <div className="flex mt-15">
-            <Skeleton.Button
-              active
-              style={{ width: 72, height: 48, marginRight: 4 }}
-            />
-            <Skeleton.Button
-              active
-              style={{ width: 72, height: 48, marginLeft: 4, marginRight: 4 }}
-            />
-            <Skeleton.Button
-              active
-              style={{ width: 72, height: 48, marginLeft: 4, marginRight: 4 }}
-            />
-            <Skeleton.Button
-              active
-              style={{ width: 72, height: 48, marginLeft: 4 }}
-            />
+        <div className="gas-selector pt-[15px] pb-[14px]">
+          <div className="pl-[84px]">
+            <div>
+              <Skeleton.Input active style={{ width: 90, height: 17 }} />
+            </div>
+            <div>
+              <Skeleton.Input active style={{ width: 70, height: 15 }} />
+            </div>
           </div>
         </div>
       </>
     );
   return (
     <>
-      <p className="section-title section-gas-cost">{t('gasCostTitle')}</p>
-      <div className="gas-selector gray-section-block">
-        <div className="top">
-          <p className="usmoney">
-            {gas.fail
-              ? 'Gas fee calculation failure'
-              : `≈ $${gas.estimated_gas_cost_usd_value.toFixed(2)}`}
-          </p>
-          {!gas.fail && (
-            <p className="gasmoney">
-              {`${formatTokenAmount(gas.estimated_gas_cost_value)} ${
-                chain.nativeTokenSymbol
-              }`}
-            </p>
-          )}
-          <div className="right">
-            <img
-              src={IconSetting}
-              alt="setting"
-              className="icon icon-setting"
-              onClick={handleShowSelectModal}
-            />
-          </div>
-        </div>
-        <div className="card-container">
-          {gasList.map((item, idx) => (
-            <div
-              key={`gas-item-${item.level}-${idx}`}
-              className={clsx('card cursor-pointer', {
-                active: selectedGas?.level === item.level,
-              })}
-              onClick={(e) => panelSelection(e, item)}
-            >
-              <div className="gas-level">{t(GAS_LEVEL_TEXT[item.level])}</div>
-              <div
-                className={clsx('cardTitle', {
-                  'custom-input': item.level === 'custom',
-                  active: selectedGas?.level === item.level,
-                })}
-              >
-                {item.level === 'custom' ? (
-                  <Input
-                    className="cursor-pointer"
-                    value={customGas}
-                    defaultValue={customGas}
-                    onChange={handleCustomGasChange}
-                    onClick={(e) => panelSelection(e, item)}
-                    onPressEnter={customGasConfirm}
-                    ref={customerInputRef}
-                    autoFocus={selectedGas?.level === item.level}
-                    min={0}
-                    bordered={false}
-                  />
-                ) : (
-                  item.price / 1e9
-                )}
+      <div className="gas-selector">
+        <div className="gas-selector-card">
+          <div className="gas-selector-card-title">Gas</div>
+          <div className="gas-selector-card-content">
+            <div className="gas-selector-card-content-item">
+              <div className="gas-selector-card-gas">
+                {selectedGas ? selectedGas.price / 1e9 : 0} Gwei
+              </div>
+              <div className="gas-selector-card-tag">{selectedGas?.level}</div>
+            </div>
+            <div className="gas-selector-card-content-item mt-[2px]">
+              <div className="gas-selector-card-amount">
+                {formatTokenAmount(gas.estimated_gas_cost_value)}{' '}
+                {chain.nativeTokenSymbol}
+              </div>
+              <div className="gas-selector-card-usd">
+                ≈${gas.estimated_gas_cost_usd_value.toFixed(2)}
               </div>
             </div>
-          ))}
+          </div>
+          <div className="gas-selector-card-extra">
+            <a
+              href="#"
+              onClick={(e) => {
+                e.preventDefault();
+                setModalVisible(true);
+              }}
+            >
+              Edit
+            </a>
+          </div>
         </div>
-        {is1559 && (
-          <div className="priority-slider">
-            <p className="priority-slider__tip">
-              Max Priority Fee: <span>{maxPriorityFee} Gwei</span>
-              <Tooltip
-                title="This chain supports EIP 1559. Setting the Max Priority Fee properly can save gas costs."
-                overlayClassName="rectangle"
-              >
-                <img src={IconInfo} className="icon icon-info" />
-              </Tooltip>
-            </p>
-            <Slider
-              min={0}
-              max={selectedGas ? selectedGas.price / 1e9 : 0}
-              onChange={handleMaxPriorityFeeChange}
-              value={maxPriorityFee}
-              step={1}
-            />
-            <p className="priority-slider__mark">
-              <span>0</span>
-              <span>{selectedGas ? selectedGas.price / 1e9 : 0}</span>
-            </p>
-          </div>
-        )}
-        {isReal1559 && isHardware && (
-          <div className="hardware-1559-tip">
-            Make sure your hardware wallet firmware has been upgraded to the
-            version that supports EIP 1559
-          </div>
-        )}
       </div>
       <Popup
-        height={460}
+        height={isShowAdvanced ? 720 : 400}
         visible={modalVisible}
-        title={t('Advanced Options')}
+        title={t('Gas')}
         className="gas-modal"
         onCancel={() => setModalVisible(false)}
         destroyOnClose
         closable
       >
-        <Form onFinish={handleConfirmGas}>
-          <div className="gas-limit">
-            <p className="section-title flex">
-              <span className="flex-1">{t('GasLimit')}</span>
-            </p>
-            <div className="expanded gas-limit-panel-wrapper">
-              <Form.Item
-                className="gas-limit-panel mb-0"
-                validateStatus={validateStatus.gasLimit.status}
+        <div className="gas-selector-modal-top">
+          <div className="gas-selector-modal-amount">
+            {formatTokenAmount(gas.estimated_gas_cost_value)}{' '}
+            {chain.nativeTokenSymbol}
+          </div>
+          <div className="gas-selector-modal-usd">
+            ≈${gas.estimated_gas_cost_usd_value.toFixed(2)}
+          </div>
+        </div>
+        <div className="card-container">
+          <div className="card-container-title">Gas Price (Gwei)</div>
+          <div className="card-container-body">
+            {gasList.map((item, idx) => (
+              <div
+                key={`gas-item-${item.level}-${idx}`}
+                className={clsx('card cursor-pointer', {
+                  active: selectedGas?.level === item.level,
+                })}
+                onClick={(e) => panelSelection(e, item)}
               >
-                <Input
-                  className="popup-input"
-                  value={afterGasLimit}
-                  onChange={handleGasLimitChange}
-                />
-              </Form.Item>
-              {validateStatus.gasLimit.message ? (
-                <p className="tip text-red-light not-italic">
-                  {validateStatus.gasLimit.message}
-                </p>
-              ) : (
-                <p className="tip">
-                  <Trans
-                    i18nKey="RecommendGasLimitTip"
-                    values={{
-                      est: Number(recommendGasLimit),
-                      current: new BigNumber(
-                        Number(afterGasLimit) / recommendGasLimit
-                      ).toFixed(1),
-                    }}
-                  />
-                  <span
-                    className="recommend-times"
-                    onClick={handleSetRecommendTimes}
-                  >
-                    1.5x
-                  </span>
-                  .
-                </p>
-              )}
-              <div className={clsx({ 'opacity-50': disableNonce })}>
-                <p className="section-title mt-20">{t('Nonce')}</p>
-                <Form.Item className="gas-limit-panel mb-0" required>
-                  <Input
-                    className="popup-input"
-                    value={customNonce}
-                    onChange={handleCustomNonceChange}
-                    disabled={disableNonce}
-                  />
-                </Form.Item>
-                <p className="tip">{t('Modify only when necessary')}</p>
+                <div className="gas-level">{t(GAS_LEVEL_TEXT[item.level])}</div>
+                <div
+                  className={clsx('cardTitle', {
+                    'custom-input': item.level === 'custom',
+                    active: selectedGas?.level === item.level,
+                  })}
+                >
+                  {item.level === 'custom' ? (
+                    <Input
+                      className="cursor-pointer"
+                      value={customGas}
+                      defaultValue={customGas}
+                      onChange={handleCustomGasChange}
+                      onClick={(e) => panelSelection(e, item)}
+                      onPressEnter={customGasConfirm}
+                      ref={customerInputRef}
+                      autoFocus={selectedGas?.level === item.level}
+                      min={0}
+                      bordered={false}
+                    />
+                  ) : (
+                    item.price / 1e9
+                  )}
+                </div>
               </div>
-            </div>
+            ))}
           </div>
-          <div className="flex justify-center mt-32 popup-footer">
-            <Button
-              type="primary"
-              className="w-[200px]"
-              size="large"
-              onClick={handleModalConfirmGas}
-              disabled={
-                !isReady ||
-                validateStatus.customGas.status === 'error' ||
-                validateStatus.gasLimit.status === 'error'
-              }
-            >
-              {t('Confirm')}
-            </Button>
+        </div>
+        {!isShowAdvanced && (
+          <div
+            className="addvance-setting-toggle"
+            onClick={() => {
+              setIsShowAdvanced(true);
+            }}
+          >
+            Advanced Settings <img src={IconArrowDown} />
           </div>
-        </Form>
+        )}
+        {isShowAdvanced && (
+          <div>
+            {is1559 && (
+              <div className="priority-slider">
+                <p className="priority-slider-header">
+                  Max Priority Fee: <span>{maxPriorityFee} Gwei</span>
+                  <Tooltip
+                    title="This chain supports EIP 1559. Setting the Max Priority Fee properly can save gas costs."
+                    overlayClassName="rectangle"
+                  >
+                    <img src={IconInfo} className="icon icon-info" />
+                  </Tooltip>
+                </p>
+                <div className="priority-slider-body">
+                  <Slider
+                    min={0}
+                    max={selectedGas ? selectedGas.price / 1e9 : 0}
+                    onChange={handleMaxPriorityFeeChange}
+                    value={maxPriorityFee}
+                    step={1}
+                  />
+                  <p className="priority-slider__mark">
+                    <span>0</span>
+                    <span>{selectedGas ? selectedGas.price / 1e9 : 0}</span>
+                  </p>
+                </div>
+                <div className="priority-slider-footer">
+                  Recommend the highest priority fee to speed up your
+                  transaction
+                </div>
+              </div>
+            )}
+            {isReal1559 && isHardware && (
+              <div className="hardware-1559-tip">
+                Make sure your hardware wallet firmware has been upgraded to the
+                version that supports EIP 1559
+              </div>
+            )}
+            <Form onFinish={handleConfirmGas}>
+              <div className="gas-limit">
+                <p className="gas-limit-label flex">
+                  <span className="flex-1">{t('GasLimit')}</span>
+                </p>
+                <div className="expanded gas-limit-panel-wrapper">
+                  <Form.Item
+                    className="gas-limit-panel mb-0"
+                    validateStatus={validateStatus.gasLimit.status}
+                  >
+                    <Input
+                      className="popup-input"
+                      value={afterGasLimit}
+                      onChange={handleGasLimitChange}
+                    />
+                  </Form.Item>
+                  {validateStatus.gasLimit.message ? (
+                    <p className="tip text-red-light not-italic">
+                      {validateStatus.gasLimit.message}
+                    </p>
+                  ) : (
+                    <p className="tip">
+                      <Trans
+                        i18nKey="RecommendGasLimitTip"
+                        values={{
+                          est: Number(recommendGasLimit),
+                          current: new BigNumber(
+                            Number(afterGasLimit) / recommendGasLimit
+                          ).toFixed(1),
+                        }}
+                      />
+                      <span
+                        className="recommend-times"
+                        onClick={handleSetRecommendTimes}
+                      >
+                        1.5x
+                      </span>
+                      .
+                    </p>
+                  )}
+                  <div className={clsx({ 'opacity-50': disableNonce })}>
+                    <p className="gas-limit-title mt-20">{t('Nonce')}</p>
+                    <Form.Item className="gas-limit-panel mb-0" required>
+                      <Input
+                        className="popup-input"
+                        value={customNonce}
+                        onChange={handleCustomNonceChange}
+                        disabled={disableNonce}
+                      />
+                    </Form.Item>
+                    <p className="tip">{t('Modify only when necessary')}</p>
+                  </div>
+                </div>
+              </div>
+            </Form>
+          </div>
+        )}
+        <div className="flex justify-center mt-32 popup-footer">
+          <Button
+            type="primary"
+            className="w-[200px]"
+            size="large"
+            onClick={handleModalConfirmGas}
+            disabled={
+              !isReady ||
+              validateStatus.customGas.status === 'error' ||
+              validateStatus.gasLimit.status === 'error'
+            }
+          >
+            {t('Confirm')}
+          </Button>
+        </div>
       </Popup>
     </>
   );

@@ -44,12 +44,10 @@ import { useTranslation } from 'react-i18next';
 import IconInfo from 'ui/assets/infoicon.svg';
 import IconGnosis from 'ui/assets/walletlogo/gnosis.png';
 import IconWatch from 'ui/assets/walletlogo/watch-purple.svg';
-import { Checkbox } from 'ui/component';
 import { useApproval, useWallet, isStringOrNumber } from 'ui/utils';
 import AccountCard from './AccountCard';
 import LedgerWebHIDAlert from './LedgerWebHIDAlert';
-import SecurityCheckBar from './SecurityCheckBar';
-import SecurityCheckDetail from './SecurityCheckDetail';
+import SecurityCheck from './SecurityCheck';
 import { WaitingSignComponent } from './SignText';
 import Approve from './TxComponents/Approve';
 import ApproveNFT from './TxComponents/ApproveNFT';
@@ -65,6 +63,8 @@ import Loading from './TxComponents/Loading';
 import Send from './TxComponents/Send';
 import SendNFT from './TxComponents/sendNFT';
 import Sign from './TxComponents/Sign';
+import PreCheckCard from './PreCheckCard';
+import SecurityCheckCard from './SecurityCheckCard';
 
 const normalizeHex = (value: string | number) => {
   if (typeof value === 'number') {
@@ -232,6 +232,182 @@ export const TxTypeComponent = ({
   return <></>;
 };
 
+const getRecommendGas = async ({
+  gas,
+  wallet,
+  tx,
+  chainId,
+}: {
+  gas: number;
+  wallet: ReturnType<typeof useWallet>;
+  tx: Tx;
+  chainId: number;
+}) => {
+  if (gas > 0) {
+    return gas;
+  }
+  if (Number(tx.gasLimit || tx.gas) > 0) {
+    return Number(tx.gasLimit || tx.gas);
+  }
+  const res = await wallet.openapi.historyGasUsed({
+    tx: {
+      ...tx,
+      nonce: tx.nonce || '0x1', // set a mock nonce for explain if dapp not set it
+      data: tx.data,
+      value: tx.value || '0x0',
+      gas: tx.gas || '', // set gas limit if dapp not set
+    },
+    user_addr: tx.from,
+  });
+  if (res.gas_used > 0) {
+    return res.gas_used;
+  }
+  const chain = Object.values(CHAINS).find((item) => item.id === chainId);
+  if (!chain) {
+    throw new Error('chain not found');
+  }
+  const block = await wallet.requestETHRpc(
+    {
+      method: 'eth_getBlockByNumber',
+      params: ['latest', true],
+    },
+    chain.serverId
+  );
+  return block.gasLimit * (19 / 20);
+};
+
+const getRecommendNonce = async ({
+  wallet,
+  tx,
+  chainId,
+}: {
+  wallet: ReturnType<typeof useWallet>;
+  tx: Tx;
+  chainId: number;
+}) => {
+  const chain = Object.values(CHAINS).find((item) => item.id === chainId);
+  if (!chain) {
+    throw new Error('chain not found');
+  }
+  const onChainNonce = await wallet.requestETHRpc(
+    {
+      method: 'eth_getTransactionCount',
+      params: [tx.from, 'latest'],
+    },
+    chain.serverId
+  );
+  const localNonce = (await wallet.getNonceByChain(tx.from, chainId)) || 0;
+  return Math.max(Number(onChainNonce), localNonce);
+};
+
+const explainGas = async ({
+  gasUsed,
+  gasPrice,
+  chainId,
+  nativeTokenPrice,
+  tx,
+  wallet,
+}: {
+  gasUsed: number;
+  gasPrice: number;
+  chainId: number;
+  nativeTokenPrice: number;
+  tx: Tx;
+  wallet: ReturnType<typeof useWallet>;
+}) => {
+  let gasCostTokenAmount = (gasUsed * gasPrice) / 1e18;
+  const chain = Object.values(CHAINS).find((item) => item.id === chainId);
+  const isOp = chain?.enum === CHAINS_ENUM.OP;
+  if (isOp) {
+    const res = await wallet.fetchEstimatedL1Fee({
+      txParams: tx,
+    });
+    gasCostTokenAmount = Number(res) / 1e18 + gasCostTokenAmount;
+  }
+  const gasCostUsd = gasCostTokenAmount * nativeTokenPrice;
+
+  return {
+    gasCostUsd,
+    gasCostAmount: gasCostTokenAmount,
+  };
+};
+
+const useExplainGas = ({
+  gasUsed,
+  gasPrice,
+  chainId,
+  nativeTokenPrice,
+  tx,
+  wallet,
+}: {
+  gasUsed: number;
+  gasPrice: number;
+  chainId: number;
+  nativeTokenPrice: number;
+  tx: Tx;
+  wallet: ReturnType<typeof useWallet>;
+}) => {
+  const [result, setResult] = useState({
+    gasCostUsd: 0,
+    gasCostAmount: 0,
+  });
+
+  useEffect(() => {
+    explainGas({
+      gasUsed,
+      gasPrice,
+      chainId,
+      nativeTokenPrice,
+      wallet,
+      tx,
+    }).then((data) => {
+      setResult(data);
+    });
+  }, [gasUsed, gasPrice, chainId, nativeTokenPrice]);
+
+  return {
+    ...result,
+  };
+};
+
+const checkGasAndNonce = ({
+  recommendGasLimit,
+  recommendNonce,
+  txDetail,
+  gas,
+  isCancel,
+}: {
+  recommendGasLimit: number;
+  recommendNonce: number;
+  txDetail: ExplainTxResponse | null;
+  gas: GasSelectorResponse;
+  isCancel: boolean;
+}) => {
+  const errors: { code: number; msg: string }[] = [];
+  if (
+    txDetail &&
+    (recommendGasLimit * gas.price) / 1e18 > txDetail.native_token.amount
+  ) {
+    errors.push({
+      code: 3001,
+      msg: 'The reserved gas fee is not enough',
+    });
+  }
+  if (gas.gasLimit < recommendGasLimit) {
+    errors.push({
+      code: 3002,
+      msg: `Gas limit is too low, suggest adjusting to ${recommendGasLimit}`,
+    });
+  }
+  if (gas.nonce < recommendNonce && !isCancel) {
+    errors.push({
+      code: 3003,
+      msg: `Nonce is too low, suggest adjusting to ${recommendNonce}`,
+    });
+  }
+  return errors;
+};
+
 interface SignTxProps<TData extends any[] = any[]> {
   params: {
     session: {
@@ -256,9 +432,14 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     cantProcessReason,
     setCantProcessReason,
   ] = useState<ReactNode | null>();
+  const [recommendGasLimit, setRecommendGasLimit] = useState<number>(0);
+  const [recommendNonce, setRecommendNonce] = useState<number>(0);
+  const [checkErrors, setCheckErrors] = useState<
+    { code: number; msg: string }[]
+  >([]);
   const [txDetail, setTxDetail] = useState<ExplainTxResponse | null>({
+    pre_exec_version: 'v0',
     balance_change: {
-      err_msg: '',
       receive_nft_list: [],
       receive_token_list: [],
       send_nft_list: [],
@@ -285,6 +466,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       usd_value: 0,
     },
     gas: {
+      gas_used: 0,
       estimated_gas_cost_usd_value: 0,
       estimated_gas_cost_value: 0,
       estimated_gas_used: 0,
@@ -292,7 +474,8 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     },
     pre_exec: {
       success: true,
-      err_msg: '',
+      error: null,
+      // err_msg: '',
     },
     recommend: {
       gas: '',
@@ -469,9 +652,18 @@ const SignTx = ({ params, origin }: SignTxProps) => {
   });
   const [realNonce, setRealNonce] = useState('');
   const [gasLimit, setGasLimit] = useState<string | undefined>(undefined);
-  const [forceProcess, setForceProcess] = useState(false);
+  const [forceProcess, setForceProcess] = useState(true);
   const [safeInfo, setSafeInfo] = useState<SafeInfo | null>(null);
   const [maxPriorityFee, setMaxPriorityFee] = useState(0);
+
+  const gasExplainResponse = useExplainGas({
+    gasUsed: recommendGasLimit,
+    gasPrice: selectedGas?.price || 0,
+    chainId,
+    nativeTokenPrice: txDetail?.native_token.price || 0,
+    tx,
+    wallet,
+  });
 
   const checkTx = async (address: string) => {
     try {
@@ -491,8 +683,10 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       setSecurityCheckStatus(res.decision);
       setSecurityCheckAlert(res.alert);
       setSecurityCheckDetail(res);
+      setForceProcess(res.decision !== 'forbidden');
     } catch (e: any) {
       const alert = e.message || JSON.stringify(e);
+      setForceProcess(false);
       setSecurityCheckStatus('danger');
       setSecurityCheckAlert(alert);
       setSecurityCheckDetail({
@@ -507,35 +701,47 @@ const SignTx = ({ params, origin }: SignTxProps) => {
   };
 
   const explainTx = async (address: string) => {
-    const res: ExplainTxResponse = await wallet.openapi.explainTx(
-      {
+    const recommendNonce = await getRecommendNonce({
+      tx,
+      wallet,
+      chainId,
+    });
+    setRecommendNonce(recommendNonce);
+    if (updateNonce && !isGnosisAccount) {
+      setRealNonce(intToHex(recommendNonce));
+    } // do not overwrite nonce if from === to(cancel transaction)
+    const res: ExplainTxResponse = await wallet.openapi.preExecTx({
+      tx: {
         ...tx,
-        nonce: tx.nonce || '0x1', // set a mock nonce for explain if dapp not set it
+        nonce: intToHex(recommendNonce) || tx.nonce || '0x1', // set a mock nonce for explain if dapp not set it
         data: tx.data,
         value: tx.value || '0x0',
         gas: tx.gas || '', // set gas limit if dapp not set
       },
-      origin || '',
+      origin: origin || '',
       address,
-      updateNonce
-    );
+      updateNonce,
+      pending_tx_list: [],
+    });
+    const gas = await getRecommendGas({
+      gas: res.gas.gas_used,
+      tx,
+      wallet,
+      chainId,
+    });
+    setRecommendGasLimit(gas);
     if (!gasLimit) {
       // use server response gas limit
-      const recommendGasLimit = new BigNumber(res.recommend.gas).toFixed(0);
+      const recommendGasLimit = new BigNumber(gas).toFixed(0);
       setGasLimit(intToHex(Number(recommendGasLimit)));
     }
     setTxDetail(res);
-    const localNonce = (await wallet.getNonceByChain(tx.from, chainId)) || 0;
-    if (updateNonce && !isGnosisAccount) {
-      setRealNonce(intToHex(Math.max(Number(res.recommend.nonce), localNonce)));
-    } // do not overwrite nonce if from === to(cancel transaction)
+
     setPreprocessSuccess(res.pre_exec.success);
     wallet.addTxExplainCache({
       address,
       chainId,
-      nonce: updateNonce
-        ? Math.max(Number(res.recommend.nonce), localNonce)
-        : Number(tx.nonce),
+      nonce: updateNonce ? recommendNonce : Number(tx.nonce),
       explain: res,
     });
     return res;
@@ -547,10 +753,8 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     try {
       setIsReady(false);
       const res = await explainTx(currentAccount.address);
-      if (res.pre_exec.success) {
-        await checkTx(currentAccount.address);
-      }
       setIsReady(true);
+      await checkTx(currentAccount.address);
     } catch (e: any) {
       Modal.error({
         title: t('Error'),
@@ -590,7 +794,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
   const handleAllow = async (doubleCheck = false) => {
     if (!selectedGas) return;
     if (!doubleCheck && securityCheckStatus !== 'pass') {
-      setShowSecurityCheckDetail(true);
+      // setShowSecurityCheckDetail(true);
       return;
     }
 
@@ -679,6 +883,16 @@ const SignTx = ({ params, origin }: SignTxProps) => {
   };
 
   const handleGasChange = (gas: GasSelectorResponse) => {
+    setCheckErrors(
+      checkGasAndNonce({
+        gas,
+        recommendGasLimit,
+        recommendNonce,
+        txDetail,
+        isCancel,
+      })
+    );
+
     setSelectedGas({
       level: gas.level,
       front_tx_count: gas.front_tx_count,
@@ -944,9 +1158,6 @@ const SignTx = ({ params, origin }: SignTxProps) => {
         setSubmitText('Proceed');
         setCheckText('Proceed');
       }
-      if (['danger', 'forbidden'].includes(securityCheckStatus)) {
-        setSubmitText('Continue');
-      }
     })();
   }, [securityCheckStatus]);
 
@@ -992,19 +1203,10 @@ const SignTx = ({ params, origin }: SignTxProps) => {
               gasList={gasList}
               selectedGas={selectedGas}
               gas={{
-                ...(txDetail
-                  ? txDetail.gas
-                  : {
-                      estimated_gas_cost_usd_value: 0,
-                      estimated_gas_cost_value: 0,
-                      estimated_seconds: 0,
-                      estimated_gas_used: 0,
-                    }),
-                front_tx_count: 0,
-                max_gas_cost_usd_value: 0,
-                max_gas_cost_value: 0,
+                estimated_gas_cost_usd_value: gasExplainResponse.gasCostUsd,
+                estimated_gas_cost_value: gasExplainResponse.gasCostAmount,
               }}
-              recommendGasLimit={Number(txDetail.recommend.gas)}
+              recommendGasLimit={recommendGasLimit}
               chainId={chainId}
               onChange={handleGasChange}
               onMaxPriorityFeeChange={handleMaxPriorityFeeChange}
@@ -1013,16 +1215,30 @@ const SignTx = ({ params, origin }: SignTxProps) => {
               is1559={support1559}
               isHardware={isHardware}
             />
+            <div className="section-title">Pre-sign check</div>
+            <PreCheckCard
+              isReady={isReady}
+              loading={!isReady}
+              version={txDetail.pre_exec_version}
+              data={txDetail.pre_exec}
+              errors={checkErrors}
+            ></PreCheckCard>
+            <SecurityCheckCard
+              isReady={isReady}
+              loading={!securityCheckDetail}
+              data={securityCheckDetail}
+            ></SecurityCheckCard>
+
             <footer className="connect-footer">
-              {txDetail && txDetail.pre_exec.success && (
+              {txDetail && (
                 <>
                   {isLedger && !useLedgerLive && !hasConnectedLedgerHID && (
                     <LedgerWebHIDAlert connected={hasConnectedLedgerHID} />
                   )}
-                  <SecurityCheckBar
+                  <SecurityCheck
                     status={securityCheckStatus}
-                    alert={securityCheckAlert}
-                    onClick={() => setShowSecurityCheckDetail(true)}
+                    value={forceProcess}
+                    onChange={handleForceProcessChange}
                   />
                   <div className="action-buttons flex justify-between relative">
                     <Button
@@ -1050,7 +1266,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
                             onClick={() => handleAllow()}
                             disabled={true}
                           >
-                            {t(submitText)}
+                            {t(submitText)} ???
                           </Button>
                           <img
                             src={IconInfo}
@@ -1066,94 +1282,17 @@ const SignTx = ({ params, origin }: SignTxProps) => {
                         type="primary"
                         size="large"
                         className="w-[172px]"
-                        onClick={() => handleAllow()}
+                        onClick={() => handleAllow(forceProcess)}
                         disabled={
                           !isReady ||
                           (selectedGas ? selectedGas.price < 0 : true) ||
                           (isGnosisAccount ? !safeInfo : false) ||
-                          (isLedger && !useLedgerLive && !hasConnectedLedgerHID)
+                          (isLedger &&
+                            !useLedgerLive &&
+                            !hasConnectedLedgerHID) ||
+                          !forceProcess
                         }
                         loading={isGnosisAccount ? !safeInfo : false}
-                      >
-                        {t(submitText)}
-                      </Button>
-                    )}
-                  </div>
-                </>
-              )}
-              {txDetail && !txDetail.pre_exec.success && (
-                <>
-                  {isLedger && !useLedgerLive && !hasConnectedLedgerHID && (
-                    <LedgerWebHIDAlert connected={hasConnectedLedgerHID} />
-                  )}
-                  {!(isLedger && !useLedgerLive && !hasConnectedLedgerHID) && (
-                    <>
-                      <p className="text-gray-subTitle mb-8 text-15 font-medium">
-                        {t('Preexecution failed')}
-                      </p>
-                      <p className="text-gray-content text-14 mb-20">
-                        {txDetail.pre_exec.err_msg}
-                      </p>
-                      <div className="force-process">
-                        <Checkbox
-                          checked={forceProcess}
-                          onChange={(e) => handleForceProcessChange(e)}
-                        >
-                          {t('processAnyway')}
-                        </Checkbox>
-                      </div>
-                    </>
-                  )}
-                  <div className="action-buttons flex justify-between">
-                    <Button
-                      type="primary"
-                      size="large"
-                      className="w-[172px]"
-                      onClick={handleCancel}
-                    >
-                      {t('Cancel')}
-                    </Button>
-                    {!canProcess ? (
-                      <Tooltip
-                        overlayClassName={clsx(
-                          'rectangle watcSign__tooltip',
-                          `watcSign__tooltip-${submitText}`
-                        )}
-                        title={cantProcessReason}
-                        placement="topRight"
-                      >
-                        <div className="w-[172px] relative flex items-center">
-                          <Button
-                            type="primary"
-                            size="large"
-                            className="w-[172px]"
-                            onClick={() => handleAllow()}
-                            disabled={true}
-                          >
-                            {t(submitText)}
-                          </Button>
-                          <img
-                            src={IconInfo}
-                            className={clsx(
-                              'absolute right-[40px]',
-                              `icon-submit-${submitText}`
-                            )}
-                          />
-                        </div>
-                      </Tooltip>
-                    ) : (
-                      <Button
-                        type="primary"
-                        size="large"
-                        className="w-[172px]"
-                        disabled={
-                          !forceProcess ||
-                          (selectedGas ? selectedGas.price < 0 : true) ||
-                          (isGnosisAccount ? !safeInfo : false) ||
-                          (isLedger && !useLedgerLive && !hasConnectedLedgerHID)
-                        }
-                        loading={isGnosisAccount ? !safeInfo : false}
-                        onClick={() => handleAllow(true)}
                       >
                         {t(submitText)}
                       </Button>
@@ -1179,17 +1318,6 @@ const SignTx = ({ params, origin }: SignTxProps) => {
               onConfirm={handleGnosisConfirm}
             />
           </Drawer>
-        )}
-        {securityCheckDetail && (
-          <SecurityCheckDetail
-            visible={showSecurityCheckDetail}
-            onCancel={() => setShowSecurityCheckDetail(false)}
-            data={securityCheckDetail}
-            onOk={() => handleAllow(true)}
-            okText={t(checkText)}
-            cancelText={t('Cancel')}
-            preprocessSuccess={preprocessSuccess}
-          />
         )}
       </div>
     </>

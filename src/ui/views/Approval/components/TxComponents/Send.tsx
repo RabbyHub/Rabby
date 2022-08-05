@@ -44,43 +44,49 @@ const Send = ({ data, chainEnum, isSpeedUp, raw }: SendProps) => {
           <img src={IconArrowRight} />
         </span>
       </p>
-      <div className="gray-section-block common-detail-block">
-        {isSpeedUp && <SpeedUpCorner />}
-        <p className="title">{t('Send Token')}</p>
-        <div className="block-field">
-          <span className="label">{t('Amount')}</span>
-          <div className="value">
-            {ellipsisOverflowedText(splitNumberByStep(detail.token_amount), 12)}{' '}
-            <span title={detail.token_symbol}>
-              {ellipsisOverflowedText(detail.token_symbol, 6)}
+      <div className="action-card">
+        <div className="common-detail-block">
+          {isSpeedUp && <SpeedUpCorner />}
+          <p className="title">{t('Send Token')}</p>
+          <div className="block-field">
+            <span className="label">{t('Amount')}</span>
+            <div className="value">
+              {ellipsisOverflowedText(
+                splitNumberByStep(detail.token_amount),
+                12
+              )}{' '}
+              <span title={detail.token_symbol}>
+                {ellipsisOverflowedText(detail.token_symbol, 6)}
+              </span>
+              <p className="est-price">
+                ≈ $
+                {splitNumberByStep(
+                  new BigNumber(detail.token_amount)
+                    .times(detail.token.price)
+                    .toFixed(2)
+                )}
+              </p>
+            </div>
+          </div>
+          <div className="block-field contract items-center">
+            <span className="label">{t('To address')}</span>
+            <span className="value">
+              <NameAndAddress
+                address={detail.to_addr}
+                className="text-13"
+                nameClass="max-117 text-13"
+                addressClass="text-13"
+              />
             </span>
-            <p className="est-price">
-              ≈ $
-              {splitNumberByStep(
-                new BigNumber(detail.token_amount)
-                  .times(detail.token.price)
-                  .toFixed(2)
-              )}
-            </p>
           </div>
         </div>
-        <div className="block-field contract">
-          <span className="label">{t('To address')}</span>
-          <span className="value">
-            <NameAndAddress
-              address={detail.to_addr}
-              className="text-13"
-              nameClass="max-117 text-13"
-              addressClass="text-13"
-            />
-          </span>
-        </div>
+        <BalanceChange
+          version={data.pre_exec_version}
+          data={data.balance_change}
+          chainEnum={chainEnum}
+          isSupport={data.support_balance_change}
+        />
       </div>
-      <BalanceChange
-        data={data.balance_change}
-        chainEnum={chainEnum}
-        isSupport={data.support_balance_change}
-      />
     </div>
   );
 };

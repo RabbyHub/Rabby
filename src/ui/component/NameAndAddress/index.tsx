@@ -4,7 +4,7 @@ import { message } from 'antd';
 import { useWallet } from 'ui/utils';
 
 import IconSuccess from 'ui/assets/success.svg';
-import IconAddressCopy from 'ui/assets/address-copy.png';
+import IconAddressCopy from 'ui/assets/component/icon-copy.svg';
 
 import './index.less';
 import clsx from 'clsx';
