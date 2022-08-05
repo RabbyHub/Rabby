@@ -86,14 +86,18 @@ const LedgerHardwareWaiting = ({ params }: { params: ApprovalParams }) => {
       ? params.account!
       : await wallet.syncGetCurrentAccount()!;
     const approval = await getApproval();
-    stats.report('signTransaction', {
-      type: account.brandName,
-      chainId: chain.serverId,
-      category: KEYRING_CATEGORY_MAP[account.type],
-    });
-    setIsSignText(
-      params.isGnosis ? true : approval?.data.approvalType !== 'SignTx'
-    );
+
+    const isSignText = params.isGnosis
+      ? true
+      : approval?.data.approvalType !== 'SignTx';
+    setIsSignText(isSignText);
+    if (!isSignText) {
+      stats.report('signTransaction', {
+        type: account.brandName,
+        chainId: chain.serverId,
+        category: KEYRING_CATEGORY_MAP[account.type],
+      });
+    }
     eventBus.addEventListener(EVENTS.LEDGER.REJECT_APPROVAL, (data) => {
       rejectApproval(data, false, true);
     });
