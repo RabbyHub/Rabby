@@ -394,7 +394,6 @@ export default ({
       <ChainSelectorModal
         className="receive-chain-select-modal"
         value={CHAINS_ENUM.ETH}
-        title="Select the chain to receive assets"
         visible={isShowReceiveModal}
         onChange={(chain) => {
           history.push(`/receive?rbisource=dashboard&chain=${chain}`);
