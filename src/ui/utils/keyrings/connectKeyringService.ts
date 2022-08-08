@@ -1,14 +1,32 @@
+import {
+  HDKeyringParams,
+  HdKeyringType,
+} from '@/background/service/keyring/hd-proxy';
 import PortMessage from '@/utils/message/portMessage';
 import { browser } from 'webextension-polyfill-ts';
 import { LedgerKeyring } from './ledger';
 
-const KEYRING_SDK_TYPES = {
-  LedgerKeyring,
+const KEYRING_CLASS: Record<HdKeyringType, any> = {
+  LEDGER: LedgerKeyring,
+  BITBOX02: undefined,
+  TREZOR: undefined,
+  ONEKEY: undefined,
+  GRIDPLUS: undefined,
 };
 
-export const keyringTypes = Object.values(KEYRING_SDK_TYPES);
-
 const cached = new Map<string, any>();
+
+function createKeyring(id: string, type: string, options?: any) {
+  const KeyringClass = KEYRING_CLASS[type];
+  if (!KeyringClass) {
+    throw new Error('Keyring type not found');
+  }
+  const keyring = new KeyringClass(options);
+
+  cached.set(id, keyring);
+
+  return keyring;
+}
 
 export const connectKeyringService = () => {
   browser.runtime.onConnect.addListener((port) => {
@@ -20,31 +38,22 @@ export const connectKeyringService = () => {
     pm.listen(async (data) => {
       console.log('method', data.method, data.type, data.params);
 
-      if (data.type === 'getHDKeyring') {
-        const KeyringClass = keyringTypes.find(
-          (item) => item.type === data.params.type
-        );
-
-        if (KeyringClass) {
-          const keyring = new KeyringClass();
-          await keyring.init();
-          cached[data.id] = keyring;
-          console.log('init');
-          return keyring;
+      if (data.type === 'init') {
+        const { data: cachedData } = data.params;
+        for (const [key, value] of Object.entries<HDKeyringParams>(
+          cachedData
+        )) {
+          createKeyring(key, value.type, value.options);
         }
+        return;
+      } else if (data.type === 'getHDKeyring') {
+        const { type, options } = data.params;
+        return createKeyring(data.id, type, options);
       } else if (data.type === 'invoke') {
-        const keyring = cached[data.id];
+        const keyring = cached.get(data.id);
 
         if (keyring) {
-          const res = await keyring[data.method]?.(...data.params);
-          console.log('result', res);
-          return res;
-        } else {
-          const k = new LedgerKeyring();
-          await k.init();
-          const res = await k[data.method]?.(...data.params);
-          console.log('result', res);
-          return res;
+          return keyring[data.method]?.(...data.params);
         }
       }
     });

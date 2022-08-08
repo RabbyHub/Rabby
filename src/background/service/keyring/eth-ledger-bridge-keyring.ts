@@ -4,9 +4,6 @@ import * as Sentry from '@sentry/browser';
 import HDKey from 'hdkey';
 import * as ethUtil from 'ethereumjs-util';
 import * as sigUtil from 'eth-sig-util';
-import TransportWebHID from '@ledgerhq/hw-transport-webhid';
-import Transport from '@ledgerhq/hw-transport';
-import LedgerEth from '@ledgerhq/hw-app-eth';
 import { is1559Tx } from '@/utils/transaction';
 import {
   TransactionFactory,
@@ -207,10 +204,7 @@ class LedgerBridgeKeyring extends EventEmitter {
   }
 
   cleanUp() {
-    // this.app = null;
-    // if (this.transport) this.transport.close();
-    // this.transport = null;
-    // this.app.close();
+    invokeHDKeyring(this.app, 'close');
     this.hdk = new HDKey();
   }
 
@@ -222,11 +216,11 @@ class LedgerBridgeKeyring extends EventEmitter {
     if (this.isWebHID) {
       await this.makeApp();
       // const res = await this.app!.getAddress(path, false, true);
-      const res = (await invokeHDKeyring(this.app, 'getAddress', [
+      const res = await invokeHDKeyring(this.app, 'getAddress', [
         path,
         false,
         true,
-      ])) as any;
+      ]);
       const { address, publicKey, chainCode } = res;
       this.hdk.publicKey = Buffer.from(publicKey, 'hex');
       this.hdk.chainCode = Buffer.from(chainCode!, 'hex');
@@ -458,7 +452,11 @@ class LedgerBridgeKeyring extends EventEmitter {
     if (this.isWebHID) {
       await this.makeApp(true);
       try {
-        const res = await this.app!.signTransaction(hdPath, rawTxHex);
+        // const res = await this.app!.signTransaction(hdPath, rawTxHex);
+        const res = await invokeHDKeyring(this.app, 'signTransaction', [
+          hdPath,
+          rawTxHex,
+        ]);
         const newOrMutatedTx = handleSigning(res);
         const valid = newOrMutatedTx.verifySignature();
         if (valid) {
@@ -519,10 +517,14 @@ class LedgerBridgeKeyring extends EventEmitter {
           try {
             await this.makeApp(true);
             const hdPath = await this.unlockAccountByAddress(withAccount);
-            const res = await this.app!.signPersonalMessage(
+            // const res = await this.app!.signPersonalMessage(
+            //   hdPath,
+            //   ethUtil.stripHexPrefix(message)
+            // );
+            const res = await invokeHDKeyring(this.app, 'signPersonalMessage', [
               hdPath,
-              ethUtil.stripHexPrefix(message)
-            );
+              ethUtil.stripHexPrefix(message),
+            ]);
             let v: string | number = res.v - 27;
             v = v.toString(16);
             if (v.length < 2) {
@@ -676,10 +678,15 @@ class LedgerBridgeKeyring extends EventEmitter {
         if (this.isWebHID) {
           try {
             await this.makeApp(true);
-            const res = await this.app!.signEIP712HashedMessage(
-              hdPath,
-              domainSeparatorHex,
-              hashStructMessageHex
+            // const res = await this.app!.signEIP712HashedMessage(
+            //   hdPath,
+            //   domainSeparatorHex,
+            //   hashStructMessageHex
+            // );
+            const res = await invokeHDKeyring(
+              this.app,
+              'signEIP712HashedMessage',
+              [hdPath, domainSeparatorHex, hashStructMessageHex]
             );
             let v: any = res.v - 27;
             v = v.toString(16);
@@ -795,6 +802,7 @@ class LedgerBridgeKeyring extends EventEmitter {
 
   /* PRIVATE METHODS */
 
+  // @deprecated
   _setupIframe() {
     // this.iframe = document.createElement('iframe');
     // this.iframe.src = this.bridgeUrl!;
