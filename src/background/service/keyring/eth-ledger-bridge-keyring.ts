@@ -14,6 +14,7 @@ import {
 } from '@ethereumjs/tx';
 import eventBus from '@/eventBus';
 import { EVENTS } from 'consts';
+import { initHDKeyring, invokeHDKeyring } from './hd-proxy';
 
 const pathBase = 'm';
 const hdPathString = `${pathBase}/44'/60'/0'`;
@@ -47,8 +48,8 @@ class LedgerBridgeKeyring extends EventEmitter {
   accounts: any;
   delayedPromise: any;
   isWebHID: boolean;
-  transport: null | Transport;
-  app: null | LedgerEth;
+  // transport: null | Transport;
+  app: any;
   hasHIDPermission: null | boolean;
   resolvePromise: null | ((value: any) => void) = null;
   rejectPromise: null | ((value: any) => void) = null;
@@ -71,7 +72,6 @@ class LedgerBridgeKeyring extends EventEmitter {
     this.hasHIDPermission = null;
     this.msgQueue = [];
     this.isWebHID = false;
-    this.transport = null;
     this.isWebUSB = false;
     this.app = null;
     this.deserialize(opts);
@@ -174,8 +174,9 @@ class LedgerBridgeKeyring extends EventEmitter {
   async makeApp(signing = false) {
     if (!this.app && this.isWebHID) {
       try {
-        this.transport = await TransportWebHID.create();
-        this.app = new LedgerEth(this.transport);
+        // this.transport = await TransportWebHID.create();
+        // this.app = new LedgerEth(this.transport);
+        this.app = await initHDKeyring('LEDGER');
       } catch (e: any) {
         if (signing) {
           if (
@@ -205,9 +206,10 @@ class LedgerBridgeKeyring extends EventEmitter {
   }
 
   cleanUp() {
-    this.app = null;
-    if (this.transport) this.transport.close();
-    this.transport = null;
+    // this.app = null;
+    // if (this.transport) this.transport.close();
+    // this.transport = null;
+    // this.app.close();
     this.hdk = new HDKey();
   }
 
@@ -218,7 +220,12 @@ class LedgerBridgeKeyring extends EventEmitter {
     const path = hdPath ? this._toLedgerPath(hdPath) : this.hdPath;
     if (this.isWebHID) {
       await this.makeApp();
-      const res = await this.app!.getAddress(path, false, true);
+      // const res = await this.app!.getAddress(path, false, true);
+      const res = (await invokeHDKeyring(this.app, 'getAddress', [
+        path,
+        false,
+        true,
+      ])) as any;
       const { address, publicKey, chainCode } = res;
       this.hdk.publicKey = Buffer.from(publicKey, 'hex');
       this.hdk.chainCode = Buffer.from(chainCode!, 'hex');
@@ -767,29 +774,29 @@ class LedgerBridgeKeyring extends EventEmitter {
   /* PRIVATE METHODS */
 
   _setupIframe() {
-    this.iframe = document.createElement('iframe');
-    this.iframe.src = this.bridgeUrl!;
-    this.iframe.onload = async () => {
-      // If the ledger live preference was set before the iframe is loaded,
-      // set it after the iframe has loaded
-      this.iframeLoaded = true;
-      if (this.delayedPromise) {
-        try {
-          const result = await this.updateTransportMethod(
-            this.delayedPromise.useLedgerLive
-          );
-          this.delayedPromise.resolve(result);
-        } catch (e) {
-          this.delayedPromise.reject(e);
-        } finally {
-          delete this.delayedPromise;
-        }
-      }
-      if (this.msgQueue.length > 0) {
-        this.msgQueue.forEach((fn) => fn());
-      }
-    };
-    document.body.appendChild(this.iframe);
+    // this.iframe = document.createElement('iframe');
+    // this.iframe.src = this.bridgeUrl!;
+    // this.iframe.onload = async () => {
+    //   // If the ledger live preference was set before the iframe is loaded,
+    //   // set it after the iframe has loaded
+    //   this.iframeLoaded = true;
+    //   if (this.delayedPromise) {
+    //     try {
+    //       const result = await this.updateTransportMethod(
+    //         this.delayedPromise.useLedgerLive
+    //       );
+    //       this.delayedPromise.resolve(result);
+    //     } catch (e) {
+    //       this.delayedPromise.reject(e);
+    //     } finally {
+    //       delete this.delayedPromise;
+    //     }
+    //   }
+    //   if (this.msgQueue.length > 0) {
+    //     this.msgQueue.forEach((fn) => fn());
+    //   }
+    // };
+    // document.body.appendChild(this.iframe);
   }
 
   _getOrigin() {

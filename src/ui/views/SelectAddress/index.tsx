@@ -115,6 +115,7 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
       onError(err) {
         message.error('Please check the connection with your wallet');
         setSpin(false);
+        console.log(err);
       },
     }
   );
