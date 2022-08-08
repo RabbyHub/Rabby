@@ -129,6 +129,7 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
         }
 
         setSpin(false);
+        console.log(err);
       },
     }
   );
