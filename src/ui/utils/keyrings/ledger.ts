@@ -8,12 +8,13 @@ export class LedgerKeyring {
 
   static type: 'LEDGER';
 
-  constructor() {
+  constructor(options?: any) {
     this.transport = null;
     this.app = null;
+    this.init();
   }
 
-  async init() {
+  private async init() {
     this.transport = await TransportWebHID.create();
     this.app = new LedgerEth(this.transport);
   }
