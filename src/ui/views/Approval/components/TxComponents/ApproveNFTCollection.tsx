@@ -32,7 +32,7 @@ const ApproveNFTCollection = ({
   const handleViewRawClick = () => {
     ViewRawModal.open({
       raw,
-      abi: data?.abiStr,
+      abi: data?.abi_str,
     });
   };
 

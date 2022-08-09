@@ -397,7 +397,7 @@ export interface ExplainTxResponse {
     func: string;
     params: Array<string[] | number | string>;
   };
-  abiStr?: string;
+  abi_str?: string;
   balance_change: BalanceChange;
   gas: {
     gas_used: number;

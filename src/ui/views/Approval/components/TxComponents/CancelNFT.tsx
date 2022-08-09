@@ -29,7 +29,7 @@ const CancelNFT = ({ data, chainEnum, isSpeedUp, raw }: CancelNFTProps) => {
   const handleViewRawClick = () => {
     ViewRawModal.open({
       raw,
-      abi: data?.abiStr,
+      abi: data?.abi_str,
     });
   };
 

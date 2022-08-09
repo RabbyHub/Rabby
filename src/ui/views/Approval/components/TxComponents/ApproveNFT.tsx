@@ -29,7 +29,7 @@ const ApproveNFT = ({ data, chainEnum, isSpeedUp, raw }: ApproveNFTProps) => {
   const handleViewRawClick = () => {
     ViewRawModal.open({
       raw,
-      abi: data?.abiStr,
+      abi: data?.abi_str,
     });
   };
 

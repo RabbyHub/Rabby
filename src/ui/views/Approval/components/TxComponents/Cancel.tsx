@@ -55,7 +55,7 @@ const Cancel = ({ data, chainEnum, isSpeedUp, raw }: CancelProps) => {
   const handleViewRawClick = () => {
     ViewRawModal.open({
       raw,
-      abi: data?.abiStr,
+      abi: data?.abi_str,
     });
   };
 
