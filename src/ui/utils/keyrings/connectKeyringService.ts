@@ -4,13 +4,15 @@ import {
 } from '@/background/service/keyring/hd-proxy';
 import PortMessage from '@/utils/message/portMessage';
 import { browser } from 'webextension-polyfill-ts';
+import { BitBox02Keyring } from './bitbox02';
 import { LedgerKeyring } from './ledger';
+import { OneKeyKeyring } from './onekey';
 
 const KEYRING_CLASS: Record<HdKeyringType, any> = {
   LEDGER: LedgerKeyring,
-  BITBOX02: undefined,
+  BITBOX02: BitBox02Keyring,
   TREZOR: undefined,
-  ONEKEY: undefined,
+  ONEKEY: OneKeyKeyring,
   GRIDPLUS: undefined,
 };
 

@@ -1,9 +1,5 @@
-import 'regenerator-runtime/runtime';
 import EventEmitter from 'events';
 import { browser } from 'webextension-polyfill-ts';
-
-import { BitBox02API, getDevicePath, constants } from 'bitbox02-api';
-
 import * as ethUtil from 'ethereumjs-util';
 import * as sigUtil from '@metamask/eth-sig-util';
 import * as HDKey from 'hdkey';
@@ -14,6 +10,7 @@ import {
   JsonTx,
   TransactionFactory,
 } from '@ethereumjs/tx';
+import { initHDKeyring, invokeHDKeyring } from './hd-proxy';
 
 const hdPathString = "m/44'/60'/0'/0";
 const keyringType = 'BitBox02 Hardware';
@@ -30,6 +27,7 @@ class BitBox02Keyring extends EventEmitter {
   unlockedAccount = 0;
   paths = {};
   hdPath = '';
+  keyringId: string = '';
 
   constructor(opts = {}) {
     super();
@@ -69,46 +67,51 @@ class BitBox02Keyring extends EventEmitter {
   }
 
   async withDevice(f) {
-    const devicePath = await getDevicePath({ forceBridge: true });
-    const bitbox02 = new BitBox02API(devicePath);
+    this.keyringId = await initHDKeyring('BITBOX02');
+    // const devicePath = await getDevicePath({ forceBridge: true });
+    // const bitbox02 = new BitBox02API(devicePath);
     try {
-      await bitbox02.connect(
-        (pairingCode) => {
-          this.openPopup(
-            `vendor/bitbox02/bitbox02-pairing.html?code=${encodeURIComponent(
-              pairingCode
-            )}`
-          );
-        },
-        async () => {
-          this.maybeClosePopup();
-        },
-        (attestationResult) => {
-          console.info(attestationResult);
-        },
-        () => {
-          this.maybeClosePopup();
-        },
-        (status) => {
-          if (status === constants.Status.PairingFailed) {
-            this.maybeClosePopup();
-          }
-        }
+      //   await bitbox02.connect(
+      //     (pairingCode) => {
+      //       this.openPopup(
+      //         `vendor/bitbox02/bitbox02-pairing.html?code=${encodeURIComponent(
+      //           pairingCode
+      //         )}`
+      //       );
+      //     },
+      //     async () => {
+      //       this.maybeClosePopup();
+      //     },
+      //     (attestationResult) => {
+      //       console.info(attestationResult);
+      //     },
+      //     () => {
+      //       this.maybeClosePopup();
+      //     },
+      //     (status) => {
+      //       if (status === constants.Status.PairingFailed) {
+      //         this.maybeClosePopup();
+      //       }
+      //     }
+      //   );
+
+      //   if (bitbox02.firmware().Product() !== constants.Product.BitBox02Multi) {
+      //     throw new Error('Unsupported device');
+      //   }
+
+      const rootPub = await invokeHDKeyring(
+        this.keyringId,
+        'ethGetRootPubKey',
+        [this.hdPath]
       );
-
-      if (bitbox02.firmware().Product() !== constants.Product.BitBox02Multi) {
-        throw new Error('Unsupported device');
-      }
-
-      const rootPub = await bitbox02.ethGetRootPubKey(this.hdPath);
       const hdk = HDKey.fromExtendedKey(rootPub);
       this.hdk = hdk;
-      const result = await f(bitbox02);
-      bitbox02.close();
+      const result = await f();
+      invokeHDKeyring(this.keyringId, 'close');
       return result;
     } catch (err) {
       console.error(err);
-      bitbox02.close();
+      invokeHDKeyring(this.keyringId, 'close');
       throw err;
     }
   }
