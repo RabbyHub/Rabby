@@ -26,7 +26,7 @@ const flow = new PromiseFlow<{
   mapMethod: string;
   approvalRes: any;
 }>();
-let screenAvailHeight = 0;
+let screenAvailHeight = 1000;
 eventBus.addEventListener(EVENTS.UIToBackground, (data) => {
   if (data.method === 'getScreen') {
     screenAvailHeight = data.params.availHeight;

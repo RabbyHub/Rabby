@@ -9,12 +9,12 @@ export class LedgerKeyring {
   constructor(options?: any) {
     this.transport = null;
     this.app = null;
-    this.init();
   }
 
-  private async init() {
+  async init() {
     this.transport = await TransportWebHID.create();
     this.app = new LedgerEth(this.transport);
+    console.log('init app ledger', this.app);
   }
 
   close() {
@@ -23,7 +23,7 @@ export class LedgerKeyring {
     this.transport = null;
   }
 
-  getAddress: LedgerEth['getAddress'] = (...rest) => {
+  getAddress: LedgerEth['getAddress'] = async (...rest) => {
     return this.app!.getAddress(...rest);
   };
 
