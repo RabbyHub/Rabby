@@ -99,9 +99,7 @@ const SendNFT = ({ data, chainEnum, isSpeedUp, raw }: SendNFTProps) => {
                 <div className="address flex gap-6">
                   <NameAndAddress
                     address={detail.spender}
-                    className="text-13"
-                    nameClass="max-117 text-13"
-                    addressClass="text-13"
+                    nameClass="max-117"
                   />
                 </div>
               </div>

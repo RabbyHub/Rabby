@@ -68,15 +68,14 @@ const Sign = ({ data, chainEnum, raw, isSpeedUp, tx }: SignProps) => {
             <div className="section-card-title">
               {detail.action || t('Unknown Action')}
             </div>
-            <div className="section-card-desc flex">
+            <div className="section-card-desc flex item-center">
               <span>
                 {detail.contract_protocol_name || t('Unknown Protocol')}
               </span>
               <NameAndAddress
                 className="ml-auto"
                 address={detail.contract}
-                nameClass="text-15 max-90"
-                addressClass="text-15"
+                nameClass="max-90"
                 noNameClass="no-name"
               />
             </div>

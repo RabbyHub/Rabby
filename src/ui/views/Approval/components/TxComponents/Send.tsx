@@ -71,12 +71,7 @@ const Send = ({ data, chainEnum, isSpeedUp, raw }: SendProps) => {
           <div className="block-field contract items-center">
             <span className="label">{t('To address')}</span>
             <span className="value">
-              <NameAndAddress
-                address={detail.to_addr}
-                className="text-13"
-                nameClass="max-117 text-13"
-                addressClass="text-13"
-              />
+              <NameAndAddress address={detail.to_addr} nameClass="max-117" />
             </span>
           </div>
         </div>

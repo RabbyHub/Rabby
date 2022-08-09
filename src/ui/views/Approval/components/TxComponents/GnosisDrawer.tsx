@@ -69,11 +69,9 @@ const AddressItem = ({
       <NameAndAddress
         address={account.address}
         nameClass={clsx(
-          'text-15',
           signed ? 'max-100' : 'max-115',
           !account.type && 'no-name'
         )}
-        addressClass="text-15"
         noNameClass="no-name"
       />
       <img

@@ -30,7 +30,6 @@ const GnosisExplain = ({ data, chainEnum, raw, tx }: GnosisExplainProps) => {
         <NameAndAddress
           address={tx.to}
           nameClass="alian-name max-117"
-          addressClass="text-13"
           noNameClass="no-name"
         />
       </div>
