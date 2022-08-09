@@ -2,7 +2,7 @@ import Events from 'events';
 import { ethErrors } from 'eth-rpc-errors';
 import { EthereumProviderError } from 'eth-rpc-errors/dist/classes';
 import { winMgr } from 'background/webapi';
-import { CHAINS } from 'consts';
+import { CHAINS, IS_LINUX, IS_CHROME } from 'consts';
 import { browser } from 'webextension-polyfill-ts';
 
 type IApprovalComponents = typeof import('@/ui/views/Approval/components');
@@ -68,6 +68,10 @@ class NotificationService extends Events {
     });
 
     winMgr.event.on('windowFocusChange', (winId: number) => {
+      if (IS_CHROME && winId === chrome.windows.WINDOW_ID_NONE && IS_LINUX) {
+        return;
+      }
+
       if (this.notifiWindowId && winId !== this.notifiWindowId) {
         if (
           this.currentApproval &&
