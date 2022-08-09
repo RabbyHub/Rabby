@@ -35,12 +35,17 @@ export async function invokeHDKeyring<T>(
   method: OnlyClassMethods<T> | string,
   params?: any
 ): Promise<any> {
-  return pm.request({
+  console.log('invokeHDKeyring', id, method, params);
+  const result = await pm.request({
     type: 'invoke',
     id,
     method,
     params,
   });
+
+  console.log(result);
+
+  return result;
 }
 
 type OnlyClassMethods<T> = {

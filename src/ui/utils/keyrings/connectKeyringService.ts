@@ -7,24 +7,35 @@ import { browser } from 'webextension-polyfill-ts';
 import { BitBox02Keyring } from './bitbox02';
 import { LedgerKeyring } from './ledger';
 import { OneKeyKeyring } from './onekey';
+import { TrezorKeyring } from './trezor';
 
 const KEYRING_CLASS: Record<HdKeyringType, any> = {
   LEDGER: LedgerKeyring,
   BITBOX02: BitBox02Keyring,
-  TREZOR: undefined,
+  TREZOR: TrezorKeyring,
   ONEKEY: OneKeyKeyring,
   GRIDPLUS: undefined,
 };
 
 const cached = new Map<string, any>();
 
-function createKeyring(id: string, type: string, options?: any) {
+async function createKeyring(id: string, type: string, options?: any) {
   const KeyringClass = KEYRING_CLASS[type];
   if (!KeyringClass) {
     throw new Error('Keyring type not found');
   }
   const keyring = new KeyringClass(options);
 
+  try {
+    await keyring.init();
+  } catch (e) {
+    /**
+     * Maybe iframe connect not ready yet
+     * or connect hid devices must be triggered by user action
+     * Anyway, just wait click button to retry
+     */
+    console.error('Init Keyring', e);
+  }
   cached.set(id, keyring);
 
   return keyring;
@@ -45,7 +56,7 @@ export const connectKeyringService = () => {
         for (const [key, value] of Object.entries<HDKeyringParams>(
           cachedData
         )) {
-          createKeyring(key, value.type, value.options);
+          await createKeyring(key, value.type, value.options);
         }
         return;
       } else if (data.type === 'getHDKeyring') {
@@ -55,7 +66,7 @@ export const connectKeyringService = () => {
         const keyring = cached.get(data.id);
 
         if (keyring) {
-          return keyring[data.method]?.(...data.params);
+          return keyring[data.method]?.(...(data.params ?? []));
         }
       }
     });

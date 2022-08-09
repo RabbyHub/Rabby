@@ -49,6 +49,7 @@ const create = async ({ url, ...rest }): Promise<number | undefined> => {
   const left = cLeft! + width! - WINDOW_SIZE.width;
 
   const currentWindow = await browser.windows.getCurrent();
+  console.log(currentWindow, WINDOW_SIZE, rest);
   let win;
   if (currentWindow.state === 'fullscreen') {
     // browser.windows.create not pass state to chrome

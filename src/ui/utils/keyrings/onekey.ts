@@ -6,23 +6,23 @@ const ONEKEY_CONNECT_MANIFEST = {
 };
 
 export class OneKeyKeyring {
-  private async init() {
-    OneKeyConnect.manifest(ONEKEY_CONNECT_MANIFEST);
+  async init() {
+    return OneKeyConnect.manifest(ONEKEY_CONNECT_MANIFEST);
   }
 
-  getPublicKey = (params) => {
+  async getPublicKey(params) {
     return OneKeyConnect.getPublicKey(params);
-  };
+  }
 
-  ethereumSignTransaction = (params) => {
+  async ethereumSignTransaction(params) {
     return OneKeyConnect.ethereumSignTransaction(params);
-  };
+  }
 
-  ethereumSignMessage = (params) => {
+  async ethereumSignMessage(params) {
     return OneKeyConnect.ethereumSignMessage(params);
-  };
+  }
 
-  ethereumSignMessageEIP712 = (params) => {
+  async ethereumSignMessageEIP712(params) {
     return OneKeyConnect.ethereumSignMessageEIP712(params);
-  };
+  }
 }
