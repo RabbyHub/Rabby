@@ -5,6 +5,7 @@ import {
 import PortMessage from '@/utils/message/portMessage';
 import { browser } from 'webextension-polyfill-ts';
 import { BitBox02Keyring } from './bitbox02';
+import { LatticeKeyring } from './lattice';
 import { LedgerKeyring } from './ledger';
 import { OneKeyKeyring } from './onekey';
 import { TrezorKeyring } from './trezor';
@@ -14,7 +15,7 @@ const KEYRING_CLASS: Record<HdKeyringType, any> = {
   BITBOX02: BitBox02Keyring,
   TREZOR: TrezorKeyring,
   ONEKEY: OneKeyKeyring,
-  GRIDPLUS: undefined,
+  GRIDPLUS: LatticeKeyring,
 };
 
 const cached = new Map<string, any>();
