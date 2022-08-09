@@ -14,10 +14,11 @@ const pm = new PortMessage();
 const cached = new Map<string, HDKeyringParams>();
 
 export const initHDKeyring = async (
-  type: keyof typeof KEYRING_CLASS['HARDWARE']
+  type: keyof typeof KEYRING_CLASS['HARDWARE'],
+  options?: any
 ) => {
   const id = nanoid();
-  const params = { type };
+  const params = { type, options };
 
   await pm.request({
     type: 'getHDKeyring',
