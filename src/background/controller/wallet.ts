@@ -63,7 +63,7 @@ import WatchKeyring from '@rabby-wallet/eth-watch-keyring';
 import stats from '@/stats';
 import { generateAliasName } from '@/utils/account';
 import { intToHex } from 'ethereumjs-util';
-import buildUnserializedTransaction from '@/utils/optimism/buildUnserializedTransaction.js';
+import buildUnserializedTransaction from '@/utils/optimism/buildUnserializedTransaction';
 
 const stashKeyrings: Record<string | number, any> = {};
 
