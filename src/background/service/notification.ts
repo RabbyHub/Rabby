@@ -69,6 +69,7 @@ class NotificationService extends Events {
 
     winMgr.event.on('windowFocusChange', (winId: number) => {
       if (IS_CHROME && winId === chrome.windows.WINDOW_ID_NONE && IS_LINUX) {
+        // When sign on Linux, will focus on -1 first then focus on sign window
         return;
       }
 
