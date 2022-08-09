@@ -6,8 +6,6 @@ export class LedgerKeyring {
   transport: null | Transport;
   app: null | LedgerEth;
 
-  static type: 'LEDGER';
-
   constructor(options?: any) {
     this.transport = null;
     this.app = null;
