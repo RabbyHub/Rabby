@@ -304,6 +304,20 @@
     display: flex;
     flex-direction: column;
     background: @color-bg;
+    flex: 1;
+
+    .ant-skeleton.ant-skeleton-active {
+      .ant-skeleton-avatar,
+      .ant-skeleton-input {
+        background: linear-gradient(
+          90deg,
+          #f5f6fa 25%,
+          rgba(190, 190, 190, 0.24) 37%,
+          #f5f6fa 63%
+        );
+        background-size: 400% 100%;
+      }
+    }
     .action-buttons {
       gap: 16px;
     }
@@ -311,7 +325,7 @@
       margin-bottom: 8px;
       font-size: 14px;
       line-height: 16px;
-      color: @color-body;
+      color: @color-title;
     }
     .view-raw {
       line-height: 16px !important;
@@ -447,7 +461,7 @@
         font-weight: 400;
         font-size: 14px;
         line-height: 16px;
-        color: @color-body;
+        color: @color-title;
       }
     }
     .tx-action {
@@ -1193,6 +1207,7 @@
     background-color: #fff;
     border-top: 0.5px solid @color-border;
     width: 100%;
+    z-index: 10;
   }
 
   .approval-text__footer {
@@ -1336,7 +1351,8 @@
 
 .gas-modal {
   .ant-drawer-content-wrapper {
-    max-height: calc(100vh - 80px);
+    // max-height: calc(100vh - 80px);
+    max-height: calc(100vh - 60px);
   }
   .ant-modal-body {
     max-height: 540px;
@@ -1390,6 +1406,10 @@
       align-items: center;
       border: 1px solid transparent;
 
+      &:hover {
+        border: 1px solid #8697ff;
+      }
+
       &.active {
         background: rgba(134, 151, 255, 0.1);
         border: 1px solid #8697ff;
@@ -1398,7 +1418,7 @@
         text-align: center;
         font-size: 12px;
         line-height: 14px;
-        color: @color-comment-2;
+        color: @color-comment-1;
         margin: 8px auto 0;
       }
       .cardTitle {

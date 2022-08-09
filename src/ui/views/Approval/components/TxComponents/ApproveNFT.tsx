@@ -89,7 +89,7 @@ const ApproveNFT = ({ data, chainEnum, isSpeedUp, raw }: ApproveNFTProps) => {
                     <Copy
                       variant="address"
                       data={detail.nft?.contract_id}
-                      className="w-16"
+                      className="w-14"
                     ></Copy>
                   </div>
                 </div>

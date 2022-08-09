@@ -300,15 +300,17 @@ const GasSelector = ({
               <div className="gas-selector-card-gas">
                 {selectedGas ? selectedGas.price / 1e9 : 0} Gwei
               </div>
-              <div className="gas-selector-card-tag">{selectedGas?.level}</div>
+              {selectedGas ? (
+                <div className="gas-selector-card-tag">
+                  {GAS_LEVEL_TEXT[selectedGas.level]}
+                </div>
+              ) : null}
             </div>
-            <div className="gas-selector-card-content-item mt-[2px]">
+            <div className="gas-selector-card-content-item mt-[4px]">
               <div className="gas-selector-card-amount">
                 {formatTokenAmount(gas.estimated_gas_cost_value)}{' '}
                 {chain.nativeTokenSymbol}
-              </div>
-              <div className="gas-selector-card-usd">
-                ≈${gas.estimated_gas_cost_usd_value.toFixed(2)}
+                &nbsp;&nbsp; ≈${gas.estimated_gas_cost_usd_value.toFixed(2)}
               </div>
             </div>
           </div>

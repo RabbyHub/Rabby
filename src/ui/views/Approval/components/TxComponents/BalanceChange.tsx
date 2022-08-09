@@ -338,16 +338,24 @@ const BalanceChange = ({
     sendTokenList,
     isUSDValueChangePositive,
     isUSDValueChangeNegative,
+    isShowTotalBalanceChange,
   } = React.useMemo(() => {
     const receiveTokenList = data.receive_token_list;
     const sendTokenList = data.send_token_list;
     const isUSDValueChangePositive = data.usd_value_change > 0;
     const isUSDValueChangeNegative = data.usd_value_change < 0;
+    const isShowTotalBalanceChange =
+      (data?.receive_token_list.length ||
+        0 + data?.send_token_list.length ||
+        0) > 1 &&
+      (data?.receive_nft_list.length || 0 + data?.send_nft_list.length || 0) <=
+        0;
     return {
       receiveTokenList,
       sendTokenList,
       isUSDValueChangePositive,
       isUSDValueChangeNegative,
+      isShowTotalBalanceChange,
     };
   }, [data]);
 
@@ -385,11 +393,13 @@ const BalanceChange = ({
       {isSuccess && hasChange && (
         <div className="token-balance-change-content">
           <div className="token-balance-change-content-header">
-            <span>{t('Est. token balance change')}</span>
-            <span className="token-change-total">
-              {isUSDValueChangePositive ? '+' : '-'} $
-              {splitNumberByStep(Math.abs(data.usd_value_change).toFixed(2))}
-            </span>
+            <span>{t('Est. balance change')}</span>
+            {isShowTotalBalanceChange ? (
+              <span className="token-change-total">
+                {isUSDValueChangePositive ? '+' : '-'} $
+                {splitNumberByStep(Math.abs(data.usd_value_change).toFixed(2))}
+              </span>
+            ) : null}
           </div>
           <div>
             <div className="token-change-list">

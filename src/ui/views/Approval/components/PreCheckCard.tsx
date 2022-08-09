@@ -51,7 +51,7 @@ const PreCheckCard = (props: PreCheckCardProps) => {
       <div className="pre-check-card ">
         <div className="pre-check-card-header items-center mb-0">
           <img src={IconCheck} className="pre-check-card-icon" />
-          <div className="pre-check-card-desc">No errors found</div>
+          <div className="pre-check-card-desc">No error found</div>
         </div>
       </div>
     );
@@ -77,7 +77,7 @@ const PreCheckCard = (props: PreCheckCardProps) => {
       <div className="pre-check-card ">
         <div className="pre-check-card-header items-center mb-0">
           <img src={IconCheck} className="pre-check-card-icon" />
-          <div className="pre-check-card-desc">No errors found</div>
+          <div className="pre-check-card-desc">No error found</div>
         </div>
       </div>
     );

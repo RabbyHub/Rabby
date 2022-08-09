@@ -83,7 +83,7 @@ const CancelNFTCollection = ({
                   <Copy
                     variant="address"
                     data={detail.nft_contract?.id}
-                    className="w-16"
+                    className="w-14"
                   ></Copy>
                 </div>
               </div>

@@ -246,7 +246,7 @@ const AddressItem = memo(
                 <Copy
                   variant="address"
                   data={account?.address}
-                  className="w-16 h-16 ml-4"
+                  className="w-14 h-14 ml-4"
                 ></Copy>
               </div>
             </div>
