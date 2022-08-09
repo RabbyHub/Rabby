@@ -14,7 +14,6 @@ export class LedgerKeyring {
   async init() {
     this.transport = await TransportWebHID.create();
     this.app = new LedgerEth(this.transport);
-    console.log('init app ledger', this.app);
   }
 
   close() {
