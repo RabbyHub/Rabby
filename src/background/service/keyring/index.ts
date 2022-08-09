@@ -17,7 +17,7 @@ import SimpleKeyring from '@rabby-wallet/eth-simple-keyring';
 import HdKeyring from '@rabby-wallet/eth-hd-keyring';
 import TrezorKeyring from './eth-trezor-keyring';
 import OnekeyKeyring from './eth-onekey-keyring';
-import LatticeKeyring from '@rabby-wallet/eth-lattice-keyring';
+import LatticeKeyring from './eth-lattice-keyring';
 import WatchKeyring from '@rabby-wallet/eth-watch-keyring';
 import KeystoneKeyring from './eth-keystone-keyring';
 import WalletConnectKeyring, {
