@@ -18,7 +18,7 @@ const isSignApproval = (type: string) => {
 const lockedOrigins = new Set<string>();
 const connectOrigins = new Set<string>();
 
-let screenAvailHeight = 0;
+let screenAvailHeight = 1000;
 eventBus.addEventListener(EVENTS.UIToBackground, (data) => {
   if (data.method === 'getScreen') {
     screenAvailHeight = data.params.availHeight;

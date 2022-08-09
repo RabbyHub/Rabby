@@ -20,10 +20,9 @@ export class BitBox02Keyring {
 
   constructor(options?: any) {
     this.app = null;
-    this.init();
   }
 
-  private async init() {
+  async init() {
     const devicePath = await getDevicePath({ forceBridge: true });
     const bitbox02 = (this.app = new BitBox02API(devicePath));
 
