@@ -269,11 +269,11 @@ const getRecommendGas = async ({
   const block = await wallet.requestETHRpc(
     {
       method: 'eth_getBlockByNumber',
-      params: ['latest', true],
+      params: ['latest', false],
     },
     chain.serverId
   );
-  return block.gasLimit * (19 / 20);
+  return parseInt(String(block.gasLimit * (19 / 20)), 10);
 };
 
 const getRecommendNonce = async ({
