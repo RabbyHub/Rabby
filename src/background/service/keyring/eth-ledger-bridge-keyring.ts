@@ -239,7 +239,7 @@ class LedgerBridgeKeyring extends EventEmitter {
   }
 
   cleanUp() {
-    invokeHDKeyring(this.app, 'close');
+    invokeHDKeyring('LEDGER', 'close');
     this.hdk = new HDKey();
   }
 
@@ -254,7 +254,7 @@ class LedgerBridgeKeyring extends EventEmitter {
     if (this.isWebHID) {
       await this.makeApp();
       // const res = await this.app!.getAddress(path, false, true);
-      const res = await invokeHDKeyring(this.app, 'getAddress', [
+      const res = await invokeHDKeyring('LEDGER', 'getAddress', [
         path,
         false,
         true,
@@ -500,7 +500,7 @@ class LedgerBridgeKeyring extends EventEmitter {
       await this.makeApp(true);
       try {
         // const res = await this.app!.signTransaction(hdPath, rawTxHex);
-        const res = await invokeHDKeyring(this.app, 'signTransaction', [
+        const res = await invokeHDKeyring('LEDGER', 'signTransaction', [
           hdPath,
           rawTxHex,
         ]);
@@ -568,7 +568,7 @@ class LedgerBridgeKeyring extends EventEmitter {
             //   hdPath,
             //   ethUtil.stripHexPrefix(message)
             // );
-            const res = await invokeHDKeyring(this.app, 'signPersonalMessage', [
+            const res = await invokeHDKeyring('LEDGER', 'signPersonalMessage', [
               hdPath,
               ethUtil.stripHexPrefix(message),
             ]);
@@ -731,7 +731,7 @@ class LedgerBridgeKeyring extends EventEmitter {
             //   hashStructMessageHex
             // );
             const res = await invokeHDKeyring(
-              this.app,
+              'LEDGER',
               'signEIP712HashedMessage',
               [hdPath, domainSeparatorHex, hashStructMessageHex]
             );

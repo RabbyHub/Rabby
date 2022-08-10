@@ -26,6 +26,7 @@ async function createKeyring(id: string, type: string, options?: any) {
     throw new Error('Keyring type not found');
   }
   const keyring = new KeyringClass(options);
+  cached.set(id, keyring);
 
   try {
     await keyring.init();
@@ -35,9 +36,8 @@ async function createKeyring(id: string, type: string, options?: any) {
      * or connect hid devices must be triggered by user action
      * Anyway, just wait click button to retry
      */
-    console.error('Init Keyring', e);
+    console.error(`Init ${id}`, e);
   }
-  cached.set(id, keyring);
 
   return keyring;
 }

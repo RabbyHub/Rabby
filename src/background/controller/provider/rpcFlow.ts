@@ -276,6 +276,8 @@ export default (request: ProviderRequest) => {
       flow.requestedApproval = false;
       // only unlock notification if current flow is an approval flow
       notificationService.unLock();
+      // @todo: need check if unlock is needed
+      notificationService.clear();
     }
   });
 };
