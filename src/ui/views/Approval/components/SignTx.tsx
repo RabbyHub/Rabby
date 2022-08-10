@@ -376,17 +376,23 @@ const checkGasAndNonce = ({
   txDetail,
   gas,
   isCancel,
+  gasExplainResponse,
 }: {
   recommendGasLimit: number;
   recommendNonce: number;
   txDetail: ExplainTxResponse | null;
   gas: GasSelectorResponse;
+  gasExplainResponse: ReturnType<typeof useExplainGas>;
   isCancel: boolean;
 }) => {
   const errors: { code: number; msg: string }[] = [];
   if (
     txDetail &&
-    (recommendGasLimit * gas.price) / 1e18 > txDetail.native_token.amount
+    gasExplainResponse.gasCostAmount +
+      (txDetail.balance_change.send_token_list.find(
+        (item) => item.symbol === txDetail.native_token.symbol
+      )?.amount || 0) >
+      txDetail.native_token.amount
   ) {
     errors.push({
       code: 3001,
@@ -396,13 +402,13 @@ const checkGasAndNonce = ({
   if (gas.gasLimit < recommendGasLimit) {
     errors.push({
       code: 3002,
-      msg: `Gas limit is too low, suggest adjusting to ${recommendGasLimit}`,
+      msg: `Gas limit is too low, the minimum should be ${recommendGasLimit}`,
     });
   }
   if (gas.nonce < recommendNonce && !isCancel) {
     errors.push({
       code: 3003,
-      msg: `Nonce is too low, suggest adjusting to ${recommendNonce}`,
+      msg: `Nonce is too low, the minimum should be ${recommendNonce}`,
     });
   }
   return errors;
@@ -710,6 +716,9 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     if (updateNonce && !isGnosisAccount) {
       setRealNonce(intToHex(recommendNonce));
     } // do not overwrite nonce if from === to(cancel transaction)
+    const { pendings, completeds } = await wallet.getTransactionHistory(
+      address
+    );
     const res: ExplainTxResponse = await wallet.openapi.preExecTx({
       tx: {
         ...tx,
@@ -721,7 +730,11 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       origin: origin || '',
       address,
       updateNonce,
-      pending_tx_list: [],
+      pending_tx_list: pendings
+        .filter((item) => item.nonce < recommendNonce)
+        .reduce((result, item) => {
+          return result.concat(item.txs.map((tx) => tx.rawTx));
+        }, [] as Tx[]),
     });
     const gas = await getRecommendGas({
       gas: res.gas.gas_used,
@@ -890,6 +903,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
         recommendNonce,
         txDetail,
         isCancel,
+        gasExplainResponse,
       })
     );
 
@@ -1202,7 +1216,9 @@ const SignTx = ({ params, origin }: SignTxProps) => {
               noUpdate={isCancel || isSpeedUp}
               gasList={gasList}
               selectedGas={selectedGas}
+              version={txDetail.pre_exec_version}
               gas={{
+                error: txDetail.gas.error,
                 estimated_gas_cost_usd_value: gasExplainResponse.gasCostUsd,
                 estimated_gas_cost_value: gasExplainResponse.gasCostAmount,
               }}

@@ -400,6 +400,11 @@ export interface ExplainTxResponse {
   abi_str?: string;
   balance_change: BalanceChange;
   gas: {
+    success?: boolean;
+    error?: {
+      code: number;
+      msg: string;
+    } | null;
     gas_used: number;
     estimated_gas_cost_usd_value: number;
     estimated_gas_cost_value: number;

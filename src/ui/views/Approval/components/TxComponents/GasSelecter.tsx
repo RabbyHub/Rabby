@@ -22,7 +22,13 @@ interface GasSelectorProps {
   gas: {
     estimated_gas_cost_value: number;
     estimated_gas_cost_usd_value: number;
+    success?: boolean;
+    error?: null | {
+      msg: string;
+      code: number;
+    };
   };
+  version: 'v0' | 'v1' | 'v2';
   chainId: number;
   tx: Tx;
   onChange(gas: GasSelectorResponse): void;
@@ -53,6 +59,7 @@ const GasSelector = ({
   selectedGas,
   is1559,
   isHardware,
+  version,
 }: GasSelectorProps) => {
   const { t } = useTranslation();
   const customerInputRef = useRef<Input>(null);
@@ -290,6 +297,7 @@ const GasSelector = ({
         </div>
       </>
     );
+
   return (
     <>
       <div className="gas-selector">
@@ -306,13 +314,28 @@ const GasSelector = ({
                 </div>
               ) : null}
             </div>
-            <div className="gas-selector-card-content-item mt-[4px]">
-              <div className="gas-selector-card-amount">
-                {formatTokenAmount(gas.estimated_gas_cost_value)}{' '}
-                {chain.nativeTokenSymbol}
-                &nbsp;&nbsp; ≈${gas.estimated_gas_cost_usd_value.toFixed(2)}
+
+            {gas.error || !gas.success ? (
+              <>
+                <div className="gas-selector-card-error mt-[6px]">
+                  Fail to fetch gas cost
+                </div>
+                {version === 'v2' && gas.error ? (
+                  <div className="gas-selector-card-error-desc mt-[2px]">
+                    {gas.error.msg}{' '}
+                    <span className="number">#{gas.error.code}</span>
+                  </div>
+                ) : null}
+              </>
+            ) : (
+              <div className="gas-selector-card-content-item mt-[4px]">
+                <div className="gas-selector-card-amount">
+                  {formatTokenAmount(gas.estimated_gas_cost_value)}{' '}
+                  {chain.nativeTokenSymbol}
+                  &nbsp;&nbsp; ≈${gas.estimated_gas_cost_usd_value.toFixed(2)}
+                </div>
               </div>
-            </div>
+            )}
           </div>
           <div className="gas-selector-card-extra">
             <a
@@ -337,13 +360,29 @@ const GasSelector = ({
         closable
       >
         <div className="gas-selector-modal-top">
-          <div className="gas-selector-modal-amount">
-            {formatTokenAmount(gas.estimated_gas_cost_value)}{' '}
-            {chain.nativeTokenSymbol}
-          </div>
-          <div className="gas-selector-modal-usd">
-            ≈${gas.estimated_gas_cost_usd_value.toFixed(2)}
-          </div>
+          {gas.error || !gas.success ? (
+            <>
+              <div className="gas-selector-modal-error">
+                Fail to fetch gas cost
+              </div>
+              {version === 'v2' && gas.error ? (
+                <div className="gas-selector-modal-error-desc mt-[4px]">
+                  {gas.error.msg}{' '}
+                  <span className="number">#{gas.error.code}</span>
+                </div>
+              ) : null}
+            </>
+          ) : (
+            <>
+              <div className="gas-selector-modal-amount">
+                {formatTokenAmount(gas.estimated_gas_cost_value)}{' '}
+                {chain.nativeTokenSymbol}
+              </div>
+              <div className="gas-selector-modal-usd">
+                ≈${gas.estimated_gas_cost_usd_value.toFixed(2)}
+              </div>
+            </>
+          )}
         </div>
         <div className="card-container">
           <div className="card-container-title">Gas Price (Gwei)</div>
@@ -482,7 +521,13 @@ const GasSelector = ({
                         disabled={disableNonce}
                       />
                     </Form.Item>
-                    <p className="tip">{t('Modify only when necessary')}</p>
+                    {Number(customNonce) < Number(nonce) && !disableNonce ? (
+                      <p className="tip text-red-light not-italic">
+                        Nonce is too low, the minimum should be {Number(nonce)}
+                      </p>
+                    ) : (
+                      <p className="tip">{t('Modify only when necessary')}</p>
+                    )}
                   </div>
                 </div>
               </div>
@@ -498,10 +543,12 @@ const GasSelector = ({
             disabled={
               !isReady ||
               validateStatus.customGas.status === 'error' ||
-              validateStatus.gasLimit.status === 'error'
+              validateStatus.gasLimit.status === 'error' ||
+              (Number(customNonce) < Number(nonce) && !disableNonce)
             }
           >
-            {t('Confirm')}
+            {t('Confirm')}{' '}
+            {Number(customNonce) < Number(nonce) && !disableNonce}
           </Button>
         </div>
       </Popup>
