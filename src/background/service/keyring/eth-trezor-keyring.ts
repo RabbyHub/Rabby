@@ -60,7 +60,6 @@ class TrezorKeyring extends EventEmitter {
   paths = {};
   hdPath = '';
   model: string = '';
-  keyringId: string = '';
 
   constructor(opts = {}) {
     super();
@@ -76,7 +75,7 @@ class TrezorKeyring extends EventEmitter {
   }
 
   private async init() {
-    this.keyringId = await initHDKeyring('TREZOR');
+    await initHDKeyring('TREZOR');
   }
 
   /**
@@ -91,7 +90,7 @@ class TrezorKeyring extends EventEmitter {
 
   dispose() {
     // TrezorConnect.dispose();
-    invokeHDKeyring(this.keyringId, 'close');
+    invokeHDKeyring('TREZOR', 'close');
   }
 
   serialize() {
@@ -123,7 +122,7 @@ class TrezorKeyring extends EventEmitter {
     }
     return new Promise((resolve, reject) => {
       // TrezorConnect.getPublicKey({
-      invokeHDKeyring(this.keyringId, 'getPublicKey', [
+      invokeHDKeyring('TREZOR', 'getPublicKey', [
         {
           path: this.hdPath,
           coin: 'ETH',
@@ -352,7 +351,7 @@ class TrezorKeyring extends EventEmitter {
       await wait(status === 'just unlocked' ? DELAY_BETWEEN_POPUPS : 0);
       // const response = await TrezorConnect.ethereumSignTransaction({
       const response = await invokeHDKeyring(
-        this.keyringId,
+        'TREZOR',
         'ethereumSignTransaction',
         [
           {
@@ -396,7 +395,7 @@ class TrezorKeyring extends EventEmitter {
           setTimeout(
             (_) => {
               // TrezorConnect.ethereumSignMessage({
-              invokeHDKeyring(this.keyringId, 'ethereumSignMessage', [
+              invokeHDKeyring('TREZOR', 'ethereumSignMessage', [
                 {
                   path: this._pathFromAddress(withAccount),
                   message: ethUtil.stripHexPrefix(message),
@@ -476,11 +475,9 @@ class TrezorKeyring extends EventEmitter {
       message_hash,
     };
     // const response = await TrezorConnect.ethereumSignTypedData(params);
-    const response = await invokeHDKeyring(
-      this.keyringId,
-      'ethereumSignTypedData',
-      [params]
-    );
+    const response = await invokeHDKeyring('TREZOR', 'ethereumSignTypedData', [
+      params,
+    ]);
 
     if (response.success) {
       if (ethUtil.toChecksumAddress(address) !== response.payload.address) {

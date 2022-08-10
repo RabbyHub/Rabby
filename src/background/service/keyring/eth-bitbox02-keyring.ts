@@ -67,7 +67,7 @@ class BitBox02Keyring extends EventEmitter {
   }
 
   async withDevice(f) {
-    this.keyringId = await initHDKeyring('BITBOX02');
+    await initHDKeyring('BITBOX02');
     // const devicePath = await getDevicePath({ forceBridge: true });
     // const bitbox02 = new BitBox02API(devicePath);
     try {
@@ -99,19 +99,17 @@ class BitBox02Keyring extends EventEmitter {
       //     throw new Error('Unsupported device');
       //   }
 
-      const rootPub = await invokeHDKeyring(
-        this.keyringId,
-        'ethGetRootPubKey',
-        [this.hdPath]
-      );
+      const rootPub = await invokeHDKeyring('BITBOX02', 'ethGetRootPubKey', [
+        this.hdPath,
+      ]);
       const hdk = HDKey.fromExtendedKey(rootPub);
       this.hdk = hdk;
       const result = await f();
-      invokeHDKeyring(this.keyringId, 'close');
+      invokeHDKeyring('BITBOX02', 'close');
       return result;
     } catch (err) {
       console.error(err);
-      invokeHDKeyring(this.keyringId, 'close');
+      invokeHDKeyring('BITBOX02', 'close');
       throw err;
     }
   }
