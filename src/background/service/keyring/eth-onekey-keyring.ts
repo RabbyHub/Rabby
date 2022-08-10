@@ -34,7 +34,6 @@ class OneKeyKeyring extends EventEmitter {
   unlockedAccount = 0;
   paths = {};
   hdPath = '';
-  keyringId: string = '';
 
   constructor(opts = {}) {
     super();
@@ -43,7 +42,7 @@ class OneKeyKeyring extends EventEmitter {
   }
 
   private async init() {
-    this.keyringId = await initHDKeyring('ONEKEY');
+    await initHDKeyring('ONEKEY');
   }
 
   serialize(): Promise<any> {
@@ -74,7 +73,7 @@ class OneKeyKeyring extends EventEmitter {
       return Promise.resolve('already unlocked');
     }
     return new Promise((resolve, reject) => {
-      invokeHDKeyring(this.keyringId, 'getPublicKey', [
+      invokeHDKeyring('ONEKEY', 'getPublicKey', [
         {
           path: this.hdPath,
           coin: 'ETH',
@@ -220,7 +219,7 @@ class OneKeyKeyring extends EventEmitter {
         .then((status) => {
           setTimeout(
             (_) => {
-              invokeHDKeyring(this.keyringId, 'ethereumSignTransaction', [
+              invokeHDKeyring('ONEKEY', 'ethereumSignTransaction', [
                 {
                   // OneKeyConnect.ethereumSignTransaction({
                   path: this._pathFromAddress(address),
@@ -297,7 +296,7 @@ class OneKeyKeyring extends EventEmitter {
         .then((status) => {
           setTimeout(
             (_) => {
-              invokeHDKeyring(this.keyringId, 'ethereumSignMessage', [
+              invokeHDKeyring('ONEKEY', 'ethereumSignMessage', [
                 {
                   // OneKeyConnect.ethereumSignMessage({
                   path: this._pathFromAddress(withAccount),
@@ -374,7 +373,7 @@ class OneKeyKeyring extends EventEmitter {
           setTimeout(
             (_) => {
               try {
-                invokeHDKeyring(this.keyringId, 'ethereumSignMessageEIP712', [
+                invokeHDKeyring('ONEKEY', 'ethereumSignMessageEIP712', [
                   {
                     // OneKeyConnect.ethereumSignMessageEIP712({
                     path: this._pathFromAddress(address),

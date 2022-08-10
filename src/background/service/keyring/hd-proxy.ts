@@ -1,6 +1,5 @@
 import PortMessage from '@/utils/message/portMessage';
 import { KEYRING_CLASS } from '.';
-import { nanoid } from 'nanoid';
 import { browser } from 'webextension-polyfill-ts';
 
 export interface HDKeyringParams {
@@ -17,8 +16,11 @@ export const initHDKeyring = async (
   type: keyof typeof KEYRING_CLASS['HARDWARE'],
   options?: any
 ) => {
-  const id = nanoid();
+  const id = type;
   const params = { type, options };
+
+  console.log('getHDKeyring', type, options);
+  cached.set(id, params);
 
   await pm.request({
     type: 'getHDKeyring',
@@ -26,13 +28,13 @@ export const initHDKeyring = async (
     id,
   });
 
-  cached.set(id, params);
+  console.log('getHDKeyring init', type, id);
 
   return id;
 };
 
 export async function invokeHDKeyring<T>(
-  id: string,
+  id: HdKeyringType,
   method: OnlyClassMethods<T> | string,
   params?: any
 ): Promise<any> {
