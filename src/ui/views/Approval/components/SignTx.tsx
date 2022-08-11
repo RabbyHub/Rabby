@@ -390,7 +390,7 @@ const checkGasAndNonce = ({
     txDetail &&
     gasExplainResponse.gasCostAmount +
       (txDetail.balance_change.send_token_list.find(
-        (item) => item.symbol === txDetail.native_token.symbol
+        (item) => item.id === txDetail.native_token.id
       )?.amount || 0) >
       txDetail.native_token.amount
   ) {
@@ -1219,6 +1219,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
               version={txDetail.pre_exec_version}
               gas={{
                 error: txDetail.gas.error,
+                success: txDetail.gas.success,
                 estimated_gas_cost_usd_value: gasExplainResponse.gasCostUsd,
                 estimated_gas_cost_value: gasExplainResponse.gasCostAmount,
               }}
