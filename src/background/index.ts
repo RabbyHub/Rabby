@@ -114,7 +114,18 @@ restoreAppState();
       if (dayjs(time).utc().isSame(dayjs().utc(), 'day')) {
         return;
       }
-
+      const contacts = contactBookService.listContacts();
+      ReactGA.event({
+        category: 'User',
+        action: 'contactBook',
+        label: contacts.length.toString(),
+      });
+      const chains = preferenceService.getSavedChains();
+      ReactGA.event({
+        category: 'User',
+        action: 'pinnedChains',
+        label: chains.join(','),
+      });
       const accounts = await walletController.getAccounts();
       const list = accounts.map((account) => {
         const category = KEYRING_CATEGORY_MAP[account.type];
