@@ -87,6 +87,10 @@ const GasSelector = ({
       status: 'success',
       message: null,
     },
+    nonce: {
+      status: 'success',
+      message: null,
+    },
   });
   const [isShowAdvanced, setIsShowAdvanced] = useState(false);
   const chain = Object.values(CHAINS).find((item) => item.id === chainId)!;
@@ -111,6 +115,14 @@ const GasSelector = ({
         gasLimit: {
           status: 'error',
           message: t('GasLimitMinimumValueAlert'),
+        },
+      });
+    } else if (Number(customNonce) < Number(nonce) && !disableNonce) {
+      setValidateStatus({
+        ...validateStatus,
+        nonce: {
+          status: 'error',
+          message: `Nonce is too low, the minimum should be ${Number(nonce)}`,
         },
       });
     } else {
@@ -236,7 +248,7 @@ const GasSelector = ({
 
   useEffect(() => {
     formValidator();
-  }, [afterGasLimit, selectedGas, gasList]);
+  }, [afterGasLimit, selectedGas, gasList, customNonce]);
 
   useEffect(() => {
     if (!selectedGas) return;
@@ -513,7 +525,11 @@ const GasSelector = ({
                   )}
                   <div className={clsx({ 'opacity-50': disableNonce })}>
                     <p className="gas-limit-title mt-20">{t('Nonce')}</p>
-                    <Form.Item className="gas-limit-panel mb-0" required>
+                    <Form.Item
+                      className="gas-limit-panel mb-0"
+                      required
+                      validateStatus={validateStatus.nonce.status}
+                    >
                       <Input
                         className="popup-input"
                         value={customNonce}
@@ -521,9 +537,9 @@ const GasSelector = ({
                         disabled={disableNonce}
                       />
                     </Form.Item>
-                    {Number(customNonce) < Number(nonce) && !disableNonce ? (
+                    {validateStatus.nonce.message ? (
                       <p className="tip text-red-light not-italic">
-                        Nonce is too low, the minimum should be {Number(nonce)}
+                        {validateStatus.nonce.message}
                       </p>
                     ) : (
                       <p className="tip">{t('Modify only when necessary')}</p>

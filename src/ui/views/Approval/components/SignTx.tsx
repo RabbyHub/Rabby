@@ -38,7 +38,7 @@ import {
   isHexString,
   unpadHexString,
 } from 'ethereumjs-util';
-import React, { ReactNode, useEffect, useState } from 'react';
+import React, { ReactNode, useEffect, useMemo, useState } from 'react';
 import ReactGA from 'react-ga';
 import { useTranslation } from 'react-i18next';
 import IconInfo from 'ui/assets/infoicon.svg';
@@ -363,7 +363,7 @@ const useExplainGas = ({
     }).then((data) => {
       setResult(data);
     });
-  }, [gasUsed, gasPrice, chainId, nativeTokenPrice]);
+  }, [gasUsed, gasPrice, chainId, nativeTokenPrice, wallet, tx]);
 
   return {
     ...result,
@@ -374,18 +374,23 @@ const checkGasAndNonce = ({
   recommendGasLimit,
   recommendNonce,
   txDetail,
-  gas,
+  gasLimit,
+  nonce,
   isCancel,
   gasExplainResponse,
+  isSpeedUp,
 }: {
   recommendGasLimit: number;
   recommendNonce: number;
   txDetail: ExplainTxResponse | null;
-  gas: GasSelectorResponse;
+  gasLimit;
+  nonce;
   gasExplainResponse: ReturnType<typeof useExplainGas>;
   isCancel: boolean;
+  isSpeedUp: boolean;
 }) => {
   const errors: { code: number; msg: string }[] = [];
+
   if (
     txDetail &&
     gasExplainResponse.gasCostAmount +
@@ -399,19 +404,54 @@ const checkGasAndNonce = ({
       msg: 'The reserved gas fee is not enough',
     });
   }
-  if (gas.gasLimit < recommendGasLimit) {
+  if (gasLimit < recommendGasLimit) {
     errors.push({
       code: 3002,
       msg: `Gas limit is too low, the minimum should be ${recommendGasLimit}`,
     });
   }
-  if (gas.nonce < recommendNonce && !isCancel) {
+  if (nonce < recommendNonce && !(isCancel || isSpeedUp)) {
     errors.push({
       code: 3003,
       msg: `Nonce is too low, the minimum should be ${recommendNonce}`,
     });
   }
   return errors;
+};
+
+const useCheckGasAndNonce = ({
+  recommendGasLimit,
+  recommendNonce,
+  txDetail,
+  gasLimit,
+  nonce,
+  isCancel,
+  gasExplainResponse,
+  isSpeedUp,
+}: Parameters<typeof checkGasAndNonce>[0]) => {
+  return useMemo(
+    () =>
+      checkGasAndNonce({
+        recommendGasLimit,
+        recommendNonce,
+        txDetail,
+        gasLimit,
+        nonce,
+        isCancel,
+        gasExplainResponse,
+        isSpeedUp,
+      }),
+    [
+      recommendGasLimit,
+      recommendNonce,
+      txDetail,
+      gasLimit,
+      nonce,
+      isCancel,
+      gasExplainResponse,
+      isSpeedUp,
+    ]
+  );
 };
 
 interface SignTxProps<TData extends any[] = any[]> {
@@ -440,9 +480,6 @@ const SignTx = ({ params, origin }: SignTxProps) => {
   ] = useState<ReactNode | null>();
   const [recommendGasLimit, setRecommendGasLimit] = useState<number>(0);
   const [recommendNonce, setRecommendNonce] = useState<number>(0);
-  const [checkErrors, setCheckErrors] = useState<
-    { code: number; msg: string }[]
-  >([]);
   const [txDetail, setTxDetail] = useState<ExplainTxResponse | null>({
     pre_exec_version: 'v0',
     balance_change: {
@@ -672,6 +709,17 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     wallet,
   });
 
+  const checkErrors = useCheckGasAndNonce({
+    recommendGasLimit,
+    recommendNonce,
+    gasLimit: Number(gasLimit),
+    nonce: Number(realNonce || tx.nonce),
+    gasExplainResponse,
+    isSpeedUp,
+    isCancel,
+    txDetail,
+  });
+
   const checkTx = async (address: string) => {
     try {
       setSecurityCheckStatus('loading');
@@ -897,17 +945,6 @@ const SignTx = ({ params, origin }: SignTxProps) => {
   };
 
   const handleGasChange = (gas: GasSelectorResponse) => {
-    setCheckErrors(
-      checkGasAndNonce({
-        gas,
-        recommendGasLimit,
-        recommendNonce,
-        txDetail,
-        isCancel,
-        gasExplainResponse,
-      })
-    );
-
     setSelectedGas({
       level: gas.level,
       front_tx_count: gas.front_tx_count,
