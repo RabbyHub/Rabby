@@ -543,12 +543,10 @@ const GasSelector = ({
             disabled={
               !isReady ||
               validateStatus.customGas.status === 'error' ||
-              validateStatus.gasLimit.status === 'error' ||
-              (Number(customNonce) < Number(nonce) && !disableNonce)
+              validateStatus.gasLimit.status === 'error'
             }
           >
-            {t('Confirm')}{' '}
-            {Number(customNonce) < Number(nonce) && !disableNonce}
+            {t('Confirm')}
           </Button>
         </div>
       </Popup>
