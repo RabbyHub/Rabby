@@ -244,7 +244,7 @@ const Approve = ({
         bfInfo.belowBlockIsEmpty && 'below-bc-block-empty'
       )}
     >
-      <p className="section-title">
+      <div className="section-title">
         <Trans
           i18nKey="signTransactionWithChain"
           values={{ name: chain.name }}
@@ -256,7 +256,7 @@ const Approve = ({
           {t('View Raw')}
           <img src={IconArrowRight} />
         </span>
-      </p>
+      </div>
       <div className="action-card">
         <div className="common-detail-block">
           {isSpeedUp && <SpeedUpCorner />}
@@ -264,7 +264,10 @@ const Approve = ({
           <div className="block-field">
             <span className="label">{t('Amount')}</span>
             <div className="value">
-              <p className="token-info" title={splitNumberByStep(tokenAmount)}>
+              <div
+                className="token-info"
+                title={splitNumberByStep(tokenAmount)}
+              >
                 <span>
                   {ellipsisOverflowedText(
                     splitNumberByStep(tokenAmount),
@@ -284,8 +287,8 @@ const Approve = ({
                     {t('Edit')}
                   </Button>
                 )}
-              </p>
-              <p
+              </div>
+              <div
                 className="token-value"
                 title={splitNumberByStep(totalTokenPrice)}
               >
@@ -295,7 +298,7 @@ const Approve = ({
                   18,
                   true
                 )}
-              </p>
+              </div>
             </div>
           </div>
           <div className="block-field mb-0">
@@ -309,7 +312,7 @@ const Approve = ({
                 />
               )}
               <div className="protocol-info">
-                <p
+                <div
                   className={clsx('protocol-info__name flex', {
                     'text-gray-content': !detail.spender_protocol_name,
                   })}
@@ -326,7 +329,7 @@ const Approve = ({
                       onClick={handleCopySpender}
                     />
                   </span>
-                </p>
+                </div>
               </div>
             </div>
           </div>

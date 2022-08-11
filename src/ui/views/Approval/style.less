@@ -485,6 +485,7 @@
 
       &-content {
         flex: 1;
+        overflow: hidden;
       }
 
       &-title {
@@ -493,6 +494,7 @@
         line-height: 18px;
         color: @color-title;
         margin-bottom: 2px;
+        .ellipsis();
       }
       &-desc {
         font-weight: 400;
@@ -577,17 +579,19 @@
         font-size: 15px;
         line-height: 18px;
         .ant-btn-link {
-          color: #8697ff;
-          font-size: 14px;
-          font-weight: normal;
           padding: 0;
           line-height: 1;
           height: auto;
+          font-weight: 500;
+          font-size: 15px;
+          line-height: 18px;
+          color: #8697ff;
+
           &::before {
             display: none;
           }
           span {
-            text-decoration: underline;
+            text-decoration: none;
           }
           &:hover {
             background-color: transparent;
@@ -1163,6 +1167,7 @@
         line-height: 14px;
         color: @color-comment-2;
         text-align: center;
+        opacity: 0.7;
       }
     }
 
@@ -1296,7 +1301,7 @@
       &-desc {
         font-weight: 400;
         font-size: 14px;
-        line-height: 16px;
+        line-height: 20px;
         color: @color-body;
 
         .number {
@@ -1340,10 +1345,10 @@
       a {
         font-weight: 500;
         font-size: 15px;
-        font-size: 14px;
         line-height: 18px;
         color: @primary-color;
-        // text-decoration: underline;
+        padding: 8px;
+        margin-right: -8px;
       }
     }
   }

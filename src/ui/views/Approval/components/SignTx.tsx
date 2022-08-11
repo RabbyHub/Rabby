@@ -627,6 +627,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     isCancel,
     isSend,
   } = normalizeTxParams(params.data[0]);
+
   let updateNonce = true;
   if (isCancel || isSpeedUp || (nonce && from === to) || nonceChanged)
     updateNonce = false;
