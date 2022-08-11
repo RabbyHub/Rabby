@@ -61,7 +61,7 @@ class LatticeKeyring extends EventEmitter {
       page: this.page,
       hdPath: this.hdPath,
       sdkState: this.keyringId
-        ? await invokeHDKeyring('LEDGER', 'getStateData')
+        ? await invokeHDKeyring('GRIDPLUS', 'getStateData')
         : null,
     };
   }
@@ -171,8 +171,8 @@ class LatticeKeyring extends EventEmitter {
     // Setup info related to signer account
     const accountIdx = await this._findSignerIdx(address);
     const chainId = getTxChainId(tx).toNumber();
-    const fwVersion = await invokeHDKeyring('LEDGER', 'getFwVersion');
-    const txData = await invokeHDKeyring('LEDGER', 'getTxData');
+    const fwVersion = await invokeHDKeyring('GRIDPLUS', 'getFwVersion');
+    const txData = await invokeHDKeyring('GRIDPLUS', 'getTxData');
     const addressIdx = this.accountIndices[accountIdx];
     const { hdPath } = this.accountOpts[accountIdx];
     const signerPath = this._getHDPathIndices(hdPath, addressIdx);
@@ -198,13 +198,13 @@ class LatticeKeyring extends EventEmitter {
       // Check if we can decode the calldata
       data.decoder = await getCalldataDecoder(tx);
       // Send the request
-      signedTx = await invokeHDKeyring('LEDGER', 'sign', [{ data }]);
+      signedTx = await invokeHDKeyring('GRIDPLUS', 'sign', [{ data }]);
     } else {
       // Older firmware versions (<0.15.0) use the legacy signing pathway.
       const data = getLegacyTxReq(tx);
       data.chainId = chainId;
       data.signerPath = signerPath;
-      signedTx = await invokeHDKeyring('LEDGER', 'sign', [
+      signedTx = await invokeHDKeyring('GRIDPLUS', 'sign', [
         { currency: 'ETH', data },
       ]);
     }
@@ -275,7 +275,7 @@ class LatticeKeyring extends EventEmitter {
         signerPath: this._getHDPathIndices(addressParentPath, addressIdx),
       },
     };
-    const res = await invokeHDKeyring('LEDGER', 'sign', [req]);
+    const res = await invokeHDKeyring('GRIDPLUS', 'sign', [req]);
     if (!res.sig) {
       throw new Error('No signature returned');
     }
@@ -375,7 +375,7 @@ class LatticeKeyring extends EventEmitter {
     const accountIdx = await this._findAccountByAddress(address);
     const { walletUID } = this.accountOpts[accountIdx];
     // Get the last updated SDK wallet UID
-    const activeWallet = await invokeHDKeyring('LEDGER', 'getActiveWallet');
+    const activeWallet = await invokeHDKeyring('GRIDPLUS', 'getActiveWallet');
     if (!activeWallet) {
       this._connect();
       throw new Error('No active wallet in Lattice.');
@@ -573,7 +573,7 @@ class LatticeKeyring extends EventEmitter {
   // the expected wallet UID is still the one active in the Lattice.
   // This will handle SafeCard insertion/removal events.
   async _connect() {
-    await invokeHDKeyring('LEDGER', 'connect', [this.creds.deviceID]);
+    await invokeHDKeyring('GRIDPLUS', 'connect', [this.creds.deviceID]);
   }
 
   async _initSession() {
@@ -630,7 +630,7 @@ class LatticeKeyring extends EventEmitter {
       startPath: this._getHDPathIndices(this.hdPath, i),
       n: shouldRecurse ? 1 : n,
     };
-    const addrs = await invokeHDKeyring('LEDGER', 'getAddresses', [addrData]);
+    const addrs = await invokeHDKeyring('GRIDPLUS', 'getAddresses', [addrData]);
     // Sanity check -- if this returned 0 addresses, handle the error
     if (addrs.length < 1) {
       throw new Error('No addresses returned');
@@ -720,7 +720,7 @@ class LatticeKeyring extends EventEmitter {
     if (!this.keyringId) {
       return null;
     }
-    const activeWallet = await invokeHDKeyring('LEDGER', 'getActiveWallet');
+    const activeWallet = await invokeHDKeyring('GRIDPLUS', 'getActiveWallet');
     if (!activeWallet || !activeWallet.uid) {
       return null;
     }

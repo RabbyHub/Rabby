@@ -62,4 +62,16 @@ export class BitBox02Keyring {
   ethGetRootPubKey(hdPath) {
     return this.app.ethGetRootPubKey(hdPath);
   }
+
+  ethSignTransaction(params) {
+    return this.app.ethSignTransaction(params);
+  }
+
+  ethSignMessage(params) {
+    return this.app.ethSignMessage(params);
+  }
+
+  ethSignTypedMessage(params) {
+    return this.app.ethSignTypedMessage(params);
+  }
 }
