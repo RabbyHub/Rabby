@@ -46,33 +46,27 @@ const PreCheckCard = (props: PreCheckCardProps) => {
       </div>
     );
   }
-  if (['v0', 'v1'].includes(version)) {
-    return (
-      <div className="pre-check-card ">
-        <div className="pre-check-card-header items-center mb-0">
-          <img src={IconCheck} className="pre-check-card-icon" />
-          <div className="pre-check-card-desc">No error found</div>
-        </div>
-      </div>
-    );
-  }
-  if (/^2/.test(String(data.error?.code || ''))) {
-    return (
-      <div className="pre-check-card ">
-        <div className="pre-check-card-header items-start mb-0">
-          <IconRcWaring className="pre-check-card-icon gray"></IconRcWaring>
-          <div>
-            <div className="pre-check-card-title">Error check failed</div>
-            <div className="pre-check-card-desc">
-              {data.error?.msg}{' '}
-              <span className="number">#{data.error?.code}</span>
-            </div>
-          </div>
-        </div>
-      </div>
-    );
-  }
-  if (data.success && (!errors || errors?.length === 0)) {
+
+  // if (/^2/.test(String(data.error?.code || ''))) {
+  //   return (
+  //     <div className="pre-check-card ">
+  //       <div className="pre-check-card-header items-start mb-0">
+  //         <IconRcWaring className="pre-check-card-icon gray"></IconRcWaring>
+  //         <div>
+  //           <div className="pre-check-card-title">Error check failed</div>
+  //           <div className="pre-check-card-desc">
+  //             {data.error?.msg}{' '}
+  //             <span className="number">#{data.error?.code}</span>
+  //           </div>
+  //         </div>
+  //       </div>
+  //     </div>
+  //   );
+  // }
+  if (
+    (data.success || ['v0', 'v1'].includes(version)) &&
+    (!errors || errors.length === 0)
+  ) {
     return (
       <div className="pre-check-card ">
         <div className="pre-check-card-header items-center mb-0">
@@ -89,7 +83,7 @@ const PreCheckCard = (props: PreCheckCardProps) => {
         <img src={IconWarning} className="pre-check-card-icon" />
         <div className="pre-check-card-title">Transaction may fail </div>
       </div>
-      {data.error && (
+      {data.error && version === 'v2' && (
         <div className="pre-check-card-item">
           <div className="pre-check-card-item-icon-wraper">
             <div className="pre-check-card-item-icon is-warning"></div>
