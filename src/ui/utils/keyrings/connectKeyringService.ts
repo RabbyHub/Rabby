@@ -2,6 +2,7 @@ import {
   HDKeyringParams,
   HdKeyringType,
 } from '@/background/service/keyring/hd-proxy';
+import { BetterJSON } from '@/utils/better-json';
 import PortMessage from '@/utils/message/portMessage';
 import { browser } from 'webextension-polyfill-ts';
 import { BitBox02Keyring } from './bitbox02';
@@ -66,9 +67,10 @@ export const connectKeyringService = () => {
         return;
       } else if (data.type === 'invoke') {
         const keyring = cached.get(data.id);
+        const params = BetterJSON.parse(data.params ?? []) as [];
 
         if (keyring) {
-          return keyring[data.method]?.(...(data.params ?? []));
+          return keyring[data.method]?.(...params);
         }
       }
     });
