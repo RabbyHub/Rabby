@@ -62,7 +62,8 @@ export const connectKeyringService = () => {
         return;
       } else if (data.type === 'getHDKeyring') {
         const { type, options } = data.params;
-        return createKeyring(data.id, type, options);
+        await createKeyring(data.id, type, options);
+        return;
       } else if (data.type === 'invoke') {
         const keyring = cached.get(data.id);
 
