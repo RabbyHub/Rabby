@@ -1,9 +1,12 @@
+import { browser } from 'webextension-polyfill-ts';
 import Events from 'events';
 import { ethErrors } from 'eth-rpc-errors';
 import { EthereumProviderError } from 'eth-rpc-errors/dist/classes';
 import { winMgr } from 'background/webapi';
-import { CHAINS } from 'consts';
-import { browser } from 'webextension-polyfill-ts';
+import { CHAINS, KEYRING_CATEGORY_MAP } from 'consts';
+import transactionHistoryService from './transactionHistory';
+import preferenceService from './preference';
+import stats from '@/stats';
 
 type IApprovalComponents = typeof import('@/ui/views/Approval/components');
 type IApprovalComponent = IApprovalComponents[keyof IApprovalComponents];
@@ -153,6 +156,20 @@ class NotificationService extends Events {
   };
 
   requestApproval = async (data, winProps?): Promise<any> => {
+    const currentAccount = preferenceService.getCurrentAccount();
+    const reportExplain = (approvalId: number) => {
+      const explain = transactionHistoryService.getExplainCacheByApprovalId(
+        approvalId
+      );
+      if (explain && currentAccount) {
+        stats.report('preExecTransaction', {
+          type: currentAccount.brandName,
+          category: KEYRING_CATEGORY_MAP[currentAccount.type],
+          chainId: explain.native_token.chain,
+          success: explain.calcSuccess && explain.pre_exec.success,
+        });
+      }
+    };
     return new Promise((resolve, reject) => {
       const uuid = Date.now();
       const approval: Approval = {
@@ -160,8 +177,18 @@ class NotificationService extends Events {
         id: uuid,
         data,
         winProps,
-        resolve,
-        reject,
+        resolve(data) {
+          if (this.data.approvalComponent === 'SignTx') {
+            reportExplain(this.id);
+          }
+          resolve(data);
+        },
+        reject(data) {
+          if (this.data.approvalComponent === 'SignTx') {
+            reportExplain(this.id);
+          }
+          reject(data);
+        },
       };
 
       if (

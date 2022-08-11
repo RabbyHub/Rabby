@@ -1,5 +1,6 @@
 import { createPersistStore } from 'background/utils';
 import maxBy from 'lodash/maxBy';
+import { Object as ObjectType } from 'ts-toolbelt';
 import openapiService, { Tx, ExplainTxResponse } from './openapi';
 import { CHAINS } from 'consts';
 
@@ -29,7 +30,10 @@ interface TxHistoryStore {
     [key: string]: Record<string, TransactionGroup>;
   };
   cacheExplain: {
-    [key: string]: TransactionGroup['explain'];
+    [key: string]: ObjectType.Merge<
+      TransactionGroup['explain'],
+      { approvalId: number; calcSuccess: boolean }
+    >;
   };
 }
 
@@ -353,17 +357,27 @@ class TxHistory {
     chainId,
     nonce,
     explain,
+    approvalId,
+    calcSuccess,
   }: {
     address: string;
     chainId: number;
     nonce: number;
     explain: ExplainTxResponse;
+    approvalId: number;
+    calcSuccess: boolean;
   }) {
     const key = `${address.toLowerCase()}-${chainId}-${nonce}`;
     this.store.cacheExplain = {
       ...this.store.cacheExplain,
-      [key]: explain,
+      [key]: { ...explain, approvalId, calcSuccess },
     };
+  }
+
+  getExplainCacheByApprovalId(approvalId: number) {
+    return Object.values(this.store.cacheExplain).find(
+      (item) => item.approvalId === approvalId
+    );
   }
 
   getExplainCache({
