@@ -83,7 +83,7 @@ class PreferenceService {
         useLedgerLive: false,
         locale: defaultLang,
         watchAddressPreference: {},
-        isDefaultWallet: true,
+        isDefaultWallet: false,
         lastTimeSendToken: {},
         highligtedAddresses: [],
         walletSavedList: [],
@@ -108,7 +108,7 @@ class PreferenceService {
       this.store.isDefaultWallet === undefined ||
       this.store.isDefaultWallet === null
     ) {
-      this.store.isDefaultWallet = true;
+      this.store.isDefaultWallet = false;
     }
     if (!this.store.lastTimeSendToken) {
       this.store.lastTimeSendToken = {};
