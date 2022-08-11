@@ -1,6 +1,7 @@
 import PortMessage from '@/utils/message/portMessage';
 import { KEYRING_CLASS } from '.';
 import { browser } from 'webextension-polyfill-ts';
+import { BetterJSON } from '@/utils/better-json';
 
 export interface HDKeyringParams {
   type: string;
@@ -43,7 +44,7 @@ export async function invokeHDKeyring<T>(
     type: 'invoke',
     id,
     method,
-    params,
+    params: BetterJSON.stringify(params),
   });
 
   console.log(result);
