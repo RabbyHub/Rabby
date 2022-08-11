@@ -67,10 +67,11 @@ class BitBox02Keyring extends EventEmitter {
   }
 
   async withDevice(f) {
-    await initHDKeyring('BITBOX02');
     // const devicePath = await getDevicePath({ forceBridge: true });
     // const bitbox02 = new BitBox02API(devicePath);
     try {
+      await initHDKeyring('BITBOX02');
+
       //   await bitbox02.connect(
       //     (pairingCode) => {
       //       this.openPopup(
@@ -98,7 +99,6 @@ class BitBox02Keyring extends EventEmitter {
       //   if (bitbox02.firmware().Product() !== constants.Product.BitBox02Multi) {
       //     throw new Error('Unsupported device');
       //   }
-
       const rootPub = await invokeHDKeyring('BITBOX02', 'ethGetRootPubKey', [
         this.hdPath,
       ]);
@@ -219,7 +219,7 @@ class BitBox02Keyring extends EventEmitter {
 
   // tx is an instance of the ethereumjs-transaction class.
   async signTransaction(address, tx: TypedTransaction) {
-    return await this.withDevice(async (bitbox02) => {
+    return await this.withDevice(async () => {
       const txData: JsonTx = {
         to: tx.to!.toString(),
         value: `0x${tx.value.toString('hex')}`,
@@ -232,18 +232,20 @@ class BitBox02Keyring extends EventEmitter {
             : (tx as FeeMarketEIP1559Transaction).maxFeePerGas.toString('hex')
         }`,
       };
-      const result = await bitbox02.ethSignTransaction({
-        keypath: this._pathFromAddress(address),
-        chainId: tx.common.chainIdBN().toNumber(),
-        tx: {
-          nonce: tx.nonce.toArrayLike(Buffer),
-          gasPrice: (tx as Transaction).gasPrice.toArrayLike(Buffer),
-          gasLimit: tx.gasLimit.toArrayLike(Buffer),
-          to: tx.to?.toBuffer(),
-          value: tx.value.toArrayLike(Buffer),
-          data: tx.data,
+      const result = await invokeHDKeyring('BITBOX02', 'ethSignTransaction', [
+        {
+          keypath: this._pathFromAddress(address),
+          chainId: tx.common.chainIdBN().toNumber(),
+          tx: {
+            nonce: tx.nonce.toArrayLike(Buffer),
+            gasPrice: (tx as Transaction).gasPrice.toArrayLike(Buffer),
+            gasLimit: tx.gasLimit.toArrayLike(Buffer),
+            to: tx.to?.toBuffer(),
+            value: tx.value.toArrayLike(Buffer),
+            data: tx.data,
+          },
         },
-      });
+      ]);
       txData.r = result.r;
       txData.s = result.s;
       txData.v = result.v;
@@ -264,11 +266,13 @@ class BitBox02Keyring extends EventEmitter {
   }
 
   async signPersonalMessage(withAccount, message) {
-    return await this.withDevice(async (bitbox02) => {
-      const result = await bitbox02.ethSignMessage({
-        keypath: this._pathFromAddress(withAccount),
-        message: ethUtil.toBuffer(message),
-      });
+    return await this.withDevice(async () => {
+      const result = await invokeHDKeyring('BITBOX02', 'ethSignMessage', [
+        {
+          keypath: this._pathFromAddress(withAccount),
+          message: ethUtil.toBuffer(message),
+        },
+      ]);
       const sig = Buffer.concat([
         Buffer.from(result.r),
         Buffer.from(result.s),
@@ -286,12 +290,14 @@ class BitBox02Keyring extends EventEmitter {
         `Only version 4 of typed data signing is supported. Provided version: ${options.version}`
       );
     }
-    return await this.withDevice(async (bitbox02) => {
-      const result = await bitbox02.ethSignTypedMessage({
-        chainId: data.domain.chainId || 1,
-        keypath: this._pathFromAddress(withAccount),
-        message: data,
-      });
+    return await this.withDevice(async () => {
+      const result = await invokeHDKeyring('BITBOX02', 'ethSignTypedMessage', [
+        {
+          chainId: data.domain.chainId || 1,
+          keypath: this._pathFromAddress(withAccount),
+          message: data,
+        },
+      ]);
       const sig = Buffer.concat([
         Buffer.from(result.r),
         Buffer.from(result.s),
