@@ -3,6 +3,7 @@ import maxBy from 'lodash/maxBy';
 import { Object as ObjectType } from 'ts-toolbelt';
 import openapiService, { Tx, ExplainTxResponse } from './openapi';
 import { CHAINS } from 'consts';
+import stats from '@/stats';
 
 export interface TransactionHistoryItem {
   rawTx: Tx;
@@ -20,7 +21,10 @@ export interface TransactionGroup {
   txs: TransactionHistoryItem[];
   isPending: boolean;
   createdAt: number;
-  explain: ExplainTxResponse;
+  explain: ObjectType.Merge<
+    ExplainTxResponse,
+    { approvalId: number; calcSuccess: boolean }
+  >;
   isFailed: boolean;
   isSubmitFailed?: boolean;
 }
@@ -293,6 +297,17 @@ class TxHistory {
         [key]: target,
       },
     };
+    const chain = Object.values(CHAINS).find(
+      (item) => item.id === Number(target.chainId)
+    );
+    if (chain) {
+      stats.report('completeTransaction', {
+        chainId: chain.serverId,
+        success,
+        preExecSuccess:
+          target.explain.pre_exec.success && target.explain.calcSuccess,
+      });
+    }
     this.clearBefore({ address, chainId, nonce });
     this.clearExpiredTxs(address);
   }
