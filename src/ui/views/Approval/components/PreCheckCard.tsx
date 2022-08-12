@@ -47,22 +47,23 @@ const PreCheckCard = (props: PreCheckCardProps) => {
     );
   }
 
-  // if (/^2/.test(String(data.error?.code || ''))) {
-  //   return (
-  //     <div className="pre-check-card ">
-  //       <div className="pre-check-card-header items-start mb-0">
-  //         <IconRcWaring className="pre-check-card-icon gray"></IconRcWaring>
-  //         <div>
-  //           <div className="pre-check-card-title">Error check failed</div>
-  //           <div className="pre-check-card-desc">
-  //             {data.error?.msg}{' '}
-  //             <span className="number">#{data.error?.code}</span>
-  //           </div>
-  //         </div>
-  //       </div>
-  //     </div>
-  //   );
-  // }
+  if (/^2/.test(String(data.error?.code || ''))) {
+    return (
+      <div className="pre-check-card ">
+        <div className="pre-check-card-header items-start mb-0">
+          <IconRcWaring className="pre-check-card-icon gray"></IconRcWaring>
+          <div>
+            <div className="pre-check-card-title">Error check failed</div>
+            <div className="pre-check-card-desc">
+              {data.error?.msg}{' '}
+              <span className="number">#{data.error?.code}</span>
+            </div>
+          </div>
+        </div>
+      </div>
+    );
+  }
+
   if (
     (data.success || ['v0', 'v1'].includes(version)) &&
     (!errors || errors.length === 0)
