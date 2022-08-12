@@ -429,7 +429,7 @@ const BalanceChange = ({
                     >
                       -{' '}
                       {splitNumberByStep(
-                        new BigNumber(token.amount).toFixed(9)
+                        Number(new BigNumber(token.amount).toFixed(9))
                       )}{' '}
                       {token.symbol}
                     </span>
@@ -462,7 +462,7 @@ const BalanceChange = ({
                     >
                       +{' '}
                       {splitNumberByStep(
-                        new BigNumber(token.amount).toFixed(9)
+                        Number(new BigNumber(token.amount).toFixed(9))
                       )}{' '}
                       {token.symbol}
                     </span>
