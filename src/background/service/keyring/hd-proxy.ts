@@ -40,16 +40,14 @@ export async function invokeHDKeyring<T>(
   params?: any
 ): Promise<any> {
   console.log('invokeHDKeyring', id, method, params);
-  const result = await pm.request({
+  const result = ((await pm.request({
     type: 'invoke',
     id,
     method,
     params: BetterJSON.stringify(params),
-  });
+  })) ?? '{}') as string;
 
-  console.log(result);
-
-  return result;
+  return BetterJSON.parse(result);
 }
 
 type OnlyClassMethods<T> = {

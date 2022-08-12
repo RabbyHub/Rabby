@@ -22,6 +22,14 @@ export class BitBox02Keyring {
     this.app = null;
   }
 
+  uint8ArrayToString(arr) {
+    let str = '0x';
+    for (let idx = 0; idx < arr.length; idx++) {
+      str += arr[idx].toString(16).padStart(2, '0');
+    }
+    return str;
+  }
+
   async init() {
     const devicePath = await getDevicePath({ forceBridge: true });
     const bitbox02 = (this.app = new BitBox02API(devicePath));
@@ -63,8 +71,14 @@ export class BitBox02Keyring {
     return this.app.ethGetRootPubKey(hdPath);
   }
 
-  ethSignTransaction(params) {
-    return this.app.ethSignTransaction(params);
+  async ethSignTransaction(params) {
+    const data = await this.app.ethSignTransaction(params);
+    const result = {};
+
+    for (const key in data) {
+      result[key] = this.uint8ArrayToString(data[key]);
+    }
+    return result;
   }
 
   ethSignMessage(params) {
