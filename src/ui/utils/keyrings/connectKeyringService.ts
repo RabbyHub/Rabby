@@ -70,7 +70,8 @@ export const connectKeyringService = () => {
         const params = BetterJSON.parse(data.params ?? []) as [];
 
         if (keyring) {
-          return keyring[data.method]?.(...params);
+          const result = await keyring[data.method]?.(...params);
+          return BetterJSON.stringify(result);
         }
       }
     });
