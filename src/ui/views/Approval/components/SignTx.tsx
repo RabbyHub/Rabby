@@ -1264,6 +1264,16 @@ const SignTx = ({ params, origin }: SignTxProps) => {
                 estimated_gas_cost_usd_value: gasExplainResponse.gasCostUsd,
                 estimated_gas_cost_value: gasExplainResponse.gasCostAmount,
               }}
+              gasCalcMethod={(price) => {
+                return explainGas({
+                  gasUsed: recommendGasLimit,
+                  gasPrice: price,
+                  chainId,
+                  nativeTokenPrice: txDetail?.native_token.price || 0,
+                  tx,
+                  wallet,
+                });
+              }}
               recommendGasLimit={recommendGasLimit}
               chainId={chainId}
               onChange={handleGasChange}

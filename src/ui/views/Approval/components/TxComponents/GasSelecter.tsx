@@ -42,7 +42,36 @@ interface GasSelectorProps {
   selectedGas: GasLevel | null;
   is1559: boolean;
   isHardware: boolean;
+  gasCalcMethod: (
+    price: number
+  ) => Promise<{
+    gasCostUsd: number;
+    gasCostAmount: number;
+  }>;
 }
+
+const useExplainGas = ({
+  price,
+  method,
+  value,
+}: {
+  price: number;
+  method: GasSelectorProps['gasCalcMethod'];
+  value: {
+    gasCostUsd: number;
+    gasCostAmount: number;
+  };
+}) => {
+  const [result, setResult] = useState<{
+    gasCostUsd: number;
+    gasCostAmount: number;
+  }>(value);
+  useEffect(() => {
+    method(price).then(setResult);
+  }, [price, method]);
+
+  return result;
+};
 
 const GasSelector = ({
   gasLimit,
@@ -56,10 +85,11 @@ const GasSelector = ({
   nonce,
   disableNonce,
   gasList,
-  selectedGas,
+  selectedGas: rawSelectedGas,
   is1559,
   isHardware,
   version,
+  gasCalcMethod,
 }: GasSelectorProps) => {
   const { t } = useTranslation();
   const customerInputRef = useRef<Input>(null);
@@ -69,6 +99,9 @@ const GasSelector = ({
   const [modalVisible, setModalVisible] = useState(false);
   const [customGas, setCustomGas] = useState<string | number>(
     Number(tx.gasPrice || tx.maxFeePerGas || 0) / 1e9
+  );
+  const [selectedGas, setSelectedGas] = useState<GasLevel | null>(
+    rawSelectedGas
   );
   const [maxPriorityFee, setMaxPriorityFee] = useState<number>(
     selectedGas ? selectedGas.price / 1e9 : 0
@@ -140,6 +173,15 @@ const GasSelector = ({
     }
   };
 
+  const modalExplainGas = useExplainGas({
+    price: selectedGas?.price || 0,
+    method: gasCalcMethod,
+    value: {
+      gasCostAmount: gas.estimated_gas_cost_value,
+      gasCostUsd: gas.estimated_gas_cost_value,
+    },
+  });
+
   const handleShowSelectModal = () => {
     setModalVisible(true);
   };
@@ -200,18 +242,14 @@ const GasSelector = ({
           gasList.find((item) => item.level === selectedGas.level) || gas;
       }
       setCustomGas(Number(target.price) / 1e9);
-      onChange({
+      setSelectedGas({
         ...target,
-        gasLimit: Number(afterGasLimit),
-        nonce: Number(customNonce || nonce),
         level: 'custom',
       });
       customerInputRef.current?.focus();
     } else {
-      onChange({
+      setSelectedGas({
         ...gas,
-        gasLimit: Number(afterGasLimit),
-        nonce: Number(customNonce || nonce),
         level: gas?.level,
       });
     }
@@ -225,11 +263,9 @@ const GasSelector = ({
       estimated_seconds: 0,
       base_fee: gasList[0].base_fee,
     };
-    onChange({
+    setSelectedGas({
       ...gas,
       price: Number(gas.price),
-      gasLimit: Number(afterGasLimit),
-      nonce: Number(customNonce || nonce),
       level: gas.level,
     });
   };
@@ -240,7 +276,15 @@ const GasSelector = ({
 
   useDebounce(
     () => {
-      (isReady || !isFirstTimeLoad) && handleConfirmGas();
+      (isReady || !isFirstTimeLoad) &&
+        setSelectedGas((gas) => ({
+          ...gas,
+          level: 'custom',
+          price: Number(customGas) * 1e9,
+          front_tx_count: 0,
+          estimated_seconds: 0,
+          base_fee: gasList[0].base_fee,
+        }));
     },
     500,
     [customGas]
@@ -257,8 +301,8 @@ const GasSelector = ({
   useEffect(() => {
     if (!selectedGas) return;
     setMaxPriorityFee(selectedGas.price / 1e9);
-    if (selectedGas?.level !== 'custom') return;
-    setCustomGas(selectedGas.price / 1e9);
+    // if (selectedGas?.level !== 'custom') return;
+    // setCustomGas(selectedGas.price / 1e9);
   }, [selectedGas]);
 
   useEffect(() => {
@@ -322,11 +366,11 @@ const GasSelector = ({
           <div className="gas-selector-card-content">
             <div className="gas-selector-card-content-item">
               <div className="gas-selector-card-gas">
-                {selectedGas ? selectedGas.price / 1e9 : 0} Gwei
+                {rawSelectedGas ? rawSelectedGas.price / 1e9 : 0} Gwei
               </div>
-              {selectedGas ? (
+              {rawSelectedGas ? (
                 <div className="gas-selector-card-tag">
-                  {GAS_LEVEL_TEXT[selectedGas.level]}
+                  {GAS_LEVEL_TEXT[rawSelectedGas.level]}
                 </div>
               ) : null}
             </div>
@@ -359,6 +403,7 @@ const GasSelector = ({
               onClick={(e) => {
                 e.preventDefault();
                 setModalVisible(true);
+                setSelectedGas(rawSelectedGas);
               }}
             >
               Edit
@@ -391,11 +436,11 @@ const GasSelector = ({
           ) : (
             <>
               <div className="gas-selector-modal-amount">
-                {formatTokenAmount(gas.estimated_gas_cost_value)}{' '}
+                {formatTokenAmount(modalExplainGas.gasCostAmount)}{' '}
                 {chain.nativeTokenSymbol}
               </div>
               <div className="gas-selector-modal-usd">
-                ≈${gas.estimated_gas_cost_usd_value.toFixed(2)}
+                ≈${modalExplainGas.gasCostUsd.toFixed(2)}
               </div>
             </>
           )}
