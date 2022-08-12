@@ -61,7 +61,10 @@ const flowContext = flow
         ctx.request.requestedApproval = true;
         lockedOrigins.add(origin);
         try {
-          await notificationService.requestApproval({ lock: true });
+          await notificationService.requestApproval(
+            { lock: true },
+            { height: 628 }
+          );
           lockedOrigins.delete(origin);
         } catch (e) {
           lockedOrigins.delete(origin);
