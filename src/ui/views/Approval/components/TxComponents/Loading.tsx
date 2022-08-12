@@ -19,18 +19,22 @@ const Loading = ({ chainEnum }: SignProps) => {
           values={{ name: chain.name }}
         />
       </p>
-      <div className="gray-section-block common-detail-block">
-        <div className="block-field">
-          <Skeleton.Input active style={{ width: 200 }} />
+      <div className="action-card">
+        <div className="common-detail-block mb-0 px-[16px] pt-[16px] pb-[20px]">
+          <div className="flex items-center gap-[12px]">
+            <Skeleton.Avatar active style={{ width: 40, height: 40 }} />
+            <div>
+              <div>
+                <Skeleton.Input active style={{ width: 90, height: 17 }} />
+              </div>
+              <div>
+                <Skeleton.Input active style={{ width: 70, height: 15 }} />
+              </div>
+            </div>
+          </div>
         </div>
-        <div className="block-field">
-          <Skeleton.Input active style={{ width: 200 }} />
-        </div>
-        <div className="block-field contract">
-          <Skeleton.Input active style={{ width: 120 }} />
-        </div>
+        <LoadingBalanceChange />
       </div>
-      <LoadingBalanceChange />
     </div>
   );
 };

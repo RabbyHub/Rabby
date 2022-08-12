@@ -25,7 +25,6 @@ import IconEyeHide from 'ui/assets/icon-eye-hide.svg';
 import IconEye from 'ui/assets/icon-eye.svg';
 import IconSuccess from 'ui/assets/icon-success-1.svg';
 import IconWarning from 'ui/assets/icon-warning-large.svg';
-import IconLogo from 'ui/assets/rabby-white-large.svg';
 import { splitNumberByStep, useWallet } from 'ui/utils';
 import { query2obj } from 'ui/utils/url';
 import './style.less';
@@ -255,7 +254,11 @@ const Receive = () => {
         </button>
       </div>
       <div className="page-receive-footer">
-        <img src={IconLogo} alt="" />
+        <img
+          src="/images/logo-white.svg"
+          className="h-[28px] opacity-50"
+          alt=""
+        />
       </div>
     </div>
   );

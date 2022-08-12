@@ -29,7 +29,7 @@ const CancelTx = ({
   const handleViewRawClick = () => {
     ViewRawModal.open({
       raw,
-      abi: data?.abiStr,
+      abi: data?.abi_str,
     });
   };
 
@@ -55,19 +55,23 @@ const CancelTx = ({
           <img src={IconArrowRight} />
         </span>
       </p>
-      <div className="gray-section-block common-detail-block">
-        {isSpeedUp && <SpeedUpCorner />}
-        <p className="title">{t('Cancel Pending Transaction')}</p>
-        <p className="text-gray-content text-14 mb-0">
-          Nonce: {Number(tx.nonce)}
-        </p>
-        <img src={IconCancelTx} className="icon icon-cancel-tx" />
+      <div className="action-card">
+        <div className="common-detail-block">
+          {isSpeedUp && <SpeedUpCorner />}
+          <p className="title">{t('Cancel Pending Transaction')}</p>
+          <p className="text-gray-content text-14 mb-0">
+            Nonce: {Number(tx.nonce)}
+          </p>
+          <img src={IconCancelTx} className="icon icon-cancel-tx" />
+        </div>
+
+        <BalanceChange
+          version={data.pre_exec_version}
+          data={data.balance_change}
+          chainEnum={chainEnum}
+          isSupport={data.support_balance_change}
+        />
       </div>
-      <BalanceChange
-        data={data.balance_change}
-        chainEnum={chainEnum}
-        isSupport={data.support_balance_change}
-      />
     </div>
   );
 };

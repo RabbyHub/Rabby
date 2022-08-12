@@ -29,7 +29,7 @@ const CancelNFT = ({ data, chainEnum, isSpeedUp, raw }: CancelNFTProps) => {
   const handleViewRawClick = () => {
     ViewRawModal.open({
       raw,
-      abi: data?.abiStr,
+      abi: data?.abi_str,
     });
   };
 
@@ -61,33 +61,58 @@ const CancelNFT = ({ data, chainEnum, isSpeedUp, raw }: CancelNFTProps) => {
           <img src={IconArrowRight} />
         </span>
       </p>
-      <div className="gray-section-block common-detail-block">
-        {isSpeedUp && <SpeedUpCorner />}
-        <p className="title">{t('Cancel Single NFT Approval')}</p>
-        <div className="nft-card">
-          <NFTAvatar
-            type={detail.nft?.content_type}
-            content={detail.nft?.content}
-            unknown={IconUnknownNFT}
-          ></NFTAvatar>
-          <div className="nft-card-content">
-            <div className="nft-card-title">
-              {detail.nft?.name || t('Unknown')}
-            </div>
-            <div className="rabby-list">
-              <div className="item">
-                <div className="label">Collection</div>
-                <div className="value">
-                  {detail.nft?.collection?.name || t('Unknown')}
+      <div className="action-card">
+        <div className="common-detail-block">
+          {isSpeedUp && <SpeedUpCorner />}
+          <p className="title">{t('Cancel Single NFT Approval')}</p>
+          <div className="nft-card">
+            <NFTAvatar
+              type={detail.nft?.content_type}
+              content={detail.nft?.content}
+              unknown={IconUnknownNFT}
+            ></NFTAvatar>
+            <div className="nft-card-content">
+              <div className="nft-card-title">
+                {detail.nft?.name || t('Unknown')}
+              </div>
+              <div className="rabby-list">
+                <div className="item">
+                  <div className="label">Collection</div>
+                  <div className="value">
+                    {detail.nft?.collection?.name || t('Unknown')}
+                  </div>
+                </div>
+                <div className="item">
+                  <div className="label">Contract</div>
+                  <div className="value flex items-center gap-6">
+                    {ellipsis(detail.nft?.contract_id)}
+                    <Copy
+                      variant="address"
+                      data={detail.nft?.contract_id}
+                      className="w-14"
+                    ></Copy>
+                  </div>
                 </div>
               </div>
-              <div className="item">
-                <div className="label">Contract</div>
-                <div className="value flex items-center gap-6">
-                  {ellipsis(detail.nft?.contract_id)}
+            </div>
+          </div>
+          <div className="rabby-list">
+            <div className="item">
+              <div className="label">Spender</div>
+              <div className="value flex items-center gap-8">
+                <img
+                  className="logo"
+                  src={detail.spender_protocol_logo_url || IconUnknownProtocol}
+                  onError={handleProtocolLogoLoadFailed}
+                />
+                <div className="name">
+                  {detail.spender_protocol_name || t('Unknown')}
+                </div>
+                <div className="address flex gap-6">
+                  {ellipsis(detail.spender)}
                   <Copy
                     variant="address"
-                    data={detail.nft?.contract_id}
+                    data={detail.spender}
                     className="w-16"
                   ></Copy>
                 </div>
@@ -95,35 +120,13 @@ const CancelNFT = ({ data, chainEnum, isSpeedUp, raw }: CancelNFTProps) => {
             </div>
           </div>
         </div>
-        <div className="rabby-list">
-          <div className="item">
-            <div className="label">Spender</div>
-            <div className="value flex items-center gap-8">
-              <img
-                className="logo"
-                src={detail.spender_protocol_logo_url || IconUnknownProtocol}
-                onError={handleProtocolLogoLoadFailed}
-              />
-              <div className="name">
-                {detail.spender_protocol_name || t('Unknown')}
-              </div>
-              <div className="address flex gap-6">
-                {ellipsis(detail.spender)}
-                <Copy
-                  variant="address"
-                  data={detail.spender}
-                  className="w-16"
-                ></Copy>
-              </div>
-            </div>
-          </div>
-        </div>
+        <BalanceChange
+          version={data.pre_exec_version}
+          data={data.balance_change}
+          chainEnum={chainEnum}
+          isSupport={data.support_balance_change}
+        />
       </div>
-      <BalanceChange
-        data={data.balance_change}
-        chainEnum={chainEnum}
-        isSupport={data.support_balance_change}
-      />
     </div>
   );
 };

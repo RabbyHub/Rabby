@@ -66,6 +66,10 @@ export interface SecurityCheckResponse {
   warning_list: SecurityCheckItem[];
   forbidden_list: SecurityCheckItem[];
   trace_id: string;
+  error?: {
+    code: number;
+    msg: string;
+  } | null;
 }
 
 export interface Tx {
@@ -363,7 +367,10 @@ export interface GasLevel {
 }
 
 export interface BalanceChange {
-  err_msg: string;
+  error?: {
+    code: number;
+    msg: string;
+  } | null;
   receive_nft_list: TransferingNFTItem[];
   receive_token_list: TokenItem[];
   send_nft_list: TransferingNFTItem[];
@@ -385,13 +392,20 @@ interface NFTContractItem {
   };
 }
 export interface ExplainTxResponse {
+  pre_exec_version: 'v0' | 'v1' | 'v2';
   abi?: {
     func: string;
     params: Array<string[] | number | string>;
   };
-  abiStr?: string;
+  abi_str?: string;
   balance_change: BalanceChange;
   gas: {
+    success?: boolean;
+    error?: {
+      code: number;
+      msg: string;
+    } | null;
+    gas_used: number;
     estimated_gas_cost_usd_value: number;
     estimated_gas_cost_value: number;
     estimated_gas_used: number;
@@ -400,7 +414,10 @@ export interface ExplainTxResponse {
   native_token: TokenItem;
   pre_exec: {
     success: boolean;
-    err_msg: string;
+    error?: {
+      code: number;
+      msg: string;
+    } | null;
   };
   recommend: {
     gas: string;
@@ -705,6 +722,59 @@ class OpenApiService {
     update_nonce = false
   ): Promise<ExplainTxResponse> => {
     const { data } = await this.request.post('/v1/wallet/explain_tx', {
+      tx,
+      user_addr: address,
+      origin,
+      update_nonce,
+    });
+
+    return data;
+  };
+
+  preExecTx = async ({
+    tx,
+    origin,
+    address,
+    updateNonce = false,
+    pending_tx_list = [],
+  }: {
+    tx: Tx;
+    origin: string;
+    address: string;
+    updateNonce: boolean;
+    pending_tx_list: Tx[];
+  }): Promise<ExplainTxResponse> => {
+    const { data } = await this.request.post('/v1/wallet/pre_exec_tx', {
+      tx,
+      user_addr: address,
+      origin,
+      update_nonce: updateNonce,
+      pending_tx_list,
+    });
+
+    return data;
+  };
+
+  historyGasUsed = async (params: {
+    tx: Tx;
+    user_addr: string;
+  }): Promise<{
+    gas_used: number;
+  }> => {
+    const { data } = await this.request.post('/v1/wallet/history_tx_used_gas', {
+      ...params,
+    });
+
+    return data;
+  };
+
+  pendingTxList = async (
+    tx: Tx,
+    origin: string,
+    address: string,
+    update_nonce = false
+  ): Promise<Tx[]> => {
+    const { data } = await this.request.post('/v1/wallet/pending_tx_list', {
       tx,
       user_addr: address,
       origin,

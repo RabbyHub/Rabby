@@ -4,7 +4,7 @@ import React from 'react';
 import { Popup } from 'ui/component';
 const { TabPane } = Tabs;
 interface ContentProps {
-  abi?: ExplainTxResponse['abiStr'];
+  abi?: ExplainTxResponse['abi_str'];
   raw: Record<string, string | number>;
 }
 

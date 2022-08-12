@@ -29,44 +29,19 @@ const NFTBCContent = styled.div`
 const LoadingBalanceChange = () => {
   const { t } = useTranslation();
   return (
-    <div className="loading-balance-change">
-      <div className="token-balance-change">
-        <p className="section-title flex justify-between">
-          <span>{t('token balance change')}</span>
-        </p>
-        <div className="gray-section-block token-balance-change-content">
-          <div>
-            <ul>
-              <li>
-                <Skeleton.Input active style={{ width: 156 }} />
-              </li>
-              <li>
-                <Skeleton.Input active style={{ width: 156 }} />
-              </li>
-            </ul>
-          </div>
-          <div className="total-balance-change">
-            <Skeleton.Input active style={{ width: 108 }} />
-          </div>
+    <div className="loading-balance-change p-[16px] mb-0">
+      <p className="section-title flex justify-between">
+        <span>{t('Est. balance change')}</span>
+      </p>
+      <div>
+        <div className="flex items-center gap-[12px] mb-[12px]">
+          <Skeleton.Avatar active style={{ width: 28, height: 28 }} />
+          <Skeleton.Input active style={{ width: 120, height: 17 }} />
         </div>
-      </div>
-      <div className="nft-bc">
-        <p className="section-title flex justify-between">
-          <span>{t('nft balance change')}</span>
-        </p>
-        <NFTBCContent className="gray-section-block nft-bc-content">
-          <div className="w-[100%] flex justify-center align-items">
-            {Array(NFT_SKE_COUNT)
-              .fill(undefined)
-              .map((_, idx) => {
-                return (
-                  <div key={`ske-nft-avatar-${idx}`} className="ske-nft-avatar">
-                    <Skeleton.Avatar active shape="square" />
-                  </div>
-                );
-              })}
-          </div>
-        </NFTBCContent>
+        <div className="flex items-center gap-[12px]">
+          <Skeleton.Avatar active style={{ width: 28, height: 28 }} />
+          <Skeleton.Input active style={{ width: 120, height: 17 }} />
+        </div>
       </div>
     </div>
   );

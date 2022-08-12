@@ -332,6 +332,11 @@ class ProviderController extends BaseController {
       ? Object.values(CHAINS).find((chain) => chain.id === approvalRes.chainId)!
           .enum
       : permissionService.getConnectedSite(origin)!.chain;
+    const cacheExplain = transactionHistoryService.getExplainCache({
+      address: txParams.from,
+      chainId: Number(approvalRes.chainId),
+      nonce: Number(approvalRes.nonce),
+    });
     try {
       const signedTx = await keyringService.signTransaction(
         keyring,
@@ -346,20 +351,19 @@ class ProviderController extends BaseController {
           chainId: CHAINS[chain].serverId,
           category: KEYRING_CATEGORY_MAP[currentAccount.type],
           success: true,
+          preExecSuccess:
+            cacheExplain.pre_exec.success && cacheExplain.calcSuccess,
         });
         return;
       }
       const onTranscationSubmitted = (hash: string) => {
-        const cacheExplain = transactionHistoryService.getExplainCache({
-          address: txParams.from,
-          chainId: Number(approvalRes.chainId),
-          nonce: Number(approvalRes.nonce),
-        });
         stats.report('submitTransaction', {
           type: currentAccount.brandName,
           chainId: CHAINS[chain].serverId,
           category: KEYRING_CATEGORY_MAP[currentAccount.type],
           success: true,
+          preExecSuccess:
+            cacheExplain.pre_exec.success && cacheExplain.calcSuccess,
         });
         if (isSend) {
           pageStateCacheService.clear();
@@ -414,6 +418,8 @@ class ProviderController extends BaseController {
         chainId: CHAINS[chain].serverId,
         category: KEYRING_CATEGORY_MAP[currentAccount.type],
         success: true,
+        preExecSuccess:
+          cacheExplain.pre_exec.success && cacheExplain.calcSuccess,
       });
       try {
         validateGasPriceRange(approvalRes);
@@ -436,6 +442,8 @@ class ProviderController extends BaseController {
           chainId: CHAINS[chain].serverId,
           category: KEYRING_CATEGORY_MAP[currentAccount.type],
           success: false,
+          preExecSuccess:
+            cacheExplain.pre_exec.success && cacheExplain.calcSuccess,
         });
         if (!isSpeedUp && !isCancel) {
           const cacheExplain = transactionHistoryService.getExplainCache({
@@ -470,6 +478,8 @@ class ProviderController extends BaseController {
           chainId: CHAINS[chain].serverId,
           category: KEYRING_CATEGORY_MAP[currentAccount.type],
           success: false,
+          preExecSuccess:
+            cacheExplain.pre_exec.success && cacheExplain.calcSuccess,
         });
       }
       throw new Error(e);

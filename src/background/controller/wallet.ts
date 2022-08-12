@@ -5,6 +5,7 @@ import * as bip39 from 'bip39';
 import { ethers, Contract } from 'ethers';
 import { groupBy } from 'lodash';
 import abiCoder, { AbiCoder } from 'web3-eth-abi';
+import * as optimismContracts from '@eth-optimism/contracts';
 import {
   keyringService,
   preferenceService,
@@ -60,6 +61,8 @@ import KeystoneKeyring, {
 import WatchKeyring from '@rabby-wallet/eth-watch-keyring';
 import stats from '@/stats';
 import { generateAliasName } from '@/utils/account';
+import { intToHex } from 'ethereumjs-util';
+import buildUnserializedTransaction from '@/utils/optimism/buildUnserializedTransaction';
 
 const stashKeyrings: Record<string | number, any> = {};
 
@@ -153,6 +156,41 @@ export class WalletController extends BaseController {
         },
       ],
     });
+  };
+
+  fetchEstimatedL1Fee = async (
+    txMeta: Record<string, any> & {
+      txParams: any;
+    }
+  ) => {
+    const account = await preferenceService.getCurrentAccount();
+    if (!account) throw new Error('no current account');
+    buildinProvider.currentProvider.currentAccount = account.address;
+    buildinProvider.currentProvider.currentAccountType = account.type;
+    buildinProvider.currentProvider.currentAccountBrand = account.brandName;
+    buildinProvider.currentProvider.chainId = CHAINS['OP'].network;
+
+    const provider = new ethers.providers.Web3Provider(
+      buildinProvider.currentProvider
+    );
+
+    const signer = provider.getSigner();
+    const OVMGasPriceOracle = optimismContracts
+      .getContractFactory('OVM_GasPriceOracle')
+      .attach(optimismContracts.predeploys.OVM_GasPriceOracle);
+    const abi = JSON.parse(
+      OVMGasPriceOracle.interface.format(
+        ethers.utils.FormatTypes.json
+      ) as string
+    );
+
+    const contract = new Contract(OVMGasPriceOracle.address, abi, signer);
+    const serializedTransaction = buildUnserializedTransaction(
+      txMeta
+    ).serialize();
+
+    const res = await contract.getL1Fee(serializedTransaction);
+    return res.toHexString();
   };
 
   transferNFT = async (
@@ -1502,7 +1540,28 @@ export class WalletController extends BaseController {
     chainId: number;
     nonce: number;
     explain: ExplainTxResponse;
+    calcSuccess: boolean;
+    approvalId: number;
   }) => transactionHistoryService.addExplainCache(params);
+
+  getExplainCache = ({
+    address,
+    chainId,
+    nonce,
+  }: {
+    address: string;
+    chainId: number;
+    nonce: number;
+  }) =>
+    transactionHistoryService.getExplainCache({
+      address,
+      chainId,
+      nonce,
+    });
+
+  getTxExplainCacheByApprovalId = (id: number) =>
+    transactionHistoryService.getExplainCacheByApprovalId(id);
+
   getTransactionHistory = (address: string) =>
     transactionHistoryService.getList(address);
   comepleteTransaction = (params: {
@@ -1764,7 +1823,10 @@ export class WalletController extends BaseController {
     widgetService.disableWidget(name);
   };
 
-  reportStats = (name: string, params: Record<string, string | number>) => {
+  reportStats = (
+    name: string,
+    params: Record<string, string | number | boolean>
+  ) => {
     stats.report(name, params);
   };
   getNeedSwitchWalletCheck = preferenceService.getNeedSwitchWalletCheck;
