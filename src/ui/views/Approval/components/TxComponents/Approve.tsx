@@ -8,7 +8,7 @@ import { CHAINS, CHAINS_ENUM, KEYRING_TYPE } from 'consts';
 import React, { useEffect, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import IconArrowRight from 'ui/assets/arrow-right-gray.svg';
-import IconCopy from 'ui/assets/address-copy.png';
+import IconCopy from 'ui/assets/component/icon-copy.svg';
 import IconSuccess from 'ui/assets/success.svg';
 import IconUnknownProtocol from 'ui/assets/unknown-protocol.svg';
 import { AddressViewer, Popup } from 'ui/component';
@@ -325,7 +325,7 @@ const Approve = ({
                     <AddressViewer address={detail.spender} showArrow={false} />
                     <img
                       src={IconCopy}
-                      className="icon icon-copy"
+                      className="icon icon-copy w-[14px] h-[14px]"
                       onClick={handleCopySpender}
                     />
                   </span>
