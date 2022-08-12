@@ -1,7 +1,9 @@
 import { createPersistStore } from 'background/utils';
 import maxBy from 'lodash/maxBy';
+import { Object as ObjectType } from 'ts-toolbelt';
 import openapiService, { Tx, ExplainTxResponse } from './openapi';
 import { CHAINS } from 'consts';
+import stats from '@/stats';
 
 export interface TransactionHistoryItem {
   rawTx: Tx;
@@ -19,7 +21,10 @@ export interface TransactionGroup {
   txs: TransactionHistoryItem[];
   isPending: boolean;
   createdAt: number;
-  explain: ExplainTxResponse;
+  explain: ObjectType.Merge<
+    ExplainTxResponse,
+    { approvalId: number; calcSuccess: boolean }
+  >;
   isFailed: boolean;
   isSubmitFailed?: boolean;
 }
@@ -29,7 +34,10 @@ interface TxHistoryStore {
     [key: string]: Record<string, TransactionGroup>;
   };
   cacheExplain: {
-    [key: string]: TransactionGroup['explain'];
+    [key: string]: ObjectType.Merge<
+      TransactionGroup['explain'],
+      { approvalId: number; calcSuccess: boolean }
+    >;
   };
 }
 
@@ -289,6 +297,17 @@ class TxHistory {
         [key]: target,
       },
     };
+    const chain = Object.values(CHAINS).find(
+      (item) => item.id === Number(target.chainId)
+    );
+    if (chain) {
+      stats.report('completeTransaction', {
+        chainId: chain.serverId,
+        success,
+        preExecSuccess:
+          target.explain.pre_exec.success && target.explain.calcSuccess,
+      });
+    }
     this.clearBefore({ address, chainId, nonce });
     this.clearExpiredTxs(address);
   }
@@ -353,17 +372,27 @@ class TxHistory {
     chainId,
     nonce,
     explain,
+    approvalId,
+    calcSuccess,
   }: {
     address: string;
     chainId: number;
     nonce: number;
     explain: ExplainTxResponse;
+    approvalId: number;
+    calcSuccess: boolean;
   }) {
     const key = `${address.toLowerCase()}-${chainId}-${nonce}`;
     this.store.cacheExplain = {
       ...this.store.cacheExplain,
-      [key]: explain,
+      [key]: { ...explain, approvalId, calcSuccess },
     };
+  }
+
+  getExplainCacheByApprovalId(approvalId: number) {
+    return Object.values(this.store.cacheExplain).find(
+      (item) => item.approvalId === approvalId
+    );
   }
 
   getExplainCache({

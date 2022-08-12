@@ -1,4 +1,3 @@
-import { BigNumber } from 'bignumber.js';
 import * as ethUtil from 'ethereumjs-util';
 import Wallet, { thirdparty } from 'ethereumjs-wallet';
 import { ethErrors } from 'eth-rpc-errors';
@@ -1541,7 +1540,28 @@ export class WalletController extends BaseController {
     chainId: number;
     nonce: number;
     explain: ExplainTxResponse;
+    calcSuccess: boolean;
+    approvalId: number;
   }) => transactionHistoryService.addExplainCache(params);
+
+  getExplainCache = ({
+    address,
+    chainId,
+    nonce,
+  }: {
+    address: string;
+    chainId: number;
+    nonce: number;
+  }) =>
+    transactionHistoryService.getExplainCache({
+      address,
+      chainId,
+      nonce,
+    });
+
+  getTxExplainCacheByApprovalId = (id: number) =>
+    transactionHistoryService.getExplainCacheByApprovalId(id);
+
   getTransactionHistory = (address: string) =>
     transactionHistoryService.getList(address);
   comepleteTransaction = (params: {
@@ -1803,7 +1823,10 @@ export class WalletController extends BaseController {
     widgetService.disableWidget(name);
   };
 
-  reportStats = (name: string, params: Record<string, string | number>) => {
+  reportStats = (
+    name: string,
+    params: Record<string, string | number | boolean>
+  ) => {
     stats.report(name, params);
   };
   getNeedSwitchWalletCheck = preferenceService.getNeedSwitchWalletCheck;

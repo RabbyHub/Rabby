@@ -79,13 +79,24 @@ const QRHardWareWaiting = ({ params }) => {
   };
   const handleRequestSignature = async () => {
     const account = await wallet.syncGetCurrentAccount()!;
+    const approval = await getApproval();
     if (account) {
       if (!isSignText) {
-        stats.report('signTransaction', {
-          type: account.brandName,
-          chainId: CHAINS[chain].serverId,
-          category: KEYRING_CATEGORY_MAP[account.type],
-        });
+        const tx = approval.data?.params;
+        if (tx) {
+          const { nonce, from, chainId } = tx;
+          const explain = await wallet.getExplainCache({
+            nonce: Number(nonce),
+            address: from,
+            chainId: Number(chainId),
+          });
+          stats.report('signTransaction', {
+            type: account.brandName,
+            chainId: CHAINS[chain].serverId,
+            category: KEYRING_CATEGORY_MAP[account.type],
+            preExecSuccess: explain?.calcSuccess && explain?.pre_exec.success,
+          });
+        }
       }
       setErrorMessage('');
       setStatus(QRHARDWARE_STATUS.SIGN);

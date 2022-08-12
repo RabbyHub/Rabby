@@ -370,11 +370,21 @@ const WatchAddressWaiting = ({ params }: { params: ApprovalParams }) => {
       : approval?.data.approvalType !== 'SignTx';
     isSignTextRef.current = isText;
     if (!isText) {
-      stats.report('signTransaction', {
-        type: account.brandName,
-        chainId: CHAINS[chain].serverId,
-        category: KEYRING_CATEGORY_MAP[account.type],
-      });
+      const tx = approval.data?.params;
+      if (tx) {
+        const { nonce, from, chainId } = tx;
+        const explain = await wallet.getExplainCache({
+          nonce: Number(nonce),
+          address: from,
+          chainId: Number(chainId),
+        });
+        stats.report('signTransaction', {
+          type: account.brandName,
+          chainId: CHAINS[chain].serverId,
+          category: KEYRING_CATEGORY_MAP[account.type],
+          preExecSuccess: explain?.calcSuccess && explain?.pre_exec.success,
+        });
+      }
       ReactGA.event({
         category: 'Transaction',
         action: 'Submit',
@@ -393,21 +403,43 @@ const WatchAddressWaiting = ({ params }: { params: ApprovalParams }) => {
           }
         }
         if (!isSignTextRef.current) {
-          stats.report('signedTransaction', {
-            type: account.brandName,
-            chainId: CHAINS[chain].serverId,
-            category: KEYRING_CATEGORY_MAP[account.type],
-            success: true,
-          });
+          const tx = approval.data?.params;
+          if (tx) {
+            const { nonce, from, chainId } = tx;
+            const explain = await wallet.getExplainCache({
+              nonce: Number(nonce),
+              address: from,
+              chainId: Number(chainId),
+            });
+            stats.report('signedTransaction', {
+              type: account.brandName,
+              chainId: CHAINS[chain].serverId,
+              category: KEYRING_CATEGORY_MAP[account.type],
+              success: true,
+              preExecSuccess: explain?.calcSuccess && explain?.pre_exec.success,
+            });
+          }
         }
         resolveApproval(data.data, !isSignTextRef.current);
       } else {
-        stats.report('signedTransaction', {
-          type: account.brandName,
-          chainId: CHAINS[chain].serverId,
-          category: KEYRING_CATEGORY_MAP[account.type],
-          success: false,
-        });
+        if (!isSignTextRef.current) {
+          const tx = approval.data?.params;
+          if (tx) {
+            const { nonce, from, chainId } = tx;
+            const explain = await wallet.getExplainCache({
+              nonce: Number(nonce),
+              address: from,
+              chainId: Number(chainId),
+            });
+            stats.report('signedTransaction', {
+              type: account.brandName,
+              chainId: CHAINS[chain].serverId,
+              category: KEYRING_CATEGORY_MAP[account.type],
+              success: false,
+              preExecSuccess: explain?.calcSuccess && explain?.pre_exec.success,
+            });
+          }
+        }
         rejectApproval(data.errorMsg);
       }
     });

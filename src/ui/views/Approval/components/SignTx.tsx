@@ -581,7 +581,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
   ]);
   const [isGnosisAccount, setIsGnosisAccount] = useState(false);
   const [gnosisDrawerVisible, setGnosisDrawerVisble] = useState(false);
-  const [, resolveApproval, rejectApproval] = useApproval();
+  const [getApproval, resolveApproval, rejectApproval] = useApproval();
   const wallet = useWallet();
   if (!chain) throw new Error('No support chain not found');
   const [support1559, setSupport1559] = useState(chain.eip['1559']);
@@ -794,11 +794,14 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     setTxDetail(res);
 
     setPreprocessSuccess(res.pre_exec.success);
+    const approval = await getApproval();
     wallet.addTxExplainCache({
       address,
       chainId,
       nonce: updateNonce ? recommendNonce : Number(tx.nonce),
       explain: res,
+      approvalId: approval.id,
+      calcSuccess: true,
     });
     return res;
   };
@@ -808,7 +811,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       isGnosis && account ? account : (await wallet.getCurrentAccount())!;
     try {
       setIsReady(false);
-      const res = await explainTx(currentAccount.address);
+      await explainTx(currentAccount.address);
       setIsReady(true);
       await checkTx(currentAccount.address);
     } catch (e: any) {
@@ -824,6 +827,8 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       type: KEYRING_TYPE.GnosisKeyring,
       category: KEYRING_CATEGORY_MAP[KEYRING_CLASS.GNOSIS],
       chainId: chain.serverId,
+      preExecSuccess:
+        checkErrors.length > 0 || !txDetail?.pre_exec.success ? false : true,
     });
     if (params.session.origin !== INTERNAL_REQUEST_ORIGIN || isSend) {
       const params: any = {
@@ -922,6 +927,8 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       type: currentAccount.brandName,
       chainId: chain.serverId,
       category: KEYRING_CATEGORY_MAP[currentAccount.type],
+      preExecSuccess:
+        checkErrors.length > 0 || !txDetail?.pre_exec.success ? false : true,
     });
 
     ReactGA.event({

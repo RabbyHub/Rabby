@@ -92,11 +92,21 @@ const LedgerHardwareWaiting = ({ params }: { params: ApprovalParams }) => {
       : approval?.data.approvalType !== 'SignTx';
     setIsSignText(isSignText);
     if (!isSignText) {
-      stats.report('signTransaction', {
-        type: account.brandName,
-        chainId: chain.serverId,
-        category: KEYRING_CATEGORY_MAP[account.type],
-      });
+      const tx = approval.data?.params;
+      if (tx) {
+        const { nonce, from, chainId } = tx;
+        const explain = await wallet.getExplainCache({
+          nonce: Number(nonce),
+          address: from,
+          chainId: Number(chainId),
+        });
+        stats.report('signTransaction', {
+          type: account.brandName,
+          chainId: chain.serverId,
+          category: KEYRING_CATEGORY_MAP[account.type],
+          preExecSuccess: explain?.calcSuccess && explain?.pre_exec.success,
+        });
+      }
     }
     eventBus.addEventListener(EVENTS.LEDGER.REJECT_APPROVAL, (data) => {
       rejectApproval(data, false, true);
