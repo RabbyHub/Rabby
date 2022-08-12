@@ -1,12 +1,9 @@
-import { browser } from 'webextension-polyfill-ts';
 import Events from 'events';
 import { ethErrors } from 'eth-rpc-errors';
 import { EthereumProviderError } from 'eth-rpc-errors/dist/classes';
 import { winMgr } from 'background/webapi';
-import { CHAINS, KEYRING_CATEGORY_MAP } from 'consts';
-import transactionHistoryService from './transactionHistory';
-import preferenceService from './preference';
-import stats from '@/stats';
+import { CHAINS, IS_LINUX, IS_CHROME } from 'consts';
+import { browser } from 'webextension-polyfill-ts';
 
 type IApprovalComponents = typeof import('@/ui/views/Approval/components');
 type IApprovalComponent = IApprovalComponents[keyof IApprovalComponents];
@@ -71,6 +68,11 @@ class NotificationService extends Events {
     });
 
     winMgr.event.on('windowFocusChange', (winId: number) => {
+      if (IS_CHROME && winId === chrome.windows.WINDOW_ID_NONE && IS_LINUX) {
+        // When sign on Linux, will focus on -1 first then focus on sign window
+        return;
+      }
+
       if (this.notifiWindowId && winId !== this.notifiWindowId) {
         if (
           this.currentApproval &&
@@ -156,20 +158,6 @@ class NotificationService extends Events {
   };
 
   requestApproval = async (data, winProps?): Promise<any> => {
-    const currentAccount = preferenceService.getCurrentAccount();
-    const reportExplain = (approvalId: number) => {
-      const explain = transactionHistoryService.getExplainCacheByApprovalId(
-        approvalId
-      );
-      if (explain && currentAccount) {
-        stats.report('preExecTransaction', {
-          type: currentAccount.brandName,
-          category: KEYRING_CATEGORY_MAP[currentAccount.type],
-          chainId: explain.native_token.chain,
-          success: explain.calcSuccess && explain.pre_exec.success,
-        });
-      }
-    };
     return new Promise((resolve, reject) => {
       const uuid = Date.now();
       const approval: Approval = {
@@ -177,18 +165,8 @@ class NotificationService extends Events {
         id: uuid,
         data,
         winProps,
-        resolve(data) {
-          if (this.data.approvalComponent === 'SignTx') {
-            reportExplain(this.id);
-          }
-          resolve(data);
-        },
-        reject(data) {
-          if (this.data.approvalComponent === 'SignTx') {
-            reportExplain(this.id);
-          }
-          reject(data);
-        },
+        resolve,
+        reject,
       };
 
       if (

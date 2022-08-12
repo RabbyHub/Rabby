@@ -107,16 +107,6 @@ export const CurrentConnection = memo(() => {
       )}
       <ChainSelector
         className={clsx(!site && 'disabled')}
-        title={
-          <div>
-            <div className="chain-selector-tips">
-              {site?.isConnected
-                ? 'Switch the chain connected to'
-                : 'Select a chain to connect for'}
-            </div>
-            <div className="chain-selector-site">{site?.origin}</div>
-          </div>
-        }
         value={site?.chain || CHAINS_ENUM.ETH}
         onChange={handleChangeDefaultChain}
         showModal={visible}
