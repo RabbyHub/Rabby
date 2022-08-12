@@ -339,14 +339,7 @@ const useExplainGas = ({
   nativeTokenPrice,
   tx,
   wallet,
-}: {
-  gasUsed: number;
-  gasPrice: number;
-  chainId: number;
-  nativeTokenPrice: number;
-  tx: Tx;
-  wallet: ReturnType<typeof useWallet>;
-}) => {
+}: Parameters<typeof explainGas>[0]) => {
   const [result, setResult] = useState({
     gasCostUsd: 0,
     gasCostAmount: 0,
@@ -480,6 +473,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
   ] = useState<ReactNode | null>();
   const [recommendGasLimit, setRecommendGasLimit] = useState<number>(0);
   const [recommendNonce, setRecommendNonce] = useState<number>(0);
+  const [updateId, setUpdateId] = useState(0);
   const [txDetail, setTxDetail] = useState<ExplainTxResponse | null>({
     pre_exec_version: 'v0',
     balance_change: {
@@ -1014,6 +1008,8 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       ...tx,
       ...obj,
     });
+    // trigger explain
+    setUpdateId((id) => id + 1);
   };
 
   const loadGasMarket = async (
@@ -1192,7 +1188,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
   useEffect(() => {
     if (!inited) return;
     explain();
-  }, [tx, inited]);
+  }, [inited, updateId]);
 
   useEffect(() => {
     (async () => {

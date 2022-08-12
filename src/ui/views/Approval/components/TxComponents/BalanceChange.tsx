@@ -395,7 +395,10 @@ const BalanceChange = ({
           <div className="token-balance-change-content-header">
             <span>{t('Est. balance change')}</span>
             {isShowTotalBalanceChange ? (
-              <span className="token-change-total">
+              <span
+                className="token-change-total"
+                title={String(data.usd_value_change)}
+              >
                 {isUSDValueChangePositive ? '+' : '-'} $
                 {splitNumberByStep(Math.abs(data.usd_value_change).toFixed(2))}
               </span>
@@ -412,10 +415,16 @@ const BalanceChange = ({
                       className="token-change-logo"
                       alt=""
                     />
-                    <span className="token-change-amount" title={token.symbol}>
+                    <span
+                      className="token-change-amount"
+                      title={`${token.amount} ${token.symbol}`}
+                    >
                       - {splitNumberByStep(token.amount)} {token.symbol}
                     </span>
-                    <span className="token-change-price">
+                    <span
+                      className="token-change-price"
+                      title={String(token.usd_value)}
+                    >
                       ${splitNumberByStep(token.usd_value!.toFixed(2))}
                     </span>
                   </div>
@@ -435,10 +444,16 @@ const BalanceChange = ({
                       className="token-change-logo"
                       alt=""
                     />
-                    <span className="token-change-amount" title={token.symbol}>
+                    <span
+                      className="token-change-amount"
+                      title={`${token.amount} ${token.symbol}`}
+                    >
                       + {splitNumberByStep(token.amount)} {token.symbol}
                     </span>
-                    <span className="token-change-price">
+                    <span
+                      className="token-change-price"
+                      title={String(token.usd_value)}
+                    >
                       ${splitNumberByStep(token.usd_value!.toFixed(2))}
                     </span>
                   </div>
