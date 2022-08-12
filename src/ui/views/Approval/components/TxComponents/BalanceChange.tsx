@@ -15,6 +15,7 @@ import useBalanceChange from '@/ui/hooks/useBalanceChange';
 import IconUnknown from 'ui/assets/token-default.svg';
 import IconMore from 'ui/assets/more.svg';
 import { ReactComponent as IconRcWarning } from 'ui/assets/icon-warning.svg';
+import BigNumber from 'bignumber.js';
 
 const NFTListCountLimit = 7;
 const NFCBalanceChangeWrapper = styled.div`
@@ -344,12 +345,15 @@ const BalanceChange = ({
     const sendTokenList = data.send_token_list;
     const isUSDValueChangePositive = data.usd_value_change > 0;
     const isUSDValueChangeNegative = data.usd_value_change < 0;
+
     const isShowTotalBalanceChange =
-      (data?.receive_token_list.length ||
-        0 + data?.send_token_list.length ||
-        0) > 1 &&
-      (data?.receive_nft_list.length || 0 + data?.send_nft_list.length || 0) <=
+      (data?.receive_token_list.length || 0) +
+        (data?.send_token_list.length || 0) >
+        1 &&
+      (data?.receive_nft_list.length || 0) +
+        (data?.send_nft_list.length || 0) <=
         0;
+
     return {
       receiveTokenList,
       sendTokenList,
@@ -419,7 +423,11 @@ const BalanceChange = ({
                       className="token-change-amount"
                       title={`${token.amount} ${token.symbol}`}
                     >
-                      - {splitNumberByStep(token.amount)} {token.symbol}
+                      -{' '}
+                      {splitNumberByStep(
+                        new BigNumber(token.amount).toFixed(9)
+                      )}{' '}
+                      {token.symbol}
                     </span>
                     <span
                       className="token-change-price"
@@ -448,7 +456,11 @@ const BalanceChange = ({
                       className="token-change-amount"
                       title={`${token.amount} ${token.symbol}`}
                     >
-                      + {splitNumberByStep(token.amount)} {token.symbol}
+                      +{' '}
+                      {splitNumberByStep(
+                        new BigNumber(token.amount).toFixed(9)
+                      )}{' '}
+                      {token.symbol}
                     </span>
                     <span
                       className="token-change-price"

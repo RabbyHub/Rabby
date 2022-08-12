@@ -132,6 +132,10 @@ const GasSelector = ({
           status: 'success',
           message: null,
         },
+        nonce: {
+          status: 'success',
+          message: null,
+        },
       });
     }
   };
