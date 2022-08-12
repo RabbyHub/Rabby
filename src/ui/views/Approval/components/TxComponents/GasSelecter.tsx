@@ -485,7 +485,7 @@ const GasSelector = ({
             )}
             <Form onFinish={handleConfirmGas}>
               <div className="gas-limit">
-                <p className="gas-limit-label flex">
+                <p className="gas-limit-label flex leading-[16px]">
                   <span className="flex-1">{t('GasLimit')}</span>
                 </p>
                 <div className="expanded gas-limit-panel-wrapper">
@@ -524,7 +524,9 @@ const GasSelector = ({
                     </p>
                   )}
                   <div className={clsx({ 'opacity-50': disableNonce })}>
-                    <p className="gas-limit-title mt-20">{t('Nonce')}</p>
+                    <p className="gas-limit-title mt-20 mb-0 leading-[16px]">
+                      {t('Nonce')}
+                    </p>
                     <Form.Item
                       className="gas-limit-panel mb-0"
                       required

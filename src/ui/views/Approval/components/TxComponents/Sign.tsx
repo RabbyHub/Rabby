@@ -57,7 +57,7 @@ const Sign = ({ data, chainEnum, raw, isSpeedUp, tx }: SignProps) => {
                 className="w-[40px] h-[40px] rounded-full"
               />
             )}
-            {!detail.contract_protocol_logo_url && isUnknown ? (
+            {!detail.contract_protocol_logo_url ? (
               <IconUnknownProtocol
                 className="w-[40px] h-[40px]"
                 viewBox="0 0 36 36"
