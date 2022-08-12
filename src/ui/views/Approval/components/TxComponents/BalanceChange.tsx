@@ -133,6 +133,10 @@ const NFCBalanceChangeWrapper = styled.div`
     line-height: 16px;
   }
 
+  .nft-avatar {
+    background-color: rgb(204, 204, 204);
+  }
+
   .nft-bc-section + .nft-bc-section {
     margin-top: 20px;
   }

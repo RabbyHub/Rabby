@@ -35,6 +35,7 @@ interface GasSelectorProps {
   onMaxPriorityFeeChange(fee: number): void;
   isReady: boolean;
   recommendGasLimit: number;
+  recommendNonce: number;
   nonce: string;
   disableNonce: boolean;
   noUpdate: boolean;
@@ -82,6 +83,7 @@ const GasSelector = ({
   onMaxPriorityFeeChange,
   isReady,
   recommendGasLimit,
+  recommendNonce,
   nonce,
   disableNonce,
   gasList,
@@ -150,12 +152,14 @@ const GasSelector = ({
           message: t('GasLimitMinimumValueAlert'),
         },
       });
-    } else if (Number(customNonce) < Number(nonce) && !disableNonce) {
+    } else if (Number(customNonce) < Number(recommendNonce) && !disableNonce) {
       setValidateStatus({
         ...validateStatus,
         nonce: {
           status: 'error',
-          message: `Nonce is too low, the minimum should be ${Number(nonce)}`,
+          message: `Nonce is too low, the minimum should be ${Number(
+            recommendNonce
+          )}`,
         },
       });
     } else {

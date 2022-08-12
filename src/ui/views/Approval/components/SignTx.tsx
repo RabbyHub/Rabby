@@ -1275,6 +1275,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
                 });
               }}
               recommendGasLimit={recommendGasLimit}
+              recommendNonce={recommendNonce}
               chainId={chainId}
               onChange={handleGasChange}
               onMaxPriorityFeeChange={handleMaxPriorityFeeChange}
