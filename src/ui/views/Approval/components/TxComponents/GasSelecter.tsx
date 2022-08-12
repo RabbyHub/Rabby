@@ -452,7 +452,23 @@ const GasSelector = ({
                 <p className="priority-slider-header">
                   Max Priority Fee: <span>{maxPriorityFee} Gwei</span>
                   <Tooltip
-                    title="This chain supports EIP 1559. Setting the Max Priority Fee properly can save gas costs."
+                    title={
+                      <ol className="list-decimal list-outside pl-[12px] mb-0">
+                        <li>
+                          On chains that support EIP-1559, the Priority Fee is
+                          the tip for miners to process your transaction. You
+                          can save your final gas cost by lowering the Priority
+                          Fee, which may cost more time for the transaction to
+                          be processed.
+                        </li>
+                        <li>
+                          Here in Rabby, Priority Fee (Tip) = Max Priority Fee -
+                          Base Fee. After you set up the Max Priority Fee, the
+                          Base Fee will be deducted from it and the rest will be
+                          tipped to miners.
+                        </li>
+                      </ol>
+                    }
                     overlayClassName="rectangle"
                   >
                     <img src={IconInfo} className="icon icon-info" />
@@ -472,8 +488,9 @@ const GasSelector = ({
                   </p>
                 </div>
                 <div className="priority-slider-footer">
-                  Recommend the highest priority fee to speed up your
-                  transaction
+                  {maxPriorityFee < (selectedGas?.price || 0) / 1e9
+                    ? 'A low priority fee may affect the transaction speed'
+                    : 'Recommend the highest priority fee to speed up your transaction'}
                 </div>
               </div>
             )}
