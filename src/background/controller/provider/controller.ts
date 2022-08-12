@@ -398,7 +398,7 @@ class ProviderController extends BaseController {
         v: addHexPrefix(signedTx.v),
       });
 
-      // Report address type(not sensitive information) to sentry when tx signatuure is invalid
+      // Report address type(not sensitive information) to sentry when tx signature is invalid
       if (!buildTx.verifySignature()) {
         if (!buildTx.v) {
           Sentry.captureException(new Error(`v missed, ${keyring.type}`));

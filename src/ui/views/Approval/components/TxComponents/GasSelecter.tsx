@@ -15,6 +15,7 @@ import { formatTokenAmount } from 'ui/utils/number';
 export interface GasSelectorResponse extends GasLevel {
   gasLimit: number;
   nonce: number;
+  maxPriorityFee: number;
 }
 
 interface GasSelectorProps {
@@ -32,7 +33,6 @@ interface GasSelectorProps {
   chainId: number;
   tx: Tx;
   onChange(gas: GasSelectorResponse): void;
-  onMaxPriorityFeeChange(fee: number): void;
   isReady: boolean;
   recommendGasLimit: number;
   recommendNonce: number;
@@ -80,7 +80,6 @@ const GasSelector = ({
   chainId,
   tx,
   onChange,
-  onMaxPriorityFeeChange,
   isReady,
   recommendGasLimit,
   recommendNonce,
@@ -186,10 +185,6 @@ const GasSelector = ({
     },
   });
 
-  const handleShowSelectModal = () => {
-    setModalVisible(true);
-  };
-
   const handleConfirmGas = () => {
     if (!selectedGas) return;
     if (selectedGas.level === 'custom') {
@@ -199,6 +194,7 @@ const GasSelector = ({
         gasLimit: Number(afterGasLimit),
         nonce: Number(customNonce),
         level: selectedGas.level,
+        maxPriorityFee: maxPriorityFee * 1e9,
       });
     } else {
       onChange({
@@ -206,6 +202,7 @@ const GasSelector = ({
         gasLimit: Number(afterGasLimit),
         nonce: Number(customNonce),
         level: selectedGas.level,
+        maxPriorityFee: maxPriorityFee * 1e9,
       });
     }
   };
@@ -303,10 +300,15 @@ const GasSelector = ({
   }, [afterGasLimit, selectedGas, gasList, customNonce]);
 
   useEffect(() => {
+    if (!rawSelectedGas) return;
+    setSelectedGas(rawSelectedGas);
+    if (rawSelectedGas?.level !== 'custom') return;
+    setCustomGas(rawSelectedGas.price / 1e9);
+  }, [rawSelectedGas]);
+
+  useEffect(() => {
     if (!selectedGas) return;
     setMaxPriorityFee(selectedGas.price / 1e9);
-    // if (selectedGas?.level !== 'custom') return;
-    // setCustomGas(selectedGas.price / 1e9);
   }, [selectedGas]);
 
   useEffect(() => {
@@ -318,10 +320,6 @@ const GasSelector = ({
       setIsFirstTimeLoad(false);
     }
   }, [isReady]);
-
-  useEffect(() => {
-    onMaxPriorityFeeChange(maxPriorityFee * 1e9);
-  }, [maxPriorityFee]);
 
   useEffect(() => {
     if (!is1559) return;

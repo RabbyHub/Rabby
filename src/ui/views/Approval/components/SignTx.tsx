@@ -896,7 +896,8 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     };
     if (support1559) {
       transaction.maxFeePerGas = tx.maxFeePerGas;
-      transaction.maxPriorityFeePerGas = intToHex(maxPriorityFee);
+      transaction.maxPriorityFeePerGas =
+        maxPriorityFee <= 0 ? tx.maxFeePerGas : intToHex(maxPriorityFee);
     } else {
       (transaction as Tx).gasPrice = tx.gasPrice;
     }
@@ -970,6 +971,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
         gas: intToHex(gas.gasLimit),
         nonce: afterNonce,
       });
+      setMaxPriorityFee(gas.maxPriorityFee);
     } else {
       setTx({
         ...tx,
@@ -991,10 +993,6 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     if (beforeNonce !== afterNonce) {
       setNonceChanged(true);
     }
-  };
-
-  const handleMaxPriorityFeeChange = (fee: number) => {
-    setMaxPriorityFee(fee);
   };
 
   const handleCancel = () => {
@@ -1278,7 +1276,6 @@ const SignTx = ({ params, origin }: SignTxProps) => {
               recommendNonce={recommendNonce}
               chainId={chainId}
               onChange={handleGasChange}
-              onMaxPriorityFeeChange={handleMaxPriorityFeeChange}
               nonce={realNonce || tx.nonce}
               disableNonce={isSpeedUp || isCancel}
               is1559={support1559}
