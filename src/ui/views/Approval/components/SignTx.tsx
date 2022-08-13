@@ -777,7 +777,13 @@ const SignTx = ({ params, origin }: SignTxProps) => {
         .filter((item) => item.nonce < recommendNonce)
         .reduce((result, item) => {
           return result.concat(item.txs.map((tx) => tx.rawTx));
-        }, [] as Tx[]),
+        }, [] as Tx[])
+        .map((tx) => {
+          return {
+            ...tx,
+            value: !tx.value || tx.value === '0x' ? '0x0' : tx.value,
+          };
+        }),
     });
     const gas = await getRecommendGas({
       gas: res.gas.gas_used,
