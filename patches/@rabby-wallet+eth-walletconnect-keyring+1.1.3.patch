@@ -1,0 +1,17 @@
+diff --git a/node_modules/@rabby-wallet/eth-walletconnect-keyring/dist/index.js b/node_modules/@rabby-wallet/eth-walletconnect-keyring/dist/index.js
+index 73841dd..bdbf985 100644
+--- a/node_modules/@rabby-wallet/eth-walletconnect-keyring/dist/index.js
++++ b/node_modules/@rabby-wallet/eth-walletconnect-keyring/dist/index.js
+@@ -116,6 +116,12 @@ class WalletConnectKeyring extends events_1.EventEmitter {
+             connector.on("disconnect", (error, payload) => {
+                 this.onDisconnect && this.onDisconnect(error, payload);
+             });
++            connector.on("transport_error", (error, payload) => {
++                this.emit('transport_error', payload);
++                // address is not necessary to close connection
++                this.closeConnector(connector, '0x', brandName);
++            });
++
+             yield connector.createSession();
+             return connector;
+         });

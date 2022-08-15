@@ -63,6 +63,7 @@ import stats from '@/stats';
 import { generateAliasName } from '@/utils/account';
 import { intToHex } from 'ethereumjs-util';
 import buildUnserializedTransaction from '@/utils/optimism/buildUnserializedTransaction';
+import * as Sentry from '@sentry/browser';
 
 const stashKeyrings: Record<string | number, any> = {};
 
@@ -887,6 +888,11 @@ export class WalletController extends BaseController {
           params: { uri },
         });
       });
+
+      keyring.on('transport_error', (data) => {
+        Sentry.captureException(new Error('Transport error: ' + data));
+      });
+
       keyring.on('statusChange', (data) => {
         eventBus.emit(EVENTS.broadcastToUI, {
           method: EVENTS.WALLETCONNECT.STATUS_CHANGED,

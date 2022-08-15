@@ -16,16 +16,7 @@ import type { WalletControllerType } from 'ui/utils/WalletContext';
 import store from './store';
 
 import '../i18n';
-
-let environment = 'production';
-
-if (process.env.DEBUG) {
-  environment = 'debug';
-}
-
-if (process.env.NODE_ENV === 'development') {
-  environment = 'development';
-}
+import { getSentryEnv } from '@/utils/env';
 
 Sentry.init({
   dsn:
@@ -37,7 +28,7 @@ Sentry.init({
   // of transactions for performance monitoring.
   // We recommend adjusting this value in production
   tracesSampleRate: 1.0,
-  environment,
+  environment: getSentryEnv(),
   ignoreErrors: [
     'ResizeObserver loop limit exceeded',
     'ResizeObserver loop completed with undelivered notifications',
