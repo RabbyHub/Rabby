@@ -1,3 +1,4 @@
+import { SvgIconPlusPrimary } from '@/ui/assets';
 import { useInfiniteScroll } from 'ahooks';
 import { Button, message, Tooltip } from 'antd';
 import { TokenItem, TxHistoryResult } from 'background/service/openapi';
@@ -23,6 +24,8 @@ const PAGE_COUNT = 10;
 const ellipsis = (text: string) => {
   return text.replace(/^(.{6})(.*)(.{4})$/, '$1...$3');
 };
+
+const isNotSupportedToken = false;
 
 interface TokenDetailProps {
   onClose?(): void;
@@ -149,9 +152,15 @@ const TokenDetail = ({
     );
   }, [history, token]);
 
+  const goToSwap = useCallback(() => {
+    history.push(
+      `/swap?rbisource=tokendetail&chain=${token?.chain}&payTokenId=${token?.id}`
+    );
+  }, [history, token]);
+
   return (
     <div className="token-detail" ref={ref}>
-      <div className="token-detail-header">
+      <div className="token-detail-header border-b-0">
         <div className="flex items-center mb-20">
           <div className="flex items-center mr-8">
             <TokenWithChain
@@ -206,12 +215,12 @@ const TokenDetail = ({
         {variant === 'add' && (
           <>
             {token.is_core ? (
-              <div className="alert">
+              <div className="alert mb-[24px]">
                 This token is supported by default. It will show up in your
                 wallet as long as balance &gt; 0.
               </div>
             ) : (
-              <div className="alert alert-primary">
+              <div className="alert alert-primary mb-[24px]">
                 This token is not verified. Please do your <br />
                 own research before you add it.
                 {token.amount > 0 ? (
@@ -238,7 +247,46 @@ const TokenDetail = ({
             )}
           </>
         )}
+
+        <div className="flex flex-row justify-between">
+          <Tooltip
+            overlayClassName="rectangle token_swap__tooltip"
+            placement="topLeft"
+            title={'This token is not supported for swap'}
+            visible={token.is_core ? false : undefined}
+          >
+            <Button
+              type="primary"
+              size="large"
+              className="w-[114px]"
+              onClick={goToSwap}
+              disabled={!token.is_core}
+            >
+              Swap
+            </Button>
+          </Tooltip>
+
+          <Button
+            type="primary"
+            ghost
+            size="large"
+            className="w-[114px] rabby-btn-ghost"
+            onClick={goToSend}
+          >
+            {t('Send')}
+          </Button>
+          <Button
+            type="primary"
+            ghost
+            size="large"
+            className="w-[114px] rabby-btn-ghost"
+            onClick={goToReceive}
+          >
+            {t('Receive')}
+          </Button>
+        </div>
       </div>
+
       <div className="token-detail-body token-txs-history">
         {data?.list.map((item) => (
           <HistoryItem
@@ -258,25 +306,6 @@ const TokenDetail = ({
             </p>
           </div>
         )}
-      </div>
-      <div className="token-detail-footer">
-        <Button
-          type="primary"
-          size="large"
-          className="w-[172px]"
-          onClick={goToSend}
-        >
-          {t('Send')}
-        </Button>
-        <Button
-          type="primary"
-          ghost
-          size="large"
-          className="w-[172px] rabby-btn-ghost"
-          onClick={goToReceive}
-        >
-          {t('Receive')}
-        </Button>
       </div>
     </div>
   );

@@ -3,6 +3,7 @@ import Wallet, { thirdparty } from 'ethereumjs-wallet';
 import { ethErrors } from 'eth-rpc-errors';
 import * as bip39 from 'bip39';
 import { ethers, Contract } from 'ethers';
+import type { BigNumber as BN } from 'ethers';
 import { groupBy } from 'lodash';
 import abiCoder, { AbiCoder } from 'web3-eth-abi';
 import * as optimismContracts from '@eth-optimism/contracts';
@@ -36,8 +37,9 @@ import {
   WALLET_BRAND_CONTENT,
   CHAINS_ENUM,
   KEYRING_TYPE,
+  RABBY_SWAP_ROUTER,
 } from 'consts';
-import { ERC1155ABI, ERC721ABI } from 'consts/abi';
+import { ERC1155ABI, ERC20ABI, ERC721ABI, RABBY_SWAP_ABI } from 'consts/abi';
 import { Account, IHighlightedAddress } from '../service/preference';
 import { ConnectedSite } from '../service/permission';
 import { ExplainTxResponse, TokenItem } from '../service/openapi';
@@ -63,6 +65,7 @@ import stats from '@/stats';
 import { generateAliasName } from '@/utils/account';
 import { intToHex } from 'ethereumjs-util';
 import buildUnserializedTransaction from '@/utils/optimism/buildUnserializedTransaction';
+import BigNumber from 'bignumber.js';
 import * as Sentry from '@sentry/browser';
 
 const stashKeyrings: Record<string | number, any> = {};
@@ -106,6 +109,128 @@ export class WalletController extends BaseController {
   rejectApproval = (err?: string, stay = false, isInternal = false) => {
     return notificationService.rejectApproval(err, stay, isInternal);
   };
+
+  async getERC20Allowance(chainServerId, contractAddress: string): Promise<BN> {
+    const account = await preferenceService.getCurrentAccount();
+    if (!account) throw new Error('no current account');
+    const chainId = Object.values(CHAINS)
+      .find((chain) => chain.serverId === chainServerId)
+      ?.id.toString();
+    if (!chainId) throw new Error('invalid chain id');
+
+    buildinProvider.currentProvider.currentAccount = account.address;
+    buildinProvider.currentProvider.currentAccountType = account.type;
+    buildinProvider.currentProvider.currentAccountBrand = account.brandName;
+    buildinProvider.currentProvider.chainId = chainId;
+
+    const provider = new ethers.providers.Web3Provider(
+      buildinProvider.currentProvider
+    );
+
+    const contract = new Contract(contractAddress, ERC20ABI, provider);
+    return await contract.allowance(account.address, RABBY_SWAP_ROUTER);
+  }
+
+  async rabbyContract(chain_server_id: string) {
+    const account = await preferenceService.getCurrentAccount();
+    if (!account) throw new Error('no current account');
+    const chainId = Object.values(CHAINS)
+      .find((chain) => chain.serverId === chain_server_id)
+      ?.id.toString();
+    if (!chainId) throw new Error('invalid chain id');
+
+    buildinProvider.currentProvider.currentAccount = account.address;
+    buildinProvider.currentProvider.currentAccountType = account.type;
+    buildinProvider.currentProvider.currentAccountBrand = account.brandName;
+    buildinProvider.currentProvider.chainId = chainId;
+
+    const provider = new ethers.providers.Web3Provider(
+      buildinProvider.currentProvider
+    );
+
+    const contract = new Contract(RABBY_SWAP_ROUTER, RABBY_SWAP_ABI, provider);
+    return contract;
+  }
+
+  async rabbySwap({
+    chain_server_id,
+    pay_token_id,
+    pay_token_raw_amount,
+    receive_token_id,
+    slippage,
+    receive_token_raw_amount,
+    dex_swap_to,
+    dex_approve_to,
+    dex_swap_calldata,
+    deadline,
+  }: {
+    chain_server_id: string;
+    pay_token_id: string;
+    pay_token_raw_amount: string;
+    receive_token_id: string;
+    slippage: string;
+    receive_token_raw_amount: number;
+    dex_swap_to: string;
+    dex_approve_to: string;
+    dex_swap_calldata: string;
+    deadline: string;
+  }) {
+    const contract = await this.rabbyContract(chain_server_id);
+    return await contract.swap(
+      pay_token_id,
+      pay_token_raw_amount,
+      receive_token_id,
+      new BigNumber(receive_token_raw_amount)
+        .times(1 - Number(slippage) / 100)
+        .toString(),
+      dex_swap_to,
+      dex_approve_to,
+      dex_swap_calldata,
+      deadline
+    );
+  }
+
+  async rabbySwapWithPermit({
+    chain_server_id,
+    pay_token_id,
+    pay_token_raw_amount,
+    receive_token_id,
+    slippage,
+    receive_token_raw_amount,
+    dex_swap_to,
+    dex_approve_to,
+    dex_swap_calldata,
+    deadline,
+    permit,
+  }: {
+    chain_server_id: string;
+    pay_token_id: string;
+    pay_token_raw_amount: string;
+    receive_token_id: string;
+    slippage: string;
+    receive_token_raw_amount: number;
+    dex_swap_to: string;
+    dex_approve_to: string;
+    dex_swap_calldata: string;
+    deadline: string;
+    permit: string;
+  }) {
+    const contract = await this.rabbyContract(chain_server_id);
+
+    return await contract.swap(
+      pay_token_id,
+      pay_token_raw_amount,
+      receive_token_id,
+      new BigNumber(receive_token_raw_amount)
+        .times(1 - Number(slippage) / 100)
+        .toString(),
+      dex_swap_to,
+      dex_approve_to,
+      dex_swap_calldata,
+      deadline,
+      permit
+    );
+  }
 
   approveToken = async (
     chainServerId: string,
