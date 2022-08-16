@@ -44,7 +44,6 @@ const Approval = () => {
   if (!approval) return <></>;
   const { data } = approval;
   const { approvalComponent, params, origin, requestDefer } = data;
-  console.log('approvalComponent', approvalComponent);
   const CurrentApprovalComponent = ApprovalComponent[approvalComponent];
 
   return (
