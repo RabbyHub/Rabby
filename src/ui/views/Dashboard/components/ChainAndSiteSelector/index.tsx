@@ -14,6 +14,7 @@ import IconEth from 'ui/assets/dashboard/eth.png';
 import IconGas from 'ui/assets/dashboard/gas.svg';
 import IconQuene from 'ui/assets/dashboard/quene.svg';
 import IconSecurity from 'ui/assets/dashboard/security.svg';
+import IconSwap from 'ui/assets/dashboard/swap.svg';
 import IconSendToken from 'ui/assets/dashboard/sendtoken.png';
 import IconSetting from 'ui/assets/dashboard/setting.png';
 import IconActivities from 'ui/assets/dashboard/activities.svg';
@@ -197,6 +198,11 @@ export default ({
   };
 
   const panelItems = {
+    swap: {
+      icon: IconSwap,
+      content: 'Swap',
+      onClick: () => history.push('/swap?rbisource=dashboard'),
+    },
     send: {
       icon: IconSendToken,
       content: 'Send',
@@ -266,24 +272,26 @@ export default ({
 
   if (isGnosis) {
     pickedPanelKeys = [
+      'swap',
       'send',
       'receive',
       'queue',
       'transactions',
       'dapps',
-      'contacts',
+      // 'contacts',
       'security',
       'widget',
       'settings',
     ];
   } else {
     pickedPanelKeys = [
+      'swap',
       'send',
       'receive',
       'activities',
       'transactions',
       'dapps',
-      'contacts',
+      // 'contacts',
       'widget',
       'security',
       'settings',

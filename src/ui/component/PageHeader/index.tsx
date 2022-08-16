@@ -1,3 +1,4 @@
+import clsx from 'clsx';
 import React, { ReactNode } from 'react';
 import { useHistory } from 'react-router-dom';
 import IconBack from 'ui/assets/back.svg';
@@ -10,6 +11,7 @@ const PageHeader = ({
   onBack,
   forceShowBack,
   fixed = false,
+  invertBack = false,
 }: {
   children: ReactNode;
   canBack?: boolean;
@@ -17,6 +19,7 @@ const PageHeader = ({
   onBack?(): void;
   forceShowBack?: boolean;
   fixed?: boolean;
+  invertBack?: boolean;
 }) => {
   const history = useHistory();
 
@@ -25,7 +28,7 @@ const PageHeader = ({
       {(forceShowBack || (canBack && history.length > 1)) && (
         <img
           src={IconBack}
-          className="icon icon-back"
+          className={clsx('icon icon-back', invertBack && 'filter invert')}
           onClick={onBack || (() => history.goBack())}
         />
       )}
