@@ -150,7 +150,6 @@ export const SwapQuotes = () => {
   );
 
   const shouldRequestApprove = async () => {
-    console.log('enter shouldRequsetApprove');
     if (pay_token_id === CHAINS[chain_enum].nativeTokenAddress) {
       return false;
     }
