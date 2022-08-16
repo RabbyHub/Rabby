@@ -19,6 +19,7 @@ export const SwapQuotes = () => {
   const { search } = useLocation();
 
   const [searchObj] = useState(query2obj(search));
+  const [shouldApprove, setShouldApprove] = useState(false);
 
   const {
     chain_enum,
@@ -153,33 +154,11 @@ export const SwapQuotes = () => {
     if (pay_token_id === CHAINS[chain_enum].nativeTokenAddress) {
       return false;
     }
-    const r = await wallet.getERC20Allowance(
+    const allowance = await wallet.getERC20Allowance(
       CHAINS[chain_enum].serverId,
       pay_token_id
     );
-    return r.lt(pay_token_raw_amount);
-  };
-
-  const querySwap = async () => {
-    const {
-      receive_token_raw_amount,
-      dex_swap_to,
-      dex_approve_to,
-      dex_swap_calldata,
-    } = swapQuotes[currentQuoteIndex];
-    wallet.rabbySwap({
-      chain_server_id: CHAINS[chain_enum].serverId,
-      pay_token_id,
-      pay_token_raw_amount,
-      receive_token_id,
-      slippage,
-      receive_token_raw_amount,
-      dex_swap_to,
-      dex_approve_to,
-      dex_swap_calldata,
-      //TODO: deadline
-      deadline: '',
-    });
+    setShouldApprove(new BigNumber(allowance).lt(pay_token_raw_amount));
   };
 
   const querySwapWithPermit = async () => {
@@ -205,8 +184,41 @@ export const SwapQuotes = () => {
     });
   };
 
-  const handleSwap = () => {
-    throw new Error('Function not implemented.');
+  const handleSwap = async () => {
+    const {
+      receive_token_raw_amount,
+      dex_swap_to,
+      dex_approve_to,
+      dex_swap_calldata,
+    } = swapQuotes[currentQuoteIndex];
+    console.log({
+      chain_server_id: CHAINS[chain_enum].serverId,
+      pay_token_id,
+      pay_token_raw_amount,
+      receive_token_id,
+      slippage,
+      receive_token_raw_amount,
+      dex_swap_to,
+      dex_approve_to,
+      dex_swap_calldata,
+      //TODO: deadline
+      deadline: Math.floor(Date.now() / 1000) + 3600 * 30,
+      needApprove: shouldApprove,
+    });
+    await wallet.rabbySwap({
+      chain_server_id: CHAINS[chain_enum].serverId,
+      pay_token_id,
+      pay_token_raw_amount,
+      receive_token_id,
+      slippage,
+      receive_token_raw_amount,
+      dex_swap_to,
+      dex_approve_to,
+      dex_swap_calldata,
+      //TODO: deadline
+      deadline: Math.floor(Date.now() / 1000) + 3600 * 30,
+      needApprove: shouldApprove,
+    });
   };
 
   useEffect(() => {
