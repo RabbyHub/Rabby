@@ -9,10 +9,11 @@ import QuoteLoading from './components/QuoteLoading';
 import SwapConfirm from './components/SwapConfirm';
 import { obj2query, query2obj } from '@/ui/utils/url';
 import { CHAINS, CHAINS_ENUM } from '@debank/common';
+import { RABBY_SWAP_ROUTER } from '@/constant';
+import { message } from 'antd';
 
 export const SwapQuotes = () => {
   const { t } = useTranslation();
-  // const wallet = useWalletOld();
   const wallet = useWallet();
 
   const history = useHistory();
@@ -53,7 +54,7 @@ export const SwapQuotes = () => {
   const getQuotes = async () => {
     try {
       const DEXList = await wallet.openapi.getDEXList(chain_id);
-      setDexList(DEXList);
+      setDexList(DEXList || []);
       const swapQuotes = await Promise.allSettled(
         DEXList.map(
           async (e) =>
@@ -135,9 +136,7 @@ export const SwapQuotes = () => {
   }, [swapQuotes, currentQuoteIndex]);
 
   const handleCancel = () => {
-    history.replace(
-      `/swap?${obj2query({ ...searchObj, fetchQuoteError: t('FailGetQuote') })}`
-    );
+    history.replace(`/swap?${obj2query(searchObj)}`);
   };
 
   const handleSelect = (i) => {
@@ -145,80 +144,46 @@ export const SwapQuotes = () => {
     setQuotesDrawer(false);
   };
 
-  const isWrapped = useMemo(
-    () => swapQuotes?.[currentQuoteIndex]?.is_wrapped || false,
-    [swapQuotes?.[currentQuoteIndex]?.is_wrapped]
-  );
-
   const shouldRequestApprove = async () => {
     if (pay_token_id === CHAINS[chain_enum].nativeTokenAddress) {
       return false;
     }
     const allowance = await wallet.getERC20Allowance(
       CHAINS[chain_enum].serverId,
-      pay_token_id
+      pay_token_id,
+      RABBY_SWAP_ROUTER
     );
     setShouldApprove(new BigNumber(allowance).lt(pay_token_raw_amount));
   };
 
-  const querySwapWithPermit = async () => {
+  const handleSwap = () => {
     const {
       receive_token_raw_amount,
       dex_swap_to,
       dex_approve_to,
       dex_swap_calldata,
+      is_wrapped,
     } = swapQuotes[currentQuoteIndex];
-    wallet.rabbySwapWithPermit({
-      chain_server_id: CHAINS[chain_enum].serverId,
-      pay_token_id,
-      pay_token_raw_amount,
-      receive_token_id,
-      slippage,
-      receive_token_raw_amount,
-      dex_swap_to,
-      dex_approve_to,
-      dex_swap_calldata,
-      //TODO: deadline  permit
-      deadline: '',
-      permit: '',
-    });
-  };
-
-  const handleSwap = async () => {
-    const {
-      receive_token_raw_amount,
-      dex_swap_to,
-      dex_approve_to,
-      dex_swap_calldata,
-    } = swapQuotes[currentQuoteIndex];
-    console.log({
-      chain_server_id: CHAINS[chain_enum].serverId,
-      pay_token_id,
-      pay_token_raw_amount,
-      receive_token_id,
-      slippage,
-      receive_token_raw_amount,
-      dex_swap_to,
-      dex_approve_to,
-      dex_swap_calldata,
-      //TODO: deadline
-      deadline: Math.floor(Date.now() / 1000) + 3600 * 30,
-      needApprove: shouldApprove,
-    });
-    await wallet.rabbySwap({
-      chain_server_id: CHAINS[chain_enum].serverId,
-      pay_token_id,
-      pay_token_raw_amount,
-      receive_token_id,
-      slippage,
-      receive_token_raw_amount,
-      dex_swap_to,
-      dex_approve_to,
-      dex_swap_calldata,
-      //TODO: deadline
-      deadline: Math.floor(Date.now() / 1000) + 3600 * 30,
-      needApprove: shouldApprove,
-    });
+    try {
+      wallet.rabbySwap({
+        chain_server_id: CHAINS[chain_enum].serverId,
+        pay_token_id,
+        pay_token_raw_amount,
+        receive_token_id,
+        slippage,
+        receive_token_raw_amount,
+        dex_swap_to,
+        dex_approve_to,
+        dex_swap_calldata,
+        deadline: Math.floor(Date.now() / 1000) + 3600 * 30,
+        needApprove: shouldApprove,
+        is_wrapped,
+      });
+      window.close();
+    } catch (e) {
+      message.error(e.message);
+      console.error(e);
+    }
   };
 
   useEffect(() => {
