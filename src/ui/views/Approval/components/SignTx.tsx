@@ -65,6 +65,7 @@ import SendNFT from './TxComponents/sendNFT';
 import Sign from './TxComponents/Sign';
 import PreCheckCard from './PreCheckCard';
 import SecurityCheckCard from './SecurityCheckCard';
+import ProcessTooltip from './ProcessTooltip';
 
 const normalizeHex = (value: string | number) => {
   if (typeof value === 'number') {
@@ -1038,11 +1039,10 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     if (currentAccount.type === KEYRING_TYPE.WatchAddressKeyring) {
       setCanProcess(false);
       setCantProcessReason(
-        <div className="flex items-center gap-8">
-          <img src={IconWatch} alt="" className="w-[24px]" />
+        <div className="flex items-center gap-6">
+          <img src={IconWatch} alt="" className="w-[24px] flex-shrink-0" />
           <div>
-            The current address is in Watch Mode. If your want to continue,
-            please{' '}
+            Unable to sign because the current address is in Watch Mode. You can{' '}
             <a
               href=""
               className="underline"
@@ -1054,7 +1054,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
             >
               import it
             </a>{' '}
-            again using another mode.
+            fully or use another address.
           </div>
         </div>
       );
@@ -1065,8 +1065,8 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       if ((chainId || CHAINS[site!.chain].id) !== Number(networkId)) {
         setCanProcess(false);
         setCantProcessReason(
-          <div className="flex items-center gap-8">
-            <img src={IconGnosis} alt="" className="w-[24px]" />
+          <div className="flex items-center gap-6">
+            <img src={IconGnosis} alt="" className="w-[24px] flex-shrink-0" />
             {t('multiSignChainNotMatch')}
           </div>
         );
@@ -1295,17 +1295,22 @@ const SignTx = ({ params, origin }: SignTxProps) => {
               data={securityCheckDetail}
             ></SecurityCheckCard>
 
-            <footer className="connect-footer">
+            <footer className="connect-footer pb-[20px]">
               {txDetail && (
                 <>
                   {isLedger && !useLedgerLive && !hasConnectedLedgerHID && (
                     <LedgerWebHIDAlert connected={hasConnectedLedgerHID} />
                   )}
-                  <SecurityCheck
-                    status={securityCheckStatus}
-                    value={forceProcess}
-                    onChange={handleForceProcessChange}
-                  />
+                  {canProcess ? (
+                    <SecurityCheck
+                      status={securityCheckStatus}
+                      value={forceProcess}
+                      onChange={handleForceProcessChange}
+                    />
+                  ) : (
+                    <ProcessTooltip>{cantProcessReason}</ProcessTooltip>
+                  )}
+
                   <div className="action-buttons flex justify-between relative">
                     <Button
                       type="primary"
@@ -1316,33 +1321,15 @@ const SignTx = ({ params, origin }: SignTxProps) => {
                       {t('Cancel')}
                     </Button>
                     {!canProcess ? (
-                      <Tooltip
-                        overlayClassName={clsx(
-                          'rectangle watcSign__tooltip',
-                          `watcSign__tooltip-${submitText}`
-                        )}
-                        title={cantProcessReason}
-                        placement="topRight"
+                      <Button
+                        type="primary"
+                        size="large"
+                        className="w-[172px]"
+                        onClick={() => handleAllow()}
+                        disabled={true}
                       >
-                        <div className="w-[172px] relative flex items-center">
-                          <Button
-                            type="primary"
-                            size="large"
-                            className="w-[172px]"
-                            onClick={() => handleAllow()}
-                            disabled={true}
-                          >
-                            {t(submitText)}
-                          </Button>
-                          <img
-                            src={IconInfo}
-                            className={clsx(
-                              'absolute right-[40px]',
-                              `icon-submit-${submitText}`
-                            )}
-                          />
-                        </div>
-                      </Tooltip>
+                        {t(submitText)}
+                      </Button>
                     ) : (
                       <Button
                         type="primary"

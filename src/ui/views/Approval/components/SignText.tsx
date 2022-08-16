@@ -236,11 +236,10 @@ const SignText = ({ params }: { params: SignTextProps }) => {
     if (accountType === KEYRING_TYPE.WatchAddressKeyring) {
       setIsWatch(true);
       setCantProcessReason(
-        <div className="flex items-center gap-8">
-          <img src={IconWatch} alt="" className="w-[24px]" />
+        <div className="flex items-center gap-6">
+          <img src={IconWatch} alt="" className="w-[24px] flex-shrink-0" />
           <div>
-            The current address is in Watch Mode. If your want to continue,
-            please{' '}
+            Unable to sign because the current address is in Watch Mode. You can{' '}
             <a
               href=""
               className="underline"
@@ -252,7 +251,7 @@ const SignText = ({ params }: { params: SignTextProps }) => {
             >
               import it
             </a>{' '}
-            again using another mode.
+            fully or use another address.
           </div>
         </div>
       );
@@ -260,8 +259,8 @@ const SignText = ({ params }: { params: SignTextProps }) => {
     if (accountType === KEYRING_TYPE.GnosisKeyring && !params.account) {
       setIsWatch(true);
       setCantProcessReason(
-        <div className="flex items-center gap-8">
-          <img src={IconGnosis} alt="" className="w-[24px]" />
+        <div className="flex items-center gap-6">
+          <img src={IconGnosis} alt="" className="w-[24px] flex-shrink-0" />
           {t(
             'This is a Gnosis Safe address, and it cannot be used to sign text.'
           )}
