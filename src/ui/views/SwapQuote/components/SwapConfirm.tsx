@@ -2,6 +2,7 @@ import { TokenItem } from '@/background/service/openapi';
 import { getTokenSymbol, Modal, PageHeader } from '@/ui/component';
 import LessPalette from '@/ui/style/var-defs';
 import { CHAINS_ENUM } from '@debank/common';
+import { CHAINS } from 'consts';
 import { Button, Space, Tooltip } from 'antd';
 import React, { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
@@ -159,7 +160,7 @@ export const SwapConfirm = ({
       </div>
       <div className="flex justify-between px-[20px]">
         <Chain>
-          On <span className="bold">{chain}</span>
+          On <span className="bold">{CHAINS[chain].name}</span>
         </Chain>
 
         <div className="text-white text-12 pt-[6px]">
