@@ -47,7 +47,9 @@ import WalletConnectTemplate from './WalletConnect';
 import AddressDetail from './AddressDetail';
 import AddressBackupMnemonics from './AddressBackup/Mnemonics';
 import AddressBackupPrivateKey from './AddressBackup/PrivateKey';
+import Swap from './Swap';
 import { getUiType, useWallet } from '../utils';
+import SwapQuotes from './SwapQuote';
 ReactGA.initialize('UA-199755108-1');
 // eslint-disable-next-line @typescript-eslint/no-empty-function
 ga('set', 'checkProtocolTask', function () {});
@@ -229,6 +231,12 @@ const Main = () => {
         </PrivateRoute>
         <PrivateRoute exact path="/receive">
           <Receive />
+        </PrivateRoute>
+        <PrivateRoute exact path="/swap">
+          <Swap />
+        </PrivateRoute>
+        <PrivateRoute exact path="/swap-quotes">
+          <SwapQuotes />
         </PrivateRoute>
       </Switch>
     </>
