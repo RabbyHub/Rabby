@@ -3,7 +3,6 @@ import Wallet, { thirdparty } from 'ethereumjs-wallet';
 import { ethErrors } from 'eth-rpc-errors';
 import * as bip39 from 'bip39';
 import { ethers, Contract } from 'ethers';
-import type { BigNumber as BN } from 'ethers';
 import { groupBy } from 'lodash';
 import abiCoder, { AbiCoder } from 'web3-eth-abi';
 import * as optimismContracts from '@eth-optimism/contracts';
@@ -63,11 +62,12 @@ import KeystoneKeyring, {
 import WatchKeyring from '@rabby-wallet/eth-watch-keyring';
 import stats from '@/stats';
 import { generateAliasName } from '@/utils/account';
-import { intToHex } from 'ethereumjs-util';
 import buildUnserializedTransaction from '@/utils/optimism/buildUnserializedTransaction';
 import BigNumber from 'bignumber.js';
 
 const stashKeyrings: Record<string | number, any> = {};
+
+const MAX_UNSIGNED_256_INT = new BigNumber(2).pow(256).minus(1).toString(10);
 
 export class WalletController extends BaseController {
   openapi = openapiService;
@@ -109,10 +109,11 @@ export class WalletController extends BaseController {
     return notificationService.rejectApproval(err, stay, isInternal);
   };
 
-  async getERC20Allowance(
+  getERC20Allowance = async (
     chainServerId,
+    erc20Address: string,
     contractAddress: string
-  ): Promise<string> {
+  ): Promise<string> => {
     const account = await preferenceService.getCurrentAccount();
     if (!account) throw new Error('no current account');
     const chainId = Object.values(CHAINS)
@@ -129,12 +130,12 @@ export class WalletController extends BaseController {
       buildinProvider.currentProvider
     );
 
-    const contract = new Contract(contractAddress, ERC20ABI, provider);
-    const amount = await contract.allowance(account.address, RABBY_SWAP_ROUTER);
+    const contract = new Contract(erc20Address, ERC20ABI, provider);
+    const amount = await contract.allowance(account.address, contractAddress);
     return amount.toString();
-  }
+  };
 
-  async rabbyContract(chain_server_id: string) {
+  rabbyContract = async (chain_server_id: string) => {
     const account = await preferenceService.getCurrentAccount();
     if (!account) throw new Error('no current account');
     const chainId = Object.values(CHAINS)
@@ -157,7 +158,7 @@ export class WalletController extends BaseController {
       provider.getSigner()
     );
     return contract;
-  }
+  };
 
   rabbySwap = async ({
     chain_server_id,
@@ -171,6 +172,7 @@ export class WalletController extends BaseController {
     dex_swap_calldata,
     deadline,
     needApprove,
+    is_wrapped,
   }: {
     chain_server_id: string;
     pay_token_id: string;
@@ -183,6 +185,7 @@ export class WalletController extends BaseController {
     dex_swap_calldata: string;
     deadline: number;
     needApprove: boolean;
+    is_wrapped: boolean;
   }) => {
     const account = await preferenceService.getCurrentAccount();
     if (!account) throw new Error('no current account');
@@ -190,12 +193,32 @@ export class WalletController extends BaseController {
       (item) => item.serverId === chain_server_id
     );
     if (!chain) throw new Error(`Can not find chain ${chain_server_id}`);
+
+    if (is_wrapped) {
+      const param = {
+        from: account.address,
+        to: dex_swap_to,
+        chainId: chain.id,
+        data: dex_swap_calldata,
+      };
+
+      if (chain.nativeTokenAddress === pay_token_id) {
+        param['value'] =
+          '0x' + new BigNumber(pay_token_raw_amount).toString(16);
+      }
+      await this.sendRequest({
+        method: 'eth_sendTransaction',
+        params: [param],
+      });
+      return;
+    }
+
     if (needApprove && pay_token_id !== chain.nativeTokenAddress) {
       await this.approveToken(
         chain_server_id,
         pay_token_id,
         RABBY_SWAP_ROUTER,
-        pay_token_raw_amount
+        MAX_UNSIGNED_256_INT
       );
     }
     await this.sendRequest({
@@ -260,7 +283,7 @@ export class WalletController extends BaseController {
               receive_token_id,
               new BigNumber(receive_token_raw_amount)
                 .times(1 - Number(slippage) / 100)
-                .toFixed(0),
+                .toFixed(0, BigNumber.ROUND_FLOOR),
               dex_swap_to,
               dex_approve_to,
               dex_swap_calldata,
@@ -270,48 +293,7 @@ export class WalletController extends BaseController {
         },
       ],
     });
-  };
-
-  rabbySwapWithPermit = async ({
-    chain_server_id,
-    pay_token_id,
-    pay_token_raw_amount,
-    receive_token_id,
-    slippage,
-    receive_token_raw_amount,
-    dex_swap_to,
-    dex_approve_to,
-    dex_swap_calldata,
-    deadline,
-    permit,
-  }: {
-    chain_server_id: string;
-    pay_token_id: string;
-    pay_token_raw_amount: string;
-    receive_token_id: string;
-    slippage: string;
-    receive_token_raw_amount: number;
-    dex_swap_to: string;
-    dex_approve_to: string;
-    dex_swap_calldata: string;
-    deadline: string;
-    permit: string;
-  }) => {
-    const contract = await this.rabbyContract(chain_server_id);
-
-    return await contract.swap(
-      pay_token_id,
-      pay_token_raw_amount,
-      receive_token_id,
-      new BigNumber(receive_token_raw_amount)
-        .times(1 - Number(slippage) / 100)
-        .toString(),
-      dex_swap_to,
-      dex_approve_to,
-      dex_swap_calldata,
-      deadline,
-      permit
-    );
+    this.clearPageStateCache();
   };
 
   approveToken = async (
