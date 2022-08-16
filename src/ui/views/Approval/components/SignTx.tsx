@@ -1332,7 +1332,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
                             onClick={() => handleAllow()}
                             disabled={true}
                           >
-                            {t(submitText)} ???
+                            {t(submitText)}
                           </Button>
                           <img
                             src={IconInfo}
