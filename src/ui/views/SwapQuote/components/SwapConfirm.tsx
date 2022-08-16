@@ -132,9 +132,9 @@ export const SwapConfirm = ({
 
     const v = n1.num.div(n2.num);
 
-    return `1 ${n1.symbol} = ${
-      v.isGreaterThan(0.01) ? v.toFixed(2) : v.toFixed(6)
-    } ${n2.symbol} `;
+    return `1 ${n1.symbol} = ${v.toFixed(2, BigNumber.ROUND_FLOOR)} ${
+      n2.symbol
+    } `;
   }, [exchangePrizeInvert, amount, payToken, receiveToken]);
 
   const noUsePrice = !(payToken.price && receiveToken.price);
@@ -222,7 +222,7 @@ export const SwapConfirm = ({
               }
             >
               <div className="text-28 font-extrabold text-gray-title max-w-[240px] truncate">
-                {new BigNumber(receiveAmount).toFixed(2)}
+                {new BigNumber(receiveAmount).toFixed(2, BigNumber.ROUND_FLOOR)}
               </div>
               <div className="ml-8 text-15 text-gray-subTitle">
                 {receiveToken.display_symbol || receiveToken.symbol}
@@ -383,12 +383,16 @@ const PrizeDifferenceBox = ({
       </div>
       <div>
         {amount} {getTokenSymbol(payToken)} ≈ $
-        {new BigNumber(amount).times(payToken.price).toFixed(2)}
+        {new BigNumber(amount)
+          .times(payToken.price)
+          .toFixed(2, BigNumber.ROUND_FLOOR)}
       </div>
 
       <div>
         {receiveAmount} {getTokenSymbol(receiveToken)} ≈ $
-        {new BigNumber(receiveAmount).times(receiveToken.price).toFixed(2)}
+        {new BigNumber(receiveAmount)
+          .times(receiveToken.price)
+          .toFixed(2, BigNumber.ROUND_FLOOR)}
       </div>
     </div>
   );
