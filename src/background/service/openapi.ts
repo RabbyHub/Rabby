@@ -980,6 +980,52 @@ class OpenApiService {
 
     return data;
   };
+
+  getDEXList = async (chain_id: string) => {
+    const { data } = await this.request.get<
+      {
+        id: string;
+        name: string;
+        logo_url: string;
+        site_url: string;
+        type: string;
+      }[]
+    >(testApiPrefix + '/v1/wallet/swap_dex_list', {
+      params: {
+        chain_id,
+      },
+    });
+    return data;
+  };
+
+  getSwapQuote = async (params: {
+    chain_id: string;
+    dex_id: string;
+    pay_token_id: string;
+    pay_token_raw_amount: string;
+    receive_token_id: string;
+  }) => {
+    const { data } = await this.request.get<{
+      receive_token_raw_amount: number;
+      dex_approve_to: string;
+      dex_swap_to: string;
+      dex_swap_calldata: string;
+      is_wrapped: boolean;
+      gas: {
+        gas_used: number;
+        gas_price: number;
+        gas_cost_value: number;
+        gas_cost_usd_value: number;
+      };
+      pay_token: TokenItem;
+      receive_token: TokenItem;
+    }>(testApiPrefix + '/v1/wallet/swap_quote', {
+      params,
+    });
+    return data;
+  };
 }
+// TODO: remove
+const testApiPrefix = 'https://alpha-openapi.debank.com';
 
 export default new OpenApiService();

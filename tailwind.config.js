@@ -44,6 +44,7 @@ module.exports = {
       green: '#27C193',
       white: colors.white,
       yellow: '#F29C1B',
+      orange: '#FFB020',
       pink: '#F24822',
       red: {
         light: '#F24822',
@@ -91,6 +92,12 @@ module.exports = {
         '24px',
         {
           lineHeight: '28px',
+        },
+      ],
+      28: [
+        '28px',
+        {
+          lineHeight: '33px',
         },
       ],
     },

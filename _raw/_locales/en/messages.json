@@ -57,7 +57,7 @@
     "message": "Save"
   },
   "AddressManagement": {
-    "message": "Address management"
+    "message": "Address Management"
   },
   "ChainManagement": {
     "message": "Chain management"
@@ -1023,5 +1023,83 @@
   },
   "SelectHDPath": {
     "message": "If you don't see the addresses you expect, try switching the HD path:"
+  },
+  "ConfirmTheTokenOn": {
+    "message": "Confirm the token on"
+  },
+  "Etherscan": {
+    "message": "Etherscan"
+  },
+  "SwapCheckEtherscanToken": {
+    "message": "Different tokens may use the same name and symbol. Check Etherscan to verify this is the token you're looking for. "
+  },
+  "AdvancedSettings": {
+    "message": "Advanced Settings"
+  },
+  "MaxPriceSlippage": {
+    "message": "Max price slippage"
+  },
+  "SlippageTip": {
+    "message": "If the price changes between the time your order is placed and confirmed, it's called \"slippage\". Your order will be canceled if the price change more than your slippage setting."
+  },
+  "LowSlippageToleranceWarn": {
+    "message": "Transaction may fail due to low slippage tolerance."
+  },
+  "HighSlippageToleranceWarn": {
+    "message": "High slippage tolerance may result in uneconomic trading. "
+  },
+  "HighSlippageToleranceError": {
+    "message": "High slippage tolerance may result in uneconomic trading. "
+  },
+  "GetQuotes": {
+    "message": "Get Quotes"
+  },
+  "FailGetQuote": {
+    "message": "Fail to get a quote due to bad connection. Please try again later"
+  },
+  "NoAvailableQuote": {
+    "message": "Sorry, no available quotes were found. "
+  },
+  "FetchingQuotes": {
+    "message": "Fetching Quotes"
+  },
+  "AllQuotes": {
+    "message": "All quotes"
+  },
+  "QuoteDetails": {
+    "message": "Quote Details"
+  },
+  "BestQuote": {
+    "message": "Best Quote"
+  },
+  "SelectedQuote": {
+    "message": "Selected quote"
+  },
+  "MaxSlippage": {
+    "message": "Max slippage"
+  },
+  "ChangeSlippage": {
+    "message": "Do you want to go back and change the max slippage to get new quotes? "
+  },
+  "QuoteDesc": {
+    "message": "Rabby searches multiple liquidity sources (exchanges, aggregators, and professional market makers) to find the best rates and lowest network fees.A fee of 0.875% has been deducted from all quote."
+  },
+  "ReceivingAmountDesc": {
+    "message": "This is an estimate. The exact amount received depends on slippage. Each quote has deducted 0.875% as a service fee for Rabby.  "
+  },
+  "EstGasFeeDesc": {
+    "message": "This is an estimated gas cost for your transaction. The actual gas cost may change based on network conditions. "
+  },
+  "MaxSlippageDesc": {
+    "message": "If the price changes between the time your order is placed and confirmed, it's called \"slippage\". Your order will be canceled if the price change more than your slippage setting. "
+  },
+  "LiquiditySourceDesc": {
+    "message": "Available liquidity sources are dexes, aggregators, and professional market makers. "
+  },
+  "RabbyQuoteDesc": {
+    "message": "Rabby searches multiple liquidity sources (exchanges, aggregators, and professional market makers) to find the best rates and lowest network fees.A fee of 0.875% has been deducted from all quote."
+  },
+  "useThisQuote": {
+    "message": "Use this quote"
   }
 }
