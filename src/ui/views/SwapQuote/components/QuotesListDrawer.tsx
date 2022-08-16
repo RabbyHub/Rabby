@@ -1,4 +1,3 @@
-import { TokenItem } from '@/background/service/openapi';
 import { getTokenSymbol } from '@/ui/component';
 import clsx from 'clsx';
 import React, { useState, useMemo, useEffect } from 'react';
@@ -66,7 +65,7 @@ export const QuotesListDrawer = ({
             {getTokenAmountBN(
               list[selectedIndex]?.receive_token_raw_amount,
               list[selectedIndex]?.receive_token?.decimals || 18
-            ).toFixed(2)}{' '}
+            ).toFixed(2, BigNumber.ROUND_FLOOR)}{' '}
             {getTokenSymbol(list[selectedIndex]?.receive_token)}
           </div>
         ),
@@ -311,7 +310,7 @@ const AmountAndGasFeeItem = ({
             title={amount.toString()}
             className="max-w-[130px] w-[130px] truncate text-15"
           >
-            {amount.toFixed(2)}
+            {amount.toFixed(2, BigNumber.ROUND_FLOOR)}
           </div>
           <div
             className="max-w-[130px] truncate text-15"

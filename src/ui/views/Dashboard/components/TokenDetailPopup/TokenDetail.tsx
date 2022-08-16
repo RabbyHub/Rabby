@@ -248,7 +248,7 @@ const TokenDetail = ({
           </>
         )}
 
-        <div className="flex flex-row justify-between">
+        <div className="flex flex-row justify-between mt-24">
           <Tooltip
             overlayClassName="rectangle token_swap__tooltip"
             placement="topLeft"
