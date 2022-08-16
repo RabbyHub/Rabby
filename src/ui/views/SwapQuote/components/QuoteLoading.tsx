@@ -30,7 +30,7 @@ export const QuoteLoading = ({
   return (
     <Container>
       <div className="mb-[12px] text-center">{t('FetchingQuotes')}</div>
-      <div className="mb-[12px] text-center"> ${successCount} quotes found</div>
+      <div className="mb-[12px] text-center"> {successCount} quotes found</div>
       <Progress
         percent={(successCount / allCount) * 100}
         showInfo={false}

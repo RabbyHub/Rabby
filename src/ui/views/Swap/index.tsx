@@ -200,6 +200,7 @@ const Swap = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   const shouldSetPageStateCache = useRef(true);
+  const [autoFocusAmount, setAutoFocusAmount] = useState(true);
 
   const canSubmit =
     currentToken &&
@@ -424,7 +425,7 @@ const Swap = () => {
               token={currentToken}
               onTokenChange={handleCurrentTokenChange}
               chainId={CHAINS[chain].serverId}
-              amountFocus={false}
+              amountFocus={autoFocusAmount}
               inlinePrize
               value={amountInput}
               excludeTokens={swapToken?.id ? [swapToken?.id] : []}
@@ -556,6 +557,8 @@ const Swap = () => {
                   suffix={'%'}
                   className={'text-right'}
                   value={customSlippageInput}
+                  onFocus={() => setAutoFocusAmount(false)}
+                  onBlur={() => setAutoFocusAmount(true)}
                   onChange={(e) => {
                     const v = Number(e.target.value);
                     if (!Number.isNaN(v)) {
