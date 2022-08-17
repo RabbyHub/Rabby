@@ -1344,10 +1344,10 @@
   resolved "https://registry.yarnpkg.com/@debank/common/-/common-0.2.10.tgz#e557b3d95f35bb6289d786aae9fc9473806eb4d4"
   integrity sha512-vL1qcitknH5kHaAzuJgQfcDvFTwMnziOTUf1GUhW/5BjdFqO4/MqZfpIBS1LYVcyEIEWMqWB5XVFifCPVf+ulw==
 
-"@debank/festats@^1.0.1":
-  version "1.0.1"
-  resolved "https://registry.yarnpkg.com/@debank/festats/-/festats-1.0.1.tgz#8f76b0919a6c8a7d938a42946272abaff2b971be"
-  integrity sha512-mr2N1oqOTYQJ4ezIGn4EWkSuioh5fiAkX82oZnzaLsG1Y71P10HvBb136Cag46m9CRUCsUNG0/wxmvPhHHGUaQ==
+"@debank/festats@1.0.0":
+  version "1.0.0"
+  resolved "https://registry.yarnpkg.com/@debank/festats/-/festats-1.0.0.tgz#0217ac76921a92aa9e31f6b7d33411d4c11eea11"
+  integrity sha512-MqCF4SJ04X5/vd5wfCPRyTLwPtJNzBrriSOv02Q+WRooOv97rSpl98NikN9IaUSFOJJBYpajJWeQda7CGPJpzw==
 
 "@discoveryjs/json-ext@^0.5.0":
   version "0.5.2"
