@@ -2,7 +2,7 @@ import * as ethUtil from 'ethereumjs-util';
 import Wallet, { thirdparty } from 'ethereumjs-wallet';
 import { ethErrors } from 'eth-rpc-errors';
 import * as bip39 from 'bip39';
-import { ethers, Contract } from 'ethers';
+import { ethers, Contract, constants } from 'ethers';
 import { groupBy } from 'lodash';
 import abiCoder, { AbiCoder } from 'web3-eth-abi';
 import * as optimismContracts from '@eth-optimism/contracts';
@@ -221,77 +221,85 @@ export class WalletController extends BaseController {
         MAX_UNSIGNED_256_INT
       );
     }
+
+    const swapParam = {
+      from: account.address,
+      to: RABBY_SWAP_ROUTER,
+      chainId: chain.id,
+      data: ((abiCoder as unknown) as AbiCoder).encodeFunctionCall(
+        {
+          inputs: [
+            {
+              internalType: 'contract IERC20',
+              name: 'srcToken',
+              type: 'address',
+            },
+            {
+              internalType: 'uint256',
+              name: 'amount',
+              type: 'uint256',
+            },
+            {
+              internalType: 'contract IERC20',
+              name: 'dstToken',
+              type: 'address',
+            },
+            {
+              internalType: 'uint256',
+              name: 'minReturn',
+              type: 'uint256',
+            },
+            {
+              internalType: 'address',
+              name: 'dexRouter',
+              type: 'address',
+            },
+            {
+              internalType: 'address',
+              name: 'dexSpender',
+              type: 'address',
+            },
+            {
+              internalType: 'bytes',
+              name: 'data',
+              type: 'bytes',
+            },
+            {
+              internalType: 'uint256',
+              name: 'deadline',
+              type: 'uint256',
+            },
+          ],
+          name: 'swap',
+          outputs: [],
+          stateMutability: 'payable',
+          type: 'function',
+        },
+        [
+          chain.nativeTokenAddress === pay_token_id
+            ? constants.AddressZero
+            : pay_token_id,
+          '0x' + new BigNumber(pay_token_raw_amount).toString(16),
+          chain.nativeTokenAddress === receive_token_id
+            ? constants.AddressZero
+            : receive_token_id,
+          new BigNumber(receive_token_raw_amount)
+            .times(1 - Number(slippage) / 100)
+            .toFixed(0, BigNumber.ROUND_FLOOR),
+          dex_swap_to,
+          dex_approve_to,
+          dex_swap_calldata,
+          deadline.toString(),
+        ]
+      ),
+    };
+    if (chain.nativeTokenAddress === pay_token_id) {
+      swapParam['value'] =
+        '0x' + new BigNumber(pay_token_raw_amount).toString(16);
+    }
     await this.sendRequest({
       method: 'eth_sendTransaction',
-      params: [
-        {
-          from: account.address,
-          to: RABBY_SWAP_ROUTER,
-          chainId: chain.id,
-          data: ((abiCoder as unknown) as AbiCoder).encodeFunctionCall(
-            {
-              inputs: [
-                {
-                  internalType: 'contract IERC20',
-                  name: 'srcToken',
-                  type: 'address',
-                },
-                {
-                  internalType: 'uint256',
-                  name: 'amount',
-                  type: 'uint256',
-                },
-                {
-                  internalType: 'contract IERC20',
-                  name: 'dstToken',
-                  type: 'address',
-                },
-                {
-                  internalType: 'uint256',
-                  name: 'minReturn',
-                  type: 'uint256',
-                },
-                {
-                  internalType: 'address',
-                  name: 'dexRouter',
-                  type: 'address',
-                },
-                {
-                  internalType: 'address',
-                  name: 'dexSpender',
-                  type: 'address',
-                },
-                {
-                  internalType: 'bytes',
-                  name: 'data',
-                  type: 'bytes',
-                },
-                {
-                  internalType: 'uint256',
-                  name: 'deadline',
-                  type: 'uint256',
-                },
-              ],
-              name: 'swap',
-              outputs: [],
-              stateMutability: 'payable',
-              type: 'function',
-            },
-            [
-              pay_token_id,
-              pay_token_raw_amount,
-              receive_token_id,
-              new BigNumber(receive_token_raw_amount)
-                .times(1 - Number(slippage) / 100)
-                .toFixed(0, BigNumber.ROUND_FLOOR),
-              dex_swap_to,
-              dex_approve_to,
-              dex_swap_calldata,
-              deadline.toString(),
-            ]
-          ),
-        },
-      ],
+      params: [swapParam],
     });
     this.clearPageStateCache();
   };
