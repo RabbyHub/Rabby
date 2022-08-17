@@ -21,7 +21,7 @@ import clsx from 'clsx';
 import { ReactComponent as IconInfo } from 'ui/assets/infoicon.svg';
 import { ReactComponent as IconTipDownArrow } from 'ui/assets/swap/arrow-tips-down.svg';
 
-const ReservedGas = 0.01;
+const ReservedGas = 0.1;
 
 const MaxButton = styled.div`
   padding: 4px 5px;
