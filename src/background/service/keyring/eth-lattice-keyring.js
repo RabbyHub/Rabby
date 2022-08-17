@@ -4,7 +4,7 @@ import BN from 'bn.js';
 import * as SDK from 'gridplus-sdk';
 import { TransactionFactory } from '@ethereumjs/tx';
 import * as Util from 'ethereumjs-util';
-import rlp from 'rlp';
+import * as rlp from 'rlp';
 import { initHDKeyring, invokeHDKeyring } from './hd-proxy';
 import { browser } from 'webextension-polyfill-ts';
 
@@ -172,13 +172,13 @@ class LatticeKeyring extends EventEmitter {
     const accountIdx = await this._findSignerIdx(address);
     const chainId = getTxChainId(tx).toNumber();
     const fwVersion = await invokeHDKeyring('GRIDPLUS', 'getFwVersion');
-    const txData = await invokeHDKeyring('GRIDPLUS', 'getTxData');
+    const txDataType = await invokeHDKeyring('GRIDPLUS', 'getTxDataType');
     const addressIdx = this.accountIndices[accountIdx];
     const { hdPath } = this.accountOpts[accountIdx];
     const signerPath = this._getHDPathIndices(hdPath, addressIdx);
     // Lattice firmware v0.11.0 implemented EIP1559 and EIP2930
     // We should throw an error if we cannot support this.
-    if (fwVersion.major === 0 && fwVersion.minor <= 11 && txData.type) {
+    if (fwVersion.major === 0 && fwVersion.minor <= 11 && txDataType) {
       throw new Error('Please update Lattice firmware.');
     }
     // Build the signing request
@@ -669,16 +669,17 @@ class LatticeKeyring extends EventEmitter {
       //    interface on the device
       // In either event we should try to resync the wallet and if that
       // fails throw an error
-      try {
-        await this._connect();
-        const accounts = await this._getPage(0);
-        return accounts;
-      } catch (err) {
-        throw new Error(
-          'Failed to get accounts. Please forget the device and try again. ' +
-            'Make sure you do not have a locked SafeCard inserted.'
-        );
-      }
+      console.log(err);
+      // try {
+      //   await this._connect();
+      //   const accounts = await this._getPage(0);
+      //   return accounts;
+      // } catch (err) {
+      //   throw new Error(
+      //     'Failed to get accounts. Please forget the device and try again. ' +
+      //       'Make sure you do not have a locked SafeCard inserted.'
+      //   );
+      // }
     }
   }
 

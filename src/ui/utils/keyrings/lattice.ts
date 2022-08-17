@@ -52,8 +52,8 @@ export class LatticeKeyring {
     return result;
   };
 
-  getTxData() {
-    return window.txData;
+  getTxDataType() {
+    return window.txData?.type;
   }
 }
 
