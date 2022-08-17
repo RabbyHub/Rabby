@@ -41,7 +41,7 @@ const TokenAmountInput = ({
   const [isListLoading, setIsListLoading] = useState(true);
   const [tokenSelectorVisible, setTokenSelectorVisible] = useState(false);
   const wallet = useWalletOld();
-  if (amountFocus) {
+  if (amountFocus && !tokenSelectorVisible) {
     tokenInputRef.current?.focus();
   }
   const handleCurrentTokenChange = (token: TokenItem) => {
