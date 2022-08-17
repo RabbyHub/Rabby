@@ -109,7 +109,7 @@ const ImportWatchAddress = () => {
       clientMeta: {
         description: t('appDescription'),
         url: 'https://rabby.io',
-        icons: ['https://rabby.io/assets/images/logo.png'],
+        icons: ['https://rabby.io/assets/images/logo-128.png'],
         name: 'Rabby',
       },
     });

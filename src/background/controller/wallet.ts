@@ -1287,22 +1287,28 @@ export class WalletController extends BaseController {
   initWalletConnect = async (brandName: string, bridge?: string) => {
     let keyring: WalletConnectKeyring, isNewKey;
     const keyringType = KEYRING_CLASS.WALLETCONNECT;
+    const clientMeta = {
+      description: i18n.t('appDescription'),
+      url: 'https://rabby.io',
+      icons: ['https://rabby.io/assets/images/logo-128.png'],
+      name: 'Rabby',
+    };
     try {
       keyring = this._getKeyringByType(keyringType);
     } catch {
       const WalletConnect = keyringService.getKeyringClassForType(keyringType);
       keyring = new WalletConnect({
         accounts: [],
-        brandName: brandName,
-        clientMeta: {
-          description: i18n.t('appDescription'),
-          url: 'https://rabby.io',
-          icons: ['https://rabby.io/assets/images/logo.png'],
-          name: 'Rabby',
-        },
+        brandName,
+        clientMeta,
       });
       isNewKey = true;
     }
+    await keyring.deserialize({
+      clientMeta,
+      accounts: [],
+      brandName,
+    });
     const { uri } = await keyring.initConnector(brandName, bridge);
     let stashId: null | number = null;
     if (isNewKey) {
