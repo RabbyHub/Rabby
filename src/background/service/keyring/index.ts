@@ -10,6 +10,7 @@ import {
   normalizeAddress,
   setPageStateCacheWhenPopupClose,
   hasWalletConnectPageStateCache,
+  setWalletConnectClientMeta,
 } from 'background/utils';
 import BitBox02Keyring from './eth-bitbox02-keyring';
 import LedgerBridgeKeyring from './eth-ledger-bridge-keyring';
@@ -826,6 +827,7 @@ export class KeyringService extends EventEmitter {
       await keyring.updateTransportMethod(true);
     }
     if (keyring.type === KEYRING_CLASS.WALLETCONNECT) {
+      setWalletConnectClientMeta(keyring);
       eventBus.addEventListener(
         EVENTS.WALLETCONNECT.INIT,
         ({ address, brandName }) => {
