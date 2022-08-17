@@ -128,7 +128,7 @@ const Swap = () => {
   const [searchObj] = useState<SwapSearchObj>(query2obj(search));
 
   const [chain, setChain] = useState(searchObj?.chain_enum || CHAINS_ENUM.ETH);
-  const [currentToken, setCurrentToken] = useState<TokenItem>({
+  const [payToken, setPayToken] = useState<TokenItem>({
     id: 'eth',
     chain: 'eth',
     name: 'ETH',
@@ -146,22 +146,30 @@ const Swap = () => {
     amount: 0,
   });
 
+  const [receiveToken, setReceiveToken] = useState<TokenItem | undefined>(
+    undefined
+  );
+
+  const payTokenIsNativeToken =
+    payToken.id === CHAINS[chain].nativeTokenAddress;
+
+  const receiveTokenIsNativeToken =
+    !!receiveToken && receiveToken.id === CHAINS[chain].nativeTokenAddress;
+
   const [balanceError, setBalanceError] = useState<string | null>(null);
   const [balanceWarn, setBalanceWarn] = useState<string | null>(null);
 
   const [amountInput, setAmountInput] = useState(searchObj?.amount || '');
 
-  const isNativeToken = currentToken.id === CHAINS[chain].nativeTokenAddress;
-
   useMemo(() => {
-    if (currentToken?.raw_amount_hex_str) {
-      const v = new BigNumber(currentToken.raw_amount_hex_str || 0).div(
-        10 ** currentToken.decimals
+    if (payToken?.raw_amount_hex_str) {
+      const v = new BigNumber(payToken.raw_amount_hex_str || 0).div(
+        10 ** payToken.decimals
       );
       if (v.lt(amountInput || 0)) {
         setBalanceError(t('Insufficient balance'));
       } else if (
-        isNativeToken &&
+        payTokenIsNativeToken &&
         v
           .minus(amountInput || 0)
           .minus(ReservedGas)
@@ -173,7 +181,7 @@ const Swap = () => {
       }
     }
     return Number(amountInput) || 0;
-  }, [amountInput, currentToken?.raw_amount_hex_str]);
+  }, [amountInput, payToken?.raw_amount_hex_str]);
 
   const [slippage, setSlippage] = useState<typeof SLIPPAGE[number] | 'custom'>(
     searchObj?.slippage
@@ -196,24 +204,23 @@ const Swap = () => {
   const wallet = useWalletOld();
   const [currentAccount, setCurrentAccount] = useState<Account | null>(null);
 
-  const [swapToken, setSwapToken] = useState<TokenItem | undefined>(undefined);
   const [isLoading, setIsLoading] = useState(true);
 
   const shouldSetPageStateCache = useRef(true);
   const [autoFocusAmount, setAutoFocusAmount] = useState(true);
 
   const canSubmit =
-    currentToken &&
-    swapToken &&
+    payToken &&
+    receiveToken &&
     Number(amountInput) > 0 &&
-    new BigNumber(currentToken.raw_amount_hex_str || 0)
-      .div(10 ** currentToken.decimals)
+    new BigNumber(payToken.raw_amount_hex_str || 0)
+      .div(10 ** payToken.decimals)
       .gte(amountInput);
 
   const handleTransform = () => {
-    if (currentToken && swapToken) {
-      setCurrentToken(swapToken);
-      setSwapToken(currentToken);
+    if (payToken && receiveToken) {
+      setPayToken(receiveToken);
+      setReceiveToken(payToken);
       setAmountInput('');
     }
   };
@@ -223,12 +230,12 @@ const Swap = () => {
     history.push(
       `/swap-quotes?${obj2query({
         chain_enum: chain,
-        chain: currentToken.chain,
-        payTokenId: currentToken.id,
-        receiveTokenId: swapToken!.id,
+        chain: payToken.chain,
+        payTokenId: payToken.id,
+        receiveTokenId: receiveToken!.id,
         amount: amountInput,
         rawAmount: new BigNumber(amountInput)
-          .times(10 ** currentToken.decimals)
+          .times(10 ** payToken.decimals)
           .toString(),
         slippage: slippage === 'custom' ? customSlippageInput : slippage + '',
       })}`
@@ -236,7 +243,7 @@ const Swap = () => {
   };
 
   const handleCurrentTokenChange = async (token: TokenItem) => {
-    setCurrentToken(token);
+    setPayToken(token);
     setAmountInput('');
     setBalanceError(null);
     setBalanceWarn(null);
@@ -246,13 +253,13 @@ const Swap = () => {
   };
 
   const handleSwapTokenChange = (token: TokenItem) => {
-    setSwapToken(token);
+    setReceiveToken(token);
   };
 
   const handleClickTokenBalance = async () => {
-    const tokenBalance = new BigNumber(
-      currentToken.raw_amount_hex_str || 0
-    ).div(10 ** currentToken.decimals);
+    const tokenBalance = new BigNumber(payToken.raw_amount_hex_str || 0).div(
+      10 ** payToken.decimals
+    );
     setAmountInput(tokenBalance.toString());
   };
 
@@ -260,7 +267,7 @@ const Swap = () => {
     const account = await wallet.syncGetCurrentAccount();
     const chain = CHAINS[val];
     setChain(val);
-    setCurrentToken({
+    setPayToken({
       id: chain.nativeTokenAddress,
       decimals: chain.nativeTokenDecimals,
       logo_url: chain.nativeTokenLogo,
@@ -281,7 +288,7 @@ const Swap = () => {
       chain.serverId,
       account!.address
     );
-    setSwapToken(undefined);
+    setReceiveToken(undefined);
     setAmountInput('');
   };
 
@@ -296,13 +303,13 @@ const Swap = () => {
     address: string
   ) => {
     const t = await wallet.openapi.getToken(address, chainId, id);
-    setCurrentToken(t);
+    setPayToken(t);
     setIsLoading(false);
   };
 
   const loadPayToken = async (id: string, chainId: string, address: string) => {
     const t = await wallet.openapi.getToken(address, chainId, id);
-    setSwapToken(t);
+    setReceiveToken(t);
   };
 
   const init = async () => {
@@ -322,20 +329,20 @@ const Swap = () => {
         (item) => item.serverId === tokenChain
       );
       if (!target) {
-        loadCurrentToken(currentToken.id, currentToken.chain, account.address);
+        loadCurrentToken(payToken.id, payToken.chain, account.address);
         return;
       }
       setChain(target.enum);
       loadCurrentToken(id, tokenChain, account.address);
     } else {
       const lastTimeToken = await wallet.getLastTimeSendToken(account.address);
-      if (lastTimeToken) setCurrentToken(lastTimeToken);
-      let needLoadToken: TokenItem = lastTimeToken || currentToken;
+      if (lastTimeToken) setPayToken(lastTimeToken);
+      let needLoadToken: TokenItem = lastTimeToken || payToken;
       if (await wallet.hasPageStateCache()) {
         const cache = await wallet.getPageStateCache();
         if (cache?.path === pathname) {
           if (cache.states.currentToken) {
-            setCurrentToken(cache.states.currentToken);
+            setPayToken(cache.states.currentToken);
             needLoadToken = cache.states.currentToken;
           }
         }
@@ -355,7 +362,9 @@ const Swap = () => {
   };
 
   const gotoTokenEtherscan = () => {
-    openInTab(`https://etherscan.io/address/${swapToken?.id}`);
+    const scanLink = CHAINS[chain].scanLink;
+    const url = new URL(scanLink);
+    openInTab(`https://${url.hostname}/token/${receiveToken?.id}`);
   };
 
   useEffect(() => {
@@ -372,18 +381,18 @@ const Swap = () => {
       return;
     }
     try {
-      await wallet.setLastTimeSendToken(currentAccount!.address, currentToken);
+      await wallet.setLastTimeSendToken(currentAccount!.address, payToken);
 
       await wallet.setPageStateCache({
         path: pathname,
         search: `?${obj2query({
           chain_enum: chain,
-          chain: currentToken.chain,
-          payTokenId: currentToken.id,
-          receiveTokenId: swapToken!.id,
+          chain: payToken.chain,
+          payTokenId: payToken.id,
+          receiveTokenId: receiveToken!.id,
           amount: amountInput,
           rawAmount: new BigNumber(amountInput)
-            .times(10 ** currentToken.decimals)
+            .times(10 ** payToken.decimals)
             .toString(),
           slippage: slippage === 'custom' ? customSlippageInput : slippage + '',
         })}`,
@@ -422,13 +431,13 @@ const Swap = () => {
           {currentAccount && (
             <TokenAmountInput
               className="px-12 py-0 h-60 flex items-center"
-              token={currentToken}
+              token={payToken}
               onTokenChange={handleCurrentTokenChange}
               chainId={CHAINS[chain].serverId}
               amountFocus={autoFocusAmount}
               inlinePrize
               value={amountInput}
-              excludeTokens={swapToken?.id ? [swapToken?.id] : []}
+              excludeTokens={receiveToken?.id ? [receiveToken?.id] : []}
               onChange={(e) => {
                 const v = Number(e);
                 if (!Number.isNaN(v)) {
@@ -444,13 +453,13 @@ const Swap = () => {
                 <Skeleton.Input active style={{ width: 100 }} />
               ) : (
                 `${t('Balance')}: ${formatTokenAmount(
-                  new BigNumber(currentToken.raw_amount_hex_str || 0)
-                    .div(10 ** currentToken.decimals)
+                  new BigNumber(payToken.raw_amount_hex_str || 0)
+                    .div(10 ** payToken.decimals)
                     .toFixed(4),
                   4
                 )}`
               )}
-              {!isNativeToken && currentToken.amount > 0 && (
+              {!payTokenIsNativeToken && payToken.amount > 0 && (
                 <MaxButton onClick={handleClickTokenBalance}>MAX</MaxButton>
               )}
             </div>
@@ -472,12 +481,18 @@ const Swap = () => {
           </div>
 
           <TokenSelect
-            token={swapToken}
+            token={receiveToken}
             onTokenChange={handleSwapTokenChange}
             chainId={CHAINS[chain].serverId}
-            excludeTokens={[currentToken.id]}
+            excludeTokens={[payToken.id]}
           />
-          <Space size={4} className="mt-[8px] text-gray-content text-12">
+          <Space
+            size={4}
+            className={clsx(
+              'mt-[8px] text-gray-content text-12',
+              (!receiveToken || receiveTokenIsNativeToken) && 'hidden'
+            )}
+          >
             <span>{t('ConfirmTheTokenOn')} </span>
             <a
               className="tx-id text-gray-content underline "
