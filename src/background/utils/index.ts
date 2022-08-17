@@ -1,6 +1,8 @@
 import { isManifestV3 } from '@/utils/mv3';
+import WalletConnectKeyring from '@rabby-wallet/eth-walletconnect-keyring';
 import * as ethUtil from 'ethereumjs-util';
 import { browser } from 'webextension-polyfill-ts';
+import i18n from '../service/i18n';
 import pageStateCache from '../service/pageStateCache';
 export { default as createPersistStore } from './persisitStore';
 
@@ -117,3 +119,15 @@ global.__rb_is = () => true;
 declare global {
   function __rb_is(): boolean;
 }
+export const walletConnectClientMeta = {
+  description: i18n.t('appDescription'),
+  url: 'https://rabby.io',
+  icons: ['https://rabby.io/assets/images/logo-128.png'],
+  name: 'Rabby',
+};
+export const setWalletConnectClientMeta = (keyring: WalletConnectKeyring) => {
+  keyring.deserialize({
+    clientMeta: walletConnectClientMeta,
+  } as any);
+  return keyring;
+};

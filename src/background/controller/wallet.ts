@@ -51,6 +51,8 @@ import {
   setPageStateCacheWhenPopupClose,
   isSameAddress,
   setPopupIcon,
+  setWalletConnectClientMeta,
+  walletConnectClientMeta,
 } from 'background/utils';
 import GnosisKeyring, {
   TransactionBuiltEvent,
@@ -1283,12 +1285,7 @@ export class WalletController extends BaseController {
   initWalletConnect = async (brandName: string, bridge?: string) => {
     let keyring: WalletConnectKeyring, isNewKey;
     const keyringType = KEYRING_CLASS.WALLETCONNECT;
-    const clientMeta = {
-      description: i18n.t('appDescription'),
-      url: 'https://rabby.io',
-      icons: ['https://rabby.io/assets/images/logo-128.png'],
-      name: 'Rabby',
-    };
+
     try {
       keyring = this._getKeyringByType(keyringType);
     } catch {
@@ -1296,15 +1293,12 @@ export class WalletController extends BaseController {
       keyring = new WalletConnect({
         accounts: [],
         brandName,
-        clientMeta,
+        clientMeta: walletConnectClientMeta,
       });
       isNewKey = true;
     }
-    await keyring.deserialize({
-      clientMeta,
-      accounts: [],
-      brandName,
-    });
+
+    setWalletConnectClientMeta(keyring);
     const { uri } = await keyring.initConnector(brandName, bridge);
     let stashId: null | number = null;
     if (isNewKey) {
