@@ -179,7 +179,9 @@ const TokenSelector = ({
                   </div>
                 </div>
 
-                <div>${splitNumberByStep((token.price || 0).toFixed(2))}</div>
+                <div className={clsx(isSwapType && 'hidden')}>
+                  ${splitNumberByStep((token.price || 0).toFixed(2))}
+                </div>
 
                 <div className="flex flex-col text-right">
                   <div className="font-medium text-13 text-gray-title">
