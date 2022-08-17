@@ -11,14 +11,14 @@ export interface HDKeyringParams {
 export type HdKeyringType = keyof typeof KEYRING_CLASS['HARDWARE'];
 
 const pm = new PortMessage();
-const cached = new Map<string, HDKeyringParams>();
+const cached = new Map<string, string>();
 
 export const initHDKeyring = async (
   type: keyof typeof KEYRING_CLASS['HARDWARE'],
   options?: any
 ) => {
   const id = type;
-  const params = { type, options };
+  const params = BetterJSON.stringify({ type, options });
 
   console.log('getHDKeyring', type, options);
   cached.set(id, params);

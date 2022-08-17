@@ -15,7 +15,12 @@ export abstract class BetterJSON {
         return obj;
       }
 
-      if (typeof obj[key] === 'object') obj[key] = this.parseObject(obj[key]);
+      if (obj[key] === null || obj[key] === undefined) {
+        continue;
+      }
+      if (typeof obj[key] === 'object') {
+        obj[key] = this.parseObject(obj[key]);
+      }
     }
 
     return obj;
@@ -26,6 +31,14 @@ export abstract class BetterJSON {
     obj = this.parseObject(obj);
 
     return obj as T;
+  }
+
+  public static tryParse<T extends object>(value: string): T | null {
+    try {
+      return this.parse<T>(value);
+    } catch (e) {
+      return null;
+    }
   }
 
   public static stringify(value: object): string {

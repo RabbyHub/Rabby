@@ -52,25 +52,33 @@ export const connectKeyringService = () => {
 
     pm.listen(async (data) => {
       console.log('method', data.method, data.type, data.params);
+      const params = BetterJSON.tryParse<{
+        data?: any;
+        type?: string;
+        options?: any;
+      }>(data.params);
 
       if (data.type === 'init') {
         const { data: cachedData } = data.params;
-        for (const [key, value] of Object.entries<HDKeyringParams>(
-          cachedData
-        )) {
-          await createKeyring(key, value.type, value.options);
+        for (const [key, value] of Object.entries<string>(cachedData)) {
+          const { type, options } =
+            BetterJSON.tryParse<HDKeyringParams>(value) ?? {};
+          if (type) await createKeyring(key, type, options);
         }
         return;
       } else if (data.type === 'getHDKeyring') {
-        const { type, options } = data.params;
-        await createKeyring(data.id, type, options);
+        const { type, options } = params ?? {};
+        if (type) await createKeyring(data.id, type, options);
         return;
       } else if (data.type === 'invoke') {
         const keyring = cached.get(data.id);
-        const params = BetterJSON.parse(data.params ?? []) as [];
 
         if (keyring) {
-          const result = await keyring[data.method]?.(...params);
+          const result = await keyring[data.method]?.(
+            ...((params as []) ?? [])
+          );
+
+          console.log('invoke result', result);
           return BetterJSON.stringify(result);
         }
       }
