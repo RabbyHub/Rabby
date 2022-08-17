@@ -1,4 +1,10 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, {
+  ComponentProps,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
 import { Skeleton, Space } from 'antd';
 import cloneDeep from 'lodash/cloneDeep';
 import BigNumber from 'bignumber.js';
@@ -11,7 +17,7 @@ import LessPalette from '@/ui/style/var-defs';
 import { ReactComponent as SvgIconArrowDownTriangle } from '@/ui/assets/swap/arrow-caret-down.svg';
 
 const Wrapper = styled.div`
-  background: ${LessPalette['@color-bg']}; //#f5f6fa;
+  background: ${LessPalette['@color-bg']};
   border-radius: 4px;
   padding: 16px 12px;
   display: flex;
@@ -28,20 +34,20 @@ const Text = styled.span`
 
 interface TokenAmountInputProps {
   token?: TokenItem;
-  // value?: string;
   onChange?(amount: string): void;
   onTokenChange(token: TokenItem): void;
   chainId: string;
   excludeTokens?: TokenItem['id'][];
+  type?: ComponentProps<typeof TokenSelector>['type'];
 }
 
 const TokenSelect = ({
   token,
-  // value,
   onChange,
   onTokenChange,
   chainId,
   excludeTokens = [],
+  type = 'default',
 }: TokenAmountInputProps) => {
   const latestChainId = useRef(chainId);
   const [tokens, setTokens] = useState<TokenItem[]>([]);
@@ -154,6 +160,7 @@ const TokenSelect = ({
         onCancel={handleTokenSelectorClose}
         onSearch={handleSearchTokens}
         isLoading={isListLoading}
+        type={type}
       />
     </>
   );

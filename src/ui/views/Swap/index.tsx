@@ -430,6 +430,7 @@ const Swap = () => {
         <Section className="pb-16">
           {currentAccount && (
             <TokenAmountInput
+              type="swap"
               className="px-12 py-0 h-60 flex items-center"
               token={payToken}
               onTokenChange={handleCurrentTokenChange}
@@ -485,6 +486,7 @@ const Swap = () => {
             onTokenChange={handleSwapTokenChange}
             chainId={CHAINS[chain].serverId}
             excludeTokens={[payToken.id]}
+            type="swap"
           />
           <Space
             size={4}
