@@ -5,7 +5,7 @@ import BigNumber from 'bignumber.js';
 import { TokenItem } from 'background/service/openapi';
 import { splitNumberByStep, useWallet, useWalletOld } from 'ui/utils';
 import TokenWithChain from '../TokenWithChain';
-import TokenSelector from '../TokenSelector';
+import TokenSelector, { TokenSelectorProps } from '../TokenSelector';
 import IconArrowDown from 'ui/assets/arrow-down-triangle.svg';
 import './style.less';
 import clsx from 'clsx';
@@ -20,6 +20,7 @@ interface TokenAmountInputProps {
   inlinePrize?: boolean;
   excludeTokens?: TokenItem['id'][];
   className?: string;
+  type?: TokenSelectorProps['type'];
 }
 
 const TokenAmountInput = ({
@@ -32,6 +33,7 @@ const TokenAmountInput = ({
   inlinePrize,
   excludeTokens = [],
   className,
+  type = 'default',
 }: TokenAmountInputProps) => {
   const tokenInputRef = useRef<Input>(null);
   const latestChainId = useRef(chainId);
@@ -163,6 +165,7 @@ const TokenAmountInput = ({
         onCancel={handleTokenSelectorClose}
         onSearch={handleSearchTokens}
         isLoading={isListLoading}
+        type={type}
       />
     </div>
   );
