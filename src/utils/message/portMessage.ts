@@ -12,7 +12,7 @@ class PortMessage extends Message {
     }
   }
 
-  connect = (name?: string) => {
+  connect = (name?: string, autoReconnect = true) => {
     this.port = browser.runtime.connect(undefined, name ? { name } : undefined);
     this.port.onMessage.addListener(({ _type_, data }) => {
       if (_type_ === `${this._EVENT_PRE}message`) {
@@ -25,7 +25,11 @@ class PortMessage extends Message {
       }
     });
 
-    this.port.onDisconnect.addListener(() => this.connect(name));
+    if (autoReconnect) {
+      this.port.onDisconnect.addListener(() => {
+        this.connect(name);
+      });
+    }
 
     return this;
   };
