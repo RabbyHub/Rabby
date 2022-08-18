@@ -8,15 +8,17 @@ import { Button, Drawer, Space, Tooltip } from 'antd';
 import { ReactComponent as IconInfo } from 'ui/assets/infoicon.svg';
 import { ReactComponent as IconArronRight } from 'ui/assets/arrow-right-gray.svg';
 import BigNumber from 'bignumber.js';
+import { SWAP_AVAILABLE_VALUE_RATE } from '@/constant';
 
 export type Quote = Awaited<
   ReturnType<typeof wallet.openapi.getSwapQuote>
 >[][number] & { dexId: string; type: string };
 
-export const getTokenAmountBN = (
+export const getReceiveTokenAmountBN = (
   rawAmount: string | number,
   decimals: number
-) => new BigNumber(rawAmount).div(10 ** decimals);
+) =>
+  new BigNumber(rawAmount).div(10 ** decimals).times(SWAP_AVAILABLE_VALUE_RATE);
 
 const labelClassName =
   'text-14 font-normal text-gray-subTitle flex items-center space-x-2';
@@ -62,7 +64,7 @@ export const QuotesListDrawer = ({
         ),
         right: (
           <div className={clsx(valueClassName)}>
-            {getTokenAmountBN(
+            {getReceiveTokenAmountBN(
               list[selectedIndex]?.receive_token_raw_amount,
               list[selectedIndex]?.receive_token?.decimals || 18
             ).toFixed(2, BigNumber.ROUND_FLOOR)}{' '}
@@ -271,7 +273,7 @@ const AmountAndGasFeeItem = ({
 }) => {
   const amount = useMemo(
     () =>
-      getTokenAmountBN(
+      getReceiveTokenAmountBN(
         item.receive_token_raw_amount,
         item.receive_token.decimals
       ),

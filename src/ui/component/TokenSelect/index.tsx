@@ -39,6 +39,7 @@ interface TokenAmountInputProps {
   chainId: string;
   excludeTokens?: TokenItem['id'][];
   type?: ComponentProps<typeof TokenSelector>['type'];
+  placeholder?: string;
 }
 
 const TokenSelect = ({
@@ -48,6 +49,7 @@ const TokenSelect = ({
   chainId,
   excludeTokens = [],
   type = 'default',
+  placeholder,
 }: TokenAmountInputProps) => {
   const latestChainId = useRef(chainId);
   const [tokens, setTokens] = useState<TokenItem[]>([]);
@@ -85,22 +87,30 @@ const TokenSelect = ({
     setIsListLoading(true);
     let tokens: TokenItem[] = [];
     const currentAccount = await wallet.syncGetCurrentAccount();
-    const defaultTokens = await wallet.openapi.listToken(
+    const getDefaultTokens =
+      type === 'swap'
+        ? wallet.openapi.getSwapTokenList
+        : wallet.openapi.listToken;
+    const defaultTokens = await getDefaultTokens(
       currentAccount?.address,
       chainId
     );
-    const localAdded =
-      (await wallet.getAddedToken(currentAccount?.address)).filter((item) => {
-        const [chain] = item.split(':');
-        return chain === chainId;
-      }) || [];
     let localAddedTokens: TokenItem[] = [];
-    if (localAdded.length > 0) {
-      localAddedTokens = await wallet.openapi.customListToken(
-        localAdded,
-        currentAccount?.address
-      );
+
+    if (type !== 'swap') {
+      const localAdded =
+        (await wallet.getAddedToken(currentAccount?.address)).filter((item) => {
+          const [chain] = item.split(':');
+          return chain === chainId;
+        }) || [];
+      if (localAdded.length > 0) {
+        localAddedTokens = await wallet.openapi.customListToken(
+          localAdded,
+          currentAccount?.address
+        );
+      }
     }
+
     if (chainId !== latestChainId.current) return;
     tokens = sortTokensByPrice([...defaultTokens, ...localAddedTokens]);
     setOriginTokenList(tokens);
@@ -161,6 +171,7 @@ const TokenSelect = ({
         onSearch={handleSearchTokens}
         isLoading={isListLoading}
         type={type}
+        placeholder={placeholder}
       />
     </>
   );
