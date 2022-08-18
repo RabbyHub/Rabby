@@ -20,6 +20,7 @@ export interface TokenSelectorProps {
   onCancel(): void;
   onSearch(q: string);
   type?: 'default' | 'swap';
+  placeholder?: string;
 }
 
 const TokenSelector = ({
@@ -30,6 +31,7 @@ const TokenSelector = ({
   onSearch,
   isLoading = false,
   type = 'default',
+  placeholder,
 }: TokenSelectorProps) => {
   const { t } = useTranslation();
   const [query, setQuery] = useState('');
@@ -131,7 +133,7 @@ const TokenSelector = ({
           className={clsx({ active: isInputActive })}
           size="large"
           prefix={<img src={IconSearch} />}
-          placeholder={t('Search name or paste address')}
+          placeholder={placeholder ?? t('Search name or paste address')}
           value={query}
           onChange={(e) => handleQueryChange(e.target.value)}
           autoFocus
