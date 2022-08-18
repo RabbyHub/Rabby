@@ -45,7 +45,7 @@ const create = async ({ url, ...rest }): Promise<number | undefined> => {
     windowTypes: ['normal'],
   } as Windows.GetInfo);
 
-  const top = cTop! + BROWSER_HEADER;
+  const top = cTop;
   const left = cLeft! + width! - WINDOW_SIZE.width;
 
   const currentWindow = await browser.windows.getCurrent();
