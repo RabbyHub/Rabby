@@ -1,4 +1,3 @@
-import ReactGA from 'react-ga';
 import { groupBy } from 'lodash';
 import 'reflect-metadata';
 import * as Sentry from '@sentry/browser';
