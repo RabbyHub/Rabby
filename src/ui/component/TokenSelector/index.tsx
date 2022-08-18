@@ -174,7 +174,7 @@ const TokenSelector = ({
                         !isSwapType && 'hidden'
                       )}
                     >
-                      @{formatTokenAmount(token.amount)}
+                      ${splitNumberByStep((token.price || 0).toFixed(2))}
                     </span>
                   </div>
                 </div>
