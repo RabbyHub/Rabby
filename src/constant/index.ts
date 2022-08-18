@@ -612,3 +612,6 @@ export const KEYRING_CATEGORY_MAP = {
 };
 
 export const RABBY_SWAP_ROUTER = '0x7bfc80a1dc182720220265e0fe0a02f0f4607748';
+
+// 1 - 0.875%
+export const SWAP_AVAILABLE_VALUE_RATE = 0.99125;

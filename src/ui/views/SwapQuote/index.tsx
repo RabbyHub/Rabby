@@ -9,7 +9,7 @@ import QuoteLoading from './components/QuoteLoading';
 import SwapConfirm from './components/SwapConfirm';
 import { obj2query, query2obj } from '@/ui/utils/url';
 import { CHAINS, CHAINS_ENUM } from '@debank/common';
-import { RABBY_SWAP_ROUTER } from '@/constant';
+import { RABBY_SWAP_ROUTER, SWAP_AVAILABLE_VALUE_RATE } from '@/constant';
 import { message } from 'antd';
 
 export const SwapQuotes = () => {
@@ -80,15 +80,16 @@ export const SwapQuotes = () => {
           availableSwapQuotes.push(e.value);
         }
       });
-      availableSwapQuotes.sort(
-        (a, b) =>
-          new BigNumber(b.receive_token_raw_amount - a.receive_token_raw_amount)
-            .div(10 ** a.receive_token.decimals)
-            .times(a.receive_token.price)
-            .toNumber() +
-          (b.gas?.gas_cost_usd_value || 0) -
-          (a.gas?.gas_cost_usd_value || 0)
-      );
+
+      availableSwapQuotes.sort((a, b) => {
+        const getValue = (item: Quote) =>
+          new BigNumber(item.receive_token_raw_amount)
+            .div(item.receive_token.decimals)
+            .times(item.receive_token.price)
+            .minus(item.gas.gas_used);
+        return getValue(b).minus(getValue(a)).toNumber();
+      });
+
       setSwapQuotes(availableSwapQuotes);
       if (availableSwapQuotes.length < 1) {
         history.replace(
@@ -124,13 +125,14 @@ export const SwapQuotes = () => {
     }
   };
 
-  const receiveAmount = useMemo(() => {
+  const feeRemovalReceiveAmount = useMemo(() => {
     if (swapQuotes[currentQuoteIndex]) {
       return new BigNumber(
         swapQuotes[currentQuoteIndex].receive_token_raw_amount
       )
+        .times(SWAP_AVAILABLE_VALUE_RATE)
         .div(10 ** swapQuotes[currentQuoteIndex]?.receive_token.decimals)
-        .toJSON();
+        .toString();
     }
     return '';
   }, [swapQuotes, currentQuoteIndex]);
@@ -224,7 +226,7 @@ export const SwapQuotes = () => {
         payToken={swapQuotes[currentQuoteIndex].pay_token}
         receiveToken={swapQuotes[currentQuoteIndex].receive_token}
         amount={amount}
-        receiveAmount={receiveAmount}
+        receiveAmount={feeRemovalReceiveAmount}
         isBestQuote={currentQuoteIndex === 0}
         openQuotesList={() => {
           setQuotesDrawer(true);
