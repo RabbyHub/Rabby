@@ -215,11 +215,7 @@ export const SwapConfirm = ({
             />
             <div
               className="inline-flex items-baseline"
-              title={
-                receiveAmount +
-                '' +
-                (receiveToken.display_symbol || receiveToken.symbol)
-              }
+              title={receiveAmount + '' + getTokenSymbol(receiveToken)}
             >
               <div className="text-28 font-extrabold text-gray-title max-w-[240px] truncate">
                 {new BigNumber(receiveAmount).toFixed(2, BigNumber.ROUND_FLOOR)}

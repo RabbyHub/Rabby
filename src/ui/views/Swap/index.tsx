@@ -2,7 +2,7 @@ import React, { useState, useEffect, useMemo, useRef } from 'react';
 import BigNumber from 'bignumber.js';
 import { useTranslation } from 'react-i18next';
 import { useHistory, useLocation } from 'react-router-dom';
-import { Skeleton, Button, Tooltip, Space, Input, message } from 'antd';
+import { Skeleton, Button, Tooltip, Space, message, InputNumber } from 'antd';
 import styled from 'styled-components';
 import { CHAINS, CHAINS_ENUM } from 'consts';
 import { Account } from 'background/service/preference';
@@ -72,7 +72,7 @@ const RotateArrow = styled.div`
 
 const SlippageItem = styled.div<{
   active?: boolean;
-  errorBorder?: boolean;
+  error?: boolean;
 }>`
   width: 82px;
   height: 36px;
@@ -83,12 +83,33 @@ const SlippageItem = styled.div<{
   margin: 4px 0;
   border: 1px solid transparent;
   cursor: pointer;
+  font-weight: 500;
+  font-size: 13px;
+  line-height: 15px;
+  color: ${(props) =>
+    props.active
+      ? props.error
+        ? LessPalette['@color-red']
+        : LessPalette['@primary-color']
+      : LessPalette['@color-title']};
   border-color: ${(props) =>
     props.active
-      ? props.errorBorder
+      ? props.error
         ? LessPalette['@color-red']
         : LessPalette['@primary-color']
       : 'transparent'};
+  & input {
+    text-align: center;
+    color: ${(props) =>
+      props.active
+        ? props.error
+          ? LessPalette['@color-red']
+          : LessPalette['@primary-color']
+        : LessPalette['@color-title']};
+  }
+  & .ant-input-number-handler-wrap {
+    display: none !important;
+  }
 `;
 
 const SlippageTip = styled.div<{
@@ -193,13 +214,15 @@ const Swap = () => {
       : 3
   );
   const [customSlippageInput, setCustomSlippageInput] = useState(
-    searchObj?.slippage || ''
+    searchObj?.slippage || '3'
   );
 
   const [slippageWarning, setSlippageWaring] = useState('');
   const [slippageError, setSlippageError] = useState('');
 
-  const [openAdvancedSetting, setOpenAdvancedSetting] = useState(false);
+  const [openAdvancedSetting, setOpenAdvancedSetting] = useState(
+    false || slippage === 'custom'
+  );
 
   const wallet = useWalletOld();
   const [currentAccount, setCurrentAccount] = useState<Account | null>(null);
@@ -210,6 +233,7 @@ const Swap = () => {
   const [autoFocusAmount, setAutoFocusAmount] = useState(true);
 
   const canSubmit =
+    !slippageError &&
     payToken &&
     receiveToken &&
     Number(amountInput) > 0 &&
@@ -237,7 +261,8 @@ const Swap = () => {
         rawAmount: new BigNumber(amountInput)
           .times(10 ** payToken.decimals)
           .toString(),
-        slippage: slippage === 'custom' ? customSlippageInput : slippage + '',
+        slippage:
+          slippage === 'custom' ? customSlippageInput || '0' : slippage + '',
       })}`
     );
   };
@@ -371,6 +396,27 @@ const Swap = () => {
     init();
   }, []);
 
+  useEffect(() => {
+    if (slippage === 'custom') {
+      const v = Number(customSlippageInput);
+      if (Number.isNaN(v)) {
+        setSlippageWaring(t('LowSlippageToleranceWarn'));
+        return;
+      }
+      setSlippageWaring('');
+      setSlippageError('');
+      if (v < 0.1) {
+        setSlippageWaring(t('LowSlippageToleranceWarn'));
+      }
+      if (v > 5 && v < 15) {
+        setSlippageWaring(t('HighSlippageToleranceWarn'));
+      }
+      if (v > 15) {
+        setSlippageError(t('HighSlippageToleranceError'));
+      }
+    }
+  }, [slippage, customSlippageInput]);
+
   const [quoteErrorModal, setQuoteModal] = useState(
     !!searchObj?.fetchQuoteError
   );
@@ -394,7 +440,8 @@ const Swap = () => {
           rawAmount: new BigNumber(amountInput)
             .times(10 ** payToken.decimals)
             .toString(),
-          slippage: slippage === 'custom' ? customSlippageInput : slippage + '',
+          slippage:
+            slippage === 'custom' ? customSlippageInput || '0' : slippage + '',
         })}`,
         states: {},
       });
@@ -445,6 +492,7 @@ const Swap = () => {
                   setAmountInput(e);
                 }
               }}
+              placeholder={t('Search by Name / Address')}
             />
           )}
 
@@ -487,6 +535,7 @@ const Swap = () => {
             chainId={CHAINS[chain].serverId}
             excludeTokens={[payToken.id]}
             type="swap"
+            placeholder={t('Search by Name / Address')}
           />
           <Space
             size={4}
@@ -565,33 +614,26 @@ const Swap = () => {
             <SlippageItem
               onClick={() => setSlippage('custom')}
               active={slippage === 'custom'}
-              errorBorder={!!slippageError}
+              error={slippage === 'custom' && !!slippageError}
             >
               {slippage === 'custom' ? (
-                <Input
+                <InputNumber
                   autoFocus
                   bordered={false}
-                  suffix={'%'}
-                  className={'text-right'}
+                  min={'0'}
+                  stringMode
                   value={customSlippageInput}
+                  formatter={(value) => (value ? `${value}%` : '')}
+                  parser={(value) => (value ? value!.replace('%', '') : '')}
                   onFocus={() => setAutoFocusAmount(false)}
-                  onBlur={() => setAutoFocusAmount(true)}
-                  onChange={(e) => {
-                    const v = Number(e.target.value);
-                    if (!Number.isNaN(v)) {
-                      setSlippageWaring('');
-                      setSlippageError('');
-                      if (v < 0.1) {
-                        setSlippageWaring(t('LowSlippageToleranceWarn'));
-                      }
-                      if (v > 5 && v < 15) {
-                        setSlippageWaring(t('HighSlippageToleranceWarn'));
-                      }
-                      if (v > 15) {
-                        setSlippageError(t('HighSlippageToleranceError'));
-                      }
-                      setCustomSlippageInput(e.target.value);
+                  onBlur={() => {
+                    setAutoFocusAmount(true);
+                    if (!customSlippageInput) {
+                      setCustomSlippageInput('0');
                     }
+                  }}
+                  onChange={(e) => {
+                    setCustomSlippageInput(e);
                   }}
                 />
               ) : (
