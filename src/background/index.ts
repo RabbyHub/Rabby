@@ -1,4 +1,3 @@
-import ReactGA from 'react-ga';
 import { groupBy } from 'lodash';
 import 'reflect-metadata';
 import * as Sentry from '@sentry/browser';
@@ -129,13 +128,13 @@ restoreAppState();
         return;
       }
       const contacts = contactBookService.listContacts();
-      ReactGA.event({
+      gaRequestEvent({
         category: 'User',
         action: 'contactBook',
         label: contacts.length.toString(),
       });
       const chains = preferenceService.getSavedChains();
-      ReactGA.event({
+      gaRequestEvent({
         category: 'User',
         action: 'pinnedChains',
         label: chains.join(','),

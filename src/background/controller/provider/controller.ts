@@ -1,4 +1,3 @@
-import ReactGA from 'react-ga';
 import * as Sentry from '@sentry/browser';
 import Common, { Hardfork } from '@ethereumjs/common';
 import { TransactionFactory } from '@ethereumjs/tx';
@@ -46,6 +45,7 @@ import { Account } from 'background/service/preference';
 import { validateGasPriceRange, is1559Tx } from '@/utils/transaction';
 import stats from '@/stats';
 import BigNumber from 'bignumber.js';
+import { gaRequestEvent } from '@/background/utils/ga-request';
 
 const reportSignText = (params: {
   method: string;
@@ -53,7 +53,7 @@ const reportSignText = (params: {
   success: boolean;
 }) => {
   const { method, account, success } = params;
-  ReactGA.event({
+  gaRequestEvent({
     category: 'SignText',
     action: 'completeSignText',
     label: [
