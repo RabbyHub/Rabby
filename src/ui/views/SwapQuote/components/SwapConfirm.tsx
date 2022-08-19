@@ -130,7 +130,7 @@ export const SwapConfirm = ({
       n2 = t1;
     }
 
-    const v = n1.num.div(n2.num);
+    const v = n2.num.div(n1.num);
 
     return `1 ${n1.symbol} = ${v.toFixed(2, BigNumber.ROUND_FLOOR)} ${
       n2.symbol
