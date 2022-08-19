@@ -35,6 +35,7 @@ import eventBus from '@/eventBus';
 import { isSameAddress } from 'background/utils';
 import contactBook from '../contactBook';
 import { generateAliasName } from '@/utils/account';
+import * as Sentry from '@sentry/browser';
 
 export const KEYRING_SDK_TYPES = {
   SimpleKeyring,
@@ -835,6 +836,15 @@ export class KeyringService extends EventEmitter {
         eventBus.emit(EVENTS.broadcastToUI, {
           method: EVENTS.WALLETCONNECT.INITED,
           params: { uri },
+        });
+      });
+
+      keyring.on('transport_error', (data) => {
+        Sentry.captureException(new Error('Transport error: ' + data));
+
+        eventBus.emit(EVENTS.broadcastToUI, {
+          method: EVENTS.WALLETCONNECT.TRANSPORT_ERROR,
+          params: data,
         });
       });
       keyring.on('statusChange', (data) => {
