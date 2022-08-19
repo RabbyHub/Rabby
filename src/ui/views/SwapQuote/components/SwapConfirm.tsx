@@ -8,7 +8,6 @@ import React, { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
 import styled from 'styled-components';
-import { ReactComponent as IconTransform } from '@/ui/assets/swap/transform.svg';
 import BigNumber from 'bignumber.js';
 import { ReactComponent as IconArrowDown } from '@/ui/assets/swap/arrow-down-light.svg';
 import ArrowRight from '@/ui/assets/arrow-right.svg';
@@ -16,6 +15,7 @@ import { ReactComponent as IconSetting } from '@/ui/assets/swap/setting.svg';
 import bg from '@/ui/assets/swap/bg.svg';
 import clsx from 'clsx';
 import { ReactComponent as IconInfo } from 'ui/assets/infoicon.svg';
+import RateExchange from './RateExchange';
 
 const SwapConfirmContainer = styled.div`
   position: relative;
@@ -43,23 +43,19 @@ const TokenSwapSection = styled.div<{
 
 const Chain = styled.div`
   display: flex;
+  width: auto;
   height: 40px;
   margin-bottom: -15px;
   padding-top: 6px;
   padding-left: 9px;
   padding-right: 13px;
-  width: 92px;
   background: ${LessPalette['@color-white']};
   border-radius: 4px;
   text-align: center;
-  font-weight: 300;
+  font-weight: 400;
   font-size: 12px;
   line-height: 14px;
   color: ${LessPalette['@primary-color']};
-  .bold {
-    font-weight: 400;
-    margin-left: 2px;
-  }
 `;
 const QuoteSelectedTag = styled.div<{
   isBestQuote: boolean;
@@ -68,7 +64,7 @@ const QuoteSelectedTag = styled.div<{
   right: 12px;
   top: -12px;
   height: 20px;
-  padding: 4px;
+  padding: 3px 9px;
   background-color: ${(props) =>
     LessPalette[props.isBestQuote ? '@primary-color' : '@color-comment']};
   border-radius: 4px;
@@ -111,31 +107,6 @@ export const SwapConfirm = ({
   };
 
   const [slippageModal, setSlippageModal] = useState(false);
-  const [exchangePrizeInvert, setExchangePrizeInvert] = useState(false);
-
-  const exchangeDisplay = useMemo(() => {
-    const t1 = {
-      num: new BigNumber(amount),
-      symbol: getTokenSymbol(payToken),
-    };
-    const t2 = {
-      num: new BigNumber(receiveAmount),
-      symbol: getTokenSymbol(receiveToken),
-    };
-
-    let n1 = t1,
-      n2 = t2;
-    if (exchangePrizeInvert) {
-      n1 = t2;
-      n2 = t1;
-    }
-
-    const v = n2.num.div(n1.num);
-
-    return `1 ${n1.symbol} = ${v.toFixed(2, BigNumber.ROUND_FLOOR)} ${
-      n2.symbol
-    } `;
-  }, [exchangePrizeInvert, amount, payToken, receiveToken]);
 
   const noUsePrice = !(payToken.price && receiveToken.price);
 
@@ -160,7 +131,8 @@ export const SwapConfirm = ({
       </div>
       <div className="flex justify-between px-[20px]">
         <Chain>
-          On <span className="bold">{CHAINS[chain].name}</span>
+          On{' '}
+          <span className="font-medium text-13 ml-2">{CHAINS[chain].name}</span>
         </Chain>
 
         <div className="text-white text-12 pt-[6px]">
@@ -188,10 +160,10 @@ export const SwapConfirm = ({
               alt={payToken.display_symbol || payToken.symbol}
             />
             <div
-              className="inline-flex items-baseline"
+              className="inline-flex items-baseline font-medium"
               title={amount + '' + (payToken.display_symbol || payToken.symbol)}
             >
-              <div className="text-20 text-gray-title max-w-[200px] truncate">
+              <div className="text-20  text-gray-title max-w-[200px] truncate">
                 {amount}
               </div>
               <div className="ml-6 text-15 text-gray-subTitle">
@@ -217,10 +189,10 @@ export const SwapConfirm = ({
               className="inline-flex items-baseline"
               title={receiveAmount + '' + getTokenSymbol(receiveToken)}
             >
-              <div className="text-28 font-extrabold text-gray-title max-w-[240px] truncate">
+              <div className="text-28 font-bold text-gray-title max-w-[240px] truncate">
                 {new BigNumber(receiveAmount).toFixed(2, BigNumber.ROUND_FLOOR)}
               </div>
-              <div className="ml-8 text-15 text-gray-subTitle">
+              <div className="ml-8 text-15 font-medium text-gray-subTitle">
                 {receiveToken.display_symbol || receiveToken.symbol}
               </div>
             </div>
@@ -239,15 +211,13 @@ export const SwapConfirm = ({
           </QuoteSelectedTag>
         </div>
 
-        <div className="flex items-center justify-center mt-[32px]">
-          <span className="text-13 text-gray-subTitle">{exchangeDisplay}</span>
-          <IconTransform
-            className="cursor-pointer"
-            onClick={() => {
-              setExchangePrizeInvert((e) => !e);
-            }}
-          />
-        </div>
+        <RateExchange
+          className="justify-center mt-[32px] font-medium"
+          payAmount={amount}
+          receiveAmount={receiveAmount}
+          payToken={payToken}
+          receiveToken={receiveToken}
+        />
       </TokenSwapSection>
 
       <div className="flex items-center justify-center mt-[24px]">
@@ -295,7 +265,7 @@ export const SwapConfirm = ({
         footer={null}
       >
         <div className="flex flex-col justify-between h-full">
-          <div className="text-center text-15 text-gray-title">
+          <div className="text-center text-15 text-gray-title font-medium">
             {t('ChangeSlippage')}
           </div>
           <Button
