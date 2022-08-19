@@ -27,6 +27,9 @@ import clsx from 'clsx';
 import ReactGA from 'react-ga';
 import { getKRCategoryByType } from '@/utils/transaction';
 import { underline2Camelcase } from '@/background/utils';
+import SecurityCheckCard from './SecurityCheckCard';
+import ProcessTooltip from './ProcessTooltip';
+import SecurityCheck from './SecurityCheck';
 interface SignTypedDataProps {
   method: string;
   data: any[];
@@ -51,6 +54,7 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
     cantProcessReason,
     setCantProcessReason,
   ] = useState<ReactNode | null>();
+  const [forceProcess, setForceProcess] = useState(true);
 
   const { data, session, method } = params;
   let parsedMessage = '';
@@ -85,6 +89,10 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
     setSecurityCheckDetail,
   ] = useState<SecurityCheckResponse | null>(null);
   const [explain, setExplain] = useState('');
+
+  const handleForceProcessChange = (checked: boolean) => {
+    setForceProcess(checked);
+  };
 
   const checkWachMode = async () => {
     const currentAccount = await wallet.getCurrentAccount();
@@ -169,6 +177,7 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
     setSecurityCheckStatus(check.decision);
     setSecurityCheckAlert(check.alert);
     setSecurityCheckDetail(check);
+    setForceProcess(check.decision !== 'forbidden');
   };
 
   const handleCancel = () => {
@@ -242,9 +251,6 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
         setSubmitText('Proceed');
         setCheckText('Proceed');
       }
-      if (['danger', 'forbidden'].includes(securityCheckStatus)) {
-        setSubmitText('Continue');
-      }
     })();
   }, [securityCheckStatus]);
 
@@ -273,17 +279,29 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
             </p>
           )}
         </div>
+        <div className="section-title mt-[32px]">Pre-sign check</div>
+        <SecurityCheckCard
+          isReady={true}
+          loading={securityCheckStatus === 'loading'}
+          data={securityCheckDetail}
+          status={securityCheckStatus}
+          onCheck={handleSecurityCheck}
+        ></SecurityCheckCard>
       </div>
+
       <footer className="approval-text__footer">
         {isLedger && !useLedgerLive && !hasConnectedLedgerHID && (
           <LedgerWebHIDAlert connected={hasConnectedLedgerHID} />
         )}
-        <SecurityCheckBar
-          status={securityCheckStatus}
-          alert={securityCheckAlert}
-          onClick={() => setShowSecurityCheckDetail(true)}
-          onCheck={handleSecurityCheck}
-        />
+        {isWatch ? (
+          <ProcessTooltip>{cantProcessReason}</ProcessTooltip>
+        ) : (
+          <SecurityCheck
+            status={securityCheckStatus}
+            value={forceProcess}
+            onChange={handleForceProcessChange}
+          />
+        )}
         <div className="action-buttons flex justify-between">
           <Button
             type="primary"
@@ -294,53 +312,31 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
             {t('Cancel')}
           </Button>
           {isWatch ? (
-            <Tooltip
-              placement="topRight"
-              overlayClassName={clsx(
-                'rectangle watcSign__tooltip',
-                'watcSign__tooltip-Sign'
-              )}
-              title={cantProcessReason}
-            >
-              <div className="w-[172px] relative flex items-center">
-                <Button
-                  type="primary"
-                  size="large"
-                  className="w-[172px]"
-                  onClick={() => handleAllow()}
-                  disabled={true}
-                >
-                  {t('Sign')}
-                </Button>
-                <img
-                  src={IconInfo}
-                  className={clsx('absolute right-[40px]', 'icon-submit-Sign')}
-                />
-              </div>
-            </Tooltip>
-          ) : (
             <Button
               type="primary"
               size="large"
               className="w-[172px]"
               onClick={() => handleAllow()}
-              disabled={isLedger && !useLedgerLive && !hasConnectedLedgerHID}
+              disabled={true}
+            >
+              {t('Sign')}
+            </Button>
+          ) : (
+            <Button
+              type="primary"
+              size="large"
+              className="w-[172px]"
+              onClick={() => handleAllow(forceProcess)}
+              disabled={
+                (isLedger && !useLedgerLive && !hasConnectedLedgerHID) ||
+                !forceProcess
+              }
             >
               {submitText}
             </Button>
           )}
         </div>
       </footer>
-      {securityCheckDetail && !isWatch && (
-        <SecurityCheckDetail
-          visible={showSecurityCheckDetail}
-          onCancel={() => setShowSecurityCheckDetail(false)}
-          data={securityCheckDetail}
-          onOk={() => handleAllow(true)}
-          okText={t(checkText)}
-          cancelText={t('Cancel')}
-        />
-      )}
     </>
   );
 };

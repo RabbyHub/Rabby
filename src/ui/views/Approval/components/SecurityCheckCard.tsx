@@ -1,10 +1,14 @@
-import { Skeleton } from 'antd';
-import { SecurityCheckResponse } from 'background/service/openapi';
+import { Button, Skeleton } from 'antd';
+import {
+  SecurityCheckDecision,
+  SecurityCheckResponse,
+} from 'background/service/openapi';
 import { useTranslation } from 'react-i18next';
 
 import clsx from 'clsx';
 import React from 'react';
 import IconCheck from 'ui/assets/icon-check.svg';
+import IconQuestion from 'ui/assets/icon-question-ghost.svg';
 import IconLoading from 'ui/assets/icon-loading.svg';
 import { ReactComponent as IconRcWaring } from 'ui/assets/icon-warning.svg';
 
@@ -12,10 +16,12 @@ interface SecurityCheckCardProps {
   loading: boolean;
   data: SecurityCheckResponse | null;
   isReady: boolean;
+  status?: SecurityCheckDecision;
+  onCheck?: () => void;
 }
 
 const SecurityCheckCard = (props: SecurityCheckCardProps) => {
-  const { loading, data, isReady } = props;
+  const { loading, data, isReady, status, onCheck } = props;
   const { t } = useTranslation();
 
   if (!isReady) {
@@ -24,6 +30,19 @@ const SecurityCheckCard = (props: SecurityCheckCardProps) => {
         <div className="security-check-card-header items-center mb-0 gap-[12px]">
           <Skeleton.Avatar active style={{ width: 20, height: 20 }} />
           <Skeleton.Input active style={{ width: 84, height: 15 }} />
+        </div>
+      </div>
+    );
+  }
+  if (status === 'pending') {
+    return (
+      <div className="security-check-card flex gap-[12px] items-center">
+        <img src={IconQuestion} className="security-check-card-icon" />
+        <div className="security-check-card-desc flex items-center flex-1">
+          <span>Security checks have not been executed</span>
+          <span className="security-check-card-btn" onClick={onCheck}>
+            Check
+          </span>
         </div>
       </div>
     );

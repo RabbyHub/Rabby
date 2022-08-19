@@ -231,11 +231,15 @@
     padding: 24px 20px;
     flex: 1;
     overflow: auto;
+    background-color: @color-bg;
     .text-detail-wrapper {
       padding-bottom: 45px;
       margin: 0 auto;
       position: relative;
       display: flex;
+      border: 1px solid @color-border;
+      background-color: #fff;
+      border-radius: 6px;
     }
     .text-detail {
       padding: 16px;
@@ -249,7 +253,7 @@
       flex: 1;
     }
     .text-explain {
-      height: 45px;
+      height: 40px;
       left: 20px;
       position: absolute;
       bottom: 0;
@@ -265,15 +269,14 @@
       padding: 0 16px;
       gap: 4px;
       color: @color-comment-1;
-      background-color: fade(@color-comment-1, 10%);
+      background-color: @color-border;
       .icon-question-mark {
         margin-left: auto;
         width: 16px;
         height: 16px;
-        .icon-question-mark {
-          path:first-child {
-            fill: @color-comment-1;
-          }
+        flex-shrink: 0;
+        path:first-child {
+          fill: @color-comment-2;
         }
       }
 
@@ -294,6 +297,134 @@
             fill: fade(@color-red, 60%);
           }
         }
+      }
+    }
+    .section-title {
+      margin-bottom: 8px;
+      font-size: 14px;
+      line-height: 16px;
+      color: @color-body;
+    }
+  }
+
+  .approval-tx,
+  .approval-text {
+    .security-check-card {
+      background-color: #fff;
+      padding: 16px;
+      border-radius: 6px;
+      margin-top: 8px;
+
+      &-header {
+        display: flex;
+        align-items: center;
+        gap: 12px;
+        margin-bottom: 12px;
+      }
+      &-btn {
+        font-weight: 500;
+        font-size: 13px;
+        line-height: 15px;
+        text-decoration-line: underline;
+        color: @primary-color;
+        cursor: pointer;
+        margin-left: auto;
+        flex-shrink: 0;
+      }
+      &-icon {
+        flex-shrink: 0;
+        &.forbidden {
+          path:first-child {
+            fill: #af160e;
+            stroke: #af160e;
+          }
+        }
+        &.danger {
+          path:first-child {
+            fill: @color-red;
+            stroke: @color-red;
+          }
+        }
+        &.warning {
+          path:first-child {
+            fill: @color-orange;
+            stroke: @color-orange;
+          }
+        }
+        &.is-loading {
+          animation: rotate 1s linear infinite;
+        }
+        &.gray {
+          path:first-child {
+            fill: #b4bdcc;
+            stroke: #b4bdcc;
+          }
+        }
+      }
+
+      &-content {
+        flex: 1;
+      }
+      &-title {
+        font-size: 15px;
+        line-height: 18px;
+        color: @color-title;
+      }
+      &-desc {
+        font-size: 14px;
+        line-height: 16px;
+        color: @color-body;
+      }
+      &-text-loading {
+        font-size: 14px;
+        line-height: 20px;
+        color: @color-comment-1;
+      }
+
+      &-item {
+        display: flex;
+        align-items: flex-start;
+        gap: 12px;
+        margin-bottom: 12px;
+        font-size: 14px;
+        line-height: 20px;
+        color: @color-body;
+
+        .number {
+          color: @color-comment-1;
+        }
+
+        &-icon-wraper {
+          width: 20px;
+          height: 20px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          flex-shrink: 0;
+        }
+
+        &-icon {
+          width: 8px;
+          height: 8px;
+          border-radius: 50%;
+          &.is-forbidden {
+            background-color: #af160e;
+          }
+          &.is-danger {
+            background-color: @color-red;
+          }
+          &.is-warning {
+            background-color: @color-orange;
+          }
+        }
+      }
+      &-footer {
+        margin-top: 24px;
+        font-size: 12px;
+        line-height: 14px;
+        color: @color-comment-2;
+        text-align: center;
+        opacity: 0.7;
       }
     }
   }
@@ -1065,123 +1196,6 @@
         }
       }
     }
-    .process-tooltip {
-      font-weight: 400;
-      font-size: 12px;
-      line-height: 16px;
-      color: @color-body;
-      padding-bottom: 16px;
-      margin-top: -4px;
-    }
-    .security-check-card {
-      background-color: #fff;
-      padding: 16px;
-      border-radius: 6px;
-      margin-top: 8px;
-
-      &-header {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        margin-bottom: 12px;
-      }
-
-      &-icon {
-        flex-shrink: 0;
-        &.forbidden {
-          path:first-child {
-            fill: #af160e;
-            stroke: #af160e;
-          }
-        }
-        &.danger {
-          path:first-child {
-            fill: @color-red;
-            stroke: @color-red;
-          }
-        }
-        &.warning {
-          path:first-child {
-            fill: @color-orange;
-            stroke: @color-orange;
-          }
-        }
-        &.is-loading {
-          animation: rotate 1s linear infinite;
-        }
-        &.gray {
-          path:first-child {
-            fill: #b4bdcc;
-            stroke: #b4bdcc;
-          }
-        }
-      }
-
-      &-content {
-        flex: 1;
-      }
-      &-title {
-        font-size: 15px;
-        line-height: 18px;
-        color: @color-title;
-      }
-      &-desc {
-        font-size: 14px;
-        line-height: 16px;
-        color: @color-body;
-      }
-      &-text-loading {
-        font-size: 14px;
-        line-height: 20px;
-        color: @color-comment-1;
-      }
-
-      &-item {
-        display: flex;
-        align-items: flex-start;
-        gap: 12px;
-        margin-bottom: 12px;
-        font-size: 14px;
-        line-height: 20px;
-        color: @color-body;
-
-        .number {
-          color: @color-comment-1;
-        }
-
-        &-icon-wraper {
-          width: 20px;
-          height: 20px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-          flex-shrink: 0;
-        }
-
-        &-icon {
-          width: 8px;
-          height: 8px;
-          border-radius: 50%;
-          &.is-forbidden {
-            background-color: #af160e;
-          }
-          &.is-danger {
-            background-color: @color-red;
-          }
-          &.is-warning {
-            background-color: @color-orange;
-          }
-        }
-      }
-      &-footer {
-        margin-top: 24px;
-        font-size: 12px;
-        line-height: 14px;
-        color: @color-comment-2;
-        text-align: center;
-        opacity: 0.7;
-      }
-    }
 
     .common-detail-block {
       position: relative;
@@ -1229,6 +1243,14 @@
 
   .approval-text__footer {
     position: relative;
+  }
+  .process-tooltip {
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 16px;
+    color: @color-body;
+    padding-bottom: 16px;
+    margin-top: -4px;
   }
 
   .force-process {
