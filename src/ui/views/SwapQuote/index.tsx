@@ -237,6 +237,7 @@ export const SwapQuotes = () => {
         handleSwap={handleSwap}
       />
       <QuotesListDrawer
+        payAmount={amount}
         currentQuoteIndex={currentQuoteIndex}
         list={swapQuotes}
         visible={quotesDrawer}

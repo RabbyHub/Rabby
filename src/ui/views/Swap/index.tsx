@@ -65,8 +65,12 @@ const AbsoluteFooter = styled.div`
 const RotateArrow = styled.div`
   cursor: pointer;
   transition: transform 0.3s;
+  border-radius: 4px;
+  width: 32px;
+  height: 32px;
   &:hover {
-    transform: rotate(180deg);
+    background: #f5f6fa;
+    transform: rotate(-180deg);
   }
 `;
 
@@ -408,7 +412,7 @@ const Swap = () => {
       if (v < 0.1) {
         setSlippageWaring(t('LowSlippageToleranceWarn'));
       }
-      if (v > 5 && v < 15) {
+      if (v > 5 && v <= 15) {
         setSlippageWaring(t('HighSlippageToleranceWarn'));
       }
       if (v > 15) {
@@ -468,7 +472,7 @@ const Swap = () => {
 
   const slippageTooltipsClassName = useCss({
     '& .ant-tooltip-arrow': {
-      left: 'calc(50% - 42px )',
+      left: 'calc(50% - 58px )',
     },
   });
 
@@ -582,7 +586,9 @@ const Swap = () => {
             setOpenAdvancedSetting((b) => !b);
           }}
         >
-          <span className="mr-2">{t('AdvancedSettings')}</span>
+          <span className="mr-2 text-12 font-normal text-gray-content">
+            {t('AdvancedSettings')}
+          </span>
           <div
             className={clsx({
               'rotate-180': openAdvancedSetting,
@@ -598,7 +604,9 @@ const Swap = () => {
           })}
         >
           <Space size={4} className="mb-8">
-            <div>{t('MaxPriceSlippage')}</div>
+            <div className="text-12 text-gray-title">
+              {t('MaxPriceSlippage')}
+            </div>
             <Tooltip
               overlayClassName={clsx(
                 'rectangle max-w-[360px] left-[20px]',
@@ -680,7 +688,7 @@ const Swap = () => {
         }}
       >
         <div className="flex flex-col justify-between h-full">
-          <div className="text-center text-15 text-gray-title">
+          <div className="text-center text-15 text-gray-title font-medium">
             {searchObj?.fetchQuoteError}
           </div>
           <Button

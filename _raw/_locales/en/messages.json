@@ -1052,7 +1052,7 @@
     "message": "High slippage tolerance may result in uneconomic trading. "
   },
   "HighSlippageToleranceError": {
-    "message": "High slippage tolerance may result in uneconomic trading. "
+    "message": "High slippage tolerance may result in large losses. Please set your max slippage below 15%. "
   },
   "GetQuotes": {
     "message": "Get Quotes"

@@ -29,6 +29,7 @@ const Wrapper = styled.div`
 const Text = styled.span`
   font-size: 15px;
   line-height: 18px;
+  font-weight: 500;
   color: ${LessPalette['@color-title']};
 `;
 
