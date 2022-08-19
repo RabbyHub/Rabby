@@ -20,7 +20,7 @@ import LessPalette from '@/ui/style/var-defs';
 import clsx from 'clsx';
 import { ReactComponent as IconInfo } from 'ui/assets/infoicon.svg';
 import { ReactComponent as IconTipDownArrow } from 'ui/assets/swap/arrow-tips-down.svg';
-
+import { useCss } from 'react-use';
 const ReservedGas = 0.1;
 
 const MaxButton = styled.div`
@@ -460,6 +460,18 @@ const Swap = () => {
     };
   }, []);
 
+  const tokenScanTooltipsClassName = useCss({
+    '& .ant-tooltip-arrow': {
+      left: 'calc(50% + 12px )',
+    },
+  });
+
+  const slippageTooltipsClassName = useCss({
+    '& .ant-tooltip-arrow': {
+      left: 'calc(50% - 42px )',
+    },
+  });
+
   return (
     <SwapContainer>
       <PageHeader onBack={handleClickBack} forceShowBack>
@@ -492,7 +504,7 @@ const Swap = () => {
                   setAmountInput(e);
                 }
               }}
-              placeholder={t('Search by Name / Address')}
+              placeholder={t('Search by Name Address')}
             />
           )}
 
@@ -535,7 +547,7 @@ const Swap = () => {
             chainId={CHAINS[chain].serverId}
             excludeTokens={[payToken.id]}
             type="swap"
-            placeholder={t('Search by Name / Address')}
+            placeholder={t('Search by Name Address')}
           />
           <Space
             size={4}
@@ -552,14 +564,12 @@ const Swap = () => {
               {t('Etherscan')}
             </a>
             <Tooltip
-              overlayStyle={{
-                maxWidth: 360,
-              }}
-              overlayClassName={'rectangle swap'}
+              overlayClassName={clsx(
+                'rectangle max-w-[360px] left-[20px]',
+                tokenScanTooltipsClassName
+              )}
               placement="bottom"
-              title={
-                <div className="w-[360px]">{t('SwapCheckEtherscanToken')}</div>
-              }
+              title={t('SwapCheckEtherscanToken')}
             >
               <IconInfo />
             </Tooltip>
@@ -590,12 +600,12 @@ const Swap = () => {
           <Space size={4} className="mb-8">
             <div>{t('MaxPriceSlippage')}</div>
             <Tooltip
-              overlayStyle={{
-                maxWidth: 360,
-              }}
-              overlayClassName={'rectangle swap'}
+              overlayClassName={clsx(
+                'rectangle max-w-[360px] left-[20px]',
+                slippageTooltipsClassName
+              )}
               placement="bottom"
-              title={<div className="w-[360px]">{t('SlippageTip')}</div>}
+              title={t('SlippageTip')}
             >
               <IconInfo />
             </Tooltip>
