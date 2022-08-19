@@ -1343,7 +1343,8 @@ const SignTx = ({ params, origin }: SignTxProps) => {
                           (isLedger &&
                             !useLedgerLive &&
                             !hasConnectedLedgerHID) ||
-                          !forceProcess
+                          !forceProcess ||
+                          securityCheckStatus === 'loading'
                         }
                         loading={isGnosisAccount ? !safeInfo : false}
                       >

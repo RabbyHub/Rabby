@@ -390,7 +390,8 @@ const SignText = ({ params }: { params: SignTextProps }) => {
               loading={isLoading}
               disabled={
                 (isLedger && !useLedgerLive && !hasConnectedLedgerHID) ||
-                !forceProcess
+                !forceProcess ||
+                securityCheckStatus === 'loading'
               }
             >
               {t(submitText)}

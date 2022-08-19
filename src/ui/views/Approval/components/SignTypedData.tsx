@@ -329,7 +329,8 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
               onClick={() => handleAllow(forceProcess)}
               disabled={
                 (isLedger && !useLedgerLive && !hasConnectedLedgerHID) ||
-                !forceProcess
+                !forceProcess ||
+                securityCheckStatus === 'loading'
               }
             >
               {submitText}
