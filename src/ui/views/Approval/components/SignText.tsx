@@ -323,7 +323,7 @@ const SignText = ({ params }: { params: SignTextProps }) => {
           </span>
         </p>
         <div className="text-detail-wrapper">
-          <div className="text-detail text-gray-subTitle">{signText}</div>
+          <div className="text-detail">{signText}</div>
           {explain && (
             <p className={clsx('text-explain', explainStatus)}>
               {explain}
