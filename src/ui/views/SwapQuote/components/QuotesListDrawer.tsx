@@ -10,6 +10,9 @@ import { ReactComponent as IconArronRight } from 'ui/assets/arrow-right-gray.svg
 import BigNumber from 'bignumber.js';
 import { SWAP_AVAILABLE_VALUE_RATE } from '@/constant';
 import { useCss } from 'react-use';
+import { ReactComponent as IconBack } from 'ui/assets/back.svg';
+import { ReactComponent as IconClose } from 'ui/assets/swap/modal-close.svg';
+import RateExchange from './RateExchange';
 
 export type Quote = Awaited<
   ReturnType<typeof wallet.openapi.getSwapQuote>
@@ -29,10 +32,10 @@ export const QuotesListDrawer = ({
   list,
   visible,
   onClose,
-
   slippage,
   currentQuoteIndex,
   handleSelect,
+  payAmount,
 }: {
   list: Quote[];
   visible: boolean;
@@ -40,6 +43,7 @@ export const QuotesListDrawer = ({
   slippage: number;
   currentQuoteIndex: number;
   handleSelect: (index: number) => void;
+  payAmount: string;
 }) => {
   const { t } = useTranslation();
 
@@ -72,7 +76,20 @@ export const QuotesListDrawer = ({
     () => [
       {
         left: <div className={clsx(labelClassName)}>Rate</div>,
-        right: null,
+        right: list[selectedIndex] ? (
+          <RateExchange
+            className={valueClassName}
+            payAmount={payAmount}
+            receiveAmount={new BigNumber(
+              list[selectedIndex].receive_token_raw_amount
+            )
+              .times(SWAP_AVAILABLE_VALUE_RATE)
+              .div(10 ** list[selectedIndex].receive_token.decimals)
+              .toString()}
+            payToken={list[selectedIndex].pay_token}
+            receiveToken={list[selectedIndex].receive_token}
+          />
+        ) : null,
       },
       {
         left: (
@@ -193,7 +210,7 @@ export const QuotesListDrawer = ({
 
   return (
     <Drawer
-      closable
+      closable={false}
       placement="bottom"
       height="512px"
       visible={visible}
@@ -205,12 +222,20 @@ export const QuotesListDrawer = ({
       }}
       push={false}
     >
-      <div className="text-20 font-medium text-center text-gray-title">
-        {t('AllQuotes')}
+      <div className="flex justify-between items-center">
+        <div />
+        <div className="text-20 font-medium text-center text-gray-title">
+          {t('AllQuotes')}
+        </div>
+        <div className="pr-[20px]">
+          <IconClose className="cursor-pointer" onClick={onClose} />
+        </div>
       </div>
+
       <div className="overflow-auto">
-        <div className="text-12 text-gray-content pt-[20px] mb-[40px] px-[10px] ">
+        <div className="text-12 text-gray-content pt-[20px] mb-[24px] px-[20px] ">
           {t('QuoteDesc')}
+          <div className="h-0 mt-16 bg-transparent border-t-[0.5px] border-gray-divider border-solid" />
         </div>
         <Space size={44} className="px-20">
           <Space size={4} className="w-[130px]">
@@ -255,7 +280,7 @@ export const QuotesListDrawer = ({
       </div>
 
       <Drawer
-        closable
+        closable={false}
         placement="bottom"
         height="512px"
         visible={!!list[selectedIndex]}
@@ -268,11 +293,22 @@ export const QuotesListDrawer = ({
           borderRadius: '16px 16px 0px 0',
         }}
       >
-        <div className="text-20 font-medium text-center text-gray-title">
-          {t('QuoteDetails')}
+        <div className="flex justify-between items-center">
+          <IconBack
+            className="cursor-pointer"
+            onClick={() => setSelectedIndex(-1)}
+          />
+          <div className="text-20 font-medium text-center text-gray-title ">
+            {t('QuoteDetails')}
+          </div>
+          <IconClose
+            className="cursor-pointer"
+            onClick={() => setSelectedIndex(-1)}
+          />
         </div>
+
         <div className="flex justify-center">
-          {selectedIndex === 0 && <BestQuoteTag />}
+          {selectedIndex === 0 && <BestQuoteTag className="mt-8" />}
         </div>
 
         <div>
@@ -368,7 +404,9 @@ const AmountAndGasFeeItem = ({
         </Space>
         <Space size={12} className="ml-auto">
           {index === 0 && <BestQuoteTag className="mr-[12px]" />}
-          <IconArronRight />
+          <IconArronRight
+            className={clsx(currentQuoteIndex === index && 'brightness-[1000]')}
+          />
         </Space>
       </div>
     </div>
