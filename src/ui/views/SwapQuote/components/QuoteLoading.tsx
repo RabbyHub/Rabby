@@ -8,7 +8,7 @@ import styled from 'styled-components';
 
 const Container = styled.div`
   position: relative;
-  padding: 110px 60px 58px;
+  padding: 110px 60px 48px;
   background-color: #f0f2f5;
   height: 100%;
   display: flex;
@@ -29,15 +29,19 @@ export const QuoteLoading = ({
   const { t } = useTranslation();
   return (
     <Container>
-      <div className="mb-[12px] text-center">{t('FetchingQuotes')}</div>
-      <div className="mb-[12px] text-center"> {successCount} quotes found</div>
+      <div className="mb-[12px] text-center text-24 font-bold">
+        {t('FetchingQuotes')}
+      </div>
+      <div className="mb-[12px] text-center text-14 text-gray-subTitle">
+        {successCount} quotes found
+      </div>
       <Progress
         percent={(successCount / allCount) * 100}
         showInfo={false}
         strokeColor={LessPalette['@primary-color']}
         trailColor={'rgba(134, 151, 255, .3)'}
       />
-      <div className="flex justify-center">
+      <div className="flex justify-center mt-[96px]">
         <IconLogo />
       </div>
       <Footer>
