@@ -9,6 +9,7 @@ import { ReactComponent as IconInfo } from 'ui/assets/infoicon.svg';
 import { ReactComponent as IconArronRight } from 'ui/assets/arrow-right-gray.svg';
 import BigNumber from 'bignumber.js';
 import { SWAP_AVAILABLE_VALUE_RATE } from '@/constant';
+import { useCss } from 'react-use';
 
 export type Quote = Awaited<
   ReturnType<typeof wallet.openapi.getSwapQuote>
@@ -42,6 +43,30 @@ export const QuotesListDrawer = ({
 }) => {
   const { t } = useTranslation();
 
+  const detailsReceivingAmountTooltipsClassName = useCss({
+    '& .ant-tooltip-arrow': {
+      left: 'calc(50% - 60px )',
+    },
+  });
+
+  const detailsGasFeeTooltipsClassName = useCss({
+    '& .ant-tooltip-arrow': {
+      left: 'calc(50% - 102px )',
+    },
+  });
+
+  const detailsSlippageTooltipsClassName = useCss({
+    '& .ant-tooltip-arrow': {
+      left: 'calc(50% - 88px )',
+    },
+  });
+
+  const detailsLiquiditySourceClassName = useCss({
+    '& .ant-tooltip-arrow': {
+      left: 'calc(50% - 72px)',
+    },
+  });
+
   const [selectedIndex, setSelectedIndex] = useState<number>(-1);
   const data = useMemo(
     () => [
@@ -54,7 +79,10 @@ export const QuotesListDrawer = ({
           <div className={clsx(labelClassName)}>
             <span>Receiving amount </span>
             <Tooltip
-              overlayClassName={'rectangle'}
+              overlayClassName={clsx(
+                'rectangle max-w-[360px] left-[20px]',
+                detailsReceivingAmountTooltipsClassName
+              )}
               placement="bottom"
               title={t('ReceivingAmountDesc')}
             >
@@ -77,7 +105,10 @@ export const QuotesListDrawer = ({
           <div className={clsx(labelClassName)}>
             <span>Est.gas fee </span>
             <Tooltip
-              overlayClassName={'rectangle'}
+              overlayClassName={clsx(
+                'rectangle max-w-[360px] left-[20px]',
+                detailsGasFeeTooltipsClassName
+              )}
               placement="bottom"
               title={t('EstGasFeeDesc')}
             >
@@ -99,7 +130,10 @@ export const QuotesListDrawer = ({
           <div className={clsx(labelClassName)}>
             <span>Max slippage </span>
             <Tooltip
-              overlayClassName={'rectangle'}
+              overlayClassName={clsx(
+                'rectangle max-w-[360px] left-[20px]',
+                detailsSlippageTooltipsClassName
+              )}
               placement="bottom"
               title={t('MaxSlippageDesc')}
             >
@@ -114,7 +148,10 @@ export const QuotesListDrawer = ({
           <div className={clsx(labelClassName)}>
             <span>Liquidity source </span>
             <Tooltip
-              overlayClassName={'rectangle'}
+              overlayClassName={clsx(
+                'rectangle max-w-[360px] left-[20px]',
+                detailsLiquiditySourceClassName
+              )}
               placement="bottom"
               title={t('LiquiditySourceDesc')}
             >
@@ -142,6 +179,17 @@ export const QuotesListDrawer = ({
     handleSelect(selectedIndex);
     setSelectedIndex(-1);
   };
+  const receivingAmountTooltipsClassName = useCss({
+    '& .ant-tooltip-arrow': {
+      left: 'calc(50% - 62px )',
+    },
+  });
+
+  const gasFeeTooltipsClassName = useCss({
+    '& .ant-tooltip-arrow': {
+      left: 'calc(50% + 76px )',
+    },
+  });
 
   return (
     <Drawer
@@ -161,18 +209,19 @@ export const QuotesListDrawer = ({
         {t('AllQuotes')}
       </div>
       <div className="overflow-auto">
-        <div className="text-12 text-gray-content pt-[20px] mb-[40px] px-[20px]">
+        <div className="text-12 text-gray-content pt-[20px] mb-[40px] px-[10px] ">
           {t('QuoteDesc')}
         </div>
         <Space size={44} className="px-20">
           <Space size={4} className="w-[130px]">
             <div>receiving amount</div>
             <Tooltip
-              overlayClassName={'rectangle'}
+              overlayClassName={clsx(
+                'rectangle max-w-[360px] left-[20px]',
+                receivingAmountTooltipsClassName
+              )}
               placement="bottom"
-              title={
-                <div className="w-[360px]">{t('ReceivingAmountDesc')}</div>
-              }
+              title={t('ReceivingAmountDesc')}
             >
               <IconInfo />
             </Tooltip>
@@ -180,16 +229,13 @@ export const QuotesListDrawer = ({
           <Space size={4}>
             <div>Est. gas fee</div>
             <Tooltip
-              overlayStyle={{
-                maxWidth: 360,
-              }}
-              overlayClassName={'rectangle'}
+              overlayClassName={clsx(
+                'rectangle max-w-[360px] left-[20px]',
+                gasFeeTooltipsClassName
+              )}
               placement="bottom"
               title={
-                <div className="w-[360px]">
-                  This is an estimated gas cost for your transaction. The actual
-                  gas cost may change based on network conditions.
-                </div>
+                'This is an estimated gas cost for your transaction. The actual gas cost may change based on network conditions.'
               }
             >
               <IconInfo />
@@ -212,7 +258,6 @@ export const QuotesListDrawer = ({
         closable
         placement="bottom"
         height="512px"
-        // width={'100%'}
         visible={!!list[selectedIndex]}
         onClose={() => setSelectedIndex(-1)}
         destroyOnClose
