@@ -34,6 +34,7 @@ import buildinProvider from 'background/utils/buildinProvider';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import { setPopupIcon } from './utils';
+import { getSentryEnv } from '@/utils/env';
 
 ReactGA.initialize('UA-199755108-3');
 // eslint-disable-next-line @typescript-eslint/no-empty-function
@@ -59,6 +60,7 @@ Sentry.init({
   // of transactions for performance monitoring.
   // We recommend adjusting this value in production
   tracesSampleRate: 1.0,
+  environment: getSentryEnv(),
 });
 
 function initAppMeta() {

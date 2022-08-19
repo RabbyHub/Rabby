@@ -1,0 +1,16 @@
+diff --git a/node_modules/@walletconnect/socket-transport/dist/esm/index.js b/node_modules/@walletconnect/socket-transport/dist/esm/index.js
+index 9a6cc32..6136396 100644
+--- a/node_modules/@walletconnect/socket-transport/dist/esm/index.js
++++ b/node_modules/@walletconnect/socket-transport/dist/esm/index.js
+@@ -51,6 +51,11 @@ class SocketTransport {
+     }
+     close() {
+         this._socketClose();
++        if (this._nextSocket) {
++            this._nextSocket.onclose = () => {
++            };
++            this._nextSocket.close();
++        }
+     }
+     send(message, topic, silent) {
+         if (!topic || typeof topic !== "string") {

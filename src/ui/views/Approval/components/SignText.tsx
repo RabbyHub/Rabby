@@ -28,6 +28,10 @@ import SecurityCheckDetail from './SecurityCheckDetail';
 
 import { getKRCategoryByType } from '@/utils/transaction';
 import ReactGA from 'react-ga';
+import PreCheckCard from './PreCheckCard';
+import SecurityCheckCard from './SecurityCheckCard';
+import ProcessTooltip from './ProcessTooltip';
+import SecurityCheck from './SecurityCheck';
 
 interface SignTextProps {
   data: string[];
@@ -82,6 +86,7 @@ const SignText = ({ params }: { params: SignTextProps }) => {
     cantProcessReason,
     setCantProcessReason,
   ] = useState<ReactNode | null>();
+  const [forceProcess, setForceProcess] = useState(true);
 
   const handleSecurityCheck = async () => {
     setSecurityCheckStatus('loading');
@@ -91,16 +96,19 @@ const SignText = ({ params }: { params: SignTextProps }) => {
       session.origin,
       hexData
     );
+
     const serverExplain = await wallet.openapi.explainText(
       session.origin,
       isGnosis ? params.account!.address : currentAccount!.address,
       hexData
     );
+
     setExplain(serverExplain.comment);
     setExplainStatus(serverExplain.status);
     setSecurityCheckStatus(check.decision);
     setSecurityCheckAlert(check.alert);
     setSecurityCheckDetail(check);
+    setForceProcess(check.decision !== 'forbidden');
   };
 
   const report = async (
@@ -226,6 +234,10 @@ const SignText = ({ params }: { params: SignTextProps }) => {
     });
   };
 
+  const handleForceProcessChange = (checked: boolean) => {
+    setForceProcess(checked);
+  };
+
   const checkWachMode = async () => {
     const currentAccount = await wallet.getCurrentAccount();
     const accountType =
@@ -236,11 +248,10 @@ const SignText = ({ params }: { params: SignTextProps }) => {
     if (accountType === KEYRING_TYPE.WatchAddressKeyring) {
       setIsWatch(true);
       setCantProcessReason(
-        <div className="flex items-center gap-8">
-          <img src={IconWatch} alt="" className="w-[24px]" />
+        <div className="flex items-center gap-6">
+          <img src={IconWatch} alt="" className="w-[24px] flex-shrink-0" />
           <div>
-            The current address is in Watch Mode. If your want to continue,
-            please{' '}
+            Unable to sign because the current address is in Watch Mode. You can{' '}
             <a
               href=""
               className="underline"
@@ -252,7 +263,7 @@ const SignText = ({ params }: { params: SignTextProps }) => {
             >
               import it
             </a>{' '}
-            again using another mode.
+            fully or use another address.
           </div>
         </div>
       );
@@ -260,8 +271,8 @@ const SignText = ({ params }: { params: SignTextProps }) => {
     if (accountType === KEYRING_TYPE.GnosisKeyring && !params.account) {
       setIsWatch(true);
       setCantProcessReason(
-        <div className="flex items-center gap-8">
-          <img src={IconGnosis} alt="" className="w-[24px]" />
+        <div className="flex items-center gap-6">
+          <img src={IconGnosis} alt="" className="w-[24px] flex-shrink-0" />
           {t(
             'This is a Gnosis Safe address, and it cannot be used to sign text.'
           )}
@@ -290,9 +301,6 @@ const SignText = ({ params }: { params: SignTextProps }) => {
         setSubmitText('Proceed');
         setCheckText('Proceed');
       }
-      if (['danger', 'forbidden'].includes(securityCheckStatus)) {
-        setSubmitText('Continue');
-      }
     })();
   }, [securityCheckStatus]);
 
@@ -314,7 +322,7 @@ const SignText = ({ params }: { params: SignTextProps }) => {
             {t('View Raw')} <img src={IconArrowRight} />
           </span>
         </p>
-        <div className="text-detail-wrapper gray-section-block">
+        <div className="text-detail-wrapper">
           <div className="text-detail text-gray-subTitle">{signText}</div>
           {explain && (
             <p className={clsx('text-explain', explainStatus)}>
@@ -331,17 +339,29 @@ const SignText = ({ params }: { params: SignTextProps }) => {
             </p>
           )}
         </div>
+        <div className="section-title mt-[32px]">Pre-sign check</div>
+        <SecurityCheckCard
+          isReady={true}
+          loading={securityCheckStatus === 'loading'}
+          data={securityCheckDetail}
+          status={securityCheckStatus}
+          onCheck={handleSecurityCheck}
+        ></SecurityCheckCard>
       </div>
-      <footer className="approval-text__footer">
+      <footer className="approval-text__footer pb-[20px]">
         {isLedger && !useLedgerLive && !hasConnectedLedgerHID && (
           <LedgerWebHIDAlert connected={hasConnectedLedgerHID} />
         )}
-        <SecurityCheckBar
-          status={securityCheckStatus}
-          alert={securityCheckAlert}
-          onClick={() => setShowSecurityCheckDetail(true)}
-          onCheck={handleSecurityCheck}
-        />
+        {isWatch ? (
+          <ProcessTooltip>{cantProcessReason}</ProcessTooltip>
+        ) : (
+          <SecurityCheck
+            status={securityCheckStatus}
+            value={forceProcess}
+            onChange={handleForceProcessChange}
+          />
+        )}
+
         <div className="action-buttons flex justify-between">
           <Button
             type="primary"
@@ -352,54 +372,33 @@ const SignText = ({ params }: { params: SignTextProps }) => {
             {t('Cancel')}
           </Button>
           {isWatch ? (
-            <Tooltip
-              placement="topRight"
-              overlayClassName={clsx(
-                'rectangle watcSign__tooltip',
-                'watcSign__tooltip-Sign'
-              )}
-              title={cantProcessReason}
-            >
-              <div className="w-[172px] relative flex items-center">
-                <Button
-                  type="primary"
-                  size="large"
-                  className="w-[172px]"
-                  onClick={() => handleAllow()}
-                  disabled={true}
-                >
-                  {t('Sign')}
-                </Button>
-                <img
-                  src={IconInfo}
-                  className={clsx('absolute right-[40px]', 'icon-submit-Sign')}
-                />
-              </div>
-            </Tooltip>
-          ) : (
             <Button
               type="primary"
               size="large"
               className="w-[172px]"
               onClick={() => handleAllow()}
+              disabled={true}
+            >
+              {t('Sign')}
+            </Button>
+          ) : (
+            <Button
+              type="primary"
+              size="large"
+              className="w-[172px]"
+              onClick={() => handleAllow(forceProcess)}
               loading={isLoading}
-              disabled={isLedger && !useLedgerLive && !hasConnectedLedgerHID}
+              disabled={
+                (isLedger && !useLedgerLive && !hasConnectedLedgerHID) ||
+                !forceProcess ||
+                securityCheckStatus === 'loading'
+              }
             >
               {t(submitText)}
             </Button>
           )}
         </div>
       </footer>
-      {securityCheckDetail && (
-        <SecurityCheckDetail
-          visible={showSecurityCheckDetail}
-          onCancel={() => setShowSecurityCheckDetail(false)}
-          data={securityCheckDetail}
-          onOk={() => handleAllow(true)}
-          okText={t(checkText)}
-          cancelText={t('Cancel')}
-        />
-      )}
     </>
   );
 };

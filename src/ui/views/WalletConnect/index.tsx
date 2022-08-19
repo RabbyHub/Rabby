@@ -103,6 +103,21 @@ const WalletConnectTemplate = () => {
     if (ready) handleImportByWalletconnect();
   }, [bridgeURL]);
 
+  useEffect(() => {
+    const alertTransportError = () => {
+      message.error(t('Please check your network or refresh the QR code'));
+    };
+
+    eventBus.addEventListener(
+      EVENTS.WALLETCONNECT.TRANSPORT_ERROR,
+      alertTransportError
+    );
+
+    return () => {
+      eventBus.removeAllEventListeners(EVENTS.WALLETCONNECT.TRANSPORT_ERROR);
+    };
+  }, []);
+
   const init = async () => {
     const cache = await wallet.getPageStateCache();
     if (cache && cache.path === history.location.pathname) {
