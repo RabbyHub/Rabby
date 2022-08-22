@@ -33,7 +33,7 @@ const TokenWithChain = ({
         className={clsx('token-symbol', noRound && 'no-round')}
         src={token.logo_url || IconUnknown}
         alt={token.symbol}
-        style={{ width, height }}
+        style={{ width, height, minWidth: width }}
       />
       {!hideChainIcon && (!hideConer || chain?.id !== 1) && (
         <img className="chain-symbol" src={chain?.logo || IconUnknown} />
