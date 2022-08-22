@@ -363,26 +363,6 @@ const Swap = () => {
       }
       setChain(target.enum);
       loadCurrentToken(id, tokenChain, account.address);
-    } else {
-      const lastTimeToken = await wallet.getLastTimeSendToken(account.address);
-      if (lastTimeToken) setPayToken(lastTimeToken);
-      let needLoadToken: TokenItem = lastTimeToken || payToken;
-      if (await wallet.hasPageStateCache()) {
-        const cache = await wallet.getPageStateCache();
-        if (cache?.path === pathname) {
-          if (cache.states.currentToken) {
-            setPayToken(cache.states.currentToken);
-            needLoadToken = cache.states.currentToken;
-          }
-        }
-      }
-      if (needLoadToken.chain !== CHAINS[chain].serverId) {
-        const target = Object.values(CHAINS).find(
-          (item) => item.serverId === needLoadToken.chain
-        )!;
-        setChain(target.enum);
-      }
-      loadCurrentToken(needLoadToken.id, needLoadToken.chain, account.address);
     }
 
     if (qs.receiveTokenId && qs.chain) {
@@ -425,21 +405,19 @@ const Swap = () => {
     !!searchObj?.fetchQuoteError
   );
 
-  const setPageStateCache = async () => {
+  const setPageStateCache = React.useCallback(async () => {
     if (!shouldSetPageStateCache.current) {
       wallet.clearPageStateCache();
       return;
     }
     try {
-      await wallet.setLastTimeSendToken(currentAccount!.address, payToken);
-
       await wallet.setPageStateCache({
         path: pathname,
         search: `?${obj2query({
           chain_enum: chain,
           chain: payToken.chain,
           payTokenId: payToken.id,
-          receiveTokenId: receiveToken!.id,
+          receiveTokenId: receiveToken?.id || '',
           amount: amountInput,
           rawAmount: new BigNumber(amountInput)
             .times(10 ** payToken.decimals)
@@ -453,14 +431,30 @@ const Swap = () => {
       message.error(error.message);
       console.error(error);
     }
-  };
+  }, [
+    pathname,
+    chain,
+    receiveToken?.id,
+    amountInput,
+    slippage,
+    customSlippageInput,
+    wallet.clearPageStateCache,
+    wallet.setPageStateCache,
+    payToken.chain,
+    payToken.id,
+    payToken.decimals,
+  ]);
 
   const setPageStateCacheRef = useRef(setPageStateCache);
   setPageStateCacheRef.current = setPageStateCache;
 
   useEffect(() => {
+    setPageStateCache();
+  }, [setPageStateCache]);
+
+  useEffect(() => {
     return () => {
-      setPageStateCacheRef.current();
+      setPageStateCache();
     };
   }, []);
 
