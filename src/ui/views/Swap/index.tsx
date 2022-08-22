@@ -405,7 +405,7 @@ const Swap = () => {
     !!searchObj?.fetchQuoteError
   );
 
-  const setPageStateCache = React.useCallback(async () => {
+  const setPageStateCache = async () => {
     if (!shouldSetPageStateCache.current) {
       wallet.clearPageStateCache();
       return;
@@ -431,30 +431,25 @@ const Swap = () => {
       message.error(error.message);
       console.error(error);
     }
-  }, [
-    pathname,
-    chain,
-    receiveToken?.id,
-    amountInput,
-    slippage,
-    customSlippageInput,
-    wallet.clearPageStateCache,
-    wallet.setPageStateCache,
-    payToken.chain,
-    payToken.id,
-    payToken.decimals,
-  ]);
+  };
 
   const setPageStateCacheRef = useRef(setPageStateCache);
   setPageStateCacheRef.current = setPageStateCache;
 
   useEffect(() => {
-    setPageStateCache();
-  }, [setPageStateCache]);
+    setPageStateCacheRef.current();
+  }, [
+    customSlippageInput,
+    slippage,
+    payToken,
+    receiveToken,
+    amountInput,
+    chain,
+  ]);
 
   useEffect(() => {
     return () => {
-      setPageStateCache();
+      setPageStateCacheRef.current();
     };
   }, []);
 
