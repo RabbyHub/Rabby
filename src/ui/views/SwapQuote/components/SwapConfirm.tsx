@@ -15,7 +15,10 @@ import { ReactComponent as IconSetting } from '@/ui/assets/swap/setting.svg';
 import bg from '@/ui/assets/swap/bg.svg';
 import clsx from 'clsx';
 import { ReactComponent as IconInfo } from 'ui/assets/infoicon.svg';
+import { ReactComponent as IconButtonInfo } from 'ui/assets/swap/button-info.svg';
+
 import RateExchange from './RateExchange';
+import { useCss } from 'react-use';
 
 const SwapConfirmContainer = styled.div`
   position: relative;
@@ -86,6 +89,7 @@ export const SwapConfirm = ({
   backToSwap,
   countDown,
   handleSwap,
+  shouldApprove,
 }: {
   chain: CHAINS_ENUM;
   payToken: TokenItem;
@@ -98,6 +102,7 @@ export const SwapConfirm = ({
   backToSwap: () => void;
   countDown: number;
   handleSwap: () => void;
+  shouldApprove: boolean;
 }) => {
   const { t } = useTranslation();
 
@@ -121,6 +126,12 @@ export const SwapConfirm = ({
       priceDifferenceIsHigh: difference.gt(0.05),
     };
   }, [receiveToken, payToken]);
+
+  const tokenApproveAndSwapTip = useCss({
+    '& .ant-tooltip-arrow': {
+      left: 'calc(50% - 60px )',
+    },
+  });
 
   return (
     <SwapConfirmContainer>
@@ -250,7 +261,26 @@ export const SwapConfirm = ({
           className="w-[200px]"
           onClick={handleSwap}
         >
-          {t('Swap')}
+          {shouldApprove ? (
+            <div className="flex items-center justify-center gap-2">
+              <span>{t('Approve and Swap')}</span>
+              <Tooltip
+                overlayClassName={'rectangle  max-w-[360px] left-[106px]'}
+                placement="bottom"
+                title={
+                  <>
+                    2 transactions need to be signed: <br />
+                    1. Allow Rabby smart contracts to use your ETH; <br />
+                    2.Confirm to swap
+                  </>
+                }
+              >
+                <IconButtonInfo />
+              </Tooltip>
+            </div>
+          ) : (
+            t('Swap')
+          )}
         </Button>
       </div>
 
