@@ -235,6 +235,7 @@ export const SwapQuotes = () => {
         backToSwap={handleCancel}
         countDown={countDown}
         handleSwap={handleSwap}
+        shouldApprove={shouldApprove}
       />
       <QuotesListDrawer
         payAmount={amount}
