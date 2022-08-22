@@ -437,7 +437,7 @@ const BalanceChange = ({
                       className="token-change-price"
                       title={String(token.usd_value)}
                     >
-                      ${splitNumberByStep(token.usd_value!.toFixed(2))}
+                      - ${splitNumberByStep(token.usd_value!.toFixed(2))}
                     </span>
                   </div>
                 ))}
@@ -470,7 +470,7 @@ const BalanceChange = ({
                       className="token-change-price"
                       title={String(token.usd_value)}
                     >
-                      ${splitNumberByStep(token.usd_value!.toFixed(2))}
+                      + ${splitNumberByStep(token.usd_value!.toFixed(2))}
                     </span>
                   </div>
                 ))}

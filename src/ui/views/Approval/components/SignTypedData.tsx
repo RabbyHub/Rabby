@@ -259,8 +259,8 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
       <AccountCard />
       <div className="approval-text">
         <p className="section-title">{t('Sign Typed Message')}</p>
-        <div className="text-detail-wrapper gray-section-block">
-          <div className="text-detail text-gray-subTitle">{parsedMessage}</div>
+        <div className="text-detail-wrapper">
+          <div className="text-detail">{parsedMessage}</div>
           {explain && (
             <p className="text-explain">
               {explain}

@@ -304,13 +304,11 @@ const Approve = ({
           <div className="block-field mb-0">
             <span className="label flex items-center">{t('Approve to')}</span>
             <div className="value protocol">
-              {detail.spender_protocol_logo_url && (
-                <img
-                  className="protocol-logo"
-                  src={detail.spender_protocol_logo_url || IconUnknownProtocol}
-                  onError={handleProtocolLogoLoadFailed}
-                />
-              )}
+              <img
+                className="protocol-logo"
+                src={detail.spender_protocol_logo_url || IconUnknownProtocol}
+                onError={handleProtocolLogoLoadFailed}
+              />
               <div className="protocol-info">
                 <div
                   className={clsx('protocol-info__name flex', {

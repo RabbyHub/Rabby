@@ -97,13 +97,11 @@ const Cancel = ({ data, chainEnum, isSpeedUp, raw }: CancelProps) => {
             />
           </p>
           <div className="protocol">
-            {detail.spender_protocol_logo_url && (
-              <img
-                className="protocol-logo"
-                src={detail.spender_protocol_logo_url || IconUnknownProtocol}
-                onError={handleProtocolLogoLoadFailed}
-              />
-            )}
+            <img
+              className="protocol-logo"
+              src={detail.spender_protocol_logo_url || IconUnknownProtocol}
+              onError={handleProtocolLogoLoadFailed}
+            />
             <div className="protocol-info">
               <p
                 className={clsx('protocol-info__name', {
