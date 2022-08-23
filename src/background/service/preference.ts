@@ -62,6 +62,7 @@ export interface PreferenceStore {
   nftApprovalChain: Record<string, CHAINS_ENUM>;
   sendLogTime?: number;
   needSwitchWalletCheck?: boolean;
+  lastSelectedSwapPayToken?: Record<string, TokenItem>;
 }
 
 const SUPPORT_LOCALES = ['en'];
@@ -196,6 +197,19 @@ class PreferenceService {
     const key = address.toLowerCase();
     this.store.lastTimeSendToken = {
       ...this.store.lastTimeSendToken,
+      [key]: token,
+    };
+  };
+
+  getLastSelectedSwapPayToken = (address: string) => {
+    const key = address.toLowerCase();
+    return this.store?.lastSelectedSwapPayToken?.[key];
+  };
+
+  setLastSelectedSwapPayToken = (address: string, token: TokenItem) => {
+    const key = address.toLowerCase();
+    this.store.lastSelectedSwapPayToken = {
+      ...this.store?.lastSelectedSwapPayToken,
       [key]: token,
     };
   };

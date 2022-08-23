@@ -749,6 +749,9 @@ export class WalletController extends BaseController {
     preferenceService.setNFTApprovalChain(address, chain);
   };
 
+  getLastSelectedSwapPayToken = preferenceService.getLastSelectedSwapPayToken;
+  setLastSelectedSwapPayToken = preferenceService.setLastSelectedSwapPayToken;
+
   /* chains */
   getSavedChains = () => preferenceService.getSavedChains();
   saveChain = (id: string) => preferenceService.saveChain(id);
