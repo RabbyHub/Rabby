@@ -1058,7 +1058,7 @@
     "message": "Get Quotes"
   },
   "FailGetQuote": {
-    "message": "Fail to get a quote due to bad connection. Please try again later"
+    "message": "Can't get a quote due to bad internet status. Please try again later."
   },
   "NoAvailableQuote": {
     "message": "Sorry, no available quotes were found. "
