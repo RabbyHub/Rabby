@@ -5,6 +5,7 @@ import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { ReactComponent as IconLogo } from '@/ui/assets/swap/logo.svg';
 import styled from 'styled-components';
+import loadingBg from '@/ui/assets/swap/loading-bg.png';
 
 const Container = styled.div`
   position: relative;
@@ -13,6 +14,10 @@ const Container = styled.div`
   height: 100%;
   display: flex;
   flex-direction: column;
+  background-image: url(${loadingBg});
+  background-position: center center;
+  background-repeat: no-repeat;
+  background-size: cover;
 `;
 
 const Footer = styled.div`
@@ -23,6 +28,7 @@ const Footer = styled.div`
 
 export const QuoteLoading = ({
   successCount = 0,
+  completeCount = 0,
   allCount = 100,
   handleCancel = noop,
 }) => {
@@ -32,16 +38,18 @@ export const QuoteLoading = ({
       <div className="mb-[12px] text-center text-24 font-bold">
         {t('FetchingQuotes')}
       </div>
-      <div className="mb-[12px] text-center text-14 text-gray-subTitle">
+      <div className="mb-[3px] text-center text-14 text-gray-subTitle">
         {successCount} quotes found
       </div>
       <Progress
-        percent={(successCount / allCount) * 100}
+        strokeWidth={4}
+        percent={(completeCount / allCount) * 100}
         showInfo={false}
         strokeColor={LessPalette['@primary-color']}
         trailColor={'rgba(134, 151, 255, .3)'}
+        status="active"
       />
-      <div className="flex justify-center mt-[96px]">
+      <div className="flex justify-center mt-[87px]">
         <IconLogo />
       </div>
       <Footer>
