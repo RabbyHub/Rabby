@@ -6,7 +6,6 @@ import { CHAINS } from 'consts';
 import { Button, Space, Tooltip } from 'antd';
 import React, { useState, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { useHistory } from 'react-router-dom';
 import styled from 'styled-components';
 import BigNumber from 'bignumber.js';
 import { ReactComponent as IconArrowDown } from '@/ui/assets/swap/arrow-down-light.svg';
@@ -16,15 +15,16 @@ import bg from '@/ui/assets/swap/bg.svg';
 import clsx from 'clsx';
 import { ReactComponent as IconInfo } from 'ui/assets/infoicon.svg';
 import { ReactComponent as IconButtonInfo } from 'ui/assets/swap/button-info.svg';
+import IconUnknown from 'ui/assets/token-default.svg';
 
-import RateExchange from './RateExchange';
+import RateExchange, { toSignificantDigits } from './RateExchange';
 import { useCss } from 'react-use';
 
 const SwapConfirmContainer = styled.div`
   position: relative;
   padding: 12px;
   padding-top: 0;
-  background-color: #f0f2f5;
+  background-color: #fff;
   height: 100%;
   display: flex;
   flex-direction: column;
@@ -90,6 +90,7 @@ export const SwapConfirm = ({
   countDown,
   handleSwap,
   shouldApprove,
+  handleClickBack,
 }: {
   chain: CHAINS_ENUM;
   payToken: TokenItem;
@@ -103,13 +104,9 @@ export const SwapConfirm = ({
   countDown: number;
   handleSwap: () => void;
   shouldApprove: boolean;
+  handleClickBack: () => void;
 }) => {
   const { t } = useTranslation();
-
-  const history = useHistory();
-  const handleClickBack = () => {
-    history.replace('/');
-  };
 
   const [slippageModal, setSlippageModal] = useState(false);
 
@@ -129,7 +126,7 @@ export const SwapConfirm = ({
 
   const tokenApproveAndSwapTip = useCss({
     '& .ant-tooltip-arrow': {
-      left: 'calc(50% - 60px )',
+      left: 'calc(50% + 64px )',
     },
   });
 
@@ -147,7 +144,9 @@ export const SwapConfirm = ({
         </Chain>
 
         <div className="text-white text-12 pt-[6px]">
-          {countDown === 0 ? 'Refreshing' : `Refresh after ${countDown} s`}
+          {countDown === 0
+            ? 'Refreshing'
+            : `Quote refresh after ${countDown} s`}
         </div>
       </div>
       <TokenSwapSection isError={noUsePrice || priceDifferenceIsHigh}>
@@ -164,9 +163,12 @@ export const SwapConfirm = ({
         <div className="flex justify-center items-end">
           <Space size={6}>
             <img
-              className="rounded-full"
-              width={20}
-              height={20}
+              className="rounded-full "
+              style={{
+                border: '1px solid rgba(229, 233, 239)',
+              }}
+              width={22}
+              height={22}
               src={payToken.logo_url}
               alt={payToken.display_symbol || payToken.symbol}
             />
@@ -193,7 +195,7 @@ export const SwapConfirm = ({
               className="rounded-full"
               width={28}
               height={28}
-              src={receiveToken.logo_url}
+              src={receiveToken.logo_url || IconUnknown}
               alt={receiveToken.display_symbol || receiveToken.symbol}
             />
             <div
@@ -201,7 +203,7 @@ export const SwapConfirm = ({
               title={receiveAmount + '' + getTokenSymbol(receiveToken)}
             >
               <div className="text-28 font-bold text-gray-title max-w-[240px] truncate">
-                {new BigNumber(receiveAmount).toFixed(2, BigNumber.ROUND_FLOOR)}
+                {toSignificantDigits(new BigNumber(receiveAmount))}
               </div>
               <div className="ml-8 text-15 font-medium text-gray-subTitle">
                 {receiveToken.display_symbol || receiveToken.symbol}
@@ -244,7 +246,7 @@ export const SwapConfirm = ({
       <div className="text-center text-12 text-orange mt-[8px] h-[14px]">
         {slippage < 0.1
           ? t('LowSlippageToleranceWarn')
-          : slippage > 5 && slippage < 15
+          : slippage > 5 && slippage <= 15
           ? t('HighSlippageToleranceWarn')
           : ''}
       </div>
@@ -258,19 +260,22 @@ export const SwapConfirm = ({
         <Button
           type="primary"
           size="large"
-          className="w-[200px]"
+          className="min-w-[280px]  h-[52px]"
           onClick={handleSwap}
         >
           {shouldApprove ? (
             <div className="flex items-center justify-center gap-2">
               <span>{t('Approve and Swap')}</span>
               <Tooltip
-                overlayClassName={'rectangle  max-w-[360px] left-[106px]'}
-                placement="bottom"
+                overlayClassName={clsx(
+                  'rectangle  max-w-[360px] w-[360px] left-[20px]',
+                  tokenApproveAndSwapTip
+                )}
+                placement="top"
                 title={
                   <>
                     2 transactions need to be signed: <br />
-                    1. Allow Rabby smart contracts to use your ETH; <br />
+                    1. Allow Rabby smart contracts to use your ETH <br />
                     2.Confirm to swap
                   </>
                 }
@@ -379,16 +384,14 @@ const PrizeDifferenceBox = ({
       </div>
       <div>
         {amount} {getTokenSymbol(payToken)} ≈ $
-        {new BigNumber(amount)
-          .times(payToken.price)
-          .toFixed(2, BigNumber.ROUND_FLOOR)}
+        {toSignificantDigits(new BigNumber(amount).times(payToken.price))}
       </div>
 
       <div>
         {receiveAmount} {getTokenSymbol(receiveToken)} ≈ $
-        {new BigNumber(receiveAmount)
-          .times(receiveToken.price)
-          .toFixed(2, BigNumber.ROUND_FLOOR)}
+        {toSignificantDigits(
+          new BigNumber(receiveAmount).times(receiveToken.price)
+        )}
       </div>
     </div>
   );
