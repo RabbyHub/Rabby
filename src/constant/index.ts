@@ -263,7 +263,7 @@ export const WALLETCONNECT_STATUS_MAP = {
   FAILD: 6,
 };
 
-export const INTERNAL_REQUEST_ORIGIN = 'https://rabby.io';
+export const INTERNAL_REQUEST_ORIGIN = location.origin;
 
 export const INTERNAL_REQUEST_SESSION = {
   name: 'Rabby',
