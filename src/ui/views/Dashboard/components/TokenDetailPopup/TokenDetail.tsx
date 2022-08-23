@@ -1,4 +1,3 @@
-import { SvgIconPlusPrimary } from '@/ui/assets';
 import { useInfiniteScroll } from 'ahooks';
 import { Button, message, Tooltip } from 'antd';
 import { TokenItem, TxHistoryResult } from 'background/service/openapi';
@@ -8,7 +7,7 @@ import { last } from 'lodash';
 import React, { useCallback, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
-import IconCopy from 'ui/assets/address-copy.png';
+import IconCopy from 'ui/assets/swap/copy.svg';
 import IconPlus from 'ui/assets/plus.svg';
 import IconSuccess from 'ui/assets/success.svg';
 import IconTrash from 'ui/assets/trash.svg';
@@ -24,8 +23,6 @@ const PAGE_COUNT = 10;
 const ellipsis = (text: string) => {
   return text.replace(/^(.{6})(.*)(.{4})$/, '$1...$3');
 };
-
-const isNotSupportedToken = false;
 
 interface TokenDetailProps {
   onClose?(): void;
@@ -160,7 +157,7 @@ const TokenDetail = ({
 
   return (
     <div className="token-detail" ref={ref}>
-      <div className="token-detail-header border-b-0">
+      <div className="token-detail-header border-b-0 pb-24">
         <div className="flex items-center mb-20">
           <div className="flex items-center mr-8">
             <TokenWithChain
@@ -258,9 +255,11 @@ const TokenDetail = ({
             <Button
               type="primary"
               size="large"
-              className="w-[114px]"
               onClick={goToSwap}
               disabled={!token.is_core}
+              style={{
+                width: 114,
+              }}
             >
               Swap
             </Button>
@@ -287,7 +286,7 @@ const TokenDetail = ({
         </div>
       </div>
 
-      <div className="token-detail-body token-txs-history">
+      <div className="token-detail-body token-txs-history pt-[0px]">
         {data?.list.map((item) => (
           <HistoryItem
             data={item}
