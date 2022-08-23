@@ -44,24 +44,30 @@ export const RateExchange = ({
 
     const v = n2.num.div(n1.num);
 
-    return `1 ${n1.symbol} = ${v.toFixed(2, BigNumber.ROUND_FLOOR)} ${
-      n2.symbol
-    } `;
+    return `1 ${n1.symbol} = ${toSignificantDigits(v)} ${n2.symbol} `;
   }, [on, payAmount, payToken, receiveToken]);
   return (
     <div
       className={clsx(
-        'flex items-center text-13 text-gray-subTitle ',
+        'flex items-center text-13 text-gray-subTitle cursor-pointer select-none',
         className
       )}
+      onClick={toggle}
     >
       <span>{exchangeDisplay}</span>
-      <IconTransform
-        className={clsx('cursor-pointer ml-2', iconClassName)}
-        onClick={toggle}
-      />
+      <IconTransform className={clsx(' ml-2', iconClassName)} />
     </div>
   );
 };
+
+export function toSignificantDigits(
+  v: BigNumber,
+  significantDigits = 6,
+  roundingMode = BigNumber.ROUND_FLOOR
+) {
+  return new BigNumber(
+    v.toPrecision(significantDigits, roundingMode)
+  ).toString();
+}
 
 export default RateExchange;

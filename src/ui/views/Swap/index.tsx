@@ -145,34 +145,44 @@ export type SwapSearchObj = {
   amount?: string;
 };
 
+const defaultToken = {
+  id: 'eth',
+  chain: 'eth',
+  name: 'ETH',
+  symbol: 'ETH',
+  display_symbol: null,
+  optimized_symbol: 'ETH',
+  decimals: 18,
+  logo_url:
+    'https://static.debank.com/image/token/logo_url/eth/935ae4e4d1d12d59a99717a24f2540b5.png',
+  price: 0,
+  is_verified: true,
+  is_core: true,
+  is_wallet: true,
+  time_at: 0,
+  amount: 0,
+};
+
 const Swap = () => {
   const { t } = useTranslation();
   const history = useHistory();
-  const { pathname, search } = useLocation();
+  const { pathname, search, state } = useLocation<{
+    chain?: CHAINS_ENUM;
+    payToken?: TokenItem;
+    receiveToken?: TokenItem;
+  }>();
 
   const [searchObj] = useState<SwapSearchObj>(query2obj(search));
 
-  const [chain, setChain] = useState(searchObj?.chain_enum || CHAINS_ENUM.ETH);
-  const [payToken, setPayToken] = useState<TokenItem>({
-    id: 'eth',
-    chain: 'eth',
-    name: 'ETH',
-    symbol: 'ETH',
-    display_symbol: null,
-    optimized_symbol: 'ETH',
-    decimals: 18,
-    logo_url:
-      'https://static.debank.com/image/token/logo_url/eth/935ae4e4d1d12d59a99717a24f2540b5.png',
-    price: 0,
-    is_verified: true,
-    is_core: true,
-    is_wallet: true,
-    time_at: 0,
-    amount: 0,
-  });
+  const [chain, setChain] = useState(
+    state?.chain || searchObj?.chain_enum || CHAINS_ENUM.ETH
+  );
+  const [payToken, setPayToken] = useState<TokenItem>(
+    state?.payToken || defaultToken
+  );
 
   const [receiveToken, setReceiveToken] = useState<TokenItem | undefined>(
-    undefined
+    state?.receiveToken || undefined
   );
 
   const payTokenIsNativeToken =
@@ -218,7 +228,7 @@ const Swap = () => {
       : 3
   );
   const [customSlippageInput, setCustomSlippageInput] = useState(
-    searchObj?.slippage || '3'
+    searchObj?.slippage || ''
   );
 
   const [slippageWarning, setSlippageWaring] = useState('');
@@ -231,7 +241,7 @@ const Swap = () => {
   const wallet = useWalletOld();
   const [currentAccount, setCurrentAccount] = useState<Account | null>(null);
 
-  const [isLoading, setIsLoading] = useState(true);
+  const [isLoading, setIsLoading] = useState(false);
 
   const shouldSetPageStateCache = useRef(true);
   const [autoFocusAmount, setAutoFocusAmount] = useState(true);
@@ -254,9 +264,15 @@ const Swap = () => {
   };
 
   const getQuotes = async () => {
+    const account = await wallet.syncGetCurrentAccount();
+
+    await wallet.setLastSelectedSwapPayToken(account.address, payToken);
+
     await setPageStateCache();
-    history.push(
-      `/swap-quotes?${obj2query({
+
+    history.replace({
+      pathname: '/swap-quotes',
+      search: obj2query({
         chain_enum: chain,
         chain: payToken.chain,
         payTokenId: payToken.id,
@@ -267,8 +283,14 @@ const Swap = () => {
           .toString(),
         slippage:
           slippage === 'custom' ? customSlippageInput || '0' : slippage + '',
-      })}`
-    );
+      }),
+      state: {
+        chain,
+        payToken,
+        receiveToken,
+        amountInput,
+      },
+    });
   };
 
   const handleCurrentTokenChange = async (token: TokenItem) => {
@@ -361,8 +383,23 @@ const Swap = () => {
         loadCurrentToken(payToken.id, payToken.chain, account.address);
         return;
       }
-      setChain(target.enum);
+      if (target.enum !== chain) {
+        setChain(target.enum);
+      }
       loadCurrentToken(id, tokenChain, account.address);
+    } else {
+      const lastTimeToken = await wallet.getLastSelectedSwapPayToken(
+        account.address
+      );
+      const needLoadToken: TokenItem = lastTimeToken || payToken;
+
+      if (needLoadToken.chain !== CHAINS[chain].serverId) {
+        const target = Object.values(CHAINS).find(
+          (item) => item.serverId === needLoadToken.chain
+        )!;
+        setChain(target.enum);
+      }
+      loadCurrentToken(needLoadToken.id, needLoadToken.chain, account.address);
     }
 
     if (qs.receiveTokenId && qs.chain) {
@@ -372,9 +409,14 @@ const Swap = () => {
 
   const gotoTokenEtherscan = () => {
     const scanLink = CHAINS[chain].scanLink;
-    const url = new URL(scanLink);
-    openInTab(`https://${url.hostname}/token/${receiveToken?.id}`);
+    openInTab(`${scanLink.replace('/tx/_s_', '')}/token/${receiveToken?.id}`);
   };
+
+  const scanHostName = useMemo(() => {
+    const scanLink = CHAINS[chain].scanLink;
+    const url = new URL(scanLink);
+    return url.hostname.split('.').reverse()[1];
+  }, [chain]);
 
   useEffect(() => {
     init();
@@ -407,7 +449,7 @@ const Swap = () => {
 
   const setPageStateCache = async () => {
     if (!shouldSetPageStateCache.current) {
-      wallet.clearPageStateCache();
+      await wallet.clearPageStateCache();
       return;
     }
     try {
@@ -551,10 +593,10 @@ const Swap = () => {
           >
             <span>{t('ConfirmTheTokenOn')} </span>
             <a
-              className="tx-id text-gray-content underline "
+              className="tx-id text-gray-content underline capitalize"
               onClick={gotoTokenEtherscan}
             >
-              {t('Etherscan')}
+              {scanHostName}
             </a>
             <Tooltip
               overlayClassName={clsx(

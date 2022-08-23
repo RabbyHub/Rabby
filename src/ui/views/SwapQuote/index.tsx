@@ -11,13 +11,18 @@ import { obj2query, query2obj } from '@/ui/utils/url';
 import { CHAINS, CHAINS_ENUM } from '@debank/common';
 import { RABBY_SWAP_ROUTER, SWAP_AVAILABLE_VALUE_RATE } from '@/constant';
 import { message } from 'antd';
+import { TokenItem } from '@/background/service/openapi';
 
 export const SwapQuotes = () => {
   const { t } = useTranslation();
   const wallet = useWallet();
 
   const history = useHistory();
-  const { search } = useLocation();
+  const { search, state } = useLocation<{
+    chain: CHAINS_ENUM;
+    payToken: TokenItem;
+    receiveToken: TokenItem;
+  }>();
 
   const [searchObj] = useState(query2obj(search));
   const [shouldApprove, setShouldApprove] = useState(false);
@@ -31,6 +36,7 @@ export const SwapQuotes = () => {
     receiveTokenId: receive_token_id,
     slippage,
   } = searchObj;
+  const [queryCount, setQueryCount] = useState(0);
   const [successCount, setSuccessCount] = useState(0);
   const [dexList, setDexList] = useState<
     Awaited<ReturnType<typeof wallet.openapi.getDEXList>>
@@ -72,6 +78,9 @@ export const SwapQuotes = () => {
                 }
                 return { ...res, dexId: e.id, type: e.type };
               })
+              .finally(() => {
+                setQueryCount((n) => n + 1);
+              })
         )
       );
       const availableSwapQuotes: Quote[] = [];
@@ -92,14 +101,18 @@ export const SwapQuotes = () => {
 
       setSwapQuotes(availableSwapQuotes);
       if (availableSwapQuotes.length < 1) {
-        history.replace(
-          `/swap?${obj2query({
+        history.replace({
+          pathname: '/swap',
+          search: obj2query({
             ...searchObj,
-            fetchQuoteError: t('FailGetQuote'),
-          })}`
-        );
+            fetchQuoteError: t('NoAvailableQuote'),
+          }),
+          state,
+        });
       }
-      setEnd(true);
+      setTimeout(() => {
+        setEnd(true);
+      }, 500);
 
       setCountDown(30);
 
@@ -116,12 +129,14 @@ export const SwapQuotes = () => {
     } catch (error) {
       console.error('get quotes', error?.message);
 
-      history.replace(
-        `/swap?${obj2query({
+      history.replace({
+        pathname: '/swap',
+        search: obj2query({
           ...searchObj,
           fetchQuoteError: t('FailGetQuote'),
-        })}`
-      );
+        }),
+        state,
+      });
     }
   };
 
@@ -138,7 +153,11 @@ export const SwapQuotes = () => {
   }, [swapQuotes, currentQuoteIndex]);
 
   const handleCancel = () => {
-    history.replace(`/swap?${obj2query(searchObj)}`);
+    history.replace({
+      pathname: '/swap',
+      search: obj2query(searchObj),
+      state,
+    });
   };
 
   const handleSelect = (i) => {
@@ -213,6 +232,7 @@ export const SwapQuotes = () => {
   if (!end) {
     return (
       <QuoteLoading
+        completeCount={queryCount}
         successCount={successCount}
         allCount={dexList.length}
         handleCancel={handleCancel}
@@ -236,6 +256,7 @@ export const SwapQuotes = () => {
         countDown={countDown}
         handleSwap={handleSwap}
         shouldApprove={shouldApprove}
+        handleClickBack={handleCancel}
       />
       <QuotesListDrawer
         payAmount={amount}
