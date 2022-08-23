@@ -161,7 +161,7 @@ const TokenAmountInput = ({
         {inlinePrize && (
           <div className="text-gray-content text-12 text-right ">
             {Number(value)
-              ? `$${splitNumberByStep(
+              ? `≈$${splitNumberByStep(
                   ((Number(value) || 0) * token.price || 0).toFixed(2)
                 )}`
               : ''}
