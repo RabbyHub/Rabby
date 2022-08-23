@@ -890,7 +890,9 @@ export class WalletController extends BaseController {
       });
 
       keyring.on('transport_error', (data) => {
-        Sentry.captureException(new Error('Transport error: ' + data));
+        Sentry.captureException(
+          new Error('Transport error: ' + JSON.stringify(data))
+        );
       });
 
       keyring.on('statusChange', (data) => {
