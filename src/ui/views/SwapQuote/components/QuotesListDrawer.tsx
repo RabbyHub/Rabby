@@ -12,7 +12,7 @@ import { SWAP_AVAILABLE_VALUE_RATE } from '@/constant';
 import { useCss } from 'react-use';
 import { ReactComponent as IconBack } from 'ui/assets/back.svg';
 import { ReactComponent as IconClose } from 'ui/assets/swap/modal-close.svg';
-import RateExchange from './RateExchange';
+import RateExchange, { toSignificantDigits } from './RateExchange';
 
 export type Quote = Awaited<
   ReturnType<typeof wallet.openapi.getSwapQuote>
@@ -109,10 +109,12 @@ export const QuotesListDrawer = ({
         ),
         right: (
           <div className={clsx(valueClassName)}>
-            {getReceiveTokenAmountBN(
-              list[selectedIndex]?.receive_token_raw_amount,
-              list[selectedIndex]?.receive_token?.decimals || 18
-            ).toFixed(2, BigNumber.ROUND_FLOOR)}{' '}
+            {toSignificantDigits(
+              getReceiveTokenAmountBN(
+                list[selectedIndex]?.receive_token_raw_amount,
+                list[selectedIndex]?.receive_token?.decimals || 18
+              )
+            )}{' '}
             {getTokenSymbol(list[selectedIndex]?.receive_token)}
           </div>
         ),
@@ -208,6 +210,13 @@ export const QuotesListDrawer = ({
     },
   });
 
+  const drawClassName = useCss({
+    '& .ant-drawer-content': {
+      boxShadow: '0px -12px 20px rgba(82, 86, 115, 0.1)',
+      borderRadius: '16px 16px 0px 0',
+    },
+  });
+
   return (
     <Drawer
       closable={false}
@@ -216,18 +225,17 @@ export const QuotesListDrawer = ({
       visible={visible}
       onClose={onClose}
       destroyOnClose
-      className="dddd"
+      className={drawClassName}
       bodyStyle={{
         padding: '20px 0',
       }}
       push={false}
     >
-      <div className="flex justify-between items-center">
-        <div />
+      <div className=" relative">
         <div className="text-20 font-medium text-center text-gray-title">
           {t('AllQuotes')}
         </div>
-        <div className="pr-[20px]">
+        <div className="absolute top-1/2 -translate-y-1/2  right-[20px]">
           <IconClose className="cursor-pointer" onClick={onClose} />
         </div>
       </div>
@@ -237,9 +245,9 @@ export const QuotesListDrawer = ({
           {t('QuoteDesc')}
           <div className="h-0 mt-16 bg-transparent border-t-[0.5px] border-gray-divider border-solid" />
         </div>
-        <Space size={44} className="px-20">
+        <Space size={44} className="px-20 mb-8">
           <Space size={4} className="w-[130px]">
-            <div>receiving amount</div>
+            <div>Receiving amount</div>
             <Tooltip
               overlayClassName={clsx(
                 'rectangle max-w-[360px] left-[20px]',
@@ -286,7 +294,7 @@ export const QuotesListDrawer = ({
         visible={!!list[selectedIndex]}
         onClose={() => setSelectedIndex(-1)}
         destroyOnClose
-        className="dddd"
+        className={drawClassName}
         getContainer={false}
         contentWrapperStyle={{
           boxShadow: '0px -12px 20px rgba(82, 86, 115, 0.1)',
@@ -373,7 +381,7 @@ const AmountAndGasFeeItem = ({
     <div
       key={item.dex_approve_to}
       className={clsx(
-        'px-20',
+        'px-20 group hover:bg-blue-light hover:text-white rounded-[6px]',
         currentQuoteIndex === index
           ? 'bg-blue-light text-white rounded-[6px]'
           : 'text-gray-title'
@@ -384,8 +392,10 @@ const AmountAndGasFeeItem = ({
     >
       <div
         className={clsx(
-          'flex h-[52px] items-center  border-gray-divider  cursor-pointer ',
-          currentQuoteIndex === index ? 'border-b-0' : 'border-b-[0.5px]'
+          'flex h-[52px] items-center  border-gray-divider  cursor-pointer',
+          currentQuoteIndex === index
+            ? 'border-b-0'
+            : 'border-b-[0.5px] group-hover:border-b-[0px]'
         )}
       >
         <Space size={44}>
@@ -393,7 +403,7 @@ const AmountAndGasFeeItem = ({
             title={amount.toString()}
             className="max-w-[130px] w-[130px] truncate text-15"
           >
-            {amount.toFixed(2, BigNumber.ROUND_FLOOR)}
+            {toSignificantDigits(amount)}
           </div>
           <div
             className="max-w-[130px] truncate text-15"
