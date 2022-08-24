@@ -10,7 +10,7 @@ export const BestQuoteTag = ({
   React.HTMLAttributes<HTMLDivElement>,
   HTMLDivElement
 > & {
-  invert: boolean;
+  invert?: boolean;
 }) => {
   const { t } = useTranslation();
   return (
