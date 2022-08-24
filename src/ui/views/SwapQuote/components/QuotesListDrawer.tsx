@@ -231,8 +231,8 @@ export const QuotesListDrawer = ({
       }}
       push={false}
     >
-      <div className=" relative">
-        <div className="text-20 font-medium text-center text-gray-title">
+      <div className="absolute top-0 left-0 w-full bg-white">
+        <div className="text-20 font-medium text-center text-gray-title pt-20">
           {t('AllQuotes')}
         </div>
         <div className="absolute top-1/2 -translate-y-1/2  right-[20px]">
@@ -240,57 +240,56 @@ export const QuotesListDrawer = ({
         </div>
       </div>
 
-      <div className="overflow-auto">
-        <div className="text-12 leading-[16px] text-gray-content pt-[20px] mb-[24px] px-[20px] ">
-          {t('QuoteDesc')}
-          <div className="h-0 mt-16 bg-transparent border-t-[0.5px] border-gray-divider border-solid" />
-        </div>
-        <Space size={44} className="px-20 mb-8">
-          <Space size={4} className="w-[130px]">
-            <div>Receiving amount</div>
-            <Tooltip
-              overlayClassName={clsx(
-                'rectangle max-w-[360px] left-[20px]',
-                receivingAmountTooltipsClassName
-              )}
-              placement="bottom"
-              title={t('ReceivingAmountDesc')}
-            >
-              <IconInfo />
-            </Tooltip>
-          </Space>
-          <Space size={4}>
-            <div>Est. gas fee</div>
-            <Tooltip
-              overlayClassName={clsx(
-                'rectangle max-w-[360px] left-[20px]',
-                gasFeeTooltipsClassName
-              )}
-              placement="bottom"
-              title={
-                'This is an estimated gas cost for your transaction. The actual gas cost may change based on network conditions.'
-              }
-            >
-              <IconInfo />
-            </Tooltip>
-          </Space>
-        </Space>
-
-        {list.map((item, index) => (
-          <AmountAndGasFeeItem
-            key={item.dexId}
-            item={item}
-            index={index}
-            currentQuoteIndex={currentQuoteIndex}
-            setSelectedIndex={setSelectedIndex}
-          />
-        ))}
+      <div className="text-12 leading-[16px] text-gray-content pt-[43px] mb-[24px] px-[20px] ">
+        {t('QuoteDesc')}
+        <div className="h-0 mt-16 bg-transparent border-t-[0.5px] border-gray-divider border-solid" />
       </div>
+      <Space size={44} className="px-20 mb-8">
+        <Space size={4} className="w-[130px]">
+          <div>Receiving amount</div>
+          <Tooltip
+            overlayClassName={clsx(
+              'rectangle max-w-[360px] left-[20px]',
+              receivingAmountTooltipsClassName
+            )}
+            placement="bottom"
+            title={t('ReceivingAmountDesc')}
+          >
+            <IconInfo />
+          </Tooltip>
+        </Space>
+        <Space size={4}>
+          <div>Est. gas fee</div>
+          <Tooltip
+            overlayClassName={clsx(
+              'rectangle max-w-[360px] left-[20px]',
+              gasFeeTooltipsClassName
+            )}
+            placement="bottom"
+            title={
+              'This is an estimated gas cost for your transaction. The actual gas cost may change based on network conditions.'
+            }
+          >
+            <IconInfo />
+          </Tooltip>
+        </Space>
+      </Space>
+
+      {list.map((item, index) => (
+        <AmountAndGasFeeItem
+          key={item.dexId}
+          item={item}
+          index={index}
+          currentQuoteIndex={currentQuoteIndex}
+          setSelectedIndex={setSelectedIndex}
+        />
+      ))}
 
       <Drawer
         closable={false}
-        placement="bottom"
-        height="512px"
+        placement="right"
+        mask={false}
+        width={'100%'}
         visible={!!list[selectedIndex]}
         onClose={() => setSelectedIndex(-1)}
         destroyOnClose
@@ -299,6 +298,7 @@ export const QuotesListDrawer = ({
         contentWrapperStyle={{
           boxShadow: '0px -12px 20px rgba(82, 86, 115, 0.1)',
           borderRadius: '16px 16px 0px 0',
+          height: 512,
         }}
       >
         <div className="flex justify-between items-center">
