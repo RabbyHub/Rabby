@@ -136,31 +136,6 @@ export class WalletController extends BaseController {
     return amount.toString();
   };
 
-  rabbyContract = async (chain_server_id: string) => {
-    const account = await preferenceService.getCurrentAccount();
-    if (!account) throw new Error('no current account');
-    const chainId = Object.values(CHAINS)
-      .find((chain) => chain.serverId === chain_server_id)
-      ?.id.toString();
-    if (!chainId) throw new Error('invalid chain id');
-
-    buildinProvider.currentProvider.currentAccount = account.address;
-    buildinProvider.currentProvider.currentAccountType = account.type;
-    buildinProvider.currentProvider.currentAccountBrand = account.brandName;
-    buildinProvider.currentProvider.chainId = chainId;
-
-    const provider = new ethers.providers.Web3Provider(
-      buildinProvider.currentProvider
-    );
-
-    const contract = new Contract(
-      RABBY_SWAP_ROUTER,
-      RABBY_SWAP_ABI,
-      provider.getSigner()
-    );
-    return contract;
-  };
-
   rabbySwap = async ({
     chain_server_id,
     pay_token_id,
@@ -194,6 +169,9 @@ export class WalletController extends BaseController {
       (item) => item.serverId === chain_server_id
     );
     if (!chain) throw new Error(`Can not find chain ${chain_server_id}`);
+    if (!Object.keys(RABBY_SWAP_ROUTER).some((e) => e === chain.enum)) {
+      throw new Error(`swap don't support chain ${chain.enum} now`);
+    }
 
     if (is_wrapped) {
       const param = {
@@ -218,14 +196,14 @@ export class WalletController extends BaseController {
       await this.approveToken(
         chain_server_id,
         pay_token_id,
-        RABBY_SWAP_ROUTER,
+        RABBY_SWAP_ROUTER[chain.enum],
         MAX_UNSIGNED_256_INT
       );
     }
 
     const swapParam = {
       from: account.address,
-      to: RABBY_SWAP_ROUTER,
+      to: RABBY_SWAP_ROUTER[chain.enum],
       chainId: chain.id,
       data: ((abiCoder as unknown) as AbiCoder).encodeFunctionCall(
         {
