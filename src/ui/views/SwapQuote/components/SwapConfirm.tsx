@@ -199,8 +199,8 @@ export const SwapConfirm = ({
         <div className="mt-[6px] mb-20 mx-auto flex justify-center">
           <IconArrowDown />
         </div>
-        <div className="relative h-[103px] pb-16 bg-blue-light bg-opacity-10 rounded">
-          <div className="flex justify-center items-center pt-12 pb-8">
+        <div className="relative h-[100px] pb-16 bg-blue-light bg-opacity-10 rounded">
+          <div className="flex justify-center items-center pt-14 pb-8">
             <img
               className="rounded-full"
               width={20}
@@ -213,7 +213,7 @@ export const SwapConfirm = ({
             </div>
           </div>
           <div
-            className="text-center text-[40px] font-medium text-gray-title max-w-[320px] px-6 truncate"
+            className="text-center text-[36px] font-medium text-gray-title max-w-[320px] px-6 truncate"
             title={receiveAmount + '' + getTokenSymbol(receiveToken)}
           >
             {toSignificantDigits(new BigNumber(receiveAmount))}
