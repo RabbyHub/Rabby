@@ -172,7 +172,7 @@ export const SwapQuotes = () => {
     const allowance = await wallet.getERC20Allowance(
       CHAINS[chain_enum].serverId,
       pay_token_id,
-      RABBY_SWAP_ROUTER
+      RABBY_SWAP_ROUTER[chain_enum]
     );
     setShouldApprove(new BigNumber(allowance).lt(pay_token_raw_amount));
   };
