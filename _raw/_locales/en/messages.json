@@ -1034,7 +1034,7 @@
     "message": "Etherscan"
   },
   "SwapCheckEtherscanToken": {
-    "message": "Different tokens may use the same name and symbol. Check Etherscan to verify this is the token you're looking for. "
+    "message": "Different tokens may use the same name and symbol. Check {{scan}} to verify this is the token you're looking for. "
   },
   "AdvancedSettings": {
     "message": "Advanced Settings"
