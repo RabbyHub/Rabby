@@ -241,7 +241,7 @@ export const QuotesListDrawer = ({
       </div>
 
       <div className="overflow-auto">
-        <div className="text-12 text-gray-content pt-[20px] mb-[24px] px-[20px] ">
+        <div className="text-12 leading-[16px] text-gray-content pt-[20px] mb-[24px] px-[20px] ">
           {t('QuoteDesc')}
           <div className="h-0 mt-16 bg-transparent border-t-[0.5px] border-gray-divider border-solid" />
         </div>
@@ -381,10 +381,10 @@ const AmountAndGasFeeItem = ({
     <div
       key={item.dex_approve_to}
       className={clsx(
-        'px-20 group hover:bg-blue-light hover:text-white rounded-[6px]',
+        'px-20 group  rounded-[6px] border border-transparent',
         currentQuoteIndex === index
           ? 'bg-blue-light text-white rounded-[6px]'
-          : 'text-gray-title'
+          : 'text-gray-title   hover:bg-blue-light hover:bg-opacity-10 hover:border-blue-light'
       )}
       onClick={() => {
         setSelectedIndex(index);
@@ -393,9 +393,7 @@ const AmountAndGasFeeItem = ({
       <div
         className={clsx(
           'flex h-[52px] items-center  border-gray-divider  cursor-pointer',
-          currentQuoteIndex === index
-            ? 'border-b-0'
-            : 'border-b-[0.5px] group-hover:border-b-[0px]'
+          currentQuoteIndex === index ? 'border-b-0' : 'border-b-[0.5px] '
         )}
       >
         <Space size={44}>
@@ -413,7 +411,7 @@ const AmountAndGasFeeItem = ({
           </div>
         </Space>
         <Space size={12} className="ml-auto">
-          {index === 0 && <BestQuoteTag className="mr-[12px]" />}
+          {index === 0 && <BestQuoteTag className={'mr-[12px]'} invert />}
           <IconArronRight
             className={clsx(currentQuoteIndex === index && 'brightness-[1000]')}
           />

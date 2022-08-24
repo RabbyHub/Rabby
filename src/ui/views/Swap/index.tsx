@@ -424,7 +424,7 @@ const Swap = () => {
 
   useEffect(() => {
     if (slippage === 'custom') {
-      const v = Number(customSlippageInput);
+      const v = Number(customSlippageInput || 0);
       if (Number.isNaN(v)) {
         setSlippageWaring(t('LowSlippageToleranceWarn'));
         return;
@@ -604,7 +604,9 @@ const Swap = () => {
                 tokenScanTooltipsClassName
               )}
               placement="bottom"
-              title={t('SwapCheckEtherscanToken')}
+              title={t('SwapCheckEtherscanToken', {
+                scan: scanHostName,
+              })}
             >
               <IconInfo />
             </Tooltip>
@@ -674,12 +676,12 @@ const Swap = () => {
                   value={customSlippageInput}
                   formatter={(value) => (value ? `${value}%` : '')}
                   parser={(value) => (value ? value!.replace('%', '') : '')}
-                  onFocus={() => setAutoFocusAmount(false)}
+                  onFocus={(e) => {
+                    setAutoFocusAmount(false);
+                    e.target?.select?.();
+                  }}
                   onBlur={() => {
                     setAutoFocusAmount(true);
-                    if (!customSlippageInput) {
-                      setCustomSlippageInput('0');
-                    }
                   }}
                   onChange={(e) => {
                     setCustomSlippageInput(e);
