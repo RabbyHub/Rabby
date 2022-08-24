@@ -22,21 +22,19 @@ import { useCss } from 'react-use';
 
 const SwapConfirmContainer = styled.div`
   position: relative;
-  padding: 12px;
+  padding: 20px;
   padding-top: 0;
-  background-color: #fff;
   height: 100%;
   display: flex;
   flex-direction: column;
+  background-color: #fff;
   background-image: url(${bg});
   background-repeat: no-repeat;
   background-position: 0 0;
 `;
 
-const TokenSwapSection = styled.div<{
-  isError: boolean;
-}>`
-  height: ${(props) => (props.isError ? 'auto' : '280px')};
+const TokenSwapSection = styled.div`
+  height: 320px;
   padding: 32px 20px;
   padding-bottom: 28px;
   background-color: ${LessPalette['@color-white']};
@@ -131,7 +129,13 @@ export const SwapConfirm = ({
   });
 
   return (
-    <SwapConfirmContainer>
+    <SwapConfirmContainer
+      className={clsx(
+        !noUsePrice && !priceDifferenceIsHigh && 'pb-[48px]',
+        noUsePrice && 'pb-32',
+        priceDifferenceIsHigh && 'pb-24'
+      )}
+    >
       <div className="-mt-12">
         <PageHeader onBack={handleClickBack} forceShowBack invertBack>
           &nbsp;&nbsp;
@@ -149,7 +153,13 @@ export const SwapConfirm = ({
             : `Quote refresh after ${countDown} s`}
         </div>
       </div>
-      <TokenSwapSection isError={noUsePrice || priceDifferenceIsHigh}>
+      <TokenSwapSection
+        className={clsx(
+          !noUsePrice && !priceDifferenceIsHigh && 'h-[320px]',
+          noUsePrice && 'h-[360px] pt-20',
+          priceDifferenceIsHigh && 'h-[379px] pt-20'
+        )}
+      >
         <UnableEstimatePriceBox className={!noUsePrice ? 'hidden' : ''} />
         <PrizeDifferenceBox
           className={!priceDifferenceIsHigh ? 'hidden' : ''}
@@ -186,30 +196,28 @@ export const SwapConfirm = ({
           </Space>
         </div>
 
-        <div className="mt-[13px] mb-20 mx-auto flex justify-center">
+        <div className="mt-[6px] mb-20 mx-auto flex justify-center">
           <IconArrowDown />
         </div>
-        <div className="relative flex justify-center items-center  h-[64px] bg-blue-light bg-opacity-10 rounded">
-          <Space size={6}>
+        <div className="relative h-[103px] pb-16 bg-blue-light bg-opacity-10 rounded">
+          <div className="flex justify-center items-center pt-12 pb-8">
             <img
               className="rounded-full"
-              width={28}
-              height={28}
+              width={20}
+              height={20}
               src={receiveToken.logo_url || IconUnknown}
               alt={receiveToken.display_symbol || receiveToken.symbol}
             />
-            <div
-              className="inline-flex items-baseline"
-              title={receiveAmount + '' + getTokenSymbol(receiveToken)}
-            >
-              <div className="text-28 font-bold text-gray-title max-w-[240px] truncate">
-                {toSignificantDigits(new BigNumber(receiveAmount))}
-              </div>
-              <div className="ml-8 text-15 font-medium text-gray-subTitle">
-                {receiveToken.display_symbol || receiveToken.symbol}
-              </div>
+            <div className="ml-8 text-15 font-medium text-gray-subTitle">
+              {receiveToken.display_symbol || receiveToken.symbol}
             </div>
-          </Space>
+          </div>
+          <div
+            className="text-center text-[40px] font-medium text-gray-title max-w-[320px] px-6 truncate"
+            title={receiveAmount + '' + getTokenSymbol(receiveToken)}
+          >
+            {toSignificantDigits(new BigNumber(receiveAmount))}
+          </div>
           <QuoteSelectedTag
             isBestQuote={isBestQuote}
             role="button"
@@ -225,7 +233,7 @@ export const SwapConfirm = ({
         </div>
 
         <RateExchange
-          className="justify-center mt-[32px] font-medium"
+          className="justify-center mt-[24px] font-medium"
           payAmount={amount}
           receiveAmount={receiveAmount}
           payToken={payToken}
@@ -254,7 +262,6 @@ export const SwapConfirm = ({
         className={clsx('mt-auto flex justify-center')}
         style={{
           marginTop: 'auto',
-          marginBottom: noUsePrice || priceDifferenceIsHigh ? 0 : 50,
         }}
       >
         <Button
@@ -275,7 +282,8 @@ export const SwapConfirm = ({
                 title={
                   <>
                     2 transactions need to be signed: <br />
-                    1. Allow Rabby smart contracts to use your ETH <br />
+                    1. Allow Rabby smart contracts to use your{' '}
+                    {getTokenSymbol(payToken)} <br />
                     2.Confirm to swap
                   </>
                 }
@@ -327,7 +335,7 @@ const UnableEstimatePriceBox = ({ className = '' }) => {
   return (
     <div
       className={clsx(
-        'flex flex-col justify-between bg-gray-bg rounded px-12  mt-[20px]',
+        'flex flex-col justify-between bg-gray-bg rounded px-12 mb-[18px]',
         className
       )}
     >
@@ -360,12 +368,12 @@ const PrizeDifferenceBox = ({
   return (
     <div
       className={clsx(
-        'bg-orange bg-opacity-20 rounded border border-orange px-12 py-12 mb-20',
+        'h-[102px] bg-orange bg-opacity-20 rounded border border-orange px-12 py-12 mb-16 flex flex-col justify-between',
         className
       )}
     >
-      <div className="flex justify-between mb-12">
-        <div className="w-[263px] text-gray-title text-14 font-medium">
+      <div className="flex justify-between">
+        <div className="w-[263px] text-gray-title text-14 leading-[16px] font-medium">
           The price difference is too high: {diff}% This will lead to an unideal
           trade
         </div>
@@ -382,16 +390,20 @@ const PrizeDifferenceBox = ({
           <IconInfo />
         </Tooltip>
       </div>
-      <div>
-        {amount} {getTokenSymbol(payToken)} ≈ $
-        {toSignificantDigits(new BigNumber(amount).times(payToken.price))}
-      </div>
+      <div className="text-12 text-gray-subTitle font-medium">
+        <div>
+          {toSignificantDigits(new BigNumber(amount))}{' '}
+          {getTokenSymbol(payToken)} ≈ $
+          {toSignificantDigits(new BigNumber(amount).times(payToken.price))}
+        </div>
 
-      <div>
-        {receiveAmount} {getTokenSymbol(receiveToken)} ≈ $
-        {toSignificantDigits(
-          new BigNumber(receiveAmount).times(receiveToken.price)
-        )}
+        <div>
+          {toSignificantDigits(new BigNumber(receiveAmount))}{' '}
+          {getTokenSymbol(receiveToken)} ≈ $
+          {toSignificantDigits(
+            new BigNumber(receiveAmount).times(receiveToken.price)
+          )}
+        </div>
       </div>
     </div>
   );
