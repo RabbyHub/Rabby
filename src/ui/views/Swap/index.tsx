@@ -56,7 +56,7 @@ const Section = styled.div`
 const AbsoluteFooter = styled.div`
   position: absolute;
   left: 0;
-  bottom: 20px;
+  bottom: 32px;
   width: 100%;
   display: flex;
   justify-content: center;
