@@ -162,7 +162,7 @@ export const SwapConfirm = ({
       >
         <UnableEstimatePriceBox className={!noUsePrice ? 'hidden' : ''} />
         <PrizeDifferenceBox
-          className={!priceDifferenceIsHigh ? 'hidden' : ''}
+          className={!priceDifferenceIsHigh || noUsePrice ? 'hidden' : ''}
           diff={priceDifference}
           amount={amount}
           receiveAmount={receiveAmount}
