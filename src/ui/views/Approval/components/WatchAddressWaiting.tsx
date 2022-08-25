@@ -27,6 +27,7 @@ interface ApprovalParams {
   isGnosis?: boolean;
   data?: string[];
   account?: Account;
+  $ctx?: any;
 }
 
 type Valueof<T> = T[keyof T];
@@ -417,6 +418,9 @@ const WatchAddressWaiting = ({ params }: { params: ApprovalParams }) => {
               category: KEYRING_CATEGORY_MAP[account.type],
               success: true,
               preExecSuccess: explain?.calcSuccess && explain?.pre_exec.success,
+              createdBy: params?.$ctx?.ga ? 'rabby' : 'dapp',
+              source: params?.$ctx?.ga?.source || '',
+              trigger: params?.$ctx?.ga?.trigger || '',
             });
           }
         }
@@ -437,6 +441,9 @@ const WatchAddressWaiting = ({ params }: { params: ApprovalParams }) => {
               category: KEYRING_CATEGORY_MAP[account.type],
               success: false,
               preExecSuccess: explain?.calcSuccess && explain?.pre_exec.success,
+              createdBy: params?.$ctx?.ga ? 'rabby' : 'dapp',
+              source: params?.$ctx?.ga?.source || '',
+              trigger: params?.$ctx?.ga?.trigger || '',
             });
           }
         }

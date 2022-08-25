@@ -26,6 +26,7 @@ interface ApprovalParams {
   isGnosis?: boolean;
   data?: string[];
   account?: Account;
+  $ctx?: any;
 }
 
 const LedgerHardwareWaiting = ({ params }: { params: ApprovalParams }) => {
@@ -105,6 +106,9 @@ const LedgerHardwareWaiting = ({ params }: { params: ApprovalParams }) => {
           chainId: chain.serverId,
           category: KEYRING_CATEGORY_MAP[account.type],
           preExecSuccess: explain?.calcSuccess && explain?.pre_exec.success,
+          createdBy: params?.$ctx?.ga ? 'rabby' : 'dapp',
+          source: params?.$ctx?.ga?.source || '',
+          trigger: params?.$ctx?.ga?.trigger || '',
         });
       }
     }
