@@ -197,6 +197,7 @@ class ProviderController extends BaseController {
         },
         origin
       );
+      sessionService.broadcastEvent('rabby:chainChanged', chain, origin);
     }
 
     return account;
@@ -766,6 +767,7 @@ class ProviderController extends BaseController {
       },
       origin
     );
+    sessionService.broadcastEvent('rabby:chainChanged', chain, origin);
     return null;
   };
 

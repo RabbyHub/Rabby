@@ -605,6 +605,11 @@ export class WalletController extends BaseController {
         },
         data.origin
       );
+      sessionService.broadcastEvent(
+        'rabby:chainChanged',
+        CHAINS[data.chain],
+        data.origin
+      );
     }
   };
   updateConnectSite = (origin: string, data: ConnectedSite) => {
@@ -615,6 +620,11 @@ export class WalletController extends BaseController {
         chain: CHAINS[data.chain].hex,
         networkVersion: CHAINS[data.chain].network,
       },
+      data.origin
+    );
+    sessionService.broadcastEvent(
+      'rabby:chainChanged',
+      CHAINS[data.chain],
       data.origin
     );
   };
