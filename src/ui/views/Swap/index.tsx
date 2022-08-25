@@ -234,9 +234,7 @@ const Swap = () => {
   const [slippageWarning, setSlippageWaring] = useState('');
   const [slippageError, setSlippageError] = useState('');
 
-  const [openAdvancedSetting, setOpenAdvancedSetting] = useState(
-    false || slippage === 'custom'
-  );
+  const [openAdvancedSetting, setOpenAdvancedSetting] = useState(false);
 
   const wallet = useWalletOld();
   const [currentAccount, setCurrentAccount] = useState<Account | null>(null);
