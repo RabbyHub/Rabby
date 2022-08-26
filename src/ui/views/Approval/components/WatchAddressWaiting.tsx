@@ -365,32 +365,13 @@ const WatchAddressWaiting = ({ params }: { params: ApprovalParams }) => {
     );
     setCurrentAccount(account);
     setBridge(bridge || DEFAULT_BRIDGE);
+
+    let isSignTriggered = false;
     const isText = params.isGnosis
       ? true
       : approval?.data.approvalType !== 'SignTx';
     isSignTextRef.current = isText;
-    if (!isText) {
-      const tx = approval.data?.params;
-      if (tx) {
-        const { nonce, from, chainId } = tx;
-        const explain = await wallet.getExplainCache({
-          nonce: Number(nonce),
-          address: from,
-          chainId: Number(chainId),
-        });
-        stats.report('signTransaction', {
-          type: account.brandName,
-          chainId: CHAINS[chain].serverId,
-          category: KEYRING_CATEGORY_MAP[account.type],
-          preExecSuccess: explain?.calcSuccess && explain?.pre_exec.success,
-        });
-      }
-      ReactGA.event({
-        category: 'Transaction',
-        action: 'Submit',
-        label: account.brandName,
-      });
-    }
+
     eventBus.addEventListener(EVENTS.SIGN_FINISHED, async (data) => {
       if (data.success) {
         if (params.isGnosis) {
@@ -446,8 +427,37 @@ const WatchAddressWaiting = ({ params }: { params: ApprovalParams }) => {
 
     eventBus.addEventListener(
       EVENTS.WALLETCONNECT.STATUS_CHANGED,
-      ({ status, payload }) => {
+      async ({ status, payload }) => {
         setConnectStatus(status);
+        if (
+          status !== WALLETCONNECT_STATUS_MAP.FAILD &&
+          status !== WALLETCONNECT_STATUS_MAP.REJECTED
+        ) {
+          if (!isText && !isSignTriggered) {
+            const tx = approval.data?.params;
+            if (tx) {
+              const { nonce, from, chainId } = tx;
+              const explain = await wallet.getExplainCache({
+                nonce: Number(nonce),
+                address: from,
+                chainId: Number(chainId),
+              });
+              stats.report('signTransaction', {
+                type: account.brandName,
+                chainId: CHAINS[chain].serverId,
+                category: KEYRING_CATEGORY_MAP[account.type],
+                preExecSuccess:
+                  explain?.calcSuccess && explain?.pre_exec.success,
+              });
+            }
+            ReactGA.event({
+              category: 'Transaction',
+              action: 'Submit',
+              label: account.brandName,
+            });
+            isSignTriggered = true;
+          }
+        }
         switch (status) {
           case WALLETCONNECT_STATUS_MAP.CONNECTED:
             break;
