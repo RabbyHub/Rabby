@@ -479,16 +479,15 @@ class ProviderController extends BaseController {
       }
     } catch (e) {
       if (!signedTransactionSuccess) {
-        cacheExplain &&
-          stats.report('signedTransaction', {
-            type: currentAccount.brandName,
-            chainId: CHAINS[chain].serverId,
-            category: KEYRING_CATEGORY_MAP[currentAccount.type],
-            success: false,
-            preExecSuccess: cacheExplain
-              ? cacheExplain.pre_exec.success && cacheExplain.calcSuccess
-              : true,
-          });
+        stats.report('signedTransaction', {
+          type: currentAccount.brandName,
+          chainId: CHAINS[chain].serverId,
+          category: KEYRING_CATEGORY_MAP[currentAccount.type],
+          success: false,
+          preExecSuccess: cacheExplain
+            ? cacheExplain.pre_exec.success && cacheExplain.calcSuccess
+            : true,
+        });
       }
       throw new Error(e);
     }
