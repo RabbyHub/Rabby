@@ -330,7 +330,6 @@ const BalanceChange = ({
 }) => {
   const { t } = useTranslation();
   const isSuccess = data.success;
-  const chain = CHAINS[chainEnum];
 
   const { hasTokenChange, hasNFTChange } = useBalanceChange({
     balance_change: data,
@@ -405,7 +404,7 @@ const BalanceChange = ({
             {isShowTotalBalanceChange ? (
               <span
                 className="token-change-total"
-                title={String(data.usd_value_change)}
+                title={new BigNumber(data.usd_value_change).toFixed()}
               >
                 {isUSDValueChangePositive ? '+' : '-'} $
                 {splitNumberByStep(Math.abs(data.usd_value_change).toFixed(2))}
@@ -429,7 +428,7 @@ const BalanceChange = ({
                     >
                       -{' '}
                       {splitNumberByStep(
-                        Number(new BigNumber(token.amount).toFixed(9))
+                        new BigNumber(token.amount).toFixed(9)
                       )}{' '}
                       {token.symbol}
                     </span>
@@ -458,17 +457,19 @@ const BalanceChange = ({
                     />
                     <span
                       className="token-change-amount"
-                      title={`${token.amount} ${token.symbol}`}
+                      title={`${new BigNumber(token.amount).toFixed()} ${
+                        token.symbol
+                      }`}
                     >
                       +{' '}
                       {splitNumberByStep(
-                        Number(new BigNumber(token.amount).toFixed(9))
+                        new BigNumber(token.amount).toFixed(9)
                       )}{' '}
                       {token.symbol}
                     </span>
                     <span
                       className="token-change-price"
-                      title={String(token.usd_value)}
+                      title={new BigNumber(token.usd_value || 0).toFixed()}
                     >
                       + ${splitNumberByStep(token.usd_value!.toFixed(2))}
                     </span>

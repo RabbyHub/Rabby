@@ -485,8 +485,9 @@ class ProviderController extends BaseController {
             chainId: CHAINS[chain].serverId,
             category: KEYRING_CATEGORY_MAP[currentAccount.type],
             success: false,
-            preExecSuccess:
-              cacheExplain.pre_exec.success && cacheExplain.calcSuccess,
+            preExecSuccess: cacheExplain
+              ? cacheExplain.pre_exec.success && cacheExplain.calcSuccess
+              : true,
           });
       }
       throw new Error(e);
