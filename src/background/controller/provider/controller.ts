@@ -383,7 +383,8 @@ class ProviderController extends BaseController {
             hash,
             failed: false,
           },
-          cacheExplain
+          cacheExplain,
+          options?.data?.$ctx
         );
         transactionWatchService.addTx(
           `${txParams.from}_${approvalRes.nonce}_${chain}`,
