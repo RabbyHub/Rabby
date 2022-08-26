@@ -339,6 +339,9 @@ function MnemonicsInputs({
                 type={isCurrentVisible ? 'text' : 'password'}
                 value={word}
                 autoFocus={isCurrentFocusing}
+                onFocus={() => {
+                  setFocusing({ index: idx, visible: isCurrentVisible });
+                }}
                 onKeyDownCapture={(e) => {
                   if (isTryingToPaste(e)) {
                     const input = e.target as HTMLInputElement;
