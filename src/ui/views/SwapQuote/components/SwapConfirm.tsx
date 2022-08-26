@@ -84,7 +84,7 @@ export const SwapConfirm = ({
   isBestQuote,
   openQuotesList,
   slippage,
-  backToSwap,
+  backToSwapBySlippageSetting,
   countDown,
   handleSwap,
   shouldApprove,
@@ -98,7 +98,7 @@ export const SwapConfirm = ({
   receiveAmount: string | number;
   isBestQuote: boolean;
   openQuotesList: () => void;
-  backToSwap: () => void;
+  backToSwapBySlippageSetting: () => void;
   countDown: number;
   handleSwap: () => void;
   shouldApprove: boolean;
@@ -320,7 +320,7 @@ export const SwapConfirm = ({
             className="mx-auto"
             onClick={() => {
               setSlippageModal(false);
-              backToSwap();
+              backToSwapBySlippageSetting();
             }}
           >
             {t('Confirm')}

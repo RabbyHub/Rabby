@@ -11,6 +11,10 @@ import { SvgIconLoading } from 'ui/assets';
 import './style.less';
 import BigNumber from 'bignumber.js';
 import Empty from '../Empty';
+import stats from '@/stats';
+
+export const isSwapTokenType = (s: string) =>
+  ['swapFrom', 'swapTo'].includes(s);
 
 export interface TokenSelectorProps {
   visible: boolean;
@@ -19,7 +23,7 @@ export interface TokenSelectorProps {
   onConfirm(item: TokenItem): void;
   onCancel(): void;
   onSearch(q: string);
-  type?: 'default' | 'swap';
+  type?: 'default' | 'swapFrom' | 'swapTo';
   placeholder?: string;
 }
 
@@ -100,7 +104,7 @@ const TokenSelector = ({
 
   const isEmpty = !query && list.length <= 0;
 
-  const isSwapType = type === 'swap';
+  const isSwapType = isSwapTokenType(type);
 
   const NoDataUI = (
     <div className="no-token">
@@ -118,6 +122,16 @@ const TokenSelector = ({
       </p>
     </div>
   );
+
+  useEffect(() => {
+    if (query && isSwapType && displayList.length === 0) {
+      stats.report('swapTokenSearchFailure', {
+        chainId: displayList[0].chain,
+        searchType: type === 'swapFrom' ? 'fromToken' : 'toToken',
+        keyword: query,
+      });
+    }
+  }, [type, query, isSwapType, displayList]);
 
   return (
     <Drawer

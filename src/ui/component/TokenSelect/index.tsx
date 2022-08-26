@@ -11,7 +11,7 @@ import BigNumber from 'bignumber.js';
 import { TokenItem } from 'background/service/openapi';
 import { useWalletOld } from 'ui/utils';
 import TokenWithChain from '../TokenWithChain';
-import TokenSelector from '../TokenSelector';
+import TokenSelector, { isSwapTokenType } from '../TokenSelector';
 import styled from 'styled-components';
 import LessPalette from '@/ui/style/var-defs';
 import { ReactComponent as SvgIconArrowDownTriangle } from '@/ui/assets/swap/arrow-caret-down.svg';
@@ -59,6 +59,8 @@ const TokenSelect = ({
   const [tokenSelectorVisible, setTokenSelectorVisible] = useState(false);
   const wallet = useWalletOld();
 
+  const isSwapType = isSwapTokenType(type);
+
   const handleCurrentTokenChange = (token: TokenItem) => {
     onChange && onChange('');
     onTokenChange(token);
@@ -88,17 +90,16 @@ const TokenSelect = ({
     setIsListLoading(true);
     let tokens: TokenItem[] = [];
     const currentAccount = await wallet.syncGetCurrentAccount();
-    const getDefaultTokens =
-      type === 'swap'
-        ? wallet.openapi.getSwapTokenList
-        : wallet.openapi.listToken;
+    const getDefaultTokens = isSwapType
+      ? wallet.openapi.getSwapTokenList
+      : wallet.openapi.listToken;
     const defaultTokens = await getDefaultTokens(
       currentAccount?.address,
       chainId
     );
     let localAddedTokens: TokenItem[] = [];
 
-    if (type !== 'swap') {
+    if (!isSwapType) {
       const localAdded =
         (await wallet.getAddedToken(currentAccount?.address)).filter((item) => {
           const [chain] = item.split(':');

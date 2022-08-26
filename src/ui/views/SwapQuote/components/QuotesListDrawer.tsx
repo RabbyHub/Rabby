@@ -16,7 +16,7 @@ import RateExchange, { toSignificantDigits } from './RateExchange';
 
 export type Quote = Awaited<
   ReturnType<typeof wallet.openapi.getSwapQuote>
->[][number] & { dexId: string; type: string };
+>[][number] & { dexId: string; type: string; duration: number };
 
 export const getReceiveTokenAmountBN = (
   rawAmount: string | number,
