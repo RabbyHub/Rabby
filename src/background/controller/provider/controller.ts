@@ -52,6 +52,7 @@ import {
   convert1559ToLegacy,
 } from '@/utils/transaction';
 import stats from '@/stats';
+import BigNumber from 'bignumber.js';
 
 const reportSignText = (params: {
   method: string;
@@ -196,6 +197,7 @@ class ProviderController extends BaseController {
         },
         origin
       );
+      sessionService.broadcastEvent('rabby:chainChanged', chain, origin);
     }
 
     return account;
@@ -741,7 +743,9 @@ class ProviderController extends BaseController {
     } else {
       chainId = chainId.toLowerCase();
     }
-    const chain = Object.values(CHAINS).find((value) => value.hex === chainId);
+    const chain = Object.values(CHAINS).find((value) =>
+      new BigNumber(value.hex).isEqualTo(chainId)
+    );
 
     if (!chain) {
       throw new Error('This chain is not supported by Rabby yet.');
@@ -763,6 +767,7 @@ class ProviderController extends BaseController {
       },
       origin
     );
+    sessionService.broadcastEvent('rabby:chainChanged', chain, origin);
     return null;
   };
 

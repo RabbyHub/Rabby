@@ -7,6 +7,7 @@ import { CHAINS, KEYRING_CATEGORY_MAP, IS_LINUX, IS_CHROME } from 'consts';
 import transactionHistoryService from './transactionHistory';
 import preferenceService from './preference';
 import stats from '@/stats';
+import BigNumber from 'bignumber.js';
 
 type IApprovalComponents = typeof import('@/ui/views/Approval/components');
 type IApprovalComponent = IApprovalComponents[keyof IApprovalComponents];
@@ -233,8 +234,8 @@ class NotificationService extends Events {
         )
       ) {
         const chainId = data.params?.data?.[0]?.chainId;
-        const chain = Object.values(CHAINS).find(
-          (chain) => chain.hex === chainId
+        const chain = Object.values(CHAINS).find((chain) =>
+          new BigNumber(chain.hex).isEqualTo(chainId)
         );
         if (chain) {
           this.resolveApproval(null);

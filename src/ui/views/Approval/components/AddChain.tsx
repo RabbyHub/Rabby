@@ -7,6 +7,7 @@ import { CHAINS_ENUM, CHAINS } from 'consts';
 import { Chain } from 'background/service/openapi';
 import { useWallet, useApproval, useWalletOld } from 'ui/utils';
 import IconWarning from 'ui/assets/warning.svg';
+import BigNumber from 'bignumber.js';
 
 interface AddChainProps {
   data: {
@@ -51,7 +52,11 @@ const AddChain = ({ params }: { params: AddChainProps }) => {
       <Trans i18nKey="switchChainDesc" values={{ name: showChain?.name }} />
     );
     setConfirmBtnText(t('Change'));
-    setShowChain(Object.values(CHAINS).find((chain) => chain.hex === chainId));
+    setShowChain(
+      Object.values(CHAINS).find((chain) =>
+        new BigNumber(chain.hex).isEqualTo(chainId)
+      )
+    );
   }, [defaultChain]);
 
   useEffect(() => {
