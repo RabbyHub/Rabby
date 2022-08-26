@@ -546,7 +546,6 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     setSecurityCheckStatus,
   ] = useState<SecurityCheckDecision>('loading');
   const [securityCheckAlert, setSecurityCheckAlert] = useState('Checking...');
-  const [showSecurityCheckDetail, setShowSecurityCheckDetail] = useState(false);
   const [
     securityCheckDetail,
     setSecurityCheckDetail,
@@ -815,7 +814,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       nonce: updateNonce ? Number(recommendNonce) : Number(tx.nonce),
       explain: res,
       approvalId: approval.id,
-      calcSuccess: true,
+      calcSuccess: !(checkErrors.length > 0),
     });
     return res;
   };
@@ -915,8 +914,17 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     } else {
       (transaction as Tx).gasPrice = tx.gasPrice;
     }
+    const approval = await getApproval();
     gaEvent('allow');
     if (currentAccount?.type && WaitingSignComponent[currentAccount.type]) {
+      await wallet.addTxExplainCache({
+        address: currentAccount.address,
+        chainId,
+        nonce: Number(realNonce || tx.nonce),
+        explain: txDetail!,
+        approvalId: approval.id,
+        calcSuccess: !(checkErrors.length > 0),
+      });
       resolveApproval({
         ...transaction,
         isSend,
@@ -944,6 +952,15 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       category: KEYRING_CATEGORY_MAP[currentAccount.type],
       preExecSuccess:
         checkErrors.length > 0 || !txDetail?.pre_exec.success ? false : true,
+    });
+
+    await wallet.addTxExplainCache({
+      address: currentAccount.address,
+      chainId,
+      nonce: Number(realNonce || tx.nonce),
+      explain: txDetail!,
+      approvalId: approval.id,
+      calcSuccess: !(checkErrors.length > 0),
     });
 
     ReactGA.event({

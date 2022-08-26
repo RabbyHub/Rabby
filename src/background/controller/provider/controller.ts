@@ -353,8 +353,9 @@ class ProviderController extends BaseController {
           chainId: CHAINS[chain].serverId,
           category: KEYRING_CATEGORY_MAP[currentAccount.type],
           success: true,
-          preExecSuccess:
-            cacheExplain.pre_exec.success && cacheExplain.calcSuccess,
+          preExecSuccess: cacheExplain
+            ? cacheExplain.pre_exec.success && cacheExplain.calcSuccess
+            : true,
         });
         return;
       }
@@ -364,8 +365,9 @@ class ProviderController extends BaseController {
           chainId: CHAINS[chain].serverId,
           category: KEYRING_CATEGORY_MAP[currentAccount.type],
           success: true,
-          preExecSuccess:
-            cacheExplain.pre_exec.success && cacheExplain.calcSuccess,
+          preExecSuccess: cacheExplain
+            ? cacheExplain.pre_exec.success && cacheExplain.calcSuccess
+            : true,
         });
         if (isSend) {
           pageStateCacheService.clear();
@@ -420,8 +422,9 @@ class ProviderController extends BaseController {
         chainId: CHAINS[chain].serverId,
         category: KEYRING_CATEGORY_MAP[currentAccount.type],
         success: true,
-        preExecSuccess:
-          cacheExplain.pre_exec.success && cacheExplain.calcSuccess,
+        preExecSuccess: cacheExplain
+          ? cacheExplain.pre_exec.success && cacheExplain.calcSuccess
+          : true,
       });
       try {
         validateGasPriceRange(approvalRes);
@@ -444,8 +447,9 @@ class ProviderController extends BaseController {
           chainId: CHAINS[chain].serverId,
           category: KEYRING_CATEGORY_MAP[currentAccount.type],
           success: false,
-          preExecSuccess:
-            cacheExplain.pre_exec.success && cacheExplain.calcSuccess,
+          preExecSuccess: cacheExplain
+            ? cacheExplain.pre_exec.success && cacheExplain.calcSuccess
+            : true,
         });
         if (!isSpeedUp && !isCancel) {
           const cacheExplain = transactionHistoryService.getExplainCache({
@@ -480,8 +484,9 @@ class ProviderController extends BaseController {
           chainId: CHAINS[chain].serverId,
           category: KEYRING_CATEGORY_MAP[currentAccount.type],
           success: false,
-          preExecSuccess:
-            cacheExplain.pre_exec.success && cacheExplain.calcSuccess,
+          preExecSuccess: cacheExplain
+            ? cacheExplain.pre_exec.success && cacheExplain.calcSuccess
+            : true,
         });
       }
       throw new Error(e);

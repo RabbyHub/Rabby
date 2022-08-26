@@ -94,7 +94,9 @@ const QRHardWareWaiting = ({ params }) => {
             type: account.brandName,
             chainId: CHAINS[chain].serverId,
             category: KEYRING_CATEGORY_MAP[account.type],
-            preExecSuccess: explain?.calcSuccess && explain?.pre_exec.success,
+            preExecSuccess: explain
+              ? explain?.calcSuccess && explain?.pre_exec.success
+              : true,
           });
         }
       }
