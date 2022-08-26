@@ -104,7 +104,9 @@ const LedgerHardwareWaiting = ({ params }: { params: ApprovalParams }) => {
           type: account.brandName,
           chainId: chain.serverId,
           category: KEYRING_CATEGORY_MAP[account.type],
-          preExecSuccess: explain?.calcSuccess && explain?.pre_exec.success,
+          preExecSuccess: explain
+            ? explain?.calcSuccess && explain?.pre_exec.success
+            : true,
         });
       }
     }
