@@ -189,6 +189,8 @@ class ProviderController extends BaseController {
     const connectSite = permissionService.getConnectedSite(origin);
     if (connectSite) {
       const chain = CHAINS[connectSite.chain];
+      // rabby:chainChanged event must be sent before chainChanged event
+      sessionService.broadcastEvent('rabby:chainChanged', chain, origin);
       sessionService.broadcastEvent(
         'chainChanged',
         {
@@ -197,7 +199,6 @@ class ProviderController extends BaseController {
         },
         origin
       );
-      sessionService.broadcastEvent('rabby:chainChanged', chain, origin);
     }
 
     return account;
@@ -764,6 +765,8 @@ class ProviderController extends BaseController {
       true
     );
 
+    // rabby:chainChanged event must be sent before chainChanged event
+    sessionService.broadcastEvent('rabby:chainChanged', chain, origin);
     sessionService.broadcastEvent(
       'chainChanged',
       {
@@ -772,7 +775,6 @@ class ProviderController extends BaseController {
       },
       origin
     );
-    sessionService.broadcastEvent('rabby:chainChanged', chain, origin);
     return null;
   };
 
