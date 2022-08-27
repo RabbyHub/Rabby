@@ -597,6 +597,12 @@ export class WalletController extends BaseController {
   setSite = (data: ConnectedSite) => {
     permissionService.setSite(data);
     if (data.isConnected) {
+      // rabby:chainChanged event must be sent before chainChanged event
+      sessionService.broadcastEvent(
+        'rabby:chainChanged',
+        CHAINS[data.chain],
+        data.origin
+      );
       sessionService.broadcastEvent(
         'chainChanged',
         {
@@ -605,26 +611,22 @@ export class WalletController extends BaseController {
         },
         data.origin
       );
-      sessionService.broadcastEvent(
-        'rabby:chainChanged',
-        CHAINS[data.chain],
-        data.origin
-      );
     }
   };
   updateConnectSite = (origin: string, data: ConnectedSite) => {
     permissionService.updateConnectSite(origin, data);
+    // rabby:chainChanged event must be sent before chainChanged event
+    sessionService.broadcastEvent(
+      'rabby:chainChanged',
+      CHAINS[data.chain],
+      data.origin
+    );
     sessionService.broadcastEvent(
       'chainChanged',
       {
         chain: CHAINS[data.chain].hex,
         networkVersion: CHAINS[data.chain].network,
       },
-      data.origin
-    );
-    sessionService.broadcastEvent(
-      'rabby:chainChanged',
-      CHAINS[data.chain],
       data.origin
     );
   };
