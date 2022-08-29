@@ -21,7 +21,8 @@ import clsx from 'clsx';
 import { ReactComponent as IconInfo } from 'ui/assets/infoicon.svg';
 import { ReactComponent as IconTipDownArrow } from 'ui/assets/swap/arrow-tips-down.svg';
 import { useCss } from 'react-use';
-const ReservedGas = 0.1;
+
+const ReservedGas = 0;
 
 const MaxButton = styled.div`
   padding: 4px 5px;
@@ -516,7 +517,11 @@ const Swap = () => {
             marginBottom: -10,
           }}
         >
-          <TagChainSelector value={chain} onChange={handleChainChanged} />
+          <TagChainSelector
+            value={chain}
+            onChange={handleChainChanged}
+            type="swap"
+          />
         </div>
 
         <Section className="pb-16">

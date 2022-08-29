@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Input, Drawer } from 'antd';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
@@ -35,8 +35,6 @@ const TokenSelector = ({
 }: TokenSelectorProps) => {
   const { t } = useTranslation();
   const [query, setQuery] = useState('');
-  const [displayList, setDisplayList] = useState<TokenItem[]>(list);
-  const [timeoutId, setTimeoutId] = useState<number | null>(null);
   const [isInputActive, setIsInputActive] = useState(false);
 
   useDebounce(
@@ -51,23 +49,7 @@ const TokenSelector = ({
     setQuery(value);
   };
 
-  const setTokensByStep = () => {
-    if (displayList.length < list.length) {
-      const tmId = window.setTimeout(
-        () => {
-          const thisStep = list.slice(
-            displayList.length,
-            displayList.length + 100 > list.length
-              ? list.length
-              : displayList.length + 100
-          );
-          setDisplayList([...displayList, ...thisStep]);
-        },
-        displayList.length <= 0 ? 0 : 500
-      );
-      setTimeoutId(tmId);
-    }
-  };
+  const displayList = useMemo(() => list || [], [list]);
 
   const handleInputFocus = () => {
     setIsInputActive(true);
@@ -78,23 +60,8 @@ const TokenSelector = ({
   };
 
   useEffect(() => {
-    setDisplayList([]);
-    if (timeoutId !== null) {
-      window.clearTimeout(timeoutId);
-      setTimeoutId(null);
-    }
-  }, [list]);
-
-  useEffect(() => {
-    if (visible) {
-      setTokensByStep();
-    }
-  }, [displayList, visible]);
-
-  useEffect(() => {
     if (!visible) {
       setQuery('');
-      setDisplayList([]);
     }
   }, [visible]);
 
@@ -208,7 +175,8 @@ const TokenSelector = ({
         <Empty
           className={clsx(
             'pt-[80px]',
-            (!isSwapType || isEmpty || displayList.length > 0) && 'hidden'
+            (!isSwapType || isLoading || isEmpty || displayList.length > 0) &&
+              'hidden'
           )}
         >
           <div className="text-14 text-gray-subTitle mb-12">

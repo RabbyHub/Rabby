@@ -5,7 +5,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { Skeleton, Space } from 'antd';
+import { Space } from 'antd';
 import cloneDeep from 'lodash/cloneDeep';
 import BigNumber from 'bignumber.js';
 import { TokenItem } from 'background/service/openapi';
@@ -24,6 +24,11 @@ const Wrapper = styled.div`
   justify-content: space-between;
   align-items: center;
   cursor: pointer;
+  border: 1px solid transparent;
+
+  &:hover {
+    border-color: #8697ff;
+  }
 `;
 
 const Text = styled.span`
@@ -119,12 +124,29 @@ const TokenSelect = ({
     setIsListLoading(false);
   };
 
-  const handleSearchTokens = (q: string) => {
+  const handleSearchTokens = async (q: string) => {
     if (!q) {
       setTokens(originTokenList);
       return;
     }
     const kw = q.trim();
+    if (type === 'swap') {
+      setIsListLoading(true);
+      try {
+        const currentAccount = await wallet.syncGetCurrentAccount();
+        const data = await wallet.openapi.searchSwapToken(
+          currentAccount!.address,
+          chainId,
+          q
+        );
+        setTokens(data);
+      } catch (error) {
+        console.error('swap search error :', error);
+      }
+      setIsListLoading(false);
+
+      return;
+    }
     setTokens(
       originTokenList.filter((token) => {
         if (kw.length === 42 && kw.startsWith('0x')) {
@@ -157,10 +179,7 @@ const TokenSelect = ({
             <Text>{token.symbol}</Text>
           </Space>
         ) : (
-          <Space size={8}>
-            <Skeleton.Avatar />
-            <Text>Select a token</Text>
-          </Space>
+          <Text>Select a token</Text>
         )}
         <SvgIconArrowDownTriangle width={24} height={24} />
       </Wrapper>

@@ -114,12 +114,29 @@ const TokenAmountInput = ({
     setIsListLoading(false);
   };
 
-  const handleSearchTokens = (q: string) => {
+  const handleSearchTokens = async (q: string) => {
     if (!q) {
       setTokens(originTokenList);
       return;
     }
     const kw = q.trim();
+    if (type === 'swap') {
+      setIsListLoading(true);
+      try {
+        const currentAccount = await wallet.syncGetCurrentAccount();
+        const data = await wallet.openapi.searchSwapToken(
+          currentAccount!.address,
+          chainId,
+          q
+        );
+        setTokens(data);
+      } catch (error) {
+        console.error('swap search error :', error);
+      }
+      setIsListLoading(false);
+
+      return;
+    }
     setTokens(
       originTokenList.filter((token) => {
         if (kw.length === 42 && kw.startsWith('0x')) {
