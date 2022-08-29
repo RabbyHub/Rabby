@@ -55,7 +55,7 @@ export const RateExchange = ({
       onClick={toggle}
     >
       <span>{exchangeDisplay}</span>
-      <IconTransform className={clsx(' ml-2', iconClassName)} />
+      <IconTransform className={clsx(' ml-4', iconClassName)} />
     </div>
   );
 };
