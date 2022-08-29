@@ -861,6 +861,23 @@ class OpenApiService {
     return data?.filter((token) => getChain(token.chain));
   };
 
+  searchSwapToken = async (
+    id: string,
+    chainId: string,
+    q: string,
+    is_all = false
+  ) => {
+    const { data } = await this.request.get('/v1/user/token_search', {
+      params: {
+        id,
+        chain_id: chainId,
+        q,
+        is_all,
+      },
+    });
+    return data;
+  };
+
   getToken = async (
     id: string,
     chainId: string,

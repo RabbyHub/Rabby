@@ -75,6 +75,12 @@ const QuoteSelectedTag = styled.div<{
   cursor: pointer;
 `;
 
+const CountDown = styled.span<{
+  warn?: boolean;
+}>`
+  color: ${(props) => (props.warn ? '#ffe819' : 'inherit')};
+`;
+
 export const SwapConfirm = ({
   chain,
   payToken,
@@ -148,9 +154,14 @@ export const SwapConfirm = ({
         </Chain>
 
         <div className="text-white text-12 pt-[6px]">
-          {countDown === 0
-            ? 'Refreshing'
-            : `Quote refresh after ${countDown} s`}
+          {countDown === 0 ? (
+            'Refreshing'
+          ) : (
+            <>
+              Refresh after{' '}
+              <CountDown warn={countDown <= 10}>{countDown}</CountDown> s
+            </>
+          )}
         </div>
       </div>
       <TokenSwapSection
@@ -213,7 +224,7 @@ export const SwapConfirm = ({
             </div>
           </div>
           <div
-            className="text-center text-[36px] font-medium text-gray-title max-w-[320px] px-6 truncate"
+            className="relative -top-2 text-center text-[36px] font-medium text-gray-title max-w-[320px] px-6 truncate"
             title={receiveAmount + '' + getTokenSymbol(receiveToken)}
           >
             {toSignificantDigits(new BigNumber(receiveAmount))}
@@ -246,7 +257,7 @@ export const SwapConfirm = ({
           {t('MaxSlippage')}: {slippage}%
         </div>
         <IconSetting
-          className="cursor-pointer ml-[2px]"
+          className="cursor-pointer ml-4"
           onClick={() => setSlippageModal(true)}
         />
       </div>
