@@ -6,6 +6,39 @@ Rabby is an open source browser plugin for the DeFi ecosystem, providing users w
 
 You can Download the latest Rabby [here](https://github.com/RabbyHub/Rabby/releases/latest).
 
+## Guideline for integrating Rabby Wallet
+
+To help dapp developers support and integrate Rabby Wallet more easily, we recommend you use our integration solution that has almost NO development cost and does not introduce any uncertainty:
+
+### Problem
+
+When a dapp connects to an extension wallet, it usually works in this way:
+
+1. The extension wallet will integrate an "Ethereum" object into the dapp page while it's loading;
+2. The dapp will look for this "Ethereum" object to determine if an extension wallet is installed;
+3. If the "Ethereum" object is detected, all following interactions between the dapp and the extension wallet are realized by this "Ethereum" object.
+4. If the "Ethereum" object is not detected, the dapp will ask users to download a new extension wallet.
+
+The problem is that many dapps will wrongly display this detected "Ethereum" object as "MetaMask" and displays a "connect to MetaMask" button by default which brings a lot of confusion to the users as any Web3 wallet can inject this "Ethereum" object. 
+
+### Solution:
+
+We recommend you to solve above problem with simple modifications as follows:
+
+1. On your connection page, display both connection buttons for "MetaMask" & "Rabby Wallet" when the "Ethereum" object is detected: these two buttons basically have the same function. Users can click any of them to interact with the "Ethereum" object and perform the connection operation. These two buttons are only used to display both brands' logos to help users understand their operation path. 
+2. If the "Ethereum" object is not detected, then suggest the users go download the extension wallet and provide download links for both "MetaMask" and "Rabby Wallet".
+
+This solution does not involve any change to your actual business logic and is just simple UI adjustments. It does not introduce any uncertainty and is with rather low cost.
+
+You can refer to "[https://debank.com](https://debank.com)" for final display effect.
+
+### Potential issues:
+According to the above solution, if a user is using the "Rabby Wallet" and clicks the "connect to MetaMask" button, he will still interact with the "Rabby Wallet" and vice versa which might be a little bit weird.
+
+However, above issue is a very rare scenario and very unlikely to happen because users are not likely to click and interact with an extension wallet that he hasn't installed. Even it happens, it's not a real problem from the user's perspective.
+
+Please don't hesitate to reach us if you have any doubt.
+
 ## Contribution
 
 ### Install dependency
