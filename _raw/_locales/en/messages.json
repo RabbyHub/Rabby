@@ -1085,10 +1085,10 @@
     "message": "Do you want to go back and change the max slippage to get new quotes? "
   },
   "QuoteDesc": {
-    "message": "Rabby searches multiple liquidity sources (exchanges, aggregators, and professional market makers) to find the best rates and lowest network fees.A fee of 0.875% has been deducted from all quote."
+    "message": "Rabby searches multiple liquidity sources (exchanges, aggregators, and professional market makers) to find the best rates and lowest network fees.A fee of {{feeRatio}}% has been deducted from all quote."
   },
   "ReceivingAmountDesc": {
-    "message": "This is an estimate. The exact amount received depends on slippage. Each quote has deducted 0.875% as a service fee for Rabby.  "
+    "message": "This is an estimate. The exact amount received depends on slippage. Each quote has deducted {{feeRatio}}% as a service fee for Rabby.  "
   },
   "EstGasFeeDesc": {
     "message": "This is an estimated gas cost for your transaction. The actual gas cost may change based on network conditions. "
@@ -1100,7 +1100,7 @@
     "message": "Available liquidity sources are dexes, aggregators, and professional market makers. "
   },
   "RabbyQuoteDesc": {
-    "message": "Rabby searches multiple liquidity sources (exchanges, aggregators, and professional market makers) to find the best rates and lowest network fees.A fee of 0.875% has been deducted from all quote."
+    "message": "Rabby searches multiple liquidity sources (exchanges, aggregators, and professional market makers) to find the best rates and lowest network fees.A fee of {{feeRatio}}% has been deducted from all quote."
   },
   "useThisQuote": {
     "message": "Use this quote"

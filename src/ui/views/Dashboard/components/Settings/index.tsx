@@ -16,7 +16,8 @@ import { Field, PageHeader, Popup } from 'ui/component';
 import { useWallet, useWalletOld } from 'ui/utils';
 import './style.less';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
-import IconContacts from 'ui/assets/dashboard/contacts.png';
+import IconContacts from 'ui/assets/swap/contact.svg';
+
 import { Contacts } from '..';
 
 interface SettingsProps {

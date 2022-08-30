@@ -20,7 +20,7 @@ import LessPalette from '@/ui/style/var-defs';
 import clsx from 'clsx';
 import { ReactComponent as IconInfo } from 'ui/assets/infoicon.svg';
 import { ReactComponent as IconTipDownArrow } from 'ui/assets/swap/arrow-tips-down.svg';
-import { useCss } from 'react-use';
+import { useAsync, useCss } from 'react-use';
 
 const ReservedGas = 0;
 
@@ -245,7 +245,12 @@ const Swap = () => {
   const shouldSetPageStateCache = useRef(true);
   const [autoFocusAmount, setAutoFocusAmount] = useState(true);
 
+  const { value: feeRatio, loading: feeRatioLoading } = useAsync(async () => {
+    return await wallet.getSwapFeeRatio(chain);
+  }, [chain, wallet]);
+
   const canSubmit =
+    !feeRatioLoading &&
     !slippageError &&
     payToken &&
     receiveToken &&
@@ -272,14 +277,15 @@ const Swap = () => {
     history.replace({
       pathname: '/swap-quotes',
       search: obj2query({
+        feeRatio,
         chain_enum: chain,
         chain: payToken.chain,
         payTokenId: payToken.id,
         receiveTokenId: receiveToken!.id,
-        amount: amountInput,
+        amount: new BigNumber(amountInput).toString(10),
         rawAmount: new BigNumber(amountInput)
           .times(10 ** payToken.decimals)
-          .toString(),
+          .toString(10),
         slippage:
           slippage === 'custom' ? customSlippageInput || '0' : slippage + '',
       }),
@@ -310,7 +316,7 @@ const Swap = () => {
     const tokenBalance = new BigNumber(payToken.raw_amount_hex_str || 0).div(
       10 ** payToken.decimals
     );
-    setAmountInput(tokenBalance.toString());
+    setAmountInput(tokenBalance.toString(10));
   };
 
   const handleChainChanged = async (val: CHAINS_ENUM) => {
@@ -462,7 +468,7 @@ const Swap = () => {
           amount: amountInput,
           rawAmount: new BigNumber(amountInput)
             .times(10 ** payToken.decimals)
-            .toString(),
+            .toString(10),
           slippage:
             slippage === 'custom' ? customSlippageInput || '0' : slippage + '',
         })}`,
