@@ -155,7 +155,14 @@ export const QuotesListDrawer = ({
             className={clsx(valueClassName)}
             title={list[selectedIndex]?.gas?.gas_cost_usd_value + ''}
           >
-            ${list[selectedIndex]?.gas?.gas_cost_usd_value?.toFixed(2)}
+            $
+            {toSignificantDigits(
+              new BigNumber(
+                list[selectedIndex]?.gas?.gas_cost_usd_value?.toFixed(10) ||
+                  '0',
+                4
+              )
+            )}
           </div>
         ),
       },
@@ -436,7 +443,11 @@ const AmountAndGasFeeItem = ({
             className="max-w-[130px] truncate text-15"
             title={item.gas?.gas_cost_usd_value + ''}
           >
-            ${item.gas?.gas_cost_usd_value?.toFixed(2) || ''}
+            $
+            {toSignificantDigits(
+              new BigNumber(item.gas?.gas_cost_usd_value || '0'),
+              4
+            )}
           </div>
         </Space>
         <Space size={12} className="ml-auto">

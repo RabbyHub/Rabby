@@ -112,8 +112,6 @@ export const SwapConfirm = ({
 }) => {
   const { t } = useTranslation();
 
-  const [slippageModal, setSlippageModal] = useState(false);
-
   const noUsePrice = !(payToken.price && receiveToken.price);
 
   const { priceDifference, priceDifferenceIsHigh } = useMemo(() => {
@@ -127,6 +125,16 @@ export const SwapConfirm = ({
       priceDifferenceIsHigh: difference.gt(0.05),
     };
   }, [receiveToken, payToken]);
+
+  const minReceive = useMemo(
+    () =>
+      toSignificantDigits(
+        new BigNumber(receiveAmount).times(
+          new BigNumber(1).minus(new BigNumber(slippage).div(100))
+        )
+      ),
+    [receiveAmount, slippage]
+  );
 
   const tokenApproveAndSwapTip = useCss({
     '& .ant-tooltip-arrow': {
@@ -252,23 +260,14 @@ export const SwapConfirm = ({
         />
       </TokenSwapSection>
 
-      <div className="flex items-center justify-center mt-[24px]">
-        <div>
-          {t('MaxSlippage')}: {slippage}%
-        </div>
-        <IconSetting
-          className="cursor-pointer ml-4"
-          onClick={() => setSlippageModal(true)}
-        />
+      <div className="flex items-center justify-center text-12 font-medium text-gray-content mt-[24px]">
+        {t('Minimum receive minReceive symbol under slippage', {
+          minReceive,
+          symbol: getTokenSymbol(receiveToken),
+          slippage,
+        })}
       </div>
 
-      <div className="text-center text-12 text-orange mt-[8px] h-[14px]">
-        {slippage < 0.1
-          ? t('LowSlippageToleranceWarn')
-          : slippage > 5 && slippage <= 15
-          ? t('HighSlippageToleranceWarn')
-          : ''}
-      </div>
       <div
         className={clsx('mt-auto flex justify-center')}
         style={{
@@ -307,37 +306,6 @@ export const SwapConfirm = ({
           )}
         </Button>
       </div>
-
-      <Modal
-        onCancel={() => setSlippageModal(false)}
-        visible={slippageModal}
-        bodyStyle={{
-          padding: 36,
-          paddingBottom: 32,
-          height: 170,
-        }}
-        footer={null}
-      >
-        <div className="flex flex-col justify-between h-full">
-          <div className="text-center text-15 text-gray-title font-medium">
-            {t('ChangeSlippage')}
-          </div>
-          <Button
-            style={{
-              width: 168,
-            }}
-            type="primary"
-            size="large"
-            className="mx-auto"
-            onClick={() => {
-              setSlippageModal(false);
-              backToSwap();
-            }}
-          >
-            {t('Confirm')}
-          </Button>
-        </div>
-      </Modal>
     </SwapConfirmContainer>
   );
 };
