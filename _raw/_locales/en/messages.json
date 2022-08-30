@@ -1039,8 +1039,8 @@
   "AdvancedSettings": {
     "message": "Advanced Settings"
   },
-  "MaxPriceSlippage": {
-    "message": "Max price slippage"
+  "Slippage__tolerance": {
+    "message": "Slippage tolerance"
   },
   "SlippageTip": {
     "message": "If the price changes between the time your order is placed and confirmed, it's called \"slippage\". Your order will be canceled if the price change more than your slippage setting."
@@ -1078,8 +1078,8 @@
   "SelectedQuote": {
     "message": "Selected quote"
   },
-  "MaxSlippage": {
-    "message": "Max slippage"
+  "Minimum__receive__minReceive__symbol__under__slippage": {
+    "message": "Minimum receive {{minReceive}} {{symbol}} under {{slippage}}% slippage"
   },
   "ChangeSlippage": {
     "message": "Do you want to go back and change the max slippage to get new quotes? "
