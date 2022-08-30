@@ -37,6 +37,7 @@ import {
   CHAINS_ENUM,
   KEYRING_TYPE,
   RABBY_SWAP_ROUTER,
+  SWAP_FEE_PRECISION,
 } from 'consts';
 import { ERC1155ABI, ERC20ABI, ERC721ABI, RABBY_SWAP_ABI } from 'consts/abi';
 import { Account, IHighlightedAddress } from '../service/preference';
@@ -136,6 +137,33 @@ export class WalletController extends BaseController {
     return amount.toString();
   };
 
+  getSwapFeeRatio = async (chainEnum: CHAINS_ENUM) => {
+    const account = await preferenceService.getCurrentAccount();
+    if (!account) throw new Error('no current account');
+    const chainId = CHAINS?.[chainEnum]?.id.toString();
+    if (!chainId) throw new Error('invalid chain id');
+
+    buildinProvider.currentProvider.currentAccount = account.address;
+    buildinProvider.currentProvider.currentAccountType = account.type;
+    buildinProvider.currentProvider.currentAccountBrand = account.brandName;
+    buildinProvider.currentProvider.chainId = chainId;
+
+    const provider = new ethers.providers.Web3Provider(
+      buildinProvider.currentProvider
+    );
+    if (!RABBY_SWAP_ROUTER[chainEnum]) {
+      if (!chainId) throw new Error('invalid rabby swap router');
+    }
+    const swapContract = new Contract(
+      RABBY_SWAP_ROUTER[chainEnum],
+      RABBY_SWAP_ABI,
+      provider
+    );
+    const feeRatio = await swapContract.feeRatio();
+
+    return feeRatio.toString();
+  };
+
   rabbySwap = async ({
     chain_server_id,
     pay_token_id,
@@ -149,6 +177,7 @@ export class WalletController extends BaseController {
     deadline,
     needApprove,
     is_wrapped,
+    feeRatio,
   }: {
     chain_server_id: string;
     pay_token_id: string;
@@ -162,6 +191,7 @@ export class WalletController extends BaseController {
     deadline: number;
     needApprove: boolean;
     is_wrapped: boolean;
+    feeRatio: number | string;
   }) => {
     const account = await preferenceService.getCurrentAccount();
     if (!account) throw new Error('no current account');
@@ -263,7 +293,12 @@ export class WalletController extends BaseController {
             ? constants.AddressZero
             : receive_token_id,
           new BigNumber(receive_token_raw_amount)
-            .times(1 - Number(slippage) / 100)
+            .times(
+              new BigNumber(1).minus(
+                new BigNumber(feeRatio).div(SWAP_FEE_PRECISION)
+              )
+            )
+            .times(new BigNumber(1).minus(new BigNumber(slippage).div(100)))
             .toFixed(0, BigNumber.ROUND_FLOOR),
           dex_swap_to,
           dex_approve_to,

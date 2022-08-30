@@ -623,5 +623,4 @@ export const RABBY_SWAP_ROUTER = {
   [CHAINS_ENUM.CRO]: '0x1429200a82a756aaba5d78e1cd4e88cee3f90a75',
 };
 
-// 1 - 0.875%
-export const SWAP_AVAILABLE_VALUE_RATE = 0.99125;
+export const SWAP_FEE_PRECISION = 1e5;
