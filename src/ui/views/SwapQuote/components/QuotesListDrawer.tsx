@@ -451,7 +451,12 @@ const AmountAndGasFeeItem = ({
           </div>
         </Space>
         <Space size={12} className="ml-auto">
-          {index === 0 && <BestQuoteTag className={'mr-[12px]'} invert />}
+          {index === 0 && (
+            <BestQuoteTag
+              className={'mr-[12px]'}
+              invert={currentQuoteIndex === index}
+            />
+          )}
           <IconArronRight
             className={clsx(currentQuoteIndex === index && 'brightness-[1000]')}
           />
