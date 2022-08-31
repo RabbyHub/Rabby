@@ -623,4 +623,67 @@ export const RABBY_SWAP_ROUTER = {
   [CHAINS_ENUM.CRO]: '0x1429200a82a756aaba5d78e1cd4e88cee3f90a75',
 };
 
+export const SWAP_DEX_WHITELIST = {
+  [CHAINS_ENUM.ETH]: {
+    kyber: '0x9AAb3f75489902f3a48495025729a0AF77d4b11e',
+    dodoex: '0xa356867fdcea8e71aeaf87805808803806231fdc',
+    matcha: '0xdef1c0ded9bec7f1a1670819833240f027b25eff',
+    '1inch': '0x1111111254fb6c44bac0bed2854e76f90643097d',
+    paraswap: '0xdef171fe48cf0115b1d80b88dc8eab59176fee57',
+    sushiswap: '0xd9e1ce17f2641f24ae83637ab66a2cca9c378b9f',
+    uniswap2: '0x7a250d5630b4cf539739df2c5dacb4c659f2488d',
+    uniswap3: '0xe592427a0aece92de3edee1f18e0157c05861564',
+  },
+  [CHAINS_ENUM.POLYGON]: {
+    matic_comethswap: '0x93bcdc45f7e62f89a8e901dc4a0e2c6c427d9f25',
+    matic_dfyn: '0xa102072a4c07f06ec3b4900fdc4c7b80b6c57429',
+    matic_1inch: '0x1111111254fb6c44bac0bed2854e76f90643097d',
+    matic_paraswap: '0xdef171fe48cf0115b1d80b88dc8eab59176fee57',
+    matic_quickswap: '0xa5e0829caced8ffdd4de3c43696c57f7d7a678ff',
+  },
+  [CHAINS_ENUM.BSC]: {
+    bsc_bakeryswap: '0xcde540d7eafe93ac5fe6233bee57e1270d3e330f',
+    bsc_dodoex: '0x8f8dd7db1bda5ed3da8c9daf3bfa471c12d58486',
+    bsc_julswap: '0xbd67d157502a23309db761c41965600c2ec788b2',
+    bsc_mdex: '0x7dae51bd3e3376b8c7c4900e9107f12be3af1ba8',
+    bsc_1inch: '0x1111111254fb6c44bac0bed2854e76f90643097d',
+    bsc_pancakeswap: '0x05ff2b0db69458a0750badebc4f9e13add608c7f',
+    bsc_paraswap: '0xdef171fe48cf0115b1d80b88dc8eab59176fee57',
+    bsc_pureswap: '0x3e8743b5453a348606111ab0a4dee7f70a87f305',
+  },
+  [CHAINS_ENUM.AVAX]: {
+    avax_elk: '0x9e4aabd2b3e60ee1322e94307d0776f2c8e6cfbb',
+    avax_1inch: '0x1111111254fb6c44bac0bed2854e76f90643097d',
+    avax_pangolin: '0xe54ca86531e17ef3616d22ca28b0d458b6c89106',
+    avax_paraswap: '0xdef171fe48cf0115b1d80b88dc8eab59176fee57',
+    avax_traderjoexyz: '0x60ae616a2155ee3d9a68541ba4544862310933d4',
+  },
+  [CHAINS_ENUM.FTM]: {
+    ftm_1inch: '0x1111111254fb6c44bac0bed2854e76f90643097d',
+    ftm_paraswap: '0xdef171fe48cf0115b1d80b88dc8eab59176fee57',
+    ftm_spiritswap: '0x16327e3fbdaca3bcf7e38f5af2599d2ddc33ae52',
+    ftm_spookyswap: '0xf491e7b69e4244ad4002bc14e878a34207e38c29',
+    ftm_sushiswap: '0x1b02da8cb0d097eb8d57a175b88c7d8b47997506',
+  },
+  [CHAINS_ENUM.OP]: {
+    op_1inch: '0x1111111254fb6c44bac0bed2854e76f90643097d',
+    op_paraswap: '0xdef171fe48cf0115b1d80b88dc8eab59176fee57',
+    op_uniswap3: '0xe592427a0aece92de3edee1f18e0157c05861564',
+  },
+  [CHAINS_ENUM.ARBITRUM]: {
+    arb_1inch: '0x1111111254fb6c44bac0bed2854e76f90643097d',
+    arb_paraswap: '0xdef171fe48cf0115b1d80b88dc8eab59176fee57',
+    arb_uniswap3: '0xe592427a0aece92de3edee1f18e0157c05861564',
+  },
+  [CHAINS_ENUM.GNOSIS]: {
+    xdai_bao: '0x6093aebac87d62b1a5a4ceec91204e35020e38be',
+    xdai_honeyswap: '0x1c232f01118cb8b424793ae03f870aa7d0ac7f77',
+    xdai_1inch: '0x1111111254fb6c44bac0bed2854e76f90643097d',
+  },
+  [CHAINS_ENUM.CRO]: {
+    cro_mmf: '0x145677fc4d9b8f19b5d56d1820c48e0443049a30',
+    cro_vvs: '0x145863eb42cf62847a6ca784e6416c1682b1b2ae',
+  },
+};
+
 export const SWAP_FEE_PRECISION = 1e5;
