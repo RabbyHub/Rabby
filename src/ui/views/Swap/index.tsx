@@ -16,7 +16,6 @@ import { getTokenSymbol, Modal, PageHeader } from 'ui/component';
 
 // import * as Sentry from '@sentry/browser';
 
-
 import { ReactComponent as IconSwapArrowDown } from 'ui/assets/swap/arrow-down.svg';
 import TokenSelect from '@/ui/component/TokenSelect';
 import LessPalette from '@/ui/style/var-defs';
@@ -27,12 +26,14 @@ import { ReactComponent as IconTipDownArrow } from 'ui/assets/swap/arrow-tips-do
 import stats from '@/stats';
 import { useRbiSource } from '@/ui/utils/ga-event';
 import { useAsync, useCss } from 'react-use';
-import { geTokenDecimals, getTokenSymbol } from '@/ui/utils/token';
+import {
+  geTokenDecimals,
+  getTokenSymbol as getTokenSymbolUtil,
+} from '@/ui/utils/token';
 import { providers } from 'ethers';
 import { SvgAlert, SvgIconLoading } from '@/ui/assets';
 
 const ReservedGas = 0;
-
 
 const MaxButton = styled.div`
   padding: 4px 5px;
@@ -257,7 +258,6 @@ const Swap = () => {
   const shouldSetPageStateCache = useRef(true);
   const [autoFocusAmount, setAutoFocusAmount] = useState(true);
 
-
   const { value: feeRatio, loading: feeRatioLoading } = useAsync(async () => {
     return await wallet.getSwapFeeRatio(chain);
   }, [chain, wallet]);
@@ -444,14 +444,12 @@ const Swap = () => {
     }
   }, [rbiSource]);
 
-
   useEffect(() => {
     init();
   }, []);
 
   useEffect(() => {
     if (slippage === 'custom') {
-
       setSlippageWaring('');
       setSlippageError('');
 
@@ -535,7 +533,7 @@ const Swap = () => {
         token.id,
         new providers.JsonRpcProvider(currentChain.thridPartyRPC)
       );
-      const symbol = await getTokenSymbol(
+      const symbol = await getTokenSymbolUtil(
         token.id,
         new providers.JsonRpcProvider(currentChain.thridPartyRPC)
       );
@@ -735,13 +733,13 @@ const Swap = () => {
             className="flex justify-between"
             onClick={() => {
               setOpenAdvancedSetting((b) => {
-              if (!b) {
-                stats.report('swapAdvancedSettingOn', {
-                  chainId: CHAINS[chain].serverId,
-                });
-              }
-              return !b;
-            });
+                if (!b) {
+                  stats.report('swapAdvancedSettingOn', {
+                    chainId: CHAINS[chain].serverId,
+                  });
+                }
+                return !b;
+              });
             }}
           >
             <Space size={4}>
@@ -815,7 +813,6 @@ const Swap = () => {
                   onBlur={() => {
                     setAutoFocusAmount(true);
                   }}
-
                   onInput={(e) => {
                     if (!e) {
                       setCustomSlippageInput(e || '');
@@ -843,7 +840,6 @@ const Swap = () => {
         </Section>
 
         <AbsoluteFooter>
-
           <div className="mb-16 text-12">
             {tokenVerifying && (
               <div className="flex items-center text-orange">

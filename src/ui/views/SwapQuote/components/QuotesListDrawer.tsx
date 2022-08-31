@@ -17,7 +17,7 @@ import { SWAP_FEE_PRECISION } from '@/constant';
 
 export type Quote = Awaited<
   ReturnType<typeof wallet.openapi.getSwapQuote>
->[][number] & { dexId: string; type: string };
+>[][number] & { dexId: string; type: string; duration: number };
 
 export const getReceiveTokenAmountBN = (
   feeRatio: string | number,
@@ -78,7 +78,6 @@ export const QuotesListDrawer = ({
       left: 'calc(50% - 72px)',
     },
   });
-
 
   const feeRatioPercentString = useMemo(
     () =>
@@ -160,8 +159,7 @@ export const QuotesListDrawer = ({
             $
             {toSignificantDigits(
               new BigNumber(
-                list[selectedIndex]?.gas?.gas_cost_usd_value ||
-                  '0',
+                list[selectedIndex]?.gas?.gas_cost_usd_value || '0',
                 4
               )
             )}

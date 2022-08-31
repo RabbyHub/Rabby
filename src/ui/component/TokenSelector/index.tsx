@@ -16,7 +16,6 @@ import stats from '@/stats';
 export const isSwapTokenType = (s: string) =>
   ['swapFrom', 'swapTo'].includes(s);
 
-
 export interface TokenSelectorProps {
   visible: boolean;
   list: TokenItem[];
@@ -73,7 +72,6 @@ const TokenSelector = ({
   const isEmpty = !query && list.length <= 0;
 
   const isSwapType = isSwapTokenType(type);
-
 
   const NoDataUI = (
     <div className="no-token">

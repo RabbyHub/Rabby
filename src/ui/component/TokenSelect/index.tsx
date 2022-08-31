@@ -125,7 +125,6 @@ const TokenSelect = ({
     setIsListLoading(false);
   };
 
-
   const handleSearchTokens = async (q: string) => {
     if (!q) {
       setTokens(originTokenList);

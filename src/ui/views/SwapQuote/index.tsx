@@ -207,7 +207,6 @@ export const SwapQuotes = () => {
   }, [swapQuotes, currentQuoteIndex]);
 
   const handleBack = () => {
-
     history.replace({
       pathname: '/swap',
       search: obj2query(searchObj),
@@ -240,7 +239,6 @@ export const SwapQuotes = () => {
     });
     handleBack();
   };
-
 
   const handleSelect = (i) => {
     setCurrentQuoteIndex(i);

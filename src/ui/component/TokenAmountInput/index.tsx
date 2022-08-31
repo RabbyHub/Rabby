@@ -124,7 +124,7 @@ const TokenAmountInput = ({
       return;
     }
     const kw = q.trim();
-    if (type === 'swap') {
+    if (isSwapType) {
       setIsListLoading(true);
       try {
         const currentAccount = await wallet.syncGetCurrentAccount();

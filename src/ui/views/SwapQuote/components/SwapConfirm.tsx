@@ -75,7 +75,6 @@ const QuoteSelectedTag = styled.div<{
   cursor: pointer;
 `;
 
-
 const CountDown = styled.span<{
   warn?: boolean;
 }>`
@@ -112,7 +111,6 @@ export const SwapConfirm = ({
   handleClickBack: () => void;
 }) => {
   const { t } = useTranslation();
-
 
   const noUsePrice = !(payToken.price && receiveToken.price);
 
