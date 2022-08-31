@@ -1107,5 +1107,11 @@
   },
   "Approve__and__Swap": {
     "message": "Approve and Swap"
+  },
+  "Please__input__the__custom__slippage": {
+    "message": "Please input the custom slippage"
+  },
+  "Slippage__cant__be__0": {
+    "message": "Slippage can't be 0"
   }
 }

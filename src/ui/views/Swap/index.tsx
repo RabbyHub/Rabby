@@ -425,15 +425,19 @@ const Swap = () => {
 
   useEffect(() => {
     if (slippage === 'custom') {
-      const v = Number(customSlippageInput || 0);
-      if (Number.isNaN(v)) {
-        setSlippageWaring(t('LowSlippageToleranceWarn'));
-        return;
-      }
       setSlippageWaring('');
       setSlippageError('');
+
+      if (customSlippageInput.trim() === '') {
+        return;
+      }
+      const v = Number(customSlippageInput);
+
       if (v < 0.1) {
         setSlippageWaring(t('LowSlippageToleranceWarn'));
+      }
+      if (v === 0) {
+        setSlippageWaring(t('Slippage cant be 0'));
       }
       if (v > 5 && v <= 15) {
         setSlippageWaring(t('HighSlippageToleranceWarn'));
@@ -549,6 +553,10 @@ const Swap = () => {
     tokenVerified &&
     !feeRatioLoading &&
     !slippageError &&
+    (slippage !== 'custom' ||
+      (slippage === 'custom' &&
+        customSlippageInput.trim() !== '' &&
+        Number(customSlippageInput.trim()) !== 0)) &&
     payToken &&
     receiveToken &&
     Number(amountInput) > 0 &&
@@ -695,13 +703,13 @@ const Swap = () => {
           </Space>
         </Section>
 
-        <Section
-          className={clsx('relative cursor-pointer')}
-          onClick={() => {
-            setOpenAdvancedSetting((b) => !b);
-          }}
-        >
-          <div className="flex justify-between">
+        <Section className={clsx('relative cursor-pointer')}>
+          <div
+            className="flex justify-between"
+            onClick={() => {
+              setOpenAdvancedSetting((b) => !b);
+            }}
+          >
             <Space size={4}>
               <div className="text-12 text-gray-title">
                 {t('Slippage tolerance')}
@@ -773,8 +781,13 @@ const Swap = () => {
                   onBlur={() => {
                     setAutoFocusAmount(true);
                   }}
+                  onInput={(e) => {
+                    if (!e) {
+                      setCustomSlippageInput(e || '');
+                    }
+                  }}
                   onChange={(e) => {
-                    setCustomSlippageInput(e);
+                    setCustomSlippageInput(e || '');
                   }}
                 />
               ) : (
@@ -782,6 +795,11 @@ const Swap = () => {
               )}
             </SlippageItem>
           </div>
+          {slippage === 'custom' && customSlippageInput.trim() === '' && (
+            <div className="text-12 mt-8 text-gray-content">
+              {t('Please input the custom slippage')}
+            </div>
+          )}
           {slippage === 'custom' && (slippageError || slippageWarning) && (
             <SlippageTip error={!!slippageError} warn={!!slippageWarning}>
               {slippageError || slippageWarning}
