@@ -4,12 +4,15 @@ import { useHistory, useLocation } from 'react-router-dom';
 import BigNumber from 'bignumber.js';
 import { useWallet } from '@/ui/utils';
 import useIntervalEffect from '@/ui/hooks/useIntervalEffect';
-import QuotesListDrawer, { Quote } from './components/QuotesListDrawer';
+import QuotesListDrawer, {
+  getReceiveTokenAmountBN,
+  Quote,
+} from './components/QuotesListDrawer';
 import QuoteLoading from './components/QuoteLoading';
 import SwapConfirm from './components/SwapConfirm';
 import { obj2query, query2obj } from '@/ui/utils/url';
 import { CHAINS, CHAINS_ENUM } from '@debank/common';
-import { RABBY_SWAP_ROUTER, SWAP_AVAILABLE_VALUE_RATE } from '@/constant';
+import { RABBY_SWAP_ROUTER } from '@/constant';
 import { message } from 'antd';
 import { TokenItem } from '@/background/service/openapi';
 import stats from '@/stats';
@@ -17,6 +20,7 @@ import { getTokenSymbol } from '@/ui/component';
 
 export const SwapQuotes = () => {
   const enterTimeRef = useRef(Date.now());
+
   const { t } = useTranslation();
   const wallet = useWallet();
 
@@ -38,6 +42,7 @@ export const SwapQuotes = () => {
     payTokenId: pay_token_id,
     receiveTokenId: receive_token_id,
     slippage,
+    feeRatio,
   } = searchObj;
   const [queryCount, setQueryCount] = useState(0);
   const [successCount, setSuccessCount] = useState(0);
@@ -46,6 +51,7 @@ export const SwapQuotes = () => {
   >([]);
 
   const [swapQuotes, setSwapQuotes] = useState<Quote[]>([]);
+
   const isFirstRender = useRef(false);
   const [currentQuoteIndex, setCurrentQuoteIndex] = useState(0);
 
@@ -59,6 +65,7 @@ export const SwapQuotes = () => {
   }, [swapQuotes, currentQuoteIndex]);
 
   const isFirstQuery = useRef(true);
+
   const getQuotes = async () => {
     try {
       const DEXList = await wallet.openapi.getDEXList(chain_id);
@@ -118,6 +125,7 @@ export const SwapQuotes = () => {
             dexResult: JSON.stringify([]),
           });
         }
+
         history.replace({
           pathname: '/swap',
           search: obj2query({
@@ -189,17 +197,17 @@ export const SwapQuotes = () => {
 
   const feeRemovalReceiveAmount = useMemo(() => {
     if (swapQuotes[currentQuoteIndex]) {
-      return new BigNumber(
-        swapQuotes[currentQuoteIndex].receive_token_raw_amount
-      )
-        .times(SWAP_AVAILABLE_VALUE_RATE)
-        .div(10 ** swapQuotes[currentQuoteIndex]?.receive_token.decimals)
-        .toString();
+      return getReceiveTokenAmountBN(
+        feeRatio,
+        swapQuotes[currentQuoteIndex].receive_token_raw_amount,
+        swapQuotes[currentQuoteIndex]?.receive_token.decimals
+      ).toString(10);
     }
     return '';
   }, [swapQuotes, currentQuoteIndex]);
 
   const handleBack = () => {
+
     history.replace({
       pathname: '/swap',
       search: obj2query(searchObj),
@@ -232,6 +240,7 @@ export const SwapQuotes = () => {
     });
     handleBack();
   };
+
 
   const handleSelect = (i) => {
     setCurrentQuoteIndex(i);
@@ -272,6 +281,7 @@ export const SwapQuotes = () => {
         deadline: Math.floor(Date.now() / 1000) + 3600 * 30,
         needApprove: shouldApprove,
         is_wrapped,
+        feeRatio,
       });
       window.close();
     } catch (e) {
@@ -335,6 +345,7 @@ export const SwapQuotes = () => {
         handleClickBack={handleClickBack}
       />
       <QuotesListDrawer
+        feeRatio={feeRatio}
         payAmount={amount}
         currentQuoteIndex={currentQuoteIndex}
         list={swapQuotes}
@@ -342,7 +353,7 @@ export const SwapQuotes = () => {
         onClose={() => {
           setQuotesDrawer(false);
         }}
-        slippage={Number(slippage)}
+        slippage={slippage}
         handleSelect={handleSelect}
       />
     </>

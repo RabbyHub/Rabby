@@ -1339,15 +1339,10 @@
   resolved "https://registry.yarnpkg.com/@ctrl/tinycolor/-/tinycolor-3.4.0.tgz#c3c5ae543c897caa9c2a68630bed355be5f9990f"
   integrity sha512-JZButFdZ1+/xAfpguQHoabIXkcqRRKpMrWKBkpEZZyxfY9C1DpADFB8PEqGSTeFr135SaTRfKqGKx5xSCLI7ZQ==
 
-"@debank/common@^0.1.1":
-  version "0.1.1"
-  resolved "https://registry.yarnpkg.com/@debank/common/-/common-0.1.1.tgz#5b5d695b6b6d6a0d0a070e12ce210adb5838dc42"
-  integrity sha512-yimaMKuwbaKJQjPoMMUfepDLmG1KOP/wwflBFAIK7Lf+/XOTeCtVPMoOQmEk3ZNQO36hjtKdJJPodLXIF6Yzhg==
-
-"@debank/common@^0.2.4":
-  version "0.2.4"
-  resolved "https://registry.yarnpkg.com/@debank/common/-/common-0.2.4.tgz#1e04329940b27fe63eb8fc5f36f8093cc5c42755"
-  integrity sha512-IUYiyi1smIVFKnMttL/udBgUbhM7YD1wUuhQEPAjemu0nUnPomGvoC2ABIhZUIopAG3sAS5Y7s8lagzcsaUCOQ==
+"@debank/common@^0.2.5":
+  version "0.2.5"
+  resolved "https://registry.yarnpkg.com/@debank/common/-/common-0.2.5.tgz#7a64e7aa10c8cb68d7114f5630630b0cbfca9c82"
+  integrity sha512-copH0BZ7XnYN+/sGdKjWm+aQsY7BwuHXol419jUg0hUHGfP/KIDfp/nwp5bdykZ3RVksmJnzqhlfgd2It446Lg==
 
 "@debank/festats@1.0.0":
   version "1.0.0"
@@ -3287,12 +3282,11 @@
     typescript "^4.4.4"
     web3-core "^1.6.0"
 
-"@rabby-wallet/page-provider@^0.1.5":
-  version "0.1.5"
-  resolved "https://registry.yarnpkg.com/@rabby-wallet/page-provider/-/page-provider-0.1.5.tgz#5d6ca4e9606bed808304647d0dc4a5c73679a5e2"
-  integrity sha512-ZrLuEfY/hWMBqHwj+33owKVXykJHLKjiV/CkoBGhjWZRhBH5+vb/Rid3qZnCtnFV0iCeMFcMChcQ7tRDCwAErw==
+"@rabby-wallet/page-provider@^0.1.7":
+  version "0.1.7"
+  resolved "https://registry.yarnpkg.com/@rabby-wallet/page-provider/-/page-provider-0.1.7.tgz#213671b899019613662d57b9dd84a3d7ffbfca79"
+  integrity sha512-x2/f5806unwhgzrBWZ1d7axo5fC68DTxO3OsW15vg3LAjF+qY05b4UkB5arjui/4pm956NszLA/wh6fAbUnFwQ==
   dependencies:
-    "@debank/common" "^0.1.1"
     "@ledgerhq/devices" "^6.27.1"
     "@rabby-wallet/widgets" "^1.0.8"
     "@types/chrome" "^0.0.186"

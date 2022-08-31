@@ -14,17 +14,25 @@ import TagChainSelector from 'ui/component/ChainSelector/tag';
 import { TokenItem } from 'background/service/openapi';
 import { getTokenSymbol, Modal, PageHeader } from 'ui/component';
 
+// import * as Sentry from '@sentry/browser';
+
+
 import { ReactComponent as IconSwapArrowDown } from 'ui/assets/swap/arrow-down.svg';
 import TokenSelect from '@/ui/component/TokenSelect';
 import LessPalette from '@/ui/style/var-defs';
 import clsx from 'clsx';
 import { ReactComponent as IconInfo } from 'ui/assets/infoicon.svg';
 import { ReactComponent as IconTipDownArrow } from 'ui/assets/swap/arrow-tips-down.svg';
-import { useCss } from 'react-use';
+
 import stats from '@/stats';
 import { useRbiSource } from '@/ui/utils/ga-event';
+import { useAsync, useCss } from 'react-use';
+import { geTokenDecimals, getTokenSymbol } from '@/ui/utils/token';
+import { providers } from 'ethers';
+import { SvgAlert, SvgIconLoading } from '@/ui/assets';
 
-const ReservedGas = 0.1;
+const ReservedGas = 0;
+
 
 const MaxButton = styled.div`
   padding: 4px 5px;
@@ -61,8 +69,10 @@ const AbsoluteFooter = styled.div`
   left: 0;
   bottom: 32px;
   width: 100%;
+  margin: 0 auto;
   display: flex;
-  justify-content: center;
+  flex-direction: column;
+  align-items: center;
 `;
 
 const RotateArrow = styled.div`
@@ -228,7 +238,7 @@ const Swap = () => {
         )
         ? (Number(searchObj?.slippage) as typeof SLIPPAGE[number])
         : 'custom'
-      : 3
+      : 1
   );
   const [customSlippageInput, setCustomSlippageInput] = useState(
     searchObj?.slippage || ''
@@ -247,14 +257,10 @@ const Swap = () => {
   const shouldSetPageStateCache = useRef(true);
   const [autoFocusAmount, setAutoFocusAmount] = useState(true);
 
-  const canSubmit =
-    !slippageError &&
-    payToken &&
-    receiveToken &&
-    Number(amountInput) > 0 &&
-    new BigNumber(payToken.raw_amount_hex_str || 0)
-      .div(10 ** payToken.decimals)
-      .gte(amountInput);
+
+  const { value: feeRatio, loading: feeRatioLoading } = useAsync(async () => {
+    return await wallet.getSwapFeeRatio(chain);
+  }, [chain, wallet]);
 
   const handleTransform = () => {
     if (payToken && receiveToken) {
@@ -282,14 +288,15 @@ const Swap = () => {
     history.replace({
       pathname: '/swap-quotes',
       search: obj2query({
+        feeRatio,
         chain_enum: chain,
         chain: payToken.chain,
         payTokenId: payToken.id,
         receiveTokenId: receiveToken!.id,
-        amount: amountInput,
+        amount: new BigNumber(amountInput).toString(10),
         rawAmount: new BigNumber(amountInput)
           .times(10 ** payToken.decimals)
-          .toString(),
+          .toString(10),
         slippage:
           slippage === 'custom' ? customSlippageInput || '0' : slippage + '',
       }),
@@ -320,7 +327,7 @@ const Swap = () => {
     const tokenBalance = new BigNumber(payToken.raw_amount_hex_str || 0).div(
       10 ** payToken.decimals
     );
-    setAmountInput(tokenBalance.toString());
+    setAmountInput(tokenBalance.toString(10));
   };
 
   const handleChainChanged = async (val: CHAINS_ENUM) => {
@@ -424,7 +431,7 @@ const Swap = () => {
   const scanHostName = useMemo(() => {
     const scanLink = CHAINS[chain].scanLink;
     const url = new URL(scanLink);
-    return url.hostname.split('.').reverse()[1];
+    return url.hostname;
   }, [chain]);
 
   const rbiSource = useRbiSource();
@@ -437,21 +444,27 @@ const Swap = () => {
     }
   }, [rbiSource]);
 
+
   useEffect(() => {
     init();
   }, []);
 
   useEffect(() => {
     if (slippage === 'custom') {
-      const v = Number(customSlippageInput || 0);
-      if (Number.isNaN(v)) {
-        setSlippageWaring(t('LowSlippageToleranceWarn'));
-        return;
-      }
+
       setSlippageWaring('');
       setSlippageError('');
+
+      if (customSlippageInput.trim() === '') {
+        return;
+      }
+      const v = Number(customSlippageInput);
+
       if (v < 0.1) {
         setSlippageWaring(t('LowSlippageToleranceWarn'));
+      }
+      if (v === 0) {
+        setSlippageWaring(t('Slippage cant be 0'));
       }
       if (v > 5 && v <= 15) {
         setSlippageWaring(t('HighSlippageToleranceWarn'));
@@ -482,7 +495,7 @@ const Swap = () => {
           amount: amountInput,
           rawAmount: new BigNumber(amountInput)
             .times(10 ** payToken.decimals)
-            .toString(),
+            .toString(10),
           slippage:
             slippage === 'custom' ? customSlippageInput || '0' : slippage + '',
         })}`,
@@ -496,6 +509,87 @@ const Swap = () => {
 
   const setPageStateCacheRef = useRef(setPageStateCache);
   setPageStateCacheRef.current = setPageStateCache;
+
+  const validateToken = async (token: TokenItem) => {
+    if (!chain) return true;
+
+    const currentChain = CHAINS[chain];
+    if (token.id === currentChain.nativeTokenAddress) {
+      if (
+        token.symbol !== currentChain.nativeTokenSymbol ||
+        token.decimals !== currentChain.nativeTokenDecimals
+      ) {
+        // Sentry.captureException(
+        //   new Error('Swap Token validation failed'),
+        //   (scope) => {
+        //     scope.setTag('id', `${token.chain}-${token.id}`);
+        //     return scope;
+        //   }
+        // );
+        return false;
+      }
+      return true;
+    }
+    try {
+      const decimals = await geTokenDecimals(
+        token.id,
+        new providers.JsonRpcProvider(currentChain.thridPartyRPC)
+      );
+      const symbol = await getTokenSymbol(
+        token.id,
+        new providers.JsonRpcProvider(currentChain.thridPartyRPC)
+      );
+      if (symbol !== token.symbol || decimals !== token.decimals) {
+        // Sentry.captureException(
+        //   new Error('Token validation failed'),
+        //   (scope) => {
+        //     scope.setTag('id', `${token.chain}-${token.id}`);
+        //     return scope;
+        //   }
+        // );
+        return false;
+      }
+      return true;
+    } catch (e) {
+      // Sentry.captureException(
+      //   new Error('Token validation failed'),
+      //   (scope) => {
+      //     scope.setTag('id', `${token.chain}-${token.id}`);
+      //     return scope;
+      //   }
+      // );
+      console.error('swap token verify failed', e);
+      return false;
+    }
+  };
+
+  const {
+    loading: tokenVerifying,
+    value: tokenVerified,
+  } = useAsync(async () => {
+    if (payToken && receiveToken) {
+      const fromTokenValidationStatus = await validateToken(payToken);
+      const toTokenValidationStatus = await validateToken(receiveToken);
+      return fromTokenValidationStatus && toTokenValidationStatus;
+    }
+    return true;
+  }, [payToken, receiveToken]);
+
+  const canSubmit =
+    !tokenVerifying &&
+    tokenVerified &&
+    !feeRatioLoading &&
+    !slippageError &&
+    (slippage !== 'custom' ||
+      (slippage === 'custom' &&
+        customSlippageInput.trim() !== '' &&
+        Number(customSlippageInput.trim()) !== 0)) &&
+    payToken &&
+    receiveToken &&
+    Number(amountInput) > 0 &&
+    new BigNumber(payToken.raw_amount_hex_str || 0)
+      .div(10 ** payToken.decimals)
+      .gte(amountInput);
 
   useEffect(() => {
     setPageStateCacheRef.current();
@@ -537,7 +631,11 @@ const Swap = () => {
             marginBottom: -10,
           }}
         >
-          <TagChainSelector value={chain} onChange={handleChainChanged} />
+          <TagChainSelector
+            value={chain}
+            onChange={handleChainChanged}
+            type="swap"
+          />
         </div>
 
         <Section className="pb-16">
@@ -612,7 +710,7 @@ const Swap = () => {
           >
             <span>{t('ConfirmTheTokenOn')} </span>
             <a
-              className="tx-id text-gray-content underline capitalize"
+              className="tx-id text-gray-content underline"
               onClick={gotoTokenEtherscan}
             >
               {scanHostName}
@@ -632,10 +730,11 @@ const Swap = () => {
           </Space>
         </Section>
 
-        <div
-          className="flex items-center justify-center m-auto cursor-pointer mt-24 mb-8"
-          onClick={() => {
-            setOpenAdvancedSetting((b) => {
+        <Section className={clsx('relative cursor-pointer')}>
+          <div
+            className="flex justify-between"
+            onClick={() => {
+              setOpenAdvancedSetting((b) => {
               if (!b) {
                 stats.report('swapAdvancedSettingOn', {
                   chainId: CHAINS[chain].serverId,
@@ -643,53 +742,60 @@ const Swap = () => {
               }
               return !b;
             });
-          }}
-        >
-          <span className="mr-2 text-12 font-normal text-gray-content">
-            {t('AdvancedSettings')}
-          </span>
-          <div
-            className={clsx({
-              'rotate-180': openAdvancedSetting,
-            })}
+            }}
           >
-            <IconTipDownArrow />
-          </div>
-        </div>
-
-        <Section
-          className={clsx('relative', {
-            hidden: !openAdvancedSetting,
-          })}
-        >
-          <Space size={4} className="mb-8">
-            <div className="text-12 text-gray-title">
-              {t('MaxPriceSlippage')}
+            <Space size={4}>
+              <div className="text-12 text-gray-title">
+                {t('Slippage tolerance')}
+              </div>
+              <Tooltip
+                overlayClassName={clsx(
+                  'rectangle max-w-[360px] left-[20px]',
+                  slippageTooltipsClassName
+                )}
+                placement="bottom"
+                title={t('SlippageTip')}
+              >
+                <IconInfo />
+              </Tooltip>
+            </Space>
+            <div className="text-right text-14 font-medium flex items-center">
+              {slippage !== 'custom' ? slippage : customSlippageInput} %
+              <div
+                className={clsx('ml-4', {
+                  'rotate-180': openAdvancedSetting,
+                })}
+              >
+                <IconTipDownArrow />
+              </div>
             </div>
-            <Tooltip
-              overlayClassName={clsx(
-                'rectangle max-w-[360px] left-[20px]',
-                slippageTooltipsClassName
-              )}
-              placement="bottom"
-              title={t('SlippageTip')}
-            >
-              <IconInfo />
-            </Tooltip>
-          </Space>
+          </div>
 
-          <div className="flex justify-between items-center bg-gray-bg rounded">
+          <div
+            className={clsx(
+              'flex justify-between items-center bg-gray-bg rounded mt-8',
+              {
+                hidden: !openAdvancedSetting,
+              }
+            )}
+          >
             {SLIPPAGE.map((e) => (
               <SlippageItem
                 key={e}
-                onClick={() => setSlippage(e)}
+                onClick={(event) => {
+                  event.stopPropagation();
+                  setSlippage(e);
+                }}
                 active={e === slippage}
               >
                 {e}%
               </SlippageItem>
             ))}
             <SlippageItem
-              onClick={() => setSlippage('custom')}
+              onClick={(event) => {
+                event.stopPropagation();
+                setSlippage('custom');
+              }}
               active={slippage === 'custom'}
               error={slippage === 'custom' && !!slippageError}
             >
@@ -709,8 +815,14 @@ const Swap = () => {
                   onBlur={() => {
                     setAutoFocusAmount(true);
                   }}
+
+                  onInput={(e) => {
+                    if (!e) {
+                      setCustomSlippageInput(e || '');
+                    }
+                  }}
                   onChange={(e) => {
-                    setCustomSlippageInput(e);
+                    setCustomSlippageInput(e || '');
                   }}
                 />
               ) : (
@@ -718,6 +830,11 @@ const Swap = () => {
               )}
             </SlippageItem>
           </div>
+          {slippage === 'custom' && customSlippageInput.trim() === '' && (
+            <div className="text-12 mt-8 text-gray-content">
+              {t('Please input the custom slippage')}
+            </div>
+          )}
           {slippage === 'custom' && (slippageError || slippageWarning) && (
             <SlippageTip error={!!slippageError} warn={!!slippageWarning}>
               {slippageError || slippageWarning}
@@ -726,6 +843,28 @@ const Swap = () => {
         </Section>
 
         <AbsoluteFooter>
+
+          <div className="mb-16 text-12">
+            {tokenVerifying && (
+              <div className="flex items-center text-orange">
+                <SvgIconLoading
+                  className="animate-spin fill-current  w-14 h-14 mr-6"
+                  viewBox="0 0 36 36"
+                />
+                <span>{t('Verifying token info ...')}</span>
+              </div>
+            )}
+
+            {!tokenVerifying && !tokenVerified && (
+              <div className="flex items-center text-red-light ">
+                <SvgAlert
+                  className="icon icon-alert w-14 h-14 mr-6"
+                  viewBox="0 0 14 14"
+                />
+                <span>{t('Token verification failed')}</span>
+              </div>
+            )}
+          </div>
           <Button
             disabled={!canSubmit}
             type="primary"

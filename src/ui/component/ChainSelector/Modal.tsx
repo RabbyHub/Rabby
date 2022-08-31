@@ -7,7 +7,10 @@ import clsx from 'clsx';
 import { CHAINS, CHAINS_ENUM } from 'consts';
 import IconSearch from 'ui/assets/search.svg';
 import Empty from '../Empty';
-import { SelectChainList } from './components/SelectChainList';
+import {
+  SelectChainList,
+  SelectChainListProps,
+} from './components/SelectChainList';
 interface ChainSelectorModalProps {
   visible: boolean;
   value: CHAINS_ENUM;
@@ -16,6 +19,8 @@ interface ChainSelectorModalProps {
   connection?: boolean;
   title?: ReactNode;
   className?: string;
+  supportChains?: CHAINS_ENUM[] | 'ALl';
+  type?: SelectChainListProps['type'];
 }
 
 const useSetup = () => {
@@ -81,6 +86,7 @@ const ChainSelectorModal = ({
   value,
   connection = false,
   className,
+  type = 'default',
 }: ChainSelectorModalProps) => {
   const handleCancel = () => {
     onCancel();
@@ -105,6 +111,8 @@ const ChainSelectorModal = ({
       setSearch('');
     }
   }, [visible]);
+
+  const isSwap = type === 'swap';
 
   return (
     <Drawer
@@ -133,8 +141,9 @@ const ChainSelectorModal = ({
       </header>
       <div className="chain-selector__modal-content">
         <SelectChainList
+          type={type}
           data={pinnedList}
-          sortable
+          sortable={!isSwap}
           pinned={pinned as CHAINS_ENUM[]}
           onStarChange={handleStarChange}
           onSort={handleSort}
@@ -142,6 +151,7 @@ const ChainSelectorModal = ({
           value={value}
         ></SelectChainList>
         <SelectChainList
+          type={type}
           data={all}
           value={value}
           pinned={pinned as CHAINS_ENUM[]}

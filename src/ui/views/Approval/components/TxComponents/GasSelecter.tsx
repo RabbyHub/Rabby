@@ -21,8 +21,8 @@ export interface GasSelectorResponse extends GasLevel {
 interface GasSelectorProps {
   gasLimit: string | undefined;
   gas: {
-    estimated_gas_cost_value: number;
-    estimated_gas_cost_usd_value: number;
+    gasCostUsd: number | string | BigNumber;
+    gasCostAmount: number | string | BigNumber;
     success?: boolean;
     error?: null | {
       msg: string;
@@ -34,8 +34,8 @@ interface GasSelectorProps {
   tx: Tx;
   onChange(gas: GasSelectorResponse): void;
   isReady: boolean;
-  recommendGasLimit: number;
-  recommendNonce: number;
+  recommendGasLimit: number | string | BigNumber;
+  recommendNonce: number | string | BigNumber;
   nonce: string;
   disableNonce: boolean;
   noUpdate: boolean;
@@ -46,8 +46,8 @@ interface GasSelectorProps {
   gasCalcMethod: (
     price: number
   ) => Promise<{
-    gasCostUsd: number;
-    gasCostAmount: number;
+    gasCostUsd: BigNumber;
+    gasCostAmount: BigNumber;
   }>;
 }
 
@@ -59,13 +59,13 @@ const useExplainGas = ({
   price: number;
   method: GasSelectorProps['gasCalcMethod'];
   value: {
-    gasCostUsd: number;
-    gasCostAmount: number;
+    gasCostUsd: BigNumber;
+    gasCostAmount: BigNumber;
   };
 }) => {
   const [result, setResult] = useState<{
-    gasCostUsd: number;
-    gasCostAmount: number;
+    gasCostUsd: BigNumber;
+    gasCostAmount: BigNumber;
   }>(value);
   useEffect(() => {
     method(price).then(setResult);
@@ -151,14 +151,14 @@ const GasSelector = ({
           message: t('GasLimitMinimumValueAlert'),
         },
       });
-    } else if (Number(customNonce) < Number(recommendNonce) && !disableNonce) {
+    } else if (new BigNumber(customNonce).lt(recommendNonce) && !disableNonce) {
       setValidateStatus({
         ...validateStatus,
         nonce: {
           status: 'error',
-          message: `Nonce is too low, the minimum should be ${Number(
+          message: `Nonce is too low, the minimum should be ${new BigNumber(
             recommendNonce
-          )}`,
+          ).toString()}`,
         },
       });
     } else {
@@ -180,8 +180,8 @@ const GasSelector = ({
     price: selectedGas?.price || 0,
     method: gasCalcMethod,
     value: {
-      gasCostAmount: gas.estimated_gas_cost_value,
-      gasCostUsd: gas.estimated_gas_cost_value,
+      gasCostAmount: new BigNumber(gas.gasCostAmount),
+      gasCostUsd: new BigNumber(gas.gasCostUsd),
     },
   });
 
@@ -392,9 +392,11 @@ const GasSelector = ({
             ) : (
               <div className="gas-selector-card-content-item mt-[4px]">
                 <div className="gas-selector-card-amount">
-                  {formatTokenAmount(gas.estimated_gas_cost_value)}{' '}
+                  {formatTokenAmount(
+                    new BigNumber(gas.gasCostAmount).toString(10)
+                  )}{' '}
                   {chain.nativeTokenSymbol}
-                  &nbsp;&nbsp; ≈${gas.estimated_gas_cost_usd_value.toFixed(2)}
+                  &nbsp;&nbsp; ≈${new BigNumber(gas.gasCostUsd).toFixed(2)}
                 </div>
               </div>
             )}
@@ -438,7 +440,9 @@ const GasSelector = ({
           ) : (
             <>
               <div className="gas-selector-modal-amount">
-                {formatTokenAmount(modalExplainGas.gasCostAmount)}{' '}
+                {formatTokenAmount(
+                  new BigNumber(modalExplainGas.gasCostAmount).toString(10)
+                )}{' '}
                 {chain.nativeTokenSymbol}
               </div>
               <div className="gas-selector-modal-usd">
@@ -577,9 +581,9 @@ const GasSelector = ({
                         i18nKey="RecommendGasLimitTip"
                         values={{
                           est: Number(recommendGasLimit),
-                          current: new BigNumber(
-                            Number(afterGasLimit) / recommendGasLimit
-                          ).toFixed(1),
+                          current: new BigNumber(afterGasLimit)
+                            .div(recommendGasLimit)
+                            .toFixed(1),
                         }}
                       />
                       <span

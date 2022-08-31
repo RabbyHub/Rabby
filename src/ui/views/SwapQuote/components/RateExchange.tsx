@@ -55,7 +55,7 @@ export const RateExchange = ({
       onClick={toggle}
     >
       <span>{exchangeDisplay}</span>
-      <IconTransform className={clsx(' ml-2', iconClassName)} />
+      <IconTransform className={clsx(' ml-4', iconClassName)} />
     </div>
   );
 };
@@ -65,9 +65,9 @@ export function toSignificantDigits(
   significantDigits = 6,
   roundingMode = BigNumber.ROUND_FLOOR
 ) {
-  return new BigNumber(
-    v.toPrecision(significantDigits, roundingMode)
-  ).toString();
+  return new BigNumber(v.toPrecision(significantDigits, roundingMode)).toString(
+    10
+  );
 }
 
 export default RateExchange;

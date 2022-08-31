@@ -233,6 +233,7 @@ export const TxTypeComponent = ({
   return <></>;
 };
 
+// todo move to background
 const getRecommendGas = async ({
   gas,
   wallet,
@@ -245,10 +246,11 @@ const getRecommendGas = async ({
   chainId: number;
 }) => {
   if (gas > 0) {
-    return gas;
+    return new BigNumber(gas);
   }
-  if (Number(tx.gasLimit || tx.gas) > 0) {
-    return Number(tx.gasLimit || tx.gas);
+  const txGas = tx.gasLimit || tx.gas;
+  if (txGas && new BigNumber(txGas).gt(0)) {
+    return new BigNumber(txGas);
   }
   const res = await wallet.openapi.historyGasUsed({
     tx: {
@@ -261,7 +263,7 @@ const getRecommendGas = async ({
     user_addr: tx.from,
   });
   if (res.gas_used > 0) {
-    return res.gas_used;
+    return new BigNumber(res.gas_used);
   }
   const chain = Object.values(CHAINS).find((item) => item.id === chainId);
   if (!chain) {
@@ -274,9 +276,12 @@ const getRecommendGas = async ({
     },
     chain.serverId
   );
-  return parseInt(String(block.gasLimit * (19 / 20)), 10);
+  return new BigNumber(
+    new BigNumber(block.gasLimit).times(19).div(20).toFixed(0)
+  );
 };
 
+// todo move to background
 const getRecommendNonce = async ({
   wallet,
   tx,
@@ -298,7 +303,7 @@ const getRecommendNonce = async ({
     chain.serverId
   );
   const localNonce = (await wallet.getNonceByChain(tx.from, chainId)) || 0;
-  return Math.max(Number(onChainNonce), localNonce);
+  return `0x${BigNumber.max(onChainNonce, localNonce).toString(16)}`;
 };
 
 const explainGas = async ({
@@ -309,23 +314,23 @@ const explainGas = async ({
   tx,
   wallet,
 }: {
-  gasUsed: number;
-  gasPrice: number;
+  gasUsed: number | string;
+  gasPrice: number | string;
   chainId: number;
   nativeTokenPrice: number;
   tx: Tx;
   wallet: ReturnType<typeof useWallet>;
 }) => {
-  let gasCostTokenAmount = (gasUsed * gasPrice) / 1e18;
+  let gasCostTokenAmount = new BigNumber(gasUsed).times(gasPrice).div(1e18);
   const chain = Object.values(CHAINS).find((item) => item.id === chainId);
   const isOp = chain?.enum === CHAINS_ENUM.OP;
   if (isOp) {
     const res = await wallet.fetchEstimatedL1Fee({
       txParams: tx,
     });
-    gasCostTokenAmount = Number(res) / 1e18 + gasCostTokenAmount;
+    gasCostTokenAmount = new BigNumber(res).div(1e18).plus(gasCostTokenAmount);
   }
-  const gasCostUsd = gasCostTokenAmount * nativeTokenPrice;
+  const gasCostUsd = new BigNumber(gasCostTokenAmount).times(nativeTokenPrice);
 
   return {
     gasCostUsd,
@@ -342,8 +347,8 @@ const useExplainGas = ({
   wallet,
 }: Parameters<typeof explainGas>[0]) => {
   const [result, setResult] = useState({
-    gasCostUsd: 0,
-    gasCostAmount: 0,
+    gasCostUsd: new BigNumber(0),
+    gasCostAmount: new BigNumber(0),
   });
 
   useEffect(() => {
@@ -374,11 +379,11 @@ const checkGasAndNonce = ({
   gasExplainResponse,
   isSpeedUp,
 }: {
-  recommendGasLimit: number;
-  recommendNonce: number;
+  recommendGasLimit: number | string | BigNumber;
+  recommendNonce: number | string | BigNumber;
   txDetail: ExplainTxResponse | null;
-  gasLimit;
-  nonce;
+  gasLimit: number | string | BigNumber;
+  nonce: number | string | BigNumber;
   gasExplainResponse: ReturnType<typeof useExplainGas>;
   isCancel: boolean;
   isSpeedUp: boolean;
@@ -387,27 +392,33 @@ const checkGasAndNonce = ({
 
   if (
     txDetail &&
-    gasExplainResponse.gasCostAmount +
-      (txDetail.balance_change.send_token_list.find(
-        (item) => item.id === txDetail.native_token.id
-      )?.amount || 0) >
-      txDetail.native_token.amount
+    gasExplainResponse.gasCostAmount
+      .plus(
+        txDetail.balance_change.send_token_list.find(
+          (item) => item.id === txDetail.native_token.id
+        )?.amount || 0
+      )
+      .isGreaterThan(txDetail.native_token.amount)
   ) {
     errors.push({
       code: 3001,
       msg: 'The reserved gas fee is not enough',
     });
   }
-  if (gasLimit < recommendGasLimit) {
+  if (new BigNumber(gasLimit).lt(recommendGasLimit)) {
     errors.push({
       code: 3002,
-      msg: `Gas limit is too low, the minimum should be ${recommendGasLimit}`,
+      msg: `Gas limit is too low, the minimum should be ${new BigNumber(
+        recommendGasLimit
+      ).toString()}`,
     });
   }
-  if (nonce < recommendNonce && !(isCancel || isSpeedUp)) {
+  if (new BigNumber(nonce).lt(recommendNonce) && !(isCancel || isSpeedUp)) {
     errors.push({
       code: 3003,
-      msg: `Nonce is too low, the minimum should be ${recommendNonce}`,
+      msg: `Nonce is too low, the minimum should be ${new BigNumber(
+        recommendNonce
+      ).toString()}`,
     });
   }
   return errors;
@@ -472,8 +483,8 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     cantProcessReason,
     setCantProcessReason,
   ] = useState<ReactNode | null>();
-  const [recommendGasLimit, setRecommendGasLimit] = useState<number>(0);
-  const [recommendNonce, setRecommendNonce] = useState<number>(0);
+  const [recommendGasLimit, setRecommendGasLimit] = useState<string>('');
+  const [recommendNonce, setRecommendNonce] = useState<string>('');
   const [updateId, setUpdateId] = useState(0);
   const [txDetail, setTxDetail] = useState<ExplainTxResponse | null>({
     pre_exec_version: 'v0',
@@ -535,7 +546,6 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     setSecurityCheckStatus,
   ] = useState<SecurityCheckDecision>('loading');
   const [securityCheckAlert, setSecurityCheckAlert] = useState('Checking...');
-  const [showSecurityCheckDetail, setShowSecurityCheckDetail] = useState(false);
   const [
     securityCheckDetail,
     setSecurityCheckDetail,
@@ -758,7 +768,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     });
     setRecommendNonce(recommendNonce);
     if (updateNonce && !isGnosisAccount) {
-      setRealNonce(intToHex(recommendNonce));
+      setRealNonce(recommendNonce);
     } // do not overwrite nonce if from === to(cancel transaction)
     const { pendings, completeds } = await wallet.getTransactionHistory(
       address
@@ -766,7 +776,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     const res: ExplainTxResponse = await wallet.openapi.preExecTx({
       tx: {
         ...tx,
-        nonce: intToHex(recommendNonce) || tx.nonce || '0x1', // set a mock nonce for explain if dapp not set it
+        nonce: (updateNonce ? recommendNonce : tx.nonce) || '0x1', // set a mock nonce for explain if dapp not set it
         data: tx.data,
         value: tx.value || '0x0',
         gas: tx.gas || '', // set gas limit if dapp not set
@@ -775,7 +785,9 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       address,
       updateNonce,
       pending_tx_list: pendings
-        .filter((item) => item.nonce < recommendNonce)
+        .filter((item) =>
+          new BigNumber(item.nonce).lt(updateNonce ? recommendNonce : tx.nonce)
+        )
         .reduce((result, item) => {
           return result.concat(item.txs.map((tx) => tx.rawTx));
         }, [] as Tx[]),
@@ -786,7 +798,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       wallet,
       chainId,
     });
-    setRecommendGasLimit(gas);
+    setRecommendGasLimit(`0x${gas.toString(16)}`);
     if (!gasLimit) {
       // use server response gas limit
       const recommendGasLimit = new BigNumber(gas).toFixed(0);
@@ -799,10 +811,10 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     wallet.addTxExplainCache({
       address,
       chainId,
-      nonce: updateNonce ? recommendNonce : Number(tx.nonce),
+      nonce: updateNonce ? Number(recommendNonce) : Number(tx.nonce),
       explain: res,
       approvalId: approval.id,
-      calcSuccess: true,
+      calcSuccess: !(checkErrors.length > 0),
     });
     return res;
   };
@@ -902,8 +914,17 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     } else {
       (transaction as Tx).gasPrice = tx.gasPrice;
     }
+    const approval = await getApproval();
     gaEvent('allow');
     if (currentAccount?.type && WaitingSignComponent[currentAccount.type]) {
+      await wallet.addTxExplainCache({
+        address: currentAccount.address,
+        chainId,
+        nonce: Number(realNonce || tx.nonce),
+        explain: txDetail!,
+        approvalId: approval.id,
+        calcSuccess: !(checkErrors.length > 0),
+      });
       resolveApproval({
         ...transaction,
         isSend,
@@ -931,6 +952,15 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       category: KEYRING_CATEGORY_MAP[currentAccount.type],
       preExecSuccess:
         checkErrors.length > 0 || !txDetail?.pre_exec.success ? false : true,
+    });
+
+    await wallet.addTxExplainCache({
+      address: currentAccount.address,
+      chainId,
+      nonce: Number(realNonce || tx.nonce),
+      explain: txDetail!,
+      approvalId: approval.id,
+      calcSuccess: !(checkErrors.length > 0),
     });
 
     ReactGA.event({
@@ -1259,8 +1289,8 @@ const SignTx = ({ params, origin }: SignTxProps) => {
               gas={{
                 error: txDetail.gas.error,
                 success: txDetail.gas.success,
-                estimated_gas_cost_usd_value: gasExplainResponse.gasCostUsd,
-                estimated_gas_cost_value: gasExplainResponse.gasCostAmount,
+                gasCostUsd: gasExplainResponse.gasCostUsd,
+                gasCostAmount: gasExplainResponse.gasCostAmount,
               }}
               gasCalcMethod={(price) => {
                 return explainGas({

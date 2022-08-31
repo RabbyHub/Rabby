@@ -8,21 +8,27 @@ import { Button, Drawer, Space, Tooltip } from 'antd';
 import { ReactComponent as IconInfo } from 'ui/assets/infoicon.svg';
 import { ReactComponent as IconArronRight } from 'ui/assets/arrow-right-gray.svg';
 import BigNumber from 'bignumber.js';
-import { SWAP_AVAILABLE_VALUE_RATE } from '@/constant';
 import { useCss } from 'react-use';
 import { ReactComponent as IconBack } from 'ui/assets/back.svg';
 import { ReactComponent as IconClose } from 'ui/assets/swap/modal-close.svg';
 import RateExchange, { toSignificantDigits } from './RateExchange';
 
+import { SWAP_FEE_PRECISION } from '@/constant';
+
 export type Quote = Awaited<
   ReturnType<typeof wallet.openapi.getSwapQuote>
->[][number] & { dexId: string; type: string; duration: number };
+>[][number] & { dexId: string; type: string };
 
 export const getReceiveTokenAmountBN = (
+  feeRatio: string | number,
   rawAmount: string | number,
   decimals: number
 ) =>
-  new BigNumber(rawAmount).div(10 ** decimals).times(SWAP_AVAILABLE_VALUE_RATE);
+  new BigNumber(rawAmount)
+    .div(10 ** decimals)
+    .times(
+      new BigNumber(1).minus(new BigNumber(feeRatio).div(SWAP_FEE_PRECISION))
+    );
 
 const labelClassName =
   'text-14 font-normal text-gray-subTitle flex items-center space-x-2';
@@ -36,14 +42,16 @@ export const QuotesListDrawer = ({
   currentQuoteIndex,
   handleSelect,
   payAmount,
+  feeRatio,
 }: {
   list: Quote[];
   visible: boolean;
   onClose: () => void;
-  slippage: number;
+  slippage: string;
   currentQuoteIndex: number;
   handleSelect: (index: number) => void;
   payAmount: string;
+  feeRatio: string | number;
 }) => {
   const { t } = useTranslation();
 
@@ -71,6 +79,13 @@ export const QuotesListDrawer = ({
     },
   });
 
+
+  const feeRatioPercentString = useMemo(
+    () =>
+      new BigNumber(feeRatio).div(SWAP_FEE_PRECISION).times(100).toString(10),
+    [feeRatio]
+  );
+
   const [selectedIndex, setSelectedIndex] = useState<number>(-1);
   const data = useMemo(
     () => [
@@ -80,12 +95,11 @@ export const QuotesListDrawer = ({
           <RateExchange
             className={valueClassName}
             payAmount={payAmount}
-            receiveAmount={new BigNumber(
-              list[selectedIndex].receive_token_raw_amount
-            )
-              .times(SWAP_AVAILABLE_VALUE_RATE)
-              .div(10 ** list[selectedIndex].receive_token.decimals)
-              .toString()}
+            receiveAmount={getReceiveTokenAmountBN(
+              feeRatio,
+              list[selectedIndex].receive_token_raw_amount,
+              list[selectedIndex].receive_token.decimals
+            ).toString(10)}
             payToken={list[selectedIndex].pay_token}
             receiveToken={list[selectedIndex].receive_token}
           />
@@ -101,7 +115,9 @@ export const QuotesListDrawer = ({
                 detailsReceivingAmountTooltipsClassName
               )}
               placement="bottom"
-              title={t('ReceivingAmountDesc')}
+              title={t('ReceivingAmountDesc', {
+                feeRatio: feeRatioPercentString,
+              })}
             >
               <IconInfo />
             </Tooltip>
@@ -111,6 +127,7 @@ export const QuotesListDrawer = ({
           <div className={clsx(valueClassName)}>
             {toSignificantDigits(
               getReceiveTokenAmountBN(
+                feeRatio,
                 list[selectedIndex]?.receive_token_raw_amount,
                 list[selectedIndex]?.receive_token?.decimals || 18
               )
@@ -140,7 +157,14 @@ export const QuotesListDrawer = ({
             className={clsx(valueClassName)}
             title={list[selectedIndex]?.gas?.gas_cost_usd_value + ''}
           >
-            ${list[selectedIndex]?.gas?.gas_cost_usd_value?.toFixed(2)}
+            $
+            {toSignificantDigits(
+              new BigNumber(
+                list[selectedIndex]?.gas?.gas_cost_usd_value ||
+                  '0',
+                4
+              )
+            )}
           </div>
         ),
       },
@@ -160,7 +184,12 @@ export const QuotesListDrawer = ({
             </Tooltip>
           </div>
         ),
-        right: <div className={clsx(valueClassName)}>{Number(slippage)}%</div>,
+
+        right: (
+          <div className={clsx(valueClassName)}>
+            {toSignificantDigits(new BigNumber(slippage))}%
+          </div>
+        ),
       },
       {
         left: (
@@ -241,7 +270,9 @@ export const QuotesListDrawer = ({
       </div>
 
       <div className="text-12 leading-[16px] text-gray-content pt-[43px] mb-[24px] px-[20px] ">
-        {t('QuoteDesc')}
+        {t('QuoteDesc', {
+          feeRatio: feeRatioPercentString,
+        })}
         <div className="h-0 mt-16 bg-transparent border-t-[0.5px] border-gray-divider border-solid" />
       </div>
       <Space size={44} className="px-20 mb-8">
@@ -253,7 +284,9 @@ export const QuotesListDrawer = ({
               receivingAmountTooltipsClassName
             )}
             placement="bottom"
-            title={t('ReceivingAmountDesc')}
+            title={t('ReceivingAmountDesc', {
+              feeRatio: feeRatioPercentString,
+            })}
           >
             <IconInfo />
           </Tooltip>
@@ -282,6 +315,7 @@ export const QuotesListDrawer = ({
           index={index}
           currentQuoteIndex={currentQuoteIndex}
           setSelectedIndex={setSelectedIndex}
+          feeRatio={feeRatio}
         />
       ))}
 
@@ -332,7 +366,9 @@ export const QuotesListDrawer = ({
         </div>
 
         <div className="mt-[16px] mb-[22px] text-12 leading-[16px] text-gray-content">
-          {t('RabbyQuoteDesc')}
+          {t('RabbyQuoteDesc', {
+            feeRatio: feeRatioPercentString,
+          })}
         </div>
         <div className="flex justify-center">
           <Button
@@ -354,15 +390,18 @@ const AmountAndGasFeeItem = ({
   index,
   currentQuoteIndex,
   setSelectedIndex,
+  feeRatio,
 }: {
   item: Quote;
   index: number;
   currentQuoteIndex: number;
   setSelectedIndex: (i: number) => void;
+  feeRatio: string | number;
 }) => {
   const amount = useMemo(
     () =>
       getReceiveTokenAmountBN(
+        feeRatio,
         item.receive_token_raw_amount,
         item.receive_token.decimals
       ),
@@ -398,7 +437,7 @@ const AmountAndGasFeeItem = ({
       >
         <Space size={44}>
           <div
-            title={amount.toString()}
+            title={amount.toString(10)}
             className="max-w-[130px] w-[130px] truncate text-15"
           >
             {toSignificantDigits(amount)}
@@ -407,11 +446,20 @@ const AmountAndGasFeeItem = ({
             className="max-w-[130px] truncate text-15"
             title={item.gas?.gas_cost_usd_value + ''}
           >
-            ${item.gas?.gas_cost_usd_value?.toFixed(2) || ''}
+            $
+            {toSignificantDigits(
+              new BigNumber(item.gas?.gas_cost_usd_value || '0'),
+              4
+            )}
           </div>
         </Space>
         <Space size={12} className="ml-auto">
-          {index === 0 && <BestQuoteTag className={'mr-[12px]'} invert />}
+          {index === 0 && (
+            <BestQuoteTag
+              className={'mr-[12px]'}
+              invert={currentQuoteIndex === index}
+            />
+          )}
           <IconArronRight
             className={clsx(currentQuoteIndex === index && 'brightness-[1000]')}
           />

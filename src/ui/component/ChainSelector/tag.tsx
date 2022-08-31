@@ -4,6 +4,7 @@ import { SvgIconArrowDownTriangle } from 'ui/assets';
 import Modal from './Modal';
 
 import './style.less';
+import { SelectChainListProps } from './components/SelectChainList';
 
 interface ChainSelectorProps {
   value: CHAINS_ENUM;
@@ -11,6 +12,7 @@ interface ChainSelectorProps {
   readonly?: boolean;
   showModal?: boolean;
   direction?: 'top' | 'bottom';
+  type?: SelectChainListProps['type'];
 }
 
 const ChainSelector = ({
@@ -18,6 +20,7 @@ const ChainSelector = ({
   onChange,
   readonly = false,
   showModal = false,
+  type = 'default',
 }: ChainSelectorProps) => {
   const [showSelectorModal, setShowSelectorModal] = useState(showModal);
 
@@ -54,6 +57,7 @@ const ChainSelector = ({
           visible={showSelectorModal}
           onChange={handleChange}
           onCancel={handleCancel}
+          type={type}
         />
       )}
     </>

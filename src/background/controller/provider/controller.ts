@@ -52,6 +52,7 @@ import {
   convert1559ToLegacy,
 } from '@/utils/transaction';
 import stats from '@/stats';
+import BigNumber from 'bignumber.js';
 
 const reportSignText = (params: {
   method: string;
@@ -188,6 +189,8 @@ class ProviderController extends BaseController {
     const connectSite = permissionService.getConnectedSite(origin);
     if (connectSite) {
       const chain = CHAINS[connectSite.chain];
+      // rabby:chainChanged event must be sent before chainChanged event
+      sessionService.broadcastEvent('rabby:chainChanged', chain, origin);
       sessionService.broadcastEvent(
         'chainChanged',
         {
@@ -351,8 +354,9 @@ class ProviderController extends BaseController {
           chainId: CHAINS[chain].serverId,
           category: KEYRING_CATEGORY_MAP[currentAccount.type],
           success: true,
-          preExecSuccess:
-            cacheExplain.pre_exec.success && cacheExplain.calcSuccess,
+          preExecSuccess: cacheExplain
+            ? cacheExplain.pre_exec.success && cacheExplain.calcSuccess
+            : true,
         });
         return;
       }
@@ -362,8 +366,9 @@ class ProviderController extends BaseController {
           chainId: CHAINS[chain].serverId,
           category: KEYRING_CATEGORY_MAP[currentAccount.type],
           success: true,
-          preExecSuccess:
-            cacheExplain.pre_exec.success && cacheExplain.calcSuccess,
+          preExecSuccess: cacheExplain
+            ? cacheExplain.pre_exec.success && cacheExplain.calcSuccess
+            : true,
         });
         if (isSend) {
           pageStateCacheService.clear();
@@ -418,8 +423,9 @@ class ProviderController extends BaseController {
         chainId: CHAINS[chain].serverId,
         category: KEYRING_CATEGORY_MAP[currentAccount.type],
         success: true,
-        preExecSuccess:
-          cacheExplain.pre_exec.success && cacheExplain.calcSuccess,
+        preExecSuccess: cacheExplain
+          ? cacheExplain.pre_exec.success && cacheExplain.calcSuccess
+          : true,
       });
       try {
         validateGasPriceRange(approvalRes);
@@ -442,8 +448,9 @@ class ProviderController extends BaseController {
           chainId: CHAINS[chain].serverId,
           category: KEYRING_CATEGORY_MAP[currentAccount.type],
           success: false,
-          preExecSuccess:
-            cacheExplain.pre_exec.success && cacheExplain.calcSuccess,
+          preExecSuccess: cacheExplain
+            ? cacheExplain.pre_exec.success && cacheExplain.calcSuccess
+            : true,
         });
         if (!isSpeedUp && !isCancel) {
           const cacheExplain = transactionHistoryService.getExplainCache({
@@ -478,8 +485,9 @@ class ProviderController extends BaseController {
           chainId: CHAINS[chain].serverId,
           category: KEYRING_CATEGORY_MAP[currentAccount.type],
           success: false,
-          preExecSuccess:
-            cacheExplain.pre_exec.success && cacheExplain.calcSuccess,
+          preExecSuccess: cacheExplain
+            ? cacheExplain.pre_exec.success && cacheExplain.calcSuccess
+            : true,
         });
       }
       throw new Error(e);
@@ -741,7 +749,9 @@ class ProviderController extends BaseController {
     } else {
       chainId = chainId.toLowerCase();
     }
-    const chain = Object.values(CHAINS).find((value) => value.hex === chainId);
+    const chain = Object.values(CHAINS).find((value) =>
+      new BigNumber(value.hex).isEqualTo(chainId)
+    );
 
     if (!chain) {
       throw new Error('This chain is not supported by Rabby yet.');
@@ -755,6 +765,8 @@ class ProviderController extends BaseController {
       true
     );
 
+    // rabby:chainChanged event must be sent before chainChanged event
+    sessionService.broadcastEvent('rabby:chainChanged', chain, origin);
     sessionService.broadcastEvent(
       'chainChanged',
       {

@@ -840,7 +840,9 @@ export class KeyringService extends EventEmitter {
       });
 
       keyring.on('transport_error', (data) => {
-        Sentry.captureException(new Error('Transport error: ' + data));
+        Sentry.captureException(
+          new Error('Transport error: ' + JSON.stringify(data))
+        );
 
         eventBus.emit(EVENTS.broadcastToUI, {
           method: EVENTS.WALLETCONNECT.TRANSPORT_ERROR,
