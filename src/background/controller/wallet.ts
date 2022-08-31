@@ -164,33 +164,36 @@ export class WalletController extends BaseController {
     return feeRatio.toString();
   };
 
-  rabbySwap = async ({
-    chain_server_id,
-    pay_token_id,
-    pay_token_raw_amount,
-    receive_token_id,
-    slippage,
-    receive_token_raw_amount,
-    dex_swap_to,
-    dex_approve_to,
-    dex_swap_calldata,
-    deadline,
-    needApprove,
-    feeRatio,
-  }: {
-    chain_server_id: string;
-    pay_token_id: string;
-    pay_token_raw_amount: string;
-    receive_token_id: string;
-    slippage: string;
-    receive_token_raw_amount: number;
-    dex_swap_to: string;
-    dex_approve_to: string;
-    dex_swap_calldata: string;
-    deadline: number;
-    needApprove: boolean;
-    feeRatio: number | string;
-  }) => {
+  rabbySwap = async (
+    {
+      chain_server_id,
+      pay_token_id,
+      pay_token_raw_amount,
+      receive_token_id,
+      slippage,
+      receive_token_raw_amount,
+      dex_swap_to,
+      dex_approve_to,
+      dex_swap_calldata,
+      deadline,
+      needApprove,
+      feeRatio,
+    }: {
+      chain_server_id: string;
+      pay_token_id: string;
+      pay_token_raw_amount: string;
+      receive_token_id: string;
+      slippage: string;
+      receive_token_raw_amount: number;
+      dex_swap_to: string;
+      dex_approve_to: string;
+      dex_swap_calldata: string;
+      deadline: number;
+      needApprove: boolean;
+      feeRatio: number | string;
+    },
+    $ctx?: any
+  ) => {
     const account = await preferenceService.getCurrentAccount();
     if (!account) throw new Error('no current account');
     const chain = Object.values(CHAINS).find(
@@ -206,7 +209,8 @@ export class WalletController extends BaseController {
         chain_server_id,
         pay_token_id,
         RABBY_SWAP_ROUTER[chain.enum],
-        MAX_UNSIGNED_256_INT
+        MAX_UNSIGNED_256_INT,
+        $ctx
       );
     }
 
@@ -291,6 +295,7 @@ export class WalletController extends BaseController {
         '0x' + new BigNumber(pay_token_raw_amount).toString(16);
     }
     await this.sendRequest({
+      $ctx,
       method: 'eth_sendTransaction',
       params: [swapParam],
     });

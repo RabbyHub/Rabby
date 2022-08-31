@@ -26,6 +26,8 @@ import { geTokenDecimals, getTokenSymbol } from '@/ui/utils/token';
 import { providers } from 'ethers';
 import { SvgIconLoading } from '@/ui/assets';
 import { ReactComponent as SvgAlertInfo } from '@/ui/assets/swap/alert-info.svg';
+import { useRbiSource } from '@/ui/utils/ga-event';
+
 const ReservedGas = 0;
 
 const MaxButton = styled.div`
@@ -255,6 +257,8 @@ const Swap = () => {
     return await wallet.getSwapFeeRatio(chain);
   }, [chain, wallet]);
 
+  const rbisource = useRbiSource();
+
   const handleTransform = () => {
     if (payToken && receiveToken) {
       setPayToken(receiveToken);
@@ -284,6 +288,7 @@ const Swap = () => {
           .toString(10),
         slippage:
           slippage === 'custom' ? customSlippageInput || '0' : slippage + '',
+        rbisource,
       }),
       state: {
         chain,
@@ -471,6 +476,7 @@ const Swap = () => {
             .toString(10),
           slippage:
             slippage === 'custom' ? customSlippageInput || '0' : slippage + '',
+          rbisource,
         })}`,
         states: {},
       });
