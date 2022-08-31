@@ -5,7 +5,10 @@ import BigNumber from 'bignumber.js';
 import { TokenItem } from 'background/service/openapi';
 import { splitNumberByStep, useWallet, useWalletOld } from 'ui/utils';
 import TokenWithChain from '../TokenWithChain';
-import TokenSelector, { TokenSelectorProps } from '../TokenSelector';
+import TokenSelector, {
+  isSwapTokenType,
+  TokenSelectorProps,
+} from '../TokenSelector';
 import IconArrowDown from 'ui/assets/arrow-down-triangle.svg';
 import './style.less';
 import clsx from 'clsx';
@@ -79,21 +82,22 @@ const TokenAmountInput = ({
     [tokens, excludeTokens]
   );
 
+  const isSwapType = isSwapTokenType(type);
+
   const handleLoadTokens = async () => {
     setIsListLoading(true);
     let tokens: TokenItem[] = [];
     const currentAccount = await wallet.syncGetCurrentAccount();
-    const getDefaultTokens =
-      type === 'swap'
-        ? wallet.openapi.getSwapTokenList
-        : wallet.openapi.listToken;
+    const getDefaultTokens = isSwapType
+      ? wallet.openapi.getSwapTokenList
+      : wallet.openapi.listToken;
     const defaultTokens = await getDefaultTokens(
       currentAccount?.address,
       chainId
     );
     let localAddedTokens: TokenItem[] = [];
 
-    if (type !== 'swap') {
+    if (!isSwapType) {
       const localAdded =
         (await wallet.getAddedToken(currentAccount?.address)).filter((item) => {
           const [chain] = item.split(':');
@@ -120,7 +124,7 @@ const TokenAmountInput = ({
       return;
     }
     const kw = q.trim();
-    if (type === 'swap') {
+    if (isSwapType) {
       setIsListLoading(true);
       try {
         const currentAccount = await wallet.syncGetCurrentAccount();
