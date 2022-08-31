@@ -12,7 +12,7 @@ import QuoteLoading from './components/QuoteLoading';
 import SwapConfirm from './components/SwapConfirm';
 import { obj2query, query2obj } from '@/ui/utils/url';
 import { CHAINS, CHAINS_ENUM } from '@debank/common';
-import { RABBY_SWAP_ROUTER } from '@/constant';
+import { RABBY_SWAP_ROUTER, SWAP_DEX_WHITELIST } from '@/constant';
 import { message } from 'antd';
 import { TokenItem } from '@/background/service/openapi';
 
@@ -65,6 +65,10 @@ export const SwapQuotes = () => {
     try {
       const DEXList = await wallet.openapi.getDEXList(chain_id);
       setDexList(DEXList || []);
+
+      const CURRENT_CHAIN_DEX_ROUTER_LIST = Object.values(
+        SWAP_DEX_WHITELIST[chain_enum]
+      );
       const swapQuotes = await Promise.allSettled(
         DEXList.map(
           async (e) =>
@@ -77,10 +81,16 @@ export const SwapQuotes = () => {
                 receive_token_id,
               })
               .then((res) => {
-                if (res.dex_approve_to) {
-                  setSuccessCount((n) => n + 1);
+                if (res.dex_swap_to) {
+                  if (CURRENT_CHAIN_DEX_ROUTER_LIST.includes(res.dex_swap_to)) {
+                    setSuccessCount((n) => n + 1);
+                    return { ...res, dexId: e.id, type: e.type };
+                  } else {
+                    console.error('untrusted swap dex', e.id, res);
+                    throw new Error('untrusted swap dex ');
+                  }
                 }
-                return { ...res, dexId: e.id, type: e.type };
+                throw new Error('swap quote fetch error');
               })
               .finally(() => {
                 setQueryCount((n) => n + 1);
@@ -90,7 +100,14 @@ export const SwapQuotes = () => {
       const availableSwapQuotes: Quote[] = [];
       swapQuotes.forEach((e) => {
         if (e.status === 'fulfilled') {
-          availableSwapQuotes.push(e.value);
+          const { dexId, dex_swap_to } = e.value;
+          if (
+            dexId &&
+            dex_swap_to &&
+            CURRENT_CHAIN_DEX_ROUTER_LIST.includes(dex_swap_to)
+          ) {
+            availableSwapQuotes.push(e.value);
+          }
         }
       });
 
