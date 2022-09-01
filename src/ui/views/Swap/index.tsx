@@ -24,8 +24,8 @@ import { ReactComponent as IconTipDownArrow } from 'ui/assets/swap/arrow-tips-do
 import { useAsync, useCss } from 'react-use';
 import { geTokenDecimals, getTokenSymbol } from '@/ui/utils/token';
 import { providers } from 'ethers';
-import { SvgAlert, SvgIconLoading } from '@/ui/assets';
-
+import { SvgIconLoading } from '@/ui/assets';
+import { ReactComponent as SvgAlertInfo } from '@/ui/assets/swap/alert-info.svg';
 const ReservedGas = 0;
 
 const MaxButton = styled.div`
@@ -827,10 +827,7 @@ const Swap = () => {
 
             {!tokenVerifying && !tokenVerified && (
               <div className="flex items-center text-red-light ">
-                <SvgAlert
-                  className="icon icon-alert w-14 h-14 mr-6"
-                  viewBox="0 0 14 14"
-                />
+                <SvgAlertInfo className=" w-14 h-14 mr-6" />
                 <span>{t('Token verification failed')}</span>
               </div>
             )}
