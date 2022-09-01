@@ -1099,9 +1099,6 @@
   "LiquiditySourceDesc": {
     "message": "Available liquidity sources are dexes, aggregators, and professional market makers. "
   },
-  "RabbyQuoteDesc": {
-    "message": "Rabby searches multiple liquidity sources (exchanges, aggregators, and professional market makers) to find the best rates and lowest network fees.A fee of {{feeRatio}}% has been deducted from all quote."
-  },
   "useThisQuote": {
     "message": "Use this quote"
   },
