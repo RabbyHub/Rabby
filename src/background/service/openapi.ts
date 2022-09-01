@@ -1007,7 +1007,7 @@ class OpenApiService {
         site_url: string;
         type: string;
       }[]
-    >(testApiPrefix + '/v1/wallet/swap_dex_list', {
+    >('/v1/wallet/swap_dex_list', {
       params: {
         chain_id,
       },
@@ -1036,7 +1036,7 @@ class OpenApiService {
       };
       pay_token: TokenItem;
       receive_token: TokenItem;
-    }>(testApiPrefix + '/v1/wallet/swap_quote', {
+    }>('/v1/wallet/swap_quote', {
       params,
     });
     return data;
@@ -1044,7 +1044,7 @@ class OpenApiService {
 
   getSwapTokenList = async (id: string, chainId?: string) => {
     const { data } = await this.request.get<TokenItem[]>(
-      testApiPrefix + '/v1/wallet/swap_token_list',
+      '/v1/wallet/swap_token_list',
       {
         params: {
           id,
@@ -1056,7 +1056,5 @@ class OpenApiService {
     return data;
   };
 }
-// TODO: remove
-const testApiPrefix = 'https://alpha-openapi.debank.com';
 
 export default new OpenApiService();
