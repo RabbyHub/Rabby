@@ -541,8 +541,14 @@ const Swap = () => {
     value: tokenVerified,
   } = useAsync(async () => {
     if (payToken && receiveToken) {
-      const fromTokenValidationStatus = await validateToken(payToken);
-      const toTokenValidationStatus = await validateToken(receiveToken);
+      const [
+        fromTokenValidationStatus,
+        toTokenValidationStatus,
+      ] = await Promise.all([
+        validateToken(payToken),
+        validateToken(receiveToken),
+      ]);
+
       return fromTokenValidationStatus && toTokenValidationStatus;
     }
     return true;
