@@ -18,6 +18,7 @@ import ChainIcon from '../NFT/ChainIcon';
 import { HistoryItem } from './HistoryItem';
 import { Loading } from './Loading';
 import './style.less';
+import { RABBY_SWAP_ROUTER } from '@/constant';
 
 const PAGE_COUNT = 10;
 const ellipsis = (text: string) => {
@@ -250,13 +251,21 @@ const TokenDetail = ({
             overlayClassName="rectangle token_swap__tooltip"
             placement="topLeft"
             title={'This token is not supported for swap'}
-            visible={token.is_core ? false : undefined}
+            visible={
+              token.is_core &&
+              RABBY_SWAP_ROUTER[getChain(token?.chain)?.enum || '']
+                ? false
+                : undefined
+            }
           >
             <Button
               type="primary"
               size="large"
               onClick={goToSwap}
-              disabled={!token.is_core}
+              disabled={
+                !token.is_core ||
+                !RABBY_SWAP_ROUTER[getChain(token?.chain)?.enum || '']
+              }
               style={{
                 width: 114,
               }}
