@@ -294,7 +294,7 @@ export const SwapConfirm = ({
                     2 transactions need to be signed: <br />
                     1. Allow Rabby smart contracts to use your{' '}
                     {getTokenSymbol(payToken)} <br />
-                    2.Confirm to swap
+                    2. Confirm to swap
                   </>
                 }
               >
