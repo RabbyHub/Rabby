@@ -305,7 +305,7 @@ const Approve = ({
             <span className="label flex items-center">{t('Approve to')}</span>
             <div className="value protocol">
               <img
-                className="protocol-logo"
+                className="protocol-logo rounded-full"
                 src={detail.spender_protocol_logo_url || IconUnknownProtocol}
                 onError={handleProtocolLogoLoadFailed}
               />
