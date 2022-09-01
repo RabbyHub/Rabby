@@ -66,9 +66,6 @@ export const SwapQuotes = () => {
       const DEXList = await wallet.openapi.getDEXList(chain_id);
       setDexList(DEXList || []);
 
-      const CURRENT_CHAIN_DEX_ROUTER_LIST = Object.values(
-        SWAP_DEX_WHITELIST[chain_enum]
-      );
       const swapQuotes = await Promise.allSettled(
         DEXList.map(
           async (e) =>
@@ -82,7 +79,11 @@ export const SwapQuotes = () => {
               })
               .then((res) => {
                 if (res.dex_swap_to) {
-                  if (CURRENT_CHAIN_DEX_ROUTER_LIST.includes(res.dex_swap_to)) {
+                  if (
+                    SWAP_DEX_WHITELIST.includes(
+                      `${chain_id.toLowerCase()}:${res.dex_swap_to.toLowerCase()}`
+                    )
+                  ) {
                     setSuccessCount((n) => n + 1);
                     return { ...res, dexId: e.id, type: e.type };
                   } else {
@@ -104,7 +105,9 @@ export const SwapQuotes = () => {
           if (
             dexId &&
             dex_swap_to &&
-            CURRENT_CHAIN_DEX_ROUTER_LIST.includes(dex_swap_to)
+            SWAP_DEX_WHITELIST.includes(
+              `${chain_id.toLowerCase()}:${dex_swap_to.toLowerCase()}`
+            )
           ) {
             availableSwapQuotes.push(e.value);
           }
