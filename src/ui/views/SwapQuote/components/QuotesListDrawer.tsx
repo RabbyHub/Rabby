@@ -363,7 +363,7 @@ export const QuotesListDrawer = ({
         </div>
 
         <div className="mt-[16px] mb-[22px] text-12 leading-[16px] text-gray-content">
-          {t('RabbyQuoteDesc', {
+          {t('QuoteDesc', {
             feeRatio: feeRatioPercentString,
           })}
         </div>
