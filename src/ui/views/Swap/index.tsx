@@ -504,14 +504,17 @@ const Swap = () => {
       return true;
     }
     try {
-      const decimals = await geTokenDecimals(
-        token.id,
-        new providers.JsonRpcProvider(currentChain.thridPartyRPC)
-      );
-      const symbol = await getTokenSymbol(
-        token.id,
-        new providers.JsonRpcProvider(currentChain.thridPartyRPC)
-      );
+      const [decimals, symbol] = await Promise.all([
+        geTokenDecimals(
+          token.id,
+          new providers.JsonRpcProvider(currentChain.thridPartyRPC)
+        ),
+        getTokenSymbol(
+          token.id,
+          new providers.JsonRpcProvider(currentChain.thridPartyRPC)
+        ),
+      ]);
+
       if (symbol !== token.symbol || decimals !== token.decimals) {
         // Sentry.captureException(
         //   new Error('Token validation failed'),
