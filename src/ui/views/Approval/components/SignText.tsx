@@ -10,7 +10,6 @@ import { KEYRING_CLASS, KEYRING_TYPE } from 'consts';
 import React, { ReactNode, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import IconArrowRight from 'ui/assets/arrow-right-gray.svg';
-import IconInfo from 'ui/assets/infoicon.svg';
 import { ReactComponent as IconQuestionMark } from 'ui/assets/question-mark.svg';
 import IconGnosis from 'ui/assets/walletlogo/gnosis.png';
 import IconWatch from 'ui/assets/walletlogo/watch-purple.svg';
@@ -23,12 +22,9 @@ import {
 } from 'ui/utils';
 import AccountCard from './AccountCard';
 import LedgerWebHIDAlert from './LedgerWebHIDAlert';
-import SecurityCheckBar from './SecurityCheckBar';
-import SecurityCheckDetail from './SecurityCheckDetail';
 
 import { getKRCategoryByType } from '@/utils/transaction';
 import ReactGA from 'react-ga';
-import PreCheckCard from './PreCheckCard';
 import SecurityCheckCard from './SecurityCheckCard';
 import ProcessTooltip from './ProcessTooltip';
 import SecurityCheck from './SecurityCheck';

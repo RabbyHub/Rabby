@@ -42,3 +42,7 @@ export const getOriginFromUrl = (url: string) => {
   const urlObj = new URL(url);
   return urlObj.origin;
 };
+
+export const resemblesETHAddress = (str: string): boolean => {
+  return str.length === 42;
+};

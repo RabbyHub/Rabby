@@ -8,6 +8,7 @@ import { PromiseFlow, underline2Camelcase } from 'background/utils';
 import { CHAINS, EVENTS } from 'consts';
 import providerController from './controller';
 import eventBus from '@/eventBus';
+import { resemblesETHAddress } from '@/utils';
 
 const isSignApproval = (type: string) => {
   const SIGN_APPROVALS = ['SignText', 'SignTypedData', 'SignTx'];
@@ -134,6 +135,21 @@ const flowContext = flow
         windowHeight = minHeight;
       }
     }
+    if (approvalType === 'SignText') {
+      let from, message;
+      const [first, second] = params;
+      // Compatible with wrong params order
+      // ref: https://github.com/MetaMask/eth-json-rpc-middleware/blob/53c7361944c380e011f5f4ee1e184db746e26d73/src/wallet.ts#L284
+      if (resemblesETHAddress(first) && !resemblesETHAddress(second)) {
+        from = first;
+        message = second;
+      } else {
+        from = second;
+        message = first;
+      }
+      ctx.request.data.params[0] = message;
+      ctx.request.data.params[1] = from;
+    }
     if (approvalType && (!condition || !condition(ctx.request))) {
       ctx.request.requestedApproval = true;
       if (approvalType === 'SignTx' && !('chainId' in params[0])) {
@@ -153,7 +169,7 @@ const flowContext = flow
           params: {
             $ctx: ctx?.request?.data?.$ctx,
             method,
-            data: params,
+            data: ctx.request.data.params,
             session: { origin, name, icon },
           },
           origin,
