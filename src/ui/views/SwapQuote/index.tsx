@@ -206,7 +206,6 @@ export const SwapQuotes = () => {
       dex_swap_to,
       dex_approve_to,
       dex_swap_calldata,
-      is_wrapped,
     } = swapQuotes[currentQuoteIndex];
     try {
       wallet.rabbySwap({
@@ -221,7 +220,6 @@ export const SwapQuotes = () => {
         dex_swap_calldata,
         deadline: Math.floor(Date.now() / 1000) + 3600 * 30,
         needApprove: shouldApprove,
-        is_wrapped,
         feeRatio,
       });
       window.close();

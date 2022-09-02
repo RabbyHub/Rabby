@@ -176,7 +176,6 @@ export class WalletController extends BaseController {
     dex_swap_calldata,
     deadline,
     needApprove,
-    is_wrapped,
     feeRatio,
   }: {
     chain_server_id: string;
@@ -190,7 +189,6 @@ export class WalletController extends BaseController {
     dex_swap_calldata: string;
     deadline: number;
     needApprove: boolean;
-    is_wrapped: boolean;
     feeRatio: number | string;
   }) => {
     const account = await preferenceService.getCurrentAccount();
@@ -201,25 +199,6 @@ export class WalletController extends BaseController {
     if (!chain) throw new Error(`Can not find chain ${chain_server_id}`);
     if (!Object.keys(RABBY_SWAP_ROUTER).some((e) => e === chain.enum)) {
       throw new Error(`swap don't support chain ${chain.enum} now`);
-    }
-
-    if (is_wrapped) {
-      const param = {
-        from: account.address,
-        to: dex_swap_to,
-        chainId: chain.id,
-        data: dex_swap_calldata,
-      };
-
-      if (chain.nativeTokenAddress === pay_token_id) {
-        param['value'] =
-          '0x' + new BigNumber(pay_token_raw_amount).toString(16);
-      }
-      await this.sendRequest({
-        method: 'eth_sendTransaction',
-        params: [param],
-      });
-      return;
     }
 
     if (needApprove && pay_token_id !== chain.nativeTokenAddress) {
