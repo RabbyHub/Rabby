@@ -1,4 +1,5 @@
 import { Button, Form, Input, Skeleton, Slider, Tooltip } from 'antd';
+import ReactGA from 'react-ga';
 import { ValidateStatus } from 'antd/lib/form/FormItem';
 import { GasLevel, Tx } from 'background/service/openapi';
 import BigNumber from 'bignumber.js';
@@ -231,6 +232,19 @@ const GasSelector = ({
     }
   };
 
+  const handleClickEdit = (
+    e: React.MouseEvent<HTMLAnchorElement, MouseEvent>
+  ) => {
+    e.preventDefault();
+    setModalVisible(true);
+    setSelectedGas(rawSelectedGas);
+    ReactGA.event({
+      category: 'Transaction',
+      action: 'EditGas',
+      label: chain?.serverId,
+    });
+  };
+
   const panelSelection = (e, gas: GasLevel) => {
     e.stopPropagation();
     let target = gas;
@@ -402,14 +416,7 @@ const GasSelector = ({
             )}
           </div>
           <div className="gas-selector-card-extra">
-            <a
-              href="#"
-              onClick={(e) => {
-                e.preventDefault();
-                setModalVisible(true);
-                setSelectedGas(rawSelectedGas);
-              }}
-            >
+            <a href="#" onClick={handleClickEdit}>
               Edit
             </a>
           </div>
