@@ -1,10 +1,7 @@
 import ReactGA from 'react-ga';
 import * as Sentry from '@sentry/browser';
 import Common, { Hardfork } from '@ethereumjs/common';
-import {
-  TransactionFactory,
-  FeeMarketEIP1559Transaction,
-} from '@ethereumjs/tx';
+import { TransactionFactory } from '@ethereumjs/tx';
 import { ethers } from 'ethers';
 import {
   bufferToHex,
@@ -46,11 +43,7 @@ import {
 import buildinProvider from 'background/utils/buildinProvider';
 import BaseController from '../base';
 import { Account } from 'background/service/preference';
-import {
-  validateGasPriceRange,
-  is1559Tx,
-  convert1559ToLegacy,
-} from '@/utils/transaction';
+import { validateGasPriceRange, is1559Tx } from '@/utils/transaction';
 import stats from '@/stats';
 import BigNumber from 'bignumber.js';
 
