@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import { useTranslation, Trans } from 'react-i18next';
+import ReactGA from 'react-ga';
 import { sortBy } from 'lodash';
 import { StrayPageWithButton } from 'ui/component';
 import AddressItem from 'ui/component/AddressList/AddressItem';
@@ -73,6 +74,13 @@ const ImportSuccess = ({ isPopup = false }: { isPopup?: boolean }) => {
     if (Object.values(KEYRING_CLASS.HARDWARE).includes(accounts[0].type)) {
       stats.report('importHardware', {
         type: accounts[0].type,
+      });
+    }
+    if (accounts[0]) {
+      ReactGA.event({
+        category: 'User',
+        action: 'importAddress',
+        label: accounts[0].type,
       });
     }
 
