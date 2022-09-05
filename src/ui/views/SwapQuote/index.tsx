@@ -65,7 +65,7 @@ export const SwapQuotes = () => {
     try {
       const DEXList = await wallet.openapi.getDEXList(chain_id);
       setDexList(DEXList || []);
-
+      const account = await wallet.getCurrentAccount();
       const swapQuotes = await Promise.allSettled(
         DEXList.map(
           async (e) =>
@@ -76,6 +76,7 @@ export const SwapQuotes = () => {
                 pay_token_id,
                 pay_token_raw_amount,
                 receive_token_id,
+                id: account!.address,
               })
               .then((res) => {
                 if (res.dex_swap_to) {
