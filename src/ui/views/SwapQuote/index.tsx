@@ -117,9 +117,9 @@ export const SwapQuotes = () => {
       availableSwapQuotes.sort((a, b) => {
         const getValue = (item: Quote) =>
           new BigNumber(item.receive_token_raw_amount)
-            .div(item.receive_token.decimals)
+            .div(10 ** item.receive_token.decimals)
             .times(item.receive_token.price)
-            .minus(item.gas.gas_used);
+            .minus(item.gas.gas_cost_usd_value);
         return getValue(b).minus(getValue(a)).toNumber();
       });
 
