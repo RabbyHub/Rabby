@@ -158,10 +158,9 @@ export const QuotesListDrawer = ({
             $
             {toSignificantDigits(
               new BigNumber(
-                list[selectedIndex]?.gas?.gas_cost_usd_value?.toFixed(10) ||
-                  '0',
-                4
-              )
+                list[selectedIndex]?.gas?.gas_cost_usd_value || '0'
+              ),
+              4
             )}
           </div>
         ),
