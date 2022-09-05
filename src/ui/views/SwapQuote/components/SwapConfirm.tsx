@@ -199,17 +199,17 @@ export const SwapConfirm = ({
               width={22}
               height={22}
               src={payToken.logo_url}
-              alt={payToken.display_symbol || payToken.symbol}
+              alt={payToken.symbol}
             />
             <div
               className="inline-flex items-baseline font-medium"
-              title={amount + '' + (payToken.display_symbol || payToken.symbol)}
+              title={amount + '' + payToken.symbol}
             >
               <div className="text-20  text-gray-title max-w-[200px] truncate">
                 {amount}
               </div>
               <div className="ml-6 text-15 text-gray-subTitle">
-                {payToken.display_symbol || payToken.symbol}
+                {payToken.symbol}
               </div>
             </div>
           </Space>
@@ -225,10 +225,10 @@ export const SwapConfirm = ({
               width={20}
               height={20}
               src={receiveToken.logo_url || IconUnknown}
-              alt={receiveToken.display_symbol || receiveToken.symbol}
+              alt={receiveToken.symbol}
             />
             <div className="ml-8 text-15 font-medium text-gray-subTitle">
-              {receiveToken.display_symbol || receiveToken.symbol}
+              {receiveToken.symbol}
             </div>
           </div>
           <div

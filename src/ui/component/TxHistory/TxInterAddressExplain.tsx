@@ -40,7 +40,7 @@ export const TxInterAddressExplain = ({
     interAddressExplain = (
       <div className="tx-explain-title">
         Approve {amount < 1e9 ? amount.toFixed(4) : 'infinite'}{' '}
-        {`${approveToken.display_symbol || approveToken.symbol} for `}
+        {`${approveToken.symbol || approveToken.display_symbol} for `}
         {projectName}
       </div>
     );
