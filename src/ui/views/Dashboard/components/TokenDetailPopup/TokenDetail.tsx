@@ -250,7 +250,7 @@ const TokenDetail = ({
           <Tooltip
             overlayClassName="rectangle token_swap__tooltip"
             placement="topLeft"
-            title={'This token is not supported for swap'}
+            title={t('The token on this chain is not supported for swap')}
             visible={
               token.is_core &&
               RABBY_SWAP_ROUTER[getChain(token?.chain)?.enum || '']
