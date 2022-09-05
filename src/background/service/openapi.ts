@@ -1016,6 +1016,7 @@ class OpenApiService {
   };
 
   getSwapQuote = async (params: {
+    id: string;
     chain_id: string;
     dex_id: string;
     pay_token_id: string;
