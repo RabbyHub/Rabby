@@ -1082,13 +1082,13 @@
     "message": "Minimum receive {{minReceive}} {{symbol}} under {{slippage}}% slippage"
   },
   "ChangeSlippage": {
-    "message": "Do you want to go back and change the max slippage to get new quotes? "
+    "message": "Do you want to go back and change the max slippage to get new quotes?"
   },
   "QuoteDesc": {
     "message": "Rabby searches multiple liquidity sources (exchanges, aggregators, and professional market makers) to find the best rates and lowest network fees. A fee of {{feeRatio}}% has been deducted from all quotes."
   },
   "ReceivingAmountDesc": {
-    "message": "This is an estimate. The exact amount received depends on slippage. Each quote has deducted {{feeRatio}}% as a service fee for Rabby.  "
+    "message": "This is an estimate. The exact amount received depends on slippage. Each quote has deducted {{feeRatio}}% as a service fee for Rabby."
   },
   "EstGasFeeDesc": {
     "message": "This is an estimated gas cost for your transaction. The actual gas cost may change based on network conditions. "
@@ -1097,7 +1097,7 @@
     "message": "If the price changes between the time your order is placed and confirmed, it's called \"slippage\". Your order will be canceled if the price change more than your slippage setting. "
   },
   "LiquiditySourceDesc": {
-    "message": "Available liquidity sources are dexes, aggregators, and professional market makers. "
+    "message": "Available liquidity sources are dexes, aggregators, and professional market makers."
   },
   "useThisQuote": {
     "message": "Use this quote"
@@ -1110,5 +1110,8 @@
   },
   "Slippage__cant__be__0": {
     "message": "Slippage can't be 0"
+  },
+  "The__token__on__this__chain__is__not__supported__for__swap": {
+    "message": "The token on this chain is not supported for swap"
   }
 }

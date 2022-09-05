@@ -169,7 +169,7 @@ export const QuotesListDrawer = ({
       {
         left: (
           <div className={clsx(labelClassName)}>
-            <span>Max slippage </span>
+            <span>{t('Slippage tolerance')} </span>
             <Tooltip
               overlayClassName={clsx(
                 'rectangle max-w-[360px] left-[20px]',

@@ -322,8 +322,8 @@ const UnableEstimatePriceBox = ({ className = '' }) => {
         Unable to estimate the price difference in USD
       </p>
       <p className="mb-[12px] text-12 text-gray-subTitle">
-        Because we fail to get the token value in USD, we can't compare the
-        price difference for this transaction.
+        Unable to get the token value in USD. We can't compare the price
+        difference for this transaction
       </p>
     </div>
   );
