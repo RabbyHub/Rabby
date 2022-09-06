@@ -150,14 +150,35 @@ const config = {
       },
       {
         test: /\.svg$/,
-        use: [
-          '@svgr/webpack',
+        oneOf: [
           {
-            loader: 'url-loader',
-            options: {
-              limit: false,
-              outputPath: 'generated/svgs',
-            },
+            include: [
+              path.resolve(
+                __dirname,
+                '../src/content-script/pageProvider/assets'
+              ),
+            ],
+            use: [
+              '@svgr/webpack',
+              {
+                loader: 'url-loader',
+                options: {
+                  limit: true,
+                },
+              },
+            ],
+          },
+          {
+            use: [
+              '@svgr/webpack',
+              {
+                loader: 'url-loader',
+                options: {
+                  limit: false,
+                  outputPath: 'generated/svgs',
+                },
+              },
+            ],
           },
         ],
       },
