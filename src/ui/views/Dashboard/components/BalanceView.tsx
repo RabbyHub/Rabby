@@ -106,7 +106,11 @@ const BalanceView = ({
           )}
         >
           <div className={clsx('amount-number', !startAnimate && 'text-32')}>
-            <span onClick={onClick} className=" cursor-pointer">
+            <span
+              onClick={onClick}
+              className=" cursor-pointer"
+              title={splitNumberByStep((balance || 0).toFixed(2))}
+            >
               ${splitNumberByStep((balance || 0).toFixed(2))}
             </span>
           </div>
