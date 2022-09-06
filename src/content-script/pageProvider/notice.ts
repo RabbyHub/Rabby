@@ -1,4 +1,4 @@
-import IconClose from 'ui/assets/close.svg';
+import IconClose from './assets/close.svg';
 interface Options {
   content: string;
   closeButton: HTMLElement | string;

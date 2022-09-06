@@ -1,5 +1,5 @@
 import { CHAINS } from '@debank/common';
-import IconRabby from 'ui/assets/dashboard/rabby.svg';
+import IconRabby from '../assets/rabby.svg';
 import notice from '../notice';
 
 let instance: ReturnType<typeof notice> | null;
