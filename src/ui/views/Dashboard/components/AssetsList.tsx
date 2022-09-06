@@ -77,7 +77,10 @@ const _Row = (props) => {
         </div>
       </div>
       <div className="right">
-        <div className="token-name opacity-100 font-medium text-13">
+        <div
+          className="token-name opacity-100 font-medium text-13 max-w-[140px] truncate"
+          title={splitNumberByStep((token.net_usd_value || 0).toFixed(2))}
+        >
           ${splitNumberByStep((token.net_usd_value || 0).toFixed(2))}
         </div>
       </div>

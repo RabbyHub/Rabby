@@ -70,7 +70,14 @@ const Row = (props) => {
     >
       <TokenWithChain token={token} hideConer width={'24px'} height={'24px'} />
       <div className="middle">
-        <div className="token-amount">
+        <div
+          className="token-amount truncate max-w-[140px]"
+          title={
+            startSearch
+              ? token?.name
+              : splitNumberByStep(token.amount?.toFixed(4))
+          }
+        >
           {startSearch
             ? token?.name
             : splitNumberByStep(token.amount?.toFixed(4))}
@@ -88,11 +95,16 @@ const Row = (props) => {
         </div>
       </div>
       {isInitList ? (
-        <div className="right">
-          <div className="token-amount">
+        <div className="right max-w-[140px] text-right pl-[8px]">
+          <div
+            className="token-amount truncate"
+            title={splitNumberByStep(
+              (token.amount * token.price || 0)?.toFixed(2)
+            )}
+          >
             ${splitNumberByStep((token.amount * token.price || 0)?.toFixed(2))}
           </div>
-          <div className="token-name">
+          <div className="token-name w-auto">
             @{splitNumberByStep((token.price || 0).toFixed(2))}
           </div>
         </div>
