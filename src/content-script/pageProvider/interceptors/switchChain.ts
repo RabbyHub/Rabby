@@ -1,11 +1,12 @@
-import { CHAINS } from '@debank/common';
 import IconRabby from '../assets/rabby.svg';
 import notice from '../notice';
 
 let instance: ReturnType<typeof notice> | null;
 
-export const switchChainNotice = (chainId: string) => {
-  const chain = Object.values(CHAINS).find((item) => item.hex === chainId);
+export const switchChainNotice = (chain: {
+  [key: string]: any;
+  name: string;
+}) => {
   if (instance) {
     instance.hide();
     instance = null;
