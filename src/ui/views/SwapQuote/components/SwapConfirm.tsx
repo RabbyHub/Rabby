@@ -1,16 +1,15 @@
 import { TokenItem } from '@/background/service/openapi';
-import { getTokenSymbol, Modal, PageHeader } from '@/ui/component';
+import { getTokenSymbol, PageHeader } from '@/ui/component';
 import LessPalette from '@/ui/style/var-defs';
 import { CHAINS_ENUM } from '@debank/common';
 import { CHAINS } from 'consts';
 import { Button, Space, Tooltip } from 'antd';
-import React, { useState, useMemo } from 'react';
+import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import BigNumber from 'bignumber.js';
 import { ReactComponent as IconArrowDown } from '@/ui/assets/swap/arrow-down-light.svg';
 import ArrowRight from '@/ui/assets/arrow-right.svg';
-import { ReactComponent as IconSetting } from '@/ui/assets/swap/setting.svg';
 import bg from '@/ui/assets/swap/bg.svg';
 import clsx from 'clsx';
 import { ReactComponent as IconInfo } from 'ui/assets/infoicon.svg';
