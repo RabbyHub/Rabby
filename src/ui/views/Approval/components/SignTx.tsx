@@ -1,5 +1,4 @@
 import stats from '@/stats';
-import { hasConnectedLedgerDevice } from '@/utils';
 import { openInternalPageInTab } from 'ui/utils/webapi';
 import {
   convertLegacyTo1559,
@@ -66,6 +65,7 @@ import Sign from './TxComponents/Sign';
 import PreCheckCard from './PreCheckCard';
 import SecurityCheckCard from './SecurityCheckCard';
 import ProcessTooltip from './ProcessTooltip';
+import { useLedgerDeviceConnected } from '@/utils/ledger';
 
 const normalizeHex = (value: string | number) => {
   if (typeof value === 'number') {
@@ -598,7 +598,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
   const [support1559, setSupport1559] = useState(chain.eip['1559']);
   const [isLedger, setIsLedger] = useState(false);
   const [useLedgerLive, setUseLedgerLive] = useState(false);
-  const [hasConnectedLedgerHID, setHasConnectedLedgerHID] = useState(false);
+  const hasConnectedLedgerHID = useLedgerDeviceConnected();
 
   const gaEvent = async (type: 'allow' | 'cancel') => {
     const ga:
@@ -1127,7 +1127,6 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       support1559 && SUPPORT_1559_KEYRING_TYPE.includes(currentAccount.type);
     setIsLedger(currentAccount?.type === KEYRING_CLASS.HARDWARE.LEDGER);
     setUseLedgerLive(await wallet.isUseLedgerLive());
-    setHasConnectedLedgerHID(await hasConnectedLedgerDevice());
     setIsHardware(
       !!Object.values(HARDWARE_KEYRING_TYPES).find(
         (item) => item.type === currentAccount.type

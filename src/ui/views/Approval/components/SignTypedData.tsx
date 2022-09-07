@@ -17,7 +17,6 @@ import {
 import SecurityCheckBar from './SecurityCheckBar';
 import SecurityCheckDetail from './SecurityCheckDetail';
 import AccountCard from './AccountCard';
-import { hasConnectedLedgerDevice } from '@/utils';
 import LedgerWebHIDAlert from './LedgerWebHIDAlert';
 import IconQuestionMark from 'ui/assets/question-mark-gray.svg';
 import IconInfo from 'ui/assets/infoicon.svg';
@@ -30,6 +29,7 @@ import { underline2Camelcase } from '@/background/utils';
 import SecurityCheckCard from './SecurityCheckCard';
 import ProcessTooltip from './ProcessTooltip';
 import SecurityCheck from './SecurityCheck';
+import { useLedgerDeviceConnected } from '@/utils/ledger';
 interface SignTypedDataProps {
   method: string;
   data: any[];
@@ -47,7 +47,7 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
   const [isWatch, setIsWatch] = useState(false);
   const [isLedger, setIsLedger] = useState(false);
   const [useLedgerLive, setUseLedgerLive] = useState(false);
-  const [hasConnectedLedgerHID, setHasConnectedLedgerHID] = useState(false);
+  const hasConnectedLedgerHID = useLedgerDeviceConnected();
   const [submitText, setSubmitText] = useState('Proceed');
   const [checkText, setCheckText] = useState('Sign');
   const [
@@ -226,7 +226,6 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
     const currentAccount = await wallet.getCurrentAccount();
     setIsLedger(currentAccount?.type === KEYRING_CLASS.HARDWARE.LEDGER);
     setUseLedgerLive(await wallet.isUseLedgerLive());
-    setHasConnectedLedgerHID(await hasConnectedLedgerDevice());
   };
 
   useEffect(() => {

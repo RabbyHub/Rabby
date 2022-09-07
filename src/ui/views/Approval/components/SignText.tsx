@@ -1,4 +1,3 @@
-import { hasConnectedLedgerDevice } from '@/utils';
 import { Button, message, Tooltip } from 'antd';
 import {
   SecurityCheckDecision,
@@ -28,6 +27,7 @@ import ReactGA from 'react-ga';
 import SecurityCheckCard from './SecurityCheckCard';
 import ProcessTooltip from './ProcessTooltip';
 import SecurityCheck from './SecurityCheck';
+import { useLedgerDeviceConnected } from '@/utils/ledger';
 
 interface SignTextProps {
   data: string[];
@@ -77,7 +77,7 @@ const SignText = ({ params }: { params: SignTextProps }) => {
   const [isLoading, setIsLoading] = useState(false);
   const [isLedger, setIsLedger] = useState(false);
   const [useLedgerLive, setUseLedgerLive] = useState(false);
-  const [hasConnectedLedgerHID, setHasConnectedLedgerHID] = useState(false);
+  const hasConnectedLedgerHID = useLedgerDeviceConnected();
   const [
     cantProcessReason,
     setCantProcessReason,
@@ -240,7 +240,6 @@ const SignText = ({ params }: { params: SignTextProps }) => {
       isGnosis && params.account ? params.account.type : currentAccount?.type;
     setIsLedger(accountType === KEYRING_CLASS.HARDWARE.LEDGER);
     setUseLedgerLive(await wallet.isUseLedgerLive());
-    setHasConnectedLedgerHID(await hasConnectedLedgerDevice());
     if (accountType === KEYRING_TYPE.WatchAddressKeyring) {
       setIsWatch(true);
       setCantProcessReason(
