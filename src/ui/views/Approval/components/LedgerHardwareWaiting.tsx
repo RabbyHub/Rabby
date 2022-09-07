@@ -26,6 +26,7 @@ interface ApprovalParams {
   isGnosis?: boolean;
   data?: string[];
   account?: Account;
+  extra?: Record<string, any>;
 }
 
 const LedgerHardwareWaiting = ({ params }: { params: ApprovalParams }) => {
@@ -109,6 +110,12 @@ const LedgerHardwareWaiting = ({ params }: { params: ApprovalParams }) => {
             : true,
         });
       }
+    } else {
+      stats.report('startSignText', {
+        type: account.brandName,
+        category: KEYRING_CATEGORY_MAP[account.type],
+        method: params?.extra?.signTextMethod,
+      });
     }
     eventBus.addEventListener(EVENTS.LEDGER.REJECT_APPROVAL, (data) => {
       rejectApproval(data, false, true);

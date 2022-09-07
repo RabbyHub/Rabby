@@ -18,7 +18,6 @@ import { ScanCopyQRCode } from 'ui/component';
 import { useApproval, useWallet, openInTab, useWalletOld } from 'ui/utils';
 import eventBus from '@/eventBus';
 import { SvgIconOpenExternal } from 'ui/assets';
-import stats from '@/stats';
 import Mask from 'ui/assets/bg-watchtrade.png';
 
 interface ApprovalParams {
@@ -27,6 +26,7 @@ interface ApprovalParams {
   isGnosis?: boolean;
   data?: string[];
   account?: Account;
+  extra?: Record<string, any>;
 }
 
 type Valueof<T> = T[keyof T];
@@ -392,7 +392,7 @@ const WatchAddressWaiting = ({ params }: { params: ApprovalParams }) => {
               address: from,
               chainId: Number(chainId),
             });
-            stats.report('signedTransaction', {
+            wallet.reportStats('signedTransaction', {
               type: account.brandName,
               chainId: CHAINS[chain].serverId,
               category: KEYRING_CATEGORY_MAP[account.type],
@@ -414,7 +414,7 @@ const WatchAddressWaiting = ({ params }: { params: ApprovalParams }) => {
               address: from,
               chainId: Number(chainId),
             });
-            stats.report('signedTransaction', {
+            wallet.reportStats('signedTransaction', {
               type: account.brandName,
               chainId: CHAINS[chain].serverId,
               category: KEYRING_CATEGORY_MAP[account.type],
@@ -446,7 +446,7 @@ const WatchAddressWaiting = ({ params }: { params: ApprovalParams }) => {
                 address: from,
                 chainId: Number(chainId),
               });
-              stats.report('signTransaction', {
+              wallet.reportStats('signTransaction', {
                 type: account.brandName,
                 chainId: CHAINS[chain].serverId,
                 category: KEYRING_CATEGORY_MAP[account.type],
@@ -459,6 +459,14 @@ const WatchAddressWaiting = ({ params }: { params: ApprovalParams }) => {
               category: 'Transaction',
               action: 'Submit',
               label: account.brandName,
+            });
+            isSignTriggered = true;
+          }
+          if (isText && !isSignTriggered) {
+            wallet.reportStats('startSignText', {
+              type: account.brandName,
+              category: KEYRING_CATEGORY_MAP[account.type],
+              method: params?.extra?.signTextMethod,
             });
             isSignTriggered = true;
           }

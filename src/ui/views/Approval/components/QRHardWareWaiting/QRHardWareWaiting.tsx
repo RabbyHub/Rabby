@@ -99,6 +99,12 @@ const QRHardWareWaiting = ({ params }) => {
               : true,
           });
         }
+      } else {
+        stats.report('startSignText', {
+          type: account.brandName,
+          category: KEYRING_CATEGORY_MAP[account.type],
+          method: params?.extra?.signTextMethod,
+        });
       }
       setErrorMessage('');
       setStatus(QRHARDWARE_STATUS.SIGN);

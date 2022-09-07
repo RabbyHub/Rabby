@@ -155,7 +155,6 @@ const SignText = ({ params }: { params: SignTextProps }) => {
     }
     const currentAccount = await wallet.getCurrentAccount();
 
-    report('startSignText');
     if (isGnosis && params.account) {
       if (WaitingSignComponent[params.account.type]) {
         wallet.signPersonalMessage(
@@ -211,11 +210,13 @@ const SignText = ({ params }: { params: SignTextProps }) => {
         address: currentAccount.address,
         extra: {
           brandName: currentAccount.brandName,
+          signTextMethod: 'personalSign',
         },
       });
 
       return;
     }
+    report('startSignText');
     resolveApproval({});
   };
 
