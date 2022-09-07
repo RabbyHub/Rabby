@@ -1,5 +1,5 @@
 import { ethErrors } from 'eth-rpc-errors';
-import type { EthereumProvider } from './index';
+import { EthereumProvider } from './index';
 
 class PushEventHandlers {
   provider: EthereumProvider;
@@ -64,6 +64,15 @@ class PushEventHandlers {
     if (networkVersion !== this.provider.networkVersion) {
       this.provider.networkVersion = networkVersion;
       this._emit('networkChanged', networkVersion);
+    }
+  };
+
+  'rabby:chainChanged' = (chain) => {
+    if (
+      chain &&
+      chain.hex?.toLowerCase() !== this.provider.chainId?.toLowerCase()
+    ) {
+      this._emit('rabby:chainChanged', chain);
     }
   };
 }
