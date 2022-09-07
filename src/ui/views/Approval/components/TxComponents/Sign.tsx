@@ -9,7 +9,7 @@ import BalanceChange from './BalanceChange';
 import GnosisExplain from './GnosisExplain';
 import SpeedUpCorner from './SpeedUpCorner';
 import ViewRawModal from './ViewRawModal';
-import { ReactComponent as IconUnknownProtocol } from 'ui/assets/unknown-protocol.svg';
+import IconUnknownProtocol from 'ui/assets/unknown-protocol.svg';
 interface SignProps {
   data: ExplainTxResponse;
   chainEnum: CHAINS_ENUM;
@@ -28,6 +28,12 @@ const Sign = ({ data, chainEnum, raw, isSpeedUp, tx }: SignProps) => {
       raw,
       abi: data?.abi_str,
     });
+  };
+
+  const handleProtocolLogoLoadFailed = function (
+    e: React.SyntheticEvent<HTMLImageElement>
+  ) {
+    e.currentTarget.src = IconUnknownProtocol;
   };
 
   const isUnknown = !data?.abi && !detail.action;
@@ -51,18 +57,11 @@ const Sign = ({ data, chainEnum, raw, isSpeedUp, tx }: SignProps) => {
         <div className="tx-action flex items-center gap-[12px] p-[16px]">
           {isSpeedUp && <SpeedUpCorner />}
           <div>
-            {detail.contract_protocol_logo_url && (
-              <img
-                src={detail.contract_protocol_logo_url}
-                className="w-[40px] h-[40px] rounded-full"
-              />
-            )}
-            {!detail.contract_protocol_logo_url ? (
-              <IconUnknownProtocol
-                className="w-[40px] h-[40px]"
-                viewBox="0 0 36 36"
-              />
-            ) : null}
+            <img
+              src={detail.contract_protocol_logo_url || IconUnknownProtocol}
+              className="w-[40px] h-[40px] rounded-full"
+              onError={handleProtocolLogoLoadFailed}
+            />
           </div>
           <div className="section-card-content">
             <div className="section-card-title">
