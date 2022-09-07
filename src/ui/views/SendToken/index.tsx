@@ -725,6 +725,7 @@ const SendToken = () => {
                 placeholder={t('Enter the address')}
                 autoComplete="off"
                 autoFocus
+                spellCheck={false}
               />
             </Form.Item>
           </div>
