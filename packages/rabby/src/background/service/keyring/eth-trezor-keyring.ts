@@ -59,7 +59,7 @@ class TrezorKeyring extends EventEmitter {
   unlockedAccount = 0;
   paths = {};
   hdPath = '';
-  model: string = '';
+  model = '';
 
   constructor(opts = {}) {
     super();

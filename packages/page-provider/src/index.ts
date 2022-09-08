@@ -1,7 +1,7 @@
 // this script is injected into webpage's context
 import { EventEmitter } from 'events';
 import { ethErrors, serializeError } from 'eth-rpc-errors';
-import BroadcastChannelMessage from '@/utils/message/broadcastChannelMessage';
+import BroadcastChannelMessage from './message/broadcastChannelMessage';
 import PushEventHandlers from './pushEventHandlers';
 import { domReadyCall, $ } from './utils';
 import ReadyPromise from './readyPromise';
@@ -111,14 +111,10 @@ export class EthereumProvider extends EventEmitter {
     });
 
     try {
-      const {
-        chainId,
-        accounts,
-        networkVersion,
-        isUnlocked,
-      }: any = await this.requestInternalMethods({
-        method: 'getProviderState',
-      });
+      const { chainId, accounts, networkVersion, isUnlocked }: any =
+        await this.requestInternalMethods({
+          method: 'getProviderState',
+        });
       if (isUnlocked) {
         this._isUnlocked = true;
         this._state.isUnlocked = true;

@@ -1,11 +1,8 @@
 import { Message } from 'utils';
 import { browser } from 'webextension-polyfill-ts';
 import { EVENTS } from '@/constant';
-<<<<<<< HEAD
 import { nanoid } from 'nanoid';
-=======
 import { isManifestV3 } from '@/utils/mv3';
->>>>>>> 957fa5c0 (chore: supports mv2 and mv3)
 
 const channelName = nanoid();
 

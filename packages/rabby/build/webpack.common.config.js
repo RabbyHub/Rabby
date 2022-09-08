@@ -7,8 +7,8 @@ const AssetReplacePlugin = require('./plugins/AssetReplacePlugin');
 const CopyPlugin = require('copy-webpack-plugin');
 const path = require('path');
 
-const createStyledComponentsTransformer = require('typescript-plugin-styled-components')
-  .default;
+const createStyledComponentsTransformer =
+  require('typescript-plugin-styled-components').default;
 
 const isEnvDevelopment = process.env.NODE_ENV !== 'production';
 
@@ -18,7 +18,7 @@ const config = {
   entry: {
     background: paths.rootResolve('src/background/index.ts'),
     'content-script': paths.rootResolve('src/content-script/index.ts'),
-    pageProvider: paths.rootResolve('src/content-script/pageProvider/index.ts'),
+    pageProvider: '@rabby-wallet/page-provider',
     ui: paths.rootResolve('src/ui/index.tsx'),
   },
   output: {
@@ -61,7 +61,7 @@ const config = {
               },
               {
                 loader: paths.rootResolve(
-                  'node_modules/antd-dayjs-webpack-plugin/src/init-loader'
+                  '../../node_modules/antd-dayjs-webpack-plugin/src/init-loader'
                 ),
                 options: {
                   plugins: [

@@ -27,7 +27,7 @@ class BitBox02Keyring extends EventEmitter {
   unlockedAccount = 0;
   paths = {};
   hdPath = '';
-  keyringId: string = '';
+  keyringId = '';
 
   constructor(opts = {}) {
     super();

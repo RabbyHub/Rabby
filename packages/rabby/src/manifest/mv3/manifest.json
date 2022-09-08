@@ -2,11 +2,7 @@
   "manifest_version": 3,
   "name": "__MSG_appName__",
   "short_name": "__MSG_appName__",
-<<<<<<< HEAD
   "version": "0.46.0",
-=======
-  "version": "0.38.0",
->>>>>>> 957fa5c0 (chore: supports mv2 and mv3)
   "default_locale": "en",
   "description": "__MSG_appDescription__",
   "icons": {

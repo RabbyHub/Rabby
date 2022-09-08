@@ -15,4 +15,4 @@ module.exports = {
   dist: rootResolve('dist'),
 
   rootResolve,
-}
+};

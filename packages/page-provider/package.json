@@ -1,0 +1,34 @@
+{
+  "name": "@rabby-wallet/page-provider",
+  "version": "0.1.7",
+  "description": "",
+  "main": "dist/index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "build": "rollup -c",
+    "dev": "yarn build"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "devDependencies": {
+    "@rollup/plugin-image": "^2.1.1",
+    "@rollup/plugin-typescript": "^8.3.2",
+    "jest": "^28.1.0",
+    "rollup": "^2.73.0",
+    "typescript": "^4.6.4"
+  },
+  "dependencies": {
+    "@ledgerhq/devices": "^6.27.1",
+    "@rabby-wallet/widgets": "^1.0.8",
+    "@types/chrome": "^0.0.186",
+    "@types/events": "^3.0.0",
+    "@types/node": "^17.0.34",
+    "@types/w3c-web-hid": "^1.0.3",
+    "eth-rpc-errors": "^4.0.3",
+    "events": "^3.3.0",
+    "lodash": "^4.17.21",
+    "sinon-chrome": "^3.0.1",
+    "webextension-polyfill-ts": "^0.26.0"
+  }
+}
