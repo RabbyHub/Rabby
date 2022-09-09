@@ -670,4 +670,8 @@ export const SWAP_DEX_WHITELIST = [
 
 export const SWAP_FEE_PRECISION = 1e5;
 
-export const GAS_TOP_UP_ADDRESS = '';
+export const GAS_TOP_UP_ADDRESS = '0xbf95c7e8ff9852a072238cd11c8be39fab76a40f';
+
+export const ALIAS_ADDRESS = {
+  [GAS_TOP_UP_ADDRESS]: 'Gas Top Up',
+};
