@@ -166,7 +166,13 @@ export const GasTopUp = () => {
                 ${e[0]}
               </div>
               {loading ? (
-                <Skeleton.Input active />
+                <Skeleton.Input
+                  active
+                  style={{
+                    width: 60,
+                    height: 14,
+                  }}
+                />
               ) : (
                 <div
                   className={clsx(

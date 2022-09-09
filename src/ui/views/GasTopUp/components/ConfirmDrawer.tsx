@@ -11,8 +11,8 @@ import { Empty, TokenWithChain } from '@/ui/component';
 import { TokenItem } from '@/background/service/openapi';
 import { ReactComponent as IconBack } from 'ui/assets/back.svg';
 import { splitNumberByStep } from '@/ui/utils';
-import SkeletonInput from 'antd/lib/skeleton/Input';
 import { ReactComponent as IconRightArrow } from '@/ui/assets/arrow-right-gray.svg';
+import { SvgIconLoading } from 'ui/assets';
 
 export const ConfirmDrawer = ({
   visible,
@@ -42,6 +42,7 @@ export const ConfirmDrawer = ({
   });
 
   const [tokenModalVisible, setTokenModalVisible] = useState(false);
+
   return (
     <>
       <Drawer
@@ -93,30 +94,23 @@ export const ConfirmDrawer = ({
           <ChainWrapper
             className="w-[360px] h-[56px]  mt-32"
             onClick={() => {
-              if (loading) return;
               setTokenModalVisible(true);
             }}
           >
-            {loading ? (
-              <SkeletonInput active />
-            ) : (
-              <>
-                <div className="text-gray-title text-14">
-                  {t(token ? 'Payment Token' : 'Select payment token')}
-                </div>
-                <div className="flex items-center ">
-                  {token ? (
-                    <>
-                      <TokenWithChain token={token} hideConer />
-                      <div className="ml-12 mr-[18px] text-gray-title text-15 font-medium">
-                        {token.symbol}
-                      </div>
-                    </>
-                  ) : null}
-                  <IconRightArrow />
-                </div>
-              </>
-            )}
+            <div className="text-gray-title text-14">
+              {t(token ? 'Payment Token' : 'Select payment token')}
+            </div>
+            <div className="flex items-center ">
+              {token ? (
+                <>
+                  <TokenWithChain token={token} hideConer />
+                  <div className="ml-12 mr-[18px] text-gray-title text-15 font-medium">
+                    {token.symbol}
+                  </div>
+                </>
+              ) : null}
+              <IconRightArrow />
+            </div>
           </ChainWrapper>
 
           <Button
@@ -173,46 +167,55 @@ export const ConfirmDrawer = ({
               </div>
             </div>
             <div className="overflow-y-auto flex-1 relative">
-              {list.length === 0 && (
+              {!loading && list.length === 0 && (
                 <Empty className="pt-[80px]">
                   <div className="text-14 text-gray-subTitle mb-12">
                     {t('No Tokens')}
                   </div>
                 </Empty>
               )}
-              {list.map((e) => (
-                <div
-                  className={clsx(
-                    'flex justify-between items-center cursor-pointer px-[20px] h-[52px] border border-transparent hover:border-blue-light rounded-[6px]',
-                    'text-13 font-medium text-gray-title',
-                    new BigNumber(e.amount)
-                      .times(e.price)
-                      .lt(new BigNumber(cost).times(1.2)) &&
-                      'opacity-50 cursor-not-allowed'
-                  )}
-                  onClick={() => {
-                    if (
+              {loading && (
+                <div className="flex flex-col items-center justify-center pt-[80px]">
+                  <SvgIconLoading className="animate-spin" fill="#8697FF" />
+                  <div className="mt-12">{t('Loading Tokens')}</div>
+                </div>
+              )}
+
+              {!loading &&
+                list.map((e) => (
+                  <div
+                    className={clsx(
+                      'flex justify-between items-center cursor-pointer px-[20px] h-[52px] border border-transparent hover:border-blue-light rounded-[6px]',
+                      'text-13 font-medium text-gray-title',
                       new BigNumber(e.amount)
                         .times(e.price)
-                        .gte(new BigNumber(cost).times(1.2))
-                    ) {
-                      onChange(e);
-                      setTokenModalVisible(false);
-                    }
-                  }}
-                >
-                  <Space size={12}>
-                    <TokenWithChain token={e} hideConer />
-                    <span>
-                      {splitNumberByStep(e.amount?.toFixed(4))}
-                      {e.symbol}
-                    </span>
-                  </Space>
-                  <div>
-                    ${splitNumberByStep((e.amount * e.price || 0)?.toFixed(2))}
+                        .lt(new BigNumber(cost).times(1.2)) &&
+                        'opacity-50 cursor-not-allowed'
+                    )}
+                    onClick={() => {
+                      if (
+                        new BigNumber(e.amount)
+                          .times(e.price)
+                          .gte(new BigNumber(cost).times(1.2))
+                      ) {
+                        onChange(e);
+                        setTokenModalVisible(false);
+                      }
+                    }}
+                  >
+                    <Space size={12}>
+                      <TokenWithChain token={e} hideConer />
+                      <span>
+                        {splitNumberByStep(e.amount?.toFixed(4))}
+                        {e.symbol}
+                      </span>
+                    </Space>
+                    <div>
+                      $
+                      {splitNumberByStep((e.amount * e.price || 0)?.toFixed(2))}
+                    </div>
                   </div>
-                </div>
-              ))}
+                ))}
             </div>
           </div>
         </Drawer>
