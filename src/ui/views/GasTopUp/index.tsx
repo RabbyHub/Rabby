@@ -3,9 +3,9 @@ import { PageHeader } from '@/ui/component';
 import { useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import bgIcon from '@/ui/assets/gas-top-up/light.svg';
-import { Button, message, Skeleton, Space } from 'antd';
+import { Button, Skeleton, Space } from 'antd';
 import { CHAINS, CHAINS_ENUM } from '@debank/common';
-import { useAsync } from 'react-use';
+import { useAsync, useAsyncRetry } from 'react-use';
 import { useWallet } from '@/ui/utils';
 import BigNumber from 'bignumber.js';
 import clsx from 'clsx';
@@ -37,7 +37,12 @@ export const GasTopUp = () => {
     return await wallet.openapi.getToken(account!.address, chainId, tokenId);
   }, [chain]);
 
-  const { value: tokenList, loading: tokenListLoading } = useAsync(async () => {
+  const {
+    value: tokenList,
+    loading: tokenListLoading,
+    error,
+    retry,
+  } = useAsyncRetry(async () => {
     const account = await wallet.getCurrentAccount();
     const tokens = await wallet.openapi.listToken(account!.address);
     const sortedTokens = tokens.sort((a, b) =>
@@ -48,6 +53,8 @@ export const GasTopUp = () => {
     );
     return sortedTokens;
   });
+
+  const [key, setKey] = useState(0);
 
   const prices = useMemo(() => {
     if (chain === CHAINS_ENUM.ETH) {
@@ -92,17 +99,12 @@ export const GasTopUp = () => {
   }, []);
 
   useEffect(() => {
-    if (!tokenListLoading && !tokenList?.[0]) {
-      setVisible(false);
-      message.error('you have not enough token to pay');
+    if (!visible) {
+      setTimeout(() => {
+        setKey((e) => e + 1);
+      }, 300);
     }
-  }, [tokenList, tokenListLoading]);
-
-  // useEffect(() => {
-  //   if (tokenList?.[0] && !token) {
-  //     setToken(tokenList[0]);
-  //   }
-  // }, [prices, tokenList, token]);
+  }, [visible]);
 
   const gasTopUp = async () => {
     if (!token) return;
@@ -126,6 +128,12 @@ export const GasTopUp = () => {
     }
   };
 
+  const retryFetchTokenList = () => {
+    if (error) {
+      retry();
+    }
+  };
+
   return (
     <div
       className="relative p-20 pt-0 h-full bg-gray-bg"
@@ -141,10 +149,10 @@ export const GasTopUp = () => {
       </div>
 
       <div className="w-[360px] h-[284px] bg-white rounded-[6px] px-[16px] py-[32px]">
-        <div className="text-15 mb-12">{t('Top Up Chain')}</div>
+        <div className="text-15 mb-12 font-medium">{t('Top Up Chain')}</div>
         <ChainSelect value={chain} onChange={setChain} />
 
-        <div className="mt-[40px] mb-[12px]">{t('Amount')}</div>
+        <div className="mt-[40px] mb-[12px] font-medium">{t('Amount')}</div>
         <Space size={8}>
           {prices.map((e, i) => (
             <div
@@ -205,16 +213,20 @@ export const GasTopUp = () => {
         </Button>
       </div>
 
-      <ConfirmDrawer
-        visible={visible}
-        onClose={() => setVisible(false)}
-        cost={prices[index][0] + ''}
-        list={tokenList}
-        token={token}
-        onChange={setToken}
-        onConfirm={gasTopUp}
-        loading={tokenListLoading}
-      />
+      {
+        <ConfirmDrawer
+          key={key}
+          visible={visible}
+          onClose={() => setVisible(false)}
+          cost={prices[index][0] + ''}
+          list={tokenList}
+          token={token}
+          onChange={setToken}
+          onConfirm={gasTopUp}
+          loading={tokenListLoading}
+          retry={retryFetchTokenList}
+        />
+      }
     </div>
   );
 };

@@ -249,14 +249,13 @@ export class WalletController extends BaseController {
     const account = await preferenceService.getCurrentAccount();
     if (!account) throw new Error('no current account');
     const txId = await this.sendERC20(others);
-    console.log('txId', txId);
-    // this.openapi.postGasStationOrder({
-    //   userAddr: account.address,
-    //   fromChainId: others.chainServerId,
-    //   fromTxId: txId,
-    //   toChainId: toChainId,
-    //   toTokenAmount: others.rawAmount,
-    // });
+    this.openapi.postGasStationOrder({
+      userAddr: account.address,
+      fromChainId: others.chainServerId,
+      fromTxId: txId,
+      toChainId: toChainId,
+      toTokenAmount: Number(others.rawAmount),
+    });
   };
 
   rabbySwap = async ({
