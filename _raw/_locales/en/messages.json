@@ -1113,5 +1113,26 @@
   },
   "The__token__on__this__chain__is__not__supported__for__swap": {
     "message": "The token on this chain is not supported for swap"
+  },
+  "Widget": {
+    "message": "Widget"
+  },
+  "Instant__Gas__Top__Up": {
+    "message": "Instant Gas Top Up"
+  },
+  "gasTopUpDescribe": {
+    "message": "Send tokens to us on one chain and we will send gas tokens to the chain you specify. Gas tokens will be sent as soon as your payment transaction is confirmed, without waiting for it to be irreversible."
+  },
+  "Including__service__fee": {
+    "message": "Including ${{fee}} service fee"
+  },
+  "Payment__Token": {
+    "message": "Payment Token"
+  },
+  "service__fee__tip": {
+    "message": "By providing the service for Gas Top Up, Rabby has to bear the loss of token fluctuation and the gas fee for the top up. Therefore a 20% service fee is charged."
+  },
+  "Contact__up__on__Discord": {
+    "message": "Contact us on Discord"
   }
 }

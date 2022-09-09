@@ -669,3 +669,5 @@ export const SWAP_DEX_WHITELIST = [
 ];
 
 export const SWAP_FEE_PRECISION = 1e5;
+
+export const GAS_TOP_UP_ADDRESS = '';

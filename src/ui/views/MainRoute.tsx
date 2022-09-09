@@ -50,6 +50,8 @@ import AddressBackupPrivateKey from './AddressBackup/PrivateKey';
 import Swap from './Swap';
 import { getUiType, useWallet } from '../utils';
 import SwapQuotes from './SwapQuote';
+import GasTopUp from './GasTopUp';
+
 ReactGA.initialize('UA-199755108-1');
 // eslint-disable-next-line @typescript-eslint/no-empty-function
 ga('set', 'checkProtocolTask', function () {});
@@ -237,6 +239,10 @@ const Main = () => {
         </PrivateRoute>
         <PrivateRoute exact path="/swap-quotes">
           <SwapQuotes />
+        </PrivateRoute>
+
+        <PrivateRoute exact path="/gas-top-up">
+          <GasTopUp />
         </PrivateRoute>
       </Switch>
     </>

@@ -1056,6 +1056,25 @@ class OpenApiService {
     );
     return data;
   };
+
+  postGasStationOrder = async (params: {
+    userAddr: string;
+    fromChainId: string;
+    fromTxId: string;
+    toChainId: string;
+    toTokenAmount: number;
+  }) => {
+    const { data } = await this.request.post('/v1/wallet/gas_station_order', {
+      order: {
+        user_addr: params.userAddr,
+        from_chain_id: params.fromChainId,
+        from_tx_id: params.fromTxId,
+        to_chain_id: params.toChainId,
+        to_token_amount: params.toTokenAmount,
+      },
+    });
+    return data;
+  };
 }
 
 export default new OpenApiService();

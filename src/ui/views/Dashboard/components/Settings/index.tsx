@@ -17,8 +17,9 @@ import { useWallet, useWalletOld } from 'ui/utils';
 import './style.less';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import IconContacts from 'ui/assets/swap/contact.svg';
-
-import { Contacts } from '..';
+import IconSettingWidget from 'ui/assets/settings-widget.svg';
+import IconDiscord from 'ui/assets/discord.svg';
+import { Contacts, Widget } from '..';
 
 interface SettingsProps {
   visible?: boolean;
@@ -207,6 +208,7 @@ const Settings = ({ visible, onClose }: SettingsProps) => {
   const [showOpenApiModal, setShowOpenApiModal] = useState(false);
   const [showResetAccountModal, setShowResetAccountModal] = useState(false);
   const [contactsVisible, setContactsVisible] = useState(false);
+  const [widgetVisible, setWidgetVisible] = useState(false);
 
   const handleClickClearWatchMode = () => {
     confirm({
@@ -238,6 +240,16 @@ const Settings = ({ visible, onClose }: SettingsProps) => {
         setContactsVisible(true);
       },
     },
+    {
+      leftIcon: IconSettingWidget,
+      content: t('Widget'),
+      onClick: () => {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        //@ts-ignore
+        onClose?.();
+        setWidgetVisible(true);
+      },
+    },
 
     {
       leftIcon: IconReset,
@@ -251,6 +263,13 @@ const Settings = ({ visible, onClose }: SettingsProps) => {
         setShowResetAccountModal(true);
       },
       rightIcon: <img src={IconArrowRight} className="icon icon-arrow-right" />,
+    },
+    {
+      leftIcon: IconDiscord,
+      content: t('Contact us on Discord'),
+      onClick: () => {
+        window.open('https://discord.com/invite/seFBCWmUre');
+      },
     },
   ];
 
@@ -353,6 +372,13 @@ const Settings = ({ visible, onClose }: SettingsProps) => {
           />
         </div>
       </Popup>
+
+      <Widget
+        visible={widgetVisible}
+        onClose={() => {
+          setWidgetVisible(false);
+        }}
+      />
     </>
   );
 };
