@@ -1,0 +1,18 @@
+{
+  "extends": "../../tsconfig.json",
+  "compilerOptions": {
+    "baseUrl": "./",
+    "target": "es6",
+    "module": "CommonJS",
+    "moduleResolution": "node",
+    "noImplicitAny": false,
+    "esModuleInterop": true,
+    "allowSyntheticDefaultImports": true,
+    "allowJs": true,
+    "skipLibCheck": true,
+    "outDir": "./dist",
+    "strict": true
+  },
+  "exclude": ["./node_modules", "test", "dist"],
+  "include": ["src"]
+}

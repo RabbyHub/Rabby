@@ -758,7 +758,7 @@ export class KeyringService extends EventEmitter {
       .then((serializedKeyrings) => {
         return this.encryptor.encrypt(
           this.password as string,
-          (serializedKeyrings as unknown) as Buffer
+          serializedKeyrings
         );
       })
       .then((encryptedString) => {
