@@ -15,8 +15,11 @@ import { CHAINS, CHAINS_ENUM } from '@debank/common';
 import { RABBY_SWAP_ROUTER, SWAP_DEX_WHITELIST } from '@/constant';
 import { message } from 'antd';
 import { TokenItem } from '@/background/service/openapi';
+import stats from '@/stats';
+import { getTokenSymbol } from '@/ui/component';
 
 export const SwapQuotes = () => {
+  const enterTimeRef = useRef(Date.now());
   const { t } = useTranslation();
   const wallet = useWallet();
 
@@ -46,9 +49,7 @@ export const SwapQuotes = () => {
     Awaited<ReturnType<typeof wallet.openapi.getDEXList>>
   >([]);
 
-  const [swapQuotes, setSwapQuotes] = useState<(Quote & { dexId: string })[]>(
-    []
-  );
+  const [swapQuotes, setSwapQuotes] = useState<Quote[]>([]);
   const isFirstRender = useRef(false);
   const [currentQuoteIndex, setCurrentQuoteIndex] = useState(0);
 
@@ -61,43 +62,50 @@ export const SwapQuotes = () => {
     return swapQuotes?.[currentQuoteIndex]?.dexId || '';
   }, [swapQuotes, currentQuoteIndex]);
 
+  const isFirstQuery = useRef(true);
   const getQuotes = async () => {
     try {
       const DEXList = await wallet.openapi.getDEXList(chain_id);
       setDexList(DEXList || []);
       const account = await wallet.getCurrentAccount();
       const swapQuotes = await Promise.allSettled(
-        DEXList.map(
-          async (e) =>
-            await wallet.openapi
-              .getSwapQuote({
-                dex_id: e.id,
-                chain_id,
-                pay_token_id,
-                pay_token_raw_amount,
-                receive_token_id,
-                id: account!.address,
-              })
-              .then((res) => {
-                if (res.dex_swap_to) {
-                  if (
-                    SWAP_DEX_WHITELIST.includes(
-                      `${chain_id.toLowerCase()}:${res.dex_swap_to.toLowerCase()}`
-                    )
-                  ) {
-                    setSuccessCount((n) => n + 1);
-                    return { ...res, dexId: e.id, type: e.type };
-                  } else {
-                    console.error('untrusted swap dex', e.id, res);
-                    throw new Error('untrusted swap dex ');
-                  }
+        DEXList.map(async (e) => {
+          const queryStartTime = Date.now();
+
+          return await wallet.openapi
+            .getSwapQuote({
+              dex_id: e.id,
+              chain_id,
+              pay_token_id,
+              pay_token_raw_amount,
+              receive_token_id,
+              id: account!.address,
+            })
+            .then((res) => {
+              if (res.dex_swap_to) {
+                if (
+                  SWAP_DEX_WHITELIST.includes(
+                    `${chain_id.toLowerCase()}:${res.dex_swap_to.toLowerCase()}`
+                  )
+                ) {
+                  setSuccessCount((n) => n + 1);
+                  return {
+                    ...res,
+                    dexId: e.id,
+                    type: e.type,
+                    duration: Date.now() - queryStartTime,
+                  };
+                } else {
+                  console.error('untrusted swap dex', e.id, res);
+                  throw new Error('untrusted swap dex ');
                 }
-                throw new Error('swap quote fetch error');
-              })
-              .finally(() => {
-                setQueryCount((n) => n + 1);
-              })
-        )
+              }
+              throw new Error('swap quote fetch error');
+            })
+            .finally(() => {
+              setQueryCount((n) => n + 1);
+            });
+        })
       );
       const availableSwapQuotes: Quote[] = [];
       swapQuotes.forEach((e) => {
@@ -126,6 +134,15 @@ export const SwapQuotes = () => {
 
       setSwapQuotes(availableSwapQuotes);
       if (availableSwapQuotes.length < 1) {
+        if (isFirstQuery.current) {
+          stats.report('swapGetQuotes', {
+            chainId: chain_id,
+            status: 'not available quote',
+            fromToken: getTokenSymbol(state.payToken),
+            toToken: getTokenSymbol(state.receiveToken),
+            dexResult: JSON.stringify([]),
+          });
+        }
         history.replace({
           pathname: '/swap',
           search: obj2query({
@@ -135,6 +152,23 @@ export const SwapQuotes = () => {
           state,
         });
       }
+      if (isFirstQuery.current) {
+        stats.report('swapGetQuotes', {
+          chainId: chain_id,
+          status: 'success',
+          fromToken: getTokenSymbol(state.payToken),
+          toToken: getTokenSymbol(state.receiveToken),
+          dexResult: JSON.stringify(
+            availableSwapQuotes.map((e) => ({
+              dexName: e.dexId,
+              queryCostTime: e.duration,
+              fromToken: getTokenSymbol(state.payToken),
+              toToken: getTokenSymbol(state.receiveToken),
+            }))
+          ),
+        });
+      }
+
       setTimeout(() => {
         setEnd(true);
       }, 500);
@@ -151,7 +185,20 @@ export const SwapQuotes = () => {
           setCurrentQuoteIndex(index);
         }
       }
+      isFirstQuery.current = false;
     } catch (error) {
+      if (isFirstQuery.current) {
+        stats.report('swapGetQuotes', {
+          chainId: chain_id,
+          status: 'not available quote',
+          fromToken: getTokenSymbol(state.payToken),
+          toToken: getTokenSymbol(state.receiveToken),
+          dexResult: JSON.stringify([]),
+        });
+      }
+
+      isFirstQuery.current = false;
+
       console.error('get quotes', error?.message);
 
       history.replace({
@@ -176,12 +223,38 @@ export const SwapQuotes = () => {
     return '';
   }, [swapQuotes, currentQuoteIndex]);
 
-  const handleCancel = () => {
+  const handleBack = () => {
     history.replace({
       pathname: '/swap',
       search: obj2query(searchObj),
       state,
     });
+  };
+
+  const handleCancel = () => {
+    const duration = Date.now() - enterTimeRef.current;
+    stats.report('swapCancelGetQuotes', {
+      chainId: chain_id,
+      duration: duration,
+    });
+    handleBack();
+  };
+
+  const handleClickBack = () => {
+    stats.report('backSwapDescPage', {
+      chainId: chain_id,
+      fromToken: getTokenSymbol(state.payToken),
+      toToken: getTokenSymbol(state.receiveToken),
+    });
+    handleBack();
+  };
+
+  const backToSwapBySlippageSetting = () => {
+    stats.report('backSwapDescPageBySlippage', {
+      chainId: chain_id,
+      slippage,
+    });
+    handleBack();
   };
 
   const handleSelect = (i) => {
@@ -272,14 +345,17 @@ export const SwapQuotes = () => {
         receiveAmount={feeRemovalReceiveAmount}
         isBestQuote={currentQuoteIndex === 0}
         openQuotesList={() => {
+          stats.report('clickQuotesList', {
+            chainId: chain_id,
+          });
           setQuotesDrawer(true);
         }}
         slippage={slippage}
-        backToSwap={handleCancel}
+        backToSwapBySlippageSetting={backToSwapBySlippageSetting}
         countDown={countDown}
         handleSwap={handleSwap}
         shouldApprove={shouldApprove}
-        handleClickBack={handleCancel}
+        handleClickBack={handleClickBack}
       />
       <QuotesListDrawer
         feeRatio={feeRatio}

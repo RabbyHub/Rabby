@@ -16,7 +16,7 @@ import { SWAP_FEE_PRECISION } from '@/constant';
 
 export type Quote = Awaited<
   ReturnType<typeof wallet.openapi.getSwapQuote>
->[][number] & { dexId: string; type: string };
+>[][number] & { dexId: string; type: string; duration: number };
 
 export const getReceiveTokenAmountBN = (
   feeRatio: string | number,
