@@ -261,6 +261,8 @@ const Swap = () => {
     return await wallet.getSwapFeeRatio(chain);
   }, [chain, wallet]);
 
+  const rbisource = useRbiSource();
+
   const handleTransform = () => {
     if (payToken && receiveToken) {
       setPayToken(receiveToken);
@@ -298,6 +300,7 @@ const Swap = () => {
           .toString(10),
         slippage:
           slippage === 'custom' ? customSlippageInput || '0' : slippage + '',
+        rbisource,
       }),
       state: {
         chain,
@@ -495,6 +498,7 @@ const Swap = () => {
             .toString(10),
           slippage:
             slippage === 'custom' ? customSlippageInput || '0' : slippage + '',
+          rbisource,
         })}`,
         states: {},
       });

@@ -15,6 +15,7 @@ import { CHAINS, CHAINS_ENUM } from '@debank/common';
 import { RABBY_SWAP_ROUTER, SWAP_DEX_WHITELIST } from '@/constant';
 import { message } from 'antd';
 import { TokenItem } from '@/background/service/openapi';
+import { useRbiSource } from '@/ui/utils/ga-event';
 import stats from '@/stats';
 import { getTokenSymbol } from '@/ui/component';
 
@@ -61,6 +62,8 @@ export const SwapQuotes = () => {
   const currentDexId = useMemo(() => {
     return swapQuotes?.[currentQuoteIndex]?.dexId || '';
   }, [swapQuotes, currentQuoteIndex]);
+
+  const rbisource = useRbiSource();
 
   const isFirstQuery = useRef(true);
   const getQuotes = async () => {
@@ -282,20 +285,30 @@ export const SwapQuotes = () => {
       dex_swap_calldata,
     } = swapQuotes[currentQuoteIndex];
     try {
-      wallet.rabbySwap({
-        chain_server_id: CHAINS[chain_enum].serverId,
-        pay_token_id,
-        pay_token_raw_amount,
-        receive_token_id,
-        slippage,
-        receive_token_raw_amount,
-        dex_swap_to,
-        dex_approve_to,
-        dex_swap_calldata,
-        deadline: Math.floor(Date.now() / 1000) + 3600 * 30,
-        needApprove: shouldApprove,
-        feeRatio,
-      });
+      wallet.rabbySwap(
+        {
+          chain_server_id: CHAINS[chain_enum].serverId,
+          pay_token_id,
+          pay_token_raw_amount,
+          receive_token_id,
+          slippage,
+          receive_token_raw_amount,
+          dex_swap_to,
+          dex_approve_to,
+          dex_swap_calldata,
+          deadline: Math.floor(Date.now() / 1000) + 3600 * 30,
+          needApprove: shouldApprove,
+          feeRatio,
+        },
+        {
+          ga: {
+            category: 'Swap',
+            source: 'swap',
+            trigger: rbisource,
+          },
+        }
+      );
+
       window.close();
     } catch (e) {
       message.error(e.message);

@@ -27,6 +27,7 @@ export interface TransactionGroup {
   >;
   isFailed: boolean;
   isSubmitFailed?: boolean;
+  $ctx?: any;
 }
 
 interface TxHistoryStore {
@@ -107,7 +108,11 @@ class TxHistory {
     this.removeExplainCache(`${from.toLowerCase()}-${chainId}-${nonce}`);
   }
 
-  addTx(tx: TransactionHistoryItem, explain: TransactionGroup['explain']) {
+  addTx(
+    tx: TransactionHistoryItem,
+    explain: TransactionGroup['explain'],
+    $ctx?: any
+  ) {
     const nonce = Number(tx.rawTx.nonce);
     const chainId = tx.rawTx.chainId;
     const key = `${chainId}-${nonce}`;
@@ -142,6 +147,7 @@ class TxHistory {
             isPending: true,
             explain: explain,
             isFailed: false,
+            $ctx,
           },
         },
       };
@@ -306,6 +312,9 @@ class TxHistory {
         success,
         preExecSuccess:
           target.explain.pre_exec.success && target.explain.calcSuccess,
+        createdBy: target?.$ctx?.ga ? 'rabby' : 'dapp',
+        source: target?.$ctx?.ga?.source || '',
+        trigger: target?.$ctx?.ga?.trigger || '',
       });
     }
     this.clearBefore({ address, chainId, nonce });
