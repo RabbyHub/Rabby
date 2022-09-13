@@ -196,7 +196,6 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
       return;
     }
     const currentAccount = await wallet.getCurrentAccount();
-    report('startSignText');
     if (currentAccount?.type === KEYRING_CLASS.HARDWARE.LEDGER) {
       try {
         const transport = await TransportWebHID.create();
@@ -213,12 +212,13 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
         address: currentAccount.address,
         extra: {
           brandName: currentAccount.brandName,
+          signTextMethod: underline2Camelcase(params.method),
         },
       });
 
       return;
     }
-
+    report('startSignText');
     resolveApproval({});
   };
 
