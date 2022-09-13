@@ -42,7 +42,7 @@
     "@rabby-wallet/eth-walletconnect-keyring": "^1.2.3",
     "@rabby-wallet/eth-watch-keyring": "^1.0.0",
     "@rabby-wallet/gnosis-sdk": "^1.2.1",
-    "@rabby-wallet/page-provider": "^0.1.7",
+    "@rabby-wallet/page-provider": "^0.1.8",
     "@rabby-wallet/widgets": "^1.0.9",
     "@rematch/core": "^2.2.0",
     "@rematch/select": "^3.1.2",

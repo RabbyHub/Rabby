@@ -3282,10 +3282,10 @@
     typescript "^4.4.4"
     web3-core "^1.6.0"
 
-"@rabby-wallet/page-provider@^0.1.7":
-  version "0.1.7"
-  resolved "https://registry.yarnpkg.com/@rabby-wallet/page-provider/-/page-provider-0.1.7.tgz#213671b899019613662d57b9dd84a3d7ffbfca79"
-  integrity sha512-x2/f5806unwhgzrBWZ1d7axo5fC68DTxO3OsW15vg3LAjF+qY05b4UkB5arjui/4pm956NszLA/wh6fAbUnFwQ==
+"@rabby-wallet/page-provider@^0.1.8":
+  version "0.1.8"
+  resolved "https://registry.yarnpkg.com/@rabby-wallet/page-provider/-/page-provider-0.1.8.tgz#e782e237896a34247e47059f39d41a4256ac9828"
+  integrity sha512-jcsoTNHqrQLy6fkpZLoh/tfmqrXnnYuZ88Ei3jdBc4GyT/zK0wt/5OxI9cTWqneQT2PZs3bXW6SvYas+HvrbFg==
   dependencies:
     "@ledgerhq/devices" "^6.27.1"
     "@rabby-wallet/widgets" "^1.0.8"

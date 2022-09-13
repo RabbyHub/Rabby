@@ -13,7 +13,7 @@ class RpcCache {
     this.loadBlockNumber();
     setInterval(() => {
       this.loadBlockNumber();
-    }, 100000);
+    }, 10000);
   }
 
   async loadBlockNumber() {
