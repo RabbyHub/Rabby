@@ -12,7 +12,7 @@ import { formatTokenAmount } from 'ui/utils/number';
 import TokenAmountInput from 'ui/component/TokenAmountInput';
 import TagChainSelector from 'ui/component/ChainSelector/tag';
 import { TokenItem } from 'background/service/openapi';
-import { Modal, PageHeader } from 'ui/component';
+import { getTokenSymbol, Modal, PageHeader } from 'ui/component';
 // import * as Sentry from '@sentry/browser';
 
 import { ReactComponent as IconSwapArrowDown } from 'ui/assets/swap/arrow-down.svg';
@@ -22,10 +22,16 @@ import clsx from 'clsx';
 import { ReactComponent as IconInfo } from 'ui/assets/infoicon.svg';
 import { ReactComponent as IconTipDownArrow } from 'ui/assets/swap/arrow-tips-down.svg';
 import { useAsync, useCss } from 'react-use';
-import { geTokenDecimals, getTokenSymbol } from '@/ui/utils/token';
+import {
+  geTokenDecimals,
+  getTokenSymbol as getTokenSymbolUtil,
+} from '@/ui/utils/token';
 import { providers } from 'ethers';
 import { SvgIconLoading } from '@/ui/assets';
 import { ReactComponent as SvgAlertInfo } from '@/ui/assets/swap/alert-info.svg';
+import stats from '@/stats';
+import { useRbiSource } from '@/ui/utils/ga-event';
+
 const ReservedGas = 0;
 
 const MaxButton = styled.div`
@@ -270,6 +276,14 @@ const Swap = () => {
 
     await setPageStateCache();
 
+    stats.report('swapQueryQuotes', {
+      chainId: payToken.chain,
+      slippage:
+        slippage === 'custom' ? customSlippageInput || '0' : slippage + '',
+      fromToken: getTokenSymbol(payToken),
+      toToken: getTokenSymbol(receiveToken!),
+    });
+
     history.replace({
       pathname: '/swap-quotes',
       search: obj2query({
@@ -419,6 +433,16 @@ const Swap = () => {
     return url.hostname;
   }, [chain]);
 
+  const rbiSource = useRbiSource();
+
+  useMemo(() => {
+    if (rbiSource) {
+      stats.report('enterSwapDescPage', {
+        refer: rbiSource,
+      });
+    }
+  }, [rbiSource]);
+
   useEffect(() => {
     init();
   }, []);
@@ -509,7 +533,7 @@ const Swap = () => {
           token.id,
           new providers.JsonRpcProvider(currentChain.thridPartyRPC)
         ),
-        getTokenSymbol(
+        getTokenSymbolUtil(
           token.id,
           new providers.JsonRpcProvider(currentChain.thridPartyRPC)
         ),
@@ -623,7 +647,7 @@ const Swap = () => {
         <Section className="pb-16">
           {currentAccount && (
             <TokenAmountInput
-              type="swap"
+              type="swapFrom"
               className="px-12 py-0 h-60 flex items-center"
               token={payToken}
               onTokenChange={handleCurrentTokenChange}
@@ -680,7 +704,7 @@ const Swap = () => {
             onTokenChange={handleSwapTokenChange}
             chainId={CHAINS[chain].serverId}
             excludeTokens={[payToken.id]}
-            type="swap"
+            type="swapTo"
             placeholder={t('Search by Name Address')}
           />
           <Space
@@ -716,7 +740,14 @@ const Swap = () => {
           <div
             className="flex justify-between"
             onClick={() => {
-              setOpenAdvancedSetting((b) => !b);
+              setOpenAdvancedSetting((b) => {
+                if (!b) {
+                  stats.report('swapAdvancedSettingOn', {
+                    chainId: CHAINS[chain].serverId,
+                  });
+                }
+                return !b;
+              });
             }}
           >
             <Space size={4}>
