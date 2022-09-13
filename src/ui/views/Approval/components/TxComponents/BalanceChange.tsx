@@ -331,6 +331,12 @@ const BalanceChange = ({
   const { t } = useTranslation();
   const isSuccess = data.success;
 
+  const handleLogoLoadFailed = function (
+    e: React.SyntheticEvent<HTMLImageElement>
+  ) {
+    e.currentTarget.src = IconUnknown;
+  };
+
   const { hasTokenChange, hasNFTChange } = useBalanceChange({
     balance_change: data,
   });
@@ -421,6 +427,7 @@ const BalanceChange = ({
                       src={token.logo_url || IconUnknown}
                       className="token-change-logo"
                       alt=""
+                      onError={handleLogoLoadFailed}
                     />
                     <span
                       className="token-change-amount"
@@ -456,6 +463,7 @@ const BalanceChange = ({
                       src={token.logo_url || IconUnknown}
                       className="token-change-logo"
                       alt=""
+                      onError={handleLogoLoadFailed}
                     />
                     <span
                       className="token-change-amount"
