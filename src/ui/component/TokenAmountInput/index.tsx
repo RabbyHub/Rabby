@@ -198,6 +198,7 @@ const TokenAmountInput = ({
         isLoading={isListLoading}
         type={type}
         placeholder={placeholder}
+        chainId={chainId}
       />
     </div>
   );

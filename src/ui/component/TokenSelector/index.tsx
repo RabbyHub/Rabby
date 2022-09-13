@@ -25,6 +25,7 @@ export interface TokenSelectorProps {
   onSearch(q: string);
   type?: 'default' | 'swapFrom' | 'swapTo';
   placeholder?: string;
+  chainId: string;
 }
 
 const TokenSelector = ({
@@ -36,6 +37,7 @@ const TokenSelector = ({
   isLoading = false,
   type = 'default',
   placeholder,
+  chainId,
 }: TokenSelectorProps) => {
   const { t } = useTranslation();
   const [query, setQuery] = useState('');
@@ -93,12 +95,12 @@ const TokenSelector = ({
   useEffect(() => {
     if (query && isSwapType && displayList.length === 0) {
       stats.report('swapTokenSearchFailure', {
-        chainId: displayList[0].chain,
+        chainId,
         searchType: type === 'swapFrom' ? 'fromToken' : 'toToken',
         keyword: query,
       });
     }
-  }, [type, query, isSwapType, displayList]);
+  }, [type, query, isSwapType, displayList, chainId]);
 
   return (
     <Drawer

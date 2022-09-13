@@ -193,6 +193,7 @@ const TokenSelect = ({
         isLoading={isListLoading}
         type={type}
         placeholder={placeholder}
+        chainId={chainId}
       />
     </>
   );
