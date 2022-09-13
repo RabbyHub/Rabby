@@ -1396,6 +1396,20 @@
     background-color: #fff;
     .ant-modal-body {
       max-height: 420px;
+      li {
+        padding-left: 10px;
+        position: relative;
+        &::before {
+          content: '';
+          position: absolute;
+          width: 4px;
+          height: 4px;
+          background-color: #000;
+          border-radius: 100%;
+          left: 0;
+          top: 9px;
+        }
+      }
     }
   }
 }
