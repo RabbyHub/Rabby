@@ -1,61 +1,75 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
-import { Input } from 'antd';
+import React, {
+  ComponentProps,
+  useEffect,
+  useMemo,
+  useRef,
+  useState,
+} from 'react';
+import { Space } from 'antd';
 import cloneDeep from 'lodash/cloneDeep';
 import BigNumber from 'bignumber.js';
 import { TokenItem } from 'background/service/openapi';
-import { splitNumberByStep, useWallet, useWalletOld } from 'ui/utils';
+import { useWalletOld } from 'ui/utils';
 import TokenWithChain from '../TokenWithChain';
-import TokenSelector, {
-  isSwapTokenType,
-  TokenSelectorProps,
-} from '../TokenSelector';
-import IconArrowDown from 'ui/assets/arrow-down-triangle.svg';
-import './style.less';
-import clsx from 'clsx';
+import TokenSelector, { isSwapTokenType } from '../TokenSelector';
+import styled from 'styled-components';
+import LessPalette from '@/ui/style/var-defs';
+import { ReactComponent as SvgIconArrowDownTriangle } from '@/ui/assets/swap/arrow-caret-down.svg';
+
+const Wrapper = styled.div`
+  background: ${LessPalette['@color-bg']};
+  border-radius: 4px;
+  padding: 16px 12px;
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  cursor: pointer;
+  border: 1px solid transparent;
+
+  &:hover {
+    border-color: #8697ff;
+  }
+`;
+
+const Text = styled.span`
+  font-size: 15px;
+  line-height: 18px;
+  font-weight: 500;
+  color: ${LessPalette['@color-title']};
+`;
 
 interface TokenAmountInputProps {
-  token: TokenItem;
-  value?: string;
+  token?: TokenItem;
   onChange?(amount: string): void;
   onTokenChange(token: TokenItem): void;
   chainId: string;
-  amountFocus?: boolean;
-  inlinePrize?: boolean;
   excludeTokens?: TokenItem['id'][];
-  className?: string;
-  type?: TokenSelectorProps['type'];
+  type?: ComponentProps<typeof TokenSelector>['type'];
   placeholder?: string;
 }
 
-const TokenAmountInput = ({
+const TokenSelect = ({
   token,
-  value,
   onChange,
   onTokenChange,
   chainId,
-  amountFocus,
-  inlinePrize,
   excludeTokens = [],
-  className,
   type = 'default',
   placeholder,
 }: TokenAmountInputProps) => {
-  const tokenInputRef = useRef<Input>(null);
   const latestChainId = useRef(chainId);
-  const latestTokenId = useRef(token.id);
   const [tokens, setTokens] = useState<TokenItem[]>([]);
   const [originTokenList, setOriginTokenList] = useState<TokenItem[]>([]);
   const [isListLoading, setIsListLoading] = useState(true);
   const [tokenSelectorVisible, setTokenSelectorVisible] = useState(false);
   const wallet = useWalletOld();
-  if (amountFocus && !tokenSelectorVisible) {
-    tokenInputRef.current?.focus();
-  }
+
+  const isSwapType = isSwapTokenType(type);
+
   const handleCurrentTokenChange = (token: TokenItem) => {
     onChange && onChange('');
     onTokenChange(token);
     setTokenSelectorVisible(false);
-    tokenInputRef.current?.focus();
   };
 
   const handleTokenSelectorClose = () => {
@@ -76,13 +90,6 @@ const TokenAmountInput = ({
         .toNumber();
     });
   };
-
-  const availableToken = useMemo(
-    () => tokens.filter((e) => !excludeTokens.includes(e.id)),
-    [tokens, excludeTokens]
-  );
-
-  const isSwapType = isSwapTokenType(type);
 
   const handleLoadTokens = async () => {
     setIsListLoading(true);
@@ -153,42 +160,30 @@ const TokenAmountInput = ({
     );
   };
 
+  const availableToken = useMemo(
+    () => tokens.filter((e) => !excludeTokens.includes(e.id)),
+    [excludeTokens, tokens]
+  );
+
   useEffect(() => {
     setTokens([]);
     setOriginTokenList([]);
     latestChainId.current = chainId;
   }, [chainId]);
 
-  useEffect(() => {
-    latestTokenId.current = token.id;
-  }, [token]);
-
   return (
-    <div className={clsx('token-amount-input', className)}>
-      <div className="left" onClick={handleSelectToken}>
-        <TokenWithChain token={token} hideConer />
-        <span className="token-input__symbol" title={token.symbol}>
-          {token.symbol}
-        </span>
-        <img src={IconArrowDown} className="icon icon-arrow-down" />
-      </div>
-      <div className="right relative flex flex-col items-end">
-        <Input
-          ref={tokenInputRef}
-          value={value}
-          onChange={(e) => onChange && onChange(e.target.value)}
-          title={value}
-        />
-        {inlinePrize && (
-          <div className="text-gray-content text-12 text-right ">
-            {Number(value)
-              ? `≈$${splitNumberByStep(
-                  ((Number(value) || 0) * token.price || 0).toFixed(2)
-                )}`
-              : ''}
-          </div>
+    <>
+      <Wrapper onClick={handleSelectToken}>
+        {token ? (
+          <Space size={8}>
+            <TokenWithChain token={token} hideConer />
+            <Text>{token.symbol}</Text>
+          </Space>
+        ) : (
+          <Text>Select a token</Text>
         )}
-      </div>
+        <SvgIconArrowDownTriangle width={24} height={24} />
+      </Wrapper>
       <TokenSelector
         visible={tokenSelectorVisible}
         list={availableToken}
@@ -199,8 +194,8 @@ const TokenAmountInput = ({
         type={type}
         placeholder={placeholder}
       />
-    </div>
+    </>
   );
 };
 
-export default TokenAmountInput;
+export default TokenSelect;

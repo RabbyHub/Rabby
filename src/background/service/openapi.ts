@@ -861,6 +861,23 @@ class OpenApiService {
     return data?.filter((token) => getChain(token.chain));
   };
 
+  searchSwapToken = async (
+    id: string,
+    chainId: string,
+    q: string,
+    is_all = false
+  ) => {
+    const { data } = await this.request.get('/v1/user/token_search', {
+      params: {
+        id,
+        chain_id: chainId,
+        q,
+        is_all,
+      },
+    });
+    return data;
+  };
+
   getToken = async (
     id: string,
     chainId: string,
@@ -978,6 +995,65 @@ class OpenApiService {
       },
     });
 
+    return data;
+  };
+
+  getDEXList = async (chain_id: string) => {
+    const { data } = await this.request.get<
+      {
+        id: string;
+        name: string;
+        logo_url: string;
+        site_url: string;
+        type: string;
+      }[]
+    >('/v1/wallet/swap_dex_list', {
+      params: {
+        chain_id,
+      },
+    });
+    return data;
+  };
+
+  getSwapQuote = async (params: {
+    id: string;
+    chain_id: string;
+    dex_id: string;
+    pay_token_id: string;
+    pay_token_raw_amount: string;
+    receive_token_id: string;
+  }) => {
+    const { data } = await this.request.get<{
+      receive_token_raw_amount: number;
+      dex_approve_to: string;
+      dex_swap_to: string;
+      dex_swap_calldata: string;
+      is_wrapped: boolean;
+      gas: {
+        gas_used: number;
+        gas_price: number;
+        gas_cost_value: number;
+        gas_cost_usd_value: number;
+      };
+      pay_token: TokenItem;
+      receive_token: TokenItem;
+    }>('/v1/wallet/swap_quote', {
+      params,
+    });
+    return data;
+  };
+
+  getSwapTokenList = async (id: string, chainId?: string) => {
+    const { data } = await this.request.get<TokenItem[]>(
+      '/v1/wallet/swap_token_list',
+      {
+        params: {
+          id,
+          chain_id: chainId,
+          is_all: false,
+        },
+      }
+    );
     return data;
   };
 }

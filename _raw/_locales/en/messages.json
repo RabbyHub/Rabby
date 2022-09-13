@@ -57,7 +57,7 @@
     "message": "Save"
   },
   "AddressManagement": {
-    "message": "Address management"
+    "message": "Address Management"
   },
   "ChainManagement": {
     "message": "Chain management"
@@ -853,6 +853,9 @@
   "Search__name__or__paste__address": {
     "message": "Search name or paste address"
   },
+  "Search__by__Name__Address": {
+    "message": "Search by Name / Address"
+  },
   "Common": {
     "message": "Common"
   },
@@ -1023,5 +1026,92 @@
   },
   "SelectHDPath": {
     "message": "If you don't see the addresses you expect, try switching the HD path:"
+  },
+  "ConfirmTheTokenOn": {
+    "message": "Confirm the token on"
+  },
+  "Etherscan": {
+    "message": "Etherscan"
+  },
+  "SwapCheckEtherscanToken": {
+    "message": "Different tokens may use the same name and symbol. Check {{scan}} to verify this is the token you're looking for. "
+  },
+  "AdvancedSettings": {
+    "message": "Advanced Settings"
+  },
+  "Slippage__tolerance": {
+    "message": "Slippage tolerance"
+  },
+  "SlippageTip": {
+    "message": "If the price changes between the time your order is placed and confirmed, it's called \"slippage\". Your order will be canceled if the price change more than your slippage setting."
+  },
+  "LowSlippageToleranceWarn": {
+    "message": "Transaction may fail due to low slippage tolerance."
+  },
+  "HighSlippageToleranceWarn": {
+    "message": "High slippage tolerance may result in uneconomic trading. "
+  },
+  "HighSlippageToleranceError": {
+    "message": "High slippage tolerance may result in large losses. Please set your max slippage below 15%. "
+  },
+  "GetQuotes": {
+    "message": "Get Quotes"
+  },
+  "FailGetQuote": {
+    "message": "Can't get a quote due to bad internet status. Please try again later."
+  },
+  "NoAvailableQuote": {
+    "message": "Sorry, no available quotes were found. "
+  },
+  "FetchingQuotes": {
+    "message": "Fetching Quotes"
+  },
+  "AllQuotes": {
+    "message": "All quotes"
+  },
+  "QuoteDetails": {
+    "message": "Quote Details"
+  },
+  "BestQuote": {
+    "message": "Best Quote"
+  },
+  "SelectedQuote": {
+    "message": "Selected quote"
+  },
+  "Minimum__receive__minReceive__symbol__under__slippage": {
+    "message": "Minimum receive {{minReceive}} {{symbol}} under {{slippage}}% slippage"
+  },
+  "ChangeSlippage": {
+    "message": "Do you want to go back and change the max slippage to get new quotes?"
+  },
+  "QuoteDesc": {
+    "message": "Rabby searches multiple liquidity sources (exchanges, aggregators, and professional market makers) to find the best rates and lowest network fees. A fee of {{feeRatio}}% has been deducted from all quotes."
+  },
+  "ReceivingAmountDesc": {
+    "message": "This is an estimate. The exact amount received depends on slippage. Each quote has deducted {{feeRatio}}% as a service fee for Rabby."
+  },
+  "EstGasFeeDesc": {
+    "message": "This is an estimated gas cost for your transaction. The actual gas cost may change based on network conditions. "
+  },
+  "MaxSlippageDesc": {
+    "message": "If the price changes between the time your order is placed and confirmed, it's called \"slippage\". Your order will be canceled if the price change more than your slippage setting. "
+  },
+  "LiquiditySourceDesc": {
+    "message": "Available liquidity sources are dexes, aggregators, and professional market makers."
+  },
+  "useThisQuote": {
+    "message": "Use this quote"
+  },
+  "Approve__and__Swap": {
+    "message": "Approve and Swap"
+  },
+  "Please__input__the__custom__slippage": {
+    "message": "Please input the custom slippage"
+  },
+  "Slippage__cant__be__0": {
+    "message": "Slippage can't be 0"
+  },
+  "The__token__on__this__chain__is__not__supported__for__swap": {
+    "message": "The token on this chain is not supported for swap"
   }
 }

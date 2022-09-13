@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Input, Drawer } from 'antd';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
@@ -9,14 +9,22 @@ import { splitNumberByStep, formatTokenAmount } from 'ui/utils/number';
 import IconSearch from 'ui/assets/search.svg';
 import { SvgIconLoading } from 'ui/assets';
 import './style.less';
+import BigNumber from 'bignumber.js';
+import Empty from '../Empty';
+import stats from '@/stats';
 
-interface TokenSelectorProps {
+export const isSwapTokenType = (s: string) =>
+  ['swapFrom', 'swapTo'].includes(s);
+
+export interface TokenSelectorProps {
   visible: boolean;
   list: TokenItem[];
   isLoading?: boolean;
   onConfirm(item: TokenItem): void;
   onCancel(): void;
   onSearch(q: string);
+  type?: 'default' | 'swapFrom' | 'swapTo';
+  placeholder?: string;
 }
 
 const TokenSelector = ({
@@ -26,11 +34,11 @@ const TokenSelector = ({
   onCancel,
   onSearch,
   isLoading = false,
+  type = 'default',
+  placeholder,
 }: TokenSelectorProps) => {
   const { t } = useTranslation();
   const [query, setQuery] = useState('');
-  const [displayList, setDisplayList] = useState<TokenItem[]>(list);
-  const [timeoutId, setTimeoutId] = useState<number | null>(null);
   const [isInputActive, setIsInputActive] = useState(false);
 
   useDebounce(
@@ -45,23 +53,7 @@ const TokenSelector = ({
     setQuery(value);
   };
 
-  const setTokensByStep = () => {
-    if (displayList.length < list.length) {
-      const tmId = window.setTimeout(
-        () => {
-          const thisStep = list.slice(
-            displayList.length,
-            displayList.length + 100 > list.length
-              ? list.length
-              : displayList.length + 100
-          );
-          setDisplayList([...displayList, ...thisStep]);
-        },
-        displayList.length <= 0 ? 0 : 500
-      );
-      setTimeoutId(tmId);
-    }
-  };
+  const displayList = useMemo(() => list || [], [list]);
 
   const handleInputFocus = () => {
     setIsInputActive(true);
@@ -72,27 +64,14 @@ const TokenSelector = ({
   };
 
   useEffect(() => {
-    setDisplayList([]);
-    if (timeoutId !== null) {
-      window.clearTimeout(timeoutId);
-      setTimeoutId(null);
-    }
-  }, [list]);
-
-  useEffect(() => {
-    if (visible) {
-      setTokensByStep();
-    }
-  }, [displayList, visible]);
-
-  useEffect(() => {
     if (!visible) {
       setQuery('');
-      setDisplayList([]);
     }
   }, [visible]);
 
   const isEmpty = !query && list.length <= 0;
+
+  const isSwapType = isSwapTokenType(type);
 
   const NoDataUI = (
     <div className="no-token">
@@ -111,6 +90,16 @@ const TokenSelector = ({
     </div>
   );
 
+  useEffect(() => {
+    if (query && isSwapType && displayList.length === 0) {
+      stats.report('swapTokenSearchFailure', {
+        chainId: displayList[0].chain,
+        searchType: type === 'swapFrom' ? 'fromToken' : 'toToken',
+        keyword: query,
+      });
+    }
+  }, [type, query, isSwapType, displayList]);
+
   return (
     <Drawer
       className="token-selector"
@@ -125,7 +114,7 @@ const TokenSelector = ({
           className={clsx({ active: isInputActive })}
           size="large"
           prefix={<img src={IconSearch} />}
-          placeholder={t('Search name or paste address')}
+          placeholder={placeholder ?? t('Search name or paste address')}
           value={query}
           onChange={(e) => handleQueryChange(e.target.value)}
           autoFocus
@@ -136,14 +125,19 @@ const TokenSelector = ({
       <ul className={clsx('token-list', { empty: isEmpty })}>
         <li className="token-list__header">
           <div>{t('Token')}</div>
-          <div>{t('Price')}</div>
-          <div>{t('Balance')}</div>
+          {!isSwapType && <div>{t('Price')}</div>}
+          <div>
+            {isSwapType ? t('Balance') + ' / ' + t('Value') : t('Balance')}
+          </div>
         </li>
         {isEmpty
           ? NoDataUI
           : displayList.map((token) => (
               <li
-                className="token-list__item"
+                className={clsx(
+                  'token-list__item',
+                  isSwapType && 'justify-between'
+                )}
                 key={`${token.chain}-${token.id}`}
                 onClick={() => onConfirm(token)}
               >
@@ -153,13 +147,59 @@ const TokenSelector = ({
                     width="24px"
                     height="24px"
                     hideConer
+                    hideChainIcon={isSwapType}
                   />
-                  <span className="symbol">{token.symbol}</span>
+                  <div className="flex flex-col text-left">
+                    <span className="symbol">{token.symbol}</span>
+                    <span
+                      className={clsx(
+                        'symbol text-12 text-gray-content',
+                        !isSwapType && 'hidden'
+                      )}
+                    >
+                      ${splitNumberByStep((token.price || 0).toFixed(2))}
+                    </span>
+                  </div>
                 </div>
-                <div>${splitNumberByStep((token.price || 0).toFixed(2))}</div>
-                <div>{formatTokenAmount(token.amount)}</div>
+
+                <div className={clsx(isSwapType && 'hidden')}>
+                  ${splitNumberByStep((token.price || 0).toFixed(2))}
+                </div>
+
+                <div className="flex flex-col text-right">
+                  <div className="font-medium text-13 text-gray-title">
+                    {formatTokenAmount(token.amount)}
+                  </div>
+                  <div
+                    className={clsx(
+                      'text-12 text-gray-content',
+                      !isSwapType && 'hidden'
+                    )}
+                  >
+                    $
+                    {splitNumberByStep(
+                      new BigNumber(token.price || 0)
+                        .times(token.amount)
+                        .toFixed(2)
+                    )}
+                  </div>
+                </div>
               </li>
             ))}
+        <Empty
+          className={clsx(
+            'pt-[80px]',
+            (!isSwapType || isLoading || isEmpty || displayList.length > 0) &&
+              'hidden'
+          )}
+        >
+          <div className="text-14 text-gray-subTitle mb-12">
+            {t('No Results')}
+          </div>
+          <p className="text-13 max-w-[283px] mx-auto text-center  text-gray-content ">
+            Only tokens listed in Rabby by default are supported for swap
+          </p>
+        </Empty>
       </ul>
     </Drawer>
   );

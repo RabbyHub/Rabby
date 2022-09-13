@@ -842,6 +842,9 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       chainId: chain.serverId,
       preExecSuccess:
         checkErrors.length > 0 || !txDetail?.pre_exec.success ? false : true,
+      createdBy: params?.$ctx?.ga ? 'rabby' : 'dapp',
+      source: params?.$ctx?.ga?.source || '',
+      trigger: params?.$ctx?.ga?.trigger || '',
     });
     if (params.session.origin !== INTERNAL_REQUEST_ORIGIN || isSend) {
       const params: any = {
@@ -937,6 +940,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
         extra: {
           brandName: currentAccount.brandName,
         },
+        $ctx: params.$ctx,
       });
 
       return;
@@ -1137,6 +1141,9 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       type: currentAccount.brandName,
       category: KEYRING_CATEGORY_MAP[currentAccount.type],
       chainId: chain.serverId,
+      createdBy: params?.$ctx?.ga ? 'rabby' : 'dapp',
+      source: params?.$ctx?.ga?.source || '',
+      trigger: params?.$ctx?.ga?.trigger || '',
     });
 
     ReactGA.event({

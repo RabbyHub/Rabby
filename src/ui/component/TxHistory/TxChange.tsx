@@ -10,7 +10,7 @@ import { numberWithCommasIsLtOne } from 'ui/utils';
 
 export function getTokenSymbol(token: TokenItem) {
   return (
-    token?.optimized_symbol || token?.display_symbol || token?.symbol || ''
+    token?.symbol || token?.optimized_symbol || token?.display_symbol || ''
   );
 }
 

@@ -7,7 +7,7 @@ import { last } from 'lodash';
 import React, { useCallback, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
-import IconCopy from 'ui/assets/address-copy.png';
+import IconCopy from 'ui/assets/swap/copy.svg';
 import IconPlus from 'ui/assets/plus.svg';
 import IconSuccess from 'ui/assets/success.svg';
 import IconTrash from 'ui/assets/trash.svg';
@@ -18,6 +18,7 @@ import ChainIcon from '../NFT/ChainIcon';
 import { HistoryItem } from './HistoryItem';
 import { Loading } from './Loading';
 import './style.less';
+import { RABBY_SWAP_ROUTER } from '@/constant';
 
 const PAGE_COUNT = 10;
 const ellipsis = (text: string) => {
@@ -149,9 +150,15 @@ const TokenDetail = ({
     );
   }, [history, token]);
 
+  const goToSwap = useCallback(() => {
+    history.push(
+      `/swap?rbisource=tokendetail&chain=${token?.chain}&payTokenId=${token?.id}`
+    );
+  }, [history, token]);
+
   return (
     <div className="token-detail" ref={ref}>
-      <div className="token-detail-header">
+      <div className="token-detail-header border-b-0 pb-24">
         <div className="flex items-center mb-20">
           <div className="flex items-center mr-8">
             <TokenWithChain
@@ -206,12 +213,12 @@ const TokenDetail = ({
         {variant === 'add' && (
           <>
             {token.is_core ? (
-              <div className="alert">
+              <div className="alert mb-[24px]">
                 This token is supported by default. It will show up in your
                 wallet as long as balance &gt; 0.
               </div>
             ) : (
-              <div className="alert alert-primary">
+              <div className="alert alert-primary mb-[24px]">
                 This token is not verified. Please do your <br />
                 own research before you add it.
                 {token.amount > 0 ? (
@@ -238,8 +245,57 @@ const TokenDetail = ({
             )}
           </>
         )}
+
+        <div className="flex flex-row justify-between mt-24">
+          <Tooltip
+            overlayClassName="rectangle token_swap__tooltip"
+            placement="topLeft"
+            title={t('The token on this chain is not supported for swap')}
+            visible={
+              token.is_core &&
+              RABBY_SWAP_ROUTER[getChain(token?.chain)?.enum || '']
+                ? false
+                : undefined
+            }
+          >
+            <Button
+              type="primary"
+              size="large"
+              onClick={goToSwap}
+              disabled={
+                !token.is_core ||
+                !RABBY_SWAP_ROUTER[getChain(token?.chain)?.enum || '']
+              }
+              style={{
+                width: 114,
+              }}
+            >
+              Swap
+            </Button>
+          </Tooltip>
+
+          <Button
+            type="primary"
+            ghost
+            size="large"
+            className="w-[114px] rabby-btn-ghost"
+            onClick={goToSend}
+          >
+            {t('Send')}
+          </Button>
+          <Button
+            type="primary"
+            ghost
+            size="large"
+            className="w-[114px] rabby-btn-ghost"
+            onClick={goToReceive}
+          >
+            {t('Receive')}
+          </Button>
+        </div>
       </div>
-      <div className="token-detail-body token-txs-history">
+
+      <div className="token-detail-body token-txs-history pt-[0px]">
         {data?.list.map((item) => (
           <HistoryItem
             data={item}
@@ -258,25 +314,6 @@ const TokenDetail = ({
             </p>
           </div>
         )}
-      </div>
-      <div className="token-detail-footer">
-        <Button
-          type="primary"
-          size="large"
-          className="w-[172px]"
-          onClick={goToSend}
-        >
-          {t('Send')}
-        </Button>
-        <Button
-          type="primary"
-          ghost
-          size="large"
-          className="w-[172px] rabby-btn-ghost"
-          onClick={goToReceive}
-        >
-          {t('Receive')}
-        </Button>
       </div>
     </div>
   );

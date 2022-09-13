@@ -255,6 +255,7 @@ class ProviderController extends BaseController {
   ])
   ethSendTransaction = async (options: {
     data: {
+      $ctx?: any;
       params: any;
     };
     session: Session;
@@ -350,6 +351,9 @@ class ProviderController extends BaseController {
           preExecSuccess: cacheExplain
             ? cacheExplain.pre_exec.success && cacheExplain.calcSuccess
             : true,
+          createdBy: options?.data?.$ctx?.ga ? 'rabby' : 'dapp',
+          source: options?.data?.$ctx?.ga?.source || '',
+          trigger: options?.data?.$ctx?.ga?.trigger || '',
         });
         return;
       }
@@ -362,6 +366,9 @@ class ProviderController extends BaseController {
           preExecSuccess: cacheExplain
             ? cacheExplain.pre_exec.success && cacheExplain.calcSuccess
             : true,
+          createdBy: options?.data?.$ctx?.ga ? 'rabby' : 'dapp',
+          source: options?.data?.$ctx?.ga?.source || '',
+          trigger: options?.data?.$ctx?.ga?.trigger || '',
         });
         if (isSend) {
           pageStateCacheService.clear();
@@ -374,7 +381,8 @@ class ProviderController extends BaseController {
             hash,
             failed: false,
           },
-          cacheExplain
+          cacheExplain,
+          options?.data?.$ctx
         );
         transactionWatchService.addTx(
           `${txParams.from}_${approvalRes.nonce}_${chain}`,
@@ -419,6 +427,9 @@ class ProviderController extends BaseController {
         preExecSuccess: cacheExplain
           ? cacheExplain.pre_exec.success && cacheExplain.calcSuccess
           : true,
+        createdBy: options?.data?.$ctx?.ga ? 'rabby' : 'dapp',
+        source: options?.data?.$ctx?.ga?.source || '',
+        trigger: options?.data?.$ctx?.ga?.trigger || '',
       });
       try {
         validateGasPriceRange(approvalRes);
@@ -444,6 +455,9 @@ class ProviderController extends BaseController {
           preExecSuccess: cacheExplain
             ? cacheExplain.pre_exec.success && cacheExplain.calcSuccess
             : true,
+          createdBy: options?.data?.$ctx?.ga ? 'rabby' : 'dapp',
+          source: options?.data?.$ctx?.ga?.source || '',
+          trigger: options?.data?.$ctx?.ga?.trigger || '',
         });
         if (!isSpeedUp && !isCancel) {
           const cacheExplain = transactionHistoryService.getExplainCache({
@@ -481,6 +495,9 @@ class ProviderController extends BaseController {
           preExecSuccess: cacheExplain
             ? cacheExplain.pre_exec.success && cacheExplain.calcSuccess
             : true,
+          createdBy: options?.data?.$ctx?.ga ? 'rabby' : 'dapp',
+          source: options?.data?.$ctx?.ga?.source || '',
+          trigger: options?.data?.$ctx?.ga?.trigger || '',
         });
       }
       throw new Error(e);

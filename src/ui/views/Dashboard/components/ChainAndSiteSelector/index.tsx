@@ -9,11 +9,11 @@ import { useHistory, useLocation } from 'react-router-dom';
 import ReactGA from 'react-ga';
 import IconAlertRed from 'ui/assets/alert-red.svg';
 import IconDapps from 'ui/assets/dapps.svg';
-import IconContacts from 'ui/assets/dashboard/contacts.png';
 import IconEth from 'ui/assets/dashboard/eth.png';
 import IconGas from 'ui/assets/dashboard/gas.svg';
 import IconQuene from 'ui/assets/dashboard/quene.svg';
 import IconSecurity from 'ui/assets/dashboard/security.svg';
+import IconSwap from 'ui/assets/dashboard/swap.svg';
 import IconSendToken from 'ui/assets/dashboard/sendtoken.png';
 import IconSetting from 'ui/assets/dashboard/setting.png';
 import IconActivities from 'ui/assets/dashboard/activities.svg';
@@ -30,13 +30,7 @@ import {
 } from 'ui/utils';
 import { CurrentConnection } from '../CurrentConnection';
 import ChainSelectorModal from 'ui/component/ChainSelector/Modal';
-import {
-  Contacts,
-  RecentConnections,
-  Security,
-  Settings,
-  Widget,
-} from '../index';
+import { RecentConnections, Security, Settings, Widget } from '../index';
 import './style.less';
 import { CHAINS_ENUM } from '@/constant';
 
@@ -73,7 +67,6 @@ export default ({
   const [urlVisible, setUrlVisible] = useState(false);
   const [settingVisible, setSettingVisible] = useState(false);
   const [widgetVisible, setWidgetVisible] = useState(false);
-  const [contactsVisible, setContactsVisible] = useState(false);
   const [securityVisible, setSecurityVisible] = useState(false);
   const [currentConnect, setCurrentConnect] = useState<
     ConnectedSite | null | undefined
@@ -150,11 +143,6 @@ export default ({
     setWidgetVisible(!widgetVisible);
   };
 
-  const changeContacts = () => {
-    setContactsVisible(!contactsVisible);
-    setDashboardReload();
-  };
-
   const changeSecurity = () => {
     setSecurityVisible(!securityVisible);
   };
@@ -197,6 +185,11 @@ export default ({
   };
 
   const panelItems = {
+    swap: {
+      icon: IconSwap,
+      content: 'Swap',
+      onClick: () => history.push('/swap?rbisource=dashboard'),
+    },
     send: {
       icon: IconSendToken,
       content: 'Send',
@@ -240,11 +233,6 @@ export default ({
         changeURL();
       },
     },
-    contacts: {
-      icon: IconContacts,
-      content: 'Contacts',
-      onClick: changeContacts,
-    },
     security: {
       icon: IconSecurity,
       content: 'Security',
@@ -266,24 +254,24 @@ export default ({
 
   if (isGnosis) {
     pickedPanelKeys = [
+      'swap',
       'send',
       'receive',
       'queue',
       'transactions',
       'dapps',
-      'contacts',
       'security',
       'widget',
       'settings',
     ];
   } else {
     pickedPanelKeys = [
+      'swap',
       'send',
       'receive',
       'activities',
       'transactions',
       'dapps',
-      'contacts',
       'widget',
       'security',
       'settings',
@@ -404,7 +392,6 @@ export default ({
         }}
       />
       <Settings visible={settingVisible} onClose={changeSetting} />
-      <Contacts visible={contactsVisible} onClose={changeContacts} />
       <RecentConnections visible={urlVisible} onClose={changeURL} />
       <Security visible={securityVisible} onClose={changeSecurity} />
       <Widget visible={widgetVisible} onClose={changeWidget} />

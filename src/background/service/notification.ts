@@ -173,6 +173,9 @@ class NotificationService extends Events {
           category: KEYRING_CATEGORY_MAP[currentAccount.type],
           chainId: explain.native_token.chain,
           success: explain.calcSuccess && explain.pre_exec.success,
+          createdBy: data?.$ctx?.ga ? 'rabby' : 'dapp',
+          source: data?.$ctx?.ga?.source || '',
+          trigger: data?.$ctx?.ga?.trigger || '',
         });
       }
     };

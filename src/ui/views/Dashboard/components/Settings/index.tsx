@@ -16,6 +16,9 @@ import { Field, PageHeader, Popup } from 'ui/component';
 import { useWallet, useWalletOld } from 'ui/utils';
 import './style.less';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
+import IconContacts from 'ui/assets/swap/contact.svg';
+
+import { Contacts } from '..';
 
 interface SettingsProps {
   visible?: boolean;
@@ -203,6 +206,7 @@ const Settings = ({ visible, onClose }: SettingsProps) => {
   const { t } = useTranslation();
   const [showOpenApiModal, setShowOpenApiModal] = useState(false);
   const [showResetAccountModal, setShowResetAccountModal] = useState(false);
+  const [contactsVisible, setContactsVisible] = useState(false);
 
   const handleClickClearWatchMode = () => {
     confirm({
@@ -227,6 +231,13 @@ const Settings = ({ visible, onClose }: SettingsProps) => {
         history.push('/settings/address');
       },
     },
+    {
+      leftIcon: IconContacts,
+      content: t('Contacts'),
+      onClick: () => {
+        setContactsVisible(true);
+      },
+    },
 
     {
       leftIcon: IconReset,
@@ -244,7 +255,7 @@ const Settings = ({ visible, onClose }: SettingsProps) => {
   ];
 
   if (process.env.DEBUG) {
-    renderData.splice(1, 0, {
+    renderData.splice(-1, 0, {
       leftIcon: IconServer,
       content: t('Backend Service URL'),
       onClick: () => setShowOpenApiModal(true),
@@ -322,6 +333,14 @@ const Settings = ({ visible, onClose }: SettingsProps) => {
               </Link>
             </div>
           </footer>
+          <Contacts
+            visible={contactsVisible}
+            onClose={(e) => {
+              setContactsVisible(false);
+              onClose?.(e);
+            }}
+          />
+
           <OpenApiModal
             visible={showOpenApiModal}
             onFinish={() => setShowOpenApiModal(false)}

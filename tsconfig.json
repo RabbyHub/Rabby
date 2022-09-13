@@ -4,7 +4,7 @@
     "experimentalDecorators": true,
     "emitDecoratorMetadata": true,
     "module": "ESNext",
-    "target": "es2019",
+    "target": "ES2020",
     "moduleResolution": "node",
     "noImplicitAny": false,
     "strict": true,
@@ -18,7 +18,7 @@
       "consts": ["./src/constant/index"],
       "consts/*": ["./src/constant/*"],
       "assets": ["./src/ui/assets"],
-      "changeLogs": ["./changeLogs"],
+      "changeLogs": ["./changeLogs"]
     },
     "types": ["chrome", "node", "react", "react-dom", "jest"],
     "jsx": "react",
@@ -31,10 +31,7 @@
       },
       {
         "name": "typescript-styled-plugin",
-        "tags": [
-          "styled",
-          "css",
-        ],
+        "tags": ["styled", "css"],
         "validate": true
       }
     ],
