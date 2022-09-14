@@ -745,14 +745,20 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       setSecurityCheckDetail(res);
       setForceProcess(res.decision !== 'forbidden');
     } catch (e: any) {
-      const alert = e.message || JSON.stringify(e);
-      setForceProcess(false);
-      setSecurityCheckStatus('danger');
+      console.error(e);
+      const alert = 'Security engine service is temporarily unavailable';
+      const decision = 'pass';
+      setForceProcess(true);
+      setSecurityCheckStatus(decision);
       setSecurityCheckAlert(alert);
       setSecurityCheckDetail({
+        error: {
+          msg: alert,
+          code: 4000,
+        },
         alert,
-        decision: 'danger',
-        danger_list: [{ id: 1, alert }],
+        decision,
+        danger_list: [],
         warning_list: [],
         forbidden_list: [],
         trace_id: '',

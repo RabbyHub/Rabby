@@ -62,16 +62,7 @@ const SecurityCheckCard = (props: SecurityCheckCardProps) => {
     );
   }
 
-  if (!data || data.decision === 'pass') {
-    return (
-      <div className="security-check-card flex gap-[12px] items-center">
-        <img src={IconCheck} className="security-check-card-icon" />
-        <div className="security-check-card-desc">No risk found</div>
-      </div>
-    );
-  }
-
-  if (data.error) {
+  if (data?.error) {
     return (
       <div className="security-check-card flex gap-[12px] items-start">
         <IconRcWaring className="security-check-card-icon gray" />
@@ -84,6 +75,15 @@ const SecurityCheckCard = (props: SecurityCheckCardProps) => {
             <span className="number">#{data.error?.code}</span>
           </div>
         </div>
+      </div>
+    );
+  }
+
+  if (!data || data.decision === 'pass') {
+    return (
+      <div className="security-check-card flex gap-[12px] items-center">
+        <img src={IconCheck} className="security-check-card-icon" />
+        <div className="security-check-card-desc">No risk found</div>
       </div>
     );
   }
