@@ -81,6 +81,7 @@ interface ApprovalRes extends Tx {
   account?: Account;
   extra?: Record<string, any>;
   traceId?: string;
+  $ctx?: any;
 }
 
 interface Web3WalletPermission {
@@ -285,6 +286,7 @@ class ProviderController extends BaseController {
     delete approvalRes.uiRequestComponent;
     delete approvalRes.traceId;
     delete approvalRes.extra;
+    delete approvalRes.$ctx;
     let is1559 = is1559Tx(approvalRes);
     if (
       is1559 &&
