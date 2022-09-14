@@ -285,8 +285,8 @@ const GnosisTransactionItem = ({
   }
 
   const init = async () => {
-    const res = await wallet.openapi.explainTx(
-      {
+    const res = await wallet.openapi.preExecTx({
+      tx: {
         chainId: Number(networkId),
         from: data.safe,
         to: data.to,
@@ -296,9 +296,11 @@ const GnosisTransactionItem = ({
         gasPrice: '0x0',
         gas: '0x0',
       },
-      INTERNAL_REQUEST_ORIGIN,
-      data.safe
-    );
+      origin: INTERNAL_REQUEST_ORIGIN,
+      address: data.safe,
+      updateNonce: false,
+      pending_tx_list: [],
+    });
     setExplain(res);
   };
 
