@@ -5397,23 +5397,6 @@
     typescript "^4.4.4"
     web3-core "^1.6.0"
 
-"@rabby-wallet/page-provider@^0.1.8":
-  version "0.1.8"
-  resolved "https://registry.yarnpkg.com/@rabby-wallet/page-provider/-/page-provider-0.1.8.tgz#e782e237896a34247e47059f39d41a4256ac9828"
-  integrity sha512-jcsoTNHqrQLy6fkpZLoh/tfmqrXnnYuZ88Ei3jdBc4GyT/zK0wt/5OxI9cTWqneQT2PZs3bXW6SvYas+HvrbFg==
-  dependencies:
-    "@ledgerhq/devices" "^6.27.1"
-    "@rabby-wallet/widgets" "^1.0.8"
-    "@types/chrome" "^0.0.186"
-    "@types/events" "^3.0.0"
-    "@types/node" "^17.0.34"
-    "@types/w3c-web-hid" "^1.0.3"
-    eth-rpc-errors "^4.0.3"
-    events "^3.3.0"
-    lodash "^4.17.21"
-    sinon-chrome "^3.0.1"
-    webextension-polyfill-ts "^0.26.0"
-
 "@rabby-wallet/widgets@^1.0.8":
   version "1.0.8"
   resolved "https://registry.yarnpkg.com/@rabby-wallet/widgets/-/widgets-1.0.8.tgz#2d917edd4c31cd2905b37c6277cbaccf9b9d4d9f"
