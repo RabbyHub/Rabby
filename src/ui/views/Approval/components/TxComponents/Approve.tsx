@@ -85,9 +85,9 @@ const ApproveAmountModal = ({
           autoFocus
         />
       </Form.Item>
-      <div className="approve-amount-footer">
+      <div className="approve-amount-footer overflow-hidden gap-[8px]">
         <span
-          className="est-approve-price"
+          className="est-approve-price truncate"
           title={splitNumberByStep(new BigNumber(tokenPrice).toFixed(2))}
         >
           ≈ $
@@ -99,7 +99,7 @@ const ApproveAmountModal = ({
         </span>
         {balance && (
           <span
-            className="token-approve-balance"
+            className="token-approve-balance truncate"
             title={splitNumberByStep(balance)}
             onClick={() => {
               setCustomAmount(balance);
