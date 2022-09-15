@@ -13,6 +13,7 @@ import { Popup } from 'ui/component';
 import { formatTokenAmount } from 'ui/utils/number';
 import styled from 'styled-components';
 import LessPalette from '@/ui/style/var-defs';
+import { ReactComponent as IconArrowRight } from 'ui/assets/approval/edit-arrow-right.svg';
 
 export interface GasSelectorResponse extends GasLevel {
   gasLimit: number;
@@ -232,10 +233,7 @@ const GasSelector = ({
     }
   };
 
-  const handleClickEdit = (
-    e: React.MouseEvent<HTMLAnchorElement, MouseEvent>
-  ) => {
-    e.preventDefault();
+  const handleClickEdit = () => {
     setModalVisible(true);
     setSelectedGas(rawSelectedGas);
     ReactGA.event({
@@ -283,7 +281,7 @@ const GasSelector = ({
       onChange({
         ...target,
         level: 'custom',
-        price: Number(Number(target.price) / 1e9) * 1e9,
+        price: Number(target.price),
         gasLimit: Number(afterGasLimit),
         nonce: Number(customNonce),
         maxPriorityFee: maxPriorityFee * 1e9,
@@ -478,10 +476,13 @@ const GasSelector = ({
               </div>
             )}
           </div>
-          <div className="gas-selector-card-extra">
-            <a href="#" onClick={handleClickEdit}>
-              Edit
-            </a>
+          <div
+            className="flex text-12 text-gray-content cursor-pointer"
+            role="button"
+            onClick={handleClickEdit}
+          >
+            <span>Edit</span>
+            <IconArrowRight />
           </div>
         </div>
         <GasSelectPanel
