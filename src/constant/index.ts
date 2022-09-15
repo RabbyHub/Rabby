@@ -669,3 +669,11 @@ export const SWAP_DEX_WHITELIST = [
 ];
 
 export const SWAP_FEE_PRECISION = 1e5;
+
+export const DEFAULT_GAS_LIMIT_RATIO = 2;
+
+export const SAFE_GAS_LIMIT_RATIO = {
+  1: 1.5,
+  56: 1.5,
+  137: 1.5,
+};

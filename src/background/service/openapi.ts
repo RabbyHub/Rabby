@@ -715,22 +715,6 @@ class OpenApiService {
     return data;
   };
 
-  explainTx = async (
-    tx: Tx,
-    origin: string,
-    address: string,
-    update_nonce = false
-  ): Promise<ExplainTxResponse> => {
-    const { data } = await this.request.post('/v1/wallet/explain_tx', {
-      tx,
-      user_addr: address,
-      origin,
-      update_nonce,
-    });
-
-    return data;
-  };
-
   preExecTx = async ({
     tx,
     origin,
@@ -744,7 +728,7 @@ class OpenApiService {
     updateNonce: boolean;
     pending_tx_list: Tx[];
   }): Promise<ExplainTxResponse> => {
-    const { data } = await this.request.post('/v1/wallet/pre_exec_tx', {
+    const { data } = await this.request.post('/v2/wallet/pre_exec_tx', {
       tx,
       user_addr: address,
       origin,
