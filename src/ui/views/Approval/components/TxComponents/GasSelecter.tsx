@@ -477,7 +477,7 @@ const GasSelector = ({
             )}
           </div>
           <div
-            className="flex text-12 text-gray-content cursor-pointer"
+            className="flex items-center text-12 text-gray-content cursor-pointer"
             role="button"
             onClick={handleClickEdit}
           >
