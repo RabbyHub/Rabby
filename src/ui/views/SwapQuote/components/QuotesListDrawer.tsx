@@ -94,22 +94,6 @@ export const QuotesListDrawer = ({
   const data = useMemo(
     () => [
       {
-        left: <div className={clsx(labelClassName)}>Rate</div>,
-        right: list[selectedIndex] ? (
-          <RateExchange
-            className={valueClassName}
-            payAmount={payAmount}
-            receiveAmount={getReceiveTokenAmountBN(
-              feeRatio,
-              list[selectedIndex].receive_token_raw_amount,
-              list[selectedIndex].receive_token.decimals
-            ).toString(10)}
-            payToken={list[selectedIndex].pay_token}
-            receiveToken={list[selectedIndex].receive_token}
-          />
-        ) : null,
-      },
-      {
         left: (
           <div className={clsx(labelClassName)}>
             <span>Receiving amount </span>
@@ -139,6 +123,22 @@ export const QuotesListDrawer = ({
             {getTokenSymbol(list[selectedIndex]?.receive_token)}
           </div>
         ),
+      },
+      {
+        left: <div className={clsx(labelClassName)}>Rate</div>,
+        right: list[selectedIndex] ? (
+          <RateExchange
+            className={valueClassName}
+            payAmount={payAmount}
+            receiveAmount={getReceiveTokenAmountBN(
+              feeRatio,
+              list[selectedIndex].receive_token_raw_amount,
+              list[selectedIndex].receive_token.decimals
+            ).toString(10)}
+            payToken={list[selectedIndex].pay_token}
+            receiveToken={list[selectedIndex].receive_token}
+          />
+        ) : null,
       },
       {
         left: (
@@ -288,6 +288,14 @@ export const QuotesListDrawer = ({
     },
   });
 
+  useEffect(() => {
+    if (!visible) {
+      setTimeout(() => {
+        setSelectedIndex(-1);
+      }, 300);
+    }
+  }, [visible]);
+
   return (
     <Drawer
       closable={false}
@@ -385,10 +393,7 @@ export const QuotesListDrawer = ({
           <div className="text-20 font-medium text-center text-gray-title ">
             {t('QuoteDetails')}
           </div>
-          <IconClose
-            className="cursor-pointer"
-            onClick={() => setSelectedIndex(-1)}
-          />
+          <IconClose className="cursor-pointer" onClick={onClose} />
         </div>
 
         <div className="flex justify-center">
