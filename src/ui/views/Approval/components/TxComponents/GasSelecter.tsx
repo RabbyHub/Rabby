@@ -447,7 +447,7 @@ const GasSelector = ({
   return (
     <>
       <div className="gas-selector">
-        <div className="gas-selector-card mb-8">
+        <div className="gas-selector-card items-end mb-8">
           <div className="gas-selector-card-title">Gas</div>
           <div className="gas-selector-card-content ml-[27px]">
             {gas.error || !gas.success ? (
