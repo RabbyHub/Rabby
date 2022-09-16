@@ -19,7 +19,7 @@
     "dev:mv3": "npm run build:dev:mv3"
   },
   "dependencies": {
-    "@debank/common": "^0.2.7",
+    "@debank/common": "^0.2.10",
     "@debank/festats": "^1.0.1",
     "@dnd-kit/core": "^5.0.1",
     "@dnd-kit/sortable": "^6.0.0",
