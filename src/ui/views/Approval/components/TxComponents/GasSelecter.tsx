@@ -481,7 +481,7 @@ const GasSelector = ({
             role="button"
             onClick={handleClickEdit}
           >
-            <span>Edit</span>
+            <span>More</span>
             <IconArrowRight />
           </div>
         </div>
