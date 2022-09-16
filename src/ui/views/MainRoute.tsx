@@ -65,8 +65,10 @@ declare global {
 
 const LogPageView = () => {
   ReactGA.pageview(window.location.hash);
-  window._paq.push(['setCustomUrl', window.location.hash.substr(1)]);
-  window._paq.push(['trackPageView']);
+  if (window._paq) {
+    window._paq.push(['setCustomUrl', window.location.hash.substr(1)]);
+    window._paq.push(['trackPageView']);
+  }
 
   return null;
 };
