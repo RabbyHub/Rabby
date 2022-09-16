@@ -8,10 +8,12 @@ import { CHAINS, GAS_LEVEL_TEXT, MINIMUM_GAS_LIMIT } from 'consts';
 import React, { useEffect, useRef, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { useDebounce } from 'react-use';
-import IconArrowDown from 'ui/assets/arrow-down.svg';
 import IconInfo from 'ui/assets/infoicon.svg';
 import { Popup } from 'ui/component';
 import { formatTokenAmount } from 'ui/utils/number';
+import styled from 'styled-components';
+import LessPalette from '@/ui/style/var-defs';
+import { ReactComponent as IconArrowRight } from 'ui/assets/approval/edit-arrow-right.svg';
 
 export interface GasSelectorResponse extends GasLevel {
   gasLimit: number;
@@ -127,7 +129,6 @@ const GasSelector = ({
       message: null,
     },
   });
-  const [isShowAdvanced, setIsShowAdvanced] = useState(false);
   const chain = Object.values(CHAINS).find((item) => item.id === chainId)!;
 
   const handleSetRecommendTimes = () => {
@@ -232,10 +233,7 @@ const GasSelector = ({
     }
   };
 
-  const handleClickEdit = (
-    e: React.MouseEvent<HTMLAnchorElement, MouseEvent>
-  ) => {
-    e.preventDefault();
+  const handleClickEdit = () => {
     setModalVisible(true);
     setSelectedGas(rawSelectedGas);
     ReactGA.event({
@@ -268,6 +266,84 @@ const GasSelector = ({
         level: gas?.level,
       });
     }
+  };
+
+  const externalPanelSelection = (e, gas: GasLevel) => {
+    e.stopPropagation();
+    let target = gas;
+
+    if (gas.level === 'custom') {
+      if (rawSelectedGas && rawSelectedGas.level !== 'custom' && !gas.price) {
+        target =
+          gasList.find((item) => item.level === rawSelectedGas.level) || gas;
+      }
+
+      onChange({
+        ...target,
+        level: 'custom',
+        price: Number(target.price),
+        gasLimit: Number(afterGasLimit),
+        nonce: Number(customNonce),
+        maxPriorityFee: maxPriorityFee * 1e9,
+      });
+    } else {
+      onChange({
+        ...gas,
+        gasLimit: Number(afterGasLimit),
+        nonce: Number(customNonce),
+        level: gas?.level,
+        maxPriorityFee: maxPriorityFee * 1e9,
+      });
+    }
+  };
+
+  const externalHandleCustomGasChange = (
+    e: React.ChangeEvent<HTMLInputElement>
+  ) => {
+    e.stopPropagation();
+
+    if (/^\d*(\.\d*)?$/.test(e.target.value)) {
+      const gasObj = {
+        level: 'custom',
+        price: Number(e?.target?.value),
+        front_tx_count: 0,
+        estimated_seconds: 0,
+        base_fee: gasList[0].base_fee,
+      };
+
+      const currentObj = {
+        ...gasObj,
+        ...rawSelectedGas,
+        front_tx_count: 0,
+        estimated_seconds: 0,
+        base_fee: gasList[0].base_fee,
+        price: Number(e.target.value) * 1e9,
+        level: 'custom',
+        gasLimit: Number(afterGasLimit),
+        nonce: Number(customNonce),
+        maxPriorityFee: maxPriorityFee * 1e9,
+      };
+      onChange(currentObj);
+    }
+  };
+
+  const externalCustomGasConfirm = (e) => {
+    const gas = {
+      level: 'custom',
+      price: Number(e?.target?.value),
+      front_tx_count: 0,
+      estimated_seconds: 0,
+      base_fee: gasList[0].base_fee,
+    };
+
+    onChange({
+      ...gas,
+      price: Number(gas.price),
+      level: gas.level,
+      gasLimit: Number(afterGasLimit),
+      nonce: Number(customNonce),
+      maxPriorityFee: maxPriorityFee * 1e9,
+    });
   };
 
   const customGasConfirm = (e) => {
@@ -352,12 +428,6 @@ const GasSelector = ({
     }
   }, [maxPriorityFee, selectedGas, customGas, is1559]);
 
-  useEffect(() => {
-    if (!modalVisible) {
-      setIsShowAdvanced(false);
-    }
-  }, [modalVisible]);
-
   if (!isReady && isFirstTimeLoad)
     return (
       <>
@@ -377,20 +447,9 @@ const GasSelector = ({
   return (
     <>
       <div className="gas-selector">
-        <div className="gas-selector-card">
+        <div className="gas-selector-card mb-8">
           <div className="gas-selector-card-title">Gas</div>
-          <div className="gas-selector-card-content">
-            <div className="gas-selector-card-content-item">
-              <div className="gas-selector-card-gas">
-                {rawSelectedGas ? rawSelectedGas.price / 1e9 : 0} Gwei
-              </div>
-              {rawSelectedGas ? (
-                <div className="gas-selector-card-tag">
-                  {GAS_LEVEL_TEXT[rawSelectedGas.level]}
-                </div>
-              ) : null}
-            </div>
-
+          <div className="gas-selector-card-content ml-[27px]">
             {gas.error || !gas.success ? (
               <>
                 <div className="gas-selector-card-error mt-[6px]">
@@ -406,24 +465,41 @@ const GasSelector = ({
             ) : (
               <div className="gas-selector-card-content-item mt-[4px]">
                 <div className="gas-selector-card-amount">
-                  {formatTokenAmount(
-                    new BigNumber(gas.gasCostAmount).toString(10)
-                  )}{' '}
-                  {chain.nativeTokenSymbol}
+                  <span className="text-gray-title font-medium text-15">
+                    {formatTokenAmount(
+                      new BigNumber(gas.gasCostAmount).toString(10)
+                    )}{' '}
+                    {chain.nativeTokenSymbol}
+                  </span>
                   &nbsp;&nbsp; ≈${new BigNumber(gas.gasCostUsd).toFixed(2)}
                 </div>
               </div>
             )}
           </div>
-          <div className="gas-selector-card-extra">
-            <a href="#" onClick={handleClickEdit}>
-              Edit
-            </a>
+          <div
+            className="flex items-center text-12 text-gray-content cursor-pointer"
+            role="button"
+            onClick={handleClickEdit}
+          >
+            <span>Edit</span>
+            <IconArrowRight />
           </div>
         </div>
+        <GasSelectPanel
+          gasList={gasList}
+          selectedGas={rawSelectedGas}
+          panelSelection={externalPanelSelection}
+          customGas={
+            rawSelectedGas?.level === 'custom'
+              ? rawSelectedGas.price / 1e9
+              : customGas
+          }
+          customGasConfirm={externalCustomGasConfirm}
+          handleCustomGasChange={externalHandleCustomGasChange}
+        />
       </div>
       <Popup
-        height={isShowAdvanced ? 720 : 400}
+        height={720}
         visible={modalVisible}
         title={t('Gas')}
         className="gas-modal"
@@ -497,140 +573,127 @@ const GasSelector = ({
             ))}
           </div>
         </div>
-        {!isShowAdvanced && (
-          <div
-            className="addvance-setting-toggle"
-            onClick={() => {
-              setIsShowAdvanced(true);
-            }}
-          >
-            Advanced Settings <img src={IconArrowDown} />
-          </div>
-        )}
-        {isShowAdvanced && (
-          <div>
-            {is1559 && (
-              <div className="priority-slider">
-                <p className="priority-slider-header">
-                  Max Priority Fee: <span>{maxPriorityFee} Gwei</span>
-                  <Tooltip
-                    title={
-                      <ol className="list-decimal list-outside pl-[12px] mb-0">
-                        <li>
-                          On chains that support EIP-1559, the Priority Fee is
-                          the tip for miners to process your transaction. You
-                          can save your final gas cost by lowering the Priority
-                          Fee, which may cost more time for the transaction to
-                          be processed.
-                        </li>
-                        <li>
-                          Here in Rabby, Priority Fee (Tip) = Max Priority Fee -
-                          Base Fee. After you set up the Max Priority Fee, the
-                          Base Fee will be deducted from it and the rest will be
-                          tipped to miners.
-                        </li>
-                      </ol>
-                    }
-                    overlayClassName="rectangle"
-                  >
-                    <img src={IconInfo} className="icon icon-info" />
-                  </Tooltip>
+        <div>
+          {is1559 && (
+            <div className="priority-slider">
+              <p className="priority-slider-header">
+                Max Priority Fee: (Gwei)
+                <Tooltip
+                  title={
+                    <ol className="list-decimal list-outside pl-[12px] mb-0">
+                      <li>
+                        On chains that support EIP-1559, the Priority Fee is the
+                        tip for miners to process your transaction. You can save
+                        your final gas cost by lowering the Priority Fee, which
+                        may cost more time for the transaction to be processed.
+                      </li>
+                      <li>
+                        Here in Rabby, Priority Fee (Tip) = Max Priority Fee -
+                        Base Fee. After you set up the Max Priority Fee, the
+                        Base Fee will be deducted from it and the rest will be
+                        tipped to miners.
+                      </li>
+                    </ol>
+                  }
+                  overlayClassName="rectangle"
+                >
+                  <img src={IconInfo} className="icon icon-info" />
+                </Tooltip>
+              </p>
+              <div className="priority-slider-body">
+                <Slider
+                  min={0}
+                  max={selectedGas ? selectedGas.price / 1e9 : 0}
+                  onChange={handleMaxPriorityFeeChange}
+                  value={maxPriorityFee}
+                  step={1}
+                />
+                <p className="priority-slider__mark">
+                  <span>0</span>
+                  <span>{selectedGas ? selectedGas.price / 1e9 : 0}</span>
                 </p>
-                <div className="priority-slider-body">
-                  <Slider
-                    min={0}
-                    max={selectedGas ? selectedGas.price / 1e9 : 0}
-                    onChange={handleMaxPriorityFeeChange}
-                    value={maxPriorityFee}
-                    step={1}
+              </div>
+              <div className="priority-slider-footer">
+                {maxPriorityFee < (selectedGas?.price || 0) / 1e9
+                  ? 'A low priority fee may affect the transaction speed'
+                  : 'Recommend the highest priority fee to speed up your transaction'}
+              </div>
+            </div>
+          )}
+          {isReal1559 && isHardware && (
+            <div className="hardware-1559-tip">
+              Make sure your hardware wallet firmware has been upgraded to the
+              version that supports EIP 1559
+            </div>
+          )}
+          <Form onFinish={handleConfirmGas}>
+            <div className="gas-limit">
+              <p className="gas-limit-label flex leading-[16px]">
+                <span className="flex-1">{t('GasLimit')}</span>
+              </p>
+              <div className="expanded gas-limit-panel-wrapper">
+                <Form.Item
+                  className="gas-limit-panel mb-0"
+                  validateStatus={validateStatus.gasLimit.status}
+                >
+                  <Input
+                    className="popup-input"
+                    value={afterGasLimit}
+                    onChange={handleGasLimitChange}
                   />
-                  <p className="priority-slider__mark">
-                    <span>0</span>
-                    <span>{selectedGas ? selectedGas.price / 1e9 : 0}</span>
+                </Form.Item>
+                {validateStatus.gasLimit.message ? (
+                  <p className="tip text-red-light not-italic">
+                    {validateStatus.gasLimit.message}
                   </p>
-                </div>
-                <div className="priority-slider-footer">
-                  {maxPriorityFee < (selectedGas?.price || 0) / 1e9
-                    ? 'A low priority fee may affect the transaction speed'
-                    : 'Recommend the highest priority fee to speed up your transaction'}
-                </div>
-              </div>
-            )}
-            {isReal1559 && isHardware && (
-              <div className="hardware-1559-tip">
-                Make sure your hardware wallet firmware has been upgraded to the
-                version that supports EIP 1559
-              </div>
-            )}
-            <Form onFinish={handleConfirmGas}>
-              <div className="gas-limit">
-                <p className="gas-limit-label flex leading-[16px]">
-                  <span className="flex-1">{t('GasLimit')}</span>
-                </p>
-                <div className="expanded gas-limit-panel-wrapper">
+                ) : (
+                  <p className="tip">
+                    <Trans
+                      i18nKey="RecommendGasLimitTip"
+                      values={{
+                        est: Number(recommendGasLimit),
+                        current: new BigNumber(afterGasLimit)
+                          .div(recommendGasLimit)
+                          .toFixed(1),
+                      }}
+                    />
+                    <span
+                      className="recommend-times"
+                      onClick={handleSetRecommendTimes}
+                    >
+                      1.5x
+                    </span>
+                    .
+                  </p>
+                )}
+                <div className={clsx({ 'opacity-50': disableNonce })}>
+                  <p className="gas-limit-title mt-20 mb-0 leading-[16px]">
+                    {t('Nonce')}
+                  </p>
                   <Form.Item
                     className="gas-limit-panel mb-0"
-                    validateStatus={validateStatus.gasLimit.status}
+                    required
+                    validateStatus={validateStatus.nonce.status}
                   >
                     <Input
                       className="popup-input"
-                      value={afterGasLimit}
-                      onChange={handleGasLimitChange}
+                      value={customNonce}
+                      onChange={handleCustomNonceChange}
+                      disabled={disableNonce}
                     />
                   </Form.Item>
-                  {validateStatus.gasLimit.message ? (
+                  {validateStatus.nonce.message ? (
                     <p className="tip text-red-light not-italic">
-                      {validateStatus.gasLimit.message}
+                      {validateStatus.nonce.message}
                     </p>
                   ) : (
-                    <p className="tip">
-                      <Trans
-                        i18nKey="RecommendGasLimitTip"
-                        values={{
-                          est: Number(recommendGasLimit),
-                          current: new BigNumber(afterGasLimit)
-                            .div(recommendGasLimit)
-                            .toFixed(1),
-                        }}
-                      />
-                      <span
-                        className="recommend-times"
-                        onClick={handleSetRecommendTimes}
-                      >
-                        1.5x
-                      </span>
-                      .
-                    </p>
+                    <p className="tip">{t('Modify only when necessary')}</p>
                   )}
-                  <div className={clsx({ 'opacity-50': disableNonce })}>
-                    <p className="gas-limit-title mt-20 mb-0 leading-[16px]">
-                      {t('Nonce')}
-                    </p>
-                    <Form.Item
-                      className="gas-limit-panel mb-0"
-                      required
-                      validateStatus={validateStatus.nonce.status}
-                    >
-                      <Input
-                        className="popup-input"
-                        value={customNonce}
-                        onChange={handleCustomNonceChange}
-                        disabled={disableNonce}
-                      />
-                    </Form.Item>
-                    {validateStatus.nonce.message ? (
-                      <p className="tip text-red-light not-italic">
-                        {validateStatus.nonce.message}
-                      </p>
-                    ) : (
-                      <p className="tip">{t('Modify only when necessary')}</p>
-                    )}
-                  </div>
                 </div>
               </div>
-            </Form>
-          </div>
-        )}
+            </div>
+          </Form>
+        </div>
         <div className="flex justify-center mt-32 popup-footer">
           <Button
             type="primary"
@@ -648,6 +711,129 @@ const GasSelector = ({
         </div>
       </Popup>
     </>
+  );
+};
+const CardBody = styled.div`
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  gap: 8px;
+
+  .card {
+    width: 76px;
+    height: 52px;
+    background: #f5f6fa;
+    border-radius: 4px;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid transparent;
+
+    &:hover {
+      border: 1px solid #8697ff;
+    }
+
+    &.active {
+      background: rgba(134, 151, 255, 0.1);
+      border: 1px solid #8697ff;
+    }
+    .gas-level,
+    .cardTitle {
+      text-align: center;
+      font-size: 12px;
+      line-height: 14px;
+      color: ${LessPalette['@color-comment']};
+      margin: 8px auto 0;
+    }
+    .cardTitle {
+      color: ${LessPalette['@color-title']} !important;
+      font-weight: 500;
+      font-size: 13px !important;
+      margin: 4px auto 0;
+      &.active {
+        color: #8697ff !important;
+      }
+    }
+    .custom-input {
+      margin: 4px auto 0;
+    }
+    .ant-input {
+      text-align: center !important;
+      font-size: 13px !important;
+      font-weight: 500;
+      color: ${LessPalette['@color-title']};
+      padding-top: 0;
+      &.active {
+        color: #8697ff !important;
+      }
+    }
+    .ant-input:focus,
+    .ant-input-focused {
+      color: #000000;
+    }
+  }
+`;
+const GasSelectPanel = ({
+  gasList,
+  selectedGas,
+  panelSelection,
+  customGas,
+  customGasConfirm,
+  handleCustomGasChange,
+}: {
+  gasList: GasLevel[];
+  selectedGas: GasLevel | null;
+  panelSelection: (
+    e: React.MouseEvent<HTMLDivElement, MouseEvent>,
+    item: GasLevel
+  ) => void;
+  customGas: string | number;
+  customGasConfirm: React.KeyboardEventHandler<HTMLInputElement> | undefined;
+  handleCustomGasChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+}) => {
+  const { t } = useTranslation();
+  const customerInputRef = useRef<Input>(null);
+  return (
+    <CardBody>
+      {gasList.map((item, idx) => (
+        <div
+          key={`gas-item-${item.level}-${idx}`}
+          className={clsx('card cursor-pointer', {
+            active: selectedGas?.level === item.level,
+          })}
+          onClick={(e) => {
+            panelSelection(e, item);
+            if (item.level === 'custom') {
+              customerInputRef.current?.focus();
+            }
+          }}
+        >
+          <div className="gas-level">{t(GAS_LEVEL_TEXT[item.level])}</div>
+          <div
+            className={clsx('cardTitle', {
+              'custom-input': item.level === 'custom',
+              active: selectedGas?.level === item.level,
+            })}
+          >
+            {item.level === 'custom' ? (
+              <Input
+                className="cursor-pointer"
+                value={customGas}
+                defaultValue={customGas}
+                onChange={handleCustomGasChange}
+                onClick={(e) => panelSelection(e, item)}
+                onPressEnter={customGasConfirm}
+                ref={customerInputRef}
+                autoFocus={selectedGas?.level === item.level}
+                min={0}
+                bordered={false}
+              />
+            ) : (
+              item.price / 1e9
+            )}
+          </div>
+        </div>
+      ))}
+    </CardBody>
   );
 };
 
