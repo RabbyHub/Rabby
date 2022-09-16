@@ -577,7 +577,7 @@ const GasSelector = ({
           {is1559 && (
             <div className="priority-slider">
               <p className="priority-slider-header">
-                Max Priority Fee: (Gwei)
+                Max Priority Fee (Gwei)
                 <Tooltip
                   title={
                     <ol className="list-decimal list-outside pl-[12px] mb-0">
