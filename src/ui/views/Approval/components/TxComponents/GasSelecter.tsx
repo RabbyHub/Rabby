@@ -447,23 +447,23 @@ const GasSelector = ({
   return (
     <>
       <div className="gas-selector">
-        <div className="gas-selector-card items-end mb-12">
+        <div className="gas-selector-card mb-14">
           <div className="gas-selector-card-title">Gas</div>
           <div className="gas-selector-card-content ml-[27px]">
             {gas.error || !gas.success ? (
               <>
-                <div className="gas-selector-card-error mt-[6px]">
+                <div className="gas-selector-card-error">
                   Fail to fetch gas cost
                 </div>
                 {version === 'v2' && gas.error ? (
-                  <div className="gas-selector-card-error-desc mt-[2px]">
+                  <div className="gas-selector-card-error-desc">
                     {gas.error.msg}{' '}
                     <span className="number">#{gas.error.code}</span>
                   </div>
                 ) : null}
               </>
             ) : (
-              <div className="gas-selector-card-content-item mt-[4px]">
+              <div className="gas-selector-card-content-item">
                 <div className="gas-selector-card-amount">
                   <span className="text-gray-title font-medium text-15">
                     {formatTokenAmount(
