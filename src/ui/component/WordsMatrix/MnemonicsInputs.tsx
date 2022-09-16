@@ -380,28 +380,7 @@ function MnemonicsInputs({
         >
           <div role="alert">{errMsgs[0]}</div>
         </div>
-      ) : (
-        <HintsAreaBar className="mt-[12px]">
-          {!isLastTypingWordFull &&
-            currentHints.map((word, idx) => {
-              return (
-                <div
-                  key={`word-${word}-${idx}`}
-                  className="work-item-box"
-                  onClick={() => {
-                    if (focusing.index < 0) return;
-                    const newInputTexts = inputTexts.slice();
-                    newInputTexts[focusing.index] = word;
-                    setInputTexts(newInputTexts);
-                    setMnemonics(word);
-                  }}
-                >
-                  <span className="work-item">{word}</span>
-                </div>
-              );
-            })}
-        </HintsAreaBar>
-      )}
+      ) : null}
     </div>
   );
 }
