@@ -1113,5 +1113,8 @@
   },
   "The__token__on__this__chain__is__not__supported__for__swap": {
     "message": "The token on this chain is not supported for swap"
+  },
+  "The__minimum__amount__received__under__the__current__slippage__tolerance": {
+    "message": "The minimum amount received under the current slippage tolerance"
   }
 }

@@ -68,7 +68,13 @@ export const QuotesListDrawer = ({
 
   const detailsSlippageTooltipsClassName = useCss({
     '& .ant-tooltip-arrow': {
-      left: 'calc(50% - 88px )',
+      left: 'calc(50% - 56px )',
+    },
+  });
+
+  const detailsMiniReceiveTooltipsClassName = useCss({
+    '& .ant-tooltip-arrow': {
+      left: 'calc(50% - 56px )',
     },
   });
 
@@ -137,6 +143,68 @@ export const QuotesListDrawer = ({
       {
         left: (
           <div className={clsx(labelClassName)}>
+            <span>{t('Slippage tolerance')} </span>
+            <Tooltip
+              overlayClassName={clsx(
+                'rectangle max-w-[360px] left-[20px]',
+                detailsSlippageTooltipsClassName
+              )}
+              placement="bottom"
+              title={t('MaxSlippageDesc')}
+            >
+              <IconInfo />
+            </Tooltip>
+          </div>
+        ),
+        right: (
+          <div className={clsx(valueClassName)}>
+            {toSignificantDigits(new BigNumber(slippage))}%
+          </div>
+        ),
+      },
+      {
+        left: (
+          <div className={clsx(labelClassName)}>
+            <span>Minimum received </span>
+            <Tooltip
+              overlayClassName={clsx(
+                'rectangle max-w-[360px] left-[20px]',
+                detailsMiniReceiveTooltipsClassName
+              )}
+              placement="bottom"
+              title={t(
+                'The minimum amount received under the current slippage tolerance'
+              )}
+            >
+              <IconInfo />
+            </Tooltip>
+          </div>
+        ),
+        right: (
+          <div
+            className={clsx(valueClassName)}
+            title={toSignificantDigits(
+              getReceiveTokenAmountBN(
+                feeRatio,
+                list[selectedIndex]?.receive_token_raw_amount,
+                list[selectedIndex]?.receive_token?.decimals || 18
+              ).times(new BigNumber(1).minus(new BigNumber(slippage).div(100)))
+            )}
+          >
+            {toSignificantDigits(
+              getReceiveTokenAmountBN(
+                feeRatio,
+                list[selectedIndex]?.receive_token_raw_amount,
+                list[selectedIndex]?.receive_token?.decimals || 18
+              ).times(new BigNumber(1).minus(new BigNumber(slippage).div(100)))
+            )}{' '}
+            {getTokenSymbol(list[selectedIndex]?.receive_token)}
+          </div>
+        ),
+      },
+      {
+        left: (
+          <div className={clsx(labelClassName)}>
             <span>Est.gas fee </span>
             <Tooltip
               overlayClassName={clsx(
@@ -162,28 +230,6 @@ export const QuotesListDrawer = ({
               ),
               4
             )}
-          </div>
-        ),
-      },
-      {
-        left: (
-          <div className={clsx(labelClassName)}>
-            <span>{t('Slippage tolerance')} </span>
-            <Tooltip
-              overlayClassName={clsx(
-                'rectangle max-w-[360px] left-[20px]',
-                detailsSlippageTooltipsClassName
-              )}
-              placement="bottom"
-              title={t('MaxSlippageDesc')}
-            >
-              <IconInfo />
-            </Tooltip>
-          </div>
-        ),
-        right: (
-          <div className={clsx(valueClassName)}>
-            {toSignificantDigits(new BigNumber(slippage))}%
           </div>
         ),
       },
@@ -246,7 +292,7 @@ export const QuotesListDrawer = ({
     <Drawer
       closable={false}
       placement="bottom"
-      height="512px"
+      height="546px"
       visible={visible}
       onClose={onClose}
       destroyOnClose
@@ -328,7 +374,7 @@ export const QuotesListDrawer = ({
         contentWrapperStyle={{
           boxShadow: '0px -12px 20px rgba(82, 86, 115, 0.1)',
           borderRadius: '16px 16px 0px 0',
-          height: 512,
+          height: 546,
         }}
       >
         <div className="flex justify-between items-center">
