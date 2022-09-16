@@ -57,8 +57,16 @@ ga('set', 'appName', 'Rabby');
 ga('set', 'appVersion', process.env.release);
 ga('require', 'displayfeatures');
 
+declare global {
+  interface Window {
+    _paq: any;
+  }
+}
+
 const LogPageView = () => {
   ReactGA.pageview(window.location.hash);
+  window._paq.push(['setCustomUrl', window.location.hash.substr(1)]);
+  window._paq.push(['trackPageView']);
 
   return null;
 };

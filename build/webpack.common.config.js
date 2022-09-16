@@ -200,7 +200,7 @@ const config = {
     }),
     new HtmlWebpackPlugin({
       inject: true,
-      template: paths.notificationHtml,
+      template: paths.backgroundHtml,
       chunks: ['background'],
       filename: 'background.html',
     }),
