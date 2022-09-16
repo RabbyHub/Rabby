@@ -221,7 +221,10 @@ const Receive = () => {
                   <div className="account-name" title={account.name}>
                     {account.name}
                   </div>
-                  <div className="account-balance">
+                  <div
+                    className="account-balance truncate"
+                    title={splitNumberByStep((account.balance || 0).toFixed(2))}
+                  >
                     ${splitNumberByStep((account.balance || 0).toFixed(2))}
                   </div>
                 </div>

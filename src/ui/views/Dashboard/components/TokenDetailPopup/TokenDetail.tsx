@@ -200,11 +200,19 @@ const TokenDetail = ({
         </div>
         <div className="balance">
           <div className="balance-title">{token?.name} balance</div>
-          <div className="balance-content">
-            <div className="balance-value">
+          <div className="balance-content overflow-hidden">
+            <div
+              className="balance-value truncate"
+              title={splitNumberByStep((token.amount || 0)?.toFixed(4))}
+            >
               {splitNumberByStep((token.amount || 0)?.toFixed(4))}
             </div>
-            <div className="balance-value-usd">
+            <div
+              className="balance-value-usd truncate"
+              title={splitNumberByStep(
+                (token.amount * token.price || 0)?.toFixed(2)
+              )}
+            >
               ≈ $
               {splitNumberByStep((token.amount * token.price || 0)?.toFixed(2))}
             </div>

@@ -1052,6 +1052,7 @@
           .token-change-item {
             display: flex;
             align-items: center;
+            overflow: hidden;
 
             .token-change-logo {
               width: 28px;
@@ -1065,6 +1066,7 @@
               color: @color-title;
               .ellipsis();
               margin-right: 12px;
+              flex: 1;
             }
             .token-change-price {
               font-size: 12px;
@@ -1073,6 +1075,7 @@
               margin-left: auto;
               flex-shrink: 0;
               .ellipsis();
+              max-width: 50%;
             }
           }
         }

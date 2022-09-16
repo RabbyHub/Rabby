@@ -169,13 +169,22 @@ const TokenSelector = ({
                 </div>
 
                 <div className="flex flex-col text-right">
-                  <div className="font-medium text-13 text-gray-title">
+                  <div
+                    className="font-medium text-13 text-gray-title truncate ml-[8px]"
+                    title={formatTokenAmount(token.amount)}
+                  >
                     {formatTokenAmount(token.amount)}
                   </div>
                   <div
+                    title={splitNumberByStep(
+                      new BigNumber(token.price || 0)
+                        .times(token.amount)
+                        .toFixed(2)
+                    )}
                     className={clsx(
                       'text-12 text-gray-content',
-                      !isSwapType && 'hidden'
+                      !isSwapType && 'hidden',
+                      'truncate'
                     )}
                   >
                     $

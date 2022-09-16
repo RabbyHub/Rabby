@@ -86,7 +86,10 @@ const AccountCard = ({
             />
           </div>
         )}
-        <span className="amount">
+        <span
+          className="amount truncate"
+          title={splitNumberByStep((balance || 0).toFixed(2))}
+        >
           ${splitNumberByStep((balance || 0).toFixed(2))}
         </span>
       </div>

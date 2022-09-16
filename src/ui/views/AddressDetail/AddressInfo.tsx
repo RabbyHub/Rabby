@@ -127,7 +127,10 @@ export const AddressInfo = ({ address, type, brandName, source }: Props) => {
       <div className="rabby-list-item">
         <div className="rabby-list-item-content">
           <div className="rabby-list-item-label">Assets</div>
-          <div className="rabby-list-item-extra">
+          <div
+            className="rabby-list-item-extra truncate"
+            title={splitNumberByStep((balance || 0).toFixed(0))}
+          >
             ${splitNumberByStep((balance || 0).toFixed(0))}
           </div>
         </div>

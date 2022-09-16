@@ -431,7 +431,11 @@ const BalanceChange = ({
                     />
                     <span
                       className="token-change-amount"
-                      title={`${token.amount} ${token.symbol}`}
+                      title={`${splitNumberByStep(
+                        new BigNumber(
+                          new BigNumber(token.amount).toFixed(9)
+                        ).toFixed()
+                      )} ${token.symbol}`}
                     >
                       -{' '}
                       {splitNumberByStep(
@@ -443,7 +447,7 @@ const BalanceChange = ({
                     </span>
                     <span
                       className="token-change-price"
-                      title={String(token.usd_value)}
+                      title={splitNumberByStep(token.usd_value!.toFixed(2))}
                     >
                       - ${splitNumberByStep(token.usd_value!.toFixed(2))}
                     </span>

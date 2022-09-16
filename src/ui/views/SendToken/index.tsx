@@ -736,12 +736,26 @@ const SendToken = () => {
               {isLoading ? (
                 <Skeleton.Input active style={{ width: 100 }} />
               ) : (
-                `${t('Balance')}: ${formatTokenAmount(
-                  new BigNumber(currentToken.raw_amount_hex_str || 0)
-                    .div(10 ** currentToken.decimals)
-                    .toFixed(),
-                  4
-                )}`
+                <>
+                  {t('Balance')}:{' '}
+                  <span
+                    className="truncate max-w-[80px]"
+                    title={formatTokenAmount(
+                      new BigNumber(currentToken.raw_amount_hex_str || 0)
+                        .div(10 ** currentToken.decimals)
+                        .toFixed(),
+                      4
+                    )}
+                  >
+                    $
+                    {formatTokenAmount(
+                      new BigNumber(currentToken.raw_amount_hex_str || 0)
+                        .div(10 ** currentToken.decimals)
+                        .toFixed(),
+                      4
+                    )}
+                  </span>
+                </>
               )}
               {currentToken.amount > 0 && (
                 <MaxButton onClick={handleClickTokenBalance}>MAX</MaxButton>
@@ -771,7 +785,14 @@ const SendToken = () => {
               />
             )}
           </Form.Item>
-          <div className="token-price">
+          <div
+            className="token-price truncate"
+            title={splitNumberByStep(
+              (
+                (form.getFieldValue('amount') || 0) * currentToken.price || 0
+              ).toFixed(2)
+            )}
+          >
             ≈ $
             {splitNumberByStep(
               (

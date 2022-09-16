@@ -149,7 +149,10 @@ function AddressRow({
                 success: copiedSuccess,
               })}
             />
-            <div className={'money-color'}>
+            <div
+              className="money-color truncate max-w-[80px]"
+              title={splitNumberByStep(Math.floor(account?.balance || 0))}
+            >
               ${splitNumberByStep(Math.floor(account?.balance || 0))}
             </div>
           </div>
