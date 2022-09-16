@@ -172,7 +172,7 @@ const TokenAmountInput = ({
         </span>
         <img src={IconArrowDown} className="icon icon-arrow-down" />
       </div>
-      <div className="right relative flex flex-col items-end">
+      <div className="right relative flex flex-col items-end overflow-hidden">
         <Input
           ref={tokenInputRef}
           value={value}
@@ -180,7 +180,12 @@ const TokenAmountInput = ({
           title={value}
         />
         {inlinePrize && (
-          <div className="text-gray-content text-12 text-right ">
+          <div
+            className="text-gray-content text-12 text-right max-w-full truncate"
+            title={splitNumberByStep(
+              ((Number(value) || 0) * token.price || 0).toFixed(2)
+            )}
+          >
             {Number(value)
               ? `≈$${splitNumberByStep(
                   ((Number(value) || 0) * token.price || 0).toFixed(2)
