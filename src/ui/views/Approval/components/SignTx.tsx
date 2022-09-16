@@ -8,7 +8,7 @@ import {
 import Safe from '@rabby-wallet/gnosis-sdk';
 import { SafeInfo } from '@rabby-wallet/gnosis-sdk/src/api';
 import * as Sentry from '@sentry/browser';
-import { Button, Drawer, Modal, Tooltip } from 'antd';
+import { Button, Drawer, Modal } from 'antd';
 import {
   Chain,
   ExplainTxResponse,
@@ -29,6 +29,8 @@ import {
   KEYRING_TYPE,
   SUPPORT_1559_KEYRING_TYPE,
   KEYRING_CATEGORY_MAP,
+  SAFE_GAS_LIMIT_RATIO,
+  DEFAULT_GAS_LIMIT_RATIO,
 } from 'consts';
 import {
   addHexPrefix,
@@ -40,7 +42,6 @@ import {
 import React, { ReactNode, useEffect, useMemo, useState } from 'react';
 import ReactGA from 'react-ga';
 import { useTranslation } from 'react-i18next';
-import IconInfo from 'ui/assets/infoicon.svg';
 import IconGnosis from 'ui/assets/walletlogo/gnosis.png';
 import IconWatch from 'ui/assets/walletlogo/watch-purple.svg';
 import { useApproval, useWallet, isStringOrNumber } from 'ui/utils';
@@ -246,11 +247,17 @@ const getRecommendGas = async ({
   chainId: number;
 }) => {
   if (gas > 0) {
-    return new BigNumber(gas);
+    return {
+      needRatio: true,
+      gas: new BigNumber(gas),
+    };
   }
   const txGas = tx.gasLimit || tx.gas;
   if (txGas && new BigNumber(txGas).gt(0)) {
-    return new BigNumber(txGas);
+    return {
+      needRatio: true,
+      gas: new BigNumber(txGas),
+    };
   }
   const res = await wallet.openapi.historyGasUsed({
     tx: {
@@ -263,7 +270,10 @@ const getRecommendGas = async ({
     user_addr: tx.from,
   });
   if (res.gas_used > 0) {
-    return new BigNumber(res.gas_used);
+    return {
+      needRatio: true,
+      gas: new BigNumber(res.gas_used),
+    };
   }
   const chain = Object.values(CHAINS).find((item) => item.id === chainId);
   if (!chain) {
@@ -276,9 +286,12 @@ const getRecommendGas = async ({
     },
     chain.serverId
   );
-  return new BigNumber(
-    new BigNumber(block.gasLimit).times(19).div(20).toFixed(0)
-  );
+  return {
+    needRatio: false,
+    gas: new BigNumber(
+      new BigNumber(block.gasLimit).times(19).div(20).toFixed(0)
+    ),
+  };
 };
 
 // todo move to background
@@ -484,6 +497,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     setCantProcessReason,
   ] = useState<ReactNode | null>();
   const [recommendGasLimit, setRecommendGasLimit] = useState<string>('');
+  const [gasUsed, setGasUsed] = useState('');
   const [recommendNonce, setRecommendNonce] = useState<string>('');
   const [updateId, setUpdateId] = useState(0);
   const [txDetail, setTxDetail] = useState<ExplainTxResponse | null>({
@@ -776,9 +790,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     if (updateNonce && !isGnosisAccount) {
       setRealNonce(recommendNonce);
     } // do not overwrite nonce if from === to(cancel transaction)
-    const { pendings, completeds } = await wallet.getTransactionHistory(
-      address
-    );
+    const { pendings } = await wallet.getTransactionHistory(address);
     const res: ExplainTxResponse = await wallet.openapi.preExecTx({
       tx: {
         ...tx,
@@ -798,7 +810,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
           return result.concat(item.txs.map((tx) => tx.rawTx));
         }, [] as Tx[]),
     });
-    const gas = await getRecommendGas({
+    const { gas, needRatio } = await getRecommendGas({
       gas: res.gas.gas_used,
       tx,
       wallet,
@@ -807,7 +819,14 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     setRecommendGasLimit(`0x${gas.toString(16)}`);
     if (!gasLimit) {
       // use server response gas limit
-      const recommendGasLimit = new BigNumber(gas).toFixed(0);
+      let ratio = SAFE_GAS_LIMIT_RATIO[chainId] || DEFAULT_GAS_LIMIT_RATIO;
+      if (res.pre_exec_version === 'v0' || res.pre_exec_version === 'v1') {
+        // use 1.5x for v0 or v1 preExec
+        ratio = 1.5;
+      }
+      const recommendGasLimit = needRatio
+        ? gas.times(ratio).toFixed(0)
+        : gas.toFixed(0);
       setGasLimit(intToHex(Number(recommendGasLimit)));
     }
     setTxDetail(res);
