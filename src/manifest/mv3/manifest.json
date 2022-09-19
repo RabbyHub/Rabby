@@ -45,7 +45,9 @@
       "js": ["vendor/trezor/trezor-content-script.js"]
     }
   ],
-  "content_security_policy": "script-src 'self' 'wasm-eval' https://www.google-analytics.com; object-src 'self'",
+  "content_security_policy": {
+    "extension_pages": "script-src 'self' 'wasm-eval'; object-src 'self'"
+  },
   "permissions": [
     "storage",
     "scripting",
