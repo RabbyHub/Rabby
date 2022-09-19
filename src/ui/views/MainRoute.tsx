@@ -61,6 +61,15 @@ ga('set', 'appName', 'Rabby');
 ga('set', 'appVersion', process.env.release);
 ga('require', 'displayfeatures');
 
+ReactGA.initialize('UA-199755108-1', {
+  gaAddress: chrome.runtime.getURL('/vendor/ga.js'),
+});
+// eslint-disable-next-line @typescript-eslint/no-empty-function
+ga('set', 'checkProtocolTask', function () {});
+ga('set', 'appName', 'Rabby');
+ga('set', 'appVersion', process.env.release ?? 'ff');
+ga('require', 'displayfeatures');
+
 declare global {
   interface Window {
     _paq: any;
