@@ -66,6 +66,7 @@ import { generateAliasName } from '@/utils/account';
 import buildUnserializedTransaction from '@/utils/optimism/buildUnserializedTransaction';
 import BigNumber from 'bignumber.js';
 import * as Sentry from '@sentry/browser';
+import { addHexPrefix, intToHex, unpadHexString } from 'ethereumjs-util';
 
 const stashKeyrings: Record<string | number, any> = {};
 
@@ -162,6 +163,103 @@ export class WalletController extends BaseController {
     const feeRatio = await swapContract.feeRatio();
 
     return feeRatio.toString();
+  };
+
+  sendERC20 = async ({
+    to,
+    chainServerId,
+    tokenId,
+    rawAmount,
+    gasPrice,
+    $ctx,
+  }: {
+    to: string;
+    chainServerId: string;
+    tokenId: string;
+    rawAmount: string;
+    gasPrice?: string;
+    $ctx?: any;
+  }) => {
+    const account = await preferenceService.getCurrentAccount();
+    if (!account) throw new Error('no current account');
+    const chain = Object.values(CHAINS).find(
+      (chain) => chain.serverId === chainServerId
+    );
+    const chainId = chain?.id;
+    if (!chainId) throw new Error('invalid chain id');
+    const params: Record<string, any> = {
+      chainId: chain.id,
+      from: account!.address,
+      to: tokenId,
+      value: '0x0',
+      data: ((abiCoder as unknown) as AbiCoder).encodeFunctionCall(
+        {
+          name: 'transfer',
+          type: 'function',
+          inputs: [
+            {
+              type: 'address',
+              name: 'to',
+            },
+            {
+              type: 'uint256',
+              name: 'value',
+            },
+          ],
+        },
+        [to, rawAmount]
+      ),
+      isSend: true,
+    };
+    const isNativeToken = tokenId === chain.nativeTokenAddress;
+
+    if (isNativeToken) {
+      params.to = to;
+      delete params.data;
+      params.value = addHexPrefix(
+        unpadHexString(
+          ((abiCoder as unknown) as AbiCoder).encodeParameter(
+            'uint256',
+            rawAmount
+          )
+        )
+      );
+      params.gas = intToHex(21000);
+    }
+    if (gasPrice) {
+      params.gasPrice = gasPrice;
+    }
+    return await this.sendRequest({
+      method: 'eth_sendTransaction',
+      params: [params],
+      $ctx,
+    });
+  };
+
+  gasTopUp = async (params: {
+    to: string;
+    chainServerId: string;
+    tokenId: string;
+    rawAmount: string;
+    gasPrice?: string;
+    $ctx?: any;
+    toChainId: string;
+    toTokenAmount: string;
+    fromTokenAmount: string;
+  }) => {
+    const { toChainId, fromTokenAmount, toTokenAmount, ...others } = params;
+    const account = await preferenceService.getCurrentAccount();
+    if (!account) throw new Error('no current account');
+    const txId = await this.sendERC20(others);
+    this.openapi.postGasStationOrder({
+      userAddr: account.address,
+      fromChainId: others.chainServerId,
+      fromTxId: txId,
+      toChainId: toChainId,
+      toTokenAmount,
+      fromTokenId: others.tokenId,
+      fromTokenAmount: fromTokenAmount,
+    });
   };
 
   rabbySwap = async (
@@ -762,6 +860,9 @@ export class WalletController extends BaseController {
 
   getLastSelectedSwapPayToken = preferenceService.getLastSelectedSwapPayToken;
   setLastSelectedSwapPayToken = preferenceService.setLastSelectedSwapPayToken;
+
+  getLastSelectedGasTopUpChain = preferenceService.getLastSelectedGasTopUpChain;
+  setLastSelectedGasTopUpChain = preferenceService.setLastSelectedGasTopUpChain;
 
   /* chains */
   getSavedChains = () => preferenceService.getSavedChains();

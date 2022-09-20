@@ -8,6 +8,7 @@ import IconAddressCopy from 'ui/assets/component/icon-copy.svg';
 
 import './index.less';
 import clsx from 'clsx';
+import { ALIAS_ADDRESS } from '@/constant';
 
 interface NameAndAddressProps {
   className?: string;
@@ -30,7 +31,10 @@ const NameAndAddress = ({
   const init = async () => {
     const contact =
       (await wallet.getContactByAddress(address?.toLowerCase()))?.name || '';
-    const alianName = (await wallet.getAlianName(address?.toLowerCase())) || '';
+    const alianName =
+      (await wallet.getAlianName(address?.toLowerCase())) ||
+      ALIAS_ADDRESS[address?.toLowerCase() || ''] ||
+      '';
     setContact(contact);
     setAlianName(alianName);
   };
