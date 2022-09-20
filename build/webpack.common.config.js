@@ -241,6 +241,9 @@ const config = {
       },
     },
   },
+  experiments: {
+    topLevelAwait: true,
+  },
 };
 
 module.exports = config;
