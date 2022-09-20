@@ -303,6 +303,8 @@ const GasSelector = ({
     e.stopPropagation();
 
     if (/^\d*(\.\d*)?$/.test(e.target.value)) {
+      setCustomGas(e?.target?.value);
+
       const gasObj = {
         level: 'custom',
         price: Number(e?.target?.value),
@@ -393,7 +395,9 @@ const GasSelector = ({
     if (!rawSelectedGas) return;
     setSelectedGas(rawSelectedGas);
     if (rawSelectedGas?.level !== 'custom') return;
-    setCustomGas(rawSelectedGas.price / 1e9);
+    setCustomGas((e) =>
+      Number(e) * 1e9 === rawSelectedGas.price ? e : rawSelectedGas.price / 1e9
+    );
   }, [rawSelectedGas]);
 
   useEffect(() => {
@@ -489,11 +493,7 @@ const GasSelector = ({
           gasList={gasList}
           selectedGas={rawSelectedGas}
           panelSelection={externalPanelSelection}
-          customGas={
-            rawSelectedGas?.level === 'custom'
-              ? rawSelectedGas.price / 1e9
-              : customGas
-          }
+          customGas={customGas}
           customGasConfirm={externalCustomGasConfirm}
           handleCustomGasChange={externalHandleCustomGasChange}
         />
