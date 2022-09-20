@@ -747,7 +747,6 @@ const SendToken = () => {
                       4
                     )}
                   >
-                    $
                     {formatTokenAmount(
                       new BigNumber(currentToken.raw_amount_hex_str || 0)
                         .div(10 ** currentToken.decimals)
