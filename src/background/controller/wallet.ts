@@ -165,7 +165,7 @@ export class WalletController extends BaseController {
     return feeRatio.toString();
   };
 
-  sendERC20 = async ({
+  sendToken = async ({
     to,
     chainServerId,
     tokenId,
