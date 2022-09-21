@@ -250,7 +250,7 @@ export class WalletController extends BaseController {
     const { toChainId, fromTokenAmount, toTokenAmount, ...others } = params;
     const account = await preferenceService.getCurrentAccount();
     if (!account) throw new Error('no current account');
-    const txId = await this.sendERC20(others);
+    const txId = await this.sendToken(others);
     this.openapi.postGasStationOrder({
       userAddr: account.address,
       fromChainId: others.chainServerId,
