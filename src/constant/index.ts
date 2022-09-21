@@ -677,3 +677,10 @@ export const SAFE_GAS_LIMIT_RATIO = {
   56: 1.5,
   137: 1.5,
 };
+
+declare global {
+  interface Window {
+    __is_rd__?: boolean;
+  }
+}
+export const IS_RD = window.__is_rd__;
