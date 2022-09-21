@@ -312,7 +312,7 @@ class TxHistory {
         success,
         preExecSuccess:
           target.explain.pre_exec.success && target.explain.calcSuccess,
-        createdBy: target?.$ctx?.ga ? 'rabby' : 'dapp',
+        createBy: target?.$ctx?.ga ? 'rabby' : 'dapp',
         source: target?.$ctx?.ga?.source || '',
         trigger: target?.$ctx?.ga?.trigger || '',
       });
