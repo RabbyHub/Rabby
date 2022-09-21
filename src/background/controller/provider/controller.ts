@@ -272,6 +272,7 @@ class ProviderController extends BaseController {
       session: { origin },
       approvalRes,
     } = cloneDeep(options);
+    console.log('options', options);
     const keyring = await this._checkAddress(txParams.from);
     const isSend = !!txParams.isSend;
     const isSpeedUp = !!txParams.isSpeedUp;
@@ -384,6 +385,7 @@ class ProviderController extends BaseController {
             failed: false,
           },
           cacheExplain,
+          origin,
           options?.data?.$ctx
         );
         transactionWatchService.addTx(
@@ -476,7 +478,8 @@ class ProviderController extends BaseController {
               failed: false,
               isSubmitFailed: true,
             },
-            cacheExplain
+            cacheExplain,
+            origin
           );
         }
         const errMsg = e.message || JSON.stringify(e);
