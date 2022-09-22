@@ -1,9 +1,10 @@
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Input } from 'antd';
 import cloneDeep from 'lodash/cloneDeep';
+import uniqBy from 'lodash/uniqBy';
 import BigNumber from 'bignumber.js';
 import { TokenItem } from 'background/service/openapi';
-import { splitNumberByStep, useWallet, useWalletOld } from 'ui/utils';
+import { splitNumberByStep, useWalletOld } from 'ui/utils';
 import TokenWithChain from '../TokenWithChain';
 import TokenSelector, {
   isSwapTokenType,
@@ -78,7 +79,10 @@ const TokenAmountInput = ({
   };
 
   const availableToken = useMemo(
-    () => tokens.filter((e) => !excludeTokens.includes(e.id)),
+    () =>
+      uniqBy(tokens, (token) => {
+        return `${token.chain}-${token.id}`;
+      }).filter((e) => !excludeTokens.includes(e.id)),
     [tokens, excludeTokens]
   );
 
