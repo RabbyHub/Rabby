@@ -258,7 +258,12 @@ const SendToken = () => {
           )
         )
       );
-      params.gas = intToHex(21000);
+      if (
+        chain.enum !== CHAINS_ENUM.ARBITRUM &&
+        chain.enum !== CHAINS_ENUM.OP
+      ) {
+        params.gas = intToHex(21000); // L2 has extra validation fee so can not set gasLimit as 21000 when send native token
+      }
       if (showGasReserved) {
         params.gasPrice = selectedGasLevel?.price;
       }

@@ -391,6 +391,7 @@ const checkGasAndNonce = ({
   isCancel,
   gasExplainResponse,
   isSpeedUp,
+  ignoreGasWarning,
 }: {
   recommendGasLimit: number | string | BigNumber;
   recommendNonce: number | string | BigNumber;
@@ -400,6 +401,7 @@ const checkGasAndNonce = ({
   gasExplainResponse: ReturnType<typeof useExplainGas>;
   isCancel: boolean;
   isSpeedUp: boolean;
+  ignoreGasWarning: boolean;
 }) => {
   const errors: { code: number; msg: string }[] = [];
 
@@ -411,14 +413,15 @@ const checkGasAndNonce = ({
           (item) => item.id === txDetail.native_token.id
         )?.amount || 0
       )
-      .isGreaterThan(txDetail.native_token.amount)
+      .isGreaterThan(txDetail.native_token.amount) &&
+    !ignoreGasWarning
   ) {
     errors.push({
       code: 3001,
       msg: 'The reserved gas fee is not enough',
     });
   }
-  if (new BigNumber(gasLimit).lt(recommendGasLimit)) {
+  if (new BigNumber(gasLimit).lt(recommendGasLimit) && !ignoreGasWarning) {
     errors.push({
       code: 3002,
       msg: `Gas limit is too low, the minimum should be ${new BigNumber(
@@ -446,6 +449,7 @@ const useCheckGasAndNonce = ({
   isCancel,
   gasExplainResponse,
   isSpeedUp,
+  ignoreGasWarning,
 }: Parameters<typeof checkGasAndNonce>[0]) => {
   return useMemo(
     () =>
@@ -458,6 +462,7 @@ const useCheckGasAndNonce = ({
         isCancel,
         gasExplainResponse,
         isSpeedUp,
+        ignoreGasWarning,
       }),
     [
       recommendGasLimit,
@@ -468,6 +473,7 @@ const useCheckGasAndNonce = ({
       isCancel,
       gasExplainResponse,
       isSpeedUp,
+      ignoreGasWarning,
     ]
   );
 };
@@ -497,7 +503,6 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     setCantProcessReason,
   ] = useState<ReactNode | null>();
   const [recommendGasLimit, setRecommendGasLimit] = useState<string>('');
-  const [gasUsed, setGasUsed] = useState('');
   const [recommendNonce, setRecommendNonce] = useState<string>('');
   const [updateId, setUpdateId] = useState(0);
   const [txDetail, setTxDetail] = useState<ExplainTxResponse | null>({
@@ -574,6 +579,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
   const [inited, setInited] = useState(false);
   const [isHardware, setIsHardware] = useState(false);
   const [selectedGas, setSelectedGas] = useState<GasLevel | null>(null);
+  const [ignoreGasWarning, setIgnoreGasWarning] = useState(false);
   const [gasList, setGasList] = useState<GasLevel[]>([
     {
       level: 'slow',
@@ -718,7 +724,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
   const [forceProcess, setForceProcess] = useState(true);
   const [safeInfo, setSafeInfo] = useState<SafeInfo | null>(null);
   const [maxPriorityFee, setMaxPriorityFee] = useState(0);
-
+  console.log(tx);
   const gasExplainResponse = useExplainGas({
     gasUsed: recommendGasLimit,
     gasPrice: selectedGas?.price || 0,
@@ -737,6 +743,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     isSpeedUp,
     isCancel,
     txDetail,
+    ignoreGasWarning,
   });
 
   const checkTx = async (address: string) => {
@@ -817,7 +824,10 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       chainId,
     });
     setRecommendGasLimit(`0x${gas.toString(16)}`);
-    if (!gasLimit) {
+    if (tx.gas && origin === INTERNAL_REQUEST_ORIGIN) {
+      setGasLimit(intToHex(Number(tx.gas))); // use origin gas as gasLimit when tx is an internal tx with gasLimit(i.e. for SendMax native token)
+      setIgnoreGasWarning(true); // ignore gas warning when tx is an internal tx with gasLimit
+    } else if (!gasLimit) {
       // use server response gas limit
       let ratio = SAFE_GAS_LIMIT_RATIO[chainId] || DEFAULT_GAS_LIMIT_RATIO;
       if (res.pre_exec_version === 'v0' || res.pre_exec_version === 'v1') {
