@@ -654,7 +654,7 @@ const SendToken = () => {
           onChange={handleChainChanged}
           showModal={showChainsModal}
         />
-        <div className="section">
+        <div className="section relative">
           <div className="section-title">{t('From')}</div>
           <AccountCard
             icons={{

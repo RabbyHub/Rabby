@@ -58,6 +58,7 @@ const SwapContainer = styled.div`
 `;
 
 const Section = styled.div`
+  position: relative;
   padding: 12px;
   background-color: ${LessPalette['@color-white']};
   border-radius: 6px;
