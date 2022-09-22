@@ -431,13 +431,21 @@ const GasSelector = ({
   if (!isReady && isFirstTimeLoad)
     return (
       <>
-        <div className="gas-selector pt-[15px] pb-[14px]">
-          <div className="pl-[84px]">
+        <div className="gas-selector pt-[14px] pb-[16px]">
+          <div>
             <div>
-              <Skeleton.Input active style={{ width: 90, height: 17 }} />
+              <Skeleton.Input active style={{ width: 120, height: 18 }} />
             </div>
-            <div>
-              <Skeleton.Input active style={{ width: 70, height: 15 }} />
+            <div className="flex items-center justify-between mt-12">
+              {Array(4)
+                .fill(0)
+                .map((_e, i) => (
+                  <Skeleton.Input
+                    key={i}
+                    active
+                    style={{ width: 76, height: 52 }}
+                  />
+                ))}
             </div>
           </div>
         </div>
@@ -447,7 +455,12 @@ const GasSelector = ({
   return (
     <>
       <div className="gas-selector">
-        <div className="gas-selector-card mb-14">
+        <div
+          className={clsx(
+            'gas-selector-card',
+            gas.error || !gas.success ? 'items-start mb-12' : 'mb-14'
+          )}
+        >
           <div className="gas-selector-card-title">Gas</div>
           <div className="gas-selector-card-content ml-[27px]">
             {gas.error || !gas.success ? (

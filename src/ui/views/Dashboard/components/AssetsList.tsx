@@ -3,13 +3,13 @@ import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FixedSizeList } from 'react-window';
 import ReactGA from 'react-ga';
-import { SvgIconLoading } from 'ui/assets';
 import IconArrowUp from 'ui/assets/arrow-up.svg';
 import IconOpenDeFi from 'ui/assets/dashboard/opendefi.png';
 import { Empty, TokenWithChain } from 'ui/component';
 import { openInTab, splitNumberByStep, useHover } from 'ui/utils';
 import { getKRCategoryByType } from '@/utils/transaction';
 import { connectStore, useRabbySelector } from '@/ui/store';
+import { Skeleton } from 'antd';
 
 const _Row = (props) => {
   const { data, index, style, isExpand, setIsExpand, totalHidden } = props;
@@ -174,11 +174,27 @@ const AssetsList = ({
     return <></>;
   }
   return (
-    <div className={clsx('tokenList', defiAnimate)}>
+    <div
+      className={clsx(
+        'tokenList',
+        isloading && 'bg-transparent shadow-none backdrop-filter-none',
+        defiAnimate
+      )}
+    >
       {isloading && (
         <div className="loadingContainer">
-          <SvgIconLoading className="icon icon-loading" fill="#FFFFFF" />
-          <div className="loading-text">{t('Loading Protocols')}</div>
+          {Array(8)
+            .fill(1)
+            .map((_, i) => (
+              <Skeleton.Input
+                key={i}
+                style={{
+                  width: 360,
+                  height: 32,
+                  marginTop: 16,
+                }}
+              />
+            ))}
         </div>
       )}
       {!isloading && assets.length > 0 ? (

@@ -1,5 +1,5 @@
 import { NFTApproval } from '@/background/service/openapi';
-import { Empty, Loading } from '@/ui/component';
+import { Empty } from '@/ui/component';
 import { connectStore, useRabbySelector } from '@/ui/store';
 import { getKRCategoryByType } from '@/utils/transaction';
 import React from 'react';
@@ -7,6 +7,7 @@ import ReactGA from 'react-ga';
 import { useTranslation } from 'react-i18next';
 import IconSearch from 'ui/assets/search.svg';
 import { getChain } from 'utils';
+import { Loading } from './Loading';
 import NFTListItem from './NFTListItem';
 
 interface ApprovalCardProps {
@@ -31,9 +32,7 @@ const NFTList = ({ data, loading, onSearch, onDecline }: ApprovalCardProps) => {
         <div className="column-title">{t('Approved to')}</div>
       </div>
       <div className="list-body">
-        <Loading loading={loading} className="py-[120px]">
-          {t('Loading')}
-        </Loading>
+        {loading && <Loading />}
         {!loading && (!data || data.length <= 0) && (
           <Empty className="pt-[80px]">{t('No Approvals')}</Empty>
         )}

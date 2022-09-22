@@ -1,9 +1,9 @@
 import { NFTItem } from '@/background/service/openapi';
 import { Empty } from '@/ui/component';
+import { Skeleton } from 'antd';
 import React, { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FixedSizeList } from 'react-window';
-import { SvgIconLoading } from 'ui/assets';
 import NFTListRow from './NFTListRow';
 
 export interface NFTListProps {
@@ -16,12 +16,34 @@ const NFTList = ({ isLoading, data }: NFTListProps) => {
   if (isLoading) {
     return (
       <div className="nft-list">
-        {
-          <div className="loadingContainer items-center">
-            <SvgIconLoading className="icon icon-loading ml-0" fill="#FFFFFF" />
-            <div className="loading-text">{t('Loading NFTs')}</div>
-          </div>
-        }
+        {Array(8)
+          .fill(1)
+          .map((_, i) => (
+            <div key={i} className="flex items-center mt-[20px] ml-[20px]">
+              <Skeleton.Input
+                style={{
+                  width: 32,
+                  height: 32,
+                  marginRight: 8,
+                }}
+              />
+              <div className="flex flex-col">
+                <Skeleton.Input
+                  style={{
+                    width: 139,
+                    height: 15,
+                    marginBottom: 2,
+                  }}
+                />
+                <Skeleton.Input
+                  style={{
+                    width: 59,
+                    height: 14,
+                  }}
+                />
+              </div>
+            </div>
+          ))}
       </div>
     );
   }

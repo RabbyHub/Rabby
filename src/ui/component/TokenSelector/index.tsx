@@ -1,5 +1,5 @@
-import React, { useEffect, useMemo, useState } from 'react';
-import { Input, Drawer } from 'antd';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import { Input, Drawer, Skeleton } from 'antd';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
 import { useDebounce } from 'react-use';
@@ -7,7 +7,6 @@ import TokenWithChain from '../TokenWithChain';
 import { TokenItem } from 'background/service/openapi';
 import { splitNumberByStep, formatTokenAmount } from 'ui/utils/number';
 import IconSearch from 'ui/assets/search.svg';
-import { SvgIconLoading } from 'ui/assets';
 import './style.less';
 import BigNumber from 'bignumber.js';
 import Empty from '../Empty';
@@ -75,21 +74,30 @@ const TokenSelector = ({
 
   const isSwapType = isSwapTokenType(type);
 
-  const NoDataUI = (
-    <div className="no-token">
-      {isLoading ? (
-        <SvgIconLoading fill="#707280" className="icon icon-loading" />
+  const NoDataUI = useMemo(
+    () =>
+      isLoading ? (
+        <div>
+          {Array(isSwapType ? 8 : 10)
+            .fill(1)
+            .map((_, i) =>
+              isSwapType ? <SwapLoading key={i} /> : <DefaultLoading key={i} />
+            )}
+        </div>
       ) : (
-        <img
-          className="no-data-image"
-          src="/images/nodata-tx.png"
-          alt="no site"
-        />
-      )}
-      <p className="text-gray-content text-14 mt-12 text-center mb-0">
-        {isLoading ? t('Loading Tokens') : t('No Tokens')}
-      </p>
-    </div>
+        <div className="no-token">
+          <img
+            className="no-data-image"
+            src="/images/nodata-tx.png"
+            alt="no site"
+          />
+
+          <p className="text-gray-content text-14 mt-12 text-center mb-0">
+            {t('No Tokens')}
+          </p>
+        </div>
+      ),
+    [isLoading, isSwapType, t]
   );
 
   useEffect(() => {
@@ -215,5 +223,61 @@ const TokenSelector = ({
     </Drawer>
   );
 };
+
+const DefaultLoading = () => (
+  <div className="flex justify-between mt-[16px] pl-[20px] pr-[17px]">
+    <Skeleton.Input
+      style={{
+        width: 73,
+        height: 23,
+      }}
+    />
+    <Skeleton.Input
+      style={{
+        width: 76,
+        height: 23,
+      }}
+    />
+    <Skeleton.Input
+      style={{
+        width: 92,
+        height: 23,
+      }}
+    />
+  </div>
+);
+
+const SwapLoading = () => (
+  <div className="mt-[12px] mb-[20px] pl-[20px] pr-[17px]">
+    <div className="flex justify-between mb-[2px]">
+      <Skeleton.Input
+        style={{
+          width: 139,
+          height: 15,
+        }}
+      />
+      <Skeleton.Input
+        style={{
+          width: 90,
+          height: 15,
+        }}
+      />
+    </div>
+    <div className="flex justify-between">
+      <Skeleton.Input
+        style={{
+          width: 59,
+          height: 14,
+        }}
+      />
+      <Skeleton.Input
+        style={{
+          width: 59,
+          height: 14,
+        }}
+      />
+    </div>
+  </div>
+);
 
 export default TokenSelector;
