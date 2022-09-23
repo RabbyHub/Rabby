@@ -11,7 +11,7 @@ const service = new OpenApiService({
       host: INITIAL_OPENAPI_URL,
     },
   }),
-  adapter: fetchAdapter,
+  adapter: fetchAdapter as any,
 });
 
 export default service;
