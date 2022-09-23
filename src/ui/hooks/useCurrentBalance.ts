@@ -30,6 +30,7 @@ export default function useCurrentBalance(
   const [balance, setBalance] = useState<number | null>(null);
   const [success, setSuccess] = useState(true);
   const [balanceLoading, setBalanceLoading] = useState(false);
+  const [balanceFromCache, setBalanceFromCache] = useState(false);
   let isCanceled = false;
   const [chainBalances, setChainBalances] = useState<
     DisplayChainWithWhiteLogo[]
@@ -44,6 +45,7 @@ export default function useCurrentBalance(
         chain_list.filter((item) => item.usd_value > 0).map(formatChain)
       );
       setBalanceLoading(false);
+      setBalanceFromCache(false);
     },
     onError() {
       setSuccess(false);
@@ -56,6 +58,7 @@ export default function useCurrentBalance(
     setBalanceLoading(true);
     const cacheData = await wallet.getAddressCacheBalance(account);
     if (cacheData) {
+      setBalanceFromCache(true);
       setBalance(cacheData.total_usd_value);
       if (update) {
         setBalanceLoading(true);
@@ -66,6 +69,7 @@ export default function useCurrentBalance(
     } else {
       getAddressBalance(account.toLowerCase());
       setBalanceLoading(false);
+      setBalanceFromCache(false);
     }
   };
 
@@ -92,5 +96,6 @@ export default function useCurrentBalance(
     getAddressBalance,
     success,
     balanceLoading,
+    balanceFromCache,
   ] as const;
 }

@@ -22,6 +22,7 @@ const BalanceView = ({
     _,
     success,
     balanceLoading,
+    balanceFromCache,
   ] = useCurrentBalance(currentAccount?.address, true);
   const [numberAnimation, setNumberAnimation] = useState('');
   const [numberWrapperAnimation, setNumberWrapperAnimation] = useState('');
@@ -115,7 +116,7 @@ const BalanceView = ({
               !startAnimate && 'text-32'
             )}
           >
-            {balanceLoading || balance === null ? (
+            {balanceLoading && balance === null ? (
               <Skeleton.Input
                 active
                 style={{
@@ -127,7 +128,10 @@ const BalanceView = ({
             ) : (
               <span
                 onClick={onClick}
-                className=" cursor-pointer"
+                className={clsx(
+                  'cursor-pointer transition-opacity',
+                  balanceFromCache && 'opacity-80'
+                )}
                 title={splitNumberByStep((balance || 0).toFixed(2))}
               >
                 ${splitNumberByStep((balance || 0).toFixed(2))}
