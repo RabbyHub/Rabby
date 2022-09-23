@@ -157,14 +157,14 @@ const SendToken = () => {
         gasList = gasPriceMap[targetChain.enum].list;
       } else {
         gasList = await fetchGasList();
+        setGasPriceMap({
+          ...gasPriceMap,
+          [targetChain.enum]: {
+            list: gasList,
+            expireAt: Date.now() + 300000, // cache gasList for 5 mins
+          },
+        });
       }
-      setGasPriceMap({
-        ...gasPriceMap,
-        [targetChain.enum]: {
-          list: gasList,
-          expireAt: Date.now() + 300000, // cache gasList for 5 mins
-        },
-      });
     },
     500,
     [chain]
