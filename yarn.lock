@@ -1351,7 +1351,7 @@
   resolved "https://registry.yarnpkg.com/@ctrl/tinycolor/-/tinycolor-3.4.0.tgz#c3c5ae543c897caa9c2a68630bed355be5f9990f"
   integrity sha512-JZButFdZ1+/xAfpguQHoabIXkcqRRKpMrWKBkpEZZyxfY9C1DpADFB8PEqGSTeFr135SaTRfKqGKx5xSCLI7ZQ==
 
-"@debank/common@^0.2.10", "@debank/common@^0.2.12":
+"@debank/common@^0.2.12":
   version "0.2.12"
   resolved "https://registry.yarnpkg.com/@debank/common/-/common-0.2.12.tgz#dfb97fbd45756798c7ded34b0c18be6e26a16af4"
   integrity sha512-+NAzrckSUW1YFOKBwL/EoSV9MdM+KDQok19/5GNghD5Mpws7ESSLeQ9/QFjk5zjtD0JucGD5IDn0B0L4MrYU3w==
@@ -1372,12 +1372,11 @@
     sha256-uint8array "^0.10.3"
     url-parse "^1.5.1"
 
-"@debank/rabby-api@^0.4.0":
-  version "0.4.0"
-  resolved "https://registry.yarnpkg.com/@debank/rabby-api/-/rabby-api-0.4.0.tgz#a6578220b8dc30aeb5641539045e385e4188ac99"
-  integrity sha512-vn7QvOMVUYqMAWb2CPhu29V4Q47jnAvt665l2R9vdz1//yRMbj4c2XWm2cwU1KjWRktooobO1HmlMZ1xi4yoVQ==
+"@debank/rabby-api@^0.4.2":
+  version "0.4.2"
+  resolved "https://registry.yarnpkg.com/@debank/rabby-api/-/rabby-api-0.4.2.tgz#e7474d122935306789250376375ca6bf04f7af31"
+  integrity sha512-rp6uXV2VGI7cmwLxmES3C2JZ2eEAgrkJYQCC+VZeXISiVCK93qMBdwtL9S/65koeD3gs9Trg6yuF+aJfKJB4MA==
   dependencies:
-    "@debank/common" "^0.2.10"
     "@debank/isomorphic" "^0.3.0"
     axios "^0.27.2"
     axios-rate-limit "^1.3.0"
