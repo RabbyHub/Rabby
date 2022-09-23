@@ -1,9 +1,9 @@
 import { UserCollection } from '@/background/service/openapi';
 import { Empty } from '@/ui/component';
+import { Skeleton } from 'antd';
 import React, { useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { VariableSizeList } from 'react-window';
-import { SvgIconLoading } from 'ui/assets';
 import CollectionCard from './CollectionCard';
 
 export interface NFTListProps {
@@ -26,10 +26,33 @@ const CollectionList = ({ isLoading, data }: NFTListProps) => {
   };
   if (isLoading) {
     return (
-      <div className="collection-list tokenList mt-0">
+      <div className="collection-list tokenList mt-0 bg-transparent shadow-none backdrop-filter-none">
         <div className="loadingContainer items-center">
-          <SvgIconLoading className="icon icon-loading ml-0" fill="#FFFFFF" />
-          <div className="loading-text">{t('Loading Collections')}</div>
+          {Array(4)
+            .fill(1)
+            .map((_, i) => (
+              <div className="nftLoadingContainer mb-[8px]" key={i}>
+                <Skeleton.Input
+                  style={{
+                    width: 139,
+                    height: 15,
+                  }}
+                />
+                <div className="flex justify-between mt-[8px]">
+                  {Array(5)
+                    .fill(1)
+                    .map((_, i) => (
+                      <Skeleton.Input
+                        key={i}
+                        style={{
+                          width: 64,
+                          height: 64,
+                        }}
+                      />
+                    ))}
+                </div>
+              </div>
+            ))}
         </div>
       </div>
     );

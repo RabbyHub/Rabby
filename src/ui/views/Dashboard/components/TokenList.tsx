@@ -1,5 +1,5 @@
 import { TokenItem } from '@/background/service/openapi';
-import { Input, message } from 'antd';
+import { Input, message, Skeleton } from 'antd';
 import clsx from 'clsx';
 import React, {
   useCallback,
@@ -12,7 +12,6 @@ import ReactGA from 'react-ga';
 import { useTranslation } from 'react-i18next';
 import { useDebounce } from 'react-use';
 import { FixedSizeList } from 'react-window';
-import { SvgIconLoading } from 'ui/assets';
 import IconArrowRight from 'ui/assets/arrow-right.svg';
 import IconArrowUp from 'ui/assets/arrow-up.svg';
 import IconSearch from 'ui/assets/tokenSearch.png';
@@ -256,7 +255,13 @@ const TokenList = ({
     return <></>;
   }
   return (
-    <div className={clsx('tokenList', tokenAnimate)}>
+    <div
+      className={clsx(
+        'tokenList',
+        tokenAnimate,
+        isloading && 'bg-transparent shadow-none backdrop-filter-none'
+      )}
+    >
       {startSearch && (
         <div className={clsx('search-wrapper', query && 'active')}>
           <Input
@@ -271,9 +276,41 @@ const TokenList = ({
       )}
       {noSeachResult && <div className="no-added-token">No results</div>}
       {isloading && (
-        <div className="loadingContainer">
-          <SvgIconLoading className="icon icon-loading" fill="#FFFFFF" />
-          <div className="loading-text">{t('Loading Tokens')}</div>
+        <div className="loadingContainer m-0 w-full">
+          {Array(8)
+            .fill(0)
+            .map((_, i) => (
+              <div key={i}>
+                <div className="flex justify-between mb-2 mt-20">
+                  <Skeleton.Input
+                    style={{
+                      width: 139,
+                      height: 15,
+                    }}
+                  />
+                  <Skeleton.Input
+                    style={{
+                      width: 90,
+                      height: 15,
+                    }}
+                  />
+                </div>
+                <div className="flex justify-between">
+                  <Skeleton.Input
+                    style={{
+                      width: 59,
+                      height: 14,
+                    }}
+                  />
+                  <Skeleton.Input
+                    style={{
+                      width: 59,
+                      height: 14,
+                    }}
+                  />
+                </div>
+              </div>
+            ))}
         </div>
       )}
       {showList && (

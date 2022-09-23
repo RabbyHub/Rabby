@@ -8,6 +8,7 @@ import { CHAINS, KEYRING_TYPE, CHAINS_ENUM } from 'consts';
 import { SvgIconOffline } from 'ui/assets';
 import IconChainMore from 'ui/assets/chain-more.svg';
 import clsx from 'clsx';
+import { Skeleton } from 'antd';
 
 const BalanceView = ({
   currentAccount,
@@ -15,10 +16,14 @@ const BalanceView = ({
   startAnimate = false,
   onClick,
 }) => {
-  const [balance, chainBalances, _, success] = useCurrentBalance(
-    currentAccount?.address,
-    true
-  );
+  const [
+    balance,
+    chainBalances,
+    _,
+    success,
+    balanceLoading,
+    balanceFromCache,
+  ] = useCurrentBalance(currentAccount?.address, true);
   const [numberAnimation, setNumberAnimation] = useState('');
   const [numberWrapperAnimation, setNumberWrapperAnimation] = useState('');
 
@@ -105,14 +110,35 @@ const BalanceView = ({
             startAnimate ? numberAnimation : 'text-32'
           )}
         >
-          <div className={clsx('amount-number', !startAnimate && 'text-32')}>
-            <span
-              onClick={onClick}
-              className=" cursor-pointer"
-              title={splitNumberByStep((balance || 0).toFixed(2))}
-            >
-              ${splitNumberByStep((balance || 0).toFixed(2))}
-            </span>
+          <div
+            className={clsx(
+              'amount-number balance-loading',
+              !startAnimate && 'text-32'
+            )}
+          >
+            {(balanceLoading && !balanceFromCache) ||
+            balance === null ||
+            (balanceFromCache && balance === 0) ? (
+              <Skeleton.Input
+                active
+                style={{
+                  width: 200,
+                  height: 28,
+                }}
+                className="leading-[28px]"
+              />
+            ) : (
+              <span
+                onClick={onClick}
+                className={clsx(
+                  'cursor-pointer transition-opacity',
+                  balanceFromCache && 'opacity-80'
+                )}
+                title={splitNumberByStep((balance || 0).toFixed(2))}
+              >
+                ${splitNumberByStep((balance || 0).toFixed(2))}
+              </span>
+            )}
           </div>
         </div>
         <div

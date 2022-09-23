@@ -9,13 +9,14 @@ import { useHistory, useLocation } from 'react-router-dom';
 import { ReactComponent as IconArrowRight } from 'ui/assets/arrow-right-gray.svg';
 import IconInfo from 'ui/assets/infoicon.svg';
 import IconSearch from 'ui/assets/search.svg';
-import { Empty, Loading, PageHeader, TokenWithChain } from 'ui/component';
+import { Empty, PageHeader, TokenWithChain } from 'ui/component';
 import TagChainSelector from 'ui/component/ChainSelector/tag';
 import {
   numberWithCommasIsLtOne,
   splitNumberByStep,
   useWalletOld as useWallet,
 } from 'ui/utils';
+import { Loading } from './components/Loading';
 import PopupApprovalCard from './components/PopupApprovalCard';
 import PopupSearch from './components/PopupSearch';
 import './style.less';
@@ -141,9 +142,7 @@ const TokenApproval = () => {
             <div className="column-title">{t('Risk exposure')}</div>
           </div>
           <div className="token-approval-body">
-            <Loading loading={loading} className="py-[120px]">
-              {t('Loading')}
-            </Loading>
+            {loading && <Loading />}
 
             {!loading &&
               (list.length <= 0 ? (

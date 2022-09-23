@@ -283,6 +283,22 @@
               margin-top: -4px;
             }
           }
+
+          .balance-loading {
+            .ant-skeleton.ant-skeleton-active {
+              .ant-skeleton-avatar,
+              .ant-skeleton-input {
+                background: linear-gradient(
+                  90deg,
+                  rgba(255, 255, 255, 0.2) 0%,
+                  rgba(255, 255, 255, 0.4) 29.05%,
+                  rgba(255, 255, 255, 0.2) 52.49%,
+                  rgba(255, 255, 255, 0.4) 78.01%,
+                  rgba(255, 255, 255, 0.2) 100%
+                );
+              }
+            }
+          }
           .icon-arrow-right {
             width: 24px;
             height: 24px;
@@ -1419,7 +1435,18 @@
 .loadingContainer {
   display: flex;
   justify-content: center;
-  margin: 170px auto;
+  width: 100%;
+
+  .nftLoadingContainer {
+    width: 100%;
+    background: rgba(255, 255, 255, 0.1);
+    box-shadow: 0px 8px 20px rgba(35, 37, 130, 0.08);
+    backdrop-filter: blur(40px);
+
+    border-radius: 6px;
+    padding: 12px;
+  }
+
   flex-direction: column;
   .icon-loading {
     margin-left: 36px;
@@ -1430,6 +1457,20 @@
     color: #ffffff;
     font-size: 14px;
     opacity: 0.8;
+  }
+  .ant-skeleton-input {
+    background: rgba(255, 255, 255, 0.2);
+  }
+  .ant-skeleton.ant-skeleton-active {
+    .ant-skeleton-avatar,
+    .ant-skeleton-input {
+      background: linear-gradient(
+        90deg,
+        rgba(255, 255, 255, 0.2) ; 25%,
+        rgba(190, 190, 190, 0.24) 37%,
+        rgba(255, 255, 255, 0.2) ; 63%
+      );
+    }
   }
 }
 .no-data {

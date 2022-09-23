@@ -1,8 +1,9 @@
 import { NFTApprovalContract } from '@/background/service/openapi';
-import { Empty, Loading } from '@/ui/component';
+import { Empty } from '@/ui/component';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import IconSearch from 'ui/assets/search.svg';
+import { Loading } from './Loading';
 import NFTContractListItem from './NFTContractListItem';
 
 interface ApprovalCardProps {
@@ -30,9 +31,8 @@ const NFTContractList = ({
         <div className="column-title">{t('Approved to')}</div>
       </div>
       <div className="list-body">
-        <Loading loading={loading} className="py-[120px]">
-          {t('Loading')}
-        </Loading>
+        {loading && <Loading />}
+
         {!loading && (!data || data.length <= 0) && (
           <Empty className="pt-[80px]">{t('No Approvals')}</Empty>
         )}
