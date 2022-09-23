@@ -695,7 +695,7 @@ export const SAFE_GAS_LIMIT_RATIO = {
   56: 1.5,
   137: 1.5,
 };
-export const GAS_TOP_UP_ADDRESS = '0xbf95c7e8ff9852a072238cd11c8be39fab76a40f';
+export const GAS_TOP_UP_ADDRESS = '0x448c02d84F10b4144954b2C4413F96DEf46761CE';
 
 export const ALIAS_ADDRESS = {
   [GAS_TOP_UP_ADDRESS]: 'Gas Top Up',
