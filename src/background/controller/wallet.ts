@@ -210,7 +210,12 @@ export class WalletController extends BaseController {
         pay_token_id,
         RABBY_SWAP_ROUTER[chain.enum],
         MAX_UNSIGNED_256_INT,
-        $ctx
+        {
+          ga: {
+            ...$ctx?.ga,
+            source: 'approvalAndSwap|tokenApproval',
+          },
+        }
       );
     }
 
@@ -294,8 +299,17 @@ export class WalletController extends BaseController {
       swapParam['value'] =
         '0x' + new BigNumber(pay_token_raw_amount).toString(16);
     }
+
     await this.sendRequest({
-      $ctx,
+      $ctx:
+        needApprove && pay_token_id !== chain.nativeTokenAddress
+          ? {
+              ga: {
+                ...$ctx?.ga,
+                source: 'approvalAndSwap|swap',
+              },
+            }
+          : $ctx,
       method: 'eth_sendTransaction',
       params: [swapParam],
     });
