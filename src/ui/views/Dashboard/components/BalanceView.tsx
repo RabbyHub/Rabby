@@ -116,7 +116,7 @@ const BalanceView = ({
               !startAnimate && 'text-32'
             )}
           >
-            {balanceLoading && balance === null ? (
+            {(balanceLoading && !balanceFromCache) || balance === null ? (
               <Skeleton.Input
                 active
                 style={{
