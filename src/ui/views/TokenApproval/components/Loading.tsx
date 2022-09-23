@@ -9,6 +9,7 @@ export const Loading = () => (
         <div key={i} className="flex justify-between items-center mb-[16px]">
           <div className="flex flex-col">
             <Skeleton.Input
+              active
               style={{
                 width: 139,
                 height: 15,
@@ -16,6 +17,7 @@ export const Loading = () => (
               }}
             />
             <Skeleton.Input
+              active
               style={{
                 width: 59,
                 height: 14,
@@ -23,6 +25,7 @@ export const Loading = () => (
             />
           </div>
           <Skeleton.Input
+            active
             style={{
               width: 123,
               height: 15,

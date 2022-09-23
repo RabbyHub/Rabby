@@ -15,12 +15,13 @@ const NFTList = ({ isLoading, data }: NFTListProps) => {
   const fixedList = useRef<FixedSizeList>();
   if (isLoading) {
     return (
-      <div className="nft-list">
+      <div className="nft-list loadingContainer justify-start">
         {Array(8)
           .fill(1)
           .map((_, i) => (
             <div key={i} className="flex items-center mt-[20px] ml-[20px]">
               <Skeleton.Input
+                active
                 style={{
                   width: 32,
                   height: 32,
@@ -29,6 +30,7 @@ const NFTList = ({ isLoading, data }: NFTListProps) => {
               />
               <div className="flex flex-col">
                 <Skeleton.Input
+                  active
                   style={{
                     width: 139,
                     height: 15,
@@ -36,6 +38,7 @@ const NFTList = ({ isLoading, data }: NFTListProps) => {
                   }}
                 />
                 <Skeleton.Input
+                  active
                   style={{
                     width: 59,
                     height: 14,

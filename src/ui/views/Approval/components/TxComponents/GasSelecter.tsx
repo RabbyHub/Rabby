@@ -303,11 +303,14 @@ const GasSelector = ({
     e.stopPropagation();
 
     if (/^\d*(\.\d*)?$/.test(e.target.value)) {
-      setCustomGas(e?.target?.value);
+      let value = e?.target?.value || '';
+      if (value.trim() === '.') {
+        value = '0.';
+      }
+      setCustomGas(value);
 
       const gasObj = {
         level: 'custom',
-        price: Number(e?.target?.value),
         front_tx_count: 0,
         estimated_seconds: 0,
         base_fee: gasList[0].base_fee,
@@ -319,7 +322,7 @@ const GasSelector = ({
         front_tx_count: 0,
         estimated_seconds: 0,
         base_fee: gasList[0].base_fee,
-        price: Number(e.target.value) * 1e9,
+        price: Number(value) * 1e9,
         level: 'custom',
         gasLimit: Number(afterGasLimit),
         nonce: Number(customNonce),

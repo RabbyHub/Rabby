@@ -33,6 +33,7 @@ const CollectionList = ({ isLoading, data }: NFTListProps) => {
             .map((_, i) => (
               <div className="nftLoadingContainer mb-[8px]" key={i}>
                 <Skeleton.Input
+                  active
                   style={{
                     width: 139,
                     height: 15,
@@ -43,6 +44,7 @@ const CollectionList = ({ isLoading, data }: NFTListProps) => {
                     .fill(1)
                     .map((_, i) => (
                       <Skeleton.Input
+                        active
                         key={i}
                         style={{
                           width: 64,

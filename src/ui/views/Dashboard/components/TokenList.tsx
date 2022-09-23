@@ -283,12 +283,14 @@ const TokenList = ({
               <div key={i}>
                 <div className="flex justify-between mb-2 mt-20">
                   <Skeleton.Input
+                    active
                     style={{
                       width: 139,
                       height: 15,
                     }}
                   />
                   <Skeleton.Input
+                    active
                     style={{
                       width: 90,
                       height: 15,
@@ -297,12 +299,14 @@ const TokenList = ({
                 </div>
                 <div className="flex justify-between">
                   <Skeleton.Input
+                    active
                     style={{
                       width: 59,
                       height: 14,
                     }}
                   />
                   <Skeleton.Input
+                    active
                     style={{
                       width: 59,
                       height: 14,
