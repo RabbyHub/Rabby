@@ -732,7 +732,7 @@ const SendToken = () => {
         </div>
         <div className="section">
           <div className="section-title flex justify-between items-center">
-            <div className="token-balance">
+            <div className="token-balance whitespace-pre-wrap">
               {isLoading ? (
                 <Skeleton.Input active style={{ width: 100 }} />
               ) : (
