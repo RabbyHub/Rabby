@@ -252,14 +252,6 @@ export const SwapQuotes = () => {
     handleBack();
   };
 
-  const backToSwapBySlippageSetting = () => {
-    stats.report('backSwapDescPageBySlippage', {
-      chainId: chain_id,
-      slippage,
-    });
-    handleBack();
-  };
-
   const handleSelect = (i) => {
     setCurrentQuoteIndex(i);
     setQuotesDrawer(false);
@@ -364,7 +356,6 @@ export const SwapQuotes = () => {
           setQuotesDrawer(true);
         }}
         slippage={slippage}
-        backToSwapBySlippageSetting={backToSwapBySlippageSetting}
         countDown={countDown}
         handleSwap={handleSwap}
         shouldApprove={shouldApprove}

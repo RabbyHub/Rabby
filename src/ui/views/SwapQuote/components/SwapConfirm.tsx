@@ -89,7 +89,6 @@ export const SwapConfirm = ({
   isBestQuote,
   openQuotesList,
   slippage,
-  backToSwapBySlippageSetting,
   countDown,
   handleSwap,
   shouldApprove,
@@ -103,7 +102,6 @@ export const SwapConfirm = ({
   receiveAmount: string | number;
   isBestQuote: boolean;
   openQuotesList: () => void;
-  backToSwapBySlippageSetting: () => void;
   countDown: number;
   handleSwap: () => void;
   shouldApprove: boolean;
