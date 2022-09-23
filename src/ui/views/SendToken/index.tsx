@@ -6,6 +6,7 @@ import BigNumber from 'bignumber.js';
 import { useTranslation } from 'react-i18next';
 import { useHistory, useLocation } from 'react-router-dom';
 import ReactGA from 'react-ga';
+import { useDebounce } from 'react-use';
 import { Input, Form, Skeleton, message, Button } from 'antd';
 import abiCoder, { AbiCoder } from 'web3-eth-abi';
 import {
@@ -23,7 +24,7 @@ import {
   KEYRING_CLASS,
   MINIMUM_GAS_LIMIT,
 } from 'consts';
-import { Account } from 'background/service/preference';
+import { Account, ChainGas } from 'background/service/preference';
 import { UIContactBookItem } from 'background/service/contactBook';
 import { useWalletOld } from 'ui/utils';
 import { query2obj } from 'ui/utils/url';
@@ -121,6 +122,9 @@ const SendToken = () => {
   const [selectedGasLevel, setSelectedGasLevel] = useState<GasLevel | null>(
     null
   );
+  const [gasPriceMap, setGasPriceMap] = useState<
+    Record<string, { list: GasLevel[]; expireAt: number }>
+  >({});
   const [tokenValidationStatus, setTokenValidationStatus] = useState(
     TOKEN_VALIDATION_STATUS.PENDING
   );
@@ -132,6 +136,79 @@ const SendToken = () => {
     !isLoading &&
     tokenValidationStatus === TOKEN_VALIDATION_STATUS.SUCCESS;
   const isNativeToken = currentToken.id === CHAINS[chain].nativeTokenAddress;
+
+  const fetchGasList = async () => {
+    const list: GasLevel[] = await wallet.openapi.gasMarket(
+      CHAINS[chain].serverId
+    );
+    return list;
+  };
+
+  useDebounce(
+    async () => {
+      const targetChain = Object.values(CHAINS).find(
+        (item) => item.enum === chain
+      )!;
+      let gasList: GasLevel[];
+      if (
+        gasPriceMap[targetChain.enum] &&
+        gasPriceMap[targetChain.enum].expireAt > Date.now()
+      ) {
+        gasList = gasPriceMap[targetChain.enum].list;
+      } else {
+        gasList = await fetchGasList();
+        setGasPriceMap({
+          ...gasPriceMap,
+          [targetChain.enum]: {
+            list: gasList,
+            expireAt: Date.now() + 300000, // cache gasList for 5 mins
+          },
+        });
+      }
+    },
+    500,
+    [chain]
+  );
+
+  const calcGasCost = async () => {
+    const targetChain = Object.values(CHAINS).find(
+      (item) => item.enum === chain
+    )!;
+    const gasList = gasPriceMap[targetChain.enum]?.list;
+
+    if (!gasList) return new BigNumber(0);
+
+    const lastTimeGas: ChainGas | null = await wallet.getLastTimeGasSelection(
+      targetChain.id
+    );
+
+    let gasLevel: GasLevel;
+    if (lastTimeGas?.lastTimeSelect === 'gasPrice' && lastTimeGas.gasPrice) {
+      // use cached gasPrice if exist
+      gasLevel = {
+        level: 'custom',
+        price: lastTimeGas.gasPrice,
+        front_tx_count: 0,
+        estimated_seconds: 0,
+        base_fee: 0,
+      };
+    } else if (
+      lastTimeGas?.lastTimeSelect &&
+      lastTimeGas?.lastTimeSelect === 'gasLevel'
+    ) {
+      const target = gasList.find(
+        (item) => item.level === lastTimeGas?.gasLevel
+      )!;
+      gasLevel = target;
+    } else {
+      // no cache, use the fast level in gasMarket
+      gasLevel = gasList.find((item) => item.level === 'fast')!;
+    }
+    const costTokenAmount = new BigNumber(gasLevel.price)
+      .times(21000)
+      .div(1e18);
+    return costTokenAmount;
+  };
 
   const handleSubmit = async ({
     to,
@@ -181,7 +258,12 @@ const SendToken = () => {
           )
         )
       );
-      params.gas = intToHex(21000);
+      if (
+        chain.enum !== CHAINS_ENUM.ARBITRUM &&
+        chain.enum !== CHAINS_ENUM.OP
+      ) {
+        params.gas = intToHex(21000); // L2 has extra validation fee so can not set gasLimit as 21000 when send native token
+      }
       if (showGasReserved) {
         params.gasPrice = selectedGasLevel?.price;
       }
@@ -289,11 +371,13 @@ const SendToken = () => {
       if (showGasReserved && Number(resultAmount) > 0) {
         setShowGasReserved(false);
       } else if (isNativeToken) {
+        const gasCostTokenAmount = await calcGasCost();
         if (
           new BigNumber(targetToken.raw_amount_hex_str || 0)
             .div(10 ** targetToken.decimals)
-            .minus(resultAmount)
-            .lt(0.1)
+            .minus(amount)
+            .minus(gasCostTokenAmount)
+            .lt(0)
         ) {
           setBalanceWarn(t('Gas fee reservation required'));
         } else {
@@ -359,9 +443,7 @@ const SendToken = () => {
     if (isNativeToken) {
       setShowGasReserved(true);
       try {
-        const list: GasLevel[] = await wallet.openapi.gasMarket(
-          CHAINS[chain].serverId
-        );
+        const list = await fetchGasList();
         setGasList(list);
         let instant = list[0];
         for (let i = 1; i < list.length; i++) {
