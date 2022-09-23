@@ -93,14 +93,6 @@ export const GasTopUp = () => {
     return gasValue;
   }, [instantGas]);
 
-  console.log(
-    'instantGasValue',
-    instantGasValue.toString(10),
-    new BigNumber(prices[index]?.[0] || 0).times(0.2).times(0.1).toString(10),
-    gasToken?.price,
-    instantGas?.price
-  );
-
   const handleClickBack = () => {
     history.replace('/');
   };
