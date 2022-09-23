@@ -156,7 +156,7 @@ const NFTApproval = () => {
           onChange={handleChainChanged}
           showModal={showChainsModal}
         />
-        <div className="card-risk-amount">
+        <div className="card-risk-amount relative">
           <div className="card-risk-amount-title">
             <span>{t('Total risk exposure')}</span>
             <Tooltip

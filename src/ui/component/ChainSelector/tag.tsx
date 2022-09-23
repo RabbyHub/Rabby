@@ -42,7 +42,7 @@ const ChainSelector = ({
 
   return (
     <>
-      <div className="chain-tag-selector flex" onClick={handleClickSelector}>
+      <div className="chain-tag-selector" onClick={handleClickSelector}>
         On{' '}
         <span className="chain-tag-selector__name flex-1">
           {CHAINS[value].name}

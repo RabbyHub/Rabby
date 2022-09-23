@@ -333,7 +333,7 @@ const SendNFT = () => {
           onValuesChange={handleFormValuesChange}
         >
           {chain && <TagChainSelector value={chain!} readonly />}
-          <div className="section">
+          <div className="section relative">
             <div className="section-title">{t('From')}</div>
             <AccountCard
               icons={{
