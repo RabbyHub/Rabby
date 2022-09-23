@@ -6,11 +6,21 @@ const zipdir = require('zip-dir');
 
 const PROJECT_ROOT = path.resolve(__dirname, '..');
 
-async function release(version) {
-  const manifestPath = path.resolve(PROJECT_ROOT, 'dist', 'manifest.json');
+function updateManifestVersion(version, path) {
+  const manifestPath = path.resolve(
+    PROJECT_ROOT,
+    'src/manifest',
+    path,
+    'manifest.json'
+  );
   const manifest = fs.readJSONSync(manifestPath);
   manifest.version = version;
   fs.writeJSONSync(manifestPath, manifest, { spaces: 2 });
+}
+
+async function release(version) {
+  updateManifestVersion(version, 'mv3');
+  updateManifestVersion(version, 'mv2');
   shell.exec(`npm version ${version} --force`);
   shell.exec('git add -A');
   shell.exec(`git commit -m "[release] ${version}"`);

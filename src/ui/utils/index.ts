@@ -157,3 +157,10 @@ export const getAccountIcon = (account: Account) => {
 export const isStringOrNumber = (data) => {
   return typeof data === 'string' || typeof data === 'number';
 };
+
+declare global {
+  interface Window {
+    __is_rd__?: boolean;
+  }
+}
+export const IS_RD = () => window.__is_rd__;
