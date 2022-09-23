@@ -1351,7 +1351,7 @@
   resolved "https://registry.yarnpkg.com/@ctrl/tinycolor/-/tinycolor-3.4.0.tgz#c3c5ae543c897caa9c2a68630bed355be5f9990f"
   integrity sha512-JZButFdZ1+/xAfpguQHoabIXkcqRRKpMrWKBkpEZZyxfY9C1DpADFB8PEqGSTeFr135SaTRfKqGKx5xSCLI7ZQ==
 
-"@debank/common@^0.2.12":
+"@debank/common@^0.2.10", "@debank/common@^0.2.12":
   version "0.2.12"
   resolved "https://registry.yarnpkg.com/@debank/common/-/common-0.2.12.tgz#dfb97fbd45756798c7ded34b0c18be6e26a16af4"
   integrity sha512-+NAzrckSUW1YFOKBwL/EoSV9MdM+KDQok19/5GNghD5Mpws7ESSLeQ9/QFjk5zjtD0JucGD5IDn0B0L4MrYU3w==
@@ -3259,10 +3259,10 @@
     hdkey "0.8.0"
     trezor-connect "8.2.6-extended"
 
-"@rabby-wallet/eth-walletconnect-keyring@^1.4.0":
-  version "1.4.0"
-  resolved "https://registry.yarnpkg.com/@rabby-wallet/eth-walletconnect-keyring/-/eth-walletconnect-keyring-1.4.0.tgz#cdb2e51b596286558797eedc842e7d68588ea491"
-  integrity sha512-DZURYyUJheFo8NNHUaiqJSVnZuqB0KQtBpn3scIN7aWO47ejVkEPNF15YLUuwT94QO18u5x3ahzqXmyDITXwXg==
+"@rabby-wallet/eth-walletconnect-keyring@^1.5.0":
+  version "1.5.0"
+  resolved "https://registry.yarnpkg.com/@rabby-wallet/eth-walletconnect-keyring/-/eth-walletconnect-keyring-1.5.0.tgz#9b56b3e052b2cbc090bad3359b3f6f9f85d2a60a"
+  integrity sha512-rnT3elfPIRDe5DFaT2K+MV+46TriP4/cl7fixTSZ0fUhF7pW/RR8u756Cni5utbHX8Wt3no6JbR4NHgNoJCMzQ==
   dependencies:
     "@ethereumjs/tx" "^3.5.2"
     "@walletconnect/client" "^1.6.6"
