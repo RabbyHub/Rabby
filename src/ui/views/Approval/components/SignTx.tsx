@@ -724,7 +724,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
   const [forceProcess, setForceProcess] = useState(true);
   const [safeInfo, setSafeInfo] = useState<SafeInfo | null>(null);
   const [maxPriorityFee, setMaxPriorityFee] = useState(0);
-  console.log(tx);
+
   const gasExplainResponse = useExplainGas({
     gasUsed: recommendGasLimit,
     gasPrice: selectedGas?.price || 0,
