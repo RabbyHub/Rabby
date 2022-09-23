@@ -227,18 +227,21 @@ const TokenSelector = ({
 const DefaultLoading = () => (
   <div className="flex justify-between mt-[16px] pl-[20px] pr-[17px]">
     <Skeleton.Input
+      active
       style={{
         width: 73,
         height: 23,
       }}
     />
     <Skeleton.Input
+      active
       style={{
         width: 76,
         height: 23,
       }}
     />
     <Skeleton.Input
+      active
       style={{
         width: 92,
         height: 23,
@@ -251,12 +254,14 @@ const SwapLoading = () => (
   <div className="mt-[12px] mb-[20px] pl-[20px] pr-[17px]">
     <div className="flex justify-between mb-[2px]">
       <Skeleton.Input
+        active
         style={{
           width: 139,
           height: 15,
         }}
       />
       <Skeleton.Input
+        active
         style={{
           width: 90,
           height: 15,
@@ -265,12 +270,14 @@ const SwapLoading = () => (
     </div>
     <div className="flex justify-between">
       <Skeleton.Input
+        active
         style={{
           width: 59,
           height: 14,
         }}
       />
       <Skeleton.Input
+        active
         style={{
           width: 59,
           height: 14,

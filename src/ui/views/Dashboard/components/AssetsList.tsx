@@ -188,6 +188,7 @@ const AssetsList = ({
             .map((_, i) => (
               <Skeleton.Input
                 key={i}
+                active
                 style={{
                   width: 360,
                   height: 32,
