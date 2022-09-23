@@ -1351,10 +1351,10 @@
   resolved "https://registry.yarnpkg.com/@ctrl/tinycolor/-/tinycolor-3.4.0.tgz#c3c5ae543c897caa9c2a68630bed355be5f9990f"
   integrity sha512-JZButFdZ1+/xAfpguQHoabIXkcqRRKpMrWKBkpEZZyxfY9C1DpADFB8PEqGSTeFr135SaTRfKqGKx5xSCLI7ZQ==
 
-"@debank/common@^0.2.12":
-  version "0.2.12"
-  resolved "https://registry.yarnpkg.com/@debank/common/-/common-0.2.12.tgz#dfb97fbd45756798c7ded34b0c18be6e26a16af4"
-  integrity sha512-+NAzrckSUW1YFOKBwL/EoSV9MdM+KDQok19/5GNghD5Mpws7ESSLeQ9/QFjk5zjtD0JucGD5IDn0B0L4MrYU3w==
+"@debank/common@^0.2.13":
+  version "0.2.13"
+  resolved "https://registry.yarnpkg.com/@debank/common/-/common-0.2.13.tgz#b9fb496a4cc776073ec35504611e190c04425e82"
+  integrity sha512-LfIub3nwNQfKZiSFydPWVfkQ1WMwrzLOlTkj74y88BJ5+9566lNi4K8C4PXHvCNMhsTktxwnHBUyp1/Is8x3kQ==
 
 "@debank/festats@1.0.0":
   version "1.0.0"
