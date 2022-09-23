@@ -272,7 +272,6 @@ class ProviderController extends BaseController {
       session: { origin },
       approvalRes,
     } = cloneDeep(options);
-    console.log('options', options);
     const keyring = await this._checkAddress(txParams.from);
     const isSend = !!txParams.isSend;
     const isSpeedUp = !!txParams.isSpeedUp;
