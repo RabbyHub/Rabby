@@ -1372,12 +1372,11 @@
     sha256-uint8array "^0.10.3"
     url-parse "^1.5.1"
 
-"@debank/rabby-api@^0.4.0":
-  version "0.4.0"
-  resolved "https://registry.yarnpkg.com/@debank/rabby-api/-/rabby-api-0.4.0.tgz#a6578220b8dc30aeb5641539045e385e4188ac99"
-  integrity sha512-vn7QvOMVUYqMAWb2CPhu29V4Q47jnAvt665l2R9vdz1//yRMbj4c2XWm2cwU1KjWRktooobO1HmlMZ1xi4yoVQ==
+"@debank/rabby-api@^0.4.2":
+  version "0.4.2"
+  resolved "https://registry.yarnpkg.com/@debank/rabby-api/-/rabby-api-0.4.2.tgz#e7474d122935306789250376375ca6bf04f7af31"
+  integrity sha512-rp6uXV2VGI7cmwLxmES3C2JZ2eEAgrkJYQCC+VZeXISiVCK93qMBdwtL9S/65koeD3gs9Trg6yuF+aJfKJB4MA==
   dependencies:
-    "@debank/common" "^0.2.10"
     "@debank/isomorphic" "^0.3.0"
     axios "^0.27.2"
     axios-rate-limit "^1.3.0"
@@ -3259,10 +3258,10 @@
     hdkey "0.8.0"
     trezor-connect "8.2.6-extended"
 
-"@rabby-wallet/eth-walletconnect-keyring@^1.4.0":
-  version "1.4.0"
-  resolved "https://registry.yarnpkg.com/@rabby-wallet/eth-walletconnect-keyring/-/eth-walletconnect-keyring-1.4.0.tgz#cdb2e51b596286558797eedc842e7d68588ea491"
-  integrity sha512-DZURYyUJheFo8NNHUaiqJSVnZuqB0KQtBpn3scIN7aWO47ejVkEPNF15YLUuwT94QO18u5x3ahzqXmyDITXwXg==
+"@rabby-wallet/eth-walletconnect-keyring@^1.5.0":
+  version "1.5.0"
+  resolved "https://registry.yarnpkg.com/@rabby-wallet/eth-walletconnect-keyring/-/eth-walletconnect-keyring-1.5.0.tgz#9b56b3e052b2cbc090bad3359b3f6f9f85d2a60a"
+  integrity sha512-rnT3elfPIRDe5DFaT2K+MV+46TriP4/cl7fixTSZ0fUhF7pW/RR8u756Cni5utbHX8Wt3no6JbR4NHgNoJCMzQ==
   dependencies:
     "@ethereumjs/tx" "^3.5.2"
     "@walletconnect/client" "^1.6.6"
