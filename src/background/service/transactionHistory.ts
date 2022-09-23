@@ -4,6 +4,7 @@ import { Object as ObjectType } from 'ts-toolbelt';
 import openapiService, { Tx, ExplainTxResponse } from './openapi';
 import { CHAINS } from 'consts';
 import stats from '@/stats';
+import permissionService, { ConnectedSite } from './permission';
 
 export interface TransactionHistoryItem {
   rawTx: Tx;
@@ -13,6 +14,7 @@ export interface TransactionHistoryItem {
   failed: boolean;
   gasUsed?: number;
   isSubmitFailed?: boolean;
+  site?: ConnectedSite;
 }
 
 export interface TransactionGroup {
@@ -66,19 +68,24 @@ class TxHistory {
 
   addSubmitFailedTransaction(
     tx: TransactionHistoryItem,
-    explain: TransactionGroup['explain']
+    explain: TransactionGroup['explain'],
+    origin: string
   ) {
     const nonce = Number(tx.rawTx.nonce);
     const chainId = tx.rawTx.chainId;
     const key = `${chainId}-${nonce}`;
     const from = tx.rawTx.from.toLowerCase();
+    const site = permissionService.getConnectedSite(origin);
 
     if (!this.store.transactions[from]) {
       this.store.transactions[from] = {};
     }
     if (this.store.transactions[from][key]) {
       const group = this.store.transactions[from][key];
-      group.txs.push(tx);
+      group.txs.push({
+        ...tx,
+        site,
+      });
       this.store.transactions = {
         ...this.store.transactions,
         [from]: {
@@ -94,7 +101,12 @@ class TxHistory {
           [key]: {
             chainId: tx.rawTx.chainId,
             nonce,
-            txs: [tx],
+            txs: [
+              {
+                ...tx,
+                site,
+              },
+            ],
             createdAt: tx.createdAt,
             isPending: true,
             explain: explain,
@@ -111,12 +123,16 @@ class TxHistory {
   addTx(
     tx: TransactionHistoryItem,
     explain: TransactionGroup['explain'],
+    origin: string,
     $ctx?: any
   ) {
     const nonce = Number(tx.rawTx.nonce);
     const chainId = tx.rawTx.chainId;
     const key = `${chainId}-${nonce}`;
     const from = tx.rawTx.from.toLowerCase();
+    const site = permissionService.getConnectedSite(origin);
+
+    tx.site = site;
 
     if (!this.store.transactions[from]) {
       this.store.transactions[from] = {};
