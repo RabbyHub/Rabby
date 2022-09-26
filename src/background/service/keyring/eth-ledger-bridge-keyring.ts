@@ -361,7 +361,7 @@ class LedgerBridgeKeyring extends EventEmitter {
 
           const rawTxHex = tx.serialize().toString('hex');
 
-          this._signTransaction(address, rawTxHex, tx.to, (payload) => {
+          this._signTransaction(address, rawTxHex, (payload) => {
             tx.v = Buffer.from(payload.v, 'hex');
             tx.r = Buffer.from(payload.r, 'hex');
             tx.s = Buffer.from(payload.s, 'hex');
