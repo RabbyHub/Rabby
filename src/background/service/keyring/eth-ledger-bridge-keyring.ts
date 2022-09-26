@@ -391,7 +391,7 @@ class LedgerBridgeKeyring extends EventEmitter {
         const rawTxHex = Buffer.isBuffer(messageToSign)
           ? messageToSign.toString('hex')
           : ethUtil.rlp.encode(messageToSign).toString('hex');
-        this._signTransaction(address, rawTxHex, tx.to.buf, (payload) => {
+        this._signTransaction(address, rawTxHex, (payload) => {
           // Because tx will be immutable, first get a plain javascript object that
           // represents the transaction. Using txData here as it aligns with the
           // nomenclature of ethereumjs/tx.
@@ -425,7 +425,7 @@ class LedgerBridgeKeyring extends EventEmitter {
     });
   }
 
-  async _signTransaction(address, rawTxHex, toAddress, handleSigning) {
+  async _signTransaction(address, rawTxHex, handleSigning) {
     const hdPath = await this.unlockAccountByAddress(address);
     if (this.isWebHID) {
       await this.makeApp(true);
@@ -453,7 +453,6 @@ class LedgerBridgeKeyring extends EventEmitter {
             params: {
               tx: rawTxHex,
               hdPath,
-              to: ethUtil.bufferToHex(toAddress).toLowerCase(),
             },
           },
           ({ success, payload }) => {
