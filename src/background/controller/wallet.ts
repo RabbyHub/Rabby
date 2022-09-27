@@ -258,16 +258,59 @@ export class WalletController extends BaseController {
     const account = await preferenceService.getCurrentAccount();
     if (!account) throw new Error('no current account');
     const txId = await this.sendToken(others);
-    this.openapi.postGasStationOrder({
-      userAddr: account.address,
-      fromChainId: others.chainServerId,
-      fromTxId: txId,
-      toChainId: toChainId,
-      toTokenAmount,
-      fromTokenId: others.tokenId,
-      fromTokenAmount: fromTokenAmount,
-      fromUsdValue,
+
+    stats.report('gasTopUpTxFinished', {
+      topUpChain: toChainId,
+      topUpAmount: fromUsdValue,
+      paymentChain: others.chainServerId,
+      paymentToken: others.tokenId,
     });
+
+    const postGasStationOrder = async () =>
+      await this.openapi.postGasStationOrder({
+        userAddr: account.address,
+        fromChainId: others.chainServerId,
+        fromTxId: txId,
+        toChainId: toChainId,
+        toTokenAmount,
+        fromTokenId: others.tokenId,
+        fromTokenAmount: fromTokenAmount,
+        fromUsdValue,
+      });
+
+    const reportGasTopUpPostGasStationOrder = () =>
+      stats.report('gasTopUpPostGasStationOrder', {
+        topUpChain: toChainId,
+        topUpAmount: fromUsdValue,
+        paymentChain: others.chainServerId,
+        paymentToken: others.tokenId,
+      });
+
+    try {
+      await postGasStationOrder();
+      reportGasTopUpPostGasStationOrder();
+    } catch (error) {
+      try {
+        await postGasStationOrder();
+        reportGasTopUpPostGasStationOrder();
+      } catch (error) {
+        Sentry.captureException(
+          new Error(
+            'postGasStationOrder failed, params: ' +
+              JSON.stringify({
+                userAddr: account.address,
+                fromChainId: others.chainServerId,
+                fromTxId: txId,
+                toChainId: toChainId,
+                toTokenAmount,
+                fromTokenId: others.tokenId,
+                fromTokenAmount: fromTokenAmount,
+                fromUsdValue,
+              })
+          )
+        );
+      }
+    }
   };
 
   rabbySwap = async (

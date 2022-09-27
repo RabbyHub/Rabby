@@ -360,6 +360,17 @@ class ProviderController extends BaseController {
         return;
       }
       const onTranscationSubmitted = (hash: string) => {
+        if (
+          options?.data?.$ctx?.stats?.afterSign?.length &&
+          Array.isArray(options?.data?.$ctx?.stats?.afterSign)
+        ) {
+          options.data.$ctx.stats.afterSign.forEach(({ name, params }) => {
+            if (name && params) {
+              stats.report(name, params);
+            }
+          });
+        }
+
         stats.report('submitTransaction', {
           type: currentAccount.brandName,
           chainId: CHAINS[chain].serverId,
@@ -450,6 +461,17 @@ class ProviderController extends BaseController {
         onTranscationSubmitted(hash);
         return hash;
       } catch (e: any) {
+        if (
+          options?.data?.$ctx?.stats?.afterSign?.length &&
+          Array.isArray(options?.data?.$ctx?.stats?.afterSign)
+        ) {
+          options.data.$ctx.stats.afterSign.forEach(({ name, params }) => {
+            if (name && params) {
+              stats.report(name, params);
+            }
+          });
+        }
+
         stats.report('submitTransaction', {
           type: currentAccount.brandName,
           chainId: CHAINS[chain].serverId,

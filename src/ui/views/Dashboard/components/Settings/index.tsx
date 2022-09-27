@@ -20,6 +20,7 @@ import IconContacts from 'ui/assets/swap/contact.svg';
 import IconSettingWidget from 'ui/assets/settings-widget.svg';
 import IconDiscord from 'ui/assets/discord.svg';
 import { Contacts, Widget } from '..';
+import stats from '@/stats';
 
 interface SettingsProps {
   visible?: boolean;
@@ -230,6 +231,7 @@ const Settings = ({ visible, onClose }: SettingsProps) => {
           action: 'clickToUse',
           label: 'adddressManagement',
         });
+        reportSettings('addressManagement');
         history.push('/settings/address');
       },
     },
@@ -238,6 +240,7 @@ const Settings = ({ visible, onClose }: SettingsProps) => {
       content: t('Contacts'),
       onClick: () => {
         setContactsVisible(true);
+        reportSettings('contract');
       },
     },
     {
@@ -248,6 +251,7 @@ const Settings = ({ visible, onClose }: SettingsProps) => {
         //@ts-ignore
         onClose?.();
         setWidgetVisible(true);
+        reportSettings('widget');
       },
     },
 
@@ -261,6 +265,7 @@ const Settings = ({ visible, onClose }: SettingsProps) => {
           label: 'resetAccount',
         });
         setShowResetAccountModal(true);
+        reportSettings('resetAccount');
       },
       rightIcon: <img src={IconArrowRight} className="icon icon-arrow-right" />,
     },
@@ -268,6 +273,7 @@ const Settings = ({ visible, onClose }: SettingsProps) => {
       leftIcon: IconDiscord,
       content: t('Contact us on Discord'),
       onClick: () => {
+        reportSettings('discord');
         window.open('https://discord.com/invite/seFBCWmUre');
       },
     },
@@ -295,6 +301,7 @@ const Settings = ({ visible, onClose }: SettingsProps) => {
       action: 'clickToUse',
       label: 'lockWallet',
     });
+    reportSettings('lockWallet');
     await wallet.lockWallet();
     history.push('/unlock');
   };
@@ -382,5 +389,11 @@ const Settings = ({ visible, onClose }: SettingsProps) => {
     </>
   );
 };
+
+function reportSettings(moduleName: string) {
+  stats.report('settingsModule', {
+    moduleName,
+  });
+}
 
 export default Settings;

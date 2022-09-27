@@ -3,7 +3,7 @@ import { PageHeader } from '@/ui/component';
 import { useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import bgIcon from '@/ui/assets/gas-top-up/light.svg';
-import { Button, Skeleton, Space, Tooltip } from 'antd';
+import { Button, message, Skeleton, Space, Tooltip } from 'antd';
 import { CHAINS, CHAINS_ENUM } from '@debank/common';
 import { useAsync, useAsyncRetry, useCss } from 'react-use';
 import { useWallet } from '@/ui/utils';
@@ -12,6 +12,7 @@ import clsx from 'clsx';
 import { ChainSelect, ConfirmDrawer } from './components';
 import { TokenItem } from '@/background/service/openapi';
 import { GAS_TOP_UP_ADDRESS, MINIMUM_GAS_LIMIT } from '@/constant';
+import stats from '@/stats';
 
 const GasList = [20, 50, 100];
 
@@ -32,14 +33,22 @@ export const GasTopUp = () => {
 
   const [index, setIndex] = useState(0);
 
-  const { value: gasToken, loading: gasTokenLoading } = useAsync(async () => {
+  const {
+    value: gasToken,
+    loading: gasTokenLoading,
+    error: gasTokenError,
+  } = useAsync(async () => {
     const account = await wallet.getCurrentAccount();
     const chainId = CHAINS[chain].serverId;
     const tokenId = CHAINS[chain].nativeTokenAddress;
     return await wallet.openapi.getToken(account!.address, chainId, tokenId);
   }, [chain]);
 
-  const { value: instantGas, loading: gasLoading } = useAsync(async () => {
+  const {
+    value: instantGas,
+    loading: gasLoading,
+    error: instantGasError,
+  } = useAsync(async () => {
     const list = await wallet.openapi.gasMarket(CHAINS[chain].serverId);
     let instant = list[0];
     for (let i = 1; i < list.length; i++) {
@@ -53,6 +62,7 @@ export const GasTopUp = () => {
   const {
     value: chainUsdBalance,
     loading: chainUsdBalanceLoading,
+    error: chainUsdBalanceError,
   } = useAsync(async () => {
     const data = await wallet.openapi.getGasStationChainBalance(
       CHAINS[chain].serverId
@@ -170,6 +180,17 @@ export const GasTopUp = () => {
     }
   }, [gasLoading, gasTokenLoading, instantGasValue, index, prices, gasToken]);
 
+  useEffect(() => {
+    if (chainUsdBalanceError || error || gasTokenError || instantGasError) {
+      message.error(
+        error?.message ||
+          chainUsdBalanceError?.message ||
+          gasTokenError?.message ||
+          instantGasError?.message
+      );
+    }
+  }, [chainUsdBalanceError, error, gasTokenError, instantGasError]);
+
   const gasTopUp = async () => {
     if (!token || !gasToken || !prices[index]) return;
     const sendValue = new BigNumber(prices[index][0] || 0)
@@ -178,7 +199,34 @@ export const GasTopUp = () => {
       .times(10 ** token.decimals)
       .toFixed(0);
     try {
+      stats.report('gasTopUpConfirm', {
+        topUpChain: gasToken!.chain,
+        topUpAmount: prices[index][0],
+        topUpToken: gasToken!.symbol,
+        paymentChain: token.chain,
+        paymentToken: token.chain,
+      });
       wallet.gasTopUp({
+        $ctx: {
+          ga: {
+            category: 'GasTopUp',
+            source: 'GasTopUp',
+            trigger: '',
+          },
+          stats: {
+            afterSign: [
+              {
+                name: 'gasTopUpClickSign',
+                params: {
+                  topUpChain: gasToken!.chain,
+                  topUpAmount: prices[index][0],
+                  topUpToken: gasToken!.symbol,
+                  paymentChain: token.chain,
+                },
+              },
+            ],
+          },
+        },
         fromUsdValue: prices[index][0],
         to: GAS_TOP_UP_ADDRESS,
         toChainId: CHAINS[chain].serverId,
@@ -203,6 +251,16 @@ export const GasTopUp = () => {
     if (error) {
       retry();
     }
+  };
+
+  const handleContinue = () => {
+    setVisible(true);
+    setLastSelectedGasTopUpChain();
+    stats.report('gasTopUpContinue', {
+      topUpChain: gasToken!.chain,
+      topUpAmount: prices[index][0],
+      topUpToken: gasToken!.symbol,
+    });
   };
 
   return (
@@ -254,10 +312,7 @@ export const GasTopUp = () => {
           }}
           type="primary"
           size="large"
-          onClick={() => {
-            setVisible(true);
-            setLastSelectedGasTopUpChain();
-          }}
+          onClick={handleContinue}
           disabled={btnDisabled}
         >
           {t('Continue')}

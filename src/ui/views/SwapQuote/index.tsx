@@ -67,6 +67,7 @@ export const SwapQuotes = () => {
 
   const isFirstQuery = useRef(true);
   const getQuotes = async () => {
+    const startTime = Date.now();
     try {
       const DEXList = await wallet.openapi.getDEXList(chain_id);
       setDexList(DEXList || []);
@@ -146,7 +147,7 @@ export const SwapQuotes = () => {
             dexResult: JSON.stringify([]),
           });
         }
-        history.replace({
+        return history.replace({
           pathname: '/swap',
           search: obj2query({
             ...searchObj,
@@ -174,6 +175,14 @@ export const SwapQuotes = () => {
 
       setTimeout(() => {
         setEnd(true);
+        if (isFirstQuery.current) {
+          stats.report('swapGetQuoteDuration', {
+            chainId: chain_id,
+            fromToken: getTokenSymbol(state.payToken),
+            toToken: getTokenSymbol(state.receiveToken),
+            duration: Date.now() - startTime,
+          });
+        }
       }, 500);
 
       setCountDown(30);
