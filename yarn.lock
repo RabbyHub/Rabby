@@ -1372,10 +1372,10 @@
     sha256-uint8array "^0.10.3"
     url-parse "^1.5.1"
 
-"@debank/rabby-api@^0.4.2":
-  version "0.4.2"
-  resolved "https://registry.yarnpkg.com/@debank/rabby-api/-/rabby-api-0.4.2.tgz#e7474d122935306789250376375ca6bf04f7af31"
-  integrity sha512-rp6uXV2VGI7cmwLxmES3C2JZ2eEAgrkJYQCC+VZeXISiVCK93qMBdwtL9S/65koeD3gs9Trg6yuF+aJfKJB4MA==
+"@debank/rabby-api@^0.5.0":
+  version "0.5.0"
+  resolved "https://registry.yarnpkg.com/@debank/rabby-api/-/rabby-api-0.5.0.tgz#6d2c70e1d4eb15e5faed0e92f4b63958e0940a30"
+  integrity sha512-8cXM+ITu7UIAvVm2l01oO95PsmSHNecJa7I4VAUGyYutWSuJwcV8qggszPPUxfIyiNKhz9KrpRDxHShNto4IFg==
   dependencies:
     "@debank/isomorphic" "^0.3.0"
     axios "^0.27.2"

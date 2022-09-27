@@ -104,3 +104,7 @@ export const setPopupIcon = (type: 'default' | 'rabby' | 'metamask') => {
 };
 
 global.__rb_is = () => true;
+
+declare global {
+  function __rb_is(): boolean;
+}
