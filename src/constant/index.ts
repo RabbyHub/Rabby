@@ -696,6 +696,13 @@ export const SAFE_GAS_LIMIT_RATIO = {
   137: 1.5,
 };
 
+export const L2_ENUMS = [
+  CHAINS_ENUM.OP,
+  CHAINS_ENUM.ARBITRUM,
+  CHAINS_ENUM.AURORA,
+  CHAINS_ENUM.NOVA,
+];
+
 declare global {
   interface Window {
     __is_rd__?: boolean;

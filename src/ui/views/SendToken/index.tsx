@@ -23,6 +23,7 @@ import {
   KEYRING_PURPLE_LOGOS,
   KEYRING_CLASS,
   MINIMUM_GAS_LIMIT,
+  L2_ENUMS,
 } from 'consts';
 import { Account, ChainGas } from 'background/service/preference';
 import { UIContactBookItem } from 'background/service/contactBook';
@@ -258,10 +259,7 @@ const SendToken = () => {
           )
         )
       );
-      if (
-        chain.enum !== CHAINS_ENUM.ARBITRUM &&
-        chain.enum !== CHAINS_ENUM.OP
-      ) {
+      if (!L2_ENUMS.includes(chain.enum)) {
         params.gas = intToHex(21000); // L2 has extra validation fee so can not set gasLimit as 21000 when send native token
       }
       if (showGasReserved) {
