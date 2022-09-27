@@ -57,40 +57,54 @@ export const ConfirmDrawer = ({
       style: CSSProperties;
     }) => {
       const item = data[index];
+
       return (
-        <div
-          key={item.id}
-          style={style}
-          className={clsx(
-            'flex justify-between items-center cursor-pointer px-[20px] h-[52px] border border-transparent hover:border-blue-light rounded-[6px]',
-            'text-13 font-medium text-gray-title',
+        <Tooltip
+          overlayClassName={clsx('rectangle')}
+          placement="top"
+          visible={
             new BigNumber(item.amount)
               .times(item.price)
-              .lt(new BigNumber(cost).times(1.2)) &&
-              'opacity-50 cursor-not-allowed'
-          )}
-          onClick={() => {
-            if (
+              .lt(new BigNumber(cost).times(1.2))
+              ? undefined
+              : false
+          }
+          title={t('Insufficient balance')}
+        >
+          <div
+            key={item.id}
+            style={style}
+            className={clsx(
+              'flex justify-between items-center cursor-pointer px-[20px] h-[52px] border border-transparent hover:border-blue-light rounded-[6px]',
+              'text-13 font-medium text-gray-title',
               new BigNumber(item.amount)
                 .times(item.price)
-                .gte(new BigNumber(cost).times(1.2))
-            ) {
-              onChange(item);
-              setTokenModalVisible(false);
-            }
-          }}
-        >
-          <Space size={12}>
-            <TokenWithChain token={item} hideConer />
-            <span>
-              {splitNumberByStep(item.amount?.toFixed(4))}
-              {item.symbol}
-            </span>
-          </Space>
-          <div>
-            ${splitNumberByStep((item.amount * item.price || 0)?.toFixed(2))}
+                .lt(new BigNumber(cost).times(1.2)) &&
+                'opacity-50 cursor-not-allowed'
+            )}
+            onClick={() => {
+              if (
+                new BigNumber(item.amount)
+                  .times(item.price)
+                  .gte(new BigNumber(cost).times(1.2))
+              ) {
+                onChange(item);
+                setTokenModalVisible(false);
+              }
+            }}
+          >
+            <Space size={12}>
+              <TokenWithChain token={item} hideConer />
+              <span>
+                {splitNumberByStep(item.amount?.toFixed(4))}
+                {item.symbol}
+              </span>
+            </Space>
+            <div>
+              ${splitNumberByStep((item.amount * item.price || 0)?.toFixed(2))}
+            </div>
           </div>
-        </div>
+        </Tooltip>
       );
     },
     [cost, onChange]

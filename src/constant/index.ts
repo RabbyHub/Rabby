@@ -695,10 +695,13 @@ export const SAFE_GAS_LIMIT_RATIO = {
   56: 1.5,
   137: 1.5,
 };
-export const GAS_TOP_UP_ADDRESS = '0x448c02d84F10b4144954b2C4413F96DEf46761CE';
+export const GAS_TOP_UP_ADDRESS = '0x448c02d84f10b4144954b2c4413f96def46761ce';
+export const GAS_TOP_UP_PAY_ADDRESS =
+  '0x1f1f2bf8942861e6194fda1c0a9f13921c0cf117';
 
 export const ALIAS_ADDRESS = {
   [GAS_TOP_UP_ADDRESS]: 'Gas Top Up',
+  [GAS_TOP_UP_PAY_ADDRESS]: 'Gas Top Up',
 };
 
 export const L2_ENUMS = [

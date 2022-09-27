@@ -70,10 +70,10 @@ export const ChainSelect = ({
   return (
     <>
       <ChainWrapper onClick={handleClickSelector}>
-        <Space size={12}>
-          <img className="icon" src={CHAINS[value].logo} />
+        <div className="flex items-center justify-center">
+          <img className="icon ml-[4px] mr-[12px]" src={CHAINS[value].logo} />
           <span className="text">{CHAINS[value].name}</span>
-        </Space>
+        </div>
         {!readonly && <SvgIconArrowDownTriangle width={24} height={24} />}
       </ChainWrapper>
       {!readonly && (

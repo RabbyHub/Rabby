@@ -1124,7 +1124,7 @@
     "message": "Instant Gas Top Up"
   },
   "gasTopUpDescribe": {
-    "message": "Send tokens to us on one chain and we will send gas tokens to the chain you specify. Gas tokens will be sent as soon as your payment transaction is confirmed, without waiting for it to be irreversible."
+    "message": "Top up gas tokens by sending us the tokens you have on any chain. Instant transfer as soon as your payment is confirmed, without waiting for it to be irreversible."
   },
   "Including__service__fee": {
     "message": "Including ${{fee}} service fee"
@@ -1137,5 +1137,11 @@
   },
   "Contact__up__on__Discord": {
     "message": "Contact us on Discord"
+  },
+  "Gas__Top__Up__Insufficient__Balance": {
+    "message": "There is not enough balance in Rabby's contract address for the current chain. Please try again later."
+  },
+  "Gas__Top__Up__hight__gas__fees": {
+    "message": "This amount is too small to be transferred because the target network requires high gas fees."
   }
 }

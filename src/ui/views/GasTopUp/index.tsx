@@ -3,9 +3,9 @@ import { PageHeader } from '@/ui/component';
 import { useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import bgIcon from '@/ui/assets/gas-top-up/light.svg';
-import { Button, Skeleton, Space } from 'antd';
+import { Button, Skeleton, Space, Tooltip } from 'antd';
 import { CHAINS, CHAINS_ENUM } from '@debank/common';
-import { useAsync, useAsyncRetry } from 'react-use';
+import { useAsync, useAsyncRetry, useCss } from 'react-use';
 import { useWallet } from '@/ui/utils';
 import BigNumber from 'bignumber.js';
 import clsx from 'clsx';
@@ -17,7 +17,7 @@ const GasList = [20, 50, 100];
 
 const EthGasList = [100, 200, 500];
 
-const ETHGasTokenChains = [CHAINS_ENUM.ETH];
+const ETHGasTokenChains = [CHAINS_ENUM.ETH, CHAINS_ENUM.RSK];
 
 export const GasTopUp = () => {
   const wallet = useWallet();
@@ -51,6 +51,16 @@ export const GasTopUp = () => {
   }, [chain, wallet]);
 
   const {
+    value: chainUsdBalance,
+    loading: chainUsdBalanceLoading,
+  } = useAsync(async () => {
+    const data = await wallet.openapi.getGasStationChainBalance(
+      CHAINS[chain].serverId
+    );
+    return data.usd_value;
+  }, [chain, wallet]);
+
+  const {
     value: tokenList,
     loading: tokenListLoading,
     error,
@@ -67,9 +77,7 @@ export const GasTopUp = () => {
     return sortedTokens;
   });
 
-  const [key, setKey] = useState(0);
-
-  const prices = useMemo(() => {
+  const prices: [number, string][] = useMemo(() => {
     if (ETHGasTokenChains.includes(chain)) {
       return EthGasList.map((e) => [
         e,
@@ -91,7 +99,24 @@ export const GasTopUp = () => {
         .times(gasToken.price);
     }
     return gasValue;
-  }, [instantGas]);
+  }, [instantGas, gasToken]);
+
+  const btnDisabled = useMemo(
+    () =>
+      index >= prices.length ||
+      new BigNumber(chainUsdBalance || 0).lt(prices[index][0]) ||
+      gasLoading ||
+      gasTokenLoading ||
+      chainUsdBalanceLoading,
+    [
+      index,
+      prices,
+      chainUsdBalance,
+      gasLoading,
+      gasTokenLoading,
+      chainUsdBalanceLoading,
+    ]
+  );
 
   const handleClickBack = () => {
     history.replace('/');
@@ -123,15 +148,18 @@ export const GasTopUp = () => {
   }, []);
 
   useEffect(() => {
-    if (!visible) {
-      setTimeout(() => {
-        setKey((e) => e + 1);
-      }, 300);
+    const isLoading = gasLoading || gasTokenLoading;
+    if (!isLoading && instantGasValue && gasToken && index >= prices.length) {
+      const i = prices.findIndex((e) =>
+        instantGasValue.lte(new BigNumber(e[0]).times(0.2).times(0.1))
+      );
+      if (prices[i]) {
+        setIndex(i);
+      }
+      return;
     }
-  }, [visible]);
 
-  useEffect(() => {
-    if (instantGasValue && prices[index] && gasToken) {
+    if (!isLoading && instantGasValue && prices[index] && gasToken) {
       if (
         instantGasValue.gt(
           new BigNumber(prices[index][0]).times(0.2).times(0.1)
@@ -140,7 +168,7 @@ export const GasTopUp = () => {
         setIndex((index) => index + 1);
       }
     }
-  }, [instantGasValue, index, prices, gasToken]);
+  }, [gasLoading, gasTokenLoading, instantGasValue, index, prices, gasToken]);
 
   const gasTopUp = async () => {
     if (!token || !gasToken || !prices[index]) return;
@@ -151,6 +179,7 @@ export const GasTopUp = () => {
       .toFixed(0);
     try {
       wallet.gasTopUp({
+        fromUsdValue: prices[index][0],
         to: GAS_TOP_UP_ADDRESS,
         toChainId: CHAINS[chain].serverId,
         rawAmount: sendValue,
@@ -191,59 +220,28 @@ export const GasTopUp = () => {
       </div>
 
       <div className="w-[360px] h-[284px] bg-white rounded-[6px] px-[16px] py-[32px]">
-        <div className="text-15 mb-12 font-medium">{t('Top Up Chain')}</div>
+        <div className="text-15 font-medium text-gray-title mb-12">
+          {t('Top Up Chain')}
+        </div>
         <ChainSelect value={chain} onChange={setChain} />
 
-        <div className="mt-[40px] mb-[12px] font-medium">{t('Amount')}</div>
+        <div className="text-15 font-medium text-gray-title mt-[40px] mb-[12px]">
+          {t('Amount')}
+        </div>
         <Space size={8}>
           {prices.map((e, i) => (
-            <div
-              key={e[1]}
-              className={clsx(
-                'w-[104px] h-[56px] cursor-pointer rounded border  text-center flex flex-col items-center justify-center',
-
-                instantGasValue.gt(new BigNumber(e[0]).times(0.2).times(0.1))
-                  ? 'cursor-not-allowed opacity-[0.6] bg-gray-light bg-opacity-[0.8]  border-transparent'
-                  : i === index
-                  ? 'bg-blue-light border-blue-light bg-opacity-[0.1]'
-                  : 'bg-gray-bg border-transparent hover:border-blue-light'
-              )}
-              onClick={() => {
-                if (
-                  !instantGasValue.gt(new BigNumber(e[0]).times(0.2).times(0.1))
-                ) {
-                  setIndex(i);
-                }
-              }}
-              title={'当前网络拥堵手续费较高，该充值金额暂不支持'}
-            >
-              <div
-                className={clsx(
-                  'text-15 text-gray-title font-medium ',
-                  i === index && 'text-blue-light'
-                )}
-              >
-                ${e[0]}
-              </div>
-              {gasTokenLoading ? (
-                <Skeleton.Input
-                  active
-                  style={{
-                    width: 60,
-                    height: 14,
-                  }}
-                />
-              ) : (
-                <div
-                  className={clsx(
-                    'text-12 text-gray-subTitle mt-2',
-                    i === index && 'text-blue-light'
-                  )}
-                >
-                  ≈ ${e[1]} {gasToken?.symbol}
-                </div>
-              )}
-            </div>
+            <GasBox
+              key={i + chain}
+              chainUsdBalanceLoading={chainUsdBalanceLoading}
+              instantGasValue={instantGasValue}
+              item={e}
+              selectedIndex={index}
+              index={i}
+              onSelect={setIndex}
+              gasTokenLoading={gasTokenLoading}
+              gasToken={gasToken}
+              chainUsdBalance={chainUsdBalance}
+            />
           ))}
         </Space>
       </div>
@@ -260,15 +258,13 @@ export const GasTopUp = () => {
             setVisible(true);
             setLastSelectedGasTopUpChain();
           }}
-          loading={gasLoading || gasTokenLoading}
-          disabled={index > prices.length - 1 || gasLoading || gasTokenLoading}
+          disabled={btnDisabled}
         >
           {t('Continue')}
         </Button>
       </div>
 
       <ConfirmDrawer
-        key={key}
         visible={visible}
         onClose={() => setVisible(false)}
         cost={prices?.[index]?.[0] ? prices?.[index]?.[0] + '' : '0'}
@@ -280,6 +276,119 @@ export const GasTopUp = () => {
         retry={retryFetchTokenList}
       />
     </div>
+  );
+};
+
+interface GasBoxProps {
+  gasToken?: TokenItem;
+  chainUsdBalance?: number;
+  chainUsdBalanceLoading: boolean;
+  instantGasValue: BigNumber;
+  item: [number, string];
+  selectedIndex: number;
+  index: number;
+  onSelect: (i: number) => void;
+  gasTokenLoading: boolean;
+}
+const GasBox = ({
+  chainUsdBalanceLoading,
+  chainUsdBalance,
+  instantGasValue,
+  index,
+  selectedIndex,
+  onSelect,
+  gasTokenLoading,
+  gasToken,
+  item,
+}: GasBoxProps) => {
+  const { t } = useTranslation();
+  const gasCostExceedsBudget = useMemo(
+    () => instantGasValue.gt(new BigNumber(item[0]).times(0.2).times(0.1)),
+    [instantGasValue, item[0]]
+  );
+  const chainInsufficientBalance = useMemo(
+    () =>
+      !chainUsdBalanceLoading &&
+      chainUsdBalance !== undefined &&
+      new BigNumber(chainUsdBalance).lt(item[0]),
+    [chainUsdBalanceLoading, chainUsdBalance, item[0]]
+  );
+
+  const tooltipsClassName = useCss({
+    '& .ant-tooltip-arrow': {
+      left: `calc(50% ${index - 1 > 0 ? '+' : '-'} ${Math.abs(
+        (index - 1) * 108
+      )}px )`,
+    },
+  });
+
+  return (
+    <Tooltip
+      overlayClassName={clsx(
+        'rectangle max-w-[328px] left-[32px]',
+        tooltipsClassName
+      )}
+      placement="top"
+      visible={
+        gasCostExceedsBudget || chainInsufficientBalance ? undefined : false
+      }
+      title={
+        chainInsufficientBalance
+          ? t('Gas Top Up Insufficient Balance')
+          : gasCostExceedsBudget
+          ? t('Gas Top Up hight gas fees')
+          : ''
+      }
+    >
+      <div
+        key={item[1]}
+        className={clsx(
+          'w-[104px] h-[56px] cursor-pointer rounded border  text-center flex flex-col items-center justify-center',
+
+          gasCostExceedsBudget || chainInsufficientBalance
+            ? 'cursor-not-allowed opacity-[0.6] bg-gray-bg  border-transparent'
+            : index === selectedIndex
+            ? 'bg-blue-light border-blue-light bg-opacity-[0.1]'
+            : 'bg-gray-bg border-transparent hover:border-blue-light'
+        )}
+        onClick={() => {
+          if (!(gasCostExceedsBudget || chainInsufficientBalance)) {
+            onSelect(index);
+          }
+        }}
+      >
+        <div
+          className={clsx(
+            'text-15 text-gray-title font-medium ',
+            !(gasCostExceedsBudget || chainInsufficientBalance) &&
+              index === selectedIndex &&
+              'text-blue-light'
+          )}
+        >
+          ${item[0]}
+        </div>
+        {gasTokenLoading || chainUsdBalanceLoading ? (
+          <Skeleton.Input
+            active
+            style={{
+              width: 60,
+              height: 14,
+            }}
+          />
+        ) : (
+          <div
+            className={clsx(
+              'text-12 text-gray-subTitle mt-2',
+              !(gasCostExceedsBudget || chainInsufficientBalance) &&
+                index === selectedIndex &&
+                'text-blue-light'
+            )}
+          >
+            ≈ {item[1]} {gasToken?.symbol}
+          </div>
+        )}
+      </div>
+    </Tooltip>
   );
 };
 

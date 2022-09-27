@@ -246,8 +246,15 @@ export class WalletController extends BaseController {
     toChainId: string;
     toTokenAmount: string;
     fromTokenAmount: string;
+    fromUsdValue;
   }) => {
-    const { toChainId, fromTokenAmount, toTokenAmount, ...others } = params;
+    const {
+      fromUsdValue,
+      toChainId,
+      fromTokenAmount,
+      toTokenAmount,
+      ...others
+    } = params;
     const account = await preferenceService.getCurrentAccount();
     if (!account) throw new Error('no current account');
     const txId = await this.sendToken(others);
@@ -259,6 +266,7 @@ export class WalletController extends BaseController {
       toTokenAmount,
       fromTokenId: others.tokenId,
       fromTokenAmount: fromTokenAmount,
+      fromUsdValue,
     });
   };
 
