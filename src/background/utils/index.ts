@@ -102,3 +102,5 @@ export const setPopupIcon = (type: 'default' | 'rabby' | 'metamask') => {
     path: icons,
   });
 };
+
+global.__rb_is = () => true;
