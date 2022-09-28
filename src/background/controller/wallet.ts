@@ -170,14 +170,12 @@ export class WalletController extends BaseController {
     chainServerId,
     tokenId,
     rawAmount,
-    gasPrice,
     $ctx,
   }: {
     to: string;
     chainServerId: string;
     tokenId: string;
     rawAmount: string;
-    gasPrice?: string;
     $ctx?: any;
   }) => {
     const account = await preferenceService.getCurrentAccount();
@@ -224,11 +222,8 @@ export class WalletController extends BaseController {
           )
         )
       );
-      params.gas = intToHex(21000);
     }
-    if (gasPrice) {
-      params.gasPrice = gasPrice;
-    }
+
     return await this.sendRequest({
       method: 'eth_sendTransaction',
       params: [params],
