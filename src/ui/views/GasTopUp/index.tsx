@@ -98,13 +98,14 @@ export const GasTopUp = () => {
   }, [chain]);
 
   const {
-    value: gasStationSupportedTokenList = [],
-    error: gasStationSupportedTokenListError,
+    value: gasStationSupportedTokenMap = {},
+    error: gasStationSupportedTokenMapError,
   } = useAsync(async () => {
-    const list = await wallet.openapi.getGasStationTokenList(
-      CHAINS[chain].serverId
-    );
-    return list;
+    const list = await wallet.openapi.getGasStationTokenList();
+    return list.reduce((pre, now) => {
+      pre[now.chain.toLowerCase() + ':' + now.id.toLowerCase()] = true;
+      return pre;
+    }, {} as Record<string, true>);
   }, [chain]);
 
   const availableTokenList = useMemo(
@@ -112,11 +113,11 @@ export const GasTopUp = () => {
       tokenList.filter(
         (token) =>
           GAS_TOP_UP_SUPPORT_TOKENS[token.chain]?.includes(token.id) &&
-          gasStationSupportedTokenList.some(
-            ({ id, chain }) => token.id === id && token.chain === chain
-          )
+          !!gasStationSupportedTokenMap[
+            token.chain.toLowerCase() + ':' + token.id.toLowerCase()
+          ]
       ),
-    [chain, tokenList, gasStationSupportedTokenList]
+    [chain, tokenList, gasStationSupportedTokenMap]
   );
 
   const prices: [number, string][] = useMemo(() => {
@@ -218,14 +219,14 @@ export const GasTopUp = () => {
       error ||
       gasTokenError ||
       instantGasError ||
-      gasStationSupportedTokenListError
+      gasStationSupportedTokenMapError
     ) {
       message.error(
         error?.message ||
           chainUsdBalanceError?.message ||
           gasTokenError?.message ||
           instantGasError?.message ||
-          gasStationSupportedTokenListError?.message
+          gasStationSupportedTokenMapError?.message
       );
     }
   }, [
@@ -233,7 +234,7 @@ export const GasTopUp = () => {
     error,
     gasTokenError,
     instantGasError,
-    gasStationSupportedTokenListError,
+    gasStationSupportedTokenMapError,
   ]);
 
   const gasTopUp = async () => {
