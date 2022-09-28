@@ -84,8 +84,14 @@ export const GasTopUp = () => {
         .minus(new BigNumber(a.amount).times(new BigNumber(a.price || 0)))
         .toNumber()
     );
-    return sortedTokens;
-  });
+    return sortedTokens.filter(
+      (e) =>
+        !(
+          e.chain === CHAINS[chain].serverId &&
+          e.id === CHAINS[chain].nativeTokenAddress
+        )
+    );
+  }, [chain]);
 
   const prices: [number, string][] = useMemo(() => {
     if (ETHGasTokenChains.includes(chain)) {
