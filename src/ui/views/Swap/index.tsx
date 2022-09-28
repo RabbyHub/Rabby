@@ -262,6 +262,8 @@ const Swap = () => {
     return await wallet.getSwapFeeRatio(chain);
   }, [chain, wallet]);
 
+  console.log('feeRatio', feeRatio);
+
   const rbisource = useRbiSource();
 
   const handleTransform = () => {
