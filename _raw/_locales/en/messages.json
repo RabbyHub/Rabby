@@ -1124,7 +1124,7 @@
     "message": "Instant Gas Top Up"
   },
   "gasTopUpDescribe": {
-    "message": "Top up gas tokens by sending us the tokens you have on any chain. Instant transfer as soon as your payment is confirmed, without waiting for it to be irreversible."
+    "message": "Top up gas by sending us available tokens on another chain. Instant transfer as soon as your payment is confirmed, without waiting for it to be irreversible."
   },
   "Including__service__fee": {
     "message": "Including ${{fee}} service fee"

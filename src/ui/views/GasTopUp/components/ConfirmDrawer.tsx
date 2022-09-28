@@ -96,8 +96,7 @@ export const ConfirmDrawer = ({
             <Space size={12}>
               <TokenWithChain token={item} hideConer />
               <span>
-                {splitNumberByStep(item.amount?.toFixed(4))}
-                {item.symbol}
+                {splitNumberByStep(item.amount?.toFixed(4))} {item.symbol}
               </span>
             </Space>
             <div>

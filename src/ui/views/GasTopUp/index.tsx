@@ -11,7 +11,11 @@ import BigNumber from 'bignumber.js';
 import clsx from 'clsx';
 import { ChainSelect, ConfirmDrawer } from './components';
 import { TokenItem } from '@/background/service/openapi';
-import { GAS_TOP_UP_ADDRESS, MINIMUM_GAS_LIMIT } from '@/constant';
+import {
+  GAS_TOP_UP_ADDRESS,
+  GAS_TOP_UP_SUPPORT_TOKENS,
+  MINIMUM_GAS_LIMIT,
+} from '@/constant';
 import stats from '@/stats';
 
 const GasList = [20, 50, 100];
@@ -71,7 +75,7 @@ export const GasTopUp = () => {
   }, [chain, wallet]);
 
   const {
-    value: tokenList,
+    value: tokenList = [],
     loading: tokenListLoading,
     error,
     retry,
@@ -92,6 +96,29 @@ export const GasTopUp = () => {
         )
     );
   }, [chain]);
+
+  const {
+    value: gasStationSupportedTokenMap = {},
+    error: gasStationSupportedTokenMapError,
+  } = useAsync(async () => {
+    const list = await wallet.openapi.getGasStationTokenList();
+    return list.reduce((pre, now) => {
+      pre[now.chain.toLowerCase() + ':' + now.id.toLowerCase()] = true;
+      return pre;
+    }, {} as Record<string, true>);
+  }, [chain]);
+
+  const availableTokenList = useMemo(
+    () =>
+      tokenList.filter(
+        (token) =>
+          GAS_TOP_UP_SUPPORT_TOKENS[token.chain]?.includes(token.id) &&
+          !!gasStationSupportedTokenMap[
+            token.chain.toLowerCase() + ':' + token.id.toLowerCase()
+          ]
+      ),
+    [chain, tokenList, gasStationSupportedTokenMap]
+  );
 
   const prices: [number, string][] = useMemo(() => {
     if (ETHGasTokenChains.includes(chain)) {
@@ -187,15 +214,28 @@ export const GasTopUp = () => {
   }, [gasLoading, gasTokenLoading, instantGasValue, index, prices, gasToken]);
 
   useEffect(() => {
-    if (chainUsdBalanceError || error || gasTokenError || instantGasError) {
+    if (
+      chainUsdBalanceError ||
+      error ||
+      gasTokenError ||
+      instantGasError ||
+      gasStationSupportedTokenMapError
+    ) {
       message.error(
         error?.message ||
           chainUsdBalanceError?.message ||
           gasTokenError?.message ||
-          instantGasError?.message
+          instantGasError?.message ||
+          gasStationSupportedTokenMapError?.message
       );
     }
-  }, [chainUsdBalanceError, error, gasTokenError, instantGasError]);
+  }, [
+    chainUsdBalanceError,
+    error,
+    gasTokenError,
+    instantGasError,
+    gasStationSupportedTokenMapError,
+  ]);
 
   const gasTopUp = async () => {
     if (!token || !gasToken || !prices[index]) return;
@@ -329,7 +369,7 @@ export const GasTopUp = () => {
         visible={visible}
         onClose={() => setVisible(false)}
         cost={prices?.[index]?.[0] ? prices?.[index]?.[0] + '' : '0'}
-        list={tokenList}
+        list={availableTokenList}
         token={token}
         onChange={setToken}
         onConfirm={gasTopUp}
