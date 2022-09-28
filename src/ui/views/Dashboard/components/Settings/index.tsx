@@ -17,8 +17,10 @@ import { useWallet, useWalletOld } from 'ui/utils';
 import './style.less';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import IconContacts from 'ui/assets/swap/contact.svg';
-
-import { Contacts } from '..';
+import IconSettingWidget from 'ui/assets/settings-widget.svg';
+import IconDiscord from 'ui/assets/discord.svg';
+import { Contacts, Widget } from '..';
+import stats from '@/stats';
 
 interface SettingsProps {
   visible?: boolean;
@@ -207,6 +209,7 @@ const Settings = ({ visible, onClose }: SettingsProps) => {
   const [showOpenApiModal, setShowOpenApiModal] = useState(false);
   const [showResetAccountModal, setShowResetAccountModal] = useState(false);
   const [contactsVisible, setContactsVisible] = useState(false);
+  const [widgetVisible, setWidgetVisible] = useState(false);
 
   const handleClickClearWatchMode = () => {
     confirm({
@@ -228,6 +231,7 @@ const Settings = ({ visible, onClose }: SettingsProps) => {
           action: 'clickToUse',
           label: 'adddressManagement',
         });
+        reportSettings('addressManagement');
         history.push('/settings/address');
       },
     },
@@ -236,6 +240,18 @@ const Settings = ({ visible, onClose }: SettingsProps) => {
       content: t('Contacts'),
       onClick: () => {
         setContactsVisible(true);
+        reportSettings('contract');
+      },
+    },
+    {
+      leftIcon: IconSettingWidget,
+      content: t('Widget'),
+      onClick: () => {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        //@ts-ignore
+        onClose?.();
+        setWidgetVisible(true);
+        reportSettings('widget');
       },
     },
 
@@ -249,8 +265,17 @@ const Settings = ({ visible, onClose }: SettingsProps) => {
           label: 'resetAccount',
         });
         setShowResetAccountModal(true);
+        reportSettings('resetAccount');
       },
       rightIcon: <img src={IconArrowRight} className="icon icon-arrow-right" />,
+    },
+    {
+      leftIcon: IconDiscord,
+      content: t('Contact us on Discord'),
+      onClick: () => {
+        reportSettings('discord');
+        window.open('https://discord.com/invite/seFBCWmUre');
+      },
     },
   ];
 
@@ -276,6 +301,7 @@ const Settings = ({ visible, onClose }: SettingsProps) => {
       action: 'clickToUse',
       label: 'lockWallet',
     });
+    reportSettings('lockWallet');
     await wallet.lockWallet();
     history.push('/unlock');
   };
@@ -353,8 +379,21 @@ const Settings = ({ visible, onClose }: SettingsProps) => {
           />
         </div>
       </Popup>
+
+      <Widget
+        visible={widgetVisible}
+        onClose={() => {
+          setWidgetVisible(false);
+        }}
+      />
     </>
   );
 };
+
+function reportSettings(moduleName: string) {
+  stats.report('settingsModule', {
+    moduleName,
+  });
+}
 
 export default Settings;

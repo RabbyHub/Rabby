@@ -19,6 +19,7 @@ import IconSetting from 'ui/assets/dashboard/setting.png';
 import IconActivities from 'ui/assets/dashboard/activities.svg';
 import IconActivitiesPending from 'ui/assets/dashboard/activities-pending.svg';
 import IconReceive from 'ui/assets/dashboard/receive.svg';
+import IconGasTopUp from 'ui/assets/dashboard/gas-top-up.svg';
 import IconTransactions from 'ui/assets/dashboard/transactions.png';
 import IconWidget from 'ui/assets/dashboard/widget.svg';
 import IconDrawer from 'ui/assets/drawer.png';
@@ -30,7 +31,7 @@ import {
 } from 'ui/utils';
 import { CurrentConnection } from '../CurrentConnection';
 import ChainSelectorModal from 'ui/component/ChainSelector/Modal';
-import { RecentConnections, Security, Settings, Widget } from '../index';
+import { RecentConnections, Security, Settings } from '../index';
 import './style.less';
 import { CHAINS_ENUM } from '@/constant';
 
@@ -66,7 +67,6 @@ export default ({
   const [drawerAnimation, setDrawerAnimation] = useState<string | null>(null);
   const [urlVisible, setUrlVisible] = useState(false);
   const [settingVisible, setSettingVisible] = useState(false);
-  const [widgetVisible, setWidgetVisible] = useState(false);
   const [securityVisible, setSecurityVisible] = useState(false);
   const [currentConnect, setCurrentConnect] = useState<
     ConnectedSite | null | undefined
@@ -139,10 +139,6 @@ export default ({
     setDashboardReload();
   };
 
-  const changeWidget = () => {
-    setWidgetVisible(!widgetVisible);
-  };
-
   const changeSecurity = () => {
     setSecurityVisible(!securityVisible);
   };
@@ -202,6 +198,13 @@ export default ({
         setIsShowReceiveModal(true);
       },
     },
+    gasTopUp: {
+      icon: IconGasTopUp,
+      content: 'Gas Top Up',
+      onClick: () => {
+        history.push('/gas-top-up');
+      },
+    },
     queue: {
       icon: IconQuene,
       content: 'Queue',
@@ -238,11 +241,6 @@ export default ({
       content: 'Security',
       onClick: changeSecurity,
     },
-    widget: {
-      icon: IconWidget,
-      content: 'Widget',
-      onClick: changeWidget,
-    },
     settings: {
       icon: IconSetting,
       content: 'Settings',
@@ -257,11 +255,11 @@ export default ({
       'swap',
       'send',
       'receive',
+      'gasTopUp',
       'queue',
       'transactions',
       'dapps',
       'security',
-      'widget',
       'settings',
     ];
   } else {
@@ -269,10 +267,10 @@ export default ({
       'swap',
       'send',
       'receive',
+      'gasTopUp',
       'activities',
       'transactions',
       'dapps',
-      'widget',
       'security',
       'settings',
     ];
@@ -394,7 +392,6 @@ export default ({
       <Settings visible={settingVisible} onClose={changeSetting} />
       <RecentConnections visible={urlVisible} onClose={changeURL} />
       <Security visible={securityVisible} onClose={changeSecurity} />
-      <Widget visible={widgetVisible} onClose={changeWidget} />
     </div>
   );
 };
