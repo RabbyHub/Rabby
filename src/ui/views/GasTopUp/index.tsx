@@ -71,7 +71,7 @@ export const GasTopUp = () => {
     const data = await wallet.openapi.getGasStationChainBalance(
       CHAINS[chain].serverId
     );
-    return data.usd_value || 100;
+    return data.usd_value;
   }, [chain, wallet]);
 
   const {
