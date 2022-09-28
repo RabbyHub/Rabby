@@ -1142,6 +1142,6 @@
     "message": "There is not enough balance in Rabby's contract address for the current chain. Please try again later."
   },
   "Gas__Top__Up__hight__gas__fees": {
-    "message": "This amount is too small to be transferred because the target network requires high gas fees."
+    "message": "This top up amount is too small because the target network requires high gas fees."
   }
 }
