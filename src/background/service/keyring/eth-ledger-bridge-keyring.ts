@@ -507,6 +507,7 @@ class LedgerBridgeKeyring extends EventEmitter {
       this.resolvePromise = resolve;
       this.rejectPromise = reject;
       this.onSendTransaction = async () => {
+        await this._reconnect();
         if (this.isWebHID) {
           try {
             await this.makeApp(true);
@@ -630,6 +631,7 @@ class LedgerBridgeKeyring extends EventEmitter {
       this.resolvePromise = resolve;
       this.rejectPromise = reject;
       this.onSendTransaction = async () => {
+        await this._reconnect();
         const isV4 = options.version === 'V4';
         if (!isV4) {
           setTimeout(() => {
