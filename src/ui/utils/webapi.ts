@@ -15,10 +15,7 @@ export const getCurrentConnectSite = async (wallet: WalletController) => {
   return wallet.getCurrentConnectedSite(id, getOriginFromUrl(url));
 };
 
-export const openInTab = async (
-  url,
-  needClose = true
-): Promise<number | undefined> => {
+export const openInTab = async (url, needClose = true): Promise<Tabs.Tab> => {
   const tab = await browser.tabs.create({
     active: true,
     url,
@@ -26,7 +23,7 @@ export const openInTab = async (
 
   if (needClose) window.close();
 
-  return tab?.id;
+  return tab;
 };
 
 export const getCurrentWindow = async (): Promise<number | undefined> => {

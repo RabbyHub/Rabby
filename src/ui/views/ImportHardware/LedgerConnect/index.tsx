@@ -1,19 +1,33 @@
 import React from 'react';
-import { useHistory } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import TransportWebHID from '@ledgerhq/hw-transport-webhid';
 import { StrayPageWithButton } from 'ui/component';
 import { hasConnectedLedgerDevice } from '@/utils';
 import { HARDWARE_KEYRING_TYPES } from 'consts';
 import './style.less';
+import { query2obj } from '@/ui/utils/url';
 
 const LedgerConnect = () => {
   const history = useHistory();
   const { t } = useTranslation();
+  const { search } = useLocation();
+
+  const qs = query2obj(search);
+  const isReconnect = !!qs.reconnect;
 
   const onSubmit = async () => {
     const supportWebHID = await TransportWebHID.isSupported();
     const hasConnectedLedger = await hasConnectedLedgerDevice();
+
+    if (isReconnect) {
+      history.push({
+        pathname: '/request-permission',
+        search: '?type=ledger&reconnect=1',
+      });
+      return;
+    }
+
     if (!supportWebHID) {
       history.push({
         pathname: '/import/select-address',

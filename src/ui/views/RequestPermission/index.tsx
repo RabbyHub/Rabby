@@ -20,6 +20,7 @@ const RequestPermission = () => {
   const history = useHistory();
   const wallet = useWallet();
   const needConfirm = type === 'ledger';
+  const isReconnect = !!qs.reconnect;
 
   const PERMISSIONS = {
     camera: {
@@ -48,6 +49,12 @@ const RequestPermission = () => {
         const transport = await TransportWebHID.create();
         await transport.close();
         await wallet.authorizeLedgerHIDPermission();
+        if (isReconnect) {
+          window.close();
+          wallet.activeFirstApproval();
+          return;
+        }
+
         if (from && from === 'approval') {
           setShowSuccess(true);
           return;

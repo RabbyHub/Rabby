@@ -19,6 +19,7 @@ import {
 import eventBus from '@/eventBus';
 import stats from '@/stats';
 import { SvgIconOpenExternal } from 'ui/assets';
+import { LedgerHardwareFailed } from './LedgerHardwareFailed';
 
 interface ApprovalParams {
   address: string;
@@ -50,7 +51,7 @@ const LedgerHardwareWaiting = ({ params }: { params: ApprovalParams }) => {
       content: 'Transaction rejected',
       signTextContent: 'Rejected',
       color: '#EC5151',
-      image: '/images/ledger-status/failed.jpg',
+      image: '/images/ledger-status/error.png',
     },
   };
   const [connectStatus, setConnectStatus] = useState(
@@ -63,6 +64,7 @@ const LedgerHardwareWaiting = ({ params }: { params: ApprovalParams }) => {
   const { t } = useTranslation();
   const [isSignText, setIsSignText] = useState(false);
   const [result, setResult] = useState('');
+  const [errorMessage, setErrorMessage] = useState('');
 
   const handleCancel = () => {
     rejectApproval('user cancel');
@@ -125,6 +127,7 @@ const LedgerHardwareWaiting = ({ params }: { params: ApprovalParams }) => {
       rejectApproval(data, false, true);
     });
     eventBus.addEventListener(EVENTS.LEDGER.REJECTED, async (data) => {
+      setErrorMessage(data);
       if (/DisconnectedDeviceDuringOperation/i.test(data)) {
         await rejectApproval('User rejected the request.');
         openInternalPageInTab('request-permission?type=ledger&from=approval');
@@ -170,10 +173,34 @@ const LedgerHardwareWaiting = ({ params }: { params: ApprovalParams }) => {
   }, []);
   const currentHeader = statusHeaders[connectStatus];
 
+  if (connectStatus === WALLETCONNECT_STATUS_MAP.FAILD) {
+    return (
+      <LedgerHardwareFailed
+        header={currentHeader}
+        errorMessage={errorMessage}
+        isSignText={isSignText}
+      >
+        <div className="ledger-waiting__footer">
+          <Button
+            className="w-[200px]"
+            type="primary"
+            size="large"
+            onClick={handleRetry}
+          >
+            Retry
+          </Button>
+          <Button type="link" onClick={handleCancel}>
+            {t('Cancel')}
+          </Button>
+        </div>
+      </LedgerHardwareFailed>
+    );
+  }
+
   return (
     <div className="ledger-waiting">
       <img
-        src="/images/ledger-status/header.jpg"
+        src="/images/ledger-status/header.png"
         className="ledger-waiting__nav"
       />
       <div className="ledger-waiting__container">
@@ -236,21 +263,6 @@ const LedgerHardwareWaiting = ({ params }: { params: ApprovalParams }) => {
               >
                 OK
               </Button>
-            )}
-            {connectStatus === WALLETCONNECT_STATUS_MAP.FAILD && (
-              <>
-                <Button
-                  className="w-[200px]"
-                  type="primary"
-                  size="large"
-                  onClick={handleRetry}
-                >
-                  Retry
-                </Button>
-                <Button type="link" onClick={handleCancel}>
-                  {t('Cancel')}
-                </Button>
-              </>
             )}
           </div>
         )}
