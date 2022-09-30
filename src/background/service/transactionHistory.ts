@@ -302,6 +302,9 @@ class TxHistory {
     const key = `${chainId}-${nonce}`;
     const normalizedAddress = address.toLowerCase();
     const target = this.store.transactions[normalizedAddress][key];
+    if (!target.isPending) {
+      return;
+    }
     target.isPending = false;
     target.isFailed = !success;
     const index = target.txs.findIndex((tx) => tx.hash === hash);
