@@ -326,29 +326,10 @@ const GasSelector = ({
         level: 'custom',
         gasLimit: Number(afterGasLimit),
         nonce: Number(customNonce),
-        maxPriorityFee: maxPriorityFee * 1e9,
+        maxPriorityFee: Number(value) * 1e9,
       };
       onChange(currentObj);
     }
-  };
-
-  const externalCustomGasConfirm = (e) => {
-    const gas = {
-      level: 'custom',
-      price: Number(e?.target?.value),
-      front_tx_count: 0,
-      estimated_seconds: 0,
-      base_fee: gasList[0].base_fee,
-    };
-
-    onChange({
-      ...gas,
-      price: Number(gas.price),
-      level: gas.level,
-      gasLimit: Number(afterGasLimit),
-      nonce: Number(customNonce),
-      maxPriorityFee: maxPriorityFee * 1e9,
-    });
   };
 
   const customGasConfirm = (e) => {
@@ -510,7 +491,6 @@ const GasSelector = ({
           selectedGas={rawSelectedGas}
           panelSelection={externalPanelSelection}
           customGas={customGas}
-          customGasConfirm={externalCustomGasConfirm}
           handleCustomGasChange={externalHandleCustomGasChange}
         />
       </div>
@@ -793,7 +773,7 @@ const GasSelectPanel = ({
   selectedGas,
   panelSelection,
   customGas,
-  customGasConfirm,
+  customGasConfirm = () => null,
   handleCustomGasChange,
 }: {
   gasList: GasLevel[];
@@ -803,7 +783,7 @@ const GasSelectPanel = ({
     item: GasLevel
   ) => void;
   customGas: string | number;
-  customGasConfirm: React.KeyboardEventHandler<HTMLInputElement> | undefined;
+  customGasConfirm?: React.KeyboardEventHandler<HTMLInputElement> | undefined;
   handleCustomGasChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
 }) => {
   const { t } = useTranslation();
