@@ -1,5 +1,5 @@
 import React, { useEffect, useState } from 'react';
-import { Button } from 'antd';
+import { Button, message } from 'antd';
 import { useTranslation } from 'react-i18next';
 import ReactGA from 'react-ga';
 import { Account } from 'background/service/preference';
@@ -78,6 +78,7 @@ const LedgerHardwareWaiting = ({ params }: { params: ApprovalParams }) => {
     const account = await wallet.syncGetCurrentAccount()!;
     setConnectStatus(WALLETCONNECT_STATUS_MAP.WAITING);
     await wallet.requestKeyring(account.type, 'resend');
+    message.success(t('Resent'));
   };
 
   const handleClickResult = () => {
