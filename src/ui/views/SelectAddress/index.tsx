@@ -115,13 +115,18 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
         setAccounts(_accounts);
       },
       onError(err) {
-        setHasError(true);
-        setSpin(false);
-        try {
-          wallet.requestKeyring(keyring, 'cleanUp');
-        } catch (e) {
-          // nothing
+        if (isLedger) {
+          setHasError(true);
+          try {
+            wallet.requestKeyring(keyring, 'cleanUp');
+          } catch (e) {
+            console.log(e);
+          }
+        } else {
+          message.error('Please check the connection with your wallet');
         }
+
+        setSpin(false);
       },
     }
   );
