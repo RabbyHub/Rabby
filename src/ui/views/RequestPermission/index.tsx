@@ -50,8 +50,8 @@ const RequestPermission = () => {
         await transport.close();
         await wallet.authorizeLedgerHIDPermission();
         if (isReconnect) {
-          window.close();
           wallet.activeFirstApproval();
+          window.close();
           return;
         }
 
