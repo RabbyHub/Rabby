@@ -54,9 +54,11 @@ export const LedgerHardwareFailed: React.FC<Props> = ({
         >
           {isSignText ? header.signTextContent : header.content}
         </h1>
-        <p className="bg-[#F248221A] border-[#EC5151] border text-[#EC5151] py-12 px-16 rounded text-14">
-          {errorMessage}
-        </p>
+        {errorMessage && (
+          <p className="bg-[#F248221A] border-[#EC5151] border text-[#EC5151] py-12 px-16 rounded text-14">
+            {errorMessage}
+          </p>
+        )}
         {isBlindSign && (
           <div className="mt-16 bg-[#F5F6FA] rounded p-16  text-13">
             <TooltipTitle>Why is enabling blind signing required?</TooltipTitle>
