@@ -207,7 +207,7 @@ class LedgerBridgeKeyring extends EventEmitter {
 
   async cleanUp() {
     this.app = null;
-    if (this.transport) await this.transport.close();
+    if (this.transport) this.transport.close();
     this.transport = null;
     this.hdk = new HDKey();
   }

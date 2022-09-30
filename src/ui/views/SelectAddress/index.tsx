@@ -21,6 +21,7 @@ import Pagination from './components/Pagination';
 import './style.less';
 import { useMedia } from 'react-use';
 import type { Account } from '@/background/service/preference';
+import { ErrorAlert } from '@/ui/component/Alert/ErrorAlert';
 
 const { Option } = Select;
 
@@ -76,6 +77,7 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
   const [spinning, setSpin] = useState(true);
   const isGrid = keyring === HARDWARE_KEYRING_TYPES.GridPlus.type;
   const isLedger = keyring === HARDWARE_KEYRING_TYPES.Ledger.type;
+  const [hasError, setHasError] = useState(false);
 
   const [getAccounts] = useWalletRequest(
     async (firstFlag, start?, end?): Promise<Account[]> => {
@@ -113,13 +115,19 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
         setAccounts(_accounts);
       },
       onError(err) {
-        message.error('Please check the connection with your wallet');
+        setHasError(true);
         setSpin(false);
+        try {
+          wallet.requestKeyring(keyring, 'cleanUp');
+        } catch (e) {
+          // nothing
+        }
       },
     }
   );
 
   const init = async () => {
+    setHasError(false);
     if (keyringId.current === null || keyringId.current === undefined) {
       const stashKeyringId = await wallet.connectHardware({
         type: keyring,
@@ -364,7 +372,25 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
             </Form.Item>
           </div>
         </div>
-        <Pagination current={currentPage} onChange={handlePageChange} />
+        {hasError && (
+          <ErrorAlert className="my-[100px] w-[460px]">
+            Please ensure the hardware wallet is connected, then&nbsp;
+            <a
+              className="text-[#EC5151] font-bold underline"
+              href="#"
+              onClick={(e) => {
+                e.preventDefault();
+                window.location.reload();
+              }}
+            >
+              refresh the page
+            </a>
+            &nbsp;to retry.
+          </ErrorAlert>
+        )}
+        {!hasError && (
+          <Pagination current={currentPage} onChange={handlePageChange} />
+        )}
       </StrayPageWithButton>
       <LoadingOverlay hidden={!spinning} />
     </div>
