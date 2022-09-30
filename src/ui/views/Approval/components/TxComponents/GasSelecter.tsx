@@ -284,7 +284,7 @@ const GasSelector = ({
         price: Number(target.price),
         gasLimit: Number(afterGasLimit),
         nonce: Number(customNonce),
-        maxPriorityFee: maxPriorityFee * 1e9,
+        maxPriorityFee: target.price,
       });
     } else {
       onChange({
@@ -292,7 +292,7 @@ const GasSelector = ({
         gasLimit: Number(afterGasLimit),
         nonce: Number(customNonce),
         level: gas?.level,
-        maxPriorityFee: maxPriorityFee * 1e9,
+        maxPriorityFee: gas.price,
       });
     }
   };
