@@ -14,6 +14,7 @@ import {
 } from '@ethereumjs/tx';
 import eventBus from '@/eventBus';
 import { EVENTS } from 'consts';
+import { wait } from '@/background/utils';
 
 const pathBase = 'm';
 const hdPathString = `${pathBase}/44'/60'/0'`;
@@ -204,7 +205,7 @@ class LedgerBridgeKeyring extends EventEmitter {
     }
   }
 
-  cleanUp() {
+  async cleanUp() {
     this.app = null;
     if (this.transport) this.transport.close();
     this.transport = null;
@@ -345,6 +346,9 @@ class LedgerBridgeKeyring extends EventEmitter {
       this.resolvePromise = resolve;
       this.rejectPromise = reject;
       this.onSendTransaction = async () => {
+        // make sure the previous transaction is cleaned up
+        await this._reconnect();
+
         // transactions built with older versions of ethereumjs-tx have a
         // getChainId method that newer versions do not. Older versions are mutable
         // while newer versions default to being immutable. Expected shape and type
@@ -425,6 +429,23 @@ class LedgerBridgeKeyring extends EventEmitter {
     });
   }
 
+  async _reconnect() {
+    if (this.isWebHID) {
+      await this.cleanUp();
+
+      let count = 0;
+      // wait connect the WebHID
+      while (!this.app) {
+        await this.makeApp();
+        await wait(() => {
+          if (count++ > 50) {
+            throw new Error('Ledger: Failed to connect to Ledger');
+          }
+        }, 100);
+      }
+    }
+  }
+
   async _signTransaction(address, rawTxHex, handleSigning) {
     const hdPath = await this.unlockAccountByAddress(address);
     if (this.isWebHID) {
@@ -486,6 +507,7 @@ class LedgerBridgeKeyring extends EventEmitter {
       this.resolvePromise = resolve;
       this.rejectPromise = reject;
       this.onSendTransaction = async () => {
+        await this._reconnect();
         if (this.isWebHID) {
           try {
             await this.makeApp(true);
@@ -609,6 +631,7 @@ class LedgerBridgeKeyring extends EventEmitter {
       this.resolvePromise = resolve;
       this.rejectPromise = reject;
       this.onSendTransaction = async () => {
+        await this._reconnect();
         const isV4 = options.version === 'V4';
         if (!isV4) {
           setTimeout(() => {
