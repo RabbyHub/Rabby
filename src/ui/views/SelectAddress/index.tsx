@@ -378,9 +378,9 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
           </div>
         </div>
         {hasError && (
-          <ErrorAlert className="my-[100px] w-[460px]">
-            Unable to connect to Ledger. Please connect your wallet directly to
-            your computer, unlock your Ledger and open the Ethereum app,then
+          <ErrorAlert className="mt-[60px] mb-[188px] w-[460px]">
+            Unable to connect to Ledger. Please connect your Ledger directly to
+            your computer, unlock your Ledger and open the Ethereum app, then
             <a
               className="text-[#EC5151] font-bold underline"
               href="#"
