@@ -1,6 +1,7 @@
 import { ledgerUSBVendorId } from '@ledgerhq/devices';
 import { useEffect, useState } from 'react';
 import { hasConnectedLedgerDevice } from 'utils';
+import { browser } from 'webextension-polyfill-ts';
 
 export const useLedgerDeviceConnected = () => {
   const [connected, setConnected] = useState(false);
@@ -17,17 +18,21 @@ export const useLedgerDeviceConnected = () => {
     }
   };
 
-  useEffect(() => {
+  const detectDevice = async () => {
     hasConnectedLedgerDevice().then((state) => {
       setConnected(state);
     });
+  };
 
+  useEffect(() => {
     navigator.hid.addEventListener('connect', onConnect);
     navigator.hid.addEventListener('disconnect', onDisconnect);
+    browser.windows.onFocusChanged.addListener(detectDevice);
 
     return () => {
       navigator.hid.removeEventListener('connect', onConnect);
       navigator.hid.removeEventListener('disconnect', onDisconnect);
+      browser.windows.onFocusChanged.removeListener(detectDevice);
     };
   }, []);
 
