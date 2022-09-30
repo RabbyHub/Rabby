@@ -25,6 +25,7 @@ export const useLedgerDeviceConnected = () => {
   };
 
   useEffect(() => {
+    detectDevice();
     navigator.hid.addEventListener('connect', onConnect);
     navigator.hid.addEventListener('disconnect', onDisconnect);
     browser.windows.onFocusChanged.addListener(detectDevice);
