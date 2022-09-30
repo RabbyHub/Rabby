@@ -289,7 +289,10 @@ const getRecommendGas = async ({
   return {
     needRatio: false,
     gas: new BigNumber(
-      new BigNumber(block.gasLimit).times(19).div(20).toFixed(0)
+      new BigNumber(block.gasLimit || block.gasUsed)
+        .times(19)
+        .div(20)
+        .toFixed(0)
     ),
   };
 };
