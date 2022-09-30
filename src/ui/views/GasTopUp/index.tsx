@@ -244,14 +244,8 @@ export const GasTopUp = () => {
       .div(token.price)
       .times(10 ** token.decimals)
       .toFixed(0);
+
     try {
-      stats.report('gasTopUpConfirm', {
-        topUpChain: gasToken!.chain,
-        topUpAmount: prices[index][0],
-        topUpToken: gasToken!.symbol,
-        paymentChain: token.chain,
-        paymentToken: token.chain,
-      });
       wallet.gasTopUp({
         $ctx: {
           ga: {
@@ -267,12 +261,14 @@ export const GasTopUp = () => {
                   topUpChain: gasToken!.chain,
                   topUpAmount: prices[index][0],
                   topUpToken: gasToken!.symbol,
-                  paymentChain: token.chain,
+                  paymentChain: `${token.chain}:${token.symbol}`,
                 },
               },
             ],
           },
         },
+        gasTokenSymbol: gasToken.symbol,
+        paymentTokenSymbol: token.symbol,
         fromUsdValue: prices[index][0],
         to: GAS_TOP_UP_ADDRESS,
         toChainId: CHAINS[chain].serverId,

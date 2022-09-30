@@ -241,15 +241,28 @@ export class WalletController extends BaseController {
     toChainId: string;
     toTokenAmount: string;
     fromTokenAmount: string;
-    fromUsdValue;
+    gasTokenSymbol: string;
+    paymentTokenSymbol: string;
+    fromUsdValue: number;
   }) => {
     const {
+      gasTokenSymbol,
+      paymentTokenSymbol,
       fromUsdValue,
       toChainId,
       fromTokenAmount,
       toTokenAmount,
       ...others
     } = params;
+
+    stats.report('gasTopUpConfirm', {
+      topUpChain: toChainId,
+      topUpAmount: fromUsdValue,
+      topUpToken: gasTokenSymbol,
+      paymentChain: others.chainServerId,
+      paymentToken: paymentTokenSymbol,
+    });
+
     const account = await preferenceService.getCurrentAccount();
     if (!account) throw new Error('no current account');
     const txId = await this.sendToken(others);
@@ -258,7 +271,7 @@ export class WalletController extends BaseController {
       topUpChain: toChainId,
       topUpAmount: fromUsdValue,
       paymentChain: others.chainServerId,
-      paymentToken: others.tokenId,
+      paymentToken: paymentTokenSymbol,
     });
 
     const postGasStationOrder = async () =>
@@ -278,7 +291,7 @@ export class WalletController extends BaseController {
         topUpChain: toChainId,
         topUpAmount: fromUsdValue,
         paymentChain: others.chainServerId,
-        paymentToken: others.tokenId,
+        paymentToken: paymentTokenSymbol,
       });
 
     try {
