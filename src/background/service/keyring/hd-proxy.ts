@@ -47,7 +47,11 @@ export async function invokeHDKeyring<T>(
     params: BetterJSON.stringify(params),
   })) ?? '{}') as string;
 
-  return BetterJSON.parse(result);
+  try {
+    return BetterJSON.parse(result);
+  } catch (e) {
+    return;
+  }
 }
 
 type OnlyClassMethods<T> = {
