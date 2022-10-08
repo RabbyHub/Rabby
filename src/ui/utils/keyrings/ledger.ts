@@ -16,25 +16,31 @@ export class LedgerKeyring {
     this.app = new LedgerEth(this.transport);
   }
 
-  close() {
+  async close() {
     this.app = null;
     if (this.transport) this.transport.close();
     this.transport = null;
+  }
+
+  getClient() {
+    return this.app;
   }
 
   getAddress: LedgerEth['getAddress'] = async (...rest) => {
     return this.app!.getAddress(...rest);
   };
 
-  signTransaction: LedgerEth['signTransaction'] = (...rest) => {
+  signTransaction: LedgerEth['signTransaction'] = async (...rest) => {
     return this.app!.signTransaction(...rest);
   };
 
-  signPersonalMessage: LedgerEth['signPersonalMessage'] = (...rest) => {
+  signPersonalMessage: LedgerEth['signPersonalMessage'] = async (...rest) => {
     return this.app!.signPersonalMessage(...rest);
   };
 
-  signEIP712HashedMessage: LedgerEth['signEIP712HashedMessage'] = (...rest) => {
+  signEIP712HashedMessage: LedgerEth['signEIP712HashedMessage'] = async (
+    ...rest
+  ) => {
     return this.app!.signEIP712HashedMessage(...rest);
   };
 }

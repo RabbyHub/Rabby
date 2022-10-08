@@ -731,9 +731,9 @@ export const L2_ENUMS = [
   CHAINS_ENUM.NOVA,
 ];
 
-declare global {
-  interface Window {
-    __is_rd__?: boolean;
-  }
-}
-export const IS_RD = window.__is_rd__;
+// declare global {
+//   interface Window {
+//     __is_rd__?: boolean;
+//   }
+// }
+// export const IS_RD = window.__is_rd__;

@@ -238,8 +238,8 @@ class LedgerBridgeKeyring extends EventEmitter {
     }
   }
 
-  cleanUp() {
-    invokeHDKeyring('LEDGER', 'close');
+  async cleanUp() {
+    await invokeHDKeyring('LEDGER', 'close');
     this.hdk = new HDKey();
   }
 
@@ -480,10 +480,10 @@ class LedgerBridgeKeyring extends EventEmitter {
   async _reconnect() {
     if (this.isWebHID) {
       await this.cleanUp();
-
+      this.app = null;
       let count = 0;
       // wait connect the WebHID
-      while (!this.app) {
+      while (!(await invokeHDKeyring('LEDGER', 'getClient'))) {
         await this.makeApp();
         await wait(() => {
           if (count++ > 50) {
@@ -766,6 +766,7 @@ class LedgerBridgeKeyring extends EventEmitter {
                   e.toString() || 'Ledger: Unknown error while signing message',
               });
             }, 500);
+            console.log('e', e);
             throw new Error(
               e.toString() || 'Ledger: Unknown error while signing message'
             );
