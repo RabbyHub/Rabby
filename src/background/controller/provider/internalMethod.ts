@@ -11,9 +11,10 @@ import ReactGA from 'react-ga';
 
 const tabCheckin = ({
   data: {
-    params: { origin, name, icon },
+    params: { name, icon },
   },
   session,
+  origin,
 }) => {
   session.setProp({ origin, name, icon });
 };
