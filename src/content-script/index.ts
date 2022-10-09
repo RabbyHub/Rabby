@@ -41,4 +41,4 @@ initListener(channelName);
 // because the content script run at document start
 setTimeout(() => {
   document.body.setAttribute('data-channel-name', channelName);
-}, 0);
+}, 50);
