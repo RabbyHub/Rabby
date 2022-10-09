@@ -106,10 +106,10 @@ async function restoreAppState() {
 
 restoreAppState();
 {
-  let interval;
+  let interval: NodeJS.Timeout | null;
   keyringService.on('unlock', () => {
     if (interval) {
-      clearInterval();
+      clearInterval(interval);
     }
     const sendEvent = async () => {
       const time = preferenceService.getSendLogTime();
@@ -252,8 +252,7 @@ browser.runtime.onConnect.addListener((port) => {
     }
     const origin = getOriginFromUrl(port.sender.url);
     const session = sessionService.getOrCreateSession(sessionId, origin);
-
-    const req = { data, session };
+    const req = { data, session, origin };
     // for background push to respective page
     req.session!.setPortMessage(pm);
 
