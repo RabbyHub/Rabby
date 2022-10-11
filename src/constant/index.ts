@@ -316,7 +316,7 @@ export enum WALLET_BRAND_TYPES {
   KEYSTONE = 'Keystone',
   COOLWALLET = 'CoolWallet',
   DEFIANT = 'Defiant',
-  AIRGAP = 'AIRGAP',
+  AIRGAP = 'AirGap',
 }
 
 enum WALLET_BRAND_CATEGORY {
