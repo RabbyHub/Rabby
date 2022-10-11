@@ -38,7 +38,11 @@ container.insertBefore(ele, container.children[0]);
 container.removeChild(ele);
 initListener(channelName);
 
-// because the content script run at document start
-setTimeout(() => {
-  document.body.setAttribute('data-channel-name', channelName);
-}, 50);
+window.addEventListener('message', (event) => {
+  if (event.data.type === 'rabby:pageProvider:ready') {
+    window.postMessage({
+      type: 'rabby:pageProvider:channelName',
+      data: { channelName },
+    });
+  }
+});
