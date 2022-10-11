@@ -439,7 +439,7 @@ export const WALLET_BRAND_CONTENT: {
   },
   [WALLET_BRAND_TYPES.AIRGAP]: {
     id: 18,
-    name: 'AirGap',
+    name: 'AirGap Vault',
     brand: WALLET_BRAND_TYPES.AIRGAP,
     icon: LogoAirGap,
     image: LogoAirGap,
