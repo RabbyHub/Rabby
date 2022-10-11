@@ -10,8 +10,16 @@ import { DEXPriceComparison, isUrlMatched } from '@rabby-wallet/widgets';
 import { switchChainNotice } from './interceptors/switchChain';
 import { switchWalletNotice } from './interceptors/switchWallet';
 
-const channelName = document.body.getAttribute('data-channel-name') as string;
-document.body.removeAttribute('data-channel-name');
+window.postMessage({
+  type: 'rabby:pageProvider:ready',
+});
+
+window.addEventListener('message', (event) => {
+  if (event.data.type === 'rabby:pageProvider:channelName') {
+    const channelName = event.data.data.channelName;
+    setup(channelName);
+  }
+});
 
 const log = (event, ...args) => {
   if (process.env.NODE_ENV !== 'production') {
@@ -74,10 +82,11 @@ export class EthereumProvider extends EventEmitter {
   private _pushEventHandlers: PushEventHandlers;
   private _requestPromise = new ReadyPromise(2);
   private _dedupePromise = new DedupePromise([]);
-  private _bcm = new BroadcastChannelMessage(channelName);
+  private _bcm: BroadcastChannelMessage;
 
-  constructor({ maxListeners = 100 } = {}) {
+  constructor({ maxListeners = 100, channelName = '' } = {}) {
     super();
+    this._bcm = new BroadcastChannelMessage(channelName);
     this.setMaxListeners(maxListeners);
     this.initialize();
     this.shimLegacy();
@@ -295,125 +304,131 @@ declare global {
   }
 }
 
-const provider = new EthereumProvider();
-let cacheOtherProvider: EthereumProvider | null = null;
-const rabbyProvider = new Proxy(provider, {
-  deleteProperty: (target, prop) => {
-    if (prop === 'on' || prop === 'isRabby') {
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      delete target[prop];
-    }
-    return true;
-  },
-});
-
-provider
-  .requestInternalMethods({ method: 'isDefaultWallet' })
-  .then((isDefaultWallet) => {
-    rabbyProvider.on('defaultWalletChanged', switchWalletNotice);
-    let finalProvider: EthereumProvider | null = null;
-    if (isDefaultWallet || !cacheOtherProvider) {
-      finalProvider = rabbyProvider;
-      Object.keys(finalProvider).forEach((key) => {
-        window.ethereum[key] = (finalProvider as EthereumProvider)[key];
-      });
-      Object.defineProperty(window, 'ethereum', {
-        set() {
-          provider.requestInternalMethods({
-            method: 'hasOtherProvider',
-            params: [],
-          });
-          return finalProvider;
-        },
-        get() {
-          return finalProvider;
-        },
-      });
-      if (!window.web3) {
-        window.web3 = {
-          currentProvider: rabbyProvider,
-        };
+function setup(channelName: string) {
+  const provider = new EthereumProvider({
+    channelName,
+  });
+  let cacheOtherProvider: EthereumProvider | null = null;
+  const rabbyProvider = new Proxy(provider, {
+    deleteProperty: (target, prop) => {
+      if (prop === 'on' || prop === 'isRabby') {
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        delete target[prop];
       }
-      finalProvider._isReady = true;
-      finalProvider.on('rabby:chainChanged', switchChainNotice);
-      const widgets = [DEXPriceComparison];
-      widgets.forEach((Widget) => {
-        provider
-          .request({
-            method: 'isWidgetDisabled',
-            params: [Widget.widgetName],
-          })
-          .then((isDisabled) => {
-            if (!isDisabled) {
-              const rule = isUrlMatched(location.href, Widget.include);
-              if (rule) {
-                new Widget(rule);
-              }
-            }
-          });
-      });
-    } else {
-      finalProvider = cacheOtherProvider;
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      delete rabbyProvider.on;
-      // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-      // @ts-ignore
-      delete rabbyProvider.isRabby;
-      Object.keys(finalProvider).forEach((key) => {
-        window.ethereum[key] = (finalProvider as EthereumProvider)[key];
-      });
-      const keys = ['selectedAddress', 'chainId', 'networkVersion'];
-      keys.forEach((key) => {
-        Object.defineProperty(cacheOtherProvider, key, {
-          get() {
-            return window.ethereum[key];
+      return true;
+    },
+  });
+
+  provider
+    .requestInternalMethods({ method: 'isDefaultWallet' })
+    .then((isDefaultWallet) => {
+      rabbyProvider.on('defaultWalletChanged', switchWalletNotice);
+      let finalProvider: EthereumProvider | null = null;
+      if (isDefaultWallet || !cacheOtherProvider) {
+        finalProvider = rabbyProvider;
+        Object.keys(finalProvider).forEach((key) => {
+          window.ethereum[key] = (finalProvider as EthereumProvider)[key];
+        });
+        Object.defineProperty(window, 'ethereum', {
+          set() {
+            provider.requestInternalMethods({
+              method: 'hasOtherProvider',
+              params: [],
+            });
+            return finalProvider;
           },
-          set(val) {
-            window.ethereum[key] = val;
+          get() {
+            return finalProvider;
           },
         });
+        if (!window.web3) {
+          window.web3 = {
+            currentProvider: rabbyProvider,
+          };
+        }
+        finalProvider._isReady = true;
+        finalProvider.on('rabby:chainChanged', switchChainNotice);
+        const widgets = [DEXPriceComparison];
+        widgets.forEach((Widget) => {
+          provider
+            .request({
+              method: 'isWidgetDisabled',
+              params: [Widget.widgetName],
+            })
+            .then((isDisabled) => {
+              if (!isDisabled) {
+                const rule = isUrlMatched(location.href, Widget.include);
+                if (rule) {
+                  new Widget(rule);
+                }
+              }
+            });
+        });
+      } else {
+        finalProvider = cacheOtherProvider;
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        delete rabbyProvider.on;
+        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+        // @ts-ignore
+        delete rabbyProvider.isRabby;
+        Object.keys(finalProvider).forEach((key) => {
+          window.ethereum[key] = (finalProvider as EthereumProvider)[key];
+        });
+        const keys = ['selectedAddress', 'chainId', 'networkVersion'];
+        keys.forEach((key) => {
+          Object.defineProperty(cacheOtherProvider, key, {
+            get() {
+              return window.ethereum[key];
+            },
+            set(val) {
+              window.ethereum[key] = val;
+            },
+          });
+        });
+      }
+      provider._cacheEventListenersBeforeReady.forEach(([event, handler]) => {
+        (finalProvider as EthereumProvider).on(event, handler);
       });
-    }
-    provider._cacheEventListenersBeforeReady.forEach(([event, handler]) => {
-      (finalProvider as EthereumProvider).on(event, handler);
+      provider._cacheRequestsBeforeReady.forEach(
+        ({ resolve, reject, data }) => {
+          (finalProvider as EthereumProvider)
+            .request(data)
+            .then(resolve)
+            .catch(reject);
+        }
+      );
     });
-    provider._cacheRequestsBeforeReady.forEach(({ resolve, reject, data }) => {
-      (finalProvider as EthereumProvider)
-        .request(data)
-        .then(resolve)
-        .catch(reject);
-    });
-  });
 
-if (window.ethereum) {
-  cacheOtherProvider = window.ethereum;
-  provider.requestInternalMethods({
-    method: 'hasOtherProvider',
-    params: [],
-  });
-}
-
-window.ethereum = rabbyProvider;
-
-Object.defineProperty(window, 'ethereum', {
-  set(val) {
+  if (window.ethereum) {
+    cacheOtherProvider = window.ethereum;
     provider.requestInternalMethods({
       method: 'hasOtherProvider',
       params: [],
     });
-    cacheOtherProvider = val;
-  },
-  get() {
-    return rabbyProvider;
-  },
-});
+  }
 
-if (!window.web3) {
-  window.web3 = {
-    currentProvider: window.ethereum,
-  };
+  window.ethereum = rabbyProvider;
+
+  Object.defineProperty(window, 'ethereum', {
+    set(val) {
+      provider.requestInternalMethods({
+        method: 'hasOtherProvider',
+        params: [],
+      });
+      cacheOtherProvider = val;
+    },
+    get() {
+      return rabbyProvider;
+    },
+  });
+
+  if (!window.web3) {
+    window.web3 = {
+      currentProvider: window.ethereum,
+    };
+  }
+
+  window.dispatchEvent(new Event('ethereum#initialized'));
 }
-
-window.dispatchEvent(new Event('ethereum#initialized'));
