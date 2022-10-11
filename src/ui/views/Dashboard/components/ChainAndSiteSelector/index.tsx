@@ -178,12 +178,16 @@ export default ({
     iconSpin?: boolean;
     hideForGnosis?: boolean;
     showAlert?: boolean;
+    disabled?: boolean;
+    disableReason?: string;
   };
 
   const panelItems = {
     swap: {
       icon: IconSwap,
       content: 'Swap',
+      disabled: true,
+      disableReason: 'Temporarily unavailable',
       onClick: () => history.push('/swap?rbisource=dashboard'),
     },
     send: {
@@ -294,7 +298,7 @@ export default ({
             if (item.hideForGnosis && isGnosis) return <></>;
             return (item as Record<string, any>).disabled ? (
               <Tooltip
-                title={'Coming soon'}
+                title={item.disableReason || 'Coming soon'}
                 overlayClassName="rectangle direction-tooltip"
                 autoAdjustOverflow={false}
               >
