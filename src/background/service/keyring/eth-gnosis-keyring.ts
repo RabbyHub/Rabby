@@ -11,7 +11,9 @@ import {
   adjustVInSignature,
 } from '@rabby-wallet/gnosis-sdk/dist/utils';
 import EthSignSignature from '@gnosis.pm/safe-core-sdk/dist/src/utils/signatures/SafeSignature';
+import fetchAdapter from '@vespaiach/axios-fetch-adapter';
 
+Safe.adapter = fetchAdapter;
 export const keyringType = 'Gnosis';
 export const TransactionBuiltEvent = 'TransactionBuilt';
 export const TransactionConfirmedEvent = 'TransactionConfirmed';
