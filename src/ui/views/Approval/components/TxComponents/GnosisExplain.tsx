@@ -8,12 +8,19 @@ import useBalanceChange from '@/ui/hooks/useBalanceChange';
 
 interface GnosisExplainProps {
   data: ExplainTxResponse;
+  balanceChange?: ExplainTxResponse['balance_change'];
   chainEnum: CHAINS_ENUM;
   raw: Record<string, string | number>;
   tx: Tx;
 }
 
-const GnosisExplain = ({ data, chainEnum, raw, tx }: GnosisExplainProps) => {
+const GnosisExplain = ({
+  data,
+  balanceChange,
+  chainEnum,
+  raw,
+  tx,
+}: GnosisExplainProps) => {
   const chain = CHAINS[chainEnum];
 
   const handleChange = () => {
@@ -21,7 +28,7 @@ const GnosisExplain = ({ data, chainEnum, raw, tx }: GnosisExplainProps) => {
   };
 
   const { hasTokenChange, hasNFTChange } = useBalanceChange({
-    balance_change: data.balance_change,
+    balance_change: balanceChange,
   });
 
   const hasChange = hasNFTChange || hasTokenChange;
