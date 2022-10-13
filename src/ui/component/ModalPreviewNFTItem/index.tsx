@@ -89,7 +89,7 @@ export default function ModalPreviewNFTItem({
           thumbnail={false}
           content={nft?.content}
           type={nft?.content_type}
-          amount={nft?.total_supply}
+          amount={nft?.amount}
         ></NFTAvatar>
         <div className="nft-txpreview-title">{nft?.name || '-'}</div>
         <div className="nft-txpreview-properties">
