@@ -25,6 +25,8 @@ const ellipsis = (text: string) => {
   return text.replace(/^(.{6})(.*)(.{4})$/, '$1...$3');
 };
 
+const DISABLE_SWAP = true;
+
 interface TokenDetailProps {
   onClose?(): void;
   token: TokenItem;
@@ -258,10 +260,16 @@ const TokenDetail = ({
           <Tooltip
             overlayClassName="rectangle token_swap__tooltip"
             placement="topLeft"
-            title={t('The token on this chain is not supported for swap')}
+            title={
+              DISABLE_SWAP
+                ? 'Temporarily unavailable'
+                : t('The token on this chain is not supported for swap')
+            }
             visible={
-              token.is_core &&
-              RABBY_SWAP_ROUTER[getChain(token?.chain)?.enum || '']
+              DISABLE_SWAP
+                ? undefined
+                : token.is_core &&
+                  RABBY_SWAP_ROUTER[getChain(token?.chain)?.enum || '']
                 ? false
                 : undefined
             }
@@ -271,6 +279,7 @@ const TokenDetail = ({
               size="large"
               onClick={goToSwap}
               disabled={
+                DISABLE_SWAP ||
                 !token.is_core ||
                 !RABBY_SWAP_ROUTER[getChain(token?.chain)?.enum || '']
               }
