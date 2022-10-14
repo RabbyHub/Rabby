@@ -240,6 +240,35 @@
       border: 1px solid @color-border;
       background-color: #fff;
       border-radius: 6px;
+      .tx-action {
+        padding-bottom: 16px;
+        border-bottom: 1px solid #e5e9ef;
+      }
+      .section-card {
+        background: #fff;
+        border-radius: 6px;
+        position: relative;
+
+        &-content {
+          flex: 1;
+          overflow: hidden;
+        }
+
+        &-title {
+          font-weight: 500;
+          font-size: 15px;
+          line-height: 18px;
+          color: @color-title;
+          margin-bottom: 2px;
+          .ellipsis();
+        }
+        &-desc {
+          font-weight: 400;
+          font-size: 14px;
+          line-height: 16px;
+          color: @color-body;
+        }
+      }
     }
     .text-detail {
       padding: 16px;
