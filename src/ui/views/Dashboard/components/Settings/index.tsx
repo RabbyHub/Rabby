@@ -317,7 +317,7 @@ const Settings = ({ visible, onClose }: SettingsProps) => {
       <Popup
         visible={visible}
         onClose={handleClose}
-        height={400}
+        height={520}
         bodyStyle={{ height: '100%' }}
       >
         <div className="popup-settings">
