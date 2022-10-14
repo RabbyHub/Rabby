@@ -4,7 +4,10 @@ import React, { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import IconUnknownProtocol from 'ui/assets/unknown-protocol.svg';
 import { ReactComponent as BlurArrowDown } from 'ui/assets/approval/arrow-down-blue.svg';
-import { TransferingNFTItem } from '@/background/service/openapi';
+import {
+  ExplainTxResponse,
+  TransferingNFTItem,
+} from '@/background/service/openapi';
 import NFTAvatar from '../../Dashboard/components/NFT/NFTAvatar';
 import clsx from 'clsx';
 import IconUnknownNFT from 'ui/assets/unknown-nft.svg';
@@ -57,7 +60,7 @@ export const NFTSignTypedSignHeader = ({
 export const NFTSignTypedSignSection = ({
   typeListNft,
 }: {
-  typeListNft: any;
+  typeListNft: { type_list_nft: ExplainTxResponse['type_list_nft'] };
 }) => {
   const [expand, setExpand] = useState(false);
   const [focusingNFT, setFocusingNFT] = useState<TransferingNFTItem | null>(
@@ -66,7 +69,7 @@ export const NFTSignTypedSignSection = ({
 
   const nftAmount = useMemo(
     () =>
-      typeListNft.type_list_nft.offer_list.reduce((sum, nft) => {
+      typeListNft?.type_list_nft?.offer_list.reduce((sum, nft) => {
         return sum + nft.amount;
       }, 0),
     [typeListNft] || 0
@@ -77,16 +80,16 @@ export const NFTSignTypedSignSection = ({
         This is an NFT listing signature
       </div>
       <div className="bg-white rounded-[6px] p-[16px]">
-        <div className="inline-block">
+        <div className="inline-block mb-[8px]">
           You are about to list <span>{nftAmount} NFTs</span> with total{' '}
           <span>
             $
             {splitNumberByStep(
-              typeListNft?.type_list_nft.total_usd_value || 0 + '',
+              typeListNft?.type_list_nft?.total_usd_value || 0 + '',
               2
             )}
           </span>
-          {!!typeListNft?.type_list_nft.buyer_list.length && (
+          {!!typeListNft?.type_list_nft?.buyer_list.length && (
             <>
               {' '}
               for specific buyer{' '}
@@ -105,7 +108,7 @@ export const NFTSignTypedSignSection = ({
         </div>
 
         <div className="bg-gray-bg2 p-[0px] rounded-[6px] max-h-[248px]">
-          {typeListNft?.type_list_nft.offer_list.map((e, i, list) => {
+          {typeListNft?.type_list_nft?.offer_list.map((e, i, list) => {
             if (!expand && i >= 2) {
               return null;
             }
@@ -119,7 +122,7 @@ export const NFTSignTypedSignSection = ({
               >
                 <div
                   className={clsx(
-                    'flex pt-[12px] pb-[16px] border border-transparent group-hover:border-transparent',
+                    'flex py-[14px]  border border-transparent group-hover:border-transparent',
                     i !== list.length - 1 && 'border-b-gray-divider'
                   )}
                 >
