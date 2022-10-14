@@ -1,25 +1,17 @@
-import React, { ReactNode, useEffect, useState } from 'react';
-import { Button, Tooltip } from 'antd';
+import React, { ReactNode, useEffect, useState, useMemo } from 'react';
+import { Button, Skeleton, Tooltip } from 'antd';
 import { useTranslation } from 'react-i18next';
 import TransportWebHID from '@ledgerhq/hw-transport-webhid';
 import { WaitingSignComponent } from './SignText';
 import { KEYRING_CLASS, KEYRING_TYPE } from 'consts';
-import {
-  openInternalPageInTab,
-  useApproval,
-  useWallet,
-  useWalletOld,
-} from 'ui/utils';
+import { openInternalPageInTab, useApproval, useWalletOld } from 'ui/utils';
 import {
   SecurityCheckResponse,
   SecurityCheckDecision,
 } from 'background/service/openapi';
-import SecurityCheckBar from './SecurityCheckBar';
-import SecurityCheckDetail from './SecurityCheckDetail';
 import AccountCard from './AccountCard';
 import LedgerWebHIDAlert from './LedgerWebHIDAlert';
 import IconQuestionMark from 'ui/assets/question-mark-gray.svg';
-import IconInfo from 'ui/assets/infoicon.svg';
 import IconWatch from 'ui/assets/walletlogo/watch-purple.svg';
 import IconGnosis from 'ui/assets/walletlogo/gnosis.png';
 import clsx from 'clsx';
@@ -30,6 +22,11 @@ import SecurityCheckCard from './SecurityCheckCard';
 import ProcessTooltip from './ProcessTooltip';
 import SecurityCheck from './SecurityCheck';
 import { useLedgerDeviceConnected } from '@/utils/ledger';
+import { useAsync } from 'react-use';
+import {
+  NFTSignTypedSignHeader,
+  NFTSignTypedSignSection,
+} from './NftSignTypedData';
 interface SignTypedDataProps {
   method: string;
   data: any[];
@@ -89,6 +86,30 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
     setSecurityCheckDetail,
   ] = useState<SecurityCheckResponse | null>(null);
   const [explain, setExplain] = useState('');
+
+  const { value, loading, error } = useAsync(async () => {
+    const currentAccount = await wallet.getCurrentAccount();
+
+    return await wallet.openapi.explainTypedData(
+      currentAccount!.address,
+      session.origin,
+      JSON.parse(data[1])
+    );
+  }, [data]);
+
+  const isNFTListing = useMemo(() => {
+    if (
+      value?.type_list_nft?.offer_list &&
+      value?.type_list_nft?.offer_list.length > 0
+    ) {
+      return true;
+    }
+    return false;
+  }, [value]);
+
+  if (error) {
+    console.error('error', error);
+  }
 
   const handleForceProcessChange = (checked: boolean) => {
     setForceProcess(checked);
@@ -258,8 +279,36 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
       <AccountCard />
       <div className="approval-text">
         <p className="section-title">{t('Sign Typed Message')}</p>
-        <div className="text-detail-wrapper">
-          <div className="text-detail">{parsedMessage}</div>
+        {loading && (
+          <Skeleton.Input
+            active
+            style={{
+              width: 358,
+              height: 400,
+            }}
+          />
+        )}
+        <div
+          className={clsx(
+            'text-detail-wrapper',
+            isNFTListing && 'flex-col pb-0',
+            loading && 'hidden'
+          )}
+        >
+          {isNFTListing && (
+            <NFTSignTypedSignHeader
+              detail={{
+                contract_protocol_logo_url:
+                  value?.type_list_nft.contract_protocol_logo_url || '',
+                contract_protocol_name:
+                  value?.type_list_nft.contract_protocol_name || '',
+                contract: value?.type_list_nft.contract || '',
+              }}
+            />
+          )}
+          <div className={clsx('text-detail', isNFTListing && 'max-h-[168px]')}>
+            {parsedMessage}
+          </div>
           {explain && (
             <p className="text-explain">
               {explain}
@@ -278,6 +327,10 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
             </p>
           )}
         </div>
+        {!loading && isNFTListing && (
+          <NFTSignTypedSignSection typeListNft={value} />
+        )}
+
         <div className="section-title mt-[32px]">Pre-sign check</div>
         <SecurityCheckCard
           isReady={true}
@@ -327,6 +380,7 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
               className="w-[172px]"
               onClick={() => handleAllow(forceProcess)}
               disabled={
+                loading ||
                 (isLedger && !useLedgerLive && !hasConnectedLedgerHID) ||
                 !forceProcess ||
                 securityCheckStatus === 'loading'
