@@ -236,6 +236,8 @@ const GasSelector = ({
   const handleClickEdit = () => {
     setModalVisible(true);
     setSelectedGas(rawSelectedGas);
+    setGasLimit(Number(gasLimit));
+    setCustomNonce(Number(nonce));
     ReactGA.event({
       category: 'Transaction',
       action: 'EditGas',
