@@ -20,7 +20,7 @@ const GnosisExplain = ({ data, chainEnum, raw, tx }: GnosisExplainProps) => {
   };
 
   return (
-    <div className="block-field">
+    <div className="block-field px-16 pb-20">
       <div className="gnosis-explain">
         <div className="internal-transaction">
           Internal transaction
