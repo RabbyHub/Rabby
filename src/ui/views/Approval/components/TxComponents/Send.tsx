@@ -3,7 +3,7 @@ import { ExplainTxResponse } from 'background/service/openapi';
 import BigNumber from 'bignumber.js';
 import { CHAINS, CHAINS_ENUM } from 'consts';
 import { Trans, useTranslation } from 'react-i18next';
-import IconArrowRight from 'ui/assets/arrow-right-gray.svg';
+import IconArrowRight from 'ui/assets/approval/edit-arrow-right.svg';
 import { NameAndAddress } from 'ui/component';
 import { ellipsisOverflowedText } from 'ui/utils';
 
