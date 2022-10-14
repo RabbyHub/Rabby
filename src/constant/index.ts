@@ -19,6 +19,7 @@ import LogoImtoken from 'ui/assets/walletlogo/imTokenLogo.png';
 import IconJade from 'ui/assets/walletlogo/jade.png';
 import LogoJade from 'ui/assets/walletlogo/JadeLogo.png';
 import LogoKeystone from 'ui/assets/walletlogo/keystone.png';
+import LogoAirGap from 'ui/assets/walletlogo/airgap.png';
 import LogoLedgerDark from 'ui/assets/walletlogo/ledgerdark.png';
 import LogoLedgerWhite from 'ui/assets/walletlogo/ledgerwhite.png';
 import IconMath from 'ui/assets/walletlogo/math.png';
@@ -315,6 +316,7 @@ export enum WALLET_BRAND_TYPES {
   KEYSTONE = 'Keystone',
   COOLWALLET = 'CoolWallet',
   DEFIANT = 'Defiant',
+  AIRGAP = 'AirGap',
 }
 
 enum WALLET_BRAND_CATEGORY {
@@ -432,6 +434,15 @@ export const WALLET_BRAND_CONTENT: {
     brand: WALLET_BRAND_TYPES.KEYSTONE,
     icon: LogoKeystone,
     image: LogoKeystone,
+    connectType: BRAND_WALLET_CONNECT_TYPE.QRCodeBase,
+    category: WALLET_BRAND_CATEGORY.HARDWARE,
+  },
+  [WALLET_BRAND_TYPES.AIRGAP]: {
+    id: 18,
+    name: 'AirGap Vault',
+    brand: WALLET_BRAND_TYPES.AIRGAP,
+    icon: LogoAirGap,
+    image: LogoAirGap,
     connectType: BRAND_WALLET_CONNECT_TYPE.QRCodeBase,
     category: WALLET_BRAND_CATEGORY.HARDWARE,
   },
