@@ -38,6 +38,18 @@ function NFTList({
     return isShowAll ? _list : _list?.slice(0, NFTListCountLimit) || [];
   }, [isShowAll, list]);
 
+  const rest = useMemo(() => {
+    const total = list.reduce((acc, cur) => {
+      return acc + (cur.amount || 0);
+    }, 0);
+    return (
+      total -
+      renderList.slice(0, NFTListCountLimit).reduce((acc, cur) => {
+        return acc + (cur.amount || 0);
+      }, 0)
+    );
+  }, [renderList, list]);
+
   const [focusingNFT, setFocusingNFT] = React.useState<NFTItem | null>(null);
 
   if (list.length === 0) {
@@ -88,15 +100,14 @@ function NFTList({
             </div>
           );
         })}
-        {!isShowAll && list?.length > NFTListCountLimit && (
+        {!isShowAll && rest > 0 && (
           <div
             className="type-list-nft-list-footer"
             onClick={() => {
               setIsShowAll(true);
             }}
           >
-            +{list.length - NFTListCountLimit} NFTs{' '}
-            <IconSwapArrowDown></IconSwapArrowDown>
+            +{rest} NFTs <IconSwapArrowDown></IconSwapArrowDown>
           </div>
         )}
       </div>
@@ -135,7 +146,11 @@ const ListNFT = ({ data, chainEnum, raw, isSpeedUp }: ListNFTProps) => {
     e.currentTarget.src = IconUnknownProtocol;
   };
 
-  const isUnknown = !data?.abi && !detail.action;
+  const totalNFTAmount = useMemo(() => {
+    return detail.offer_list?.reduce((acc, cur) => {
+      return acc + (cur.amount || 0);
+    }, 0);
+  }, [detail.offer_list]);
 
   return (
     <div className="type-list-nft section-block">
@@ -181,8 +196,8 @@ const ListNFT = ({ data, chainEnum, raw, isSpeedUp }: ListNFTProps) => {
         </div>
         <div className="type-list-nft-explain">
           <div className="type-list-nft-explain-title">
-            You are about to list{' '}
-            <strong>{detail.offer_list.length} NFTs</strong> with total{' '}
+            You are about to list <strong>{totalNFTAmount} NFTs</strong> with
+            total{' '}
             <strong>
               ${splitNumberByStep((detail.total_usd_value || 0).toFixed(2))}
             </strong>
