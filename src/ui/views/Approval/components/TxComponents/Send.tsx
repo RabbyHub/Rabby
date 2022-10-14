@@ -49,14 +49,16 @@ const Send = ({ data, chainEnum, isSpeedUp, raw }: SendProps) => {
           {isSpeedUp && <SpeedUpCorner />}
           <p className="title">{t('Send Token')}</p>
           <div className="block-field">
-            <span className="label">{t('Amount')}</span>
+            <span className="label pt-2">{t('Amount')}</span>
             <div className="value">
-              {ellipsisOverflowedText(
-                splitNumberByStep(detail.token_amount),
-                12
-              )}{' '}
-              <span title={detail.token_symbol}>
-                {ellipsisOverflowedText(detail.token_symbol, 6)}
+              <span className="value-strong">
+                {ellipsisOverflowedText(
+                  splitNumberByStep(detail.token_amount),
+                  12
+                )}{' '}
+                <span title={detail.token_symbol}>
+                  {ellipsisOverflowedText(detail.token_symbol, 6)}
+                </span>
               </span>
               <p className="est-price">
                 ≈ $
