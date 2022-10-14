@@ -3258,10 +3258,10 @@
     hdkey "0.8.0"
     trezor-connect "8.2.6-extended"
 
-"@rabby-wallet/eth-walletconnect-keyring@^1.5.0":
-  version "1.5.0"
-  resolved "https://registry.yarnpkg.com/@rabby-wallet/eth-walletconnect-keyring/-/eth-walletconnect-keyring-1.5.0.tgz#9b56b3e052b2cbc090bad3359b3f6f9f85d2a60a"
-  integrity sha512-rnT3elfPIRDe5DFaT2K+MV+46TriP4/cl7fixTSZ0fUhF7pW/RR8u756Cni5utbHX8Wt3no6JbR4NHgNoJCMzQ==
+"@rabby-wallet/eth-walletconnect-keyring@^1.6.0":
+  version "1.6.0"
+  resolved "https://registry.yarnpkg.com/@rabby-wallet/eth-walletconnect-keyring/-/eth-walletconnect-keyring-1.6.0.tgz#b539b50ccdd45c959d0cbca7417ae5f385246260"
+  integrity sha512-RFWh0A5YJQUDwa+ivdhhhO87C8/fQh+UxotOHWsuFld2F2ZoBg9nEuv8LIzD0no3wDVmGEtEeP4nbx0KpdcFcQ==
   dependencies:
     "@ethereumjs/tx" "^3.5.2"
     "@walletconnect/client" "^1.6.6"
