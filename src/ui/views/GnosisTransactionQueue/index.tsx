@@ -337,7 +337,12 @@ const GnosisTransactionItem = ({
     setIsLoading(false);
     wallet.sendRequest({
       method: 'eth_sendTransaction',
-      params: [params],
+      params: [
+        {
+          ...params,
+          isViewGnosisSafe: true,
+        },
+      ],
     });
     window.close();
   };

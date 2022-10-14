@@ -684,6 +684,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     isSpeedUp,
     isCancel,
     isSend,
+    isViewGnosisSafe,
   } = normalizeTxParams(params.data[0]);
 
   let updateNonce = true;
@@ -875,7 +876,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       source: params?.$ctx?.ga?.source || '',
       trigger: params?.$ctx?.ga?.trigger || '',
     });
-    if (params.session.origin !== INTERNAL_REQUEST_ORIGIN || isSend) {
+    if (!isViewGnosisSafe) {
       const params: any = {
         from: tx.from,
         to: tx.to,
@@ -1243,7 +1244,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
   };
 
   const handleIsGnosisAccountChange = async () => {
-    if (params.session.origin !== INTERNAL_REQUEST_ORIGIN) {
+    if (!isViewGnosisSafe) {
       await wallet.clearGnosisTransaction();
     }
   };
