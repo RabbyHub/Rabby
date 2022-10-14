@@ -259,8 +259,25 @@ const SendToken = () => {
           )
         )
       );
-      if (!L2_ENUMS.includes(chain.enum)) {
-        params.gas = intToHex(21000); // L2 has extra validation fee so can not set gasLimit as 21000 when send native token
+      try {
+        const code = await wallet.requestETHRpc(
+          {
+            method: 'eth_getCode',
+            params: [to, 'latest'],
+          },
+          chain.serverId
+        );
+        if (
+          code &&
+          (code === '0x' || code === '0x0') &&
+          !L2_ENUMS.includes(chain.enum)
+        ) {
+          params.gas = intToHex(21000); // L2 has extra validation fee so can not set gasLimit as 21000 when send native token
+        }
+      } catch (e) {
+        if (!L2_ENUMS.includes(chain.enum)) {
+          params.gas = intToHex(21000); // L2 has extra validation fee so can not set gasLimit as 21000 when send native token
+        }
       }
       if (showGasReserved) {
         params.gasPrice = selectedGasLevel?.price;
