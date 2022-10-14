@@ -711,11 +711,7 @@ export const SWAP_FEE_PRECISION = 1e5;
 
 export const DEFAULT_GAS_LIMIT_RATIO = 2;
 
-export const SAFE_GAS_LIMIT_RATIO = {
-  1: 1.5,
-  56: 1.5,
-  137: 1.5,
-};
+export const SAFE_GAS_LIMIT_RATIO = {};
 export const GAS_TOP_UP_ADDRESS = '0x448c02d84f10b4144954b2c4413f96def46761ce';
 export const GAS_TOP_UP_PAY_ADDRESS =
   '0x1f1f2bf8942861e6194fda1c0a9f13921c0cf117';
