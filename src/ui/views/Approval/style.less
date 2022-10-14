@@ -240,6 +240,35 @@
       border: 1px solid @color-border;
       background-color: #fff;
       border-radius: 6px;
+      .tx-action {
+        padding-bottom: 16px;
+        border-bottom: 1px solid #e5e9ef;
+      }
+      .section-card {
+        background: #fff;
+        border-radius: 6px;
+        position: relative;
+
+        &-content {
+          flex: 1;
+          overflow: hidden;
+        }
+
+        &-title {
+          font-weight: 500;
+          font-size: 15px;
+          line-height: 18px;
+          color: @color-title;
+          margin-bottom: 2px;
+          .ellipsis();
+        }
+        &-desc {
+          font-weight: 400;
+          font-size: 14px;
+          line-height: 16px;
+          color: @color-body;
+        }
+      }
     }
     .text-detail {
       padding: 16px;
@@ -694,83 +723,6 @@
             font-weight: 500;
             color: @color-title;
             word-break: break-all;
-          }
-        }
-      }
-      &-list {
-        background: #f5f6fa;
-        border-radius: 4px;
-        &-footer {
-          padding: 10px;
-          display: flex;
-          align-items: center;
-          justify-content: center;
-
-          font-weight: 500;
-          font-size: 13px;
-          line-height: 15px;
-          color: @primary-color;
-          cursor: pointer;
-
-          svg {
-            path {
-              fill: @primary-color;
-            }
-          }
-        }
-
-        &-item {
-          display: flex;
-          gap: 8px;
-          border-radius: 4px;
-          padding: 12px;
-          cursor: pointer;
-          border: 1px solid transparent;
-          border: 0.5px solid transparent;
-          position: relative;
-          align-items: center;
-
-          &:not(:last-child)::before {
-            content: '';
-            position: absolute;
-            left: 12px;
-            right: 12px;
-            bottom: 0;
-            height: 1px;
-            background: #e5e9ef;
-          }
-
-          &:hover {
-            background-color: rgba(134, 151, 255, 0.2);
-            border-color: #8697ff;
-          }
-
-          &-title {
-            font-weight: 500;
-            font-size: 12px;
-            line-height: 14px;
-            color: @color-title;
-            margin-bottom: 2px;
-            .ellipsis();
-          }
-          &-desc {
-            font-weight: 400;
-            font-size: 12px;
-            line-height: 14px;
-            color: @color-body;
-            .ellipsis();
-          }
-          &-extra {
-            font-weight: 500;
-            font-size: 15px;
-            line-height: 18px;
-            color: @color-body;
-            margin-left: auto;
-          }
-          .nft-avatar {
-            width: 28px;
-            height: 28px;
-            background-color: rgb(204, 204, 204);
           }
         }
       }

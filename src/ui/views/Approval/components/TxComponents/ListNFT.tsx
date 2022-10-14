@@ -1,4 +1,5 @@
 import ModalPreviewNFTItem from '@/ui/component/ModalPreviewNFTItem';
+import LessPalette, { ellipsis } from '@/ui/style/var-defs';
 import { splitNumberByStep } from '@/ui/utils';
 import NFTAvatar from '@/ui/views/Dashboard/components/NFT/NFTAvatar';
 import {
@@ -10,6 +11,7 @@ import clsx from 'clsx';
 import { CHAINS, CHAINS_ENUM } from 'consts';
 import React, { useMemo } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
+import styled from 'styled-components';
 import { ReactComponent as IconSwapArrowDown } from 'ui/assets/arrow-down.svg';
 import IconArrowRight from 'ui/assets/arrow-right-gray.svg';
 import IconUnknownProtocol from 'ui/assets/unknown-protocol.svg';
@@ -18,7 +20,87 @@ import BalanceChange from './BalanceChange';
 import SpeedUpCorner from './SpeedUpCorner';
 import ViewRawModal from './ViewRawModal';
 
-function NFTList({
+const NFTListWrapper = styled.div`
+  background: #f5f6fa;
+  border-radius: 4px;
+  .type-list-nft-list {
+    &-footer {
+      padding: 10px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+
+      font-weight: 500;
+      font-size: 13px;
+      line-height: 15px;
+      color: ${LessPalette['@primary-color']};
+      cursor: pointer;
+
+      svg {
+        path {
+          fill: ${LessPalette['@primary-color']};
+        }
+      }
+    }
+
+    &-item {
+      display: flex;
+      gap: 8px;
+      border-radius: 4px;
+      padding: 12px;
+      cursor: pointer;
+      border: 1px solid transparent;
+      border: 0.5px solid transparent;
+      position: relative;
+      align-items: center;
+
+      &:not(:last-child)::before {
+        content: '';
+        position: absolute;
+        left: 12px;
+        right: 12px;
+        bottom: 0;
+        height: 1px;
+        background: #e5e9ef;
+      }
+
+      &:hover {
+        background-color: rgba(134, 151, 255, 0.2);
+        border-color: #8697ff;
+      }
+
+      &-title {
+        font-weight: 500;
+        font-size: 12px;
+        line-height: 14px;
+        color: ${LessPalette['@color-title']};
+        margin-bottom: 2px;
+        ${ellipsis()}
+      }
+      &-desc {
+        font-weight: 400;
+        font-size: 12px;
+        line-height: 14px;
+        color: ${LessPalette['@color-body']};
+        ${ellipsis()}
+      }
+      &-extra {
+        font-weight: 500;
+        font-size: 15px;
+        line-height: 18px;
+        color: ${LessPalette['@color-body']};
+        margin-left: auto;
+      }
+      .nft-avatar {
+        width: 28px;
+        height: 28px;
+        background-color: rgb(204, 204, 204);
+      }
+    }
+  }
+`;
+
+export function NFTList({
   list,
 }: {
   list: NonNullable<ExplainTxResponse['type_list_nft']>['offer_list'];
@@ -58,7 +140,7 @@ function NFTList({
 
   return (
     <>
-      <div className="type-list-nft-list">
+      <NFTListWrapper className="type-list-nft-list">
         {renderList?.map((item, idx) => {
           return (
             <div
@@ -110,7 +192,7 @@ function NFTList({
             +{rest} NFTs <IconSwapArrowDown></IconSwapArrowDown>
           </div>
         )}
-      </div>
+      </NFTListWrapper>
       {focusingNFT && (
         <ModalPreviewNFTItem
           nft={(focusingNFT as any) as TransferingNFTItem}
