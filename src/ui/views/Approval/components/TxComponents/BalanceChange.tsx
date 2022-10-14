@@ -400,15 +400,19 @@ const BalanceChange = ({
         !hasChange && 'no-change-detected'
       )}
     >
-      {!hasChange && !data.error && (
+      {!hasChange && !data.error && !isGnosis && (
         <p className="section-title flex flex-start items-center">
           <span className="mr-[3px]">{t('No balance change found')}</span>
         </p>
       )}
-      {isSuccess && hasChange && isGnosis && (
-        <div>{t('You are signing to submit a Gnosis Safe transaction')}</div>
+      {!hasChange && !data.error && isGnosis && (
+        <p className="section-title flex flex-start items-center">
+          <span className="mr-[3px]">
+            {t('You are signing to submit a Gnosis Safe transaction')}
+          </span>
+        </p>
       )}
-      {isSuccess && hasChange && !isGnosis && (
+      {isSuccess && hasChange && (
         <div className="token-balance-change-content">
           <div className="token-balance-change-content-header">
             <span>{t('Est. balance change')}</span>
