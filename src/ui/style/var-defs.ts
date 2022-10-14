@@ -44,4 +44,12 @@ const LessPalette = {
   "@modal-confirm-body-padding": "20px 16px 24px"
 };
 
+export function ellipsis(){
+  return `
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  `
+}
+
 export default LessPalette;

@@ -22,6 +22,14 @@ fs.writeFileSync(path.resolve(ROOT, './src/ui/style/var-defs.ts'), `\
 /* this file is genetared by ${fname} automatic, never modify it manually! */
 const LessPalette = ${JSON.stringify(palette, null, '  ')};
 
+export function ellipsis(){
+  return \`
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  \`
+}
+
 export default LessPalette;
 `);
 
