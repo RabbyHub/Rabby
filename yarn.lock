@@ -1372,10 +1372,10 @@
     sha256-uint8array "^0.10.3"
     url-parse "^1.5.1"
 
-"@debank/rabby-api@^0.5.4":
-  version "0.5.4"
-  resolved "https://registry.yarnpkg.com/@debank/rabby-api/-/rabby-api-0.5.4.tgz#7e78cbe3a0fb0520c6f80d572a6463610b66c98f"
-  integrity sha512-CrbISVSddrRZM3vFytgJf1rl5m7VFnFdjoLHuxV5YWnJ132W5+LtCgRB/6eCgLvwtKiudc1MecGa3rl3cUKjhw==
+"@debank/rabby-api@^0.5.6":
+  version "0.5.6"
+  resolved "https://registry.yarnpkg.com/@debank/rabby-api/-/rabby-api-0.5.6.tgz#0e93b05d47e902b44c23af2a1e01fdea4b109436"
+  integrity sha512-OYqnUAQMCcfBu1njHYpnB5Ee+O/LqNaMzMXxy7KDNqygPJx7HE9YdhRIVF3OWUfdofsuV80LVl2zWkylRauWdQ==
   dependencies:
     "@debank/isomorphic" "^0.3.1"
     axios "^0.27.2"
@@ -3317,10 +3317,10 @@
     typescript "^4.4.4"
     web3-core "^1.6.0"
 
-"@rabby-wallet/page-provider@^0.1.8":
-  version "0.1.8"
-  resolved "https://registry.yarnpkg.com/@rabby-wallet/page-provider/-/page-provider-0.1.8.tgz#e782e237896a34247e47059f39d41a4256ac9828"
-  integrity sha512-jcsoTNHqrQLy6fkpZLoh/tfmqrXnnYuZ88Ei3jdBc4GyT/zK0wt/5OxI9cTWqneQT2PZs3bXW6SvYas+HvrbFg==
+"@rabby-wallet/page-provider@^0.1.9":
+  version "0.1.9"
+  resolved "https://registry.yarnpkg.com/@rabby-wallet/page-provider/-/page-provider-0.1.9.tgz#f1113c63e1c5286ca2461a92e1d16ffc94931231"
+  integrity sha512-av3LbXD+n6IJwfTEC1hUFDEf3AznFDnMxK/bgH7fjhsU3tB5kw11YExksg+HX54wzcw9CLE0ddShzPTmzB418Q==
   dependencies:
     "@ledgerhq/devices" "^6.27.1"
     "@rabby-wallet/widgets" "^1.0.8"
