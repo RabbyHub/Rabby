@@ -5,7 +5,7 @@ import clsx from 'clsx';
 import { CHAINS, CHAINS_ENUM } from 'consts';
 import React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
-import IconArrowRight from 'ui/assets/arrow-right-gray.svg';
+import IconArrowRight from 'ui/assets/approval/edit-arrow-right.svg';
 import IconCopy from 'ui/assets/component/icon-copy.svg';
 import IconSuccess from 'ui/assets/success.svg';
 import IconUnknownProtocol from 'ui/assets/unknown-protocol.svg';

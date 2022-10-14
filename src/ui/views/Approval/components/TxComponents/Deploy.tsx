@@ -4,7 +4,7 @@ import clsx from 'clsx';
 import { CHAINS, CHAINS_ENUM } from 'consts';
 import React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
-import IconArrowRight from 'ui/assets/arrow-right-gray.svg';
+import IconArrowRight from 'ui/assets/approval/edit-arrow-right.svg';
 import IconDeployContract from 'ui/assets/deploy-contract.svg';
 import BalanceChange from './BalanceChange';
 import SpeedUpCorner from './SpeedUpCorner';

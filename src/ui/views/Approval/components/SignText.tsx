@@ -8,7 +8,7 @@ import clsx from 'clsx';
 import { KEYRING_CLASS, KEYRING_TYPE } from 'consts';
 import React, { ReactNode, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import IconArrowRight from 'ui/assets/arrow-right-gray.svg';
+import IconArrowRight from 'ui/assets/approval/edit-arrow-right.svg';
 import { ReactComponent as IconQuestionMark } from 'ui/assets/question-mark.svg';
 import IconGnosis from 'ui/assets/walletlogo/gnosis.png';
 import IconWatch from 'ui/assets/walletlogo/watch-purple.svg';
