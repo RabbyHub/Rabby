@@ -80,9 +80,10 @@ export const NFTSignTypedSignSection = ({
         This is an NFT listing signature
       </div>
       <div className="bg-white rounded-[6px] p-[16px]">
-        <div className="inline-block mb-[8px]">
-          You are about to list <span>{nftAmount} NFTs</span> with total{' '}
-          <span>
+        <div className="text-13 leading-[18px] font-normal mb-[8px]">
+          You are about to list{' '}
+          <span className="font-medium">{nftAmount} NFTs</span> with total{' '}
+          <span className="font-medium">
             $
             {splitNumberByStep(
               typeListNft?.type_list_nft?.total_usd_value || 0 + '',
