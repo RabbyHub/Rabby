@@ -93,7 +93,6 @@ const Sign = ({ data, chainEnum, raw, isSpeedUp, tx }: SignProps) => {
               ...data.gnosis,
               support_balance_change: data.support_balance_change,
             }}
-            balanceChange={data.balance_change}
             chainEnum={chainEnum}
             tx={tx}
             raw={raw}
