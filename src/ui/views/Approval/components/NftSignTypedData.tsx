@@ -3,15 +3,12 @@ import { splitNumberByStep } from '@/ui/utils';
 import React, { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import IconUnknownProtocol from 'ui/assets/unknown-protocol.svg';
-import { ReactComponent as BlurArrowDown } from 'ui/assets/approval/arrow-down-blue.svg';
 import {
   ExplainTxResponse,
   TransferingNFTItem,
 } from '@/background/service/openapi';
-import NFTAvatar from '../../Dashboard/components/NFT/NFTAvatar';
-import clsx from 'clsx';
-import IconUnknownNFT from 'ui/assets/unknown-nft.svg';
 import ModalPreviewNFTItem from '@/ui/component/ModalPreviewNFTItem';
+import { NFTList } from './TxComponents/ListNFT';
 
 export const NFTSignTypedSignHeader = ({
   detail,
@@ -62,7 +59,6 @@ export const NFTSignTypedSignSection = ({
 }: {
   typeListNft: { type_list_nft: ExplainTxResponse['type_list_nft'] };
 }) => {
-  const [expand, setExpand] = useState(false);
   const [focusingNFT, setFocusingNFT] = useState<TransferingNFTItem | null>(
     null
   );
@@ -75,7 +71,7 @@ export const NFTSignTypedSignSection = ({
     [typeListNft] || 0
   );
   return (
-    <>
+    <div className="type-list-nft">
       <div className="section-title mt-[32px]">
         This is an NFT listing signature
       </div>
@@ -107,56 +103,9 @@ export const NFTSignTypedSignSection = ({
             </>
           )}
         </div>
-
-        <div className="bg-gray-bg2 p-[0px] rounded-[6px] max-h-[248px]">
-          {typeListNft?.type_list_nft?.offer_list.map((e, i, list) => {
-            if (!expand && i >= 2) {
-              return null;
-            }
-            return (
-              <div
-                key={e.nft.id}
-                onClick={() => {
-                  setFocusingNFT(e.nft as any);
-                }}
-                className="group relative cursor-pointer  px-[12px] rounded-[4px] border border-transparent hover:border hover:border-blue-light hover:bg-blue-light hover:bg-opacity-[0.2]"
-              >
-                <div
-                  className={clsx(
-                    'flex py-[14px]  border border-transparent group-hover:border-transparent',
-                    i !== list.length - 1 && 'border-b-gray-divider'
-                  )}
-                >
-                  <NFTAvatar
-                    className="w-[28px] h-[28px]"
-                    type={e.nft.content_type as any}
-                    content={e.nft?.content}
-                    unknown={IconUnknownNFT}
-                  />
-                  <div className="flex flex-col ml-[8px]">
-                    <span className="text-12 font-medium max-w-[266px] text-gray-title whitespace-nowrap overflow-ellipsis overflow-hidden">
-                      {e.nft.name}
-                    </span>
-                    <span className="mt-[2px] text-12 max-w-[266px] text-gray-subTitle whitespace-nowrap overflow-ellipsis overflow-hidden">
-                      {e.nft.collection?.name || ''}
-                    </span>
-                  </div>
-                </div>
-              </div>
-            );
-          })}
-          {!expand &&
-            typeListNft?.type_list_nft?.offer_list &&
-            typeListNft?.type_list_nft?.offer_list.length > 2 && (
-              <div
-                className="flex items-center justify-center h-[34px] text-13 font-medium text-blue-light text-center"
-                onClick={() => setExpand(true)}
-              >
-                +{(typeListNft?.type_list_nft?.offer_list.length || 2) - 2} NFT{' '}
-                <BlurArrowDown />
-              </div>
-            )}
-        </div>
+        {typeListNft?.type_list_nft?.offer_list && (
+          <NFTList list={typeListNft?.type_list_nft?.offer_list} />
+        )}
       </div>
 
       {focusingNFT && (
@@ -165,6 +114,6 @@ export const NFTSignTypedSignSection = ({
           onCancel={() => setFocusingNFT(null)}
         />
       )}
-    </>
+    </div>
   );
 };
