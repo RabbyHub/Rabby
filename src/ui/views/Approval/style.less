@@ -861,59 +861,6 @@
         position: relative;
         // border-bottom: 1px solid @color-border;
 
-        .block-field {
-          display: flex;
-          // margin-bottom: 16px;
-          padding: 0 16px 20px;
-          &.has-msg {
-            margin-bottom: 20px;
-          }
-          .label {
-            color: @color-comment-1;
-            font-size: 14px;
-            width: 100px;
-            flex-shrink: 0;
-            line-height: 1;
-          }
-          .value {
-            line-height: 1;
-            flex: 1;
-            color: @color-body;
-            font-size: 15px;
-            white-space: nowrap;
-            text-overflow: ellipsis;
-            overflow: hidden;
-          }
-          .msg-warning {
-            color: @color-orange;
-            margin-top: 2px;
-            font-weight: 400;
-            font-size: 12px;
-            line-height: 14px;
-            position: absolute;
-          }
-          &.contract {
-            margin-bottom: 0;
-            border-top: 0.5px solid rgba(180, 189, 204, 0.6);
-            padding-top: 16px;
-            .value {
-              display: flex;
-              align-items: center;
-              .address-viewer-text {
-                color: @color-comment-1;
-                font-size: 13px;
-                font-weight: 500;
-                margin-right: 0;
-              }
-              .icon-copy {
-                width: 16px;
-                height: 16px;
-                margin-left: 6px;
-                cursor: pointer;
-              }
-            }
-          }
-        }
         .contract-logo,
         .contract-logo-unknown {
           position: absolute;

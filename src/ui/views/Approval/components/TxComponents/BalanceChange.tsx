@@ -320,11 +320,13 @@ const NFTBalanceChange = ({
 const BalanceChange = ({
   data,
   isSupport,
+  isGnosis,
   chainEnum,
   version,
 }: {
   data: IBalanceChange;
   isSupport: boolean;
+  isGnosis?: boolean;
   chainEnum: CHAINS_ENUM;
   version: 'v0' | 'v1' | 'v2';
 }) => {
@@ -403,7 +405,10 @@ const BalanceChange = ({
           <span className="mr-[3px]">{t('No balance change found')}</span>
         </p>
       )}
-      {isSuccess && hasChange && (
+      {isSuccess && hasChange && isGnosis && (
+        <div>{t('You are signing to submit a Gnosis Safe transaction')}</div>
+      )}
+      {isSuccess && hasChange && !isGnosis && (
         <div className="token-balance-change-content">
           <div className="token-balance-change-content-header">
             <span>{t('Est. balance change')}</span>
