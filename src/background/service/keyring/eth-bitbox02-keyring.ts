@@ -18,7 +18,6 @@ import {
 const hdPathString = "m/44'/60'/0'/0";
 const keyringType = 'BitBox02 Hardware';
 const pathBase = 'm';
-const MAX_INDEX = 100;
 
 class BitBox02Keyring extends EventEmitter {
   static type = keyringType;
@@ -131,6 +130,12 @@ class BitBox02Keyring extends EventEmitter {
         if (!this.accounts.includes(address)) {
           this.accounts.push(address);
         }
+
+        // Cache available address paths
+        if (typeof this.paths[address] === 'undefined') {
+          this.paths[address] = i;
+        }
+
         this.page = 0;
       }
       return this.accounts;
@@ -334,17 +339,11 @@ class BitBox02Keyring extends EventEmitter {
   _pathFromAddress(address: string): string {
     const checksummedAddress = ethUtil.toChecksumAddress(address);
     let index = this.paths[checksummedAddress];
-    if (typeof index === 'undefined') {
-      for (let i = 0; i < MAX_INDEX; i++) {
-        if (checksummedAddress === this._addressFromIndex(pathBase, i)) {
-          index = i;
-          break;
-        }
-      }
-    }
 
     if (typeof index === 'undefined') {
-      throw new Error('Unknown address');
+      throw new Error(
+        'Address not be found. Please resync this wallet with your device!'
+      );
     }
     return `${this.hdPath}/${index}`;
   }
