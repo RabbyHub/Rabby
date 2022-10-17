@@ -108,7 +108,7 @@ let style: HTMLStyleElement | null = null;
 const styles = `
     .rabby-notice-container {
       position: fixed;
-      z-index: 1010;
+      z-index: 99999;
       top: 60px;
       right: 42px;
     }
