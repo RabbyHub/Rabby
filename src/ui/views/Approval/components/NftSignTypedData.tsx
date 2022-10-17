@@ -82,7 +82,7 @@ export const NFTSignTypedSignSection = ({
           <span className="font-medium">
             $
             {splitNumberByStep(
-              typeListNft?.type_list_nft?.total_usd_value || 0 + ''
+              (typeListNft?.type_list_nft?.total_usd_value || 0).toFixed(2)
             )}
           </span>
           {!!typeListNft?.type_list_nft?.buyer_list.length && (
