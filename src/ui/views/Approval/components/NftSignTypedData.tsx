@@ -76,14 +76,13 @@ export const NFTSignTypedSignSection = ({
         This is an NFT listing signature
       </div>
       <div className="bg-white rounded-[6px] p-[16px]">
-        <div className="text-13 leading-[18px] font-normal mb-[8px]">
+        <div className="break-all text-13 leading-[18px] font-normal mb-[8px]">
           You are about to list{' '}
           <span className="font-medium">{nftAmount} NFTs</span> with total{' '}
           <span className="font-medium">
             $
             {splitNumberByStep(
-              typeListNft?.type_list_nft?.total_usd_value || 0 + '',
-              2
+              typeListNft?.type_list_nft?.total_usd_value || 0 + ''
             )}
           </span>
           {!!typeListNft?.type_list_nft?.buyer_list.length && (
@@ -96,7 +95,8 @@ export const NFTSignTypedSignSection = ({
                     key={buyer.id}
                     className="inline-flex pr-[2px]"
                     address={buyer.id}
-                    noNameClass="no-name"
+                    noNameClass="no-name text-13 leading-[15px] font-medium"
+                    copyIconClass="w-[14px] h-[14px]"
                   />
                 );
               })}
