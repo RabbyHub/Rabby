@@ -11,7 +11,7 @@ import { useDebounce } from 'react-use';
 import IconInfo from 'ui/assets/infoicon.svg';
 import { Popup } from 'ui/component';
 import { formatTokenAmount } from 'ui/utils/number';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 import LessPalette from '@/ui/style/var-defs';
 import { ReactComponent as IconArrowRight } from 'ui/assets/approval/edit-arrow-right.svg';
 
@@ -52,6 +52,7 @@ interface GasSelectorProps {
     gasCostUsd: BigNumber;
     gasCostAmount: BigNumber;
   }>;
+  isGnosisAccount?: boolean;
 }
 
 const useExplainGas = ({
@@ -94,6 +95,7 @@ const GasSelector = ({
   isHardware,
   version,
   gasCalcMethod,
+  isGnosisAccount,
 }: GasSelectorProps) => {
   const { t } = useTranslation();
   const customerInputRef = useRef<Input>(null);
@@ -453,7 +455,9 @@ const GasSelector = ({
         >
           <div className="gas-selector-card-title">Gas</div>
           <div className="gas-selector-card-content ml-[27px]">
-            {gas.error || !gas.success ? (
+            {isGnosisAccount ? (
+              <div className="font-semibold">Gnosis safe no gas cost</div>
+            ) : gas.error || !gas.success ? (
               <>
                 <div className="gas-selector-card-error">
                   Fail to fetch gas cost
@@ -494,6 +498,7 @@ const GasSelector = ({
           panelSelection={externalPanelSelection}
           customGas={customGas}
           handleCustomGasChange={externalHandleCustomGasChange}
+          isGnosisAccount={isGnosisAccount}
         />
       </div>
       <Popup
@@ -711,11 +716,40 @@ const GasSelector = ({
     </>
   );
 };
-const CardBody = styled.div`
+const CardBody = styled.div<{
+  $disabled?: boolean;
+}>`
   display: flex;
   justify-content: space-between;
   width: 100%;
   gap: 8px;
+
+  ${({ $disabled }) =>
+    $disabled
+      ? css`
+          opacity: 0.5;
+          cursor: not-allowed;
+        `
+      : css`
+          .card {
+            cursor: pointer;
+
+            &:hover {
+              border: 1px solid #8697ff;
+            }
+
+            &.active {
+              background: rgba(134, 151, 255, 0.1);
+              border: 1px solid #8697ff;
+            }
+          }
+
+          .cardTitle {
+            &.active {
+              color: #8697ff !important;
+            }
+          }
+        `}
 
   .card {
     width: 76px;
@@ -726,14 +760,6 @@ const CardBody = styled.div`
     flex-direction: column;
     border: 1px solid transparent;
 
-    &:hover {
-      border: 1px solid #8697ff;
-    }
-
-    &.active {
-      background: rgba(134, 151, 255, 0.1);
-      border: 1px solid #8697ff;
-    }
     .gas-level,
     .cardTitle {
       text-align: center;
@@ -747,9 +773,6 @@ const CardBody = styled.div`
       font-weight: 500;
       font-size: 13px !important;
       margin: 4px auto 0;
-      &.active {
-        color: #8697ff !important;
-      }
     }
     .custom-input {
       margin: 4px auto 0;
@@ -777,6 +800,7 @@ const GasSelectPanel = ({
   customGas,
   customGasConfirm = () => null,
   handleCustomGasChange,
+  isGnosisAccount,
 }: {
   gasList: GasLevel[];
   selectedGas: GasLevel | null;
@@ -787,19 +811,26 @@ const GasSelectPanel = ({
   customGas: string | number;
   customGasConfirm?: React.KeyboardEventHandler<HTMLInputElement> | undefined;
   handleCustomGasChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  isGnosisAccount?: boolean;
 }) => {
   const { t } = useTranslation();
   const customerInputRef = useRef<Input>(null);
+  const disabled = isGnosisAccount;
+  const handlePanelSelection = (e, item) => {
+    if (disabled) return;
+    return panelSelection(e, item);
+  };
+
   return (
-    <CardBody>
+    <CardBody $disabled={disabled}>
       {gasList.map((item, idx) => (
         <div
           key={`gas-item-${item.level}-${idx}`}
-          className={clsx('card cursor-pointer', {
+          className={clsx('card', {
             active: selectedGas?.level === item.level,
           })}
           onClick={(e) => {
-            panelSelection(e, item);
+            handlePanelSelection(e, item);
             if (item.level === 'custom') {
               customerInputRef.current?.focus();
             }
@@ -814,16 +845,16 @@ const GasSelectPanel = ({
           >
             {item.level === 'custom' ? (
               <Input
-                className="cursor-pointer"
                 value={customGas}
                 defaultValue={customGas}
                 onChange={handleCustomGasChange}
-                onClick={(e) => panelSelection(e, item)}
+                onClick={(e) => handlePanelSelection(e, item)}
                 onPressEnter={customGasConfirm}
                 ref={customerInputRef}
                 autoFocus={selectedGas?.level === item.level}
                 min={0}
                 bordered={false}
+                disabled={disabled}
               />
             ) : (
               item.price / 1e9

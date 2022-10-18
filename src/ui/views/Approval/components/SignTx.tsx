@@ -1318,6 +1318,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
               />
             )}
             <GasSelector
+              isGnosisAccount={isGnosisAccount}
               isReady={isReady}
               tx={tx}
               gasLimit={gasLimit}
