@@ -129,6 +129,7 @@ const SendToken = () => {
   const [tokenValidationStatus, setTokenValidationStatus] = useState(
     TOKEN_VALIDATION_STATUS.PENDING
   );
+  const [isGnosisSafe, setIsGnosisSafe] = useState(false);
 
   const canSubmit =
     isValidAddress(form.getFieldValue('to')) &&
@@ -385,7 +386,7 @@ const SendToken = () => {
     if (amount !== cacheAmount) {
       if (showGasReserved && Number(resultAmount) > 0) {
         setShowGasReserved(false);
-      } else if (isNativeToken) {
+      } else if (isNativeToken && !isGnosisSafe) {
         const gasCostTokenAmount = await calcGasCost();
         if (
           new BigNumber(targetToken.raw_amount_hex_str || 0)
@@ -455,7 +456,7 @@ const SendToken = () => {
     ).div(10 ** currentToken.decimals);
     let amount = tokenBalance.toFixed();
 
-    if (isNativeToken) {
+    if (isNativeToken && !isGnosisSafe) {
       setShowGasReserved(true);
       try {
         const list = await fetchGasList();
@@ -473,8 +474,10 @@ const SendToken = () => {
           setShowGasReserved(false);
         }
       } catch (e) {
-        setBalanceWarn(t('Gas fee reservation required'));
-        setShowGasReserved(false);
+        if (!isGnosisSafe) {
+          setBalanceWarn(t('Gas fee reservation required'));
+          setShowGasReserved(false);
+        }
       }
     }
 
@@ -568,6 +571,10 @@ const SendToken = () => {
     }
 
     setCurrentAccount(account);
+
+    if (account.type === KEYRING_CLASS.GNOSIS) {
+      setIsGnosisSafe(true);
+    }
 
     const qs = query2obj(history.location.search);
     if (qs.token) {

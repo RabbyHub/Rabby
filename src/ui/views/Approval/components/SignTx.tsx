@@ -394,6 +394,7 @@ const checkGasAndNonce = ({
   isCancel,
   gasExplainResponse,
   isSpeedUp,
+  isGnosisAccount,
 }: {
   recommendGasLimit: number | string | BigNumber;
   recommendNonce: number | string | BigNumber;
@@ -403,10 +404,12 @@ const checkGasAndNonce = ({
   gasExplainResponse: ReturnType<typeof useExplainGas>;
   isCancel: boolean;
   isSpeedUp: boolean;
+  isGnosisAccount: boolean;
 }) => {
   const errors: { code: number; msg: string }[] = [];
 
   if (
+    !isGnosisAccount &&
     txDetail &&
     gasExplainResponse.gasCostAmount
       .plus(
@@ -421,7 +424,7 @@ const checkGasAndNonce = ({
       msg: 'The reserved gas fee is not enough',
     });
   }
-  if (new BigNumber(gasLimit).lt(recommendGasLimit)) {
+  if (!isGnosisAccount && new BigNumber(gasLimit).lt(recommendGasLimit)) {
     errors.push({
       code: 3002,
       msg: `Gas limit is too low, the minimum should be ${new BigNumber(
@@ -449,6 +452,7 @@ const useCheckGasAndNonce = ({
   isCancel,
   gasExplainResponse,
   isSpeedUp,
+  isGnosisAccount,
 }: Parameters<typeof checkGasAndNonce>[0]) => {
   return useMemo(
     () =>
@@ -461,6 +465,7 @@ const useCheckGasAndNonce = ({
         isCancel,
         gasExplainResponse,
         isSpeedUp,
+        isGnosisAccount,
       }),
     [
       recommendGasLimit,
@@ -471,6 +476,7 @@ const useCheckGasAndNonce = ({
       isCancel,
       gasExplainResponse,
       isSpeedUp,
+      isGnosisAccount,
     ]
   );
 };
@@ -740,6 +746,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     isSpeedUp,
     isCancel,
     txDetail,
+    isGnosisAccount,
   });
 
   const checkTx = async (address: string) => {
