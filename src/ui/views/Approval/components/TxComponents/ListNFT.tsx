@@ -280,8 +280,11 @@ const ListNFT = ({ data, chainEnum, raw, isSpeedUp }: ListNFTProps) => {
         </div>
         <div className="type-list-nft-explain">
           <div className="type-list-nft-explain-title">
-            You're about to list <strong>{totalNFTAmount} NFTs</strong> with a
-            total of{' '}
+            You're about to list{' '}
+            <strong>
+              {totalNFTAmount} NFT{totalNFTAmount > 1 ? 's' : ''}
+            </strong>{' '}
+            with a total of{' '}
             <strong>
               ${splitNumberByStep((detail.total_usd_value || 0).toFixed(2))}
             </strong>{' '}
