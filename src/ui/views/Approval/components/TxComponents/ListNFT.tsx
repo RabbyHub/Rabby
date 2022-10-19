@@ -21,6 +21,7 @@ import { NameAndAddress } from 'ui/component';
 import BalanceChange from './BalanceChange';
 import SpeedUpCorner from './SpeedUpCorner';
 import ViewRawModal from './ViewRawModal';
+import BigNumber from 'bignumber.js';
 
 const NFTListWrapper = styled.div`
   background: #f5f6fa;
@@ -286,7 +287,7 @@ const ListNFT = ({ data, chainEnum, raw, isSpeedUp }: ListNFTProps) => {
             </strong>{' '}
             with a total of{' '}
             <strong>
-              ${splitNumberByStep((detail.total_usd_value || 0).toFixed(2))}
+              ${new BigNumber(detail.total_usd_value || 0).toFormat(2)}
             </strong>{' '}
             {detail.buyer_list && detail.buyer_list.length > 0 ? (
               <>
