@@ -379,7 +379,7 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
             'text-detail-wrapper',
             isNFTListing && 'flex-col pb-0',
             loading && 'hidden',
-            !explain && 'pb-0'
+            !isSignTypedDataV1 && 'pb-0'
           )}
         >
           {isNFTListing && (
@@ -397,7 +397,9 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
           )}
           <div
             className={clsx(
-              'text-detail text-15 leading-[16px] font-bold max-h-[168px] text-[rgb(82,89,102)]'
+              'text-detail text-15 leading-[16px] font-bold text-[rgb(82,89,102)]',
+              isNFTListing && 'max-h-[168px]',
+              !isNFTListing && !isSignTypedDataV1 && 'h-[360px]'
             )}
             style={{
               fontFamily: 'Roboto Mono',
