@@ -28,6 +28,8 @@ import {
   NFTSignTypedSignSection,
 } from './NftSignTypedData';
 import { CHAINS_LIST } from '@debank/common';
+import IconArrowRight from 'ui/assets/arrow-right-gray.svg';
+import ViewRawModal from './TxComponents/ViewRawModal';
 interface SignTypedDataProps {
   method: string;
   data: any[];
@@ -78,18 +80,35 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
     () => /^eth_signTypedData(_v1)?$/.test(method),
     [method]
   );
+
+  const signTypedData: null | Record<string, any> = useMemo(() => {
+    if (!isSignTypedDataV1) {
+      try {
+        const v = JSON.parse(data[1]);
+        return v;
+      } catch (error) {
+        console.error('parse signTypedData error: ', error);
+        return null;
+      }
+    }
+    return null;
+  }, [data, isSignTypedDataV1]);
+
   const chainName = useMemo(() => {
-    let chainId;
-    try {
-      chainId = JSON.parse(data[1])?.domain?.chainId;
-    } catch (error) {
-      console.error(error);
+    if (!isSignTypedDataV1 && signTypedData) {
+      let chainId;
+      try {
+        chainId = signTypedData?.domain?.chainId;
+      } catch (error) {
+        console.error(error);
+      }
+      if (chainId) {
+        return CHAINS_LIST.find((e) => e.id + '' === chainId + '')?.name || '';
+      }
     }
-    if (chainId) {
-      return CHAINS_LIST.find((e) => e.id + '' === chainId + '')?.name || '';
-    }
+
     return '';
-  }, [data]);
+  }, [data, isSignTypedDataV1, signTypedData]);
 
   const [showSecurityCheckDetail, setShowSecurityCheckDetail] = useState(false);
   const [
@@ -108,29 +127,32 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
   const [explain, setExplain] = useState('');
 
   const { value: explainTypedDataRes, loading, error } = useAsync(async () => {
-    const currentAccount = await wallet.getCurrentAccount();
+    if (!isSignTypedDataV1 && signTypedData) {
+      const currentAccount = await wallet.getCurrentAccount();
 
-    return await wallet.openapi.explainTypedData(
-      currentAccount!.address,
-      session.origin,
-      JSON.parse(data[1])
-    );
-  }, [data]);
+      return await wallet.openapi.explainTypedData(
+        currentAccount!.address,
+        session.origin,
+        signTypedData
+      );
+    }
+    return;
+  }, [data, isSignTypedDataV1, signTypedData]);
 
   const { value: checkResult } = useAsync(async () => {
-    if (!isSignTypedDataV1) {
+    if (!isSignTypedDataV1 && signTypedData) {
       setSecurityCheckStatus('loading');
       const currentAccount = await wallet.getCurrentAccount();
       const check = await wallet.openapi.checkTypedData(
         currentAccount!.address,
         session.origin,
-        JSON.parse(data[1])
+        signTypedData
       );
       return check;
     }
 
     return;
-  }, [data, isSignTypedDataV1]);
+  }, [data, isSignTypedDataV1, signTypedData]);
 
   useEffect(() => {
     if (checkResult) {
@@ -304,6 +326,12 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
     report('createSignText');
   }, []);
 
+  const handleViewRawClick = () => {
+    ViewRawModal.open({
+      raw: isSignTypedDataV1 ? data[0] : signTypedData || data[1],
+    });
+  };
+
   useEffect(() => {
     (async () => {
       const currentAccount = await wallet.getCurrentAccount();
@@ -328,7 +356,15 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
     <>
       <AccountCard />
       <div className="approval-text">
-        <p className="section-title">Sign {chainName} Typed Message</p>
+        <p className="section-title">
+          Sign {chainName} Typed Message
+          <span
+            className="float-right text-12 cursor-pointer flex items-center view-raw text-gray-content"
+            onClick={handleViewRawClick}
+          >
+            {t('View Raw')} <img src={IconArrowRight} />
+          </span>
+        </p>
         {loading && (
           <Skeleton.Input
             active
@@ -342,7 +378,8 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
           className={clsx(
             'text-detail-wrapper',
             isNFTListing && 'flex-col pb-0',
-            loading && 'hidden'
+            loading && 'hidden',
+            !explain && 'pb-0'
           )}
         >
           {isNFTListing && (
@@ -358,7 +395,11 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
               }}
             />
           )}
-          <div className={clsx('text-detail', isNFTListing && 'max-h-[168px]')}>
+          <div
+            className={clsx(
+              'text-detail text-15 leading-[16px] font-bold max-h-[168px] text-[rgb(82,89,102)]'
+            )}
+          >
             {parsedMessage}
           </div>
           {explain && (
