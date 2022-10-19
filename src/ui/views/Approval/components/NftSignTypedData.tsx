@@ -3,12 +3,14 @@ import { splitNumberByStep } from '@/ui/utils';
 import React, { useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import IconUnknownProtocol from 'ui/assets/unknown-protocol.svg';
+import IconInfo from 'ui/assets/infoicon.svg';
 import {
   ExplainTxResponse,
   TransferingNFTItem,
 } from '@/background/service/openapi';
 import ModalPreviewNFTItem from '@/ui/component/ModalPreviewNFTItem';
 import { NFTList } from './TxComponents/ListNFT';
+import { Tooltip } from 'antd';
 
 export const NFTSignTypedSignHeader = ({
   detail,
@@ -77,18 +79,17 @@ export const NFTSignTypedSignSection = ({
       </div>
       <div className="bg-white rounded-[6px] p-[16px]">
         <div className="break-all text-13 leading-[18px] font-normal mb-[8px]">
-          You are about to list{' '}
-          <span className="font-medium">{nftAmount} NFTs</span> with total{' '}
+          You're about to list{' '}
+          <span className="font-medium">{nftAmount} NFTs</span> with a total of{' '}
           <span className="font-medium">
             $
             {splitNumberByStep(
               (typeListNft?.type_list_nft?.total_usd_value || 0).toFixed(2)
             )}
-          </span>
+          </span>{' '}
           {!!typeListNft?.type_list_nft?.buyer_list.length && (
             <>
-              {' '}
-              for specific buyer{' '}
+              for the specific buyer{' '}
               {typeListNft?.type_list_nft.buyer_list.map((buyer) => {
                 return (
                   <NameAndAddress
@@ -102,6 +103,18 @@ export const NFTSignTypedSignSection = ({
               })}
             </>
           )}
+          <Tooltip
+            overlayClassName="rectangle max-w-[250px]"
+            placement="topRight"
+            arrowPointAtCenter
+            title="Multiple listings will be aggregated in the display. For auction listings, the lowest starting price will be displayed."
+          >
+            <img
+              src={IconInfo}
+              alt=""
+              className="inline-block w-[15px] h-[15px] mt-[-2px]"
+            />
+          </Tooltip>
         </div>
         {typeListNft?.type_list_nft?.offer_list && (
           <NFTList list={typeListNft?.type_list_nft?.offer_list} />

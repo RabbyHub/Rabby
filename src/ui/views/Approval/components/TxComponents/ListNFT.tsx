@@ -2,6 +2,7 @@ import ModalPreviewNFTItem from '@/ui/component/ModalPreviewNFTItem';
 import LessPalette, { ellipsis } from '@/ui/style/var-defs';
 import { splitNumberByStep } from '@/ui/utils';
 import NFTAvatar from '@/ui/views/Dashboard/components/NFT/NFTAvatar';
+import { Tooltip } from 'antd';
 import {
   ExplainTxResponse,
   NFTItem,
@@ -9,12 +10,13 @@ import {
 } from 'background/service/openapi';
 import clsx from 'clsx';
 import { CHAINS, CHAINS_ENUM } from 'consts';
-import React, { useMemo } from 'react';
+import React, { useMemo, useRef } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import { ReactComponent as IconSwapArrowDown } from 'ui/assets/arrow-down.svg';
 import IconArrowRight from 'ui/assets/arrow-right-gray.svg';
 import IconUnknownProtocol from 'ui/assets/unknown-protocol.svg';
+import IconInfo from 'ui/assets/infoicon.svg';
 import { NameAndAddress } from 'ui/component';
 import BalanceChange from './BalanceChange';
 import SpeedUpCorner from './SpeedUpCorner';
@@ -278,18 +280,18 @@ const ListNFT = ({ data, chainEnum, raw, isSpeedUp }: ListNFTProps) => {
         </div>
         <div className="type-list-nft-explain">
           <div className="type-list-nft-explain-title">
-            You are about to list <strong>{totalNFTAmount} NFTs</strong> with
-            total{' '}
+            You're about to list <strong>{totalNFTAmount} NFTs</strong> with a
+            total of{' '}
             <strong>
               ${splitNumberByStep((detail.total_usd_value || 0).toFixed(2))}
-            </strong>
+            </strong>{' '}
             {detail.buyer_list && detail.buyer_list.length > 0 ? (
               <>
-                {' '}
-                for specific buyer{' '}
+                for the specific buyer{' '}
                 {detail.buyer_list?.map((item) => {
                   return (
                     <NameAndAddress
+                      key={item.id}
                       address={item.id}
                       nameClass="max-90"
                       noNameClass="no-name"
@@ -298,6 +300,18 @@ const ListNFT = ({ data, chainEnum, raw, isSpeedUp }: ListNFTProps) => {
                 })}
               </>
             ) : null}
+            <Tooltip
+              overlayClassName="rectangle max-w-[250px]"
+              placement="topRight"
+              arrowPointAtCenter
+              title="Multiple listings will be aggregated in the display. For auction listings, the lowest starting price will be displayed."
+            >
+              <img
+                src={IconInfo}
+                alt=""
+                className="inline-block w-[15px] h-[15px] mt-[-2px]"
+              />
+            </Tooltip>
           </div>
           <NFTList list={data.type_list_nft?.offer_list || []}></NFTList>
         </div>
