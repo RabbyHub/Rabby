@@ -309,7 +309,7 @@ const ListNFT = ({ data, chainEnum, raw, isSpeedUp }: ListNFTProps) => {
               <img
                 src={IconInfo}
                 alt=""
-                className="inline-block w-[15px] h-[15px] mt-[-2px]"
+                className="inline-block w-[14px] h-[14px] mt-[-2px]"
               />
             </Tooltip>
           </div>

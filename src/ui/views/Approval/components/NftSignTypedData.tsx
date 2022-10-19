@@ -94,7 +94,7 @@ export const NFTSignTypedSignSection = ({
                 return (
                   <NameAndAddress
                     key={buyer.id}
-                    className="inline-flex pr-[2px]"
+                    className="inline-flex mr-[6px]"
                     address={buyer.id}
                     noNameClass="no-name text-13 leading-[15px] font-medium"
                     copyIconClass="w-[14px] h-[14px]"
@@ -112,7 +112,7 @@ export const NFTSignTypedSignSection = ({
             <img
               src={IconInfo}
               alt=""
-              className="inline-block w-[15px] h-[15px] mt-[-2px]"
+              className="inline-block w-[14px] h-[14px] mt-[-2px]"
             />
           </Tooltip>
         </div>
