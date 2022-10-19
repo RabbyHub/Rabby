@@ -1,7 +1,6 @@
 // this script is injected into webpage's context
 import { EventEmitter } from 'events';
 import { ethErrors, serializeError } from 'eth-rpc-errors';
-import BroadcastChannelMessage from '@/utils/message/broadcastChannelMessage';
 import PushEventHandlers from './pushEventHandlers';
 import { domReadyCall, $ } from './utils';
 import ReadyPromise from './readyPromise';
@@ -9,17 +8,7 @@ import DedupePromise from './dedupePromise';
 import { DEXPriceComparison, isUrlMatched } from '@rabby-wallet/widgets';
 import { switchChainNotice } from './interceptors/switchChain';
 import { switchWalletNotice } from './interceptors/switchWallet';
-
-window.postMessage({
-  type: 'rabby:pageProvider:ready',
-});
-
-window.addEventListener('message', (event) => {
-  if (event.data.type === 'rabby:pageProvider:channelName') {
-    const channelName = event.data.data.channelName;
-    setup(channelName);
-  }
-});
+import WindowMessage from '@/utils/message/windowMessage';
 
 const log = (event, ...args) => {
   if (process.env.NODE_ENV !== 'production') {
@@ -82,11 +71,11 @@ export class EthereumProvider extends EventEmitter {
   private _pushEventHandlers: PushEventHandlers;
   private _requestPromise = new ReadyPromise(2);
   private _dedupePromise = new DedupePromise([]);
-  private _bcm: BroadcastChannelMessage;
+  private _bcm: WindowMessage;
 
-  constructor({ maxListeners = 100, channelName = '' } = {}) {
+  constructor({ maxListeners = 100 } = {}) {
     super();
-    this._bcm = new BroadcastChannelMessage(channelName);
+    this._bcm = new WindowMessage();
     this.setMaxListeners(maxListeners);
     this.initialize();
     this.shimLegacy();
@@ -304,10 +293,8 @@ declare global {
   }
 }
 
-function setup(channelName: string) {
-  const provider = new EthereumProvider({
-    channelName,
-  });
+function setup() {
+  const provider = new EthereumProvider();
   let cacheOtherProvider: EthereumProvider | null = null;
   const rabbyProvider = new Proxy(provider, {
     deleteProperty: (target, prop) => {
@@ -432,3 +419,5 @@ function setup(channelName: string) {
 
   window.dispatchEvent(new Event('ethereum#initialized'));
 }
+
+setup();
