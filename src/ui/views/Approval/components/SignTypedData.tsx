@@ -1,25 +1,17 @@
-import React, { ReactNode, useEffect, useState } from 'react';
-import { Button, Tooltip } from 'antd';
+import React, { ReactNode, useEffect, useState, useMemo } from 'react';
+import { Button, Skeleton, Tooltip } from 'antd';
 import { useTranslation } from 'react-i18next';
 import TransportWebHID from '@ledgerhq/hw-transport-webhid';
 import { WaitingSignComponent } from './SignText';
 import { KEYRING_CLASS, KEYRING_TYPE } from 'consts';
-import {
-  openInternalPageInTab,
-  useApproval,
-  useWallet,
-  useWalletOld,
-} from 'ui/utils';
+import { openInternalPageInTab, useApproval, useWallet } from 'ui/utils';
 import {
   SecurityCheckResponse,
   SecurityCheckDecision,
 } from 'background/service/openapi';
-import SecurityCheckBar from './SecurityCheckBar';
-import SecurityCheckDetail from './SecurityCheckDetail';
 import AccountCard from './AccountCard';
 import LedgerWebHIDAlert from './LedgerWebHIDAlert';
 import IconQuestionMark from 'ui/assets/question-mark-gray.svg';
-import IconInfo from 'ui/assets/infoicon.svg';
 import IconWatch from 'ui/assets/walletlogo/watch-purple.svg';
 import IconGnosis from 'ui/assets/walletlogo/gnosis.png';
 import clsx from 'clsx';
@@ -30,6 +22,14 @@ import SecurityCheckCard from './SecurityCheckCard';
 import ProcessTooltip from './ProcessTooltip';
 import SecurityCheck from './SecurityCheck';
 import { useLedgerDeviceConnected } from '@/utils/ledger';
+import { useAsync } from 'react-use';
+import {
+  NFTSignTypedSignHeader,
+  NFTSignTypedSignSection,
+} from './NftSignTypedData';
+import { CHAINS_LIST } from '@debank/common';
+import IconArrowRight from 'ui/assets/arrow-right-gray.svg';
+import ViewRawModal from './TxComponents/ViewRawModal';
 interface SignTypedDataProps {
   method: string;
   data: any[];
@@ -43,7 +43,7 @@ interface SignTypedDataProps {
 const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
   const [, resolveApproval, rejectApproval] = useApproval();
   const { t } = useTranslation();
-  const wallet = useWalletOld();
+  const wallet = useWallet();
   const [isWatch, setIsWatch] = useState(false);
   const [isLedger, setIsLedger] = useState(false);
   const [useLedgerLive, setUseLedgerLive] = useState(false);
@@ -76,11 +76,47 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
     console.log('parse message error', parsedMessage);
   }
 
+  const isSignTypedDataV1 = useMemo(
+    () => /^eth_signTypedData(_v1)?$/.test(method),
+    [method]
+  );
+
+  const signTypedData: null | Record<string, any> = useMemo(() => {
+    if (!isSignTypedDataV1) {
+      try {
+        const v = JSON.parse(data[1]);
+        return v;
+      } catch (error) {
+        console.error('parse signTypedData error: ', error);
+        return null;
+      }
+    }
+    return null;
+  }, [data, isSignTypedDataV1]);
+
+  const chainName = useMemo(() => {
+    if (!isSignTypedDataV1 && signTypedData) {
+      let chainId;
+      try {
+        chainId = signTypedData?.domain?.chainId;
+      } catch (error) {
+        console.error(error);
+      }
+      if (chainId) {
+        return CHAINS_LIST.find((e) => e.id + '' === chainId + '')?.name || '';
+      }
+    }
+
+    return '';
+  }, [data, isSignTypedDataV1, signTypedData]);
+
   const [showSecurityCheckDetail, setShowSecurityCheckDetail] = useState(false);
   const [
     securityCheckStatus,
     setSecurityCheckStatus,
-  ] = useState<SecurityCheckDecision>('pending');
+  ] = useState<SecurityCheckDecision>(
+    isSignTypedDataV1 ? 'pending' : 'loading'
+  );
   const [securityCheckAlert, setSecurityCheckAlert] = useState(
     t<string>('Checking')
   );
@@ -90,13 +126,67 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
   ] = useState<SecurityCheckResponse | null>(null);
   const [explain, setExplain] = useState('');
 
+  const { value: explainTypedDataRes, loading, error } = useAsync(async () => {
+    if (!isSignTypedDataV1 && signTypedData) {
+      const currentAccount = await wallet.getCurrentAccount();
+
+      return await wallet.openapi.explainTypedData(
+        currentAccount!.address,
+        session.origin,
+        signTypedData
+      );
+    }
+    return;
+  }, [data, isSignTypedDataV1, signTypedData]);
+
+  const { value: checkResult } = useAsync(async () => {
+    if (!isSignTypedDataV1 && signTypedData) {
+      setSecurityCheckStatus('loading');
+      const currentAccount = await wallet.getCurrentAccount();
+      const check = await wallet.openapi.checkTypedData(
+        currentAccount!.address,
+        session.origin,
+        signTypedData
+      );
+      return check;
+    }
+
+    return;
+  }, [data, isSignTypedDataV1, signTypedData]);
+
+  useEffect(() => {
+    if (checkResult) {
+      setSecurityCheckStatus(checkResult.decision);
+      setSecurityCheckAlert(checkResult.alert);
+      setSecurityCheckDetail(checkResult);
+      setForceProcess(checkResult.decision !== 'forbidden');
+    }
+  }, [checkResult]);
+
+  const isNFTListing = useMemo(() => {
+    if (
+      explainTypedDataRes?.type_list_nft?.offer_list &&
+      explainTypedDataRes?.type_list_nft?.offer_list.length > 0
+    ) {
+      return true;
+    }
+    return false;
+  }, [explainTypedDataRes]);
+
+  if (error) {
+    console.error('error', error);
+  }
+
   const handleForceProcessChange = (checked: boolean) => {
     setForceProcess(checked);
   };
 
   const checkWachMode = async () => {
     const currentAccount = await wallet.getCurrentAccount();
-    if (currentAccount.type === KEYRING_TYPE.WatchAddressKeyring) {
+    if (
+      currentAccount &&
+      currentAccount.type === KEYRING_TYPE.WatchAddressKeyring
+    ) {
       setIsWatch(true);
       setCantProcessReason(
         <div className="flex items-center gap-6">
@@ -119,7 +209,7 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
         </div>
       );
     }
-    if (currentAccount.type === KEYRING_TYPE.GnosisKeyring) {
+    if (currentAccount && currentAccount.type === KEYRING_TYPE.GnosisKeyring) {
       setIsWatch(true);
       setCantProcessReason(
         <div className="flex items-center gap-6">
@@ -141,21 +231,23 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
     extra?: Record<string, any>
   ) => {
     const currentAccount = await wallet.getCurrentAccount();
-    ReactGA.event({
-      category: 'SignText',
-      action: action,
-      label: [
-        getKRCategoryByType(currentAccount.type),
-        currentAccount.brandName,
-      ].join('|'),
-      transport: 'beacon',
-    });
-    await wallet.reportStats(action, {
-      type: currentAccount.brandName,
-      category: getKRCategoryByType(currentAccount.type),
-      method: underline2Camelcase(params.method),
-      ...extra,
-    });
+    if (currentAccount) {
+      ReactGA.event({
+        category: 'SignText',
+        action: action,
+        label: [
+          getKRCategoryByType(currentAccount.type),
+          currentAccount.brandName,
+        ].join('|'),
+        transport: 'beacon',
+      });
+      await wallet.reportStats(action, {
+        type: currentAccount.brandName,
+        category: getKRCategoryByType(currentAccount.type),
+        method: underline2Camelcase(params.method),
+        ...extra,
+      });
+    }
   };
 
   const handleSecurityCheck = async () => {
@@ -234,10 +326,17 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
     report('createSignText');
   }, []);
 
+  const handleViewRawClick = () => {
+    ViewRawModal.open({
+      raw: isSignTypedDataV1 ? data[0] : signTypedData || data[1],
+    });
+  };
+
   useEffect(() => {
     (async () => {
       const currentAccount = await wallet.getCurrentAccount();
       if (
+        currentAccount &&
         [
           KEYRING_CLASS.MNEMONIC,
           KEYRING_CLASS.PRIVATE_KEY,
@@ -257,9 +356,57 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
     <>
       <AccountCard />
       <div className="approval-text">
-        <p className="section-title">{t('Sign Typed Message')}</p>
-        <div className="text-detail-wrapper">
-          <div className="text-detail">{parsedMessage}</div>
+        <p className="section-title">
+          Sign {chainName} Typed Message
+          <span
+            className="float-right text-12 cursor-pointer flex items-center view-raw text-gray-content"
+            onClick={handleViewRawClick}
+          >
+            {t('View Raw')} <img src={IconArrowRight} />
+          </span>
+        </p>
+        {loading && (
+          <Skeleton.Input
+            active
+            style={{
+              width: 358,
+              height: 400,
+            }}
+          />
+        )}
+        <div
+          className={clsx(
+            'text-detail-wrapper',
+            isNFTListing && 'flex-col pb-0',
+            loading && 'hidden',
+            !isSignTypedDataV1 && 'pb-0'
+          )}
+        >
+          {isNFTListing && (
+            <NFTSignTypedSignHeader
+              detail={{
+                contract_protocol_logo_url:
+                  explainTypedDataRes?.type_list_nft
+                    ?.contract_protocol_logo_url || '',
+                contract_protocol_name:
+                  explainTypedDataRes?.type_list_nft?.contract_protocol_name ||
+                  '',
+                contract: explainTypedDataRes?.type_list_nft?.contract || '',
+              }}
+            />
+          )}
+          <div
+            className={clsx(
+              'text-detail text-15 leading-[16px] font-bold text-[rgb(82,89,102)]',
+              isNFTListing && 'max-h-[168px]',
+              !isNFTListing && !isSignTypedDataV1 && 'h-[360px]'
+            )}
+            style={{
+              fontFamily: 'Roboto Mono',
+            }}
+          >
+            {parsedMessage}
+          </div>
           {explain && (
             <p className="text-explain">
               {explain}
@@ -278,13 +425,17 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
             </p>
           )}
         </div>
+        {!loading && isNFTListing && explainTypedDataRes && (
+          <NFTSignTypedSignSection typeListNft={explainTypedDataRes} />
+        )}
+
         <div className="section-title mt-[32px]">Pre-sign check</div>
         <SecurityCheckCard
           isReady={true}
           loading={securityCheckStatus === 'loading'}
           data={securityCheckDetail}
           status={securityCheckStatus}
-          onCheck={handleSecurityCheck}
+          onCheck={isSignTypedDataV1 ? handleSecurityCheck : undefined}
         ></SecurityCheckCard>
       </div>
 
@@ -327,6 +478,7 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
               className="w-[172px]"
               onClick={() => handleAllow(forceProcess)}
               disabled={
+                loading ||
                 (isLedger && !useLedgerLive && !hasConnectedLedgerHID) ||
                 !forceProcess ||
                 securityCheckStatus === 'loading'

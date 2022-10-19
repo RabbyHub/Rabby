@@ -16,6 +16,7 @@ interface NameAndAddressProps {
   nameClass?: string;
   addressClass?: string;
   noNameClass?: string;
+  copyIconClass?: string;
 }
 
 const NameAndAddress = ({
@@ -24,6 +25,7 @@ const NameAndAddress = ({
   nameClass = '',
   addressClass = '',
   noNameClass = '',
+  copyIconClass = '',
 }: NameAndAddressProps) => {
   const wallet = useWallet();
   const [contact, setContact] = useState('');
@@ -89,9 +91,13 @@ const NameAndAddress = ({
         onClick={handleCopyContractAddress}
         src={IconAddressCopy}
         id={'copyIcon'}
-        className={clsx('w-[16px] h-[16px] ml-4 cursor-pointer', {
-          success: true,
-        })}
+        className={clsx(
+          'w-[16px] h-[16px] ml-4 cursor-pointer',
+          copyIconClass,
+          {
+            success: true,
+          }
+        )}
       />
     </div>
   );

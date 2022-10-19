@@ -8,6 +8,7 @@ import NFTAvatar from '@/ui/views/Dashboard/components/NFT/NFTAvatar';
 import LessPalette from '@/ui/style/var-defs';
 import { getChain } from 'utils';
 import clsx from 'clsx';
+import { splitNumberByStep } from '@/ui/utils';
 
 const PreviewModal = styled(Modal)`
   .ant-modal-body {
@@ -89,7 +90,7 @@ export default function ModalPreviewNFTItem({
           thumbnail={false}
           content={nft?.content}
           type={nft?.content_type}
-          amount={nft?.total_supply}
+          amount={nft?.amount}
         ></NFTAvatar>
         <div className="nft-txpreview-title">{nft?.name || '-'}</div>
         <div className="nft-txpreview-properties">
@@ -103,16 +104,23 @@ export default function ModalPreviewNFTItem({
             <div className="nft-txpreview-property-label">Chain</div>
             <div className="nft-txpreview-property-value">{chainName}</div>
           </div>
-          {/* <div className="nft-txpreview-property">
-          <div className="nft-txpreview-property-label">Purchase Date</div>
-          <div className="nft-txpreview-property-value">
-            {purchaseAt}
+          <div className="nft-txpreview-property">
+            <div className="nft-txpreview-property-label">Purchase Date</div>
+            <div className="nft-txpreview-property-value">
+              {/* todo */}
+              {(nft as any)?.pay_token?.date_at || '-'}
+            </div>
           </div>
-        </div> */}
-          {/* <div className="nft-txpreview-property">
-          <div className="nft-txpreview-property-label">Last Price</div>
-          <div className="nft-txpreview-property-value">{price}</div>
-        </div> */}
+          <div className="nft-txpreview-property">
+            <div className="nft-txpreview-property-label">Last Price</div>
+            <div className="nft-txpreview-property-value">
+              {(nft as any)?.usd_price
+                ? `$${splitNumberByStep(
+                    ((nft as any)?.usd_price || 0).toFixed(2)
+                  )}`
+                : '-'}
+            </div>
+          </div>
         </div>
       </PreviewCard>
     </PreviewModal>

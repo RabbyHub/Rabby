@@ -240,6 +240,35 @@
       border: 1px solid @color-border;
       background-color: #fff;
       border-radius: 6px;
+      .tx-action {
+        padding-bottom: 16px;
+        border-bottom: 1px solid #e5e9ef;
+      }
+      .section-card {
+        background: #fff;
+        border-radius: 6px;
+        position: relative;
+
+        &-content {
+          flex: 1;
+          overflow: hidden;
+        }
+
+        &-title {
+          font-weight: 500;
+          font-size: 15px;
+          line-height: 18px;
+          color: @color-title;
+          margin-bottom: 2px;
+          .ellipsis();
+        }
+        &-desc {
+          font-weight: 400;
+          font-size: 14px;
+          line-height: 16px;
+          color: @color-body;
+        }
+      }
     }
     .text-detail {
       padding: 16px;
@@ -474,6 +503,7 @@
     .cancel-nft-collection,
     .cancel-nft,
     .send-nft,
+    .type-list-nft,
     .cancel-tx {
       .common-detail-block {
         min-height: 120px;
@@ -657,6 +687,44 @@
         margin: 4px 0 0 0;
         color: @color-comment-1;
         font-size: 12px;
+      }
+    }
+    .type-list-nft {
+      .token-balance-change.no-change-detected .section-title {
+        font-weight: 400;
+        font-size: 14px;
+        line-height: 16px;
+        color: @color-body;
+      }
+      &-explain {
+        padding: 16px;
+        // border-bottom: 1px solid #e5e9ef;
+        &-title {
+          font-weight: 400;
+          font-size: 13px;
+          line-height: 18px;
+          color: @color-title;
+          margin-bottom: 10px;
+          .name-and-address {
+            display: inline-flex;
+            margin-right: 6px;
+            .address {
+              font-weight: 500;
+              font-size: 13px;
+              line-height: 15px;
+              color: @color-comment-1;
+            }
+            img {
+              width: 14px !important;
+              height: 14px !important;
+            }
+          }
+          strong {
+            font-weight: 500;
+            color: @color-title;
+            word-break: break-all;
+          }
+        }
       }
     }
     .cancel-tx {

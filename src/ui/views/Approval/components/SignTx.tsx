@@ -63,6 +63,7 @@ import Loading from './TxComponents/Loading';
 import Send from './TxComponents/Send';
 import SendNFT from './TxComponents/sendNFT';
 import Sign from './TxComponents/Sign';
+import ListNFT from './TxComponents/ListNFT';
 import PreCheckCard from './PreCheckCard';
 import SecurityCheckCard from './SecurityCheckCard';
 import ProcessTooltip from './ProcessTooltip';
@@ -221,6 +222,16 @@ export const TxTypeComponent = ({
         raw={raw}
       />
     );
+  if (txDetail.type_list_nft) {
+    return (
+      <ListNFT
+        data={txDetail}
+        chainEnum={chain.enum}
+        isSpeedUp={isSpeedUp}
+        raw={raw}
+      />
+    );
+  }
   if (txDetail.type_call)
     return (
       <Sign
