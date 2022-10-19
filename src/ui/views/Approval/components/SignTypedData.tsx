@@ -399,6 +399,9 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
             className={clsx(
               'text-detail text-15 leading-[16px] font-bold max-h-[168px] text-[rgb(82,89,102)]'
             )}
+            style={{
+              fontFamily: 'Roboto Mono',
+            }}
           >
             {parsedMessage}
           </div>
