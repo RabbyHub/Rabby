@@ -1675,6 +1675,13 @@
         text-decoration: underline;
         cursor: pointer;
       }
+      &.disabled {
+        opacity: 0.5;
+        cursor: not-allowed;
+        .recommend-times {
+          cursor: not-allowed;
+        }
+      }
     }
   }
 }
