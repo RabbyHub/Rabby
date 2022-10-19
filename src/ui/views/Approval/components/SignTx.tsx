@@ -329,6 +329,7 @@ const explainGas = async ({
   nativeTokenPrice,
   tx,
   wallet,
+  gasLimit,
 }: {
   gasUsed: number | string;
   gasPrice: number | string;
@@ -336,8 +337,10 @@ const explainGas = async ({
   nativeTokenPrice: number;
   tx: Tx;
   wallet: ReturnType<typeof useWallet>;
+  gasLimit: string | undefined;
 }) => {
   let gasCostTokenAmount = new BigNumber(gasUsed).times(gasPrice).div(1e18);
+  let maxGasCostAmount = new BigNumber(gasLimit || 0).times(gasPrice).div(1e18);
   const chain = Object.values(CHAINS).find((item) => item.id === chainId);
   const isOp = chain?.enum === CHAINS_ENUM.OP;
   if (isOp) {
@@ -345,12 +348,14 @@ const explainGas = async ({
       txParams: tx,
     });
     gasCostTokenAmount = new BigNumber(res).div(1e18).plus(gasCostTokenAmount);
+    maxGasCostAmount = new BigNumber(res).div(1e18).plus(maxGasCostAmount);
   }
   const gasCostUsd = new BigNumber(gasCostTokenAmount).times(nativeTokenPrice);
 
   return {
     gasCostUsd,
     gasCostAmount: gasCostTokenAmount,
+    maxGasCostAmount,
   };
 };
 
@@ -361,10 +366,12 @@ const useExplainGas = ({
   nativeTokenPrice,
   tx,
   wallet,
+  gasLimit,
 }: Parameters<typeof explainGas>[0]) => {
   const [result, setResult] = useState({
     gasCostUsd: new BigNumber(0),
     gasCostAmount: new BigNumber(0),
+    maxGasCostAmount: new BigNumber(0),
   });
 
   useEffect(() => {
@@ -375,10 +382,11 @@ const useExplainGas = ({
       nativeTokenPrice,
       wallet,
       tx,
+      gasLimit,
     }).then((data) => {
       setResult(data);
     });
-  }, [gasUsed, gasPrice, chainId, nativeTokenPrice, wallet, tx]);
+  }, [gasUsed, gasPrice, chainId, nativeTokenPrice, wallet, tx, gasLimit]);
 
   return {
     ...result,
@@ -394,6 +402,7 @@ const checkGasAndNonce = ({
   isCancel,
   gasExplainResponse,
   isSpeedUp,
+  isGnosisAccount,
 }: {
   recommendGasLimit: number | string | BigNumber;
   recommendNonce: number | string | BigNumber;
@@ -403,12 +412,14 @@ const checkGasAndNonce = ({
   gasExplainResponse: ReturnType<typeof useExplainGas>;
   isCancel: boolean;
   isSpeedUp: boolean;
+  isGnosisAccount: boolean;
 }) => {
   const errors: { code: number; msg: string }[] = [];
 
   if (
+    !isGnosisAccount &&
     txDetail &&
-    gasExplainResponse.gasCostAmount
+    gasExplainResponse.maxGasCostAmount
       .plus(
         txDetail.balance_change.send_token_list.find(
           (item) => item.id === txDetail.native_token.id
@@ -421,7 +432,7 @@ const checkGasAndNonce = ({
       msg: 'The reserved gas fee is not enough',
     });
   }
-  if (new BigNumber(gasLimit).lt(recommendGasLimit)) {
+  if (!isGnosisAccount && new BigNumber(gasLimit).lt(recommendGasLimit)) {
     errors.push({
       code: 3002,
       msg: `Gas limit is too low, the minimum should be ${new BigNumber(
@@ -449,6 +460,7 @@ const useCheckGasAndNonce = ({
   isCancel,
   gasExplainResponse,
   isSpeedUp,
+  isGnosisAccount,
 }: Parameters<typeof checkGasAndNonce>[0]) => {
   return useMemo(
     () =>
@@ -461,6 +473,7 @@ const useCheckGasAndNonce = ({
         isCancel,
         gasExplainResponse,
         isSpeedUp,
+        isGnosisAccount,
       }),
     [
       recommendGasLimit,
@@ -471,6 +484,7 @@ const useCheckGasAndNonce = ({
       isCancel,
       gasExplainResponse,
       isSpeedUp,
+      isGnosisAccount,
     ]
   );
 };
@@ -729,6 +743,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     nativeTokenPrice: txDetail?.native_token.price || 0,
     tx,
     wallet,
+    gasLimit,
   });
 
   const checkErrors = useCheckGasAndNonce({
@@ -740,6 +755,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     isSpeedUp,
     isCancel,
     txDetail,
+    isGnosisAccount,
   });
 
   const checkTx = async (address: string) => {
@@ -1318,6 +1334,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
               />
             )}
             <GasSelector
+              isGnosisAccount={isGnosisAccount}
               isReady={isReady}
               tx={tx}
               gasLimit={gasLimit}
@@ -1339,6 +1356,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
                   nativeTokenPrice: txDetail?.native_token.price || 0,
                   tx,
                   wallet,
+                  gasLimit,
                 });
               }}
               recommendGasLimit={recommendGasLimit}

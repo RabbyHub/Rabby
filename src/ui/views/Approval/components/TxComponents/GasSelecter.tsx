@@ -11,7 +11,7 @@ import { useDebounce } from 'react-use';
 import IconInfo from 'ui/assets/infoicon.svg';
 import { Popup } from 'ui/component';
 import { formatTokenAmount } from 'ui/utils/number';
-import styled from 'styled-components';
+import styled, { css } from 'styled-components';
 import LessPalette from '@/ui/style/var-defs';
 import { ReactComponent as IconArrowRight } from 'ui/assets/approval/edit-arrow-right.svg';
 
@@ -52,6 +52,7 @@ interface GasSelectorProps {
     gasCostUsd: BigNumber;
     gasCostAmount: BigNumber;
   }>;
+  isGnosisAccount?: boolean;
 }
 
 const useExplainGas = ({
@@ -77,6 +78,84 @@ const useExplainGas = ({
   return result;
 };
 
+const CardBody = styled.div<{
+  $disabled?: boolean;
+}>`
+  display: flex;
+  justify-content: space-between;
+  width: 100%;
+  gap: 8px;
+
+  ${({ $disabled }) =>
+    $disabled
+      ? css`
+          opacity: 0.5;
+          cursor: not-allowed;
+        `
+      : css`
+          .card {
+            cursor: pointer;
+
+            &:hover {
+              border: 1px solid #8697ff;
+            }
+
+            &.active {
+              background: rgba(134, 151, 255, 0.1);
+              border: 1px solid #8697ff;
+            }
+          }
+
+          .cardTitle {
+            &.active {
+              color: #8697ff !important;
+            }
+          }
+        `}
+
+  .card {
+    width: 76px;
+    height: 52px;
+    background: #f5f6fa;
+    border-radius: 4px;
+    display: flex;
+    flex-direction: column;
+    border: 1px solid transparent;
+
+    .gas-level,
+    .cardTitle {
+      text-align: center;
+      font-size: 12px;
+      line-height: 14px;
+      color: ${LessPalette['@color-comment']};
+      margin: 8px auto 0;
+    }
+    .cardTitle {
+      color: ${LessPalette['@color-title']} !important;
+      font-weight: 500;
+      font-size: 13px !important;
+      margin: 4px auto 0;
+    }
+    .custom-input {
+      margin: 4px auto 0;
+    }
+    .ant-input {
+      text-align: center !important;
+      font-size: 13px !important;
+      font-weight: 500;
+      color: ${LessPalette['@color-title']};
+      padding-top: 0;
+      &.active {
+        color: #8697ff !important;
+      }
+    }
+    .ant-input:focus,
+    .ant-input-focused {
+      color: #000000;
+    }
+  }
+`;
+
 const GasSelector = ({
   gasLimit,
   gas,
@@ -94,6 +173,7 @@ const GasSelector = ({
   isHardware,
   version,
   gasCalcMethod,
+  isGnosisAccount,
 }: GasSelectorProps) => {
   const { t } = useTranslation();
   const customerInputRef = useRef<Input>(null);
@@ -268,6 +348,11 @@ const GasSelector = ({
         level: gas?.level,
       });
     }
+  };
+
+  const handlePanelSelection = (e, gas: GasLevel) => {
+    if (isGnosisAccount) return;
+    return panelSelection(e, gas);
   };
 
   const externalPanelSelection = (e, gas: GasLevel) => {
@@ -453,7 +538,9 @@ const GasSelector = ({
         >
           <div className="gas-selector-card-title">Gas</div>
           <div className="gas-selector-card-content ml-[27px]">
-            {gas.error || !gas.success ? (
+            {isGnosisAccount ? (
+              <div className="font-semibold">Gnosis safe no gas cost</div>
+            ) : gas.error || !gas.success ? (
               <>
                 <div className="gas-selector-card-error">
                   Fail to fetch gas cost
@@ -494,6 +581,7 @@ const GasSelector = ({
           panelSelection={externalPanelSelection}
           customGas={customGas}
           handleCustomGasChange={externalHandleCustomGasChange}
+          isGnosisAccount={isGnosisAccount}
         />
       </div>
       <Popup
@@ -533,15 +621,21 @@ const GasSelector = ({
           )}
         </div>
         <div className="card-container">
-          <div className="card-container-title">Gas Price (Gwei)</div>
-          <div className="card-container-body">
+          <div
+            className={clsx('card-container-title', {
+              disabled: isGnosisAccount,
+            })}
+          >
+            Gas Price (Gwei)
+          </div>
+          <CardBody $disabled={isGnosisAccount}>
             {gasList.map((item, idx) => (
               <div
                 key={`gas-item-${item.level}-${idx}`}
-                className={clsx('card cursor-pointer', {
+                className={clsx('card', {
                   active: selectedGas?.level === item.level,
                 })}
-                onClick={(e) => panelSelection(e, item)}
+                onClick={(e) => handlePanelSelection(e, item)}
               >
                 <div className="gas-level">{t(GAS_LEVEL_TEXT[item.level])}</div>
                 <div
@@ -552,16 +646,16 @@ const GasSelector = ({
                 >
                   {item.level === 'custom' ? (
                     <Input
-                      className="cursor-pointer"
                       value={customGas}
                       defaultValue={customGas}
                       onChange={handleCustomGasChange}
-                      onClick={(e) => panelSelection(e, item)}
+                      onClick={(e) => handlePanelSelection(e, item)}
                       onPressEnter={customGasConfirm}
                       ref={customerInputRef}
                       autoFocus={selectedGas?.level === item.level}
                       min={0}
                       bordered={false}
+                      disabled={isGnosisAccount}
                     />
                   ) : (
                     item.price / 1e9
@@ -569,7 +663,7 @@ const GasSelector = ({
                 </div>
               </div>
             ))}
-          </div>
+          </CardBody>
         </div>
         <div>
           {is1559 && (
@@ -626,18 +720,25 @@ const GasSelector = ({
           )}
           <Form onFinish={handleConfirmGas}>
             <div className="gas-limit">
-              <p className="gas-limit-label flex leading-[16px]">
+              <p
+                className={clsx('gas-limit-label flex leading-[16px]', {
+                  disabled: isGnosisAccount,
+                })}
+              >
                 <span className="flex-1">{t('GasLimit')}</span>
               </p>
               <div className="expanded gas-limit-panel-wrapper">
                 <Form.Item
-                  className="gas-limit-panel mb-0"
+                  className={clsx('gas-limit-panel mb-0', {
+                    disabled: isGnosisAccount,
+                  })}
                   validateStatus={validateStatus.gasLimit.status}
                 >
                   <Input
                     className="popup-input"
                     value={afterGasLimit}
                     onChange={handleGasLimitChange}
+                    disabled={isGnosisAccount}
                   />
                 </Form.Item>
                 {validateStatus.gasLimit.message ? (
@@ -711,65 +812,7 @@ const GasSelector = ({
     </>
   );
 };
-const CardBody = styled.div`
-  display: flex;
-  justify-content: space-between;
-  width: 100%;
-  gap: 8px;
 
-  .card {
-    width: 76px;
-    height: 52px;
-    background: #f5f6fa;
-    border-radius: 4px;
-    display: flex;
-    flex-direction: column;
-    border: 1px solid transparent;
-
-    &:hover {
-      border: 1px solid #8697ff;
-    }
-
-    &.active {
-      background: rgba(134, 151, 255, 0.1);
-      border: 1px solid #8697ff;
-    }
-    .gas-level,
-    .cardTitle {
-      text-align: center;
-      font-size: 12px;
-      line-height: 14px;
-      color: ${LessPalette['@color-comment']};
-      margin: 8px auto 0;
-    }
-    .cardTitle {
-      color: ${LessPalette['@color-title']} !important;
-      font-weight: 500;
-      font-size: 13px !important;
-      margin: 4px auto 0;
-      &.active {
-        color: #8697ff !important;
-      }
-    }
-    .custom-input {
-      margin: 4px auto 0;
-    }
-    .ant-input {
-      text-align: center !important;
-      font-size: 13px !important;
-      font-weight: 500;
-      color: ${LessPalette['@color-title']};
-      padding-top: 0;
-      &.active {
-        color: #8697ff !important;
-      }
-    }
-    .ant-input:focus,
-    .ant-input-focused {
-      color: #000000;
-    }
-  }
-`;
 const GasSelectPanel = ({
   gasList,
   selectedGas,
@@ -777,6 +820,7 @@ const GasSelectPanel = ({
   customGas,
   customGasConfirm = () => null,
   handleCustomGasChange,
+  isGnosisAccount,
 }: {
   gasList: GasLevel[];
   selectedGas: GasLevel | null;
@@ -787,51 +831,65 @@ const GasSelectPanel = ({
   customGas: string | number;
   customGasConfirm?: React.KeyboardEventHandler<HTMLInputElement> | undefined;
   handleCustomGasChange: (e: React.ChangeEvent<HTMLInputElement>) => void;
+  isGnosisAccount?: boolean;
 }) => {
   const { t } = useTranslation();
   const customerInputRef = useRef<Input>(null);
+  const disabled = isGnosisAccount;
+  const handlePanelSelection = (e, item) => {
+    if (disabled) return;
+    return panelSelection(e, item);
+  };
+
   return (
-    <CardBody>
-      {gasList.map((item, idx) => (
-        <div
-          key={`gas-item-${item.level}-${idx}`}
-          className={clsx('card cursor-pointer', {
-            active: selectedGas?.level === item.level,
-          })}
-          onClick={(e) => {
-            panelSelection(e, item);
-            if (item.level === 'custom') {
-              customerInputRef.current?.focus();
-            }
-          }}
-        >
-          <div className="gas-level">{t(GAS_LEVEL_TEXT[item.level])}</div>
+    <Tooltip
+      overlayClassName="rectangle"
+      title={
+        disabled ? 'Gas fee is not required for Gnosis safe transactions' : null
+      }
+    >
+      <CardBody $disabled={disabled}>
+        {gasList.map((item, idx) => (
           <div
-            className={clsx('cardTitle', {
-              'custom-input': item.level === 'custom',
+            key={`gas-item-${item.level}-${idx}`}
+            className={clsx('card', {
               active: selectedGas?.level === item.level,
             })}
+            onClick={(e) => {
+              handlePanelSelection(e, item);
+              if (item.level === 'custom') {
+                customerInputRef.current?.focus();
+              }
+            }}
           >
-            {item.level === 'custom' ? (
-              <Input
-                className="cursor-pointer"
-                value={customGas}
-                defaultValue={customGas}
-                onChange={handleCustomGasChange}
-                onClick={(e) => panelSelection(e, item)}
-                onPressEnter={customGasConfirm}
-                ref={customerInputRef}
-                autoFocus={selectedGas?.level === item.level}
-                min={0}
-                bordered={false}
-              />
-            ) : (
-              item.price / 1e9
-            )}
+            <div className="gas-level">{t(GAS_LEVEL_TEXT[item.level])}</div>
+            <div
+              className={clsx('cardTitle', {
+                'custom-input': item.level === 'custom',
+                active: selectedGas?.level === item.level,
+              })}
+            >
+              {item.level === 'custom' ? (
+                <Input
+                  value={customGas}
+                  defaultValue={customGas}
+                  onChange={handleCustomGasChange}
+                  onClick={(e) => handlePanelSelection(e, item)}
+                  onPressEnter={customGasConfirm}
+                  ref={customerInputRef}
+                  autoFocus={selectedGas?.level === item.level}
+                  min={0}
+                  bordered={false}
+                  disabled={disabled}
+                />
+              ) : (
+                item.price / 1e9
+              )}
+            </div>
           </div>
-        </div>
-      ))}
-    </CardBody>
+        ))}
+      </CardBody>
+    </Tooltip>
   );
 };
 

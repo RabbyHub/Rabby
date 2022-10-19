@@ -1409,66 +1409,8 @@
       line-height: 16px;
       color: @color-title;
       margin-bottom: 8px;
-    }
-
-    &-body {
-      display: flex;
-      justify-content: space-between;
-      width: 100%;
-      gap: 10px;
-    }
-
-    .card {
-      width: 83px;
-      height: 48px;
-      background: #f5f6fa;
-      border-radius: 4px;
-      display: flex;
-      flex-direction: column;
-      align-items: center;
-      border: 1px solid transparent;
-
-      &:hover {
-        border: 1px solid #8697ff;
-      }
-
-      &.active {
-        background: rgba(134, 151, 255, 0.1);
-        border: 1px solid #8697ff;
-      }
-      .gas-level {
-        text-align: center;
-        font-size: 12px;
-        line-height: 14px;
-        color: @color-comment-1;
-        margin: 8px auto 0;
-      }
-      .cardTitle {
-        .gas-level;
-        color: @color-title !important;
-        font-weight: 500;
-        font-size: 13px !important;
-        margin: 4px auto 0;
-        &.active {
-          color: #8697ff !important;
-        }
-      }
-      .custom-input {
-        margin: 4px auto 0;
-      }
-      .ant-input {
-        text-align: center !important;
-        font-size: 13px !important;
-        font-weight: 500;
-        color: @color-title;
-        padding-top: 0;
-        &.active {
-          color: #8697ff !important;
-        }
-      }
-      .ant-input:focus,
-      .ant-input-focused {
-        color: #000000;
+      &.disabled {
+        opacity: 0.5;
       }
     }
   }
@@ -1611,9 +1553,9 @@
     &-label {
       margin-bottom: 0;
       color: @color-title;
-      // span:nth-child(2) {
-      //   color: @color-comment-2;
-      // }
+      &.disabled {
+        opacity: 0.5;
+      }
     }
     &-title {
       color: @color-title;
@@ -1649,14 +1591,11 @@
           display: none;
         }
       }
-      // .ant-input-number:focus,
-      // .ant-input-number-focused,
-      // .ant-input-number:hover,
-      // .ant-input-number:focus-visible {
-      //   border: none;
-      // }
       &.ant-form-item-has-error .ant-input {
         border-color: #f24822 !important;
+      }
+      &.disabled {
+        opacity: 0.5;
       }
     }
     .tip {
