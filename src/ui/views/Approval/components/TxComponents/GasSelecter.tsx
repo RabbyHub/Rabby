@@ -595,7 +595,9 @@ const GasSelector = ({
         closable
       >
         <div className="gas-selector-modal-top">
-          {isGnosisAccount ? null : gas.error || !gas.success ? (
+          {isGnosisAccount ? (
+            <div className="gas-selector-modal-amount">No gas required</div>
+          ) : gas.error || !gas.success ? (
             <>
               <div className="gas-selector-modal-error">
                 Fail to fetch gas cost
