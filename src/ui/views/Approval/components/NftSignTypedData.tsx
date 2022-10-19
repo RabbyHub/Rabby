@@ -11,6 +11,7 @@ import {
 import ModalPreviewNFTItem from '@/ui/component/ModalPreviewNFTItem';
 import { NFTList } from './TxComponents/ListNFT';
 import { Tooltip } from 'antd';
+import BigNumber from 'bignumber.js';
 
 export const NFTSignTypedSignHeader = ({
   detail,
@@ -86,9 +87,9 @@ export const NFTSignTypedSignSection = ({
           with a total of{' '}
           <span className="font-medium">
             $
-            {splitNumberByStep(
-              (typeListNft?.type_list_nft?.total_usd_value || 0).toFixed(2)
-            )}
+            {new BigNumber(
+              typeListNft?.type_list_nft?.total_usd_value || 0
+            ).toFormat(2)}
           </span>{' '}
           {!!typeListNft?.type_list_nft?.buyer_list.length && (
             <>
