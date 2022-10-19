@@ -80,7 +80,10 @@ export const NFTSignTypedSignSection = ({
       <div className="bg-white rounded-[6px] p-[16px]">
         <div className="break-all text-13 leading-[18px] font-normal mb-[8px]">
           You're about to list{' '}
-          <span className="font-medium">{nftAmount} NFTs</span> with a total of{' '}
+          <span className="font-medium">
+            {nftAmount} NFT{nftAmount && nftAmount > 1 ? 's' : ''}
+          </span>{' '}
+          with a total of{' '}
           <span className="font-medium">
             $
             {splitNumberByStep(
