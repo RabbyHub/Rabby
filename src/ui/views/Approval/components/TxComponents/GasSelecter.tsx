@@ -212,6 +212,7 @@ const GasSelector = ({
   const chain = Object.values(CHAINS).find((item) => item.id === chainId)!;
 
   const handleSetRecommendTimes = () => {
+    if (isGnosisAccount) return;
     const value = new BigNumber(recommendGasLimit).times(1.5).toFixed(0);
     setGasLimit(value);
   };
@@ -594,7 +595,9 @@ const GasSelector = ({
         closable
       >
         <div className="gas-selector-modal-top">
-          {gas.error || !gas.success ? (
+          {isGnosisAccount ? (
+            <div className="gas-selector-modal-amount">No gas required</div>
+          ) : gas.error || !gas.success ? (
             <>
               <div className="gas-selector-modal-error">
                 Fail to fetch gas cost
@@ -628,42 +631,53 @@ const GasSelector = ({
           >
             Gas Price (Gwei)
           </div>
-          <CardBody $disabled={isGnosisAccount}>
-            {gasList.map((item, idx) => (
-              <div
-                key={`gas-item-${item.level}-${idx}`}
-                className={clsx('card', {
-                  active: selectedGas?.level === item.level,
-                })}
-                onClick={(e) => handlePanelSelection(e, item)}
-              >
-                <div className="gas-level">{t(GAS_LEVEL_TEXT[item.level])}</div>
+          <Tooltip
+            overlayClassName="rectangle"
+            title={
+              isGnosisAccount
+                ? 'Gas fee is not required for Gnosis safe transactions'
+                : null
+            }
+          >
+            <CardBody $disabled={isGnosisAccount}>
+              {gasList.map((item, idx) => (
                 <div
-                  className={clsx('cardTitle', {
-                    'custom-input': item.level === 'custom',
+                  key={`gas-item-${item.level}-${idx}`}
+                  className={clsx('card', {
                     active: selectedGas?.level === item.level,
                   })}
+                  onClick={(e) => handlePanelSelection(e, item)}
                 >
-                  {item.level === 'custom' ? (
-                    <Input
-                      value={customGas}
-                      defaultValue={customGas}
-                      onChange={handleCustomGasChange}
-                      onClick={(e) => handlePanelSelection(e, item)}
-                      onPressEnter={customGasConfirm}
-                      ref={customerInputRef}
-                      autoFocus={selectedGas?.level === item.level}
-                      min={0}
-                      bordered={false}
-                      disabled={isGnosisAccount}
-                    />
-                  ) : (
-                    item.price / 1e9
-                  )}
+                  <div className="gas-level">
+                    {t(GAS_LEVEL_TEXT[item.level])}
+                  </div>
+                  <div
+                    className={clsx('cardTitle', {
+                      'custom-input': item.level === 'custom',
+                      active: selectedGas?.level === item.level,
+                    })}
+                  >
+                    {item.level === 'custom' ? (
+                      <Input
+                        value={customGas}
+                        defaultValue={customGas}
+                        onChange={handleCustomGasChange}
+                        onClick={(e) => handlePanelSelection(e, item)}
+                        onPressEnter={customGasConfirm}
+                        ref={customerInputRef}
+                        autoFocus={selectedGas?.level === item.level}
+                        min={0}
+                        bordered={false}
+                        disabled={isGnosisAccount}
+                      />
+                    ) : (
+                      item.price / 1e9
+                    )}
+                  </div>
                 </div>
-              </div>
-            ))}
-          </CardBody>
+              ))}
+            </CardBody>
+          </Tooltip>
         </div>
         <div>
           {is1559 && (
@@ -728,25 +742,34 @@ const GasSelector = ({
                 <span className="flex-1">{t('GasLimit')}</span>
               </p>
               <div className="expanded gas-limit-panel-wrapper">
-                <Form.Item
-                  className={clsx('gas-limit-panel mb-0', {
-                    disabled: isGnosisAccount,
-                  })}
-                  validateStatus={validateStatus.gasLimit.status}
+                <Tooltip
+                  overlayClassName="rectangle"
+                  title={
+                    isGnosisAccount
+                      ? 'Gas fee is not required for Gnosis safe transactions'
+                      : null
+                  }
                 >
-                  <Input
-                    className="popup-input"
-                    value={afterGasLimit}
-                    onChange={handleGasLimitChange}
-                    disabled={isGnosisAccount}
-                  />
-                </Form.Item>
+                  <Form.Item
+                    className={clsx('gas-limit-panel mb-0', {
+                      disabled: isGnosisAccount,
+                    })}
+                    validateStatus={validateStatus.gasLimit.status}
+                  >
+                    <Input
+                      className="popup-input"
+                      value={afterGasLimit}
+                      onChange={handleGasLimitChange}
+                      disabled={isGnosisAccount}
+                    />
+                  </Form.Item>
+                </Tooltip>
                 {validateStatus.gasLimit.message ? (
                   <p className="tip text-red-light not-italic">
                     {validateStatus.gasLimit.message}
                   </p>
                 ) : (
-                  <p className="tip">
+                  <p className={clsx('tip', { disabled: isGnosisAccount })}>
                     <Trans
                       i18nKey="RecommendGasLimitTip"
                       values={{
