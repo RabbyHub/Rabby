@@ -161,7 +161,9 @@ const LedgerHardwareWaiting = ({ params }: { params: ApprovalParams }) => {
         const pendingApprovalCount = await wallet.getPendingApprovalCount();
         resolveApproval(
           data.data,
-          pendingApprovalCount > 1 ? false : !isSignText
+          pendingApprovalCount > 1 ? false : !isSignText,
+          false,
+          approval.id
         );
       } else {
         setConnectStatus(WALLETCONNECT_STATUS_MAP.FAILD);

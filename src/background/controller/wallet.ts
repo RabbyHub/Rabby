@@ -1933,7 +1933,7 @@ export class WalletController extends BaseController {
     nonce: number;
     explain: ExplainTxResponse;
     calcSuccess: boolean;
-    approvalId: number;
+    approvalId: string;
   }) => transactionHistoryService.addExplainCache(params);
 
   getExplainCache = ({
@@ -1951,7 +1951,7 @@ export class WalletController extends BaseController {
       nonce,
     });
 
-  getTxExplainCacheByApprovalId = (id: number) =>
+  getTxExplainCacheByApprovalId = (id: string) =>
     transactionHistoryService.getExplainCacheByApprovalId(id);
 
   getTransactionHistory = (address: string) =>
