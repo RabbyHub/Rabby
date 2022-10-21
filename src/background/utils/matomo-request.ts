@@ -1,7 +1,7 @@
 import { storage } from 'background/webapi';
 import { nanoid } from 'nanoid';
 
-const ANALYTICS_PATH = 'https://www.google-analytics.com/collect';
+const ANALYTICS_PATH = 'https://matomo.debank.com/matomo.php';
 
 async function postData(url = '', data: RequestInit['body']) {
   const response = await fetch(url, {
@@ -19,8 +19,7 @@ async function postData(url = '', data: RequestInit['body']) {
 
   return response;
 }
-
-const getGAParams = async () => {
+const getParams = async () => {
   let cid = await storage.get('cid');
   if (!cid) {
     cid = nanoid();
@@ -28,17 +27,17 @@ const getGAParams = async () => {
   }
 
   const gaParams = new URLSearchParams();
-  gaParams.append('v', '1');
-  gaParams.append('tid', 'UA-199755108-3');
-  gaParams.append('cid', cid);
-  gaParams.append('t', 'event');
-  gaParams.append('an', 'Rabby');
-  gaParams.append('av', process.env.release ?? '');
+  gaParams.append('idsite', '2');
+  gaParams.append('rec', '1');
+  gaParams.append('apiv', '1');
+  gaParams.append('url', location.href);
+  gaParams.append('_id', cid);
+  gaParams.append('rand', nanoid());
 
   return gaParams;
 };
 
-export const gaRequestEvent = async (
+export const matomoRequestEvent = async (
   data: {
     category?: string;
     action?: string;
@@ -46,14 +45,17 @@ export const gaRequestEvent = async (
     value?: string | number;
   } = {}
 ) => {
-  const params = await getGAParams();
+  const params = await getParams();
 
-  for (const key in data) {
-    const value = data[key];
-    if (value) {
-      params.append('e' + key[0], value);
-    }
+  params.append('action_name', [data.category, data.action].join('/'));
+  const cvar = {};
+  if (data.label) {
+    cvar['1'] = ['label', data.label];
   }
+  if (data.value) {
+    cvar['2'] = ['value', data.value];
+  }
+  params.append('cvar', JSON.stringify(cvar));
 
   return postData(ANALYTICS_PATH, params);
 };
