@@ -21,6 +21,7 @@ import IconActivitiesPending from 'ui/assets/dashboard/activities-pending.svg';
 import IconReceive from 'ui/assets/dashboard/receive.svg';
 import IconGasTopUp from 'ui/assets/dashboard/gas-top-up.svg';
 import IconTransactions from 'ui/assets/dashboard/transactions.png';
+import IconAddresses from 'ui/assets/dashboard/addresses.svg';
 import IconWidget from 'ui/assets/dashboard/widget.svg';
 import IconDrawer from 'ui/assets/drawer.png';
 import {
@@ -183,13 +184,13 @@ export default ({
   };
 
   const panelItems = {
-    swap: {
-      icon: IconSwap,
-      content: 'Swap',
-      disabled: true,
-      disableReason: 'Temporarily unavailable',
-      onClick: () => history.push('/swap?rbisource=dashboard'),
-    },
+    // swap: {
+    //   icon: IconSwap,
+    //   content: 'Swap',
+    //   disabled: true,
+    //   disableReason: 'Temporarily unavailable',
+    //   onClick: () => history.push('/swap?rbisource=dashboard'),
+    // },
     send: {
       icon: IconSendToken,
       content: 'Send',
@@ -250,13 +251,20 @@ export default ({
       content: 'Settings',
       onClick: changeSetting,
     },
+    address: {
+      icon: IconAddresses,
+      content: 'Addresses',
+      onClick: () => {
+        history.push('/settings/address');
+      },
+    },
   };
 
   let pickedPanelKeys: (keyof typeof panelItems)[] = [];
 
   if (isGnosis) {
     pickedPanelKeys = [
-      'swap',
+      // 'swap',
       'send',
       'receive',
       'gasTopUp',
@@ -264,11 +272,12 @@ export default ({
       'transactions',
       'dapps',
       'security',
+      'address',
       'settings',
     ];
   } else {
     pickedPanelKeys = [
-      'swap',
+      // 'swap',
       'send',
       'receive',
       'gasTopUp',
@@ -276,6 +285,7 @@ export default ({
       'transactions',
       'dapps',
       'security',
+      'address',
       'settings',
     ];
   }
