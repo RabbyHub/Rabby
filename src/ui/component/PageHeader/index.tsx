@@ -12,6 +12,7 @@ const PageHeader = ({
   forceShowBack,
   fixed = false,
   invertBack = false,
+  className = '',
 }: {
   children: ReactNode;
   canBack?: boolean;
@@ -20,11 +21,12 @@ const PageHeader = ({
   forceShowBack?: boolean;
   fixed?: boolean;
   invertBack?: boolean;
+  className?: string;
 }) => {
   const history = useHistory();
 
   const Content = (
-    <div className="page-header">
+    <div className={clsx('page-header', !fixed && className)}>
       {(forceShowBack || (canBack && history.length > 1)) && (
         <img
           src={IconBack}
@@ -37,7 +39,7 @@ const PageHeader = ({
     </div>
   );
   return fixed ? (
-    <div className="page-header-container">
+    <div className={clsx('page-header-container', className)}>
       <div className="page-header-wrap">{Content}</div>
     </div>
   ) : (

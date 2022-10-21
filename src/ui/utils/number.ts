@@ -48,3 +48,27 @@ export const numberWithCommasIsLtOne = (
   parts[0] = parts[0].replace(/\B(?=(\d{3})+(?!\d))/g, ',');
   return parts.join('.');
 };
+
+export const formatNumber = (
+  num: string | number,
+  decimal = 2,
+  opt = {} as BigNumber.Format
+) => {
+  const n = new BigNumber(num);
+  const format = {
+    prefix: '',
+    decimalSeparator: '.',
+    groupSeparator: ',',
+    groupSize: 3,
+    secondaryGroupSize: 0,
+    fractionGroupSeparator: ' ',
+    fractionGroupSize: 0,
+    suffix: '',
+    ...opt,
+  };
+  // hide the after-point part if number is more than 1000000
+  if (n.isGreaterThan(1000000)) {
+    return n.decimalPlaces(0).toFormat(format);
+  }
+  return n.toFormat(decimal, format);
+};

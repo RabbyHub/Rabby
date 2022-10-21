@@ -24,17 +24,14 @@ import IconTransactions from 'ui/assets/dashboard/transactions.png';
 import IconAddresses from 'ui/assets/dashboard/addresses.svg';
 import IconWidget from 'ui/assets/dashboard/widget.svg';
 import IconDrawer from 'ui/assets/drawer.png';
-import {
-  getCurrentConnectSite,
-  splitNumberByStep,
-  useWallet,
-  useWalletOld,
-} from 'ui/utils';
+import { getCurrentConnectSite, splitNumberByStep, useWallet } from 'ui/utils';
 import { CurrentConnection } from '../CurrentConnection';
 import ChainSelectorModal from 'ui/component/ChainSelector/Modal';
-import { RecentConnections, Security, Settings } from '../index';
+import { RecentConnections, Settings } from '../index';
 import './style.less';
 import { CHAINS_ENUM } from '@/constant';
+import { useAsync } from 'react-use';
+import { useRabbySelector } from '@/ui/store';
 
 export default ({
   pendingTxCount,
@@ -82,7 +79,33 @@ export default ({
   const [isShowReceiveModal, setIsShowReceiveModal] = useState(
     trigger === 'receive' && showChainsModal
   );
-  const wallet = useWalletOld();
+  const wallet = useWallet();
+
+  const account = useRabbySelector((state) => state.account.currentAccount);
+
+  const [approvalRiskAlert, setApprovalRiskAlert] = useState(0);
+
+  const { value: approvalState } = useAsync(async () => {
+    if (account?.address) {
+      const data = await wallet.openapi.approvalStatus(account.address);
+      return data;
+    }
+    return;
+  }, [account?.address]);
+
+  useEffect(() => {
+    if (approvalState) {
+      setApprovalRiskAlert(
+        approvalState.reduce(
+          (pre, now) =>
+            pre + now.nft_approval_danger_cnt + now.token_approval_danger_cnt,
+          0
+        )
+      );
+    } else {
+      setApprovalRiskAlert(0);
+    }
+  }, [approvalState]);
 
   const getConnectedSites = async () => {
     const sites = await wallet.getRecentConnectedSites();
@@ -176,6 +199,7 @@ export default ({
     content: string;
     onClick: import('react').MouseEventHandler<HTMLElement>;
     badge?: number;
+    badgeAlert?: boolean;
     iconSpin?: boolean;
     hideForGnosis?: boolean;
     showAlert?: boolean;
@@ -183,7 +207,7 @@ export default ({
     disableReason?: string;
   };
 
-  const panelItems = {
+  const panelItems: Record<string, IPanelItem> = {
     // swap: {
     //   icon: IconSwap,
     //   content: 'Swap',
@@ -243,8 +267,12 @@ export default ({
     },
     security: {
       icon: IconSecurity,
-      content: 'Security',
-      onClick: changeSecurity,
+      content: 'Approval',
+      onClick: () => {
+        history.push('/approval-manage');
+      },
+      badge: approvalRiskAlert,
+      badgeAlert: approvalRiskAlert > 0,
     },
     settings: {
       icon: IconSetting,
@@ -334,7 +362,11 @@ export default ({
                   <img src={IconAlertRed} className="icon icon-alert" />
                 )}
                 {item.badge ? (
-                  <Badge count={item.badge} size="small">
+                  <Badge
+                    count={item.badge}
+                    size="small"
+                    className={item.badgeAlert ? 'alert' : ''}
+                  >
                     <img
                       src={item.icon}
                       className={[item.iconSpin && 'icon-spin', 'images']
@@ -405,7 +437,6 @@ export default ({
       />
       <Settings visible={settingVisible} onClose={changeSetting} />
       <RecentConnections visible={urlVisible} onClose={changeURL} />
-      <Security visible={securityVisible} onClose={changeSecurity} />
     </div>
   );
 };

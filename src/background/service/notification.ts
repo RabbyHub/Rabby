@@ -149,17 +149,18 @@ class NotificationService extends Events {
   };
 
   rejectApproval = async (err?: string, stay = false, isInternal = false) => {
-    if (isInternal) {
-      this.currentApproval?.reject &&
-        this.currentApproval?.reject(ethErrors.rpc.internal(err));
-    } else {
-      this.currentApproval?.reject &&
-        this.currentApproval?.reject(
-          ethErrors.provider.userRejectedRequest<any>(err)
-        );
+    const approval = this.currentApproval;
+
+    if (this.approvals.length <= 1) {
+      await this.clear(stay); // TODO: FIXME
     }
 
-    const approval = this.currentApproval;
+    if (isInternal) {
+      approval?.reject && approval?.reject(ethErrors.rpc.internal(err));
+    } else {
+      approval?.reject &&
+        approval?.reject(ethErrors.provider.userRejectedRequest<any>(err));
+    }
 
     if (approval && this.approvals.length > 1) {
       this.deleteApproval(approval);
