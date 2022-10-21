@@ -44,7 +44,17 @@ const ApprovalManage = () => {
   );
 
   const [value, setValue] = useState('');
-  const search = useThrottleFn((value) => value, 200, [value]);
+  const search = useThrottleFn(
+    (value) => {
+      if (sizeMap.current && listRef?.current) {
+        sizeMap.current = {};
+        listRef?.current.resetAfterIndex(0);
+      }
+      return value;
+    },
+    200,
+    [value]
+  );
 
   const [selectedItem, setSelectedItem] = useState<ApprovalItem | undefined>();
   const [visible, setVisible] = useState(false);
