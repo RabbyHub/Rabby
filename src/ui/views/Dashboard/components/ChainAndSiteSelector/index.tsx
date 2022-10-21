@@ -267,7 +267,7 @@ export default ({
     },
     security: {
       icon: IconSecurity,
-      content: 'Approval',
+      content: 'Approvals',
       onClick: () => {
         history.push('/approval-manage');
       },
