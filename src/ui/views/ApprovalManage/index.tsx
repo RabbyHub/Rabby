@@ -194,7 +194,7 @@ const ApprovalManage = () => {
   return (
     <div className="token-approval">
       <PageHeader className="mb-0" onBack={handleClickBack} forceShowBack>
-        {t('Approval')}
+        {t('Approvals')}
       </PageHeader>
       <div>
         <Input

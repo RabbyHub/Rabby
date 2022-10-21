@@ -110,7 +110,7 @@ export const RevokeApprovalDrawer = (props: {
     >
       <div>
         <PageHeader className="mb-0 px-0" onBack={onClose} forceShowBack>
-          {t('Revoke approval')}
+          {t('Revoke approvals')}
         </PageHeader>
 
         <div className="mt-16 mb-18">
