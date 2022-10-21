@@ -135,10 +135,8 @@ export const RevokeApprovalDrawer = (props: {
               <div
                 key={index}
                 className={clsx(
-                  'h-[51px] px-[16px] flex justify-between items-center bg-white  border-b  cursor-pointer',
-                  index !== item.list.length - 1
-                    ? 'border-gray-divider'
-                    : 'border-transparent rounded-b-[6px]'
+                  'px-[16px] bg-white cursor-pointer',
+                  index !== item.list.length - 1 && 'rounded-b-[6px]'
                 )}
                 onClick={(e) => {
                   if ((e.target as HTMLElement)?.id !== 'copyIcon') {
@@ -150,47 +148,56 @@ export const RevokeApprovalDrawer = (props: {
                   }
                 }}
               >
-                {'logo_url' in e ? (
-                  <TokenWithChain
-                    token={(e as unknown) as TokenItem}
-                    hideConer
-                    hideChainIcon
-                  />
-                ) : (
-                  <NFTAvatar
-                    className="w-[24px] h-[24px]"
-                    type={(e as NFTApproval)?.content_type}
-                    content={(e as NFTApproval)?.content}
-                    thumbnail
-                    unknown={IconUnknownNFT}
-                  />
-                )}
-                {/* <div className=""> */}
-                {'spender' in e ? (
-                  <div className="flex flex-col ml-[8px]">
-                    <div className="text-13 font-medium leading-[15px] mb-2">
-                      {e.contract_name}
+                <div
+                  className={clsx(
+                    'h-[51px] flex justify-between items-center border-b',
+                    index !== item.list.length - 1
+                      ? 'border-gray-divider'
+                      : 'border-transparent '
+                  )}
+                >
+                  {'logo_url' in e ? (
+                    <TokenWithChain
+                      token={(e as unknown) as TokenItem}
+                      hideConer
+                      hideChainIcon
+                    />
+                  ) : (
+                    <NFTAvatar
+                      className="w-[24px] h-[24px]"
+                      type={(e as NFTApproval)?.content_type}
+                      content={(e as NFTApproval)?.content}
+                      thumbnail
+                      unknown={IconUnknownNFT}
+                    />
+                  )}
+                  {/* <div className=""> */}
+                  {'spender' in e ? (
+                    <div className="flex flex-col ml-[8px]">
+                      <div className="text-13 font-medium leading-[15px] mb-2">
+                        {e.contract_name}
+                      </div>
+                      <NameAndAddress
+                        className="justify-start"
+                        address={e.contract_id || (e as NFTApproval).id}
+                      />
                     </div>
-                    <NameAndAddress
-                      className="justify-start"
-                      address={e.contract_id || (e as NFTApproval).id}
+                  ) : (
+                    <div className="ml-[8px] text-13 font-medium leading-[15px]">
+                      {e.symbol}
+                    </div>
+                  )}
+
+                  <div className="ml-auto">
+                    <img
+                      src={
+                        selectedList.includes(index)
+                          ? IconChecked
+                          : IconNotChecked
+                      }
+                      className="icon icon-checked"
                     />
                   </div>
-                ) : (
-                  <div className="ml-[8px] text-13 font-medium leading-[15px]">
-                    {e.symbol}
-                  </div>
-                )}
-
-                <div className="ml-auto">
-                  <img
-                    src={
-                      selectedList.includes(index)
-                        ? IconChecked
-                        : IconNotChecked
-                    }
-                    className="icon icon-checked"
-                  />
                 </div>
               </div>
             );
@@ -200,7 +207,7 @@ export const RevokeApprovalDrawer = (props: {
       <div
         className={clsx(
           'absolute flex flex-col items-center justify-center bg-white left-0 bottom-0 w-full',
-          selectedList.length > 1 ? 'h-[115]' : 'h-[84px]'
+          selectedList.length > 1 ? 'h-[115px]' : 'h-[84px]'
         )}
       >
         {selectedList.length > 1 && (
