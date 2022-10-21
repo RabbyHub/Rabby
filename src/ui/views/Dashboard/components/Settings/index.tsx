@@ -222,19 +222,19 @@ const Settings = ({ visible, onClose }: SettingsProps) => {
   };
 
   const renderData = [
-    {
-      leftIcon: IconAddressManagement,
-      content: t('AddressManagement'),
-      onClick: () => {
-        ReactGA.event({
-          category: 'Setting',
-          action: 'clickToUse',
-          label: 'adddressManagement',
-        });
-        reportSettings('addressManagement');
-        history.push('/settings/address');
-      },
-    },
+    // {
+    //   leftIcon: IconAddressManagement,
+    //   content: t('AddressManagement'),
+    //   onClick: () => {
+    //     ReactGA.event({
+    //       category: 'Setting',
+    //       action: 'clickToUse',
+    //       label: 'adddressManagement',
+    //     });
+    //     reportSettings('addressManagement');
+    //     history.push('/settings/address');
+    //   },
+    // },
     {
       leftIcon: IconContacts,
       content: t('Contacts'),
