@@ -15,7 +15,6 @@ import {
   KEYRING_TYPE,
   KEYRING_TYPE_TEXT,
   WALLET_BRAND_CONTENT,
-  SWAP_CONTRACT_APPROVED_LIST,
 } from 'consts';
 import cloneDeep from 'lodash/cloneDeep';
 import uniqBy from 'lodash/uniqBy';
@@ -167,7 +166,6 @@ const Dashboard = () => {
   const [connectionAnimation, setConnectionAnimation] = useState('');
   const [nftType, setNFTType] = useState<'collection' | 'nft'>('collection');
   const [pendingApprovalCount, setPendingApprovalCount] = useState(0);
-  const [showSwapApproveAlert, setShowSwapApproveAlert] = useState(false);
 
   const [startAnimate, setStartAnimate] = useState(false);
   const isGnosis = useRabbyGetter((s) => s.chains.isCurrentAccountGnosis);
@@ -231,16 +229,6 @@ const Dashboard = () => {
       dispatch.accountToDisplay.getAllAccountsToDisplay();
       const pendingCount = await wallet.getPendingApprovalCount();
       setPendingApprovalCount(pendingCount);
-      const accounts = await wallet.getAllVisibleAccountsArray();
-      if (
-        accounts.find((account) =>
-          SWAP_CONTRACT_APPROVED_LIST.map((addr) =>
-            addr.toLowerCase()
-          ).includes(account.address.toLowerCase())
-        )
-      ) {
-        setShowSwapApproveAlert(true);
-      }
     })();
   }, []);
 
@@ -606,10 +594,6 @@ const Dashboard = () => {
     setTokens(sortTokensByPrice(newTokenList));
   };
 
-  const handleClickSwapApprovedAlert = () => {
-    openInTab('https://twitter.com/Rabby_io/status/1579877793642737665');
-  };
-
   useEffect(() => {
     if (!showNFT) {
       setNFTType('collection');
@@ -632,14 +616,6 @@ const Dashboard = () => {
         })}
       >
         <div className={clsx('main', showChain && 'show-chain-bg')}>
-          {showSwapApproveAlert && (
-            <div className="swap-approved-alert">
-              Danger: Approval risks detected,{' '}
-              <a href="javascript:;" onClick={handleClickSwapApprovedAlert}>
-                Check Official Twitter Here
-              </a>
-            </div>
-          )}
           {currentAccount && (
             <div
               className={clsx('flex header items-center relative', topAnimate)}
