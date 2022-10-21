@@ -202,6 +202,7 @@ const ApprovalManage = () => {
           placeholder={t('Search contract address')}
           value={value}
           onChange={(e) => setValue(e.target.value)}
+          spellCheck={false}
         />
         <div className="mt-[16px] mb-[12px] text-12 text-gray-subTitle">
           You have approvals for the following contracts

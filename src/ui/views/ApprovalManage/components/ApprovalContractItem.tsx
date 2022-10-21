@@ -7,7 +7,7 @@ import {
 import { NameAndAddress } from '@/ui/component';
 import { IconWithChain } from '@/ui/component/TokenWithChain';
 import clsx from 'clsx';
-import React from 'react';
+import React, { MouseEventHandler } from 'react';
 import { useEffect, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import IconUnknown from 'ui/assets/icon-unknown-1.svg';
@@ -34,8 +34,10 @@ export const ApprovalContractItem = ({
   const { t } = useTranslation();
   const item = data[index];
 
-  const handleClick = () => {
-    onSelect?.(item);
+  const handleClick: MouseEventHandler<HTMLDivElement> = (e) => {
+    if ((e.target as HTMLElement)?.id !== 'copyIcon') {
+      onSelect?.(item);
+    }
   };
 
   useEffect(() => {
@@ -90,13 +92,17 @@ export const ApprovalContractItem = ({
         <div className="pb-[12px]">
           <Alert
             className={clsx(
-              'mx-[16px]  rounded-[4px] p-[8px] text-12 text-white',
+              'mx-[16px]  rounded-[4px] p-[8px]',
               item.risk_level === 'danger' ? 'bg-[#ec5151]' : 'bg-orange'
             )}
-            icon={<InfoCircleOutlined className="text-white" />}
+            icon={
+              <InfoCircleOutlined className="text-white pt-[4px] self-start" />
+            }
             banner
-            message={item.risk_alert}
-            type={item.risk_level === 'danger' ? 'error' : 'warning'}
+            message={
+              <span className="text-12 text-white">{item.risk_alert}</span>
+            }
+            type={'error'}
           />
         </div>
       )}

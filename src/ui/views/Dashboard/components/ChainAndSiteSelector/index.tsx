@@ -30,6 +30,7 @@ import { RecentConnections, Settings } from '../index';
 import './style.less';
 import { CHAINS_ENUM } from '@/constant';
 import { useAsync } from 'react-use';
+import { useRabbySelector } from '@/ui/store';
 
 export default ({
   pendingTxCount,
@@ -79,23 +80,29 @@ export default ({
   );
   const wallet = useWallet();
 
-  const [approvalRiskAlert, setApprovalRiskAlert] = useState(false);
+  const account = useRabbySelector((state) => state.account.currentAccount);
+
+  const [approvalRiskAlert, setApprovalRiskAlert] = useState(0);
+
   const { value: approvalState } = useAsync(async () => {
-    const account = await wallet.getCurrentAccount();
-    const data = await wallet.openapi.approvalStatus(account!.address);
-    return data;
-  }, [wallet]);
+    if (account?.address) {
+      const data = await wallet.openapi.approvalStatus(account.address);
+      return data;
+    }
+    return;
+  }, [account?.address]);
 
   useEffect(() => {
     if (approvalState) {
       setApprovalRiskAlert(
-        approvalState.some(
-          (e) =>
-            e.token_approval_danger_cnt > 0 || e.nft_approval_danger_cnt > 0
+        approvalState.reduce(
+          (pre, now) =>
+            pre + now.nft_approval_danger_cnt + now.token_approval_danger_cnt,
+          0
         )
       );
     } else {
-      setApprovalRiskAlert(false);
+      setApprovalRiskAlert(0);
     }
   }, [approvalState]);
 
@@ -191,6 +198,7 @@ export default ({
     content: string;
     onClick: import('react').MouseEventHandler<HTMLElement>;
     badge?: number;
+    badgeAlert?: boolean;
     iconSpin?: boolean;
     hideForGnosis?: boolean;
     showAlert?: boolean;
@@ -198,7 +206,7 @@ export default ({
     disableReason?: string;
   };
 
-  const panelItems = {
+  const panelItems: Record<string, IPanelItem> = {
     swap: {
       icon: IconSwap,
       content: 'Swap',
@@ -262,7 +270,8 @@ export default ({
       onClick: () => {
         history.push('/approval-manage');
       },
-      showAlert: approvalRiskAlert,
+      badge: approvalRiskAlert,
+      badgeAlert: approvalRiskAlert > 0,
     },
     settings: {
       icon: IconSetting,
@@ -343,7 +352,11 @@ export default ({
                   <img src={IconAlertRed} className="icon icon-alert" />
                 )}
                 {item.badge ? (
-                  <Badge count={item.badge} size="small">
+                  <Badge
+                    count={item.badge}
+                    size="small"
+                    className={item.badgeAlert ? 'alert' : ''}
+                  >
                     <img
                       src={item.icon}
                       className={[item.iconSpin && 'icon-spin', 'images']

@@ -140,12 +140,14 @@ export const RevokeApprovalDrawer = (props: {
                     ? 'border-gray-divider'
                     : 'border-transparent rounded-b-[6px]'
                 )}
-                onClick={() => {
-                  setSelectedList((l) =>
-                    l.includes(index)
-                      ? l.filter((e) => e !== index)
-                      : [...l, index]
-                  );
+                onClick={(e) => {
+                  if ((e.target as HTMLElement)?.id !== 'copyIcon') {
+                    setSelectedList((l) =>
+                      l.includes(index)
+                        ? l.filter((e) => e !== index)
+                        : [...l, index]
+                    );
+                  }
                 }}
               >
                 {'logo_url' in e ? (
