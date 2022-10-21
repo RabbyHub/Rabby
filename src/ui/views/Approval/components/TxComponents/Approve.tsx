@@ -237,7 +237,6 @@ const Approve = ({
   }, []);
 
   const bfInfo = useBalanceChange(data);
-  console.log('detail', detail);
   const ExceedsAccountBalance = useMemo(() => {
     if (
       balance === null ||
