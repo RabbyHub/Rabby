@@ -23,17 +23,13 @@ import IconGasTopUp from 'ui/assets/dashboard/gas-top-up.svg';
 import IconTransactions from 'ui/assets/dashboard/transactions.png';
 import IconWidget from 'ui/assets/dashboard/widget.svg';
 import IconDrawer from 'ui/assets/drawer.png';
-import {
-  getCurrentConnectSite,
-  splitNumberByStep,
-  useWallet,
-  useWalletOld,
-} from 'ui/utils';
+import { getCurrentConnectSite, splitNumberByStep, useWallet } from 'ui/utils';
 import { CurrentConnection } from '../CurrentConnection';
 import ChainSelectorModal from 'ui/component/ChainSelector/Modal';
-import { RecentConnections, Security, Settings } from '../index';
+import { RecentConnections, Settings } from '../index';
 import './style.less';
 import { CHAINS_ENUM } from '@/constant';
+import { useAsync } from 'react-use';
 
 export default ({
   pendingTxCount,
@@ -81,7 +77,27 @@ export default ({
   const [isShowReceiveModal, setIsShowReceiveModal] = useState(
     trigger === 'receive' && showChainsModal
   );
-  const wallet = useWalletOld();
+  const wallet = useWallet();
+
+  const [approvalRiskAlert, setApprovalRiskAlert] = useState(false);
+  const { value: approvalState } = useAsync(async () => {
+    const account = await wallet.getCurrentAccount();
+    const data = await wallet.openapi.approvalStatus(account!.address);
+    return data;
+  }, [wallet]);
+
+  useEffect(() => {
+    if (approvalState) {
+      setApprovalRiskAlert(
+        approvalState.some(
+          (e) =>
+            e.token_approval_danger_cnt > 0 || e.nft_approval_danger_cnt > 0
+        )
+      );
+    } else {
+      setApprovalRiskAlert(false);
+    }
+  }, [approvalState]);
 
   const getConnectedSites = async () => {
     const sites = await wallet.getRecentConnectedSites();
@@ -242,8 +258,11 @@ export default ({
     },
     security: {
       icon: IconSecurity,
-      content: 'Security',
-      onClick: changeSecurity,
+      content: 'Approval',
+      onClick: () => {
+        history.push('/approval-manage');
+      },
+      showAlert: approvalRiskAlert,
     },
     settings: {
       icon: IconSetting,
@@ -395,7 +414,6 @@ export default ({
       />
       <Settings visible={settingVisible} onClose={changeSetting} />
       <RecentConnections visible={urlVisible} onClose={changeURL} />
-      <Security visible={securityVisible} onClose={changeSecurity} />
     </div>
   );
 };

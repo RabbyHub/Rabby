@@ -67,6 +67,7 @@ import buildUnserializedTransaction from '@/utils/optimism/buildUnserializedTran
 import BigNumber from 'bignumber.js';
 import * as Sentry from '@sentry/browser';
 import { addHexPrefix, intToHex, unpadHexString } from 'ethereumjs-util';
+import PQueue from 'p-queue';
 
 const stashKeyrings: Record<string | number, any> = {};
 
@@ -635,7 +636,7 @@ export class WalletController extends BaseController {
       chainServerId: string;
       contractId: string;
       spender: string;
-      abi: 'ERC721' | 'ERC1155';
+      abi: 'ERC721' | 'ERC1155' | '';
       isApprovedForAll: boolean;
       tokenId: string | null | undefined;
     },
@@ -2224,6 +2225,54 @@ export class WalletController extends BaseController {
   getNeedSwitchWalletCheck = preferenceService.getNeedSwitchWalletCheck;
 
   updateNeedSwitchWalletCheck = preferenceService.updateNeedSwitchWalletCheck;
+
+  revoke = async ({
+    list,
+  }: {
+    list: (
+      | {
+          chainServerId: string;
+          contractId: string;
+          spender: string;
+          abi: 'ERC721' | 'ERC1155' | '';
+          tokenId: string | null | undefined;
+          isApprovedForAll: boolean;
+        }
+      | {
+          chainServerId: string;
+          id: string;
+          spender: string;
+        }
+    )[];
+  }) => {
+    const revokeList = list.map((e) => async () => {
+      try {
+        if ('tokenId' in e) {
+          await this.revokeNFTApprove(e);
+        } else {
+          await this.approveToken(e.chainServerId, e.id, e.spender, 0, {
+            ga: {
+              category: 'Security',
+              source: 'tokenApproval',
+            },
+          });
+        }
+      } catch (error) {
+        console.error('revoke error', e);
+      }
+    });
+
+    const queue = new PQueue({
+      autoStart: true,
+      concurrency: 1,
+      timeout: undefined,
+    });
+    try {
+      await queue.addAll(revokeList);
+    } catch (error) {
+      console.log('revoke error', error);
+    }
+  };
 }
 
 export default new WalletController();

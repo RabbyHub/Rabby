@@ -11,7 +11,7 @@ import IconArrowRight from 'ui/assets/approval/edit-arrow-right.svg';
 import IconCopy from 'ui/assets/component/icon-copy.svg';
 import IconSuccess from 'ui/assets/success.svg';
 import IconUnknownProtocol from 'ui/assets/unknown-protocol.svg';
-import { AddressViewer, Popup } from 'ui/component';
+import { AddressViewer, Popup, TokenWithChain } from 'ui/component';
 import { ellipsisOverflowedText, useWallet, useWalletOld } from 'ui/utils';
 import { splitNumberByStep } from 'ui/utils/number';
 import { getCustomTxParamsData } from 'ui/utils/transaction';
@@ -19,6 +19,7 @@ import BalanceChange from './BalanceChange';
 import SpeedUpCorner from './SpeedUpCorner';
 import ViewRawModal from './ViewRawModal';
 import useBalanceChange from '@/ui/hooks/useBalanceChange';
+import { InfoCircleOutlined } from '@ant-design/icons';
 
 interface ApproveProps {
   data: ExplainTxResponse;
@@ -260,45 +261,62 @@ const Approve = ({
       <div className="action-card">
         <div className="common-detail-block">
           {isSpeedUp && <SpeedUpCorner />}
-          <p className="title">{t('Token Approval')}</p>
-          <div className="block-field">
-            <span className="label">{t('Amount')}</span>
-            <div className="value">
-              <div
-                className="token-info"
-                title={splitNumberByStep(tokenAmount)}
+          <p className="title mb-[20px]">{t('Token Approval')}</p>
+          <div className="block-field flex flex-col bg-gray-bg2 rounded px-[12px]">
+            <div className="flex justify-between pt-[16px] text-13 font-medium leading-[15px] mb-[8px]">
+              <span className="text-gray-title">Approval amount</span>
+              <span
+                className="text-blue-light cursor-pointer text"
+                onClick={handleEditApproveAmount}
               >
-                <span>
+                {t('Edit')}
+              </span>
+            </div>
+            <div className="flex justify-between items-center pb-[12px]">
+              <div className="flex">
+                <TokenWithChain
+                  hideConer
+                  width={'20px'}
+                  height={'20px'}
+                  token={detail.token}
+                />
+                <span
+                  className="ml-[6px]"
+                  title={tokenAmount + ' ' + detail.token_symbol}
+                >
                   {ellipsisOverflowedText(
                     splitNumberByStep(tokenAmount),
                     15,
                     true
-                  )}{' '}
+                  )}
                   <span title={detail.token_symbol}>
                     {ellipsisOverflowedText(detail.token_symbol, 4)}
-                  </span>
+                  </span>{' '}
                 </span>
-                {!isGnosis && (
-                  <Button
-                    type="link"
-                    onClick={handleEditApproveAmount}
-                    className="edit-btn"
-                  >
-                    {t('Edit')}
-                  </Button>
-                )}
               </div>
               <div
                 className="token-value"
                 title={splitNumberByStep(totalTokenPrice)}
               >
-                ≈ $
+                $
                 {ellipsisOverflowedText(
                   splitNumberByStep(totalTokenPrice),
                   18,
                   true
                 )}
               </div>
+            </div>
+
+            <div className="flex justify-between items-center text-13 py-[10px] border-t border-gray-divider overflow-hidden overflow-ellipsis whitespace-nowrap">
+              <div className="flex flex-1 items-center text-gray-content">
+                <InfoCircleOutlined />
+                <span className="ml-[4px]">Exceeds account balance</span>
+              </div>
+
+              <span className="underline text-gray-content pl-[10px] overflow-hidden overflow-ellipsis whitespace-nowrap">
+                Balance:
+                {splitNumberByStep(new BigNumber(balance || 0).toFixed(4))}
+              </span>
             </div>
           </div>
           <div className="block-field mb-0">
