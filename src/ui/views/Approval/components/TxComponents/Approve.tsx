@@ -5,7 +5,7 @@ import BigNumber from 'bignumber.js';
 import ClipboardJS from 'clipboard';
 import clsx from 'clsx';
 import { CHAINS, CHAINS_ENUM, KEYRING_TYPE } from 'consts';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import IconArrowRight from 'ui/assets/approval/edit-arrow-right.svg';
 import IconCopy from 'ui/assets/component/icon-copy.svg';
@@ -238,6 +238,33 @@ const Approve = ({
 
   const bfInfo = useBalanceChange(data);
 
+  const ExceedsAccountBalance = useMemo(() => {
+    if (
+      balance === null ||
+      new BigNumber(balance || 0).minus(detail.token_amount).abs().lt(1e-17)
+    ) {
+      return null;
+    }
+    return (
+      <div className="flex justify-between items-center text-13 py-[10px] border-t border-gray-divider overflow-hidden overflow-ellipsis whitespace-nowrap">
+        <div className="flex flex-1 items-center text-gray-content">
+          <InfoCircleOutlined />
+          <span className="ml-[4px]">Exceeds account balance</span>
+        </div>
+
+        <span
+          className="underline text-gray-content pl-[10px] overflow-hidden overflow-ellipsis whitespace-nowrap cursor-pointer"
+          onClick={() => {
+            handleApproveAmountChange(balance || '0');
+          }}
+        >
+          Balance:
+          {splitNumberByStep(new BigNumber(balance || 0).toFixed(4))}
+        </span>
+      </div>
+    );
+  }, [balance, detail.token_amount]);
+
   return (
     <div
       className={clsx(
@@ -279,6 +306,7 @@ const Approve = ({
                   width={'20px'}
                   height={'20px'}
                   token={detail.token}
+                  hideChainIcon
                 />
                 <span
                   className="ml-[6px]"
@@ -306,18 +334,7 @@ const Approve = ({
                 )}
               </div>
             </div>
-
-            <div className="flex justify-between items-center text-13 py-[10px] border-t border-gray-divider overflow-hidden overflow-ellipsis whitespace-nowrap">
-              <div className="flex flex-1 items-center text-gray-content">
-                <InfoCircleOutlined />
-                <span className="ml-[4px]">Exceeds account balance</span>
-              </div>
-
-              <span className="underline text-gray-content pl-[10px] overflow-hidden overflow-ellipsis whitespace-nowrap">
-                Balance:
-                {splitNumberByStep(new BigNumber(balance || 0).toFixed(4))}
-              </span>
-            </div>
+            {ExceedsAccountBalance}
           </div>
           <div className="block-field mb-0">
             <span className="label flex items-center">{t('Approve to')}</span>

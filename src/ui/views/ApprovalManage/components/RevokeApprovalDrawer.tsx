@@ -117,7 +117,7 @@ export const RevokeApprovalDrawer = (props: {
           <ApprovalContractItem data={[item]} index={0} />
         </div>
 
-        <section className="mb-[8px] flex justify-between items-center">
+        <section className="mb-[6px] flex justify-between items-center">
           <span className="text-12 text-gray-title">
             {t('Approved Token and NFT')}
           </span>
@@ -129,12 +129,17 @@ export const RevokeApprovalDrawer = (props: {
           </div>
         </section>
 
-        <section className="max-h-[364px] overflow-hidden overflow-y-scroll rounded-[6px] bg-white">
+        <section className="max-h-[364px] overflow-hidden overflow-y-scroll rounded-[6px] pb-[40px]">
           {item.list.map((e, index) => {
             return (
               <div
                 key={index}
-                className="h-[51px] px-[16px] flex justify-between items-center  border-b border-gray-divider cursor-pointer"
+                className={clsx(
+                  'h-[51px] px-[16px] flex justify-between items-center bg-white  border-b  cursor-pointer',
+                  index !== item.list.length - 1
+                    ? 'border-gray-divider'
+                    : 'border-transparent rounded-b-[6px]'
+                )}
                 onClick={() => {
                   setSelectedList((l) =>
                     l.includes(index)
@@ -171,7 +176,7 @@ export const RevokeApprovalDrawer = (props: {
                   </div>
                 ) : (
                   <div className="ml-[8px] text-13 font-medium leading-[15px]">
-                    {e.name}
+                    {e.symbol}
                   </div>
                 )}
 
