@@ -6,7 +6,7 @@ import {
   preferenceService,
 } from 'background/service';
 import providerController from './controller';
-import { gaRequestEvent } from '@/background/utils/ga-request';
+import { matomoRequestEvent } from '@/background/utils/matomo-request';
 
 const networkIdMap: {
   [key: string]: string;
@@ -58,7 +58,7 @@ const hasOtherProvider = () => {
   preferenceService.setHasOtherProvider(true);
   const isRabby = preferenceService.getIsDefaultWallet();
   setPopupIcon(isRabby ? 'rabby' : 'metamask');
-  gaRequestEvent({
+  matomoRequestEvent({
     category: 'User',
     action: 'hasMetaMask',
   });

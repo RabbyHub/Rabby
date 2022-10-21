@@ -33,15 +33,7 @@ import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import { setPopupIcon } from './utils';
 import { getSentryEnv } from '@/utils/env';
-import ReactGA from 'react-ga';
-import { gaRequestEvent } from './utils/ga-request';
-
-ReactGA.initialize('UA-199755108-3', { debug: true });
-// eslint-disable-next-line @typescript-eslint/no-empty-function
-ReactGA.set({ checkProtocolTask: function () {} });
-ReactGA.set({ appName: 'Rabby' });
-ReactGA.set({ appVersion: process.env.release });
-// ReactGA.plugin.require('displayfeatures');
+import { matomoRequestEvent } from './utils/matomo-request';
 
 dayjs.extend(utc);
 
@@ -128,13 +120,13 @@ restoreAppState();
         return;
       }
       const contacts = contactBookService.listContacts();
-      gaRequestEvent({
+      matomoRequestEvent({
         category: 'User',
         action: 'contactBook',
         label: contacts.length.toString(),
       });
       const chains = preferenceService.getSavedChains();
-      gaRequestEvent({
+      matomoRequestEvent({
         category: 'User',
         action: 'pinnedChains',
         label: chains.join(','),
@@ -156,7 +148,7 @@ restoreAppState();
         return `${item.category}_${item.action}_${item.label}`;
       });
       Object.values(groups).forEach((group) => {
-        gaRequestEvent({
+        matomoRequestEvent({
           ...group[0],
           value: group.length,
         });
@@ -189,7 +181,7 @@ restoreAppState();
 
 // for page provider
 browser.runtime.onConnect.addListener((port) => {
-  gaRequestEvent({
+  matomoRequestEvent({
     category: 'User',
     action: 'enable',
   });

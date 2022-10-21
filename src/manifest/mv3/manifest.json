@@ -62,7 +62,8 @@
       "resources": [
         "user-media-permission.html",
         "pageProvider.js",
-        "vendor/ga.js"
+        "vendor/matomo.js",
+        "/vendor/matomo.client.js"
       ],
       "matches": ["<all_urls>"]
     }
