@@ -135,8 +135,10 @@ export const RevokeApprovalDrawer = (props: {
               <div
                 key={index}
                 className={clsx(
-                  'px-[16px] bg-white cursor-pointer',
-                  index !== item.list.length - 1 && 'rounded-b-[6px]'
+                  'relative px-[16px] h-[51px] flex justify-between items-center bg-white cursor-pointer  border border-transparent  hover:border-blue-light  hover:bg-blue-light hover:bg-opacity-[0.1] hover:rounded-[6px] hover:z-10',
+                  index === item.list.length - 1 && 'rounded-b-[6px]',
+                  index !== item.list.length - 1 &&
+                    'after:absolute after:h-[1px] after:left-[16px] after:right-[16px] after:bottom-0 after:bg-gray-divider'
                 )}
                 onClick={(e) => {
                   if ((e.target as HTMLElement)?.id !== 'copyIcon') {
@@ -148,56 +150,47 @@ export const RevokeApprovalDrawer = (props: {
                   }
                 }}
               >
-                <div
-                  className={clsx(
-                    'h-[51px] flex justify-between items-center border-b',
-                    index !== item.list.length - 1
-                      ? 'border-gray-divider'
-                      : 'border-transparent '
-                  )}
-                >
-                  {'logo_url' in e ? (
-                    <TokenWithChain
-                      token={(e as unknown) as TokenItem}
-                      hideConer
-                      hideChainIcon
-                    />
-                  ) : (
-                    <NFTAvatar
-                      className="w-[24px] h-[24px]"
-                      type={(e as NFTApproval)?.content_type}
-                      content={(e as NFTApproval)?.content}
-                      thumbnail
-                      unknown={IconUnknownNFT}
-                    />
-                  )}
-                  {/* <div className=""> */}
-                  {'spender' in e ? (
-                    <div className="flex flex-col ml-[8px]">
-                      <div className="text-13 font-medium leading-[15px] mb-2">
-                        {e.contract_name}
-                      </div>
-                      <NameAndAddress
-                        className="justify-start"
-                        address={e.contract_id || (e as NFTApproval).id}
-                      />
+                {'logo_url' in e ? (
+                  <TokenWithChain
+                    token={(e as unknown) as TokenItem}
+                    hideConer
+                    hideChainIcon
+                  />
+                ) : (
+                  <NFTAvatar
+                    className="w-[24px] h-[24px]"
+                    type={(e as NFTApproval)?.content_type}
+                    content={(e as NFTApproval)?.content}
+                    thumbnail
+                    unknown={IconUnknownNFT}
+                  />
+                )}
+                {/* <div className=""> */}
+                {'spender' in e ? (
+                  <div className="flex flex-col ml-[8px]">
+                    <div className="text-13 font-medium leading-[15px] mb-2">
+                      {e.contract_name}
                     </div>
-                  ) : (
-                    <div className="ml-[8px] text-13 font-medium leading-[15px]">
-                      {e.symbol}
-                    </div>
-                  )}
-
-                  <div className="ml-auto">
-                    <img
-                      src={
-                        selectedList.includes(index)
-                          ? IconChecked
-                          : IconNotChecked
-                      }
-                      className="icon icon-checked"
+                    <NameAndAddress
+                      className="justify-start"
+                      address={e.contract_id || (e as NFTApproval).id}
                     />
                   </div>
+                ) : (
+                  <div className="ml-[8px] text-13 font-medium leading-[15px]">
+                    {e.symbol}
+                  </div>
+                )}
+
+                <div className="ml-auto">
+                  <img
+                    src={
+                      selectedList.includes(index)
+                        ? IconChecked
+                        : IconNotChecked
+                    }
+                    className="icon icon-checked"
+                  />
                 </div>
               </div>
             );

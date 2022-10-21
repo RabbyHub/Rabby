@@ -85,7 +85,12 @@ export const ApprovalContractItem = ({
         </div>
 
         {onSelect && (
-          <IconArrowRight className="token-approval-item-arrow ml-auto" />
+          <IconArrowRight
+            width={20}
+            height={20}
+            viewBox="0 0 12 12"
+            className="token-approval-item-arrow ml-auto"
+          />
         )}
       </div>
       {item.risk_level !== 'safe' && (

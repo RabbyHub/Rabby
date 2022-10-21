@@ -257,6 +257,7 @@ const Approve = ({
           onClick={() => {
             handleApproveAmountChange(balance || '0');
           }}
+          title={balance}
         >
           Balance:
           {splitNumberByStep(new BigNumber(balance || 0).toFixed(4))}
@@ -314,7 +315,7 @@ const Approve = ({
                 >
                   {ellipsisOverflowedText(
                     splitNumberByStep(tokenAmount),
-                    15,
+                    12,
                     true
                   )}
                   <span title={detail.token_symbol}>
