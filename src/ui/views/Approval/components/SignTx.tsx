@@ -811,12 +811,15 @@ const SignTx = ({ params, origin }: SignTxProps) => {
   };
 
   const explainTx = async (address: string) => {
-    const recommendNonce = await getRecommendNonce({
-      tx,
-      wallet,
-      chainId,
-    });
-    setRecommendNonce(recommendNonce);
+    let recommendNonce = '0x0';
+    if (!isGnosisAccount) {
+      recommendNonce = await getRecommendNonce({
+        tx,
+        wallet,
+        chainId,
+      });
+      setRecommendNonce(recommendNonce);
+    }
     if (updateNonce && !isGnosisAccount) {
       setRealNonce(recommendNonce);
     } // do not overwrite nonce if from === to(cancel transaction)
@@ -1173,6 +1176,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     const networkId = await wallet.getGnosisNetworkId(currentAccount.address);
     const safeInfo = await Safe.getSafeInfo(currentAccount.address, networkId);
     setSafeInfo(safeInfo);
+    setRecommendNonce(`0x${safeInfo.nonce.toString(16)}`);
     if (Number(tx.nonce || 0) < safeInfo.nonce) {
       setTx({
         ...tx,
@@ -1180,6 +1184,13 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       });
     }
     if (Number(realNonce || 0) < safeInfo.nonce) {
+      setRealNonce(`0x${safeInfo.nonce.toString(16)}`);
+    }
+    if (tx.nonce === undefined || tx.nonce === null) {
+      setTx({
+        ...tx,
+        nonce: `0x${safeInfo.nonce.toString(16)}`,
+      });
       setRealNonce(`0x${safeInfo.nonce.toString(16)}`);
     }
   };
