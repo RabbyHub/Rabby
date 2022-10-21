@@ -25,7 +25,7 @@ export interface TransactionGroup {
   createdAt: number;
   explain: ObjectType.Merge<
     ExplainTxResponse,
-    { approvalId: number; calcSuccess: boolean }
+    { approvalId: string; calcSuccess: boolean }
   >;
   isFailed: boolean;
   isSubmitFailed?: boolean;
@@ -39,7 +39,7 @@ interface TxHistoryStore {
   cacheExplain: {
     [key: string]: ObjectType.Merge<
       TransactionGroup['explain'],
-      { approvalId: number; calcSuccess: boolean }
+      { approvalId: string; calcSuccess: boolean }
     >;
   };
 }
@@ -407,7 +407,7 @@ class TxHistory {
     chainId: number;
     nonce: number;
     explain: ExplainTxResponse;
-    approvalId: number;
+    approvalId: string;
     calcSuccess: boolean;
   }) {
     const key = `${address.toLowerCase()}-${chainId}-${nonce}`;
@@ -417,7 +417,7 @@ class TxHistory {
     };
   }
 
-  getExplainCacheByApprovalId(approvalId: number) {
+  getExplainCacheByApprovalId(approvalId: string) {
     return Object.values(this.store.cacheExplain).find(
       (item) => item.approvalId === approvalId
     );

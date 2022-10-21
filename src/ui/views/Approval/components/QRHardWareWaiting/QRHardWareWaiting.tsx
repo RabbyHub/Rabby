@@ -55,7 +55,7 @@ const QRHardWareWaiting = ({ params }) => {
     );
     eventBus.addEventListener(EVENTS.SIGN_FINISHED, async (data) => {
       if (data.success) {
-        resolveApproval(data.data, !isSignText);
+        resolveApproval(data.data, !isSignText, false, approval.id);
       } else {
         rejectApproval(data.errorMsg);
       }

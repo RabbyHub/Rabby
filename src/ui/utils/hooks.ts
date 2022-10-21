@@ -15,12 +15,13 @@ export const useApproval = () => {
   const resolveApproval = async (
     data?: any,
     stay = false,
-    forceReject = false
+    forceReject = false,
+    approvalId?: string
   ) => {
     const approval = await getApproval();
 
     if (approval) {
-      wallet.resolveApproval(data, forceReject);
+      wallet.resolveApproval(data, forceReject, approvalId);
     }
     if (stay) {
       return;

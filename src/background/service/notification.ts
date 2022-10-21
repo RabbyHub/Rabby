@@ -1,6 +1,7 @@
 import { browser } from 'webextension-polyfill-ts';
 import Events from 'events';
 import { ethErrors } from 'eth-rpc-errors';
+import { v4 as uuidv4 } from 'uuid';
 import { EthereumProviderError } from 'eth-rpc-errors/dist/classes';
 import { winMgr } from 'background/webapi';
 import { CHAINS, KEYRING_CATEGORY_MAP, IS_LINUX, IS_CHROME } from 'consts';
@@ -13,7 +14,7 @@ type IApprovalComponents = typeof import('@/ui/views/Approval/components');
 type IApprovalComponent = IApprovalComponents[keyof IApprovalComponents];
 
 export interface Approval {
-  id: number;
+  id: string;
   taskId: number | null;
   data: {
     params?: import('react').ComponentProps<IApprovalComponent>['params'];
@@ -31,6 +32,9 @@ const QUEUE_APPROVAL_COMPONENTS_WHITELIST = [
   'SignTx',
   'SignText',
   'SignTypedData',
+  'LedgerHardwareWaiting',
+  'QRHardWareWaiting',
+  'WatchAdrressWaiting',
 ];
 
 // something need user approval in window
@@ -116,7 +120,12 @@ class NotificationService extends Events {
 
   getApproval = () => this.currentApproval;
 
-  resolveApproval = async (data?: any, forceReject = false) => {
+  resolveApproval = async (
+    data?: any,
+    forceReject = false,
+    approvalId?: string
+  ) => {
+    if (approvalId && approvalId !== this.currentApproval?.id) return;
     if (forceReject) {
       this.currentApproval?.reject &&
         this.currentApproval?.reject(
@@ -163,7 +172,7 @@ class NotificationService extends Events {
 
   requestApproval = async (data, winProps?): Promise<any> => {
     const currentAccount = preferenceService.getCurrentAccount();
-    const reportExplain = (approvalId: number) => {
+    const reportExplain = (approvalId: string) => {
       const explain = transactionHistoryService.getExplainCacheByApprovalId(
         approvalId
       );
@@ -180,7 +189,7 @@ class NotificationService extends Events {
       }
     };
     return new Promise((resolve, reject) => {
-      const uuid = Date.now();
+      const uuid = uuidv4();
       const approval: Approval = {
         taskId: uuid,
         id: uuid,
