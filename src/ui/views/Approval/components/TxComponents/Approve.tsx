@@ -237,11 +237,15 @@ const Approve = ({
   }, []);
 
   const bfInfo = useBalanceChange(data);
-
+  console.log('detail', detail);
   const ExceedsAccountBalance = useMemo(() => {
     if (
       balance === null ||
-      new BigNumber(balance || 0).minus(detail.token_amount).abs().lt(1e-17)
+      new BigNumber(balance || 0).eq(
+        new BigNumber(detail.token.raw_amount_hex_str || 0)
+          .div(new BigNumber(10).pow(detail.token.decimals))
+          .toFixed()
+      )
     ) {
       return null;
     }
