@@ -160,8 +160,13 @@ const TokenDetail = ({
 
   return (
     <div className="token-detail" ref={ref}>
-      <div className="token-detail-header border-b-0 pb-24">
-        <div className="flex items-center mb-20">
+      <div
+        className={clsx(
+          'token-detail-header',
+          !DISABLE_SWAP && 'border-b-0 pb-24'
+        )}
+      >
+        <div className={clsx('flex items-center', !DISABLE_SWAP && 'mb-20')}>
           <div className="flex items-center mr-8">
             <TokenWithChain
               token={token}
@@ -223,12 +228,17 @@ const TokenDetail = ({
         {variant === 'add' && (
           <>
             {token.is_core ? (
-              <div className="alert mb-[24px]">
+              <div className={clsx('alert', !DISABLE_SWAP && 'mb-[24px]')}>
                 This token is supported by default. It will show up in your
                 wallet as long as balance &gt; 0.
               </div>
             ) : (
-              <div className="alert alert-primary mb-[24px]">
+              <div
+                className={clsx(
+                  'alert alert-primary',
+                  !DISABLE_SWAP && 'mb-[24px]'
+                )}
+              >
                 This token is not verified. Please do your <br />
                 own research before you add it.
                 {token.amount > 0 ? (
@@ -256,63 +266,70 @@ const TokenDetail = ({
           </>
         )}
 
-        <div className="flex flex-row justify-between mt-24">
-          <Tooltip
-            overlayClassName="rectangle token_swap__tooltip"
-            placement="topLeft"
-            title={
-              DISABLE_SWAP
-                ? 'Temporarily unavailable'
-                : t('The token on this chain is not supported for swap')
-            }
-            visible={
-              DISABLE_SWAP
-                ? undefined
-                : token.is_core &&
-                  RABBY_SWAP_ROUTER[getChain(token?.chain)?.enum || '']
-                ? false
-                : undefined
-            }
-          >
+        {!DISABLE_SWAP && (
+          <div className="flex flex-row justify-between mt-24">
+            <Tooltip
+              overlayClassName="rectangle token_swap__tooltip"
+              placement="topLeft"
+              title={
+                DISABLE_SWAP
+                  ? 'Temporarily unavailable'
+                  : t('The token on this chain is not supported for swap')
+              }
+              visible={
+                DISABLE_SWAP
+                  ? undefined
+                  : token.is_core &&
+                    RABBY_SWAP_ROUTER[getChain(token?.chain)?.enum || '']
+                  ? false
+                  : undefined
+              }
+            >
+              <Button
+                type="primary"
+                size="large"
+                onClick={goToSwap}
+                disabled={
+                  DISABLE_SWAP ||
+                  !token.is_core ||
+                  !RABBY_SWAP_ROUTER[getChain(token?.chain)?.enum || '']
+                }
+                style={{
+                  width: 114,
+                }}
+              >
+                Swap
+              </Button>
+            </Tooltip>
+
             <Button
               type="primary"
+              ghost
               size="large"
-              onClick={goToSwap}
-              disabled={
-                DISABLE_SWAP ||
-                !token.is_core ||
-                !RABBY_SWAP_ROUTER[getChain(token?.chain)?.enum || '']
-              }
-              style={{
-                width: 114,
-              }}
+              className="w-[114px] rabby-btn-ghost"
+              onClick={goToSend}
             >
-              Swap
+              {t('Send')}
             </Button>
-          </Tooltip>
-
-          <Button
-            type="primary"
-            ghost
-            size="large"
-            className="w-[114px] rabby-btn-ghost"
-            onClick={goToSend}
-          >
-            {t('Send')}
-          </Button>
-          <Button
-            type="primary"
-            ghost
-            size="large"
-            className="w-[114px] rabby-btn-ghost"
-            onClick={goToReceive}
-          >
-            {t('Receive')}
-          </Button>
-        </div>
+            <Button
+              type="primary"
+              ghost
+              size="large"
+              className="w-[114px] rabby-btn-ghost"
+              onClick={goToReceive}
+            >
+              {t('Receive')}
+            </Button>
+          </div>
+        )}
       </div>
 
-      <div className="token-detail-body token-txs-history pt-[0px]">
+      <div
+        className={clsx(
+          'token-detail-body token-txs-history',
+          !DISABLE_SWAP && 'pt-[0px]'
+        )}
+      >
         {data?.list.map((item) => (
           <HistoryItem
             data={item}
@@ -332,6 +349,28 @@ const TokenDetail = ({
           </div>
         )}
       </div>
+
+      {DISABLE_SWAP && (
+        <div className="token-detail-footer">
+          <Button
+            type="primary"
+            size="large"
+            className="w-[172px]"
+            onClick={goToSend}
+          >
+            {t('Send')}
+          </Button>
+          <Button
+            type="primary"
+            ghost
+            size="large"
+            className="w-[172px] rabby-btn-ghost"
+            onClick={goToReceive}
+          >
+            {t('Receive')}
+          </Button>
+        </div>
+      )}
     </div>
   );
 };
