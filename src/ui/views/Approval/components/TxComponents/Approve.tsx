@@ -267,7 +267,7 @@ const Approve = ({
         </span>
       </div>
     );
-  }, [balance, detail.token_amount]);
+  }, [balance, detail.token.raw_amount_hex_str]);
 
   return (
     <div
