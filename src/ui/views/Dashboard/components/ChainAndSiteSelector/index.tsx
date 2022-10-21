@@ -207,8 +207,7 @@ export default ({
     disableReason?: string;
   };
 
-
-  const panelItems:Record<string, IPanelItem> = {
+  const panelItems: Record<string, IPanelItem> = {
     // swap: {
     //   icon: IconSwap,
     //   content: 'Swap',
