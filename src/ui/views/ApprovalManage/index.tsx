@@ -78,8 +78,8 @@ const ApprovalManage = () => {
                 ...contract.spender,
                 list: [],
               };
-              contractMap[`${chainName}:${contractId}`].list.push(contract);
             }
+            contractMap[`${chainName}:${contractId}`].list.push(contract);
           });
           data.tokens.forEach((token) => {
             const chainName = token.chain;
@@ -89,8 +89,8 @@ const ApprovalManage = () => {
                 ...token.spender,
                 list: [],
               };
-              contractMap[`${chainName}:${contractId}`].list.push(token);
             }
+            contractMap[`${chainName}:${contractId}`].list.push(token);
           });
         }
       } catch (error) {
@@ -114,8 +114,8 @@ const ApprovalManage = () => {
                   ...spender,
                   list: [],
                 };
-                contractMap[`${chainName}:${contractId}`].list.push(token);
               }
+              contractMap[`${chainName}:${contractId}`].list.push(token);
             });
           });
         }
@@ -130,6 +130,8 @@ const ApprovalManage = () => {
 
     return contractMap;
   });
+
+  console.log('contractMap', contractMap);
 
   if (error) {
     console.log('error', error);
