@@ -262,8 +262,7 @@ const Approve = ({
           }}
           title={balance}
         >
-          Balance:
-          {splitNumberByStep(new BigNumber(balance || 0).toFixed(4))}
+          Balance: {splitNumberByStep(new BigNumber(balance || 0).toFixed(4))}
         </span>
       </div>
     );
@@ -320,7 +319,7 @@ const Approve = ({
                     splitNumberByStep(tokenAmount),
                     12,
                     true
-                  )}
+                  )}{' '}
                   <span title={detail.token_symbol}>
                     {ellipsisOverflowedText(detail.token_symbol, 4)}
                   </span>{' '}
