@@ -87,12 +87,11 @@ const ConfirmMnemonics = ({ isPopup = false }: { isPopup?: boolean }) => {
   return (
     <StrayPageWithButton
       hasDivider
-      hasBack
       onBackClick={() => {
         history.goBack();
       }}
       nextDisabled={noAnyAccountsToImport}
-      NextButtonContent={t('OK')}
+      NextButtonContent={t('Next')}
       onNextClick={async () => {
         await dispatch.importMnemonics.confirmAllImportingAccountsAsync();
 

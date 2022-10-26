@@ -13,6 +13,7 @@ import { HARDWARE_KEYRING_TYPES, WALLET_BRAND_CONTENT } from 'consts';
 import QRCodeCheckerDetail from 'ui/views/QRCodeCheckerDetail';
 import clsx from 'clsx';
 import { useMedia } from 'react-use';
+import IconBack from 'ui/assets/icon-back.svg';
 
 type Valueof<T> = T[keyof T];
 
@@ -108,7 +109,6 @@ const ImportQRCodeBase = () => {
     <StrayPageWithButton
       custom={isWide}
       form={form}
-      hasBack
       hasDivider
       noPadding
       className={clsx('import-qrcode', isWide && 'rabby-stray-page')}
@@ -117,9 +117,10 @@ const ImportQRCodeBase = () => {
       <header className="create-new-header create-password-header h-[264px] res">
         <div className="rabby-container">
           <img
-            className="rabby-logo"
-            src="/images/logo-white.svg"
-            alt="rabby logo"
+            className="icon-back z-10 relative"
+            src={IconBack}
+            alt="back"
+            onClick={handleClickBack}
           />
           <img
             className="unlock-logo w-[80px] h-[75px] mb-20 mx-auto"

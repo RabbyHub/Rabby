@@ -21,6 +21,7 @@ import IconChecked from 'ui/assets/checked.svg';
 import { useMedia } from 'react-use';
 import clsx from 'clsx';
 import { Modal } from 'ui/component';
+import IconBack from 'ui/assets/icon-back.svg';
 
 const ImportWatchAddress = () => {
   const { t } = useTranslation();
@@ -219,7 +220,6 @@ const ImportWatchAddress = () => {
       onSubmit={handleNextClick}
       spinning={loading}
       form={form}
-      hasBack
       hasDivider
       noPadding
       className={clsx('import-watchmode', isWide && 'rabby-stray-page')}
@@ -232,9 +232,10 @@ const ImportWatchAddress = () => {
       <header className="create-new-header create-password-header h-[264px] res">
         <div className="rabby-container">
           <img
-            className="rabby-logo"
-            src="/images/logo-white.svg"
-            alt="rabby logo"
+            className="icon-back z-10 relative"
+            src={IconBack}
+            alt="back"
+            onClick={handleClickBack}
           />
           <img
             className="unlock-logo w-[80px] h-[75px] mb-20 mx-auto"
@@ -313,7 +314,9 @@ const ImportWatchAddress = () => {
         onCancel={handleWalletconnectModalCancel}
         // width={360}
       >
-        <p className="guide">{t('ScanQRcodesWithWalletConnect')}</p>
+        <p className="guide">
+          {t(' Scan QR codes with WalletConnect-compatible wallets')}
+        </p>
         <div className="symbol">
           <img src={IconWalletconnect} className="icon icon-walletconnect" />
           Wallet connect
@@ -333,9 +336,7 @@ const ImportWatchAddress = () => {
         // width={360}
         destroyOnClose
       >
-        <p className="guide">
-          {t('Please point the QR code in your phone at the screen')}
-        </p>
+        <p className="guide">{t('Please scan the QR code with your camera')}</p>
         <img src={IconArrowDown} className="icon icon-arrow-down" />
         <div className="qrcode">
           <QRCodeReader

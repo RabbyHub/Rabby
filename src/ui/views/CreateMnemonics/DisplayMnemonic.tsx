@@ -5,33 +5,31 @@ import { InfoCircleOutlined } from '@ant-design/icons';
 
 import WordsMatrix from '@/ui/component/WordsMatrix';
 
-import { StrayPageWithButton } from 'ui/component';
+import { Navbar, StrayPageWithButton } from 'ui/component';
 import { useMedia } from 'react-use';
 import clsx from 'clsx';
 import { connectStore, useRabbyDispatch, useRabbySelector } from 'ui/store';
 import LessPalette from '@/ui/style/var-defs';
 import { fadeColor, styid } from '@/ui/utils/styled';
+import { useWallet } from 'ui/utils';
+import { Account } from '@/background/service/preference';
 
 import IconMaskIcon from '@/ui/assets/create-mnemonics/mask-lock.svg';
 import IconCopy from 'ui/assets/component/icon-copy.svg';
 import IconSuccess from 'ui/assets/success.svg';
 import { message } from 'antd';
 import { copyTextToClipboard } from '@/ui/utils/clipboard';
+import { generateAliasName } from '@/utils/account';
+import { BRAND_ALIAN_TYPE_TEXT, KEYRING_TYPE } from '@/constant';
+import { useHistory } from 'react-router-dom';
 
 const AlertBlock = styled.div`
   padding: 10px 12px;
   color: ${LessPalette['@color-red']};
-  background-color: ${fadeColor({ hex: LessPalette['@color-red'], fade: 10 })};
-`;
-
-const MnemonicsMask = styled.div`
-  background-color: ${fadeColor({ hex: '#000000', fade: 90 })};
-  position: absolute;
-  width: 100%;
-  height: 100%;
-  top: 0;
-  left: 0;
-  opacity: 0.9;
+  background: rgba(236, 81, 81, 0.1);
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 16px;
 `;
 
 const CopySection = styled.div`
@@ -39,6 +37,7 @@ const CopySection = styled.div`
   display: flex;
   align-items: center;
   justify-content: center;
+  line-height: 1;
 
   cursor: pointer;
 `;
@@ -67,11 +66,11 @@ const DisplayMnemonic = () => {
   const { t } = useTranslation();
   const isWide = useMedia('(min-width: 401px)');
   const dispatch = useRabbyDispatch();
+  const wallet = useWallet();
+  const history = useHistory();
   useEffect(() => {
     dispatch.createMnemonics.prepareMnemonicsAsync();
   }, []);
-
-  const [masked, setMasked] = React.useState(true);
 
   const { mnemonics } = useRabbySelector((s) => ({
     mnemonics: s.createMnemonics.mnemonics,
@@ -87,53 +86,77 @@ const DisplayMnemonic = () => {
     });
   }, [mnemonics]);
 
+  const onSubmit = React.useCallback(() => {
+    wallet
+      .createKeyringWithMnemonics(mnemonics)
+      .then(async (accounts: Account[]) => {
+        const keyring = await wallet.getKeyringByMnemonic(mnemonics);
+
+        const newAccounts = await Promise.all(
+          accounts.map(async (account) => {
+            const alianName = generateAliasName({
+              keyringType: KEYRING_TYPE.HdKeyring,
+              brandName: `${BRAND_ALIAN_TYPE_TEXT[KEYRING_TYPE.HdKeyring]}`,
+              keyringCount: Math.max(keyring!.index, 0),
+              addressCount: 0,
+            });
+
+            await wallet.updateAlianName(
+              account?.address?.toLowerCase(),
+              alianName
+            );
+
+            return {
+              ...account,
+              alianName,
+            };
+          })
+        );
+
+        history.replace({
+          pathname: '/popup/import/success',
+          state: {
+            accounts: newAccounts,
+            title: t('Created Successfully'),
+            editing: true,
+          },
+        });
+
+        dispatch.createMnemonics.reset();
+      });
+  }, [mnemonics]);
+
   return (
     <StrayPageWithButton
       custom={isWide}
       className={clsx(isWide && 'rabby-stray-page')}
-      hasBack
       hasDivider
-      onNextClick={() => {
-        dispatch.createMnemonics.stepTo('verify');
-      }}
+      onSubmit={onSubmit}
       onBackClick={async () => {
         dispatch.createMnemonics.stepTo('risk-check');
       }}
-      nextDisabled={masked}
       noPadding
+      NextButtonContent={"I've Saved the Phrase"}
     >
-      <header className="create-new-header create-mnemonics-header h-[60px] leading-[60px] py-0">
-        <h2 className="text-20 mb-0 mt-0 text-white text-center font-medium">
-          {t('Backup Seed Phrase')}
-        </h2>
-      </header>
+      <Navbar
+        onBack={async () => {
+          dispatch.createMnemonics.stepTo('risk-check');
+        }}
+      >
+        {t('Backup Seed Phrase')}
+      </Navbar>
       <div className="rabby-container">
-        <div className="px-20 pt-20">
+        <div className="px-20 pt-24">
           <AlertBlock className="flex justify-center items-center mb-20 rounded-[4px]">
             <InfoCircleOutlined className="mr-10" />
             <p className="mb-0">
               {t(
-                'When backing up the seed phrase, make sure no one else is around !'
+                'Make sure no one else is watching your screen when you back up the seed phrase'
               )}
             </p>
           </AlertBlock>
           <MnemonicsWrapper className="relative">
-            <MnemonicsMask
-              onClick={() => setMasked(false)}
-              className={clsx(
-                'rounded-[6px] flex flex-col justify-center items-center cursor-pointer z-10',
-                !masked && 'hidden'
-              )}
-            >
-              <img src={IconMaskIcon} className="w-[44px] h-[44px]" />
-              <p className="mt-[16px] mb-0 text-white">
-                {t('Click to show Seed Phrase')}
-              </p>
-            </MnemonicsMask>
-            <div
-              className="rounded-[6px] flex items-center"
-              style={masked ? { filter: 'blur(3px)' } : {}}
-            >
+            <div className="rounded-[6px] flex items-center">
               <WordsMatrix
                 focusable={false}
                 closable={false}
@@ -141,26 +164,11 @@ const DisplayMnemonic = () => {
               />
             </div>
           </MnemonicsWrapper>
-          {!masked && (
-            <CopySection onClick={onCopyMnemonics} className="pt-16 pb-16">
-              <img className="mr-6" src={IconCopy} />
+          <CopySection onClick={onCopyMnemonics} className="pt-16 pb-16">
+            <img className="mr-6" src={IconCopy} />
 
-              {'Copy seed phrase'}
-            </CopySection>
-          )}
-          <TipTextList className="text-14 pl-20">
-            <li>
-              Do not backup and save by screenshots or network transmission.
-            </li>
-            <li>
-              Do not share the seed phrase with others, as having the seed
-              phrase is the same as having control of the asset.
-            </li>
-            <li>
-              Do not uninstall Rabby easily in any case, after uninstallation,
-              the seed phrase be lost and Rabby cannot retrieve it for you.
-            </li>
-          </TipTextList>
+            {'Copy seed phrase'}
+          </CopySection>
         </div>
       </div>
     </StrayPageWithButton>

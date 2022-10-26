@@ -4,7 +4,7 @@ import { useHistory, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { DEFAULT_BRIDGE } from '@rabby-wallet/eth-walletconnect-keyring';
 import { useWalletOld as useWallet, useWalletRequest } from 'ui/utils';
-import IconBack from 'ui/assets/gobackwhite.svg';
+import IconBack from 'ui/assets/icon-back.svg';
 import { ScanCopyQRCode } from 'ui/component';
 import eventBus from '@/eventBus';
 import { WALLETCONNECT_STATUS_MAP, EVENTS } from 'consts';
@@ -152,10 +152,10 @@ const WalletConnectTemplate = () => {
 
   return (
     <div className="wallet-connect">
-      <div className="create-new-header create-password-header h-[220px]">
+      <div className="create-new-header create-password-header h-[220px] pt-[16px] pb-[30px]">
         <img
           src={IconBack}
-          className={clsx('goback', 'cursor-pointer')}
+          className="icon-back mb-0 relative z-10"
           onClick={handleClickBack}
         />
         <img

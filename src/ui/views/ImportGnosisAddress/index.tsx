@@ -14,6 +14,7 @@ import IconGnosis from 'ui/assets/walletlogo/gnosis.png';
 import { Chain } from '@/background/service/openapi';
 import './style.less';
 import clsx from 'clsx';
+import IconBack from 'ui/assets/icon-back.svg';
 
 const SUPPORT_CHAINS = [
   CHAINS_ENUM.ETH,
@@ -126,7 +127,6 @@ const ImportGnosisAddress = () => {
         className={clsx('step2', isWide && 'rabby-stray-page')}
         onSubmit={handleNextClick}
         form={form}
-        hasBack
         hasDivider
         noPadding
         onBackClick={() => setCurrentStep(1)}
@@ -137,9 +137,11 @@ const ImportGnosisAddress = () => {
         <header className="create-new-header create-password-header h-[264px] res">
           <div className="rabby-container">
             <img
-              className="rabby-logo"
-              src="/images/logo-white.svg"
-              alt="rabby logo"
+              src={IconBack}
+              className="icon-back mb-0 relative z-10"
+              onClick={() => {
+                history.goBack();
+              }}
             />
             <img
               className="unlock-logo w-[80px] h-[80px] mb-20 mx-auto"
@@ -178,7 +180,6 @@ const ImportGnosisAddress = () => {
         custom={isWide}
         className={clsx('step1', isWide && 'rabby-stray-page')}
         onSubmit={handleStep1Finish}
-        hasBack
         hasDivider
         noPadding
         nextDisabled={selectedChain === null}
@@ -186,9 +187,11 @@ const ImportGnosisAddress = () => {
         <header className="create-new-header create-password-header h-[200px] res">
           <div className="rabby-container">
             <img
-              className="rabby-logo"
-              src="/images/logo-white.svg"
-              alt="rabby logo"
+              src={IconBack}
+              className="icon-back mb-0 relative z-10"
+              onClick={() => {
+                history.goBack();
+              }}
             />
             <img
               className="unlock-logo w-[80px] h-[80px] mb-20 mx-auto"

@@ -27,3 +27,4 @@ export { default as Copy } from './Copy';
 export { default as Empty } from './Empty';
 export { default as Loading } from './Loading';
 export { default as LoadingOverlay } from './LoadingOverlay';
+export { default as Navbar } from './Navbar';
