@@ -117,6 +117,7 @@ const signTypedDataVlidation = ({
 };
 
 class ProviderController extends BaseController {
+  @Reflect.metadata('PRIVATE', true)
   ethRpc = (req, forceChainServerId?: string) => {
     const {
       data: { method, params },
@@ -592,6 +593,7 @@ class ProviderController extends BaseController {
     }
   };
 
+  @Reflect.metadata('PRIVATE', true)
   private _signTypedData = async (from, data, version, extra?) => {
     const keyring = await this._checkAddress(from);
     let _data = data;
@@ -870,6 +872,7 @@ class ProviderController extends BaseController {
     return true;
   };
 
+  @Reflect.metadata('PRIVATE', true)
   private _checkAddress = async (address) => {
     // eslint-disable-next-line prefer-const
     let { address: currentAddress, type } =

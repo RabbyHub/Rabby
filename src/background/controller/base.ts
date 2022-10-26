@@ -4,6 +4,7 @@ import { Account } from 'background/service/preference';
 import { isSameAddress } from 'background/utils';
 
 class BaseController {
+  @Reflect.metadata('PRIVATE', true)
   getCurrentAccount = async () => {
     let account = preferenceService.getCurrentAccount();
     if (account) {
@@ -23,10 +24,12 @@ class BaseController {
     return cloneDeep(account) as Account;
   };
 
+  @Reflect.metadata('PRIVATE', true)
   syncGetCurrentAccount = () => {
     return preferenceService.getCurrentAccount() || null;
   };
 
+  @Reflect.metadata('PRIVATE', true)
   getAccounts = () => {
     return keyringService.getAllVisibleAccountsArray();
   };

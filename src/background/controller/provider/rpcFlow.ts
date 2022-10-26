@@ -26,7 +26,13 @@ const flowContext = flow
       data: { method },
     } = ctx.request;
     ctx.mapMethod = underline2Camelcase(method);
-
+    if (Reflect.getMetadata('PRIVATE', providerController, ctx.mapMethod)) {
+      // Reject when dapp try to call private controller function
+      throw ethErrors.rpc.methodNotFound({
+        message: `method [${method}] doesn't has corresponding handler`,
+        data: ctx.request.data,
+      });
+    }
     if (!providerController[ctx.mapMethod]) {
       // TODO: make rpc whitelist
       if (method.startsWith('eth_') || method === 'net_version') {
