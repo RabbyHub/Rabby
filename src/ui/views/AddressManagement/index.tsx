@@ -6,8 +6,8 @@ import { PageHeader, StrayFooter } from 'ui/component';
 import AddressItem from './AddressItem';
 import IconPlusAddress from 'ui/assets/addchain.png';
 import IconPlusAddress1 from 'ui/assets/addAddress.png';
-import IconStar from 'ui/assets/icon-star.svg';
-import IconStarFill from 'ui/assets/icon-star-fill.svg';
+import IconPinned from 'ui/assets/icon-pinned.svg';
+import IconPinnedFill from 'ui/assets/icon-pinned-fill.svg';
 
 import './style.less';
 import { obj2query } from '@/ui/utils/url';
@@ -113,9 +113,9 @@ const AddressManagement = () => {
               }}
             >
               {favorited ? (
-                <img src={IconStarFill} alt="" />
+                <img src={IconPinnedFill} alt="" />
               ) : (
-                <img src={IconStar} alt="" />
+                <img src={IconPinned} alt="" />
               )}
             </div>
           }
