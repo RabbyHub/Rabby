@@ -9,6 +9,10 @@ import {
 import providerController from './controller';
 import ReactGA from 'react-ga';
 
+const networkIdMap: {
+  [key: string]: string;
+} = {};
+
 const tabCheckin = ({
   data: {
     params: { name, icon },
@@ -24,14 +28,21 @@ const getProviderState = async (req) => {
     session: { origin },
   } = req;
 
-  const chainEnum = permissionService.getWithoutUpdate(origin)?.chain;
+  const chainEnum =
+    permissionService.getWithoutUpdate(origin)?.chain || CHAINS_ENUM.ETH;
   const isUnlocked = keyringService.memStore.getState().isUnlocked;
-
+  let networkVersion = '1';
+  if (networkIdMap[chainEnum]) {
+    networkVersion = networkIdMap[chainEnum];
+  } else {
+    networkVersion = await providerController.netVersion(req);
+    networkIdMap[chainEnum] = networkVersion;
+  }
   return {
-    chainId: CHAINS[chainEnum || CHAINS_ENUM.ETH].hex,
+    chainId: CHAINS[chainEnum].hex,
     isUnlocked,
     accounts: isUnlocked ? await providerController.ethAccounts(req) : [],
-    networkVersion: await providerController.netVersion(req),
+    networkVersion,
   };
 };
 
