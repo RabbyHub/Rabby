@@ -157,7 +157,7 @@ const TokenSelector = ({
                     width="24px"
                     height="24px"
                     hideConer
-                    hideChainIcon={isSwapType}
+                    // hideChainIcon={isSwapType}
                   />
                   <div className="flex flex-col text-left">
                     <span className="symbol">{token.symbol}</span>

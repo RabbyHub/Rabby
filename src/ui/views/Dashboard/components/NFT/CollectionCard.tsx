@@ -48,9 +48,7 @@ const CollectionCard = (props: CollectionCardProps) => {
         <div className="collection-card-title">{collection.name}</div>
         <div className="collection-card-count">({list.length})</div>
         <div className="collection-card-chain">
-          {list[0].chain && list[0].chain !== 'eth' && (
-            <ChainIcon chain={list[0].chain}></ChainIcon>
-          )}
+          {list[0].chain && <ChainIcon chain={list[0].chain}></ChainIcon>}
         </div>
       </div>
       <div className="collection-card-body">

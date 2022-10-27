@@ -35,7 +35,7 @@ const TokenWithChain = ({
         alt={token.symbol}
         style={{ width, height, minWidth: width }}
       />
-      {!hideChainIcon && (!hideConer || chain?.id !== 1) && (
+      {!hideChainIcon && (!hideConer || chain?.id) && (
         <img className="chain-symbol" src={chain?.logo || IconUnknown} />
       )}
     </div>
@@ -73,7 +73,7 @@ export const IconWithChain = ({
         alt={''}
         style={{ width, height, minWidth: width }}
       />
-      {!hideChainIcon && (!hideConer || chain?.id !== 1) && (
+      {!hideChainIcon && (!hideConer || chain?.id) && (
         <img className="chain-symbol" src={chain?.logo || IconUnknown} />
       )}
     </div>
