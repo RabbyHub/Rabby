@@ -97,14 +97,25 @@ const LedgerHardwareWaiting = ({ params }: { params: ApprovalParams }) => {
       : approval?.data.approvalType !== 'SignTx';
     setIsSignText(isSignText);
     if (!isSignText) {
-      const tx = approval.data?.params;
-      if (tx) {
-        const { nonce, from, chainId } = tx;
-        const explain = await wallet.getExplainCache({
-          nonce: Number(nonce),
-          address: from,
-          chainId: Number(chainId),
-        });
+      const signingTxId = approval.data.params.signingTxId;
+      // const tx = approval.data?.params;
+      if (signingTxId) {
+        // const { nonce, from, chainId } = tx;
+        // const explain = await wallet.getExplainCache({
+        //   nonce: Number(nonce),
+        //   address: from,
+        //   chainId: Number(chainId),
+        // });
+
+        const signingTx = await wallet.getSigningTx(signingTxId);
+
+        if (!signingTx?.explain) {
+          setErrorMessage('Failed to get explain');
+          return;
+        }
+
+        const explain = signingTx.explain;
+
         stats.report('signTransaction', {
           type: account.brandName,
           chainId: chain.serverId,

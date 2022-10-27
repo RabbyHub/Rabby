@@ -82,6 +82,7 @@ interface ApprovalRes extends Tx {
   extra?: Record<string, any>;
   traceId?: string;
   $ctx?: any;
+  signingTxId?: string;
 }
 
 interface Web3WalletPermission {
@@ -278,6 +279,8 @@ class ProviderController extends BaseController {
     const isCancel = !!txParams.isCancel;
     const traceId = approvalRes.traceId;
     const extra = approvalRes.extra;
+    const signingTxId = approvalRes.signingTxId;
+
     let signedTransactionSuccess = false;
     delete txParams.isSend;
     delete approvalRes.isSend;
@@ -287,6 +290,8 @@ class ProviderController extends BaseController {
     delete approvalRes.traceId;
     delete approvalRes.extra;
     delete approvalRes.$ctx;
+    delete approvalRes.signingTxId;
+
     let is1559 = is1559Tx(approvalRes);
     if (
       is1559 &&
@@ -331,11 +336,18 @@ class ProviderController extends BaseController {
       ? Object.values(CHAINS).find((chain) => chain.id === approvalRes.chainId)!
           .enum
       : permissionService.getConnectedSite(origin)!.chain;
-    const cacheExplain = transactionHistoryService.getExplainCache({
-      address: txParams.from,
-      chainId: Number(approvalRes.chainId),
-      nonce: Number(approvalRes.nonce),
-    });
+    // const cacheExplain = transactionHistoryService.getExplainCache({
+    //   address: txParams.from,
+    //   chainId: Number(approvalRes.chainId),
+    //   nonce: Number(approvalRes.nonce),
+    // });
+    const approvingTx = transactionHistoryService.getSigningTx(signingTxId!);
+    if (!approvingTx?.rawTx || !approvingTx?.explain) {
+      throw new Error(`approvingTx not found: ${signingTxId}`);
+    }
+
+    const { explain: cacheExplain, rawTx } = approvingTx;
+
     try {
       const signedTx = await keyringService.signTransaction(
         keyring,
@@ -359,7 +371,7 @@ class ProviderController extends BaseController {
         });
         return;
       }
-      const onTranscationSubmitted = (hash: string) => {
+      const onTransactionSubmitted = (hash: string) => {
         if (
           options?.data?.$ctx?.stats?.afterSign?.length &&
           Array.isArray(options?.data?.$ctx?.stats?.afterSign)
@@ -388,7 +400,10 @@ class ProviderController extends BaseController {
         }
         transactionHistoryService.addTx(
           {
-            rawTx: approvalRes,
+            rawTx: {
+              ...rawTx,
+              ...approvalRes,
+            },
             createdAt: Date.now(),
             isCompleted: false,
             hash,
@@ -398,6 +413,7 @@ class ProviderController extends BaseController {
           origin,
           options?.data?.$ctx
         );
+        transactionHistoryService.removeSigningTx(signingTxId!);
         transactionWatchService.addTx(
           `${txParams.from}_${approvalRes.nonce}_${chain}`,
           {
@@ -408,7 +424,7 @@ class ProviderController extends BaseController {
         );
       };
       if (typeof signedTx === 'string') {
-        onTranscationSubmitted(signedTx);
+        onTransactionSubmitted(signedTx);
         return signedTx;
       }
       const buildTx = TransactionFactory.fromTxData({
@@ -458,7 +474,7 @@ class ProviderController extends BaseController {
           traceId
         );
 
-        onTranscationSubmitted(hash);
+        onTransactionSubmitted(hash);
         return hash;
       } catch (e: any) {
         if (
@@ -485,11 +501,11 @@ class ProviderController extends BaseController {
           trigger: options?.data?.$ctx?.ga?.trigger || '',
         });
         if (!isSpeedUp && !isCancel) {
-          const cacheExplain = transactionHistoryService.getExplainCache({
-            address: txParams.from,
-            chainId: Number(approvalRes.chainId),
-            nonce: Number(approvalRes.nonce),
-          });
+          // const cacheExplain = transactionHistoryService.getExplainCache({
+          //   address: txParams.from,
+          //   chainId: Number(approvalRes.chainId),
+          //   nonce: Number(approvalRes.nonce),
+          // });
           transactionHistoryService.addSubmitFailedTransaction(
             {
               rawTx: approvalRes,
@@ -509,6 +525,7 @@ class ProviderController extends BaseController {
           i18n.t('Transaction push failed'),
           errMsg
         );
+        transactionHistoryService.removeSigningTx(signingTxId!);
         throw new Error(errMsg);
       }
     } catch (e) {
@@ -526,6 +543,7 @@ class ProviderController extends BaseController {
           trigger: options?.data?.$ctx?.ga?.trigger || '',
         });
       }
+      transactionHistoryService.removeSigningTx(signingTxId!);
       throw new Error(e);
     }
   };

@@ -868,14 +868,27 @@ const SignTx = ({ params, origin }: SignTxProps) => {
 
     setPreprocessSuccess(res.pre_exec.success);
     const approval = await getApproval();
-    wallet.addTxExplainCache({
-      address,
-      chainId,
-      nonce: updateNonce ? Number(recommendNonce) : Number(tx.nonce),
-      explain: res,
-      approvalId: approval.id,
-      calcSuccess: !(checkErrors.length > 0),
-    });
+
+    approval.signingTxId &&
+      (await wallet.updateSigningTx(approval.signingTxId, {
+        rawTx: {
+          nonce: updateNonce ? recommendNonce : tx.nonce,
+        },
+        explain: {
+          ...res,
+          approvalId: approval.id,
+          calcSuccess: !(checkErrors.length > 0),
+        },
+      }));
+
+    // wallet.addTxExplainCache({
+    //   address,
+    //   chainId,
+    //   nonce: updateNonce ? Number(recommendNonce) : Number(tx.nonce),
+    //   explain: res,
+    //   approvalId: approval.id,
+    //   calcSuccess: !(checkErrors.length > 0),
+    // });
     return res;
   };
 
@@ -979,15 +992,28 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     }
     const approval = await getApproval();
     gaEvent('allow');
+
+    approval.signingTxId &&
+      (await wallet.updateSigningTx(approval.signingTxId, {
+        rawTx: {
+          nonce: realNonce || tx.nonce,
+        },
+        explain: {
+          ...txDetail!,
+          approvalId: approval.id,
+          calcSuccess: !(checkErrors.length > 0),
+        },
+      }));
+
     if (currentAccount?.type && WaitingSignComponent[currentAccount.type]) {
-      await wallet.addTxExplainCache({
-        address: currentAccount.address,
-        chainId,
-        nonce: Number(realNonce || tx.nonce),
-        explain: txDetail!,
-        approvalId: approval.id,
-        calcSuccess: !(checkErrors.length > 0),
-      });
+      // await wallet.addTxExplainCache({
+      //   address: currentAccount.address,
+      //   chainId,
+      //   nonce: Number(realNonce || tx.nonce),
+      //   explain: txDetail!,
+      //   approvalId: approval.id,
+      //   calcSuccess: !(checkErrors.length > 0),
+      // });
       resolveApproval({
         ...transaction,
         isSend,
@@ -1001,6 +1027,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
           brandName: currentAccount.brandName,
         },
         $ctx: params.$ctx,
+        signingTxId: approval.signingTxId,
       });
 
       return;
@@ -1021,14 +1048,14 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       trigger: params?.$ctx?.ga?.trigger || '',
     });
 
-    await wallet.addTxExplainCache({
-      address: currentAccount.address,
-      chainId,
-      nonce: Number(realNonce || tx.nonce),
-      explain: txDetail!,
-      approvalId: approval.id,
-      calcSuccess: !(checkErrors.length > 0),
-    });
+    // await wallet.addTxExplainCache({
+    //   address: currentAccount.address,
+    //   chainId,
+    //   nonce: Number(realNonce || tx.nonce),
+    //   explain: txDetail!,
+    //   approvalId: approval.id,
+    //   calcSuccess: !(checkErrors.length > 0),
+    // });
 
     ReactGA.event({
       category: 'Transaction',
@@ -1041,6 +1068,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       gas: gasLimit,
       isSend,
       traceId: securityCheckDetail?.trace_id,
+      signingTxId: approval.signingTxId,
     });
   };
 

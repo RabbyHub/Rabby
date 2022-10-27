@@ -5,6 +5,7 @@ import openapiService, { Tx, ExplainTxResponse } from './openapi';
 import { CHAINS } from 'consts';
 import stats from '@/stats';
 import permissionService, { ConnectedSite } from './permission';
+import { nanoid } from 'nanoid';
 
 export interface TransactionHistoryItem {
   rawTx: Tx;
@@ -15,6 +16,15 @@ export interface TransactionHistoryItem {
   gasUsed?: number;
   isSubmitFailed?: boolean;
   site?: ConnectedSite;
+}
+
+export interface TransactionSigningItem {
+  rawTx: Tx;
+  explain?: ObjectType.Merge<
+    ExplainTxResponse,
+    { approvalId: string; calcSuccess: boolean }
+  >;
+  id: string;
 }
 
 export interface TransactionGroup {
@@ -36,27 +46,72 @@ interface TxHistoryStore {
   transactions: {
     [key: string]: Record<string, TransactionGroup>;
   };
-  cacheExplain: {
-    [key: string]: ObjectType.Merge<
-      TransactionGroup['explain'],
-      { approvalId: string; calcSuccess: boolean }
-    >;
-  };
+  // cacheExplain: {
+  //   [key: string]: ObjectType.Merge<
+  //     TransactionGroup['explain'],
+  //     { approvalId: string; calcSuccess: boolean }
+  //   >;
+  // };
 }
 
 class TxHistory {
   store!: TxHistoryStore;
+
+  private _signingTxList: TransactionSigningItem[] = [];
+
+  addSigningTx(tx: Tx) {
+    const id = nanoid();
+
+    this._signingTxList.push({
+      rawTx: tx,
+      id,
+    });
+
+    return id;
+  }
+
+  getSigningTx(id: string) {
+    return this._signingTxList.find((item) => item.id === id);
+  }
+
+  removeSigningTx(id: string) {
+    this._signingTxList = this._signingTxList.filter((item) => item.id !== id);
+  }
+
+  removeAllSigningTx() {
+    this._signingTxList = [];
+  }
+
+  updateSigningTx(
+    id: string,
+    data: {
+      explain?: Partial<TransactionSigningItem['explain']>;
+      rawTx?: Partial<TransactionSigningItem['rawTx']>;
+    }
+  ) {
+    const target = this._signingTxList.find((item) => item.id === id);
+    if (target) {
+      target.rawTx = {
+        ...target.rawTx,
+        ...data.rawTx,
+      };
+      target.explain = {
+        ...target.explain,
+        ...data.explain,
+      } as TransactionSigningItem['explain'];
+    }
+  }
 
   async init() {
     this.store = await createPersistStore<TxHistoryStore>({
       name: 'txHistory',
       template: {
         transactions: {},
-        cacheExplain: {},
+        // cacheExplain: {},
       },
     });
     if (!this.store.transactions) this.store.transactions = {};
-    if (!this.store.cacheExplain) this.store.cacheExplain = {};
+    // if (!this.store.cacheExplain) this.store.cacheExplain = {};
   }
 
   getPendingCount(address: string) {
@@ -117,7 +172,7 @@ class TxHistory {
       };
     }
 
-    this.removeExplainCache(`${from.toLowerCase()}-${chainId}-${nonce}`);
+    // this.removeExplainCache(`${from.toLowerCase()}-${chainId}-${nonce}`);
   }
 
   addTx(
@@ -169,7 +224,7 @@ class TxHistory {
       };
     }
 
-    this.removeExplainCache(`${from.toLowerCase()}-${chainId}-${nonce}`);
+    // this.removeExplainCache(`${from.toLowerCase()}-${chainId}-${nonce}`);
   }
 
   updateSingleTx(tx: TransactionHistoryItem) {
@@ -371,78 +426,78 @@ class TxHistory {
   }) {
     const normalizedAddress = address.toLowerCase();
     const copyHistory = this.store.transactions[normalizedAddress];
-    const copyExplain = this.store.cacheExplain;
+    // const copyExplain = this.store.cacheExplain;
     for (const k in copyHistory) {
       const t = copyHistory[k];
       if (t.chainId === chainId && t.nonce < nonce && t.isPending) {
         delete copyHistory[k];
       }
     }
-    for (const k in copyExplain) {
-      const [addr, cacheChainId, cacheNonce] = k.split('-');
-      if (
-        addr.toLowerCase() === normalizedAddress &&
-        Number(cacheChainId) === chainId &&
-        Number(cacheNonce) < nonce
-      ) {
-        delete copyExplain[k];
-      }
-    }
+    // for (const k in copyExplain) {
+    //   const [addr, cacheChainId, cacheNonce] = k.split('-');
+    //   if (
+    //     addr.toLowerCase() === normalizedAddress &&
+    //     Number(cacheChainId) === chainId &&
+    //     Number(cacheNonce) < nonce
+    //   ) {
+    //     delete copyExplain[k];
+    //   }
+    // }
     this.store.transactions = {
       ...this.store.transactions,
       [normalizedAddress]: copyHistory,
     };
-    this.store.cacheExplain = copyExplain;
+    // this.store.cacheExplain = copyExplain;
   }
 
-  addExplainCache({
-    address,
-    chainId,
-    nonce,
-    explain,
-    approvalId,
-    calcSuccess,
-  }: {
-    address: string;
-    chainId: number;
-    nonce: number;
-    explain: ExplainTxResponse;
-    approvalId: string;
-    calcSuccess: boolean;
-  }) {
-    const key = `${address.toLowerCase()}-${chainId}-${nonce}`;
-    this.store.cacheExplain = {
-      ...this.store.cacheExplain,
-      [key]: { ...explain, approvalId, calcSuccess },
-    };
-  }
+  // addExplainCache({
+  //   address,
+  //   chainId,
+  //   nonce,
+  //   explain,
+  //   approvalId,
+  //   calcSuccess,
+  // }: {
+  //   address: string;
+  //   chainId: number;
+  //   nonce: number;
+  //   explain: ExplainTxResponse;
+  //   approvalId: string;
+  //   calcSuccess: boolean;
+  // }) {
+  //   const key = `${address.toLowerCase()}-${chainId}-${nonce}`;
+  //   this.store.cacheExplain = {
+  //     ...this.store.cacheExplain,
+  //     [key]: { ...explain, approvalId, calcSuccess },
+  //   };
+  // }
 
-  getExplainCacheByApprovalId(approvalId: string) {
-    return Object.values(this.store.cacheExplain).find(
-      (item) => item.approvalId === approvalId
-    );
-  }
+  // getExplainCacheByApprovalId(approvalId: string) {
+  //   return Object.values(this.store.cacheExplain).find(
+  //     (item) => item.approvalId === approvalId
+  //   );
+  // }
 
-  getExplainCache({
-    address,
-    chainId,
-    nonce,
-  }: {
-    address: string;
-    chainId: number;
-    nonce: number;
-  }) {
-    const key = `${address.toLowerCase()}-${chainId}-${nonce}`;
-    return this.store.cacheExplain[key];
-  }
+  // getExplainCache({
+  //   address,
+  //   chainId,
+  //   nonce,
+  // }: {
+  //   address: string;
+  //   chainId: number;
+  //   nonce: number;
+  // }) {
+  //   const key = `${address.toLowerCase()}-${chainId}-${nonce}`;
+  //   return this.store.cacheExplain[key];
+  // }
 
-  removeExplainCache(key: string) {
-    const { cacheExplain } = this.store;
-    if (cacheExplain[key]) {
-      delete cacheExplain[key];
-      this.store.cacheExplain = cacheExplain;
-    }
-  }
+  // removeExplainCache(key: string) {
+  //   const { cacheExplain } = this.store;
+  //   if (cacheExplain[key]) {
+  //     delete cacheExplain[key];
+  //     this.store.cacheExplain = cacheExplain;
+  //   }
+  // }
 
   clearPendingTransactions(address: string) {
     const transactions = this.store.transactions[address.toLowerCase()];
@@ -469,9 +524,21 @@ class TxHistory {
       (item) => item.nonce
     );
 
+    const maxNonceSigningTx = maxBy(
+      this._signingTxList.filter(
+        (item) => item.rawTx.from === address && item.rawTx.chainId === chainId
+      ),
+      (item) => item.rawTx.nonce
+    );
+
     if (!maxNonceTx) return null;
 
-    return maxNonceTx.nonce + 1;
+    const maxNonce = Math.max(
+      maxNonceTx.nonce ?? 0,
+      parseInt(maxNonceSigningTx?.rawTx.nonce ?? '0', 0) ?? 0
+    );
+
+    return maxNonce + 1;
   }
 }
 
