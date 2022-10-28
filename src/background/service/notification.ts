@@ -42,7 +42,7 @@ const QUEUE_APPROVAL_COMPONENTS_WHITELIST = [
 class NotificationService extends Events {
   currentApproval: Approval | null = null;
   _approvals: Approval[] = [];
-  notifiWindowId = 0;
+  notifiWindowId: null | number = 0;
   isLocked = false;
 
   get approvals() {
@@ -70,7 +70,7 @@ class NotificationService extends Events {
 
     winMgr.event.on('windowRemoved', (winId: number) => {
       if (winId === this.notifiWindowId) {
-        this.notifiWindowId = 0;
+        this.notifiWindowId = null;
         this.rejectAllApprovals();
       }
     });
@@ -81,7 +81,7 @@ class NotificationService extends Events {
         return;
       }
 
-      if (this.notifiWindowId && winId !== this.notifiWindowId) {
+      if (this.notifiWindowId !== null && winId !== this.notifiWindowId) {
         if (
           this.currentApproval &&
           !QUEUE_APPROVAL_COMPONENTS_WHITELIST.includes(
@@ -95,7 +95,7 @@ class NotificationService extends Events {
   }
 
   activeFirstApproval = () => {
-    if (this.notifiWindowId) {
+    if (this.notifiWindowId !== null) {
       browser.windows.update(this.notifiWindowId, {
         focused: true,
       });
@@ -256,7 +256,7 @@ class NotificationService extends Events {
         }
       }
 
-      if (this.notifiWindowId) {
+      if (this.notifiWindowId !== null) {
         browser.windows.update(this.notifiWindowId, {
           focused: true,
         });
@@ -269,9 +269,9 @@ class NotificationService extends Events {
   clear = async (stay = false) => {
     this.approvals = [];
     this.currentApproval = null;
-    if (this.notifiWindowId && !stay) {
+    if (this.notifiWindowId !== null && !stay) {
       await winMgr.remove(this.notifiWindowId);
-      this.notifiWindowId = 0;
+      this.notifiWindowId = null;
     }
   };
 
@@ -297,9 +297,9 @@ class NotificationService extends Events {
   openNotification = (winProps) => {
     if (this.isLocked) return;
     this.lock();
-    if (this.notifiWindowId) {
+    if (this.notifiWindowId !== null) {
       winMgr.remove(this.notifiWindowId);
-      this.notifiWindowId = 0;
+      this.notifiWindowId = null;
     }
     winMgr.openNotification(winProps).then((winId) => {
       this.notifiWindowId = winId!;
