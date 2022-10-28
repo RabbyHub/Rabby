@@ -42,7 +42,7 @@ const QUEUE_APPROVAL_COMPONENTS_WHITELIST = [
 class NotificationService extends Events {
   currentApproval: Approval | null = null;
   _approvals: Approval[] = [];
-  notifiWindowId: null | number = 0;
+  notifiWindowId: null | number = null;
   isLocked = false;
 
   get approvals() {
