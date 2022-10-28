@@ -52,6 +52,7 @@ import { getUiType, useWallet } from '../utils';
 import SwapQuotes from './SwapQuote';
 import GasTopUp from './GasTopUp';
 import ApprovalManage from './ApprovalManage';
+import { ImportMyMetaMaskAccount } from './ImportMyMetaMaskAccount';
 
 ReactGA.initialize('UA-199755108-1');
 // eslint-disable-next-line @typescript-eslint/no-empty-function
@@ -258,6 +259,10 @@ const Main = () => {
 
         <PrivateRoute exact path="/approval-manage">
           <ApprovalManage />
+        </PrivateRoute>
+
+        <PrivateRoute exact path="/import/metamask">
+          <ImportMyMetaMaskAccount />
         </PrivateRoute>
       </Switch>
     </>

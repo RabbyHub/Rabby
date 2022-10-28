@@ -1,13 +1,13 @@
 import React from 'react';
-import { useTranslation } from 'react-i18next';
-import { PageHeader, AddAddressOptions } from 'ui/component';
+import { AddAddressOptions, BlueHeader } from 'ui/component';
 import './style.less';
 
 const AddAddress = () => {
-  const { t } = useTranslation();
   return (
     <div className="add-address">
-      <PageHeader fixed>{t('Add address')}</PageHeader>
+      <BlueHeader fixed className="mx-[-20px]" fillClassName="mb-[20px]">
+        Add an Address
+      </BlueHeader>
       <AddAddressOptions />
     </div>
   );

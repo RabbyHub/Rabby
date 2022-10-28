@@ -19,6 +19,8 @@ import { connectStore } from '@/ui/store';
 import LessPalette from '@/ui/style/var-defs';
 
 const ActionEntries = styled.div`
+  border-radius: 6px;
+  background-color: #fff;
   .action-item {
     border: 1px solid #ffffff;
 
@@ -65,9 +67,9 @@ const EntryImportAddress = () => {
         </div>
       </header>
       <div className="rabby-container pt-32">
-        <ActionEntries className="import-action-entries px-20">
+        <ActionEntries className="import-action-entries mx-20">
           <Field
-            className="w-[100%] mb-12 action-item"
+            className="w-[100%]  action-item"
             leftIcon={<img src={IconMnemonics} className={clsx('icon')} />}
             rightIcon={
               <img src={IconEntryRightIcon} className="right-chevron-icon" />
@@ -78,7 +80,7 @@ const EntryImportAddress = () => {
           </Field>
 
           <Field
-            className="w-[100%] mb-12 action-item"
+            className="w-[100%] mt-0 action-item"
             leftIcon={<img src={IconPrivatekey} className={clsx('icon')} />}
             rightIcon={
               <img src={IconEntryRightIcon} className="right-chevron-icon" />
@@ -89,7 +91,7 @@ const EntryImportAddress = () => {
           </Field>
 
           <Field
-            className="w-[100%] mb-12 action-item"
+            className="w-[100%] mt-0 action-item"
             leftIcon={<img src={IconKeystore} className={clsx('icon')} />}
             rightIcon={
               <img src={IconEntryRightIcon} className="right-chevron-icon" />
