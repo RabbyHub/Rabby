@@ -31,7 +31,7 @@ const Container = styled.div`
     width: 317px;
     margin-left: auto;
     margin-right: auto;
-    margin-bottom: 75px;
+    margin-bottom: 67px;
   }
 `;
 
