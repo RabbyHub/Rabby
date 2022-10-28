@@ -129,7 +129,7 @@ export const RevokeApprovalDrawer = (props: {
           </div>
         </section>
 
-        <section className="max-h-[364px] overflow-hidden overflow-y-scroll rounded-[6px] pb-[40px]">
+        <section className="max-h-[364px] overflow-hidden overflow-y-scroll rounded-[6px] pb-[60px]">
           {item.list.map((e, index) => {
             return (
               <div
