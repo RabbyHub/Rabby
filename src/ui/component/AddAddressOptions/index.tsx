@@ -51,7 +51,6 @@ const walletSortObj = [
   WALLET_BRAND_TYPES.JADE,
 ].reduce((pre, now, i) => {
   pre[now] = i + 1;
-  console.log('i', i);
   return pre;
 }, {} as { [k: string]: number });
 
