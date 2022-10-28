@@ -55,67 +55,68 @@ export const ImportMyMetaMaskAccount = () => {
     [t]
   );
   return (
-    <div className="add-metamask">
+    <div className="add-metamask ">
       <BlueHeader className="mx-[-20px]">Import My MetaMask Account</BlueHeader>
+      <div className="rabby-container">
+        <div className="relative bg-white mt-[12px] rounded-[6px] px-[12px] py-[20px] pb-0 mb-[20px]">
+          <div className="metamask-shadow" />
 
-      <div className="relative bg-white mt-[12px] rounded-[6px] px-[12px] py-[20px] pb-0 mb-[20px]">
-        <div className="metamask-shadow" />
-
-        <div className="flex mb-[24px]">
-          <img
-            src={IconMetamask}
-            className="w-[44px] h-[44px]"
-            alt="MetaMask"
-          />
-          <div className="pl-[10px] text-16 font-bold text-gray-title">
-            How to import my MetaMask Account?
-          </div>
-        </div>
-
-        <div className="">
-          <Timeline>
-            {stepList.map((step, i) => (
-              <Timeline.Item
-                color="transparent"
-                dot={
-                  <span className="text-13 font-bold text-gray-title">
-                    Step {i + 1} :{' '}
-                  </span>
-                }
-              >
-                <div className="text-12 font-medium text-gray-title">
-                  {step}
-                </div>
-              </Timeline.Item>
-            ))}
-          </Timeline>
-        </div>
-      </div>
-
-      <div className="bg-white rounded-[6px] ">
-        <div className="border-b border-gray-divider py-[15px] px-[19px]">
-          <div className="text-13 leading-[20px] font-medium text-gray-title">
-            Import the seed phrase or private key
-          </div>
-
-          <div className="mt-[3px] text-12 leading-[18px] text-[#666]">
-            It will only be stored locally on the browser. Rabby will never have
-            access to your private information.
-          </div>
-        </div>
-
-        {importList.map((e) => (
-          <Item
-            key={e.icon}
-            leftIcon={e.icon}
-            leftIconClassName="icon"
-            onClick={e.onClick}
-          >
-            <div className="pl-[12px] text-13 leading-[15px] font-medium text-gray-title">
-              {e.content}
+          <div className="flex mb-[24px]">
+            <img
+              src={IconMetamask}
+              className="w-[44px] h-[44px]"
+              alt="MetaMask"
+            />
+            <div className="pl-[10px] text-16 font-bold text-gray-title">
+              How to import my MetaMask Account?
             </div>
-          </Item>
-        ))}
+          </div>
+
+          <div className="">
+            <Timeline>
+              {stepList.map((step, i) => (
+                <Timeline.Item
+                  color="transparent"
+                  dot={
+                    <span className="text-13 font-bold text-gray-title">
+                      Step {i + 1} :{' '}
+                    </span>
+                  }
+                >
+                  <div className="text-12 font-medium text-gray-title">
+                    {step}
+                  </div>
+                </Timeline.Item>
+              ))}
+            </Timeline>
+          </div>
+        </div>
+
+        <div className="bg-white rounded-[6px] ">
+          <div className="border-b border-gray-divider py-[15px] px-[19px]">
+            <div className="text-13 leading-[20px] font-medium text-gray-title">
+              Import the seed phrase or private key
+            </div>
+
+            <div className="mt-[3px] text-12 leading-[18px] text-[#666]">
+              It will only be stored locally on the browser. Rabby will never
+              have access to your private information.
+            </div>
+          </div>
+
+          {importList.map((e) => (
+            <Item
+              key={e.icon}
+              leftIcon={e.icon}
+              leftIconClassName="icon"
+              onClick={e.onClick}
+            >
+              <div className="pl-[12px] text-13 leading-[15px] font-medium text-gray-title">
+                {e.content}
+              </div>
+            </Item>
+          ))}
+        </div>
       </div>
     </div>
   );

@@ -30,9 +30,7 @@ const StrayPage = ({
 }: StrayPageProps) => (
   <div
     className={cx(
-      'stray-page relative flex flex-col bg-gray-bg',
-      { 'sm:pt-28': !noPadding },
-      'lg:py-[60px] lg:w-[800px] sm:min-h-full lg:rounded-xl',
+      'rabby-container stray-page relative flex flex-col bg-gray-bg',
       className
     )}
   >
