@@ -77,7 +77,7 @@ export const ApprovalContractItem = ({
 
         <div className="ml-2">
           <div className="token-approval-item-title ">
-            {item.protocol?.name || t('Unknow Contract')}
+            {item.protocol?.name || t('Unknown Contract')}
           </div>
           <div className="token-approval-item-desc">
             <NameAndAddress address={item.id} />
