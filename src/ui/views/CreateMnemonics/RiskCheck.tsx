@@ -5,7 +5,7 @@ import { useMedia } from 'react-use';
 import styled from 'styled-components';
 import clsx from 'clsx';
 
-import { StrayPageWithButton, Field, Checkbox } from 'ui/component';
+import { StrayPageWithButton, Field, Checkbox, Navbar } from 'ui/component';
 import { useWallet } from 'ui/utils';
 import {
   connectStore,
@@ -15,7 +15,14 @@ import {
 } from 'ui/store';
 import LessPalette from 'ui/style/var-defs';
 
-const QuestionsWrapper = styled.div``;
+const QuestionsWrapper = styled.div`
+  .field-slot {
+    font-weight: 500;
+    font-size: 13px;
+    line-height: 16px;
+    color: #13141a;
+  }
+`;
 
 const RiskTipText = styled.p`
   font-weight: 500;
@@ -32,22 +39,29 @@ function useQuestionsCheck() {
     return [
       {
         index: 1 as const,
-        content: t('If I lose my Seed Phrase, my assets will be lost forever!'),
-        checked: false,
+        content: t('If I lose my seed phrase, my assets will be lost forever.'),
+        checked: true,
       },
       {
         index: 2 as const,
         content: t(
-          'If I share my Seed Phrase to others, my assets will be stolen!'
+          'If I share my seed phrase with others, my assets will be stolen.'
         ),
-        checked: false,
+        checked: true,
       },
       {
         index: 3 as const,
         content: t(
-          'Seed Phrase is only stored in my computer, it is my responsibility to keep the Seed Phrase safe!'
+          'The seed phrase is only stored on my computer, and Rabby has no access to it.'
         ),
-        checked: false,
+        checked: true,
+      },
+      {
+        index: 4 as const,
+        content: t(
+          'If I uninstall Rabby without backing up the seed phrase, Rabby cannot retrieve it for me.'
+        ),
+        checked: true,
       },
     ];
   }, []);
@@ -116,34 +130,33 @@ const RiskCheck = () => {
   return (
     <StrayPageWithButton
       custom={isWide}
-      className={clsx(isWide && 'rabby-stray-page')}
+      className={clsx(isWide && 'rabby-stray-page', 'stray-page')}
       formProps={{
         validateTrigger: 'onBlur',
       }}
       onSubmit={onSubmit}
-      hasBack
       hasDivider
-      onBackClick={async () => {
-        await dispatch.createMnemonics.cleanCreateAsync();
-        if (history.length > 1) {
-          history.goBack();
-        } else {
-          history.replace('/');
-        }
-      }}
       nextDisabled={!isAllChecked}
       onNextClick={() => {
         dispatch.createMnemonics.stepTo('display');
       }}
       noPadding
+      NextButtonContent="Show Seed Phrase"
     >
-      <header className="create-new-header create-mnemonics-header h-[60px] leading-[60px] py-0">
-        <h2 className="text-20 mb-0 mt-0 text-white text-center font-medium">
-          {t('Create New Address')}
-        </h2>
-      </header>
+      <Navbar
+        onBack={async () => {
+          await dispatch.createMnemonics.cleanCreateAsync();
+          if (history.length > 1) {
+            history.goBack();
+          } else {
+            history.replace('/');
+          }
+        }}
+      >
+        {t('Create New Address')}
+      </Navbar>
       <div className="rabby-container">
-        <div className="pt-32 px-20">
+        <div className="pt-28 px-20">
           <RiskTipText className="mb-32">
             {t(
               'Before starting, please read and keep the following security points in mind'
@@ -158,8 +171,7 @@ const RiskCheck = () => {
                 <Field
                   key={`item-${q.index}`}
                   className={clsx(
-                    'bg-white flex justify-between items-center py-12 px-16 border transition-colors',
-                    'lg:w-[460px]',
+                    'bg-white flex justify-between items-center px-12 py-16 border transition-colors',
                     'border-transparent'
                   )}
                   leftIcon={

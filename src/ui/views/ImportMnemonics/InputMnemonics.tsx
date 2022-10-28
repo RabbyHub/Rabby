@@ -4,7 +4,7 @@ import { useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 
-import { StrayPageWithButton } from 'ui/component';
+import { Navbar, StrayPageWithButton } from 'ui/component';
 import { useWallet, useWalletRequest } from 'ui/utils';
 import clsx from 'clsx';
 import { useMedia } from 'react-use';
@@ -35,17 +35,25 @@ const FormItemWrapper = styled.div`
   }
 `;
 
-const TipTextList = styled.ol`
-  list-style-type: decimal;
-
-  > li {
-    font-weight: 400;
-    color: ${LessPalette['@color-body']};
-    line-height: 20px;
+const TipTextList = styled.div`
+  margin-top: 32px;
+  h3 {
+    font-weight: 700;
+    font-size: 13px;
+    line-height: 15px;
+    color: #13141a;
+    margin-top: 0;
+    margin-bottom: 8px;
   }
-
-  > li + li {
-    margin-top: 4px;
+  p {
+    font-weight: 400;
+    font-size: 13px;
+    line-height: 15px;
+    color: #4b4d59;
+    margin: 0;
+  }
+  section + section {
+    margin-top: 16px;
   }
 `;
 
@@ -141,7 +149,6 @@ const ImportMnemonics = () => {
         }
         setErrMsgs([]);
       }}
-      hasBack
       hasDivider
       noPadding
       onBackClick={() => {
@@ -153,14 +160,20 @@ const ImportMnemonics = () => {
       }}
       backDisabled={false}
     >
-      <header className="create-new-header import-mnemonics-header h-[60px] leading-[60px] py-0">
-        <h2 className="text-20 mb-0 mt-0 text-white text-center font-medium">
-          {t('Import Seed Phrase')}
-        </h2>
-      </header>
+      <Navbar
+        onBack={() => {
+          if (history.length > 1) {
+            history.goBack();
+          } else {
+            history.replace('/');
+          }
+        }}
+      >
+        {t('Import Seed Phrase')}
+      </Navbar>
       <div className="rabby-container">
-        <div className="pt-20 px-20">
-          <Toptip className="mb-[20px]">
+        <div className="pt-12 px-20">
+          <Toptip className="mb-[12px]">
             You can paste your entire secret recovery phrase in 1st field
           </Toptip>
           <FormItemWrapper className="relative">
@@ -174,15 +187,18 @@ const ImportMnemonics = () => {
               <WordsMatrix.MnemonicsInputs errMsgs={errMsgs} />
             </Form.Item>
           </FormItemWrapper>
-          <TipTextList className="text-14 pl-20 mt-35">
-            <li>
-              The seed phrase you import will only be stored on the front end of
-              your browser and will not be uploaded to Rabby's servers.
-            </li>
-            <li>
-              After you uninstall Rabby or your browser, the seed phrase will be
-              deleted and cannot be recovered.
-            </li>
+          <TipTextList>
+            <section>
+              <h3>What is a Seed Phrase?</h3>
+              <p>A 12, 18, or 24-word phrase used to control your assets.</p>
+            </section>
+            <section>
+              <h3>Is it safe to import it in Rabby?</h3>
+              <p>
+                Yes, it will be stored locally on your browser and only
+                accessible to you.
+              </p>
+            </section>
           </TipTextList>
         </div>
       </div>

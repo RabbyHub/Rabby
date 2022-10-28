@@ -5,23 +5,31 @@ import { useTranslation } from 'react-i18next';
 import styled from 'styled-components';
 import { KEYRING_TYPE } from 'consts';
 
-import { StrayPageWithButton } from 'ui/component';
+import { Navbar, StrayPageWithButton } from 'ui/component';
 import { useWallet, useWalletRequest } from 'ui/utils';
 import { useMedia } from 'react-use';
 import clsx from 'clsx';
 import LessPalette from 'ui/style/var-defs';
 
-const TipTextList = styled.ol`
-  list-style-type: decimal;
-
-  > li {
-    font-weight: 400;
-    color: ${LessPalette['@color-body']};
-    line-height: 20px;
+const TipTextList = styled.div`
+  margin-top: 32px;
+  h3 {
+    font-weight: 700;
+    font-size: 13px;
+    line-height: 15px;
+    color: #13141a;
+    margin-top: 0;
+    margin-bottom: 8px;
   }
-
-  > li + li {
-    margin-top: 4px;
+  p {
+    font-weight: 400;
+    font-size: 13px;
+    line-height: 15px;
+    color: #4b4d59;
+    margin: 0;
+  }
+  section + section {
+    margin-top: 16px;
   }
 `;
 
@@ -81,65 +89,79 @@ const ImportPrivateKey = () => {
   }, []);
 
   return (
-    <StrayPageWithButton
-      custom={isWide}
-      spinning={loading}
-      form={form}
-      onSubmit={({ key }) => run(key)}
-      hasBack
-      hasDivider
-      noPadding
-      className={clsx(isWide && 'rabby-stray-page')}
-      formProps={{
-        onValuesChange: (states) => {
-          wallet.setPageStateCache({
-            path: history.location.pathname,
-            params: {},
-            states,
-          });
-        },
-      }}
-      onBackClick={() => {
-        if (history.length > 1) {
-          history.goBack();
-        } else {
-          history.replace('/');
-        }
-      }}
-      backDisabled={false}
-    >
-      <header className="create-new-header import-privatekey-header h-[60px] leading-[60px] py-0">
-        <h2 className="mt-0 mb-0 font-medium text-center text-white text-20">
-          {t('Import Your Private Key')}
-        </h2>
-      </header>
-      <div className="rabby-container">
-        <div className="px-20 pt-32">
-          <Form.Item
-            name="key"
-            rules={[{ required: true, message: t('Please input Private key') }]}
-          >
-            <Input
-              className={'h-[52px] p-16'}
-              placeholder={t('Enter your Private key')}
-              autoFocus
-              spellCheck={false}
-              type="password"
-            />
-          </Form.Item>
-          <TipTextList className="pl-20 text-14 mt-35">
-            <li>
-              The private key you import will only be stored on the front end of
-              your browser and will not be uploaded to Rabby's servers.
-            </li>
-            <li>
-              After you uninstall Rabby or uninstall your browser, the private
-              key will be deleted and Rabby cannot recover it for you.
-            </li>
-          </TipTextList>
+    <>
+      <StrayPageWithButton
+        custom={isWide}
+        spinning={loading}
+        form={form}
+        onSubmit={({ key }) => run(key)}
+        hasBack={false}
+        hasDivider
+        noPadding
+        className={clsx(isWide && 'rabby-stray-page')}
+        NextButtonContent="Confirm"
+        formProps={{
+          onValuesChange: (states) => {
+            wallet.setPageStateCache({
+              path: history.location.pathname,
+              params: {},
+              states,
+            });
+          },
+        }}
+        onBackClick={() => {
+          if (history.length > 1) {
+            history.goBack();
+          } else {
+            history.replace('/');
+          }
+        }}
+        backDisabled={false}
+      >
+        <Navbar
+          onBack={() => {
+            if (history.length > 1) {
+              history.goBack();
+            } else {
+              history.replace('/');
+            }
+          }}
+        >
+          Import Private Key
+        </Navbar>
+        <div className="rabby-container">
+          <div className="px-20 pt-24">
+            <Form.Item
+              name="key"
+              rules={[
+                { required: true, message: t('Please input Private key') },
+              ]}
+            >
+              <Input
+                className={'h-[52px] p-16'}
+                placeholder={t('Enter your Private key')}
+                autoFocus
+                spellCheck={false}
+                type="password"
+              />
+            </Form.Item>
+            <TipTextList className="mt-32">
+              <section>
+                <h3>What is a private key?</h3>
+                <p>A 64-digit number used to control your assets.</p>
+              </section>
+              <section>
+                <h3>Is it safe to import it in Rabby?</h3>
+                <p>
+                  Yes, it will be stored locally on your browser and only
+                  accessible to you.{' '}
+                </p>
+              </section>
+            </TipTextList>
+          </div>
         </div>
-      </div>
-    </StrayPageWithButton>
+      </StrayPageWithButton>
+    </>
   );
 };
 

@@ -53,11 +53,15 @@ button:focus {
       transform: translateX(-50%);
     }
     .rabby-container {
-      padding: 32px 20px;
+      padding: 16px 20px 32px;
       height: 100%;
       position: relative;
       overflow: hidden;
     }
+  }
+  .icon-back {
+    margin-bottom: 40px;
+    cursor: pointer;
   }
   .rabby-logo {
     width: 120px;
@@ -89,9 +93,28 @@ button:focus {
         margin: 0 auto;
         border-top: 0;
         .ant-btn {
-          height: 44px !important;
+          height: 42px !important;
         }
       }
+    }
+  }
+}
+
+.stray-page {
+  .stray-footer-nav {
+    background-color: #fff;
+    border-top: 1px solid #e5e9ef !important;
+    border-top: 0.5px solid #e5e9ef !important;
+
+    .ant-btn {
+      height: 42px !important;
+      padding-left: 40px;
+      padding-right: 40px;
+      font-weight: 500;
+      font-size: 15px;
+      line-height: 18px;
+      width: auto !important;
+      min-width: 155px;
     }
   }
 }

@@ -92,7 +92,7 @@ const ImportSuccess = ({ isPopup = false }: { isPopup?: boolean }) => {
       custom={isWide}
       className={clsx(isWide && 'rabby-stray-page')}
       hasDivider={hasDivider}
-      NextButtonContent={t('OK')}
+      NextButtonContent={t('Done')}
       onNextClick={handleNextClick}
       footerFixed={false}
       noPadding={isPopup}

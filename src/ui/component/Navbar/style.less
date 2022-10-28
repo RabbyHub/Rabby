@@ -1,0 +1,61 @@
+.rabby-navbar {
+  min-height: 48px;
+  background: linear-gradient(97.59deg, #8ba8ff 0%, #8c96ff 99.49%);
+  &-container {
+    width: 100%;
+    padding: 16px 20px;
+  }
+
+  &-main {
+    display: flex;
+    align-items: center;
+  }
+
+  &-back {
+    cursor: pointer;
+  }
+
+  &-left,
+  &-right {
+    flex: 1;
+  }
+
+  &-right {
+    text-align: right;
+  }
+
+  &-title {
+    flex: auto;
+    font-weight: 500;
+    font-size: 20px;
+    line-height: 23px;
+    text-align: center;
+    padding-left: 12px;
+    padding-right: 12px;
+
+    color: #ffffff;
+
+    .ellipsis();
+  }
+  &-desc {
+    margin-top: 4px;
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 16px;
+    text-align: center;
+
+    color: #ffffff;
+
+    opacity: 0.8;
+    padding-left: 20px;
+    padding-right: 20px;
+  }
+}
+
+@media screen and (min-width: 400px) {
+  .rabby-navbar-container {
+    width: 400px;
+    margin-left: auto;
+    margin-right: auto;
+  }
+}

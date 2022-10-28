@@ -266,7 +266,7 @@ function MnemonicsInputs({
 
   return (
     <div className={clsx(!!errMsgs.length && 'with-error')}>
-      <HeadToolbar className="mb-[12px]">
+      <HeadToolbar className="mb-[8px]">
         <Dropdown
           trigger={['click']}
           overlay={
@@ -376,7 +376,7 @@ function MnemonicsInputs({
       </MatrixWrapper>
       {errMsgs?.[0] ? (
         <div
-          className={`ant-form-item-explain ant-form-item-explain-error mt-[12px] pt-[0] h-[${HINT_BAR_H}px]`}
+          className={`ant-form-item-explain ant-form-item-explain-error mt-[12px] pt-[0] min-h-0 text-[14px]`}
         >
           <div role="alert">{errMsgs[0]}</div>
         </div>

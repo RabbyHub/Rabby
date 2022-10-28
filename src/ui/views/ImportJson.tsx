@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Input, Form } from 'antd';
 import { useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { StrayPageWithButton, Uploader } from 'ui/component';
+import { Navbar, StrayPageWithButton, Uploader } from 'ui/component';
 import { useWallet, useWalletRequest } from 'ui/utils';
 import clsx from 'clsx';
 import { useMedia } from 'react-use';
@@ -44,32 +44,28 @@ const ImportJson = () => {
       onSubmit={({ keyStore, password }) => run(keyStore, password)}
       form={form}
       spinning={loading}
-      hasBack
+      hasBack={false}
       hasDivider
       noPadding
       nextDisabled={!isUpload}
+      NextButtonContent="Confirm"
     >
-      <header className="create-new-header create-password-header h-[264px]">
-        <div className="rabby-container">
-          <img
-            className="rabby-logo"
-            src="/images/logo-white.svg"
-            alt="rabby logo"
-          />
-          <p className="text-24 mb-4 mt-32 text-white text-center font-bold">
-            {t('Import Your Keystore')}
-          </p>
-          <p className="text-14 mb-0 mt-4 text-white opacity-80 text-center">
-            {t(
-              'Select the keystore file you want to import and enter the corresponding password'
-            )}
-          </p>
-        </div>
-      </header>
+      <Navbar
+        onBack={() => {
+          if (history.length > 1) {
+            history.goBack();
+          } else {
+            history.replace('/');
+          }
+        }}
+        desc="Select the keystore file you want to import and enter the corresponding password"
+      >
+        Import Your Keystore
+      </Navbar>
       <div className="rabby-container">
         <div className="px-20">
           <Form.Item
-            className="mx-auto -mt-80"
+            className="mx-auto mt-[32px] mb-[24px]"
             name="keyStore"
             valuePropName="file"
           >

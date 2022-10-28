@@ -7,6 +7,7 @@ import {
   StrayPageWithButton,
   MultiSelectAddressList,
   LoadingOverlay,
+  Navbar,
 } from 'ui/component';
 import { useWallet, useWalletRequest } from 'ui/utils';
 import { KEYRING_TYPE } from 'consts';
@@ -168,7 +169,6 @@ const ImportMoreAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
           });
         }}
         nextDisabled={countDraftSelected === 0}
-        hasBack
         hasDivider
         footerFixed={false}
         noPadding={isPopup}
@@ -176,16 +176,21 @@ const ImportMoreAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
         isScrollContainer={isPopup}
       >
         {isPopup && (
-          <header className="create-new-header import-more-address-header py-18 h-[80px]">
-            <div className="rabby-container">
-              <p className="text-20 mb-4 text-white text-center font-bold">
-                {t('Import more address')}
-              </p>
-              <p className="text-14 mb-0 mt-4 text-white opacity-80 text-center">
-                {t('Select the addresses you want to import')}
-              </p>
-            </div>
-          </header>
+          <Navbar
+            onBack={() => {
+              dispatch.importMnemonics.clearDraftAddresses();
+
+              history.replace({
+                pathname: isPopup
+                  ? '/popup/import/mnemonics-confirm'
+                  : '/import/mnemonics-confirm',
+                state: { backFromImportMoreAddress: true },
+              });
+            }}
+            desc={t('Select the addresses you want to import')}
+          >
+            {t('Import more address')}
+          </Navbar>
         )}
         <div
           className={clsx(
