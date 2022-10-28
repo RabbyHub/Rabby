@@ -159,6 +159,7 @@ const ImportMnemonics = () => {
         }
       }}
       backDisabled={false}
+      NextButtonContent="Confirm"
     >
       <Navbar
         onBack={() => {
