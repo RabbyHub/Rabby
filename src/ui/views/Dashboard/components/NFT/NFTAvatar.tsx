@@ -103,8 +103,7 @@ const NFTAvatar = ({
   amount,
 }: AvatarProps) => {
   const logo = getChain(chain)?.logo || IconUnknown;
-  const isShowLogo = chain && chain.toUpperCase() !== CHAINS_ENUM.ETH;
-
+  const isShowLogo = !!chain;
   return (
     <div className={clsx('nft-avatar', className)} style={style}>
       {thumbnail ? (

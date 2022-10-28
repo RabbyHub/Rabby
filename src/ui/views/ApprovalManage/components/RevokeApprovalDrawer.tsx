@@ -151,17 +151,14 @@ export const RevokeApprovalDrawer = (props: {
                 }}
               >
                 {'logo_url' in e ? (
-                  <TokenWithChain
-                    token={(e as unknown) as TokenItem}
-                    hideConer
-                    hideChainIcon
-                  />
+                  <TokenWithChain token={(e as unknown) as TokenItem} />
                 ) : (
                   <NFTAvatar
                     className="w-[24px] h-[24px]"
                     type={(e as NFTApproval)?.content_type}
                     content={(e as NFTApproval)?.content}
                     thumbnail
+                    chain={(e as NFTApproval)?.chain}
                     unknown={IconUnknownNFT}
                   />
                 )}
