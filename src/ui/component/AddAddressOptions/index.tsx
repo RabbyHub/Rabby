@@ -199,7 +199,7 @@ const AddAddressOptions = () => {
   );
 
   return (
-    <>
+    <div className="rabby-container">
       {[createIMportAddrList, centerList].map((items) => (
         <div className="bg-white rounded-[6px] mb-[20px]">
           {items.map((e) => {
@@ -252,41 +252,43 @@ const AddAddressOptions = () => {
               </Item>
               <div
                 className={clsx(
-                  'py-[8px] grid grid-cols-3 gap-x-0 mx-[16px] bg-gray-bg2 rounded-[6px] transition-all overflow-hidden',
-                  !isSelected && 'hidden'
+                  'mx-[16px] bg-gray-bg2 rounded-[6px] transition-all  overflow-hidden',
+                  !isSelected ? 'max-h-0' : 'max-h-[500px]'
                 )}
               >
-                {item.values.map((v) => {
-                  return (
-                    <Item
-                      bgColor="transparent"
-                      className="flex-col justify-center hover:border-transparent"
-                      py={10}
-                      px={0}
-                      key={v.brand}
-                      left={
-                        <div className="relative w-[28px] h-[28px]">
-                          <img
-                            src={v.image}
-                            className="w-[28px] h-[28px] rounded-full"
-                          />
-                          {v.connectType === 'WalletConnect' && (
+                <div className="py-[8px] grid grid-cols-3 gap-x-0">
+                  {item.values.map((v) => {
+                    return (
+                      <Item
+                        bgColor="transparent"
+                        className="flex-col justify-center hover:border-transparent"
+                        py={10}
+                        px={0}
+                        key={v.brand}
+                        left={
+                          <div className="relative w-[28px] h-[28px]">
                             <img
-                              src={IconWalletConnect}
-                              className="absolute -top-6 -right-6 w-[14px] h-[14px] rounded-full"
+                              src={v.image}
+                              className="w-[28px] h-[28px] rounded-full"
                             />
-                          )}
-                        </div>
-                      }
-                      rightIcon={null}
-                      onClick={v.onClick}
-                    >
-                      <span className="text-12 font-medium text-gray-title mt-[8px]">
-                        {v.content}
-                      </span>
-                    </Item>
-                  );
-                })}
+                            {v.connectType === 'WalletConnect' && (
+                              <img
+                                src={IconWalletConnect}
+                                className="absolute -top-6 -right-6 w-[14px] h-[14px] rounded-full"
+                              />
+                            )}
+                          </div>
+                        }
+                        rightIcon={null}
+                        onClick={v.onClick}
+                      >
+                        <span className="text-12 font-medium text-gray-title mt-[8px]">
+                          {v.content}
+                        </span>
+                      </Item>
+                    );
+                  })}
+                </div>
               </div>
             </div>
           );
@@ -307,7 +309,7 @@ const AddAddressOptions = () => {
           );
         })}
       </div>
-    </>
+    </div>
   );
 };
 
