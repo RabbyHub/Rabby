@@ -141,8 +141,6 @@ const ApprovalManage = () => {
     return contractMap;
   });
 
-  console.log('contractMap', contractMap);
-
   if (error) {
     console.log('error', error);
   }
