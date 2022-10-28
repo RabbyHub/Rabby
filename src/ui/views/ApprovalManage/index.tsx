@@ -141,8 +141,6 @@ const ApprovalManage = () => {
     return contractMap;
   });
 
-  console.log('contractMap', contractMap);
-
   if (error) {
     console.log('error', error);
   }
@@ -211,7 +209,7 @@ const ApprovalManage = () => {
           className="h-[40px] rounded-[6px] p-0 pl-[12px] mt-[16px]"
           size="large"
           prefix={<img className="mr-[10px]" src={IconSearch} />}
-          placeholder={t('Search contract address')}
+          placeholder={'Search by contract name or address'}
           value={value}
           onChange={(e) => setValue(e.target.value)}
           spellCheck={false}
