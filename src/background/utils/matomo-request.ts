@@ -43,6 +43,7 @@ export const matomoRequestEvent = async (
     action?: string;
     label?: string;
     value?: string | number;
+    transport?: string;
   } = {}
 ) => {
   const params = await getParams();
@@ -54,6 +55,9 @@ export const matomoRequestEvent = async (
   }
   if (data.value) {
     cvar['2'] = ['value', data.value];
+  }
+  if (data.transport) {
+    cvar['3'] = ['transport', data.transport];
   }
   params.append('cvar', JSON.stringify(cvar));
 
