@@ -4,8 +4,8 @@ import { Tooltip } from 'antd';
 import clsx from 'clsx';
 import React, { forwardRef, HTMLAttributes, useState } from 'react';
 import IconCheck from 'ui/assets/check-2.svg';
-import IconStarFill from 'ui/assets/icon-star-fill.svg';
-import { ReactComponent as RcIconStar } from 'ui/assets/icon-star.svg';
+import IconPinned from 'ui/assets/icon-pinned.svg';
+import IconPinnedFill from 'ui/assets/icon-pinned-fill.svg';
 
 export type SelectChainItemProps = {
   stared?: boolean;
@@ -61,24 +61,14 @@ export const SelectChainItem = forwardRef(
             <div className="select-chain-item-name">{data.name}</div>
           </div>
         </Tooltip>
-        {stared ? (
-          <img
-            className="select-chain-item-star"
-            src={IconStarFill}
-            onClick={(e) => {
-              e.stopPropagation();
-              onStarChange?.(!stared);
-            }}
-          />
-        ) : (
-          <RcIconStar
-            className="select-chain-item-star"
-            onClick={(e) => {
-              e.stopPropagation();
-              onStarChange?.(!stared);
-            }}
-          ></RcIconStar>
-        )}
+        <img
+          className={clsx('select-chain-item-star', stared ? 'is-active' : '')}
+          src={stared ? IconPinnedFill : IconPinned}
+          onClick={(e) => {
+            e.stopPropagation();
+            onStarChange?.(!stared);
+          }}
+        />
         {value === data.enum ? (
           <img className="select-chain-item-checked" src={IconCheck}></img>
         ) : null}

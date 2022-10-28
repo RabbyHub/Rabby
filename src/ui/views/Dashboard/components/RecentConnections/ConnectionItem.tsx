@@ -3,8 +3,8 @@ import { CHAINS } from '@/constant';
 import { FallbackSiteLogo } from '@/ui/component';
 import clsx from 'clsx';
 import React, { forwardRef, memo, useMemo } from 'react';
-import IconStar from 'ui/assets/icon-star.svg';
-import IconStarFill from 'ui/assets/icon-star-fill.svg';
+import IconPinned from 'ui/assets/icon-pinned.svg';
+import IconPinnedFill from 'ui/assets/icon-pinned-fill.svg';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
 import IconDisconnect from 'ui/assets/icon-disconnect.svg';
@@ -73,7 +73,7 @@ export const Item = memo(
             }}
           >
             <img
-              src={item.isTop ? IconStarFill : IconStar}
+              src={item.isTop ? IconPinnedFill : IconPinned}
               className={clsx('pin-website', item.isTop && 'is-active')}
               alt=""
             />

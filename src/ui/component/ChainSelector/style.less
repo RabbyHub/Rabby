@@ -210,8 +210,9 @@
     }
     &-star {
       margin-left: 8px;
-      path:last-child {
-        stroke: #b4bdcc;
+      display: none;
+      &.is-active {
+        display: block;
       }
     }
     &-checked {
@@ -224,8 +225,8 @@
       &::after {
         display: none;
       }
-      .select-chain-item-star path:last-child {
-        stroke: #707280;
+      .select-chain-item-star {
+        display: block;
       }
     }
     &:last-child::after {

@@ -6,8 +6,8 @@ import { Account } from '@/background/service/preference';
 
 import IconSuccess from 'ui/assets/success.svg';
 import IconAddressCopy from 'ui/assets/address-copy.png';
-import IconFavStarFilled from 'ui/assets/dashboard/favstar-filled.svg';
-import IconFavStar from 'ui/assets/dashboard/favstar.svg';
+import IconPinned from 'ui/assets/icon-pinned.svg';
+import IconPinnedFill from 'ui/assets/icon-pinned-fill.svg';
 
 import { splitNumberByStep, useWallet } from 'ui/utils';
 import { message } from 'antd';
@@ -130,7 +130,7 @@ function AddressRow({
                       brandName: account.brandName,
                     });
                 }}
-                src={favorited ? IconFavStarFilled : IconFavStar}
+                src={favorited ? IconPinnedFill : IconPinned}
                 className={clsx('w-[12px] h-[12px]')}
               />
             </span>
