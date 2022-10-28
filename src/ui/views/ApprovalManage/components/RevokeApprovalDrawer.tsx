@@ -129,7 +129,7 @@ export const RevokeApprovalDrawer = (props: {
           </div>
         </section>
 
-        <section className="max-h-[364px] overflow-hidden overflow-y-scroll rounded-[6px] pb-[40px]">
+        <section className="max-h-[364px] overflow-hidden overflow-y-scroll rounded-[6px] pb-[60px]">
           {item.list.map((e, index) => {
             return (
               <div
@@ -196,7 +196,7 @@ export const RevokeApprovalDrawer = (props: {
       </div>
       <div
         className={clsx(
-          'absolute flex flex-col items-center justify-center bg-white left-0 bottom-0 w-full',
+          'absolute flex flex-col items-center justify-center bg-white left-0 bottom-0 w-full z-[99999]',
           selectedList.length > 1 ? 'h-[115px]' : 'h-[84px]'
         )}
       >

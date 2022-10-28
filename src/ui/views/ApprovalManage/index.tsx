@@ -209,7 +209,7 @@ const ApprovalManage = () => {
           className="h-[40px] rounded-[6px] p-0 pl-[12px] mt-[16px]"
           size="large"
           prefix={<img className="mr-[10px]" src={IconSearch} />}
-          placeholder={'Search by contract name or address'}
+          placeholder={'Search by protocol name or address'}
           value={value}
           onChange={(e) => setValue(e.target.value)}
           spellCheck={false}
