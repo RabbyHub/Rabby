@@ -4,7 +4,7 @@ import { ellipsis } from '@/ui/utils/address';
 import { getKRCategoryByType } from '@/utils/transaction';
 import { Button } from 'antd';
 import React from 'react';
-import ReactGA from 'react-ga';
+import { matomoRequestEvent } from '@/background/utils/matomo-request';
 import { getChain } from 'utils';
 import { getAmountText } from '../utils';
 
@@ -40,7 +40,7 @@ const NFTContractListItem = ({ item, onDecline }: NFTContractListItemProps) => {
           shape="round"
           size="small"
           onClick={() => {
-            ReactGA.event({
+            matomoRequestEvent({
               category: 'Security',
               action: 'startDeclineNFTApproval',
               label: [

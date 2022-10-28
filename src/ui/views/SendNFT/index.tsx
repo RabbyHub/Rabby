@@ -5,7 +5,7 @@ import clsx from 'clsx';
 import BigNumber from 'bignumber.js';
 import { useTranslation } from 'react-i18next';
 import { useHistory, useLocation } from 'react-router-dom';
-import ReactGA from 'react-ga';
+import { matomoRequestEvent } from '@/background/utils/matomo-request';
 import { Input, Form, message, Button } from 'antd';
 import { isValidAddress } from 'ethereumjs-util';
 import { providers } from 'ethers';
@@ -206,7 +206,7 @@ const SendNFT = () => {
       },
     });
     try {
-      ReactGA.event({
+      matomoRequestEvent({
         category: 'Send',
         action: 'createTx',
         label: [

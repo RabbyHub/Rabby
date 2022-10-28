@@ -3,7 +3,7 @@ import { Empty } from '@/ui/component';
 import { connectStore, useRabbySelector } from '@/ui/store';
 import { getKRCategoryByType } from '@/utils/transaction';
 import React from 'react';
-import ReactGA from 'react-ga';
+import { matomoRequestEvent } from '@/background/utils/matomo-request';
 import { useTranslation } from 'react-i18next';
 import IconSearch from 'ui/assets/search.svg';
 import { getChain } from 'utils';
@@ -41,7 +41,7 @@ const NFTList = ({ data, loading, onSearch, onDecline }: ApprovalCardProps) => {
             <NFTListItem
               item={item}
               onDecline={(item) => {
-                ReactGA.event({
+                matomoRequestEvent({
                   category: 'Security',
                   action: 'startDeclineNFTApproval',
                   label: [

@@ -13,7 +13,7 @@ import { CHAINS, INITIAL_OPENAPI_URL } from 'consts';
 import React, { useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Link, useHistory } from 'react-router-dom';
-import ReactGA from 'react-ga';
+import { matomoRequestEvent } from '@/background/utils/matomo-request';
 import IconArrowRight from 'ui/assets/arrow-right-gray.svg';
 import IconActivities from 'ui/assets/dashboard/activities.svg';
 import IconLock from 'ui/assets/lock.svg';
@@ -360,7 +360,7 @@ const Settings = ({ visible, onClose }: SettingsProps) => {
       leftIcon: IconReset,
       content: t('Reset Account'),
       onClick: () => {
-        ReactGA.event({
+        matomoRequestEvent({
           category: 'Setting',
           action: 'clickToUse',
           label: 'resetAccount',
@@ -417,7 +417,7 @@ const Settings = ({ visible, onClose }: SettingsProps) => {
   }
 
   const lockWallet = async () => {
-    ReactGA.event({
+    matomoRequestEvent({
       category: 'Setting',
       action: 'clickToUse',
       label: 'lockWallet',

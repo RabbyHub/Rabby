@@ -23,7 +23,7 @@ import AccountCard from './AccountCard';
 import LedgerWebHIDAlert from './LedgerWebHIDAlert';
 
 import { getKRCategoryByType } from '@/utils/transaction';
-import ReactGA from 'react-ga';
+import { matomoRequestEvent } from '@/background/utils/matomo-request';
 import SecurityCheckCard from './SecurityCheckCard';
 import ProcessTooltip from './ProcessTooltip';
 import SecurityCheck from './SecurityCheck';
@@ -122,7 +122,7 @@ const SignText = ({ params }: { params: SignTextProps }) => {
     if (!currentAccount) {
       return;
     }
-    ReactGA.event({
+    matomoRequestEvent({
       category: 'SignText',
       action: action,
       label: [

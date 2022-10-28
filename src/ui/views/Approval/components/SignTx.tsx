@@ -40,7 +40,7 @@ import {
   unpadHexString,
 } from 'ethereumjs-util';
 import React, { ReactNode, useEffect, useMemo, useState } from 'react';
-import ReactGA from 'react-ga';
+import { matomoRequestEvent } from '@/background/utils/matomo-request';
 import { useTranslation } from 'react-i18next';
 import IconGnosis from 'ui/assets/walletlogo/gnosis.svg';
 import IconWatch from 'ui/assets/walletlogo/watch-purple.svg';
@@ -777,7 +777,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       isGnosis && account ? account : (await wallet.getCurrentAccount())!;
 
     if (category === 'Send') {
-      ReactGA.event({
+      matomoRequestEvent({
         category,
         action: type === 'cancel' ? 'cancelSignTx' : 'signTx',
         label: [
@@ -804,7 +804,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
           action = 'signDeclineTokenApproval';
         }
       }
-      ReactGA.event({
+      matomoRequestEvent({
         category,
         action,
         label: [
@@ -1200,7 +1200,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     //   calcSuccess: !(checkErrors.length > 0),
     // });
 
-    ReactGA.event({
+    matomoRequestEvent({
       category: 'Transaction',
       action: 'Submit',
       label: currentAccount.brandName,
@@ -1410,7 +1410,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       trigger: params?.$ctx?.ga?.trigger || '',
     });
 
-    ReactGA.event({
+    matomoRequestEvent({
       category: 'Transaction',
       action: 'init',
       label: currentAccount.brandName,

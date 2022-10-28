@@ -2,7 +2,7 @@ import { DrawerProps } from 'antd';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
-import ReactGA from 'react-ga';
+import { matomoRequestEvent } from '@/background/utils/matomo-request';
 import IconArrowRight from 'ui/assets/arrow-right-gray.svg';
 import IconTokenApproval from 'ui/assets/icon-token-approval.svg';
 import IconNFTApproval from 'ui/assets/nft-approval.svg';
@@ -33,7 +33,7 @@ const Security = ({ visible, onClose }: SecurityProps) => {
       rightIcon: <img src={IconArrowRight} className="icon icon-arrow-right" />,
       content: t('Token Approval'),
       onClick: () => {
-        ReactGA.event({
+        matomoRequestEvent({
           category: 'Security',
           action: 'clickTokenApproval',
           label: [
@@ -49,7 +49,7 @@ const Security = ({ visible, onClose }: SecurityProps) => {
       rightIcon: <img src={IconArrowRight} className="icon icon-arrow-right" />,
       content: t('NFT Approval'),
       onClick: () => {
-        ReactGA.event({
+        matomoRequestEvent({
           category: 'Security',
           action: 'clickNFTApproval',
           label: [

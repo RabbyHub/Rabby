@@ -15,7 +15,7 @@ import IconQuestionMark from 'ui/assets/question-mark-gray.svg';
 import IconWatch from 'ui/assets/walletlogo/watch-purple.svg';
 import IconGnosis from 'ui/assets/walletlogo/gnosis.svg';
 import clsx from 'clsx';
-import ReactGA from 'react-ga';
+import { matomoRequestEvent } from '@/background/utils/matomo-request';
 import { getKRCategoryByType } from '@/utils/transaction';
 import { underline2Camelcase } from '@/background/utils';
 import SecurityCheckCard from './SecurityCheckCard';
@@ -241,7 +241,7 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
   ) => {
     const currentAccount = await wallet.getCurrentAccount();
     if (currentAccount) {
-      ReactGA.event({
+      matomoRequestEvent({
         category: 'SignText',
         action: action,
         label: [

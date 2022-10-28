@@ -3,7 +3,7 @@ import { message } from 'antd';
 import { ConnectedSite } from 'background/service/permission';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import ReactGA from 'react-ga';
+import { matomoRequestEvent } from '@/background/utils/matomo-request';
 import { openInTab, useWallet } from 'ui/utils';
 import ConnectionList from './ConnectionList';
 import './style.less';
@@ -33,7 +33,7 @@ const RecentConnections = ({
   }, [connections]);
 
   const handleClick = (connection: ConnectedSite) => {
-    ReactGA.event({
+    matomoRequestEvent({
       category: 'Dapps',
       action: 'openDapp',
       label: connection.origin,
@@ -51,14 +51,14 @@ const RecentConnections = ({
   const handleFavoriteChange = (item: ConnectedSite) => {
     if (item.isTop) {
       dispatch.permission.unFavoriteWebsite(item.origin);
-      ReactGA.event({
+      matomoRequestEvent({
         category: 'Dapps',
         action: 'unfavoriteDapp',
         label: item.origin,
       });
     } else {
       dispatch.permission.favoriteWebsite(item.origin);
-      ReactGA.event({
+      matomoRequestEvent({
         category: 'Dapps',
         action: 'favoriteDapp',
         label: item.origin,
@@ -67,7 +67,7 @@ const RecentConnections = ({
   };
   const handleRemove = async (origin: string) => {
     await dispatch.permission.removeWebsite(origin);
-    ReactGA.event({
+    matomoRequestEvent({
       category: 'Dapps',
       action: 'disconnectDapp',
       label: origin,
@@ -81,7 +81,7 @@ const RecentConnections = ({
   const removeAll = async () => {
     try {
       await dispatch.permission.clearAll();
-      ReactGA.event({
+      matomoRequestEvent({
         category: 'Dapps',
         action: 'disconnectAllDapps',
       });

@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Button, message } from 'antd';
 import { useTranslation } from 'react-i18next';
-import ReactGA from 'react-ga';
+import { matomoRequestEvent } from '@/background/utils/matomo-request';
 import { Account } from 'background/service/preference';
 import {
   CHAINS,
@@ -159,7 +159,7 @@ const LedgerHardwareWaiting = ({ params }: { params: ApprovalParams }) => {
             await wallet.postGnosisTransaction();
           }
         }
-        ReactGA.event({
+        matomoRequestEvent({
           category: 'Transaction',
           action: 'Submit',
           label: KEYRING_CLASS.HARDWARE.LEDGER,

@@ -1,6 +1,5 @@
 import React, { useEffect } from 'react';
 import { Switch, Route, Redirect } from 'react-router-dom';
-import ReactGA, { ga } from 'react-ga';
 import { PrivateRoute } from 'ui/component';
 
 import Welcome from './Welcome';
@@ -53,6 +52,7 @@ import SwapQuotes from './SwapQuote';
 import GasTopUp from './GasTopUp';
 import ApprovalManage from './ApprovalManage';
 import { ImportMyMetaMaskAccount } from './ImportMyMetaMaskAccount';
+import { matomoRequestEvent } from '@/background/utils/matomo-request';
 
 declare global {
   interface Window {
@@ -61,7 +61,6 @@ declare global {
 }
 
 const LogPageView = () => {
-  ReactGA.pageview(window.location.hash);
   if (window._paq) {
     window._paq.push(['setCustomUrl', window.location.hash.replace(/#/, '')]);
     window._paq.push(['trackPageView']);
@@ -78,7 +77,7 @@ const Main = () => {
       const UIType = getUiType();
       if (UIType.isNotification || UIType.isPop) {
         const hasOtherProvider = await wallet.getHasOtherProvider();
-        ReactGA.event({
+        matomoRequestEvent({
           category: 'User',
           action: 'active',
           label: UIType.isPop

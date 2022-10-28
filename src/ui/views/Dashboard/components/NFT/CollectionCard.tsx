@@ -4,7 +4,7 @@ import { Modal } from 'antd';
 import ChainIcon from './ChainIcon';
 import NFTAvatar from './NFTAvatar';
 import NFTModal from './NFTModal';
-import ReactGA from 'react-ga';
+import { matomoRequestEvent } from '@/background/utils/matomo-request';
 import './style.less';
 import { getKRCategoryByType } from '@/utils/transaction';
 import { useAccount } from '@/ui/store-hooks';
@@ -31,7 +31,7 @@ const CollectionCard = (props: CollectionCardProps) => {
   const handleShowModal = (item: NFTItem) => {
     setNFTItem(item);
     setModalVisible(true);
-    ReactGA.event({
+    matomoRequestEvent({
       category: 'ViewAssets',
       action: 'viewNFTDetail',
       label: [

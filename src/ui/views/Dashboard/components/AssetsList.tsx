@@ -2,7 +2,7 @@ import clsx from 'clsx';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FixedSizeList } from 'react-window';
-import ReactGA from 'react-ga';
+import { matomoRequestEvent } from '@/background/utils/matomo-request';
 import IconArrowUp from 'ui/assets/arrow-up.svg';
 import IconOpenDeFi from 'ui/assets/dashboard/opendefi.png';
 import { Empty, TokenWithChain } from 'ui/component';
@@ -17,7 +17,7 @@ const _Row = (props) => {
   const [isHovering, hoverProps] = useHover();
   const currentAccount = useRabbySelector((s) => s.account.currentAccount);
   const handleGotoProfile = () => {
-    ReactGA.event({
+    matomoRequestEvent({
       category: 'ViewAssets',
       action: 'viewDefiDetail',
       label: [
