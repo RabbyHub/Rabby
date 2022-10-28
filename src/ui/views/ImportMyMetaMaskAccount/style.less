@@ -1,0 +1,51 @@
+@import '../../style/mixin.less';
+
+.add-metamask {
+  .page();
+  padding: 0;
+  padding: 0 20px 30px;
+
+  .header {
+    background: linear-gradient(97.59deg, #8ba8ff 0%, #8c96ff 99.49%);
+    margin: 0 -20px;
+  }
+
+  .metamask-shadow {
+    background: linear-gradient(
+      180deg,
+      rgba(251, 140, 0, 0.054) 0%,
+      rgba(251, 140, 0, 0) 100%
+    );
+    border-radius: 6px;
+    position: absolute;
+    width: 360px;
+    height: 50px;
+    left: 0px;
+    top: 0px;
+  }
+
+  .ant-timeline {
+    margin-left: 22px;
+
+    .ant-timeline-item-tail {
+      border-style: dotted;
+      border-color: #b3bdcc;
+      top: 20px;
+      left: 0;
+    }
+    .ant-timeline-item-content {
+      padding-top: 6px;
+      padding-left: 14px;
+    }
+    .ant-timeline-item {
+      padding-bottom: 22px;
+      &.ant-timeline-item-last {
+        padding-bottom: 20px;
+
+        .ant-timeline-item-content {
+          min-height: 28px;
+        }
+      }
+    }
+  }
+}
