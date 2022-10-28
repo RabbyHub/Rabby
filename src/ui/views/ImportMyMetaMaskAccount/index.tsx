@@ -7,6 +7,7 @@ import { useHistory } from 'react-router-dom';
 import IconMetamask from 'ui/assets/dashboard/icon-metamask.svg';
 import IconMnemonics from 'ui/assets/import/mnemonics.svg';
 import IconPrivatekey from 'ui/assets/import/privatekey.svg';
+import { ReactComponent as IconTinRightArrow } from 'ui/assets/address/tiny-arrow-right.svg';
 
 import './style.less';
 
@@ -21,7 +22,7 @@ const stepList = [
         openInTab('https://rabby.io/metamask-export');
       }}
     >
-      Guidance &gt;{' '}
+      Guidance <IconTinRightArrow className="inline-block relative" />
     </a>
   </>,
   <>Import the seed phrase or private key in Rabby</>,
@@ -61,7 +62,7 @@ export const ImportMyMetaMaskAccount = () => {
         <div className="relative bg-white mt-[12px] rounded-[6px] px-[12px] py-[20px] pb-0 mb-[20px]">
           <div className="metamask-shadow" />
 
-          <div className="flex mb-[24px]">
+          <div className="flex items-center mb-[24px]">
             <img
               src={IconMetamask}
               className="w-[44px] h-[44px]"
@@ -83,7 +84,7 @@ export const ImportMyMetaMaskAccount = () => {
                     </span>
                   }
                 >
-                  <div className="text-12 font-medium text-gray-title">
+                  <div className="text-12 leading-[18px] font-medium text-gray-title">
                     {step}
                   </div>
                 </Timeline.Item>

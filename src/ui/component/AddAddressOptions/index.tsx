@@ -128,17 +128,17 @@ const AddAddressOptions = () => {
     () =>
       [
         {
-          title: 'Connect with Hardware Wallets',
+          title: 'Connect Hardware Wallets',
           key: 'hardware',
           icon: IconHardWallet,
         },
         {
-          title: 'Connect with Mobile Wallet Apps',
+          title: 'Connect Mobile Wallet Apps',
           key: 'mobile',
           icon: InstitutionalWallet,
         },
         {
-          title: 'Connect with Institutional Wallets',
+          title: 'Connect Institutional Wallets',
           key: 'institutional',
           icon: IconMobileWallet,
         },

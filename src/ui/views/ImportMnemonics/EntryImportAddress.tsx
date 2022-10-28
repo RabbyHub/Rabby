@@ -34,12 +34,15 @@ const ActionEntries = styled.div`
 const EntryImportAddress = () => {
   const { t } = useTranslation();
   const history = useHistory();
-  const isWide = useMedia('(min-width: 401px)');
+  // const isWide = useMedia('(min-width: 401px)');
 
   return (
     <StrayPage
       noPadding
-      className={clsx('import-watchmode', isWide && 'rabby-stray-page')}
+      className={clsx(
+        'import-watchmode'
+        // , isWide && 'rabby-stray-page'
+      )}
     >
       <header className="create-new-header entry-import-address h-[234px] res">
         <div className="rabby-container flex justify-center items-center flex-col">
