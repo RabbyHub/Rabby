@@ -46,7 +46,7 @@ const Welcome = () => {
       </div>
       {step === 1 ? (
         <section className="step">
-          <div className="step-title">Access All Dapp</div>
+          <div className="step-title">Access All Dapps</div>
           <div className="step-content">
             Rabby connects to all Dapps that MetaMask supports
           </div>

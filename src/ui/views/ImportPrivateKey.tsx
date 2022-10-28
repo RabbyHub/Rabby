@@ -148,7 +148,9 @@ const ImportPrivateKey = () => {
             <TipTextList className="mt-32">
               <section>
                 <h3>What is a private key?</h3>
-                <p>A 64-digit number used to control your assets.</p>
+                <p>
+                  A string of letters and numbers used to control your assets.
+                </p>
               </section>
               <section>
                 <h3>Is it safe to import it in Rabby?</h3>

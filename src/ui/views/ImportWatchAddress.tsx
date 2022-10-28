@@ -228,6 +228,7 @@ const ImportWatchAddress = () => {
       }}
       disableKeyDownEvent={disableKeydown}
       onBackClick={handleClickBack}
+      NextButtonContent="Confirm"
     >
       <header className="create-new-header create-password-header h-[264px] res">
         <div className="rabby-container">
