@@ -10,7 +10,7 @@ import { isValidAddress } from 'ethereumjs-util';
 import { StrayPageWithButton } from 'ui/component';
 import { useWallet, useWalletRequest } from 'ui/utils';
 import { FieldCheckbox } from 'ui/component';
-import IconGnosis from 'ui/assets/walletlogo/gnosis.png';
+import IconGnosis from 'ui/assets/walletlogo/gnosis.svg';
 import { Chain } from '@/background/service/openapi';
 import './style.less';
 import clsx from 'clsx';

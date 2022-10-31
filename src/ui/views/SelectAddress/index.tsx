@@ -279,7 +279,10 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
     <div className="select-address">
       <StrayPageWithButton
         custom={isPopup && isWide}
-        className={clsx(isPopup && isWide && 'rabby-stray-page')}
+        className={clsx(
+          isPopup && isWide && 'rabby-stray-page',
+          isWide && 'stray-page-wide'
+        )}
         header={
           isPopup
             ? undefined

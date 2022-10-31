@@ -13,7 +13,7 @@ import AccountCard from './AccountCard';
 import LedgerWebHIDAlert from './LedgerWebHIDAlert';
 import IconQuestionMark from 'ui/assets/question-mark-gray.svg';
 import IconWatch from 'ui/assets/walletlogo/watch-purple.svg';
-import IconGnosis from 'ui/assets/walletlogo/gnosis.png';
+import IconGnosis from 'ui/assets/walletlogo/gnosis.svg';
 import clsx from 'clsx';
 import ReactGA from 'react-ga';
 import { getKRCategoryByType } from '@/utils/transaction';

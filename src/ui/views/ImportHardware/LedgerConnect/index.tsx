@@ -62,6 +62,7 @@ const LedgerConnect = () => {
         title: t('Connect Ledger'),
         center: true,
       }}
+      className="stray-page-wide"
       headerClassName="mb-40"
       onSubmit={onSubmit}
       hasBack={false}
