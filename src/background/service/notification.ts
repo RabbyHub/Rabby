@@ -182,12 +182,12 @@ class NotificationService extends Events {
       // const explain = transactionHistoryService.getExplainCacheByApprovalId(
       //   approvalId
       // );
-      const signingTx =
-        signingTxId && transactionHistoryService.getSigningTx(signingTxId);
+      const signingTx = signingTxId
+        ? transactionHistoryService.getSigningTx(signingTxId)
+        : null;
+      const explain = signingTx?.explain;
 
-      if (signingTx && currentAccount) {
-        const explain = signingTx.explain!;
-
+      if (explain && currentAccount) {
         stats.report('preExecTransaction', {
           type: currentAccount.brandName,
           category: KEYRING_CATEGORY_MAP[currentAccount.type],
@@ -302,6 +302,7 @@ class NotificationService extends Events {
     });
     this.approvals = [];
     this.currentApproval = null;
+    transactionHistoryService.removeAllSigningTx();
   };
 
   unLock = () => {

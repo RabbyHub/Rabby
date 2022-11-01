@@ -25,6 +25,7 @@ export interface TransactionSigningItem {
     { approvalId: string; calcSuccess: boolean }
   >;
   id: string;
+  isSubmitted?: boolean;
 }
 
 export interface TransactionGroup {
@@ -87,6 +88,7 @@ class TxHistory {
     data: {
       explain?: Partial<TransactionSigningItem['explain']>;
       rawTx?: Partial<TransactionSigningItem['rawTx']>;
+      isSubmitted?: boolean;
     }
   ) {
     const target = this._signingTxList.find((item) => item.id === id);
@@ -99,6 +101,7 @@ class TxHistory {
         ...target.explain,
         ...data.explain,
       } as TransactionSigningItem['explain'];
+      target.isSubmitted = data.isSubmitted;
     }
   }
 
@@ -524,21 +527,27 @@ class TxHistory {
       (item) => item.nonce
     );
 
-    const maxNonceSigningTx = maxBy(
-      this._signingTxList.filter(
-        (item) => item.rawTx.from === address && item.rawTx.chainId === chainId
-      ),
-      (item) => item.rawTx.nonce
+    const firstSigningTx = this._signingTxList.find(
+      (item) => item.rawTx.chainId === chainId && !item.isSubmitted
+    );
+    const processingTx = this._signingTxList.find(
+      (item) => item.rawTx.chainId === chainId && item.isSubmitted
     );
 
     if (!maxNonceTx) return null;
 
-    const maxNonce = Math.max(
-      maxNonceTx.nonce ?? 0,
-      parseInt(maxNonceSigningTx?.rawTx.nonce ?? '0', 0) ?? 0
-    );
+    const maxLocalNonce = maxNonceTx.nonce;
+    const firstSigningNonce =
+      parseInt(firstSigningTx?.rawTx.nonce ?? '0', 0) ?? 0;
+    const processingNonce = parseInt(processingTx?.rawTx.nonce ?? '0', 0) ?? 0;
 
-    return maxNonce + 1;
+    const maxLocalOrProcessingNonce = Math.max(maxLocalNonce, processingNonce);
+
+    if (maxLocalOrProcessingNonce < firstSigningNonce) {
+      return firstSigningNonce;
+    }
+
+    return maxLocalOrProcessingNonce + 1;
   }
 }
 

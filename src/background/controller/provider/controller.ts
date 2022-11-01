@@ -345,6 +345,9 @@ class ProviderController extends BaseController {
     if (!approvingTx?.rawTx || !approvingTx?.explain) {
       throw new Error(`approvingTx not found: ${signingTxId}`);
     }
+    transactionHistoryService.updateSigningTx(signingTxId!, {
+      isSubmitted: true,
+    });
 
     const { explain: cacheExplain, rawTx } = approvingTx;
 
