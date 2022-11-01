@@ -94,8 +94,12 @@ class NotificationService extends Events {
     });
   }
 
-  activeFirstApproval = () => {
-    if (this.notifiWindowId !== null) {
+  activeFirstApproval = async () => {
+    const windows = await browser.windows.getAll();
+    const existWindow = windows.find(
+      (window) => window.id === this.notifiWindowId
+    );
+    if (this.notifiWindowId !== null && !!existWindow) {
       browser.windows.update(this.notifiWindowId, {
         focused: true,
       });
@@ -106,7 +110,7 @@ class NotificationService extends Events {
 
     const approval = this.approvals[0];
     this.currentApproval = approval;
-    this.openNotification(approval.winProps);
+    this.openNotification(approval.winProps, true);
   };
 
   deleteApproval = (approval) => {
@@ -294,9 +298,12 @@ class NotificationService extends Events {
     this.isLocked = true;
   };
 
-  openNotification = (winProps) => {
-    if (this.isLocked) return;
-    this.lock();
+  openNotification = (winProps, ignoreLock = false) => {
+    // Only use ignoreLock flag when approval exist but no notification window exist
+    if (!ignoreLock) {
+      if (this.isLocked) return;
+      this.lock();
+    }
     if (this.notifiWindowId !== null) {
       winMgr.remove(this.notifiWindowId);
       this.notifiWindowId = null;
