@@ -21,6 +21,7 @@ const SUPPORT_CHAINS = [
   CHAINS_ENUM.BSC,
   CHAINS_ENUM.POLYGON,
   CHAINS_ENUM.GNOSIS,
+  CHAINS_ENUM.AVAX,
 ];
 
 const ImportGnosisAddress = () => {
