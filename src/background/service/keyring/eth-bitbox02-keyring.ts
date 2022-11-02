@@ -164,6 +164,10 @@ class BitBox02Keyring extends EventEmitter {
       const accounts: any[] = [];
 
       for (let i = from; i < to; i++) {
+        if (i >= MAX_INDEX) {
+          return accounts;
+        }
+
         const address = this._addressFromIndex(pathBase, i);
         accounts.push({
           address,
@@ -181,6 +185,10 @@ class BitBox02Keyring extends EventEmitter {
     const accounts: any[] = [];
     return await this.withDevice(async () => {
       for (let i = from; i < to; i++) {
+        if (i >= MAX_INDEX) {
+          return accounts;
+        }
+
         const address = this._addressFromIndex(pathBase, i);
         accounts.push({
           address,

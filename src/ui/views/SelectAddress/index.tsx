@@ -80,7 +80,7 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
   const [hasError, setHasError] = useState(false);
 
   const [getAccounts] = useWalletRequest(
-    async (firstFlag, start?, end?): Promise<Account[]> => {
+    async (firstFlag, start?, end?, cb?): Promise<Account[]> => {
       setSpin(true);
       return firstFlag
         ? await wallet.requestKeyring(
@@ -103,7 +103,12 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
           );
     },
     {
-      onSuccess(_accounts) {
+      onSuccess(_accounts, { args: [, , , cb] }) {
+        if (_accounts.length <= 0) {
+          setSpin(false);
+          message.error('No accounts found');
+          return;
+        }
         if (_accounts.length < 5) {
           throw new Error(
             t(
@@ -113,6 +118,7 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
         }
         setSpin(false);
         setAccounts(_accounts);
+        cb?.();
       },
       onError(err) {
         if (isLedger) {
@@ -182,8 +188,9 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
   const handlePageChange = async (page: number) => {
     const start = 5 * (page - 1);
     const end = 5 * (page - 1) + 5;
-    await getAccounts(false, start, end);
-    setCurrentPage(page);
+    await getAccounts(false, start, end, () => {
+      setCurrentPage(page);
+    });
   };
 
   const onSubmit = async ({
