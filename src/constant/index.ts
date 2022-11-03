@@ -709,7 +709,7 @@ export const SWAP_DEX_WHITELIST = [
 
 export const SWAP_FEE_PRECISION = 1e5;
 
-export const DEFAULT_GAS_LIMIT_RATIO = 2;
+export const DEFAULT_GAS_LIMIT_RATIO = 4;
 
 export const SAFE_GAS_LIMIT_RATIO = {};
 export const GAS_TOP_UP_ADDRESS = '0x448c02d84f10b4144954b2c4413f96def46761ce';
