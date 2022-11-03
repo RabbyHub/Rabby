@@ -46,17 +46,6 @@ const { PortMessage } = Message;
 
 let appStoreLoaded = false;
 
-function forceReconnect(port) {
-  deleteTimer(port);
-  port.disconnect();
-}
-function deleteTimer(port) {
-  if (port._timer) {
-    clearTimeout(port._timer);
-    delete port._timer;
-  }
-}
-
 Sentry.init({
   dsn:
     'https://e871ee64a51b4e8c91ea5fa50b67be6b@o460488.ingest.sentry.io/5831390',
