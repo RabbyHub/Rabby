@@ -43,17 +43,6 @@ const { PortMessage } = Message;
 
 let appStoreLoaded = false;
 
-function forceReconnect(port) {
-  deleteTimer(port);
-  port.disconnect();
-}
-function deleteTimer(port) {
-  if (port._timer) {
-    clearTimeout(port._timer);
-    delete port._timer;
-  }
-}
-
 Sentry.init({
   dsn:
     'https://e871ee64a51b4e8c91ea5fa50b67be6b@o460488.ingest.sentry.io/5831390',
@@ -185,10 +174,7 @@ browser.runtime.onConnect.addListener((port) => {
     category: 'User',
     action: 'enable',
   });
-  // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-  // @ts-ignore
-  port._timer = setTimeout(forceReconnect, 250e3, port);
-  port.onDisconnect.addListener(deleteTimer);
+
   if (
     port.name === 'popup' ||
     port.name === 'notification' ||
