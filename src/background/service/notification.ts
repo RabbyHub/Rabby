@@ -16,6 +16,7 @@ type IApprovalComponent = IApprovalComponents[keyof IApprovalComponents];
 export interface Approval {
   id: string;
   taskId: number | null;
+  signingTxId?: string;
   data: {
     params?: import('react').ComponentProps<IApprovalComponent>['params'];
     origin?: string;
@@ -162,6 +163,10 @@ class NotificationService extends Events {
         approval?.reject(ethErrors.provider.userRejectedRequest<any>(err));
     }
 
+    if (approval?.signingTxId) {
+      transactionHistoryService.removeSigningTx(approval.signingTxId);
+    }
+
     if (approval && this.approvals.length > 1) {
       this.deleteApproval(approval);
       this.currentApproval = this.approvals[0];
@@ -173,10 +178,15 @@ class NotificationService extends Events {
 
   requestApproval = async (data, winProps?): Promise<any> => {
     const currentAccount = preferenceService.getCurrentAccount();
-    const reportExplain = (approvalId: string) => {
-      const explain = transactionHistoryService.getExplainCacheByApprovalId(
-        approvalId
-      );
+    const reportExplain = (signingTxId?: string) => {
+      // const explain = transactionHistoryService.getExplainCacheByApprovalId(
+      //   approvalId
+      // );
+      const signingTx = signingTxId
+        ? transactionHistoryService.getSigningTx(signingTxId)
+        : null;
+      const explain = signingTx?.explain;
+
       if (explain && currentAccount) {
         stats.report('preExecTransaction', {
           type: currentAccount.brandName,
@@ -191,20 +201,28 @@ class NotificationService extends Events {
     };
     return new Promise((resolve, reject) => {
       const uuid = uuidv4();
+      let signingTxId;
+      if (data.approvalComponent === 'SignTx') {
+        signingTxId = transactionHistoryService.addSigningTx(
+          data.params.data[0]
+        );
+      }
+
       const approval: Approval = {
         taskId: uuid,
         id: uuid,
+        signingTxId,
         data,
         winProps,
         resolve(data) {
           if (this.data.approvalComponent === 'SignTx') {
-            reportExplain(this.id);
+            reportExplain(this.signingTxId);
           }
           resolve(data);
         },
         reject(data) {
           if (this.data.approvalComponent === 'SignTx') {
-            reportExplain(this.id);
+            reportExplain(this.signingTxId);
           }
           reject(data);
         },
@@ -284,6 +302,7 @@ class NotificationService extends Events {
     });
     this.approvals = [];
     this.currentApproval = null;
+    transactionHistoryService.removeAllSigningTx();
   };
 
   unLock = () => {

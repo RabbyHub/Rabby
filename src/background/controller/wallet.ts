@@ -42,7 +42,7 @@ import {
 import { ERC1155ABI, ERC20ABI, ERC721ABI, RABBY_SWAP_ABI } from 'consts/abi';
 import { Account, IHighlightedAddress } from '../service/preference';
 import { ConnectedSite } from '../service/permission';
-import { ExplainTxResponse, TokenItem } from '../service/openapi';
+import { TokenItem, Tx } from '../service/openapi';
 import DisplayKeyring from '../service/keyring/display';
 import provider from './provider';
 import WalletConnectKeyring from '@rabby-wallet/eth-walletconnect-keyring';
@@ -1928,35 +1928,47 @@ export class WalletController extends BaseController {
     return signTextHistoryService.getHistory(address);
   };
 
-  addTxExplainCache = (params: {
-    address: string;
-    chainId: number;
-    nonce: number;
-    explain: ExplainTxResponse;
-    calcSuccess: boolean;
-    approvalId: string;
-  }) => transactionHistoryService.addExplainCache(params);
+  // addTxExplainCache = (params: {
+  //   address: string;
+  //   chainId: number;
+  //   nonce: number;
+  //   explain: ExplainTxResponse;
+  //   calcSuccess: boolean;
+  //   approvalId: string;
+  // }) => transactionHistoryService.addExplainCache(params);
 
-  getExplainCache = ({
-    address,
-    chainId,
-    nonce,
-  }: {
-    address: string;
-    chainId: number;
-    nonce: number;
-  }) =>
-    transactionHistoryService.getExplainCache({
-      address,
-      chainId,
-      nonce,
-    });
+  // getExplainCache = ({
+  //   address,
+  //   chainId,
+  //   nonce,
+  // }: {
+  //   address: string;
+  //   chainId: number;
+  //   nonce: number;
+  // }) =>
+  //   transactionHistoryService.getExplainCache({
+  //     address,
+  //     chainId,
+  //     nonce,
+  //   });
 
-  getTxExplainCacheByApprovalId = (id: string) =>
-    transactionHistoryService.getExplainCacheByApprovalId(id);
+  // getTxExplainCacheByApprovalId = (id: string) =>
+  //   transactionHistoryService.getExplainCacheByApprovalId(id);
 
   getTransactionHistory = (address: string) =>
     transactionHistoryService.getList(address);
+
+  addSigningTx = (tx: Tx) => transactionHistoryService.addSigningTx(tx);
+
+  updateSigningTx = (
+    ...args: Parameters<typeof transactionHistoryService['updateSigningTx']>
+  ) => transactionHistoryService.updateSigningTx(...args);
+
+  removeSigningTx = (id: string) =>
+    transactionHistoryService.removeSigningTx(id);
+
+  getSigningTx = (id: string) => transactionHistoryService.getSigningTx(id);
+
   comepleteTransaction = (params: {
     address: string;
     chainId: number;

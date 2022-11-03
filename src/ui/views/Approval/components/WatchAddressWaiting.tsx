@@ -385,14 +385,24 @@ const WatchAddressWaiting = ({ params }: { params: ApprovalParams }) => {
           }
         }
         if (!isSignTextRef.current) {
-          const tx = approval.data?.params;
-          if (tx) {
-            const { nonce, from, chainId } = tx;
-            const explain = await wallet.getExplainCache({
-              nonce: Number(nonce),
-              address: from,
-              chainId: Number(chainId),
-            });
+          const signingTxId = approval.data.params.signingTxId;
+          // const tx = approval.data?.params;
+          if (signingTxId) {
+            // const { nonce, from, chainId } = tx;
+            // const explain = await wallet.getExplainCache({
+            //   nonce: Number(nonce),
+            //   address: from,
+            //   chainId: Number(chainId),
+            // });
+
+            const signingTx = await wallet.getSigningTx(signingTxId);
+
+            if (!signingTx?.explain) {
+              throw new Error('signingTx explain is null');
+            }
+
+            const explain = signingTx.explain;
+
             wallet.reportStats('signedTransaction', {
               type: account.brandName,
               chainId: CHAINS[chain].serverId,
@@ -410,14 +420,23 @@ const WatchAddressWaiting = ({ params }: { params: ApprovalParams }) => {
         resolveApproval(data.data, !isSignTextRef.current, false, approval.id);
       } else {
         if (!isSignTextRef.current) {
-          const tx = approval.data?.params;
-          if (tx) {
-            const { nonce, from, chainId } = tx;
-            const explain = await wallet.getExplainCache({
-              nonce: Number(nonce),
-              address: from,
-              chainId: Number(chainId),
-            });
+          // const tx = approval.data?.params;
+          if (approval.signingTxId) {
+            // const { nonce, from, chainId } = tx;
+            // const explain = await wallet.getExplainCache({
+            //   nonce: Number(nonce),
+            //   address: from,
+            //   chainId: Number(chainId),
+            // });
+
+            const signingTx = await wallet.getSigningTx(approval.signingTxId);
+
+            if (!signingTx?.explain) {
+              throw new Error('signingTx explain is null');
+            }
+
+            const explain = signingTx.explain;
+
             wallet.reportStats('signedTransaction', {
               type: account.brandName,
               chainId: CHAINS[chain].serverId,
@@ -445,14 +464,23 @@ const WatchAddressWaiting = ({ params }: { params: ApprovalParams }) => {
           status !== WALLETCONNECT_STATUS_MAP.REJECTED
         ) {
           if (!isText && !isSignTriggered) {
-            const tx = approval.data?.params;
-            if (tx) {
-              const { nonce, from, chainId } = tx;
-              const explain = await wallet.getExplainCache({
-                nonce: Number(nonce),
-                address: from,
-                chainId: Number(chainId),
-              });
+            // const tx = approval.data?.params;
+            if (approval.signingTxId) {
+              // const { nonce, from, chainId } = tx;
+              // const explain = await wallet.getExplainCache({
+              //   nonce: Number(nonce),
+              //   address: from,
+              //   chainId: Number(chainId),
+              // });
+
+              const signingTx = await wallet.getSigningTx(approval.signingTxId);
+
+              if (!signingTx?.explain) {
+                throw new Error('signingTx explain is null');
+              }
+
+              const explain = signingTx.explain;
+
               wallet.reportStats('signTransaction', {
                 type: account.brandName,
                 chainId: CHAINS[chain].serverId,
