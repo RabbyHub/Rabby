@@ -3,7 +3,7 @@ import { useHistory } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { openInternalPageInTab } from 'ui/utils/webapi';
 
-import IconWalletConnect from 'ui/assets/walletlogo/walletconnect.png';
+import IconWalletConnect from 'ui/assets/walletlogo/walletconnect.svg';
 import IconCreatenewaddr from 'ui/assets/walletlogo/createnewaddr.svg';
 import IconImportAdress from 'ui/assets/walletlogo/import-address.svg';
 import IconAddwatchmodo from 'ui/assets/walletlogo/addwatchmode.svg';
@@ -135,12 +135,12 @@ const AddAddressOptions = () => {
         {
           title: 'Connect Mobile Wallet Apps',
           key: 'mobile',
-          icon: InstitutionalWallet,
+          icon: IconMobileWallet,
         },
         {
           title: 'Connect Institutional Wallets',
           key: 'institutional',
-          icon: IconMobileWallet,
+          icon: InstitutionalWallet,
         },
       ]
         .map((item) => {
@@ -200,8 +200,8 @@ const AddAddressOptions = () => {
 
   return (
     <div className="rabby-container">
-      {[createIMportAddrList, centerList].map((items) => (
-        <div className="bg-white rounded-[6px] mb-[20px]">
+      {[createIMportAddrList, centerList].map((items, index) => (
+        <div className="bg-white rounded-[6px] mb-[20px]" key={index}>
           {items.map((e) => {
             return (
               <Item key={e.brand} leftIcon={e.leftIcon} onClick={e.onClick}>

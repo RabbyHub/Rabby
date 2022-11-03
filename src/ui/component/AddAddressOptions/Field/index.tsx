@@ -2,7 +2,7 @@ import React, { ReactNode } from 'react';
 import cx from 'clsx';
 import { useWalletOld as useWallet, useHover } from 'ui/utils';
 import './style.less';
-import IconWalletConnect from 'ui/assets/walletlogo/walletconnect.png';
+import IconWalletConnect from 'ui/assets/walletlogo/walletconnect.svg';
 interface FieldProps {
   children: ReactNode;
   leftIcon?: ReactNode;

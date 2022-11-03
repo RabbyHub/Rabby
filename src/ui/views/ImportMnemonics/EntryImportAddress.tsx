@@ -17,6 +17,7 @@ import { useMedia } from 'react-use';
 import clsx from 'clsx';
 import { connectStore } from '@/ui/store';
 import LessPalette from '@/ui/style/var-defs';
+import IconBack from 'ui/assets/icon-back.svg';
 
 const ActionEntries = styled.div`
   border-radius: 6px;
@@ -34,31 +35,21 @@ const ActionEntries = styled.div`
 const EntryImportAddress = () => {
   const { t } = useTranslation();
   const history = useHistory();
-  // const isWide = useMedia('(min-width: 401px)');
 
   return (
-    <StrayPage
-      noPadding
-      className={clsx(
-        'import-watchmode'
-        // , isWide && 'rabby-stray-page'
-      )}
-    >
+    <div className={clsx('import-watchmode', 'stray-page')}>
       <header className="create-new-header entry-import-address h-[234px] res">
         <div className="rabby-container flex justify-center items-center flex-col">
+          <img
+            className="absolute left-20 top-[16px] cursor-pointer"
+            src={IconBack}
+            alt="back"
+            onClick={() => history.goBack()}
+          />
           <img
             className="w-[128px] h-[128px] mb-28 mx-auto"
             src={EntryImportAddressLogo}
           />
-          <div
-            className="absolute left-20 top-20 w-20 h-20 cursor-pointer"
-            onClick={() => history.goBack()}
-          >
-            <img
-              className="back-btn w-[7.5px] h-[15px] leading-[20px] inline-block"
-              src={ArrowLeftWhiteBack}
-            />
-          </div>
 
           <p className="text-24 absolute bottom-[2px] text-white text-center font-bold">
             {t('Select Import Method')}
@@ -105,7 +96,7 @@ const EntryImportAddress = () => {
           </Field>
         </ActionEntries>
       </div>
-    </StrayPage>
+    </div>
   );
 };
 

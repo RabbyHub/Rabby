@@ -42,7 +42,7 @@ import {
 import React, { ReactNode, useEffect, useMemo, useState } from 'react';
 import ReactGA from 'react-ga';
 import { useTranslation } from 'react-i18next';
-import IconGnosis from 'ui/assets/walletlogo/gnosis.png';
+import IconGnosis from 'ui/assets/walletlogo/gnosis.svg';
 import IconWatch from 'ui/assets/walletlogo/watch-purple.svg';
 import { useApproval, useWallet, isStringOrNumber } from 'ui/utils';
 import AccountCard from './AccountCard';
