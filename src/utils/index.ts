@@ -49,12 +49,16 @@ export const getOriginFromUrl = (url: string) => {
  * @returns (pancakeswap.finance)
  */
 export const getMainDomain = (url: string) => {
-  const origin = getOriginFromUrl(url);
-  const arr = origin.split('.');
-  const mainDomainWithPath = [arr[arr.length - 2], arr[arr.length - 1]].join(
-    '.'
-  );
-  return mainDomainWithPath.replace(/^https?:\/\//, '');
+  try {
+    const origin = getOriginFromUrl(url);
+    const arr = origin.split('.');
+    const mainDomainWithPath = [arr[arr.length - 2], arr[arr.length - 1]].join(
+      '.'
+    );
+    return mainDomainWithPath.replace(/^https?:\/\//, '');
+  } catch (err) {
+    return '';
+  }
 };
 
 export const resemblesETHAddress = (str: string): boolean => {
