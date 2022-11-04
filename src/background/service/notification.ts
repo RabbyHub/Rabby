@@ -2,6 +2,7 @@ import { browser } from 'webextension-polyfill-ts';
 import Events from 'events';
 import { ethErrors } from 'eth-rpc-errors';
 import { v4 as uuidv4 } from 'uuid';
+import * as Sentry from '@sentry/browser';
 import { EthereumProviderError } from 'eth-rpc-errors/dist/classes';
 import { winMgr } from 'background/webapi';
 import { CHAINS, KEYRING_CATEGORY_MAP, IS_LINUX, IS_CHROME } from 'consts';
@@ -96,22 +97,29 @@ class NotificationService extends Events {
   }
 
   activeFirstApproval = async () => {
-    const windows = await browser.windows.getAll();
-    const existWindow = windows.find(
-      (window) => window.id === this.notifiWindowId
-    );
-    if (this.notifiWindowId !== null && !!existWindow) {
-      browser.windows.update(this.notifiWindowId, {
-        focused: true,
-      });
-      return;
+    try {
+      const windows = await browser.windows.getAll();
+      const existWindow = windows.find(
+        (window) => window.id === this.notifiWindowId
+      );
+      if (this.notifiWindowId !== null && !!existWindow) {
+        browser.windows.update(this.notifiWindowId, {
+          focused: true,
+        });
+        return;
+      }
+
+      if (this.approvals.length < 0) return;
+
+      const approval = this.approvals[0];
+      this.currentApproval = approval;
+      this.openNotification(approval.winProps, true);
+    } catch (e) {
+      Sentry.captureException(
+        'activeFirstApproval failed: ' + JSON.stringify(e)
+      );
+      this.clear();
     }
-
-    if (this.approvals.length < 0) return;
-
-    const approval = this.approvals[0];
-    this.currentApproval = approval;
-    this.openNotification(approval.winProps, true);
   };
 
   deleteApproval = (approval) => {
