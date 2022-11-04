@@ -12,7 +12,11 @@ import './style.less';
 import { useLocation } from 'react-router-dom';
 import { getOriginFromUrl } from '@/utils';
 
-export const CurrentConnection = memo(() => {
+interface CurrentConnectionProps {
+  onChainChange?: (chain: CHAINS_ENUM) => void;
+}
+export const CurrentConnection = memo((props: CurrentConnectionProps) => {
+  const { onChainChange } = props;
   const wallet = useWalletOld();
   const { t } = useTranslation();
   const [site, setSite] = useState<ConnectedSite>();
@@ -50,6 +54,7 @@ export const CurrentConnection = memo(() => {
     };
     setSite(_site);
     setVisible(false);
+    onChainChange?.(chain);
     await wallet.setSite(_site);
   };
 
