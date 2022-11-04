@@ -426,7 +426,9 @@ export default ({
               <>
                 <div className="gasprice">
                   {currentPrice !== null
-                    ? `$${splitNumberByStep(currentPrice)}`
+                    ? currentPrice < 0.01
+                      ? '<$0.01'
+                      : `$${splitNumberByStep(currentPrice.toFixed(2))}`
                     : '-'}
                 </div>
                 {percentage !== null && (
