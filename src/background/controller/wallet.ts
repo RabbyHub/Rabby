@@ -1489,6 +1489,11 @@ export class WalletController extends BaseController {
     if (!(await keyringService.hasAddress(address))) {
       contactBookService.removeAlias(address);
     }
+    transactionHistoryService.removeSigningTx(address);
+    transactionHistoryService.removeTransactions(address);
+    signTextHistoryService.removeHistory(address);
+
+    preferenceService.removeHighlightedAddress(address);
     preferenceService.removeAddressBalance(address);
     const current = preferenceService.getCurrentAccount();
     if (

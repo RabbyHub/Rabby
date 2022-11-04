@@ -391,6 +391,12 @@ class PreferenceService {
     this.store.highligtedAddresses = list;
   };
 
+  removeHighlightedAddress = (address: string) => {
+    this.store.highligtedAddresses = this.store.highligtedAddresses.filter(
+      (item) => item.address !== address
+    );
+  };
+
   getWalletSavedList = () => {
     return this.store.walletSavedList || [];
   };

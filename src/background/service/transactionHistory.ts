@@ -549,6 +549,10 @@ class TxHistory {
 
     return maxLocalOrProcessingNonce + 1;
   }
+
+  removeTransactions(address) {
+    delete this.store.transactions[address.toLowerCase()];
+  }
 }
 
 export default new TxHistory();
