@@ -28,6 +28,7 @@ interface ApprovalParams {
   account?: Account;
   $ctx?: any;
   extra?: Record<string, any>;
+  signingTxId?: string;
 }
 
 type Valueof<T> = T[keyof T];
@@ -312,6 +313,7 @@ const WatchAddressWaiting = ({ params }: { params: ApprovalParams }) => {
   const [brandName, setBrandName] = useState<string | null>(null);
   const [bridgeURL, setBridge] = useState<string>(DEFAULT_BRIDGE);
   const [currentAccount, setCurrentAccount] = useState<Account | null>(null);
+  const explainRef = useRef<any | null>(null);
 
   const initWalletConnect = async () => {
     const account = params.isGnosis
@@ -328,6 +330,13 @@ const WatchAddressWaiting = ({ params }: { params: ApprovalParams }) => {
     eventBus.addEventListener(EVENTS.WALLETCONNECT.INITED, ({ uri }) => {
       setQrcodeContent(uri);
     });
+    const signingTx = await wallet.getSigningTx(params.signingTxId);
+
+    if (!signingTx?.explain) {
+      throw new Error('signingTx explain is null');
+    }
+
+    explainRef.current = signingTx.explain;
     if (
       status !== WALLETCONNECT_STATUS_MAP.CONNECTED &&
       status !== WALLETCONNECT_STATUS_MAP.SIBMITTED
@@ -385,23 +394,15 @@ const WatchAddressWaiting = ({ params }: { params: ApprovalParams }) => {
           }
         }
         if (!isSignTextRef.current) {
-          const signingTxId = approval.data.params.signingTxId;
           // const tx = approval.data?.params;
-          if (signingTxId) {
+          const explain = explainRef.current;
+          if (explain) {
             // const { nonce, from, chainId } = tx;
             // const explain = await wallet.getExplainCache({
             //   nonce: Number(nonce),
             //   address: from,
             //   chainId: Number(chainId),
             // });
-
-            const signingTx = await wallet.getSigningTx(signingTxId);
-
-            if (!signingTx?.explain) {
-              throw new Error('signingTx explain is null');
-            }
-
-            const explain = signingTx.explain;
 
             wallet.reportStats('signedTransaction', {
               type: account.brandName,
@@ -421,21 +422,14 @@ const WatchAddressWaiting = ({ params }: { params: ApprovalParams }) => {
       } else {
         if (!isSignTextRef.current) {
           // const tx = approval.data?.params;
-          if (approval.signingTxId) {
+          const explain = explainRef.current;
+          if (explain) {
             // const { nonce, from, chainId } = tx;
             // const explain = await wallet.getExplainCache({
             //   nonce: Number(nonce),
             //   address: from,
             //   chainId: Number(chainId),
             // });
-
-            const signingTx = await wallet.getSigningTx(approval.signingTxId);
-
-            if (!signingTx?.explain) {
-              throw new Error('signingTx explain is null');
-            }
-
-            const explain = signingTx.explain;
 
             wallet.reportStats('signedTransaction', {
               type: account.brandName,
