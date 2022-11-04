@@ -4,7 +4,7 @@ import { GasLevel } from 'background/service/openapi';
 import { ConnectedSite } from 'background/service/permission';
 import clsx from 'clsx';
 import maxBy from 'lodash/maxBy';
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import ReactGA from 'react-ga';
 import IconAlertRed from 'ui/assets/alert-red.svg';
@@ -29,7 +29,7 @@ import { CurrentConnection } from '../CurrentConnection';
 import ChainSelectorModal from 'ui/component/ChainSelector/Modal';
 import { RecentConnections, Settings } from '../index';
 import './style.less';
-import { CHAINS_ENUM } from '@/constant';
+import { CHAINS, CHAINS_ENUM } from '@/constant';
 import { useAsync } from 'react-use';
 import { useRabbySelector } from '@/ui/store';
 
@@ -58,9 +58,9 @@ export default ({
 }) => {
   const history = useHistory();
   const [connections, setConnections] = useState<(ConnectedSite | null)[]>([]);
-  const [currentPrice, setCurrentPrice] = useState<number>(0);
-  const [currentPriceLoading, setCurrentPriceLoading] = useState(false);
-  const [percentage, setPercentage] = useState<number>(0);
+  const [currentConnectedSiteChain, setCurrentConnectedSiteChain] = useState(
+    CHAINS_ENUM.ETH
+  );
   const [localshowModal, setLocalShowModal] = useState(showModal);
   const [drawerAnimation, setDrawerAnimation] = useState<string | null>(null);
   const [urlVisible, setUrlVisible] = useState(false);
@@ -69,8 +69,6 @@ export default ({
   const [currentConnect, setCurrentConnect] = useState<
     ConnectedSite | null | undefined
   >(null);
-  const [gasPrice, setGasPrice] = useState<number>(0);
-  const [gasPriceLoading, setGasPriceLoading] = useState(false);
   const { state } = useLocation<{
     trigger?: string;
     showChainsModal?: boolean;
@@ -121,38 +119,66 @@ export default ({
     setLocalShowModal(false);
   };
 
-  const getGasPrice = async () => {
+  const currentConnectedSiteChainNativeToken = useMemo(
+    () =>
+      currentConnectedSiteChain
+        ? CHAINS?.[currentConnectedSiteChain]?.nativeTokenAddress || 'eth'
+        : 'eth',
+    [currentConnectedSiteChain]
+  );
+
+  const {
+    value: gasPrice = 0,
+    loading: gasPriceLoading,
+  } = useAsync(async () => {
     try {
-      setGasPriceLoading(true);
-      const marketGas: GasLevel[] = await wallet.openapi.gasMarket('eth');
+      const marketGas: GasLevel[] = await wallet.openapi.gasMarket(
+        currentConnectedSiteChainNativeToken
+      );
       const maxGas = maxBy(marketGas, (level) => level.price)!.price;
       if (maxGas) {
-        setGasPrice(Number(maxGas / 1e9));
+        return Number(maxGas / 1e9);
       }
-      setGasPriceLoading(false);
     } catch (e) {
       // DO NOTHING
     }
-  };
+  }, [currentConnectedSiteChainNativeToken]);
 
-  const getETHPrice = async () => {
+  const { value: tokenLogo, loading: tokenLoading } = useAsync(async () => {
     try {
-      setCurrentPriceLoading(true);
+      const data = await wallet.openapi.getToken(
+        account!.address,
+        CHAINS[currentConnectedSiteChain].serverId,
+        CHAINS[currentConnectedSiteChain].nativeTokenAddress
+      );
+      return (
+        data?.logo_url || CHAINS[currentConnectedSiteChain].nativeTokenLogo
+      );
+    } catch (error) {
+      return CHAINS[currentConnectedSiteChain].nativeTokenLogo;
+    }
+  }, [currentConnectedSiteChain]);
+
+  const {
+    value: tokenPrice,
+    loading: currentPriceLoading,
+  } = useAsync(async () => {
+    try {
       const {
         change_percent = 0,
         last_price = 0,
-      } = await wallet.openapi.tokenPrice('eth');
-      setCurrentPrice(last_price);
-      setPercentage(change_percent);
-      setCurrentPriceLoading(false);
+      } = await wallet.openapi.tokenPrice(currentConnectedSiteChainNativeToken);
+
+      return { currentPrice: last_price, percentage: change_percent };
     } catch (e) {
-      // DO NOTHING
+      return {
+        currentPrice: null,
+        percentage: null,
+      };
     }
-  };
-  const getPrice = () => {
-    getGasPrice();
-    getETHPrice();
-  };
+  }, [currentConnectedSiteChainNativeToken]);
+
+  const { currentPrice = null, percentage = null } = tokenPrice || {};
 
   const changeURL = () => {
     setUrlVisible(!urlVisible);
@@ -169,8 +195,13 @@ export default ({
 
   useEffect(() => {
     getCurrentSite();
-    getPrice();
   }, []);
+
+  useEffect(() => {
+    if (currentConnect?.chain) {
+      setCurrentConnectedSiteChain(currentConnect?.chain);
+    }
+  }, [currentConnect?.chain]);
 
   useEffect(() => {
     if (!urlVisible) {
@@ -260,7 +291,7 @@ export default ({
     },
     dapps: {
       icon: IconDapps,
-      content: 'Dapps',
+      content: 'Connected',
       onClick: () => {
         changeURL();
       },
@@ -384,26 +415,36 @@ export default ({
         </div>
         <div className="price-viewer">
           <div className="eth-price">
-            <img src={IconEth} className="w-[20px] h-[20px]" />
+            {tokenLoading ? (
+              <Skeleton.Avatar size={20} active shape="circle" />
+            ) : (
+              <img src={tokenLogo} className="w-[20px] h-[20px] rounded-full" />
+            )}
             {currentPriceLoading ? (
               <Skeleton.Button active={true} />
             ) : (
               <>
-                <div className="gasprice">{`$${splitNumberByStep(
-                  currentPrice
-                )}`}</div>
-                <div
-                  className={
-                    percentage > 0
-                      ? 'positive'
-                      : percentage === 0
-                      ? 'even'
-                      : 'depositive'
-                  }
-                >
-                  {percentage >= 0 && '+'}
-                  {percentage?.toFixed(2)}%
+                <div className="gasprice">
+                  {currentPrice !== null
+                    ? currentPrice < 0.01
+                      ? '<$0.01'
+                      : `$${splitNumberByStep(currentPrice.toFixed(2))}`
+                    : '-'}
                 </div>
+                {percentage !== null && (
+                  <div
+                    className={
+                      percentage > 0
+                        ? 'positive'
+                        : percentage === 0
+                        ? 'even'
+                        : 'depositive'
+                    }
+                  >
+                    {percentage >= 0 && '+'}
+                    {percentage?.toFixed(2)}%
+                  </div>
+                )}
               </>
             )}
           </div>
@@ -422,7 +463,7 @@ export default ({
           </div>
         </div>
       </div>
-      <CurrentConnection />
+      <CurrentConnection onChainChange={setCurrentConnectedSiteChain} />
       <ChainSelectorModal
         className="receive-chain-select-modal"
         value={CHAINS_ENUM.ETH}

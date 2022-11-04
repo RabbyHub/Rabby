@@ -123,7 +123,7 @@ const RecentConnections = ({
       visible={visible}
       height={580}
       onClose={onClose}
-      title="Dapps"
+      title="Connected"
       closable
     >
       <div className="recent-connections-popup">
