@@ -1,6 +1,8 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import cx from 'clsx';
+import { getMainDomain } from '@/utils';
 import { getOriginName, hashCode } from 'ui/utils';
+import { EXTERNAL_RESOURCE_DOMAIN_BLACK_LIST } from '@/constant';
 import './style.less';
 
 const bgColorList = [
@@ -37,6 +39,7 @@ const FallbackImage = ({
 }) => {
   const [loadFaild, setLoadFaild] = useState(false);
   const [loadSuccess, setLoadSuccess] = useState(false);
+  const [logoUrl, setLogoUrl] = useState('');
 
   const [bgColor, originName] = useMemo(() => {
     const bgIndex = Math.abs(hashCode(origin) % 12);
@@ -53,7 +56,15 @@ const FallbackImage = ({
   };
 
   useEffect(() => {
-    if (!url) setLoadFaild(true);
+    if (!url) {
+      setLoadFaild(true);
+      return;
+    }
+    if (EXTERNAL_RESOURCE_DOMAIN_BLACK_LIST.includes(getMainDomain(url))) {
+      setLoadFaild(true);
+    } else {
+      setLogoUrl(url);
+    }
   }, [url]);
 
   const bgText = `data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'><text x='50%' y='50%' dominant-baseline="middle" text-anchor='middle' fill='white' font-size='15' font-weight='500'>${originName?.[0]?.toUpperCase()}</text></svg>`;
@@ -71,12 +82,12 @@ const FallbackImage = ({
       <div
         className="img-wrapper"
         style={{
-          '--background': loadSuccess ? `url(${url})` : bgColor,
+          '--background': loadSuccess ? `url(${logoUrl})` : bgColor,
         }}
       >
         {!loadFaild && (
           <img
-            src={url}
+            src={logoUrl}
             alt={origin}
             style={{
               width,
