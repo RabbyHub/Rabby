@@ -60,7 +60,6 @@ const FallbackImage = ({
       setLoadFaild(true);
       return;
     }
-    console.log('getMainDomain', getMainDomain(url));
     if (EXTERNAL_RESOURCE_DOMAIN_BLACK_LIST.includes(getMainDomain(url))) {
       setLoadFaild(true);
     } else {
