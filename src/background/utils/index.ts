@@ -68,6 +68,14 @@ export const wait = (fn: () => void, ms = 1000) => {
   });
 };
 
+export const sleep = (ms: number) => {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve(true);
+    }, ms);
+  });
+};
+
 export const setPageStateCacheWhenPopupClose = (data) => {
   const cache = pageStateCache.get();
   if (cache && cache.path === '/import/wallet-connect') {
