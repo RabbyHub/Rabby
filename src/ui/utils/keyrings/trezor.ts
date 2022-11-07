@@ -1,3 +1,4 @@
+import { sleep } from '@/background/utils';
 import TrezorConnect from 'trezor-connect';
 
 const TREZOR_CONNECT_MANIFEST = {
@@ -6,23 +7,44 @@ const TREZOR_CONNECT_MANIFEST = {
 };
 
 export class TrezorKeyring {
+  initiated = false;
+
   async init() {
-    return TrezorConnect.init({ manifest: TREZOR_CONNECT_MANIFEST });
+    this.initiated = false;
+    try {
+      await TrezorConnect.init({ manifest: TREZOR_CONNECT_MANIFEST });
+      this.initiated = true;
+    } catch (e) {
+      // ignore init error
+      this.close();
+      this.init();
+    }
+    return;
+  }
+
+  async waitInit() {
+    while (!this.initiated) {
+      await sleep(500);
+    }
   }
 
   async getPublicKey(params) {
+    await this.waitInit();
     return TrezorConnect.getPublicKey(params);
   }
 
   async ethereumSignTransaction(params) {
+    await this.waitInit();
     return TrezorConnect.ethereumSignTransaction(params);
   }
 
   async ethereumSignMessage(params) {
+    await this.waitInit();
     return TrezorConnect.ethereumSignMessage(params);
   }
 
   async ethereumSignTypedData(params) {
+    await this.waitInit();
     return TrezorConnect.ethereumSignTypedData(params);
   }
 
