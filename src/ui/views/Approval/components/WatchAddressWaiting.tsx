@@ -332,11 +332,7 @@ const WatchAddressWaiting = ({ params }: { params: ApprovalParams }) => {
     });
     const signingTx = await wallet.getSigningTx(params.signingTxId);
 
-    if (!signingTx?.explain) {
-      throw new Error('signingTx explain is null');
-    }
-
-    explainRef.current = signingTx.explain;
+    explainRef.current = signingTx?.explain;
     if (
       status !== WALLETCONNECT_STATUS_MAP.CONNECTED &&
       status !== WALLETCONNECT_STATUS_MAP.SIBMITTED
