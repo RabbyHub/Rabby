@@ -12,7 +12,9 @@ const palette = lessVarsToJs(varsLess, {
 });
 
 Object.entries(palette).forEach(([key, value]) => {
-    palette[key] = value.trim().replace(/\n/g, '');
+    palette[key] = value.trim()
+      .replace(/\r\n/g, '')
+      .replace(/\n/g, '');
 });
 
 const fname = path.basename(__filename);
