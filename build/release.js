@@ -6,11 +6,11 @@ const zipdir = require('zip-dir');
 
 const PROJECT_ROOT = path.resolve(__dirname, '..');
 
-function updateManifestVersion(version, path) {
+function updateManifestVersion(version, p) {
   const manifestPath = path.resolve(
     PROJECT_ROOT,
     'src/manifest',
-    path,
+    p,
     'manifest.json'
   );
   const manifest = fs.readJSONSync(manifestPath);
