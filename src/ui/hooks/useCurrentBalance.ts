@@ -24,7 +24,8 @@ const formatChain = (item: ChainWithBalance): DisplayChainWithWhiteLogo => {
 export default function useCurrentBalance(
   account: string | undefined,
   update = false,
-  noNeedBalance = false
+  noNeedBalance = false,
+  nonce = 0
 ) {
   const wallet = useWallet();
   const [balance, setBalance] = useState<number | null>(null);
@@ -89,7 +90,7 @@ export default function useCurrentBalance(
     return () => {
       isCanceled = true;
     };
-  }, [account]);
+  }, [account, nonce]);
   return [
     balance,
     chainBalances,

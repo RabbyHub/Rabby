@@ -26,6 +26,7 @@ export const transactions = createModel<RootModel>()({
     async getPendingTxCountAsync(address: string, store) {
       const count = await store.app.wallet.getPendingCount<number>(address);
       dispatch.transactions.setField({ pendingTransactionCount: count });
+      return count;
     },
   }),
 });

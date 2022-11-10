@@ -14,6 +14,7 @@ const BalanceView = ({
   currentAccount,
   showChain = false,
   startAnimate = false,
+  accountBalanceUpdateNonce = 0,
   onClick,
 }) => {
   const [
@@ -23,7 +24,12 @@ const BalanceView = ({
     success,
     balanceLoading,
     balanceFromCache,
-  ] = useCurrentBalance(currentAccount?.address, true);
+  ] = useCurrentBalance(
+    currentAccount?.address,
+    true,
+    false,
+    accountBalanceUpdateNonce
+  );
   const [numberAnimation, setNumberAnimation] = useState('');
   const [numberWrapperAnimation, setNumberWrapperAnimation] = useState('');
 

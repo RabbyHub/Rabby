@@ -163,6 +163,7 @@ const Dashboard = () => {
   const [connectionAnimation, setConnectionAnimation] = useState('');
   const [nftType, setNFTType] = useState<'collection' | 'nft'>('collection');
   const [pendingApprovalCount, setPendingApprovalCount] = useState(0);
+  const [accountBalanceUpdateNonce, setAccountBalanceUpdateNonce] = useState(0);
 
   const [startAnimate, setStartAnimate] = useState(false);
   const isGnosis = useRabbyGetter((s) => s.chains.isCurrentAccountGnosis);
@@ -207,9 +208,17 @@ const Dashboard = () => {
           setDisplayName(name);
         });
 
-      eventBus.addEventListener(EVENTS.TX_COMPLETED, ({ address }) => {
+      eventBus.addEventListener(EVENTS.TX_COMPLETED, async ({ address }) => {
         if (isSameAddress(address, currentAccount.address)) {
-          dispatch.transactions.getPendingTxCountAsync(currentAccount.address);
+          const count = await dispatch.transactions.getPendingTxCountAsync(
+            currentAccount.address
+          );
+          if (count === 0) {
+            setTimeout(() => {
+              // increase accountBalanceUpdateNonce to trigger useCurrentBalance re-fetch account balance
+              setAccountBalanceUpdateNonce(accountBalanceUpdateNonce + 1);
+            }, 3000);
+          }
         }
       });
     }
@@ -705,6 +714,7 @@ const Dashboard = () => {
             currentAccount={currentAccount}
             showChain={showChain}
             startAnimate={startAnimate}
+            accountBalanceUpdateNonce={accountBalanceUpdateNonce}
             onClick={() => {
               if (!showToken && !showAssets && !showNFT) {
                 ReactGA.event({
