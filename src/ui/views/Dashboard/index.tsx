@@ -216,8 +216,9 @@ const Dashboard = () => {
           if (count === 0) {
             setTimeout(() => {
               // increase accountBalanceUpdateNonce to trigger useCurrentBalance re-fetch account balance
+              // delay 5s for waiting db sync data
               setAccountBalanceUpdateNonce(accountBalanceUpdateNonce + 1);
-            }, 3000);
+            }, 5000);
           }
         }
       });
