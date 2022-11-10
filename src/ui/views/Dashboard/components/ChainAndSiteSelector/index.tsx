@@ -1,4 +1,3 @@
-import eventBus from '@/eventBus';
 import { Badge, Skeleton, Tooltip } from 'antd';
 import { GasLevel } from 'background/service/openapi';
 import { ConnectedSite } from 'background/service/permission';
@@ -9,20 +8,15 @@ import { useHistory, useLocation } from 'react-router-dom';
 import ReactGA from 'react-ga';
 import IconAlertRed from 'ui/assets/alert-red.svg';
 import IconDapps from 'ui/assets/dapps.svg';
-import IconEth from 'ui/assets/dashboard/eth.png';
 import IconGas from 'ui/assets/dashboard/gas.svg';
 import IconQuene from 'ui/assets/dashboard/quene.svg';
 import IconSecurity from 'ui/assets/dashboard/security.svg';
-import IconSwap from 'ui/assets/dashboard/swap.svg';
 import IconSendToken from 'ui/assets/dashboard/sendtoken.png';
 import IconSetting from 'ui/assets/dashboard/setting.png';
-import IconActivities from 'ui/assets/dashboard/activities.svg';
-import IconActivitiesPending from 'ui/assets/dashboard/activities-pending.svg';
 import IconReceive from 'ui/assets/dashboard/receive.svg';
 import IconGasTopUp from 'ui/assets/dashboard/gas-top-up.svg';
 import IconTransactions from 'ui/assets/dashboard/transactions.png';
 import IconAddresses from 'ui/assets/dashboard/addresses.svg';
-import IconWidget from 'ui/assets/dashboard/widget.svg';
 import IconDrawer from 'ui/assets/drawer.png';
 import { getCurrentConnectSite, splitNumberByStep, useWallet } from 'ui/utils';
 import { CurrentConnection } from '../CurrentConnection';
@@ -34,13 +28,11 @@ import { useAsync } from 'react-use';
 import { useRabbySelector } from '@/ui/store';
 
 export default ({
-  pendingTxCount,
   gnosisPendingCount,
   onChange,
   connectionAnimation,
   showDrawer,
   hideAllList,
-  showModal = false,
   isGnosis,
   setDashboardReload,
 }: {
@@ -49,7 +41,6 @@ export default ({
   connectionAnimation?: string;
   showDrawer?: boolean;
   hideAllList?(): void;
-  showModal?: boolean;
   isGnosis: boolean;
   higherBottom: boolean;
   pendingTxCount?: number;
@@ -57,15 +48,12 @@ export default ({
   setDashboardReload(): void;
 }) => {
   const history = useHistory();
-  const [connections, setConnections] = useState<(ConnectedSite | null)[]>([]);
   const [currentConnectedSiteChain, setCurrentConnectedSiteChain] = useState(
     CHAINS_ENUM.ETH
   );
-  const [localshowModal, setLocalShowModal] = useState(showModal);
   const [drawerAnimation, setDrawerAnimation] = useState<string | null>(null);
   const [urlVisible, setUrlVisible] = useState(false);
   const [settingVisible, setSettingVisible] = useState(false);
-  const [securityVisible, setSecurityVisible] = useState(false);
   const [currentConnect, setCurrentConnect] = useState<
     ConnectedSite | null | undefined
   >(null);
@@ -105,19 +93,10 @@ export default ({
     }
   }, [approvalState]);
 
-  const getConnectedSites = async () => {
-    const sites = await wallet.getRecentConnectedSites();
-    setConnections(sites.slice(0, 6));
-  };
-
   const getCurrentSite = useCallback(async () => {
     const current = await getCurrentConnectSite(wallet);
     setCurrentConnect(current);
   }, []);
-
-  const hideModal = () => {
-    setLocalShowModal(false);
-  };
 
   const currentConnectedSiteChainNativeToken = useMemo(
     () =>
@@ -189,10 +168,6 @@ export default ({
     setDashboardReload();
   };
 
-  const changeSecurity = () => {
-    setSecurityVisible(!securityVisible);
-  };
-
   useEffect(() => {
     getCurrentSite();
   }, []);
@@ -202,12 +177,6 @@ export default ({
       setCurrentConnectedSiteChain(currentConnect?.chain);
     }
   }, [currentConnect?.chain]);
-
-  useEffect(() => {
-    if (!urlVisible) {
-      getConnectedSites();
-    }
-  }, [urlVisible]);
 
   useEffect(() => {
     onChange(currentConnect);
@@ -273,15 +242,6 @@ export default ({
         history.push('/gnosis-queue');
       },
     },
-    activities: {
-      icon: pendingTxCount ? IconActivitiesPending : IconActivities,
-      content: 'Activities',
-      badge: pendingTxCount,
-      iconSpin: !!pendingTxCount,
-      onClick: () => {
-        history.push('/activities');
-      },
-    },
     transactions: {
       icon: IconTransactions,
       content: 'Transactions',
@@ -340,7 +300,6 @@ export default ({
       'send',
       'receive',
       'gasTopUp',
-      'activities',
       'transactions',
       'dapps',
       'security',

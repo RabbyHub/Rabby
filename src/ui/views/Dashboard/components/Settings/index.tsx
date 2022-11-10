@@ -6,7 +6,7 @@ import { useTranslation } from 'react-i18next';
 import { Link, useHistory } from 'react-router-dom';
 import ReactGA from 'react-ga';
 import IconArrowRight from 'ui/assets/arrow-right-gray.svg';
-import IconAddressManagement from 'ui/assets/icon-user.svg';
+import IconActivities from 'ui/assets/dashboard/activities.svg';
 import IconLock from 'ui/assets/lock.svg';
 import LogoRabby from 'ui/assets/logo-rabby-large.svg';
 import IconReset from 'ui/assets/reset-account.svg';
@@ -222,19 +222,14 @@ const Settings = ({ visible, onClose }: SettingsProps) => {
   };
 
   const renderData = [
-    // {
-    //   leftIcon: IconAddressManagement,
-    //   content: t('AddressManagement'),
-    //   onClick: () => {
-    //     ReactGA.event({
-    //       category: 'Setting',
-    //       action: 'clickToUse',
-    //       label: 'adddressManagement',
-    //     });
-    //     reportSettings('addressManagement');
-    //     history.push('/settings/address');
-    //   },
-    // },
+    {
+      leftIcon: IconActivities,
+      content: t('Signature Record'),
+      onClick: () => {
+        history.push('/activities');
+        reportSettings('activities');
+      },
+    },
     {
       leftIcon: IconContacts,
       content: t('Contacts'),

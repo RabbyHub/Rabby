@@ -15,12 +15,13 @@ import {
   KEYRING_TYPE,
   KEYRING_TYPE_TEXT,
   WALLET_BRAND_CONTENT,
+  EVENTS,
 } from 'consts';
 import cloneDeep from 'lodash/cloneDeep';
 import uniqBy from 'lodash/uniqBy';
 import QRCode from 'qrcode.react';
 import React, { useEffect, useRef, useState } from 'react';
-import { Link, useHistory, useLocation } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import { useInterval } from 'react-use';
 import { FixedSizeList } from 'react-window';
 import { SvgIconLoading } from 'ui/assets';
@@ -43,7 +44,6 @@ import {
   useRabbySelector,
 } from 'ui/store';
 import { isSameAddress, useWalletOld } from 'ui/utils';
-import { openInTab } from 'ui/utils/webapi';
 import {
   AssetsList,
   BalanceView,
@@ -59,8 +59,10 @@ import './style.less';
 
 import AddressRow from './components/AddressRow';
 import PendingApproval from './components/PendingApproval';
+import PendingTxs from './components/PendingTxs';
 import { sortAccountsByBalance } from '@/ui/utils/account';
 import { getKRCategoryByType } from '@/utils/transaction';
+import eventBus from '@/eventBus';
 
 const GnosisAdminItem = ({
   accounts,
@@ -86,11 +88,6 @@ const GnosisAdminItem = ({
 
 const Dashboard = () => {
   const history = useHistory();
-  const { state } = useLocation<{
-    connection?: boolean;
-    showChainsModal?: boolean;
-  }>();
-  const { showChainsModal = false } = state ?? {};
   const wallet = useWalletOld();
   const { t } = useTranslation();
   const dispatch = useRabbyDispatch();
@@ -209,7 +206,16 @@ const Dashboard = () => {
           dispatch.account.setField({ alianName: name });
           setDisplayName(name);
         });
+
+      eventBus.addEventListener(EVENTS.TX_COMPLETED, ({ address }) => {
+        if (isSameAddress(address, currentAccount.address)) {
+          dispatch.transactions.getPendingTxCountAsync(currentAccount.address);
+        }
+      });
     }
+    return () => {
+      eventBus.removeAllEventListeners(EVENTS.TX_COMPLETED);
+    };
   }, [currentAccount]);
 
   useEffect(() => {
@@ -732,6 +738,9 @@ const Dashboard = () => {
               }
             }}
           />
+          {pendingTxCount > 0 && !showChain && (
+            <PendingTxs pendingTxCount={pendingTxCount} />
+          )}
           <div className={clsx('listContainer', showChain && 'mt-10')}>
             <div
               className={clsx('token', showToken && 'showToken')}
@@ -862,8 +871,6 @@ const Dashboard = () => {
           connectionAnimation={connectionAnimation}
           showDrawer={showToken || showAssets || showNFT}
           hideAllList={hideAllList}
-          showModal={showChainsModal}
-          pendingTxCount={pendingTxCount}
           gnosisPendingCount={gnosisPendingCount}
           isGnosis={isGnosis}
           higherBottom={isGnosis}
