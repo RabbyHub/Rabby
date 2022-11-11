@@ -1017,7 +1017,12 @@ const Dashboard = () => {
       </Modal>
       {!(showToken || showAssets || showNFT) && <DefaultWalletSetting />}
       {pendingApprovalCount > 0 && (
-        <PendingApproval count={pendingApprovalCount} />
+        <PendingApproval
+          onRejectAll={() => {
+            setPendingApprovalCount(0);
+          }}
+          count={pendingApprovalCount}
+        />
       )}
     </>
   );

@@ -51,7 +51,13 @@ const NumberText = styled.span`
   color: ${LessPalette['@primary-color']};
 `;
 
-const PendingApproval = ({ count }: { count: number }) => {
+const PendingApproval = ({
+  count,
+  onRejectAll,
+}: {
+  count: number;
+  onRejectAll: () => void;
+}) => {
   const wallet = useWallet();
 
   const handleActiveApproval = async () => {
@@ -59,9 +65,9 @@ const PendingApproval = ({ count }: { count: number }) => {
     window.close();
   };
 
-  const onRejectAll = async () => {
+  const handleOnRejectAll = async () => {
     await wallet.rejectAllApprovals();
-    window.close();
+    onRejectAll();
   };
 
   return (
@@ -78,7 +84,7 @@ const PendingApproval = ({ count }: { count: number }) => {
         >
           {count === 1 ? 'View' : 'View first one'}
         </Button>
-        <RejectAllButton href="#" onClick={onRejectAll}>
+        <RejectAllButton href="#" onClick={handleOnRejectAll}>
           Reject All
         </RejectAllButton>
       </Inner>
