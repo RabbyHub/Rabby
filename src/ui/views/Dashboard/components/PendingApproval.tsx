@@ -23,7 +23,7 @@ const Inner = styled.div`
   background: #fff;
   box-shadow: 0px 20px 20px rgba(45, 48, 51, 0.16);
   border-radius: 6px;
-  padding: 40px 16px 30px;
+  padding: 40px 16px 24px;
   display: flex;
   flex-direction: column;
   align-items: center;
@@ -40,11 +40,11 @@ const TextContent = styled.p`
 
 const RejectAllButton = styled.a`
   font-weight: 500;
-  font-size: 12px;
-  line-height: 22px;
+  font-size: 13px;
+  line-height: 15px;
   text-align: center;
   color: ${LessPalette['@color-text']};
-  margin-top: 26px;
+  margin-top: 16px;
 `;
 
 const NumberText = styled.span`

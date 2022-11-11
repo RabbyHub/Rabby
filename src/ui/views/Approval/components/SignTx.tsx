@@ -8,7 +8,7 @@ import {
 import Safe from '@rabby-wallet/gnosis-sdk';
 import { SafeInfo } from '@rabby-wallet/gnosis-sdk/src/api';
 import * as Sentry from '@sentry/browser';
-import { Button, Drawer, Modal } from 'antd';
+import { Button, Drawer, Modal, Tooltip } from 'antd';
 import {
   Chain,
   ExplainTxResponse,
@@ -35,7 +35,6 @@ import {
 } from 'consts';
 import {
   addHexPrefix,
-  intToHex,
   isHexPrefixed,
   isHexString,
   unpadHexString,
@@ -70,6 +69,7 @@ import SecurityCheckCard from './SecurityCheckCard';
 import ProcessTooltip from './ProcessTooltip';
 import { useLedgerDeviceConnected } from '@/utils/ledger';
 import { TransactionGroup } from 'background/service/transactionHistory';
+import { intToHex } from 'ui/utils/number';
 
 const normalizeHex = (value: string | number) => {
   if (typeof value === 'number') {
@@ -510,6 +510,7 @@ const checkGasAndNonce = ({
     errors.push({
       code: 3001,
       msg: 'The reserved gas fee is not enough',
+      level: 'forbidden',
     });
   }
   if (new BigNumber(nonce).lt(recommendNonce) && !(isCancel || isSpeedUp)) {
@@ -568,7 +569,6 @@ const useCheckGasAndNonce = ({
 
 const getGasLimitBaseAccountBalance = ({
   gasPrice,
-  gasLimit,
   nativeTokenBalance,
   nonce,
   pendingList,
@@ -577,12 +577,11 @@ const getGasLimitBaseAccountBalance = ({
   recommendGasLimitRatio,
 }: {
   tx: Tx;
-  gasLimit: number | string | BigNumber;
   nonce: number | string | BigNumber;
   gasPrice: number | string | BigNumber;
   pendingList: TransactionGroup[];
   nativeTokenBalance: string;
-  recommendGasLimit: string;
+  recommendGasLimit: string | number;
   recommendGasLimitRatio: number;
 }) => {
   const sendNativeTokenAmount = new BigNumber(
@@ -613,33 +612,19 @@ const getGasLimitBaseAccountBalance = ({
   const avaliableGasToken = new BigNumber(nativeTokenBalance).minus(
     sendNativeTokenAmount.plus(pendingsSumNativeTokenCost)
   ); // avaliableGasToken = current native token balance - sendNativeTokenAmount - pendingsSumNativeTokenCost
-  const currentTxGasCost = new BigNumber(gasPrice).times(gasLimit);
-  if (
-    new BigNumber(gasLimit).lt(
-      Number(recommendGasLimit) * recommendGasLimitRatio
-    )
-  ) {
-    if (
-      avaliableGasToken.gt(
-        new BigNumber(gasPrice).times(
-          Number(recommendGasLimit) * recommendGasLimitRatio
-        )
-      )
-    ) {
-      // if avaliableGasToken is enough to pay gas fee of recommendGasLimit * recommendGasLimitRatio, use recommendGasLimit * recommendGasLimitRatio as gasLimit
-      return Number(recommendGasLimit) * recommendGasLimitRatio;
-    } else {
-      const adaptGasLimit = avaliableGasToken.div(gasPrice); // if avaliableGasToken is not enough, adapt gasLimit by account balance
-      return Math.floor(adaptGasLimit.toNumber());
-    }
-  }
-  if (avaliableGasToken.lt(0)) {
+  if (avaliableGasToken.lte(0)) {
     // avaliableGasToken less than 0 use 0 as gasLimit
     return 0;
   }
-  if (avaliableGasToken.gt(currentTxGasCost)) {
-    // avaliableGasToken > currentTxGasCost then use gasLimit
-    return gasLimit;
+  if (
+    avaliableGasToken.gt(
+      new BigNumber(gasPrice).times(
+        Number(recommendGasLimit) * recommendGasLimitRatio
+      )
+    )
+  ) {
+    // if avaliableGasToken is enough to pay gas fee of recommendGasLimit * recommendGasLimitRatio, use recommendGasLimit * recommendGasLimitRatio as gasLimit
+    return Number(recommendGasLimit) * recommendGasLimitRatio;
   }
   const adaptGasLimit = avaliableGasToken.div(gasPrice); // adapt gasLimit by account balance
   return Math.floor(adaptGasLimit.toNumber());
@@ -1002,6 +987,20 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     setRecommendGasLimit(`0x${gas.toString(16)}`);
     if (tx.gas && origin === INTERNAL_REQUEST_ORIGIN) {
       setGasLimit(intToHex(Number(tx.gas))); // use origin gas as gasLimit when tx is an internal tx with gasLimit(i.e. for SendMax native token)
+      reCalcGasLimitBaseAccountBalance({
+        nonce: (updateNonce ? recommendNonce : tx.nonce) || '0x1',
+        tx: {
+          ...tx,
+          nonce: (updateNonce ? recommendNonce : tx.nonce) || '0x1', // set a mock nonce for explain if dapp not set it
+          data: tx.data,
+          value: tx.value || '0x0',
+          gas: tx.gas || '', // set gas limit if dapp not set
+        },
+        gasPrice: selectedGas?.price || 0,
+        customRecommendGasLimit: gas.toNumber(),
+        customGasLimit: Number(tx.gas),
+        customRecommendGasLimitRatio: 1,
+      });
     } else if (!gasLimit) {
       // use server response gas limit
       const ratio = SAFE_GAS_LIMIT_RATIO[chainId] || DEFAULT_GAS_LIMIT_RATIO;
@@ -1010,6 +1009,20 @@ const SignTx = ({ params, origin }: SignTxProps) => {
         ? gas.times(ratio).toFixed(0)
         : gas.toFixed(0);
       setGasLimit(intToHex(Number(recommendGasLimit)));
+      reCalcGasLimitBaseAccountBalance({
+        nonce: (updateNonce ? recommendNonce : tx.nonce) || '0x1',
+        tx: {
+          ...tx,
+          nonce: (updateNonce ? recommendNonce : tx.nonce) || '0x1', // set a mock nonce for explain if dapp not set it
+          data: tx.data,
+          value: tx.value || '0x0',
+          gas: tx.gas || '', // set gas limit if dapp not set
+        },
+        gasPrice: selectedGas?.price || 0,
+        customRecommendGasLimit: Number(recommendGasLimit),
+        customGasLimit: Number(recommendGasLimit),
+        customRecommendGasLimitRatio: needRatio ? ratio : 1,
+      });
     }
 
     setTxDetail(res);
@@ -1480,12 +1493,22 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     gasPrice,
     nonce,
     tx,
+    customRecommendGasLimit,
+    customGasLimit,
+    customRecommendGasLimitRatio,
   }: {
     tx: Tx;
     nonce: number | string | BigNumber;
     gasPrice: number | string | BigNumber;
+    customRecommendGasLimit?: number;
+    customGasLimit?: number;
+    customRecommendGasLimitRatio?: number;
   }) => {
-    if (!gasLimit) return;
+    const calcGasLimit = customGasLimit || gasLimit;
+    const calcGasLimitRatio =
+      customRecommendGasLimitRatio || recommendGasLimitRatio;
+    const calcRecommendGasLimit = customRecommendGasLimit || recommendGasLimit;
+    if (!calcGasLimit) return;
     const currentAccount =
       isGnosis && account ? account : (await wallet.getCurrentAccount())!;
     const { pendings } = await wallet.getTransactionHistory(
@@ -1493,15 +1516,14 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     );
     const res = getGasLimitBaseAccountBalance({
       gasPrice,
-      gasLimit,
       nonce,
       pendingList: pendings,
       nativeTokenBalance,
       tx,
-      recommendGasLimit,
-      recommendGasLimitRatio,
+      recommendGasLimit: calcRecommendGasLimit,
+      recommendGasLimitRatio: calcGasLimitRatio,
     });
-    if (!new BigNumber(res).eq(gasLimit)) {
+    if (!new BigNumber(res).eq(calcGasLimit)) {
       setGasLimit(`0x${new BigNumber(res).toNumber().toString(16)}`);
       setManuallyChangeGasLimit(false);
     }
@@ -1652,15 +1674,29 @@ const SignTx = ({ params, origin }: SignTxProps) => {
                     </Button>
                     {!canProcess ||
                     !!checkErrors.find((item) => item.level === 'forbidden') ? (
-                      <Button
-                        type="primary"
-                        size="large"
-                        className="w-[172px]"
-                        onClick={() => handleAllow()}
-                        disabled={true}
+                      <Tooltip
+                        placement="topLeft"
+                        overlayClassName="rectangle sign-tx-forbidden-tooltip"
+                        title={
+                          checkErrors.find((item) => item.level === 'forbidden')
+                            ? checkErrors.find(
+                                (item) => item.level === 'forbidden'
+                              )!.msg
+                            : null
+                        }
                       >
-                        {t(submitText)}
-                      </Button>
+                        <div>
+                          <Button
+                            type="primary"
+                            size="large"
+                            className="w-[172px]"
+                            onClick={() => handleAllow()}
+                            disabled={true}
+                          >
+                            {t(submitText)}
+                          </Button>
+                        </div>
+                      </Tooltip>
                     ) : (
                       <Button
                         type="primary"

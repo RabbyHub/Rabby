@@ -2262,6 +2262,12 @@ export class WalletController extends BaseController {
         }
     )[];
   }) => {
+    const queue = new PQueue({
+      autoStart: true,
+      concurrency: 1,
+      timeout: undefined,
+    });
+
     const revokeList = list.map((e) => async () => {
       try {
         if ('tokenId' in e) {
@@ -2275,15 +2281,11 @@ export class WalletController extends BaseController {
           });
         }
       } catch (error) {
+        queue.clear();
         console.error('revoke error', e);
       }
     });
 
-    const queue = new PQueue({
-      autoStart: true,
-      concurrency: 1,
-      timeout: undefined,
-    });
     try {
       await queue.addAll(revokeList);
     } catch (error) {
