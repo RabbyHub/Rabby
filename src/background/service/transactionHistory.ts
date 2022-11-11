@@ -395,7 +395,6 @@ class TxHistory {
       });
     }
     this.clearBefore({ address, chainId, nonce });
-    this.clearExpiredTxs(address);
   }
 
   clearExpiredTxs(address: string) {
