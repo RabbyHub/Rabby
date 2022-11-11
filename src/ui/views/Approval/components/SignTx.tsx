@@ -504,7 +504,9 @@ const checkGasAndNonce = ({
   if (
     !isGnosisAccount &&
     gasExplainResponse.maxGasCostAmount
-      .plus(new BigNumber(tx.value || 0).div(1e18))
+      .plus(
+        new BigNumber(isNaN(Number(tx.value)) ? 0 : Number(tx.value)).div(1e18)
+      )
       .isGreaterThan(new BigNumber(nativeTokenBalance).div(1e18))
   ) {
     errors.push({
@@ -1517,7 +1519,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     const res = getGasLimitBaseAccountBalance({
       gasPrice,
       nonce,
-      pendingList: pendings,
+      pendingList: pendings.filter((item) => item.chainId === chainId),
       nativeTokenBalance,
       tx,
       recommendGasLimit: calcRecommendGasLimit,
