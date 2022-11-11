@@ -2000,6 +2000,9 @@ export class WalletController extends BaseController {
   getTransactionHistory = (address: string) =>
     transactionHistoryService.getList(address);
 
+  loadPendingListQueue = (address: string) =>
+    transactionHistoryService.loadPendingListQueue(address);
+
   addSigningTx = (tx: Tx) => transactionHistoryService.addSigningTx(tx);
 
   updateSigningTx = (
@@ -2011,7 +2014,7 @@ export class WalletController extends BaseController {
 
   getSigningTx = (id: string) => transactionHistoryService.getSigningTx(id);
 
-  comepleteTransaction = (params: {
+  completedTransaction = (params: {
     address: string;
     chainId: number;
     nonce: number;

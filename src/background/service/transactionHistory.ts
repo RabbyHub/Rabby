@@ -258,7 +258,7 @@ class TxHistory {
       chainId: number;
       nonce: number;
     },
-    duration = 0
+    duration: number | boolean = 0
   ) {
     const key = `${chainId}-${nonce}`;
     const from = address.toLowerCase();
@@ -270,11 +270,12 @@ class TxHistory {
       const results = await Promise.all(
         txs
           .filter((tx) => !!tx)
+          .filter((tx) => !tx.isSubmitFailed)
           .map((tx) =>
             openapiService.getTx(
               chain.serverId,
               tx.hash,
-              Number(tx.rawTx.gasPrice)
+              Number(tx.rawTx.gasPrice || tx.rawTx.maxFeePerGas || 0)
             )
           )
       );
@@ -282,11 +283,11 @@ class TxHistory {
         (result) => result.code === 0 && result.status !== 0
       );
       if (!completed) {
-        if (duration < 1000 * 15) {
+        if (duration !== false && duration < 1000 * 15) {
           // maximum retry 15 times;
           setTimeout(() => {
             this.reloadTx({ address, chainId, nonce });
-          }, duration + 1000);
+          }, Number(duration) + 1000);
         }
         return;
       }
@@ -303,13 +304,47 @@ class TxHistory {
         success: completed.status === 1,
       });
     } catch (e) {
-      if (duration < 1000 * 15) {
+      if (duration !== false && duration < 1000 * 15) {
         // maximum retry 15 times;
         setTimeout(() => {
           this.reloadTx({ address, chainId, nonce });
-        }, duration + 1000);
+        }, Number(duration) + 1000);
       }
     }
+  }
+
+  async loadPendingListQueue(address) {
+    const { pendings: pendingList } = await this.getList(address);
+
+    const pendingListByChain = pendingList.reduce<
+      Record<number, TransactionGroup[]>
+    >((acc, cur) => {
+      const chainId = cur.chainId;
+      if (!acc[chainId]) {
+        acc[chainId] = [];
+      }
+      acc[chainId].push(cur);
+      return acc;
+    }, {});
+
+    await Promise.all(
+      Object.keys(pendingListByChain).map(async (chainId) => {
+        const list = pendingListByChain[Number(chainId)].reverse();
+
+        for (const tx of list) {
+          await this.reloadTx(
+            {
+              address,
+              chainId: tx.chainId,
+              nonce: tx.nonce,
+            },
+            false // don't retry
+          );
+        }
+      })
+    );
+
+    return (await this.getList(address)).pendings;
   }
 
   getList(address: string) {
