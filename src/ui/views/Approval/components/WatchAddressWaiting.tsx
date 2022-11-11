@@ -454,22 +454,16 @@ const WatchAddressWaiting = ({ params }: { params: ApprovalParams }) => {
           status !== WALLETCONNECT_STATUS_MAP.REJECTED
         ) {
           if (!isText && !isSignTriggered) {
+            const explain = explainRef.current;
+
             // const tx = approval.data?.params;
-            if (approval.signingTxId) {
+            if (explain) {
               // const { nonce, from, chainId } = tx;
               // const explain = await wallet.getExplainCache({
               //   nonce: Number(nonce),
               //   address: from,
               //   chainId: Number(chainId),
               // });
-
-              const signingTx = await wallet.getSigningTx(approval.signingTxId);
-
-              if (!signingTx?.explain) {
-                throw new Error('signingTx explain is null');
-              }
-
-              const explain = signingTx.explain;
 
               wallet.reportStats('signTransaction', {
                 type: account.brandName,
