@@ -13,7 +13,7 @@ import IconReset from 'ui/assets/reset-account.svg';
 import IconSuccess from 'ui/assets/success.svg';
 import IconServer from 'ui/assets/server.svg';
 import { Field, PageHeader, Popup } from 'ui/component';
-import { useWallet, useWalletOld } from 'ui/utils';
+import { openInTab, useWallet, useWalletOld } from 'ui/utils';
 import './style.less';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import IconContacts from 'ui/assets/swap/contact.svg';
@@ -21,6 +21,8 @@ import IconSettingWidget from 'ui/assets/settings-widget.svg';
 import IconDiscord from 'ui/assets/discord.svg';
 import { Contacts, Widget } from '..';
 import stats from '@/stats';
+import { useAsync, useCss } from 'react-use';
+import compareVersions from 'compare-versions';
 
 interface SettingsProps {
   visible?: boolean;
@@ -221,6 +223,61 @@ const Settings = ({ visible, onClose }: SettingsProps) => {
     });
   };
 
+  const { value: hasNewVersion = false, error } = useAsync(async () => {
+    const data = await wallet.openapi.getLatestVersion();
+
+    return (
+      compareVersions(process.env.release || '0.0.0', data.version_tag) === -1
+    );
+  });
+
+  const updateVersionClassName = useCss({
+    '& .ant-modal-content': {
+      background: '#fff',
+    },
+    '& .ant-modal-body': {
+      padding: '15px 14px 28px 14px',
+    },
+    '& .ant-modal-confirm-content': {
+      padding: '24px 0 0 0',
+    },
+    '& .ant-modal-confirm-btns': {
+      justifyContent: 'center',
+      'button:first-child': {
+        display: 'none',
+      },
+    },
+  });
+
+  const updateVersion = () => {
+    if (hasNewVersion) {
+      confirm({
+        width: 320,
+        closable: true,
+        centered: true,
+        className: updateVersionClassName,
+        title: null,
+        content: (
+          <div className="text-14 leading-[18px] text-center text-gray-subTitle">
+            A new update for Rabby Wallet is available. Click to check how to
+            update manually.
+          </div>
+        ),
+        okText: 'See Tutorial',
+        onOk() {
+          openInTab('https://rabby.io/update-extension');
+        },
+      });
+    } else {
+      message.success({
+        icon: <img src={IconSuccess} className="icon icon-success" />,
+        content: (
+          <span className="text-white">You are using the latest version</span>
+        ),
+      });
+    }
+  };
+
   const renderData = [
     {
       leftIcon: IconActivities,
@@ -348,7 +405,24 @@ const Settings = ({ visible, onClose }: SettingsProps) => {
           <footer className="footer">
             <img src={LogoRabby} alt="" />
             <div>
-              {process.env.version} /{' '}
+              <span
+                className="text-12 underline text-gray-content cursor-pointer"
+                role="button"
+                onClick={updateVersion}
+              >
+                {process.env.version}
+              </span>
+              <span
+                className={clsx(
+                  'px-[6px] py-[1px] mx-[4px] rounded-[90px] bg-[#ec5151] text-white text-center',
+                  !hasNewVersion && 'hidden'
+                )}
+                role="button"
+                onClick={updateVersion}
+              >
+                Update Available
+              </span>
+              /{' '}
               <Link to="/settings/chain-list" className="underline">
                 {Object.values(CHAINS).length} chains supported
               </Link>

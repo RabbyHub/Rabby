@@ -107,9 +107,9 @@ const Main = () => {
           <CreatePassword />
         </Route>
 
-        <PrivateRoute exact path="/no-address">
+        <Route exact path="/no-address">
           <NoAddress />
-        </PrivateRoute>
+        </Route>
         <PrivateRoute exact path="/start-chain-management">
           <StartChainManagement />
         </PrivateRoute>

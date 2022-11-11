@@ -25,6 +25,7 @@ import clsx from 'clsx';
 import _ from 'lodash';
 import { connectStore } from '@/ui/store';
 import { Item } from '../Item';
+import { useWallet } from '@/ui/utils';
 
 const walletSortObj = [
   //mobile
@@ -60,11 +61,22 @@ const AddAddressOptions = () => {
   const history = useHistory();
   const { t } = useTranslation();
 
+  const wallet = useWallet();
+
   const [selectedWalletType, setSelectedWalletType] = useState('');
+  const handleRouter = async (action: (h: typeof history) => void) =>
+    (await wallet.isBooted())
+      ? action(history)
+      : history.push({
+          pathname: '/password',
+          state: {
+            handle: (h: typeof history) => action(h),
+          },
+        });
 
   type Valueof<T> = T[keyof T];
-  const connectRouter = React.useCallback(
-    (item: Valueof<typeof WALLET_BRAND_CONTENT>) => {
+  const connectRouter1 = React.useCallback(
+    (history, item: Valueof<typeof WALLET_BRAND_CONTENT>) => {
       if (item.connectType === 'BitBox02Connect') {
         openInternalPageInTab('import/hardware?connectType=BITBOX02');
       } else if (item.connectType === 'GridPlusConnect') {
@@ -101,6 +113,8 @@ const AddAddressOptions = () => {
     },
     []
   );
+  const connectRouter = (item: Valueof<typeof WALLET_BRAND_CONTENT>) =>
+    handleRouter((h) => connectRouter1(h, item));
   const brandWallet = React.useMemo(
     () =>
       Object.values(WALLET_BRAND_CONTENT)
@@ -159,15 +173,18 @@ const AddAddressOptions = () => {
         leftIcon: IconCreatenewaddr,
         content: t('createAddress'),
         brand: 'createAddress',
-        onClick: async () => {
-          history.push('/mnemonics/create');
+        onClick: () => {
+          handleRouter((history) => history.push('/mnemonics/create'));
         },
       },
       {
         leftIcon: IconImportAdress,
         brand: 'importAddress',
         content: 'Import Address',
-        onClick: () => history.push('/import/entry-import-address'),
+        onClick: () =>
+          handleRouter((history) =>
+            history.push('/import/entry-import-address')
+          ),
       },
     ],
     [t]
@@ -179,7 +196,8 @@ const AddAddressOptions = () => {
         leftIcon: IconMetamask,
         brand: 'addMetaMaskAccount',
         content: 'Import My MetaMask Account',
-        onClick: () => history.push('/import/metamask'),
+        onClick: () =>
+          handleRouter((history) => history.push('/import/metamask')),
       },
     ],
     []
@@ -192,7 +210,8 @@ const AddAddressOptions = () => {
         brand: 'addWatchMode',
         content: 'Watch Mode Address',
         subText: t('Add address without private keys'),
-        onClick: () => history.push('/import/watch-address'),
+        onClick: () =>
+          handleRouter((history) => history.push('/import/watch-address')),
       },
     ],
     [t]
