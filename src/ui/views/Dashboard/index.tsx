@@ -15,12 +15,13 @@ import {
   KEYRING_TYPE,
   KEYRING_TYPE_TEXT,
   WALLET_BRAND_CONTENT,
+  EVENTS,
 } from 'consts';
 import cloneDeep from 'lodash/cloneDeep';
 import uniqBy from 'lodash/uniqBy';
 import QRCode from 'qrcode.react';
 import React, { useEffect, useRef, useState } from 'react';
-import { Link, useHistory, useLocation } from 'react-router-dom';
+import { Link, useHistory } from 'react-router-dom';
 import { useInterval } from 'react-use';
 import { FixedSizeList } from 'react-window';
 import { SvgIconLoading } from 'ui/assets';
@@ -43,7 +44,6 @@ import {
   useRabbySelector,
 } from 'ui/store';
 import { isSameAddress, useWalletOld } from 'ui/utils';
-import { openInTab } from 'ui/utils/webapi';
 import {
   AssetsList,
   BalanceView,
@@ -59,8 +59,10 @@ import './style.less';
 
 import AddressRow from './components/AddressRow';
 import PendingApproval from './components/PendingApproval';
+import PendingTxs from './components/PendingTxs';
 import { sortAccountsByBalance } from '@/ui/utils/account';
 import { getKRCategoryByType } from '@/utils/transaction';
+import eventBus from '@/eventBus';
 
 const GnosisAdminItem = ({
   accounts,
@@ -86,11 +88,6 @@ const GnosisAdminItem = ({
 
 const Dashboard = () => {
   const history = useHistory();
-  const { state } = useLocation<{
-    connection?: boolean;
-    showChainsModal?: boolean;
-  }>();
-  const { showChainsModal = false } = state ?? {};
   const wallet = useWalletOld();
   const { t } = useTranslation();
   const dispatch = useRabbyDispatch();
@@ -166,6 +163,7 @@ const Dashboard = () => {
   const [connectionAnimation, setConnectionAnimation] = useState('');
   const [nftType, setNFTType] = useState<'collection' | 'nft'>('collection');
   const [pendingApprovalCount, setPendingApprovalCount] = useState(0);
+  const [accountBalanceUpdateNonce, setAccountBalanceUpdateNonce] = useState(0);
 
   const [startAnimate, setStartAnimate] = useState(false);
   const isGnosis = useRabbyGetter((s) => s.chains.isCurrentAccountGnosis);
@@ -209,7 +207,25 @@ const Dashboard = () => {
           dispatch.account.setField({ alianName: name });
           setDisplayName(name);
         });
+
+      eventBus.addEventListener(EVENTS.TX_COMPLETED, async ({ address }) => {
+        if (isSameAddress(address, currentAccount.address)) {
+          const count = await dispatch.transactions.getPendingTxCountAsync(
+            currentAccount.address
+          );
+          if (count === 0) {
+            setTimeout(() => {
+              // increase accountBalanceUpdateNonce to trigger useCurrentBalance re-fetch account balance
+              // delay 5s for waiting db sync data
+              setAccountBalanceUpdateNonce(accountBalanceUpdateNonce + 1);
+            }, 5000);
+          }
+        }
+      });
     }
+    return () => {
+      eventBus.removeAllEventListeners(EVENTS.TX_COMPLETED);
+    };
   }, [currentAccount]);
 
   useEffect(() => {
@@ -699,6 +715,7 @@ const Dashboard = () => {
             currentAccount={currentAccount}
             showChain={showChain}
             startAnimate={startAnimate}
+            accountBalanceUpdateNonce={accountBalanceUpdateNonce}
             onClick={() => {
               if (!showToken && !showAssets && !showNFT) {
                 ReactGA.event({
@@ -732,6 +749,9 @@ const Dashboard = () => {
               }
             }}
           />
+          {pendingTxCount > 0 && !showChain && (
+            <PendingTxs pendingTxCount={pendingTxCount} />
+          )}
           <div className={clsx('listContainer', showChain && 'mt-10')}>
             <div
               className={clsx('token', showToken && 'showToken')}
@@ -862,8 +882,6 @@ const Dashboard = () => {
           connectionAnimation={connectionAnimation}
           showDrawer={showToken || showAssets || showNFT}
           hideAllList={hideAllList}
-          showModal={showChainsModal}
-          pendingTxCount={pendingTxCount}
           gnosisPendingCount={gnosisPendingCount}
           isGnosis={isGnosis}
           higherBottom={isGnosis}

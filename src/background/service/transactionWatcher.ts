@@ -7,6 +7,8 @@ import { createPersistStore } from 'background/utils';
 import { notification } from 'background/webapi';
 import { CHAINS, CHAINS_ENUM } from 'consts';
 import { format } from 'utils';
+import eventBus from '@/eventBus';
+import { EVENTS } from '@/constant';
 
 class Transaction {
   createdTime = 0;
@@ -25,6 +27,7 @@ const QUERY_FREQUENCY = [
   [60 * 1000, 1000],
   [10 * 60 * 1000, 5 * 1000],
   [60 * 60 * 1000, 30 * 1000],
+  [2 * 60 * 60 * 1000, 60 * 1000],
 ];
 
 interface TransactionWatcherStore {
@@ -77,7 +80,7 @@ class TransactionWatcher {
       .catch(() => null);
   };
 
-  notify = (id: string, txReceipt) => {
+  notify = async (id: string, txReceipt) => {
     if (!this.store.pendingTx[id]) {
       return;
     }
@@ -88,7 +91,7 @@ class TransactionWatcher {
       .id;
 
     if (txReceipt) {
-      transactionHistoryService.reloadTx({
+      await transactionHistoryService.reloadTx({
         address,
         nonce: Number(nonce),
         chainId,
@@ -106,6 +109,11 @@ class TransactionWatcher {
       i18n.t('click to view more information'),
       2
     );
+
+    eventBus.emit(EVENTS.broadcastToUI, {
+      method: EVENTS.TX_COMPLETED,
+      params: { address, hash },
+    });
   };
 
   roll = () => {
@@ -146,12 +154,23 @@ class TransactionWatcher {
     }
   };
 
+  /**
+   * get query frequency by tx createTime
+   * 0s - 1min: 1s
+   * 1min - 1hour: 5s
+   * 1hour - 2hour: 30s
+   * 2hour - infinite 60s
+   */
   _findFrequency = (createTime) => {
     const now = +new Date();
 
-    return QUERY_FREQUENCY.find(
+    const frequency = QUERY_FREQUENCY.find(
       ([sinceCreate]) => now - createTime < sinceCreate
     )?.[1];
+
+    if (frequency) return frequency;
+
+    return QUERY_FREQUENCY[QUERY_FREQUENCY.length - 1][1];
   };
 
   _removeTx = (id: string) => {
