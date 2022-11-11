@@ -72,7 +72,7 @@ const Welcome = () => {
           </div>
           <img className="step-image" src={WelcomeStep2} alt="" />
           <footer>
-            <Link to="/password" replace>
+            <Link to="/no-address" replace>
               <Button type="primary" size="large" block>
                 Get Started
               </Button>
