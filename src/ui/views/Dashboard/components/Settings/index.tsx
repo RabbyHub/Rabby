@@ -231,8 +231,6 @@ const Settings = ({ visible, onClose }: SettingsProps) => {
     );
   });
 
-  console.log('error', error);
-
   const updateVersionClassName = useCss({
     '& .ant-modal-content': {
       background: '#fff',
