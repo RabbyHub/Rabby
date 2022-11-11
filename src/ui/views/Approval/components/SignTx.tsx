@@ -587,7 +587,7 @@ const getGasLimitBaseAccountBalance = ({
 }) => {
   const sendNativeTokenAmount = new BigNumber(
     isNaN(Number(tx.value)) ? 0 : Number(tx.value)
-  ); // 当前交易原生代币转账数量
+  ); // current transaction native token transfer count
   const pendingsSumNativeTokenCost = pendingList
     .filter((item) => new BigNumber(item.nonce).lt(nonce))
     .reduce((sum, item) => {
@@ -609,10 +609,10 @@ const getGasLimitBaseAccountBalance = ({
             );
           }, new BigNumber(0))
       );
-    }, new BigNumber(0)); // nonce 小于当前交易的 pending 交易消耗原生代币总和
+    }, new BigNumber(0)); // sum native token cost in pending tx list which nonce less than current tx
   const avaliableGasToken = new BigNumber(nativeTokenBalance).minus(
     sendNativeTokenAmount.plus(pendingsSumNativeTokenCost)
-  ); // avaliableGasToken = 当前原生代币余额 - 当前交易原生代币转账数量 - pending 交易消耗原生代币总和
+  ); // avaliableGasToken = current native token balance - sendNativeTokenAmount - pendingsSumNativeTokenCost
   const currentTxGasCost = new BigNumber(gasPrice).times(gasLimit);
   if (
     new BigNumber(gasLimit).lt(
@@ -626,22 +626,22 @@ const getGasLimitBaseAccountBalance = ({
         )
       )
     ) {
-      // 当 avaliableGasToken 足以支付 recommendGasLimit * recommendGasLimitRatio 做 gasLimit 的 gas 费时直接使用
+      // if avaliableGasToken is enough to pay gas fee of recommendGasLimit * recommendGasLimitRatio, use recommendGasLimit * recommendGasLimitRatio as gasLimit
       return Number(recommendGasLimit) * recommendGasLimitRatio;
     } else {
-      const adaptGasLimit = avaliableGasToken.div(gasPrice); // 根据 avaliableGasToken 和当前 gasPrice 计算对应 gasLimit
+      const adaptGasLimit = avaliableGasToken.div(gasPrice); // if avaliableGasToken is not enough, adapt gasLimit by account balance
       return Math.floor(adaptGasLimit.toNumber());
     }
   }
   if (avaliableGasToken.lt(0)) {
-    // avaliableGasToken 不足或当前交易消耗 gas 大于 avaliableGasToken 时 gasLimit 为 0
+    // avaliableGasToken less than 0 use 0 as gasLimit
     return 0;
   }
   if (avaliableGasToken.gt(currentTxGasCost)) {
-    // avaliableGasToken > 当前交易消耗 gas 数量时使用当前设置的 gasLimit
+    // avaliableGasToken > currentTxGasCost then use gasLimit
     return gasLimit;
   }
-  const adaptGasLimit = avaliableGasToken.div(gasPrice); // 根据 avaliableGasToken 和当前 gasPrice 计算对应 gasLimit
+  const adaptGasLimit = avaliableGasToken.div(gasPrice); // adapt gasLimit by account balance
   return Math.floor(adaptGasLimit.toNumber());
 };
 
