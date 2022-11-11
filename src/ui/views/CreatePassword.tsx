@@ -119,7 +119,7 @@ const CreatePassword = () => {
               {t('Set Unlock Password')}
             </p>
             <p className="text-14 mb-0 text-white opacity-80 text-center">
-              {t('This password will be used to unlock your wallet')}
+              It will be used to unlock your wallet and encrypt local data
             </p>
             <img src="/images/create-password-mask.png" className="mask" />
           </header>
