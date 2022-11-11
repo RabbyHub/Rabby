@@ -113,6 +113,10 @@ export class WalletController extends BaseController {
     return notificationService.rejectApproval(err, stay, isInternal);
   };
 
+  rejectAllApprovals = () => {
+    return notificationService.rejectAllApprovals();
+  };
+
   getERC20Allowance = async (
     chainServerId,
     erc20Address: string,

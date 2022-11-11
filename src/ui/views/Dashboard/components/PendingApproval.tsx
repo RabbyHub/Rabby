@@ -38,16 +38,36 @@ const TextContent = styled.p`
   color: ${LessPalette['@color-title']};
 `;
 
+const RejectAllButton = styled.a`
+  font-weight: 500;
+  font-size: 12px;
+  line-height: 22px;
+  text-align: center;
+  color: ${LessPalette['@color-text']};
+  margin-top: 26px;
+`;
+
 const NumberText = styled.span`
   color: ${LessPalette['@primary-color']};
 `;
 
-const PendingApproval = ({ count }: { count: number }) => {
+const PendingApproval = ({
+  count,
+  onRejectAll,
+}: {
+  count: number;
+  onRejectAll: () => void;
+}) => {
   const wallet = useWallet();
 
   const handleActiveApproval = async () => {
     await wallet.activeFirstApproval();
     window.close();
+  };
+
+  const handleOnRejectAll = async () => {
+    await wallet.rejectAllApprovals();
+    onRejectAll();
   };
 
   return (
@@ -64,6 +84,9 @@ const PendingApproval = ({ count }: { count: number }) => {
         >
           {count === 1 ? 'View' : 'View first one'}
         </Button>
+        <RejectAllButton href="#" onClick={handleOnRejectAll}>
+          Reject All
+        </RejectAllButton>
       </Inner>
     </Overlay>
   );
