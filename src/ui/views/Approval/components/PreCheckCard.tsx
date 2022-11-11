@@ -1,11 +1,10 @@
 import { Skeleton } from 'antd';
 import { ExplainTxResponse } from 'background/service/openapi';
-import React from 'react';
+import clsx from 'clsx';
+import React, { useEffect, useState } from 'react';
 import IconCheck from 'ui/assets/icon-check.svg';
 import IconLoading from 'ui/assets/icon-loading.svg';
-import IconWarning, {
-  ReactComponent as IconRcWaring,
-} from 'ui/assets/icon-warning.svg';
+import { ReactComponent as IconRcWaring } from 'ui/assets/icon-warning.svg';
 
 interface PreCheckCardProps {
   loading: boolean;
@@ -14,12 +13,35 @@ interface PreCheckCardProps {
   errors?: {
     msg: string;
     code: number;
+    level?: 'warn' | 'danger' | 'forbidden';
   }[];
   isReady: boolean;
 }
 
 const PreCheckCard = (props: PreCheckCardProps) => {
   const { loading, version, data, errors, isReady } = props;
+  const [renderErrors, setRenderErrors] = useState<
+    {
+      msg: string;
+      code: number;
+      level?: 'warn' | 'danger' | 'forbidden';
+    }[]
+  >([]);
+
+  useEffect(() => {
+    const order = {
+      forbidden: 1,
+      danger: 2,
+      warn: 3,
+    };
+    if (errors && errors.length > 0) {
+      const orderedErrors = [...errors].sort(
+        (a, b) => order[a.level || 'warn'] - order[b.level || 'warn']
+      );
+      setRenderErrors(orderedErrors);
+    }
+  }, [errors]);
+
   if (!isReady) {
     return (
       <div className="pre-check-card">
@@ -81,7 +103,12 @@ const PreCheckCard = (props: PreCheckCardProps) => {
   return (
     <div className="pre-check-card">
       <div className="pre-check-card-header">
-        <img src={IconWarning} className="pre-check-card-icon" />
+        <IconRcWaring
+          className={clsx(
+            'pre-check-card-icon',
+            renderErrors[0] ? renderErrors[0].level : ''
+          )}
+        />
         <div className="pre-check-card-title">Transaction may fail </div>
       </div>
       {data.error && version === 'v2' && (
@@ -95,11 +122,16 @@ const PreCheckCard = (props: PreCheckCardProps) => {
           </div>
         </div>
       )}
-      {errors?.map((item) => {
+      {renderErrors?.map((item) => {
         return (
           <div key={`warning_${item.code}`} className="pre-check-card-item">
             <div className="pre-check-card-item-icon-wraper">
-              <div className="pre-check-card-item-icon is-warning"></div>
+              <div
+                className={clsx(
+                  'pre-check-card-item-icon',
+                  item.level || 'warn'
+                )}
+              ></div>
             </div>
             <div>
               {item.msg} <span className="number">#{item.code}</span>

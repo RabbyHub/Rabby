@@ -1152,6 +1152,24 @@
 
       &-icon {
         flex-shrink: 0;
+        &.forbidden {
+          path:first-child {
+            fill: #af160e;
+            stroke: #af160e;
+          }
+        }
+        &.danger {
+          path:first-child {
+            fill: @color-red;
+            stroke: @color-red;
+          }
+        }
+        &.warning {
+          path:first-child {
+            fill: @color-orange;
+            stroke: @color-orange;
+          }
+        }
         &.is-loading {
           animation: rotate 1s linear infinite;
         }
@@ -1212,7 +1230,15 @@
           width: 8px;
           height: 8px;
           border-radius: 50%;
-          background-color: @color-orange;
+          &.forbidden {
+            background-color: #af160e;
+          }
+          &.danger {
+            background-color: @color-red;
+          }
+          &.warn {
+            background-color: @color-orange;
+          }
         }
       }
     }

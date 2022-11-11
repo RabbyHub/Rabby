@@ -53,6 +53,7 @@ interface GasSelectorProps {
     gasCostAmount: BigNumber;
   }>;
   isGnosisAccount?: boolean;
+  manuallyChangeGasLimit: boolean;
 }
 
 const useExplainGas = ({
@@ -156,6 +157,14 @@ const CardBody = styled.div<{
   }
 `;
 
+const ManuallySetGasLimitAlert = styled.div`
+  font-weight: 400;
+  font-size: 13px;
+  line-height: 15px;
+  margin-top: 10px;
+  color: #707280;
+`;
+
 const GasSelector = ({
   gasLimit,
   gas,
@@ -174,6 +183,7 @@ const GasSelector = ({
   version,
   gasCalcMethod,
   isGnosisAccount,
+  manuallyChangeGasLimit,
 }: GasSelectorProps) => {
   const { t } = useTranslation();
   const customerInputRef = useRef<Input>(null);
@@ -584,6 +594,11 @@ const GasSelector = ({
           handleCustomGasChange={externalHandleCustomGasChange}
           isGnosisAccount={isGnosisAccount}
         />
+        {manuallyChangeGasLimit && (
+          <ManuallySetGasLimitAlert>
+            You have manually set the Gas limit to {Number(gasLimit)}
+          </ManuallySetGasLimitAlert>
+        )}
       </div>
       <Popup
         height={720}
@@ -822,11 +837,7 @@ const GasSelector = ({
             className="w-[200px]"
             size="large"
             onClick={handleModalConfirmGas}
-            disabled={
-              !isReady ||
-              validateStatus.customGas.status === 'error' ||
-              validateStatus.gasLimit.status === 'error'
-            }
+            disabled={!isReady || validateStatus.customGas.status === 'error'}
           >
             {t('Confirm')}
           </Button>
