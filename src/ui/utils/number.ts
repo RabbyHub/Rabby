@@ -72,3 +72,8 @@ export const formatNumber = (
   }
   return n.toFormat(decimal, format);
 };
+
+export const intToHex = (n: number) => {
+  if (n % 1 !== 0) throw new Error(`${n} is not int`);
+  return `0x${n.toString(16)}`;
+};
