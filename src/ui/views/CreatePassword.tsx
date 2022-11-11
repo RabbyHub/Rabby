@@ -75,11 +75,21 @@ const CreatePassword = () => {
         fontSize: '15px',
         fontWeight: '700',
         color: 'rgba(19, 20, 26, 1)',
-        marginTop: '20px',
+        margin: '20px 0',
+      },
+      p: {
+        margin: '0 0 10px 0',
+      },
+      li: {
+        marginTop: '4px',
       },
       'p,li': {
         fontSize: '14px',
         color: 'rgba(75, 77, 89, 1)',
+      },
+      'ol, ul': {
+        listStyle: 'disc outside none',
+        paddingLeft: '14px ',
       },
     },
   });
@@ -116,7 +126,7 @@ const CreatePassword = () => {
               src={UnlockLogo}
             />
             <p className="text-24 mb-8 mt-0 text-white text-center font-bold">
-              {t('Set Unlock Password')}
+              Set Password
             </p>
             <p className="text-14 mb-0 text-white opacity-80 text-center">
               It will be used to unlock your wallet and encrypt local data
@@ -140,9 +150,7 @@ const CreatePassword = () => {
               ]}
             >
               <Input
-                className={
-                  'h-[52px] bg-gray-bg2 border-gray-divider focus:bg-white focus:border-blue-light placeholder-gray-comment'
-                }
+                className={'h-[52px]'}
                 size="large"
                 placeholder={'Password must be at least 8 characters long'}
                 type="password"
@@ -172,9 +180,9 @@ const CreatePassword = () => {
               ]}
             >
               <Input
-                className="h-[52px] bg-gray-bg2 border-gray-divider focus:bg-white focus:border-blue-light"
+                className="h-[52px]"
                 size="large"
-                placeholder={t('Repeat Password')}
+                placeholder={'Confirm password'}
                 type="password"
                 spellCheck={false}
               />
@@ -201,7 +209,7 @@ const CreatePassword = () => {
                   toggleVisible();
                 }}
               >
-                Term of Use
+                Terms of Use
               </span>
             </span>{' '}
           </div>
@@ -232,15 +240,19 @@ const CreatePassword = () => {
         }}
       >
         <header className="text-gray-title mb-[20px] text-20 font-medium leading-[20px] text-center">
-          Term of Use
+          Rabby Term of Use
         </header>
         <div
           className="overflow-scroll"
           style={{
-            maxHeight: 520,
+            maxHeight: 496,
           }}
         >
-          <ReactMarkdown children={TermOfUse} remarkPlugins={[remarkGfm]} />
+          <ReactMarkdown
+            className="markdown-body"
+            children={TermOfUse}
+            remarkPlugins={[remarkGfm]}
+          />
         </div>
       </Drawer>
     </Spin>
