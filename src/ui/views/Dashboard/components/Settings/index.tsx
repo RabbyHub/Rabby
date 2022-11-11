@@ -259,8 +259,8 @@ const Settings = ({ visible, onClose }: SettingsProps) => {
         title: null,
         content: (
           <div className="text-14 leading-[18px] text-center text-gray-subTitle">
-            A new update for Rabby Wallet is available. Click the button below
-            to check how to update manually.
+            A new update for Rabby Wallet is available. Click to check how to
+            update manually.
           </div>
         ),
         okText: 'See Tutorial',
