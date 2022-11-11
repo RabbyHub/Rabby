@@ -12,7 +12,7 @@ const Activities = () => {
 
   return (
     <div className="activities">
-      <PageHeader fixed>{t('Activities')}</PageHeader>
+      <PageHeader fixed>{t('Signature Record')}</PageHeader>
       <Tabs
         centered
         className="activities_tabs"
