@@ -222,9 +222,9 @@ const SendToken = () => {
     const chain = Object.values(CHAINS).find(
       (item) => item.serverId === currentToken.chain
     )!;
-    const sendValue = new BigNumber(amount)
-      .multipliedBy(10 ** currentToken.decimals)
-      .toFixed(0);
+    const sendValue = new BigNumber(amount).multipliedBy(
+      10 ** currentToken.decimals
+    );
     const params: Record<string, any> = {
       chainId: chain.id,
       from: currentAccount!.address,
@@ -245,21 +245,14 @@ const SendToken = () => {
             },
           ],
         },
-        [to, sendValue]
+        [to, sendValue.toFixed(0)]
       ),
       isSend: true,
     };
     if (isNativeToken) {
       params.to = to;
       delete params.data;
-      params.value = addHexPrefix(
-        unpadHexString(
-          ((abiCoder as unknown) as AbiCoder).encodeParameter(
-            'uint256',
-            sendValue
-          )
-        )
-      );
+      params.value = `0x${sendValue.toString(16)}`;
       try {
         const code = await wallet.requestETHRpc(
           {

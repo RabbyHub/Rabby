@@ -501,12 +501,14 @@ const checkGasAndNonce = ({
       }
     }
   }
+  let sendNativeTokenAmount = new BigNumber(tx.value); // current transaction native token transfer count
+  sendNativeTokenAmount = isNaN(sendNativeTokenAmount.toNumber())
+    ? new BigNumber(0)
+    : sendNativeTokenAmount;
   if (
     !isGnosisAccount &&
     gasExplainResponse.maxGasCostAmount
-      .plus(
-        new BigNumber(isNaN(Number(tx.value)) ? 0 : Number(tx.value)).div(1e18)
-      )
+      .plus(sendNativeTokenAmount.div(1e18))
       .isGreaterThan(new BigNumber(nativeTokenBalance).div(1e18))
   ) {
     errors.push({
@@ -586,9 +588,10 @@ const getGasLimitBaseAccountBalance = ({
   recommendGasLimit: string | number;
   recommendGasLimitRatio: number;
 }) => {
-  const sendNativeTokenAmount = new BigNumber(
-    isNaN(Number(tx.value)) ? 0 : Number(tx.value)
-  ); // current transaction native token transfer count
+  let sendNativeTokenAmount = new BigNumber(tx.value); // current transaction native token transfer count
+  sendNativeTokenAmount = isNaN(sendNativeTokenAmount.toNumber())
+    ? new BigNumber(0)
+    : sendNativeTokenAmount;
   const pendingsSumNativeTokenCost = pendingList
     .filter((item) => new BigNumber(item.nonce).lt(nonce))
     .reduce((sum, item) => {
@@ -1021,7 +1024,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
           gas: tx.gas || '', // set gas limit if dapp not set
         },
         gasPrice: selectedGas?.price || 0,
-        customRecommendGasLimit: Number(recommendGasLimit),
+        customRecommendGasLimit: gas.toNumber(),
         customGasLimit: Number(recommendGasLimit),
         customRecommendGasLimitRatio: needRatio ? ratio : 1,
       });
@@ -1506,6 +1509,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     customGasLimit?: number;
     customRecommendGasLimitRatio?: number;
   }) => {
+    if (isGnosisAccount) return; // Gnosis Safe transaction no need gasLimit
     const calcGasLimit = customGasLimit || gasLimit;
     const calcGasLimitRatio =
       customRecommendGasLimitRatio || recommendGasLimitRatio;
