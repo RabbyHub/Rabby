@@ -240,7 +240,7 @@ const Approve = ({
   const ExceedsAccountBalance = useMemo(() => {
     if (
       balance === null ||
-      new BigNumber(balance || 0).eq(
+      new BigNumber(balance || 0).gte(
         new BigNumber(detail.token.raw_amount_hex_str || 0)
           .div(new BigNumber(10).pow(detail.token.decimals))
           .toFixed()
