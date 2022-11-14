@@ -513,7 +513,7 @@ class LedgerBridgeKeyring extends EventEmitter {
         }
       } catch (err: any) {
         throw new Error(
-          err.toString() || 'Ledger: Unknown error while signing transaction'
+          err.message ?? 'Ledger: Unknown error while signing transaction'
         );
       } finally {
         this.cleanUp();
