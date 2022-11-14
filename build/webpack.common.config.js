@@ -14,6 +14,10 @@ const isEnvDevelopment = process.env.NODE_ENV !== 'production';
 
 const paths = require('./paths');
 
+if (isEnvDevelopment) {
+  process.env.VERSION = require('../package.json').version;
+}
+
 const config = {
   entry: {
     background: paths.rootResolve('src/background/index.ts'),
