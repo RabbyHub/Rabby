@@ -158,6 +158,7 @@ const config = {
             loader: 'url-loader',
             options: {
               limit: false,
+              outputPath: 'generated/svgs',
             },
           },
         ],
@@ -167,6 +168,7 @@ const config = {
         loader: 'file-loader',
         options: {
           name: '[name].[ext]',
+          outputPath: 'generated/images',
         },
       },
       {
