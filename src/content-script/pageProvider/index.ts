@@ -421,7 +421,3 @@ function setup() {
 }
 
 setup();
-
-setInterval(() => {
-  window.postMessage('KEEP_ALIVE');
-}, 250e3);
