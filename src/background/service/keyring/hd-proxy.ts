@@ -60,7 +60,7 @@ type OnlyClassMethods<T> = {
 
 browser.runtime.onMessage.addListener((event) => {
   if (event === 'init-connect-keyring-service') {
-    pm.connect('keyring');
+    pm.connect('keyring', false);
 
     pm.request({
       type: 'init',
