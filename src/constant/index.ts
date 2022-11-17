@@ -104,7 +104,7 @@ export const KEYRING_TYPE_TEXT = {
 export const BRAND_ALIAN_TYPE_TEXT = {
   [KEYRING_TYPE.HdKeyring]: 'Seed Phrase',
   [KEYRING_TYPE.SimpleKeyring]: 'Private Key',
-  [KEYRING_TYPE.WatchAddressKeyring]: 'Contract',
+  [KEYRING_TYPE.WatchAddressKeyring]: 'Contact',
   [KEYRING_CLASS.HARDWARE.LEDGER]: 'Ledger',
   [KEYRING_CLASS.HARDWARE.TREZOR]: 'Trezor',
   [KEYRING_CLASS.HARDWARE.ONEKEY]: 'Onekey',
