@@ -41,10 +41,11 @@ import IconEdit from 'ui/assets/edit-purple.svg';
 import IconCopy from 'ui/assets/copy-no-border.svg';
 import IconSuccess from 'ui/assets/success.svg';
 import IconCheck from 'ui/assets/icon-check.svg';
+import IconContact from 'ui/assets/contact.svg';
 import IconTemporaryGrantCheckbox from 'ui/assets/send-token/temporary-grant-checkbox.svg';
 import TokenInfoArrow from 'ui/assets/send-token/token-info-arrow.svg';
 import ButtonMax from 'ui/assets/send-token/max.svg';
-import { SvgIconPlusPrimary, SvgIconLoading, SvgAlert } from 'ui/assets';
+import { SvgIconLoading, SvgAlert } from 'ui/assets';
 import './style.less';
 import { getKRCategoryByType } from '@/utils/transaction';
 import { filterRbiSource, useRbiSource } from '@/ui/utils/ga-event';
@@ -835,7 +836,7 @@ const SendToken = () => {
               )}
               <img
                 className="icon icon-contact"
-                src={IconWhitelist}
+                src={whitelistEnabled ? IconWhitelist : IconContact}
                 onClick={handleListContact}
               />
             </div>

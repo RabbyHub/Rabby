@@ -84,10 +84,18 @@ const AccountItem = ({
       clipboard.destroy();
     });
   };
+  const handleClickItem = () => {
+    if (disabled) {
+      message.error('This address is not whitelisted');
+      return;
+    }
+
+    onClick && onClick(account);
+  };
   return (
     <AccountItemWrapper
       className={clsx({ disabled, 'cursor-pointer': onClick })}
-      onClick={() => onClick && !disabled && onClick(account)}
+      onClick={handleClickItem}
     >
       <img
         className="icon icon-account-type w-[24px] h-[24px]"

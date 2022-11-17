@@ -112,8 +112,9 @@ const ListModal = ({ visible, onOk, onCancel }: ListModalProps) => {
     >
       <div className="flex flex-col pb-80 h-full">
         <div className="text-center mb-16 text-14 text-gray-content">
-          You can only send to the addresses in the whitelist within Rabby once
-          enabled. You can disable it in "Settings".
+          {whitelistEnabled
+            ? 'You can only send to the addresses in the whitelist within Rabby once enabled. You can disable it in "Settings".'
+            : 'You can send to any address once whitelist disabled'}
         </div>
         <ListScrollWrapper>
           {accountsList.map((account) => (
