@@ -211,8 +211,8 @@ const AddressItem = memo(
           </div>
         )}
         {isCurrentAccount && (
-          <div className="rabby-address-item-extra mr-[16px]">
-            <span className="text-12 text-white">
+          <div className="rabby-address-item-extra flex items-center justify-center mr-[28px]">
+            <span className="text-15 font-medium text-white">
               ${splitNumberByStep(balance?.toFixed(2))}
             </span>
           </div>
