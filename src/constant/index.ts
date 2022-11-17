@@ -544,7 +544,7 @@ export const KEYRING_PURPLE_LOGOS = {
 export const KEYRINGS_LOGOS = {
   [KEYRING_CLASS.MNEMONIC]: LogoMnemonic,
   [KEYRING_CLASS.PRIVATE_KEY]: LogoPrivateKey,
-  [KEYRING_CLASS.WATCH]: LogoWatch,
+  [KEYRING_CLASS.WATCH]: IconWatchWhite,
   [HARDWARE_KEYRING_TYPES.BitBox02.type]: IconBitBox02WithBorder,
   [HARDWARE_KEYRING_TYPES.Ledger.type]: LogoLedgerWhite,
   [HARDWARE_KEYRING_TYPES.Onekey.type]: IconOneKey18,

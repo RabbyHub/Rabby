@@ -14,9 +14,9 @@ import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { sortAccountsByBalance } from '@/ui/utils/account';
 import clsx from 'clsx';
 import { ReactComponent as IconAddAddress } from '@/ui/assets/address/add-address.svg';
-import { KEYRING_CLASS } from '@/background/service/keyring';
 import { groupBy } from 'lodash';
 import styled from 'styled-components';
+import { KEYRING_CLASS } from '@/constant';
 
 const AddressManagement = () => {
   const { t } = useTranslation();
@@ -75,8 +75,8 @@ const AddressManagement = () => {
   );
 
   const noAccount = useMemo(() => {
-    return sortedAccountsList.length <= 0 && !loadingAccounts;
-  }, [sortedAccountsList, loadingAccounts]);
+    return accountList.length <= 0 && !loadingAccounts;
+  }, [accountList, loadingAccounts]);
 
   const dispatch = useRabbyDispatch();
 
@@ -186,7 +186,7 @@ const AddressManagement = () => {
   return (
     <div className="page-address-management px-0 overflow-hidden">
       <PageHeader className="pt-[24px] mx-[20px]">
-        {t('Address Management')}
+        {enableSwitch ? 'Current Address' : t('Address Management')}
 
         <IconAddAddress
           className="absolute right-0 top-[20px] text-gray-title w-[20px] h-[20px] cursor-pointer"

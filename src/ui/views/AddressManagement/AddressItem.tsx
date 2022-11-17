@@ -1,9 +1,9 @@
-import { KEYRING_CLASS } from '@/background/service/keyring';
 import { Input, message, Tooltip } from 'antd';
 import clsx from 'clsx';
 import {
   BRAND_ALIAN_TYPE_TEXT,
   KEYRINGS_LOGOS,
+  KEYRING_CLASS,
   KEYRING_ICONS,
   KEYRING_TYPE_TEXT,
   WALLET_BRAND_CONTENT,
@@ -211,8 +211,8 @@ const AddressItem = memo(
           </div>
         )}
         {isCurrentAccount && (
-          <div className="rabby-address-item-extra mr-[16px]">
-            <span className="text-12 text-white">
+          <div className="rabby-address-item-extra flex items-center justify-center mr-[28px]">
+            <span className="text-15 font-medium text-white">
               ${splitNumberByStep(balance?.toFixed(2))}
             </span>
           </div>
