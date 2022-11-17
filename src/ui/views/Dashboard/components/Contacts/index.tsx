@@ -1,18 +1,12 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { message, DrawerProps } from 'antd';
+import React, { useEffect, useState } from 'react';
+import { DrawerProps } from 'antd';
 import { useTranslation } from 'react-i18next';
-import { ContactBookItem } from 'background/service/contactBook';
-import { Popup } from 'ui/component';
+import { Item, PageHeader, Popup } from 'ui/component';
 import { useWallet } from 'ui/utils';
-import ContactsItem from './ContactsItem';
-import IconSuccess from 'ui/assets/success.svg';
-import IconAddAddress from 'ui/assets/dashboard/contacts/add-address.png';
 import './style.less';
-import { SvgIconCross } from 'ui/assets';
-
-const closeIcon = (
-  <SvgIconCross className="w-14 fill-current text-gray-content" />
-);
+import styled from 'styled-components';
+import LessPalette from '@/ui/style/var-defs';
+import AddressItem from '@/ui/component/AddressList/AddressItem';
 
 interface ContactsProps {
   visible?: boolean;
@@ -23,7 +17,6 @@ export interface Account {
   name?: string;
 }
 const Contacts = ({ visible, onClose }: ContactsProps) => {
-  const ref = useRef(null);
   const wallet = useWallet();
   const { t } = useTranslation();
 
@@ -35,40 +28,6 @@ const Contacts = ({ visible, onClose }: ContactsProps) => {
     setAccounts(listContacts);
     setEditIndex(null);
     setCanAdd(true);
-  };
-  const addNewAccount = () => {
-    const newAccount: Account = {
-      address: '',
-      name: '',
-    };
-    setCanAdd(false);
-    setAccounts([...accounts, newAccount]);
-    setEditIndex(accounts.length);
-  };
-  const handleDeleteAddress = async (address: string) => {
-    await wallet.removeContact(address);
-    init();
-  };
-  const handleUpdateContact = async (data: ContactBookItem) => {
-    await wallet.updateContact(data);
-    await init();
-  };
-  const addContact = async (data: ContactBookItem) => {
-    await wallet.addContact(data);
-    message.success({
-      icon: <img src={IconSuccess} className="icon icon-success" />,
-      content: t('Added to contact'),
-      duration: 1,
-    });
-    setEditIndex(null);
-    setCanAdd(true);
-    init();
-  };
-  const hideNewContact = () => {
-    if (!canAdd) {
-      setCanAdd(true);
-      setAccounts(accounts.slice(0, accounts.length - 1));
-    }
   };
   useEffect(() => {
     if (visible) {
@@ -92,68 +51,72 @@ const Contacts = ({ visible, onClose }: ContactsProps) => {
   return (
     <Popup
       visible={visible}
-      onClose={onClose}
-      title={'Contacts'}
+      title={
+        <PageHeader
+          forceShowBack
+          canBack
+          className="pt-0"
+          onBack={() => {
+            // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+            //@ts-ignore
+            onClose();
+          }}
+        >
+          Old Contact List
+        </PageHeader>
+      }
       bodyStyle={{ height: '100%' }}
-      closeIcon={closeIcon}
       contentWrapperStyle={{
-        height: 580,
+        height: 520,
       }}
       drawerStyle={{
-        height: 580,
+        height: 520,
       }}
       headerStyle={{
-        height: 92,
-        marginBottom: 6,
+        height: 64,
       }}
       className="contacts-drawer"
-      closable
+      closable={false}
     >
-      <div className="header">
-        <div>Address</div>
-        <div>Note</div>
-      </div>
-      <div
-        className="list-wrapper"
-        ref={ref}
-        onClick={(e) => {
-          const isClickOutside = e.target === ref.current;
-          if (!isClickOutside) {
-            return;
-          }
-          hideNewContact();
-          if (editIndex) {
-            setEditIndex(null);
-            init();
-          }
-        }}
-      >
+      <Desc>
+        Because of the merging of contacts and watch model addresses, the old
+        contacts will be backed up for you here and after some time we will
+        delete the list.Please add in time if you continue to use.
+      </Desc>
+      <div>
         {accounts.length > 0
-          ? accounts.map((item, index) => (
-              <ContactsItem
+          ? accounts.map((item) => (
+              <Item
                 key={item.address}
-                account={item}
-                index={index}
-                setEditIndex={setEditIndex}
-                editIndex={editIndex}
-                accounts={accounts}
-                handleDeleteAddress={handleDeleteAddress}
-                handleUpdateContact={handleUpdateContact}
-                addContact={addContact}
-                hideNewContact={hideNewContact}
-              />
+                py={11}
+                bgColor="#F5F6FA"
+                rightIcon={null}
+              >
+                <AddressItem
+                  className="list-none"
+                  editing={false}
+                  account={{
+                    address: item.address,
+                    alianName: item.name || ' ',
+                    type: '',
+                    brandName: '',
+                    index: undefined,
+                  }}
+                />
+              </Item>
             ))
           : NoDataUI}
       </div>
-      {canAdd && (
-        <img
-          src={IconAddAddress}
-          className="add-address-name"
-          onClick={addNewAccount}
-        />
-      )}
     </Popup>
   );
 };
+
+const Desc = styled.div`
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 18px;
+  color: ${LessPalette['@color-body']};
+  margin-bottom: 20px;
+`;
 
 export default Contacts;

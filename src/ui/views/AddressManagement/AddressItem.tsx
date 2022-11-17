@@ -1,4 +1,5 @@
-import { Input, Tooltip } from 'antd';
+import { KEYRING_CLASS } from '@/background/service/keyring';
+import { Input, message, Tooltip } from 'antd';
 import clsx from 'clsx';
 import {
   BRAND_ALIAN_TYPE_TEXT,
@@ -11,17 +12,23 @@ import React, {
   MouseEventHandler,
   ReactNode,
   useEffect,
+  useMemo,
   useRef,
   useState,
 } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
-import { ReactComponent as IconArrowRight } from 'ui/assets/arrow-right-gray.svg';
+import { ReactComponent as IconArrowRight } from 'ui/assets/address/bold-right-arrow.svg';
+import { ReactComponent as IconDeleteAddress } from 'ui/assets/address/delete.svg';
+
 import IconCopy from 'ui/assets/component/icon-copy.svg';
-import IconCorrect from 'ui/assets/dashboard/contacts/correct.png';
-import IconEditPen from 'ui/assets/editpen.svg';
 import { AddressViewer, Copy } from 'ui/component';
-import { useAlias } from 'ui/utils';
+import { splitNumberByStep, useAlias, useWallet } from 'ui/utils';
+import IconSuccess from 'ui/assets/success.svg';
+import { useRabbyDispatch } from '@/ui/store';
+import IconCheck from 'ui/assets/check.svg';
+
 export interface AddressItemProps {
+  balance: number;
   address: string;
   type: string;
   brandName: string;
@@ -29,17 +36,24 @@ export interface AddressItemProps {
   extra?: ReactNode;
   alias?: string;
   onClick: MouseEventHandler<HTMLDivElement>;
+  onSwitchCurrentAccount?: () => void;
+  enableSwitch?: boolean;
+  isCurrentAccount?: boolean;
 }
 
 const AddressItem = memo(
   ({
+    balance,
     address,
     type,
     brandName,
     className,
     onClick,
+    onSwitchCurrentAccount,
     alias: aliasName,
     extra,
+    enableSwitch = false,
+    isCurrentAccount = false,
   }: AddressItemProps) => {
     const { t } = useTranslation();
     const formatAddressTooltip = (type: string, brandName: string) => {
@@ -65,6 +79,30 @@ const AddressItem = memo(
     const inputRef = useRef<Input>(null);
     const titleRef = useRef<HTMLDivElement>(null);
 
+    const wallet = useWallet();
+    const dispatch = useRabbyDispatch();
+
+    const canFastDeleteAccount = useMemo(
+      // not seed phrase ,not privacy secret
+      () => ![KEYRING_CLASS.MNEMONIC, KEYRING_CLASS.PRIVATE_KEY].includes(type),
+      [type]
+    );
+    const deleteAccount = async (e: React.MouseEvent<any>) => {
+      e.stopPropagation();
+      if (canFastDeleteAccount) {
+        await dispatch.addressManagement.removeAddress([
+          address,
+          type,
+          brandName,
+        ]);
+        message.success({
+          icon: <img src={IconSuccess} className="icon icon-success" />,
+          content: t('Deleted'),
+          duration: 0.5,
+        });
+      }
+    };
+
     useEffect(() => {
       const handleClickOutside = (e: MouseEvent) => {
         const isOut =
@@ -80,7 +118,24 @@ const AddressItem = memo(
     }, []);
 
     return (
-      <div className={clsx(className, 'rabby-address-item')} onClick={onClick}>
+      <div
+        className={clsx(
+          className,
+          'rabby-address-item relative  py-[9px]',
+          isCurrentAccount
+            ? 'bg-blue-light hover:bg-blue-light'
+            : 'group hover:bg-blue-light hover:bg-opacity-[0.1]'
+        )}
+        onClick={enableSwitch ? onSwitchCurrentAccount : onClick}
+      >
+        {canFastDeleteAccount && (
+          <div className="absolute hidden group-hover:flex w-[20px] left-[-20px] h-full top-0  justify-center items-center">
+            <IconDeleteAddress
+              className="cursor-pointer w-[16px] h-[16px]"
+              onClick={deleteAccount}
+            />
+          </div>
+        )}
         <Tooltip
           overlayClassName="rectangle addressType__tooltip"
           placement="topRight"
@@ -91,78 +146,89 @@ const AddressItem = memo(
         >
           <img
             src={KEYRING_ICONS[type] || WALLET_BRAND_CONTENT[brandName]?.image}
-            className="rabby-address-item-icon"
+            className="rabby-address-item-icon w-[24px] h-[24px]"
           />
         </Tooltip>
 
         <div className={clsx('rabby-address-item-content')}>
           {
             <div className="rabby-address-item-title" ref={titleRef}>
-              {isEdit ? (
+              {
                 <>
-                  <Input
-                    ref={inputRef}
-                    defaultValue={alias}
-                    onPressEnter={() => {
-                      setIsEdit(false);
-                      setAlias(inputRef.current?.state.value);
-                    }}
-                    autoFocus
-                    onClick={(e) => e.stopPropagation()}
-                    maxLength={50}
-                    min={0}
-                  />
-                  <img
-                    className="w-[16px] h-[16px] flex-shrink-0"
-                    src={IconCorrect}
-                    onClick={(e) => {
-                      e.preventDefault();
-                      e.stopPropagation();
-                      setIsEdit(false);
-                      setAlias(inputRef.current?.state.value);
-                    }}
-                  />
-                </>
-              ) : (
-                <>
-                  <div className="rabby-address-item-alias" title={alias}>
+                  <div
+                    className={clsx(
+                      'rabby-address-item-alias',
+                      isCurrentAccount && 'text-white'
+                    )}
+                    title={alias}
+                  >
                     {alias}
                   </div>
-                  <img
-                    className="icon-edit w-[12px] h-[12px] flex-shrink-0"
-                    src={IconEditPen}
-                    onClick={(e) => {
-                      e.stopPropagation();
-                      setIsEdit(true);
-                    }}
-                  />
+                  {extra}
                 </>
-              )}
+              }
             </div>
           }
           <div className="flex items-center">
             <AddressViewer
               address={address?.toLowerCase()}
               showArrow={false}
-              className={'subtitle'}
+              className={clsx('subtitle', isCurrentAccount && 'text-white')}
             />
             <Copy
               onClick={(e) => e.stopPropagation()}
               icon={IconCopy}
               variant="address"
               data={address}
-              className="w-[14px] h-[14px] ml-4"
+              className={clsx(
+                'w-[14px] h-[14px] ml-4',
+                isCurrentAccount && 'text-white brightness-[100]'
+              )}
             ></Copy>
+            {!isCurrentAccount && (
+              <span className="ml-[6px] text-12 text-gray-subTitle">
+                ${splitNumberByStep(balance?.toFixed(2))}
+              </span>
+            )}
           </div>
         </div>
 
-        <div className="rabby-address-item-extra">{extra}</div>
-        <div className="rabby-address-item-arrow">
-          <IconArrowRight
-            width={20}
-            height={20}
-            viewBox="0 0 12 12"
-          ></IconArrowRight>
+        {enableSwitch && !isCurrentAccount && (
+          <div className="rabby-address-item-extra flex justify-center items-center pr-[44px]">
+            <div className="opacity-0 group-hover:opacity-100 w-[16px] h-[16px] rounded-full bg-blue-light flex items-center justify-center">
+              <img src={IconCheck} className="w-[54%] icon icon-check" />
+            </div>
+            <div className="hidden group-hover:block w-[1px] h-full absolute top-0 right-[44px] bg-blue-light"></div>
+          </div>
+        )}
+        {isCurrentAccount && (
+          <div className="rabby-address-item-extra mr-[16px]">
+            <span className="text-12 text-white">
+              ${splitNumberByStep(balance?.toFixed(2))}
+            </span>
+          </div>
+        )}
+        <div
+          className="rabby-address-item-arrow"
+          onClick={
+            enableSwitch
+              ? (e) => {
+                  e.stopPropagation();
+                  onClick?.(e);
+                }
+              : undefined
+          }
+        >
+          <div
+            className={clsx(
+              ' absolute h-full top-0 right-0 w-[44px]  items-center justify-center',
+              isCurrentAccount
+                ? 'flex text-white'
+                : 'text-blue-light hidden group-hover:flex'
+            )}
+          >
+            <IconArrowRight />
+          </div>
         </div>
       </div>
     );

@@ -264,6 +264,10 @@ const Main = () => {
         <PrivateRoute exact path="/import/metamask">
           <ImportMyMetaMaskAccount />
         </PrivateRoute>
+
+        <PrivateRoute exact path="/switch-address">
+          <AddressManagement />
+        </PrivateRoute>
       </Switch>
     </>
   );

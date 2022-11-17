@@ -289,7 +289,7 @@ const Settings = ({ visible, onClose }: SettingsProps) => {
     },
     {
       leftIcon: IconContacts,
-      content: t('Contacts'),
+      content: 'Old Contact List',
       onClick: () => {
         setContactsVisible(true);
         reportSettings('contract');
@@ -430,9 +430,8 @@ const Settings = ({ visible, onClose }: SettingsProps) => {
           </footer>
           <Contacts
             visible={contactsVisible}
-            onClose={(e) => {
+            onClose={() => {
               setContactsVisible(false);
-              onClose?.(e);
             }}
           />
 

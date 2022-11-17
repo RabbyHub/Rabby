@@ -33,8 +33,8 @@ const AddressDetail = () => {
   }
 
   return (
-    <div className="page-address-detail">
-      <PageHeader>{t('Address Detail')}</PageHeader>
+    <div className="page-address-detail overflow-auto">
+      <PageHeader fixed>{t('Address Detail')}</PageHeader>
       <AddressInfo
         address={address}
         type={type}

@@ -2,6 +2,7 @@ import { createModel } from '@rematch/core';
 
 import { RootModel } from '.';
 import { Account, IHighlightedAddress } from '@/background/service/preference';
+import store from '../store';
 
 type IState = {
   highlightedAddresses: IHighlightedAddress[];
@@ -73,6 +74,14 @@ export const addressManagement = createModel<RootModel>()({
         highlightedAddresses: addrs,
       });
       dispatch.addressManagement.getHilightedAddressesAsync();
+    },
+
+    async removeAddress(
+      payload: Parameters<typeof store.app.wallet.removeAddress>,
+      store
+    ) {
+      await store.app.wallet.removeAddress(...payload);
+      dispatch.accountToDisplay.getAllAccountsToDisplay();
     },
   }),
 });

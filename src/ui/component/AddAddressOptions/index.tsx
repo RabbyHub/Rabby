@@ -208,8 +208,8 @@ const AddAddressOptions = () => {
       {
         leftIcon: IconAddwatchmodo,
         brand: 'addWatchMode',
-        content: 'Watch Mode Address',
-        subText: t('Add address without private keys'),
+        content: 'Add Contacts',
+        subText: 'You can also use it as a watch-only address',
         onClick: () =>
           handleRouter((history) => history.push('/import/watch-address')),
       },
