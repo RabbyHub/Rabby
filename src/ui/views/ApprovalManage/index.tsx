@@ -26,9 +26,11 @@ import PQueue from 'p-queue';
 import { VariableSizeList } from 'react-window';
 import { ApprovalContractItem } from './components/ApprovalContractItem';
 import { RevokeApprovalDrawer } from './components/RevokeApprovalDrawer';
+import { groupBy, sortBy, flatten } from 'lodash';
 
 type ApprovalItem = Spender & {
   list: (NFTApprovalContract | NFTApproval | TokenApproval)[];
+  chain: string;
 };
 const ApprovalManage = () => {
   const wallet = useWallet();
@@ -87,6 +89,7 @@ const ApprovalManage = () => {
               contractMap[`${chainName}:${contractId}`] = {
                 ...contract.spender,
                 list: [],
+                chain: e.id,
               };
             }
             contractMap[`${chainName}:${contractId}`].list.push(contract);
@@ -98,6 +101,7 @@ const ApprovalManage = () => {
               contractMap[`${token.chain}:${contractId}`] = {
                 ...token.spender,
                 list: [],
+                chain: e.id,
               };
             }
             contractMap[`${chainName}:${contractId}`].list.push(token);
@@ -123,6 +127,7 @@ const ApprovalManage = () => {
                 contractMap[`${chainName}:${contractId}`] = {
                   ...spender,
                   list: [],
+                  chain: token.chain,
                 };
               }
               contractMap[`${chainName}:${contractId}`].list.push(token);
@@ -147,18 +152,31 @@ const ApprovalManage = () => {
 
   const sortedContractList: ApprovalItem[] = useMemo(() => {
     if (contractMap) {
-      return Object.values(contractMap).sort(
-        (a: ApprovalItem, b: ApprovalItem) => {
-          const numMap: Record<string, number> = {
-            safe: 0,
-            warning: 1,
-            danger: 100,
-          };
-          const aNum = numMap[a.risk_level] || 0;
-          const bNum = numMap[b.risk_level] || 0;
-          return bNum - aNum;
+      const contractMapArr = Object.values(contractMap);
+      const l = contractMapArr.length;
+      const dangerList: ApprovalItem[] = [];
+      const warnList: ApprovalItem[] = [];
+      const safeList: ApprovalItem[] = [];
+      const numMap: Record<string, string> = {
+        safe: '0',
+        warning: '1',
+        danger: '100',
+      };
+      for (let i = 0; i < l; i++) {
+        const item = contractMapArr[i];
+        if (item.risk_level === numMap.warning) {
+          warnList.push(item);
+        } else if (item.risk_level === numMap.danger) {
+          dangerList.push(item);
+        } else {
+          safeList.push(item);
         }
-      );
+      }
+
+      const groupedSafeList = groupBy(safeList, (item) => item.chain);
+      const sorted = sortBy(Object.values(groupedSafeList), 'length');
+
+      return [...dangerList, ...warnList, ...flatten(sorted.reverse())];
     }
     return [];
   }, [contractMap]);

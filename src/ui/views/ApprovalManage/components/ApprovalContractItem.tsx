@@ -17,6 +17,7 @@ import { InfoCircleOutlined } from '@ant-design/icons';
 
 export type ApprovalItem = Spender & {
   list: (NFTApprovalContract | NFTApproval | TokenApproval)[];
+  chain: string;
 };
 export const ApprovalContractItem = ({
   data,
