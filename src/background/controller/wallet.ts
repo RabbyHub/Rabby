@@ -1525,6 +1525,7 @@ export class WalletController extends BaseController {
     await keyringService.removeAccount(address, type, brand);
     if (!(await keyringService.hasAddress(address))) {
       contactBookService.removeAlias(address);
+      whitelistService.removeWhitelist(address);
     }
     preferenceService.removeAddressBalance(address);
     const current = preferenceService.getCurrentAccount();
