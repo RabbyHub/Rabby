@@ -17,7 +17,7 @@ import {
   transactionHistoryService,
   contactBookService,
   signTextHistoryService,
-  widgetService,
+  whitelistService,
 } from 'background/service';
 import buildinProvider from 'background/utils/buildinProvider';
 import { ContactBookItem } from '../service/contactBook';
@@ -66,7 +66,7 @@ import { generateAliasName } from '@/utils/account';
 import buildUnserializedTransaction from '@/utils/optimism/buildUnserializedTransaction';
 import BigNumber from 'bignumber.js';
 import * as Sentry from '@sentry/browser';
-import { addHexPrefix, intToHex, unpadHexString } from 'ethereumjs-util';
+import { addHexPrefix, unpadHexString } from 'ethereumjs-util';
 import PQueue from 'p-queue';
 
 const stashKeyrings: Record<string | number, any> = {};
@@ -81,6 +81,38 @@ export class WalletController extends BaseController {
   isBooted = () => keyringService.isBooted();
   verifyPassword = (password: string) =>
     keyringService.verifyPassword(password);
+
+  setWhitelist = async (password: string, addresses: string[]) => {
+    await this.verifyPassword(password);
+    whitelistService.setWhitelist(addresses);
+  };
+
+  addWhitelist = async (password: string, address: string) => {
+    await this.verifyPassword(password);
+    whitelistService.addWhitelist(address);
+  };
+
+  removeWhitelist = async (password: string, address: string) => {
+    await this.verifyPassword(password);
+    whitelistService.removeWhitelist(address);
+  };
+
+  toggleWhitelist = async (password: string, enable: boolean) => {
+    await this.verifyPassword(password);
+    if (enable) {
+      whitelistService.enableWhitelist();
+    } else {
+      whitelistService.disableWhiteList();
+    }
+  };
+
+  getWhitelist = () => {
+    return whitelistService.getWhitelist();
+  };
+
+  isWhitelistEnabled = () => {
+    return whitelistService.isWhitelistEnabled();
+  };
 
   requestETHRpc = (data: { method: string; params: any }, chainId: string) => {
     return providerController.ethRpc(
@@ -1493,6 +1525,7 @@ export class WalletController extends BaseController {
     await keyringService.removeAccount(address, type, brand);
     if (!(await keyringService.hasAddress(address))) {
       contactBookService.removeAlias(address);
+      whitelistService.removeWhitelist(address);
     }
     preferenceService.removeAddressBalance(address);
     const current = preferenceService.getCurrentAccount();
@@ -2074,8 +2107,9 @@ export class WalletController extends BaseController {
   };
 
   getAlianName = (address: string) => {
-    const contactName = contactBookService.getContactByAddress(address)?.name;
-    return contactName;
+    const contact = contactBookService.getContactByAddress(address);
+    if (contact?.isAlias) return contact.name;
+    return undefined;
   };
 
   updateAlianName = (address: string, name: string) => {
@@ -2222,15 +2256,6 @@ export class WalletController extends BaseController {
   };
   updateAddedToken = (address: string, tokenList: string[]) => {
     return preferenceService.updateAddedToken(address, tokenList);
-  };
-  getWidgets = () => {
-    return widgetService.getWidgets();
-  };
-  enableWidget = (name: string) => {
-    widgetService.enableWidget(name);
-  };
-  disableWidget = (name: string) => {
-    widgetService.disableWidget(name);
   };
 
   reportStats = (

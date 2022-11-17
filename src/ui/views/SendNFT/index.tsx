@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import * as Sentry from '@sentry/browser';
 import ClipboardJS from 'clipboard';
 import clsx from 'clsx';
@@ -15,23 +15,27 @@ import {
   KEYRING_CLASS,
   CHAINS_ENUM,
 } from 'consts';
+import { useRabbyDispatch, useRabbySelector, connectStore } from 'ui/store';
 import { Account } from 'background/service/preference';
 import { NFTItem } from '@/background/service/openapi';
 import { UIContactBookItem } from 'background/service/contactBook';
-import { useWallet, useWalletOld } from 'ui/utils';
+import { useWalletOld, isSameAddress } from 'ui/utils';
 import { getTokenName } from 'ui/utils/token';
 import AccountCard from '../Approval/components/AccountCard';
 import TagChainSelector from 'ui/component/ChainSelector/tag';
 import { PageHeader, AddressViewer } from 'ui/component';
+import AuthenticationModalPromise from 'ui/component/AuthenticationModal';
 import ContactEditModal from 'ui/component/Contact/EditModal';
 import ContactListModal from 'ui/component/Contact/ListModal';
 import NumberInput from '@/ui/component/NFTNumberInput';
 import NFTAvatar from 'ui/views/Dashboard/components/NFT/NFTAvatar';
-import IconContact from 'ui/assets/contact.svg';
+import IconWhitelist from 'ui/assets/dashboard/whitelist.svg';
 import IconEdit from 'ui/assets/edit-purple.svg';
 import IconCopy from 'ui/assets/copy-no-border.svg';
 import IconSuccess from 'ui/assets/success.svg';
-import { SvgIconPlusPrimary, SvgIconLoading, SvgAlert } from 'ui/assets';
+import IconCheck from 'ui/assets/icon-check.svg';
+import IconTemporaryGrantCheckbox from 'ui/assets/send-token/temporary-grant-checkbox.svg';
+import { SvgIconLoading, SvgAlert } from 'ui/assets';
 import './style.less';
 import { getKRCategoryByType } from '@/utils/transaction';
 import { filterRbiSource, useRbiSource } from '@/ui/utils/ga-event';
@@ -50,6 +54,7 @@ const SendNFT = () => {
   }>();
   const { t } = useTranslation();
   const rbisource = useRbiSource();
+  const dispatch = useRabbyDispatch();
 
   const [currentAccount, setCurrentAccount] = useState<Account | null>(null);
   const [nftItem, setNftItem] = useState<NFTItem | null>(
@@ -72,21 +77,55 @@ const SendNFT = () => {
   const [contactInfo, setContactInfo] = useState<null | UIContactBookItem>(
     null
   );
+  const [inited, setInited] = useState(false);
   const [sendAlianName, setSendAlianName] = useState<string | null>(null);
   const [showEditContactModal, setShowEditContactModal] = useState(false);
   const [showListContactModal, setShowListContactModal] = useState(false);
   const [editBtnDisabled, setEditBtnDisabled] = useState(true);
   const [showContactInfo, setShowContactInfo] = useState(false);
-  const [accountType, setAccountType] = useState('');
+  const [showWhitelistAlert, setShowWhitelistAlert] = useState(false);
+  const [temporaryGrant, setTemporaryGrant] = useState(false);
+  const [toAddressInWhitelist, setToAddressInWhitelist] = useState(false);
   const [tokenValidationStatus, setTokenValidationStatus] = useState(
     TOKEN_VALIDATION_STATUS.PENDING
   );
 
+  const { whitelist, whitelistEnabled } = useRabbySelector((s) => ({
+    whitelist: s.whitelist.whitelist,
+    whitelistEnabled: s.whitelist.enabled,
+  }));
+
+  const whitelistAlertContent = useMemo(() => {
+    if (!whitelistEnabled) {
+      return {
+        content: 'Whitelist disabled. You can transfer to any address.',
+        success: true,
+      };
+    }
+    if (toAddressInWhitelist) {
+      return {
+        content: 'The address is whitelisted',
+        success: true,
+      };
+    }
+    if (temporaryGrant) {
+      return {
+        content: 'Temporary permission granted',
+        success: true,
+      };
+    }
+    return {
+      success: false,
+      content:
+        'The address is not whitelisted. I agree to grant temporary permission to transfer.',
+    };
+  }, [temporaryGrant, whitelist, toAddressInWhitelist, whitelistEnabled]);
+
   const canSubmit =
     isValidAddress(form.getFieldValue('to')) &&
     new BigNumber(form.getFieldValue('amount')).isGreaterThan(0) &&
-    tokenValidationStatus === TOKEN_VALIDATION_STATUS.SUCCESS;
-
+    tokenValidationStatus === TOKEN_VALIDATION_STATUS.SUCCESS &&
+    (!whitelistEnabled || temporaryGrant || toAddressInWhitelist);
   const handleCopyContractAddress = () => {
     const clipboard = new ClipboardJS('.transfer-nft', {
       text: function () {
@@ -114,7 +153,7 @@ const SendNFT = () => {
   };
 
   const handleFormValuesChange = async (
-    _,
+    changedValues,
     {
       to,
     }: {
@@ -122,20 +161,25 @@ const SendNFT = () => {
       amount: number;
     }
   ) => {
-    setShowContactInfo(!!to && isValidAddress(to));
+    if (changedValues && changedValues.to) {
+      setTemporaryGrant(false);
+    }
     if (!to || !isValidAddress(to)) {
       setEditBtnDisabled(true);
+      setShowWhitelistAlert(false);
     } else {
       setEditBtnDisabled(false);
+      setShowWhitelistAlert(true);
+      setToAddressInWhitelist(
+        !!whitelist.find((item) => isSameAddress(item, to))
+      );
     }
-    const addressContact = await wallet.getContactByAddress(to);
     const alianName = await wallet.getAlianName(to.toLowerCase());
-    if (addressContact || alianName) {
-      setContactInfo(addressContact || { to, name: alianName });
-      alianName ? setAccountType('my') : setAccountType('others');
-    } else if (!addressContact && contactInfo) {
+    if (alianName) {
+      setContactInfo({ address: to, name: alianName });
+      setShowContactInfo(true);
+    } else if (contactInfo) {
       setContactInfo(null);
-      setAccountType('');
     }
   };
 
@@ -192,17 +236,27 @@ const SendNFT = () => {
     }
   };
 
-  const handleConfirmContact = (
-    data: UIContactBookItem | null,
-    type: string
-  ) => {
-    setShowEditContactModal(false);
+  const handleClickWhitelistAlert = () => {
+    AuthenticationModalPromise({
+      title: 'Enter the Password to Confirm',
+      cancelText: 'Cancel',
+      wallet,
+      onFinished() {
+        setTemporaryGrant(true);
+      },
+      onCancel() {
+        // do nothing
+      },
+    });
+  };
+
+  const handleConfirmContact = (account: UIContactBookItem) => {
     setShowListContactModal(false);
-    setContactInfo(data);
-    setAccountType(type);
+    setShowEditContactModal(false);
+    setContactInfo(account);
     const values = form.getFieldsValue();
-    const to = data ? data.address : '';
-    if (!data) return;
+    const to = account ? account.address : '';
+    if (!account) return;
     form.setFieldsValue({
       ...values,
       to,
@@ -231,7 +285,7 @@ const SendNFT = () => {
     history.replace('/');
   };
 
-  const init = async () => {
+  const initByCache = async () => {
     if (!nftItem) {
       if (await wallet.hasPageStateCache()) {
         const cache = await wallet.getPageStateCache();
@@ -246,6 +300,11 @@ const SendNFT = () => {
         }
       }
     }
+  };
+
+  const init = async () => {
+    dispatch.whitelist.getWhitelistEnabled();
+    dispatch.whitelist.getWhitelist();
     const account = await wallet.syncGetCurrentAccount();
 
     if (!account) {
@@ -254,6 +313,7 @@ const SendNFT = () => {
     }
 
     setCurrentAccount(account);
+    setInited(true);
   };
 
   const getAlianName = async () => {
@@ -293,6 +353,10 @@ const SendNFT = () => {
       wallet.clearPageStateCache();
     };
   }, []);
+
+  useEffect(() => {
+    if (inited) initByCache();
+  }, [inited]);
 
   useEffect(() => {
     if (currentAccount) {
@@ -353,7 +417,7 @@ const SendNFT = () => {
                     })}
                     onClick={handleEditContact}
                   >
-                    {contactInfo ? (
+                    {contactInfo && (
                       <>
                         <img src={IconEdit} className="icon icon-edit" />
                         <span
@@ -363,20 +427,12 @@ const SendNFT = () => {
                           {contactInfo.name}
                         </span>
                       </>
-                    ) : (
-                      <>
-                        <SvgIconPlusPrimary
-                          className="icon icon-add"
-                          fill="#8697FF"
-                        />
-                        <span>{t('Add contact')}</span>
-                      </>
                     )}
                   </div>
                 )}
                 <img
                   className="icon icon-contact"
-                  src={IconContact}
+                  src={IconWhitelist}
                   onClick={handleListContact}
                 />
               </div>
@@ -477,6 +533,33 @@ const SendNFT = () => {
             </div>
           )}
 
+          {tokenValidationStatus === TOKEN_VALIDATION_STATUS.SUCCESS &&
+            showWhitelistAlert && (
+              <div
+                className={clsx(
+                  'whitelist-alert',
+                  !whitelistEnabled || whitelistAlertContent.success
+                    ? 'granted'
+                    : 'cursor-pointer'
+                )}
+                onClick={handleClickWhitelistAlert}
+              >
+                {whitelistEnabled && (
+                  <img
+                    src={
+                      whitelistAlertContent.success
+                        ? IconCheck
+                        : IconTemporaryGrantCheckbox
+                    }
+                    className="icon icon-check"
+                  />
+                )}
+                <p className="whitelist-alert__content">
+                  {whitelistAlertContent.content}
+                </p>
+              </div>
+            )}
+
           <div className="footer flex justify-center">
             <Button
               disabled={!canSubmit}
@@ -494,7 +577,6 @@ const SendNFT = () => {
         visible={showEditContactModal}
         address={form.getFieldValue('to')}
         onOk={handleConfirmContact}
-        accountType={accountType}
         onCancel={handleCancelEditContact}
         isEdit={!!contactInfo}
       />
@@ -502,10 +584,9 @@ const SendNFT = () => {
         visible={showListContactModal}
         onCancel={() => setShowListContactModal(false)}
         onOk={handleConfirmContact}
-        address={form.getFieldValue('to')}
       />
     </div>
   );
 };
 
-export default SendNFT;
+export default connectStore()(SendNFT);

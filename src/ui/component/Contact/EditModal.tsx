@@ -1,28 +1,19 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Drawer, Input, Button, Form, message } from 'antd';
-import { useWallet, useWalletOld } from 'ui/utils';
+import { Drawer, Input, Button, Form } from 'antd';
+import { useWalletOld } from 'ui/utils';
 import { UIContactBookItem } from 'background/service/contactBook';
-import IconSuccess from 'ui/assets/success.svg';
 import './style.less';
 
 interface EditModalProps {
   address: string;
   visible: boolean;
-  onOk(data: UIContactBookItem | null, type: string): void;
+  onOk(data: UIContactBookItem): void;
   onCancel(): void;
   isEdit: boolean;
-  accountType: string;
 }
 
-const EditModal = ({
-  address,
-  visible,
-  onOk,
-  onCancel,
-  isEdit = true,
-  accountType = 'others',
-}: EditModalProps) => {
+const EditModal = ({ address, visible, onOk, onCancel }: EditModalProps) => {
   const { t } = useTranslation();
   const wallet = useWalletOld();
   const [name, setName] = useState('');
@@ -30,29 +21,8 @@ const EditModal = ({
 
   const handleConfirm = () => {
     if (!name) return;
-    if (isEdit) {
-      wallet.updateContact({
-        address,
-        name,
-      });
-      wallet.updateAlianName(address.toLowerCase(), name);
-    } else {
-      wallet.addContact({
-        address,
-        name,
-      });
-      message.success({
-        icon: <img src={IconSuccess} className="icon icon-success" />,
-        content: t('Added to Contact'),
-        duration: 1,
-      });
-    }
-    onOk({ address, name }, accountType);
-  };
-
-  const handleRemoveContact = () => {
-    wallet.removeContact(address);
-    onOk(null, accountType);
+    wallet.updateAlianName(address.toLowerCase(), name);
+    onOk({ address, name });
   };
 
   const strLength = (str) => {
@@ -76,10 +46,9 @@ const EditModal = ({
   };
 
   const init = async () => {
-    if (isEdit) {
-      const contact = await wallet.getContactByAddress(address);
+    if (address) {
       const alianName = await wallet.getAlianName(address);
-      setName(contact.name || alianName);
+      setName(alianName);
     }
   };
 
@@ -88,13 +57,8 @@ const EditModal = ({
       setTimeout(() => {
         inputRef?.current?.focus();
       }, 200);
-      if (isEdit) {
-        const contact = await wallet.getContactByAddress(address);
-        const alianName = await wallet.getAlianName(address);
-        setName(contact?.name || alianName || '');
-      } else {
-        setName('');
-      }
+      const alianName = await wallet.getAlianName(address);
+      setName(alianName || '');
     }
   };
 
@@ -107,16 +71,12 @@ const EditModal = ({
   }, []);
   return (
     <Drawer
-      className={
-        isEdit && accountType === 'others'
-          ? 'edit-contact-modal-with-remove'
-          : 'edit-contact-modal'
-      }
-      title={isEdit ? t('Edit address note') : t('Add address note')}
+      className="edit-contact-modal-with-remove"
+      title={t('Edit address note')}
       visible={visible}
       onClose={onCancel}
       placement="bottom"
-      height={isEdit && accountType === 'others' ? '245px' : '215px'}
+      height="215px"
       destroyOnClose
     >
       <Form onFinish={handleConfirm}>
@@ -140,13 +100,6 @@ const EditModal = ({
           {t('Confirm')}
         </Button>
       </div>
-      {isEdit && accountType === 'others' && (
-        <div className="remove-btn">
-          <Button type="link" onClick={handleRemoveContact}>
-            {t('Remove from Contacts')}
-          </Button>
-        </div>
-      )}
     </Drawer>
   );
 };

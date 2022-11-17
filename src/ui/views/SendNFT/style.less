@@ -67,4 +67,26 @@
   .footer {
     bottom: 32px;
   }
+  .whitelist-alert {
+    display: flex;
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 14px;
+    color: #AF160E;
+    margin-top: 16px;
+    margin-bottom: 16px;
+    justify-content: center;
+    .icon-check {
+      width: 14px;
+      height: 14px;
+      margin-right: 4px;
+    }
+    &__content {
+      max-width: 312px;
+      margin-bottom: 0;
+    }
+    &.granted {
+      color: #707280;
+    }
+  }
 }
