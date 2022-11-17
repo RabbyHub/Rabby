@@ -1160,7 +1160,7 @@ export class WalletController extends BaseController {
     return keyring.postTransaction();
   };
 
-  getGnosisOwners = (
+  getGnosisOwners = async (
     account: Account,
     safeAddress: string,
     version: string
@@ -1170,11 +1170,15 @@ export class WalletController extends BaseController {
     buildinProvider.currentProvider.currentAccount = account.address;
     buildinProvider.currentProvider.currentAccountType = account.type;
     buildinProvider.currentProvider.currentAccountBrand = account.brandName;
-    return keyring.getOwners(
+    buildinProvider.currentProvider.chainId = this.getGnosisNetworkId(
+      safeAddress
+    );
+    const owners = await keyring.getOwners(
       safeAddress,
       version,
       new ethers.providers.Web3Provider(buildinProvider.currentProvider)
     );
+    return owners;
   };
 
   signGnosisTransaction = (account: Account) => {

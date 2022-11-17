@@ -239,14 +239,14 @@ const ImportWatchAddress = () => {
             onClick={handleClickBack}
           />
           <img
-            className="unlock-logo w-[80px] h-[75px] mb-20 mx-auto"
+            className="unlock-logo w-[80px] h-[75px] mb-28 mx-auto"
             src={WatchLogo}
           />
           <p className="text-24 mb-4 mt-0 text-white text-center font-bold">
-            {t('Watch Mode')}
+            Add Contacts
           </p>
-          <p className="text-14 mb-0 mt-4 text-white opacity-80 text-center">
-            {t('Enter an address without providing private key')}
+          <p className="text-14 mb-0 mt-4 text-white  text-center">
+            You can also use it as a watch-only address{' '}
           </p>
           <img src="/images/watch-mask.png" className="mask" />
         </div>

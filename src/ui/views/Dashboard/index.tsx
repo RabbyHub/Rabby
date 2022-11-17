@@ -32,10 +32,8 @@ import IconCorrect from 'ui/assets/dashboard/contacts/correct.png';
 import IconUnCorrect from 'ui/assets/dashboard/contacts/uncorrect.png';
 import IconEditPen from 'ui/assets/editpen.svg';
 import IconCopy from 'ui/assets/icon-copy.svg';
-import IconInfo from 'ui/assets/information.png';
 import IconSuccess from 'ui/assets/success.svg';
 import IconTagYou from 'ui/assets/tag-you.svg';
-import IconUpAndDown from 'ui/assets/up-and-down.svg';
 import { AddressViewer, Copy, Modal, NameAndAddress } from 'ui/component';
 import {
   connectStore,
@@ -63,6 +61,8 @@ import PendingTxs from './components/PendingTxs';
 import { sortAccountsByBalance } from '@/ui/utils/account';
 import { getKRCategoryByType } from '@/utils/transaction';
 import eventBus from '@/eventBus';
+
+import { ReactComponent as IconAddAddress } from '@/ui/assets/address/add-address.svg';
 
 const GnosisAdminItem = ({
   accounts,
@@ -391,6 +391,10 @@ const Dashboard = () => {
     setAssets(assets);
     setIsAssetsLoading(false);
   };
+
+  const gotoAddAddress = () => {
+    history.push('/add-address');
+  };
   useEffect(() => {
     dispatch.appVersion.checkIfFirstLoginAsync();
   }, []);
@@ -400,70 +404,6 @@ const Dashboard = () => {
       setAssets([]);
     }
   }, [currentAccount]);
-
-  const clickContent = () => (
-    <div className="click-list flex flex-col w-[233px]">
-      {loadingAccounts ? (
-        <div className="address-loading">
-          <SvgIconLoading className="icon icon-loading" fill="#707280" />
-          <div className="text-14 text-gray-light">
-            {t('Loading Addresses')}
-          </div>
-        </div>
-      ) : sortedAccountsList.length <= 0 ? (
-        <div className="no-other-address"> {t('No address')}</div>
-      ) : (
-        <FixedSizeList
-          height={
-            sortedAccountsList.length > 5 ? 308 : sortedAccountsList.length * 54
-          }
-          width="100%"
-          itemData={sortedAccountsList}
-          itemCount={sortedAccountsList.length}
-          itemSize={54}
-          ref={fixedList}
-          style={{ zIndex: 10 }}
-        >
-          {(props: {
-            data: Account[];
-            index: number;
-            style: React.StyleHTMLAttributes<HTMLDivElement>;
-          }) => {
-            return (
-              <AddressRow
-                data={props.data}
-                index={props.index}
-                style={props.style}
-                copiedSuccess={copySuccess}
-                handleClickChange={handleChange}
-                onCopy={(account) => {
-                  ReactGA.event({
-                    category: 'AccountInfo',
-                    action: 'selectCopyAddress',
-                    label: [
-                      getKRCategoryByType(account?.type),
-                      account?.brandName,
-                    ].join('|'),
-                  });
-                }}
-              />
-            );
-          }}
-        </FixedSizeList>
-      )}
-      <Link to="/add-address" className="pop-add-address flex items-center">
-        {' '}
-        <img src={IconPlus} />
-        <p className="mb-0 ml-15 lh-1">{t('Add address')}</p>
-      </Link>
-    </div>
-  );
-
-  const handleClickChange = (visible: boolean) => {
-    setClicked(visible);
-    setStartEdit(false);
-    setHovered(false);
-  };
 
   const hide = () => {
     setStartEdit(false);
@@ -624,6 +564,9 @@ const Dashboard = () => {
     currentAccount?.type === KEYRING_CLASS.WATCH;
   const showGnosisAlert = isGnosis && showGnosisWrongChainAlert && !showChain;
 
+  const switchAddress = () => {
+    history.push('/switch-address');
+  };
   return (
     <>
       <div
@@ -636,14 +579,16 @@ const Dashboard = () => {
             <div
               className={clsx('flex header items-center relative', topAnimate)}
             >
-              <div className="h-[36px] flex header-wrapper items-center relative">
+              <div
+                className="h-[36px] flex header-wrapper items-center relative"
+                onClick={switchAddress}
+              >
                 <Popover
-                  content={clickContent}
+                  content={null}
                   trigger="click"
-                  visible={clicked}
+                  visible={false}
                   placement="bottomLeft"
                   overlayClassName="switch-popover"
-                  onVisibleChange={handleClickChange}
                 >
                   {
                     <img
@@ -672,27 +617,28 @@ const Dashboard = () => {
                       />
                     )}
                   </div>
-                  <img
-                    className="icon icon-account-type w-[16px] h-[16px] ml-8"
-                    src={IconUpAndDown}
-                  />
+
+                  <svg
+                    className="ml-8"
+                    width="16"
+                    height="16"
+                    viewBox="0 0 16 16"
+                    fill="none"
+                    xmlns="http://www.w3.org/2000/svg"
+                  >
+                    <g opacity="0.8">
+                      <path
+                        d="M6.16406 3L11.1641 8L6.16406 13V3Z"
+                        fill="white"
+                        stroke="white"
+                        stroke-width="1.25"
+                        stroke-linejoin="round"
+                      />
+                    </g>
+                  </svg>
                 </Popover>
               </div>
-              <img
-                src={IconInfo}
-                onClick={() => {
-                  setHovered(true);
-                  ReactGA.event({
-                    category: 'AccountInfo',
-                    action: 'getQRCode',
-                    label: [
-                      getKRCategoryByType(currentAccount?.type),
-                      currentAccount?.brandName,
-                    ].join('|'),
-                  });
-                }}
-                className="w-[18px] h-[18px] mr-12 pointer"
-              />
+
               <Copy
                 onClick={() => {
                   ReactGA.event({
@@ -709,6 +655,14 @@ const Dashboard = () => {
                 className="w-18"
                 icon={IconCopy}
               ></Copy>
+
+              <div
+                className="ml-auto w-[36px] h-[36px] bg-white bg-opacity-[0.12] backdrop-blur-[20px] rounded-[6px] flex items-center justify-center cursor-pointer"
+                role="button"
+                onClick={gotoAddAddress}
+              >
+                <IconAddAddress className="text-white w-[20px] h-[20px]" />
+              </div>
             </div>
           )}
           <BalanceView

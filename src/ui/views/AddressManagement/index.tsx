@@ -1,11 +1,10 @@
-import React, { useEffect, useRef, useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Link, useHistory } from 'react-router-dom';
-import { FixedSizeList } from 'react-window';
-import { PageHeader, StrayFooter } from 'ui/component';
+import { Link, useHistory, useLocation } from 'react-router-dom';
+import { VariableSizeList as VList } from 'react-window';
+import { PageHeader } from 'ui/component';
 import AddressItem from './AddressItem';
 import IconPlusAddress from 'ui/assets/addchain.png';
-import IconPlusAddress1 from 'ui/assets/addAddress.png';
 import IconPinned from 'ui/assets/icon-pinned.svg';
 import IconPinnedFill from 'ui/assets/icon-pinned-fill.svg';
 
@@ -14,25 +13,31 @@ import { obj2query } from '@/ui/utils/url';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { sortAccountsByBalance } from '@/ui/utils/account';
 import clsx from 'clsx';
-
-const { Nav: StrayFooterNav } = StrayFooter;
+import { ReactComponent as IconAddAddress } from '@/ui/assets/address/add-address.svg';
+import { KEYRING_CLASS } from '@/background/service/keyring';
+import { groupBy } from 'lodash';
+import styled from 'styled-components';
 
 const AddressManagement = () => {
   const { t } = useTranslation();
   const history = useHistory();
+  const location = useLocation();
+  const enableSwitch = location.pathname === '/switch-address';
 
   // todo: store redesign
   const {
     accountsList,
-    highlightedAddresses,
+    highlightedAddresses = [],
     loadingAccounts,
   } = useRabbySelector((s) => ({
     ...s.accountToDisplay,
     highlightedAddresses: s.addressManagement.highlightedAddresses,
   }));
-  const { sortedAccountsList } = React.useMemo(() => {
+
+  const [sortedAccountsList, watchSortedAccountsList] = React.useMemo(() => {
     const restAccounts = [...accountsList];
     let highlightedAccounts: typeof accountsList = [];
+    let watchModeHighlightedAccounts: typeof accountsList = [];
 
     highlightedAddresses.forEach((highlighted) => {
       const idx = restAccounts.findIndex(
@@ -41,17 +46,33 @@ const AddressManagement = () => {
           account.brandName === highlighted.brandName
       );
       if (idx > -1) {
-        highlightedAccounts.push(restAccounts[idx]);
+        if (restAccounts[idx].type === KEYRING_CLASS.WATCH) {
+          watchModeHighlightedAccounts.push(restAccounts[idx]);
+        } else {
+          highlightedAccounts.push(restAccounts[idx]);
+        }
         restAccounts.splice(idx, 1);
       }
     });
+    const data = groupBy(restAccounts, (e) =>
+      e.type === KEYRING_CLASS.WATCH ? '1' : '0'
+    );
 
     highlightedAccounts = sortAccountsByBalance(highlightedAccounts);
+    watchModeHighlightedAccounts = sortAccountsByBalance(
+      watchModeHighlightedAccounts
+    );
 
-    return {
-      sortedAccountsList: highlightedAccounts.concat(restAccounts),
-    };
+    return [
+      highlightedAccounts.concat(data['0'] || []).filter((e) => !!e),
+      watchModeHighlightedAccounts.concat(data['1'] || []).filter((e) => !!e),
+    ];
   }, [accountsList, highlightedAddresses]);
+
+  const accountList = useMemo(
+    () => [...(sortedAccountsList || []), ...(watchSortedAccountsList || [])],
+    [sortedAccountsList, watchSortedAccountsList]
+  );
 
   const noAccount = useMemo(() => {
     return sortedAccountsList.length <= 0 && !loadingAccounts;
@@ -64,8 +85,6 @@ const AddressManagement = () => {
       dispatch.accountToDisplay.getAllAccountsToDisplay();
     });
   }, []);
-
-  const fixedList = useRef<FixedSizeList>();
 
   const NoAddressUI = (
     <div className="no-address">
@@ -85,6 +104,28 @@ const AddressManagement = () => {
     </div>
   );
 
+  const currentAccount = useRabbySelector((s) => s.account.currentAccount);
+
+  const currentAccountIndex = useMemo(() => {
+    if (!currentAccount || !enableSwitch) {
+      return -1;
+    }
+    return accountList.findIndex((e) =>
+      (['address', 'brandName', 'type'] as const).every(
+        (key) => e[key].toLowerCase() === currentAccount[key].toLowerCase()
+      )
+    );
+  }, [accountList, currentAccount, enableSwitch]);
+
+  const gotoAddAddress = () => {
+    history.push('/add-address');
+  };
+
+  const switchAccount = async (account: typeof sortedAccountsList[number]) => {
+    await dispatch.account.changeAccountAsync(account);
+    history.push('/dashboard');
+  };
+
   const Row = (props) => {
     const { data, index, style } = props;
     const account = data[index];
@@ -95,15 +136,19 @@ const AddressManagement = () => {
     );
 
     return (
-      <div className="address-wrap-with-padding" style={style}>
+      <div className="address-wrap-with-padding px-[20px]" style={style}>
         <AddressItem
+          balance={account.balance}
           address={account.address}
           type={account.type}
           brandName={account.brandName}
           alias={account.alianName}
           extra={
             <div
-              className={clsx('icon-star', favorited && 'is-active')}
+              className={clsx(
+                'icon-star opacity-100 border-none px-0',
+                favorited && 'is-active'
+              )}
               onClick={(e) => {
                 e.stopPropagation();
                 dispatch.addressManagement.toggleHighlightedAddressAsync({
@@ -112,11 +157,11 @@ const AddressManagement = () => {
                 });
               }}
             >
-              {favorited ? (
-                <img src={IconPinnedFill} alt="" />
-              ) : (
-                <img src={IconPinned} alt="" />
-              )}
+              <img
+                className="w-[13px] h-[13px]"
+                src={favorited ? IconPinnedFill : IconPinned}
+                alt=""
+              />
             </div>
           }
           onClick={() => {
@@ -129,50 +174,103 @@ const AddressManagement = () => {
               })}`
             );
           }}
+          onSwitchCurrentAccount={() => {
+            switchAccount(account);
+          }}
+          enableSwitch={enableSwitch}
         />
       </div>
     );
   };
 
   return (
-    <div className="page-address-management">
-      <PageHeader>{t('Address Management')}</PageHeader>
+    <div className="page-address-management px-0 overflow-hidden">
+      <PageHeader className="pt-[24px] mx-[20px]">
+        {t('Address Management')}
+
+        <IconAddAddress
+          className="absolute right-0 top-[20px] text-gray-title w-[20px] h-[20px] cursor-pointer"
+          onClick={gotoAddAddress}
+        />
+      </PageHeader>
+
+      {currentAccountIndex !== -1 && accountList[currentAccountIndex] && (
+        <>
+          <div className="address-wrap-with-padding px-[20px]">
+            <AddressItem
+              balance={accountList[currentAccountIndex].balance || 0}
+              address={accountList[currentAccountIndex].address || ''}
+              type={accountList[currentAccountIndex].type || ''}
+              brandName={accountList[currentAccountIndex].brandName || ''}
+              alias={accountList[currentAccountIndex].alianName}
+              isCurrentAccount
+              onClick={() => {
+                history.push(
+                  `/settings/address-detail?${obj2query({
+                    address: accountList[currentAccountIndex].address,
+                    type: accountList[currentAccountIndex].type,
+                    brandName: accountList[currentAccountIndex].brandName,
+                    byImport:
+                      ((accountList[currentAccountIndex]
+                        .byImport as unknown) as string) || '',
+                  })}`
+                );
+              }}
+            />
+          </div>
+          <SwitchTips>Switch Address</SwitchTips>
+        </>
+      )}
       {noAccount ? (
         NoAddressUI
       ) : (
         <>
           <div className={'address-group-list management'}>
-            <FixedSizeList
+            <VList
               height={500}
               width="100%"
-              itemData={sortedAccountsList}
-              itemCount={sortedAccountsList.length}
-              itemSize={64}
-              ref={fixedList}
+              itemData={accountList}
+              itemCount={accountList.length}
+              itemSize={(i) => (i !== sortedAccountsList.length - 1 ? 64 : 78)}
               className="scroll-container"
             >
               {Row}
-            </FixedSizeList>
+            </VList>
           </div>
-          <StrayFooterNav
-            hasDivider
-            onNextClick={() => {
-              history.push('/add-address');
-            }}
-            NextButtonContent={
-              <div className="flex items-center h-full justify-center text-15">
-                <img
-                  src={IconPlusAddress1}
-                  className="w-[16px] h-[16px] mr-10"
-                />
-                {t('Add Address')}
-              </div>
-            }
-          />
         </>
       )}
     </div>
   );
 };
+
+const SwitchTips = styled.div`
+  width: 211px;
+  height: 14px;
+  position: relative;
+  margin: 0 auto;
+  margin-top: 20px;
+  margin-bottom: 12px;
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 14px;
+  text-align: center;
+  color: #b4bdcc;
+  &::before,
+  &::after {
+    content: '';
+    width: 52px;
+    height: 0px;
+    position: absolute;
+    top: 50%;
+    transform: translateY(-50%);
+    border-bottom: 1px solid #e5e9ef;
+  }
+  &::before {
+    left: 0;
+  }
+  &::after {
+    right: 0;
+  }
+`;
 
 export default AddressManagement;

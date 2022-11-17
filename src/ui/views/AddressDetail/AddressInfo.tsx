@@ -1,25 +1,39 @@
 import { Button, Form, Input, message, Popover } from 'antd';
 import React, { useRef } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Copy, PageHeader, Popup } from 'ui/component';
-import { splitNumberByStep, useAlias, useBalance, useWallet } from 'ui/utils';
+import { Copy, NameAndAddress, PageHeader, Popup } from 'ui/component';
+import {
+  isSameAddress,
+  splitNumberByStep,
+  useAlias,
+  useBalance,
+  useWallet,
+} from 'ui/utils';
 import QRCode from 'qrcode.react';
 import IconCopy from 'ui/assets/component/icon-copy.svg';
 import IconPen from 'ui/assets/editpen.svg';
 import './style.less';
 import { copyAddress } from '@/ui/utils/clipboard';
 import { useForm } from 'antd/lib/form/Form';
-import { KEYRING_ICONS, WALLET_BRAND_CONTENT } from '@/constant';
+import { KEYRING_CLASS, KEYRING_ICONS, WALLET_BRAND_CONTENT } from '@/constant';
 import { useLocation } from 'react-router-dom';
+import { connectStore, useRabbyGetter, useRabbySelector } from '@/ui/store';
+import { Account } from '@/background/service/preference';
+import IconTagYou from 'ui/assets/tag-you.svg';
+import { sortAccountsByBalance } from '@/ui/utils/account';
+import { useAsync } from 'react-use';
+import Safe from '@rabby-wallet/gnosis-sdk';
+import { crossCompareOwners } from '@/ui/utils/gnosis';
+import { SvgIconLoading } from 'ui/assets';
 
 type Props = {
   address: string;
   type: string;
-  brandName?: string;
+  brandName: string;
   source: string;
 };
 
-export const AddressInfo = ({ address, type, brandName, source }: Props) => {
+const AddressInfo1 = ({ address, type, brandName, source }: Props) => {
   const wallet = useWallet();
   const { t } = useTranslation();
 
@@ -27,6 +41,65 @@ export const AddressInfo = ({ address, type, brandName, source }: Props) => {
   const [balance] = useBalance(address);
   const [form] = useForm();
   const inputRef = useRef<Input>(null);
+
+  const { accountsList, highlightedAddresses } = useRabbySelector((s) => ({
+    accountsList: s.accountToDisplay.accountsList,
+    highlightedAddresses: s.addressManagement.highlightedAddresses,
+  }));
+  const isGnosis = type === KEYRING_CLASS.GNOSIS;
+
+  const {
+    value: safeInfo,
+    error,
+    loading: gnosisLoading,
+  } = useAsync(async () => {
+    if (isGnosis) {
+      const network = await wallet.getGnosisNetworkId(address);
+
+      const info = await Safe.getSafeInfo(address, network);
+
+      const owners = await wallet.getGnosisOwners(
+        {
+          type,
+          address,
+          brandName,
+        },
+        address,
+        info.version
+      );
+
+      const comparedOwners = crossCompareOwners(owners, info.owners);
+
+      return {
+        ...info,
+        owners: comparedOwners,
+      };
+    }
+    return;
+  }, [isGnosis]);
+
+  const { sortedAccountsList } = React.useMemo(() => {
+    const restAccounts = [...accountsList];
+    let highlightedAccounts: typeof accountsList = [];
+
+    highlightedAddresses.forEach((highlighted) => {
+      const idx = restAccounts.findIndex(
+        (account) =>
+          account.address === highlighted.address &&
+          account.brandName === highlighted.brandName
+      );
+      if (idx > -1) {
+        highlightedAccounts.push(restAccounts[idx]);
+        restAccounts.splice(idx, 1);
+      }
+    });
+
+    highlightedAccounts = sortAccountsByBalance(highlightedAccounts);
+
+    return {
+      sortedAccountsList: highlightedAccounts.concat(restAccounts),
+    };
+  }, [accountsList, highlightedAddresses]);
 
   const handleEditMemo = () => {
     form.setFieldsValue({
@@ -171,6 +244,68 @@ export const AddressInfo = ({ address, type, brandName, source }: Props) => {
             {source}
           </div>
         </div>
+      </div>
+      {gnosisLoading && (
+        <div className="rabby-list-item">
+          <div className="rabby-list-item-content ">
+            <SvgIconLoading
+              className="icon icon-tag animate-spin"
+              fill="#707280"
+            />
+          </div>
+        </div>
+      )}
+      {isGnosis && safeInfo ? (
+        <>
+          <div className="rabby-list-item">
+            <div className="rabby-list-item-content">
+              <div className="rabby-list-item-label">
+                Admins
+                <div className="rabby-list-item-desc text-gray-subTitle">
+                  Any transaction requires{' '}
+                  <span className="text-gray-title text-14">
+                    {safeInfo.threshold}/{safeInfo.owners.length}
+                  </span>{' '}
+                  confirmations
+                </div>
+              </div>
+              <div className="rabby-list-item-extra flex gap-[4px]"></div>
+            </div>
+          </div>
+          {safeInfo.owners.map((owner, index) => (
+            <GnosisAdminItem
+              address={owner}
+              accounts={sortedAccountsList}
+              key={index}
+            />
+          ))}
+        </>
+      ) : null}
+    </div>
+  );
+};
+
+export const AddressInfo = connectStore()(AddressInfo1);
+
+const GnosisAdminItem = ({
+  accounts,
+  address,
+}: {
+  accounts: Account[];
+  address: string;
+}) => {
+  const addressInWallet = accounts.find((account) =>
+    isSameAddress(account.address, address)
+  );
+  return (
+    <div className="rabby-list-item">
+      <div className="rabby-list-item-content py-0 min-h-[40px]">
+        <NameAndAddress address={address} nameClass="max-143" />
+        {addressInWallet ? (
+          <img src={IconTagYou} className="icon icon-tag ml-[12px]" />
+        ) : (
+          <></>
+        )}
       </div>
     </div>
   );
