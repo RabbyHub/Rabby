@@ -61,46 +61,54 @@ const EditWhitelist = ({
   accountsList,
 }: Props) => {
   const [checkedList, setCheckedList] = useState<string[]>(whitelist);
+  const [hasAnyChange, setHasAnyChange] = useState(false);
 
   const handleClickBack = () => {
-    const modal = Modal.info({
-      closable: false,
-      className: 'page-receive-modal edit-whitelist-back-modal',
-      content: (
-        <div>
-          <h1 className="text-gray-title text-center mb-12">Discard Changes</h1>
-          <p className="text-gray-subTitle text-center text-15 mb-[52px]">
-            Changes you made will not be saved
-          </p>
-          <div className="footer">
-            <Button
-              type="primary"
-              block
-              onClick={() => {
-                modal.destroy();
-              }}
-            >
-              Cancel
-            </Button>
-            <Button
-              type="primary"
-              className="rabby-btn-ghost"
-              ghost
-              block
-              onClick={() => {
-                modal.destroy();
-                onCancel();
-              }}
-            >
-              Confirm
-            </Button>
+    if (hasAnyChange) {
+      const modal = Modal.info({
+        closable: false,
+        className: 'page-receive-modal edit-whitelist-back-modal',
+        content: (
+          <div>
+            <h1 className="text-gray-title text-center mb-12">
+              Discard Changes
+            </h1>
+            <p className="text-gray-subTitle text-center text-15 mb-[52px]">
+              Changes you made will not be saved
+            </p>
+            <div className="footer">
+              <Button
+                type="primary"
+                block
+                onClick={() => {
+                  modal.destroy();
+                }}
+              >
+                Cancel
+              </Button>
+              <Button
+                type="primary"
+                className="rabby-btn-ghost"
+                ghost
+                block
+                onClick={() => {
+                  modal.destroy();
+                  onCancel();
+                }}
+              >
+                Confirm
+              </Button>
+            </div>
           </div>
-        </div>
-      ),
-    });
+        ),
+      });
+    } else {
+      onCancel();
+    }
   };
 
   const handleCheckAddress = (checked: boolean, address: string) => {
+    setHasAnyChange(true);
     if (checked) {
       setCheckedList([...checkedList, address]);
     } else {

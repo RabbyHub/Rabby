@@ -41,7 +41,7 @@ import IconEdit from 'ui/assets/edit-purple.svg';
 import IconCopy from 'ui/assets/copy-no-border.svg';
 import IconSuccess from 'ui/assets/success.svg';
 import IconCheck from 'ui/assets/icon-check.svg';
-import IconContact from 'ui/assets/contact.svg';
+import IconContact from 'ui/assets/send-token/contact.svg';
 import IconTemporaryGrantCheckbox from 'ui/assets/send-token/temporary-grant-checkbox.svg';
 import TokenInfoArrow from 'ui/assets/send-token/token-info-arrow.svg';
 import ButtonMax from 'ui/assets/send-token/max.svg';
@@ -752,17 +752,19 @@ const SendToken = () => {
   };
 
   const handleClickWhitelistAlert = () => {
-    AuthenticationModalPromise({
-      title: 'Enter the Password to Confirm',
-      cancelText: 'Cancel',
-      wallet,
-      onFinished() {
-        setTemporaryGrant(true);
-      },
-      onCancel() {
-        // do nothing
-      },
-    });
+    if (whitelistEnabled && !temporaryGrant && !toAddressInWhitelist) {
+      AuthenticationModalPromise({
+        title: 'Enter the Password to Confirm',
+        cancelText: 'Cancel',
+        wallet,
+        onFinished() {
+          setTemporaryGrant(true);
+        },
+        onCancel() {
+          // do nothing
+        },
+      });
+    }
   };
 
   useEffect(() => {
@@ -869,7 +871,13 @@ const SendToken = () => {
             </Form.Item>
           </div>
         </div>
-        <div className="section mb-16">
+        <div
+          className={clsx('section', {
+            'mb-40':
+              !showWhitelistAlert &&
+              tokenValidationStatus === TOKEN_VALIDATION_STATUS.SUCCESS,
+          })}
+        >
           <div className="section-title flex justify-between items-center">
             <div className="token-balance whitespace-pre-wrap">
               {isLoading ? (

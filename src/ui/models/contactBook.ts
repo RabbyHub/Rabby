@@ -44,16 +44,6 @@ export const contactBook = createModel<RootModel>()({
       return Object.values(contactsMap).filter((item) => item.isContact);
     },
 
-    async updateContact(data: ContactBookItem, store) {
-      await store.app.wallet.updateContact(data);
-      await dispatch.contactBook.getContactBookAsync();
-    },
-
-    async removeContact(address: string, store) {
-      await store.app.wallet.removeContact(address);
-      await dispatch.contactBook.getContactBookAsync();
-    },
-
     async getAliasNamesAsync(_?, store?) {
       const contactsMap: Record<string, ContactBookItem> =
         store.contactBook.contacts;

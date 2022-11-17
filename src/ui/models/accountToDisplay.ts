@@ -36,14 +36,9 @@ export const accountToDisplay = createModel<RootModel>()({
     async getAllAccountsToDisplay(_?, store?) {
       dispatch.accountToDisplay.setField({ loadingAccounts: true });
 
-      const [
-        displayedKeyrings,
-        allAlianNames,
-        allContactNames,
-      ] = await Promise.all([
+      const [displayedKeyrings, allAlianNames] = await Promise.all([
         store.app.wallet.getAllVisibleAccounts(),
-        store.app.wallet.getAllAlianName(),
-        store.app.wallet.getContactsByMap(),
+        store.app.wallet.getAllAlianNameByMap(),
       ]);
 
       const result = await Promise.all<IDisplayedAccountWithBalance>(
@@ -54,9 +49,7 @@ export const accountToDisplay = createModel<RootModel>()({
                 ...account,
                 type: item.type,
                 byImport: item.byImport,
-                alianName:
-                  allContactNames[account?.address?.toLowerCase()]?.name ||
-                  allAlianNames[account?.address?.toLowerCase()],
+                alianName: allAlianNames[account?.address?.toLowerCase()]?.name,
                 keyring: item.keyring,
               };
             });

@@ -28,19 +28,15 @@ const NameAndAddress = ({
   copyIconClass = '',
 }: NameAndAddressProps) => {
   const wallet = useWallet();
-  const [contact, setContact] = useState('');
   const [alianName, setAlianName] = useState('');
   const init = async () => {
-    const contact =
-      (await wallet.getContactByAddress(address?.toLowerCase()))?.name || '';
     const alianName =
       (await wallet.getAlianName(address?.toLowerCase())) ||
       ALIAS_ADDRESS[address?.toLowerCase() || ''] ||
       '';
-    setContact(contact);
     setAlianName(alianName);
   };
-  const localName = alianName || contact || '';
+  const localName = alianName || '';
   const handleCopyContractAddress = () => {
     const clipboard = new ClipboardJS('.name-and-address', {
       text: function () {

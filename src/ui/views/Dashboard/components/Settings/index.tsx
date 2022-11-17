@@ -274,6 +274,18 @@ const Settings = ({ visible, onClose }: SettingsProps) => {
       onFinished() {
         setWhitelistEnable(value);
         setWhitelistConfirmVisible(false);
+        message.success({
+          duration: 1.5,
+          icon: <i />,
+          content: (
+            <div>
+              <div className="flex gap-10 text-white">
+                <img src={IconSuccess} alt="" />
+                {value ? 'Whitelist is enabled' : 'Whitelist is disabled'}
+              </div>
+            </div>
+          ),
+        });
       },
       onCancel() {
         // do nothing

@@ -2053,15 +2053,6 @@ export class WalletController extends BaseController {
     throw ethErrors.rpc.internal(`No ${type} keyring found`);
   }
 
-  addContact = (data: ContactBookItem) => {
-    contactBookService.addContact(data);
-  };
-  updateContact = (data: ContactBookItem) => {
-    contactBookService.updateContact(data);
-  };
-  removeContact = (address: string) => {
-    contactBookService.removeContact(address);
-  };
   listContact = (includeAlias = true) => {
     const list = contactBookService.listContacts();
     if (includeAlias) {
@@ -2070,9 +2061,6 @@ export class WalletController extends BaseController {
       return list.filter((item) => !item.isAlias);
     }
   };
-  getContactsByMap = () => contactBookService.getContactsByMap();
-  getContactByAddress = (address: string) =>
-    contactBookService.getContactByAddress(address);
 
   private async _setCurrentAccountFromKeyring(keyring, index = 0) {
     const accounts = keyring.getAccountsWithBrand
@@ -2121,6 +2109,16 @@ export class WalletController extends BaseController {
       name,
       address,
     });
+  };
+
+  getAllAlianNameByMap = () => {
+    return contactBookService.listAlias().reduce((res, item) => {
+      if (!item.address) return res;
+      return {
+        ...res,
+        [item.address]: item,
+      };
+    }, {});
   };
 
   getAllAlianName = () => {
