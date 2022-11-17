@@ -94,13 +94,13 @@ const AddressManagement = () => {
         alt="no address"
       />
       <p className="text-gray-content text-14">{t('NoAddress')}</p>
-      <Link
+      {/* <Link
         to="/add-address"
         className="flex no-data-add-btn rounded-md text-15"
       >
         <img src={IconPlusAddress} className="w-[16px] h-[16px] mr-10" />
         {t('Add address')}
-      </Link>
+      </Link> */}
     </div>
   );
 
