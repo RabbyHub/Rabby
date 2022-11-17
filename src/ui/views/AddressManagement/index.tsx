@@ -14,9 +14,9 @@ import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { sortAccountsByBalance } from '@/ui/utils/account';
 import clsx from 'clsx';
 import { ReactComponent as IconAddAddress } from '@/ui/assets/address/add-address.svg';
-import { KEYRING_CLASS } from '@/background/service/keyring';
 import { groupBy } from 'lodash';
 import styled from 'styled-components';
+import { KEYRING_CLASS } from '@/constant';
 
 const AddressManagement = () => {
   const { t } = useTranslation();

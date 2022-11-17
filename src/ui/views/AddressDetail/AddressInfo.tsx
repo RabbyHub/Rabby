@@ -18,7 +18,6 @@ import { useForm } from 'antd/lib/form/Form';
 import { KEYRING_CLASS, KEYRING_ICONS, WALLET_BRAND_CONTENT } from '@/constant';
 import { useLocation } from 'react-router-dom';
 import { connectStore, useRabbyGetter, useRabbySelector } from '@/ui/store';
-import { Account } from '@/background/service/preference';
 import IconTagYou from 'ui/assets/tag-you.svg';
 import { sortAccountsByBalance } from '@/ui/utils/account';
 import { useAsync } from 'react-use';
@@ -275,7 +274,7 @@ const AddressInfo1 = ({ address, type, brandName, source }: Props) => {
           {safeInfo.owners.map((owner, index) => (
             <GnosisAdminItem
               address={owner}
-              accounts={sortedAccountsList}
+              accounts={sortedAccountsList.map((e) => e.address)}
               key={index}
             />
           ))}
@@ -291,12 +290,10 @@ const GnosisAdminItem = ({
   accounts,
   address,
 }: {
-  accounts: Account[];
+  accounts: string[];
   address: string;
 }) => {
-  const addressInWallet = accounts.find((account) =>
-    isSameAddress(account.address, address)
-  );
+  const addressInWallet = accounts.find((addr) => isSameAddress(addr, address));
   return (
     <div className="rabby-list-item">
       <div className="rabby-list-item-content py-0 min-h-[40px]">
