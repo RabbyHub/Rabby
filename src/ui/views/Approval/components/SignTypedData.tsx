@@ -192,7 +192,8 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
         <div className="flex items-center gap-6">
           <img src={IconWatch} alt="" className="w-[24px] flex-shrink-0" />
           <div>
-            Unable to sign because the current address is in Watch Mode. You can{' '}
+            Unable to sign because the current address is a Watch-only Address
+            from Contacts. You can{' '}
             <a
               href=""
               className="underline"
