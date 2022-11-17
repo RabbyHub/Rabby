@@ -439,7 +439,7 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
         )}
 
         {!loading && explainTypedDataRes && (
-          <PermitSignTypedSignSection explain={explainTypedDataRes as any} />
+          <PermitSignTypedSignSection explain={explainTypedDataRes} />
         )}
 
         <div className="section-title mt-[32px]">Pre-sign check</div>

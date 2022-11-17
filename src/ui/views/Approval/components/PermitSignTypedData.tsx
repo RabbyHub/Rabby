@@ -6,7 +6,9 @@ import {
 } from './TxComponents/ApproveToken';
 
 interface Props {
-  explain: ExplainTxResponse;
+  explain: {
+    type_token_approval?: ExplainTxResponse['type_token_approval'];
+  };
 }
 
 export const PermitSignTypedSignSection: React.FC<Props> = ({ explain }) => {
