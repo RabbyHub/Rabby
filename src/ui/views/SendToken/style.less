@@ -8,11 +8,15 @@
   .chain-tag-selector {
     margin-bottom: -10px;
   }
+  .page-header {
+    margin-bottom: 15px;
+    padding-top: 20px;
+  }
   .section {
-    padding: 12px 12px 16px;
+    padding: 12px;
     background-color: #fff;
     border-radius: 6px;
-    margin-bottom: 12px;
+    margin-bottom: 8px;
     .section-title {
       display: flex;
       font-size: 12px;
@@ -23,9 +27,6 @@
         display: flex;
         align-items: center;
       }
-    }
-    &:nth-last-child(1) {
-      padding: 12px;
     }
 
     .token-amount-input {
@@ -45,7 +46,7 @@
     padding: 0;
     background: rgba(134, 151, 255, 0.1);
     border-radius: 4px;
-    margin-bottom: 12px;
+    margin-bottom: 10px;
     .title {
       display: none;
     }
@@ -192,21 +193,17 @@
   }
   .token-info__header {
     position: absolute;
-    left: -1px;
-    right: -1px;
+    left: 28px;
     top: -15px;
-    height: 21px;
-    background: url(../../assets/arrow-container-header.svg);
-    background-size: cover;
-    background-repeat: no-repeat;
+    height: 27px;
+    width: 18px;
     z-index: 0;
   }
   .token-info {
-    background: #fafafb;
-    border: 1px solid @color-border;
+    margin-top: 24px;
+    background: #F5F6FA;
     border-radius: 4px;
     padding: 12px;
-    border-top: none;
     position: relative;
     z-index: 1;
     .section-field {
@@ -234,13 +231,35 @@
       }
     }
   }
+  .whitelist-alert {
+    display: flex;
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 14px;
+    color: #AF160E;
+    margin-top: 16px;
+    margin-bottom: 16px;
+    justify-content: center;
+    .icon-check {
+      width: 14px;
+      height: 14px;
+      margin-right: 4px;
+    }
+    &__content {
+      max-width: 312px;
+      margin-bottom: 0;
+    }
+    &.granted {
+      color: #707280;
+    }
+  }
   .token-validation {
     font-size: 12px;
     line-height: 14px;
     color: #ffb020;
     display: flex;
-    margin-top: 12px;
     justify-content: center;
+    margin-bottom: 16px;
     .icon {
       width: 12px;
       height: 12px;
@@ -269,12 +288,6 @@
     line-height: 14px;
     color: #f24822;
     text-align: right;
-  }
-  .footer {
-    position: absolute;
-    bottom: 20px;
-    left: 0;
-    width: 100%;
   }
 }
 

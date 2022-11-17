@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useMemo } from 'react';
 import ClipboardJS from 'clipboard';
 import * as Sentry from '@sentry/browser';
 import clsx from 'clsx';
@@ -9,12 +9,7 @@ import ReactGA from 'react-ga';
 import { useDebounce } from 'react-use';
 import { Input, Form, Skeleton, message, Button } from 'antd';
 import abiCoder, { AbiCoder } from 'web3-eth-abi';
-import {
-  isValidAddress,
-  unpadHexString,
-  addHexPrefix,
-  intToHex,
-} from 'ethereumjs-util';
+import { isValidAddress, intToHex } from 'ethereumjs-util';
 import styled from 'styled-components';
 import { providers } from 'ethers';
 import {
@@ -25,12 +20,13 @@ import {
   MINIMUM_GAS_LIMIT,
   L2_ENUMS,
 } from 'consts';
+import { useRabbyDispatch, useRabbySelector, connectStore } from 'ui/store';
 import { Account, ChainGas } from 'background/service/preference';
-import { UIContactBookItem } from 'background/service/contactBook';
-import { useWalletOld } from 'ui/utils';
+import { isSameAddress, useWalletOld } from 'ui/utils';
 import { query2obj } from 'ui/utils/url';
 import { getTokenSymbol, geTokenDecimals } from 'ui/utils/token';
 import { formatTokenAmount, splitNumberByStep } from 'ui/utils/number';
+import AuthenticationModalPromise from 'ui/component/AuthenticationModal';
 import AccountCard from '../Approval/components/AccountCard';
 import TokenAmountInput from 'ui/component/TokenAmountInput';
 import TagChainSelector from 'ui/component/ChainSelector/tag';
@@ -40,14 +36,19 @@ import ContactEditModal from 'ui/component/Contact/EditModal';
 import ContactListModal from 'ui/component/Contact/ListModal';
 import GasReserved from './components/GasReserved';
 import GasSelector from './components/GasSelector';
-import IconContact from 'ui/assets/contact.svg';
+import IconWhitelist from 'ui/assets/dashboard/whitelist.svg';
 import IconEdit from 'ui/assets/edit-purple.svg';
 import IconCopy from 'ui/assets/copy-no-border.svg';
 import IconSuccess from 'ui/assets/success.svg';
+import IconCheck from 'ui/assets/icon-check.svg';
+import IconTemporaryGrantCheckbox from 'ui/assets/send-token/temporary-grant-checkbox.svg';
+import TokenInfoArrow from 'ui/assets/send-token/token-info-arrow.svg';
+import ButtonMax from 'ui/assets/send-token/max.svg';
 import { SvgIconPlusPrimary, SvgIconLoading, SvgAlert } from 'ui/assets';
 import './style.less';
 import { getKRCategoryByType } from '@/utils/transaction';
 import { filterRbiSource, useRbiSource } from '@/ui/utils/ga-event';
+import { UIContactBookItem } from '@/background/service/contactBook';
 
 const TOKEN_VALIDATION_STATUS = {
   PENDING: 0,
@@ -55,19 +56,10 @@ const TOKEN_VALIDATION_STATUS = {
   FAILD: 2,
 };
 
-const MaxButton = styled.div`
-  padding: 4px 5px;
-  background: rgba(134, 151, 255, 0.1);
-  border-radius: 2px;
-  font-weight: 400;
-  font-size: 12px;
-  line-height: 14px;
-  color: #8697ff;
-  margin-left: 6px;
+const MaxButton = styled.img`
   cursor: pointer;
-  &:hover {
-    background: rgba(134, 151, 255, 0.2);
-  }
+  user-select: nonce;
+  margin-left: 6px;
 `;
 
 const SendToken = () => {
@@ -81,6 +73,7 @@ const SendToken = () => {
   const { state } = useLocation<{
     showChainsModal?: boolean;
   }>();
+  const dispatch = useRabbyDispatch();
 
   const rbisource = useRbiSource();
   const { showChainsModal = false } = state ?? {};
@@ -106,6 +99,7 @@ const SendToken = () => {
     time_at: 0,
     amount: 0,
   });
+  const [inited, setInited] = useState(false);
   const [gasList, setGasList] = useState<GasLevel[]>([]);
   const [sendAlianName, setSendAlianName] = useState<string | null>(null);
   const [showEditContactModal, setShowEditContactModal] = useState(false);
@@ -117,12 +111,14 @@ const SendToken = () => {
   const [balanceWarn, setBalanceWarn] = useState<string | null>(null);
   const [showGasReserved, setShowGasReserved] = useState(false);
   const [showContactInfo, setShowContactInfo] = useState(false);
-  const [accountType, setAccountType] = useState('');
+  const [showWhitelistAlert, setShowWhitelistAlert] = useState(false);
   const [amountFocus, setAmountFocus] = useState(false);
   const [gasSelectorVisible, setGasSelectorVisible] = useState(false);
   const [selectedGasLevel, setSelectedGasLevel] = useState<GasLevel | null>(
     null
   );
+  const [temporaryGrant, setTemporaryGrant] = useState(false);
+  const [toAddressInWhitelist, setToAddressInWhitelist] = useState(false);
   const [gasPriceMap, setGasPriceMap] = useState<
     Record<string, { list: GasLevel[]; expireAt: number }>
   >({});
@@ -131,12 +127,44 @@ const SendToken = () => {
   );
   const [isGnosisSafe, setIsGnosisSafe] = useState(false);
 
+  const { whitelist, whitelistEnabled } = useRabbySelector((s) => ({
+    whitelist: s.whitelist.whitelist,
+    whitelistEnabled: s.whitelist.enabled,
+  }));
+
+  const whitelistAlertContent = useMemo(() => {
+    if (!whitelistEnabled) {
+      return {
+        content: 'Whitelist disabled. You can transfer to any address.',
+        success: true,
+      };
+    }
+    if (toAddressInWhitelist) {
+      return {
+        content: 'The address is whitelisted',
+        success: true,
+      };
+    }
+    if (temporaryGrant) {
+      return {
+        content: 'Temporary permission granted',
+        success: true,
+      };
+    }
+    return {
+      success: false,
+      content:
+        'The address is not whitelisted. I agree to grant temporary permission to transfer.',
+    };
+  }, [temporaryGrant, whitelist, toAddressInWhitelist, whitelistEnabled]);
+
   const canSubmit =
     isValidAddress(form.getFieldValue('to')) &&
     !balanceError &&
     new BigNumber(form.getFieldValue('amount')).isGreaterThan(0) &&
     !isLoading &&
-    tokenValidationStatus === TOKEN_VALIDATION_STATUS.SUCCESS;
+    tokenValidationStatus === TOKEN_VALIDATION_STATUS.SUCCESS &&
+    (!whitelistEnabled || temporaryGrant || toAddressInWhitelist);
   const isNativeToken = currentToken.id === CHAINS[chain].nativeTokenAddress;
 
   const fetchGasList = async () => {
@@ -318,18 +346,14 @@ const SendToken = () => {
     }
   };
 
-  const handleConfirmContact = (
-    data: UIContactBookItem | null,
-    type: string
-  ) => {
-    setShowEditContactModal(false);
+  const handleConfirmContact = (account: UIContactBookItem) => {
     setShowListContactModal(false);
-    setContactInfo(data);
-    setAccountType(type);
+    setShowEditContactModal(false);
+    setContactInfo(account);
     setAmountFocus(true);
     const values = form.getFieldsValue();
-    const to = data ? data.address : '';
-    if (!data) return;
+    const to = account ? account.address : '';
+    if (!account) return;
     form.setFieldsValue({
       ...values,
       to,
@@ -354,7 +378,7 @@ const SendToken = () => {
   };
 
   const handleFormValuesChange = async (
-    _,
+    changedValues,
     {
       to,
       amount,
@@ -364,12 +388,19 @@ const SendToken = () => {
     },
     token?: TokenItem
   ) => {
+    if (changedValues && changedValues.to) {
+      setTemporaryGrant(false);
+    }
     const targetToken = token || currentToken;
-    setShowContactInfo(!!to && isValidAddress(to));
     if (!to || !isValidAddress(to)) {
       setEditBtnDisabled(true);
+      setShowWhitelistAlert(false);
     } else {
+      setShowWhitelistAlert(true);
       setEditBtnDisabled(false);
+      setToAddressInWhitelist(
+        !!whitelist.find((item) => isSameAddress(item, to))
+      );
     }
     let resultAmount = amount;
     if (!/^\d*(\.\d*)?$/.test(amount)) {
@@ -411,14 +442,12 @@ const SendToken = () => {
       amount: resultAmount,
     });
     setCacheAmount(resultAmount);
-    const addressContact = await wallet.getContactByAddress(to);
     const alianName = await wallet.getAlianName(to.toLowerCase());
-    if (addressContact || alianName) {
-      setContactInfo(addressContact || { to, name: alianName });
-      alianName ? setAccountType('my') : setAccountType('others');
-    } else if (!addressContact && contactInfo) {
+    if (alianName) {
+      setContactInfo({ address: to, name: alianName });
+      setShowContactInfo(true);
+    } else if (contactInfo) {
       setContactInfo(null);
-      setAccountType('');
     }
   };
 
@@ -510,10 +539,13 @@ const SendToken = () => {
       amount: '',
     });
     setShowGasReserved(false);
-    handleFormValuesChange(null, {
-      ...values,
-      amount: '',
-    });
+    handleFormValuesChange(
+      { amount: '' },
+      {
+        ...values,
+        amount: '',
+      }
+    );
   };
 
   const handleCopyContractAddress = () => {
@@ -555,20 +587,8 @@ const SendToken = () => {
     setIsLoading(false);
   };
 
-  const init = async () => {
+  const initByCache = async () => {
     const account = await wallet.syncGetCurrentAccount();
-
-    if (!account) {
-      history.replace('/');
-      return;
-    }
-
-    setCurrentAccount(account);
-
-    if (account.type === KEYRING_CLASS.GNOSIS) {
-      setIsGnosisSafe(true);
-    }
-
     const qs = query2obj(history.location.search);
     if (qs.token) {
       const [tokenChain, id] = qs.token.split(':');
@@ -592,7 +612,7 @@ const SendToken = () => {
           if (cache.states.values) {
             form.setFieldsValue(cache.states.values);
             handleFormValuesChange(
-              null,
+              cache.states.values,
               form.getFieldsValue(),
               cache.states.currentToken
             );
@@ -610,16 +630,31 @@ const SendToken = () => {
         setChain(target.enum);
       }
       loadCurrentToken(needLoadToken.id, needLoadToken.chain, account.address);
-      if (qs.address) {
-        const data = {
-          name: qs?.name,
-          address: qs?.address,
-        };
-        const type = 'others';
-        handleConfirmContact(data, type);
-      }
     }
   };
+
+  const init = async () => {
+    const account = await wallet.syncGetCurrentAccount();
+    dispatch.whitelist.getWhitelistEnabled();
+    dispatch.whitelist.getWhitelist();
+    if (!account) {
+      history.replace('/');
+      return;
+    }
+    setCurrentAccount(account);
+
+    if (account.type === KEYRING_CLASS.GNOSIS) {
+      setIsGnosisSafe(true);
+    }
+
+    setInited(true);
+  };
+
+  useEffect(() => {
+    if (inited) {
+      initByCache();
+    }
+  }, [inited]);
 
   const getAlianName = async () => {
     const alianName = await wallet.getAlianName(currentAccount?.address);
@@ -715,6 +750,20 @@ const SendToken = () => {
     return gasTokenAmount;
   };
 
+  const handleClickWhitelistAlert = () => {
+    AuthenticationModalPromise({
+      title: 'Enter the Password to Confirm',
+      cancelText: 'Cancel',
+      wallet,
+      onFinished() {
+        setTemporaryGrant(true);
+      },
+      onCancel() {
+        // do nothing
+      },
+    });
+  };
+
   useEffect(() => {
     init();
     return () => {
@@ -771,7 +820,7 @@ const SendToken = () => {
                   })}
                   onClick={handleEditContact}
                 >
-                  {contactInfo ? (
+                  {contactInfo && (
                     <>
                       <img src={IconEdit} className="icon icon-edit" />
                       <span
@@ -781,20 +830,12 @@ const SendToken = () => {
                         {contactInfo.name}
                       </span>
                     </>
-                  ) : (
-                    <>
-                      <SvgIconPlusPrimary
-                        className="icon icon-add"
-                        fill="#8697FF"
-                      />
-                      <span>{t('Add contact')}</span>
-                    </>
                   )}
                 </div>
               )}
               <img
                 className="icon icon-contact"
-                src={IconContact}
+                src={IconWhitelist}
                 onClick={handleListContact}
               />
             </div>
@@ -827,7 +868,7 @@ const SendToken = () => {
             </Form.Item>
           </div>
         </div>
-        <div className="section">
+        <div className="section mb-16">
           <div className="section-title flex justify-between items-center">
             <div className="token-balance whitespace-pre-wrap">
               {isLoading ? (
@@ -854,7 +895,7 @@ const SendToken = () => {
                 </>
               )}
               {currentToken.amount > 0 && (
-                <MaxButton onClick={handleClickTokenBalance}>MAX</MaxButton>
+                <MaxButton src={ButtonMax} onClick={handleClickTokenBalance} />
               )}
             </div>
             {showGasReserved &&
@@ -878,27 +919,12 @@ const SendToken = () => {
                 onTokenChange={handleCurrentTokenChange}
                 chainId={CHAINS[chain].serverId}
                 amountFocus={amountFocus}
+                inlinePrize
               />
             )}
           </Form.Item>
-          <div
-            className="token-price truncate"
-            title={splitNumberByStep(
-              (
-                (form.getFieldValue('amount') || 0) * currentToken.price || 0
-              ).toFixed(2)
-            )}
-          >
-            ≈ $
-            {splitNumberByStep(
-              (
-                (form.getFieldValue('amount') || 0) * currentToken.price || 0
-              ).toFixed(2)
-            )}
-          </div>
-
           <div className="token-info">
-            <div className="token-info__header" />
+            <img className="token-info__header" src={TokenInfoArrow} />
             {!isNativeToken ? (
               <div className="section-field">
                 <span>{t('Contract Address')}</span>
@@ -931,31 +957,57 @@ const SendToken = () => {
               </span>
             </div>
           </div>
-          {tokenValidationStatus !== TOKEN_VALIDATION_STATUS.SUCCESS && (
+        </div>
+        {tokenValidationStatus !== TOKEN_VALIDATION_STATUS.SUCCESS && (
+          <div
+            className={clsx('token-validation', {
+              pending:
+                tokenValidationStatus === TOKEN_VALIDATION_STATUS.PENDING,
+              faild: tokenValidationStatus === TOKEN_VALIDATION_STATUS.FAILD,
+            })}
+          >
+            {tokenValidationStatus === TOKEN_VALIDATION_STATUS.PENDING ? (
+              <>
+                <SvgIconLoading
+                  className="icon icon-loading"
+                  viewBox="0 0 36 36"
+                />
+                {t('Verifying token info ...')}
+              </>
+            ) : (
+              <>
+                <SvgAlert className="icon icon-alert" viewBox="0 0 14 14" />
+                {t('Token verification failed')}
+              </>
+            )}
+          </div>
+        )}
+        {tokenValidationStatus === TOKEN_VALIDATION_STATUS.SUCCESS &&
+          showWhitelistAlert && (
             <div
-              className={clsx('token-validation', {
-                pending:
-                  tokenValidationStatus === TOKEN_VALIDATION_STATUS.PENDING,
-                faild: tokenValidationStatus === TOKEN_VALIDATION_STATUS.FAILD,
-              })}
-            >
-              {tokenValidationStatus === TOKEN_VALIDATION_STATUS.PENDING ? (
-                <>
-                  <SvgIconLoading
-                    className="icon icon-loading"
-                    viewBox="0 0 36 36"
-                  />
-                  {t('Verifying token info ...')}
-                </>
-              ) : (
-                <>
-                  <SvgAlert className="icon icon-alert" viewBox="0 0 14 14" />
-                  {t('Token verification failed')}
-                </>
+              className={clsx(
+                'whitelist-alert',
+                !whitelistEnabled || whitelistAlertContent.success
+                  ? 'granted'
+                  : 'cursor-pointer'
               )}
+              onClick={handleClickWhitelistAlert}
+            >
+              {whitelistEnabled && (
+                <img
+                  src={
+                    whitelistAlertContent.success
+                      ? IconCheck
+                      : IconTemporaryGrantCheckbox
+                  }
+                  className="icon icon-check"
+                />
+              )}
+              <p className="whitelist-alert__content">
+                {whitelistAlertContent.content}
+              </p>
             </div>
           )}
-        </div>
         <div className="footer flex justify-center">
           <Button
             disabled={!canSubmit}
@@ -972,7 +1024,6 @@ const SendToken = () => {
         visible={showEditContactModal}
         address={form.getFieldValue('to')}
         onOk={handleConfirmContact}
-        accountType={accountType}
         onCancel={handleCancelEditContact}
         isEdit={!!contactInfo}
       />
@@ -980,7 +1031,6 @@ const SendToken = () => {
         visible={showListContactModal}
         onCancel={() => setShowListContactModal(false)}
         onOk={handleConfirmContact}
-        address={form.getFieldValue('to')}
       />
 
       <GasSelector
@@ -1000,4 +1050,4 @@ const SendToken = () => {
   );
 };
 
-export default SendToken;
+export default connectStore()(SendToken);

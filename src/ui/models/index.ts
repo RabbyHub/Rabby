@@ -13,6 +13,7 @@ import { importMnemonics } from './importMnemonics';
 import { addressManagement } from './addressManagement';
 import { transactions } from './transactions';
 import { chains } from './chains';
+import { whitelist } from './whitelist';
 
 export interface RootModel extends Models<RootModel> {
   app: typeof app;
@@ -28,6 +29,7 @@ export interface RootModel extends Models<RootModel> {
   addressManagement: typeof addressManagement;
   transactions: typeof transactions;
   chains: typeof chains;
+  whitelist: typeof whitelist;
 }
 
 export const models: RootModel = {
@@ -44,4 +46,5 @@ export const models: RootModel = {
   addressManagement,
   transactions,
   chains,
+  whitelist,
 };

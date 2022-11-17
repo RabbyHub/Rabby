@@ -1,158 +1,144 @@
-import React, { useEffect, useRef, useState } from 'react';
-import { message, DrawerProps } from 'antd';
+import React, { useEffect, useState } from 'react';
+import { message } from 'antd';
+import clsx from 'clsx';
+import styled from 'styled-components';
+import ClipboardJS from 'clipboard';
 import { useTranslation } from 'react-i18next';
 import { ContactBookItem } from 'background/service/contactBook';
-import { Popup } from 'ui/component';
+import { PageHeader } from 'ui/component';
 import { useWallet } from 'ui/utils';
-import ContactsItem from './ContactsItem';
+import { ellipsis } from 'ui/utils/address';
 import IconSuccess from 'ui/assets/success.svg';
-import IconAddAddress from 'ui/assets/dashboard/contacts/add-address.png';
-import './style.less';
-import { SvgIconCross } from 'ui/assets';
+import IconCopy from 'ui/assets/component/icon-copy.svg';
 
-const closeIcon = (
-  <SvgIconCross className="w-14 fill-current text-gray-content" />
-);
+const ContactItemWrapper = styled.div`
+  padding: 11px 16px;
+  background-color: #f5f6fa;
+  border-radius: 6px;
+  margin-bottom: 8px;
+  .name {
+    font-weight: 500;
+    font-size: 15px;
+    line-height: 18px;
+    margin-bottom: 0;
+  }
+  .address {
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 14px;
+    margin: 0;
+    display: flex;
+  }
+  .icon-copy {
+    width: 14px;
+    height: 14px;
+    margin-left: 4px;
+    cursor: pointer;
+  }
+  &:nth-last-child(1) {
+    margin-bottom: 0;
+  }
+`;
 
-interface ContactsProps {
-  visible?: boolean;
-  onClose?: DrawerProps['onClose'];
-}
-export interface Account {
-  address: string;
-  name?: string;
-}
-const Contacts = ({ visible, onClose }: ContactsProps) => {
-  const ref = useRef(null);
-  const wallet = useWallet();
-  const { t } = useTranslation();
-
-  const [accounts, setAccounts] = useState<Account[]>([]);
-  const [editIndex, setEditIndex] = useState<number | null>(null);
-  const [canAdd, setCanAdd] = useState(true);
-  const init = async () => {
-    const listContacts = await wallet.listContact();
-    setAccounts(listContacts);
-    setEditIndex(null);
-    setCanAdd(true);
-  };
-  const addNewAccount = () => {
-    const newAccount: Account = {
-      address: '',
-      name: '',
-    };
-    setCanAdd(false);
-    setAccounts([...accounts, newAccount]);
-    setEditIndex(accounts.length);
-  };
-  const handleDeleteAddress = async (address: string) => {
-    await wallet.removeContact(address);
-    init();
-  };
-  const handleUpdateContact = async (data: ContactBookItem) => {
-    await wallet.updateContact(data);
-    await init();
-  };
-  const addContact = async (data: ContactBookItem) => {
-    await wallet.addContact(data);
-    message.success({
-      icon: <img src={IconSuccess} className="icon icon-success" />,
-      content: t('Added to contact'),
-      duration: 1,
+const ContactItem = ({ item }: { item: ContactBookItem }) => {
+  const handleClickCopy = () => {
+    const clipboard = new ClipboardJS('.address', {
+      text: function () {
+        return item.address;
+      },
     });
-    setEditIndex(null);
-    setCanAdd(true);
-    init();
+    clipboard.on('success', () => {
+      message.success({
+        duration: 3,
+        icon: <i />,
+        content: (
+          <div>
+            <div className="flex gap-4 mb-4">
+              <img src={IconSuccess} alt="" />
+              Copied
+            </div>
+            <div className="text-white">{item.address}</div>
+          </div>
+        ),
+      });
+      clipboard.destroy();
+    });
   };
-  const hideNewContact = () => {
-    if (!canAdd) {
-      setCanAdd(true);
-      setAccounts(accounts.slice(0, accounts.length - 1));
-    }
-  };
-  useEffect(() => {
-    if (visible) {
-      init();
-    } else {
-      setAccounts([]);
-    }
-  }, [visible]);
-  const NoDataUI = (
-    <div className="no-contact">
-      <img
-        className="no-data-image"
-        src="/images/nodata-site.png"
-        alt="no contact"
-      />
-      <p className="text-gray-content text-14 text-center">
-        {t('No contacts')}
-      </p>
-    </div>
-  );
   return (
-    <Popup
-      visible={visible}
-      onClose={onClose}
-      title={'Contacts'}
-      bodyStyle={{ height: '100%' }}
-      closeIcon={closeIcon}
-      contentWrapperStyle={{
-        height: 580,
-      }}
-      drawerStyle={{
-        height: 580,
-      }}
-      headerStyle={{
-        height: 92,
-        marginBottom: 6,
-      }}
-      className="contacts-drawer"
-      closable
-    >
-      <div className="header">
-        <div>Address</div>
-        <div>Note</div>
-      </div>
-      <div
-        className="list-wrapper"
-        ref={ref}
-        onClick={(e) => {
-          const isClickOutside = e.target === ref.current;
-          if (!isClickOutside) {
-            return;
-          }
-          hideNewContact();
-          if (editIndex) {
-            setEditIndex(null);
-            init();
-          }
-        }}
-      >
-        {accounts.length > 0
-          ? accounts.map((item, index) => (
-              <ContactsItem
-                key={item.address}
-                account={item}
-                index={index}
-                setEditIndex={setEditIndex}
-                editIndex={editIndex}
-                accounts={accounts}
-                handleDeleteAddress={handleDeleteAddress}
-                handleUpdateContact={handleUpdateContact}
-                addContact={addContact}
-                hideNewContact={hideNewContact}
-              />
-            ))
-          : NoDataUI}
-      </div>
-      {canAdd && (
+    <ContactItemWrapper>
+      <p className="name text-gray-title">{item.name}</p>
+      <p className="address" title={item.address}>
+        {ellipsis(item.address)}
         <img
-          src={IconAddAddress}
-          className="add-address-name"
-          onClick={addNewAccount}
+          className="icon icon-copy"
+          src={IconCopy}
+          onClick={handleClickCopy}
         />
-      )}
-    </Popup>
+      </p>
+    </ContactItemWrapper>
+  );
+};
+
+const ContractListElement = styled.div`
+  flex: 1;
+  overflow: auto;
+`;
+
+const Contacts = ({
+  visible,
+  onCancel,
+}: {
+  visible: boolean;
+  onCancel(): void;
+}) => {
+  const [isVisible, setIsVisible] = useState(false);
+  const [contacts, setContacts] = useState<ContactBookItem[]>([]);
+  const { t } = useTranslation();
+  const wallet = useWallet();
+
+  const handleCancel = () => {
+    setIsVisible(false);
+    setTimeout(() => {
+      onCancel();
+    }, 500);
+  };
+
+  useEffect(() => {
+    setTimeout(() => {
+      setIsVisible(visible);
+    }, 100);
+  }, [visible]);
+
+  const init = async () => {
+    const list = await wallet.listContact(false);
+    setContacts(list);
+  };
+
+  useEffect(() => {
+    init();
+  }, []);
+
+  return (
+    <div
+      className={clsx('openapi-modal flex flex-col', {
+        show: isVisible,
+        hidden: !visible,
+      })}
+    >
+      <PageHeader forceShowBack onBack={handleCancel}>
+        {t('Old Contact List')}
+      </PageHeader>
+      <div className="desc mb-20">
+        Because of the merging of contacts and watch model addresses, the old
+        contacts will be backed up for you here and after some time we will
+        delete the list.Please add in time if you continue to use.
+      </div>
+      <ContractListElement>
+        {contacts.map((contact) => (
+          <ContactItem item={contact} key={contact.address} />
+        ))}
+      </ContractListElement>
+    </div>
   );
 };
 

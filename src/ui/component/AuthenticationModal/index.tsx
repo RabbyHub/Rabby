@@ -1,5 +1,6 @@
 import { Button, Form, Input } from 'antd';
 import { WalletController } from 'background/controller/wallet';
+import clsx from 'clsx';
 import React, { useEffect, useRef, useState } from 'react';
 import * as ReactDOM from 'react-dom';
 import { useTranslation } from 'react-i18next';
@@ -9,6 +10,9 @@ interface AuthenticationModalProps {
   onFinished(): void;
   onCancel(): void;
   validationHandler?(password: string): Promise<void>;
+  confirmText?: string;
+  cancelText?: string;
+  title?: string;
   wallet: WalletController;
 }
 
@@ -17,6 +21,9 @@ const AuthenticationModal = ({
   onFinished,
   onCancel,
   wallet,
+  cancelText,
+  confirmText = 'Confirm',
+  title = 'Enter Password',
 }: AuthenticationModalProps) => {
   const [visible, setVisible] = useState(false);
   const [form] = Form.useForm();
@@ -53,11 +60,7 @@ const AuthenticationModal = ({
   }, []);
 
   return (
-    <Popup
-      visible={visible}
-      title={t('Enter Password')}
-      onCancel={handleCancel}
-    >
+    <Popup visible={visible} title={title} onCancel={handleCancel} height={260}>
       <Form onFinish={handleSubmit} form={form}>
         <Form.Item
           name="password"
@@ -73,14 +76,30 @@ const AuthenticationModal = ({
             spellCheck={false}
           />
         </Form.Item>
-        <div className="flex justify-center pt-6 popup-footer">
+        <div
+          className={clsx(
+            'flex pt-6 popup-footer px-20',
+            cancelText ? 'justify-between' : 'justify-center'
+          )}
+        >
+          {cancelText && (
+            <Button
+              size="large"
+              type="primary"
+              className="w-[172px] rabby-btn-ghost"
+              ghost
+              onClick={handleCancel}
+            >
+              {cancelText}
+            </Button>
+          )}
           <Button
             type="primary"
             size="large"
             htmlType="submit"
-            className="w-[200px]"
+            className={clsx(cancelText ? 'w-[172px]' : 'w-[200px]')}
           >
-            {t('View')}
+            {confirmText}
           </Button>
         </div>
       </Form>

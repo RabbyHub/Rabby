@@ -5,7 +5,7 @@ import { DisplayedKeryring } from '@/background/service/keyring';
 import { sortAccountsByBalance } from '../utils/account';
 
 type IDisplayedAccount = Required<DisplayedKeryring['accounts'][number]>;
-type IDisplayedAccountWithBalance = IDisplayedAccount & {
+export type IDisplayedAccountWithBalance = IDisplayedAccount & {
   balance: number;
   byImport?: boolean;
 };

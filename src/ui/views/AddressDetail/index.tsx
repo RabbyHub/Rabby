@@ -1,17 +1,15 @@
-import { KEYRING_TYPE } from '@/constant';
 import { query2obj } from '@/ui/utils/url';
 import React, { useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useLocation } from 'react-router-dom';
 import { PageHeader } from 'ui/component';
-import { useAddressSource, useWallet } from 'ui/utils';
+import { useAddressSource } from 'ui/utils';
 import { AddressBackup } from './AddressBackup';
 import { AddressDelete } from './AddressDelete';
 import { AddressInfo } from './AddressInfo';
 import './style.less';
 
 const AddressDetail = () => {
-  const wallet = useWallet();
   const { t } = useTranslation();
   const { search } = useLocation();
   const qs = useMemo(() => query2obj(search), [search]) as {

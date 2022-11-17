@@ -20,6 +20,7 @@ import {
   transactionHistoryService,
   contactBookService,
   signTextHistoryService,
+  whitelistService,
 } from './service';
 import { providerController, walletController } from './controller';
 import i18n from './service/i18n';
@@ -94,6 +95,7 @@ async function restoreAppState() {
   await transactionHistoryService.init();
   await contactBookService.init();
   await signTextHistoryService.init();
+  await whitelistService.init();
   rpcCache.start();
 
   appStoreLoaded = true;
