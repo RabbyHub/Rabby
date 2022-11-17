@@ -158,9 +158,9 @@ const ApprovalManage = () => {
       const warnList: ApprovalItem[] = [];
       const safeList: ApprovalItem[] = [];
       const numMap: Record<string, string> = {
-        safe: '0',
-        warning: '1',
-        danger: '100',
+        safe: 'safe',
+        warning: 'warning',
+        danger: 'danger',
       };
       for (let i = 0; i < l; i++) {
         const item = contractMapArr[i];
