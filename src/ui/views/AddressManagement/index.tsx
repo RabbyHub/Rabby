@@ -27,7 +27,7 @@ const AddressManagement = () => {
   // todo: store redesign
   const {
     accountsList,
-    highlightedAddresses,
+    highlightedAddresses = [],
     loadingAccounts,
   } = useRabbySelector((s) => ({
     ...s.accountToDisplay,
@@ -64,8 +64,8 @@ const AddressManagement = () => {
     );
 
     return [
-      highlightedAccounts.concat(data['0']),
-      watchModeHighlightedAccounts.concat(data['1']),
+      highlightedAccounts.concat(data['0'] || []).filter((e) => !!e),
+      watchModeHighlightedAccounts.concat(data['1'] || []).filter((e) => !!e),
     ];
   }, [accountsList, highlightedAddresses]);
 
@@ -111,8 +111,8 @@ const AddressManagement = () => {
       return -1;
     }
     return accountList.findIndex((e) =>
-      ['address', 'brandName', 'type'].every(
-        (key) => e[key] === currentAccount[key]
+      (['address', 'brandName', 'type'] as const).every(
+        (key) => e[key].toLowerCase() === currentAccount[key].toLowerCase()
       )
     );
   }, [accountList, currentAccount, enableSwitch]);
@@ -184,7 +184,7 @@ const AddressManagement = () => {
   };
 
   return (
-    <div className="page-address-management px-0">
+    <div className="page-address-management px-0 overflow-hidden">
       <PageHeader className="pt-[24px] mx-[20px]">
         {t('Address Management')}
 
