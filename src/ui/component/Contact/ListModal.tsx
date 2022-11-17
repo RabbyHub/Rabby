@@ -11,6 +11,7 @@ import { UIContactBookItem } from 'background/service/contactBook';
 import { isSameAddress, useWallet } from 'ui/utils';
 import IconSuccess from 'ui/assets/success.svg';
 import './style.less';
+import clsx from 'clsx';
 
 interface ListModalProps {
   address?: string;
@@ -110,11 +111,15 @@ const ListModal = ({ visible, onOk, onCancel }: ListModalProps) => {
       height={580}
       closable
     >
-      <div className="flex flex-col pb-80 h-full">
+      <div
+        className={clsx('flex flex-col pb-80 h-full', {
+          'pb-20': !whitelistEnabled,
+        })}
+      >
         <div className="text-center mb-16 text-14 text-gray-content">
           {whitelistEnabled
-            ? 'You can only send to the addresses in the whitelist within Rabby once enabled. You can disable it in "Settings".'
-            : 'You can send to any address once whitelist disabled'}
+            ? 'Whitelist is enabled.You can only send to the addresses in the whitelist within Rabby or disable it in "Settings".'
+            : 'Whitelist is disabled. You can send to any address.'}
         </div>
         <ListScrollWrapper>
           {accountsList.map((account) => (
@@ -132,16 +137,18 @@ const ListModal = ({ visible, onOk, onCancel }: ListModalProps) => {
             />
           ))}
         </ListScrollWrapper>
-        <ListFooterWrapper>
-          <Button
-            type="primary"
-            size="large"
-            className="w-[169px] h-[40px] text-15"
-            onClick={handleClickEditWhitelist}
-          >
-            Edit Whitelist
-          </Button>
-        </ListFooterWrapper>
+        {whitelistEnabled && (
+          <ListFooterWrapper>
+            <Button
+              type="primary"
+              size="large"
+              className="w-[169px] h-[40px] text-15"
+              onClick={handleClickEditWhitelist}
+            >
+              Edit Whitelist
+            </Button>
+          </ListFooterWrapper>
+        )}
       </div>
       {editWhitelistVsible && (
         <EditWhitelist

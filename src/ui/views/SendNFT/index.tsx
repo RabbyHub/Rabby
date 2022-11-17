@@ -34,6 +34,7 @@ import IconEdit from 'ui/assets/edit-purple.svg';
 import IconCopy from 'ui/assets/copy-no-border.svg';
 import IconSuccess from 'ui/assets/success.svg';
 import IconCheck from 'ui/assets/icon-check.svg';
+import IconContact from 'ui/assets/send-token/contact.svg';
 import IconTemporaryGrantCheckbox from 'ui/assets/send-token/temporary-grant-checkbox.svg';
 import { SvgIconLoading, SvgAlert } from 'ui/assets';
 import './style.less';
@@ -237,17 +238,19 @@ const SendNFT = () => {
   };
 
   const handleClickWhitelistAlert = () => {
-    AuthenticationModalPromise({
-      title: 'Enter the Password to Confirm',
-      cancelText: 'Cancel',
-      wallet,
-      onFinished() {
-        setTemporaryGrant(true);
-      },
-      onCancel() {
-        // do nothing
-      },
-    });
+    if (whitelistEnabled && !temporaryGrant && !toAddressInWhitelist) {
+      AuthenticationModalPromise({
+        title: 'Enter the Password to Confirm',
+        cancelText: 'Cancel',
+        wallet,
+        onFinished() {
+          setTemporaryGrant(true);
+        },
+        onCancel() {
+          // do nothing
+        },
+      });
+    }
   };
 
   const handleConfirmContact = (account: UIContactBookItem) => {
@@ -432,7 +435,7 @@ const SendNFT = () => {
                 )}
                 <img
                   className="icon icon-contact"
-                  src={IconWhitelist}
+                  src={whitelistEnabled ? IconWhitelist : IconContact}
                   onClick={handleListContact}
                 />
               </div>
@@ -463,7 +466,13 @@ const SendNFT = () => {
               </Form.Item>
             </div>
           </div>
-          <div className="section">
+          <div
+            className={clsx('section', {
+              'mb-40':
+                !showWhitelistAlert &&
+                tokenValidationStatus === TOKEN_VALIDATION_STATUS.SUCCESS,
+            })}
+          >
             <div className="nft-info flex">
               <NFTAvatar
                 type={nftItem.content_type}
