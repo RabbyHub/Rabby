@@ -82,93 +82,14 @@
     border-radius: 16px 16px 0px 0px;
   }
 }
-.list-contact-modal {
+.whitelist-selector {
   .ant-drawer-body {
-    padding-bottom: 0;
-    padding-top: 8px;
+    padding: 12px 20px 0;
   }
-  .ant-drawer-content-wrapper {
-    box-shadow: 0px -12px 20px rgb(35 47 129 / 10%);
-    border-radius: 16px 16px 0px 0px;
-    overflow: hidden;
-  }
-  .ant-tabs {
-    display: flex;
-    height: 100%;
-    flex-direction: column;
-    .ant-tabs-nav {
-      height: 40px;
-      .ant-tabs-nav-list {
-        .ant-tabs-tab {
-          position: relative;
-          display: inline-flex;
-          align-items: center;
-          padding: 12px 0 4px;
-          font-size: 14px;
-          background: transparent;
-          border: 0;
-          outline: none;
-          cursor: pointer;
-        }
-        .ant-tabs-tab + .ant-tabs-tab {
-          margin-left: 20px !important;
-        }
-        .ant-tabs-tab-btn {
-          font-size: 15px;
-          font-weight: 500;
-          color: @color-comment-1;
-        }
-        .ant-tabs-tab-active {
-          .ant-tabs-tab-btn {
-            font-size: 15px;
-            font-weight: 500;
-            color: #8697ff;
-          }
-        }
-      }
-      &::before {
-        display: none;
-      }
-    }
-    .ant-tabs-content-holder {
-      flex: 1;
-      overflow: auto;
-    }
-  }
-  .no-contact {
-    margin-top: 96px;
-    .no-data-image {
-      width: 156px;
-      margin: 0 auto 32px auto;
-    }
-  }
+}
 
-  .field {
-    background-color: @color-bg !important;
-  }
-
-  .contact-info {
-    p {
-      max-width: 190px;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      &:nth-child(1) {
-        font-weight: 500;
-        font-size: 15px;
-        line-height: 18px;
-        color: #161819;
-        margin-bottom: 4px;
-      }
-      &:nth-child(2) {
-        margin-bottom: 0;
-        .address-viewer-text.normal {
-          font-size: 12px;
-          line-height: 14px;
-          color: #707880;
-          font-weight: normal;
-        }
-      }
-    }
+.edit-whitelist-back-modal {
+  .ant-modal-confirm-content {
+    padding: 24px !important;
   }
 }

@@ -42,17 +42,8 @@ const AddressInfo1 = ({ address, type, brandName, source }: Props) => {
   const [form] = useForm();
   const inputRef = useRef<Input>(null);
 
-  const {
-    // alianName,
-    // currentAccount,
-    accountsList,
-    // loadingAccounts,
-    highlightedAddresses,
-  } = useRabbySelector((s) => ({
-    alianName: s.account.alianName,
-    currentAccount: s.account.currentAccount,
+  const { accountsList, highlightedAddresses } = useRabbySelector((s) => ({
     accountsList: s.accountToDisplay.accountsList,
-    loadingAccounts: s.accountToDisplay.loadingAccounts,
     highlightedAddresses: s.addressManagement.highlightedAddresses,
   }));
   const isGnosis = type === KEYRING_CLASS.GNOSIS;

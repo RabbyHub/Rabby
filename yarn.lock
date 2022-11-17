@@ -1351,10 +1351,10 @@
   resolved "https://registry.yarnpkg.com/@ctrl/tinycolor/-/tinycolor-3.4.0.tgz#c3c5ae543c897caa9c2a68630bed355be5f9990f"
   integrity sha512-JZButFdZ1+/xAfpguQHoabIXkcqRRKpMrWKBkpEZZyxfY9C1DpADFB8PEqGSTeFr135SaTRfKqGKx5xSCLI7ZQ==
 
-"@debank/common@^0.2.18":
-  version "0.2.18"
-  resolved "https://registry.yarnpkg.com/@debank/common/-/common-0.2.18.tgz#6b190d50be02edd8f662f542fd4b926e5b8670b0"
-  integrity sha512-57r3LkLfqOaiDhysguOVPuVtdYrh8cSeOoHFJabHHKAXuvhX/b1exxurxx1spnmOD43SPkXYjcYALzbysxHY9A==
+"@debank/common@^0.2.19":
+  version "0.2.19"
+  resolved "https://registry.yarnpkg.com/@debank/common/-/common-0.2.19.tgz#a38c43da2b614a69d9b90e7df65283a22d9b550e"
+  integrity sha512-TVydXnZrFAxo1yO+lCFJgQjVJmYnJM9mFwHe7UN9MxKtoZCFTLIGTmii2RpAnQxpL9WlSz82aXcrHPrcKdfmjw==
 
 "@debank/festats@1.0.0":
   version "1.0.0"
@@ -3317,13 +3317,12 @@
     typescript "^4.4.4"
     web3-core "^1.6.0"
 
-"@rabby-wallet/page-provider@^0.1.9":
-  version "0.1.9"
-  resolved "https://registry.yarnpkg.com/@rabby-wallet/page-provider/-/page-provider-0.1.9.tgz#f1113c63e1c5286ca2461a92e1d16ffc94931231"
-  integrity sha512-av3LbXD+n6IJwfTEC1hUFDEf3AznFDnMxK/bgH7fjhsU3tB5kw11YExksg+HX54wzcw9CLE0ddShzPTmzB418Q==
+"@rabby-wallet/page-provider@^0.1.10":
+  version "0.1.10"
+  resolved "https://registry.yarnpkg.com/@rabby-wallet/page-provider/-/page-provider-0.1.10.tgz#3067499114f8ce56f3a14715be292f7845efcca5"
+  integrity sha512-g/e4ymBs0HG1EJ1Q4hiowZ8A0urIf101Wj5tlA2AbPLWi9FaiLXRQhjXZQ428lHZhnzMmdzfscrdzdTz5o0QRg==
   dependencies:
     "@ledgerhq/devices" "^6.27.1"
-    "@rabby-wallet/widgets" "^1.0.8"
     "@types/chrome" "^0.0.186"
     "@types/events" "^3.0.0"
     "@types/node" "^17.0.34"
@@ -3333,13 +3332,6 @@
     lodash "^4.17.21"
     sinon-chrome "^3.0.1"
     webextension-polyfill-ts "^0.26.0"
-
-"@rabby-wallet/widgets@^1.0.8":
-  version "1.0.8"
-  resolved "https://registry.yarnpkg.com/@rabby-wallet/widgets/-/widgets-1.0.8.tgz#2d917edd4c31cd2905b37c6277cbaccf9b9d4d9f"
-  integrity sha512-ezYjArzAsR7p3c5GKwbuB3Iz/Dbbx/FWc2Lhl7fBl+nOJaqjIAMjiB7iii+K0Lk9Gi/m9cpNtWMkfm01FB7TGg==
-  dependencies:
-    bignumber.js "^9.0.2"
 
 "@rabby-wallet/widgets@^1.0.9":
   version "1.0.9"
@@ -6727,7 +6719,7 @@ debug@2.6.9, debug@^2.2.0, debug@^2.6.9:
   dependencies:
     ms "2.0.0"
 
-debug@4, debug@^4.3.2:
+debug@4, debug@^4.0.0, debug@^4.1.0, debug@^4.1.1, debug@^4.3.2:
   version "4.3.3"
   resolved "https://registry.yarnpkg.com/debug/-/debug-4.3.3.tgz#04266e0b70a98d4462e6e288e38259213332b664"
   integrity sha512-/zxw5+vh1Tfv+4Qn7a5nsbcJKPaSvCDhojn6FEl9vupwK2VCSDtEiEtqr8DFtzYFOdz63LBkxec7DYuc2jon6Q==
@@ -6740,20 +6732,6 @@ debug@^3.1.0, debug@^3.1.1:
   integrity sha512-CFjzYYAi4ThfiQvizrFQevTTXHtnCqWfe7x1AhgEscTz6ZbLbfoLRLPugTQyBth6f8ZERVUSyWHFD/7Wu4t1XQ==
   dependencies:
     ms "^2.1.1"
-
-debug@^4.0.0:
-  version "4.3.2"
-  resolved "https://r.cnpmjs.org/debug/download/debug-4.3.2.tgz#f0a49c18ac8779e31d4a0c6029dfb76873c7428b"
-  integrity sha1-8KScGKyHeeMdSgxgKd+3aHPHQos=
-  dependencies:
-    ms "2.1.2"
-
-debug@^4.1.0, debug@^4.1.1:
-  version "4.3.1"
-  resolved "https://registry.yarnpkg.com/debug/-/debug-4.3.1.tgz#f0d229c505e0c6d8c49ac553d1b13dc183f6b2ee"
-  integrity sha512-doEwdvm4PCeK4K3RQN2ZC2BYUBaxwLARCqZmMjtF8a51J2Rb0xpVloFRnCODwqjpwnAoao4pelN8l3RJdv3gRQ==
-  dependencies:
-    ms "2.1.2"
 
 debug@~3.1.0:
   version "3.1.0"
@@ -10077,11 +10055,9 @@ json2mq@^0.2.0:
     string-convert "^0.2.0"
 
 json5@2.x, json5@^2.1.2:
-  version "2.2.0"
-  resolved "https://registry.yarnpkg.com/json5/-/json5-2.2.0.tgz#2dfefe720c6ba525d9ebd909950f0515316c89a3"
-  integrity sha512-f+8cldu7X/y7RAJurMEJmdoKXGB/X550w2Nr3tTbezL6RwEE/iMcm+tZnXeoZtKuOq6ft8+CqzEkrIgx1fPoQA==
-  dependencies:
-    minimist "^1.2.5"
+  version "2.2.1"
+  resolved "https://registry.yarnpkg.com/json5/-/json5-2.2.1.tgz#655d50ed1e6f95ad1a3caababd2b0efda10b395c"
+  integrity sha512-1hqLFMSrGHRHxav9q9gNjJ5EXznIxGVO09xQRrwplcS8qs28pZ8s8hupZAmqDwZUmVZ2Qb2jnyPOWcDH8m8dlA==
 
 json5@^1.0.1:
   version "1.0.1"
@@ -10299,9 +10275,9 @@ loader-runner@^4.2.0:
   integrity sha512-92+huvxMvYlMzMt0iIOukcwYBFpkYJdpl2xsZ7LrlayO7E8SOv+JJUEK17B/dJIHAOLMfh2dZZ/Y18WgmGtYNw==
 
 loader-utils@^2.0.0:
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/loader-utils/-/loader-utils-2.0.0.tgz#e4cace5b816d425a166b5f097e10cd12b36064b0"
-  integrity sha512-rP4F0h2RaWSvPEkD7BLDFQnvSf+nK+wr3ESUjNTyAGobqrijmW92zc+SO6d4p4B1wh7+B/Jg1mkQe5NYUEHtHQ==
+  version "2.0.3"
+  resolved "https://registry.yarnpkg.com/loader-utils/-/loader-utils-2.0.3.tgz#d4b15b8504c63d1fc3f2ade52d41bc8459d6ede1"
+  integrity sha512-THWqIsn8QRnvLl0shHYVBN9syumU8pYWEHPTmkiVGd+7K5eFNVSY6AJhRvgGF70gg1Dz+l/k8WicvFCxdEs60A==
   dependencies:
     big.js "^5.2.2"
     emojis-list "^3.0.0"
@@ -11041,7 +11017,7 @@ mri@^1.1.0:
 ms@2.0.0:
   version "2.0.0"
   resolved "https://registry.yarnpkg.com/ms/-/ms-2.0.0.tgz#5608aeadfc00be6c2901df5f9861788de0d597c8"
-  integrity sha1-VgiurfwAvmwpAd9fmGF4jeDVl8g=
+  integrity sha512-Tpp60P6IUJDTuOq/5Z8cdskzJujfwqfOTkrwIwj7IRISpnkJnT6SyJ4PCPnGMoFjC9ddhal5KVIYtAt97ix05A==
 
 ms@2.1.1:
   version "2.1.1"
@@ -13633,9 +13609,9 @@ socket.io-client@^2.2.0:
     to-array "0.1.4"
 
 socket.io-parser@~3.3.0:
-  version "3.3.2"
-  resolved "https://registry.yarnpkg.com/socket.io-parser/-/socket.io-parser-3.3.2.tgz#ef872009d0adcf704f2fbe830191a14752ad50b6"
-  integrity sha512-FJvDBuOALxdCI9qwRrO/Rfp9yfndRtc1jSgVgV8FDraihmSP/MLGD5PEuJrNfjALvcQ+vMDM/33AWOYP/JSjDg==
+  version "3.3.3"
+  resolved "https://registry.yarnpkg.com/socket.io-parser/-/socket.io-parser-3.3.3.tgz#3a8b84823eba87f3f7624e64a8aaab6d6318a72f"
+  integrity sha512-qOg87q1PMWWTeO01768Yh9ogn7chB9zkKtQnya41Y355S0UmpXgpcrFwAgjYJxu9BdKug5r5e9YtVSeWhKBUZg==
   dependencies:
     component-emitter "~1.3.0"
     debug "~3.1.0"

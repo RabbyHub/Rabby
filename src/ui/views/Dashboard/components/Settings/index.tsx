@@ -1,4 +1,4 @@
-import { Button, DrawerProps, Form, Input, message, Modal } from 'antd';
+import { Button, DrawerProps, Form, Input, message, Modal, Switch } from 'antd';
 import clsx from 'clsx';
 import { CHAINS, INITIAL_OPENAPI_URL } from 'consts';
 import React, { useEffect, useState } from 'react';
@@ -13,13 +13,14 @@ import IconReset from 'ui/assets/reset-account.svg';
 import IconSuccess from 'ui/assets/success.svg';
 import IconServer from 'ui/assets/server.svg';
 import { Field, PageHeader, Popup } from 'ui/component';
+import AuthenticationModalPromise from 'ui/component/AuthenticationModal';
 import { openInTab, useWallet, useWalletOld } from 'ui/utils';
 import './style.less';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import IconContacts from 'ui/assets/swap/contact.svg';
-import IconSettingWidget from 'ui/assets/settings-widget.svg';
 import IconDiscord from 'ui/assets/discord.svg';
-import { Contacts, Widget } from '..';
+import IconWhitelist from 'ui/assets/dashboard/whitelist.svg';
+import { Contacts } from '..';
 import stats from '@/stats';
 import { useAsync, useCss } from 'react-use';
 import compareVersions from 'compare-versions';
@@ -133,6 +134,50 @@ const OpenApiModal = ({
   );
 };
 
+const ConfirmWhitelistPopup = ({
+  enable,
+  visible,
+  onClose,
+  onConfirm,
+}: {
+  enable: boolean;
+  visible: boolean;
+  onClose(): void;
+  onConfirm(val: boolean): void;
+}) => {
+  return (
+    <Popup visible={visible} onClose={onClose} height={260}>
+      <h1 className="text-gray-title text-center">
+        {enable ? 'Enable Whitelist' : 'Disable Whitelist'}
+      </h1>
+      <p className="text-gray-subTitle text-14 text-center mt-12 mb-0">
+        {enable
+          ? 'You can only send to the addresses in the whitelist within Rabby once enabled'
+          : 'You can send to any address once disabled'}
+      </p>
+      <div className="flex pt-6 popup-footer px-20 justify-between">
+        <Button
+          size="large"
+          type="primary"
+          className="w-[172px] rabby-btn-ghost"
+          ghost
+          onClick={onClose}
+        >
+          Cancel
+        </Button>
+        <Button
+          type="primary"
+          size="large"
+          onClick={() => onConfirm(enable)}
+          className="w-[172px]"
+        >
+          Confirm
+        </Button>
+      </div>
+    </Popup>
+  );
+};
+
 const ResetAccountModal = ({
   visible,
   onFinish,
@@ -211,7 +256,31 @@ const Settings = ({ visible, onClose }: SettingsProps) => {
   const [showOpenApiModal, setShowOpenApiModal] = useState(false);
   const [showResetAccountModal, setShowResetAccountModal] = useState(false);
   const [contactsVisible, setContactsVisible] = useState(false);
-  const [widgetVisible, setWidgetVisible] = useState(false);
+  const [whitelistEnable, setWhitelistEnable] = useState(true);
+  const [whitelistConfirmVisible, setWhitelistConfirmVisible] = useState(false);
+
+  const handleSwitchWhitelistEnable = async () => {
+    reportSettings('whitelist');
+    setWhitelistConfirmVisible(true);
+  };
+
+  const handleWhitelistEnableChange = async (value: boolean) => {
+    await AuthenticationModalPromise({
+      confirmText: 'Confirm',
+      cancelText: 'Cancel',
+      title: 'Enter the Password to Confirm',
+      validationHandler: async (password: string) =>
+        await wallet.toggleWhitelist(password, value),
+      onFinished() {
+        setWhitelistEnable(value);
+        setWhitelistConfirmVisible(false);
+      },
+      onCancel() {
+        // do nothing
+      },
+      wallet,
+    });
+  };
 
   const handleClickClearWatchMode = () => {
     confirm({
@@ -223,7 +292,7 @@ const Settings = ({ visible, onClose }: SettingsProps) => {
     });
   };
 
-  const { value: hasNewVersion = false, error } = useAsync(async () => {
+  const { value: hasNewVersion = false } = useAsync(async () => {
     const data = await wallet.openapi.getLatestVersion();
 
     return (
@@ -280,6 +349,17 @@ const Settings = ({ visible, onClose }: SettingsProps) => {
 
   const renderData = [
     {
+      leftIcon: IconWhitelist,
+      content: t('Whitelist'),
+      description: 'You can only send to the addresses in the whitelist',
+      rightIcon: (
+        <Switch
+          checked={whitelistEnable}
+          onChange={handleSwitchWhitelistEnable}
+        />
+      ),
+    },
+    {
       leftIcon: IconActivities,
       content: t('Signature Record'),
       onClick: () => {
@@ -289,21 +369,10 @@ const Settings = ({ visible, onClose }: SettingsProps) => {
     },
     {
       leftIcon: IconContacts,
-      content: 'Old Contact List',
+      content: t('Old Contacts'),
       onClick: () => {
         setContactsVisible(true);
         reportSettings('contract');
-      },
-    },
-    {
-      leftIcon: IconSettingWidget,
-      content: t('Widget'),
-      onClick: () => {
-        // eslint-disable-next-line @typescript-eslint/ban-ts-comment
-        //@ts-ignore
-        onClose?.();
-        setWidgetVisible(true);
-        reportSettings('widget');
       },
     },
 
@@ -364,6 +433,15 @@ const Settings = ({ visible, onClose }: SettingsProps) => {
     onClose && onClose(e);
   };
 
+  const initWhitelistEnabled = async () => {
+    const enabled = await wallet.isWhitelistEnabled();
+    setWhitelistEnable(enabled);
+  };
+
+  useEffect(() => {
+    initWhitelistEnabled();
+  }, []);
+
   return (
     <>
       <Popup
@@ -397,8 +475,10 @@ const Settings = ({ visible, onClose }: SettingsProps) => {
                   )
                 }
                 onClick={data.onClick}
+                className={clsx(data.description ? 'has-desc' : null)}
               >
                 {data.content}
+                {data.description && <p className="desc">{data.description}</p>}
               </Field>
             ))}
           </div>
@@ -430,7 +510,7 @@ const Settings = ({ visible, onClose }: SettingsProps) => {
           </footer>
           <Contacts
             visible={contactsVisible}
-            onClose={() => {
+            onCancel={() => {
               setContactsVisible(false);
             }}
           />
@@ -447,12 +527,13 @@ const Settings = ({ visible, onClose }: SettingsProps) => {
           />
         </div>
       </Popup>
-
-      <Widget
-        visible={widgetVisible}
+      <ConfirmWhitelistPopup
+        visible={whitelistConfirmVisible}
         onClose={() => {
-          setWidgetVisible(false);
+          setWhitelistConfirmVisible(false);
         }}
+        onConfirm={handleWhitelistEnableChange}
+        enable={!whitelistEnable}
       />
     </>
   );

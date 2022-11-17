@@ -9,14 +9,7 @@ import {
   WALLET_BRAND_CONTENT,
 } from 'consts';
 import QRCode from 'qrcode.react';
-import React, {
-  useEffect,
-  useLayoutEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
-import { useTranslation } from 'react-i18next';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import ReactGA from 'react-ga';
 import { ReactComponent as IconBack } from 'ui/assets/back.svg';

@@ -40,6 +40,24 @@
     color: @color-title;
     padding: 0 16px;
     border: 1px solid transparent;
+    &.has-desc {
+      align-items: flex-start;
+      padding: 12px 16px 0;
+      .field-slot {
+        overflow: visible;
+        flex-wrap: wrap;
+      }
+      .desc {
+        width: 100%;
+        font-weight: 400;
+        font-size: 12px;
+        line-height: 14px;
+        color: #4B4D59;
+        margin-top: 4px;
+        margin-bottom: 0;
+        white-space: nowrap;
+      }
+    }
     & + .field {
       margin-top: 8px;
     }
