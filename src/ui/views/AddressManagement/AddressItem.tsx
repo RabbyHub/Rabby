@@ -3,6 +3,7 @@ import { Input, message, Tooltip } from 'antd';
 import clsx from 'clsx';
 import {
   BRAND_ALIAN_TYPE_TEXT,
+  KEYRINGS_LOGOS,
   KEYRING_ICONS,
   KEYRING_TYPE_TEXT,
   WALLET_BRAND_CONTENT,
@@ -117,6 +118,14 @@ const AddressItem = memo(
       };
     }, []);
 
+    const addressTypeIcon = useMemo(
+      () =>
+        isCurrentAccount
+          ? WALLET_BRAND_CONTENT?.[brandName]?.image || KEYRINGS_LOGOS[type]
+          : KEYRING_ICONS[type] || WALLET_BRAND_CONTENT?.[brandName]?.image,
+      [type, brandName]
+    );
+
     return (
       <div
         className={clsx(
@@ -145,7 +154,7 @@ const AddressItem = memo(
           )}
         >
           <img
-            src={KEYRING_ICONS[type] || WALLET_BRAND_CONTENT[brandName]?.image}
+            src={addressTypeIcon}
             className="rabby-address-item-icon w-[24px] h-[24px]"
           />
         </Tooltip>
