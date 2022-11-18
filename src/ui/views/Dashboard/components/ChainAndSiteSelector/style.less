@@ -81,9 +81,26 @@
       }
       .disable-direction {
         opacity: 0.5;
+
         &:hover {
           background: transparent;
         }
+      }
+      .coming-soon-badge {
+        opacity: 1;
+        cursor: default;
+        position: absolute;
+        right: 4px;
+        top: 0;
+        padding: 1px 8px;
+        background: #d3dbe7;
+        border-radius: 90px;
+        color: @color-comment-1;
+        height: 16px;
+        width: 44px;
+        font-size: 12px;
+        line-height: 14px;
+        font-weight: 400;
       }
     }
 
@@ -390,4 +407,9 @@
   .ant-drawer-wrapper-body {
     // height: 300px !important;
   }
+}
+
+.coming-soon-message .tip-text {
+  position: relative;
+  // top: 1px;
 }
