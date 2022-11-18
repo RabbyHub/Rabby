@@ -15,7 +15,7 @@ const versionMap = {
   '0.49.1': version0490,
   '0.53.0': version0530,
   '0.56.0': version0560,
-  '0.57.0': version0570,
+  '0.57.1': version0570,
 };
 export const getUpdateContent = () => {
   return versionMap[version];

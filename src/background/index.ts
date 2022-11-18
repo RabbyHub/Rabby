@@ -154,6 +154,17 @@ restoreAppState();
     };
     sendEvent();
     interval = setInterval(sendEvent, 5 * 60 * 1000);
+    const arrangeOldContactAndAlias = async () => {
+      const addresses = await keyringService.getAllAdresses();
+      const contactMap = contactBookService.getContactsByMap();
+      addresses.forEach(({ address }) => {
+        const item = contactMap[address];
+        if (item && item.isContact && !item.isAlias) {
+          contactBookService.addAlias({ name: item.name, address });
+        }
+      });
+    };
+    arrangeOldContactAndAlias();
   });
 
   keyringService.on('lock', () => {
