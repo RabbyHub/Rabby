@@ -109,26 +109,26 @@ class TransactionWatcher {
 
   // fetch pending txs status every 5s
   roll = () => {
-    const list = Object.keys(this.store.pendingTx);
-    // order by address, chain, nonce
-    const idQueue = list.sort((a, b) => {
-      const [aAddress, aNonceStr, aChain] = a.split('_');
-      const [bAddress, , bNonceStr, bChain] = b.split('_');
-
-      const aNonce = Number(aNonceStr);
-      const bNonce = Number(bNonceStr);
-
-      if (aAddress !== bAddress) {
-        return aAddress > bAddress ? 1 : -1;
-      }
-
-      if (aChain !== bChain) {
-        return aChain > bChain ? 1 : -1;
-      }
-      return aNonce > bNonce ? 1 : -1;
-    });
-
     interval(async () => {
+      const list = Object.keys(this.store.pendingTx);
+      // order by address, chain, nonce
+      const idQueue = list.sort((a, b) => {
+        const [aAddress, aNonceStr, aChain] = a.split('_');
+        const [bAddress, , bNonceStr, bChain] = b.split('_');
+
+        const aNonce = Number(aNonceStr);
+        const bNonce = Number(bNonceStr);
+
+        if (aAddress !== bAddress) {
+          return aAddress > bAddress ? 1 : -1;
+        }
+
+        if (aChain !== bChain) {
+          return aChain > bChain ? 1 : -1;
+        }
+        return aNonce > bNonce ? 1 : -1;
+      });
+
       return this._queryList(idQueue);
     }, 5000);
   };
