@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Button, message } from 'antd';
 import styled from 'styled-components';
 import { useRabbyDispatch, useRabbySelector, connectStore } from 'ui/store';
@@ -37,7 +37,7 @@ const ListFooterWrapper = styled.div`
 `;
 
 const ListModal = ({ visible, onOk, onCancel }: ListModalProps) => {
-  const [editWhitelistVsible, setEditWhitelistVisible] = useState(false);
+  const [editWhitelistVisible, setEditWhitelistVisible] = useState(false);
   const dispatch = useRabbyDispatch();
   const wallet = useWallet();
 
@@ -49,6 +49,23 @@ const ListModal = ({ visible, onOk, onCancel }: ListModalProps) => {
       whitelistEnabled: s.whitelist.enabled,
     })
   );
+
+  const sortedAccountsList = useMemo(() => {
+    if (!whitelistEnabled) {
+      return accountsList;
+    }
+    return [...accountsList].sort((a, b) => {
+      let an = 0,
+        bn = 0;
+      if (whitelist?.some((w) => isSameAddress(w, a.address))) {
+        an = 1;
+      }
+      if (whitelist?.some((w) => isSameAddress(w, b.address))) {
+        bn = 1;
+      }
+      return bn - an;
+    });
+  }, [accountsList, whitelist]);
 
   const handleSelectAddress = (account: IDisplayedAccountWithBalance) => {
     onOk({
@@ -122,7 +139,7 @@ const ListModal = ({ visible, onOk, onCancel }: ListModalProps) => {
             : 'Whitelist is disabled. You can send to any address.'}
         </div>
         <ListScrollWrapper>
-          {accountsList.map((account) => (
+          {sortedAccountsList.map((account) => (
             <AccountItem
               account={account}
               key={`${account.brandName}-${account.address}`}
@@ -150,7 +167,7 @@ const ListModal = ({ visible, onOk, onCancel }: ListModalProps) => {
           </ListFooterWrapper>
         )}
       </div>
-      {editWhitelistVsible && (
+      {editWhitelistVisible && (
         <EditWhitelist
           onCancel={() => setEditWhitelistVisible(false)}
           onConfirm={handleSaveWhitelist}

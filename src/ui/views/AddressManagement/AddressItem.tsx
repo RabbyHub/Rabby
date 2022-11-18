@@ -195,7 +195,7 @@ const AddressItem = memo(
               )}
             ></Copy>
             {!isCurrentAccount && (
-              <span className="ml-[6px] text-12 text-gray-subTitle">
+              <span className="ml-[12px] text-12 text-gray-subTitle">
                 ${splitNumberByStep(balance?.toFixed(2))}
               </span>
             )}

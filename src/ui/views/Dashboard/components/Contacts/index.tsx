@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { message } from 'antd';
 import clsx from 'clsx';
 import styled from 'styled-components';
@@ -114,6 +114,22 @@ const Contacts = ({
     setContacts(list);
   };
 
+  const NoData = useMemo(() => {
+    if (contacts?.length) {
+      return null;
+    }
+    return (
+      <div className="mt-[80px] flex flex-col justify-center items-center">
+        <img
+          className="w-[100px] h-[100px]"
+          src="/images/nodata-tx.png"
+          alt="no data"
+        />
+        <p className="mt-[12px] text-14 text-gray-subTitle">{t('No data')}</p>
+      </div>
+    );
+  }, [contacts?.length]);
+
   useEffect(() => {
     init();
   }, []);
@@ -128,7 +144,7 @@ const Contacts = ({
       <PageHeader forceShowBack onBack={handleCancel}>
         {t('Old Contact List')}
       </PageHeader>
-      <div className="desc mb-20">
+      <div className="desc mb-20 text-gray-subTitle">
         Because of the merging of contacts and watch model addresses, the old
         contacts will be backed up for you here and after some time we will
         delete the list.Please add in time if you continue to use.
@@ -137,6 +153,7 @@ const Contacts = ({
         {contacts.map((contact) => (
           <ContactItem item={contact} key={contact.address} />
         ))}
+        {NoData}
       </ContractListElement>
     </div>
   );

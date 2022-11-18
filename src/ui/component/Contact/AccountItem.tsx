@@ -18,6 +18,12 @@ const AccountItemWrapper = styled.div`
   display: flex;
   align-items: center;
   flex: 1;
+  border: 1px solid transparent;
+
+  &:hover {
+    background-color: rgba(134, 151, 255, 0.1);
+    border-color: #8697ff;
+  }
   .name {
     font-weight: 500;
     font-size: 15px;
@@ -46,6 +52,10 @@ const AccountItemWrapper = styled.div`
   &.disabled {
     opacity: 0.5;
     cursor: not-allowed;
+    &:hover {
+      background-color: f5f6fa;
+      border-color: transparent;
+    }
   }
 `;
 
@@ -94,7 +104,7 @@ const AccountItem = ({
   };
   return (
     <AccountItemWrapper
-      className={clsx({ disabled, 'cursor-pointer': onClick })}
+      className={clsx({ disabled, 'cursor-pointer': !disabled && onClick })}
       onClick={handleClickItem}
     >
       <img

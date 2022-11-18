@@ -816,7 +816,7 @@ const SendToken = () => {
           <div className="section-title">
             <span className="section-title__to">{t('To')}</span>
             <div className="flex flex-1 justify-end items-center">
-              {showContactInfo && (
+              {showContactInfo && !!contactInfo && (
                 <div
                   className={clsx('contact-info', {
                     disabled: editBtnDisabled,
@@ -967,66 +967,73 @@ const SendToken = () => {
             </div>
           </div>
         </div>
-        {tokenValidationStatus !== TOKEN_VALIDATION_STATUS.SUCCESS && (
-          <div
-            className={clsx('token-validation', {
-              pending:
-                tokenValidationStatus === TOKEN_VALIDATION_STATUS.PENDING,
-              faild: tokenValidationStatus === TOKEN_VALIDATION_STATUS.FAILD,
-            })}
-          >
-            {tokenValidationStatus === TOKEN_VALIDATION_STATUS.PENDING ? (
-              <>
-                <SvgIconLoading
-                  className="icon icon-loading"
-                  viewBox="0 0 36 36"
-                />
-                {t('Verifying token info ...')}
-              </>
-            ) : (
-              <>
-                <SvgAlert className="icon icon-alert" viewBox="0 0 14 14" />
-                {t('Token verification failed')}
-              </>
-            )}
-          </div>
-        )}
-        {tokenValidationStatus === TOKEN_VALIDATION_STATUS.SUCCESS &&
-          showWhitelistAlert && (
+        <div
+          className={clsx(
+            isNativeToken &&
+              'w-full absolute bottom-[32px] left-1/2 -translate-x-1/2'
+          )}
+        >
+          {tokenValidationStatus !== TOKEN_VALIDATION_STATUS.SUCCESS && (
             <div
-              className={clsx(
-                'whitelist-alert',
-                !whitelistEnabled || whitelistAlertContent.success
-                  ? 'granted'
-                  : 'cursor-pointer'
-              )}
-              onClick={handleClickWhitelistAlert}
+              className={clsx('token-validation', {
+                pending:
+                  tokenValidationStatus === TOKEN_VALIDATION_STATUS.PENDING,
+                faild: tokenValidationStatus === TOKEN_VALIDATION_STATUS.FAILD,
+              })}
             >
-              {whitelistEnabled && (
-                <img
-                  src={
-                    whitelistAlertContent.success
-                      ? IconCheck
-                      : IconTemporaryGrantCheckbox
-                  }
-                  className="icon icon-check"
-                />
+              {tokenValidationStatus === TOKEN_VALIDATION_STATUS.PENDING ? (
+                <>
+                  <SvgIconLoading
+                    className="icon icon-loading"
+                    viewBox="0 0 36 36"
+                  />
+                  {t('Verifying token info ...')}
+                </>
+              ) : (
+                <>
+                  <SvgAlert className="icon icon-alert" viewBox="0 0 14 14" />
+                  {t('Token verification failed')}
+                </>
               )}
-              <p className="whitelist-alert__content">
-                {whitelistAlertContent.content}
-              </p>
             </div>
           )}
-        <div className="footer flex justify-center">
-          <Button
-            disabled={!canSubmit}
-            type="primary"
-            htmlType="submit"
-            size="large"
-            className="w-[200px]"
-          >
-            {t('Send')}
-          </Button>
+          {tokenValidationStatus === TOKEN_VALIDATION_STATUS.SUCCESS &&
+            showWhitelistAlert && (
+              <div
+                className={clsx(
+                  'whitelist-alert',
+                  !whitelistEnabled || whitelistAlertContent.success
+                    ? 'granted'
+                    : 'cursor-pointer'
+                )}
+                onClick={handleClickWhitelistAlert}
+              >
+                {whitelistEnabled && (
+                  <img
+                    src={
+                      whitelistAlertContent.success
+                        ? IconCheck
+                        : IconTemporaryGrantCheckbox
+                    }
+                    className="icon icon-check"
+                  />
+                )}
+                <p className="whitelist-alert__content">
+                  {whitelistAlertContent.content}
+                </p>
+              </div>
+            )}
+          <div className="footer flex justify-center">
+            <Button
+              disabled={!canSubmit}
+              type="primary"
+              htmlType="submit"
+              size="large"
+              className="w-[200px]"
+            >
+              {t('Send')}
+            </Button>
+          </div>
         </div>
       </Form>
       <ContactEditModal

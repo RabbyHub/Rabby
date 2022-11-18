@@ -63,6 +63,7 @@ import { getKRCategoryByType } from '@/utils/transaction';
 import eventBus from '@/eventBus';
 
 import { ReactComponent as IconAddAddress } from '@/ui/assets/address/add-address.svg';
+import { ReactComponent as IconArrowRight } from 'ui/assets/dashboard/arrow-right.svg';
 
 const GnosisAdminItem = ({
   accounts,
@@ -617,25 +618,7 @@ const Dashboard = () => {
                       />
                     )}
                   </div>
-
-                  <svg
-                    className="ml-8"
-                    width="16"
-                    height="16"
-                    viewBox="0 0 16 16"
-                    fill="none"
-                    xmlns="http://www.w3.org/2000/svg"
-                  >
-                    <g opacity="0.8">
-                      <path
-                        d="M6.16406 3L11.1641 8L6.16406 13V3Z"
-                        fill="white"
-                        stroke="white"
-                        stroke-width="1.25"
-                        stroke-linejoin="round"
-                      />
-                    </g>
-                  </svg>
+                  <IconArrowRight className="ml-8" />
                 </Popover>
               </div>
 
