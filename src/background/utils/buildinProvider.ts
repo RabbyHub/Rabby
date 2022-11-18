@@ -110,26 +110,29 @@ export class EthereumProvider extends EventEmitter {
             reject(err);
           });
         });
-      case 'eth_sendTransaction':
+      case 'eth_sendTransaction': {
+        const txParams = {
+          ...data.params[0],
+          chainId: Number(networkId),
+        };
         preferenceService.setCurrentAccount({
           address: this.currentAccount,
           type: this.currentAccountType,
           brandName: this.currentAccountBrand,
         });
+        if (txParams.gas) {
+          delete txParams.gas;
+        }
         return wallet
           .sendRequest({
             $ctx: this.$ctx,
             method: 'eth_sendTransaction',
-            params: [
-              {
-                ...data.params[0],
-                chainId: Number(networkId),
-              },
-            ],
+            params: [txParams],
           })
           .finally(() => {
             preferenceService.setCurrentAccount(currentAccount);
           });
+      }
       case 'eth_chainId':
         return chain.hex;
       default:
