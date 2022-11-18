@@ -135,8 +135,8 @@ const ListModal = ({ visible, onOk, onCancel }: ListModalProps) => {
       >
         <div className="text-center mb-16 text-14 text-gray-content">
           {whitelistEnabled
-            ? 'Whitelist is enabled.You can only send to the addresses in the whitelist within Rabby or disable it in "Settings".'
-            : 'Whitelist is disabled. You can send to any address.'}
+            ? 'Whitelist is enabled. You can only send assets to a whitelisted address or you can disable it in "Settings"'
+            : 'Whitelist is disabled. You can send assets to any address'}
         </div>
         <ListScrollWrapper>
           {sortedAccountsList.map((account) => (

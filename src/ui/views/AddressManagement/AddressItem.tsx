@@ -182,7 +182,10 @@ const AddressItem = memo(
             <AddressViewer
               address={address?.toLowerCase()}
               showArrow={false}
-              className={clsx('subtitle', isCurrentAccount && 'text-white')}
+              className={clsx(
+                'subtitle',
+                isCurrentAccount ? 'text-white' : 'text-gray-subTitle'
+              )}
             />
             <Copy
               onClick={(e) => e.stopPropagation()}
