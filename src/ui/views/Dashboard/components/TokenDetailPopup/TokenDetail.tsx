@@ -76,7 +76,7 @@ const TokenDetail = ({
     {
       target: ref,
       isNoMore: (d) => {
-        return !d?.last || (d?.list.length || 0) % PAGE_COUNT != 0;
+        return !d?.last || (d?.list.length || 0) < PAGE_COUNT;
       },
     }
   );
