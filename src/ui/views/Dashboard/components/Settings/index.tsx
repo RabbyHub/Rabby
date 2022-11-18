@@ -153,7 +153,7 @@ const ConfirmWhitelistPopup = ({
       <p className="text-gray-subTitle text-14 text-center mt-12 mb-0">
         {enable
           ? 'Once enabled, you can only send assets to the addresses in the whitelist using Rabby.'
-          : 'You can only send assets to whitelisted address'}
+          : 'You can send assets to any address once disabled'}
       </p>
       <div className="flex pt-6 popup-footer px-20 justify-between">
         <Button
