@@ -1,6 +1,5 @@
 import React, { useEffect, useState } from 'react';
 import { useTranslation, Trans } from 'react-i18next';
-import { useInterval } from 'react-use';
 import { intToHex } from 'ethereumjs-util';
 import clsx from 'clsx';
 import minBy from 'lodash/minBy';
@@ -30,6 +29,7 @@ import IconQuestionMark from 'ui/assets/question-mark-black.svg';
 import { SvgIconOpenExternal } from 'ui/assets';
 import './style.less';
 import { Account } from '@/background/service/preference';
+import interval from 'interval-promise';
 
 const TransactionExplain = ({
   explain,
@@ -235,7 +235,6 @@ const TransactionItem = ({
   const originTx = minBy(item.txs, (tx) => tx.createdAt)!;
   const completedTx = item.txs.find((tx) => tx.isCompleted);
   const isCompleted = !item.isPending || item.isSubmitFailed;
-  const intervalDelay = item.isPending ? 1000 : null;
   const isCanceled =
     !item.isPending &&
     item.txs.length > 1 &&
@@ -317,14 +316,14 @@ const TransactionItem = ({
             };
           }
         } else if (status !== 0 && code === 0) {
-          wallet.comepleteTransaction({
-            address: item.txs[index].rawTx.from,
-            chainId: Number(item.txs[index].rawTx.chainId),
-            nonce: Number(item.txs[index].rawTx.nonce),
-            hash: item.txs[index].hash,
-            success: status === 1,
-            gasUsed: gas_used,
-          });
+          // wallet.completedTransaction({
+          //   address: item.txs[index].rawTx.from,
+          //   chainId: Number(item.txs[index].rawTx.chainId),
+          //   nonce: Number(item.txs[index].rawTx.nonce),
+          //   hash: item.txs[index].hash,
+          //   success: status === 1,
+          //   gasUsed: gas_used,
+          // });
         } else {
           map = {
             ...map,
@@ -341,12 +340,6 @@ const TransactionItem = ({
       setTxQueues(map);
     }
   };
-
-  if (item.isPending && !item.isSubmitFailed) {
-    useInterval(() => {
-      loadTxData();
-    }, intervalDelay);
-  }
 
   useEffect(() => {
     loadTxData();
@@ -599,6 +592,28 @@ const TransactionHistory = () => {
     setPendingList(pendings);
     setCompleteList(completeds);
   };
+
+  const loadPendingList = async () => {
+    const account = await wallet.syncGetCurrentAccount<Account>()!;
+    const pendings = await wallet.loadPendingListQueue(account.address);
+    setPendingList(pendings);
+  };
+
+  useEffect(() => {
+    let stoppedInterval = false;
+    const stopInterval = () => {
+      stoppedInterval = true;
+    };
+
+    interval(async (iteration, stop) => {
+      if (stoppedInterval) {
+        stop();
+      }
+      return loadPendingList();
+    }, 1000);
+
+    return stopInterval;
+  }, []);
 
   const handleTxComplete = () => {
     init();

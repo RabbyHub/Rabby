@@ -9,6 +9,7 @@ import { CHAINS, CHAINS_ENUM } from 'consts';
 import { format } from 'utils';
 import eventBus from '@/eventBus';
 import { EVENTS } from '@/constant';
+import interval from 'interval-promise';
 
 class Transaction {
   createdTime = 0;
@@ -21,14 +22,6 @@ class Transaction {
     this.createdTime = +new Date();
   }
 }
-
-// [interval, timeout]
-const QUERY_FREQUENCY = [
-  [60 * 1000, 1000],
-  [10 * 60 * 1000, 5 * 1000],
-  [60 * 60 * 1000, 30 * 1000],
-  [2 * 60 * 60 * 1000, 60 * 1000],
-];
 
 interface TransactionWatcherStore {
   pendingTx: Record<string, Transaction>;
@@ -62,8 +55,6 @@ class TransactionWatcher {
       i18n.t('Transaction submitted'),
       i18n.t('click to view more information')
     );
-
-    this._scheduleQuerying(id);
   };
 
   checkStatus = async (id: string) => {
@@ -116,61 +107,45 @@ class TransactionWatcher {
     });
   };
 
+  // fetch pending txs status every 5s
   roll = () => {
-    // make a copy
-    const currentList = { ...this.store.pendingTx };
+    const list = Object.keys(this.store.pendingTx);
+    // order by address, chain, nonce
+    const idQueue = list.sort((a, b) => {
+      const [aAddress, aNonceStr, aChain] = a.split('_');
+      const [bAddress, , bNonceStr, bChain] = b.split('_');
 
-    Object.keys(currentList).forEach(this._scheduleQuerying);
+      const aNonce = Number(aNonceStr);
+      const bNonce = Number(bNonceStr);
+
+      if (aAddress !== bAddress) {
+        return aAddress > bAddress ? 1 : -1;
+      }
+
+      if (aChain !== bChain) {
+        return aChain > bChain ? 1 : -1;
+      }
+      return aNonce > bNonce ? 1 : -1;
+    });
+
+    interval(async () => {
+      return this._queryList(idQueue);
+    }, 5000);
   };
 
-  _scheduleQuerying = (id) => {
-    const tx = this.store.pendingTx[id];
+  _queryList = async (ids: string[]) => {
+    for (const id of ids) {
+      try {
+        const txReceipt = await this.checkStatus(id);
 
-    if (!tx) {
-      return;
+        if (txReceipt) {
+          this.notify(id, txReceipt);
+          this._removeTx(id);
+        }
+      } catch (error) {
+        console.error(error);
+      }
     }
-
-    if (this.timers[id] !== null && typeof this.timers[id] !== 'undefined') {
-      clearTimeout(this.timers[id]);
-      this.timers[id] = null;
-    }
-
-    const nextTimeout = tx.createdTime && this._findFrequency(tx.createdTime);
-
-    if (nextTimeout) {
-      this.timers[id] = window.setTimeout(() => {
-        this.checkStatus(id).then((txReceipt) => {
-          if (txReceipt) {
-            this.notify(id, txReceipt);
-            this._removeTx(id);
-          } else {
-            this.timers[id] = null;
-            this._scheduleQuerying(id);
-          }
-        });
-      }, nextTimeout);
-    } else {
-      this._removeTx(id);
-    }
-  };
-
-  /**
-   * get query frequency by tx createTime
-   * 0s - 1min: 1s
-   * 1min - 1hour: 5s
-   * 1hour - 2hour: 30s
-   * 2hour - infinite 60s
-   */
-  _findFrequency = (createTime) => {
-    const now = +new Date();
-
-    const frequency = QUERY_FREQUENCY.find(
-      ([sinceCreate]) => now - createTime < sinceCreate
-    )?.[1];
-
-    if (frequency) return frequency;
-
-    return QUERY_FREQUENCY[QUERY_FREQUENCY.length - 1][1];
   };
 
   _removeTx = (id: string) => {
