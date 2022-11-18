@@ -214,6 +214,7 @@ export default ({
       icon: IconSwap,
       content: 'Swap',
       commingSoonBadge: true,
+      hideForGnosis: true,
       onClick: () => {
         message.info({
           icon: <i />,
