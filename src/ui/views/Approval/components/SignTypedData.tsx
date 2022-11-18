@@ -30,6 +30,7 @@ import {
 import { CHAINS_LIST } from '@debank/common';
 import IconArrowRight from 'ui/assets/arrow-right-gray.svg';
 import ViewRawModal from './TxComponents/ViewRawModal';
+import { PermitSignTypedSignSection } from './PermitSignTypedData';
 interface SignTypedDataProps {
   method: string;
   data: any[];
@@ -168,6 +169,13 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
       explainTypedDataRes?.type_list_nft?.offer_list &&
       explainTypedDataRes?.type_list_nft?.offer_list.length > 0
     ) {
+      return true;
+    }
+    return false;
+  }, [explainTypedDataRes]);
+
+  const isPermit = useMemo(() => {
+    if (explainTypedDataRes?.type_token_approval) {
       return true;
     }
     return false;
@@ -399,8 +407,8 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
           <div
             className={clsx(
               'text-detail text-15 leading-[16px] font-bold text-[rgb(82,89,102)]',
-              isNFTListing && 'max-h-[168px]',
-              !isNFTListing && !isSignTypedDataV1 && 'h-[360px]'
+              (isNFTListing || isPermit) && 'max-h-[168px]',
+              !isNFTListing && !isPermit && !isSignTypedDataV1 && 'h-[360px]'
             )}
             style={{
               fontFamily: 'Roboto Mono',
@@ -428,6 +436,10 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
         </div>
         {!loading && isNFTListing && explainTypedDataRes && (
           <NFTSignTypedSignSection typeListNft={explainTypedDataRes} />
+        )}
+
+        {!loading && explainTypedDataRes && (
+          <PermitSignTypedSignSection explain={explainTypedDataRes} />
         )}
 
         <div className="section-title mt-[32px]">Pre-sign check</div>

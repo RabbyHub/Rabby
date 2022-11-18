@@ -1,25 +1,20 @@
-import { Button, Form, Input, message } from 'antd';
+import { Button, Form, Input } from 'antd';
 import { ExplainTxResponse, TokenItem, Tx } from 'background/service/openapi';
 import { Account } from 'background/service/preference';
 import BigNumber from 'bignumber.js';
-import ClipboardJS from 'clipboard';
 import clsx from 'clsx';
 import { CHAINS, CHAINS_ENUM, KEYRING_TYPE } from 'consts';
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import IconArrowRight from 'ui/assets/approval/edit-arrow-right.svg';
-import IconCopy from 'ui/assets/component/icon-copy.svg';
-import IconSuccess from 'ui/assets/success.svg';
-import IconUnknownProtocol from 'ui/assets/unknown-protocol.svg';
-import { AddressViewer, Popup, TokenWithChain } from 'ui/component';
-import { ellipsisOverflowedText, useWallet, useWalletOld } from 'ui/utils';
+import { Popup } from 'ui/component';
+import { ellipsisOverflowedText, useWalletOld } from 'ui/utils';
 import { splitNumberByStep } from 'ui/utils/number';
 import { getCustomTxParamsData } from 'ui/utils/transaction';
-import BalanceChange from './BalanceChange';
-import SpeedUpCorner from './SpeedUpCorner';
 import ViewRawModal from './ViewRawModal';
 import useBalanceChange from '@/ui/hooks/useBalanceChange';
-import { InfoCircleOutlined } from '@ant-design/icons';
+import { ApproveToken } from './ApproveToken';
+import BalanceChange from './BalanceChange';
 
 interface ApproveProps {
   data: ExplainTxResponse;
@@ -141,48 +136,12 @@ const Approve = ({
   const [balance, setBalance] = useState<string | null>(null);
   const [isGnosis, setIsGnosis] = useState(false);
   const { t } = useTranslation();
-  const totalTokenPrice = new BigNumber(
-    ((detail.token.raw_amount || 0) / Math.pow(10, detail.token.decimals)) *
-      detail.token.price
-  ).toFixed(2);
-  const tokenAmount = new BigNumber(detail.token_amount).toFixed();
-
-  const handleCopySpender = () => {
-    const clipboard = new ClipboardJS('.approve', {
-      text: function () {
-        return detail.spender;
-      },
-    });
-
-    clipboard.on('success', () => {
-      message.success({
-        duration: 3,
-        icon: <i />,
-        content: (
-          <div>
-            <div className="flex gap-4 mb-4">
-              <img src={IconSuccess} alt="" />
-              Copied
-            </div>
-            <div className="text-white">{detail.spender}</div>
-          </div>
-        ),
-      });
-      clipboard.destroy();
-    });
-  };
 
   const handleViewRawClick = () => {
     ViewRawModal.open({
       raw,
       abi: data?.abi_str,
     });
-  };
-
-  const handleProtocolLogoLoadFailed = function (
-    e: React.SyntheticEvent<HTMLImageElement>
-  ) {
-    e.currentTarget.src = IconUnknownProtocol;
   };
 
   const handleEditApproveAmount = () => {
@@ -237,36 +196,6 @@ const Approve = ({
   }, []);
 
   const bfInfo = useBalanceChange(data);
-  const ExceedsAccountBalance = useMemo(() => {
-    if (
-      balance === null ||
-      new BigNumber(balance || 0).gte(
-        new BigNumber(detail.token.raw_amount_hex_str || 0)
-          .div(new BigNumber(10).pow(detail.token.decimals))
-          .toFixed()
-      )
-    ) {
-      return null;
-    }
-    return (
-      <div className="flex justify-between items-center text-13 py-[10px] border-t border-gray-divider overflow-hidden overflow-ellipsis whitespace-nowrap">
-        <div className="flex flex-1 items-center text-gray-content">
-          <InfoCircleOutlined />
-          <span className="ml-[4px]">Exceeds account balance</span>
-        </div>
-
-        <span
-          className="underline text-gray-content pl-[10px] overflow-hidden overflow-ellipsis whitespace-nowrap cursor-pointer"
-          onClick={() => {
-            handleApproveAmountChange(balance || '0');
-          }}
-          title={balance}
-        >
-          Balance: {splitNumberByStep(new BigNumber(balance || 0).toFixed(4))}
-        </span>
-      </div>
-    );
-  }, [balance, detail.token.raw_amount_hex_str]);
 
   return (
     <div
@@ -288,95 +217,20 @@ const Approve = ({
           <img src={IconArrowRight} />
         </span>
       </div>
-      <div className="action-card">
-        <div className="common-detail-block">
-          {isSpeedUp && <SpeedUpCorner />}
-          <p className="title mb-[20px]">{t('Token Approval')}</p>
-          <div className="block-field flex flex-col bg-gray-bg2 rounded px-[12px]">
-            <div className="flex justify-between pt-[16px] text-13 font-medium leading-[15px] mb-[8px]">
-              <span className="text-gray-title">Approval amount</span>
-              <span
-                className="text-blue-light cursor-pointer text"
-                onClick={handleEditApproveAmount}
-              >
-                {t('Edit')}
-              </span>
-            </div>
-            <div className="flex justify-between items-center pb-[12px]">
-              <div className="flex">
-                <TokenWithChain
-                  hideConer
-                  width={'20px'}
-                  height={'20px'}
-                  token={detail.token}
-                  hideChainIcon
-                />
-                <span
-                  className="ml-[6px]"
-                  title={tokenAmount + ' ' + detail.token_symbol}
-                >
-                  {ellipsisOverflowedText(
-                    splitNumberByStep(tokenAmount),
-                    12,
-                    true
-                  )}{' '}
-                  <span title={detail.token_symbol}>
-                    {ellipsisOverflowedText(detail.token_symbol, 4)}
-                  </span>{' '}
-                </span>
-              </div>
-              <div
-                className="token-value"
-                title={splitNumberByStep(totalTokenPrice)}
-              >
-                $
-                {ellipsisOverflowedText(
-                  splitNumberByStep(totalTokenPrice),
-                  18,
-                  true
-                )}
-              </div>
-            </div>
-            {ExceedsAccountBalance}
-          </div>
-          <div className="block-field mb-0">
-            <span className="label flex items-center">{t('Approve to')}</span>
-            <div className="value protocol">
-              <img
-                className="protocol-logo rounded-full"
-                src={detail.spender_protocol_logo_url || IconUnknownProtocol}
-                onError={handleProtocolLogoLoadFailed}
-              />
-              <div className="protocol-info">
-                <div
-                  className={clsx('protocol-info__name flex', {
-                    'text-gray-content': !detail.spender_protocol_name,
-                  })}
-                >
-                  {ellipsisOverflowedText(
-                    detail.spender_protocol_name || t('UnknownProtocol'),
-                    10
-                  )}
-                  <span className="protocol-info__spender">
-                    <AddressViewer address={detail.spender} showArrow={false} />
-                    <img
-                      src={IconCopy}
-                      className="icon icon-copy w-[14px] h-[14px]"
-                      onClick={handleCopySpender}
-                    />
-                  </span>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
+      <ApproveToken
+        detail={detail!}
+        isSpeedUp={isSpeedUp}
+        onClickEdit={handleEditApproveAmount}
+        onApproveAmountChange={() => handleApproveAmountChange(balance || '0')}
+        balance={balance}
+      >
         <BalanceChange
           version={data.pre_exec_version}
           data={data.balance_change}
           chainEnum={chainEnum}
           isSupport={data.support_balance_change}
         />
-      </div>
+      </ApproveToken>
       <Popup
         visible={editApproveModalVisible}
         className="edit-approve-amount-modal"

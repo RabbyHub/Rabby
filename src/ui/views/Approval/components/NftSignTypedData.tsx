@@ -60,7 +60,7 @@ export const NFTSignTypedSignHeader = ({
 export const NFTSignTypedSignSection = ({
   typeListNft,
 }: {
-  typeListNft: { type_list_nft: ExplainTxResponse['type_list_nft'] };
+  typeListNft: { type_list_nft?: ExplainTxResponse['type_list_nft'] };
 }) => {
   const [focusingNFT, setFocusingNFT] = useState<TransferingNFTItem | null>(
     null
