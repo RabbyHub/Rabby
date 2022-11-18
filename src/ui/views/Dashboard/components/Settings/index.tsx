@@ -152,8 +152,8 @@ const ConfirmWhitelistPopup = ({
       </h1>
       <p className="text-gray-subTitle text-14 text-center mt-12 mb-0">
         {enable
-          ? 'You can only send to the addresses in the whitelist within Rabby once enabled'
-          : 'You can send to any address once disabled'}
+          ? 'Once enabled, you can only send assets to the addresses in the whitelist using Rabby.'
+          : 'You can only send assets to whitelisted address'}
       </p>
       <div className="flex pt-6 popup-footer px-20 justify-between">
         <Button
@@ -363,7 +363,7 @@ const Settings = ({ visible, onClose }: SettingsProps) => {
     {
       leftIcon: IconWhitelist,
       content: t('Whitelist'),
-      description: 'You can only send to the addresses in the whitelist',
+      description: 'You can only send assets to whitelisted address',
       rightIcon: (
         <Switch
           checked={whitelistEnable}
