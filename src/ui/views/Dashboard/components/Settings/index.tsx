@@ -381,7 +381,7 @@ const Settings = ({ visible, onClose }: SettingsProps) => {
     },
     {
       leftIcon: IconContacts,
-      content: t('Old Contacts'),
+      content: t('Old Contact List'),
       onClick: () => {
         setContactsVisible(true);
         reportSettings('contract');
