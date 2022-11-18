@@ -114,7 +114,7 @@ class TransactionWatcher {
       // order by address, chain, nonce
       const idQueue = list.sort((a, b) => {
         const [aAddress, aNonceStr, aChain] = a.split('_');
-        const [bAddress, , bNonceStr, bChain] = b.split('_');
+        const [bAddress, bNonceStr, bChain] = b.split('_');
 
         const aNonce = Number(aNonceStr);
         const bNonce = Number(bNonceStr);
