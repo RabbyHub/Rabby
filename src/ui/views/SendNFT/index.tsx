@@ -117,8 +117,12 @@ const SendNFT = () => {
     }
     return {
       success: false,
-      content:
-        'The address is not whitelisted. I agree to grant temporary permission to transfer.',
+      content: (
+        <>
+          The address is not whitelisted.
+          <br /> I agree to grant temporary permission to transfer.
+        </>
+      ),
     };
   }, [temporaryGrant, whitelist, toAddressInWhitelist, whitelistEnabled]);
 
@@ -553,17 +557,17 @@ const SendNFT = () => {
                 )}
                 onClick={handleClickWhitelistAlert}
               >
-                {whitelistEnabled && (
-                  <img
-                    src={
-                      whitelistAlertContent.success
-                        ? IconCheck
-                        : IconTemporaryGrantCheckbox
-                    }
-                    className="icon icon-check"
-                  />
-                )}
-                <p className="whitelist-alert__content">
+                <p className="whitelist-alert__content text-center">
+                  {whitelistEnabled && (
+                    <img
+                      src={
+                        whitelistAlertContent.success
+                          ? IconCheck
+                          : IconTemporaryGrantCheckbox
+                      }
+                      className="icon icon-check inline-block relative -top-1"
+                    />
+                  )}
                   {whitelistAlertContent.content}
                 </p>
               </div>
