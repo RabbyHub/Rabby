@@ -1,4 +1,4 @@
-import { Badge, Skeleton, Tooltip } from 'antd';
+import { Badge, message, Skeleton, Tooltip } from 'antd';
 import { GasLevel } from 'background/service/openapi';
 import { ConnectedSite } from 'background/service/permission';
 import clsx from 'clsx';
@@ -13,6 +13,7 @@ import IconQuene from 'ui/assets/dashboard/quene.svg';
 import IconSecurity from 'ui/assets/dashboard/security.svg';
 import IconSendToken from 'ui/assets/dashboard/sendtoken.png';
 import IconSetting from 'ui/assets/dashboard/setting.png';
+import IconSwap from 'ui/assets/dashboard/swap.svg';
 import IconReceive from 'ui/assets/dashboard/receive.svg';
 import IconGasTopUp from 'ui/assets/dashboard/gas-top-up.svg';
 import IconTransactions from 'ui/assets/dashboard/transactions.png';
@@ -204,17 +205,26 @@ export default ({
     hideForGnosis?: boolean;
     showAlert?: boolean;
     disabled?: boolean;
+    commingSoonBadge?: boolean;
     disableReason?: string;
   };
 
   const panelItems: Record<string, IPanelItem> = {
-    // swap: {
-    //   icon: IconSwap,
-    //   content: 'Swap',
-    //   disabled: true,
-    //   disableReason: 'Temporarily unavailable',
-    //   onClick: () => history.push('/swap?rbisource=dashboard'),
-    // },
+    swap: {
+      icon: IconSwap,
+      content: 'Swap',
+      commingSoonBadge: true,
+      onClick: () => {
+        message.info({
+          icon: <i />,
+          className: 'coming-soon-message',
+          content: (
+            <span className="text-white tip-text">{'Coming soon  :)'}</span>
+          ),
+        });
+        // history.push('/swap?rbisource=dashboard')
+      },
+    },
     send: {
       icon: IconSendToken,
       content: 'Send',
@@ -283,7 +293,7 @@ export default ({
 
   if (isGnosis) {
     pickedPanelKeys = [
-      // 'swap',
+      'swap',
       'send',
       'receive',
       'gasTopUp',
@@ -296,7 +306,7 @@ export default ({
     ];
   } else {
     pickedPanelKeys = [
-      // 'swap',
+      'swap',
       'send',
       'receive',
       'gasTopUp',
@@ -324,8 +334,9 @@ export default ({
           {pickedPanelKeys.map((panelKey, index) => {
             const item = panelItems[panelKey] as IPanelItem;
             if (item.hideForGnosis && isGnosis) return <></>;
-            return (item as Record<string, any>).disabled ? (
+            return item.disabled ? (
               <Tooltip
+                {...(item.commingSoonBadge && { visible: false })}
                 title={item.disableReason || 'Coming soon'}
                 overlayClassName="rectangle direction-tooltip"
                 autoAdjustOverflow={false}
@@ -368,6 +379,9 @@ export default ({
                   <img src={item.icon} className="images" />
                 )}
                 <div>{item.content} </div>
+                {item.commingSoonBadge && (
+                  <div className="coming-soon-badge">Soon</div>
+                )}
               </div>
             );
           })}
