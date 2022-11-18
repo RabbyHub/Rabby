@@ -332,14 +332,18 @@ class TxHistory {
         const list = pendingListByChain[Number(chainId)].reverse();
 
         for (const tx of list) {
-          await this.reloadTx(
-            {
-              address,
-              chainId: tx.chainId,
-              nonce: tx.nonce,
-            },
-            false // don't retry
-          );
+          try {
+            await this.reloadTx(
+              {
+                address,
+                chainId: tx.chainId,
+                nonce: tx.nonce,
+              },
+              false // don't retry
+            );
+          } catch (e) {
+            console.error(e);
+          }
         }
       })
     );
