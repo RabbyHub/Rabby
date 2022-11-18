@@ -146,8 +146,8 @@ const AddressManagement = () => {
           extra={
             <div
               className={clsx(
-                'icon-star opacity-100 border-none px-0',
-                favorited && 'is-active'
+                'icon-star  border-none px-0',
+                favorited ? 'is-active' : 'opacity-0 group-hover:opacity-100'
               )}
               onClick={(e) => {
                 e.stopPropagation();
