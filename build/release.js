@@ -18,15 +18,15 @@ function updateManifestVersion(version, p) {
   fs.writeJSONSync(manifestPath, manifest, { spaces: 2 });
 }
 
-async function release(version) {
-  updateManifestVersion(version, 'mv3');
-  updateManifestVersion(version, 'mv2');
-  shell.exec(`npm version ${version} --force`);
-  shell.exec('git add -A');
-  shell.exec(`git commit -m "[release] ${version}"`);
-  shell.exec(`git push origin refs/tags/v${version}`);
-  shell.exec('git push origin master');
-  return version;
+async function release([version, isDebug, isRelease]) {
+  if (isRelease) {
+    shell.exec(`npm version ${version} --force`);
+    shell.exec('git add -A');
+    shell.exec(`git commit -m "[release] ${version}"`);
+    shell.exec(`git push origin refs/tags/v${version}`);
+    shell.exec('git push origin master');
+  }
+  return [version, isDebug, isRelease];
 }
 
 async function bundle() {
@@ -40,17 +40,32 @@ async function bundle() {
     message: '[Rabby] Do you want to release to MV3? (y/N)',
   }).run();
 
+  const isDebug = await new BooleanPrompt({
+    message: '[Rabby] Do you want to build a debug version? (y/N)',
+  }).run();
+
+  const isRelease = await new BooleanPrompt({
+    message: '[Rabby] Do you want to release? (y/N)',
+  }).run();
+
+  const buildStr = isDebug ? 'build:debug' : 'build:pro';
+
+  updateManifestVersion(version, 'mv3');
+  updateManifestVersion(version, 'mv2');
+
   if (isMV3) {
-    shell.exec(`VERSION=${version} yarn build:pro:mv3`);
+    shell.exec(`VERSION=${version} yarn ${buildStr}:mv3`);
   } else {
-    shell.exec(`VERSION=${version} yarn build:pro`);
+    shell.exec(`VERSION=${version} yarn ${buildStr}`);
   }
-  return version;
+  return [version, isDebug, isRelease];
 }
 
-async function packed(version) {
+async function packed([version, isDebug]) {
   const distPath = path.resolve(PROJECT_ROOT, 'dist');
-  return zipdir(distPath, { saveTo: `Rabby_v${version}.zip` });
+  return zipdir(distPath, {
+    saveTo: `Rabby_v${version}${isDebug ? '_debug' : ''}.zip`,
+  });
 }
 
 bundle().then(release).then(packed);

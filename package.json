@@ -12,6 +12,7 @@
     "build:sourcemap": "npm run clean && npm run make-vars && webpack --progress --env config=sourcemap",
     "build:dev:mv3": "ENABLE_MV3=true npm run build:dev",
     "build:pro:mv3": "ENABLE_MV3=true npm run build:pro",
+    "build:debug:mv3": "ENABLE_MV3=true npm run build:debug",
     "lint:fix": "eslint --fix --ext .js,.jsx,.ts,.tsx ./src",
     "test": "jest",
     "pub": "node build/release.js"
