@@ -235,6 +235,7 @@ const AddressDeleteCheckModal = ({
           };
           return (
             <Field
+              className="field-outlined"
               key={`item-${q.index}`}
               leftIcon={
                 <Checkbox
