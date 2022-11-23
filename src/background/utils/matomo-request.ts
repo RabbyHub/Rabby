@@ -19,15 +19,16 @@ const getParams = async () => {
   }
 
   const gaParams = new URLSearchParams();
+  gaParams.append('action_name', location.hash.substring(2) ?? 'background');
   gaParams.append('idsite', '2');
   gaParams.append('rec', '1');
   gaParams.append('url', encodeURI(location.href));
   gaParams.append('_id', cid);
   gaParams.append('rand', nanoid());
   gaParams.append('ca', '1');
-  gaParams.append('h', new Date().getHours().toString());
-  gaParams.append('m', new Date().getMinutes().toString());
-  gaParams.append('s', new Date().getSeconds().toString());
+  gaParams.append('h', new Date().getUTCHours().toString());
+  gaParams.append('m', new Date().getUTCMinutes().toString());
+  gaParams.append('s', new Date().getUTCSeconds().toString());
   gaParams.append('cookie', '0');
   gaParams.append('send_image', '0');
 
