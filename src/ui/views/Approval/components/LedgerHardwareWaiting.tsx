@@ -14,7 +14,7 @@ import {
   useApproval,
   openInTab,
   openInternalPageInTab,
-  useWalletOld,
+  useWallet,
 } from 'ui/utils';
 import eventBus from '@/eventBus';
 import stats from '@/stats';
@@ -32,7 +32,7 @@ interface ApprovalParams {
 }
 
 const LedgerHardwareWaiting = ({ params }: { params: ApprovalParams }) => {
-  const wallet = useWalletOld();
+  const wallet = useWallet();
   const statusHeaders = {
     [WALLETCONNECT_STATUS_MAP.WAITING]: {
       color: '#8697FF',
@@ -77,7 +77,7 @@ const LedgerHardwareWaiting = ({ params }: { params: ApprovalParams }) => {
   const handleRetry = async () => {
     const account = await wallet.syncGetCurrentAccount()!;
     setConnectStatus(WALLETCONNECT_STATUS_MAP.WAITING);
-    await wallet.requestKeyring(account.type, 'resend');
+    await wallet.requestKeyring(account?.type || '', 'resend', null);
     message.success(t('Resent'));
   };
 
@@ -89,7 +89,7 @@ const LedgerHardwareWaiting = ({ params }: { params: ApprovalParams }) => {
   const init = async () => {
     const account = params.isGnosis
       ? params.account!
-      : await wallet.syncGetCurrentAccount()!;
+      : (await wallet.syncGetCurrentAccount())!;
     const approval = await getApproval();
 
     const isSignText = params.isGnosis

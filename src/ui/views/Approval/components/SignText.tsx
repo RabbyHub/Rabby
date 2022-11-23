@@ -17,7 +17,7 @@ import {
   hex2Text,
   openInternalPageInTab,
   useApproval,
-  useWalletOld,
+  useWallet,
 } from 'ui/utils';
 import AccountCard from './AccountCard';
 import LedgerWebHIDAlert from './LedgerWebHIDAlert';
@@ -52,7 +52,7 @@ export const WaitingSignComponent = {
 
 const SignText = ({ params }: { params: SignTextProps }) => {
   const [, resolveApproval, rejectApproval] = useApproval();
-  const wallet = useWalletOld();
+  const wallet = useWallet();
   const { t } = useTranslation();
   const { data, session, isGnosis = false } = params;
   const [hexData] = data;
@@ -100,7 +100,8 @@ const SignText = ({ params }: { params: SignTextProps }) => {
     );
 
     setExplain(serverExplain.comment);
-    setExplainStatus(serverExplain.status);
+    // TODO: check if the 'status' in serverExplain
+    setExplainStatus((serverExplain as any).status);
     setSecurityCheckStatus(check.decision);
     setSecurityCheckAlert(check.alert);
     setSecurityCheckDetail(check);

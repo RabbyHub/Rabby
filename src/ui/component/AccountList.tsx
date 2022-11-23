@@ -1,7 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { KEYRING_CLASS } from 'consts';
 import { DisplayedKeryring } from 'background/service/keyring';
-import { useWallet, useWalletOld } from 'ui/utils';
+import { useWallet } from 'ui/utils';
 
 const ADDRESS_TYPES = [
   {
@@ -22,11 +22,9 @@ const ADDRESS_TYPES = [
   },
 ];
 
-const AccountList = ({ renderTypeAction, renderAccountAction }) => {
-  const wallet = useWalletOld();
-  const [accounts, setAccounts] = useState<Record<string, DisplayedKeryring[]>>(
-    {}
-  );
+const AccountList = () => {
+  const wallet = useWallet();
+  const [accounts, setAccounts] = useState<DisplayedKeryring[]>([]);
 
   const initData = async () => {
     const accounts = await wallet.getAllClassAccounts();

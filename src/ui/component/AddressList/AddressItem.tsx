@@ -10,7 +10,7 @@ import { Tooltip, Input } from 'antd';
 import clsx from 'clsx';
 import { useTranslation, Trans } from 'react-i18next';
 import { Account } from 'background/service/preference';
-import { useWalletOld as useWallet } from 'ui/utils';
+import { useWallet } from 'ui/utils';
 import { AddressViewer, Copy } from 'ui/component';
 import {
   KEYRING_ICONS,
@@ -150,8 +150,8 @@ const AddressItem = memo(
         (async () => {
           if (!alianName) {
             const alias = await wallet.getAlianName(account.address);
-            setAlianName(alias);
-            setDisplayName(alias);
+            setAlianName(alias || '');
+            setDisplayName(alias || '');
           }
         })();
       }, []);

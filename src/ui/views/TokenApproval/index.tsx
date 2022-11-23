@@ -14,7 +14,7 @@ import TagChainSelector from 'ui/component/ChainSelector/tag';
 import {
   numberWithCommasIsLtOne,
   splitNumberByStep,
-  useWalletOld as useWallet,
+  useWallet,
 } from 'ui/utils';
 import { Loading } from './components/Loading';
 import PopupApprovalCard from './components/PopupApprovalCard';

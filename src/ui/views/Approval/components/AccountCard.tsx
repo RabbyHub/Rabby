@@ -1,6 +1,6 @@
 import React, { useState, useEffect } from 'react';
 import { Account } from 'background/service/preference';
-import { useWallet, useWalletOld } from 'ui/utils';
+import { useWallet } from 'ui/utils';
 import { splitNumberByStep } from 'ui/utils/number';
 import { KEYRINGS_LOGOS, WALLET_BRAND_CONTENT, KEYRING_CLASS } from 'consts';
 import { AddressViewer } from 'ui/component';
@@ -20,7 +20,7 @@ const AccountCard = ({
   alianName?: string | null;
   account?: Account;
 }) => {
-  const wallet = useWalletOld();
+  const wallet = useWallet();
   const [currentAccount, setCurrentAccount] = useState<Account | null>(
     account || null
   );
@@ -51,9 +51,9 @@ const AccountCard = ({
     const currentAccount = account || (await wallet.syncGetCurrentAccount());
     setCurrentAccount(currentAccount || null);
     const alianName = await wallet.getAlianName(
-      currentAccount?.address?.toLowerCase()
+      currentAccount?.address?.toLowerCase() || ''
     );
-    setCurrentAccountAlianName(alianName);
+    setCurrentAccountAlianName(alianName || '');
   };
 
   useEffect(() => {

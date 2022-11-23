@@ -3,7 +3,7 @@ import { message } from 'antd';
 import { useHistory, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { DEFAULT_BRIDGE } from '@rabby-wallet/eth-walletconnect-keyring';
-import { useWalletOld as useWallet, useWalletRequest } from 'ui/utils';
+import { useWallet, useWalletRequest } from 'ui/utils';
 import IconBack from 'ui/assets/icon-back.svg';
 import { ScanCopyQRCode } from 'ui/component';
 import eventBus from '@/eventBus';
@@ -67,7 +67,12 @@ const WalletConnectTemplate = () => {
         switch (status) {
           case WALLETCONNECT_STATUS_MAP.CONNECTED:
             setResult(payload);
-            run(payload, brand.brand, bridgeURL, stashId);
+            run(
+              payload,
+              brand.brand,
+              bridgeURL,
+              stashId === null ? undefined : stashId
+            );
             break;
           case WALLETCONNECT_STATUS_MAP.FAILD:
           case WALLETCONNECT_STATUS_MAP.REJECTED:

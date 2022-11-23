@@ -9,7 +9,7 @@ import { Space } from 'antd';
 import cloneDeep from 'lodash/cloneDeep';
 import BigNumber from 'bignumber.js';
 import { TokenItem } from 'background/service/openapi';
-import { useWalletOld } from 'ui/utils';
+import { useWallet } from 'ui/utils';
 import TokenWithChain from '../TokenWithChain';
 import TokenSelector, { isSwapTokenType } from '../TokenSelector';
 import styled from 'styled-components';
@@ -62,7 +62,7 @@ const TokenSelect = ({
   const [originTokenList, setOriginTokenList] = useState<TokenItem[]>([]);
   const [isListLoading, setIsListLoading] = useState(true);
   const [tokenSelectorVisible, setTokenSelectorVisible] = useState(false);
-  const wallet = useWalletOld();
+  const wallet = useWallet();
 
   const isSwapType = isSwapTokenType(type);
 
@@ -98,22 +98,21 @@ const TokenSelect = ({
     const getDefaultTokens = isSwapType
       ? wallet.openapi.getSwapTokenList
       : wallet.openapi.listToken;
-    const defaultTokens = await getDefaultTokens(
-      currentAccount?.address,
-      chainId
-    );
+
+    const currentAddress = currentAccount?.address || '';
+    const defaultTokens = await getDefaultTokens(currentAddress, chainId);
     let localAddedTokens: TokenItem[] = [];
 
     if (!isSwapType) {
       const localAdded =
-        (await wallet.getAddedToken(currentAccount?.address)).filter((item) => {
+        (await wallet.getAddedToken(currentAddress)).filter((item) => {
           const [chain] = item.split(':');
           return chain === chainId;
         }) || [];
       if (localAdded.length > 0) {
         localAddedTokens = await wallet.openapi.customListToken(
           localAdded,
-          currentAccount?.address
+          currentAddress
         );
       }
     }

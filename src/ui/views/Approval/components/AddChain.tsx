@@ -5,7 +5,7 @@ import { useTranslation, Trans } from 'react-i18next';
 import { intToHex } from 'ethereumjs-util';
 import { CHAINS_ENUM, CHAINS } from 'consts';
 import { Chain } from 'background/service/openapi';
-import { useWallet, useApproval, useWalletOld } from 'ui/utils';
+import { useWallet, useApproval } from 'ui/utils';
 import IconWarning from 'ui/assets/warning.svg';
 import BigNumber from 'bignumber.js';
 
@@ -21,7 +21,7 @@ interface AddChainProps {
 }
 
 const AddChain = ({ params }: { params: AddChainProps }) => {
-  const wallet = useWalletOld();
+  const wallet = useWallet();
   const [, resolveApproval, rejectApproval] = useApproval();
   const { t } = useTranslation();
 
@@ -42,7 +42,7 @@ const AddChain = ({ params }: { params: AddChainProps }) => {
 
   const init = async () => {
     const site = await wallet.getConnectedSite(session.origin)!;
-    setDefaultChain(site.chain);
+    setDefaultChain(site?.chain || null);
     setInited(true);
   };
 

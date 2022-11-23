@@ -7,7 +7,7 @@ import { useTranslation } from 'react-i18next';
 import IconDisconnect from 'ui/assets/icon-disconnect.svg';
 import IconDapps from 'ui/assets/dapps.svg';
 import { ChainSelector, FallbackSiteLogo } from 'ui/component';
-import { getCurrentTab, useWalletOld } from 'ui/utils';
+import { getCurrentTab, useWallet } from 'ui/utils';
 import './style.less';
 import { useLocation } from 'react-router-dom';
 import { getOriginFromUrl } from '@/utils';
@@ -17,9 +17,9 @@ interface CurrentConnectionProps {
 }
 export const CurrentConnection = memo((props: CurrentConnectionProps) => {
   const { onChainChange } = props;
-  const wallet = useWalletOld();
+  const wallet = useWallet();
   const { t } = useTranslation();
-  const [site, setSite] = useState<ConnectedSite>();
+  const [site, setSite] = useState<ConnectedSite | null>(null);
   const { state } = useLocation<{
     trigger?: string;
     showChainsModal?: boolean;

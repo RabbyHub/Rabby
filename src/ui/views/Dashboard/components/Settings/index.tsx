@@ -14,7 +14,7 @@ import IconSuccess from 'ui/assets/success.svg';
 import IconServer from 'ui/assets/server.svg';
 import { Field, PageHeader, Popup } from 'ui/component';
 import AuthenticationModalPromise from 'ui/component/AuthenticationModal';
-import { openInTab, useWallet, useWalletOld } from 'ui/utils';
+import { openInTab, useWallet } from 'ui/utils';
 import './style.less';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import IconContacts from 'ui/assets/swap/contact.svg';
@@ -188,7 +188,7 @@ const ResetAccountModal = ({
   onCancel(): void;
 }) => {
   const [isVisible, setIsVisible] = useState(false);
-  const wallet = useWalletOld();
+  const wallet = useWallet();
   const { t } = useTranslation();
 
   const handleCancel = () => {
@@ -199,7 +199,7 @@ const ResetAccountModal = ({
   };
 
   const handleResetAccount = async () => {
-    const currentAddress = (await wallet.getCurrentAccount()).address;
+    const currentAddress = (await wallet.getCurrentAccount())?.address || '';
     await wallet.clearAddressPendingTransactions(currentAddress);
     message.success({
       icon: <img src={IconSuccess} className="icon icon-success" />,

@@ -376,7 +376,9 @@ function MnemonicsInputs({
       </MatrixWrapper>
       {errMsgs?.[0] ? (
         <div
-          className={`ant-form-item-explain ant-form-item-explain-error mt-[12px] pt-[0] min-h-0 text-[14px]`}
+          className={
+            'ant-form-item-explain ant-form-item-explain-error mt-[12px] pt-[0] min-h-0 text-[14px]'
+          }
         >
           <div role="alert">{errMsgs[0]}</div>
         </div>
