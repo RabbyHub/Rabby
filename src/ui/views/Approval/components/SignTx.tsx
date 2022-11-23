@@ -935,7 +935,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       setForceProcess(true);
       setSecurityCheckStatus(decision);
       setSecurityCheckAlert(alert);
-      setSecurityCheckDetail({
+      setSecurityCheckDetail(({
         error: {
           msg: alert,
           code: 4000,
@@ -946,7 +946,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
         warning_list: [],
         forbidden_list: [],
         trace_id: '',
-      });
+      } as unknown) as SecurityCheckResponse);
     }
   };
 

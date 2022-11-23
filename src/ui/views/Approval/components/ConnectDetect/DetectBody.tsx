@@ -40,7 +40,10 @@ export const DetectBody: React.FC<DetectBodyProps> = ({
         'pt-20': isWarning,
       })}
     >
-      <div className="px-20 overflow-auto" ref={contentContainerRef}>
+      <div
+        className={clsx('px-20 overflow-auto', { 'flex-1': isForbidden })}
+        ref={contentContainerRef}
+      >
         <div className="text-gray-title text-15 leading-5 font-medium">
           {alert}
         </div>
