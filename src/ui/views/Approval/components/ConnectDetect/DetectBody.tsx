@@ -20,19 +20,31 @@ export const DetectBody: React.FC<DetectBodyProps> = ({
   const isForbidden = decision === 'forbidden';
   const isWarning = decision === 'warning';
   const [isAllChecked, setIsAllChecked] = React.useState(false);
+  const contentContainerRef = React.useRef<HTMLDivElement>(null);
+
+  const handleChecklist = (checked) => {
+    setIsAllChecked(checked);
+    // scroll to bottom
+    setTimeout(() => {
+      contentContainerRef.current?.scrollTo({
+        top: contentContainerRef.current.scrollHeight,
+        behavior: 'smooth',
+      });
+    }, 0);
+  };
 
   return (
     <div
-      className={clsx('flex flex-col h-full', {
+      className={clsx('flex flex-col h-full overflow-hidden', {
         'pt-32': isForbidden,
         'pt-20': isWarning,
       })}
     >
-      <div className="flex-1 px-20">
+      <div className="px-20 overflow-auto" ref={contentContainerRef}>
         <div className="text-gray-title text-15 leading-5 font-medium">
           {alert}
         </div>
-        {isWarning && <WarningChecklist onChange={setIsAllChecked} />}
+        {isWarning && <WarningChecklist onChange={handleChecklist} />}
       </div>
 
       {isForbidden && <FooterButtonContainer onCancel={onCancel} />}
