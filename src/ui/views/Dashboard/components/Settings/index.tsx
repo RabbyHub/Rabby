@@ -1,4 +1,13 @@
-import { Button, DrawerProps, Form, Input, message, Modal, Switch } from 'antd';
+import {
+  Button,
+  DrawerProps,
+  Form,
+  Input,
+  message,
+  Modal,
+  Switch,
+  Tooltip,
+} from 'antd';
 import clsx from 'clsx';
 import { CHAINS, INITIAL_OPENAPI_URL } from 'consts';
 import React, { useEffect, useState } from 'react';
@@ -19,6 +28,8 @@ import './style.less';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import IconContacts from 'ui/assets/swap/contact.svg';
 import IconDiscord from 'ui/assets/discord.svg';
+import IconFindUs from 'ui/assets/find-us.svg';
+import IconTwitter from 'ui/assets/twitter.svg';
 import IconWhitelist from 'ui/assets/dashboard/whitelist.svg';
 import { Contacts } from '..';
 import stats from '@/stats';
@@ -403,12 +414,32 @@ const Settings = ({ visible, onClose }: SettingsProps) => {
       rightIcon: <img src={IconArrowRight} className="icon icon-arrow-right" />,
     },
     {
-      leftIcon: IconDiscord,
-      content: t('Contact us on Discord'),
-      onClick: () => {
-        reportSettings('discord');
-        window.open('https://discord.com/invite/seFBCWmUre');
-      },
+      leftIcon: IconFindUs,
+      content: t('Find us'),
+      rightIcon: (
+        <div className="flex space-x-18">
+          <Tooltip title="Twitter">
+            <a
+              href="https://twitter.com/rabby_io"
+              target="_blank"
+              rel="noreferrer"
+              onClick={() => reportSettings('twitter')}
+            >
+              <img src={IconTwitter} className="w-20" />
+            </a>
+          </Tooltip>
+          <Tooltip title="Discord">
+            <a
+              href="https://discord.com/invite/seFBCWmUre"
+              target="_blank"
+              rel="noreferrer"
+              onClick={() => reportSettings('discord')}
+            >
+              <img src={IconDiscord} className="w-20" />
+            </a>
+          </Tooltip>
+        </div>
+      ),
     },
   ];
 
