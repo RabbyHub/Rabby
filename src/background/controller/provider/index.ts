@@ -1,3 +1,5 @@
+import { ProviderRequest } from './type';
+
 import { ethErrors } from 'eth-rpc-errors';
 import { tab } from 'background/webapi';
 import { sessionService, keyringService } from 'background/service';
@@ -9,7 +11,7 @@ tab.on('tabRemove', (id) => {
   sessionService.deleteSession(id);
 });
 
-export default async (req) => {
+export default async <T = void>(req: ProviderRequest): Promise<T> => {
   const {
     data: { method },
   } = req;
@@ -25,5 +27,5 @@ export default async (req) => {
     });
   }
 
-  return rpcFlow(req);
+  return rpcFlow(req) as any;
 };

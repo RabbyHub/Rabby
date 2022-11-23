@@ -9,6 +9,7 @@ import { CHAINS, EVENTS } from 'consts';
 import providerController from './controller';
 import eventBus from '@/eventBus';
 import { resemblesETHAddress } from '@/utils';
+import { ProviderRequest } from './type';
 
 const isSignApproval = (type: string) => {
   const SIGN_APPROVALS = ['SignText', 'SignTypedData', 'SignTx'];
@@ -18,7 +19,13 @@ const isSignApproval = (type: string) => {
 const lockedOrigins = new Set<string>();
 const connectOrigins = new Set<string>();
 
-const flow = new PromiseFlow();
+const flow = new PromiseFlow<{
+  request: ProviderRequest & {
+    session: Exclude<ProviderRequest, void>;
+  };
+  mapMethod: string;
+  approvalRes: any;
+}>();
 const flowContext = flow
   .use(async (ctx, next) => {
     // check method
@@ -255,7 +262,7 @@ const flowContext = flow
   })
   .callback();
 
-export default (request) => {
+export default (request: ProviderRequest) => {
   const ctx: any = { request: { ...request, requestedApproval: false } };
   return flowContext(ctx).finally(() => {
     if (ctx.request.requestedApproval) {

@@ -68,6 +68,7 @@ import BigNumber from 'bignumber.js';
 import * as Sentry from '@sentry/browser';
 import { addHexPrefix, unpadHexString } from 'ethereumjs-util';
 import PQueue from 'p-queue';
+import { ProviderRequest } from './provider/type';
 
 const stashKeyrings: Record<string | number, any> = {};
 
@@ -128,8 +129,8 @@ export class WalletController extends BaseController {
     );
   };
 
-  sendRequest = (data) => {
-    return provider({
+  sendRequest = <T = any>(data: ProviderRequest['data']) => {
+    return provider<T>({
       data,
       session: {
         name: 'Rabby',
@@ -262,7 +263,7 @@ export class WalletController extends BaseController {
       );
     }
 
-    return await this.sendRequest({
+    return await this.sendRequest<string>({
       method: 'eth_sendTransaction',
       params: [params],
       $ctx,
