@@ -1,10 +1,9 @@
 import React, { useEffect, useMemo } from 'react';
 import { useTranslation } from 'react-i18next';
-import { Link, useHistory, useLocation } from 'react-router-dom';
+import { useHistory, useLocation } from 'react-router-dom';
 import { VariableSizeList as VList } from 'react-window';
 import { PageHeader } from 'ui/component';
 import AddressItem from './AddressItem';
-import IconPlusAddress from 'ui/assets/addchain.png';
 import IconPinned from 'ui/assets/icon-pinned.svg';
 import IconPinnedFill from 'ui/assets/icon-pinned-fill.svg';
 

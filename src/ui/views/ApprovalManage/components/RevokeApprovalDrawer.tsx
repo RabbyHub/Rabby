@@ -183,7 +183,7 @@ export const RevokeApprovalDrawer = (props: {
                 src={
                   selectedList.includes(index) ? IconChecked : IconNotChecked
                 }
-                className="icon icon-checked"
+                className="icon icon-checked w-[24px] h-[24px]"
               />
             </div>
           </div>
