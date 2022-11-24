@@ -219,6 +219,9 @@ const provider = new EthereumProvider();
 if (isManifestV3()) {
   getCurrentTab().then((tab) => {
     if (!tab?.id) return;
+    // skip urls like "chrome://" to avoid extension error
+    if (!tab.url || tab.url?.startsWith('chrome://')) return;
+
     browser.scripting.executeScript({
       target: { tabId: tab.id },
       func: () => {
