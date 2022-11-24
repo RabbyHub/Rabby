@@ -230,12 +230,6 @@ const ApprovalManage = () => {
 
   const [contractMap, tokenMap, nftMap] = allData || [];
 
-  console.log({
-    contractMap,
-    tokenMap,
-    nftMap,
-  });
-
   if (error) {
     console.log('error', error);
   }
