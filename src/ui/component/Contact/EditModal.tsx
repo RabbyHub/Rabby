@@ -1,7 +1,7 @@
 import React, { useEffect, useState, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { Drawer, Input, Button, Form } from 'antd';
-import { useWalletOld } from 'ui/utils';
+import { useWallet } from 'ui/utils';
 import { UIContactBookItem } from 'background/service/contactBook';
 import './style.less';
 
@@ -15,8 +15,8 @@ interface EditModalProps {
 
 const EditModal = ({ address, visible, onOk, onCancel }: EditModalProps) => {
   const { t } = useTranslation();
-  const wallet = useWalletOld();
-  const [name, setName] = useState('');
+  const wallet = useWallet();
+  const [name, setName] = useState<string | undefined>('');
   const inputRef = useRef<Input>(null);
 
   const handleConfirm = () => {

@@ -6,7 +6,7 @@ import { Skeleton, Button, Tooltip, Space, message, InputNumber } from 'antd';
 import styled from 'styled-components';
 import { CHAINS, CHAINS_ENUM } from 'consts';
 import { Account } from 'background/service/preference';
-import { openInTab, useWalletOld } from 'ui/utils';
+import { openInTab, useWallet } from 'ui/utils';
 import { obj2query, query2obj } from 'ui/utils/url';
 import { formatTokenAmount } from 'ui/utils/number';
 import TokenAmountInput from 'ui/component/TokenAmountInput';
@@ -250,7 +250,7 @@ const Swap = () => {
 
   const [openAdvancedSetting, setOpenAdvancedSetting] = useState(false);
 
-  const wallet = useWalletOld();
+  const wallet = useWallet();
   const [currentAccount, setCurrentAccount] = useState<Account | null>(null);
 
   const [isLoading, setIsLoading] = useState(false);
@@ -273,7 +273,7 @@ const Swap = () => {
   };
 
   const getQuotes = async () => {
-    const account = await wallet.syncGetCurrentAccount();
+    const account = (await wallet.syncGetCurrentAccount())!;
 
     await wallet.setLastSelectedSwapPayToken(account.address, payToken);
 

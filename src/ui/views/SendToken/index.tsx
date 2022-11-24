@@ -22,7 +22,7 @@ import {
 } from 'consts';
 import { useRabbyDispatch, useRabbySelector, connectStore } from 'ui/store';
 import { Account, ChainGas } from 'background/service/preference';
-import { isSameAddress, useWalletOld } from 'ui/utils';
+import { isSameAddress, useWallet } from 'ui/utils';
 import { query2obj } from 'ui/utils/url';
 import { getTokenSymbol, geTokenDecimals } from 'ui/utils/token';
 import { formatTokenAmount, splitNumberByStep } from 'ui/utils/number';
@@ -64,7 +64,7 @@ const MaxButton = styled.img`
 `;
 
 const SendToken = () => {
-  const wallet = useWalletOld();
+  const wallet = useWallet();
   const [currentAccount, setCurrentAccount] = useState<Account | null>(null);
   const [chain, setChain] = useState(CHAINS_ENUM.ETH);
   const { t } = useTranslation();
@@ -460,7 +460,7 @@ const SendToken = () => {
     if (showGasReserved) {
       setShowGasReserved(false);
     }
-    const account = await wallet.syncGetCurrentAccount();
+    const account = (await wallet.syncGetCurrentAccount())!;
     const values = form.getFieldsValue();
     if (token.id !== currentToken.id || token.chain !== currentToken.chain) {
       form.setFieldsValue({
@@ -518,7 +518,7 @@ const SendToken = () => {
   };
 
   const handleChainChanged = async (val: CHAINS_ENUM) => {
-    const account = await wallet.syncGetCurrentAccount();
+    const account = (await wallet.syncGetCurrentAccount())!;
     const chain = CHAINS[val];
     setChain(val);
     setCurrentToken({
@@ -593,7 +593,7 @@ const SendToken = () => {
   };
 
   const initByCache = async () => {
-    const account = await wallet.syncGetCurrentAccount();
+    const account = (await wallet.syncGetCurrentAccount())!;
     const qs = query2obj(history.location.search);
     if (qs.token) {
       const [tokenChain, id] = qs.token.split(':');
@@ -662,8 +662,8 @@ const SendToken = () => {
   }, [inited]);
 
   const getAlianName = async () => {
-    const alianName = await wallet.getAlianName(currentAccount?.address);
-    setSendAlianName(alianName);
+    const alianName = await wallet.getAlianName(currentAccount?.address || '');
+    setSendAlianName(alianName || '');
   };
 
   const validateCurrentToken = async () => {

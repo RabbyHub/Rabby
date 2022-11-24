@@ -10,11 +10,7 @@ import {
 } from 'ui/component';
 import type { ISelectAccountItem } from 'ui/component/MultiSelectAddressList';
 import stats from '@/stats';
-import {
-  getUiType,
-  useWalletOld as useWallet,
-  useWalletRequest,
-} from 'ui/utils';
+import { getUiType, useWallet, useWalletRequest } from 'ui/utils';
 import { HARDWARE_KEYRING_TYPES, HDPaths } from 'consts';
 import { BIP44_PATH, LEDGER_LIVE_PATH } from '../ImportHardware/LedgerHdPath';
 import Pagination from './components/Pagination';
@@ -124,7 +120,7 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
         if (isLedger) {
           setHasError(true);
           try {
-            wallet.requestKeyring(keyring, 'cleanUp');
+            wallet.requestKeyring(keyring, 'cleanUp', null);
           } catch (e) {
             console.log(e);
           }
@@ -217,7 +213,7 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
         keyringId.current ?? null,
         selectedIndexes
       );
-      await wallet.addKeyring(keyringId.current);
+      await wallet.addKeyring(keyringId.current!);
     } else {
       await wallet.unlockHardwareAccount(
         keyring,

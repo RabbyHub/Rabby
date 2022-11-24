@@ -19,7 +19,7 @@ import { useRabbyDispatch, useRabbySelector, connectStore } from 'ui/store';
 import { Account } from 'background/service/preference';
 import { NFTItem } from '@/background/service/openapi';
 import { UIContactBookItem } from 'background/service/contactBook';
-import { useWalletOld, isSameAddress } from 'ui/utils';
+import { useWallet, isSameAddress } from 'ui/utils';
 import { getTokenName } from 'ui/utils/token';
 import AccountCard from '../Approval/components/AccountCard';
 import TagChainSelector from 'ui/component/ChainSelector/tag';
@@ -48,7 +48,7 @@ const TOKEN_VALIDATION_STATUS = {
 };
 
 const SendNFT = () => {
-  const wallet = useWalletOld();
+  const wallet = useWallet();
   const history = useHistory();
   const { state } = useLocation<{
     nftItem: NFTItem;
@@ -324,8 +324,8 @@ const SendNFT = () => {
   };
 
   const getAlianName = async () => {
-    const alianName = await wallet.getAlianName(currentAccount?.address);
-    setSendAlianName(alianName);
+    const alianName = await wallet.getAlianName(currentAccount?.address || '');
+    setSendAlianName(alianName || '');
   };
 
   const validateNFT = async () => {

@@ -41,7 +41,7 @@ import {
   useRabbyGetter,
   useRabbySelector,
 } from 'ui/store';
-import { isSameAddress, useWalletOld } from 'ui/utils';
+import { isSameAddress, useWallet } from 'ui/utils';
 import {
   AssetsList,
   BalanceView,
@@ -89,7 +89,7 @@ const GnosisAdminItem = ({
 
 const Dashboard = () => {
   const history = useHistory();
-  const wallet = useWalletOld();
+  const wallet = useWallet();
   const { t } = useTranslation();
   const dispatch = useRabbyDispatch();
   const fixedList = useRef<FixedSizeList>();
@@ -206,7 +206,7 @@ const Dashboard = () => {
         .getAlianName(currentAccount?.address.toLowerCase())
         .then((name) => {
           dispatch.account.setField({ alianName: name });
-          setDisplayName(name);
+          setDisplayName(name!);
         });
 
       eventBus.addEventListener(EVENTS.TX_COMPLETED, async ({ address }) => {
@@ -309,7 +309,7 @@ const Dashboard = () => {
     }
     setStartEdit(false);
     await wallet.updateAlianName(
-      currentAccount?.address?.toLowerCase(),
+      currentAccount?.address?.toLowerCase() || '',
       alianName
     );
     setDisplayName(alianName);
@@ -352,19 +352,19 @@ const Dashboard = () => {
     if (q) {
       if (q.length !== 42 || !q.startsWith('0x')) return [];
       tokens = sortTokensByPrice(
-        await wallet.openapi.searchToken(currentAccount?.address, q)
+        await wallet.openapi.searchToken(currentAccount?.address || '', q)
       );
       setSearchTokens(tokens);
     } else {
       setIsListLoading(true);
       const defaultTokens = await wallet.openapi.listToken(
-        currentAccount?.address
+        currentAccount?.address || ''
       );
       const localAdded =
-        (await wallet.getAddedToken(currentAccount?.address)) || [];
+        (await wallet.getAddedToken(currentAccount?.address || '')) || [];
       const localAddedTokens = await wallet.openapi.customListToken(
         localAdded,
-        currentAccount?.address
+        currentAccount?.address || ''
       );
       const addedToken = localAdded
         .map((item) => {
@@ -387,7 +387,7 @@ const Dashboard = () => {
   const handleLoadAssets = async () => {
     setIsAssetsLoading(true);
     const assets = sortAssetsByUSDValue(
-      await wallet.listChainAssets(currentAccount?.address)
+      await wallet.listChainAssets(currentAccount?.address || '')
     );
     setAssets(assets);
     setIsAssetsLoading(false);
@@ -526,10 +526,10 @@ const Dashboard = () => {
   const removeToken = async (token: TokenItem) => {
     const uuid = `${token?.chain}:${token?.id}`;
     const localAdded =
-      (await wallet.getAddedToken(currentAccount?.address)) || [];
+      (await wallet.getAddedToken(currentAccount?.address || '')) || [];
     const newAddTokenSymbolList = localAdded.filter((item) => item !== uuid);
     await wallet.updateAddedToken(
-      currentAccount?.address,
+      currentAccount?.address || '',
       newAddTokenSymbolList
     );
     const removeNewTokens = tokens.filter((item) => item.id !== token?.id);
@@ -541,9 +541,9 @@ const Dashboard = () => {
     const newAddTokenList = [...addedToken, newAddToken?.id];
     const uuid = `${newAddToken?.chain}:${newAddToken?.id}`;
     const localAdded =
-      (await wallet.getAddedToken(currentAccount?.address)) || [];
+      (await wallet.getAddedToken(currentAccount?.address || '')) || [];
     setAddedToken(newAddTokenList);
-    await wallet.updateAddedToken(currentAccount?.address, [
+    await wallet.updateAddedToken(currentAccount?.address || '', [
       ...localAdded,
       uuid,
     ]);

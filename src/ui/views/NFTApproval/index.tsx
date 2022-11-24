@@ -13,7 +13,7 @@ import { useHistory, useLocation } from 'react-router-dom';
 import IconInfo from 'ui/assets/infoicon.svg';
 import { PageHeader } from 'ui/component';
 import TagChainSelector from 'ui/component/ChainSelector/tag';
-import { useWallet, useWalletOld } from 'ui/utils';
+import { useWallet } from 'ui/utils';
 import NFTContractList from './components/NFTContractList';
 import NFTList from './components/NFTList';
 import PopupSearch from './components/PopupSearch';
@@ -22,7 +22,7 @@ import { getAmountText } from './utils';
 const { TabPane } = Tabs;
 
 const NFTApproval = () => {
-  const wallet = useWalletOld();
+  const wallet = useWallet();
   const [loading, setLoading] = useState(false);
   const [isShowSearch, setIsShowSearch] = useState(false);
   const [data, setData] = useState<NFTApprovalResponse | null>(null);

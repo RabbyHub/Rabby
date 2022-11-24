@@ -8,7 +8,7 @@ import React, { useEffect, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import IconArrowRight from 'ui/assets/approval/edit-arrow-right.svg';
 import { Popup } from 'ui/component';
-import { ellipsisOverflowedText, useWalletOld } from 'ui/utils';
+import { ellipsisOverflowedText, useWallet } from 'ui/utils';
 import { splitNumberByStep } from 'ui/utils/number';
 import { getCustomTxParamsData } from 'ui/utils/transaction';
 import ViewRawModal from './ViewRawModal';
@@ -128,7 +128,7 @@ const Approve = ({
   isSpeedUp,
   raw,
 }: ApproveProps) => {
-  const wallet = useWalletOld();
+  const wallet = useWallet();
   const detail = data.type_token_approval!;
   const chain = CHAINS[chainEnum];
   const [editApproveModalVisible, setEditApproveModalVisible] = useState(false);
@@ -168,7 +168,7 @@ const Approve = ({
 
   const fetchBalance = async () => {
     const userToken: TokenItem = await wallet.openapi.getToken(
-      currentAccount?.address,
+      currentAccount?.address || '',
       detail.token.chain,
       detail.token.id
     );

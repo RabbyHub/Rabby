@@ -12,7 +12,7 @@ import IconPlus from 'ui/assets/plus.svg';
 import IconSuccess from 'ui/assets/success.svg';
 import IconTrash from 'ui/assets/trash.svg';
 import { Modal, Popup, TokenWithChain } from 'ui/component';
-import { splitNumberByStep, useWallet, useWalletOld } from 'ui/utils';
+import { splitNumberByStep, useWallet } from 'ui/utils';
 import { getChain } from 'utils';
 import ChainIcon from '../NFT/ChainIcon';
 import { HistoryItem } from './HistoryItem';
@@ -41,13 +41,13 @@ const TokenDetail = ({
   removeToken,
   variant,
 }: TokenDetailProps) => {
-  const wallet = useWalletOld();
+  const wallet = useWallet();
   const { t } = useTranslation();
 
   const ref = useRef<HTMLDivElement | null>(null);
 
   const fetchData = async (startTime = 0) => {
-    const { address } = await wallet.syncGetCurrentAccount()!;
+    const { address } = (await wallet.syncGetCurrentAccount())!;
 
     const res: TxHistoryResult = await wallet.openapi.listTxHisotry({
       id: address,

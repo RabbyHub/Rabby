@@ -15,7 +15,7 @@ import {
   KEYRING_CATEGORY_MAP,
 } from 'consts';
 import { ScanCopyQRCode } from 'ui/component';
-import { useApproval, useWallet, openInTab, useWalletOld } from 'ui/utils';
+import { useApproval, useWallet, openInTab } from 'ui/utils';
 import eventBus from '@/eventBus';
 import { SvgIconOpenExternal } from 'ui/assets';
 import Mask from 'ui/assets/bg-watchtrade.png';
@@ -294,7 +294,7 @@ const Process = ({
 };
 
 const WatchAddressWaiting = ({ params }: { params: ApprovalParams }) => {
-  const wallet = useWalletOld();
+  const wallet = useWallet();
   const [connectStatus, setConnectStatus] = useState(
     WALLETCONNECT_STATUS_MAP.WAITING
   );
@@ -317,8 +317,8 @@ const WatchAddressWaiting = ({ params }: { params: ApprovalParams }) => {
 
   const initWalletConnect = async () => {
     const account = params.isGnosis
-      ? params.account
-      : await wallet.syncGetCurrentAccount()!;
+      ? params.account!
+      : (await wallet.syncGetCurrentAccount())!;
     const status = await wallet.getWalletConnectStatus(
       account.address,
       account.brandName
@@ -330,7 +330,7 @@ const WatchAddressWaiting = ({ params }: { params: ApprovalParams }) => {
     eventBus.addEventListener(EVENTS.WALLETCONNECT.INITED, ({ uri }) => {
       setQrcodeContent(uri);
     });
-    const signingTx = await wallet.getSigningTx(params.signingTxId);
+    const signingTx = await wallet.getSigningTx(params.signingTxId!);
 
     explainRef.current = signingTx?.explain;
     if (
@@ -349,7 +349,7 @@ const WatchAddressWaiting = ({ params }: { params: ApprovalParams }) => {
   };
 
   const handleRetry = async () => {
-    const account = await wallet.syncGetCurrentAccount()!;
+    const account = (await wallet.syncGetCurrentAccount())!;
     await wallet.killWalletConnectConnector(account.address, account.brandName);
     await initWalletConnect();
     setConnectStatus(WALLETCONNECT_STATUS_MAP.PENDING);
@@ -364,7 +364,7 @@ const WatchAddressWaiting = ({ params }: { params: ApprovalParams }) => {
     const approval = await getApproval();
     const account = params.isGnosis
       ? params.account!
-      : await wallet.syncGetCurrentAccount()!;
+      : (await wallet.syncGetCurrentAccount())!;
     const bridge = await wallet.getWalletConnectBridge(
       account.address,
       account.brandName
@@ -515,8 +515,8 @@ const WatchAddressWaiting = ({ params }: { params: ApprovalParams }) => {
 
   const handleBridgeChange = async (val: string) => {
     const account = params.isGnosis
-      ? params.account
-      : await wallet.syncGetCurrentAccount()!;
+      ? params.account!
+      : (await wallet.syncGetCurrentAccount())!;
     setBridge(val);
     eventBus.removeAllEventListeners(EVENTS.WALLETCONNECT.INITED);
     initWalletConnect();

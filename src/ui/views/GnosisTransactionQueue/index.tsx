@@ -14,7 +14,7 @@ import { ExplainTxResponse } from 'background/service/openapi';
 import { Account } from 'background/service/preference';
 
 import { intToHex } from 'ethereumjs-util';
-import { timeago, isSameAddress, useWalletOld } from 'ui/utils';
+import { timeago, isSameAddress, useWallet } from 'ui/utils';
 import {
   validateEOASign,
   validateETHSign,
@@ -90,7 +90,7 @@ const TransactionConfirmations = ({
   owners,
 }: TransactionConfirmationsProps) => {
   const { t } = useTranslation();
-  const wallet = useWalletOld();
+  const wallet = useWallet();
   const [visibleAccounts, setVisibleAccounts] = useState<Account[]>([]);
   const init = async () => {
     const accounts = await wallet.getAllVisibleAccountsArray();
@@ -258,7 +258,7 @@ const GnosisTransactionItem = ({
   safeInfo: SafeInfo;
   onSubmit(data: SafeTransactionItem): void;
 }) => {
-  const wallet = useWalletOld();
+  const wallet = useWallet();
   const { t } = useTranslation();
   const [explain, setExplain] = useState<ExplainTxResponse | null>(null);
   const [isLoading, setIsLoading] = useState(false);
@@ -306,7 +306,7 @@ const GnosisTransactionItem = ({
 
   const handleView = async () => {
     setIsLoading(true);
-    const account = await wallet.getCurrentAccount();
+    const account = (await wallet.getCurrentAccount())!;
     const params = {
       chainId: Number(networkId),
       from: toChecksumAddress(data.safe),
@@ -410,7 +410,7 @@ const GnosisTransactionItem = ({
 };
 
 const GnosisTransactionQueue = () => {
-  const wallet = useWalletOld();
+  const wallet = useWallet();
   const [networkId, setNetworkId] = useState('1');
   const [safeInfo, setSafeInfo] = useState<SafeInfo | null>(null);
   const { t } = useTranslation();
@@ -428,7 +428,7 @@ const GnosisTransactionQueue = () => {
 
   const init = async () => {
     try {
-      const account = await wallet.syncGetCurrentAccount();
+      const account = (await wallet.syncGetCurrentAccount())!;
       const network = await wallet.getGnosisNetworkId(account.address);
       const [info, txs] = await Promise.all([
         Safe.getSafeInfo(account.address, network),
@@ -513,7 +513,7 @@ const GnosisTransactionQueue = () => {
   };
 
   const handleConfirm = async (account: Account) => {
-    const currentAccount = await wallet.getCurrentAccount();
+    const currentAccount = (await wallet.getCurrentAccount())!;
     const data = submitTransaction;
     if (!data) return;
     try {

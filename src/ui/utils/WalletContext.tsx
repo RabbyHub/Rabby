@@ -42,17 +42,6 @@ const WalletProvider = ({
   <WalletContext.Provider value={{ wallet }}>{children}</WalletContext.Provider>
 );
 
-/**
- * @deprecated The method should not be used
- */
-const useWalletOld = () => {
-  const { wallet } = useContext(WalletContext) as {
-    wallet: WalletController;
-  };
-
-  return wallet;
-};
-
 const useWallet = () => {
   const { wallet } = (useContext(WalletContext) as unknown) as {
     wallet: WalletControllerType;
@@ -61,4 +50,4 @@ const useWallet = () => {
   return wallet;
 };
 
-export { WalletProvider, useWalletOld, useWallet };
+export { WalletProvider, useWallet };
