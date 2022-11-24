@@ -2,7 +2,7 @@ import clsx from 'clsx';
 import React from 'react';
 import { FooterButtonContainer } from './FooterButtonContainer';
 import { TYPE_VISIBLE_DECISIONS } from './ConnectDetect';
-import { WarningChecklist } from './WarningChecklist';
+import { QUESTION_IDS, WarningRadioGroup } from './WarningRadioGroup';
 
 interface DetectBodyProps {
   decision: TYPE_VISIBLE_DECISIONS;
@@ -19,11 +19,11 @@ export const DetectBody: React.FC<DetectBodyProps> = ({
 }) => {
   const isForbidden = decision === 'forbidden';
   const isWarning = decision === 'warning';
-  const [isAllChecked, setIsAllChecked] = React.useState(false);
   const contentContainerRef = React.useRef<HTMLDivElement>(null);
+  const [selected, setSelected] = React.useState<QUESTION_IDS>();
 
-  const handleChecklist = (checked) => {
-    setIsAllChecked(checked);
+  const handleChecklist = (s: QUESTION_IDS) => {
+    setSelected(s);
     // scroll to bottom
     setTimeout(() => {
       contentContainerRef.current?.scrollTo({
@@ -47,12 +47,14 @@ export const DetectBody: React.FC<DetectBodyProps> = ({
         <div className="text-gray-title text-15 leading-5 font-medium">
           {alert}
         </div>
-        {isWarning && <WarningChecklist onChange={handleChecklist} />}
+        {isWarning && <WarningRadioGroup onChange={handleChecklist} />}
       </div>
 
-      {isForbidden && <FooterButtonContainer onCancel={onCancel} />}
+      {(isForbidden || (isWarning && selected === 'cancel')) && (
+        <FooterButtonContainer onCancel={onCancel} />
+      )}
 
-      {isWarning && isAllChecked && (
+      {isWarning && selected === 'continue' && (
         <FooterButtonContainer onCancel={onContinue} text="Continue" />
       )}
     </div>

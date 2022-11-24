@@ -62,6 +62,25 @@ const Connect = ({ params: { icon, origin } }: ConnectProps) => {
     rejectApproval('User rejected the request.');
   };
 
+  const addOriginFeedback = React.useCallback(async (isSafe: boolean) => {
+    const account = await wallet.getCurrentAccount();
+
+    wallet.openapi.addOriginFeedback({
+      origin,
+      is_safe: isSafe,
+      user_addr: account!.address,
+    });
+  }, []);
+
+  const handleDetectContinue = React.useCallback(() => {
+    addOriginFeedback(true);
+  }, []);
+
+  const handleDetectCancel = React.useCallback(() => {
+    handleCancel();
+    addOriginFeedback(false);
+  }, []);
+
   const handleAllow = async () => {
     resolveApproval({
       defaultChain,
@@ -74,7 +93,12 @@ const Connect = ({ params: { icon, origin } }: ConnectProps) => {
 
   return (
     <Spin spinning={isLoading}>
-      <ConnectDetect origin={origin} icon={icon} onCancel={handleCancel} />
+      <ConnectDetect
+        origin={origin}
+        icon={icon}
+        onCancel={handleDetectCancel}
+        onContinue={handleDetectContinue}
+      />
       <div className="approval-connect">
         <div className="font-medium text-20 text-center">
           {t('Website Wants to Connect')}
