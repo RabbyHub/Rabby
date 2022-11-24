@@ -7,32 +7,76 @@ import {
 import { NameAndAddress } from '@/ui/component';
 import { IconWithChain } from '@/ui/component/TokenWithChain';
 import clsx from 'clsx';
-import React, { MouseEventHandler } from 'react';
+import React, { MouseEventHandler, useMemo } from 'react';
 import { useEffect, useRef } from 'react';
-import { useTranslation } from 'react-i18next';
 import IconUnknown from 'ui/assets/icon-unknown-1.svg';
-import { ReactComponent as IconArrowRight } from 'ui/assets/arrow-right-gray.svg';
+import { ReactComponent as IconArrowRight } from 'ui/assets/approval-management/right.svg';
 import { Alert } from 'antd';
 import { InfoCircleOutlined } from '@ant-design/icons';
+import { openInTab, splitNumberByStep } from '@/ui/utils';
+import { CHAINS } from '@debank/common';
+import { ReactComponent as IconExternalLink } from 'ui/assets/open-external-gray.svg';
 
-export type ApprovalItem = Spender & {
+export type ApprovalItem =
+  | ContractApprovalItem
+  | TokenApprovalItem
+  | NftApprovalItem;
+
+export type ContractApprovalItem = {
+  name: string;
+  logo_url: string;
+  risk_level: string;
+  risk_alert?: string;
+  id: string;
+  type: 'contract';
+
   list: (NFTApprovalContract | NFTApproval | TokenApproval)[];
   chain: string;
 };
+export type TokenApprovalItem = {
+  name: string;
+  logo_url: string;
+  risk_level: string;
+  risk_alert?: string;
+  id: string;
+  type: 'token';
+  balance: number;
+
+  list: Spender[];
+  chain: string;
+};
+export type NftApprovalItem = {
+  nftContract?: NFTApprovalContract;
+  nftToken?: NFTApproval;
+} & {
+  name: string;
+  logo_url: string;
+  risk_level: string;
+  risk_alert?: string;
+  id: string;
+  type: 'nft';
+  amount: string;
+
+  list: Spender[];
+  chain: string;
+};
+type Props = {
+  data: ApprovalItem[];
+  index: number;
+  setSize?: (i: number, h: number) => void;
+  onClick?: (item: ApprovalItem) => void;
+  showNFTAmount?: boolean;
+};
+
 export const ApprovalContractItem = ({
   data,
   index,
   setSize,
   onClick: onSelect,
-}: {
-  data: ApprovalItem[];
-  index: number;
-  setSize?: (i: number, h: number) => void;
-  onClick?: (item: ApprovalItem) => void;
-}) => {
+  showNFTAmount = false,
+}: Props) => {
   const rowRef = useRef<HTMLDivElement>(null);
 
-  const { t } = useTranslation();
   const item = data[index];
 
   const handleClick: MouseEventHandler<HTMLDivElement> = (e) => {
@@ -40,6 +84,79 @@ export const ApprovalContractItem = ({
       onSelect?.(item);
     }
   };
+
+  const title = useMemo(() => {
+    if (item.type === 'token') {
+      return splitNumberByStep(item.balance.toFixed(2));
+    }
+    return item?.name;
+  }, [item.type]);
+
+  const desc = useMemo(() => {
+    if (item.type === 'contract') {
+      return <NameAndAddress address={item.id} />;
+    }
+    if (item.type === 'token') {
+      return item.name;
+    }
+    if (item.nftContract) {
+      const chain = item.chain;
+      const scanLink = Object.values(CHAINS)
+        .find((e) => e.serverId === chain)
+        ?.scanLink?.replace('/tx/_s_', '');
+      return (
+        <div className="flex items-center text-gray-subTitle">
+          <span
+            className="flex items-center cursor-pointer"
+            onClick={(e) => {
+              e.stopPropagation();
+              !!scanLink &&
+                openInTab(
+                  `${scanLink}/address/${item.nftContract?.contract_id}`
+                );
+            }}
+          >
+            <span>Collection</span>
+            <IconExternalLink
+              width={14}
+              height={14}
+              viewBox="0 0 14 14"
+              className="ml-[4px] text-gray-subTitle"
+            />
+          </span>
+
+          <span
+            className={clsx(
+              'ml-[6px] text-12 text-white bg-blue-light  rounded-[2px]',
+              !showNFTAmount && 'hidden'
+            )}
+            style={{
+              padding: '1px 4px',
+            }}
+          >
+            You currently have{' '}
+            {item?.nftContract?.amount || item?.nftToken?.amount}
+          </span>
+        </div>
+      );
+    }
+    return (
+      <div className="flex items-center">
+        <span>NFT</span>{' '}
+        <span
+          className={clsx(
+            'ml-[6px] text-12 text-white bg-blue-light  rounded-[2px]',
+            !showNFTAmount && 'hidden'
+          )}
+          style={{
+            padding: '1px 4px',
+          }}
+        >
+          You currently have {item?.nftToken?.amount}
+        </span>
+      </div>
+    );
+  }, [item.type]);
 
   useEffect(() => {
     if (
@@ -49,7 +166,7 @@ export const ApprovalContractItem = ({
     ) {
       setSize(index, rowRef.current.getBoundingClientRect().height);
     }
-  }, [item.risk_level, setSize, index]);
+  }, [item, setSize, index]);
 
   return (
     <div
@@ -59,12 +176,12 @@ export const ApprovalContractItem = ({
         onSelect &&
           'hover:border-blue-light hover:bg-blue-light hover:bg-opacity-[0.1] cursor-pointer'
       )}
-      key={item.id + item.list[0].chain}
+      key={item.id + item.chain}
       onClick={handleClick}
     >
       <div
         className={clsx(
-          'token-approval-item px-[16px] py-[14px] hover:bg-transparent hover:border-transparent',
+          'token-approval-item px-[16px] pt-[11px] pb-[10px] hover:bg-transparent hover:border-transparent',
           !onSelect && 'cursor-auto'
         )}
       >
@@ -72,27 +189,21 @@ export const ApprovalContractItem = ({
           width="32px"
           height="32px"
           hideConer
-          iconUrl={item?.protocol?.logo_url || IconUnknown}
-          chainServerId={item?.protocol?.chain || item.list[0].chain}
+          iconUrl={item?.logo_url || IconUnknown}
+          chainServerId={item.chain}
         />
 
         <div className="ml-2">
-          <div className="token-approval-item-title ">
-            {item.protocol?.name || t('Unknown Contract')}
-          </div>
-          <div className="token-approval-item-desc">
-            <NameAndAddress address={item.id} />
-          </div>
+          <div className="token-approval-item-title ">{title}</div>
+          <div className="token-approval-item-desc">{desc}</div>
         </div>
 
-        {onSelect && (
-          <IconArrowRight
-            width={20}
-            height={20}
-            viewBox="0 0 12 12"
-            className="token-approval-item-arrow ml-auto"
-          />
-        )}
+        <span className="text-[13px] text-gray-subTitle ml-auto ">
+          {item.list.length}{' '}
+          {!onSelect && 'Approval' + (item.list.length > 1 ? 's' : '')}
+          {}
+        </span>
+        {onSelect && <IconArrowRight className="ml-[8px]" />}
       </div>
       {item.risk_level !== 'safe' && (
         <div className="pb-[12px]">

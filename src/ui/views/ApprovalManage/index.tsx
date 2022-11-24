@@ -1,15 +1,10 @@
-import {
-  NFTApproval,
-  NFTApprovalContract,
-  Spender,
-  TokenApproval,
-} from '@/background/service/openapi';
 import { useRabbySelector } from '@/ui/store';
-import { Input } from 'antd';
+import { Dropdown, Input, Menu } from 'antd';
 import { CHAINS_ENUM } from 'consts';
 import React, {
   CSSProperties,
   useCallback,
+  useEffect,
   useMemo,
   useRef,
   useState,
@@ -24,14 +19,25 @@ import { Loading } from './components/Loading';
 import './style.less';
 import PQueue from 'p-queue';
 import { VariableSizeList } from 'react-window';
-import { ApprovalContractItem } from './components/ApprovalContractItem';
+import {
+  ApprovalContractItem,
+  ApprovalItem,
+  ContractApprovalItem,
+  NftApprovalItem,
+  TokenApprovalItem,
+} from './components/ApprovalContractItem';
 import { RevokeApprovalDrawer } from './components/RevokeApprovalDrawer';
 import { groupBy, sortBy, flatten } from 'lodash';
+import { ReactComponent as IconDownArrow } from 'ui/assets/approval-management/down.svg';
+import IconUnknownNFT from 'ui/assets/unknown-nft.svg';
+import IconUnknownToken from 'ui/assets/token-default.svg';
 
-type ApprovalItem = Spender & {
-  list: (NFTApprovalContract | NFTApproval | TokenApproval)[];
-  chain: string;
+const FILTER_TYPES = {
+  contract: 'By Contracts',
+  token: 'By Tokens',
+  nft: 'By NFTs',
 };
+
 const ApprovalManage = () => {
   const wallet = useWallet();
   const { t } = useTranslation();
@@ -43,6 +49,10 @@ const ApprovalManage = () => {
       state.preference.tokenApprovalChain[
         account?.address?.toLowerCase() || ''
       ] || CHAINS_ENUM.ETH
+  );
+
+  const [filterType, setFilterType] = useState<keyof typeof FILTER_TYPES>(
+    'contract'
   );
 
   const [value, setValue] = useState('');
@@ -69,11 +79,13 @@ const ApprovalManage = () => {
 
   const queueRef = useRef(new PQueue({ concurrency: 40 }));
 
-  const { value: contractMap, loading, error } = useAsync(async () => {
+  const { value: allData, loading, error } = useAsync(async () => {
     const userAddress = account!.address;
     const usedChainList = await wallet.openapi.usedChainList(userAddress);
 
-    const contractMap: Record<string, ApprovalItem> = {};
+    const contractMap: Record<string, ContractApprovalItem> = {};
+    const tokenMap: Record<string, TokenApprovalItem> = {};
+    const nftMap: Record<string, NftApprovalItem> = {};
     await queueRef.current.clear();
     const nftAuthorizedQueryList = usedChainList.map((e) => async () => {
       try {
@@ -86,25 +98,74 @@ const ApprovalManage = () => {
             const chainName = contract.chain;
             const contractId = contract.spender.id;
             if (!contractMap[`${chainName}:${contractId}`]) {
+              const spender = contract.spender;
               contractMap[`${chainName}:${contractId}`] = {
-                ...contract.spender,
                 list: [],
                 chain: e.id,
+                type: 'contract',
+                risk_level: spender.risk_level,
+                risk_alert: spender.risk_alert,
+                id: spender.id,
+                name: spender?.protocol?.name || 'Unknown Contract',
+                logo_url: spender.protocol?.logo_url,
               };
             }
             contractMap[`${chainName}:${contractId}`].list.push(contract);
-          });
-          data.tokens.forEach((token) => {
-            const chainName = token.chain;
-            const contractId = token.spender.id;
-            if (!contractMap[`${token.chain}:${token.spender.id}`]) {
-              contractMap[`${token.chain}:${contractId}`] = {
-                ...token.spender,
+
+            if (!nftMap[`${chainName}:${contract.contract_id}`]) {
+              nftMap[`${chainName}:${contract.contract_id}`] = {
+                nftContract: contract,
                 list: [],
+                type: 'nft',
+                risk_level: 'safe',
+                id: contract.contract_id,
+                name: contract.contract_name,
+                logo_url:
+                  (contract as any)?.collection?.logo_url || IconUnknownNFT,
+                amount: contract.amount,
                 chain: e.id,
               };
             }
+            nftMap[`${chainName}:${contract.contract_id}`].list.push(
+              contract.spender
+            );
+          });
+
+          data.tokens.forEach((token) => {
+            const chainName = token.chain;
+            const contractId = token.spender.id;
+            const spender = token.spender;
+
+            if (!contractMap[`${token.chain}:${contractId}`]) {
+              contractMap[`${token.chain}:${contractId}`] = {
+                list: [],
+                chain: e.id,
+                risk_level: spender.risk_level,
+                risk_alert: spender.risk_alert,
+                id: spender.id,
+                name: spender?.protocol?.name || 'Unknown Contract',
+                logo_url: spender.protocol?.logo_url || IconUnknownNFT,
+                type: 'contract',
+              };
+            }
             contractMap[`${chainName}:${contractId}`].list.push(token);
+
+            if (!nftMap[`${chainName}:${token.contract_id}`]) {
+              nftMap[`${chainName}:${token.contract_id}`] = {
+                nftToken: token,
+                list: [],
+                chain: e.id,
+                risk_level: 'safe',
+                id: token.contract_id,
+                name: token.contract_name,
+                logo_url: token?.detail_url || token?.content,
+                type: 'nft',
+                amount: token.amount,
+              };
+            }
+            nftMap[`${chainName}:${token.contract_id}`].list.push(
+              token.spender
+            );
           });
         }
       } catch (error) {
@@ -125,12 +186,33 @@ const ApprovalManage = () => {
               const contractId = spender.id;
               if (!contractMap[`${chainName}:${contractId}`]) {
                 contractMap[`${chainName}:${contractId}`] = {
-                  ...spender,
                   list: [],
                   chain: token.chain,
+                  risk_level: spender.risk_level,
+                  risk_alert: spender.risk_alert,
+                  id: spender.id,
+                  name: spender?.protocol?.name || 'Unknown Contract',
+                  logo_url: spender.protocol?.logo_url,
+                  type: 'contract',
                 };
               }
               contractMap[`${chainName}:${contractId}`].list.push(token);
+
+              const tokenId = token.id;
+
+              if (!tokenMap[`${chainName}:${tokenId}`]) {
+                tokenMap[`${chainName}:${tokenId}`] = {
+                  list: [],
+                  chain: e.id,
+                  risk_level: 'safe',
+                  id: token.id,
+                  name: token.symbol,
+                  logo_url: token.logo_url || IconUnknownToken,
+                  type: 'token',
+                  balance: token.balance,
+                };
+              }
+              tokenMap[`${chainName}:${tokenId}`].list.push(spender);
             });
           });
         }
@@ -143,7 +225,15 @@ const ApprovalManage = () => {
       ...tokenAuthorizedQueryList,
     ]);
 
-    return contractMap;
+    return [contractMap, tokenMap, nftMap];
+  });
+
+  const [contractMap, tokenMap, nftMap] = allData || [];
+
+  console.log({
+    contractMap,
+    tokenMap,
+    nftMap,
   });
 
   if (error) {
@@ -152,7 +242,12 @@ const ApprovalManage = () => {
 
   const sortedContractList: ApprovalItem[] = useMemo(() => {
     if (contractMap) {
-      const contractMapArr = Object.values(contractMap);
+      const filterMap = {
+        contract: contractMap,
+        token: tokenMap,
+        nft: nftMap,
+      };
+      const contractMapArr = Object.values(filterMap[filterType]);
       const l = contractMapArr.length;
       const dangerList: ApprovalItem[] = [];
       const warnList: ApprovalItem[] = [];
@@ -179,7 +274,7 @@ const ApprovalManage = () => {
       return [...dangerList, ...warnList, ...flatten(sorted.reverse())];
     }
     return [];
-  }, [contractMap]);
+  }, [contractMap, tokenMap, nftMap, filterType]);
 
   const displaySortedContractList = useMemo(() => {
     if (!search || search.trim() === '') {
@@ -188,8 +283,7 @@ const ApprovalManage = () => {
 
     const keywords = search.toLowerCase();
     return sortedContractList.filter((e) => {
-      const { name = '', id = '', chain = '' } = e.protocol || {};
-      return [e.id, e.risk_alert, name, id, chain].some((e) =>
+      return [e.id, e.risk_alert || '', e.name, e.id, e.chain].some((e) =>
         e.toLowerCase().includes(keywords)
       );
     });
@@ -209,9 +303,25 @@ const ApprovalManage = () => {
   }, []);
 
   const getSize = useCallback(
-    (index: number) => sizeMap.current[index] || 78,
-    []
+    (index: number) =>
+      filterType === 'contract' ? sizeMap.current[index] || 68 : 68,
+    [filterType]
   );
+
+  const subTitle = useMemo(() => {
+    if (filterType === 'contract') {
+      return 'Approval contract';
+    }
+    if (filterType === 'token') {
+      return 'Token Balance';
+    }
+    return 'NFT & Collection';
+  }, [filterType]);
+
+  useEffect(() => {
+    listRef?.current?.scrollToItem(0);
+    listRef?.current?.resetAfterIndex?.(0);
+  }, [filterType]);
 
   if (!chain) {
     return null;
@@ -223,21 +333,47 @@ const ApprovalManage = () => {
         {t('Approvals')}
       </PageHeader>
       <div>
-        <Input
-          className="h-[40px] rounded-[6px] p-0 pl-[12px] mt-[16px]"
-          size="large"
-          prefix={<img className="mr-[10px]" src={IconSearch} />}
-          placeholder={'Search by protocol name or address'}
-          value={value}
-          onChange={(e) => setValue(e.target.value)}
-          spellCheck={false}
-        />
-        <div className="mt-[16px] mb-[12px] text-12 text-gray-subTitle">
-          You have approvals for the following contracts
+        <div className="flex justify-between items-center mt-[16px]">
+          <Input
+            className="w-[244px] h-[40px] rounded-[6px] p-0 pl-[12px] "
+            size="large"
+            prefix={<img className="mr-[10px]" src={IconSearch} />}
+            placeholder={'Search by name/address'}
+            value={value}
+            onChange={(e) => setValue(e.target.value)}
+            spellCheck={false}
+          />
+          <Dropdown
+            trigger={['click']}
+            overlay={
+              <Menu className="filter-approval-menu">
+                {(Object.keys(FILTER_TYPES) as Array<
+                  keyof typeof FILTER_TYPES
+                >).map((e) => {
+                  return (
+                    <Menu.Item key={e} onClick={() => setFilterType(e)}>
+                      {FILTER_TYPES[e]}
+                    </Menu.Item>
+                  );
+                })}
+              </Menu>
+            }
+          >
+            <div
+              role="button"
+              className="cursor-pointer flex justify-center items-center w-[108px] h-[40px] text-13 text-gray-subTitle hover:text-blue-light  border border-gray-divider hover:border-blue-light rounded-[6px]"
+            >
+              {FILTER_TYPES[filterType]} <IconDownArrow className="ml-4" />
+            </div>
+          </Dropdown>
+        </div>
+        <div className="mt-[16px] mb-[8px] text-12 text-gray-subTitle w-full flex justify-between items-center">
+          <span>{subTitle}</span>
+          <span>Approval amounts</span>
         </div>
 
-        <div className="token-approval-list mt-[12px]  bg-transparent">
-          <div className="token-approval-body  min-h-[460px]">
+        <div className="token-approval-list bg-transparent">
+          <div className="token-approval-body  min-h-[450px]">
             {loading && <Loading />}
 
             {!loading &&
@@ -246,7 +382,7 @@ const ApprovalManage = () => {
               ) : (
                 <VariableSizeList
                   ref={listRef}
-                  height={460}
+                  height={450}
                   width="100%"
                   itemCount={displaySortedContractList.length}
                   itemSize={getSize}
