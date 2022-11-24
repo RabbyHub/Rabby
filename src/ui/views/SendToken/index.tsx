@@ -758,7 +758,7 @@ const SendToken = () => {
   const handleClickWhitelistAlert = () => {
     if (whitelistEnabled && !temporaryGrant && !toAddressInWhitelist) {
       AuthenticationModalPromise({
-        title: 'Enter the Password to Confirm',
+        title: 'Grant temporary permission',
         cancelText: 'Cancel',
         wallet,
         onFinished() {

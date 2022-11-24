@@ -1,10 +1,17 @@
 import { Button, Form, Input } from 'antd';
+import styled from 'styled-components';
 import { WalletController } from 'background/controller/wallet';
 import clsx from 'clsx';
-import React, { useEffect, useRef, useState } from 'react';
+import React, {
+  useEffect,
+  useRef,
+  useState,
+  useCallback,
+  useMemo,
+} from 'react';
 import * as ReactDOM from 'react-dom';
 import { useTranslation } from 'react-i18next';
-import { Popup } from 'ui/component';
+import { Popup, Checkbox } from 'ui/component';
 
 interface AuthenticationModalProps {
   onFinished(): void;
@@ -13,10 +20,85 @@ interface AuthenticationModalProps {
   confirmText?: string;
   cancelText?: string;
   title?: string;
+  description?: string;
+  checklist?: string[];
   wallet: WalletController;
 }
 
+const Description = styled.div`
+  margin-bottom: 20px;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 16px;
+  text-align: center;
+  color: #4b4d59;
+`;
+
+const ChecklistItem = styled.div`
+  background: #f5f6fa;
+  border-radius: 6px;
+  padding: 16px 12px;
+  font-weight: 400;
+  font-size: 14px;
+  line-height: 18px;
+  color: #13141a;
+  display: flex;
+  align-items: center;
+  margin-bottom: 12px;
+  cursor: pointer;
+  .rabby-checkbox {
+    margin-right: 12px;
+  }
+  &:nth-last-child(1) {
+    margin-bottom: 32px;
+  }
+`;
+
+function useQuestionsCheck(checklist: string[]) {
+  const QUESTIONS = React.useMemo(() => {
+    return checklist.map((item, index) => ({
+      index,
+      content: item,
+      checked: false,
+    }));
+  }, []);
+
+  const [questionChecks, setQuestionChecks] = React.useState(QUESTIONS);
+
+  type TIndex = typeof QUESTIONS[number]['index'];
+  const toggleCheckedByIndex = React.useCallback((index: TIndex) => {
+    setQuestionChecks((prev) => {
+      const idx = prev.findIndex((item) => item.index === index);
+
+      prev[idx].checked = !prev[idx].checked;
+
+      return [...prev];
+    });
+  }, []);
+
+  const reset = useCallback(() => {
+    setQuestionChecks((prev) => {
+      return prev.map((item) => ({
+        ...item,
+        checked: false,
+      }));
+    });
+  }, []);
+
+  return {
+    questionChecks,
+    isAllChecked: React.useMemo(
+      () => questionChecks.every((item) => item.checked),
+      [questionChecks]
+    ),
+    toggleCheckedByIndex,
+    reset,
+  };
+}
+
 const AuthenticationModal = ({
+  description,
+  checklist = [],
   validationHandler,
   onFinished,
   onCancel,
@@ -29,6 +111,18 @@ const AuthenticationModal = ({
   const [form] = Form.useForm();
   const { t } = useTranslation();
   const inputRef = useRef<Input>(null);
+  const {
+    questionChecks,
+    isAllChecked,
+    toggleCheckedByIndex,
+    reset,
+  } = useQuestionsCheck(checklist);
+  const height = useMemo(() => {
+    if (!description && checklist.length <= 0) return 240;
+    if (description && checklist.length <= 0) return 280;
+    return 500;
+  }, [description, checklist]);
+
   const handleSubmit = async ({ password }: { password: string }) => {
     try {
       if (validationHandler) {
@@ -47,6 +141,7 @@ const AuthenticationModal = ({
       ]);
     }
   };
+
   const handleCancel = () => {
     setVisible(false);
     onCancel();
@@ -60,7 +155,35 @@ const AuthenticationModal = ({
   }, []);
 
   return (
-    <Popup visible={visible} title={title} onCancel={handleCancel} height={260}>
+    <Popup
+      className={clsx('input-password-popup', { 'has-desc': !!description })}
+      visible={visible}
+      title={title}
+      onCancel={handleCancel}
+      height={height}
+    >
+      {description && <Description>{description}</Description>}
+      {checklist.length > 0 && (
+        <div className="field-list">
+          {questionChecks.map((q) => {
+            const handleClickItem = () => {
+              toggleCheckedByIndex(q.index);
+            };
+            return (
+              <ChecklistItem key={`item-${q.index}`} onClick={handleClickItem}>
+                <Checkbox
+                  checked={q.checked}
+                  width={'20px'}
+                  height={'20px'}
+                  background="#27C193"
+                  onChange={handleClickItem}
+                />
+                {q.content}
+              </ChecklistItem>
+            );
+          })}
+        </div>
+      )}
       <Form onFinish={handleSubmit} form={form}>
         <Form.Item
           name="password"
@@ -68,7 +191,7 @@ const AuthenticationModal = ({
         >
           <Input
             className="popup-input"
-            placeholder={t('Password')}
+            placeholder={t('Enter the Password to Confirm')}
             type="password"
             size="large"
             autoFocus
@@ -98,6 +221,7 @@ const AuthenticationModal = ({
             size="large"
             htmlType="submit"
             className={clsx(cancelText ? 'w-[172px]' : 'w-[200px]')}
+            disabled={checklist.length > 0 ? !isAllChecked : false}
           >
             {confirmText}
           </Button>

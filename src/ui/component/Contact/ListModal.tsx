@@ -88,7 +88,7 @@ const ListModal = ({ visible, onOk, onCancel }: ListModalProps) => {
     await AuthenticationModalPromise({
       confirmText: 'Confirm',
       cancelText: 'Cancel',
-      title: 'Enter the Password to Confirm',
+      title: 'Save to Whitelist',
       validationHandler: async (password: string) =>
         wallet.setWhitelist(password, list),
       onFinished() {

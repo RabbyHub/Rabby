@@ -134,50 +134,6 @@ const OpenApiModal = ({
   );
 };
 
-const ConfirmWhitelistPopup = ({
-  enable,
-  visible,
-  onClose,
-  onConfirm,
-}: {
-  enable: boolean;
-  visible: boolean;
-  onClose(): void;
-  onConfirm(val: boolean): void;
-}) => {
-  return (
-    <Popup visible={visible} onClose={onClose} height={260}>
-      <h1 className="text-gray-title text-center">
-        {enable ? 'Enable Whitelist' : 'Disable Whitelist'}
-      </h1>
-      <p className="text-gray-subTitle text-14 text-center mt-12 mb-0">
-        {enable
-          ? 'Once enabled, you can only send assets to the addresses in the whitelist using Rabby.'
-          : 'You can send assets to any address once disabled'}
-      </p>
-      <div className="flex pt-6 popup-footer px-20 justify-between">
-        <Button
-          size="large"
-          type="primary"
-          className="w-[172px] rabby-btn-ghost"
-          ghost
-          onClick={onClose}
-        >
-          Cancel
-        </Button>
-        <Button
-          type="primary"
-          size="large"
-          onClick={() => onConfirm(enable)}
-          className="w-[172px]"
-        >
-          Confirm
-        </Button>
-      </div>
-    </Popup>
-  );
-};
-
 const ResetAccountModal = ({
   visible,
   onFinish,
@@ -257,23 +213,24 @@ const Settings = ({ visible, onClose }: SettingsProps) => {
   const [showResetAccountModal, setShowResetAccountModal] = useState(false);
   const [contactsVisible, setContactsVisible] = useState(false);
   const [whitelistEnable, setWhitelistEnable] = useState(true);
-  const [whitelistConfirmVisible, setWhitelistConfirmVisible] = useState(false);
 
-  const handleSwitchWhitelistEnable = async () => {
+  const handleSwitchWhitelistEnable = async (checked: boolean) => {
     reportSettings('whitelist');
-    setWhitelistConfirmVisible(true);
+    handleWhitelistEnableChange(checked);
   };
 
   const handleWhitelistEnableChange = async (value: boolean) => {
     await AuthenticationModalPromise({
       confirmText: 'Confirm',
       cancelText: 'Cancel',
-      title: 'Enter the Password to Confirm',
+      title: value ? 'Enable Whitelist' : 'Disable Whitelist',
+      description: value
+        ? 'Once enabled, you can only send assets to the addresses in the whitelist using Rabby.'
+        : 'You can send assets to any address once disabled',
       validationHandler: async (password: string) =>
         await wallet.toggleWhitelist(password, value),
       onFinished() {
         setWhitelistEnable(value);
-        setWhitelistConfirmVisible(false);
         message.success({
           duration: 1.5,
           icon: <i />,
@@ -539,14 +496,14 @@ const Settings = ({ visible, onClose }: SettingsProps) => {
           />
         </div>
       </Popup>
-      <ConfirmWhitelistPopup
+      {/* <ConfirmWhitelistPopup
         visible={whitelistConfirmVisible}
         onClose={() => {
           setWhitelistConfirmVisible(false);
         }}
         onConfirm={handleWhitelistEnableChange}
         enable={!whitelistEnable}
-      />
+      /> */}
     </>
   );
 };

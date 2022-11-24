@@ -55,7 +55,7 @@ const Unlock = () => {
           rules={[
             {
               required: true,
-              message: t('Please input Password'),
+              message: t('Enter the Password to Unlock'),
             },
           ]}
         >
