@@ -225,6 +225,9 @@ const ApprovalManage = () => {
       ...tokenAuthorizedQueryList,
     ]);
 
+    sortTokenOrNFTApprovalsSpenderList(tokenMap);
+    sortTokenOrNFTApprovalsSpenderList(nftMap);
+
     return [contractMap, tokenMap, nftMap];
   });
 
@@ -264,8 +267,10 @@ const ApprovalManage = () => {
 
       const groupedSafeList = groupBy(safeList, (item) => item.chain);
       const sorted = sortBy(Object.values(groupedSafeList), 'length');
-
-      return [...dangerList, ...warnList, ...flatten(sorted.reverse())];
+      const sortedList = sorted.map((e) =>
+        sortBy(e, (a) => a.list.length).reverse()
+      );
+      return [...dangerList, ...warnList, ...flatten(sortedList.reverse())];
     }
     return [];
   }, [contractMap, tokenMap, nftMap, filterType]);
@@ -414,5 +419,20 @@ const ApprovalManage = () => {
     </div>
   );
 };
+
+function sortTokenOrNFTApprovalsSpenderList(
+  item: Record<string, TokenApprovalItem> | Record<string, NftApprovalItem>
+) {
+  Object.keys(item).forEach((t) => {
+    item[t].list.sort((a, b) => {
+      const numMap: Record<string, number> = {
+        safe: 1,
+        warning: 10,
+        danger: 100,
+      };
+      return numMap[b.risk_level] - numMap[a.risk_level];
+    });
+  });
+}
 
 export default ApprovalManage;
