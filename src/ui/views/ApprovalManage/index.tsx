@@ -422,14 +422,16 @@ function sortTokenOrNFTApprovalsSpenderList(
   item: Record<string, TokenApprovalItem> | Record<string, NftApprovalItem>
 ) {
   Object.keys(item).forEach((t) => {
-    item[t].list.sort((a, b) => {
-      const numMap: Record<string, number> = {
-        safe: 1,
-        warning: 10,
-        danger: 100,
-      };
-      return numMap[b.risk_level] - numMap[a.risk_level];
-    });
+    item[t].list
+      .sort((a, b) => b.value - a.value)
+      .sort((a, b) => {
+        const numMap: Record<string, number> = {
+          safe: 1,
+          warning: 10,
+          danger: 100,
+        };
+        return numMap[b.risk_level] - numMap[a.risk_level];
+      });
   });
 }
 
