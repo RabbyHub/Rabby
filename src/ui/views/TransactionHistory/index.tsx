@@ -593,10 +593,13 @@ const TransactionHistory = () => {
     setCompleteList(completeds);
   };
 
-  const loadPendingList = async () => {
+  const loadList = async () => {
     const account = await wallet.syncGetCurrentAccount<Account>()!;
     const pendings = await wallet.loadPendingListQueue(account.address);
     setPendingList(pendings);
+
+    const { completeds } = await wallet.getTransactionHistory(account.address);
+    setCompleteList(completeds);
   };
 
   useEffect(() => {
@@ -609,7 +612,7 @@ const TransactionHistory = () => {
       if (stoppedInterval) {
         stop();
       }
-      return loadPendingList();
+      return loadList();
     }, 1000);
 
     return stopInterval;
@@ -643,7 +646,6 @@ const TransactionHistory = () => {
       )}
       {completeList.length > 0 && (
         <div className="tx-history__completed">
-          <p className="subtitle">{t('Completed transactions')}</p>
           {completeList.map((item) => (
             <TransactionItem
               item={item}

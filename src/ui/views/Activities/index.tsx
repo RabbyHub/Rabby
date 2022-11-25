@@ -20,17 +20,13 @@ const Activities = () => {
         animated={{ inkBar: false, tabPane: false }}
       >
         <Tabs.TabPane
-          tab={
-            <span className="text-13 tab-title">
-              {t('Signed Transactions')}
-            </span>
-          }
+          tab={<span className="text-13 tab-title">{t('Transactions')}</span>}
           key="signed_tx"
         >
           <TransactionHistory />
         </Tabs.TabPane>
         <Tabs.TabPane
-          tab={<span className="text-13 tab-title">{t('Signed Texts')}</span>}
+          tab={<span className="text-13 tab-title">{t('Texts')}</span>}
           key="signed_text"
         >
           <SignedTextHistory />
