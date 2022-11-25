@@ -300,7 +300,11 @@ class NotificationService extends Events {
     this.approvals = [];
     this.currentApproval = null;
     if (this.notifiWindowId !== null && !stay) {
-      await winMgr.remove(this.notifiWindowId);
+      try {
+        await winMgr.remove(this.notifiWindowId);
+      } catch (e) {
+        // ignore error
+      }
       this.notifiWindowId = null;
     }
   };
