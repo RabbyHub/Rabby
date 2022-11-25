@@ -42,7 +42,6 @@ import LogoTrust from 'ui/assets/walletlogo/trust.svg';
 import IconTrust from 'ui/assets/walletlogo/trust.svg';
 import LogoCoolWallet from 'ui/assets/walletlogo/coolwallet.svg';
 import IconWatchPurple from 'ui/assets/walletlogo/watch-purple.svg';
-import LogoWatch from 'ui/assets/walletlogo/watchlogo.svg';
 import IconWatchWhite from 'ui/assets/walletlogo/IconWatch-white.svg';
 import LogoDefiant from 'ui/assets/walletlogo/defiant.svg';
 import LogoDefiantWhite from 'ui/assets/walletlogo/defiant.svg';
@@ -92,14 +91,14 @@ export const SUPPORT_1559_KEYRING_TYPE = [
 export const KEYRING_TYPE_TEXT = {
   [KEYRING_TYPE.HdKeyring]: 'Created by Seed Phrase',
   [KEYRING_TYPE.SimpleKeyring]: 'Imported by Private Key',
-  [KEYRING_TYPE.WatchAddressKeyring]: 'Watch Mode',
+  [KEYRING_TYPE.WatchAddressKeyring]: 'Contact',
   [KEYRING_CLASS.HARDWARE.BITBOX02]: 'Imported by BitBox02',
   [KEYRING_CLASS.HARDWARE.LEDGER]: 'Imported by Ledger',
   [KEYRING_CLASS.HARDWARE.TREZOR]: 'Imported by Trezor',
   [KEYRING_CLASS.HARDWARE.ONEKEY]: 'Imported by Onekey',
   [KEYRING_CLASS.HARDWARE.GRIDPLUS]: 'Imported by GridPlus',
   [KEYRING_CLASS.GNOSIS]: 'Imported by Gnosis Safe',
-  [KEYRING_CLASS.HARDWARE.KEYSTONE]: 'Imported by Keystone',
+  [KEYRING_CLASS.HARDWARE.KEYSTONE]: 'Imported by QRCode Base',
 };
 export const BRAND_ALIAN_TYPE_TEXT = {
   [KEYRING_TYPE.HdKeyring]: 'Seed Phrase',
@@ -109,7 +108,7 @@ export const BRAND_ALIAN_TYPE_TEXT = {
   [KEYRING_CLASS.HARDWARE.TREZOR]: 'Trezor',
   [KEYRING_CLASS.HARDWARE.ONEKEY]: 'Onekey',
   [KEYRING_CLASS.HARDWARE.BITBOX02]: 'BitBox02',
-  [KEYRING_CLASS.GNOSIS]: 'Gnosis',
+  [KEYRING_CLASS.GNOSIS]: 'Gnosis Safe',
   [KEYRING_CLASS.HARDWARE.GRIDPLUS]: 'GridPlus',
   [KEYRING_CLASS.HARDWARE.KEYSTONE]: 'Keystone',
 };
@@ -521,7 +520,6 @@ export const KEYRING_ICONS = {
   [HARDWARE_KEYRING_TYPES.Onekey.type]: LogoOnekey,
   [HARDWARE_KEYRING_TYPES.Trezor.type]: IconTrezor24,
   [HARDWARE_KEYRING_TYPES.GridPlus.type]: IconGridPlus,
-  [HARDWARE_KEYRING_TYPES.Keystone.type]: LogoKeystone,
 };
 
 export const KEYRING_ICONS_WHITE = {
@@ -550,7 +548,6 @@ export const KEYRINGS_LOGOS = {
   [HARDWARE_KEYRING_TYPES.Onekey.type]: IconOneKey18,
   [HARDWARE_KEYRING_TYPES.Trezor.type]: IconTrezor24Border,
   [HARDWARE_KEYRING_TYPES.GridPlus.type]: IconGridPlus,
-  [HARDWARE_KEYRING_TYPES.Keystone.type]: LogoKeystone,
 };
 
 export const NOT_CLOSE_UNFOCUS_LIST: string[] = [

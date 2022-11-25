@@ -9,6 +9,12 @@
 
 .ant-input {
   border-radius: 6px;
+  &[type="password"] {
+    letter-spacing: 4px;
+    &::placeholder {
+      letter-spacing: normal;
+    }
+  }
 }
 
 /*---------------------

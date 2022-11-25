@@ -40,7 +40,7 @@ const AddressDetail = () => {
 
   const handleWhitelistChange = (checked: boolean) => {
     AuthenticationModalPromise({
-      title: 'Enter the Password to Confirm',
+      title: checked ? 'Add to Whitelist' : 'Remove from Whitelist',
       cancelText: 'Cancel',
       wallet,
       validationHandler: async (password) => {

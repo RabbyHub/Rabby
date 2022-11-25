@@ -1,7 +1,5 @@
-import { Button, Form, Input, message } from 'antd';
-import React, { useRef } from 'react';
-import { useTranslation } from 'react-i18next';
-import { PageHeader, Popup } from 'ui/component';
+import React from 'react';
+import AuthenticationModalPromise from 'ui/component/AuthenticationModal';
 import { useWallet } from 'ui/utils';
 import './style.less';
 import { ReactComponent as IconArrowRight } from 'ui/assets/arrow-right-gray.svg';
@@ -16,104 +14,43 @@ type Props = {
 };
 export const AddressBackup = ({ address, type }: Props) => {
   const wallet = useWallet();
-  const { t } = useTranslation();
   const history = useHistory();
 
   const [form] = useForm();
-  const inputRef = useRef<Input>(null);
 
   if (![KEYRING_TYPE.HdKeyring, KEYRING_TYPE.SimpleKeyring].includes(type)) {
     return null;
   }
 
-  const handleBackup = (path: 'mneonics' | 'private-key') => {
+  const handleBackup = async (path: 'mneonics' | 'private-key') => {
     form.resetFields();
-    setTimeout(() => {
-      inputRef.current?.focus();
-    }, 50);
-    const { destroy } = Popup.info({
-      title: 'Enter Password before backup',
-      height: 280,
-      content: (
-        <div className="pt-[4px]">
-          <Form
-            form={form}
-            onFinish={async () => {
-              const { password } = await form.validateFields();
-              try {
-                await wallet.verifyPassword(password);
-              } catch (e: any) {
-                form.setFields([
-                  {
-                    name: 'password',
-                    errors: [e?.message || t('incorrect password')],
-                  },
-                ]);
-                throw e;
-              }
-              try {
-                let data = '';
-                if (path === 'private-key') {
-                  data = await wallet.getPrivateKey(password, {
-                    address,
-                    type,
-                  });
-                } else if (path === 'mneonics') {
-                  data = await wallet.getMnemonics(password, address);
-                } else {
-                  throw Error('Wrong path');
-                }
-                destroy();
-                history.push({
-                  pathname: `/settings/address-backup/${path}`,
-                  state: {
-                    data: data,
-                  },
-                });
-              } catch (e) {
-                message.error(e.message || 'Something wrong');
-              }
-            }}
-          >
-            <Form.Item
-              name="password"
-              className="h-[80px] mb-[58px]"
-              rules={[{ required: true, message: t('Please input password') }]}
-            >
-              <Input
-                ref={inputRef}
-                className="popup-input h-[48px]"
-                size="large"
-                placeholder="Please input password"
-                type="password"
-                autoFocus
-                spellCheck={false}
-              ></Input>
-            </Form.Item>
-            <div className="flex gap-[16px]">
-              <Button
-                type="primary"
-                size="large"
-                className="w-[50%]"
-                onClick={() => {
-                  destroy();
-                }}
-              >
-                Cancel
-              </Button>
-              <Button
-                type="primary"
-                className="rabby-btn-ghost w-[50%]"
-                ghost
-                size="large"
-                htmlType="submit"
-              >
-                Confirm
-              </Button>
-            </div>
-          </Form>
-        </div>
-      ),
+    let data = '';
+    await AuthenticationModalPromise({
+      confirmText: 'Confirm',
+      cancelText: 'Cancel',
+      title: `Backup ${path === 'private-key' ? 'Private Key' : 'Seed Phrase'}`,
+      validationHandler: async (password: string) => {
+        if (path === 'private-key') {
+          data = await wallet.getPrivateKey(password, {
+            address,
+            type,
+          });
+        } else {
+          data = await wallet.getMnemonics(password, address);
+        }
+      },
+      onFinished() {
+        history.push({
+          pathname: `/settings/address-backup/${path}`,
+          state: {
+            data: data,
+          },
+        });
+      },
+      onCancel() {
+        // do nothing
+      },
+      wallet,
     });
   };
 
