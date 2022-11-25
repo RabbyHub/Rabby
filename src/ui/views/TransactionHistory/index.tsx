@@ -368,7 +368,6 @@ const TransactionItem = ({
           value: '0x0',
           chainId: item.chainId,
           nonce: intToHex(item.nonce),
-          gas: intToHex(MINIMUM_GAS_LIMIT),
           isCancel: true,
         },
       ],
@@ -393,7 +392,12 @@ const TransactionItem = ({
       method: 'eth_sendTransaction',
       params: [
         {
-          ...originTx.rawTx,
+          from: originTx.rawTx.from,
+          value: originTx.rawTx.value,
+          data: originTx.rawTx.data,
+          nonce: originTx.rawTx.nonce,
+          chainId: originTx.rawTx.chainId,
+          to: originTx.rawTx.to,
           gasPrice: intToHex(
             Math.round(Math.max(maxGasPrice * 2, maxGasMarketPrice))
           ),
