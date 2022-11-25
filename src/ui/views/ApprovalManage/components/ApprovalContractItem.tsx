@@ -191,6 +191,7 @@ export const ApprovalContractItem = ({
           hideConer
           iconUrl={item?.logo_url || IconUnknown}
           chainServerId={item.chain}
+          noRound={item.type === 'nft'}
         />
 
         <div className="ml-2">
