@@ -367,7 +367,6 @@ const ApprovalManage = () => {
         </div>
         <div className="mt-[16px] mb-[8px] text-12 text-gray-subTitle w-full flex justify-between items-center">
           <span>{subTitle}</span>
-          <span>Approval amounts</span>
         </div>
 
         <div className="token-approval-list bg-transparent">
