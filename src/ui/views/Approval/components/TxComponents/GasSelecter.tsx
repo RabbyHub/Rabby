@@ -709,10 +709,10 @@ const GasSelector = ({
                         may cost more time for the transaction to be processed.
                       </li>
                       <li>
-                        Here in Rabby, Priority Fee (Tip) = Max Priority Fee -
-                        Base Fee. After you set up the Max Priority Fee, the
-                        Base Fee will be deducted from it and the rest will be
-                        tipped to miners.
+                        Here in Rabby, Priority Fee (Tip) = Max Fee - Base Fee.
+                        After you set up the Max Priority Fee, the Base Fee will
+                        be deducted from it and the rest will be tipped to
+                        miners.
                       </li>
                     </ol>
                   }
