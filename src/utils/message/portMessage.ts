@@ -27,7 +27,7 @@ class PortMessage extends Message {
 
     if (autoReconnect) {
       this.port.onDisconnect.addListener(() => {
-        this.connect(name);
+        this.connect(name, autoReconnect);
       });
     }
 

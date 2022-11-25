@@ -57,6 +57,17 @@ function deleteTimer(port) {
   }
 }
 
+function addSession(port, pm) {
+  const sessionId = port.sender?.tab?.id;
+  if (sessionId === undefined || !port.sender?.url) {
+    return;
+  }
+  const origin = getOriginFromUrl(port.sender.url);
+  const session = sessionService.getOrCreateSession(sessionId, origin);
+  // for background push to respective page
+  session!.setPortMessage(pm);
+}
+
 Sentry.init({
   dsn:
     'https://e871ee64a51b4e8c91ea5fa50b67be6b@o460488.ingest.sentry.io/5831390',
@@ -258,6 +269,8 @@ browser.runtime.onConnect.addListener((port) => {
       },
     });
   });
+
+  addSession(port, pm);
 
   pm.listen(async (data) => {
     if (!appStoreLoaded) {
