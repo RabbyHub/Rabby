@@ -20,7 +20,9 @@ export const DetectBody: React.FC<DetectBodyProps> = ({
   const isForbidden = decision === 'forbidden';
   const isWarning = decision === 'warning';
   const contentContainerRef = React.useRef<HTMLDivElement>(null);
+  const alertRef = React.useRef<HTMLDivElement>(null);
   const [selected, setSelected] = React.useState<QUESTION_IDS>();
+  const [isMultiLine, setIsMultiLine] = React.useState(false);
 
   const handleChecklist = (s: QUESTION_IDS) => {
     setSelected(s);
@@ -33,6 +35,12 @@ export const DetectBody: React.FC<DetectBodyProps> = ({
     }, 0);
   };
 
+  React.useEffect(() => {
+    if (alertRef.current) {
+      setIsMultiLine(alertRef.current.clientHeight > 20);
+    }
+  }, []);
+
   return (
     <div
       className={clsx('flex flex-col h-full overflow-hidden', {
@@ -44,7 +52,12 @@ export const DetectBody: React.FC<DetectBodyProps> = ({
         className={clsx('px-20 overflow-auto', { 'flex-1': isForbidden })}
         ref={contentContainerRef}
       >
-        <div className="text-gray-title text-15 leading-5 font-medium">
+        <div
+          className={clsx('text-gray-title text-15 leading-5', {
+            'text-center': !isMultiLine,
+          })}
+          ref={alertRef}
+        >
           {alert}
         </div>
         {isWarning && <WarningRadioGroup onChange={handleChecklist} />}

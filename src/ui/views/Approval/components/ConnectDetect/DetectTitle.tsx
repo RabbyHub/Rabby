@@ -29,7 +29,7 @@ export const DetectTitle: React.FC<DetectTitleProps> = ({
           : ''}
       </h1>
 
-      <div className="inline-flex mt-6 px-8 py-6 bg-[#00000020] text-white text-13 leading-[1.15] rounded-sm">
+      <div className="inline-flex mt-6 px-8 py-6 bg-[#00000010] text-white text-13 leading-[1.15] rounded-sm">
         <FallbackSiteLogo url={icon} origin={origin} width="15px" />
         <div className="ml-6">{origin}</div>
       </div>
