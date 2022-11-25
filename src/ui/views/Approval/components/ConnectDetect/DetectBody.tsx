@@ -36,9 +36,11 @@ export const DetectBody: React.FC<DetectBodyProps> = ({
   };
 
   React.useEffect(() => {
-    if (alertRef.current) {
-      setIsMultiLine(alertRef.current.clientHeight > 20);
-    }
+    setTimeout(() => {
+      if (alertRef.current) {
+        setIsMultiLine(alertRef.current.clientHeight > 20);
+      }
+    }, 0);
   }, []);
 
   return (
