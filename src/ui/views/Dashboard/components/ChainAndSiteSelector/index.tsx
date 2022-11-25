@@ -2,7 +2,6 @@ import { Badge, message, Skeleton, Tooltip } from 'antd';
 import { GasLevel } from 'background/service/openapi';
 import { ConnectedSite } from 'background/service/permission';
 import clsx from 'clsx';
-import maxBy from 'lodash/maxBy';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import ReactGA from 'react-ga';
@@ -115,9 +114,10 @@ export default ({
       const marketGas: GasLevel[] = await wallet.openapi.gasMarket(
         currentConnectedSiteChainNativeToken
       );
-      const maxGas = maxBy(marketGas, (level) => level.price)!.price;
-      if (maxGas) {
-        return Number(maxGas / 1e9);
+      const selectedGasPice = marketGas.find((item) => item.level === 'slow')
+        ?.price;
+      if (selectedGasPice) {
+        return Number(selectedGasPice / 1e9);
       }
     } catch (e) {
       // DO NOTHING
