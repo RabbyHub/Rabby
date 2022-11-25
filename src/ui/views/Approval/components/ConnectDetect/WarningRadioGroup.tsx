@@ -9,7 +9,7 @@ const QUESTIONS: {
 }[] = [
   {
     id: 'cancel',
-    content: 'I am aware of the risks and will stop the connection',
+    content: 'I’m aware of the risks, stop the connection.',
   },
   {
     id: 'continue',
