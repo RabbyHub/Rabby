@@ -248,8 +248,9 @@ const AddressInfo1 = ({ address, type, brandName, source }: Props) => {
         <div className="rabby-list-item">
           <div className="rabby-list-item-content ">
             <SvgIconLoading
-              className="icon icon-tag animate-spin"
+              className="animate-spin w-[20px] h-[20px]"
               fill="#707280"
+              viewBox="0 0 36 36"
             />
           </div>
         </div>

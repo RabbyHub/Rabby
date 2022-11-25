@@ -207,7 +207,7 @@ const AddressItem = memo(
 
         {enableSwitch && !isCurrentAccount && (
           <div className="rabby-address-item-extra flex justify-center items-center pr-[44px]">
-            <div className="opacity-0 group-hover:opacity-100 w-[16px] h-[16px] rounded-full bg-blue-light flex items-center justify-center">
+            <div className="opacity-0 group-hover:opacity-100 w-[20px] h-[20px] rounded-full bg-blue-light flex items-center justify-center">
               <img src={IconCheck} className="w-[54%] icon icon-check" />
             </div>
             <div className="hidden group-hover:block w-[1px] h-full absolute top-0 right-[44px] bg-blue-light"></div>
