@@ -12,6 +12,7 @@ interface CheckboxProps {
   height?: string;
   className?: string;
   children?: ReactNode;
+  checkIcon?: ReactNode;
 }
 
 const unCheckBackground = '#B4BDCC';
@@ -21,10 +22,12 @@ const Checkbox = ({
   onChange,
   defaultChecked = false,
   background = '#8697FF',
+
   width = '16px',
   height = '16px',
   className,
   children,
+  checkIcon,
 }: CheckboxProps) => {
   const [checkState, setCheckState] = useState(defaultChecked);
 
@@ -50,7 +53,7 @@ const Checkbox = ({
           backgroundColor: checkState ? background : unCheckBackground,
         }}
       >
-        <img src={IconCheck} className="icon icon-check" />
+        {checkIcon ?? <img src={IconCheck} className="icon icon-check" />}
       </div>
       {children && <div className="rabby-checkbox__label">{children}</div>}
     </div>

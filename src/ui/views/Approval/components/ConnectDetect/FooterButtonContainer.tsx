@@ -12,7 +12,7 @@ export const FooterButtonContainer: React.FC<Props> = ({
 }) => {
   return (
     <div className="py-20 text-center flex-shrink-0 h-80">
-      <Button className="h-40" type="primary" onClick={onCancel}>
+      <Button className="h-40 w-[180px]" type="primary" onClick={onCancel}>
         {text}
       </Button>
     </div>
