@@ -367,7 +367,6 @@ const ApprovalManage = () => {
         </div>
         <div className="mt-[16px] mb-[8px] text-12 text-gray-subTitle w-full flex justify-between items-center">
           <span>{subTitle}</span>
-          <span>Approval amounts</span>
         </div>
 
         <div className="token-approval-list bg-transparent">
@@ -423,14 +422,16 @@ function sortTokenOrNFTApprovalsSpenderList(
   item: Record<string, TokenApprovalItem> | Record<string, NftApprovalItem>
 ) {
   Object.keys(item).forEach((t) => {
-    item[t].list.sort((a, b) => {
-      const numMap: Record<string, number> = {
-        safe: 1,
-        warning: 10,
-        danger: 100,
-      };
-      return numMap[b.risk_level] - numMap[a.risk_level];
-    });
+    item[t].list
+      .sort((a, b) => b.value - a.value)
+      .sort((a, b) => {
+        const numMap: Record<string, number> = {
+          safe: 1,
+          warning: 10,
+          danger: 100,
+        };
+        return numMap[b.risk_level] - numMap[a.risk_level];
+      });
   });
 }
 
