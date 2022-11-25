@@ -340,7 +340,7 @@ const ApprovalManage = () => {
           <Dropdown
             trigger={['click']}
             overlay={
-              <Menu className="filter-approval-menu">
+              <Menu className="filter-approval-menu ">
                 {(Object.keys(FILTER_TYPES) as Array<
                   keyof typeof FILTER_TYPES
                 >).map((e) => {
@@ -355,7 +355,7 @@ const ApprovalManage = () => {
           >
             <div
               role="button"
-              className="cursor-pointer flex justify-center items-center w-[108px] h-[40px] text-13 text-gray-subTitle hover:text-blue-light  border border-gray-divider hover:border-blue-light rounded-[6px]"
+              className="bg-white cursor-pointer flex justify-center items-center w-[108px] h-[40px] text-13 text-gray-subTitle hover:text-blue-light  border border-gray-divider hover:border-blue-light rounded-[6px]"
             >
               {FILTER_TYPES[filterType]} <IconDownArrow className="ml-4" />
             </div>
