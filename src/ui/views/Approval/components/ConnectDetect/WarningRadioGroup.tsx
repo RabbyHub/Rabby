@@ -11,7 +11,7 @@ const QUESTIONS: {
   },
   {
     id: 'continue',
-    content: 'I confirm it is no risk and proceed',
+    content: 'I see no risk and will proceed anyway',
   },
 ];
 
