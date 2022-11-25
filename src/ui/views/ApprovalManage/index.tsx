@@ -150,22 +150,21 @@ const ApprovalManage = () => {
             }
             contractMap[`${chainName}:${contractId}`].list.push(token);
 
-            if (!nftMap[`${chainName}:${token.contract_id}`]) {
-              nftMap[`${chainName}:${token.contract_id}`] = {
+            const nftTokenKey = `${chainName}:${token.contract_id}:${token.inner_id}`;
+            if (!nftMap[nftTokenKey]) {
+              nftMap[nftTokenKey] = {
                 nftToken: token,
                 list: [],
                 chain: e.id,
                 risk_level: 'safe',
                 id: token.contract_id,
                 name: token.contract_name,
-                logo_url: token?.detail_url || token?.content,
+                logo_url: token?.content || (token as any).collection?.logo_url,
                 type: 'nft',
                 amount: token.amount,
               };
             }
-            nftMap[`${chainName}:${token.contract_id}`].list.push(
-              token.spender
-            );
+            nftMap[nftTokenKey].list.push(token.spender);
           });
         }
       } catch (error) {
