@@ -157,7 +157,9 @@ const ApprovalManage = () => {
                 chain: e.id,
                 risk_level: 'safe',
                 id: token.contract_id,
-                name: token.contract_name,
+                name:
+                  token.contract_name +
+                  (token.inner_id ? ` #${token.inner_id}` : ''),
                 logo_url: token?.detail_url || token?.content,
                 type: 'nft',
                 amount: token.amount,
