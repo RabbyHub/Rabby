@@ -11,7 +11,8 @@ import React, {
 } from 'react';
 import * as ReactDOM from 'react-dom';
 import { useTranslation } from 'react-i18next';
-import { Popup, Checkbox } from 'ui/component';
+import { Popup, Checkbox, Field } from 'ui/component';
+import LessPalette from '@/ui/style/var-defs';
 
 interface AuthenticationModalProps {
   onFinished(): void;
@@ -34,23 +35,29 @@ const Description = styled.div`
   color: #4b4d59;
 `;
 
-const ChecklistItem = styled.div`
-  background: #f5f6fa;
-  border-radius: 6px;
-  padding: 16px 12px;
-  font-weight: 400;
-  font-size: 14px;
-  line-height: 18px;
-  color: #13141a;
-  display: flex;
-  align-items: center;
-  margin-bottom: 12px;
-  cursor: pointer;
-  .rabby-checkbox {
-    margin-right: 12px;
-  }
-  &:nth-last-child(1) {
-    margin-bottom: 32px;
+const FieldList = styled.div`
+  margin-bottom: 20px;
+
+  .field {
+    background: ${LessPalette['@color-bg']};
+    border-radius: 6px;
+    padding: 16px 12px;
+
+    font-weight: 400;
+    font-size: 14px;
+    line-height: 18px;
+    color: ${LessPalette['@color-title']};
+    border: 1px solid transparent;
+    margin-bottom: 8px;
+
+    &:hover {
+      background-color: rgba(134, 151, 255, 0.2);
+      border: 1px solid #8697ff;
+    }
+
+    &:nth-last-child(1) {
+      margin-bottom: 0;
+    }
   }
 `;
 
@@ -120,7 +127,7 @@ const AuthenticationModal = ({
   const height = useMemo(() => {
     if (!description && checklist.length <= 0) return 240;
     if (description && checklist.length <= 0) return 280;
-    return 500;
+    return 480;
   }, [description, checklist]);
 
   const handleSubmit = async ({ password }: { password: string }) => {
@@ -164,25 +171,31 @@ const AuthenticationModal = ({
     >
       {description && <Description>{description}</Description>}
       {checklist.length > 0 && (
-        <div className="field-list">
+        <FieldList>
           {questionChecks.map((q) => {
             const handleClickItem = () => {
               toggleCheckedByIndex(q.index);
             };
             return (
-              <ChecklistItem key={`item-${q.index}`} onClick={handleClickItem}>
-                <Checkbox
-                  checked={q.checked}
-                  width={'20px'}
-                  height={'20px'}
-                  background="#27C193"
-                  onChange={handleClickItem}
-                />
+              <Field
+                key={`item-${q.index}`}
+                leftIcon={
+                  <Checkbox
+                    checked={q.checked}
+                    width={'20px'}
+                    height={'20px'}
+                    background="#27C193"
+                    onChange={handleClickItem}
+                  />
+                }
+                rightIcon={null}
+                onClick={handleClickItem}
+              >
                 {q.content}
-              </ChecklistItem>
+              </Field>
             );
           })}
-        </div>
+        </FieldList>
       )}
       <Form onFinish={handleSubmit} form={form}>
         <Form.Item
