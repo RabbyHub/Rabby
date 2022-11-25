@@ -11,7 +11,7 @@ _paq.push(['enableLinkTracking']);
       g = d.createElement('script'),
       s = d.getElementsByTagName('script')[0];
     g.async = true;
-    g.src = u + 'matomo.js';
+    g.src = '/vendor/matomo.client.js';
     s.parentNode.insertBefore(g, s);
-  }, 500)
+  }, 500);
 })();
