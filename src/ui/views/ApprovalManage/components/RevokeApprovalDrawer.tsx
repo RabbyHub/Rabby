@@ -154,8 +154,11 @@ export const RevokeApprovalDrawer = (props: {
             ) : (
               <NFTAvatar
                 className="w-[24px] h-[24px]"
-                type={(e as NFTApproval)?.content_type}
-                content={(e as NFTApproval)?.content}
+                type={(e as NFTApproval)?.content_type || 'image'}
+                content={
+                  (e as NFTApproval)?.content ||
+                  (e as any)?.collection?.logo_url
+                }
                 thumbnail
                 chain={(e as NFTApproval)?.chain}
                 unknown={IconUnknownNFT}
