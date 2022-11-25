@@ -49,6 +49,7 @@ module.exports = {
       red: {
         light: '#F24822',
         DEFAULT: '#AF160E',
+        forbidden: '#EC5151',
       },
       gray: {
         bg2: '#F5F6FA',

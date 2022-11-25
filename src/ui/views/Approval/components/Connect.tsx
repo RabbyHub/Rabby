@@ -6,6 +6,7 @@ import { Chain } from 'background/service/openapi';
 import { ChainSelector, Spin, FallbackSiteLogo } from 'ui/component';
 import { useApproval, useWallet } from 'ui/utils';
 import { CHAINS_ENUM, CHAINS } from 'consts';
+import { ConnectDetect } from './ConnectDetect/ConnectDetect';
 
 interface ConnectProps {
   params: any;
@@ -18,7 +19,7 @@ const Connect = ({ params: { icon, origin } }: ConnectProps) => {
     showChainsModal?: boolean;
   }>();
   const { showChainsModal = false } = state ?? {};
-  const [showModal, setShowModal] = useState(showChainsModal);
+  const [showModal] = useState(showChainsModal);
   const [, resolveApproval, rejectApproval] = useApproval();
   const { t } = useTranslation();
   const wallet = useWallet();
@@ -61,6 +62,25 @@ const Connect = ({ params: { icon, origin } }: ConnectProps) => {
     rejectApproval('User rejected the request.');
   };
 
+  const addOriginFeedback = React.useCallback(async (isSafe: boolean) => {
+    const account = await wallet.getCurrentAccount();
+
+    wallet.openapi.addOriginFeedback({
+      origin,
+      is_safe: isSafe,
+      user_addr: account!.address,
+    });
+  }, []);
+
+  const handleDetectContinue = React.useCallback(() => {
+    addOriginFeedback(true);
+  }, []);
+
+  const handleDetectCancel = React.useCallback(() => {
+    handleCancel();
+    addOriginFeedback(false);
+  }, []);
+
   const handleAllow = async () => {
     resolveApproval({
       defaultChain,
@@ -73,6 +93,12 @@ const Connect = ({ params: { icon, origin } }: ConnectProps) => {
 
   return (
     <Spin spinning={isLoading}>
+      <ConnectDetect
+        origin={origin}
+        icon={icon}
+        onCancel={handleDetectCancel}
+        onContinue={handleDetectContinue}
+      />
       <div className="approval-connect">
         <div className="font-medium text-20 text-center">
           {t('Website Wants to Connect')}
