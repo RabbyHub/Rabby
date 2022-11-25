@@ -1,5 +1,7 @@
 import { Checkbox, Field } from '@/ui/component';
+import clsx from 'clsx';
 import React from 'react';
+import { ReactComponent as IconCheck } from 'ui/assets/check.svg';
 
 const QUESTIONS: {
   id: QUESTION_IDS;
@@ -33,15 +35,18 @@ export const WarningRadioGroup: React.FC<Props> = ({ onChange }) => {
     <div className="mt-16 mb-20">
       {QUESTIONS.map((q) => (
         <Field
-          className="field-outlined text-13 min-h-[44px] py-0"
+          className={clsx('field-outlined text-13 min-h-[44px] py-0', {
+            'bg-blue-light text-white selected': selected === q.id,
+          })}
           key={`item-${q.id}`}
           leftIcon={
             <Checkbox
               checked={selected === q.id}
               width="20px"
               height="20px"
-              background="#27C193"
+              background="white"
               onChange={() => toggleCheckedByIndex(q.id)}
+              checkIcon={<IconCheck className="icon icon-check" />}
             />
           }
           rightIcon={null}
