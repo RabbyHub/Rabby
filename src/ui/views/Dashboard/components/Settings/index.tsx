@@ -496,14 +496,6 @@ const Settings = ({ visible, onClose }: SettingsProps) => {
           />
         </div>
       </Popup>
-      {/* <ConfirmWhitelistPopup
-        visible={whitelistConfirmVisible}
-        onClose={() => {
-          setWhitelistConfirmVisible(false);
-        }}
-        onConfirm={handleWhitelistEnableChange}
-        enable={!whitelistEnable}
-      /> */}
     </>
   );
 };
