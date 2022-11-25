@@ -46,7 +46,7 @@
       "js": ["vendor/trezor/trezor-content-script.js"]
     }
   ],
-  "content_security_policy": "script-src 'self' 'wasm-eval' 'sha256-OocOJT2vDG5puZ6dCp0pzp4FiqlV4FYvX0v2kBcXMIg=' https://bam.eu01.nr-data.net https://js-agent.newrelic.com https://www.google-analytics.com; object-src 'self'",
+  "content_security_policy": "script-src 'self' 'wasm-unsafe-eval'; object-src 'self'",
   "permissions": [
     "storage",
     "unlimitedStorage",
