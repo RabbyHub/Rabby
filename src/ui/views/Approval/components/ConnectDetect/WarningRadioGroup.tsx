@@ -33,7 +33,7 @@ export const WarningRadioGroup: React.FC<Props> = ({ onChange }) => {
     <div className="mt-16 mb-20">
       {QUESTIONS.map((q) => (
         <Field
-          className="field-outlined text-13 min-h-[48px] py-0"
+          className="field-outlined text-13 min-h-[44px] py-0"
           key={`item-${q.id}`}
           leftIcon={
             <Checkbox

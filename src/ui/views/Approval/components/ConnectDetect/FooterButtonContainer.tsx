@@ -11,7 +11,7 @@ export const FooterButtonContainer: React.FC<Props> = ({
   text = 'Cancel connection',
 }) => {
   return (
-    <div className="py-20 border-gray-divider border-t text-center flex-shrink-0 h-80">
+    <div className="py-20 text-center flex-shrink-0 h-80">
       <Button className="h-40" type="primary" onClick={onCancel}>
         {text}
       </Button>
