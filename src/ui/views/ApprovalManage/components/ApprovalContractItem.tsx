@@ -194,8 +194,20 @@ export const ApprovalContractItem = ({
         />
 
         <div className="ml-2">
-          <div className="token-approval-item-title ">{title}</div>
-          <div className="token-approval-item-desc">{desc}</div>
+          <div
+            className={clsx('token-approval-item-title', {
+              'text-15': item.type === 'token',
+            })}
+          >
+            {title}
+          </div>
+          <div
+            className={clsx('token-approval-item-desc', {
+              'text-13': item.type === 'token',
+            })}
+          >
+            {desc}
+          </div>
         </div>
 
         <span className="text-[13px] text-gray-subTitle ml-auto ">
@@ -203,7 +215,7 @@ export const ApprovalContractItem = ({
           {!onSelect && 'Approval' + (item.list.length > 1 ? 's' : '')}
           {}
         </span>
-        {onSelect && <IconArrowRight className="ml-[8px]" />}
+        {onSelect && <IconArrowRight />}
       </div>
       {item.risk_level !== 'safe' && (
         <div className="pb-[12px]">
