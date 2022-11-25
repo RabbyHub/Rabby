@@ -134,7 +134,7 @@ export const RevokeApprovalDrawer = (props: {
           <div
             key={index}
             className={clsx(
-              'relative px-[16px] h-[51px] flex justify-between items-center bg-white cursor-pointer  border border-transparent  hover:border-blue-light  hover:bg-blue-light hover:bg-opacity-[0.1] hover:rounded-[6px] hover:z-10',
+              'relative px-[16px] h-[56px] flex justify-between items-center bg-white cursor-pointer  border border-transparent  hover:border-blue-light  hover:bg-blue-light hover:bg-opacity-[0.1] hover:rounded-[6px] hover:z-10',
               index === item.list.length - 1 && 'rounded-b-[6px]',
               index !== item.list.length - 1 &&
                 'after:absolute after:h-[1px] after:left-[16px] after:right-[16px] after:bottom-0 after:bg-gray-divider'
@@ -227,11 +227,21 @@ export const RevokeApprovalDrawer = (props: {
               <div className="text-13 font-medium leading-[15px] mb-2">
                 {spender.protocol?.name || 'Unknown Contract'}
               </div>
-              <NameAndAddress className="justify-start" address={spender.id} />
+              <NameAndAddress
+                className="justify-start"
+                addressClass="text-12"
+                copyIconClass="w-[14px] h-[14px]"
+                address={spender.id}
+              />
             </div>
 
             <div className="ml-auto flex justify-center items-center">
-              <span className="mr-[14px] text-[13px] text-gray-subTitle">
+              <span
+                className={clsx(
+                  'mr-[14px] text-[13px] text-gray-subTitle',
+                  item.type === 'token'
+                )}
+              >
                 {displayApprovalValue}
               </span>
               <img

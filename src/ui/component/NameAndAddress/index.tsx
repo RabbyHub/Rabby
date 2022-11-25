@@ -87,13 +87,11 @@ const NameAndAddress = ({
         onClick={handleCopyContractAddress}
         src={IconAddressCopy}
         id={'copyIcon'}
-        className={clsx(
-          'w-[16px] h-[16px] ml-4 cursor-pointer',
-          copyIconClass,
-          {
-            success: true,
-          }
-        )}
+        width={16}
+        height={16}
+        className={clsx('ml-4 cursor-pointer', copyIconClass, {
+          success: true,
+        })}
       />
     </div>
   );
