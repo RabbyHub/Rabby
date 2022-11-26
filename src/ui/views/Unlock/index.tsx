@@ -60,7 +60,7 @@ const Unlock = () => {
           ]}
         >
           <Input
-            placeholder={t('Enter the Password to Confirm')}
+            placeholder={t('Enter the Password to Unlock')}
             size="large"
             type="password"
             ref={inputEl}
