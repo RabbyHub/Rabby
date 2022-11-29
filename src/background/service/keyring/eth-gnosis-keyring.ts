@@ -111,7 +111,7 @@ class GnosisKeyring extends EventEmitter {
       throw new Error("The address you're are trying to import is duplicate");
     }
 
-    this.accounts.push(prefixedAddress);
+    this.accounts.push(prefixedAddress.toLowerCase());
 
     return [prefixedAddress];
   };

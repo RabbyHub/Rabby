@@ -47,6 +47,7 @@ export const accountToDisplay = createModel<RootModel>()({
             return item.accounts.map((account) => {
               return {
                 ...account,
+                address: account.address.toLowerCase(),
                 type: item.type,
                 byImport: item.byImport,
                 alianName: allAlianNames[account?.address?.toLowerCase()]?.name,

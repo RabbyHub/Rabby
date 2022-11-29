@@ -254,7 +254,7 @@ class LedgerBridgeKeyring extends EventEmitter {
           const to = from + n;
           for (let i = from; i < to; i++) {
             const path = this._getPathForIndex(i);
-            let address;
+            let address: string;
             if (this._isLedgerLiveHdPath()) {
               address = await this.unlock(path);
             } else {
@@ -268,7 +268,7 @@ class LedgerBridgeKeyring extends EventEmitter {
             };
 
             if (!this.accounts.includes(address)) {
-              this.accounts.push(address);
+              this.accounts.push(address.toLowerCase());
             }
             this.page = 0;
           }
