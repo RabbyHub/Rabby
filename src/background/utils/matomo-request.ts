@@ -1,8 +1,8 @@
-import { storage } from 'background/webapi';
 import { customAlphabet, nanoid } from 'nanoid';
+import { preferenceService } from '../service';
 
 const ANALYTICS_PATH = 'https://matomo.debank.com/matomo.php';
-const genCid = customAlphabet('1234567890abcdef', 16);
+const genRequestId = customAlphabet('1234567890abcdef', 16);
 
 async function postData(url = '', params: URLSearchParams) {
   const response = await fetch(`${url}?${params.toString()}`, {
@@ -12,10 +12,10 @@ async function postData(url = '', params: URLSearchParams) {
   return response;
 }
 const getParams = async () => {
-  let cid = await storage.get('cid_v2');
-  if (!cid) {
-    cid = genCid();
-    storage.set('cid_v2', cid);
+  let requestId = await preferenceService.getRequestId();
+  if (!requestId) {
+    requestId = genRequestId();
+    preferenceService.updateRequestId(requestId);
   }
 
   const gaParams = new URLSearchParams();
@@ -23,7 +23,7 @@ const getParams = async () => {
   gaParams.append('idsite', '2');
   gaParams.append('rec', '1');
   gaParams.append('url', encodeURI(location.href));
-  gaParams.append('_id', cid);
+  gaParams.append('_id', requestId);
   gaParams.append('rand', nanoid());
   gaParams.append('ca', '1');
   gaParams.append('h', new Date().getUTCHours().toString());

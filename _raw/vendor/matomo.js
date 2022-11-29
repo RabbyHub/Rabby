@@ -4,12 +4,13 @@ _paq.push(['trackPageView']);
 _paq.push(['enableLinkTracking']);
 (function () {
   setTimeout(() => {
-    chrome.storage.local.get('cid_v2').then(function (result) {
+    chrome.storage.local.get('preference').then(function (result) {
       var u = 'https://matomo.debank.com/';
       _paq.push(['setTrackerUrl', u + 'matomo.php']);
       _paq.push(['setSiteId', '2']);
-      _paq.push(['setVisitorId', result.cid_v2]);
-
+      if (result.preference && result.preference.requestId) {
+        _paq.push(['setVisitorId', result.preference.requestId]);
+      }
       var d = document,
         g = d.createElement('script'),
         s = d.getElementsByTagName('script')[0];
