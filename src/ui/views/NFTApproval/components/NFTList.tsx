@@ -3,7 +3,7 @@ import { Empty } from '@/ui/component';
 import { connectStore, useRabbySelector } from '@/ui/store';
 import { getKRCategoryByType } from '@/utils/transaction';
 import React from 'react';
-import { matomoRequestEvent } from '@/background/utils/matomo-request';
+import { matomoRequestEvent } from '@/utils/matomo-request';
 import { useTranslation } from 'react-i18next';
 import IconSearch from 'ui/assets/search.svg';
 import { getChain } from 'utils';

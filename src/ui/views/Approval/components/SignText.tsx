@@ -23,7 +23,7 @@ import AccountCard from './AccountCard';
 import LedgerWebHIDAlert from './LedgerWebHIDAlert';
 
 import { getKRCategoryByType } from '@/utils/transaction';
-import { matomoRequestEvent } from '@/background/utils/matomo-request';
+import { matomoRequestEvent } from '@/utils/matomo-request';
 import SecurityCheckCard from './SecurityCheckCard';
 import ProcessTooltip from './ProcessTooltip';
 import SecurityCheck from './SecurityCheck';

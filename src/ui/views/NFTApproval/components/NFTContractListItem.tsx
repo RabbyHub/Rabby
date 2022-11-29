@@ -4,7 +4,7 @@ import { ellipsis } from '@/ui/utils/address';
 import { getKRCategoryByType } from '@/utils/transaction';
 import { Button } from 'antd';
 import React from 'react';
-import { matomoRequestEvent } from '@/background/utils/matomo-request';
+import { matomoRequestEvent } from '@/utils/matomo-request';
 import { getChain } from 'utils';
 import { getAmountText } from '../utils';
 

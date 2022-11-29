@@ -4,7 +4,7 @@ import { getKRCategoryByType } from '@/utils/transaction';
 import { Modal } from 'antd';
 import clsx from 'clsx';
 import React, { useState } from 'react';
-import { matomoRequestEvent } from '@/background/utils/matomo-request';
+import { matomoRequestEvent } from '@/utils/matomo-request';
 import { useHover } from 'ui/utils';
 import NFTAvatar from './NFTAvatar';
 import NFTModal from './NFTModal';

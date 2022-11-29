@@ -1,5 +1,5 @@
 import { customAlphabet, nanoid } from 'nanoid';
-import { preferenceService } from '../service';
+import { browser } from 'webextension-polyfill-ts';
 
 const ANALYTICS_PATH = 'https://matomo.debank.com/matomo.php';
 const genRequestId = customAlphabet('1234567890abcdef', 16);
@@ -12,17 +12,23 @@ async function postData(url = '', params: URLSearchParams) {
   return response;
 }
 const getParams = async () => {
-  let requestId = await preferenceService.getRequestId();
+  const { preference } = await browser.storage.local.get('preference');
+  let requestId = preference?.requestId;
   if (!requestId) {
     requestId = genRequestId();
-    preferenceService.updateRequestId(requestId);
+    preference.requestId = requestId;
+    browser.storage.local.set({ preference });
   }
 
   const gaParams = new URLSearchParams();
-  gaParams.append('action_name', location.hash.substring(2) ?? 'background');
+
+  const pathname = location.hash.substring(2) || 'background';
+  const url = `https://${location.host}.com/${pathname}`;
+
+  gaParams.append('action_name', pathname);
   gaParams.append('idsite', '2');
   gaParams.append('rec', '1');
-  gaParams.append('url', encodeURI(location.href));
+  gaParams.append('url', encodeURI(url));
   gaParams.append('_id', requestId);
   gaParams.append('rand', nanoid());
   gaParams.append('ca', '1');

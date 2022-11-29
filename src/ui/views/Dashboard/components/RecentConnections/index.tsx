@@ -3,7 +3,7 @@ import { message } from 'antd';
 import { ConnectedSite } from 'background/service/permission';
 import React, { useEffect, useMemo, useState } from 'react';
 import { useTranslation } from 'react-i18next';
-import { matomoRequestEvent } from '@/background/utils/matomo-request';
+import { matomoRequestEvent } from '@/utils/matomo-request';
 import { openInTab, useWallet } from 'ui/utils';
 import ConnectionList from './ConnectionList';
 import './style.less';

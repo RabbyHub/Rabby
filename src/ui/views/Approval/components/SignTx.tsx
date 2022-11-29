@@ -40,7 +40,7 @@ import {
   unpadHexString,
 } from 'ethereumjs-util';
 import React, { ReactNode, useEffect, useMemo, useState } from 'react';
-import { matomoRequestEvent } from '@/background/utils/matomo-request';
+import { matomoRequestEvent } from '@/utils/matomo-request';
 import { useTranslation } from 'react-i18next';
 import IconGnosis from 'ui/assets/walletlogo/gnosis.svg';
 import IconWatch from 'ui/assets/walletlogo/watch-purple.svg';

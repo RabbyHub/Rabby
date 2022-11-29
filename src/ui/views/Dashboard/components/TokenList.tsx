@@ -8,7 +8,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { matomoRequestEvent } from '@/background/utils/matomo-request';
+import { matomoRequestEvent } from '@/utils/matomo-request';
 import { useTranslation } from 'react-i18next';
 import { useDebounce } from 'react-use';
 import { FixedSizeList } from 'react-window';

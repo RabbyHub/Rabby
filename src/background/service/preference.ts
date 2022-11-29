@@ -64,7 +64,6 @@ export interface PreferenceStore {
   needSwitchWalletCheck?: boolean;
   lastSelectedSwapPayToken?: Record<string, TokenItem>;
   lastSelectedGasTopUpChain?: Record<string, CHAINS_ENUM>;
-  requestId?: string;
 }
 
 const SUPPORT_LOCALES = ['en'];
@@ -101,7 +100,6 @@ class PreferenceService {
         nftApprovalChain: {},
         sendLogTime: 0,
         needSwitchWalletCheck: true,
-        requestId: '',
       },
     });
     if (!this.store.locale || this.store.locale !== defaultLang) {
@@ -458,13 +456,6 @@ class PreferenceService {
   };
   updateNeedSwitchWalletCheck = (value: boolean) => {
     this.store.needSwitchWalletCheck = value;
-  };
-  getRequestId = () => {
-    return this.store.requestId;
-  };
-
-  updateRequestId = (id: string) => {
-    this.store.requestId = id;
   };
 }
 

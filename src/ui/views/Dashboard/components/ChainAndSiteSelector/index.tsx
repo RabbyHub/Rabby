@@ -4,7 +4,7 @@ import { ConnectedSite } from 'background/service/permission';
 import clsx from 'clsx';
 import React, { useCallback, useEffect, useMemo, useState } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
-import { matomoRequestEvent } from '@/background/utils/matomo-request';
+import { matomoRequestEvent } from '@/utils/matomo-request';
 import IconAlertRed from 'ui/assets/alert-red.svg';
 import IconDapps from 'ui/assets/dapps.svg';
 import IconGas from 'ui/assets/dashboard/gas.svg';

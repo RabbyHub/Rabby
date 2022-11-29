@@ -7,7 +7,7 @@ import clsx from 'clsx';
 import { useTranslation, Trans } from 'react-i18next';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import { matomoRequestEvent } from '@/background/utils/matomo-request';
+import { matomoRequestEvent } from '@/utils/matomo-request';
 import {
   KEYRING_CLASS,
   KEYRING_ICONS,

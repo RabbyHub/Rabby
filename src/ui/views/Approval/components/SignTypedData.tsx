@@ -15,7 +15,7 @@ import IconQuestionMark from 'ui/assets/question-mark-gray.svg';
 import IconWatch from 'ui/assets/walletlogo/watch-purple.svg';
 import IconGnosis from 'ui/assets/walletlogo/gnosis.svg';
 import clsx from 'clsx';
-import { matomoRequestEvent } from '@/background/utils/matomo-request';
+import { matomoRequestEvent } from '@/utils/matomo-request';
 import { getKRCategoryByType } from '@/utils/transaction';
 import { underline2Camelcase } from '@/background/utils';
 import SecurityCheckCard from './SecurityCheckCard';

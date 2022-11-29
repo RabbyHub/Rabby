@@ -2,7 +2,7 @@ import { DrawerProps } from 'antd';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
-import { matomoRequestEvent } from '@/background/utils/matomo-request';
+import { matomoRequestEvent } from '@/utils/matomo-request';
 import IconArrowRight from 'ui/assets/arrow-right-gray.svg';
 import IconTokenApproval from 'ui/assets/icon-token-approval.svg';
 import IconNFTApproval from 'ui/assets/nft-approval.svg';

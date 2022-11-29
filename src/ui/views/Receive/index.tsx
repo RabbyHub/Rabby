@@ -11,7 +11,7 @@ import {
 import QRCode from 'qrcode.react';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useHistory } from 'react-router-dom';
-import { matomoRequestEvent } from '@/background/utils/matomo-request';
+import { matomoRequestEvent } from '@/utils/matomo-request';
 import { ReactComponent as IconBack } from 'ui/assets/back.svg';
 import IconCopy from 'ui/assets/icon-copy-1.svg';
 import IconEyeHide from 'ui/assets/icon-eye-hide.svg';

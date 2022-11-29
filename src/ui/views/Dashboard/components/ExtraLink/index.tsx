@@ -3,7 +3,7 @@ import { openInTab } from '@/ui/utils';
 import { getKRCategoryByType } from '@/utils/transaction';
 import clsx from 'clsx';
 import React, { useCallback } from 'react';
-import { matomoRequestEvent } from '@/background/utils/matomo-request';
+import { matomoRequestEvent } from '@/utils/matomo-request';
 
 interface ExtraLinkProps {
   className?: string;

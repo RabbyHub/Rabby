@@ -52,7 +52,7 @@ import SwapQuotes from './SwapQuote';
 import GasTopUp from './GasTopUp';
 import ApprovalManage from './ApprovalManage';
 import { ImportMyMetaMaskAccount } from './ImportMyMetaMaskAccount';
-import { matomoRequestEvent } from '@/background/utils/matomo-request';
+import { matomoRequestEvent } from '@/utils/matomo-request';
 
 declare global {
   interface Window {

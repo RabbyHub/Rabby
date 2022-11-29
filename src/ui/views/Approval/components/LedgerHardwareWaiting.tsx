@@ -1,7 +1,7 @@
 import React, { useEffect, useState } from 'react';
 import { Button, message } from 'antd';
 import { useTranslation } from 'react-i18next';
-import { matomoRequestEvent } from '@/background/utils/matomo-request';
+import { matomoRequestEvent } from '@/utils/matomo-request';
 import { Account } from 'background/service/preference';
 import {
   CHAINS,

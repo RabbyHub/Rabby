@@ -1,5 +1,5 @@
 import { Button, Form, Input, Skeleton, Slider, Tooltip } from 'antd';
-import { matomoRequestEvent } from '@/background/utils/matomo-request';
+import { matomoRequestEvent } from '@/utils/matomo-request';
 import { ValidateStatus } from 'antd/lib/form/FormItem';
 import { GasLevel, Tx } from 'background/service/openapi';
 import BigNumber from 'bignumber.js';

@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import { useTranslation, Trans } from 'react-i18next';
-import { matomoRequestEvent } from '@/background/utils/matomo-request';
+import { matomoRequestEvent } from '@/utils/matomo-request';
 import { sortBy } from 'lodash';
 import { StrayPageWithButton } from 'ui/component';
 import AddressItem from 'ui/component/AddressList/AddressItem';

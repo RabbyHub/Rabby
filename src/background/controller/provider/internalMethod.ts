@@ -6,7 +6,7 @@ import {
   preferenceService,
 } from 'background/service';
 import providerController from './controller';
-import { matomoRequestEvent } from '@/background/utils/matomo-request';
+import { matomoRequestEvent } from '@/utils/matomo-request';
 
 const networkIdMap: {
   [key: string]: string;

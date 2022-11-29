@@ -33,7 +33,7 @@ import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
 import { setPopupIcon } from './utils';
 import { getSentryEnv } from '@/utils/env';
-import { matomoRequestEvent } from './utils/matomo-request';
+import { matomoRequestEvent } from '@/utils/matomo-request';
 
 dayjs.extend(utc);
 

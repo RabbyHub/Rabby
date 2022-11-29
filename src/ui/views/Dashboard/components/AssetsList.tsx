@@ -2,7 +2,7 @@ import clsx from 'clsx';
 import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import { FixedSizeList } from 'react-window';
-import { matomoRequestEvent } from '@/background/utils/matomo-request';
+import { matomoRequestEvent } from '@/utils/matomo-request';
 import IconArrowUp from 'ui/assets/arrow-up.svg';
 import IconOpenDeFi from 'ui/assets/dashboard/opendefi.png';
 import { Empty, TokenWithChain } from 'ui/component';

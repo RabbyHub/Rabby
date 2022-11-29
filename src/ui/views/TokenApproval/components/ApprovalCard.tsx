@@ -3,7 +3,7 @@ import { TokenWithChain } from '@/ui/component';
 import { Button, message } from 'antd';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
-import { matomoRequestEvent } from '@/background/utils/matomo-request';
+import { matomoRequestEvent } from '@/utils/matomo-request';
 import IconUnknown from 'ui/assets/icon-unknown-1.svg';
 import {
   numberWithCommasIsLtOne,

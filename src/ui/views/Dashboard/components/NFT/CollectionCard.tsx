@@ -4,7 +4,7 @@ import { Modal } from 'antd';
 import ChainIcon from './ChainIcon';
 import NFTAvatar from './NFTAvatar';
 import NFTModal from './NFTModal';
-import { matomoRequestEvent } from '@/background/utils/matomo-request';
+import { matomoRequestEvent } from '@/utils/matomo-request';
 import './style.less';
 import { getKRCategoryByType } from '@/utils/transaction';
 import { useAccount } from '@/ui/store-hooks';

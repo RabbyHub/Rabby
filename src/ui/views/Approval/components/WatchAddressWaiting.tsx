@@ -2,7 +2,7 @@ import React, { useEffect, useRef, useState } from 'react';
 import { Button } from 'antd';
 import { useHistory } from 'react-router-dom';
 import { useTranslation, Trans } from 'react-i18next';
-import { matomoRequestEvent } from '@/background/utils/matomo-request';
+import { matomoRequestEvent } from '@/utils/matomo-request';
 import { DEFAULT_BRIDGE } from '@rabby-wallet/eth-walletconnect-keyring';
 import { Account } from 'background/service/preference';
 import {

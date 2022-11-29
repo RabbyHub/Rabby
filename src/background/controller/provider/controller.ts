@@ -45,7 +45,7 @@ import { Account } from 'background/service/preference';
 import { validateGasPriceRange, is1559Tx } from '@/utils/transaction';
 import stats from '@/stats';
 import BigNumber from 'bignumber.js';
-import { matomoRequestEvent } from '@/background/utils/matomo-request';
+import { matomoRequestEvent } from '@/utils/matomo-request';
 
 const reportSignText = (params: {
   method: string;
