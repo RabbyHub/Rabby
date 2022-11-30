@@ -130,11 +130,10 @@ restoreAppState();
       if (dayjs(time).utc().isSame(dayjs().utc(), 'day')) {
         return;
       }
-      const contacts = contactBookService.listContacts();
+
       matomoRequestEvent({
         category: 'User',
-        action: 'contactBook',
-        label: contacts.length.toString(),
+        action: 'enable',
       });
       const chains = preferenceService.getSavedChains();
       matomoRequestEvent({
@@ -160,7 +159,9 @@ restoreAppState();
       });
       Object.values(groups).forEach((group) => {
         matomoRequestEvent({
-          ...group[0],
+          category: 'UserAddress',
+          action: group[0].category,
+          label: [group[0].action, group[0].label, group.length].join('|'),
           value: group.length,
         });
       });
@@ -192,11 +193,6 @@ restoreAppState();
 
 // for page provider
 browser.runtime.onConnect.addListener((port) => {
-  matomoRequestEvent({
-    category: 'User',
-    action: 'enable',
-  });
-
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
   port._timer = setTimeout(forceReconnect, 250e3, port);

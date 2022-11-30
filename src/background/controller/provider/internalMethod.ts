@@ -58,10 +58,6 @@ const hasOtherProvider = () => {
   preferenceService.setHasOtherProvider(true);
   const isRabby = preferenceService.getIsDefaultWallet();
   setPopupIcon(isRabby ? 'rabby' : 'metamask');
-  matomoRequestEvent({
-    category: 'User',
-    action: 'hasMetaMask',
-  });
   return true;
 };
 
