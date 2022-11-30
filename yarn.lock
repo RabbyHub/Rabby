@@ -1351,7 +1351,7 @@
   resolved "https://registry.yarnpkg.com/@ctrl/tinycolor/-/tinycolor-3.4.0.tgz#c3c5ae543c897caa9c2a68630bed355be5f9990f"
   integrity sha512-JZButFdZ1+/xAfpguQHoabIXkcqRRKpMrWKBkpEZZyxfY9C1DpADFB8PEqGSTeFr135SaTRfKqGKx5xSCLI7ZQ==
 
-"@debank/common@^0.2.21":
+"@debank/common@^0.2.20", "@debank/common@^0.2.21":
   version "0.2.21"
   resolved "https://registry.yarnpkg.com/@debank/common/-/common-0.2.21.tgz#36e158c8f82de64523bb3bf09ffa64c756e19289"
   integrity sha512-Dx3u1+xmeLfDX4GUmIaZ6Rq3R/nif/6+iLf0KyJWXMXQ7bP3w14RiqZ4JNv0Q4MpYAr8uzhoSmzdhROCZmWUEQ==
@@ -3332,6 +3332,15 @@
     lodash "^4.17.21"
     sinon-chrome "^3.0.1"
     webextension-polyfill-ts "^0.26.0"
+
+"@rabby-wallet/rabby-swap@^0.0.3":
+  version "0.0.3"
+  resolved "https://registry.yarnpkg.com/@rabby-wallet/rabby-swap/-/rabby-swap-0.0.3.tgz#0b39612cdca75cbc321330efaa24fd1a9bf9f1ff"
+  integrity sha512-lDZN4BRO2JGAoD4ou8Sn/2Ti79/K42KAkg0aWC6ZlZ9na09VhGWvBmhPsFfzRNKNXu4rM6Ux2QtUKDh0g/kqXQ==
+  dependencies:
+    "@debank/common" "^0.2.20"
+    axios "^0.27.2"
+    web3-eth-abi "^1.8.1"
 
 "@rabby-wallet/widgets@^1.0.9":
   version "1.0.9"
@@ -15007,6 +15016,14 @@ web3-eth-abi@^1.7.0:
     "@ethersproject/abi" "5.0.7"
     web3-utils "1.7.0"
 
+web3-eth-abi@^1.8.1:
+  version "1.8.1"
+  resolved "https://registry.yarnpkg.com/web3-eth-abi/-/web3-eth-abi-1.8.1.tgz#47455d6513217c4b0866fea6f97b1c4afa0b6535"
+  integrity sha512-0mZvCRTIG0UhDhJwNQJgJxu4b4DyIpuMA0GTfqxqeuqzX4Q/ZvmoNurw0ExTfXaGPP82UUmmdkRi6FdZOx+C6w==
+  dependencies:
+    "@ethersproject/abi" "^5.6.3"
+    web3-utils "1.8.1"
+
 web3-eth-iban@1.6.1:
   version "1.6.1"
   resolved "https://registry.yarnpkg.com/web3-eth-iban/-/web3-eth-iban-1.6.1.tgz#20bbed75723e3e9ff98e624979629d26329462b6"
@@ -15059,6 +15076,19 @@ web3-utils@1.7.0, web3-utils@^1.7.0:
   integrity sha512-O8Tl4Ky40Sp6pe89Olk2FsaUkgHyb5QAXuaKo38ms3CxZZ4d3rPGfjP9DNKGm5+IUgAZBNpF1VmlSmNCqfDI1w==
   dependencies:
     bn.js "^4.11.9"
+    ethereum-bloom-filters "^1.0.6"
+    ethereumjs-util "^7.1.0"
+    ethjs-unit "0.1.6"
+    number-to-bn "1.7.0"
+    randombytes "^2.1.0"
+    utf8 "3.0.0"
+
+web3-utils@1.8.1:
+  version "1.8.1"
+  resolved "https://registry.yarnpkg.com/web3-utils/-/web3-utils-1.8.1.tgz#f2f7ca7eb65e6feb9f3d61056d0de6bbd57125ff"
+  integrity sha512-LgnM9p6V7rHHUGfpMZod+NST8cRfGzJ1BTXAyNo7A9cJX9LczBfSRxJp+U/GInYe9mby40t3v22AJdlELibnsQ==
+  dependencies:
+    bn.js "^5.2.1"
     ethereum-bloom-filters "^1.0.6"
     ethereumjs-util "^7.1.0"
     ethjs-unit "0.1.6"
