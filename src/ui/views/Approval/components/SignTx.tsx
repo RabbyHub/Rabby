@@ -1453,7 +1453,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       gas = target;
     } else {
       // no cache, use the fast level in gasMarket
-      gas = gasList.find((item) => item.level === 'standard')!;
+      gas = gasList.find((item) => item.level === 'normal')!;
     }
 
     setSelectedGas(gas);
