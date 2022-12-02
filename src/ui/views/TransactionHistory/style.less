@@ -20,8 +20,7 @@
       font-size: 15px;
       line-height: 18px;
       color: @color-body;
-      cursor: pointer;
-      width: 100%;
+      flex: 1;
       span {
         max-width: 80%;
         overflow: hidden;
@@ -34,17 +33,20 @@
         margin-right: 8px;
         border-radius: 2px;
       }
-      .icon-external {
-        display: none;
-        margin-left: 6px;
-        path {
-          fill: @color-comment-1;
-        }
-      }
-      &:hover {
-        text-decoration: underline;
+      .tx-explain__text {
+        cursor: pointer;
         .icon-external {
-          display: block;
+          display: none;
+          margin-left: 6px;
+          path {
+            fill: @color-comment-1;
+          }
+        }
+        &:hover {
+          text-decoration: underline;
+          .icon-external {
+            display: block;
+          }
         }
       }
     }
@@ -80,10 +82,10 @@
       display: flex;
       align-items: flex-end;
       &__actions {
-        flex: 1;
         display: flex;
         justify-content: flex-end;
         align-items: center;
+        margin-right: -5px;
         .icon-action {
           cursor: pointer;
           width: 24px;
@@ -101,20 +103,9 @@
           background-color: @color-border;
         }
       }
-      .pending-detail {
-        display: flex;
-        align-items: center;
-        color: #707880;
-        font-size: 12px;
-        .icon-question-mark {
-          width: 10px;
-          height: 10px;
-          margin-left: 6px;
-        }
-      }
     }
     .ahead {
-      font-size: 14px;
+      font-size: 12px;
       color: #7f8a9a;
     }
     &--children {
@@ -124,6 +115,18 @@
       font-size: 12px;
       line-height: 14px;
       color: @color-comment-1;
+      .pending-detail {
+        display: flex;
+        align-items: center;
+        color: #707280;
+        font-size: 12px;
+        margin-bottom: 10px;
+        .icon-question-mark {
+          width: 10px;
+          height: 10px;
+          margin-left: 6px;
+        }
+      }
       &__item {
         display: flex;
         margin-bottom: 10px;
@@ -147,7 +150,15 @@
       }
     }
   }
- 
+  
+  &__pending {
+    .tx-history__item {
+      .tx-footer {
+        margin-top: 12px;
+      }
+    }
+  }
+
   &__completed {
     .subtitle {
       margin-bottom: 12px;

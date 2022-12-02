@@ -5,11 +5,12 @@ import clsx from 'clsx';
 import minBy from 'lodash/minBy';
 import maxBy from 'lodash/maxBy';
 import { Tooltip } from 'antd';
+import styled from 'styled-components';
 import { useWallet, isSameAddress } from 'ui/utils';
 import { splitNumberByStep } from 'ui/utils/number';
 import { sinceTime } from 'ui/utils';
 import { openInTab } from 'ui/utils/webapi';
-import { PageHeader, Empty } from 'ui/component';
+import { Empty } from 'ui/component';
 import {
   TransactionGroup,
   TransactionHistoryItem,
@@ -19,7 +20,8 @@ import {
   TokenItem,
   GasLevel,
 } from 'background/service/openapi';
-import { CHAINS, MINIMUM_GAS_LIMIT } from 'consts';
+import { ConnectedSite } from 'background/service/permission';
+import { CHAINS, INTERNAL_REQUEST_ORIGIN } from 'consts';
 import { SvgPendingSpin } from 'ui/assets';
 import IconUser from 'ui/assets/address-management.svg';
 import IconUnknown from 'ui/assets/icon-unknown.svg';
@@ -32,9 +34,15 @@ import { Account } from '@/background/service/preference';
 import interval from 'interval-promise';
 
 const TransactionExplain = ({
+  isFailed,
+  isSubmitFailed,
+  isCancel,
   explain,
   onOpenScan,
 }: {
+  isFailed: boolean;
+  isSubmitFailed: boolean;
+  isCancel: boolean;
   explain: ExplainTxResponse;
   onOpenScan(): void;
 }) => {
@@ -192,8 +200,17 @@ const TransactionExplain = ({
   return (
     <p className="tx-explain" onClick={onOpenScan}>
       {icon || <img className="icon icon-explain" src={IconUnknown} />}
-      <span>{content || t('Unknown Transaction')}</span>
-      <SvgIconOpenExternal className="icon icon-external" />
+      <div className="flex flex-1">
+        <span className="tx-explain__text flex flex-1 items-center">
+          {content || t('Unknown Transaction')}
+          <SvgIconOpenExternal className="icon icon-external" />
+        </span>
+        <span className="text-red-light text-14 font-normal text-right">
+          {isCancel && t('Canceled')}
+          {isFailed && t('Failed')}
+          {isSubmitFailed && t('Failed to submit')}
+        </span>
+      </div>
     </p>
   );
 };
@@ -220,6 +237,37 @@ const ChildrenTxText = ({
   return <span className="tx-type">{text}</span>;
 };
 
+const TransactionWebsiteWrapper = styled.a`
+  font-weight: 400;
+  font-size: 12px;
+  line-height: 14px;
+  color: #707280;
+  flex: 1;
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+  &:hover {
+    color: #707280;
+    text-decoration: underline;
+  }
+`;
+
+const TransactionWebsite = ({ site }: { site: ConnectedSite }) => {
+  return site.origin === INTERNAL_REQUEST_ORIGIN ? (
+    <span className="flex-1 whitespace-nowrap overflow-ellipsis overflow-hidden text-gray-light text-12">
+      Rabby Wallet
+    </span>
+  ) : (
+    <TransactionWebsiteWrapper
+      href={site.origin}
+      target="_blank"
+      title={site.origin}
+    >
+      {site.origin}
+    </TransactionWebsiteWrapper>
+  );
+};
+
 const TransactionItem = ({
   item,
   canCancel,
@@ -233,6 +281,9 @@ const TransactionItem = ({
   const wallet = useWallet();
   const chain = Object.values(CHAINS).find((c) => c.id === item.chainId)!;
   const originTx = minBy(item.txs, (tx) => tx.createdAt)!;
+  const maxGasTx = maxBy(item.txs, (tx) =>
+    Number(tx.rawTx.gasPrice || tx.rawTx.maxFeePerGas || 0)
+  )!;
   const completedTx = item.txs.find((tx) => tx.isCompleted);
   const isCompleted = !item.isPending || item.isSubmitFailed;
   const isCanceled =
@@ -445,42 +496,15 @@ const TransactionItem = ({
             </span>
           )}
         </div>
-        <TransactionExplain
-          explain={item.explain}
-          onOpenScan={handleOpenScan}
-        />
-        {isPending ? (
-          <div className="tx-footer">
-            {item.txs.length > 1 ? (
-              <div className="pending-detail">
-                {t('Pending detail')}
-                <Tooltip
-                  title={t('PendingDetailTip')}
-                  overlayClassName="rectangle pending-detail__tooltip"
-                  autoAdjustOverflow={false}
-                >
-                  <img
-                    className="icon icon-question-mark"
-                    src={IconQuestionMark}
-                  />
-                </Tooltip>
-              </div>
-            ) : (
-              <div className="ahead">
-                {txQueues[originTx.hash] ? (
-                  <>
-                    {Number(
-                      originTx.rawTx.gasPrice ||
-                        originTx.rawTx.maxFeePerGas ||
-                        0
-                    ) / 1e9}{' '}
-                    Gwei{' '}
-                  </>
-                ) : (
-                  t('Unknown')
-                )}
-              </div>
-            )}
+        <div className="flex">
+          <TransactionExplain
+            isFailed={item.isFailed}
+            isCancel={isCanceled}
+            isSubmitFailed={!!item.isSubmitFailed}
+            explain={item.explain}
+            onOpenScan={handleOpenScan}
+          />
+          {isPending && (
             <div
               className={clsx('tx-footer__actions', {
                 'opacity-40': !canCancel,
@@ -521,44 +545,72 @@ const TransactionItem = ({
                 </div>
               </Tooltip>
             </div>
+          )}
+        </div>
+        {isPending ? (
+          <div className="tx-footer">
+            {originTx.site && <TransactionWebsite site={originTx.site} />}
+            <div className="ahead">
+              {txQueues[originTx.hash] ? (
+                <>
+                  {Number(
+                    maxGasTx.rawTx.gasPrice || maxGasTx.rawTx.maxFeePerGas || 0
+                  ) / 1e9}{' '}
+                  Gwei{' '}
+                </>
+              ) : (
+                t('Unknown')
+              )}
+            </div>
           </div>
         ) : (
           <div className="tx-footer justify-between text-12">
             {item.isSubmitFailed ? (
-              <span className="flex-1 whitespace-nowrap overflow-ellipsis overflow-hidden text-gray-light" />
+              originTx.site && <TransactionWebsite site={originTx.site} />
             ) : (
-              <span className="flex-1 whitespace-nowrap overflow-ellipsis overflow-hidden text-gray-light">
-                Gas:{' '}
-                {gasTokenCount
-                  ? `${gasTokenCount.toFixed(
-                      8
-                    )} ${gasTokenSymbol} ($${gasUSDValue})`
-                  : txQueues[completedTx!.hash]
-                  ? txQueues[completedTx!.hash].tokenCount?.toFixed(8) +
-                    ` ${txQueues[completedTx!.hash].token?.symbol} ($${(
-                      txQueues[completedTx!.hash].tokenCount! *
-                      (txQueues[completedTx!.hash].token?.price || 1)
-                    ).toFixed(2)})`
-                  : t('Unknown')}
-              </span>
+              <>
+                {completedTx?.site ? (
+                  <TransactionWebsite site={completedTx.site} />
+                ) : (
+                  <span className="flex-1 whitespace-nowrap overflow-ellipsis overflow-hidden text-gray-light"></span>
+                )}
+                <span className="whitespace-nowrap overflow-ellipsis overflow-hidden text-gray-light text-right">
+                  Gas:{' '}
+                  {gasTokenCount
+                    ? `${gasTokenCount.toFixed(
+                        6
+                      )} ${gasTokenSymbol} ($${gasUSDValue})`
+                    : txQueues[completedTx!.hash]
+                    ? txQueues[completedTx!.hash].tokenCount?.toFixed(8) +
+                      ` ${txQueues[completedTx!.hash].token?.symbol} ($${(
+                        txQueues[completedTx!.hash].tokenCount! *
+                        (txQueues[completedTx!.hash].token?.price || 1)
+                      ).toFixed(2)})`
+                    : t('Unknown')}
+                </span>
+              </>
             )}
-            <span className="text-red-light">
-              {isCanceled && t('Canceled')}
-              {item.isFailed && t('Failed')}
-              {item.isSubmitFailed && t('Failed to submit')}
-            </span>
           </div>
         )}
       </div>
       {isPending && item.txs.length > 1 && (
         <div className="tx-history__item--children">
+          <div className="pending-detail">
+            {t('Pending detail')}
+            <Tooltip
+              title={t('PendingDetailTip')}
+              overlayClassName="rectangle pending-detail__tooltip"
+              autoAdjustOverflow={false}
+            >
+              <img className="icon icon-question-mark" src={IconQuestionMark} />
+            </Tooltip>
+          </div>
           {item.txs
             .sort((a, b) => b.createdAt - a.createdAt)
             .map((tx, index) => (
               <div
                 className={clsx('tx-history__item--children__item', {
-                  'opacity-50': index === 1,
-                  'opacity-30': index > 1,
+                  'opacity-50': index >= 1,
                 })}
               >
                 <ChildrenTxText tx={tx} originTx={originTx} />
