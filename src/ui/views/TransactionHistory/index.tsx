@@ -200,7 +200,7 @@ const TransactionExplain = ({
   return (
     <p className="tx-explain" onClick={onOpenScan}>
       {icon || <img className="icon icon-explain" src={IconUnknown} />}
-      <div className="flex flex-1">
+      <div className="flex flex-1 justify-between">
         <span className="tx-explain__text flex flex-1 items-center">
           {content || t('Unknown Transaction')}
           <SvgIconOpenExternal className="icon icon-external" />
@@ -267,6 +267,11 @@ const TransactionWebsite = ({ site }: { site: ConnectedSite }) => {
     </TransactionWebsiteWrapper>
   );
 };
+
+const ChildrenWrapper = styled.div`
+  padding: 2px;
+  padding-top: 0;
+`;
 
 const TransactionItem = ({
   item,
@@ -594,41 +599,47 @@ const TransactionItem = ({
         )}
       </div>
       {isPending && item.txs.length > 1 && (
-        <div className="tx-history__item--children">
-          <div className="pending-detail">
-            {t('Pending detail')}
-            <Tooltip
-              title={t('PendingDetailTip')}
-              overlayClassName="rectangle pending-detail__tooltip"
-              autoAdjustOverflow={false}
-            >
-              <img className="icon icon-question-mark" src={IconQuestionMark} />
-            </Tooltip>
-          </div>
-          {item.txs
-            .sort((a, b) => b.createdAt - a.createdAt)
-            .map((tx, index) => (
-              <div
-                className={clsx('tx-history__item--children__item', {
-                  'opacity-50': index >= 1,
-                })}
+        <ChildrenWrapper>
+          <div className="tx-history__item--children">
+            <div className="pending-detail">
+              {t('Pending detail')}
+              <Tooltip
+                title={t('PendingDetailTip')}
+                overlayClassName="rectangle pending-detail__tooltip"
+                autoAdjustOverflow={false}
               >
-                <ChildrenTxText tx={tx} originTx={originTx} />
-                <div className="ahead">
-                  {txQueues[tx.hash] ? (
-                    <>
-                      {Number(tx.rawTx.gasPrice || tx.rawTx.maxFeePerGas || 0) /
-                        1e9}{' '}
-                      Gwei{' '}
-                    </>
-                  ) : (
-                    t('Unknown')
-                  )}
+                <img
+                  className="icon icon-question-mark"
+                  src={IconQuestionMark}
+                />
+              </Tooltip>
+            </div>
+            {item.txs
+              .sort((a, b) => b.createdAt - a.createdAt)
+              .map((tx, index) => (
+                <div
+                  className={clsx('tx-history__item--children__item', {
+                    'opacity-50': index >= 1,
+                  })}
+                >
+                  <ChildrenTxText tx={tx} originTx={originTx} />
+                  <div className="ahead">
+                    {txQueues[tx.hash] ? (
+                      <>
+                        {Number(
+                          tx.rawTx.gasPrice || tx.rawTx.maxFeePerGas || 0
+                        ) / 1e9}{' '}
+                        Gwei{' '}
+                      </>
+                    ) : (
+                      t('Unknown')
+                    )}
+                  </div>
+                  <SvgPendingSpin className="icon icon-spin" />
                 </div>
-                <SvgPendingSpin className="icon icon-spin" />
-              </div>
-            ))}
-        </div>
+              ))}
+          </div>
+        </ChildrenWrapper>
       )}
     </div>
   );
