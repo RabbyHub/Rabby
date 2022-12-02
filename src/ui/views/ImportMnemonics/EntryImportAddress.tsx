@@ -29,6 +29,11 @@ const ActionEntries = styled.div`
       border-color: ${LessPalette['@primary-color']};
       background: rgba(134, 151, 255, 0.1);
     }
+
+    .left-icon > img {
+      width: 24px;
+      height: 24px;
+    }
   }
 `;
 
