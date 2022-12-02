@@ -285,7 +285,6 @@ const TransactionItem = ({
     Number(tx.rawTx.gasPrice || tx.rawTx.maxFeePerGas || 0)
   )!;
   const completedTx = item.txs.find((tx) => tx.isCompleted);
-  console.log('completedTx', completedTx);
   const isCompleted = !item.isPending || item.isSubmitFailed;
   const isCanceled =
     !item.isPending &&
