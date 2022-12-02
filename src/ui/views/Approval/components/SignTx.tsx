@@ -252,7 +252,6 @@ const getRecommendGas = async ({
   gas,
   wallet,
   tx,
-  chainId,
 }: {
   gas: number;
   wallet: ReturnType<typeof useWallet>;
@@ -288,25 +287,9 @@ const getRecommendGas = async ({
       gas: new BigNumber(res.gas_used),
     };
   }
-  const chain = Object.values(CHAINS).find((item) => item.id === chainId);
-  if (!chain) {
-    throw new Error('chain not found');
-  }
-  const block = await wallet.requestETHRpc(
-    {
-      method: 'eth_getBlockByNumber',
-      params: ['latest', false],
-    },
-    chain.serverId
-  );
   return {
     needRatio: false,
-    gas: new BigNumber(
-      new BigNumber(block.gasLimit || block.gasUsed)
-        .times(19)
-        .div(20)
-        .toFixed(0)
-    ),
+    gas: new BigNumber(1000000),
   };
 };
 
