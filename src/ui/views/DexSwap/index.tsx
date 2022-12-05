@@ -21,7 +21,7 @@ import {
 import { ReactComponent as IconSwitchToken } from '@/ui/assets/swap/switch-token.svg';
 import { ReactComponent as IconLoading } from '@/ui/assets/swap/loading.svg';
 import BigNumber from 'bignumber.js';
-import { splitNumberByStep, useWallet } from '@/ui/utils';
+import { splitNumberByStep, useWallet, isSameAddress } from '@/ui/utils';
 import { Alert, Button, Skeleton, Switch } from 'antd';
 import { InfoCircleFilled } from '@ant-design/icons';
 import { Slippage } from './component/Slippage';
@@ -136,8 +136,8 @@ export const SwapByDex = () => {
       ];
 
       const res =
-        wrapTokens.includes(payToken?.id) &&
-        wrapTokens.includes(receiveToken?.id);
+        !!wrapTokens.find((token) => isSameAddress(payToken?.id, token)) &&
+        !!wrapTokens.find((token) => isSameAddress(receiveToken?.id, token));
       setDexId(res ? DEX_ENUM.WRAPTOKEN : oDexId);
       return res;
     }
@@ -341,10 +341,11 @@ export const SwapByDex = () => {
 
   const isStableCoin = useMemo(() => {
     if (payToken?.price && receiveToken?.price) {
-      return (
-        new BigNumber(payToken?.price).minus(1).div(1).abs().lte(0.05) &&
-        new BigNumber(receiveToken?.price).minus(1).div(1).abs().lte(0.05)
-      );
+      return new BigNumber(payToken?.price)
+        .minus(receiveToken?.price)
+        .div(payToken?.price)
+        .abs()
+        .lte(0.05);
     }
     return false;
   }, [payToken, receiveToken]);
