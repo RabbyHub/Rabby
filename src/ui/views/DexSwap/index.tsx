@@ -545,6 +545,10 @@ export const SwapByDex = () => {
 
     return;
   }, [
+    chain,
+    totalGasUsedLoading,
+    gasMarket,
+    dexId,
     isInsufficient,
     payToken,
     payAmount,
