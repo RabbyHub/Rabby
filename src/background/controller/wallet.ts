@@ -596,6 +596,7 @@ export class WalletController extends BaseController {
       from,
       to,
       chainId: chainId,
+      value: '0x',
       data: ((abiCoder as unknown) as AbiCoder).encodeFunctionCall(
         {
           constant: false,

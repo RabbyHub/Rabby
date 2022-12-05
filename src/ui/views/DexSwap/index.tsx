@@ -37,6 +37,7 @@ import { useVerifySdk } from './hooks';
 import { IconRefresh } from './component/IconRefresh';
 import { useLocation } from 'react-router-dom';
 import { query2obj } from '@/ui/utils/url';
+import { INTERNAL_REQUEST_ORIGIN } from 'consts';
 
 const getChainDefaultToken = (chain: CHAINS_ENUM) => {
   const chainInfo = CHAINS[chain];
@@ -173,14 +174,13 @@ export const SwapByDex = () => {
         WrapTokenAddressMap[chain],
         CHAINS[chain].nativeTokenAddress,
       ];
-
       const res =
         !!wrapTokens.find((token) => isSameAddress(payToken?.id, token)) &&
         !!wrapTokens.find((token) => isSameAddress(receiveToken?.id, token));
       setDexId(res ? DEX_ENUM.WRAPTOKEN : oDexId);
       return [
         res,
-        payToken?.id === WrapTokenAddressMap[chain]
+        isSameAddress(payToken?.id, WrapTokenAddressMap[chain])
           ? payToken.symbol
           : receiveToken.symbol,
       ];
@@ -295,8 +295,8 @@ export const SwapByDex = () => {
     payAmount,
   });
 
-  const { value: preExcelInfo, error } = useAsync(async () => {
-    if (chain && quoteInfo && payToken) {
+  const { value: totalGasUsed } = useAsync(async () => {
+    if (chain && quoteInfo && payToken && dexId) {
       const nonce = await wallet.getRecommendNonce({
         from: quoteInfo.tx.from,
         chainId: CHAINS[chain].id,
@@ -309,64 +309,64 @@ export const SwapByDex = () => {
         );
         gasPrice = selectGas?.price || 0;
       }
-
       if (!allowance) {
-        const nextNonce = `0x${new BigNumber(nonce.replace('0x', ''), 16)
-          .plus(1)
-          .toString(16)}`;
+        const nextNonce = `0x${new BigNumber(nonce).plus(1).toString(16)}`;
         const tokenApproveParams = await wallet.generateApproveTokenTx({
           from: userAddress,
           to: payToken?.id,
           chainId: CHAINS[chain].id,
-          spender: DEX_SPENDER_WHITELIST[chain],
+          spender: DEX_SPENDER_WHITELIST[dexId][chain],
           amount: quoteInfo.fromTokenAmount,
         });
         const tokenApproveTx = {
           ...tokenApproveParams,
           nonce,
           value: '0x',
-          gasPrice: gasPrice + '',
+          gasPrice: `0x${new BigNumber(gasPrice).toString(16)}`,
         };
-        const [swapPreExecTx, tokenApprovePreExecTx] = await Promise.all([
-          wallet.openapi.preExecTx({
-            tx: {
-              ...quoteInfo.tx,
-              nonce: nextNonce,
-              chainId: CHAINS[chain].id,
-              value: `0x${new BigNumber(quoteInfo.tx.value).toString(16)}`,
-              gasPrice: gasPrice + '',
-              // gas: '',
-            } as Tx,
-            origin: '',
-            address: userAddress,
-            updateNonce: true,
-            pending_tx_list: [tokenApproveTx],
-            // value: `0x${new BigNumber(quoteInfo.tx.value).toString(16)}`,
-          }),
-          wallet.openapi.preExecTx({
-            tx: tokenApproveTx,
-            origin: '',
-            address: userAddress,
-            updateNonce: true,
-            pending_tx_list: [],
-          }),
-        ]);
-
+        const tokenApprovePreExecTx = await wallet.openapi.preExecTx({
+          tx: tokenApproveTx,
+          origin: INTERNAL_REQUEST_ORIGIN,
+          address: userAddress,
+          updateNonce: true,
+          pending_tx_list: [],
+        });
+        const swapPreExecTx = await wallet.openapi.preExecTx({
+          tx: {
+            ...quoteInfo.tx,
+            nonce: nextNonce,
+            chainId: CHAINS[chain].id,
+            value: `0x${new BigNumber(quoteInfo.tx.value).toString(16)}`,
+            gasPrice: `0x${new BigNumber(gasPrice).toString(16)}`,
+            gas: `0x0`,
+          } as Tx,
+          origin: INTERNAL_REQUEST_ORIGIN,
+          address: userAddress,
+          updateNonce: true,
+          pending_tx_list: [
+            {
+              ...tokenApproveTx,
+              gas: `0x${new BigNumber(
+                tokenApprovePreExecTx.gas.gas_used
+              ).toString(16)}`,
+            },
+          ],
+        });
         return (
           (swapPreExecTx?.gas?.gas_used || 0) +
           (tokenApprovePreExecTx?.gas?.gas_used || 0)
         );
       }
-
       const d = await wallet.openapi.preExecTx({
         tx: {
           ...quoteInfo.tx,
+          gas: '0x0',
           nonce,
           chainId: CHAINS[chain].id,
           value: `0x${new BigNumber(quoteInfo.tx.value).toString(16)}`,
-          gasPrice: gasPrice + '',
+          gasPrice: `0x${new BigNumber(gasPrice).toString(16)}`,
         } as Tx,
-        origin: '',
+        origin: INTERNAL_REQUEST_ORIGIN,
         address: userAddress,
         updateNonce: true,
         pending_tx_list: [],
@@ -374,7 +374,7 @@ export const SwapByDex = () => {
       return d?.gas?.gas_used;
     }
     return;
-  }, [chain, quoteInfo, refreshId, allowance]);
+  }, [chain, quoteInfo, refreshId, allowance, dexId]);
 
   const [payTokenUsdDisplay, payTokenUsdBn] = useMemo(() => {
     const payTokenUsd = new BigNumber(payAmount || 0).times(
@@ -498,7 +498,7 @@ export const SwapByDex = () => {
       if (isHighPriceDifference) {
         return tips.priceDifference;
       }
-      if (payToken && payAmount && receiveToken && !preExcelInfo) {
+      if (payToken && payAmount && receiveToken && !totalGasUsed) {
         return tips.gasCostFail;
       }
       if (
@@ -758,7 +758,7 @@ export const SwapByDex = () => {
                   gasList={gasMarket || []}
                   gas={gasLevel}
                   token={nativeToken}
-                  gasAmount={preExcelInfo}
+                  gasUsed={totalGasUsed}
                 />
               )}
 

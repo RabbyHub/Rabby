@@ -1,8 +1,8 @@
 import clsx from 'clsx';
-import React, { useEffect, useState, useRef } from 'react';
+import React, { useRef, useMemo } from 'react';
 import { Input } from 'antd';
 import { useTranslation } from 'react-i18next';
-import { CHAINS, GAS_LEVEL_TEXT } from 'consts';
+import { GAS_LEVEL_TEXT } from 'consts';
 import { GasLevel, TokenItem } from 'background/service/openapi';
 import { useToggle } from 'react-use';
 import { ReactComponent as IconTipDownArrow } from 'ui/assets/swap/arrow-tips-down.svg';
@@ -15,10 +15,8 @@ interface GasSelectorProps {
   onChange(gas: GasLevel): void;
   gasList: GasLevel[];
   gas: GasLevel | null;
-  //   visible: boolean;
   token: TokenItem;
-  gasAmount?: string | number;
-  //   onClose(): void;
+  gasUsed?: string | number;
 }
 
 export const GasSelector = ({
@@ -26,7 +24,7 @@ export const GasSelector = ({
   gasList,
   gas: selectGas,
   token,
-  gasAmount,
+  gasUsed,
 }: GasSelectorProps) => {
   const { t } = useTranslation();
   const customerInputRef = useRef<Input>(null);
@@ -56,21 +54,24 @@ export const GasSelector = ({
     onChange({ ...gas });
   };
 
-  const gasUsd = () => {
-    if (!gasAmount || gasList.length < 1) {
-      return '';
+  const gasUsd = useMemo(() => {
+    if (!gasUsed || gasList.length < 1) {
+      return '-';
     }
     if (selectGas?.level !== 'custom') {
       const item = gasList.find((e) => e.level === selectGas?.level);
       return new BigNumber(item?.price || 0)
-        .times(gasAmount)
+        .times(gasUsed)
         .div(10 ** token.decimals)
         .times(token.price)
         .toFixed(2);
     } else {
-      return new BigNumber(selectGas.price).times(gasAmount).div(token.amount);
+      return new BigNumber(selectGas.price)
+        .times(gasUsed)
+        .div(token.amount)
+        .toFixed(2);
     }
-  };
+  }, [gasUsed, selectGas, gasList, token]);
 
   return (
     <section className={clsx('relative cursor-pointer px-12')}>

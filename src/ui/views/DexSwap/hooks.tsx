@@ -147,7 +147,6 @@ export const useVerifySdk = <T extends ValidateTokenParam>(
       DEX_SPENDER_WHITELIST[dexId][chain]
     );
 
-    console.log('allowance', allowance);
     return new BigNumber(allowance).gte(
       new BigNumber(payAmount).times(10 ** payToken.decimals)
     );
