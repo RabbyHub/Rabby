@@ -1,9 +1,17 @@
 import clsx from 'clsx';
-import React, { memo } from 'react';
+import React, { memo, useEffect, useState } from 'react';
 
 export const IconRefresh = memo(
   (props: React.SVGProps<SVGSVGElement> & { active: boolean }) => {
     const { active, className, ...other } = props;
+
+    const [id, setId] = useState(0);
+    useEffect(() => {
+      if (active) {
+        setId((id) => ++id);
+      }
+    }, [active]);
+
     if (!active) {
       return (
         <svg
@@ -31,6 +39,7 @@ export const IconRefresh = memo(
         className={clsx('arrow-loading', className || 'text-blue-light')}
         width="36"
         height="36"
+        key={id}
         {...other}
       >
         <path

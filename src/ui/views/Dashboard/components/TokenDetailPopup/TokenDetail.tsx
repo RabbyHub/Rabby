@@ -302,6 +302,7 @@ const TokenDetail = ({
                 size="large"
                 onClick={goToSwap}
                 disabled={
+                  shouldSelectDex ||
                   DISABLE_SWAP ||
                   !token.is_core ||
                   !RABBY_SWAP_ROUTER[getChain(token?.chain)?.enum || '']

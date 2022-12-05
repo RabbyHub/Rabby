@@ -514,7 +514,7 @@ export const SwapByDex = () => {
       if (isHighPriceDifference) {
         return tips.priceDifference;
       }
-      if (totalGasUsed !== undefined) {
+      if (totalGasUsed === undefined) {
         return tips.gasCostFail;
       }
       if (
@@ -527,7 +527,7 @@ export const SwapByDex = () => {
       if (Number(slippage) >= 10) {
         return tips.highSlippage;
       }
-      if (Number(slippage) <= 0.5) {
+      if (Number(slippage) <= 0.05) {
         return tips.lowSlippage;
       }
     }
@@ -622,6 +622,10 @@ export const SwapByDex = () => {
     } else {
       setFeeRate('0.3');
     }
+
+    if (isStableCoin) {
+      setSlippage('0.05');
+    }
   }, [isWrapToken, isStableCoin]);
 
   useEffect(() => {
@@ -680,7 +684,6 @@ export const SwapByDex = () => {
               className="text-blue-light cursor-pointer"
               onClick={refresh}
               active={intervalActive}
-              key={refreshId}
             />
           </div>
           <div className="relative flex flex-col gap-8 mb-16">
