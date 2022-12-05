@@ -5,7 +5,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import { Space } from 'antd';
+import { Input, Skeleton, Space } from 'antd';
 import cloneDeep from 'lodash/cloneDeep';
 import BigNumber from 'bignumber.js';
 import { TokenItem } from 'background/service/openapi';
@@ -17,17 +17,36 @@ import LessPalette from '@/ui/style/var-defs';
 import { ReactComponent as SvgIconArrowDownTriangle } from '@/ui/assets/swap/arrow-caret-down.svg';
 
 const Wrapper = styled.div`
-  background: ${LessPalette['@color-bg']};
+  /* background: ${LessPalette['@color-bg']}; */
+  background-color: transparent;
   border-radius: 4px;
-  padding: 16px 12px;
+  /* padding: 16px 12px; */
   display: flex;
   justify-content: space-between;
   align-items: center;
   cursor: pointer;
   border: 1px solid transparent;
 
-  &:hover {
+  /* &:hover {
     border-color: #8697ff;
+  } */
+
+  & .ant-input {
+    background-color: transparent;
+    border-color: transparent;
+    color: #161819;
+    flex: 1;
+    font-weight: 500;
+    font-size: 22px;
+    line-height: 26px;
+
+    text-align: right;
+    color: #13141a;
+    padding-right: 0;
+
+    &:placeholder {
+      color: #707280;
+    }
   }
 `;
 
@@ -46,6 +65,9 @@ interface TokenAmountInputProps {
   excludeTokens?: TokenItem['id'][];
   type?: ComponentProps<typeof TokenSelector>['type'];
   placeholder?: string;
+  hideChainIcon?: boolean;
+  value?: string;
+  loading?: boolean;
 }
 
 const TokenSelect = ({
@@ -56,6 +78,9 @@ const TokenSelect = ({
   excludeTokens = [],
   type = 'default',
   placeholder,
+  hideChainIcon = true,
+  value,
+  loading = false,
 }: TokenAmountInputProps) => {
   const latestChainId = useRef(chainId);
   const [tokens, setTokens] = useState<TokenItem[]>([]);
@@ -164,6 +189,17 @@ const TokenSelect = ({
     [excludeTokens, tokens]
   );
 
+  const [input, setInput] = useState('');
+
+  const handleInput: React.ChangeEventHandler<HTMLInputElement> = (e) => {
+    const v = e.target.value;
+    if (!/^\d*(\.\d*)?$/.test(v)) {
+      return;
+    }
+    setInput(v);
+    onChange && onChange(v);
+  };
+
   useEffect(() => {
     setTokens([]);
     setOriginTokenList([]);
@@ -172,16 +208,53 @@ const TokenSelect = ({
 
   return (
     <>
-      <Wrapper onClick={handleSelectToken}>
-        {token ? (
-          <Space size={8}>
-            <TokenWithChain token={token} hideConer />
-            <Text>{token.symbol}</Text>
-          </Space>
+      <Wrapper>
+        <div onClick={handleSelectToken}>
+          {token ? (
+            <TokenWrapper>
+              <TokenWithChain
+                token={token}
+                hideConer
+                hideChainIcon={hideChainIcon}
+              />
+              <Text>{token.symbol}</Text>
+              <SvgIconArrowDownTriangle
+                viewBox="0 0 24 24"
+                width={14}
+                height={14}
+              />
+            </TokenWrapper>
+          ) : (
+            <SelectTips>
+              <span>Select Token</span>
+              <SvgIconArrowDownTriangle
+                className="brightness-[100] ml-4"
+                viewBox="0 0 24 24"
+                width={14}
+                height={14}
+              />
+            </SelectTips>
+          )}
+        </div>
+        {loading ? (
+          <Skeleton.Input
+            active
+            style={{
+              width: 110,
+              height: 20,
+            }}
+          />
         ) : (
-          <Text>Select a token</Text>
+          <Input
+            readOnly={type === 'swapTo'}
+            placeholder={'0'}
+            autoFocus={type !== 'swapTo'}
+            autoCorrect="false"
+            autoComplete="false"
+            value={value ?? input}
+            onChange={type !== 'swapTo' ? handleInput : undefined}
+          />
         )}
-        <SvgIconArrowDownTriangle width={24} height={24} />
       </Wrapper>
       <TokenSelector
         visible={tokenSelectorVisible}
@@ -198,4 +271,35 @@ const TokenSelect = ({
   );
 };
 
+const TokenWrapper = styled.div`
+  /* width: 92px; */
+  /* height: 30px; */
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 5px;
+  padding: 4px;
+  border-radius: 4px;
+  &:hover {
+    background: rgba(134, 151, 255, 0.3);
+  }
+`;
+
+const SelectTips = styled.div`
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  width: 150px;
+  height: 32px;
+  color: #fff;
+  background: #8697ff;
+  border-radius: 4px;
+  font-weight: 500;
+  font-size: 20px;
+  line-height: 23px;
+  & svg {
+    margin-left: 4px;
+    filter: brightness(1000);
+  }
+`;
 export default TokenSelect;

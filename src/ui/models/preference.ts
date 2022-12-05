@@ -3,6 +3,7 @@ import { RootModel } from '.';
 import { TokenItem } from 'background/service/openapi';
 import { GasCache, addedToken } from 'background/service/preference';
 import { CHAINS_ENUM } from 'consts';
+import { DEX_ENUM } from '@rabby-wallet/rabby-swap';
 
 interface PreferenceState {
   externalLinkAck: boolean;
@@ -18,6 +19,7 @@ interface PreferenceState {
   addedToken: addedToken;
   tokenApprovalChain: Record<string, CHAINS_ENUM>;
   nftApprovalChain: Record<string, CHAINS_ENUM>;
+  swapDexId?: DEX_ENUM;
 }
 
 export const preference = createModel<RootModel>()({
@@ -136,6 +138,14 @@ export const preference = createModel<RootModel>()({
       });
       await store.app.wallet.updateChain(chains);
       dispatch.preference.getPreference('pinnedChain');
+    },
+
+    async setSwapDexId(id: DEX_ENUM, store) {
+      dispatch.preference.setField({
+        swapDexId: id,
+      });
+      await store.app.wallet.setSwapDexId(id);
+      // dispatch.preference.getPreference('swapDexId');
     },
   }),
 });

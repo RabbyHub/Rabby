@@ -53,6 +53,7 @@ import SwapQuotes from './SwapQuote';
 import GasTopUp from './GasTopUp';
 import ApprovalManage from './ApprovalManage';
 import { ImportMyMetaMaskAccount } from './ImportMyMetaMaskAccount';
+import { SwapByDex } from './DexSwap';
 
 ReactGA.initialize('UA-199755108-1');
 // eslint-disable-next-line @typescript-eslint/no-empty-function
@@ -267,6 +268,10 @@ const Main = () => {
 
         <PrivateRoute exact path="/switch-address">
           <AddressManagement />
+        </PrivateRoute>
+
+        <PrivateRoute exact path="/dex-swap">
+          <SwapByDex />
         </PrivateRoute>
       </Switch>
     </>

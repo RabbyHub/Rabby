@@ -1,4 +1,3 @@
-import { RABBY_SWAP_ROUTER } from '@/constant';
 import { CHAINS_ENUM } from '@debank/common';
 import {
   DndContext,
@@ -24,10 +23,8 @@ export type SelectChainListProps = {
   onChange?: (value: CHAINS_ENUM) => void;
   onStarChange?: (v: CHAINS_ENUM, value: boolean) => void;
   pinned: CHAINS_ENUM[];
-  type?: 'swap' | 'default';
+  supportChains?: CHAINS_ENUM[];
 };
-
-const swapSupportChains = Object.keys(RABBY_SWAP_ROUTER);
 
 export const SelectChainList = (props: SelectChainListProps) => {
   const {
@@ -40,28 +37,21 @@ export const SelectChainList = (props: SelectChainListProps) => {
     onChange,
     onStarChange,
     pinned,
-    type = 'default',
+    supportChains,
   } = props;
-  const isSwap = type === 'swap';
   const items = data
     .map((item, index) => ({
       ...item,
       index,
     }))
     .sort((a, b) => {
-      if (!isSwap) {
+      if (!supportChains) {
         return 0;
       }
-      if (
-        swapSupportChains.includes(a.enum) &&
-        !swapSupportChains.includes(b.enum)
-      ) {
+      if (supportChains.includes(a.enum) && !supportChains.includes(b.enum)) {
         return -1;
       }
-      if (
-        !swapSupportChains.includes(a.enum) &&
-        swapSupportChains.includes(b.enum)
-      ) {
+      if (!supportChains.includes(a.enum) && supportChains.includes(b.enum)) {
         return 1;
       }
       return 0;
@@ -117,7 +107,7 @@ export const SelectChainList = (props: SelectChainListProps) => {
                   }}
                   onChange={onChange}
                   disabled={
-                    isSwap ? !swapSupportChains.includes(item.enum) : false
+                    supportChains ? !supportChains.includes(item.enum) : false
                   }
                 ></SortableSelectChainItem>
               );
@@ -140,7 +130,9 @@ export const SelectChainList = (props: SelectChainListProps) => {
             }}
             stared={!!pinned.find((chain) => chain === item.enum)}
             onChange={onChange}
-            disabled={isSwap ? !swapSupportChains.includes(item.enum) : false}
+            disabled={
+              supportChains ? !supportChains.includes(item.enum) : false
+            }
           ></SortableSelectChainItem>
         );
       })}

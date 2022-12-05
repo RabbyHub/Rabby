@@ -6,6 +6,7 @@ import { keyringService, sessionService, i18n } from './index';
 import { TotalBalanceResponse, TokenItem } from './openapi';
 import { HARDWARE_KEYRING_TYPES, EVENTS, CHAINS_ENUM } from 'consts';
 import { browser } from 'webextension-polyfill-ts';
+import { DEX_ENUM } from '@rabby-wallet/rabby-swap';
 
 const version = process.env.release || '0';
 
@@ -64,6 +65,7 @@ export interface PreferenceStore {
   needSwitchWalletCheck?: boolean;
   lastSelectedSwapPayToken?: Record<string, TokenItem>;
   lastSelectedGasTopUpChain?: Record<string, CHAINS_ENUM>;
+  swapDexId?: DEX_ENUM;
 }
 
 const SUPPORT_LOCALES = ['en'];
@@ -456,6 +458,12 @@ class PreferenceService {
   };
   updateNeedSwitchWalletCheck = (value: boolean) => {
     this.store.needSwitchWalletCheck = value;
+  };
+  getSwapDexId = () => {
+    return this.store.swapDexId || '';
+  };
+  setSwapDexId = (dexId: DEX_ENUM) => {
+    this.store.swapDexId = dexId;
   };
 }
 

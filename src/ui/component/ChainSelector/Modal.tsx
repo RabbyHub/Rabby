@@ -19,8 +19,7 @@ interface ChainSelectorModalProps {
   connection?: boolean;
   title?: ReactNode;
   className?: string;
-  supportChains?: CHAINS_ENUM[] | 'ALl';
-  type?: SelectChainListProps['type'];
+  supportChains?: SelectChainListProps['supportChains'];
 }
 
 const useSetup = () => {
@@ -86,7 +85,7 @@ const ChainSelectorModal = ({
   value,
   connection = false,
   className,
-  type = 'default',
+  supportChains,
 }: ChainSelectorModalProps) => {
   const handleCancel = () => {
     onCancel();
@@ -111,8 +110,6 @@ const ChainSelectorModal = ({
       setSearch('');
     }
   }, [visible]);
-
-  const isSwap = type === 'swap';
 
   return (
     <Drawer
@@ -141,9 +138,9 @@ const ChainSelectorModal = ({
       </header>
       <div className="chain-selector__modal-content">
         <SelectChainList
-          type={type}
+          supportChains={supportChains}
           data={pinnedList}
-          sortable={!isSwap}
+          sortable={!supportChains}
           pinned={pinned as CHAINS_ENUM[]}
           onStarChange={handleStarChange}
           onSort={handleSort}
@@ -151,7 +148,7 @@ const ChainSelectorModal = ({
           value={value}
         ></SelectChainList>
         <SelectChainList
-          type={type}
+          supportChains={supportChains}
           data={all}
           value={value}
           pinned={pinned as CHAINS_ENUM[]}

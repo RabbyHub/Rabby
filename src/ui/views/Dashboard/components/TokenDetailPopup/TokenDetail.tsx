@@ -25,7 +25,7 @@ const ellipsis = (text: string) => {
   return text.replace(/^(.{6})(.*)(.{4})$/, '$1...$3');
 };
 
-const DISABLE_SWAP = true;
+const DISABLE_SWAP = false;
 
 interface TokenDetailProps {
   onClose?(): void;

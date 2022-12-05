@@ -213,17 +213,18 @@ export default ({
     swap: {
       icon: IconSwap,
       content: 'Swap',
-      commingSoonBadge: true,
-      hideForGnosis: true,
+      // commingSoonBadge: true,
+      // hideForGnosis: true,
       onClick: () => {
-        message.info({
-          icon: <i />,
-          className: 'coming-soon-message',
-          content: (
-            <span className="text-white tip-text">{'Coming soon  :)'}</span>
-          ),
-        });
-        // history.push('/swap?rbisource=dashboard')
+        history.push('/dex-swap?rbisource=dashboard');
+
+        // message.info({
+        //   icon: <i />,
+        //   className: 'coming-soon-message',
+        //   content: (
+        //     <span className="text-white tip-text">{'Coming soon  :)'}</span>
+        //   ),
+        // });
       },
     },
     send: {

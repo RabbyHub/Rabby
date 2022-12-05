@@ -3,7 +3,7 @@ import Wallet, { thirdparty } from 'ethereumjs-wallet';
 import { ethErrors } from 'eth-rpc-errors';
 import * as bip39 from 'bip39';
 import { ethers, Contract, constants } from 'ethers';
-import { groupBy } from 'lodash';
+import { groupBy, result } from 'lodash';
 import abiCoder, { AbiCoder } from 'web3-eth-abi';
 import * as optimismContracts from '@eth-optimism/contracts';
 import {
@@ -510,6 +510,68 @@ export class WalletController extends BaseController {
       params: [swapParam],
     });
     this.clearPageStateCache();
+  };
+
+  dexSwap = async (
+    {
+      chain,
+      tx,
+      needApprove,
+      spender,
+      pay_token_id,
+      unlimited,
+    }: {
+      chain: CHAINS_ENUM;
+      tx: Tx;
+      needApprove: boolean;
+      spender: string;
+      pay_token_id: string;
+      unlimited: boolean;
+    },
+    $ctx?: any
+  ) => {
+    const account = await preferenceService.getCurrentAccount();
+    if (!account) throw new Error('no current account');
+    const chainObj = CHAINS[chain];
+    if (!chainObj) throw new Error(`Can not find chain ${chain}`);
+    if (!Object.keys(RABBY_SWAP_ROUTER).some((e) => e === chainObj.enum)) {
+      throw new Error(`swap don't support chain ${chainObj.enum} now`);
+    }
+
+    if (needApprove) {
+      await this.approveToken(
+        chainObj.serverId,
+        pay_token_id,
+        spender,
+        unlimited ? MAX_UNSIGNED_256_INT : tx.value,
+        {
+          ga: {
+            ...$ctx?.ga,
+            source: 'approvalAndSwap|tokenApproval',
+          },
+        }
+      );
+    }
+
+    await this.sendRequest({
+      $ctx:
+        needApprove && pay_token_id !== chainObj.nativeTokenAddress
+          ? {
+              ga: {
+                ...$ctx?.ga,
+                source: 'approvalAndSwap|swap',
+              },
+            }
+          : $ctx,
+      method: 'eth_sendTransaction',
+      params: [
+        {
+          ...tx,
+          value: `0x${new BigNumber(tx.value).toString(16)}`,
+          chainId: chainObj.id,
+        },
+      ],
+    });
   };
 
   approveToken = async (
@@ -2274,6 +2336,10 @@ export class WalletController extends BaseController {
 
   updateNeedSwitchWalletCheck = preferenceService.updateNeedSwitchWalletCheck;
 
+  getSwapDexId = preferenceService.getSwapDexId;
+
+  setSwapDexId = preferenceService.setSwapDexId;
+
   revoke = async ({
     list,
   }: {
@@ -2322,6 +2388,28 @@ export class WalletController extends BaseController {
     } catch (error) {
       console.log('revoke error', error);
     }
+  };
+
+  getRecommendNonce = async ({
+    from,
+    chainId,
+  }: {
+    from: string;
+    chainId: number;
+  }) => {
+    const chain = Object.values(CHAINS).find((item) => item.id === chainId);
+    if (!chain) {
+      throw new Error('chain not found');
+    }
+    const onChainNonce = await this.requestETHRpc(
+      {
+        method: 'eth_getTransactionCount',
+        params: [from, 'latest'],
+      },
+      chain.serverId
+    );
+    const localNonce = (await this.getNonceByChain(from, chainId)) || 0;
+    return `0x${BigNumber.max(onChainNonce, localNonce).toString(16)}`;
   };
 }
 
