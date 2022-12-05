@@ -143,7 +143,7 @@ export const useVerifySdk = <T extends ValidateTokenParam>(
     }
     const allowance = await wallet.getERC20Allowance(
       CHAINS[chain].serverId,
-      payToken?.id,
+      payToken!.id,
       DEX_SPENDER_WHITELIST[dexId][chain]
     );
 
