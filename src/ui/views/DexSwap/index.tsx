@@ -1,7 +1,13 @@
 import { PageHeader } from '@/ui/component';
-import { useRabbySelector } from '@/ui/store';
-import React, { useEffect, useMemo, useState } from 'react';
-import { useAsync, useAsyncFn, useDebounce, useToggle } from 'react-use';
+import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
+import {
+  useAsync,
+  useAsyncFn,
+  useDebounce,
+  useInterval,
+  useToggle,
+} from 'react-use';
 import { DEX, DexSelectDrawer } from './component/DexSelect';
 import { ReactComponent as IconSwitchDex } from '@/ui/assets/swap/switch.svg';
 import { CHAINS, CHAINS_ENUM } from '@debank/common';
@@ -18,16 +24,19 @@ import {
   WrapTokenAddressMap,
 } from '@rabby-wallet/rabby-swap';
 
-import { ReactComponent as IconSwitchToken } from '@/ui/assets/swap/switch-token.svg';
 import { ReactComponent as IconLoading } from '@/ui/assets/swap/loading.svg';
+import { ReactComponent as IconSwitchToken } from '@/ui/assets/swap/switch-token.svg';
 import BigNumber from 'bignumber.js';
 import { splitNumberByStep, useWallet, isSameAddress } from '@/ui/utils';
-import { Alert, Button, Skeleton, Switch } from 'antd';
+import { Alert, Button, message, Skeleton, Switch } from 'antd';
 import { InfoCircleFilled } from '@ant-design/icons';
 import { Slippage } from './component/Slippage';
 import { GasSelector } from './component/GasSelector';
 import { Fee, FeeProps } from './component/Fee';
 import { useVerifySdk } from './hooks';
+import { IconRefresh } from './component/IconRefresh';
+import { useLocation } from 'react-router-dom';
+import { query2obj } from '@/ui/utils/url';
 
 const defaultToken = {
   id: 'eth',
@@ -99,7 +108,20 @@ const defaultGasFee = {
 };
 
 export const SwapByDex = () => {
-  const oDexId = useRabbySelector((state) => state.preference.swapDexId);
+  const oDexId = useRabbySelector((state) => state.swap.selectedDex);
+  const oChain = useRabbySelector(
+    (state) => state.swap.selectedChain || CHAINS_ENUM.ETH
+  );
+  const dispath = useRabbyDispatch();
+  const { search } = useLocation();
+  const [searchObj] = useState<{
+    payTokenId?: string;
+    chain?: string;
+  }>(query2obj(search));
+
+  const [unlimited, setUnlimited] = useToggle(false);
+  const [refreshId, setRefreshId] = useState(0);
+  const [isClickRefresh, setIsClickRefresh] = useState(false);
 
   const [dexId, setDexId] = useState(() => oDexId);
   const userAddress = useRabbySelector(
@@ -109,7 +131,7 @@ export const SwapByDex = () => {
 
   const [visible, toggleVisible] = useToggle(false);
 
-  const [chain, setChain] = useState(CHAINS_ENUM.ETH);
+  const [chain, setChain] = useState(oChain);
 
   const [payAmount, setAmount] = useState('');
   const [feeRate, setFeeRate] = useState<FeeProps['fee']>('0.3');
@@ -121,14 +143,29 @@ export const SwapByDex = () => {
     undefined
   );
 
+  useMemo(() => {
+    if (searchObj.chain && searchObj.payTokenId) {
+      const target = Object.values(CHAINS).find(
+        (item) => item.serverId === searchObj.chain
+      );
+      if (target) {
+        setChain(target?.enum);
+      }
+
+      setPayToken({
+        ...defaultToken,
+        id: searchObj.payTokenId,
+        chain: searchObj.chain,
+      });
+    }
+  }, [searchObj?.chain, searchObj?.payTokenId]);
+
   const payTokenIsNativeToken = useMemo(
     () => payToken?.id === CHAINS[chain].nativeTokenAddress,
     [payToken?.id, chain]
   );
 
-  console.log('gasLevel', gasLevel);
-
-  const isWrapToken = useMemo(() => {
+  const [isWrapToken, wrapTokenSymbol] = useMemo(() => {
     if (payToken?.id && receiveToken?.id) {
       const wrapTokens = [
         WrapTokenAddressMap[chain],
@@ -139,10 +176,15 @@ export const SwapByDex = () => {
         !!wrapTokens.find((token) => isSameAddress(payToken?.id, token)) &&
         !!wrapTokens.find((token) => isSameAddress(receiveToken?.id, token));
       setDexId(res ? DEX_ENUM.WRAPTOKEN : oDexId);
-      return res;
+      return [
+        res,
+        payToken?.id === WrapTokenAddressMap[chain]
+          ? payToken.symbol
+          : receiveToken.symbol,
+      ];
     }
     setDexId(oDexId);
-    return false;
+    return [false, ''];
   }, [payToken?.id, receiveToken?.id, chain]);
 
   const [logo, name] = useMemo(() => {
@@ -151,18 +193,6 @@ export const SwapByDex = () => {
     }
     return ['', ''];
   }, [oDexId]);
-
-  console.log(
-    userAddress,
-    dexId,
-    oDexId,
-    chain,
-    payAmount,
-    payToken?.id,
-    payToken?.decimals,
-    receiveToken?.id,
-    feeRate
-  );
 
   const { value: gasMarket } = useAsync(() =>
     wallet.openapi.gasMarket(CHAINS[chain].serverId)
@@ -195,7 +225,7 @@ export const SwapByDex = () => {
       return;
     }
     return;
-  }, [chain, payToken?.id, payToken?.time_at]);
+  }, [chain, payToken?.id, payToken?.time_at, refreshId]);
 
   const [{ value: quoteInfo, loading }, fetchQuote] = useAsyncFn(async () => {
     if (
@@ -235,37 +265,10 @@ export const SwapByDex = () => {
     slippage,
   ]);
 
-  const { value: preExcelInfo, error } = useAsync(async () => {
-    if (chain && quoteInfo) {
-      const nonce = await wallet.getRecommendNonce({
-        from: quoteInfo.tx.from,
-        chainId: CHAINS[chain].id,
-      });
-      const d = await wallet.openapi.preExecTx({
-        tx: {
-          ...quoteInfo.tx,
-          nonce,
-          chainId: CHAINS[chain].id,
-          value: `0x${new BigNumber(quoteInfo.tx.value).toString(16)}`,
-          gas: '',
-        } as Tx,
-        origin: '',
-        address: userAddress,
-        updateNonce: true,
-        pending_tx_list: [],
-        // value: `0x${new BigNumber(quoteInfo.tx.value).toString(16)}`,
-      });
-      return d;
-    }
-    return;
-  }, [chain, quoteInfo]);
-
-  console.log({ dexId, quoteInfo, preExcelInfo, error });
-
   const {
-    routerPass,
-    spenderPass,
-    callDataPass,
+    // routerPass,
+    // spenderPass,
+    // callDataPass,
     isSdkDataPass,
     tokenLoading,
     tokenPass,
@@ -289,6 +292,87 @@ export const SwapByDex = () => {
     receiveToken,
     payAmount,
   });
+
+  const { value: preExcelInfo, error } = useAsync(async () => {
+    if (chain && quoteInfo && payToken) {
+      const nonce = await wallet.getRecommendNonce({
+        from: quoteInfo.tx.from,
+        chainId: CHAINS[chain].id,
+      });
+
+      let gasPrice = gasLevel.price;
+      if (gasLevel.level !== 'custom') {
+        const selectGas = (gasMarket || []).find(
+          (e) => e.level === gasLevel.level
+        );
+        gasPrice = selectGas?.price || 0;
+      }
+
+      if (!allowance) {
+        const nextNonce = `0x${new BigNumber(nonce.replace('0x', ''), 16)
+          .plus(1)
+          .toString(16)}`;
+        const tokenApproveParams = await wallet.generateApproveTokenTx({
+          from: userAddress,
+          to: payToken?.id,
+          chainId: CHAINS[chain].id,
+          spender: DEX_SPENDER_WHITELIST[chain],
+          amount: quoteInfo.fromTokenAmount,
+        });
+        const tokenApproveTx = {
+          ...tokenApproveParams,
+          nonce,
+          value: '0x',
+          gasPrice: gasPrice + '',
+        };
+        const [swapPreExecTx, tokenApprovePreExecTx] = await Promise.all([
+          wallet.openapi.preExecTx({
+            tx: {
+              ...quoteInfo.tx,
+              nonce: nextNonce,
+              chainId: CHAINS[chain].id,
+              value: `0x${new BigNumber(quoteInfo.tx.value).toString(16)}`,
+              gasPrice: gasPrice + '',
+              // gas: '',
+            } as Tx,
+            origin: '',
+            address: userAddress,
+            updateNonce: true,
+            pending_tx_list: [tokenApproveTx],
+            // value: `0x${new BigNumber(quoteInfo.tx.value).toString(16)}`,
+          }),
+          wallet.openapi.preExecTx({
+            tx: tokenApproveTx,
+            origin: '',
+            address: userAddress,
+            updateNonce: true,
+            pending_tx_list: [],
+          }),
+        ]);
+
+        return (
+          (swapPreExecTx?.gas?.gas_used || 0) +
+          (tokenApprovePreExecTx?.gas?.gas_used || 0)
+        );
+      }
+
+      const d = await wallet.openapi.preExecTx({
+        tx: {
+          ...quoteInfo.tx,
+          nonce,
+          chainId: CHAINS[chain].id,
+          value: `0x${new BigNumber(quoteInfo.tx.value).toString(16)}`,
+          gasPrice: gasPrice + '',
+        } as Tx,
+        origin: '',
+        address: userAddress,
+        updateNonce: true,
+        pending_tx_list: [],
+      });
+      return d?.gas?.gas_used;
+    }
+    return;
+  }, [chain, quoteInfo, refreshId, allowance]);
 
   const [payTokenUsdDisplay, payTokenUsdBn] = useMemo(() => {
     const payTokenUsd = new BigNumber(payAmount || 0).times(
@@ -329,7 +413,7 @@ export const SwapByDex = () => {
         isHighPriceDifference,
       ];
     }
-    return ['', 0];
+    return ['', false];
   }, [receivedTokeAmountBn, payToken, payAmount]);
 
   const isInsufficient = useMemo(() => {
@@ -360,10 +444,12 @@ export const SwapByDex = () => {
     receiveToken?.id,
     feeRate,
     slippage,
+    refreshId,
   ]);
 
   const handleChain = (c: CHAINS_ENUM) => {
     setChain(c);
+    dispath.swap.setSelectedChain(c);
     const chainInfo = CHAINS[c];
 
     setPayToken({
@@ -394,13 +480,6 @@ export const SwapByDex = () => {
     setReceiveToken(payToken);
   };
 
-  // 1.token
-  // 2. 余额足够
-  // 3.不是loading 状态
-  // 4. 报价
-  // 5.token pass
-  // 6.sdk  secure pass
-
   const canSubmit =
     payToken &&
     receiveToken &&
@@ -412,16 +491,6 @@ export const SwapByDex = () => {
     !loading &&
     quoteInfo &&
     isSdkDataPass;
-
-  console.log({
-    payToken,
-    receiveToken,
-    payAmount,
-    chain,
-    isInsufficient,
-    isHighPriceDifference,
-    isSdkDataPass,
-  });
 
   const tipsDisplay = useMemo(() => {
     if (isInsufficient) {
@@ -443,10 +512,9 @@ export const SwapByDex = () => {
       if (isHighPriceDifference) {
         return tips.priceDifference;
       }
-      //TODO
-      //gasCostFail
-      //   if(){
-      //   }
+      if (payToken && payAmount && receiveToken && !preExcelInfo) {
+        return tips.gasCostFail;
+      }
       if (
         quoteInfo &&
         (payToken.price === undefined || receiveToken.price === undefined)
@@ -477,9 +545,28 @@ export const SwapByDex = () => {
     slippage,
   ]);
 
-  const [unlimited, setUnlimited] = useToggle(false);
+  const timer = useRef<number>();
+  const isClickRefreshRef = useRef(isClickRefresh);
+  const refresh = () => {
+    clearTimeout(timer.current);
+    setRefreshId((id) => ++id);
+    setIsClickRefresh(true);
+  };
 
   const handleSwap = () => {
+    if (tipsDisplay?.level === 'danger') {
+      message.error({
+        icon: (
+          <InfoCircleFilled
+            className={clsx(
+              'pb-2 self-start transform rotate-180 origin-center,text-red-light'
+            )}
+          />
+        ),
+        content: tipsDisplay.label,
+      });
+      return;
+    }
     if (payToken && oDexId && dexId && chain && quoteInfo) {
       wallet.dexSwap({
         chain,
@@ -492,6 +579,18 @@ export const SwapByDex = () => {
     }
   };
 
+  useInterval(
+    () => {
+      refresh();
+      if (isClickRefreshRef.current) {
+        timer.current = (setTimeout(() => {
+          setIsClickRefresh(false);
+        }, 700) as unknown) as number;
+      }
+    },
+    isClickRefresh ? 9300 - 70 : 9300
+  );
+
   useEffect(() => {
     if (isWrapToken) {
       setFeeRate('0');
@@ -503,10 +602,19 @@ export const SwapByDex = () => {
   }, [isWrapToken, isStableCoin]);
 
   useEffect(() => {
+    if (dexId !== oDexId) {
+      setChain(CHAINS_ENUM.ETH);
+      setPayToken(defaultToken);
+      setReceiveToken(undefined);
+      setDexId(oDexId);
+    }
+  }, [dexId, oDexId]);
+
+  useEffect(() => {
     return cancel;
   }, []);
 
-  if (!dexId) {
+  if (!oDexId) {
     return (
       <div className="bg-gray-bg h-full">
         <DexSelectDrawer visible={true} onClose={() => toggleVisible(false)} />
@@ -515,7 +623,7 @@ export const SwapByDex = () => {
   }
 
   return (
-    <div className="px-0 overflow-hidden bg-gray-bg h-full relative">
+    <div className="px-0 overflow-hidden bg-gray-bg h-full relative pb-[120px]">
       <PageHeader className="pt-[24px] mx-[20px]">
         <div className="flex items-center justify-center">
           <img src={logo} alt="" className="w-24 h-24 rounded-full" />
@@ -530,169 +638,179 @@ export const SwapByDex = () => {
           onClick={toggleVisible}
         />
       </PageHeader>
-
-      <div className="mx-20 bg-white w-[360px] rounded-[6px] px-12 pt-16 pb-12">
-        <div className="flex items-center justify-between">
-          <SwapChainSelector value={chain} onChange={handleChain} />
-          {/* <IconLoading className=" text-blue-light" /> */}
-        </div>
-        <div className="relative flex flex-col gap-8 mt-12 mb-16">
-          <SwapTokenWrapper>
-            <div className="text-left w-full">Pay with</div>
-            <TokenSelect
-              value={payAmount}
-              token={payToken}
-              onTokenChange={setPayToken}
-              chainId={CHAINS[chain].serverId}
-              type={'swapFrom'}
-              placeholder={'Search by Name / Address'}
-              onChange={setAmount}
-              excludeTokens={receiveToken?.id ? [receiveToken?.id] : undefined}
+      <div className="max-h-[444px] overflow-y-auto pb-40">
+        <div className="mx-20 bg-white w-[360px] rounded-[6px] px-12 pt-16 pb-12">
+          <div className="flex items-center justify-between">
+            <SwapChainSelector
+              value={chain}
+              onChange={handleChain}
+              disabledTips={'Not supported by the current exchange'}
             />
-            <div className={clsx('w-full flex justify-between items-center')}>
-              {payTokenLoading ? (
-                <Skeleton.Input
-                  style={{
-                    width: 86,
-                    height: 14,
-                  }}
-                  active
-                />
-              ) : (
-                <div
-                  className={clsx('flex items-center', !payToken && 'hidden')}
-                >
-                  Balance:{' '}
-                  {splitNumberByStep((payToken?.amount || 0).toFixed(2))}
-                  {payToken && !payTokenIsNativeToken && (
-                    <img
-                      className="ml-6 select-none cursor-pointer"
-                      src={ButtonMax}
-                      onClick={handleMax}
-                    />
-                  )}
-                </div>
-              )}
-              {payTokenLoading ? (
-                <Skeleton.Input
-                  style={{
-                    width: 86,
-                    height: 14,
-                  }}
-                  active
-                />
-              ) : (
-                <div className={clsx((!payToken || !payAmount) && 'hidden')}>
-                  ${splitNumberByStep(payTokenUsdDisplay)}
-                </div>
-              )}
-            </div>
-          </SwapTokenWrapper>
-          <SwapTokenWrapper>
-            <div className="text-left w-full">Receive</div>
-            <TokenSelect
-              token={receiveToken}
-              onTokenChange={setReceiveToken}
-              chainId={CHAINS[chain].serverId}
-              type={'swapTo'}
-              placeholder={'Search by Name / Address'}
-              excludeTokens={payToken?.id ? [payToken?.id] : undefined}
-              value={receivedTokeAmountDisplay}
-              loading={loading}
+            <IconRefresh
+              className="text-blue-light cursor-pointer"
+              onClick={refresh}
             />
-            <div className={clsx('w-full flex justify-between items-center')}>
-              <div className={clsx(!receiveToken && 'hidden')}>
-                Balance:
-                {splitNumberByStep((receiveToken?.amount || 0).toFixed(2))}
+          </div>
+          <div className="relative flex flex-col gap-8 mt-12 mb-16">
+            <SwapTokenWrapper>
+              <div className="text-left w-full">Pay with</div>
+              <TokenSelect
+                value={payAmount}
+                token={payToken}
+                onTokenChange={setPayToken}
+                chainId={CHAINS[chain].serverId}
+                type={'swapFrom'}
+                placeholder={'Search by Name / Address'}
+                onChange={setAmount}
+                excludeTokens={
+                  receiveToken?.id ? [receiveToken?.id] : undefined
+                }
+              />
+              <div className={clsx('w-full flex justify-between items-center')}>
+                {payTokenLoading ? (
+                  <Skeleton.Input
+                    style={{
+                      width: 86,
+                      height: 14,
+                    }}
+                    active
+                  />
+                ) : (
+                  <div
+                    className={clsx('flex items-center', !payToken && 'hidden')}
+                  >
+                    Balance:{' '}
+                    {splitNumberByStep((payToken?.amount || 0).toFixed(2))}
+                    {payToken && !payTokenIsNativeToken && (
+                      <img
+                        className="ml-6 select-none cursor-pointer"
+                        src={ButtonMax}
+                        onClick={handleMax}
+                      />
+                    )}
+                  </div>
+                )}
+                {payTokenLoading ? (
+                  <Skeleton.Input
+                    style={{
+                      width: 86,
+                      height: 14,
+                    }}
+                    active
+                  />
+                ) : (
+                  <div className={clsx((!payToken || !payAmount) && 'hidden')}>
+                    ${splitNumberByStep(payTokenUsdDisplay)}
+                  </div>
+                )}
               </div>
-
-              {loading ? (
-                <Skeleton.Input
-                  style={{
-                    width: 86,
-                    height: 14,
-                  }}
-                  active
-                />
-              ) : (
-                <div
-                  className={clsx(
-                    (!receivedTokenUsd || !payAmount) && 'hidden'
-                  )}
-                >
-                  ${receivedTokenUsd}
+            </SwapTokenWrapper>
+            <SwapTokenWrapper>
+              <div className="text-left w-full">Receive</div>
+              <TokenSelect
+                token={receiveToken}
+                onTokenChange={setReceiveToken}
+                chainId={CHAINS[chain].serverId}
+                type={'swapTo'}
+                placeholder={'Search by Name / Address'}
+                excludeTokens={payToken?.id ? [payToken?.id] : undefined}
+                value={receivedTokeAmountDisplay}
+                loading={loading}
+              />
+              <div className={clsx('w-full flex justify-between items-center')}>
+                <div className={clsx(!receiveToken && 'hidden')}>
+                  Balance:
+                  {splitNumberByStep((receiveToken?.amount || 0).toFixed(2))}
                 </div>
+
+                {loading ? (
+                  <Skeleton.Input
+                    style={{
+                      width: 86,
+                      height: 14,
+                    }}
+                    active
+                  />
+                ) : (
+                  <div
+                    className={clsx(
+                      (!receivedTokenUsd || !payAmount) && 'hidden'
+                    )}
+                  >
+                    ${receivedTokenUsd}
+                  </div>
+                )}
+              </div>
+            </SwapTokenWrapper>
+
+            <IconSwitchToken
+              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 cursor-pointer"
+              onClick={switchToken}
+            />
+          </div>
+          {payToken && receiveToken && (
+            <div className="flex flex-col gap-16">
+              <Slippage
+                value={slippage}
+                onChange={setSlippage}
+                amount={
+                  quoteInfo?.toTokenAmount
+                    ? receivedTokeAmountBn
+                        .minus(receivedTokeAmountBn.times(feeRate).div(100))
+                        .toFixed(2)
+                    : ''
+                }
+                symbol={receiveToken?.symbol}
+              />
+
+              {nativeToken && (
+                <GasSelector
+                  chainId={CHAINS[chain].id}
+                  onChange={function (gas: GasLevel): void {
+                    setGasLevel(gas);
+                  }}
+                  gasList={gasMarket || []}
+                  gas={gasLevel}
+                  token={nativeToken}
+                  gasAmount={preExcelInfo}
+                />
               )}
+
+              <Fee fee={feeRate} symbol={wrapTokenSymbol} />
             </div>
-          </SwapTokenWrapper>
-
-          <IconSwitchToken
-            className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2"
-            onClick={switchToken}
-          />
+          )}
         </div>
-        <div className="flex flex-col gap-16">
-          <Slippage
-            value={slippage}
-            onChange={setSlippage}
-            amount={
-              quoteInfo?.toTokenAmount
-                ? receivedTokeAmountBn
-                    .minus(receivedTokeAmountBn.times(feeRate).div(100))
-                    .toFixed(2)
-                : ''
+        {!!tipsDisplay && (
+          <Alert
+            className={clsx(
+              'mx-[16px]  rounded-[4px] px-[8px] py-[3px] bg-transparent'
+            )}
+            icon={
+              <InfoCircleFilled
+                className={clsx(
+                  'pb-[4px] self-start transform rotate-180 origin-center',
+                  tipsDisplay.level === 'danger'
+                    ? 'text-red-light'
+                    : 'text-orange'
+                )}
+              />
             }
-            symbol={receiveToken?.symbol}
+            banner
+            message={
+              <span
+                className={clsx(
+                  'text-12',
+                  tipsDisplay.level === 'danger'
+                    ? 'text-red-light'
+                    : 'text-orange'
+                )}
+              >
+                {tipsDisplay.label}
+              </span>
+            }
           />
-
-          {nativeToken && (
-            <GasSelector
-              chainId={CHAINS[chain].id}
-              onChange={function (gas: GasLevel): void {
-                setGasLevel(gas);
-              }}
-              gasList={gasMarket || []}
-              gas={gasLevel}
-              token={nativeToken}
-              gasAmount={preExcelInfo?.gas?.gas_used}
-            />
-          )}
-
-          <Fee fee={feeRate} />
-        </div>
+        )}
       </div>
-
-      {!!tipsDisplay && (
-        <Alert
-          className={clsx(
-            'mx-[16px]  rounded-[4px] px-[8px] py-[3px] bg-transparent'
-          )}
-          icon={
-            <InfoCircleFilled
-              className={clsx(
-                'pb-[4px] self-start transform rotate-180 origin-center',
-                tipsDisplay.level === 'danger'
-                  ? 'text-red-light'
-                  : 'text-orange'
-              )}
-            />
-          }
-          banner
-          message={
-            <span
-              className={clsx(
-                'text-12',
-                tipsDisplay.level === 'danger'
-                  ? 'text-red-light'
-                  : 'text-orange'
-              )}
-            >
-              {tipsDisplay.label}
-            </span>
-          }
-          //   type={tipsDisplay.level}
-        />
-      )}
 
       <DexSelectDrawer visible={visible} onClose={() => toggleVisible(false)} />
 
@@ -711,11 +829,15 @@ export const SwapByDex = () => {
         <Button
           size="large"
           type="primary"
-          className="mb-25 w-[360px]"
           onClick={handleSwap}
-          disabled={!canSubmit}
+          className={clsx(!canSubmit && 'disabled')}
+          icon={loading ? <IconLoading className="animate-spin" /> : null}
         >
-          {!allowance ? `Approve ${payToken?.symbol}` : 'swap'}
+          {loading
+            ? 'Fetching offer'
+            : !allowance
+            ? `Approve ${payToken?.symbol}`
+            : 'swap'}
         </Button>
       </FooterWrapper>
     </div>
@@ -770,5 +892,20 @@ const FooterWrapper = styled.div`
     line-height: 14px;
     text-align: right;
     color: #707280;
+  }
+
+  .ant-btn-primary {
+    height: 52px;
+    width: 360px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    gap: 8px;
+  }
+
+  .ant-btn-primary.disabled {
+    background-color: #b6c1ff;
+    box-shadow: 0px 12px 24px rgba(134, 151, 255, 0.12);
+    border-color: rgba(134, 151, 255, 0.12);
   }
 `;

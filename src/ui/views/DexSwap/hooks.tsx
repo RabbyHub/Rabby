@@ -43,7 +43,7 @@ export const useVerifyToken = <T extends ValidateTokenParam>(
 
 export const useVerifyRouterAndSpender = (
   chain: CHAINS_ENUM,
-  dexId?: DEX_ENUM,
+  dexId?: DEX_ENUM | null,
   router?: string,
   spender?: string
 ) => {
@@ -67,7 +67,7 @@ export const useVerifyRouterAndSpender = (
 export const useVerifyCalldata = <
   T extends Parameters<typeof decodeCalldata>[1]
 >(
-  dexId?: DEX_ENUM,
+  dexId?: DEX_ENUM | null,
   slippage?: string | number,
   tx?: T,
   data?: QuoteResult
@@ -103,7 +103,7 @@ export const useVerifyCalldata = <
 
 type VerifySdkParams<T extends ValidateTokenParam> = {
   chain: CHAINS_ENUM;
-  dexId?: DEX_ENUM;
+  dexId?: DEX_ENUM | null;
   slippage: string | number;
   data?: QuoteResult;
   payToken?: T;

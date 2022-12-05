@@ -20,12 +20,14 @@ interface ChainSelectorModalProps {
   title?: ReactNode;
   className?: string;
   supportChains?: SelectChainListProps['supportChains'];
+  disabledTips?: SelectChainListProps['disabledTips'];
 }
 
 const useSetup = () => {
   const [search, setSearch] = useState('');
-  const pinned = useRabbySelector((state) =>
-    state.preference.pinnedChain?.filter((item) => CHAINS[item])
+  const pinned = useRabbySelector(
+    (state) =>
+      state.preference.pinnedChain?.filter((item) => CHAINS[item]) || []
   );
   const dispatch = useRabbyDispatch();
 
@@ -86,6 +88,7 @@ const ChainSelectorModal = ({
   connection = false,
   className,
   supportChains,
+  disabledTips,
 }: ChainSelectorModalProps) => {
   const handleCancel = () => {
     onCancel();
@@ -146,6 +149,7 @@ const ChainSelectorModal = ({
           onSort={handleSort}
           onChange={handleChange}
           value={value}
+          disabledTips={disabledTips}
         ></SelectChainList>
         <SelectChainList
           supportChains={supportChains}
@@ -154,6 +158,7 @@ const ChainSelectorModal = ({
           pinned={pinned as CHAINS_ENUM[]}
           onStarChange={handleStarChange}
           onChange={handleChange}
+          disabledTips={disabledTips}
         ></SelectChainList>
         {pinnedList.length === 0 && all.length === 0 ? (
           <div className="select-chain-list pt-[70px] pb-[120px]">

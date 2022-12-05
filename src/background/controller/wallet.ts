@@ -579,6 +579,52 @@ export class WalletController extends BaseController {
     });
   };
 
+  generateApproveTokenTx = ({
+    from,
+    to,
+    chainId,
+    spender,
+    amount,
+  }: {
+    from: string;
+    to: string;
+    chainId: number;
+    spender: string;
+    amount: string;
+  }) => {
+    return {
+      from,
+      to,
+      chainId: chainId,
+      data: ((abiCoder as unknown) as AbiCoder).encodeFunctionCall(
+        {
+          constant: false,
+          inputs: [
+            {
+              name: '_spender',
+              type: 'address',
+            },
+            {
+              name: '_value',
+              type: 'uint256',
+            },
+          ],
+          name: 'approve',
+          outputs: [
+            {
+              name: '',
+              type: 'bool',
+            },
+          ],
+          payable: false,
+          stateMutability: 'nonpayable',
+          type: 'function',
+        },
+        [spender, amount] as any
+      ),
+    };
+  };
+
   approveToken = async (
     chainServerId: string,
     id: string,
@@ -1030,6 +1076,8 @@ export class WalletController extends BaseController {
   setLastSelectedGasTopUpChain = preferenceService.setLastSelectedGasTopUpChain;
 
   getLastSelectedSwapChain = swapService.getSelectedChain;
+  setLastSelectedSwapChain = swapService.setSelectedChain;
+  getSwap = swapService.getSwap;
   getSwapGasCache = swapService.getLastTimeGasSelection;
   updateSwapGasCache = swapService.updateLastTimeGasSelection;
   getSwapDexId = swapService.getSelectedDex;

@@ -14,6 +14,7 @@ import { addressManagement } from './addressManagement';
 import { transactions } from './transactions';
 import { chains } from './chains';
 import { whitelist } from './whitelist';
+import { swap } from './swap';
 
 export interface RootModel extends Models<RootModel> {
   app: typeof app;
@@ -30,6 +31,7 @@ export interface RootModel extends Models<RootModel> {
   transactions: typeof transactions;
   chains: typeof chains;
   whitelist: typeof whitelist;
+  swap: typeof swap;
 }
 
 export const models: RootModel = {
@@ -47,4 +49,5 @@ export const models: RootModel = {
   transactions,
   chains,
   whitelist,
+  swap,
 };

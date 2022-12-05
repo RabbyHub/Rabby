@@ -28,6 +28,10 @@ class SwapService {
     this.store = storage || this.store;
   };
 
+  getSwap = (key?: keyof SwapServiceStore) => {
+    return key ? this.store[key] : this.store;
+  };
+
   getLastTimeGasSelection = (chainId: keyof GasCache): ChainGas | null => {
     const cache = this.store.gasPriceCache[chainId];
     if (cache && cache.lastTimeSelect === 'gasPrice') {

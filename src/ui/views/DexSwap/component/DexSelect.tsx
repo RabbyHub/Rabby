@@ -27,7 +27,7 @@ export const DexSelectDrawer = (props: DexSelectDrawerProps) => {
     },
   });
 
-  const dexId = useRabbySelector((state) => state.preference.swapDexId);
+  const dexId = useRabbySelector((state) => state.swap.selectedDex);
   const dispatch = useRabbyDispatch();
 
   const [checkedId, setCheckedId] = useState(() => dexId || '');
@@ -41,7 +41,7 @@ export const DexSelectDrawer = (props: DexSelectDrawerProps) => {
 
   const handleDexId = async () => {
     if (!checkedId) return;
-    await dispatch.preference.setSwapDexId(checkedId as DEX_ENUM);
+    await dispatch.swap.setSwapDexId(checkedId as DEX_ENUM);
     onClose();
   };
 
@@ -181,7 +181,7 @@ const DexItem = (props: DexItemProps) => {
       </div>
       <div className="flex items-center mt-12">
         <span>Support Chains: </span>
-        <div className="flex items-center gap-6">
+        <div className="flex items-center gap-6 ml-6">
           {chainList.map((e) => {
             const chainInfo = CHAINS[e];
             return (

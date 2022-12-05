@@ -14,6 +14,7 @@ export type SelectChainItemProps = {
   onStarChange?: (value: boolean) => void;
   onChange?: (value: CHAINS_ENUM) => void;
   disabled?: boolean;
+  disabledTips?: string;
 } & Omit<HTMLAttributes<HTMLDivElement>, 'onChange'>;
 
 export const SelectChainItem = forwardRef(
@@ -26,6 +27,7 @@ export const SelectChainItem = forwardRef(
       onStarChange,
       onChange,
       disabled = false,
+      disabledTips = 'Coming soon',
       ...rest
     }: SelectChainItemProps,
     ref: React.ForwardedRef<HTMLDivElement>
@@ -51,9 +53,9 @@ export const SelectChainItem = forwardRef(
         }}
       >
         <Tooltip
-          overlayClassName={clsx('rectangle')}
+          overlayClassName={clsx('rectangle left-[20px]')}
           placement="top"
-          title={'Coming soon'}
+          title={disabledTips}
           visible={disabled ? hover : false}
         >
           <div className="flex items-center">

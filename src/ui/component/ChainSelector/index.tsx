@@ -7,6 +7,7 @@ import Modal from './Modal';
 import './style.less';
 import { chain } from 'lodash';
 import clsx from 'clsx';
+import { SelectChainListProps } from './components/SelectChainList';
 
 interface ChainSelectorProps {
   value: CHAINS_ENUM;

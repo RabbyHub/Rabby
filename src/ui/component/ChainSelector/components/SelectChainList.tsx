@@ -11,6 +11,7 @@ import { SortableContext } from '@dnd-kit/sortable';
 import { Chain } from 'background/service/openapi';
 import clsx from 'clsx';
 import React from 'react';
+import { SelectChainItemProps } from './SelectChainItem';
 import { SortableSelectChainItem } from './SortableSelectChainItem';
 
 export type SelectChainListProps = {
@@ -24,6 +25,7 @@ export type SelectChainListProps = {
   onStarChange?: (v: CHAINS_ENUM, value: boolean) => void;
   pinned: CHAINS_ENUM[];
   supportChains?: CHAINS_ENUM[];
+  disabledTips?: SelectChainItemProps['disabledTips'];
 };
 
 export const SelectChainList = (props: SelectChainListProps) => {
@@ -38,6 +40,7 @@ export const SelectChainList = (props: SelectChainListProps) => {
     onStarChange,
     pinned,
     supportChains,
+    disabledTips,
   } = props;
   const items = data
     .map((item, index) => ({
@@ -109,6 +112,7 @@ export const SelectChainList = (props: SelectChainListProps) => {
                   disabled={
                     supportChains ? !supportChains.includes(item.enum) : false
                   }
+                  disabledTips={disabledTips}
                 ></SortableSelectChainItem>
               );
             })}
@@ -133,6 +137,7 @@ export const SelectChainList = (props: SelectChainListProps) => {
             disabled={
               supportChains ? !supportChains.includes(item.enum) : false
             }
+            disabledTips={disabledTips}
           ></SortableSelectChainItem>
         );
       })}

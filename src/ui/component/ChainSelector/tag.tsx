@@ -6,7 +6,7 @@ import Modal from './Modal';
 import './style.less';
 import { SelectChainListProps } from './components/SelectChainList';
 import { useRabbySelector } from '@/ui/store';
-import { DEX } from '@/ui/views/DexSwap/component/DexSelect';
+// import { DEX } from '@/ui/views/DexSwap/component/DexSelect';
 import { DEX_SUPPORT_CHAINS } from '@rabby-wallet/rabby-swap';
 
 interface ChainSelectorProps {
@@ -16,6 +16,7 @@ interface ChainSelectorProps {
   showModal?: boolean;
   direction?: 'top' | 'bottom';
   supportChains?: SelectChainListProps['supportChains'];
+  disabledTips?: SelectChainListProps['disabledTips'];
 }
 
 const ChainSelector = ({
@@ -72,6 +73,7 @@ export const SwapChainSelector = ({
   onChange,
   readonly = false,
   showModal = false,
+  disabledTips,
 }: // supportChains,
 ChainSelectorProps) => {
   const [showSelectorModal, setShowSelectorModal] = useState(showModal);
@@ -92,7 +94,7 @@ ChainSelectorProps) => {
     setShowSelectorModal(false);
   };
 
-  const dexId = useRabbySelector((s) => s.preference.swapDexId);
+  const dexId = useRabbySelector((s) => s.swap.selectedDex);
 
   if (!dexId) {
     return null;
@@ -101,7 +103,10 @@ ChainSelectorProps) => {
 
   return (
     <>
-      <div className="flex items-center" onClick={handleClickSelector}>
+      <div
+        className="flex items-center cursor-pointer"
+        onClick={handleClickSelector}
+      >
         <img
           src={CHAINS[value].logo}
           className="w-[16px] h-[16px] mr-6 overflow-hidden"
@@ -120,6 +125,7 @@ ChainSelectorProps) => {
           onChange={handleChange}
           onCancel={handleCancel}
           supportChains={supportChains}
+          disabledTips={disabledTips}
         />
       )}
     </>

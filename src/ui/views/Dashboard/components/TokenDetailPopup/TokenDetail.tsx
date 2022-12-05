@@ -4,7 +4,7 @@ import { TokenItem, TxHistoryResult } from 'background/service/openapi';
 import ClipboardJS from 'clipboard';
 import clsx from 'clsx';
 import { last } from 'lodash';
-import React, { useCallback, useRef } from 'react';
+import React, { useCallback, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
 import IconCopy from 'ui/assets/swap/copy.svg';
@@ -19,6 +19,8 @@ import { HistoryItem } from './HistoryItem';
 import { Loading } from './Loading';
 import './style.less';
 import { RABBY_SWAP_ROUTER } from '@/constant';
+import { useRabbySelector } from '@/ui/store';
+import { DEX_SUPPORT_CHAINS } from '@rabby-wallet/rabby-swap';
 
 const PAGE_COUNT = 10;
 const ellipsis = (text: string) => {
@@ -43,6 +45,12 @@ const TokenDetail = ({
 }: TokenDetailProps) => {
   const wallet = useWallet();
   const { t } = useTranslation();
+
+  const oDexId = useRabbySelector((state) => state.swap.selectedDex);
+
+  const shouldSelectDex = useMemo(() => !oDexId, [oDexId]);
+
+  const supportChains = oDexId ? DEX_SUPPORT_CHAINS[oDexId] || [] : [];
 
   const ref = useRef<HTMLDivElement | null>(null);
 
@@ -154,7 +162,7 @@ const TokenDetail = ({
 
   const goToSwap = useCallback(() => {
     history.push(
-      `/swap?rbisource=tokendetail&chain=${token?.chain}&payTokenId=${token?.id}`
+      `/dex-swap?rbisource=tokendetail&chain=${token?.chain}&payTokenId=${token?.id}`
     );
   }, [history, token]);
 
@@ -274,13 +282,17 @@ const TokenDetail = ({
               title={
                 DISABLE_SWAP
                   ? 'Temporarily unavailable'
+                  : shouldSelectDex
+                  ? 'Please Select DEX'
                   : t('The token on this chain is not supported for swap')
               }
               visible={
                 DISABLE_SWAP
                   ? undefined
                   : token.is_core &&
-                    RABBY_SWAP_ROUTER[getChain(token?.chain)?.enum || '']
+                    ((getChain(token?.chain)?.enum &&
+                      supportChains.includes(getChain(token?.chain)!.enum)) ||
+                      shouldSelectDex)
                   ? false
                   : undefined
               }

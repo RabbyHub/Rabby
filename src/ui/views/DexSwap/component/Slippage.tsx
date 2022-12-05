@@ -2,9 +2,9 @@ import LessPalette, { ellipsis } from '@/ui/style/var-defs';
 import { InputNumber, Space, Tooltip } from 'antd';
 import clsx from 'clsx';
 import React, { memo, useMemo, useState } from 'react';
-import { useToggle } from 'react-use';
+import { useCss, useToggle } from 'react-use';
 import styled from 'styled-components';
-import { ReactComponent as IconInfo } from 'ui/assets/infoicon.svg';
+import { ReactComponent as IconInfo } from '@/ui/assets/swap/info-outline.svg';
 import { ReactComponent as IconTipDownArrow } from 'ui/assets/swap/arrow-tips-down.svg';
 import IconArrowTips from 'ui/assets/swap/arrow.svg';
 export const SlippageItem = styled.div<{
@@ -85,8 +85,6 @@ export const Slippage = memo((props: SlippageProps) => {
   const [open, setOpen] = useToggle(false);
   const [isCustom, setIsCustom] = useToggle(false);
 
-  // const [customInput, setCustomInput] = useState('');
-
   const [slippageError, isLow, isHigh] = useMemo(() => {
     const low = Number(value || 0) < 0.05;
     const high = Number(value || 0) > 10;
@@ -95,6 +93,12 @@ export const Slippage = memo((props: SlippageProps) => {
 
   const hasAmount = !!amount;
 
+  const slippageTooltipsClassName = useCss({
+    '& .ant-tooltip-arrow': {
+      left: 'calc(50% - 94px )',
+    },
+  });
+
   return (
     <section className={clsx('relative cursor-pointer px-12')}>
       <div className="flex justify-between" onClick={() => setOpen()}>
@@ -102,8 +106,8 @@ export const Slippage = memo((props: SlippageProps) => {
           <div className="text-13 text-gray-title">Slippage</div>
           <Tooltip
             overlayClassName={clsx(
-              'rectangle max-w-[360px] left-[20px]'
-              //   slippageTooltipsClassName
+              'rectangle max-w-[360px] left-[20px]',
+              slippageTooltipsClassName
             )}
             placement="bottom"
             title={tips}
