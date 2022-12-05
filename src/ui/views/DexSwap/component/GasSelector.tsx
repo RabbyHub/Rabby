@@ -68,7 +68,8 @@ export const GasSelector = ({
     } else {
       return new BigNumber(selectGas.price)
         .times(gasUsed)
-        .div(token.amount)
+        .div(10 ** token.decimals)
+        .times(token.price)
         .toFixed(2);
     }
   }, [gasUsed, selectGas, gasList, token]);

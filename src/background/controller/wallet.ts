@@ -521,14 +521,15 @@ export class WalletController extends BaseController {
       spender,
       pay_token_id,
       unlimited,
+      gasPrice,
     }: {
       chain: CHAINS_ENUM;
-      // tx: Tx;
       quote: QuoteResult;
       needApprove: boolean;
       spender: string;
       pay_token_id: string;
       unlimited: boolean;
+      gasPrice: number;
     },
     $ctx?: any
   ) => {
@@ -551,7 +552,9 @@ export class WalletController extends BaseController {
             ...$ctx?.ga,
             source: 'approvalAndSwap|tokenApproval',
           },
-        }
+        },
+        gasPrice,
+        { isSwap: true }
       );
     }
 
@@ -573,6 +576,7 @@ export class WalletController extends BaseController {
           data: quote.tx.data || '0x',
           value: `0x${new BigNumber(quote.tx.value || '0').toString(16)}`,
           chainId: chainObj.id,
+          gasPrice: `0x${new BigNumber(gasPrice).toString(16)}`,
           isSwap: true,
         },
       ],
@@ -631,7 +635,9 @@ export class WalletController extends BaseController {
     id: string,
     spender: string,
     amount: number | string,
-    $ctx?: any
+    $ctx?: any,
+    gasPrice?: number,
+    extra?: { isSwap: boolean }
   ) => {
     const account = await preferenceService.getCurrentAccount();
     if (!account) throw new Error('no current account');
@@ -639,42 +645,50 @@ export class WalletController extends BaseController {
       (chain) => chain.serverId === chainServerId
     )?.id;
     if (!chainId) throw new Error('invalid chain id');
+    let tx: any = {
+      from: account.address,
+      to: id,
+      chainId: chainId,
+      data: ((abiCoder as unknown) as AbiCoder).encodeFunctionCall(
+        {
+          constant: false,
+          inputs: [
+            {
+              name: '_spender',
+              type: 'address',
+            },
+            {
+              name: '_value',
+              type: 'uint256',
+            },
+          ],
+          name: 'approve',
+          outputs: [
+            {
+              name: '',
+              type: 'bool',
+            },
+          ],
+          payable: false,
+          stateMutability: 'nonpayable',
+          type: 'function',
+        },
+        [spender, amount] as any
+      ),
+    };
+    if (gasPrice) {
+      tx.gasPrice = gasPrice;
+    }
+    if (extra) {
+      tx = {
+        ...tx,
+        ...extra,
+      };
+    }
     await this.sendRequest({
       $ctx,
       method: 'eth_sendTransaction',
-      params: [
-        {
-          from: account.address,
-          to: id,
-          chainId: chainId,
-          data: ((abiCoder as unknown) as AbiCoder).encodeFunctionCall(
-            {
-              constant: false,
-              inputs: [
-                {
-                  name: '_spender',
-                  type: 'address',
-                },
-                {
-                  name: '_value',
-                  type: 'uint256',
-                },
-              ],
-              name: 'approve',
-              outputs: [
-                {
-                  name: '',
-                  type: 'bool',
-                },
-              ],
-              payable: false,
-              stateMutability: 'nonpayable',
-              type: 'function',
-            },
-            [spender, amount] as any
-          ),
-        },
-      ],
+      params: [tx],
     });
   };
 

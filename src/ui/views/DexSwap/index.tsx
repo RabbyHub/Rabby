@@ -127,9 +127,10 @@ export const SwapByDex = () => {
   const [isClickRefresh, setIsClickRefresh] = useState(false);
 
   const [dexId, setDexId] = useState(() => oDexId);
-  const userAddress = useRabbySelector(
-    (state) => state.account.currentAccount?.address || ''
-  );
+  const { userAddress, gasPriceCache } = useRabbySelector((state) => ({
+    userAddress: state.account.currentAccount?.address || '',
+    gasPriceCache: state.swap.gasPriceCache,
+  }));
   const wallet = useWallet();
 
   const [visible, toggleVisible] = useToggle(false);
@@ -139,7 +140,23 @@ export const SwapByDex = () => {
   const [payAmount, setAmount] = useState('');
   const [feeRate, setFeeRate] = useState<FeeProps['fee']>('0.3');
   const [slippage, setSlippage] = useState('0.5');
-  const [gasLevel, setGasLevel] = useState<GasLevel>(defaultGasFee);
+  const [gasLevel, setGasLevel] = useState<GasLevel>(
+    (gasPriceCache || {})[chain]
+      ? {
+          level:
+            gasPriceCache![chain].lastTimeSelect === 'gasPrice'
+              ? 'custom'
+              : gasPriceCache![chain].gasLevel!,
+          base_fee: 0,
+          price:
+            gasPriceCache![chain].lastTimeSelect === 'gasPrice'
+              ? gasPriceCache![chain].gasPrice!
+              : 0,
+          front_tx_count: 0,
+          estimated_seconds: 0,
+        }
+      : defaultGasFee
+  );
 
   const [payToken, setPayToken] = useState<TokenItem | undefined>(() =>
     getChainDefaultToken(chain)
@@ -268,9 +285,6 @@ export const SwapByDex = () => {
   ]);
 
   const {
-    // routerPass,
-    // spenderPass,
-    // callDataPass,
     isSdkDataPass,
     tokenLoading,
     tokenPass,
@@ -324,6 +338,7 @@ export const SwapByDex = () => {
           nonce,
           value: '0x',
           gasPrice: `0x${new BigNumber(gasPrice).toString(16)}`,
+          gas: '0x0',
         };
         const tokenApprovePreExecTx = await wallet.openapi.preExecTx({
           tx: tokenApproveTx,
@@ -540,7 +555,25 @@ export const SwapByDex = () => {
     setIsClickRefresh(true);
   };
 
-  const handleSwap = () => {
+  const handleUpdateGasCache = async () => {
+    let price = 0;
+    if (gasLevel.level === 'custom') {
+      price = gasLevel.price;
+    } else {
+      price = (gasMarket || []).find((item) => item.level === gasLevel.level)!
+        .price;
+    }
+    await dispatch.swap.updateSwapGasCache({
+      chain,
+      gas: {
+        gasPrice: price,
+        gasLevel: gasLevel.level,
+        lastTimeSelect: gasLevel.level === 'custom' ? 'gasPrice' : 'gasLevel',
+      },
+    });
+  };
+
+  const handleSwap = async () => {
     if (tipsDisplay?.level === 'danger') {
       message.error({
         icon: (
@@ -554,13 +587,22 @@ export const SwapByDex = () => {
       });
       return;
     }
+    let price = 0;
+    if (gasLevel.level === 'custom') {
+      price = gasLevel.price;
+    } else {
+      price = (gasMarket || []).find((item) => item.level === gasLevel.level)!
+        .price;
+    }
     if (payToken && oDexId && dexId && chain && quoteInfo) {
+      await handleUpdateGasCache();
       wallet.dexSwap({
         chain,
         quote: quoteInfo,
         needApprove: !allowance,
         spender: DEX_SPENDER_WHITELIST[oDexId][chain],
         pay_token_id: payToken.id,
+        gasPrice: price,
         unlimited,
       });
     }

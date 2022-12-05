@@ -1438,7 +1438,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     let gas: GasLevel | null = null;
 
     if (
-      (isSend && customGasPrice) ||
+      ((isSend || isSwap) && customGasPrice) ||
       isSpeedUp ||
       isCancel ||
       lastTimeGas?.lastTimeSelect === 'gasPrice'

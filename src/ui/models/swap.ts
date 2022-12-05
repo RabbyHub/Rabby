@@ -1,6 +1,6 @@
 import { createModel } from '@rematch/core';
 import { RootModel } from '.';
-import { GasCache } from 'background/service/preference';
+import { ChainGas } from 'background/service/preference';
 import { CHAINS_ENUM } from 'consts';
 import { SwapServiceStore } from '@/background/service/swap';
 import { DEX_ENUM } from '@rabby-wallet/rabby-swap';
@@ -11,6 +11,7 @@ export const swap = createModel<RootModel>()({
   state: {
     selectedDex: null,
     selectedChain: CHAINS_ENUM.ETH,
+    gasPriceCache: {},
   } as Partial<SwapServiceStore>,
 
   reducers: {
@@ -44,7 +45,7 @@ export const swap = createModel<RootModel>()({
     },
 
     async updateSwapGasCache(
-      obj: { chain: CHAINS_ENUM; gas: GasCache },
+      obj: { chain: CHAINS_ENUM; gas: ChainGas },
       store
     ) {
       await store.app.wallet.updateSwapGasCache(obj.chain, obj.gas);
