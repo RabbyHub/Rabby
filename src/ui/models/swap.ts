@@ -60,7 +60,7 @@ export const swap = createModel<RootModel>()({
     },
 
     async setSelectedChain(selectedChain: CHAINS_ENUM, store) {
-      await store.app.wallet.setLas(selectedChain);
+      await store.app.wallet.setLastSelectedSwapChain(selectedChain);
 
       this.setField({
         selectedChain,
