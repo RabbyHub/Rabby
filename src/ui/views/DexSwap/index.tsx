@@ -146,14 +146,16 @@ export const SwapByDex = () => {
   }, [payToken?.id, receiveToken?.id, chain]);
 
   const [logo, name] = useMemo(() => {
-    if (dexId) {
-      return [DEX[dexId].logo, DEX[dexId].name];
+    if (oDexId) {
+      return [DEX[oDexId].logo, DEX[oDexId].name];
     }
     return ['', ''];
-  }, [dexId]);
+  }, [oDexId]);
+
   console.log(
     userAddress,
     dexId,
+    oDexId,
     chain,
     payAmount,
     payToken?.id,
@@ -161,8 +163,6 @@ export const SwapByDex = () => {
     receiveToken?.id,
     feeRate
   );
-
-  console.log('payAmount', payAmount);
 
   const { value: gasMarket } = useAsync(() =>
     wallet.openapi.gasMarket(CHAINS[chain].serverId)
@@ -386,18 +386,34 @@ export const SwapByDex = () => {
     setReceiveToken(payToken);
   };
 
+  // 1.token
+  // 2. 余额足够
+  // 3.不是loading 状态
+  // 4. 报价
+  // 5.token pass
+  // 6.sdk  secure pass
+
   const canSubmit =
     payToken &&
     receiveToken &&
+    chain &&
+    payAmount &&
     !isInsufficient &&
     !tokenLoading &&
     tokenPass &&
     !loading &&
     quoteInfo &&
-    isSdkDataPass &&
-    routerPass &&
-    spenderPass &&
-    callDataPass;
+    isSdkDataPass;
+
+  console.log({
+    payToken,
+    receiveToken,
+    payAmount,
+    chain,
+    isInsufficient,
+    isHighPriceDifference,
+    isSdkDataPass,
+  });
 
   const tipsDisplay = useMemo(() => {
     if (isInsufficient) {
@@ -689,7 +705,7 @@ export const SwapByDex = () => {
           type="primary"
           className="mb-25 w-[360px]"
           onClick={handleSwap}
-          // disabled={!canSubmit}
+          disabled={!canSubmit}
         >
           {!allowance ? `Approve ${payToken?.symbol}` : 'swap'}
         </Button>
