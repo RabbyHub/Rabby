@@ -69,6 +69,7 @@ import * as Sentry from '@sentry/browser';
 import { addHexPrefix, unpadHexString } from 'ethereumjs-util';
 import PQueue from 'p-queue';
 import { ProviderRequest } from './provider/type';
+import { QuoteResult } from '@rabby-wallet/rabby-swap/dist/quote';
 
 const stashKeyrings: Record<string | number, any> = {};
 
@@ -515,14 +516,15 @@ export class WalletController extends BaseController {
   dexSwap = async (
     {
       chain,
-      tx,
+      quote,
       needApprove,
       spender,
       pay_token_id,
       unlimited,
     }: {
       chain: CHAINS_ENUM;
-      tx: Tx;
+      // tx: Tx;
+      quote: QuoteResult;
       needApprove: boolean;
       spender: string;
       pay_token_id: string;
@@ -543,7 +545,7 @@ export class WalletController extends BaseController {
         chainObj.serverId,
         pay_token_id,
         spender,
-        unlimited ? MAX_UNSIGNED_256_INT : tx.value,
+        unlimited ? MAX_UNSIGNED_256_INT : quote.fromTokenAmount,
         {
           ga: {
             ...$ctx?.ga,
@@ -566,8 +568,8 @@ export class WalletController extends BaseController {
       method: 'eth_sendTransaction',
       params: [
         {
-          ...tx,
-          value: `0x${new BigNumber(tx.value).toString(16)}`,
+          ...quote.tx,
+          value: `0x${new BigNumber(quote.tx.value).toString(16)}`,
           chainId: chainObj.id,
         },
       ],

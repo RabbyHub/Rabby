@@ -459,7 +459,7 @@ export const SwapByDex = () => {
     if (payToken && dexId && chain && quoteInfo) {
       wallet.dexSwap({
         chain,
-        tx: quoteInfo!.tx as any,
+        quote: quoteInfo,
         needApprove: !allowance,
         spender: DEX_ROUTER_WHITELIST[dexId!][chain],
         pay_token_id: payToken.id,
@@ -607,34 +607,35 @@ export const SwapByDex = () => {
             onClick={switchToken}
           />
         </div>
-
-        <Slippage
-          value={slippage}
-          onChange={setSlippage}
-          amount={
-            quoteInfo?.toTokenAmount
-              ? receivedTokeAmountBn
-                  .minus(receivedTokeAmountBn.times(feeRate).div(100))
-                  .toFixed(2)
-              : ''
-          }
-          symbol={receiveToken?.symbol}
-        />
-
-        {nativeToken && (
-          <GasSelector
-            chainId={CHAINS[chain].id}
-            onChange={function (gas: GasLevel): void {
-              setGasLevel(gas);
-            }}
-            gasList={gasMarket || []}
-            gas={gasLevel}
-            token={nativeToken}
-            gasAmount={preExcelInfo?.gas?.gas_used}
+        <div className="flex flex-col gap-16">
+          <Slippage
+            value={slippage}
+            onChange={setSlippage}
+            amount={
+              quoteInfo?.toTokenAmount
+                ? receivedTokeAmountBn
+                    .minus(receivedTokeAmountBn.times(feeRate).div(100))
+                    .toFixed(2)
+                : ''
+            }
+            symbol={receiveToken?.symbol}
           />
-        )}
 
-        <Fee fee={feeRate} />
+          {nativeToken && (
+            <GasSelector
+              chainId={CHAINS[chain].id}
+              onChange={function (gas: GasLevel): void {
+                setGasLevel(gas);
+              }}
+              gasList={gasMarket || []}
+              gas={gasLevel}
+              token={nativeToken}
+              gasAmount={preExcelInfo?.gas?.gas_used}
+            />
+          )}
+
+          <Fee fee={feeRate} />
+        </div>
       </div>
 
       {!!tipsDisplay && (
