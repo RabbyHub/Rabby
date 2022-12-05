@@ -18,9 +18,9 @@ import {
   contactBookService,
   signTextHistoryService,
   whitelistService,
+  swapService,
 } from 'background/service';
 import buildinProvider from 'background/utils/buildinProvider';
-import { ContactBookItem } from '../service/contactBook';
 import { openIndexPage } from 'background/webapi/tab';
 import { CacheState } from 'background/service/pageStateCache';
 import i18n from 'background/service/i18n';
@@ -1028,6 +1028,12 @@ export class WalletController extends BaseController {
 
   getLastSelectedGasTopUpChain = preferenceService.getLastSelectedGasTopUpChain;
   setLastSelectedGasTopUpChain = preferenceService.setLastSelectedGasTopUpChain;
+
+  getLastSelectedSwapChain = swapService.getSelectedChain;
+  getSwapGasCache = swapService.getLastTimeGasSelection;
+  updateSwapGasCache = swapService.updateLastTimeGasSelection;
+  getSwapDexId = swapService.getSelectedDex;
+  setSwapDexId = swapService.setSelectedDex;
 
   /* chains */
   getSavedChains = () => preferenceService.getSavedChains();
@@ -2340,10 +2346,6 @@ export class WalletController extends BaseController {
   getNeedSwitchWalletCheck = preferenceService.getNeedSwitchWalletCheck;
 
   updateNeedSwitchWalletCheck = preferenceService.updateNeedSwitchWalletCheck;
-
-  getSwapDexId = preferenceService.getSwapDexId;
-
-  setSwapDexId = preferenceService.setSwapDexId;
 
   revoke = async ({
     list,

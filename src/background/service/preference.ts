@@ -65,7 +65,6 @@ export interface PreferenceStore {
   needSwitchWalletCheck?: boolean;
   lastSelectedSwapPayToken?: Record<string, TokenItem>;
   lastSelectedGasTopUpChain?: Record<string, CHAINS_ENUM>;
-  swapDexId?: DEX_ENUM;
 }
 
 const SUPPORT_LOCALES = ['en'];
@@ -458,12 +457,6 @@ class PreferenceService {
   };
   updateNeedSwitchWalletCheck = (value: boolean) => {
     this.store.needSwitchWalletCheck = value;
-  };
-  getSwapDexId = () => {
-    return this.store.swapDexId || '';
-  };
-  setSwapDexId = (dexId: DEX_ENUM) => {
-    this.store.swapDexId = dexId;
   };
 }
 
