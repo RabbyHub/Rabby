@@ -846,6 +846,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     isSpeedUp,
     isCancel,
     isSend,
+    isSwap,
     isViewGnosisSafe,
   } = normalizeTxParams(params.data[0]);
 
@@ -1444,7 +1445,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       // use cached gasPrice if exist
       customGasPrice = lastTimeGas.gasPrice;
     }
-    if (isSpeedUp || isCancel || (isSend && tx.gasPrice)) {
+    if (isSpeedUp || isCancel || ((isSend || isSwap) && tx.gasPrice)) {
       // use gasPrice set by dapp when it's a speedup or cancel tx
       customGasPrice = parseInt(tx.gasPrice!);
     }

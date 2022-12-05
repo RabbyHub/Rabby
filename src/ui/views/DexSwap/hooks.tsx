@@ -85,9 +85,9 @@ export const useVerifyCalldata = <
         new BigNumber(1).minus(slippage)
       );
       return (
-        callDataResult.fromToken === data.fromToken &&
+        isSameAddress(callDataResult.fromToken, data.fromToken) &&
         callDataResult.fromTokenAmount === data.fromTokenAmount &&
-        callDataResult.toToken === data.toToken &&
+        isSameAddress(callDataResult.toToken, data.toToken) &&
         new BigNumber(callDataResult.minReceiveToTokenAmount)
           .minus(estimateMinReceive)
           .div(estimateMinReceive)
@@ -123,7 +123,7 @@ export const useVerifySdk = <T extends ValidateTokenParam>(
 
   const callDataPass = useVerifyCalldata(
     dexId,
-    slippage,
+    new BigNumber(slippage).div(100).toFixed(),
     data?.tx ? { ...data?.tx, chainId: CHAINS[chain].id } : undefined,
     data
   );
@@ -148,7 +148,7 @@ export const useVerifySdk = <T extends ValidateTokenParam>(
     );
 
     console.log('allowance', allowance);
-    return new BigNumber(allowance).gt(
+    return new BigNumber(allowance).gte(
       new BigNumber(payAmount).times(10 ** payToken.decimals)
     );
   }, [chain, dexId, payToken, payAmount]);

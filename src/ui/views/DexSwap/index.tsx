@@ -13,7 +13,7 @@ import ButtonMax from 'ui/assets/send-token/max.svg';
 import clsx from 'clsx';
 import {
   DEX_ENUM,
-  DEX_ROUTER_WHITELIST,
+  DEX_SPENDER_WHITELIST,
   getQuote,
   WrapTokenAddressMap,
 } from '@rabby-wallet/rabby-swap';
@@ -277,7 +277,14 @@ export const SwapByDex = () => {
     chain,
     dexId,
     slippage,
-    data: quoteInfo,
+    data: quoteInfo && {
+      ...quoteInfo,
+      fromToken: payToken!.id,
+      fromTokenAmount: new BigNumber(payAmount)
+        .times(10 ** payToken!.decimals)
+        .toFixed(0),
+      toToken: receiveToken!.id,
+    },
     payToken,
     receiveToken,
     payAmount,
@@ -299,7 +306,7 @@ export const SwapByDex = () => {
           10 ** (quoteInfo?.toTokenDecimals || receiveToken?.decimals || 20)
         );
 
-      return [v.toFixed(2), v];
+      return [v.toFixed(), v];
     }
     return ['', v];
   }, [quoteInfo, receiveToken?.price]);
@@ -477,7 +484,7 @@ export const SwapByDex = () => {
         chain,
         quote: quoteInfo,
         needApprove: !allowance,
-        spender: DEX_ROUTER_WHITELIST[oDexId][chain],
+        spender: DEX_SPENDER_WHITELIST[oDexId][chain],
         pay_token_id: payToken.id,
         unlimited,
       });

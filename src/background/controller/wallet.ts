@@ -568,9 +568,12 @@ export class WalletController extends BaseController {
       method: 'eth_sendTransaction',
       params: [
         {
-          ...quote.tx,
-          value: `0x${new BigNumber(quote.tx.value).toString(16)}`,
+          from: quote.tx.from,
+          to: quote.tx.to,
+          data: quote.tx.data || '0x',
+          value: `0x${new BigNumber(quote.tx.value || '0').toString(16)}`,
           chainId: chainObj.id,
+          isSwap: true,
         },
       ],
     });
