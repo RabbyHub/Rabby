@@ -472,12 +472,12 @@ export const SwapByDex = () => {
   const [unlimited, setUnlimited] = useToggle(false);
 
   const handleSwap = () => {
-    if (payToken && dexId && chain && quoteInfo) {
+    if (payToken && oDexId && dexId && chain && quoteInfo) {
       wallet.dexSwap({
         chain,
         quote: quoteInfo,
         needApprove: !allowance,
-        spender: DEX_ROUTER_WHITELIST[dexId!][chain],
+        spender: DEX_ROUTER_WHITELIST[oDexId][chain],
         pay_token_id: payToken.id,
         unlimited,
       });

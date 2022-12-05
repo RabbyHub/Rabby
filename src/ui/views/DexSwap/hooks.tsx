@@ -73,7 +73,7 @@ export const useVerifyCalldata = <
   data?: QuoteResult
 ) => {
   const callDataResult = useMemo(() => {
-    if (dexId && tx) {
+    if (dexId && dexId !== DEX_ENUM.WRAPTOKEN && tx) {
       return decodeCalldata(dexId, tx) as DecodeCalldataResult;
     }
     return null;
