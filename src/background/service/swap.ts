@@ -28,15 +28,43 @@ class SwapService {
     this.store = storage || this.store;
   };
 
-  getLastTimeGasSelection = (chainId: keyof GasCache) => {
-    return this.store.gasPriceCache[chainId];
+  getLastTimeGasSelection = (chainId: keyof GasCache): ChainGas | null => {
+    const cache = this.store.gasPriceCache[chainId];
+    if (cache && cache.lastTimeSelect === 'gasPrice') {
+      if (Date.now() <= (cache.expireAt || 0)) {
+        return cache;
+      } else if (cache.gasLevel) {
+        return {
+          lastTimeSelect: 'gasLevel',
+          gasLevel: cache.gasLevel,
+        };
+      } else {
+        return null;
+      }
+    } else {
+      return cache;
+    }
   };
 
   updateLastTimeGasSelection = (chainId: keyof GasCache, gas: ChainGas) => {
-    this.store.gasPriceCache = {
-      ...this.store.gasPriceCache,
-      [chainId]: gas,
-    };
+    if (gas.lastTimeSelect === 'gasPrice') {
+      this.store.gasPriceCache = {
+        ...this.store.gasPriceCache,
+        [chainId]: {
+          ...this.store.gasPriceCache[chainId],
+          ...gas,
+          expireAt: Date.now() + 3600000, // custom gasPrice will expire at 1h later
+        },
+      };
+    } else {
+      this.store.gasPriceCache = {
+        ...this.store.gasPriceCache,
+        [chainId]: {
+          ...this.store.gasPriceCache[chainId],
+          ...gas,
+        },
+      };
+    }
   };
 
   getSelectedDex = () => {
