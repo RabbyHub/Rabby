@@ -50,7 +50,6 @@
   },
   "permissions": [
     "storage",
-    "scripting",
     "alarms",
     "unlimitedStorage",
     "activeTab",
