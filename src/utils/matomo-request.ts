@@ -37,6 +37,12 @@ const getParams = async () => {
   gaParams.append('s', new Date().getUTCSeconds().toString());
   gaParams.append('cookie', '0');
   gaParams.append('send_image', '0');
+  gaParams.append(
+    '_cvar',
+    JSON.stringify({
+      1: ['appVersion', process.env.version],
+    })
+  );
 
   return gaParams;
 };
