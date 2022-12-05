@@ -17,6 +17,7 @@ interface ChainSelectorProps {
   direction?: 'top' | 'bottom';
   supportChains?: SelectChainListProps['supportChains'];
   disabledTips?: SelectChainListProps['disabledTips'];
+  title?: React.ReactNode;
 }
 
 const ChainSelector = ({
@@ -74,6 +75,7 @@ export const SwapChainSelector = ({
   readonly = false,
   showModal = false,
   disabledTips,
+  title,
 }: // supportChains,
 ChainSelectorProps) => {
   const [showSelectorModal, setShowSelectorModal] = useState(showModal);
@@ -126,6 +128,7 @@ ChainSelectorProps) => {
           onCancel={handleCancel}
           supportChains={supportChains}
           disabledTips={disabledTips}
+          title={title}
         />
       )}
     </>

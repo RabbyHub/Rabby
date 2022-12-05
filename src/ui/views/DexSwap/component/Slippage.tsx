@@ -1,7 +1,7 @@
 import LessPalette, { ellipsis } from '@/ui/style/var-defs';
 import { InputNumber, Space, Tooltip } from 'antd';
 import clsx from 'clsx';
-import React, { memo, useMemo, useState } from 'react';
+import React, { memo, useMemo } from 'react';
 import { useCss, useToggle } from 'react-use';
 import styled from 'styled-components';
 import { ReactComponent as IconInfo } from '@/ui/assets/swap/info-outline.svg';
@@ -115,7 +115,7 @@ export const Slippage = memo((props: SlippageProps) => {
             <IconInfo />
           </Tooltip>
         </Space>
-        <div className="text-right text-14 font-medium flex items-center">
+        <div className="text-right text-13 font-medium flex items-center">
           {value} %
           <div
             className={clsx('ml-4', {

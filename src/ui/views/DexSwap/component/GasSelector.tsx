@@ -79,7 +79,7 @@ export const GasSelector = ({
       <div className="flex justify-between" onClick={() => setOpen()}>
         <div className="text-13 text-gray-title">Gas fee</div>
 
-        <div className="text-right text-14 font-medium flex items-center">
+        <div className="text-right text-13 font-medium flex items-center">
           {selectGas?.level ? GAS_LEVEL_TEXT[selectGas?.level] : ''}·${gasUsd}
           <div
             className={clsx('ml-4', {

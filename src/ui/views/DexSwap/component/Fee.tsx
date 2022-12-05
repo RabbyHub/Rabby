@@ -44,7 +44,7 @@ export const Fee = (props: FeeProps) => {
           <IconInfo />
         </Tooltip>
       </Space>
-      <div className="text-right text-14 font-medium flex items-center">
+      <div className="text-right text-13 font-medium flex items-center">
         <span className="mr-4">
           {fee}
           {fee === '0' ? '' : '%'}

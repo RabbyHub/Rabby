@@ -124,7 +124,6 @@ export const SwapByDex = () => {
 
   const [unlimited, setUnlimited] = useToggle(false);
   const [refreshId, setRefreshId] = useState(0);
-  const [isClickRefresh, setIsClickRefresh] = useState(false);
 
   const [dexId, setDexId] = useState(() => oDexId);
   const { userAddress, gasPriceCache } = useRabbySelector((state) => ({
@@ -311,7 +310,7 @@ export const SwapByDex = () => {
   });
 
   const { value: totalGasUsed } = useAsync(async () => {
-    if (chain && quoteInfo && payToken && dexId) {
+    if (chain && quoteInfo && payToken && dexId && gasMarket) {
       const nonce = await wallet.getRecommendNonce({
         from: quoteInfo.tx.from,
         chainId: CHAINS[chain].id,
@@ -390,7 +389,7 @@ export const SwapByDex = () => {
       return d?.gas?.gas_used;
     }
     return;
-  }, [chain, quoteInfo, refreshId, allowance, dexId]);
+  }, [chain, quoteInfo, refreshId, allowance, dexId, gasLevel, gasMarket]);
 
   const [payTokenUsdDisplay, payTokenUsdBn] = useMemo(() => {
     const payTokenUsd = new BigNumber(payAmount || 0).times(
@@ -498,7 +497,8 @@ export const SwapByDex = () => {
     if (isInsufficient) {
       return tips.insufficient;
     }
-    if (payToken && payAmount && receiveToken && !loading && !quoteInfo) {
+
+    if (payToken && payAmount && receiveToken) {
       if (!loading && !quoteInfo) {
         return tips.quoteFail;
       }
@@ -514,7 +514,7 @@ export const SwapByDex = () => {
       if (isHighPriceDifference) {
         return tips.priceDifference;
       }
-      if (payToken && payAmount && receiveToken && !totalGasUsed) {
+      if (totalGasUsed !== undefined) {
         return tips.gasCostFail;
       }
       if (
@@ -547,12 +547,8 @@ export const SwapByDex = () => {
     slippage,
   ]);
 
-  const timer = useRef<number>();
-  const isClickRefreshRef = useRef(isClickRefresh);
   const refresh = () => {
-    clearTimeout(timer.current);
     setRefreshId((id) => ++id);
-    setIsClickRefresh(true);
   };
 
   const handleUpdateGasCache = async () => {
@@ -608,16 +604,14 @@ export const SwapByDex = () => {
     }
   };
 
+  const intervalActive =
+    !!payAmount && !!payToken && !!receiveToken && !!quoteInfo && !loading;
+
   useInterval(
     () => {
       refresh();
-      if (isClickRefreshRef.current) {
-        timer.current = (setTimeout(() => {
-          setIsClickRefresh(false);
-        }, 700) as unknown) as number;
-      }
     },
-    isClickRefresh ? 9300 - 70 : 9300
+    intervalActive ? 9300 : null
   );
 
   useEffect(() => {
@@ -655,7 +649,7 @@ export const SwapByDex = () => {
   return (
     <div className="px-0 overflow-hidden bg-gray-bg h-full relative pb-[120px]">
       <PageHeader className="pt-[24px] mx-[20px]">
-        <div className="flex items-center justify-center">
+        <div className="flex items-center justify-center gap-4">
           <img src={logo} alt="" className="w-24 h-24 rounded-full" />
           <span className="font-medium text-20 text-gray-title">{name}</span>
         </div>
@@ -668,22 +662,30 @@ export const SwapByDex = () => {
           onClick={toggleVisible}
         />
       </PageHeader>
-      <div className="max-h-[444px] overflow-y-auto pb-40">
+      <div className="max-h-[444px] overflow-y-auto pb-80">
         <div className="mx-20 bg-white w-[360px] rounded-[6px] px-12 pt-16 pb-12">
           <div className="flex items-center justify-between">
             <SwapChainSelector
               value={chain}
               onChange={handleChain}
               disabledTips={'Not supported by the current exchange'}
+              title={
+                <div className="flex items-center gap-6">
+                  <img src={logo} alt="" className="w-24 h-24 rounded-[4px]" />
+                  <span>Select the chain supported by {name}</span>
+                </div>
+              }
             />
             <IconRefresh
               className="text-blue-light cursor-pointer"
               onClick={refresh}
+              active={intervalActive}
+              key={refreshId}
             />
           </div>
-          <div className="relative flex flex-col gap-8 mt-12 mb-16">
+          <div className="relative flex flex-col gap-8 mb-16">
             <SwapTokenWrapper>
-              <div className="text-left w-full">Pay with</div>
+              <div className="text-left w-full mb-4 pl-4">Pay with</div>
               <TokenSelect
                 value={payAmount}
                 token={payToken}
@@ -696,7 +698,11 @@ export const SwapByDex = () => {
                   receiveToken?.id ? [receiveToken?.id] : undefined
                 }
               />
-              <div className={clsx('w-full flex justify-between items-center')}>
+              <div
+                className={clsx(
+                  'w-full flex justify-between items-center mt-6 pl-4'
+                )}
+              >
                 {payTokenLoading ? (
                   <Skeleton.Input
                     style={{
@@ -736,7 +742,7 @@ export const SwapByDex = () => {
               </div>
             </SwapTokenWrapper>
             <SwapTokenWrapper>
-              <div className="text-left w-full">Receive</div>
+              <div className="text-left w-full mb-4 pl-4">Receive</div>
               <TokenSelect
                 token={receiveToken}
                 onTokenChange={setReceiveToken}
@@ -747,7 +753,11 @@ export const SwapByDex = () => {
                 value={receivedTokeAmountDisplay}
                 loading={loading}
               />
-              <div className={clsx('w-full flex justify-between items-center')}>
+              <div
+                className={clsx(
+                  'w-full flex justify-between items-center mt-6 pl-4'
+                )}
+              >
                 <div className={clsx(!receiveToken && 'hidden')}>
                   Balance:
                   {splitNumberByStep((receiveToken?.amount || 0).toFixed(2))}
@@ -879,9 +889,7 @@ const SwapTokenWrapper = styled.div`
   height: 92px;
   display: flex;
   flex-direction: column;
-  gap: 4px;
-
-  padding: 12px;
+  padding: 10px 12px 12px 8px;
   background: #f5f6fa;
   border-radius: 4px;
   font-weight: 400;

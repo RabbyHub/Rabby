@@ -17,19 +17,12 @@ import LessPalette from '@/ui/style/var-defs';
 import { ReactComponent as SvgIconArrowDownTriangle } from '@/ui/assets/swap/arrow-caret-down.svg';
 
 const Wrapper = styled.div`
-  /* background: ${LessPalette['@color-bg']}; */
   background-color: transparent;
   border-radius: 4px;
-  /* padding: 16px 12px; */
   display: flex;
   justify-content: space-between;
   align-items: center;
   cursor: pointer;
-  border: 1px solid transparent;
-
-  /* &:hover {
-    border-color: #8697ff;
-  } */
 
   & .ant-input {
     background-color: transparent;
@@ -213,6 +206,8 @@ const TokenSelect = ({
           {token ? (
             <TokenWrapper>
               <TokenWithChain
+                width="22px"
+                height="22px"
                 token={token}
                 hideConer
                 hideChainIcon={hideChainIcon}
@@ -246,6 +241,7 @@ const TokenSelect = ({
           />
         ) : (
           <Input
+            className="h-[30px]"
             readOnly={type === 'swapTo'}
             placeholder={'0'}
             autoFocus={type !== 'swapTo'}
