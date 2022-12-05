@@ -282,14 +282,15 @@ export const SwapByDex = () => {
     chain,
     dexId,
     slippage,
-    data: quoteInfo && {
-      ...quoteInfo,
-      fromToken: payToken!.id,
-      fromTokenAmount: new BigNumber(payAmount)
-        .times(10 ** payToken!.decimals)
-        .toFixed(0),
-      toToken: receiveToken!.id,
-    },
+    data: quoteInfo &&
+      receiveToken && {
+        ...quoteInfo,
+        fromToken: payToken!.id,
+        fromTokenAmount: new BigNumber(payAmount)
+          .times(10 ** payToken!.decimals)
+          .toFixed(0),
+        toToken: receiveToken?.id,
+      },
     payToken,
     receiveToken,
     payAmount,
@@ -588,11 +589,12 @@ export const SwapByDex = () => {
   }, [isWrapToken, isStableCoin]);
 
   useEffect(() => {
-    if (dexId !== oDexId) {
+    if (dexId !== oDexId && dexId !== DEX_ENUM.WRAPTOKEN) {
       setChain(CHAINS_ENUM.ETH);
       setPayToken(getChainDefaultToken(CHAINS_ENUM.ETH));
       setReceiveToken(undefined);
       setDexId(oDexId);
+      setAmount('');
     }
   }, [dexId, oDexId]);
 
@@ -823,7 +825,7 @@ export const SwapByDex = () => {
             ? 'Fetching offer'
             : !allowance
             ? `Approve ${payToken?.symbol}`
-            : 'swap'}
+            : 'Swap'}
         </Button>
       </FooterWrapper>
     </div>
