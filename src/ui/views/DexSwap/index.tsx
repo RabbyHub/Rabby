@@ -309,7 +309,10 @@ export const SwapByDex = () => {
     payAmount,
   });
 
-  const { value: totalGasUsed } = useAsync(async () => {
+  const {
+    value: totalGasUsed,
+    loading: totalGasUsedLoading,
+  } = useAsync(async () => {
     if (chain && quoteInfo && payToken && dexId && gasMarket) {
       const nonce = await wallet.getRecommendNonce({
         from: quoteInfo.tx.from,
@@ -514,7 +517,15 @@ export const SwapByDex = () => {
       if (isHighPriceDifference) {
         return tips.priceDifference;
       }
-      if (totalGasUsed === undefined) {
+      if (
+        chain &&
+        quoteInfo &&
+        payToken &&
+        dexId &&
+        gasMarket &&
+        !totalGasUsedLoading &&
+        totalGasUsed === undefined
+      ) {
         return tips.gasCostFail;
       }
       if (
@@ -524,10 +535,10 @@ export const SwapByDex = () => {
         return tips.priceFail;
       }
 
-      if (Number(slippage) >= 10) {
+      if (Number(slippage) > 10) {
         return tips.highSlippage;
       }
-      if (Number(slippage) <= 0.05) {
+      if (Number(slippage) < 0.05) {
         return tips.lowSlippage;
       }
     }
