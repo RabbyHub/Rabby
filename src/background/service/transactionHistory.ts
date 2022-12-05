@@ -2,7 +2,7 @@ import { createPersistStore } from 'background/utils';
 import maxBy from 'lodash/maxBy';
 import { Object as ObjectType } from 'ts-toolbelt';
 import openapiService, { Tx, ExplainTxResponse } from './openapi';
-import { CHAINS } from 'consts';
+import { CHAINS, INTERNAL_REQUEST_ORIGIN, CHAINS_ENUM } from 'consts';
 import stats from '@/stats';
 import permissionService, { ConnectedSite } from './permission';
 import { nanoid } from 'nanoid';
@@ -47,12 +47,6 @@ interface TxHistoryStore {
   transactions: {
     [key: string]: Record<string, TransactionGroup>;
   };
-  // cacheExplain: {
-  //   [key: string]: ObjectType.Merge<
-  //     TransactionGroup['explain'],
-  //     { approvalId: string; calcSuccess: boolean }
-  //   >;
-  // };
 }
 
 class TxHistory {
@@ -110,11 +104,9 @@ class TxHistory {
       name: 'txHistory',
       template: {
         transactions: {},
-        // cacheExplain: {},
       },
     });
     if (!this.store.transactions) this.store.transactions = {};
-    // if (!this.store.cacheExplain) this.store.cacheExplain = {};
   }
 
   getPendingCount(address: string) {
@@ -133,17 +125,29 @@ class TxHistory {
     const chainId = tx.rawTx.chainId;
     const key = `${chainId}-${nonce}`;
     const from = tx.rawTx.from.toLowerCase();
-    const site = permissionService.getConnectedSite(origin);
+
+    if (origin === INTERNAL_REQUEST_ORIGIN) {
+      const site = {
+        origin: INTERNAL_REQUEST_ORIGIN,
+        icon: '',
+        name: 'Rabby Wallet',
+        chain: CHAINS_ENUM.ETH,
+        isSigned: false,
+        isTop: false,
+        isConnected: true,
+      };
+      tx.site = site;
+    } else {
+      const site = permissionService.getConnectedSite(origin);
+      tx.site = site;
+    }
 
     if (!this.store.transactions[from]) {
       this.store.transactions[from] = {};
     }
     if (this.store.transactions[from][key]) {
       const group = this.store.transactions[from][key];
-      group.txs.push({
-        ...tx,
-        site,
-      });
+      group.txs.push(tx);
       this.store.transactions = {
         ...this.store.transactions,
         [from]: {
@@ -159,12 +163,7 @@ class TxHistory {
           [key]: {
             chainId: tx.rawTx.chainId,
             nonce,
-            txs: [
-              {
-                ...tx,
-                site,
-              },
-            ],
+            txs: [tx],
             createdAt: tx.createdAt,
             isPending: true,
             explain: explain,
@@ -174,8 +173,6 @@ class TxHistory {
         },
       };
     }
-
-    // this.removeExplainCache(`${from.toLowerCase()}-${chainId}-${nonce}`);
   }
 
   addTx(
@@ -188,9 +185,21 @@ class TxHistory {
     const chainId = tx.rawTx.chainId;
     const key = `${chainId}-${nonce}`;
     const from = tx.rawTx.from.toLowerCase();
-    const site = permissionService.getConnectedSite(origin);
-
-    tx.site = site;
+    if (origin === INTERNAL_REQUEST_ORIGIN) {
+      const site = {
+        origin: INTERNAL_REQUEST_ORIGIN,
+        icon: '',
+        name: 'Rabby Wallet',
+        chain: CHAINS_ENUM.ETH,
+        isSigned: false,
+        isTop: false,
+        isConnected: true,
+      };
+      tx.site = site;
+    } else {
+      const site = permissionService.getConnectedSite(origin);
+      tx.site = site;
+    }
 
     if (!this.store.transactions[from]) {
       this.store.transactions[from] = {};
@@ -373,11 +382,9 @@ class TxHistory {
           return a.chainId - b.chainId;
         }
       }),
-      completeds: completeds
-        .sort((a, b) => {
-          return b.createdAt - a.createdAt;
-        })
-        .slice(0, 10),
+      completeds: completeds.sort((a, b) => {
+        return b.createdAt - a.createdAt;
+      }),
     };
   }
 

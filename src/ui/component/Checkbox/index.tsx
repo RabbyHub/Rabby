@@ -15,7 +15,7 @@ interface CheckboxProps {
   checkIcon?: ReactNode;
 }
 
-const unCheckBackground = '#B4BDCC';
+const unCheckBackground = '#E5E9EF';
 
 const Checkbox = ({
   checked,
