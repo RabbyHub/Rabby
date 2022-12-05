@@ -446,7 +446,7 @@ export const SwapByDex = () => {
         .minus(receiveToken?.price)
         .div(payToken?.price)
         .abs()
-        .lte(0.05);
+        .lte(0.01);
     }
     return false;
   }, [payToken, receiveToken]);
