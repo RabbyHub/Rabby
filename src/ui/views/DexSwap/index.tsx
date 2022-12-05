@@ -38,22 +38,24 @@ import { IconRefresh } from './component/IconRefresh';
 import { useLocation } from 'react-router-dom';
 import { query2obj } from '@/ui/utils/url';
 
-const defaultToken = {
-  id: 'eth',
-  chain: 'eth',
-  name: 'ETH',
-  symbol: 'ETH',
-  display_symbol: null,
-  optimized_symbol: 'ETH',
-  decimals: 18,
-  logo_url:
-    'https://static.debank.com/image/token/logo_url/eth/935ae4e4d1d12d59a99717a24f2540b5.png',
-  price: 0,
-  is_verified: true,
-  is_core: true,
-  is_wallet: true,
-  time_at: 0,
-  amount: 0,
+const getChainDefaultToken = (chain: CHAINS_ENUM) => {
+  const chainInfo = CHAINS[chain];
+  return {
+    id: chainInfo.nativeTokenAddress,
+    decimals: chainInfo.nativeTokenDecimals,
+    logo_url: chainInfo.nativeTokenLogo,
+    symbol: chainInfo.nativeTokenSymbol,
+    display_symbol: chainInfo.nativeTokenSymbol,
+    optimized_symbol: chainInfo.nativeTokenSymbol,
+    is_core: true,
+    is_verified: true,
+    is_wallet: true,
+    amount: 0,
+    price: 0,
+    name: chainInfo.nativeTokenSymbol,
+    chain: chainInfo.serverId,
+    time_at: 0,
+  };
 };
 
 const tips = {
@@ -112,7 +114,7 @@ export const SwapByDex = () => {
   const oChain = useRabbySelector(
     (state) => state.swap.selectedChain || CHAINS_ENUM.ETH
   );
-  const dispath = useRabbyDispatch();
+  const dispatch = useRabbyDispatch();
   const { search } = useLocation();
   const [searchObj] = useState<{
     payTokenId?: string;
@@ -138,7 +140,9 @@ export const SwapByDex = () => {
   const [slippage, setSlippage] = useState('0.5');
   const [gasLevel, setGasLevel] = useState<GasLevel>(defaultGasFee);
 
-  const [payToken, setPayToken] = useState<TokenItem | undefined>(defaultToken);
+  const [payToken, setPayToken] = useState<TokenItem | undefined>(() =>
+    getChainDefaultToken(chain)
+  );
   const [receiveToken, setReceiveToken] = useState<TokenItem | undefined>(
     undefined
   );
@@ -150,13 +154,11 @@ export const SwapByDex = () => {
       );
       if (target) {
         setChain(target?.enum);
+        setPayToken({
+          ...getChainDefaultToken(target?.enum),
+          id: searchObj.payTokenId,
+        });
       }
-
-      setPayToken({
-        ...defaultToken,
-        id: searchObj.payTokenId,
-        chain: searchObj.chain,
-      });
     }
   }, [searchObj?.chain, searchObj?.payTokenId]);
 
@@ -449,25 +451,9 @@ export const SwapByDex = () => {
 
   const handleChain = (c: CHAINS_ENUM) => {
     setChain(c);
-    dispath.swap.setSelectedChain(c);
-    const chainInfo = CHAINS[c];
+    dispatch.swap.setSelectedChain(c);
 
-    setPayToken({
-      id: chainInfo.nativeTokenAddress,
-      decimals: chainInfo.nativeTokenDecimals,
-      logo_url: chainInfo.nativeTokenLogo,
-      symbol: chainInfo.nativeTokenSymbol,
-      display_symbol: chainInfo.nativeTokenSymbol,
-      optimized_symbol: chainInfo.nativeTokenSymbol,
-      is_core: true,
-      is_verified: true,
-      is_wallet: true,
-      amount: 0,
-      price: 0,
-      name: chainInfo.nativeTokenSymbol,
-      chain: chainInfo.serverId,
-      time_at: 0,
-    });
+    setPayToken(getChainDefaultToken(c));
     setReceiveToken(undefined);
   };
 
@@ -604,7 +590,7 @@ export const SwapByDex = () => {
   useEffect(() => {
     if (dexId !== oDexId) {
       setChain(CHAINS_ENUM.ETH);
-      setPayToken(defaultToken);
+      setPayToken(getChainDefaultToken(CHAINS_ENUM.ETH));
       setReceiveToken(undefined);
       setDexId(oDexId);
     }
