@@ -18,10 +18,17 @@ import { useAsync } from 'react-use';
 export const useVerifyToken = <T extends ValidateTokenParam>(
   payToken?: T,
   receiveToken?: T,
-  chain?: CHAINS_ENUM
+  chain?: CHAINS_ENUM,
+  isWrapToken?: boolean
 ) => {
   const data = useAsync(async () => {
-    if (payToken && receiveToken) {
+    if (payToken && receiveToken && chain) {
+      if (
+        isWrapToken ||
+        isSameAddress(payToken!.id, CHAINS[chain].nativeTokenAddress)
+      ) {
+        return [true, true, true];
+      }
       const [
         fromTokenValidationStatus,
         toTokenValidationStatus,
@@ -36,6 +43,7 @@ export const useVerifyToken = <T extends ValidateTokenParam>(
         toTokenValidationStatus,
       ];
     }
+
     return [true, true, true];
   }, [payToken, receiveToken, chain]);
   return data;
@@ -45,10 +53,15 @@ export const useVerifyRouterAndSpender = (
   chain: CHAINS_ENUM,
   dexId?: DEX_ENUM | null,
   router?: string,
-  spender?: string
+  spender?: string,
+  payTokenId?: string
 ) => {
   const data = useMemo(() => {
-    if (dexId === DEX_ENUM.WRAPTOKEN) {
+    if (
+      dexId === DEX_ENUM.WRAPTOKEN ||
+      (payTokenId &&
+        isSameAddress(payTokenId, CHAINS[chain].nativeTokenAddress))
+    ) {
       return [true, true];
     }
     if (!dexId || !router || !spender) {
@@ -118,7 +131,8 @@ export const useVerifySdk = <T extends ValidateTokenParam>(
     chain,
     dexId,
     data?.tx.to,
-    data?.spender
+    data?.spender,
+    payToken?.id
   );
 
   const callDataPass = useVerifyCalldata(
@@ -131,7 +145,8 @@ export const useVerifySdk = <T extends ValidateTokenParam>(
   const { value: tokenVerifyResult, loading: tokenLoading } = useVerifyToken(
     payToken,
     receiveToken,
-    chain
+    chain,
+    dexId === DEX_ENUM.WRAPTOKEN
   );
 
   const wallet = useWallet();
