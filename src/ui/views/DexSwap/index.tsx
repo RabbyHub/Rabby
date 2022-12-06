@@ -709,7 +709,7 @@ export const SwapByDex = () => {
               />
             )}
           </div>
-          <div className="relative flex flex-col gap-8 mb-16">
+          <div className="relative flex flex-col gap-8 ">
             <SwapTokenWrapper>
               <div className="text-left w-full mb-4 pl-4">Pay with</div>
               <TokenSelect
@@ -820,7 +820,7 @@ export const SwapByDex = () => {
             </div>
           </div>
           {payToken && receiveToken && (
-            <div className="flex flex-col gap-14">
+            <div className="flex flex-col gap-14 mt-16 mb-8">
               <Slippage
                 value={slippage}
                 onChange={setSlippage}

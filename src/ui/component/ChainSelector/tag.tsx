@@ -107,7 +107,7 @@ ChainSelectorProps) => {
   return (
     <>
       <div
-        className="flex items-center cursor-pointer"
+        className="flex items-center cursor-pointer mb-12"
         onClick={handleClickSelector}
       >
         <img
