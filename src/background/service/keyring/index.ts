@@ -820,12 +820,7 @@ export class KeyringService extends EventEmitter {
     const Keyring = this.getKeyringClassForType(type);
     const keyring = new Keyring();
     await keyring.deserialize(data);
-    if (
-      keyring.type === HARDWARE_KEYRING_TYPES.Ledger.type &&
-      preference.store.useLedgerLive
-    ) {
-      await keyring.updateTransportMethod(true);
-    }
+
     if (keyring.type === KEYRING_CLASS.WALLETCONNECT) {
       setWalletConnectClientMeta(keyring);
       eventBus.addEventListener(
