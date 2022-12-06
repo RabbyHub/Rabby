@@ -2,7 +2,7 @@ import { useRabbySelector, useRabbyDispatch } from '@/ui/store';
 import { CHAINS_ENUM, CHAINS } from '@debank/common';
 import { DEX_ENUM, DEX_SUPPORT_CHAINS } from '@rabby-wallet/rabby-swap';
 import { Button, Drawer } from 'antd';
-import React, { useState, useEffect } from 'react';
+import React, { useState } from 'react';
 import { useHistory } from 'react-router-dom';
 import { useCss } from 'react-use';
 import styled from 'styled-components';
@@ -145,7 +145,6 @@ export const DEX = {
 
 const DexItemBox = styled.div`
   width: 360px;
-  height: 100px;
   background: #f5f6fa;
   border-radius: 6px;
   border: 1px solid transparent;
@@ -154,6 +153,37 @@ const DexItemBox = styled.div`
   &:hover {
     background: rgba(134, 151, 255, 0.2);
     border: 1px solid #8697ff;
+
+    .dex {
+      border-bottom-color: #b4bdcc;
+    }
+  }
+  .dex {
+    padding-bottom: 12px;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    border-bottom: 1px solid #e5e9ef;
+  }
+
+  .chain {
+    display: flex;
+    align-items: center;
+    margin-top: 12px;
+
+    .chain-tips {
+      font-weight: 400;
+      font-size: 12px;
+      line-height: 14px;
+      color: #707280;
+    }
+
+    .chain-logo {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      margin-left: 6px;
+    }
   }
 `;
 interface DexItemProps {
@@ -172,16 +202,21 @@ const DexItem = (props: DexItemProps) => {
         onChecked(!checked);
       }}
     >
-      <div className="flex justify-between items-center border-b border-gray-comment pb-[12px]">
+      <div className="dex">
         <div className="flex items-center">
           <img className="w-[32px] h-[32px] rounded-full mr-8" src={imgSrc} />
           <span className="text-15 text-gray-title font-medium">{name}</span>
         </div>
-        <Checkbox checked={checked} onChange={onChecked} />
+        <Checkbox
+          width="20px"
+          height="20px"
+          checked={checked}
+          onChange={onChecked}
+        />
       </div>
-      <div className="flex items-center mt-12">
-        <span>Support Chains: </span>
-        <div className="flex items-center gap-6 ml-6">
+      <div className="chain">
+        <span className="chain-tips">Support Chains: </span>
+        <div className="chain-logo">
           {chainList.map((e) => {
             const chainInfo = CHAINS[e];
             return (

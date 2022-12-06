@@ -14,7 +14,7 @@ import TokenWithChain from '../TokenWithChain';
 import TokenSelector, { isSwapTokenType } from '../TokenSelector';
 import styled from 'styled-components';
 import LessPalette from '@/ui/style/var-defs';
-import { ReactComponent as SvgIconArrowDownTriangle } from '@/ui/assets/swap/arrow-caret-down.svg';
+import { ReactComponent as SvgIconArrowDownTriangle } from '@/ui/assets/swap/arrow-caret-down2.svg';
 
 const Wrapper = styled.div`
   background-color: transparent;
@@ -44,9 +44,9 @@ const Wrapper = styled.div`
 `;
 
 const Text = styled.span`
-  font-size: 15px;
-  line-height: 18px;
   font-weight: 500;
+  font-size: 20px;
+  line-height: 23px;
   color: ${LessPalette['@color-title']};
 `;
 
@@ -206,28 +206,19 @@ const TokenSelect = ({
           {token ? (
             <TokenWrapper>
               <TokenWithChain
-                width="22px"
-                height="22px"
+                width="24px"
+                height="24px"
                 token={token}
                 hideConer
                 hideChainIcon={hideChainIcon}
               />
               <Text>{token.symbol}</Text>
-              <SvgIconArrowDownTriangle
-                viewBox="0 0 24 24"
-                width={14}
-                height={14}
-              />
+              <SvgIconArrowDownTriangle className="ml-[3px]" />
             </TokenWrapper>
           ) : (
             <SelectTips>
               <span>Select Token</span>
-              <SvgIconArrowDownTriangle
-                className="brightness-[100] ml-4"
-                viewBox="0 0 24 24"
-                width={14}
-                height={14}
-              />
+              <SvgIconArrowDownTriangle className="brightness-[100] ml-[7px]" />
             </SelectTips>
           )}
         </div>

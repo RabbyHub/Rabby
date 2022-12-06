@@ -9,6 +9,7 @@ import { ReactComponent as IconTipDownArrow } from 'ui/assets/swap/arrow-tips-do
 import styled from 'styled-components';
 import { SlippageItem } from './Slippage';
 import BigNumber from 'bignumber.js';
+import LessPalette from '@/ui/style/var-defs';
 
 interface GasSelectorProps {
   chainId: number;
@@ -141,6 +142,10 @@ const GasItem = styled(SlippageItem)`
   font-size: 13px;
   line-height: 15px;
   text-align: center;
+  &:hover {
+    background-color: rgba(134, 151, 255, 0.1);
+    border-color: ${LessPalette['@primary-color']};
+  }
   .gas-level {
     font-weight: 400;
     font-size: 12px;

@@ -8,6 +8,7 @@ import { SelectChainListProps } from './components/SelectChainList';
 import { useRabbySelector } from '@/ui/store';
 // import { DEX } from '@/ui/views/DexSwap/component/DexSelect';
 import { DEX_SUPPORT_CHAINS } from '@rabby-wallet/rabby-swap';
+import { ReactComponent as SvgIconSwapArrowDownTriangle } from '@/ui/assets/swap/arrow-caret-down2.svg';
 
 interface ChainSelectorProps {
   value: CHAINS_ENUM;
@@ -109,16 +110,16 @@ ChainSelectorProps) => {
         className="flex items-center cursor-pointer"
         onClick={handleClickSelector}
       >
-        <img
-          src={CHAINS[value].logo}
-          className="w-[16px] h-[16px] mr-6 overflow-hidden"
-        />
+        <div className="w-[16px] h-[16px] rounded-[2px] mr-6  overflow-hidden relative">
+          <img
+            src={CHAINS[value].logo}
+            className="min-w-[22px] h-[22px] absolute left-1/2 top-1/2 translate-x-[-50%] translate-y-[-50%]"
+          />
+        </div>
         <span className="text-13 font-medium text-gray-title">
           {CHAINS[value].name}
         </span>
-        {!readonly && (
-          <SvgIconArrowDownTriangle className="icon icon-arrow-down" />
-        )}
+        {!readonly && <SvgIconSwapArrowDownTriangle className="ml-4 pt-1" />}
       </div>
       {!readonly && (
         <Modal

@@ -701,11 +701,13 @@ export const SwapByDex = () => {
                 </div>
               }
             />
-            <IconRefresh
-              className="text-blue-light cursor-pointer"
-              onClick={refresh}
-              active={intervalActive}
-            />
+            {!!payAmount && !!payToken && !!receiveToken && (
+              <IconRefresh
+                className="text-blue-light cursor-pointer"
+                onClick={refresh}
+                active={intervalActive}
+              />
+            )}
           </div>
           <div className="relative flex flex-col gap-8 mb-16">
             <SwapTokenWrapper>
@@ -737,7 +739,11 @@ export const SwapByDex = () => {
                   />
                 ) : (
                   <div
-                    className={clsx('flex items-center', !payToken && 'hidden')}
+                    className={clsx(
+                      'flex items-center',
+                      !payToken && 'hidden',
+                      isInsufficient && 'text-red-forbidden'
+                    )}
                   >
                     Balance:{' '}
                     {splitNumberByStep((payToken?.amount || 0).toFixed(2))}
@@ -806,14 +812,15 @@ export const SwapByDex = () => {
                 )}
               </div>
             </SwapTokenWrapper>
-
-            <IconSwitchToken
-              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 cursor-pointer"
+            <div
+              className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 cursor-pointer text-gray-bg hover:text-gray-divider"
               onClick={switchToken}
-            />
+            >
+              <IconSwitchToken />
+            </div>
           </div>
           {payToken && receiveToken && (
-            <div className="flex flex-col gap-16">
+            <div className="flex flex-col gap-14">
               <Slippage
                 value={slippage}
                 onChange={setSlippage}
@@ -847,14 +854,14 @@ export const SwapByDex = () => {
         {!!tipsDisplay && (
           <Alert
             className={clsx(
-              'mx-[16px]  rounded-[4px] px-[8px] py-[3px] bg-transparent'
+              'mx-[20px]  rounded-[4px] px-0 py-[3px] bg-transparent mt-10'
             )}
             icon={
               <InfoCircleFilled
                 className={clsx(
                   'pb-[4px] self-start transform rotate-180 origin-center',
                   tipsDisplay.level === 'danger'
-                    ? 'text-red-light'
+                    ? 'text-red-forbidden'
                     : 'text-orange'
                 )}
               />
@@ -863,9 +870,9 @@ export const SwapByDex = () => {
             message={
               <span
                 className={clsx(
-                  'text-12',
+                  'text-13 font-medium',
                   tipsDisplay.level === 'danger'
-                    ? 'text-red-light'
+                    ? 'text-red-forbidden'
                     : 'text-orange'
                 )}
               >
@@ -884,7 +891,9 @@ export const SwapByDex = () => {
             <div className="tips">
               1.Approve <span className="swapTips">→ 2.Swap</span>
             </div>
-            <div className="allowance">
+            <div
+              className={clsx('allowance', unlimited && 'text-gray-subTitle')}
+            >
               <span>Unlimited allowance</span>{' '}
               <Switch checked={unlimited} onChange={setUnlimited} />
             </div>
@@ -969,5 +978,6 @@ const FooterWrapper = styled.div`
     background-color: #b6c1ff;
     box-shadow: 0px 12px 24px rgba(134, 151, 255, 0.12);
     border-color: rgba(134, 151, 255, 0.12);
+    cursor: not-allowed;
   }
 `;

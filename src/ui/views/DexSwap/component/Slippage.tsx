@@ -43,6 +43,27 @@ export const SlippageItem = styled.div<{
         ? '#ffb020'
         : LessPalette['@primary-color']
       : 'transparent'};
+
+  &:hover {
+    background-color: ${(props) =>
+      props.active
+        ? props.error
+          ? 'rgba(255,176,32,0.1)'
+          : 'rgba(134, 151, 255, 0.1)'
+        : 'rgba(134, 151, 255, 0.1)'};
+    color: ${(props) =>
+      props.active
+        ? props.error
+          ? '#ffb020'
+          : LessPalette['@primary-color']
+        : LessPalette['@primary-color']};
+    border-color: ${(props) =>
+      props.active
+        ? props.error
+          ? '#ffb020'
+          : LessPalette['@primary-color']
+        : LessPalette['@primary-color']};
+  }
   &::after {
     opacity: ${(props) => (props.active && props.hasAmount ? 1 : 0)};
     content: '';
