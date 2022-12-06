@@ -37,7 +37,7 @@ import {
   CHAINS_ENUM,
   KEYRING_TYPE,
 } from 'consts';
-import { ERC1155ABI, ERC20ABI, ERC721ABI, RABBY_SWAP_ABI } from 'consts/abi';
+import { ERC1155ABI, ERC20ABI, ERC721ABI } from 'consts/abi';
 import { Account, IHighlightedAddress } from '../service/preference';
 import { ConnectedSite } from '../service/permission';
 import { TokenItem, Tx } from '../service/openapi';
