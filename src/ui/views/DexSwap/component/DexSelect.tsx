@@ -57,6 +57,7 @@ export const DexSelectDrawer = (props: DexSelectDrawerProps) => {
       className={drawClassName}
       bodyStyle={{
         padding: '20px 0',
+        overflow: 'hidden',
       }}
       push={false}
     >
@@ -103,11 +104,11 @@ export const DexSelectDrawer = (props: DexSelectDrawerProps) => {
       </div>
       <div className="flex flex-col items-center">
         {checkedId ? (
-          <span className="py-20 text-13 font-medium text-gray-title">
+          <span className="py-18 text-13 font-medium text-gray-title">
             The quotes and order will be directly provided by {checkedId}
           </span>
         ) : (
-          <span className="py-20 text-13 font-medium text-gray-subTitle">
+          <span className="py-18 text-13 font-medium text-gray-subTitle">
             Select the DEX you're looking for or switch it at any time
           </span>
         )}
@@ -159,7 +160,7 @@ const DexItemBox = styled.div`
     }
   }
   .dex {
-    padding-bottom: 12px;
+    padding-bottom: 10px;
     display: flex;
     justify-content: space-between;
     align-items: center;
@@ -169,7 +170,7 @@ const DexItemBox = styled.div`
   .chain {
     display: flex;
     align-items: center;
-    margin-top: 12px;
+    margin-top: 11px;
 
     .chain-tips {
       font-weight: 400;

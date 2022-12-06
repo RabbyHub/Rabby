@@ -6,7 +6,6 @@ import Modal from './Modal';
 import './style.less';
 import { SelectChainListProps } from './components/SelectChainList';
 import { useRabbySelector } from '@/ui/store';
-// import { DEX } from '@/ui/views/DexSwap/component/DexSelect';
 import { DEX_SUPPORT_CHAINS } from '@rabby-wallet/rabby-swap';
 import { ReactComponent as SvgIconSwapArrowDownTriangle } from '@/ui/assets/swap/arrow-caret-down2.svg';
 
@@ -107,7 +106,7 @@ ChainSelectorProps) => {
   return (
     <>
       <div
-        className="flex items-center cursor-pointer mb-12"
+        className="flex items-center cursor-pointer"
         onClick={handleClickSelector}
       >
         <img

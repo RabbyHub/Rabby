@@ -130,7 +130,7 @@ export const Slippage = memo((props: SlippageProps) => {
               'rectangle max-w-[360px] left-[20px]',
               slippageTooltipsClassName
             )}
-            placement="bottom"
+            placement="top"
             title={tips}
           >
             <IconInfo />

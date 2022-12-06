@@ -37,7 +37,7 @@ export const Fee = (props: FeeProps) => {
             'rectangle max-w-[360px] left-[20px]',
             feeTooltipsClassName
           )}
-          placement="bottom"
+          placement="top"
           title={
             "The charged fee depends on which token you're swapping. It has been charged from the current quote."
           }
@@ -55,7 +55,7 @@ export const Fee = (props: FeeProps) => {
             'rectangle max-w-[360px] left-auto right-[20px]',
             feeNumClassName
           )}
-          placement="bottom"
+          placement="top"
           title={feeTips[fee](symbol)}
         >
           <IconQuestion />

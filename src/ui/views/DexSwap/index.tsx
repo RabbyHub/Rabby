@@ -403,7 +403,7 @@ export const SwapByDex = () => {
         .lte(-5);
 
       return [
-        `${splitNumberByStep(v.toFixed(2))}(${v
+        `${splitNumberByStep(v.toFixed(2))} (${v
           .minus(payTokenUsdBn)
           .div(payTokenUsdBn)
           .times(100)
@@ -481,15 +481,15 @@ export const SwapByDex = () => {
   };
 
   const canSubmit =
-    payToken &&
-    receiveToken &&
-    chain &&
-    payAmount &&
+    !!payToken &&
+    !!receiveToken &&
+    !!chain &&
+    !!payAmount &&
     !isInsufficient &&
     !tokenLoading &&
     tokenPass &&
     !loading &&
-    quoteInfo &&
+    !!quoteInfo &&
     isSdkDataPass;
 
   const tipsDisplay = useMemo(() => {
@@ -684,9 +684,9 @@ export const SwapByDex = () => {
           onClick={toggleVisible}
         />
       </PageHeader>
-      <div className="max-h-[444px] overflow-y-auto pb-80">
+      <div className="max-h-[444px] overflow-y-auto pb-[72px]">
         <div className="mx-20 bg-white w-[360px] rounded-[6px] px-12 pt-16 pb-12">
-          <div className="flex items-center justify-between">
+          <div className="flex items-center justify-between mb-12">
             <SwapChainSelector
               value={chain}
               onChange={handleChain}
