@@ -18,7 +18,6 @@ import ChainIcon from '../NFT/ChainIcon';
 import { HistoryItem } from './HistoryItem';
 import { Loading } from './Loading';
 import './style.less';
-import { RABBY_SWAP_ROUTER } from '@/constant';
 import { useRabbySelector } from '@/ui/store';
 import { DEX_SUPPORT_CHAINS } from '@rabby-wallet/rabby-swap';
 
@@ -301,12 +300,7 @@ const TokenDetail = ({
                 type="primary"
                 size="large"
                 onClick={goToSwap}
-                disabled={
-                  shouldSelectDex ||
-                  DISABLE_SWAP ||
-                  !token.is_core ||
-                  !RABBY_SWAP_ROUTER[getChain(token?.chain)?.enum || '']
-                }
+                disabled={shouldSelectDex || DISABLE_SWAP || !token.is_core}
                 style={{
                   width: 114,
                 }}
