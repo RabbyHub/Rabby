@@ -139,23 +139,7 @@ export const SwapByDex = () => {
   const [payAmount, setAmount] = useState('');
   const [feeRate, setFeeRate] = useState<FeeProps['fee']>('0.3');
   const [slippage, setSlippage] = useState('0.5');
-  const [gasLevel, setGasLevel] = useState<GasLevel>(
-    (gasPriceCache || {})[chain]
-      ? {
-          level:
-            gasPriceCache![chain].lastTimeSelect === 'gasPrice'
-              ? 'custom'
-              : gasPriceCache![chain].gasLevel!,
-          base_fee: 0,
-          price:
-            gasPriceCache![chain].lastTimeSelect === 'gasPrice'
-              ? gasPriceCache![chain].gasPrice!
-              : 0,
-          front_tx_count: 0,
-          estimated_seconds: 0,
-        }
-      : defaultGasFee
-  );
+  const [gasLevel, setGasLevel] = useState<GasLevel>(defaultGasFee);
 
   const [payToken, setPayToken] = useState<TokenItem | undefined>(() =>
     getChainDefaultToken(chain)
@@ -470,8 +454,26 @@ export const SwapByDex = () => {
   const handleChain = (c: CHAINS_ENUM) => {
     setChain(c);
     dispatch.swap.setSelectedChain(c);
+  };
 
-    setPayToken(getChainDefaultToken(c));
+  const onChainChanged = async () => {
+    const gasCache = await dispatch.swap.getSwapGasCache(chain);
+    setGasLevel(
+      gasCache
+        ? {
+            level:
+              gasCache.lastTimeSelect === 'gasPrice'
+                ? 'custom'
+                : gasCache.gasLevel!,
+            base_fee: 0,
+            price:
+              gasCache.lastTimeSelect === 'gasPrice' ? gasCache.gasPrice! : 0,
+            front_tx_count: 0,
+            estimated_seconds: 0,
+          }
+        : defaultGasFee
+    );
+    setPayToken(getChainDefaultToken(chain));
     setReceiveToken(undefined);
   };
 
@@ -658,6 +660,10 @@ export const SwapByDex = () => {
       setAmount('');
     }
   }, [dexId, oDexId]);
+
+  useEffect(() => {
+    onChainChanged();
+  }, [chain]);
 
   useEffect(() => {
     return cancel;

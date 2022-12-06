@@ -1115,7 +1115,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     } else {
       selected.gasLevel = selectedGas.level;
     }
-    if (!isSpeedUp && !isCancel) {
+    if (!isSpeedUp && !isCancel && !isSwap) {
       await wallet.updateLastTimeGasSelection(chainId, selected);
     }
     const transaction: Tx = {

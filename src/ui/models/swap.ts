@@ -44,12 +44,21 @@ export const swap = createModel<RootModel>()({
       );
     },
 
+    async getSwapGasCache(chain: CHAINS_ENUM, store) {
+      const gasCache = await store.app.wallet.getSwapGasCache(chain);
+      this.setField({
+        ...store.swap.gasPriceCache,
+        [chain]: gasCache,
+      });
+      return gasCache;
+    },
+
     async updateSwapGasCache(
       obj: { chain: CHAINS_ENUM; gas: ChainGas },
       store
     ) {
       await store.app.wallet.updateSwapGasCache(obj.chain, obj.gas);
-      dispatch.swap.syncState();
+      dispatch.swap.getSwapGasCache(obj.chain);
     },
 
     async setSwapDexId(selectedDex: DEX_ENUM, store) {
