@@ -619,6 +619,13 @@ export const SwapByDex = () => {
     }
   };
 
+  const totalLoading =
+    loading ||
+    nativeTokenLoading ||
+    tokenLoading ||
+    payTokenLoading ||
+    totalGasUsedLoading;
+
   useEffect(() => {
     if (isWrapToken) {
       setFeeRate('0');
@@ -886,8 +893,8 @@ export const SwapByDex = () => {
           size="large"
           type="primary"
           onClick={handleSwap}
-          className={clsx(!canSubmit && 'disabled')}
-          icon={loading ? <IconLoading className="animate-spin" /> : null}
+          className={clsx((!canSubmit || totalLoading) && 'disabled')}
+          icon={totalLoading ? <IconLoading className="animate-spin" /> : null}
         >
           {loading
             ? 'Fetching offer'
