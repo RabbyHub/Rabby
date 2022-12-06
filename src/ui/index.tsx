@@ -1,8 +1,5 @@
 // import './wdyr';
 import './style/index.less';
-import { connectKeyringService } from './utils/keyrings/connectKeyringService';
-
-connectKeyringService();
 
 // For fix chrome extension render problem in external screen
 if (

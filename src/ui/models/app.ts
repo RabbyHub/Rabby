@@ -1,6 +1,9 @@
 import type { WalletControllerType } from 'ui/utils/WalletContext';
 import { createModel } from '@rematch/core';
 import { RootModel } from '.';
+import { connectKeyringService } from '../utils/keyrings/connectKeyringService';
+
+connectKeyringService();
 
 export const app = createModel<RootModel>()({
   name: 'app',
