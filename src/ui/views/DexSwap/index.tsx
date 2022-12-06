@@ -1,13 +1,7 @@
 import { PageHeader } from '@/ui/component';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
-import React, { useEffect, useMemo, useRef, useState } from 'react';
-import {
-  useAsync,
-  useAsyncFn,
-  useDebounce,
-  useInterval,
-  useToggle,
-} from 'react-use';
+import React, { useEffect, useMemo, useState } from 'react';
+import { useAsync, useAsyncFn, useDebounce, useToggle } from 'react-use';
 import { DEX, DexSelectDrawer } from './component/DexSelect';
 import { ReactComponent as IconSwitchDex } from '@/ui/assets/swap/switch.svg';
 import { CHAINS, CHAINS_ENUM } from '@debank/common';
@@ -625,16 +619,6 @@ export const SwapByDex = () => {
     }
   };
 
-  const intervalActive =
-    !!payAmount && !!payToken && !!receiveToken && !!quoteInfo && !loading;
-
-  useInterval(
-    () => {
-      refresh();
-    },
-    intervalActive ? 9300 : null
-  );
-
   useEffect(() => {
     if (isWrapToken) {
       setFeeRate('0');
@@ -704,8 +688,7 @@ export const SwapByDex = () => {
             {!!payAmount && !!payToken && !!receiveToken && (
               <IconRefresh
                 className="text-blue-light cursor-pointer"
-                onClick={refresh}
-                active={intervalActive}
+                refresh={refresh}
               />
             )}
           </div>
