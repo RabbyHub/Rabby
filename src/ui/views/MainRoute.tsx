@@ -49,7 +49,6 @@ import AddressBackupMnemonics from './AddressBackup/Mnemonics';
 import AddressBackupPrivateKey from './AddressBackup/PrivateKey';
 import Swap from './Swap';
 import { getUiType, useWallet } from '../utils';
-import SwapQuotes from './SwapQuote';
 import GasTopUp from './GasTopUp';
 import ApprovalManage from './ApprovalManage';
 import { ImportMyMetaMaskAccount } from './ImportMyMetaMaskAccount';
@@ -249,9 +248,6 @@ const Main = () => {
         </PrivateRoute>
         <PrivateRoute exact path="/swap">
           <Swap />
-        </PrivateRoute>
-        <PrivateRoute exact path="/swap-quotes">
-          <SwapQuotes />
         </PrivateRoute>
 
         <PrivateRoute exact path="/gas-top-up">

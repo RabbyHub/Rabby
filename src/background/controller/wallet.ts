@@ -2,8 +2,8 @@ import * as ethUtil from 'ethereumjs-util';
 import Wallet, { thirdparty } from 'ethereumjs-wallet';
 import { ethErrors } from 'eth-rpc-errors';
 import * as bip39 from 'bip39';
-import { ethers, Contract, constants } from 'ethers';
-import { groupBy, result } from 'lodash';
+import { ethers, Contract } from 'ethers';
+import { groupBy } from 'lodash';
 import abiCoder, { AbiCoder } from 'web3-eth-abi';
 import * as optimismContracts from '@eth-optimism/contracts';
 import {
@@ -36,10 +36,8 @@ import {
   WALLET_BRAND_CONTENT,
   CHAINS_ENUM,
   KEYRING_TYPE,
-  RABBY_SWAP_ROUTER,
-  SWAP_FEE_PRECISION,
 } from 'consts';
-import { ERC1155ABI, ERC20ABI, ERC721ABI, RABBY_SWAP_ABI } from 'consts/abi';
+import { ERC1155ABI, ERC20ABI, ERC721ABI } from 'consts/abi';
 import { Account, IHighlightedAddress } from '../service/preference';
 import { ConnectedSite } from '../service/permission';
 import { TokenItem, Tx } from '../service/openapi';
@@ -176,33 +174,6 @@ export class WalletController extends BaseController {
     const contract = new Contract(erc20Address, ERC20ABI, provider);
     const amount = await contract.allowance(account.address, contractAddress);
     return amount.toString();
-  };
-
-  getSwapFeeRatio = async (chainEnum: CHAINS_ENUM) => {
-    const account = await preferenceService.getCurrentAccount();
-    if (!account) throw new Error('no current account');
-    const chainId = CHAINS?.[chainEnum]?.id.toString();
-    if (!chainId) throw new Error('invalid chain id');
-
-    buildinProvider.currentProvider.currentAccount = account.address;
-    buildinProvider.currentProvider.currentAccountType = account.type;
-    buildinProvider.currentProvider.currentAccountBrand = account.brandName;
-    buildinProvider.currentProvider.chainId = chainId;
-
-    const provider = new ethers.providers.Web3Provider(
-      buildinProvider.currentProvider
-    );
-    if (!RABBY_SWAP_ROUTER[chainEnum]) {
-      if (!chainId) throw new Error('invalid rabby swap router');
-    }
-    const swapContract = new Contract(
-      RABBY_SWAP_ROUTER[chainEnum],
-      RABBY_SWAP_ABI,
-      provider
-    );
-    const feeRatio = await swapContract.feeRatio();
-
-    return feeRatio.toString();
   };
 
   sendToken = async ({
@@ -361,158 +332,6 @@ export class WalletController extends BaseController {
     }
   };
 
-  rabbySwap = async (
-    {
-      chain_server_id,
-      pay_token_id,
-      pay_token_raw_amount,
-      receive_token_id,
-      slippage,
-      receive_token_raw_amount,
-      dex_swap_to,
-      dex_approve_to,
-      dex_swap_calldata,
-      deadline,
-      needApprove,
-      feeRatio,
-    }: {
-      chain_server_id: string;
-      pay_token_id: string;
-      pay_token_raw_amount: string;
-      receive_token_id: string;
-      slippage: string;
-      receive_token_raw_amount: number;
-      dex_swap_to: string;
-      dex_approve_to: string;
-      dex_swap_calldata: string;
-      deadline: number;
-      needApprove: boolean;
-      feeRatio: number | string;
-    },
-    $ctx?: any
-  ) => {
-    const account = await preferenceService.getCurrentAccount();
-    if (!account) throw new Error('no current account');
-    const chain = Object.values(CHAINS).find(
-      (item) => item.serverId === chain_server_id
-    );
-    if (!chain) throw new Error(`Can not find chain ${chain_server_id}`);
-    if (!Object.keys(RABBY_SWAP_ROUTER).some((e) => e === chain.enum)) {
-      throw new Error(`swap don't support chain ${chain.enum} now`);
-    }
-
-    if (needApprove && pay_token_id !== chain.nativeTokenAddress) {
-      await this.approveToken(
-        chain_server_id,
-        pay_token_id,
-        RABBY_SWAP_ROUTER[chain.enum],
-        MAX_UNSIGNED_256_INT,
-        {
-          ga: {
-            ...$ctx?.ga,
-            source: 'approvalAndSwap|tokenApproval',
-          },
-        }
-      );
-    }
-
-    const swapParam = {
-      from: account.address,
-      to: RABBY_SWAP_ROUTER[chain.enum],
-      chainId: chain.id,
-      data: ((abiCoder as unknown) as AbiCoder).encodeFunctionCall(
-        {
-          inputs: [
-            {
-              internalType: 'contract IERC20',
-              name: 'srcToken',
-              type: 'address',
-            },
-            {
-              internalType: 'uint256',
-              name: 'amount',
-              type: 'uint256',
-            },
-            {
-              internalType: 'contract IERC20',
-              name: 'dstToken',
-              type: 'address',
-            },
-            {
-              internalType: 'uint256',
-              name: 'minReturn',
-              type: 'uint256',
-            },
-            {
-              internalType: 'address',
-              name: 'dexRouter',
-              type: 'address',
-            },
-            {
-              internalType: 'address',
-              name: 'dexSpender',
-              type: 'address',
-            },
-            {
-              internalType: 'bytes',
-              name: 'data',
-              type: 'bytes',
-            },
-            {
-              internalType: 'uint256',
-              name: 'deadline',
-              type: 'uint256',
-            },
-          ],
-          name: 'swap',
-          outputs: [],
-          stateMutability: 'payable',
-          type: 'function',
-        },
-        [
-          chain.nativeTokenAddress === pay_token_id
-            ? constants.AddressZero
-            : pay_token_id,
-          '0x' + new BigNumber(pay_token_raw_amount).toString(16),
-          chain.nativeTokenAddress === receive_token_id
-            ? constants.AddressZero
-            : receive_token_id,
-          new BigNumber(receive_token_raw_amount)
-            .times(
-              new BigNumber(1).minus(
-                new BigNumber(feeRatio).div(SWAP_FEE_PRECISION)
-              )
-            )
-            .times(new BigNumber(1).minus(new BigNumber(slippage).div(100)))
-            .toFixed(0, BigNumber.ROUND_FLOOR),
-          dex_swap_to,
-          dex_approve_to,
-          dex_swap_calldata,
-          deadline.toString(),
-        ]
-      ),
-    };
-    if (chain.nativeTokenAddress === pay_token_id) {
-      swapParam['value'] =
-        '0x' + new BigNumber(pay_token_raw_amount).toString(16);
-    }
-
-    await this.sendRequest({
-      $ctx:
-        needApprove && pay_token_id !== chain.nativeTokenAddress
-          ? {
-              ga: {
-                ...$ctx?.ga,
-                source: 'approvalAndSwap|swap',
-              },
-            }
-          : $ctx,
-      method: 'eth_sendTransaction',
-      params: [swapParam],
-    });
-    this.clearPageStateCache();
-  };
-
   dexSwap = async (
     {
       chain,
@@ -537,9 +356,6 @@ export class WalletController extends BaseController {
     if (!account) throw new Error('no current account');
     const chainObj = CHAINS[chain];
     if (!chainObj) throw new Error(`Can not find chain ${chain}`);
-    if (!Object.keys(RABBY_SWAP_ROUTER).some((e) => e === chainObj.enum)) {
-      throw new Error(`swap don't support chain ${chainObj.enum} now`);
-    }
 
     if (needApprove) {
       await this.approveToken(
