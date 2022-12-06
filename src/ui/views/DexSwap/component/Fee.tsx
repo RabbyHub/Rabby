@@ -1,6 +1,7 @@
 import { Space, Tooltip } from 'antd';
 import clsx from 'clsx';
 import React from 'react';
+import { ReactComponent as IconQuestion } from '@/ui/assets/swap/question-outline.svg';
 import { ReactComponent as IconInfo } from '@/ui/assets/swap/info-outline.svg';
 import { useCss } from 'react-use';
 
@@ -57,7 +58,7 @@ export const Fee = (props: FeeProps) => {
           placement="bottom"
           title={feeTips[fee](symbol)}
         >
-          <IconInfo />
+          <IconQuestion />
         </Tooltip>
       </div>
     </div>
