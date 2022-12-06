@@ -598,24 +598,30 @@ export const SwapByDex = () => {
       });
       return;
     }
-    let price = 0;
-    if (gasLevel.level === 'custom') {
-      price = gasLevel.price;
-    } else {
-      price = (gasMarket || []).find((item) => item.level === gasLevel.level)!
-        .price;
-    }
-    if (payToken && oDexId && dexId && chain && quoteInfo) {
+
+    if (canSubmit && oDexId) {
+      let price = 0;
+      if (gasLevel.level === 'custom') {
+        price = gasLevel.price;
+      } else {
+        price = (gasMarket || []).find((item) => item.level === gasLevel.level)!
+          .price;
+      }
       await handleUpdateGasCache();
-      wallet.dexSwap({
-        chain,
-        quote: quoteInfo,
-        needApprove: !allowance,
-        spender: DEX_SPENDER_WHITELIST[oDexId][chain],
-        pay_token_id: payToken.id,
-        gasPrice: price,
-        unlimited,
-      });
+      try {
+        wallet.dexSwap({
+          chain,
+          quote: quoteInfo,
+          needApprove: !allowance,
+          spender: DEX_SPENDER_WHITELIST[oDexId][chain],
+          pay_token_id: payToken.id,
+          gasPrice: price,
+          unlimited,
+        });
+        window.close();
+      } catch (error) {
+        console.error(error);
+      }
     }
   };
 
