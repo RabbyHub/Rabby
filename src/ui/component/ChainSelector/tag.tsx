@@ -110,12 +110,10 @@ ChainSelectorProps) => {
         className="flex items-center cursor-pointer"
         onClick={handleClickSelector}
       >
-        <div className="w-[16px] h-[16px] rounded-[2px] mr-6  overflow-hidden relative">
-          <img
-            src={CHAINS[value].logo}
-            className="min-w-[22px] h-[22px] absolute left-1/2 top-1/2 translate-x-[-50%] translate-y-[-50%]"
-          />
-        </div>
+        <img
+          src={CHAINS[value].logo}
+          className="w-[16px] h-[16px] rounded-[2px] mr-6  overflow-hidden"
+        />
         <span className="text-13 font-medium text-gray-title">
           {CHAINS[value].name}
         </span>
