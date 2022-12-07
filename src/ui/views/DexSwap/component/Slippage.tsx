@@ -1,5 +1,5 @@
 import LessPalette, { ellipsis } from '@/ui/style/var-defs';
-import { InputNumber, Space, Tooltip } from 'antd';
+import { Input, Space, Tooltip } from 'antd';
 import clsx from 'clsx';
 import React, { memo, useMemo } from 'react';
 import { useCss, useToggle } from 'react-use';
@@ -182,24 +182,18 @@ export const Slippage = memo((props: SlippageProps) => {
           hasAmount={hasAmount}
         >
           {isCustom ? (
-            <InputNumber
+            <Input
               autoFocus
               bordered={false}
-              min={'0'}
-              stringMode
-              value={value}
-              formatter={(value) => (value ? `${value}%` : '')}
-              parser={(value) => (value ? value!.replace('%', '') : '')}
+              value={value + '%'}
               onFocus={(e) => {
                 e.target?.select?.();
               }}
-              onInput={(e) => {
-                if (!e) {
-                  onChange(e || '');
-                }
-              }}
               onChange={(e) => {
-                onChange(Number(e) > 50 ? '50' : e || '');
+                const v = e.target.value.replace(/%/g, '');
+                if (/^\d*(\.\d*)?$/.test(v)) {
+                  onChange(Number(v) > 50 ? '50' : v);
+                }
               }}
             />
           ) : (
