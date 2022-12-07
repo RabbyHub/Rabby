@@ -136,7 +136,12 @@ export const Slippage = memo((props: SlippageProps) => {
             <IconInfo />
           </Tooltip>
         </Space>
-        <div className="text-right text-13 font-medium flex items-center">
+        <div
+          className={clsx(
+            'text-right text-13 font-medium flex items-center',
+            (isLow || isHigh) && 'text-orange'
+          )}
+        >
           {value} %
           <div
             className={clsx('ml-4', {
@@ -170,7 +175,6 @@ export const Slippage = memo((props: SlippageProps) => {
         <SlippageItem
           onClick={(event) => {
             event.stopPropagation();
-            // setSlippage('custom');
             setIsCustom(true);
           }}
           active={isCustom}
@@ -216,33 +220,9 @@ export const Slippage = memo((props: SlippageProps) => {
           Please input the custom slippage
         </div>
       )}
-      {isCustom && slippageError && (
-        <SlippageTip warn>
-          {isLow &&
-            'Transaction might be reverted because of low slippage tolerance'}
-          {isHigh &&
-            'Transaction might be frontrun because of high slippage tolerance'}
-        </SlippageTip>
-      )}
     </section>
   );
 });
-
-const SlippageTip = styled.div<{
-  error?: boolean;
-  warn?: boolean;
-}>`
-  margin-top: 8px;
-  font-size: 12px;
-  line-height: 14px;
-  font-weight: 400;
-  color: ${(props) =>
-    props.error
-      ? LessPalette['@color-red']
-      : props.warn
-      ? LessPalette['@color-orange']
-      : LessPalette['@color-comment']};
-`;
 
 const MinReceivedBox = styled.div`
   margin-top: 8px;

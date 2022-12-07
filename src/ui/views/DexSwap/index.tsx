@@ -530,13 +530,13 @@ export const SwapByDex = () => {
       ) {
         return tips.priceFail;
       }
+    }
 
-      if (Number(slippage) > 10) {
-        return tips.highSlippage;
-      }
-      if (Number(slippage) < 0.05) {
-        return tips.lowSlippage;
-      }
+    if (Number(slippage) > 10) {
+      return tips.highSlippage;
+    }
+    if (Number(slippage) < 0.05) {
+      return tips.lowSlippage;
     }
 
     return;
