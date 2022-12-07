@@ -116,14 +116,17 @@ export const SwapByDex = () => {
     chain?: string;
   }>(query2obj(search));
 
-  const [unlimited, setUnlimited] = useToggle(false);
   const [refreshId, setRefreshId] = useState(0);
 
   const [dexId, setDexId] = useState(() => oDexId);
-  const { userAddress, gasPriceCache } = useRabbySelector((state) => ({
+  const { userAddress, unlimitedAllowance } = useRabbySelector((state) => ({
     userAddress: state.account.currentAccount?.address || '',
-    gasPriceCache: state.swap.gasPriceCache,
+    unlimitedAllowance: state.swap.unlimitedAllowance || false,
   }));
+
+  const setUnlimited = (bool: boolean) => {
+    dispatch.swap.setUnlimitedAllowance(bool);
+  };
   const wallet = useWallet();
 
   const [visible, toggleVisible] = useToggle(false);
@@ -578,12 +581,25 @@ export const SwapByDex = () => {
   };
 
   const handleSwap = async () => {
+    if (payAmount && payToken && !receiveToken) {
+      message.error({
+        icon: (
+          <InfoCircleFilled
+            className={clsx(
+              'pb-2 self-start transform rotate-180 origin-center text-red-light'
+            )}
+          />
+        ),
+        content: 'Please select receive token',
+      });
+      return;
+    }
     if (tipsDisplay?.level === 'danger') {
       message.error({
         icon: (
           <InfoCircleFilled
             className={clsx(
-              'pb-2 self-start transform rotate-180 origin-center,text-red-light'
+              'pb-2 self-start transform rotate-180 origin-center text-red-light'
             )}
           />
         ),
@@ -609,7 +625,7 @@ export const SwapByDex = () => {
           spender: DEX_SPENDER_WHITELIST[oDexId][chain],
           pay_token_id: payToken.id,
           gasPrice: price,
-          unlimited,
+          unlimited: unlimitedAllowance,
         });
         window.close();
       } catch (error) {
@@ -863,7 +879,7 @@ export const SwapByDex = () => {
             message={
               <span
                 className={clsx(
-                  'text-13 font-medium',
+                  'text-13',
                   tipsDisplay.level === 'danger'
                     ? 'text-red-forbidden'
                     : 'text-orange'
@@ -885,10 +901,13 @@ export const SwapByDex = () => {
               1.Approve <span className="swapTips">→ 2.Swap</span>
             </div>
             <div
-              className={clsx('allowance', unlimited && 'text-gray-subTitle')}
+              className={clsx(
+                'allowance',
+                unlimitedAllowance && 'text-gray-subTitle'
+              )}
             >
               <span>Unlimited allowance</span>{' '}
-              <Switch checked={unlimited} onChange={setUnlimited} />
+              <Switch checked={unlimitedAllowance} onChange={setUnlimited} />
             </div>
           </div>
         )}

@@ -7,6 +7,7 @@ export type SwapServiceStore = {
   gasPriceCache: GasCache;
   selectedDex: DEX_ENUM | null;
   selectedChain: CHAINS_ENUM;
+  unlimitedAllowance: boolean;
 };
 
 class SwapService {
@@ -14,6 +15,7 @@ class SwapService {
     gasPriceCache: {},
     selectedChain: CHAINS_ENUM.ETH,
     selectedDex: null,
+    unlimitedAllowance: false,
   };
 
   init = async () => {
@@ -23,6 +25,7 @@ class SwapService {
         gasPriceCache: {},
         selectedChain: CHAINS_ENUM.ETH,
         selectedDex: null,
+        unlimitedAllowance: false,
       },
     });
     this.store = storage || this.store;
@@ -85,6 +88,14 @@ class SwapService {
 
   setSelectedChain = (chain: CHAINS_ENUM) => {
     this.store.selectedChain = chain;
+  };
+
+  getUnlimitedAllowance = () => {
+    return this.store.unlimitedAllowance;
+  };
+
+  setUnlimitedAllowance = (bool: boolean) => {
+    this.store.unlimitedAllowance = bool;
   };
 }
 

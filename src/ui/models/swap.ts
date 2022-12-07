@@ -12,6 +12,7 @@ export const swap = createModel<RootModel>()({
     selectedDex: null,
     selectedChain: CHAINS_ENUM.ETH,
     gasPriceCache: {},
+    unlimitedAllowance: false,
   } as Partial<SwapServiceStore>,
 
   reducers: {
@@ -74,6 +75,13 @@ export const swap = createModel<RootModel>()({
 
       this.setField({
         selectedChain,
+      });
+    },
+    async setUnlimitedAllowance(unlimitedAllowance: boolean, store) {
+      await store.app.wallet.setUnlimitedAllowance(unlimitedAllowance);
+
+      this.setField({
+        unlimitedAllowance,
       });
     },
   }),

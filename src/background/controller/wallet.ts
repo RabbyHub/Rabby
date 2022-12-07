@@ -913,6 +913,8 @@ export class WalletController extends BaseController {
   updateSwapGasCache = swapService.updateLastTimeGasSelection;
   getSwapDexId = swapService.getSelectedDex;
   setSwapDexId = swapService.setSelectedDex;
+  getUnlimitedAllowance = swapService.getUnlimitedAllowance;
+  setUnlimitedAllowance = swapService.setUnlimitedAllowance;
 
   /* chains */
   getSavedChains = () => preferenceService.getSavedChains();
