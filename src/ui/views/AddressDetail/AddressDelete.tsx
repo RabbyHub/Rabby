@@ -138,7 +138,7 @@ const AddressDeleteModal = ({
     <Popup
       visible={visible}
       title={t('Delete address')}
-      height={420}
+      height={240}
       className="address-delete-modal"
       onClose={onClose}
     >

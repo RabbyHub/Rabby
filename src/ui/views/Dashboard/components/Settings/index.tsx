@@ -447,7 +447,7 @@ const Settings = ({ visible, onClose }: SettingsProps) => {
       <Popup
         visible={visible}
         onClose={handleClose}
-        height={520}
+        height={showResetAccountModal ? 360 : 520}
         bodyStyle={{ height: '100%' }}
       >
         <div className="popup-settings">
