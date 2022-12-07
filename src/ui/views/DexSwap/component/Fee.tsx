@@ -46,10 +46,7 @@ export const Fee = (props: FeeProps) => {
         </Tooltip>
       </Space>
       <div className="text-right text-13 font-medium flex items-center">
-        <span className="mr-4">
-          {fee}
-          {fee === '0' ? '' : '%'}
-        </span>
+        <span className="mr-4">{fee}%</span>
         <Tooltip
           overlayClassName={clsx(
             'rectangle max-w-[360px] left-auto right-[20px]',
