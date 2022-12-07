@@ -309,32 +309,31 @@ class LedgerBridgeKeyring extends EventEmitter {
   }
 
   updateTransportMethod(useLedgerLive = false) {
-    return new Promise((resolve, reject) => {
-      // If the iframe isn't loaded yet, let's store the desired useLedgerLive value and
-      // optimistically return a successful promise
-      if (!this.iframeLoaded) {
-        this.delayedPromise = {
-          resolve,
-          reject,
-          useLedgerLive,
-        };
-        return;
-      }
-
-      this._sendMessage(
-        {
-          action: 'ledger-update-transport',
-          params: { useLedgerLive },
-        },
-        ({ success }) => {
-          if (success) {
-            resolve(true);
-          } else {
-            reject(new Error('Ledger transport could not be updated'));
-          }
-        }
-      );
-    });
+    // return new Promise((resolve, reject) => {
+    //   // If the iframe isn't loaded yet, let's store the desired useLedgerLive value and
+    //   // optimistically return a successful promise
+    //   if (!this.iframeLoaded) {
+    //     this.delayedPromise = {
+    //       resolve,
+    //       reject,
+    //       useLedgerLive,
+    //     };
+    //     return;
+    //   }
+    //   this._sendMessage(
+    //     {
+    //       action: 'ledger-update-transport',
+    //       params: { useLedgerLive },
+    //     },
+    //     ({ success }) => {
+    //       if (success) {
+    //         resolve(true);
+    //       } else {
+    //         reject(new Error('Ledger transport could not be updated'));
+    //       }
+    //     }
+    //   );
+    // });
   }
 
   resend() {
