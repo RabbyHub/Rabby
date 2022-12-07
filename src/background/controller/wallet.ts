@@ -341,6 +341,7 @@ export class WalletController extends BaseController {
       pay_token_id,
       unlimited,
       gasPrice,
+      shouldTwoStepApprove,
     }: {
       chain: CHAINS_ENUM;
       quote: QuoteResult;
@@ -349,6 +350,7 @@ export class WalletController extends BaseController {
       pay_token_id: string;
       unlimited: boolean;
       gasPrice: number;
+      shouldTwoStepApprove: boolean;
     },
     $ctx?: any
   ) => {
@@ -356,6 +358,23 @@ export class WalletController extends BaseController {
     if (!account) throw new Error('no current account');
     const chainObj = CHAINS[chain];
     if (!chainObj) throw new Error(`Can not find chain ${chain}`);
+
+    if (shouldTwoStepApprove) {
+      await this.approveToken(
+        chainObj.serverId,
+        pay_token_id,
+        spender,
+        0,
+        {
+          ga: {
+            ...$ctx?.ga,
+            source: 'approvalAndSwap|tokenApproval',
+          },
+        },
+        gasPrice,
+        { isSwap: true }
+      );
+    }
 
     if (needApprove) {
       await this.approveToken(

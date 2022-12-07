@@ -1,7 +1,13 @@
 import { PageHeader } from '@/ui/component';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import React, { useEffect, useMemo, useState } from 'react';
-import { useAsync, useAsyncFn, useDebounce, useToggle } from 'react-use';
+import {
+  useAsync,
+  useAsyncFn,
+  useCss,
+  useDebounce,
+  useToggle,
+} from 'react-use';
 import { DEX, DexSelectDrawer } from './component/DexSelect';
 import { ReactComponent as IconSwitchDex } from '@/ui/assets/swap/switch.svg';
 import { CHAINS, CHAINS_ENUM } from '@debank/common';
@@ -22,7 +28,7 @@ import { ReactComponent as IconLoading } from '@/ui/assets/swap/loading.svg';
 import { ReactComponent as IconSwitchToken } from '@/ui/assets/swap/switch-token.svg';
 import BigNumber from 'bignumber.js';
 import { splitNumberByStep, useWallet, isSameAddress } from '@/ui/utils';
-import { Alert, Button, message, Skeleton, Switch } from 'antd';
+import { Alert, Button, message, Modal, Skeleton, Switch } from 'antd';
 import { InfoCircleFilled } from '@ant-design/icons';
 import { Slippage } from './component/Slippage';
 import { GasSelector } from './component/GasSelector';
@@ -32,6 +38,8 @@ import { IconRefresh } from './component/IconRefresh';
 import { useLocation } from 'react-router-dom';
 import { query2obj } from '@/ui/utils/url';
 import { INTERNAL_REQUEST_ORIGIN } from 'consts';
+
+const { confirm } = Modal;
 
 const getChainDefaultToken = (chain: CHAINS_ENUM) => {
   const chainInfo = CHAINS[chain];
@@ -271,7 +279,8 @@ export const SwapByDex = () => {
     payTokenPass,
     receiveTokenPass,
 
-    allowance,
+    tokenApproved,
+    shouldTwoStepApprove,
   } = useVerifySdk({
     chain,
     dexId,
@@ -307,7 +316,7 @@ export const SwapByDex = () => {
         );
         gasPrice = selectGas?.price || 0;
       }
-      if (!allowance) {
+      if (!tokenApproved) {
         const nextNonce = `0x${new BigNumber(nonce).plus(1).toString(16)}`;
         const tokenApproveParams = await wallet.generateApproveTokenTx({
           from: userAddress,
@@ -373,7 +382,7 @@ export const SwapByDex = () => {
       return d?.gas?.gas_used;
     }
     return;
-  }, [chain, quoteInfo, refreshId, allowance, dexId, gasLevel, gasMarket]);
+  }, [chain, quoteInfo, refreshId, tokenApproved, dexId, gasLevel, gasMarket]);
 
   const [payTokenUsdDisplay, payTokenUsdBn] = useMemo(() => {
     const payTokenUsd = new BigNumber(payAmount || 0).times(
@@ -580,6 +589,55 @@ export const SwapByDex = () => {
     });
   };
 
+  const gotoSwap = async () => {
+    if (canSubmit && oDexId) {
+      let price = 0;
+      if (gasLevel.level === 'custom') {
+        price = gasLevel.price;
+      } else {
+        price = (gasMarket || []).find((item) => item.level === gasLevel.level)!
+          .price;
+      }
+      await handleUpdateGasCache();
+      try {
+        wallet.dexSwap({
+          chain,
+          quote: quoteInfo,
+          needApprove: !tokenApproved,
+          spender: DEX_SPENDER_WHITELIST[oDexId][chain],
+          pay_token_id: payToken.id,
+          gasPrice: price,
+          unlimited: unlimitedAllowance,
+          shouldTwoStepApprove,
+        });
+        window.close();
+      } catch (error) {
+        console.error(error);
+      }
+    }
+  };
+
+  const twoStepApproveCn = useCss({
+    '& .ant-modal-content': {
+      background: '#fff',
+    },
+    '& .ant-modal-body': {
+      padding: '12px 8px 32px 16px',
+    },
+    '& .ant-modal-confirm-content': {
+      padding: '4px 0 0 0',
+    },
+    '& .ant-modal-confirm-btns': {
+      justifyContent: 'center',
+      '.ant-btn-primary': {
+        width: '260px',
+        height: '40px',
+      },
+      'button:first-child': {
+        display: 'none',
+      },
+    },
+  });
   const handleSwap = async () => {
     if (payAmount && payToken && !receiveToken) {
       message.error({
@@ -609,28 +667,32 @@ export const SwapByDex = () => {
     }
 
     if (canSubmit && oDexId) {
-      let price = 0;
-      if (gasLevel.level === 'custom') {
-        price = gasLevel.price;
-      } else {
-        price = (gasMarket || []).find((item) => item.level === gasLevel.level)!
-          .price;
-      }
-      await handleUpdateGasCache();
-      try {
-        wallet.dexSwap({
-          chain,
-          quote: quoteInfo,
-          needApprove: !allowance,
-          spender: DEX_SPENDER_WHITELIST[oDexId][chain],
-          pay_token_id: payToken.id,
-          gasPrice: price,
-          unlimited: unlimitedAllowance,
+      if (shouldTwoStepApprove) {
+        return confirm({
+          width: 360,
+          closable: true,
+          centered: true,
+          className: twoStepApproveCn,
+          title: null,
+          content: (
+            <>
+              <div className="text-16 font-medium text-gray-title mb-18 text-center">
+                Sign 2 transactions to change allowance
+              </div>
+              <div className="text-13 leading-[17px]  text-gray-subTitle">
+                Token USDT requires 2 transactions to change allowance. First
+                you would need to reset allowance to zero, and only then set new
+                allowance value.
+              </div>
+            </>
+          ),
+          okText: 'Proceed with two step approve',
+          onOk() {
+            gotoSwap();
+          },
         });
-        window.close();
-      } catch (error) {
-        console.error(error);
       }
+      gotoSwap();
     }
   };
 
@@ -895,7 +957,7 @@ export const SwapByDex = () => {
       <DexSelectDrawer visible={visible} onClose={() => toggleVisible(false)} />
 
       <FooterWrapper>
-        {!allowance && (
+        {!tokenApproved && (
           <div className="flex items-center justify-between">
             <div className="tips">
               1.Approve <span className="swapTips">→ 2.Swap</span>
@@ -920,7 +982,7 @@ export const SwapByDex = () => {
         >
           {loading
             ? 'Fetching offer'
-            : !allowance
+            : !tokenApproved
             ? `Approve ${payToken?.symbol}`
             : 'Swap'}
         </Button>

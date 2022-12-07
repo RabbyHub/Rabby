@@ -15,6 +15,8 @@ import BigNumber from 'bignumber.js';
 import { useMemo } from 'react';
 import { useAsync } from 'react-use';
 
+const ETH_USDT_CONTRACT = '0xdac17f958d2ee523a2206206994597c13d831ec7';
+
 export const useVerifyToken = <T extends ValidateTokenParam>(
   payToken?: T,
   receiveToken?: T,
@@ -151,10 +153,10 @@ export const useVerifySdk = <T extends ValidateTokenParam>(
 
   const wallet = useWallet();
 
-  const { value: allowance = true } = useAsync(async () => {
-    if (!payToken || !dexId || !payAmount) return true;
+  const { value: tokenApprovalResult = [true, false] } = useAsync(async () => {
+    if (!payToken || !dexId || !payAmount) return [true, false];
     if (payToken?.id === CHAINS[chain].nativeTokenAddress) {
-      return true;
+      return [true, false];
     }
     const allowance = await wallet.getERC20Allowance(
       CHAINS[chain].serverId,
@@ -162,9 +164,19 @@ export const useVerifySdk = <T extends ValidateTokenParam>(
       DEX_SPENDER_WHITELIST[dexId][chain]
     );
 
-    return new BigNumber(allowance).gte(
+    const tokenApproved = new BigNumber(allowance).gte(
       new BigNumber(payAmount).times(10 ** payToken.decimals)
     );
+
+    if (
+      chain === CHAINS_ENUM.ETH &&
+      isSameAddress(payToken.id, ETH_USDT_CONTRACT) &&
+      Number(allowance) !== 0 &&
+      !tokenApproved
+    ) {
+      return [tokenApproved, true];
+    }
+    return [tokenApproved, false];
   }, [chain, dexId, payToken, payAmount]);
 
   return {
@@ -178,6 +190,7 @@ export const useVerifySdk = <T extends ValidateTokenParam>(
     payTokenPass: !!tokenVerifyResult?.[1],
     receiveTokenPass: !!tokenVerifyResult?.[2],
 
-    allowance,
+    tokenApproved: tokenApprovalResult[0],
+    shouldTwoStepApprove: tokenApprovalResult[1],
   };
 };
