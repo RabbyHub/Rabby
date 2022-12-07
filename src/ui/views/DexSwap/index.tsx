@@ -415,10 +415,7 @@ export const SwapByDex = () => {
   }, [receivedTokeAmountBn, payToken, payAmount]);
 
   const isInsufficient = useMemo(() => {
-    if (payAmount && payToken?.amount) {
-      return new BigNumber(payAmount).gt(payToken?.amount);
-    }
-    return false;
+    return new BigNumber(payAmount || 0).gt(payToken?.amount || 0);
   }, [payAmount, payToken?.amount]);
 
   const isStableCoin = useMemo(() => {
