@@ -17,6 +17,7 @@ import store from './store';
 
 import '../i18n';
 import { getSentryEnv } from '@/utils/env';
+import { browser } from 'webextension-polyfill-ts';
 
 Sentry.init({
   dsn:
@@ -60,7 +61,34 @@ const { PortMessage } = Message;
 
 const portMessageChannel = new PortMessage();
 
+const ONE_SECOND_IN_MILLISECONDS = 1_000;
+
+// Service Worker Keep Alive Message Constants
+const WORKER_KEEP_ALIVE_INTERVAL = ONE_SECOND_IN_MILLISECONDS;
+const WORKER_KEEP_ALIVE_MESSAGE = 'WORKER_KEEP_ALIVE_MESSAGE';
+const ACK_KEEP_ALIVE_WAIT_TIME = 60_000; // 1 minute
+
+let lastMessageReceivedTimestamp = Date.now();
+let ackTimeoutToDisplayError;
+
 portMessageChannel.connect(getUITypeName());
+
+const keepAliveInterval = setInterval(() => {
+  portMessageChannel.send('AWAKE', WORKER_KEEP_ALIVE_MESSAGE);
+  portMessageChannel.on('message', (msg) => {
+    if (msg === 'WORKER_KEEP_ALIVE_MESSAGE') {
+      lastMessageReceivedTimestamp = Date.now();
+      clearTimeout(ackTimeoutToDisplayError);
+    }
+  });
+
+  ackTimeoutToDisplayError = setTimeout(() => {
+    if (Date.now() - lastMessageReceivedTimestamp > ACK_KEEP_ALIVE_WAIT_TIME) {
+      clearInterval(keepAliveInterval);
+      // TODO: sw dead, report to sentry
+    }
+  }, ACK_KEEP_ALIVE_WAIT_TIME);
+}, WORKER_KEEP_ALIVE_INTERVAL);
 
 const wallet = new Proxy(
   {},

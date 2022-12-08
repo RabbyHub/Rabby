@@ -43,17 +43,6 @@ const { PortMessage } = Message;
 
 let appStoreLoaded = false;
 
-function forceReconnect(port) {
-  deleteTimer(port);
-  port.disconnect();
-}
-function deleteTimer(port) {
-  if (port._timer) {
-    clearTimeout(port._timer);
-    delete port._timer;
-  }
-}
-
 function addSession(port, pm) {
   const sessionId = port.sender?.tab?.id;
   if (sessionId === undefined || !port.sender?.url) {
@@ -195,8 +184,15 @@ restoreAppState();
 browser.runtime.onConnect.addListener((port) => {
   // eslint-disable-next-line @typescript-eslint/ban-ts-comment
   // @ts-ignore
-  port._timer = setTimeout(forceReconnect, 250e3, port);
-  port.onDisconnect.addListener(deleteTimer);
+
+  port.onMessage.addListener((message) => {
+    if (message.data === 'WORKER_KEEP_ALIVE_MESSAGE') {
+      port.postMessage({
+        _type_: 'ETH_WALLET_message',
+        data: 'ACK_KEEP_ALIVE_MESSAGE',
+      });
+    }
+  });
 
   if (
     port.name === 'popup' ||
