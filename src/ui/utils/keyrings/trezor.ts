@@ -11,18 +11,23 @@ export class TrezorKeyring {
 
   async init() {
     this.initiated = false;
+  }
+
+  async initSDK() {
+    this.initiated = false;
     try {
       await TrezorConnect.init({ manifest: TREZOR_CONNECT_MANIFEST });
       this.initiated = true;
     } catch (e) {
       // ignore init error
       this.close();
-      this.init();
+      this.initSDK();
     }
     return;
   }
 
   async waitInit() {
+    await this.initSDK();
     while (!this.initiated) {
       await sleep(500);
     }

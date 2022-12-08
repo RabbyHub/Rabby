@@ -17,7 +17,6 @@ const SortHat = () => {
     const isInTab = UIType.isTab;
     const approval: Approval | undefined = await getApproval();
     if (isInNotification && !approval) {
-      setTo('');
       return;
     }
 

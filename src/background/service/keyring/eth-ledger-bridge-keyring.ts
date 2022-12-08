@@ -105,7 +105,7 @@ class LedgerBridgeKeyring extends EventEmitter {
     this.deserialize(opts);
 
     this.iframeLoaded = false;
-    this._setupIframe();
+    // this._setupIframe();
   }
 
   serialize() {

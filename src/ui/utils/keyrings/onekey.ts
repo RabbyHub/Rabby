@@ -11,6 +11,10 @@ export class OneKeyKeyring {
 
   async init() {
     this.initiated = false;
+  }
+
+  async initSDK() {
+    this.initiated = false;
     try {
       await OneKeyConnect.init({
         manifest: ONEKEY_CONNECT_MANIFEST,
@@ -19,7 +23,7 @@ export class OneKeyKeyring {
     } catch (e) {
       // ignore init error
       this.close();
-      this.init();
+      this.initSDK();
     }
     return;
   }
@@ -28,6 +32,7 @@ export class OneKeyKeyring {
   }
 
   async waitInit() {
+    await this.initSDK();
     while (!this.initiated) {
       await sleep(500);
     }

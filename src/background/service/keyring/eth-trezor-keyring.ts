@@ -64,13 +64,6 @@ class TrezorKeyring extends EventEmitter {
   constructor(opts = {}) {
     super();
     this.deserialize(opts);
-
-    // TrezorConnect.on('DEVICE_EVENT', (event) => {
-    //   if (event && event.payload && event.payload.features) {
-    //     this.model = event.payload.features.model;
-    //   }
-    // });
-    // TrezorConnect.init({ manifest: TREZOR_CONNECT_MANIFEST });
     this.init();
   }
 
