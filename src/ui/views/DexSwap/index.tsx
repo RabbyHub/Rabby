@@ -890,7 +890,7 @@ export const SwapByDex = () => {
             message={
               <span
                 className={clsx(
-                  'text-13',
+                  'text-13 leading-[16px]',
                   tipsDisplay.level === 'danger'
                     ? 'text-red-forbidden'
                     : 'text-orange'
