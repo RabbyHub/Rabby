@@ -313,11 +313,6 @@ export const SwapByDex = () => {
     payAmount,
   });
 
-  console.log({
-    quoteInfo,
-    totalGasUsed,
-  });
-
   const [payTokenUsdDisplay, payTokenUsdBn] = useMemo(() => {
     const payTokenUsd = new BigNumber(payAmount || 0).times(
       payToken?.price || 0
