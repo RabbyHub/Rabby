@@ -11,7 +11,7 @@ import IconCopy from 'ui/assets/swap/copy.svg';
 import IconPlus from 'ui/assets/plus.svg';
 import IconSuccess from 'ui/assets/success.svg';
 import IconTrash from 'ui/assets/trash.svg';
-import { Modal, Popup, TokenWithChain } from 'ui/component';
+import { Modal, TokenWithChain } from 'ui/component';
 import { splitNumberByStep, useWallet } from 'ui/utils';
 import { getChain } from 'utils';
 import ChainIcon from '../NFT/ChainIcon';
@@ -25,8 +25,6 @@ const PAGE_COUNT = 10;
 const ellipsis = (text: string) => {
   return text.replace(/^(.{6})(.*)(.{4})$/, '$1...$3');
 };
-
-const DISABLE_SWAP = false;
 
 interface TokenDetailProps {
   onClose?(): void;
@@ -49,7 +47,16 @@ const TokenDetail = ({
 
   const shouldSelectDex = useMemo(() => !oDexId, [oDexId]);
 
-  const supportChains = oDexId ? DEX_SUPPORT_CHAINS[oDexId] || [] : [];
+  const supportChains = useMemo(
+    () => (oDexId ? DEX_SUPPORT_CHAINS[oDexId] || [] : []),
+    [oDexId]
+  );
+
+  const tokenSupportSwap = useMemo(() => {
+    if (shouldSelectDex || !token.is_core) return false;
+    const tokenChain = getChain(token?.chain)?.enum;
+    return !!tokenChain && supportChains.includes(tokenChain);
+  }, [supportChains, token, shouldSelectDex]);
 
   const ref = useRef<HTMLDivElement | null>(null);
 
@@ -167,13 +174,8 @@ const TokenDetail = ({
 
   return (
     <div className="token-detail" ref={ref}>
-      <div
-        className={clsx(
-          'token-detail-header',
-          !DISABLE_SWAP && 'border-b-0 pb-24'
-        )}
-      >
-        <div className={clsx('flex items-center', !DISABLE_SWAP && 'mb-20')}>
+      <div className={clsx('token-detail-header', 'border-b-0 pb-24')}>
+        <div className={clsx('flex items-center', 'mb-20')}>
           <div className="flex items-center mr-8">
             <TokenWithChain
               token={token}
@@ -235,17 +237,12 @@ const TokenDetail = ({
         {variant === 'add' && (
           <>
             {token.is_core ? (
-              <div className={clsx('alert', !DISABLE_SWAP && 'mb-[24px]')}>
+              <div className={clsx('alert', 'mb-[24px]')}>
                 This token is supported by default. It will show up in your
                 wallet as long as balance &gt; 0.
               </div>
             ) : (
-              <div
-                className={clsx(
-                  'alert alert-primary',
-                  !DISABLE_SWAP && 'mb-[24px]'
-                )}
-              >
+              <div className={clsx('alert alert-primary', 'mb-[24px]')}>
                 This token is not verified. Please do your <br />
                 own research before you add it.
                 {token.amount > 0 ? (
@@ -273,70 +270,52 @@ const TokenDetail = ({
           </>
         )}
 
-        {!DISABLE_SWAP && (
-          <div className="flex flex-row justify-between mt-24">
-            <Tooltip
-              overlayClassName="rectangle token_swap__tooltip"
-              placement="topLeft"
-              title={
-                DISABLE_SWAP
-                  ? 'Temporarily unavailable'
-                  : shouldSelectDex
-                  ? 'Please Select DEX'
-                  : t('The token on this chain is not supported for swap')
-              }
-              visible={
-                DISABLE_SWAP
-                  ? undefined
-                  : token.is_core &&
-                    ((getChain(token?.chain)?.enum &&
-                      supportChains.includes(getChain(token?.chain)!.enum)) ||
-                      shouldSelectDex)
-                  ? false
-                  : undefined
-              }
+        <div className="flex flex-row justify-between mt-24">
+          <Tooltip
+            overlayClassName="rectangle token_swap__tooltip"
+            placement="topLeft"
+            title={
+              shouldSelectDex
+                ? 'Please Select DEX'
+                : t('The token on this chain is not supported for swap')
+            }
+            visible={tokenSupportSwap ? false : undefined}
+          >
+            <Button
+              type="primary"
+              size="large"
+              onClick={goToSwap}
+              disabled={!tokenSupportSwap}
+              style={{
+                width: 114,
+              }}
             >
-              <Button
-                type="primary"
-                size="large"
-                onClick={goToSwap}
-                disabled={shouldSelectDex || DISABLE_SWAP || !token.is_core}
-                style={{
-                  width: 114,
-                }}
-              >
-                Swap
-              </Button>
-            </Tooltip>
+              Swap
+            </Button>
+          </Tooltip>
 
-            <Button
-              type="primary"
-              ghost
-              size="large"
-              className="w-[114px] rabby-btn-ghost"
-              onClick={goToSend}
-            >
-              {t('Send')}
-            </Button>
-            <Button
-              type="primary"
-              ghost
-              size="large"
-              className="w-[114px] rabby-btn-ghost"
-              onClick={goToReceive}
-            >
-              {t('Receive')}
-            </Button>
-          </div>
-        )}
+          <Button
+            type="primary"
+            ghost
+            size="large"
+            className="w-[114px] rabby-btn-ghost"
+            onClick={goToSend}
+          >
+            {t('Send')}
+          </Button>
+          <Button
+            type="primary"
+            ghost
+            size="large"
+            className="w-[114px] rabby-btn-ghost"
+            onClick={goToReceive}
+          >
+            {t('Receive')}
+          </Button>
+        </div>
       </div>
 
-      <div
-        className={clsx(
-          'token-detail-body token-txs-history',
-          !DISABLE_SWAP && 'pt-[0px]'
-        )}
-      >
+      <div className={clsx('token-detail-body token-txs-history', 'pt-[0px]')}>
         {data?.list.map((item) => (
           <HistoryItem
             data={item}
@@ -356,28 +335,6 @@ const TokenDetail = ({
           </div>
         )}
       </div>
-
-      {DISABLE_SWAP && (
-        <div className="token-detail-footer">
-          <Button
-            type="primary"
-            size="large"
-            className="w-[172px]"
-            onClick={goToSend}
-          >
-            {t('Send')}
-          </Button>
-          <Button
-            type="primary"
-            ghost
-            size="large"
-            className="w-[172px] rabby-btn-ghost"
-            onClick={goToReceive}
-          >
-            {t('Receive')}
-          </Button>
-        </div>
-      )}
     </div>
   );
 };
