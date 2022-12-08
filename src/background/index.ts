@@ -46,17 +46,6 @@ const { PortMessage } = Message;
 
 let appStoreLoaded = false;
 
-function forceReconnect(port) {
-  deleteTimer(port);
-  port.disconnect();
-}
-function deleteTimer(port) {
-  if (port._timer) {
-    clearTimeout(port._timer);
-    delete port._timer;
-  }
-}
-
 function addSession(port, pm) {
   const sessionId = port.sender?.tab?.id;
   if (sessionId === undefined || !port.sender?.url) {

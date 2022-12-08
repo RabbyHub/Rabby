@@ -595,11 +595,11 @@ class LedgerBridgeKeyring extends EventEmitter {
               eventBus.emit(EVENTS.broadcastToUI, {
                 method: EVENTS.LEDGER.REJECTED,
                 params:
-                  e.toString() || 'Ledger: Unknown error while signing message',
+                  e?.message || 'Ledger: Unknown error while signing message',
               });
             }, 500);
             throw new Error(
-              e.toString() || 'Ledger: Unknown error while signing message'
+              e?.message || 'Ledger: Unknown error while signing message'
             );
           } finally {
             this.cleanUp();
