@@ -13,7 +13,7 @@ import { useWallet } from 'ui/utils';
 import TokenWithChain from '../TokenWithChain';
 import TokenSelector, { isSwapTokenType } from '../TokenSelector';
 import styled from 'styled-components';
-import LessPalette from '@/ui/style/var-defs';
+import LessPalette, { ellipsis } from '@/ui/style/var-defs';
 import { ReactComponent as SvgIconArrowDownTriangle } from '@/ui/assets/swap/arrow-caret-down2.svg';
 
 const Wrapper = styled.div`
@@ -48,6 +48,8 @@ const Text = styled.span`
   font-size: 20px;
   line-height: 23px;
   color: ${LessPalette['@color-title']};
+  max-width: 100px;
+  ${ellipsis()}
 `;
 
 interface TokenAmountInputProps {
@@ -212,7 +214,7 @@ const TokenSelect = ({
                 hideConer
                 hideChainIcon={hideChainIcon}
               />
-              <Text>{token.symbol}</Text>
+              <Text title={token.symbol}>{token.symbol}</Text>
               <SvgIconArrowDownTriangle className="ml-[3px]" />
             </TokenWrapper>
           ) : (
@@ -232,7 +234,7 @@ const TokenSelect = ({
           />
         ) : (
           <Input
-            className="h-[30px]"
+            className="h-[30px] max-w-"
             readOnly={type === 'swapTo'}
             placeholder={'0'}
             autoFocus={type !== 'swapTo'}

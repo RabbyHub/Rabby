@@ -61,6 +61,11 @@ const getChainDefaultToken = (chain: CHAINS_ENUM) => {
 };
 
 const tips = {
+  securityFail: {
+    label:
+      'Security verification failed, please contact us in Settings - Discord',
+    level: 'danger',
+  },
   insufficient: {
     label: 'Insufficient balance',
     level: 'danger',
@@ -325,9 +330,7 @@ export const SwapByDex = () => {
     if (quoteInfo?.toTokenAmount) {
       v = v
         .plus(quoteInfo?.toTokenAmount)
-        .div(
-          10 ** (quoteInfo?.toTokenDecimals || receiveToken?.decimals || 20)
-        );
+        .div(10 ** (quoteInfo?.toTokenDecimals || receiveToken?.decimals || 0));
 
       return [v.toFixed(), v];
     }
@@ -456,7 +459,11 @@ export const SwapByDex = () => {
         return tips.receivingTokenFail;
       }
 
-      if (isHighPriceDifference) {
+      if (!loading && quoteInfo && !tokenLoading && !isSdkDataPass) {
+        return tips.securityFail;
+      }
+
+      if (!loading && quoteInfo && isHighPriceDifference) {
         return tips.priceDifference;
       }
       if (
@@ -465,6 +472,7 @@ export const SwapByDex = () => {
         payToken &&
         dexId &&
         gasMarket &&
+        !loading &&
         !totalGasUsedLoading &&
         totalGasUsed === undefined
       ) {
@@ -487,10 +495,6 @@ export const SwapByDex = () => {
 
     return;
   }, [
-    chain,
-    totalGasUsedLoading,
-    gasMarket,
-    dexId,
     isInsufficient,
     payToken,
     payAmount,
@@ -500,7 +504,13 @@ export const SwapByDex = () => {
     tokenLoading,
     payTokenPass,
     receiveTokenPass,
+    isSdkDataPass,
     isHighPriceDifference,
+    chain,
+    dexId,
+    gasMarket,
+    totalGasUsedLoading,
+    totalGasUsed,
     slippage,
   ]);
 
@@ -696,9 +706,9 @@ export const SwapByDex = () => {
           onClick={toggleVisible}
         />
       </PageHeader>
-      <div className="max-h-[444px] overflow-y-auto pb-[72px]">
+      <div className="max-h-[444px] overflow-y-auto pb-[62px]">
         <div className="mx-20 bg-white w-[360px] rounded-[6px] px-12 pt-16 pb-12">
-          <div className="flex items-center justify-between mb-12">
+          <div className="flex items-center justify-between h-[36px]">
             <SwapChainSelector
               value={chain}
               onChange={handleChain}
@@ -837,7 +847,7 @@ export const SwapByDex = () => {
                 amount={
                   quoteInfo?.toTokenAmount
                     ? receivedTokeAmountBn
-                        .minus(receivedTokeAmountBn.times(feeRate).div(100))
+                        .minus(receivedTokeAmountBn.times(slippage).div(100))
                         .toFixed(2)
                     : ''
                 }
@@ -864,7 +874,7 @@ export const SwapByDex = () => {
         {!!tipsDisplay && (
           <Alert
             className={clsx(
-              'mx-[20px]  rounded-[4px] px-0 py-[3px] bg-transparent mt-10'
+              'mx-[20px]  rounded-[4px] px-0 py-[3px] bg-transparent mt-6'
             )}
             icon={
               <InfoCircleFilled

@@ -22,17 +22,10 @@ const ETH_USDT_CONTRACT = '0xdac17f958d2ee523a2206206994597c13d831ec7';
 export const useVerifyToken = <T extends ValidateTokenParam>(
   payToken?: T,
   receiveToken?: T,
-  chain?: CHAINS_ENUM,
-  isWrapToken?: boolean
+  chain?: CHAINS_ENUM
 ) => {
   const data = useAsync(async () => {
     if (payToken && receiveToken && chain) {
-      if (
-        isWrapToken ||
-        isSameAddress(payToken!.id, CHAINS[chain].nativeTokenAddress)
-      ) {
-        return [true, true, true];
-      }
       const [
         fromTokenValidationStatus,
         toTokenValidationStatus,
@@ -149,8 +142,7 @@ export const useVerifySdk = <T extends ValidateTokenParam>(
   const { value: tokenVerifyResult, loading: tokenLoading } = useVerifyToken(
     payToken,
     receiveToken,
-    chain,
-    dexId === DEX_ENUM.WRAPTOKEN
+    chain
   );
 
   const wallet = useWallet();

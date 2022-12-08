@@ -108,7 +108,7 @@ export const DexSelectDrawer = (props: DexSelectDrawerProps) => {
             The quotes and order will be directly provided by {checkedId}
           </span>
         ) : (
-          <span className="py-18 text-13 font-medium text-gray-subTitle">
+          <span className="py-18 text-13  text-gray-subTitle">
             Select the DEX you're looking for or switch it at any time
           </span>
         )}
@@ -156,7 +156,7 @@ const DexItemBox = styled.div`
     border: 1px solid #8697ff;
 
     .dex {
-      border-bottom-color: #b4bdcc;
+      border-bottom-color: rgba(229, 233, 239, 0.7);
     }
   }
   .dex {
