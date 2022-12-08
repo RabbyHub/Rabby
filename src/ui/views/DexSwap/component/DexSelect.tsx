@@ -113,14 +113,14 @@ export const DexSelectDrawer = (props: DexSelectDrawerProps) => {
           </span>
         )}
 
-        <Button
+        <ButtonWrapper
           type="primary"
           className="w-[360px] h-[52px] "
           onClick={handleDexId}
           disabled={!checkedId}
         >
           Confirm
-        </Button>
+        </ButtonWrapper>
       </div>
     </Drawer>
   );
@@ -143,6 +143,15 @@ export const DEX = {
     chains: DEX_SUPPORT_CHAINS[DEX_ENUM.PARASWAP],
   },
 };
+
+const ButtonWrapper = styled(Button)`
+  &.ant-btn-primary[disabled] {
+    background-color: #b6c1ff;
+    box-shadow: 0px 12px 24px rgba(134, 151, 255, 0.12);
+    border-color: rgba(134, 151, 255, 0.12);
+    cursor: not-allowed;
+  }
+`;
 
 const DexItemBox = styled.div`
   width: 360px;
