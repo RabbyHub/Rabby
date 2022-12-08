@@ -29,6 +29,7 @@ const initListener = () => {
 
     keepAliveTimer = setTimeout(() => {
       clearInterval(keepAliveInterval);
+      runWorkerKeepAliveInterval();
     }, TIME_45_MIN_IN_MS);
 
     clearInterval(keepAliveInterval);
