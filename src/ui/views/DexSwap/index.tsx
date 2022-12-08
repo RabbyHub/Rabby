@@ -707,7 +707,7 @@ export const SwapByDex = () => {
         />
       </PageHeader>
       <div className="max-h-[444px] overflow-y-auto pb-[62px]">
-        <div className="mx-20 bg-white w-[360px] rounded-[6px] px-12 pt-16 pb-12">
+        <div className="mx-20 bg-white w-[360px] rounded-[6px] px-12 pt-2 pb-12">
           <div className="flex items-center justify-between h-[36px]">
             <SwapChainSelector
               value={chain}

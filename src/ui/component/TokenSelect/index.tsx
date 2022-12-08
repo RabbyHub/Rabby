@@ -138,7 +138,10 @@ const TokenSelect = ({
     }
 
     if (chainId !== latestChainId.current) return;
-    tokens = sortTokensByPrice([...defaultTokens, ...localAddedTokens]);
+    tokens = sortTokensByPrice([
+      ...defaultTokens,
+      ...localAddedTokens,
+    ]).filter((e) => (type === 'swapFrom' ? e.amount > 0 : true));
     setOriginTokenList(tokens);
     setTokens(tokens);
     setIsListLoading(false);
