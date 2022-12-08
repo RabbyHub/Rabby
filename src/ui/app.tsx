@@ -86,7 +86,7 @@ const keepAliveInterval = setInterval(() => {
   ackTimeoutToDisplayError = setTimeout(() => {
     if (Date.now() - lastMessageReceivedTimestamp > ACK_KEEP_ALIVE_WAIT_TIME) {
       clearInterval(keepAliveInterval);
-      // TODO: sw dead, report to sentry
+      Sentry.captureException('Service Worker Dead');
     }
   }, ACK_KEEP_ALIVE_WAIT_TIME);
 }, WORKER_KEEP_ALIVE_INTERVAL);
