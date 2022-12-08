@@ -75,7 +75,7 @@ export const IconRefresh = memo(
               values="0;-30"
               begin="arrow_loading.click; 0.7s"
               repeatCount="indefinite"
-              dur="9.3s"
+              dur="14.3s"
               ref={repeatAnimateElem as any}
             ></animate>
           </circle>
