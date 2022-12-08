@@ -220,6 +220,7 @@ const DexItem = (props: DexItemProps) => {
         <Checkbox
           width="20px"
           height="20px"
+          unCheckBackground={'#B4BDCC'}
           checked={checked}
           onChange={onChecked}
         />

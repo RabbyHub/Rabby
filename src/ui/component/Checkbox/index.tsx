@@ -8,6 +8,7 @@ interface CheckboxProps {
   defaultChecked?: boolean;
   onChange?(checked: boolean): void;
   background?: string;
+  unCheckBackground?: string;
   width?: string;
   height?: string;
   className?: string;
@@ -15,13 +16,12 @@ interface CheckboxProps {
   checkIcon?: ReactNode;
 }
 
-const unCheckBackground = '#E5E9EF';
-
 const Checkbox = ({
   checked,
   onChange,
   defaultChecked = false,
   background = '#8697FF',
+  unCheckBackground = '#E5E9EF',
 
   width = '16px',
   height = '16px',
