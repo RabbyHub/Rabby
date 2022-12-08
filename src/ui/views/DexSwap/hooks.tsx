@@ -279,7 +279,9 @@ export const useGasAmount = <T extends ValidateTokenParam>(
         gasUsed += tokenApprovePreExecTx.gas.gas_used;
         pendingTx.push({
           ...tokenApproveTx,
-          gas: `0x${new BigNumber(gasUsed).toString(16)}`,
+          gas: `0x${new BigNumber(tokenApprovePreExecTx.gas.gas_used)
+            .times(4)
+            .toString(16)}`,
         });
         nextNonce = `0x${new BigNumber(nextNonce).plus(1).toString(16)}`;
       };
