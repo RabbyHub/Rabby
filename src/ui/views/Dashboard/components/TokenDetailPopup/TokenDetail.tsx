@@ -276,8 +276,8 @@ const TokenDetail = ({
             placement="topLeft"
             title={
               shouldSelectDex
-                ? 'Please Select DEX'
-                : t('The token on this chain is not supported for swap')
+                ? 'Please select the dex in swap first'
+                : t('The token on this chain is not supported on current dex')
             }
             visible={tokenSupportSwap ? false : undefined}
           >
