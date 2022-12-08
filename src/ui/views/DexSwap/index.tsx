@@ -676,7 +676,7 @@ export const SwapByDex = () => {
           title: null,
           content: (
             <>
-              <div className="text-16 font-medium text-gray-title mb-18 text-center">
+              <div className="text-[16px] font-medium text-gray-title mb-18 text-center">
                 Sign 2 transactions to change allowance
               </div>
               <div className="text-13 leading-[17px]  text-gray-subTitle">
@@ -817,7 +817,9 @@ export const SwapByDex = () => {
                     )}
                   >
                     Balance:{' '}
-                    {splitNumberByStep((payToken?.amount || 0).toFixed(2))}
+                    {splitNumberByStep(
+                      new BigNumber(payToken?.amount || 0).toFixed(2, 1)
+                    )}
                     {payToken && !payTokenIsNativeToken && (
                       <img
                         className="ml-6 select-none cursor-pointer"
