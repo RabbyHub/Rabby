@@ -17,7 +17,7 @@ const SortHat = () => {
     const isInTab = UIType.isTab;
     const approval: Approval | undefined = await getApproval();
     if (isInNotification && !approval) {
-      // window.close();
+      setTo('');
       return;
     }
 
@@ -70,7 +70,7 @@ const SortHat = () => {
   }, []);
 
   return (
-    <div className="h-full flex items-center justify-center">
+    <div className="h-screen flex items-center justify-center">
       {UIType.isPop ? (
         <>{to && <Redirect to={to} />}</>
       ) : (
