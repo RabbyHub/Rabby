@@ -12,7 +12,7 @@ import { DEX, DexSelectDrawer } from './component/DexSelect';
 import { ReactComponent as IconSwitchDex } from '@/ui/assets/swap/switch.svg';
 import { CHAINS, CHAINS_ENUM } from '@debank/common';
 import { SwapChainSelector } from '@/ui/component/ChainSelector/tag';
-import { GasLevel, TokenItem, Tx } from '@/background/service/openapi';
+import { GasLevel, TokenItem } from '@/background/service/openapi';
 import TokenSelect from '@/ui/component/TokenSelect';
 import styled from 'styled-components';
 import ButtonMax from 'ui/assets/send-token/max.svg';
@@ -33,11 +33,10 @@ import { InfoCircleFilled } from '@ant-design/icons';
 import { Slippage } from './component/Slippage';
 import { GasSelector } from './component/GasSelector';
 import { Fee, FeeProps } from './component/Fee';
-import { useVerifySdk } from './hooks';
+import { useGasAmount, useVerifySdk } from './hooks';
 import { IconRefresh } from './component/IconRefresh';
 import { useLocation } from 'react-router-dom';
 import { query2obj } from '@/ui/utils/url';
-import { INTERNAL_REQUEST_ORIGIN } from 'consts';
 
 const { confirm } = Modal;
 
@@ -254,7 +253,7 @@ export const SwapByDex = () => {
       fromTokenDecimals: payToken.decimals,
       amount: new BigNumber(payAmount)
         .times(10 ** payToken.decimals)
-        .toFixed(0),
+        .toFixed(0, 1),
       userAddress,
       slippage: Number(slippage),
       feeRate: Number(feeRate) || 0,
@@ -291,7 +290,7 @@ export const SwapByDex = () => {
         fromToken: payToken!.id,
         fromTokenAmount: new BigNumber(payAmount)
           .times(10 ** payToken!.decimals)
-          .toFixed(0),
+          .toFixed(0, 1),
         toToken: receiveToken?.id,
       },
     payToken,
@@ -299,90 +298,25 @@ export const SwapByDex = () => {
     payAmount,
   });
 
-  const {
-    value: totalGasUsed,
-    loading: totalGasUsedLoading,
-  } = useAsync(async () => {
-    if (chain && quoteInfo && payToken && dexId && gasMarket) {
-      const nonce = await wallet.getRecommendNonce({
-        from: quoteInfo.tx.from,
-        chainId: CHAINS[chain].id,
-      });
+  const { totalGasUsed, totalGasUsedLoading } = useGasAmount({
+    chain,
+    data: quoteInfo,
+    payToken,
+    receiveToken,
+    dexId,
+    gasMarket,
+    gasLevel,
+    tokenApproved,
+    shouldTwoStepApprove,
+    userAddress,
+    refreshId,
+    payAmount,
+  });
 
-      let gasPrice = gasLevel.price;
-      if (gasLevel.level !== 'custom') {
-        const selectGas = (gasMarket || []).find(
-          (e) => e.level === gasLevel.level
-        );
-        gasPrice = selectGas?.price || 0;
-      }
-      if (!tokenApproved) {
-        const nextNonce = `0x${new BigNumber(nonce).plus(1).toString(16)}`;
-        const tokenApproveParams = await wallet.generateApproveTokenTx({
-          from: userAddress,
-          to: payToken?.id,
-          chainId: CHAINS[chain].id,
-          spender: DEX_SPENDER_WHITELIST[dexId][chain],
-          amount: quoteInfo.fromTokenAmount,
-        });
-        const tokenApproveTx = {
-          ...tokenApproveParams,
-          nonce,
-          value: '0x',
-          gasPrice: `0x${new BigNumber(gasPrice).toString(16)}`,
-          gas: '0x0',
-        };
-        const tokenApprovePreExecTx = await wallet.openapi.preExecTx({
-          tx: tokenApproveTx,
-          origin: INTERNAL_REQUEST_ORIGIN,
-          address: userAddress,
-          updateNonce: true,
-          pending_tx_list: [],
-        });
-        const swapPreExecTx = await wallet.openapi.preExecTx({
-          tx: {
-            ...quoteInfo.tx,
-            nonce: nextNonce,
-            chainId: CHAINS[chain].id,
-            value: `0x${new BigNumber(quoteInfo.tx.value).toString(16)}`,
-            gasPrice: `0x${new BigNumber(gasPrice).toString(16)}`,
-            gas: `0x0`,
-          } as Tx,
-          origin: INTERNAL_REQUEST_ORIGIN,
-          address: userAddress,
-          updateNonce: true,
-          pending_tx_list: [
-            {
-              ...tokenApproveTx,
-              gas: `0x${new BigNumber(
-                tokenApprovePreExecTx.gas.gas_used
-              ).toString(16)}`,
-            },
-          ],
-        });
-        return (
-          (swapPreExecTx?.gas?.gas_used || 0) +
-          (tokenApprovePreExecTx?.gas?.gas_used || 0)
-        );
-      }
-      const d = await wallet.openapi.preExecTx({
-        tx: {
-          ...quoteInfo.tx,
-          gas: '0x0',
-          nonce,
-          chainId: CHAINS[chain].id,
-          value: `0x${new BigNumber(quoteInfo.tx.value).toString(16)}`,
-          gasPrice: `0x${new BigNumber(gasPrice).toString(16)}`,
-        } as Tx,
-        origin: INTERNAL_REQUEST_ORIGIN,
-        address: userAddress,
-        updateNonce: true,
-        pending_tx_list: [],
-      });
-      return d?.gas?.gas_used;
-    }
-    return;
-  }, [chain, quoteInfo, refreshId, tokenApproved, dexId, gasLevel, gasMarket]);
+  console.log({
+    quoteInfo,
+    totalGasUsed,
+  });
 
   const [payTokenUsdDisplay, payTokenUsdBn] = useMemo(() => {
     const payTokenUsd = new BigNumber(payAmount || 0).times(
@@ -427,7 +361,11 @@ export const SwapByDex = () => {
   }, [receivedTokeAmountBn, payToken, payAmount]);
 
   const isInsufficient = useMemo(() => {
-    return new BigNumber(payAmount || 0).gt(payToken?.amount || 0);
+    return new BigNumber(payAmount || 0).gt(
+      new BigNumber(payToken?.raw_amount_hex_str || 0).div(
+        10 ** (payToken?.decimals || 0)
+      )
+    );
   }, [payAmount, payToken?.amount]);
 
   const isStableCoin = useMemo(() => {
@@ -481,7 +419,11 @@ export const SwapByDex = () => {
   };
 
   const handleMax = () => {
-    setAmount((payToken?.amount ?? '') + '');
+    setAmount(
+      new BigNumber(payToken?.raw_amount_hex_str || '')
+        .div(10 ** (payToken?.decimals || 0))
+        .toFixed()
+    );
   };
 
   const switchToken = () => {

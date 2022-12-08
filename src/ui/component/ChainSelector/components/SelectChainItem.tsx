@@ -32,49 +32,45 @@ export const SelectChainItem = forwardRef(
     }: SelectChainItemProps,
     ref: React.ForwardedRef<HTMLDivElement>
   ) => {
-    const [hover, setHover] = useState(false);
     return (
-      <div
-        className={clsx(
-          'select-chain-item',
-          disabled && 'opacity-50',
-          className
-        )}
-        ref={ref}
-        {...rest}
-        onClick={() => !disabled && onChange?.(data.enum)}
-        onMouseEnter={(e) => {
-          setHover(true);
-          rest?.onMouseEnter?.(e);
-        }}
-        onMouseLeave={(e) => {
-          setHover(false);
-          rest?.onMouseLeave?.(e);
-        }}
+      <Tooltip
+        trigger={['click', 'hover']}
+        mouseEnterDelay={3}
+        overlayClassName={clsx('rectangle left-[20px]')}
+        placement="top"
+        title={disabledTips}
+        visible={disabled ? undefined : false}
       >
-        <Tooltip
-          overlayClassName={clsx('rectangle left-[20px]')}
-          placement="top"
-          title={disabledTips}
-          visible={disabled ? hover : false}
+        <div
+          className={clsx(
+            'select-chain-item',
+            disabled && 'opacity-50',
+            className
+          )}
+          ref={ref}
+          {...rest}
+          onClick={() => !disabled && onChange?.(data.enum)}
         >
           <div className="flex items-center">
             <img src={data.logo} alt="" className="select-chain-item-icon" />
             <div className="select-chain-item-name">{data.name}</div>
           </div>
-        </Tooltip>
-        <img
-          className={clsx('select-chain-item-star', stared ? 'is-active' : '')}
-          src={stared ? IconPinnedFill : IconPinned}
-          onClick={(e) => {
-            e.stopPropagation();
-            onStarChange?.(!stared);
-          }}
-        />
-        {value === data.enum ? (
-          <img className="select-chain-item-checked" src={IconCheck}></img>
-        ) : null}
-      </div>
+          <img
+            className={clsx(
+              'select-chain-item-star',
+              stared ? 'is-active' : ''
+            )}
+            src={stared ? IconPinnedFill : IconPinned}
+            onClick={(e) => {
+              e.stopPropagation();
+              onStarChange?.(!stared);
+            }}
+          />
+          {value === data.enum ? (
+            <img className="select-chain-item-checked" src={IconCheck}></img>
+          ) : null}
+        </div>
+      </Tooltip>
     );
   }
 );
