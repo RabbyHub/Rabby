@@ -77,6 +77,7 @@ interface ApprovalRes extends Tx {
   isSend?: boolean;
   isSpeedUp?: boolean;
   isCancel?: boolean;
+  isSwap?: boolean;
   isGnosis?: boolean;
   account?: Account;
   extra?: Record<string, any>;
@@ -285,6 +286,7 @@ class ProviderController extends BaseController {
     let signedTransactionSuccess = false;
     delete txParams.isSend;
     delete approvalRes.isSend;
+    delete approvalRes.isSwap;
     delete approvalRes.address;
     delete approvalRes.type;
     delete approvalRes.uiRequestComponent;

@@ -64,6 +64,7 @@ import eventBus from '@/eventBus';
 
 import { ReactComponent as IconAddAddress } from '@/ui/assets/address/add-address.svg';
 import { ReactComponent as IconArrowRight } from 'ui/assets/dashboard/arrow-right.svg';
+import Queue from './components/Queue';
 
 const GnosisAdminItem = ({
   accounts,
@@ -686,8 +687,11 @@ const Dashboard = () => {
               }
             }}
           />
-          {pendingTxCount > 0 && !showChain && (
-            <PendingTxs pendingTxCount={pendingTxCount} />
+          {isGnosis ? (
+            <Queue count={gnosisPendingCount || 0} />
+          ) : (
+            pendingTxCount > 0 &&
+            !showChain && <PendingTxs pendingTxCount={pendingTxCount} />
           )}
           <div className={clsx('listContainer', showChain && 'mt-10')}>
             <div

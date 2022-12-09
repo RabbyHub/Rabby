@@ -19,14 +19,15 @@ interface ChainSelectorModalProps {
   connection?: boolean;
   title?: ReactNode;
   className?: string;
-  supportChains?: CHAINS_ENUM[] | 'ALl';
-  type?: SelectChainListProps['type'];
+  supportChains?: SelectChainListProps['supportChains'];
+  disabledTips?: SelectChainListProps['disabledTips'];
 }
 
 const useSetup = () => {
   const [search, setSearch] = useState('');
-  const pinned = useRabbySelector((state) =>
-    state.preference.pinnedChain?.filter((item) => CHAINS[item])
+  const pinned = useRabbySelector(
+    (state) =>
+      state.preference.pinnedChain?.filter((item) => CHAINS[item]) || []
   );
   const dispatch = useRabbyDispatch();
 
@@ -86,7 +87,8 @@ const ChainSelectorModal = ({
   value,
   connection = false,
   className,
-  type = 'default',
+  supportChains,
+  disabledTips,
 }: ChainSelectorModalProps) => {
   const handleCancel = () => {
     onCancel();
@@ -111,8 +113,6 @@ const ChainSelectorModal = ({
       setSearch('');
     }
   }, [visible]);
-
-  const isSwap = type === 'swap';
 
   return (
     <Drawer
@@ -141,22 +141,24 @@ const ChainSelectorModal = ({
       </header>
       <div className="chain-selector__modal-content">
         <SelectChainList
-          type={type}
+          supportChains={supportChains}
           data={pinnedList}
-          sortable={!isSwap}
+          sortable={!supportChains}
           pinned={pinned as CHAINS_ENUM[]}
           onStarChange={handleStarChange}
           onSort={handleSort}
           onChange={handleChange}
           value={value}
+          disabledTips={disabledTips}
         ></SelectChainList>
         <SelectChainList
-          type={type}
+          supportChains={supportChains}
           data={all}
           value={value}
           pinned={pinned as CHAINS_ENUM[]}
           onStarChange={handleStarChange}
           onChange={handleChange}
+          disabledTips={disabledTips}
         ></SelectChainList>
         {pinnedList.length === 0 && all.length === 0 ? (
           <div className="select-chain-list pt-[70px] pb-[120px]">

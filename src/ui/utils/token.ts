@@ -1,3 +1,5 @@
+import { TokenItem } from '@/background/service/openapi';
+import { CHAINS } from '@/constant';
 import { Contract, providers } from 'ethers';
 import { hexToString } from 'web3-utils';
 
@@ -204,5 +206,50 @@ export const getTokenName = async (
       );
       return contract.NAME();
     }
+  }
+};
+
+export type ValidateTokenParam = {
+  id: string;
+  symbol: string;
+  decimals: number;
+};
+export const validateToken = async <
+  T extends ValidateTokenParam = ValidateTokenParam
+>(
+  token: T,
+  chain
+) => {
+  if (!chain) return true;
+
+  const currentChain = CHAINS[chain];
+  if (token.id === currentChain.nativeTokenAddress) {
+    if (
+      token.symbol !== currentChain.nativeTokenSymbol ||
+      token.decimals !== currentChain.nativeTokenDecimals
+    ) {
+      return false;
+    }
+    return true;
+  }
+  try {
+    const [decimals, symbol] = await Promise.all([
+      geTokenDecimals(
+        token.id,
+        new providers.JsonRpcProvider(currentChain.thridPartyRPC)
+      ),
+      getTokenSymbol(
+        token.id,
+        new providers.JsonRpcProvider(currentChain.thridPartyRPC)
+      ),
+    ]);
+
+    if (symbol !== token.symbol || decimals !== token.decimals) {
+      return false;
+    }
+    return true;
+  } catch (e) {
+    console.error('token verify failed', e);
+    return false;
   }
 };
