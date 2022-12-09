@@ -30,7 +30,6 @@ const SortHat = () => {
       setTo('/unlock');
       return;
     }
-
     if (
       (await wallet.hasPageStateCache()) &&
       !isInNotification &&

@@ -10,4 +10,5 @@ export { default as transactionHistoryService } from './transactionHistory';
 export { default as contactBookService } from './contactBook';
 export { default as signTextHistoryService } from './signTextHistory';
 export { default as whitelistService } from './whitelist';
+export { default as swapService } from './swap';
 export { default as i18n } from './i18n';

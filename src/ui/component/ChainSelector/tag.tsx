@@ -5,6 +5,9 @@ import Modal from './Modal';
 
 import './style.less';
 import { SelectChainListProps } from './components/SelectChainList';
+import { useRabbySelector } from '@/ui/store';
+import { DEX_SUPPORT_CHAINS } from '@rabby-wallet/rabby-swap';
+import { ReactComponent as SvgIconSwapArrowDownTriangle } from '@/ui/assets/swap/arrow-caret-down2.svg';
 
 interface ChainSelectorProps {
   value: CHAINS_ENUM;
@@ -12,7 +15,9 @@ interface ChainSelectorProps {
   readonly?: boolean;
   showModal?: boolean;
   direction?: 'top' | 'bottom';
-  type?: SelectChainListProps['type'];
+  supportChains?: SelectChainListProps['supportChains'];
+  disabledTips?: SelectChainListProps['disabledTips'];
+  title?: React.ReactNode;
 }
 
 const ChainSelector = ({
@@ -20,7 +25,7 @@ const ChainSelector = ({
   onChange,
   readonly = false,
   showModal = false,
-  type = 'default',
+  supportChains,
 }: ChainSelectorProps) => {
   const [showSelectorModal, setShowSelectorModal] = useState(showModal);
 
@@ -57,7 +62,71 @@ const ChainSelector = ({
           visible={showSelectorModal}
           onChange={handleChange}
           onCancel={handleCancel}
-          type={type}
+          supportChains={supportChains}
+        />
+      )}
+    </>
+  );
+};
+
+export const SwapChainSelector = ({
+  value,
+  onChange,
+  readonly = false,
+  showModal = false,
+  disabledTips,
+  title,
+}: // supportChains,
+ChainSelectorProps) => {
+  const [showSelectorModal, setShowSelectorModal] = useState(showModal);
+
+  const handleClickSelector = () => {
+    if (readonly) return;
+    setShowSelectorModal(true);
+  };
+
+  const handleCancel = () => {
+    if (readonly) return;
+    setShowSelectorModal(false);
+  };
+
+  const handleChange = (value: CHAINS_ENUM) => {
+    if (readonly) return;
+    onChange && onChange(value);
+    setShowSelectorModal(false);
+  };
+
+  const dexId = useRabbySelector((s) => s.swap.selectedDex);
+
+  if (!dexId) {
+    return null;
+  }
+  const supportChains = DEX_SUPPORT_CHAINS[dexId];
+
+  return (
+    <>
+      <div
+        className="flex items-center cursor-pointer"
+        onClick={handleClickSelector}
+      >
+        <img
+          src={CHAINS[value].logo}
+          className="w-[16px] h-[16px] rounded-[2px] mr-6  overflow-hidden"
+        />
+        <span className="text-13 font-medium text-gray-title">
+          {CHAINS[value].name}
+        </span>
+        {!readonly && <SvgIconSwapArrowDownTriangle className="ml-4 pt-1" />}
+      </div>
+      {!readonly && (
+        <Modal
+          value={value}
+          visible={showSelectorModal}
+          onChange={handleChange}
+          onCancel={handleCancel}
+          supportChains={supportChains}
+          disabledTips={disabledTips}
+          title={title}
         />
       )}
     </>

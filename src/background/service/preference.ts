@@ -6,6 +6,7 @@ import { keyringService, sessionService, i18n } from './index';
 import { TotalBalanceResponse, TokenItem } from './openapi';
 import { HARDWARE_KEYRING_TYPES, EVENTS, CHAINS_ENUM } from 'consts';
 import { browser } from 'webextension-polyfill-ts';
+import { DEX_ENUM } from '@rabby-wallet/rabby-swap';
 
 const version = process.env.release || '0';
 
@@ -23,6 +24,7 @@ export interface ChainGas {
   gasPrice?: number | null; // custom cached gas price
   gasLevel?: string | null; // cached gasLevel
   lastTimeSelect?: 'gasLevel' | 'gasPrice'; // last time selection, 'gasLevel' | 'gasPrice'
+  expireAt?: number;
 }
 
 export interface GasCache {
@@ -404,15 +406,43 @@ class PreferenceService {
   changeInitAlianNameStatus = () => {
     this.store.initAlianNames = true;
   };
-  getLastTimeGasSelection = (chainId: keyof GasCache) => {
-    return this.store.gasCache[chainId];
+  getLastTimeGasSelection = (chainId: keyof GasCache): ChainGas | null => {
+    const cache = this.store.gasCache[chainId];
+    if (cache && cache.lastTimeSelect === 'gasPrice') {
+      if (Date.now() <= (cache.expireAt || 0)) {
+        return cache;
+      } else if (cache.gasLevel) {
+        return {
+          lastTimeSelect: 'gasLevel',
+          gasLevel: cache.gasLevel,
+        };
+      } else {
+        return null;
+      }
+    } else {
+      return cache;
+    }
   };
 
   updateLastTimeGasSelection = (chainId: keyof GasCache, gas: ChainGas) => {
-    this.store.gasCache = {
-      ...this.store.gasCache,
-      [chainId]: gas,
-    };
+    if (gas.lastTimeSelect === 'gasPrice') {
+      this.store.gasCache = {
+        ...this.store.gasCache,
+        [chainId]: {
+          ...this.store.gasCache[chainId],
+          ...gas,
+          expireAt: Date.now() + 3600000, // custom gasPrice will expire at 1h later
+        },
+      };
+    } else {
+      this.store.gasCache = {
+        ...this.store.gasCache,
+        [chainId]: {
+          ...this.store.gasCache[chainId],
+          ...gas,
+        },
+      };
+    }
   };
   getIsFirstOpen = () => {
     if (

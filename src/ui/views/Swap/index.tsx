@@ -642,11 +642,7 @@ const Swap = () => {
             marginBottom: -10,
           }}
         >
-          <TagChainSelector
-            value={chain}
-            onChange={handleChainChanged}
-            type="swap"
-          />
+          <TagChainSelector value={chain} onChange={handleChainChanged} />
         </div>
 
         <Section className="pb-16">

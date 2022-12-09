@@ -181,7 +181,11 @@ const TokenSelector = ({
                     className="font-medium text-13 text-gray-title truncate ml-[8px]"
                     title={formatTokenAmount(token.amount)}
                   >
-                    {formatTokenAmount(token.amount)}
+                    {isSwapType
+                      ? token.amount !== 0 && token.amount < 0.0001
+                        ? '< 0.0001'
+                        : formatTokenAmount(token.amount)
+                      : formatTokenAmount(token.amount)}
                   </div>
                   <div
                     title={splitNumberByStep(

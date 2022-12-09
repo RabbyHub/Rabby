@@ -49,10 +49,10 @@ import AddressBackupMnemonics from './AddressBackup/Mnemonics';
 import AddressBackupPrivateKey from './AddressBackup/PrivateKey';
 import Swap from './Swap';
 import { getUiType, useWallet } from '../utils';
-import SwapQuotes from './SwapQuote';
 import GasTopUp from './GasTopUp';
 import ApprovalManage from './ApprovalManage';
 import { ImportMyMetaMaskAccount } from './ImportMyMetaMaskAccount';
+import { SwapByDex } from './DexSwap';
 
 ReactGA.initialize('UA-199755108-1');
 // eslint-disable-next-line @typescript-eslint/no-empty-function
@@ -249,9 +249,6 @@ const Main = () => {
         <PrivateRoute exact path="/swap">
           <Swap />
         </PrivateRoute>
-        <PrivateRoute exact path="/swap-quotes">
-          <SwapQuotes />
-        </PrivateRoute>
 
         <PrivateRoute exact path="/gas-top-up">
           <GasTopUp />
@@ -267,6 +264,10 @@ const Main = () => {
 
         <PrivateRoute exact path="/switch-address">
           <AddressManagement />
+        </PrivateRoute>
+
+        <PrivateRoute exact path="/dex-swap">
+          <SwapByDex />
         </PrivateRoute>
       </Switch>
     </>

@@ -1,11 +1,9 @@
 import LessPalette from '@/ui/style/var-defs';
-import { Space } from 'antd';
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { ReactComponent as SvgIconArrowDownTriangle } from '@/ui/assets/swap/arrow-caret-down.svg';
 import Modal from '@/ui/component/ChainSelector/Modal';
 import { CHAINS, CHAINS_ENUM } from '@/constant';
-import { SelectChainListProps } from '@/ui/component/ChainSelector/components/SelectChainList';
 
 export const ChainWrapper = styled.div`
   background: ${LessPalette['@color-bg']};
@@ -41,14 +39,12 @@ interface ChainSelectProps {
   readonly?: boolean;
   showModal?: boolean;
   direction?: 'top' | 'bottom';
-  type?: SelectChainListProps['type'];
 }
 export const ChainSelect = ({
   value,
   onChange,
   readonly = false,
   showModal = false,
-  type = 'default',
 }: ChainSelectProps) => {
   const [showSelectorModal, setShowSelectorModal] = useState(showModal);
 
@@ -82,7 +78,6 @@ export const ChainSelect = ({
           visible={showSelectorModal}
           onChange={handleChange}
           onCancel={handleCancel}
-          type={type}
         />
       )}
     </>
