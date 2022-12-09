@@ -160,6 +160,7 @@ class TransactionWatcher {
       },
       {}
     );
+    this._clearBefore(id);
   };
 
   clearPendingTx = (address: string) => {
@@ -167,6 +168,25 @@ class TransactionWatcher {
       (m, [key, v]) => {
         // address_chain_nonce
         if (!key.startsWith(address) && v) {
+          m[key] = v;
+        }
+
+        return m;
+      },
+      {}
+    );
+  };
+
+  _clearBefore = (id: string) => {
+    const [address, nonceStr] = id.split('_');
+    const nonce = Number(nonceStr);
+    this.store.pendingTx = Object.entries(this.store.pendingTx).reduce(
+      (m, [key, v]) => {
+        // address_chain_nonce
+        const [kAddress, kNonceStr] = key.split('_');
+        const kNonce = Number(kNonceStr);
+
+        if (kAddress === address && kNonce < nonce && v) {
           m[key] = v;
         }
 
