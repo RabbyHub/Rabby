@@ -76,7 +76,7 @@ const EditModal = ({ address, visible, onOk, onCancel }: EditModalProps) => {
       visible={visible}
       onClose={onCancel}
       placement="bottom"
-      height="215px"
+      height="240px"
       destroyOnClose
     >
       <Form onFinish={handleConfirm}>

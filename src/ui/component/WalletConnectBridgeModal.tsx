@@ -53,7 +53,7 @@ const OpenApiModal = ({
 
   return (
     <ModalComponent
-      height={280}
+      height={240}
       closable={false}
       title={t('Bridge server URL')}
       visible={visible}
@@ -62,6 +62,7 @@ const OpenApiModal = ({
     >
       <Form onFinish={handleSubmit} form={form}>
         <Form.Item
+          className="mb-12"
           name="host"
           rules={[
             { required: true, message: t('Please input bridge server host') },
