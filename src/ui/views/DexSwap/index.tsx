@@ -27,7 +27,12 @@ import {
 import { ReactComponent as IconLoading } from '@/ui/assets/swap/loading.svg';
 import { ReactComponent as IconSwitchToken } from '@/ui/assets/swap/switch-token.svg';
 import BigNumber from 'bignumber.js';
-import { splitNumberByStep, useWallet, isSameAddress } from '@/ui/utils';
+import {
+  splitNumberByStep,
+  useWallet,
+  isSameAddress,
+  formatTokenAmount,
+} from '@/ui/utils';
 import { Alert, Button, message, Modal, Skeleton, Switch } from 'antd';
 import { InfoCircleFilled } from '@ant-design/icons';
 import { Slippage } from './component/Slippage';
@@ -332,7 +337,7 @@ export const SwapByDex = () => {
         .plus(quoteInfo?.toTokenAmount)
         .div(10 ** (quoteInfo?.toTokenDecimals || receiveToken?.decimals || 0));
 
-      return [v.toFixed(), v];
+      return [formatTokenAmount(v.toFixed(), 8), v];
     }
     return ['', v];
   }, [quoteInfo, receiveToken?.price]);

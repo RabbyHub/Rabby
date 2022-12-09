@@ -54,11 +54,7 @@ export const useVerifyRouterAndSpender = (
   payTokenId?: string
 ) => {
   const data = useMemo(() => {
-    if (
-      dexId === DEX_ENUM.WRAPTOKEN ||
-      (payTokenId &&
-        isSameAddress(payTokenId, CHAINS[chain].nativeTokenAddress))
-    ) {
+    if (dexId === DEX_ENUM.WRAPTOKEN) {
       return [true, true];
     }
     if (!dexId || !router || !spender) {
@@ -68,7 +64,9 @@ export const useVerifyRouterAndSpender = (
     const spenderWhitelist = DEX_SPENDER_WHITELIST[dexId][chain];
     return [
       isSameAddress(routerWhitelist, router),
-      isSameAddress(spenderWhitelist, spender),
+      payTokenId && isSameAddress(payTokenId, CHAINS[chain].nativeTokenAddress) // When payToken is native token, no need to approve so no need to verify spender
+        ? true
+        : isSameAddress(spenderWhitelist, spender),
     ];
   }, [dexId, router, spender]);
   return data;
