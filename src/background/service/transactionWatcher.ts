@@ -161,6 +161,20 @@ class TransactionWatcher {
       {}
     );
   };
+
+  clearPendingTx = (address: string) => {
+    this.store.pendingTx = Object.entries(this.store.pendingTx).reduce(
+      (m, [key, v]) => {
+        // address_chain_nonce
+        if (!key.startsWith(address) && v) {
+          m[key] = v;
+        }
+
+        return m;
+      },
+      {}
+    );
+  };
 }
 
 export default new TransactionWatcher();

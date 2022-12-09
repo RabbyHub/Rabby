@@ -68,6 +68,7 @@ import { addHexPrefix, unpadHexString } from 'ethereumjs-util';
 import PQueue from 'p-queue';
 import { ProviderRequest } from './provider/type';
 import { QuoteResult } from '@rabby-wallet/rabby-swap/dist/quote';
+import transactionWatcher from '../service/transactionWatcher';
 
 const stashKeyrings: Record<string | number, any> = {};
 
@@ -1418,7 +1419,9 @@ export class WalletController extends BaseController {
   };
 
   clearAddressPendingTransactions = (address: string) => {
-    return transactionHistoryService.clearPendingTransactions(address);
+    transactionHistoryService.clearPendingTransactions(address);
+    transactionWatcher.clearPendingTx(address);
+    return;
   };
 
   importPrivateKey = async (data) => {
