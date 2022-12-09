@@ -178,22 +178,25 @@ class TransactionWatcher {
   };
 
   _clearBefore = (id: string) => {
-    const [address, nonceStr] = id.split('_');
+    const [address, nonceStr, chain] = id.split('_');
     const nonce = Number(nonceStr);
-    this.store.pendingTx = Object.entries(this.store.pendingTx).reduce(
-      (m, [key, v]) => {
-        // address_chain_nonce
-        const [kAddress, kNonceStr] = key.split('_');
-        const kNonce = Number(kNonceStr);
 
-        if (kAddress === address && kNonce < nonce && v) {
-          m[key] = v;
-        }
+    const pendingTx = { ...this.store.pendingTx };
 
-        return m;
-      },
-      {}
-    );
+    for (const key in pendingTx) {
+      const [kAddress, kNonceStr, kChain] = key.split('_');
+
+      if (
+        kAddress === address &&
+        kChain === chain &&
+        Number(kNonceStr) < nonce &&
+        pendingTx[key]
+      ) {
+        delete pendingTx[key];
+      }
+    }
+
+    this.store.pendingTx = pendingTx;
   };
 }
 
