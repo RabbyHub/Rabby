@@ -3,7 +3,7 @@ import {
   i18n,
   transactionHistoryService,
 } from 'background/service';
-import { createPersistStore } from 'background/utils';
+import { createPersistStore, isSameAddress } from 'background/utils';
 import { notification } from 'background/webapi';
 import { CHAINS, CHAINS_ENUM } from 'consts';
 import { format } from 'utils';
@@ -160,6 +160,45 @@ class TransactionWatcher {
       },
       {}
     );
+    this._clearBefore(id);
+  };
+
+  clearPendingTx = (address: string) => {
+    this.store.pendingTx = Object.entries(this.store.pendingTx).reduce(
+      (m, [key, v]) => {
+        // address_chain_nonce
+        const [kAddress] = key.split('_');
+        // keep pending txs of other addresses
+        if (!isSameAddress(address, kAddress) && v) {
+          m[key] = v;
+        }
+
+        return m;
+      },
+      {}
+    );
+  };
+
+  _clearBefore = (id: string) => {
+    const [address, nonceStr, chain] = id.split('_');
+    const nonce = Number(nonceStr);
+
+    const pendingTx = { ...this.store.pendingTx };
+
+    for (const key in pendingTx) {
+      const [kAddress, kNonceStr, kChain] = key.split('_');
+
+      if (
+        isSameAddress(kAddress, address) &&
+        kChain === chain &&
+        Number(kNonceStr) < nonce &&
+        pendingTx[key]
+      ) {
+        delete pendingTx[key];
+      }
+    }
+
+    this.store.pendingTx = pendingTx;
   };
 }
 
