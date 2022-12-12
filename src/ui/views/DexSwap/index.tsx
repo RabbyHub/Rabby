@@ -210,9 +210,9 @@ export const SwapByDex = () => {
     return ['', ''];
   }, [oDexId]);
 
-  const { value: gasMarket } = useAsync(() =>
-    wallet.openapi.gasMarket(CHAINS[chain].serverId)
-  );
+  const { value: gasMarket } = useAsync(() => {
+    return wallet.openapi.gasMarket(CHAINS[chain].serverId);
+  }, [chain]);
 
   const {
     value: nativeToken,
