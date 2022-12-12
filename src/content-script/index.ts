@@ -17,33 +17,6 @@ const initListener = () => {
     params: { availHeight: screen.availHeight },
   });
 
-  const WORKER_KEEP_ALIVE_INTERVAL = 1000;
-  const WORKER_KEEP_ALIVE_MESSAGE = 'WORKER_KEEP_ALIVE_MESSAGE';
-  const TIME_45_MIN_IN_MS = 45 * 60 * 1000;
-
-  let keepAliveInterval;
-  let keepAliveTimer;
-
-  const runWorkerKeepAliveInterval = () => {
-    clearTimeout(keepAliveTimer);
-
-    keepAliveTimer = setTimeout(() => {
-      clearInterval(keepAliveInterval);
-      runWorkerKeepAliveInterval();
-    }, TIME_45_MIN_IN_MS);
-
-    clearInterval(keepAliveInterval);
-    pm.send('message', WORKER_KEEP_ALIVE_MESSAGE);
-
-    keepAliveInterval = setInterval(() => {
-      if (browser.runtime.id) {
-        pm.send('message', WORKER_KEEP_ALIVE_MESSAGE);
-      }
-    }, WORKER_KEEP_ALIVE_INTERVAL);
-  };
-
-  runWorkerKeepAliveInterval();
-
   document.addEventListener('beforeunload', () => {
     bcm.dispose();
     pm.dispose();

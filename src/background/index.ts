@@ -74,6 +74,18 @@ Sentry.init({
   ],
 });
 
+// keep sw alive
+const createKeepAliveAlarm = () => {
+  browser.alarms.create('KEEP_ALIVE', { delayInMinutes: 1 });
+};
+createKeepAliveAlarm();
+browser.alarms.onAlarm.addListener((name) => {
+  if (name.name === 'KEEP_ALIVE') {
+    browser.runtime.sendMessage('KEEP_ALIVE');
+    createKeepAliveAlarm();
+  }
+});
+
 // function initAppMeta() {
 //   const head = document.querySelector('head');
 //   const icon = document.createElement('link');
