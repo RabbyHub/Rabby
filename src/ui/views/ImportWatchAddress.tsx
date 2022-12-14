@@ -323,9 +323,14 @@ const ImportWatchAddress = () => {
           Wallet connect
         </div>
         {walletconnectUri && (
-          <div className="qrcode">
-            <QRCode value={walletconnectUri} size={176} />
-          </div>
+          <>
+            <div className="qrcode">
+              <QRCode value={walletconnectUri} size={176} />
+            </div>
+            <div className="text-12 text-gray-content text-center  mt-12">
+              WalletConnect will be unstable if you use VPN.
+            </div>
+          </>
         )}
       </ModalComponent>
       <ModalComponent
