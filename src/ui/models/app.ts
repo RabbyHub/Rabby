@@ -40,6 +40,7 @@ export const app = createModel<RootModel>()({
       dispatch.account.init();
       dispatch.preference.init();
       dispatch.swap.init();
+      dispatch.whitelist.init();
     },
   }),
 });

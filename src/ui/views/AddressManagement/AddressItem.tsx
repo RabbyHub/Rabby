@@ -23,10 +23,16 @@ import { ReactComponent as IconDeleteAddress } from 'ui/assets/address/delete.sv
 
 import IconCopy from 'ui/assets/component/icon-copy.svg';
 import { AddressViewer, Copy } from 'ui/component';
-import { splitNumberByStep, useAlias, useWallet } from 'ui/utils';
+import {
+  isSameAddress,
+  splitNumberByStep,
+  useAlias,
+  useWallet,
+} from 'ui/utils';
 import IconSuccess from 'ui/assets/success.svg';
-import { useRabbyDispatch } from '@/ui/store';
+import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import IconCheck from 'ui/assets/check.svg';
+import IconWhitelist from 'ui/assets/address/whitelist.svg';
 
 export interface AddressItemProps {
   balance: number;
@@ -57,6 +63,14 @@ const AddressItem = memo(
     isCurrentAccount = false,
   }: AddressItemProps) => {
     const { t } = useTranslation();
+    const { whitelistEnable, whiteList } = useRabbySelector((s) => ({
+      whitelistEnable: s.whitelist.enabled,
+      whiteList: s.whitelist.whitelist,
+    }));
+
+    const isInWhiteList = useMemo(() => {
+      return whiteList.some((e) => isSameAddress(e, address));
+    }, [whiteList, address]);
     const formatAddressTooltip = (type: string, brandName: string) => {
       if (KEYRING_TYPE_TEXT[type]) {
         return t(KEYRING_TYPE_TEXT[type]);
@@ -173,6 +187,21 @@ const AddressItem = memo(
                   >
                     {alias}
                   </div>
+                  {whitelistEnable && isInWhiteList && (
+                    <Tooltip
+                      overlayClassName="rectangle"
+                      placement="top"
+                      title={'Whitelisted address'}
+                    >
+                      <img
+                        src={IconWhitelist}
+                        className={clsx(
+                          'w-14 h-14',
+                          isCurrentAccount && 'brightness-[100]'
+                        )}
+                      />
+                    </Tooltip>
+                  )}
                   {extra}
                 </>
               }
