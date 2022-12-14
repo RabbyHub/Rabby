@@ -22,6 +22,7 @@ import {
   signTextHistoryService,
   whitelistService,
   swapService,
+  RPCService,
 } from './service';
 import { providerController, walletController } from './controller';
 import i18n from './service/i18n';
@@ -98,6 +99,7 @@ async function restoreAppState() {
   await signTextHistoryService.init();
   await whitelistService.init();
   await swapService.init();
+  await RPCService.init();
   rpcCache.start();
 
   appStoreLoaded = true;

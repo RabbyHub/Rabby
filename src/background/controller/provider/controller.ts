@@ -26,6 +26,7 @@ import {
   transactionHistoryService,
   pageStateCacheService,
   signTextHistoryService,
+  RPCService,
   i18n,
 } from 'background/service';
 import { notification } from 'background/webapi';
@@ -150,29 +151,52 @@ class ProviderController extends BaseController {
       chainId: chainServerId,
     });
     if (cache) return cache;
-
-    const promise = openapiService
-      .ethRpc(chainServerId, {
-        origin: encodeURIComponent(origin),
+    const chain = Object.values(CHAINS).find(
+      (item) => item.serverId === chainServerId
+    )!;
+    if (RPCService.hasCustomRPC(chain.enum)) {
+      const promise = RPCService.request(chain.enum, method, params).then(
+        (result) => {
+          RpcCache.set(currentAddress, {
+            method,
+            params,
+            result,
+            chainId: chainServerId,
+          });
+          return result;
+        }
+      );
+      RpcCache.set(currentAddress, {
         method,
         params,
-      })
-      .then((result) => {
-        RpcCache.set(currentAddress, {
+        result: promise,
+        chainId: chainServerId,
+      });
+      return promise;
+    } else {
+      const promise = openapiService
+        .ethRpc(chainServerId, {
+          origin: encodeURIComponent(origin),
           method,
           params,
-          result,
-          chainId: chainServerId,
+        })
+        .then((result) => {
+          RpcCache.set(currentAddress, {
+            method,
+            params,
+            result,
+            chainId: chainServerId,
+          });
+          return result;
         });
-        return result;
+      RpcCache.set(currentAddress, {
+        method,
+        params,
+        result: promise,
+        chainId: chainServerId,
       });
-    RpcCache.set(currentAddress, {
-      method,
-      params,
-      result: promise,
-      chainId: chainServerId,
-    });
-    return promise;
+      return promise;
+    }
   };
 
   ethRequestAccounts = async ({ session: { origin } }) => {
