@@ -398,7 +398,7 @@ export const SwapByDex = () => {
   const handleChain = (c: CHAINS_ENUM) => {
     setChain(c);
     dispatch.swap.setSelectedChain(c);
-    resetSwapTokens();
+    resetSwapTokens(c);
   };
 
   const onChainChanged = async () => {
@@ -420,7 +420,7 @@ export const SwapByDex = () => {
     );
   };
 
-  const resetSwapTokens = () => {
+  const resetSwapTokens = (chain: CHAINS_ENUM) => {
     setPayToken(getChainDefaultToken(chain));
     setReceiveToken(undefined);
   };
@@ -676,7 +676,7 @@ export const SwapByDex = () => {
   useEffect(() => {
     if (dexId !== oDexId && dexId !== DEX_ENUM.WRAPTOKEN) {
       setChain(CHAINS_ENUM.ETH);
-      resetSwapTokens();
+      resetSwapTokens(CHAINS_ENUM.ETH);
       setDexId(oDexId);
       setAmount('');
     }
