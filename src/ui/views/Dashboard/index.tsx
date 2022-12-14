@@ -7,7 +7,7 @@ import clsx from 'clsx';
 import { useTranslation, Trans } from 'react-i18next';
 import ReactMarkdown from 'react-markdown';
 import remarkGfm from 'remark-gfm';
-import ReactGA from 'react-ga';
+import { matomoRequestEvent } from '@/utils/matomo-request';
 import {
   KEYRING_CLASS,
   KEYRING_ICONS,
@@ -286,7 +286,7 @@ const Dashboard = () => {
           </div>
         ),
       });
-      ReactGA.event({
+      matomoRequestEvent({
         category: 'AccountInfo',
         action: 'popupCopyAddress',
         label: [
@@ -635,7 +635,7 @@ const Dashboard = () => {
 
               <Copy
                 onClick={() => {
-                  ReactGA.event({
+                  matomoRequestEvent({
                     category: 'AccountInfo',
                     action: 'headCopyAddress',
                     label: [
@@ -666,7 +666,7 @@ const Dashboard = () => {
             accountBalanceUpdateNonce={accountBalanceUpdateNonce}
             onClick={() => {
               if (!showToken && !showAssets && !showNFT) {
-                ReactGA.event({
+                matomoRequestEvent({
                   category: 'ViewAssets',
                   action: 'openTotal',
                   label: [
@@ -676,7 +676,7 @@ const Dashboard = () => {
                 });
                 displayTokenList();
               } else {
-                ReactGA.event({
+                matomoRequestEvent({
                   category: 'ViewAssets',
                   action: 'closeTotal',
                   label: [
@@ -707,7 +707,7 @@ const Dashboard = () => {
             <div
               className={clsx('token', showToken && 'showToken')}
               onClick={() => {
-                ReactGA.event({
+                matomoRequestEvent({
                   category: 'ViewAssets',
                   action: 'clickHeadToken',
                   label: [
@@ -724,7 +724,7 @@ const Dashboard = () => {
             <div
               className={clsx('token', showAssets && 'showToken')}
               onClick={() => {
-                ReactGA.event({
+                matomoRequestEvent({
                   category: 'ViewAssets',
                   action: 'clickHeadDefi',
                   label: [
@@ -741,7 +741,7 @@ const Dashboard = () => {
             <div
               className={clsx('token', showNFT && 'showToken')}
               onClick={() => {
-                ReactGA.event({
+                matomoRequestEvent({
                   category: 'ViewAssets',
                   action: 'clickHeadNFT',
                   label: [
@@ -781,7 +781,7 @@ const Dashboard = () => {
                 <Dropdown
                   value={nftType}
                   onChange={(nextVal: typeof nftType) => {
-                    ReactGA.event({
+                    matomoRequestEvent({
                       category: 'ViewAssets',
                       action: 'switchNFTFilter',
                       label: [

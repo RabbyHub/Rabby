@@ -1,5 +1,5 @@
 import { Button, Form, Input, Skeleton, Slider, Tooltip } from 'antd';
-import ReactGA from 'react-ga';
+import { matomoRequestEvent } from '@/utils/matomo-request';
 import { ValidateStatus } from 'antd/lib/form/FormItem';
 import { GasLevel, Tx } from 'background/service/openapi';
 import BigNumber from 'bignumber.js';
@@ -329,7 +329,7 @@ const GasSelector = ({
     setSelectedGas(rawSelectedGas);
     setGasLimit(Number(gasLimit));
     setCustomNonce(Number(nonce));
-    ReactGA.event({
+    matomoRequestEvent({
       category: 'Transaction',
       action: 'EditGas',
       label: chain?.serverId,

@@ -3,7 +3,7 @@ import { openInTab } from '@/ui/utils';
 import { getKRCategoryByType } from '@/utils/transaction';
 import clsx from 'clsx';
 import React, { useCallback } from 'react';
-import ReactGA from 'react-ga';
+import { matomoRequestEvent } from '@/utils/matomo-request';
 
 interface ExtraLinkProps {
   className?: string;
@@ -14,7 +14,7 @@ const ExtraLink = ({ className, address }: ExtraLinkProps) => {
   const currentAccount = useRabbySelector((s) => s.account.currentAccount);
 
   const handleDebankClick = useCallback(() => {
-    ReactGA.event({
+    matomoRequestEvent({
       category: 'ViewAssets',
       action: 'goToDebank',
       label: [
@@ -28,7 +28,7 @@ const ExtraLink = ({ className, address }: ExtraLinkProps) => {
     }, 200);
   }, [address, currentAccount]);
   const handleScanClick = useCallback(() => {
-    ReactGA.event({
+    matomoRequestEvent({
       category: 'ViewAssets',
       action: 'goToEtherscan',
       label: [
