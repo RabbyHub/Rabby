@@ -395,6 +395,11 @@ const Dashboard = () => {
   };
 
   const gotoAddAddress = () => {
+    ReactGA.event({
+      category: 'Front Page Click',
+      action: 'Click',
+      label: 'Add Address',
+    });
     history.push('/add-address');
   };
   useEffect(() => {
@@ -567,6 +572,11 @@ const Dashboard = () => {
   const showGnosisAlert = isGnosis && showGnosisWrongChainAlert && !showChain;
 
   const switchAddress = () => {
+    ReactGA.event({
+      category: 'Front Page Click',
+      action: 'Click',
+      label: 'Change Address',
+    });
     history.push('/switch-address');
   };
   return (

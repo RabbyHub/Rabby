@@ -42,6 +42,8 @@ import { useGasAmount, useVerifySdk } from './hooks';
 import { IconRefresh } from './component/IconRefresh';
 import { useLocation } from 'react-router-dom';
 import { query2obj } from '@/ui/utils/url';
+import { useRbiSource } from '@/ui/utils/ga-event';
+import stats from '@/stats';
 
 const { confirm } = Modal;
 
@@ -132,6 +134,16 @@ export const SwapByDex = () => {
     payTokenId?: string;
     chain?: string;
   }>(query2obj(search));
+
+  const rbiSource = useRbiSource();
+
+  useMemo(() => {
+    if (rbiSource) {
+      stats.report('enterSwapDescPage', {
+        refer: rbiSource,
+      });
+    }
+  }, [rbiSource]);
 
   const [refreshId, setRefreshId] = useState(0);
 
@@ -256,19 +268,45 @@ export const SwapByDex = () => {
     ) {
       return;
     }
-    return getQuote(dexId, {
+    stats.report('swapRequestQuote', {
+      dex: dexId,
+      chain,
       fromToken: payToken.id,
       toToken: receiveToken.id,
-      feeAddress,
-      fromTokenDecimals: payToken.decimals,
-      amount: new BigNumber(payAmount)
-        .times(10 ** payToken.decimals)
-        .toFixed(0, 1),
-      userAddress,
-      slippage: Number(slippage),
-      feeRate: Number(feeRate) || 0,
-      chain: chain,
     });
+    try {
+      const data = await getQuote(dexId, {
+        fromToken: payToken.id,
+        toToken: receiveToken.id,
+        feeAddress,
+        fromTokenDecimals: payToken.decimals,
+        amount: new BigNumber(payAmount)
+          .times(10 ** payToken.decimals)
+          .toFixed(0, 1),
+        userAddress,
+        slippage: Number(slippage),
+        feeRate: Number(feeRate) || 0,
+        chain: chain,
+      });
+
+      stats.report('swapQuoteResult', {
+        dex: dexId,
+        chain,
+        fromToken: payToken.id,
+        toToken: receiveToken.id,
+        status: data ? 'success' : 'fail',
+      });
+
+      return data;
+    } catch (error) {
+      stats.report('swapQuoteResult', {
+        dex: dexId,
+        chain,
+        fromToken: payToken.id,
+        toToken: receiveToken.id,
+        status: 'fail',
+      });
+    }
   }, [
     userAddress,
     dexId,
