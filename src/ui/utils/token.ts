@@ -218,10 +218,10 @@ export const validateToken = async <
   T extends ValidateTokenParam = ValidateTokenParam
 >(
   token: T,
-  chain
+  chain,
+  customRPC
 ) => {
   if (!chain) return true;
-
   const currentChain = CHAINS[chain];
   if (token.id === currentChain.nativeTokenAddress) {
     if (
@@ -236,11 +236,11 @@ export const validateToken = async <
     const [decimals, symbol] = await Promise.all([
       geTokenDecimals(
         token.id,
-        new providers.JsonRpcProvider(currentChain.thridPartyRPC)
+        new providers.JsonRpcProvider(customRPC || currentChain.thridPartyRPC)
       ),
       getTokenSymbol(
         token.id,
-        new providers.JsonRpcProvider(currentChain.thridPartyRPC)
+        new providers.JsonRpcProvider(customRPC || currentChain.thridPartyRPC)
       ),
     ]);
 

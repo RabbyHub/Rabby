@@ -226,7 +226,7 @@ const Settings = ({ visible, onClose }: SettingsProps) => {
   const [whitelistEnable, setWhitelistEnable] = useState(true);
 
   const handleSwitchWhitelistEnable = async (checked: boolean) => {
-    reportSettings('whitelist');
+    reportSettings('Whitelist');
     handleWhitelistEnableChange(checked);
   };
 
@@ -340,11 +340,19 @@ const Settings = ({ visible, onClose }: SettingsProps) => {
       ),
     },
     {
+      leftIcon: IconWhitelist,
+      content: t('Custom RPC'),
+      onClick: () => {
+        history.push('/custom-rpc');
+        reportSettings('Custom RPC');
+      },
+    },
+    {
       leftIcon: IconActivities,
       content: t('Signature Record'),
       onClick: () => {
         history.push('/activities');
-        reportSettings('activities');
+        reportSettings('Signature Record');
       },
     },
     {
@@ -352,7 +360,7 @@ const Settings = ({ visible, onClose }: SettingsProps) => {
       content: t('Old Contact List'),
       onClick: () => {
         setContactsVisible(true);
-        reportSettings('contract');
+        reportSettings('Old Contact List');
       },
     },
 
@@ -366,7 +374,7 @@ const Settings = ({ visible, onClose }: SettingsProps) => {
           label: 'resetAccount',
         });
         setShowResetAccountModal(true);
-        reportSettings('resetAccount');
+        reportSettings('Reset Account');
       },
       rightIcon: <img src={IconArrowRight} className="icon icon-arrow-right" />,
     },

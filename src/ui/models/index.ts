@@ -15,6 +15,7 @@ import { transactions } from './transactions';
 import { chains } from './chains';
 import { whitelist } from './whitelist';
 import { swap } from './swap';
+import { customRPC } from './customRPC';
 
 export interface RootModel extends Models<RootModel> {
   app: typeof app;
@@ -32,6 +33,7 @@ export interface RootModel extends Models<RootModel> {
   chains: typeof chains;
   whitelist: typeof whitelist;
   swap: typeof swap;
+  customRPC: typeof customRPC;
 }
 
 export const models: RootModel = {
@@ -50,4 +52,5 @@ export const models: RootModel = {
   chains,
   whitelist,
   swap,
+  customRPC,
 };

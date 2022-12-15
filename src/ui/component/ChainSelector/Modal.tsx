@@ -13,7 +13,7 @@ import {
 } from './components/SelectChainList';
 interface ChainSelectorModalProps {
   visible: boolean;
-  value: CHAINS_ENUM;
+  value?: CHAINS_ENUM;
   onCancel(): void;
   onChange(val: CHAINS_ENUM): void;
   connection?: boolean;

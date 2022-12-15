@@ -51,6 +51,7 @@ import Swap from './Swap';
 import { getUiType, useWallet } from '../utils';
 import GasTopUp from './GasTopUp';
 import ApprovalManage from './ApprovalManage';
+import CustomRPC from './CustomRPC';
 import { ImportMyMetaMaskAccount } from './ImportMyMetaMaskAccount';
 import { SwapByDex } from './DexSwap';
 
@@ -268,6 +269,9 @@ const Main = () => {
 
         <PrivateRoute exact path="/dex-swap">
           <SwapByDex />
+        </PrivateRoute>
+        <PrivateRoute exact path="/custom-rpc">
+          <CustomRPC />
         </PrivateRoute>
       </Switch>
     </>

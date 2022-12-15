@@ -21,13 +21,12 @@ import cloneDeep from 'lodash/cloneDeep';
 import uniqBy from 'lodash/uniqBy';
 import QRCode from 'qrcode.react';
 import React, { useEffect, useRef, useState } from 'react';
-import { Link, useHistory } from 'react-router-dom';
+import { useHistory } from 'react-router-dom';
 import { useInterval } from 'react-use';
 import { FixedSizeList } from 'react-window';
 import { SvgIconLoading } from 'ui/assets';
 import IconAddressCopy from 'ui/assets/address-copy.png';
 import IconAddToken from 'ui/assets/addtoken.png';
-import IconPlus from 'ui/assets/dashboard-plus.svg';
 import IconCorrect from 'ui/assets/dashboard/contacts/correct.png';
 import IconUnCorrect from 'ui/assets/dashboard/contacts/uncorrect.png';
 import IconEditPen from 'ui/assets/editpen.svg';
@@ -55,7 +54,6 @@ import {
 import Dropdown from './components/NFT/Dropdown';
 import './style.less';
 
-import AddressRow from './components/AddressRow';
 import PendingApproval from './components/PendingApproval';
 import PendingTxs from './components/PendingTxs';
 import { sortAccountsByBalance } from '@/ui/utils/account';
