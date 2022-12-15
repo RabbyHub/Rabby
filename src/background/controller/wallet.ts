@@ -19,6 +19,7 @@ import {
   signTextHistoryService,
   whitelistService,
   swapService,
+  RPCService,
 } from 'background/service';
 import buildinProvider from 'background/utils/buildinProvider';
 import { openIndexPage } from 'background/webapi/tab';
@@ -935,6 +936,19 @@ export class WalletController extends BaseController {
   setSwapDexId = swapService.setSelectedDex;
   getUnlimitedAllowance = swapService.getUnlimitedAllowance;
   setUnlimitedAllowance = swapService.setUnlimitedAllowance;
+
+  setCustomRPC = RPCService.setRPC;
+  removeCustomRPC = RPCService.removeCustomRPC;
+  getAllCustomRPC = RPCService.getAllRPC;
+  getCustomRpcByChain = RPCService.getRPCByChain;
+  pingCustomRPC = RPCService.ping;
+  validateRPC = async (url: string, chainId: number) => {
+    const [_, rpcChainId] = await Promise.all([
+      RPCService.ping(url),
+      RPCService.request(url, 'eth_chainId', []),
+    ]);
+    return chainId === Number(rpcChainId);
+  };
 
   /* chains */
   getSavedChains = () => preferenceService.getSavedChains();

@@ -47,6 +47,7 @@ import { Account } from 'background/service/preference';
 import { validateGasPriceRange, is1559Tx } from '@/utils/transaction';
 import stats from '@/stats';
 import BigNumber from 'bignumber.js';
+import { AddEthereumChainParams } from 'ui/views/Approval/components/AddChain';
 
 const reportSignText = (params: {
   method: string;
@@ -155,17 +156,19 @@ class ProviderController extends BaseController {
       (item) => item.serverId === chainServerId
     )!;
     if (RPCService.hasCustomRPC(chain.enum)) {
-      const promise = RPCService.request(chain.enum, method, params).then(
-        (result) => {
-          RpcCache.set(currentAddress, {
-            method,
-            params,
-            result,
-            chainId: chainServerId,
-          });
-          return result;
-        }
-      );
+      const promise = RPCService.requestCustomRPC(
+        chain.enum,
+        method,
+        params
+      ).then((result) => {
+        RpcCache.set(currentAddress, {
+          method,
+          params,
+          result,
+          chainId: chainServerId,
+        });
+        return result;
+      });
       RpcCache.set(currentAddress, {
         method,
         params,
@@ -363,11 +366,7 @@ class ProviderController extends BaseController {
       ? Object.values(CHAINS).find((chain) => chain.id === approvalRes.chainId)!
           .enum
       : permissionService.getConnectedSite(origin)!.chain;
-    // const cacheExplain = transactionHistoryService.getExplainCache({
-    //   address: txParams.from,
-    //   chainId: Number(approvalRes.chainId),
-    //   nonce: Number(approvalRes.nonce),
-    // });
+
     const approvingTx = transactionHistoryService.getSigningTx(signingTxId!);
     if (!approvingTx?.rawTx || !approvingTx?.explain) {
       throw new Error(`approvingTx not found: ${signingTxId}`);
@@ -493,17 +492,42 @@ class ProviderController extends BaseController {
       });
       try {
         validateGasPriceRange(approvalRes);
-        const hash = await openapiService.pushTx(
-          {
+        let hash = '';
+        if (RPCService.hasCustomRPC(chain)) {
+          const txData: any = {
             ...approvalRes,
-            r: bufferToHex(signedTx.r),
-            s: bufferToHex(signedTx.s),
-            v: bufferToHex(signedTx.v),
-            value: approvalRes.value || '0x0',
-          },
-          traceId
-        );
-
+            gasLimit: approvalRes.gas,
+            r: addHexPrefix(signedTx.r),
+            s: addHexPrefix(signedTx.s),
+            v: addHexPrefix(signedTx.v),
+          };
+          if (is1559) {
+            txData.type = '0x2';
+          }
+          const tx = TransactionFactory.fromTxData(txData);
+          const rawTx = bufferToHex(tx.serialize());
+          hash = await RPCService.requestCustomRPC(
+            chain,
+            'eth_sendRawTransaction',
+            [rawTx]
+          );
+          try {
+            openapiService.traceTx(hash, traceId || '', CHAINS[chain].serverId);
+          } catch (e) {
+            // DO nothing
+          }
+        } else {
+          hash = await openapiService.pushTx(
+            {
+              ...approvalRes,
+              r: bufferToHex(signedTx.r),
+              s: bufferToHex(signedTx.s),
+              v: bufferToHex(signedTx.v),
+              value: approvalRes.value || '0x0',
+            },
+            traceId
+          );
+        }
         onTransactionSubmitted(hash);
         return hash;
       } catch (e: any) {
@@ -809,6 +833,62 @@ class ProviderController extends BaseController {
     }
   };
 
+  @Reflect.metadata('APPROVAL', ['AddChain', false, { height: 390 }])
+  walletAddEthereumChain = ({
+    data: {
+      params: [chainParams],
+    },
+    session: { origin },
+    approvalRes,
+  }: {
+    data: {
+      params: AddEthereumChainParams[];
+    };
+    session: {
+      origin: string;
+    };
+    approvalRes: {
+      chain: CHAINS_ENUM;
+      rpcUrl: string;
+    };
+  }) => {
+    let chainId = chainParams.chainId;
+    if (typeof chainId === 'number') {
+      chainId = intToHex(chainId).toLowerCase();
+    } else {
+      chainId = chainId.toLowerCase();
+    }
+    const chain = Object.values(CHAINS).find((value) =>
+      new BigNumber(value.hex).isEqualTo(chainId)
+    );
+
+    if (!chain) {
+      throw new Error('This chain is not supported by Rabby yet.');
+    }
+
+    RPCService.setRPC(approvalRes.chain, approvalRes.rpcUrl);
+
+    permissionService.updateConnectSite(
+      origin,
+      {
+        chain: chain.enum,
+      },
+      true
+    );
+
+    // rabby:chainChanged event must be sent before chainChanged event
+    sessionService.broadcastEvent('rabby:chainChanged', chain, origin);
+    sessionService.broadcastEvent(
+      'chainChanged',
+      {
+        chain: chain.hex,
+        networkVersion: chain.network,
+      },
+      origin
+    );
+    return null;
+  };
+
   @Reflect.metadata('APPROVAL', [
     'AddChain',
     ({ data, session }) => {
@@ -822,7 +902,7 @@ class ProviderController extends BaseController {
     },
     { height: 390 },
   ])
-  walletAddEthereumChain = ({
+  walletSwitchEthereumChain = ({
     data: {
       params: [chainParams],
     },
@@ -862,21 +942,6 @@ class ProviderController extends BaseController {
     );
     return null;
   };
-
-  @Reflect.metadata('APPROVAL', [
-    'AddChain',
-    ({ data, session }) => {
-      const connected = permissionService.getConnectedSite(session.origin);
-      if (connected) {
-        const { chainId } = data.params[0];
-        if (Number(chainId) === CHAINS[connected.chain].id) {
-          return true;
-        }
-      }
-    },
-    { height: 390 },
-  ])
-  walletSwitchEthereumChain = this.walletAddEthereumChain;
 
   @Reflect.metadata('APPROVAL', ['AddAsset', () => null, { height: 390 }])
   walletWatchAsset = () => {

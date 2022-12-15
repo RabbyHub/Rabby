@@ -23,9 +23,7 @@ class RPCService {
     const storage = await createPersistStore<RPCServiceStore>({
       name: 'rpc',
       template: {
-        customRPC: {
-          [CHAINS_ENUM.BSC]: 'https://bsc-dataseed1.defibit.io',
-        },
+        customRPC: {},
       },
     });
     this.store = storage || this.store;
@@ -44,7 +42,16 @@ class RPCService {
   };
 
   setRPC = (chain: CHAINS_ENUM, url: string) => {
-    this.store.customRPC[chain] = url;
+    this.store.customRPC = {
+      ...this.store.customRPC,
+      [chain]: url,
+    };
+  };
+
+  removeCustomRPC = (chain: CHAINS_ENUM) => {
+    const map = this.store.customRPC;
+    delete map[chain];
+    this.store.customRPC = map;
   };
 
   requestCustomRPC = async (
@@ -59,20 +66,30 @@ class RPCService {
     return this.request(host, method, params);
   };
 
-  request = async (host: string, method: string, params: any[]) => {
-    const { data } = await axios.post(host, {
-      jsonrpc: '2.0',
-      id: getUniqueId(),
-      params,
-      method,
-    });
+  request = async (
+    host: string,
+    method: string,
+    params: any[],
+    timeout?: number
+  ) => {
+    const { data } = await axios.post(
+      host,
+      {
+        jsonrpc: '2.0',
+        id: getUniqueId(),
+        params,
+        method,
+      },
+      timeout ? { timeout } : undefined
+    );
     if (data?.error) throw data.error;
     if (data?.result) return data.result;
     return data;
   };
 
   ping = async (host: string) => {
-    await this.request(host, 'eth_getBlockNumber', []);
+    // set ping request timeout as 5s
+    await this.request(host, 'eth_blockNumber', [], 5000);
   };
 }
 
