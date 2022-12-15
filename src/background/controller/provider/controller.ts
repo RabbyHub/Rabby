@@ -847,7 +847,7 @@ class ProviderController extends BaseController {
     session: {
       origin: string;
     };
-    approvalRes: {
+    approvalRes?: {
       chain: CHAINS_ENUM;
       rpcUrl: string;
     };
@@ -866,7 +866,9 @@ class ProviderController extends BaseController {
       throw new Error('This chain is not supported by Rabby yet.');
     }
 
-    RPCService.setRPC(approvalRes.chain, approvalRes.rpcUrl);
+    if (approvalRes) {
+      RPCService.setRPC(approvalRes.chain, approvalRes.rpcUrl);
+    }
 
     permissionService.updateConnectSite(
       origin,

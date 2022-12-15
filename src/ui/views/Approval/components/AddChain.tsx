@@ -10,6 +10,8 @@ import { CHAINS_ENUM, CHAINS } from 'consts';
 import { Chain } from 'background/service/openapi';
 import { useWallet, useApproval } from 'ui/utils';
 import { isValidateUrl } from 'ui/utils/url';
+import { FieldCheckbox } from 'ui/component';
+import IconWarning from 'ui/assets/warning.svg';
 
 export interface AddEthereumChainParams {
   chainId: string;
@@ -52,6 +54,42 @@ const ErrorMsg = styled.div`
   margin-top: 8px;
 `;
 
+const OptionsWrapper = styled.div`
+  height: 100%;
+  padding-top: 16px;
+  display: flex;
+  flex-direction: column;
+  .field {
+    background-color: #f5f6fa !important;
+    flex-flow: row-reverse;
+    .right-icon {
+      margin-right: 12px;
+    }
+    .field-slot {
+      span {
+        max-width: 100px;
+        white-space: nowrap;
+        overflow: hidden;
+        text-overflow: ellipsis;
+      }
+    }
+    &.checked {
+      background-color: #f3f5ff !important;
+      .rabby-checkbox {
+        background-color: #8697ff !important;
+      }
+    }
+  }
+`;
+
+const Footer = styled.div`
+  height: 76px;
+  border-top: 1px solid #e5e9ef;
+  padding: 16px 20px;
+  display: flex;
+  justify-content: space-between;
+`;
+
 const AddChain = ({ params }: { params: AddChainProps }) => {
   const wallet = useWallet();
   const [, resolveApproval, rejectApproval] = useApproval();
@@ -68,11 +106,13 @@ const AddChain = ({ params }: { params: AddChainProps }) => {
 
   const [showChain, setShowChain] = useState<Chain | undefined>(undefined);
   const [defaultChain, setDefaultChain] = useState<CHAINS_ENUM | null>(null);
-  const [confirmBtnText, setConfirmBtnText] = useState('');
   const [inited, setInited] = useState(false);
   const [isSupported, setIsSupported] = useState(true);
   const [rpcUrl, setRpcUrl] = useState('');
   const [rpcErrorMsg, setRpcErrorMsg] = useState('');
+  const [showOptions, setShowOptions] = useState(true);
+  const [selectedOption, setSelectedOption] = useState(0);
+  const [showUnsupportAlert, setShowUnsupportAlert] = useState(false);
 
   const init = async () => {
     const site = await wallet.getConnectedSite(session.origin)!;
@@ -108,7 +148,6 @@ const AddChain = ({ params }: { params: AddChainProps }) => {
   };
 
   useEffect(() => {
-    setConfirmBtnText(t('Change'));
     const chain = Object.values(CHAINS).find((chain) =>
       new BigNumber(chain.hex).isEqualTo(chainId)
     );
@@ -149,7 +188,104 @@ const AddChain = ({ params }: { params: AddChainProps }) => {
     });
   };
 
+  const handleSelectOption = (id: number) => {
+    setSelectedOption(id);
+  };
+
+  const handleClickContinue = () => {
+    if (selectedOption === 0) {
+      if (isSupported) {
+        resolveApproval();
+      } else {
+        setShowUnsupportAlert(true);
+        setShowOptions(false);
+      }
+    } else {
+      setShowOptions(false);
+    }
+  };
+
   if (!inited) return <></>;
+  console.log('showUnsupportAlert', showUnsupportAlert);
+  if (showUnsupportAlert) {
+    return (
+      <OptionsWrapper>
+        <div className="flex-1 px-28 pt-60">
+          <img src={IconWarning} className="w-[68px] h-[68px] mb-28 mx-auto" />
+          <div className="text-gray-title text-20 w-[344px] mx-auto font-medium text-center">
+            {t('The requested chain is not supported by Rabby yet')}
+          </div>
+        </div>
+        <Footer className="justify-center">
+          <Button
+            type="primary"
+            size="large"
+            className="w-[200px]"
+            onClick={() => rejectApproval()}
+          >
+            OK
+          </Button>
+        </Footer>
+      </OptionsWrapper>
+    );
+  }
+
+  if (showOptions) {
+    return (
+      <OptionsWrapper>
+        <div className="flex-1 px-20">
+          <h1 className="mb-12">Dapp attempts to add custom RPC</h1>
+          <p className="mb-28 text-gray-subTitle">
+            Rabby can't verify the security of custom RPC. The custom RPC will
+            replace Rabby's node. It can be deleted later in "Settings" -
+            "Custom RPC"
+          </p>
+          <FieldCheckbox
+            defaultChecked
+            checked={selectedOption === 0}
+            className={clsx({ checked: selectedOption === 0 })}
+            onChange={(checked) => {
+              if (checked) handleSelectOption(0);
+            }}
+          >
+            Switch to
+            <span className="text-gray-title font-bold mx-4">
+              {showChain ? showChain.name : 'Unknown'}
+            </span>
+            without adding RPC
+          </FieldCheckbox>
+          <FieldCheckbox
+            className={clsx({ checked: selectedOption === 1 })}
+            checked={selectedOption === 1}
+            onChange={(checked) => {
+              if (checked) handleSelectOption(1);
+            }}
+          >
+            Allow this site to add custom RPC
+          </FieldCheckbox>
+        </div>
+        <Footer>
+          <Button
+            type="primary"
+            size="large"
+            ghost
+            className="rabby-btn-ghost w-[172px]"
+            onClick={() => rejectApproval()}
+          >
+            Cancel
+          </Button>
+          <Button
+            type="primary"
+            className="w-[172px]"
+            size="large"
+            onClick={handleClickContinue}
+          >
+            Continue
+          </Button>
+        </Footer>
+      </OptionsWrapper>
+    );
+  }
 
   return (
     <>
@@ -203,7 +339,7 @@ const AddChain = ({ params }: { params: AddChainProps }) => {
                 className="w-[172px]"
                 onClick={handleConfirm}
               >
-                {confirmBtnText}
+                Save
               </Button>
             </>
           ) : (
