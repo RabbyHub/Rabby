@@ -270,12 +270,7 @@ class NotificationService extends Events {
           this.currentApproval = approval;
         }
       }
-
-      if (
-        ['wallet_switchEthereumChain', 'wallet_addEthereumChain'].includes(
-          data?.params?.method
-        )
-      ) {
+      if (['wallet_switchEthereumChain'].includes(data?.params?.method)) {
         const chainId = data.params?.data?.[0]?.chainId;
         const chain = Object.values(CHAINS).find((chain) =>
           new BigNumber(chain.hex).isEqualTo(chainId)

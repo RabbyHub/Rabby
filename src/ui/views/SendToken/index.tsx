@@ -691,13 +691,14 @@ const SendToken = () => {
       return;
     }
     try {
+      const customRPC = await wallet.getCustomRpcByChain(chain.enum);
       const decimals = await geTokenDecimals(
         currentToken.id,
-        new providers.JsonRpcProvider(chain.thridPartyRPC)
+        new providers.JsonRpcProvider(customRPC || chain.thridPartyRPC)
       );
       const symbol = await getTokenSymbol(
         currentToken.id,
-        new providers.JsonRpcProvider(chain.thridPartyRPC)
+        new providers.JsonRpcProvider(customRPC || chain.thridPartyRPC)
       );
       if (
         symbol !== currentToken.symbol ||

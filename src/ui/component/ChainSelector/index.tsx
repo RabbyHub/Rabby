@@ -1,13 +1,12 @@
-import React, { ReactNode, useState } from 'react';
+import React, { ReactNode, useEffect, useState } from 'react';
 import { CHAINS_ENUM, CHAINS } from 'consts';
-import { useHover } from 'ui/utils';
+import { useHover, useWallet } from 'ui/utils';
 import { SvgIconArrowDown } from 'ui/assets';
 import Modal from './Modal';
+import ChainIcon from '../ChainIcon';
 
 import './style.less';
-import { chain } from 'lodash';
 import clsx from 'clsx';
-import { SelectChainListProps } from './components/SelectChainList';
 
 interface ChainSelectorProps {
   value: CHAINS_ENUM;
@@ -31,6 +30,8 @@ const ChainSelector = ({
 }: ChainSelectorProps) => {
   const [showSelectorModal, setShowSelectorModal] = useState(showModal);
   const [isHovering, hoverProps] = useHover();
+  const [customRPC, setCustomRPC] = useState('');
+  const wallet = useWallet();
 
   const handleClickSelector = () => {
     setShowSelectorModal(true);
@@ -45,6 +46,16 @@ const ChainSelector = ({
     onChange(value);
     setShowSelectorModal(false);
   };
+
+  const getCustomRPC = async () => {
+    const rpc = await wallet.getCustomRpcByChain(value);
+    setCustomRPC(rpc);
+  };
+
+  useEffect(() => {
+    getCustomRPC();
+  }, [value]);
+
   return (
     <>
       <div
@@ -56,7 +67,14 @@ const ChainSelector = ({
         onClick={handleClickSelector}
         {...hoverProps}
       >
-        <img src={CHAINS[value]?.logo} className="chain-logo" />
+        <div className="mr-6">
+          <ChainIcon
+            chain={value}
+            customRPC={customRPC}
+            size="small"
+            showCustomRPCToolTip
+          />
+        </div>
         {CHAINS[value]?.name}
         <SvgIconArrowDown className={clsx('icon icon-arrow-down arrowColor')} />
       </div>

@@ -14,3 +14,7 @@ export const obj2query = (obj: Record<string, string>) => {
     })
     .join('&');
 };
+
+export const isValidateUrl = (url: string) => {
+  return /^((https|http)?:\/\/)[^\s]+\.[^\s]+/.test(url);
+};

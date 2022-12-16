@@ -24,14 +24,16 @@ export const useVerifyToken = <T extends ValidateTokenParam>(
   receiveToken?: T,
   chain?: CHAINS_ENUM
 ) => {
+  const wallet = useWallet();
   const data = useAsync(async () => {
     if (payToken && receiveToken && chain) {
+      const customRPC = await wallet.getCustomRpcByChain(chain);
       const [
         fromTokenValidationStatus,
         toTokenValidationStatus,
       ] = await Promise.all([
-        validateToken(payToken, chain),
-        validateToken(receiveToken, chain),
+        validateToken(payToken, chain, customRPC),
+        validateToken(receiveToken, chain, customRPC),
       ]);
 
       return [

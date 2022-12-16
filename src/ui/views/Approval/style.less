@@ -221,7 +221,19 @@
   }
 
   .approval-chain {
-    padding-top: 40px;
+    padding: 16px 20px 0;
+    .rpc-input {
+      height: 52px;
+      width: 360px;
+      margin-left: auto;
+      margin-right: auto;
+      background: #F5F6FA;
+      border: 1px solid #E5E9EF;
+      border-radius: 6px;
+      &.has-error {
+        border-color: #EC5151;
+      }
+    }
   }
   .approval-add-asset {
     padding-top: 53px;

@@ -331,10 +331,11 @@ const SendNFT = () => {
   const validateNFT = async () => {
     if (!nftItem) return;
     try {
+      const customRPC = await wallet.getCustomRpcByChain(chain!);
       setTokenValidationStatus(TOKEN_VALIDATION_STATUS.PENDING);
       const name = await getTokenName(
         nftItem.contract_id,
-        new providers.JsonRpcProvider(CHAINS[chain!].thridPartyRPC)
+        new providers.JsonRpcProvider(customRPC || CHAINS[chain!].thridPartyRPC)
       );
       if (name === nftItem.contract_name) {
         setTokenValidationStatus(TOKEN_VALIDATION_STATUS.SUCCESS);
