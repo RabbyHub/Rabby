@@ -388,7 +388,14 @@ const Settings = ({ visible, onClose }: SettingsProps) => {
               href="https://twitter.com/rabby_io"
               target="_blank"
               rel="noreferrer"
-              onClick={() => reportSettings('twitter')}
+              onClick={() => {
+                matomoRequestEvent({
+                  category: 'Setting',
+                  action: 'clickToUse',
+                  label: 'Find us|Twitter',
+                });
+                reportSettings('twitter');
+              }}
             >
               <img src={IconTwitter} className="w-20" />
             </a>
@@ -398,7 +405,14 @@ const Settings = ({ visible, onClose }: SettingsProps) => {
               href="https://discord.com/invite/seFBCWmUre"
               target="_blank"
               rel="noreferrer"
-              onClick={() => reportSettings('discord')}
+              onClick={() => {
+                matomoRequestEvent({
+                  category: 'Setting',
+                  action: 'clickToUse',
+                  label: 'Find us|Discord',
+                });
+                reportSettings('discord');
+              }}
             >
               <img src={IconDiscord} className="w-20" />
             </a>
