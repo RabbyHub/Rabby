@@ -156,7 +156,7 @@ const WalletConnectTemplate = () => {
   }, []);
 
   return (
-    <div className="wallet-connect">
+    <div className="wallet-connect pb-0">
       <div className="create-new-header create-password-header h-[220px] pt-[16px] pb-[30px]">
         <img
           src={IconBack}
@@ -164,13 +164,13 @@ const WalletConnectTemplate = () => {
           onClick={handleClickBack}
         />
         <img
-          className="unlock-logo w-[80px] h-[80px] mb-20 mx-auto"
+          className="unlock-logo w-[80px] h-[80px] mb-16 mx-auto"
           src={brand.image}
         />
-        <p className="text-24 mb-4 mt-0 text-white text-center font-bold">
+        <p className="text-24 mb-8 mt-0 text-white text-center font-bold">
           {t(brand.name)}
         </p>
-        <p className="text-14 mb-0 mt-4 text-white font-bold text-center">
+        <p className="text-15 mb-0 mt-4 text-white font-medium text-center">
           {t('Scan with your wallet app')}
         </p>
         <img src={Mask} className="mask" />

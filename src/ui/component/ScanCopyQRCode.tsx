@@ -65,7 +65,7 @@ const ScanCopyQRCode: React.FC<Props> = ({
 
   return (
     <div>
-      <div className="button-container">
+      <div className="button-container mt-28 mb-16">
         <div
           className={clsx('cursor-pointer', { active: !showURL })}
           onClick={() => changeShowURL(false)}
@@ -80,7 +80,7 @@ const ScanCopyQRCode: React.FC<Props> = ({
         </div>
       </div>
       {!showURL && (
-        <div className="qrcode cursor-pointer" {...hoverProps}>
+        <div className="qrcode cursor-pointer mb-0" {...hoverProps}>
           <QRCode value={qrcodeURL} size={170} />
           {isHovering && (
             <div className="refresh-container">
@@ -96,7 +96,7 @@ const ScanCopyQRCode: React.FC<Props> = ({
         </div>
       )}
       {showURL && (
-        <div className="url-container mx-auto w-[336px] mt-0 mb-24">
+        <div className="url-container mx-auto w-[336px] mt-0 mb-0">
           <Input.TextArea
             className="h-[200px] w-[336px] p-16 block"
             spellCheck={false}
@@ -117,6 +117,9 @@ const ScanCopyQRCode: React.FC<Props> = ({
           />
         </div>
       )}
+      <div className="text-12 text-gray-content text-center mb-24 mt-12">
+        WalletConnect will be unstable if you use VPN.
+      </div>
       {canChangeBridge && (
         <div
           className="change-bridge"
