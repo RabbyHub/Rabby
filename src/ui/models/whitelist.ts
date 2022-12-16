@@ -25,6 +25,10 @@ export const whitelist = createModel<RootModel>()({
     },
   },
   effects: (dispatch) => ({
+    async init() {
+      this.getWhitelist();
+      this.getWhitelistEnabled();
+    },
     async getWhitelist(_?, store?) {
       const whitelist = await store.app.wallet.getWhitelist();
       dispatch.whitelist.setField({ whitelist });
