@@ -395,7 +395,7 @@ const Dashboard = () => {
   };
 
   const gotoAddAddress = () => {
-    ReactGA.event({
+    matomoRequestEvent({
       category: 'Front Page Click',
       action: 'Click',
       label: 'Add Address',
@@ -572,7 +572,7 @@ const Dashboard = () => {
   const showGnosisAlert = isGnosis && showGnosisWrongChainAlert && !showChain;
 
   const switchAddress = () => {
-    ReactGA.event({
+    matomoRequestEvent({
       category: 'Front Page Click',
       action: 'Click',
       label: 'Change Address',
