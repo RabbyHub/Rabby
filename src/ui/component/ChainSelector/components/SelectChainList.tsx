@@ -26,6 +26,7 @@ export type SelectChainListProps = {
   pinned: CHAINS_ENUM[];
   supportChains?: CHAINS_ENUM[];
   disabledTips?: SelectChainItemProps['disabledTips'];
+  showRPCStatus?: boolean;
 };
 
 export const SelectChainList = (props: SelectChainListProps) => {
@@ -41,6 +42,7 @@ export const SelectChainList = (props: SelectChainListProps) => {
     pinned,
     supportChains,
     disabledTips,
+    showRPCStatus = false,
   } = props;
   const items = data
     .map((item, index) => ({
@@ -113,6 +115,7 @@ export const SelectChainList = (props: SelectChainListProps) => {
                     supportChains ? !supportChains.includes(item.enum) : false
                   }
                   disabledTips={disabledTips}
+                  showRPCStatus={showRPCStatus}
                 ></SortableSelectChainItem>
               );
             })}
@@ -138,6 +141,7 @@ export const SelectChainList = (props: SelectChainListProps) => {
               supportChains ? !supportChains.includes(item.enum) : false
             }
             disabledTips={disabledTips}
+            showRPCStatus={showRPCStatus}
           ></SortableSelectChainItem>
         );
       })}

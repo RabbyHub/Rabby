@@ -17,6 +17,7 @@ interface ChainSelectorProps {
   className?: string;
   title?: ReactNode;
   onAfterOpen?: () => void;
+  showRPCStatus?: boolean;
 }
 
 const ChainSelector = ({
@@ -27,6 +28,7 @@ const ChainSelector = ({
   showModal = false,
   className = '',
   onAfterOpen,
+  showRPCStatus = false,
 }: ChainSelectorProps) => {
   const [showSelectorModal, setShowSelectorModal] = useState(showModal);
   const [isHovering, hoverProps] = useHover();
@@ -85,6 +87,7 @@ const ChainSelector = ({
         onChange={handleChange}
         onCancel={handleCancel}
         connection={connection}
+        showRPCStatus={showRPCStatus}
       />
     </>
   );

@@ -158,6 +158,12 @@ const CustomRPC = () => {
 
   const handleChainChanged = (chain: CHAINS_ENUM) => {
     setSelectedChain(chain);
+    if (customRPC[chain]) {
+      setEditRPC({
+        id: chain,
+        rpc: customRPC[chain],
+      });
+    }
     setRPCModalVisible(true);
   };
 
@@ -199,10 +205,12 @@ const CustomRPC = () => {
     <div className="no-address">
       <img
         className="no-data-image"
-        src="/images/nodata-address.png"
+        src="/images/nodata-tx.png"
         alt="no address"
       />
-      <p className="text-gray-content text-14 text-center">No custom RPC</p>
+      <p className="text-gray-content text-14 text-center font-medium">
+        No custom RPC
+      </p>
     </div>
   );
 
@@ -236,6 +244,7 @@ const CustomRPC = () => {
         visible={chainSelectorVisible}
         onChange={handleChainChanged}
         onCancel={handleCancelSelectChain}
+        showRPCStatus
       />
       <EditRPCModal
         visible={rpcModalVisible}

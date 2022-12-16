@@ -237,7 +237,9 @@ const AddChain = ({ params }: { params: AddChainProps }) => {
     return (
       <OptionsWrapper>
         <div className="flex-1 px-20">
-          <h1 className="mb-12">Dapp attempts to add custom RPC</h1>
+          <div className="mb-12 text-center text-18 font-medium">
+            Dapp attempts to add custom RPC
+          </div>
           <p className="mb-28 text-gray-subTitle">
             Rabby can't verify the security of custom RPC. The custom RPC will
             replace Rabby's node. It can be deleted later in "Settings" -
@@ -293,7 +295,7 @@ const AddChain = ({ params }: { params: AddChainProps }) => {
   return (
     <>
       <div className="approval-chain">
-        <div className="text-center mb-12 text-18">Edit RPC</div>
+        <div className="text-center mb-12 text-18 font-medium">Edit RPC</div>
         <div className="text-center">
           {showChain?.logo ? (
             <img
@@ -323,18 +325,19 @@ const AddChain = ({ params }: { params: AddChainProps }) => {
           <ErrorMsg>The requested chain is not supported by Rabby yet</ErrorMsg>
         )}
       </div>
-      <footer className="connect-footer">
+      <footer className="add-rpc-footer">
         <div
           className={clsx([
-            'action-buttons flex mt-4',
+            'action-buttons flex',
             showChain ? 'justify-between' : 'justify-center',
           ])}
         >
           <Button
             type="primary"
             size="large"
-            className="w-[172px]"
+            className="w-[172px] rabby-btn-ghost"
             onClick={() => rejectApproval()}
+            ghost
           >
             {t('Cancel')}
           </Button>

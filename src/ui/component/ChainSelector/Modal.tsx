@@ -21,6 +21,7 @@ interface ChainSelectorModalProps {
   className?: string;
   supportChains?: SelectChainListProps['supportChains'];
   disabledTips?: SelectChainListProps['disabledTips'];
+  showRPCStatus?: boolean;
 }
 
 const useSetup = () => {
@@ -89,6 +90,7 @@ const ChainSelectorModal = ({
   className,
   supportChains,
   disabledTips,
+  showRPCStatus = false,
 }: ChainSelectorModalProps) => {
   const handleCancel = () => {
     onCancel();
@@ -150,6 +152,7 @@ const ChainSelectorModal = ({
           onChange={handleChange}
           value={value}
           disabledTips={disabledTips}
+          showRPCStatus={showRPCStatus}
         ></SelectChainList>
         <SelectChainList
           supportChains={supportChains}
@@ -159,6 +162,7 @@ const ChainSelectorModal = ({
           onStarChange={handleStarChange}
           onChange={handleChange}
           disabledTips={disabledTips}
+          showRPCStatus={showRPCStatus}
         ></SelectChainList>
         {pinnedList.length === 0 && all.length === 0 ? (
           <div className="select-chain-list pt-[70px] pb-[120px]">

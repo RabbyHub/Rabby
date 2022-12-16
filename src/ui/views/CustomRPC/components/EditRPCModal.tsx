@@ -105,6 +105,10 @@ const EditRPCModal = ({
     }
   }, [rpcInfo]);
 
+  useEffect(() => {
+    if (!visible) setRpcUrl('');
+  }, [visible]);
+
   return (
     <Popup
       height={440}
