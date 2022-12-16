@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useMemo } from 'react';
 import clsx from 'clsx';
 import { Button, Input } from 'antd';
 import { useTranslation } from 'react-i18next';
@@ -113,6 +113,9 @@ const AddChain = ({ params }: { params: AddChainProps }) => {
   const [showOptions, setShowOptions] = useState(true);
   const [selectedOption, setSelectedOption] = useState(0);
   const [showUnsupportAlert, setShowUnsupportAlert] = useState(false);
+  const canSave = useMemo(() => {
+    return rpcUrl && !rpcErrorMsg && isSupported;
+  }, [rpcErrorMsg, isSupported, rpcUrl]);
 
   const init = async () => {
     const site = await wallet.getConnectedSite(session.origin)!;
@@ -314,7 +317,11 @@ const AddChain = ({ params }: { params: AddChainProps }) => {
           placeholder="Enter the RPC URL"
           onChange={(e) => handleRPCChanged(e.target.value)}
         />
-        {rpcErrorMsg && <ErrorMsg>{rpcErrorMsg}</ErrorMsg>}
+        {isSupported ? (
+          rpcErrorMsg && <ErrorMsg>{rpcErrorMsg}</ErrorMsg>
+        ) : (
+          <ErrorMsg>The requested chain is not supported by Rabby yet</ErrorMsg>
+        )}
       </div>
       <footer className="connect-footer">
         <div
@@ -323,35 +330,23 @@ const AddChain = ({ params }: { params: AddChainProps }) => {
             showChain ? 'justify-between' : 'justify-center',
           ])}
         >
-          {showChain ? (
-            <>
-              <Button
-                type="primary"
-                size="large"
-                className="w-[172px]"
-                onClick={() => rejectApproval()}
-              >
-                {t('Cancel')}
-              </Button>
-              <Button
-                type="primary"
-                size="large"
-                className="w-[172px]"
-                onClick={handleConfirm}
-              >
-                Save
-              </Button>
-            </>
-          ) : (
-            <Button
-              type="primary"
-              size="large"
-              className="w-[200px]"
-              onClick={() => rejectApproval()}
-            >
-              {t('OK')}
-            </Button>
-          )}
+          <Button
+            type="primary"
+            size="large"
+            className="w-[172px]"
+            onClick={() => rejectApproval()}
+          >
+            {t('Cancel')}
+          </Button>
+          <Button
+            type="primary"
+            size="large"
+            className="w-[172px]"
+            onClick={handleConfirm}
+            disabled={!canSave}
+          >
+            Save
+          </Button>
         </div>
       </footer>
     </>
