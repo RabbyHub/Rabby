@@ -118,6 +118,10 @@ const AddressManagement = () => {
     history.push('/dashboard');
   };
 
+  useEffect(() => {
+    dispatch.whitelist.init();
+  }, []);
+
   const Row = (props) => {
     const { data, index, style } = props;
     const account = data[index];
