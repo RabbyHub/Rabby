@@ -594,16 +594,25 @@ export const SwapByDex = () => {
       }
       await handleUpdateGasCache();
       try {
-        wallet.dexSwap({
-          chain,
-          quote: quoteInfo,
-          needApprove: !tokenApproved,
-          spender: DEX_SPENDER_WHITELIST[oDexId][chain],
-          pay_token_id: payToken.id,
-          gasPrice: price,
-          unlimited: unlimitedAllowance,
-          shouldTwoStepApprove,
-        });
+        wallet.dexSwap(
+          {
+            chain,
+            quote: quoteInfo,
+            needApprove: !tokenApproved,
+            spender: DEX_SPENDER_WHITELIST[oDexId][chain],
+            pay_token_id: payToken.id,
+            gasPrice: price,
+            unlimited: unlimitedAllowance,
+            shouldTwoStepApprove,
+          },
+          {
+            ga: {
+              category: 'Swap',
+              source: 'swap',
+              trigger: rbiSource,
+            },
+          }
+        );
         window.close();
       } catch (error) {
         console.error(error);
