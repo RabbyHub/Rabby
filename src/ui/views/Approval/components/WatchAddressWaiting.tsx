@@ -530,7 +530,7 @@ const WatchAddressWaiting = ({ params }: { params: ApprovalParams }) => {
   return (
     <div className="watchaddress">
       <div className="watchaddress-header">
-        <div className="flex item-center justify-center icon-header">
+        <div className="flex item-center justify-center icon-header h-full pt-0 items-center">
           <img
             className="w-[28px] h-[28px]"
             src={brandName && WALLET_BRAND_CONTENT[brandName]!.image}
