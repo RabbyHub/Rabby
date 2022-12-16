@@ -345,7 +345,7 @@ export default ({
                   matomoRequestEvent({
                     category: 'Dashboard',
                     action: 'clickEntry',
-                    label: panelKey,
+                    label: item.content,
                   });
                   item?.onClick(evt);
                 }}

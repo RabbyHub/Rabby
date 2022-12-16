@@ -3510,10 +3510,10 @@
     sinon-chrome "^3.0.1"
     webextension-polyfill-ts "^0.26.0"
 
-"@rabby-wallet/rabby-swap@^0.0.8":
-  version "0.0.8"
-  resolved "https://registry.yarnpkg.com/@rabby-wallet/rabby-swap/-/rabby-swap-0.0.8.tgz#28b88144835bd1f9a9ef30df4c06f0e1bdd73e31"
-  integrity sha512-HV4f6FYjkcSyTydC94t6uuDfPPYXY4jjxbf1Zir8tZW2cwF6F2GhBxp/LeU9NDJtAIjppoerwF8uxwGhYUuafg==
+"@rabby-wallet/rabby-swap@^0.0.9":
+  version "0.0.9"
+  resolved "https://registry.yarnpkg.com/@rabby-wallet/rabby-swap/-/rabby-swap-0.0.9.tgz#cca980189f47de50c448ad51cc95cfbe7f41c241"
+  integrity sha512-KTTyGkySHpTBAkR1JZX3J9BQycXl++1dyHvNjhQE3Zkz6fWG5n/PQq8kCmOjvF3q5h28g8DCaygluuNAHQnCsg==
   dependencies:
     "@debank/common" "^0.2.20"
     "@ethersproject/abi" "^5.7.0"
