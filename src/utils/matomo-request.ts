@@ -3,7 +3,7 @@ import { browser } from 'webextension-polyfill-ts';
 import ReactGA from 'react-ga';
 
 const ANALYTICS_PATH = 'https://matomo.debank.com/matomo.php';
-const genRequestId = customAlphabet('1234567890abcdef', 16);
+const genExtensionId = customAlphabet('1234567890abcdef', 16);
 
 async function postData(url = '', params: URLSearchParams) {
   const response = await fetch(`${url}?${params.toString()}`, {
@@ -12,15 +12,14 @@ async function postData(url = '', params: URLSearchParams) {
 
   return response;
 }
-const getParams = async () => {
-  const { preference } = await browser.storage.local.get('preference');
-  let requestId = preference?.requestId;
-  if (!requestId) {
-    requestId = genRequestId();
-    preference.requestId = requestId;
-    browser.storage.local.set({ preference });
-  }
 
+let { extensionId } = await browser.storage.local.get('extensionId');
+if (!extensionId) {
+  extensionId = genExtensionId();
+  browser.storage.local.set({ extensionId });
+}
+
+const getParams = async () => {
   const gaParams = new URLSearchParams();
 
   const pathname = location.hash.substring(2) || 'background';
@@ -30,7 +29,7 @@ const getParams = async () => {
   gaParams.append('idsite', '2');
   gaParams.append('rec', '1');
   gaParams.append('url', encodeURI(url));
-  gaParams.append('_id', requestId);
+  gaParams.append('_id', extensionId);
   gaParams.append('rand', nanoid());
   gaParams.append('ca', '1');
   gaParams.append('h', new Date().getUTCHours().toString());
