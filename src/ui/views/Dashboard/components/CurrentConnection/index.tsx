@@ -11,7 +11,7 @@ import { getCurrentTab, useWallet } from 'ui/utils';
 import './style.less';
 import { useLocation } from 'react-router-dom';
 import { getOriginFromUrl } from '@/utils';
-import ReactGA from 'react-ga';
+import { matomoRequestEvent } from '@/utils/matomo-request';
 
 interface CurrentConnectionProps {
   onChainChange?: (chain: CHAINS_ENUM) => void;
@@ -117,7 +117,7 @@ export const CurrentConnection = memo((props: CurrentConnectionProps) => {
         onChange={handleChangeDefaultChain}
         showModal={visible}
         onAfterOpen={() => {
-          ReactGA.event({
+          matomoRequestEvent({
             category: 'Front Page Click',
             action: 'Click',
             label: 'Change Chain',

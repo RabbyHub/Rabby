@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { useHistory, useLocation } from 'react-router-dom';
 import { useTranslation, Trans } from 'react-i18next';
-import ReactGA from 'react-ga';
+import { matomoRequestEvent } from '@/utils/matomo-request';
 import { sortBy } from 'lodash';
 import { StrayPageWithButton } from 'ui/component';
 import AddressItem from 'ui/component/AddressList/AddressItem';
@@ -77,7 +77,7 @@ const ImportSuccess = ({ isPopup = false }: { isPopup?: boolean }) => {
       });
     }
     if (accounts[0]) {
-      ReactGA.event({
+      matomoRequestEvent({
         category: 'User',
         action: 'importAddress',
         label: accounts[0].type,

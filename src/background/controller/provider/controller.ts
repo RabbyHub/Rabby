@@ -1,4 +1,4 @@
-import ReactGA from 'react-ga';
+import { matomoRequestEvent } from '@/utils/matomo-request';
 import * as Sentry from '@sentry/browser';
 import Common, { Hardfork } from '@ethereumjs/common';
 import { TransactionFactory } from '@ethereumjs/tx';
@@ -53,7 +53,7 @@ const reportSignText = (params: {
   success: boolean;
 }) => {
   const { method, account, success } = params;
-  ReactGA.event({
+  matomoRequestEvent({
     category: 'SignText',
     action: 'completeSignText',
     label: [

@@ -8,7 +8,7 @@ import React, {
   useRef,
   useState,
 } from 'react';
-import ReactGA from 'react-ga';
+import { matomoRequestEvent } from '@/utils/matomo-request';
 import { useTranslation } from 'react-i18next';
 import { useDebounce } from 'react-use';
 import { FixedSizeList } from 'react-window';
@@ -217,7 +217,7 @@ const TokenList = ({
       current: token,
       varaint: !isAdded && startSearch ? 'add' : undefined,
     });
-    ReactGA.event({
+    matomoRequestEvent({
       category: 'ViewAssets',
       action: 'viewTokenDetail',
       label: token?.id,

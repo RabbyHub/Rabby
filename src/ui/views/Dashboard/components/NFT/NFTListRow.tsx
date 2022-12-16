@@ -4,7 +4,7 @@ import { getKRCategoryByType } from '@/utils/transaction';
 import { Modal } from 'antd';
 import clsx from 'clsx';
 import React, { useState } from 'react';
-import ReactGA from 'react-ga';
+import { matomoRequestEvent } from '@/utils/matomo-request';
 import { useHover } from 'ui/utils';
 import NFTAvatar from './NFTAvatar';
 import NFTModal from './NFTModal';
@@ -25,7 +25,7 @@ const NFTListRow = (props: NFTListRowProps) => {
 
   const handleToggleModal = () => {
     if (!modalVisible) {
-      ReactGA.event({
+      matomoRequestEvent({
         category: 'ViewAssets',
         action: 'viewNFTDetail',
         label: [

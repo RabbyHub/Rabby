@@ -5,7 +5,7 @@ import clsx from 'clsx';
 import BigNumber from 'bignumber.js';
 import { useTranslation } from 'react-i18next';
 import { useHistory, useLocation } from 'react-router-dom';
-import ReactGA from 'react-ga';
+import { matomoRequestEvent } from '@/utils/matomo-request';
 import { useDebounce } from 'react-use';
 import { Input, Form, Skeleton, message, Button } from 'antd';
 import abiCoder, { AbiCoder } from 'web3-eth-abi';
@@ -321,7 +321,7 @@ const SendToken = () => {
           currentToken,
         },
       });
-      ReactGA.event({
+      matomoRequestEvent({
         category: 'Send',
         action: 'createTx',
         label: [
