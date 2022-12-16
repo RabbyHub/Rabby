@@ -123,6 +123,7 @@ export const CurrentConnection = memo((props: CurrentConnectionProps) => {
             label: 'Change Chain',
           });
         }}
+        showRPCStatus
       />
     </div>
   );

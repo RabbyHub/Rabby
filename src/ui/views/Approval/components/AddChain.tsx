@@ -108,14 +108,15 @@ const AddChain = ({ params }: { params: AddChainProps }) => {
   const [defaultChain, setDefaultChain] = useState<CHAINS_ENUM | null>(null);
   const [inited, setInited] = useState(false);
   const [isSupported, setIsSupported] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
   const [rpcUrl, setRpcUrl] = useState('');
   const [rpcErrorMsg, setRpcErrorMsg] = useState('');
   const [showOptions, setShowOptions] = useState(true);
   const [selectedOption, setSelectedOption] = useState(0);
   const [showUnsupportAlert, setShowUnsupportAlert] = useState(false);
   const canSave = useMemo(() => {
-    return rpcUrl && !rpcErrorMsg && isSupported;
-  }, [rpcErrorMsg, isSupported, rpcUrl]);
+    return rpcUrl && !rpcErrorMsg && isSupported && !isLoading;
+  }, [rpcErrorMsg, isSupported, rpcUrl, isLoading]);
 
   const init = async () => {
     const site = await wallet.getConnectedSite(session.origin)!;
@@ -128,24 +129,28 @@ const AddChain = ({ params }: { params: AddChainProps }) => {
 
   const handleRPCChanged = (rpc: string) => {
     setRpcUrl(rpc);
+    setIsLoading(true);
     if (!isValidateUrl(rpc)) {
-      setRpcErrorMsg('Invalid rpc url');
+      setRpcErrorMsg('Invalid RPC URL');
     }
   };
 
   const rpcValidation = async () => {
     if (!isValidateUrl(rpcUrl)) {
-      setRpcErrorMsg('Invalid rpc url');
+      setRpcErrorMsg('Invalid RPC URL');
       return;
     }
     try {
+      setIsLoading(true);
       const isValid = await wallet.validateRPC(rpcUrl, Number(chainId));
+      setIsLoading(false);
       if (!isValid) {
         setRpcErrorMsg('Invalid Chain ID');
       } else {
         setRpcErrorMsg('');
       }
     } catch (e) {
+      setIsLoading(false);
       setRpcErrorMsg('RPC authentication failed');
     }
   };
@@ -209,7 +214,7 @@ const AddChain = ({ params }: { params: AddChainProps }) => {
   };
 
   if (!inited) return <></>;
-  console.log('showUnsupportAlert', showUnsupportAlert);
+
   if (showUnsupportAlert) {
     return (
       <OptionsWrapper>
@@ -237,7 +242,9 @@ const AddChain = ({ params }: { params: AddChainProps }) => {
     return (
       <OptionsWrapper>
         <div className="flex-1 px-20">
-          <h1 className="mb-12">Dapp attempts to add custom RPC</h1>
+          <div className="mb-12 text-center text-18 font-medium">
+            Dapp attempts to add custom RPC
+          </div>
           <p className="mb-28 text-gray-subTitle">
             Rabby can't verify the security of custom RPC. The custom RPC will
             replace Rabby's node. It can be deleted later in "Settings" -
@@ -293,7 +300,7 @@ const AddChain = ({ params }: { params: AddChainProps }) => {
   return (
     <>
       <div className="approval-chain">
-        <div className="text-center mb-12 text-18">Edit RPC</div>
+        <div className="text-center mb-12 text-18 font-medium">Edit RPC</div>
         <div className="text-center">
           {showChain?.logo ? (
             <img
@@ -323,18 +330,19 @@ const AddChain = ({ params }: { params: AddChainProps }) => {
           <ErrorMsg>The requested chain is not supported by Rabby yet</ErrorMsg>
         )}
       </div>
-      <footer className="connect-footer">
+      <footer className="add-rpc-footer">
         <div
           className={clsx([
-            'action-buttons flex mt-4',
+            'action-buttons flex',
             showChain ? 'justify-between' : 'justify-center',
           ])}
         >
           <Button
             type="primary"
             size="large"
-            className="w-[172px]"
+            className="w-[172px] rabby-btn-ghost"
             onClick={() => rejectApproval()}
+            ghost
           >
             {t('Cancel')}
           </Button>
@@ -344,6 +352,7 @@ const AddChain = ({ params }: { params: AddChainProps }) => {
             className="w-[172px]"
             onClick={handleConfirm}
             disabled={!canSave}
+            loading={isLoading}
           >
             Save
           </Button>

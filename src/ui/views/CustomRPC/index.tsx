@@ -2,11 +2,12 @@ import React, { useEffect, useMemo, useState } from 'react';
 import { CHAINS_ENUM, CHAINS } from '@debank/common';
 import { message, Button } from 'antd';
 import styled from 'styled-components';
-import { Item, PageHeader, Modal } from 'ui/component';
+import { PageHeader } from 'ui/component';
 import ChainSelectorModal from 'ui/component/ChainSelector/Modal';
 import ChainIcon from 'ui/component/ChainIcon';
 import EditRPCModal from './components/EditRPCModal';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
+import { matomoRequestEvent } from '@/utils/matomo-request';
 import IconEdit from 'ui/assets/custom-rpc/edit.svg';
 import IconDelete from 'ui/assets/custom-rpc/delete.svg';
 import IconSuccess from 'ui/assets/success.svg';
@@ -86,7 +87,7 @@ const RPCItem = ({
   item,
   onEdit,
 }: {
-  item: { id: CHAINS_ENUM; rpc: string };
+  item: { id: CHAINS_ENUM; rpc: string; nonce: number };
   onEdit(item: { id: CHAINS_ENUM; rpc: string }): void;
 }) => {
   const dispatch = useRabbyDispatch();
@@ -101,6 +102,11 @@ const RPCItem = ({
 
   const handleDelete = async () => {
     await dispatch.customRPC.deleteCustomRPC(item.id);
+    matomoRequestEvent({
+      category: 'CustomRPC',
+      action: 'delete',
+      label: item.id,
+    });
     message.success({
       duration: 0.5,
       icon: <i />,
@@ -117,7 +123,7 @@ const RPCItem = ({
 
   return (
     <RPCItemWrapper>
-      <ChainIcon chain={item.id} customRPC={item.rpc} />
+      <ChainIcon chain={item.id} customRPC={item.rpc} nonce={item.nonce} />
       <div className="right">
         <p>{chain.name}</p>
         <p title={item.rpc}>{item.rpc}</p>
@@ -148,16 +154,24 @@ const CustomRPC = () => {
     id: CHAINS_ENUM;
     rpc: string;
   } | null>(null);
+  const [nonce, setNonce] = useState(0);
 
   const rpcList = useMemo(() => {
     return Object.keys(customRPC).map((key) => ({
+      nonce,
       id: key as CHAINS_ENUM,
       rpc: customRPC[key],
     }));
-  }, [customRPC]);
+  }, [customRPC, nonce]);
 
   const handleChainChanged = (chain: CHAINS_ENUM) => {
     setSelectedChain(chain);
+    if (customRPC[chain]) {
+      setEditRPC({
+        id: chain,
+        rpc: customRPC[chain],
+      });
+    }
     setRPCModalVisible(true);
   };
 
@@ -184,6 +198,11 @@ const CustomRPC = () => {
     setChainSelectorVisible(false);
     setRPCModalVisible(false);
     setEditRPC(null);
+    matomoRequestEvent({
+      category: 'CustomRPC',
+      action: 'add',
+      label: selectedChain,
+    });
   };
 
   const handleCancelEditCustomRPC = () => {
@@ -195,14 +214,22 @@ const CustomRPC = () => {
     dispatch.customRPC.getAllRPC();
   }, []);
 
+  useEffect(() => {
+    if (!rpcModalVisible && !chainSelectorVisible) {
+      setNonce(nonce + 1);
+    }
+  }, [rpcModalVisible, chainSelectorVisible]);
+
   const NoAddressUI = (
     <div className="no-address">
       <img
         className="no-data-image"
-        src="/images/nodata-address.png"
+        src="/images/nodata-tx.png"
         alt="no address"
       />
-      <p className="text-gray-content text-14 text-center">No custom RPC</p>
+      <p className="text-gray-content text-14 text-center font-medium">
+        No custom RPC
+      </p>
     </div>
   );
 
@@ -236,6 +263,7 @@ const CustomRPC = () => {
         visible={chainSelectorVisible}
         onChange={handleChainChanged}
         onCancel={handleCancelSelectChain}
+        showRPCStatus
       />
       <EditRPCModal
         visible={rpcModalVisible}

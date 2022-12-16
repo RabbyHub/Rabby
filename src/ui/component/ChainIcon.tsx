@@ -1,7 +1,7 @@
 import { Tooltip } from 'antd';
 import { CHAINS_ENUM, CHAINS } from '@debank/common';
 import clsx from 'clsx';
-import React, { useEffect, useState } from 'react';
+import React, { useEffect, useState, useRef } from 'react';
 import styled from 'styled-components';
 import { useWallet } from '@/ui/utils';
 
@@ -87,6 +87,7 @@ interface Props {
   customRPC: string | undefined;
   size?: 'normal' | 'small';
   showCustomRPCToolTip?: boolean;
+  nonce?: number;
 }
 
 const CustomRPCTooltipContent = ({
@@ -111,24 +112,35 @@ const ChainIcon = ({
   customRPC,
   size = 'normal',
   showCustomRPCToolTip = false,
+  nonce,
 }: Props) => {
   const wallet = useWallet();
   const [customRPCAvaliable, setCustomRPCAvaliable] = useState(true);
+  const [customRPCVlidated, setCustomRPCValidated] = useState(false);
+  const chainRef = useRef(chain);
+  const rpcRef = useRef(customRPC);
 
-  const pingCustomRPC = async () => {
-    if (customRPC) {
+  const pingCustomRPC = async (c: CHAINS_ENUM, rpc: string | undefined) => {
+    setCustomRPCValidated(false);
+    if (rpc) {
       try {
-        await wallet.pingCustomRPC(customRPC);
+        await wallet.pingCustomRPC(rpc);
+        if (c !== chainRef.current || rpc !== rpcRef.current) return;
+        setCustomRPCValidated(true);
         setCustomRPCAvaliable(true);
       } catch (e) {
+        if (c !== chainRef.current || rpc !== rpcRef.current) return;
+        setCustomRPCValidated(true);
         setCustomRPCAvaliable(false);
       }
     }
   };
 
   useEffect(() => {
-    pingCustomRPC();
-  }, [chain, customRPC]);
+    chainRef.current = chain;
+    rpcRef.current = customRPC;
+    pingCustomRPC(chain, customRPC);
+  }, [chain, customRPC, nonce]);
 
   return (
     <Tooltip
@@ -146,6 +158,7 @@ const ChainIcon = ({
       <ChainIconWrapper>
         <ChainIconEle className={clsx(size)} src={CHAINS[chain].logo} />
         {customRPC &&
+          customRPCVlidated &&
           (customRPCAvaliable ? (
             <AvaliableIcon className={clsx(size)} />
           ) : (

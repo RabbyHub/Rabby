@@ -2,7 +2,9 @@ import { Chain } from '@/background/service/openapi';
 import { CHAINS_ENUM } from '@debank/common';
 import { Tooltip } from 'antd';
 import clsx from 'clsx';
-import React, { forwardRef, HTMLAttributes, useState } from 'react';
+import React, { forwardRef, HTMLAttributes, useEffect } from 'react';
+import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
+import ChainIcon from '../../ChainIcon';
 import IconCheck from 'ui/assets/check-2.svg';
 import IconPinned from 'ui/assets/icon-pinned.svg';
 import IconPinnedFill from 'ui/assets/icon-pinned-fill.svg';
@@ -15,6 +17,7 @@ export type SelectChainItemProps = {
   onChange?: (value: CHAINS_ENUM) => void;
   disabled?: boolean;
   disabledTips?: string;
+  showRPCStatus?: boolean;
 } & Omit<HTMLAttributes<HTMLDivElement>, 'onChange'>;
 
 export const SelectChainItem = forwardRef(
@@ -28,10 +31,20 @@ export const SelectChainItem = forwardRef(
       onChange,
       disabled = false,
       disabledTips = 'Coming soon',
+      showRPCStatus = false,
       ...rest
     }: SelectChainItemProps,
     ref: React.ForwardedRef<HTMLDivElement>
   ) => {
+    const { customRPC } = useRabbySelector((s) => ({
+      ...s.customRPC,
+    }));
+    const dispatch = useRabbyDispatch();
+
+    useEffect(() => {
+      dispatch.customRPC.getAllRPC();
+    }, []);
+
     return (
       <Tooltip
         trigger={['click', 'hover']}
@@ -52,7 +65,11 @@ export const SelectChainItem = forwardRef(
           onClick={() => !disabled && onChange?.(data.enum)}
         >
           <div className="flex items-center">
-            <img src={data.logo} alt="" className="select-chain-item-icon" />
+            {showRPCStatus ? (
+              <ChainIcon chain={data.enum} customRPC={customRPC[data.enum]} />
+            ) : (
+              <img src={data.logo} alt="" className="select-chain-item-icon" />
+            )}
             <div className="select-chain-item-name">{data.name}</div>
           </div>
           <img
