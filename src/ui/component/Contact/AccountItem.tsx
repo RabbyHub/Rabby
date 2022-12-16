@@ -1,14 +1,17 @@
-import React, { useRef } from 'react';
+import React, { useMemo, useRef } from 'react';
 import styled from 'styled-components';
 import ClipboardJS from 'clipboard';
 import clsx from 'clsx';
-import { message } from 'antd';
+import { message, Tooltip } from 'antd';
 import { ellipsis } from 'ui/utils/address';
 import { IDisplayedAccountWithBalance } from 'ui/models/accountToDisplay';
 import { splitNumberByStep } from 'ui/utils/number';
 import { WALLET_BRAND_CONTENT, KEYRING_ICONS } from 'consts';
 import IconSuccess from 'ui/assets/success.svg';
 import IconCopy from 'ui/assets/component/icon-copy.svg';
+import IconWhitelist from 'ui/assets/address/whitelist.svg';
+import { useRabbySelector } from '@/ui/store';
+import { isSameAddress } from '@/ui/utils';
 
 const AccountItemWrapper = styled.div`
   padding: 10px 16px;
@@ -68,6 +71,15 @@ const AccountItem = ({
   disabled?: boolean;
   onClick?(account: IDisplayedAccountWithBalance): void;
 }) => {
+  const { whitelistEnable, whiteList } = useRabbySelector((s) => ({
+    whitelistEnable: s.whitelist.enabled,
+    whiteList: s.whitelist.whitelist,
+  }));
+
+  const isInWhiteList = useMemo(() => {
+    return whiteList.some((e) => isSameAddress(e, account.address));
+  }, [whiteList, account.address]);
+
   const addressElement = useRef(null);
   const handleClickCopy = (e: React.MouseEvent<HTMLImageElement>) => {
     if (disabled) return;
@@ -115,7 +127,20 @@ const AccountItem = ({
         }
       />
       <div className="account-info flex-1">
-        <p className="name">{account.alianName}</p>
+        <p className="name">
+          <div className="flex items-center gap-4">
+            <span>{account.alianName}</span>
+            {onClick && whitelistEnable && isInWhiteList && (
+              <Tooltip
+                overlayClassName="rectangle"
+                placement="top"
+                title={'Whitelisted address'}
+              >
+                <img src={IconWhitelist} className={'w-14 h-14'} />
+              </Tooltip>
+            )}
+          </div>
+        </p>
         <p className="address" title={account.address} ref={addressElement}>
           {ellipsis(account.address)}
           <div className="cursor-pointer" onClick={handleClickCopy}>
