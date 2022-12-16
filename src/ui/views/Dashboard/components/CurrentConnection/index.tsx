@@ -11,6 +11,7 @@ import { getCurrentTab, useWallet } from 'ui/utils';
 import './style.less';
 import { useLocation } from 'react-router-dom';
 import { getOriginFromUrl } from '@/utils';
+import ReactGA from 'react-ga';
 
 interface CurrentConnectionProps {
   onChainChange?: (chain: CHAINS_ENUM) => void;
@@ -115,6 +116,13 @@ export const CurrentConnection = memo((props: CurrentConnectionProps) => {
         value={site?.chain || CHAINS_ENUM.ETH}
         onChange={handleChangeDefaultChain}
         showModal={visible}
+        onAfterOpen={() => {
+          ReactGA.event({
+            category: 'Front Page Click',
+            action: 'Click',
+            label: 'Change Chain',
+          });
+        }}
       />
     </div>
   );

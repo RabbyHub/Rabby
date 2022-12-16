@@ -17,6 +17,7 @@ interface ChainSelectorProps {
   showModal?: boolean;
   className?: string;
   title?: ReactNode;
+  onAfterOpen?: () => void;
 }
 
 const ChainSelector = ({
@@ -26,12 +27,14 @@ const ChainSelector = ({
   connection = false,
   showModal = false,
   className = '',
+  onAfterOpen,
 }: ChainSelectorProps) => {
   const [showSelectorModal, setShowSelectorModal] = useState(showModal);
   const [isHovering, hoverProps] = useHover();
 
   const handleClickSelector = () => {
     setShowSelectorModal(true);
+    onAfterOpen?.();
   };
 
   const handleCancel = () => {
