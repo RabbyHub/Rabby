@@ -31,6 +31,7 @@ import IconDiscord from 'ui/assets/discord.svg';
 import IconFindUs from 'ui/assets/find-us.svg';
 import IconTwitter from 'ui/assets/twitter.svg';
 import IconWhitelist from 'ui/assets/dashboard/whitelist.svg';
+import IconCustomRPC from 'ui/assets/dashboard/custom-rpc.svg';
 import { Contacts } from '..';
 import stats from '@/stats';
 import { useAsync, useCss } from 'react-use';
@@ -340,14 +341,6 @@ const Settings = ({ visible, onClose }: SettingsProps) => {
       ),
     },
     {
-      leftIcon: IconWhitelist,
-      content: t('Custom RPC'),
-      onClick: () => {
-        history.push('/custom-rpc');
-        reportSettings('Custom RPC');
-      },
-    },
-    {
       leftIcon: IconActivities,
       content: t('Signature Record'),
       onClick: () => {
@@ -363,7 +356,14 @@ const Settings = ({ visible, onClose }: SettingsProps) => {
         reportSettings('Old Contact List');
       },
     },
-
+    {
+      leftIcon: IconCustomRPC,
+      content: t('Custom RPC'),
+      onClick: () => {
+        history.push('/custom-rpc');
+        reportSettings('Custom RPC');
+      },
+    },
     {
       leftIcon: IconReset,
       content: t('Reset Account'),
