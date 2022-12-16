@@ -86,7 +86,7 @@ const RPCItem = ({
   item,
   onEdit,
 }: {
-  item: { id: CHAINS_ENUM; rpc: string };
+  item: { id: CHAINS_ENUM; rpc: string; nonce: number };
   onEdit(item: { id: CHAINS_ENUM; rpc: string }): void;
 }) => {
   const dispatch = useRabbyDispatch();
@@ -117,7 +117,7 @@ const RPCItem = ({
 
   return (
     <RPCItemWrapper>
-      <ChainIcon chain={item.id} customRPC={item.rpc} />
+      <ChainIcon chain={item.id} customRPC={item.rpc} nonce={item.nonce} />
       <div className="right">
         <p>{chain.name}</p>
         <p title={item.rpc}>{item.rpc}</p>
@@ -148,13 +148,15 @@ const CustomRPC = () => {
     id: CHAINS_ENUM;
     rpc: string;
   } | null>(null);
+  const [nonce, setNonce] = useState(0);
 
   const rpcList = useMemo(() => {
     return Object.keys(customRPC).map((key) => ({
+      nonce,
       id: key as CHAINS_ENUM,
       rpc: customRPC[key],
     }));
-  }, [customRPC]);
+  }, [customRPC, nonce]);
 
   const handleChainChanged = (chain: CHAINS_ENUM) => {
     setSelectedChain(chain);
@@ -190,6 +192,7 @@ const CustomRPC = () => {
     setChainSelectorVisible(false);
     setRPCModalVisible(false);
     setEditRPC(null);
+    setNonce(nonce + 1);
   };
 
   const handleCancelEditCustomRPC = () => {

@@ -108,14 +108,15 @@ const AddChain = ({ params }: { params: AddChainProps }) => {
   const [defaultChain, setDefaultChain] = useState<CHAINS_ENUM | null>(null);
   const [inited, setInited] = useState(false);
   const [isSupported, setIsSupported] = useState(true);
+  const [isLoading, setIsLoading] = useState(true);
   const [rpcUrl, setRpcUrl] = useState('');
   const [rpcErrorMsg, setRpcErrorMsg] = useState('');
   const [showOptions, setShowOptions] = useState(true);
   const [selectedOption, setSelectedOption] = useState(0);
   const [showUnsupportAlert, setShowUnsupportAlert] = useState(false);
   const canSave = useMemo(() => {
-    return rpcUrl && !rpcErrorMsg && isSupported;
-  }, [rpcErrorMsg, isSupported, rpcUrl]);
+    return rpcUrl && !rpcErrorMsg && isSupported && !isLoading;
+  }, [rpcErrorMsg, isSupported, rpcUrl, isLoading]);
 
   const init = async () => {
     const site = await wallet.getConnectedSite(session.origin)!;
@@ -129,23 +130,26 @@ const AddChain = ({ params }: { params: AddChainProps }) => {
   const handleRPCChanged = (rpc: string) => {
     setRpcUrl(rpc);
     if (!isValidateUrl(rpc)) {
-      setRpcErrorMsg('Invalid rpc url');
+      setRpcErrorMsg('Invalid RPC URL');
     }
   };
 
   const rpcValidation = async () => {
     if (!isValidateUrl(rpcUrl)) {
-      setRpcErrorMsg('Invalid rpc url');
+      setRpcErrorMsg('Invalid RPC URL');
       return;
     }
     try {
+      setIsLoading(true);
       const isValid = await wallet.validateRPC(rpcUrl, Number(chainId));
+      setIsLoading(false);
       if (!isValid) {
         setRpcErrorMsg('Invalid Chain ID');
       } else {
         setRpcErrorMsg('');
       }
     } catch (e) {
+      setIsLoading(false);
       setRpcErrorMsg('RPC authentication failed');
     }
   };
@@ -209,7 +213,7 @@ const AddChain = ({ params }: { params: AddChainProps }) => {
   };
 
   if (!inited) return <></>;
-  console.log('showUnsupportAlert', showUnsupportAlert);
+
   if (showUnsupportAlert) {
     return (
       <OptionsWrapper>
@@ -347,6 +351,7 @@ const AddChain = ({ params }: { params: AddChainProps }) => {
             className="w-[172px]"
             onClick={handleConfirm}
             disabled={!canSave}
+            loading={isLoading}
           >
             Save
           </Button>

@@ -73,7 +73,7 @@ const EditRPCModal = ({
   const handleRPCChanged = (url: string) => {
     setRpcUrl(url);
     if (!isValidateUrl(url)) {
-      setRpcErrorMsg('Invalid rpc url');
+      setRpcErrorMsg('Invalid RPC URL');
     }
   };
 
@@ -91,6 +91,7 @@ const EditRPCModal = ({
         setRpcErrorMsg('');
       }
     } catch (e) {
+      setIsValidating(false);
       setRpcErrorMsg('RPC authentication failed');
     }
   };
@@ -106,7 +107,10 @@ const EditRPCModal = ({
   }, [rpcInfo]);
 
   useEffect(() => {
-    if (!visible) setRpcUrl('');
+    if (!visible) {
+      setRpcUrl('');
+      setRpcErrorMsg('');
+    }
   }, [visible]);
 
   return (
