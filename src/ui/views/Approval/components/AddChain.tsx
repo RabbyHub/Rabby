@@ -129,6 +129,7 @@ const AddChain = ({ params }: { params: AddChainProps }) => {
 
   const handleRPCChanged = (rpc: string) => {
     setRpcUrl(rpc);
+    setIsLoading(true);
     if (!isValidateUrl(rpc)) {
       setRpcErrorMsg('Invalid RPC URL');
     }
