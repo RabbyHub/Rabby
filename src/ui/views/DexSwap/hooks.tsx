@@ -84,7 +84,11 @@ export const useVerifyCalldata = <
 ) => {
   const callDataResult = useMemo(() => {
     if (dexId && dexId !== DEX_ENUM.WRAPTOKEN && tx) {
-      return decodeCalldata(dexId, tx) as DecodeCalldataResult;
+      try {
+        return decodeCalldata(dexId, tx) as DecodeCalldataResult;
+      } catch (error) {
+        return null;
+      }
     }
     return null;
   }, [dexId, tx]);
