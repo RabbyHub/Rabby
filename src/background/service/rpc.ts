@@ -1,6 +1,7 @@
 import { CHAINS_ENUM } from '@debank/common';
-import { createPersistStore } from 'background/utils';
 import axios from 'axios';
+import fetchAdapter from '@vespaiach/axios-fetch-adapter';
+import { createPersistStore } from 'background/utils';
 
 export interface RPCItem {
   url: string;
@@ -117,7 +118,12 @@ class RPCService {
         method,
       },
       {
+<<<<<<< HEAD
         timeout,
+=======
+        adapter: fetchAdapter,
+        timeout: timeout,
+>>>>>>> 59bfb062 (fix: customRPC fetch)
       }
     );
     if (data?.error) throw data.error;
