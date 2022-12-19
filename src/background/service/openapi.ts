@@ -13,3 +13,9 @@ const service = new OpenApiService({
 });
 
 export default service;
+
+export const fetchPhishingList = async () => {
+  return fetch('https://static.debank.com/security/phishing-site.json').then<
+    string[]
+  >((res) => res.json());
+};
