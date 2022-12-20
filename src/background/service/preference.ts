@@ -525,11 +525,10 @@ class PreferenceService {
   detectPhishSite = async (url: string) => {
     const list = await this._getPhishSiteList();
     const lowerUrl = url.toLowerCase();
+    const phishSite = this.store.phishSiteMap?.[lowerUrl];
 
-    if (this.store.phishSiteMap?.[lowerUrl]) {
-      const { continueAt } = this.store.phishSiteMap[lowerUrl];
-
-      return !(continueAt > Date.now());
+    if (phishSite) {
+      return !(phishSite.continueAt > Date.now());
     }
 
     return list.some((item) => lowerUrl.includes(item));
