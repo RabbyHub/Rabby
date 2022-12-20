@@ -6,8 +6,6 @@ import {
   preferenceService,
 } from 'background/service';
 import providerController from './controller';
-import { matomoRequestEvent } from '@/utils/matomo-request';
-import { browser } from 'webextension-polyfill-ts';
 
 const networkIdMap: {
   [key: string]: string;
@@ -21,6 +19,7 @@ const tabCheckin = ({
   origin,
 }) => {
   session.setProp({ origin, name, icon });
+  preferenceService.detectPhishing(origin);
 };
 
 const getProviderState = async (req) => {
@@ -66,55 +65,10 @@ const isDefaultWallet = () => {
   return preferenceService.getIsDefaultWallet();
 };
 
-const detectPhishSite = async (req) => {
-  const origin = req.data.params.origin;
-  const isPhishing = await preferenceService.detectPhishSite(origin);
-
-  if (isPhishing) {
-    matomoRequestEvent({
-      category: 'PhishSite',
-      action: 'active',
-      label: origin,
-    });
-  }
-
-  return isPhishing;
-};
-
-const closePhishSite = async (req) => {
-  const origin = req.data.params.origin;
-  matomoRequestEvent({
-    category: 'PhishSite',
-    action: 'close',
-    label: origin,
-  });
-
-  // close current tab
-  const [tab] = await browser.tabs.query({ active: true, currentWindow: true });
-  if (tab?.id) {
-    browser.tabs.remove(tab.id);
-  }
-};
-
-const continuePhishSite = async (req) => {
-  const origin = req.data.params.origin;
-
-  matomoRequestEvent({
-    category: 'PhishSite',
-    action: 'continue',
-    label: origin,
-  });
-
-  return await preferenceService.continuePhishSite(origin);
-};
-
 export default {
   tabCheckin,
   getProviderState,
   providerOverwrite,
   hasOtherProvider,
   isDefaultWallet,
-  detectPhishSite,
-  closePhishSite,
-  continuePhishSite,
 };

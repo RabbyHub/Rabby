@@ -66,9 +66,8 @@ export interface PreferenceStore {
   needSwitchWalletCheck?: boolean;
   lastSelectedSwapPayToken?: Record<string, TokenItem>;
   lastSelectedGasTopUpChain?: Record<string, CHAINS_ENUM>;
-  phishSiteList?: string[];
-  phishSiteListExpireAt?: number;
-  phishSiteMap?: Record<
+  phishingList?: string[];
+  phishingMap?: Record<
     string,
     {
       continueAt: number;
@@ -110,7 +109,8 @@ class PreferenceService {
         nftApprovalChain: {},
         sendLogTime: 0,
         needSwitchWalletCheck: true,
-        phishSiteList: [],
+        phishingList: [],
+        phishingMap: {},
       },
     });
     if (!this.store.locale || this.store.locale !== defaultLang) {
@@ -168,17 +168,15 @@ class PreferenceService {
     if (this.store.needSwitchWalletCheck == null) {
       this.store.needSwitchWalletCheck = true;
     }
-    if (!this.store.phishSiteList) {
-      this.store.phishSiteList = [];
+    if (!this.store.phishingList) {
+      this.store.phishingList = [];
     }
 
-    if (!this.store.phishSiteListExpireAt) {
-      this.store.phishSiteListExpireAt = 0;
+    if (!this.store.phishingMap) {
+      this.store.phishingMap = {};
     }
 
-    if (!this.store.phishSiteMap) {
-      this.store.phishSiteMap = {};
-    }
+    this._pollLoadPhishingList();
   };
 
   getPreference = (key?: string) => {
@@ -508,35 +506,46 @@ class PreferenceService {
     this.store.needSwitchWalletCheck = value;
   };
 
-  _getPhishSiteList = async () => {
-    if (
-      !this.store.phishSiteList ||
-      (this.store.phishSiteListExpireAt ?? 0) < Date.now()
-    ) {
-      const list = await fetchPhishingList();
-      this.store.phishSiteList = list.map((item) => item.toLowerCase());
-      // expire at 1h later
-      this.store.phishSiteListExpireAt = Date.now() + 3600000;
-    }
+  _pollLoadPhishingList = async () => {
+    const list = await fetchPhishingList();
 
-    return this.store.phishSiteList;
+    this.store.phishingList = list.map((item) => item.toLowerCase());
+    setTimeout(() => {
+      this._pollLoadPhishingList();
+      // reload at 1h later
+    }, 3600000);
   };
 
-  detectPhishSite = async (url: string) => {
-    const list = await this._getPhishSiteList();
+  detectPhishing = async (url: string) => {
+    const list = this.store.phishingList ?? [];
     const lowerUrl = url.toLowerCase();
-    const phishSite = this.store.phishSiteMap?.[lowerUrl];
+    const cachedSite = this.store.phishingMap?.[lowerUrl];
+    let isPhishing = list.some((item) => lowerUrl.includes(item));
 
-    if (phishSite) {
-      return !(phishSite.continueAt > Date.now());
+    if (cachedSite) {
+      isPhishing = !(cachedSite.continueAt > Date.now());
     }
 
-    return list.some((item) => lowerUrl.includes(item));
+    if (isPhishing) {
+      // close current tab
+      const [tab] = await browser.tabs.query({
+        active: true,
+        currentWindow: true,
+      });
+      if (tab?.id) {
+        browser.tabs.remove(tab.id);
+      }
+
+      browser.tabs.create({
+        active: true,
+        url: `./index.html#/phishing?origin=${url}`,
+      });
+    }
   };
 
-  continuePhishSite = (url: string) => {
-    this.store.phishSiteMap = {
-      ...this.store.phishSiteMap,
+  continuePhishing = (url: string) => {
+    this.store.phishingMap = {
+      ...this.store.phishingMap,
       [url.toLowerCase()]: {
         // 24h later
         continueAt: Date.now() + 86400000,
