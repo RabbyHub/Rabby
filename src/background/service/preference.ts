@@ -176,7 +176,7 @@ class PreferenceService {
       this.store.phishingMap = {};
     }
 
-    this._pollLoadPhishingList();
+    this.pollLoadPhishingList();
   };
 
   getPreference = (key?: string) => {
@@ -506,12 +506,12 @@ class PreferenceService {
     this.store.needSwitchWalletCheck = value;
   };
 
-  _pollLoadPhishingList = async () => {
+  private pollLoadPhishingList = async () => {
     const list = await fetchPhishingList();
 
     this.store.phishingList = list.map((item) => item.toLowerCase());
     setTimeout(() => {
-      this._pollLoadPhishingList();
+      this.pollLoadPhishingList();
       // reload at 1h later
     }, 3600000);
   };
