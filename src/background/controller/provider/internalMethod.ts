@@ -72,7 +72,7 @@ const detectPhishSite = async (req) => {
 
   if (isPhishing) {
     matomoRequestEvent({
-      category: 'PhishSiteWarning',
+      category: 'PhishSite',
       action: 'active',
       label: origin,
     });
@@ -84,7 +84,7 @@ const detectPhishSite = async (req) => {
 const closePhishSite = async (req) => {
   const origin = req.data.params.origin;
   matomoRequestEvent({
-    category: 'PhishSiteWarning',
+    category: 'PhishSite',
     action: 'close',
     label: origin,
   });
@@ -100,7 +100,7 @@ const continuePhishSite = async (req) => {
   const origin = req.data.params.origin;
 
   matomoRequestEvent({
-    category: 'PhishSiteWarning',
+    category: 'PhishSite',
     action: 'continue',
     label: origin,
   });
