@@ -4,6 +4,13 @@ import axios from 'axios';
 
 export type RPCServiceStore = {
   customRPC: Record<string, string>;
+  rpcStatus: Record<
+    string,
+    {
+      expireAt: number;
+      available: boolean;
+    }
+  >;
 };
 
 const MAX = 4_294_967_295;
@@ -17,6 +24,7 @@ function getUniqueId(): number {
 class RPCService {
   store: RPCServiceStore = {
     customRPC: {},
+    rpcStatus: {},
   };
 
   init = async () => {
@@ -24,9 +32,11 @@ class RPCService {
       name: 'rpc',
       template: {
         customRPC: {},
+        rpcStatus: {},
       },
     });
     this.store = storage || this.store;
+    if (!this.store.rpcStatus) this.store.rpcStatus = {};
   };
 
   hasCustomRPC = (chain: CHAINS_ENUM) => {
@@ -70,7 +80,7 @@ class RPCService {
     host: string,
     method: string,
     params: any[],
-    timeout?: number
+    timeout = 5000
   ) => {
     const { data } = await axios.post(
       host,
@@ -80,16 +90,41 @@ class RPCService {
         params,
         method,
       },
-      timeout ? { timeout } : undefined
+      {
+        timeout,
+      }
     );
     if (data?.error) throw data.error;
     if (data?.result) return data.result;
     return data;
   };
 
-  ping = async (host: string) => {
-    // set ping request timeout as 5s
-    await this.request(host, 'eth_blockNumber', [], 5000);
+  ping = async (chain: CHAINS_ENUM) => {
+    if (this.store.rpcStatus[chain]?.expireAt > Date.now()) {
+      return this.store.rpcStatus[chain].available;
+    }
+    const host = this.store.customRPC[chain];
+    if (!host) return false;
+    try {
+      await this.request(host, 'eth_blockNumber', [], 2000);
+      this.store.rpcStatus = {
+        ...this.store.rpcStatus,
+        [chain]: {
+          expireAt: Date.now() + 60 * 1000,
+          available: true,
+        },
+      };
+      return true;
+    } catch (e) {
+      this.store.rpcStatus = {
+        ...this.store.rpcStatus,
+        [chain]: {
+          expireAt: Date.now() + 60 * 1000,
+          available: false,
+        },
+      };
+      return false;
+    }
   };
 }
 

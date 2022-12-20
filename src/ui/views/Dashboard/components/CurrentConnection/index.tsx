@@ -57,6 +57,10 @@ export const CurrentConnection = memo((props: CurrentConnectionProps) => {
     setVisible(false);
     onChainChange?.(chain);
     await wallet.setSite(_site);
+    const avaliable = await wallet.pingCustomRPC(chain);
+    if (!avaliable) {
+      message.error('The custom RPC is unavailable');
+    }
   };
 
   useEffect(() => {

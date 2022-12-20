@@ -124,10 +124,16 @@ const ChainIcon = ({
     setCustomRPCValidated(false);
     if (rpc) {
       try {
-        await wallet.pingCustomRPC(rpc);
-        if (c !== chainRef.current || rpc !== rpcRef.current) return;
-        setCustomRPCValidated(true);
-        setCustomRPCAvaliable(true);
+        const rpcAvailable = await wallet.pingCustomRPC(c);
+        if (rpcAvailable) {
+          if (c !== chainRef.current || rpc !== rpcRef.current) return;
+          setCustomRPCValidated(true);
+          setCustomRPCAvaliable(true);
+        } else {
+          if (c !== chainRef.current || rpc !== rpcRef.current) return;
+          setCustomRPCValidated(true);
+          setCustomRPCAvaliable(false);
+        }
       } catch (e) {
         if (c !== chainRef.current || rpc !== rpcRef.current) return;
         setCustomRPCValidated(true);
