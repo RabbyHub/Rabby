@@ -276,9 +276,9 @@ const Main = () => {
           <CustomRPC />
         </PrivateRoute>
 
-        <PrivateRoute exact path="/phishing">
+        <Route exact path="/phishing">
           <Phishing />
-        </PrivateRoute>
+        </Route>
       </Switch>
     </>
   );
