@@ -21,9 +21,10 @@ const Wrapper = styled.div`
 
 interface QueueProps {
   count?: number;
+  className?: string;
 }
 
-const Queue = ({ count }: QueueProps) => {
+const Queue = ({ count, className }: QueueProps) => {
   const history = useHistory();
 
   const handleClickPendingTxs = () => {
@@ -31,7 +32,7 @@ const Queue = ({ count }: QueueProps) => {
   };
 
   return (
-    <Wrapper onClick={handleClickPendingTxs}>
+    <Wrapper onClick={handleClickPendingTxs} className={className}>
       {count ? `${count} in Queue` : 'Queue'}
     </Wrapper>
   );
