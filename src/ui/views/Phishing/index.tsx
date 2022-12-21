@@ -1,9 +1,10 @@
-import { openInTab, useWallet } from '@/ui/utils';
+import { getCurrentTab, useWallet } from '@/ui/utils';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import React from 'react';
 import { useLocation } from 'react-router-dom';
 import IconRabby from 'ui/assets/dashboard/rabby.svg';
 import IconDanger from 'ui/assets/phishing/danger.svg';
+import { browser } from 'webextension-polyfill-ts';
 import './index.less';
 
 const Phishing = () => {
@@ -34,8 +35,13 @@ const Phishing = () => {
       action: 'continue',
       label: origin,
     });
-    window.close();
-    openInTab(origin);
+
+    const tab = await getCurrentTab();
+
+    browser.tabs.update(tab.id, {
+      active: true,
+      url: origin,
+    });
   };
 
   React.useEffect(() => {

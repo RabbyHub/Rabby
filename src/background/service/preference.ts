@@ -532,11 +532,8 @@ class PreferenceService {
         active: true,
         currentWindow: true,
       });
-      if (tab?.id) {
-        browser.tabs.remove(tab.id);
-      }
 
-      browser.tabs.create({
+      browser.tabs.update(tab.id, {
         active: true,
         url: `./index.html#/phishing?origin=${url}`,
       });
