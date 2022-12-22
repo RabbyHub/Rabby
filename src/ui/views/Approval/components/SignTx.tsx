@@ -1383,96 +1383,103 @@ const SignTx = ({ params, origin }: SignTxProps) => {
   };
 
   const init = async () => {
-    const currentAccount =
-      isGnosis && account ? account : (await wallet.getCurrentAccount())!;
-    const is1559 =
-      support1559 && SUPPORT_1559_KEYRING_TYPE.includes(currentAccount.type);
-    setIsLedger(currentAccount?.type === KEYRING_CLASS.HARDWARE.LEDGER);
-    setUseLedgerLive(await wallet.isUseLedgerLive());
-    setIsHardware(
-      !!Object.values(HARDWARE_KEYRING_TYPES).find(
-        (item) => item.type === currentAccount.type
-      )
-    );
-    const balance = await getNativeTokenBalance({
-      wallet,
-      chainId,
-      address: currentAccount.address,
-    });
+    try {
+      const currentAccount =
+        isGnosis && account ? account : (await wallet.getCurrentAccount())!;
+      const is1559 =
+        support1559 && SUPPORT_1559_KEYRING_TYPE.includes(currentAccount.type);
+      setIsLedger(currentAccount?.type === KEYRING_CLASS.HARDWARE.LEDGER);
+      setUseLedgerLive(await wallet.isUseLedgerLive());
+      setIsHardware(
+        !!Object.values(HARDWARE_KEYRING_TYPES).find(
+          (item) => item.type === currentAccount.type
+        )
+      );
+      const balance = await getNativeTokenBalance({
+        wallet,
+        chainId,
+        address: currentAccount.address,
+      });
 
-    setNativeTokenBalance(balance);
+      setNativeTokenBalance(balance);
 
-    wallet.reportStats('createTransaction', {
-      type: currentAccount.brandName,
-      category: KEYRING_CATEGORY_MAP[currentAccount.type],
-      chainId: chain.serverId,
-      createBy: params?.$ctx?.ga ? 'rabby' : 'dapp',
-      source: params?.$ctx?.ga?.source || '',
-      trigger: params?.$ctx?.ga?.trigger || '',
-    });
+      wallet.reportStats('createTransaction', {
+        type: currentAccount.brandName,
+        category: KEYRING_CATEGORY_MAP[currentAccount.type],
+        chainId: chain.serverId,
+        createBy: params?.$ctx?.ga ? 'rabby' : 'dapp',
+        source: params?.$ctx?.ga?.source || '',
+        trigger: params?.$ctx?.ga?.trigger || '',
+      });
 
-    matomoRequestEvent({
-      category: 'Transaction',
-      action: 'init',
-      label: currentAccount.brandName,
-    });
+      matomoRequestEvent({
+        category: 'Transaction',
+        action: 'init',
+        label: currentAccount.brandName,
+      });
 
-    if (currentAccount.type === KEYRING_TYPE.GnosisKeyring) {
-      setIsGnosisAccount(true);
-      await getSafeInfo();
-    }
-    checkCanProcess();
-    const lastTimeGas: ChainGas | null = await wallet.getLastTimeGasSelection(
-      chainId
-    );
-    let customGasPrice = 0;
-    if (lastTimeGas?.lastTimeSelect === 'gasPrice' && lastTimeGas.gasPrice) {
-      // use cached gasPrice if exist
-      customGasPrice = lastTimeGas.gasPrice;
-    }
-    if (isSpeedUp || isCancel || ((isSend || isSwap) && tx.gasPrice)) {
-      // use gasPrice set by dapp when it's a speedup or cancel tx
-      customGasPrice = parseInt(tx.gasPrice!);
-    }
-    const gasList = await loadGasMarket(chain, customGasPrice);
-    let gas: GasLevel | null = null;
+      if (currentAccount.type === KEYRING_TYPE.GnosisKeyring) {
+        setIsGnosisAccount(true);
+        await getSafeInfo();
+      }
+      checkCanProcess();
+      const lastTimeGas: ChainGas | null = await wallet.getLastTimeGasSelection(
+        chainId
+      );
+      let customGasPrice = 0;
+      if (lastTimeGas?.lastTimeSelect === 'gasPrice' && lastTimeGas.gasPrice) {
+        // use cached gasPrice if exist
+        customGasPrice = lastTimeGas.gasPrice;
+      }
+      if (isSpeedUp || isCancel || ((isSend || isSwap) && tx.gasPrice)) {
+        // use gasPrice set by dapp when it's a speedup or cancel tx
+        customGasPrice = parseInt(tx.gasPrice!);
+      }
+      const gasList = await loadGasMarket(chain, customGasPrice);
+      let gas: GasLevel | null = null;
 
-    if (
-      ((isSend || isSwap) && customGasPrice) ||
-      isSpeedUp ||
-      isCancel ||
-      lastTimeGas?.lastTimeSelect === 'gasPrice'
-    ) {
-      gas = gasList.find((item) => item.level === 'custom')!;
-    } else if (
-      lastTimeGas?.lastTimeSelect &&
-      lastTimeGas?.lastTimeSelect === 'gasLevel'
-    ) {
-      const target = gasList.find(
-        (item) => item.level === lastTimeGas?.gasLevel
-      )!;
-      gas = target;
-    } else {
-      // no cache, use the fast level in gasMarket
-      gas = gasList.find((item) => item.level === 'normal')!;
-    }
+      if (
+        ((isSend || isSwap) && customGasPrice) ||
+        isSpeedUp ||
+        isCancel ||
+        lastTimeGas?.lastTimeSelect === 'gasPrice'
+      ) {
+        gas = gasList.find((item) => item.level === 'custom')!;
+      } else if (
+        lastTimeGas?.lastTimeSelect &&
+        lastTimeGas?.lastTimeSelect === 'gasLevel'
+      ) {
+        const target = gasList.find(
+          (item) => item.level === lastTimeGas?.gasLevel
+        )!;
+        gas = target;
+      } else {
+        // no cache, use the fast level in gasMarket
+        gas = gasList.find((item) => item.level === 'normal')!;
+      }
 
-    setSelectedGas(gas);
-    setSupport1559(is1559);
-    if (is1559) {
-      setTx(
-        convertLegacyTo1559({
+      setSelectedGas(gas);
+      setSupport1559(is1559);
+      if (is1559) {
+        setTx(
+          convertLegacyTo1559({
+            ...tx,
+            gasPrice: intToHex(gas.price),
+          })
+        );
+      } else {
+        setTx({
           ...tx,
           gasPrice: intToHex(gas.price),
-        })
-      );
-    } else {
-      setTx({
-        ...tx,
-        gasPrice: intToHex(gas.price),
+        });
+      }
+      setInited(true);
+    } catch (e) {
+      Modal.error({
+        title: t('Error'),
+        content: e.message || JSON.stringify(e),
       });
     }
-    setInited(true);
   };
 
   const handleIsGnosisAccountChange = async () => {

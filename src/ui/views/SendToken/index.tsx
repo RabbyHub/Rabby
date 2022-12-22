@@ -108,6 +108,7 @@ const SendToken = () => {
   const [editBtnDisabled, setEditBtnDisabled] = useState(true);
   const [cacheAmount, setCacheAmount] = useState('0');
   const [isLoading, setIsLoading] = useState(true);
+  const [isSubmitLoading, setIsSubmitLoading] = useState(false);
   const [balanceError, setBalanceError] = useState<string | null>(null);
   const [balanceWarn, setBalanceWarn] = useState<string | null>(null);
   const [showGasReserved, setShowGasReserved] = useState(false);
@@ -252,6 +253,7 @@ const SendToken = () => {
     to: string;
     amount: string;
   }) => {
+    setIsSubmitLoading(true);
     const chain = Object.values(CHAINS).find(
       (item) => item.serverId === currentToken.chain
     )!;
@@ -306,6 +308,7 @@ const SendToken = () => {
           params.gas = intToHex(21000); // L2 has extra validation fee so can not set gasLimit as 21000 when send native token
         }
       }
+      setIsSubmitLoading(false);
       if (showGasReserved) {
         params.gasPrice = selectedGasLevel?.price;
       }
@@ -1035,6 +1038,7 @@ const SendToken = () => {
               htmlType="submit"
               size="large"
               className="w-[200px]"
+              loading={isSubmitLoading}
             >
               {t('Send')}
             </Button>
