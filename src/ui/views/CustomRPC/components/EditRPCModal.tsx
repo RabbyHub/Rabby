@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import clsx from 'clsx';
 import { Input, Button } from 'antd';
 import styled from 'styled-components';
@@ -70,6 +70,8 @@ const EditRPCModal = ({
     return rpcUrl && !rpcErrorMsg && !isValidating;
   }, [rpcUrl, rpcErrorMsg, isValidating]);
 
+  const inputRef = useRef<Input>(null);
+
   const handleRPCChanged = (url: string) => {
     setRpcUrl(url);
     if (!isValidateUrl(url)) {
@@ -111,6 +113,9 @@ const EditRPCModal = ({
       setRpcUrl('');
       setRpcErrorMsg('');
     }
+    setTimeout(() => {
+      inputRef.current?.input?.focus();
+    });
   }, [visible]);
 
   return (
@@ -126,7 +131,7 @@ const EditRPCModal = ({
       }}
     >
       <EditRPCWrapped>
-        <PageHeader forceShowBack onBack={onCancel}>
+        <PageHeader forceShowBack onBack={onCancel} className="pt-0">
           Edit RPC
         </PageHeader>
         <div className="text-center">
@@ -140,6 +145,7 @@ const EditRPCModal = ({
           <div className="mb-8 text-14 text-gray-title text-left">RPC URL</div>
         </div>
         <Input
+          ref={inputRef}
           className={clsx('rpc-input', { 'has-error': rpcErrorMsg })}
           value={rpcUrl}
           placeholder="Enter the RPC URL"

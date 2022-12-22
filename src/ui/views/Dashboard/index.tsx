@@ -696,7 +696,13 @@ const Dashboard = () => {
             }}
           />
           {isGnosis ? (
-            <Queue count={gnosisPendingCount || 0} />
+            <Queue
+              count={gnosisPendingCount || 0}
+              className={clsx(
+                'transition-opacity',
+                showChain ? 'opacity-0 pointer-events-none' : 'opacity-100'
+              )}
+            />
           ) : (
             pendingTxCount > 0 &&
             !showChain && <PendingTxs pendingTxCount={pendingTxCount} />
