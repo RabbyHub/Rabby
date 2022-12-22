@@ -2317,6 +2317,10 @@ export class WalletController extends BaseController {
     const localNonce = (await this.getNonceByChain(from, chainId)) || 0;
     return `0x${BigNumber.max(onChainNonce, localNonce).toString(16)}`;
   };
+
+  continuePhishing = async (url: string) => {
+    await preferenceService.continuePhishing(url);
+  };
 }
 
 export default new WalletController();

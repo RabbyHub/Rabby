@@ -19,6 +19,7 @@ const tabCheckin = ({
   origin,
 }) => {
   session.setProp({ origin, name, icon });
+  preferenceService.detectPhishing(origin);
 };
 
 const getProviderState = async (req) => {

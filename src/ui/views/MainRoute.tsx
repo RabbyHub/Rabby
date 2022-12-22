@@ -52,6 +52,7 @@ import { getUiType, useWallet } from '../utils';
 import GasTopUp from './GasTopUp';
 import ApprovalManage from './ApprovalManage';
 import CustomRPC from './CustomRPC';
+import Phishing from './Phishing';
 import { ImportMyMetaMaskAccount } from './ImportMyMetaMaskAccount';
 import { SwapByDex } from './DexSwap';
 import { matomoRequestEvent } from '@/utils/matomo-request';
@@ -274,6 +275,10 @@ const Main = () => {
         <PrivateRoute exact path="/custom-rpc">
           <CustomRPC />
         </PrivateRoute>
+
+        <Route exact path="/phishing">
+          <Phishing />
+        </Route>
       </Switch>
     </>
   );

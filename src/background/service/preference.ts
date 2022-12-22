@@ -3,7 +3,7 @@ import eventBus from '@/eventBus';
 import compareVersions from 'compare-versions';
 import { createPersistStore } from 'background/utils';
 import { keyringService, sessionService, i18n } from './index';
-import { TotalBalanceResponse, TokenItem } from './openapi';
+import { TotalBalanceResponse, TokenItem, fetchPhishingList } from './openapi';
 import { HARDWARE_KEYRING_TYPES, EVENTS, CHAINS_ENUM } from 'consts';
 import { browser } from 'webextension-polyfill-ts';
 import { DEX_ENUM } from '@rabby-wallet/rabby-swap';
@@ -66,6 +66,13 @@ export interface PreferenceStore {
   needSwitchWalletCheck?: boolean;
   lastSelectedSwapPayToken?: Record<string, TokenItem>;
   lastSelectedGasTopUpChain?: Record<string, CHAINS_ENUM>;
+  phishingList?: string[];
+  phishingMap?: Record<
+    string,
+    {
+      continueAt: number;
+    }
+  >;
 }
 
 const SUPPORT_LOCALES = ['en'];
@@ -102,6 +109,8 @@ class PreferenceService {
         nftApprovalChain: {},
         sendLogTime: 0,
         needSwitchWalletCheck: true,
+        phishingList: [],
+        phishingMap: {},
       },
     });
     if (!this.store.locale || this.store.locale !== defaultLang) {
@@ -159,6 +168,15 @@ class PreferenceService {
     if (this.store.needSwitchWalletCheck == null) {
       this.store.needSwitchWalletCheck = true;
     }
+    if (!this.store.phishingList) {
+      this.store.phishingList = [];
+    }
+
+    if (!this.store.phishingMap) {
+      this.store.phishingMap = {};
+    }
+
+    this.pollLoadPhishingList();
   };
 
   getPreference = (key?: string) => {
@@ -486,6 +504,50 @@ class PreferenceService {
   };
   updateNeedSwitchWalletCheck = (value: boolean) => {
     this.store.needSwitchWalletCheck = value;
+  };
+
+  private pollLoadPhishingList = async () => {
+    const list = await fetchPhishingList();
+
+    this.store.phishingList = list.map((item) => item.toLowerCase());
+    setTimeout(() => {
+      this.pollLoadPhishingList();
+      // reload at 1h later
+    }, 3600000);
+  };
+
+  detectPhishing = async (url: string) => {
+    const list = this.store.phishingList ?? [];
+    const lowerUrl = url.toLowerCase();
+    const cachedSite = this.store.phishingMap?.[lowerUrl];
+    let isPhishing = list.some((item) => lowerUrl.includes(item));
+
+    if (cachedSite) {
+      isPhishing = !(cachedSite.continueAt > Date.now());
+    }
+
+    if (isPhishing) {
+      // close current tab
+      const [tab] = await browser.tabs.query({
+        active: true,
+        currentWindow: true,
+      });
+
+      browser.tabs.update(tab.id, {
+        active: true,
+        url: `./index.html#/phishing?origin=${url}`,
+      });
+    }
+  };
+
+  continuePhishing = (url: string) => {
+    this.store.phishingMap = {
+      ...this.store.phishingMap,
+      [url.toLowerCase()]: {
+        // 24h later
+        continueAt: Date.now() + 86400000,
+      },
+    };
   };
 }
 
