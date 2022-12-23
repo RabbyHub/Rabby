@@ -19,13 +19,13 @@ const tabCheckin = ({
   origin,
 }) => {
   session.setProp({ origin, name, icon });
-  preferenceService.detectPhishing(origin);
 };
 
 const getProviderState = async (req) => {
   const {
     session: { origin },
   } = req;
+  preferenceService.detectPhishing(origin);
 
   const chainEnum =
     permissionService.getWithoutUpdate(origin)?.chain || CHAINS_ENUM.ETH;

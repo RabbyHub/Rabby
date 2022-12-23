@@ -1,4 +1,4 @@
-import { getCurrentTab, useWallet } from '@/ui/utils';
+import { useWallet } from '@/ui/utils';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import React from 'react';
 import { useLocation } from 'react-router-dom';
@@ -28,7 +28,8 @@ const Phishing = () => {
     });
   };
 
-  const onContinue = async () => {
+  const onContinue = async (e: any) => {
+    e.preventDefault();
     await wallet.continuePhishing(origin);
     matomoRequestEvent({
       category: 'Phishing',
@@ -36,10 +37,7 @@ const Phishing = () => {
       label: origin,
     });
 
-    const tab = await getCurrentTab();
-
-    browser.tabs.update(tab.id, {
-      active: true,
+    browser.tabs.update({
       url: origin,
     });
   };

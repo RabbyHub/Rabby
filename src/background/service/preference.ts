@@ -518,32 +518,27 @@ class PreferenceService {
 
   detectPhishing = async (url: string) => {
     const list = this.store.phishingList ?? [];
-    const lowerUrl = url.toLowerCase();
-    const cachedSite = this.store.phishingMap?.[lowerUrl];
-    let isPhishing = list.some((item) => lowerUrl.includes(item));
+    const origin = url.toLowerCase().replace(/^https?:\/\//, '');
+    const cachedSite = this.store.phishingMap?.[origin];
+    let isPhishing = list.includes(origin);
 
     if (cachedSite) {
       isPhishing = !(cachedSite.continueAt > Date.now());
     }
 
     if (isPhishing) {
-      // close current tab
-      const [tab] = await browser.tabs.query({
-        active: true,
-        currentWindow: true,
-      });
-
-      browser.tabs.update(tab.id, {
-        active: true,
+      browser.tabs.update({
         url: `./index.html#/phishing?origin=${url}`,
       });
     }
   };
 
   continuePhishing = (url: string) => {
+    const origin = url.toLowerCase().replace(/^https?:\/\//, '');
+
     this.store.phishingMap = {
       ...this.store.phishingMap,
-      [url.toLowerCase()]: {
+      [origin]: {
         // 24h later
         continueAt: Date.now() + 86400000,
       },
