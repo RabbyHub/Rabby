@@ -180,6 +180,8 @@ const AddChain = ({ params }: { params: AddChainProps }) => {
         selectChainLogo: '',
         eip: {},
       });
+      setShowUnsupportAlert(true);
+      setShowOptions(false);
     }
   }, [defaultChain]);
 
