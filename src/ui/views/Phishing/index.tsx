@@ -28,7 +28,8 @@ const Phishing = () => {
     });
   };
 
-  const onContinue = async () => {
+  const onContinue = async (e: any) => {
+    e.preventDefault();
     await wallet.continuePhishing(origin);
     matomoRequestEvent({
       category: 'Phishing',
