@@ -118,12 +118,8 @@ class RPCService {
         method,
       },
       {
-<<<<<<< HEAD
-        timeout,
-=======
         adapter: fetchAdapter,
         timeout: timeout,
->>>>>>> 59bfb062 (fix: customRPC fetch)
       }
     );
     if (data?.error) throw data.error;
