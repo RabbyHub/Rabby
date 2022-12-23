@@ -255,8 +255,9 @@ const SignText = ({ params }: { params: SignTextProps }) => {
 
       return;
     }
+    setIsLoading(true);
     report('startSignText');
-    resolveApproval({});
+    resolveApproval({}, true);
   };
 
   const handleViewRawClick = () => {

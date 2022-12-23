@@ -52,6 +52,7 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
     setCantProcessReason,
   ] = useState<ReactNode | null>();
   const [forceProcess, setForceProcess] = useState(true);
+  const [isSigning, setIsSigning] = useState(false);
 
   const { data, session, method } = params;
   let parsedMessage = '';
@@ -313,8 +314,9 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
 
       return;
     }
+    setIsSigning(true);
     report('startSignText');
-    resolveApproval({});
+    resolveApproval({}, true);
   };
 
   const init = async () => {
@@ -470,6 +472,7 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
               size="large"
               className="w-[172px]"
               onClick={() => handleAllow(forceProcess)}
+              loading={isSigning}
               disabled={
                 loading ||
                 (isLedger && !useLedgerLive && !hasConnectedLedgerHID) ||
