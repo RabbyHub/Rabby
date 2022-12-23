@@ -4,13 +4,6 @@ import axios from 'axios';
 
 export type RPCServiceStore = {
   customRPC: Record<string, string>;
-  rpcStatus: Record<
-    string,
-    {
-      expireAt: number;
-      available: boolean;
-    }
-  >;
 };
 
 const MAX = 4_294_967_295;
@@ -24,19 +17,22 @@ function getUniqueId(): number {
 class RPCService {
   store: RPCServiceStore = {
     customRPC: {},
-    rpcStatus: {},
   };
-
+  rpcStatus: Record<
+    string,
+    {
+      expireAt: number;
+      available: boolean;
+    }
+  > = {};
   init = async () => {
     const storage = await createPersistStore<RPCServiceStore>({
       name: 'rpc',
       template: {
         customRPC: {},
-        rpcStatus: {},
       },
     });
     this.store = storage || this.store;
-    if (!this.store.rpcStatus) this.store.rpcStatus = {};
   };
 
   hasCustomRPC = (chain: CHAINS_ENUM) => {
@@ -56,12 +52,18 @@ class RPCService {
       ...this.store.customRPC,
       [chain]: url,
     };
+    if (this.rpcStatus[chain]) {
+      delete this.rpcStatus[chain];
+    }
   };
 
   removeCustomRPC = (chain: CHAINS_ENUM) => {
     const map = this.store.customRPC;
     delete map[chain];
     this.store.customRPC = map;
+    if (this.rpcStatus[chain]) {
+      delete this.rpcStatus[chain];
+    }
   };
 
   requestCustomRPC = async (
@@ -100,15 +102,15 @@ class RPCService {
   };
 
   ping = async (chain: CHAINS_ENUM) => {
-    if (this.store.rpcStatus[chain]?.expireAt > Date.now()) {
-      return this.store.rpcStatus[chain].available;
+    if (this.rpcStatus[chain]?.expireAt > Date.now()) {
+      return this.rpcStatus[chain].available;
     }
     const host = this.store.customRPC[chain];
     if (!host) return false;
     try {
       await this.request(host, 'eth_blockNumber', [], 2000);
-      this.store.rpcStatus = {
-        ...this.store.rpcStatus,
+      this.rpcStatus = {
+        ...this.rpcStatus,
         [chain]: {
           expireAt: Date.now() + 60 * 1000,
           available: true,
@@ -116,8 +118,8 @@ class RPCService {
       };
       return true;
     } catch (e) {
-      this.store.rpcStatus = {
-        ...this.store.rpcStatus,
+      this.rpcStatus = {
+        ...this.rpcStatus,
         [chain]: {
           expireAt: Date.now() + 60 * 1000,
           available: false,
