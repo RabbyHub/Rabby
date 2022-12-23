@@ -69,7 +69,8 @@ export const GasTopUp = () => {
     error: chainUsdBalanceError,
   } = useAsync(async () => {
     const data = await wallet.openapi.getGasStationChainBalance(
-      CHAINS[chain].serverId
+      CHAINS[chain].serverId,
+      GAS_TOP_UP_ADDRESS
     );
     return data.usd_value;
   }, [chain, wallet]);
