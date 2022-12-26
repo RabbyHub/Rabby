@@ -309,3 +309,9 @@ function startEnableUser() {
   });
   preferenceService.updateSendEnableTime(Date.now());
 }
+browser.runtime.onMessage.addListener(async (message) => {
+  const { data, type } = message;
+  if (type === 'DETECT_PHISHING') {
+    preferenceService.detectPhishing(data.origin);
+  }
+});

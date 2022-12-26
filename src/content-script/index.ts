@@ -1,5 +1,6 @@
 import { Message } from 'utils';
 import { nanoid } from 'nanoid';
+import { browser } from 'webextension-polyfill-ts';
 
 const channelName = nanoid();
 
@@ -30,4 +31,11 @@ pm.on('message', (data) => bcm.send('message', data));
 document.addEventListener('beforeunload', () => {
   bcm.dispose();
   pm.dispose();
+});
+
+browser.runtime.sendMessage({
+  type: 'DETECT_PHISHING',
+  data: {
+    origin: location.origin,
+  },
 });
