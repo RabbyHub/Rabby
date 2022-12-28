@@ -73,6 +73,7 @@ export interface PreferenceStore {
       continueAt: number;
     }
   >;
+  sendEnableTime?: number;
 }
 
 const SUPPORT_LOCALES = ['en'];
@@ -111,6 +112,7 @@ class PreferenceService {
         needSwitchWalletCheck: true,
         phishingList: [],
         phishingMap: {},
+        sendEnableTime: 0,
       },
     });
     if (!this.store.locale || this.store.locale !== defaultLang) {
@@ -174,6 +176,9 @@ class PreferenceService {
 
     if (!this.store.phishingMap) {
       this.store.phishingMap = {};
+    }
+    if (!this.store.sendEnableTime) {
+      this.store.sendEnableTime = 0;
     }
 
     this.pollLoadPhishingList();
@@ -495,6 +500,12 @@ class PreferenceService {
   };
   updateSendLogTime = (time: number) => {
     this.store.sendLogTime = time;
+  };
+  getSendEnableTime = () => {
+    return this.store.sendEnableTime || 0;
+  };
+  updateSendEnableTime = (time: number) => {
+    this.store.sendEnableTime = time;
   };
   getNeedSwitchWalletCheck = () => {
     if (this.store.needSwitchWalletCheck == null) {
