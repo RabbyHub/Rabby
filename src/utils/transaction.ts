@@ -1,6 +1,8 @@
 import { isHexString } from 'ethereumjs-util';
+import { minBy } from 'lodash';
+import BigNumber from 'bignumber.js';
 import { CHAINS, GASPRICE_RANGE, KEYRING_CATEGORY_MAP } from 'consts';
-import { Tx } from 'background/service/openapi';
+import { GasLevel, Tx } from 'background/service/openapi';
 
 export const validateGasPriceRange = (tx: Tx) => {
   const chain = Object.values(CHAINS).find((chain) => chain.id === tx.chainId);
@@ -50,3 +52,34 @@ export const is1559Tx = (tx: Tx) => {
 export function getKRCategoryByType(type?: string) {
   return KEYRING_CATEGORY_MAP[type as any] || null;
 }
+
+export const calcMaxPriorityFee = (
+  gasList: GasLevel[],
+  target: GasLevel,
+  chainId: number
+) => {
+  if (chainId !== 1) {
+    return target.price;
+  }
+  // only enable auto-priorityFee for ETH currently
+  const min = minBy(
+    gasList.filter((item) => item.level !== 'custom'),
+    'price'
+  );
+  if (min) {
+    if (target.price < min.price) return target.price / 10;
+    const basePriorityFee = target.price / 10;
+    if (min.level === target.level) {
+      return basePriorityFee;
+    } else {
+      const gap = target.price - min.price;
+      const value = new BigNumber(gap)
+        .times(0.8)
+        .plus(basePriorityFee)
+        .toFixed(1);
+      return Number(value);
+    }
+  } else {
+    return target.price;
+  }
+};

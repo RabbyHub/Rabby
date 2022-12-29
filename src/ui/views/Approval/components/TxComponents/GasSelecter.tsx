@@ -5,12 +5,13 @@ import { GasLevel, Tx } from 'background/service/openapi';
 import BigNumber from 'bignumber.js';
 import clsx from 'clsx';
 import { CHAINS, GAS_LEVEL_TEXT, MINIMUM_GAS_LIMIT } from 'consts';
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import { useDebounce } from 'react-use';
 import IconInfo from 'ui/assets/infoicon.svg';
 import { Popup } from 'ui/component';
 import { formatTokenAmount } from 'ui/utils/number';
+import { calcMaxPriorityFee } from '@/utils/transaction';
 import styled, { css } from 'styled-components';
 import LessPalette from '@/ui/style/var-defs';
 import { ReactComponent as IconArrowRight } from 'ui/assets/approval/edit-arrow-right.svg';
@@ -220,6 +221,11 @@ const GasSelector = ({
     },
   });
   const chain = Object.values(CHAINS).find((item) => item.id === chainId)!;
+  const sliderStep = useMemo(() => {
+    if (!selectedGas) return 0;
+    if (selectedGas.price / 1e9 <= 50) return 0.1;
+    return 1;
+  }, [selectedGas]);
 
   const handleSetRecommendTimes = () => {
     if (isGnosisAccount) return;
@@ -382,7 +388,7 @@ const GasSelector = ({
         price: Number(target.price),
         gasLimit: Number(afterGasLimit),
         nonce: Number(customNonce),
-        maxPriorityFee: target.price,
+        maxPriorityFee: calcMaxPriorityFee(gasList, target, chainId),
       });
     } else {
       onChange({
@@ -390,7 +396,7 @@ const GasSelector = ({
         gasLimit: Number(afterGasLimit),
         nonce: Number(customNonce),
         level: gas?.level,
-        maxPriorityFee: gas.price,
+        maxPriorityFee: calcMaxPriorityFee(gasList, target, chainId),
       });
     }
   };
@@ -483,11 +489,6 @@ const GasSelector = ({
   }, [rawSelectedGas]);
 
   useEffect(() => {
-    if (!selectedGas) return;
-    setMaxPriorityFee(selectedGas.price / 1e9);
-  }, [selectedGas]);
-
-  useEffect(() => {
     setCustomNonce(Number(nonce));
   }, [nonce]);
 
@@ -513,6 +514,15 @@ const GasSelector = ({
       }
     }
   }, [maxPriorityFee, selectedGas, customGas, is1559]);
+
+  useEffect(() => {
+    if (isReady && selectedGas && chainId === 1) {
+      const priorityFee = calcMaxPriorityFee(gasList, selectedGas, chainId);
+      setMaxPriorityFee(priorityFee / 1e9);
+    } else if (selectedGas) {
+      setMaxPriorityFee(selectedGas.price / 1e9);
+    }
+  }, [gasList, selectedGas, isReady, chainId]);
 
   if (!isReady && isFirstTimeLoad)
     return (
@@ -727,7 +737,7 @@ const GasSelector = ({
                   max={selectedGas ? selectedGas.price / 1e9 : 0}
                   onChange={handleMaxPriorityFeeChange}
                   value={maxPriorityFee}
-                  step={1}
+                  step={sliderStep}
                 />
                 <p className="priority-slider__mark">
                   <span>0</span>
