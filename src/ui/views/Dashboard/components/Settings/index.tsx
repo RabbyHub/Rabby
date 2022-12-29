@@ -227,6 +227,11 @@ const Settings = ({ visible, onClose }: SettingsProps) => {
   const [whitelistEnable, setWhitelistEnable] = useState(true);
 
   const handleSwitchWhitelistEnable = async (checked: boolean) => {
+    matomoRequestEvent({
+      category: 'Setting',
+      action: 'clickToUse',
+      label: 'Whitelist',
+    });
     reportSettings('Whitelist');
     handleWhitelistEnableChange(checked);
   };
@@ -345,6 +350,11 @@ const Settings = ({ visible, onClose }: SettingsProps) => {
       content: t('Signature Record'),
       onClick: () => {
         history.push('/activities');
+        matomoRequestEvent({
+          category: 'Setting',
+          action: 'clickToUse',
+          label: 'Signature Record',
+        });
         reportSettings('Signature Record');
       },
     },
@@ -353,6 +363,11 @@ const Settings = ({ visible, onClose }: SettingsProps) => {
       content: t('Old Contact List'),
       onClick: () => {
         setContactsVisible(true);
+        matomoRequestEvent({
+          category: 'Setting',
+          action: 'clickToUse',
+          label: 'Old Contact List',
+        });
         reportSettings('Old Contact List');
       },
     },
@@ -361,6 +376,11 @@ const Settings = ({ visible, onClose }: SettingsProps) => {
       content: t('Custom RPC'),
       onClick: () => {
         history.push('/custom-rpc');
+        matomoRequestEvent({
+          category: 'Setting',
+          action: 'clickToUse',
+          label: 'Custom RPC',
+        });
         reportSettings('Custom RPC');
       },
     },
@@ -371,7 +391,7 @@ const Settings = ({ visible, onClose }: SettingsProps) => {
         matomoRequestEvent({
           category: 'Setting',
           action: 'clickToUse',
-          label: 'resetAccount',
+          label: 'Reset Account',
         });
         setShowResetAccountModal(true);
         reportSettings('Reset Account');
