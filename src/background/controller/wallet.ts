@@ -20,6 +20,7 @@ import {
   whitelistService,
   swapService,
   RPCService,
+  unTriggerTxCounter,
 } from 'background/service';
 import buildinProvider from 'background/utils/buildinProvider';
 import { openIndexPage } from 'background/webapi/tab';
@@ -359,64 +360,77 @@ export class WalletController extends BaseController {
     if (!account) throw new Error('no current account');
     const chainObj = CHAINS[chain];
     if (!chainObj) throw new Error(`Can not find chain ${chain}`);
-
-    if (shouldTwoStepApprove) {
-      await this.approveToken(
-        chainObj.serverId,
-        pay_token_id,
-        spender,
-        0,
-        {
-          ga: {
-            ...$ctx?.ga,
-            source: 'approvalAndSwap|tokenApproval',
+    try {
+      if (shouldTwoStepApprove) {
+        unTriggerTxCounter.increase(3);
+        await this.approveToken(
+          chainObj.serverId,
+          pay_token_id,
+          spender,
+          0,
+          {
+            ga: {
+              ...$ctx?.ga,
+              source: 'approvalAndSwap|tokenApproval',
+            },
           },
-        },
-        gasPrice,
-        { isSwap: true }
-      );
-    }
+          gasPrice,
+          { isSwap: true }
+        );
+        unTriggerTxCounter.decrease();
+      }
 
-    if (needApprove) {
-      await this.approveToken(
-        chainObj.serverId,
-        pay_token_id,
-        spender,
-        unlimited ? MAX_UNSIGNED_256_INT : quote.fromTokenAmount,
-        {
-          ga: {
-            ...$ctx?.ga,
-            source: 'approvalAndSwap|tokenApproval',
+      if (needApprove) {
+        if (!shouldTwoStepApprove) {
+          unTriggerTxCounter.increase(2);
+        }
+        await this.approveToken(
+          chainObj.serverId,
+          pay_token_id,
+          spender,
+          unlimited ? MAX_UNSIGNED_256_INT : quote.fromTokenAmount,
+          {
+            ga: {
+              ...$ctx?.ga,
+              source: 'approvalAndSwap|tokenApproval',
+            },
           },
-        },
-        gasPrice,
-        { isSwap: true }
-      );
+          gasPrice,
+          { isSwap: true }
+        );
+        unTriggerTxCounter.decrease();
+      }
+      await this.sendRequest({
+        $ctx:
+          needApprove && pay_token_id !== chainObj.nativeTokenAddress
+            ? {
+                ga: {
+                  ...$ctx?.ga,
+                  source: 'approvalAndSwap|swap',
+                },
+              }
+            : $ctx,
+        method: 'eth_sendTransaction',
+        params: [
+          {
+            from: quote.tx.from,
+            to: quote.tx.to,
+            data: quote.tx.data || '0x',
+            value: `0x${new BigNumber(quote.tx.value || '0').toString(16)}`,
+            chainId: chainObj.id,
+            gasPrice: `0x${new BigNumber(gasPrice).toString(16)}`,
+            isSwap: true,
+          },
+        ],
+      });
+      unTriggerTxCounter.decrease();
+    } catch (e) {
+      unTriggerTxCounter.reset();
     }
+  };
 
-    await this.sendRequest({
-      $ctx:
-        needApprove && pay_token_id !== chainObj.nativeTokenAddress
-          ? {
-              ga: {
-                ...$ctx?.ga,
-                source: 'approvalAndSwap|swap',
-              },
-            }
-          : $ctx,
-      method: 'eth_sendTransaction',
-      params: [
-        {
-          from: quote.tx.from,
-          to: quote.tx.to,
-          data: quote.tx.data || '0x',
-          value: `0x${new BigNumber(quote.tx.value || '0').toString(16)}`,
-          chainId: chainObj.id,
-          gasPrice: `0x${new BigNumber(gasPrice).toString(16)}`,
-          isSwap: true,
-        },
-      ],
-    });
+  getUnTriggerTxCount = () => {
+    return unTriggerTxCounter.count;
   };
 
   generateApproveTokenTx = ({
