@@ -24,7 +24,7 @@ const ExtraLink = ({ className, address }: ExtraLinkProps) => {
       transport: 'beacon',
     });
     setTimeout(() => {
-      openInTab(`https://debank.com/profile/${address}`);
+      openInTab(`https://debank.com/profile/${address}?gtm=rabby`);
     }, 200);
   }, [address, currentAccount]);
   const handleScanClick = useCallback(() => {
