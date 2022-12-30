@@ -456,11 +456,13 @@ class ProviderController extends BaseController {
         onTransactionSubmitted(signedTx);
         return signedTx;
       }
+
       const buildTx = TransactionFactory.fromTxData({
         ...approvalRes,
         r: addHexPrefix(signedTx.r),
         s: addHexPrefix(signedTx.s),
         v: addHexPrefix(signedTx.v),
+        type: is1559 ? '0x2' : '0x0',
       });
 
       // Report address type(not sensitive information) to sentry when tx signature is invalid
