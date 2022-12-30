@@ -25,8 +25,6 @@ const getProviderState = async (req) => {
   const {
     session: { origin },
   } = req;
-  preferenceService.detectPhishing(origin);
-
   const chainEnum =
     permissionService.getWithoutUpdate(origin)?.chain || CHAINS_ENUM.ETH;
   const isUnlocked = keyringService.memStore.getState().isUnlocked;
