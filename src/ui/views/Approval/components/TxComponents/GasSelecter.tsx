@@ -744,11 +744,6 @@ const GasSelector = ({
                   <span>{selectedGas ? selectedGas.price / 1e9 : 0}</span>
                 </p>
               </div>
-              <div className="priority-slider-footer">
-                {maxPriorityFee < (selectedGas?.price || 0) / 1e9
-                  ? 'A low priority fee may affect the transaction speed'
-                  : 'Recommend the highest priority fee to speed up your transaction'}
-              </div>
             </div>
           )}
           {isReal1559 && isHardware && (
