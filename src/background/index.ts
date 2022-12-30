@@ -107,6 +107,7 @@ async function restoreAppState() {
 
   transactionWatchService.roll();
   initAppMeta();
+  startEnableUser();
 }
 
 restoreAppState();
@@ -121,10 +122,6 @@ restoreAppState();
       if (dayjs(time).utc().isSame(dayjs().utc(), 'day')) {
         return;
       }
-      matomoRequestEvent({
-        category: 'User',
-        action: 'enable',
-      });
       const chains = preferenceService.getSavedChains();
       matomoRequestEvent({
         category: 'User',
@@ -300,3 +297,15 @@ storage
   .catch(() => {
     // IGNORE
   });
+
+function startEnableUser() {
+  const time = preferenceService.getSendEnableTime();
+  if (dayjs(time).utc().isSame(dayjs().utc(), 'day')) {
+    return;
+  }
+  matomoRequestEvent({
+    category: 'User',
+    action: 'enable',
+  });
+  preferenceService.updateSendEnableTime(Date.now());
+}
