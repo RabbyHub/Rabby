@@ -170,9 +170,12 @@ const LedgerHardwareWaiting = ({ params }: { params: ApprovalParams }) => {
           await wallet.authorizeLedgerHIDPermission();
         }
         const pendingApprovalCount = await wallet.getPendingApprovalCount();
+        const unTriggerTxCount = await wallet.getUnTriggerTxCount();
         resolveApproval(
           data.data,
-          pendingApprovalCount > 1 ? false : !isSignText,
+          pendingApprovalCount > 1 || unTriggerTxCount > 1
+            ? false
+            : !isSignText,
           false,
           approval.id
         );
