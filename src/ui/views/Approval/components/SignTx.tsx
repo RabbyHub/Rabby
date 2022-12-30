@@ -70,6 +70,7 @@ import ProcessTooltip from './ProcessTooltip';
 import { useLedgerDeviceConnected } from '@/utils/ledger';
 import { TransactionGroup } from 'background/service/transactionHistory';
 import { intToHex } from 'ui/utils/number';
+import { calcMaxPriorityFee } from '@/utils/transaction';
 
 const normalizeHex = (value: string | number) => {
   if (typeof value === 'number') {
@@ -1457,6 +1458,8 @@ const SignTx = ({ params, origin }: SignTxProps) => {
         // no cache, use the fast level in gasMarket
         gas = gasList.find((item) => item.level === 'normal')!;
       }
+      const fee = calcMaxPriorityFee(gasList, gas, chainId);
+      setMaxPriorityFee(fee);
 
       setSelectedGas(gas);
       setSupport1559(is1559);
