@@ -18,6 +18,7 @@ import './style.less';
 import { useMedia } from 'react-use';
 import type { Account } from '@/background/service/preference';
 import { ErrorAlert } from '@/ui/component/Alert/ErrorAlert';
+import { LedgerManager } from '../LedgerManager';
 
 const { Option } = Select;
 
@@ -277,6 +278,10 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
   const handleSelectChange = (res: { address: string; index: number }[]) => {
     setSelectedAcounts(res);
   };
+
+  if (keyring === HARDWARE_KEYRING_TYPES.Ledger.type) {
+    return <LedgerManager />;
+  }
 
   return (
     <div className="select-address">

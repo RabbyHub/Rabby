@@ -30,8 +30,21 @@ const NETWORK_API_URLS = {
   mainnet: 'https://api.etherscan.io',
 };
 
+enum HDPathType {
+  LedgerLive = 'LedgerLive',
+  Legacy = 'Legacy',
+  BIP44 = 'BIP44',
+}
+
+interface AccountDetail {
+  bip44: boolean;
+  hdPath: string;
+  hdPathBasePublicKey?: string;
+  hdPathType?: HDPathType;
+}
+
 class LedgerBridgeKeyring extends EventEmitter {
-  accountDetails: {};
+  accountDetails: Record<string, AccountDetail>;
   bridgeUrl: string | null;
   type: string;
   page: number;
@@ -94,6 +107,7 @@ class LedgerBridgeKeyring extends EventEmitter {
   }
 
   deserialize(opts: any = {}) {
+    console.log(opts);
     this.hdPath = opts.hdPath || hdPathString;
     this.bridgeUrl = BRIDGE_URL;
     this.accounts = opts.accounts || [];
@@ -223,6 +237,10 @@ class LedgerBridgeKeyring extends EventEmitter {
       const { address, publicKey, chainCode } = res;
       this.hdk.publicKey = Buffer.from(publicKey, 'hex');
       this.hdk.chainCode = Buffer.from(chainCode!, 'hex');
+
+      if (hdPath) {
+        await this._fixAccountDetail(address, hdPath);
+      }
       return address;
     }
     return new Promise((resolve, reject) => {
@@ -260,11 +278,15 @@ class LedgerBridgeKeyring extends EventEmitter {
             } else {
               address = this._addressFromIndex(pathBase, i);
             }
+            const isLive = this._isLedgerLiveHdPath();
+            const hdPathType = this._getHDPathType(path, isLive);
             this.accountDetails[ethUtil.toChecksumAddress(address)] = {
               // TODO: consider renaming this property, as the current name is misleading
               // It's currently used to represent whether an account uses the Ledger Live path.
-              bip44: this._isLedgerLiveHdPath(),
+              bip44: isLive,
               hdPath: path,
+              hdPathBasePublicKey: await this._getPathBasePublicKey(hdPathType),
+              hdPathType,
             };
 
             if (!this.accounts.includes(address)) {
@@ -1026,6 +1048,53 @@ class LedgerBridgeKeyring extends EventEmitter {
 
   _getApiUrl() {
     return NETWORK_API_URLS[this.network] || NETWORK_API_URLS.mainnet;
+  }
+
+  private _getHDPathType(path: string, isLedgerLive?: boolean) {
+    if (isLedgerLive || /^m\/44'\/60'\/(\d+)'\/0\/0$/.test(path)) {
+      return HDPathType.LedgerLive;
+    } else if (/^m\/44'\/60'\/0'\/0\/(\d+)$/.test(path)) {
+      return HDPathType.BIP44;
+    } else if (/^m\/44'\/60'\/0'\/(\d+)$/.test(path)) {
+      return HDPathType.Legacy;
+    }
+    throw new Error('Invalid path');
+  }
+  private async _getPathBasePublicKey(hdPathType: HDPathType) {
+    const pathBase = this._getHDPathBase(hdPathType);
+    const res = await this.app!.getAddress(pathBase, false, true);
+
+    return res.publicKey;
+  }
+
+  private _getHDPathBase(hdPathType: HDPathType) {
+    switch (hdPathType) {
+      case HDPathType.BIP44:
+        return "m/44'/60'/0'/0";
+      case HDPathType.Legacy:
+        return "m/44'/60'/0'";
+      case HDPathType.LedgerLive:
+        return "m/44'/60'/0'/0/0";
+      default:
+        throw new Error('Invalid path');
+    }
+  }
+
+  private async _fixAccountDetail(address: string, hdPath: string) {
+    const checksummedAddress = ethUtil.toChecksumAddress(address);
+
+    if (this.accountDetails[checksummedAddress]) {
+      const accountDetail = this.accountDetails[checksummedAddress];
+
+      if (!accountDetail.hdPathBasePublicKey) {
+        const hdPathType = this._getHDPathType(hdPath, accountDetail.bip44);
+
+        accountDetail.hdPathType = hdPathType;
+        accountDetail.hdPathBasePublicKey = await this._getPathBasePublicKey(
+          hdPathType
+        );
+      }
+    }
   }
 }
 
