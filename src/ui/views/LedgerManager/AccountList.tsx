@@ -1,20 +1,66 @@
-import { Table } from 'antd';
+import { message, Table } from 'antd';
 import React from 'react';
+import { ReactComponent as CopySVG } from 'ui/assets/icon-copy-gray.svg';
+import ClipboardJS from 'clipboard';
 
-export const AccountList: React.FC = () => {
+export interface Account {
+  address: string;
+  balance: string;
+  index: number;
+  chains: string[];
+  firstTxTime: number;
+}
+
+export interface Props {
+  loading: boolean;
+  data?: Account[];
+}
+
+export const AccountList: React.FC<Props> = ({ loading, data }) => {
   const onHideInfo = React.useCallback((e: React.MouseEvent) => {
     e.preventDefault();
   }, []);
 
+  const copy = React.useCallback((value: string) => {
+    const clipboard = new ClipboardJS('.copy-icon', {
+      text: function () {
+        return value;
+      },
+    });
+    clipboard.on('success', () => {
+      message.success('Copied');
+      clipboard.destroy();
+    });
+  }, []);
+
   return (
-    <Table className="AccountList">
+    <Table
+      dataSource={data}
+      rowKey="index"
+      className="AccountList"
+      loading={loading}
+      pagination={false}
+    >
       <Table.Column title="Add to Rabby" dataIndex="add" key="add" />
 
       <Table.ColumnGroup
         title={<div className="column-group">Basic information</div>}
       >
-        <Table.Column title="#" dataIndex="number" key="number" />
-        <Table.Column title="Addresses" dataIndex="address" key="address" />
+        <Table.Column title="#" dataIndex="index" key="index" />
+        <Table.Column
+          title="Addresses"
+          dataIndex="address"
+          key="address"
+          render={(value: string) => (
+            <div className="cell-address">
+              <span>{value.toLowerCase()}</span>
+              <CopySVG
+                onClick={() => copy(value.toLowerCase())}
+                className="copy-icon"
+              />
+            </div>
+          )}
+        />
         <Table.Column title="Notes" dataIndex="notes" key="notes" />
       </Table.ColumnGroup>
 

@@ -15,6 +15,7 @@ import {
 import eventBus from '@/eventBus';
 import { EVENTS } from 'consts';
 import { wait } from '@/background/utils';
+import { LedgerHDPathType } from '@/utils/ledger';
 
 const pathBase = 'm';
 const hdPathString = `${pathBase}/44'/60'/0'`;
@@ -30,10 +31,12 @@ const NETWORK_API_URLS = {
   mainnet: 'https://api.etherscan.io',
 };
 
-enum HDPathType {
-  LedgerLive = 'LedgerLive',
-  Legacy = 'Legacy',
-  BIP44 = 'BIP44',
+import HDPathType = LedgerHDPathType;
+
+interface Account {
+  address: string;
+  balance: number | null;
+  index: number;
 }
 
 interface AccountDetail {
@@ -107,7 +110,6 @@ class LedgerBridgeKeyring extends EventEmitter {
   }
 
   deserialize(opts: any = {}) {
-    console.log(opts);
     this.hdPath = opts.hdPath || hdPathString;
     this.bridgeUrl = BRIDGE_URL;
     this.accounts = opts.accounts || [];
@@ -877,7 +879,7 @@ class LedgerBridgeKeyring extends EventEmitter {
     const to = from + this.perPage;
 
     await this.unlock();
-    let accounts;
+    let accounts: Account[];
     if (this._isLedgerLiveHdPath()) {
       accounts = await this._getAccountsBIP44(from, to);
     } else {
@@ -889,7 +891,7 @@ class LedgerBridgeKeyring extends EventEmitter {
     const from = start;
     const to = end;
     await this.unlock();
-    let accounts;
+    let accounts: Account[];
     if (this._isLedgerLiveHdPath()) {
       accounts = await this._getAccountsBIP44(from, to);
     } else {
@@ -923,11 +925,7 @@ class LedgerBridgeKeyring extends EventEmitter {
   }
 
   async _getAccountsBIP44(from, to) {
-    const accounts: {
-      address: string;
-      balance: number | null;
-      index: number;
-    }[] = [];
+    const accounts: Account[] = [];
 
     for (let i = from; i < to; i++) {
       const path = this._getPathForIndex(i);
@@ -952,11 +950,7 @@ class LedgerBridgeKeyring extends EventEmitter {
   }
 
   _getAccountsLegacy(from, to) {
-    const accounts: {
-      address: string;
-      balance: number | null;
-      index: number;
-    }[] = [];
+    const accounts: Account[] = [];
     for (let i = from; i < to; i++) {
       const address = this._addressFromIndex(pathBase, i);
       accounts.push({
@@ -1061,13 +1055,13 @@ class LedgerBridgeKeyring extends EventEmitter {
     throw new Error('Invalid path');
   }
   private async _getPathBasePublicKey(hdPathType: HDPathType) {
-    const pathBase = this._getHDPathBase(hdPathType);
+    const pathBase = this.getHDPathBase(hdPathType);
     const res = await this.app!.getAddress(pathBase, false, true);
 
     return res.publicKey;
   }
 
-  private _getHDPathBase(hdPathType: HDPathType) {
+  getHDPathBase(hdPathType: HDPathType) {
     switch (hdPathType) {
       case HDPathType.BIP44:
         return "m/44'/60'/0'/0";
@@ -1095,6 +1089,24 @@ class LedgerBridgeKeyring extends EventEmitter {
         );
       }
     }
+  }
+
+  // return top 3 accounts for each path type
+  async getInitialAccounts() {
+    const defaultHDPath = this.hdPath;
+    this.setHdPath(this.getHDPathBase(HDPathType.LedgerLive));
+    const LedgerLiveAccounts = await this.getAddresses(0, 3);
+    this.setHdPath(this.getHDPathBase(HDPathType.BIP44));
+    const BIP44Accounts = await this.getAddresses(0, 3);
+    this.setHdPath(this.getHDPathBase(HDPathType.Legacy));
+    const LegacyAccounts = await this.getAddresses(0, 3);
+    this.setHdPath(defaultHDPath);
+
+    return {
+      [HDPathType.LedgerLive]: LedgerLiveAccounts,
+      [HDPathType.BIP44]: BIP44Accounts,
+      [HDPathType.Legacy]: LegacyAccounts,
+    };
   }
 }
 

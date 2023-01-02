@@ -3,6 +3,12 @@ import { useEffect, useState } from 'react';
 import { hasConnectedLedgerDevice } from 'utils';
 import { browser } from 'webextension-polyfill-ts';
 
+export enum LedgerHDPathType {
+  LedgerLive = 'LedgerLive',
+  Legacy = 'Legacy',
+  BIP44 = 'BIP44',
+}
+
 export const useLedgerDeviceConnected = () => {
   const [connected, setConnected] = useState(false);
 

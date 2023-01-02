@@ -1,5 +1,6 @@
 import { Button, InputNumber } from 'antd';
 import React from 'react';
+import { InitAccounts } from '.';
 import { HDPathType, HDPathTypeButton } from './HDPathTypeButton';
 
 const MIN_START_NO = 1;
@@ -9,14 +10,14 @@ const HDPathTypeGroup = [
   HDPathType.BIP44,
   HDPathType.Legacy,
 ];
+export const MAX_ACCOUNT_COUNT = 50;
 
 export interface SettingData {
-  type: HDPathType;
+  type?: HDPathType;
   startNo: number;
 }
 
 export const DEFAULT_SETTING_DATA: SettingData = {
-  type: HDPathType.LedgerLive,
   startNo: MIN_START_NO,
 };
 
@@ -31,12 +32,16 @@ const HDPathTypeTips = {
 
 interface Props {
   onConfirm?: (data: SettingData) => void;
+  initAccounts?: InitAccounts;
+  initSettingData?: SettingData;
 }
 
-export const AdvancedSettings: React.FC<Props> = ({ onConfirm }) => {
-  const [hdPathType, setHDPathType] = React.useState<HDPathType>(
-    DEFAULT_SETTING_DATA.type
-  );
+export const AdvancedSettings: React.FC<Props> = ({
+  onConfirm,
+  initAccounts,
+  initSettingData,
+}) => {
+  const [hdPathType, setHDPathType] = React.useState<HDPathType>();
   const [startNo, setStartNo] = React.useState(DEFAULT_SETTING_DATA.startNo);
 
   const onInputChange = React.useCallback((value: number) => {
@@ -49,6 +54,13 @@ export const AdvancedSettings: React.FC<Props> = ({ onConfirm }) => {
     }
   }, []);
 
+  React.useEffect(() => {
+    if (initSettingData) {
+      setStartNo(initSettingData.startNo);
+      setHDPathType(initSettingData.type);
+    }
+  }, []);
+
   return (
     <div className="AdvancedSettings">
       <div className="group">
@@ -58,13 +70,15 @@ export const AdvancedSettings: React.FC<Props> = ({ onConfirm }) => {
             <HDPathTypeButton
               type={type}
               onClick={setHDPathType}
-              isOnChain={true}
+              isOnChain={
+                !!initAccounts?.[type].some((account) => account.chains.length)
+              }
               selected={hdPathType === type}
               key={type}
             />
           ))}
         </div>
-        <div className="tip">{HDPathTypeTips[hdPathType]}</div>
+        {hdPathType && <div className="tip">{HDPathTypeTips[hdPathType]}</div>}
       </div>
       <div className="group">
         <div className="label">
@@ -80,7 +94,7 @@ export const AdvancedSettings: React.FC<Props> = ({ onConfirm }) => {
           max={MAX_START_NO}
         ></InputNumber>
         <div className="tip">
-          Manage address from {startNo} to {startNo + 49}
+          Manage address from {startNo} to {startNo + MAX_ACCOUNT_COUNT - 1}
         </div>
       </div>
 

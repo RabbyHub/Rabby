@@ -1,6 +1,6 @@
 import React from 'react';
-import { AccountList } from './AccountList';
+import { AccountList, Props } from './AccountList';
 
-export const AddressesInRabby: React.FC = () => {
-  return <AccountList></AccountList>;
+export const AddressesInRabby: React.FC<Props> = (props) => {
+  return <AccountList {...props}></AccountList>;
 };

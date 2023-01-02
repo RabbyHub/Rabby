@@ -11,20 +11,90 @@ import {
   SettingData,
   DEFAULT_SETTING_DATA,
 } from './AdvancedSettings';
+import { useWallet } from '@/ui/utils';
+import { HARDWARE_KEYRING_TYPES } from '@/constant';
+import { HDPathType } from './HDPathTypeButton';
+import { Account } from './AccountList';
+
+export type InitAccounts = {
+  [key in HDPathType]: Account[];
+};
 
 export const LedgerManager: React.FC = () => {
+  const wallet = useWallet();
   const [visibleAdvanced, setVisibleAdvanced] = React.useState(false);
   const [setting, setSetting] = React.useState<SettingData>(
     DEFAULT_SETTING_DATA
   );
+  const [initAccounts, setInitAccounts] = React.useState<InitAccounts>();
+  const [loading, setLoading] = React.useState(false);
 
   const openAdvanced = React.useCallback(() => {
+    if (loading) {
+      return;
+    }
     setVisibleAdvanced(true);
-  }, []);
+  }, [loading]);
 
   const onConfirmAdvanced = React.useCallback((data: SettingData) => {
     setVisibleAdvanced(false);
     setSetting(data);
+  }, []);
+
+  const fetchAccountInfo = React.useCallback(async (account: Account) => {
+    account.chains = [];
+    return account;
+  }, []);
+
+  const fetchInitAccounts = React.useCallback(async () => {
+    setLoading(true);
+    try {
+      const accounts = (await wallet.requestKeyring(
+        HARDWARE_KEYRING_TYPES.Ledger.type,
+        'getInitialAccounts',
+        null
+      )) as InitAccounts;
+
+      // fetch balance and transaction information
+      for (const key in accounts) {
+        const items = accounts[key] as Account[];
+        accounts[key] = await Promise.all(items.map(fetchAccountInfo));
+      }
+      setInitAccounts(accounts);
+      detectInitialHDPathType(accounts);
+    } catch (e) {
+      console.error(e);
+    }
+
+    setLoading(false);
+  }, []);
+
+  const detectInitialHDPathType = React.useCallback(
+    (accounts: InitAccounts) => {
+      let initialHDPathType = HDPathType.LedgerLive;
+      let maxChainLength = 0;
+      for (const key in accounts) {
+        const items = accounts[key] as Account[];
+        items.forEach((account) => {
+          if (account.chains.length > maxChainLength) {
+            maxChainLength = account.chains.length;
+            initialHDPathType = key as HDPathType;
+          }
+        });
+      }
+
+      setSetting((prev) => ({
+        ...prev,
+        type: initialHDPathType,
+      }));
+
+      return initialHDPathType;
+    },
+    []
+  );
+
+  React.useEffect(() => {
+    fetchInitAccounts();
   }, []);
 
   return (
@@ -39,10 +109,14 @@ export const LedgerManager: React.FC = () => {
       </div>
       <Tabs className="tabs">
         <Tabs.TabPane tab="Addresses in Ledger" key="ledger">
-          <AddressesInLedger />
+          <AddressesInLedger
+            type={setting.type}
+            startNo={setting.startNo}
+            loading={loading}
+          />
         </Tabs.TabPane>
         <Tabs.TabPane tab="Addresses in Rabby" key="rabby">
-          <AddressesInRabby />
+          <AddressesInRabby loading={loading} />
         </Tabs.TabPane>
       </Tabs>
       <Modal
@@ -51,8 +125,13 @@ export const LedgerManager: React.FC = () => {
         visible={visibleAdvanced}
         width={840}
         footer={[]}
+        onCancel={() => setVisibleAdvanced(false)}
       >
-        <AdvancedSettings onConfirm={onConfirmAdvanced} />
+        <AdvancedSettings
+          initAccounts={initAccounts}
+          onConfirm={onConfirmAdvanced}
+          initSettingData={setting}
+        />
       </Modal>
     </div>
   );

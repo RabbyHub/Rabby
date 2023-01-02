@@ -1,12 +1,15 @@
+import { LedgerHDPathType } from '@/utils/ledger';
 import clsx from 'clsx';
 import React from 'react';
 import './index.less';
 
-export enum HDPathType {
-  LedgerLive = 'Ledger Live',
-  BIP44 = 'BIP44',
-  Legacy = 'Legacy',
-}
+export import HDPathType = LedgerHDPathType;
+
+const HDPathTypeLabel = {
+  [HDPathType.LedgerLive]: 'Ledger Live',
+  [HDPathType.BIP44]: 'BIP44',
+  [HDPathType.Legacy]: 'Legacy',
+};
 
 interface Props {
   type: HDPathType;
@@ -28,7 +31,7 @@ export const HDPathTypeButton: React.FC<Props> = ({
       })}
       onClick={() => onClick?.(type)}
     >
-      {type}
+      {HDPathTypeLabel[type]}
     </button>
   );
 };
