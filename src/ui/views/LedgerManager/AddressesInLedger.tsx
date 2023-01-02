@@ -1,9 +1,10 @@
 import { HARDWARE_KEYRING_TYPES } from '@/constant';
 import { useWallet } from '@/ui/utils';
+import { message } from 'antd';
 import React from 'react';
 import { Account, AccountList, Props as AccountListProps } from './AccountList';
 import { MAX_ACCOUNT_COUNT, SettingData } from './AdvancedSettings';
-import { HDPathType } from './HDPathTypeButton';
+import { sleep } from './utils';
 
 interface Props extends AccountListProps, SettingData {}
 
@@ -15,37 +16,32 @@ export const AddressesInLedger: React.FC<Props> = ({
   const [accountList, setAccountList] = React.useState<Account[]>([]);
   const wallet = useWallet();
   const [loading, setLoading] = React.useState(false);
-  const restartRef = React.useRef(false);
   const stoppedRef = React.useRef(true);
   const startNoRef = React.useRef(startNo);
   const typeRef = React.useRef(type);
+  const retryCountRef = React.useRef(0);
+  const exitRef = React.useRef(false);
+
+  const runGetAccounts = React.useCallback(async () => {
+    setAccountList([]);
+    asyncGetAccounts();
+  }, []);
 
   const asyncGetAccounts = React.useCallback(async () => {
     stoppedRef.current = false;
     setLoading(true);
     const start = startNoRef.current;
-    const type = typeRef.current!;
     const index = start - 1;
+    let i = index;
 
     try {
-      const hdPathBase = await wallet.requestKeyring(
-        HARDWARE_KEYRING_TYPES.Ledger.type,
-        'getHDPathBase',
-        null,
-        type
-      );
-      await wallet.requestKeyring(
-        HARDWARE_KEYRING_TYPES.Ledger.type,
-        'setHdPath',
-        null,
-        hdPathBase
-      );
-      for (let i = index; i < index + MAX_ACCOUNT_COUNT; i++) {
-        if (restartRef.current) {
-          restartRef.current = false;
-          setAccountList([]);
-          asyncGetAccounts();
+      for (i = index; i < index + MAX_ACCOUNT_COUNT; i++) {
+        if (exitRef.current) {
           return;
+        }
+
+        if (stoppedRef.current) {
+          break;
         }
         const accounts = (await wallet.requestKeyring(
           HARDWARE_KEYRING_TYPES.Ledger.type,
@@ -56,12 +52,27 @@ export const AddressesInLedger: React.FC<Props> = ({
         )) as Account[];
         setAccountList((prev) => [...prev, ...accounts]);
         setLoading(false);
-        if (i === index + MAX_ACCOUNT_COUNT - 1) {
-          stoppedRef.current = true;
-        }
       }
     } catch (e) {
-      console.error(e);
+      // maybe request not finished in previous tab
+      if (/busy/.test(e.message)) {
+        await sleep(1000);
+        if (retryCountRef.current > 3) {
+          retryCountRef.current = 0;
+          message.error('Ledger is busy, please try again later');
+          return;
+        }
+
+        retryCountRef.current += 1;
+        runGetAccounts();
+      } else {
+        message.error(e.message);
+      }
+    }
+    stoppedRef.current = true;
+    // maybe stop by manual, so we need restart
+    if (i !== index + MAX_ACCOUNT_COUNT) {
+      runGetAccounts();
     }
   }, []);
 
@@ -71,13 +82,18 @@ export const AddressesInLedger: React.FC<Props> = ({
 
     if (type) {
       if (stoppedRef.current) {
-        setAccountList([]);
-        asyncGetAccounts();
+        runGetAccounts();
       } else {
-        restartRef.current = true;
+        stoppedRef.current = true;
       }
     }
   }, [type, startNo]);
+
+  React.useEffect(() => {
+    return () => {
+      exitRef.current = true;
+    };
+  }, []);
 
   return (
     <AccountList

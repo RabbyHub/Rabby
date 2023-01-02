@@ -36,8 +36,11 @@ export const LedgerManager: React.FC = () => {
     setVisibleAdvanced(true);
   }, [loading]);
 
-  const onConfirmAdvanced = React.useCallback((data: SettingData) => {
+  const onConfirmAdvanced = React.useCallback(async (data: SettingData) => {
     setVisibleAdvanced(false);
+    if (data.type) {
+      await changeHDPath(data.type);
+    }
     setSetting(data);
   }, []);
 
@@ -69,8 +72,23 @@ export const LedgerManager: React.FC = () => {
     setLoading(false);
   }, []);
 
+  const changeHDPath = React.useCallback(async (type: HDPathType) => {
+    const hdPathBase = await wallet.requestKeyring(
+      HARDWARE_KEYRING_TYPES.Ledger.type,
+      'getHDPathBase',
+      null,
+      type
+    );
+    await wallet.requestKeyring(
+      HARDWARE_KEYRING_TYPES.Ledger.type,
+      'setHdPath',
+      null,
+      hdPathBase
+    );
+  }, []);
+
   const detectInitialHDPathType = React.useCallback(
-    (accounts: InitAccounts) => {
+    async (accounts: InitAccounts) => {
       let initialHDPathType = HDPathType.LedgerLive;
       let maxChainLength = 0;
       for (const key in accounts) {
@@ -87,6 +105,8 @@ export const LedgerManager: React.FC = () => {
         ...prev,
         type: initialHDPathType,
       }));
+
+      changeHDPath(initialHDPathType);
 
       return initialHDPathType;
     },
@@ -107,7 +127,7 @@ export const LedgerManager: React.FC = () => {
         <SettingSVG className="icon" />
         <span className="title">Advanced Settings</span>
       </div>
-      <Tabs className="tabs">
+      <Tabs className="tabs" destroyInactiveTabPane>
         <Tabs.TabPane tab="Addresses in Ledger" key="ledger">
           <AddressesInLedger
             type={setting.type}
@@ -115,8 +135,12 @@ export const LedgerManager: React.FC = () => {
             loading={loading}
           />
         </Tabs.TabPane>
-        <Tabs.TabPane tab="Addresses in Rabby" key="rabby">
-          <AddressesInRabby loading={loading} />
+        <Tabs.TabPane tab="Addresses in Rabby" key="rabby" disabled={loading}>
+          <AddressesInRabby
+            type={setting.type}
+            startNo={setting.startNo}
+            loading={loading}
+          />
         </Tabs.TabPane>
       </Tabs>
       <Modal

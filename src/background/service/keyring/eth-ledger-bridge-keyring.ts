@@ -1108,6 +1108,26 @@ class LedgerBridgeKeyring extends EventEmitter {
       [HDPathType.Legacy]: LegacyAccounts,
     };
   }
+
+  async getCurrentAccounts() {
+    await this.unlock();
+    const accounts = await this.getAccounts();
+    const pathBase = this.hdPath;
+    const { publicKey: currentPublicKey } = await this.app!.getAddress(
+      pathBase,
+      false,
+      true
+    );
+
+    const result = accounts.filter((account) => {
+      return (
+        this.accountDetails[ethUtil.toChecksumAddress(account)]
+          ?.hdPathBasePublicKey === currentPublicKey
+      );
+    });
+
+    return result;
+  }
 }
 
 LedgerBridgeKeyring.type = type;
