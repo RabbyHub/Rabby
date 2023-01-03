@@ -119,44 +119,46 @@ export const LedgerManager: React.FC = () => {
 
   return (
     <div className="LedgerManager">
-      <div className="logo">
-        <LedgerLogoSVG className="icon" />
-        <span className="title">Connected to Ledger</span>
-      </div>
-      <div className="setting" onClick={openAdvanced}>
-        <SettingSVG className="icon" />
-        <span className="title">Advanced Settings</span>
-      </div>
-      <Tabs className="tabs" destroyInactiveTabPane>
-        <Tabs.TabPane tab="Addresses in Ledger" key="ledger">
-          <AddressesInLedger
-            type={setting.type}
-            startNo={setting.startNo}
-            loading={loading}
+      <main>
+        <div className="logo">
+          <LedgerLogoSVG className="icon" />
+          <span className="title">Connected to Ledger</span>
+        </div>
+        <div className="setting" onClick={openAdvanced}>
+          <SettingSVG className="icon" />
+          <span className="title">Advanced Settings</span>
+        </div>
+        <Tabs className="tabs" destroyInactiveTabPane>
+          <Tabs.TabPane tab="Addresses in Ledger" key="ledger">
+            <AddressesInLedger
+              type={setting.type}
+              startNo={setting.startNo}
+              loading={loading}
+            />
+          </Tabs.TabPane>
+          <Tabs.TabPane tab="Addresses in Rabby" key="rabby" disabled={loading}>
+            <AddressesInRabby
+              type={setting.type}
+              startNo={setting.startNo}
+              loading={loading}
+            />
+          </Tabs.TabPane>
+        </Tabs>
+        <Modal
+          className="AdvancedModal"
+          title="Custom Address HD path"
+          visible={visibleAdvanced}
+          width={840}
+          footer={[]}
+          onCancel={() => setVisibleAdvanced(false)}
+        >
+          <AdvancedSettings
+            initAccounts={initAccounts}
+            onConfirm={onConfirmAdvanced}
+            initSettingData={setting}
           />
-        </Tabs.TabPane>
-        <Tabs.TabPane tab="Addresses in Rabby" key="rabby" disabled={loading}>
-          <AddressesInRabby
-            type={setting.type}
-            startNo={setting.startNo}
-            loading={loading}
-          />
-        </Tabs.TabPane>
-      </Tabs>
-      <Modal
-        className="AdvancedModal"
-        title="Custom Address HD path"
-        visible={visibleAdvanced}
-        width={840}
-        footer={[]}
-        onCancel={() => setVisibleAdvanced(false)}
-      >
-        <AdvancedSettings
-          initAccounts={initAccounts}
-          onConfirm={onConfirmAdvanced}
-          initSettingData={setting}
-        />
-      </Modal>
+        </Modal>
+      </main>
     </div>
   );
 };

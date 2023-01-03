@@ -4,7 +4,6 @@ import { message } from 'antd';
 import React from 'react';
 import { Account, AccountList, Props as AccountListProps } from './AccountList';
 import { MAX_ACCOUNT_COUNT, SettingData } from './AdvancedSettings';
-import { sleep } from './utils';
 
 interface Props extends AccountListProps, SettingData {}
 
@@ -19,7 +18,6 @@ export const AddressesInLedger: React.FC<Props> = ({
   const stoppedRef = React.useRef(true);
   const startNoRef = React.useRef(startNo);
   const typeRef = React.useRef(type);
-  const retryCountRef = React.useRef(0);
   const exitRef = React.useRef(false);
 
   const runGetAccounts = React.useCallback(async () => {
@@ -54,20 +52,7 @@ export const AddressesInLedger: React.FC<Props> = ({
         setLoading(false);
       }
     } catch (e) {
-      // maybe request not finished in previous tab
-      if (/busy/.test(e.message)) {
-        await sleep(1000);
-        if (retryCountRef.current > 3) {
-          retryCountRef.current = 0;
-          message.error('Ledger is busy, please try again later');
-          return;
-        }
-
-        retryCountRef.current += 1;
-        runGetAccounts();
-      } else {
-        message.error(e.message);
-      }
+      message.error(e.message);
     }
     stoppedRef.current = true;
     // maybe stop by manual, so we need restart

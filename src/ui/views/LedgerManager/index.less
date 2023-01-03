@@ -1,12 +1,18 @@
 .LedgerManager {
-  display: flex;
-  flex-direction: column;
-  padding-top: 20px;
   font-weight: 500;
   line-height: 1.15;
-  position: relative;
-  margin: 20px 120px 0;
-  min-width: 900px;
+  background: @color-bg;
+  overflow-x: auto;
+  min-height: 100vh;
+
+  main {
+    min-width: 900px;
+    position: relative;
+    padding-top: 20px;
+    margin: 20px 120px 0;
+    display: flex;
+    flex-direction: column;
+  }
 
   .logo {
     display: flex;
@@ -68,12 +74,15 @@
 }
 
 .AccountList {
+  tr > td {
+    border-bottom: 1px solid @color-bg;
+  }
   .ant-table-thead {
     font-size: 12px;
     line-height: 14px;
     
     .ant-table-cell {
-      padding: 8px 20px;
+      padding: 8px 16px;
       background: #FAFBFD;
       border-bottom: none;
     }
@@ -82,7 +91,7 @@
       color: @color-comment;
       text-align: left;
       font-weight: normal;
-      padding: 10px 20px 0;
+      padding: 10px 0 0;
 
       a {
         color: @color-comment;
@@ -94,6 +103,22 @@
   .cell-address {
     display: flex;
     align-items: center;
+    padding-left: 3px;
+    padding-right: 20px;
+  }
+
+  .cell-index {
+    color: @color-comment;
+    font-weight: 400;
+    padding-right: 3px;
+  }
+
+  .cell-note {
+    border-right: 1px solid @color-bg;
+  }
+
+  .cell-add {
+    border-right: 1px solid @color-bg;
   }
 
   .copy-icon {
@@ -199,5 +224,39 @@
     border-radius: 50%;
     width: 8px;
     height: 8px;
+  }
+}
+
+.AddToRabby {
+  min-width: 50px;
+  height: 20px;
+  line-height: 20px;
+  border-radius: 90px;
+  background-color: #D9DEE5;
+  .icon {
+    position: absolute;
+    top: 6px;
+    left: 5px;
+  }
+  &.ant-switch-checked {
+    background-color: @primary-color;
+    .ant-switch-handle {
+      left: calc(100% - 22px);
+      &::before {
+        border-color: rgba(134, 151, 255, 0.2);
+        box-shadow: 0px 1px 2px rgba(29, 40, 109, 0.1);
+      }
+    }
+  }
+  .ant-switch-handle {
+    width: 24px;
+    height: 24px;
+    top: -2px;
+    left: -2px;
+    &::before {
+      border-radius: 50%;
+      border: 1px solid #D9DEE5;
+      box-shadow: 0px 1px 2px rgba(29, 40, 109, 0.1);
+    }
   }
 }
