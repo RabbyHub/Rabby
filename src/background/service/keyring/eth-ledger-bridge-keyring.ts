@@ -228,7 +228,10 @@ class LedgerBridgeKeyring extends EventEmitter {
     this.hdk = new HDKey();
   }
 
-  async unlock(hdPath?): Promise<string> {
+  async unlock(hdPath?, force?: boolean): Promise<string> {
+    if (force) {
+      hdPath = this.hdPath;
+    }
     if (this.isUnlocked() && !hdPath) {
       return 'already unlocked';
     }

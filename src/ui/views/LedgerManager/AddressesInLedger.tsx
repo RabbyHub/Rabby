@@ -4,7 +4,8 @@ import { message } from 'antd';
 import React from 'react';
 import { Account, AccountList, Props as AccountListProps } from './AccountList';
 import { MAX_ACCOUNT_COUNT, SettingData } from './AdvancedSettings';
-import { fetchAccountsInfo } from './utils';
+import { HDPathType } from './HDPathTypeButton';
+import { fetchAccountsInfo, sleep } from './utils';
 
 interface Props extends AccountListProps, SettingData {
   currentAccounts: Account[];
@@ -34,9 +35,17 @@ export const AddressesInLedger: React.FC<Props> = ({
     const start = startNoRef.current;
     const index = start - 1;
     let i = index;
+    const isLedgerLive = typeRef.current === HDPathType.LedgerLive;
 
     try {
-      for (i = index; i < index + MAX_ACCOUNT_COUNT; i++) {
+      await wallet.requestKeyring(
+        HARDWARE_KEYRING_TYPES.Ledger.type,
+        'unlock',
+        null,
+        null,
+        true
+      );
+      for (i = index; i < index + MAX_ACCOUNT_COUNT; ) {
         if (exitRef.current) {
           return;
         }
@@ -49,13 +58,25 @@ export const AddressesInLedger: React.FC<Props> = ({
           'getAddresses',
           null,
           i,
-          i + 1
+          i + (isLedgerLive ? 1 : MAX_ACCOUNT_COUNT)
         )) as Account[];
         setAccountList((prev) => [...prev, ...accounts]);
         setLoading(false);
+
+        // only ledger live need to fetch one by one
+        if (isLedgerLive) {
+          i++;
+        } else {
+          i += MAX_ACCOUNT_COUNT;
+        }
       }
     } catch (e) {
-      message.error(e.message);
+      if (!/busy/.test(e.message)) {
+        message.error({
+          content: e.message,
+          key: 'ledger-error',
+        });
+      }
     }
     stoppedRef.current = true;
     // maybe stop by manual, so we need restart

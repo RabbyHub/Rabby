@@ -59,7 +59,6 @@ export const LedgerManager: React.FC = () => {
         'getInitialAccounts',
         null
       )) as InitAccounts;
-
       // fetch balance and transaction information
       for (const key in accounts) {
         const items = accounts[key] as Account[];
