@@ -35,7 +35,7 @@ import IconCustomRPC from 'ui/assets/dashboard/custom-rpc.svg';
 import { Contacts } from '..';
 import stats from '@/stats';
 import { useAsync, useCss } from 'react-use';
-import compareVersions from 'compare-versions';
+import semver from 'semver-compare';
 
 interface SettingsProps {
   visible?: boolean;
@@ -281,9 +281,7 @@ const Settings = ({ visible, onClose }: SettingsProps) => {
   const { value: hasNewVersion = false } = useAsync(async () => {
     const data = await wallet.openapi.getLatestVersion();
 
-    return (
-      compareVersions(process.env.release || '0.0.0', data.version_tag) === -1
-    );
+    return semver(process.env.release || '0.0.0', data.version_tag) === -1;
   });
 
   const updateVersionClassName = useCss({

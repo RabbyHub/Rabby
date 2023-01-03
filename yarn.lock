@@ -6488,11 +6488,6 @@ commander@^7.0.0, commander@^7.2.0:
   resolved "https://registry.yarnpkg.com/commander/-/commander-7.2.0.tgz#a36cb57d0b501ce108e4d20559a150a391d97ab7"
   integrity sha512-QrWXB+ZQSVPmIWIhtEO9H+gwHaMGYiF5ChvoJ+K9ZGHG/sVsa6yiesAD1GC/x46sET00Xlwo1u49RVVVzvcSkw==
 
-compare-versions@^4.1.1:
-  version "4.1.1"
-  resolved "https://r.cnpmjs.org/compare-versions/download/compare-versions-4.1.1.tgz#d881fc9f47d6eb2b8f63109dc5e82dae39c3680c"
-  integrity sha512-jHQA7zMUpbO+FhPz/kADChZVSk3edtD7c3WkEAjleBtwgAl0ji6wGrYxryaBhViGgq0A+Pb6JPhjhg9jpth4mQ==
-
 component-bind@1.0.0:
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/component-bind/-/component-bind-1.0.0.tgz#00c608ab7dcd93897c0009651b1d3a8e1e73bbd1"

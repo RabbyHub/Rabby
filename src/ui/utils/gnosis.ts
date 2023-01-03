@@ -4,7 +4,7 @@ import {
   SignTypedDataVersion,
 } from '@metamask/eth-sig-util';
 import { SafeTransactionDataPartial } from '@gnosis.pm/safe-core-sdk-types';
-import compareVersions from 'compare-versions';
+import semver from 'semver-compare';
 import { isSameAddress } from './index';
 
 const EIP712_DOMAIN_BEFORE_V130 = [
@@ -26,7 +26,7 @@ const EIP712_DOMAIN = [
 ];
 
 const getEip712MessageTypes = (version) => {
-  const eip712WithChainId = compareVersions(version, '1.3.0') !== -1;
+  const eip712WithChainId = semver(version, '1.3.0') !== -1;
   return {
     EIP712Domain: eip712WithChainId ? EIP712_DOMAIN : EIP712_DOMAIN_BEFORE_V130,
     SafeTx: [
@@ -71,7 +71,7 @@ export const validateEOASign = (
   safeAddress: string,
   networkId: number
 ) => {
-  const eip712WithChainId = compareVersions(version, '1.3.0') !== -1;
+  const eip712WithChainId = semver(version, '1.3.0') !== -1;
   const typedData = {
     types: getEip712MessageTypes(version),
     domain: {
