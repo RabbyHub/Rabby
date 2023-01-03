@@ -35,7 +35,7 @@ import createSubscription from './controller/provider/subscriptionManager';
 import buildinProvider from 'background/utils/buildinProvider';
 import dayjs from 'dayjs';
 import utc from 'dayjs/plugin/utc';
-import { setPopupIcon } from './utils';
+import { setPopupIcon, wait } from './utils';
 import { getSentryEnv } from '@/utils/env';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 
@@ -312,6 +312,11 @@ function startEnableUser() {
 browser.runtime.onMessage.addListener(async (message) => {
   const { data, type } = message;
   if (type === 'DETECT_PHISHING') {
+    while (!preferenceService.store) {
+      await wait(() => {
+        // wait for store ready
+      }, 200);
+    }
     preferenceService.detectPhishing(data.origin);
   }
 });
