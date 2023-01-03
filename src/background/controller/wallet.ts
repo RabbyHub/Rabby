@@ -69,7 +69,6 @@ import { addHexPrefix, unpadHexString } from 'ethereumjs-util';
 import { ProviderRequest } from './provider/type';
 import { QuoteResult } from '@rabby-wallet/rabby-swap/dist/quote';
 import transactionWatcher from '../service/transactionWatcher';
-import LedgerBridgeKeyring from '../service/keyring/eth-ledger-bridge-keyring';
 
 const stashKeyrings: Record<string | number, any> = {};
 

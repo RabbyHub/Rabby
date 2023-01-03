@@ -9,7 +9,7 @@
     min-width: 900px;
     position: relative;
     padding-top: 20px;
-    margin: 20px 120px 0;
+    margin: 20px 120px;
     display: flex;
     flex-direction: column;
   }
@@ -74,6 +74,9 @@
 }
 
 .AccountList {
+  .ant-table-cell {
+    height: 55px;
+  }
   tr > td {
     border-bottom: 1px solid @color-bg;
   }
@@ -98,6 +101,10 @@
         text-decoration: underline;
       }
     }
+
+    .column-group-wrap {
+      border-right: 1px solid @color-bg;
+    }
   }
 
   .cell-address {
@@ -105,6 +112,16 @@
     align-items: center;
     padding-left: 3px;
     padding-right: 20px;
+  }
+
+  &-skeleton {
+    background: @color-bg;
+    padding: 4px 6px;
+    border-radius: 4px;
+    color: @color-comment;
+    font-size: 13px;
+    display: block;
+    margin: auto;
   }
 
   .cell-index {
@@ -124,6 +141,33 @@
   .copy-icon {
     width: 14px;
     margin-left: 4px;
+  }
+
+  .info-mask {
+    cursor: pointer;
+    position: absolute;
+    right: 0;
+    background-color: rgba(0, 0, 0, 0.1);
+    bottom: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 108px;
+
+    &--center {
+      justify-content: center;
+      padding-top: 0;
+    }
+
+    td {
+      border-bottom: none;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      .icon {
+        margin-right: 12px;
+      }
+    }
   }
 }
 

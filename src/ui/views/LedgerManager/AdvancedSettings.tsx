@@ -71,7 +71,7 @@ export const AdvancedSettings: React.FC<Props> = ({
               type={type}
               onClick={setHDPathType}
               isOnChain={
-                !!initAccounts?.[type].some((account) => account.chains.length)
+                !!initAccounts?.[type].some((account) => account.chains?.length)
               }
               selected={hdPathType === type}
               key={type}

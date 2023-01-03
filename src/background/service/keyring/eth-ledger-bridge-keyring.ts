@@ -1111,22 +1111,39 @@ class LedgerBridgeKeyring extends EventEmitter {
 
   async getCurrentAccounts() {
     await this.unlock();
-    const accounts = await this.getAccounts();
+    const addresses = await this.getAccounts();
     const pathBase = this.hdPath;
     const { publicKey: currentPublicKey } = await this.app!.getAddress(
       pathBase,
       false,
       true
     );
-
-    const result = accounts.filter((account) => {
-      return (
-        this.accountDetails[ethUtil.toChecksumAddress(account)]
-          ?.hdPathBasePublicKey === currentPublicKey
-      );
+    const accounts: Account[] = [];
+    addresses.forEach((address) => {
+      const detail = this.accountDetails[ethUtil.toChecksumAddress(address)];
+      if (detail?.hdPathBasePublicKey === currentPublicKey) {
+        accounts.push({
+          address,
+          index: this.getIndexFromPath(detail.hdPath, detail.hdPathType) + 1,
+          balance: null,
+        });
+      }
     });
 
-    return result;
+    return accounts;
+  }
+
+  private getIndexFromPath(path: string, hdPathType?: HDPathType) {
+    switch (hdPathType) {
+      case HDPathType.BIP44:
+        return parseInt(path.split('/')[4]);
+      case HDPathType.Legacy:
+        return parseInt(path.split('/')[3]);
+      case HDPathType.LedgerLive:
+        return parseInt(path.split('/')[3]);
+      default:
+        throw new Error('Invalid path');
+    }
   }
 }
 

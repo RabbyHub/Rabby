@@ -1,4 +1,4 @@
-import { Button, Tabs } from 'antd';
+import { Tabs } from 'antd';
 import React from 'react';
 import './index.less';
 import { ReactComponent as LedgerLogoSVG } from 'ui/assets/walletlogo/ledger.svg';
@@ -15,6 +15,7 @@ import { useWallet } from '@/ui/utils';
 import { HARDWARE_KEYRING_TYPES } from '@/constant';
 import { HDPathType } from './HDPathTypeButton';
 import { Account } from './AccountList';
+import { fetchAccountsInfo, useGetCurrentAccounts } from './utils';
 
 export type InitAccounts = {
   [key in HDPathType]: Account[];
@@ -28,6 +29,11 @@ export const LedgerManager: React.FC = () => {
   );
   const [initAccounts, setInitAccounts] = React.useState<InitAccounts>();
   const [loading, setLoading] = React.useState(false);
+  const {
+    loading: currentAccountsLoading,
+    getCurrentAccounts,
+    accounts: currentAccounts,
+  } = useGetCurrentAccounts();
 
   const openAdvanced = React.useCallback(() => {
     if (loading) {
@@ -41,12 +47,8 @@ export const LedgerManager: React.FC = () => {
     if (data.type) {
       await changeHDPath(data.type);
     }
+    await getCurrentAccounts();
     setSetting(data);
-  }, []);
-
-  const fetchAccountInfo = React.useCallback(async (account: Account) => {
-    account.chains = [];
-    return account;
   }, []);
 
   const fetchInitAccounts = React.useCallback(async () => {
@@ -61,7 +63,7 @@ export const LedgerManager: React.FC = () => {
       // fetch balance and transaction information
       for (const key in accounts) {
         const items = accounts[key] as Account[];
-        accounts[key] = await Promise.all(items.map(fetchAccountInfo));
+        accounts[key] = await fetchAccountsInfo(wallet, items);
       }
       setInitAccounts(accounts);
       detectInitialHDPathType(accounts);
@@ -94,19 +96,21 @@ export const LedgerManager: React.FC = () => {
       for (const key in accounts) {
         const items = accounts[key] as Account[];
         items.forEach((account) => {
-          if (account.chains.length > maxChainLength) {
-            maxChainLength = account.chains.length;
+          const chainLen = account.chains?.length ?? 0;
+
+          if (chainLen > maxChainLength) {
+            maxChainLength = chainLen;
             initialHDPathType = key as HDPathType;
           }
         });
       }
 
+      await changeHDPath(initialHDPathType);
+      await getCurrentAccounts();
       setSetting((prev) => ({
         ...prev,
         type: initialHDPathType,
       }));
-
-      changeHDPath(initialHDPathType);
 
       return initialHDPathType;
     },
@@ -116,6 +120,8 @@ export const LedgerManager: React.FC = () => {
   React.useEffect(() => {
     fetchInitAccounts();
   }, []);
+
+  const tableLoading = loading || currentAccountsLoading;
 
   return (
     <div className="LedgerManager">
@@ -133,14 +139,16 @@ export const LedgerManager: React.FC = () => {
             <AddressesInLedger
               type={setting.type}
               startNo={setting.startNo}
-              loading={loading}
+              loading={tableLoading}
+              currentAccounts={currentAccounts}
             />
           </Tabs.TabPane>
           <Tabs.TabPane tab="Addresses in Rabby" key="rabby" disabled={loading}>
             <AddressesInRabby
               type={setting.type}
               startNo={setting.startNo}
-              loading={loading}
+              loading={tableLoading}
+              currentAccounts={currentAccounts}
             />
           </Tabs.TabPane>
         </Tabs>

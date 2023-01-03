@@ -4,8 +4,11 @@ import { message } from 'antd';
 import React from 'react';
 import { Account, AccountList, Props as AccountListProps } from './AccountList';
 import { MAX_ACCOUNT_COUNT, SettingData } from './AdvancedSettings';
+import { fetchAccountsInfo } from './utils';
 
-interface Props extends AccountListProps, SettingData {}
+interface Props extends AccountListProps, SettingData {
+  currentAccounts: Account[];
+}
 
 export const AddressesInLedger: React.FC<Props> = ({
   type,
@@ -80,9 +83,22 @@ export const AddressesInLedger: React.FC<Props> = ({
     };
   }, []);
 
+  const fullData = React.useMemo(() => {
+    const newData = [...(accountList ?? [])];
+    let lastIndex = newData[newData.length - 1]?.index ?? 0;
+
+    for (let i = newData.length; i < MAX_ACCOUNT_COUNT; i++) {
+      newData.push({
+        address: '',
+        index: ++lastIndex,
+      });
+    }
+    return newData;
+  }, [accountList]);
+
   return (
     <AccountList
-      data={accountList}
+      data={fullData}
       {...props}
       loading={props.loading || loading}
     ></AccountList>
