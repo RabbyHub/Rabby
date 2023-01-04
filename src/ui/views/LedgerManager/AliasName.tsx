@@ -13,8 +13,11 @@ export const AliasName: React.FC<Props> = ({ account, onChange }) => {
   const [focus, setFocus] = React.useState(false);
 
   const onChangeAliasName = React.useCallback(() => {
-    onChange(value);
+    if (value !== account.aliasName) {
+      onChange(value);
+    }
     setFocus(false);
+    setHover(false);
   }, [value]);
 
   if (!account.aliasName) {
@@ -22,11 +25,7 @@ export const AliasName: React.FC<Props> = ({ account, onChange }) => {
   }
 
   return (
-    <div
-      className="AliasName"
-      onMouseOver={() => setHover(true)}
-      onMouseLeave={() => setHover(false)}
-    >
+    <div className="AliasName" onClick={() => setHover(true)}>
       {hover || focus ? (
         <Input
           className="alias-input"
@@ -35,6 +34,7 @@ export const AliasName: React.FC<Props> = ({ account, onChange }) => {
           onBlur={onChangeAliasName}
           onFocus={() => setFocus(true)}
           onPressEnter={onChangeAliasName}
+          autoFocus
         />
       ) : (
         <div className="label">

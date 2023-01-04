@@ -11,7 +11,7 @@ import dayjs from 'dayjs';
 import { ReactComponent as ArrowSVG } from 'ui/assets/ledger/arrow.svg';
 import clsx from 'clsx';
 import { HARDWARE_KEYRING_TYPES } from '@/constant';
-import { LedgerManagerStateContext } from './utils';
+import { fetchAccountsInfo, LedgerManagerStateContext } from './utils';
 import { AliasName } from './AliasName';
 import { ChainList } from './ChainList';
 
@@ -71,8 +71,12 @@ export const AccountList: React.FC<Props> = ({ loading, data }) => {
   }, []);
 
   React.useEffect(() => {
-    setList(data ?? []);
-  }, [data]);
+    if (!hiddenInfo) {
+      createTask(() => fetchAccountsInfo(wallet, data ?? []).then(setList));
+    } else {
+      setList(data ?? []);
+    }
+  }, [hiddenInfo, data]);
 
   const currentIndex = React.useMemo(() => {
     if (list?.length) {
@@ -223,7 +227,7 @@ export const AccountList: React.FC<Props> = ({ loading, data }) => {
                 onChange={(val) => handleChangeAliasName(val, account)}
               />
             ) : !record.address ? (
-              <AccountListSkeleton width={100} />
+              <AccountListSkeleton align="left" width={100} />
             ) : null;
           }}
         />

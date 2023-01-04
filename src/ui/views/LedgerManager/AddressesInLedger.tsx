@@ -63,8 +63,7 @@ export const AddressesInLedger: React.FC<Props> = ({
             i + (isLedgerLive ? 1 : 5)
           )
         )) as Account[];
-        const fullAccounts = await fetchAccountsInfo(wallet, accounts);
-        setAccountList((prev) => [...prev, ...fullAccounts]);
+        setAccountList((prev) => [...prev, ...accounts]);
         setLoading(false);
 
         // only ledger live need to fetch one by one

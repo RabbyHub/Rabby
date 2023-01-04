@@ -78,8 +78,7 @@ const useGetCurrentAccounts = ({ keyringId }: StateProviderProps) => {
         'getCurrentAccounts',
         keyringId
       )) as Account[];
-      const fullAccounts = await fetchAccountsInfo(wallet, accounts);
-      setAccounts(fullAccounts);
+      setAccounts(accounts);
     } catch (e) {
       message.error(e.message);
     }
