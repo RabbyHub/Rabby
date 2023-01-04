@@ -1,26 +1,54 @@
 import { Input } from 'antd';
 import React from 'react';
-import { Account } from './AccountList';
 import { ReactComponent as EditPenSVG } from 'ui/assets/editpen.svg';
 
 interface Props {
-  account: Account;
+  address: string;
+  aliasName?: string;
   onChange: (value: string) => void;
 }
-export const AliasName: React.FC<Props> = ({ account, onChange }) => {
+
+const cachedName = new Map<string, string>();
+
+export const AliasName: React.FC<Props> = ({
+  address,
+  aliasName,
+  onChange,
+}) => {
   const [hover, setHover] = React.useState(false);
-  const [value, setValue] = React.useState(account.aliasName ?? '');
+  const [value, setValue] = React.useState(aliasName);
   const [focus, setFocus] = React.useState(false);
 
   const onChangeAliasName = React.useCallback(() => {
-    if (value !== account.aliasName) {
+    if (value && value !== aliasName) {
+      if (address) {
+        cachedName[address] = value;
+      }
+
       onChange(value);
     }
     setFocus(false);
     setHover(false);
   }, [value]);
 
-  if (!account.aliasName) {
+  React.useEffect(() => {
+    setValue(aliasName);
+    if (aliasName) {
+      cachedName[address] = aliasName;
+    }
+  }, [aliasName]);
+
+  if (!value) {
+    if (cachedName[address]) {
+      return (
+        <div className="AliasName AliasName--disabled">
+          <div className="label">
+            <span className="text">{cachedName[address]}</span>
+          </div>
+        </div>
+      );
+    }
+
     return null;
   }
 
@@ -29,7 +57,7 @@ export const AliasName: React.FC<Props> = ({ account, onChange }) => {
       {hover || focus ? (
         <Input
           className="alias-input"
-          defaultValue={account.aliasName}
+          defaultValue={value}
           onChange={(e) => setValue(e.target.value)}
           onBlur={onChangeAliasName}
           onFocus={() => setFocus(true)}
@@ -38,7 +66,7 @@ export const AliasName: React.FC<Props> = ({ account, onChange }) => {
         />
       ) : (
         <div className="label">
-          <span className="text">{account.aliasName}</span>
+          <span className="text">{value}</span>
           <EditPenSVG />
         </div>
       )}

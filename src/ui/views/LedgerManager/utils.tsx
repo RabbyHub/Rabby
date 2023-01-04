@@ -87,7 +87,10 @@ const useGetCurrentAccounts = ({ keyringId }: StateProviderProps) => {
 
       setAccounts(accountsWithAliasName);
     } catch (e) {
-      message.error(e.message);
+      message.error({
+        content: e.message,
+        key: 'ledger-error',
+      });
     }
     setLoading(false);
   }, []);

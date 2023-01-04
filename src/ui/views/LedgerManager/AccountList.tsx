@@ -110,7 +110,10 @@ export const AccountList: React.FC<Props> = ({ loading, data }) => {
   );
 
   const handleChangeAliasName = React.useCallback(
-    async (value: string, account: Account) => {
+    async (value: string, account?: Account) => {
+      if (!account) {
+        return;
+      }
       setLocked(true);
       await wallet.updateAlianName(account.address, value);
       await createTask(() => getCurrentAccounts());
@@ -136,7 +139,13 @@ export const AccountList: React.FC<Props> = ({ loading, data }) => {
       dataSource={list}
       rowKey="index"
       className="AccountList"
-      loading={loading || locked}
+      loading={
+        loading || locked
+          ? {
+              tip: 'Waiting...',
+            }
+          : false
+      }
       pagination={false}
       summary={() =>
         list.length && hiddenInfo ? (
@@ -221,14 +230,15 @@ export const AccountList: React.FC<Props> = ({ loading, data }) => {
             const account = currentAccounts?.find((item) =>
               isSameAddress(item.address, record.address)
             );
-            return account?.aliasName ? (
+            return !record.address ? (
+              <AccountListSkeleton align="left" width={100} />
+            ) : (
               <AliasName
-                account={account}
+                address={record.address}
+                aliasName={account?.aliasName}
                 onChange={(val) => handleChangeAliasName(val, account)}
               />
-            ) : !record.address ? (
-              <AccountListSkeleton align="left" width={100} />
-            ) : null;
+            );
           }}
         />
       </Table.ColumnGroup>
@@ -246,6 +256,7 @@ export const AccountList: React.FC<Props> = ({ loading, data }) => {
           title="Used chains"
           dataIndex="usedChains"
           key="usedChains"
+          width={140}
           render={(value, record) =>
             hiddenInfo ? (
               <AccountListSkeleton width={100} />
@@ -258,6 +269,7 @@ export const AccountList: React.FC<Props> = ({ loading, data }) => {
           title="First transaction time"
           dataIndex="firstTxTime"
           key="firstTxTime"
+          width={160}
           render={(value) =>
             hiddenInfo ? (
               <AccountListSkeleton width={100} />
@@ -270,6 +282,8 @@ export const AccountList: React.FC<Props> = ({ loading, data }) => {
           title="Balance"
           dataIndex="balance"
           key="balance"
+          width={200}
+          ellipsis
           render={(balance, record) =>
             hiddenInfo ? (
               <AccountListSkeleton width={100} />

@@ -49,11 +49,13 @@ export const Main: React.FC = () => {
 
   const onConfirmAdvanced = React.useCallback(async (data: SettingData) => {
     setVisibleAdvanced(false);
+    setLoading(true);
     if (data.type) {
       await changeHDPathTask(data.type);
     }
     await createTask(() => getCurrentAccounts());
     setSetting(data);
+    setLoading(false);
   }, []);
 
   const fetchInitAccountsTask = React.useCallback(async () => {
@@ -144,7 +146,6 @@ export const Main: React.FC = () => {
         activeKey={tab}
         onChange={(active) => setTab(active as any)}
         className="tabs"
-        destroyInactiveTabPane
       >
         <Tabs.TabPane tab="Addresses in Ledger" key="ledger">
           <AddressesInLedger

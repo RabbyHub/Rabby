@@ -72,6 +72,7 @@
       color: @color-comment;
       font-size: 15px;
       transition: all 0.3s ease-in-out;
+      margin: 0;
       &.ant-tabs-tab-active {
         background: #fff;
       }
@@ -95,6 +96,7 @@
       padding: 8px 16px;
       background: #FAFBFD;
       border-bottom: none;
+      height: auto;
     }
 
     .column-group {
@@ -179,6 +181,9 @@
   }
 
   .AliasName {
+    &--disabled {
+      color: @color-comment;
+    }
     .label {
       display: flex;
       align-items: center;

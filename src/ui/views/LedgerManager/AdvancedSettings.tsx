@@ -89,7 +89,7 @@ export const AdvancedSettings: React.FC<Props> = ({
           className="group-field"
           size="large"
           type="number"
-          defaultValue={MIN_START_NO}
+          value={startNo}
           min={MIN_START_NO}
           max={MAX_START_NO}
         ></InputNumber>
