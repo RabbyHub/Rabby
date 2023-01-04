@@ -8,6 +8,7 @@ import { Account } from './AccountList';
 export const sleep = (ms: number) =>
   new Promise((resolve) => setTimeout(resolve, ms));
 
+// cached chains, balance, firstTxTime
 const cachedAccountInfo = new Map<string, Account>();
 
 export const fetchAccountsInfo = async (
@@ -17,6 +18,7 @@ export const fetchAccountsInfo = async (
   return await Promise.all(
     accounts.map(async (account) => {
       let firstTxTime;
+      let balance;
       const address = account.address.toLowerCase();
       if (!address) return account;
       const aliasName = await wallet.getAlianName(address);
@@ -25,21 +27,29 @@ export const fetchAccountsInfo = async (
         const cached = cachedAccountInfo.get(address);
         if (cached) {
           return {
-            ...cached,
+            ...account,
             aliasName,
+            chains: cached.chains,
+            balance: cached.balance,
+            firstTxTime: cached.firstTxTime,
           };
         }
       }
 
-      const res = await wallet.openapi.getTotalBalance(account.address);
-      const balance = res.total_usd_value;
-      const chains = res.chain_list;
+      const chains = await wallet.openapi.usedChainList(account.address);
 
-      chains.forEach((chain: any) => {
-        if (chain.born_at) {
-          firstTxTime = Math.min(firstTxTime ?? Infinity, chain.born_at);
-        }
-      });
+      // if has chains, get balance and firstTxTime from api
+      if (chains.length) {
+        const res = await wallet.openapi.getTotalBalance(account.address);
+        balance = res.total_usd_value;
+        const allChains = res.chain_list;
+
+        allChains.forEach((chain: any) => {
+          if (chain.born_at) {
+            firstTxTime = Math.min(firstTxTime ?? Infinity, chain.born_at);
+          }
+        });
+      }
       const accountInfo: Account = {
         ...account,
         chains,
@@ -55,7 +65,7 @@ export const fetchAccountsInfo = async (
   );
 };
 
-const useGetCurrentAccounts = () => {
+const useGetCurrentAccounts = ({ keyringId }: StateProviderProps) => {
   const wallet = useWallet();
   const [loading, setLoading] = React.useState(false);
   const [accounts, setAccounts] = React.useState<Account[]>([]);
@@ -66,7 +76,7 @@ const useGetCurrentAccounts = () => {
       const accounts = (await wallet.requestKeyring(
         HARDWARE_KEYRING_TYPES.Ledger.type,
         'getCurrentAccounts',
-        null
+        keyringId
       )) as Account[];
       const fullAccounts = await fetchAccountsInfo(wallet, accounts);
       setAccounts(fullAccounts);
@@ -106,28 +116,46 @@ const useTaskQueue = () => {
   const queueRef = React.useRef(new PQueue({ concurrency: 1 }));
 
   const createTask = React.useCallback(async (task: () => Promise<any>) => {
-    console.log(task);
     return queueRef.current.add(task);
+  }, []);
+
+  React.useEffect(() => {
+    return () => {
+      queueRef.current.clear();
+    };
   }, []);
 
   return { queueRef, createTask };
 };
 
+export interface StateProviderProps {
+  // FIXME:
+  // it's not important, only one instance of ledger keyring will be created,
+  // 'connectHardware' will not return keyringId if keyring already exists, so we
+  // don't know the keyringId now.
+  keyringId: number | null;
+}
+
 export const LedgerManagerStateContext = React.createContext<
   ReturnType<typeof useGetCurrentAccounts> &
     ReturnType<typeof useManagerTab> &
     ReturnType<typeof useHiddenInfo> &
-    ReturnType<typeof useTaskQueue>
+    ReturnType<typeof useTaskQueue> &
+    StateProviderProps
 >({} as any);
 
-export const LedgerManagerStateProvider: React.FC = ({ children }) => {
+export const LedgerManagerStateProvider: React.FC<StateProviderProps> = ({
+  children,
+  keyringId,
+}) => {
   return (
     <LedgerManagerStateContext.Provider
       value={{
-        ...useGetCurrentAccounts(),
+        ...useGetCurrentAccounts({ keyringId }),
         ...useManagerTab(),
         ...useHiddenInfo(),
         ...useTaskQueue(),
+        keyringId,
       }}
     >
       {children}

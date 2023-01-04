@@ -9,6 +9,12 @@ export enum LedgerHDPathType {
   BIP44 = 'BIP44',
 }
 
+export const LedgerHDPathTypeLabel = {
+  [LedgerHDPathType.LedgerLive]: 'Ledger Live',
+  [LedgerHDPathType.BIP44]: 'BIP44',
+  [LedgerHDPathType.Legacy]: 'Legacy',
+};
+
 export const useLedgerDeviceConnected = () => {
   const [connected, setConnected] = useState(false);
 

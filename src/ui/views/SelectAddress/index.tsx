@@ -121,7 +121,11 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
         if (isLedger) {
           setHasError(true);
           try {
-            wallet.requestKeyring(keyring, 'cleanUp', null);
+            wallet.requestKeyring(
+              keyring,
+              'cleanUp',
+              keyringId.current ?? null
+            );
           } catch (e) {
             console.log(e);
           }
@@ -281,8 +285,8 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
     setSelectedAcounts(res);
   };
 
-  if (keyring === HARDWARE_KEYRING_TYPES.Ledger.type) {
-    return <LedgerManager />;
+  if (isLedger) {
+    return <LedgerManager keyringId={null} />;
   }
 
   return (

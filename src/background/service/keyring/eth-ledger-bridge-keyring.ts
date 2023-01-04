@@ -95,7 +95,6 @@ class LedgerBridgeKeyring extends EventEmitter {
 
     this.iframeLoaded = false;
     this._setupIframe();
-    console.log('初始化');
   }
 
   serialize() {
@@ -1114,7 +1113,6 @@ class LedgerBridgeKeyring extends EventEmitter {
   }
 
   async getCurrentAccounts() {
-    await this.unlock();
     const addresses = await this.getAccounts();
     const pathBase = this.hdPath;
     const { publicKey: currentPublicKey } = await this.app!.getAddress(
@@ -1123,26 +1121,36 @@ class LedgerBridgeKeyring extends EventEmitter {
       true
     );
     const accounts: Account[] = [];
-    console.log(accounts);
-    console.log(this.accountDetails);
     addresses.forEach((address) => {
       const detail = this.accountDetails[ethUtil.toChecksumAddress(address)];
       if (detail?.hdPathBasePublicKey === currentPublicKey) {
-        accounts.push({
-          address,
-          index: this.getIndexFromPath(detail.hdPath, detail.hdPathType) + 1,
-          balance: null,
-        });
+        const info = this.getAccountInfo(address);
+        if (info) {
+          accounts.push(info);
+        }
       }
     });
 
     return accounts;
   }
 
+  getAccountInfo(address: string) {
+    const detail = this.accountDetails[ethUtil.toChecksumAddress(address)];
+    if (detail) {
+      const { hdPath, hdPathType } = detail;
+      return {
+        address,
+        index: this.getIndexFromPath(hdPath, hdPathType) + 1,
+        balance: null,
+        hdPathType,
+      };
+    }
+  }
+
   private getIndexFromPath(path: string, hdPathType?: HDPathType) {
     switch (hdPathType) {
       case HDPathType.BIP44:
-        return parseInt(path.split('/')[4]);
+        return parseInt(path.split('/')[5]);
       case HDPathType.Legacy:
         return parseInt(path.split('/')[3]);
       case HDPathType.LedgerLive:

@@ -1,15 +1,10 @@
-import { LedgerHDPathType } from '@/utils/ledger';
+import { LedgerHDPathType, LedgerHDPathTypeLabel } from '@/utils/ledger';
 import clsx from 'clsx';
 import React from 'react';
 import './index.less';
 
 export import HDPathType = LedgerHDPathType;
-
-const HDPathTypeLabel = {
-  [HDPathType.LedgerLive]: 'Ledger Live',
-  [HDPathType.BIP44]: 'BIP44',
-  [HDPathType.Legacy]: 'Legacy',
-};
+export const HDPathTypeLabel = LedgerHDPathTypeLabel;
 
 interface Props {
   type: HDPathType;

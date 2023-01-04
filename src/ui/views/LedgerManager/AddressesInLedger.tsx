@@ -21,7 +21,7 @@ export const AddressesInLedger: React.FC<Props> = ({
   const startNoRef = React.useRef(startNo);
   const typeRef = React.useRef(type);
   const exitRef = React.useRef(false);
-  const { createTask } = React.useContext(LedgerManagerStateContext);
+  const { createTask, keyringId } = React.useContext(LedgerManagerStateContext);
 
   const runGetAccounts = React.useCallback(async () => {
     setAccountList([]);
@@ -41,7 +41,7 @@ export const AddressesInLedger: React.FC<Props> = ({
         wallet.requestKeyring(
           HARDWARE_KEYRING_TYPES.Ledger.type,
           'unlock',
-          null,
+          keyringId,
           null,
           true
         )
@@ -58,7 +58,7 @@ export const AddressesInLedger: React.FC<Props> = ({
           wallet.requestKeyring(
             HARDWARE_KEYRING_TYPES.Ledger.type,
             'getAddresses',
-            null,
+            keyringId,
             i,
             i + (isLedgerLive ? 1 : 5)
           )

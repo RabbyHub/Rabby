@@ -37,6 +37,7 @@ export const Main: React.FC = () => {
     setTab,
     tab,
     createTask,
+    keyringId,
   } = React.useContext(LedgerManagerStateContext);
 
   const openAdvanced = React.useCallback(() => {
@@ -49,9 +50,9 @@ export const Main: React.FC = () => {
   const onConfirmAdvanced = React.useCallback(async (data: SettingData) => {
     setVisibleAdvanced(false);
     if (data.type) {
-      changeHDPathTask(data.type);
+      await changeHDPathTask(data.type);
     }
-    createTask(() => getCurrentAccounts());
+    await createTask(() => getCurrentAccounts());
     setSetting(data);
   }, []);
 
@@ -59,7 +60,7 @@ export const Main: React.FC = () => {
     setLoading(true);
     try {
       const accounts = (await createTask(() =>
-        wallet.requestKeyring(LEDGER_TYPE, 'getInitialAccounts', null)
+        wallet.requestKeyring(LEDGER_TYPE, 'getInitialAccounts', keyringId)
       )) as InitAccounts;
       // fetch balance and transaction information
       for (const key in accounts) {
@@ -77,10 +78,10 @@ export const Main: React.FC = () => {
 
   const changeHDPathTask = React.useCallback(async (type: HDPathType) => {
     const hdPathBase = await createTask(() =>
-      wallet.requestKeyring(LEDGER_TYPE, 'getHDPathBase', null, type)
+      wallet.requestKeyring(LEDGER_TYPE, 'getHDPathBase', keyringId, type)
     );
     await createTask(() =>
-      wallet.requestKeyring(LEDGER_TYPE, 'setHdPath', null, hdPathBase)
+      wallet.requestKeyring(LEDGER_TYPE, 'setHdPath', keyringId, hdPathBase)
     );
   }, []);
 

@@ -5,13 +5,15 @@ import ClipboardJS from 'clipboard';
 import { AddToRabby } from './AddToRabby';
 import { MAX_ACCOUNT_COUNT } from './AdvancedSettings';
 import { AccountListSkeleton } from './AccountListSkeleton';
-import { ChainWithBalance } from '@debank/rabby-api/dist/types';
+import { UsedChain } from '@debank/rabby-api/dist/types';
 import { isSameAddress, splitNumberByStep, useWallet } from '@/ui/utils';
 import dayjs from 'dayjs';
 import { ReactComponent as ArrowSVG } from 'ui/assets/ledger/arrow.svg';
 import clsx from 'clsx';
 import { HARDWARE_KEYRING_TYPES } from '@/constant';
 import { LedgerManagerStateContext } from './utils';
+import { AliasName } from './AliasName';
+import { ChainList } from './ChainList';
 
 const LEDGER_TYPE = HARDWARE_KEYRING_TYPES.Ledger.type;
 
@@ -19,7 +21,7 @@ export interface Account {
   address: string;
   balance?: number;
   index: number;
-  chains?: ChainWithBalance[];
+  chains?: UsedChain[];
   firstTxTime?: number;
   aliasName?: string;
 }
@@ -41,8 +43,9 @@ export const AccountList: React.FC<Props> = ({ loading, data }) => {
     hiddenInfo,
     setHiddenInfo,
     createTask,
+    keyringId,
   } = React.useContext(LedgerManagerStateContext);
-  const [locking, setLocking] = React.useState(false);
+  const [locked, setLocked] = React.useState(false);
 
   const toggleHiddenInfo = React.useCallback(
     (e: React.MouseEvent, val: boolean) => {
@@ -59,7 +62,10 @@ export const AccountList: React.FC<Props> = ({ loading, data }) => {
       },
     });
     clipboard.on('success', () => {
-      message.success('Copied');
+      message.success({
+        content: 'Copied',
+        key: 'ledger-success',
+      });
       clipboard.destroy();
     });
   }, []);
@@ -77,10 +83,14 @@ export const AccountList: React.FC<Props> = ({ loading, data }) => {
 
   const handleAddAccount = React.useCallback(
     async (checked: boolean, account: Account) => {
-      setLocking(true);
+      setLocked(true);
       if (checked) {
         await createTask(() =>
-          wallet.unlockHardwareAccount(LEDGER_TYPE, [account.index - 1], null)
+          wallet.unlockHardwareAccount(
+            LEDGER_TYPE,
+            [account.index - 1],
+            keyringId
+          )
         );
       } else {
         await createTask(() =>
@@ -90,7 +100,17 @@ export const AccountList: React.FC<Props> = ({ loading, data }) => {
 
       // update current account list
       await createTask(() => getCurrentAccounts());
-      setLocking(false);
+      setLocked(false);
+    },
+    []
+  );
+
+  const handleChangeAliasName = React.useCallback(
+    async (value: string, account: Account) => {
+      setLocked(true);
+      await wallet.updateAlianName(account.address, value);
+      await createTask(() => getCurrentAccounts());
+      setLocked(false);
     },
     []
   );
@@ -107,14 +127,12 @@ export const AccountList: React.FC<Props> = ({ loading, data }) => {
     };
   }, []);
 
-  console.log(currentAccounts);
-
   return (
     <Table<Account>
       dataSource={list}
       rowKey="index"
       className="AccountList"
-      loading={loading || locking}
+      loading={loading || locked}
       pagination={false}
       summary={() =>
         list.length && hiddenInfo ? (
@@ -161,6 +179,7 @@ export const AccountList: React.FC<Props> = ({ loading, data }) => {
         className="column-group-wrap"
       >
         <Table.Column
+          width={50}
           title="#"
           dataIndex="index"
           key="index"
@@ -180,7 +199,7 @@ export const AccountList: React.FC<Props> = ({ loading, data }) => {
                 />
               </div>
             ) : (
-              <AccountListSkeleton height={28}>
+              <AccountListSkeleton align="left" height={28} width={300}>
                 {index === currentIndex
                   ? `Loading ${index + 1}/${MAX_ACCOUNT_COUNT} addresses`
                   : ''}
@@ -189,19 +208,24 @@ export const AccountList: React.FC<Props> = ({ loading, data }) => {
           }
         />
         <Table.Column<Account>
+          width={200}
           title="Notes"
           dataIndex="aliasName"
           key="aliasName"
           className="cell-note"
-          render={(value, record) => (
-            <div>
-              {value ? (
-                <span>{value}</span>
-              ) : !record.address ? (
-                <AccountListSkeleton width={100} />
-              ) : null}
-            </div>
-          )}
+          render={(value, record) => {
+            const account = currentAccounts?.find((item) =>
+              isSameAddress(item.address, record.address)
+            );
+            return account?.aliasName ? (
+              <AliasName
+                account={account}
+                onChange={(val) => handleChangeAliasName(val, account)}
+              />
+            ) : !record.address ? (
+              <AccountListSkeleton width={100} />
+            ) : null;
+          }}
         />
       </Table.ColumnGroup>
 
@@ -219,22 +243,22 @@ export const AccountList: React.FC<Props> = ({ loading, data }) => {
           dataIndex="usedChains"
           key="usedChains"
           render={(value, record) =>
-            record.chains?.length && !hiddenInfo ? (
-              `record.chains`
-            ) : !record.address ? (
+            hiddenInfo ? (
               <AccountListSkeleton width={100} />
-            ) : null
+            ) : (
+              <ChainList account={record} />
+            )
           }
         />
         <Table.Column<Account>
           title="First transaction time"
           dataIndex="firstTxTime"
           key="firstTxTime"
-          render={(value, record) =>
-            !isNaN(value) && !hiddenInfo ? (
-              dayjs.unix(value).format('YYYY-MM-DD')
-            ) : !record.address ? (
+          render={(value) =>
+            hiddenInfo ? (
               <AccountListSkeleton width={100} />
+            ) : !isNaN(value) ? (
+              dayjs.unix(value).format('YYYY-MM-DD')
             ) : null
           }
         />
@@ -243,10 +267,10 @@ export const AccountList: React.FC<Props> = ({ loading, data }) => {
           dataIndex="balance"
           key="balance"
           render={(balance, record) =>
-            record.chains?.length && !hiddenInfo ? (
-              `$${splitNumberByStep(balance.toFixed(2))}`
-            ) : !record.address ? (
+            hiddenInfo ? (
               <AccountListSkeleton width={100} />
+            ) : record.chains?.length ? (
+              `$${splitNumberByStep(balance.toFixed(2))}`
             ) : null
           }
         />

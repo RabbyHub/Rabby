@@ -1,10 +1,11 @@
-import { KEYRING_TYPE } from './../../constant/index';
+import { HARDWARE_KEYRING_TYPES, KEYRING_TYPE } from './../../constant/index';
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { useHistory } from 'react-router-dom';
 import { Approval } from 'background/service/notification';
 import { useWallet } from './WalletContext';
 import { getUiType } from './index';
 import { KEYRING_TYPE_TEXT, WALLET_BRAND_CONTENT } from '@/constant';
+import { LedgerHDPathType, LedgerHDPathTypeLabel } from '@/utils/ledger';
 
 export const useApproval = () => {
   const wallet = useWallet();
@@ -269,4 +270,32 @@ export const useAddressSource = ({
     return WALLET_BRAND_CONTENT[brandName].name;
   }
   return '';
+};
+
+export const useLedgerAccount = (address: string) => {
+  const wallet = useWallet();
+  const [account, setAccount] = useState<{
+    address: string;
+    hdPathType: LedgerHDPathType;
+    hdPathTypeLabel: string;
+    index: number;
+  }>();
+
+  useEffect(() => {
+    wallet
+      .requestKeyring(
+        HARDWARE_KEYRING_TYPES.Ledger.type,
+        'getAccountInfo',
+        null,
+        address
+      )
+      .then((res) => {
+        setAccount({
+          ...res,
+          hdPathTypeLabel: LedgerHDPathTypeLabel[res.hdPathType],
+        });
+      });
+  }, [address]);
+
+  return account;
 };

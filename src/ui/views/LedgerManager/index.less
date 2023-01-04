@@ -6,7 +6,7 @@
   min-height: 100vh;
 
   main {
-    min-width: 900px;
+    min-width: 1000px;
     position: relative;
     padding-top: 20px;
     margin: 20px 120px;
@@ -82,6 +82,7 @@
 .AccountList {
   .ant-table-cell {
     height: 55px;
+    padding: 0 16px;
   }
   tr > td {
     border-bottom: 1px solid @color-bg;
@@ -118,6 +119,7 @@
     align-items: center;
     padding-left: 3px;
     padding-right: 20px;
+    text-align: left;
   }
 
   &-skeleton {
@@ -172,6 +174,40 @@
       align-items: center;
       .icon {
         margin-right: 12px;
+      }
+    }
+  }
+
+  .AliasName {
+    .label {
+      display: flex;
+      align-items: center;
+    }
+    .text {
+      margin-right: 4px;
+    }
+  }
+
+  .ChainList {
+    display: flex;
+    align-items: center;
+
+    .chain-item {
+      width: 20px;
+      height: 20px;
+      margin-right: 8px;
+      border-radius: 100%;
+      background: @color-border;
+      color: @color-comment;
+      font-size: 12px;
+      line-height: 14px;
+      font-weight: 400;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      &:last-child {
+        margin-right: 0;
       }
     }
   }
