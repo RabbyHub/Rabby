@@ -270,7 +270,6 @@ class LedgerBridgeKeyring extends EventEmitter {
   }
 
   addAccounts(n = 1) {
-    console.log(this.hdPath);
     return new Promise((resolve, reject) => {
       this.unlock()
         .then(async (_) => {
@@ -295,8 +294,10 @@ class LedgerBridgeKeyring extends EventEmitter {
               hdPathType,
             };
 
+            address = address.toLowerCase();
+
             if (!this.accounts.includes(address)) {
-              this.accounts.push(address.toLowerCase());
+              this.accounts.push(address);
             }
             this.page = 0;
           }
@@ -1124,7 +1125,6 @@ class LedgerBridgeKeyring extends EventEmitter {
       true
     );
     const accounts: Account[] = [];
-    console.log(this.accountDetails);
     addresses.forEach((address) => {
       const detail = this.accountDetails[ethUtil.toChecksumAddress(address)];
       if (detail?.hdPathBasePublicKey === currentPublicKey) {
@@ -1156,7 +1156,7 @@ class LedgerBridgeKeyring extends EventEmitter {
       case HDPathType.BIP44:
         return parseInt(path.split('/')[5]);
       case HDPathType.Legacy:
-        return parseInt(path.split('/')[3]);
+        return parseInt(path.split('/')[4]);
       case HDPathType.LedgerLive:
         return parseInt(path.split('/')[3]);
       default:

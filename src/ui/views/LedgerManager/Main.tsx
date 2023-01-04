@@ -117,6 +117,17 @@ export const Main: React.FC = () => {
     fetchInitAccountsTask();
   }, []);
 
+  React.useEffect(() => {
+    const handleFocus = () => {
+      createTask(() => getCurrentAccounts());
+    };
+    window.addEventListener('focus', handleFocus);
+
+    return () => {
+      window.removeEventListener('focus', handleFocus);
+    };
+  }, []);
+
   const tableLoading = loading || currentAccountsLoading;
 
   return (
@@ -152,6 +163,7 @@ export const Main: React.FC = () => {
         </Tabs.TabPane>
       </Tabs>
       <Modal
+        destroyOnClose
         className="AdvancedModal"
         title="Custom Address HD path"
         visible={visibleAdvanced}

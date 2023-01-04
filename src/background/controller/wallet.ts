@@ -77,6 +77,14 @@ const MAX_UNSIGNED_256_INT = new BigNumber(2).pow(256).minus(1).toString(10);
 export class WalletController extends BaseController {
   openapi = openapiService;
 
+  cachedAccountInfo: Record<
+    string,
+    {
+      inWhiteList: boolean;
+      aliasName?: string;
+    }
+  > = {};
+
   /* wallet */
   boot = (password) => keyringService.boot(password);
   isBooted = () => keyringService.isBooted();
@@ -1518,6 +1526,7 @@ export class WalletController extends BaseController {
   };
 
   removeAddress = async (address: string, type: string, brand?: string) => {
+    await this.addAccountToCache(address);
     await keyringService.removeAccount(address, type, brand);
     if (!(await keyringService.hasAddress(address))) {
       contactBookService.removeAlias(address);
@@ -1952,7 +1961,9 @@ export class WalletController extends BaseController {
     }
     for (let i = 0; i < indexes.length; i++) {
       keyringInstance!.setAccountToUnlock(indexes[i]);
-      await keyringService.addNewAccount(keyringInstance);
+      const addresses = await keyringService.addNewAccount(keyringInstance);
+
+      addresses.forEach(this.resetAccountFromCache);
     }
 
     return this._setCurrentAccountFromKeyring(keyringInstance);
@@ -2322,6 +2333,25 @@ export class WalletController extends BaseController {
 
   continuePhishing = async (url: string) => {
     await preferenceService.continuePhishing(url);
+  };
+
+  private addAccountToCache = async (address: string) => {
+    this.cachedAccountInfo[address.toLowerCase()] = {
+      inWhiteList: whitelistService.isInWhiteList(address),
+      aliasName: await this.getAlianName(address),
+    };
+  };
+
+  private resetAccountFromCache = (address: string) => {
+    const cached = this.cachedAccountInfo[address.toLowerCase()];
+    if (cached) {
+      if (cached.inWhiteList) {
+        whitelistService.addWhitelist(address);
+      }
+      if (cached.aliasName) {
+        this.updateAlianName(address, cached.aliasName);
+      }
+    }
   };
 }
 
