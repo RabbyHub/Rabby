@@ -5,11 +5,9 @@ import React from 'react';
 import { Account, AccountList, Props as AccountListProps } from './AccountList';
 import { MAX_ACCOUNT_COUNT, SettingData } from './AdvancedSettings';
 import { HDPathType } from './HDPathTypeButton';
-import { fetchAccountsInfo, sleep } from './utils';
+import { fetchAccountsInfo, LedgerManagerStateContext } from './utils';
 
-interface Props extends AccountListProps, SettingData {
-  currentAccounts: Account[];
-}
+interface Props extends AccountListProps, SettingData {}
 
 export const AddressesInLedger: React.FC<Props> = ({
   type,
@@ -23,6 +21,7 @@ export const AddressesInLedger: React.FC<Props> = ({
   const startNoRef = React.useRef(startNo);
   const typeRef = React.useRef(type);
   const exitRef = React.useRef(false);
+  const { createTask } = React.useContext(LedgerManagerStateContext);
 
   const runGetAccounts = React.useCallback(async () => {
     setAccountList([]);
@@ -38,12 +37,14 @@ export const AddressesInLedger: React.FC<Props> = ({
     const isLedgerLive = typeRef.current === HDPathType.LedgerLive;
 
     try {
-      await wallet.requestKeyring(
-        HARDWARE_KEYRING_TYPES.Ledger.type,
-        'unlock',
-        null,
-        null,
-        true
+      await createTask(() =>
+        wallet.requestKeyring(
+          HARDWARE_KEYRING_TYPES.Ledger.type,
+          'unlock',
+          null,
+          null,
+          true
+        )
       );
       for (i = index; i < index + MAX_ACCOUNT_COUNT; ) {
         if (exitRef.current) {
@@ -53,21 +54,24 @@ export const AddressesInLedger: React.FC<Props> = ({
         if (stoppedRef.current) {
           break;
         }
-        const accounts = (await wallet.requestKeyring(
-          HARDWARE_KEYRING_TYPES.Ledger.type,
-          'getAddresses',
-          null,
-          i,
-          i + (isLedgerLive ? 1 : MAX_ACCOUNT_COUNT)
+        const accounts = (await createTask(() =>
+          wallet.requestKeyring(
+            HARDWARE_KEYRING_TYPES.Ledger.type,
+            'getAddresses',
+            null,
+            i,
+            i + (isLedgerLive ? 1 : 5)
+          )
         )) as Account[];
-        setAccountList((prev) => [...prev, ...accounts]);
+        const fullAccounts = await fetchAccountsInfo(wallet, accounts);
+        setAccountList((prev) => [...prev, ...fullAccounts]);
         setLoading(false);
 
         // only ledger live need to fetch one by one
         if (isLedgerLive) {
           i++;
         } else {
-          i += MAX_ACCOUNT_COUNT;
+          i += 5;
         }
       }
     } catch (e) {

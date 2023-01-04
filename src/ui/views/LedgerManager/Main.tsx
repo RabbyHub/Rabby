@@ -1,6 +1,5 @@
 import { Tabs } from 'antd';
 import React from 'react';
-import './index.less';
 import { ReactComponent as LedgerLogoSVG } from 'ui/assets/walletlogo/ledger.svg';
 import { ReactComponent as SettingSVG } from 'ui/assets/setting-outline.svg';
 import { AddressesInLedger } from './AddressesInLedger';
@@ -15,13 +14,15 @@ import { useWallet } from '@/ui/utils';
 import { HARDWARE_KEYRING_TYPES } from '@/constant';
 import { HDPathType } from './HDPathTypeButton';
 import { Account } from './AccountList';
-import { fetchAccountsInfo, useGetCurrentAccounts } from './utils';
+import { fetchAccountsInfo, LedgerManagerStateContext } from './utils';
 
 export type InitAccounts = {
   [key in HDPathType]: Account[];
 };
 
-export const LedgerManager: React.FC = () => {
+const LEDGER_TYPE = HARDWARE_KEYRING_TYPES.Ledger.type;
+
+export const Main: React.FC = () => {
   const wallet = useWallet();
   const [visibleAdvanced, setVisibleAdvanced] = React.useState(false);
   const [setting, setSetting] = React.useState<SettingData>(
@@ -30,10 +31,13 @@ export const LedgerManager: React.FC = () => {
   const [initAccounts, setInitAccounts] = React.useState<InitAccounts>();
   const [loading, setLoading] = React.useState(false);
   const {
-    loading: currentAccountsLoading,
+    currentAccountsLoading,
     getCurrentAccounts,
-    accounts: currentAccounts,
-  } = useGetCurrentAccounts();
+    currentAccounts,
+    setTab,
+    tab,
+    createTask,
+  } = React.useContext(LedgerManagerStateContext);
 
   const openAdvanced = React.useCallback(() => {
     if (loading) {
@@ -45,19 +49,17 @@ export const LedgerManager: React.FC = () => {
   const onConfirmAdvanced = React.useCallback(async (data: SettingData) => {
     setVisibleAdvanced(false);
     if (data.type) {
-      await changeHDPath(data.type);
+      changeHDPathTask(data.type);
     }
-    await getCurrentAccounts();
+    createTask(() => getCurrentAccounts());
     setSetting(data);
   }, []);
 
-  const fetchInitAccounts = React.useCallback(async () => {
+  const fetchInitAccountsTask = React.useCallback(async () => {
     setLoading(true);
     try {
-      const accounts = (await wallet.requestKeyring(
-        HARDWARE_KEYRING_TYPES.Ledger.type,
-        'getInitialAccounts',
-        null
+      const accounts = (await createTask(() =>
+        wallet.requestKeyring(LEDGER_TYPE, 'getInitialAccounts', null)
       )) as InitAccounts;
       // fetch balance and transaction information
       for (const key in accounts) {
@@ -73,18 +75,12 @@ export const LedgerManager: React.FC = () => {
     setLoading(false);
   }, []);
 
-  const changeHDPath = React.useCallback(async (type: HDPathType) => {
-    const hdPathBase = await wallet.requestKeyring(
-      HARDWARE_KEYRING_TYPES.Ledger.type,
-      'getHDPathBase',
-      null,
-      type
+  const changeHDPathTask = React.useCallback(async (type: HDPathType) => {
+    const hdPathBase = await createTask(() =>
+      wallet.requestKeyring(LEDGER_TYPE, 'getHDPathBase', null, type)
     );
-    await wallet.requestKeyring(
-      HARDWARE_KEYRING_TYPES.Ledger.type,
-      'setHdPath',
-      null,
-      hdPathBase
+    await createTask(() =>
+      wallet.requestKeyring(LEDGER_TYPE, 'setHdPath', null, hdPathBase)
     );
   }, []);
 
@@ -104,8 +100,8 @@ export const LedgerManager: React.FC = () => {
         });
       }
 
-      await changeHDPath(initialHDPathType);
-      await getCurrentAccounts();
+      await changeHDPathTask(initialHDPathType);
+      await createTask(() => getCurrentAccounts());
       setSetting((prev) => ({
         ...prev,
         type: initialHDPathType,
@@ -117,55 +113,57 @@ export const LedgerManager: React.FC = () => {
   );
 
   React.useEffect(() => {
-    fetchInitAccounts();
+    fetchInitAccountsTask();
   }, []);
 
   const tableLoading = loading || currentAccountsLoading;
 
   return (
-    <div className="LedgerManager">
-      <main>
-        <div className="logo">
-          <LedgerLogoSVG className="icon" />
-          <span className="title">Connected to Ledger</span>
-        </div>
-        <div className="setting" onClick={openAdvanced}>
-          <SettingSVG className="icon" />
-          <span className="title">Advanced Settings</span>
-        </div>
-        <Tabs className="tabs" destroyInactiveTabPane>
-          <Tabs.TabPane tab="Addresses in Ledger" key="ledger">
-            <AddressesInLedger
-              type={setting.type}
-              startNo={setting.startNo}
-              loading={tableLoading}
-              currentAccounts={currentAccounts}
-            />
-          </Tabs.TabPane>
-          <Tabs.TabPane tab="Addresses in Rabby" key="rabby" disabled={loading}>
-            <AddressesInRabby
-              type={setting.type}
-              startNo={setting.startNo}
-              loading={tableLoading}
-              currentAccounts={currentAccounts}
-            />
-          </Tabs.TabPane>
-        </Tabs>
-        <Modal
-          className="AdvancedModal"
-          title="Custom Address HD path"
-          visible={visibleAdvanced}
-          width={840}
-          footer={[]}
-          onCancel={() => setVisibleAdvanced(false)}
-        >
-          <AdvancedSettings
-            initAccounts={initAccounts}
-            onConfirm={onConfirmAdvanced}
-            initSettingData={setting}
+    <main>
+      <div className="logo">
+        <LedgerLogoSVG className="icon" />
+        <span className="title">Connected to Ledger</span>
+      </div>
+      <div className="setting" onClick={openAdvanced}>
+        <SettingSVG className="icon" />
+        <span className="title">Advanced Settings</span>
+      </div>
+      <Tabs
+        activeKey={tab}
+        onChange={(active) => setTab(active as any)}
+        className="tabs"
+        destroyInactiveTabPane
+      >
+        <Tabs.TabPane tab="Addresses in Ledger" key="ledger">
+          <AddressesInLedger
+            type={setting.type}
+            startNo={setting.startNo}
+            loading={tableLoading}
           />
-        </Modal>
-      </main>
-    </div>
+        </Tabs.TabPane>
+        <Tabs.TabPane tab="Addresses in Rabby" key="rabby" disabled={loading}>
+          <AddressesInRabby
+            type={setting.type}
+            startNo={setting.startNo}
+            loading={tableLoading}
+            data={currentAccounts}
+          />
+        </Tabs.TabPane>
+      </Tabs>
+      <Modal
+        className="AdvancedModal"
+        title="Custom Address HD path"
+        visible={visibleAdvanced}
+        width={840}
+        footer={[]}
+        onCancel={() => setVisibleAdvanced(false)}
+      >
+        <AdvancedSettings
+          initAccounts={initAccounts}
+          onConfirm={onConfirmAdvanced}
+          initSettingData={setting}
+        />
+      </Modal>
+    </main>
   );
 };

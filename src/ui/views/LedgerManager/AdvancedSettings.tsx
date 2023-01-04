@@ -1,6 +1,6 @@
 import { Button, InputNumber } from 'antd';
 import React from 'react';
-import { InitAccounts } from '.';
+import { InitAccounts } from './Main';
 import { HDPathType, HDPathTypeButton } from './HDPathTypeButton';
 
 const MIN_START_NO = 1;

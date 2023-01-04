@@ -1,6 +1,7 @@
 import { HARDWARE_KEYRING_TYPES } from '@/constant';
 import { useWallet, WalletControllerType } from '@/ui/utils';
 import { message } from 'antd';
+import PQueue from 'p-queue';
 import React from 'react';
 import { Account } from './AccountList';
 
@@ -16,17 +17,20 @@ export const fetchAccountsInfo = async (
   return await Promise.all(
     accounts.map(async (account) => {
       let firstTxTime;
-      const address = account.address;
+      const address = account.address.toLowerCase();
       if (!address) return account;
+      const aliasName = await wallet.getAlianName(address);
 
       if (cachedAccountInfo.has(address)) {
         const cached = cachedAccountInfo.get(address);
         if (cached) {
-          return cached;
+          return {
+            ...cached,
+            aliasName,
+          };
         }
       }
 
-      const aliasName = await wallet.getAlianName(address);
       const res = await wallet.openapi.getTotalBalance(account.address);
       const balance = res.total_usd_value;
       const chains = res.chain_list;
@@ -51,9 +55,8 @@ export const fetchAccountsInfo = async (
   );
 };
 
-export const useGetCurrentAccounts = () => {
+const useGetCurrentAccounts = () => {
   const wallet = useWallet();
-  const retryCountRef = React.useRef(0);
   const [loading, setLoading] = React.useState(false);
   const [accounts, setAccounts] = React.useState<Account[]>([]);
 
@@ -65,30 +68,69 @@ export const useGetCurrentAccounts = () => {
         'getCurrentAccounts',
         null
       )) as Account[];
-      setAccounts(accounts);
+      const fullAccounts = await fetchAccountsInfo(wallet, accounts);
+      setAccounts(fullAccounts);
     } catch (e) {
-      // maybe request not finished in previous tab
-      if (/busy/.test(e.message)) {
-        await sleep(1000);
-        if (retryCountRef.current > 3) {
-          retryCountRef.current = 0;
-          message.error('Ledger is busy, please try again later');
-          return;
-        }
-
-        retryCountRef.current += 1;
-        getCurrentAccounts();
-      } else {
-        message.error(e.message);
-      }
+      message.error(e.message);
     }
     setLoading(false);
-    retryCountRef.current = 0;
   }, []);
 
   return {
-    loading,
+    currentAccountsLoading: loading,
     getCurrentAccounts,
-    accounts,
+    currentAccounts: accounts,
   };
+};
+
+const useManagerTab = () => {
+  const [tab, setTab] = React.useState<'ledger' | 'rabby'>('ledger');
+
+  return {
+    tab,
+    setTab,
+  };
+};
+
+const useHiddenInfo = () => {
+  const [hiddenInfo, setHiddenInfo] = React.useState(true);
+  return {
+    hiddenInfo,
+    setHiddenInfo,
+  };
+};
+
+// !IMPORTANT!: Ledger instance only allow one request at a time,
+// so we need a queue to control the request.
+const useTaskQueue = () => {
+  const queueRef = React.useRef(new PQueue({ concurrency: 1 }));
+
+  const createTask = React.useCallback(async (task: () => Promise<any>) => {
+    console.log(task);
+    return queueRef.current.add(task);
+  }, []);
+
+  return { queueRef, createTask };
+};
+
+export const LedgerManagerStateContext = React.createContext<
+  ReturnType<typeof useGetCurrentAccounts> &
+    ReturnType<typeof useManagerTab> &
+    ReturnType<typeof useHiddenInfo> &
+    ReturnType<typeof useTaskQueue>
+>({} as any);
+
+export const LedgerManagerStateProvider: React.FC = ({ children }) => {
+  return (
+    <LedgerManagerStateContext.Provider
+      value={{
+        ...useGetCurrentAccounts(),
+        ...useManagerTab(),
+        ...useHiddenInfo(),
+        ...useTaskQueue(),
+      }}
+    >
+      {children}
+    </LedgerManagerStateContext.Provider>
+  );
 };

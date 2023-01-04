@@ -18,7 +18,7 @@ import './style.less';
 import { useMedia } from 'react-use';
 import type { Account } from '@/background/service/preference';
 import { ErrorAlert } from '@/ui/component/Alert/ErrorAlert';
-import { LedgerManager } from '../LedgerManager';
+import { LedgerManager } from '../LedgerManager/LedgerManager';
 
 const { Option } = Select;
 
@@ -159,7 +159,9 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
   };
 
   useEffect(() => {
-    init();
+    if (!isLedger) {
+      init();
+    }
     if (!isMnemonics) {
       stats.report('connectHardware', {
         type: keyring,

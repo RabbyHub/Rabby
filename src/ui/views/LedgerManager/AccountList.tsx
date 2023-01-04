@@ -6,11 +6,14 @@ import { AddToRabby } from './AddToRabby';
 import { MAX_ACCOUNT_COUNT } from './AdvancedSettings';
 import { AccountListSkeleton } from './AccountListSkeleton';
 import { ChainWithBalance } from '@debank/rabby-api/dist/types';
-import { splitNumberByStep, useWallet } from '@/ui/utils';
+import { isSameAddress, splitNumberByStep, useWallet } from '@/ui/utils';
 import dayjs from 'dayjs';
-import { fetchAccountsInfo } from './utils';
 import { ReactComponent as ArrowSVG } from 'ui/assets/ledger/arrow.svg';
 import clsx from 'clsx';
+import { HARDWARE_KEYRING_TYPES } from '@/constant';
+import { LedgerManagerStateContext } from './utils';
+
+const LEDGER_TYPE = HARDWARE_KEYRING_TYPES.Ledger.type;
 
 export interface Account {
   address: string;
@@ -28,11 +31,19 @@ export interface Props {
 
 export const AccountList: React.FC<Props> = ({ loading, data }) => {
   const wallet = useWallet();
-  const [hiddenInfo, setHiddenInfo] = React.useState(true);
   const [list, setList] = React.useState<Account[]>([]);
   const infoRef = React.useRef<HTMLDivElement>(null);
   const [infoColumnWidth, setInfoColumnWidth] = React.useState(0);
   const [infoColumnTop, setInfoColumnTop] = React.useState(0);
+  const {
+    currentAccounts,
+    getCurrentAccounts,
+    hiddenInfo,
+    setHiddenInfo,
+    createTask,
+  } = React.useContext(LedgerManagerStateContext);
+  const [locking, setLocking] = React.useState(false);
+
   const toggleHiddenInfo = React.useCallback(
     (e: React.MouseEvent, val: boolean) => {
       e.preventDefault();
@@ -64,6 +75,26 @@ export const AccountList: React.FC<Props> = ({ loading, data }) => {
     return -1;
   }, [list]);
 
+  const handleAddAccount = React.useCallback(
+    async (checked: boolean, account: Account) => {
+      setLocking(true);
+      if (checked) {
+        await createTask(() =>
+          wallet.unlockHardwareAccount(LEDGER_TYPE, [account.index - 1], null)
+        );
+      } else {
+        await createTask(() =>
+          wallet.removeAddress(account.address, LEDGER_TYPE)
+        );
+      }
+
+      // update current account list
+      await createTask(() => getCurrentAccounts());
+      setLocking(false);
+    },
+    []
+  );
+
   React.useEffect(() => {
     // watch infoRef resize
     const resizeObserver = new ResizeObserver(() => {
@@ -76,12 +107,14 @@ export const AccountList: React.FC<Props> = ({ loading, data }) => {
     };
   }, []);
 
+  console.log(currentAccounts);
+
   return (
     <Table<Account>
       dataSource={list}
       rowKey="index"
       className="AccountList"
-      loading={loading}
+      loading={loading || locking}
       pagination={false}
       summary={() =>
         list.length && hiddenInfo ? (
@@ -107,7 +140,16 @@ export const AccountList: React.FC<Props> = ({ loading, data }) => {
         title="Add to Rabby"
         key="add"
         render={(val, record) =>
-          record.address ? <AddToRabby /> : <AccountListSkeleton width={52} />
+          record.address ? (
+            <AddToRabby
+              checked={currentAccounts?.some((item) =>
+                isSameAddress(item.address, record.address)
+              )}
+              onChange={(val) => handleAddAccount(val, record)}
+            />
+          ) : (
+            <AccountListSkeleton width={52} />
+          )
         }
         width={120}
         align="center"
@@ -146,12 +188,20 @@ export const AccountList: React.FC<Props> = ({ loading, data }) => {
             )
           }
         />
-        <Table.Column
+        <Table.Column<Account>
           title="Notes"
           dataIndex="aliasName"
           key="aliasName"
           className="cell-note"
-          render={(value) => <div>{value ? <span>{value}</span> : null}</div>}
+          render={(value, record) => (
+            <div>
+              {value ? (
+                <span>{value}</span>
+              ) : !record.address ? (
+                <AccountListSkeleton width={100} />
+              ) : null}
+            </div>
+          )}
         />
       </Table.ColumnGroup>
 
@@ -164,17 +214,28 @@ export const AccountList: React.FC<Props> = ({ loading, data }) => {
           </div>
         }
       >
-        <Table.Column
+        <Table.Column<Account>
           title="Used chains"
           dataIndex="usedChains"
           key="usedChains"
+          render={(value, record) =>
+            record.chains?.length && !hiddenInfo ? (
+              `record.chains`
+            ) : !record.address ? (
+              <AccountListSkeleton width={100} />
+            ) : null
+          }
         />
-        <Table.Column
+        <Table.Column<Account>
           title="First transaction time"
           dataIndex="firstTxTime"
           key="firstTxTime"
-          render={(value) =>
-            !isNaN(value) && dayjs.unix(value).format('YYYY-MM-DD')
+          render={(value, record) =>
+            !isNaN(value) && !hiddenInfo ? (
+              dayjs.unix(value).format('YYYY-MM-DD')
+            ) : !record.address ? (
+              <AccountListSkeleton width={100} />
+            ) : null
           }
         />
         <Table.Column<Account>
@@ -182,9 +243,11 @@ export const AccountList: React.FC<Props> = ({ loading, data }) => {
           dataIndex="balance"
           key="balance"
           render={(balance, record) =>
-            record.chains?.length
-              ? `$${splitNumberByStep(balance.toFixed(2))}`
-              : null
+            record.chains?.length && !hiddenInfo ? (
+              `$${splitNumberByStep(balance.toFixed(2))}`
+            ) : !record.address ? (
+              <AccountListSkeleton width={100} />
+            ) : null
           }
         />
       </Table.ColumnGroup>

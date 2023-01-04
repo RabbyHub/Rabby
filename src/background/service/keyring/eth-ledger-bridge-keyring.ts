@@ -95,6 +95,7 @@ class LedgerBridgeKeyring extends EventEmitter {
 
     this.iframeLoaded = false;
     this._setupIframe();
+    console.log('初始化');
   }
 
   serialize() {
@@ -1122,6 +1123,8 @@ class LedgerBridgeKeyring extends EventEmitter {
       true
     );
     const accounts: Account[] = [];
+    console.log(accounts);
+    console.log(this.accountDetails);
     addresses.forEach((address) => {
       const detail = this.accountDetails[ethUtil.toChecksumAddress(address)];
       if (detail?.hdPathBasePublicKey === currentPublicKey) {
