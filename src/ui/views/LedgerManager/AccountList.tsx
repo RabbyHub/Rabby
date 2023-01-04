@@ -147,11 +147,11 @@ export const AccountList: React.FC<Props> = ({ loading, data }) => {
         });
       }, 1000);
     } else {
-      setLoadNum(99);
+      setLoadNum(0);
       timer && clearInterval(timer);
     }
     return () => {
-      setLoadNum(99);
+      setLoadNum(0);
       timer && clearInterval(timer);
     };
   }, [loading]);
