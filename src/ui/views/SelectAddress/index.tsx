@@ -76,6 +76,10 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
   const isLedger = keyring === HARDWARE_KEYRING_TYPES.Ledger.type;
   const [hasError, setHasError] = useState(false);
 
+  if (isLedger) {
+    return <LedgerManager keyringId={keyringId.current ?? null} />;
+  }
+
   const [getAccounts] = useWalletRequest(
     async (firstFlag, start?, end?, cb?): Promise<Account[]> => {
       setSpin(true);
@@ -163,9 +167,7 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
   };
 
   useEffect(() => {
-    if (!isLedger) {
-      init();
-    }
+    init();
     if (!isMnemonics) {
       stats.report('connectHardware', {
         type: keyring,
@@ -286,7 +288,7 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
   };
 
   if (isLedger) {
-    return <LedgerManager keyringId={null} />;
+    return <LedgerManager keyringId={keyringId.current ?? null} />;
   }
 
   return (

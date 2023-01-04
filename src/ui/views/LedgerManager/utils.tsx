@@ -21,14 +21,12 @@ export const fetchAccountsInfo = async (
       let balance;
       const address = account.address.toLowerCase();
       if (!address) return account;
-      const aliasName = await wallet.getAlianName(address);
 
       if (cachedAccountInfo.has(address)) {
         const cached = cachedAccountInfo.get(address);
         if (cached) {
           return {
             ...account,
-            aliasName,
             chains: cached.chains,
             balance: cached.balance,
             firstTxTime: cached.firstTxTime,
@@ -55,7 +53,6 @@ export const fetchAccountsInfo = async (
         chains,
         balance,
         firstTxTime,
-        aliasName,
       };
 
       cachedAccountInfo.set(address, accountInfo);
@@ -78,7 +75,17 @@ const useGetCurrentAccounts = ({ keyringId }: StateProviderProps) => {
         'getCurrentAccounts',
         keyringId
       )) as Account[];
-      setAccounts(accounts);
+
+      // fetch aliasName
+      const accountsWithAliasName = await Promise.all(
+        accounts.map(async (account) => {
+          const aliasName = await wallet.getAlianName(account.address);
+          account.aliasName = aliasName;
+          return account;
+        })
+      );
+
+      setAccounts(accountsWithAliasName);
     } catch (e) {
       message.error(e.message);
     }

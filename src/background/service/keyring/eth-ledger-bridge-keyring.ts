@@ -1096,6 +1096,7 @@ class LedgerBridgeKeyring extends EventEmitter {
 
   // return top 3 accounts for each path type
   async getInitialAccounts() {
+    await this.unlock();
     const defaultHDPath = this.hdPath;
     this.setHdPath(this.getHDPathBase(HDPathType.LedgerLive));
     const LedgerLiveAccounts = await this.getAddresses(0, 3);
@@ -1113,6 +1114,7 @@ class LedgerBridgeKeyring extends EventEmitter {
   }
 
   async getCurrentAccounts() {
+    await this.unlock();
     const addresses = await this.getAccounts();
     const pathBase = this.hdPath;
     const { publicKey: currentPublicKey } = await this.app!.getAddress(
