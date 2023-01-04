@@ -129,6 +129,14 @@ const useTaskQueue = () => {
   }, []);
 
   React.useEffect(() => {
+    queueRef.current.on('error', () => {
+      message.error({
+        content:
+          'Unable to connect to Hardware wallet. Please try to re-connect.',
+        key: 'ledger-error',
+      });
+    });
+
     return () => {
       queueRef.current.clear();
     };

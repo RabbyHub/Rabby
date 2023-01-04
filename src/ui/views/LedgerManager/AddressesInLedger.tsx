@@ -5,7 +5,7 @@ import React from 'react';
 import { Account, AccountList, Props as AccountListProps } from './AccountList';
 import { MAX_ACCOUNT_COUNT, SettingData } from './AdvancedSettings';
 import { HDPathType } from './HDPathTypeButton';
-import { fetchAccountsInfo, LedgerManagerStateContext } from './utils';
+import { LedgerManagerStateContext } from './utils';
 
 interface Props extends AccountListProps, SettingData {}
 
@@ -16,7 +16,7 @@ export const AddressesInLedger: React.FC<Props> = ({
 }) => {
   const [accountList, setAccountList] = React.useState<Account[]>([]);
   const wallet = useWallet();
-  const [loading, setLoading] = React.useState(false);
+  const [loading, setLoading] = React.useState(true);
   const stoppedRef = React.useRef(true);
   const startNoRef = React.useRef(startNo);
   const typeRef = React.useRef(type);

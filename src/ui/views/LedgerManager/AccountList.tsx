@@ -46,6 +46,7 @@ export const AccountList: React.FC<Props> = ({ loading, data }) => {
     keyringId,
   } = React.useContext(LedgerManagerStateContext);
   const [locked, setLocked] = React.useState(false);
+  const [loadNum, setLoadNum] = React.useState(0);
 
   const toggleHiddenInfo = React.useCallback(
     (e: React.MouseEvent, val: boolean) => {
@@ -134,6 +135,27 @@ export const AccountList: React.FC<Props> = ({ loading, data }) => {
     };
   }, []);
 
+  // fake loading progress
+  React.useEffect(() => {
+    let timer;
+    if (loading) {
+      setLoadNum(0);
+      timer = setInterval(() => {
+        setLoadNum((num) => {
+          const random = Math.floor(Math.random() * 10) + 20;
+          return num + random > 99 ? 99 : num + random;
+        });
+      }, 1000);
+    } else {
+      setLoadNum(99);
+      timer && clearInterval(timer);
+    }
+    return () => {
+      setLoadNum(99);
+      timer && clearInterval(timer);
+    };
+  }, [loading]);
+
   return (
     <Table<Account>
       dataSource={list}
@@ -142,7 +164,7 @@ export const AccountList: React.FC<Props> = ({ loading, data }) => {
       loading={
         loading || locked
           ? {
-              tip: 'Waiting...',
+              tip: 'Waiting' + (loadNum ? ` - ${loadNum}%` : ''),
             }
           : false
       }
