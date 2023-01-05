@@ -1149,6 +1149,21 @@ class LedgerBridgeKeyring extends EventEmitter {
         if (info) {
           accounts.push(info);
         }
+        continue;
+      }
+
+      // Live and BIP44 first account is the same
+      if (
+        detail.hdPathType === HDPathType.LedgerLive ||
+        detail.hdPathType === HDPathType.BIP44
+      ) {
+        const info = this.getAccountInfo(address);
+        if (info?.index === 1) {
+          const res = await this.app!.getAddress(detail.hdPath, false, true);
+          if (isSameAddress(res.address, address)) {
+            accounts.push(info);
+          }
+        }
       }
     }
 
