@@ -1,12 +1,11 @@
 import cloneDeep from 'lodash/cloneDeep';
 import eventBus from '@/eventBus';
-import compareVersions from 'compare-versions';
 import { createPersistStore } from 'background/utils';
 import { keyringService, sessionService, i18n } from './index';
 import { TotalBalanceResponse, TokenItem, fetchPhishingList } from './openapi';
 import { HARDWARE_KEYRING_TYPES, EVENTS, CHAINS_ENUM } from 'consts';
 import { browser } from 'webextension-polyfill-ts';
-import { DEX_ENUM } from '@rabby-wallet/rabby-swap';
+import semver from 'semver-compare';
 
 const version = process.env.release || '0';
 
@@ -470,7 +469,7 @@ class PreferenceService {
   getIsFirstOpen = () => {
     if (
       !this.store.currentVersion ||
-      compareVersions(version, this.store.currentVersion)
+      semver(version, this.store.currentVersion) > 0
     ) {
       this.store.currentVersion = version;
       this.store.firstOpen = true;
