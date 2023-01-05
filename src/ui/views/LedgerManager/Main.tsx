@@ -130,8 +130,6 @@ export const Main: React.FC = () => {
     };
   }, []);
 
-  const tableLoading = loading || currentAccountsLoading;
-
   return (
     <main>
       <div className="logo">
@@ -151,14 +149,14 @@ export const Main: React.FC = () => {
           <AddressesInLedger
             type={setting.type}
             startNo={setting.startNo}
-            loading={tableLoading}
+            loading={loading}
           />
         </Tabs.TabPane>
         <Tabs.TabPane tab="Addresses in Rabby" key="rabby" disabled={loading}>
           <AddressesInRabby
             type={setting.type}
             startNo={setting.startNo}
-            loading={tableLoading}
+            loading={loading}
             data={currentAccounts}
           />
         </Tabs.TabPane>

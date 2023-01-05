@@ -1,8 +1,9 @@
 import { HARDWARE_KEYRING_TYPES } from '@/constant';
-import { useWallet, WalletControllerType } from '@/ui/utils';
+import { isSameAddress, useWallet, WalletControllerType } from '@/ui/utils';
 import { message } from 'antd';
 import PQueue from 'p-queue';
 import React from 'react';
+import { useHistory } from 'react-router-dom';
 import { Account } from './AccountList';
 
 export const sleep = (ms: number) =>
@@ -95,10 +96,34 @@ const useGetCurrentAccounts = ({ keyringId }: StateProviderProps) => {
     setLoading(false);
   }, []);
 
+  const removeCurrentAccount = React.useCallback((address: string) => {
+    setAccounts((accounts) => {
+      return accounts.filter(
+        (account) => !isSameAddress(account.address, address)
+      );
+    });
+  }, []);
+
+  const updateCurrentAccountAliasName = React.useCallback(
+    (address: string, aliasName: string) => {
+      setAccounts((accounts) => {
+        return accounts.map((account) => {
+          if (isSameAddress(account.address, address)) {
+            account.aliasName = aliasName;
+          }
+          return account;
+        });
+      });
+    },
+    []
+  );
+
   return {
     currentAccountsLoading: loading,
     getCurrentAccounts,
     currentAccounts: accounts,
+    removeCurrentAccount,
+    updateCurrentAccountAliasName,
   };
 };
 
@@ -123,6 +148,7 @@ const useHiddenInfo = () => {
 // so we need a queue to control the request.
 const useTaskQueue = () => {
   const queueRef = React.useRef(new PQueue({ concurrency: 1 }));
+  const history = useHistory();
 
   const createTask = React.useCallback(async (task: () => Promise<any>) => {
     return queueRef.current.add(task);
@@ -135,6 +161,7 @@ const useTaskQueue = () => {
           'Unable to connect to Hardware wallet. Please try to re-connect.',
         key: 'ledger-error',
       });
+      history.goBack();
     });
 
     return () => {

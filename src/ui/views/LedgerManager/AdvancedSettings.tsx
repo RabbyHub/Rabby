@@ -30,6 +30,15 @@ const HDPathTypeTips = {
     'Legacy: HD path used by MEW / Mycrypto. In the first 3 addresses, there are addresses used on-chain.',
 };
 
+const HDPathTypeTipsNoChain = {
+  [HDPathType.LedgerLive]:
+    'Ledger Live: Ledger official HD path. In the first 3 addresses, there are no addresses used on-chain.',
+  [HDPathType.BIP44]:
+    'BIP44 Standard: HD path defined by the BIP44 protocol. In the first 3 addresses, there are no addresses used on-chain.',
+  [HDPathType.Legacy]:
+    'Legacy: HD path used by MEW / Mycrypto. In the first 3 addresses, there are no addresses used on-chain.',
+};
+
 interface Props {
   onConfirm?: (data: SettingData) => void;
   initAccounts?: InitAccounts;
@@ -61,6 +70,20 @@ export const AdvancedSettings: React.FC<Props> = ({
     }
   }, []);
 
+  const isOnChain = React.useCallback((type) => {
+    return (
+      type && initAccounts?.[type].some((account) => account.chains?.length)
+    );
+  }, []);
+
+  const hdPathTypeTip = React.useMemo(() => {
+    if (!hdPathType) return null;
+
+    return isOnChain(hdPathType)
+      ? HDPathTypeTips[hdPathType]
+      : HDPathTypeTipsNoChain[hdPathType];
+  }, [hdPathType]);
+
   return (
     <div className="AdvancedSettings">
       <div className="group">
@@ -70,15 +93,13 @@ export const AdvancedSettings: React.FC<Props> = ({
             <HDPathTypeButton
               type={type}
               onClick={setHDPathType}
-              isOnChain={
-                !!initAccounts?.[type].some((account) => account.chains?.length)
-              }
+              isOnChain={isOnChain(type)}
               selected={hdPathType === type}
               key={type}
             />
           ))}
         </div>
-        {hdPathType && <div className="tip">{HDPathTypeTips[hdPathType]}</div>}
+        {<div className="tip">{hdPathTypeTip}</div>}
       </div>
       <div className="group">
         <div className="label">

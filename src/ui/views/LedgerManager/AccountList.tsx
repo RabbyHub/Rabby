@@ -44,8 +44,9 @@ export const AccountList: React.FC<Props> = ({ loading, data }) => {
     setHiddenInfo,
     createTask,
     keyringId,
+    removeCurrentAccount,
+    updateCurrentAccountAliasName,
   } = React.useContext(LedgerManagerStateContext);
-  const [locked, setLocked] = React.useState(false);
   const [loadNum, setLoadNum] = React.useState(0);
 
   const toggleHiddenInfo = React.useCallback(
@@ -88,7 +89,6 @@ export const AccountList: React.FC<Props> = ({ loading, data }) => {
 
   const handleAddAccount = React.useCallback(
     async (checked: boolean, account: Account) => {
-      setLocked(true);
       if (checked) {
         await createTask(() =>
           wallet.unlockHardwareAccount(
@@ -97,15 +97,23 @@ export const AccountList: React.FC<Props> = ({ loading, data }) => {
             keyringId
           )
         );
+
+        // update current account list
+        await createTask(() => getCurrentAccounts());
+        message.success({
+          content: 'The address is added to Rabby',
+        });
       } else {
         await createTask(() =>
           wallet.removeAddress(account.address, LEDGER_TYPE)
         );
+        removeCurrentAccount(account.address);
+        message.success({
+          content: 'The address is removed from Rabby',
+        });
       }
 
-      // update current account list
-      await createTask(() => getCurrentAccounts());
-      setLocked(false);
+      return;
     },
     []
   );
@@ -115,10 +123,9 @@ export const AccountList: React.FC<Props> = ({ loading, data }) => {
       if (!account) {
         return;
       }
-      setLocked(true);
       await wallet.updateAlianName(account.address, value);
-      await createTask(() => getCurrentAccounts());
-      setLocked(false);
+      updateCurrentAccountAliasName(account.address, value);
+      return;
     },
     []
   );
@@ -162,7 +169,7 @@ export const AccountList: React.FC<Props> = ({ loading, data }) => {
       rowKey="index"
       className="AccountList"
       loading={
-        loading || locked
+        loading
           ? {
               tip: 'Waiting' + (loadNum ? ` - ${loadNum}%` : ''),
             }

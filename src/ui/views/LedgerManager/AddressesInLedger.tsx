@@ -74,12 +74,10 @@ export const AddressesInLedger: React.FC<Props> = ({
         }
       }
     } catch (e) {
-      if (!/busy/.test(e.message)) {
-        message.error({
-          content: e.message,
-          key: 'ledger-error',
-        });
-      }
+      message.error({
+        content: e.message,
+        key: 'ledger-error',
+      });
     }
     stoppedRef.current = true;
     // maybe stop by manual, so we need restart
