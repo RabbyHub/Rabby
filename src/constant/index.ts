@@ -112,7 +112,6 @@ export const BRAND_ALIAN_TYPE_TEXT = {
   [KEYRING_CLASS.HARDWARE.KEYSTONE]: 'Keystone',
 };
 
-CHAINS[CHAINS_ENUM.ETH].
 export const HARDWARE_KEYRING_TYPES = {
   BitBox02: {
     type: 'BitBox02 Hardware',
