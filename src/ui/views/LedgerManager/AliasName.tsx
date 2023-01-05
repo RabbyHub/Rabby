@@ -19,7 +19,13 @@ export const AliasName: React.FC<Props> = ({
   const [value, setValue] = React.useState(aliasName);
   const [focus, setFocus] = React.useState(false);
 
-  const onChangeAliasName = React.useCallback(() => {
+  const onChangeAliasName = React.useCallback((e) => {
+    const value = e.target.value;
+    if (!value) {
+      setFocus(false);
+      setHover(false);
+      return;
+    }
     if (value && value !== aliasName) {
       if (address) {
         cachedName[address] = value;
@@ -29,7 +35,8 @@ export const AliasName: React.FC<Props> = ({
     }
     setFocus(false);
     setHover(false);
-  }, [value]);
+    setValue(value);
+  }, []);
 
   React.useEffect(() => {
     setValue(aliasName);
@@ -58,7 +65,6 @@ export const AliasName: React.FC<Props> = ({
         <Input
           className="alias-input"
           defaultValue={value}
-          onChange={(e) => setValue(e.target.value)}
           onBlur={onChangeAliasName}
           onFocus={() => setFocus(true)}
           onPressEnter={onChangeAliasName}

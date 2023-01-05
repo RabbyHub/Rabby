@@ -101,17 +101,16 @@ export const Main: React.FC = () => {
 
       if (!usedHDPathType) {
         initialHDPathType = HDPathType.LedgerLive;
-        let maxChainLength = 0;
+        let maxUsedCount = 0;
         for (const key in accounts) {
           const items = accounts[key] as Account[];
-          items.forEach((account) => {
-            const chainLen = account.chains?.length ?? 0;
+          const usedCount =
+            items.filter((item) => !!item.chains?.length).length ?? 0;
 
-            if (chainLen > maxChainLength) {
-              maxChainLength = chainLen;
-              initialHDPathType = key as HDPathType;
-            }
-          });
+          if (usedCount > maxUsedCount) {
+            maxUsedCount = usedCount;
+            initialHDPathType = key as HDPathType;
+          }
         }
       }
 
