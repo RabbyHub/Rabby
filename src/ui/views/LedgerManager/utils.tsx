@@ -20,8 +20,10 @@ export const fetchAccountsInfo = async (
     accounts.map(async (account) => {
       let firstTxTime;
       let balance;
-      const address = account.address.toLowerCase();
+      const address = account.address?.toLowerCase();
       if (!address) return account;
+
+      let needCache = true;
 
       if (cachedAccountInfo.has(address)) {
         const cached = cachedAccountInfo.get(address);
@@ -40,6 +42,7 @@ export const fetchAccountsInfo = async (
         chains = await wallet.openapi.usedChainList(account.address);
       } catch (e) {
         console.error('ignore usedChainList error', e);
+        needCache = false;
       }
       try {
         // if has chains, get balance from api
@@ -49,6 +52,7 @@ export const fetchAccountsInfo = async (
         }
       } catch (e) {
         console.error('ignore getTotalBalance error', e);
+        needCache = false;
       }
 
       // find firstTxTime
@@ -65,7 +69,9 @@ export const fetchAccountsInfo = async (
         firstTxTime,
       };
 
-      cachedAccountInfo.set(address, accountInfo);
+      if (needCache) {
+        cachedAccountInfo.set(address, accountInfo);
+      }
 
       return accountInfo;
     })
