@@ -69,30 +69,23 @@ const useGetCurrentAccounts = ({ keyringId }: StateProviderProps) => {
   const [accounts, setAccounts] = React.useState<Account[]>([]);
 
   const getCurrentAccounts = React.useCallback(async () => {
-    try {
-      setLoading(true);
-      const accounts = (await wallet.requestKeyring(
-        HARDWARE_KEYRING_TYPES.Ledger.type,
-        'getCurrentAccounts',
-        keyringId
-      )) as Account[];
+    setLoading(true);
+    const accounts = (await wallet.requestKeyring(
+      HARDWARE_KEYRING_TYPES.Ledger.type,
+      'getCurrentAccounts',
+      keyringId
+    )) as Account[];
 
-      // fetch aliasName
-      const accountsWithAliasName = await Promise.all(
-        accounts.map(async (account) => {
-          const aliasName = await wallet.getAlianName(account.address);
-          account.aliasName = aliasName;
-          return account;
-        })
-      );
+    // fetch aliasName
+    const accountsWithAliasName = await Promise.all(
+      accounts.map(async (account) => {
+        const aliasName = await wallet.getAlianName(account.address);
+        account.aliasName = aliasName;
+        return account;
+      })
+    );
 
-      setAccounts(accountsWithAliasName);
-    } catch (e) {
-      message.error({
-        content: e.message,
-        key: 'ledger-error',
-      });
-    }
+    setAccounts(accountsWithAliasName);
     setLoading(false);
   }, []);
 
@@ -155,7 +148,8 @@ const useTaskQueue = () => {
   }, []);
 
   React.useEffect(() => {
-    queueRef.current.on('error', () => {
+    queueRef.current.on('error', (e) => {
+      console.error(e);
       message.error({
         content:
           'Unable to connect to Hardware wallet. Please try to re-connect.',

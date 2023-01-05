@@ -1087,7 +1087,7 @@ class LedgerBridgeKeyring extends EventEmitter {
     // Check if the account is of the device
     // so we get address from the device by the hdPath
     let addressInDevice;
-    const hdPathType = this._getHDPathType(detail.hdPath);
+    const hdPathType = this._getHDPathType(detail.hdPath, detail.bip44);
 
     // Ledger Live Account
     if (detail.bip44 && this._isLedgerLiveHdPath()) {
