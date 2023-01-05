@@ -287,10 +287,6 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
     setSelectedAcounts(res);
   };
 
-  if (isLedger) {
-    return <LedgerManager keyringId={keyringId.current ?? null} />;
-  }
-
   return (
     <div className="select-address">
       <StrayPageWithButton
