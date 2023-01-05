@@ -1151,6 +1151,7 @@ class LedgerBridgeKeyring extends EventEmitter {
       false,
       true
     );
+    const hdPathType = this.getHDPathTypeFromPath(pathBase);
     const accounts: Account[] = [];
     for (let i = 0; i < addresses.length; i++) {
       const address = addresses[i];
@@ -1167,9 +1168,11 @@ class LedgerBridgeKeyring extends EventEmitter {
       }
 
       // Live and BIP44 first account is the same
+      // we need to check the first account when the path type is LedgerLive or BIP44
       if (
-        detail.hdPathType === HDPathType.LedgerLive ||
-        detail.hdPathType === HDPathType.BIP44
+        hdPathType !== HDPathType.Legacy &&
+        (detail.hdPathType === HDPathType.LedgerLive ||
+          detail.hdPathType === HDPathType.BIP44)
       ) {
         const info = this.getAccountInfo(address);
         if (info?.index === 1) {
