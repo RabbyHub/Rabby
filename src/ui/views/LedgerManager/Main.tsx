@@ -164,7 +164,13 @@ export const Main: React.FC = () => {
             loading={loading}
           />
         </Tabs.TabPane>
-        <Tabs.TabPane tab="Addresses in Rabby" key="rabby" disabled={loading}>
+        <Tabs.TabPane
+          tab={`Addresses in Rabby${
+            loading ? '' : ` (${currentAccounts.length})`
+          }`}
+          key="rabby"
+          disabled={loading}
+        >
           <AddressesInRabby
             type={setting.type}
             startNo={setting.startNo}
