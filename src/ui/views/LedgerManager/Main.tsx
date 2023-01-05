@@ -9,6 +9,7 @@ import {
   AdvancedSettings,
   SettingData,
   DEFAULT_SETTING_DATA,
+  MAX_ACCOUNT_COUNT,
 } from './AdvancedSettings';
 import { useWallet } from '@/ui/utils';
 import { HARDWARE_KEYRING_TYPES } from '@/constant';
@@ -31,7 +32,6 @@ export const Main: React.FC = () => {
   const [initAccounts, setInitAccounts] = React.useState<InitAccounts>();
   const [loading, setLoading] = React.useState(false);
   const {
-    currentAccountsLoading,
     getCurrentAccounts,
     currentAccounts,
     setTab,
@@ -142,6 +142,15 @@ export const Main: React.FC = () => {
     };
   }, []);
 
+  const filterCurrentAccounts = React.useMemo(() => {
+    return currentAccounts?.filter((item) => {
+      return (
+        item.index >= setting.startNo &&
+        item.index < setting.startNo + MAX_ACCOUNT_COUNT
+      );
+    });
+  }, [setting.startNo, currentAccounts]);
+
   return (
     <main>
       <div className="logo">
@@ -166,7 +175,7 @@ export const Main: React.FC = () => {
         </Tabs.TabPane>
         <Tabs.TabPane
           tab={`Addresses in Rabby${
-            loading ? '' : ` (${currentAccounts.length})`
+            loading ? '' : ` (${filterCurrentAccounts.length})`
           }`}
           key="rabby"
           disabled={loading}
@@ -175,7 +184,7 @@ export const Main: React.FC = () => {
             type={setting.type}
             startNo={setting.startNo}
             loading={loading}
-            data={currentAccounts}
+            data={filterCurrentAccounts}
           />
         </Tabs.TabPane>
       </Tabs>
