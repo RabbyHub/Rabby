@@ -273,7 +273,7 @@ export const AccountList: React.FC<Props> = ({ loading, data }) => {
               <AliasName
                 address={record.address}
                 aliasName={account?.aliasName}
-                onChange={(val) => handleChangeAliasName(val, account)}
+                onChange={(val) => handleChangeAliasName(val, record)}
               />
             );
           }}
