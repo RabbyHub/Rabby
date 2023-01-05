@@ -14,7 +14,7 @@ import {
 } from '@ethereumjs/tx';
 import eventBus from '@/eventBus';
 import { EVENTS } from 'consts';
-import { wait } from '@/background/utils';
+import { isSameAddress, wait } from '@/background/utils';
 import { LedgerHDPathType } from '@/utils/ledger';
 
 const pathBase = 'm';
@@ -243,9 +243,6 @@ class LedgerBridgeKeyring extends EventEmitter {
       this.hdk.publicKey = Buffer.from(publicKey, 'hex');
       this.hdk.chainCode = Buffer.from(chainCode!, 'hex');
 
-      if (hdPath) {
-        await this._fixAccountDetail(address, hdPath);
-      }
       return address;
     }
     return new Promise((resolve, reject) => {
@@ -1079,21 +1076,37 @@ class LedgerBridgeKeyring extends EventEmitter {
     }
   }
 
-  private async _fixAccountDetail(address: string, hdPath: string) {
+  private async _fixAccountDetail(address: string) {
     const checksummedAddress = ethUtil.toChecksumAddress(address);
+    const detail = this.accountDetails[checksummedAddress];
 
-    if (this.accountDetails[checksummedAddress]) {
-      const accountDetail = this.accountDetails[checksummedAddress];
-
-      if (!accountDetail.hdPathBasePublicKey) {
-        const hdPathType = this._getHDPathType(hdPath, accountDetail.bip44);
-
-        accountDetail.hdPathType = hdPathType;
-        accountDetail.hdPathBasePublicKey = await this._getPathBasePublicKey(
-          hdPathType
-        );
-      }
+    // The detail is already fixed
+    if (detail.hdPathBasePublicKey) {
+      return;
     }
+    // Check if the account is of the device
+    // so we get address from the device by the hdPath
+    let addressInDevice;
+    const hdPathType = this._getHDPathType(detail.hdPath);
+
+    // Ledger Live Account
+    if (detail.bip44 && this._isLedgerLiveHdPath()) {
+      const res = await this.app!.getAddress(detail.hdPath, false, true);
+      addressInDevice = res.address;
+      // BIP44 OR Legacy Account
+    } else {
+      const index = this.getIndexFromPath(detail.hdPath, hdPathType);
+      addressInDevice = this._addressFromIndex(pathBase, index);
+    }
+
+    // The address is not the same, so we don't need to fix
+    if (!isSameAddress(addressInDevice, address)) {
+      return;
+    }
+
+    // Right, we need to fix the account detail
+    detail.hdPathType = hdPathType;
+    detail.hdPathBasePublicKey = await this._getPathBasePublicKey(hdPathType);
   }
 
   // return top 3 accounts for each path type
@@ -1125,15 +1138,19 @@ class LedgerBridgeKeyring extends EventEmitter {
       true
     );
     const accounts: Account[] = [];
-    addresses.forEach((address) => {
+    for (let i = 0; i < addresses.length; i++) {
+      const address = addresses[i];
+      await this._fixAccountDetail(address);
+
       const detail = this.accountDetails[ethUtil.toChecksumAddress(address)];
-      if (detail?.hdPathBasePublicKey === currentPublicKey) {
+
+      if (detail.hdPathBasePublicKey === currentPublicKey) {
         const info = this.getAccountInfo(address);
         if (info) {
           accounts.push(info);
         }
       }
-    });
+    }
 
     return accounts;
   }
