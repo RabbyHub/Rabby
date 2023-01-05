@@ -98,6 +98,14 @@ export const AccountList: React.FC<Props> = ({ loading, data }) => {
           )
         );
 
+        await createTask(() =>
+          wallet.requestKeyring(
+            LEDGER_TYPE,
+            'setCurrentUsedHDPathType',
+            keyringId
+          )
+        );
+
         // update current account list
         await createTask(() => getCurrentAccounts());
         message.success({
@@ -149,7 +157,7 @@ export const AccountList: React.FC<Props> = ({ loading, data }) => {
       setLoadNum(0);
       timer = setInterval(() => {
         setLoadNum((num) => {
-          const random = Math.floor(Math.random() * 10) + 20;
+          const random = Math.floor(Math.random() * 10) + 10;
           return num + random > 99 ? 99 : num + random;
         });
       }, 1000);
@@ -273,6 +281,7 @@ export const AccountList: React.FC<Props> = ({ loading, data }) => {
       </Table.ColumnGroup>
 
       <Table.ColumnGroup
+        className="column-group-wrap"
         title={
           <div ref={infoRef} className="column-group">
             <a href="#" onClick={(e) => toggleHiddenInfo(e, !hiddenInfo)}>

@@ -9,6 +9,7 @@ import {
   AdvancedSettings,
   SettingData,
   DEFAULT_SETTING_DATA,
+  MAX_ACCOUNT_COUNT,
 } from './AdvancedSettings';
 import { useWallet } from '@/ui/utils';
 import { HARDWARE_KEYRING_TYPES } from '@/constant';
@@ -31,7 +32,6 @@ export const Main: React.FC = () => {
   const [initAccounts, setInitAccounts] = React.useState<InitAccounts>();
   const [loading, setLoading] = React.useState(false);
   const {
-    currentAccountsLoading,
     getCurrentAccounts,
     currentAccounts,
     setTab,
@@ -70,7 +70,18 @@ export const Main: React.FC = () => {
         accounts[key] = await fetchAccountsInfo(wallet, items);
       }
       setInitAccounts(accounts);
-      detectInitialHDPathType(accounts);
+
+      // fetch current used HDPathType
+      const usedHDPathType =
+        ((await createTask(() =>
+          wallet.requestKeyring(
+            LEDGER_TYPE,
+            'getCurrentUsedHDPathType',
+            keyringId
+          )
+        )) as HDPathType) || undefined;
+
+      detectInitialHDPathType(accounts, usedHDPathType);
     } catch (e) {
       console.error(e);
     }
@@ -79,31 +90,32 @@ export const Main: React.FC = () => {
   }, []);
 
   const changeHDPathTask = React.useCallback(async (type: HDPathType) => {
-    const hdPathBase = await createTask(() =>
-      wallet.requestKeyring(LEDGER_TYPE, 'getHDPathBase', keyringId, type)
-    );
     await createTask(() =>
-      wallet.requestKeyring(LEDGER_TYPE, 'setHdPath', keyringId, hdPathBase)
+      wallet.requestKeyring(LEDGER_TYPE, 'setHDPathType', keyringId, type)
     );
   }, []);
 
   const detectInitialHDPathType = React.useCallback(
-    async (accounts: InitAccounts) => {
-      let initialHDPathType = HDPathType.LedgerLive;
-      let maxChainLength = 0;
-      for (const key in accounts) {
-        const items = accounts[key] as Account[];
-        items.forEach((account) => {
-          const chainLen = account.chains?.length ?? 0;
+    async (accounts: InitAccounts, usedHDPathType?: HDPathType) => {
+      let initialHDPathType = usedHDPathType;
 
-          if (chainLen > maxChainLength) {
-            maxChainLength = chainLen;
-            initialHDPathType = key as HDPathType;
-          }
-        });
+      if (!usedHDPathType) {
+        initialHDPathType = HDPathType.LedgerLive;
+        let maxChainLength = 0;
+        for (const key in accounts) {
+          const items = accounts[key] as Account[];
+          items.forEach((account) => {
+            const chainLen = account.chains?.length ?? 0;
+
+            if (chainLen > maxChainLength) {
+              maxChainLength = chainLen;
+              initialHDPathType = key as HDPathType;
+            }
+          });
+        }
       }
 
-      await changeHDPathTask(initialHDPathType);
+      await changeHDPathTask(initialHDPathType!);
       await createTask(() => getCurrentAccounts());
       setSetting((prev) => ({
         ...prev,
@@ -130,6 +142,15 @@ export const Main: React.FC = () => {
     };
   }, []);
 
+  const filterCurrentAccounts = React.useMemo(() => {
+    return currentAccounts?.filter((item) => {
+      return (
+        item.index >= setting.startNo &&
+        item.index < setting.startNo + MAX_ACCOUNT_COUNT
+      );
+    });
+  }, [setting.startNo, currentAccounts]);
+
   return (
     <main>
       <div className="logo">
@@ -152,12 +173,18 @@ export const Main: React.FC = () => {
             loading={loading}
           />
         </Tabs.TabPane>
-        <Tabs.TabPane tab="Addresses in Rabby" key="rabby" disabled={loading}>
+        <Tabs.TabPane
+          tab={`Addresses in Rabby${
+            loading ? '' : ` (${filterCurrentAccounts.length})`
+          }`}
+          key="rabby"
+          disabled={loading}
+        >
           <AddressesInRabby
             type={setting.type}
             startNo={setting.startNo}
             loading={loading}
-            data={currentAccounts}
+            data={filterCurrentAccounts}
           />
         </Tabs.TabPane>
       </Tabs>
