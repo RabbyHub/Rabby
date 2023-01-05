@@ -33,6 +33,18 @@ const NETWORK_API_URLS = {
 
 import HDPathType = LedgerHDPathType;
 
+const HD_PATH_BASE = {
+  [HDPathType.BIP44]: "m/44'/60'/0'/0",
+  [HDPathType.Legacy]: "m/44'/60'/0'",
+  [HDPathType.LedgerLive]: "m/44'/60'/0'/0/0",
+};
+
+const HD_PATH_TYPE = {
+  [HD_PATH_BASE['Legacy']]: HDPathType.Legacy,
+  [HD_PATH_BASE['BIP44']]: HDPathType.BIP44,
+  [HD_PATH_BASE['LedgerLive']]: HDPathType.LedgerLive,
+};
+
 interface Account {
   address: string;
   balance: number | null;
@@ -71,6 +83,7 @@ class LedgerBridgeKeyring extends EventEmitter {
   rejectPromise: null | ((value: any) => void) = null;
   onSendTransaction: null | (() => Promise<any>) = null;
   isWebUSB: boolean;
+  usedHDPathTypeList: Record<string, HDPathType> = {};
   static type: string;
   constructor(opts = {}) {
     super();
@@ -91,6 +104,7 @@ class LedgerBridgeKeyring extends EventEmitter {
     this.transport = null;
     this.isWebUSB = false;
     this.app = null;
+    this.usedHDPathTypeList = {};
     this.deserialize(opts);
 
     this.iframeLoaded = false;
@@ -106,6 +120,7 @@ class LedgerBridgeKeyring extends EventEmitter {
       implementFullBIP44: false,
       isWebHID: this.isWebHID,
       hasHIDPermission: this.hasHIDPermission,
+      usedHDPathTypeList: this.usedHDPathTypeList,
     });
   }
 
@@ -126,6 +141,10 @@ class LedgerBridgeKeyring extends EventEmitter {
     }
     if (!opts.accountDetails) {
       this._migrateAccountDetails(opts);
+    }
+
+    if (opts.usedHDPathTypeList) {
+      this.usedHDPathTypeList = opts.usedHDPathTypeList;
     }
 
     this.implementFullBIP44 = opts.implementFullBIP44 || false;
@@ -281,13 +300,13 @@ class LedgerBridgeKeyring extends EventEmitter {
               address = this._addressFromIndex(pathBase, i);
             }
             const isLive = this._isLedgerLiveHdPath();
-            const hdPathType = this._getHDPathType(path, isLive);
+            const hdPathType = this.getHDPathType(path, isLive);
             this.accountDetails[ethUtil.toChecksumAddress(address)] = {
               // TODO: consider renaming this property, as the current name is misleading
               // It's currently used to represent whether an account uses the Ledger Live path.
               bip44: isLive,
               hdPath: path,
-              hdPathBasePublicKey: await this._getPathBasePublicKey(hdPathType),
+              hdPathBasePublicKey: await this.getPathBasePublicKey(hdPathType),
               hdPathType,
             };
 
@@ -1046,7 +1065,7 @@ class LedgerBridgeKeyring extends EventEmitter {
     return NETWORK_API_URLS[this.network] || NETWORK_API_URLS.mainnet;
   }
 
-  private _getHDPathType(path: string, isLedgerLive?: boolean) {
+  private getHDPathType(path: string, isLedgerLive?: boolean) {
     if (isLedgerLive && /^m\/44'\/60'\/(\d+)'\/0\/0$/.test(path)) {
       return HDPathType.LedgerLive;
     } else if (/^m\/44'\/60'\/0'\/0\/(\d+)$/.test(path)) {
@@ -1056,24 +1075,19 @@ class LedgerBridgeKeyring extends EventEmitter {
     }
     throw new Error('Invalid path');
   }
-  private async _getPathBasePublicKey(hdPathType: HDPathType) {
+  private async getPathBasePublicKey(hdPathType: HDPathType) {
     const pathBase = this.getHDPathBase(hdPathType);
     const res = await this.app!.getAddress(pathBase, false, true);
 
     return res.publicKey;
   }
 
-  getHDPathBase(hdPathType: HDPathType) {
-    switch (hdPathType) {
-      case HDPathType.BIP44:
-        return "m/44'/60'/0'/0";
-      case HDPathType.Legacy:
-        return "m/44'/60'/0'";
-      case HDPathType.LedgerLive:
-        return "m/44'/60'/0'/0/0";
-      default:
-        throw new Error('Invalid path');
-    }
+  private getHDPathBase(hdPathType: HDPathType) {
+    return HD_PATH_BASE[hdPathType];
+  }
+
+  private getHDPathTypeFromPath(hdPath: string) {
+    return HD_PATH_TYPE[hdPath];
   }
 
   private async _fixAccountDetail(address: string) {
@@ -1087,7 +1101,7 @@ class LedgerBridgeKeyring extends EventEmitter {
     // Check if the account is of the device
     // so we get address from the device by the hdPath
     let addressInDevice;
-    const hdPathType = this._getHDPathType(detail.hdPath, detail.bip44);
+    const hdPathType = this.getHDPathType(detail.hdPath, detail.bip44);
 
     // Ledger Live Account
     if (detail.bip44 && this._isLedgerLiveHdPath()) {
@@ -1106,7 +1120,7 @@ class LedgerBridgeKeyring extends EventEmitter {
 
     // Right, we need to fix the account detail
     detail.hdPathType = hdPathType;
-    detail.hdPathBasePublicKey = await this._getPathBasePublicKey(hdPathType);
+    detail.hdPathBasePublicKey = await this.getPathBasePublicKey(hdPathType);
   }
 
   // return top 3 accounts for each path type
@@ -1194,6 +1208,21 @@ class LedgerBridgeKeyring extends EventEmitter {
       default:
         throw new Error('Invalid path');
     }
+  }
+
+  async setHDPathType(hdPathType: HDPathType) {
+    const hdPath = this.getHDPathBase(hdPathType);
+    this.setHdPath(hdPath);
+  }
+
+  async setCurrentUsedHDPathType() {
+    const key = await this.getPathBasePublicKey(HDPathType.Legacy);
+    this.usedHDPathTypeList[key] = this.getHDPathTypeFromPath(this.hdPath);
+  }
+
+  async getCurrentUsedHDPathType() {
+    const key = await this.getPathBasePublicKey(HDPathType.Legacy);
+    return this.usedHDPathTypeList[key];
   }
 }
 

@@ -70,7 +70,18 @@ export const Main: React.FC = () => {
         accounts[key] = await fetchAccountsInfo(wallet, items);
       }
       setInitAccounts(accounts);
-      detectInitialHDPathType(accounts);
+
+      // fetch current used HDPathType
+      const usedHDPathType =
+        ((await createTask(() =>
+          wallet.requestKeyring(
+            LEDGER_TYPE,
+            'getCurrentUsedHDPathType',
+            keyringId
+          )
+        )) as HDPathType) || undefined;
+
+      detectInitialHDPathType(accounts, usedHDPathType);
     } catch (e) {
       console.error(e);
     }
@@ -79,31 +90,32 @@ export const Main: React.FC = () => {
   }, []);
 
   const changeHDPathTask = React.useCallback(async (type: HDPathType) => {
-    const hdPathBase = await createTask(() =>
-      wallet.requestKeyring(LEDGER_TYPE, 'getHDPathBase', keyringId, type)
-    );
     await createTask(() =>
-      wallet.requestKeyring(LEDGER_TYPE, 'setHdPath', keyringId, hdPathBase)
+      wallet.requestKeyring(LEDGER_TYPE, 'setHDPathType', keyringId, type)
     );
   }, []);
 
   const detectInitialHDPathType = React.useCallback(
-    async (accounts: InitAccounts) => {
-      let initialHDPathType = HDPathType.LedgerLive;
-      let maxChainLength = 0;
-      for (const key in accounts) {
-        const items = accounts[key] as Account[];
-        items.forEach((account) => {
-          const chainLen = account.chains?.length ?? 0;
+    async (accounts: InitAccounts, usedHDPathType?: HDPathType) => {
+      let initialHDPathType = usedHDPathType;
 
-          if (chainLen > maxChainLength) {
-            maxChainLength = chainLen;
-            initialHDPathType = key as HDPathType;
-          }
-        });
+      if (!usedHDPathType) {
+        initialHDPathType = HDPathType.LedgerLive;
+        let maxChainLength = 0;
+        for (const key in accounts) {
+          const items = accounts[key] as Account[];
+          items.forEach((account) => {
+            const chainLen = account.chains?.length ?? 0;
+
+            if (chainLen > maxChainLength) {
+              maxChainLength = chainLen;
+              initialHDPathType = key as HDPathType;
+            }
+          });
+        }
       }
 
-      await changeHDPathTask(initialHDPathType);
+      await changeHDPathTask(initialHDPathType!);
       await createTask(() => getCurrentAccounts());
       setSetting((prev) => ({
         ...prev,

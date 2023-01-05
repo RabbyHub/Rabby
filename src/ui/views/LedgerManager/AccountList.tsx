@@ -98,6 +98,14 @@ export const AccountList: React.FC<Props> = ({ loading, data }) => {
           )
         );
 
+        await createTask(() =>
+          wallet.requestKeyring(
+            LEDGER_TYPE,
+            'setCurrentUsedHDPathType',
+            keyringId
+          )
+        );
+
         // update current account list
         await createTask(() => getCurrentAccounts());
         message.success({
