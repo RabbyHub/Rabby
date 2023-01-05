@@ -56,6 +56,10 @@ class WhitelistService {
   isWhitelistEnabled = () => {
     return this.store.enabled;
   };
+
+  isInWhiteList = (address: string) => {
+    return this.store.whitelists.some((item) => isSameAddress(item, address));
+  };
 }
 
 export default new WhitelistService();

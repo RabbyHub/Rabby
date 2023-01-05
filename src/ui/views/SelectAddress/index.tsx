@@ -18,6 +18,7 @@ import './style.less';
 import { useMedia } from 'react-use';
 import type { Account } from '@/background/service/preference';
 import { ErrorAlert } from '@/ui/component/Alert/ErrorAlert';
+import { LedgerManager } from '../LedgerManager/LedgerManager';
 
 const { Option } = Select;
 
@@ -75,6 +76,10 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
   const isLedger = keyring === HARDWARE_KEYRING_TYPES.Ledger.type;
   const [hasError, setHasError] = useState(false);
 
+  if (isLedger) {
+    return <LedgerManager keyringId={keyringId.current ?? null} />;
+  }
+
   const [getAccounts] = useWalletRequest(
     async (firstFlag, start?, end?, cb?): Promise<Account[]> => {
       setSpin(true);
@@ -120,7 +125,11 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
         if (isLedger) {
           setHasError(true);
           try {
-            wallet.requestKeyring(keyring, 'cleanUp', null);
+            wallet.requestKeyring(
+              keyring,
+              'cleanUp',
+              keyringId.current ?? null
+            );
           } catch (e) {
             console.log(e);
           }

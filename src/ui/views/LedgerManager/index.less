@@ -1,0 +1,366 @@
+.LedgerManager {
+  font-weight: 500;
+  line-height: 1.15;
+  background: @color-bg;
+  overflow-x: auto;
+  min-height: 100vh;
+
+  main {
+    min-width: 1000px;
+    position: relative;
+    padding-top: 20px;
+    margin: 20px 120px;
+    display: flex;
+    flex-direction: column;
+  }
+
+  @media (max-width: 900px) {
+    main {
+      margin: 20px 10px;
+    }
+  }
+
+  .logo {
+    display: flex;
+    align-items: center;
+    margin: 0 auto 24px;
+    .icon {
+      width: 32px;
+      margin-right: 12px;
+    }
+    .title {
+      font-size: 20px;
+      color: @color-title;
+      margin-bottom: 0;
+    }
+  }
+
+  .setting {
+    display: flex;
+    align-items: center;
+    position: absolute;
+    right: 0;
+    top: 0;
+    cursor: pointer;
+    .icon {
+      width: 16px;
+      margin-right: 4px;
+    }
+    .title {
+      color: @color-body;
+      font-size: 12px;
+      line-height: 1;
+    }
+  }
+
+  .tabs {
+    .ant-tabs-nav::before {
+      display: none;
+    }
+    .ant-tabs-nav-list {
+      margin: auto;
+      background: @color-border;
+      border-radius: 8px;
+      padding: 4px;
+    }
+    .ant-tabs-ink-bar {
+      display: none;
+    }
+    .ant-tabs-tab {
+      padding: 7px 34px;
+      border-radius: 6px;
+      color: @color-comment;
+      font-size: 15px;
+      transition: all 0.3s ease-in-out;
+      margin: 0;
+      &.ant-tabs-tab-active {
+        background: #fff;
+      }
+    }
+  }
+}
+
+.AccountList {
+  .ant-table-cell {
+    height: 55px;
+    padding: 0 16px;
+  }
+  tr > td {
+    border-bottom: 1px solid @color-bg;
+  }
+  .ant-table-thead {
+    font-size: 12px;
+    line-height: 14px;
+    
+    .ant-table-cell {
+      padding: 8px 16px;
+      background: #FAFBFD;
+      border-bottom: none;
+      height: auto;
+    }
+
+    .column-group {
+      color: @color-comment;
+      text-align: left;
+      font-weight: normal;
+      padding: 10px 0 0;
+
+      a {
+        color: @color-comment;
+        text-decoration: underline;
+      }
+    }
+
+    .column-group-wrap {
+      border-right: 1px solid @color-bg;
+    }
+  }
+
+  .cell-address {
+    display: flex;
+    align-items: center;
+    padding-left: 3px;
+    padding-right: 20px;
+    text-align: left;
+  }
+
+  &-skeleton {
+    background: @color-bg;
+    padding: 4px 6px;
+    border-radius: 4px;
+    color: @color-comment;
+    font-size: 13px;
+    display: block;
+    margin: auto;
+  }
+
+  .cell-index {
+    color: @color-comment;
+    font-weight: 400;
+    padding-right: 3px;
+  }
+
+  .cell-note {
+    border-right: 1px solid @color-bg;
+  }
+
+  .cell-add {
+    border-right: 1px solid @color-bg;
+  }
+
+  .copy-icon {
+    width: 14px;
+    margin-left: 4px;
+  }
+
+  .info-mask {
+    cursor: pointer;
+    position: absolute;
+    right: 0;
+    background-color: rgba(0, 0, 0, 0.1);
+    bottom: 0;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding-top: 108px;
+
+    &--center {
+      justify-content: center;
+      padding-top: 0;
+    }
+
+    td {
+      border-bottom: none;
+      padding: 0;
+      display: flex;
+      align-items: center;
+      .icon {
+        margin-right: 12px;
+      }
+    }
+  }
+
+  .AliasName {
+    &--disabled {
+      color: @color-comment;
+    }
+    .label {
+      display: flex;
+      align-items: center;
+    }
+    .text {
+      margin-right: 4px;
+    }
+  }
+
+  .ChainList {
+    display: flex;
+    align-items: center;
+
+    .chain-item {
+      width: 20px;
+      height: 20px;
+      margin-right: 8px;
+      border-radius: 100%;
+      background: @color-border;
+      color: @color-comment;
+      font-size: 12px;
+      line-height: 14px;
+      font-weight: 400;
+      overflow: hidden;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      &:last-child {
+        margin-right: 0;
+      }
+    }
+  }
+}
+
+.AdvancedSettings {
+  .group {
+    margin-bottom: 40px;
+   
+    .label {
+      color: @color-title;
+      font-size: 15px;
+      line-height: 17.5px;
+      margin-bottom: 12px;
+      font-weight: 500;
+    }
+
+    .tip {
+      color: @color-comment;
+      font-size: 13px;
+      line-height: 15px;
+      font-weight: 500;
+    }
+
+    .group-field {
+      margin-bottom: 12px;
+      width: 100%;
+      display: flex;
+
+      .ant-input-number-handler-wrap {
+        display: none;
+      }
+
+      .ant-input-number-input-wrap {
+        width: 100%;
+      }
+    }
+  }
+}
+
+.AdvancedModal {
+  .ant-modal-footer {
+    border-top: none;
+    padding: 0;
+  }
+
+  .ant-modal-header {
+    border-bottom: none;
+    padding: 40px 0;
+    background-color: #fff;
+  }
+
+  .ant-modal-body {
+    padding: 0 74px;
+  }
+
+  .ant-modal-content {
+    background-color: #fff;
+    border-radius: 12px;
+  }
+
+  .advanced-button {
+    padding: 17px 0;
+    height: auto;
+    font-size: 15px;
+    line-height: 1;
+    width: 360px;
+    margin: auto;
+    display: block;
+  }
+
+  .footer {
+    margin: 80px 0 60px;
+  }
+}
+
+.HDPathTypeButton {
+  background: @color-bg;
+  border-radius: 6px;
+  color: @color-title;
+  font-size: 15px;
+  font-weight: 500;
+  line-height: 17.5px;
+  padding: 17px 0;
+  width: 220px;
+  position: relative;
+  margin-right: 16px;
+  transition: all 0.3s ease-in-out;
+  &:last-child {
+    margin-right: 0;
+  }
+
+  &--selected {
+    background: rgba(134, 151, 255, 0.2);
+    color: @primary-text-color;
+  }
+
+  &--on-chain::before {
+    content: '';
+    background: @color-green;
+    position: absolute;
+    right: 8px;
+    top: 8px;
+    border-radius: 50%;
+    width: 8px;
+    height: 8px;
+  }
+}
+
+.AddToRabby {
+  min-width: 50px;
+  height: 20px;
+  line-height: 20px;
+  border-radius: 90px;
+  background-color: #D9DEE5;
+  .icon {
+    position: absolute;
+    top: 6px;
+    left: 5px;
+  }
+  .icon-loading {
+    position: absolute;
+    left: 1px;
+    top: 2px;
+
+    path {
+      stroke: @primary-color;
+    }
+  }
+  &.ant-switch-checked {
+    background-color: @primary-color;
+    .ant-switch-handle {
+      left: calc(100% - 22px);
+      &::before {
+        border-color: rgba(134, 151, 255, 0.2);
+        box-shadow: 0px 1px 2px rgba(29, 40, 109, 0.1);
+      }
+    }
+  }
+  .ant-switch-handle {
+    width: 24px;
+    height: 24px;
+    top: -2px;
+    left: -2px;
+    &::before {
+      border-radius: 50%;
+      border: 1px solid #D9DEE5;
+      box-shadow: 0px 1px 2px rgba(29, 40, 109, 0.1);
+    }
+  }
+}

@@ -14,7 +14,8 @@ import {
 } from '@ethereumjs/tx';
 import eventBus from '@/eventBus';
 import { EVENTS } from 'consts';
-import { wait } from '@/background/utils';
+import { isSameAddress, wait } from '@/background/utils';
+import { LedgerHDPathType } from '@/utils/ledger';
 
 const pathBase = 'm';
 const hdPathString = `${pathBase}/44'/60'/0'`;
@@ -30,8 +31,23 @@ const NETWORK_API_URLS = {
   mainnet: 'https://api.etherscan.io',
 };
 
+import HDPathType = LedgerHDPathType;
+
+interface Account {
+  address: string;
+  balance: number | null;
+  index: number;
+}
+
+interface AccountDetail {
+  bip44: boolean;
+  hdPath: string;
+  hdPathBasePublicKey?: string;
+  hdPathType?: HDPathType;
+}
+
 class LedgerBridgeKeyring extends EventEmitter {
-  accountDetails: {};
+  accountDetails: Record<string, AccountDetail>;
   bridgeUrl: string | null;
   type: string;
   page: number;
@@ -212,7 +228,10 @@ class LedgerBridgeKeyring extends EventEmitter {
     this.hdk = new HDKey();
   }
 
-  async unlock(hdPath?): Promise<string> {
+  async unlock(hdPath?, force?: boolean): Promise<string> {
+    if (force) {
+      hdPath = this.hdPath;
+    }
     if (this.isUnlocked() && !hdPath) {
       return 'already unlocked';
     }
@@ -223,6 +242,7 @@ class LedgerBridgeKeyring extends EventEmitter {
       const { address, publicKey, chainCode } = res;
       this.hdk.publicKey = Buffer.from(publicKey, 'hex');
       this.hdk.chainCode = Buffer.from(chainCode!, 'hex');
+
       return address;
     }
     return new Promise((resolve, reject) => {
@@ -260,15 +280,21 @@ class LedgerBridgeKeyring extends EventEmitter {
             } else {
               address = this._addressFromIndex(pathBase, i);
             }
+            const isLive = this._isLedgerLiveHdPath();
+            const hdPathType = this._getHDPathType(path, isLive);
             this.accountDetails[ethUtil.toChecksumAddress(address)] = {
               // TODO: consider renaming this property, as the current name is misleading
               // It's currently used to represent whether an account uses the Ledger Live path.
-              bip44: this._isLedgerLiveHdPath(),
+              bip44: isLive,
               hdPath: path,
+              hdPathBasePublicKey: await this._getPathBasePublicKey(hdPathType),
+              hdPathType,
             };
 
+            address = address.toLowerCase();
+
             if (!this.accounts.includes(address)) {
-              this.accounts.push(address.toLowerCase());
+              this.accounts.push(address);
             }
             this.page = 0;
           }
@@ -855,7 +881,7 @@ class LedgerBridgeKeyring extends EventEmitter {
     const to = from + this.perPage;
 
     await this.unlock();
-    let accounts;
+    let accounts: Account[];
     if (this._isLedgerLiveHdPath()) {
       accounts = await this._getAccountsBIP44(from, to);
     } else {
@@ -867,7 +893,7 @@ class LedgerBridgeKeyring extends EventEmitter {
     const from = start;
     const to = end;
     await this.unlock();
-    let accounts;
+    let accounts: Account[];
     if (this._isLedgerLiveHdPath()) {
       accounts = await this._getAccountsBIP44(from, to);
     } else {
@@ -901,11 +927,7 @@ class LedgerBridgeKeyring extends EventEmitter {
   }
 
   async _getAccountsBIP44(from, to) {
-    const accounts: {
-      address: string;
-      balance: number | null;
-      index: number;
-    }[] = [];
+    const accounts: Account[] = [];
 
     for (let i = from; i < to; i++) {
       const path = this._getPathForIndex(i);
@@ -930,11 +952,7 @@ class LedgerBridgeKeyring extends EventEmitter {
   }
 
   _getAccountsLegacy(from, to) {
-    const accounts: {
-      address: string;
-      balance: number | null;
-      index: number;
-    }[] = [];
+    const accounts: Account[] = [];
     for (let i = from; i < to; i++) {
       const address = this._addressFromIndex(pathBase, i);
       accounts.push({
@@ -1026,6 +1044,141 @@ class LedgerBridgeKeyring extends EventEmitter {
 
   _getApiUrl() {
     return NETWORK_API_URLS[this.network] || NETWORK_API_URLS.mainnet;
+  }
+
+  private _getHDPathType(path: string, isLedgerLive?: boolean) {
+    if (isLedgerLive && /^m\/44'\/60'\/(\d+)'\/0\/0$/.test(path)) {
+      return HDPathType.LedgerLive;
+    } else if (/^m\/44'\/60'\/0'\/0\/(\d+)$/.test(path)) {
+      return HDPathType.BIP44;
+    } else if (/^m\/44'\/60'\/0'\/(\d+)$/.test(path)) {
+      return HDPathType.Legacy;
+    }
+    throw new Error('Invalid path');
+  }
+  private async _getPathBasePublicKey(hdPathType: HDPathType) {
+    const pathBase = this.getHDPathBase(hdPathType);
+    const res = await this.app!.getAddress(pathBase, false, true);
+
+    return res.publicKey;
+  }
+
+  getHDPathBase(hdPathType: HDPathType) {
+    switch (hdPathType) {
+      case HDPathType.BIP44:
+        return "m/44'/60'/0'/0";
+      case HDPathType.Legacy:
+        return "m/44'/60'/0'";
+      case HDPathType.LedgerLive:
+        return "m/44'/60'/0'/0/0";
+      default:
+        throw new Error('Invalid path');
+    }
+  }
+
+  private async _fixAccountDetail(address: string) {
+    const checksummedAddress = ethUtil.toChecksumAddress(address);
+    const detail = this.accountDetails[checksummedAddress];
+
+    // The detail is already fixed
+    if (detail.hdPathBasePublicKey) {
+      return;
+    }
+    // Check if the account is of the device
+    // so we get address from the device by the hdPath
+    let addressInDevice;
+    const hdPathType = this._getHDPathType(detail.hdPath, detail.bip44);
+
+    // Ledger Live Account
+    if (detail.bip44 && this._isLedgerLiveHdPath()) {
+      const res = await this.app!.getAddress(detail.hdPath, false, true);
+      addressInDevice = res.address;
+      // BIP44 OR Legacy Account
+    } else {
+      const index = this.getIndexFromPath(detail.hdPath, hdPathType);
+      addressInDevice = this._addressFromIndex(pathBase, index);
+    }
+
+    // The address is not the same, so we don't need to fix
+    if (!isSameAddress(addressInDevice, address)) {
+      return;
+    }
+
+    // Right, we need to fix the account detail
+    detail.hdPathType = hdPathType;
+    detail.hdPathBasePublicKey = await this._getPathBasePublicKey(hdPathType);
+  }
+
+  // return top 3 accounts for each path type
+  async getInitialAccounts() {
+    await this.unlock();
+    const defaultHDPath = this.hdPath;
+    this.setHdPath(this.getHDPathBase(HDPathType.LedgerLive));
+    const LedgerLiveAccounts = await this.getAddresses(0, 3);
+    this.setHdPath(this.getHDPathBase(HDPathType.BIP44));
+    const BIP44Accounts = await this.getAddresses(0, 3);
+    this.setHdPath(this.getHDPathBase(HDPathType.Legacy));
+    const LegacyAccounts = await this.getAddresses(0, 3);
+    this.setHdPath(defaultHDPath);
+
+    return {
+      [HDPathType.LedgerLive]: LedgerLiveAccounts,
+      [HDPathType.BIP44]: BIP44Accounts,
+      [HDPathType.Legacy]: LegacyAccounts,
+    };
+  }
+
+  async getCurrentAccounts() {
+    await this.unlock();
+    const addresses = await this.getAccounts();
+    const pathBase = this.hdPath;
+    const { publicKey: currentPublicKey } = await this.app!.getAddress(
+      pathBase,
+      false,
+      true
+    );
+    const accounts: Account[] = [];
+    for (let i = 0; i < addresses.length; i++) {
+      const address = addresses[i];
+      await this._fixAccountDetail(address);
+
+      const detail = this.accountDetails[ethUtil.toChecksumAddress(address)];
+
+      if (detail.hdPathBasePublicKey === currentPublicKey) {
+        const info = this.getAccountInfo(address);
+        if (info) {
+          accounts.push(info);
+        }
+      }
+    }
+
+    return accounts;
+  }
+
+  getAccountInfo(address: string) {
+    const detail = this.accountDetails[ethUtil.toChecksumAddress(address)];
+    if (detail) {
+      const { hdPath, hdPathType } = detail;
+      return {
+        address,
+        index: this.getIndexFromPath(hdPath, hdPathType) + 1,
+        balance: null,
+        hdPathType,
+      };
+    }
+  }
+
+  private getIndexFromPath(path: string, hdPathType?: HDPathType) {
+    switch (hdPathType) {
+      case HDPathType.BIP44:
+        return parseInt(path.split('/')[5]);
+      case HDPathType.Legacy:
+        return parseInt(path.split('/')[4]);
+      case HDPathType.LedgerLive:
+        return parseInt(path.split('/')[3]);
+      default:
+        throw new Error('Invalid path');
+    }
   }
 }
 
