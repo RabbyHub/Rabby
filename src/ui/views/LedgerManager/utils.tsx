@@ -35,19 +35,24 @@ export const fetchAccountsInfo = async (
         }
       }
 
-      const chains = await wallet.openapi.usedChainList(account.address);
+      let chains: Account['chains'];
+      try {
+        chains = await wallet.openapi.usedChainList(account.address);
 
-      // if has chains, get balance and firstTxTime from api
-      if (chains.length) {
-        const res = await wallet.openapi.getTotalBalance(account.address);
-        balance = res.total_usd_value;
-        const allChains = res.chain_list;
+        // if has chains, get balance and firstTxTime from api
+        if (chains.length) {
+          const res = await wallet.openapi.getTotalBalance(account.address);
+          balance = res.total_usd_value;
+          const allChains = res.chain_list;
 
-        allChains.forEach((chain: any) => {
-          if (chain.born_at) {
-            firstTxTime = Math.min(firstTxTime ?? Infinity, chain.born_at);
-          }
-        });
+          allChains.forEach((chain: any) => {
+            if (chain.born_at) {
+              firstTxTime = Math.min(firstTxTime ?? Infinity, chain.born_at);
+            }
+          });
+        }
+      } catch (e) {
+        console.error('ignore api error', e);
       }
       const accountInfo: Account = {
         ...account,
