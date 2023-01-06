@@ -31,28 +31,7 @@ const ele = document.createElement('script');
 ele.setAttribute('src', browser.runtime.getURL('pageProvider.js'));
 container.insertBefore(ele, container.children[0]);
 container.removeChild(ele);
-
-const { BroadcastChannelMessage, PortMessage } = Message;
-
-const pm = new PortMessage().connect();
-
-const bcm = new BroadcastChannelMessage(channelName).listen((data) =>
-  pm.request(data)
-);
-
-// background notification
-pm.on('message', (data) => bcm.send('message', data));
-
-pm.request({
-  type: EVENTS.UIToBackground,
-  method: 'getScreen',
-  params: { availHeight: screen.availHeight },
-});
-
-document.addEventListener('beforeunload', () => {
-  bcm.dispose();
-  pm.dispose();
-});
+initListener();
 
 browser.runtime.sendMessage({
   type: 'DETECT_PHISHING',
@@ -60,4 +39,3 @@ browser.runtime.sendMessage({
     origin: location.origin,
   },
 });
-initListener();

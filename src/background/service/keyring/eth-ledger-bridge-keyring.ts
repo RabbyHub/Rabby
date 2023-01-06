@@ -253,7 +253,6 @@ class LedgerBridgeKeyring extends EventEmitter {
     const path = hdPath ? this._toLedgerPath(hdPath) : this.hdPath;
     if (this.isWebHID) {
       await this.makeApp();
-      // const res = await this.app!.getAddress(path, false, true);
       const res = await invokeHDKeyring('LEDGER', 'getAddress', [
         path,
         false,
@@ -1094,7 +1093,11 @@ class LedgerBridgeKeyring extends EventEmitter {
   }
   private async getPathBasePublicKey(hdPathType: HDPathType) {
     const pathBase = this.getHDPathBase(hdPathType);
-    const res = await this.app!.getAddress(pathBase, false, true);
+    const res = await invokeHDKeyring('LEDGER', 'getAddress', [
+      pathBase,
+      false,
+      true,
+    ]);
 
     return res.publicKey;
   }
@@ -1122,7 +1125,11 @@ class LedgerBridgeKeyring extends EventEmitter {
 
     // Ledger Live Account
     if (detail.bip44 && this._isLedgerLiveHdPath()) {
-      const res = await this.app!.getAddress(detail.hdPath, false, true);
+      const res = await invokeHDKeyring('LEDGER', 'getAddress', [
+        detail.hdPath,
+        false,
+        true,
+      ]);
       addressInDevice = res.address;
       // BIP44 OR Legacy Account
     } else {
@@ -1163,11 +1170,12 @@ class LedgerBridgeKeyring extends EventEmitter {
     await this.unlock();
     const addresses = await this.getAccounts();
     const pathBase = this.hdPath;
-    const { publicKey: currentPublicKey } = await this.app!.getAddress(
-      pathBase,
-      false,
-      true
+    const { publicKey: currentPublicKey } = await invokeHDKeyring(
+      'LEDGER',
+      'getAddress',
+      [pathBase, false, true]
     );
+
     const hdPathType = this.getHDPathTypeFromPath(pathBase);
     const accounts: Account[] = [];
     for (let i = 0; i < addresses.length; i++) {
@@ -1193,7 +1201,12 @@ class LedgerBridgeKeyring extends EventEmitter {
       ) {
         const info = this.getAccountInfo(address);
         if (info?.index === 1) {
-          const res = await this.app!.getAddress(detail.hdPath, false, true);
+          const res = await invokeHDKeyring('LEDGER', 'getAddress', [
+            detail.hdPath,
+            false,
+            true,
+          ]);
+
           if (isSameAddress(res.address, address)) {
             accounts.push(info);
           }
