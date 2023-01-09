@@ -1,26 +1,25 @@
-import React from 'react';
-import './index.less';
-import { LedgerManagerStateProvider, StateProviderProps } from './utils';
-import { Main } from './Main';
 import { useWallet } from '@/ui/utils';
-import { HARDWARE_KEYRING_TYPES } from '@/constant';
+import React from 'react';
+import { HDManagerStateProvider, StateProviderProps } from './utils';
 import { Spin } from 'antd';
+import { LedgerManager } from './LedgerManager';
+import './index.less';
+import { HARDWARE_KEYRING_TYPES } from '@/constant';
+import { OneKeyManager } from './OnekeyManager';
 
-const LEDGER_TYPE = HARDWARE_KEYRING_TYPES.Ledger.type;
-
-export const LedgerManager: React.FC<StateProviderProps> = () => {
+export const HDManager: React.FC<StateProviderProps> = ({ keyring }) => {
   const wallet = useWallet();
   const [initialed, setInitialed] = React.useState(false);
   const idRef = React.useRef<number | null>(null);
 
   const closeConnect = React.useCallback(() => {
-    wallet.requestKeyring(LEDGER_TYPE, 'cleanUp', idRef.current);
+    wallet.requestKeyring(keyring, 'cleanUp', idRef.current);
   }, []);
 
   React.useEffect(() => {
     wallet
       .connectHardware({
-        type: LEDGER_TYPE,
+        type: keyring,
         isWebHID: true,
       })
       .then((id) => {
@@ -46,10 +45,13 @@ export const LedgerManager: React.FC<StateProviderProps> = () => {
   }
 
   return (
-    <LedgerManagerStateProvider keyringId={idRef.current}>
-      <div className="LedgerManager">
-        <Main />
+    <HDManagerStateProvider keyringId={idRef.current} keyring={keyring}>
+      <div className="HDManager">
+        <main>
+          {keyring === HARDWARE_KEYRING_TYPES.Ledger.type && <LedgerManager />}
+          {keyring === HARDWARE_KEYRING_TYPES.Onekey.type && <OneKeyManager />}
+        </main>
       </div>
-    </LedgerManagerStateProvider>
+    </HDManagerStateProvider>
   );
 };

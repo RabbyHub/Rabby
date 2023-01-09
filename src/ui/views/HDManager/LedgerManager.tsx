@@ -1,21 +1,18 @@
-import { Tabs } from 'antd';
 import React from 'react';
+import { MainContainer } from './MainContainer';
+import { useWallet } from '@/ui/utils';
+import { HARDWARE_KEYRING_TYPES } from '@/constant';
+import { Modal } from 'antd';
 import { ReactComponent as LedgerLogoSVG } from 'ui/assets/walletlogo/ledger.svg';
 import { ReactComponent as SettingSVG } from 'ui/assets/setting-outline.svg';
-import { AddressesInLedger } from './AddressesInLedger';
-import { AddressesInRabby } from './AddressesInRabby';
-import { Modal } from 'antd';
 import {
   AdvancedSettings,
   SettingData,
   DEFAULT_SETTING_DATA,
-  MAX_ACCOUNT_COUNT,
 } from './AdvancedSettings';
-import { useWallet } from '@/ui/utils';
-import { HARDWARE_KEYRING_TYPES } from '@/constant';
 import { HDPathType } from './HDPathTypeButton';
 import { Account } from './AccountList';
-import { fetchAccountsInfo, LedgerManagerStateContext } from './utils';
+import { fetchAccountsInfo, HDManagerStateContext } from './utils';
 
 export type InitAccounts = {
   [key in HDPathType]: Account[];
@@ -23,7 +20,7 @@ export type InitAccounts = {
 
 const LEDGER_TYPE = HARDWARE_KEYRING_TYPES.Ledger.type;
 
-export const Main: React.FC = () => {
+export const LedgerManager: React.FC = () => {
   const wallet = useWallet();
   const [visibleAdvanced, setVisibleAdvanced] = React.useState(false);
   const [setting, setSetting] = React.useState<SettingData>(
@@ -31,14 +28,9 @@ export const Main: React.FC = () => {
   );
   const [initAccounts, setInitAccounts] = React.useState<InitAccounts>();
   const [loading, setLoading] = React.useState(false);
-  const {
-    getCurrentAccounts,
-    currentAccounts,
-    setTab,
-    tab,
-    createTask,
-    keyringId,
-  } = React.useContext(LedgerManagerStateContext);
+  const { getCurrentAccounts, createTask, keyringId } = React.useContext(
+    HDManagerStateContext
+  );
 
   const openAdvanced = React.useCallback(() => {
     if (loading) {
@@ -130,28 +122,8 @@ export const Main: React.FC = () => {
     fetchInitAccountsTask();
   }, []);
 
-  React.useEffect(() => {
-    const handleFocus = () => {
-      createTask(() => getCurrentAccounts());
-    };
-    window.addEventListener('focus', handleFocus);
-
-    return () => {
-      window.removeEventListener('focus', handleFocus);
-    };
-  }, []);
-
-  const filterCurrentAccounts = React.useMemo(() => {
-    return currentAccounts?.filter((item) => {
-      return (
-        item.index >= setting.startNo &&
-        item.index < setting.startNo + MAX_ACCOUNT_COUNT
-      );
-    });
-  }, [setting.startNo, currentAccounts]);
-
   return (
-    <main>
+    <>
       <div className="logo">
         <LedgerLogoSVG className="icon" />
         <span className="title">Connected to Ledger</span>
@@ -160,33 +132,9 @@ export const Main: React.FC = () => {
         <SettingSVG className="icon" />
         <span className="title">Advanced Settings</span>
       </div>
-      <Tabs
-        activeKey={tab}
-        onChange={(active) => setTab(active as any)}
-        className="tabs"
-      >
-        <Tabs.TabPane tab="Addresses in Ledger" key="ledger">
-          <AddressesInLedger
-            type={setting.type}
-            startNo={setting.startNo}
-            loading={loading}
-          />
-        </Tabs.TabPane>
-        <Tabs.TabPane
-          tab={`Addresses in Rabby${
-            loading ? '' : ` (${filterCurrentAccounts.length})`
-          }`}
-          key="rabby"
-          disabled={loading}
-        >
-          <AddressesInRabby
-            type={setting.type}
-            startNo={setting.startNo}
-            loading={loading}
-            data={filterCurrentAccounts}
-          />
-        </Tabs.TabPane>
-      </Tabs>
+
+      <MainContainer setting={setting} loading={loading} HDName="Ledger" />
+
       <Modal
         destroyOnClose
         className="AdvancedModal"
@@ -202,6 +150,6 @@ export const Main: React.FC = () => {
           initSettingData={setting}
         />
       </Modal>
-    </main>
+    </>
   );
 };

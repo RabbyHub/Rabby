@@ -10,12 +10,9 @@ import { isSameAddress, splitNumberByStep, useWallet } from '@/ui/utils';
 import dayjs from 'dayjs';
 import { ReactComponent as ArrowSVG } from 'ui/assets/ledger/arrow.svg';
 import clsx from 'clsx';
-import { HARDWARE_KEYRING_TYPES } from '@/constant';
-import { fetchAccountsInfo, LedgerManagerStateContext } from './utils';
+import { fetchAccountsInfo, HDManagerStateContext } from './utils';
 import { AliasName } from './AliasName';
 import { ChainList } from './ChainList';
-
-const LEDGER_TYPE = HARDWARE_KEYRING_TYPES.Ledger.type;
 
 export interface Account {
   address: string;
@@ -46,7 +43,8 @@ export const AccountList: React.FC<Props> = ({ loading, data }) => {
     keyringId,
     removeCurrentAccount,
     updateCurrentAccountAliasName,
-  } = React.useContext(LedgerManagerStateContext);
+    keyring,
+  } = React.useContext(HDManagerStateContext);
   const [loadNum, setLoadNum] = React.useState(0);
 
   const toggleHiddenInfo = React.useCallback(
@@ -91,19 +89,11 @@ export const AccountList: React.FC<Props> = ({ loading, data }) => {
     async (checked: boolean, account: Account) => {
       if (checked) {
         await createTask(() =>
-          wallet.unlockHardwareAccount(
-            LEDGER_TYPE,
-            [account.index - 1],
-            keyringId
-          )
+          wallet.unlockHardwareAccount(keyring, [account.index - 1], keyringId)
         );
 
         await createTask(() =>
-          wallet.requestKeyring(
-            LEDGER_TYPE,
-            'setCurrentUsedHDPathType',
-            keyringId
-          )
+          wallet.requestKeyring(keyring, 'setCurrentUsedHDPathType', keyringId)
         );
 
         // update current account list
@@ -112,9 +102,7 @@ export const AccountList: React.FC<Props> = ({ loading, data }) => {
           content: 'The address is added to Rabby',
         });
       } else {
-        await createTask(() =>
-          wallet.removeAddress(account.address, LEDGER_TYPE)
-        );
+        await createTask(() => wallet.removeAddress(account.address, keyring));
         removeCurrentAccount(account.address);
         message.success({
           content: 'The address is removed from Rabby',

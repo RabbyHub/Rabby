@@ -18,7 +18,7 @@ import './style.less';
 import { useMedia } from 'react-use';
 import type { Account } from '@/background/service/preference';
 import { ErrorAlert } from '@/ui/component/Alert/ErrorAlert';
-import { LedgerManager } from '../LedgerManager/LedgerManager';
+import { HDManager } from '../HDManager/HDManager';
 
 const { Option } = Select;
 
@@ -74,10 +74,14 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
   const [spinning, setSpin] = useState(true);
   const isGrid = keyring === HARDWARE_KEYRING_TYPES.GridPlus.type;
   const isLedger = keyring === HARDWARE_KEYRING_TYPES.Ledger.type;
+  const isOneKey = keyring === HARDWARE_KEYRING_TYPES.Onekey.type;
+  const isTrezor = keyring === HARDWARE_KEYRING_TYPES.Trezor.type;
   const [hasError, setHasError] = useState(false);
 
-  if (isLedger) {
-    return <LedgerManager keyringId={keyringId.current ?? null} />;
+  if (isLedger || isOneKey || isTrezor) {
+    return (
+      <HDManager keyringId={keyringId.current ?? null} keyring={keyring} />
+    );
   }
 
   const [getAccounts] = useWalletRequest(

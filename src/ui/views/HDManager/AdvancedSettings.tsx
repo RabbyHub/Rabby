@@ -1,7 +1,7 @@
 import { Button, InputNumber } from 'antd';
 import React from 'react';
-import { InitAccounts } from './Main';
 import { HDPathType, HDPathTypeButton } from './HDPathTypeButton';
+import { InitAccounts } from './LedgerManager';
 
 const MIN_START_NO = 1;
 const MAX_START_NO = 950 + MIN_START_NO;
