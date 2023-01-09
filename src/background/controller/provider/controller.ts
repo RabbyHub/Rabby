@@ -835,7 +835,29 @@ class ProviderController extends BaseController {
     }
   };
 
-  @Reflect.metadata('APPROVAL', ['AddChain', false, { height: 390 }])
+  @Reflect.metadata('APPROVAL', [
+    'AddChain',
+    ({
+      data: {
+        params: [chainParams],
+      },
+      session,
+    }) => {
+      if (!chainParams) {
+        throw ethErrors.rpc.invalidParams('params is required but got []');
+      }
+      if (!chainParams.chainId) {
+        throw ethErrors.rpc.invalidParams('chainId is required');
+      }
+      const connected = permissionService.getConnectedSite(session.origin);
+      if (connected) {
+        if (Number(chainParams.chainId) === CHAINS[connected.chain].id) {
+          return true;
+        }
+      }
+    },
+    { height: 390 },
+  ])
   walletAddEthereumChain = ({
     data: {
       params: [chainParams],
@@ -896,6 +918,12 @@ class ProviderController extends BaseController {
   @Reflect.metadata('APPROVAL', [
     'AddChain',
     ({ data, session }) => {
+      if (!data.params[0]) {
+        throw ethErrors.rpc.invalidParams('params is required but got []');
+      }
+      if (!data.params[0]?.chainId) {
+        throw ethErrors.rpc.invalidParams('chainId is required');
+      }
       const connected = permissionService.getConnectedSite(session.origin);
       if (connected) {
         const { chainId } = data.params[0];
