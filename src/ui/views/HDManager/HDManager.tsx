@@ -1,11 +1,12 @@
+import './index.less';
 import { useWallet } from '@/ui/utils';
 import React from 'react';
 import { HDManagerStateProvider, StateProviderProps } from './utils';
 import { Spin } from 'antd';
-import { LedgerManager } from './LedgerManager';
-import './index.less';
 import { HARDWARE_KEYRING_TYPES } from '@/constant';
+import { LedgerManager } from './LedgerManager';
 import { OneKeyManager } from './OnekeyManager';
+import { TrezorManager } from './TrezorManager';
 
 export const HDManager: React.FC<StateProviderProps> = ({ keyring }) => {
   const wallet = useWallet();
@@ -50,6 +51,7 @@ export const HDManager: React.FC<StateProviderProps> = ({ keyring }) => {
         <main>
           {keyring === HARDWARE_KEYRING_TYPES.Ledger.type && <LedgerManager />}
           {keyring === HARDWARE_KEYRING_TYPES.Onekey.type && <OneKeyManager />}
+          {keyring === HARDWARE_KEYRING_TYPES.Trezor.type && <TrezorManager />}
         </main>
       </div>
     </HDManagerStateProvider>

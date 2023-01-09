@@ -86,21 +86,23 @@ export const AdvancedSettings: React.FC<Props> = ({
 
   return (
     <div className="AdvancedSettings">
-      <div className="group">
-        <div className="label">Select HD path:</div>
-        <div className="group-field">
-          {HDPathTypeGroup.map((type) => (
-            <HDPathTypeButton
-              type={type}
-              onClick={setHDPathType}
-              isOnChain={isOnChain(type)}
-              selected={hdPathType === type}
-              key={type}
-            />
-          ))}
+      {!!initAccounts && (
+        <div className="group">
+          <div className="label">Select HD path:</div>
+          <div className="group-field">
+            {HDPathTypeGroup.map((type) => (
+              <HDPathTypeButton
+                type={type}
+                onClick={setHDPathType}
+                isOnChain={isOnChain(type)}
+                selected={hdPathType === type}
+                key={type}
+              />
+            ))}
+          </div>
+          {<div className="tip">{hdPathTypeTip}</div>}
         </div>
-        {<div className="tip">{hdPathTypeTip}</div>}
-      </div>
+      )}
       <div className="group">
         <div className="label">
           Select the serial number of addresses to start from:
