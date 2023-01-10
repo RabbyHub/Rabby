@@ -7,8 +7,9 @@ import {
 } from './AdvancedSettings';
 import { HDPathType } from './HDPathTypeButton';
 import { MainContainer } from './MainContainer';
-import { HDManagerStateContext } from './utils';
+import { HDManagerStateContext, sleep } from './utils';
 import { ReactComponent as SettingSVG } from 'ui/assets/setting-outline.svg';
+import { useAsyncRetry } from 'react-use';
 
 interface Props {
   HDName?: string;
@@ -16,13 +17,12 @@ interface Props {
 
 export const TrezorManager: React.FC<Props> = ({ HDName = 'Trezor' }) => {
   const [loading, setLoading] = React.useState(true);
-  const { getCurrentAccounts, createTask } = React.useContext(
-    HDManagerStateContext
-  );
+  const { getCurrentAccounts } = React.useContext(HDManagerStateContext);
   const [visibleAdvanced, setVisibleAdvanced] = React.useState(false);
   const [setting, setSetting] = React.useState<SettingData>(
     DEFAULT_SETTING_DATA
   );
+  const [firstFetchAccounts, setFirstFetchAccounts] = React.useState(false);
 
   const openAdvanced = React.useCallback(() => {
     if (loading) {
@@ -33,9 +33,14 @@ export const TrezorManager: React.FC<Props> = ({ HDName = 'Trezor' }) => {
 
   const fetchCurrentAccounts = React.useCallback(async () => {
     setLoading(true);
-    await createTask(getCurrentAccounts);
+    await getCurrentAccounts();
+    setSetting({
+      ...setting,
+      type: HDPathType.BIP44,
+    });
     setLoading(false);
   }, []);
+  const fetchCurrentAccountsRetry = useAsyncRetry(fetchCurrentAccounts);
 
   const onConfirmAdvanced = React.useCallback(async (data: SettingData) => {
     setVisibleAdvanced(false);
@@ -47,8 +52,15 @@ export const TrezorManager: React.FC<Props> = ({ HDName = 'Trezor' }) => {
   }, []);
 
   React.useEffect(() => {
-    fetchCurrentAccounts();
-  }, []);
+    // connect failed because previous connect is not closed
+    if (!fetchCurrentAccountsRetry.loading) {
+      if (fetchCurrentAccountsRetry.error) {
+        sleep(1000).then(fetchCurrentAccountsRetry.retry);
+      } else {
+        setFirstFetchAccounts(true);
+      }
+    }
+  }, [fetchCurrentAccountsRetry.loading, fetchCurrentAccountsRetry.error]);
 
   return (
     <>
@@ -58,10 +70,8 @@ export const TrezorManager: React.FC<Props> = ({ HDName = 'Trezor' }) => {
       </div>
 
       <MainContainer
-        setting={{
-          ...setting,
-          type: HDPathType.BIP44,
-        }}
+        firstFetchAccounts={firstFetchAccounts}
+        setting={setting}
         loading={loading}
         HDName={HDName}
       />

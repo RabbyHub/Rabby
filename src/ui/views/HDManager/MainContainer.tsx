@@ -1,4 +1,5 @@
 import { Tabs } from 'antd';
+import { isBoolean } from 'lodash';
 import React from 'react';
 import { AddressesInHD } from './AddressesInHD';
 import { AddressesInRabby } from './AddressesInRabby';
@@ -9,12 +10,14 @@ interface Props {
   setting: SettingData;
   loading: boolean;
   HDName: string;
+  firstFetchAccounts?: boolean;
 }
 
 export const MainContainer: React.FC<Props> = ({
   setting,
   loading,
   HDName,
+  firstFetchAccounts,
 }) => {
   const {
     getCurrentAccounts,
@@ -26,14 +29,17 @@ export const MainContainer: React.FC<Props> = ({
 
   React.useEffect(() => {
     const handleFocus = () => {
-      createTask(() => getCurrentAccounts());
+      if (isBoolean(firstFetchAccounts) && !firstFetchAccounts) {
+        return;
+      }
+      createTask(getCurrentAccounts);
     };
     window.addEventListener('focus', handleFocus);
 
     return () => {
       window.removeEventListener('focus', handleFocus);
     };
-  }, []);
+  }, [firstFetchAccounts]);
 
   const filterCurrentAccounts = React.useMemo(() => {
     return currentAccounts?.filter((item) => {
