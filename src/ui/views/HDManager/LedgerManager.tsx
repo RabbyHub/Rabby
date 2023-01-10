@@ -124,10 +124,6 @@ export const LedgerManager: React.FC = () => {
 
   return (
     <>
-      <div className="logo">
-        <LedgerLogoSVG className="icon" />
-        <span className="title">Connected to Ledger</span>
-      </div>
       <div className="setting" onClick={openAdvanced}>
         <SettingSVG className="icon" />
         <span className="title">Advanced Settings</span>

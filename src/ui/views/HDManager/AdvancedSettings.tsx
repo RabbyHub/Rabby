@@ -86,7 +86,7 @@ export const AdvancedSettings: React.FC<Props> = ({
 
   return (
     <div className="AdvancedSettings">
-      {!!initAccounts && (
+      {initAccounts ? (
         <div className="group">
           <div className="label">Select HD path:</div>
           <div className="group-field">
@@ -100,7 +100,22 @@ export const AdvancedSettings: React.FC<Props> = ({
               />
             ))}
           </div>
-          {<div className="tip">{hdPathTypeTip}</div>}
+          <div className="tip">{hdPathTypeTip}</div>
+        </div>
+      ) : (
+        <div className="group">
+          <div className="label">Select HD path:</div>
+          <div className="group-field">
+            <HDPathTypeButton
+              type={HDPathType.BIP44}
+              onClick={setHDPathType}
+              selected
+              isOnChain={false}
+            />
+          </div>
+          <div className="tip">
+            BIP44: HDpath defined by the BIP44 protocol.
+          </div>
         </div>
       )}
       <div className="group">
