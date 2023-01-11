@@ -1,19 +1,14 @@
-import { HARDWARE_KEYRING_TYPES } from '@/constant';
 import { useWallet } from '@/ui/utils';
 import { message } from 'antd';
 import React from 'react';
 import { Account, AccountList, Props as AccountListProps } from './AccountList';
 import { MAX_ACCOUNT_COUNT, SettingData } from './AdvancedSettings';
 import { HDPathType } from './HDPathTypeButton';
-import { LedgerManagerStateContext } from './utils';
+import { HDManagerStateContext } from './utils';
 
 interface Props extends AccountListProps, SettingData {}
 
-export const AddressesInLedger: React.FC<Props> = ({
-  type,
-  startNo,
-  ...props
-}) => {
+export const AddressesInHD: React.FC<Props> = ({ type, startNo, ...props }) => {
   const [accountList, setAccountList] = React.useState<Account[]>([]);
   const wallet = useWallet();
   const [loading, setLoading] = React.useState(true);
@@ -21,7 +16,9 @@ export const AddressesInLedger: React.FC<Props> = ({
   const startNoRef = React.useRef(startNo);
   const typeRef = React.useRef(type);
   const exitRef = React.useRef(false);
-  const { createTask, keyringId } = React.useContext(LedgerManagerStateContext);
+  const { createTask, keyringId, keyring } = React.useContext(
+    HDManagerStateContext
+  );
 
   const runGetAccounts = React.useCallback(async () => {
     setAccountList([]);
@@ -38,13 +35,7 @@ export const AddressesInLedger: React.FC<Props> = ({
 
     try {
       await createTask(() =>
-        wallet.requestKeyring(
-          HARDWARE_KEYRING_TYPES.Ledger.type,
-          'unlock',
-          keyringId,
-          null,
-          true
-        )
+        wallet.requestKeyring(keyring, 'unlock', keyringId, null, true)
       );
       for (i = index; i < index + MAX_ACCOUNT_COUNT; ) {
         if (exitRef.current) {
@@ -56,7 +47,7 @@ export const AddressesInLedger: React.FC<Props> = ({
         }
         const accounts = (await createTask(() =>
           wallet.requestKeyring(
-            HARDWARE_KEYRING_TYPES.Ledger.type,
+            keyring,
             'getAddresses',
             keyringId,
             i,

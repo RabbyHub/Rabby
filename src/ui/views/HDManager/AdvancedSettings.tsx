@@ -1,7 +1,7 @@
 import { Button, InputNumber } from 'antd';
 import React from 'react';
-import { InitAccounts } from './Main';
 import { HDPathType, HDPathTypeButton } from './HDPathTypeButton';
+import { InitAccounts } from './LedgerManager';
 
 const MIN_START_NO = 1;
 const MAX_START_NO = 950 + MIN_START_NO;
@@ -86,21 +86,38 @@ export const AdvancedSettings: React.FC<Props> = ({
 
   return (
     <div className="AdvancedSettings">
-      <div className="group">
-        <div className="label">Select HD path:</div>
-        <div className="group-field">
-          {HDPathTypeGroup.map((type) => (
-            <HDPathTypeButton
-              type={type}
-              onClick={setHDPathType}
-              isOnChain={isOnChain(type)}
-              selected={hdPathType === type}
-              key={type}
-            />
-          ))}
+      {initAccounts ? (
+        <div className="group">
+          <div className="label">Select HD path:</div>
+          <div className="group-field">
+            {HDPathTypeGroup.map((type) => (
+              <HDPathTypeButton
+                type={type}
+                onClick={setHDPathType}
+                isOnChain={isOnChain(type)}
+                selected={hdPathType === type}
+                key={type}
+              />
+            ))}
+          </div>
+          <div className="tip">{hdPathTypeTip}</div>
         </div>
-        {<div className="tip">{hdPathTypeTip}</div>}
-      </div>
+      ) : (
+        <div className="group">
+          <div className="label">Select HD path:</div>
+          <div className="group-field">
+            <HDPathTypeButton
+              type={HDPathType.BIP44}
+              onClick={setHDPathType}
+              selected
+              isOnChain={false}
+            />
+          </div>
+          <div className="tip">
+            BIP44: HDpath defined by the BIP44 protocol.
+          </div>
+        </div>
+      )}
       <div className="group">
         <div className="label">
           Select the serial number of addresses to start from:

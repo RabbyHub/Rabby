@@ -40,7 +40,11 @@ export const AliasName: React.FC<Props> = ({
 
   React.useEffect(() => {
     setValue(aliasName);
-    if (aliasName) {
+
+    if (aliasName && cachedName[address] && cachedName[address] !== aliasName) {
+      setValue(cachedName[address]);
+      onChange(cachedName[address]);
+    } else if (aliasName) {
       cachedName[address] = aliasName;
     }
   }, [aliasName]);

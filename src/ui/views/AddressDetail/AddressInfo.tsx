@@ -7,7 +7,7 @@ import {
   splitNumberByStep,
   useAlias,
   useBalance,
-  useLedgerAccount,
+  useAccountInfo,
   useWallet,
 } from 'ui/utils';
 import QRCode from 'qrcode.react';
@@ -41,14 +41,13 @@ const AddressInfo1 = ({ address, type, brandName, source }: Props) => {
   const [balance] = useBalance(address);
   const [form] = useForm();
   const inputRef = useRef<Input>(null);
-  const ledgerAccount = useLedgerAccount(address);
+  const accountInfo = useAccountInfo(type, address);
 
   const { accountsList, highlightedAddresses } = useRabbySelector((s) => ({
     accountsList: s.accountToDisplay.accountsList,
     highlightedAddresses: s.addressManagement.highlightedAddresses,
   }));
   const isGnosis = type === KEYRING_CLASS.GNOSIS;
-  const isLedger = type === KEYRING_CLASS.HARDWARE.LEDGER;
 
   const {
     value: safeInfo,
@@ -247,11 +246,11 @@ const AddressInfo1 = ({ address, type, brandName, source }: Props) => {
           </div>
         </div>
       </div>
-      {isLedger && ledgerAccount && (
+      {accountInfo && (
         <div className="rabby-list-item">
           <div className="rabby-list-item-content">
             <div className="rabby-list-item-label">HD Path</div>
-            <div className="rabby-list-item-extra flex gap-[4px]">{`${ledgerAccount.hdPathTypeLabel} #${ledgerAccount.index}`}</div>
+            <div className="rabby-list-item-extra flex gap-[4px]">{`${accountInfo.hdPathTypeLabel} #${accountInfo.index}`}</div>
           </div>
         </div>
       )}

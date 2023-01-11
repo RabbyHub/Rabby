@@ -1,4 +1,8 @@
-import { HARDWARE_KEYRING_TYPES, KEYRING_TYPE } from './../../constant/index';
+import {
+  HARDWARE_KEYRING_TYPES,
+  KEYRING_CLASS,
+  KEYRING_TYPE,
+} from './../../constant/index';
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { useHistory } from 'react-router-dom';
 import { Approval } from 'background/service/notification';
@@ -272,7 +276,7 @@ export const useAddressSource = ({
   return '';
 };
 
-export const useLedgerAccount = (address: string) => {
+export const useAccountInfo = (type: string, address: string) => {
   const wallet = useWallet();
   const [account, setAccount] = useState<{
     address: string;
@@ -280,21 +284,36 @@ export const useLedgerAccount = (address: string) => {
     hdPathTypeLabel: string;
     index: number;
   }>();
+  const isLedger = type === KEYRING_CLASS.HARDWARE.LEDGER;
 
-  useEffect(() => {
+  const fetchLedgerAccount = useCallback(() => {
+    wallet.requestKeyring(type, 'getAccountInfo', null, address).then((res) => {
+      setAccount({
+        ...res,
+        hdPathTypeLabel: LedgerHDPathTypeLabel[res.hdPathType],
+      });
+    });
+  }, []);
+
+  const fetchTrezorLikeAccount = useCallback(() => {
     wallet
-      .requestKeyring(
-        HARDWARE_KEYRING_TYPES.Ledger.type,
-        'getAccountInfo',
-        null,
-        address
-      )
-      .then((res) => {
+      .requestKeyring(type, 'indexFromAddress', null, address)
+      .then((index) => {
         setAccount({
-          ...res,
-          hdPathTypeLabel: LedgerHDPathTypeLabel[res.hdPathType],
+          address,
+          index: index + 1,
+          hdPathType: LedgerHDPathType.BIP44,
+          hdPathTypeLabel: LedgerHDPathTypeLabel.BIP44,
         });
       });
+  }, []);
+
+  useEffect(() => {
+    if (isLedger) {
+      fetchLedgerAccount();
+    } else {
+      fetchTrezorLikeAccount();
+    }
   }, [address]);
 
   return account;

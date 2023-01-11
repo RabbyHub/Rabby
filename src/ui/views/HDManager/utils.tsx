@@ -1,4 +1,3 @@
-import { HARDWARE_KEYRING_TYPES } from '@/constant';
 import { isSameAddress, useWallet, WalletControllerType } from '@/ui/utils';
 import { message } from 'antd';
 import PQueue from 'p-queue';
@@ -78,7 +77,7 @@ export const fetchAccountsInfo = async (
   );
 };
 
-const useGetCurrentAccounts = ({ keyringId }: StateProviderProps) => {
+const useGetCurrentAccounts = ({ keyringId, keyring }: StateProviderProps) => {
   const wallet = useWallet();
   const [loading, setLoading] = React.useState(false);
   const [accounts, setAccounts] = React.useState<Account[]>([]);
@@ -86,7 +85,7 @@ const useGetCurrentAccounts = ({ keyringId }: StateProviderProps) => {
   const getCurrentAccounts = React.useCallback(async () => {
     setLoading(true);
     const accounts = (await wallet.requestKeyring(
-      HARDWARE_KEYRING_TYPES.Ledger.type,
+      keyring,
       'getCurrentAccounts',
       keyringId
     )) as Account[];
@@ -187,9 +186,10 @@ export interface StateProviderProps {
   // 'connectHardware' will not return keyringId if keyring already exists, so we
   // don't know the keyringId now.
   keyringId: number | null;
+  keyring: string;
 }
 
-export const LedgerManagerStateContext = React.createContext<
+export const HDManagerStateContext = React.createContext<
   ReturnType<typeof useGetCurrentAccounts> &
     ReturnType<typeof useManagerTab> &
     ReturnType<typeof useHiddenInfo> &
@@ -197,21 +197,23 @@ export const LedgerManagerStateContext = React.createContext<
     StateProviderProps
 >({} as any);
 
-export const LedgerManagerStateProvider: React.FC<StateProviderProps> = ({
+export const HDManagerStateProvider: React.FC<StateProviderProps> = ({
   children,
   keyringId,
+  keyring,
 }) => {
   return (
-    <LedgerManagerStateContext.Provider
+    <HDManagerStateContext.Provider
       value={{
-        ...useGetCurrentAccounts({ keyringId }),
+        ...useGetCurrentAccounts({ keyringId, keyring }),
         ...useManagerTab(),
         ...useHiddenInfo(),
         ...useTaskQueue(),
         keyringId,
+        keyring,
       }}
     >
       {children}
-    </LedgerManagerStateContext.Provider>
+    </HDManagerStateContext.Provider>
   );
 };
