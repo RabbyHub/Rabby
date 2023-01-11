@@ -57,6 +57,7 @@ class OneKeyKeyring extends EventEmitter {
     this.accounts = opts.accounts || [];
     this.page = opts.page || 0;
     this.perPage = 5;
+    this.paths = opts.paths || {};
     return Promise.resolve();
   }
 
@@ -456,7 +457,7 @@ class OneKeyKeyring extends EventEmitter {
     return `${this.hdPath}/${this.indexFromAddress(address)}`;
   }
 
-  private indexFromAddress(address: string) {
+  indexFromAddress(address: string) {
     const checksummedAddress = ethUtil.toChecksumAddress(address);
     let index = this.paths[checksummedAddress];
     if (typeof index === 'undefined') {
