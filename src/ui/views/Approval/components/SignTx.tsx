@@ -438,6 +438,7 @@ const checkGasAndNonce = ({
   isSpeedUp: boolean;
   isGnosisAccount: boolean;
 }) => {
+  console.log('recommendGasLimitRatio', recommendGasLimitRatio);
   const errors: {
     code: number;
     msg: string;
@@ -455,7 +456,7 @@ const checkGasAndNonce = ({
     new BigNumber(gasLimit).lt(
       new BigNumber(recommendGasLimit).times(recommendGasLimitRatio)
     ) &&
-    new BigNumber(gasLimit).gt(21000)
+    new BigNumber(gasLimit).gte(21000)
   ) {
     if (recommendGasLimitRatio === 4) {
       const realRatio = new BigNumber(gasLimit).div(recommendGasLimit);
@@ -602,8 +603,8 @@ const getGasLimitBaseAccountBalance = ({
     sendNativeTokenAmount.plus(pendingsSumNativeTokenCost)
   ); // avaliableGasToken = current native token balance - sendNativeTokenAmount - pendingsSumNativeTokenCost
   if (avaliableGasToken.lte(0)) {
-    // avaliableGasToken less than 0 use 0 as gasLimit
-    return 0;
+    // avaliableGasToken less than 0 use 21000 as gasLimit
+    return 21000;
   }
   if (
     avaliableGasToken.gt(
@@ -616,6 +617,10 @@ const getGasLimitBaseAccountBalance = ({
     return Number(recommendGasLimit) * recommendGasLimitRatio;
   }
   const adaptGasLimit = avaliableGasToken.div(gasPrice); // adapt gasLimit by account balance
+  if (adaptGasLimit.lt(21000)) {
+    // use 21000 as minimum gasLimit
+    return 21000;
+  }
   return Math.floor(adaptGasLimit.toNumber());
 };
 
