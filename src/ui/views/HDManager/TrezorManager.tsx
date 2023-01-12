@@ -10,6 +10,7 @@ import { MainContainer } from './MainContainer';
 import { HDManagerStateContext, sleep } from './utils';
 import { ReactComponent as SettingSVG } from 'ui/assets/setting-outline.svg';
 import { useAsyncRetry } from 'react-use';
+import useModal from 'antd/lib/modal/useModal';
 
 interface Props {
   HDName?: string;
@@ -23,6 +24,7 @@ export const TrezorManager: React.FC<Props> = ({ HDName = 'Trezor' }) => {
     DEFAULT_SETTING_DATA
   );
   const [firstFetchAccounts, setFirstFetchAccounts] = React.useState(false);
+  const [preventLoading, setPreventLoading] = React.useState(false);
 
   const openAdvanced = React.useCallback(() => {
     if (loading) {
@@ -51,14 +53,30 @@ export const TrezorManager: React.FC<Props> = ({ HDName = 'Trezor' }) => {
     });
   }, []);
 
+  const [modal, contextHolder] = useModal();
+
   React.useEffect(() => {
+    if (fetchCurrentAccountsRetry.loading) {
+      return;
+    }
+    const errMessage = fetchCurrentAccountsRetry.error?.message ?? '';
+    if (!errMessage) {
+      setFirstFetchAccounts(true);
+      return;
+    }
+
     // connect failed because previous connect is not closed
-    if (!fetchCurrentAccountsRetry.loading) {
-      if (fetchCurrentAccountsRetry.error) {
-        sleep(1000).then(fetchCurrentAccountsRetry.retry);
-      } else {
-        setFirstFetchAccounts(true);
-      }
+    if (/Manifest not set/.test(errMessage)) {
+      sleep(1000).then(fetchCurrentAccountsRetry.retry);
+    } else {
+      setPreventLoading(true);
+      modal.error({
+        content: `${HDName}Connect has stopped. Please refresh the page to connect again.`,
+        okText: 'Refresh',
+        onOk() {
+          window.location.reload();
+        },
+      });
     }
   }, [fetchCurrentAccountsRetry.loading, fetchCurrentAccountsRetry.error]);
 
@@ -74,6 +92,7 @@ export const TrezorManager: React.FC<Props> = ({ HDName = 'Trezor' }) => {
         setting={setting}
         loading={loading}
         HDName={HDName}
+        preventLoading={preventLoading}
       />
 
       <Modal
@@ -90,6 +109,7 @@ export const TrezorManager: React.FC<Props> = ({ HDName = 'Trezor' }) => {
           initSettingData={setting}
         />
       </Modal>
+      {contextHolder}
     </>
   );
 };

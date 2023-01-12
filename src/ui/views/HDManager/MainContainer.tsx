@@ -11,6 +11,7 @@ interface Props {
   loading: boolean;
   HDName: string;
   firstFetchAccounts?: boolean;
+  preventLoading?: boolean;
 }
 
 export const MainContainer: React.FC<Props> = ({
@@ -18,6 +19,7 @@ export const MainContainer: React.FC<Props> = ({
   loading,
   HDName,
   firstFetchAccounts,
+  preventLoading,
 }) => {
   const {
     getCurrentAccounts,
@@ -61,6 +63,7 @@ export const MainContainer: React.FC<Props> = ({
           type={setting.type}
           startNo={setting.startNo}
           loading={loading}
+          preventLoading={preventLoading}
         />
       </Tabs.TabPane>
       <Tabs.TabPane

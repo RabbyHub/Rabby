@@ -26,9 +26,14 @@ export interface Account {
 export interface Props {
   loading: boolean;
   data?: Account[];
+  preventLoading?: boolean;
 }
 
-export const AccountList: React.FC<Props> = ({ loading, data }) => {
+export const AccountList: React.FC<Props> = ({
+  loading,
+  data,
+  preventLoading,
+}) => {
   const wallet = useWallet();
   const [list, setList] = React.useState<Account[]>([]);
   const infoRef = React.useRef<HTMLDivElement>(null);
@@ -79,11 +84,11 @@ export const AccountList: React.FC<Props> = ({ loading, data }) => {
   }, [hiddenInfo, data]);
 
   const currentIndex = React.useMemo(() => {
-    if (list?.length) {
+    if (!preventLoading && list?.length) {
       return list.findIndex((item) => !item.address);
     }
     return -1;
-  }, [list]);
+  }, [list, preventLoading]);
 
   const handleAddAccount = React.useCallback(
     async (checked: boolean, account: Account) => {
@@ -165,7 +170,7 @@ export const AccountList: React.FC<Props> = ({ loading, data }) => {
       rowKey="index"
       className="AccountList"
       loading={
-        loading
+        !preventLoading && loading
           ? {
               tip: 'Waiting' + (loadNum ? ` - ${loadNum}%` : ''),
             }
