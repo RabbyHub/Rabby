@@ -1863,12 +1863,16 @@ export class WalletController extends BaseController {
   }: {
     type: string;
     from: string;
-    data: any;
+    data: string;
     options?: any;
   }) => {
-    const stripped = ethUtil.stripHexPrefix(data);
-    const buff = Buffer.from(stripped, 'hex');
-    data = JSON.parse(buff.toString('utf8'));
+    if (data.startsWith('0x')) {
+      const stripped = ethUtil.stripHexPrefix(data);
+      const buff = Buffer.from(stripped, 'hex');
+      data = JSON.parse(buff.toString('utf8'));
+    } else {
+      data = JSON.parse(data);
+    }
     const keyring = await keyringService.getKeyringForAccount(from, type);
     return keyring.decryptMessage(from, data, options);
   };
