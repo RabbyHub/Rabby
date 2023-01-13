@@ -1,6 +1,7 @@
 import { Input } from 'antd';
 import React from 'react';
 import { ReactComponent as EditPenSVG } from 'ui/assets/editpen.svg';
+import { ReactComponent as CheckSVG } from 'ui/assets/check-2.svg';
 
 interface Props {
   address: string;
@@ -66,18 +67,21 @@ export const AliasName: React.FC<Props> = ({
   return (
     <div className="AliasName" onClick={() => setHover(true)}>
       {hover || focus ? (
-        <Input
-          className="alias-input"
-          defaultValue={value}
-          onBlur={onChangeAliasName}
-          onFocus={() => setFocus(true)}
-          onPressEnter={onChangeAliasName}
-          autoFocus
-        />
+        <div className="input-group">
+          <Input
+            className="alias-input"
+            defaultValue={value}
+            onBlur={onChangeAliasName}
+            onFocus={() => setFocus(true)}
+            onPressEnter={onChangeAliasName}
+            autoFocus
+          />
+          <CheckSVG className="icon" />
+        </div>
       ) : (
         <div className="label">
           <span className="text">{value}</span>
-          <EditPenSVG />
+          <EditPenSVG className="icon" />
         </div>
       )}
     </div>
