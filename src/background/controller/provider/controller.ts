@@ -110,9 +110,28 @@ const v1SignTypedDataVlidation = ({
 
 const signTypedDataVlidation = ({
   data: {
-    params: [from, _],
+    params: [from, data],
   },
+  session,
 }) => {
+  let jsonData;
+  try {
+    jsonData = JSON.parse(data);
+  } catch (e) {
+    throw ethErrors.rpc.invalidParams('data is not a validate JSON string');
+  }
+  const currentChain = permissionService.getConnectedSite(session.origin)
+    ?.chain;
+  if (jsonData.domain.chainId) {
+    if (
+      !currentChain ||
+      Number(jsonData.domain.chainId) !== CHAINS[currentChain].id
+    ) {
+      throw ethErrors.rpc.invalidParams(
+        'chainId should be same as current chainId'
+      );
+    }
+  }
   const currentAddress = preferenceService
     .getCurrentAccount()
     ?.address.toLowerCase();
