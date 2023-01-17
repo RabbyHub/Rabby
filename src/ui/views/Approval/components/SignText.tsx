@@ -322,7 +322,7 @@ const SignText = ({ params }: { params: SignTextProps }) => {
         </p>
         <div className="text-detail-wrapper">
           <div className="text-detail">{signText}</div>
-          {explain && (
+          {/* {explain && (
             <p className={clsx('text-explain', explainStatus)}>
               {explain}
               <Tooltip
@@ -335,7 +335,7 @@ const SignText = ({ params }: { params: SignTextProps }) => {
                 <IconQuestionMark className="icon icon-question-mark"></IconQuestionMark>
               </Tooltip>
             </p>
-          )}
+          )} */}
         </div>
         <div className="section-title mt-[32px]">Pre-sign check</div>
         <SecurityCheckCard

@@ -32,7 +32,7 @@ export const TxInterAddressExplain = ({
   let interAddressExplain;
 
   if (isCancel) {
-    interAddressExplain = 'Canceled a pending tansaction';
+    interAddressExplain = 'Canceled a pending transaction';
   } else if (isApprove) {
     const approveToken = tokenDict[data.token_approve?.token_id || ''];
     const amount = data.token_approve?.value || 0;
