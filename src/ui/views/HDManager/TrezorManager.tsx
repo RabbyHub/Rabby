@@ -11,6 +11,7 @@ import { HDManagerStateContext, sleep } from './utils';
 import { ReactComponent as SettingSVG } from 'ui/assets/setting-outline.svg';
 import { useAsyncRetry } from 'react-use';
 import useModal from 'antd/lib/modal/useModal';
+import * as Sentry from '@sentry/browser';
 
 interface Props {
   HDName?: string;
@@ -70,6 +71,9 @@ export const TrezorManager: React.FC<Props> = ({ HDName = 'Trezor' }) => {
       sleep(1000).then(fetchCurrentAccountsRetry.retry);
     } else {
       setPreventLoading(true);
+      console.log(errMessage);
+      Sentry.captureException(fetchCurrentAccountsRetry.error);
+
       modal.error({
         content: `${HDName}Connect has stopped. Please refresh the page to connect again.`,
         okText: 'Refresh',
