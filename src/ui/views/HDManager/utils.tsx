@@ -4,6 +4,7 @@ import PQueue from 'p-queue';
 import React from 'react';
 import { useHistory } from 'react-router-dom';
 import { Account } from './AccountList';
+import * as Sentry from '@sentry/browser';
 
 export const sleep = (ms: number) =>
   new Promise((resolve) => setTimeout(resolve, ms));
@@ -164,6 +165,7 @@ const useTaskQueue = () => {
   React.useEffect(() => {
     queueRef.current.on('error', (e) => {
       console.error(e);
+      Sentry.captureException(e);
       message.error({
         content:
           'Unable to connect to Hardware wallet. Please try to re-connect.',
