@@ -285,6 +285,9 @@ export const useAccountInfo = (type: string, address: string) => {
     index: number;
   }>();
   const isLedger = type === KEYRING_CLASS.HARDWARE.LEDGER;
+  const isTrezorLike =
+    type === KEYRING_CLASS.HARDWARE.TREZOR ||
+    type === KEYRING_CLASS.HARDWARE.ONEKEY;
 
   const fetchLedgerAccount = useCallback(() => {
     wallet.requestKeyring(type, 'getAccountInfo', null, address).then((res) => {
@@ -311,7 +314,7 @@ export const useAccountInfo = (type: string, address: string) => {
   useEffect(() => {
     if (isLedger) {
       fetchLedgerAccount();
-    } else {
+    } else if (isTrezorLike) {
       fetchTrezorLikeAccount();
     }
   }, [address]);
