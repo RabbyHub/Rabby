@@ -33,12 +33,7 @@ import {
   DEFAULT_GAS_LIMIT_RATIO,
   MINIMUM_GAS_LIMIT,
 } from 'consts';
-import {
-  addHexPrefix,
-  isHexPrefixed,
-  isHexString,
-  unpadHexString,
-} from 'ethereumjs-util';
+import { addHexPrefix, isHexPrefixed, isHexString } from 'ethereumjs-util';
 import React, { ReactNode, useEffect, useMemo, useState } from 'react';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import { useTranslation } from 'react-i18next';
@@ -101,9 +96,11 @@ const normalizeTxParams = (tx) => {
       copy.gasPrice = normalizeHex(copy.gasPrice);
     }
     if ('value' in copy) {
-      copy.value = addHexPrefix(
-        unpadHexString(addHexPrefix(copy.value) || '0x0')
-      );
+      if (!isStringOrNumber(copy.value)) {
+        copy.value = '0x0';
+      } else {
+        copy.value = normalizeHex(copy.value);
+      }
     }
   } catch (e) {
     Sentry.captureException(
@@ -438,7 +435,6 @@ const checkGasAndNonce = ({
   isSpeedUp: boolean;
   isGnosisAccount: boolean;
 }) => {
-  console.log('recommendGasLimitRatio', recommendGasLimitRatio);
   const errors: {
     code: number;
     msg: string;

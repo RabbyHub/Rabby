@@ -48,6 +48,7 @@ import { validateGasPriceRange, is1559Tx } from '@/utils/transaction';
 import stats from '@/stats';
 import BigNumber from 'bignumber.js';
 import { AddEthereumChainParams } from 'ui/views/Approval/components/AddChain';
+import { formatTxMetaForRpcResult } from 'background/utils/tx';
 
 const reportSignText = (params: {
   method: string;
@@ -1106,6 +1107,20 @@ class ProviderController extends BaseController {
     approvalRes,
   }) => {
     return approvalRes.data;
+  };
+
+  ethGetTransactionByHash = async (req) => {
+    const {
+      data: {
+        params: [hash],
+      },
+    } = req;
+    const tx = transactionHistoryService.getPendingTxByHash(hash);
+    if (tx) return formatTxMetaForRpcResult(tx);
+    return this.ethRpc({
+      ...req,
+      data: { method: 'eth_getTransactionByHash', params: [hash] },
+    });
   };
 }
 
