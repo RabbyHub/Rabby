@@ -1574,7 +1574,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       recommendGasLimit: calcRecommendGasLimit,
       recommendGasLimitRatio: calcGasLimitRatio,
     });
-    console.log(Number(block?.gasLimit), res);
+
     if (block && res > Number(block.gasLimit)) {
       res = Number(block.gasLimit);
     }
