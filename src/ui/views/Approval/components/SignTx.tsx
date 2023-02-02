@@ -639,6 +639,30 @@ interface SignTxProps<TData extends any[] = any[]> {
   origin?: string;
 }
 
+interface BlockInfo {
+  baseFeePerGas: string;
+  difficulty: string;
+  extraData: string;
+  gasLimit: string;
+  gasUsed: string;
+  hash: string;
+  logsBloom: string;
+  miner: string;
+  mixHash: string;
+  nonce: string;
+  number: string;
+  parentHash: string;
+  receiptsRoot: string;
+  sha3Uncles: string;
+  size: string;
+  stateRoot: string;
+  timestamp: string;
+  totalDifficulty: string;
+  transactions: string[];
+  transactionsRoot: string;
+  uncles: string[];
+}
+
 const SignTx = ({ params, origin }: SignTxProps) => {
   const { isGnosis, account } = params;
   const [isReady, setIsReady] = useState(false);
@@ -648,6 +672,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     cantProcessReason,
     setCantProcessReason,
   ] = useState<ReactNode | null>();
+  const [blockInfo, setBlockInfo] = useState<BlockInfo | null>(null);
   const [recommendGasLimit, setRecommendGasLimit] = useState<string>('');
   const [recommendGasLimitRatio, setRecommendGasLimitRatio] = useState(1); // 1 / 1.5 / 4
   const [recommendNonce, setRecommendNonce] = useState<string>('');
@@ -980,6 +1005,19 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       chainId,
     });
     setRecommendGasLimit(`0x${gas.toString(16)}`);
+    let block = null;
+    try {
+      block = await wallet.requestETHRpc(
+        {
+          method: 'eth_getBlockByNumber',
+          params: ['latest', false],
+        },
+        chain.serverId
+      );
+      setBlockInfo(block);
+    } catch (e) {
+      // DO NOTHING
+    }
     if (tx.gas && origin === INTERNAL_REQUEST_ORIGIN) {
       setGasLimit(intToHex(Number(tx.gas))); // use origin gas as gasLimit when tx is an internal tx with gasLimit(i.e. for SendMax native token)
       reCalcGasLimitBaseAccountBalance({
@@ -995,6 +1033,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
         customRecommendGasLimit: gas.toNumber(),
         customGasLimit: Number(tx.gas),
         customRecommendGasLimitRatio: 1,
+        block,
       });
     } else if (!gasLimit) {
       // use server response gas limit
@@ -1017,6 +1056,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
         customRecommendGasLimit: gas.toNumber(),
         customGasLimit: Number(recommendGasLimit),
         customRecommendGasLimitRatio: needRatio ? ratio : 1,
+        block,
       });
     }
 
@@ -1269,6 +1309,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
           nonce: afterNonce,
         },
         nonce: afterNonce,
+        block: blockInfo,
       });
     }
     if (!isGnosisAccount) {
@@ -1503,6 +1544,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     customRecommendGasLimit,
     customGasLimit,
     customRecommendGasLimitRatio,
+    block,
   }: {
     tx: Tx;
     nonce: number | string | BigNumber;
@@ -1510,6 +1552,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     customRecommendGasLimit?: number;
     customGasLimit?: number;
     customRecommendGasLimitRatio?: number;
+    block: BlockInfo | null;
   }) => {
     if (isGnosisAccount) return; // Gnosis Safe transaction no need gasLimit
     const calcGasLimit = customGasLimit || gasLimit;
@@ -1522,7 +1565,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     const { pendings } = await wallet.getTransactionHistory(
       currentAccount.address
     );
-    const res = getGasLimitBaseAccountBalance({
+    let res = getGasLimitBaseAccountBalance({
       gasPrice,
       nonce,
       pendingList: pendings.filter((item) => item.chainId === chainId),
@@ -1531,6 +1574,10 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       recommendGasLimit: calcRecommendGasLimit,
       recommendGasLimitRatio: calcGasLimitRatio,
     });
+    console.log(Number(block?.gasLimit), res);
+    if (block && res > Number(block.gasLimit)) {
+      res = Number(block.gasLimit);
+    }
     if (!new BigNumber(res).eq(calcGasLimit)) {
       setGasLimit(`0x${new BigNumber(res).toNumber().toString(16)}`);
       setManuallyChangeGasLimit(false);
