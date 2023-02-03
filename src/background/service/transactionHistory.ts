@@ -498,55 +498,6 @@ class TxHistory {
     // this.store.cacheExplain = copyExplain;
   }
 
-  // addExplainCache({
-  //   address,
-  //   chainId,
-  //   nonce,
-  //   explain,
-  //   approvalId,
-  //   calcSuccess,
-  // }: {
-  //   address: string;
-  //   chainId: number;
-  //   nonce: number;
-  //   explain: ExplainTxResponse;
-  //   approvalId: string;
-  //   calcSuccess: boolean;
-  // }) {
-  //   const key = `${address.toLowerCase()}-${chainId}-${nonce}`;
-  //   this.store.cacheExplain = {
-  //     ...this.store.cacheExplain,
-  //     [key]: { ...explain, approvalId, calcSuccess },
-  //   };
-  // }
-
-  // getExplainCacheByApprovalId(approvalId: string) {
-  //   return Object.values(this.store.cacheExplain).find(
-  //     (item) => item.approvalId === approvalId
-  //   );
-  // }
-
-  // getExplainCache({
-  //   address,
-  //   chainId,
-  //   nonce,
-  // }: {
-  //   address: string;
-  //   chainId: number;
-  //   nonce: number;
-  // }) {
-  //   const key = `${address.toLowerCase()}-${chainId}-${nonce}`;
-  //   return this.store.cacheExplain[key];
-  // }
-
-  // removeExplainCache(key: string) {
-  //   const { cacheExplain } = this.store;
-  //   if (cacheExplain[key]) {
-  //     delete cacheExplain[key];
-  //     this.store.cacheExplain = cacheExplain;
-  //   }
-  // }
-
   clearPendingTransactions(address: string) {
     const transactions = this.store.transactions[address.toLowerCase()];
     if (!transactions) return;
@@ -561,6 +512,20 @@ class TxHistory {
           };
         }, {}),
     };
+  }
+
+  getPendingTxByHash(hash: string) {
+    for (const address in this.store.transactions) {
+      const addressTxMap = this.store.transactions[address];
+      for (const id in addressTxMap) {
+        const txGroup = addressTxMap[id];
+        if (txGroup.isPending) {
+          const target = txGroup.txs.find((tx) => tx.hash === hash);
+          if (target) return target;
+        }
+      }
+    }
+    return null;
   }
 
   getNonceByChain(address: string, chainId: number) {
