@@ -349,7 +349,9 @@ class LedgerBridgeKeyring extends EventEmitter {
     this.accounts = this.accounts.filter(
       (a) => a.toLowerCase() !== address.toLowerCase()
     );
-    delete this.accountDetails[ethUtil.toChecksumAddress(address)];
+    const checksummedAddress = ethUtil.toChecksumAddress(address);
+    delete this.accountDetails[checksummedAddress];
+    delete this.paths[checksummedAddress];
   }
 
   updateTransportMethod(useLedgerLive = false) {

@@ -8,6 +8,7 @@ import {
   FeeMarketEIP1559Transaction,
 } from '@ethereumjs/tx';
 import HDKey from 'hdkey';
+import { isSameAddress } from '@/background/utils';
 
 const keyringType = 'Onekey Hardware';
 const hdPathString = "m/44'/60'/0'/0";
@@ -24,6 +25,10 @@ interface Account {
   index: number;
 }
 
+interface AccountDetail {
+  hdPathBasePublicKey?: string;
+}
+
 class OneKeyKeyring extends EventEmitter {
   static type = keyringType;
   type = keyringType;
@@ -34,9 +39,11 @@ class OneKeyKeyring extends EventEmitter {
   unlockedAccount = 0;
   paths = {};
   hdPath = '';
+  accountDetails: Record<string, AccountDetail>;
 
   constructor(opts = {}) {
     super();
+    this.accountDetails = {};
     this.deserialize(opts);
     OneKeyConnect.manifest(ONEKEY_CONNECT_MANIFEST);
   }
@@ -49,6 +56,7 @@ class OneKeyKeyring extends EventEmitter {
       paths: this.paths,
       perPage: this.perPage,
       unlockedAccount: this.unlockedAccount,
+      accountDetails: this.accountDetails,
     });
   }
 
@@ -58,6 +66,7 @@ class OneKeyKeyring extends EventEmitter {
     this.page = opts.page || 0;
     this.perPage = 5;
     this.paths = opts.paths || {};
+    this.accountDetails = opts.accountDetails || {};
     return Promise.resolve();
   }
 
@@ -201,6 +210,9 @@ class OneKeyKeyring extends EventEmitter {
     this.accounts = this.accounts.filter(
       (a) => a.toLowerCase() !== address.toLowerCase()
     );
+    const checksummedAddress = ethUtil.toChecksumAddress(address);
+    delete this.accountDetails[checksummedAddress];
+    delete this.paths[checksummedAddress];
   }
 
   // tx is an instance of the ethereumjs-transaction class.
@@ -478,19 +490,63 @@ class OneKeyKeyring extends EventEmitter {
   async getCurrentAccounts() {
     await this.unlock();
     const addresses = await this.getAccounts();
-
+    const currentPublicKey = this.getPathBasePublicKey();
     const accounts: Account[] = [];
 
     for (let i = 0; i < addresses.length; i++) {
       const address = addresses[i];
-      const account = {
-        address,
-        index: this.indexFromAddress(address) + 1,
-      };
-      accounts.push(account);
+      await this._fixAccountDetail(address);
+
+      const detail = this.accountDetails[ethUtil.toChecksumAddress(address)];
+
+      if (detail?.hdPathBasePublicKey !== currentPublicKey) {
+        continue;
+      }
+
+      try {
+        const account = {
+          address,
+          index: this.indexFromAddress(address) + 1,
+        };
+        accounts.push(account);
+      } catch (e) {
+        console.log('address not found', address);
+      }
     }
 
     return accounts;
+  }
+
+  private getPathBasePublicKey() {
+    return this.hdk.publicKey.toString('hex');
+  }
+
+  private async _fixAccountDetail(address: string) {
+    const checksummedAddress = ethUtil.toChecksumAddress(address);
+    const detail = this.accountDetails[checksummedAddress];
+
+    // The detail is already fixed
+    if (detail?.hdPathBasePublicKey) {
+      return;
+    }
+
+    let addressInDevice;
+
+    try {
+      const index = this.indexFromAddress(address);
+      addressInDevice = this._addressFromIndex(pathBase, index);
+    } catch (e) {
+      console.log('address not found', address);
+    }
+
+    if (!addressInDevice || !isSameAddress(address, addressInDevice)) {
+      return;
+    }
+
+    this.accountDetails[checksummedAddress] = {
+      ...detail,
+      hdPathBasePublicKey: this.getPathBasePublicKey(),
+    };
   }
 }
 

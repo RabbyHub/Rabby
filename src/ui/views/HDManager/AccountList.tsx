@@ -167,7 +167,7 @@ export const AccountList: React.FC<Props> = ({
   return (
     <Table<Account>
       dataSource={list}
-      rowKey="index"
+      rowKey={(record) => record.address || record.index}
       className="AccountList"
       loading={
         !preventLoading && loading
