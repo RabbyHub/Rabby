@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Button } from 'antd';
 import { useHistory } from 'react-router-dom';
 import { useTranslation, Trans } from 'react-i18next';
@@ -305,15 +305,19 @@ const WatchAddressWaiting = ({ params }: { params: ApprovalParams }) => {
   const [qrcodeContent, setQrcodeContent] = useState('');
   const [result, setResult] = useState('');
   const [getApproval, resolveApproval, rejectApproval] = useApproval();
-  const chain = Object.values(CHAINS).find(
-    (item) => item.id === (params.chainId || 1)
-  )!.enum;
   const { t } = useTranslation();
   const isSignTextRef = useRef(false);
   const [brandName, setBrandName] = useState<string | null>(null);
   const [bridgeURL, setBridge] = useState<string>(DEFAULT_BRIDGE);
   const [currentAccount, setCurrentAccount] = useState<Account | null>(null);
   const explainRef = useRef<any | null>(null);
+  const [chainId, setChainId] = useState<number>(1);
+
+  const chain = useMemo(() => {
+    return Object.values(CHAINS).find(
+      (item) => item.id === (params.chainId || chainId)
+    )!.enum;
+  }, [params.chainId, chainId]);
 
   const initWalletConnect = async () => {
     const account = params.isGnosis
@@ -327,19 +331,32 @@ const WatchAddressWaiting = ({ params }: { params: ApprovalParams }) => {
       status === null ? WALLETCONNECT_STATUS_MAP.PENDING : status
     );
     setBrandName(account!.brandName);
-    eventBus.addEventListener(EVENTS.WALLETCONNECT.INITED, ({ uri }) => {
-      setQrcodeContent(uri);
-    });
+    eventBus.addEventListener(
+      EVENTS.WALLETCONNECT.INITED,
+      ({ uri, chainId }) => {
+        setChainId(chainId);
+        setQrcodeContent(uri);
+      }
+    );
     const signingTx = await wallet.getSigningTx(params.signingTxId!);
 
     explainRef.current = signingTx?.explain;
+  };
+
+  const reconnectWalletConnect = async () => {
+    const account = params.isGnosis
+      ? params.account!
+      : (await wallet.syncGetCurrentAccount())!;
     if (
-      status !== WALLETCONNECT_STATUS_MAP.CONNECTED &&
-      status !== WALLETCONNECT_STATUS_MAP.SIBMITTED
+      connectStatus !== WALLETCONNECT_STATUS_MAP.CONNECTED &&
+      connectStatus !== WALLETCONNECT_STATUS_MAP.SIBMITTED
     ) {
       eventBus.emit(EVENTS.broadcastToBackground, {
         method: EVENTS.WALLETCONNECT.INIT,
-        data: account,
+        data: {
+          ...account,
+          chainId,
+        },
       });
     }
   };
@@ -353,7 +370,7 @@ const WatchAddressWaiting = ({ params }: { params: ApprovalParams }) => {
       ? params.account!
       : (await wallet.syncGetCurrentAccount())!;
     await wallet.killWalletConnectConnector(account.address, account.brandName);
-    await initWalletConnect();
+    await reconnectWalletConnect();
     setConnectStatus(WALLETCONNECT_STATUS_MAP.PENDING);
     setConnectError(null);
   };

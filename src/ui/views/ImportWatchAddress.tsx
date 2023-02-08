@@ -5,13 +5,10 @@ import { useTranslation } from 'react-i18next';
 import QRCode from 'qrcode.react';
 import QRCodeReader from 'ui/component/QRCodeReader';
 import { isValidAddress } from 'ethereumjs-util';
-import WalletConnect from '@walletconnect/client';
-import { DEFAULT_BRIDGE } from '@rabby-wallet/eth-walletconnect-keyring';
 import { Popup, StrayPageWithButton } from 'ui/component';
 import { useWallet, useWalletRequest } from 'ui/utils';
 import { openInternalPageInTab } from 'ui/utils/webapi';
-import { KEYRING_CLASS } from 'consts';
-
+import { EVENTS, KEYRING_CLASS, WALLETCONNECT_STATUS_MAP } from 'consts';
 import WatchLogo from 'ui/assets/waitcup.svg';
 import IconWalletconnect from 'ui/assets/walletconnect.svg';
 import IconScan from 'ui/assets/scan.svg';
@@ -21,6 +18,7 @@ import { useMedia } from 'react-use';
 import clsx from 'clsx';
 import { Modal } from 'ui/component';
 import IconBack from 'ui/assets/icon-back.svg';
+import eventBus from '@/eventBus';
 
 const ImportWatchAddress = () => {
   const { t } = useTranslation();
@@ -32,7 +30,7 @@ const ImportWatchAddress = () => {
     false
   );
   const [QRScanModalVisible, setQRScanModalVisible] = useState(false);
-  const connector = useRef<WalletConnect>();
+  const connector = useRef();
   const [walletconnectUri, setWalletconnectUri] = useState('');
   const [ensResult, setEnsResult] = useState<null | {
     addr: string;
@@ -102,42 +100,31 @@ const ImportWatchAddress = () => {
     };
   }, [handleKeyDown]);
 
-  const handleImportByWalletconnect = async () => {
-    localStorage.removeItem('walletconnect');
-    connector.current = new WalletConnect({
-      bridge: DEFAULT_BRIDGE,
-      clientMeta: {
-        description: t('appDescription'),
-        url: 'https://rabby.io',
-        icons: ['https://rabby.io/assets/images/logo.png'],
-        name: 'Rabby',
-      },
-    });
-    connector.current.on('connect', async (error, payload) => {
-      if (error) {
-        handleImportByWalletconnect();
-      } else {
-        const { accounts } = payload.params[0];
-        form.setFieldsValue({
-          address: accounts[0],
-        });
-        await connector.current?.killSession();
-        setWalletconnectModalVisible(false);
-        setWalletconnectUri('');
+  const handleImportByWalletConnect = async () => {
+    const uri = await wallet.connectWalletConnect();
+    eventBus.addEventListener(
+      EVENTS.WALLETCONNECT.STATUS_CHANGED,
+      ({ status, payload }) => {
+        if (status === WALLETCONNECT_STATUS_MAP.CONNECTED) {
+          const { address } = payload;
+          form.setFieldsValue({
+            address: address,
+          });
+          // await connector.current?.killSession();
+          setWalletconnectModalVisible(false);
+          setWalletconnectUri('');
+        }
       }
-    });
-    connector.current.on('disconnect', () => {
-      setWalletconnectModalVisible(false);
-    });
-    await connector.current.createSession();
-    setWalletconnectUri(connector.current.uri);
+    );
+    // connector.current.on('disconnect', () => {
+    //   setWalletconnectModalVisible(false);
+    // });
+    if (uri) {
+      setWalletconnectUri(uri);
+    }
     setWalletconnectModalVisible(true);
   };
-
   const handleWalletconnectModalCancel = () => {
-    if (connector.current && connector.current.connected) {
-      connector.current.killSession();
-    }
     setWalletconnectModalVisible(false);
   };
 
@@ -295,7 +282,7 @@ const ImportWatchAddress = () => {
         <div className="flex justify-between px-20">
           <div
             className="w-[172px] import-watchmode__button"
-            onClick={handleImportByWalletconnect}
+            onClick={handleImportByWalletConnect}
           >
             <img src={IconWalletconnect} className="icon icon-walletconnect" />
             {t('Scan via mobile wallet')}

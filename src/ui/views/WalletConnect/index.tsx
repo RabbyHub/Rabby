@@ -2,7 +2,6 @@ import React, { useState, useEffect } from 'react';
 import { message } from 'antd';
 import { useHistory, useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
-import { DEFAULT_BRIDGE } from '@rabby-wallet/eth-walletconnect-keyring';
 import { useWallet, useWalletRequest } from 'ui/utils';
 import IconBack from 'ui/assets/icon-back.svg';
 import { ScanCopyQRCode } from 'ui/component';
@@ -11,6 +10,7 @@ import { WALLETCONNECT_STATUS_MAP, EVENTS } from 'consts';
 import Mask from 'ui/assets/import-mask.png';
 import './style.less';
 import clsx from 'clsx';
+import { DEFAULT_BRIDGE } from '@rabby-wallet/eth-walletconnect-keyring';
 const WalletConnectTemplate = () => {
   const { t } = useTranslation();
   const history = useHistory();
@@ -49,7 +49,7 @@ const WalletConnectTemplate = () => {
       brand.brand,
       bridgeURL
     );
-    setWalletconnectUri(uri);
+    setWalletconnectUri(uri!);
     await wallet.setPageStateCache({
       path: '/import/wallet-connect',
       params: {},

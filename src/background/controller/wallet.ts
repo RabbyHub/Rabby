@@ -1284,6 +1284,22 @@ export class WalletController extends BaseController {
     return null;
   };
 
+  connectWalletConnect = async () => {
+    let keyring: WalletConnectKeyring;
+    const keyringType = KEYRING_CLASS.WALLETCONNECT;
+    try {
+      keyring = this._getKeyringByType(keyringType);
+    } catch {
+      const WalletConnect = keyringService.getKeyringClassForType(keyringType);
+      keyring = new WalletConnect({
+        accounts: [],
+        brandName: 'brandName',
+      });
+    }
+
+    return keyring.connectSDK();
+  };
+
   initWalletConnect = async (brandName: string, bridge?: string) => {
     let keyring: WalletConnectKeyring, isNewKey;
     const keyringType = KEYRING_CLASS.WALLETCONNECT;
@@ -1303,27 +1319,21 @@ export class WalletController extends BaseController {
       });
       isNewKey = true;
     }
-    const { uri } = await keyring.initConnector(brandName, bridge);
+    const { uri } = await keyring.initConnector(brandName);
     let stashId: null | number = null;
     if (isNewKey) {
       stashId = this.addKeyringToStash(keyring);
       eventBus.addEventListener(
         EVENTS.WALLETCONNECT.INIT,
-        ({ address, brandName }) => {
-          (keyring as WalletConnectKeyring).init(address, brandName);
+        ({ address, brandName, chainId }) => {
+          (keyring as WalletConnectKeyring).init(address, brandName, chainId);
         }
       );
-      (keyring as WalletConnectKeyring).on('inited', (uri) => {
+      (keyring as WalletConnectKeyring).on('inited', (params) => {
         eventBus.emit(EVENTS.broadcastToUI, {
           method: EVENTS.WALLETCONNECT.INITED,
-          params: { uri },
+          params,
         });
-      });
-
-      keyring.on('transport_error', (data) => {
-        Sentry.captureException(
-          new Error('Transport error: ' + JSON.stringify(data))
-        );
       });
 
       keyring.on('statusChange', (data) => {
@@ -1383,7 +1393,7 @@ export class WalletController extends BaseController {
       const connector =
         keyring.connectors[`${brandName}-${address.toLowerCase()}`];
       if (connector) {
-        await keyring.closeConnector(connector.connector, address, brandName);
+        await keyring.closeConnector(connector, address, brandName);
       }
     }
   };
@@ -1414,7 +1424,6 @@ export class WalletController extends BaseController {
     keyring.setAccountToAdd({
       address,
       brandName,
-      bridge,
     });
 
     if (isNewKey) {

@@ -828,14 +828,14 @@ export class KeyringService extends EventEmitter {
     if (keyring.type === KEYRING_CLASS.WALLETCONNECT) {
       eventBus.addEventListener(
         EVENTS.WALLETCONNECT.INIT,
-        ({ address, brandName }) => {
-          (keyring as WalletConnectKeyring).init(address, brandName);
+        ({ address, brandName, chainId }) => {
+          (keyring as WalletConnectKeyring).init(address, brandName, chainId);
         }
       );
-      (keyring as WalletConnectKeyring).on('inited', (uri) => {
+      (keyring as WalletConnectKeyring).on('inited', (params) => {
         eventBus.emit(EVENTS.broadcastToUI, {
           method: EVENTS.WALLETCONNECT.INITED,
-          params: { uri },
+          params,
         });
       });
 

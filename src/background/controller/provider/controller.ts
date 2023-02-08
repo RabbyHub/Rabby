@@ -666,10 +666,17 @@ class ProviderController extends BaseController {
       const [string, from] = data.params;
       const hex = isHexString(string) ? string : stringToHex(string);
       const keyring = await this._checkAddress(from);
+      const chain =
+        session && permissionService.getConnectedSite(session.origin)?.chain;
+      const chainId = chain ? CHAINS[chain].id : 1;
+
       const result = await keyringService.signPersonalMessage(
         keyring,
         { data: hex, from },
-        approvalRes?.extra
+        {
+          ...approvalRes?.extra,
+          chainId,
+        }
       );
       signTextHistoryService.createHistory({
         address: from,
@@ -695,6 +702,11 @@ class ProviderController extends BaseController {
 
   @Reflect.metadata('PRIVATE', true)
   private _signTypedData = async (from, data, version, extra?) => {
+    const chain =
+      extra.session &&
+      permissionService.getConnectedSite(extra.session.origin)?.chain;
+    const chainId = chain ? CHAINS[chain].id : 1;
+
     const keyring = await this._checkAddress(from);
     let _data = data;
     if (version !== 'V1') {
@@ -706,7 +718,7 @@ class ProviderController extends BaseController {
     return keyringService.signTypedMessage(
       keyring,
       { from, data: _data },
-      { version, ...(extra || {}) }
+      { version, chainId, ...(extra || {}) }
     );
   };
 
@@ -718,14 +730,13 @@ class ProviderController extends BaseController {
     session,
     approvalRes,
   }) => {
+    const extra = {
+      ...approvalRes?.extra,
+      session,
+    };
     const currentAccount = preferenceService.getCurrentAccount()!;
     try {
-      const result = await this._signTypedData(
-        from,
-        data,
-        'V1',
-        approvalRes?.extra
-      );
+      const result = await this._signTypedData(from, data, 'V1', extra);
       signTextHistoryService.createHistory({
         address: from,
         text: data,
@@ -756,14 +767,13 @@ class ProviderController extends BaseController {
     session,
     approvalRes,
   }) => {
+    const extra = {
+      ...approvalRes?.extra,
+      session,
+    };
     const currentAccount = preferenceService.getCurrentAccount()!;
     try {
-      const result = await this._signTypedData(
-        from,
-        data,
-        'V1',
-        approvalRes?.extra
-      );
+      const result = await this._signTypedData(from, data, 'V1', extra);
       signTextHistoryService.createHistory({
         address: from,
         text: data,
@@ -794,14 +804,13 @@ class ProviderController extends BaseController {
     session,
     approvalRes,
   }) => {
+    const extra = {
+      ...approvalRes?.extra,
+      session,
+    };
     const currentAccount = preferenceService.getCurrentAccount()!;
     try {
-      const result = await this._signTypedData(
-        from,
-        data,
-        'V3',
-        approvalRes?.extra
-      );
+      const result = await this._signTypedData(from, data, 'V3', extra);
       signTextHistoryService.createHistory({
         address: from,
         text: data,
@@ -832,14 +841,13 @@ class ProviderController extends BaseController {
     session,
     approvalRes,
   }) => {
+    const extra = {
+      ...approvalRes?.extra,
+      session,
+    };
     const currentAccount = preferenceService.getCurrentAccount()!;
     try {
-      const result = await this._signTypedData(
-        from,
-        data,
-        'V4',
-        approvalRes?.extra
-      );
+      const result = await this._signTypedData(from, data, 'V4', extra);
       signTextHistoryService.createHistory({
         address: from,
         text: data,
