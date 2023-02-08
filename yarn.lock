@@ -3496,10 +3496,10 @@
     ethereumjs-util "^7.1.5"
     hdkey "0.8.0"
 
-"@rabby-wallet/eth-walletconnect-keyring@^2.0.0-beta.0":
-  version "2.0.0-beta.0"
-  resolved "https://registry.yarnpkg.com/@rabby-wallet/eth-walletconnect-keyring/-/eth-walletconnect-keyring-2.0.0-beta.0.tgz#5373d05234dcdb15ad39905781712baafc8a9e46"
-  integrity sha512-BMSc/NUMl06lWeu0kKyHT0pkQnD94JxWV8hdNhct8S+nbQMeTDvwUIV0MB/N1LQL1Q9AYSRYW/Q6Hv1zVzs/9A==
+"@rabby-wallet/eth-walletconnect-keyring@^2.0.0-beta.2":
+  version "2.0.0-beta.2"
+  resolved "https://registry.yarnpkg.com/@rabby-wallet/eth-walletconnect-keyring/-/eth-walletconnect-keyring-2.0.0-beta.2.tgz#a690b489186a984abfd2522782e300dd55a49781"
+  integrity sha512-EgHy8L5hEG71/sVezEwbN6tX28hbztot3CO7o82QJrHpcikCsXprWetaL4s0TI7LRIAHpHIfED4fFqBVQ/L8SA==
   dependencies:
     "@ethereumjs/tx" "^3.5.2"
     "@walletconnect/sign-client" "^2.3.3"

@@ -20,9 +20,7 @@ import OnekeyKeyring from './eth-onekey-keyring';
 import LatticeKeyring from '@rabby-wallet/eth-lattice-keyring';
 import WatchKeyring from '@rabby-wallet/eth-watch-keyring';
 import KeystoneKeyring from './eth-keystone-keyring';
-import WalletConnectKeyring, {
-  keyringType,
-} from '@rabby-wallet/eth-walletconnect-keyring';
+import WalletConnectKeyring from '@rabby-wallet/eth-walletconnect-keyring';
 import GnosisKeyring, {
   TransactionBuiltEvent,
   TransactionConfirmedEvent,
