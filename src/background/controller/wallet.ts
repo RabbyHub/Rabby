@@ -1293,11 +1293,23 @@ export class WalletController extends BaseController {
       const WalletConnect = keyringService.getKeyringClassForType(keyringType);
       keyring = new WalletConnect({
         accounts: [],
-        brandName: 'brandName',
+        brandName: 'WalletConnect',
       });
     }
 
     return keyring.connectSDK();
+  };
+
+  disconnectWalletConnect = async () => {
+    let keyring: WalletConnectKeyring | undefined;
+    const keyringType = KEYRING_CLASS.WALLETCONNECT;
+    try {
+      keyring = this._getKeyringByType(keyringType);
+    } catch {
+      // ignore
+    }
+
+    return keyring?.disconnectSDK?.();
   };
 
   initWalletConnect = async (brandName: string, bridge?: string) => {

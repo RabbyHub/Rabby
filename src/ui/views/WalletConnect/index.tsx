@@ -183,6 +183,7 @@ const WalletConnectTemplate = () => {
         bridgeURL={bridgeURL}
         onBridgeChange={handleBridgeChange}
         defaultBridge={DEFAULT_BRIDGE}
+        canChangeBridge={false}
       />
     </div>
   );
