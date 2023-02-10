@@ -376,7 +376,7 @@ const WatchAddressWaiting = ({ params }: { params: ApprovalParams }) => {
   };
 
   const handleRefreshQrCode = () => {
-    initWalletConnect();
+    handleRetry();
   };
 
   const init = async () => {
