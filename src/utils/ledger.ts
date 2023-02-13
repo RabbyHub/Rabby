@@ -1,6 +1,6 @@
 import { ledgerUSBVendorId } from '@ledgerhq/devices';
 import { useEffect, useState } from 'react';
-import { hasConnectedLedgerDevice } from 'utils';
+import { hasConnectedLedgerDevice } from '@/utils';
 import { browser } from 'webextension-polyfill-ts';
 
 export enum LedgerHDPathType {

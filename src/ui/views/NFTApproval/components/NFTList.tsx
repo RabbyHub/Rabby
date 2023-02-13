@@ -6,7 +6,7 @@ import React from 'react';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import { useTranslation } from 'react-i18next';
 import IconSearch from 'ui/assets/search.svg';
-import { getChain } from 'utils';
+import { getChain } from '@/utils';
 import { Loading } from './Loading';
 import NFTListItem from './NFTListItem';
 

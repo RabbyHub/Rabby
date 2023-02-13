@@ -2,7 +2,7 @@ import { NFTItem } from '@/background/service/openapi';
 import { Button, Tooltip } from 'antd';
 import React from 'react';
 import { useHistory } from 'react-router-dom';
-import { getChain } from 'utils';
+import { getChain } from '@/utils';
 import NFTAvatar from './NFTAvatar';
 import { splitNumberByStep } from '@/ui/utils';
 import { IGAEventSource } from '@/ui/utils/ga-event';

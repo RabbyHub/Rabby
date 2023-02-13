@@ -6,7 +6,7 @@ import { Integrations } from '@sentry/tracing';
 import { browser } from 'webextension-polyfill-ts';
 import { ethErrors } from 'eth-rpc-errors';
 import { WalletController } from 'background/controller/wallet';
-import { Message } from 'utils';
+import { Message } from '@/utils';
 import { CHAINS, EVENTS, KEYRING_CATEGORY_MAP } from 'consts';
 import { storage } from './webapi';
 import {

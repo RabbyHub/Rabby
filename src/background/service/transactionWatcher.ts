@@ -6,7 +6,7 @@ import {
 import { createPersistStore, isSameAddress } from 'background/utils';
 import { notification } from 'background/webapi';
 import { CHAINS, CHAINS_ENUM } from 'consts';
-import { format } from 'utils';
+import { format } from '@/utils';
 import eventBus from '@/eventBus';
 import { EVENTS } from '@/constant';
 import interval from 'interval-promise';
