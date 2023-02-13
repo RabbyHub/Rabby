@@ -18,6 +18,19 @@ const TREZOR_CONNECT_MANIFEST = {
   appUrl: 'https://debank.com/',
 };
 
+const isSameAddress = (a: string, b: string) => {
+  return a.toLowerCase() === b.toLowerCase();
+};
+
+interface Account {
+  address: string;
+  index: number;
+}
+
+interface AccountDetail {
+  hdPathBasePublicKey?: string;
+}
+
 const ALLOWED_HD_PATHS = {
   [hdPathString]: true,
   [SLIP0044TestnetPath]: true,
@@ -60,9 +73,11 @@ class TrezorKeyring extends EventEmitter {
   paths = {};
   hdPath = '';
   model: string = '';
+  accountDetails: Record<string, AccountDetail>;
 
   constructor(opts = {}) {
     super();
+    this.accountDetails = {};
     this.deserialize(opts);
     this.init();
   }
@@ -540,7 +555,11 @@ class TrezorKeyring extends EventEmitter {
     return ethUtil.toChecksumAddress(`0x${address}`);
   }
 
-  _pathFromAddress(address) {
+  _pathFromAddress(address: string): string {
+    return `${this.hdPath}/${this.indexFromAddress(address)}`;
+  }
+
+  indexFromAddress(address: string) {
     const checksummedAddress = ethUtil.toChecksumAddress(address);
     let index = this.paths[checksummedAddress];
     if (typeof index === 'undefined') {
@@ -555,7 +574,70 @@ class TrezorKeyring extends EventEmitter {
     if (typeof index === 'undefined') {
       throw new Error('Unknown address');
     }
-    return `${this.hdPath}/${index}`;
+    return index;
+  }
+
+  async getCurrentAccounts() {
+    await this.unlock();
+    const addresses = await this.getAccounts();
+    const currentPublicKey = this.getPathBasePublicKey();
+
+    const accounts: Account[] = [];
+
+    for (let i = 0; i < addresses.length; i++) {
+      const address = addresses[i];
+      await this._fixAccountDetail(address);
+
+      const detail = this.accountDetails[ethUtil.toChecksumAddress(address)];
+
+      if (detail?.hdPathBasePublicKey !== currentPublicKey) {
+        continue;
+      }
+
+      try {
+        const account = {
+          address,
+          index: this.indexFromAddress(address) + 1,
+        };
+        accounts.push(account);
+      } catch (e) {
+        console.log('address not found', address);
+      }
+    }
+
+    return accounts;
+  }
+
+  private getPathBasePublicKey() {
+    return this.hdk.publicKey.toString('hex');
+  }
+
+  private async _fixAccountDetail(address: string) {
+    const checksummedAddress = ethUtil.toChecksumAddress(address);
+    const detail = this.accountDetails[checksummedAddress];
+
+    // The detail is already fixed
+    if (detail?.hdPathBasePublicKey) {
+      return;
+    }
+
+    let addressInDevice;
+
+    try {
+      const index = this.indexFromAddress(address);
+      addressInDevice = this._addressFromIndex(pathBase, index);
+    } catch (e) {
+      console.log('address not found', address);
+    }
+
+    if (!addressInDevice || !isSameAddress(address, addressInDevice)) {
+      return;
+    }
+
+    this.accountDetails[checksummedAddress] = {
+      ...detail,
+      hdPathBasePublicKey: this.getPathBasePublicKey(),
+    };
   }
 }
 
