@@ -109,6 +109,7 @@ class TrezorKeyring extends EventEmitter {
       paths: this.paths,
       perPage: this.perPage,
       unlockedAccount: this.unlockedAccount,
+      accountDetails: this.accountDetails,
     });
   }
 
@@ -117,6 +118,7 @@ class TrezorKeyring extends EventEmitter {
     this.accounts = opts.accounts || [];
     this.page = opts.page || 0;
     this.perPage = opts.perPage || 5;
+    this.accountDetails = opts.accountDetails || {};
     return Promise.resolve();
   }
 
