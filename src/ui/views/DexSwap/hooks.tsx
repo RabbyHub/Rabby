@@ -127,7 +127,7 @@ type VerifySdkParams<T extends ValidateTokenParam> = {
 export const useVerifySdk = <T extends ValidateTokenParam>(
   p: VerifySdkParams<T>
 ) => {
-  const { chain, dexId, slippage, data, payToken, receiveToken, payAmount } = p;
+  const { chain, dexId, slippage, data, payToken, payAmount } = p;
   const [routerPass, spenderPass] = useVerifyRouterAndSpender(
     chain,
     dexId,
@@ -141,12 +141,6 @@ export const useVerifySdk = <T extends ValidateTokenParam>(
     new BigNumber(slippage).div(100).toFixed(),
     data?.tx ? { ...data?.tx, chainId: CHAINS[chain].id } : undefined,
     data
-  );
-
-  const { value: tokenVerifyResult, loading: tokenLoading } = useVerifyToken(
-    payToken,
-    receiveToken,
-    chain
   );
 
   const wallet = useWallet();
@@ -182,12 +176,6 @@ export const useVerifySdk = <T extends ValidateTokenParam>(
     spenderPass,
     callDataPass,
     isSdkDataPass: routerPass && spenderPass && callDataPass,
-
-    tokenLoading,
-    tokenPass: !!tokenVerifyResult?.[0],
-    payTokenPass: !!tokenVerifyResult?.[1],
-    receiveTokenPass: !!tokenVerifyResult?.[2],
-
     tokenApproved: tokenApprovalResult[0],
     shouldTwoStepApprove: tokenApprovalResult[1],
   };
