@@ -414,7 +414,7 @@ const WatchAddressWaiting = ({ params }: { params: ApprovalParams }) => {
             });
           }
         }
-        resolveApproval(data.data, !isSignTextRef.current, false, approval.id);
+        resolveApproval(data.data, false, false, approval.id);
       } else {
         if (!isSignTextRef.current) {
           // const tx = approval.data?.params;
