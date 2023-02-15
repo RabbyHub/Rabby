@@ -512,83 +512,7 @@ const Swap = () => {
   const setPageStateCacheRef = useRef(setPageStateCache);
   setPageStateCacheRef.current = setPageStateCache;
 
-  const validateToken = async (token: TokenItem) => {
-    if (!chain) return true;
-
-    const currentChain = CHAINS[chain];
-    if (token.id === currentChain.nativeTokenAddress) {
-      if (
-        token.symbol !== currentChain.nativeTokenSymbol ||
-        token.decimals !== currentChain.nativeTokenDecimals
-      ) {
-        // Sentry.captureException(
-        //   new Error('Swap Token validation failed'),
-        //   (scope) => {
-        //     scope.setTag('id', `${token.chain}-${token.id}`);
-        //     return scope;
-        //   }
-        // );
-        return false;
-      }
-      return true;
-    }
-    try {
-      const [decimals, symbol] = await Promise.all([
-        geTokenDecimals(
-          token.id,
-          new providers.JsonRpcProvider(currentChain.thridPartyRPC)
-        ),
-        getTokenSymbolUtil(
-          token.id,
-          new providers.JsonRpcProvider(currentChain.thridPartyRPC)
-        ),
-      ]);
-
-      if (symbol !== token.symbol || decimals !== token.decimals) {
-        // Sentry.captureException(
-        //   new Error('Token validation failed'),
-        //   (scope) => {
-        //     scope.setTag('id', `${token.chain}-${token.id}`);
-        //     return scope;
-        //   }
-        // );
-        return false;
-      }
-      return true;
-    } catch (e) {
-      // Sentry.captureException(
-      //   new Error('Token validation failed'),
-      //   (scope) => {
-      //     scope.setTag('id', `${token.chain}-${token.id}`);
-      //     return scope;
-      //   }
-      // );
-      console.error('swap token verify failed', e);
-      return false;
-    }
-  };
-
-  const {
-    loading: tokenVerifying,
-    value: tokenVerified,
-  } = useAsync(async () => {
-    if (payToken && receiveToken) {
-      const [
-        fromTokenValidationStatus,
-        toTokenValidationStatus,
-      ] = await Promise.all([
-        validateToken(payToken),
-        validateToken(receiveToken),
-      ]);
-
-      return fromTokenValidationStatus && toTokenValidationStatus;
-    }
-    return true;
-  }, [payToken, receiveToken]);
-
   const canSubmit =
-    !tokenVerifying &&
-    tokenVerified &&
     !feeRatioLoading &&
     !slippageError &&
     (slippage !== 'custom' ||
@@ -849,24 +773,6 @@ const Swap = () => {
         </Section>
 
         <AbsoluteFooter>
-          <div className="mb-16 text-12">
-            {tokenVerifying && (
-              <div className="flex items-center text-orange">
-                <SvgIconLoading
-                  className="animate-spin fill-current  w-14 h-14 mr-6"
-                  viewBox="0 0 36 36"
-                />
-                <span>{t('Verifying token info ...')}</span>
-              </div>
-            )}
-
-            {!tokenVerifying && !tokenVerified && (
-              <div className="flex items-center text-red-light ">
-                <SvgAlertInfo className=" w-14 h-14 mr-6" />
-                <span>{t('Token verification failed')}</span>
-              </div>
-            )}
-          </div>
           <Button
             disabled={!canSubmit}
             type="primary"
