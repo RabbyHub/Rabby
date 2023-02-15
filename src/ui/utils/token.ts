@@ -1,5 +1,3 @@
-import { TokenItem } from '@/background/service/openapi';
-import { CHAINS } from '@/constant';
 import { Contract, providers } from 'ethers';
 import { hexToString } from 'web3-utils';
 

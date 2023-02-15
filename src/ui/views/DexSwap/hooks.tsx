@@ -1,6 +1,5 @@
 import { INTERNAL_REQUEST_ORIGIN } from '@/constant';
 import { isSameAddress, useWallet } from '@/ui/utils';
-import { validateToken, ValidateTokenParam } from '@/ui/utils/token';
 import { CHAINS, CHAINS_ENUM } from '@debank/common';
 import { GasLevel, Tx } from '@debank/rabby-api/dist/types';
 import {
@@ -17,36 +16,13 @@ import BigNumber from 'bignumber.js';
 import { useMemo } from 'react';
 import { useAsync } from 'react-use';
 
-const ETH_USDT_CONTRACT = '0xdac17f958d2ee523a2206206994597c13d831ec7';
-
-export const useVerifyToken = <T extends ValidateTokenParam>(
-  payToken?: T,
-  receiveToken?: T,
-  chain?: CHAINS_ENUM
-) => {
-  const wallet = useWallet();
-  const data = useAsync(async () => {
-    if (payToken && receiveToken && chain) {
-      const customRPC = await wallet.getCustomRpcByChain(chain);
-      const [
-        fromTokenValidationStatus,
-        toTokenValidationStatus,
-      ] = await Promise.all([
-        validateToken(payToken, chain, customRPC),
-        validateToken(receiveToken, chain, customRPC),
-      ]);
-
-      return [
-        fromTokenValidationStatus && toTokenValidationStatus,
-        fromTokenValidationStatus,
-        toTokenValidationStatus,
-      ];
-    }
-
-    return [true, true, true];
-  }, [payToken, receiveToken, chain]);
-  return data;
+export type ValidateTokenParam = {
+  id: string;
+  symbol: string;
+  decimals: number;
 };
+
+const ETH_USDT_CONTRACT = '0xdac17f958d2ee523a2206206994597c13d831ec7';
 
 export const useVerifyRouterAndSpender = (
   chain: CHAINS_ENUM,
