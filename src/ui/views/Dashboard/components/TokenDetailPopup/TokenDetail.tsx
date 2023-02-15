@@ -1,18 +1,16 @@
 import { useInfiniteScroll } from 'ahooks';
-import { Button, message, Tooltip } from 'antd';
+import { Button, Tooltip } from 'antd';
 import { TokenItem, TxHistoryResult } from 'background/service/openapi';
-import ClipboardJS from 'clipboard';
 import clsx from 'clsx';
 import { last } from 'lodash';
 import React, { useCallback, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
-import IconCopy from 'ui/assets/swap/copy.svg';
+import IconExternal from 'ui/assets/open-external-gray.svg';
 import IconPlus from 'ui/assets/plus.svg';
-import IconSuccess from 'ui/assets/success.svg';
 import IconTrash from 'ui/assets/trash.svg';
 import { Modal, TokenWithChain } from 'ui/component';
-import { splitNumberByStep, useWallet } from 'ui/utils';
+import { splitNumberByStep, useWallet, openInTab } from 'ui/utils';
 import { getChain } from 'utils';
 import ChainIcon from '../NFT/ChainIcon';
 import { HistoryItem } from './HistoryItem';
@@ -20,6 +18,7 @@ import { Loading } from './Loading';
 import './style.less';
 import { useRabbySelector } from '@/ui/store';
 import { DEX_SUPPORT_CHAINS } from '@rabby-wallet/rabby-swap';
+import { CHAINS } from 'consts';
 
 const PAGE_COUNT = 10;
 const ellipsis = (text: string) => {
@@ -95,29 +94,14 @@ const TokenDetail = ({
     }
   );
 
-  const handleCopy = (text) => {
-    const clipboard = new ClipboardJS('.token-detail', {
-      text: function () {
-        return text;
-      },
-    });
-
-    clipboard.on('success', () => {
-      message.success({
-        duration: 3,
-        icon: <i />,
-        content: (
-          <div>
-            <div className="flex gap-4 mb-4">
-              <img src={IconSuccess} alt="" />
-              Copied
-            </div>
-            <div className="text-white">{text}</div>
-          </div>
-        ),
-      });
-      clipboard.destroy();
-    });
+  const handleClickLink = (token: TokenItem) => {
+    const serverId = token.chain;
+    const chain = Object.values(CHAINS).find(
+      (item) => item.serverId === serverId
+    );
+    if (!chain) return;
+    const prefix = chain.scanLink?.replace('/tx/_s_', '');
+    openInTab(`${prefix}/token/${token.id}`);
   };
 
   const handleRemove = async (token: TokenItem) => {
@@ -191,11 +175,11 @@ const TokenDetail = ({
               <>
                 {ellipsis(token.id)}
                 <img
-                  src={IconCopy}
+                  src={IconExternal}
                   className="w-14 cursor-pointer"
                   alt=""
                   onClick={() => {
-                    handleCopy(token.id);
+                    handleClickLink(token);
                   }}
                 />
               </>

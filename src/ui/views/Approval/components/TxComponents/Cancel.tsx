@@ -1,19 +1,17 @@
-import { message } from 'antd';
 import { ExplainTxResponse } from 'background/service/openapi';
-import ClipboardJS from 'clipboard';
 import clsx from 'clsx';
 import { CHAINS, CHAINS_ENUM } from 'consts';
 import React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import IconArrowRight from 'ui/assets/approval/edit-arrow-right.svg';
-import IconCopy from 'ui/assets/component/icon-copy.svg';
-import IconSuccess from 'ui/assets/success.svg';
 import IconUnknownProtocol from 'ui/assets/unknown-protocol.svg';
 import { AddressViewer } from 'ui/component';
 import BalanceChange from './BalanceChange';
 import SpeedUpCorner from './SpeedUpCorner';
 import ViewRawModal from './ViewRawModal';
 import useBalanceChange from '@/ui/hooks/useBalanceChange';
+import IconExternal from 'ui/assets/open-external-gray.svg';
+import { openInTab } from '@/ui/utils';
 
 interface CancelProps {
   data: ExplainTxResponse;
@@ -27,29 +25,12 @@ const Cancel = ({ data, chainEnum, isSpeedUp, raw }: CancelProps) => {
   const chain = CHAINS[chainEnum];
   const { t } = useTranslation();
 
-  const handleCopySpender = () => {
-    const clipboard = new ClipboardJS('.cancel', {
-      text: function () {
-        return detail.spender;
-      },
-    });
-
-    clipboard.on('success', () => {
-      message.success({
-        duration: 3,
-        icon: <i />,
-        content: (
-          <div>
-            <div className="flex gap-4 mb-4">
-              <img src={IconSuccess} alt="" />
-              Copied
-            </div>
-            <div className="text-white">{detail.spender}</div>
-          </div>
-        ),
-      });
-      clipboard.destroy();
-    });
+  const handleClickSpender = () => {
+    const chain = CHAINS[chainEnum];
+    openInTab(
+      chain.scanLink.replace(/tx\/_s_/, `address/${detail.spender}`),
+      false
+    );
   };
 
   const handleViewRawClick = () => {
@@ -113,9 +94,9 @@ const Cancel = ({ data, chainEnum, isSpeedUp, raw }: CancelProps) => {
               <div className="protocol-info__spender">
                 <AddressViewer address={detail.spender} showArrow={false} />
                 <img
-                  src={IconCopy}
+                  src={IconExternal}
                   className="icon icon-copy w-[14px] h-[14px]"
-                  onClick={handleCopySpender}
+                  onClick={handleClickSpender}
                 />
               </div>
             </div>

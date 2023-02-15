@@ -4,14 +4,13 @@ import { AddressViewer, TokenWithChain } from 'ui/component';
 import { ellipsisOverflowedText, splitNumberByStep } from '@/ui/utils';
 import IconUnknownProtocol from 'ui/assets/unknown-protocol.svg';
 import { useTranslation } from 'react-i18next';
-import IconCopy from 'ui/assets/component/icon-copy.svg';
 import { ExplainTxResponse } from '@debank/rabby-api/dist/types';
-import IconSuccess from 'ui/assets/success.svg';
 import BigNumber from 'bignumber.js';
 import clsx from 'clsx';
-import ClipboardJS from 'clipboard';
-import { message } from 'antd';
 import { InfoCircleOutlined } from '@ant-design/icons';
+import { CHAINS_ENUM, CHAINS } from 'consts';
+import IconExternal from 'ui/assets/open-external-gray.svg';
+import { openInTab } from '@/ui/utils';
 
 export interface Props {
   isSpeedUp?: boolean;
@@ -19,6 +18,7 @@ export interface Props {
   onClickEdit?: () => void;
   onApproveAmountChange?: (amount: string) => void;
   balance?: string | null;
+  chainEnum?: CHAINS_ENUM;
 }
 
 export const ApproveToken: React.FC<Props> = ({
@@ -28,6 +28,7 @@ export const ApproveToken: React.FC<Props> = ({
   onClickEdit,
   onApproveAmountChange,
   children,
+  chainEnum,
 }) => {
   const { t } = useTranslation();
   const tokenAmount = new BigNumber(detail.token_amount).toFixed();
@@ -72,29 +73,13 @@ export const ApproveToken: React.FC<Props> = ({
     e.currentTarget.src = IconUnknownProtocol;
   };
 
-  const handleCopySpender = () => {
-    const clipboard = new ClipboardJS('.approve', {
-      text: function () {
-        return detail.spender;
-      },
-    });
-
-    clipboard.on('success', () => {
-      message.success({
-        duration: 3,
-        icon: <i />,
-        content: (
-          <div>
-            <div className="flex gap-4 mb-4">
-              <img src={IconSuccess} alt="" />
-              Copied
-            </div>
-            <div className="text-white">{detail.spender}</div>
-          </div>
-        ),
-      });
-      clipboard.destroy();
-    });
+  const handleClickSpender = () => {
+    if (!chainEnum) return;
+    const chain = CHAINS[chainEnum];
+    openInTab(
+      chain.scanLink.replace(/tx\/_s_/, `address/${detail.spender}`),
+      false
+    );
   };
 
   return (
@@ -171,11 +156,13 @@ export const ApproveToken: React.FC<Props> = ({
                 )}
                 <span className="protocol-info__spender">
                   <AddressViewer address={detail.spender} showArrow={false} />
-                  <img
-                    src={IconCopy}
-                    className="icon icon-copy w-[14px] h-[14px]"
-                    onClick={handleCopySpender}
-                  />
+                  {chainEnum && (
+                    <img
+                      src={IconExternal}
+                      className="icon icon-copy w-[14px] h-[14px]"
+                      onClick={handleClickSpender}
+                    />
+                  )}
                 </span>
               </div>
             </div>

@@ -4,14 +4,19 @@ import {
   ApproveToken,
   Props as ApproveTokenProps,
 } from './TxComponents/ApproveToken';
+import { CHAINS_ENUM } from 'consts';
 
 interface Props {
   explain: {
     type_token_approval?: ExplainTxResponse['type_token_approval'];
   };
+  chainEnum?: CHAINS_ENUM;
 }
 
-export const PermitSignTypedSignSection: React.FC<Props> = ({ explain }) => {
+export const PermitSignTypedSignSection: React.FC<Props> = ({
+  explain,
+  chainEnum,
+}) => {
   const permit = explain.type_token_approval;
   if (!permit) {
     return null;
@@ -29,7 +34,7 @@ export const PermitSignTypedSignSection: React.FC<Props> = ({ explain }) => {
         This is a Permit Token Approval signature
       </div>
       <div className="approve mt-8">
-        <ApproveToken detail={detail} />
+        <ApproveToken detail={detail} chainEnum={chainEnum} />
       </div>
     </div>
   );

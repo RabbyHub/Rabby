@@ -223,6 +223,7 @@ const Approve = ({
         onClickEdit={handleEditApproveAmount}
         onApproveAmountChange={() => handleApproveAmountChange(balance || '0')}
         balance={balance}
+        chainEnum={chainEnum}
       >
         <BalanceChange
           version={data.pre_exec_version}
