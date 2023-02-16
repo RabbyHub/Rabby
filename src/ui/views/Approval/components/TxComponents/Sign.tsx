@@ -1,5 +1,4 @@
 import { ExplainTxResponse, Tx } from 'background/service/openapi';
-import clsx from 'clsx';
 import { CHAINS, CHAINS_ENUM } from 'consts';
 import React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
@@ -10,6 +9,7 @@ import GnosisExplain from './GnosisExplain';
 import SpeedUpCorner from './SpeedUpCorner';
 import ViewRawModal from './ViewRawModal';
 import IconUnknownProtocol from 'ui/assets/unknown-protocol.svg';
+
 interface SignProps {
   data: ExplainTxResponse;
   chainEnum: CHAINS_ENUM;
@@ -35,8 +35,6 @@ const Sign = ({ data, chainEnum, raw, isSpeedUp, tx }: SignProps) => {
   ) {
     e.currentTarget.src = IconUnknownProtocol;
   };
-
-  const isUnknown = !data?.abi && !detail.action;
 
   return (
     <div className="sign section-block">
@@ -76,6 +74,8 @@ const Sign = ({ data, chainEnum, raw, isSpeedUp, tx }: SignProps) => {
                 address={detail.contract}
                 nameClass="max-90"
                 noNameClass="no-name"
+                openExternal
+                chainEnum={chainEnum}
               />
             </div>
           </div>
