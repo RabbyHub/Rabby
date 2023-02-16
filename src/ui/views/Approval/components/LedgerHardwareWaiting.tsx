@@ -169,16 +169,7 @@ const LedgerHardwareWaiting = ({ params }: { params: ApprovalParams }) => {
         if (!hasPermission && !isUseLedgerLive) {
           await wallet.authorizeLedgerHIDPermission();
         }
-        const pendingApprovalCount = await wallet.getPendingApprovalCount();
-        const unTriggerTxCount = await wallet.getUnTriggerTxCount();
-        resolveApproval(
-          data.data,
-          pendingApprovalCount > 1 || unTriggerTxCount > 1
-            ? false
-            : !isSignText,
-          false,
-          approval.id
-        );
+        resolveApproval(data.data, false, false, approval.id);
       } else {
         setConnectStatus(WALLETCONNECT_STATUS_MAP.FAILD);
       }
