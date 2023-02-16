@@ -9,10 +9,11 @@ import { Trans, useTranslation } from 'react-i18next';
 import IconArrowRight from 'ui/assets/approval/edit-arrow-right.svg';
 import IconUnknownNFT from 'ui/assets/unknown-nft.svg';
 import IconUnknownProtocol from 'ui/assets/unknown-protocol.svg';
-import { Copy } from 'ui/component';
 import BalanceChange from './BalanceChange';
 import SpeedUpCorner from './SpeedUpCorner';
 import ViewRawModal from './ViewRawModal';
+import IconExternal from 'ui/assets/open-external-gray.svg';
+import { openInTab } from '@/ui/utils';
 
 interface CancelNFTProps {
   data: ExplainTxResponse;
@@ -40,6 +41,11 @@ const CancelNFT = ({ data, chainEnum, isSpeedUp, raw }: CancelNFTProps) => {
   };
 
   const bfInfo = useBalanceChange(data);
+
+  const handleClickContractId = (id: string) => {
+    const chain = CHAINS[chainEnum];
+    openInTab(chain.scanLink.replace(/tx\/_s_/, `address/${id}`), false);
+  };
 
   return (
     <div
@@ -86,11 +92,13 @@ const CancelNFT = ({ data, chainEnum, isSpeedUp, raw }: CancelNFTProps) => {
                   <div className="label">Contract</div>
                   <div className="value flex items-center gap-6">
                     {ellipsis(detail.nft?.contract_id)}
-                    <Copy
-                      variant="address"
-                      data={detail.nft?.contract_id}
-                      className="w-14"
-                    ></Copy>
+                    <img
+                      src={IconExternal}
+                      className="icon icon-copy w-[14px] h-[14px] cursor-pointer"
+                      onClick={() =>
+                        handleClickContractId(detail.nft?.contract_id)
+                      }
+                    />
                   </div>
                 </div>
               </div>
@@ -110,11 +118,11 @@ const CancelNFT = ({ data, chainEnum, isSpeedUp, raw }: CancelNFTProps) => {
                 </div>
                 <div className="address flex gap-6">
                   {ellipsis(detail.spender)}
-                  <Copy
-                    variant="address"
-                    data={detail.spender}
-                    className="w-16"
-                  ></Copy>
+                  <img
+                    src={IconExternal}
+                    className="icon icon-copy w-[14px] h-[14px] cursor-pointer"
+                    onClick={() => handleClickContractId(detail.spender)}
+                  />
                 </div>
               </div>
             </div>

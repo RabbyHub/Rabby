@@ -95,7 +95,7 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
     return null;
   }, [data, isSignTypedDataV1]);
 
-  const chainName = useMemo(() => {
+  const chain = useMemo(() => {
     if (!isSignTypedDataV1 && signTypedData) {
       let chainId;
       try {
@@ -104,11 +104,11 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
         console.error(error);
       }
       if (chainId) {
-        return CHAINS_LIST.find((e) => e.id + '' === chainId + '')?.name || '';
+        return CHAINS_LIST.find((e) => e.id + '' === chainId + '');
       }
     }
 
-    return '';
+    return undefined;
   }, [data, isSignTypedDataV1, signTypedData]);
 
   const [showSecurityCheckDetail, setShowSecurityCheckDetail] = useState(false);
@@ -366,7 +366,7 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
       <AccountCard />
       <div className="approval-text">
         <p className="section-title">
-          Sign {chainName} Typed Message
+          Sign {chain ? chain.name : ''} Typed Message
           <span
             className="float-right text-12 cursor-pointer flex items-center view-raw text-gray-content"
             onClick={handleViewRawClick}
@@ -439,7 +439,10 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
         )}
 
         {!loading && explainTypedDataRes && (
-          <PermitSignTypedSignSection explain={explainTypedDataRes} />
+          <PermitSignTypedSignSection
+            explain={explainTypedDataRes}
+            chainEnum={chain?.enum}
+          />
         )}
 
         <div className="section-title mt-[32px]">Pre-sign check</div>

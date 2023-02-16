@@ -7,10 +7,11 @@ import React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import IconArrowRight from 'ui/assets/approval/edit-arrow-right.svg';
 import IconUnknownProtocol from 'ui/assets/unknown-protocol.svg';
-import { Copy } from 'ui/component';
 import BalanceChange from './BalanceChange';
 import SpeedUpCorner from './SpeedUpCorner';
 import ViewRawModal from './ViewRawModal';
+import IconExternal from 'ui/assets/open-external-gray.svg';
+import { openInTab } from '@/ui/utils';
 
 interface CancelNFTCollectionProps {
   data: ExplainTxResponse;
@@ -43,6 +44,11 @@ const CancelNFTCollection = ({
   };
 
   const bfInfo = useBalanceChange(data);
+
+  const handleClickContractId = (id: string) => {
+    const chain = CHAINS[chainEnum];
+    openInTab(chain.scanLink.replace(/tx\/_s_/, `address/${id}`), false);
+  };
 
   return (
     <div
@@ -80,11 +86,13 @@ const CancelNFTCollection = ({
                 <div className="label">Contract</div>
                 <div className="value flex items-center gap-6">
                   {ellipsis(detail.nft_contract?.id)}
-                  <Copy
-                    variant="address"
-                    data={detail.nft_contract?.id}
-                    className="w-14"
-                  ></Copy>
+                  <img
+                    src={IconExternal}
+                    className="icon icon-copy w-[14px] h-[14px] cursor-pointer"
+                    onClick={() =>
+                      handleClickContractId(detail.nft_contract?.id)
+                    }
+                  />
                 </div>
               </div>
             </div>
@@ -103,11 +111,11 @@ const CancelNFTCollection = ({
                 </div>
                 <div className="address flex gap-6">
                   {ellipsis(detail.spender)}
-                  <Copy
-                    variant="address"
-                    data={detail.spender}
-                    className="w-16"
-                  ></Copy>
+                  <img
+                    src={IconExternal}
+                    className="icon icon-copy w-[14px] h-[14px] cursor-pointer"
+                    onClick={() => handleClickContractId(detail.spender)}
+                  />
                 </div>
               </div>
             </div>
