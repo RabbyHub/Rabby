@@ -992,7 +992,19 @@ const SignTx = ({ params, origin }: SignTxProps) => {
         )
         .reduce((result, item) => {
           return result.concat(item.txs.map((tx) => tx.rawTx));
-        }, [] as Tx[]),
+        }, [] as Tx[])
+        .map((item) => ({
+          from: item.from,
+          to: item.to,
+          chainId: item.chainId,
+          data: item.data || '0x',
+          nonce: item.nonce,
+          value: item.value,
+          gasPrice: `0x${new BigNumber(
+            item.gasPrice || item.maxFeePerGas || 0
+          ).toString(16)}`,
+          gas: item.gas || item.gasLimit || '0x0',
+        })),
     });
     const { gas, needRatio } = await getRecommendGas({
       gas: res.gas.gas_used,
