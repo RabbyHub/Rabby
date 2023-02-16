@@ -794,7 +794,7 @@ export const SwapByDex = () => {
                   >
                     Balance:{' '}
                     {splitNumberByStep(
-                      new BigNumber(payToken?.amount || 0).toFixed(2, 1)
+                      new BigNumber(payToken?.amount || 0).toFixed(4, 1)
                     )}
                     {payToken && !payTokenIsNativeToken && (
                       <img
@@ -839,7 +839,7 @@ export const SwapByDex = () => {
               >
                 <div className={clsx(!receiveToken && 'hidden')}>
                   Balance:
-                  {splitNumberByStep((receiveToken?.amount || 0).toFixed(2))}
+                  {splitNumberByStep((receiveToken?.amount || 0).toFixed(4))}
                 </div>
 
                 {loading ? (
