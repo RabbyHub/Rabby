@@ -1,5 +1,4 @@
 import React, { useState, useEffect, useRef, useMemo } from 'react';
-import * as Sentry from '@sentry/browser';
 import ClipboardJS from 'clipboard';
 import clsx from 'clsx';
 import BigNumber from 'bignumber.js';
@@ -8,7 +7,6 @@ import { useHistory, useLocation } from 'react-router-dom';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import { Input, Form, message, Button } from 'antd';
 import { isValidAddress } from 'ethereumjs-util';
-import { providers } from 'ethers';
 import {
   CHAINS,
   KEYRING_PURPLE_LOGOS,
@@ -20,7 +18,6 @@ import { Account } from 'background/service/preference';
 import { NFTItem } from '@/background/service/openapi';
 import { UIContactBookItem } from 'background/service/contactBook';
 import { useWallet, isSameAddress } from 'ui/utils';
-import { getTokenName } from 'ui/utils/token';
 import AccountCard from '../Approval/components/AccountCard';
 import TagChainSelector from 'ui/component/ChainSelector/tag';
 import { PageHeader, AddressViewer } from 'ui/component';
@@ -36,16 +33,9 @@ import IconSuccess from 'ui/assets/success.svg';
 import IconCheck from 'ui/assets/icon-check.svg';
 import IconContact from 'ui/assets/send-token/contact.svg';
 import IconTemporaryGrantCheckbox from 'ui/assets/send-token/temporary-grant-checkbox.svg';
-import { SvgIconLoading, SvgAlert } from 'ui/assets';
 import './style.less';
 import { getKRCategoryByType } from '@/utils/transaction';
 import { filterRbiSource, useRbiSource } from '@/ui/utils/ga-event';
-
-const TOKEN_VALIDATION_STATUS = {
-  PENDING: 0,
-  SUCCESS: 1,
-  FAILD: 2,
-};
 
 const SendNFT = () => {
   const wallet = useWallet();
@@ -87,9 +77,6 @@ const SendNFT = () => {
   const [showWhitelistAlert, setShowWhitelistAlert] = useState(false);
   const [temporaryGrant, setTemporaryGrant] = useState(false);
   const [toAddressInWhitelist, setToAddressInWhitelist] = useState(false);
-  const [tokenValidationStatus, setTokenValidationStatus] = useState(
-    TOKEN_VALIDATION_STATUS.PENDING
-  );
 
   const { whitelist, whitelistEnabled } = useRabbySelector((s) => ({
     whitelist: s.whitelist.whitelist,
@@ -129,7 +116,6 @@ const SendNFT = () => {
   const canSubmit =
     isValidAddress(form.getFieldValue('to')) &&
     new BigNumber(form.getFieldValue('amount')).isGreaterThan(0) &&
-    tokenValidationStatus === TOKEN_VALIDATION_STATUS.SUCCESS &&
     (!whitelistEnabled || temporaryGrant || toAddressInWhitelist);
   const handleCopyContractAddress = () => {
     const clipboard = new ClipboardJS('.transfer-nft', {
@@ -328,33 +314,6 @@ const SendNFT = () => {
     setSendAlianName(alianName || '');
   };
 
-  const validateNFT = async () => {
-    if (!nftItem) return;
-    try {
-      const customRPC = await wallet.getCustomRpcByChain(chain!);
-      setTokenValidationStatus(TOKEN_VALIDATION_STATUS.PENDING);
-      const name = await getTokenName(
-        nftItem.contract_id,
-        new providers.JsonRpcProvider(customRPC || CHAINS[chain!].thridPartyRPC)
-      );
-      if (name === nftItem.contract_name) {
-        setTokenValidationStatus(TOKEN_VALIDATION_STATUS.SUCCESS);
-      } else {
-        Sentry.captureException(new Error('NFT validation failed'), (scope) => {
-          scope.setTag('id', `${nftItem.chain}-${nftItem.contract_id}`);
-          return scope;
-        });
-        setTokenValidationStatus(TOKEN_VALIDATION_STATUS.FAILD);
-      }
-    } catch (e) {
-      Sentry.captureException(new Error('NFT validation failed'), (scope) => {
-        scope.setTag('id', `${nftItem.chain}-${nftItem.contract_id}`);
-        return scope;
-      });
-      setTokenValidationStatus(TOKEN_VALIDATION_STATUS.FAILD);
-    }
-  };
-
   useEffect(() => {
     init();
     return () => {
@@ -383,8 +342,6 @@ const SendNFT = () => {
         } else {
           setChain(nftChain);
         }
-      } else {
-        validateNFT();
       }
     }
   }, [nftItem, chain]);
@@ -473,9 +430,7 @@ const SendNFT = () => {
           </div>
           <div
             className={clsx('section', {
-              'mb-40':
-                !showWhitelistAlert &&
-                tokenValidationStatus === TOKEN_VALIDATION_STATUS.SUCCESS,
+              'mb-40': !showWhitelistAlert,
             })}
           >
             <div className="nft-info flex">
@@ -522,57 +477,31 @@ const SendNFT = () => {
             </div>
           </div>
 
-          {tokenValidationStatus !== TOKEN_VALIDATION_STATUS.SUCCESS && (
+          {showWhitelistAlert && (
             <div
-              className={clsx('token-validation', {
-                pending:
-                  tokenValidationStatus === TOKEN_VALIDATION_STATUS.PENDING,
-                faild: tokenValidationStatus === TOKEN_VALIDATION_STATUS.FAILD,
-              })}
-            >
-              {tokenValidationStatus === TOKEN_VALIDATION_STATUS.PENDING ? (
-                <>
-                  <SvgIconLoading
-                    className="icon icon-loading"
-                    viewBox="0 0 36 36"
-                  />
-                  {t('Verifying token info ...')}
-                </>
-              ) : (
-                <>
-                  <SvgAlert className="icon icon-alert" viewBox="0 0 14 14" />
-                  {t('Token verification failed')}
-                </>
+              className={clsx(
+                'whitelist-alert',
+                !whitelistEnabled || whitelistAlertContent.success
+                  ? 'granted'
+                  : 'cursor-pointer'
               )}
+              onClick={handleClickWhitelistAlert}
+            >
+              <p className="whitelist-alert__content text-center">
+                {whitelistEnabled && (
+                  <img
+                    src={
+                      whitelistAlertContent.success
+                        ? IconCheck
+                        : IconTemporaryGrantCheckbox
+                    }
+                    className="icon icon-check inline-block relative -top-1"
+                  />
+                )}
+                {whitelistAlertContent.content}
+              </p>
             </div>
           )}
-
-          {tokenValidationStatus === TOKEN_VALIDATION_STATUS.SUCCESS &&
-            showWhitelistAlert && (
-              <div
-                className={clsx(
-                  'whitelist-alert',
-                  !whitelistEnabled || whitelistAlertContent.success
-                    ? 'granted'
-                    : 'cursor-pointer'
-                )}
-                onClick={handleClickWhitelistAlert}
-              >
-                <p className="whitelist-alert__content text-center">
-                  {whitelistEnabled && (
-                    <img
-                      src={
-                        whitelistAlertContent.success
-                          ? IconCheck
-                          : IconTemporaryGrantCheckbox
-                      }
-                      className="icon icon-check inline-block relative -top-1"
-                    />
-                  )}
-                  {whitelistAlertContent.content}
-                </p>
-              </div>
-            )}
 
           <div className="footer flex justify-center">
             <Button

@@ -175,7 +175,6 @@ const AddChain = ({ params }: { params: AddChainProps }) => {
         nativeTokenLogo: '',
         nativeTokenAddress: '',
         scanLink: '',
-        thridPartyRPC: '',
         nativeTokenDecimals: 18,
         selectChainLogo: '',
         eip: {},

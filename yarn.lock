@@ -1356,10 +1356,10 @@
   resolved "https://registry.yarnpkg.com/@debank/common/-/common-0.2.22.tgz#4c193829cd8d626df2b3cf21f47180e32cde162a"
   integrity sha512-EBXBlfUxPoYRWIhWuaDoICgTijEdICk3v0+zNDu2WZCXILYrLuGqTjc0NxtbfONjtkQRB3yD8KQu8PGaRbju4g==
 
-"@debank/common@^0.2.24":
-  version "0.2.24"
-  resolved "https://registry.yarnpkg.com/@debank/common/-/common-0.2.24.tgz#0c1d83c86c52167b846a6d61e1f768b0b5980082"
-  integrity sha512-K47HMrkJzgwlYDa1m0yVkH9hD0qwtGtjeDwdxivRwsgzkwfyLY9tlZvkU0vH1uDTvVl5osUEiO66NI0tT3ACAQ==
+"@debank/common@^0.2.26":
+  version "0.2.26"
+  resolved "https://registry.yarnpkg.com/@debank/common/-/common-0.2.26.tgz#6f05bc94f9f2403f0a7c95cd0ab105ef4efa3de7"
+  integrity sha512-3RMA2rY+XkwKJbrjxeRAHBvAfFHErXO772IONMiiRvTGqsOHjKWb7JYKvqrgI3BxeV2BkMjptGW5UskQBcpt3A==
 
 "@debank/festats@1.0.0":
   version "1.0.0"
@@ -1377,10 +1377,10 @@
     sha256-uint8array "^0.10.3"
     url-parse "^1.5.1"
 
-"@debank/rabby-api@^0.5.20":
-  version "0.5.20"
-  resolved "https://registry.yarnpkg.com/@debank/rabby-api/-/rabby-api-0.5.20.tgz#5a8c872a5e8afe4d83ee3885bb498d06433ec94f"
-  integrity sha512-tS+0wyYzJA9X+7Pgr4ZXswS8LqOOJQ8uoEzl5o8YGqZ8HB1DsQFfIq+pQb1gntXo4kzwAajKNclihJe2IGMIYA==
+"@debank/rabby-api@^0.5.21":
+  version "0.5.21"
+  resolved "https://registry.yarnpkg.com/@debank/rabby-api/-/rabby-api-0.5.21.tgz#06902da38595d81e69d25cf79adc854885619a13"
+  integrity sha512-p/RluxOM3kt+kVMFYr7W3SfkGzq8AxMi76cL7fmkLSzWq76RUdj5RQKbDXS6lcsFBB2EooYvBLIIBC4YVMqTwQ==
   dependencies:
     "@debank/isomorphic" "^0.3.1"
     axios "^0.27.2"

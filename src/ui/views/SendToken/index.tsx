@@ -1,6 +1,5 @@
 import React, { useState, useEffect, useMemo } from 'react';
 import ClipboardJS from 'clipboard';
-import * as Sentry from '@sentry/browser';
 import clsx from 'clsx';
 import BigNumber from 'bignumber.js';
 import { useTranslation } from 'react-i18next';
@@ -11,7 +10,6 @@ import { Input, Form, Skeleton, message, Button } from 'antd';
 import abiCoder, { AbiCoder } from 'web3-eth-abi';
 import { isValidAddress, intToHex } from 'ethereumjs-util';
 import styled from 'styled-components';
-import { providers } from 'ethers';
 import {
   CHAINS,
   CHAINS_ENUM,
@@ -24,7 +22,6 @@ import { useRabbyDispatch, useRabbySelector, connectStore } from 'ui/store';
 import { Account, ChainGas } from 'background/service/preference';
 import { isSameAddress, useWallet } from 'ui/utils';
 import { query2obj } from 'ui/utils/url';
-import { getTokenSymbol, geTokenDecimals } from 'ui/utils/token';
 import { formatTokenAmount, splitNumberByStep } from 'ui/utils/number';
 import AuthenticationModalPromise from 'ui/component/AuthenticationModal';
 import AccountCard from '../Approval/components/AccountCard';
@@ -45,17 +42,10 @@ import IconContact from 'ui/assets/send-token/contact.svg';
 import IconTemporaryGrantCheckbox from 'ui/assets/send-token/temporary-grant-checkbox.svg';
 import TokenInfoArrow from 'ui/assets/send-token/token-info-arrow.svg';
 import ButtonMax from 'ui/assets/send-token/max.svg';
-import { SvgIconLoading, SvgAlert } from 'ui/assets';
 import './style.less';
 import { getKRCategoryByType } from '@/utils/transaction';
 import { filterRbiSource, useRbiSource } from '@/ui/utils/ga-event';
 import { UIContactBookItem } from '@/background/service/contactBook';
-
-const TOKEN_VALIDATION_STATUS = {
-  PENDING: 0,
-  SUCCESS: 1,
-  FAILD: 2,
-};
 
 const MaxButton = styled.img`
   cursor: pointer;
@@ -124,9 +114,6 @@ const SendToken = () => {
   const [gasPriceMap, setGasPriceMap] = useState<
     Record<string, { list: GasLevel[]; expireAt: number }>
   >({});
-  const [tokenValidationStatus, setTokenValidationStatus] = useState(
-    TOKEN_VALIDATION_STATUS.PENDING
-  );
   const [isGnosisSafe, setIsGnosisSafe] = useState(false);
 
   const { whitelist, whitelistEnabled } = useRabbySelector((s) => ({
@@ -169,7 +156,6 @@ const SendToken = () => {
     !balanceError &&
     new BigNumber(form.getFieldValue('amount')).isGreaterThan(0) &&
     !isLoading &&
-    tokenValidationStatus === TOKEN_VALIDATION_STATUS.SUCCESS &&
     (!whitelistEnabled || temporaryGrant || toAddressInWhitelist);
   const isNativeToken = currentToken.id === CHAINS[chain].nativeTokenAddress;
 
@@ -669,65 +655,6 @@ const SendToken = () => {
     setSendAlianName(alianName || '');
   };
 
-  const validateCurrentToken = async () => {
-    setTokenValidationStatus(TOKEN_VALIDATION_STATUS.PENDING);
-    const chain = Object.values(CHAINS).find(
-      (item) => item.serverId === currentToken.chain
-    );
-    if (!chain) return;
-    if (currentToken.id === chain.nativeTokenAddress) {
-      if (
-        currentToken.symbol !== chain.nativeTokenSymbol ||
-        currentToken.decimals !== chain.nativeTokenDecimals
-      ) {
-        Sentry.captureException(
-          new Error('Token validation failed'),
-          (scope) => {
-            scope.setTag('id', `${currentToken.chain}-${currentToken.id}`);
-            return scope;
-          }
-        );
-        setTokenValidationStatus(TOKEN_VALIDATION_STATUS.FAILD);
-      } else {
-        setTokenValidationStatus(TOKEN_VALIDATION_STATUS.SUCCESS);
-      }
-      return;
-    }
-    try {
-      const customRPC = await wallet.getCustomRpcByChain(chain.enum);
-      const decimals = await geTokenDecimals(
-        currentToken.id,
-        new providers.JsonRpcProvider(customRPC || chain.thridPartyRPC)
-      );
-      const symbol = await getTokenSymbol(
-        currentToken.id,
-        new providers.JsonRpcProvider(customRPC || chain.thridPartyRPC)
-      );
-      if (
-        symbol !== currentToken.symbol ||
-        decimals !== currentToken.decimals
-      ) {
-        Sentry.captureException(
-          new Error('Token validation failed'),
-          (scope) => {
-            scope.setTag('id', `${currentToken.chain}-${currentToken.id}`);
-            return scope;
-          }
-        );
-        setTokenValidationStatus(TOKEN_VALIDATION_STATUS.FAILD);
-      } else {
-        setTokenValidationStatus(TOKEN_VALIDATION_STATUS.SUCCESS);
-      }
-    } catch (e) {
-      Sentry.captureException(new Error('Token validation failed'), (scope) => {
-        scope.setTag('id', `${currentToken.chain}-${currentToken.id}`);
-        return scope;
-      });
-      setTokenValidationStatus(TOKEN_VALIDATION_STATUS.FAILD);
-      throw e;
-    }
-  };
-
   const handleClickGasReserved = () => {
     setGasSelectorVisible(true);
   };
@@ -781,10 +708,6 @@ const SendToken = () => {
       wallet.clearPageStateCache();
     };
   }, []);
-
-  useEffect(() => {
-    validateCurrentToken();
-  }, [currentToken]);
 
   useEffect(() => {
     if (currentAccount) {
@@ -881,9 +804,7 @@ const SendToken = () => {
         </div>
         <div
           className={clsx('section', {
-            'mb-40':
-              !showWhitelistAlert &&
-              tokenValidationStatus === TOKEN_VALIDATION_STATUS.SUCCESS,
+            'mb-40': !showWhitelistAlert,
           })}
         >
           <div className="section-title flex justify-between items-center">
@@ -981,56 +902,31 @@ const SendToken = () => {
               'w-full absolute bottom-[32px] left-1/2 -translate-x-1/2'
           )}
         >
-          {tokenValidationStatus !== TOKEN_VALIDATION_STATUS.SUCCESS && (
+          {showWhitelistAlert && (
             <div
-              className={clsx('token-validation', {
-                pending:
-                  tokenValidationStatus === TOKEN_VALIDATION_STATUS.PENDING,
-                faild: tokenValidationStatus === TOKEN_VALIDATION_STATUS.FAILD,
-              })}
-            >
-              {tokenValidationStatus === TOKEN_VALIDATION_STATUS.PENDING ? (
-                <>
-                  <SvgIconLoading
-                    className="icon icon-loading"
-                    viewBox="0 0 36 36"
-                  />
-                  {t('Verifying token info ...')}
-                </>
-              ) : (
-                <>
-                  <SvgAlert className="icon icon-alert" viewBox="0 0 14 14" />
-                  {t('Token verification failed')}
-                </>
+              className={clsx(
+                'whitelist-alert',
+                !whitelistEnabled || whitelistAlertContent.success
+                  ? 'granted'
+                  : 'cursor-pointer'
               )}
+              onClick={handleClickWhitelistAlert}
+            >
+              <p className="whitelist-alert__content text-center">
+                {whitelistEnabled && (
+                  <img
+                    src={
+                      whitelistAlertContent.success
+                        ? IconCheck
+                        : IconTemporaryGrantCheckbox
+                    }
+                    className="icon icon-check inline-block relative -top-1"
+                  />
+                )}
+                {whitelistAlertContent.content}
+              </p>
             </div>
           )}
-          {tokenValidationStatus === TOKEN_VALIDATION_STATUS.SUCCESS &&
-            showWhitelistAlert && (
-              <div
-                className={clsx(
-                  'whitelist-alert',
-                  !whitelistEnabled || whitelistAlertContent.success
-                    ? 'granted'
-                    : 'cursor-pointer'
-                )}
-                onClick={handleClickWhitelistAlert}
-              >
-                <p className="whitelist-alert__content text-center">
-                  {whitelistEnabled && (
-                    <img
-                      src={
-                        whitelistAlertContent.success
-                          ? IconCheck
-                          : IconTemporaryGrantCheckbox
-                      }
-                      className="icon icon-check inline-block relative -top-1"
-                    />
-                  )}
-                  {whitelistAlertContent.content}
-                </p>
-              </div>
-            )}
           <div className="footer flex justify-center">
             <Button
               disabled={!canSubmit}

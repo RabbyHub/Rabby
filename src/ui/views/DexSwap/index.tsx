@@ -319,16 +319,7 @@ export const SwapByDex = () => {
     slippage,
   ]);
 
-  const {
-    isSdkDataPass,
-    tokenLoading,
-    tokenPass,
-    payTokenPass,
-    receiveTokenPass,
-
-    tokenApproved,
-    shouldTwoStepApprove,
-  } = useVerifySdk({
+  const { isSdkDataPass, tokenApproved, shouldTwoStepApprove } = useVerifySdk({
     chain,
     dexId,
     slippage,
@@ -482,8 +473,6 @@ export const SwapByDex = () => {
     !!chain &&
     !!payAmount &&
     !isInsufficient &&
-    !tokenLoading &&
-    tokenPass &&
     !loading &&
     !!quoteInfo &&
     isSdkDataPass;
@@ -498,15 +487,7 @@ export const SwapByDex = () => {
         return tips.quoteFail;
       }
 
-      if (!tokenLoading && !payTokenPass) {
-        return tips.payTokenFail;
-      }
-
-      if (!tokenLoading && !receiveTokenPass) {
-        return tips.receivingTokenFail;
-      }
-
-      if (!loading && quoteInfo && !tokenLoading && !isSdkDataPass) {
+      if (!loading && quoteInfo && !isSdkDataPass) {
         return tips.securityFail;
       }
 
@@ -548,9 +529,6 @@ export const SwapByDex = () => {
     receiveToken,
     loading,
     quoteInfo,
-    tokenLoading,
-    payTokenPass,
-    receiveTokenPass,
     isSdkDataPass,
     isHighPriceDifference,
     chain,
@@ -700,11 +678,7 @@ export const SwapByDex = () => {
   };
 
   const totalLoading =
-    loading ||
-    nativeTokenLoading ||
-    tokenLoading ||
-    payTokenLoading ||
-    totalGasUsedLoading;
+    loading || nativeTokenLoading || payTokenLoading || totalGasUsedLoading;
 
   useEffect(() => {
     if (isWrapToken) {
