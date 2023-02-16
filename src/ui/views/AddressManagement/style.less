@@ -10,7 +10,6 @@
     background-color: #fff;
     border: 1px solid transparent;
     cursor: pointer;
-    padding: 10px 16px;
     display: flex;
     align-items: center;
     width: 100%;
@@ -21,7 +20,17 @@
         opacity: 1;
       }
     }
-
+    &-left {
+      display: flex;
+      align-items: center;
+      width: 316px;
+      padding: 10px 16px;
+    }
+    &-arrow {
+      display: flex;
+      width: 44px;
+      height: 100%;
+    }
     &-icon {
       width: 28px;
       height: 28px;
@@ -72,11 +81,39 @@
         opacity: 1;
       }
     }
-    // &-arrow {
-    //   svg path {
-    //     fill: #707280;
-    //   }
-    // }
+    &.is-switch {
+      border: none;
+      .rabby-address-item-left {
+        padding-right: 0;
+        border-top-left-radius: 6px;
+        border-bottom-left-radius: 6px;
+        border: 1px solid transparent;
+        &:hover {
+          border: 1px solid #8697FF;
+          background: rgba(134, 151, 255, 0.1);
+        }
+      }
+      .rabby-address-item-arrow {
+        border: 1px solid transparent;
+        border-top-right-radius: 6px;
+        border-bottom-right-radius: 6px;
+        &:hover {
+          border: 1px solid #8697FF;
+          background: rgba(134, 151, 255, 0.1);
+        }
+      }
+      &:hover {
+        border: none;
+        background-color: #fff !important;
+      }
+    }
+    .icon-delete {
+      &:hover {
+        g {
+          stroke: #EC5151;
+        }
+      }
+    }
   }
 
   .address-item-hidden {
