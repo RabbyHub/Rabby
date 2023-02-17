@@ -35,9 +35,10 @@ const SendNFT = ({ data, chainEnum, isSpeedUp, raw }: SendNFTProps) => {
   };
 
   const handleClickContractId = () => {
+    if (!detail.nft?.contract_id) return;
     const chain = CHAINS[chainEnum];
     openInTab(
-      chain.scanLink.replace(/tx\/_s_/, `address/${detail.spender}`),
+      chain.scanLink.replace(/tx\/_s_/, `address/${detail.nft?.contract_id}`),
       false
     );
   };

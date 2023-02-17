@@ -97,7 +97,7 @@ const NameAndAddress = ({
       {!openExternal && (
         <img
           onClick={handleCopyContractAddress}
-          src={IconExternal}
+          src={IconAddressCopy}
           width={16}
           height={16}
           className={clsx('ml-4 cursor-pointer', copyIconClass, {
