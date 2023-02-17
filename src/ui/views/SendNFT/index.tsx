@@ -17,7 +17,7 @@ import { useRabbyDispatch, useRabbySelector, connectStore } from 'ui/store';
 import { Account } from 'background/service/preference';
 import { NFTItem } from '@/background/service/openapi';
 import { UIContactBookItem } from 'background/service/contactBook';
-import { useWallet, isSameAddress } from 'ui/utils';
+import { useWallet, isSameAddress, openInTab } from 'ui/utils';
 import AccountCard from '../Approval/components/AccountCard';
 import TagChainSelector from 'ui/component/ChainSelector/tag';
 import { PageHeader, AddressViewer } from 'ui/component';
@@ -36,6 +36,7 @@ import IconTemporaryGrantCheckbox from 'ui/assets/send-token/temporary-grant-che
 import './style.less';
 import { getKRCategoryByType } from '@/utils/transaction';
 import { filterRbiSource, useRbiSource } from '@/ui/utils/ga-event';
+import IconExternal from 'ui/assets/open-external-gray.svg';
 
 const SendNFT = () => {
   const wallet = useWallet();
@@ -117,30 +118,13 @@ const SendNFT = () => {
     isValidAddress(form.getFieldValue('to')) &&
     new BigNumber(form.getFieldValue('amount')).isGreaterThan(0) &&
     (!whitelistEnabled || temporaryGrant || toAddressInWhitelist);
-  const handleCopyContractAddress = () => {
-    const clipboard = new ClipboardJS('.transfer-nft', {
-      text: function () {
-        if (!nftItem) return '';
-        return nftItem.contract_id;
-      },
-    });
-
-    clipboard.on('success', () => {
-      message.success({
-        duration: 3,
-        icon: <i />,
-        content: (
-          <div>
-            <div className="flex gap-4 mb-4">
-              <img src={IconSuccess} alt="" />
-              Copied
-            </div>
-            <div className="text-white">{nftItem?.contract_id}</div>
-          </div>
-        ),
-      });
-      clipboard.destroy();
-    });
+  const handleClickContractId = () => {
+    if (!chain || !nftItem) return;
+    const targetChain = CHAINS[chain];
+    openInTab(
+      targetChain.scanLink.replace(/tx\/_s_/, `address/${nftItem.contract_id}`),
+      false
+    );
   };
 
   const handleFormValuesChange = async (
@@ -455,9 +439,9 @@ const SendNFT = () => {
                       showArrow={false}
                     />
                     <img
-                      src={IconCopy}
+                      src={IconExternal}
                       className="icon icon-copy"
-                      onClick={handleCopyContractAddress}
+                      onClick={handleClickContractId}
                     />
                   </span>
                 </p>

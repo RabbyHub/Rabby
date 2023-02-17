@@ -94,7 +94,15 @@ export const ApprovalContractItem = ({
 
   const desc = useMemo(() => {
     if (item.type === 'contract') {
-      return <NameAndAddress address={item.id} />;
+      return (
+        <NameAndAddress
+          address={item.id}
+          chainEnum={
+            Object.values(CHAINS).find((i) => i.serverId === item.chain)?.enum
+          }
+          openExternal
+        />
+      );
     }
     if (item.type === 'token') {
       return item.name;
