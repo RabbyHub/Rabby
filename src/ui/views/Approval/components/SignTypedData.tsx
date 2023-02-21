@@ -31,6 +31,8 @@ import { CHAINS_LIST } from '@debank/common';
 import IconArrowRight from 'ui/assets/arrow-right-gray.svg';
 import ViewRawModal from './TxComponents/ViewRawModal';
 import { PermitSignTypedSignSection } from './PermitSignTypedData';
+import { ExplainListNFT } from '@/ui/component/ExplainListNFT';
+import { SignTypedDataExplain } from './SignTypedDataExplain';
 interface SignTypedDataProps {
   method: string;
   data: any[];
@@ -383,69 +385,52 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
             }}
           />
         )}
-        <div
-          className={clsx(
-            'text-detail-wrapper',
-            isNFTListing && 'flex-col pb-0',
-            loading && 'hidden',
-            !isSignTypedDataV1 && 'pb-0'
-          )}
-        >
-          {isNFTListing && (
-            <NFTSignTypedSignHeader
-              detail={{
-                contract_protocol_logo_url:
-                  explainTypedDataRes?.type_list_nft
-                    ?.contract_protocol_logo_url || '',
-                contract_protocol_name:
-                  explainTypedDataRes?.type_list_nft?.contract_protocol_name ||
-                  '',
-                contract: explainTypedDataRes?.type_list_nft?.contract || '',
-              }}
-            />
-          )}
-          <div
-            className={clsx(
-              'text-detail text-15 leading-[16px] font-bold text-[rgb(82,89,102)]',
-              (isNFTListing || isPermit) && 'max-h-[168px]',
-              !isNFTListing && !isPermit && !isSignTypedDataV1 && 'h-[360px]'
-            )}
-            style={{
-              fontFamily: 'Roboto Mono',
-            }}
-          >
-            {parsedMessage}
-          </div>
-          {explain && (
-            <p className="text-explain">
-              {explain}
-              <Tooltip
-                placement="topRight"
-                overlayClassName="text-explain-tooltip"
-                title={t(
-                  'This summary information is provide by DeBank OpenAPI'
+        <SignTypedDataExplain
+          data={explainTypedDataRes}
+          chain={chain}
+          message={
+            <div
+              className={clsx(
+                'text-detail-wrapper',
+                loading && 'hidden',
+                !isSignTypedDataV1 && 'pb-0',
+                'h-full'
+              )}
+            >
+              <div
+                className={clsx(
+                  'text-detail text-15 leading-[16px] font-medium',
+                  'h-full'
                 )}
+                style={{
+                  fontFamily: 'Roboto Mono',
+                  color: '#13141A',
+                }}
               >
-                <img
-                  src={IconQuestionMark}
-                  className="icon icon-question-mark"
-                />
-              </Tooltip>
-            </p>
-          )}
-        </div>
-        {!loading && isNFTListing && explainTypedDataRes && (
-          <NFTSignTypedSignSection typeListNft={explainTypedDataRes} />
-        )}
+                {parsedMessage}
+              </div>
+              {explain && (
+                <p className="text-explain">
+                  {explain}
+                  <Tooltip
+                    placement="topRight"
+                    overlayClassName="text-explain-tooltip"
+                    title={t(
+                      'This summary information is provide by DeBank OpenAPI'
+                    )}
+                  >
+                    <img
+                      src={IconQuestionMark}
+                      className="icon icon-question-mark"
+                    />
+                  </Tooltip>
+                </p>
+              )}
+            </div>
+          }
+        />
 
-        {!loading && explainTypedDataRes && (
-          <PermitSignTypedSignSection
-            explain={explainTypedDataRes}
-            chainEnum={chain?.enum}
-          />
-        )}
-
-        <div className="section-title mt-[32px]">Pre-sign check</div>
+        <div className="section-title mt-[20px]">Pre-sign check</div>
         <SecurityCheckCard
           isReady={true}
           loading={securityCheckStatus === 'loading'}

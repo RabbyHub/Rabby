@@ -227,11 +227,11 @@
       width: 360px;
       margin-left: auto;
       margin-right: auto;
-      background: #F5F6FA;
-      border: 1px solid #E5E9EF;
+      background: #f5f6fa;
+      border: 1px solid #e5e9ef;
       border-radius: 6px;
       &.has-error {
-        border-color: #EC5151;
+        border-color: #ec5151;
       }
     }
   }
@@ -364,7 +364,7 @@
       .common-detail-block {
         min-height: 120px;
         padding: 22px 16px;
-  
+
         .title {
           color: @color-body;
           font-size: 20px;
@@ -374,16 +374,16 @@
           z-index: 1;
           line-height: 23px;
         }
-  
+
         p {
           word-break: break-all;
           white-space: pre-wrap;
         }
-  
+
         .block-field {
           display: flex;
           margin-bottom: 16px;
-  
+
           .label {
             // color: @color-comment-1;
             color: @color-body;
@@ -392,7 +392,7 @@
             flex-shrink: 0;
             line-height: 1;
           }
-  
+
           .value {
             line-height: 1;
             flex: 1;
@@ -402,25 +402,25 @@
             white-space: nowrap;
             text-overflow: ellipsis;
             overflow: hidden;
-  
+
             &-strong {
               font-weight: 500;
               color: @color-title;
             }
           }
-  
+
           &.contract {
             .value {
               display: flex;
               align-items: center;
-  
+
               .address-viewer-text {
                 color: @color-comment-1;
                 font-size: 13px;
                 font-weight: 500;
                 margin-right: 0;
               }
-  
+
               .icon-copy {
                 width: 16px;
                 height: 16px;
@@ -429,24 +429,24 @@
               }
             }
           }
-  
+
           &:nth-last-child(1) {
             margin-bottom: 0;
           }
         }
       }
-  
+
       .protocol {
         display: flex;
         align-items: center;
-  
+
         .protocol-logo {
           width: 36px;
           height: 36px;
           margin-right: 8px;
           flex-shrink: 0;
         }
-  
+
         .protocol-info {
           .protocol-info__name {
             color: @color-body;
@@ -455,18 +455,18 @@
             margin-bottom: 4px;
             line-height: 1;
           }
-  
+
           .protocol-info__spender {
             display: flex;
             align-items: center;
-  
+
             .icon-copy {
               margin-left: 6px;
               width: 16px;
               height: 16px;
               cursor: pointer;
             }
-  
+
             .address-viewer-text {
               color: @color-comment-1;
               font-size: 13px;
@@ -476,17 +476,17 @@
           }
         }
       }
-  
-      .token-balance-change+.nft-bc,
+
+      .token-balance-change + .nft-bc,
       .nft-bc,
       .token-balance-change {
         border-top: 1px solid @color-border;
       }
-  
+
       .token-balance-change.no-change-detected,
       .nft-bc.no-change-detected {
         margin-bottom: 0;
-  
+
         .section-title {
           margin-bottom: 0;
         }
@@ -500,7 +500,7 @@
       &-body {
         padding: 16px;
 
-        &+& {
+        & + & {
           border-top: 1px solid #e5e9ef;
         }
       }
@@ -580,7 +580,7 @@
         line-height: 14px;
       }
     }
-    
+
     .security-check-card {
       background-color: #fff;
       padding: 16px;
@@ -737,7 +737,7 @@
     &.pre-process-failed {
       padding-bottom: 200px;
     }
-    
+
     .section-block {
       .section-title {
         font-weight: 400;
@@ -750,7 +750,7 @@
       padding-bottom: 16px;
       border-bottom: 1px solid #e5e9ef;
     }
-    
+
     .section-card {
       background: #fff;
       border-radius: 6px;
@@ -811,11 +811,11 @@
         padding: 16px;
         // border-bottom: 1px solid #e5e9ef;
         &-title {
-          font-weight: 400;
-          font-size: 13px;
-          line-height: 18px;
+          font-weight: 500;
+          font-size: 20px;
+          line-height: 23px;
           color: @color-title;
-          margin-bottom: 10px;
+          margin-bottom: 16px;
           .name-and-address {
             display: inline-flex;
             margin-right: 6px;
@@ -836,6 +836,86 @@
             word-break: break-all;
           }
         }
+        .type-list-nft-card {
+          display: flex;
+          background: rgba(134, 151, 255, 0.1);
+          border-radius: 4px;
+          align-items: center;
+          padding: 15px;
+          gap: 12px;
+
+          &-title {
+            font-weight: 500;
+            font-size: 15px;
+            line-height: 18px;
+            margin-bottom: 8px;
+          }
+
+          &-form-item {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            &:not(:last-child) {
+              margin-bottom: 8px;
+            }
+          }
+          &-label {
+            font-weight: 400;
+            font-size: 12px;
+            line-height: 14px;
+            color: @color-comment-1;
+            width: 54px;
+          }
+          &-value,
+          .address {
+            font-weight: 500;
+            font-size: 12px;
+            line-height: 14px;
+            color: @color-body !important;
+          }
+        }
+        &-list {
+          margin-top: 24px;
+          &-item {
+            display: flex;
+            align-items: center;
+            gap: 16px;
+            &:not(:last-child) {
+              margin-bottom: 16px;
+            }
+
+            &-label {
+              font-weight: 400;
+              font-size: 14px;
+              line-height: 16px;
+              color: @color-body;
+            }
+            &-value {
+              margin-left: auto;
+              font-weight: 500;
+              font-size: 14px;
+              line-height: 16px;
+              color: @color-title;
+              .list-on-address {
+                .address {
+                  font-weight: 400;
+                  font-size: 14px;
+                  line-height: 16px;
+                  color: @color-comment-1 !important;
+                }
+              }
+              .buyer-address {
+                .address {
+                  font-weight: 500;
+                  font-size: 14px;
+                  line-height: 16px;
+                  text-align: right;
+                  color: @color-title !important;
+                }
+              }
+            }
+          }
+        }
       }
     }
     .cancel-tx {
@@ -851,7 +931,7 @@
         }
       }
     }
-    
+
     .approve-nft,
     .approve-nft-collection,
     .cancel-nft-collection,
@@ -2461,7 +2541,7 @@
   }
 
   .field {
-    &+.field {
+    & + .field {
       margin-top: 8px;
     }
     &.selected {
