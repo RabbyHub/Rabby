@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useRef, useState } from 'react';
+import React, { useMemo, useRef, useState } from 'react';
 import { Input } from 'antd';
 import cloneDeep from 'lodash/cloneDeep';
 import uniqBy from 'lodash/uniqBy';
@@ -13,6 +13,7 @@ import TokenSelector, {
 import IconArrowDown from 'ui/assets/arrow-down-triangle.svg';
 import './style.less';
 import clsx from 'clsx';
+import { useAsync } from 'react-use';
 
 interface TokenAmountInputProps {
   token: TokenItem;
@@ -42,13 +43,11 @@ const TokenAmountInput = ({
   placeholder,
 }: TokenAmountInputProps) => {
   const tokenInputRef = useRef<Input>(null);
-  const latestChainId = useRef(chainId);
-  const latestTokenId = useRef(token.id);
-  const [tokens, setTokens] = useState<TokenItem[]>([]);
-  const [originTokenList, setOriginTokenList] = useState<TokenItem[]>([]);
-  const [isListLoading, setIsListLoading] = useState(true);
   const [tokenSelectorVisible, setTokenSelectorVisible] = useState(false);
   const wallet = useWallet();
+
+  const [q, setQ] = useState('');
+
   if (amountFocus && !tokenSelectorVisible) {
     tokenInputRef.current?.focus();
   }
@@ -65,7 +64,6 @@ const TokenAmountInput = ({
 
   const handleSelectToken = () => {
     setTokenSelectorVisible(true);
-    handleLoadTokens();
   };
 
   const sortTokensByPrice = (tokens: TokenItem[]) => {
@@ -77,21 +75,16 @@ const TokenAmountInput = ({
         .toNumber();
     });
   };
-
-  const availableToken = useMemo(
-    () =>
-      uniqBy(tokens, (token) => {
-        return `${token.chain}-${token.id}`;
-      }).filter((e) => !excludeTokens.includes(e.id)),
-    [tokens, excludeTokens]
-  );
-
   const isSwapType = isSwapTokenType(type);
 
-  const handleLoadTokens = async () => {
-    setIsListLoading(true);
+  const {
+    value: originTokenList = [],
+    loading: isTokenLoading,
+  } = useAsync(async () => {
+    if (!tokenSelectorVisible) return [];
     let tokens: TokenItem[] = [];
     const currentAccount = await wallet.syncGetCurrentAccount();
+
     const getDefaultTokens = isSwapType
       ? wallet.openapi.getSwapTokenList
       : wallet.openapi.listToken;
@@ -113,58 +106,60 @@ const TokenAmountInput = ({
         );
       }
     }
+    tokens = sortTokensByPrice([
+      ...defaultTokens,
+      ...localAddedTokens,
+    ]).filter((e) => (type === 'swapFrom' ? e.amount > 0 : true));
 
-    if (chainId !== latestChainId.current) return;
-    tokens = sortTokensByPrice([...defaultTokens, ...localAddedTokens]);
-    setOriginTokenList(tokens);
-    setTokens(tokens);
-    setIsListLoading(false);
-  };
+    return tokens;
+  }, [tokenSelectorVisible, chainId, isSwapType]);
 
-  const handleSearchTokens = async (q: string) => {
+  const {
+    value: displayTokens = [],
+    loading: isSearchLoading,
+  } = useAsync(async (): Promise<TokenItem[]> => {
+    if (!tokenSelectorVisible) return [];
     if (!q) {
-      setTokens(originTokenList);
-      return;
+      return originTokenList;
     }
+
     const kw = q.trim();
-    if (isSwapType) {
-      setIsListLoading(true);
-      try {
-        const currentAccount = await wallet.syncGetCurrentAccount();
-        const data = await wallet.openapi.searchSwapToken(
-          currentAccount!.address,
-          chainId,
-          q
-        );
-        setTokens(data);
-      } catch (error) {
-        console.error('swap search error :', error);
-      }
-      setIsListLoading(false);
 
-      return;
+    if (kw.length === 42 && kw.toLowerCase().startsWith('0x')) {
+      const currentAccount = await wallet.syncGetCurrentAccount();
+
+      const data = await wallet.openapi.searchToken(currentAccount!.address, q);
+      return data.filter((e) => e.chain === chainId);
     }
-    setTokens(
-      originTokenList.filter((token) => {
-        if (kw.length === 42 && kw.startsWith('0x')) {
-          return token.id.toLowerCase() === kw.toLowerCase();
-        } else {
-          const reg = new RegExp(kw, 'i');
-          return reg.test(token.name) || reg.test(token.symbol);
-        }
-      })
-    );
-  };
+    if (isSwapType) {
+      const currentAccount = await wallet.syncGetCurrentAccount();
 
-  useEffect(() => {
-    setTokens([]);
-    setOriginTokenList([]);
-    latestChainId.current = chainId;
-  }, [chainId]);
+      const data = await wallet.openapi.searchSwapToken(
+        currentAccount!.address,
+        chainId,
+        q
+      );
+      return data;
+    }
 
-  useEffect(() => {
-    latestTokenId.current = token.id;
-  }, [token]);
+    return originTokenList.filter((token) => {
+      const reg = new RegExp(kw, 'i');
+      return reg.test(token.name) || reg.test(token.symbol);
+    });
+  }, [tokenSelectorVisible, originTokenList, q, chainId]);
+
+  const availableToken = useMemo(
+    () =>
+      uniqBy(displayTokens, (token) => {
+        return `${token.chain}-${token.id}`;
+      }).filter((e) => !excludeTokens.includes(e.id)),
+    [displayTokens, excludeTokens]
+  );
+  const isListLoading = isTokenLoading || isSearchLoading;
+
+  const handleSearchTokens = React.useCallback(async (q: string) => {
+    setQ(q);
+  }, []);
 
   return (
     <div className={clsx('token-amount-input', className)}>

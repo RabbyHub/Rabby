@@ -1,11 +1,5 @@
-import React, {
-  ComponentProps,
-  useEffect,
-  useMemo,
-  useRef,
-  useState,
-} from 'react';
-import { Input, Skeleton, Space } from 'antd';
+import React, { ComponentProps, useMemo, useState } from 'react';
+import { Input, Skeleton } from 'antd';
 import cloneDeep from 'lodash/cloneDeep';
 import BigNumber from 'bignumber.js';
 import { TokenItem } from 'background/service/openapi';
@@ -15,6 +9,7 @@ import TokenSelector, { isSwapTokenType } from '../TokenSelector';
 import styled from 'styled-components';
 import LessPalette, { ellipsis } from '@/ui/style/var-defs';
 import { ReactComponent as SvgIconArrowDownTriangle } from '@/ui/assets/swap/arrow-caret-down2.svg';
+import { useAsync } from 'react-use';
 
 const Wrapper = styled.div`
   background-color: transparent;
@@ -77,10 +72,7 @@ const TokenSelect = ({
   value,
   loading = false,
 }: TokenAmountInputProps) => {
-  const latestChainId = useRef(chainId);
-  const [tokens, setTokens] = useState<TokenItem[]>([]);
-  const [originTokenList, setOriginTokenList] = useState<TokenItem[]>([]);
-  const [isListLoading, setIsListLoading] = useState(true);
+  const [q, setQ] = useState('');
   const [tokenSelectorVisible, setTokenSelectorVisible] = useState(false);
   const wallet = useWallet();
 
@@ -98,7 +90,6 @@ const TokenSelect = ({
 
   const handleSelectToken = () => {
     setTokenSelectorVisible(true);
-    handleLoadTokens();
   };
 
   const sortTokensByPrice = (tokens: TokenItem[]) => {
@@ -111,10 +102,14 @@ const TokenSelect = ({
     });
   };
 
-  const handleLoadTokens = async () => {
-    setIsListLoading(true);
+  const {
+    value: originTokenList = [],
+    loading: isTokenLoading,
+  } = useAsync(async () => {
+    if (!tokenSelectorVisible) return [];
     let tokens: TokenItem[] = [];
     const currentAccount = await wallet.syncGetCurrentAccount();
+
     const getDefaultTokens = isSwapType
       ? wallet.openapi.getSwapTokenList
       : wallet.openapi.listToken;
@@ -136,55 +131,57 @@ const TokenSelect = ({
         );
       }
     }
-
-    if (chainId !== latestChainId.current) return;
     tokens = sortTokensByPrice([
       ...defaultTokens,
       ...localAddedTokens,
     ]).filter((e) => (type === 'swapFrom' ? e.amount > 0 : true));
-    setOriginTokenList(tokens);
-    setTokens(tokens);
-    setIsListLoading(false);
-  };
 
-  const handleSearchTokens = async (q: string) => {
+    return tokens;
+  }, [tokenSelectorVisible, chainId, isSwapType]);
+
+  const {
+    value: displayTokens = [],
+    loading: isSearchLoading,
+  } = useAsync(async (): Promise<TokenItem[]> => {
+    if (!tokenSelectorVisible) return [];
     if (!q) {
-      setTokens(originTokenList);
-      return;
+      return originTokenList;
     }
-    const kw = q.trim();
-    if (isSwapType) {
-      setIsListLoading(true);
-      try {
-        const currentAccount = await wallet.syncGetCurrentAccount();
-        const data = await wallet.openapi.searchSwapToken(
-          currentAccount!.address,
-          chainId,
-          q
-        );
-        setTokens(data);
-      } catch (error) {
-        console.error('swap search error :', error);
-      }
-      setIsListLoading(false);
 
-      return;
+    const kw = q.trim();
+
+    if (kw.length === 42 && kw.toLowerCase().startsWith('0x')) {
+      const currentAccount = await wallet.syncGetCurrentAccount();
+
+      const data = await wallet.openapi.searchToken(currentAccount!.address, q);
+      return data.filter((e) => e.chain === chainId);
     }
-    setTokens(
-      originTokenList.filter((token) => {
-        if (kw.length === 42 && kw.startsWith('0x')) {
-          return token.id.toLowerCase() === kw.toLowerCase();
-        } else {
-          const reg = new RegExp(kw, 'i');
-          return reg.test(token.name) || reg.test(token.symbol);
-        }
-      })
-    );
-  };
+    if (isSwapType) {
+      const currentAccount = await wallet.syncGetCurrentAccount();
+
+      const data = await wallet.openapi.searchSwapToken(
+        currentAccount!.address,
+        chainId,
+        q
+      );
+      return data;
+    }
+
+    return originTokenList.filter((token) => {
+      const reg = new RegExp(kw, 'i');
+      return reg.test(token.name) || reg.test(token.symbol);
+    });
+  }, [tokenSelectorVisible, originTokenList, q, chainId]);
+
+  const isListLoading = isTokenLoading || isSearchLoading;
+
+  const handleSearchTokens = React.useCallback(async (q: string) => {
+    setQ(q);
+  }, []);
 
   const availableToken = useMemo(
-    () => tokens.filter((e) => !excludeTokens.includes(e.id)),
-    [excludeTokens, tokens]
+    () => displayTokens.filter((e) => !excludeTokens.includes(e.id)),
+    [excludeTokens, displayTokens]
   );
 
   const [input, setInput] = useState('');
@@ -197,12 +194,6 @@ const TokenSelect = ({
     setInput(v);
     onChange && onChange(v);
   };
-
-  useEffect(() => {
-    setTokens([]);
-    setOriginTokenList([]);
-    latestChainId.current = chainId;
-  }, [chainId]);
 
   return (
     <>
