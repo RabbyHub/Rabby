@@ -1,8 +1,7 @@
 import { NameAndAddress } from '@/ui/component';
 import LessPalette from '@/ui/style/var-defs';
 import { CHAINS_ENUM } from '@debank/common';
-import { OpenApiService } from '@debank/rabby-api';
-import { ExplainTxResponse } from '@debank/rabby-api/dist/types';
+import { ExplainTypedDataResponse } from '@debank/rabby-api/dist/types';
 import React from 'react';
 import styled from 'styled-components';
 import IconUnknownProtocol from 'ui/assets/unknown-protocol.svg';
@@ -66,9 +65,7 @@ const Wraper = styled.div`
 `;
 
 interface CommonSignProps {
-  detail: NonNullable<
-    Awaited<ReturnType<OpenApiService['explainTypedData']>>['type_common_sign']
-  >;
+  detail: NonNullable<ExplainTypedDataResponse['type_common_sign']>;
   chainEnum?: CHAINS_ENUM;
 }
 

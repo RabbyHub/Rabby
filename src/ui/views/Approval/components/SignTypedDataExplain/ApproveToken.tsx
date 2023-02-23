@@ -1,13 +1,13 @@
+import { ExplainTypedDataResponse } from '@debank/rabby-api/dist/types';
+import { CHAINS_ENUM } from 'consts';
 import React from 'react';
-import { ExplainTxResponse } from '@/background/service/openapi';
 import {
   ApproveToken as ApproveTokenComponent,
   Props as ApproveTokenProps,
 } from '../TxComponents/ApproveToken';
-import { CHAINS_ENUM } from 'consts';
 
 interface Props {
-  detail: NonNullable<ExplainTxResponse['type_token_approval']>;
+  detail: NonNullable<ExplainTypedDataResponse['type_token_approval']>;
   chainEnum?: CHAINS_ENUM;
 }
 

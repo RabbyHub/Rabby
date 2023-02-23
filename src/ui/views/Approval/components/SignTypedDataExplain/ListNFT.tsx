@@ -1,1 +1,1 @@
-export { ExplainListNFT as ListNFT } from '@/ui/component/ExplainListNFT';
+export { ExplainListNFT as ListNFT } from '../TxComponents/ExplainListNFT';

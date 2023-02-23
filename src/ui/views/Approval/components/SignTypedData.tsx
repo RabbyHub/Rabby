@@ -1,38 +1,32 @@
-import React, { ReactNode, useEffect, useState, useMemo } from 'react';
-import { Button, Skeleton, Tooltip } from 'antd';
-import { useTranslation } from 'react-i18next';
-import TransportWebHID from '@ledgerhq/hw-transport-webhid';
-import { WaitingSignComponent } from './SignText';
-import { KEYRING_CLASS, KEYRING_TYPE } from 'consts';
-import { openInternalPageInTab, useApproval, useWallet } from 'ui/utils';
-import {
-  SecurityCheckResponse,
-  SecurityCheckDecision,
-} from 'background/service/openapi';
-import AccountCard from './AccountCard';
-import LedgerWebHIDAlert from './LedgerWebHIDAlert';
-import IconQuestionMark from 'ui/assets/question-mark-gray.svg';
-import IconWatch from 'ui/assets/walletlogo/watch-purple.svg';
-import IconGnosis from 'ui/assets/walletlogo/gnosis.svg';
-import clsx from 'clsx';
+import { underline2Camelcase } from '@/background/utils';
+import { useLedgerDeviceConnected } from '@/utils/ledger';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import { getKRCategoryByType } from '@/utils/transaction';
-import { underline2Camelcase } from '@/background/utils';
-import SecurityCheckCard from './SecurityCheckCard';
+import { CHAINS_LIST } from '@debank/common';
+import TransportWebHID from '@ledgerhq/hw-transport-webhid';
+import { Button, Skeleton, Tooltip } from 'antd';
+import {
+  SecurityCheckDecision,
+  SecurityCheckResponse,
+} from 'background/service/openapi';
+import clsx from 'clsx';
+import { KEYRING_CLASS, KEYRING_TYPE } from 'consts';
+import React, { ReactNode, useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useAsync } from 'react-use';
+import IconArrowRight from 'ui/assets/arrow-right-gray.svg';
+import IconQuestionMark from 'ui/assets/question-mark-gray.svg';
+import IconGnosis from 'ui/assets/walletlogo/gnosis.svg';
+import IconWatch from 'ui/assets/walletlogo/watch-purple.svg';
+import { openInternalPageInTab, useApproval, useWallet } from 'ui/utils';
+import AccountCard from './AccountCard';
+import LedgerWebHIDAlert from './LedgerWebHIDAlert';
 import ProcessTooltip from './ProcessTooltip';
 import SecurityCheck from './SecurityCheck';
-import { useLedgerDeviceConnected } from '@/utils/ledger';
-import { useAsync } from 'react-use';
-import {
-  NFTSignTypedSignHeader,
-  NFTSignTypedSignSection,
-} from './NftSignTypedData';
-import { CHAINS_LIST } from '@debank/common';
-import IconArrowRight from 'ui/assets/arrow-right-gray.svg';
-import ViewRawModal from './TxComponents/ViewRawModal';
-import { PermitSignTypedSignSection } from './PermitSignTypedData';
-import { ExplainListNFT } from '@/ui/component/ExplainListNFT';
+import SecurityCheckCard from './SecurityCheckCard';
+import { WaitingSignComponent } from './SignText';
 import { SignTypedDataExplain } from './SignTypedDataExplain';
+import ViewRawModal from './TxComponents/ViewRawModal';
 interface SignTypedDataProps {
   method: string;
   data: any[];

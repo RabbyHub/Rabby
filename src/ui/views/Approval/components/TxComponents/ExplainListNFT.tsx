@@ -1,6 +1,7 @@
 import ModalPreviewNFTItem from '@/ui/component/ModalPreviewNFTItem';
 import LessPalette from '@/ui/style/var-defs';
 import NFTAvatar from '@/ui/views/Dashboard/components/NFT/NFTAvatar';
+import { CHAINS_ENUM } from '@debank/common';
 import { Tooltip } from 'antd';
 import {
   ExplainTxResponse,
@@ -15,6 +16,7 @@ import styled from 'styled-components';
 import IconWarning from 'ui/assets/icon-warning.svg';
 import IconUnknownProtocol from 'ui/assets/unknown-protocol.svg';
 import { NameAndAddress } from 'ui/component';
+import { getChain } from 'utils';
 
 const NFTListWrapper = styled.div`
   background: rgba(134, 151, 255, 0.1);
@@ -22,18 +24,46 @@ const NFTListWrapper = styled.div`
   display: flex;
   align-items: center;
   padding: 15px 16px;
-  gap: 16px;
+  gap: 12px;
 
-  .type-list-nft-list {
-    &-item {
-      .nft-avatar {
-        width: 60px;
-        height: 60px;
-        background-color: rgb(204, 204, 204);
-        border: none;
-        cursor: pointer;
+  .type-list-nft-card {
+    &-title {
+      font-weight: 500;
+      font-size: 15px;
+      line-height: 18px;
+      margin-bottom: 8px;
+    }
+
+    &-form-item {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      &:not(:last-child) {
+        margin-bottom: 8px;
       }
     }
+    &-label {
+      font-weight: 400;
+      font-size: 12px;
+      line-height: 14px;
+      color: ${LessPalette['@color-comment-1']};
+      width: 54px;
+    }
+    &-value,
+    .address {
+      font-weight: 500;
+      font-size: 12px;
+      line-height: 14px;
+      color: ${LessPalette['@color-body']} !important;
+    }
+  }
+
+  .nft-avatar {
+    width: 60px;
+    height: 60px;
+    background-color: rgb(204, 204, 204);
+    border: none;
+    flex-shrink: 0;
   }
   .more {
     font-weight: 500;
@@ -50,18 +80,9 @@ export function NFTList({
 }) {
   const NFTListCountLimit = 3;
   const { renderList, rest } = useMemo(() => {
-    const _list = list.slice().sort((a, b) => {
-      if (!a.nft?.name) {
-        return 1;
-      }
-      if (!b.nft?.name) {
-        return -1;
-      }
-      return a.nft?.name > b.nft?.name ? 1 : -1;
-    });
     return {
-      renderList: _list.slice(0, NFTListCountLimit),
-      rest: _list.length - NFTListCountLimit,
+      renderList: list.slice(0, NFTListCountLimit),
+      rest: list.length - NFTListCountLimit,
     };
   }, [list]);
 
@@ -74,18 +95,26 @@ export function NFTList({
   if (renderList.length === 1) {
     const item = renderList[0];
     return (
-      <div className="type-list-nft-card">
+      <NFTListWrapper className="type-list-nft-card">
         <NFTAvatar
-          className="nft-item-avatar"
+          className="nft-item-avatar flex-shrink-0"
           thumbnail
           content={item.nft?.content}
           type={item.nft?.content_type}
         />
-        <div>
-          <div className="type-list-nft-card-title">{item.nft?.name}</div>
+        <div className="overflow-hidden">
+          <div
+            className="type-list-nft-card-title truncate"
+            title={item.nft?.name}
+          >
+            {item.nft?.name}
+          </div>
           <div className="type-list-nft-card-form-item">
             <div className="type-list-nft-card-label">Collection</div>
-            <div className="type-list-nft-card-value">
+            <div
+              className="type-list-nft-card-value truncate"
+              title={item?.nft?.collection?.name}
+            >
               {item.nft?.collection?.name || '-'}
             </div>
           </div>
@@ -98,11 +127,12 @@ export function NFTList({
                 address={item.nft.contract_id}
                 nameClass="max-90"
                 noNameClass="no-name"
+                chainEnum={getChain(item.nft?.chain)?.enum}
               />
             </div>
           </div>
         </div>
-      </div>
+      </NFTListWrapper>
     );
   }
 
@@ -187,50 +217,13 @@ const ExplainListNFTWraper = styled.div`
         word-break: break-all;
       }
     }
-    .type-list-nft-card {
-      display: flex;
-      background: rgba(134, 151, 255, 0.1);
-      border-radius: 4px;
-      align-items: center;
-      padding: 15px;
-      gap: 12px;
 
-      &-title {
-        font-weight: 500;
-        font-size: 15px;
-        line-height: 18px;
-        margin-bottom: 8px;
-      }
-
-      &-form-item {
-        display: flex;
-        align-items: center;
-        gap: 12px;
-        &:not(:last-child) {
-          margin-bottom: 8px;
-        }
-      }
-      &-label {
-        font-weight: 400;
-        font-size: 12px;
-        line-height: 14px;
-        color: ${LessPalette['@color-comment-1']};
-        width: 54px;
-      }
-      &-value,
-      .address {
-        font-weight: 500;
-        font-size: 12px;
-        line-height: 14px;
-        color: ${LessPalette['@color-body']} !important;
-      }
-    }
     &-list {
       margin-top: 24px;
       &-item {
         display: flex;
         align-items: center;
-        gap: 16px;
+        gap: 12px;
         &:not(:last-child) {
           margin-bottom: 16px;
         }
@@ -240,6 +233,7 @@ const ExplainListNFTWraper = styled.div`
           font-size: 14px;
           line-height: 16px;
           color: ${LessPalette['@color-body']};
+          flex-shrink: 0;
         }
         &-value {
           margin-left: auto;
@@ -271,9 +265,10 @@ const ExplainListNFTWraper = styled.div`
 `;
 interface ExplainListNFTProps {
   detail: NonNullable<ExplainTxResponse['type_list_nft']>;
+  chainEnum?: CHAINS_ENUM;
 }
 
-export const ExplainListNFT = ({ detail }: ExplainListNFTProps) => {
+export const ExplainListNFT = ({ detail, chainEnum }: ExplainListNFTProps) => {
   const { t } = useTranslation();
 
   const handleProtocolLogoLoadFailed = function (
@@ -288,12 +283,30 @@ export const ExplainListNFT = ({ detail }: ExplainListNFTProps) => {
     }, 0);
   }, [detail.offer_list]);
 
+  const offerList = useMemo(() => {
+    const result: {
+      item_type: number;
+      amount: number;
+      nft: NFTItem;
+    }[] = [];
+    detail.offer_list?.forEach((item) => {
+      for (let i = 0; i < item.amount; i++) {
+        result.push({
+          item_type: item.item_type,
+          amount: 1,
+          nft: item.nft,
+        });
+      }
+    });
+    return result;
+  }, [detail.offer_list]);
+
   return (
     <ExplainListNFTWraper>
       <div className="type-list-nft-explain-title">
         List {totalNFTAmount} NFT{totalNFTAmount > 1 ? 's' : ''} For Sale
       </div>
-      <NFTList list={detail?.offer_list || []}></NFTList>
+      <NFTList list={offerList}></NFTList>
       <div className="type-list-nft-explain-list">
         <div className="type-list-nft-explain-list-item">
           <div className="type-list-nft-explain-list-item-label">List on</div>
@@ -303,7 +316,7 @@ export const ExplainListNFT = ({ detail }: ExplainListNFTProps) => {
               className="w-[16px] h-[16px] rounded-full"
               onError={handleProtocolLogoLoadFailed}
             />
-            <span>
+            <span className="truncate">
               {detail.contract_protocol_name || t('Unknown Protocol')}
             </span>
             <NameAndAddress
@@ -312,6 +325,7 @@ export const ExplainListNFT = ({ detail }: ExplainListNFTProps) => {
               nameClass="max-90"
               noNameClass="no-name"
               openExternal
+              chainEnum={chainEnum}
             />
           </div>
         </div>
@@ -319,7 +333,7 @@ export const ExplainListNFT = ({ detail }: ExplainListNFTProps) => {
           <div className="type-list-nft-explain-list-item-label">
             Est. total listing price in USD
           </div>
-          <div className="type-list-nft-explain-list-item-value flex items-center">
+          <div className="type-list-nft-explain-list-item-value truncate">
             ${new BigNumber(detail.total_usd_value || 0).toFormat(2)}
           </div>
         </div>
