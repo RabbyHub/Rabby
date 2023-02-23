@@ -1,7 +1,13 @@
 import LessPalette, { ellipsis } from '@/ui/style/var-defs';
 import { Input, Space, Tooltip } from 'antd';
 import clsx from 'clsx';
-import React, { memo, useMemo } from 'react';
+import React, {
+  ChangeEventHandler,
+  KeyboardEventHandler,
+  memo,
+  useCallback,
+  useMemo,
+} from 'react';
 import { useCss, useToggle } from 'react-use';
 import styled from 'styled-components';
 import { ReactComponent as IconInfo } from '@/ui/assets/swap/info-outline.svg';
@@ -120,6 +126,44 @@ export const Slippage = memo((props: SlippageProps) => {
     },
   });
 
+  const onInputFocus: ChangeEventHandler<HTMLInputElement> = useCallback(
+    (e) => {
+      e.target?.select?.();
+    },
+    []
+  );
+
+  const onInputChange: ChangeEventHandler<HTMLInputElement> = useCallback(
+    (e) => {
+      const v = e.target.value.replace(/%/g, '');
+      if (/^\d*(\.\d*)?$/.test(v)) {
+        onChange(Number(v) > 50 ? '50' : v);
+      }
+    },
+    [onChange]
+  );
+
+  const onInputKeyDown: KeyboardEventHandler<HTMLInputElement> = useCallback(
+    (event) => {
+      const key = event.key;
+      const target = event.currentTarget;
+      const isDelete =
+        key === 'Backspace' &&
+        !!target.selectionStart &&
+        target.value[target.selectionStart - 1] === '%';
+      if (!isDelete) return;
+
+      if (target.selectionStart) {
+        target.focus();
+        target.setSelectionRange(
+          target.selectionStart - 1,
+          target.selectionStart - 1
+        );
+      }
+    },
+    []
+  );
+
   return (
     <section className={clsx('relative cursor-pointer px-12')}>
       <div className="flex justify-between" onClick={() => setOpen()}>
@@ -186,15 +230,9 @@ export const Slippage = memo((props: SlippageProps) => {
               autoFocus
               bordered={false}
               value={value + '%'}
-              onFocus={(e) => {
-                e.target?.select?.();
-              }}
-              onChange={(e) => {
-                const v = e.target.value.replace(/%/g, '');
-                if (/^\d*(\.\d*)?$/.test(v)) {
-                  onChange(Number(v) > 50 ? '50' : v);
-                }
-              }}
+              onFocus={onInputFocus}
+              onChange={onInputChange}
+              onKeyDown={onInputKeyDown}
             />
           ) : (
             'Custom'
