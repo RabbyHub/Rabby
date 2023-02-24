@@ -2,8 +2,13 @@ import { CHAINS_ENUM } from '@debank/common';
 import { createPersistStore } from 'background/utils';
 import axios from 'axios';
 
+export interface RPCItem {
+  url: string;
+  enable: boolean;
+}
+
 export type RPCServiceStore = {
-  customRPC: Record<string, string>;
+  customRPC: Record<string, RPCItem>;
 };
 
 const MAX = 4_294_967_295;
@@ -36,7 +41,7 @@ class RPCService {
   };
 
   hasCustomRPC = (chain: CHAINS_ENUM) => {
-    return !!this.store.customRPC[chain];
+    return this.store.customRPC[chain] && this.store.customRPC[chain].enable;
   };
 
   getRPCByChain = (chain: CHAINS_ENUM) => {
@@ -48,13 +53,32 @@ class RPCService {
   };
 
   setRPC = (chain: CHAINS_ENUM, url: string) => {
+    const rpcItem = this.store.customRPC[chain]
+      ? {
+          ...this.store.customRPC[chain],
+          url,
+        }
+      : {
+          url,
+          enable: true,
+        };
     this.store.customRPC = {
       ...this.store.customRPC,
-      [chain]: url,
+      [chain]: rpcItem,
     };
     if (this.rpcStatus[chain]) {
       delete this.rpcStatus[chain];
     }
+  };
+
+  setRPCEnable = (chain: CHAINS_ENUM, enable: boolean) => {
+    this.store.customRPC = {
+      ...this.store.customRPC,
+      [chain]: {
+        ...this.store.customRPC[chain],
+        enable,
+      },
+    };
   };
 
   removeCustomRPC = (chain: CHAINS_ENUM) => {
@@ -71,7 +95,7 @@ class RPCService {
     method: string,
     params: any[]
   ) => {
-    const host = this.store.customRPC[chain];
+    const host = this.store.customRPC[chain]?.url;
     if (!host) {
       throw new Error(`No customRPC set for ${chain}`);
     }
@@ -105,13 +129,14 @@ class RPCService {
     if (this.rpcStatus[chain]?.expireAt > Date.now()) {
       return this.rpcStatus[chain].available;
     }
-    const host = this.store.customRPC[chain];
+    const host = this.store.customRPC[chain]?.url;
     if (!host) return false;
     try {
       await this.request(host, 'eth_blockNumber', [], 2000);
       this.rpcStatus = {
         ...this.rpcStatus,
         [chain]: {
+          ...this.rpcStatus[chain],
           expireAt: Date.now() + 60 * 1000,
           available: true,
         },
@@ -121,6 +146,7 @@ class RPCService {
       this.rpcStatus = {
         ...this.rpcStatus,
         [chain]: {
+          ...this.rpcStatus[chain],
           expireAt: Date.now() + 60 * 1000,
           available: false,
         },

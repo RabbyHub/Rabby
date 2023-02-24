@@ -955,6 +955,7 @@ export class WalletController extends BaseController {
   getAllCustomRPC = RPCService.getAllRPC;
   getCustomRpcByChain = RPCService.getRPCByChain;
   pingCustomRPC = RPCService.ping;
+  setRPCEnable = RPCService.setRPCEnable;
   validateRPC = async (url: string, chainId: number) => {
     const chain = Object.values(CHAINS).find((item) => item.id === chainId);
     if (!chain) throw new Error(`ChainId ${chainId} is not supported`);

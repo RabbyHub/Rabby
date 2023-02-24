@@ -1,7 +1,8 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { CHAINS_ENUM, CHAINS } from '@debank/common';
-import { message, Button } from 'antd';
+import { message, Button, Switch } from 'antd';
 import styled from 'styled-components';
+import { RPCItem } from 'background/service/rpc';
 import { PageHeader } from 'ui/component';
 import ChainSelectorModal from 'ui/component/ChainSelector/Modal';
 import ChainIcon from 'ui/component/ChainIcon';
@@ -16,13 +17,18 @@ import './style.less';
 const RPCItemWrapper = styled.div`
   background: #ffffff;
   border-radius: 6px;
-  padding: 12px 16px;
+  padding: 12px;
   display: flex;
   margin-bottom: 8px;
   height: 56px;
   border: 1px solid transparent;
+  align-items: center;
+  .switch-wrapper {
+    margin-right: 12px;
+  }
   .right {
     margin-left: 12px;
+    max-width: 194px;
     p {
       max-width: 194px;
       overflow: hidden;
@@ -45,17 +51,18 @@ const RPCItemWrapper = styled.div`
     }
   }
   .operation {
-    flex: 1;
     justify-content: flex-end;
-    display: none;
+    opacity: 0;
     align-items: center;
+    display: flex;
+    flex: 1;
     .icon {
-      width: 20px;
-      height: 20px;
+      width: 16px;
+      height: 16px;
       cursor: pointer;
       user-select: none;
       &:nth-child(1) {
-        margin-right: 20px;
+        margin-right: 12px;
       }
     }
   }
@@ -64,7 +71,7 @@ const RPCItemWrapper = styled.div`
     border: 1px solid #8697ff;
     border-radius: 6px;
     .operation {
-      display: flex;
+      opacity: 1;
     }
   }
 `;
@@ -83,12 +90,12 @@ const Footer = styled.div`
   justify-content: center;
 `;
 
-const RPCItem = ({
+const RPCItemComp = ({
   item,
   onEdit,
 }: {
-  item: { id: CHAINS_ENUM; rpc: string; nonce: number };
-  onEdit(item: { id: CHAINS_ENUM; rpc: string }): void;
+  item: { id: CHAINS_ENUM; rpc: RPCItem; nonce: number };
+  onEdit(item: { id: CHAINS_ENUM; rpc: RPCItem }): void;
 }) => {
   const dispatch = useRabbyDispatch();
 
@@ -98,6 +105,25 @@ const RPCItem = ({
 
   const handleEdit = () => {
     onEdit(item);
+  };
+
+  const handleSwitchRPCEnable = async (val: boolean) => {
+    await dispatch.customRPC.setRPCEnable({
+      chain: item.id,
+      enable: val,
+    });
+    message.success({
+      duration: 0.5,
+      icon: <i />,
+      content: (
+        <div>
+          <div className="flex gap-4 mb-4">
+            <img src={IconSuccess} alt="" />
+            {val ? 'Opened' : 'Closed'}
+          </div>
+        </div>
+      ),
+    });
   };
 
   const handleDelete = async () => {
@@ -123,10 +149,17 @@ const RPCItem = ({
 
   return (
     <RPCItemWrapper>
-      <ChainIcon chain={item.id} customRPC={item.rpc} nonce={item.nonce} />
+      <div className="switch-wrapper">
+        <Switch checked={item.rpc.enable} onChange={handleSwitchRPCEnable} />
+      </div>
+      <ChainIcon
+        chain={item.id}
+        customRPC={item.rpc?.enable ? item.rpc.url : undefined}
+        nonce={item.nonce}
+      />
       <div className="right">
         <p>{chain.name}</p>
-        <p title={item.rpc}>{item.rpc}</p>
+        <p title={item.rpc.url}>{item.rpc.url}</p>
       </div>
       <div className="operation">
         <img src={IconEdit} className="icon icon-edit" onClick={handleEdit} />
@@ -152,7 +185,7 @@ const CustomRPC = () => {
   );
   const [editRPC, setEditRPC] = useState<{
     id: CHAINS_ENUM;
-    rpc: string;
+    rpc: RPCItem;
   } | null>(null);
   const [nonce, setNonce] = useState(0);
 
@@ -175,7 +208,7 @@ const CustomRPC = () => {
     setRPCModalVisible(true);
   };
 
-  const handleEditRPC = (item: { id: CHAINS_ENUM; rpc: string }) => {
+  const handleEditRPC = (item: { id: CHAINS_ENUM; rpc: RPCItem }) => {
     setSelectedChain(item.id);
     setEditRPC(item);
     setRPCModalVisible(true);
@@ -245,7 +278,7 @@ const CustomRPC = () => {
       ) : (
         <RPCListContainer>
           {rpcList.map((rpc) => (
-            <RPCItem item={rpc} onEdit={handleEditRPC} />
+            <RPCItemComp item={rpc} onEdit={handleEditRPC} />
           ))}
         </RPCListContainer>
       )}
