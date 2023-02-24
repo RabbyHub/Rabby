@@ -37,7 +37,7 @@ const RPCItemWrapper = styled.div`
       margin: 0;
       &:nth-child(1) {
         margin-bottom: 2px;
-        font-size: 15px;
+        font-size: 13px;
         font-weight: 500;
         line-height: 18px;
         color: #13141a;
@@ -64,6 +64,12 @@ const RPCItemWrapper = styled.div`
       &:nth-child(1) {
         margin-right: 12px;
       }
+    }
+  }
+  .chain-icon-comp {
+    img {
+      width: 24px;
+      height: 24px;
     }
   }
   &:hover {
@@ -270,8 +276,8 @@ const CustomRPC = () => {
     <div className="custom-rpc">
       <PageHeader className="pt-[24px] mx-[20px] mb-16">Custom RPC</PageHeader>
       <p className="text-gray-subTitle text-14 mb-20 px-20">
-        Once added, the custom RPC will replace Rabby's node. To continue using
-        Rabby's node, delete the custom RPC.
+        Enabling custom RPC will replace Rabby as the default node. To continue
+        using Rabby, please disable or remove the custom RPC node.
       </p>
       {rpcList.length <= 0 ? (
         NoAddressUI

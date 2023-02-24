@@ -161,7 +161,7 @@ const ChainIcon = ({
         ) : null
       }
     >
-      <ChainIconWrapper>
+      <ChainIconWrapper className="chain-icon-comp">
         <ChainIconEle className={clsx(size)} src={CHAINS[chain].logo} />
         {customRPC &&
           customRPCVlidated &&

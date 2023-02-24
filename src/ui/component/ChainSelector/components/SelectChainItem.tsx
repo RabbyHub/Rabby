@@ -68,7 +68,9 @@ export const SelectChainItem = forwardRef(
             {showRPCStatus ? (
               <ChainIcon
                 chain={data.enum}
-                customRPC={customRPC[data.enum]?.url}
+                customRPC={
+                  customRPC[data.enum]?.enable ? customRPC[data.enum].url : ''
+                }
               />
             ) : (
               <img src={data.logo} alt="" className="select-chain-item-icon" />
