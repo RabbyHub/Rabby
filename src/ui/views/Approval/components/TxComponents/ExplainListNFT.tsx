@@ -16,7 +16,7 @@ import styled from 'styled-components';
 import IconWarning from 'ui/assets/icon-warning.svg';
 import IconUnknownProtocol from 'ui/assets/unknown-protocol.svg';
 import { NameAndAddress } from 'ui/component';
-import { getChain } from 'utils';
+import { getChain } from '@/utils';
 
 const NFTListWrapper = styled.div`
   background: rgba(134, 151, 255, 0.1);
