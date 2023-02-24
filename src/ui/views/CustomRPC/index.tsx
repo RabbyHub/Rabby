@@ -37,7 +37,7 @@ const RPCItemWrapper = styled.div`
       margin: 0;
       &:nth-child(1) {
         margin-bottom: 2px;
-        font-size: 15px;
+        font-size: 13px;
         font-weight: 500;
         line-height: 18px;
         color: #13141a;
@@ -64,6 +64,12 @@ const RPCItemWrapper = styled.div`
       &:nth-child(1) {
         margin-right: 12px;
       }
+    }
+  }
+  .chain-icon-comp {
+    img {
+      width: 24px;
+      height: 24px;
     }
   }
   &:hover {
