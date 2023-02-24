@@ -11,6 +11,7 @@ import './style.less';
 import BigNumber from 'bignumber.js';
 import stats from '@/stats';
 import MatchImage from 'ui/assets/match.svg';
+import { CHAINS_LIST } from '@debank/common';
 
 export const isSwapTokenType = (s: string) =>
   ['swapFrom', 'swapTo'].includes(s);
@@ -111,13 +112,15 @@ const TokenSelector = ({
                 No Match
               </p>
               <p className="text-gray-content text-14 mt-0 text-center">
-                Try to search contract address on Ethereum
+                Try to search contract address on{' '}
+                {CHAINS_LIST.find((e) => e.serverId === chainId)?.name ||
+                  'chain'}
               </p>
             </>
           )}
         </div>
       ),
-    [isLoading, isSwapType, t, isSearchAddr]
+    [isLoading, isSwapType, t, isSearchAddr, chainId]
   );
 
   useEffect(() => {
