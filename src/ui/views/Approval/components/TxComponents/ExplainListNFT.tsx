@@ -150,7 +150,7 @@ export function NFTList({
             >
               <div
                 title={item.nft?.name}
-                className="nft-detail-anchor"
+                className="nft-detail-anchor cursor-pointer"
                 onClick={() => {
                   setFocusingNFT(item.nft);
                 }}
