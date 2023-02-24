@@ -84,9 +84,9 @@ export const ApproveToken: React.FC<Props> = ({
 
   return (
     <div className="action-card">
-      <div className="common-detail-block">
+      <div className="common-detail-block pt-[15px]">
         {isSpeedUp && <SpeedUpCorner />}
-        <p className="title mb-[20px]">{t('Token Approval')}</p>
+        <p className="title mb-[16px] text-gray-title">{t('Token Approval')}</p>
         <div className="block-field flex flex-col bg-gray-bg2 rounded px-[12px]">
           <div className="flex justify-between pt-[16px] text-13 font-medium leading-[15px] mb-[8px]">
             <span className="text-gray-title">Approval amount</span>
@@ -109,7 +109,7 @@ export const ApproveToken: React.FC<Props> = ({
                 hideChainIcon
               />
               <span
-                className="ml-[6px]"
+                className="ml-[6px] font-medium"
                 title={tokenAmount + ' ' + detail.token_symbol}
               >
                 {ellipsisOverflowedText(
@@ -140,14 +140,14 @@ export const ApproveToken: React.FC<Props> = ({
           <span className="label flex items-center">{t('Approve to')}</span>
           <div className="value protocol">
             <img
-              className="protocol-logo rounded-full"
+              className="protocol-logo rounded-full h-[20px] w-[20px]"
               src={detail.spender_protocol_logo_url || IconUnknownProtocol}
               onError={handleProtocolLogoLoadFailed}
             />
             <div className="protocol-info">
               <div
-                className={clsx('protocol-info__name flex', {
-                  'text-gray-content': !detail.spender_protocol_name,
+                className={clsx('protocol-info__name flex font-medium', {
+                  'text-gray-title': !detail.spender_protocol_name,
                 })}
               >
                 {ellipsisOverflowedText(
@@ -155,7 +155,11 @@ export const ApproveToken: React.FC<Props> = ({
                   10
                 )}
                 <span className="protocol-info__spender">
-                  <AddressViewer address={detail.spender} showArrow={false} />
+                  <AddressViewer
+                    className="font-normal"
+                    address={detail.spender}
+                    showArrow={false}
+                  />
                   {chainEnum && (
                     <img
                       src={IconExternal}

@@ -1,36 +1,32 @@
-import React, { ReactNode, useEffect, useState, useMemo } from 'react';
-import { Button, Skeleton, Tooltip } from 'antd';
-import { useTranslation } from 'react-i18next';
-import TransportWebHID from '@ledgerhq/hw-transport-webhid';
-import { WaitingSignComponent } from './SignText';
-import { KEYRING_CLASS, KEYRING_TYPE } from 'consts';
-import { openInternalPageInTab, useApproval, useWallet } from 'ui/utils';
-import {
-  SecurityCheckResponse,
-  SecurityCheckDecision,
-} from 'background/service/openapi';
-import AccountCard from './AccountCard';
-import LedgerWebHIDAlert from './LedgerWebHIDAlert';
-import IconQuestionMark from 'ui/assets/question-mark-gray.svg';
-import IconWatch from 'ui/assets/walletlogo/watch-purple.svg';
-import IconGnosis from 'ui/assets/walletlogo/gnosis.svg';
-import clsx from 'clsx';
+import { underline2Camelcase } from '@/background/utils';
+import { useLedgerDeviceConnected } from '@/utils/ledger';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import { getKRCategoryByType } from '@/utils/transaction';
-import { underline2Camelcase } from '@/background/utils';
-import SecurityCheckCard from './SecurityCheckCard';
+import { CHAINS_LIST } from '@debank/common';
+import TransportWebHID from '@ledgerhq/hw-transport-webhid';
+import { Button, Skeleton, Tooltip } from 'antd';
+import {
+  SecurityCheckDecision,
+  SecurityCheckResponse,
+} from 'background/service/openapi';
+import clsx from 'clsx';
+import { KEYRING_CLASS, KEYRING_TYPE } from 'consts';
+import React, { ReactNode, useEffect, useMemo, useState } from 'react';
+import { useTranslation } from 'react-i18next';
+import { useAsync } from 'react-use';
+import IconArrowRight from 'ui/assets/arrow-right-gray.svg';
+import IconQuestionMark from 'ui/assets/question-mark-gray.svg';
+import IconGnosis from 'ui/assets/walletlogo/gnosis.svg';
+import IconWatch from 'ui/assets/walletlogo/watch-purple.svg';
+import { openInternalPageInTab, useApproval, useWallet } from 'ui/utils';
+import AccountCard from './AccountCard';
+import LedgerWebHIDAlert from './LedgerWebHIDAlert';
 import ProcessTooltip from './ProcessTooltip';
 import SecurityCheck from './SecurityCheck';
-import { useLedgerDeviceConnected } from '@/utils/ledger';
-import { useAsync } from 'react-use';
-import {
-  NFTSignTypedSignHeader,
-  NFTSignTypedSignSection,
-} from './NftSignTypedData';
-import { CHAINS_LIST } from '@debank/common';
-import IconArrowRight from 'ui/assets/arrow-right-gray.svg';
+import SecurityCheckCard from './SecurityCheckCard';
+import { WaitingSignComponent } from './SignText';
+import { SignTypedDataExplain } from './SignTypedDataExplain';
 import ViewRawModal from './TxComponents/ViewRawModal';
-import { PermitSignTypedSignSection } from './PermitSignTypedData';
 interface SignTypedDataProps {
   method: string;
   data: any[];
@@ -383,69 +379,52 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
             }}
           />
         )}
-        <div
-          className={clsx(
-            'text-detail-wrapper',
-            isNFTListing && 'flex-col pb-0',
-            loading && 'hidden',
-            !isSignTypedDataV1 && 'pb-0'
-          )}
-        >
-          {isNFTListing && (
-            <NFTSignTypedSignHeader
-              detail={{
-                contract_protocol_logo_url:
-                  explainTypedDataRes?.type_list_nft
-                    ?.contract_protocol_logo_url || '',
-                contract_protocol_name:
-                  explainTypedDataRes?.type_list_nft?.contract_protocol_name ||
-                  '',
-                contract: explainTypedDataRes?.type_list_nft?.contract || '',
-              }}
-            />
-          )}
-          <div
-            className={clsx(
-              'text-detail text-15 leading-[16px] font-bold text-[rgb(82,89,102)]',
-              (isNFTListing || isPermit) && 'max-h-[168px]',
-              !isNFTListing && !isPermit && !isSignTypedDataV1 && 'h-[360px]'
-            )}
-            style={{
-              fontFamily: 'Roboto Mono',
-            }}
-          >
-            {parsedMessage}
-          </div>
-          {explain && (
-            <p className="text-explain">
-              {explain}
-              <Tooltip
-                placement="topRight"
-                overlayClassName="text-explain-tooltip"
-                title={t(
-                  'This summary information is provide by DeBank OpenAPI'
+        <SignTypedDataExplain
+          data={explainTypedDataRes}
+          chain={chain}
+          message={
+            <div
+              className={clsx(
+                'text-detail-wrapper',
+                loading && 'hidden',
+                !isSignTypedDataV1 && 'pb-0',
+                'h-full'
+              )}
+            >
+              <div
+                className={clsx(
+                  'text-detail text-15 leading-[16px] font-medium',
+                  'h-full'
                 )}
+                style={{
+                  fontFamily: 'Roboto Mono',
+                  color: '#13141A',
+                }}
               >
-                <img
-                  src={IconQuestionMark}
-                  className="icon icon-question-mark"
-                />
-              </Tooltip>
-            </p>
-          )}
-        </div>
-        {!loading && isNFTListing && explainTypedDataRes && (
-          <NFTSignTypedSignSection typeListNft={explainTypedDataRes} />
-        )}
+                {parsedMessage}
+              </div>
+              {explain && (
+                <p className="text-explain">
+                  {explain}
+                  <Tooltip
+                    placement="topRight"
+                    overlayClassName="text-explain-tooltip"
+                    title={t(
+                      'This summary information is provide by DeBank OpenAPI'
+                    )}
+                  >
+                    <img
+                      src={IconQuestionMark}
+                      className="icon icon-question-mark"
+                    />
+                  </Tooltip>
+                </p>
+              )}
+            </div>
+          }
+        />
 
-        {!loading && explainTypedDataRes && (
-          <PermitSignTypedSignSection
-            explain={explainTypedDataRes}
-            chainEnum={chain?.enum}
-          />
-        )}
-
-        <div className="section-title mt-[32px]">Pre-sign check</div>
+        <div className="section-title mt-[20px]">Pre-sign check</div>
         <SecurityCheckCard
           isReady={true}
           loading={securityCheckStatus === 'loading'}
