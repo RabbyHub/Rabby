@@ -74,6 +74,10 @@ class OneKeyKeyring extends EventEmitter {
     return Boolean(this.hdk && this.hdk.publicKey);
   }
 
+  cleanUp() {
+    this.hdk = new HDKey();
+  }
+
   unlock(): Promise<string> {
     if (this.isUnlocked()) {
       return Promise.resolve('already unlocked');
