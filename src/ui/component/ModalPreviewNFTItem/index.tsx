@@ -6,7 +6,7 @@ import { Modal, ModalProps } from 'antd';
 import NFTAvatar from '@/ui/views/Dashboard/components/NFT/NFTAvatar';
 
 import LessPalette from '@/ui/style/var-defs';
-import { getChain } from 'utils';
+import { getChain } from '@/utils';
 import clsx from 'clsx';
 import { splitNumberByStep } from '@/ui/utils';
 

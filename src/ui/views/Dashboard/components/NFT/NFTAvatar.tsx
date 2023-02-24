@@ -8,7 +8,7 @@ import IconImgFail from 'ui/assets/img-fail-1.svg';
 import IconNFTDefault from 'ui/assets/nft-default.svg';
 import IconUnknown from 'ui/assets/token-default.svg';
 import IconZoom from 'ui/assets/zoom.svg';
-import { getChain } from 'utils';
+import { getChain } from '@/utils';
 
 type AvatarProps = {
   content?: string;

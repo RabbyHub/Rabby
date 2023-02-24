@@ -11,7 +11,7 @@ import IconPlus from 'ui/assets/plus.svg';
 import IconTrash from 'ui/assets/trash.svg';
 import { Modal, TokenWithChain } from 'ui/component';
 import { splitNumberByStep, useWallet, openInTab } from 'ui/utils';
-import { getChain } from 'utils';
+import { getChain } from '@/utils';
 import ChainIcon from '../NFT/ChainIcon';
 import { HistoryItem } from './HistoryItem';
 import { Loading } from './Loading';

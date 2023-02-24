@@ -12,7 +12,7 @@ import {
 } from 'ui/utils';
 import { connectStore, useRabbySelector } from '@/ui/store';
 import { getKRCategoryByType } from '@/utils/transaction';
-import { getChain } from 'utils';
+import { getChain } from '@/utils';
 
 interface ApprovalCardProps {
   data: TokenApproval;

@@ -8,7 +8,7 @@ import clsx from 'clsx';
 import _ from 'lodash';
 import { groupBy, keyBy } from 'lodash';
 import React, { useEffect, useMemo, useState } from 'react';
-import { getChain } from 'utils';
+import { getChain } from '@/utils';
 import CollectionList from './CollectionList';
 import NFTList from './NFTList';
 

@@ -2,7 +2,7 @@ import { TxDisplayItem, TxHistoryItem } from '@/background/service/openapi';
 import { sinceTime } from 'ui/utils';
 import clsx from 'clsx';
 import React from 'react';
-import { getChain } from 'utils';
+import { getChain } from '@/utils';
 import { numberWithCommasIsLtOne } from 'ui/utils';
 import { TokenChange, TxId, TxInterAddressExplain } from '@/ui/component';
 

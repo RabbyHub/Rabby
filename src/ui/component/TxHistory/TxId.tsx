@@ -1,6 +1,6 @@
 import React, { useCallback, useMemo } from 'react';
 import { openInTab } from 'ui/utils/webapi';
-import { getChain } from 'utils';
+import { getChain } from '@/utils';
 
 interface TxIdProps {
   id: string;

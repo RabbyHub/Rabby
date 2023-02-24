@@ -11,7 +11,7 @@
     "esModuleInterop": true,
     "useUnknownInCatchVariables": false,
     "paths": {
-      "utils": ["./src/utils"],
+      "@/utils": ["./src/utils"],
       "@/*": ["./src/*"],
       "ui/*": ["./src/ui/*"],
       "background/*": ["./src/background/*"],
