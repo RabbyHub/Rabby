@@ -22,13 +22,6 @@ import clsx from 'clsx';
 import { ReactComponent as IconInfo } from 'ui/assets/infoicon.svg';
 import { ReactComponent as IconTipDownArrow } from 'ui/assets/swap/arrow-tips-down.svg';
 import { useAsync, useCss } from 'react-use';
-import {
-  geTokenDecimals,
-  getTokenSymbol as getTokenSymbolUtil,
-} from '@/ui/utils/token';
-import { providers } from 'ethers';
-import { SvgIconLoading } from '@/ui/assets';
-import { ReactComponent as SvgAlertInfo } from '@/ui/assets/swap/alert-info.svg';
 import stats from '@/stats';
 import { useRbiSource } from '@/ui/utils/ga-event';
 

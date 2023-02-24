@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
 import { Input, Drawer, Skeleton } from 'antd';
 import clsx from 'clsx';
 import { useTranslation } from 'react-i18next';
@@ -9,8 +9,8 @@ import { splitNumberByStep, formatTokenAmount } from 'ui/utils/number';
 import IconSearch from 'ui/assets/search.svg';
 import './style.less';
 import BigNumber from 'bignumber.js';
-import Empty from '../Empty';
 import stats from '@/stats';
+import MatchImage from 'ui/assets/match.svg';
 
 export const isSwapTokenType = (s: string) =>
   ['swapFrom', 'swapTo'].includes(s);
@@ -70,9 +70,14 @@ const TokenSelector = ({
     }
   }, [visible]);
 
-  const isEmpty = !query && list.length <= 0;
+  const isEmpty = list.length <= 0;
 
   const isSwapType = isSwapTokenType(type);
+
+  const isSearchAddr = useMemo(() => {
+    const v = query?.trim() || '';
+    return v.length === 42 && v.toLowerCase().startsWith('0x');
+  }, [query]);
 
   const NoDataUI = useMemo(
     () =>
@@ -85,19 +90,34 @@ const TokenSelector = ({
             )}
         </div>
       ) : (
-        <div className="no-token">
+        <div className="no-token w-full">
           <img
-            className="no-data-image"
-            src="/images/nodata-tx.png"
+            className={
+              !query || isSearchAddr
+                ? 'w-[100px] h-[100px]'
+                : 'w-[52px] h-[52px]'
+            }
+            src={!query || isSearchAddr ? '/images/nodata-tx.png' : MatchImage}
             alt="no site"
           />
 
-          <p className="text-gray-content text-14 mt-12 text-center mb-0">
-            {t('No Tokens')}
-          </p>
+          {!query || isSearchAddr ? (
+            <p className="text-gray-content text-14 mt-12 text-center mb-0">
+              {t('No Tokens')}
+            </p>
+          ) : (
+            <>
+              <p className="text-gray-content text-14 mt-12 text-center mb-0">
+                No Match
+              </p>
+              <p className="text-gray-content text-14 mt-0 text-center">
+                Try to search contract address on Ethereum
+              </p>
+            </>
+          )}
         </div>
       ),
-    [isLoading, isSwapType, t]
+    [isLoading, isSwapType, t, isSearchAddr]
   );
 
   useEffect(() => {
@@ -108,7 +128,7 @@ const TokenSelector = ({
         keyword: query,
       });
     }
-  }, [type, query, isSwapType, displayList, chainId]);
+  }, [type, query, isSwapType, displayList, query, chainId]);
 
   return (
     <Drawer
@@ -124,7 +144,7 @@ const TokenSelector = ({
           className={clsx({ active: isInputActive })}
           size="large"
           prefix={<img src={IconSearch} />}
-          placeholder={placeholder ?? t('Search name or paste address')}
+          placeholder={placeholder ?? t('Search by Name / Address')}
           value={query}
           onChange={(e) => handleQueryChange(e.target.value)}
           autoFocus
@@ -209,20 +229,6 @@ const TokenSelector = ({
                 </div>
               </li>
             ))}
-        <Empty
-          className={clsx(
-            'pt-[80px]',
-            (!isSwapType || isLoading || isEmpty || displayList.length > 0) &&
-              'hidden'
-          )}
-        >
-          <div className="text-14 text-gray-subTitle mb-12">
-            {t('No Results')}
-          </div>
-          <p className="text-13 max-w-[283px] mx-auto text-center  text-gray-content ">
-            Only tokens listed in Rabby by default are supported for swap
-          </p>
-        </Empty>
       </ul>
     </Drawer>
   );
