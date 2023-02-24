@@ -66,7 +66,10 @@ export const SelectChainItem = forwardRef(
         >
           <div className="flex items-center">
             {showRPCStatus ? (
-              <ChainIcon chain={data.enum} customRPC={customRPC[data.enum]} />
+              <ChainIcon
+                chain={data.enum}
+                customRPC={customRPC[data.enum]?.url}
+              />
             ) : (
               <img src={data.logo} alt="" className="select-chain-item-icon" />
             )}

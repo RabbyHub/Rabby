@@ -1,10 +1,11 @@
 import { CHAINS_ENUM } from '@debank/common';
+import { RPCItem } from '@/background/service/rpc';
 import { createModel } from '@rematch/core';
 
 import { RootModel } from '.';
 
 type IState = {
-  customRPC: Record<CHAINS_ENUM, string>;
+  customRPC: Record<CHAINS_ENUM, RPCItem>;
 };
 
 export const customRPC = createModel<RootModel>()({
@@ -38,6 +39,14 @@ export const customRPC = createModel<RootModel>()({
       store?
     ) {
       await store.app.wallet.setCustomRPC(payload.chain, payload.url);
+      dispatch.customRPC.getAllRPC();
+    },
+
+    async setRPCEnable(
+      payload: { chain: CHAINS_ENUM; enable: boolean },
+      store
+    ) {
+      await store.app.wallet.setRPCEnable(payload.chain, payload.enable);
       dispatch.customRPC.getAllRPC();
     },
 

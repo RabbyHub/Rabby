@@ -7,6 +7,7 @@ import { useWallet } from 'ui/utils';
 import { CHAINS_ENUM, CHAINS } from 'consts';
 import { Popup, PageHeader } from 'ui/component';
 import { isValidateUrl } from 'ui/utils/url';
+import { RPCItem } from '@/background/service/rpc';
 
 const ErrorMsg = styled.div`
   color: #ec5151;
@@ -54,7 +55,7 @@ const EditRPCModal = ({
   onConfirm,
 }: {
   chain: CHAINS_ENUM;
-  rpcInfo: { id: CHAINS_ENUM; rpc: string } | null;
+  rpcInfo: { id: CHAINS_ENUM; rpc: RPCItem } | null;
   visible: boolean;
   onCancel(): void;
   onConfirm(url: string): void;
@@ -102,7 +103,7 @@ const EditRPCModal = ({
 
   useEffect(() => {
     if (rpcInfo) {
-      setRpcUrl(rpcInfo.rpc);
+      setRpcUrl(rpcInfo.rpc.url);
     } else {
       setRpcUrl('');
     }

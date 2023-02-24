@@ -9,6 +9,7 @@ const KEYS = [
   'preference',
   'transactions',
   'txHistory',
+  'rpc',
 ];
 
 const sortedMigrations = Object.values(migrations).sort((a, b) => {
