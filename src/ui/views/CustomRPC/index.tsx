@@ -270,8 +270,8 @@ const CustomRPC = () => {
     <div className="custom-rpc">
       <PageHeader className="pt-[24px] mx-[20px] mb-16">Custom RPC</PageHeader>
       <p className="text-gray-subTitle text-14 mb-20 px-20">
-        Once added, the custom RPC will replace Rabby's node. To continue using
-        Rabby's node, delete the custom RPC.
+        Enabling custom RPC will replace Rabby as the default node. To continue
+        using Rabby, please disable or remove the custom RPC node.
       </p>
       {rpcList.length <= 0 ? (
         NoAddressUI

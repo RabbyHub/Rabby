@@ -51,7 +51,7 @@ const ChainSelector = ({
 
   const getCustomRPC = async () => {
     const rpc = await wallet.getCustomRpcByChain(value);
-    setCustomRPC(rpc?.url);
+    setCustomRPC(rpc?.enable ? rpc.url : '');
   };
 
   useEffect(() => {
