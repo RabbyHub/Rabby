@@ -113,7 +113,7 @@ const TokenSelector = ({
               </p>
               <p className="text-gray-content text-14 mt-0 text-center">
                 Try to search contract address on{' '}
-                {CHAINS_LIST.find((e) => e.serverId === chainId)?.enum ||
+                {CHAINS_LIST.find((e) => e.serverId === chainId)?.name ||
                   'chain'}
               </p>
             </>
