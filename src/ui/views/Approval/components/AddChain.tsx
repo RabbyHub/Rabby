@@ -121,7 +121,7 @@ const AddChain = ({ params }: { params: AddChainProps }) => {
   const init = async () => {
     const site = await wallet.getConnectedSite(session.origin)!;
     setDefaultChain(site?.chain || null);
-    if (rpcUrls.length > 0) {
+    if (rpcUrls?.length > 0) {
       setRpcUrl(rpcUrls[0]);
     }
     setInited(true);
