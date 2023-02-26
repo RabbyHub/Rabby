@@ -124,7 +124,7 @@ export function NFTList({
               <NameAndAddress
                 openExternal
                 className="ml-auto"
-                address={item.nft.contract_id}
+                address={item.nft?.contract_id}
                 nameClass="max-90"
                 noNameClass="no-name"
                 chainEnum={getChain(item.nft?.chain)?.enum}
