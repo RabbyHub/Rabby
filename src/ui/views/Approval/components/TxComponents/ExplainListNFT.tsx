@@ -121,14 +121,18 @@ export function NFTList({
           <div className="type-list-nft-card-form-item">
             <div className="type-list-nft-card-label">Contract</div>
             <div className="type-list-nft-card-value">
-              <NameAndAddress
-                openExternal
-                className="ml-auto"
-                address={item.nft?.contract_id}
-                nameClass="max-90"
-                noNameClass="no-name"
-                chainEnum={getChain(item.nft?.chain)?.enum}
-              />
+              {item.nft ? (
+                <NameAndAddress
+                  openExternal
+                  className="ml-auto"
+                  address={item.nft?.contract_id}
+                  nameClass="max-90"
+                  noNameClass="no-name"
+                  chainEnum={getChain(item.nft?.chain)?.enum}
+                />
+              ) : (
+                '-'
+              )}
             </div>
           </div>
         </div>
