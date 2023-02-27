@@ -29,10 +29,11 @@ export function getTimeSpan(times: number) {
   if (isNaN(+times)) {
     times = 0;
   }
-  const d = parseInt(times / 60 / 60 / 24 + '');
-  const h = parseInt(((times / 60 / 60) % 24) + '');
-  const m = parseInt(((times / 60) % 60) + '');
-  const s = parseInt((times % 60) + '');
+  const int = Math.floor(times);
+  const d = parseInt(int / 60 / 60 / 24 + '');
+  const h = parseInt(((int / 60 / 60) % 24) + '');
+  const m = parseInt(((int / 60) % 60) + '');
+  const s = parseInt((int % 60) + '');
   return {
     d,
     h,
