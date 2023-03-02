@@ -1,5 +1,5 @@
 import clsx from 'clsx';
-import React, { useRef, useMemo } from 'react';
+import React, { useRef, useMemo, useState } from 'react';
 import { Input } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { GAS_LEVEL_TEXT } from 'consts';
@@ -29,6 +29,9 @@ export const GasSelector = ({
 }: GasSelectorProps) => {
   const { t } = useTranslation();
   const customerInputRef = useRef<Input>(null);
+  const [customGas, setCustomGas] = useState(
+    selectGas?.level === 'custom' ? selectGas.price / 1e9 : ''
+  );
 
   const [open, setOpen] = useToggle(false);
 
@@ -48,7 +51,6 @@ export const GasSelector = ({
     if (gas.level === 'custom') {
       return onChange({
         ...gas,
-        price: selectGas!.price,
         level: 'custom',
       });
     }
@@ -98,7 +100,6 @@ export const GasSelector = ({
       >
         {gasList.map((item) => (
           <GasItem
-            //   'cursor-pointer w-[78px] h-[52px] flex-col pt-10 pb-9 justify-between'
             active={selectGas?.level === item.level}
             onClick={(e) => panelSelection(e, item)}
           >
@@ -107,15 +108,9 @@ export const GasSelector = ({
               {item.level === 'custom' ? (
                 <Input
                   className="cursor-pointer"
-                  value={
-                    selectGas?.level === 'custom'
-                      ? (selectGas?.price || 0) / 1e9
-                      : 0
-                  }
-                  //   defaultValue={(selectGas?.price || 0) / 1e9}
+                  defaultValue={customGas}
                   onChange={handleCustomGasChange}
                   onClick={(e) => panelSelection(e, item)}
-                  //   onPressEnter={customGasConfirm}
                   ref={customerInputRef}
                   autoFocus={selectGas?.level === item.level}
                   min={0}

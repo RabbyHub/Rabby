@@ -45,7 +45,7 @@ const GasSelector = ({
 }: GasSelectorProps) => {
   const { t } = useTranslation();
   const customerInputRef = useRef<Input>(null);
-  const [customGas, setCustomGas] = useState<string | number>(0);
+  const [customGas, setCustomGas] = useState<string | number>('');
   const chain = Object.values(CHAINS).find((item) => item.id === chainId)!;
   const [selectedGas, setSelectedGas] = useState(gas);
 
@@ -74,16 +74,10 @@ const GasSelector = ({
 
   const panelSelection = (e, gas: GasLevel) => {
     e.stopPropagation();
-    let target = gas;
+    const target = gas;
 
     if (gas.level === selectedGas?.level) return;
-
     if (gas.level === 'custom') {
-      if (selectedGas && selectedGas.level !== 'custom' && !gas.price) {
-        target =
-          gasList.find((item) => item.level === selectedGas.level) || gas;
-      }
-      setCustomGas(Number(target.price) / 1e9);
       setSelectedGas({
         ...target,
         level: 'custom',
