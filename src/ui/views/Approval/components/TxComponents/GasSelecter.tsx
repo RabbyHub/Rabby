@@ -192,9 +192,7 @@ const GasSelector = ({
     Number(gasLimit)
   );
   const [modalVisible, setModalVisible] = useState(false);
-  const [customGas, setCustomGas] = useState<string | number>(
-    Number(tx.gasPrice || tx.maxFeePerGas || 0) / 1e9
-  );
+  const [customGas, setCustomGas] = useState<string | number>('');
   const [selectedGas, setSelectedGas] = useState<GasLevel | null>(
     rawSelectedGas
   );
@@ -344,16 +342,11 @@ const GasSelector = ({
 
   const panelSelection = (e, gas: GasLevel) => {
     e.stopPropagation();
-    let target = gas;
+    const target = gas;
 
     if (gas.level === selectedGas?.level) return;
 
     if (gas.level === 'custom') {
-      if (selectedGas && selectedGas.level !== 'custom' && !gas.price) {
-        target =
-          gasList.find((item) => item.level === selectedGas.level) || gas;
-      }
-      setCustomGas(Number(target.price) / 1e9);
       setSelectedGas({
         ...target,
         level: 'custom',
@@ -374,14 +367,9 @@ const GasSelector = ({
 
   const externalPanelSelection = (e, gas: GasLevel) => {
     e.stopPropagation();
-    let target = gas;
+    const target = gas;
 
     if (gas.level === 'custom') {
-      if (rawSelectedGas && rawSelectedGas.level !== 'custom' && !gas.price) {
-        target =
-          gasList.find((item) => item.level === rawSelectedGas.level) || gas;
-      }
-
       onChange({
         ...target,
         level: 'custom',
