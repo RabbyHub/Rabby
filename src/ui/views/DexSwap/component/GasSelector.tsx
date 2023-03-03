@@ -30,7 +30,7 @@ export const GasSelector = ({
   const { t } = useTranslation();
   const customerInputRef = useRef<Input>(null);
   const [customGas, setCustomGas] = useState(
-    selectGas?.level === 'custom' ? selectGas.price / 1e9 : ''
+    selectGas?.level === 'custom' ? selectGas.price / 1e9 : '0'
   );
 
   const [open, setOpen] = useToggle(false);

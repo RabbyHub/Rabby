@@ -192,7 +192,7 @@ const GasSelector = ({
     Number(gasLimit)
   );
   const [modalVisible, setModalVisible] = useState(false);
-  const [customGas, setCustomGas] = useState<string | number>('');
+  const [customGas, setCustomGas] = useState<string | number>('0');
   const [selectedGas, setSelectedGas] = useState<GasLevel | null>(
     rawSelectedGas
   );
@@ -908,6 +908,7 @@ const GasSelectPanel = ({
                   min={0}
                   bordered={false}
                   disabled={disabled}
+                  placeholder="0"
                 />
               ) : (
                 item.price / 1e9

@@ -45,7 +45,7 @@ const GasSelector = ({
 }: GasSelectorProps) => {
   const { t } = useTranslation();
   const customerInputRef = useRef<Input>(null);
-  const [customGas, setCustomGas] = useState<string | number>('');
+  const [customGas, setCustomGas] = useState<string | number>('0');
   const chain = Object.values(CHAINS).find((item) => item.id === chainId)!;
   const [selectedGas, setSelectedGas] = useState(gas);
 
