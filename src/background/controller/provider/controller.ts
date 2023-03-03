@@ -636,6 +636,13 @@ class ProviderController extends BaseController {
     return `Rabby/${process.env.release}`;
   };
 
+  @Reflect.metadata('APPROVAL', ['ETHSign', () => null, { height: 390 }])
+  ethSign = () => {
+    throw new Error(
+      "Signing with 'eth_sign' can lead to asset loss. For your safety, Rabby does not support this method."
+    );
+  };
+
   @Reflect.metadata('APPROVAL', [
     'SignText',
     ({
