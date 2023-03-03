@@ -10,3 +10,4 @@ export { default as LedgerHardwareWaiting } from './LedgerHardwareWaiting';
 export { default as AddAsset } from './AddAsset';
 export { default as GetPublicKey } from './GetPublicKey';
 export { default as Decrypt } from './Decrypt';
+export { default as ETHSign } from './ETHSign';
