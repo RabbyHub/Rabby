@@ -357,19 +357,6 @@ const Settings = ({ visible, onClose }: SettingsProps) => {
       },
     },
     {
-      leftIcon: IconContacts,
-      content: t('Old Contact List'),
-      onClick: () => {
-        setContactsVisible(true);
-        matomoRequestEvent({
-          category: 'Setting',
-          action: 'clickToUse',
-          label: 'Old Contact List',
-        });
-        reportSettings('Old Contact List');
-      },
-    },
-    {
       leftIcon: IconCustomRPC,
       content: t('Custom RPC'),
       onClick: () => {
