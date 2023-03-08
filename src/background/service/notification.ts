@@ -218,6 +218,8 @@ class NotificationService extends Events {
         signingTxId = transactionHistoryService.addSigningTx(
           data.params.data[0]
         );
+      } else {
+        signingTxId = data?.params?.signingTxId;
       }
 
       const approval: Approval = {
