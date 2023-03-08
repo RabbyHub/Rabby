@@ -1,6 +1,5 @@
 import { customAlphabet, nanoid } from 'nanoid';
 import { browser } from 'webextension-polyfill-ts';
-import ReactGA from 'react-ga';
 
 const ANALYTICS_PATH = 'https://matomo.debank.com/matomo.php';
 const genExtensionId = customAlphabet('1234567890abcdef', 16);
@@ -49,8 +48,6 @@ export const matomoRequestEvent = async (data: {
   value?: number;
   transport?: any;
 }) => {
-  ReactGA.event(data);
-
   const params = await getParams();
 
   if (data.category) {
