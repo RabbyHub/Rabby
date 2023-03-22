@@ -154,7 +154,12 @@ const AddressItem = memo(
             />
           </div>
         )}
-        <div className="rabby-address-item-left">
+        <div
+          className={clsx(
+            'rabby-address-item-left',
+            isCurrentAccount && 'w-[calc(100%-34px)] pr-0'
+          )}
+        >
           <Tooltip
             overlayClassName="rectangle addressType__tooltip"
             placement="topRight"
@@ -246,7 +251,10 @@ const AddressItem = memo(
           )}
         </div>
         <div
-          className="rabby-address-item-arrow absolute h-full top-0 right-0 bottom-0 w-[44px]  items-center justify-center"
+          className={clsx(
+            'rabby-address-item-arrow absolute h-full top-0 right-0 bottom-0 items-center justify-center',
+            isCurrentAccount ? 'w-[20px] mr-12' : 'w-[44px]'
+          )}
           onClick={
             enableSwitch
               ? (e) => {
