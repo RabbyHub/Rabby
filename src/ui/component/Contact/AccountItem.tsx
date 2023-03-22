@@ -82,7 +82,6 @@ const AccountItem = ({
 
   const addressElement = useRef(null);
   const handleClickCopy = (e: React.MouseEvent<HTMLImageElement>) => {
-    if (disabled) return;
     e.stopPropagation();
     const clipboard = new ClipboardJS(addressElement.current!, {
       text: function () {
