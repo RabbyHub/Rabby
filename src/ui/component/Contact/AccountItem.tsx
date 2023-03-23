@@ -1,17 +1,16 @@
 import React, { useMemo, useRef } from 'react';
 import styled from 'styled-components';
-import ClipboardJS from 'clipboard';
 import clsx from 'clsx';
 import { message, Tooltip } from 'antd';
 import { ellipsis } from 'ui/utils/address';
 import { IDisplayedAccountWithBalance } from 'ui/models/accountToDisplay';
 import { splitNumberByStep } from 'ui/utils/number';
 import { WALLET_BRAND_CONTENT, KEYRING_ICONS } from 'consts';
-import IconSuccess from 'ui/assets/success.svg';
 import IconCopy from 'ui/assets/component/icon-copy.svg';
 import IconWhitelist from 'ui/assets/address/whitelist.svg';
 import { useRabbySelector } from '@/ui/store';
 import { isSameAddress } from '@/ui/utils';
+import { copyAddress } from '@/ui/utils/clipboard';
 
 const AccountItemWrapper = styled.div`
   padding: 10px 16px;
@@ -83,27 +82,7 @@ const AccountItem = ({
   const addressElement = useRef(null);
   const handleClickCopy = (e: React.MouseEvent<HTMLImageElement>) => {
     e.stopPropagation();
-    const clipboard = new ClipboardJS(addressElement.current!, {
-      text: function () {
-        return account.address;
-      },
-    });
-    clipboard.on('success', () => {
-      message.success({
-        duration: 3,
-        icon: <i />,
-        content: (
-          <div>
-            <div className="flex gap-4 mb-4">
-              <img src={IconSuccess} alt="" />
-              Copied
-            </div>
-            <div className="text-white">{account.address}</div>
-          </div>
-        ),
-      });
-      clipboard.destroy();
-    });
+    copyAddress(account.address);
   };
   const handleClickItem = () => {
     if (disabled) {
