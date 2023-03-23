@@ -52,11 +52,19 @@ const AccountItemWrapper = styled.div`
     margin-bottom: 0;
   }
   &.disabled {
-    opacity: 0.5;
     cursor: not-allowed;
+    background-color: rgba(245, 246, 250, 0.5);
     &:hover {
       background-color: f5f6fa;
       border-color: transparent;
+    }
+    & > *,
+    .account-info .name,
+    .account-info .addr {
+      opacity: 0.5;
+    }
+    & > .account-info {
+      opacity: 1;
     }
   }
 `;
@@ -120,7 +128,7 @@ const AccountItem = ({
           </div>
         </p>
         <p className="address" title={account.address} ref={addressElement}>
-          {ellipsis(account.address)}
+          <div className="addr">{ellipsis(account.address)}</div>
           <div className="cursor-pointer" onClick={handleClickCopy}>
             <img className="icon icon-copy" src={IconCopy} />
           </div>
