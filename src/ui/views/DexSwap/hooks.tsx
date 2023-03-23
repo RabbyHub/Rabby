@@ -13,7 +13,7 @@ import {
   QuoteResult,
 } from '@rabby-wallet/rabby-swap/dist/quote';
 import BigNumber from 'bignumber.js';
-import { useMemo } from 'react';
+import { useCallback, useMemo } from 'react';
 import { useAsync } from 'react-use';
 
 export type ValidateTokenParam = {
@@ -184,14 +184,14 @@ export const useGasAmount = <T extends ValidateTokenParam>(
     dexId,
     gasMarket,
     gasLevel,
-    tokenApproved,
-    shouldTwoStepApprove,
     userAddress,
     refreshId,
   } = p;
+
   const {
     value: totalGasUsed,
     loading: totalGasUsedLoading,
+    error,
   } = useAsync(async () => {
     if (chain && payAmount && data && payToken && dexId && gasMarket) {
       const nonce = await wallet.getRecommendNonce({
@@ -236,6 +236,10 @@ export const useGasAmount = <T extends ValidateTokenParam>(
           pending_tx_list: pendingTx,
         });
 
+        if (!tokenApprovePreExecTx?.pre_exec?.success) {
+          throw new Error('pre exec error');
+        }
+
         gasUsed += tokenApprovePreExecTx.gas.gas_used;
         pendingTx.push({
           ...tokenApproveTx,
@@ -245,6 +249,37 @@ export const useGasAmount = <T extends ValidateTokenParam>(
         });
         nextNonce = `0x${new BigNumber(nextNonce).plus(1).toString(16)}`;
       };
+
+      const getTokenApproveStatus = async () => {
+        if (!payToken || !dexId || !payAmount) return [true, false];
+        if (payToken?.id === CHAINS[chain].nativeTokenAddress) {
+          return [true, false];
+        }
+        const allowance = await wallet.getERC20Allowance(
+          CHAINS[chain].serverId,
+          payToken!.id,
+          DEX_SPENDER_WHITELIST[dexId][chain]
+        );
+
+        const tokenApproved = new BigNumber(allowance).gte(
+          new BigNumber(payAmount).times(10 ** payToken.decimals)
+        );
+
+        if (
+          chain === CHAINS_ENUM.ETH &&
+          isSameAddress(payToken.id, ETH_USDT_CONTRACT) &&
+          Number(allowance) !== 0 &&
+          !tokenApproved
+        ) {
+          return [tokenApproved, true];
+        }
+        return [tokenApproved, false];
+      };
+
+      const [
+        tokenApproved,
+        shouldTwoStepApprove,
+      ] = await getTokenApproveStatus();
 
       if (shouldTwoStepApprove) {
         await approveToken('0');
@@ -271,23 +306,18 @@ export const useGasAmount = <T extends ValidateTokenParam>(
         pending_tx_list: pendingTx,
       });
 
+      if (!swapPreExecTx?.pre_exec?.success) {
+        throw new Error('pre exec error');
+      }
+
       return gasUsed + swapPreExecTx.gas.gas_used;
     }
     return;
-  }, [
-    chain,
-    data,
-    refreshId,
-    tokenApproved,
-    dexId,
-    gasLevel,
-    gasMarket,
-    shouldTwoStepApprove,
-    payAmount,
-  ]);
+  }, [chain, data, refreshId, dexId, gasLevel, gasMarket, payAmount]);
 
   return {
     totalGasUsed,
     totalGasUsedLoading,
+    preExecTxError: error,
   };
 };
