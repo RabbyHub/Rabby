@@ -55,7 +55,7 @@ const AccountItemWrapper = styled.div`
     cursor: not-allowed;
     background-color: rgba(245, 246, 250, 0.5);
     &:hover {
-      background-color: f5f6fa;
+      background-color: #f5f6fa;
       border-color: transparent;
     }
     & > *,
