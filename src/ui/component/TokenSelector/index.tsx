@@ -168,11 +168,12 @@ const TokenSelector = ({
           : displayList.map((token) => (
               <li
                 className={clsx(
-                  'token-list__item',
+                  'token-list__item h-[52px]',
                   isSwapType && 'justify-between'
                 )}
                 key={`${token.chain}-${token.id}`}
                 onClick={() => onConfirm(token)}
+                title={token.symbol}
               >
                 <div>
                   <TokenWithChain
@@ -199,9 +200,9 @@ const TokenSelector = ({
                   ${splitNumberByStep((token.price || 0).toFixed(2))}
                 </div>
 
-                <div className="flex flex-col text-right">
+                <div className="flex flex-col text-right items-end">
                   <div
-                    className="font-medium text-13 text-gray-title truncate ml-[8px]"
+                    className="max-w-full font-medium text-13 text-gray-title truncate ml-[8px]"
                     title={formatTokenAmount(token.amount)}
                   >
                     {isSwapType
@@ -217,7 +218,7 @@ const TokenSelector = ({
                         .toFixed(2)
                     )}
                     className={clsx(
-                      'text-12 text-gray-content',
+                      'max-w-full text-12 text-gray-content',
                       !isSwapType && 'hidden',
                       'truncate'
                     )}

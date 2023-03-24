@@ -89,13 +89,13 @@ const tips = {
     label: 'Fail to verify the receiving token',
     level: 'danger',
   },
+  preExecTxFail: {
+    label: 'The previous exchange rate has expired',
+    level: 'danger',
+  },
   priceDifference: {
     label:
       'The price difference is higher than 5%, which may cause a great loss',
-    level: 'warning',
-  },
-  gasCostFail: {
-    label: 'Fail to estimate gas cost',
     level: 'warning',
   },
   priceFail: {
@@ -337,7 +337,7 @@ export const SwapByDex = () => {
     payAmount,
   });
 
-  const { totalGasUsed, totalGasUsedLoading } = useGasAmount({
+  const { totalGasUsed, totalGasUsedLoading, preExecTxError } = useGasAmount({
     chain,
     data: quoteInfo,
     payToken,
@@ -467,6 +467,9 @@ export const SwapByDex = () => {
     setReceiveToken(payToken);
   };
 
+  const preExecTxSuccess =
+    !totalGasUsedLoading && !preExecTxError && !!totalGasUsed;
+
   const canSubmit =
     !!payToken &&
     !!receiveToken &&
@@ -475,7 +478,8 @@ export const SwapByDex = () => {
     !isInsufficient &&
     !loading &&
     !!quoteInfo &&
-    isSdkDataPass;
+    isSdkDataPass &&
+    preExecTxSuccess;
 
   const tipsDisplay = useMemo(() => {
     if (isInsufficient) {
@@ -487,13 +491,6 @@ export const SwapByDex = () => {
         return tips.quoteFail;
       }
 
-      if (!loading && quoteInfo && !isSdkDataPass) {
-        return tips.securityFail;
-      }
-
-      if (!loading && quoteInfo && isHighPriceDifference) {
-        return tips.priceDifference;
-      }
       if (
         chain &&
         quoteInfo &&
@@ -502,10 +499,19 @@ export const SwapByDex = () => {
         gasMarket &&
         !loading &&
         !totalGasUsedLoading &&
-        totalGasUsed === undefined
+        (preExecTxError || totalGasUsed === undefined)
       ) {
-        return tips.gasCostFail;
+        return tips.preExecTxFail;
       }
+
+      if (!loading && quoteInfo && !isSdkDataPass) {
+        return tips.securityFail;
+      }
+
+      if (!loading && quoteInfo && isHighPriceDifference) {
+        return tips.priceDifference;
+      }
+
       if (
         quoteInfo &&
         (payToken.price === undefined || receiveToken.price === undefined)

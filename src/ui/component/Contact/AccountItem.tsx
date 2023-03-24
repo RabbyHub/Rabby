@@ -1,17 +1,16 @@
 import React, { useMemo, useRef } from 'react';
 import styled from 'styled-components';
-import ClipboardJS from 'clipboard';
 import clsx from 'clsx';
 import { message, Tooltip } from 'antd';
 import { ellipsis } from 'ui/utils/address';
 import { IDisplayedAccountWithBalance } from 'ui/models/accountToDisplay';
 import { splitNumberByStep } from 'ui/utils/number';
 import { WALLET_BRAND_CONTENT, KEYRING_ICONS } from 'consts';
-import IconSuccess from 'ui/assets/success.svg';
 import IconCopy from 'ui/assets/component/icon-copy.svg';
 import IconWhitelist from 'ui/assets/address/whitelist.svg';
 import { useRabbySelector } from '@/ui/store';
 import { isSameAddress } from '@/ui/utils';
+import { copyAddress } from '@/ui/utils/clipboard';
 
 const AccountItemWrapper = styled.div`
   padding: 10px 16px;
@@ -53,11 +52,19 @@ const AccountItemWrapper = styled.div`
     margin-bottom: 0;
   }
   &.disabled {
-    opacity: 0.5;
     cursor: not-allowed;
+    background-color: rgba(245, 246, 250, 0.5);
     &:hover {
-      background-color: f5f6fa;
+      background-color: #f5f6fa;
       border-color: transparent;
+    }
+    & > *,
+    .account-info .name,
+    .account-info .addr {
+      opacity: 0.5;
+    }
+    & > .account-info {
+      opacity: 1;
     }
   }
 `;
@@ -82,29 +89,8 @@ const AccountItem = ({
 
   const addressElement = useRef(null);
   const handleClickCopy = (e: React.MouseEvent<HTMLImageElement>) => {
-    if (disabled) return;
     e.stopPropagation();
-    const clipboard = new ClipboardJS(addressElement.current!, {
-      text: function () {
-        return account.address;
-      },
-    });
-    clipboard.on('success', () => {
-      message.success({
-        duration: 3,
-        icon: <i />,
-        content: (
-          <div>
-            <div className="flex gap-4 mb-4">
-              <img src={IconSuccess} alt="" />
-              Copied
-            </div>
-            <div className="text-white">{account.address}</div>
-          </div>
-        ),
-      });
-      clipboard.destroy();
-    });
+    copyAddress(account.address);
   };
   const handleClickItem = () => {
     if (disabled) {
@@ -142,7 +128,7 @@ const AccountItem = ({
           </div>
         </p>
         <p className="address" title={account.address} ref={addressElement}>
-          {ellipsis(account.address)}
+          <div className="addr">{ellipsis(account.address)}</div>
           <div className="cursor-pointer" onClick={handleClickCopy}>
             <img className="icon icon-copy" src={IconCopy} />
           </div>

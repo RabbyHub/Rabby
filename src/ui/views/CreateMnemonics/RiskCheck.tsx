@@ -172,7 +172,7 @@ const RiskCheck = () => {
                   key={`item-${q.index}`}
                   className={clsx(
                     'bg-white flex justify-between items-center px-12 py-16 border transition-colors',
-                    'border-transparent'
+                    'border-transparent hover:border-blue-light hover:bg-blue-light hover:bg-opacity-[0.1]'
                   )}
                   leftIcon={
                     <Checkbox
