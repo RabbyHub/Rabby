@@ -171,8 +171,8 @@ const ResetAccountModal = ({
     await wallet.clearAddressPendingTransactions(currentAddress);
     message.success({
       icon: <img src={IconSuccess} className="icon icon-success" />,
-      content: t('Reset success'),
-      duration: 0.5,
+      content: t('Pending transaction cleared'),
+      duration: 1,
     });
     setIsVisible(false);
     setTimeout(() => {
