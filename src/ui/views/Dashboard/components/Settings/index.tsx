@@ -18,7 +18,7 @@ import IconArrowRight from 'ui/assets/arrow-right-gray.svg';
 import IconActivities from 'ui/assets/dashboard/activities.svg';
 import IconLock from 'ui/assets/lock.svg';
 import LogoRabby from 'ui/assets/logo-rabby-large.svg';
-import IconReset from 'ui/assets/reset-account.svg';
+import IconClear from 'ui/assets/icon-clear.svg';
 import IconSuccess from 'ui/assets/success.svg';
 import IconServer from 'ui/assets/server.svg';
 import { Field, PageHeader, Popup } from 'ui/component';
@@ -171,8 +171,8 @@ const ResetAccountModal = ({
     await wallet.clearAddressPendingTransactions(currentAddress);
     message.success({
       icon: <img src={IconSuccess} className="icon icon-success" />,
-      content: t('Reset success'),
-      duration: 0.5,
+      content: t('Pending transaction cleared'),
+      duration: 1,
     });
     setIsVisible(false);
     setTimeout(() => {
@@ -194,14 +194,19 @@ const ResetAccountModal = ({
       })}
     >
       <PageHeader forceShowBack onBack={handleCancel}>
-        {t('Reset Account')}
+        {t('Clear Pending')}
       </PageHeader>
       <div>
         <p className="reset-account-content mb-16">
-          {t('ResetAccountDescription1')}
+          {t(
+            `This will clear all your pending transactions. This can help you solve the problem that in some cases the state of the transaction in Rabby does not match the state on-chain. `
+          )}
         </p>
-        <p className="reset-account-content">{t('ResetAccountDescription2')}</p>
-        <p className="reset-account-warn">{t('ResetAccountWarn')}</p>
+        <p className="reset-account-content">
+          {t(
+            `This will not change the balances in your accounts or require you to re-enter your seed phrase. All your assets and accounts information will remain secure.`
+          )}
+        </p>
         <div className="flex justify-center mt-24 popup-footer">
           <Button
             type="primary"
@@ -370,8 +375,8 @@ const Settings = ({ visible, onClose }: SettingsProps) => {
       },
     },
     {
-      leftIcon: IconReset,
-      content: t('Reset Account'),
+      leftIcon: IconClear,
+      content: t('Clear Pending'),
       onClick: () => {
         matomoRequestEvent({
           category: 'Setting',
