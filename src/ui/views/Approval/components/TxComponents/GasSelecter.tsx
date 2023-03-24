@@ -648,7 +648,7 @@ const GasSelector = ({
             overlayClassName="rectangle"
             title={
               isGnosisAccount
-                ? 'Gas fee is not required for Gnosis safe transactions'
+                ? 'Gas fee is not required for Safe transactions'
                 : null
             }
           >
@@ -754,7 +754,7 @@ const GasSelector = ({
                   overlayClassName="rectangle"
                   title={
                     isGnosisAccount
-                      ? 'Gas fee is not required for Gnosis safe transactions'
+                      ? 'Gas fee is not required for Safe transactions'
                       : null
                   }
                 >
@@ -871,9 +871,7 @@ const GasSelectPanel = ({
   return (
     <Tooltip
       overlayClassName="rectangle"
-      title={
-        disabled ? 'Gas fee is not required for Gnosis safe transactions' : null
-      }
+      title={disabled ? 'Gas fee is not required for Safe transactions' : null}
     >
       <CardBody $disabled={disabled}>
         {gasList.map((item, idx) => (

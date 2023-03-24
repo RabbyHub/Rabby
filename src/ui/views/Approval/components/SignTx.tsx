@@ -37,7 +37,7 @@ import { addHexPrefix, isHexPrefixed, isHexString } from 'ethereumjs-util';
 import React, { ReactNode, useEffect, useMemo, useState } from 'react';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import { useTranslation } from 'react-i18next';
-import IconGnosis from 'ui/assets/walletlogo/gnosis.svg';
+import IconGnosis from 'ui/assets/walletlogo/safe.svg';
 import IconWatch from 'ui/assets/walletlogo/watch-purple.svg';
 import { useApproval, useWallet, isStringOrNumber } from 'ui/utils';
 import AccountCard from './AccountCard';

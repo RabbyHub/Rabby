@@ -3,7 +3,7 @@ import { ExplainTxResponse, Tx } from 'background/service/openapi';
 import { CHAINS, CHAINS_ENUM } from 'consts';
 import { NameAndAddress } from 'ui/component/index';
 import { TxTypeComponent } from '../SignTx';
-import IconGnosis from 'ui/assets/walletlogo/gnosis.svg';
+import IconGnosis from 'ui/assets/walletlogo/safe.svg';
 
 interface GnosisExplainProps {
   data: ExplainTxResponse;
