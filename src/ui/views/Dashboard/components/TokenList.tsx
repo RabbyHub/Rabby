@@ -121,7 +121,7 @@ const calcFilterPrice = (tokens) => {
     (t, item) => (item.amount * item.price || 0) + t,
     0
   );
-  return Math.min(total / 100, 1000);
+  return Math.min(total * 0.001, 1000);
 };
 const calcIsShowExpand = (tokens) => {
   const filterPrice = calcFilterPrice(tokens);

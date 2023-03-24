@@ -92,7 +92,7 @@ const Row = connectStore()(_Row);
 
 const calcFilterPrice = (assets) => {
   const total = assets.reduce((t, item) => (item.net_usd_value || 0) + t, 0);
-  return Math.min(total / 100, 1000);
+  return Math.min(total * 0.001, 1000);
 };
 const calcIsShowExpand = (assets) => {
   const filterPrice = calcFilterPrice(assets);
