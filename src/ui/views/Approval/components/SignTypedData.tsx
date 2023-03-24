@@ -16,7 +16,7 @@ import { useTranslation } from 'react-i18next';
 import { useAsync } from 'react-use';
 import IconArrowRight from 'ui/assets/arrow-right-gray.svg';
 import IconQuestionMark from 'ui/assets/question-mark-gray.svg';
-import IconGnosis from 'ui/assets/walletlogo/gnosis.svg';
+import IconGnosis from 'ui/assets/walletlogo/safe.svg';
 import IconWatch from 'ui/assets/walletlogo/watch-purple.svg';
 import { openInternalPageInTab, useApproval, useWallet } from 'ui/utils';
 import AccountCard from './AccountCard';
@@ -219,9 +219,7 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
       setCantProcessReason(
         <div className="flex items-center gap-6">
           <img src={IconGnosis} alt="" className="w-[24px] flex-shrink-0" />
-          {t(
-            'This is a Gnosis Safe address, and it cannot be used to sign text.'
-          )}
+          {t('This is a Safe address, and it cannot be used to sign text.')}
         </div>
       );
     }

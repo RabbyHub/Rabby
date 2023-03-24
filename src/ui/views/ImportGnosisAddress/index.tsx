@@ -10,7 +10,7 @@ import { isValidAddress } from 'ethereumjs-util';
 import { StrayPageWithButton } from 'ui/component';
 import { useWallet, useWalletRequest } from 'ui/utils';
 import { FieldCheckbox } from 'ui/component';
-import IconGnosis from 'ui/assets/walletlogo/gnosis.svg';
+import IconGnosis from 'ui/assets/walletlogo/safe.svg';
 import { Chain } from '@/background/service/openapi';
 import './style.less';
 import clsx from 'clsx';
@@ -149,7 +149,7 @@ const ImportGnosisAddress = () => {
               src={IconGnosis}
             />
             <p className="text-24 mb-4 mt-0 text-white text-center font-bold">
-              {t('Gnosis Safe')}
+              {t('Safe')}
             </p>
             <p className="text-14 mb-0 mt-4 text-white opacity-80 text-center">
               {t('Add address')}

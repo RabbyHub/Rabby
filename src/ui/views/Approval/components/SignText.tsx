@@ -10,7 +10,7 @@ import React, { ReactNode, useEffect, useState } from 'react';
 import { useTranslation } from 'react-i18next';
 import IconArrowRight from 'ui/assets/approval/edit-arrow-right.svg';
 import { ReactComponent as IconQuestionMark } from 'ui/assets/question-mark.svg';
-import IconGnosis from 'ui/assets/walletlogo/gnosis.svg';
+import IconGnosis from 'ui/assets/walletlogo/safe.svg';
 import IconWatch from 'ui/assets/walletlogo/watch-purple.svg';
 import { Modal } from 'ui/component';
 import {

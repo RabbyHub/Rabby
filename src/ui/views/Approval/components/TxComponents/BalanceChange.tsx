@@ -408,7 +408,7 @@ const BalanceChange = ({
       {!hasChange && !data.error && isGnosis && (
         <p className="section-title flex flex-start items-center">
           <span className="mr-[3px]">
-            {t('You are signing to submit a Gnosis Safe transaction')}
+            {t('You are signing to submit a Safe transaction')}
           </span>
         </p>
       )}
