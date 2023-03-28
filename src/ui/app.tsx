@@ -36,7 +36,6 @@ Sentry.init({
     'Request limit exceeded.',
     'Non-Error promise rejection captured with keys: code, message',
     'Failed to fetch',
-    'Transport error: {"event":"transport_error","params":["Websocket connection failed"]}',
   ],
 });
 
