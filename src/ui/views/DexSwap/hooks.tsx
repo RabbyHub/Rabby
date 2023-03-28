@@ -6,6 +6,7 @@ import {
   DEX_ENUM,
   DEX_ROUTER_WHITELIST,
   DEX_SPENDER_WHITELIST,
+  WrapTokenAddressMap,
 } from '@rabby-wallet/rabby-swap';
 import {
   decodeCalldata,
@@ -103,7 +104,7 @@ type VerifySdkParams<T extends ValidateTokenParam> = {
 export const useVerifySdk = <T extends ValidateTokenParam>(
   p: VerifySdkParams<T>
 ) => {
-  const { chain, dexId, slippage, data, payToken, payAmount } = p;
+  const { chain, dexId, slippage, data, payToken, payAmount, receiveToken } = p;
   const [routerPass, spenderPass] = useVerifyRouterAndSpender(
     chain,
     dexId,
@@ -122,8 +123,13 @@ export const useVerifySdk = <T extends ValidateTokenParam>(
   const wallet = useWallet();
 
   const { value: tokenApprovalResult = [true, false] } = useAsync(async () => {
-    if (!payToken || !dexId || !payAmount) return [true, false];
-    if (payToken?.id === CHAINS[chain].nativeTokenAddress) {
+    if (!payToken || !receiveToken || !dexId || !payAmount)
+      return [true, false];
+
+    if (
+      payToken?.id === CHAINS[chain].nativeTokenAddress ||
+      isSwapWrapToken(payToken.id, receiveToken.id, chain)
+    ) {
       return [true, false];
     }
     const allowance = await wallet.getERC20Allowance(
@@ -186,6 +192,7 @@ export const useGasAmount = <T extends ValidateTokenParam>(
     gasLevel,
     userAddress,
     refreshId,
+    receiveToken,
   } = p;
 
   const {
@@ -251,8 +258,13 @@ export const useGasAmount = <T extends ValidateTokenParam>(
       };
 
       const getTokenApproveStatus = async () => {
-        if (!payToken || !dexId || !payAmount) return [true, false];
-        if (payToken?.id === CHAINS[chain].nativeTokenAddress) {
+        if (!payToken || !receiveToken || !dexId || !payAmount)
+          return [true, false];
+
+        if (
+          payToken?.id === CHAINS[chain].nativeTokenAddress ||
+          isSwapWrapToken(payToken.id, receiveToken.id, chain)
+        ) {
           return [true, false];
         }
         const allowance = await wallet.getERC20Allowance(
@@ -321,3 +333,18 @@ export const useGasAmount = <T extends ValidateTokenParam>(
     preExecTxError: error,
   };
 };
+
+function isSwapWrapToken(
+  payTokenId: string,
+  receiveId: string,
+  chain: CHAINS_ENUM
+) {
+  const wrapTokens = [
+    WrapTokenAddressMap[chain],
+    CHAINS[chain].nativeTokenAddress,
+  ];
+  return (
+    !!wrapTokens.find((token) => isSameAddress(payTokenId, token)) &&
+    !!wrapTokens.find((token) => isSameAddress(receiveId, token))
+  );
+}
