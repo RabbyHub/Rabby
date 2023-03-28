@@ -342,7 +342,7 @@ export const SwapByDex = () => {
     data: quoteInfo,
     payToken,
     receiveToken,
-    dexId,
+    dexId: oDexId,
     gasMarket,
     gasLevel,
     tokenApproved,
