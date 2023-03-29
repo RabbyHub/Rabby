@@ -3477,10 +3477,10 @@
     ethereumjs-wallet "^1.0.2"
     randombytes "^2.1.0"
 
-"@rabby-wallet/eth-trezor-keyring@^2.0.0":
-  version "2.0.0"
-  resolved "https://registry.yarnpkg.com/@rabby-wallet/eth-trezor-keyring/-/eth-trezor-keyring-2.0.0.tgz#14c23955e6559cecaddcbd104a97d1c222c95f33"
-  integrity sha512-2AAnSEgs6/XDG2PJjmH93ktnyWKJE36CXzxVzAZ+xWBSoy+jyCs14eqbalBivUmedH9vNzN0jNBiNTkRcXANrA==
+"@rabby-wallet/eth-trezor-keyring@^2.2.0":
+  version "2.2.0"
+  resolved "https://registry.yarnpkg.com/@rabby-wallet/eth-trezor-keyring/-/eth-trezor-keyring-2.2.0.tgz#df8b1d3244f227b1a2416571d8c0520b831e149f"
+  integrity sha512-DZF70FieQ9q06CtrqRj3qs//3vmjY7KGM+hsGJyzCAz37tfENTrh9MBK9IgCaFXYgo7Ncj3JAI2VXY/rZYl1Cg==
   dependencies:
     "@ethereumjs/tx" "3"
     "@metamask/eth-sig-util" "5"
