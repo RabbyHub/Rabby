@@ -21,13 +21,14 @@ import { Trans, useTranslation } from 'react-i18next';
 import { ReactComponent as IconArrowRight } from 'ui/assets/address/bold-right-arrow.svg';
 import { ReactComponent as IconDeleteAddress } from 'ui/assets/address/delete.svg';
 
-import IconCopy from 'ui/assets/component/icon-copy.svg';
-import { AddressViewer, Copy } from 'ui/component';
+import { AddressViewer } from 'ui/component';
 import { isSameAddress, splitNumberByStep, useAlias } from 'ui/utils';
 import IconSuccess from 'ui/assets/success.svg';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import IconCheck from 'ui/assets/check.svg';
+
 import IconWhitelist from 'ui/assets/address/whitelist.svg';
+import { CopyChecked } from '@/ui/component/CopyChecked';
 
 export interface AddressItemProps {
   balance: number;
@@ -217,16 +218,17 @@ const AddressItem = memo(
                   isCurrentAccount ? 'text-white' : 'text-gray-subTitle'
                 )}
               />
-              <Copy
-                onClick={(e) => e.stopPropagation()}
-                icon={IconCopy}
-                variant="address"
-                data={address}
-                className={clsx(
-                  'w-[14px] h-[14px] ml-4',
+
+              <CopyChecked
+                addr={address}
+                className={clsx('w-[14px] h-[14px] ml-4 text-14 textgre')}
+                copyClassName={clsx(
                   isCurrentAccount && 'text-white brightness-[100]'
                 )}
-              ></Copy>
+                checkedClassName={clsx(
+                  isCurrentAccount ? 'text-white' : 'text-[#00C087]'
+                )}
+              />
               {!isCurrentAccount && (
                 <span className="ml-[12px] text-12 text-gray-subTitle">
                   ${splitNumberByStep(balance?.toFixed(2))}

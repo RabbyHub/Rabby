@@ -17,7 +17,6 @@ import IconWalletconnect from 'ui/assets/walletconnect.svg';
 import IconScan from 'ui/assets/scan.svg';
 import IconArrowDown from 'ui/assets/big-arrow-down.svg';
 import IconEnter from 'ui/assets/enter.svg';
-import IconChecked from 'ui/assets/checked.svg';
 import { useMedia } from 'react-use';
 import clsx from 'clsx';
 import { Modal } from 'ui/component';
@@ -42,6 +41,8 @@ const ImportWatchAddress = () => {
   const [tags, setTags] = useState<string[]>([]);
   const [importedAccounts, setImportedAccounts] = useState<any[]>([]);
   const isWide = useMedia('(min-width: 401px)');
+
+  const [isValidAddr, setIsValidAddr] = useState(false);
 
   const ModalComponent = isWide ? Modal : Popup;
 
@@ -77,6 +78,7 @@ const ImportWatchAddress = () => {
     form.setFieldsValue({
       address: result,
     });
+    setIsValidAddr(true);
     setTags([`ENS: ${ensResult!.name}`]);
     setEnsResult(null);
   };
@@ -174,6 +176,7 @@ const ImportWatchAddress = () => {
   const handleValuesChange = async ({ address }: { address: string }) => {
     setTags([]);
     if (!isValidAddress(address)) {
+      setIsValidAddr(false);
       try {
         const result = await wallet.openapi.getEnsAddressByName(address);
         setDisableKeydown(true);
@@ -184,6 +187,7 @@ const ImportWatchAddress = () => {
         setEnsResult(null);
       }
     } else {
+      setIsValidAddr(true);
       setEnsResult(null);
     }
   };
@@ -229,6 +233,7 @@ const ImportWatchAddress = () => {
       disableKeyDownEvent={disableKeydown}
       onBackClick={handleClickBack}
       NextButtonContent="Confirm"
+      nextDisabled={!isValidAddr}
     >
       <header className="create-new-header create-password-header h-[264px] res">
         <div className="rabby-container">
@@ -264,17 +269,14 @@ const ImportWatchAddress = () => {
               maxLength={44}
               autoFocus
               spellCheck={false}
-              suffix={
-                ensResult ? (
-                  <img src={IconChecked} className="icon icon-checked" />
-                ) : null
-              }
             />
           </Form.Item>
           {tags.length > 0 && (
             <ul className="tags">
               {tags.map((tag) => (
-                <li key={tag}>{tag}</li>
+                <li className="border-none pl-0 py-0" key={tag}>
+                  {tag}
+                </li>
               ))}
             </ul>
           )}

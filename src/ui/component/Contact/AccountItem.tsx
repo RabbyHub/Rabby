@@ -11,6 +11,7 @@ import IconWhitelist from 'ui/assets/address/whitelist.svg';
 import { useRabbySelector } from '@/ui/store';
 import { isSameAddress } from '@/ui/utils';
 import { copyAddress } from '@/ui/utils/clipboard';
+import { CopyChecked } from '../CopyChecked';
 
 const AccountItemWrapper = styled.div`
   padding: 10px 16px;
@@ -115,7 +116,9 @@ const AccountItem = ({
       <div className="account-info flex-1">
         <p className="name">
           <div className="flex items-center gap-4">
-            <span>{account.alianName}</span>
+            <span className="inline-block max-w-[180px] overflow-hidden overflow-ellipsis whitespace-nowrap">
+              {account.alianName}
+            </span>
             {onClick && whitelistEnable && isInWhiteList && (
               <Tooltip
                 overlayClassName="rectangle"
@@ -129,9 +132,8 @@ const AccountItem = ({
         </p>
         <p className="address" title={account.address} ref={addressElement}>
           <div className="addr">{ellipsis(account.address)}</div>
-          <div className="cursor-pointer" onClick={handleClickCopy}>
-            <img className="icon icon-copy" src={IconCopy} />
-          </div>
+
+          <CopyChecked addr={account.address} className="icon icon-copy" />
         </p>
       </div>
       <p className="text-13 text-gray-title mb-0">

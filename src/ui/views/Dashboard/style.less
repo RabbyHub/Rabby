@@ -240,6 +240,9 @@
       margin-right: 12px;
       border-radius: 6px;
       cursor: pointer;
+      &:hover {
+        background: rgba(255, 255, 255, 0.3);
+      }
       span {
         display: flex;
         align-items: center;
@@ -1490,4 +1493,13 @@
 }
 .no-name {
   color: @color-comment-1 !important;
+}
+
+.copyAddr {
+  width: 18px;
+  height: 18px;
+  cursor: pointer;
+  &:hover g {
+    opacity: 0.9 !important;
+  }
 }
