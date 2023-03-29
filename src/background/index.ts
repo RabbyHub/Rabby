@@ -56,6 +56,9 @@ Sentry.init({
   // We recommend adjusting this value in production
   tracesSampleRate: 1.0,
   environment: getSentryEnv(),
+  ignoreErrors: [
+    'Transport error: {"event":"transport_error","params":["Websocket connection failed"]}',
+  ],
 });
 
 function initAppMeta() {
