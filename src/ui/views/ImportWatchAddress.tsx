@@ -233,7 +233,7 @@ const ImportWatchAddress = () => {
       disableKeyDownEvent={disableKeydown}
       onBackClick={handleClickBack}
       NextButtonContent="Confirm"
-      nextDisabled={!ensResult && !isValidAddr}
+      nextDisabled={!isValidAddr}
     >
       <header className="create-new-header create-password-header h-[264px] res">
         <div className="rabby-container">

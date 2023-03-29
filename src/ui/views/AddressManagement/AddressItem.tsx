@@ -21,17 +21,14 @@ import { Trans, useTranslation } from 'react-i18next';
 import { ReactComponent as IconArrowRight } from 'ui/assets/address/bold-right-arrow.svg';
 import { ReactComponent as IconDeleteAddress } from 'ui/assets/address/delete.svg';
 
-import { ReactComponent as RcIconCopy } from 'ui/assets/component/icon-copy.svg';
-
 import { AddressViewer } from 'ui/component';
 import { isSameAddress, splitNumberByStep, useAlias } from 'ui/utils';
 import IconSuccess from 'ui/assets/success.svg';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import IconCheck from 'ui/assets/check.svg';
-import { ReactComponent as RcIconCopyCheck } from 'ui/assets/copy-checked.svg';
 
 import IconWhitelist from 'ui/assets/address/whitelist.svg';
-import { copyAddress } from '@/ui/utils/clipboard';
+import { CopyChecked } from '@/ui/component/CopyChecked';
 
 export interface AddressItemProps {
   balance: number;
@@ -222,7 +219,7 @@ const AddressItem = memo(
                 )}
               />
 
-              <CopyAfterCheck
+              <CopyChecked
                 addr={address}
                 className={clsx('w-[14px] h-[14px] ml-4 text-14 textgre')}
                 copyClassName={clsx(
@@ -283,54 +280,5 @@ const AddressItem = memo(
     );
   }
 );
-
-const CopyAfterCheck = ({
-  addr,
-  className,
-  copyClassName,
-  checkedClassName,
-}: {
-  addr: string;
-  className?: string;
-  copyClassName?: string;
-  checkedClassName?: string;
-}) => {
-  const timerRef = useRef<NodeJS.Timeout>();
-  const [copied, setCopied] = useState(false);
-  const handleCopy: React.MouseEventHandler = (e) => {
-    e.stopPropagation();
-    copyAddress(addr);
-    setCopied(true);
-    if (timerRef.current) {
-      clearTimeout(timerRef.current);
-    }
-    timerRef.current = setTimeout(() => {
-      setCopied(false);
-    }, 2000);
-  };
-
-  useEffect(() => {
-    return () => {
-      if (timerRef.current) {
-        clearTimeout(timerRef.current);
-      }
-    };
-  }, []);
-  if (copied) {
-    return (
-      <RcIconCopyCheck
-        viewBox="0 0 14 14"
-        className={clsx(className, checkedClassName)}
-      />
-    );
-  }
-  return (
-    <RcIconCopy
-      viewBox="0 0 16 16"
-      onClick={handleCopy}
-      className={clsx(className, copyClassName)}
-    />
-  );
-};
 
 export default AddressItem;
