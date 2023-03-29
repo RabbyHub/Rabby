@@ -30,10 +30,11 @@ import IconAddToken from 'ui/assets/addtoken.png';
 import IconCorrect from 'ui/assets/dashboard/contacts/correct.png';
 import IconUnCorrect from 'ui/assets/dashboard/contacts/uncorrect.png';
 import IconEditPen from 'ui/assets/editpen.svg';
-import IconCopy from 'ui/assets/icon-copy.svg';
+import { ReactComponent as RcIconCopy } from 'ui/assets/icon-copy.svg';
+
 import IconSuccess from 'ui/assets/success.svg';
 import IconTagYou from 'ui/assets/tag-you.svg';
-import { AddressViewer, Copy, Modal, NameAndAddress } from 'ui/component';
+import { AddressViewer, Modal, NameAndAddress } from 'ui/component';
 import {
   connectStore,
   useRabbyDispatch,
@@ -63,6 +64,7 @@ import eventBus from '@/eventBus';
 import { ReactComponent as IconAddAddress } from '@/ui/assets/address/add-address.svg';
 import { ReactComponent as IconArrowRight } from 'ui/assets/dashboard/arrow-right.svg';
 import Queue from './components/Queue';
+import { copyAddress } from '@/ui/utils/clipboard';
 
 const GnosisAdminItem = ({
   accounts,
@@ -631,8 +633,10 @@ const Dashboard = () => {
                 </Popover>
               </div>
 
-              <Copy
+              <RcIconCopy
+                className="copyAddr"
                 onClick={() => {
+                  copyAddress(currentAccount.address);
                   matomoRequestEvent({
                     category: 'AccountInfo',
                     action: 'headCopyAddress',
@@ -642,14 +646,10 @@ const Dashboard = () => {
                     ].join('|'),
                   });
                 }}
-                variant="address"
-                data={currentAccount.address}
-                className="w-18"
-                icon={IconCopy}
-              ></Copy>
+              />
 
               <div
-                className="ml-auto w-[36px] h-[36px] bg-white bg-opacity-[0.12] backdrop-blur-[20px] rounded-[6px] flex items-center justify-center cursor-pointer"
+                className="ml-auto w-[36px] h-[36px] bg-white bg-opacity-[0.12] hover:bg-opacity-[0.3] backdrop-blur-[20px] rounded-[6px] flex items-center justify-center cursor-pointer"
                 role="button"
                 onClick={gotoAddAddress}
               >
