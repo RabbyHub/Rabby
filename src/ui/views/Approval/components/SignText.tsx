@@ -28,6 +28,12 @@ import SecurityCheckCard from './SecurityCheckCard';
 import ProcessTooltip from './ProcessTooltip';
 import SecurityCheck from './SecurityCheck';
 import { useLedgerDeviceConnected } from '@/utils/ledger';
+import {
+  checkSIWEAddress,
+  checkSIWEDomain,
+  detectSIWE,
+  genSecurityCheckMessage,
+} from 'ui/utils/siwe';
 
 interface SignTextProps {
   data: string[];
@@ -83,6 +89,38 @@ const SignText = ({ params }: { params: SignTextProps }) => {
     setCantProcessReason,
   ] = useState<ReactNode | null>();
   const [forceProcess, setForceProcess] = useState(true);
+  const [title, setTitle] = useState('Sign Text');
+  const swie = detectSIWE(signText);
+
+  const handleSWIECheck = async () => {
+    const currentAccount = await wallet.getCurrentAccount();
+    const address = isGnosis
+      ? params.account!.address
+      : currentAccount!.address;
+    const origin = session.origin;
+
+    if (!checkSIWEAddress(address, swie.parsedMessage!)) {
+      setSecurityCheckStatus('warning');
+      setSecurityCheckDetail(
+        genSecurityCheckMessage({
+          alert:
+            'The address in the signature does not match the address you are using.',
+          status: 'warning',
+        })
+      );
+    }
+    if (!checkSIWEDomain(origin, swie.parsedMessage!)) {
+      setForceProcess(false);
+      setSecurityCheckStatus('forbidden');
+      setSecurityCheckDetail(
+        genSecurityCheckMessage({
+          alert:
+            'The domain in the signature does not match the current site, which may be a phishing site',
+          status: 'forbidden',
+        })
+      );
+    }
+  };
 
   const handleSecurityCheck = async () => {
     setSecurityCheckStatus('loading');
@@ -281,6 +319,11 @@ const SignText = ({ params }: { params: SignTextProps }) => {
 
   useEffect(() => {
     checkWachMode();
+
+    if (swie.isSIWEMessage) {
+      setTitle('Sign-In with Ethereum');
+      handleSWIECheck();
+    }
   }, []);
 
   useEffect(() => {
@@ -311,7 +354,7 @@ const SignText = ({ params }: { params: SignTextProps }) => {
       <AccountCard account={params.account} />
       <div className="approval-text">
         <p className="section-title">
-          {t('Sign Text')}
+          {title}
           <span
             className="float-right text-12 cursor-pointer flex items-center view-raw"
             style={{ lineHeight: '16px !important' }}
