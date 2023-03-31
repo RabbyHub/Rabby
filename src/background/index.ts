@@ -58,6 +58,8 @@ Sentry.init({
   environment: getSentryEnv(),
   ignoreErrors: [
     'Transport error: {"event":"transport_error","params":["Websocket connection failed"]}',
+    'Failed to fetch',
+    'TransportOpenUserCancelled',
   ],
 });
 
