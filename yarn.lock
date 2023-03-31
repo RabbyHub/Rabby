@@ -1329,15 +1329,15 @@
   resolved "https://registry.yarnpkg.com/@ctrl/tinycolor/-/tinycolor-3.4.0.tgz#c3c5ae543c897caa9c2a68630bed355be5f9990f"
   integrity sha512-JZButFdZ1+/xAfpguQHoabIXkcqRRKpMrWKBkpEZZyxfY9C1DpADFB8PEqGSTeFr135SaTRfKqGKx5xSCLI7ZQ==
 
+"@debank/common@0.2.28":
+  version "0.2.28"
+  resolved "https://registry.yarnpkg.com/@debank/common/-/common-0.2.28.tgz#5a27c77aee4bd620cc861d39129320c4247d6c2c"
+  integrity sha512-fN/bq5gDk+AQay5OS026zRWIWAYiPdP4Xf6Mk9cfUHTNSvRFLSIyNovhNT31dObCCPnyY1vJDC67PjJKAVnvgQ==
+
 "@debank/common@^0.2.20":
   version "0.2.22"
   resolved "https://registry.yarnpkg.com/@debank/common/-/common-0.2.22.tgz#4c193829cd8d626df2b3cf21f47180e32cde162a"
   integrity sha512-EBXBlfUxPoYRWIhWuaDoICgTijEdICk3v0+zNDu2WZCXILYrLuGqTjc0NxtbfONjtkQRB3yD8KQu8PGaRbju4g==
-
-"@debank/common@^0.2.26":
-  version "0.2.26"
-  resolved "https://registry.yarnpkg.com/@debank/common/-/common-0.2.26.tgz#6f05bc94f9f2403f0a7c95cd0ab105ef4efa3de7"
-  integrity sha512-3RMA2rY+XkwKJbrjxeRAHBvAfFHErXO772IONMiiRvTGqsOHjKWb7JYKvqrgI3BxeV2BkMjptGW5UskQBcpt3A==
 
 "@debank/festats@1.0.0":
   version "1.0.0"
