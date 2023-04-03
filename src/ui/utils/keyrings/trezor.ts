@@ -1,5 +1,5 @@
 import { sleep } from '@/background/utils';
-import TrezorConnect from 'trezor-connect';
+import TrezorConnect from '@trezor/connect-web';
 
 const TREZOR_CONNECT_MANIFEST = {
   email: 'support@debank.com/',

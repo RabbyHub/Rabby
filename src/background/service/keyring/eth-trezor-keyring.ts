@@ -4,7 +4,7 @@ import { EventEmitter } from 'events';
 import * as ethUtil from 'ethereumjs-util';
 import { TransactionFactory } from '@ethereumjs/tx';
 import HDKey from 'hdkey';
-import transformTypedData from 'trezor-connect/lib/plugins/ethereum/typedData';
+import transformTypedData from '@trezor/connect-plugin-ethereum';
 import { initHDKeyring, invokeHDKeyring } from './hd-proxy';
 
 const hdPathString = "m/44'/60'/0'/0";
