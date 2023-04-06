@@ -200,6 +200,9 @@ export const RevokeApprovalDrawer = (props: {
       const displayApprovalValue = isUnlimited
         ? 'Unlimited'
         : splitNumberByStep(value.toFixed(2));
+
+      const risky = ['danger', 'warning'].includes(spender.risk_level);
+
       return (
         <div
           key={spender.id}
@@ -208,7 +211,7 @@ export const RevokeApprovalDrawer = (props: {
             index === item.list.length - 1 && 'rounded-b-[6px]',
             index !== item.list.length - 1 &&
               'after:absolute after:h-[1px] after:left-[16px] after:right-[16px] after:bottom-0 after:bg-gray-divider',
-            spender.risk_level === 'safe' ? 'h-[51px] ' : 'flex-col pt-[13px]'
+            !risky ? 'h-[51px] ' : 'flex-col pt-[13px]'
           )}
           onClick={(e) => {
             if ((e.target as HTMLElement)?.id !== 'copyIcon') {
@@ -252,7 +255,7 @@ export const RevokeApprovalDrawer = (props: {
               />
             </div>
           </div>
-          {spender.risk_level !== 'safe' && (
+          {risky && (
             <div className="pt-[8px] pb-[16px]">
               <Alert
                 className={clsx(

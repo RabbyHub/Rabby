@@ -166,12 +166,12 @@ export const ApprovalContractItem = ({
     );
   }, [item.type]);
 
+  const risky = useMemo(() => ['danger', 'warning'].includes(item.risk_level), [
+    item.risk_level,
+  ]);
+
   useEffect(() => {
-    if (
-      item.risk_level !== 'safe' &&
-      setSize &&
-      rowRef.current?.getBoundingClientRect
-    ) {
+    if (risky && setSize && rowRef.current?.getBoundingClientRect) {
       setSize(index, rowRef.current.getBoundingClientRect().height);
     }
   }, [item, setSize, index]);
@@ -226,7 +226,7 @@ export const ApprovalContractItem = ({
         </span>
         {onSelect && <IconArrowRight />}
       </div>
-      {item.risk_level !== 'safe' && (
+      {risky && (
         <div className="pb-[12px]">
           <Alert
             className={clsx(
