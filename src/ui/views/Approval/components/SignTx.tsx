@@ -600,7 +600,11 @@ const getGasLimitBaseAccountBalance = ({
   ); // avaliableGasToken = current native token balance - sendNativeTokenAmount - pendingsSumNativeTokenCost
   if (avaliableGasToken.lte(0)) {
     // avaliableGasToken less than 0 use 21000 as gasLimit
-    return 21000;
+    return Math.floor(
+      new BigNumber(recommendGasLimit)
+        .times(Math.min(recommendGasLimitRatio, 1.5))
+        .toNumber()
+    );
   }
   if (
     avaliableGasToken.gt(
@@ -615,7 +619,11 @@ const getGasLimitBaseAccountBalance = ({
   const adaptGasLimit = avaliableGasToken.div(gasPrice); // adapt gasLimit by account balance
   if (adaptGasLimit.lt(21000)) {
     // use 21000 as minimum gasLimit
-    return 21000;
+    return Math.floor(
+      new BigNumber(recommendGasLimit)
+        .times(Math.min(recommendGasLimitRatio, 1.5))
+        .toNumber()
+    );
   }
   return Math.floor(adaptGasLimit.toNumber());
 };
