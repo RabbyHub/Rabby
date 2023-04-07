@@ -64,7 +64,7 @@ export const SelectChainItem = forwardRef(
           {...rest}
           onClick={() => !disabled && onChange?.(data.enum)}
         >
-          <div className="flex items-center">
+          <div className="flex items-center flex-1">
             {showRPCStatus ? (
               <ChainIcon
                 chain={data.enum}
