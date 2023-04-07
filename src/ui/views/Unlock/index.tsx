@@ -14,6 +14,7 @@ const Unlock = () => {
   const UiType = getUiType();
   const { t } = useTranslation();
   const history = useHistory();
+  const isUnlockingRef = useRef(false);
 
   useEffect(() => {
     if (!inputEl.current) return;
@@ -38,6 +39,13 @@ const Unlock = () => {
     },
   });
 
+  const handleSubmit = async ({ password }: { password: string }) => {
+    if (isUnlockingRef.current) return;
+    isUnlockingRef.current = true;
+    await run(password);
+    isUnlockingRef.current = false;
+  };
+
   return (
     <div className="unlock">
       <div className="header">
@@ -47,7 +55,7 @@ const Unlock = () => {
         autoComplete="off"
         className="bg-gray-bg flex-1"
         form={form}
-        onFinish={({ password }) => run(password)}
+        onFinish={handleSubmit}
       >
         <Form.Item
           className="mt-[34px] mx-28"
