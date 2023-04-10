@@ -246,6 +246,10 @@ browser.runtime.onConnect.addListener((port) => {
         data: message.params,
       },
     });
+    pm.send('message', {
+      event: 'data',
+      data: message,
+    });
   });
 
   pm.listen(async (data) => {
