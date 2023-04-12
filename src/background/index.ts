@@ -22,6 +22,7 @@ import {
   whitelistService,
   swapService,
   RPCService,
+  contextMenuService,
 } from './service';
 import { providerController, walletController } from './controller';
 import i18n from './service/i18n';

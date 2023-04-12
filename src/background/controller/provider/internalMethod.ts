@@ -4,6 +4,7 @@ import {
   permissionService,
   keyringService,
   preferenceService,
+  contextMenuService,
 } from 'background/service';
 import providerController from './controller';
 
@@ -19,6 +20,7 @@ const tabCheckin = ({
   origin,
 }) => {
   session.setProp({ origin, name, icon });
+  contextMenuService.create(origin);
 };
 
 const getProviderState = async (req) => {
@@ -53,14 +55,18 @@ const providerOverwrite = ({
 };
 
 const hasOtherProvider = () => {
+  const prev = preferenceService.getHasOtherProvider();
   preferenceService.setHasOtherProvider(true);
   const isRabby = preferenceService.getIsDefaultWallet();
+  if (!prev) {
+    contextMenuService.init();
+  }
   setPopupIcon(isRabby ? 'rabby' : 'metamask');
   return true;
 };
 
-const isDefaultWallet = () => {
-  return preferenceService.getIsDefaultWallet();
+const isDefaultWallet = ({ origin }) => {
+  return preferenceService.getIsDefaultWallet(origin);
 };
 
 export default {

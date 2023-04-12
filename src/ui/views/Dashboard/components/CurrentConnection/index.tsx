@@ -12,6 +12,8 @@ import './style.less';
 import { useLocation } from 'react-router-dom';
 import { getOriginFromUrl } from '@/utils';
 import { matomoRequestEvent } from '@/utils/matomo-request';
+import IconMetamaskBadge from 'ui/assets/dashboard/icon-metamask-badge.svg';
+import { useRequest } from 'ahooks';
 
 interface CurrentConnectionProps {
   onChainChange?: (chain: CHAINS_ENUM) => void;
@@ -26,6 +28,10 @@ export const CurrentConnection = memo((props: CurrentConnectionProps) => {
     showChainsModal?: boolean;
   }>();
   const { showChainsModal = false, trigger } = state ?? {};
+
+  const { data: hasOtherProvider } = useRequest(() =>
+    wallet.getHasOtherProvider()
+  );
 
   const [visible, setVisible] = useState(
     trigger === 'current-connection' && showChainsModal
@@ -72,12 +78,41 @@ export const CurrentConnection = memo((props: CurrentConnectionProps) => {
 
   const Content = site && (
     <div className="site mr-[18px]">
-      <FallbackSiteLogo
-        url={site.icon}
-        origin={site.origin}
-        width="28px"
-        className="site-icon"
-      ></FallbackSiteLogo>
+      {site?.preferMetamask && hasOtherProvider ? (
+        <Tooltip
+          placement="topLeft"
+          overlayClassName="rectangle prefer-metamask-tooltip"
+          align={{
+            offset: [-12, -4],
+          }}
+          title="This dapp is set to Always-Use-MetaMask. Update this settings anytime in Settings > Always-Use-MetaMask Dapps"
+        >
+          <div className="relative">
+            <img
+              src={IconMetamaskBadge}
+              alt=""
+              className="absolute"
+              style={{
+                top: '-8px',
+                left: '-8px',
+              }}
+            />
+            <FallbackSiteLogo
+              url={site.icon}
+              origin={site.origin}
+              width="28px"
+              className="site-icon"
+            ></FallbackSiteLogo>
+          </div>
+        </Tooltip>
+      ) : (
+        <FallbackSiteLogo
+          url={site.icon}
+          origin={site.origin}
+          width="28px"
+          className="site-icon"
+        ></FallbackSiteLogo>
+      )}
       <div className="site-content">
         <div className="site-name" title={site?.origin}>
           {site?.origin}
@@ -98,7 +133,7 @@ export const CurrentConnection = memo((props: CurrentConnectionProps) => {
   return (
     <div className={clsx('current-connection-block')}>
       {site ? (
-        site.isConnected ? (
+        site.isConnected || (site.preferMetamask && hasOtherProvider) ? (
           Content
         ) : (
           <Tooltip

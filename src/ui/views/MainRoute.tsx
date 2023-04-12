@@ -55,6 +55,7 @@ import Phishing from './Phishing';
 import { ImportMyMetaMaskAccount } from './ImportMyMetaMaskAccount';
 import { SwapByDex } from './DexSwap';
 import { matomoRequestEvent } from '@/utils/matomo-request';
+import { PreferMetamaskDapps } from './PreferMetamaskDapps';
 
 declare global {
   interface Window {
@@ -265,6 +266,9 @@ const Main = () => {
         </PrivateRoute>
         <PrivateRoute exact path="/custom-rpc">
           <CustomRPC />
+        </PrivateRoute>
+        <PrivateRoute exact path="/prefer-metamask-dapps">
+          <PreferMetamaskDapps />
         </PrivateRoute>
 
         <Route exact path="/phishing">

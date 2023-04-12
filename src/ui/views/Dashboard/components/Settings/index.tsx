@@ -32,6 +32,7 @@ import IconFindUs from 'ui/assets/find-us.svg';
 import IconTwitter from 'ui/assets/twitter.svg';
 import IconWhitelist from 'ui/assets/dashboard/whitelist.svg';
 import IconCustomRPC from 'ui/assets/dashboard/custom-rpc.svg';
+import IconPreferMetamask from 'ui/assets/dashboard/icon-prefer-metamask.svg';
 import { Contacts } from '..';
 import stats from '@/stats';
 import { useAsync, useCss } from 'react-use';
@@ -357,6 +358,19 @@ const Settings = ({ visible, onClose }: SettingsProps) => {
           category: 'Setting',
           action: 'clickToUse',
           label: 'Signature Record',
+        });
+        reportSettings('Signature Record');
+      },
+    },
+    {
+      leftIcon: IconPreferMetamask,
+      content: t('Always-Use-MetaMask Dapps'),
+      onClick: () => {
+        history.push('/prefer-metamask-dapps');
+        matomoRequestEvent({
+          category: 'Setting',
+          action: 'clickToUse',
+          label: 'Always-Use-MetaMask Dapps',
         });
         reportSettings('Signature Record');
       },

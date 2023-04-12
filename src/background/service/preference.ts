@@ -1,7 +1,12 @@
 import cloneDeep from 'lodash/cloneDeep';
 import eventBus from '@/eventBus';
 import { createPersistStore } from 'background/utils';
-import { keyringService, sessionService, i18n } from './index';
+import {
+  keyringService,
+  sessionService,
+  i18n,
+  permissionService,
+} from './index';
 import { TotalBalanceResponse, TokenItem, fetchPhishingList } from './openapi';
 import { HARDWARE_KEYRING_TYPES, EVENTS, CHAINS_ENUM } from 'consts';
 import { browser } from 'webextension-polyfill-ts';
@@ -254,13 +259,17 @@ class PreferenceService {
 
   setIsDefaultWallet = (val: boolean) => {
     this.store.isDefaultWallet = val;
+    // todo: check if this is needed
     eventBus.emit(EVENTS.broadcastToUI, {
       method: 'isDefaultWalletChanged',
       params: val,
     });
   };
 
-  getIsDefaultWallet = () => {
+  getIsDefaultWallet = (origin?: string) => {
+    if (origin && permissionService.getSite(origin)?.preferMetamask) {
+      return false;
+    }
     return this.store.isDefaultWallet;
   };
 

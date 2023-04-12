@@ -13,6 +13,7 @@ export interface ConnectedSite {
   isTop: boolean;
   order?: number;
   isConnected: boolean;
+  preferMetamask?: boolean;
 }
 
 export type PermissionStore = {
@@ -151,6 +152,16 @@ class PermissionService {
 
   getConnectedSites = () => {
     return (this.lruCache?.values() || []).filter((item) => item.isConnected);
+  };
+
+  getSites = () => {
+    return this.lruCache?.values() || [];
+  };
+
+  getPreferMetamaskSites = () => {
+    return (this.lruCache?.values() || []).filter(
+      (item) => item.preferMetamask
+    );
   };
 
   getConnectedSite = (key: string) => {
