@@ -42,6 +42,10 @@ export class Session {
 // for each tab
 const sessionMap = new Map<string, Session | null>();
 
+const getSessionMap = () => {
+  return sessionMap;
+};
+
 const getSession = (key: string) => {
   return sessionMap.get(key);
 };
@@ -93,6 +97,7 @@ const broadcastEvent = (ev, data?, origin?: string) => {
 };
 
 export default {
+  getSessionMap,
   getSession,
   getOrCreateSession,
   deleteSession,

@@ -53,8 +53,7 @@
     "https://wallet.gridplus.io/*",
     "activeTab",
     "notifications",
-    "contextMenus",
-    "tabs"
+    "contextMenus"
   ],
   "web_accessible_resources": ["user-media-permission.html"]
 }

@@ -1,4 +1,3 @@
-import { getOriginFromUrl } from '@/utils';
 import { CHAINS_ENUM } from '@debank/common';
 import {
   permissionService,
@@ -7,14 +6,13 @@ import {
 } from 'background/service';
 
 const getTabsOriginList = () => {
-  return new Promise<string[]>((resolve) => {
-    chrome.tabs.query({}, (tabs) => {
-      const originList = tabs.map((tab) => {
-        return getOriginFromUrl(tab.url || '');
-      });
-      resolve(originList);
-    });
-  });
+  const res: string[] = [];
+  for (const session of sessionService.getSessionMap().values()) {
+    if (session?.origin) {
+      res.push(session.origin);
+    }
+  }
+  return res;
 };
 
 const getContextMenuTitle = (origin: string) => {
