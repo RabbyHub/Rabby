@@ -54,7 +54,7 @@ export const PreferMetamaskDapps = () => {
       title: 'How to Add',
       closable: true,
       className: 'prefer-metamask-popup',
-      height: 260,
+      height: 270,
       content: (
         <div className="content">
           <div className="info">
