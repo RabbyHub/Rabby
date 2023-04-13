@@ -33,7 +33,9 @@ const useSetup = () => {
   const dispatch = useRabbyDispatch();
 
   const _pinnedList = pinned.map((chain) => CHAINS[chain]);
-  const _all = Object.values(CHAINS).sort((a, b) => (a.name > b.name ? 1 : -1));
+  const _all = Object.values(CHAINS).sort((a, b) =>
+    a.name.localeCompare(b.name)
+  );
 
   const handleStarChange = (chain: CHAINS_ENUM, value) => {
     if (value) {
