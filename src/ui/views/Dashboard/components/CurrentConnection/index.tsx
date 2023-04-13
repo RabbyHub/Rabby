@@ -85,17 +85,13 @@ export const CurrentConnection = memo((props: CurrentConnectionProps) => {
           align={{
             offset: [-12, -4],
           }}
-          title="This dapp is set to Always-Use-MetaMask. Update this settings anytime in Settings > Always-Use-MetaMask Dapps"
+          title="You prefer to use MetaMask with this dapp. Update this settings anytime in Settings > MetaMask Preferred Dapps"
         >
           <div className="relative">
             <img
               src={IconMetamaskBadge}
               alt=""
-              className="absolute"
-              style={{
-                top: '-8px',
-                left: '-8px',
-              }}
+              className="prefer-metamask-badge"
             />
             <FallbackSiteLogo
               url={site.icon}

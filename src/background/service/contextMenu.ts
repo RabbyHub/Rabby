@@ -18,8 +18,8 @@ const getTabsOriginList = () => {
 const getContextMenuTitle = (origin: string) => {
   const site = permissionService.getSite(origin);
   const title = site?.preferMetamask
-    ? 'Stop always using MetaMask on this dapp'
-    : 'Always use MetaMask on this dapp';
+    ? 'Do not prefer to use MetaMask on this dapp'
+    : 'Prefer to use MetaMask on this dapp';
   return title;
 };
 

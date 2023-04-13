@@ -69,7 +69,7 @@ export const PreferMetamaskDapps = () => {
   return (
     <div className="page-prefer-metamask-dapps">
       <header className="header">
-        <PageHeader>{t('Always-Use-MetaMask Dapps')}</PageHeader>
+        <PageHeader>{t('MetaMask Preferred Dapps')}</PageHeader>
         <div className="desc">
           The following dapps will remain connected through MetaMask, regardless
           of the wallet you've flipped to

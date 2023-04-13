@@ -364,13 +364,13 @@ const Settings = ({ visible, onClose }: SettingsProps) => {
     },
     {
       leftIcon: IconPreferMetamask,
-      content: t('Always-Use-MetaMask Dapps'),
+      content: t('MetaMask Preferred Dapps'),
       onClick: () => {
         history.push('/prefer-metamask-dapps');
         matomoRequestEvent({
           category: 'Setting',
           action: 'clickToUse',
-          label: 'Always-Use-MetaMask Dapps',
+          label: 'MetaMask Preferred Dapps',
         });
         reportSettings('Signature Record');
       },
