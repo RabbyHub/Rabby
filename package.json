@@ -1,6 +1,6 @@
 {
   "name": "rabby",
-  "version": "0.78.1",
+  "version": "0.79.0",
   "description": "A browser plugin for DeFi users",
   "scripts": {
     "postinstall": "patch-package",
