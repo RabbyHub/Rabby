@@ -23,7 +23,14 @@
     display: flex;
     align-items: center;
     gap: 8px;
-    overflow: hidden;
+    min-width: 0;
+    .prefer-metamask-badge {
+      position: absolute;
+      top: -10px;
+      left: -10px;
+      width: 24px;
+      height: 24px;
+    }
     &.is-empty {
       .site-icon {
         width: 20px;
@@ -100,5 +107,12 @@
     &:hover {
       background-color: rgba(134, 151, 255, 0.2);
     }
+  }
+}
+
+.prefer-metamask-tooltip {
+  max-width: 360px !important;
+  .ant-tooltip-arrow {
+    left: 7px !important;
   }
 }

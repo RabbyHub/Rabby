@@ -21,6 +21,7 @@ import {
   swapService,
   RPCService,
   unTriggerTxCounter,
+  contextMenuService,
 } from 'background/service';
 import buildinProvider from 'background/utils/buildinProvider';
 import { openIndexPage } from 'background/webapi/tab';
@@ -1028,6 +1029,27 @@ export class WalletController extends BaseController {
       );
     }
   };
+  removePreferMetamask = (origin: string) => {
+    const site = permissionService.getSite(origin);
+    if (!site?.preferMetamask) {
+      return;
+    }
+    const prevIsDefaultWallet = preferenceService.getIsDefaultWallet(
+      site?.origin
+    );
+    site.preferMetamask = false;
+    permissionService.setSite(site);
+    contextMenuService.createOrUpdate(site.origin);
+    const currentIsDefaultWallet = preferenceService.getIsDefaultWallet(origin);
+    const hasOtherProvider = preferenceService.getHasOtherProvider();
+    if (prevIsDefaultWallet !== currentIsDefaultWallet && hasOtherProvider) {
+      sessionService.broadcastEvent(
+        'defaultWalletChanged',
+        currentIsDefaultWallet ? 'rabby' : 'metamask',
+        site.origin
+      );
+    }
+  };
   updateConnectSite = (origin: string, data: ConnectedSite) => {
     permissionService.updateConnectSite(origin, data);
     // rabby:chainChanged event must be sent before chainChanged event
@@ -1058,6 +1080,7 @@ export class WalletController extends BaseController {
     permissionService.removeConnectedSite(origin);
   };
   getSitesByDefaultChain = permissionService.getSitesByDefaultChain;
+  getPreferMetamaskSites = permissionService.getPreferMetamaskSites;
   topConnectedSite = (origin: string) =>
     permissionService.topConnectedSite(origin);
   unpinConnectedSite = (origin: string) =>
@@ -2046,16 +2069,24 @@ export class WalletController extends BaseController {
     preferenceService.setIsDefaultWallet(val);
     const hasOtherProvider = preferenceService.getHasOtherProvider();
     if (hasOtherProvider) {
-      sessionService.broadcastEvent(
-        'defaultWalletChanged',
-        val ? 'rabby' : 'metamask'
-      );
+      // todo: check is code
+      const sites = permissionService
+        .getSites()
+        .filter((item) => !item.preferMetamask);
+      sites.forEach((site) => {
+        sessionService.broadcastEvent(
+          'defaultWalletChanged',
+          val ? 'rabby' : 'metamask',
+          site.origin
+        );
+      });
       setPopupIcon(val ? 'rabby' : 'metamask');
     } else {
       setPopupIcon('default');
     }
   };
-  isDefaultWallet = () => preferenceService.getIsDefaultWallet();
+  isDefaultWallet = (origin?: string) =>
+    preferenceService.getIsDefaultWallet(origin);
 
   private _getKeyringByType(type) {
     const keyring = keyringService.getKeyringsByType(type)[0];
