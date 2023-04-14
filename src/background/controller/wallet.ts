@@ -1039,6 +1039,7 @@ export class WalletController extends BaseController {
     );
     site.preferMetamask = false;
     permissionService.setSite(site);
+    contextMenuService.createOrUpdate(site.origin);
     const currentIsDefaultWallet = preferenceService.getIsDefaultWallet(origin);
     const hasOtherProvider = preferenceService.getHasOtherProvider();
     if (prevIsDefaultWallet !== currentIsDefaultWallet && hasOtherProvider) {
@@ -1047,7 +1048,6 @@ export class WalletController extends BaseController {
         currentIsDefaultWallet ? 'rabby' : 'metamask',
         site.origin
       );
-      contextMenuService.update(site.origin);
     }
   };
   updateConnectSite = (origin: string, data: ConnectedSite) => {

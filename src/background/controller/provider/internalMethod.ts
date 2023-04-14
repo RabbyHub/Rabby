@@ -20,7 +20,7 @@ const tabCheckin = ({
   origin,
 }) => {
   session.setProp({ origin, name, icon });
-  contextMenuService.create(origin);
+  contextMenuService.createOrUpdate(origin);
 };
 
 const getProviderState = async (req) => {

@@ -46,9 +46,15 @@ export class ContextMenu {
       }
     );
   }
+  createOrUpdate(origin: string) {
+    if (this.store.has(origin)) {
+      this.update(origin);
+    } else {
+      this.create(origin);
+    }
+  }
   update(origin: string) {
     if (!this.store.has(origin)) {
-      this.create(origin);
       return;
     }
 
