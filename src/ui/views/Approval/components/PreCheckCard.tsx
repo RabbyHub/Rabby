@@ -39,6 +39,8 @@ const PreCheckCard = (props: PreCheckCardProps) => {
         (a, b) => order[a.level || 'warn'] - order[b.level || 'warn']
       );
       setRenderErrors(orderedErrors);
+    } else {
+      setRenderErrors([]);
     }
   }, [errors]);
 
