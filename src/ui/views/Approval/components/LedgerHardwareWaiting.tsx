@@ -148,7 +148,7 @@ const LedgerHardwareWaiting = ({ params }: { params: ApprovalParams }) => {
     });
     eventBus.addEventListener(EVENTS.SIGN_FINISHED, async (data) => {
       if (data.success) {
-        setConnectStatus(WALLETCONNECT_STATUS_MAP.SIBMITTED);
+        // setConnectStatus(WALLETCONNECT_STATUS_MAP.SIBMITTED);
         setResult(data.data);
         if (params.isGnosis) {
           const sigs = await wallet.getGnosisTransactionSignatures();
