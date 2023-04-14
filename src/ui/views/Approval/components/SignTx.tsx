@@ -454,9 +454,9 @@ const checkGasAndNonce = ({
     ) &&
     new BigNumber(gasLimit).gte(21000)
   ) {
-    if (recommendGasLimitRatio === 4) {
+    if (recommendGasLimitRatio === DEFAULT_GAS_LIMIT_RATIO) {
       const realRatio = new BigNumber(gasLimit).div(recommendGasLimit);
-      if (realRatio.lt(4) && realRatio.gt(1)) {
+      if (realRatio.lt(DEFAULT_GAS_LIMIT_RATIO) && realRatio.gt(1)) {
         errors.push({
           code: 3004,
           msg:
@@ -678,7 +678,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
   ] = useState<ReactNode | null>();
   const [blockInfo, setBlockInfo] = useState<BlockInfo | null>(null);
   const [recommendGasLimit, setRecommendGasLimit] = useState<string>('');
-  const [recommendGasLimitRatio, setRecommendGasLimitRatio] = useState(1); // 1 / 1.5 / 4
+  const [recommendGasLimitRatio, setRecommendGasLimitRatio] = useState(1); // 1 / 1.5 / 2
   const [recommendNonce, setRecommendNonce] = useState<string>('');
   const [updateId, setUpdateId] = useState(0);
   const [txDetail, setTxDetail] = useState<ExplainTxResponse | null>({
