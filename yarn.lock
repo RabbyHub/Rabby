@@ -1334,6 +1334,11 @@
   resolved "https://registry.yarnpkg.com/@debank/common/-/common-0.2.29.tgz#a4c04464c7793102d50db24b2c4d1a681f53efb9"
   integrity sha512-9/Bh4u5dlS9jSXDl3unG226fJDsJkAVhQZbzU9NqIUW3Zj72kPs1tDzBXF2d0I2Z3dcXUK3PWbFBLmMZTR/jQA==
 
+"@debank/common@^0.2.31":
+  version "0.2.31"
+  resolved "https://registry.yarnpkg.com/@debank/common/-/common-0.2.31.tgz#2c1d8a65bf1e3c21879f6065b65120697e4a77d6"
+  integrity sha512-Qui1GjqoDDtGqpeN6M9u3EYetTgL2BAp3lf1YanjER4lHoZhZTkSpj2qKOyjz69G1YH1VZnPCcsQwX24/i7Mrw==
+
 "@debank/festats@1.0.0":
   version "1.0.0"
   resolved "https://registry.yarnpkg.com/@debank/festats/-/festats-1.0.0.tgz#0217ac76921a92aa9e31f6b7d33411d4c11eea11"
@@ -1350,10 +1355,10 @@
     sha256-uint8array "^0.10.3"
     url-parse "^1.5.1"
 
-"@debank/rabby-api@^0.5.22":
-  version "0.5.22"
-  resolved "https://registry.yarnpkg.com/@debank/rabby-api/-/rabby-api-0.5.22.tgz#e08032e19db88fac82ec84d2f1a7b6cd1f8e0845"
-  integrity sha512-tKnYPPo4bm94T8A26FUhPXsYkT/HlFGtj7A+iwU4xV8tvH6ffZecbjhHpBuYyUhK/1VNGX7q+5wkkTNdwI+c9A==
+"@debank/rabby-api@^0.5.25":
+  version "0.5.25"
+  resolved "https://registry.yarnpkg.com/@debank/rabby-api/-/rabby-api-0.5.25.tgz#b283a8701c7773206237490224e4ff32eefe7aa4"
+  integrity sha512-G0tHBqYEfs1A7tLjDenoBUnWINW50A9jzMBOYo+tqc9RGpQKjQSe5p8hROftCMhcwUIQIUuqVbkg9o/w+84o2A==
   dependencies:
     "@debank/isomorphic" "^0.3.1"
     axios "^0.27.2"
@@ -1361,6 +1366,14 @@
     eth-rpc-errors "^4.0.3"
     lodash "^4.17.21"
     qss "^2.0.3"
+
+"@debank/rabby-security-engine@^1.0.6":
+  version "1.0.6"
+  resolved "https://registry.yarnpkg.com/@debank/rabby-security-engine/-/rabby-security-engine-1.0.6.tgz#cbcab258f80481a2e7a3e0113a5847d946f224d9"
+  integrity sha512-vq8dR1YDHoc+Ruwoe+mskvEL7HlL7sPFX6JZVm1pMa6YgX5j5onMSZlCvQR4xLe2FpYZoq29vOY2K0ukeamEvA==
+  dependencies:
+    "@debank/common" "^0.2.31"
+    "@debank/rabby-api" "^0.5.25"
 
 "@discoveryjs/json-ext@^0.5.0":
   version "0.5.2"

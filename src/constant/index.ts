@@ -1,4 +1,5 @@
 import { CHAINS, CHAINS_ENUM } from '@debank/common';
+import { Level } from '@debank/rabby-security-engine/dist/rules';
 import IconEN from 'ui/assets/langs/en.svg';
 import IconAmber from 'ui/assets/walletlogo/amber.svg';
 import LogoAmber from 'ui/assets/walletlogo/amber.svg';
@@ -45,6 +46,12 @@ import IconWatchPurple from 'ui/assets/walletlogo/watch-purple.svg';
 import IconWatchWhite from 'ui/assets/walletlogo/IconWatch-white.svg';
 import LogoDefiant from 'ui/assets/walletlogo/defiant.svg';
 import LogoDefiantWhite from 'ui/assets/walletlogo/defiant.svg';
+import IconSafe from 'ui/assets/sign/security-engine/safe.svg';
+import IconDanger from 'ui/assets/sign/security-engine/danger.svg';
+import IconForbidden from 'ui/assets/sign/security-engine/forbidden.svg';
+import IconWarning from 'ui/assets/sign/security-engine/warning.svg';
+import IconError from 'ui/assets/sign/security-engine/error.svg';
+import IconProceed from 'ui/assets/sign/security-engine/processed.svg';
 
 export { CHAINS, CHAINS_ENUM };
 
@@ -729,6 +736,49 @@ export const L2_ENUMS = [
   CHAINS_ENUM.AURORA,
   CHAINS_ENUM.NOVA,
 ];
+
+export const SecurityEngineLevelOrder = [
+  Level.FORBIDDEN,
+  Level.SAFE,
+  Level.DANGER,
+  Level.WARNING,
+  null,
+  Level.ERROR,
+  'proceed',
+];
+
+export const SecurityEngineLevel = {
+  [Level.SAFE]: {
+    color: '#27C193',
+    icon: IconSafe,
+    text: 'Safe',
+  },
+  [Level.WARNING]: {
+    color: '#FFB020',
+    icon: IconWarning,
+    text: 'Warning',
+  },
+  [Level.DANGER]: {
+    color: '#EC5151',
+    icon: IconDanger,
+    text: 'Danger',
+  },
+  [Level.FORBIDDEN]: {
+    color: '#AF160E',
+    icon: IconForbidden,
+    text: 'Forbidden',
+  },
+  [Level.ERROR]: {
+    color: '#B4BDCC',
+    icon: IconError,
+    text: '引擎加载失败',
+  },
+  proceed: {
+    color: '#B4BDCC',
+    icon: IconProceed,
+    text: 'Proceed',
+  },
+};
 
 declare global {
   interface Window {
