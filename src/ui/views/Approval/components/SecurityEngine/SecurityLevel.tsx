@@ -8,6 +8,7 @@ const SecurityLevelWrapper = styled.div`
   font-weight: 500;
   font-size: 13px;
   line-height: 15px;
+  align-items: center;
   .icon-level {
     width: 16px;
     height: 16px;

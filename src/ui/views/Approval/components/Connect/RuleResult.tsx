@@ -52,13 +52,24 @@ const RuleResultWrapper = styled.div`
   }
 `;
 
+const PopularLevelDisplay = {
+  very_low: 'Very Low',
+  low: 'Low',
+  average: 'Average',
+  high: 'High',
+};
+
 const RuleResult = ({
   rule,
   collectList,
+  popularLevel,
+  ignored,
   onSelect,
 }: {
   rule: { id: string; desc: string; result: Result | null };
   collectList: { name: string; logo_url: string }[];
+  popularLevel: string | null;
+  ignored: boolean;
   onSelect(rule: { id: string; desc: string; result: Result }): void;
 }) => {
   const handleClick = () => {
@@ -71,17 +82,25 @@ const RuleResult = ({
         <div className="rule-desc flex items-center">
           {rule.desc}
           {rule.id === '1005' && (
-            <Tooltip
-              overlayClassName="rectangle"
-              placement="top"
-              title="Site popularity is calculated based on website visits and interactions."
-            >
-              <IconQuestion className="ml-2" />
-            </Tooltip>
+            <>
+              <Tooltip
+                overlayClassName="rectangle"
+                placement="top"
+                title="Site popularity is calculated based on website visits and interactions."
+              >
+                <IconQuestion className="ml-2" />
+              </Tooltip>
+              <span className="text-15 font-medium text-gray-title">
+                : {popularLevel && PopularLevelDisplay[popularLevel]}
+              </span>
+            </>
           )}
         </div>
         <div className="flex">
-          {rule.result && <SecurityLevel level={rule.result.level} />}
+          {rule.result && !ignored && (
+            <SecurityLevel level={rule.result.level} />
+          )}
+          {rule.result && ignored && <SecurityLevel level="proceed" />}
           {rule.result && (
             <img src={IconArrowRight} className="icon-arrow-right" />
           )}

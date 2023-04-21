@@ -37,7 +37,6 @@ const RuleDrawerWrapper = styled.div`
       width: 24px;
       height: 24px;
       opacity: 0.1;
-      z-index: -1;
     }
   }
   .threshold {
@@ -190,6 +189,29 @@ const RuleDrawerWrapper = styled.div`
     justify-content: center;
     background: #f5f6fa;
   }
+  &.proceed {
+    background: #f5f6fa;
+    .rule-threshold {
+      background: rgba(0, 0, 0, 0.03);
+      .level-text {
+        color: #707280;
+      }
+    }
+    .rule-threshold-footer {
+      .button-ignore {
+        background: #b4bdcc;
+        border-color: #b4bdcc;
+        &:hover {
+          background: #b4bdcc;
+          border-color: #b4bdcc;
+          box-shadow: 0px 8px 16px rgba(108, 189, 204, 0.3);
+        }
+        &:focus {
+          box-shadow: 0px 8px 16px rgba(108, 189, 204, 0.3);
+        }
+      }
+    }
+  }
 `;
 
 const RuleFooter = styled.div`
@@ -251,6 +273,11 @@ const RuleDrawer = ({
   onRuleEnableStatusChange,
 }: Props) => {
   const [accepted, setAccepted] = useState(false);
+
+  const currentLevel = useMemo(() => {
+    if (!selectRule || selectRule.ignored) return 'proceed';
+    return selectRule.level;
+  }, [selectRule]);
 
   const displayValue = useMemo(() => {
     if (!selectRule) return '';
@@ -318,12 +345,10 @@ const RuleDrawer = ({
 
   const ignoreButtonDisabled = useMemo(() => {
     if (!selectRule) return true;
-    if (
-      selectRule.level === Level.DANGER &&
-      (selectRule.ignored || !accepted)
-    ) {
+    if (selectRule.ignored) {
       return true;
     }
+    if (selectRule.level === Level.DANGER && !accepted) return true;
     return false;
   }, [selectRule, accepted]);
 
@@ -363,11 +388,13 @@ const RuleDrawer = ({
       );
     } else {
       return (
-        <RuleDrawerWrapper className={clsx(selectRule.level)}>
+        <RuleDrawerWrapper
+          className={clsx(selectRule.ignored ? 'proceed' : selectRule.level)}
+        >
           <div className="value-desc">
             {selectRule.ruleConfig.valueDescription}
             <img
-              src={SecurityEngineLevel[selectRule.level].icon}
+              src={SecurityEngineLevel[currentLevel].icon}
               className="icon-level"
             />
           </div>
@@ -381,7 +408,7 @@ const RuleDrawer = ({
             <div className="rule-threshold">
               <img
                 className="level-icon"
-                src={SecurityEngineLevel[selectRule.level].icon}
+                src={SecurityEngineLevel[currentLevel].icon}
               />
               <span className="level-text">
                 {SecurityEngineLevel[selectRule.level].text}:

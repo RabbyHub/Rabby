@@ -774,7 +774,7 @@ export const SecurityEngineLevel = {
     text: '引擎加载失败',
   },
   proceed: {
-    color: '#B4BDCC',
+    color: '#707280',
     icon: IconProceed,
     text: 'Proceed',
   },

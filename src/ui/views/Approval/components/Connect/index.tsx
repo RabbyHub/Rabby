@@ -116,16 +116,17 @@ const Connect = ({ params: { icon, origin } }: ConnectProps) => {
   const [defaultChain, setDefaultChain] = useState(CHAINS_ENUM.ETH);
   const [isLoading, setIsLoading] = useState(true);
   const [processedRules, setProcessedRules] = useState<string[]>([]);
-  const {
-    rules,
-    userData,
-    executeEngine,
-    updateUserData,
-  } = useSecurityEngine();
+  const [nonce, setNonce] = useState(0);
+  const { rules, userData, executeEngine, updateUserData } = useSecurityEngine(
+    nonce
+  );
   const [engineResults, setEngineResults] = useState<Result[]>([]);
   const [collectList, setCollectList] = useState<
     { name: string; logo_url: string }[]
   >([]);
+  const [originPopularLevel, setOriginPopularLevel] = useState<string | null>(
+    null
+  );
   const [ruleDrawerVisible, setRuleDrawerVisible] = useState(false);
   const [selectRule, setSelectRule] = useState<{
     ruleConfig: RuleConfig;
@@ -166,7 +167,25 @@ const Connect = ({ params: { icon, origin } }: ConnectProps) => {
   };
 
   const handleRuleEnableStatusChange = (id: string, value: boolean) => {
-    // TODO
+    // setNonce(nonce + 1);
+  };
+
+  const handleUserDataListChange = () => {
+    setNonce(nonce + 1);
+  };
+
+  const handleExecuteSecurityEngine = async () => {
+    setIsLoading(true);
+    const ctx: ContextActionData = {
+      origin: {
+        url: origin,
+        communityCount: collectList.length,
+        popularLevel: originPopularLevel!,
+      },
+    };
+    const results = await executeEngine(ctx);
+    setIsLoading(false);
+    setEngineResults(results);
   };
 
   const init = async () => {
@@ -175,11 +194,14 @@ const Connect = ({ params: { icon, origin } }: ConnectProps) => {
     const {
       collect_list,
     } = await wallet.openapi.getOriginThirdPartyCollectList(origin);
+    const { level } = await wallet.openapi.getOriginPopularityLevel(origin);
+    setOriginPopularLevel(level);
     setCollectList(collect_list);
     const ctx: ContextActionData = {
       origin: {
         url: origin,
         communityCount: collect_list.length,
+        popularLevel: level,
       },
     };
     const results = await executeEngine(ctx);
@@ -234,7 +256,6 @@ const Connect = ({ params: { icon, origin } }: ConnectProps) => {
   }) => {
     const target = rules.find((item) => item.id === rule.id);
     if (!target) return;
-    console.log(processedRules.includes(rule.id));
     setSelectRule({
       ruleConfig: target,
       value: rule.result.value,
@@ -273,6 +294,9 @@ const Connect = ({ params: { icon, origin } }: ConnectProps) => {
               logo={icon}
               userData={userData}
               ruleResult={userListResult}
+              onChange={handleUserDataListChange}
+              onUpdateSecurityEngine={handleExecuteSecurityEngine}
+              rules={rules}
             />
           </div>
         </div>
@@ -284,6 +308,8 @@ const Connect = ({ params: { icon, origin } }: ConnectProps) => {
               key={rule.id}
               onSelect={handleSelectRule}
               collectList={collectList}
+              popularLevel={originPopularLevel}
+              ignored={processedRules.includes(rule.id)}
             />
           ))}
         </div>

@@ -2394,6 +2394,24 @@ export class WalletController extends BaseController {
   updateUserData = (data: UserData) => {
     securityEngineService.updateUserData(data);
   };
+
+  addOriginWhitelist = (origin: string) => {
+    securityEngineService.removeOriginBlacklist(origin);
+    securityEngineService.addOriginWhitelist(origin);
+  };
+
+  addOriginBlacklist = (origin: string) => {
+    securityEngineService.removeOriginWhitelist(origin);
+    securityEngineService.addOriginBlacklist(origin);
+  };
+
+  removeOriginWhitelist = (origin: string) => {
+    securityEngineService.removeOriginWhitelist(origin);
+  };
+
+  removeOriginBlacklist = (origin: string) => {
+    securityEngineService.removeOriginBlacklist(origin);
+  };
 }
 
 export default new WalletController();
