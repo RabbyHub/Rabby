@@ -9,6 +9,7 @@ import {
 } from '@debank/rabby-security-engine/dist/rules';
 import styled from 'styled-components';
 import { SecurityEngineLevel } from 'consts';
+import RuleDetailDrawer from './RuleDetailDrawer';
 import clsx from 'clsx';
 import IconArrowRight from 'ui/assets/sign/arrow-right.svg';
 import IconError from 'ui/assets/sign/security-engine/error-big.svg';
@@ -89,6 +90,13 @@ const RuleDrawerWrapper = styled.div`
       line-height: 14px;
       color: #707280;
       margin-bottom: 12px;
+    }
+    .forbidden-tip {
+      margin-bottom: 12px;
+      font-size: 12px;
+      line-height: 14px;
+      text-align: center;
+      color: #13141a;
     }
     .button-ignore {
       padding: 12px;
@@ -255,14 +263,14 @@ const RuleFooter = styled.div`
 interface Props {
   selectRule: {
     ruleConfig: RuleConfig;
-    value: number | string | boolean;
-    level: Level;
+    value?: number | string | boolean;
+    level?: Level;
     ignored: boolean;
   } | null;
   visible: boolean;
-  onRuleEnableStatusChange(id: string, value: boolean): void;
+  onRuleEnableStatusChange(id: string, value: boolean): Promise<void>;
   onIgnore(id: string): void;
-  onClose(): void;
+  onClose(update: boolean): void;
 }
 
 const RuleDrawer = ({
@@ -273,6 +281,9 @@ const RuleDrawer = ({
   onRuleEnableStatusChange,
 }: Props) => {
   const [accepted, setAccepted] = useState(false);
+  const [changed, setChanged] = useState(false);
+  const [enabled, setEnabled] = useState<boolean | null>(null);
+  const [ruleDetailDrawerVisible, setRuleDetailDrawerVisible] = useState(false);
 
   const currentLevel = useMemo(() => {
     if (!selectRule || selectRule.ignored) return 'proceed';
@@ -298,6 +309,7 @@ const RuleDrawer = ({
   const displayThreshold = useMemo(() => {
     if (!selectRule) return '';
     const { level, ruleConfig, value } = selectRule;
+    if (!level) return '';
     const threshold = {
       ...ruleConfig.defaultThreshold,
       ...ruleConfig.customThreshold,
@@ -345,6 +357,7 @@ const RuleDrawer = ({
 
   const ignoreButtonDisabled = useMemo(() => {
     if (!selectRule) return true;
+    if (selectRule.level === Level.FORBIDDEN) return true;
     if (selectRule.ignored) {
       return true;
     }
@@ -357,25 +370,42 @@ const RuleDrawer = ({
     onIgnore(selectRule.ruleConfig.id);
   };
 
-  const handleEnableStatusChange = (value: boolean) => {
+  const handleEnableStatusChange = async (value: boolean) => {
     if (!selectRule) return;
-    onRuleEnableStatusChange(selectRule.ruleConfig.id, value);
+    await onRuleEnableStatusChange(selectRule.ruleConfig.id, value);
+    setEnabled(value);
+    setChanged(true);
+  };
+
+  const handleClose = () => {
+    onClose(changed);
+  };
+
+  const reset = () => {
+    setAccepted(false);
+    setChanged(false);
+    setEnabled(null);
+    setRuleDetailDrawerVisible(false);
   };
 
   useEffect(() => {
-    if (!visible) setAccepted(false);
+    if (!visible) {
+      reset();
+    }
   }, [visible]);
 
   const content = () => {
     if (!selectRule) return null;
     if (!selectRule.ruleConfig.enable) {
-      <RuleDrawerWrapper className={clsx(Level.ERROR)}>
-        <img src={IconDisable} />
-        <p className="text-15 text-gray-content mt-4 text-center font-medium">
-          Security Engine has been turned off. Turn it on anytime from below for
-          safety.
-        </p>
-      </RuleDrawerWrapper>;
+      return (
+        <RuleDrawerWrapper className={clsx(Level.ERROR)}>
+          <img src={IconDisable} />
+          <p className="text-15 text-gray-content mt-4 text-center font-medium">
+            Security Engine has been turned off. Turn it on anytime from below
+            for safety.
+          </p>
+        </RuleDrawerWrapper>
+      );
     } else if (selectRule.level === Level.ERROR) {
       return (
         <RuleDrawerWrapper className={clsx(selectRule.level)}>
@@ -393,10 +423,12 @@ const RuleDrawer = ({
         >
           <div className="value-desc">
             {selectRule.ruleConfig.valueDescription}
-            <img
-              src={SecurityEngineLevel[currentLevel].icon}
-              className="icon-level"
-            />
+            {currentLevel && (
+              <img
+                src={SecurityEngineLevel[currentLevel].icon}
+                className="icon-level"
+              />
+            )}
           </div>
           <div className="threshold">
             <p>
@@ -406,26 +438,40 @@ const RuleDrawer = ({
               The current resulting value triggers the following security rules
             </p>
             <div className="rule-threshold">
-              <img
-                className="level-icon"
-                src={SecurityEngineLevel[currentLevel].icon}
-              />
-              <span className="level-text">
-                {SecurityEngineLevel[selectRule.level].text}:
-              </span>
+              {currentLevel && (
+                <img
+                  className="level-icon"
+                  src={SecurityEngineLevel[currentLevel].icon}
+                />
+              )}
+              {selectRule.level && (
+                <span className="level-text">
+                  {SecurityEngineLevel[selectRule.level].text}:
+                </span>
+              )}
               <span className="threshold-text">{displayThreshold}</span>
             </div>
             {selectRule.level !== 'safe' && (
               <div className="rule-threshold-footer">
                 {selectRule.level === Level.DANGER && (
-                  <div className="risk-confirm">
+                  <div
+                    className={clsx('risk-confirm', {
+                      'opacity-50': selectRule.ignored,
+                    })}
+                  >
                     <Checkbox
-                      checked={accepted}
+                      checked={selectRule.ignored || accepted}
                       onChange={(val) => setAccepted(val)}
                     >
                       I understand and accept responsibility for any loss
                     </Checkbox>
                   </div>
+                )}
+                {selectRule.level === Level.FORBIDDEN && (
+                  <p className="forbidden-tip">
+                    Forbidden risk, which may cause damage to your property and
+                    is not allowed to be ignored
+                  </p>
                 )}
                 <Button
                   type="primary"
@@ -433,7 +479,7 @@ const RuleDrawer = ({
                   onClick={handleIgnore}
                   disabled={ignoreButtonDisabled}
                 >
-                  Ignore it for once
+                  {selectRule.ignored ? 'Risk Processed' : 'Ignore it for once'}
                 </Button>
               </div>
             )}
@@ -444,29 +490,41 @@ const RuleDrawer = ({
   };
 
   return (
-    <Popup visible={visible} onClose={onClose} height="510" closable>
+    <Popup visible={visible} onClose={handleClose} height="510" closable>
       {selectRule && (
         <>
           {content()}
           <RuleFooter>
             <div className="item">
-              <div className="left">Enable this rule</div>
+              <div className="left">Enable security rule</div>
               <div className="right">
                 <Switch
-                  checked={selectRule.ruleConfig.enable}
+                  checked={
+                    enabled === null ? selectRule.ruleConfig.enable : enabled
+                  }
                   onChange={(val) => handleEnableStatusChange(val)}
                 />
               </div>
             </div>
-            <div className="item">
+            <div
+              className="item"
+              onClick={() => setRuleDetailDrawerVisible(true)}
+            >
               <div className="left">View security rules</div>
               <div className="right">
-                {SecurityEngineLevel[selectRule.level].text}
+                {selectRule.level && SecurityEngineLevel[selectRule.level].text}
                 <img src={IconArrowRight} className="icon-arrow-right" />
               </div>
             </div>
           </RuleFooter>
         </>
+      )}
+      {selectRule && (
+        <RuleDetailDrawer
+          visible={ruleDetailDrawerVisible}
+          rule={selectRule.ruleConfig}
+          onCancel={() => setRuleDetailDrawerVisible(false)}
+        />
       )}
     </Popup>
   );

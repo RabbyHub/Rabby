@@ -77,7 +77,6 @@ class SecurityEngineService {
       ...actionData,
       userData: this.store.userData,
     });
-    console.log('results');
     return results;
   };
 
@@ -149,6 +148,39 @@ class SecurityEngineService {
         return item.toLowerCase() !== origin.toLowerCase();
       }),
     };
+  };
+
+  enableRule = (id: string) => {
+    this.store.rules = this.store.rules.map((rule) => {
+      if (rule.id === id) {
+        return {
+          ...rule,
+          enable: true,
+        };
+      } else {
+        return rule;
+      }
+    });
+    this.reloadRules(this.store.rules);
+  };
+
+  disableRule = (id: string) => {
+    this.store.rules = this.store.rules.map((rule) => {
+      if (rule.id === id) {
+        return {
+          ...rule,
+          enable: false,
+        };
+      } else {
+        return rule;
+      }
+    });
+    this.reloadRules(this.store.rules);
+  };
+
+  reloadRules = (rules: UserRuleConfig[]) => {
+    this.rules = mergeRules(defaultRules, rules);
+    this.engine?.reloadRules(this.rules);
   };
 }
 

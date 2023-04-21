@@ -1,4 +1,4 @@
-import React, { useState, useMemo } from 'react';
+import React, { useState, useMemo, useEffect } from 'react';
 import styled from 'styled-components';
 import { Result } from '@debank/rabby-security-engine';
 import { RuleConfig, UserData } from '@debank/rabby-security-engine/dist/rules';
@@ -87,6 +87,11 @@ const SecurityLevelWrapper = styled.div`
       #ffffff;
     border: 0.522914px solid rgba(255, 176, 32, 0.2);
   }
+  &.proceed {
+    color: #707280;
+    background: #f5f6fa;
+    border: 0.522914px solid #e5e9ef;
+  }
 `;
 
 interface Props {
@@ -94,8 +99,11 @@ interface Props {
   logo: string;
   userData: UserData;
   rules: RuleConfig[];
+  processedRules: string[];
   onChange(): void;
   onUpdateSecurityEngine(): void;
+  onIgnore(id: string): void;
+  onRuleEnableStatusChange(id: string, value: boolean): void;
   ruleResult?: Result;
 }
 
@@ -105,8 +113,11 @@ const UserDataList = ({
   userData,
   ruleResult,
   rules,
+  processedRules,
   onChange,
   onUpdateSecurityEngine,
+  onIgnore,
+  onRuleEnableStatusChange,
 }: Props) => {
   const wallet = useWallet();
 
@@ -117,6 +128,11 @@ const UserDataList = ({
   const isInWhitelist = useMemo(() => {
     return userData.originWhitelist.includes(origin.toLowerCase());
   }, [origin, userData]);
+
+  const ignored = useMemo(() => {
+    if (!ruleResult) return false;
+    return processedRules.includes(ruleResult.id);
+  }, [processedRules, ruleResult]);
 
   const [listDrawerVisible, setListDrawerVisible] = useState(false);
   const [ruleDrawerVisible, setRuleDrawerVisible] = useState(false);
@@ -157,25 +173,53 @@ const UserDataList = ({
       ruleConfig: config,
       value: ruleResult.value,
       level: ruleResult.level,
-      ignored: false,
+      ignored,
     });
     setRuleDrawerVisible(true);
   };
 
   const handleDrawerClose = () => {
-    setListDrawerVisible(false);
     if (changed) {
       onUpdateSecurityEngine();
     }
+    setListDrawerVisible(false);
+  };
+
+  const handleRuleDrawerClose = () => {
+    if (changed) {
+      onUpdateSecurityEngine();
+    }
+    setRuleDrawerVisible(false);
   };
 
   const handleIgnoreRule = () => {
-    // TODO
+    if (!ruleResult) return;
+    const { id } = ruleResult;
+    onIgnore(id);
+    setRuleDrawerVisible(false);
   };
 
-  const handleRuleEnableStatusChange = () => {
-    // TODO
+  const handleRuleEnableStatusChange = async (id: string, value: boolean) => {
+    onRuleEnableStatusChange(id, value);
+    setChanged(true);
   };
+
+  const reset = () => {
+    setChanged(false);
+    setSelectRule(null);
+  };
+
+  useEffect(() => {
+    if (!listDrawerVisible) {
+      reset();
+    }
+  }, [listDrawerVisible]);
+
+  useEffect(() => {
+    if (!ruleDrawerVisible) {
+      reset();
+    }
+  }, [ruleDrawerVisible]);
 
   return (
     <div className="flex">
@@ -206,10 +250,10 @@ const UserDataList = ({
       </UserDataListWrapper>
       {ruleResult && (
         <SecurityLevelWrapper
-          className={ruleResult.level}
+          className={ignored ? 'proceed' : ruleResult.level}
           onClick={handleClickRuleResult}
         >
-          <SecurityLevel level={ruleResult.level} />
+          <SecurityLevel level={ignored ? 'proceed' : ruleResult.level} />
           <SvgIconArrowRight className="icon-arrow-right" />
         </SecurityLevelWrapper>
       )}
@@ -227,7 +271,7 @@ const UserDataList = ({
         visible={ruleDrawerVisible}
         onIgnore={handleIgnoreRule}
         onRuleEnableStatusChange={handleRuleEnableStatusChange}
-        onClose={() => setRuleDrawerVisible(false)}
+        onClose={handleRuleDrawerClose}
       />
     </div>
   );

@@ -2412,6 +2412,14 @@ export class WalletController extends BaseController {
   removeOriginBlacklist = (origin: string) => {
     securityEngineService.removeOriginBlacklist(origin);
   };
+
+  ruleEnableStatusChange = (id: string, value: boolean) => {
+    if (value) {
+      securityEngineService.enableRule(id);
+    } else {
+      securityEngineService.disableRule(id);
+    }
+  };
 }
 
 export default new WalletController();

@@ -17,7 +17,6 @@ export const useSecurityEngine = (nonce = 0) => {
   const fetch = async () => {
     const data = await wallet.getSecurityEngineUserData();
     const r = await wallet.getSecurityEngineRules();
-    console.log('data', data);
     setUserData(data);
     setRules(r);
   };

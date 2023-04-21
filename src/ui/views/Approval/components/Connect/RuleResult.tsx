@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React from 'react';
 import { Tooltip } from 'antd';
 import { Result } from '@debank/rabby-security-engine';
 import styled from 'styled-components';
@@ -8,6 +8,7 @@ import { ReactComponent as IconQuestion } from '@/ui/assets/swap/question-outlin
 
 const RuleResultWrapper = styled.div`
   display: flex;
+  cursor: pointer;
   flex-direction: column;
   justify-content: center;
   min-height: 56px;
@@ -70,11 +71,10 @@ const RuleResult = ({
   collectList: { name: string; logo_url: string }[];
   popularLevel: string | null;
   ignored: boolean;
-  onSelect(rule: { id: string; desc: string; result: Result }): void;
+  onSelect(rule: { id: string; desc: string; result: Result | null }): void;
 }) => {
   const handleClick = () => {
-    if (!rule.result) return;
-    onSelect(rule as { id: string; desc: string; result: Result });
+    onSelect(rule);
   };
   return (
     <RuleResultWrapper onClick={handleClick}>
@@ -101,9 +101,7 @@ const RuleResult = ({
             <SecurityLevel level={rule.result.level} />
           )}
           {rule.result && ignored && <SecurityLevel level="proceed" />}
-          {rule.result && (
-            <img src={IconArrowRight} className="icon-arrow-right" />
-          )}
+          <img src={IconArrowRight} className="icon-arrow-right" />
         </div>
       </div>
       {rule.id === '1004' && (

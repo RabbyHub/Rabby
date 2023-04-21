@@ -9,7 +9,6 @@ import { CHAINS_ENUM, CHAINS } from 'consts';
 import styled from 'styled-components';
 import UserDataList from './UserDataList';
 import {
-  UserData,
   ContextActionData,
   RuleConfig,
   Level,
@@ -117,9 +116,7 @@ const Connect = ({ params: { icon, origin } }: ConnectProps) => {
   const [isLoading, setIsLoading] = useState(true);
   const [processedRules, setProcessedRules] = useState<string[]>([]);
   const [nonce, setNonce] = useState(0);
-  const { rules, userData, executeEngine, updateUserData } = useSecurityEngine(
-    nonce
-  );
+  const { rules, userData, executeEngine } = useSecurityEngine(nonce);
   const [engineResults, setEngineResults] = useState<Result[]>([]);
   const [collectList, setCollectList] = useState<
     { name: string; logo_url: string }[]
@@ -130,8 +127,8 @@ const Connect = ({ params: { icon, origin } }: ConnectProps) => {
   const [ruleDrawerVisible, setRuleDrawerVisible] = useState(false);
   const [selectRule, setSelectRule] = useState<{
     ruleConfig: RuleConfig;
-    value: number | string | boolean;
-    level: Level;
+    value?: number | string | boolean;
+    level?: Level;
     ignored: boolean;
   } | null>(null);
 
@@ -166,8 +163,9 @@ const Connect = ({ params: { icon, origin } }: ConnectProps) => {
     setRuleDrawerVisible(false);
   };
 
-  const handleRuleEnableStatusChange = (id: string, value: boolean) => {
-    // setNonce(nonce + 1);
+  const handleRuleEnableStatusChange = async (id: string, value: boolean) => {
+    await wallet.ruleEnableStatusChange(id, value);
+    setNonce(nonce + 1);
   };
 
   const handleUserDataListChange = () => {
@@ -245,6 +243,13 @@ const Connect = ({ params: { icon, origin } }: ConnectProps) => {
     });
   };
 
+  const handleRuleDrawerClose = (update: boolean) => {
+    if (update) {
+      handleExecuteSecurityEngine();
+    }
+    setRuleDrawerVisible(false);
+  };
+
   const handleChainChange = (val: CHAINS_ENUM) => {
     setDefaultChain(val);
   };
@@ -252,14 +257,14 @@ const Connect = ({ params: { icon, origin } }: ConnectProps) => {
   const handleSelectRule = (rule: {
     id: string;
     desc: string;
-    result: Result;
+    result: Result | null;
   }) => {
     const target = rules.find((item) => item.id === rule.id);
     if (!target) return;
     setSelectRule({
       ruleConfig: target,
-      value: rule.result.value,
-      level: rule.result.level,
+      value: rule.result?.value,
+      level: rule.result?.level,
       ignored: processedRules.includes(rule.id),
     });
     setRuleDrawerVisible(true);
@@ -294,8 +299,11 @@ const Connect = ({ params: { icon, origin } }: ConnectProps) => {
               logo={icon}
               userData={userData}
               ruleResult={userListResult}
+              processedRules={processedRules}
               onChange={handleUserDataListChange}
               onUpdateSecurityEngine={handleExecuteSecurityEngine}
+              onIgnore={handleIgnoreRule}
+              onRuleEnableStatusChange={handleRuleEnableStatusChange}
               rules={rules}
             />
           </div>
@@ -339,7 +347,7 @@ const Connect = ({ params: { icon, origin } }: ConnectProps) => {
           visible={ruleDrawerVisible}
           onIgnore={handleIgnoreRule}
           onRuleEnableStatusChange={handleRuleEnableStatusChange}
-          onClose={() => setRuleDrawerVisible(false)}
+          onClose={handleRuleDrawerClose}
         />
       </ConnectWrapper>
     </Spin>

@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React from 'react';
 import { Popup, Checkbox } from 'ui/component';
 import styled, { createGlobalStyle } from 'styled-components';
 
@@ -23,6 +23,7 @@ const Footer = styled.div`
   border-radius: 6px;
   .item {
     display: flex;
+    cursor: pointer;
     justify-content: space-between;
     align-items: center;
     padding: 15px;
@@ -102,7 +103,10 @@ const UserListDrawer = ({
         </div>
       </UserListDrawerWrapper>
       <Footer>
-        <div className="item">
+        <div
+          className="item"
+          onClick={() => onChange({ onBlacklist: false, onWhitelist: false })}
+        >
           <div>Not on any list</div>
           <div>
             <Checkbox
@@ -113,7 +117,10 @@ const UserListDrawer = ({
             />
           </div>
         </div>
-        <div className="item">
+        <div
+          className="item"
+          onClick={() => onChange({ onBlacklist: false, onWhitelist: true })}
+        >
           <div>On your whitelist</div>
           <div>
             <Checkbox
@@ -124,7 +131,10 @@ const UserListDrawer = ({
             />
           </div>
         </div>
-        <div className="item">
+        <div
+          className="item"
+          onClick={() => onChange({ onBlacklist: true, onWhitelist: false })}
+        >
           <div>On your blacklist</div>
           <div>
             <Checkbox
