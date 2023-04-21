@@ -75,6 +75,31 @@ const ConnectWrapper = styled.div`
   }
 `;
 
+const Footer = styled.div`
+  display: flex;
+  flex-direction: column;
+  padding: 20px;
+  border-top: 1px solid #e5e9ef;
+  position: fixed;
+  bottom: 0;
+  left: 0;
+  width: 100%;
+  .ant-btn {
+    width: 100%;
+    &:nth-child(1) {
+      margin-bottom: 12px;
+    }
+  }
+  .security-tip {
+    font-weight: 500;
+    font-size: 13px;
+    line-height: 15px;
+    text-align: center;
+    color: #4b4d59;
+    margin-bottom: 20px;
+  }
+`;
+
 const RuleDesc = [
   {
     id: '1004',
@@ -156,6 +181,40 @@ const Connect = ({ params: { icon, origin } }: ConnectProps) => {
       }
     }
     return list;
+  }, [engineResults]);
+
+  const connectBtnStatus = useMemo(() => {
+    let disabled = false;
+    let text = '';
+    let forbiddenCount = 0;
+    let safeCount = 0;
+    let needProcessCount = 0;
+
+    engineResults.forEach((result) => {
+      if (result.level === Level.SAFE) {
+        safeCount++;
+      } else if (result.level === Level.FORBIDDEN) {
+        forbiddenCount++;
+      } else {
+        needProcessCount++;
+      }
+    });
+    console.log(safeCount);
+    if (forbiddenCount > 0) {
+      disabled = true;
+      text = `${forbiddenCount} high-risk issue found. Connection is blocked to protect your assets`;
+    } else if (safeCount > 0) {
+      disabled = false;
+      text = `${needProcessCount} risk found, but with ${safeCount} safety check passed, you can connect without processing it.`;
+    } else {
+      disabled = true;
+      text = `${needProcessCount} risk found. Please process it before connecting.`;
+    }
+
+    return {
+      disabled,
+      text,
+    };
   }, [engineResults]);
 
   const handleIgnoreRule = (id: string) => {
@@ -322,26 +381,28 @@ const Connect = ({ params: { icon, origin } }: ConnectProps) => {
           ))}
         </div>
 
-        <footer className="connect-footer">
-          <div className="action-buttons flex justify-between mt-4">
+        <Footer>
+          <div className="action-buttons flex flex-col mt-4">
             <Button
               type="primary"
               size="large"
-              className="w-[172px]"
+              onClick={() => handleAllow()}
+              disabled={connectBtnStatus.disabled}
+            >
+              {t('Connect')}
+            </Button>
+            <div className="security-tip">{connectBtnStatus.text}</div>
+            <Button
+              type="primary"
+              ghost
+              className="rabby-btn-ghost"
+              size="large"
               onClick={handleCancel}
             >
               {t('Cancel')}
             </Button>
-            <Button
-              type="primary"
-              size="large"
-              className="w-[172px]"
-              onClick={() => handleAllow()}
-            >
-              {t('Connect')}
-            </Button>
           </div>
-        </footer>
+        </Footer>
         <RuleDrawer
           selectRule={selectRule}
           visible={ruleDrawerVisible}

@@ -74,6 +74,7 @@ const RuleResult = ({
   onSelect(rule: { id: string; desc: string; result: Result | null }): void;
 }) => {
   const handleClick = () => {
+    if (!rule.result) return;
     onSelect(rule);
   };
   return (
@@ -101,7 +102,9 @@ const RuleResult = ({
             <SecurityLevel level={rule.result.level} />
           )}
           {rule.result && ignored && <SecurityLevel level="proceed" />}
-          <img src={IconArrowRight} className="icon-arrow-right" />
+          {rule.result && (
+            <img src={IconArrowRight} className="icon-arrow-right" />
+          )}
         </div>
       </div>
       {rule.id === '1004' && (

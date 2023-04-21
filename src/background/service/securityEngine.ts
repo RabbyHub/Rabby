@@ -66,7 +66,10 @@ class SecurityEngineService {
         rules: getRuleConfigFromRules(defaultRules),
       },
     });
-    this.rules = mergeRules(defaultRules, storage.rules);
+    this.rules = mergeRules(defaultRules, storage.rules).map((rule) => ({
+      ...rule,
+      enable: true,
+    }));
     this.store = storage || this.store;
     this.engine = new Engine(this.rules, openapiService);
   };
