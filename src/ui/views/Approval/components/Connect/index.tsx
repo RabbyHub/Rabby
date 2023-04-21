@@ -198,7 +198,10 @@ const Connect = ({ params: { icon, origin } }: ConnectProps) => {
         safeCount++;
       } else if (result.level === Level.FORBIDDEN) {
         forbiddenCount++;
-      } else if (result.level !== Level.ERROR) {
+      } else if (
+        result.level !== Level.ERROR &&
+        !processedRules.includes(result.id)
+      ) {
         needProcessCount++;
       }
     });
@@ -218,7 +221,7 @@ const Connect = ({ params: { icon, origin } }: ConnectProps) => {
       disabled,
       text,
     };
-  }, [engineResults]);
+  }, [engineResults, processedRules]);
 
   const handleIgnoreRule = (id: string) => {
     setProcessedRules([...processedRules, id]);
