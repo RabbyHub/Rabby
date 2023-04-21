@@ -201,10 +201,10 @@ const TransactionExplain = ({
     <p className="tx-explain" onClick={onOpenScan}>
       {icon || <img className="icon icon-explain" src={IconUnknown} />}
       <div className="flex flex-1 justify-between">
-        <span className="tx-explain__text flex flex-1 items-center">
-          {content || t('Unknown Transaction')}
+        <div className="flex flex-1 items-center tx-explain__text">
+          <span>{content || t('Unknown Transaction')}</span>
           <SvgIconOpenExternal className="icon icon-external" />
-        </span>
+        </div>
         <span className="text-red-light text-14 font-normal text-right">
           {isCancel && t('Canceled')}
           {isFailed && t('Failed')}
