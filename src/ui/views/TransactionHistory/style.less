@@ -20,12 +20,6 @@
       line-height: 18px;
       color: @color-body;
       flex: 1;
-      span {
-        max-width: 80%;
-        overflow: hidden;
-        text-overflow: ellipsis;
-        white-space: nowrap;
-      }
       .icon-explain {
         width: 18px;
         height: 18px;
@@ -33,7 +27,14 @@
         border-radius: 2px;
       }
       .tx-explain__text {
+        overflow: hidden;
+        max-width: 250px;
         cursor: pointer;
+        span {
+          text-overflow: ellipsis;
+          white-space: nowrap;
+          overflow: hidden;
+        }
         .icon-external {
           display: none;
           margin-left: 6px;
