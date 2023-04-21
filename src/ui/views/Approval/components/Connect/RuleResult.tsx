@@ -51,6 +51,10 @@ const RuleResultWrapper = styled.div`
       }
     }
   }
+  &:hover {
+    background: rgba(134, 151, 255, 0.1);
+    border: 1px solid #8697ff;
+  }
 `;
 
 const PopularLevelDisplay = {

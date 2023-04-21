@@ -771,7 +771,7 @@ export const SecurityEngineLevel = {
   [Level.ERROR]: {
     color: '#B4BDCC',
     icon: IconError,
-    text: '引擎加载失败',
+    text: 'Security engine failed',
   },
   proceed: {
     color: '#707280',

@@ -25,6 +25,9 @@ interface ConnectProps {
 }
 
 const ConnectWrapper = styled.div`
+  height: 100vh;
+  display: flex;
+  flex-direction: column;
   .approval-connect {
     padding: 26px 20px;
     .approval-title {
@@ -71,6 +74,8 @@ const ConnectWrapper = styled.div`
     }
   }
   .rule-list {
+    flex: 1;
+    overflow: auto;
     padding: 0 20px;
   }
 `;
@@ -80,10 +85,8 @@ const Footer = styled.div`
   flex-direction: column;
   padding: 20px;
   border-top: 1px solid #e5e9ef;
-  position: fixed;
-  bottom: 0;
-  left: 0;
   width: 100%;
+  background-color: #fff;
   .ant-btn {
     width: 100%;
     &:nth-child(1) {
@@ -195,18 +198,18 @@ const Connect = ({ params: { icon, origin } }: ConnectProps) => {
         safeCount++;
       } else if (result.level === Level.FORBIDDEN) {
         forbiddenCount++;
-      } else {
+      } else if (result.level !== Level.ERROR) {
         needProcessCount++;
       }
     });
-    console.log(safeCount);
+
     if (forbiddenCount > 0) {
       disabled = true;
       text = `${forbiddenCount} high-risk issue found. Connection is blocked to protect your assets`;
     } else if (safeCount > 0) {
       disabled = false;
       text = `${needProcessCount} risk found, but with ${safeCount} safety check passed, you can connect without processing it.`;
-    } else {
+    } else if (needProcessCount > 0) {
       disabled = true;
       text = `${needProcessCount} risk found. Please process it before connecting.`;
     }
