@@ -1,3 +1,4 @@
+import { message } from 'antd';
 import React, { useState, useMemo, useEffect } from 'react';
 import styled from 'styled-components';
 import { Result } from '@debank/rabby-security-engine';
@@ -8,8 +9,8 @@ import RuleDrawer from '../SecurityEngine/RuleDrawer';
 import SecurityLevel from '../SecurityEngine/SecurityLevel';
 import IconWhitelist from 'ui/assets/sign/security-engine/whitelist.svg';
 import IconBlacklist from 'ui/assets/sign/security-engine/blacklist.svg';
-import IconNotlist from 'ui/assets/sign/security-engine/no-list.svg';
 import IconEditList from 'ui/assets/sign/connect/list-edit.svg';
+import IconSuccess from 'ui/assets/success.svg';
 import { ReactComponent as SvgIconArrowRight } from 'ui/assets/sign/arrow-right.svg';
 
 const UserDataListWrapper = styled.div`
@@ -23,6 +24,7 @@ const UserDataListWrapper = styled.div`
   align-items: center;
   background-color: #fff;
   margin-right: 8px;
+  cursor: pointer;
   .icon-list-status {
     width: 16px;
     height: 16px;
@@ -32,7 +34,6 @@ const UserDataListWrapper = styled.div`
     width: 16px;
     height: 16px;
     margin-left: 6px;
-    cursor: pointer;
   }
 `;
 
@@ -154,11 +155,47 @@ const UserDataList = ({
     if (onWhitelist === isInWhitelist && onBlacklist === isInBlacklist) return;
     if (onWhitelist) {
       await wallet.addOriginWhitelist(origin);
+      message.success({
+        duration: 3,
+        icon: <i />,
+        content: (
+          <div>
+            <div className="flex gap-4">
+              <img src={IconSuccess} alt="" />
+              <div className="text-white">Added to your whitelist</div>
+            </div>
+          </div>
+        ),
+      });
     } else if (onBlacklist) {
       await wallet.addOriginBlacklist(origin);
+      message.success({
+        duration: 3000000,
+        icon: <i />,
+        content: (
+          <div>
+            <div className="flex gap-4">
+              <img src={IconSuccess} alt="" />
+              <div className="text-white">Added to your blacklist</div>
+            </div>
+          </div>
+        ),
+      });
     } else {
       await wallet.removeOriginBlacklist(origin);
       await wallet.removeOriginWhitelist(origin);
+      message.success({
+        duration: 3,
+        icon: <i />,
+        content: (
+          <div>
+            <div className="flex gap-4">
+              <img src={IconSuccess} alt="" />
+              <div className="text-white">Removed from any list</div>
+            </div>
+          </div>
+        ),
+      });
     }
     setChanged(true);
     onChange();
@@ -223,13 +260,8 @@ const UserDataList = ({
 
   return (
     <div className="flex">
-      <UserDataListWrapper>
-        {!isInBlacklist && !isInWhitelist && (
-          <>
-            <img className="icon-list-status" src={IconNotlist} />
-            Not in any list
-          </>
-        )}
+      <UserDataListWrapper onClick={() => setListDrawerVisible(true)}>
+        {!isInBlacklist && !isInWhitelist && 'Not in any list'}
         {isInBlacklist && (
           <>
             <img className="icon-list-status" src={IconBlacklist} />
@@ -242,11 +274,7 @@ const UserDataList = ({
             In your whitelist
           </>
         )}
-        <img
-          src={IconEditList}
-          className="icon-edit-list"
-          onClick={() => setListDrawerVisible(true)}
-        />
+        <img src={IconEditList} className="icon-edit-list" />
       </UserDataListWrapper>
       {ruleResult && (
         <SecurityLevelWrapper

@@ -355,6 +355,19 @@ const RuleDrawer = ({
     }
   }, [selectRule]);
 
+  const ruleLevels = useMemo(() => {
+    if (!selectRule) return '';
+    const { ruleConfig } = selectRule;
+    const threshold = {
+      ...ruleConfig.defaultThreshold,
+      ...ruleConfig.customThreshold,
+    };
+
+    return Object.keys(threshold)
+      .map((level) => SecurityEngineLevel[level]?.text)
+      .join('/');
+  }, [selectRule]);
+
   const ignoreButtonDisabled = useMemo(() => {
     if (!selectRule) return true;
     if (selectRule.level === Level.FORBIDDEN) return true;
@@ -512,7 +525,7 @@ const RuleDrawer = ({
             >
               <div className="left">View security rules</div>
               <div className="right">
-                {selectRule.level && SecurityEngineLevel[selectRule.level].text}
+                {ruleLevels}
                 <img src={IconArrowRight} className="icon-arrow-right" />
               </div>
             </div>

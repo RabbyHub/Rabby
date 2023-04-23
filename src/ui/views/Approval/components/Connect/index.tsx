@@ -211,7 +211,11 @@ const Connect = ({ params: { icon, origin } }: ConnectProps) => {
       text = `${forbiddenCount} high-risk issue found. Connection is blocked to protect your assets`;
     } else if (safeCount > 0) {
       disabled = false;
-      text = `${needProcessCount} risk found, but with ${safeCount} safety check passed, you can connect without processing it.`;
+      if (needProcessCount > 0) {
+        text = `${needProcessCount} risk found, but with ${safeCount} safety check passed, you can connect without processing it.`;
+      } else {
+        text = `${safeCount} safety check passed. It is safe to connect.`;
+      }
     } else if (needProcessCount > 0) {
       disabled = true;
       text = `${needProcessCount} risk found. Please process it before connecting.`;
@@ -340,7 +344,7 @@ const Connect = ({ params: { icon, origin } }: ConnectProps) => {
       <ConnectWrapper>
         <div className="approval-connect">
           <div className="flex justify-between items-center mb-20">
-            <div className="approval-title">Dapp Connection</div>
+            <div className="approval-title">Connect to Dapp</div>
             <ChainSelector
               title={
                 <div>
