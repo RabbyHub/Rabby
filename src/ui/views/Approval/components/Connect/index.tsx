@@ -1,5 +1,6 @@
 import React, { useEffect, useMemo, useState } from 'react';
 import { Button } from 'antd';
+import clsx from 'clsx';
 import { useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Chain } from 'background/service/openapi';
@@ -411,10 +412,15 @@ const Connect = ({ params: { icon, origin } }: ConnectProps) => {
               size="large"
               onClick={() => handleAllow()}
               disabled={connectBtnStatus.disabled}
+              className={clsx({
+                'mb-0': !connectBtnStatus.text,
+              })}
             >
               {t('Connect')}
             </Button>
-            <div className="security-tip">{connectBtnStatus.text}</div>
+            {connectBtnStatus.text && (
+              <div className="security-tip">{connectBtnStatus.text}</div>
+            )}
             <Button
               type="primary"
               ghost

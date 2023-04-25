@@ -33,6 +33,18 @@ const Footer = styled.div`
     color: #13141a;
     position: relative;
     border: 1px solid transparent;
+    .rabby-checkbox__wrapper {
+      .rabby-checkbox {
+        border: 1px solid #707280;
+        background-color: #fff !important;
+      }
+      &.checked {
+        .rabby-checkbox {
+          background-color: #8697ff !important;
+          border: none;
+        }
+      }
+    }
     &::after {
       content: '';
       position: absolute;

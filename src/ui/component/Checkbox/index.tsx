@@ -42,7 +42,9 @@ const Checkbox = ({
 
   return (
     <div
-      className={cx('rabby-checkbox__wrapper', className)}
+      className={cx('rabby-checkbox__wrapper', className, {
+        checked: checkState,
+      })}
       onClick={(e) => handleValueChange(e, !checkState)}
     >
       <div

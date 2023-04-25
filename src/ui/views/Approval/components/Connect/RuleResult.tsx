@@ -9,7 +9,7 @@ const RuleResultWrapper = styled.div`
   justify-content: center;
   min-height: 56px;
   padding: 15px 16px;
-  padding-right: 80px;
+  padding-right: 0;
   background: #f5f6fa;
   border: 1px solid #e5e9ef;
   border-radius: 8px;
@@ -21,6 +21,7 @@ const RuleResultWrapper = styled.div`
     font-size: 15px;
     line-height: 18px;
     color: #13141a;
+    padding-right: 80px;
   }
   .icon-arrow-right {
     width: 16px;
@@ -66,13 +67,12 @@ const RuleResult = ({
   onSelect(rule: { id: string; desc: string; result: Result | null }): void;
 }) => {
   const handleClick = () => {
-    console.log('rule', rule);
     if (!rule.result) return;
     onSelect(rule);
   };
   return (
     <RuleResultWrapper>
-      <div className="flex justify-between items-center">
+      <div className="flex justify-between items-center w-full">
         <div className="rule-desc flex items-center">
           {rule.id === '1004' && (
             <div

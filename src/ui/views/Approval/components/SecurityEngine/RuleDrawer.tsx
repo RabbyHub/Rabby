@@ -10,8 +10,9 @@ import {
 import styled from 'styled-components';
 import { sortBy } from 'lodash';
 import { SecurityEngineLevel, SecurityEngineLevelOrder } from 'consts';
-import RuleDetailDrawer from './RuleDetailDrawer';
 import clsx from 'clsx';
+import { useHover } from '@/ui/utils';
+import RuleDetailDrawer from './RuleDetailDrawer';
 import IconArrowRight from 'ui/assets/sign/arrow-right.svg';
 import IconError from 'ui/assets/sign/security-engine/error-big.svg';
 import IconDisable from 'ui/assets/sign/security-engine/disable-big.svg';
@@ -91,6 +92,18 @@ const RuleDrawerWrapper = styled.div`
       line-height: 14px;
       color: #707280;
       margin-bottom: 12px;
+      .rabby-checkbox__wrapper {
+        .rabby-checkbox {
+          border: 1px solid #707280;
+          background-color: #fff !important;
+        }
+        &.checked {
+          .rabby-checkbox {
+            background-color: #8697ff !important;
+            border: none;
+          }
+        }
+      }
     }
     .forbidden-tip {
       margin-bottom: 12px;
@@ -201,7 +214,7 @@ const RuleDrawerWrapper = styled.div`
     .rule-threshold-footer {
       .button-ignore {
         background: #707280;
-        border-color: #707280;
+        border-color: transparent;
         &:hover {
           background: #707280;
           border-color: #707280;
@@ -286,6 +299,8 @@ const RuleDrawer = ({
   const [enabled, setEnabled] = useState<boolean | null>(null);
   const [ruleDetailDrawerVisible, setRuleDetailDrawerVisible] = useState(false);
 
+  const [isHovering, hoverProps] = useHover();
+  console.log('isHovering', isHovering);
   const currentLevel = useMemo(() => {
     if (!selectRule || selectRule.ignored) return 'proceed';
     return selectRule.level;
@@ -375,11 +390,32 @@ const RuleDrawer = ({
     if (!selectRule) return true;
     if (selectRule.level === Level.FORBIDDEN) return true;
     if (selectRule.ignored) {
-      return false;
+      return !isHovering;
     }
     if (selectRule.level === Level.DANGER && !accepted) return true;
     return false;
-  }, [selectRule, accepted]);
+  }, [selectRule, accepted, isHovering]);
+
+  const ignoreButtonContent = useMemo(() => {
+    if (!selectRule) return { color: null, text: '' };
+    let text = '';
+    let color: string | null = '#B4BDCC';
+    if (selectRule.ignored) {
+      if (isHovering) {
+        text = 'Undo';
+        color = '#707280';
+      } else {
+        text = 'Risk Processed';
+      }
+    } else {
+      text = 'Confirm and ignore risk';
+      color = null;
+    }
+    return {
+      text,
+      color,
+    };
+  }, [selectRule, isHovering]);
 
   const handleIgnore = () => {
     if (!selectRule || selectRule.level === Level.FORBIDDEN) return;
@@ -494,14 +530,21 @@ const RuleDrawer = ({
                     Found forbidden risk that can't be ignored.
                   </p>
                 )}
-                <Button
-                  type="primary"
-                  className="button-ignore"
-                  onClick={selectRule.ignored ? handleUndoIgnore : handleIgnore}
-                  disabled={ignoreButtonDisabled}
-                >
-                  {selectRule.ignored ? 'Undo' : 'Ignore the risk'}
-                </Button>
+                <div {...hoverProps}>
+                  <Button
+                    type="primary"
+                    className="button-ignore"
+                    style={{
+                      backgroundColor: ignoreButtonContent.color,
+                    }}
+                    onClick={
+                      selectRule.ignored ? handleUndoIgnore : handleIgnore
+                    }
+                    disabled={ignoreButtonDisabled}
+                  >
+                    {ignoreButtonContent.text}
+                  </Button>
+                </div>
               </div>
             )}
           </div>

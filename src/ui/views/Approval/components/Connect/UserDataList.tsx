@@ -11,6 +11,7 @@ import IconWhitelist from 'ui/assets/sign/security-engine/whitelist.svg';
 import IconBlacklist from 'ui/assets/sign/security-engine/blacklist.svg';
 import IconEditList from 'ui/assets/sign/connect/list-edit.svg';
 import IconSuccess from 'ui/assets/success.svg';
+import clsx from 'clsx';
 
 const UserDataListWrapper = styled.div`
   display: flex;
@@ -22,7 +23,6 @@ const UserDataListWrapper = styled.div`
   border-radius: 4px;
   align-items: center;
   background-color: #fff;
-  margin-right: 8px;
   cursor: pointer;
   .icon-list-status {
     width: 16px;
@@ -204,7 +204,12 @@ const UserDataList = ({
 
   return (
     <div className="flex">
-      <UserDataListWrapper onClick={() => setListDrawerVisible(true)}>
+      <UserDataListWrapper
+        className={clsx({
+          'pl-12': !isInBlacklist && !isInWhitelist,
+        })}
+        onClick={() => setListDrawerVisible(true)}
+      >
         {!isInBlacklist && !isInWhitelist && 'Not on any list'}
         {isInBlacklist && (
           <>
