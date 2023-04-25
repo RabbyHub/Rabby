@@ -1367,10 +1367,22 @@
     lodash "^4.17.21"
     qss "^2.0.3"
 
-"@debank/rabby-security-engine@^1.0.11":
-  version "1.0.11"
-  resolved "https://registry.yarnpkg.com/@debank/rabby-security-engine/-/rabby-security-engine-1.0.11.tgz#a6752f5205ef63211a6689e37d8c13d05cc38c2a"
-  integrity sha512-dDnY52Kp7qFoQUKG4cjD0iYU3kCsxQ+OvlQ1JAG6F4vM//8SHFEtgzcNwDSP/wgZQSNFfjBim7tVsojsLJi4RQ==
+"@debank/rabby-api@^0.5.26":
+  version "0.5.26"
+  resolved "https://registry.yarnpkg.com/@debank/rabby-api/-/rabby-api-0.5.26.tgz#e00176a2c01cc33be70382ff56a6a27b91abe8ce"
+  integrity sha512-Jang517dqtt/ak1wUnu0wgqVVDPb48ZdYE8txf6dvQWA4rUacqO08v2hutukMcjJFQQV8/3NcbtRAc8dZf0bTA==
+  dependencies:
+    "@debank/isomorphic" "^0.3.1"
+    axios "^0.27.2"
+    axios-rate-limit "^1.3.0"
+    eth-rpc-errors "^4.0.3"
+    lodash "^4.17.21"
+    qss "^2.0.3"
+
+"@debank/rabby-security-engine@^1.0.13":
+  version "1.0.13"
+  resolved "https://registry.yarnpkg.com/@debank/rabby-security-engine/-/rabby-security-engine-1.0.13.tgz#cd5055497739f6c65aebbed0e8d27b0db2df4f29"
+  integrity sha512-5AQ8+qEFFAXixlRRZoBXWm/4T2On4t8A+oWqxTd9sFOYTsae2wNQF2scJ6iCvPf1nsMNH/ymyjy6ilox53KbWA==
   dependencies:
     "@debank/common" "^0.2.31"
     "@debank/rabby-api" "^0.5.25"

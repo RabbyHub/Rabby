@@ -6,6 +6,8 @@ import {
 } from '@debank/rabby-security-engine/dist/rules';
 import React, { useState, useEffect, useMemo } from 'react';
 import clsx from 'clsx';
+import { sortBy } from 'lodash';
+import { SecurityEngineLevelOrder } from 'consts';
 import { PageHeader } from 'ui/component';
 import styled from 'styled-components';
 import SecurityLevel from './SecurityLevel';
@@ -147,7 +149,9 @@ const RuleDetailDrawer = ({
       ...rule.defaultThreshold,
       ...rule.customThreshold,
     };
-    return Object.keys(merged).map((key) => {
+    return sortBy(Object.keys(merged), (key) => {
+      return SecurityEngineLevelOrder.findIndex((k) => k === key);
+    }).map((key) => {
       return {
         data: merged[key],
         level: key as Level,

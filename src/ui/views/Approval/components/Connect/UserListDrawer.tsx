@@ -32,6 +32,7 @@ const Footer = styled.div`
     line-height: 15px;
     color: #13141a;
     position: relative;
+    border: 1px solid transparent;
     &::after {
       content: '';
       position: absolute;
@@ -40,6 +41,11 @@ const Footer = styled.div`
       width: 328px;
       height: 1px;
       background-color: #e5e9ef;
+    }
+    &:hover {
+      background: rgba(134, 151, 255, 0.1);
+      border: 1px solid #8697ff;
+      border-radius: 6px;
     }
     &:nth-last-child(1) {
       &::after {
@@ -99,7 +105,9 @@ const UserListDrawer = ({
       <UserListDrawerWrapper>
         <div className="origin">
           <img src={logo} className="logo" />
-          {origin}
+          <span className="flex-1 whitespace-nowrap overflow-hidden overflow-ellipsis">
+            {origin}
+          </span>
         </div>
       </UserListDrawerWrapper>
       <Footer>

@@ -52,6 +52,7 @@ import IconForbidden from 'ui/assets/sign/security-engine/forbidden.svg';
 import IconWarning from 'ui/assets/sign/security-engine/warning.svg';
 import IconError from 'ui/assets/sign/security-engine/error.svg';
 import IconProceed from 'ui/assets/sign/security-engine/processed.svg';
+import IconClosed from 'ui/assets/sign/security-engine/closed.svg';
 
 export { CHAINS, CHAINS_ENUM };
 
@@ -739,9 +740,9 @@ export const L2_ENUMS = [
 
 export const SecurityEngineLevelOrder = [
   Level.FORBIDDEN,
-  Level.SAFE,
   Level.DANGER,
   Level.WARNING,
+  Level.SAFE,
   null,
   Level.ERROR,
   'proceed',
@@ -772,6 +773,11 @@ export const SecurityEngineLevel = {
     color: '#B4BDCC',
     icon: IconError,
     text: 'Security engine failed',
+  },
+  [Level.CLOSED]: {
+    color: '#B4BDCC',
+    icon: IconClosed,
+    text: 'Closed',
   },
   proceed: {
     color: '#707280',

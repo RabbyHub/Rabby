@@ -1,23 +1,21 @@
 import React from 'react';
-import { Tooltip } from 'antd';
 import { Result } from '@debank/rabby-security-engine';
 import styled from 'styled-components';
-import SecurityLevel from '../SecurityEngine/SecurityLevel';
-import IconArrowRight from 'ui/assets/sign/arrow-right.svg';
-import { ReactComponent as IconQuestion } from '@/ui/assets/swap/question-outline.svg';
+import SecurityLevelTag from '../SecurityEngine/SecurityLevelTag';
 
 const RuleResultWrapper = styled.div`
   display: flex;
-  cursor: pointer;
   flex-direction: column;
   justify-content: center;
   min-height: 56px;
   padding: 15px 16px;
-  padding-right: 12px;
+  padding-right: 80px;
   background: #f5f6fa;
   border: 1px solid #e5e9ef;
   border-radius: 8px;
   margin-bottom: 8px;
+  position: relative;
+
   .rule-desc {
     font-weight: 500;
     font-size: 15px;
@@ -35,11 +33,12 @@ const RuleResultWrapper = styled.div`
     &-item {
       display: flex;
       align-items: center;
-      font-size: 12px;
-      line-height: 14px;
-      color: #707280;
+      font-weight: 500;
+      font-size: 13px;
+      line-height: 15px;
+      color: #13141a;
       margin-right: 12px;
-      margin-top: 10px;
+      margin-top: 8px;
       img {
         width: 16px;
         height: 16px;
@@ -51,18 +50,7 @@ const RuleResultWrapper = styled.div`
       }
     }
   }
-  &:hover {
-    background: rgba(134, 151, 255, 0.1);
-    border: 1px solid #8697ff;
-  }
 `;
-
-const PopularLevelDisplay = {
-  very_low: 'Very Low',
-  low: 'Low',
-  average: 'Average',
-  high: 'High',
-};
 
 const RuleResult = ({
   rule,
@@ -78,37 +66,36 @@ const RuleResult = ({
   onSelect(rule: { id: string; desc: string; result: Result | null }): void;
 }) => {
   const handleClick = () => {
+    console.log('rule', rule);
     if (!rule.result) return;
     onSelect(rule);
   };
   return (
-    <RuleResultWrapper onClick={handleClick}>
+    <RuleResultWrapper>
       <div className="flex justify-between items-center">
         <div className="rule-desc flex items-center">
-          {rule.desc}
+          {rule.id === '1004' && (
+            <div
+              className={
+                collectList.length > 0
+                  ? 'text-12 text-gray-subTitle font-normal'
+                  : ''
+              }
+            >
+              {collectList.length === 0
+                ? 'Not listed by any community platforms'
+                : `Listed by ${collectList.length} community platforms`}
+            </div>
+          )}
           {rule.id === '1005' && (
             <>
-              <Tooltip
-                overlayClassName="rectangle"
-                placement="top"
-                title="Site popularity is calculated based on website visits and interactions."
-              >
-                <IconQuestion className="ml-2" />
-              </Tooltip>
-              <span className="text-15 font-medium text-gray-title">
-                : {popularLevel && PopularLevelDisplay[popularLevel]}
-              </span>
+              {popularLevel === 'high' && 'Popular site with many visitors'}
+              {popularLevel === 'medium' && 'Popular site with many visitors'}
+              {popularLevel === 'low' && 'Low popularity with few visitors'}
+              {popularLevel === 'very_low' && 'Very few visitors to this site'}
             </>
           )}
-        </div>
-        <div className="flex">
-          {rule.result && !ignored && (
-            <SecurityLevel level={rule.result.level} />
-          )}
-          {rule.result && ignored && <SecurityLevel level="proceed" />}
-          {rule.result && (
-            <img src={IconArrowRight} className="icon-arrow-right" />
-          )}
+          {rule.id !== '1004' && rule.id !== '1005' && rule.desc}
         </div>
       </div>
       {rule.id === '1004' && (
@@ -120,6 +107,12 @@ const RuleResult = ({
             </div>
           ))}
         </div>
+      )}
+      {rule.result && !ignored && (
+        <SecurityLevelTag level={rule.result.level} onClick={handleClick} />
+      )}
+      {rule.result && ignored && (
+        <SecurityLevelTag level="proceed" onClick={handleClick} />
       )}
     </RuleResultWrapper>
   );

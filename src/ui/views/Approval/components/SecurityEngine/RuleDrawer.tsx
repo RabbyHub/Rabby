@@ -8,7 +8,8 @@ import {
   EnumDefine,
 } from '@debank/rabby-security-engine/dist/rules';
 import styled from 'styled-components';
-import { SecurityEngineLevel } from 'consts';
+import { sortBy } from 'lodash';
+import { SecurityEngineLevel, SecurityEngineLevelOrder } from 'consts';
 import RuleDetailDrawer from './RuleDetailDrawer';
 import clsx from 'clsx';
 import IconArrowRight from 'ui/assets/sign/arrow-right.svg';
@@ -179,14 +180,6 @@ const RuleDrawerWrapper = styled.div`
       .button-ignore {
         background: #af160e;
         border-color: #af160e;
-        &:hover {
-          background: #af160e;
-          border-color: #af160e;
-          box-shadow: 0px 8px 16px rgba(175, 22, 14, 0.3);
-        }
-        &:focus {
-          box-shadow: 0px 8px 16px rgba(175, 22, 14, 0.3);
-        }
       }
     }
   }
@@ -207,15 +200,15 @@ const RuleDrawerWrapper = styled.div`
     }
     .rule-threshold-footer {
       .button-ignore {
-        background: #b4bdcc;
-        border-color: #b4bdcc;
+        background: #707280;
+        border-color: #707280;
         &:hover {
-          background: #b4bdcc;
-          border-color: #b4bdcc;
-          box-shadow: 0px 8px 16px rgba(108, 189, 204, 0.3);
+          background: #707280;
+          border-color: #707280;
+          box-shadow: 0px 8px 16px rgba(112, 114, 128, 0.3);
         }
         &:focus {
-          box-shadow: 0px 8px 16px rgba(108, 189, 204, 0.3);
+          box-shadow: 0px 8px 16px rgba(112, 114, 128, 0.3);
         }
       }
     }
@@ -236,6 +229,12 @@ const RuleFooter = styled.div`
     color: #13141a;
     .right {
       display: flex;
+      font-size: 12px;
+      line-height: 14px;
+      text-align: right;
+      color: #4b4d59;
+      font-weight: normal;
+      align-items: center;
     }
     &:nth-child(1) {
       position: relative;
@@ -270,6 +269,7 @@ interface Props {
   visible: boolean;
   onRuleEnableStatusChange(id: string, value: boolean): Promise<void>;
   onIgnore(id: string): void;
+  onUndo(id: string): void;
   onClose(update: boolean): void;
 }
 
@@ -278,6 +278,7 @@ const RuleDrawer = ({
   selectRule,
   onClose,
   onIgnore,
+  onUndo,
   onRuleEnableStatusChange,
 }: Props) => {
   const [accepted, setAccepted] = useState(false);
@@ -309,7 +310,7 @@ const RuleDrawer = ({
   const displayThreshold = useMemo(() => {
     if (!selectRule) return '';
     const { level, ruleConfig, value } = selectRule;
-    if (!level) return '';
+    if (!level || level === Level.CLOSED || level === Level.ERROR) return '';
     const threshold = {
       ...ruleConfig.defaultThreshold,
       ...ruleConfig.customThreshold,
@@ -330,26 +331,26 @@ const RuleDrawer = ({
         const arr: string[] = [];
         if (min !== null) {
           if (minIncluded) {
-            arr.push(`≤${min}`);
+            arr.push(`≥${min}`);
           } else {
-            arr.push(`<${min}`);
+            arr.push(`>${min}`);
           }
         }
         if (max !== null) {
           if (maxIncluded) {
-            arr.push(`≥${max}`);
+            arr.push(`≤${max}`);
           } else {
-            arr.push(`>${max}`);
+            arr.push(`<${max}`);
           }
         } else {
           arr.push('∞');
         }
-        return arr.join('; ');
+        return arr.join(' and ');
       }
       case 'enum':
         return (levelThreshold as string[])
           .map((item) => (ruleConfig.valueDefine as EnumDefine).display[item])
-          .join(';');
+          .join(' or ');
       default:
         return '';
     }
@@ -363,7 +364,9 @@ const RuleDrawer = ({
       ...ruleConfig.customThreshold,
     };
 
-    return Object.keys(threshold)
+    return sortBy(Object.keys(threshold), (key) => {
+      return SecurityEngineLevelOrder.findIndex((k) => k === key);
+    })
       .map((level) => SecurityEngineLevel[level]?.text)
       .join('/');
   }, [selectRule]);
@@ -372,7 +375,7 @@ const RuleDrawer = ({
     if (!selectRule) return true;
     if (selectRule.level === Level.FORBIDDEN) return true;
     if (selectRule.ignored) {
-      return true;
+      return false;
     }
     if (selectRule.level === Level.DANGER && !accepted) return true;
     return false;
@@ -381,6 +384,11 @@ const RuleDrawer = ({
   const handleIgnore = () => {
     if (!selectRule || selectRule.level === Level.FORBIDDEN) return;
     onIgnore(selectRule.ruleConfig.id);
+  };
+
+  const handleUndoIgnore = () => {
+    if (!selectRule) return;
+    onUndo(selectRule.ruleConfig.id);
   };
 
   const handleEnableStatusChange = async (value: boolean) => {
@@ -445,10 +453,9 @@ const RuleDrawer = ({
           </div>
           <div className="threshold">
             <p>
-              The current result value is:{' '}
-              <span className="value">{displayValue}</span>
+              Current value: <span className="value">{displayValue}</span>
               <br />
-              The current resulting value triggers the following security rules
+              The risk level triggered by current value:
             </p>
             <div className="rule-threshold">
               {currentLevel && (
@@ -462,7 +469,9 @@ const RuleDrawer = ({
                   {SecurityEngineLevel[selectRule.level].text}:
                 </span>
               )}
-              <span className="threshold-text">{displayThreshold}</span>
+              <span className="threshold-text">
+                when the value is {displayThreshold}
+              </span>
             </div>
             {selectRule.level !== 'safe' && (
               <div className="rule-threshold-footer">
@@ -476,23 +485,22 @@ const RuleDrawer = ({
                       checked={selectRule.ignored || accepted}
                       onChange={(val) => setAccepted(val)}
                     >
-                      I understand and accept responsibility for any loss
+                      I understand and confirm no risks
                     </Checkbox>
                   </div>
                 )}
                 {selectRule.level === Level.FORBIDDEN && (
                   <p className="forbidden-tip">
-                    Forbidden risk, which may cause damage to your property and
-                    is not allowed to be ignored
+                    Found forbidden risk that can't be ignored.
                   </p>
                 )}
                 <Button
                   type="primary"
                   className="button-ignore"
-                  onClick={handleIgnore}
+                  onClick={selectRule.ignored ? handleUndoIgnore : handleIgnore}
                   disabled={ignoreButtonDisabled}
                 >
-                  {selectRule.ignored ? 'Risk Processed' : 'Ignore it for once'}
+                  {selectRule.ignored ? 'Undo' : 'Ignore the risk'}
                 </Button>
               </div>
             )}

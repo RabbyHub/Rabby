@@ -6,12 +6,11 @@ import { RuleConfig, UserData } from '@debank/rabby-security-engine/dist/rules';
 import { useWallet } from 'ui/utils';
 import UserListDrawer from './UserListDrawer';
 import RuleDrawer from '../SecurityEngine/RuleDrawer';
-import SecurityLevel from '../SecurityEngine/SecurityLevel';
+import SecurityLevelTag from '../SecurityEngine/SecurityLevelTag';
 import IconWhitelist from 'ui/assets/sign/security-engine/whitelist.svg';
 import IconBlacklist from 'ui/assets/sign/security-engine/blacklist.svg';
 import IconEditList from 'ui/assets/sign/connect/list-edit.svg';
 import IconSuccess from 'ui/assets/success.svg';
-import { ReactComponent as SvgIconArrowRight } from 'ui/assets/sign/arrow-right.svg';
 
 const UserDataListWrapper = styled.div`
   display: flex;
@@ -37,64 +36,6 @@ const UserDataListWrapper = styled.div`
   }
 `;
 
-const SecurityLevelWrapper = styled.div`
-  display: flex;
-  padding: 8px 12px;
-  border-radius: 4px;
-  cursor: pointer;
-  align-items: center;
-  .icon-arrow-right {
-    path {
-      stroke: currentColor;
-    }
-  }
-  &.safe {
-    color: #27c193;
-    background: linear-gradient(
-        0deg,
-        rgba(39, 193, 147, 0.1),
-        rgba(39, 193, 147, 0.1)
-      ),
-      #ffffff;
-    border: 0.522914px solid rgba(39, 193, 147, 0.2);
-  }
-  &.forbidden {
-    color: #af160e;
-    background: linear-gradient(
-        0deg,
-        rgba(175, 22, 14, 0.1),
-        rgba(175, 22, 14, 0.1)
-      ),
-      #ffffff;
-    border: 0.522914px solid rgba(175, 22, 14, 0.2);
-  }
-  &.danger {
-    color: #ec5151;
-    background: linear-gradient(
-        0deg,
-        rgba(236, 81, 81, 0.1),
-        rgba(236, 81, 81, 0.1)
-      ),
-      #ffffff;
-    border: 0.522914px solid rgba(255, 176, 32, 0.2);
-  }
-  &.warning {
-    color: #ffb020;
-    background: linear-gradient(
-        0deg,
-        rgba(255, 176, 32, 0.1),
-        rgba(255, 176, 32, 0.1)
-      ),
-      #ffffff;
-    border: 0.522914px solid rgba(255, 176, 32, 0.2);
-  }
-  &.proceed {
-    color: #707280;
-    background: #f5f6fa;
-    border: 0.522914px solid #e5e9ef;
-  }
-`;
-
 interface Props {
   origin: string;
   logo: string;
@@ -104,6 +45,7 @@ interface Props {
   onChange(): void;
   onUpdateSecurityEngine(): void;
   onIgnore(id: string): void;
+  onUndo(id: string): void;
   onRuleEnableStatusChange(id: string, value: boolean): void;
   ruleResult?: Result;
 }
@@ -118,6 +60,7 @@ const UserDataList = ({
   onChange,
   onUpdateSecurityEngine,
   onIgnore,
+  onUndo,
   onRuleEnableStatusChange,
 }: Props) => {
   const wallet = useWallet();
@@ -170,7 +113,7 @@ const UserDataList = ({
     } else if (onBlacklist) {
       await wallet.addOriginBlacklist(origin);
       message.success({
-        duration: 3000000,
+        duration: 3,
         icon: <i />,
         content: (
           <div>
@@ -197,8 +140,9 @@ const UserDataList = ({
         ),
       });
     }
-    setChanged(true);
+    setListDrawerVisible(false);
     onChange();
+    onUpdateSecurityEngine();
   };
 
   const handleClickRuleResult = () => {
@@ -216,9 +160,6 @@ const UserDataList = ({
   };
 
   const handleDrawerClose = () => {
-    if (changed) {
-      onUpdateSecurityEngine();
-    }
     setListDrawerVisible(false);
   };
 
@@ -229,10 +170,13 @@ const UserDataList = ({
     setRuleDrawerVisible(false);
   };
 
-  const handleIgnoreRule = () => {
-    if (!ruleResult) return;
-    const { id } = ruleResult;
+  const handleIgnoreRule = (id: string) => {
     onIgnore(id);
+    setRuleDrawerVisible(false);
+  };
+
+  const handleUndoIgnore = (id: string) => {
+    onUndo(id);
     setRuleDrawerVisible(false);
   };
 
@@ -261,29 +205,26 @@ const UserDataList = ({
   return (
     <div className="flex">
       <UserDataListWrapper onClick={() => setListDrawerVisible(true)}>
-        {!isInBlacklist && !isInWhitelist && 'Not in any list'}
+        {!isInBlacklist && !isInWhitelist && 'Not on any list'}
         {isInBlacklist && (
           <>
             <img className="icon-list-status" src={IconBlacklist} />
-            In your blacklist
+            On your blacklist
           </>
         )}
         {isInWhitelist && (
           <>
             <img className="icon-list-status" src={IconWhitelist} />
-            In your whitelist
+            On your whitelist
           </>
         )}
         <img src={IconEditList} className="icon-edit-list" />
       </UserDataListWrapper>
       {ruleResult && (
-        <SecurityLevelWrapper
-          className={ignored ? 'proceed' : ruleResult.level}
+        <SecurityLevelTag
+          level={ignored ? 'proceed' : ruleResult.level}
           onClick={handleClickRuleResult}
-        >
-          <SecurityLevel level={ignored ? 'proceed' : ruleResult.level} />
-          <SvgIconArrowRight className="icon-arrow-right" />
-        </SecurityLevelWrapper>
+        />
       )}
       <UserListDrawer
         origin={origin}
@@ -298,6 +239,7 @@ const UserDataList = ({
         selectRule={selectRule}
         visible={ruleDrawerVisible}
         onIgnore={handleIgnoreRule}
+        onUndo={handleUndoIgnore}
         onRuleEnableStatusChange={handleRuleEnableStatusChange}
         onClose={handleRuleDrawerClose}
       />

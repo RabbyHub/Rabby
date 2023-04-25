@@ -62,6 +62,7 @@ const ConnectWrapper = styled.div`
       display: flex;
       flex-direction: column;
       align-items: center;
+      position: relative;
       .connect-origin {
         margin-top: 12px;
         margin-bottom: 14px;
@@ -89,8 +90,12 @@ const Footer = styled.div`
   background-color: #fff;
   .ant-btn {
     width: 100%;
+    height: 52px;
     &:nth-child(1) {
       margin-bottom: 12px;
+    }
+    &:nth-last-child(1) {
+      margin-top: 20px;
     }
   }
   .security-tip {
@@ -99,7 +104,6 @@ const Footer = styled.div`
     line-height: 15px;
     text-align: center;
     color: #4b4d59;
-    margin-bottom: 20px;
   }
 `;
 
@@ -192,6 +196,7 @@ const Connect = ({ params: { icon, origin } }: ConnectProps) => {
     let forbiddenCount = 0;
     let safeCount = 0;
     let needProcessCount = 0;
+    let cancelBtnText = 'Cancel';
 
     engineResults.forEach((result) => {
       if (result.level === Level.SAFE) {
@@ -200,6 +205,7 @@ const Connect = ({ params: { icon, origin } }: ConnectProps) => {
         forbiddenCount++;
       } else if (
         result.level !== Level.ERROR &&
+        result.level !== Level.CLOSED &&
         !processedRules.includes(result.id)
       ) {
         needProcessCount++;
@@ -208,27 +214,31 @@ const Connect = ({ params: { icon, origin } }: ConnectProps) => {
 
     if (forbiddenCount > 0) {
       disabled = true;
-      text = `${forbiddenCount} high-risk issue found. Connection is blocked to protect your assets`;
-    } else if (safeCount > 0) {
-      disabled = false;
-      if (needProcessCount > 0) {
-        text = `${needProcessCount} risk found, but with ${safeCount} safety check passed, you can connect without processing it.`;
-      } else {
-        text = `${safeCount} safety check passed. It is safe to connect.`;
-      }
+      text = `Found ${forbiddenCount} forbidden risk${
+        forbiddenCount > 1 ? 's' : ''
+      }. Connection is blocked to avoid possible asset loss.`;
+      cancelBtnText = 'Close';
     } else if (needProcessCount > 0) {
       disabled = true;
-      text = `${needProcessCount} risk found. Please process it before connecting.`;
+      text = `Found ${needProcessCount} risk${
+        needProcessCount > 1 ? 's' : ''
+      }. Please process it before connecting.`;
     }
 
     return {
       disabled,
       text,
+      cancelBtnText,
     };
   }, [engineResults, processedRules]);
 
   const handleIgnoreRule = (id: string) => {
     setProcessedRules([...processedRules, id]);
+    setRuleDrawerVisible(false);
+  };
+
+  const handleUndoIgnore = (id: string) => {
+    setProcessedRules(processedRules.filter((item) => item !== id));
     setRuleDrawerVisible(false);
   };
 
@@ -272,6 +282,7 @@ const Connect = ({ params: { icon, origin } }: ConnectProps) => {
       },
     };
     const results = await executeEngine(ctx);
+
     setEngineResults(results);
     if (site) {
       setDefaultChain(site.chain);
@@ -358,6 +369,7 @@ const Connect = ({ params: { icon, origin } }: ConnectProps) => {
               onChange={handleChainChange}
               connection
               showModal={showModal}
+              modalHeight={540}
             />
           </div>
           <div className="connect-card">
@@ -372,6 +384,7 @@ const Connect = ({ params: { icon, origin } }: ConnectProps) => {
               onChange={handleUserDataListChange}
               onUpdateSecurityEngine={handleExecuteSecurityEngine}
               onIgnore={handleIgnoreRule}
+              onUndo={handleUndoIgnore}
               onRuleEnableStatusChange={handleRuleEnableStatusChange}
               rules={rules}
             />
@@ -409,7 +422,7 @@ const Connect = ({ params: { icon, origin } }: ConnectProps) => {
               size="large"
               onClick={handleCancel}
             >
-              {t('Cancel')}
+              {connectBtnStatus.cancelBtnText}
             </Button>
           </div>
         </Footer>
@@ -417,6 +430,7 @@ const Connect = ({ params: { icon, origin } }: ConnectProps) => {
           selectRule={selectRule}
           visible={ruleDrawerVisible}
           onIgnore={handleIgnoreRule}
+          onUndo={handleUndoIgnore}
           onRuleEnableStatusChange={handleRuleEnableStatusChange}
           onClose={handleRuleDrawerClose}
         />
