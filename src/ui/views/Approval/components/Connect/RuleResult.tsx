@@ -119,7 +119,8 @@ const RuleResult = ({
           {rule.id === '1005' && (
             <>
               {popularLevel === 'high' && 'Popular site with many visitors'}
-              {popularLevel === 'medium' && 'Popular site with many visitors'}
+              {popularLevel === 'medium' &&
+                'Average level of popularity among users'}
               {popularLevel === 'low' && 'Low popularity with few visitors'}
               {popularLevel === 'very_low' && 'Very few visitors to this site'}
             </>

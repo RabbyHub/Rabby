@@ -59,6 +59,7 @@ const ThresholdItem = ({ rule, level }: { rule: RuleConfig; level: Level }) => {
         return 'False';
       case 'float':
       case 'int': {
+        const { max: valueMax, min: valueMin } = rule.valueDefine;
         const {
           max,
           min,
@@ -68,16 +69,24 @@ const ThresholdItem = ({ rule, level }: { rule: RuleConfig; level: Level }) => {
         const arr: string[] = [];
         if (min !== null) {
           if (minIncluded) {
-            arr.push(`≤${min}`);
+            if (min === valueMax) {
+              arr.push(min.toString());
+            } else {
+              arr.push(`≥${min}`);
+            }
           } else {
-            arr.push(`<${min}`);
+            arr.push(`>${min}`);
           }
         }
         if (max !== null) {
           if (maxIncluded) {
-            arr.push(`≥${max}`);
+            if (max === valueMin) {
+              arr.push(max.toString());
+            } else {
+              arr.push(`≤${max}`);
+            }
           } else {
-            arr.push(`>${max}`);
+            arr.push(`<${max}`);
           }
         } else {
           arr.push('∞');

@@ -256,6 +256,7 @@ const Connect = ({ params: { icon, origin } }: ConnectProps) => {
         ignored: true,
       });
     }
+    setRuleDrawerVisible(false);
   };
 
   const handleUndoIgnore = (id: string) => {
@@ -266,6 +267,7 @@ const Connect = ({ params: { icon, origin } }: ConnectProps) => {
         ignored: false,
       });
     }
+    setRuleDrawerVisible(false);
   };
 
   const handleRuleEnableStatusChange = async (id: string, value: boolean) => {

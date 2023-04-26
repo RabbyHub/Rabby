@@ -193,9 +193,6 @@ const UserDataList = ({
   };
 
   const handleRuleDrawerClose = () => {
-    if (changed) {
-      onUpdateSecurityEngine();
-    }
     setRuleDrawerVisible(false);
   };
 
@@ -212,6 +209,7 @@ const UserDataList = ({
   const handleRuleEnableStatusChange = async (id: string, value: boolean) => {
     onRuleEnableStatusChange(id, value);
     setChanged(true);
+    onUpdateSecurityEngine();
   };
 
   const reset = () => {
