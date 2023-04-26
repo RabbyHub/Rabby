@@ -457,8 +457,8 @@ const RuleDrawer = ({
         <RuleDrawerWrapper className={clsx(Level.ERROR)}>
           <img src={IconDisable} />
           <p className="text-15 text-gray-content mt-4 text-center font-medium">
-            Security Engine has been turned off. Turn it on anytime from below
-            for safety.
+            Security rules have been disabled. For your safety, you can turn it
+            on anytime.
           </p>
         </RuleDrawerWrapper>
       );
@@ -467,8 +467,7 @@ const RuleDrawer = ({
         <RuleDrawerWrapper className={clsx(selectRule.level)}>
           <img src={IconError} />
           <p className="text-15 text-gray-content mt-16 text-center font-medium">
-            Unknown result because Security Engine is unavailable. Please try
-            again later.
+            Unknown result because security rule is unavailable
           </p>
         </RuleDrawerWrapper>
       );

@@ -97,9 +97,13 @@ const UserDataList = ({
       ruleResult.level === Level.CLOSED ||
       ignored
     ) {
-      return false;
+      return !hasForbidden;
     } else {
-      return hasSafe || hasForbidden;
+      if (hasForbidden) {
+        return false;
+      } else {
+        return hasSafe;
+      }
     }
   }, [hasSafe, hasForbidden, ruleResult, ignored]);
 
@@ -254,6 +258,7 @@ const UserDataList = ({
         <SecurityLevelTag
           level={ignored ? 'proceed' : ruleResult.level}
           onClick={handleClickRuleResult}
+          translucent={translucent}
         />
       )}
       <UserListDrawer

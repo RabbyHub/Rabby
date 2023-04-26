@@ -89,7 +89,11 @@ const RuleResult = ({
     ) {
       return false;
     } else {
-      return hasSafe || hasForbidden;
+      if (hasForbidden) {
+        return false;
+      } else {
+        return hasSafe;
+      }
     }
   }, [hasSafe, hasForbidden, rule, ignored]);
 
