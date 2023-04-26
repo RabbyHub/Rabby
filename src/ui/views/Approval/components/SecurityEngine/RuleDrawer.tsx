@@ -300,7 +300,6 @@ const RuleDrawer = ({
   const [ruleDetailDrawerVisible, setRuleDetailDrawerVisible] = useState(false);
 
   const [isHovering, hoverProps] = useHover();
-  console.log('isHovering', isHovering);
   const currentLevel = useMemo(() => {
     if (!selectRule || selectRule.ignored) return 'proceed';
     return selectRule.level;
@@ -408,7 +407,7 @@ const RuleDrawer = ({
         text = 'Risk Processed';
       }
     } else {
-      text = 'Confirm and ignore risk';
+      text = 'Ignore the risk';
       color = null;
     }
     return {
@@ -574,7 +573,7 @@ const RuleDrawer = ({
               className="item"
               onClick={() => setRuleDetailDrawerVisible(true)}
             >
-              <div className="left">View security rules</div>
+              <div className="left">View risk level</div>
               <div className="right">
                 {ruleLevels}
                 <img src={IconArrowRight} className="icon-arrow-right" />

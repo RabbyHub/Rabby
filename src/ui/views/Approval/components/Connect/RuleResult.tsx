@@ -1,7 +1,8 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import { Result } from '@debank/rabby-security-engine';
 import styled from 'styled-components';
 import SecurityLevelTag from '../SecurityEngine/SecurityLevelTag';
+import { Level } from '@debank/rabby-security-engine/dist/rules';
 
 const RuleResultWrapper = styled.div`
   display: flex;
@@ -58,18 +59,40 @@ const RuleResult = ({
   collectList,
   popularLevel,
   ignored,
+  hasSafe,
+  hasForbidden,
   onSelect,
 }: {
   rule: { id: string; desc: string; result: Result | null };
   collectList: { name: string; logo_url: string }[];
   popularLevel: string | null;
   ignored: boolean;
+  hasSafe: boolean;
+  hasForbidden: boolean;
   onSelect(rule: { id: string; desc: string; result: Result | null }): void;
 }) => {
   const handleClick = () => {
     if (!rule.result) return;
     onSelect(rule);
   };
+
+  const translucent = useMemo(() => {
+    if (!rule.result) return false;
+    if (rule.result.level === Level.FORBIDDEN) {
+      return false;
+    } else if (rule.result.level === Level.SAFE) {
+      return hasForbidden;
+    } else if (
+      rule.result.level === Level.ERROR ||
+      rule.result.level === Level.CLOSED ||
+      ignored
+    ) {
+      return false;
+    } else {
+      return hasSafe || hasForbidden;
+    }
+  }, [hasSafe, hasForbidden, rule, ignored]);
+
   return (
     <RuleResultWrapper>
       <div className="flex justify-between items-center w-full">
@@ -84,7 +107,9 @@ const RuleResult = ({
             >
               {collectList.length === 0
                 ? 'Not listed by any community platforms'
-                : `Listed by ${collectList.length} community platforms`}
+                : `Listed by ${collectList.length} community platform${
+                    collectList.length > 1 ? 's' : ''
+                  }`}
             </div>
           )}
           {rule.id === '1005' && (
@@ -109,7 +134,11 @@ const RuleResult = ({
         </div>
       )}
       {rule.result && !ignored && (
-        <SecurityLevelTag level={rule.result.level} onClick={handleClick} />
+        <SecurityLevelTag
+          level={rule.result.level}
+          onClick={handleClick}
+          translucent={translucent}
+        />
       )}
       {rule.result && ignored && (
         <SecurityLevelTag level="proceed" onClick={handleClick} />

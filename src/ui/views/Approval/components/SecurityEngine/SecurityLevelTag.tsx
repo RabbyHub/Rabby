@@ -14,6 +14,9 @@ const SecurityLevelTagWrapper = styled.div`
   padding: 4px;
   border-radius: 4px;
   transition: all 0.3s;
+  &.translucent {
+    opacity: 0.7;
+  }
   &.safe {
     color: #27c193;
     background: rgba(39, 193, 147, 0.15);
@@ -47,6 +50,7 @@ const SecurityLevelTagWrapper = styled.div`
   }
   &:hover {
     box-shadow: 0px 2px 4px rgba(0, 0, 0, 0.1);
+    opacity: 1;
     &.safe {
       background: rgba(39, 193, 147, 0.3);
       border: 0.5px solid rgba(39, 193, 147, 1);
@@ -82,14 +86,16 @@ const SecurityLevelTagWrapper = styled.div`
 
 const SecurityLevelTag = ({
   level,
+  translucent,
   onClick,
 }: {
   level: Level | 'proceed';
+  translucent?: boolean;
   onClick?(): void;
 }) => {
   return (
     <SecurityLevelTagWrapper
-      className={clsx(level, { 'cursor-pointer': onClick })}
+      className={clsx(level, { 'cursor-pointer': onClick, translucent })}
       onClick={onClick}
     >
       <SecurityLevel level={level} />

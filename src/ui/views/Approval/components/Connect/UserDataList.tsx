@@ -2,7 +2,11 @@ import { message } from 'antd';
 import React, { useState, useMemo, useEffect } from 'react';
 import styled from 'styled-components';
 import { Result } from '@debank/rabby-security-engine';
-import { RuleConfig, UserData } from '@debank/rabby-security-engine/dist/rules';
+import {
+  RuleConfig,
+  UserData,
+  Level,
+} from '@debank/rabby-security-engine/dist/rules';
 import { useWallet } from 'ui/utils';
 import UserListDrawer from './UserListDrawer';
 import RuleDrawer from '../SecurityEngine/RuleDrawer';
@@ -42,6 +46,8 @@ interface Props {
   userData: UserData;
   rules: RuleConfig[];
   processedRules: string[];
+  hasSafe: boolean;
+  hasForbidden: boolean;
   onChange(): void;
   onUpdateSecurityEngine(): void;
   onIgnore(id: string): void;
@@ -57,6 +63,8 @@ const UserDataList = ({
   ruleResult,
   rules,
   processedRules,
+  hasSafe,
+  hasForbidden,
   onChange,
   onUpdateSecurityEngine,
   onIgnore,
@@ -77,6 +85,23 @@ const UserDataList = ({
     if (!ruleResult) return false;
     return processedRules.includes(ruleResult.id);
   }, [processedRules, ruleResult]);
+
+  const translucent = useMemo(() => {
+    if (!ruleResult) return false;
+    if (ruleResult.level === Level.FORBIDDEN) {
+      return false;
+    } else if (ruleResult.level === Level.SAFE) {
+      return hasForbidden;
+    } else if (
+      ruleResult.level === Level.ERROR ||
+      ruleResult.level === Level.CLOSED ||
+      ignored
+    ) {
+      return false;
+    } else {
+      return hasSafe || hasForbidden;
+    }
+  }, [hasSafe, hasForbidden, ruleResult, ignored]);
 
   const [listDrawerVisible, setListDrawerVisible] = useState(false);
   const [ruleDrawerVisible, setRuleDrawerVisible] = useState(false);
@@ -134,7 +159,7 @@ const UserDataList = ({
           <div>
             <div className="flex gap-4">
               <img src={IconSuccess} alt="" />
-              <div className="text-white">Removed from any list</div>
+              <div className="text-white">Removed from all lists</div>
             </div>
           </div>
         ),
@@ -225,7 +250,7 @@ const UserDataList = ({
         )}
         <img src={IconEditList} className="icon-edit-list" />
       </UserDataListWrapper>
-      {ruleResult && (
+      {ruleResult && (isInBlacklist || isInWhitelist) && (
         <SecurityLevelTag
           level={ignored ? 'proceed' : ruleResult.level}
           onClick={handleClickRuleResult}

@@ -121,17 +121,17 @@ const RuleDesc = [
   },
   {
     id: '1001',
-    desc: 'Flagged by Rabby',
+    desc: 'Phishing check by Rabby',
     fixed: false,
   },
   {
     id: '1002',
-    desc: 'Flagged by MetaMask',
+    desc: 'Phishing check by MetaMask',
     fixed: false,
   },
   {
     id: '1003',
-    desc: 'Flagged by ScamSniffer',
+    desc: 'Phishing check by ScamSniffer',
     fixed: false,
   },
 ];
@@ -217,13 +217,18 @@ const Connect = ({ params: { icon, origin } }: ConnectProps) => {
       disabled = true;
       text = `Found ${forbiddenCount} forbidden risk${
         forbiddenCount > 1 ? 's' : ''
-      }. Connection is blocked to avoid possible asset loss.`;
+      }.`;
       cancelBtnText = 'Close';
     } else if (needProcessCount > 0) {
-      disabled = true;
-      text = `Found ${needProcessCount} risk${
-        needProcessCount > 1 ? 's' : ''
-      }. Please process it before connecting.`;
+      if (safeCount > 0) {
+        disabled = false;
+        text = '';
+      } else {
+        disabled = true;
+        text = `Found ${needProcessCount} risk${
+          needProcessCount > 1 ? 's' : ''
+        }. Please process it before connecting.`;
+      }
     }
 
     return {
@@ -233,14 +238,32 @@ const Connect = ({ params: { icon, origin } }: ConnectProps) => {
     };
   }, [engineResults, processedRules]);
 
+  const hasForbidden = useMemo(() => {
+    return engineResults.some((item) => item.level === Level.FORBIDDEN);
+  }, [engineResults]);
+
+  const hasSafe = useMemo(() => {
+    return engineResults.some((item) => item.level === Level.SAFE);
+  }, [engineResults]);
+
   const handleIgnoreRule = (id: string) => {
     setProcessedRules([...processedRules, id]);
-    setRuleDrawerVisible(false);
+    if (selectRule) {
+      setSelectRule({
+        ...selectRule,
+        ignored: true,
+      });
+    }
   };
 
   const handleUndoIgnore = (id: string) => {
     setProcessedRules(processedRules.filter((item) => item !== id));
-    setRuleDrawerVisible(false);
+    if (selectRule) {
+      setSelectRule({
+        ...selectRule,
+        ignored: false,
+      });
+    }
   };
 
   const handleRuleEnableStatusChange = async (id: string, value: boolean) => {
@@ -388,6 +411,8 @@ const Connect = ({ params: { icon, origin } }: ConnectProps) => {
               onUndo={handleUndoIgnore}
               onRuleEnableStatusChange={handleRuleEnableStatusChange}
               rules={rules}
+              hasSafe={hasSafe}
+              hasForbidden={hasForbidden}
             />
           </div>
         </div>
@@ -401,6 +426,8 @@ const Connect = ({ params: { icon, origin } }: ConnectProps) => {
               collectList={collectList}
               popularLevel={originPopularLevel}
               ignored={processedRules.includes(rule.id)}
+              hasSafe={hasSafe}
+              hasForbidden={hasForbidden}
             />
           ))}
         </div>
