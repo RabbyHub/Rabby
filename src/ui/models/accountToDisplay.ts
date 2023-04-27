@@ -76,5 +76,35 @@ export const accountToDisplay = createModel<RootModel>()({
         dispatch.accountToDisplay.setField({ accountsList: withBalanceList });
       }
     },
+    async updateBalance(payload: string, store?) {
+      const balance = await store.app.wallet.getAddressBalance(payload);
+      dispatch.accountToDisplay.setField({
+        accountsList: store.accountToDisplay.accountsList.map((item) => {
+          if (item.address === payload) {
+            return {
+              ...item,
+              balance: balance?.total_usd_value || 0,
+            };
+          }
+          return item;
+        }),
+      });
+    },
+    async updateAllBalance(_?, store?) {
+      const result: IDisplayedAccountWithBalance[] = [];
+
+      // todo quene
+      for (const item of store?.accountToDisplay?.accountsList || []) {
+        const balance = await store.app.wallet.getAddressBalance(item.address);
+        result.push({
+          ...item,
+          balance: balance?.total_usd_value || 0,
+        });
+      }
+
+      dispatch.accountToDisplay.setField({
+        accountsList: result,
+      });
+    },
   }),
 });

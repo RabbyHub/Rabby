@@ -29,6 +29,7 @@ import IconCheck from 'ui/assets/check.svg';
 
 import IconWhitelist from 'ui/assets/address/whitelist.svg';
 import { CopyChecked } from '@/ui/component/CopyChecked';
+import SkeletonInput from 'antd/lib/skeleton/Input';
 
 export interface AddressItemProps {
   balance: number;
@@ -42,6 +43,7 @@ export interface AddressItemProps {
   onSwitchCurrentAccount?: () => void;
   enableSwitch?: boolean;
   isCurrentAccount?: boolean;
+  isUpdatingBalance?: boolean;
 }
 
 const AddressItem = memo(
@@ -57,6 +59,7 @@ const AddressItem = memo(
     extra,
     enableSwitch = false,
     isCurrentAccount = false,
+    isUpdatingBalance,
   }: AddressItemProps) => {
     const { t } = useTranslation();
     const { whitelistEnable, whiteList } = useRabbySelector((s) => ({
@@ -230,9 +233,24 @@ const AddressItem = memo(
                 )}
               />
               {!isCurrentAccount && (
-                <span className="ml-[12px] text-12 text-gray-subTitle">
-                  ${splitNumberByStep(balance?.toFixed(2))}
-                </span>
+                <>
+                  {isUpdatingBalance ? (
+                    <>
+                      <SkeletonInput
+                        active
+                        style={{
+                          width: 60,
+                          height: 14,
+                          marginLeft: 8,
+                        }}
+                      />
+                    </>
+                  ) : (
+                    <span className="ml-[12px] text-12 text-gray-subTitle">
+                      ${splitNumberByStep(balance?.toFixed(2))}
+                    </span>
+                  )}
+                </>
               )}
             </div>
           </div>
@@ -246,9 +264,21 @@ const AddressItem = memo(
           )}
           {isCurrentAccount && (
             <div className="rabby-address-item-extra flex items-center justify-center">
-              <span className="text-15 font-medium text-white">
-                ${splitNumberByStep(balance?.toFixed(2))}
-              </span>
+              {isUpdatingBalance ? (
+                <>
+                  <SkeletonInput
+                    active
+                    style={{
+                      width: 96,
+                      height: 24,
+                    }}
+                  />
+                </>
+              ) : (
+                <span className="text-15 font-medium text-white">
+                  ${splitNumberByStep(balance?.toFixed(2))}
+                </span>
+              )}
             </div>
           )}
         </div>

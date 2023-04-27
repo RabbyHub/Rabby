@@ -13,9 +13,12 @@ import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { sortAccountsByBalance } from '@/ui/utils/account';
 import clsx from 'clsx';
 import { ReactComponent as IconAddAddress } from '@/ui/assets/address/add-address.svg';
+import { ReactComponent as IconRefresh } from '@/ui/assets/address/refresh.svg';
 import { groupBy } from 'lodash';
 import styled from 'styled-components';
 import { KEYRING_CLASS } from '@/constant';
+import { Button, Tooltip, message } from 'antd';
+import { useRequest } from 'ahooks';
 
 const AddressManagement = () => {
   const { t } = useTranslation();
@@ -85,6 +88,16 @@ const AddressManagement = () => {
     });
   }, []);
 
+  const {
+    runAsync: handleUpdateAllBalance,
+    loading: isUpdateAllBalanceLoading,
+  } = useRequest(() => dispatch.accountToDisplay.updateAllBalance(), {
+    manual: true,
+    onError: (e) => {
+      message.error('Update balance failed');
+    },
+  });
+
   const NoAddressUI = (
     <div className="no-address">
       <img
@@ -139,6 +152,7 @@ const AddressManagement = () => {
           type={account.type}
           brandName={account.brandName}
           alias={account.alianName}
+          isUpdatingBalance={isUpdateAllBalanceLoading}
           extra={
             <div
               className={clsx(
@@ -183,11 +197,26 @@ const AddressManagement = () => {
     <div className="page-address-management px-0 overflow-hidden">
       <PageHeader className="pt-[24px] mx-[20px]">
         {enableSwitch ? 'Current Address' : t('Address Management')}
-
-        <IconAddAddress
-          className="absolute right-0 top-[20px] text-gray-title w-[20px] h-[20px] cursor-pointer"
-          onClick={gotoAddAddress}
-        />
+        <Tooltip
+          title="Update balance data"
+          overlayClassName="rectangle"
+          placement="left"
+        >
+          <div className="absolute right-0 top-[24px]">
+            <IconRefresh
+              className={clsx(
+                'text-gray-title w-[20px] h-[20px] cursor-pointer',
+                isUpdateAllBalanceLoading && 'animate-spin'
+              )}
+              onClick={() => {
+                if (isUpdateAllBalanceLoading) {
+                  return;
+                }
+                handleUpdateAllBalance();
+              }}
+            />
+          </div>
+        </Tooltip>
       </PageHeader>
 
       {currentAccountIndex !== -1 && accountList[currentAccountIndex] && (
@@ -200,6 +229,7 @@ const AddressManagement = () => {
               brandName={accountList[currentAccountIndex].brandName || ''}
               alias={accountList[currentAccountIndex].alianName}
               isCurrentAccount
+              isUpdatingBalance={isUpdateAllBalanceLoading}
               onClick={() => {
                 history.push(
                   `/settings/address-detail?${obj2query({
@@ -235,6 +265,12 @@ const AddressManagement = () => {
           </div>
         </>
       )}
+      <div className="footer">
+        <Button type="default" onClick={gotoAddAddress}>
+          <IconAddAddress />
+          New address
+        </Button>
+      </div>
     </div>
   );
 };
