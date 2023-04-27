@@ -12,6 +12,9 @@ export function formatTxMetaForRpcResult(tx: TransactionHistoryItem) {
     gasPrice,
     maxFeePerGas,
     maxPriorityFeePerGas,
+    r,
+    s,
+    v,
   } = rawTx;
 
   const formattedTxMeta: any = {
@@ -25,6 +28,9 @@ export function formatTxMetaForRpcResult(tx: TransactionHistoryItem) {
     blockHash: null,
     blockNumber: null,
     transactionIndex: null,
+    r,
+    s,
+    v,
   };
 
   if (maxFeePerGas && maxPriorityFeePerGas) {
