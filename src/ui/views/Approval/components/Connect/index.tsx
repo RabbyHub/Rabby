@@ -217,7 +217,7 @@ const Connect = ({ params: { icon, origin } }: ConnectProps) => {
       disabled = true;
       text = `Found ${forbiddenCount} forbidden risk${
         forbiddenCount > 1 ? 's' : ''
-      }.Connection is blocked.`;
+      }. Connection is blocked.`;
       cancelBtnText = 'Close';
     } else if (needProcessCount > 0) {
       if (safeCount > 0) {
