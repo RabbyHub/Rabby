@@ -228,7 +228,7 @@ const Connect = ({ params: { icon, origin } }: ConnectProps) => {
         text = `Found ${needProcessCount} risk${
           needProcessCount > 1 ? 's' : ''
         }. Please process ${
-          needProcessCount > 1 ? 'then' : 'it'
+          needProcessCount > 1 ? 'them' : 'it'
         } before connecting.`;
       }
     }
