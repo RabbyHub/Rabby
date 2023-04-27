@@ -93,9 +93,9 @@ const AddressManagement = () => {
     loading: isUpdateAllBalanceLoading,
   } = useRequest(() => dispatch.accountToDisplay.updateAllBalance(), {
     manual: true,
-    onError: (e) => {
-      message.error('Update balance failed');
-    },
+    // onError: (e) => {
+    //   message.error('Update balance failed');
+    // },
   });
 
   const NoAddressUI = (

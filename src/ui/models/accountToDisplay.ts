@@ -3,6 +3,15 @@ import { createModel } from '@rematch/core';
 import { RootModel } from '.';
 import { DisplayedKeryring } from '@/background/service/keyring';
 import { sortAccountsByBalance } from '../utils/account';
+import PQueue from 'p-queue';
+
+const waitQueueFinished = (q: PQueue) => {
+  return new Promise((resolve) => {
+    q.on('empty', () => {
+      if (q.pending <= 0) resolve(null);
+    });
+  });
+};
 
 type IDisplayedAccount = Required<DisplayedKeryring['accounts'][number]>;
 export type IDisplayedAccountWithBalance = IDisplayedAccount & {
@@ -76,31 +85,32 @@ export const accountToDisplay = createModel<RootModel>()({
         dispatch.accountToDisplay.setField({ accountsList: withBalanceList });
       }
     },
-    async updateBalance(payload: string, store?) {
-      const balance = await store.app.wallet.getAddressBalance(payload);
-      dispatch.accountToDisplay.setField({
-        accountsList: store.accountToDisplay.accountsList.map((item) => {
-          if (item.address === payload) {
-            return {
-              ...item,
-              balance: balance?.total_usd_value || 0,
-            };
-          }
-          return item;
-        }),
-      });
-    },
+
     async updateAllBalance(_?, store?) {
       const result: IDisplayedAccountWithBalance[] = [];
+      const queue = new PQueue({ concurrency: 10 });
+      queue.addAll(
+        (store?.accountToDisplay?.accountsList || []).map((item) => {
+          return async () => {
+            try {
+              const balance = await store.app.wallet.getAddressBalance(
+                item.address
+              );
+              return {
+                ...item,
+                balance: balance?.total_usd_value || 0,
+              };
+            } catch (e) {
+              return item;
+            }
+          };
+        })
+      );
 
-      // todo quene
-      for (const item of store?.accountToDisplay?.accountsList || []) {
-        const balance = await store.app.wallet.getAddressBalance(item.address);
-        result.push({
-          ...item,
-          balance: balance?.total_usd_value || 0,
-        });
-      }
+      queue.on('completed', (r: IDisplayedAccountWithBalance) => {
+        result.push(r);
+      });
+      await waitQueueFinished(queue);
 
       dispatch.accountToDisplay.setField({
         accountsList: result,
