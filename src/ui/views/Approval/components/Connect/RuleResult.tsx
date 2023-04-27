@@ -97,36 +97,53 @@ const RuleResult = ({
     }
   }, [hasSafe, hasForbidden, rule, ignored]);
 
+  const ruleDesc = () => {
+    if (rule.id === '1004') {
+      return (
+        <div
+          className={
+            collectList.length > 0
+              ? 'text-12 text-gray-subTitle font-normal'
+              : ''
+          }
+        >
+          {collectList.length === 0
+            ? 'Not listed by any community platforms'
+            : `Listed by ${collectList.length} community platform${
+                collectList.length > 1 ? 's' : ''
+              }`}
+        </div>
+      );
+    }
+    if (rule.id === '1005') {
+      return (
+        <>
+          {popularLevel === 'high' && 'Popular site with many visitors'}
+          {popularLevel === 'medium' &&
+            'Average level of popularity among users'}
+          {popularLevel === 'low' && 'Low popularity with few visitors'}
+          {popularLevel === 'very_low' && 'Very few visitors to this site'}
+        </>
+      );
+    }
+    if (rule.result) {
+      if (
+        (rule.id === '1002' || rule.id === '1001' || rule.id === '1003') &&
+        [Level.DANGER, Level.FORBIDDEN, Level.WARNING].includes(
+          rule.result.level
+        )
+      ) {
+        return rule.desc.replace(/Phishing check/, 'Flagged');
+      } else {
+        return rule.desc;
+      }
+    }
+  };
+
   return (
     <RuleResultWrapper>
       <div className="flex justify-between items-center w-full">
-        <div className="rule-desc flex items-center">
-          {rule.id === '1004' && (
-            <div
-              className={
-                collectList.length > 0
-                  ? 'text-12 text-gray-subTitle font-normal'
-                  : ''
-              }
-            >
-              {collectList.length === 0
-                ? 'Not listed by any community platforms'
-                : `Listed by ${collectList.length} community platform${
-                    collectList.length > 1 ? 's' : ''
-                  }`}
-            </div>
-          )}
-          {rule.id === '1005' && (
-            <>
-              {popularLevel === 'high' && 'Popular site with many visitors'}
-              {popularLevel === 'medium' &&
-                'Average level of popularity among users'}
-              {popularLevel === 'low' && 'Low popularity with few visitors'}
-              {popularLevel === 'very_low' && 'Very few visitors to this site'}
-            </>
-          )}
-          {rule.id !== '1004' && rule.id !== '1005' && rule.desc}
-        </div>
+        <div className="rule-desc flex items-center">{ruleDesc()}</div>
       </div>
       {rule.id === '1004' && (
         <div className="collect-list">

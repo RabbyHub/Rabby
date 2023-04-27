@@ -91,12 +91,12 @@ const ThresholdItem = ({ rule, level }: { rule: RuleConfig; level: Level }) => {
         } else {
           arr.push('∞');
         }
-        return arr.join('; ');
+        return arr.join(' and ');
       }
       case 'enum':
         return (levelThreshold as string[])
           .map((item) => (rule.valueDefine as EnumDefine).display[item])
-          .join(';');
+          .join(' or ');
       default:
         return '';
     }
@@ -105,7 +105,9 @@ const ThresholdItem = ({ rule, level }: { rule: RuleConfig; level: Level }) => {
     <ThresholdWrapper className={level}>
       <SecurityLevel level={level} />
       {':'}
-      <span className="threshold-display">{displayThreshold}</span>
+      <span className="threshold-display">
+        when the value is {displayThreshold}
+      </span>
     </ThresholdWrapper>
   );
 };

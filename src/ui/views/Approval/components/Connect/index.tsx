@@ -271,6 +271,9 @@ const Connect = ({ params: { icon, origin } }: ConnectProps) => {
   };
 
   const handleRuleEnableStatusChange = async (id: string, value: boolean) => {
+    if (processedRules.includes(id)) {
+      setProcessedRules(processedRules.filter((i) => i !== id));
+    }
     await wallet.ruleEnableStatusChange(id, value);
     setNonce(nonce + 1);
   };
