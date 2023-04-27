@@ -15,7 +15,7 @@
     "pub": "node build/release.js"
   },
   "dependencies": {
-    "@debank/common": "^0.2.32",
+    "@debank/common": "^0.2.33",
     "@debank/festats": "1.0.0",
     "@debank/rabby-api": "^0.5.26",
     "@debank/rabby-security-engine": "^1.0.14",
