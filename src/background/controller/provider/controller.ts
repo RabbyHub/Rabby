@@ -452,6 +452,9 @@ class ProviderController extends BaseController {
             rawTx: {
               ...rawTx,
               ...approvalRes,
+              r: bufferToHex(signedTx.r),
+              s: bufferToHex(signedTx.s),
+              v: bufferToHex(signedTx.v),
             },
             createdAt: Date.now(),
             isCompleted: false,
