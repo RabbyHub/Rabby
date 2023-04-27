@@ -1334,7 +1334,7 @@
   resolved "https://registry.yarnpkg.com/@debank/common/-/common-0.2.29.tgz#a4c04464c7793102d50db24b2c4d1a681f53efb9"
   integrity sha512-9/Bh4u5dlS9jSXDl3unG226fJDsJkAVhQZbzU9NqIUW3Zj72kPs1tDzBXF2d0I2Z3dcXUK3PWbFBLmMZTR/jQA==
 
-"@debank/common@^0.2.33":
+"@debank/common@^0.2.31", "@debank/common@^0.2.33":
   version "0.2.33"
   resolved "https://registry.yarnpkg.com/@debank/common/-/common-0.2.33.tgz#e3ed9bce272beb47886af15edb000d1496032eb1"
   integrity sha512-6nPvxPazsmHIbpqtKjlbysKagt8EEMYTraez/n1wprfIxviJ/qDyt/gey9HNo1BKeyc5+bDgYTzqR7yh4ljjgA==
