@@ -22,6 +22,7 @@ import {
   RPCService,
   unTriggerTxCounter,
   contextMenuService,
+  securityEngineService,
 } from 'background/service';
 import buildinProvider from 'background/utils/buildinProvider';
 import { openIndexPage } from 'background/webapi/tab';
@@ -44,6 +45,10 @@ import { ERC1155ABI, ERC20ABI, ERC721ABI } from 'consts/abi';
 import { Account, IHighlightedAddress } from '../service/preference';
 import { ConnectedSite } from '../service/permission';
 import { TokenItem, Tx } from '../service/openapi';
+import {
+  ContextActionData,
+  UserData,
+} from '@debank/rabby-security-engine/dist/rules';
 import DisplayKeyring from '../service/keyring/display';
 import provider from './provider';
 import WalletConnectKeyring from '@rabby-wallet/eth-walletconnect-keyring';
@@ -2372,6 +2377,48 @@ export class WalletController extends BaseController {
 
   continuePhishing = async (url: string) => {
     await preferenceService.continuePhishing(url);
+  };
+
+  getSecurityEngineRules = () => {
+    return securityEngineService.getRules();
+  };
+
+  getSecurityEngineUserData = () => {
+    return securityEngineService.getUserData();
+  };
+
+  executeSecurityEngine = (actionData: ContextActionData) => {
+    return securityEngineService.execute(actionData);
+  };
+
+  updateUserData = (data: UserData) => {
+    securityEngineService.updateUserData(data);
+  };
+
+  addOriginWhitelist = (origin: string) => {
+    securityEngineService.removeOriginBlacklist(origin);
+    securityEngineService.addOriginWhitelist(origin);
+  };
+
+  addOriginBlacklist = (origin: string) => {
+    securityEngineService.removeOriginWhitelist(origin);
+    securityEngineService.addOriginBlacklist(origin);
+  };
+
+  removeOriginWhitelist = (origin: string) => {
+    securityEngineService.removeOriginWhitelist(origin);
+  };
+
+  removeOriginBlacklist = (origin: string) => {
+    securityEngineService.removeOriginBlacklist(origin);
+  };
+
+  ruleEnableStatusChange = (id: string, value: boolean) => {
+    if (value) {
+      securityEngineService.enableRule(id);
+    } else {
+      securityEngineService.disableRule(id);
+    }
   };
 }
 

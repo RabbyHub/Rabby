@@ -1,7 +1,6 @@
 import { groupBy } from 'lodash';
 import 'reflect-metadata';
 import * as Sentry from '@sentry/browser';
-import { Integrations } from '@sentry/tracing';
 import { browser } from 'webextension-polyfill-ts';
 import { ethErrors } from 'eth-rpc-errors';
 import { WalletController } from 'background/controller/wallet';
@@ -22,7 +21,7 @@ import {
   whitelistService,
   swapService,
   RPCService,
-  contextMenuService,
+  securityEngineService,
 } from './service';
 import { providerController, walletController } from './controller';
 import i18n from './service/i18n';
@@ -94,6 +93,7 @@ async function restoreAppState() {
   await whitelistService.init();
   await swapService.init();
   await RPCService.init();
+  await securityEngineService.init();
   rpcCache.start();
 
   appStoreLoaded = true;

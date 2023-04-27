@@ -15,3 +15,4 @@ export { default as RPCService } from './rpc';
 export { default as i18n } from './i18n';
 export { default as unTriggerTxCounter } from './unTriggerTxCounter';
 export * from './contextMenu';
+export { default as securityEngineService } from './securityEngine';

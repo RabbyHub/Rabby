@@ -22,6 +22,7 @@ interface ChainSelectorModalProps {
   supportChains?: SelectChainListProps['supportChains'];
   disabledTips?: SelectChainListProps['disabledTips'];
   showRPCStatus?: boolean;
+  height?: number;
 }
 
 const useSetup = () => {
@@ -93,6 +94,7 @@ const ChainSelectorModal = ({
   supportChains,
   disabledTips,
   showRPCStatus = false,
+  height = 400,
 }: ChainSelectorModalProps) => {
   const handleCancel = () => {
     onCancel();
@@ -122,7 +124,7 @@ const ChainSelectorModal = ({
     <Drawer
       title={title}
       width="400px"
-      height={440}
+      height={height}
       closable={false}
       placement={'bottom'}
       visible={visible}

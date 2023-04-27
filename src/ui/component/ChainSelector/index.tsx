@@ -18,6 +18,7 @@ interface ChainSelectorProps {
   title?: ReactNode;
   onAfterOpen?: () => void;
   showRPCStatus?: boolean;
+  modalHeight?: number;
 }
 
 const ChainSelector = ({
@@ -29,6 +30,7 @@ const ChainSelector = ({
   className = '',
   onAfterOpen,
   showRPCStatus = false,
+  modalHeight,
 }: ChainSelectorProps) => {
   const [showSelectorModal, setShowSelectorModal] = useState(showModal);
   const [isHovering, hoverProps] = useHover();
@@ -88,6 +90,7 @@ const ChainSelector = ({
         onCancel={handleCancel}
         connection={connection}
         showRPCStatus={showRPCStatus}
+        height={modalHeight}
       />
     </>
   );
