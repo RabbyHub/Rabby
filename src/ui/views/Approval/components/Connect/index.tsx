@@ -299,16 +299,30 @@ const Connect = ({ params: { icon, origin } }: ConnectProps) => {
   const init = async () => {
     const account = await wallet.getCurrentAccount();
     const site = await wallet.getSite(origin);
-    const {
-      collect_list,
-    } = await wallet.openapi.getOriginThirdPartyCollectList(origin);
-    const { level } = await wallet.openapi.getOriginPopularityLevel(origin);
-    setOriginPopularLevel(level);
-    setCollectList(collect_list);
+    let level: 'very_low' | 'low' | 'medium' | 'high';
+    let collectList: { name: string; logo_url: string }[] = [];
+    try {
+      const result = await wallet.openapi.getOriginPopularityLevel(origin);
+      setOriginPopularLevel(result.level);
+      level = result.level;
+    } catch (e) {
+      setOriginPopularLevel('low');
+      level = 'low';
+    }
+    try {
+      const {
+        collect_list,
+      } = await wallet.openapi.getOriginThirdPartyCollectList(origin);
+      setCollectList(collect_list);
+      collectList = collect_list;
+    } catch (e) {
+      setCollectList([]);
+    }
+
     const ctx: ContextActionData = {
       origin: {
         url: origin,
-        communityCount: collect_list.length,
+        communityCount: collectList.length,
         popularLevel: level,
       },
     };
