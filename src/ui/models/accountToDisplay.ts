@@ -3,6 +3,7 @@ import { createModel } from '@rematch/core';
 import { RootModel } from '.';
 import { DisplayedKeryring } from '@/background/service/keyring';
 import { sortAccountsByBalance } from '../utils/account';
+import PQueue from 'p-queue';
 
 type IDisplayedAccount = Required<DisplayedKeryring['accounts'][number]>;
 export type IDisplayedAccountWithBalance = IDisplayedAccount & {
@@ -74,6 +75,37 @@ export const accountToDisplay = createModel<RootModel>()({
       if (result) {
         const withBalanceList = sortAccountsByBalance(result);
         dispatch.accountToDisplay.setField({ accountsList: withBalanceList });
+      }
+    },
+
+    async updateAllBalance(_?, store?) {
+      const queue = new PQueue({ concurrency: 10 });
+      let hasError = false;
+      const result = await queue.addAll(
+        (store?.accountToDisplay?.accountsList || []).map((item) => {
+          return async () => {
+            try {
+              const balance = await store.app.wallet.getAddressBalance(
+                item.address
+              );
+              return {
+                ...item,
+                balance: balance?.total_usd_value || 0,
+              };
+            } catch (e) {
+              hasError = true;
+              return item;
+            }
+          };
+        })
+      );
+
+      dispatch.accountToDisplay.setField({
+        accountsList: result,
+      });
+
+      if (hasError) {
+        throw new Error('update balance error');
       }
     },
   }),
