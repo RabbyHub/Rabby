@@ -1367,10 +1367,10 @@
     lodash "^4.17.21"
     qss "^2.0.3"
 
-"@debank/rabby-api@^0.5.26":
-  version "0.5.26"
-  resolved "https://registry.yarnpkg.com/@debank/rabby-api/-/rabby-api-0.5.26.tgz#e00176a2c01cc33be70382ff56a6a27b91abe8ce"
-  integrity sha512-Jang517dqtt/ak1wUnu0wgqVVDPb48ZdYE8txf6dvQWA4rUacqO08v2hutukMcjJFQQV8/3NcbtRAc8dZf0bTA==
+"@debank/rabby-api@^0.5.27":
+  version "0.5.27"
+  resolved "https://registry.yarnpkg.com/@debank/rabby-api/-/rabby-api-0.5.27.tgz#6de60600fd75c3e1c61e85a4e5124ec55e5c7c54"
+  integrity sha512-gxSJXAwTwzc+ALC7CxUnFr+C2hNDLwqAUHqbrbYiOy19XBEx9RuEeCpH/Ad6AwPwOI2cTyNG8y9MOLI24F+u9A==
   dependencies:
     "@debank/isomorphic" "^0.3.1"
     axios "^0.27.2"
