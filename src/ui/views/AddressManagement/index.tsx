@@ -268,7 +268,7 @@ const AddressManagement = () => {
       <div className="footer">
         <Button type="primary" onClick={gotoAddAddress}>
           <IconAddAddress />
-          New address
+          New Address
         </Button>
       </div>
     </div>
