@@ -18,12 +18,14 @@
     &:not(:last-child) {
       margin-bottom: 12px;
     }
-    &.is-failed {
+    &.is-gray {
       opacity: 0.5;
     }
     &-header {
       display: flex;
-      padding: 12px 0;
+      align-items: center;
+      padding: 9px 0;
+      min-height: 38px;
       gap: 12px;
       .time {
         color: #707880;
@@ -48,6 +50,15 @@
         }
       }
     }
+  }
+  .tag-scam {
+    font-weight: 400;
+    font-size: 12px;
+    line-height: 14px;
+    color: #ffffff;
+    padding: 3px 6px;
+    background: @color-comment-1;
+    border-radius: 2px;
   }
   .tx-id {
     color: @color-comment-1;

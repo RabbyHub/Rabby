@@ -18,9 +18,13 @@ export const HistoryItem = ({
 }: HistoryItemProps) => {
   const chain = getChain(data.chain);
   const isFailed = data.tx?.status === 0;
+  const isScam = data.is_scam;
   return (
-    <div className={clsx('txs-history-card', isFailed && 'is-failed')}>
+    <div
+      className={clsx('txs-history-card', (isScam || isFailed) && 'is-gray')}
+    >
       <div className="txs-history-card-header">
+        {isScam && <div className="tag-scam">Scam tx</div>}
         <div className="time">{sinceTime(data.time_at)}</div>
         <TxId chain={data.chain} id={data.id} />
       </div>
