@@ -20,7 +20,7 @@ import { getSentryEnv } from '@/utils/env';
 
 Sentry.init({
   dsn:
-    'https://e871ee64a51b4e8c91ea5fa50b67be6b@o460488.sentry.rabby.io/5831390',
+    'https://e871ee64a51b4e8c91ea5fa50b67be6b@o460488.ingest.sentry.io/5831390',
   release: process.env.release,
   environment: getSentryEnv(),
   ignoreErrors: [
