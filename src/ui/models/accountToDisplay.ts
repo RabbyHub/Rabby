@@ -5,14 +5,6 @@ import { DisplayedKeryring } from '@/background/service/keyring';
 import { sortAccountsByBalance } from '../utils/account';
 import PQueue from 'p-queue';
 
-const waitQueueFinished = (q: PQueue) => {
-  return new Promise((resolve) => {
-    q.on('empty', () => {
-      if (q.pending <= 0) resolve(null);
-    });
-  });
-};
-
 type IDisplayedAccount = Required<DisplayedKeryring['accounts'][number]>;
 export type IDisplayedAccountWithBalance = IDisplayedAccount & {
   balance: number;
@@ -87,9 +79,9 @@ export const accountToDisplay = createModel<RootModel>()({
     },
 
     async updateAllBalance(_?, store?) {
-      const result: IDisplayedAccountWithBalance[] = [];
       const queue = new PQueue({ concurrency: 10 });
-      queue.addAll(
+      let hasError = false;
+      const result = await queue.addAll(
         (store?.accountToDisplay?.accountsList || []).map((item) => {
           return async () => {
             try {
@@ -101,20 +93,20 @@ export const accountToDisplay = createModel<RootModel>()({
                 balance: balance?.total_usd_value || 0,
               };
             } catch (e) {
+              hasError = true;
               return item;
             }
           };
         })
       );
 
-      queue.on('completed', (r: IDisplayedAccountWithBalance) => {
-        result.push(r);
-      });
-      await waitQueueFinished(queue);
-
       dispatch.accountToDisplay.setField({
         accountsList: result,
       });
+
+      if (hasError) {
+        throw new Error('update balance error');
+      }
     },
   }),
 });
