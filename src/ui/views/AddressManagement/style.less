@@ -190,11 +190,19 @@
       font-weight: 500;
       font-size: 13px;
       line-height: 16px;
+      text-shadow: none;
 
-      background-color: rgba(220, 220, 220, 0.5);
+      background-color: rgba(134, 151, 255, 0.15);
       border: none;
+      box-shadow: none;
 
-      color: #090909;
+      color: #667bff;
+      &:hover {
+        background-color: rgba(134, 151, 255, 0.2);
+        &::before {
+          display: none;
+        }
+      }
     }
   }
 }

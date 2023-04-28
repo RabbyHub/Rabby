@@ -12,7 +12,7 @@ import { obj2query } from '@/ui/utils/url';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { sortAccountsByBalance } from '@/ui/utils/account';
 import clsx from 'clsx';
-import { ReactComponent as IconAddAddress } from '@/ui/assets/address/add-address.svg';
+import { ReactComponent as IconAddAddress } from '@/ui/assets/address/new-address.svg';
 import { ReactComponent as IconRefresh } from '@/ui/assets/address/refresh.svg';
 import { groupBy } from 'lodash';
 import styled from 'styled-components';
@@ -266,9 +266,9 @@ const AddressManagement = () => {
         </>
       )}
       <div className="footer">
-        <Button type="default" onClick={gotoAddAddress}>
+        <Button type="primary" onClick={gotoAddAddress}>
           <IconAddAddress />
-          New address
+          New Address
         </Button>
       </div>
     </div>
