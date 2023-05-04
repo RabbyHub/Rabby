@@ -1257,6 +1257,15 @@ export class WalletController extends BaseController {
     }
   };
 
+  gnosisGenerateTypedData = () => {
+    const keyring: GnosisKeyring = this._getKeyringByType(KEYRING_CLASS.GNOSIS);
+    if (!keyring) throw new Error('No Gnosis keyring found');
+    if (!keyring.currentTransaction) {
+      throw new Error('No transaction in Gnosis keyring');
+    }
+    return keyring.generateTypedData();
+  };
+
   gnosisAddConfirmation = async (address: string, signature: string) => {
     const keyring: GnosisKeyring = this._getKeyringByType(KEYRING_CLASS.GNOSIS);
     if (!keyring) throw new Error('No Gnosis keyring found');
@@ -1860,6 +1869,28 @@ export class WalletController extends BaseController {
   ) => {
     const keyring = await keyringService.getKeyringForAccount(from, type);
     const res = await keyringService.signPersonalMessage(
+      keyring,
+      { from, data },
+      options
+    );
+    eventBus.emit(EVENTS.broadcastToUI, {
+      method: EVENTS.SIGN_FINISHED,
+      params: {
+        success: true,
+        data: res,
+      },
+    });
+    return res;
+  };
+
+  signTypedData = async (
+    type: string,
+    from: string,
+    data: string,
+    options?: any
+  ) => {
+    const keyring = await keyringService.getKeyringForAccount(from, type);
+    const res = await keyringService.signTypedMessage(
       keyring,
       { from, data },
       options

@@ -1113,6 +1113,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
   };
 
   const handleGnosisConfirm = async (account: Account) => {
+    if (!safeInfo) return;
     stats.report('signTransaction', {
       type: KEYRING_TYPE.GnosisKeyring,
       category: KEYRING_CATEGORY_MAP[KEYRING_CLASS.GNOSIS],
@@ -1135,13 +1136,14 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       }
       await wallet.buildGnosisTransaction(tx.from, account, params);
     }
-    const hash = await wallet.getGnosisTransactionHash();
+    const typedData = await wallet.gnosisGenerateTypedData();
     resolveApproval({
-      data: [hash, account.address],
+      data: [account.address, JSON.stringify(typedData)],
       session: params.session,
       isGnosis: true,
       account: account,
-      uiRequestComponent: 'SignText',
+      method: 'ethSignTypedDataV4',
+      uiRequestComponent: 'SignTypedData',
     });
   };
 
