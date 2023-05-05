@@ -283,7 +283,6 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
       ? account
       : await wallet.getCurrentAccount();
     if (isGnosis && params.account) {
-      console.log(params.account);
       if (WaitingSignComponent[params.account.type]) {
         wallet.signTypedData(
           params.account.type,
@@ -404,7 +403,7 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
 
   return (
     <>
-      <AccountCard />
+      <AccountCard account={params.account} />
       <div className="approval-text">
         <p className="section-title">
           Sign {chain ? chain.name : ''} Typed Message
