@@ -28,8 +28,10 @@ import './style.less';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import IconContacts from 'ui/assets/swap/contact.svg';
 import IconDiscord from 'ui/assets/discord.svg';
+import IconDiscordHover from 'ui/assets/discord-hover.svg';
 import IconFindUs from 'ui/assets/find-us.svg';
 import IconTwitter from 'ui/assets/twitter.svg';
+import IconTwitterHover from 'ui/assets/twitter-hover.svg';
 import IconWhitelist from 'ui/assets/dashboard/whitelist.svg';
 import IconCustomRPC from 'ui/assets/dashboard/custom-rpc.svg';
 import IconPreferMetamask from 'ui/assets/dashboard/icon-prefer-metamask.svg';
@@ -402,48 +404,6 @@ const Settings = ({ visible, onClose }: SettingsProps) => {
       },
       rightIcon: <img src={IconArrowRight} className="icon icon-arrow-right" />,
     },
-    {
-      leftIcon: IconFindUs,
-      content: t('Find us'),
-      rightIcon: (
-        <div className="flex space-x-18">
-          <Tooltip title="Twitter">
-            <a
-              href="https://twitter.com/rabby_io"
-              target="_blank"
-              rel="noreferrer"
-              onClick={() => {
-                matomoRequestEvent({
-                  category: 'Setting',
-                  action: 'clickToUse',
-                  label: 'Find us|Twitter',
-                });
-                reportSettings('twitter');
-              }}
-            >
-              <img src={IconTwitter} className="w-20" />
-            </a>
-          </Tooltip>
-          <Tooltip title="Discord">
-            <a
-              href="https://discord.com/invite/seFBCWmUre"
-              target="_blank"
-              rel="noreferrer"
-              onClick={() => {
-                matomoRequestEvent({
-                  category: 'Setting',
-                  action: 'clickToUse',
-                  label: 'Find us|Discord',
-                });
-                reportSettings('discord');
-              }}
-            >
-              <img src={IconDiscord} className="w-20" />
-            </a>
-          </Tooltip>
-        </div>
-      ),
-    },
   ];
 
   if (process.env.DEBUG) {
@@ -528,7 +488,7 @@ const Settings = ({ visible, onClose }: SettingsProps) => {
               </Field>
             ))}
           </div>
-          <footer className="footer">
+          <footer className="footer mt-20">
             <img src={LogoRabby} alt="" />
             <div>
               <span
@@ -537,21 +497,64 @@ const Settings = ({ visible, onClose }: SettingsProps) => {
                 onClick={updateVersion}
               >
                 {process.env.version}
-              </span>
-              <span
-                className={clsx(
-                  'px-[6px] py-[1px] mx-[4px] rounded-[90px] bg-[#ec5151] text-white text-center',
-                  !hasNewVersion && 'hidden'
-                )}
-                role="button"
-                onClick={updateVersion}
-              >
-                Update Available
-              </span>
+                <span
+                  className={clsx('text-[#ec5151] underline')}
+                  role="button"
+                  onClick={updateVersion}
+                >
+                  &nbsp;(Update Available)&nbsp;
+                </span>
+              </span>{' '}
               /{' '}
               <Link to="/settings/chain-list" className="underline">
                 {Object.values(CHAINS).length} chains supported
               </Link>
+              <a
+                href="https://twitter.com/rabby_io"
+                target="_blank"
+                rel="noreferrer"
+                onClick={() => {
+                  matomoRequestEvent({
+                    category: 'Setting',
+                    action: 'clickToUse',
+                    label: 'Find us|Twitter',
+                  });
+                  reportSettings('twitter');
+                }}
+                className="ml-12 group"
+              >
+                <img
+                  src={IconTwitter}
+                  className="w-16 group-hover:w-0 group-hover:h-0 group-hover:overflow-hidden"
+                />
+                <img
+                  src={IconTwitterHover}
+                  className=" w-0 h-0 overflow-hidden group-hover:w-16 group-hover:h-16"
+                />
+              </a>
+              <a
+                href="https://discord.com/invite/seFBCWmUre"
+                target="_blank"
+                rel="noreferrer"
+                onClick={() => {
+                  matomoRequestEvent({
+                    category: 'Setting',
+                    action: 'clickToUse',
+                    label: 'Find us|Discord',
+                  });
+                  reportSettings('discord');
+                }}
+                className="ml-12 group"
+              >
+                <img
+                  src={IconDiscord}
+                  className="w-16 overflow-hidden group-hover:w-0 group-hover:h-0 "
+                />
+                <img
+                  src={IconDiscordHover}
+                  className=" w-0 h-0 overflow-hidden group-hover:w-16 group-hover:h-16"
+                />
+              </a>
             </div>
           </footer>
           <Contacts
