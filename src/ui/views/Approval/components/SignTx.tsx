@@ -617,7 +617,13 @@ const getGasLimitBaseAccountBalance = ({
     return Number(recommendGasLimit) * recommendGasLimitRatio;
   }
   const adaptGasLimit = avaliableGasToken.div(gasPrice); // adapt gasLimit by account balance
-  if (adaptGasLimit.lt(recommendGasLimit)) {
+  if (
+    adaptGasLimit.lt(
+      new BigNumber(recommendGasLimit).times(
+        Math.min(recommendGasLimitRatio, 1.5)
+      )
+    )
+  ) {
     return Math.floor(
       new BigNumber(recommendGasLimit)
         .times(Math.min(recommendGasLimitRatio, 1.5))
