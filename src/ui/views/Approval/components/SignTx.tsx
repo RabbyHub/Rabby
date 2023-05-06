@@ -599,7 +599,7 @@ const getGasLimitBaseAccountBalance = ({
     sendNativeTokenAmount.plus(pendingsSumNativeTokenCost)
   ); // avaliableGasToken = current native token balance - sendNativeTokenAmount - pendingsSumNativeTokenCost
   if (avaliableGasToken.lte(0)) {
-    // avaliableGasToken less than 0 use 21000 as gasLimit
+    // avaliableGasToken less than 0 use 1.5x gasUsed as gasLimit
     return Math.floor(
       new BigNumber(recommendGasLimit)
         .times(Math.min(recommendGasLimitRatio, 1.5))
@@ -617,8 +617,13 @@ const getGasLimitBaseAccountBalance = ({
     return Number(recommendGasLimit) * recommendGasLimitRatio;
   }
   const adaptGasLimit = avaliableGasToken.div(gasPrice); // adapt gasLimit by account balance
-  if (adaptGasLimit.lt(21000)) {
-    // use 21000 as minimum gasLimit
+  if (
+    adaptGasLimit.lt(
+      new BigNumber(recommendGasLimit).times(
+        Math.min(recommendGasLimitRatio, 1.5)
+      )
+    )
+  ) {
     return Math.floor(
       new BigNumber(recommendGasLimit)
         .times(Math.min(recommendGasLimitRatio, 1.5))
@@ -1253,15 +1258,6 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       source: params?.$ctx?.ga?.source || '',
       trigger: params?.$ctx?.ga?.trigger || '',
     });
-
-    // await wallet.addTxExplainCache({
-    //   address: currentAccount.address,
-    //   chainId,
-    //   nonce: Number(realNonce || tx.nonce),
-    //   explain: txDetail!,
-    //   approvalId: approval.id,
-    //   calcSuccess: !(checkErrors.length > 0),
-    // });
 
     matomoRequestEvent({
       category: 'Transaction',
