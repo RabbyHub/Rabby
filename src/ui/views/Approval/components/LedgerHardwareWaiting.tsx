@@ -149,9 +149,10 @@ const LedgerHardwareWaiting = ({ params }: { params: ApprovalParams }) => {
     });
     eventBus.addEventListener(EVENTS.SIGN_FINISHED, async (data) => {
       if (data.success) {
-        const sig = adjustV('eth_signTypedData', data.data);
+        let sig = data.data;
         setResult(sig);
         if (params.isGnosis) {
+          sig = adjustV('eth_signTypedData', sig);
           const sigs = await wallet.getGnosisTransactionSignatures();
           if (sigs.length > 0) {
             await wallet.gnosisAddConfirmation(account.address, sig);
