@@ -55,6 +55,15 @@ const QRHardWareWaiting = ({ params }) => {
     );
     eventBus.addEventListener(EVENTS.SIGN_FINISHED, async (data) => {
       if (data.success) {
+        if (params.isGnosis) {
+          const sigs = await wallet.getGnosisTransactionSignatures();
+          if (sigs.length > 0) {
+            await wallet.gnosisAddConfirmation(account.address, data.data);
+          } else {
+            await wallet.gnosisAddSignature(account.address, data.data);
+            await wallet.postGnosisTransaction();
+          }
+        }
         resolveApproval(data.data, !isSignText, false, approval.id);
       } else {
         rejectApproval(data.errorMsg);
