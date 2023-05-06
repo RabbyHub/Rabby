@@ -1,0 +1,35 @@
+<svg version="1.1"
+  xmlns="http://www.w3.org/2000/svg"
+  xmlns:xlink="http://www.w3.org/1999/xlink" width="20" height="20" viewBox="0 0 20 20" style="enable-background:new 0 0 20 20;" xml:space="preserve">
+  <defs>
+    <style>
+      @keyframes spin {
+        0% {
+            stroke-dasharray: 0.46875, 96.875;
+            stroke-dashoffset: 0;
+            transform: rotate(0);
+        }
+
+        50% {
+            stroke-dasharray: 43.59375, 72.65625;
+            stroke-dashoffset: -19.375
+        }
+
+        100% {
+            stroke-dasharray: 43.59375, 72.65625;
+            stroke-dashoffset: -58.125;
+            transform: rotate(1turn)
+        }
+      }
+
+      .rotate {
+          transform-origin: 50% 50%;
+          animation: spin 2s ease-in-out infinite;
+          stroke: currentColor;
+          stroke-width: 1.5px;
+          stroke-linecap: round;
+      }
+    </style>
+  </defs>
+  <circle class="rotate" cx="10" cy="10" r="8" fill="none"></circle>
+</svg>
