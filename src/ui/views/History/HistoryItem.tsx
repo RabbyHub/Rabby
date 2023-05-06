@@ -25,8 +25,10 @@ export const HistoryItem = ({
     >
       <div className="txs-history-card-header">
         {isScam && <div className="tag-scam">Scam tx</div>}
-        <div className="time">{sinceTime(data.time_at)}</div>
-        <TxId chain={data.chain} id={data.id} />
+        <div className="txs-history-card-header-inner">
+          <div className="time">{sinceTime(data.time_at)}</div>
+          <TxId chain={data.chain} id={data.id} />
+        </div>
       </div>
       <div className="txs-history-card-body">
         <TxInterAddressExplain
