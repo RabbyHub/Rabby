@@ -32,10 +32,3 @@ document.addEventListener('beforeunload', () => {
   bcm.dispose();
   pm.dispose();
 });
-
-browser.runtime.sendMessage({
-  type: 'DETECT_PHISHING',
-  data: {
-    origin: location.origin,
-  },
-});

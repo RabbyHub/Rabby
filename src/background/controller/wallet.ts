@@ -2406,10 +2406,6 @@ export class WalletController extends BaseController {
     return `0x${BigNumber.max(onChainNonce, localNonce).toString(16)}`;
   };
 
-  continuePhishing = async (url: string) => {
-    await preferenceService.continuePhishing(url);
-  };
-
   getSecurityEngineRules = () => {
     return securityEngineService.getRules();
   };
