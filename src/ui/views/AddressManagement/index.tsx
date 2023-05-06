@@ -14,6 +14,7 @@ import { sortAccountsByBalance } from '@/ui/utils/account';
 import clsx from 'clsx';
 import { ReactComponent as IconAddAddress } from '@/ui/assets/address/new-address.svg';
 import { ReactComponent as IconRefresh } from '@/ui/assets/address/refresh.svg';
+import { ReactComponent as IconLoading } from '@/ui/assets/address/loading.svg';
 import { groupBy } from 'lodash';
 import styled from 'styled-components';
 import { KEYRING_CLASS } from '@/constant';
@@ -203,18 +204,26 @@ const AddressManagement = () => {
           placement="left"
         >
           <div className="absolute right-0 top-[24px]">
-            <IconRefresh
-              className={clsx(
-                'text-gray-title w-[20px] h-[20px] cursor-pointer',
-                isUpdateAllBalanceLoading && 'animate-spin'
-              )}
-              onClick={() => {
-                if (isUpdateAllBalanceLoading) {
-                  return;
-                }
-                handleUpdateAllBalance();
-              }}
-            />
+            {isUpdateAllBalanceLoading ? (
+              <div className="w-[20px] h-[20px] flex items-center justify-center">
+                <IconLoading
+                  viewBox="0 0 20 20"
+                  className="text-gray-title w-[16px] h-[16px] cursor-pointer"
+                />
+              </div>
+            ) : (
+              <IconRefresh
+                className={clsx(
+                  'text-gray-title w-[20px] h-[20px] cursor-pointer'
+                )}
+                onClick={() => {
+                  if (isUpdateAllBalanceLoading) {
+                    return;
+                  }
+                  handleUpdateAllBalance();
+                }}
+              />
+            )}
           </div>
         </Tooltip>
       </PageHeader>
