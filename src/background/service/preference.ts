@@ -7,7 +7,7 @@ import {
   i18n,
   permissionService,
 } from './index';
-import { TotalBalanceResponse, TokenItem, fetchPhishingList } from './openapi';
+import { TotalBalanceResponse, TokenItem } from './openapi';
 import { HARDWARE_KEYRING_TYPES, EVENTS, CHAINS_ENUM } from 'consts';
 import { browser } from 'webextension-polyfill-ts';
 import semver from 'semver-compare';
@@ -70,13 +70,6 @@ export interface PreferenceStore {
   needSwitchWalletCheck?: boolean;
   lastSelectedSwapPayToken?: Record<string, TokenItem>;
   lastSelectedGasTopUpChain?: Record<string, CHAINS_ENUM>;
-  phishingList?: string[];
-  phishingMap?: Record<
-    string,
-    {
-      continueAt: number;
-    }
-  >;
   sendEnableTime?: number;
 }
 
@@ -114,8 +107,6 @@ class PreferenceService {
         nftApprovalChain: {},
         sendLogTime: 0,
         needSwitchWalletCheck: true,
-        phishingList: [],
-        phishingMap: {},
         sendEnableTime: 0,
       },
     });
@@ -174,18 +165,9 @@ class PreferenceService {
     if (this.store.needSwitchWalletCheck == null) {
       this.store.needSwitchWalletCheck = true;
     }
-    if (!this.store.phishingList) {
-      this.store.phishingList = [];
-    }
-
-    if (!this.store.phishingMap) {
-      this.store.phishingMap = {};
-    }
     if (!this.store.sendEnableTime) {
       this.store.sendEnableTime = 0;
     }
-
-    this.pollLoadPhishingList();
   };
 
   getPreference = (key?: string) => {
@@ -523,45 +505,6 @@ class PreferenceService {
   };
   updateNeedSwitchWalletCheck = (value: boolean) => {
     this.store.needSwitchWalletCheck = value;
-  };
-
-  private pollLoadPhishingList = async () => {
-    const list = await fetchPhishingList();
-
-    this.store.phishingList = list.map((item) => item.toLowerCase());
-    setTimeout(() => {
-      this.pollLoadPhishingList();
-      // reload at 1h later
-    }, 3600000);
-  };
-
-  detectPhishing = async (url: string) => {
-    const list = this.store.phishingList ?? [];
-    const origin = url.toLowerCase().replace(/^https?:\/\//, '');
-    const cachedSite = this.store.phishingMap?.[origin];
-    let isPhishing = list.includes(origin);
-
-    if (cachedSite) {
-      isPhishing = !(cachedSite.continueAt > Date.now());
-    }
-
-    if (isPhishing) {
-      browser.tabs.update({
-        url: `./index.html#/phishing?origin=${url}`,
-      });
-    }
-  };
-
-  continuePhishing = (url: string) => {
-    const origin = url.toLowerCase().replace(/^https?:\/\//, '');
-
-    this.store.phishingMap = {
-      ...this.store.phishingMap,
-      [origin]: {
-        // 24h later
-        continueAt: Date.now() + 86400000,
-      },
-    };
   };
 }
 
