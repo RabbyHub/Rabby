@@ -26,7 +26,18 @@
       align-items: center;
       padding: 9px 0;
       min-height: 38px;
-      gap: 12px;
+      gap: 0 12px;
+      flex-wrap: wrap;
+      &-inner {
+        flex: 1;
+        flex-shrink: 0;
+        display: flex;
+        align-items: center;
+        padding: 9px 0;
+        min-height: 38px;
+        gap: 12px;
+        white-space: nowrap;
+      }
       .time {
         color: #707880;
       }
