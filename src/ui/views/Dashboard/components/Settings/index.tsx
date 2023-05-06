@@ -331,6 +331,7 @@ const Settings = ({ visible, onClose }: SettingsProps) => {
       });
     } else {
       message.success({
+        key: 'latest version',
         icon: <img src={IconSuccess} className="icon icon-success" />,
         content: (
           <span className="text-white">You are using the latest version</span>
@@ -453,7 +454,7 @@ const Settings = ({ visible, onClose }: SettingsProps) => {
       <Popup
         visible={visible}
         onClose={handleClose}
-        height={520}
+        height={512}
         bodyStyle={{ height: '100%' }}
       >
         <div className="popup-settings">
@@ -488,7 +489,7 @@ const Settings = ({ visible, onClose }: SettingsProps) => {
               </Field>
             ))}
           </div>
-          <footer className="footer mt-20">
+          <footer className="footer">
             <img src={LogoRabby} alt="" />
             <div>
               <span
@@ -498,7 +499,10 @@ const Settings = ({ visible, onClose }: SettingsProps) => {
               >
                 {process.env.version}
                 <span
-                  className={clsx('text-[#ec5151] underline')}
+                  className={clsx(
+                    'text-[#ec5151] underline',
+                    !hasNewVersion && 'hidden'
+                  )}
                   role="button"
                   onClick={updateVersion}
                 >
