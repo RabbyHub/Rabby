@@ -26,9 +26,15 @@ const Approval = () => {
       return null;
     }
     setApproval(approval);
-    if (approval.data.origin || approval.data.params?.session?.origin) {
+    if (
+      approval.data.origin ||
+      approval.data.params?.origin ||
+      approval.data.params?.session?.origin
+    ) {
       document.title =
-        approval.data.origin || approval.data.params!.session.origin;
+        approval.data.origin ||
+        approval.data.params?.origin ||
+        approval.data.params!.session.origin;
     }
     const account = await wallet.getCurrentAccount();
     if (!account) {
