@@ -16,6 +16,7 @@ import {
   openInternalPageInTab,
   useWallet,
 } from 'ui/utils';
+import { adjustV } from 'ui/utils/gnosis';
 import eventBus from '@/eventBus';
 import stats from '@/stats';
 import { SvgIconOpenExternal } from 'ui/assets';
@@ -148,14 +149,15 @@ const LedgerHardwareWaiting = ({ params }: { params: ApprovalParams }) => {
     });
     eventBus.addEventListener(EVENTS.SIGN_FINISHED, async (data) => {
       if (data.success) {
-        // setConnectStatus(WALLETCONNECT_STATUS_MAP.SIBMITTED);
-        setResult(data.data);
+        let sig = data.data;
+        setResult(sig);
         if (params.isGnosis) {
+          sig = adjustV('eth_signTypedData', sig);
           const sigs = await wallet.getGnosisTransactionSignatures();
           if (sigs.length > 0) {
-            await wallet.gnosisAddConfirmation(account.address, data.data);
+            await wallet.gnosisAddConfirmation(account.address, sig);
           } else {
-            await wallet.gnosisAddSignature(account.address, data.data);
+            await wallet.gnosisAddSignature(account.address, sig);
             await wallet.postGnosisTransaction();
           }
         }
@@ -169,7 +171,7 @@ const LedgerHardwareWaiting = ({ params }: { params: ApprovalParams }) => {
         if (!hasPermission && !isUseLedgerLive) {
           await wallet.authorizeLedgerHIDPermission();
         }
-        resolveApproval(data.data, false, false, approval.id);
+        resolveApproval(sig, false, false, approval.id);
       } else {
         setConnectStatus(WALLETCONNECT_STATUS_MAP.FAILD);
       }

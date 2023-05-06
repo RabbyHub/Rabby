@@ -6,10 +6,7 @@ import {
   SafeTransaction,
   SafeTransactionDataPartial,
 } from '@gnosis.pm/safe-core-sdk-types';
-import {
-  isTxHashSignedWithPrefix,
-  adjustVInSignature,
-} from '@rabby-wallet/gnosis-sdk/dist/utils';
+import semverSatisfies from 'semver/functions/satisfies';
 import EthSignSignature from '@gnosis.pm/safe-core-sdk/dist/src/utils/signatures/SafeSignature';
 
 export const keyringType = 'Gnosis';
@@ -35,6 +32,140 @@ function sanitizeHex(hex: string): string {
   hex = hex.length % 2 !== 0 ? '0' + hex : hex;
   return '0x' + hex;
 }
+
+export enum Operation {
+  CALL = '0',
+  DELEGATE = '1',
+}
+
+export type TxArgs = {
+  baseGas: string;
+  data: string;
+  gasPrice: string;
+  gasToken: string;
+  nonce: number;
+  operation: Operation;
+  refundReceiver: string;
+  safeTxGas: string;
+  to: string;
+  valueInWei: string;
+};
+
+export interface SigningTxArgs extends TxArgs {
+  safeAddress: string;
+  safeVersion: string;
+  networkId: string;
+}
+
+type Eip712MessageTypes = {
+  EIP712Domain: {
+    type: string;
+    name: string;
+  }[];
+  SafeTx: {
+    type: string;
+    name: string;
+  }[];
+};
+
+type GenerateTypedData = {
+  types: Eip712MessageTypes;
+  domain: {
+    chainId: string | undefined;
+    verifyingContract: string;
+  };
+  primaryType: string;
+  message: {
+    to: string;
+    value: string;
+    data: string;
+    operation: Operation;
+    safeTxGas: string;
+    baseGas: string;
+    gasPrice: string;
+    gasToken: string;
+    refundReceiver: string;
+    nonce: number;
+  };
+};
+
+const EIP712_DOMAIN_BEFORE_V130 = [
+  {
+    type: 'address',
+    name: 'verifyingContract',
+  },
+];
+
+const EIP712_DOMAIN = [
+  {
+    type: 'uint256',
+    name: 'chainId',
+  },
+  {
+    type: 'address',
+    name: 'verifyingContract',
+  },
+];
+
+const getEip712MessageTypes = (version) => {
+  const eip712WithChainId = semverSatisfies(version, '>=1.3.0');
+  return {
+    EIP712Domain: eip712WithChainId ? EIP712_DOMAIN : EIP712_DOMAIN_BEFORE_V130,
+    SafeTx: [
+      { type: 'address', name: 'to' },
+      { type: 'uint256', name: 'value' },
+      { type: 'bytes', name: 'data' },
+      { type: 'uint8', name: 'operation' },
+      { type: 'uint256', name: 'safeTxGas' },
+      { type: 'uint256', name: 'baseGas' },
+      { type: 'uint256', name: 'gasPrice' },
+      { type: 'address', name: 'gasToken' },
+      { type: 'address', name: 'refundReceiver' },
+      { type: 'uint256', name: 'nonce' },
+    ],
+  };
+};
+
+export const generateTypedDataFrom = ({
+  safeAddress,
+  safeVersion,
+  baseGas,
+  data,
+  gasPrice,
+  gasToken,
+  nonce,
+  operation,
+  refundReceiver,
+  safeTxGas,
+  to,
+  valueInWei,
+  networkId,
+}: SigningTxArgs): GenerateTypedData => {
+  const eip712WithChainId = semverSatisfies(safeVersion, '>=1.3.0');
+
+  const typedData = {
+    types: getEip712MessageTypes(safeVersion),
+    domain: {
+      chainId: eip712WithChainId ? networkId : undefined,
+      verifyingContract: safeAddress,
+    },
+    primaryType: 'SafeTx',
+    message: {
+      to,
+      value: valueInWei,
+      data,
+      operation,
+      safeTxGas,
+      baseGas,
+      gasPrice,
+      gasToken,
+      refundReceiver,
+      nonce: Number(nonce),
+    },
+  };
+
+  return typedData;
+};
 
 class GnosisKeyring extends EventEmitter {
   static type = keyringType;
@@ -81,6 +212,39 @@ class GnosisKeyring extends EventEmitter {
 
   setAccountToAdd = (account: string) => {
     this.accountToAdd = account;
+  };
+
+  generateTypedData = () => {
+    if (!this.safeInstance || !this.currentTransaction) return;
+    const safe = this.safeInstance;
+    const { version } = safe;
+    const {
+      data,
+      value,
+      to,
+      gasPrice,
+      safeTxGas,
+      baseGas,
+      nonce,
+      refundReceiver,
+      operation,
+      gasToken,
+    } = this.currentTransaction.data;
+    return generateTypedDataFrom({
+      safeAddress: safe.safeAddress,
+      data,
+      valueInWei: value,
+      safeVersion: version,
+      to,
+      gasPrice: gasPrice.toString(),
+      gasToken,
+      refundReceiver,
+      nonce,
+      baseGas: baseGas.toString(),
+      safeTxGas: safeTxGas.toString(),
+      operation: (operation as unknown) as Operation,
+      networkId: safe.network,
+    });
   };
 
   async getAccounts() {
@@ -184,11 +348,9 @@ class GnosisKeyring extends EventEmitter {
     if (!this.currentTransaction || !this.safeInstance) {
       throw new Error('No transaction in Gnosis keyring');
     }
-    const hash = await this.getTransactionHash();
-    const hasPrefix = isTxHashSignedWithPrefix(hash, signature, address);
-    signature = adjustVInSignature(signature, hasPrefix);
     const sig = new EthSignSignature(address, signature);
     this.currentTransaction.addSignature(sig);
+    console.log(this.currentTransaction);
   }
 
   async getOwners(address: string, version: string, provider) {

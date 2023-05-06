@@ -4,7 +4,7 @@ import { matomoRequestEvent } from '@/utils/matomo-request';
 import { getKRCategoryByType } from '@/utils/transaction';
 import { CHAINS_LIST } from '@debank/common';
 import TransportWebHID from '@ledgerhq/hw-transport-webhid';
-import { Button, Skeleton, Tooltip } from 'antd';
+import { Button, Skeleton, Tooltip, message } from 'antd';
 import {
   SecurityCheckDecision,
   SecurityCheckResponse,
@@ -27,6 +27,8 @@ import SecurityCheckCard from './SecurityCheckCard';
 import { WaitingSignComponent } from './SignText';
 import { SignTypedDataExplain } from './SignTypedDataExplain';
 import ViewRawModal from './TxComponents/ViewRawModal';
+import { Account } from '@/background/service/preference';
+import { adjustV } from '@/ui/utils/gnosis';
 interface SignTypedDataProps {
   method: string;
   data: any[];
@@ -35,25 +37,27 @@ interface SignTypedDataProps {
     icon: string;
     name: string;
   };
+  isGnosis?: boolean;
+  account?: Account;
 }
 
 const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
   const [, resolveApproval, rejectApproval] = useApproval();
   const { t } = useTranslation();
   const wallet = useWallet();
+  const [isLoading, setIsLoading] = useState(false);
   const [isWatch, setIsWatch] = useState(false);
   const [isLedger, setIsLedger] = useState(false);
   const [useLedgerLive, setUseLedgerLive] = useState(false);
   const hasConnectedLedgerHID = useLedgerDeviceConnected();
   const [submitText, setSubmitText] = useState('Proceed');
-  const [checkText, setCheckText] = useState('Sign');
   const [
     cantProcessReason,
     setCantProcessReason,
   ] = useState<ReactNode | null>();
   const [forceProcess, setForceProcess] = useState(true);
 
-  const { data, session, method } = params;
+  const { data, session, method, isGnosis, account } = params;
   let parsedMessage = '';
   let _message = '';
   try {
@@ -107,15 +111,11 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
     return undefined;
   }, [data, isSignTypedDataV1, signTypedData]);
 
-  const [showSecurityCheckDetail, setShowSecurityCheckDetail] = useState(false);
   const [
     securityCheckStatus,
     setSecurityCheckStatus,
   ] = useState<SecurityCheckDecision>(
     isSignTypedDataV1 ? 'pending' : 'loading'
-  );
-  const [securityCheckAlert, setSecurityCheckAlert] = useState(
-    t<string>('Checking')
   );
   const [
     securityCheckDetail,
@@ -125,7 +125,9 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
 
   const { value: explainTypedDataRes, loading, error } = useAsync(async () => {
     if (!isSignTypedDataV1 && signTypedData) {
-      const currentAccount = await wallet.getCurrentAccount();
+      const currentAccount = isGnosis
+        ? account
+        : await wallet.getCurrentAccount();
 
       return await wallet.openapi.explainTypedData(
         currentAccount!.address,
@@ -139,7 +141,9 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
   const { value: checkResult } = useAsync(async () => {
     if (!isSignTypedDataV1 && signTypedData) {
       setSecurityCheckStatus('loading');
-      const currentAccount = await wallet.getCurrentAccount();
+      const currentAccount = isGnosis
+        ? account
+        : await wallet.getCurrentAccount();
       const check = await wallet.openapi.checkTypedData(
         currentAccount!.address,
         session.origin,
@@ -154,28 +158,10 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
   useEffect(() => {
     if (checkResult) {
       setSecurityCheckStatus(checkResult.decision);
-      setSecurityCheckAlert(checkResult.alert);
       setSecurityCheckDetail(checkResult);
       setForceProcess(checkResult.decision !== 'forbidden');
     }
   }, [checkResult]);
-
-  const isNFTListing = useMemo(() => {
-    if (
-      explainTypedDataRes?.type_list_nft?.offer_list &&
-      explainTypedDataRes?.type_list_nft?.offer_list.length > 0
-    ) {
-      return true;
-    }
-    return false;
-  }, [explainTypedDataRes]);
-
-  const isPermit = useMemo(() => {
-    if (explainTypedDataRes?.type_token_approval) {
-      return true;
-    }
-    return false;
-  }, [explainTypedDataRes]);
 
   if (error) {
     console.error('error', error);
@@ -186,7 +172,9 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
   };
 
   const checkWachMode = async () => {
-    const currentAccount = await wallet.getCurrentAccount();
+    const currentAccount = isGnosis
+      ? account
+      : await wallet.getCurrentAccount();
     if (
       currentAccount &&
       currentAccount.type === KEYRING_TYPE.WatchAddressKeyring
@@ -233,7 +221,9 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
       | 'completeSignText',
     extra?: Record<string, any>
   ) => {
-    const currentAccount = await wallet.getCurrentAccount();
+    const currentAccount = isGnosis
+      ? account
+      : await wallet.getCurrentAccount();
     if (currentAccount) {
       matomoRequestEvent({
         category: 'SignText',
@@ -255,7 +245,9 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
 
   const handleSecurityCheck = async () => {
     setSecurityCheckStatus('loading');
-    const currentAccount = await wallet.getCurrentAccount();
+    const currentAccount = isGnosis
+      ? account
+      : await wallet.getCurrentAccount();
 
     const dataStr = JSON.stringify(data);
     const check = await wallet.openapi.checkText(
@@ -270,7 +262,6 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
     );
     setExplain(serverExplain.comment);
     setSecurityCheckStatus(check.decision);
-    setSecurityCheckAlert(check.alert);
     setSecurityCheckDetail(check);
     setForceProcess(check.decision !== 'forbidden');
   };
@@ -286,11 +277,64 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
       securityCheckStatus !== 'pass' &&
       securityCheckStatus !== 'pending'
     ) {
-      setShowSecurityCheckDetail(true);
-
       return;
     }
-    const currentAccount = await wallet.getCurrentAccount();
+    const currentAccount = isGnosis
+      ? account
+      : await wallet.getCurrentAccount();
+    if (isGnosis && params.account) {
+      if (WaitingSignComponent[params.account.type]) {
+        wallet.signTypedData(
+          params.account.type,
+          params.account.address,
+          JSON.parse(params.data[1]),
+          {
+            brandName: params.account.brandName,
+            version: 'V4',
+          }
+        );
+        resolveApproval({
+          uiRequestComponent: WaitingSignComponent[params.account.type],
+          type: params.account.type,
+          address: params.account.address,
+          data: params.data,
+          isGnosis: true,
+          account: params.account,
+        });
+      } else {
+        try {
+          setIsLoading(true);
+          let result = await wallet.signTypedData(
+            params.account.type,
+            params.account.address,
+            JSON.parse(params.data[1]),
+            {
+              version: 'V4',
+            }
+          );
+          result = adjustV('eth_signTypedData', result);
+          report('completeSignText', {
+            success: true,
+          });
+          const sigs = await wallet.getGnosisTransactionSignatures();
+          if (sigs.length > 0) {
+            await wallet.gnosisAddConfirmation(params.account.address, result);
+          } else {
+            await wallet.gnosisAddSignature(params.account.address, result);
+            await wallet.postGnosisTransaction();
+          }
+          setIsLoading(false);
+          resolveApproval(result, false, true);
+        } catch (e) {
+          message.error(e.message);
+          setIsLoading(false);
+          report('completeSignText', {
+            success: false,
+          });
+        }
+      }
+      return;
+    }
     if (currentAccount?.type === KEYRING_CLASS.HARDWARE.LEDGER) {
       try {
         const transport = await TransportWebHID.create();
@@ -318,7 +362,9 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
   };
 
   const init = async () => {
-    const currentAccount = await wallet.getCurrentAccount();
+    const currentAccount = isGnosis
+      ? account
+      : await wallet.getCurrentAccount();
     setIsLedger(currentAccount?.type === KEYRING_CLASS.HARDWARE.LEDGER);
     setUseLedgerLive(await wallet.isUseLedgerLive());
   };
@@ -337,7 +383,9 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
 
   useEffect(() => {
     (async () => {
-      const currentAccount = await wallet.getCurrentAccount();
+      const currentAccount = isGnosis
+        ? account
+        : await wallet.getCurrentAccount();
       if (
         currentAccount &&
         [
@@ -347,17 +395,15 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
         ].includes(currentAccount.type)
       ) {
         setSubmitText('Sign');
-        setCheckText('Sign');
       } else {
         setSubmitText('Proceed');
-        setCheckText('Proceed');
       }
     })();
   }, [securityCheckStatus]);
 
   return (
     <>
-      <AccountCard />
+      <AccountCard account={params.account} />
       <div className="approval-text">
         <p className="section-title">
           Sign {chain ? chain.name : ''} Typed Message
@@ -470,6 +516,7 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
               size="large"
               className="w-[172px]"
               onClick={() => handleAllow(forceProcess)}
+              loading={isLoading}
               disabled={
                 loading ||
                 (isLedger && !useLedgerLive && !hasConnectedLedgerHID) ||
