@@ -14,6 +14,18 @@
     align-items: center;
     width: 100%;
 
+    &-container {
+      .icon-delete-container {
+        display: flex;
+        opacity: 0;
+      }
+      &:hover {
+        .icon-delete-container {
+          opacity: 1;
+        }
+      }
+    }
+
     &:hover {
       border: 1px solid #8697ff;
       .icon-star {
