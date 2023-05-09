@@ -20,6 +20,7 @@ import styled from 'styled-components';
 import { KEYRING_CLASS } from '@/constant';
 import { Button, Tooltip, message } from 'antd';
 import { useRequest } from 'ahooks';
+import { SessionStatusBar } from '@/ui/component/WalletConnect/SessionStatusBar';
 
 const AddressManagement = () => {
   const { t } = useTranslation();
@@ -118,7 +119,7 @@ const AddressManagement = () => {
     }
     return accountList.findIndex((e) =>
       (['address', 'brandName', 'type'] as const).every(
-        (key) => e[key].toLowerCase() === currentAccount[key].toLowerCase()
+        (key) => e[key]?.toLowerCase() === currentAccount[key]?.toLowerCase()
       )
     );
   }, [accountList, currentAccount, enableSwitch]);
@@ -194,6 +195,9 @@ const AddressManagement = () => {
     );
   };
 
+  const isWalletConnect =
+    accountList[currentAccountIndex]?.type === KEYRING_CLASS.WALLETCONNECT;
+
   return (
     <div className="page-address-management px-0 overflow-hidden">
       <PageHeader className="pt-[24px] mx-[20px]">
@@ -251,7 +255,15 @@ const AddressManagement = () => {
                   })}`
                 );
               }}
-            />
+            >
+              {isWalletConnect && (
+                <SessionStatusBar
+                  address={accountList[currentAccountIndex].address || ''}
+                  brandName={accountList[currentAccountIndex].brandName || ''}
+                  className="m-[16px] mt-0 text-white bg-[#0000001A]"
+                />
+              )}
+            </AddressItem>
           </div>
           <SwitchTips>Switch Address</SwitchTips>
         </>
@@ -262,7 +274,7 @@ const AddressManagement = () => {
         <>
           <div className={'address-group-list management'}>
             <VList
-              height={500}
+              height={isWalletConnect ? 450 : 500}
               width="100%"
               itemData={accountList}
               itemCount={accountList.length}

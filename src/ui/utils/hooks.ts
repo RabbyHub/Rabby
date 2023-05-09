@@ -1,8 +1,4 @@
-import {
-  HARDWARE_KEYRING_TYPES,
-  KEYRING_CLASS,
-  KEYRING_TYPE,
-} from './../../constant/index';
+import { KEYRING_CLASS, KEYRING_TYPE } from './../../constant/index';
 import { useEffect, useRef, useState, useCallback } from 'react';
 import { useHistory } from 'react-router-dom';
 import { Approval } from 'background/service/notification';
@@ -10,10 +6,12 @@ import { useWallet } from './WalletContext';
 import { getUiType } from './index';
 import { KEYRING_TYPE_TEXT, WALLET_BRAND_CONTENT } from '@/constant';
 import { LedgerHDPathType, LedgerHDPathTypeLabel } from '@/utils/ledger';
+import { useApprovalPopup } from './approval-popup';
 
 export const useApproval = () => {
   const wallet = useWallet();
   const history = useHistory();
+  const { showPopup, enablePopup } = useApprovalPopup();
 
   const getApproval: () => Promise<Approval> = wallet.getApproval;
 
@@ -32,6 +30,10 @@ export const useApproval = () => {
       return;
     }
     setTimeout(() => {
+      if (enablePopup(data.type)) {
+        showPopup();
+        return;
+      }
       history.replace('/');
     });
   };

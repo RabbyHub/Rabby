@@ -465,7 +465,7 @@ export class KeyringService extends EventEmitter {
           brandName:
             typeof account === 'string'
               ? selectedKeyring.type
-              : account.brandName,
+              : account?.realBrandName || account.brandName,
         }));
         allAccounts.forEach((account) => {
           this.setAddressAlias(
@@ -855,6 +855,25 @@ export class KeyringService extends EventEmitter {
         }
         eventBus.emit(EVENTS.broadcastToUI, {
           method: EVENTS.WALLETCONNECT.STATUS_CHANGED,
+          params: data,
+        });
+      });
+
+      keyring.on('sessionStatusChange', (data) => {
+        eventBus.emit(EVENTS.broadcastToUI, {
+          method: EVENTS.WALLETCONNECT.SESSION_STATUS_CHANGED,
+          params: data,
+        });
+      });
+      keyring.on('sessionAccountChange', (data) => {
+        eventBus.emit(EVENTS.broadcastToUI, {
+          method: EVENTS.WALLETCONNECT.SESSION_ACCOUNT_CHANGED,
+          params: data,
+        });
+      });
+      keyring.on('sessionNetworkDelay', (data) => {
+        eventBus.emit(EVENTS.broadcastToUI, {
+          method: EVENTS.WALLETCONNECT.SESSION_NETWORK_DELAY,
           params: data,
         });
       });

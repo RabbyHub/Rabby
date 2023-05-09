@@ -53,6 +53,10 @@ import IconWarning from 'ui/assets/sign/security-engine/warning.svg';
 import IconError from 'ui/assets/sign/security-engine/error.svg';
 import IconProceed from 'ui/assets/sign/security-engine/processed.svg';
 import IconClosed from 'ui/assets/sign/security-engine/closed.svg';
+import LogoWalletConnect from 'ui/assets/walletlogo/walletconnect.svg';
+import LogoWalletConnectWhite from 'ui/assets/walletlogo/walletconnect.svg';
+import LogoCoinbase from 'ui/assets/walletlogo/coinbase.svg';
+import LogoCoinbaseWhite from 'ui/assets/walletlogo/coinbase.svg';
 
 export { CHAINS, CHAINS_ENUM };
 
@@ -106,18 +110,6 @@ export const KEYRING_TYPE_TEXT = {
   [KEYRING_CLASS.HARDWARE.GRIDPLUS]: 'Imported by GridPlus',
   [KEYRING_CLASS.GNOSIS]: 'Imported by Safe',
   [KEYRING_CLASS.HARDWARE.KEYSTONE]: 'Imported by QRCode Base',
-};
-export const BRAND_ALIAN_TYPE_TEXT = {
-  [KEYRING_TYPE.HdKeyring]: 'Seed Phrase',
-  [KEYRING_TYPE.SimpleKeyring]: 'Private Key',
-  [KEYRING_TYPE.WatchAddressKeyring]: 'Contact',
-  [KEYRING_CLASS.HARDWARE.LEDGER]: 'Ledger',
-  [KEYRING_CLASS.HARDWARE.TREZOR]: 'Trezor',
-  [KEYRING_CLASS.HARDWARE.ONEKEY]: 'Onekey',
-  [KEYRING_CLASS.HARDWARE.BITBOX02]: 'BitBox02',
-  [KEYRING_CLASS.GNOSIS]: 'Safe',
-  [KEYRING_CLASS.HARDWARE.GRIDPLUS]: 'GridPlus',
-  [KEYRING_CLASS.HARDWARE.KEYSTONE]: 'Keystone',
 };
 
 export const HARDWARE_KEYRING_TYPES = {
@@ -288,6 +280,9 @@ export const EVENTS = {
   SIGN_FINISHED: 'SIGN_FINISHED',
   WALLETCONNECT: {
     STATUS_CHANGED: 'WALLETCONNECT_STATUS_CHANGED',
+    SESSION_STATUS_CHANGED: 'SESSION_STATUS_CHANGED',
+    SESSION_ACCOUNT_CHANGED: 'SESSION_ACCOUNT_CHANGED',
+    SESSION_NETWORK_DELAY: 'SESSION_NETWORK_DELAY',
     INIT: 'WALLETCONNECT_INIT',
     INITED: 'WALLETCONNECT_INITED',
     TRANSPORT_ERROR: 'TRANSPORT_ERROR',
@@ -324,7 +319,9 @@ export enum WALLET_BRAND_TYPES {
   KEYSTONE = 'Keystone',
   COOLWALLET = 'CoolWallet',
   DEFIANT = 'Defiant',
+  WALLETCONNECT = 'WALLETCONNECT',
   AIRGAP = 'AirGap',
+  COINBASE = 'Coinbase',
 }
 
 enum WALLET_BRAND_CATEGORY {
@@ -341,6 +338,7 @@ export type IWalletBrandContent = {
   image: string;
   connectType: BRAND_WALLET_CONNECT_TYPE;
   category: WALLET_BRAND_CATEGORY;
+  hidden?: boolean;
 };
 
 export const WALLET_BRAND_CONTENT: {
@@ -388,6 +386,16 @@ export const WALLET_BRAND_CONTENT: {
     brand: WALLET_BRAND_TYPES.DEFIANT,
     icon: LogoDefiant,
     image: LogoDefiantWhite,
+    connectType: BRAND_WALLET_CONNECT_TYPE.WalletConnect,
+    category: WALLET_BRAND_CATEGORY.MOBILE,
+    hidden: true,
+  },
+  [WALLET_BRAND_TYPES.WALLETCONNECT]: {
+    id: 20,
+    name: 'Wallet Connect',
+    brand: WALLET_BRAND_TYPES.WALLETCONNECT,
+    icon: LogoWalletConnect,
+    image: LogoWalletConnectWhite,
     connectType: BRAND_WALLET_CONNECT_TYPE.WalletConnect,
     category: WALLET_BRAND_CATEGORY.MOBILE,
   },
@@ -516,6 +524,16 @@ export const WALLET_BRAND_CONTENT: {
     image: LogoTrust,
     connectType: BRAND_WALLET_CONNECT_TYPE.WalletConnect,
     category: WALLET_BRAND_CATEGORY.MOBILE,
+  },
+  [WALLET_BRAND_TYPES.COINBASE]: {
+    id: 21,
+    name: 'Coinbase Wallet',
+    brand: WALLET_BRAND_TYPES.COINBASE,
+    icon: LogoCoinbase,
+    image: LogoCoinbaseWhite,
+    connectType: BRAND_WALLET_CONNECT_TYPE.WalletConnect,
+    category: WALLET_BRAND_CATEGORY.MOBILE,
+    hidden: true,
   },
 };
 
@@ -792,3 +810,21 @@ declare global {
   }
 }
 export const IS_RD = window.__is_rd__;
+
+export const BRAND_ALIAN_TYPE_TEXT = {
+  [KEYRING_TYPE.HdKeyring]: 'Seed Phrase',
+  [KEYRING_TYPE.SimpleKeyring]: 'Private Key',
+  [KEYRING_TYPE.WatchAddressKeyring]: 'Contact',
+  [KEYRING_CLASS.HARDWARE.LEDGER]: 'Ledger',
+  [KEYRING_CLASS.HARDWARE.TREZOR]: 'Trezor',
+  [KEYRING_CLASS.HARDWARE.ONEKEY]: 'Onekey',
+  [KEYRING_CLASS.HARDWARE.BITBOX02]: 'BitBox02',
+  [KEYRING_CLASS.GNOSIS]: 'Safe',
+  [KEYRING_CLASS.HARDWARE.GRIDPLUS]: 'GridPlus',
+  [KEYRING_CLASS.HARDWARE.KEYSTONE]: 'Keystone',
+  [WALLET_BRAND_TYPES.TP]: WALLET_BRAND_CONTENT.TP.name,
+  [WALLET_BRAND_TYPES.METAMASK]: WALLET_BRAND_CONTENT.MetaMask.name,
+  [WALLET_BRAND_TYPES.IMTOKEN]: WALLET_BRAND_CONTENT.IMTOKEN.name,
+  [WALLET_BRAND_TYPES.MATHWALLET]: WALLET_BRAND_CONTENT.MATHWALLET.name,
+  [WALLET_BRAND_TYPES.TRUSTWALLET]: WALLET_BRAND_CONTENT.TRUSTWALLET.name,
+};
