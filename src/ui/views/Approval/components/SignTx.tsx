@@ -1020,7 +1020,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
         })),
     });
     const { gas, needRatio } = await getRecommendGas({
-      gas: res.gas.gas_used,
+      gas: res.gas.success ? res.gas.gas_used : 0,
       tx,
       wallet,
       chainId,
