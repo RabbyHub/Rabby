@@ -18,20 +18,20 @@ import store from './store';
 import '../i18n';
 import { getSentryEnv } from '@/utils/env';
 
-Sentry.init({
-  dsn:
-    'https://e871ee64a51b4e8c91ea5fa50b67be6b@o460488.ingest.sentry.io/5831390',
-  release: process.env.release,
-  environment: getSentryEnv(),
-  ignoreErrors: [
-    'ResizeObserver loop limit exceeded',
-    'ResizeObserver loop completed with undelivered notifications',
-    'Network Error',
-    'Request limit exceeded.',
-    'Non-Error promise rejection captured with keys: code, message',
-    'Failed to fetch',
-  ],
-});
+// Sentry.init({
+//   dsn:
+//     'https://e871ee64a51b4e8c91ea5fa50b67be6b@o460488.ingest.sentry.io/5831390',
+//   release: process.env.release,
+//   environment: getSentryEnv(),
+//   ignoreErrors: [
+//     'ResizeObserver loop limit exceeded',
+//     'ResizeObserver loop completed with undelivered notifications',
+//     'Network Error',
+//     'Request limit exceeded.',
+//     'Non-Error promise rejection captured with keys: code, message',
+//     'Failed to fetch',
+//   ],
+// });
 
 function initAppMeta() {
   const head = document.querySelector('head');

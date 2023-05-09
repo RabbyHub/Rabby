@@ -342,6 +342,7 @@ const AddressItem = memo(
           </div>
           {children}
         </div>
+        {children}
       </div>
     );
   }
