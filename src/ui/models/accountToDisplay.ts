@@ -62,7 +62,10 @@ export const accountToDisplay = createModel<RootModel>()({
               item?.address
             );
             if (!balance) {
-              balance = await store.app.wallet.getAddressBalance(item?.address);
+              balance = {
+                total_usd_value: 0,
+                chain_list: [],
+              };
             }
             return {
               ...item,
