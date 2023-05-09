@@ -77,16 +77,16 @@ const WalletConnectTemplate = () => {
     );
     setCurStashId(stashId);
     setWalletconnectUri(uri);
-    await wallet.setPageStateCache({
-      path: '/import/wallet-connect',
-      params: {},
-      states: {
-        uri,
-        stashId,
-        brand,
-        bridgeURL,
-      },
-    });
+    // await wallet.setPageStateCache({
+    //   path: '/import/wallet-connect',
+    //   params: {},
+    //   states: {
+    //     uri,
+    //     stashId,
+    //     brand,
+    //     bridgeURL,
+    //   },
+    // });
     eventBus.removeAllEventListeners(EVENTS.WALLETCONNECT.STATUS_CHANGED);
     eventBus.addEventListener(
       EVENTS.WALLETCONNECT.STATUS_CHANGED,
@@ -165,27 +165,29 @@ const WalletConnectTemplate = () => {
   }, [sessionStatus]);
 
   const init = async () => {
-    const cache = await wallet.getPageStateCache();
-    if (cache && cache.path === history.location.pathname) {
-      const { states } = cache;
-      if (states.uri) setWalletconnectUri(states.uri);
-      if (states.brand) {
-        setBrand(states.brand);
-      }
-      if (states.data) {
-        setRunParams([
-          states.data.payload,
-          states.brand.brand,
-          states.bridgeURL,
-          states.stashId,
-        ]);
-      }
-      if (states.bridgeURL && states.bridgeURL !== bridgeURL) {
-        setBridgeURL(states.bridgeURL);
-      }
-    } else {
-      handleImportByWalletconnect();
-    }
+    // const cache = await wallet.getPageStateCache();
+    // if (cache && cache.path === history.location.pathname) {
+    //   const { states } = cache;
+    //   if (states.uri) setWalletconnectUri(states.uri);
+    //   if (states.brand) {
+    //     setBrand(states.brand);
+    //   }
+    //   if (states.data) {
+    //     setRunParams([
+    //       states.data.payload,
+    //       states.brand.brand,
+    //       states.bridgeURL,
+    //       states.stashId,
+    //     ]);
+    //   }
+    //   if (states.bridgeURL && states.bridgeURL !== bridgeURL) {
+    //     setBridgeURL(states.bridgeURL);
+    //   }
+    // } else {
+    //   handleImportByWalletconnect();
+    // }
+
+    handleImportByWalletconnect();
     setReady(true);
   };
 
