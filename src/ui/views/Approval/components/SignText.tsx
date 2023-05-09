@@ -32,6 +32,7 @@ import {
   detectSIWE,
   genSecurityCheckMessage,
 } from 'ui/utils/siwe';
+import { FooterBar } from './FooterBar/FooterBar';
 
 interface SignTextProps {
   data: string[];
@@ -47,8 +48,8 @@ interface SignTextProps {
 
 export const WaitingSignComponent = {
   // [KEYRING_CLASS.HARDWARE.LEDGER]: 'HardwareWaiting',
-  // [KEYRING_CLASS.WATCH]: 'WatchAdrressWaiting',
-  [KEYRING_CLASS.WALLETCONNECT]: 'WatchAdrressWaiting',
+  // [KEYRING_CLASS.WATCH]: 'WatchAddressWaiting',
+  [KEYRING_CLASS.WALLETCONNECT]: 'WatchAddressWaiting',
   // [KEYRING_CLASS.GNOSIS]: 'GnosisWaiting',
   [KEYRING_CLASS.HARDWARE.KEYSTONE]: 'QRHardWareWaiting',
   [KEYRING_CLASS.HARDWARE.LEDGER]: 'LedgerHardwareWaiting',
@@ -80,6 +81,7 @@ const SignText = ({ params }: { params: SignTextProps }) => {
   const [isWatch, setIsWatch] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
   const [isLedger, setIsLedger] = useState(false);
+  const [isWalletConnect, setIsWalletConnect] = useState(false);
   const [useLedgerLive, setUseLedgerLive] = useState(false);
   const hasConnectedLedgerHID = useLedgerDeviceConnected();
   const [
@@ -277,6 +279,7 @@ const SignText = ({ params }: { params: SignTextProps }) => {
     const accountType =
       isGnosis && params.account ? params.account.type : currentAccount?.type;
     setIsLedger(accountType === KEYRING_CLASS.HARDWARE.LEDGER);
+    setIsWalletConnect(currentAccount?.type === KEYRING_CLASS.WALLETCONNECT);
     setUseLedgerLive(await wallet.isUseLedgerLive());
     if (accountType === KEYRING_TYPE.WatchAddressKeyring) {
       setIsWatch(true);
@@ -349,7 +352,7 @@ const SignText = ({ params }: { params: SignTextProps }) => {
 
   return (
     <>
-      <AccountCard account={params.account} />
+      {!isWalletConnect && <AccountCard account={params.account} />}
       <div className="approval-text">
         <p className="section-title">
           {title}
@@ -387,6 +390,7 @@ const SignText = ({ params }: { params: SignTextProps }) => {
           onCheck={handleSecurityCheck}
         ></SecurityCheckCard>
       </div>
+
       <footer className="approval-text__footer pb-[20px]">
         {isLedger && !useLedgerLive && !hasConnectedLedgerHID && (
           <LedgerWebHIDAlert connected={hasConnectedLedgerHID} />
@@ -401,42 +405,54 @@ const SignText = ({ params }: { params: SignTextProps }) => {
           />
         )}
 
-        <div className="action-buttons flex justify-between">
-          <Button
-            type="primary"
-            size="large"
-            className="w-[172px]"
-            onClick={handleCancel}
-          >
-            {t('Cancel')}
-          </Button>
-          {isWatch ? (
+        {isWalletConnect ? (
+          <FooterBar
+            onCancel={handleCancel}
+            onProcess={() => handleAllow(forceProcess)}
+            disabledProcess={
+              (isLedger && !useLedgerLive && !hasConnectedLedgerHID) ||
+              !forceProcess ||
+              securityCheckStatus === 'loading'
+            }
+          />
+        ) : (
+          <div className="action-buttons flex justify-between">
             <Button
               type="primary"
               size="large"
               className="w-[172px]"
-              onClick={() => handleAllow()}
-              disabled={true}
+              onClick={handleCancel}
             >
-              {t('Sign')}
+              {t('Cancel')}
             </Button>
-          ) : (
-            <Button
-              type="primary"
-              size="large"
-              className="w-[172px]"
-              onClick={() => handleAllow(forceProcess)}
-              loading={isLoading}
-              disabled={
-                (isLedger && !useLedgerLive && !hasConnectedLedgerHID) ||
-                !forceProcess ||
-                securityCheckStatus === 'loading'
-              }
-            >
-              {t(submitText)}
-            </Button>
-          )}
-        </div>
+            {isWatch ? (
+              <Button
+                type="primary"
+                size="large"
+                className="w-[172px]"
+                onClick={() => handleAllow()}
+                disabled={true}
+              >
+                {t('Sign')}
+              </Button>
+            ) : (
+              <Button
+                type="primary"
+                size="large"
+                className="w-[172px]"
+                onClick={() => handleAllow(forceProcess)}
+                loading={isLoading}
+                disabled={
+                  (isLedger && !useLedgerLive && !hasConnectedLedgerHID) ||
+                  !forceProcess ||
+                  securityCheckStatus === 'loading'
+                }
+              >
+                {t(submitText)}
+              </Button>
+            )}
+          </div>
+        )}
       </footer>
     </>
   );

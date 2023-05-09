@@ -46,17 +46,17 @@ const { PortMessage } = Message;
 
 let appStoreLoaded = false;
 
-Sentry.init({
-  dsn:
-    'https://e871ee64a51b4e8c91ea5fa50b67be6b@o460488.ingest.sentry.io/5831390',
-  release: process.env.release,
-  environment: getSentryEnv(),
-  ignoreErrors: [
-    'Transport error: {"event":"transport_error","params":["Websocket connection failed"]}',
-    'Failed to fetch',
-    'TransportOpenUserCancelled',
-  ],
-});
+// Sentry.init({
+//   dsn:
+//     'https://e871ee64a51b4e8c91ea5fa50b67be6b@o460488.ingest.sentry.io/5831390',
+//   release: process.env.release,
+//   environment: getSentryEnv(),
+//   ignoreErrors: [
+//     'Transport error: {"event":"transport_error","params":["Websocket connection failed"]}',
+//     'Failed to fetch',
+//     'TransportOpenUserCancelled',
+//   ],
+// });
 
 function initAppMeta() {
   const head = document.querySelector('head');

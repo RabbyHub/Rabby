@@ -29,6 +29,7 @@ import { SignTypedDataExplain } from './SignTypedDataExplain';
 import ViewRawModal from './TxComponents/ViewRawModal';
 import { Account } from '@/background/service/preference';
 import { adjustV } from '@/ui/utils/gnosis';
+import { FooterBar } from './FooterBar/FooterBar';
 interface SignTypedDataProps {
   method: string;
   data: any[];
@@ -56,6 +57,7 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
     setCantProcessReason,
   ] = useState<ReactNode | null>();
   const [forceProcess, setForceProcess] = useState(true);
+  const [isWalletConnect, setIsWalletConnect] = useState(false);
 
   const { data, session, method, isGnosis, account } = params;
   let parsedMessage = '';
@@ -366,6 +368,7 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
       ? account
       : await wallet.getCurrentAccount();
     setIsLedger(currentAccount?.type === KEYRING_CLASS.HARDWARE.LEDGER);
+    setIsWalletConnect(currentAccount?.type === KEYRING_CLASS.WALLETCONNECT);
     setUseLedgerLive(await wallet.isUseLedgerLive());
   };
 
@@ -403,8 +406,13 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
 
   return (
     <>
-      <AccountCard account={params.account} />
-      <div className="approval-text">
+      {!isWalletConnect && <AccountCard />}
+      <div
+        className="approval-text"
+        style={{
+          paddingBottom: isWalletConnect ? '250px' : '0',
+        }}
+      >
         <p className="section-title">
           Sign {chain ? chain.name : ''} Typed Message
           <span
@@ -491,43 +499,57 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
             onChange={handleForceProcessChange}
           />
         )}
-        <div className="action-buttons flex justify-between">
-          <Button
-            type="primary"
-            size="large"
-            className="w-[172px]"
-            onClick={handleCancel}
-          >
-            {t('Cancel')}
-          </Button>
-          {isWatch ? (
+
+        {isWalletConnect ? (
+          <FooterBar
+            onCancel={handleCancel}
+            onProcess={() => handleAllow(forceProcess)}
+            disabledProcess={
+              loading ||
+              (isLedger && !useLedgerLive && !hasConnectedLedgerHID) ||
+              !forceProcess ||
+              securityCheckStatus === 'loading'
+            }
+          />
+        ) : (
+          <div className="action-buttons flex justify-between">
             <Button
               type="primary"
               size="large"
               className="w-[172px]"
-              onClick={() => handleAllow()}
-              disabled={true}
+              onClick={handleCancel}
             >
-              {t('Sign')}
+              {t('Cancel')}
             </Button>
-          ) : (
-            <Button
-              type="primary"
-              size="large"
-              className="w-[172px]"
-              onClick={() => handleAllow(forceProcess)}
-              loading={isLoading}
-              disabled={
-                loading ||
-                (isLedger && !useLedgerLive && !hasConnectedLedgerHID) ||
-                !forceProcess ||
-                securityCheckStatus === 'loading'
-              }
-            >
-              {submitText}
-            </Button>
-          )}
-        </div>
+            {isWatch ? (
+              <Button
+                type="primary"
+                size="large"
+                className="w-[172px]"
+                onClick={() => handleAllow()}
+                disabled={true}
+              >
+                {t('Sign')}
+              </Button>
+            ) : (
+              <Button
+                type="primary"
+                size="large"
+                className="w-[172px]"
+                onClick={() => handleAllow(forceProcess)}
+                loading={isLoading}
+                disabled={
+                  loading ||
+                  (isLedger && !useLedgerLive && !hasConnectedLedgerHID) ||
+                  !forceProcess ||
+                  securityCheckStatus === 'loading'
+                }
+              >
+                {submitText}
+              </Button>
+            )}
+          </div>
+        )}
       </footer>
     </>
   );

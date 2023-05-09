@@ -100,14 +100,14 @@ const ImportSuccess = ({ isPopup = false }: { isPopup?: boolean }) => {
     >
       {isPopup &&
         (!isWide ? (
-          <header className="create-new-header create-password-header h-[264px]">
+          <header className="create-new-header create-password-header h-[200px]">
             <img
-              className="rabby-logo"
-              src="/images/logo-white.svg"
+              className="ml-[12px]"
+              src="/images/logo-rabby.svg"
               alt="rabby logo"
             />
             <img
-              className="unlock-logo w-[128px] h-[128px] mx-auto"
+              className="unlock-logo w-[80px] h-[80px] mx-auto mb-[16px] mt-[-4px]"
               src={SuccessLogo}
             />
             <p className="text-24 mb-4 mt-0 text-white text-center font-bold">
@@ -116,10 +116,10 @@ const ImportSuccess = ({ isPopup = false }: { isPopup?: boolean }) => {
             <img src="/images/success-mask.png" className="mask" />
           </header>
         ) : (
-          <div className="create-new-header create-password-header h-[220px]">
+          <div className="create-new-header create-password-header h-[200px]">
             <div className="rabby-container">
               <img
-                className="unlock-logo w-[128px] h-[128px] mx-auto"
+                className="unlock-logo w-[80px] h-[80px] mx-auto mb-[16px] mt-[-4px]"
                 src={SuccessLogo}
               />
               <p className="text-24 mb-4 mt-0 text-white text-center font-bold">
@@ -167,7 +167,7 @@ const ImportSuccess = ({ isPopup = false }: { isPopup?: boolean }) => {
           >
             {sortBy(accounts, (item) => item?.index).map((account, index) => (
               <AddressItem
-                className="mb-12 rounded bg-white py-12 pl-16 h-[52px] flex"
+                className="mb-12 rounded bg-white py-12 pl-16 h-[92px] flex"
                 key={account.address}
                 account={account}
                 showAssets
@@ -179,8 +179,10 @@ const ImportSuccess = ({ isPopup = false }: { isPopup?: boolean }) => {
                 importedAccount
                 isMnemonics={isMnemonics}
                 importedLength={importedLength}
-                stopEditing={stopEditing || index !== editIndex}
+                stopEditing={!editing}
                 canEditing={(editing) => startEdit(editing, index)}
+                showEditIcon={false}
+                ellipsis={false}
                 ref={(el) => {
                   addressItems.current[index] = el;
                 }}

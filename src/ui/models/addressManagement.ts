@@ -81,7 +81,7 @@ export const addressManagement = createModel<RootModel>()({
       store
     ) {
       await store.app.wallet.removeAddress(...payload);
-      dispatch.accountToDisplay.getAllAccountsToDisplay();
+      await dispatch.accountToDisplay.getAllAccountsToDisplay();
     },
   }),
 });
