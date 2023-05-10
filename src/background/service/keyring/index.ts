@@ -492,6 +492,14 @@ export class KeyringService extends EventEmitter {
         contactBook.addAlias(cacheAlias);
       } else {
         const accounts = await keyring.getAccounts();
+<<<<<<< Updated upstream
+=======
+        let addressCount = accounts.length - 1; // TODO: change 1 to real count of accounts if this function can add multiple accounts
+        if (keyring.type === KEYRING_CLASS.WALLETCONNECT) {
+          addressCount = accounts.filter((item) => item.brandName === brandName)
+            .length;
+        }
+>>>>>>> Stashed changes
         const alias = generateAliasName({
           brandName,
           keyringType: keyring.type,
