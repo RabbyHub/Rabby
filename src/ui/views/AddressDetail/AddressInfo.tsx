@@ -26,6 +26,8 @@ import Safe from '@rabby-wallet/gnosis-sdk';
 import { crossCompareOwners } from '@/ui/utils/gnosis';
 import { SvgIconLoading } from 'ui/assets';
 import { SessionStatusBar } from '@/ui/component/WalletConnect/SessionStatusBar';
+import { LedgerStatusBar } from '@/ui/component/ConnectStatus/LedgerStatusBar';
+import { GridPlusStatusBar } from '@/ui/component/ConnectStatus/GridPlusStatusBar';
 
 type Props = {
   address: string;
@@ -252,6 +254,12 @@ const AddressInfo1 = ({ address, type, brandName, source }: Props) => {
             address={address}
             brandName={brandName}
           />
+        )}
+        {type === KEYRING_CLASS.HARDWARE.LEDGER && (
+          <LedgerStatusBar className="text-gray-subTitle bg-gray-bg mr-[16px] mb-[20px]" />
+        )}
+        {type === KEYRING_CLASS.HARDWARE.GRIDPLUS && (
+          <GridPlusStatusBar className="text-gray-subTitle bg-gray-bg mr-[16px] mb-[20px]" />
         )}
       </div>
       {accountInfo && (

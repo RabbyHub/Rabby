@@ -15,9 +15,9 @@ import BitBox02Keyring from './eth-bitbox02-keyring';
 import LedgerBridgeKeyring from './eth-ledger-bridge-keyring';
 import SimpleKeyring from '@rabby-wallet/eth-simple-keyring';
 import HdKeyring from '@rabby-wallet/eth-hd-keyring';
-import TrezorKeyring from '@rabby-wallet/eth-trezor-keyring';
+import TrezorKeyring from './eth-trezor-keyring';
 import OnekeyKeyring from './eth-onekey-keyring';
-import LatticeKeyring from '@rabby-wallet/eth-lattice-keyring';
+import LatticeKeyring from './eth-lattice-keyring';
 import WatchKeyring from '@rabby-wallet/eth-watch-keyring';
 import KeystoneKeyring from './eth-keystone-keyring';
 import WalletConnectKeyring, {
@@ -495,8 +495,12 @@ export class KeyringService extends EventEmitter {
 
         let addressCount = accounts.length - 1; // TODO: change 1 to real count of accounts if this function can add multiple accounts
         if (keyring.type === KEYRING_CLASS.WALLETCONNECT) {
-          addressCount = accounts.filter((item) => item.brandName === brandName)
-            .length;
+          const accountWithBrands = await keyring.getAccountsWithBrand();
+          addressCount =
+            accountWithBrands.filter(
+              (item) =>
+                item.brandName === brandName || item.realBrandName === brandName
+            ).length - 1;
         }
         const alias = generateAliasName({
           brandName,

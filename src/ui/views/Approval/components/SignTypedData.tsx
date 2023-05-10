@@ -18,7 +18,12 @@ import IconArrowRight from 'ui/assets/arrow-right-gray.svg';
 import IconQuestionMark from 'ui/assets/question-mark-gray.svg';
 import IconGnosis from 'ui/assets/walletlogo/safe.svg';
 import IconWatch from 'ui/assets/walletlogo/watch-purple.svg';
-import { openInternalPageInTab, useApproval, useWallet } from 'ui/utils';
+import {
+  openInternalPageInTab,
+  useApproval,
+  useCommonPopupView,
+  useWallet,
+} from 'ui/utils';
 import AccountCard from './AccountCard';
 import LedgerWebHIDAlert from './LedgerWebHIDAlert';
 import ProcessTooltip from './ProcessTooltip';
@@ -57,7 +62,6 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
     setCantProcessReason,
   ] = useState<ReactNode | null>();
   const [forceProcess, setForceProcess] = useState(true);
-  const [isWalletConnect, setIsWalletConnect] = useState(false);
 
   const { data, session, method, isGnosis, account } = params;
   let parsedMessage = '';
@@ -183,25 +187,26 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
     ) {
       setIsWatch(true);
       setCantProcessReason(
-        <div className="flex items-center gap-6">
-          <img src={IconWatch} alt="" className="w-[24px] flex-shrink-0" />
-          <div>
-            Unable to sign because the current address is a Watch-only Address
-            from Contacts. You can{' '}
-            <a
-              href=""
-              className="underline"
-              onClick={async (e) => {
-                e.preventDefault();
-                await rejectApproval('User rejected the request.', true);
-                openInternalPageInTab('no-address');
-              }}
-            >
-              import it
-            </a>{' '}
-            fully or use another address.
-          </div>
-        </div>
+        // <div className="flex items-center gap-6">
+        //   <img src={IconWatch} alt="" className="w-[24px] flex-shrink-0" />
+        //   <div>
+        //     Unable to sign because the current address is a Watch-only Address
+        //     from Contacts. You can{' '}
+        //     <a
+        //       href=""
+        //       className="underline"
+        //       onClick={async (e) => {
+        //         e.preventDefault();
+        //         await rejectApproval('User rejected the request.', true);
+        //         openInternalPageInTab('no-address');
+        //       }}
+        //     >
+        //       import it
+        //     </a>{' '}
+        //     fully or use another address.
+        //   </div>
+        // </div>
+        <div>You can only use imported addresses to sign</div>
       );
     }
     if (currentAccount && currentAccount.type === KEYRING_TYPE.GnosisKeyring) {
@@ -273,12 +278,17 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
     rejectApproval('User rejected the request.');
   };
 
+  const { activeApprovalPopup } = useCommonPopupView();
+
   const handleAllow = async (doubleCheck = false) => {
     if (
       !doubleCheck &&
       securityCheckStatus !== 'pass' &&
       securityCheckStatus !== 'pending'
     ) {
+      return;
+    }
+    if (activeApprovalPopup()) {
       return;
     }
     const currentAccount = isGnosis
@@ -368,7 +378,6 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
       ? account
       : await wallet.getCurrentAccount();
     setIsLedger(currentAccount?.type === KEYRING_CLASS.HARDWARE.LEDGER);
-    setIsWalletConnect(currentAccount?.type === KEYRING_CLASS.WALLETCONNECT);
     setUseLedgerLive(await wallet.isUseLedgerLive());
   };
 
@@ -406,11 +415,10 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
 
   return (
     <>
-      {!isWalletConnect && <AccountCard />}
       <div
         className="approval-text"
         style={{
-          paddingBottom: isWalletConnect ? '250px' : '0',
+          paddingBottom: '210px',
         }}
       >
         <p className="section-title">
@@ -487,9 +495,9 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
       </div>
 
       <footer className="approval-text__footer">
-        {isLedger && !useLedgerLive && !hasConnectedLedgerHID && (
+        {/* {isLedger && !useLedgerLive && !hasConnectedLedgerHID && (
           <LedgerWebHIDAlert connected={hasConnectedLedgerHID} />
-        )}
+        )}*/}
         {isWatch ? (
           <ProcessTooltip>{cantProcessReason}</ProcessTooltip>
         ) : (
@@ -500,56 +508,21 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
           />
         )}
 
-        {isWalletConnect ? (
-          <FooterBar
-            onCancel={handleCancel}
-            onProcess={() => handleAllow(forceProcess)}
-            disabledProcess={
-              loading ||
-              (isLedger && !useLedgerLive && !hasConnectedLedgerHID) ||
-              !forceProcess ||
-              securityCheckStatus === 'loading'
-            }
-          />
-        ) : (
-          <div className="action-buttons flex justify-between">
-            <Button
-              type="primary"
-              size="large"
-              className="w-[172px]"
-              onClick={handleCancel}
-            >
-              {t('Cancel')}
-            </Button>
-            {isWatch ? (
-              <Button
-                type="primary"
-                size="large"
-                className="w-[172px]"
-                onClick={() => handleAllow()}
-                disabled={true}
-              >
-                {t('Sign')}
-              </Button>
-            ) : (
-              <Button
-                type="primary"
-                size="large"
-                className="w-[172px]"
-                onClick={() => handleAllow(forceProcess)}
-                loading={isLoading}
-                disabled={
-                  loading ||
-                  (isLedger && !useLedgerLive && !hasConnectedLedgerHID) ||
-                  !forceProcess ||
-                  securityCheckStatus === 'loading'
-                }
-              >
-                {submitText}
-              </Button>
-            )}
-          </div>
-        )}
+        <ProcessTooltip>{cantProcessReason}</ProcessTooltip>
+
+        <FooterBar
+          onCancel={handleCancel}
+          onSubmit={() => handleAllow(forceProcess)}
+          enableTooltip={isWatch}
+          tooltipContent={cantProcessReason}
+          disabledProcess={
+            loading ||
+            (isLedger && !useLedgerLive && !hasConnectedLedgerHID) ||
+            !forceProcess ||
+            securityCheckStatus === 'loading' ||
+            isWatch
+          }
+        />
       </footer>
     </>
   );

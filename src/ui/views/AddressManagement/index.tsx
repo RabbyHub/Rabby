@@ -21,6 +21,8 @@ import { KEYRING_CLASS } from '@/constant';
 import { Button, Tooltip, message } from 'antd';
 import { useRequest } from 'ahooks';
 import { SessionStatusBar } from '@/ui/component/WalletConnect/SessionStatusBar';
+import { LedgerStatusBar } from '@/ui/component/ConnectStatus/LedgerStatusBar';
+import { GridPlusStatusBar } from '@/ui/component/ConnectStatus/GridPlusStatusBar';
 
 const AddressManagement = () => {
   const { t } = useTranslation();
@@ -197,6 +199,10 @@ const AddressManagement = () => {
 
   const isWalletConnect =
     accountList[currentAccountIndex]?.type === KEYRING_CLASS.WALLETCONNECT;
+  const isLedger =
+    accountList[currentAccountIndex]?.type === KEYRING_CLASS.HARDWARE.LEDGER;
+  const isGridPlus =
+    accountList[currentAccountIndex]?.type === KEYRING_CLASS.HARDWARE.GRIDPLUS;
 
   return (
     <div className="page-address-management px-0 overflow-hidden">
@@ -262,6 +268,12 @@ const AddressManagement = () => {
                   brandName={accountList[currentAccountIndex].brandName || ''}
                   className="m-[16px] mt-0 text-white bg-[#0000001A]"
                 />
+              )}
+              {isLedger && (
+                <LedgerStatusBar className="m-[16px] mt-0 text-white bg-[#0000001A]" />
+              )}
+              {isGridPlus && (
+                <GridPlusStatusBar className="m-[16px] mt-0 text-white bg-[#0000001A]" />
               )}
             </AddressItem>
           </div>

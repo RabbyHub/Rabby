@@ -52,6 +52,14 @@ const useCommonPopupViewState = () => {
     setComponentName(undefined);
   };
 
+  const activeApprovalPopup = () => {
+    if (componentName === 'Approval' && visible === false) {
+      setVisible(true);
+      return true;
+    }
+    return false;
+  };
+
   return {
     visible,
     setVisible,
@@ -66,6 +74,7 @@ const useCommonPopupViewState = () => {
     setClassName,
     account,
     setAccount,
+    activeApprovalPopup,
   };
 };
 

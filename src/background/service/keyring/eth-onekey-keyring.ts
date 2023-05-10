@@ -9,6 +9,8 @@ import {
 } from '@ethereumjs/tx';
 import HDKey from 'hdkey';
 import { isSameAddress } from '@/background/utils';
+import { SignHelper } from './helper';
+import { EVENTS } from '@/constant';
 
 const keyringType = 'Onekey Hardware';
 const hdPathString = "m/44'/60'/0'/0";
@@ -40,6 +42,10 @@ class OneKeyKeyring extends EventEmitter {
   paths = {};
   hdPath = '';
   accountDetails: Record<string, AccountDetail>;
+
+  signHelper = new SignHelper({
+    errorEventName: EVENTS.COMMON_HARDWARE.REJECTED,
+  });
 
   constructor(opts = {}) {
     super();
@@ -76,6 +82,10 @@ class OneKeyKeyring extends EventEmitter {
 
   cleanUp() {
     this.hdk = new HDKey();
+  }
+
+  resend() {
+    this.signHelper.resend();
   }
 
   unlock(): Promise<string> {
@@ -221,71 +231,73 @@ class OneKeyKeyring extends EventEmitter {
 
   // tx is an instance of the ethereumjs-transaction class.
   signTransaction(address: string, tx: TypedTransaction): Promise<any> {
-    return new Promise((resolve, reject) => {
-      this.unlock()
-        .then((status) => {
-          setTimeout(
-            (_) => {
-              OneKeyConnect.ethereumSignTransaction({
-                path: this._pathFromAddress(address),
-                transaction: {
-                  to: tx.to!.toString(),
-                  value: `0x${tx.value.toString('hex')}`,
-                  data: this._normalize(tx.data),
-                  chainId: tx.common.chainIdBN().toNumber(),
-                  nonce: `0x${tx.nonce.toString('hex')}`,
-                  gasLimit: `0x${tx.gasLimit.toString('hex')}`,
-                  gasPrice: `0x${
-                    (tx as Transaction).gasPrice
-                      ? (tx as Transaction).gasPrice.toString('hex')
-                      : (tx as FeeMarketEIP1559Transaction).maxFeePerGas.toString(
-                          'hex'
-                        )
-                  }`,
-                },
-              })
-                .then((response) => {
-                  if (response.success) {
-                    const txData = tx.toJSON();
-                    txData.v = response.payload.v;
-                    txData.r = response.payload.r;
-                    txData.s = response.payload.s;
+    return this.signHelper.invoke(async () => {
+      return new Promise((resolve, reject) => {
+        this.unlock()
+          .then((status) => {
+            setTimeout(
+              (_) => {
+                OneKeyConnect.ethereumSignTransaction({
+                  path: this._pathFromAddress(address),
+                  transaction: {
+                    to: tx.to!.toString(),
+                    value: `0x${tx.value.toString('hex')}`,
+                    data: this._normalize(tx.data),
+                    chainId: tx.common.chainIdBN().toNumber(),
+                    nonce: `0x${tx.nonce.toString('hex')}`,
+                    gasLimit: `0x${tx.gasLimit.toString('hex')}`,
+                    gasPrice: `0x${
+                      (tx as Transaction).gasPrice
+                        ? (tx as Transaction).gasPrice.toString('hex')
+                        : (tx as FeeMarketEIP1559Transaction).maxFeePerGas.toString(
+                            'hex'
+                          )
+                    }`,
+                  },
+                })
+                  .then((response) => {
+                    if (response.success) {
+                      const txData = tx.toJSON();
+                      txData.v = response.payload.v;
+                      txData.r = response.payload.r;
+                      txData.s = response.payload.s;
 
-                    const signedTx = TransactionFactory.fromTxData(txData);
+                      const signedTx = TransactionFactory.fromTxData(txData);
 
-                    const addressSignedWith = ethUtil.toChecksumAddress(
-                      address
-                    );
-                    const correctAddress = ethUtil.toChecksumAddress(address);
-                    if (addressSignedWith !== correctAddress) {
+                      const addressSignedWith = ethUtil.toChecksumAddress(
+                        address
+                      );
+                      const correctAddress = ethUtil.toChecksumAddress(address);
+                      if (addressSignedWith !== correctAddress) {
+                        reject(
+                          new Error('signature doesnt match the right address')
+                        );
+                      }
+
+                      resolve(signedTx);
+                    } else {
                       reject(
-                        new Error('signature doesnt match the right address')
+                        new Error(
+                          (response.payload && response.payload.error) ||
+                            'Unknown error'
+                        )
                       );
                     }
+                  })
+                  .catch((e) => {
+                    reject(new Error((e && e.toString()) || 'Unknown error'));
+                  });
 
-                    resolve(signedTx);
-                  } else {
-                    reject(
-                      new Error(
-                        (response.payload && response.payload.error) ||
-                          'Unknown error'
-                      )
-                    );
-                  }
-                })
-                .catch((e) => {
-                  reject(new Error((e && e.toString()) || 'Unknown error'));
-                });
-
-              // This is necessary to avoid popup collision
-              // between the unlock & sign trezor popups
-            },
-            status === 'just unlocked' ? DELAY_BETWEEN_POPUPS : 0
-          );
-        })
-        .catch((e) => {
-          reject(new Error((e && e.toString()) || 'Unknown error'));
-        });
+                // This is necessary to avoid popup collision
+                // between the unlock & sign trezor popups
+              },
+              status === 'just unlocked' ? DELAY_BETWEEN_POPUPS : 0
+            );
+          })
+          .catch((e) => {
+            reject(new Error((e && e.toString()) || 'Unknown error'));
+          });
+      });
     });
   }
 
@@ -295,51 +307,53 @@ class OneKeyKeyring extends EventEmitter {
 
   // For personal_sign, we need to prefix the message:
   signPersonalMessage(withAccount: string, message: string): Promise<any> {
-    return new Promise((resolve, reject) => {
-      this.unlock()
-        .then((status) => {
-          setTimeout(
-            (_) => {
-              OneKeyConnect.ethereumSignMessage({
-                path: this._pathFromAddress(withAccount),
-                message: ethUtil.stripHexPrefix(message),
-                hex: true,
-              })
-                .then((response: any) => {
-                  if (response.success) {
-                    if (
-                      response.payload.address !==
-                      ethUtil.toChecksumAddress(withAccount)
-                    ) {
+    return this.signHelper.invoke(async () => {
+      return new Promise((resolve, reject) => {
+        this.unlock()
+          .then((status) => {
+            setTimeout(
+              (_) => {
+                OneKeyConnect.ethereumSignMessage({
+                  path: this._pathFromAddress(withAccount),
+                  message: ethUtil.stripHexPrefix(message),
+                  hex: true,
+                })
+                  .then((response: any) => {
+                    if (response.success) {
+                      if (
+                        response.payload.address !==
+                        ethUtil.toChecksumAddress(withAccount)
+                      ) {
+                        reject(
+                          new Error('signature doesnt match the right address')
+                        );
+                      }
+                      const signature = `0x${response.payload.signature}`;
+                      resolve(signature);
+                    } else {
                       reject(
-                        new Error('signature doesnt match the right address')
+                        new Error(
+                          (response.payload && response.payload.error) ||
+                            'Unknown error'
+                        )
                       );
                     }
-                    const signature = `0x${response.payload.signature}`;
-                    resolve(signature);
-                  } else {
-                    reject(
-                      new Error(
-                        (response.payload && response.payload.error) ||
-                          'Unknown error'
-                      )
-                    );
-                  }
-                })
-                .catch((e) => {
-                  console.log('Error while trying to sign a message ', e);
-                  reject(new Error((e && e.toString()) || 'Unknown error'));
-                });
-              // This is necessary to avoid popup collision
-              // between the unlock & sign trezor popups
-            },
-            status === 'just unlocked' ? DELAY_BETWEEN_POPUPS : 0
-          );
-        })
-        .catch((e) => {
-          console.log('Error while trying to sign a message ', e);
-          reject(new Error((e && e.toString()) || 'Unknown error'));
-        });
+                  })
+                  .catch((e) => {
+                    console.log('Error while trying to sign a message ', e);
+                    reject(new Error((e && e.toString()) || 'Unknown error'));
+                  });
+                // This is necessary to avoid popup collision
+                // between the unlock & sign trezor popups
+              },
+              status === 'just unlocked' ? DELAY_BETWEEN_POPUPS : 0
+            );
+          })
+          .catch((e) => {
+            console.log('Error while trying to sign a message ', e);
+            reject(new Error((e && e.toString()) || 'Unknown error'));
+          });
+      });
     });
   }
 
@@ -367,78 +381,82 @@ class OneKeyKeyring extends EventEmitter {
     typedData,
     opts: { version?: 'V3' | 'V4' } = {}
   ) {
-    return new Promise((resolve, reject) => {
-      const { version = 'V4' } = opts;
-      this.unlock()
-        .then((status) => {
-          setTimeout(
-            (_) => {
-              try {
-                OneKeyConnect.ethereumSignMessageEIP712({
-                  path: this._pathFromAddress(address),
-                  version,
-                  data: typedData,
-                })
-                  .then((response) => {
-                    if (response.success) {
-                      if (
-                        response.payload.address !==
-                        ethUtil.toChecksumAddress(address)
-                      ) {
-                        reject(
-                          new Error('signature doesnt match the right address')
-                        );
-                      }
-                      const signature = `0x${response.payload.signature}`;
-                      resolve(signature);
-                    } else {
-                      let code =
-                        (response.payload && response.payload.code) || '';
-                      const message =
-                        (response.payload && response.payload.error) || '';
-                      let errorMsg =
-                        (response.payload && response.payload.error) ||
-                        'Unknown error';
-
-                      let errorUrl = '';
-                      if (message.includes('EIP712Domain')) {
-                        code = 'EIP712_DOMAIN_NOT_SUPPORT';
-                      } else if (message.includes('EIP712')) {
-                        code = 'EIP712_BLIND_SIGN_DISABLED';
-                        errorUrl =
-                          'https://help.onekey.so/hc/zh-cn/articles/4406637762959';
-                      }
-                      if (code === 'Failure_UnexpectedMessage') {
-                        code = 'EIP712_FIRMWARE_NOT_SUPPORT';
-                        errorMsg = 'Not supported on this device';
-                      }
-
-                      const error = new Error(
-                        JSON.stringify({
-                          code,
-                          errorMsg,
-                        })
-                      );
-                      reject(error);
-                    }
+    return this.signHelper.invoke(async () => {
+      return new Promise((resolve, reject) => {
+        const { version = 'V4' } = opts;
+        this.unlock()
+          .then((status) => {
+            setTimeout(
+              (_) => {
+                try {
+                  OneKeyConnect.ethereumSignMessageEIP712({
+                    path: this._pathFromAddress(address),
+                    version,
+                    data: typedData,
                   })
-                  .catch((e) => {
-                    console.log('Error while trying to sign a message ', e);
-                    reject(new Error((e && e.toString()) || 'Unknown error'));
-                  });
-              } catch (e) {
-                reject(new Error((e && e.toString()) || 'Unknown error'));
-              }
-              // This is necessary to avoid popup collision
-              // between the unlock & sign trezor popups
-            },
-            status === 'just unlocked' ? DELAY_BETWEEN_POPUPS : 0
-          );
-        })
-        .catch((e) => {
-          console.log('Error while trying to sign a message ', e);
-          reject(new Error((e && e.toString()) || 'Unknown error'));
-        });
+                    .then((response) => {
+                      if (response.success) {
+                        if (
+                          response.payload.address !==
+                          ethUtil.toChecksumAddress(address)
+                        ) {
+                          reject(
+                            new Error(
+                              'signature doesnt match the right address'
+                            )
+                          );
+                        }
+                        const signature = `0x${response.payload.signature}`;
+                        resolve(signature);
+                      } else {
+                        let code =
+                          (response.payload && response.payload.code) || '';
+                        const message =
+                          (response.payload && response.payload.error) || '';
+                        let errorMsg =
+                          (response.payload && response.payload.error) ||
+                          'Unknown error';
+
+                        let errorUrl = '';
+                        if (message.includes('EIP712Domain')) {
+                          code = 'EIP712_DOMAIN_NOT_SUPPORT';
+                        } else if (message.includes('EIP712')) {
+                          code = 'EIP712_BLIND_SIGN_DISABLED';
+                          errorUrl =
+                            'https://help.onekey.so/hc/zh-cn/articles/4406637762959';
+                        }
+                        if (code === 'Failure_UnexpectedMessage') {
+                          code = 'EIP712_FIRMWARE_NOT_SUPPORT';
+                          errorMsg = 'Not supported on this device';
+                        }
+
+                        const error = new Error(
+                          JSON.stringify({
+                            code,
+                            errorMsg,
+                          })
+                        );
+                        reject(error);
+                      }
+                    })
+                    .catch((e) => {
+                      console.log('Error while trying to sign a message ', e);
+                      reject(new Error((e && e.toString()) || 'Unknown error'));
+                    });
+                } catch (e) {
+                  reject(new Error((e && e.toString()) || 'Unknown error'));
+                }
+                // This is necessary to avoid popup collision
+                // between the unlock & sign trezor popups
+              },
+              status === 'just unlocked' ? DELAY_BETWEEN_POPUPS : 0
+            );
+          })
+          .catch((e) => {
+            console.log('Error while trying to sign a message ', e);
+            reject(new Error((e && e.toString()) || 'Unknown error'));
+          });
+      });
     });
   }
 

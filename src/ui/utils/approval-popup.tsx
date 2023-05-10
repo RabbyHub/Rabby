@@ -1,9 +1,7 @@
-import { KEYRING_CLASS } from '@/constant';
 import { useCommonPopupView } from './WalletContext';
 
 /**
  * New popup window for approval
- * Current only support walletconnect(2023-04)
  */
 export const useApprovalPopup = () => {
   const { activePopup } = useCommonPopupView();
@@ -13,7 +11,8 @@ export const useApprovalPopup = () => {
   };
 
   const enablePopup = (type: string) => {
-    if (type === KEYRING_CLASS.WALLETCONNECT) {
+    console.log('type', type);
+    if (type) {
       return true;
     }
 

@@ -1,5 +1,10 @@
 import { Account } from '@/background/service/preference';
-import { KEYRING_CLASS } from '@/constant';
+import {
+  KEYRING_ICONS,
+  KEYRING_CLASS,
+  WALLET_BRAND_CONTENT,
+  WALLET_BRAND_TYPES,
+} from '@/constant';
 import { AddressViewer } from '@/ui/component';
 import useCurrentBalance from '@/ui/hooks/useCurrentBalance';
 import { splitNumberByStep, useWallet } from '@/ui/utils';
@@ -7,6 +12,10 @@ import clsx from 'clsx';
 import React from 'react';
 import { WalletConnectAccount } from './WalletConnectAccount';
 import { Chain } from '@debank/common';
+import { LedgerAccount } from './LedgerAccount';
+import { CommonAccount } from './CommonAccount';
+import { GridPlusAccount } from './GridPlusAccount';
+import { Tooltip } from 'antd';
 
 export interface Props {
   account: Account;
@@ -40,17 +49,87 @@ export const AccountInfo: React.FC<Props> = ({ account, chain }) => {
     >
       <div className={clsx('flex items-center justify-between')}>
         <div className="space-x-6 flex items-center">
-          <div className="text-gray-title text-15">{nickname}</div>
+          <Tooltip title={nickname}>
+            <div
+              className={clsx(
+                'text-gray-title text-[17px] font-medium',
+                'max-w-[115px] overflow-ellipsis whitespace-nowrap overflow-hidden'
+              )}
+            >
+              {nickname}
+            </div>
+          </Tooltip>
           <AddressViewer
             showArrow={false}
             address={account.address}
             className={clsx('text-13 text-gray-subTitle')}
           />
         </div>
-        <div title={displayBalance}>${displayBalance}</div>
+        <div
+          className="text-13 font-medium text-gray-title"
+          title={displayBalance}
+        >
+          ${displayBalance}
+        </div>
       </div>
       {account?.type === KEYRING_CLASS.WALLETCONNECT && (
         <WalletConnectAccount chain={chain} account={account} />
+      )}
+      {account?.type === KEYRING_CLASS.HARDWARE.LEDGER && <LedgerAccount />}
+      {account?.type === KEYRING_CLASS.HARDWARE.GRIDPLUS && <GridPlusAccount />}
+      {account?.type === KEYRING_CLASS.HARDWARE.ONEKEY && (
+        <CommonAccount
+          icon={WALLET_BRAND_CONTENT.ONEKEY.icon}
+          tip="Import by OneKey"
+        />
+      )}
+      {account?.type === KEYRING_CLASS.HARDWARE.TREZOR && (
+        <CommonAccount
+          icon={WALLET_BRAND_CONTENT.TREZOR.icon}
+          tip="Import by Trezor"
+        />
+      )}
+      {account?.type === KEYRING_CLASS.HARDWARE.BITBOX02 && (
+        <CommonAccount
+          icon={WALLET_BRAND_CONTENT.BITBOX02.icon}
+          tip="Import by BitBox02"
+        />
+      )}
+      {account?.brandName === WALLET_BRAND_TYPES.KEYSTONE && (
+        <CommonAccount
+          icon={WALLET_BRAND_CONTENT.Keystone.icon}
+          tip="Import by Keystone"
+        />
+      )}
+      {account?.brandName === WALLET_BRAND_TYPES.AIRGAP && (
+        <CommonAccount
+          icon={WALLET_BRAND_CONTENT.AirGap.icon}
+          tip="Import by AirGap"
+        />
+      )}
+      {account?.brandName === WALLET_BRAND_TYPES.COOLWALLET && (
+        <CommonAccount
+          icon={WALLET_BRAND_CONTENT.CoolWallet.icon}
+          tip="Import by CoolWallet"
+        />
+      )}
+      {account?.type === KEYRING_CLASS.PRIVATE_KEY && (
+        <CommonAccount
+          icon={KEYRING_ICONS[KEYRING_CLASS.PRIVATE_KEY]}
+          tip="Import by PrivateKey"
+        />
+      )}
+      {account?.type === KEYRING_CLASS.MNEMONIC && (
+        <CommonAccount
+          icon={KEYRING_ICONS[KEYRING_CLASS.MNEMONIC]}
+          tip="Import by Seed Phrase"
+        />
+      )}
+      {account?.type === KEYRING_CLASS.WATCH && (
+        <CommonAccount
+          icon={KEYRING_ICONS[KEYRING_CLASS.WATCH]}
+          tip="Unable to sign with watch-only address"
+        />
       )}
     </div>
   );

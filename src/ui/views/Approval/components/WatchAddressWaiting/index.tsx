@@ -14,6 +14,7 @@ import Process from './Process';
 import Scan from './Scan';
 import { message } from 'antd';
 import { useSessionStatus } from '@/ui/component/WalletConnect/useSessionStatus';
+import { adjustV } from '@/ui/utils/gnosis';
 
 interface ApprovalParams {
   address: string;
@@ -27,7 +28,7 @@ interface ApprovalParams {
 }
 
 const WatchAddressWaiting = ({ params }: { params: ApprovalParams }) => {
-  const { setHeight, setVisible } = useCommonPopupView();
+  const { setHeight, setVisible, closePopup } = useCommonPopupView();
   const wallet = useWallet();
   const [connectStatus, setConnectStatus] = useState(
     WALLETCONNECT_STATUS_MAP.WAITING
@@ -121,12 +122,15 @@ const WatchAddressWaiting = ({ params }: { params: ApprovalParams }) => {
 
     eventBus.addEventListener(EVENTS.SIGN_FINISHED, async (data) => {
       if (data.success) {
+        let sig = data.data;
+        setResult(sig);
         if (params.isGnosis) {
+          sig = adjustV('eth_signTypedData', sig);
           const sigs = await wallet.getGnosisTransactionSignatures();
           if (sigs.length > 0) {
-            await wallet.gnosisAddConfirmation(account.address, data.data);
+            await wallet.gnosisAddConfirmation(account.address, sig);
           } else {
-            await wallet.gnosisAddSignature(account.address, data.data);
+            await wallet.gnosisAddSignature(account.address, sig);
             await wallet.postGnosisTransaction();
           }
         }
@@ -156,7 +160,7 @@ const WatchAddressWaiting = ({ params }: { params: ApprovalParams }) => {
           }
         }
         setSignFinishedData({
-          data: data.data,
+          data: sig,
           approvalId: approval.id,
         });
       } else {
@@ -275,6 +279,7 @@ const WatchAddressWaiting = ({ params }: { params: ApprovalParams }) => {
 
   useEffect(() => {
     if (signFinishedData && isClickDone) {
+      closePopup();
       resolveApproval(
         signFinishedData.data,
         false,

@@ -32,6 +32,8 @@ import { CopyChecked } from '@/ui/component/CopyChecked';
 import SkeletonInput from 'antd/lib/skeleton/Input';
 import { SessionSignal } from '@/ui/component/WalletConnect/SessionSignal';
 import { useWalletConnectIcon } from '@/ui/component/WalletConnect/useWalletConnectIcon';
+import { LedgerSignal } from '@/ui/component/ConnectStatus/LedgerSignal';
+import { GridPlusSignal } from '@/ui/component/ConnectStatus/GridPlusSignal';
 
 export interface AddressItemProps {
   balance: number;
@@ -207,6 +209,12 @@ const AddressItem = memo(
                       address={address}
                       brandName={brandName}
                     />
+                  )}
+                  {type === KEYRING_CLASS.HARDWARE.LEDGER && (
+                    <LedgerSignal isBadge />
+                  )}
+                  {type === KEYRING_CLASS.HARDWARE.GRIDPLUS && (
+                    <GridPlusSignal isBadge />
                   )}
                 </div>
               </Tooltip>

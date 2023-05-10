@@ -31,11 +31,10 @@ export const useApproval = () => {
     }
     setTimeout(() => {
       if (enablePopup(data.type)) {
-        showPopup();
-        return;
+        return showPopup();
       }
       history.replace('/');
-    });
+    }, 0);
   };
 
   const rejectApproval = async (err?, stay = false, isInternal = false) => {

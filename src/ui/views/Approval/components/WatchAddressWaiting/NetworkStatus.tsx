@@ -28,7 +28,10 @@ export const NetworkStatus: React.FC<Props> = ({ account, className }) => {
 
   return (
     <div className={className}>
-      <Tooltip title={<div className="text-white">Latency {delay}ms</div>}>
+      <Tooltip
+        placement="right"
+        title={<div className="text-white">Latency {delay}ms</div>}
+      >
         <img src={iconUrl} className="w-[20px] h-[20px]" />
       </Tooltip>
     </div>

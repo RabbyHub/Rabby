@@ -49,7 +49,9 @@ const WalletConnectTemplate = () => {
       });
     },
     onError(err) {
-      message.error(t(err?.message));
+      if (!err?.message.includes('duplicate')) {
+        message.error(t(err?.message));
+      }
       handleImportByWalletconnect();
       return;
     },

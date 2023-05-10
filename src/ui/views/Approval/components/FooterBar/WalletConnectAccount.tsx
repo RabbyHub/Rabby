@@ -10,6 +10,7 @@ import { Chain } from '@debank/common';
 import { Button } from 'antd';
 import clsx from 'clsx';
 import React from 'react';
+import { CommonAccount } from './CommonAccount';
 
 export interface Props {
   account: Account;
@@ -78,7 +79,7 @@ export const WalletConnectAccount: React.FC<Props> = ({ account, chain }) => {
         return (
           <div className="text-orange">
             <div>Connected but unable to sign.</div>
-            <div className="whitespace-nowrap">
+            <div className="whitespace-nowrap mt-12">
               Please switch to the correct address in mobile wallet
             </div>
           </div>
@@ -87,7 +88,9 @@ export const WalletConnectAccount: React.FC<Props> = ({ account, chain }) => {
         return (
           <div className="text-orange">
             <div>Connected but unable to sign.</div>
-            <div>Please switch to {chain?.name} in mobile wallet</div>
+            <div className="mt-12">
+              Please switch to {chain?.name} in mobile wallet
+            </div>
           </div>
         );
       case 'DISCONNECTED':
@@ -123,42 +126,41 @@ export const WalletConnectAccount: React.FC<Props> = ({ account, chain }) => {
   };
 
   return (
-    <section>
-      <div className={clsx('space-x-6 flex items-start', 'relative')}>
-        <div className="relative mt-[-2px]">
-          <img src={addressTypeIcon} className="w-[24px] h-[24px]" />
-          <SessionSignal
-            chainId={chain?.id}
-            pendingConnect={pendingConnect}
-            isBadge
-            address={address}
-            brandName={brandName}
-          />
-        </div>
-        <div className="text-13 font-medium">
-          <TipContent />
-        </div>
-        <div
-          onClick={handleButton}
-          className={clsx(
-            'underline cursor-pointer',
-            'absolute right-0 top-[-1px]',
-            'text-13'
-          )}
-        >
-          {tipStatus === 'ACCOUNT_ERROR' && 'How to switch'}
-          {tipStatus === 'CHAIN_ERROR' && 'How to switch'}
-        </div>
+    <CommonAccount
+      customSignal={
+        <SessionSignal
+          chainId={chain?.id}
+          pendingConnect={pendingConnect}
+          isBadge
+          address={address}
+          brandName={brandName}
+        />
+      }
+      tip={<TipContent />}
+      icon={addressTypeIcon}
+      footer={
+        tipStatus === 'DISCONNECTED' && (
+          <Button
+            onClick={handleButton}
+            className="w-full h-[40px] mt-[12px]"
+            type="primary"
+          >
+            Connect
+          </Button>
+        )
+      }
+    >
+      <div
+        onClick={handleButton}
+        className={clsx(
+          'underline cursor-pointer',
+          'absolute right-0 top-[-1px]',
+          'text-12 font-medium text-gray-subTitle'
+        )}
+      >
+        {tipStatus === 'ACCOUNT_ERROR' && 'How to switch'}
+        {tipStatus === 'CHAIN_ERROR' && 'How to switch'}
       </div>
-      {tipStatus === 'DISCONNECTED' && (
-        <Button
-          onClick={handleButton}
-          className="w-full h-[40px] mt-[12px]"
-          type="primary"
-        >
-          Connect
-        </Button>
-      )}
-    </section>
+    </CommonAccount>
   );
 };

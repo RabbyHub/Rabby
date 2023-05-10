@@ -15,7 +15,7 @@ interface Props {
   uri: string;
 }
 export const ConnectStatus: React.FC<Props> = ({ brandName, account }) => {
-  const { status } = useSessionStatus(account);
+  const { status } = useSessionStatus(account, false, true);
   const [displayBrandName] = useDisplayBrandName(brandName);
   const hasWallet = useBrandNameHasWallet(displayBrandName);
   const IconClassName = 'inline-block mr-[6px] w-[14px] h-[14px] mb-2';

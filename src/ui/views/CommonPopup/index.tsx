@@ -5,12 +5,14 @@ import Approval from '../Approval';
 import { ReconnectView } from '@/ui/component/WalletConnect/ReconnectView';
 import { SwitchAddress } from './SwitchAddress';
 import { SwitchChain } from './SwitchChain';
+import { Ledger } from './Ledger';
 
 export type CommonPopupComponentName =
   | 'Approval'
   | 'WalletConnect'
   | 'SwitchAddress'
-  | 'SwitchChain';
+  | 'SwitchChain'
+  | 'Ledger';
 
 export const CommonPopup: React.FC = () => {
   const {
@@ -24,7 +26,7 @@ export const CommonPopup: React.FC = () => {
 
   return (
     <Popup
-      title={<span className="text-[16px]">{title}</span>}
+      title={<span className="text-[20px]">{title}</span>}
       closable
       height={height}
       onClose={() => setVisible(false)}
@@ -36,6 +38,7 @@ export const CommonPopup: React.FC = () => {
       {componentName === 'WalletConnect' && <ReconnectView />}
       {componentName === 'SwitchAddress' && <SwitchAddress />}
       {componentName === 'SwitchChain' && <SwitchChain />}
+      {componentName === 'Ledger' && <Ledger />}
     </Popup>
   );
 };

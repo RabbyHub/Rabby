@@ -1,10 +1,10 @@
 import React from 'react';
 import { SessionSignal } from './SessionSignal';
-import clsx from 'clsx';
 import { useSessionStatus } from './useSessionStatus';
 import { useWallet, useCommonPopupView } from '@/ui/utils';
 import { useDisplayBrandName } from './useDisplayBrandName';
 import { message } from 'antd';
+import { CommonStatusBar } from '../ConnectStatus/CommonStatusBar';
 
 interface Props {
   address: string;
@@ -90,16 +90,8 @@ export const SessionStatusBar: React.FC<Props> = ({
   }, [status]);
 
   return (
-    <div
-      className={clsx(
-        'relative',
-        'py-[6px] pl-[8px] pr-[6px] rounded-[4px]',
-        'flex flex-row items-center justify-between',
-        'text-[13px]',
-        className
-      )}
-    >
-      <div className="flex flex-row items-start">
+    <CommonStatusBar
+      Signal={
         <SessionSignal
           size="small"
           address={address}
@@ -107,21 +99,17 @@ export const SessionStatusBar: React.FC<Props> = ({
           className="mt-[7px]"
           pendingConnect={pendingConnect}
         />
-        <div className={clsx('ml-[4px]')}>
-          <TipContent />
-        </div>
-      </div>
-      <div
-        onClick={handleButton}
-        className={clsx(
-          'underline cursor-pointer',
-          'absolute right-[8px] top-[6px]'
-        )}
-      >
-        {tipStatus === 'CONNECTED' && 'Disconnect'}
-        {tipStatus === 'DISCONNECTED' && 'Connect'}
-        {tipStatus === 'ACCOUNT_ERROR' && 'How to switch'}
-      </div>
-    </div>
+      }
+      className={className}
+      onClickButton={handleButton}
+      ButtonText={
+        <>
+          {tipStatus === 'CONNECTED' && 'Disconnect'}
+          {tipStatus === 'DISCONNECTED' && 'Connect'}
+          {tipStatus === 'ACCOUNT_ERROR' && 'How to switch'}
+        </>
+      }
+      Content={<TipContent />}
+    />
   );
 };

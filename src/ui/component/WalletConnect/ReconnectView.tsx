@@ -37,6 +37,7 @@ export const ReconnectView: React.FC = () => {
       await wallet.killWalletConnectConnector(
         account.address,
         account.brandName,
+        true,
         true
       );
     }
@@ -69,8 +70,12 @@ export const ReconnectView: React.FC = () => {
   };
 
   React.useEffect(() => {
+    init();
+  }, []);
+
+  React.useEffect(() => {
     if (visible) {
-      init();
+      initWalletConnect();
     }
   }, [visible]);
 

@@ -1563,6 +1563,15 @@ export class WalletController extends BaseController {
     return this._setCurrentAccountFromKeyring(keyring, -1);
   };
 
+  gridPlusIsConnect = () => {
+    const keyringType = KEYRING_CLASS.HARDWARE.GRIDPLUS;
+    const keyring = this._getKeyringByType(keyringType);
+    if (keyring) {
+      return keyring.isUnlocked();
+    }
+    return null;
+  };
+
   getPrivateKey = async (
     password: string,
     { address, type }: { address: string; type: string }

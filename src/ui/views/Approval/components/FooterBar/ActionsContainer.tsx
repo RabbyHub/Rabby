@@ -1,15 +1,23 @@
 import { Button } from 'antd';
 import clsx from 'clsx';
 import React from 'react';
+import { Account } from '@/background/service/preference';
+import { Chain } from '@debank/common';
 
 export interface Props {
-  onClickCancel(): void;
-  children: React.ReactNode;
+  onSubmit(): void;
+  onCancel(): void;
+  account: Account;
+  disabledProcess: boolean;
+  enableTooltip?: boolean;
+  tooltipContent?: React.ReactNode;
+  children?: React.ReactNode;
+  chain?: Chain;
 }
 
-export const ActionsContainer: React.FC<Props> = ({
+export const ActionsContainer: React.FC<Pick<Props, 'onCancel'>> = ({
   children,
-  onClickCancel,
+  onCancel,
 }) => {
   return (
     <div className="flex items-center gap-[16px]">
@@ -22,7 +30,7 @@ export const ActionsContainer: React.FC<Props> = ({
           'rounded-[8px]',
           'before:content-none'
         )}
-        onClick={onClickCancel}
+        onClick={onCancel}
       >
         Cancel
       </Button>

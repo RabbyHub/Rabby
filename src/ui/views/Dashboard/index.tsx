@@ -67,6 +67,8 @@ import Queue from './components/Queue';
 import { copyAddress } from '@/ui/utils/clipboard';
 import { SessionSignal } from '@/ui/component/WalletConnect/SessionSignal';
 import { useWalletConnectIcon } from '@/ui/component/WalletConnect/useWalletConnectIcon';
+import { GridPlusSignal } from '@/ui/component/ConnectStatus/GridPlusSignal';
+import { LedgerSignal } from '@/ui/component/ConnectStatus/LedgerSignal';
 
 const GnosisAdminItem = ({
   accounts,
@@ -625,6 +627,13 @@ const Dashboard = () => {
                         address={currentAccount.address}
                         brandName={currentAccount.brandName}
                       />
+                    )}
+                    {currentAccount.type === KEYRING_CLASS.HARDWARE.LEDGER && (
+                      <LedgerSignal isBadge />
+                    )}
+                    {currentAccount.type ===
+                      KEYRING_CLASS.HARDWARE.GRIDPLUS && (
+                      <GridPlusSignal isBadge />
                     )}
                   </div>
                   <div

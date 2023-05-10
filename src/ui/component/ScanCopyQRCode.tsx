@@ -47,9 +47,10 @@ const ScanCopyQRCode: React.FC<Props> = ({
   const [copySuccess, setCopySuccess] = useState(false);
   const [showOpenApiModal, setShowOpenApiModal] = useState(false);
   const { status } = useSessionStatus(account);
+  const rootRef = React.useRef<HTMLDivElement>(null);
 
   const handleCopyCurrentAddress = () => {
-    const clipboard = new ClipboardJS('.wallet-connect', {
+    const clipboard = new ClipboardJS(rootRef.current!, {
       text: function () {
         return qrcodeURL;
       },
@@ -82,7 +83,7 @@ const ScanCopyQRCode: React.FC<Props> = ({
   }, [status]);
 
   return (
-    <div>
+    <div ref={rootRef}>
       <div className="button-container mt-32 mb-24">
         <div
           className={clsx('cursor-pointer', { active: !showURL })}

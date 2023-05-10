@@ -15,7 +15,8 @@ type Status = keyof typeof WALLETCONNECT_SESSION_STATUS_MAP;
  */
 export const useSessionStatus = (
   account?: { address: string; brandName: string },
-  pendingConnect?: boolean
+  pendingConnect?: boolean,
+  ignoreStore = false
 ) => {
   const wallet = useWallet();
   const [status, setStatus] = React.useState<Status>();
@@ -86,12 +87,12 @@ export const useSessionStatus = (
   }, [account, pendingConnect]);
 
   React.useEffect(() => {
-    if (account) {
+    if (account && !ignoreStore) {
       wallet
         .getWalletConnectSessionStatus(account.address, account.brandName)
         .then((result) => result && setStatus(result));
     }
-  }, [account]);
+  }, [account, ignoreStore]);
 
   return { status, errorAccount, currAccount };
 };
