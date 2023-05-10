@@ -1392,67 +1392,67 @@
     "@debank/common" "^0.2.31"
     "@debank/rabby-api" "^0.5.25"
 
-"@debank/wc-browser-utils@^1.8.5":
-  version "1.8.5"
-  resolved "https://registry.yarnpkg.com/@debank/wc-browser-utils/-/wc-browser-utils-1.8.5.tgz#d7d16a4d34714a3867db8e5f910a3812662a9a5d"
-  integrity sha512-pkigwksSYsphgiR/SpIGMPOitWxmxH3hr4OE76kpr/XfROShZdY8nYcJks+ltVt/gmon3qaeYCtlr3DFVR5E1g==
+"@debank/wc-browser-utils@^1.8.6":
+  version "1.8.6"
+  resolved "https://registry.yarnpkg.com/@debank/wc-browser-utils/-/wc-browser-utils-1.8.6.tgz#63009d4c9bd13ff22c6e6d9bf86dba2795dbbf66"
+  integrity sha512-int+M74Y+bcIvAV7YvMdl9ssg12wMF6y7B/KGhcPBrl2YsaVwAQQH/w3Wv/5RWPxiM2Z6THwbzI2n/p5iXKQiQ==
   dependencies:
-    "@debank/wc-types" "^1.8.5"
+    "@debank/wc-types" "^1.8.6"
     "@walletconnect/safe-json" "1.0.0"
     "@walletconnect/window-getters" "1.0.0"
     "@walletconnect/window-metadata" "1.0.0"
     detect-browser "5.2.0"
 
 "@debank/wc-client@^1.8.5":
-  version "1.8.5"
-  resolved "https://registry.yarnpkg.com/@debank/wc-client/-/wc-client-1.8.5.tgz#c728e1d1ff81ff244ee579078449dd5d58251489"
-  integrity sha512-2Wr3CoDgltSozynkAs5EHFBeJ+sUTkOjb6GSWQsxHeao4XNQArFmAlGVNOb4fhJ42GlFH8bmXmEPdtHDHCgLng==
+  version "1.8.6"
+  resolved "https://registry.yarnpkg.com/@debank/wc-client/-/wc-client-1.8.6.tgz#9bfae191676de609b4770b6d88b9522fe730fc04"
+  integrity sha512-eYhTw9CXGtHylZ+cpkFQFgYb7M1Sy/ncSl+vywooXlVxTpXAxbVeSy9ew7i7J5zW/xleePUL2yIgnS2zYbEV5A==
   dependencies:
-    "@debank/wc-core" "^1.8.5"
-    "@debank/wc-iso-crypto" "^1.8.5"
-    "@debank/wc-types" "^1.8.5"
-    "@debank/wc-utils" "^1.8.5"
+    "@debank/wc-core" "^1.8.6"
+    "@debank/wc-iso-crypto" "^1.8.6"
+    "@debank/wc-types" "^1.8.6"
+    "@debank/wc-utils" "^1.8.6"
 
-"@debank/wc-core@^1.8.5":
-  version "1.8.5"
-  resolved "https://registry.yarnpkg.com/@debank/wc-core/-/wc-core-1.8.5.tgz#a3fc2e901e12780a7b730e72fa9ceddd1f60f532"
-  integrity sha512-WkklTM3kFg7+t1Bz9ztA7Q5mnpF5Im650EaAt7nL0J2Ew4qqEuRaG71fv9BF2+WuaK2+w/r2NRNXERAQUnU+1Q==
+"@debank/wc-core@^1.8.6":
+  version "1.8.6"
+  resolved "https://registry.yarnpkg.com/@debank/wc-core/-/wc-core-1.8.6.tgz#591d963f01254ec6688bd61c58f3ffc14784c078"
+  integrity sha512-9FH48LMzNplgNFMKNFwfe/Ch3ZaDAKq0ECcDdo6Or9I8FYPGqzwQLec15M3Zg2/P1ZYOZzcJ86dEa0row5QdFA==
   dependencies:
-    "@debank/wc-socket-transport" "^1.8.5"
-    "@debank/wc-types" "^1.8.5"
-    "@debank/wc-utils" "^1.8.5"
+    "@debank/wc-socket-transport" "^1.8.6"
+    "@debank/wc-types" "^1.8.6"
+    "@debank/wc-utils" "^1.8.6"
 
-"@debank/wc-iso-crypto@^1.8.5":
-  version "1.8.5"
-  resolved "https://registry.yarnpkg.com/@debank/wc-iso-crypto/-/wc-iso-crypto-1.8.5.tgz#741c6dd38870a1e42258b4228c90dd096a472598"
-  integrity sha512-mREsGU5RVITSU91Aot0v7qi61nMFQFEiBz4QtV9KdzGHBR/vpKFESoDobo6IelWw8AutHiB5ATDpxzRNY6NOXA==
+"@debank/wc-iso-crypto@^1.8.6":
+  version "1.8.6"
+  resolved "https://registry.yarnpkg.com/@debank/wc-iso-crypto/-/wc-iso-crypto-1.8.6.tgz#8bfb13096cff54ab96f1f45e070a9f945f96b42a"
+  integrity sha512-bgBo2Mxy+lcPB+/hTPZdFxjnucL/Fq6f32W6kZRVmMwXLkS+CEOA8gnE3LzBIVu/oAqqSIdtSXNw80RU+FrRTA==
   dependencies:
-    "@debank/wc-types" "^1.8.5"
-    "@debank/wc-utils" "^1.8.5"
+    "@debank/wc-types" "^1.8.6"
+    "@debank/wc-utils" "^1.8.6"
     "@walletconnect/crypto" "^1.0.2"
     "@walletconnect/encoding" "^1.0.1"
 
-"@debank/wc-socket-transport@^1.8.5":
-  version "1.8.5"
-  resolved "https://registry.yarnpkg.com/@debank/wc-socket-transport/-/wc-socket-transport-1.8.5.tgz#3c63cae698c7eff3ef06d794174228a70b595a86"
-  integrity sha512-HIAWayk87HEDvd3xIuGPhhT2rGITdKU3S2mX1cSbDJONDIY8QhJrM3pqgWmp6orFKrnRKbjBoAQOVVc+77wDbw==
+"@debank/wc-socket-transport@^1.8.6":
+  version "1.8.6"
+  resolved "https://registry.yarnpkg.com/@debank/wc-socket-transport/-/wc-socket-transport-1.8.6.tgz#ad3ff317d3c9dc5e32d56abbf7ccb81fec6b5614"
+  integrity sha512-5JAhplalH4QLJfiFWy61eGqOd1QLEM67lYxjXTcABULPmh6olUFPlSh3I499qJZ7v1jnq0hxg/ElowWymRXwDQ==
   dependencies:
-    "@debank/wc-types" "^1.8.5"
-    "@debank/wc-utils" "^1.8.5"
+    "@debank/wc-types" "^1.8.6"
+    "@debank/wc-utils" "^1.8.6"
     ws "7.5.3"
 
-"@debank/wc-types@^1.8.5":
-  version "1.8.5"
-  resolved "https://registry.yarnpkg.com/@debank/wc-types/-/wc-types-1.8.5.tgz#4abb8654869846983319d4e6e350d8e1b429eb7a"
-  integrity sha512-5AyJm8BPlYGZCce/N62kV+m2R0pEvXvaUIW193ntB0CeEE0gUiiF2KFb5f7gR1MTLdTk1rsmScX619w60DctGw==
+"@debank/wc-types@^1.8.6":
+  version "1.8.6"
+  resolved "https://registry.yarnpkg.com/@debank/wc-types/-/wc-types-1.8.6.tgz#eb5b39b02b4c5095a01887df35dc9262dd5e953e"
+  integrity sha512-ZHSAKHy2xr257r7ZSGOZP1qMSy4QQhBJDMpinYkYMwuQb69QIwsYW2TYKDqQDTNoTid2RIlkrXJRJp+tO9h5/g==
 
-"@debank/wc-utils@^1.8.5":
-  version "1.8.5"
-  resolved "https://registry.yarnpkg.com/@debank/wc-utils/-/wc-utils-1.8.5.tgz#b5217cef566a1e85791bc2876550917289e071e7"
-  integrity sha512-qZ0M3u58F/QN4fCiTvoMOFZBGbPtRjMYJ4qc9yBWCSifQaBTEFujkRAsZwRDrafJzX2NjcDlcKNk+ErJGgs4jw==
+"@debank/wc-utils@^1.8.6":
+  version "1.8.6"
+  resolved "https://registry.yarnpkg.com/@debank/wc-utils/-/wc-utils-1.8.6.tgz#63dbb39bb5efa753e3517fab02b736f4f8227378"
+  integrity sha512-yK5QRSx4N2q+7b6nPYVXDs63wwc3IcMZz/wXuiqnWp9fkJjN6xgbvdVmQDM5/WAPmeMGC6+ktdrFLPtuk/SEvQ==
   dependencies:
-    "@debank/wc-browser-utils" "^1.8.5"
-    "@debank/wc-types" "^1.8.5"
+    "@debank/wc-browser-utils" "^1.8.6"
+    "@debank/wc-types" "^1.8.6"
     "@walletconnect/encoding" "^1.0.1"
     "@walletconnect/jsonrpc-utils" "^1.0.3"
     bn.js "4.11.8"

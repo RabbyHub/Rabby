@@ -98,7 +98,7 @@ const ScanCopyQRCode: React.FC<Props> = ({
         </div>
       </div>
       {!showURL && (
-        <div className="qrcode cursor-pointer mb-0" {...hoverProps}>
+        <div className="qrcode mb-0" {...hoverProps}>
           <QRCode value={qrcodeURL} size={170} />
           {isHovering && (
             <div className="refresh-container">

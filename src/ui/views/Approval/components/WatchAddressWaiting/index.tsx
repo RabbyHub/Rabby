@@ -13,6 +13,7 @@ import eventBus from '@/eventBus';
 import Process from './Process';
 import Scan from './Scan';
 import { message } from 'antd';
+import { useSessionStatus } from '@/ui/component/WalletConnect/useSessionStatus';
 
 interface ApprovalParams {
   address: string;
@@ -50,6 +51,7 @@ const WatchAddressWaiting = ({ params }: { params: ApprovalParams }) => {
     approvalId: string;
   }>();
   const [isClickDone, setIsClickDone] = useState(false);
+  const { status: sessionStatus } = useSessionStatus(currentAccount!);
 
   const initWalletConnect = async () => {
     const account = params.isGnosis
@@ -281,6 +283,13 @@ const WatchAddressWaiting = ({ params }: { params: ApprovalParams }) => {
       );
     }
   }, [signFinishedData, isClickDone]);
+
+  useEffect(() => {
+    if (sessionStatus === 'DISCONNECTED') {
+      setVisible(false);
+      message.error('Your wallet is not connected. Please re-connect.');
+    }
+  }, [sessionStatus]);
 
   return (
     <div className="watchaddress">

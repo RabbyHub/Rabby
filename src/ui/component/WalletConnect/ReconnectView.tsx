@@ -16,6 +16,7 @@ export const ReconnectView: React.FC = () => {
     setHeight,
     setClassName,
     closePopup,
+    visible,
     account,
   } = useCommonPopupView();
   const [qrCodeContent, setQRcodeContent] = React.useState('');
@@ -68,8 +69,10 @@ export const ReconnectView: React.FC = () => {
   };
 
   React.useEffect(() => {
-    init();
-  }, []);
+    if (visible) {
+      init();
+    }
+  }, [visible]);
 
   React.useEffect(() => {
     if (status === 'CONNECTED') {
