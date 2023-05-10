@@ -26,6 +26,7 @@ export const HistoryItem = ({
   tokenDict,
 }: HistoryItemProps) => {
   const isFailed = data.tx?.status === 0;
+  const isScam = data.is_scam;
 
   const handleClickTxHash = () => {
     const chain = Object.values(CHAINS).find(
@@ -35,8 +36,14 @@ export const HistoryItem = ({
     openInTab(chain.scanLink.replace(/_s_/, data.id));
   };
   return (
-    <div className={clsx('token-txs-history-card', isFailed && 'is-failed')}>
+    <div
+      className={clsx(
+        'token-txs-history-card',
+        (isScam || isFailed) && 'is-gray'
+      )}
+    >
       <div className="token-txs-history-card-header">
+        {isScam && <div className="tag-scam">Scam tx</div>}
         <div className="time">{sinceTime(data.time_at)}</div>
         {isFailed && <span className="tx-status is-failed">Failed</span>}
         <EtherscanLink onClick={handleClickTxHash}>
