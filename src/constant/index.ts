@@ -55,8 +55,6 @@ import IconProceed from 'ui/assets/sign/security-engine/processed.svg';
 import IconClosed from 'ui/assets/sign/security-engine/closed.svg';
 import LogoWalletConnect from 'ui/assets/walletlogo/walletconnect.svg';
 import LogoWalletConnectWhite from 'ui/assets/walletlogo/walletconnect.svg';
-import LogoCoinbase from 'ui/assets/walletlogo/coinbase.svg';
-import LogoCoinbaseWhite from 'ui/assets/walletlogo/coinbase.svg';
 
 export { CHAINS, CHAINS_ENUM };
 
@@ -321,7 +319,6 @@ export enum WALLET_BRAND_TYPES {
   DEFIANT = 'Defiant',
   WALLETCONNECT = 'WALLETCONNECT',
   AIRGAP = 'AirGap',
-  COINBASE = 'Coinbase',
 }
 
 enum WALLET_BRAND_CATEGORY {
@@ -524,16 +521,6 @@ export const WALLET_BRAND_CONTENT: {
     image: LogoTrust,
     connectType: BRAND_WALLET_CONNECT_TYPE.WalletConnect,
     category: WALLET_BRAND_CATEGORY.MOBILE,
-  },
-  [WALLET_BRAND_TYPES.COINBASE]: {
-    id: 21,
-    name: 'Coinbase Wallet',
-    brand: WALLET_BRAND_TYPES.COINBASE,
-    icon: LogoCoinbase,
-    image: LogoCoinbaseWhite,
-    connectType: BRAND_WALLET_CONNECT_TYPE.WalletConnect,
-    category: WALLET_BRAND_CATEGORY.MOBILE,
-    hidden: true,
   },
 };
 

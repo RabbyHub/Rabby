@@ -16,8 +16,6 @@ export const SwitchAddress: React.FC = () => {
         return '/images/wallet/switch-address-metamask.png';
       case WALLET_BRAND_TYPES.TP:
         return '/images/wallet/switch-address-tp.png';
-      case WALLET_BRAND_TYPES.COINBASE:
-        return '/images/wallet/switch-address-coinbase.png';
       case WALLET_BRAND_TYPES.IMTOKEN:
         return '/images/wallet/switch-address-imtoken.png';
       case WALLET_BRAND_TYPES.TRUSTWALLET:
