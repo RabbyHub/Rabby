@@ -28,6 +28,11 @@ class SwapService {
         unlimitedAllowance: false,
       },
     });
+    if (storage) {
+      if (storage.selectedDex && !DEX_ENUM[storage.selectedDex]) {
+        storage.selectedDex = null;
+      }
+    }
     this.store = storage || this.store;
   };
 
