@@ -140,16 +140,17 @@
     &:not(:last-child) {
       margin-bottom: 8px;
     }
-    &.is-failed {
+    &.is-gray {
       opacity: 0.5;
     }
     &-header {
       display: flex;
       padding: 12px 0;
-      gap: 12px;
-      justify-content: space-between;
+      gap: 8px;
+      align-items: center;
       .time {
         color: #707880;
+        margin-right: auto;
       }
     }
     &-body {
@@ -163,6 +164,15 @@
       &.is-failed {
         color: #f24822;
       }
+    }
+    .tag-scam {
+      font-weight: 400;
+      font-size: 12px;
+      line-height: 14px;
+      color: @color-comment-1;
+      padding: 3px 6px;
+      background: #e5e9ef;
+      border-radius: 2px;
     }
   }
   &__empty {
