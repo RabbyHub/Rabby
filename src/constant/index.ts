@@ -322,7 +322,6 @@ export enum WALLET_BRAND_TYPES {
   DEFIANT = 'Defiant',
   WALLETCONNECT = 'WALLETCONNECT',
   AIRGAP = 'AirGap',
-  COINBASE = 'Coinbase',
 }
 
 enum WALLET_BRAND_CATEGORY {
@@ -525,16 +524,6 @@ export const WALLET_BRAND_CONTENT: {
     image: LogoTrust,
     connectType: BRAND_WALLET_CONNECT_TYPE.WalletConnect,
     category: WALLET_BRAND_CATEGORY.MOBILE,
-  },
-  [WALLET_BRAND_TYPES.COINBASE]: {
-    id: 21,
-    name: 'Coinbase Wallet',
-    brand: WALLET_BRAND_TYPES.COINBASE,
-    icon: LogoCoinbase,
-    image: LogoCoinbaseWhite,
-    connectType: BRAND_WALLET_CONNECT_TYPE.WalletConnect,
-    category: WALLET_BRAND_CATEGORY.MOBILE,
-    hidden: true,
   },
 };
 
