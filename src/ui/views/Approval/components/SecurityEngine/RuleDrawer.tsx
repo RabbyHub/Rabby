@@ -416,7 +416,7 @@ const RuleDrawer = ({
         text = 'Risk Processed';
       }
     } else {
-      text = 'Ignore the risk';
+      text = 'Ignore the alert';
       color = null;
     }
     return {
