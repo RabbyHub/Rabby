@@ -50,7 +50,7 @@ export const DexSelectDrawer = (props: DexSelectDrawerProps) => {
       maskClosable={false}
       closable={false}
       placement="bottom"
-      height="524"
+      height="410"
       visible={visible}
       // onClose={close}
       destroyOnClose
@@ -127,11 +127,11 @@ export const DexSelectDrawer = (props: DexSelectDrawerProps) => {
 };
 
 export const DEX = {
-  [DEX_ENUM.ONEINCH]: {
-    logo: Image1inch,
-    name: '1inch',
-    chains: DEX_SUPPORT_CHAINS[DEX_ENUM.ONEINCH],
-  },
+  // [DEX_ENUM.ONEINCH]: {
+  //   logo: Image1inch,
+  //   name: '1inch',
+  //   chains: DEX_SUPPORT_CHAINS[DEX_ENUM.ONEINCH],
+  // },
   [DEX_ENUM.ZEROXAPI]: {
     logo: ImageOx,
     name: '0x',
