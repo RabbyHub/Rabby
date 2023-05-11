@@ -20,7 +20,7 @@ export const ActionsContainer: React.FC<Pick<Props, 'onCancel'>> = ({
   onCancel,
 }) => {
   return (
-    <div className="flex items-center gap-[16px]">
+    <div className="flex gap-[16px] relative justify-end">
       {children}
       <Button
         type="ghost"
@@ -28,7 +28,8 @@ export const ActionsContainer: React.FC<Pick<Props, 'onCancel'>> = ({
           'w-[100px] h-[48px] border-blue-light text-blue-light',
           'hover:bg-[#8697FF1A] active:bg-[#0000001A]',
           'rounded-[8px]',
-          'before:content-none'
+          'before:content-none',
+          'z-10'
         )}
         onClick={onCancel}
       >

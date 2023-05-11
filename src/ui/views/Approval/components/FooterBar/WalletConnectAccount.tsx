@@ -18,8 +18,7 @@ export interface Props {
 }
 
 export const WalletConnectAccount: React.FC<Props> = ({ account, chain }) => {
-  const [pendingConnect, setPendingConnect] = React.useState(false);
-  const { activePopup, setAccount } = useCommonPopupView();
+  const { activePopup, setAccount, setVisible } = useCommonPopupView();
   const { address, brandName, type } = account;
   const brandIcon = useWalletConnectIcon({
     address,
@@ -42,18 +41,12 @@ export const WalletConnectAccount: React.FC<Props> = ({ account, chain }) => {
       address,
       brandName,
     },
-    pendingConnect
+    true
   );
   const sessionChainId = useSessionChainId({
     address,
     brandName,
   });
-
-  React.useEffect(() => {
-    if (status === 'CONNECTED') {
-      setPendingConnect(false);
-    }
-  }, [status]);
 
   const tipStatus = React.useMemo(() => {
     if (chain && chain.id !== sessionChainId && status === 'CONNECTED') {
@@ -117,7 +110,6 @@ export const WalletConnectAccount: React.FC<Props> = ({ account, chain }) => {
     });
     if (tipStatus === 'DISCONNECTED') {
       activePopup('WalletConnect');
-      setPendingConnect(true);
     } else if (tipStatus === 'ACCOUNT_ERROR') {
       activePopup('SwitchAddress');
     } else if (tipStatus === 'CHAIN_ERROR') {
@@ -125,12 +117,18 @@ export const WalletConnectAccount: React.FC<Props> = ({ account, chain }) => {
     }
   };
 
+  React.useEffect(() => {
+    if (tipStatus === 'ACCOUNT_ERROR' || tipStatus === 'CHAIN_ERROR') {
+      setVisible(false);
+    }
+  }, [tipStatus]);
+
   return (
     <CommonAccount
       customSignal={
         <SessionSignal
           chainId={chain?.id}
-          pendingConnect={pendingConnect}
+          pendingConnect={true}
           isBadge
           address={address}
           brandName={brandName}

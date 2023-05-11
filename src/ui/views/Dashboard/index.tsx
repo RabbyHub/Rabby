@@ -626,6 +626,7 @@ const Dashboard = () => {
                         isBadge
                         address={currentAccount.address}
                         brandName={currentAccount.brandName}
+                        pendingConnect
                       />
                     )}
                     {currentAccount.type === KEYRING_CLASS.HARDWARE.LEDGER && (

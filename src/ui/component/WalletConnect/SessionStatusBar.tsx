@@ -17,13 +17,12 @@ export const SessionStatusBar: React.FC<Props> = ({
   brandName,
   className,
 }) => {
-  const [pendingConnect, setPendingConnect] = React.useState(false);
   const { status } = useSessionStatus(
     {
       address,
       brandName,
     },
-    pendingConnect
+    true
   );
   const { activePopup, setAccount } = useCommonPopupView();
   const wallet = useWallet();
@@ -59,7 +58,6 @@ export const SessionStatusBar: React.FC<Props> = ({
       message.success('Disconnected');
     } else if (tipStatus === 'DISCONNECTED') {
       activePopup('WalletConnect');
-      setPendingConnect(true);
     } else if (tipStatus === 'ACCOUNT_ERROR') {
       activePopup('SwitchAddress');
     }
@@ -83,12 +81,6 @@ export const SessionStatusBar: React.FC<Props> = ({
     }
   };
 
-  React.useEffect(() => {
-    if (status === 'CONNECTED') {
-      setPendingConnect(false);
-    }
-  }, [status]);
-
   return (
     <CommonStatusBar
       Signal={
@@ -97,7 +89,7 @@ export const SessionStatusBar: React.FC<Props> = ({
           address={address}
           brandName={brandName}
           className="mt-[7px]"
-          pendingConnect={pendingConnect}
+          pendingConnect={true}
         />
       }
       className={className}

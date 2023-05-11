@@ -1766,7 +1766,8 @@ const SignTx = ({ params, origin }: SignTxProps) => {
                       (isLedger && !useLedgerLive && !hasConnectedLedgerHID) ||
                       !forceProcess ||
                       securityCheckStatus === 'loading' ||
-                      !canProcess
+                      !canProcess ||
+                      !!checkErrors.find((item) => item.level === 'forbidden')
                     }
                   />
                 </>

@@ -115,7 +115,7 @@ export const ApprovalPopupContainer: React.FC<Props> = ({
         className={clsx(
           contentColor,
           hasMoreDescription
-            ? 'text-[13px] mt-12 leading-[18px]'
+            ? 'text-[13px] mt-12 leading-[18px] text-center'
             : 'text-[20px] font-bold'
         )}
       >

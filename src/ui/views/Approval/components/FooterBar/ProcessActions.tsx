@@ -15,7 +15,7 @@ export const ProcessActions: React.FC<Props> = ({
         overlayClassName="rectangle sign-tx-forbidden-tooltip"
         title={tooltipContent}
       >
-        <div>
+        <div className="absolute left-0 right-0">
           <Button
             disabled={disabledProcess}
             type="ghost"

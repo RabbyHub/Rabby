@@ -208,6 +208,7 @@ const AddressItem = memo(
                       isBadge
                       address={address}
                       brandName={brandName}
+                      pendingConnect
                     />
                   )}
                   {type === KEYRING_CLASS.HARDWARE.LEDGER && (

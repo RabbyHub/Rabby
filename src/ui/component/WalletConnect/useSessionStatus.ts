@@ -28,6 +28,7 @@ export const useSessionStatus = (
     address: string;
     brandName: string;
   }>();
+  const [isConnect, setIsConnect] = React.useState(false);
 
   React.useEffect(() => {
     const handleSessionChange = (data: {
@@ -36,7 +37,7 @@ export const useSessionStatus = (
       realBrandName?: string;
       status: Status;
     }) => {
-      console.log(data);
+      console.log('fetch', data);
       let updated: Status | undefined;
       if (
         !account?.address &&
@@ -57,17 +58,15 @@ export const useSessionStatus = (
         data.brandName !== WALLET_BRAND_TYPES.WALLETCONNECT
       ) {
         updated = 'BRAND_NAME_ERROR';
-      } else if (!isSameAddress(data.address, account.address)) {
-        updated = 'ACCOUNT_ERROR';
-        setErrorAccount(data);
       }
 
-      if (pendingConnect) {
-        if (updated === 'CONNECTED') {
-          setStatus(updated);
-        }
-      } else {
-        setStatus(updated);
+      setStatus(updated);
+
+      console.log('我给他设置了', updated, account);
+      if (updated === 'CONNECTED') {
+        setIsConnect(true);
+      } else if (updated === 'DISCONNECTED') {
+        setIsConnect(false);
       }
 
       setCurrAccount(data);
@@ -90,9 +89,29 @@ export const useSessionStatus = (
     if (account && !ignoreStore) {
       wallet
         .getWalletConnectSessionStatus(account.address, account.brandName)
-        .then((result) => result && setStatus(result));
+        .then((result) => {
+          if (!result) return;
+          if (result === 'DISCONNECTED') {
+            setIsConnect(false);
+          } else {
+            setIsConnect(true);
+          }
+
+          setStatus(result);
+        });
     }
   }, [account, ignoreStore]);
 
-  return { status, errorAccount, currAccount };
+  const currStatus = React.useMemo(() => {
+    if (pendingConnect) {
+      if (isConnect) {
+        return status;
+      }
+      return undefined;
+    }
+
+    return status;
+  }, [status, isConnect, pendingConnect]);
+
+  return { status: currStatus, errorAccount, currAccount };
 };
