@@ -60,7 +60,9 @@ export const useSessionStatus = (
         updated = 'BRAND_NAME_ERROR';
       }
 
-      setStatus(updated);
+      if (updated) {
+        setStatus(updated);
+      }
 
       if (updated === 'CONNECTED') {
         setIsConnect(true);
