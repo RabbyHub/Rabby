@@ -6,6 +6,7 @@ import { KEYRINGS_LOGOS, WALLET_BRAND_CONTENT, KEYRING_CLASS } from 'consts';
 import { AddressViewer } from 'ui/component';
 import useCurrentBalance from 'ui/hooks/useCurrentBalance';
 import clsx from 'clsx';
+import { useWalletConnectIcon } from '@/ui/component/WalletConnect/useWalletConnectIcon';
 
 const AccountCard = ({
   icons,
@@ -25,7 +26,11 @@ const AccountCard = ({
     account || null
   );
   const [currentAccountAlianName, setCurrentAccountAlianName] = useState('');
+  const brandRealUrl = useWalletConnectIcon(currentAccount);
   const getAccountIcon = (type: string | undefined) => {
+    if (brandRealUrl) {
+      return brandRealUrl;
+    }
     if (currentAccount && type) {
       if (WALLET_BRAND_CONTENT[currentAccount?.brandName]) {
         return WALLET_BRAND_CONTENT[currentAccount?.brandName].image;

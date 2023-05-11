@@ -7,11 +7,14 @@ import { useWallet } from '@/ui/utils';
 import React from 'react';
 
 export const useWalletConnectIcon = (
-  account: {
-    address: string;
-    brandName: string;
-    type: string;
-  } | null
+  account:
+    | {
+        address: string;
+        brandName: string;
+        type: string;
+      }
+    | undefined
+    | null
 ) => {
   const wallet = useWallet();
   const [url, setUrl] = React.useState<string>();

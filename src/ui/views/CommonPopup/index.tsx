@@ -26,11 +26,11 @@ export const CommonPopup: React.FC = () => {
 
   return (
     <Popup
-      title={<span className="text-[20px]">{title}</span>}
+      title={<span className="text-[16px]">{title}</span>}
       closable
       height={height}
       onClose={() => setVisible(false)}
-      visible={visible}
+      visible={visible && !!componentName}
       className={className}
       destroyOnClose={false}
     >

@@ -249,17 +249,23 @@ const AddressInfo1 = ({ address, type, brandName, source }: Props) => {
           </div>
         </div>
         {type === KEYRING_CLASS.WALLETCONNECT && (
-          <SessionStatusBar
-            className="text-gray-subTitle bg-gray-bg mr-[16px] mb-[20px]"
-            address={address}
-            brandName={brandName}
-          />
+          <div className="pb-[20px]">
+            <SessionStatusBar
+              className="text-gray-subTitle bg-gray-bg connect-status"
+              address={address}
+              brandName={brandName}
+            />
+          </div>
         )}
         {type === KEYRING_CLASS.HARDWARE.LEDGER && (
-          <LedgerStatusBar className="text-gray-subTitle bg-gray-bg mr-[16px] mb-[20px]" />
+          <div className="pb-[20px]">
+            <LedgerStatusBar className="text-gray-subTitle bg-gray-bg connect-status" />
+          </div>
         )}
         {type === KEYRING_CLASS.HARDWARE.GRIDPLUS && (
-          <GridPlusStatusBar className="text-gray-subTitle bg-gray-bg mr-[16px] mb-[20px]" />
+          <div className="pb-[20px]">
+            <GridPlusStatusBar className="text-gray-subTitle bg-gray-bg connect-status" />
+          </div>
         )}
       </div>
       {accountInfo && (

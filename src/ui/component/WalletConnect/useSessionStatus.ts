@@ -53,11 +53,6 @@ export const useSessionStatus = (
           data.brandName === account.brandName)
       ) {
         updated = data.status;
-      } else if (
-        data.brandName !== account.brandName &&
-        data.brandName !== WALLET_BRAND_TYPES.WALLETCONNECT
-      ) {
-        updated = 'BRAND_NAME_ERROR';
       }
 
       if (updated) {

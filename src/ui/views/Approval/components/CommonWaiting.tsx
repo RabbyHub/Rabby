@@ -212,7 +212,7 @@ export const CommonWaiting = ({ params }: { params: ApprovalParams }) => {
       description={description}
       onDone={() => setIsClickDone(true)}
       onCancel={handleCancel}
-      hasMoreDescription
+      hasMoreDescription={!!errorMessage}
     />
   );
 };

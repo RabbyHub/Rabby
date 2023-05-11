@@ -53,7 +53,8 @@ export const AccountInfo: React.FC<Props> = ({ account, chain }) => {
             <div
               className={clsx(
                 'text-gray-title text-[17px] font-medium',
-                'max-w-[115px] overflow-ellipsis whitespace-nowrap overflow-hidden'
+                'max-w-[115px] overflow-ellipsis whitespace-nowrap overflow-hidden',
+                'leading-[20px]'
               )}
             >
               {nickname}
@@ -62,7 +63,7 @@ export const AccountInfo: React.FC<Props> = ({ account, chain }) => {
           <AddressViewer
             showArrow={false}
             address={account.address}
-            className={clsx('text-13 text-gray-subTitle')}
+            className={clsx('text-13 text-gray-subTitle leading-[20px]')}
           />
         </div>
         <div
