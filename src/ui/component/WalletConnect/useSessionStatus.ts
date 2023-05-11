@@ -37,7 +37,7 @@ export const useSessionStatus = (
       realBrandName?: string;
       status: Status;
     }) => {
-      console.log('fetch', data);
+      console.log('session status', data);
       let updated: Status | undefined;
       if (
         !account?.address &&
@@ -62,7 +62,6 @@ export const useSessionStatus = (
 
       setStatus(updated);
 
-      console.log('我给他设置了', updated, account);
       if (updated === 'CONNECTED') {
         setIsConnect(true);
       } else if (updated === 'DISCONNECTED') {
