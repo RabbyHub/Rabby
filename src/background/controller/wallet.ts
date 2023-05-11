@@ -1387,6 +1387,8 @@ export class WalletController extends BaseController {
       keyring = new WalletConnect({
         accounts: [],
         brandName: brandName,
+        // 1h
+        maxDuration: 3600000,
         clientMeta: {
           description: i18n.t('appDescription'),
           url: 'https://rabby.io',
