@@ -409,6 +409,7 @@ const SignText = ({ params }: { params: SignTextProps }) => {
         )}
 
         <FooterBar
+          gnosisAccount={isGnosis ? params.account : undefined}
           enableTooltip={isWatch}
           tooltipContent={cantProcessReason}
           onCancel={handleCancel}

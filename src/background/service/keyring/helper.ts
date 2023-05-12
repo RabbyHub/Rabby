@@ -21,6 +21,10 @@ export class SignHelper {
     return this.signFn?.();
   }
 
+  resetResend() {
+    this.signFn = undefined;
+  }
+
   async invoke(fn: () => Promise<any>) {
     return new Promise((resolve) => {
       this.signFn = async () => {

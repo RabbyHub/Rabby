@@ -14,6 +14,10 @@ class TrezorKeyring extends OldTrezorKeyring {
     this.signHelper.resend();
   }
 
+  resetResend() {
+    this.signHelper.resetResend();
+  }
+
   signTransaction(address, tx) {
     return this.signHelper.invoke(async () => {
       return super.signTransaction(address, tx);

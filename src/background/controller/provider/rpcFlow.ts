@@ -269,6 +269,7 @@ export default (request: ProviderRequest) => {
       flow.requestedApproval = false;
       // only unlock notification if current flow is an approval flow
       notificationService.unLock();
+      keyringService.resetResend();
     }
   });
 };
