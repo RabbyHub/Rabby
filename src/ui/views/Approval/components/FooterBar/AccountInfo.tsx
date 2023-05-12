@@ -63,7 +63,7 @@ export const AccountInfo: React.FC<Props> = ({ account, chain }) => {
           <AddressViewer
             showArrow={false}
             address={account.address}
-            className={clsx('text-13 text-gray-subTitle mt-3')}
+            className={clsx('text-13 text-gray-subTitle mt-[4px]')}
           />
         </div>
         <div
