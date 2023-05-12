@@ -19,6 +19,7 @@ import './style.less';
 import { useRabbySelector } from '@/ui/store';
 import { DEX_SUPPORT_CHAINS } from '@rabby-wallet/rabby-swap';
 import { CHAINS } from 'consts';
+import { ellipsisOverflowedText } from 'ui/utils';
 
 const PAGE_COUNT = 10;
 const ellipsis = (text: string) => {
@@ -167,7 +168,9 @@ const TokenDetail = ({
               width="24px"
               height="24px"
             ></TokenWithChain>
-            <div className="token-symbol ml-8">{token.symbol}</div>
+            <div className="token-symbol ml-8" title={token.symbol}>
+              {ellipsisOverflowedText(token.symbol, 8)}
+            </div>
           </div>
           <div className="address">
             <ChainIcon chain={token.chain}></ChainIcon>
