@@ -241,7 +241,7 @@ const LedgerHardwareWaiting = ({ params }: { params: ApprovalParams }) => {
         break;
       case WALLETCONNECT_STATUS_MAP.SIBMITTED:
         setStatusProp('RESOLVED');
-        setContent('Signature Complete');
+        setContent('Signature completed');
         setDescription('');
         break;
       default:
