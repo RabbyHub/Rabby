@@ -201,21 +201,35 @@ const AddressItem = memo(
                   BRAND_ALIAN_TYPE_TEXT[brandName] || brandName
                 )}
               >
-                <div className="relative mr-[12px] rabby-address-item-icon">
-                  <img src={addressTypeIcon} className=" w-[24px] h-[24px]" />
+                <div className="relative mr-[12px]">
+                  <img
+                    src={addressTypeIcon}
+                    className={
+                      isCurrentAccount
+                        ? 'w-[32px] h-[32px]'
+                        : 'w-[24px] h-[24px]'
+                    }
+                  />
                   {type === KEYRING_CLASS.WALLETCONNECT && (
                     <SessionSignal
                       isBadge
                       address={address}
                       brandName={brandName}
                       pendingConnect
+                      className={isCurrentAccount ? 'bottom-0 right-0' : ''}
                     />
                   )}
                   {type === KEYRING_CLASS.HARDWARE.LEDGER && (
-                    <LedgerSignal isBadge />
+                    <LedgerSignal
+                      isBadge
+                      className={isCurrentAccount ? 'bottom-0 right-0' : ''}
+                    />
                   )}
                   {type === KEYRING_CLASS.HARDWARE.GRIDPLUS && (
-                    <GridPlusSignal isBadge />
+                    <GridPlusSignal
+                      isBadge
+                      className={isCurrentAccount ? 'bottom-0 right-0' : ''}
+                    />
                   )}
                 </div>
               </Tooltip>
