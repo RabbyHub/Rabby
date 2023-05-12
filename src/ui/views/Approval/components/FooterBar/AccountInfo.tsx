@@ -67,7 +67,7 @@ export const AccountInfo: React.FC<Props> = ({ account, chain }) => {
           />
         </div>
         <div
-          className="text-13 font-medium text-gray-title"
+          className="text-13 font-medium text-gray-title mt-[4px]"
           title={displayBalance}
         >
           ${displayBalance}
