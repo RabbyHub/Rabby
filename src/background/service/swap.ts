@@ -29,7 +29,8 @@ class SwapService {
       },
     });
     if (storage) {
-      if (storage.selectedDex && !DEX_ENUM[storage.selectedDex]) {
+      const values = Object.values(DEX_ENUM);
+      if (storage.selectedDex && !values.includes(storage.selectedDex)) {
         storage.selectedDex = null;
       }
     }
