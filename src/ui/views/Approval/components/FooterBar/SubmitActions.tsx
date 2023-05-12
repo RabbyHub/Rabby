@@ -42,7 +42,11 @@ export const SubmitActions: React.FC<Props> = ({
           )}
         >
           <button
-            className={clsx('hover:bg-[#00000033]', 'w-[184px] h-full')}
+            className={clsx(
+              'hover:bg-[#00000033]',
+              'w-[184px] h-full',
+              'font-medium'
+            )}
             onClick={handleClickConfirm}
           >
             Confirm
