@@ -15,6 +15,10 @@ class LatticeKeyring extends OldLatticeKeyring {
     this.signHelper.resend();
   }
 
+  resetResend() {
+    this.signHelper.resetResend();
+  }
+
   async signTransaction(address, tx) {
     return this.signHelper.invoke(async () => {
       return super.signTransaction(address, tx);
