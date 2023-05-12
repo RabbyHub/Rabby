@@ -30,7 +30,7 @@ export const useApproval = () => {
       return;
     }
     setTimeout(() => {
-      if (enablePopup(data.type)) {
+      if (data && enablePopup(data.type)) {
         return showPopup();
       }
       history.replace('/');
