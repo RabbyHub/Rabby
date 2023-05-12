@@ -69,9 +69,10 @@ const LedgerConnect = () => {
       footerFixed={false}
     >
       <div className="connect-ledger">
-        <ul>
-          <li>1. Plug your Ledger wallet into your computer</li>
-          <li>2. Unlock Ledger and open the Ethereum app</li>
+        <ul className="list-decimal w-[180px] pl-[20px] m-auto text-gray-title text-14 leading-[20px] mb-[50px]">
+          <li>Plug in a single Ledger</li>
+          <li>Enter pin to unlock</li>
+          <li>Open Ethereum App</li>
         </ul>
         <img src="/images/ledger-plug.png" className="ledger-plug" />
       </div>

@@ -14,6 +14,8 @@ import {
   JsonTx,
   TransactionFactory,
 } from '@ethereumjs/tx';
+import { EVENTS } from '@/constant';
+import { SignHelper } from './helper';
 
 const hdPathString = "m/44'/60'/0'/0";
 const keyringType = 'BitBox02 Hardware';
@@ -30,6 +32,9 @@ class BitBox02Keyring extends EventEmitter {
   unlockedAccount = 0;
   paths = {};
   hdPath = '';
+  signHelper = new SignHelper({
+    errorEventName: EVENTS.COMMON_HARDWARE.REJECTED,
+  });
 
   constructor(opts = {}) {
     super();
@@ -53,6 +58,10 @@ class BitBox02Keyring extends EventEmitter {
     this.page = opts.page || 0;
     this.perPage = 5;
     return Promise.resolve();
+  }
+
+  resend() {
+    this.signHelper.resend();
   }
 
   async openPopup(url) {
@@ -218,43 +227,45 @@ class BitBox02Keyring extends EventEmitter {
 
   // tx is an instance of the ethereumjs-transaction class.
   async signTransaction(address, tx: TypedTransaction) {
-    return await this.withDevice(async (bitbox02) => {
-      const txData: JsonTx = {
-        to: tx.to!.toString(),
-        value: `0x${tx.value.toString('hex')}`,
-        data: this._normalize(tx.data),
-        nonce: `0x${tx.nonce.toString('hex')}`,
-        gasLimit: `0x${tx.gasLimit.toString('hex')}`,
-        gasPrice: `0x${
-          (tx as Transaction).gasPrice
-            ? (tx as Transaction).gasPrice.toString('hex')
-            : (tx as FeeMarketEIP1559Transaction).maxFeePerGas.toString('hex')
-        }`,
-      };
-      const result = await bitbox02.ethSignTransaction({
-        keypath: this._pathFromAddress(address),
-        chainId: tx.common.chainIdBN().toNumber(),
-        tx: {
-          nonce: tx.nonce.toArrayLike(Buffer),
-          gasPrice: (tx as Transaction).gasPrice.toArrayLike(Buffer),
-          gasLimit: tx.gasLimit.toArrayLike(Buffer),
-          to: tx.to?.toBuffer(),
-          value: tx.value.toArrayLike(Buffer),
-          data: tx.data,
-        },
+    return this.signHelper.invoke(async () => {
+      return await this.withDevice(async (bitbox02) => {
+        const txData: JsonTx = {
+          to: tx.to!.toString(),
+          value: `0x${tx.value.toString('hex')}`,
+          data: this._normalize(tx.data),
+          nonce: `0x${tx.nonce.toString('hex')}`,
+          gasLimit: `0x${tx.gasLimit.toString('hex')}`,
+          gasPrice: `0x${
+            (tx as Transaction).gasPrice
+              ? (tx as Transaction).gasPrice.toString('hex')
+              : (tx as FeeMarketEIP1559Transaction).maxFeePerGas.toString('hex')
+          }`,
+        };
+        const result = await bitbox02.ethSignTransaction({
+          keypath: this._pathFromAddress(address),
+          chainId: tx.common.chainIdBN().toNumber(),
+          tx: {
+            nonce: tx.nonce.toArrayLike(Buffer),
+            gasPrice: (tx as Transaction).gasPrice.toArrayLike(Buffer),
+            gasLimit: tx.gasLimit.toArrayLike(Buffer),
+            to: tx.to?.toBuffer(),
+            value: tx.value.toArrayLike(Buffer),
+            data: tx.data,
+          },
+        });
+        txData.r = result.r;
+        txData.s = result.s;
+        txData.v = result.v;
+        const signedTx = TransactionFactory.fromTxData(txData);
+        const addressSignedWith = ethUtil.toChecksumAddress(
+          signedTx.getSenderAddress().toString()
+        );
+        const correctAddress = ethUtil.toChecksumAddress(address);
+        if (addressSignedWith !== correctAddress) {
+          throw new Error('signature doesnt match the right address');
+        }
+        return signedTx;
       });
-      txData.r = result.r;
-      txData.s = result.s;
-      txData.v = result.v;
-      const signedTx = TransactionFactory.fromTxData(txData);
-      const addressSignedWith = ethUtil.toChecksumAddress(
-        signedTx.getSenderAddress().toString()
-      );
-      const correctAddress = ethUtil.toChecksumAddress(address);
-      if (addressSignedWith !== correctAddress) {
-        throw new Error('signature doesnt match the right address');
-      }
-      return signedTx;
     });
   }
 
@@ -263,19 +274,21 @@ class BitBox02Keyring extends EventEmitter {
   }
 
   async signPersonalMessage(withAccount, message) {
-    return await this.withDevice(async (bitbox02) => {
-      const result = await bitbox02.ethSignMessage({
-        keypath: this._pathFromAddress(withAccount),
-        message: ethUtil.toBuffer(message),
-      });
-      const sig = Buffer.concat([
-        Buffer.from(result.r),
-        Buffer.from(result.s),
-        Buffer.from(result.v),
-      ]);
+    return this.signHelper.invoke(async () => {
+      return await this.withDevice(async (bitbox02) => {
+        const result = await bitbox02.ethSignMessage({
+          keypath: this._pathFromAddress(withAccount),
+          message: ethUtil.toBuffer(message),
+        });
+        const sig = Buffer.concat([
+          Buffer.from(result.r),
+          Buffer.from(result.s),
+          Buffer.from(result.v),
+        ]);
 
-      const sigHex = `0x${sig.toString('hex')}`;
-      return sigHex;
+        const sigHex = `0x${sig.toString('hex')}`;
+        return sigHex;
+      });
     });
   }
 
@@ -285,30 +298,32 @@ class BitBox02Keyring extends EventEmitter {
         `Only version 4 of typed data signing is supported. Provided version: ${options.version}`
       );
     }
-    return await this.withDevice(async (bitbox02) => {
-      const result = await bitbox02.ethSignTypedMessage({
-        chainId: data.domain.chainId || 1,
-        keypath: this._pathFromAddress(withAccount),
-        message: data,
+    return this.signHelper.invoke(async () => {
+      return await this.withDevice(async (bitbox02) => {
+        const result = await bitbox02.ethSignTypedMessage({
+          chainId: data.domain.chainId || 1,
+          keypath: this._pathFromAddress(withAccount),
+          message: data,
+        });
+        const sig = Buffer.concat([
+          Buffer.from(result.r),
+          Buffer.from(result.s),
+          Buffer.from(result.v),
+        ]);
+        const sigHex = `0x${sig.toString('hex')}`;
+        const addressSignedWith = sigUtil.recoverTypedSignature({
+          data,
+          signature: sigHex,
+          version: options.version,
+        });
+        if (
+          ethUtil.toChecksumAddress(addressSignedWith) !==
+          ethUtil.toChecksumAddress(withAccount)
+        ) {
+          throw new Error('The signature doesnt match the right address');
+        }
+        return sigHex;
       });
-      const sig = Buffer.concat([
-        Buffer.from(result.r),
-        Buffer.from(result.s),
-        Buffer.from(result.v),
-      ]);
-      const sigHex = `0x${sig.toString('hex')}`;
-      const addressSignedWith = sigUtil.recoverTypedSignature({
-        data,
-        signature: sigHex,
-        version: options.version,
-      });
-      if (
-        ethUtil.toChecksumAddress(addressSignedWith) !==
-        ethUtil.toChecksumAddress(withAccount)
-      ) {
-        throw new Error('The signature doesnt match the right address');
-      }
-      return sigHex;
     });
   }
 

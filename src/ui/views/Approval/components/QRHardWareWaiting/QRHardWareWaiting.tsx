@@ -9,26 +9,26 @@ import {
   WALLET_BRAND_CONTENT,
   WALLET_BRAND_TYPES,
 } from 'consts';
-import { useTranslation } from 'react-i18next';
-import { StrayPageWithButton } from 'ui/component';
 import eventBus from '@/eventBus';
-import { useApproval, useWallet } from 'ui/utils';
-import QRCodeCheckerDetail from '../../../QRCodeCheckerDetail';
+import { useApproval, useCommonPopupView, useWallet } from 'ui/utils';
 import { useHistory } from 'react-router-dom';
 import { RequestSignPayload } from '@/background/service/keyring/eth-keystone-keyring';
+import { ApprovalPopupContainer } from '../Popup/ApprovalPopupContainer';
 
 enum QRHARDWARE_STATUS {
   SYNC,
   SIGN,
+  RECEIVED,
+  DONE,
 }
 
 const QRHardWareWaiting = ({ params }) => {
+  const { setTitle } = useCommonPopupView();
   const [status, setStatus] = useState<QRHARDWARE_STATUS>(
     QRHARDWARE_STATUS.SYNC
   );
   const [signPayload, setSignPayload] = useState<RequestSignPayload>();
   const [getApproval, resolveApproval, rejectApproval] = useApproval();
-  const { t } = useTranslation();
   const [errorMessage, setErrorMessage] = useState('');
   const [isSignText, setIsSignText] = useState(false);
   const history = useHistory();
@@ -36,6 +36,8 @@ const QRHardWareWaiting = ({ params }) => {
   const [walletBrandContent, setWalletBrandContent] = useState(
     WALLET_BRAND_CONTENT[WALLET_BRAND_TYPES.KEYSTONE]
   );
+  const [content, setContent] = React.useState('');
+
   const chain = Object.values(CHAINS).find(
     (item) => item.id === (params.chainId || 1)
   )!.enum;
@@ -43,6 +45,7 @@ const QRHardWareWaiting = ({ params }) => {
     const approval = await getApproval();
     const account = await wallet.syncGetCurrentAccount()!;
     if (!account) return;
+    setTitle('Sign with ' + account.brandName);
     setWalletBrandContent(WALLET_BRAND_CONTENT[account.brandName]);
     setIsSignText(
       params.isGnosis ? true : approval?.data.approvalType !== 'SignTx'
@@ -64,11 +67,13 @@ const QRHardWareWaiting = ({ params }) => {
             await wallet.postGnosisTransaction();
           }
         }
+        setStatus(QRHARDWARE_STATUS.DONE);
         resolveApproval(data.data, !isSignText, false, approval.id);
       } else {
+        setErrorMessage(data.errorMsg);
         rejectApproval(data.errorMsg);
       }
-      history.push('/');
+      // history.push('/');
     });
     await wallet.acquireKeystoneMemStoreData();
   }, []);
@@ -137,61 +142,81 @@ const QRHardWareWaiting = ({ params }) => {
     return errorMessage !== '' && status == QRHARDWARE_STATUS.SIGN;
   }, [errorMessage]);
 
+  const [scanMessage, setScanMessage] = React.useState();
+  const handleScan = (scanMessage) => {
+    setScanMessage(scanMessage);
+    setStatus(QRHARDWARE_STATUS.RECEIVED);
+  };
+
+  const handleDone = () => {
+    history.push('/');
+  };
+
+  const handleSubmit = () => {
+    wallet.submitQRHardwareSignature(
+      signPayload!.requestId,
+      scanMessage!,
+      params?.account?.address
+    );
+  };
+
+  const popupStatus = React.useMemo(() => {
+    if (errorMessage) {
+      setContent('Transaction failed');
+      return 'FAILED';
+    }
+
+    if (status === QRHARDWARE_STATUS.RECEIVED) {
+      setContent('Signature received');
+      return 'SUBMITTING';
+    }
+    if (status === QRHARDWARE_STATUS.DONE) {
+      setContent('Transaction submitted');
+      return 'RESOLVED';
+    }
+    if ([QRHARDWARE_STATUS.SIGN, QRHARDWARE_STATUS.SYNC].includes(status)) {
+      setContent('');
+      return;
+    }
+  }, [status, errorMessage]);
+
+  if (popupStatus) {
+    return (
+      <ApprovalPopupContainer
+        brandUrl={walletBrandContent.icon}
+        status={popupStatus}
+        content={content}
+        description={errorMessage}
+        onCancel={handleCancel}
+        onRetry={handleRequestSignature}
+        onDone={handleDone}
+        onSubmit={handleSubmit}
+        hasMoreDescription={!!errorMessage}
+      />
+    );
+  }
+
   return (
-    <StrayPageWithButton
-      hasBack
-      hasDivider
-      noPadding
-      className="qr-hardware-sign"
-      onBackClick={handleCancel}
-      NextButtonContent={t('Get Signature')}
-      onNextClick={handleRequestSignature}
-      nextDisabled={status == QRHARDWARE_STATUS.SIGN}
-    >
-      <header className="create-new-header create-password-header h-[264px]">
-        <img
-          className="rabby-logo"
-          src="/images/logo-white.svg"
-          alt="rabby logo"
-        />
-        <img
-          className="unlock-logo w-[80px] h-[75px] mb-20 mx-auto"
-          src={walletBrandContent.image}
-        />
-        <p className="text-24 mb-4 mt-0 text-white text-center font-bold">
-          {t(walletBrandContent.name)}
-        </p>
-        <p className="text-14 mb-0 mt-4 text-white opacity-80 text-center">
-          Scan the QR code on the {walletBrandContent.name} hardware wallet
-        </p>
-        <img src="/images/watch-mask.png" className="mask" />
-      </header>
+    <section>
       <div className="flex justify-center qrcode-scanner">
         {status === QRHARDWARE_STATUS.SYNC && signPayload && (
           <Player
             type={signPayload.payload.type}
             cbor={signPayload.payload.cbor}
+            onSign={handleRequestSignature}
+            brandName={walletBrandContent.brand}
           />
         )}
         {status === QRHARDWARE_STATUS.SIGN && (
           <Reader
             requestId={signPayload?.requestId}
             setErrorMessage={setErrorMessage}
-            address={params?.account?.address}
-          />
-        )}
-        {showErrorChecker && (
-          <QRCodeCheckerDetail
-            visible={showErrorChecker}
-            onCancel={handleCancel}
-            data={errorMessage}
-            onOk={handleRequestSignature}
-            okText={t('Retry')}
-            cancelText={t('Cancel')}
+            brandName={walletBrandContent.brand}
+            onScan={handleScan}
           />
         )}
       </div>
-    </StrayPageWithButton>
+    </section>
   );
 };
 

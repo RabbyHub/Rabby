@@ -1,5 +1,5 @@
-import React, { useEffect, useState } from 'react';
-import { Button, message } from 'antd';
+import React from 'react';
+import { message } from 'antd';
 import { useTranslation } from 'react-i18next';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import { Account } from 'background/service/preference';
@@ -15,12 +15,17 @@ import {
   openInTab,
   openInternalPageInTab,
   useWallet,
+  useCommonPopupView,
 } from 'ui/utils';
 import { adjustV } from 'ui/utils/gnosis';
 import eventBus from '@/eventBus';
 import stats from '@/stats';
-import { SvgIconOpenExternal } from 'ui/assets';
-import { LedgerHardwareFailed } from './LedgerHardwareFailed';
+import LedgerSVG from 'ui/assets/walletlogo/ledger.svg';
+import {
+  ApprovalPopupContainer,
+  Props as ApprovalPopupContainerProps,
+} from './Popup/ApprovalPopupContainer';
+import { useLedgerStatus } from '@/ui/component/ConnectStatus/useLedgerStatus';
 
 interface ApprovalParams {
   address: string;
@@ -33,29 +38,15 @@ interface ApprovalParams {
 }
 
 const LedgerHardwareWaiting = ({ params }: { params: ApprovalParams }) => {
+  const { setTitle, setVisible, visible, closePopup } = useCommonPopupView();
+  const [statusProp, setStatusProp] = React.useState<
+    ApprovalPopupContainerProps['status']
+  >('SENDING');
+  const [content, setContent] = React.useState('');
+  const [description, setDescription] = React.useState('');
   const wallet = useWallet();
-  const statusHeaders = {
-    [WALLETCONNECT_STATUS_MAP.WAITING]: {
-      color: '#8697FF',
-      content: 'Please Sign on Your Ledger',
-      signTextContent: 'Please Sign on Your Ledger',
-      image: '/images/ledger-status/plug.jpg',
-    },
-    [WALLETCONNECT_STATUS_MAP.SIBMITTED]: {
-      content: 'Transaction submitted',
-      signTextContent: 'Signed',
-      color: '#27C193',
-      desc: 'Your transaction has been submitted',
-      image: '/images/ledger-status/success.jpg',
-    },
-    [WALLETCONNECT_STATUS_MAP.FAILD]: {
-      content: 'Transaction rejected',
-      signTextContent: 'Rejected',
-      color: '#EC5151',
-      image: '/images/ledger-status/error.png',
-    },
-  };
-  const [connectStatus, setConnectStatus] = useState(
+
+  const [connectStatus, setConnectStatus] = React.useState(
     WALLETCONNECT_STATUS_MAP.WAITING
   );
   const [getApproval, resolveApproval, rejectApproval] = useApproval();
@@ -63,23 +54,31 @@ const LedgerHardwareWaiting = ({ params }: { params: ApprovalParams }) => {
     (item) => item.id === (params.chainId || 1)
   )!;
   const { t } = useTranslation();
-  const [isSignText, setIsSignText] = useState(false);
-  const [result, setResult] = useState('');
-  const [errorMessage, setErrorMessage] = useState('');
+  const [isSignText, setIsSignText] = React.useState(false);
+  const [result, setResult] = React.useState('');
+  const [errorMessage, setErrorMessage] = React.useState('');
+  const [isClickDone, setIsClickDone] = React.useState(false);
+  const [signFinishedData, setSignFinishedData] = React.useState<{
+    data: any;
+    approvalId: string;
+  }>();
+  const { status: sessionStatus } = useLedgerStatus();
+  const firstConnectRef = React.useRef<boolean>(false);
+  const mountedRef = React.useRef(false);
+  const showDueToStatusChangeRef = React.useRef(false);
 
   const handleCancel = () => {
     rejectApproval('user cancel');
   };
 
-  const handleOK = () => {
-    window.close();
-  };
-
-  const handleRetry = async () => {
+  const handleRetry = async (showToast = true) => {
+    if (sessionStatus === 'DISCONNECTED') return;
     const account = await wallet.syncGetCurrentAccount()!;
     setConnectStatus(WALLETCONNECT_STATUS_MAP.WAITING);
     await wallet.requestKeyring(account?.type || '', 'resend', null);
-    message.success(t('Resent'));
+    if (showToast) {
+      message.success(t('Resent'));
+    }
   };
 
   const handleClickResult = () => {
@@ -145,12 +144,13 @@ const LedgerHardwareWaiting = ({ params }: { params: ApprovalParams }) => {
         await rejectApproval('User rejected the request.');
         openInternalPageInTab('request-permission?type=ledger&from=approval');
       }
-      setConnectStatus(WALLETCONNECT_STATUS_MAP.FAILD);
+      setConnectStatus(WALLETCONNECT_STATUS_MAP.REJECTED);
     });
     eventBus.addEventListener(EVENTS.SIGN_FINISHED, async (data) => {
       if (data.success) {
         let sig = data.data;
         setResult(sig);
+        setConnectStatus(WALLETCONNECT_STATUS_MAP.SIBMITTED);
         if (params.isGnosis) {
           sig = adjustV('eth_signTypedData', sig);
           const sigs = await wallet.getGnosisTransactionSignatures();
@@ -166,118 +166,135 @@ const LedgerHardwareWaiting = ({ params }: { params: ApprovalParams }) => {
           action: 'Submit',
           label: KEYRING_CLASS.HARDWARE.LEDGER,
         });
-        const hasPermission = await wallet.checkLedgerHasHIDPermission();
-        const isUseLedgerLive = await wallet.isUseLedgerLive();
-        if (!hasPermission && !isUseLedgerLive) {
-          await wallet.authorizeLedgerHIDPermission();
-        }
-        resolveApproval(sig, false, false, approval.id);
+        // TODO: Why check permissions after signature completion?
+        // const hasPermission = await wallet.checkLedgerHasHIDPermission();
+        // const isUseLedgerLive = await wallet.isUseLedgerLive();
+        // if (!hasPermission && !isUseLedgerLive) {
+        //   await wallet.authorizeLedgerHIDPermission();
+        // }
+        setSignFinishedData({
+          data: sig,
+          approvalId: approval.id,
+        });
       } else {
         setConnectStatus(WALLETCONNECT_STATUS_MAP.FAILD);
       }
     });
   };
 
-  useEffect(() => {
-    init();
-  }, []);
-  const currentHeader = statusHeaders[connectStatus];
+  React.useEffect(() => {
+    if (firstConnectRef.current) {
+      if (sessionStatus === 'DISCONNECTED') {
+        setVisible(false);
+        message.error('Your wallet is not connected. Please re-connect.');
+      }
+    }
 
-  if (connectStatus === WALLETCONNECT_STATUS_MAP.FAILD) {
-    return (
-      <LedgerHardwareFailed
-        header={currentHeader}
-        errorMessage={errorMessage}
-        isSignText={isSignText}
-      >
-        <div className="ledger-waiting__footer">
-          <Button
-            className="w-[200px]"
-            type="primary"
-            size="large"
-            onClick={handleRetry}
-          >
-            Retry
-          </Button>
-          <Button type="link" onClick={handleCancel}>
-            {t('Cancel')}
-          </Button>
-        </div>
-      </LedgerHardwareFailed>
-    );
-  }
+    if (sessionStatus === 'CONNECTED') {
+      firstConnectRef.current = true;
+    }
+  }, [sessionStatus]);
+
+  React.useEffect(() => {
+    setTitle('Sign with Ledger');
+    init();
+    mountedRef.current = true;
+  }, []);
+
+  React.useEffect(() => {
+    if (visible && mountedRef.current && !showDueToStatusChangeRef.current) {
+      handleRetry(false);
+    }
+    showDueToStatusChangeRef.current = false;
+  }, [visible]);
+
+  React.useEffect(() => {
+    if (signFinishedData && isClickDone) {
+      closePopup();
+      resolveApproval(
+        signFinishedData.data,
+        false,
+        false,
+        signFinishedData.approvalId
+      );
+    }
+  }, [signFinishedData, isClickDone]);
+
+  React.useEffect(() => {
+    setVisible(true);
+    showDueToStatusChangeRef.current = true;
+    switch (connectStatus) {
+      case WALLETCONNECT_STATUS_MAP.WAITING:
+        setStatusProp('SENDING');
+        setContent('Sending signing request...');
+        setDescription('');
+        break;
+      case WALLETCONNECT_STATUS_MAP.REJECTED:
+        setStatusProp('REJECTED');
+        setContent('Transaction rejected');
+        setDescription(errorMessage);
+        break;
+      case WALLETCONNECT_STATUS_MAP.FAILD:
+        setStatusProp('FAILED');
+        setContent('Transaction failed');
+        setDescription(errorMessage);
+        break;
+      case WALLETCONNECT_STATUS_MAP.SIBMITTED:
+        setStatusProp('RESOLVED');
+        setContent('Transaction submitted');
+        setDescription('');
+        break;
+      default:
+        break;
+    }
+  }, [connectStatus, errorMessage]);
+
+  const currentDescription = React.useMemo(() => {
+    if (description.includes('0x5515') || description.includes('0x6b0c')) {
+      return 'Please plug in and unlock your Ledger, open Ethereum on it';
+    } else if (
+      description.includes('0x6e00') ||
+      description.includes('0x6b00')
+    ) {
+      return 'Please update the firmware and Ethereum App on your Ledger';
+    } else if (description.includes('0x6985')) {
+      return 'Transaction is rejected on your Ledger';
+    }
+
+    return description;
+  }, [description]);
 
   return (
-    <div className="ledger-waiting">
-      <img
-        src="/images/ledger-status/header.png"
-        className="ledger-waiting__nav"
-      />
-      <div className="ledger-waiting__container">
-        <div className="ledger-waiting__header">
-          <h1
-            style={{
-              color: currentHeader.color,
-              marginBottom: `${currentHeader.desc ? '8px' : '70px'}`,
-            }}
-          >
-            {isSignText ? currentHeader.signTextContent : currentHeader.content}
-          </h1>
-          {currentHeader.desc && !isSignText && <p>{currentHeader.desc}</p>}
-        </div>
-        <img src={currentHeader.image} className="ledger-waiting__status" />
-        {connectStatus === WALLETCONNECT_STATUS_MAP.WAITING && (
-          <div className="ledger-waiting__tip">
-            <p>Make sure:</p>
-            <p>1. Plug your Ledger wallet into your computer</p>
-            <p>2. Unlock Ledger and open the Ethereum app</p>
-            <p className="ledger-waiting__tip-resend">
-              Don't see the transaction on Ledger?{' '}
-              <span className="underline cursor-pointer" onClick={handleRetry}>
-                Resend transaction
-              </span>
-            </p>
-          </div>
-        )}
-        {connectStatus === WALLETCONNECT_STATUS_MAP.SIBMITTED && !isSignText && (
-          <div className="ledger-waiting__result">
-            <img className="icon icon-chain" src={chain.logo} />
+    <ApprovalPopupContainer
+      brandUrl={LedgerSVG}
+      status={statusProp}
+      onRetry={() => handleRetry()}
+      onDone={() => setIsClickDone(true)}
+      onCancel={handleCancel}
+      description={
+        <>
+          {currentDescription}
+          {currentDescription.includes('EthAppPleaseEnableContractData') && (
             <a
-              href="javascript:;"
-              className="tx-hash"
-              onClick={handleClickResult}
+              className="underline text-blue-light block text-center mt-8"
+              href="https://support.ledger.com/hc/en-us/articles/4405481324433-Enable-blind-signing-in-the-Ethereum-ETH-app?docs=true"
+              onClick={(e) => {
+                e.preventDefault();
+                window.open(
+                  e.currentTarget.href,
+                  '_blank',
+                  'noopener,noreferrer'
+                );
+              }}
             >
-              {`${result.slice(0, 6)}...${result.slice(-4)}`}
-              <SvgIconOpenExternal className="icon icon-external" />
+              Blind Signature Tutorial from Ledger
             </a>
-          </div>
-        )}
-        {(connectStatus === WALLETCONNECT_STATUS_MAP.SIBMITTED ||
-          connectStatus === WALLETCONNECT_STATUS_MAP.FAILD) && (
-          <div
-            className="ledger-waiting__footer"
-            style={{
-              marginTop: `${
-                connectStatus === WALLETCONNECT_STATUS_MAP.SIBMITTED
-                  ? '55px'
-                  : '120px'
-              }`,
-            }}
-          >
-            {connectStatus === WALLETCONNECT_STATUS_MAP.SIBMITTED && (
-              <Button
-                className="w-[200px]"
-                type="primary"
-                size="large"
-                onClick={handleOK}
-              >
-                OK
-              </Button>
-            )}
-          </div>
-        )}
-      </div>
-    </div>
+          )}
+        </>
+      }
+      content={content}
+      hasMoreDescription={statusProp === 'REJECTED' || statusProp === 'FAILED'}
+    />
   );
 };
 

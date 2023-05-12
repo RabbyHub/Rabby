@@ -15,6 +15,7 @@ import {
   hex2Text,
   openInternalPageInTab,
   useApproval,
+  useCommonPopupView,
   useWallet,
 } from 'ui/utils';
 import AccountCard from './AccountCard';
@@ -32,6 +33,7 @@ import {
   detectSIWE,
   genSecurityCheckMessage,
 } from 'ui/utils/siwe';
+import { FooterBar } from './FooterBar/FooterBar';
 
 interface SignTextProps {
   data: string[];
@@ -46,12 +48,15 @@ interface SignTextProps {
 }
 
 export const WaitingSignComponent = {
-  // [KEYRING_CLASS.HARDWARE.LEDGER]: 'HardwareWaiting',
-  // [KEYRING_CLASS.WATCH]: 'WatchAdrressWaiting',
-  [KEYRING_CLASS.WALLETCONNECT]: 'WatchAdrressWaiting',
+  // [KEYRING_CLASS.WATCH]: 'WatchAddressWaiting',
+  [KEYRING_CLASS.WALLETCONNECT]: 'WatchAddressWaiting',
   // [KEYRING_CLASS.GNOSIS]: 'GnosisWaiting',
   [KEYRING_CLASS.HARDWARE.KEYSTONE]: 'QRHardWareWaiting',
   [KEYRING_CLASS.HARDWARE.LEDGER]: 'LedgerHardwareWaiting',
+  [KEYRING_CLASS.HARDWARE.GRIDPLUS]: 'CommonWaiting',
+  [KEYRING_CLASS.HARDWARE.ONEKEY]: 'CommonWaiting',
+  [KEYRING_CLASS.HARDWARE.TREZOR]: 'CommonWaiting',
+  [KEYRING_CLASS.HARDWARE.BITBOX02]: 'CommonWaiting',
 };
 
 const SignText = ({ params }: { params: SignTextProps }) => {
@@ -180,6 +185,7 @@ const SignText = ({ params }: { params: SignTextProps }) => {
     rejectApproval('User rejected the request.');
   };
 
+  const { activeApprovalPopup } = useCommonPopupView();
   const handleAllow = async (doubleCheck = false) => {
     if (
       !doubleCheck &&
@@ -188,6 +194,9 @@ const SignText = ({ params }: { params: SignTextProps }) => {
     ) {
       setShowSecurityCheckDetail(true);
 
+      return;
+    }
+    if (activeApprovalPopup()) {
       return;
     }
     const currentAccount = await wallet.getCurrentAccount();
@@ -281,25 +290,26 @@ const SignText = ({ params }: { params: SignTextProps }) => {
     if (accountType === KEYRING_TYPE.WatchAddressKeyring) {
       setIsWatch(true);
       setCantProcessReason(
-        <div className="flex items-center gap-6">
-          <img src={IconWatch} alt="" className="w-[24px] flex-shrink-0" />
-          <div>
-            Unable to sign because the current address is a Watch-only Address
-            from Contacts. You can{' '}
-            <a
-              href=""
-              className="underline"
-              onClick={async (e) => {
-                e.preventDefault();
-                await rejectApproval('User rejected the request.', true);
-                openInternalPageInTab('no-address');
-              }}
-            >
-              import it
-            </a>{' '}
-            fully or use another address.
-          </div>
-        </div>
+        // <div className="flex items-center gap-6">
+        //   <img src={IconWatch} alt="" className="w-[24px] flex-shrink-0" />
+        //   <div>
+        //     Unable to sign because the current address is a Watch-only Address
+        //     from Contacts. You can{' '}
+        //     <a
+        //       href=""
+        //       className="underline"
+        //       onClick={async (e) => {
+        //         e.preventDefault();
+        //         await rejectApproval('User rejected the request.', true);
+        //         openInternalPageInTab('no-address');
+        //       }}
+        //     >
+        //       import it
+        //     </a>{' '}
+        //     fully or use another address.
+        //   </div>
+        // </div>
+        <div>You can only use imported addresses to sign</div>
       );
     }
     if (accountType === KEYRING_TYPE.GnosisKeyring && !params.account) {
@@ -349,7 +359,6 @@ const SignText = ({ params }: { params: SignTextProps }) => {
 
   return (
     <>
-      <AccountCard account={params.account} />
       <div className="approval-text">
         <p className="section-title">
           {title}
@@ -387,10 +396,8 @@ const SignText = ({ params }: { params: SignTextProps }) => {
           onCheck={handleSecurityCheck}
         ></SecurityCheckCard>
       </div>
+
       <footer className="approval-text__footer pb-[20px]">
-        {isLedger && !useLedgerLive && !hasConnectedLedgerHID && (
-          <LedgerWebHIDAlert connected={hasConnectedLedgerHID} />
-        )}
         {isWatch ? (
           <ProcessTooltip>{cantProcessReason}</ProcessTooltip>
         ) : (
@@ -401,42 +408,18 @@ const SignText = ({ params }: { params: SignTextProps }) => {
           />
         )}
 
-        <div className="action-buttons flex justify-between">
-          <Button
-            type="primary"
-            size="large"
-            className="w-[172px]"
-            onClick={handleCancel}
-          >
-            {t('Cancel')}
-          </Button>
-          {isWatch ? (
-            <Button
-              type="primary"
-              size="large"
-              className="w-[172px]"
-              onClick={() => handleAllow()}
-              disabled={true}
-            >
-              {t('Sign')}
-            </Button>
-          ) : (
-            <Button
-              type="primary"
-              size="large"
-              className="w-[172px]"
-              onClick={() => handleAllow(forceProcess)}
-              loading={isLoading}
-              disabled={
-                (isLedger && !useLedgerLive && !hasConnectedLedgerHID) ||
-                !forceProcess ||
-                securityCheckStatus === 'loading'
-              }
-            >
-              {t(submitText)}
-            </Button>
-          )}
-        </div>
+        <FooterBar
+          enableTooltip={isWatch}
+          tooltipContent={cantProcessReason}
+          onCancel={handleCancel}
+          onSubmit={() => handleAllow(forceProcess)}
+          disabledProcess={
+            (isLedger && !useLedgerLive && !hasConnectedLedgerHID) ||
+            !forceProcess ||
+            securityCheckStatus === 'loading' ||
+            isWatch
+          }
+        />
       </footer>
     </>
   );

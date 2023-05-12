@@ -19,6 +19,7 @@ import {
   WALLET_BRAND_CONTENT,
   BRAND_WALLET_CONNECT_TYPE,
   WALLET_BRAND_TYPES,
+  IWalletBrandContent,
 } from 'consts';
 
 import clsx from 'clsx';
@@ -31,10 +32,10 @@ const walletSortObj = [
   //mobile
   WALLET_BRAND_TYPES.METAMASK,
   WALLET_BRAND_TYPES.TRUSTWALLET,
-  WALLET_BRAND_TYPES.IMTOKEN,
   WALLET_BRAND_TYPES.TP,
+  WALLET_BRAND_TYPES.IMTOKEN,
   WALLET_BRAND_TYPES.MATHWALLET,
-  WALLET_BRAND_TYPES.DEFIANT,
+  WALLET_BRAND_TYPES.WALLETCONNECT,
   //hard wallet
   WALLET_BRAND_TYPES.LEDGER,
   WALLET_BRAND_TYPES.TREZOR,
@@ -73,6 +74,24 @@ const AddAddressOptions = () => {
             handle: (h: typeof history) => action(h),
           },
         });
+
+  // keep selected wallet type
+  const rootRef = React.useRef<HTMLDivElement>(null);
+  React.useEffect(() => {
+    if (sessionStorage.getItem('SELECTED_WALLET_TYPE') === 'mobile') {
+      setSelectedWalletType('mobile');
+      setTimeout(() => {
+        rootRef.current?.querySelector('.mobile')?.scrollIntoView({
+          behavior: 'smooth',
+        });
+      }, 150);
+    }
+
+    // clear cache when leave page
+    return () => {
+      sessionStorage.removeItem('SELECTED_WALLET_TYPE');
+    };
+  }, []);
 
   type Valueof<T> = T[keyof T];
   const connectRouter1 = React.useCallback(
@@ -117,8 +136,9 @@ const AddAddressOptions = () => {
     handleRouter((h) => connectRouter1(h, item));
   const brandWallet = React.useMemo(
     () =>
-      Object.values(WALLET_BRAND_CONTENT)
+      (Object.values(WALLET_BRAND_CONTENT)
         .map((item) => {
+          if (item.hidden) return;
           return {
             leftIcon: item.image,
             content: t(item.name),
@@ -129,8 +149,9 @@ const AddAddressOptions = () => {
             category: item.category,
           };
         })
-        .filter(Boolean)
-        .sort((a, b) => getSortNum(a.brand) - getSortNum(b.brand)),
+        .filter(Boolean) as any).sort(
+        (a, b) => getSortNum(a.brand) - getSortNum(b.brand)
+      ),
     [t, connectRouter]
   );
 
@@ -218,7 +239,7 @@ const AddAddressOptions = () => {
   );
 
   return (
-    <div className="rabby-container">
+    <div className="rabby-container" ref={rootRef}>
       {[createIMportAddrList, centerList].map((items, index) => (
         <div className="bg-white rounded-[6px] mb-[20px]" key={index}>
           {items.map((e) => {
@@ -241,7 +262,7 @@ const AddAddressOptions = () => {
               <Item
                 hoverBorder={false}
                 leftIcon={item.icon}
-                className="bg-transparent"
+                className={clsx('bg-transparent', item.key)}
                 rightIconClassName={clsx(
                   'ml-[8px] transition-transform',
                   isSelected ? '-rotate-90' : 'rotate-90'
@@ -290,12 +311,13 @@ const AddAddressOptions = () => {
                               src={v.image}
                               className="w-[28px] h-[28px] rounded-full"
                             />
-                            {v.connectType === 'WalletConnect' && (
-                              <img
-                                src={IconWalletConnect}
-                                className="absolute -top-6 -right-6 w-[14px] h-[14px] rounded-full"
-                              />
-                            )}
+                            {v.connectType === 'WalletConnect' &&
+                              v.brand !== WALLET_BRAND_TYPES.WALLETCONNECT && (
+                                <img
+                                  src={IconWalletConnect}
+                                  className="absolute -bottom-6 -right-6 w-[14px] h-[14px] rounded-full"
+                                />
+                              )}
                           </div>
                         }
                         rightIcon={null}

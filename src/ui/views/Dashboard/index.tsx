@@ -65,6 +65,10 @@ import { ReactComponent as IconAddAddress } from '@/ui/assets/address/add-addres
 import { ReactComponent as IconArrowRight } from 'ui/assets/dashboard/arrow-right.svg';
 import Queue from './components/Queue';
 import { copyAddress } from '@/ui/utils/clipboard';
+import { SessionSignal } from '@/ui/component/WalletConnect/SessionSignal';
+import { useWalletConnectIcon } from '@/ui/component/WalletConnect/useWalletConnectIcon';
+import { GridPlusSignal } from '@/ui/component/ConnectStatus/GridPlusSignal';
+import { LedgerSignal } from '@/ui/component/ConnectStatus/LedgerSignal';
 
 const GnosisAdminItem = ({
   accounts,
@@ -579,6 +583,9 @@ const Dashboard = () => {
     });
     history.push('/switch-address');
   };
+
+  const brandIcon = useWalletConnectIcon(currentAccount);
+
   return (
     <>
       <div
@@ -602,18 +609,34 @@ const Dashboard = () => {
                   placement="bottomLeft"
                   overlayClassName="switch-popover"
                 >
-                  {
+                  <div className="relative mr-[4px]">
                     <img
                       className={clsx(
-                        'icon icon-account-type w-[20px] h-[20px]',
+                        'icon w-[24px] h-[24px]',
                         opacity60 && 'opacity-60'
                       )}
                       src={
+                        brandIcon ||
                         WALLET_BRAND_CONTENT[currentAccount.brandName]?.image ||
                         KEYRING_ICONS_WHITE[currentAccount.type]
                       }
                     />
-                  }
+                    {currentAccount.type === KEYRING_CLASS.WALLETCONNECT && (
+                      <SessionSignal
+                        isBadge
+                        address={currentAccount.address}
+                        brandName={currentAccount.brandName}
+                        pendingConnect
+                      />
+                    )}
+                    {currentAccount.type === KEYRING_CLASS.HARDWARE.LEDGER && (
+                      <LedgerSignal isBadge />
+                    )}
+                    {currentAccount.type ===
+                      KEYRING_CLASS.HARDWARE.GRIDPLUS && (
+                      <GridPlusSignal isBadge />
+                    )}
+                  </div>
                   <div
                     className="text-15 text-white ml-6 mr-6 dashboard-name"
                     title={displayName}

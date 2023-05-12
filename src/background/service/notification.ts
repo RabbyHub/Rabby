@@ -36,7 +36,8 @@ const QUEUE_APPROVAL_COMPONENTS_WHITELIST = [
   'SignTypedData',
   'LedgerHardwareWaiting',
   'QRHardWareWaiting',
-  'WatchAdrressWaiting',
+  'WatchAddressWaiting',
+  'CommonWaiting',
 ];
 
 // something need user approval in window
@@ -128,7 +129,6 @@ class NotificationService extends Events {
     } else {
       this.currentApproval = null;
       this.approvals = [];
-      this.notifiWindowId = null;
     }
   };
 

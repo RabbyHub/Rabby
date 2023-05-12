@@ -39,7 +39,12 @@ import { matomoRequestEvent } from '@/utils/matomo-request';
 import { useTranslation } from 'react-i18next';
 import IconGnosis from 'ui/assets/walletlogo/safe.svg';
 import IconWatch from 'ui/assets/walletlogo/watch-purple.svg';
-import { useApproval, useWallet, isStringOrNumber } from 'ui/utils';
+import {
+  useApproval,
+  useWallet,
+  isStringOrNumber,
+  useCommonPopupView,
+} from 'ui/utils';
 import AccountCard from './AccountCard';
 import LedgerWebHIDAlert from './LedgerWebHIDAlert';
 import SecurityCheck from './SecurityCheck';
@@ -66,6 +71,7 @@ import { useLedgerDeviceConnected } from '@/utils/ledger';
 import { TransactionGroup } from 'background/service/transactionHistory';
 import { intToHex } from 'ui/utils/number';
 import { calcMaxPriorityFee } from '@/utils/transaction';
+import { FooterBar } from './FooterBar/FooterBar';
 
 const normalizeHex = (value: string | number) => {
   if (typeof value === 'number') {
@@ -1166,10 +1172,15 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     });
   };
 
+  const { activeApprovalPopup } = useCommonPopupView();
   const handleAllow = async (doubleCheck = false) => {
     if (!selectedGas) return;
     if (!doubleCheck && securityCheckStatus !== 'pass') {
       // setShowSecurityCheckDetail(true);
+      return;
+    }
+
+    if (activeApprovalPopup()) {
       return;
     }
 
@@ -1397,25 +1408,26 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     if (currentAccount.type === KEYRING_TYPE.WatchAddressKeyring) {
       setCanProcess(false);
       setCantProcessReason(
-        <div className="flex items-center gap-6">
-          <img src={IconWatch} alt="" className="w-[24px] flex-shrink-0" />
-          <div>
-            You can't sign with a watch-only address from contacts. To sign,
-            you'll need to{' '}
-            <a
-              href=""
-              className="underline"
-              onClick={async (e) => {
-                e.preventDefault();
-                await rejectApproval('User rejected the request.', true);
-                openInternalPageInTab('no-address');
-              }}
-            >
-              import it
-            </a>{' '}
-            fully or use a different address.
-          </div>
-        </div>
+        // <div className="flex items-center gap-6">
+        //   <img src={IconWatch} alt="" className="w-[24px] flex-shrink-0" />
+        //   <div>
+        //     You can't sign with a watch-only address from contacts. To sign,
+        //     you'll need to{' '}
+        //     <a
+        //       href=""
+        //       className="underline"
+        //       onClick={async (e) => {
+        //         e.preventDefault();
+        //         await rejectApproval('User rejected the request.', true);
+        //         openInternalPageInTab('no-address');
+        //       }}
+        //     >
+        //       import it
+        //     </a>{' '}
+        //     fully or use a different address.
+        //   </div>
+        // </div>
+        <div>You can only use imported addresses to sign</div>
       );
     }
     if (currentAccount.type === KEYRING_TYPE.GnosisKeyring || isGnosis) {
@@ -1650,9 +1662,9 @@ const SignTx = ({ params, origin }: SignTxProps) => {
   if (isLedger && !useLedgerLive && !hasConnectedLedgerHID) {
     approvalTxStyle.paddingBottom = '230px';
   }
+  approvalTxStyle.paddingBottom = '210px';
   return (
     <>
-      <AccountCard />
       <div
         className={clsx('approval-tx', {
           'pre-process-failed': !preprocessSuccess,
@@ -1733,9 +1745,9 @@ const SignTx = ({ params, origin }: SignTxProps) => {
             <footer className="connect-footer pb-[20px]">
               {txDetail && (
                 <>
-                  {isLedger && !useLedgerLive && !hasConnectedLedgerHID && (
+                  {/* {isLedger && !useLedgerLive && !hasConnectedLedgerHID && (
                     <LedgerWebHIDAlert connected={hasConnectedLedgerHID} />
-                  )}
+                  )}*/}
                   {canProcess ? (
                     <SecurityCheck
                       status={securityCheckStatus}
@@ -1746,62 +1758,32 @@ const SignTx = ({ params, origin }: SignTxProps) => {
                     <ProcessTooltip>{cantProcessReason}</ProcessTooltip>
                   )}
 
-                  <div className="action-buttons flex justify-between relative">
-                    <Button
-                      type="primary"
-                      size="large"
-                      className="w-[172px]"
-                      onClick={handleCancel}
-                    >
-                      {t('Cancel')}
-                    </Button>
-                    {!canProcess ||
-                    !!checkErrors.find((item) => item.level === 'forbidden') ? (
-                      <Tooltip
-                        placement="topLeft"
-                        overlayClassName="rectangle sign-tx-forbidden-tooltip"
-                        title={
-                          checkErrors.find((item) => item.level === 'forbidden')
-                            ? checkErrors.find(
-                                (item) => item.level === 'forbidden'
-                              )!.msg
-                            : null
-                        }
-                      >
-                        <div>
-                          <Button
-                            type="primary"
-                            size="large"
-                            className="w-[172px]"
-                            onClick={() => handleAllow()}
-                            disabled={true}
-                          >
-                            {t(submitText)}
-                          </Button>
-                        </div>
-                      </Tooltip>
-                    ) : (
-                      <Button
-                        type="primary"
-                        size="large"
-                        className="w-[172px]"
-                        onClick={() => handleAllow(forceProcess)}
-                        disabled={
-                          !isReady ||
-                          (selectedGas ? selectedGas.price < 0 : true) ||
-                          (isGnosisAccount ? !safeInfo : false) ||
-                          (isLedger &&
-                            !useLedgerLive &&
-                            !hasConnectedLedgerHID) ||
-                          !forceProcess ||
-                          securityCheckStatus === 'loading'
-                        }
-                        loading={isGnosisAccount ? !safeInfo : false}
-                      >
-                        {t(submitText)}
-                      </Button>
-                    )}
-                  </div>
+                  <FooterBar
+                    chain={chain}
+                    onCancel={handleCancel}
+                    onSubmit={() => handleAllow(forceProcess)}
+                    enableTooltip={
+                      !canProcess ||
+                      !!checkErrors.find((item) => item.level === 'forbidden')
+                    }
+                    tooltipContent={
+                      checkErrors.find((item) => item.level === 'forbidden')
+                        ? checkErrors.find(
+                            (item) => item.level === 'forbidden'
+                          )!.msg
+                        : cantProcessReason
+                    }
+                    disabledProcess={
+                      !isReady ||
+                      (selectedGas ? selectedGas.price < 0 : true) ||
+                      (isGnosisAccount ? !safeInfo : false) ||
+                      (isLedger && !useLedgerLive && !hasConnectedLedgerHID) ||
+                      !forceProcess ||
+                      securityCheckStatus === 'loading' ||
+                      !canProcess ||
+                      !!checkErrors.find((item) => item.level === 'forbidden')
+                    }
+                  />
                 </>
               )}
             </footer>

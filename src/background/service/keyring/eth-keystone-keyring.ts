@@ -33,7 +33,7 @@ export default class KeystoneKeyring extends MetaMaskKeyring {
 
     this.getMemStore().subscribe((data) => {
       const request = data.sign?.request;
-      this.getInteraction().once(AcquireMemeStoreData, () => {
+      this.getInteraction().on(AcquireMemeStoreData, () => {
         if (request) {
           this.getInteraction().emit(MemStoreDataReady, request);
         }

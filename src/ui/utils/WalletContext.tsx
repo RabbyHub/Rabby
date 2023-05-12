@@ -1,8 +1,8 @@
-import React, { ReactNode } from 'react';
-import { createContext, useContext } from 'react';
+import React, { ReactNode, createContext, useContext, useState } from 'react';
 import { Object } from 'ts-toolbelt';
 import { WalletController as WalletControllerClass } from 'background/controller/wallet';
 import { IExtractFromPromise } from './type';
+import { CommonPopupComponentName } from '../views/CommonPopup';
 
 // TODO: implement here but not used now to avoid too much ts checker error.
 // we will use it on almost biz store ready.
@@ -28,8 +28,59 @@ export type WalletController = Object.Merge<
   Record<string, <T = any>(...params: any) => Promise<T>>
 >;
 
+const useCommonPopupViewState = () => {
+  const [componentName, setComponentName] = useState<
+    CommonPopupComponentName | false
+  >();
+  const [visible, setVisible] = useState(false);
+  const [title, setTitle] = useState('Sign');
+  const [height, setHeight] = useState(360);
+  const [className, setClassName] = useState<'isConnectView' | undefined>();
+  const [account, setAccount] = useState<{
+    address: string;
+    brandName: string;
+    realBrandName?: string;
+  }>();
+
+  const activePopup = (name: CommonPopupComponentName) => {
+    setComponentName(name);
+    setVisible(true);
+  };
+
+  const closePopup = () => {
+    setVisible(false);
+    setComponentName(undefined);
+  };
+
+  const activeApprovalPopup = () => {
+    if (componentName === 'Approval' && visible === false) {
+      setVisible(true);
+      return true;
+    }
+    return false;
+  };
+
+  return {
+    visible,
+    setVisible,
+    closePopup,
+    componentName,
+    activePopup,
+    title,
+    setTitle,
+    height,
+    setHeight,
+    className,
+    setClassName,
+    account,
+    setAccount,
+    activeApprovalPopup,
+  };
+};
+
 const WalletContext = createContext<{
   wallet: WalletController;
+  commonPopupView: ReturnType<typeof useCommonPopupViewState>;
 } | null>(null);
 
 const WalletProvider = ({
@@ -38,9 +89,15 @@ const WalletProvider = ({
 }: {
   children?: ReactNode;
   wallet: WalletController;
-}) => (
-  <WalletContext.Provider value={{ wallet }}>{children}</WalletContext.Provider>
-);
+}) => {
+  const commonPopupView = useCommonPopupViewState();
+
+  return (
+    <WalletContext.Provider value={{ wallet, commonPopupView }}>
+      {children}
+    </WalletContext.Provider>
+  );
+};
 
 const useWallet = () => {
   const { wallet } = (useContext(WalletContext) as unknown) as {
@@ -50,4 +107,12 @@ const useWallet = () => {
   return wallet;
 };
 
-export { WalletProvider, useWallet };
+const useCommonPopupView = () => {
+  const { commonPopupView } = (useContext(WalletContext) as unknown) as {
+    commonPopupView: ReturnType<typeof useCommonPopupViewState>;
+  };
+
+  return commonPopupView;
+};
+
+export { WalletProvider, useWallet, useCommonPopupView };

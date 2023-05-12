@@ -25,6 +25,9 @@ import { useAsync } from 'react-use';
 import Safe from '@rabby-wallet/gnosis-sdk';
 import { crossCompareOwners } from '@/ui/utils/gnosis';
 import { SvgIconLoading } from 'ui/assets';
+import { SessionStatusBar } from '@/ui/component/WalletConnect/SessionStatusBar';
+import { LedgerStatusBar } from '@/ui/component/ConnectStatus/LedgerStatusBar';
+import { GridPlusStatusBar } from '@/ui/component/ConnectStatus/GridPlusStatusBar';
 
 type Props = {
   address: string;
@@ -245,6 +248,25 @@ const AddressInfo1 = ({ address, type, brandName, source }: Props) => {
             {source}
           </div>
         </div>
+        {type === KEYRING_CLASS.WALLETCONNECT && (
+          <div className="pb-[20px]">
+            <SessionStatusBar
+              className="text-gray-subTitle bg-gray-bg connect-status"
+              address={address}
+              brandName={brandName}
+            />
+          </div>
+        )}
+        {type === KEYRING_CLASS.HARDWARE.LEDGER && (
+          <div className="pb-[20px]">
+            <LedgerStatusBar className="text-gray-subTitle bg-gray-bg connect-status" />
+          </div>
+        )}
+        {type === KEYRING_CLASS.HARDWARE.GRIDPLUS && (
+          <div className="pb-[20px]">
+            <GridPlusStatusBar className="text-gray-subTitle bg-gray-bg connect-status" />
+          </div>
+        )}
       </div>
       {accountInfo && (
         <div className="rabby-list-item">

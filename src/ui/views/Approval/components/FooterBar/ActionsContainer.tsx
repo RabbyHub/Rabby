@@ -1,0 +1,40 @@
+import { Button } from 'antd';
+import clsx from 'clsx';
+import React from 'react';
+import { Account } from '@/background/service/preference';
+import { Chain } from '@debank/common';
+
+export interface Props {
+  onSubmit(): void;
+  onCancel(): void;
+  account: Account;
+  disabledProcess: boolean;
+  enableTooltip?: boolean;
+  tooltipContent?: React.ReactNode;
+  children?: React.ReactNode;
+  chain?: Chain;
+}
+
+export const ActionsContainer: React.FC<Pick<Props, 'onCancel'>> = ({
+  children,
+  onCancel,
+}) => {
+  return (
+    <div className="flex gap-[16px] relative justify-end">
+      {children}
+      <Button
+        type="ghost"
+        className={clsx(
+          'w-[100px] h-[48px] border-blue-light text-blue-light',
+          'hover:bg-[#8697FF1A] active:bg-[#0000001A]',
+          'rounded-[8px]',
+          'before:content-none',
+          'z-10'
+        )}
+        onClick={onCancel}
+      >
+        Cancel
+      </Button>
+    </div>
+  );
+};
