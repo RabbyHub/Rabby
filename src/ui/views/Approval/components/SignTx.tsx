@@ -250,7 +250,9 @@ const getRecommendGas = async ({
   gas,
   wallet,
   tx,
+  gasUsed,
 }: {
+  gasUsed: number;
   gas: number;
   wallet: ReturnType<typeof useWallet>;
   tx: Tx;
@@ -260,6 +262,7 @@ const getRecommendGas = async ({
     return {
       needRatio: true,
       gas: new BigNumber(gas),
+      gasUsed,
     };
   }
   const txGas = tx.gasLimit || tx.gas;
@@ -267,6 +270,7 @@ const getRecommendGas = async ({
     return {
       needRatio: true,
       gas: new BigNumber(txGas),
+      gasUsed: Number(txGas),
     };
   }
   const res = await wallet.openapi.historyGasUsed({
@@ -283,11 +287,13 @@ const getRecommendGas = async ({
     return {
       needRatio: true,
       gas: new BigNumber(res.gas_used),
+      gasUsed: res.gas_used,
     };
   }
   return {
     needRatio: false,
     gas: new BigNumber(1000000),
+    gasUsed: 1000000,
   };
 };
 
@@ -683,6 +689,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
   ] = useState<ReactNode | null>();
   const [blockInfo, setBlockInfo] = useState<BlockInfo | null>(null);
   const [recommendGasLimit, setRecommendGasLimit] = useState<string>('');
+  const [gasUsed, setGasUsed] = useState(0);
   const [recommendGasLimitRatio, setRecommendGasLimitRatio] = useState(1); // 1 / 1.5 / 2
   const [recommendNonce, setRecommendNonce] = useState<string>('');
   const [updateId, setUpdateId] = useState(0);
@@ -716,6 +723,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     },
     gas: {
       gas_used: 0,
+      gas_limit: 0,
       estimated_gas_cost_usd_value: 0,
       estimated_gas_cost_value: 0,
       estimated_gas_used: 0,
@@ -910,7 +918,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
   const [nativeTokenBalance, setNativeTokenBalance] = useState('0x0');
 
   const gasExplainResponse = useExplainGas({
-    gasUsed: recommendGasLimit,
+    gasUsed,
     gasPrice: selectedGas?.price || 0,
     chainId,
     nativeTokenPrice: txDetail?.native_token.price || 0,
@@ -1019,12 +1027,18 @@ const SignTx = ({ params, origin }: SignTxProps) => {
           gas: item.gas || item.gasLimit || '0x0',
         })),
     });
-    const { gas, needRatio } = await getRecommendGas({
-      gas: res.gas.gas_used,
+    let estimateGas = 0;
+    if (res.gas.success) {
+      estimateGas = res.gas.gas_limit || res.gas.gas_used;
+    }
+    const { gas, needRatio, gasUsed } = await getRecommendGas({
+      gasUsed: res.gas.gas_used,
+      gas: estimateGas,
       tx,
       wallet,
       chainId,
     });
+    setGasUsed(gasUsed);
     setRecommendGasLimit(`0x${gas.toString(16)}`);
     let block = null;
     try {
@@ -1683,7 +1697,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
               }}
               gasCalcMethod={(price) => {
                 return explainGas({
-                  gasUsed: recommendGasLimit,
+                  gasUsed,
                   gasPrice: price,
                   chainId,
                   nativeTokenPrice: txDetail?.native_token.price || 0,
