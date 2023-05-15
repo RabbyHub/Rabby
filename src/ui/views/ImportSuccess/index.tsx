@@ -45,7 +45,7 @@ const ImportSuccess = ({ isPopup = false }: { isPopup?: boolean }) => {
   } = state;
 
   const handleNextClick = async (e: React.MouseEvent<HTMLElement>) => {
-    e.stopPropagation();
+    e?.stopPropagation();
     if (!stopEditing) {
       addressItems.current.forEach((item) => item.alianNameConfirm());
     }
