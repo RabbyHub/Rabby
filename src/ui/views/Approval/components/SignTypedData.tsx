@@ -35,6 +35,7 @@ import ViewRawModal from './TxComponents/ViewRawModal';
 import { Account } from '@/background/service/preference';
 import { adjustV } from '@/ui/utils/gnosis';
 import { FooterBar } from './FooterBar/FooterBar';
+import { parseSignTypedDataMessage } from './SignTypedDataExplain/parseSignTypedDataMessage';
 interface SignTypedDataProps {
   method: string;
   data: any[];
@@ -75,7 +76,7 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
       }, {});
     } else {
       // [from, Message]
-      _message = JSON.parse(data[1])?.message;
+      _message = parseSignTypedDataMessage(data[1]);
     }
 
     parsedMessage = JSON.stringify(_message, null, 4);
