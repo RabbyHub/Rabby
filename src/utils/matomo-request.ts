@@ -70,5 +70,9 @@ export const matomoRequestEvent = async (data: {
     params.append('e_i', data.transport);
   }
 
-  return postData(ANALYTICS_PATH, params);
+  try {
+    return postData(ANALYTICS_PATH, params);
+  } catch (e) {
+    // ignore
+  }
 };
