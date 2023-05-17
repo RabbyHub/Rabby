@@ -201,12 +201,13 @@ const LedgerHardwareWaiting = ({ params }: { params: ApprovalParams }) => {
     mountedRef.current = true;
   }, []);
 
-  React.useEffect(() => {
-    if (visible && mountedRef.current && !showDueToStatusChangeRef.current) {
-      handleRetry(false);
-    }
-    showDueToStatusChangeRef.current = false;
-  }, [visible]);
+  // React.useEffect(() => {
+  //   if (visible && mountedRef.current && !showDueToStatusChangeRef.current) {
+  //     console.log('handle retry');
+  //     handleRetry(false);
+  //   }
+  //   showDueToStatusChangeRef.current = false;
+  // }, [visible]);
 
   React.useEffect(() => {
     if (signFinishedData && isClickDone) {
