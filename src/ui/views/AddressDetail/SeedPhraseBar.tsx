@@ -43,7 +43,7 @@ export const SeedPhraseBar: React.FC<Props> = ({ address }) => {
       )}
     >
       <div className="pl-[2px]">Manage addresses under this Seed Phrase </div>
-      <IconArrowRight />
+      <IconArrowRight width={16} height={16} viewBox="0 0 12 12" />
     </div>
   );
 };

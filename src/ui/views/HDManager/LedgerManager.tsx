@@ -136,6 +136,7 @@ export const LedgerManager: React.FC = () => {
         className="AdvancedModal"
         title="Custom Address HD path"
         visible={visibleAdvanced}
+        centered
         width={840}
         footer={[]}
         onCancel={() => setVisibleAdvanced(false)}

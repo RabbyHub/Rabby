@@ -2,7 +2,7 @@ import React, { useEffect } from 'react';
 import { Button, Form, FormInstance, Input } from 'antd';
 import { useHistory } from 'react-router-dom';
 import styled from 'styled-components';
-import { useWallet, useWalletRequest } from '@/ui/utils';
+import { getUiType, useWallet, useWalletRequest } from '@/ui/utils';
 import clsx from 'clsx';
 import LessPalette from '@/ui/style/var-defs';
 import { connectStore, useRabbyDispatch } from '../../store';
@@ -106,6 +106,12 @@ const ImportMnemonics = () => {
       },
     }
   );
+
+  // if is pop, redirect to dashboard
+  if (getUiType().isPop) {
+    history.replace('/dashboard');
+    return null;
+  }
 
   useEffect(() => {
     (async () => {
