@@ -124,15 +124,20 @@ const WatchAddressWaiting = ({ params }: { params: ApprovalParams }) => {
       if (data.success) {
         let sig = data.data;
         setResult(sig);
-        if (params.isGnosis) {
-          sig = adjustV('eth_signTypedData', sig);
-          const sigs = await wallet.getGnosisTransactionSignatures();
-          if (sigs.length > 0) {
-            await wallet.gnosisAddConfirmation(account.address, sig);
-          } else {
-            await wallet.gnosisAddSignature(account.address, sig);
-            await wallet.postGnosisTransaction();
+        try {
+          if (params.isGnosis) {
+            sig = adjustV('eth_signTypedData', sig);
+            const sigs = await wallet.getGnosisTransactionSignatures();
+            if (sigs.length > 0) {
+              await wallet.gnosisAddConfirmation(account.address, sig);
+            } else {
+              await wallet.gnosisAddSignature(account.address, sig);
+              await wallet.postGnosisTransaction();
+            }
           }
+        } catch (e) {
+          rejectApproval(e.message);
+          return;
         }
         if (!isSignTextRef.current) {
           // const tx = approval.data?.params;
