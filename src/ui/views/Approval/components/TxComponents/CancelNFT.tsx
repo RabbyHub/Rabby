@@ -14,6 +14,7 @@ import SpeedUpCorner from './SpeedUpCorner';
 import ViewRawModal from './ViewRawModal';
 import IconExternal from 'ui/assets/open-external-gray.svg';
 import { openInTab } from '@/ui/utils';
+import { Copy } from '@/ui/component';
 
 interface CancelNFTProps {
   data: ExplainTxResponse;
@@ -92,6 +93,10 @@ const CancelNFT = ({ data, chainEnum, isSpeedUp, raw }: CancelNFTProps) => {
                   <div className="label">Contract</div>
                   <div className="value flex items-center gap-6">
                     {ellipsis(detail.nft?.contract_id)}
+                    <Copy
+                      data={detail.nft?.contract_id}
+                      variant="address"
+                    ></Copy>
                     <img
                       src={IconExternal}
                       className="icon icon-copy w-[14px] h-[14px] cursor-pointer"
@@ -118,6 +123,7 @@ const CancelNFT = ({ data, chainEnum, isSpeedUp, raw }: CancelNFTProps) => {
                 </div>
                 <div className="address flex gap-6">
                   {ellipsis(detail.spender)}
+                  <Copy variant="address" data={detail.spender}></Copy>
                   <img
                     src={IconExternal}
                     className="icon icon-copy w-[14px] h-[14px] cursor-pointer"

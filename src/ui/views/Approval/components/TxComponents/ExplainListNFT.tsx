@@ -245,7 +245,9 @@ const ExplainListNFTWraper = styled.div`
           font-size: 14px;
           line-height: 16px;
           color: ${LessPalette['@color-title']};
+          min-width: 0;
           .list-on-address {
+            flex: 1;
             .address {
               font-weight: 400;
               font-size: 14px;
