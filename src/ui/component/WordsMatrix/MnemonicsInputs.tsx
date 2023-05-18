@@ -72,6 +72,7 @@ const MatrixWrapper = styled.div.withConfig<{
     position: absolute;
     top: 8px;
     left: 8px;
+    color: #707280;
   }
 
   /* for MnemonicsInputs :start */
@@ -79,6 +80,7 @@ const MatrixWrapper = styled.div.withConfig<{
     height: 100%;
     display: inline-block;
     line-height: ${ITEM_H}px;
+    border-color: #f5f6fa;
     &:hover,
     &:focus,
     &.ant-input-focused {
@@ -310,7 +312,11 @@ function MnemonicsInputs({
         </div>
       </HeadToolbar>
       <MatrixWrapper
-        className={clsx('rounded-[6px] bg-white text-center', className)}
+        className={clsx(
+          'rounded-[6px] bg-gray-bg text-center',
+          'border border-[#E1E5F2] border-solid',
+          className
+        )}
         rowCount={rowCount}
       >
         {wordPlaceHolders.map((_, idx) => {
@@ -323,7 +329,7 @@ function MnemonicsInputs({
           return (
             <div
               key={`word-item-${word}-${idx}`}
-              className={clsx('matrix-word-item is-mnemonics-input')}
+              className={clsx('matrix-word-item is-mnemonics-input bg-gray-bg')}
               onClick={() => {
                 setFocusing({ index: idx, visible: isCurrentVisible });
                 setMnemonics(word);
@@ -333,7 +339,7 @@ function MnemonicsInputs({
                 debounce={150}
                 key={`word-input-${ver}-${word}-${idx}`}
                 className={clsx(
-                  'mnemonics-input px-[28px]',
+                  'mnemonics-input px-[28px] bg-gray-bg',
                   isCurrentFocusing && 'ant-input-focused'
                 )}
                 type={isCurrentVisible ? 'text' : 'password'}
@@ -377,7 +383,7 @@ function MnemonicsInputs({
       {errMsgs?.[0] ? (
         <div
           className={
-            'ant-form-item-explain ant-form-item-explain-error mt-[12px] pt-[0] min-h-0 text-[14px]'
+            'ant-form-item-explain ant-form-item-explain-error mt-[12px] pt-[0] min-h-0 text-[14px] absolute'
           }
         >
           <div role="alert">{errMsgs[0]}</div>

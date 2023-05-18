@@ -5,8 +5,11 @@ import { Account, AccountList, Props as AccountListProps } from './AccountList';
 import { MAX_ACCOUNT_COUNT, SettingData } from './AdvancedSettings';
 import { HDPathType } from './HDPathTypeButton';
 import { HDManagerStateContext } from './utils';
+import { useRabbyDispatch } from '@/ui/store';
+import { KEYRING_CLASS } from '@/constant';
 
 interface Props extends AccountListProps, SettingData {}
+const MAX_STEP_COUNT = 5;
 
 export const AddressesInHD: React.FC<Props> = ({ type, startNo, ...props }) => {
   const [accountList, setAccountList] = React.useState<Account[]>([]);
@@ -19,6 +22,7 @@ export const AddressesInHD: React.FC<Props> = ({ type, startNo, ...props }) => {
   const { createTask, keyringId, keyring } = React.useContext(
     HDManagerStateContext
   );
+  const dispatch = useRabbyDispatch();
 
   const runGetAccounts = React.useCallback(async () => {
     setAccountList([]);
@@ -45,15 +49,21 @@ export const AddressesInHD: React.FC<Props> = ({ type, startNo, ...props }) => {
         if (stoppedRef.current) {
           break;
         }
-        const accounts = (await createTask(() =>
-          wallet.requestKeyring(
+        const accounts = (await createTask(() => {
+          if (keyring === KEYRING_CLASS.MNEMONIC) {
+            return dispatch.importMnemonics.getAccounts({
+              start: i,
+              end: i + MAX_STEP_COUNT,
+            });
+          }
+          return wallet.requestKeyring(
             keyring,
             'getAddresses',
             keyringId,
             i,
-            i + (isLedgerLive ? 1 : 5)
-          )
-        )) as Account[];
+            i + (isLedgerLive ? 1 : MAX_STEP_COUNT)
+          );
+        })) as Account[];
         setAccountList((prev) => [...prev, ...accounts]);
         setLoading(false);
 
@@ -61,7 +71,7 @@ export const AddressesInHD: React.FC<Props> = ({ type, startNo, ...props }) => {
         if (isLedgerLive) {
           i++;
         } else {
-          i += 5;
+          i += MAX_STEP_COUNT;
         }
       }
     } catch (e) {

@@ -58,7 +58,7 @@ export const MainContainer: React.FC<Props> = ({
       onChange={(active) => setTab(active as any)}
       className="tabs"
     >
-      <Tabs.TabPane tab={`Addresses in ${HDName}`} key="ledger">
+      <Tabs.TabPane tab={`Addresses in ${HDName}`} key="hd">
         <AddressesInHD
           type={setting.type}
           startNo={setting.startNo}

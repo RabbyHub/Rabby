@@ -7,6 +7,7 @@ import { getUiType } from './index';
 import { KEYRING_TYPE_TEXT, WALLET_BRAND_CONTENT } from '@/constant';
 import { LedgerHDPathType, LedgerHDPathTypeLabel } from '@/utils/ledger';
 import { useApprovalPopup } from './approval-popup';
+import { useRabbyDispatch, useRabbySelector } from '../store';
 
 export const useApproval = () => {
   const wallet = useWallet();
@@ -285,11 +286,13 @@ export const useAccountInfo = (type: string, address: string) => {
     hdPathTypeLabel: string;
     index: number;
   }>();
+  const dispatch = useRabbyDispatch();
   const isLedger = type === KEYRING_CLASS.HARDWARE.LEDGER;
   const isTrezorLike =
     type === KEYRING_CLASS.HARDWARE.TREZOR ||
     type === KEYRING_CLASS.HARDWARE.ONEKEY;
-
+  const isMnemonics = type === KEYRING_CLASS.MNEMONIC;
+  const mnemonicAccounts = useRabbySelector((state) => state.account);
   const fetchLedgerAccount = useCallback(() => {
     wallet.requestKeyring(type, 'getAccountInfo', null, address).then((res) => {
       setAccount({
@@ -312,11 +315,23 @@ export const useAccountInfo = (type: string, address: string) => {
       });
   }, []);
 
+  const fetchMnemonicsAccount = useCallback(async () => {
+    const index = (await wallet.getMnemonicAddressIndex(address)) ?? 0;
+    setAccount({
+      address,
+      index: index + 1,
+      hdPathType: LedgerHDPathType.Default,
+      hdPathTypeLabel: LedgerHDPathTypeLabel.Default,
+    });
+  }, []);
+
   useEffect(() => {
     if (isLedger) {
       fetchLedgerAccount();
     } else if (isTrezorLike) {
       fetchTrezorLikeAccount();
+    } else if (isMnemonics) {
+      fetchMnemonicsAccount();
     }
   }, [address]);
 
