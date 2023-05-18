@@ -47,6 +47,10 @@ class SecurityEngineService {
     userData: {
       originBlacklist: [],
       originWhitelist: [],
+      contractBlacklist: [],
+      contractWhitelist: [],
+      addressBlacklist: [],
+      addressWhitelist: [],
     },
     rules: [],
   };
@@ -62,12 +66,40 @@ class SecurityEngineService {
         userData: {
           originBlacklist: [],
           originWhitelist: [],
+          contractBlacklist: [],
+          contractWhitelist: [],
+          addressBlacklist: [],
+          addressWhitelist: [],
         },
         rules: getRuleConfigFromRules(defaultRules),
       },
     });
     this.rules = mergeRules(defaultRules, storage.rules);
     this.store = storage || this.store;
+    if (!this.store.userData.contractBlacklist) {
+      this.store.userData = {
+        ...this.store.userData,
+        contractBlacklist: [],
+      };
+    }
+    if (!this.store.userData.contractWhitelist) {
+      this.store.userData = {
+        ...this.store.userData,
+        contractWhitelist: [],
+      };
+    }
+    if (!this.store.userData.addressBlacklist) {
+      this.store.userData = {
+        ...this.store.userData,
+        addressBlacklist: [],
+      };
+    }
+    if (!this.store.userData.addressWhitelist) {
+      this.store.userData = {
+        ...this.store.userData,
+        addressWhitelist: [],
+      };
+    }
     this.engine = new Engine(this.rules, openapiService);
   };
 

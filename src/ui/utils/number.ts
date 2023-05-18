@@ -77,3 +77,14 @@ export const intToHex = (n: number) => {
   if (n % 1 !== 0) throw new Error(`${n} is not int`);
   return `0x${n.toString(16)}`;
 };
+
+export const formatUsdValue = (value: string | number) => {
+  const bnValue = new BigNumber(value);
+  if (bnValue.lt(0)) {
+    return `-$${formatNumber(Math.abs(Number(value)))}`;
+  }
+  if (bnValue.gte(0.01) || bnValue.eq(0)) {
+    return `$${formatNumber(value)}`;
+  }
+  return '<$0.01';
+};

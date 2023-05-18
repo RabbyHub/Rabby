@@ -1,5 +1,4 @@
 import stats from '@/stats';
-import { openInternalPageInTab } from 'ui/utils/webapi';
 import {
   convertLegacyTo1559,
   getKRCategoryByType,
@@ -8,7 +7,7 @@ import {
 import Safe from '@rabby-wallet/gnosis-sdk';
 import { SafeInfo } from '@rabby-wallet/gnosis-sdk/src/api';
 import * as Sentry from '@sentry/browser';
-import { Button, Drawer, Modal, Tooltip } from 'antd';
+import { Drawer, Modal } from 'antd';
 import {
   Chain,
   ExplainTxResponse,
@@ -20,6 +19,7 @@ import {
 import { Account, ChainGas } from 'background/service/preference';
 import BigNumber from 'bignumber.js';
 import clsx from 'clsx';
+import { Result } from '@debank/rabby-security-engine';
 import {
   CHAINS,
   CHAINS_ENUM,
@@ -38,32 +38,17 @@ import React, { ReactNode, useEffect, useMemo, useState } from 'react';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import { useTranslation } from 'react-i18next';
 import IconGnosis from 'ui/assets/walletlogo/safe.svg';
-import IconWatch from 'ui/assets/walletlogo/watch-purple.svg';
 import {
   useApproval,
   useWallet,
   isStringOrNumber,
   useCommonPopupView,
 } from 'ui/utils';
-import AccountCard from './AccountCard';
-import LedgerWebHIDAlert from './LedgerWebHIDAlert';
 import SecurityCheck from './SecurityCheck';
 import { WaitingSignComponent } from './SignText';
-import Approve from './TxComponents/Approve';
-import ApproveNFT from './TxComponents/ApproveNFT';
-import ApproveNFTCollection from './TxComponents/ApproveNFTCollection';
-import Cancel from './TxComponents/Cancel';
-import CancelNFT from './TxComponents/CancelNFT';
-import CancelNFTCollection from './TxComponents/CancelNFTCollection';
-import CancelTx from './TxComponents/CancelTx';
-import Deploy from './TxComponents/Deploy';
 import GasSelector, { GasSelectorResponse } from './TxComponents/GasSelecter';
 import GnosisDrawer from './TxComponents/GnosisDrawer';
 import Loading from './TxComponents/Loading';
-import Send from './TxComponents/Send';
-import SendNFT from './TxComponents/sendNFT';
-import Sign from './TxComponents/Sign';
-import ListNFT from './TxComponents/ListNFT';
 import PreCheckCard from './PreCheckCard';
 import SecurityCheckCard from './SecurityCheckCard';
 import ProcessTooltip from './ProcessTooltip';
@@ -72,6 +57,15 @@ import { TransactionGroup } from 'background/service/transactionHistory';
 import { intToHex } from 'ui/utils/number';
 import { calcMaxPriorityFee } from '@/utils/transaction';
 import { FooterBar } from './FooterBar/FooterBar';
+import {
+  ParsedActionData,
+  parseAction,
+  fetchActionRequiredData,
+  ActionRequireData,
+  formatSecurityEngineCtx,
+} from '../components/Actions/utils';
+import Actions from './Actions';
+import { useSecurityEngine } from 'ui/utils/securityEngine';
 
 const normalizeHex = (value: string | number) => {
   if (typeof value === 'number') {
@@ -117,137 +111,37 @@ const normalizeTxParams = (tx) => {
 };
 
 export const TxTypeComponent = ({
-  txDetail,
+  actionRequireData,
+  actionData,
   chain = CHAINS[CHAINS_ENUM.ETH],
   isReady,
   raw,
   onChange,
   tx,
   isSpeedUp,
+  engineResults,
 }: {
-  txDetail: ExplainTxResponse;
-  chain: Chain | undefined;
+  actionRequireData: ActionRequireData;
+  actionData: ParsedActionData;
+  chain: Chain;
   isReady: boolean;
   raw: Record<string, string | number>;
   onChange(data: Record<string, any>): void;
   tx: Tx;
   isSpeedUp: boolean;
+  engineResults: Result[];
 }) => {
   if (!isReady) return <Loading chainEnum={chain.enum} />;
-
-  if (txDetail.type_deploy_contract)
+  if (actionData && actionRequireData) {
     return (
-      <Deploy
-        data={txDetail}
-        chainEnum={chain.enum}
-        isSpeedUp={isSpeedUp}
-        raw={raw}
-      />
-    );
-  if (txDetail.type_cancel_tx)
-    return (
-      <CancelTx
-        data={txDetail}
-        chainEnum={chain.enum}
-        tx={tx}
-        isSpeedUp={isSpeedUp}
-        raw={raw}
-      />
-    );
-  if (txDetail.type_cancel_single_nft_approval)
-    return (
-      <CancelNFT
-        data={txDetail}
-        chainEnum={chain.enum}
-        isSpeedUp={isSpeedUp}
-        raw={raw}
-      />
-    );
-  if (txDetail.type_cancel_nft_collection_approval)
-    return (
-      <CancelNFTCollection
-        data={txDetail}
-        chainEnum={chain.enum}
-        isSpeedUp={isSpeedUp}
-        raw={raw}
-      />
-    );
-  if (txDetail.type_cancel_token_approval)
-    return (
-      <Cancel
-        data={txDetail}
-        chainEnum={chain.enum}
-        isSpeedUp={isSpeedUp}
-        raw={raw}
-      />
-    );
-  if (txDetail.type_single_nft_approval)
-    return (
-      <ApproveNFT
-        data={txDetail}
-        chainEnum={chain.enum}
-        isSpeedUp={isSpeedUp}
-        raw={raw}
-      />
-    );
-  if (txDetail.type_nft_collection_approval)
-    return (
-      <ApproveNFTCollection
-        data={txDetail}
-        chainEnum={chain.enum}
-        isSpeedUp={isSpeedUp}
-        raw={raw}
-      />
-    );
-  if (txDetail.type_nft_send)
-    return (
-      <SendNFT
-        data={txDetail}
-        chainEnum={chain.enum}
-        isSpeedUp={isSpeedUp}
-        raw={raw}
-      />
-    );
-  if (txDetail.type_token_approval)
-    return (
-      <Approve
-        data={txDetail}
-        chainEnum={chain.enum}
-        onChange={onChange}
-        tx={tx}
-        isSpeedUp={isSpeedUp}
-        raw={raw}
-      />
-    );
-  if (txDetail.type_send)
-    return (
-      <Send
-        data={txDetail}
-        chainEnum={chain.enum}
-        isSpeedUp={isSpeedUp}
-        raw={raw}
-      />
-    );
-  if (txDetail.type_list_nft) {
-    return (
-      <ListNFT
-        data={txDetail}
-        chainEnum={chain.enum}
-        isSpeedUp={isSpeedUp}
-        raw={raw}
+      <Actions
+        data={actionData}
+        requireData={actionRequireData}
+        chain={chain}
+        engineResults={engineResults}
       />
     );
   }
-  if (txDetail.type_call)
-    return (
-      <Sign
-        data={txDetail}
-        raw={raw}
-        chainEnum={chain.enum}
-        isSpeedUp={isSpeedUp}
-        tx={tx}
-      />
-    );
   return <></>;
 };
 
@@ -752,6 +646,10 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       contract_protocol_name: '',
     },
   });
+  const [actionData, setActionData] = useState<ParsedActionData>({});
+  const [actionRequireData, setActionRequireData] = useState<ActionRequireData>(
+    null
+  );
   const [submitText, setSubmitText] = useState('Proceed');
   const [checkText, setCheckText] = useState('Sign');
   const { t } = useTranslation();
@@ -922,6 +820,9 @@ const SignTx = ({ params, origin }: SignTxProps) => {
   const [safeInfo, setSafeInfo] = useState<SafeInfo | null>(null);
   const [maxPriorityFee, setMaxPriorityFee] = useState(0);
   const [nativeTokenBalance, setNativeTokenBalance] = useState('0x0');
+  const [securityEngineNonce, setSecurityEngineNonce] = useState(0);
+  const { rules, userData, executeEngine } = useSecurityEngine(nonce);
+  const [engineResults, setEngineResults] = useState<Result[]>([]);
 
   const gasExplainResponse = useExplainGas({
     gasUsed,
@@ -1100,7 +1001,32 @@ const SignTx = ({ params, origin }: SignTxProps) => {
         block,
       });
     }
-
+    const actionData = await wallet.openapi.parseTx({
+      chainId: chain.serverId,
+      tx: {
+        ...tx,
+        nonce: (updateNonce ? recommendNonce : tx.nonce) || '0x1',
+      },
+      origin: origin || '',
+      addr: address,
+    });
+    const parsed = parseAction(actionData.action, res.balance_change);
+    const requiredData = await fetchActionRequiredData({
+      actionData: parsed,
+      contractCall: actionData.contract_call,
+      chainId: chain.serverId,
+      address,
+      wallet,
+    });
+    const ctx = formatSecurityEngineCtx({
+      actionData: parsed,
+      requireData: requiredData,
+      chainId: chain.serverId,
+    });
+    const result = await executeEngine(ctx);
+    setEngineResults(result);
+    setActionData(parsed);
+    setActionRequireData(requiredData);
     setTxDetail(res);
 
     setPreprocessSuccess(res.pre_exec.success);
@@ -1676,7 +1602,8 @@ const SignTx = ({ params, origin }: SignTxProps) => {
             {txDetail && (
               <TxTypeComponent
                 isReady={isReady}
-                txDetail={txDetail}
+                actionData={actionData}
+                actionRequireData={actionRequireData}
                 chain={chain}
                 raw={{
                   ...tx,
@@ -1690,6 +1617,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
                   gas: gasLimit,
                 }}
                 isSpeedUp={isSpeedUp}
+                engineResults={engineResults}
               />
             )}
             <GasSelector
