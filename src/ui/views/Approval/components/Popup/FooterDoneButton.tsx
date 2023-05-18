@@ -34,7 +34,7 @@ export const FooterDoneButton: React.FC<Props> = ({ onDone }) => {
         type="primary"
         onClick={onDone}
       >
-        Done ({counter}s)
+        Done {counter < 0 ? '' : `(${counter}s)`}
       </Button>
     </div>
   );
