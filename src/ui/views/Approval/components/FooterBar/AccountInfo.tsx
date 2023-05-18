@@ -117,13 +117,13 @@ export const AccountInfo: React.FC<Props> = ({ account, chain }) => {
       {account?.type === KEYRING_CLASS.PRIVATE_KEY && (
         <CommonAccount
           icon={KEYRING_ICONS[KEYRING_CLASS.PRIVATE_KEY]}
-          tip="Import by PrivateKey"
+          tip="Private Key address"
         />
       )}
       {account?.type === KEYRING_CLASS.MNEMONIC && (
         <CommonAccount
           icon={KEYRING_ICONS[KEYRING_CLASS.MNEMONIC]}
-          tip="Import by Seed Phrase"
+          tip="Seed Phrase address"
         />
       )}
       {account?.type === KEYRING_CLASS.WATCH && (
