@@ -55,6 +55,10 @@ import IconProceed from 'ui/assets/sign/security-engine/processed.svg';
 import IconClosed from 'ui/assets/sign/security-engine/closed.svg';
 import LogoWalletConnect from 'ui/assets/walletlogo/walletconnect.svg';
 import LogoWalletConnectWhite from 'ui/assets/walletlogo/walletconnect.svg';
+import LogoBitkeep from 'ui/assets/walletlogo/bitkeep.svg';
+import LogoRainbow from 'ui/assets/walletlogo/rainbow.svg';
+import LogoUniswap from 'ui/assets/walletlogo/uniswap.svg';
+import LogoZerion from 'ui/assets/walletlogo/zerion.svg';
 
 export { CHAINS, CHAINS_ENUM };
 
@@ -322,6 +326,10 @@ export enum WALLET_BRAND_TYPES {
   DEFIANT = 'Defiant',
   WALLETCONNECT = 'WALLETCONNECT',
   AIRGAP = 'AirGap',
+  Rainbow = 'Rainbow',
+  Bitkeep = 'Bitkeep',
+  Uniswap = 'Uniswap',
+  Zerion = 'Zerion',
 }
 
 enum WALLET_BRAND_CATEGORY {
@@ -522,6 +530,42 @@ export const WALLET_BRAND_CONTENT: {
     brand: WALLET_BRAND_TYPES.TRUSTWALLET,
     icon: IconTrust,
     image: LogoTrust,
+    connectType: BRAND_WALLET_CONNECT_TYPE.WalletConnect,
+    category: WALLET_BRAND_CATEGORY.MOBILE,
+  },
+  [WALLET_BRAND_TYPES.Rainbow]: {
+    id: 21,
+    name: 'Rainbow',
+    brand: WALLET_BRAND_TYPES.Rainbow,
+    icon: LogoRainbow,
+    image: LogoRainbow,
+    connectType: BRAND_WALLET_CONNECT_TYPE.WalletConnect,
+    category: WALLET_BRAND_CATEGORY.MOBILE,
+  },
+  [WALLET_BRAND_TYPES.Bitkeep]: {
+    id: 22,
+    name: 'Bitkeep',
+    brand: WALLET_BRAND_TYPES.Bitkeep,
+    icon: LogoBitkeep,
+    image: LogoBitkeep,
+    connectType: BRAND_WALLET_CONNECT_TYPE.WalletConnect,
+    category: WALLET_BRAND_CATEGORY.MOBILE,
+  },
+  [WALLET_BRAND_TYPES.Zerion]: {
+    id: 23,
+    name: 'Zerion Wallet',
+    brand: WALLET_BRAND_TYPES.Zerion,
+    icon: LogoZerion,
+    image: LogoZerion,
+    connectType: BRAND_WALLET_CONNECT_TYPE.WalletConnect,
+    category: WALLET_BRAND_CATEGORY.MOBILE,
+  },
+  [WALLET_BRAND_TYPES.Uniswap]: {
+    id: 24,
+    name: 'Uniswap Wallet',
+    brand: WALLET_BRAND_TYPES.Uniswap,
+    icon: LogoUniswap,
+    image: LogoUniswap,
     connectType: BRAND_WALLET_CONNECT_TYPE.WalletConnect,
     category: WALLET_BRAND_CATEGORY.MOBILE,
   },

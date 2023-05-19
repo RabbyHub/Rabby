@@ -1,4 +1,5 @@
 import { Button } from 'antd';
+import clsx from 'clsx';
 import React from 'react';
 
 export interface Props {
@@ -9,7 +10,11 @@ export interface Props {
 export const FooterButton: React.FC<Props> = ({ onClick, text }) => {
   return (
     <div>
-      <Button className="w-[180px] h-[40px]" type="primary" onClick={onClick}>
+      <Button
+        className={clsx('w-[180px] h-[40px]', 'active:before:bg-[#00000033]')}
+        type="primary"
+        onClick={onClick}
+      >
         {text}
       </Button>
     </div>

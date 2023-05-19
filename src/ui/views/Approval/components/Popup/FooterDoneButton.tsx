@@ -8,12 +8,12 @@ export interface Props {
 }
 
 export const FooterDoneButton: React.FC<Props> = ({ onDone }) => {
-  const [counter, setCounter] = React.useState(3);
+  const [counter, setCounter] = React.useState(0.5);
   const { visible } = useCommonPopupView();
 
   useInterval(() => {
     setCounter(counter - 1);
-  }, 1000);
+  }, 500);
 
   React.useEffect(() => {
     if (counter <= 0) {
@@ -34,7 +34,7 @@ export const FooterDoneButton: React.FC<Props> = ({ onDone }) => {
         type="primary"
         onClick={onDone}
       >
-        Done ({counter}s)
+        Done {counter < 0 ? '' : `(${counter}s)`}
       </Button>
     </div>
   );
