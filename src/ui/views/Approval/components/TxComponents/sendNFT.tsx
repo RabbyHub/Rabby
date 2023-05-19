@@ -8,11 +8,11 @@ import React from 'react';
 import { Trans, useTranslation } from 'react-i18next';
 import IconArrowRight from 'ui/assets/approval/edit-arrow-right.svg';
 import IconUnknownNFT from 'ui/assets/unknown-nft.svg';
-import { NameAndAddress } from 'ui/component';
+import { Copy, NameAndAddress } from 'ui/component';
 import BalanceChange from './BalanceChange';
 import SpeedUpCorner from './SpeedUpCorner';
 import ViewRawModal from './ViewRawModal';
-import IconExternal from 'ui/assets/open-external-gray.svg';
+import IconExternal from 'ui/assets/icon-share.svg';
 import { openInTab } from '@/ui/utils';
 
 interface SendNFTProps {
@@ -93,6 +93,10 @@ const SendNFT = ({ data, chainEnum, isSpeedUp, raw }: SendNFTProps) => {
                   <div className="label">Contract</div>
                   <div className="value flex items-center gap-6">
                     {ellipsis(detail.nft?.contract_id)}
+                    <Copy
+                      data={detail.nft?.contract_id}
+                      variant="address"
+                    ></Copy>
                     <img
                       src={IconExternal}
                       className="icon icon-copy w-[14px] h-[14px] cursor-pointer"

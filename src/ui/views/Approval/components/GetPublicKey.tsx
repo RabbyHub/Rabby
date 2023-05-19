@@ -76,7 +76,7 @@ const GetEncryptionPublicKey = ({ params }: ConnectProps) => {
           this site will be able to compose encrypted messages to you.
         </div>
       </div>
-      <footer className="footer">
+      <footer className="footer p-[20px]">
         <div className="action-buttons flex justify-between mt-4">
           <Button
             type="primary"
