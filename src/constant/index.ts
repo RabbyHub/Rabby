@@ -328,7 +328,7 @@ export enum WALLET_BRAND_TYPES {
   AIRGAP = 'AirGap',
   Rainbow = 'Rainbow',
   Bitkeep = 'Bitkeep',
-  Uniswap = 'Uniswap',
+  // Uniswap = 'Uniswap',
   Zerion = 'Zerion',
 }
 
@@ -560,15 +560,15 @@ export const WALLET_BRAND_CONTENT: {
     connectType: BRAND_WALLET_CONNECT_TYPE.WalletConnect,
     category: WALLET_BRAND_CATEGORY.MOBILE,
   },
-  [WALLET_BRAND_TYPES.Uniswap]: {
-    id: 24,
-    name: 'Uniswap Wallet',
-    brand: WALLET_BRAND_TYPES.Uniswap,
-    icon: LogoUniswap,
-    image: LogoUniswap,
-    connectType: BRAND_WALLET_CONNECT_TYPE.WalletConnect,
-    category: WALLET_BRAND_CATEGORY.MOBILE,
-  },
+  // [WALLET_BRAND_TYPES.Uniswap]: {
+  //   id: 24,
+  //   name: 'Uniswap Wallet',
+  //   brand: WALLET_BRAND_TYPES.Uniswap,
+  //   icon: LogoUniswap,
+  //   image: LogoUniswap,
+  //   connectType: BRAND_WALLET_CONNECT_TYPE.WalletConnect,
+  //   category: WALLET_BRAND_CATEGORY.MOBILE,
+  // },
 };
 
 export const KEYRING_ICONS = {
