@@ -162,11 +162,6 @@ export const ApproveToken: React.FC<Props> = ({
                     address={detail.spender}
                     showArrow={false}
                   />
-                  <Copy
-                    data={detail.spender}
-                    variant="address"
-                    className="icon icon-copy w-[16px] h-[16px]"
-                  />
                   {chainEnum && (
                     <img
                       src={IconExternal}
@@ -174,6 +169,11 @@ export const ApproveToken: React.FC<Props> = ({
                       onClick={handleClickSpender}
                     />
                   )}
+                  <Copy
+                    data={detail.spender}
+                    variant="address"
+                    className="icon icon-copy w-[16px] h-[16px]"
+                  />
                 </span>
               </div>
             </div>

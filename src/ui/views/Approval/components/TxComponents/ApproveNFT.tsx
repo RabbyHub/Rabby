@@ -93,10 +93,6 @@ const ApproveNFT = ({ data, chainEnum, isSpeedUp, raw }: ApproveNFTProps) => {
                   <div className="label">Contract</div>
                   <div className="value flex items-center gap-6">
                     {ellipsis(detail.nft?.contract_id)}
-                    <Copy
-                      data={detail.nft?.contract_id}
-                      variant="address"
-                    ></Copy>
                     <img
                       src={IconExternal}
                       className="icon icon-copy w-[14px] h-[14px] cursor-pointer"
@@ -104,6 +100,10 @@ const ApproveNFT = ({ data, chainEnum, isSpeedUp, raw }: ApproveNFTProps) => {
                         handleClickContractId(detail.nft?.contract_id)
                       }
                     />
+                    <Copy
+                      data={detail.nft?.contract_id}
+                      variant="address"
+                    ></Copy>
                   </div>
                 </div>
               </div>
@@ -123,12 +123,12 @@ const ApproveNFT = ({ data, chainEnum, isSpeedUp, raw }: ApproveNFTProps) => {
                 </div>
                 <div className="address flex gap-6">
                   {ellipsis(detail.spender)}
-                  <Copy data={detail.spender} variant="address"></Copy>
                   <img
                     src={IconExternal}
                     className="icon icon-copy w-[14px] h-[14px] cursor-pointer"
                     onClick={() => handleClickContractId(detail.spender)}
                   />
+                  <Copy data={detail.spender} variant="address"></Copy>
                 </div>
               </div>
             </div>

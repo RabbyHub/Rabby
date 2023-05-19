@@ -93,16 +93,16 @@ const Cancel = ({ data, chainEnum, isSpeedUp, raw }: CancelProps) => {
               </p>
               <div className="protocol-info__spender">
                 <AddressViewer address={detail.spender} showArrow={false} />
-                <Copy
-                  data={detail.spender}
-                  variant="address"
-                  className="ml-[6px]"
-                ></Copy>
                 <img
                   src={IconExternal}
                   className="icon icon-copy w-[14px] h-[14px]"
                   onClick={handleClickSpender}
                 />
+                <Copy
+                  data={detail.spender}
+                  variant="address"
+                  className="ml-[6px]"
+                ></Copy>
               </div>
             </div>
           </div>

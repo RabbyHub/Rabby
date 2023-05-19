@@ -93,10 +93,6 @@ const CancelNFT = ({ data, chainEnum, isSpeedUp, raw }: CancelNFTProps) => {
                   <div className="label">Contract</div>
                   <div className="value flex items-center gap-6">
                     {ellipsis(detail.nft?.contract_id)}
-                    <Copy
-                      data={detail.nft?.contract_id}
-                      variant="address"
-                    ></Copy>
                     <img
                       src={IconExternal}
                       className="icon icon-copy w-[14px] h-[14px] cursor-pointer"
@@ -104,6 +100,10 @@ const CancelNFT = ({ data, chainEnum, isSpeedUp, raw }: CancelNFTProps) => {
                         handleClickContractId(detail.nft?.contract_id)
                       }
                     />
+                    <Copy
+                      data={detail.nft?.contract_id}
+                      variant="address"
+                    ></Copy>
                   </div>
                 </div>
               </div>
@@ -123,12 +123,12 @@ const CancelNFT = ({ data, chainEnum, isSpeedUp, raw }: CancelNFTProps) => {
                 </div>
                 <div className="address flex gap-6">
                   {ellipsis(detail.spender)}
-                  <Copy variant="address" data={detail.spender}></Copy>
                   <img
                     src={IconExternal}
                     className="icon icon-copy w-[14px] h-[14px] cursor-pointer"
                     onClick={() => handleClickContractId(detail.spender)}
                   />
+                  <Copy variant="address" data={detail.spender}></Copy>
                 </div>
               </div>
             </div>
