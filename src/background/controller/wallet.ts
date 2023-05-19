@@ -1593,14 +1593,14 @@ export class WalletController extends BaseController {
     const serialized = await keyring.serialize();
     const seedWords = serialized.mnemonic;
 
-    this._lastGetMnemonics = seedWords;
+    this._lastGetAddress = address;
     return seedWords;
   };
 
-  _lastGetMnemonics = '';
+  _lastGetAddress = '';
 
-  getLastGetMnemonics = () => {
-    return this._lastGetMnemonics;
+  getLastGetAddress = () => {
+    return this._lastGetAddress;
   };
 
   clearAddressPendingTransactions = (address: string) => {
@@ -1733,6 +1733,14 @@ export class WalletController extends BaseController {
         })
       );
     });
+  };
+
+  getMnemonicByAddress = (address: string) => {
+    const keyring = this._getMnemonicKeyringByAddress(address);
+    if (!keyring) {
+      throw new Error("Can't find keyring by address");
+    }
+    return keyring.mnemonic;
   };
 
   getMnemonicAddressIndex = async (address: string) => {

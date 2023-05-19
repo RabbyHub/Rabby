@@ -66,7 +66,8 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
   const dispatch = useRabbyDispatch();
   const initMnemonics = async () => {
     if (query.get('hd')) {
-      const mnemonics = await wallet.getLastGetMnemonics();
+      const address = await wallet.getLastGetAddress();
+      const mnemonics = await wallet.getMnemonicByAddress(address);
       const {
         keyringId,
         isExistedKR,
