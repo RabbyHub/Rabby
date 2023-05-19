@@ -47,6 +47,7 @@ import { ConnectedSite } from '../service/permission';
 import { TokenItem, Tx } from '../service/openapi';
 import {
   ContextActionData,
+  ContractAddress,
   UserData,
 } from '@debank/rabby-security-engine/dist/rules';
 import DisplayKeyring from '../service/keyring/display';
@@ -2531,6 +2532,24 @@ export class WalletController extends BaseController {
 
   updateUserData = (data: UserData) => {
     securityEngineService.updateUserData(data);
+  };
+
+  addContractWhitelist = (contract: ContractAddress) => {
+    securityEngineService.removeContractBlacklist(contract);
+    securityEngineService.addContractWhitelist(contract);
+  };
+
+  addContractBlacklist = (contract: ContractAddress) => {
+    securityEngineService.removeContractWhitelist(contract);
+    securityEngineService.addContractBlacklist(contract);
+  };
+
+  removeContractWhitelist = (contract: ContractAddress) => {
+    securityEngineService.removeContractWhitelist(contract);
+  };
+
+  removeContractBlacklist = (contract: ContractAddress) => {
+    securityEngineService.removeContractBlacklist(contract);
   };
 
   addOriginWhitelist = (origin: string) => {

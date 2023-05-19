@@ -4,12 +4,13 @@ import {
   RuleConfig,
   Threshold,
   ContextActionData,
+  ContractAddress,
 } from '@debank/rabby-security-engine/dist/rules';
 import Engine from '@debank/rabby-security-engine';
-import { createPersistStore } from 'background/utils';
+import { createPersistStore, isSameAddress } from 'background/utils';
 import openapiService from './openapi';
 
-interface SecurityEngineStore {
+export interface SecurityEngineStore {
   userData: UserData;
   rules: UserRuleConfig[];
 }
@@ -76,6 +77,7 @@ class SecurityEngineService {
     });
     this.rules = mergeRules(defaultRules, storage.rules);
     this.store = storage || this.store;
+    this.store.rules = this.rules;
     if (!this.store.userData.contractBlacklist) {
       this.store.userData = {
         ...this.store.userData,
@@ -155,6 +157,98 @@ class SecurityEngineService {
 
   getOriginBlacklist = () => {
     return this.store.userData.originBlacklist;
+  };
+
+  addContractBlacklist = (contract: ContractAddress) => {
+    if (
+      this.store.userData.contractBlacklist.find(
+        (item) =>
+          isSameAddress(contract.address, item.address) &&
+          contract.chainId === item.chainId
+      )
+    ) {
+      return;
+    }
+    this.store.userData = {
+      ...this.store.userData,
+      contractBlacklist: [
+        ...this.store.userData.contractBlacklist,
+        {
+          ...contract,
+          address: contract.address.toLowerCase(),
+        },
+      ],
+    };
+  };
+
+  addContractWhitelist = (contract: ContractAddress) => {
+    if (
+      this.store.userData.contractWhitelist.find(
+        (item) =>
+          isSameAddress(contract.address, item.address) &&
+          contract.chainId === item.chainId
+      )
+    ) {
+      return;
+    }
+    this.store.userData = {
+      ...this.store.userData,
+      contractWhitelist: [
+        ...this.store.userData.contractWhitelist,
+        {
+          ...contract,
+          address: contract.address.toLowerCase(),
+        },
+      ],
+    };
+  };
+
+  removeContractWhitelist = (contract: ContractAddress) => {
+    if (
+      !this.store.userData.contractWhitelist.find(
+        (item) =>
+          isSameAddress(contract.address, item.address) &&
+          contract.chainId === item.chainId
+      )
+    ) {
+      return;
+    }
+
+    this.store.userData = {
+      ...this.store.userData,
+      contractWhitelist: this.store.userData.contractWhitelist.filter(
+        (item) => {
+          return !(
+            isSameAddress(item.address, contract.address) &&
+            item.chainId === contract.chainId
+          );
+        }
+      ),
+    };
+  };
+
+  removeContractBlacklist = (contract: ContractAddress) => {
+    if (
+      !this.store.userData.contractBlacklist.find(
+        (item) =>
+          isSameAddress(contract.address, item.address) &&
+          contract.chainId === item.chainId
+      )
+    ) {
+      return;
+    }
+
+    this.store.userData = {
+      ...this.store.userData,
+      contractBlacklist: this.store.userData.contractBlacklist.filter(
+        (item) => {
+          return !(
+            isSameAddress(item.address, contract.address) &&
+            item.chainId === contract.chainId
+          );
+        }
+      ),
+    };
   };
 
   addOriginBlacklist = (origin: string) => {

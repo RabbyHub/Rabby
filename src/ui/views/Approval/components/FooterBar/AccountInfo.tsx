@@ -43,7 +43,7 @@ export const AccountInfo: React.FC<Props> = ({ account, chain }) => {
     <div
       className={clsx(
         'bg-[#EFF1FC] rounded-[8px]',
-        'py-[14px] px-[16px]',
+        'py-[14px] px-[16px] mb-[16px]',
         'space-y-10'
       )}
     >

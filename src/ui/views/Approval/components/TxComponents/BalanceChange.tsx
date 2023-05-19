@@ -1,13 +1,11 @@
 import React from 'react';
 import styled from 'styled-components';
 import clsx from 'clsx';
-import { useTranslation, Trans } from 'react-i18next';
+import { useTranslation } from 'react-i18next';
 import { CHAINS_ENUM, CHAINS } from 'consts';
 import { BalanceChange as IBalanceChange } from 'background/service/openapi';
 import { splitNumberByStep } from 'ui/utils/number';
-import { Tooltip } from 'antd';
 import NFTAvatar from '@/ui/views/Dashboard/components/NFT/NFTAvatar';
-import IconQuestion from 'ui/assets/approval/question.svg';
 
 import LessPalette from '@/ui/style/var-defs';
 import ModalPreviewNFTItem from '@/ui/component/ModalPreviewNFTItem';

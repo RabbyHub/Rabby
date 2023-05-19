@@ -1,12 +1,16 @@
-import { WalletControllerType, isSameAddress } from '@/ui/utils';
+import { WalletControllerType, isSameAddress, useWallet } from '@/ui/utils';
 import {
   ExplainTxResponse,
   TokenItem,
   ParseTxResponse,
   SwapAction,
 } from '@debank/rabby-api/dist/types';
-import { ContextActionData } from '@debank/rabby-security-engine/dist/rules';
+import {
+  ContextActionData,
+  UserData,
+} from '@debank/rabby-security-engine/dist/rules';
 import BigNumber from 'bignumber.js';
+import { useState, useCallback, useEffect } from 'react';
 
 export interface ReceiveTokenItem extends TokenItem {
   min_amount: number;
@@ -201,4 +205,30 @@ export const formatSecurityEngineCtx = ({
     };
   }
   return {};
+};
+
+export const useUserData = () => {
+  const wallet = useWallet();
+  const [userData, setUserData] = useState<UserData>({
+    originWhitelist: [],
+    originBlacklist: [],
+    contractWhitelist: [],
+    contractBlacklist: [],
+    addressWhitelist: [],
+    addressBlacklist: [],
+  });
+
+  useEffect(() => {
+    wallet.getSecurityEngineUserData().then(setUserData);
+  }, []);
+
+  const updateUserData = useCallback(
+    async (userData: UserData) => {
+      await wallet.updateUserData(userData);
+      setUserData(userData);
+    },
+    [userData, wallet]
+  );
+
+  return [userData, updateUserData] as const;
 };

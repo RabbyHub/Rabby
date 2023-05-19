@@ -44,14 +44,10 @@ import {
   isStringOrNumber,
   useCommonPopupView,
 } from 'ui/utils';
-import SecurityCheck from './SecurityCheck';
 import { WaitingSignComponent } from './SignText';
 import GasSelector, { GasSelectorResponse } from './TxComponents/GasSelecter';
 import GnosisDrawer from './TxComponents/GnosisDrawer';
 import Loading from './TxComponents/Loading';
-import PreCheckCard from './PreCheckCard';
-import SecurityCheckCard from './SecurityCheckCard';
-import ProcessTooltip from './ProcessTooltip';
 import { useLedgerDeviceConnected } from '@/utils/ledger';
 import { TransactionGroup } from 'background/service/transactionHistory';
 import { intToHex } from 'ui/utils/number';
@@ -66,6 +62,9 @@ import {
 } from '../components/Actions/utils';
 import Actions from './Actions';
 import { useSecurityEngine } from 'ui/utils/securityEngine';
+import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
+import RuleDrawer from './SecurityEngine/RuleDrawer';
+import { Level } from '@debank/rabby-security-engine/dist/rules';
 
 const normalizeHex = (value: string | number) => {
   if (typeof value === 'number') {
@@ -116,18 +115,20 @@ export const TxTypeComponent = ({
   chain = CHAINS[CHAINS_ENUM.ETH],
   isReady,
   raw,
-  onChange,
-  tx,
-  isSpeedUp,
+  // onChange,
+  // tx,
+  // isSpeedUp,
   engineResults,
+  txDetail,
 }: {
   actionRequireData: ActionRequireData;
   actionData: ParsedActionData;
   chain: Chain;
   isReady: boolean;
+  txDetail: ExplainTxResponse;
   raw: Record<string, string | number>;
-  onChange(data: Record<string, any>): void;
-  tx: Tx;
+  // onChange(data: Record<string, any>): void;
+  // tx: Tx;
   isSpeedUp: boolean;
   engineResults: Result[];
 }) => {
@@ -139,6 +140,8 @@ export const TxTypeComponent = ({
         requireData={actionRequireData}
         chain={chain}
         engineResults={engineResults}
+        txDetail={txDetail}
+        raw={raw}
       />
     );
   }
@@ -706,12 +709,18 @@ const SignTx = ({ params, origin }: SignTxProps) => {
   const [isGnosisAccount, setIsGnosisAccount] = useState(false);
   const [gnosisDrawerVisible, setGnosisDrawerVisble] = useState(false);
   const [getApproval, resolveApproval, rejectApproval] = useApproval();
+  const dispatch = useRabbyDispatch();
   const wallet = useWallet();
   if (!chain) throw new Error('No support chain not found');
   const [support1559, setSupport1559] = useState(chain.eip['1559']);
   const [isLedger, setIsLedger] = useState(false);
   const [useLedgerLive, setUseLedgerLive] = useState(false);
   const hasConnectedLedgerHID = useLedgerDeviceConnected();
+  const { userData, rules, currentTx } = useRabbySelector((s) => ({
+    userData: s.securityEngine.userData,
+    rules: s.securityEngine.rules,
+    currentTx: s.securityEngine.currentTx,
+  }));
 
   const gaEvent = async (type: 'allow' | 'cancel') => {
     const ga:
@@ -820,9 +829,17 @@ const SignTx = ({ params, origin }: SignTxProps) => {
   const [safeInfo, setSafeInfo] = useState<SafeInfo | null>(null);
   const [maxPriorityFee, setMaxPriorityFee] = useState(0);
   const [nativeTokenBalance, setNativeTokenBalance] = useState('0x0');
-  const [securityEngineNonce, setSecurityEngineNonce] = useState(0);
-  const { rules, userData, executeEngine } = useSecurityEngine(nonce);
+  const { executeEngine } = useSecurityEngine();
   const [engineResults, setEngineResults] = useState<Result[]>([]);
+  const securityLevel = useMemo(() => {
+    if (engineResults.some((result) => result.level === Level.FORBIDDEN))
+      return Level.FORBIDDEN;
+    if (engineResults.some((result) => result.level === Level.DANGER))
+      return Level.DANGER;
+    if (engineResults.some((result) => result.level === Level.WARNING))
+      return Level.WARNING;
+    return undefined;
+  }, [engineResults]);
 
   const gasExplainResponse = useExplainGas({
     gasUsed,
@@ -1006,6 +1023,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       tx: {
         ...tx,
         nonce: (updateNonce ? recommendNonce : tx.nonce) || '0x1',
+        value: tx.value || '0x0',
       },
       origin: origin || '',
       addr: address,
@@ -1334,25 +1352,6 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     if (currentAccount.type === KEYRING_TYPE.WatchAddressKeyring) {
       setCanProcess(false);
       setCantProcessReason(
-        // <div className="flex items-center gap-6">
-        //   <img src={IconWatch} alt="" className="w-[24px] flex-shrink-0" />
-        //   <div>
-        //     You can't sign with a watch-only address from contacts. To sign,
-        //     you'll need to{' '}
-        //     <a
-        //       href=""
-        //       className="underline"
-        //       onClick={async (e) => {
-        //         e.preventDefault();
-        //         await rejectApproval('User rejected the request.', true);
-        //         openInternalPageInTab('no-address');
-        //       }}
-        //     >
-        //       import it
-        //     </a>{' '}
-        //     fully or use a different address.
-        //   </div>
-        // </div>
         <div>You can only use imported addresses to sign</div>
       );
     }
@@ -1395,7 +1394,33 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     }
   };
 
+  const handleIgnoreRule = (id: string) => {
+    dispatch.securityEngine.processRule(id);
+    dispatch.securityEngine.closeRuleDrawer();
+  };
+
+  const handleUndoIgnore = (id: string) => {
+    dispatch.securityEngine.unProcessRule(id);
+    dispatch.securityEngine.closeRuleDrawer();
+  };
+
+  const handleRuleEnableStatusChange = async (id: string, value: boolean) => {
+    if (currentTx.processedRules.includes(id)) {
+      dispatch.securityEngine.unProcessRule(id);
+    }
+    await wallet.ruleEnableStatusChange(id, value);
+    dispatch.securityEngine.init();
+  };
+
+  const handleRuleDrawerClose = (update: boolean) => {
+    if (update) {
+      executeSecurityEngine();
+    }
+    dispatch.securityEngine.closeRuleDrawer();
+  };
+
   const init = async () => {
+    dispatch.securityEngine.resetCurrentTx();
     try {
       const currentAccount =
         isGnosis && account ? account : (await wallet.getCurrentAccount())!;
@@ -1550,6 +1575,16 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     }
   };
 
+  const executeSecurityEngine = async () => {
+    const ctx = formatSecurityEngineCtx({
+      actionData: actionData,
+      requireData: actionRequireData,
+      chainId: chain.serverId,
+    });
+    const result = await executeEngine(ctx);
+    setEngineResults(result);
+  };
+
   useEffect(() => {
     init();
   }, []);
@@ -1584,18 +1619,16 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     })();
   }, [securityCheckStatus]);
 
-  const approvalTxStyle: Record<string, string> = {};
-  if (isLedger && !useLedgerLive && !hasConnectedLedgerHID) {
-    approvalTxStyle.paddingBottom = '230px';
-  }
-  approvalTxStyle.paddingBottom = '210px';
+  useEffect(() => {
+    executeSecurityEngine();
+  }, [userData, rules]);
+
   return (
     <>
       <div
         className={clsx('approval-tx', {
           'pre-process-failed': !preprocessSuccess,
         })}
-        style={approvalTxStyle}
       >
         {txDetail && (
           <>
@@ -1605,17 +1638,18 @@ const SignTx = ({ params, origin }: SignTxProps) => {
                 actionData={actionData}
                 actionRequireData={actionRequireData}
                 chain={chain}
+                txDetail={txDetail}
                 raw={{
                   ...tx,
                   nonce: realNonce || tx.nonce,
                   gas: gasLimit!,
                 }}
-                onChange={handleTxChange}
-                tx={{
-                  ...tx,
-                  nonce: realNonce || tx.nonce,
-                  gas: gasLimit,
-                }}
+                // onChange={handleTxChange}
+                // tx={{
+                //   ...tx,
+                //   nonce: realNonce || tx.nonce,
+                //   gas: gasLimit,
+                // }}
                 isSpeedUp={isSpeedUp}
                 engineResults={engineResults}
               />
@@ -1656,66 +1690,6 @@ const SignTx = ({ params, origin }: SignTxProps) => {
               isHardware={isHardware}
               manuallyChangeGasLimit={manuallyChangeGasLimit}
             />
-            <div className="section-title">Pre-sign check</div>
-            <PreCheckCard
-              isReady={isReady}
-              loading={!isReady}
-              version={txDetail.pre_exec_version}
-              data={txDetail.pre_exec}
-              errors={checkErrors}
-            ></PreCheckCard>
-            <SecurityCheckCard
-              isReady={isReady}
-              loading={!securityCheckDetail}
-              data={securityCheckDetail}
-            ></SecurityCheckCard>
-
-            <footer className="connect-footer pb-[20px]">
-              {txDetail && (
-                <>
-                  {/* {isLedger && !useLedgerLive && !hasConnectedLedgerHID && (
-                    <LedgerWebHIDAlert connected={hasConnectedLedgerHID} />
-                  )}*/}
-                  {canProcess ? (
-                    <SecurityCheck
-                      status={securityCheckStatus}
-                      value={forceProcess}
-                      onChange={handleForceProcessChange}
-                    />
-                  ) : (
-                    <ProcessTooltip>{cantProcessReason}</ProcessTooltip>
-                  )}
-
-                  <FooterBar
-                    gnosisAccount={isGnosis ? account : undefined}
-                    chain={chain}
-                    onCancel={handleCancel}
-                    onSubmit={() => handleAllow(forceProcess)}
-                    enableTooltip={
-                      !canProcess ||
-                      !!checkErrors.find((item) => item.level === 'forbidden')
-                    }
-                    tooltipContent={
-                      checkErrors.find((item) => item.level === 'forbidden')
-                        ? checkErrors.find(
-                            (item) => item.level === 'forbidden'
-                          )!.msg
-                        : cantProcessReason
-                    }
-                    disabledProcess={
-                      !isReady ||
-                      (selectedGas ? selectedGas.price < 0 : true) ||
-                      (isGnosisAccount ? !safeInfo : false) ||
-                      (isLedger && !useLedgerLive && !hasConnectedLedgerHID) ||
-                      !forceProcess ||
-                      securityCheckStatus === 'loading' ||
-                      !canProcess ||
-                      !!checkErrors.find((item) => item.level === 'forbidden')
-                    }
-                  />
-                </>
-              )}
-            </footer>
           </>
         )}
         {isGnosisAccount && safeInfo && (
@@ -1734,7 +1708,44 @@ const SignTx = ({ params, origin }: SignTxProps) => {
             />
           </Drawer>
         )}
+        <RuleDrawer
+          selectRule={currentTx.ruleDrawer.selectRule}
+          visible={currentTx.ruleDrawer.visible}
+          onIgnore={handleIgnoreRule}
+          onUndo={handleUndoIgnore}
+          onRuleEnableStatusChange={handleRuleEnableStatusChange}
+          onClose={handleRuleDrawerClose}
+        />
       </div>
+      {txDetail && (
+        <>
+          <FooterBar
+            origin={origin}
+            securityLevel={securityLevel}
+            gnosisAccount={isGnosis ? account : undefined}
+            chain={chain}
+            onCancel={handleCancel}
+            onSubmit={() => handleAllow(forceProcess)}
+            enableTooltip={
+              !canProcess ||
+              !!checkErrors.find((item) => item.level === 'forbidden')
+            }
+            tooltipContent={
+              checkErrors.find((item) => item.level === 'forbidden')
+                ? checkErrors.find((item) => item.level === 'forbidden')!.msg
+                : cantProcessReason
+            }
+            disabledProcess={
+              !isReady ||
+              (selectedGas ? selectedGas.price < 0 : true) ||
+              (isGnosisAccount ? !safeInfo : false) ||
+              (isLedger && !useLedgerLive && !hasConnectedLedgerHID) ||
+              securityCheckStatus === 'loading' ||
+              !canProcess
+            }
+          />
+        </>
+      )}
     </>
   );
 };
