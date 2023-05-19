@@ -20,7 +20,7 @@ interface IState {
 
   confirmingAccounts: ISimpleAccount[];
   importedAddresses: Set<Exclude<Account['address'], void>>;
-
+  importedAccounts: Set<Exclude<Pick<Account, 'address' | 'index'>, void>>;
   selectedAddresses: Set<Exclude<Account['address'], void>>;
   draftAddressSelection: Set<Exclude<Account['address'], void>>;
 }
@@ -35,7 +35,7 @@ const makeInitValues = () => {
 
     confirmingAccounts: [],
     importedAddresses: new Set(),
-
+    importedAccounts: new Set(),
     selectedAddresses: new Set(),
     draftAddressSelection: new Set(),
   } as IState;
@@ -122,6 +122,56 @@ export const importMnemonics = createModel<RootModel>()({
           importedAccounts.map((address) => address.toLowerCase())
         ),
       });
+    },
+
+    async getImportedAccounts(payload = {}, store) {
+      const {
+        isExistedKeyring,
+        stashKeyringId,
+        finalMnemonics,
+      } = store.importMnemonics;
+      const wallet = store.app.wallet;
+      let addresses: string[];
+
+      if (!isExistedKeyring) {
+        addresses = await wallet.requestKeyring(
+          KEYRING_TYPE.HdKeyring,
+          'getAccounts',
+          stashKeyringId ?? null
+        );
+      } else {
+        addresses = await wallet.requestHDKeyringByMnemonics(
+          finalMnemonics,
+          'getAccounts'
+        );
+      }
+
+      const accounts = await Promise.all(
+        addresses.map(async (address) => {
+          let index = 0;
+
+          if (!isExistedKeyring) {
+            index = await wallet.requestKeyring(
+              KEYRING_TYPE.HdKeyring,
+              'getIndexByAddress',
+              stashKeyringId ?? null,
+              address
+            );
+          } else {
+            index = await wallet.requestHDKeyringByMnemonics(
+              finalMnemonics,
+              'getIndexByAddress',
+              address
+            );
+          }
+          return {
+            address,
+            index: index + 1,
+          };
+        })
+      );
+
+      return accounts;
     },
 
     async cleanUpImportedInfoAsync(_?: void, store?) {

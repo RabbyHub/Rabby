@@ -18,6 +18,7 @@ import clsx from 'clsx';
 import { connectStore } from '@/ui/store';
 import LessPalette from '@/ui/style/var-defs';
 import IconBack from 'ui/assets/icon-back.svg';
+import { openInternalPageInTab } from '@/ui/utils';
 
 const ActionEntries = styled.div`
   border-radius: 6px;
@@ -73,7 +74,7 @@ const EntryImportAddress = () => {
             rightIcon={
               <img src={IconEntryRightIcon} className="right-chevron-icon" />
             }
-            onClick={() => history.push('/import/mnemonics')}
+            onClick={() => openInternalPageInTab('import/mnemonics')}
           >
             {t('Import Seed Phrase')}
           </Field>

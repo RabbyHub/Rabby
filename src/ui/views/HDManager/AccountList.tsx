@@ -13,6 +13,8 @@ import clsx from 'clsx';
 import { fetchAccountsInfo, HDManagerStateContext } from './utils';
 import { AliasName } from './AliasName';
 import { ChainList } from './ChainList';
+import { KEYRING_CLASS } from '@/constant';
+import { useRabbyDispatch } from '@/ui/store';
 
 export interface Account {
   address: string;
@@ -51,6 +53,7 @@ export const AccountList: React.FC<Props> = ({
     keyring,
   } = React.useContext(HDManagerStateContext);
   const [loadNum, setLoadNum] = React.useState(0);
+  const dispatch = useRabbyDispatch();
 
   const toggleHiddenInfo = React.useCallback(
     (e: React.MouseEvent, val: boolean) => {
@@ -93,9 +96,20 @@ export const AccountList: React.FC<Props> = ({
   const handleAddAccount = React.useCallback(
     async (checked: boolean, account: Account) => {
       if (checked) {
-        await createTask(() =>
-          wallet.unlockHardwareAccount(keyring, [account.index - 1], keyringId)
-        );
+        await createTask(async () => {
+          if (keyring === KEYRING_CLASS.MNEMONIC) {
+            await dispatch.importMnemonics.setSelectedAccounts([
+              account.address,
+            ]);
+            await dispatch.importMnemonics.confirmAllImportingAccountsAsync();
+          } else {
+            wallet.unlockHardwareAccount(
+              keyring,
+              [account.index - 1],
+              keyringId
+            );
+          }
+        });
 
         await createTask(() =>
           wallet.requestKeyring(keyring, 'setCurrentUsedHDPathType', keyringId)

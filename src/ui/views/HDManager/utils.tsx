@@ -5,6 +5,8 @@ import React from 'react';
 import { useHistory } from 'react-router-dom';
 import { Account } from './AccountList';
 import * as Sentry from '@sentry/browser';
+import { KEYRING_CLASS } from '@/constant';
+import { useRabbyDispatch } from '@/ui/store';
 
 export const sleep = (ms: number) =>
   new Promise((resolve) => setTimeout(resolve, ms));
@@ -82,14 +84,23 @@ const useGetCurrentAccounts = ({ keyringId, keyring }: StateProviderProps) => {
   const wallet = useWallet();
   const [loading, setLoading] = React.useState(false);
   const [accounts, setAccounts] = React.useState<Account[]>([]);
+  const dispatch = useRabbyDispatch();
 
   const getCurrentAccounts = React.useCallback(async () => {
     setLoading(true);
-    const accounts = (await wallet.requestKeyring(
-      keyring,
-      'getCurrentAccounts',
-      keyringId
-    )) as Account[];
+    const accounts: Account[] = [];
+    if (keyring === KEYRING_CLASS.MNEMONIC) {
+      const list = await dispatch.importMnemonics.getImportedAccounts({});
+      accounts.push(...list);
+    } else {
+      accounts.push(
+        ...(await wallet.requestKeyring(
+          keyring,
+          'getCurrentAccounts',
+          keyringId
+        ))
+      );
+    }
 
     // fetch aliasName
     const accountsWithAliasName = await Promise.all(
@@ -136,7 +147,7 @@ const useGetCurrentAccounts = ({ keyringId, keyring }: StateProviderProps) => {
 };
 
 const useManagerTab = () => {
-  const [tab, setTab] = React.useState<'ledger' | 'rabby'>('ledger');
+  const [tab, setTab] = React.useState<'hd' | 'rabby'>('hd');
 
   return {
     tab,
