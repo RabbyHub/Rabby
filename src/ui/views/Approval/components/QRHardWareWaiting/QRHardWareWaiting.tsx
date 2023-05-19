@@ -1,4 +1,4 @@
-import React, { useCallback, useEffect, useMemo, useState } from 'react';
+import React, { useCallback, useMemo, useState } from 'react';
 import stats from '@/stats';
 import Player from './Player';
 import Reader from './Reader';
@@ -24,7 +24,7 @@ enum QRHARDWARE_STATUS {
 }
 
 const QRHardWareWaiting = ({ params }) => {
-  const { setTitle } = useCommonPopupView();
+  const { setTitle, closePopup } = useCommonPopupView();
   const [status, setStatus] = useState<QRHARDWARE_STATUS>(
     QRHARDWARE_STATUS.SYNC
   );
@@ -38,6 +38,12 @@ const QRHardWareWaiting = ({ params }) => {
     WALLET_BRAND_CONTENT[WALLET_BRAND_TYPES.KEYSTONE]
   );
   const [content, setContent] = React.useState('');
+  const [isClickDone, setIsClickDone] = React.useState(false);
+  const [signFinishedData, setSignFinishedData] = React.useState<{
+    data: any;
+    stay: boolean;
+    approvalId: string;
+  }>();
 
   const chain = Object.values(CHAINS).find(
     (item) => item.id === (params.chainId || 1)
@@ -77,17 +83,20 @@ const QRHardWareWaiting = ({ params }) => {
           return;
         }
         setStatus(QRHARDWARE_STATUS.DONE);
-        resolveApproval(data.data, !isSignText, false, approval.id);
+        setSignFinishedData({
+          data: sig,
+          stay: !isSignText,
+          approvalId: approval.id,
+        });
       } else {
         setErrorMessage(data.errorMsg);
         rejectApproval(data.errorMsg);
       }
-      // history.push('/');
     });
     await wallet.acquireKeystoneMemStoreData();
   }, []);
 
-  useEffect(() => {
+  React.useEffect(() => {
     init();
     return () => {
       eventBus.removeAllEventListeners(EVENTS.SIGN_FINISHED);
@@ -96,6 +105,18 @@ const QRHardWareWaiting = ({ params }) => {
       );
     };
   }, [init]);
+
+  React.useEffect(() => {
+    if (signFinishedData && isClickDone) {
+      closePopup();
+      resolveApproval(
+        signFinishedData.data,
+        signFinishedData.stay,
+        false,
+        signFinishedData.approvalId
+      );
+    }
+  }, [signFinishedData, isClickDone]);
 
   const handleCancel = () => {
     rejectApproval('User rejected the request.');
@@ -198,7 +219,7 @@ const QRHardWareWaiting = ({ params }) => {
         description={errorMessage}
         onCancel={handleCancel}
         onRetry={handleRequestSignature}
-        onDone={handleDone}
+        onDone={() => setIsClickDone(true)}
         onSubmit={handleSubmit}
         hasMoreDescription={!!errorMessage}
       />
