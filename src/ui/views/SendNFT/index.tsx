@@ -438,12 +438,12 @@ const SendNFT = () => {
                       address={nftItem.contract_id}
                       showArrow={false}
                     />
-                    <Copy data={nftItem.contract_id} variant="address"></Copy>
                     <img
                       src={IconExternal}
                       className="icon icon-copy"
                       onClick={handleClickContractId}
                     />
+                    <Copy data={nftItem.contract_id} variant="address"></Copy>
                   </span>
                 </p>
               </div>

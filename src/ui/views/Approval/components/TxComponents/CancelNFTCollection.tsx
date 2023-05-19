@@ -87,7 +87,6 @@ const CancelNFTCollection = ({
                 <div className="label">Contract</div>
                 <div className="value flex items-center gap-6">
                   {ellipsis(detail.nft_contract?.id)}
-                  <Copy variant="address" data={detail.nft_contract?.id}></Copy>
                   <img
                     src={IconExternal}
                     className="icon icon-copy w-[14px] h-[14px] cursor-pointer"
@@ -95,6 +94,7 @@ const CancelNFTCollection = ({
                       handleClickContractId(detail.nft_contract?.id)
                     }
                   />
+                  <Copy variant="address" data={detail.nft_contract?.id}></Copy>
                 </div>
               </div>
             </div>
@@ -113,12 +113,12 @@ const CancelNFTCollection = ({
                 </div>
                 <div className="address flex gap-6">
                   {ellipsis(detail.spender)}
-                  <Copy variant="address" data={detail.spender}></Copy>
                   <img
                     src={IconExternal}
                     className="icon icon-copy w-[14px] h-[14px] cursor-pointer"
                     onClick={() => handleClickContractId(detail.spender)}
                   />
+                  <Copy variant="address" data={detail.spender}></Copy>
                 </div>
               </div>
             </div>

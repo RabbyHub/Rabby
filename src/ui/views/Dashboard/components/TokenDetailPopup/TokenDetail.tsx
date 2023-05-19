@@ -178,11 +178,6 @@ const TokenDetail = ({
             {isShowAddress ? (
               <>
                 {ellipsis(token.id)}
-                <Copy
-                  data={token.id}
-                  variant="address"
-                  className="w-14 cursor-pointer"
-                />
                 <img
                   src={IconExternal}
                   className="w-14 cursor-pointer"
@@ -190,6 +185,11 @@ const TokenDetail = ({
                   onClick={() => {
                     handleClickLink(token);
                   }}
+                />
+                <Copy
+                  data={token.id}
+                  variant="address"
+                  className="w-14 cursor-pointer"
                 />
               </>
             ) : (

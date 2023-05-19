@@ -96,6 +96,15 @@ const NameAndAddress = ({
               ?.toLowerCase()
               .slice(0, 6)}...${address?.toLowerCase().slice(-4)}`}
       </div>
+      {openExternal && (
+        <img
+          onClick={handleClickContractId}
+          src={IconExternal}
+          width={16}
+          height={16}
+          className={clsx('ml-6 cursor-pointer', copyIconClass)}
+        />
+      )}
       {isShowCopyIcon && (
         <img
           onClick={handleCopyContractAddress}
@@ -105,15 +114,6 @@ const NameAndAddress = ({
           className={clsx('ml-6 cursor-pointer', copyIconClass, {
             success: true,
           })}
-        />
-      )}
-      {openExternal && (
-        <img
-          onClick={handleClickContractId}
-          src={IconExternal}
-          width={16}
-          height={16}
-          className={clsx('ml-6 cursor-pointer', copyIconClass)}
         />
       )}
     </div>
