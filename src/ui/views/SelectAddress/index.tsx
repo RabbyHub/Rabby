@@ -116,7 +116,7 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
   const isMnemonic = keyring === KEYRING_CLASS.MNEMONIC;
   const [hasError, setHasError] = useState(false);
 
-  if (!isPopup) {
+  if (isMnemonic) {
     if (!isMounted) return null;
   }
 
