@@ -28,6 +28,7 @@ import { SvgIconLoading } from 'ui/assets';
 import { SessionStatusBar } from '@/ui/component/WalletConnect/SessionStatusBar';
 import { LedgerStatusBar } from '@/ui/component/ConnectStatus/LedgerStatusBar';
 import { GridPlusStatusBar } from '@/ui/component/ConnectStatus/GridPlusStatusBar';
+import { SeedPhraseBar } from './SeedPhraseBar';
 
 type Props = {
   address: string;
@@ -265,6 +266,11 @@ const AddressInfo1 = ({ address, type, brandName, source }: Props) => {
         {type === KEYRING_CLASS.HARDWARE.GRIDPLUS && (
           <div className="pb-[20px]">
             <GridPlusStatusBar className="text-gray-subTitle bg-gray-bg connect-status" />
+          </div>
+        )}
+        {type === KEYRING_CLASS.MNEMONIC && (
+          <div className="pb-[20px]">
+            <SeedPhraseBar address={address} />
           </div>
         )}
       </div>

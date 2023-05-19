@@ -2,7 +2,7 @@ import { message } from 'antd';
 import ClipboardJS from 'clipboard';
 import clsx from 'clsx';
 import React, { MouseEventHandler, useEffect, useRef } from 'react';
-import IconAddressCopy from 'ui/assets/component/icon-copy.svg';
+import IconAddressCopy from 'ui/assets/icon-copy-2.svg';
 import IconSuccess from 'ui/assets/success.svg';
 
 interface CopyProps {

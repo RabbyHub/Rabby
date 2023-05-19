@@ -1,5 +1,5 @@
 import { BlueHeader, Item } from '@/ui/component';
-import { openInTab } from '@/ui/utils';
+import { openInTab, openInternalPageInTab } from '@/ui/utils';
 import { Timeline } from 'antd';
 import React from 'react';
 import { useTranslation } from 'react-i18next';
@@ -42,7 +42,7 @@ export const ImportMyMetaMaskAccount = () => {
         icon: IconMnemonics,
         content: t('Import Seed Phrase'),
         onClick: () => {
-          history.push('/import/mnemonics');
+          openInternalPageInTab('import/mnemonics');
         },
       },
       {

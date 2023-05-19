@@ -1384,10 +1384,10 @@
     lodash "^4.17.21"
     qss "^2.0.3"
 
-"@debank/rabby-security-engine@^1.0.14":
-  version "1.0.14"
-  resolved "https://registry.yarnpkg.com/@debank/rabby-security-engine/-/rabby-security-engine-1.0.14.tgz#2a8616115e921e03c73244d3bae51b194d3895a9"
-  integrity sha512-8hHZAp3wxc8pD+QUHecypdi/wChhw2yQ6TqM7DSpQT9aqaruys+2ImNL/uvS7PcFagh1VLgrKqIUHqVM1xxY0Q==
+"@debank/rabby-security-engine@^1.0.15":
+  version "1.0.15"
+  resolved "https://registry.yarnpkg.com/@debank/rabby-security-engine/-/rabby-security-engine-1.0.15.tgz#df1fdad944a8e6841efa019952271bca815c9c06"
+  integrity sha512-wf5NQ3EvoL/G9iXHWPaYE5zZ951liNsdIi06ZuQX7crF44a2sCj4F+AfPyZ0vP87z05UUv/hDNUja53OmhUrjQ==
   dependencies:
     "@debank/common" "^0.2.31"
     "@debank/rabby-api" "^0.5.25"
@@ -3586,10 +3586,10 @@
     ethereumjs-util "^7.1.5"
     hdkey "0.8.0"
 
-"@rabby-wallet/eth-walletconnect-keyring@^1.7.13":
-  version "1.7.13"
-  resolved "https://registry.yarnpkg.com/@rabby-wallet/eth-walletconnect-keyring/-/eth-walletconnect-keyring-1.7.13.tgz#cf53dce201b1c5f5c83a08a2419e3df742dc5ea3"
-  integrity sha512-8lWwfp6cC7OkUMFpsH2WwzITogGQon7qE94LAbLkZZUE3MshxNrAVAIZYWXvyrj23lD1towQW4fxKc/hoCtI2Q==
+"@rabby-wallet/eth-walletconnect-keyring@^1.7.15":
+  version "1.7.15"
+  resolved "https://registry.yarnpkg.com/@rabby-wallet/eth-walletconnect-keyring/-/eth-walletconnect-keyring-1.7.15.tgz#927d85cc54c8b2ca5c186a761341fb09938aea0b"
+  integrity sha512-tSAQFTmbRMsjvy98db+spwh8MWrE8jXwHMkdszNc3t4/HeFpcAxmXiG0rcm79adxpVeAqKEaxrfGTUYNEK6E1w==
   dependencies:
     "@debank/wc-client" "^1.8.7"
     "@ethereumjs/tx" "^3.5.2"

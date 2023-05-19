@@ -57,6 +57,7 @@ export const SessionStatusBar: React.FC<Props> = ({
       wallet.killWalletConnectConnector(address, brandName, true);
       message.success('Disconnected');
     } else if (tipStatus === 'DISCONNECTED') {
+      wallet.killWalletConnectConnector(address, brandName, true, true);
       activePopup('WalletConnect');
     } else if (tipStatus === 'ACCOUNT_ERROR') {
       activePopup('SwitchAddress');

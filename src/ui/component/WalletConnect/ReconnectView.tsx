@@ -37,7 +37,7 @@ export const ReconnectView: React.FC = () => {
       await wallet.killWalletConnectConnector(
         account.address,
         account.brandName,
-        true,
+        false,
         true
       );
     }

@@ -11,7 +11,7 @@ import {
 import type { ISelectAccountItem } from 'ui/component/MultiSelectAddressList';
 import stats from '@/stats';
 import { getUiType, useWallet, useWalletRequest } from 'ui/utils';
-import { HARDWARE_KEYRING_TYPES, HDPaths } from 'consts';
+import { HARDWARE_KEYRING_TYPES, HDPaths, KEYRING_CLASS } from 'consts';
 import { BIP44_PATH, LEDGER_LIVE_PATH } from '../ImportHardware/LedgerHdPath';
 import Pagination from './components/Pagination';
 import './style.less';
@@ -19,14 +19,24 @@ import { useMedia } from 'react-use';
 import type { Account } from '@/background/service/preference';
 import { ErrorAlert } from '@/ui/component/Alert/ErrorAlert';
 import { HDManager } from '../HDManager/HDManager';
+import { useRabbyDispatch } from '@/ui/store';
 
 const { Option } = Select;
+type State = {
+  keyring: string;
+  isMnemonics?: boolean;
+  isWebHID?: boolean;
+  path?: string;
+  keyringId?: number | null;
+  ledgerLive?: boolean;
+  brand?: string;
+};
 
 const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
   const history = useHistory();
   const { t } = useTranslation();
   const isWide = useMedia('(min-width: 401px)');
-  const { state } = useLocation<{
+  const { state = {} as State, search } = useLocation<{
     keyring: string;
     isMnemonics?: boolean;
     isWebHID?: boolean;
@@ -35,6 +45,9 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
     ledgerLive?: boolean;
     brand?: string;
   }>();
+  const query = new URLSearchParams(search);
+
+  state.keyring = state?.keyring || (query.get('hd') as string);
 
   if (!state) {
     if (getUiType().isTab) {
@@ -48,6 +61,30 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
     }
     return null;
   }
+
+  const [isMounted, setIsMounted] = React.useState(false);
+  const dispatch = useRabbyDispatch();
+  const initMnemonics = async () => {
+    if (query.get('hd')) {
+      const address = await wallet.getLastGetAddress();
+      const mnemonics = await wallet.getMnemonicByAddress(address);
+      const {
+        keyringId,
+        isExistedKR,
+      } = await wallet.generateKeyringWithMnemonic(mnemonics);
+
+      dispatch.importMnemonics.switchKeyring({
+        finalMnemonics: mnemonics,
+        isExistedKeyring: isExistedKR,
+        stashKeyringId: keyringId,
+      });
+    }
+
+    setIsMounted(true);
+  };
+  React.useEffect(() => {
+    initMnemonics();
+  }, [query]);
 
   const {
     keyring,
@@ -76,9 +113,12 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
   const isLedger = keyring === HARDWARE_KEYRING_TYPES.Ledger.type;
   const isOneKey = keyring === HARDWARE_KEYRING_TYPES.Onekey.type;
   const isTrezor = keyring === HARDWARE_KEYRING_TYPES.Trezor.type;
+  const isMnemonic = keyring === KEYRING_CLASS.MNEMONIC;
   const [hasError, setHasError] = useState(false);
 
-  if (isLedger || isOneKey || isTrezor) {
+  if (!isMounted) return null;
+
+  if (isLedger || isOneKey || isTrezor || isMnemonic) {
     return (
       <HDManager keyringId={keyringId.current ?? null} keyring={keyring} />
     );

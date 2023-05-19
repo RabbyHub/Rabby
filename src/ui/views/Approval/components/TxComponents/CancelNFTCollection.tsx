@@ -10,8 +10,9 @@ import IconUnknownProtocol from 'ui/assets/unknown-protocol.svg';
 import BalanceChange from './BalanceChange';
 import SpeedUpCorner from './SpeedUpCorner';
 import ViewRawModal from './ViewRawModal';
-import IconExternal from 'ui/assets/open-external-gray.svg';
+import IconExternal from 'ui/assets/icon-share.svg';
 import { openInTab } from '@/ui/utils';
+import { Copy } from '@/ui/component';
 
 interface CancelNFTCollectionProps {
   data: ExplainTxResponse;
@@ -86,6 +87,7 @@ const CancelNFTCollection = ({
                 <div className="label">Contract</div>
                 <div className="value flex items-center gap-6">
                   {ellipsis(detail.nft_contract?.id)}
+                  <Copy variant="address" data={detail.nft_contract?.id}></Copy>
                   <img
                     src={IconExternal}
                     className="icon icon-copy w-[14px] h-[14px] cursor-pointer"
@@ -99,7 +101,7 @@ const CancelNFTCollection = ({
           </div>
           <div className="rabby-list px-[13px]">
             <div className="item">
-              <div className="label">Spender</div>
+              <div className="label min-w-[80px]">Spender</div>
               <div className="value flex items-center gap-8">
                 <img
                   className="logo"
@@ -111,6 +113,7 @@ const CancelNFTCollection = ({
                 </div>
                 <div className="address flex gap-6">
                   {ellipsis(detail.spender)}
+                  <Copy variant="address" data={detail.spender}></Copy>
                   <img
                     src={IconExternal}
                     className="icon icon-copy w-[14px] h-[14px] cursor-pointer"

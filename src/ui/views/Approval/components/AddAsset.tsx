@@ -39,7 +39,7 @@ const AddAsset = ({ params }: { params: AddAssetProps }) => {
           </div>
         </>
       </div>
-      <footer className="connect-footer">
+      <footer className="connect-footer p-[20px]">
         <div className={clsx(['action-buttons flex mt-4', 'justify-center'])}>
           <Button
             type="primary"

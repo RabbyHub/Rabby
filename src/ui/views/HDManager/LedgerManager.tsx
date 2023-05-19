@@ -1,7 +1,7 @@
 import React from 'react';
 import { MainContainer } from './MainContainer';
 import { useWallet } from '@/ui/utils';
-import { HARDWARE_KEYRING_TYPES } from '@/constant';
+import { HARDWARE_KEYRING_TYPES, KEYRING_CLASS } from '@/constant';
 import { Modal } from 'antd';
 import { ReactComponent as LedgerLogoSVG } from 'ui/assets/walletlogo/ledger.svg';
 import { ReactComponent as SettingSVG } from 'ui/assets/setting-outline.svg';
@@ -136,6 +136,7 @@ export const LedgerManager: React.FC = () => {
         className="AdvancedModal"
         title="Custom Address HD path"
         visible={visibleAdvanced}
+        centered
         width={840}
         footer={[]}
         onCancel={() => setVisibleAdvanced(false)}
