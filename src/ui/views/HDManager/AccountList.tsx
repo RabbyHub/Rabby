@@ -103,7 +103,7 @@ export const AccountList: React.FC<Props> = ({
             ]);
             await dispatch.importMnemonics.confirmAllImportingAccountsAsync();
           } else {
-            wallet.unlockHardwareAccount(
+            await wallet.unlockHardwareAccount(
               keyring,
               [account.index - 1],
               keyringId

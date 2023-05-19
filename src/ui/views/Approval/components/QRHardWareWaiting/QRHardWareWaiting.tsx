@@ -115,6 +115,7 @@ const QRHardWareWaiting = ({ params }) => {
         false,
         signFinishedData.approvalId
       );
+      handleDone();
     }
   }, [signFinishedData, isClickDone]);
 

@@ -95,9 +95,7 @@ export const WalletConnectAccount: React.FC<Props> = ({ account, chain }) => {
 
       default:
         return (
-          <div className="text-gray-subTitle">
-            Connected to {displayBrandName}
-          </div>
+          <div className="text-gray-subTitle">Connected and ready to sign</div>
         );
     }
   };

@@ -2405,6 +2405,9 @@ export class WalletController extends BaseController {
       );
     }
 
+    const importedAccounts = await (keyring as any).getAccounts();
+    const addressIndexStart = importedAccounts.length ?? 0;
+
     const accounts = ids
       .sort((a, b) => a - b)
       .map((id, index) => {
@@ -2412,7 +2415,7 @@ export class WalletController extends BaseController {
         const alias = generateAliasName({
           keyringType: KEYRING_TYPE.HdKeyring,
           keyringCount: keyring.index,
-          addressCount: index,
+          addressCount: addressIndexStart + index,
         });
         contactBookService.updateCacheAlias({
           address: address,
