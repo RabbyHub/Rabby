@@ -4,6 +4,8 @@ import {
   TokenItem,
   ParseTxResponse,
   SwapAction,
+  SendAction,
+  ContractDesc,
 } from '@debank/rabby-api/dist/types';
 import {
   ContextActionData,
@@ -33,6 +35,10 @@ export interface ParsedActionData {
     receiver: string;
     usdValueDiff: string;
     usdValuePercentage: number;
+  };
+  send?: {
+    to: string;
+    token: TokenItem;
   };
 }
 
@@ -93,6 +99,11 @@ export const parseAction = (
       },
     };
   }
+  if (data.type === 'send_token') {
+    return {
+      send: data.data as SendAction,
+    };
+  }
   return {};
 };
 
@@ -109,7 +120,30 @@ export interface SwapRequireData {
   sender: string;
 }
 
-export type ActionRequireData = SwapRequireData | null;
+export interface SendRequireData {
+  eoa: {
+    id: string;
+    bornAt: number;
+  } | null;
+  cex: {
+    id: string;
+    name: string;
+    logo: string;
+    bornAt: number;
+    isDeposit: boolean;
+    supportToken?: boolean;
+  } | null;
+  contract: Record<string, ContractDesc> | null;
+  usd_value: number;
+  protocol: {
+    id: string;
+    logo_url: string;
+    name: string;
+  } | null;
+  hasTransfer: boolean;
+}
+
+export type ActionRequireData = SwapRequireData | SendRequireData | null;
 
 export const fetchActionRequiredData = async ({
   actionData,
@@ -167,6 +201,66 @@ export const fetchActionRequiredData = async ({
       result.hasInteraction = hasInteraction.has_interaction;
     } catch (error) {
       // NOTHING
+    }
+    return result;
+  }
+  if (actionData.send) {
+    const result: SendRequireData = {
+      eoa: null,
+      cex: null,
+      contract: null,
+      usd_value: 0,
+      protocol: null,
+      hasTransfer: false,
+    };
+    try {
+      const { has_transfer } = await wallet.openapi.hasTransfer(
+        chainId,
+        address,
+        actionData.send.to
+      );
+      result.hasTransfer = has_transfer;
+    } catch (e) {
+      //
+    }
+    try {
+      const { desc } = await wallet.openapi.addrDesc(actionData.send.to);
+      if (desc.cex) {
+        result.cex = {
+          id: desc.cex.id,
+          logo: desc.cex.logo_url,
+          name: desc.cex.name,
+          bornAt: desc.born_at,
+          isDeposit: desc.cex.is_deposit,
+        };
+      }
+      if (desc.contract) {
+        result.contract = desc.contract;
+      }
+      if (!desc.cex && !desc.contract) {
+        result.eoa = {
+          id: actionData.send.to,
+          bornAt: desc.born_at,
+        };
+      }
+      desc.cex;
+    } catch (e) {
+      //
+    }
+    if (result.cex) {
+      try {
+        const { cex_list } = await wallet.openapi.depositCexList(
+          actionData.send.token.id,
+          chainId
+        );
+        if (cex_list.some((cex) => cex.id === result.cex!.id)) {
+          result.cex.isDeposit = true;
+        } else {
+          result.cex.isDeposit = false;
+        }
+      } catch (e) {
+        //
+      }
     }
     return result;
   }

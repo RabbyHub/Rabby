@@ -1,7 +1,13 @@
 import React, { useMemo } from 'react';
 import Swap from './Swap';
+import Send from './Send';
 import styled from 'styled-components';
-import { ActionRequireData, ParsedActionData, SwapRequireData } from './utils';
+import {
+  ActionRequireData,
+  ParsedActionData,
+  SendRequireData,
+  SwapRequireData,
+} from './utils';
 import { Chain, ExplainTxResponse } from 'background/service/openapi';
 import { Result } from '@debank/rabby-security-engine';
 import BalanceChange from '../TxComponents/BalanceChange';
@@ -26,22 +32,45 @@ const SignTitle = styled.div`
 `;
 
 const ActionWrapper = styled.div`
-  padding: 14px;
   background-color: #fff;
-  .header {
+  border-radius: 8px;
+  .action-header {
     display: flex;
     justify-content: space-between;
     margin-bottom: 16px;
+    background: #8697ff;
+    padding: 14px;
+    align-items: center;
+    color: #fff;
+    border-top-left-radius: 8px;
+    border-top-right-radius: 8px;
     .left {
       font-weight: 500;
       font-size: 16px;
       line-height: 19px;
-      color: #222222;
     }
     .right {
       font-size: 14px;
       line-height: 16px;
-      color: #999999;
+    }
+  }
+  .container {
+    padding: 14px;
+    .header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 16px;
+      .left {
+        font-weight: 500;
+        font-size: 16px;
+        line-height: 19px;
+        color: #222222;
+      }
+      .right {
+        font-size: 14px;
+        line-height: 16px;
+        color: #999999;
+      }
     }
   }
 `;
@@ -86,24 +115,34 @@ const Actions = ({
         </div>
       </SignTitle>
       <ActionWrapper>
-        <div className="header">
+        <div className="action-header">
           <div className="left">{actionName}</div>
           <div className="right">action type</div>
         </div>
-        {data.swap && (
-          <Swap
-            data={data.swap}
-            requireData={requireData as SwapRequireData}
-            chain={chain}
-            engineResults={engineResults}
+        <div className="container">
+          {data.swap && (
+            <Swap
+              data={data.swap}
+              requireData={requireData as SwapRequireData}
+              chain={chain}
+              engineResults={engineResults}
+            />
+          )}
+          {data.send && (
+            <Send
+              data={data.send}
+              requireData={requireData as SendRequireData}
+              chain={chain}
+              engineResults={engineResults}
+            />
+          )}
+          <BalanceChange
+            version={txDetail.pre_exec_version}
+            data={txDetail.balance_change}
+            chainEnum={chain.enum}
+            isSupport={txDetail.support_balance_change}
           />
-        )}
-        <BalanceChange
-          version={txDetail.pre_exec_version}
-          data={txDetail.balance_change}
-          chainEnum={chain.enum}
-          isSupport={txDetail.support_balance_change}
-        />
+        </div>
       </ActionWrapper>
     </>
   );

@@ -1,26 +1,23 @@
-import React, { useMemo, useState, useRef, useEffect } from 'react';
-import { Button, Form, Input, message } from 'antd';
-import { useForm } from 'antd/lib/form/Form';
-import { Popup } from 'ui/component';
+import React, { useMemo, useEffect } from 'react';
 import { BigNumber } from 'bignumber.js';
 import styled from 'styled-components';
 import { Table, Col, Row } from './components/Table';
 import LogoWithText from './components/LogoWithText';
 import userDataDrawer from './components/UserListDrawer';
-import { ParsedActionData, SwapRequireData, useUserData } from './utils';
+import AddressMemo from './components/AddressMemo';
+import { ParsedActionData, SwapRequireData } from './utils';
 import { formatTokenAmount, formatUsdValue } from 'ui/utils/number';
 import { ellipsis } from 'ui/utils/address';
 import { ellipsisTokenSymbol } from 'ui/utils/token';
 import { getTimeSpan } from 'ui/utils/time';
 import { Chain } from 'background/service/openapi';
-import IconRank from 'ui/assets/sign/contract/rank.svg';
 import { Result } from '@debank/rabby-security-engine';
 import SecurityLevelTagNoText from '../SecurityEngine/SecurityLevelTagNoText';
-import { isSameAddress, useAlias, useWallet } from '@/ui/utils';
+import { isSameAddress, useWallet } from '@/ui/utils';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import IconEdit from 'ui/assets/editpen.svg';
-import RuleDrawer from '../SecurityEngine/RuleDrawer';
-import { Level, RuleConfig } from '@debank/rabby-security-engine/dist/rules';
+import IconFakeToken from 'ui/assets/sign/tx/token-fake.svg';
+import IconScamToken from 'ui/assets/sign/tx/token-scam.svg';
 
 const Wrapper = styled.div`
   .header {
@@ -30,6 +27,14 @@ const Wrapper = styled.div`
     width: 13px;
     height: 13px;
     cursor: pointer;
+  }
+  .icon-scam-token {
+    margin-left: 4px;
+    width: 13px;
+  }
+  .icon-fake-token {
+    margin-left: 4px;
+    width: 13px;
   }
 `;
 
@@ -61,10 +66,6 @@ const Swap = ({
   }));
   const dispatch = useRabbyDispatch();
   const wallet = useWallet();
-  const [receiverAlias, updateReceiverAlias] = useAlias(receiver);
-  const [contractAlias, updateContractAlias] = useAlias(requireData.id);
-  const inputRef = useRef<Input>(null);
-  const [form] = useForm();
 
   const engineResultMap = useMemo(() => {
     const map: Record<string, Result> = {};
@@ -100,6 +101,32 @@ const Swap = ({
     return !isSameAddress(receiver, requireData.sender);
   }, [requireData, receiver]);
 
+  const handleEditReceiverMark = () => {
+    userDataDrawer({
+      address: requireData.id,
+      onWhitelist: receiverInWhitelist,
+      onBlacklist: receiverInBlacklist,
+      async onChange({ onWhitelist, onBlacklist }) {
+        const address = requireData.id;
+        if (onWhitelist && !receiverInWhitelist) {
+          await wallet.addAddressWhitelist(address);
+        }
+        if (onBlacklist && !receiverInBlacklist) {
+          await wallet.addAddressBlacklist(address);
+        }
+        if (
+          !onBlacklist &&
+          !onWhitelist &&
+          (receiverInBlacklist || receiverInWhitelist)
+        ) {
+          await wallet.removeAddressBlacklist(address);
+          await wallet.removeAddressWhitelist(address);
+        }
+        dispatch.securityEngine.init();
+      },
+    });
+  };
+
   const handleEditContractMark = () => {
     userDataDrawer({
       address: requireData.id,
@@ -126,70 +153,6 @@ const Swap = ({
         }
         dispatch.securityEngine.init();
       },
-    });
-  };
-
-  const updateAddressMemo = (
-    alias: string | undefined,
-    update: (memo: string) => void
-  ) => {
-    form.setFieldsValue({
-      memo: alias,
-    });
-    setTimeout(() => {
-      inputRef.current?.focus();
-    }, 50);
-    const { destroy } = Popup.info({
-      title: 'Edit address note',
-      height: 215,
-      content: (
-        <div className="pt-[4px]">
-          <Form
-            form={form}
-            onFinish={async () => {
-              form
-                .validateFields()
-                .then((values) => {
-                  return update(values.memo);
-                })
-                .then(() => {
-                  destroy();
-                });
-            }}
-            initialValues={{
-              memo: alias,
-            }}
-          >
-            <Form.Item
-              name="memo"
-              className="h-[80px] mb-0"
-              rules={[{ required: true, message: 'Please input address note' }]}
-            >
-              <Input
-                ref={inputRef}
-                className="popup-input h-[48px]"
-                size="large"
-                placeholder="Please input address note"
-                autoFocus
-                allowClear
-                spellCheck={false}
-                autoComplete="off"
-                maxLength={50}
-              ></Input>
-            </Form.Item>
-            <div className="text-center">
-              <Button
-                type="primary"
-                size="large"
-                className="w-[200px]"
-                htmlType="submit"
-              >
-                Confirm
-              </Button>
-            </div>
-          </Form>
-        </div>
-      ),
     });
   };
 
@@ -250,12 +213,40 @@ const Swap = ({
         <Col>
           <Row isTitle>Receive Token</Row>
           <Row>
-            <LogoWithText
-              logo={receiveToken.logo_url}
-              text={`${formatTokenAmount(
-                receiveToken.amount
-              )} ${ellipsisTokenSymbol(receiveToken.symbol)}`}
-            />
+            <div className="flex">
+              <LogoWithText
+                logo={receiveToken.logo_url}
+                text={`${formatTokenAmount(
+                  receiveToken.amount
+                )} ${ellipsisTokenSymbol(receiveToken.symbol)}`}
+              />
+              {!receiveToken.is_verified && (
+                <img className="icon icon-fake-token" src={IconFakeToken} />
+              )}
+              {requireData.receiveTokenIsScam && (
+                <img className="icon icon-scam-token" src={IconScamToken} />
+              )}
+            </div>
+            {engineResultMap['1008'] && (
+              <SecurityLevelTagNoText
+                level={
+                  processedRules.includes('1008')
+                    ? 'proceed'
+                    : engineResultMap['1008'].level
+                }
+                onClick={() => handleClickRule('1008')}
+              />
+            )}
+            {engineResultMap['1009'] && (
+              <SecurityLevelTagNoText
+                level={
+                  processedRules.includes('1009')
+                    ? 'proceed'
+                    : engineResultMap['1009'].level
+                }
+                onClick={() => handleClickRule('1009')}
+              />
+            )}
             <ul className="desc-list">
               <li>
                 {formatUsdValue(
@@ -336,14 +327,7 @@ const Swap = ({
                   )}
                 </li>
                 <li className="flex">
-                  <span className="mr-2">{receiverAlias || ''}</span>
-                  <img
-                    src={IconEdit}
-                    className="icon-edit-alias icon"
-                    onClick={() =>
-                      updateAddressMemo(receiverAlias, updateReceiverAlias)
-                    }
-                  />
+                  <AddressMemo address={receiver} />
                 </li>
                 <li className="flex">
                   <span className="mr-2">
@@ -354,9 +338,7 @@ const Swap = ({
                   <img
                     src={IconEdit}
                     className="icon-edit-alias icon"
-                    onClick={() =>
-                      updateAddressMemo(contractAlias, updateContractAlias)
-                    }
+                    onClick={() => handleEditReceiverMark()}
                   />
                 </li>
               </ul>
@@ -401,16 +383,7 @@ const Swap = ({
         <Col>
           <Row isTitle>Address note</Row>
           <Row>
-            <div className="flex">
-              <span className="mr-6">{contractAlias || '-'}</span>
-              <img
-                src={IconEdit}
-                className="icon-edit-alias icon"
-                onClick={() =>
-                  updateAddressMemo(contractAlias, updateContractAlias)
-                }
-              />
-            </div>
+            <AddressMemo address={requireData.id} />
           </Row>
         </Col>
         <Col>

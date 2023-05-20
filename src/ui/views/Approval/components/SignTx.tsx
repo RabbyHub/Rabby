@@ -1022,6 +1022,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       chainId: chain.serverId,
       tx: {
         ...tx,
+        gas: '0x0',
         nonce: (updateNonce ? recommendNonce : tx.nonce) || '0x1',
         value: tx.value || '0x0',
       },

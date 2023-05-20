@@ -251,6 +251,56 @@ class SecurityEngineService {
     };
   };
 
+  addAddressWhitelist = (address: string) => {
+    if (this.store.userData.addressWhitelist.includes(address)) return;
+
+    this.store.userData = {
+      ...this.store.userData,
+      addressWhitelist: [
+        ...this.store.userData.addressWhitelist,
+        address.toLowerCase(),
+      ],
+    };
+  };
+
+  removeAddressWhitelist = (address: string) => {
+    if (!this.store.userData.addressWhitelist.includes(address.toLowerCase())) {
+      return;
+    }
+
+    this.store.userData = {
+      ...this.store.userData,
+      addressWhitelist: this.store.userData.addressWhitelist.filter((item) => {
+        return item.toLowerCase() !== address.toLowerCase();
+      }),
+    };
+  };
+
+  addAddressBlacklist = (address: string) => {
+    if (this.store.userData.addressBlacklist.includes(address)) return;
+
+    this.store.userData = {
+      ...this.store.userData,
+      addressBlacklist: [
+        ...this.store.userData.addressBlacklist,
+        address.toLowerCase(),
+      ],
+    };
+  };
+
+  removeAddressBlacklist = (address: string) => {
+    if (!this.store.userData.addressBlacklist.includes(address.toLowerCase())) {
+      return;
+    }
+
+    this.store.userData = {
+      ...this.store.userData,
+      addressBlacklist: this.store.userData.addressBlacklist.filter((item) => {
+        return item.toLowerCase() !== address.toLowerCase();
+      }),
+    };
+  };
+
   addOriginBlacklist = (origin: string) => {
     if (this.store.userData.originBlacklist.includes(origin)) return;
 

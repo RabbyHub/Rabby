@@ -2552,6 +2552,24 @@ export class WalletController extends BaseController {
     securityEngineService.removeContractBlacklist(contract);
   };
 
+  addAddressWhitelist = (address: string) => {
+    securityEngineService.removeAddressBlacklist(address);
+    securityEngineService.addAddressWhitelist(address);
+  };
+
+  addAddressBlacklist = (address: string) => {
+    securityEngineService.removeAddressWhitelist(address);
+    securityEngineService.addAddressBlacklist(address);
+  };
+
+  removeAddressWhitelist = (address: string) => {
+    securityEngineService.removeAddressWhitelist(address);
+  };
+
+  removeAddressBlacklist = (address: string) => {
+    securityEngineService.removeAddressBlacklist(address);
+  };
+
   addOriginWhitelist = (origin: string) => {
     securityEngineService.removeOriginBlacklist(origin);
     securityEngineService.addOriginWhitelist(origin);
