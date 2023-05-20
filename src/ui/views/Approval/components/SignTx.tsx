@@ -1586,6 +1586,27 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     setEngineResults(result);
   };
 
+  const hasUnProcessSecurityResult = useMemo(() => {
+    const { processedRules } = currentTx;
+    const hasForbidden = engineResults.find(
+      (result) => result.level === Level.FORBIDDEN
+    );
+    const hasSafe = !!engineResults.find(
+      (result) => result.level === Level.SAFE
+    );
+    const needProcess = engineResults.filter(
+      (result) =>
+        (result.level === Level.DANGER || result.level === Level.WARNING) &&
+        !processedRules.includes(result.id)
+    );
+    if (hasForbidden) return true;
+    if (needProcess.length > 0) {
+      return !hasSafe;
+    } else {
+      return false;
+    }
+  }, [engineResults, currentTx]);
+
   useEffect(() => {
     init();
   }, []);
@@ -1722,6 +1743,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
         <>
           <FooterBar
             origin={origin}
+            hasUnProcessSecurityResult={hasUnProcessSecurityResult}
             securityLevel={securityLevel}
             gnosisAccount={isGnosis ? account : undefined}
             chain={chain}
@@ -1742,7 +1764,8 @@ const SignTx = ({ params, origin }: SignTxProps) => {
               (isGnosisAccount ? !safeInfo : false) ||
               (isLedger && !useLedgerLive && !hasConnectedLedgerHID) ||
               securityCheckStatus === 'loading' ||
-              !canProcess
+              !canProcess ||
+              hasUnProcessSecurityResult
             }
           />
         </>

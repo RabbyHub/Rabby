@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import styled from 'styled-components';
 import BigNumber from 'bignumber.js';
 import { Chain } from 'background/service/openapi';
@@ -8,12 +8,13 @@ import { formatUsdValue } from 'ui/utils/number';
 import { ellipsis } from 'ui/utils/address';
 import { ellipsisTokenSymbol } from 'ui/utils/token';
 import { getTimeSpan } from 'ui/utils/time';
-import { isSameAddress, useAlias, useWallet } from '@/ui/utils';
+import { useWallet } from '@/ui/utils';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { Table, Col, Row } from './components/Table';
 import AddressMemo from './components/AddressMemo';
 import userDataDrawer from './components/UserListDrawer';
 import LogoWithText from './components/LogoWithText';
+import SecurityLevelTagNoText from '../SecurityEngine/SecurityLevelTagNoText';
 import IconEdit from 'ui/assets/editpen.svg';
 
 const Wrapper = styled.div`
@@ -112,6 +113,26 @@ const Send = ({
     return '1 Minute ago';
   }, [requireData]);
 
+  const engineResultMap = useMemo(() => {
+    const map: Record<string, Result> = {};
+    engineResults.forEach((item) => {
+      map[item.id] = item;
+    });
+    return map;
+  }, [engineResults]);
+
+  const handleClickRule = (id: string) => {
+    const rule = rules.find((item) => item.id === id);
+    if (!rule) return;
+    const result = engineResultMap[id];
+    dispatch.securityEngine.openRuleDrawer({
+      ruleConfig: rule,
+      value: result?.value,
+      level: result?.level,
+      ignored: processedRules.includes(id),
+    });
+  };
+
   const handleEditReceiverMark = () => {
     userDataDrawer({
       address: actionData.to,
@@ -136,6 +157,12 @@ const Send = ({
       },
     });
   };
+
+  console.log(requireData.cex);
+
+  useEffect(() => {
+    dispatch.securityEngine.init();
+  }, []);
 
   return (
     <Wrapper>
@@ -173,18 +200,42 @@ const Send = ({
                 logo={requireData.cex.logo}
                 text={requireData.cex.name}
               />
-              {!requireData.cex.isDeposit ||
-                (!requireData.cex.supportToken && (
-                  <ul className="desc-list">
-                    {!requireData.cex.isDeposit && <li>Non top up address</li>}
-                    {!requireData.cex.supportToken && (
-                      <li>
-                        {ellipsisTokenSymbol(actionData.token.symbol)} not
-                        supported
-                      </li>
-                    )}
-                  </ul>
-                ))}
+              {(!requireData.cex.isDeposit ||
+                !requireData.cex.supportToken) && (
+                <ul className="desc-list">
+                  {!requireData.cex.isDeposit && (
+                    <li>
+                      Non top up address
+                      {engineResultMap['1021'] && (
+                        <SecurityLevelTagNoText
+                          level={
+                            processedRules.includes('1021')
+                              ? 'proceed'
+                              : engineResultMap['1021'].level
+                          }
+                          onClick={() => handleClickRule('1021')}
+                        />
+                      )}
+                    </li>
+                  )}
+                  {!requireData.cex.supportToken && (
+                    <li>
+                      {ellipsisTokenSymbol(actionData.token.symbol)} not
+                      supported
+                      {engineResultMap['1020'] && (
+                        <SecurityLevelTagNoText
+                          level={
+                            processedRules.includes('1020')
+                              ? 'proceed'
+                              : engineResultMap['1020'].level
+                          }
+                          onClick={() => handleClickRule('1020')}
+                        />
+                      )}
+                    </li>
+                  )}
+                </ul>
+              )}
             </Row>
           </Col>
         )}
@@ -196,6 +247,16 @@ const Send = ({
               <ul className="desc-list">
                 {contractOnCurrentChain.multisig && <li>MultiSig: Safe</li>}
               </ul>
+            )}
+            {engineResultMap['1019'] && (
+              <SecurityLevelTagNoText
+                level={
+                  processedRules.includes('1019')
+                    ? 'proceed'
+                    : engineResultMap['1019'].level
+                }
+                onClick={() => handleClickRule('1019')}
+              />
             )}
           </Row>
         </Col>
@@ -211,7 +272,19 @@ const Send = ({
         </Col>
         <Col>
           <Row isTitle>Transacted before</Row>
-          <Row>{requireData.hasTransfer ? 'Yes' : 'No'}</Row>
+          <Row>
+            {requireData.hasTransfer ? 'Yes' : 'No'}
+            {engineResultMap['1018'] && (
+              <SecurityLevelTagNoText
+                level={
+                  processedRules.includes('1018')
+                    ? 'proceed'
+                    : engineResultMap['1018'].level
+                }
+                onClick={() => handleClickRule('1018')}
+              />
+            )}
+          </Row>
         </Col>
         {transferWhiteEnable && (
           <Col>
@@ -244,6 +317,26 @@ const Send = ({
                 onClick={handleEditReceiverMark}
               />
             </div>
+            {engineResultMap['1033'] && (
+              <SecurityLevelTagNoText
+                level={
+                  processedRules.includes('1033')
+                    ? 'proceed'
+                    : engineResultMap['1033'].level
+                }
+                onClick={() => handleClickRule('1033')}
+              />
+            )}
+            {engineResultMap['1032'] && (
+              <SecurityLevelTagNoText
+                level={
+                  processedRules.includes('1032')
+                    ? 'proceed'
+                    : engineResultMap['1032'].level
+                }
+                onClick={() => handleClickRule('1032')}
+              />
+            )}
           </Row>
         </Col>
       </Table>

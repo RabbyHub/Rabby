@@ -243,7 +243,6 @@ export const fetchActionRequiredData = async ({
           bornAt: desc.born_at,
         };
       }
-      desc.cex;
     } catch (e) {
       //
     }
@@ -254,9 +253,9 @@ export const fetchActionRequiredData = async ({
           chainId
         );
         if (cex_list.some((cex) => cex.id === result.cex!.id)) {
-          result.cex.isDeposit = true;
+          result.cex.supportToken = true;
         } else {
-          result.cex.isDeposit = false;
+          result.cex.supportToken = false;
         }
       } catch (e) {
         //
@@ -295,6 +294,29 @@ export const formatSecurityEngineCtx = ({
         contractAddress: id,
         slippageTolerance,
         usdValuePercentage,
+      },
+    };
+  }
+  if (actionData.send) {
+    const data = requireData as SendRequireData;
+    const { to } = actionData.send;
+    return {
+      send: {
+        to,
+        contract: data.contract
+          ? {
+              chains: Object.keys(data.contract),
+            }
+          : null,
+        cex: data.cex
+          ? {
+              id: data.cex.id,
+              isDeposit: data.cex.isDeposit,
+              supportToken: data.cex.supportToken,
+            }
+          : null,
+        hasTransfer: data.hasTransfer,
+        chainId,
       },
     };
   }

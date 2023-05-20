@@ -14,6 +14,7 @@ interface Props extends Omit<ActionGroupProps, 'account'> {
   gnosisAccount?: Account;
   securityLevel?: Level;
   origin?: string;
+  hasUnProcessSecurityResult?: boolean;
 }
 
 const Wrapper = styled.section`
@@ -28,6 +29,9 @@ const Wrapper = styled.section`
     padding: 0 20px 15px 0;
     position: relative;
     margin-bottom: 18px;
+    white-space: nowrap;
+    text-overflow: ellipsis;
+    overflow: hidden;
     .origin {
       color: #333;
     }
@@ -80,6 +84,7 @@ export const FooterBar: React.FC<Props> = ({
   origin,
   gnosisAccount,
   securityLevel,
+  hasUnProcessSecurityResult,
   ...props
 }) => {
   const [account, setAccount] = React.useState<Account>();
@@ -108,7 +113,7 @@ export const FooterBar: React.FC<Props> = ({
       )}
       <AccountInfo chain={props.chain} account={account} />
       <ActionGroup account={account} {...props} />
-      {securityLevel && (
+      {securityLevel && hasUnProcessSecurityResult && (
         <div
           className="security-level-tip"
           style={{
