@@ -68,6 +68,9 @@ export const formatNumber = (
   };
   // hide the after-point part if number is more than 1000000
   if (n.isGreaterThan(1000000)) {
+    if (n.gte(1e9)) {
+      return `${n.div(1e9).toFormat(decimal, format)}B`;
+    }
     return n.decimalPlaces(0).toFormat(format);
   }
   return n.toFormat(decimal, format);
@@ -87,4 +90,13 @@ export const formatUsdValue = (value: string | number) => {
     return `$${formatNumber(value)}`;
   }
   return '<$0.01';
+};
+
+export const formatAmount = (amount: string | number, decimals = 4) => {
+  if (amount > 1e9) {
+    return `${new BigNumber(amount).div(1e9).toFormat(4)}B`;
+  }
+  if (amount > 10000) return formatNumber(amount);
+  if (amount > 1) return formatNumber(amount, 4);
+  return formatNumber(amount, decimals);
 };

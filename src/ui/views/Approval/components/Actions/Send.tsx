@@ -158,8 +158,6 @@ const Send = ({
     });
   };
 
-  console.log(requireData.cex);
-
   useEffect(() => {
     dispatch.securityEngine.init();
   }, []);

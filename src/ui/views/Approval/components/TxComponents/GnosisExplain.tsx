@@ -34,7 +34,7 @@ const GnosisExplain = ({ data, chainEnum, raw, tx }: GnosisExplainProps) => {
             noNameClass="no-name"
           />
         </div>
-        <TxTypeComponent
+        {/* <TxTypeComponent
           txDetail={data}
           chain={chain}
           isReady
@@ -42,7 +42,7 @@ const GnosisExplain = ({ data, chainEnum, raw, tx }: GnosisExplainProps) => {
           isSpeedUp={false}
           tx={tx}
           onChange={handleChange}
-        />
+        /> */}
       </div>
     </div>
   );

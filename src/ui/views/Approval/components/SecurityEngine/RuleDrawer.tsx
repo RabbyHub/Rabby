@@ -314,6 +314,8 @@ const RuleDrawer = ({
         return 'False';
       case 'enum':
         return ruleConfig.valueDefine.display[value as string];
+      case 'percent':
+        return `${Math.floor(value as number)}%`;
       case 'int':
       case 'float':
       default:
@@ -335,6 +337,7 @@ const RuleDrawer = ({
         if (value === true) return 'True';
         return 'False';
       case 'float':
+      case 'percent':
       case 'int': {
         const { max: valueMax, min: valueMin } = ruleConfig.valueDefine;
         const {
@@ -349,10 +352,14 @@ const RuleDrawer = ({
             if (min === valueMax) {
               arr.push(min.toString());
             } else {
-              arr.push(`≥${min}`);
+              arr.push(
+                `≥${min}${ruleConfig.valueDefine.type === 'percent' ? '%' : ''}`
+              );
             }
           } else {
-            arr.push(`>${min}`);
+            arr.push(
+              `>${min}${ruleConfig.valueDefine.type === 'percent' ? '%' : ''}`
+            );
           }
         }
         if (max !== null) {
@@ -360,10 +367,14 @@ const RuleDrawer = ({
             if (max === valueMin) {
               arr.push(max.toString());
             } else {
-              arr.push(`≤${max}`);
+              arr.push(
+                `≤${max}${ruleConfig.valueDefine.type === 'percent' ? '%' : ''}`
+              );
             }
           } else {
-            arr.push(`<${max}`);
+            arr.push(
+              `<${max}${ruleConfig.valueDefine.type === 'percent' ? '%' : ''}`
+            );
           }
         } else {
           arr.push('∞');

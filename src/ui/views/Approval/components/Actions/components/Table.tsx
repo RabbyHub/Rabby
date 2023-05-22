@@ -16,6 +16,7 @@ const ColWrapper = styled.div`
   display: flex;
   border-bottom: 1px solid #ededed;
   align-items: stretch;
+  width: 100%;
   &:nth-last-child(1) {
     border-bottom: none;
   }
@@ -34,6 +35,7 @@ const RowWrapper = styled.div`
   color: #333333;
   &:not(.title) {
     flex: 1;
+    width: 190px;
   }
   &.title {
     font-size: 12px;
@@ -41,6 +43,7 @@ const RowWrapper = styled.div`
     color: #666666;
     border-right: 1px solid #ededed;
     width: 125px;
+    flex-shrink: 0;
   }
   .desc-list {
     font-size: 12px;

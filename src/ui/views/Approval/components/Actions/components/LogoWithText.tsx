@@ -15,6 +15,10 @@ const Wrapper = styled.div`
     line-height: 15px;
     color: #333333;
     margin-right: 4px;
+    flex: 1;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
   }
 `;
 

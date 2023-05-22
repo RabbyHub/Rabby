@@ -28,7 +28,8 @@ function mergeRules(rules: RuleConfig[], userConfig: UserRuleConfig[]) {
     if (target) {
       return {
         ...rule,
-        ...target,
+        enable: target.enable,
+        customThreshold: target.customThreshold,
       };
     }
     return rule;

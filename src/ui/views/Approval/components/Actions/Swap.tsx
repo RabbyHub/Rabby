@@ -1,17 +1,18 @@
 import React, { useMemo, useEffect } from 'react';
 import { BigNumber } from 'bignumber.js';
 import styled from 'styled-components';
+import { Result } from '@debank/rabby-security-engine';
 import { Table, Col, Row } from './components/Table';
 import LogoWithText from './components/LogoWithText';
 import userDataDrawer from './components/UserListDrawer';
 import AddressMemo from './components/AddressMemo';
+import * as Values from './components/Values';
 import { ParsedActionData, SwapRequireData } from './utils';
-import { formatTokenAmount, formatUsdValue } from 'ui/utils/number';
+import { formatAmount, formatUsdValue } from 'ui/utils/number';
 import { ellipsis } from 'ui/utils/address';
 import { ellipsisTokenSymbol } from 'ui/utils/token';
 import { getTimeSpan } from 'ui/utils/time';
 import { Chain } from 'background/service/openapi';
-import { Result } from '@debank/rabby-security-engine';
 import SecurityLevelTagNoText from '../SecurityEngine/SecurityLevelTagNoText';
 import { isSameAddress, useWallet } from '@/ui/utils';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
@@ -196,9 +197,9 @@ const Swap = ({
           <Row>
             <LogoWithText
               logo={payToken.logo_url}
-              text={`${formatTokenAmount(
-                payToken.amount
-              )} ${ellipsisTokenSymbol(payToken.symbol)}`}
+              text={`${formatAmount(payToken.amount)} ${ellipsisTokenSymbol(
+                payToken.symbol
+              )}`}
             />
             <ul className="desc-list">
               <li>
@@ -216,7 +217,7 @@ const Swap = ({
             <div className="flex">
               <LogoWithText
                 logo={receiveToken.logo_url}
-                text={`${formatTokenAmount(
+                text={`${formatAmount(
                   receiveToken.amount
                 )} ${ellipsisTokenSymbol(receiveToken.symbol)}`}
               />
@@ -257,7 +258,7 @@ const Swap = ({
                 @{formatUsdValue(receiveToken.price)}
               </li>
               <li>
-                Value diff {(usdValuePercentage * 100).toFixed(2)}%(
+                Value diff <Values.Percentage value={usdValuePercentage} />(
                 {formatUsdValue(usdValueDiff)})
                 {engineResultMap['1012'] && (
                   <SecurityLevelTagNoText
@@ -276,9 +277,9 @@ const Swap = ({
         <Col>
           <Row isTitle>Minimum Received</Row>
           <Row>
-            <div>{`${formatTokenAmount(
-              minReceive.amount
-            )} ${ellipsisTokenSymbol(minReceive.symbol)}`}</div>
+            <div>{`${formatAmount(minReceive.amount)} ${ellipsisTokenSymbol(
+              minReceive.symbol
+            )}`}</div>
             <ul className="desc-list">
               <li>
                 {formatUsdValue(
@@ -294,7 +295,9 @@ const Swap = ({
         <Col>
           <Row isTitle>Slippage tolerance</Row>
           <Row>
-            <div>{(slippageTolerance * 100).toFixed(2)}%</div>
+            <div>
+              <Values.Percentage value={slippageTolerance} />
+            </div>
             {engineResultMap['1011'] && (
               <SecurityLevelTagNoText
                 level={

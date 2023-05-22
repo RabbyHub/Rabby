@@ -6,6 +6,8 @@ import {
   SwapAction,
   SendAction,
   ContractDesc,
+  ApproveAction,
+  UsedChain,
 } from '@debank/rabby-api/dist/types';
 import {
   ContextActionData,
@@ -13,6 +15,8 @@ import {
 } from '@debank/rabby-security-engine/dist/rules';
 import BigNumber from 'bignumber.js';
 import { useState, useCallback, useEffect } from 'react';
+import PQueue from 'p-queue';
+import { getTimeSpan } from 'ui/utils/time';
 
 export interface ReceiveTokenItem extends TokenItem {
   min_amount: number;
@@ -38,6 +42,10 @@ export interface ParsedActionData {
   };
   send?: {
     to: string;
+    token: TokenItem;
+  };
+  approveToken?: {
+    spender: string;
     token: TokenItem;
   };
 }
@@ -66,8 +74,8 @@ export const parseAction = (
       ? actualReceiveToken.amount
       : 0;
     const slippageTolerance = calcSlippageTolerance(
-      actualReceiveToken ? actualReceiveToken.amount : 0,
-      receiveToken.min_amount || 0
+      receiveToken.min_amount || 0,
+      actualReceiveToken ? actualReceiveToken.amount : 0
     );
     const receiveTokenUsdValue = new BigNumber(receiveTokenAmount).times(
       receiveToken.price
@@ -102,6 +110,15 @@ export const parseAction = (
   if (data.type === 'send_token') {
     return {
       send: data.data as SendAction,
+    };
+  }
+  if (data.type === 'approve_token') {
+    const { spender, token } = data.data as ApproveAction;
+    return {
+      approveToken: {
+        spender,
+        token,
+      },
     };
   }
   return {};
@@ -141,9 +158,38 @@ export interface SendRequireData {
     name: string;
   } | null;
   hasTransfer: boolean;
+  isTokenContract: boolean;
+  usedChains: UsedChain[];
 }
 
-export type ActionRequireData = SwapRequireData | SendRequireData | null;
+export interface ApproveTokenRequireData {
+  isEOA: boolean;
+  contract: Record<string, ContractDesc> | null;
+  riskExposure: number;
+  rank: number | null;
+  hasInteraction: boolean;
+  bornAt: number;
+  protocol: {
+    name: string;
+    logo_url: string;
+  } | null;
+  isDanger: boolean | null;
+  tokenBalance: string;
+}
+
+export type ActionRequireData =
+  | SwapRequireData
+  | ApproveTokenRequireData
+  | SendRequireData
+  | null;
+
+const waitQueueFinished = (q: PQueue) => {
+  return new Promise((resolve) => {
+    q.on('empty', () => {
+      if (q.pending <= 0) resolve(null);
+    });
+  });
+};
 
 export const fetchActionRequiredData = async ({
   actionData,
@@ -159,6 +205,7 @@ export const fetchActionRequiredData = async ({
   wallet: WalletControllerType;
 }): Promise<ActionRequireData> => {
   const { id, protocol } = contractCall.contract;
+  const queue = new PQueue();
   if (actionData.swap) {
     const result: SwapRequireData = {
       id,
@@ -169,39 +216,32 @@ export const fetchActionRequiredData = async ({
       receiveTokenIsScam: false,
       sender: address,
     };
-    try {
+    queue.add(async () => {
       const isScam = await wallet.openapi.isScamToken(
-        actionData.swap.receiveToken.id,
+        actionData.swap!.receiveToken.id,
         chainId
       );
       result.receiveTokenIsScam = isScam.is_scam;
-    } catch (e) {
-      // NOTHING
-    }
-    try {
+    });
+    queue.add(async () => {
       const credit = await wallet.openapi.getContractCredit(id, chainId);
       result.rank = credit.rank_at;
-    } catch (error) {
-      // NOTHING
-    }
-
-    try {
+    });
+    queue.add(async () => {
       const { desc } = await wallet.openapi.addrDesc(id);
-      result.bornAt = desc.born_at;
-    } catch (error) {
-      // NOTHING
-    }
-
-    try {
+      if (desc.contract && desc.contract[chainId]) {
+        result.bornAt = desc.contract[chainId].create_at;
+      }
+    });
+    queue.add(async () => {
       const hasInteraction = await wallet.openapi.hasInteraction(
         address,
         chainId,
         id
       );
       result.hasInteraction = hasInteraction.has_interaction;
-    } catch (error) {
-      // NOTHING
-    }
+    });
+    await waitQueueFinished(queue);
     return result;
   }
   if (actionData.send) {
@@ -212,20 +252,20 @@ export const fetchActionRequiredData = async ({
       usd_value: 0,
       protocol: null,
       hasTransfer: false,
+      usedChains: [],
+      isTokenContract: false,
     };
-    try {
+    queue.add(async () => {
       const { has_transfer } = await wallet.openapi.hasTransfer(
         chainId,
         address,
-        actionData.send.to
+        actionData.send!.to
       );
       result.hasTransfer = has_transfer;
-    } catch (e) {
-      //
-    }
-    try {
-      const { desc } = await wallet.openapi.addrDesc(actionData.send.to);
-      if (desc.cex) {
+    });
+    queue.add(async () => {
+      const { desc } = await wallet.openapi.addrDesc(actionData.send!.to);
+      if (desc.cex?.id) {
         result.cex = {
           id: desc.cex.id,
           logo: desc.cex.logo_url,
@@ -234,22 +274,19 @@ export const fetchActionRequiredData = async ({
           isDeposit: desc.cex.is_deposit,
         };
       }
-      if (desc.contract) {
+      if (desc.contract && Object.keys(desc.contract).length > 0) {
         result.contract = desc.contract;
       }
-      if (!desc.cex && !desc.contract) {
+      if (!result.cex && !result.contract) {
         result.eoa = {
-          id: actionData.send.to,
+          id: actionData.send!.to,
           bornAt: desc.born_at,
         };
       }
-    } catch (e) {
-      //
-    }
-    if (result.cex) {
-      try {
+      result.usd_value = desc.usd_value;
+      if (result.cex) {
         const { cex_list } = await wallet.openapi.depositCexList(
-          actionData.send.token.id,
+          actionData.send!.token.id,
           chainId
         );
         if (cex_list.some((cex) => cex.id === result.cex!.id)) {
@@ -257,10 +294,72 @@ export const fetchActionRequiredData = async ({
         } else {
           result.cex.supportToken = false;
         }
-      } catch (e) {
-        //
       }
-    }
+      if (result.contract) {
+        const { is_token } = await wallet.openapi.isTokenContract(
+          chainId,
+          actionData.send!.to
+        );
+        result.isTokenContract = is_token;
+      }
+    });
+    queue.add(async () => {
+      const usedChainList = await wallet.openapi.addrUsedChainList(
+        actionData.send!.to
+      );
+      result.usedChains = usedChainList;
+    });
+    await waitQueueFinished(queue);
+    return result;
+  }
+  if (actionData.approveToken) {
+    const result: ApproveTokenRequireData = {
+      isEOA: false,
+      contract: null,
+      riskExposure: 0,
+      rank: null,
+      hasInteraction: false,
+      bornAt: 0,
+      protocol: null,
+      isDanger: false,
+      tokenBalance: '0',
+    };
+    const { spender, token } = actionData.approveToken;
+    queue.add(async () => {
+      const credit = await wallet.openapi.getContractCredit(spender, chainId);
+      result.rank = credit.rank_at;
+    });
+    queue.add(async () => {
+      const { usd_value } = await wallet.openapi.tokenApproveExposure(
+        spender,
+        chainId
+      );
+      result.riskExposure = usd_value;
+    });
+    queue.add(async () => {
+      const t = await wallet.openapi.getToken(address, chainId, token.id);
+      result.tokenBalance = t.raw_amount_hex_str || '0';
+    });
+    queue.add(async () => {
+      const { desc } = await wallet.openapi.addrDesc(spender);
+      if (desc.contract && desc.contract[chainId]) {
+        result.bornAt = desc.contract[chainId].create_at;
+      }
+      if (!desc.contract?.[chainId]) {
+        result.isEOA = true;
+        result.bornAt = desc.born_at;
+      }
+      result.isDanger = desc.is_danger;
+    });
+    queue.add(async () => {
+      const hasInteraction = await wallet.openapi.hasInteraction(
+        address,
+        chainId,
+        spender
+      );
+      result.hasInteraction = hasInteraction.has_interaction;
+    });
+    await waitQueueFinished(queue);
     return result;
   }
   return null;
@@ -317,6 +416,23 @@ export const formatSecurityEngineCtx = ({
           : null,
         hasTransfer: data.hasTransfer,
         chainId,
+        usedChainList: data.usedChains.map((item) => item.id),
+        isTokenContract: data.isTokenContract,
+      },
+    };
+  }
+  if (actionData.approveToken) {
+    const data = requireData as ApproveTokenRequireData;
+    const { spender } = actionData.approveToken;
+    return {
+      tokenApprove: {
+        chainId,
+        spender,
+        isEOA: data.isEOA,
+        riskExposure: data.riskExposure,
+        deployDays: getTimeSpan(Math.floor(Date.now() / 1000) - data.bornAt).d,
+        hasInteracted: data.hasInteraction,
+        isDanger: !!data.isDanger,
       },
     };
   }

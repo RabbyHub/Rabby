@@ -1,9 +1,11 @@
 import React, { useMemo } from 'react';
 import Swap from './Swap';
 import Send from './Send';
+import TokenApprove from './TokenApprove';
 import styled from 'styled-components';
 import {
   ActionRequireData,
+  ApproveTokenRequireData,
   ParsedActionData,
   SendRequireData,
   SwapRequireData,
@@ -91,9 +93,16 @@ const Actions = ({
   raw: Record<string, string | number>;
 }) => {
   const actionName = useMemo(() => {
-    // TODO: 完善逻辑
-    return 'Swap Token';
-  }, []);
+    if (data.swap) {
+      return 'Swap Token';
+    }
+    if (data.send) {
+      return 'Send Token';
+    }
+    if (data.approveToken) {
+      return 'Token Approval';
+    }
+  }, [data]);
 
   const handleViewRawClick = () => {
     ViewRawModal.open({
@@ -132,6 +141,14 @@ const Actions = ({
             <Send
               data={data.send}
               requireData={requireData as SendRequireData}
+              chain={chain}
+              engineResults={engineResults}
+            />
+          )}
+          {data.approveToken && (
+            <TokenApprove
+              data={data.approveToken}
+              requireData={requireData as ApproveTokenRequireData}
               chain={chain}
               engineResults={engineResults}
             />
