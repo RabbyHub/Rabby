@@ -1,5 +1,5 @@
 import { message, Table } from 'antd';
-import React from 'react';
+import React, { useEffect } from 'react';
 import { ReactComponent as CopySVG } from 'ui/assets/icon-copy-gray.svg';
 import ClipboardJS from 'clipboard';
 import { AddToRabby } from './AddToRabby';
@@ -13,6 +13,8 @@ import clsx from 'clsx';
 import { fetchAccountsInfo, HDManagerStateContext } from './utils';
 import { AliasName } from './AliasName';
 import { ChainList } from './ChainList';
+import { KEYRING_CLASS } from '@/constant';
+import { useRabbyDispatch } from '@/ui/store';
 
 export interface Account {
   address: string;
@@ -37,6 +39,7 @@ export const AccountList: React.FC<Props> = ({
   const wallet = useWallet();
   const [list, setList] = React.useState<Account[]>([]);
   const infoRef = React.useRef<HTMLDivElement>(null);
+  const currentAccountsRef = React.useRef<Account[]>([]);
   const [infoColumnWidth, setInfoColumnWidth] = React.useState(0);
   const [infoColumnTop, setInfoColumnTop] = React.useState(0);
   const {
@@ -51,6 +54,11 @@ export const AccountList: React.FC<Props> = ({
     keyring,
   } = React.useContext(HDManagerStateContext);
   const [loadNum, setLoadNum] = React.useState(0);
+  const dispatch = useRabbyDispatch();
+
+  useEffect(() => {
+    currentAccountsRef.current = currentAccounts;
+  }, [currentAccounts]);
 
   const toggleHiddenInfo = React.useCallback(
     (e: React.MouseEvent, val: boolean) => {
@@ -93,9 +101,20 @@ export const AccountList: React.FC<Props> = ({
   const handleAddAccount = React.useCallback(
     async (checked: boolean, account: Account) => {
       if (checked) {
-        await createTask(() =>
-          wallet.unlockHardwareAccount(keyring, [account.index - 1], keyringId)
-        );
+        await createTask(async () => {
+          if (keyring === KEYRING_CLASS.MNEMONIC) {
+            await dispatch.importMnemonics.setSelectedAccounts([
+              account.address,
+            ]);
+            await dispatch.importMnemonics.confirmAllImportingAccountsAsync();
+          } else {
+            await wallet.unlockHardwareAccount(
+              keyring,
+              [account.index - 1],
+              keyringId
+            );
+          }
+        });
 
         await createTask(() =>
           wallet.requestKeyring(keyring, 'setCurrentUsedHDPathType', keyringId)
@@ -107,6 +126,17 @@ export const AccountList: React.FC<Props> = ({
           content: 'The address is added to Rabby',
         });
       } else {
+        if (
+          currentAccountsRef.current.length <= 1 &&
+          keyring === KEYRING_CLASS.MNEMONIC
+        ) {
+          message.error({
+            content:
+              'The last address cannot be deleted from the current page. Please go to Address Management to delete it',
+            duration: 5,
+          });
+          return;
+        }
         await createTask(() => wallet.removeAddress(account.address, keyring));
         removeCurrentAccount(account.address);
         message.success({

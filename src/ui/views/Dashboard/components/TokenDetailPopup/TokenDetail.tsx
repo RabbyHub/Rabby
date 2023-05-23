@@ -6,10 +6,11 @@ import { last } from 'lodash';
 import React, { useCallback, useMemo, useRef } from 'react';
 import { useTranslation } from 'react-i18next';
 import { useHistory } from 'react-router-dom';
-import IconExternal from 'ui/assets/open-external-gray.svg';
+import IconExternal from 'ui/assets/icon-share.svg';
+import IconCopy from 'ui/assets/icon-copy-2.svg';
 import IconPlus from 'ui/assets/plus.svg';
 import IconTrash from 'ui/assets/trash.svg';
-import { Modal, TokenWithChain } from 'ui/component';
+import { Copy, Modal, TokenWithChain } from 'ui/component';
 import { splitNumberByStep, useWallet, openInTab } from 'ui/utils';
 import { getChain } from '@/utils';
 import ChainIcon from '../NFT/ChainIcon';
@@ -184,6 +185,11 @@ const TokenDetail = ({
                   onClick={() => {
                     handleClickLink(token);
                   }}
+                />
+                <Copy
+                  data={token.id}
+                  variant="address"
+                  className="w-14 cursor-pointer"
                 />
               </>
             ) : (

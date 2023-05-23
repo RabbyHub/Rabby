@@ -151,15 +151,20 @@ const LedgerHardwareWaiting = ({ params }: { params: ApprovalParams }) => {
         let sig = data.data;
         setResult(sig);
         setConnectStatus(WALLETCONNECT_STATUS_MAP.SIBMITTED);
-        if (params.isGnosis) {
-          sig = adjustV('eth_signTypedData', sig);
-          const sigs = await wallet.getGnosisTransactionSignatures();
-          if (sigs.length > 0) {
-            await wallet.gnosisAddConfirmation(account.address, sig);
-          } else {
-            await wallet.gnosisAddSignature(account.address, sig);
-            await wallet.postGnosisTransaction();
+        try {
+          if (params.isGnosis) {
+            sig = adjustV('eth_signTypedData', sig);
+            const sigs = await wallet.getGnosisTransactionSignatures();
+            if (sigs.length > 0) {
+              await wallet.gnosisAddConfirmation(account.address, sig);
+            } else {
+              await wallet.gnosisAddSignature(account.address, sig);
+              await wallet.postGnosisTransaction();
+            }
           }
+        } catch (e) {
+          setConnectStatus(WALLETCONNECT_STATUS_MAP.FAILD);
+          return;
         }
         matomoRequestEvent({
           category: 'Transaction',
@@ -201,12 +206,13 @@ const LedgerHardwareWaiting = ({ params }: { params: ApprovalParams }) => {
     mountedRef.current = true;
   }, []);
 
-  React.useEffect(() => {
-    if (visible && mountedRef.current && !showDueToStatusChangeRef.current) {
-      handleRetry(false);
-    }
-    showDueToStatusChangeRef.current = false;
-  }, [visible]);
+  // React.useEffect(() => {
+  //   if (visible && mountedRef.current && !showDueToStatusChangeRef.current) {
+  //     console.log('handle retry');
+  //     handleRetry(false);
+  //   }
+  //   showDueToStatusChangeRef.current = false;
+  // }, [visible]);
 
   React.useEffect(() => {
     if (signFinishedData && isClickDone) {

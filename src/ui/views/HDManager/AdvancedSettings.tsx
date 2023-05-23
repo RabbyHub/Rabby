@@ -2,14 +2,12 @@ import { Button, InputNumber } from 'antd';
 import React from 'react';
 import { HDPathType, HDPathTypeButton } from './HDPathTypeButton';
 import { InitAccounts } from './LedgerManager';
+import { HDManagerStateContext } from './utils';
+import { KEYRING_CLASS } from '@/constant';
 
 const MIN_START_NO = 1;
 const MAX_START_NO = 950 + MIN_START_NO;
-const HDPathTypeGroup = [
-  HDPathType.LedgerLive,
-  HDPathType.BIP44,
-  HDPathType.Legacy,
-];
+
 export const MAX_ACCOUNT_COUNT = 50;
 
 export interface SettingData {
@@ -21,22 +19,57 @@ export const DEFAULT_SETTING_DATA: SettingData = {
   startNo: MIN_START_NO,
 };
 
+const HDPathTypeGroup = {
+  [KEYRING_CLASS.HARDWARE.LEDGER]: [
+    HDPathType.LedgerLive,
+    HDPathType.BIP44,
+    HDPathType.Legacy,
+  ],
+  [KEYRING_CLASS.HARDWARE.TREZOR]: [HDPathType.BIP44],
+  [KEYRING_CLASS.HARDWARE.ONEKEY]: [HDPathType.BIP44],
+  [KEYRING_CLASS.MNEMONIC]: [HDPathType.Default],
+};
+
 const HDPathTypeTips = {
-  [HDPathType.LedgerLive]:
-    'Ledger Live: Ledger official HD path. In the first 3 addresses, there are addresses used on-chain.',
-  [HDPathType.BIP44]:
-    'BIP44 Standard: HDpath defined by the BIP44 protocol. In the first 3 addresses, there are addresses used on-chain.',
-  [HDPathType.Legacy]:
-    'Legacy: HD path used by MEW / Mycrypto. In the first 3 addresses, there are addresses used on-chain.',
+  [KEYRING_CLASS.HARDWARE.LEDGER]: {
+    [HDPathType.LedgerLive]:
+      'Ledger Live: Ledger official HD path. In the first 3 addresses, there are addresses used on-chain.',
+    [HDPathType.BIP44]:
+      'BIP44 Standard: HDpath defined by the BIP44 protocol. In the first 3 addresses, there are addresses used on-chain.',
+    [HDPathType.Legacy]:
+      'Legacy: HD path used by MEW / Mycrypto. In the first 3 addresses, there are addresses used on-chain.',
+  },
+  [KEYRING_CLASS.HARDWARE.TREZOR]: {
+    [HDPathType.BIP44]: 'BIP44: HDpath defined by the BIP44 protocol.',
+  },
+  [KEYRING_CLASS.HARDWARE.ONEKEY]: {
+    [HDPathType.BIP44]: 'BIP44: HDpath defined by the BIP44 protocol.',
+  },
+  [KEYRING_CLASS.MNEMONIC]: {
+    [HDPathType.Default]:
+      'Default: The Default HD path for importing a seed phrase is used.',
+  },
 };
 
 const HDPathTypeTipsNoChain = {
-  [HDPathType.LedgerLive]:
-    'Ledger Live: Ledger official HD path. In the first 3 addresses, there are no addresses used on-chain.',
-  [HDPathType.BIP44]:
-    'BIP44 Standard: HD path defined by the BIP44 protocol. In the first 3 addresses, there are no addresses used on-chain.',
-  [HDPathType.Legacy]:
-    'Legacy: HD path used by MEW / Mycrypto. In the first 3 addresses, there are no addresses used on-chain.',
+  [KEYRING_CLASS.HARDWARE.LEDGER]: {
+    [HDPathType.LedgerLive]:
+      'Ledger Live: Ledger official HD path. In the first 3 addresses, there are no addresses used on-chain.',
+    [HDPathType.BIP44]:
+      'BIP44 Standard: HD path defined by the BIP44 protocol. In the first 3 addresses, there are no addresses used on-chain.',
+    [HDPathType.Legacy]:
+      'Legacy: HD path used by MEW / Mycrypto. In the first 3 addresses, there are no addresses used on-chain.',
+  },
+  [KEYRING_CLASS.HARDWARE.TREZOR]: {
+    [HDPathType.BIP44]: 'BIP44: HDpath defined by the BIP44 protocol.',
+  },
+  [KEYRING_CLASS.HARDWARE.ONEKEY]: {
+    [HDPathType.BIP44]: 'BIP44: HDpath defined by the BIP44 protocol.',
+  },
+  [KEYRING_CLASS.MNEMONIC]: {
+    [HDPathType.Default]:
+      'Default: The Default HD path for importing a seed phrase is used.',
+  },
 };
 
 interface Props {
@@ -52,6 +85,7 @@ export const AdvancedSettings: React.FC<Props> = ({
 }) => {
   const [hdPathType, setHDPathType] = React.useState<HDPathType>();
   const [startNo, setStartNo] = React.useState(DEFAULT_SETTING_DATA.startNo);
+  const { keyring } = React.useContext(HDManagerStateContext);
 
   const onInputChange = React.useCallback((value: number) => {
     if (isNaN(value) || value < DEFAULT_SETTING_DATA.startNo) {
@@ -76,48 +110,42 @@ export const AdvancedSettings: React.FC<Props> = ({
     );
   }, []);
 
-  const hdPathTypeTip = React.useMemo(() => {
-    if (!hdPathType) return null;
+  const currentHdPathTypeTip = React.useMemo(() => {
+    if (!hdPathType) {
+      if (
+        keyring === KEYRING_CLASS.HARDWARE.TREZOR ||
+        keyring === KEYRING_CLASS.HARDWARE.ONEKEY ||
+        keyring === KEYRING_CLASS.MNEMONIC
+      ) {
+        // only one type
+        return HDPathTypeTips[keyring][HDPathTypeGroup[keyring][0]];
+      }
+
+      return null;
+    }
 
     return isOnChain(hdPathType)
-      ? HDPathTypeTips[hdPathType]
-      : HDPathTypeTipsNoChain[hdPathType];
-  }, [hdPathType]);
+      ? HDPathTypeTips[keyring][hdPathType]
+      : HDPathTypeTipsNoChain[keyring][hdPathType];
+  }, [hdPathType, keyring]);
 
   return (
     <div className="AdvancedSettings">
-      {initAccounts ? (
-        <div className="group">
-          <div className="label">Select HD path:</div>
-          <div className="group-field">
-            {HDPathTypeGroup.map((type) => (
-              <HDPathTypeButton
-                type={type}
-                onClick={setHDPathType}
-                isOnChain={isOnChain(type)}
-                selected={hdPathType === type}
-                key={type}
-              />
-            ))}
-          </div>
-          <div className="tip">{hdPathTypeTip}</div>
-        </div>
-      ) : (
-        <div className="group">
-          <div className="label">Select HD path:</div>
-          <div className="group-field">
+      <div className="group">
+        <div className="label">Select HD path:</div>
+        <div className="group-field">
+          {HDPathTypeGroup[keyring].map((type) => (
             <HDPathTypeButton
-              type={HDPathType.BIP44}
+              type={type}
               onClick={setHDPathType}
-              selected
-              isOnChain={false}
+              isOnChain={isOnChain(type)}
+              selected={hdPathType === type}
+              key={type}
             />
-          </div>
-          <div className="tip">
-            BIP44: HDpath defined by the BIP44 protocol.
-          </div>
+          ))}
         </div>
-      )}
+        <div className="tip">{currentHdPathTypeTip}</div>
+      </div>
       <div className="group">
         <div className="label">
           Select the serial number of addresses to start from:

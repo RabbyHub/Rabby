@@ -12,8 +12,9 @@ import IconUnknownProtocol from 'ui/assets/unknown-protocol.svg';
 import BalanceChange from './BalanceChange';
 import SpeedUpCorner from './SpeedUpCorner';
 import ViewRawModal from './ViewRawModal';
-import IconExternal from 'ui/assets/open-external-gray.svg';
+import IconExternal from 'ui/assets/icon-share.svg';
 import { openInTab } from '@/ui/utils';
+import { Copy } from '@/ui/component';
 
 interface ApproveNFTProps {
   data: ExplainTxResponse;
@@ -95,8 +96,14 @@ const ApproveNFT = ({ data, chainEnum, isSpeedUp, raw }: ApproveNFTProps) => {
                     <img
                       src={IconExternal}
                       className="icon icon-copy w-[14px] h-[14px] cursor-pointer"
-                      onClick={() => handleClickContractId(detail.nft?.id)}
+                      onClick={() =>
+                        handleClickContractId(detail.nft?.contract_id)
+                      }
                     />
+                    <Copy
+                      data={detail.nft?.contract_id}
+                      variant="address"
+                    ></Copy>
                   </div>
                 </div>
               </div>
@@ -104,7 +111,7 @@ const ApproveNFT = ({ data, chainEnum, isSpeedUp, raw }: ApproveNFTProps) => {
           </div>
           <div className="rabby-list">
             <div className="item">
-              <div className="label">Approve to</div>
+              <div className="label min-w-[80px]">Approve to</div>
               <div className="value flex items-center gap-8">
                 <img
                   className="logo"
@@ -121,6 +128,7 @@ const ApproveNFT = ({ data, chainEnum, isSpeedUp, raw }: ApproveNFTProps) => {
                     className="icon icon-copy w-[14px] h-[14px] cursor-pointer"
                     onClick={() => handleClickContractId(detail.spender)}
                   />
+                  <Copy data={detail.spender} variant="address"></Copy>
                 </div>
               </div>
             </div>

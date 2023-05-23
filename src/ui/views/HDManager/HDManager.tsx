@@ -3,30 +3,35 @@ import { useWallet } from '@/ui/utils';
 import React from 'react';
 import { HDManagerStateProvider, StateProviderProps } from './utils';
 import { Spin } from 'antd';
-import { HARDWARE_KEYRING_TYPES } from '@/constant';
+import { HARDWARE_KEYRING_TYPES, KEYRING_CLASS } from '@/constant';
 import { LedgerManager } from './LedgerManager';
 import { OneKeyManager } from './OnekeyManager';
 import { TrezorManager } from './TrezorManager';
+import { MnemonicManager } from './MnemonicManager';
 import { ReactComponent as TrezorSVG } from 'ui/assets/walletlogo/trezor.svg';
 import { ReactComponent as OneKeySVG } from 'ui/assets/walletlogo/onekey.svg';
 import { ReactComponent as LedgerSVG } from 'ui/assets/walletlogo/ledger.svg';
+import { ReactComponent as MnemonicSVG } from '@/ui/assets/walletlogo/mnemonic-ink.svg';
 
 const LOGO_MAP = {
   [HARDWARE_KEYRING_TYPES.Ledger.type]: LedgerSVG,
   [HARDWARE_KEYRING_TYPES.Trezor.type]: TrezorSVG,
   [HARDWARE_KEYRING_TYPES.Onekey.type]: OneKeySVG,
+  [KEYRING_CLASS.MNEMONIC]: MnemonicSVG,
 };
 
 const LOGO_NAME_MAP = {
-  [HARDWARE_KEYRING_TYPES.Ledger.type]: 'Ledger',
-  [HARDWARE_KEYRING_TYPES.Trezor.type]: 'Trezor',
-  [HARDWARE_KEYRING_TYPES.Onekey.type]: 'OneKey',
+  [HARDWARE_KEYRING_TYPES.Ledger.type]: 'Connected to Ledger',
+  [HARDWARE_KEYRING_TYPES.Trezor.type]: 'Connected to Trezor',
+  [HARDWARE_KEYRING_TYPES.Onekey.type]: 'Connected to OneKey',
+  [KEYRING_CLASS.MNEMONIC]: 'Manage Seed Phrase ',
 };
 
 const MANAGER_MAP = {
   [HARDWARE_KEYRING_TYPES.Ledger.type]: LedgerManager,
   [HARDWARE_KEYRING_TYPES.Trezor.type]: TrezorManager,
   [HARDWARE_KEYRING_TYPES.Onekey.type]: OneKeyManager,
+  [KEYRING_CLASS.MNEMONIC]: MnemonicManager,
 };
 
 export const HDManager: React.FC<StateProviderProps> = ({ keyring }) => {
@@ -76,7 +81,7 @@ export const HDManager: React.FC<StateProviderProps> = ({ keyring }) => {
         <main>
           <div className="logo">
             <Logo className="icon" />
-            <span className="title">Connected to {name}</span>
+            <span className="title">{name}</span>
           </div>
           <Manager />
         </main>

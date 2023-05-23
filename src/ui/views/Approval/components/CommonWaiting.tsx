@@ -134,15 +134,21 @@ export const CommonWaiting = ({ params }: { params: ApprovalParams }) => {
         let sig = data.data;
         setResult(sig);
         setConnectStatus(WALLETCONNECT_STATUS_MAP.SIBMITTED);
-        if (params.isGnosis) {
-          sig = adjustV('eth_signTypedData', sig);
-          const sigs = await wallet.getGnosisTransactionSignatures();
-          if (sigs.length > 0) {
-            await wallet.gnosisAddConfirmation(account.address, data.data);
-          } else {
-            await wallet.gnosisAddSignature(account.address, data.data);
-            await wallet.postGnosisTransaction();
+        try {
+          if (params.isGnosis) {
+            sig = adjustV('eth_signTypedData', sig);
+            const sigs = await wallet.getGnosisTransactionSignatures();
+            if (sigs.length > 0) {
+              await wallet.gnosisAddConfirmation(account.address, data.data);
+            } else {
+              await wallet.gnosisAddSignature(account.address, data.data);
+              await wallet.postGnosisTransaction();
+            }
           }
+        } catch (e) {
+          setConnectStatus(WALLETCONNECT_STATUS_MAP.FAILD);
+          setErrorMessage(e.message);
+          return;
         }
         matomoRequestEvent({
           category: 'Transaction',

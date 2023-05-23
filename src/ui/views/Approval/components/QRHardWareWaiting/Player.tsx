@@ -2,6 +2,7 @@ import React, { useEffect, useMemo, useState } from 'react';
 import QRCode from 'qrcode.react';
 import { UR, UREncoder } from '@ngraveio/bc-ur';
 import { Button } from 'antd';
+import clsx from 'clsx';
 
 const Player = ({ type, cbor, onSign, brandName }) => {
   const urEncoder = useMemo(
@@ -30,7 +31,10 @@ const Player = ({ type, cbor, onSign, brandName }) => {
 
       <Button
         onClick={onSign}
-        className="w-[180px] h-[40px] mt-16"
+        className={clsx(
+          'w-[180px] h-[40px] mt-16',
+          'active:before:bg-[#00000033]'
+        )}
         type="primary"
       >
         Get signature

@@ -20,7 +20,7 @@ import { UIContactBookItem } from 'background/service/contactBook';
 import { useWallet, isSameAddress, openInTab } from 'ui/utils';
 import AccountCard from '../Approval/components/AccountCard';
 import TagChainSelector from 'ui/component/ChainSelector/tag';
-import { PageHeader, AddressViewer } from 'ui/component';
+import { PageHeader, AddressViewer, Copy } from 'ui/component';
 import AuthenticationModalPromise from 'ui/component/AuthenticationModal';
 import ContactEditModal from 'ui/component/Contact/EditModal';
 import ContactListModal from 'ui/component/Contact/ListModal';
@@ -36,7 +36,7 @@ import IconTemporaryGrantCheckbox from 'ui/assets/send-token/temporary-grant-che
 import './style.less';
 import { getKRCategoryByType } from '@/utils/transaction';
 import { filterRbiSource, useRbiSource } from '@/ui/utils/ga-event';
-import IconExternal from 'ui/assets/open-external-gray.svg';
+import IconExternal from 'ui/assets/icon-share.svg';
 
 const SendNFT = () => {
   const wallet = useWallet();
@@ -433,7 +433,7 @@ const SendNFT = () => {
                 </p>
                 <p>
                   <span className="field-name">Contract</span>
-                  <span className="value">
+                  <span className="value gap-[4px]">
                     <AddressViewer
                       address={nftItem.contract_id}
                       showArrow={false}
@@ -443,6 +443,7 @@ const SendNFT = () => {
                       className="icon icon-copy"
                       onClick={handleClickContractId}
                     />
+                    <Copy data={nftItem.contract_id} variant="address"></Copy>
                   </span>
                 </p>
               </div>

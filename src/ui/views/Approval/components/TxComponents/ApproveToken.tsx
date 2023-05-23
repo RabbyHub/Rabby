@@ -1,6 +1,6 @@
 import React from 'react';
 import SpeedUpCorner from './SpeedUpCorner';
-import { AddressViewer, TokenWithChain } from 'ui/component';
+import { AddressViewer, Copy, TokenWithChain } from 'ui/component';
 import { ellipsisOverflowedText, splitNumberByStep } from '@/ui/utils';
 import IconUnknownProtocol from 'ui/assets/unknown-protocol.svg';
 import { useTranslation } from 'react-i18next';
@@ -9,7 +9,7 @@ import BigNumber from 'bignumber.js';
 import clsx from 'clsx';
 import { InfoCircleOutlined } from '@ant-design/icons';
 import { CHAINS_ENUM, CHAINS } from 'consts';
-import IconExternal from 'ui/assets/open-external-gray.svg';
+import IconExternal from 'ui/assets/icon-share.svg';
 import { openInTab } from '@/ui/utils';
 
 export interface Props {
@@ -137,8 +137,10 @@ export const ApproveToken: React.FC<Props> = ({
           {ExceedsAccountBalance}
         </div>
         <div className="block-field mb-0">
-          <span className="label flex items-center">{t('Approve to')}</span>
-          <div className="value protocol">
+          <span className="label flex items-center w-[80px]">
+            {t('Approve to')}
+          </span>
+          <div className="value protocol justify-end">
             <img
               className="protocol-logo rounded-full h-[20px] w-[20px]"
               src={detail.spender_protocol_logo_url || IconUnknownProtocol}
@@ -163,10 +165,15 @@ export const ApproveToken: React.FC<Props> = ({
                   {chainEnum && (
                     <img
                       src={IconExternal}
-                      className="icon icon-copy w-[14px] h-[14px]"
+                      className="icon icon-copy w-[16px] h-[16px]"
                       onClick={handleClickSpender}
                     />
                   )}
+                  <Copy
+                    data={detail.spender}
+                    variant="address"
+                    className="icon icon-copy w-[16px] h-[16px]"
+                  />
                 </span>
               </div>
             </div>

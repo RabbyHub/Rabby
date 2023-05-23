@@ -3,11 +3,11 @@ import ClipboardJS from 'clipboard';
 import { message } from 'antd';
 import { useWallet } from 'ui/utils';
 import IconSuccess from 'ui/assets/success.svg';
-import IconAddressCopy from 'ui/assets/component/icon-copy.svg';
+import IconAddressCopy from 'ui/assets/icon-copy-2.svg';
 import './index.less';
 import clsx from 'clsx';
 import { ALIAS_ADDRESS, CHAINS, CHAINS_ENUM } from '@/constant';
-import IconExternal from 'ui/assets/open-external-gray.svg';
+import IconExternal from 'ui/assets/icon-share.svg';
 import { openInTab } from '@/ui/utils';
 
 interface NameAndAddressProps {
@@ -19,6 +19,7 @@ interface NameAndAddressProps {
   copyIconClass?: string;
   openExternal?: boolean;
   chainEnum?: CHAINS_ENUM;
+  isShowCopyIcon?: boolean;
 }
 
 const NameAndAddress = ({
@@ -30,6 +31,7 @@ const NameAndAddress = ({
   copyIconClass = '',
   openExternal = false,
   chainEnum,
+  isShowCopyIcon = true,
 }: NameAndAddressProps) => {
   const wallet = useWallet();
   const [alianName, setAlianName] = useState('');
@@ -94,24 +96,24 @@ const NameAndAddress = ({
               ?.toLowerCase()
               .slice(0, 6)}...${address?.toLowerCase().slice(-4)}`}
       </div>
-      {!openExternal && (
+      {openExternal && (
+        <img
+          onClick={handleClickContractId}
+          src={IconExternal}
+          width={16}
+          height={16}
+          className={clsx('ml-6 cursor-pointer', copyIconClass)}
+        />
+      )}
+      {isShowCopyIcon && (
         <img
           onClick={handleCopyContractAddress}
           src={IconAddressCopy}
           width={16}
           height={16}
-          className={clsx('ml-4 cursor-pointer', copyIconClass, {
+          className={clsx('ml-6 cursor-pointer', copyIconClass, {
             success: true,
           })}
-        />
-      )}
-      {openExternal && (
-        <img
-          onClick={handleClickContractId}
-          src={IconExternal}
-          width={14}
-          height={14}
-          className={clsx('ml-4 cursor-pointer', copyIconClass)}
         />
       )}
     </div>

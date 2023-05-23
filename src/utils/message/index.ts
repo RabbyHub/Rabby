@@ -4,6 +4,9 @@
 
 import { EventEmitter } from 'events';
 import { ethErrors } from 'eth-rpc-errors';
+import PQueue from 'p-queue';
+
+const pQueue = new PQueue({ concurrency: 1000 });
 
 abstract class Message extends EventEmitter {
   // avaiable id list
@@ -24,19 +27,21 @@ abstract class Message extends EventEmitter {
   abstract send(type: string, data: any): void;
 
   request = (data) => {
-    if (!this._requestIdPool.length) {
-      throw ethErrors.rpc.limitExceeded();
-    }
-    const ident = this._requestIdPool.shift()!;
+    return pQueue.add(() => {
+      if (!this._requestIdPool.length) {
+        throw ethErrors.rpc.limitExceeded();
+      }
+      const ident = this._requestIdPool.shift()!;
 
-    return new Promise((resolve, reject) => {
-      this._waitingMap.set(ident, {
-        data,
-        resolve,
-        reject,
+      return new Promise((resolve, reject) => {
+        this._waitingMap.set(ident, {
+          data,
+          resolve,
+          reject,
+        });
+
+        this.send('request', { ident, data });
       });
-
-      this.send('request', { ident, data });
     });
   };
 

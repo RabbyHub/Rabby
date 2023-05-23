@@ -1594,7 +1594,14 @@ export class WalletController extends BaseController {
     const serialized = await keyring.serialize();
     const seedWords = serialized.mnemonic;
 
+    this._lastGetAddress = address;
     return seedWords;
+  };
+
+  _lastGetAddress = '';
+
+  getLastGetAddress = () => {
+    return this._lastGetAddress;
   };
 
   clearAddressPendingTransactions = (address: string) => {
@@ -1713,6 +1720,36 @@ export class WalletController extends BaseController {
     return keyringService.keyrings.find((item) => {
       return item.type === KEYRING_CLASS.MNEMONIC && item.mnemonic === mnemonic;
     });
+  };
+
+  _getMnemonicKeyringByAddress = (address: string) => {
+    return keyringService.keyrings.find((item) => {
+      return (
+        item.type === KEYRING_CLASS.MNEMONIC &&
+        item.mnemonic &&
+        Object.keys(item._index2wallet).some((key) => {
+          return (
+            item._index2wallet[key][0].toLowerCase() === address.toLowerCase()
+          );
+        })
+      );
+    });
+  };
+
+  getMnemonicByAddress = (address: string) => {
+    const keyring = this._getMnemonicKeyringByAddress(address);
+    if (!keyring) {
+      throw new Error("Can't find keyring by address");
+    }
+    return keyring.mnemonic;
+  };
+
+  getMnemonicAddressIndex = async (address: string) => {
+    const keyring = this._getMnemonicKeyringByAddress(address);
+    if (!keyring) {
+      throw new Error("Can't find keyring by address");
+    }
+    return await keyring.getIndexByAddress(address);
   };
 
   generateKeyringWithMnemonic = async (mnemonic: string) => {
@@ -2369,6 +2406,9 @@ export class WalletController extends BaseController {
       );
     }
 
+    const importedAccounts = await (keyring as any).getAccounts();
+    const addressIndexStart = importedAccounts.length ?? 0;
+
     const accounts = ids
       .sort((a, b) => a - b)
       .map((id, index) => {
@@ -2376,7 +2416,7 @@ export class WalletController extends BaseController {
         const alias = generateAliasName({
           keyringType: KEYRING_TYPE.HdKeyring,
           keyringCount: keyring.index,
-          addressCount: index,
+          addressCount: addressIndexStart + index,
         });
         contactBookService.updateCacheAlias({
           address: address,
