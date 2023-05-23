@@ -84,6 +84,7 @@ const Actions = ({
   engineResults,
   txDetail,
   raw,
+  onChange,
 }: {
   data: ParsedActionData;
   requireData: ActionRequireData;
@@ -91,6 +92,7 @@ const Actions = ({
   engineResults: Result[];
   txDetail: ExplainTxResponse;
   raw: Record<string, string | number>;
+  onChange(tx: Record<string, any>): void;
 }) => {
   const actionName = useMemo(() => {
     if (data.swap) {
@@ -151,6 +153,8 @@ const Actions = ({
               requireData={requireData as ApproveTokenRequireData}
               chain={chain}
               engineResults={engineResults}
+              onChange={onChange}
+              raw={raw}
             />
           )}
           <BalanceChange

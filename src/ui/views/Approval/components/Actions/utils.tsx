@@ -175,7 +175,7 @@ export interface ApproveTokenRequireData {
     logo_url: string;
   } | null;
   isDanger: boolean | null;
-  tokenBalance: string;
+  token: TokenItem;
 }
 
 export type ActionRequireData =
@@ -316,6 +316,7 @@ export const fetchActionRequiredData = async ({
     return result;
   }
   if (actionData.approveToken) {
+    const { spender, token } = actionData.approveToken;
     const result: ApproveTokenRequireData = {
       isEOA: false,
       contract: null,
@@ -325,9 +326,13 @@ export const fetchActionRequiredData = async ({
       bornAt: 0,
       protocol: null,
       isDanger: false,
-      tokenBalance: '0',
+      token: {
+        ...token,
+        amount: 0,
+        raw_amount: 0,
+        raw_amount_hex_str: '0x0',
+      },
     };
-    const { spender, token } = actionData.approveToken;
     queue.add(async () => {
       const credit = await wallet.openapi.getContractCredit(spender, chainId);
       result.rank = credit.rank_at;
@@ -341,7 +346,7 @@ export const fetchActionRequiredData = async ({
     });
     queue.add(async () => {
       const t = await wallet.openapi.getToken(address, chainId, token.id);
-      result.tokenBalance = t.raw_amount_hex_str || '0';
+      result.token = t;
     });
     queue.add(async () => {
       const { desc } = await wallet.openapi.addrDesc(spender);
