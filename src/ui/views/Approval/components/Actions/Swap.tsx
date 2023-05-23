@@ -4,7 +4,6 @@ import styled from 'styled-components';
 import { Result } from '@debank/rabby-security-engine';
 import { Table, Col, Row } from './components/Table';
 import LogoWithText from './components/LogoWithText';
-import userDataDrawer from './components/UserListDrawer';
 import AddressMemo from './components/AddressMemo';
 import * as Values from './components/Values';
 import { ParsedActionData, SwapRequireData } from './utils';
@@ -16,7 +15,6 @@ import { Chain } from 'background/service/openapi';
 import SecurityLevelTagNoText from '../SecurityEngine/SecurityLevelTagNoText';
 import { isSameAddress, useWallet } from '@/ui/utils';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
-import IconEdit from 'ui/assets/editpen.svg';
 import IconFakeToken from 'ui/assets/sign/tx/token-fake.svg';
 import IconScamToken from 'ui/assets/sign/tx/token-scam.svg';
 
@@ -66,7 +64,6 @@ const Swap = ({
     processedRules: s.securityEngine.currentTx.processedRules,
   }));
   const dispatch = useRabbyDispatch();
-  const wallet = useWallet();
 
   const engineResultMap = useMemo(() => {
     const map: Record<string, Result> = {};
@@ -98,64 +95,8 @@ const Swap = ({
   }, [userData, requireData, chain]);
 
   const hasReceiver = useMemo(() => {
-    // return isSameAddress(receiver, requireData.sender);
     return !isSameAddress(receiver, requireData.sender);
   }, [requireData, receiver]);
-
-  const handleEditReceiverMark = () => {
-    userDataDrawer({
-      address: requireData.id,
-      onWhitelist: receiverInWhitelist,
-      onBlacklist: receiverInBlacklist,
-      async onChange({ onWhitelist, onBlacklist }) {
-        const address = requireData.id;
-        if (onWhitelist && !receiverInWhitelist) {
-          await wallet.addAddressWhitelist(address);
-        }
-        if (onBlacklist && !receiverInBlacklist) {
-          await wallet.addAddressBlacklist(address);
-        }
-        if (
-          !onBlacklist &&
-          !onWhitelist &&
-          (receiverInBlacklist || receiverInWhitelist)
-        ) {
-          await wallet.removeAddressBlacklist(address);
-          await wallet.removeAddressWhitelist(address);
-        }
-        dispatch.securityEngine.init();
-      },
-    });
-  };
-
-  const handleEditContractMark = () => {
-    userDataDrawer({
-      address: requireData.id,
-      onWhitelist: contractInWhitelist,
-      onBlacklist: contractInBlacklist,
-      async onChange({ onWhitelist, onBlacklist }) {
-        const contract = {
-          address: requireData.id,
-          chainId: chain.serverId,
-        };
-        if (onWhitelist && !contractInWhitelist) {
-          await wallet.addContractWhitelist(contract);
-        }
-        if (onBlacklist && !contractInBlacklist) {
-          await wallet.addContractBlacklist(contract);
-        }
-        if (
-          !onBlacklist &&
-          !onWhitelist &&
-          (contractInBlacklist || contractInWhitelist)
-        ) {
-          await wallet.removeContractBlacklist(contract);
-          await wallet.removeContractWhitelist(contract);
-        }
-        dispatch.securityEngine.init();
-      },
-    });
-  };
 
   const handleClickRule = (id: string) => {
     const rule = rules.find((item) => item.id === id);
@@ -332,16 +273,12 @@ const Swap = ({
                 <li className="flex">
                   <AddressMemo address={receiver} />
                 </li>
-                <li className="flex">
-                  <span className="mr-2">
-                    {receiverInBlacklist && 'Blocked'}
-                    {receiverInWhitelist && 'Trusted'}
-                    {!receiverInBlacklist && !receiverInWhitelist && 'No mark'}
-                  </span>
-                  <img
-                    src={IconEdit}
-                    className="icon-edit-alias icon"
-                    onClick={() => handleEditReceiverMark()}
+                <li>
+                  <Values.AddressMark
+                    onWhitelist={receiverInWhitelist}
+                    onBlacklist={receiverInBlacklist}
+                    address={receiver}
+                    onChange={() => dispatch.securityEngine.init()}
                   />
                 </li>
               </ul>
@@ -392,18 +329,14 @@ const Swap = ({
         <Col>
           <Row isTitle>My mark</Row>
           <Row>
-            <div className="flex">
-              <span className="mr-6">
-                {contractInBlacklist && 'Blocked'}
-                {contractInWhitelist && 'Trusted'}
-                {!contractInBlacklist && !contractInWhitelist && 'No mark'}
-              </span>
-              <img
-                src={IconEdit}
-                className="icon-edit-alias icon"
-                onClick={handleEditContractMark}
-              />
-            </div>
+            <Values.AddressMark
+              onWhitelist={contractInWhitelist}
+              onBlacklist={contractInBlacklist}
+              address={requireData.id}
+              chainId={chain.serverId}
+              isContract
+              onChange={() => dispatch.securityEngine.init()}
+            />
             {engineResultMap['1014'] && (
               <SecurityLevelTagNoText
                 level={

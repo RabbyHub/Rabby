@@ -228,6 +228,24 @@ class SecurityEngineService {
     };
   };
 
+  removeContractBlacklistFromAllChains = (contract: ContractAddress) => {
+    if (
+      !this.store.userData.contractBlacklist.find((item) =>
+        isSameAddress(contract.address, item.address)
+      )
+    ) {
+      return;
+    }
+    this.store.userData = {
+      ...this.store.userData,
+      contractBlacklist: this.store.userData.contractBlacklist.filter(
+        (item) => {
+          return !isSameAddress(item.address, contract.address);
+        }
+      ),
+    };
+  };
+
   removeContractBlacklist = (contract: ContractAddress) => {
     if (
       !this.store.userData.contractBlacklist.find(

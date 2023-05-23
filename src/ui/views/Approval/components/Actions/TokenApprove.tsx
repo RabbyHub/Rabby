@@ -3,7 +3,6 @@ import styled from 'styled-components';
 import { Chain } from 'background/service/openapi';
 import { Result } from '@debank/rabby-security-engine';
 import { ApproveTokenRequireData, ParsedActionData } from './utils';
-import { formatUsdValue } from 'ui/utils/number';
 import { ellipsis } from 'ui/utils/address';
 import { ellipsisTokenSymbol } from 'ui/utils/token';
 import { getTimeSpan } from 'ui/utils/time';
@@ -208,7 +207,7 @@ const Send = ({
         <Col>
           <Row isTitle>Risk exposure</Row>
           <Row>
-            {formatUsdValue(requireData.riskExposure)}
+            <Values.USDValue value={requireData.riskExposure} />
             {engineResultMap['1023'] && (
               <SecurityLevelTagNoText
                 level={

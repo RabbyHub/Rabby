@@ -160,6 +160,7 @@ export interface SendRequireData {
   hasTransfer: boolean;
   isTokenContract: boolean;
   usedChains: UsedChain[];
+  name: string | null;
 }
 
 export interface ApproveTokenRequireData {
@@ -254,6 +255,7 @@ export const fetchActionRequiredData = async ({
       hasTransfer: false,
       usedChains: [],
       isTokenContract: false,
+      name: null,
     };
     queue.add(async () => {
       const { has_transfer } = await wallet.openapi.hasTransfer(
@@ -302,6 +304,7 @@ export const fetchActionRequiredData = async ({
         );
         result.isTokenContract = is_token;
       }
+      result.name = desc.name;
     });
     queue.add(async () => {
       const usedChainList = await wallet.openapi.addrUsedChainList(
