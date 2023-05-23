@@ -1,5 +1,4 @@
 import stats from '@/stats';
-import { openInternalPageInTab } from 'ui/utils/webapi';
 import {
   convertLegacyTo1559,
   getKRCategoryByType,
@@ -8,7 +7,8 @@ import {
 import Safe from '@rabby-wallet/gnosis-sdk';
 import { SafeInfo } from '@rabby-wallet/gnosis-sdk/src/api';
 import * as Sentry from '@sentry/browser';
-import { Button, Drawer, Modal, Tooltip } from 'antd';
+import { Drawer, Modal } from 'antd';
+import { maxBy } from 'lodash';
 import {
   Chain,
   ExplainTxResponse,
@@ -38,15 +38,12 @@ import React, { ReactNode, useEffect, useMemo, useState } from 'react';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import { useTranslation } from 'react-i18next';
 import IconGnosis from 'ui/assets/walletlogo/safe.svg';
-import IconWatch from 'ui/assets/walletlogo/watch-purple.svg';
 import {
   useApproval,
   useWallet,
   isStringOrNumber,
   useCommonPopupView,
 } from 'ui/utils';
-import AccountCard from './AccountCard';
-import LedgerWebHIDAlert from './LedgerWebHIDAlert';
 import SecurityCheck from './SecurityCheck';
 import { WaitingSignComponent } from './SignText';
 import Approve from './TxComponents/Approve';
@@ -1156,9 +1153,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
         data: tx.data,
         value: tx.value,
       };
-      if (nonceChanged) {
-        params.nonce = realNonce;
-      }
+      params.nonce = realNonce;
       await wallet.buildGnosisTransaction(tx.from, account, params);
     }
     const typedData = await wallet.gnosisGenerateTypedData();
@@ -1449,23 +1444,32 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     const currentAccount = (await wallet.getCurrentAccount())!;
     const networkId = await wallet.getGnosisNetworkId(currentAccount.address);
     const safeInfo = await Safe.getSafeInfo(currentAccount.address, networkId);
+    const pendingTxs = await Safe.getPendingTransactions(
+      currentAccount.address,
+      networkId
+    );
+    const maxNonceTx = maxBy(pendingTxs.results, (item) => item.nonce);
+    const recommendSafeNonce = maxNonceTx
+      ? maxNonceTx.nonce + 1
+      : safeInfo.nonce;
+
     setSafeInfo(safeInfo);
-    setRecommendNonce(`0x${safeInfo.nonce.toString(16)}`);
+    setRecommendNonce(`0x${recommendSafeNonce.toString(16)}`);
     if (Number(tx.nonce || 0) < safeInfo.nonce) {
       setTx({
         ...tx,
-        nonce: `0x${safeInfo.nonce.toString(16)}`,
+        nonce: `0x${recommendSafeNonce.toString(16)}`,
       });
-    }
-    if (Number(realNonce || 0) < safeInfo.nonce) {
-      setRealNonce(`0x${safeInfo.nonce.toString(16)}`);
+      setRealNonce(`0x${recommendSafeNonce.toString(16)}`);
+    } else {
+      setRealNonce(`0x${Number(tx.nonce).toString(16)}`);
     }
     if (tx.nonce === undefined || tx.nonce === null) {
       setTx({
         ...tx,
-        nonce: `0x${safeInfo.nonce.toString(16)}`,
+        nonce: `0x${recommendSafeNonce.toString(16)}`,
       });
-      setRealNonce(`0x${safeInfo.nonce.toString(16)}`);
+      setRealNonce(`0x${recommendSafeNonce.toString(16)}`);
     }
   };
 
