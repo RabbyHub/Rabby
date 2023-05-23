@@ -46,7 +46,7 @@ export const MnemonicManager: React.FC = () => {
 
   const fetchCurrentAccounts = React.useCallback(async () => {
     setLoading(true);
-    await getCurrentAccounts();
+    await createTask(() => getCurrentAccounts());
     setSetting({
       ...setting,
       type: HDPathType.Default,
