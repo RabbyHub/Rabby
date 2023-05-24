@@ -161,6 +161,7 @@ export interface SendRequireData {
   isTokenContract: boolean;
   usedChains: UsedChain[];
   name: string | null;
+  onTransferWhitelist: boolean;
 }
 
 export interface ApproveTokenRequireData {
@@ -256,6 +257,7 @@ export const fetchActionRequiredData = async ({
       usedChains: [],
       isTokenContract: false,
       name: null,
+      onTransferWhitelist: false,
     };
     queue.add(async () => {
       const { has_transfer } = await wallet.openapi.hasTransfer(
@@ -312,6 +314,10 @@ export const fetchActionRequiredData = async ({
       );
       result.usedChains = usedChainList;
     });
+    const whitelist = await wallet.getWhitelist();
+    result.onTransferWhitelist = whitelist.includes(
+      actionData.send.to.toLowerCase()
+    );
     await waitQueueFinished(queue);
     return result;
   }
@@ -426,6 +432,7 @@ export const formatSecurityEngineCtx = ({
         chainId,
         usedChainList: data.usedChains.map((item) => item.id),
         isTokenContract: data.isTokenContract,
+        onTransferWhitelist: data.onTransferWhitelist,
       },
     };
   }

@@ -259,6 +259,16 @@ const Send = ({
               {transferWhitelist.includes(actionData.to.toLowerCase())
                 ? 'On my whitelist'
                 : 'Not on my whitelist'}
+              {engineResultMap['1033'] && (
+                <SecurityLevelTagNoText
+                  level={
+                    processedRules.includes('1033')
+                      ? 'proceed'
+                      : engineResultMap['1033'].level
+                  }
+                  onClick={() => handleClickRule('1033')}
+                />
+              )}
             </Row>
           </Col>
         )}
@@ -277,14 +287,14 @@ const Send = ({
               address={actionData.to}
               onChange={() => dispatch.securityEngine.init()}
             />
-            {engineResultMap['1033'] && (
+            {engineResultMap['1031'] && (
               <SecurityLevelTagNoText
                 level={
-                  processedRules.includes('1033')
+                  processedRules.includes('1031')
                     ? 'proceed'
-                    : engineResultMap['1033'].level
+                    : engineResultMap['1031'].level
                 }
-                onClick={() => handleClickRule('1033')}
+                onClick={() => handleClickRule('1031')}
               />
             )}
             {engineResultMap['1032'] && (
