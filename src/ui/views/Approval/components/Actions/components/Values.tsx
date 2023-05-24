@@ -1,10 +1,10 @@
-import React from 'react';
+import React, { useMemo } from 'react';
 import styled from 'styled-components';
-import { formatAmount } from 'ui/utils/number';
 import AddressMemo from './AddressMemo';
 import userDataDrawer from './UserListDrawer';
 import { useWallet } from 'ui/utils';
-import { formatUsdValue } from 'ui/utils/number';
+import { getTimeSpan } from 'ui/utils/time';
+import { formatUsdValue, formatAmount } from 'ui/utils/number';
 import IconEdit from 'ui/assets/editpen.svg';
 
 const Boolean = ({ value }: { value: boolean }) => {
@@ -26,6 +26,25 @@ const Percentage = ({ value }: { value: number }) => {
 
 const USDValue = ({ value }: { value: number | string }) => {
   return <>{formatUsdValue(value)}</>;
+};
+
+const TimeSpan = ({ value }) => {
+  const timeSpan = useMemo(() => {
+    const bornAt = value;
+
+    const { d, h, m } = getTimeSpan(Math.floor(Date.now() / 1000) - bornAt);
+    if (d > 0) {
+      return `${d} Day${d > 1 ? 's' : ''} ago`;
+    }
+    if (h > 0) {
+      return `${h} Hour${h > 1 ? 's' : ''} ago`;
+    }
+    if (m > 1) {
+      return `${m} Minutes ago`;
+    }
+    return '1 Minute ago';
+  }, [value]);
+  return <>{timeSpan}</>;
 };
 
 const AddressMarkWrapper = styled.div`
@@ -117,4 +136,12 @@ const AddressMark = ({
   );
 };
 
-export { Boolean, TokenAmount, Percentage, AddressMemo, AddressMark, USDValue };
+export {
+  Boolean,
+  TokenAmount,
+  Percentage,
+  AddressMemo,
+  AddressMark,
+  USDValue,
+  TimeSpan,
+};

@@ -6,6 +6,7 @@ import styled from 'styled-components';
 import {
   ActionRequireData,
   ApproveTokenRequireData,
+  ContractCallRequireDta,
   ParsedActionData,
   SendRequireData,
   SwapRequireData,
@@ -15,6 +16,7 @@ import { Result } from '@debank/rabby-security-engine';
 import BalanceChange from '../TxComponents/BalanceChange';
 import ViewRawModal from '../TxComponents/ViewRawModal';
 import IconArrowRight from 'ui/assets/approval/edit-arrow-right.svg';
+import ContractCall from './ContractCall';
 
 const SignTitle = styled.div`
   display: flex;
@@ -126,10 +128,12 @@ const Actions = ({
         </div>
       </SignTitle>
       <ActionWrapper>
-        <div className="action-header">
-          <div className="left">{actionName}</div>
-          <div className="right">action type</div>
-        </div>
+        {!data.contractCall && (
+          <div className="action-header">
+            <div className="left">{actionName}</div>
+            <div className="right">action type</div>
+          </div>
+        )}
         <div className="container">
           {data.swap && (
             <Swap
@@ -157,11 +161,19 @@ const Actions = ({
               raw={raw}
             />
           )}
+          {data.contractCall && (
+            <ContractCall
+              data={data.contractCall}
+              requireData={requireData as ContractCallRequireDta}
+              chain={chain}
+              engineResults={engineResults}
+              onChange={onChange}
+              raw={raw}
+            />
+          )}
           <BalanceChange
             version={txDetail.pre_exec_version}
             data={txDetail.balance_change}
-            chainEnum={chain.enum}
-            isSupport={txDetail.support_balance_change}
           />
         </div>
       </ActionWrapper>

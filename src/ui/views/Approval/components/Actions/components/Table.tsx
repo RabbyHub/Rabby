@@ -5,7 +5,7 @@ import clsx from 'clsx';
 const TableWrapper = styled.div`
   background: #fafbff;
   border: 1px solid #ededed;
-  border-radius: 4px;
+  border-radius: 8px;
 `;
 
 const Table = ({ children }: { children: ReactNode }) => {

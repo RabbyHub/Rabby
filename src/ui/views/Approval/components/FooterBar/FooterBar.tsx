@@ -1,4 +1,5 @@
-import React from 'react';
+import React, { useMemo } from 'react';
+import { INTERNAL_REQUEST_ORIGIN } from 'consts';
 import { AccountInfo } from './AccountInfo';
 import { useWallet } from '@/ui/utils';
 import { Account } from '@/background/service/preference';
@@ -90,6 +91,13 @@ export const FooterBar: React.FC<Props> = ({
   const [account, setAccount] = React.useState<Account>();
   const wallet = useWallet();
 
+  const displayOirigin = useMemo(() => {
+    if (origin === INTERNAL_REQUEST_ORIGIN) {
+      return 'Rabby Wallet';
+    }
+    return origin;
+  }, [origin]);
+
   const init = async () => {
     const currentAccount =
       gnosisAccount || (await wallet.syncGetCurrentAccount());
@@ -108,7 +116,7 @@ export const FooterBar: React.FC<Props> = ({
     <Wrapper className={clsx('bg-white')}>
       {origin && (
         <div className="request-origin">
-          Request from <span className="origin">{origin}</span>
+          Request from <span className="origin">{displayOirigin}</span>
         </div>
       )}
       <AccountInfo chain={props.chain} account={account} />

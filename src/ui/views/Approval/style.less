@@ -428,21 +428,6 @@
           }
         }
       }
-
-      .token-balance-change + .nft-bc,
-      .nft-bc,
-      .token-balance-change {
-        border-top: 1px solid @color-border;
-      }
-
-      .token-balance-change.no-change-detected,
-      .nft-bc.no-change-detected {
-        margin-bottom: 0;
-
-        .section-title {
-          margin-bottom: 0;
-        }
-      }
     }
 
     overflow-y: scroll;
@@ -655,7 +640,7 @@
   }
 
   .approval-tx {
-    padding: 20px;
+    padding: 15px 18px;
     display: flex;
     flex-direction: column;
     background: @color-bg;
@@ -685,9 +670,6 @@
     .view-raw {
       line-height: 16px !important;
       color: @color-comment-1;
-    }
-    &.pre-process-failed {
-      padding-bottom: 200px;
     }
 
     .section-block {
@@ -750,14 +732,6 @@
         margin: 4px 0 0 0;
         color: @color-comment-1;
         font-size: 12px;
-      }
-    }
-    .type-list-nft {
-      .token-balance-change.no-change-detected .section-title {
-        font-weight: 400;
-        font-size: 14px;
-        line-height: 16px;
-        color: @color-body;
       }
     }
     .cancel-tx {
@@ -887,12 +861,6 @@
       }
     }
     .sign {
-      .token-balance-change.no-change-detected {
-        margin-bottom: 0;
-        .section-title {
-          margin-bottom: 0;
-        }
-      }
       .common-detail-block {
         // padding: 21px 16px;
         // margin-bottom: 20px;
@@ -977,9 +945,6 @@
               font-size: 15px;
             }
           }
-          .token-balance-change {
-            margin-bottom: 0;
-          }
           .view-raw {
             display: none !important;
           }
@@ -1006,27 +971,18 @@
       }
     }
 
-    .token-balance-change + .nft-bc,
-    .nft-bc + .token-balance-change {
-      margin-top: 20px;
-    }
 
     .token-balance-change {
-      padding: 16px;
+      margin-top: 15px;
       .token-balance-change-content {
         &-header {
+          font-weight: 500;
+          font-size: 16px;
+          line-height: 19px;
+          color: #131419;
           display: flex;
           align-items: center;
-          justify-content: space-between;
-          margin-bottom: 12px;
-          color: @color-body;
-
-          .token-change-total {
-            font-weight: 500;
-            font-size: 13px;
-            line-height: 15px;
-            color: @color-body;
-          }
+          margin-bottom: 15px;
         }
         .token-change-list {
           margin: 0;

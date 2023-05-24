@@ -48,6 +48,7 @@ export interface ParsedActionData {
     spender: string;
     token: TokenItem;
   };
+  contractCall?: object;
 }
 
 const calcSlippageTolerance = (base: number, actual: number) => {
@@ -61,7 +62,7 @@ export const parseAction = (
   data: ParseTxResponse['action'],
   balanceChange: ExplainTxResponse['balance_change']
 ): ParsedActionData => {
-  if (data.type === 'swap_token') {
+  if (data?.type === 'swap_token') {
     const {
       pay_token: payToken,
       receive_token: receiveToken,
@@ -107,12 +108,12 @@ export const parseAction = (
       },
     };
   }
-  if (data.type === 'send_token') {
+  if (data?.type === 'send_token') {
     return {
       send: data.data as SendAction,
     };
   }
-  if (data.type === 'approve_token') {
+  if (data?.type === 'approve_token') {
     const { spender, token } = data.data as ApproveAction;
     return {
       approveToken: {
@@ -121,7 +122,9 @@ export const parseAction = (
       },
     };
   }
-  return {};
+  return {
+    contractCall: {},
+  };
 };
 
 export interface SwapRequireData {
@@ -179,10 +182,23 @@ export interface ApproveTokenRequireData {
   token: TokenItem;
 }
 
+export interface ContractCallRequireDta {
+  contract: Record<string, ContractDesc> | null;
+  rank: number | null;
+  hasInteraction: boolean;
+  bornAt: number;
+  protocol: {
+    name: string;
+    logo_url: string;
+  } | null;
+  call: ParseTxResponse['contract_call'];
+}
+
 export type ActionRequireData =
   | SwapRequireData
   | ApproveTokenRequireData
   | SendRequireData
+  | ContractCallRequireDta
   | null;
 
 const waitQueueFinished = (q: PQueue) => {
@@ -219,11 +235,11 @@ export const fetchActionRequiredData = async ({
       sender: address,
     };
     queue.add(async () => {
-      const isScam = await wallet.openapi.isScamToken(
+      const { is_suspicious } = await wallet.openapi.isSuspiciousToken(
         actionData.swap!.receiveToken.id,
         chainId
       );
-      result.receiveTokenIsScam = isScam.is_scam;
+      result.receiveTokenIsScam = is_suspicious;
     });
     queue.add(async () => {
       const credit = await wallet.openapi.getContractCredit(id, chainId);
@@ -370,6 +386,42 @@ export const fetchActionRequiredData = async ({
         address,
         chainId,
         spender
+      );
+      result.hasInteraction = hasInteraction.has_interaction;
+    });
+    await waitQueueFinished(queue);
+    return result;
+  }
+  if (actionData.contractCall && contractCall) {
+    const result: ContractCallRequireDta = {
+      contract: null,
+      rank: null,
+      hasInteraction: false,
+      bornAt: 0,
+      protocol: contractCall.contract.protocol,
+      call: contractCall,
+    };
+    queue.add(async () => {
+      const credit = await wallet.openapi.getContractCredit(
+        contractCall.contract.id,
+        chainId
+      );
+      result.rank = credit.rank_at;
+    });
+    queue.add(async () => {
+      const { desc } = await wallet.openapi.addrDesc(contractCall.contract.id);
+      if (desc.contract) {
+        result.contract = desc.contract;
+        if (desc.contract[chainId]) {
+          result.bornAt = desc.contract[chainId].create_at;
+        }
+      }
+    });
+    queue.add(async () => {
+      const hasInteraction = await wallet.openapi.hasInteraction(
+        address,
+        chainId,
+        contractCall.contract.id
       );
       result.hasInteraction = hasInteraction.has_interaction;
     });
