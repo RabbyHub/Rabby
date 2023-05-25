@@ -2,11 +2,14 @@ import React, { useMemo } from 'react';
 import Swap from './Swap';
 import Send from './Send';
 import TokenApprove from './TokenApprove';
+import SendNFT from './SendNFT';
 import styled from 'styled-components';
 import {
   ActionRequireData,
+  ApproveNFTRequireData,
   ApproveTokenRequireData,
   ParsedActionData,
+  RevokeNFTRequireData,
   SendRequireData,
   SwapRequireData,
 } from './utils';
@@ -15,6 +18,11 @@ import { Result } from '@debank/rabby-security-engine';
 import BalanceChange from '../TxComponents/BalanceChange';
 import ViewRawModal from '../TxComponents/ViewRawModal';
 import IconArrowRight from 'ui/assets/approval/edit-arrow-right.svg';
+import DeployContract from './DeployContract';
+import ApproveNFT from './ApproveNFT';
+import ApproveNFTCollection from './ApproveNFTCollection';
+import RevokeNFTCollection from './RevokeNFTCollection';
+import RevokeNFT from './RevokeNFT';
 
 const SignTitle = styled.div`
   display: flex;
@@ -102,6 +110,27 @@ const Actions = ({
     if (data.approveToken) {
       return 'Token Approval';
     }
+    if (data.sendNFT) {
+      return 'Send NFT';
+    }
+    if (data.approveNFT) {
+      return 'NFT Approval';
+    }
+
+    if (data.revokeNFT) {
+      return 'Revoke NFT Approval';
+    }
+
+    if (data.approveNFTCollection) {
+      return 'NFT Collection Approval';
+    }
+    if (data.revokeNFTCollection) {
+      return 'Revoke NFT Collection Approval';
+    }
+
+    if (data.deployContract) {
+      return 'Deploy Contract';
+    }
   }, [data]);
 
   const handleViewRawClick = () => {
@@ -153,6 +182,47 @@ const Actions = ({
               engineResults={engineResults}
             />
           )}
+          {data?.sendNFT && (
+            <SendNFT
+              data={data.sendNFT}
+              requireData={requireData as SendRequireData}
+              chain={chain}
+              engineResults={engineResults}
+            />
+          )}
+          {data?.approveNFT && (
+            <ApproveNFT
+              data={data.approveNFT}
+              requireData={requireData as ApproveNFTRequireData}
+              chain={chain}
+              engineResults={engineResults}
+            />
+          )}
+          {data?.revokeNFT && (
+            <RevokeNFT
+              data={data.revokeNFT}
+              requireData={requireData as RevokeNFTRequireData}
+              chain={chain}
+              engineResults={engineResults}
+            />
+          )}
+          {data?.revokeNFTCollection && (
+            <RevokeNFTCollection
+              data={data.revokeNFTCollection}
+              requireData={requireData as RevokeNFTRequireData}
+              chain={chain}
+              engineResults={engineResults}
+            />
+          )}
+          {data?.approveNFTCollection && (
+            <ApproveNFTCollection
+              data={data.approveNFTCollection}
+              requireData={requireData as RevokeNFTRequireData}
+              chain={chain}
+              engineResults={engineResults}
+            />
+          )}
+          {data?.deployContract && <DeployContract />}
           <BalanceChange
             version={txDetail.pre_exec_version}
             data={txDetail.balance_change}

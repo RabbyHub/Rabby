@@ -133,7 +133,8 @@ export const TxTypeComponent = ({
   engineResults: Result[];
 }) => {
   if (!isReady) return <Loading chainEnum={chain.enum} />;
-  if (actionData && actionRequireData) {
+  // if (actionData && actionRequireData) {
+  if (actionData) {
     return (
       <Actions
         data={actionData}
@@ -1025,6 +1026,8 @@ const SignTx = ({ params, origin }: SignTxProps) => {
         gas: '0x0',
         nonce: (updateNonce ? recommendNonce : tx.nonce) || '0x1',
         value: tx.value || '0x0',
+        // todo
+        to: tx.to || '',
       },
       origin: origin || '',
       addr: address,

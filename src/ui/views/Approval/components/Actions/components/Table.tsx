@@ -78,12 +78,16 @@ const RowWrapper = styled.div`
 const Row = ({
   children,
   isTitle = false,
+  className,
 }: {
   children: ReactNode;
   isTitle?: boolean;
+  className?: string;
 }) => {
   return (
-    <RowWrapper className={clsx({ title: isTitle })}>{children}</RowWrapper>
+    <RowWrapper className={clsx({ title: isTitle }, className)}>
+      {children}
+    </RowWrapper>
   );
 };
 
