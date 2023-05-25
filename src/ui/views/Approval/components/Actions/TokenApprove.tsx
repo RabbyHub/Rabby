@@ -15,11 +15,9 @@ import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { Popup } from 'ui/component';
 import { Table, Col, Row } from './components/Table';
 import AddressMemo from './components/AddressMemo';
-import userDataDrawer from './components/UserListDrawer';
 import LogoWithText from './components/LogoWithText';
 import * as Values from './components/Values';
 import SecurityLevelTagNoText from '../SecurityEngine/SecurityLevelTagNoText';
-import IconEdit from 'ui/assets/editpen.svg';
 
 const Wrapper = styled.div`
   .header {
@@ -222,35 +220,6 @@ const TokenApprove = ({
     });
   };
 
-  const handleEditSpenderMark = () => {
-    userDataDrawer({
-      address: actionData.spender,
-      onWhitelist: spenderInWhitelist,
-      onBlacklist: spenderInBlacklist,
-      async onChange({ onWhitelist, onBlacklist }) {
-        const contract = {
-          address: actionData.spender,
-          chainId: chain.serverId,
-        };
-        if (onWhitelist && !spenderInWhitelist) {
-          await wallet.addContractWhitelist(contract);
-        }
-        if (onBlacklist && !spenderInBlacklist) {
-          await wallet.addContractBlacklist(contract);
-        }
-        if (
-          !onBlacklist &&
-          !onWhitelist &&
-          (spenderInBlacklist || spenderInWhitelist)
-        ) {
-          await wallet.removeContractBlacklist(contract);
-          await wallet.removeContractWhitelist(contract);
-        }
-        dispatch.securityEngine.init();
-      },
-    });
-  };
-
   const handleClickTokenBalance = () => {
     handleApproveAmountChange(tokenBalance);
   };
@@ -405,18 +374,14 @@ const TokenApprove = ({
         <Col>
           <Row isTitle>My mark</Row>
           <Row>
-            <div className="flex">
-              <span className="mr-6">
-                {spenderInWhitelist && 'Trusted'}
-                {spenderInBlacklist && 'Blocked'}
-                {!spenderInBlacklist && !spenderInWhitelist && 'No mark'}
-              </span>
-              <img
-                src={IconEdit}
-                className="icon-edit-alias icon"
-                onClick={handleEditSpenderMark}
-              />
-            </div>
+            <Values.AddressMark
+              onWhitelist={spenderInWhitelist}
+              onBlacklist={spenderInBlacklist}
+              address={actionData.spender}
+              chainId={chain.serverId}
+              isContract
+              onChange={() => dispatch.securityEngine.init()}
+            />
             {engineResultMap['1026'] && (
               <SecurityLevelTagNoText
                 level={

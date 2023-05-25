@@ -395,7 +395,7 @@ class ProviderController extends BaseController {
       isSubmitted: true,
     });
 
-    const { explain: cacheExplain, rawTx } = approvingTx;
+    const { explain: cacheExplain, rawTx, action } = approvingTx;
 
     try {
       const signedTx = await keyringService.signTransaction(
@@ -462,6 +462,7 @@ class ProviderController extends BaseController {
             failed: false,
           },
           cacheExplain,
+          action,
           origin,
           options?.data?.$ctx
         );

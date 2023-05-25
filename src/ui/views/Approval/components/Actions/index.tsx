@@ -1,30 +1,32 @@
+import { Result } from '@debank/rabby-security-engine';
+import { Chain, ExplainTxResponse } from 'background/service/openapi';
 import React, { useMemo } from 'react';
-import Swap from './Swap';
-import Send from './Send';
-import TokenApprove from './TokenApprove';
-import SendNFT from './SendNFT';
 import styled from 'styled-components';
+import IconArrowRight from 'ui/assets/approval/edit-arrow-right.svg';
+import BalanceChange from '../TxComponents/BalanceChange';
+import ViewRawModal from '../TxComponents/ViewRawModal';
+import ApproveNFT from './ApproveNFT';
+import ApproveNFTCollection from './ApproveNFTCollection';
+import CancelTx from './CancelTx';
+import ContractCall from './ContractCall';
+import DeployContract from './DeployContract';
+import RevokeNFT from './RevokeNFT';
+import RevokeNFTCollection from './RevokeNFTCollection';
+import Send from './Send';
+import SendNFT from './SendNFT';
+import Swap from './Swap';
+import TokenApprove from './TokenApprove';
 import {
   ActionRequireData,
   ApproveNFTRequireData,
   ApproveTokenRequireData,
-  ContractCallRequireDta,
+  CancelTxRequireData,
+  ContractCallRequireData,
   ParsedActionData,
   RevokeNFTRequireData,
   SendRequireData,
   SwapRequireData,
 } from './utils';
-import { Chain, ExplainTxResponse } from 'background/service/openapi';
-import { Result } from '@debank/rabby-security-engine';
-import BalanceChange from '../TxComponents/BalanceChange';
-import ViewRawModal from '../TxComponents/ViewRawModal';
-import IconArrowRight from 'ui/assets/approval/edit-arrow-right.svg';
-import DeployContract from './DeployContract';
-import ApproveNFT from './ApproveNFT';
-import ApproveNFTCollection from './ApproveNFTCollection';
-import RevokeNFTCollection from './RevokeNFTCollection';
-import RevokeNFT from './RevokeNFT';
-import ContractCall from './ContractCall';
 
 const SignTitle = styled.div`
   display: flex;
@@ -135,6 +137,10 @@ const Actions = ({
     if (data.deployContract) {
       return 'Deploy Contract';
     }
+
+    if (data.cancelTx) {
+      return 'Cancel Pending Transaction';
+    }
   }, [data]);
 
   const handleViewRawClick = () => {
@@ -190,10 +196,20 @@ const Actions = ({
               raw={raw}
             />
           )}
+          {data.cancelTx && (
+            <CancelTx
+              data={data.cancelTx}
+              requireData={requireData as CancelTxRequireData}
+              chain={chain}
+              engineResults={engineResults}
+              onChange={onChange}
+              raw={raw}
+            ></CancelTx>
+          )}
           {data.contractCall && (
             <ContractCall
               data={data.contractCall}
-              requireData={requireData as ContractCallRequireDta}
+              requireData={requireData as ContractCallRequireData}
               chain={chain}
               engineResults={engineResults}
               onChange={onChange}

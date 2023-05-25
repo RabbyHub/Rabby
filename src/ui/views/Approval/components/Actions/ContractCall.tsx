@@ -2,7 +2,7 @@ import React, { useEffect, useMemo } from 'react';
 import styled from 'styled-components';
 import { Chain } from 'background/service/openapi';
 import { Result } from '@debank/rabby-security-engine';
-import { ContractCallRequireDta, ParsedActionData } from './utils';
+import { ContractCallRequireData, ParsedActionData } from './utils';
 import { ellipsis } from 'ui/utils/address';
 import { isSameAddress } from '@/ui/utils';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
@@ -54,7 +54,7 @@ const ContractCall = ({
   engineResults,
 }: {
   data: ParsedActionData['contractCall'];
-  requireData: ContractCallRequireDta;
+  requireData: ContractCallRequireData;
   chain: Chain;
   raw: Record<string, string | number>;
   engineResults: Result[];
