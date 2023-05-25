@@ -8,23 +8,16 @@ import { formatUsdValue } from 'ui/utils/number';
 import { ellipsis } from 'ui/utils/address';
 import { ellipsisTokenSymbol } from 'ui/utils/token';
 import { getTimeSpan } from 'ui/utils/time';
-import { useWallet } from '@/ui/utils';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { Table, Col, Row } from './components/Table';
 import AddressMemo from './components/AddressMemo';
-import userDataDrawer from './components/UserListDrawer';
+import * as Values from './components/Values';
 import LogoWithText from './components/LogoWithText';
 import SecurityLevelTagNoText from '../SecurityEngine/SecurityLevelTagNoText';
-import IconEdit from 'ui/assets/editpen.svg';
 
 const Wrapper = styled.div`
   .header {
     margin-top: 15px;
-  }
-  .icon-edit-alias {
-    width: 13px;
-    height: 13px;
-    cursor: pointer;
   }
   .icon-scam-token {
     margin-left: 4px;
@@ -49,7 +42,6 @@ const Send = ({
 }) => {
   const actionData = data!;
   const dispatch = useRabbyDispatch();
-  const wallet = useWallet();
   const {
     userData,
     rules,
@@ -130,31 +122,6 @@ const Send = ({
       value: result?.value,
       level: result?.level,
       ignored: processedRules.includes(id),
-    });
-  };
-
-  const handleEditReceiverMark = () => {
-    userDataDrawer({
-      address: actionData.to,
-      onWhitelist: receiverInWhitelist,
-      onBlacklist: receiverInBlacklist,
-      async onChange({ onWhitelist, onBlacklist }) {
-        if (onWhitelist && !receiverInWhitelist) {
-          await wallet.addAddressWhitelist(actionData.to);
-        }
-        if (onBlacklist && !receiverInBlacklist) {
-          await wallet.addAddressBlacklist(actionData.to);
-        }
-        if (
-          !onBlacklist &&
-          !onWhitelist &&
-          (receiverInBlacklist || receiverInWhitelist)
-        ) {
-          await wallet.removeAddressBlacklist(actionData.to);
-          await wallet.removeAddressWhitelist(actionData.to);
-        }
-        dispatch.securityEngine.init();
-      },
     });
   };
 
@@ -244,6 +211,7 @@ const Send = ({
             {contractOnCurrentChain && (
               <ul className="desc-list">
                 {contractOnCurrentChain.multisig && <li>MultiSig: Safe</li>}
+                {requireData.name && <li>{requireData.name}</li>}
               </ul>
             )}
             {engineResultMap['1019'] && (
@@ -271,7 +239,7 @@ const Send = ({
         <Col>
           <Row isTitle>Transacted before</Row>
           <Row>
-            {requireData.hasTransfer ? 'Yes' : 'No'}
+            <Values.Boolean value={requireData.hasTransfer} />
             {engineResultMap['1018'] && (
               <SecurityLevelTagNoText
                 level={
@@ -291,6 +259,16 @@ const Send = ({
               {transferWhitelist.includes(actionData.to.toLowerCase())
                 ? 'On my whitelist'
                 : 'Not on my whitelist'}
+              {engineResultMap['1033'] && (
+                <SecurityLevelTagNoText
+                  level={
+                    processedRules.includes('1033')
+                      ? 'proceed'
+                      : engineResultMap['1033'].level
+                  }
+                  onClick={() => handleClickRule('1033')}
+                />
+              )}
             </Row>
           </Col>
         )}
@@ -303,26 +281,20 @@ const Send = ({
         <Col>
           <Row isTitle>My mark</Row>
           <Row>
-            <div className="flex">
-              <span className="mr-6">
-                {receiverInWhitelist && 'Trusted'}
-                {receiverInBlacklist && 'Blocked'}
-                {!receiverInBlacklist && !receiverInWhitelist && 'No mark'}
-              </span>
-              <img
-                src={IconEdit}
-                className="icon-edit-alias icon"
-                onClick={handleEditReceiverMark}
-              />
-            </div>
-            {engineResultMap['1033'] && (
+            <Values.AddressMark
+              onWhitelist={receiverInWhitelist}
+              onBlacklist={receiverInBlacklist}
+              address={actionData.to}
+              onChange={() => dispatch.securityEngine.init()}
+            />
+            {engineResultMap['1031'] && (
               <SecurityLevelTagNoText
                 level={
-                  processedRules.includes('1033')
+                  processedRules.includes('1031')
                     ? 'proceed'
-                    : engineResultMap['1033'].level
+                    : engineResultMap['1031'].level
                 }
-                onClick={() => handleClickRule('1033')}
+                onClick={() => handleClickRule('1031')}
               />
             )}
             {engineResultMap['1032'] && (

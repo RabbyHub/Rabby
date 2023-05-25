@@ -1,14 +1,18 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect, useMemo, useState } from 'react';
+import { Button, Form, Input } from 'antd';
 import styled from 'styled-components';
-import { Chain } from 'background/service/openapi';
+import BigNumber from 'bignumber.js';
+import { Chain, TokenItem } from 'background/service/openapi';
 import { Result } from '@debank/rabby-security-engine';
 import { ApproveTokenRequireData, ParsedActionData } from './utils';
-import { formatUsdValue } from 'ui/utils/number';
 import { ellipsis } from 'ui/utils/address';
 import { ellipsisTokenSymbol } from 'ui/utils/token';
 import { getTimeSpan } from 'ui/utils/time';
-import { isSameAddress, useWallet } from '@/ui/utils';
+import { isSameAddress, useWallet, ellipsisOverflowedText } from '@/ui/utils';
+import { getCustomTxParamsData } from 'ui/utils/transaction';
+import { formatAmount, formatUsdValue } from '@/ui/utils/number';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
+import { Popup } from 'ui/component';
 import { Table, Col, Row } from './components/Table';
 import AddressMemo from './components/AddressMemo';
 import userDataDrawer from './components/UserListDrawer';
@@ -36,18 +40,119 @@ const Wrapper = styled.div`
   }
 `;
 
-const Send = ({
+interface ApproveAmountModalProps {
+  amount: number | string;
+  balance: string | undefined | null;
+  token: TokenItem;
+  onChange(value: string): void;
+}
+
+const ApproveAmountModal = ({
+  balance,
+  amount,
+  token,
+  onChange,
+}: ApproveAmountModalProps) => {
+  const [customAmount, setCustomAmount] = useState(
+    new BigNumber(amount).toFixed()
+  );
+  const [tokenPrice, setTokenPrice] = useState(
+    new BigNumber(amount).times(token.price).toNumber()
+  );
+  const [canSubmit, setCanSubmit] = useState(false);
+  const handleSubmit = () => {
+    onChange(customAmount);
+  };
+  const handleChange = (value: string) => {
+    if (/^\d*(\.\d*)?$/.test(value)) {
+      setCustomAmount(value);
+    }
+  };
+
+  useEffect(() => {
+    if (
+      !customAmount ||
+      Number(customAmount) <= 0 ||
+      Number.isNaN(Number(customAmount))
+    ) {
+      setCanSubmit(false);
+    } else {
+      setCanSubmit(true);
+    }
+    setTokenPrice(Number(customAmount || 0) * token.price);
+  }, [customAmount]);
+
+  return (
+    <Form onFinish={handleSubmit}>
+      <Form.Item>
+        <Input
+          value={customAmount}
+          onChange={(e) => handleChange(e.target.value)}
+          bordered={false}
+          addonAfter={
+            <span title={token.symbol}>
+              {ellipsisTokenSymbol(token.symbol, 4)}
+            </span>
+          }
+          autoFocus
+        />
+      </Form.Item>
+      <div className="approve-amount-footer overflow-hidden gap-[8px]">
+        <span
+          className="est-approve-price truncate"
+          title={formatUsdValue(new BigNumber(tokenPrice).toFixed(2))}
+        >
+          ≈
+          {ellipsisOverflowedText(
+            formatUsdValue(new BigNumber(tokenPrice).toFixed()),
+            18,
+            true
+          )}
+        </span>
+        {balance && (
+          <span
+            className="token-approve-balance truncate"
+            title={formatAmount(balance)}
+            onClick={() => {
+              setCustomAmount(balance);
+            }}
+          >
+            Balance: {formatAmount(new BigNumber(balance).toFixed(4))}
+          </span>
+        )}
+      </div>
+      <div className="flex justify-center mt-32 popup-footer">
+        <Button
+          type="primary"
+          className="w-[200px]"
+          size="large"
+          htmlType="submit"
+          disabled={!canSubmit}
+        >
+          Confirm
+        </Button>
+      </div>
+    </Form>
+  );
+};
+
+const TokenApprove = ({
   data,
   requireData,
   chain,
   engineResults,
+  raw,
+  onChange,
 }: {
   data: ParsedActionData['approveToken'];
   requireData: ApproveTokenRequireData;
   chain: Chain;
+  raw: Record<string, string | number>;
   engineResults: Result[];
+  onChange(tx: Record<string, any>): void;
 }) => {
   const actionData = data!;
+  const [editApproveModalVisible, setEditApproveModalVisible] = useState(false);
   const dispatch = useRabbyDispatch();
   const wallet = useWallet();
   const { userData, rules, processedRules } = useRabbySelector((s) => ({
@@ -94,6 +199,17 @@ const Send = ({
     return map;
   }, [engineResults]);
 
+  const tokenBalance = useMemo(() => {
+    return new BigNumber(requireData.token.raw_amount || '0')
+      .div(10 ** requireData.token.decimals)
+      .toFixed();
+  }, [requireData]);
+  const approveAmount = useMemo(() => {
+    return new BigNumber(actionData.token.raw_amount || '0')
+      .div(10 ** actionData.token.decimals)
+      .toFixed();
+  }, [actionData]);
+
   const handleClickRule = (id: string) => {
     const rule = rules.find((item) => item.id === id);
     if (!rule) return;
@@ -135,6 +251,23 @@ const Send = ({
     });
   };
 
+  const handleClickTokenBalance = () => {
+    handleApproveAmountChange(tokenBalance);
+  };
+
+  const handleApproveAmountChange = (value: string) => {
+    const result = new BigNumber(value).isGreaterThan(Number.MAX_SAFE_INTEGER)
+      ? String(Number.MAX_SAFE_INTEGER)
+      : value;
+    const data = getCustomTxParamsData(raw.data, {
+      customPermissionAmount: result,
+      decimals: actionData.token.decimals,
+    });
+    onChange({
+      data,
+    });
+  };
+
   useEffect(() => {
     dispatch.securityEngine.init();
   }, []);
@@ -154,7 +287,27 @@ const Send = ({
         <Col>
           <Row isTitle>Approve Amount</Row>
           <Row>
-            <Values.TokenAmount value={actionData.token.amount} />
+            <div className="flex justify-between">
+              <Values.TokenAmount value={actionData.token.amount} />
+              <span
+                className="text-blue-light text-12 font-medium cursor-pointer"
+                onClick={() => setEditApproveModalVisible(true)}
+              >
+                Edit
+              </span>
+            </div>
+            <ul className="desc-list">
+              <li>
+                My balance{' '}
+                <span
+                  className="underline cursor-pointer"
+                  onClick={handleClickTokenBalance}
+                >
+                  {formatAmount(tokenBalance)}
+                </span>{' '}
+                {ellipsisTokenSymbol(actionData.token.symbol)}
+              </li>
+            </ul>
           </Row>
         </Col>
       </Table>
@@ -208,7 +361,7 @@ const Send = ({
         <Col>
           <Row isTitle>Risk exposure</Row>
           <Row>
-            {formatUsdValue(requireData.riskExposure)}
+            <Values.USDValue value={requireData.riskExposure} />
             {engineResultMap['1023'] && (
               <SecurityLevelTagNoText
                 level={
@@ -297,8 +450,23 @@ const Send = ({
           </Row>
         </Col>
       </Table>
+      <Popup
+        visible={editApproveModalVisible}
+        className="edit-approve-amount-modal"
+        height={280}
+        title="Amount"
+        onCancel={() => setEditApproveModalVisible(false)}
+        destroyOnClose
+      >
+        <ApproveAmountModal
+          balance={tokenBalance}
+          amount={approveAmount}
+          token={actionData.token}
+          onChange={handleApproveAmountChange}
+        />
+      </Popup>
     </Wrapper>
   );
 };
 
-export default Send;
+export default TokenApprove;

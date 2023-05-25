@@ -76,6 +76,7 @@ export interface ParsedActionData {
     collection: NFTCollection;
   };
   deployContract?: Record<string, never>;
+  contractCall?: object;
 }
 
 const calcSlippageTolerance = (base: number, actual: number) => {
@@ -89,7 +90,7 @@ export const parseAction = (
   data: ParseTxResponse['action'],
   balanceChange: ExplainTxResponse['balance_change']
 ): ParsedActionData => {
-  if (data.type === 'swap_token') {
+  if (data?.type === 'swap_token') {
     const {
       pay_token: payToken,
       receive_token: receiveToken,
@@ -135,12 +136,12 @@ export const parseAction = (
       },
     };
   }
-  if (data.type === 'send_token') {
+  if (data?.type === 'send_token') {
     return {
       send: data.data as SendAction,
     };
   }
-  if (data.type === 'approve_token') {
+  if (data?.type === 'approve_token') {
     const { spender, token } = data.data as ApproveAction;
     return {
       approveToken: {
@@ -181,7 +182,9 @@ export const parseAction = (
       deployContract: {},
     };
   }
-  return {};
+  return {
+    contractCall: {},
+  };
 };
 
 export interface SwapRequireData {
@@ -220,6 +223,8 @@ export interface SendRequireData {
   hasTransfer: boolean;
   isTokenContract: boolean;
   usedChains: UsedChain[];
+  name: string | null;
+  onTransferWhitelist: boolean;
 }
 
 export interface ApproveTokenRequireData {
@@ -234,7 +239,19 @@ export interface ApproveTokenRequireData {
     logo_url: string;
   } | null;
   isDanger: boolean | null;
-  tokenBalance: string;
+  token: TokenItem;
+}
+
+export interface ContractCallRequireDta {
+  contract: Record<string, ContractDesc> | null;
+  rank: number | null;
+  hasInteraction: boolean;
+  bornAt: number;
+  protocol: {
+    name: string;
+    logo_url: string;
+  } | null;
+  call: NonNullable<ParseTxResponse['contract_call']>;
 }
 
 export interface ApproveNFTRequireData {
@@ -260,6 +277,7 @@ export type ActionRequireData =
   | SendRequireData
   | ApproveNFTRequireData
   | RevokeNFTRequireData
+  | ContractCallRequireDta
   | null;
 
 const waitQueueFinished = (q: PQueue) => {
@@ -299,11 +317,11 @@ export const fetchActionRequiredData = async ({
       sender: address,
     };
     queue.add(async () => {
-      const isScam = await wallet.openapi.isScamToken(
+      const { is_suspicious } = await wallet.openapi.isSuspiciousToken(
         actionData.swap!.receiveToken.id,
         chainId
       );
-      result.receiveTokenIsScam = isScam.is_scam;
+      result.receiveTokenIsScam = is_suspicious;
     });
     queue.add(async () => {
       const credit = await wallet.openapi.getContractCredit(id, chainId);
@@ -336,6 +354,8 @@ export const fetchActionRequiredData = async ({
       hasTransfer: false,
       usedChains: [],
       isTokenContract: false,
+      name: null,
+      onTransferWhitelist: false,
     };
     queue.add(async () => {
       const { has_transfer } = await wallet.openapi.hasTransfer(
@@ -384,6 +404,7 @@ export const fetchActionRequiredData = async ({
         );
         result.isTokenContract = is_token;
       }
+      result.name = desc.name;
     });
     queue.add(async () => {
       const usedChainList = await wallet.openapi.addrUsedChainList(
@@ -391,10 +412,15 @@ export const fetchActionRequiredData = async ({
       );
       result.usedChains = usedChainList;
     });
+    const whitelist = await wallet.getWhitelist();
+    result.onTransferWhitelist = whitelist.includes(
+      actionData.send.to.toLowerCase()
+    );
     await waitQueueFinished(queue);
     return result;
   }
   if (actionData.approveToken) {
+    const { spender, token } = actionData.approveToken;
     const result: ApproveTokenRequireData = {
       isEOA: false,
       contract: null,
@@ -404,9 +430,13 @@ export const fetchActionRequiredData = async ({
       bornAt: 0,
       protocol: null,
       isDanger: false,
-      tokenBalance: '0',
+      token: {
+        ...token,
+        amount: 0,
+        raw_amount: 0,
+        raw_amount_hex_str: '0x0',
+      },
     };
-    const { spender, token } = actionData.approveToken;
     queue.add(async () => {
       const credit = await wallet.openapi.getContractCredit(spender, chainId);
       result.rank = credit.rank_at;
@@ -420,7 +450,7 @@ export const fetchActionRequiredData = async ({
     });
     queue.add(async () => {
       const t = await wallet.openapi.getToken(address, chainId, token.id);
-      result.tokenBalance = t.raw_amount_hex_str || '0';
+      result.token = t;
     });
     queue.add(async () => {
       const { desc } = await wallet.openapi.addrDesc(spender);
@@ -454,6 +484,8 @@ export const fetchActionRequiredData = async ({
       hasTransfer: false,
       usedChains: [],
       isTokenContract: false,
+      name: null,
+      onTransferWhitelist: false,
     };
     queue.add(async () => {
       const { has_transfer } = await wallet.openapi.hasTransfer(
@@ -772,6 +804,7 @@ export const formatSecurityEngineCtx = ({
         chainId,
         usedChainList: data.usedChains.map((item) => item.id),
         isTokenContract: data.isTokenContract,
+        onTransferWhitelist: data.onTransferWhitelist,
       },
     };
   }

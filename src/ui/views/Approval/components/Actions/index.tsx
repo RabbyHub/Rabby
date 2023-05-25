@@ -8,6 +8,7 @@ import {
   ActionRequireData,
   ApproveNFTRequireData,
   ApproveTokenRequireData,
+  ContractCallRequireDta,
   ParsedActionData,
   RevokeNFTRequireData,
   SendRequireData,
@@ -23,6 +24,7 @@ import ApproveNFT from './ApproveNFT';
 import ApproveNFTCollection from './ApproveNFTCollection';
 import RevokeNFTCollection from './RevokeNFTCollection';
 import RevokeNFT from './RevokeNFT';
+import ContractCall from './ContractCall';
 
 const SignTitle = styled.div`
   display: flex;
@@ -92,6 +94,7 @@ const Actions = ({
   engineResults,
   txDetail,
   raw,
+  onChange,
 }: {
   data: ParsedActionData;
   requireData: ActionRequireData;
@@ -99,6 +102,7 @@ const Actions = ({
   engineResults: Result[];
   txDetail: ExplainTxResponse;
   raw: Record<string, string | number>;
+  onChange(tx: Record<string, any>): void;
 }) => {
   const actionName = useMemo(() => {
     if (data.swap) {
@@ -153,10 +157,12 @@ const Actions = ({
         </div>
       </SignTitle>
       <ActionWrapper>
-        <div className="action-header">
-          <div className="left">{actionName}</div>
-          <div className="right">action type</div>
-        </div>
+        {!data.contractCall && (
+          <div className="action-header">
+            <div className="left">{actionName}</div>
+            <div className="right">action type</div>
+          </div>
+        )}
         <div className="container">
           {data.swap && (
             <Swap
@@ -180,6 +186,18 @@ const Actions = ({
               requireData={requireData as ApproveTokenRequireData}
               chain={chain}
               engineResults={engineResults}
+              onChange={onChange}
+              raw={raw}
+            />
+          )}
+          {data.contractCall && (
+            <ContractCall
+              data={data.contractCall}
+              requireData={requireData as ContractCallRequireDta}
+              chain={chain}
+              engineResults={engineResults}
+              onChange={onChange}
+              raw={raw}
             />
           )}
           {data?.sendNFT && (
@@ -226,8 +244,6 @@ const Actions = ({
           <BalanceChange
             version={txDetail.pre_exec_version}
             data={txDetail.balance_change}
-            chainEnum={chain.enum}
-            isSupport={txDetail.support_balance_change}
           />
         </div>
       </ActionWrapper>

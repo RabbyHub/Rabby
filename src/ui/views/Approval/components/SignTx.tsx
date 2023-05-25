@@ -115,7 +115,7 @@ export const TxTypeComponent = ({
   chain = CHAINS[CHAINS_ENUM.ETH],
   isReady,
   raw,
-  // onChange,
+  onChange,
   // tx,
   // isSpeedUp,
   engineResults,
@@ -127,14 +127,14 @@ export const TxTypeComponent = ({
   isReady: boolean;
   txDetail: ExplainTxResponse;
   raw: Record<string, string | number>;
-  // onChange(data: Record<string, any>): void;
+  onChange(data: Record<string, any>): void;
   // tx: Tx;
   isSpeedUp: boolean;
   engineResults: Result[];
 }) => {
   if (!isReady) return <Loading chainEnum={chain.enum} />;
-  // if (actionData && actionRequireData) {
-  if (actionData) {
+  if (actionData && actionRequireData) {
+    // if (actionData) {
     return (
       <Actions
         data={actionData}
@@ -143,6 +143,7 @@ export const TxTypeComponent = ({
         engineResults={engineResults}
         txDetail={txDetail}
         raw={raw}
+        onChange={onChange}
       />
     );
   }
@@ -1669,7 +1670,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
                   nonce: realNonce || tx.nonce,
                   gas: gasLimit!,
                 }}
-                // onChange={handleTxChange}
+                onChange={handleTxChange}
                 // tx={{
                 //   ...tx,
                 //   nonce: realNonce || tx.nonce,

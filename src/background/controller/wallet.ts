@@ -2575,7 +2575,7 @@ export class WalletController extends BaseController {
   };
 
   addContractWhitelist = (contract: ContractAddress) => {
-    securityEngineService.removeContractBlacklist(contract);
+    securityEngineService.removeContractBlacklistFromAllChains(contract);
     securityEngineService.addContractWhitelist(contract);
   };
 
@@ -2589,7 +2589,7 @@ export class WalletController extends BaseController {
   };
 
   removeContractBlacklist = (contract: ContractAddress) => {
-    securityEngineService.removeContractBlacklist(contract);
+    securityEngineService.removeContractBlacklistFromAllChains(contract);
   };
 
   addAddressWhitelist = (address: string) => {
