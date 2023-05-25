@@ -3,8 +3,8 @@ import styled from 'styled-components';
 import BigNumber from 'bignumber.js';
 import { Chain } from 'background/service/openapi';
 import { Result } from '@debank/rabby-security-engine';
-import { ParsedActionData, SendRequireData } from './utils';
-import { formatUsdValue } from 'ui/utils/number';
+import { ParsedActionData, SendNFTRequireData, SendRequireData } from './utils';
+import { formatAmount, formatUsdValue } from 'ui/utils/number';
 import { ellipsis } from 'ui/utils/address';
 import { ellipsisTokenSymbol } from 'ui/utils/token';
 import { getTimeSpan } from 'ui/utils/time';
@@ -19,6 +19,7 @@ import IconEdit from 'ui/assets/editpen.svg';
 import NFTAvatar from '@/ui/views/Dashboard/components/NFT/NFTAvatar';
 import { NameAndAddress } from '@/ui/component';
 import NFTWithName from './components/NFTWithName';
+import * as Values from './components/Values';
 
 const Wrapper = styled.div`
   .header {
@@ -60,7 +61,7 @@ const SendNFT = ({
   engineResults,
 }: {
   data: ParsedActionData['sendNFT'];
-  requireData: SendRequireData;
+  requireData: SendNFTRequireData;
   chain: Chain;
   engineResults: Result[];
 }) => {
@@ -188,7 +189,23 @@ const SendNFT = ({
             <NFTWithName nft={actionData?.nft}></NFTWithName>
             <ul className="desc-list">
               <li>{actionData?.nft?.collection?.name}</li>
-              <li>Floor price 50.2 ETH //todo</li>
+              <li>
+                Floor price {/* todo */}
+                {requireData?.collection?.floor_price ? (
+                  <>
+                    {/* <Values.TokenAmount
+                      value={requireData?.collection?.floor_price}
+                    /> */}
+                    {formatAmount(requireData?.collection?.floor_price, 2)}
+                    {chain.nativeTokenSymbol}
+                  </>
+                ) : (
+                  '-'
+                )}
+              </li>
+              {actionData?.nft?.amount > 1 && (
+                <li>Amount: {actionData?.nft?.amount}</li>
+              )}
               <li>
                 <NameAndAddress
                   address={actionData?.nft?.contract_id}
@@ -219,14 +236,14 @@ const SendNFT = ({
                   {!requireData.cex.isDeposit && (
                     <li>
                       Non top up address
-                      {engineResultMap['1021'] && (
+                      {engineResultMap['1039'] && (
                         <SecurityLevelTagNoText
                           level={
-                            processedRules.includes('1021')
+                            processedRules.includes('1039')
                               ? 'proceed'
-                              : engineResultMap['1021'].level
+                              : engineResultMap['1039'].level
                           }
-                          onClick={() => handleClickRule('1021')}
+                          onClick={() => handleClickRule('1039')}
                         />
                       )}
                     </li>
@@ -235,14 +252,14 @@ const SendNFT = ({
                     <li>
                       {/* {ellipsisTokenSymbol(actionData.token.symbol)} not
                       supported */}
-                      {engineResultMap['1020'] && (
+                      {engineResultMap['1038'] && (
                         <SecurityLevelTagNoText
                           level={
-                            processedRules.includes('1020')
+                            processedRules.includes('1038')
                               ? 'proceed'
-                              : engineResultMap['1020'].level
+                              : engineResultMap['1038'].level
                           }
-                          onClick={() => handleClickRule('1020')}
+                          onClick={() => handleClickRule('1038')}
                         />
                       )}
                     </li>
@@ -261,14 +278,14 @@ const SendNFT = ({
                 {contractOnCurrentChain.multisig && <li>MultiSig: Safe</li>}
               </ul>
             )}
-            {engineResultMap['1019'] && (
+            {engineResultMap['1037'] && (
               <SecurityLevelTagNoText
                 level={
-                  processedRules.includes('1019')
+                  processedRules.includes('1037')
                     ? 'proceed'
-                    : engineResultMap['1019'].level
+                    : engineResultMap['1037'].level
                 }
-                onClick={() => handleClickRule('1019')}
+                onClick={() => handleClickRule('1037')}
               />
             )}
           </Row>
@@ -287,14 +304,14 @@ const SendNFT = ({
           <Row isTitle>Transacted before</Row>
           <Row>
             {requireData.hasTransfer ? 'Yes' : 'No'}
-            {engineResultMap['1018'] && (
+            {engineResultMap['1036'] && (
               <SecurityLevelTagNoText
                 level={
-                  processedRules.includes('1018')
+                  processedRules.includes('1036')
                     ? 'proceed'
-                    : engineResultMap['1018'].level
+                    : engineResultMap['1036'].level
                 }
-                onClick={() => handleClickRule('1018')}
+                onClick={() => handleClickRule('1036')}
               />
             )}
           </Row>
@@ -330,24 +347,24 @@ const SendNFT = ({
                 onClick={handleEditReceiverMark}
               />
             </div>
-            {engineResultMap['1033'] && (
+            {engineResultMap['1042'] && (
               <SecurityLevelTagNoText
                 level={
-                  processedRules.includes('1033')
+                  processedRules.includes('1042')
                     ? 'proceed'
-                    : engineResultMap['1033'].level
+                    : engineResultMap['1042'].level
                 }
-                onClick={() => handleClickRule('1033')}
+                onClick={() => handleClickRule('1042')}
               />
             )}
-            {engineResultMap['1032'] && (
+            {engineResultMap['1041'] && (
               <SecurityLevelTagNoText
                 level={
-                  processedRules.includes('1032')
+                  processedRules.includes('1041')
                     ? 'proceed'
-                    : engineResultMap['1032'].level
+                    : engineResultMap['1041'].level
                 }
-                onClick={() => handleClickRule('1032')}
+                onClick={() => handleClickRule('1041')}
               />
             )}
           </Row>

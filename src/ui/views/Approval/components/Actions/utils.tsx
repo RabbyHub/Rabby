@@ -15,6 +15,7 @@ import {
   ApproveNFTCollectionAction,
   RevokeNFTCollectionAction,
   NFTCollection,
+  CollectionWithFloorPrice,
 } from '@debank/rabby-api/dist/types';
 import {
   ContextActionData,
@@ -227,6 +228,10 @@ export interface SendRequireData {
   onTransferWhitelist: boolean;
 }
 
+export interface SendNFTRequireData extends SendRequireData {
+  collection?: CollectionWithFloorPrice | null;
+}
+
 export interface ApproveTokenRequireData {
   isEOA: boolean;
   contract: Record<string, ContractDesc> | null;
@@ -262,6 +267,7 @@ export interface ApproveNFTRequireData {
   hasInteraction: boolean;
   bornAt: number;
   protocol: {
+    id: string;
     name: string;
     logo_url: string;
   } | null;
@@ -475,7 +481,7 @@ export const fetchActionRequiredData = async ({
     return result;
   }
   if (actionData.sendNFT) {
-    const result: SendRequireData = {
+    const result: SendNFTRequireData = {
       eoa: null,
       cex: null,
       contract: null,
@@ -486,6 +492,7 @@ export const fetchActionRequiredData = async ({
       isTokenContract: false,
       name: null,
       onTransferWhitelist: false,
+      collection: null,
     };
     queue.add(async () => {
       const { has_transfer } = await wallet.openapi.hasTransfer(
@@ -541,6 +548,13 @@ export const fetchActionRequiredData = async ({
       );
       result.usedChains = usedChainList;
     });
+    queue.add(async () => {
+      const res = await wallet.openapi.getCollection(
+        chainId,
+        actionData.sendNFT!.nft.collection?.id || ''
+      );
+      result.collection = res.collection;
+    });
     await waitQueueFinished(queue);
     return result;
   }
@@ -584,6 +598,9 @@ export const fetchActionRequiredData = async ({
       if (!desc.contract?.[chainId]) {
         result.isEOA = true;
         result.bornAt = desc.born_at;
+      }
+      if (desc.protocol?.[chainId]) {
+        result.protocol = desc.protocol[chainId];
       }
       result.isDanger = desc.is_danger;
     });
@@ -635,6 +652,9 @@ export const fetchActionRequiredData = async ({
         result.isEOA = true;
         result.bornAt = desc.born_at;
       }
+      if (desc.protocol?.[chainId]) {
+        result.protocol = desc.protocol[chainId];
+      }
       result.isDanger = desc.is_danger;
     });
     queue.add(async () => {
@@ -685,6 +705,9 @@ export const fetchActionRequiredData = async ({
         result.isEOA = true;
         result.bornAt = desc.born_at;
       }
+      if (desc.protocol?.[chainId]) {
+        result.protocol = desc.protocol[chainId];
+      }
       result.isDanger = desc.is_danger;
     });
     queue.add(async () => {
@@ -734,6 +757,9 @@ export const fetchActionRequiredData = async ({
       if (!desc.contract?.[chainId]) {
         result.isEOA = true;
         result.bornAt = desc.born_at;
+      }
+      if (desc.protocol?.[chainId]) {
+        result.protocol = desc.protocol[chainId];
       }
       result.isDanger = desc.is_danger;
     });

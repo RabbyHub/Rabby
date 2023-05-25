@@ -27,7 +27,7 @@ const LogoWithText = ({
   text,
   icon,
 }: {
-  logo: string;
+  logo?: string;
   text: string;
   icon?: ReactNode;
 }) => {

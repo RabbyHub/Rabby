@@ -161,11 +161,13 @@ const ApproveNFT = ({
     dispatch.securityEngine.init();
   }, []);
 
+  console.log(requireData);
+
   return (
     <Wrapper>
       <Table>
         <Col>
-          <Row isTitle>Send NFT</Row>
+          <Row isTitle>Approve NFT</Row>
           <Row>
             <NFTWithName nft={actionData?.nft}></NFTWithName>
             <ul className="desc-list">
@@ -188,27 +190,36 @@ const ApproveNFT = ({
       </div>
       <Table>
         <Col>
+          <Row isTitle>Protocol</Row>
+          <Row>
+            <LogoWithText
+              logo={requireData.protocol?.logo_url}
+              text={requireData.protocol?.name || 'Unknown'}
+            ></LogoWithText>
+          </Row>
+        </Col>
+        <Col>
           <Row isTitle>Type</Row>
           <Row>
             {requireData.isEOA ? 'EOA' : 'Contract'}
-            {engineResultMap['1022'] && (
+            {engineResultMap['1043'] && (
               <SecurityLevelTagNoText
                 level={
-                  processedRules.includes('1022')
+                  processedRules.includes('1043')
                     ? 'proceed'
-                    : engineResultMap['1022'].level
+                    : engineResultMap['1043'].level
                 }
-                onClick={() => handleClickRule('1022')}
+                onClick={() => handleClickRule('1043')}
               />
             )}
-            {engineResultMap['1029'] && (
+            {engineResultMap['1052'] && (
               <SecurityLevelTagNoText
                 level={
-                  processedRules.includes('1029')
+                  processedRules.includes('1052')
                     ? 'proceed'
-                    : engineResultMap['1029'].level
+                    : engineResultMap['1052'].level
                 }
-                onClick={() => handleClickRule('1029')}
+                onClick={() => handleClickRule('1052')}
               />
             )}
           </Row>
@@ -217,14 +228,14 @@ const ApproveNFT = ({
           <Row isTitle>{requireData.isEOA ? 'First on-chain' : 'Deployed'}</Row>
           <Row>
             {timeSpan}
-            {engineResultMap['1024'] && (
+            {engineResultMap['1045'] && (
               <SecurityLevelTagNoText
                 level={
-                  processedRules.includes('1024')
+                  processedRules.includes('1045')
                     ? 'proceed'
-                    : engineResultMap['1024'].level
+                    : engineResultMap['1045'].level
                 }
-                onClick={() => handleClickRule('1024')}
+                onClick={() => handleClickRule('1045')}
               />
             )}
           </Row>
@@ -233,14 +244,14 @@ const ApproveNFT = ({
           <Row isTitle>Risk exposure</Row>
           <Row>
             {formatUsdValue(requireData.riskExposure)}
-            {engineResultMap['1023'] && (
+            {engineResultMap['1054'] && (
               <SecurityLevelTagNoText
                 level={
-                  processedRules.includes('1023')
+                  processedRules.includes('1054')
                     ? 'proceed'
-                    : engineResultMap['1023'].level
+                    : engineResultMap['1054'].level
                 }
-                onClick={() => handleClickRule('1023')}
+                onClick={() => handleClickRule('1054')}
               />
             )}
           </Row>
@@ -255,14 +266,14 @@ const ApproveNFT = ({
           <Row isTitle>Interacted before</Row>
           <Row>
             <Values.Boolean value={requireData.hasInteraction} />
-            {engineResultMap['1025'] && (
+            {engineResultMap['1048'] && (
               <SecurityLevelTagNoText
                 level={
-                  processedRules.includes('1025')
+                  processedRules.includes('1048')
                     ? 'proceed'
-                    : engineResultMap['1025'].level
+                    : engineResultMap['1048'].level
                 }
-                onClick={() => handleClickRule('1025')}
+                onClick={() => handleClickRule('1048')}
               />
             )}
           </Row>
@@ -288,34 +299,34 @@ const ApproveNFT = ({
                 onClick={handleEditSpenderMark}
               />
             </div>
-            {engineResultMap['1026'] && (
+            {engineResultMap['1049'] && (
               <SecurityLevelTagNoText
                 level={
-                  processedRules.includes('1026')
+                  processedRules.includes('1049')
                     ? 'proceed'
-                    : engineResultMap['1026'].level
+                    : engineResultMap['1049'].level
                 }
-                onClick={() => handleClickRule('1026')}
+                onClick={() => handleClickRule('1049')}
               />
             )}
-            {engineResultMap['1027'] && (
+            {engineResultMap['1050'] && (
               <SecurityLevelTagNoText
                 level={
-                  processedRules.includes('1027')
+                  processedRules.includes('1050')
                     ? 'proceed'
-                    : engineResultMap['1027'].level
+                    : engineResultMap['1050'].level
                 }
-                onClick={() => handleClickRule('1027')}
+                onClick={() => handleClickRule('1050')}
               />
             )}
-            {engineResultMap['1028'] && (
+            {engineResultMap['1051'] && (
               <SecurityLevelTagNoText
                 level={
-                  processedRules.includes('1028')
+                  processedRules.includes('1051')
                     ? 'proceed'
-                    : engineResultMap['1028'].level
+                    : engineResultMap['1051'].level
                 }
-                onClick={() => handleClickRule('1028')}
+                onClick={() => handleClickRule('1051')}
               />
             )}
           </Row>

@@ -165,7 +165,7 @@ const RevokeNFTCollection = ({
     <Wrapper>
       <Table>
         <Col>
-          <Row isTitle>Send NFT</Row>
+          <Row isTitle>Revoke collection</Row>
           <Row>
             {actionData?.collection?.name}
             <ul className="desc-list">
@@ -187,6 +187,15 @@ const RevokeNFTCollection = ({
         <div className="right">approve to</div>
       </div>
       <Table>
+        <Col>
+          <Row isTitle>Protocol</Row>
+          <Row>
+            <LogoWithText
+              logo={requireData.protocol?.logo_url}
+              text={requireData.protocol?.name || 'Unknown'}
+            ></LogoWithText>
+          </Row>
+        </Col>
         <Col>
           <Row isTitle>Type</Row>
           <Row>

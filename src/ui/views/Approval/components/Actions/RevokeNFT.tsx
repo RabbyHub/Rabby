@@ -166,7 +166,7 @@ const RevokeNFT = ({
     <Wrapper>
       <Table>
         <Col>
-          <Row isTitle>Send NFT</Row>
+          <Row isTitle>Revoke NFT</Row>
           <Row>
             <NFTWithName nft={actionData?.nft}></NFTWithName>
             <ul className="desc-list">
@@ -185,9 +185,18 @@ const RevokeNFT = ({
       </Table>
       <div className="header">
         <div className="left">{ellipsis(actionData.spender)}</div>
-        <div className="right">approve to</div>
+        <div className="right">revoke from</div>
       </div>
       <Table>
+        <Col>
+          <Row isTitle>Protocol</Row>
+          <Row>
+            <LogoWithText
+              logo={requireData.protocol?.logo_url}
+              text={requireData.protocol?.name || 'Unknown'}
+            ></LogoWithText>
+          </Row>
+        </Col>
         <Col>
           <Row isTitle>Type</Row>
           <Row>

@@ -165,7 +165,7 @@ const ApproveNFTCollection = ({
     <Wrapper>
       <Table>
         <Col>
-          <Row isTitle>Send NFT</Row>
+          <Row isTitle>Approve collection</Row>
           <Row>
             {actionData?.collection?.name}
             <ul className="desc-list">
@@ -188,27 +188,36 @@ const ApproveNFTCollection = ({
       </div>
       <Table>
         <Col>
+          <Row isTitle>Protocol</Row>
+          <Row>
+            <LogoWithText
+              logo={requireData.protocol?.logo_url}
+              text={requireData.protocol?.name || 'Unknown'}
+            ></LogoWithText>
+          </Row>
+        </Col>
+        <Col>
           <Row isTitle>Type</Row>
           <Row>
             {requireData.isEOA ? 'EOA' : 'Contract'}
-            {engineResultMap['1022'] && (
+            {engineResultMap['1053'] && (
               <SecurityLevelTagNoText
                 level={
-                  processedRules.includes('1022')
+                  processedRules.includes('1053')
                     ? 'proceed'
-                    : engineResultMap['1022'].level
+                    : engineResultMap['1053'].level
                 }
-                onClick={() => handleClickRule('1022')}
+                onClick={() => handleClickRule('1053')}
               />
             )}
-            {engineResultMap['1029'] && (
+            {engineResultMap['1060'] && (
               <SecurityLevelTagNoText
                 level={
-                  processedRules.includes('1029')
+                  processedRules.includes('1060')
                     ? 'proceed'
-                    : engineResultMap['1029'].level
+                    : engineResultMap['1060'].level
                 }
-                onClick={() => handleClickRule('1029')}
+                onClick={() => handleClickRule('1060')}
               />
             )}
           </Row>
@@ -217,14 +226,14 @@ const ApproveNFTCollection = ({
           <Row isTitle>{requireData.isEOA ? 'First on-chain' : 'Deployed'}</Row>
           <Row>
             {timeSpan}
-            {engineResultMap['1024'] && (
+            {engineResultMap['1055'] && (
               <SecurityLevelTagNoText
                 level={
-                  processedRules.includes('1024')
+                  processedRules.includes('1055')
                     ? 'proceed'
-                    : engineResultMap['1024'].level
+                    : engineResultMap['1055'].level
                 }
-                onClick={() => handleClickRule('1024')}
+                onClick={() => handleClickRule('1055')}
               />
             )}
           </Row>
@@ -233,14 +242,14 @@ const ApproveNFTCollection = ({
           <Row isTitle>Risk exposure</Row>
           <Row>
             {formatUsdValue(requireData.riskExposure)}
-            {engineResultMap['1023'] && (
+            {engineResultMap['1054'] && (
               <SecurityLevelTagNoText
                 level={
-                  processedRules.includes('1023')
+                  processedRules.includes('1054')
                     ? 'proceed'
-                    : engineResultMap['1023'].level
+                    : engineResultMap['1054'].level
                 }
-                onClick={() => handleClickRule('1023')}
+                onClick={() => handleClickRule('1054')}
               />
             )}
           </Row>
@@ -255,14 +264,14 @@ const ApproveNFTCollection = ({
           <Row isTitle>Interacted before</Row>
           <Row>
             <Values.Boolean value={requireData.hasInteraction} />
-            {engineResultMap['1025'] && (
+            {engineResultMap['1056'] && (
               <SecurityLevelTagNoText
                 level={
-                  processedRules.includes('1025')
+                  processedRules.includes('1056')
                     ? 'proceed'
-                    : engineResultMap['1025'].level
+                    : engineResultMap['1056'].level
                 }
-                onClick={() => handleClickRule('1025')}
+                onClick={() => handleClickRule('1056')}
               />
             )}
           </Row>
@@ -288,34 +297,34 @@ const ApproveNFTCollection = ({
                 onClick={handleEditSpenderMark}
               />
             </div>
-            {engineResultMap['1026'] && (
+            {engineResultMap['1057'] && (
               <SecurityLevelTagNoText
                 level={
-                  processedRules.includes('1026')
+                  processedRules.includes('1057')
                     ? 'proceed'
-                    : engineResultMap['1026'].level
+                    : engineResultMap['1057'].level
                 }
-                onClick={() => handleClickRule('1026')}
+                onClick={() => handleClickRule('1057')}
               />
             )}
-            {engineResultMap['1027'] && (
+            {engineResultMap['1058'] && (
               <SecurityLevelTagNoText
                 level={
-                  processedRules.includes('1027')
+                  processedRules.includes('1058')
                     ? 'proceed'
-                    : engineResultMap['1027'].level
+                    : engineResultMap['1058'].level
                 }
-                onClick={() => handleClickRule('1027')}
+                onClick={() => handleClickRule('1058')}
               />
             )}
-            {engineResultMap['1028'] && (
+            {engineResultMap['1059'] && (
               <SecurityLevelTagNoText
                 level={
-                  processedRules.includes('1028')
+                  processedRules.includes('1059')
                     ? 'proceed'
-                    : engineResultMap['1028'].level
+                    : engineResultMap['1059'].level
                 }
-                onClick={() => handleClickRule('1028')}
+                onClick={() => handleClickRule('1059')}
               />
             )}
           </Row>
