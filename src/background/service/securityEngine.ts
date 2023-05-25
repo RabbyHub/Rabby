@@ -103,7 +103,8 @@ class SecurityEngineService {
         addressWhitelist: [],
       };
     }
-    this.engine = new Engine(this.rules, openapiService);
+    // todo
+    this.engine = new Engine(this.rules, openapiService as any);
   };
 
   execute = async (actionData: ContextActionData) => {

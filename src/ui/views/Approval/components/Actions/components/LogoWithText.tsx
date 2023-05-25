@@ -28,7 +28,7 @@ const LogoWithText = ({
   icon,
   logoRadius = '',
 }: {
-  logo: string;
+  logo?: string;
   text: string;
   icon?: ReactNode;
   logoRadius?: string;

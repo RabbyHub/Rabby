@@ -1,24 +1,32 @@
+import { Result } from '@debank/rabby-security-engine';
+import { Chain, ExplainTxResponse } from 'background/service/openapi';
 import React, { useMemo } from 'react';
 import styled from 'styled-components';
+import IconArrowRight from 'ui/assets/approval/edit-arrow-right.svg';
+import BalanceChange from '../TxComponents/BalanceChange';
+import ViewRawModal from '../TxComponents/ViewRawModal';
+import ApproveNFT from './ApproveNFT';
+import ApproveNFTCollection from './ApproveNFTCollection';
+import CancelTx from './CancelTx';
+import ContractCall from './ContractCall';
+import DeployContract from './DeployContract';
+import RevokeNFT from './RevokeNFT';
+import RevokeNFTCollection from './RevokeNFTCollection';
+import Send from './Send';
+import SendNFT from './SendNFT';
+import Swap from './Swap';
+import TokenApprove from './TokenApprove';
 import {
   ActionRequireData,
+  ApproveNFTRequireData,
   ApproveTokenRequireData,
   CancelTxRequireData,
   ContractCallRequireData,
   ParsedActionData,
+  RevokeNFTRequireData,
   SendRequireData,
   SwapRequireData,
 } from './utils';
-import { Chain, ExplainTxResponse } from 'background/service/openapi';
-import { Result } from '@debank/rabby-security-engine';
-import BalanceChange from '../TxComponents/BalanceChange';
-import ViewRawModal from '../TxComponents/ViewRawModal';
-import Swap from './Swap';
-import Send from './Send';
-import TokenApprove from './TokenApprove';
-import ContractCall from './ContractCall';
-import CancelTx from './CancelTx';
-import IconArrowRight from 'ui/assets/approval/edit-arrow-right.svg';
 
 const SignTitle = styled.div`
   display: flex;
@@ -108,6 +116,28 @@ const Actions = ({
     if (data.approveToken) {
       return 'Token Approval';
     }
+    if (data.sendNFT) {
+      return 'Send NFT';
+    }
+    if (data.approveNFT) {
+      return 'NFT Approval';
+    }
+
+    if (data.revokeNFT) {
+      return 'Revoke NFT Approval';
+    }
+
+    if (data.approveNFTCollection) {
+      return 'NFT Collection Approval';
+    }
+    if (data.revokeNFTCollection) {
+      return 'Revoke NFT Collection Approval';
+    }
+
+    if (data.deployContract) {
+      return 'Deploy Contract';
+    }
+
     if (data.cancelTx) {
       return 'Cancel Pending Transaction';
     }
@@ -186,6 +216,47 @@ const Actions = ({
               raw={raw}
             />
           )}
+          {data?.sendNFT && (
+            <SendNFT
+              data={data.sendNFT}
+              requireData={requireData as SendRequireData}
+              chain={chain}
+              engineResults={engineResults}
+            />
+          )}
+          {data?.approveNFT && (
+            <ApproveNFT
+              data={data.approveNFT}
+              requireData={requireData as ApproveNFTRequireData}
+              chain={chain}
+              engineResults={engineResults}
+            />
+          )}
+          {data?.revokeNFT && (
+            <RevokeNFT
+              data={data.revokeNFT}
+              requireData={requireData as RevokeNFTRequireData}
+              chain={chain}
+              engineResults={engineResults}
+            />
+          )}
+          {data?.revokeNFTCollection && (
+            <RevokeNFTCollection
+              data={data.revokeNFTCollection}
+              requireData={requireData as RevokeNFTRequireData}
+              chain={chain}
+              engineResults={engineResults}
+            />
+          )}
+          {data?.approveNFTCollection && (
+            <ApproveNFTCollection
+              data={data.approveNFTCollection}
+              requireData={requireData as RevokeNFTRequireData}
+              chain={chain}
+              engineResults={engineResults}
+            />
+          )}
+          {data?.deployContract && <DeployContract />}
           <BalanceChange
             version={txDetail.pre_exec_version}
             data={txDetail.balance_change}

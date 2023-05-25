@@ -8,6 +8,14 @@ import {
   ContractDesc,
   ApproveAction,
   UsedChain,
+  NFTItem,
+  SendNFTAction,
+  ApproveNFTAction,
+  RevokeNFTAction,
+  ApproveNFTCollectionAction,
+  RevokeNFTCollectionAction,
+  NFTCollection,
+  CollectionWithFloorPrice,
   Tx,
 } from '@debank/rabby-api/dist/types';
 import {
@@ -51,6 +59,27 @@ export interface ParsedActionData {
     spender: string;
     token: TokenItem;
   };
+  sendNFT?: {
+    to: string;
+    nft: NFTItem;
+  };
+  approveNFT?: {
+    spender: string;
+    nft: NFTItem;
+  };
+  revokeNFT?: {
+    spender: string;
+    nft: NFTItem;
+  };
+  approveNFTCollection?: {
+    spender: string;
+    collection: NFTCollection;
+  };
+  revokeNFTCollection?: {
+    spender: string;
+    collection: NFTCollection;
+  };
+  deployContract?: Record<string, never>;
   contractCall?: object;
   cancelTx?: {
     nonce: string;
@@ -129,6 +158,38 @@ export const parseAction = (
       },
     };
   }
+  if (data.type === 'send_nft') {
+    return {
+      sendNFT: data.data as SendNFTAction,
+    };
+  }
+  if (data.type === 'approve_nft') {
+    return {
+      approveNFT: data.data as ApproveNFTAction,
+    };
+  }
+  if (data.type === 'revoke_nft') {
+    return {
+      revokeNFT: data.data as RevokeNFTAction,
+    };
+  }
+
+  if (data.type === 'approve_collection') {
+    return {
+      approveNFTCollection: data.data as ApproveNFTCollectionAction,
+    };
+  }
+
+  if (data.type === 'revoke_collection') {
+    return {
+      revokeNFTCollection: data.data as RevokeNFTCollectionAction,
+    };
+  }
+  if (data.type === 'deploy_contract') {
+    return {
+      deployContract: {},
+    };
+  }
   if (data?.type === 'cancel_tx') {
     return {
       cancelTx: {
@@ -180,6 +241,10 @@ export interface SendRequireData {
   onTransferWhitelist: boolean;
 }
 
+export interface SendNFTRequireData extends SendRequireData {
+  collection?: CollectionWithFloorPrice | null;
+}
+
 export interface ApproveTokenRequireData {
   isEOA: boolean;
   contract: Record<string, ContractDesc> | null;
@@ -205,9 +270,26 @@ export interface ContractCallRequireData {
     name: string;
     logo_url: string;
   } | null;
-  call: ParseTxResponse['contract_call'];
+  call: NonNullable<ParseTxResponse['contract_call']>;
 }
 
+export interface ApproveNFTRequireData {
+  isEOA: boolean;
+  contract: Record<string, ContractDesc> | null;
+  riskExposure: number;
+  rank: number | null;
+  hasInteraction: boolean;
+  bornAt: number;
+  protocol: {
+    id: string;
+    name: string;
+    logo_url: string;
+  } | null;
+  isDanger: boolean | null;
+  tokenBalance: string;
+}
+
+export type RevokeNFTRequireData = ApproveNFTRequireData;
 export interface CancelTxRequireData {
   pendingTxs: TransactionGroup[];
 }
@@ -216,6 +298,10 @@ export type ActionRequireData =
   | SwapRequireData
   | ApproveTokenRequireData
   | SendRequireData
+  | ApproveNFTRequireData
+  | RevokeNFTRequireData
+  | ContractCallRequireData
+  | Record<string, never>
   | ContractCallRequireData
   | CancelTxRequireData
   | null;
@@ -228,6 +314,61 @@ const waitQueueFinished = (q: PQueue) => {
   });
 };
 
+const fetchNFTApproveRequiredData = async ({
+  spender,
+  address,
+  chainId,
+  wallet,
+}: {
+  spender: string;
+  address: string;
+  chainId: string;
+  wallet: WalletControllerType;
+}) => {
+  const queue = new PQueue();
+  const result: ApproveNFTRequireData = {
+    isEOA: false,
+    contract: null,
+    riskExposure: 0,
+    rank: null,
+    hasInteraction: false,
+    bornAt: 0,
+    protocol: null,
+    isDanger: false,
+    tokenBalance: '0',
+  };
+
+  queue.add(async () => {
+    const credit = await wallet.openapi.getContractCredit(spender, chainId);
+    result.rank = credit.rank_at;
+  });
+
+  queue.add(async () => {
+    const { desc } = await wallet.openapi.addrDesc(spender);
+    if (desc.contract && desc.contract[chainId]) {
+      result.bornAt = desc.contract[chainId].create_at;
+    }
+    if (!desc.contract?.[chainId]) {
+      result.isEOA = true;
+      result.bornAt = desc.born_at;
+    }
+    if (desc.protocol?.[chainId]) {
+      result.protocol = desc.protocol[chainId];
+    }
+    result.isDanger = desc.is_danger;
+  });
+  queue.add(async () => {
+    const hasInteraction = await wallet.openapi.hasInteraction(
+      address,
+      chainId,
+      spender
+    );
+    result.hasInteraction = hasInteraction.has_interaction;
+  });
+  await waitQueueFinished(queue);
+  return result;
+};
+
 export const fetchActionRequiredData = async ({
   actionData,
   contractCall,
@@ -236,11 +377,17 @@ export const fetchActionRequiredData = async ({
   wallet,
 }: {
   actionData: ParsedActionData;
-  contractCall: ParseTxResponse['contract_call'];
+  contractCall?: ParseTxResponse['contract_call'] | null;
   chainId: string;
   address: string;
   wallet: WalletControllerType;
 }): Promise<ActionRequireData> => {
+  if (actionData.deployContract) {
+    return {};
+  }
+  if (!contractCall) {
+    return null;
+  }
   const queue = new PQueue();
   if (actionData.swap) {
     const { id, protocol } = contractCall.contract;
@@ -461,6 +608,110 @@ export const fetchActionRequiredData = async ({
     await waitQueueFinished(queue);
     return result;
   }
+  if (actionData.sendNFT) {
+    const result: SendNFTRequireData = {
+      eoa: null,
+      cex: null,
+      contract: null,
+      usd_value: 0,
+      protocol: null,
+      hasTransfer: false,
+      usedChains: [],
+      isTokenContract: false,
+      name: null,
+      onTransferWhitelist: false,
+    };
+    queue.add(async () => {
+      const { has_transfer } = await wallet.openapi.hasTransfer(
+        chainId,
+        address,
+        actionData.sendNFT!.to
+      );
+      result.hasTransfer = has_transfer;
+    });
+    queue.add(async () => {
+      const { desc } = await wallet.openapi.addrDesc(actionData.sendNFT!.to);
+      if (desc.cex?.id) {
+        result.cex = {
+          id: desc.cex.id,
+          logo: desc.cex.logo_url,
+          name: desc.cex.name,
+          bornAt: desc.born_at,
+          isDeposit: desc.cex.is_deposit,
+        };
+      }
+      if (desc.contract && Object.keys(desc.contract).length > 0) {
+        result.contract = desc.contract;
+      }
+      if (!result.cex && !result.contract) {
+        result.eoa = {
+          id: actionData.sendNFT!.to,
+          bornAt: desc.born_at,
+        };
+      }
+      result.usd_value = desc.usd_value;
+      if (result.cex) {
+        const { cex_list } = await wallet.openapi.depositCexList(
+          actionData.sendNFT!.nft.contract_id,
+          chainId
+        );
+        if (cex_list.some((cex) => cex.id === result.cex!.id)) {
+          result.cex.supportToken = true;
+        } else {
+          result.cex.supportToken = false;
+        }
+      }
+      if (result.contract) {
+        const { is_token } = await wallet.openapi.isTokenContract(
+          chainId,
+          actionData.sendNFT!.to
+        );
+        result.isTokenContract = is_token;
+      }
+    });
+    queue.add(async () => {
+      const usedChainList = await wallet.openapi.addrUsedChainList(
+        actionData.sendNFT!.to
+      );
+      result.usedChains = usedChainList;
+    });
+
+    await waitQueueFinished(queue);
+    return result;
+  }
+  if (actionData.approveNFT) {
+    return fetchNFTApproveRequiredData({
+      address,
+      chainId,
+      wallet,
+      spender: actionData.approveNFT.spender,
+    });
+  }
+  if (actionData.revokeNFT) {
+    return fetchNFTApproveRequiredData({
+      address,
+      chainId,
+      wallet,
+      spender: actionData.revokeNFT.spender,
+    });
+  }
+  if (actionData.approveNFTCollection) {
+    return fetchNFTApproveRequiredData({
+      address,
+      chainId,
+      wallet,
+      spender: actionData.approveNFTCollection.spender,
+    });
+  }
+  if (actionData.revokeNFTCollection) {
+    return fetchNFTApproveRequiredData({
+      address,
+      chainId,
+      wallet,
+      spender: actionData.revokeNFTCollection.spender,
+    });
+  }
+
   return null;
 };
 
