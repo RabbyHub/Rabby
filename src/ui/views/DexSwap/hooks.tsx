@@ -151,7 +151,7 @@ export const useVerifySdk = <T extends ValidateTokenParam>(
       return [tokenApproved, true];
     }
     return [tokenApproved, false];
-  }, [chain, dexId, payToken, payAmount]);
+  }, [chain, dexId, receiveToken?.id, payToken?.id, payAmount]);
 
   return {
     routerPass,
