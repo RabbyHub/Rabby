@@ -322,7 +322,7 @@ export const SwapByDex = () => {
     gasMarket?.[1]?.price,
   ]);
 
-  const { isSdkDataPass, tokenApproved, shouldTwoStepApprove } = useVerifySdk({
+  const { isSdkDataPass } = useVerifySdk({
     chain,
     dexId,
     slippage,
@@ -336,11 +336,15 @@ export const SwapByDex = () => {
         toToken: receiveToken?.id,
       },
     payToken,
-    receiveToken,
-    payAmount,
   });
 
-  const { totalGasUsed, totalGasUsedLoading, preExecTxError } = useGasAmount({
+  const {
+    totalGasUsed,
+    totalGasUsedLoading,
+    preExecTxError,
+    tokenApproved,
+    shouldTwoStepApprove,
+  } = useGasAmount({
     chain,
     data: quoteInfo,
     payToken,
@@ -348,8 +352,6 @@ export const SwapByDex = () => {
     dexId: oDexId,
     gasMarket,
     gasLevel,
-    tokenApproved,
-    shouldTwoStepApprove,
     userAddress,
     refreshId,
     payAmount,

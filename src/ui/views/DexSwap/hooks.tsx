@@ -14,7 +14,7 @@ import {
   QuoteResult,
 } from '@rabby-wallet/rabby-swap/dist/quote';
 import BigNumber from 'bignumber.js';
-import { useCallback, useMemo } from 'react';
+import { useMemo, useState } from 'react';
 import { useAsync } from 'react-use';
 
 export type ValidateTokenParam = {
@@ -98,13 +98,11 @@ type VerifySdkParams<T extends ValidateTokenParam> = {
   slippage: string | number;
   data?: QuoteResult;
   payToken?: T;
-  receiveToken?: T;
-  payAmount?: string;
 };
 export const useVerifySdk = <T extends ValidateTokenParam>(
   p: VerifySdkParams<T>
 ) => {
-  const { chain, dexId, slippage, data, payToken, payAmount, receiveToken } = p;
+  const { chain, dexId, slippage, data, payToken } = p;
   const [routerPass, spenderPass] = useVerifyRouterAndSpender(
     chain,
     dexId,
@@ -120,46 +118,11 @@ export const useVerifySdk = <T extends ValidateTokenParam>(
     data
   );
 
-  const wallet = useWallet();
-
-  const { value: tokenApprovalResult = [true, false] } = useAsync(async () => {
-    if (!payToken || !receiveToken || !dexId || !payAmount)
-      return [true, false];
-
-    if (
-      payToken?.id === CHAINS[chain].nativeTokenAddress ||
-      isSwapWrapToken(payToken.id, receiveToken.id, chain)
-    ) {
-      return [true, false];
-    }
-    const allowance = await wallet.getERC20Allowance(
-      CHAINS[chain].serverId,
-      payToken!.id,
-      DEX_SPENDER_WHITELIST[dexId][chain]
-    );
-
-    const tokenApproved = new BigNumber(allowance).gte(
-      new BigNumber(payAmount).times(10 ** payToken.decimals)
-    );
-
-    if (
-      chain === CHAINS_ENUM.ETH &&
-      isSameAddress(payToken.id, ETH_USDT_CONTRACT) &&
-      Number(allowance) !== 0 &&
-      !tokenApproved
-    ) {
-      return [tokenApproved, true];
-    }
-    return [tokenApproved, false];
-  }, [chain, dexId, receiveToken?.id, payToken?.id, payAmount]);
-
   return {
     routerPass,
     spenderPass,
     callDataPass,
     isSdkDataPass: routerPass && spenderPass && callDataPass,
-    tokenApproved: tokenApprovalResult[0],
-    shouldTwoStepApprove: tokenApprovalResult[1],
   };
 };
 
@@ -171,8 +134,6 @@ interface UseGasAmountParams<T extends ValidateTokenParam> {
   dexId?: DEX_ENUM | null;
   gasMarket?: GasLevel[];
   gasLevel: GasLevel;
-  tokenApproved: boolean;
-  shouldTwoStepApprove: boolean;
   userAddress: string;
   refreshId: number;
   payAmount: string;
@@ -194,6 +155,8 @@ export const useGasAmount = <T extends ValidateTokenParam>(
     refreshId,
     receiveToken,
   } = p;
+
+  const [approveStatus, setApproveStatus] = useState([true, false]);
 
   const {
     value: totalGasUsed,
@@ -293,6 +256,8 @@ export const useGasAmount = <T extends ValidateTokenParam>(
         shouldTwoStepApprove,
       ] = await getTokenApproveStatus();
 
+      setApproveStatus([tokenApproved, shouldTwoStepApprove]);
+
       if (shouldTwoStepApprove) {
         await approveToken('0');
       }
@@ -328,6 +293,8 @@ export const useGasAmount = <T extends ValidateTokenParam>(
   }, [chain, data, refreshId, dexId, gasLevel, gasMarket, payAmount]);
 
   return {
+    tokenApproved: approveStatus[0],
+    shouldTwoStepApprove: approveStatus[1],
     totalGasUsed,
     totalGasUsedLoading,
     preExecTxError: error,
