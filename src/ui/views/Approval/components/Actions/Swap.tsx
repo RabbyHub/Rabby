@@ -141,6 +141,7 @@ const Swap = ({
               text={`${formatAmount(payToken.amount)} ${ellipsisTokenSymbol(
                 payToken.symbol
               )}`}
+              logoRadius="100%"
             />
             <ul className="desc-list">
               <li>
@@ -158,16 +159,27 @@ const Swap = ({
             <div className="flex">
               <LogoWithText
                 logo={receiveToken.logo_url}
+                logoRadius="100%"
                 text={`${formatAmount(
                   receiveToken.amount
                 )} ${ellipsisTokenSymbol(receiveToken.symbol)}`}
+                icon={
+                  <div className="flex gap-4 flex-shrink-0">
+                    {receiveToken.is_verified === false && (
+                      <img
+                        className="icon icon-fake-token"
+                        src={IconFakeToken}
+                      />
+                    )}
+                    {receiveToken.is_suspicious && (
+                      <img
+                        className="icon icon-scam-token"
+                        src={IconScamToken}
+                      />
+                    )}
+                  </div>
+                }
               />
-              {!receiveToken.is_verified && (
-                <img className="icon icon-fake-token" src={IconFakeToken} />
-              )}
-              {requireData.receiveTokenIsScam && (
-                <img className="icon icon-scam-token" src={IconScamToken} />
-              )}
             </div>
             {engineResultMap['1008'] && (
               <SecurityLevelTagNoText
@@ -298,6 +310,7 @@ const Swap = ({
               <LogoWithText
                 logo={requireData.protocol.logo_url}
                 text={requireData.protocol.name}
+                logoRadius="100%"
               />
             </Row>
           </Col>

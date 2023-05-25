@@ -150,7 +150,6 @@ export interface SwapRequireData {
   bornAt: number;
   hasInteraction: boolean;
   rank: number | null;
-  receiveTokenIsScam: boolean;
   sender: string;
 }
 
@@ -189,6 +188,7 @@ export interface ApproveTokenRequireData {
   hasInteraction: boolean;
   bornAt: number;
   protocol: {
+    id: string;
     name: string;
     logo_url: string;
   } | null;
@@ -250,16 +250,8 @@ export const fetchActionRequiredData = async ({
       bornAt: 0,
       hasInteraction: false,
       rank: null,
-      receiveTokenIsScam: false,
       sender: address,
     };
-    queue.add(async () => {
-      const { is_suspicious } = await wallet.openapi.isSuspiciousToken(
-        actionData.swap!.receiveToken.id,
-        chainId
-      );
-      result.receiveTokenIsScam = is_suspicious;
-    });
     queue.add(async () => {
       const credit = await wallet.openapi.getContractCredit(id, chainId);
       result.rank = credit.rank_at;
@@ -399,6 +391,9 @@ export const fetchActionRequiredData = async ({
         result.bornAt = desc.born_at;
       }
       result.isDanger = desc.is_danger;
+      if (desc.protocol?.[chainId]) {
+        result.protocol = desc.protocol[chainId];
+      }
     });
     queue.add(async () => {
       const hasInteraction = await wallet.openapi.hasInteraction(
@@ -486,11 +481,11 @@ export const formatSecurityEngineCtx = ({
       slippageTolerance,
       usdValuePercentage,
     } = actionData.swap;
-    const { receiveTokenIsScam, sender, id } = data;
+    const { sender, id } = data;
     return {
       swap: {
-        receiveTokenIsScam,
-        receiveTokenIsFake: !receiveToken.is_verified,
+        receiveTokenIsScam: !!receiveToken.is_suspicious,
+        receiveTokenIsFake: receiveToken.is_verified === false,
         receiver,
         from: sender,
         chainId,

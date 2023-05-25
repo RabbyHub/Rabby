@@ -138,6 +138,7 @@ const Send = ({
             <LogoWithText
               logo={actionData.token.logo_url}
               text={ellipsisTokenSymbol(actionData.token.symbol)}
+              logoRadius="100%"
             />
             <ul className="desc-list">
               <li>
@@ -164,6 +165,7 @@ const Send = ({
               <LogoWithText
                 logo={requireData.cex.logo}
                 text={requireData.cex.name}
+                logoRadius="100%"
               />
               {(!requireData.cex.isDeposit ||
                 !requireData.cex.supportToken) && (

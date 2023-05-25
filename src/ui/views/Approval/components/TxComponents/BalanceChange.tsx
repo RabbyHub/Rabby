@@ -5,6 +5,8 @@ import { splitNumberByStep } from 'ui/utils/number';
 import useBalanceChange from '@/ui/hooks/useBalanceChange';
 import { Table, Col, Row } from '../Actions/components/Table';
 import LogoWithText from '../Actions/components/LogoWithText';
+import IconScam from 'ui/assets/sign/tx/token-scam.svg';
+import IconFake from 'ui/assets/sign/tx/token-fake.svg';
 import BigNumber from 'bignumber.js';
 
 const NFTBalanceChange = ({
@@ -50,8 +52,16 @@ const NFTBalanceChange = ({
         <Row isTitle>NFT in</Row>
         <Row>
           {receiveNftList.map((item) => (
-            <div className="mb-10 last:mb-0">
+            <div className="flex mb-10 last:mb-0">
               + {item.amount} {item.name}
+              <div className="flex gap-4 flex-shrink-0">
+                {item.collection.is_verified === false && (
+                  <img src={IconFake} className="icon icon-fake" />
+                )}
+                {item.collection.is_suspicious && (
+                  <img src={IconScam} className="icon icon-scam" />
+                )}
+              </div>
             </div>
           ))}
         </Row>
@@ -64,8 +74,16 @@ const NFTBalanceChange = ({
         <Row isTitle>NFT out</Row>
         <Row>
           {sendNftList.map((item) => (
-            <div className="mb-10 last:mb-0">
+            <div className="flex mb-10 last:mb-0">
               - {item.amount} {item.name}
+              <div className="flex gap-4 flex-shrink-0">
+                {item.collection.is_verified === false && (
+                  <img src={IconFake} className="icon icon-fake" />
+                )}
+                {item.collection.is_suspicious && (
+                  <img src={IconScam} className="icon icon-scam" />
+                )}
+              </div>
             </div>
           ))}
         </Row>
@@ -184,6 +202,16 @@ const BalanceChange = ({
                         ).toFixed()
                       )} ${token.symbol}`}
                       key={token.id}
+                      icon={
+                        <div className="flex gap-4 shrink-0">
+                          {token.is_verified === false && (
+                            <img src={IconFake} className="icon icon-fake" />
+                          )}
+                          {token.is_suspicious && (
+                            <img src={IconScam} className="icon icon-scam" />
+                          )}
+                        </div>
+                      }
                     />
                   </div>
                 ))}
@@ -194,7 +222,7 @@ const BalanceChange = ({
             <Col>
               <Row isTitle>Token in</Row>
               <Row>
-                {sendTokenList.map((token) => (
+                {receiveTokenList.map((token) => (
                   <div className="mb-8 last:mb-0">
                     <LogoWithText
                       logo={token.logo_url}
@@ -204,6 +232,16 @@ const BalanceChange = ({
                         ).toFixed()
                       )} ${token.symbol}`}
                       key={token.id}
+                      icon={
+                        <div className="flex gap-4 shrink-0">
+                          {token.is_verified === false && (
+                            <img src={IconFake} className="icon icon-fake" />
+                          )}
+                          {token.is_suspicious && (
+                            <img src={IconScam} className="icon icon-scam" />
+                          )}
+                        </div>
+                      }
                     />
                   </div>
                 ))}

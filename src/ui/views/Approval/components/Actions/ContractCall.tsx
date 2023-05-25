@@ -136,6 +136,7 @@ const ContractCall = ({
               <LogoWithText
                 logo={requireData.protocol.logo_url}
                 text={requireData.protocol.name}
+                logoRadius="100%"
               />
             ) : (
               '-'

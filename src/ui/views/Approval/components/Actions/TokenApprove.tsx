@@ -8,7 +8,7 @@ import { ApproveTokenRequireData, ParsedActionData } from './utils';
 import { ellipsis } from 'ui/utils/address';
 import { ellipsisTokenSymbol } from 'ui/utils/token';
 import { getTimeSpan } from 'ui/utils/time';
-import { isSameAddress, useWallet, ellipsisOverflowedText } from '@/ui/utils';
+import { isSameAddress, ellipsisOverflowedText } from '@/ui/utils';
 import { getCustomTxParamsData } from 'ui/utils/transaction';
 import { formatAmount, formatUsdValue } from '@/ui/utils/number';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
@@ -152,7 +152,6 @@ const TokenApprove = ({
   const actionData = data!;
   const [editApproveModalVisible, setEditApproveModalVisible] = useState(false);
   const dispatch = useRabbyDispatch();
-  const wallet = useWallet();
   const { userData, rules, processedRules } = useRabbySelector((s) => ({
     userData: s.securityEngine.userData,
     rules: s.securityEngine.rules,
@@ -250,6 +249,7 @@ const TokenApprove = ({
             <LogoWithText
               logo={actionData.token.logo_url}
               text={ellipsisTokenSymbol(actionData.token.symbol)}
+              logoRadius="100%"
             />
           </Row>
         </Col>
@@ -285,6 +285,20 @@ const TokenApprove = ({
         <div className="right">approve to</div>
       </div>
       <Table>
+        <Col>
+          <Row isTitle>Protocol</Row>
+          <Row>
+            {requireData.protocol ? (
+              <LogoWithText
+                logo={requireData.protocol.logo_url}
+                text={requireData.protocol.name}
+                logoRadius="100%"
+              />
+            ) : (
+              '-'
+            )}
+          </Row>
+        </Col>
         <Col>
           <Row isTitle>Type</Row>
           <Row>
