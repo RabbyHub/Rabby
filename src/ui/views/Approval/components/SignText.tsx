@@ -415,10 +415,7 @@ const SignText = ({ params }: { params: SignTextProps }) => {
           onCancel={handleCancel}
           onSubmit={() => handleAllow(forceProcess)}
           disabledProcess={
-            (isLedger && !useLedgerLive && !hasConnectedLedgerHID) ||
-            !forceProcess ||
-            securityCheckStatus === 'loading' ||
-            isWatch
+            !forceProcess || securityCheckStatus === 'loading' || isWatch
           }
         />
       </footer>

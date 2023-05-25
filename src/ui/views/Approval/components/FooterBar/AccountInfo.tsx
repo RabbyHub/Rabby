@@ -76,7 +76,9 @@ export const AccountInfo: React.FC<Props> = ({ account, chain }) => {
       {account?.type === KEYRING_CLASS.WALLETCONNECT && (
         <WalletConnectAccount chain={chain} account={account} />
       )}
-      {account?.type === KEYRING_CLASS.HARDWARE.LEDGER && <LedgerAccount />}
+      {account?.type === KEYRING_CLASS.HARDWARE.LEDGER && (
+        <LedgerAccount account={account} />
+      )}
       {account?.type === KEYRING_CLASS.HARDWARE.GRIDPLUS && <GridPlusAccount />}
       {account?.type === KEYRING_CLASS.HARDWARE.ONEKEY && (
         <CommonAccount
