@@ -1030,7 +1030,12 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       origin: origin || '',
       addr: address,
     });
-    const parsed = parseAction(actionData.action, res.balance_change);
+    const parsed = parseAction(actionData.action, res.balance_change, {
+      ...tx,
+      gas: '0x0',
+      nonce: (updateNonce ? recommendNonce : tx.nonce) || '0x1',
+      value: tx.value || '0x0',
+    });
     const requiredData = await fetchActionRequiredData({
       actionData: parsed,
       contractCall: actionData.contract_call,
@@ -1061,6 +1066,10 @@ const SignTx = ({ params, origin }: SignTxProps) => {
           ...res,
           approvalId: approval.id,
           calcSuccess: !(checkErrors.length > 0),
+        },
+        action: {
+          actionData: parsed,
+          requiredData,
         },
       }));
 
@@ -1186,6 +1195,10 @@ const SignTx = ({ params, origin }: SignTxProps) => {
           ...txDetail!,
           approvalId: approval.id,
           calcSuccess: !(checkErrors.length > 0),
+        },
+        action: {
+          actionData,
+          requiredData: actionRequireData,
         },
       }));
 

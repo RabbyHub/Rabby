@@ -2245,6 +2245,8 @@ export class WalletController extends BaseController {
     transactionHistoryService.getPendingCount(address);
   getNonceByChain = (address: string, chainId: number) =>
     transactionHistoryService.getNonceByChain(address, chainId);
+  getPendingTxsByNonce = (address: string, chainId: number, nonce: number) =>
+    transactionHistoryService.getPendingTxsByNonce(address, chainId, nonce);
 
   getPreference = (key?: string) => {
     return preferenceService.getPreference(key);

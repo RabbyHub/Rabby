@@ -1,12 +1,10 @@
 import React, { useMemo } from 'react';
-import Swap from './Swap';
-import Send from './Send';
-import TokenApprove from './TokenApprove';
 import styled from 'styled-components';
 import {
   ActionRequireData,
   ApproveTokenRequireData,
-  ContractCallRequireDta,
+  CancelTxRequireData,
+  ContractCallRequireData,
   ParsedActionData,
   SendRequireData,
   SwapRequireData,
@@ -15,8 +13,12 @@ import { Chain, ExplainTxResponse } from 'background/service/openapi';
 import { Result } from '@debank/rabby-security-engine';
 import BalanceChange from '../TxComponents/BalanceChange';
 import ViewRawModal from '../TxComponents/ViewRawModal';
-import IconArrowRight from 'ui/assets/approval/edit-arrow-right.svg';
+import Swap from './Swap';
+import Send from './Send';
+import TokenApprove from './TokenApprove';
 import ContractCall from './ContractCall';
+import CancelTx from './CancelTx';
+import IconArrowRight from 'ui/assets/approval/edit-arrow-right.svg';
 
 const SignTitle = styled.div`
   display: flex;
@@ -106,6 +108,9 @@ const Actions = ({
     if (data.approveToken) {
       return 'Token Approval';
     }
+    if (data.cancelTx) {
+      return 'Cancel Pending Transaction';
+    }
   }, [data]);
 
   const handleViewRawClick = () => {
@@ -161,10 +166,20 @@ const Actions = ({
               raw={raw}
             />
           )}
+          {data.cancelTx && (
+            <CancelTx
+              data={data.cancelTx}
+              requireData={requireData as CancelTxRequireData}
+              chain={chain}
+              engineResults={engineResults}
+              onChange={onChange}
+              raw={raw}
+            ></CancelTx>
+          )}
           {data.contractCall && (
             <ContractCall
               data={data.contractCall}
-              requireData={requireData as ContractCallRequireDta}
+              requireData={requireData as ContractCallRequireData}
               chain={chain}
               engineResults={engineResults}
               onChange={onChange}

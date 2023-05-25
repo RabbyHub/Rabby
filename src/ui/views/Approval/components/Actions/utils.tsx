@@ -8,6 +8,7 @@ import {
   ContractDesc,
   ApproveAction,
   UsedChain,
+  Tx,
 } from '@debank/rabby-api/dist/types';
 import {
   ContextActionData,
@@ -17,6 +18,8 @@ import BigNumber from 'bignumber.js';
 import { useState, useCallback, useEffect } from 'react';
 import PQueue from 'p-queue';
 import { getTimeSpan } from 'ui/utils/time';
+import { CHAINS } from 'consts';
+import { TransactionGroup } from '@/background/service/transactionHistory';
 
 export interface ReceiveTokenItem extends TokenItem {
   min_amount: number;
@@ -49,6 +52,9 @@ export interface ParsedActionData {
     token: TokenItem;
   };
   contractCall?: object;
+  cancelTx?: {
+    nonce: string;
+  };
 }
 
 const calcSlippageTolerance = (base: number, actual: number) => {
@@ -60,7 +66,8 @@ const calcSlippageTolerance = (base: number, actual: number) => {
 
 export const parseAction = (
   data: ParseTxResponse['action'],
-  balanceChange: ExplainTxResponse['balance_change']
+  balanceChange: ExplainTxResponse['balance_change'],
+  tx: Tx
 ): ParsedActionData => {
   if (data?.type === 'swap_token') {
     const {
@@ -119,6 +126,13 @@ export const parseAction = (
       approveToken: {
         spender,
         token,
+      },
+    };
+  }
+  if (data?.type === 'cancel_tx') {
+    return {
+      cancelTx: {
+        nonce: tx.nonce,
       },
     };
   }
@@ -182,7 +196,7 @@ export interface ApproveTokenRequireData {
   token: TokenItem;
 }
 
-export interface ContractCallRequireDta {
+export interface ContractCallRequireData {
   contract: Record<string, ContractDesc> | null;
   rank: number | null;
   hasInteraction: boolean;
@@ -194,11 +208,16 @@ export interface ContractCallRequireDta {
   call: ParseTxResponse['contract_call'];
 }
 
+export interface CancelTxRequireData {
+  pendingTxs: TransactionGroup[];
+}
+
 export type ActionRequireData =
   | SwapRequireData
   | ApproveTokenRequireData
   | SendRequireData
-  | ContractCallRequireDta
+  | ContractCallRequireData
+  | CancelTxRequireData
   | null;
 
 const waitQueueFinished = (q: PQueue) => {
@@ -222,9 +241,9 @@ export const fetchActionRequiredData = async ({
   address: string;
   wallet: WalletControllerType;
 }): Promise<ActionRequireData> => {
-  const { id, protocol } = contractCall.contract;
   const queue = new PQueue();
   if (actionData.swap) {
+    const { id, protocol } = contractCall.contract;
     const result: SwapRequireData = {
       id,
       protocol: protocol,
@@ -392,8 +411,27 @@ export const fetchActionRequiredData = async ({
     await waitQueueFinished(queue);
     return result;
   }
+  if (actionData.cancelTx) {
+    const chain = Object.values(CHAINS).find(
+      (chain) => chain.serverId === chainId
+    );
+    if (chain) {
+      const pendingTxs = await wallet.getPendingTxsByNonce(
+        address,
+        chain.id,
+        Number(actionData.cancelTx.nonce)
+      );
+      return {
+        pendingTxs,
+      };
+    } else {
+      return {
+        pendingTxs: [],
+      };
+    }
+  }
   if (actionData.contractCall && contractCall) {
-    const result: ContractCallRequireDta = {
+    const result: ContractCallRequireData = {
       contract: null,
       rank: null,
       hasInteraction: false,
