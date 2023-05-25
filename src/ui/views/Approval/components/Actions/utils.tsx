@@ -17,6 +17,9 @@ import {
   NFTCollection,
   CollectionWithFloorPrice,
   Tx,
+  RevokeTokenApproveAction,
+  WrapTokenAction,
+  UnWrapTokenAction,
 } from '@debank/rabby-api/dist/types';
 import {
   ContextActionData,
@@ -31,6 +34,7 @@ import { TransactionGroup } from '@/background/service/transactionHistory';
 
 export interface ReceiveTokenItem extends TokenItem {
   min_amount: number;
+  min_raw_amount: string;
 }
 
 export interface ActionData {
@@ -79,6 +83,20 @@ export interface ParsedActionData {
     spender: string;
     collection: NFTCollection;
   };
+  revokeToken?: {
+    spender: string;
+    token: TokenItem;
+  };
+  wrapToken?: {
+    payToken: TokenItem;
+    receiveToken: ReceiveTokenItem;
+    slippageTolerance: number;
+  };
+  unWrapToken?: {
+    payToken: TokenItem;
+    receiveToken: ReceiveTokenItem;
+    slippageTolerance: number;
+  };
   deployContract?: Record<string, never>;
   contractCall?: object;
   cancelTx?: {
@@ -86,11 +104,13 @@ export interface ParsedActionData {
   };
 }
 
-const calcSlippageTolerance = (base: number, actual: number) => {
-  if (base === 0 && actual === 0) return 0;
-  if (base === 0) return 1;
-  if (actual === 0) return -1;
-  return (actual - base) / base;
+const calcSlippageTolerance = (base: string, actual: string) => {
+  const baseBn = new BigNumber(base);
+  const actualBn = new BigNumber(actual);
+  if (baseBn.eq(0) && actualBn.eq(0)) return 0;
+  if (baseBn.eq(0)) return 1;
+  if (actualBn.eq(0)) return -1;
+  return actualBn.minus(baseBn).div(baseBn).toNumber();
 };
 
 export const parseAction = (
@@ -111,8 +131,8 @@ export const parseAction = (
       ? actualReceiveToken.amount
       : 0;
     const slippageTolerance = calcSlippageTolerance(
-      receiveToken.min_amount || 0,
-      actualReceiveToken ? actualReceiveToken.amount : 0
+      receiveToken.min_raw_amount || '0',
+      actualReceiveToken ? actualReceiveToken.raw_amount || '0' : '0'
     );
     const receiveTokenUsdValue = new BigNumber(receiveTokenAmount).times(
       receiveToken.price
@@ -122,8 +142,8 @@ export const parseAction = (
     );
     const usdValueDiff = receiveTokenUsdValue.minus(payTokenUsdValue).toFixed();
     const usdValuePercentage = calcSlippageTolerance(
-      Number(payTokenUsdValue),
-      Number(receiveTokenUsdValue)
+      payTokenUsdValue.toFixed(),
+      receiveTokenUsdValue.toFixed()
     );
     const minReceive = {
       ...receiveToken,
@@ -158,34 +178,72 @@ export const parseAction = (
       },
     };
   }
-  if (data.type === 'send_nft') {
+  if (data?.type === 'revoke_token') {
+    const { spender, token } = data.data as RevokeTokenApproveAction;
+    console.log(data);
+    return {
+      revokeToken: {
+        spender,
+        token,
+      },
+    };
+  }
+  if (data?.type === 'wrap_token') {
+    const { pay_token, receive_token } = data.data as WrapTokenAction;
+    const slippageTolerance = calcSlippageTolerance(
+      receive_token.raw_amount || '0',
+      pay_token.raw_amount || '0'
+    );
+    return {
+      wrapToken: {
+        payToken: pay_token,
+        receiveToken: receive_token,
+        slippageTolerance,
+      },
+    };
+  }
+  if (data?.type === 'unwrap_token') {
+    const { pay_token, receive_token } = data.data as UnWrapTokenAction;
+    const slippageTolerance = calcSlippageTolerance(
+      receive_token.raw_amount || '0',
+      pay_token.raw_amount || '0'
+    );
+    return {
+      wrapToken: {
+        payToken: pay_token,
+        receiveToken: receive_token,
+        slippageTolerance,
+      },
+    };
+  }
+  if (data?.type === 'send_nft') {
     return {
       sendNFT: data.data as SendNFTAction,
     };
   }
-  if (data.type === 'approve_nft') {
+  if (data?.type === 'approve_nft') {
     return {
       approveNFT: data.data as ApproveNFTAction,
     };
   }
-  if (data.type === 'revoke_nft') {
+  if (data?.type === 'revoke_nft') {
     return {
       revokeNFT: data.data as RevokeNFTAction,
     };
   }
 
-  if (data.type === 'approve_collection') {
+  if (data?.type === 'approve_collection') {
     return {
       approveNFTCollection: data.data as ApproveNFTCollectionAction,
     };
   }
 
-  if (data.type === 'revoke_collection') {
+  if (data?.type === 'revoke_collection') {
     return {
       revokeNFTCollection: data.data as RevokeNFTCollectionAction,
     };
   }
-  if (data.type === 'deploy_contract') {
+  if (data?.type === 'deploy_contract') {
     return {
       deployContract: {},
     };
@@ -261,6 +319,33 @@ export interface ApproveTokenRequireData {
   token: TokenItem;
 }
 
+export interface RevokeTokenApproveRequireData {
+  isEOA: boolean;
+  contract: Record<string, ContractDesc> | null;
+  riskExposure: number;
+  rank: number | null;
+  hasInteraction: boolean;
+  bornAt: number;
+  protocol: {
+    id: string;
+    name: string;
+    logo_url: string;
+  } | null;
+  isDanger: boolean | null;
+  token: TokenItem;
+}
+
+export interface WrapTokenRequireData {
+  id: string;
+  protocol: {
+    name: string;
+    logo_url: string;
+  } | null;
+  bornAt: number;
+  hasInteraction: boolean;
+  rank: number | null;
+}
+
 export interface ContractCallRequireData {
   contract: Record<string, ContractDesc> | null;
   rank: number | null;
@@ -304,6 +389,7 @@ export type ActionRequireData =
   | Record<string, never>
   | ContractCallRequireData
   | CancelTxRequireData
+  | WrapTokenRequireData
   | null;
 
 const waitQueueFinished = (q: PQueue) => {
@@ -369,6 +455,76 @@ const fetchNFTApproveRequiredData = async ({
   return result;
 };
 
+const fetchTokenApproveRequireData = async ({
+  spender,
+  token,
+  wallet,
+  address,
+  chainId,
+}: {
+  spender: string;
+  token: TokenItem;
+  address: string;
+  chainId: string;
+  wallet: WalletControllerType;
+}) => {
+  const queue = new PQueue();
+  const result: ApproveTokenRequireData = {
+    isEOA: false,
+    contract: null,
+    riskExposure: 0,
+    rank: null,
+    hasInteraction: false,
+    bornAt: 0,
+    protocol: null,
+    isDanger: false,
+    token: {
+      ...token,
+      amount: 0,
+      raw_amount_hex_str: '0x0',
+    },
+  };
+  queue.add(async () => {
+    const credit = await wallet.openapi.getContractCredit(spender, chainId);
+    result.rank = credit.rank_at;
+  });
+  queue.add(async () => {
+    const { usd_value } = await wallet.openapi.tokenApproveExposure(
+      spender,
+      chainId
+    );
+    result.riskExposure = usd_value;
+  });
+  queue.add(async () => {
+    const t = await wallet.openapi.getToken(address, chainId, token.id);
+    result.token = t;
+  });
+  queue.add(async () => {
+    const { desc } = await wallet.openapi.addrDesc(spender);
+    if (desc.contract && desc.contract[chainId]) {
+      result.bornAt = desc.contract[chainId].create_at;
+    }
+    if (!desc.contract?.[chainId]) {
+      result.isEOA = true;
+      result.bornAt = desc.born_at;
+    }
+    result.isDanger = desc.is_danger;
+    if (desc.protocol?.[chainId]) {
+      result.protocol = desc.protocol[chainId];
+    }
+  });
+  queue.add(async () => {
+    const hasInteraction = await wallet.openapi.hasInteraction(
+      address,
+      chainId,
+      spender
+    );
+    result.hasInteraction = hasInteraction.has_interaction;
+  });
+  await waitQueueFinished(queue);
+  return result;
+};
+
 export const fetchActionRequiredData = async ({
   actionData,
   contractCall,
@@ -398,6 +554,36 @@ export const fetchActionRequiredData = async ({
       hasInteraction: false,
       rank: null,
       sender: address,
+    };
+    queue.add(async () => {
+      const credit = await wallet.openapi.getContractCredit(id, chainId);
+      result.rank = credit.rank_at;
+    });
+    queue.add(async () => {
+      const { desc } = await wallet.openapi.addrDesc(id);
+      if (desc.contract && desc.contract[chainId]) {
+        result.bornAt = desc.contract[chainId].create_at;
+      }
+    });
+    queue.add(async () => {
+      const hasInteraction = await wallet.openapi.hasInteraction(
+        address,
+        chainId,
+        id
+      );
+      result.hasInteraction = hasInteraction.has_interaction;
+    });
+    await waitQueueFinished(queue);
+    return result;
+  }
+  if (actionData.wrapToken || actionData.unWrapToken) {
+    const { id, protocol } = contractCall.contract;
+    const result: WrapTokenRequireData = {
+      id,
+      protocol: protocol,
+      bornAt: 0,
+      hasInteraction: false,
+      rank: null,
     };
     queue.add(async () => {
       const credit = await wallet.openapi.getContractCredit(id, chainId);
@@ -496,62 +682,24 @@ export const fetchActionRequiredData = async ({
     return result;
   }
   if (actionData.approveToken) {
-    const { spender, token } = actionData.approveToken;
-    const result: ApproveTokenRequireData = {
-      isEOA: false,
-      contract: null,
-      riskExposure: 0,
-      rank: null,
-      hasInteraction: false,
-      bornAt: 0,
-      protocol: null,
-      isDanger: false,
-      token: {
-        ...token,
-        amount: 0,
-        raw_amount: 0,
-        raw_amount_hex_str: '0x0',
-      },
-    };
-    queue.add(async () => {
-      const credit = await wallet.openapi.getContractCredit(spender, chainId);
-      result.rank = credit.rank_at;
+    const { token, spender } = actionData.approveToken;
+    return await fetchTokenApproveRequireData({
+      wallet,
+      chainId,
+      address,
+      token,
+      spender,
     });
-    queue.add(async () => {
-      const { usd_value } = await wallet.openapi.tokenApproveExposure(
-        spender,
-        chainId
-      );
-      result.riskExposure = usd_value;
+  }
+  if (actionData.revokeToken) {
+    const { token, spender } = actionData.revokeToken;
+    return await fetchTokenApproveRequireData({
+      wallet,
+      chainId,
+      address,
+      token,
+      spender,
     });
-    queue.add(async () => {
-      const t = await wallet.openapi.getToken(address, chainId, token.id);
-      result.token = t;
-    });
-    queue.add(async () => {
-      const { desc } = await wallet.openapi.addrDesc(spender);
-      if (desc.contract && desc.contract[chainId]) {
-        result.bornAt = desc.contract[chainId].create_at;
-      }
-      if (!desc.contract?.[chainId]) {
-        result.isEOA = true;
-        result.bornAt = desc.born_at;
-      }
-      result.isDanger = desc.is_danger;
-      if (desc.protocol?.[chainId]) {
-        result.protocol = desc.protocol[chainId];
-      }
-    });
-    queue.add(async () => {
-      const hasInteraction = await wallet.openapi.hasInteraction(
-        address,
-        chainId,
-        spender
-      );
-      result.hasInteraction = hasInteraction.has_interaction;
-    });
-    await waitQueueFinished(queue);
-    return result;
   }
   if (actionData.cancelTx) {
     const chain = Object.values(CHAINS).find(
@@ -571,42 +719,6 @@ export const fetchActionRequiredData = async ({
         pendingTxs: [],
       };
     }
-  }
-  if (actionData.contractCall && contractCall) {
-    const result: ContractCallRequireData = {
-      contract: null,
-      rank: null,
-      hasInteraction: false,
-      bornAt: 0,
-      protocol: contractCall.contract.protocol,
-      call: contractCall,
-    };
-    queue.add(async () => {
-      const credit = await wallet.openapi.getContractCredit(
-        contractCall.contract.id,
-        chainId
-      );
-      result.rank = credit.rank_at;
-    });
-    queue.add(async () => {
-      const { desc } = await wallet.openapi.addrDesc(contractCall.contract.id);
-      if (desc.contract) {
-        result.contract = desc.contract;
-        if (desc.contract[chainId]) {
-          result.bornAt = desc.contract[chainId].create_at;
-        }
-      }
-    });
-    queue.add(async () => {
-      const hasInteraction = await wallet.openapi.hasInteraction(
-        address,
-        chainId,
-        contractCall.contract.id
-      );
-      result.hasInteraction = hasInteraction.has_interaction;
-    });
-    await waitQueueFinished(queue);
-    return result;
   }
   if (actionData.sendNFT) {
     const result: SendNFTRequireData = {
@@ -711,7 +823,42 @@ export const fetchActionRequiredData = async ({
       spender: actionData.revokeNFTCollection.spender,
     });
   }
-
+  if (actionData.contractCall && contractCall) {
+    const result: ContractCallRequireData = {
+      contract: null,
+      rank: null,
+      hasInteraction: false,
+      bornAt: 0,
+      protocol: contractCall.contract.protocol,
+      call: contractCall,
+    };
+    queue.add(async () => {
+      const credit = await wallet.openapi.getContractCredit(
+        contractCall.contract.id,
+        chainId
+      );
+      result.rank = credit.rank_at;
+    });
+    queue.add(async () => {
+      const { desc } = await wallet.openapi.addrDesc(contractCall.contract.id);
+      if (desc.contract) {
+        result.contract = desc.contract;
+        if (desc.contract[chainId]) {
+          result.bornAt = desc.contract[chainId].create_at;
+        }
+      }
+    });
+    queue.add(async () => {
+      const hasInteraction = await wallet.openapi.hasInteraction(
+        address,
+        chainId,
+        contractCall.contract.id
+      );
+      result.hasInteraction = hasInteraction.has_interaction;
+    });
+    await waitQueueFinished(queue);
+    return result;
+  }
   return null;
 };
 

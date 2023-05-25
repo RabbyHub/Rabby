@@ -10,7 +10,7 @@ const DeployContract = () => {
       <Table>
         <Col>
           <Row isTitle className="w-[90px]">
-            说明
+            Description
           </Row>
           <Row>You are deploying a smart contract</Row>
         </Col>

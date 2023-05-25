@@ -1,17 +1,10 @@
 import React, { useEffect, useMemo } from 'react';
 import styled from 'styled-components';
-import BigNumber from 'bignumber.js';
 import { Chain } from 'background/service/openapi';
 import { Result } from '@debank/rabby-security-engine';
-import {
-  ApproveNFTRequireData,
-  ParsedActionData,
-  RevokeNFTRequireData,
-  SendRequireData,
-} from './utils';
-import { formatAmount, formatUsdValue } from 'ui/utils/number';
+import { ParsedActionData, RevokeNFTRequireData } from './utils';
+import { formatAmount } from 'ui/utils/number';
 import { ellipsis } from 'ui/utils/address';
-import { ellipsisTokenSymbol } from 'ui/utils/token';
 import { getTimeSpan } from 'ui/utils/time';
 import { isSameAddress, useWallet } from '@/ui/utils';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
@@ -21,7 +14,6 @@ import userDataDrawer from './components/UserListDrawer';
 import LogoWithText from './components/LogoWithText';
 import SecurityLevelTagNoText from '../SecurityEngine/SecurityLevelTagNoText';
 import IconEdit from 'ui/assets/editpen.svg';
-import NFTAvatar from '@/ui/views/Dashboard/components/NFT/NFTAvatar';
 import { NameAndAddress } from '@/ui/component';
 import NFTWithName from './components/NFTWithName';
 import * as Values from './components/Values';

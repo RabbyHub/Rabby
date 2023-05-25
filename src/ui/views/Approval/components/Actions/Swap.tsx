@@ -13,7 +13,7 @@ import { ellipsisTokenSymbol } from 'ui/utils/token';
 import { getTimeSpan } from 'ui/utils/time';
 import { Chain } from 'background/service/openapi';
 import SecurityLevelTagNoText from '../SecurityEngine/SecurityLevelTagNoText';
-import { isSameAddress, useWallet } from '@/ui/utils';
+import { isSameAddress } from '@/ui/utils';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import IconFakeToken from 'ui/assets/sign/tx/token-fake.svg';
 import IconScamToken from 'ui/assets/sign/tx/token-scam.svg';
@@ -230,9 +230,15 @@ const Swap = ({
         <Col>
           <Row isTitle>Minimum Received</Row>
           <Row>
-            <div>{`${formatAmount(minReceive.amount)} ${ellipsisTokenSymbol(
-              minReceive.symbol
-            )}`}</div>
+            <div>
+              <LogoWithText
+                logo={minReceive.logo_url}
+                logoRadius="100%"
+                text={`${formatAmount(minReceive.amount)} ${ellipsisTokenSymbol(
+                  minReceive.symbol
+                )}`}
+              />
+            </div>
             <ul className="desc-list">
               <li>
                 {formatUsdValue(

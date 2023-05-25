@@ -16,6 +16,9 @@ import Send from './Send';
 import SendNFT from './SendNFT';
 import Swap from './Swap';
 import TokenApprove from './TokenApprove';
+import RevokeTokenApprove from './RevokeTokenApprove';
+import WrapToken from './WrapToken';
+import UnWrapToken from './UnWrapToken';
 import {
   ActionRequireData,
   ApproveNFTRequireData,
@@ -24,8 +27,10 @@ import {
   ContractCallRequireData,
   ParsedActionData,
   RevokeNFTRequireData,
+  RevokeTokenApproveRequireData,
   SendRequireData,
   SwapRequireData,
+  WrapTokenRequireData,
 } from './utils';
 
 const SignTitle = styled.div`
@@ -110,11 +115,20 @@ const Actions = ({
     if (data.swap) {
       return 'Swap Token';
     }
+    if (data.wrapToken) {
+      return 'Wrap Token';
+    }
+    if (data.unWrapToken) {
+      return 'Unwrap Token';
+    }
     if (data.send) {
       return 'Send Token';
     }
     if (data.approveToken) {
       return 'Token Approval';
+    }
+    if (data.revokeToken) {
+      return 'Revoke Token Approval';
     }
     if (data.sendNFT) {
       return 'Send NFT';
@@ -122,22 +136,18 @@ const Actions = ({
     if (data.approveNFT) {
       return 'NFT Approval';
     }
-
     if (data.revokeNFT) {
       return 'Revoke NFT Approval';
     }
-
     if (data.approveNFTCollection) {
       return 'NFT Collection Approval';
     }
     if (data.revokeNFTCollection) {
       return 'Revoke NFT Collection Approval';
     }
-
     if (data.deployContract) {
       return 'Deploy Contract';
     }
-
     if (data.cancelTx) {
       return 'Cancel Pending Transaction';
     }
@@ -178,6 +188,22 @@ const Actions = ({
               engineResults={engineResults}
             />
           )}
+          {data.wrapToken && (
+            <WrapToken
+              data={data.wrapToken}
+              requireData={requireData as WrapTokenRequireData}
+              chain={chain}
+              engineResults={engineResults}
+            />
+          )}
+          {data.unWrapToken && (
+            <UnWrapToken
+              data={data.unWrapToken}
+              requireData={requireData as WrapTokenRequireData}
+              chain={chain}
+              engineResults={engineResults}
+            />
+          )}
           {data.send && (
             <Send
               data={data.send}
@@ -196,6 +222,16 @@ const Actions = ({
               raw={raw}
             />
           )}
+          {data.revokeToken && (
+            <RevokeTokenApprove
+              data={data.revokeToken}
+              requireData={requireData as RevokeTokenApproveRequireData}
+              chain={chain}
+              engineResults={engineResults}
+              onChange={onChange}
+              raw={raw}
+            />
+          )}
           {data.cancelTx && (
             <CancelTx
               data={data.cancelTx}
@@ -205,16 +241,6 @@ const Actions = ({
               onChange={onChange}
               raw={raw}
             ></CancelTx>
-          )}
-          {data.contractCall && (
-            <ContractCall
-              data={data.contractCall}
-              requireData={requireData as ContractCallRequireData}
-              chain={chain}
-              engineResults={engineResults}
-              onChange={onChange}
-              raw={raw}
-            />
           )}
           {data?.sendNFT && (
             <SendNFT
@@ -257,6 +283,16 @@ const Actions = ({
             />
           )}
           {data?.deployContract && <DeployContract />}
+          {data.contractCall && (
+            <ContractCall
+              data={data.contractCall}
+              requireData={requireData as ContractCallRequireData}
+              chain={chain}
+              engineResults={engineResults}
+              onChange={onChange}
+              raw={raw}
+            />
+          )}
           <BalanceChange
             version={txDetail.pre_exec_version}
             data={txDetail.balance_change}
