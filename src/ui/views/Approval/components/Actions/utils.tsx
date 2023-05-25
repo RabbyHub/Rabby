@@ -611,221 +611,38 @@ export const fetchActionRequiredData = async ({
     return result;
   }
   if (actionData.approveNFT) {
-    const result: ApproveNFTRequireData = {
-      isEOA: false,
-      contract: null,
-      riskExposure: 0,
-      rank: null,
-      hasInteraction: false,
-      bornAt: 0,
-      protocol: null,
-      isDanger: false,
-      tokenBalance: '0',
-    };
-    const { spender, nft } = actionData.approveNFT;
-    queue.add(async () => {
-      const credit = await wallet.openapi.getContractCredit(spender, chainId);
-      result.rank = credit.rank_at;
+    return fetchNFTApproveRequiredData({
+      address,
+      chainId,
+      wallet,
+      spender: actionData.approveNFT.spender,
     });
-    // queue.add(async () => {
-    //   const { usd_value } = await wallet.openapi.tokenApproveExposure(
-    //     spender,
-    //     chainId
-    //   );
-    //   result.riskExposure = usd_value;
-    // });
-    // queue.add(async () => {
-    //   const t = await wallet.openapi.getToken(
-    //     address,
-    //     chainId,
-    //     nft.contract_id
-    //   );
-    //   result.tokenBalance = t.raw_amount_hex_str || '0';
-    // });
-    queue.add(async () => {
-      const { desc } = await wallet.openapi.addrDesc(spender);
-      if (desc.contract && desc.contract[chainId]) {
-        result.bornAt = desc.contract[chainId].create_at;
-      }
-      if (!desc.contract?.[chainId]) {
-        result.isEOA = true;
-        result.bornAt = desc.born_at;
-      }
-      if (desc.protocol?.[chainId]) {
-        result.protocol = desc.protocol[chainId];
-      }
-      result.isDanger = desc.is_danger;
-    });
-    queue.add(async () => {
-      const hasInteraction = await wallet.openapi.hasInteraction(
-        address,
-        chainId,
-        spender
-      );
-      result.hasInteraction = hasInteraction.has_interaction;
-    });
-    await waitQueueFinished(queue);
-    return result;
   }
   if (actionData.revokeNFT) {
-    const result: ApproveNFTRequireData = {
-      isEOA: false,
-      contract: null,
-      riskExposure: 0,
-      rank: null,
-      hasInteraction: false,
-      bornAt: 0,
-      protocol: null,
-      isDanger: false,
-      tokenBalance: '0',
-    };
-    const { spender, nft } = actionData.revokeNFT;
-    queue.add(async () => {
-      const credit = await wallet.openapi.getContractCredit(spender, chainId);
-      result.rank = credit.rank_at;
+    return fetchNFTApproveRequiredData({
+      address,
+      chainId,
+      wallet,
+      spender: actionData.revokeNFT.spender,
     });
-    // queue.add(async () => {
-    //   const { usd_value } = await wallet.openapi.tokenApproveExposure(
-    //     spender,
-    //     chainId
-    //   );
-    //   result.riskExposure = usd_value;
-    // });
-    // queue.add(async () => {
-    //   const t = await wallet.openapi.getToken(address, chainId, nft.contract_id);
-    //   result.tokenBalance = t.raw_amount_hex_str || '0';
-    // });
-    queue.add(async () => {
-      const { desc } = await wallet.openapi.addrDesc(spender);
-      if (desc.contract && desc.contract[chainId]) {
-        result.bornAt = desc.contract[chainId].create_at;
-      }
-      if (!desc.contract?.[chainId]) {
-        result.isEOA = true;
-        result.bornAt = desc.born_at;
-      }
-      if (desc.protocol?.[chainId]) {
-        result.protocol = desc.protocol[chainId];
-      }
-      result.isDanger = desc.is_danger;
-    });
-    queue.add(async () => {
-      const hasInteraction = await wallet.openapi.hasInteraction(
-        address,
-        chainId,
-        spender
-      );
-      result.hasInteraction = hasInteraction.has_interaction;
-    });
-    await waitQueueFinished(queue);
-    return result;
   }
   if (actionData.approveNFTCollection) {
-    const result: ApproveNFTRequireData = {
-      isEOA: false,
-      contract: null,
-      riskExposure: 0,
-      rank: null,
-      hasInteraction: false,
-      bornAt: 0,
-      protocol: null,
-      isDanger: false,
-      tokenBalance: '0',
-    };
-    const { spender, collection } = actionData.approveNFTCollection;
-    queue.add(async () => {
-      const credit = await wallet.openapi.getContractCredit(spender, chainId);
-      result.rank = credit.rank_at;
+    return fetchNFTApproveRequiredData({
+      address,
+      chainId,
+      wallet,
+      spender: actionData.approveNFTCollection.spender,
     });
-    // queue.add(async () => {
-    //   const { usd_value } = await wallet.openapi.tokenApproveExposure(
-    //     spender,
-    //     chainId
-    //   );
-    //   result.riskExposure = usd_value;
-    // });
-    // queue.add(async () => {
-    //   const t = await wallet.openapi.getToken(address, chainId, collection.id);
-    //   result.tokenBalance = t.raw_amount_hex_str || '0';
-    // });
-    queue.add(async () => {
-      const { desc } = await wallet.openapi.addrDesc(spender);
-      if (desc.contract && desc.contract[chainId]) {
-        result.bornAt = desc.contract[chainId].create_at;
-      }
-      if (!desc.contract?.[chainId]) {
-        result.isEOA = true;
-        result.bornAt = desc.born_at;
-      }
-      if (desc.protocol?.[chainId]) {
-        result.protocol = desc.protocol[chainId];
-      }
-      result.isDanger = desc.is_danger;
-    });
-    queue.add(async () => {
-      const hasInteraction = await wallet.openapi.hasInteraction(
-        address,
-        chainId,
-        spender
-      );
-      result.hasInteraction = hasInteraction.has_interaction;
-    });
-    await waitQueueFinished(queue);
-    return result;
   }
   if (actionData.revokeNFTCollection) {
-    const result: ApproveNFTRequireData = {
-      isEOA: false,
-      contract: null,
-      riskExposure: 0,
-      rank: null,
-      hasInteraction: false,
-      bornAt: 0,
-      protocol: null,
-      isDanger: false,
-      tokenBalance: '0',
-    };
-    const { spender, collection } = actionData.revokeNFTCollection;
-    queue.add(async () => {
-      const credit = await wallet.openapi.getContractCredit(spender, chainId);
-      result.rank = credit.rank_at;
+    return fetchNFTApproveRequiredData({
+      address,
+      chainId,
+      wallet,
+      spender: actionData.revokeNFTCollection.spender,
     });
-    // queue.add(async () => {
-    //   const { usd_value } = await wallet.openapi.tokenApproveExposure(
-    //     spender,
-    //     chainId
-    //   );
-    //   result.riskExposure = usd_value;
-    // });
-    // queue.add(async () => {
-    //   const t = await wallet.openapi.getToken(address, chainId, collection.id);
-    //   result.tokenBalance = t.raw_amount_hex_str || '0';
-    // });
-    queue.add(async () => {
-      const { desc } = await wallet.openapi.addrDesc(spender);
-      if (desc.contract && desc.contract[chainId]) {
-        result.bornAt = desc.contract[chainId].create_at;
-      }
-      if (!desc.contract?.[chainId]) {
-        result.isEOA = true;
-        result.bornAt = desc.born_at;
-      }
-      if (desc.protocol?.[chainId]) {
-        result.protocol = desc.protocol[chainId];
-      }
-      result.isDanger = desc.is_danger;
-    });
-    queue.add(async () => {
-      const hasInteraction = await wallet.openapi.hasInteraction(
-        address,
-        chainId,
-        spender
-      );
-      result.hasInteraction = hasInteraction.has_interaction;
-    });
-    await waitQueueFinished(queue);
-    return result;
   }
+
   return null;
 };
 
