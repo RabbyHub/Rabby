@@ -36,6 +36,7 @@ const LedgerConnect = () => {
           isWebHID: false,
           ledgerLive: true,
         },
+        search: `?hd=${HARDWARE_KEYRING_TYPES.Ledger.type}`,
       });
     } else {
       if (hasConnectedLedger) {
@@ -46,6 +47,7 @@ const LedgerConnect = () => {
             isWebHID: true,
             ledgerLive: false,
           },
+          search: `?hd=${HARDWARE_KEYRING_TYPES.Ledger.type}`,
         });
       } else {
         history.push({

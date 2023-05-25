@@ -81,8 +81,8 @@ export const importMnemonics = createModel<RootModel>()({
 
   effects: (dispatch) => ({
     switchKeyring(payload: {
-      finalMnemonics: IState['finalMnemonics'];
-      isExistedKeyring: IState['isExistedKeyring'];
+      finalMnemonics?: IState['finalMnemonics'];
+      isExistedKeyring?: IState['isExistedKeyring'];
       stashKeyringId: IState['stashKeyringId'];
     }) {
       const initValues = makeInitValues();
