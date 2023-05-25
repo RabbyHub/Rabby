@@ -8,7 +8,7 @@ import {
   ParsedActionData,
   SendRequireData,
 } from './utils';
-import { formatUsdValue } from 'ui/utils/number';
+import { formatAmount, formatUsdValue } from 'ui/utils/number';
 import { ellipsis } from 'ui/utils/address';
 import { ellipsisTokenSymbol } from 'ui/utils/token';
 import { getTimeSpan } from 'ui/utils/time';
@@ -170,7 +170,17 @@ const ApproveNFTCollection = ({
             {actionData?.collection?.name}
             <ul className="desc-list">
               <li>{actionData?.collection?.name}</li>
-              <li>Floor price 50.2 ETH //todo</li>
+              <li>
+                Floor price{' '}
+                {actionData?.collection?.floor_price ? (
+                  <>
+                    {formatAmount(actionData?.collection?.floor_price)}
+                    {chain.nativeTokenSymbol}
+                  </>
+                ) : (
+                  '-'
+                )}
+              </li>
               <li>
                 <NameAndAddress
                   address={actionData?.collection?.id}
@@ -238,7 +248,7 @@ const ApproveNFTCollection = ({
             )}
           </Row>
         </Col>
-        <Col>
+        {/* <Col>
           <Row isTitle>Risk exposure</Row>
           <Row>
             {formatUsdValue(requireData.riskExposure)}
@@ -253,7 +263,7 @@ const ApproveNFTCollection = ({
               />
             )}
           </Row>
-        </Col>
+        </Col> */}
         <Col>
           <Row isTitle>Popularity</Row>
           <Row>

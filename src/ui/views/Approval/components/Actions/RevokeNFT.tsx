@@ -9,7 +9,7 @@ import {
   RevokeNFTRequireData,
   SendRequireData,
 } from './utils';
-import { formatUsdValue } from 'ui/utils/number';
+import { formatAmount, formatUsdValue } from 'ui/utils/number';
 import { ellipsis } from 'ui/utils/address';
 import { ellipsisTokenSymbol } from 'ui/utils/token';
 import { getTimeSpan } from 'ui/utils/time';
@@ -171,7 +171,17 @@ const RevokeNFT = ({
             <NFTWithName nft={actionData?.nft}></NFTWithName>
             <ul className="desc-list">
               <li>{actionData?.nft?.collection?.name}</li>
-              <li>Floor price 50.2 ETH //todo</li>
+              <li>
+                Floor price{' '}
+                {actionData?.nft?.collection?.floor_price ? (
+                  <>
+                    {formatAmount(actionData?.nft?.collection?.floor_price)}
+                    {chain.nativeTokenSymbol}
+                  </>
+                ) : (
+                  '-'
+                )}
+              </li>
               <li>
                 <NameAndAddress
                   address={actionData?.nft?.contract_id}
@@ -239,7 +249,7 @@ const RevokeNFT = ({
             )}
           </Row>
         </Col>
-        <Col>
+        {/* <Col>
           <Row isTitle>Risk exposure</Row>
           <Row>
             {formatUsdValue(requireData.riskExposure)}
@@ -254,7 +264,7 @@ const RevokeNFT = ({
               />
             )}
           </Row>
-        </Col>
+        </Col> */}
         <Col>
           <Row isTitle>Popularity</Row>
           <Row>

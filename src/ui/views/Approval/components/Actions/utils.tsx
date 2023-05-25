@@ -284,6 +284,7 @@ export type ActionRequireData =
   | ApproveNFTRequireData
   | RevokeNFTRequireData
   | ContractCallRequireDta
+  | Record<string, never>
   | null;
 
 const waitQueueFinished = (q: PQueue) => {
@@ -292,6 +293,61 @@ const waitQueueFinished = (q: PQueue) => {
       if (q.pending <= 0) resolve(null);
     });
   });
+};
+
+const fetchNFTApproveRequiredData = async ({
+  spender,
+  address,
+  chainId,
+  wallet,
+}: {
+  spender: string;
+  address: string;
+  chainId: string;
+  wallet: WalletControllerType;
+}) => {
+  const queue = new PQueue();
+  const result: ApproveNFTRequireData = {
+    isEOA: false,
+    contract: null,
+    riskExposure: 0,
+    rank: null,
+    hasInteraction: false,
+    bornAt: 0,
+    protocol: null,
+    isDanger: false,
+    tokenBalance: '0',
+  };
+
+  queue.add(async () => {
+    const credit = await wallet.openapi.getContractCredit(spender, chainId);
+    result.rank = credit.rank_at;
+  });
+
+  queue.add(async () => {
+    const { desc } = await wallet.openapi.addrDesc(spender);
+    if (desc.contract && desc.contract[chainId]) {
+      result.bornAt = desc.contract[chainId].create_at;
+    }
+    if (!desc.contract?.[chainId]) {
+      result.isEOA = true;
+      result.bornAt = desc.born_at;
+    }
+    if (desc.protocol?.[chainId]) {
+      result.protocol = desc.protocol[chainId];
+    }
+    result.isDanger = desc.is_danger;
+  });
+  queue.add(async () => {
+    const hasInteraction = await wallet.openapi.hasInteraction(
+      address,
+      chainId,
+      spender
+    );
+    result.hasInteraction = hasInteraction.has_interaction;
+  });
+  await waitQueueFinished(queue);
+  return result;
 };
 
 export const fetchActionRequiredData = async ({
@@ -307,6 +363,9 @@ export const fetchActionRequiredData = async ({
   address: string;
   wallet: WalletControllerType;
 }): Promise<ActionRequireData> => {
+  if (actionData.deployContract) {
+    return {};
+  }
   if (!contractCall) {
     return null;
   }
@@ -492,7 +551,6 @@ export const fetchActionRequiredData = async ({
       isTokenContract: false,
       name: null,
       onTransferWhitelist: false,
-      collection: null,
     };
     queue.add(async () => {
       const { has_transfer } = await wallet.openapi.hasTransfer(
@@ -548,13 +606,7 @@ export const fetchActionRequiredData = async ({
       );
       result.usedChains = usedChainList;
     });
-    queue.add(async () => {
-      const res = await wallet.openapi.getCollection(
-        chainId,
-        actionData.sendNFT!.nft.collection?.id || ''
-      );
-      result.collection = res.collection;
-    });
+
     await waitQueueFinished(queue);
     return result;
   }
@@ -575,21 +627,21 @@ export const fetchActionRequiredData = async ({
       const credit = await wallet.openapi.getContractCredit(spender, chainId);
       result.rank = credit.rank_at;
     });
-    queue.add(async () => {
-      const { usd_value } = await wallet.openapi.tokenApproveExposure(
-        spender,
-        chainId
-      );
-      result.riskExposure = usd_value;
-    });
-    queue.add(async () => {
-      const t = await wallet.openapi.getToken(
-        address,
-        chainId,
-        nft.contract_id
-      );
-      result.tokenBalance = t.raw_amount_hex_str || '0';
-    });
+    // queue.add(async () => {
+    //   const { usd_value } = await wallet.openapi.tokenApproveExposure(
+    //     spender,
+    //     chainId
+    //   );
+    //   result.riskExposure = usd_value;
+    // });
+    // queue.add(async () => {
+    //   const t = await wallet.openapi.getToken(
+    //     address,
+    //     chainId,
+    //     nft.contract_id
+    //   );
+    //   result.tokenBalance = t.raw_amount_hex_str || '0';
+    // });
     queue.add(async () => {
       const { desc } = await wallet.openapi.addrDesc(spender);
       if (desc.contract && desc.contract[chainId]) {
@@ -632,17 +684,17 @@ export const fetchActionRequiredData = async ({
       const credit = await wallet.openapi.getContractCredit(spender, chainId);
       result.rank = credit.rank_at;
     });
-    queue.add(async () => {
-      const { usd_value } = await wallet.openapi.tokenApproveExposure(
-        spender,
-        chainId
-      );
-      result.riskExposure = usd_value;
-    });
-    queue.add(async () => {
-      const t = await wallet.openapi.getToken(address, chainId, nft.id);
-      result.tokenBalance = t.raw_amount_hex_str || '0';
-    });
+    // queue.add(async () => {
+    //   const { usd_value } = await wallet.openapi.tokenApproveExposure(
+    //     spender,
+    //     chainId
+    //   );
+    //   result.riskExposure = usd_value;
+    // });
+    // queue.add(async () => {
+    //   const t = await wallet.openapi.getToken(address, chainId, nft.contract_id);
+    //   result.tokenBalance = t.raw_amount_hex_str || '0';
+    // });
     queue.add(async () => {
       const { desc } = await wallet.openapi.addrDesc(spender);
       if (desc.contract && desc.contract[chainId]) {
@@ -685,17 +737,17 @@ export const fetchActionRequiredData = async ({
       const credit = await wallet.openapi.getContractCredit(spender, chainId);
       result.rank = credit.rank_at;
     });
-    queue.add(async () => {
-      const { usd_value } = await wallet.openapi.tokenApproveExposure(
-        spender,
-        chainId
-      );
-      result.riskExposure = usd_value;
-    });
-    queue.add(async () => {
-      const t = await wallet.openapi.getToken(address, chainId, collection.id);
-      result.tokenBalance = t.raw_amount_hex_str || '0';
-    });
+    // queue.add(async () => {
+    //   const { usd_value } = await wallet.openapi.tokenApproveExposure(
+    //     spender,
+    //     chainId
+    //   );
+    //   result.riskExposure = usd_value;
+    // });
+    // queue.add(async () => {
+    //   const t = await wallet.openapi.getToken(address, chainId, collection.id);
+    //   result.tokenBalance = t.raw_amount_hex_str || '0';
+    // });
     queue.add(async () => {
       const { desc } = await wallet.openapi.addrDesc(spender);
       if (desc.contract && desc.contract[chainId]) {
@@ -738,17 +790,17 @@ export const fetchActionRequiredData = async ({
       const credit = await wallet.openapi.getContractCredit(spender, chainId);
       result.rank = credit.rank_at;
     });
-    queue.add(async () => {
-      const { usd_value } = await wallet.openapi.tokenApproveExposure(
-        spender,
-        chainId
-      );
-      result.riskExposure = usd_value;
-    });
-    queue.add(async () => {
-      const t = await wallet.openapi.getToken(address, chainId, collection.id);
-      result.tokenBalance = t.raw_amount_hex_str || '0';
-    });
+    // queue.add(async () => {
+    //   const { usd_value } = await wallet.openapi.tokenApproveExposure(
+    //     spender,
+    //     chainId
+    //   );
+    //   result.riskExposure = usd_value;
+    // });
+    // queue.add(async () => {
+    //   const t = await wallet.openapi.getToken(address, chainId, collection.id);
+    //   result.tokenBalance = t.raw_amount_hex_str || '0';
+    // });
     queue.add(async () => {
       const { desc } = await wallet.openapi.addrDesc(spender);
       if (desc.contract && desc.contract[chainId]) {

@@ -8,7 +8,7 @@ import {
   ParsedActionData,
   SendRequireData,
 } from './utils';
-import { formatUsdValue } from 'ui/utils/number';
+import { formatAmount, formatUsdValue } from 'ui/utils/number';
 import { ellipsis } from 'ui/utils/address';
 import { ellipsisTokenSymbol } from 'ui/utils/token';
 import { getTimeSpan } from 'ui/utils/time';
@@ -172,7 +172,17 @@ const ApproveNFT = ({
             <NFTWithName nft={actionData?.nft}></NFTWithName>
             <ul className="desc-list">
               <li>{actionData?.nft?.collection?.name}</li>
-              <li>Floor price 50.2 ETH //todo</li>
+              <li>
+                Floor price{' '}
+                {actionData?.nft?.collection?.floor_price ? (
+                  <>
+                    {formatAmount(actionData?.nft?.collection?.floor_price)}
+                    {chain.nativeTokenSymbol}
+                  </>
+                ) : (
+                  '-'
+                )}
+              </li>
               <li>
                 <NameAndAddress
                   address={actionData?.nft?.contract_id}
@@ -240,7 +250,7 @@ const ApproveNFT = ({
             )}
           </Row>
         </Col>
-        <Col>
+        {/* <Col>
           <Row isTitle>Risk exposure</Row>
           <Row>
             {formatUsdValue(requireData.riskExposure)}
@@ -255,7 +265,7 @@ const ApproveNFT = ({
               />
             )}
           </Row>
-        </Col>
+        </Col> */}
         <Col>
           <Row isTitle>Popularity</Row>
           <Row>

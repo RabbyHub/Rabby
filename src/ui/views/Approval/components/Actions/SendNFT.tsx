@@ -188,15 +188,20 @@ const SendNFT = ({
           <Row>
             <NFTWithName nft={actionData?.nft}></NFTWithName>
             <ul className="desc-list">
-              <li>{actionData?.nft?.collection?.name}</li>
               <li>
-                Floor price {/* todo */}
-                {requireData?.collection?.floor_price ? (
+                {actionData?.nft?.collection?.name}
+                {/* {actionData?.nft?.collection?.is_verified && (
+                  <img className="icon icon-fake-token" src={IconFakeToken} />
+                )}
+                {actionData?.nft?.collection?.is_suspicious && (
+                  <img className="icon icon-scam-token" src={IconScamToken} />
+                )} */}
+              </li>
+              <li>
+                Floor price{' '}
+                {actionData?.nft?.collection?.floor_price ? (
                   <>
-                    {/* <Values.TokenAmount
-                      value={requireData?.collection?.floor_price}
-                    /> */}
-                    {formatAmount(requireData?.collection?.floor_price, 2)}
+                    {formatAmount(actionData?.nft?.collection?.floor_price)}
                     {chain.nativeTokenSymbol}
                   </>
                 ) : (
