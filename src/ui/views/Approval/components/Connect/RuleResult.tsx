@@ -152,15 +152,11 @@ const RuleResult = ({
           <div>{rule.result.value ? 'Yes' : 'No'}</div>
         )}
         {(rule.id === '1006' || rule.id === '1007') && (
-          <div className="flex">
+          <div className="flex cursor-pointer" onClick={onEditUserList}>
             {!userListResult && 'No mark'}
             {userListResult && userListResult.id === '1006' && 'Blocked'}
             {userListResult && userListResult.id === '1007' && 'Trusted'}
-            <img
-              src={IconEdit}
-              className="ml-6 icon icon-edit cursor-pointer"
-              onClick={onEditUserList}
-            />
+            <img src={IconEdit} className="ml-6 icon icon-edit" />
           </div>
         )}
       </div>
