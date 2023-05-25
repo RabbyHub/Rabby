@@ -82,8 +82,8 @@ export const useLedgerStatus = (address?: string) => {
           null,
           address
         )
-        .then((res) => {
-          if (!res) {
+        .then((valid) => {
+          if (!valid) {
             setStatus('ADDRESS_ERROR');
           }
         });
