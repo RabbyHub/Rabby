@@ -58,7 +58,6 @@ export const useLedgerStatus = (address?: string) => {
 
   React.useEffect(() => {
     const handle = (payload) => {
-      console.log('payload', payload);
       setStatus(payload);
     };
 
