@@ -3,68 +3,47 @@ import clsx from 'clsx';
 import { WALLET_BRAND_CONTENT } from '@/constant';
 import { CommonAccount } from './CommonAccount';
 import { useLedgerStatus } from '@/ui/component/ConnectStatus/useLedgerStatus';
-import { Account } from '@/background/service/preference';
 
 const LegerIcon = WALLET_BRAND_CONTENT.LEDGER.icon;
 
-interface Props {
-  account: Account;
-}
-
-export const LedgerAccount: React.FC<Props> = ({ account }) => {
-  const { status, onClickConnect, content, description } = useLedgerStatus(
-    account.address
-  );
-
-  const tipStatus = React.useMemo(() => {
-    if (status === 'DISCONNECTED' || !status) {
-      return 'DISCONNECTED';
-    }
-    return status;
-  }, [status]);
+export const LedgerAccount: React.FC = () => {
+  const { status, onClickConnect } = useLedgerStatus();
 
   const signal = React.useMemo(() => {
     switch (status) {
+      case undefined:
       case 'DISCONNECTED':
         return 'DISCONNECTED';
-      case 'CONNECTED':
-        return 'CONNECTED';
+
       default:
-        return 'ERROR';
+        return 'CONNECTED';
     }
-  }, [tipStatus]);
+  }, [status]);
 
   const TipContent = () => {
-    switch (tipStatus) {
+    switch (status) {
       case 'DISCONNECTED':
-        return <div className="text-red-forbidden">{content}</div>;
-
-      case 'ADDRESS_ERROR':
-      case 'LOCKED':
         return (
-          <div className="text-orange">
-            <div>{content}</div>
-            <div className="mt-12">{description}</div>
+          <div className="flex justify-between w-full">
+            <div className="text-red-forbidden">Ledger is not connected</div>
+            <div
+              onClick={onClickConnect}
+              className={clsx(
+                'underline cursor-pointer',
+                'text-12 font-medium text-gray-subTitle'
+              )}
+            >
+              Connect
+            </div>
           </div>
         );
 
       default:
-        return <div className="text-gray-subTitle">{content}</div>;
+        return <div className="text-gray-subTitle">Ledger is connected</div>;
     }
   };
 
   return (
-    <CommonAccount signal={signal} icon={LegerIcon} tip={<TipContent />}>
-      <div
-        onClick={onClickConnect}
-        className={clsx(
-          'underline cursor-pointer',
-          'absolute right-0 top-[-1px]',
-          'text-12 font-medium text-gray-subTitle'
-        )}
-      >
-        {tipStatus === 'DISCONNECTED' && 'Connect'}
-      </div>
-    </CommonAccount>
+    <CommonAccount signal={signal} icon={LegerIcon} tip={<TipContent />} />
   );
 };

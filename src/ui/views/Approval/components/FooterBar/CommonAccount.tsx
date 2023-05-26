@@ -4,7 +4,7 @@ import { Signal } from '@/ui/component/Signal';
 
 export interface Props {
   icon: string;
-  signal?: 'CONNECTED' | 'DISCONNECTED' | 'ERROR';
+  signal?: 'CONNECTED' | 'DISCONNECTED';
   customSignal?: React.ReactNode;
   tip?: React.ReactNode;
   children?: React.ReactNode;
@@ -21,11 +21,9 @@ export const CommonAccount: React.FC<Props> = ({
 }) => {
   const bgColor = React.useMemo(() => {
     switch (signal) {
-      case undefined:
       case 'DISCONNECTED':
         return 'gray';
-      case 'ERROR':
-        return 'orange';
+
       default:
       case 'CONNECTED':
         return 'green';

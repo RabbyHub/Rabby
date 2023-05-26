@@ -16,17 +16,6 @@ import eventBus from '@/eventBus';
 import { EVENTS } from 'consts';
 import { isSameAddress, wait } from '@/background/utils';
 import { LedgerHDPathType } from '@/utils/ledger';
-import PQueue from 'p-queue';
-
-type ConnectStatus = 'CONNECTED' | 'DISCONNECTED' | 'LOCKED';
-
-const timeoutPromise = (prom, time, exception) => {
-  let timer;
-  return Promise.race([
-    prom,
-    new Promise((_r, rej) => (timer = setTimeout(rej, time, exception))),
-  ]).finally(() => clearTimeout(timer));
-};
 
 const pathBase = 'm';
 const hdPathString = `${pathBase}/44'/60'/0'`;
@@ -96,7 +85,6 @@ class LedgerBridgeKeyring extends EventEmitter {
   isWebUSB: boolean;
   usedHDPathTypeList: Record<string, HDPathType> = {};
   static type: string;
-  queue = new PQueue({ concurrency: 1 });
   constructor(opts = {}) {
     super();
     this.accountDetails = {};
@@ -121,7 +109,6 @@ class LedgerBridgeKeyring extends EventEmitter {
 
     this.iframeLoaded = false;
     this._setupIframe();
-    this.loopCheckConnectStatus();
   }
 
   serialize() {
@@ -220,17 +207,11 @@ class LedgerBridgeKeyring extends EventEmitter {
     this.hdPath = hdPath;
   }
 
-  async _connectLedger() {
-    if (!this.app && this.isWebHID) {
-      this.transport = await TransportWebHID.create();
-      this.app = new LedgerEth(this.transport);
-    }
-  }
-
   async makeApp(signing = false) {
     if (!this.app && this.isWebHID) {
       try {
-        await this._connectLedger();
+        this.transport = await TransportWebHID.create();
+        this.app = new LedgerEth(this.transport);
       } catch (e: any) {
         if (signing) {
           if (
@@ -276,9 +257,7 @@ class LedgerBridgeKeyring extends EventEmitter {
     const path = hdPath ? this._toLedgerPath(hdPath) : this.hdPath;
     if (this.isWebHID) {
       await this.makeApp();
-      const res = await this.queue.add(() =>
-        this.app!.getAddress(path, false, true)
-      );
+      const res = await this.app!.getAddress(path, false, true);
       const { address, publicKey, chainCode } = res;
       this.hdk.publicKey = Buffer.from(publicKey, 'hex');
       this.hdk.chainCode = Buffer.from(chainCode!, 'hex');
@@ -519,9 +498,7 @@ class LedgerBridgeKeyring extends EventEmitter {
     if (this.isWebHID) {
       await this.makeApp(true);
       try {
-        const res = await this.queue.add(() =>
-          this.app!.signTransaction(hdPath, rawTxHex)
-        );
+        const res = await this.app!.signTransaction(hdPath, rawTxHex);
         const newOrMutatedTx = handleSigning(res);
         const valid = newOrMutatedTx.verifySignature();
         if (valid) {
@@ -582,11 +559,9 @@ class LedgerBridgeKeyring extends EventEmitter {
           try {
             await this.makeApp(true);
             const hdPath = await this.unlockAccountByAddress(withAccount);
-            const res = await this.queue.add(() =>
-              this.app!.signPersonalMessage(
-                hdPath,
-                ethUtil.stripHexPrefix(message)
-              )
+            const res = await this.app!.signPersonalMessage(
+              hdPath,
+              ethUtil.stripHexPrefix(message)
             );
             let v: string | number = res.v - 27;
             v = v.toString(16);
@@ -741,12 +716,10 @@ class LedgerBridgeKeyring extends EventEmitter {
         if (this.isWebHID) {
           try {
             await this.makeApp(true);
-            const res = await this.queue.add(() =>
-              this.app!.signEIP712HashedMessage(
-                hdPath,
-                domainSeparatorHex,
-                hashStructMessageHex
-              )
+            const res = await this.app!.signEIP712HashedMessage(
+              hdPath,
+              domainSeparatorHex,
+              hashStructMessageHex
             );
             let v: any = res.v - 27;
             v = v.toString(16);
@@ -1106,9 +1079,7 @@ class LedgerBridgeKeyring extends EventEmitter {
   }
   private async getPathBasePublicKey(hdPathType: HDPathType) {
     const pathBase = this.getHDPathBase(hdPathType);
-    const res = await this.queue.add(() =>
-      this.app!.getAddress(pathBase, false, true)
-    );
+    const res = await this.app!.getAddress(pathBase, false, true);
 
     return res.publicKey;
   }
@@ -1136,9 +1107,7 @@ class LedgerBridgeKeyring extends EventEmitter {
 
     // Ledger Live Account
     if (detail.bip44 && this._isLedgerLiveHdPath()) {
-      const res = await this.queue.add(() =>
-        this.app!.getAddress(detail.hdPath, false, true)
-      );
+      const res = await this.app!.getAddress(detail.hdPath, false, true);
       addressInDevice = res.address;
       // BIP44 OR Legacy Account
     } else {
@@ -1179,8 +1148,10 @@ class LedgerBridgeKeyring extends EventEmitter {
     await this.unlock();
     const addresses = await this.getAccounts();
     const pathBase = this.hdPath;
-    const { publicKey: currentPublicKey } = await this.queue.add(() =>
-      this.app!.getAddress(pathBase, false, true)
+    const { publicKey: currentPublicKey } = await this.app!.getAddress(
+      pathBase,
+      false,
+      true
     );
     const hdPathType = this.getHDPathTypeFromPath(pathBase);
     const accounts: Account[] = [];
@@ -1207,9 +1178,7 @@ class LedgerBridgeKeyring extends EventEmitter {
       ) {
         const info = this.getAccountInfo(address);
         if (info?.index === 1) {
-          const res = await this.queue.add(() =>
-            this.app!.getAddress(detail.hdPath, false, true)
-          );
+          const res = await this.app!.getAddress(detail.hdPath, false, true);
           if (isSameAddress(res.address, address)) {
             accounts.push(info);
           }
@@ -1229,7 +1198,6 @@ class LedgerBridgeKeyring extends EventEmitter {
         index: this.getIndexFromPath(hdPath, hdPathType) + 1,
         balance: null,
         hdPathType,
-        hdPath,
       };
     }
   }
@@ -1260,71 +1228,6 @@ class LedgerBridgeKeyring extends EventEmitter {
   async getCurrentUsedHDPathType() {
     const key = await this.getPathBasePublicKey(HDPathType.Legacy);
     return this.usedHDPathTypeList[key];
-  }
-
-  async checkConnectStatusTask() {
-    const timeoutError = Symbol();
-    try {
-      await this._connectLedger();
-      await timeoutPromise(
-        this.app!.getAddress("44'/60'/0'/0", false, false),
-        2000,
-        timeoutError
-      );
-      eventBus.emit(EVENTS.broadcastToUI, {
-        method: EVENTS.LEDGER.SESSION_CHANGE,
-        params: 'CONNECTED',
-      });
-      this.connectStatus = 'CONNECTED';
-    } catch (e) {
-      if (e?.name === 'TransportOpenUserCancelled') {
-        eventBus.emit(EVENTS.broadcastToUI, {
-          method: EVENTS.LEDGER.SESSION_CHANGE,
-          params: 'DISCONNECTED',
-        });
-        this.connectStatus = 'DISCONNECTED';
-        return;
-      }
-
-      if (e === timeoutError || !this.app) {
-        this.cleanUp();
-      }
-
-      eventBus.emit(EVENTS.broadcastToUI, {
-        method: EVENTS.LEDGER.SESSION_CHANGE,
-        params: 'LOCKED',
-      });
-      this.connectStatus = 'LOCKED';
-    }
-  }
-
-  connectStatus: ConnectStatus = 'DISCONNECTED';
-
-  getConnectStatus() {
-    return this.connectStatus;
-  }
-
-  async loopCheckConnectStatus() {
-    await this.queue.add(() => this.checkConnectStatusTask());
-    setTimeout(
-      () => {
-        this.loopCheckConnectStatus();
-      },
-      this.connectStatus !== 'CONNECTED' ? 500 : 5000
-    );
-  }
-
-  async verifyAddressInDevice(address: string) {
-    if (this.connectStatus !== 'CONNECTED') {
-      return;
-    }
-
-    const info = this.getAccountInfo(address);
-    const result = await this.queue.add(() =>
-      this.app!.getAddress(info!.hdPath, false, false)
-    );
-
-    return isSameAddress(address, result.address);
   }
 }
 
