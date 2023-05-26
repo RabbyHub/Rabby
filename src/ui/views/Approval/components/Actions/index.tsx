@@ -135,7 +135,7 @@ const Actions = ({
     }
 
     if (data.deployContract) {
-      return 'Deploy Contract';
+      return 'Deploy a Contract';
     }
 
     if (data.cancelTx) {
