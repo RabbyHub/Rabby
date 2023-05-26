@@ -309,18 +309,12 @@ const Swap = ({
         <div className="right">contract</div>
       </div>
       <Table>
-        {requireData.protocol && (
-          <Col>
-            <Row isTitle>Protocol</Row>
-            <Row>
-              <LogoWithText
-                logo={requireData.protocol.logo_url}
-                text={requireData.protocol.name}
-                logoRadius="100%"
-              />
-            </Row>
-          </Col>
-        )}
+        <Col>
+          <Row isTitle>Protocol</Row>
+          <Row>
+            <Values.Protocol value={requireData.protocol} />
+          </Row>
+        </Col>
         <Col>
           <Row isTitle>Deployed</Row>
           <Row>{timeSpan}</Row>

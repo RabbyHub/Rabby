@@ -8,8 +8,8 @@ import { isSameAddress } from '@/ui/utils';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { Table, Col, Row } from './components/Table';
 import AddressMemo from './components/AddressMemo';
-import LogoWithText from './components/LogoWithText';
 import * as Values from './components/Values';
+import SecurityLevelTagNoText from '../SecurityEngine/SecurityLevelTagNoText';
 import IconAlert from 'ui/assets/sign/tx/alert.svg';
 
 const Wrapper = styled.div`
@@ -133,15 +133,7 @@ const ContractCall = ({
         <Col>
           <Row isTitle>Protocol</Row>
           <Row>
-            {requireData.protocol ? (
-              <LogoWithText
-                logo={requireData.protocol.logo_url}
-                text={requireData.protocol.name}
-                logoRadius="100%"
-              />
-            ) : (
-              '-'
-            )}
+            <Values.Protocol value={requireData.protocol} />
           </Row>
         </Col>
         <Col>
@@ -164,16 +156,6 @@ const ContractCall = ({
           <Row isTitle>Interacted before</Row>
           <Row>
             <Values.Boolean value={requireData.hasInteraction} />
-            {/* {engineResultMap['1025'] && (
-              <SecurityLevelTagNoText
-                level={
-                  processedRules.includes('1025')
-                    ? 'proceed'
-                    : engineResultMap['1025'].level
-                }
-                onClick={() => handleClickRule('1025')}
-              />
-            )} */}
           </Row>
         </Col>
         <Col>
@@ -193,6 +175,26 @@ const ContractCall = ({
               isContract
               onChange={() => dispatch.securityEngine.init()}
             />
+            {engineResultMap['1064'] && (
+              <SecurityLevelTagNoText
+                level={
+                  processedRules.includes('1064')
+                    ? 'proceed'
+                    : engineResultMap['1064'].level
+                }
+                onClick={() => handleClickRule('1064')}
+              />
+            )}
+            {engineResultMap['1065'] && (
+              <SecurityLevelTagNoText
+                level={
+                  processedRules.includes('1065')
+                    ? 'proceed'
+                    : engineResultMap['1065'].level
+                }
+                onClick={() => handleClickRule('1065')}
+              />
+            )}
           </Row>
         </Col>
       </Table>

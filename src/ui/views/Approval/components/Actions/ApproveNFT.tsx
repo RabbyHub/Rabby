@@ -202,10 +202,7 @@ const ApproveNFT = ({
         <Col>
           <Row isTitle>Protocol</Row>
           <Row>
-            <LogoWithText
-              logo={requireData.protocol?.logo_url}
-              text={requireData.protocol?.name || 'Unknown'}
-            ></LogoWithText>
+            <Values.Protocol value={requireData.protocol} />
           </Row>
         </Col>
         <Col>
@@ -250,22 +247,24 @@ const ApproveNFT = ({
             )}
           </Row>
         </Col>
-        {/* <Col>
-          <Row isTitle>Risk exposure</Row>
-          <Row>
-            {formatUsdValue(requireData.riskExposure)}
-            {engineResultMap['1054'] && (
-              <SecurityLevelTagNoText
-                level={
-                  processedRules.includes('1054')
-                    ? 'proceed'
-                    : engineResultMap['1054'].level
-                }
-                onClick={() => handleClickRule('1054')}
-              />
-            )}
-          </Row>
-        </Col> */}
+        {requireData.riskExposure !== null && (
+          <Col>
+            <Row isTitle>Risk exposure</Row>
+            <Row>
+              {formatUsdValue(requireData.riskExposure || 0)}
+              {engineResultMap['1044'] && (
+                <SecurityLevelTagNoText
+                  level={
+                    processedRules.includes('1044')
+                      ? 'proceed'
+                      : engineResultMap['1044'].level
+                  }
+                  onClick={() => handleClickRule('1044')}
+                />
+              )}
+            </Row>
+          </Col>
+        )}
         <Col>
           <Row isTitle>Popularity</Row>
           <Row>

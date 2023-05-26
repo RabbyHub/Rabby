@@ -9,12 +9,14 @@ import styled from 'styled-components';
 import { Chain } from '@debank/common';
 import { SecurityEngineLevel } from 'consts';
 import { Level } from '@debank/rabby-security-engine/dist/rules';
+import { FallbackSiteLogo } from '@/ui/component';
 
 interface Props extends Omit<ActionGroupProps, 'account'> {
   chain?: Chain;
   gnosisAccount?: Account;
   securityLevel?: Level;
   origin?: string;
+  originLogo?: string;
   hasUnProcessSecurityResult?: boolean;
 }
 
@@ -27,14 +29,23 @@ const Wrapper = styled.section`
     font-size: 13px;
     line-height: 15px;
     color: #666;
-    padding: 0 20px 15px 0;
+    padding-bottom: 15px;
     position: relative;
     margin-bottom: 18px;
-    white-space: nowrap;
-    text-overflow: ellipsis;
-    overflow: hidden;
+    display: flex;
+    align-items: center;
     .origin {
       color: #333;
+      flex: 1;
+      margin-left: 8px;
+      overflow: hidden;
+      text-overflow: ellipsis;
+      white-space: nowrap;
+    }
+    .right {
+      font-size: 12px;
+      line-height: 14px;
+      color: #707280;
     }
     &::after {
       content: '';
@@ -83,6 +94,7 @@ const SecurityLevelTipColor = {
 
 export const FooterBar: React.FC<Props> = ({
   origin,
+  originLogo,
   gnosisAccount,
   securityLevel,
   hasUnProcessSecurityResult,
@@ -116,7 +128,16 @@ export const FooterBar: React.FC<Props> = ({
     <Wrapper className={clsx('bg-white')}>
       {origin && (
         <div className="request-origin">
-          Request from <span className="origin">{displayOirigin}</span>
+          {originLogo && !(origin === INTERNAL_REQUEST_ORIGIN) && (
+            <FallbackSiteLogo
+              url={originLogo}
+              origin={origin}
+              width="20px"
+              height="20px"
+            />
+          )}
+          <span className="origin">{displayOirigin}</span>
+          <span className="right">Request from</span>
         </div>
       )}
       <AccountInfo chain={props.chain} account={account} />

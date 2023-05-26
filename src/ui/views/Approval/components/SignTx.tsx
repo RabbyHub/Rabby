@@ -1045,12 +1045,19 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       chainId: chain.serverId,
       address,
       wallet,
+      tx: {
+        ...tx,
+        gas: '0x0',
+        nonce: (updateNonce ? recommendNonce : tx.nonce) || '0x1',
+        value: tx.value || '0x0',
+      },
     });
     const ctx = formatSecurityEngineCtx({
       actionData: parsed,
       requireData: requiredData,
       chainId: chain.serverId,
     });
+    console.log('ctx', ctx);
     const result = await executeEngine(ctx);
     setEngineResults(result);
     setActionData(parsed);
@@ -1206,14 +1213,6 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       }));
 
     if (currentAccount?.type && WaitingSignComponent[currentAccount.type]) {
-      // await wallet.addTxExplainCache({
-      //   address: currentAccount.address,
-      //   chainId,
-      //   nonce: Number(realNonce || tx.nonce),
-      //   explain: txDetail!,
-      //   approvalId: approval.id,
-      //   calcSuccess: !(checkErrors.length > 0),
-      // });
       resolveApproval({
         ...transaction,
         isSend,
@@ -1334,10 +1333,6 @@ const SignTx = ({ params, origin }: SignTxProps) => {
 
   const handleGnosisDrawerCancel = () => {
     setGnosisDrawerVisble(false);
-  };
-
-  const handleForceProcessChange = (checked: boolean) => {
-    setForceProcess(checked);
   };
 
   const handleTxChange = (obj: Record<string, any>) => {
@@ -1760,6 +1755,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
         <>
           <FooterBar
             origin={origin}
+            originLogo={params.session.icon}
             hasUnProcessSecurityResult={hasUnProcessSecurityResult}
             securityLevel={securityLevel}
             gnosisAccount={isGnosis ? account : undefined}

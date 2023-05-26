@@ -5,6 +5,7 @@ import userDataDrawer from './UserListDrawer';
 import { useWallet } from 'ui/utils';
 import { getTimeSpan } from 'ui/utils/time';
 import { formatUsdValue, formatAmount } from 'ui/utils/number';
+import LogoWithText from './LogoWithText';
 import IconEdit from 'ui/assets/editpen.svg';
 
 const Boolean = ({ value }: { value: boolean }) => {
@@ -136,6 +137,26 @@ const AddressMark = ({
   );
 };
 
+const Protocol = ({
+  value,
+}: {
+  value?: { name: string; logo_url: string } | null;
+}) => {
+  return (
+    <>
+      {value ? (
+        <LogoWithText
+          logo={value.logo_url}
+          text={value.name}
+          logoRadius="100%"
+        />
+      ) : (
+        '-'
+      )}
+    </>
+  );
+};
+
 export {
   Boolean,
   TokenAmount,
@@ -144,4 +165,5 @@ export {
   AddressMark,
   USDValue,
   TimeSpan,
+  Protocol,
 };

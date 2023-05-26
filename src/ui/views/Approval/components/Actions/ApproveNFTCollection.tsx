@@ -1,28 +1,19 @@
 import React, { useEffect, useMemo } from 'react';
 import styled from 'styled-components';
-import BigNumber from 'bignumber.js';
 import { Chain } from 'background/service/openapi';
 import { Result } from '@debank/rabby-security-engine';
-import {
-  ApproveNFTRequireData,
-  ParsedActionData,
-  SendRequireData,
-} from './utils';
+import { ApproveNFTRequireData, ParsedActionData } from './utils';
 import { formatAmount, formatUsdValue } from 'ui/utils/number';
 import { ellipsis } from 'ui/utils/address';
-import { ellipsisTokenSymbol } from 'ui/utils/token';
 import { getTimeSpan } from 'ui/utils/time';
 import { isSameAddress, useWallet } from '@/ui/utils';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { Table, Col, Row } from './components/Table';
 import AddressMemo from './components/AddressMemo';
 import userDataDrawer from './components/UserListDrawer';
-import LogoWithText from './components/LogoWithText';
 import SecurityLevelTagNoText from '../SecurityEngine/SecurityLevelTagNoText';
 import IconEdit from 'ui/assets/editpen.svg';
-import NFTAvatar from '@/ui/views/Dashboard/components/NFT/NFTAvatar';
 import { NameAndAddress } from '@/ui/component';
-import NFTWithName from './components/NFTWithName';
 import * as Values from './components/Values';
 
 const Wrapper = styled.div`
@@ -200,10 +191,7 @@ const ApproveNFTCollection = ({
         <Col>
           <Row isTitle>Protocol</Row>
           <Row>
-            <LogoWithText
-              logo={requireData.protocol?.logo_url}
-              text={requireData.protocol?.name || 'Unknown'}
-            ></LogoWithText>
+            <Values.Protocol value={requireData.protocol} />
           </Row>
         </Col>
         <Col>
@@ -248,22 +236,24 @@ const ApproveNFTCollection = ({
             )}
           </Row>
         </Col>
-        {/* <Col>
-          <Row isTitle>Risk exposure</Row>
-          <Row>
-            {formatUsdValue(requireData.riskExposure)}
-            {engineResultMap['1054'] && (
-              <SecurityLevelTagNoText
-                level={
-                  processedRules.includes('1054')
-                    ? 'proceed'
-                    : engineResultMap['1054'].level
-                }
-                onClick={() => handleClickRule('1054')}
-              />
-            )}
-          </Row>
-        </Col> */}
+        {requireData.riskExposure !== null && (
+          <Col>
+            <Row isTitle>Risk exposure</Row>
+            <Row>
+              {formatUsdValue(requireData.riskExposure)}
+              {engineResultMap['1054'] && (
+                <SecurityLevelTagNoText
+                  level={
+                    processedRules.includes('1054')
+                      ? 'proceed'
+                      : engineResultMap['1054'].level
+                  }
+                  onClick={() => handleClickRule('1054')}
+                />
+              )}
+            </Row>
+          </Col>
+        )}
         <Col>
           <Row isTitle>Popularity</Row>
           <Row>

@@ -175,10 +175,7 @@ const RevokeNFTCollection = ({
         <Col>
           <Row isTitle>Protocol</Row>
           <Row>
-            <LogoWithText
-              logo={requireData.protocol?.logo_url}
-              text={requireData.protocol?.name || 'Unknown'}
-            ></LogoWithText>
+            <Values.Protocol value={requireData.protocol} />
           </Row>
         </Col>
         <Col>
@@ -223,22 +220,24 @@ const RevokeNFTCollection = ({
             )}
           </Row>
         </Col>
-        {/* <Col>
-          <Row isTitle>Risk exposure</Row>
-          <Row>
-            {formatUsdValue(requireData.riskExposure)}
-            {engineResultMap['1023'] && (
-              <SecurityLevelTagNoText
-                level={
-                  processedRules.includes('1023')
-                    ? 'proceed'
-                    : engineResultMap['1023'].level
-                }
-                onClick={() => handleClickRule('1023')}
-              />
-            )}
-          </Row>
-        </Col> */}
+        {requireData.riskExposure !== null && (
+          <Col>
+            <Row isTitle>Risk exposure</Row>
+            <Row>
+              {formatUsdValue(requireData.riskExposure)}
+              {engineResultMap['1023'] && (
+                <SecurityLevelTagNoText
+                  level={
+                    processedRules.includes('1023')
+                      ? 'proceed'
+                      : engineResultMap['1023'].level
+                  }
+                  onClick={() => handleClickRule('1023')}
+                />
+              )}
+            </Row>
+          </Col>
+        )}
         <Col>
           <Row isTitle>Popularity</Row>
           <Row>

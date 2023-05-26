@@ -111,6 +111,7 @@ const SendNFT = ({
     }
     if (requireData.cex) bornAt = requireData.cex.bornAt;
     if (requireData.eoa) bornAt = requireData.eoa.bornAt;
+    if (!bornAt) return '-';
     const { d, h, m } = getTimeSpan(Math.floor(Date.now() / 1000) - bornAt);
     if (d > 0) {
       return `${d} Day${d > 1 ? 's' : ''} ago`;
@@ -287,6 +288,16 @@ const SendNFT = ({
               {transferWhitelist.includes(actionData.to.toLowerCase())
                 ? 'On my whitelist'
                 : 'Not on my whitelist'}
+              {engineResultMap['1042'] && (
+                <SecurityLevelTagNoText
+                  level={
+                    processedRules.includes('1042')
+                      ? 'proceed'
+                      : engineResultMap['1042'].level
+                  }
+                  onClick={() => handleClickRule('1042')}
+                />
+              )}
             </Row>
           </Col>
         )}
@@ -305,14 +316,14 @@ const SendNFT = ({
               onBlacklist={receiverInBlacklist}
               onChange={() => dispatch.securityEngine.init()}
             />
-            {engineResultMap['1042'] && (
+            {engineResultMap['1040'] && (
               <SecurityLevelTagNoText
                 level={
-                  processedRules.includes('1042')
+                  processedRules.includes('1040')
                     ? 'proceed'
-                    : engineResultMap['1042'].level
+                    : engineResultMap['1040'].level
                 }
-                onClick={() => handleClickRule('1042')}
+                onClick={() => handleClickRule('1040')}
               />
             )}
             {engineResultMap['1041'] && (

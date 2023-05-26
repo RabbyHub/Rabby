@@ -92,6 +92,7 @@ const Send = ({
     }
     if (requireData.cex) bornAt = requireData.cex.bornAt;
     if (requireData.eoa) bornAt = requireData.eoa.bornAt;
+    if (!bornAt) return '-';
     const { d, h, m } = getTimeSpan(Math.floor(Date.now() / 1000) - bornAt);
     if (d > 0) {
       return `${d} Day${d > 1 ? 's' : ''} ago`;

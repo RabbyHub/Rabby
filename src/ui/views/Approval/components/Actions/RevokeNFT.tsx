@@ -3,7 +3,7 @@ import styled from 'styled-components';
 import { Chain } from 'background/service/openapi';
 import { Result } from '@debank/rabby-security-engine';
 import { ParsedActionData, RevokeNFTRequireData } from './utils';
-import { formatAmount } from 'ui/utils/number';
+import { formatAmount, formatUsdValue } from 'ui/utils/number';
 import { ellipsis } from 'ui/utils/address';
 import { getTimeSpan } from 'ui/utils/time';
 import { isSameAddress, useWallet } from '@/ui/utils';
@@ -11,7 +11,6 @@ import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { Table, Col, Row } from './components/Table';
 import AddressMemo from './components/AddressMemo';
 import userDataDrawer from './components/UserListDrawer';
-import LogoWithText from './components/LogoWithText';
 import SecurityLevelTagNoText from '../SecurityEngine/SecurityLevelTagNoText';
 import IconEdit from 'ui/assets/editpen.svg';
 import { NameAndAddress } from '@/ui/component';
@@ -193,10 +192,7 @@ const RevokeNFT = ({
         <Col>
           <Row isTitle>Protocol</Row>
           <Row>
-            <LogoWithText
-              logo={requireData.protocol?.logo_url}
-              text={requireData.protocol?.name || 'Unknown'}
-            ></LogoWithText>
+            <Values.Protocol value={requireData.protocol} />
           </Row>
         </Col>
         <Col>
@@ -241,22 +237,24 @@ const RevokeNFT = ({
             )}
           </Row>
         </Col>
-        {/* <Col>
-          <Row isTitle>Risk exposure</Row>
-          <Row>
-            {formatUsdValue(requireData.riskExposure)}
-            {engineResultMap['1023'] && (
-              <SecurityLevelTagNoText
-                level={
-                  processedRules.includes('1023')
-                    ? 'proceed'
-                    : engineResultMap['1023'].level
-                }
-                onClick={() => handleClickRule('1023')}
-              />
-            )}
-          </Row>
-        </Col> */}
+        {requireData.riskExposure !== null && (
+          <Col>
+            <Row isTitle>Risk exposure</Row>
+            <Row>
+              {formatUsdValue(requireData.riskExposure)}
+              {engineResultMap['1023'] && (
+                <SecurityLevelTagNoText
+                  level={
+                    processedRules.includes('1023')
+                      ? 'proceed'
+                      : engineResultMap['1023'].level
+                  }
+                  onClick={() => handleClickRule('1023')}
+                />
+              )}
+            </Row>
+          </Col>
+        )}
         <Col>
           <Row isTitle>Popularity</Row>
           <Row>

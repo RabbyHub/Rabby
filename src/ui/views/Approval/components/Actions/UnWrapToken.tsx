@@ -146,11 +146,7 @@ const UnWrapToken = ({
           <Col>
             <Row isTitle>Protocol</Row>
             <Row>
-              <LogoWithText
-                logo={requireData.protocol.logo_url}
-                text={requireData.protocol.name}
-                logoRadius="100%"
-              />
+              <Values.Protocol value={requireData.protocol} />
             </Row>
           </Col>
         )}

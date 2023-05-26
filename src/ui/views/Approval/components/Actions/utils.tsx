@@ -347,6 +347,7 @@ export interface WrapTokenRequireData {
 }
 
 export interface ContractCallRequireData {
+  id: string;
   contract: Record<string, ContractDesc> | null;
   rank: number | null;
   hasInteraction: boolean;
@@ -451,6 +452,13 @@ const fetchNFTApproveRequiredData = async ({
     );
     result.hasInteraction = hasInteraction.has_interaction;
   });
+  queue.add(async () => {
+    const { usd_value } = await wallet.openapi.getTokenNFTExposure(
+      chainId,
+      spender
+    );
+    result.riskExposure = usd_value;
+  });
   await waitQueueFinished(queue);
   return result;
 };
@@ -531,25 +539,24 @@ export const fetchActionRequiredData = async ({
   chainId,
   address,
   wallet,
+  tx,
 }: {
   actionData: ParsedActionData;
   contractCall?: ParseTxResponse['contract_call'] | null;
   chainId: string;
   address: string;
   wallet: WalletControllerType;
+  tx: Tx;
 }): Promise<ActionRequireData> => {
   if (actionData.deployContract) {
     return {};
   }
-  if (!contractCall) {
-    return null;
-  }
   const queue = new PQueue();
   if (actionData.swap) {
-    const { id, protocol } = contractCall.contract;
+    const id = tx.to;
     const result: SwapRequireData = {
       id,
-      protocol: protocol,
+      protocol: null,
       bornAt: 0,
       hasInteraction: false,
       rank: null,
@@ -564,6 +571,9 @@ export const fetchActionRequiredData = async ({
       if (desc.contract && desc.contract[chainId]) {
         result.bornAt = desc.contract[chainId].create_at;
       }
+      if (desc.protocol && desc.protocol[chainId]) {
+        result.protocol = desc.protocol[chainId];
+      }
     });
     queue.add(async () => {
       const hasInteraction = await wallet.openapi.hasInteraction(
@@ -577,10 +587,10 @@ export const fetchActionRequiredData = async ({
     return result;
   }
   if (actionData.wrapToken || actionData.unWrapToken) {
-    const { id, protocol } = contractCall.contract;
+    const id = tx.to;
     const result: WrapTokenRequireData = {
       id,
-      protocol: protocol,
+      protocol: null,
       bornAt: 0,
       hasInteraction: false,
       rank: null,
@@ -593,6 +603,9 @@ export const fetchActionRequiredData = async ({
       const { desc } = await wallet.openapi.addrDesc(id);
       if (desc.contract && desc.contract[chainId]) {
         result.bornAt = desc.contract[chainId].create_at;
+      }
+      if (desc.protocol && desc.protocol[chainId]) {
+        result.protocol = desc.protocol[chainId];
       }
     });
     queue.add(async () => {
@@ -787,7 +800,10 @@ export const fetchActionRequiredData = async ({
       );
       result.usedChains = usedChainList;
     });
-
+    const whitelist = await wallet.getWhitelist();
+    result.onTransferWhitelist = whitelist.includes(
+      actionData.sendNFT.to.toLowerCase()
+    );
     await waitQueueFinished(queue);
     return result;
   }
@@ -831,6 +847,7 @@ export const fetchActionRequiredData = async ({
       bornAt: 0,
       protocol: contractCall.contract.protocol,
       call: contractCall,
+      id: contractCall.contract.id,
     };
     queue.add(async () => {
       const credit = await wallet.openapi.getContractCredit(
@@ -919,6 +936,31 @@ export const formatSecurityEngineCtx = ({
       },
     };
   }
+  if (actionData.sendNFT) {
+    const data = requireData as SendRequireData;
+    const { to } = actionData.sendNFT;
+    return {
+      sendNFT: {
+        to,
+        contract: data.contract
+          ? {
+              chains: Object.keys(data.contract),
+            }
+          : null,
+        cex: data.cex
+          ? {
+              id: data.cex.id,
+              isDeposit: data.cex.isDeposit,
+              supportToken: data.cex.supportToken,
+            }
+          : null,
+        hasTransfer: data.hasTransfer,
+        chainId,
+        usedChainList: data.usedChains.map((item) => item.id),
+        onTransferWhitelist: data.onTransferWhitelist,
+      },
+    };
+  }
   if (actionData.approveToken) {
     const data = requireData as ApproveTokenRequireData;
     const { spender } = actionData.approveToken;
@@ -931,6 +973,61 @@ export const formatSecurityEngineCtx = ({
         deployDays: getTimeSpan(Math.floor(Date.now() / 1000) - data.bornAt).d,
         hasInteracted: data.hasInteraction,
         isDanger: !!data.isDanger,
+      },
+    };
+  }
+  if (actionData.approveNFT) {
+    const data = requireData as ApproveNFTRequireData;
+    const { spender } = actionData.approveNFT;
+    return {
+      nftApprove: {
+        chainId,
+        spender,
+        isEOA: data.isEOA,
+        riskExposure: data.riskExposure,
+        deployDays: getTimeSpan(Math.floor(Date.now() / 1000) - data.bornAt).d,
+        hasInteracted: data.hasInteraction,
+        isDanger: !!data.isDanger,
+      },
+    };
+  }
+  if (actionData.approveNFTCollection) {
+    const data = requireData as ApproveNFTRequireData;
+    const { spender } = actionData.approveNFTCollection;
+    return {
+      collectionApprove: {
+        chainId,
+        spender,
+        isEOA: data.isEOA,
+        riskExposure: data.riskExposure,
+        deployDays: getTimeSpan(Math.floor(Date.now() / 1000) - data.bornAt).d,
+        hasInteracted: data.hasInteraction,
+        isDanger: !!data.isDanger,
+      },
+    };
+  }
+  if (actionData.wrapToken) {
+    const { slippageTolerance } = actionData.wrapToken;
+    return {
+      wrapToken: {
+        slippageTolerance,
+      },
+    };
+  }
+  if (actionData.unWrapToken) {
+    const { slippageTolerance } = actionData.unWrapToken;
+    return {
+      wrapToken: {
+        slippageTolerance,
+      },
+    };
+  }
+  if (actionData.contractCall) {
+    const data = requireData as ContractCallRequireData;
+    return {
+      contractCall: {
+        chainId,
+        id: data.id,
       },
     };
   }
