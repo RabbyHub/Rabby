@@ -77,6 +77,7 @@ export const TrezorManager: React.FC<Props> = ({ HDName = 'Trezor' }) => {
       modal.error({
         content: `${HDName}Connect has stopped. Please refresh the page to connect again.`,
         okText: 'Refresh',
+        centered: true,
         onOk() {
           window.location.reload();
         },

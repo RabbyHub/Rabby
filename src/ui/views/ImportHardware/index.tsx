@@ -57,6 +57,7 @@ const ImportHardware = () => {
         state: {
           keyring: KEYRING_CLASS.HARDWARE[hardware],
         },
+        search: `?hd=${KEYRING_CLASS.HARDWARE[hardware]}`,
       });
     } catch (err) {
       console.log('connect error', err);

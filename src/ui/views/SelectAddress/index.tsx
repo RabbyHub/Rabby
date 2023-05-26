@@ -48,6 +48,9 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
   const query = new URLSearchParams(search);
 
   state.keyring = state?.keyring || (query.get('hd') as string);
+  if (query.get('keyringId') && !state.keyringId) {
+    state.keyringId = Number(query.get('keyringId') as string);
+  }
 
   if (!state) {
     if (getUiType().isTab) {
@@ -65,18 +68,9 @@ const SelectAddress = ({ isPopup = false }: { isPopup?: boolean }) => {
   const [isMounted, setIsMounted] = React.useState(false);
   const dispatch = useRabbyDispatch();
   const initMnemonics = async () => {
-    if (query.get('hd')) {
-      const address = await wallet.getLastGetAddress();
-      const mnemonics = await wallet.getMnemonicByAddress(address);
-      const {
-        keyringId,
-        isExistedKR,
-      } = await wallet.generateKeyringWithMnemonic(mnemonics);
-
+    if (isMnemonic) {
       dispatch.importMnemonics.switchKeyring({
-        finalMnemonics: mnemonics,
-        isExistedKeyring: isExistedKR,
-        stashKeyringId: keyringId,
+        stashKeyringId: keyringId.current as number,
       });
     }
 

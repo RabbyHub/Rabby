@@ -1771,6 +1771,7 @@ export class WalletController extends BaseController {
       result.keyringId = this.addKeyringToStash(keyring);
     } else {
       result.isExistedKR = true;
+      result.keyringId = this.updateKeyringInStash(keyring);
     }
 
     return result;
@@ -1781,6 +1782,18 @@ export class WalletController extends BaseController {
     stashKeyrings[stashId] = keyring;
 
     return stashId;
+  };
+
+  updateKeyringInStash = (keyring) => {
+    let keyringId = Object.keys(stashKeyrings).find((key) => {
+      return stashKeyrings[key].mnemonic === keyring.mnemonic;
+    }) as number | undefined;
+
+    if (!keyringId) {
+      keyringId = this.addKeyringToStash(keyring);
+    }
+
+    return Number(keyringId);
   };
 
   addKeyring = async (
@@ -1909,13 +1922,28 @@ export class WalletController extends BaseController {
   }) => {
     let keyring;
     let stashKeyringId: number | null = null;
+    let isNew = false;
     try {
       keyring = this._getKeyringByType(type);
     } catch {
       const Keyring = keyringService.getKeyringClassForType(type);
       keyring = new Keyring();
+      isNew = true;
+    }
+
+    Object.keys(stashKeyrings).forEach((key) => {
+      const kr = stashKeyrings[key];
+      if (kr.type === keyring.type) {
+        stashKeyringId = Number(key);
+      }
+    });
+    if (!stashKeyringId) {
       stashKeyringId = Object.values(stashKeyrings).length + 1;
       stashKeyrings[stashKeyringId] = keyring;
+    } else {
+      if (isNew) {
+        stashKeyrings[stashKeyringId] = keyring;
+      }
     }
 
     if (hdPath && keyring.setHdPath) {

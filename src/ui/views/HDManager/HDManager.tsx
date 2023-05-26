@@ -34,7 +34,10 @@ const MANAGER_MAP = {
   [KEYRING_CLASS.MNEMONIC]: MnemonicManager,
 };
 
-export const HDManager: React.FC<StateProviderProps> = ({ keyring }) => {
+export const HDManager: React.FC<StateProviderProps> = ({
+  keyring,
+  keyringId,
+}) => {
   const wallet = useWallet();
   const [initialed, setInitialed] = React.useState(false);
   const idRef = React.useRef<number | null>(null);
@@ -44,15 +47,20 @@ export const HDManager: React.FC<StateProviderProps> = ({ keyring }) => {
   }, []);
 
   React.useEffect(() => {
-    wallet
-      .connectHardware({
-        type: keyring,
-        isWebHID: true,
-      })
-      .then((id) => {
-        idRef.current = id;
-        setInitialed(true);
-      });
+    if (keyring === KEYRING_CLASS.MNEMONIC) {
+      idRef.current = keyringId;
+      setInitialed(true);
+    } else {
+      wallet
+        .connectHardware({
+          type: keyring,
+          isWebHID: true,
+        })
+        .then((id) => {
+          idRef.current = id;
+          setInitialed(true);
+        });
+    }
 
     window.addEventListener('beforeunload', () => {
       closeConnect();

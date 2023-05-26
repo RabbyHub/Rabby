@@ -519,7 +519,6 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
           tooltipContent={cantProcessReason}
           disabledProcess={
             loading ||
-            (isLedger && !useLedgerLive && !hasConnectedLedgerHID) ||
             !forceProcess ||
             securityCheckStatus === 'loading' ||
             isWatch

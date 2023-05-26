@@ -264,7 +264,8 @@ export const SwapByDex = () => {
       !payToken?.decimals ||
       !receiveToken?.id ||
       !payAmount ||
-      !feeRate
+      !feeRate ||
+      !gasMarket?.[1]?.price
     ) {
       return;
     }
@@ -287,6 +288,7 @@ export const SwapByDex = () => {
         slippage: Number(slippage),
         feeRate: Number(feeRate) || 0,
         chain: chain,
+        gasPrice: gasMarket?.[1]?.price,
       });
 
       stats.report('swapQuoteResult', {
@@ -317,9 +319,10 @@ export const SwapByDex = () => {
     receiveToken?.id,
     feeRate,
     slippage,
+    gasMarket?.[1]?.price,
   ]);
 
-  const { isSdkDataPass, tokenApproved, shouldTwoStepApprove } = useVerifySdk({
+  const { isSdkDataPass } = useVerifySdk({
     chain,
     dexId,
     slippage,
@@ -333,11 +336,15 @@ export const SwapByDex = () => {
         toToken: receiveToken?.id,
       },
     payToken,
-    receiveToken,
-    payAmount,
   });
 
-  const { totalGasUsed, totalGasUsedLoading, preExecTxError } = useGasAmount({
+  const {
+    totalGasUsed,
+    totalGasUsedLoading,
+    preExecTxError,
+    tokenApproved,
+    shouldTwoStepApprove,
+  } = useGasAmount({
     chain,
     data: quoteInfo,
     payToken,
@@ -345,8 +352,6 @@ export const SwapByDex = () => {
     dexId: oDexId,
     gasMarket,
     gasLevel,
-    tokenApproved,
-    shouldTwoStepApprove,
     userAddress,
     refreshId,
     payAmount,
@@ -759,6 +764,7 @@ export const SwapByDex = () => {
               <IconRefresh
                 className="text-blue-light cursor-pointer"
                 refresh={refresh}
+                loading={loading}
               />
             )}
           </div>
