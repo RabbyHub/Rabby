@@ -12,7 +12,6 @@ import { Table, Col, Row } from './components/Table';
 import AddressMemo from './components/AddressMemo';
 import userDataDrawer from './components/UserListDrawer';
 import SecurityLevelTagNoText from '../SecurityEngine/SecurityLevelTagNoText';
-import IconEdit from 'ui/assets/editpen.svg';
 import { NameAndAddress } from '@/ui/component';
 import NFTWithName from './components/NFTWithName';
 import * as Values from './components/Values';
@@ -286,18 +285,14 @@ const RevokeNFT = ({
         <Col>
           <Row isTitle>My mark</Row>
           <Row>
-            <div className="flex">
-              <span className="mr-6">
-                {spenderInWhitelist && 'Trusted'}
-                {spenderInBlacklist && 'Blocked'}
-                {!spenderInBlacklist && !spenderInWhitelist && 'No mark'}
-              </span>
-              <img
-                src={IconEdit}
-                className="icon-edit-alias icon"
-                onClick={handleEditSpenderMark}
-              />
-            </div>
+            <Values.AddressMark
+              address={actionData.spender}
+              chainId={chain.serverId}
+              onWhitelist={spenderInWhitelist}
+              onBlacklist={spenderInBlacklist}
+              onChange={() => dispatch.securityEngine.init()}
+              isContract
+            />
             {engineResultMap['1026'] && (
               <SecurityLevelTagNoText
                 level={

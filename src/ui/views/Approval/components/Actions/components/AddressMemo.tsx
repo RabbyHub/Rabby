@@ -75,13 +75,12 @@ const AddressMemo = ({ address }: { address: string }) => {
   };
 
   return (
-    <div className="flex">
+    <div
+      className="flex cursor-pointer"
+      onClick={() => updateAddressMemo(addressAlias, updateAlias)}
+    >
       <span className="mr-6">{addressAlias || '-'}</span>
-      <img
-        src={IconEdit}
-        className="icon-edit-alias icon"
-        onClick={() => updateAddressMemo(addressAlias, updateAlias)}
-      />
+      <img src={IconEdit} className="icon-edit-alias icon" />
     </div>
   );
 };

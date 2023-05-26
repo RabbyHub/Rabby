@@ -397,16 +397,12 @@ const SignText = ({ params }: { params: SignTextProps }) => {
         ></SecurityCheckCard>
       </div>
 
-      <footer className="approval-text__footer pb-[20px]">
-        {isWatch ? (
-          <ProcessTooltip>{cantProcessReason}</ProcessTooltip>
-        ) : (
-          <SecurityCheck
-            status={securityCheckStatus}
-            value={forceProcess}
-            onChange={handleForceProcessChange}
-          />
-        )}
+      <footer className="approval-text__footer">
+        <SecurityCheck
+          status={securityCheckStatus}
+          value={forceProcess}
+          onChange={handleForceProcessChange}
+        />
 
         <FooterBar
           gnosisAccount={isGnosis ? params.account : undefined}

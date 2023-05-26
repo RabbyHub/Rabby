@@ -1,26 +1,16 @@
 import React, { useEffect, useMemo } from 'react';
 import styled from 'styled-components';
-import BigNumber from 'bignumber.js';
 import { Chain } from 'background/service/openapi';
 import { Result } from '@debank/rabby-security-engine';
-import {
-  ApproveNFTRequireData,
-  ParsedActionData,
-  SendRequireData,
-} from './utils';
+import { ApproveNFTRequireData, ParsedActionData } from './utils';
 import { formatAmount, formatUsdValue } from 'ui/utils/number';
 import { ellipsis } from 'ui/utils/address';
-import { ellipsisTokenSymbol } from 'ui/utils/token';
 import { getTimeSpan } from 'ui/utils/time';
 import { isSameAddress, useWallet } from '@/ui/utils';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { Table, Col, Row } from './components/Table';
 import AddressMemo from './components/AddressMemo';
-import userDataDrawer from './components/UserListDrawer';
-import LogoWithText from './components/LogoWithText';
 import SecurityLevelTagNoText from '../SecurityEngine/SecurityLevelTagNoText';
-import IconEdit from 'ui/assets/editpen.svg';
-import NFTAvatar from '@/ui/views/Dashboard/components/NFT/NFTAvatar';
 import { NameAndAddress } from '@/ui/component';
 import NFTWithName from './components/NFTWithName';
 import * as Values from './components/Values';
@@ -125,35 +115,6 @@ const ApproveNFT = ({
       value: result?.value,
       level: result?.level,
       ignored: processedRules.includes(id),
-    });
-  };
-
-  const handleEditSpenderMark = () => {
-    userDataDrawer({
-      address: actionData.spender,
-      onWhitelist: spenderInWhitelist,
-      onBlacklist: spenderInBlacklist,
-      async onChange({ onWhitelist, onBlacklist }) {
-        const contract = {
-          address: actionData.spender,
-          chainId: chain.serverId,
-        };
-        if (onWhitelist && !spenderInWhitelist) {
-          await wallet.addContractWhitelist(contract);
-        }
-        if (onBlacklist && !spenderInBlacklist) {
-          await wallet.addContractBlacklist(contract);
-        }
-        if (
-          !onBlacklist &&
-          !onWhitelist &&
-          (spenderInBlacklist || spenderInWhitelist)
-        ) {
-          await wallet.removeContractBlacklist(contract);
-          await wallet.removeContractWhitelist(contract);
-        }
-        dispatch.securityEngine.init();
-      },
     });
   };
 
@@ -296,18 +257,14 @@ const ApproveNFT = ({
         <Col>
           <Row isTitle>My mark</Row>
           <Row>
-            <div className="flex">
-              <span className="mr-6">
-                {spenderInWhitelist && 'Trusted'}
-                {spenderInBlacklist && 'Blocked'}
-                {!spenderInBlacklist && !spenderInWhitelist && 'No mark'}
-              </span>
-              <img
-                src={IconEdit}
-                className="icon-edit-alias icon"
-                onClick={handleEditSpenderMark}
-              />
-            </div>
+            <Values.AddressMark
+              address={actionData.spender}
+              chainId={chain.serverId}
+              onWhitelist={spenderInWhitelist}
+              onBlacklist={spenderInBlacklist}
+              onChange={() => dispatch.securityEngine.init()}
+              isContract
+            />
             {engineResultMap['1049'] && (
               <SecurityLevelTagNoText
                 level={

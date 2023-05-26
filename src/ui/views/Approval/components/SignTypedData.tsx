@@ -496,21 +496,11 @@ const SignTypedData = ({ params }: { params: SignTypedDataProps }) => {
       </div>
 
       <footer className="approval-text__footer">
-        {/* {isLedger && !useLedgerLive && !hasConnectedLedgerHID && (
-          <LedgerWebHIDAlert connected={hasConnectedLedgerHID} />
-        )}*/}
-        {isWatch ? (
-          <ProcessTooltip>{cantProcessReason}</ProcessTooltip>
-        ) : (
-          <SecurityCheck
-            status={securityCheckStatus}
-            value={forceProcess}
-            onChange={handleForceProcessChange}
-          />
-        )}
-
-        <ProcessTooltip>{cantProcessReason}</ProcessTooltip>
-
+        <SecurityCheck
+          status={securityCheckStatus}
+          value={forceProcess}
+          onChange={handleForceProcessChange}
+        />
         <FooterBar
           gnosisAccount={isGnosis ? account : undefined}
           onCancel={handleCancel}

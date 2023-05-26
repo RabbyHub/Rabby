@@ -10,9 +10,7 @@ import { isSameAddress, useWallet } from '@/ui/utils';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { Table, Col, Row } from './components/Table';
 import AddressMemo from './components/AddressMemo';
-import userDataDrawer from './components/UserListDrawer';
 import SecurityLevelTagNoText from '../SecurityEngine/SecurityLevelTagNoText';
-import IconEdit from 'ui/assets/editpen.svg';
 import { NameAndAddress } from '@/ui/component';
 import * as Values from './components/Values';
 
@@ -116,35 +114,6 @@ const ApproveNFTCollection = ({
       value: result?.value,
       level: result?.level,
       ignored: processedRules.includes(id),
-    });
-  };
-
-  const handleEditSpenderMark = () => {
-    userDataDrawer({
-      address: actionData.spender,
-      onWhitelist: spenderInWhitelist,
-      onBlacklist: spenderInBlacklist,
-      async onChange({ onWhitelist, onBlacklist }) {
-        const contract = {
-          address: actionData.spender,
-          chainId: chain.serverId,
-        };
-        if (onWhitelist && !spenderInWhitelist) {
-          await wallet.addContractWhitelist(contract);
-        }
-        if (onBlacklist && !spenderInBlacklist) {
-          await wallet.addContractBlacklist(contract);
-        }
-        if (
-          !onBlacklist &&
-          !onWhitelist &&
-          (spenderInBlacklist || spenderInWhitelist)
-        ) {
-          await wallet.removeContractBlacklist(contract);
-          await wallet.removeContractWhitelist(contract);
-        }
-        dispatch.securityEngine.init();
-      },
     });
   };
 
@@ -285,18 +254,14 @@ const ApproveNFTCollection = ({
         <Col>
           <Row isTitle>My mark</Row>
           <Row>
-            <div className="flex">
-              <span className="mr-6">
-                {spenderInWhitelist && 'Trusted'}
-                {spenderInBlacklist && 'Blocked'}
-                {!spenderInBlacklist && !spenderInWhitelist && 'No mark'}
-              </span>
-              <img
-                src={IconEdit}
-                className="icon-edit-alias icon"
-                onClick={handleEditSpenderMark}
-              />
-            </div>
+            <Values.AddressMark
+              address={actionData.spender}
+              chainId={chain.serverId}
+              onWhitelist={spenderInWhitelist}
+              onBlacklist={spenderInBlacklist}
+              onChange={() => dispatch.securityEngine.init()}
+              isContract
+            />
             {engineResultMap['1057'] && (
               <SecurityLevelTagNoText
                 level={

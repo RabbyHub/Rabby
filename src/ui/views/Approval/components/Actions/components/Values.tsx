@@ -50,10 +50,10 @@ const TimeSpan = ({ value }) => {
 
 const AddressMarkWrapper = styled.div`
   display: flex;
+  cursor: pointer;
   .icon-edit-alias {
     width: 13px;
     height: 13px;
-    cursor: pointer;
   }
 `;
 const AddressMark = ({
@@ -122,17 +122,13 @@ const AddressMark = ({
     });
   };
   return (
-    <AddressMarkWrapper>
+    <AddressMarkWrapper onClick={handleEditMark}>
       <span className="mr-6">
         {onWhitelist && 'Trusted'}
         {onBlacklist && 'Blocked'}
         {!onBlacklist && !onWhitelist && 'No mark'}
       </span>
-      <img
-        src={IconEdit}
-        className="icon-edit-alias icon"
-        onClick={handleEditMark}
-      />
+      <img src={IconEdit} className="icon-edit-alias icon" />
     </AddressMarkWrapper>
   );
 };
