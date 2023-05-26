@@ -132,15 +132,16 @@ export const DEX = {
   //   name: '1inch',
   //   chains: DEX_SUPPORT_CHAINS[DEX_ENUM.ONEINCH],
   // },
-  [DEX_ENUM.OPENOCEAN]: {
-    logo: ImageOpenOcean,
-    name: 'OpenOcean',
-    chains: DEX_SUPPORT_CHAINS[DEX_ENUM.OPENOCEAN],
-  },
+
   [DEX_ENUM.ZEROXAPI]: {
     logo: ImageOx,
     name: '0x',
     chains: DEX_SUPPORT_CHAINS[DEX_ENUM.ZEROXAPI],
+  },
+  [DEX_ENUM.OPENOCEAN]: {
+    logo: ImageOpenOcean,
+    name: 'OpenOcean',
+    chains: DEX_SUPPORT_CHAINS[DEX_ENUM.OPENOCEAN],
   },
   [DEX_ENUM.PARASWAP]: {
     logo: ImagePara,
