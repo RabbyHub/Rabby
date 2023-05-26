@@ -1329,7 +1329,7 @@
   resolved "https://registry.yarnpkg.com/@ctrl/tinycolor/-/tinycolor-3.4.0.tgz#c3c5ae543c897caa9c2a68630bed355be5f9990f"
   integrity sha512-JZButFdZ1+/xAfpguQHoabIXkcqRRKpMrWKBkpEZZyxfY9C1DpADFB8PEqGSTeFr135SaTRfKqGKx5xSCLI7ZQ==
 
-"@debank/common@^0.2.28", "@debank/common@^0.2.37":
+"@debank/common@^0.2.28":
   version "0.2.37"
   resolved "https://registry.yarnpkg.com/@debank/common/-/common-0.2.37.tgz#e1e9eb56643c22cfda7afcceca329b1de1537a61"
   integrity sha512-gsxpSPaWyPEhHSYEuRhN2G/m2k99pOIgucqlU/PMXWcB06nR0WW5v7TPvSvkIPf749rlUrO/v0OBHM4ZS99rAw==
@@ -1338,6 +1338,11 @@
   version "0.2.33"
   resolved "https://registry.yarnpkg.com/@debank/common/-/common-0.2.33.tgz#e3ed9bce272beb47886af15edb000d1496032eb1"
   integrity sha512-6nPvxPazsmHIbpqtKjlbysKagt8EEMYTraez/n1wprfIxviJ/qDyt/gey9HNo1BKeyc5+bDgYTzqR7yh4ljjgA==
+
+"@debank/common@^0.2.38":
+  version "0.2.38"
+  resolved "https://registry.yarnpkg.com/@debank/common/-/common-0.2.38.tgz#455365b64aafdd5234954e5d4426ab35d29e7eae"
+  integrity sha512-h97wkFeiD7VXv2IS8vwli+WW8c3YJ9ZJNhcar0DbDRzwZ4NVa8JA05e0zNPvAjAgE256mMgQH/GIAzExRN83zA==
 
 "@debank/festats@1.0.0":
   version "1.0.0"
