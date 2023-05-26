@@ -138,6 +138,11 @@ const RuleDesc = [
     fixed: true,
   },
   {
+    id: '1006',
+    desc: 'My Mark',
+    fixed: false,
+  },
+  {
     id: '1001',
     desc: 'Flagged by Rabby',
     fixed: false,
@@ -150,11 +155,6 @@ const RuleDesc = [
   {
     id: '1003',
     desc: 'Flagged by ScamSniffer',
-    fixed: false,
-  },
-  {
-    id: '1006',
-    desc: 'My Mark',
     fixed: false,
   },
 ];
@@ -555,37 +555,46 @@ const Connect = ({ params: { icon, origin } }: ConnectProps) => {
         </div>
 
         <div className="rule-list">
-          {sortRules.map((rule) => (
-            <RuleResult
-              rule={rule}
-              key={rule.id}
-              onSelect={handleSelectRule}
-              collectList={collectList}
-              popularLevel={originPopularLevel}
-              userListResult={userListResult}
-              ignored={processedRules.includes(rule.id)}
-              hasSafe={hasSafe}
-              hasForbidden={hasForbidden}
-              onEditUserList={handleEditUserDataList}
-            />
-          ))}
-          {!userListResult && (
-            <RuleResult
-              rule={{
-                id: '1006',
-                desc: 'My mark',
-                result: null,
-              }}
-              onSelect={handleSelectRule}
-              collectList={collectList}
-              popularLevel={originPopularLevel}
-              userListResult={userListResult}
-              ignored={false}
-              hasSafe={hasSafe}
-              hasForbidden={hasForbidden}
-              onEditUserList={handleEditUserDataList}
-            />
-          )}
+          {RuleDesc.map((rule) => {
+            if (rule.id === '1006') {
+              return (
+                <RuleResult
+                  rule={{
+                    id: '1006',
+                    desc: 'My mark',
+                    result: null,
+                  }}
+                  onSelect={handleSelectRule}
+                  collectList={collectList}
+                  popularLevel={originPopularLevel}
+                  userListResult={userListResult}
+                  ignored={false}
+                  hasSafe={hasSafe}
+                  hasForbidden={hasForbidden}
+                  onEditUserList={handleEditUserDataList}
+                />
+              );
+            } else {
+              if (sortRules.find((item) => item.id === rule.id) || rule.fixed) {
+                return (
+                  <RuleResult
+                    rule={sortRules.find((item) => item.id === rule.id)!}
+                    key={rule.id}
+                    onSelect={handleSelectRule}
+                    collectList={collectList}
+                    popularLevel={originPopularLevel}
+                    userListResult={userListResult}
+                    ignored={processedRules.includes(rule.id)}
+                    hasSafe={hasSafe}
+                    hasForbidden={hasForbidden}
+                    onEditUserList={handleEditUserDataList}
+                  />
+                );
+              } else {
+                return null;
+              }
+            }
+          })}
         </div>
 
         <Footer>
