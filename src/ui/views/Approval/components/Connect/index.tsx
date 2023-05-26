@@ -562,7 +562,7 @@ const Connect = ({ params: { icon, origin } }: ConnectProps) => {
                   rule={{
                     id: '1006',
                     desc: 'My mark',
-                    result: null,
+                    result: userListResult || null,
                   }}
                   onSelect={handleSelectRule}
                   collectList={collectList}
