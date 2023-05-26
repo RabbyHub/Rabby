@@ -214,6 +214,21 @@ const Send = ({
               <ul className="desc-list">
                 {contractOnCurrentChain.multisig && <li>MultiSig: Safe</li>}
                 {requireData.name && <li>{requireData.name}</li>}
+                {requireData.isTokenContract && (
+                  <li>
+                    Recipient address is a token contract address
+                    {engineResultMap['1016'] && (
+                      <SecurityLevelTagNoText
+                        level={
+                          processedRules.includes('1016')
+                            ? 'proceed'
+                            : engineResultMap['1016'].level
+                        }
+                        onClick={() => handleClickRule('1016')}
+                      />
+                    )}
+                  </li>
+                )}
               </ul>
             )}
             {engineResultMap['1019'] && (
