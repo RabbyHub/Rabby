@@ -4,8 +4,8 @@ import { ProcessActions } from './ProcessActions';
 import { useLedgerStatus } from '@/ui/component/ConnectStatus/useLedgerStatus';
 
 export const LedgerProcessActions: React.FC<Props> = (props) => {
-  const { disabledProcess, account } = props;
-  const { status } = useLedgerStatus(account.address);
+  const { disabledProcess } = props;
+  const { status } = useLedgerStatus();
 
   return (
     <ProcessActions

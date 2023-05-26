@@ -10,8 +10,7 @@ export const LedgerSignal: React.FC<Omit<Props, 'color'>> = (props) => {
       case undefined:
       case 'DISCONNECTED':
         return 'gray';
-      case 'LOCKED':
-        return 'orange';
+
       default:
         return 'green';
     }
