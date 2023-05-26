@@ -1,17 +1,10 @@
 import React, { useEffect, useMemo } from 'react';
 import styled from 'styled-components';
-import BigNumber from 'bignumber.js';
 import { Chain } from 'background/service/openapi';
 import { Result } from '@debank/rabby-security-engine';
-import {
-  ApproveNFTRequireData,
-  ParsedActionData,
-  SendRequireData,
-} from './utils';
+import { ApproveNFTRequireData, ParsedActionData } from './utils';
 import { formatAmount, formatUsdValue } from 'ui/utils/number';
 import { ellipsis } from 'ui/utils/address';
-import { ellipsisTokenSymbol } from 'ui/utils/token';
-import { getTimeSpan } from 'ui/utils/time';
 import { isSameAddress, useWallet } from '@/ui/utils';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { Table, Col, Row } from './components/Table';
@@ -20,9 +13,7 @@ import userDataDrawer from './components/UserListDrawer';
 import LogoWithText from './components/LogoWithText';
 import SecurityLevelTagNoText from '../SecurityEngine/SecurityLevelTagNoText';
 import IconEdit from 'ui/assets/editpen.svg';
-import NFTAvatar from '@/ui/views/Dashboard/components/NFT/NFTAvatar';
 import { NameAndAddress } from '@/ui/component';
-import NFTWithName from './components/NFTWithName';
 import * as Values from './components/Values';
 
 const Wrapper = styled.div`
@@ -91,22 +82,6 @@ const RevokeNFTCollection = ({
       return isSameAddress(contract.address, actionData.spender);
     });
   }, [userData, requireData, chain]);
-
-  const timeSpan = useMemo(() => {
-    const bornAt = requireData.bornAt;
-
-    const { d, h, m } = getTimeSpan(Math.floor(Date.now() / 1000) - bornAt);
-    if (d > 0) {
-      return `${d} Day${d > 1 ? 's' : ''} ago`;
-    }
-    if (h > 0) {
-      return `${h} Hour${h > 1 ? 's' : ''} ago`;
-    }
-    if (m > 1) {
-      return `${m} Minutes ago`;
-    }
-    return '1 Minute ago';
-  }, [requireData]);
 
   const engineResultMap = useMemo(() => {
     const map: Record<string, Result> = {};
@@ -235,7 +210,7 @@ const RevokeNFTCollection = ({
         <Col>
           <Row isTitle>{requireData.isEOA ? 'First on-chain' : 'Deployed'}</Row>
           <Row>
-            {timeSpan}
+            <Values.TimeSpan value={requireData.bornAt} />
             {engineResultMap['1024'] && (
               <SecurityLevelTagNoText
                 level={

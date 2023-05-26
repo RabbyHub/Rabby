@@ -110,17 +110,18 @@ const ContractCall = ({
       <div className="contract-call-header">
         <div className="alert">
           <img className="icon icon-alert" src={IconAlert} />
-          Rabby暂不支持完整解析该签名行为，但不代表有风险。
+          This signature can't be decoded by Rabby, but it doesn't imply any
+          risk
         </div>
         <div className="text-12 font-medium text-gray-common">
           {requireData.call.func
-            ? '以下是通过ABI解析的结果：'
-            : '以下是交互合约的相关信息：'}
+            ? 'Here are the decoded results from ABI:'
+            : "Here is the contract info you'll interact with:"}
         </div>
       </div>
       <div className="header">
         <div className="left">{ellipsis(requireData.call.contract.id)}</div>
-        <div className="right">approve to</div>
+        <div className="right">interact with</div>
       </div>
       <Table>
         {requireData.call.func && (
@@ -136,6 +137,7 @@ const ContractCall = ({
               <LogoWithText
                 logo={requireData.protocol.logo_url}
                 text={requireData.protocol.name}
+                logoRadius="100%"
               />
             ) : (
               '-'

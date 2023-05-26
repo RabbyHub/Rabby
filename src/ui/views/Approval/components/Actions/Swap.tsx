@@ -13,7 +13,7 @@ import { ellipsisTokenSymbol } from 'ui/utils/token';
 import { getTimeSpan } from 'ui/utils/time';
 import { Chain } from 'background/service/openapi';
 import SecurityLevelTagNoText from '../SecurityEngine/SecurityLevelTagNoText';
-import { isSameAddress, useWallet } from '@/ui/utils';
+import { isSameAddress } from '@/ui/utils';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import IconFakeToken from 'ui/assets/sign/tx/token-fake.svg';
 import IconScamToken from 'ui/assets/sign/tx/token-scam.svg';
@@ -141,6 +141,7 @@ const Swap = ({
               text={`${formatAmount(payToken.amount)} ${ellipsisTokenSymbol(
                 payToken.symbol
               )}`}
+              logoRadius="100%"
             />
             <ul className="desc-list">
               <li>
@@ -158,16 +159,27 @@ const Swap = ({
             <div className="flex">
               <LogoWithText
                 logo={receiveToken.logo_url}
+                logoRadius="100%"
                 text={`${formatAmount(
                   receiveToken.amount
                 )} ${ellipsisTokenSymbol(receiveToken.symbol)}`}
+                icon={
+                  <div className="flex gap-4 flex-shrink-0">
+                    {receiveToken.is_verified === false && (
+                      <img
+                        className="icon icon-fake-token"
+                        src={IconFakeToken}
+                      />
+                    )}
+                    {receiveToken.is_suspicious && (
+                      <img
+                        className="icon icon-scam-token"
+                        src={IconScamToken}
+                      />
+                    )}
+                  </div>
+                }
               />
-              {!receiveToken.is_verified && (
-                <img className="icon icon-fake-token" src={IconFakeToken} />
-              )}
-              {requireData.receiveTokenIsScam && (
-                <img className="icon icon-scam-token" src={IconScamToken} />
-              )}
             </div>
             {engineResultMap['1008'] && (
               <SecurityLevelTagNoText
@@ -218,9 +230,15 @@ const Swap = ({
         <Col>
           <Row isTitle>Minimum Received</Row>
           <Row>
-            <div>{`${formatAmount(minReceive.amount)} ${ellipsisTokenSymbol(
-              minReceive.symbol
-            )}`}</div>
+            <div>
+              <LogoWithText
+                logo={minReceive.logo_url}
+                logoRadius="100%"
+                text={`${formatAmount(minReceive.amount)} ${ellipsisTokenSymbol(
+                  minReceive.symbol
+                )}`}
+              />
+            </div>
             <ul className="desc-list">
               <li>
                 {formatUsdValue(
@@ -298,6 +316,7 @@ const Swap = ({
               <LogoWithText
                 logo={requireData.protocol.logo_url}
                 text={requireData.protocol.name}
+                logoRadius="100%"
               />
             </Row>
           </Col>

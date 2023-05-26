@@ -1,22 +1,16 @@
 import React, { useEffect, useMemo } from 'react';
 import styled from 'styled-components';
-import BigNumber from 'bignumber.js';
 import { Chain } from 'background/service/openapi';
 import { Result } from '@debank/rabby-security-engine';
-import { ParsedActionData, SendNFTRequireData, SendRequireData } from './utils';
+import { ParsedActionData, SendNFTRequireData } from './utils';
 import { formatAmount, formatUsdValue } from 'ui/utils/number';
 import { ellipsis } from 'ui/utils/address';
-import { ellipsisTokenSymbol } from 'ui/utils/token';
 import { getTimeSpan } from 'ui/utils/time';
-import { useWallet } from '@/ui/utils';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { Table, Col, Row } from './components/Table';
 import AddressMemo from './components/AddressMemo';
-import userDataDrawer from './components/UserListDrawer';
 import LogoWithText from './components/LogoWithText';
 import SecurityLevelTagNoText from '../SecurityEngine/SecurityLevelTagNoText';
-import IconEdit from 'ui/assets/editpen.svg';
-import NFTAvatar from '@/ui/views/Dashboard/components/NFT/NFTAvatar';
 import { NameAndAddress } from '@/ui/component';
 import NFTWithName from './components/NFTWithName';
 import * as Values from './components/Values';
@@ -67,7 +61,6 @@ const SendNFT = ({
 }) => {
   const actionData = data!;
   const dispatch = useRabbyDispatch();
-  const wallet = useWallet();
   const {
     userData,
     rules,
@@ -151,31 +144,6 @@ const SendNFT = ({
     });
   };
 
-  const handleEditReceiverMark = () => {
-    userDataDrawer({
-      address: actionData.to,
-      onWhitelist: receiverInWhitelist,
-      onBlacklist: receiverInBlacklist,
-      async onChange({ onWhitelist, onBlacklist }) {
-        if (onWhitelist && !receiverInWhitelist) {
-          await wallet.addAddressWhitelist(actionData.to);
-        }
-        if (onBlacklist && !receiverInBlacklist) {
-          await wallet.addAddressBlacklist(actionData.to);
-        }
-        if (
-          !onBlacklist &&
-          !onWhitelist &&
-          (receiverInBlacklist || receiverInWhitelist)
-        ) {
-          await wallet.removeAddressBlacklist(actionData.to);
-          await wallet.removeAddressWhitelist(actionData.to);
-        }
-        dispatch.securityEngine.init();
-      },
-    });
-  };
-
   useEffect(() => {
     dispatch.securityEngine.init();
   }, []);
@@ -188,15 +156,7 @@ const SendNFT = ({
           <Row>
             <NFTWithName nft={actionData?.nft}></NFTWithName>
             <ul className="desc-list">
-              <li>
-                {actionData?.nft?.collection?.name}
-                {/* {actionData?.nft?.collection?.is_verified && (
-                  <img className="icon icon-fake-token" src={IconFakeToken} />
-                )}
-                {actionData?.nft?.collection?.is_suspicious && (
-                  <img className="icon icon-scam-token" src={IconScamToken} />
-                )} */}
-              </li>
+              <li>{actionData?.nft?.collection?.name}</li>
               <li>
                 Floor price{' '}
                 {actionData?.nft?.collection?.floor_price ? (
@@ -255,8 +215,7 @@ const SendNFT = ({
                   )}
                   {!requireData.cex.supportToken && (
                     <li>
-                      {/* {ellipsisTokenSymbol(actionData.token.symbol)} not
-                      supported */}
+                      token not supported
                       {engineResultMap['1038'] && (
                         <SecurityLevelTagNoText
                           level={
@@ -340,18 +299,12 @@ const SendNFT = ({
         <Col>
           <Row isTitle>My mark</Row>
           <Row>
-            <div className="flex">
-              <span className="mr-6">
-                {receiverInWhitelist && 'Trusted'}
-                {receiverInBlacklist && 'Blocked'}
-                {!receiverInBlacklist && !receiverInWhitelist && 'No mark'}
-              </span>
-              <img
-                src={IconEdit}
-                className="icon-edit-alias icon"
-                onClick={handleEditReceiverMark}
-              />
-            </div>
+            <Values.AddressMark
+              address={actionData.to}
+              onWhitelist={receiverInWhitelist}
+              onBlacklist={receiverInBlacklist}
+              onChange={() => dispatch.securityEngine.init()}
+            />
             {engineResultMap['1042'] && (
               <SecurityLevelTagNoText
                 level={

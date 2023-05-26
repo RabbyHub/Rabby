@@ -138,6 +138,7 @@ const Send = ({
             <LogoWithText
               logo={actionData.token.logo_url}
               text={ellipsisTokenSymbol(actionData.token.symbol)}
+              logoRadius="100%"
             />
             <ul className="desc-list">
               <li>
@@ -164,6 +165,7 @@ const Send = ({
               <LogoWithText
                 logo={requireData.cex.logo}
                 text={requireData.cex.name}
+                logoRadius="100%"
               />
               {(!requireData.cex.isDeposit ||
                 !requireData.cex.supportToken) && (
@@ -212,6 +214,21 @@ const Send = ({
               <ul className="desc-list">
                 {contractOnCurrentChain.multisig && <li>MultiSig: Safe</li>}
                 {requireData.name && <li>{requireData.name}</li>}
+                {requireData.isTokenContract && (
+                  <li>
+                    Recipient address is a token contract address
+                    {engineResultMap['1016'] && (
+                      <SecurityLevelTagNoText
+                        level={
+                          processedRules.includes('1016')
+                            ? 'proceed'
+                            : engineResultMap['1016'].level
+                        }
+                        onClick={() => handleClickRule('1016')}
+                      />
+                    )}
+                  </li>
+                )}
               </ul>
             )}
             {engineResultMap['1019'] && (
