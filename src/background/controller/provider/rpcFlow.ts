@@ -141,6 +141,9 @@ const flowContext = flow
       windowHeight = options.height;
     } else {
       const minHeight = 500;
+      // if (screen.availHeight > windowHeight) {
+      //   windowHeight = screen.availHeight;
+      // }
       if (screen.availHeight < 880) {
         windowHeight = screen.availHeight;
       }

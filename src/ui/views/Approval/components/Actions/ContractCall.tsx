@@ -3,7 +3,6 @@ import styled from 'styled-components';
 import { Chain } from 'background/service/openapi';
 import { Result } from '@debank/rabby-security-engine';
 import { ContractCallRequireData, ParsedActionData } from './utils';
-import { ellipsis } from 'ui/utils/address';
 import { isSameAddress } from '@/ui/utils';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { Table, Col, Row } from './components/Table';
@@ -120,7 +119,13 @@ const ContractCall = ({
         </div>
       </div>
       <div className="header">
-        <div className="left">{ellipsis(requireData.call.contract.id)}</div>
+        <div className="left">
+          <Values.Address
+            address={requireData.call.contract.id}
+            chain={chain}
+            iconWidth="16px"
+          />
+        </div>
         <div className="right">interact with</div>
       </div>
       <Table>
@@ -171,7 +176,7 @@ const ContractCall = ({
               onBlacklist={contractInBlacklist}
               onWhitelist={contractInWhitelist}
               address={requireData.call.contract.id}
-              chainId={chain.serverId}
+              chain={chain}
               isContract
               onChange={() => dispatch.securityEngine.init()}
             />

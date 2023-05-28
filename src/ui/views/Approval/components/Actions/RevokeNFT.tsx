@@ -4,15 +4,12 @@ import { Chain } from 'background/service/openapi';
 import { Result } from '@debank/rabby-security-engine';
 import { ParsedActionData, RevokeNFTRequireData } from './utils';
 import { formatAmount, formatUsdValue } from 'ui/utils/number';
-import { ellipsis } from 'ui/utils/address';
 import { getTimeSpan } from 'ui/utils/time';
-import { isSameAddress, useWallet } from '@/ui/utils';
+import { isSameAddress } from '@/ui/utils';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { Table, Col, Row } from './components/Table';
 import AddressMemo from './components/AddressMemo';
-import userDataDrawer from './components/UserListDrawer';
 import SecurityLevelTagNoText from '../SecurityEngine/SecurityLevelTagNoText';
-import { NameAndAddress } from '@/ui/component';
 import NFTWithName from './components/NFTWithName';
 import * as Values from './components/Values';
 
@@ -62,7 +59,6 @@ const RevokeNFT = ({
 }) => {
   const actionData = data!;
   const dispatch = useRabbyDispatch();
-  const wallet = useWallet();
   const { userData, rules, processedRules } = useRabbySelector((s) => ({
     userData: s.securityEngine.userData,
     rules: s.securityEngine.rules,
@@ -118,36 +114,6 @@ const RevokeNFT = ({
       ignored: processedRules.includes(id),
     });
   };
-
-  const handleEditSpenderMark = () => {
-    userDataDrawer({
-      address: actionData.spender,
-      onWhitelist: spenderInWhitelist,
-      onBlacklist: spenderInBlacklist,
-      async onChange({ onWhitelist, onBlacklist }) {
-        const contract = {
-          address: actionData.spender,
-          chainId: chain.serverId,
-        };
-        if (onWhitelist && !spenderInWhitelist) {
-          await wallet.addContractWhitelist(contract);
-        }
-        if (onBlacklist && !spenderInBlacklist) {
-          await wallet.addContractBlacklist(contract);
-        }
-        if (
-          !onBlacklist &&
-          !onWhitelist &&
-          (spenderInBlacklist || spenderInWhitelist)
-        ) {
-          await wallet.removeContractBlacklist(contract);
-          await wallet.removeContractWhitelist(contract);
-        }
-        dispatch.securityEngine.init();
-      },
-    });
-  };
-
   useEffect(() => {
     dispatch.securityEngine.init();
   }, []);
@@ -166,17 +132,16 @@ const RevokeNFT = ({
                 {actionData?.nft?.collection?.floor_price ? (
                   <>
                     {formatAmount(actionData?.nft?.collection?.floor_price)}
-                    {chain.nativeTokenSymbol}
+                    ETH
                   </>
                 ) : (
                   '-'
                 )}
               </li>
               <li>
-                <NameAndAddress
-                  address={actionData?.nft?.contract_id}
-                  chainEnum={chain?.enum}
-                  openExternal
+                <Values.Address
+                  address={actionData.nft.contract_id}
+                  chain={chain}
                 />
               </li>
             </ul>
@@ -184,7 +149,13 @@ const RevokeNFT = ({
         </Col>
       </Table>
       <div className="header">
-        <div className="left">{ellipsis(actionData.spender)}</div>
+        <div className="left">
+          <Values.Address
+            address={actionData.spender}
+            chain={chain}
+            iconWidth="16px"
+          />
+        </div>
         <div className="right">revoke from</div>
       </div>
       <Table>
@@ -238,7 +209,12 @@ const RevokeNFT = ({
         </Col>
         {requireData.riskExposure !== null && (
           <Col>
-            <Row isTitle>Risk exposure</Row>
+            <Row
+              isTitle
+              tip="The USD value of the top NFT that has approved to this spender address"
+            >
+              Risk exposure
+            </Row>
             <Row>
               {formatUsdValue(requireData.riskExposure)}
               {engineResultMap['1023'] && (
@@ -287,7 +263,7 @@ const RevokeNFT = ({
           <Row>
             <Values.AddressMark
               address={actionData.spender}
-              chainId={chain.serverId}
+              chain={chain}
               onWhitelist={spenderInWhitelist}
               onBlacklist={spenderInBlacklist}
               onChange={() => dispatch.securityEngine.init()}

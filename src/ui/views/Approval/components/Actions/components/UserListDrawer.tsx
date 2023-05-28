@@ -1,7 +1,8 @@
 import React from 'react';
 import styled, { createGlobalStyle } from 'styled-components';
 import { Popup, Checkbox } from 'ui/component';
-import { ellipsis } from 'ui/utils/address';
+import { Chain } from 'background/service/openapi';
+import * as Values from './Values';
 
 const UserListDrawerWrapper = styled.div`
   .origin {
@@ -82,6 +83,7 @@ const GlobalStyle = createGlobalStyle`
 
 interface Props {
   address: string;
+  chain: Chain;
   onWhitelist: boolean;
   onBlacklist: boolean;
   onChange({
@@ -95,6 +97,7 @@ interface Props {
 
 const UserListDrawer = ({
   address,
+  chain,
   onWhitelist,
   onBlacklist,
   onChange,
@@ -105,7 +108,7 @@ const UserListDrawer = ({
       <UserListDrawerWrapper>
         <div className="origin">
           <span className="flex-1 whitespace-nowrap overflow-hidden overflow-ellipsis">
-            {ellipsis(address)}
+            <Values.Address address={address} chain={chain} iconWidth="18px" />
           </span>
         </div>
       </UserListDrawerWrapper>
@@ -128,7 +131,7 @@ const UserListDrawer = ({
           className="item"
           onClick={() => onChange({ onBlacklist: false, onWhitelist: true })}
         >
-          <div>Trusted</div>
+          <div className="text-green">Trusted</div>
           <div>
             <Checkbox
               checked={onWhitelist}
@@ -142,7 +145,7 @@ const UserListDrawer = ({
           className="item"
           onClick={() => onChange({ onBlacklist: true, onWhitelist: false })}
         >
-          <div>Blocked</div>
+          <div className="text-red">Blocked</div>
           <div>
             <Checkbox
               checked={onBlacklist}
@@ -159,11 +162,13 @@ const UserListDrawer = ({
 
 export default ({
   address,
+  chain,
   onWhitelist,
   onBlacklist,
   onChange,
 }: {
   address: string;
+  chain: Chain;
   onWhitelist: boolean;
   onBlacklist: boolean;
   onChange({
@@ -178,6 +183,7 @@ export default ({
     content: (
       <UserListDrawer
         address={address}
+        chain={chain}
         onWhitelist={onWhitelist}
         onBlacklist={onBlacklist}
         onChange={(res) => {

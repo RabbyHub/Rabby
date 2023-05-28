@@ -1,6 +1,8 @@
 import React, { ReactNode } from 'react';
 import styled from 'styled-components';
 import clsx from 'clsx';
+import { Tooltip } from 'antd';
+import IconQuestionMark from 'ui/assets/sign/tx/question-mark.svg';
 
 const TableWrapper = styled.div`
   background: #fafbff;
@@ -78,15 +80,31 @@ const RowWrapper = styled.div`
 const Row = ({
   children,
   isTitle = false,
+  tip,
   className,
 }: {
   children: ReactNode;
   isTitle?: boolean;
+  tip?: string;
   className?: string;
 }) => {
   return (
-    <RowWrapper className={clsx({ title: isTitle }, className)}>
+    <RowWrapper
+      className={clsx(
+        {
+          title: isTitle,
+          flex: !!tip,
+        },
+        className
+      )}
+    >
       {children}
+
+      {tip && (
+        <Tooltip title={tip} overlayClassName="rectangle max-w-[244px]">
+          <img src={IconQuestionMark} className="icon ml-6" />
+        </Tooltip>
+      )}
     </RowWrapper>
   );
 };

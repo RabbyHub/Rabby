@@ -1,5 +1,4 @@
 import React, { useMemo, useEffect } from 'react';
-import { BigNumber } from 'bignumber.js';
 import styled from 'styled-components';
 import { Result } from '@debank/rabby-security-engine';
 import { Table, Col, Row } from './components/Table';
@@ -7,10 +6,8 @@ import LogoWithText from './components/LogoWithText';
 import AddressMemo from './components/AddressMemo';
 import * as Values from './components/Values';
 import { ParsedActionData, WrapTokenRequireData } from './utils';
-import { formatAmount, formatUsdValue } from 'ui/utils/number';
-import { ellipsis } from 'ui/utils/address';
+import { formatAmount } from 'ui/utils/number';
 import { ellipsisTokenSymbol } from 'ui/utils/token';
-import { getTimeSpan } from 'ui/utils/time';
 import { Chain } from 'background/service/openapi';
 import SecurityLevelTagNoText from '../SecurityEngine/SecurityLevelTagNoText';
 import { isSameAddress } from '@/ui/utils';
@@ -112,7 +109,7 @@ const UnWrapToken = ({
           <Row isTitle>Receive token</Row>
           <Row>
             <LogoWithText
-              logo={payToken.logo_url}
+              logo={receiveToken.logo_url}
               text={`${formatAmount(
                 receiveToken.min_amount
               )} ${ellipsisTokenSymbol(receiveToken.symbol)}`}
@@ -122,7 +119,13 @@ const UnWrapToken = ({
         </Col>
       </Table>
       <div className="header">
-        <div className="left">{ellipsis(requireData.id)}</div>
+        <div className="left">
+          <Values.Address
+            address={requireData.id}
+            chain={chain}
+            iconWidth="16px"
+          />
+        </div>
         <div className="right">contract</div>
       </div>
       <Table>
@@ -167,7 +170,7 @@ const UnWrapToken = ({
               onWhitelist={contractInWhitelist}
               onBlacklist={contractInBlacklist}
               address={requireData.id}
-              chainId={chain.serverId}
+              chain={chain}
               isContract
               onChange={() => dispatch.securityEngine.init()}
             />

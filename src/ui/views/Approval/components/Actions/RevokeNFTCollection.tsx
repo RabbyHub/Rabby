@@ -4,13 +4,11 @@ import { Chain } from 'background/service/openapi';
 import { Result } from '@debank/rabby-security-engine';
 import { ApproveNFTRequireData, ParsedActionData } from './utils';
 import { formatAmount, formatUsdValue } from 'ui/utils/number';
-import { ellipsis } from 'ui/utils/address';
 import { isSameAddress, useWallet } from '@/ui/utils';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { Table, Col, Row } from './components/Table';
 import AddressMemo from './components/AddressMemo';
 import SecurityLevelTagNoText from '../SecurityEngine/SecurityLevelTagNoText';
-import { NameAndAddress } from '@/ui/component';
 import * as Values from './components/Values';
 
 const Wrapper = styled.div`
@@ -118,17 +116,16 @@ const RevokeNFTCollection = ({
                 {actionData?.collection?.floor_price ? (
                   <>
                     {formatAmount(actionData?.collection?.floor_price)}
-                    {chain.nativeTokenSymbol}
+                    ETH
                   </>
                 ) : (
                   '-'
                 )}
               </li>
               <li>
-                <NameAndAddress
-                  address={actionData?.collection?.id}
-                  chainEnum={chain?.enum}
-                  openExternal
+                <Values.Address
+                  address={actionData.collection.id}
+                  chain={chain}
                 />
               </li>
             </ul>
@@ -136,7 +133,13 @@ const RevokeNFTCollection = ({
         </Col>
       </Table>
       <div className="header">
-        <div className="left">{ellipsis(actionData.spender)}</div>
+        <div className="left">
+          <Values.Address
+            address={actionData.spender}
+            chain={chain}
+            iconWidth="16px"
+          />
+        </div>
         <div className="right">revoke from</div>
       </div>
       <Table>
@@ -190,7 +193,12 @@ const RevokeNFTCollection = ({
         </Col>
         {requireData.riskExposure !== null && (
           <Col>
-            <Row isTitle>Risk exposure</Row>
+            <Row
+              isTitle
+              tip="The USD value of the top NFT that has approved to this spender address"
+            >
+              Risk exposure
+            </Row>
             <Row>
               {formatUsdValue(requireData.riskExposure)}
               {engineResultMap['1023'] && (
@@ -239,7 +247,7 @@ const RevokeNFTCollection = ({
           <Row>
             <Values.AddressMark
               address={actionData.spender}
-              chainId={chain.serverId}
+              chain={chain}
               onWhitelist={spenderInWhitelist}
               onBlacklist={spenderInBlacklist}
               onChange={() => dispatch.securityEngine.init()}

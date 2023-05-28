@@ -4,8 +4,7 @@ import BigNumber from 'bignumber.js';
 import { Chain } from 'background/service/openapi';
 import { Result } from '@debank/rabby-security-engine';
 import { ParsedActionData, SendRequireData } from './utils';
-import { formatUsdValue } from 'ui/utils/number';
-import { ellipsis } from 'ui/utils/address';
+import { formatTokenAmount, formatUsdValue } from 'ui/utils/number';
 import { ellipsisTokenSymbol } from 'ui/utils/token';
 import { getTimeSpan } from 'ui/utils/time';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
@@ -134,11 +133,13 @@ const Send = ({
     <Wrapper>
       <Table>
         <Col>
-          <Row isTitle>Send Token</Row>
+          <Row isTitle>Send token</Row>
           <Row>
             <LogoWithText
               logo={actionData.token.logo_url}
-              text={ellipsisTokenSymbol(actionData.token.symbol)}
+              text={`${formatTokenAmount(
+                actionData.token.amount || 0
+              )} ${ellipsisTokenSymbol(actionData.token.symbol)}`}
               logoRadius="100%"
             />
             <ul className="desc-list">
@@ -155,7 +156,13 @@ const Send = ({
         </Col>
       </Table>
       <div className="header">
-        <div className="left">{ellipsis(actionData.to)}</div>
+        <div className="left">
+          <Values.Address
+            address={actionData.to}
+            chain={chain}
+            iconWidth="16px"
+          />
+        </div>
         <div className="right">send to</div>
       </div>
       <Table>
@@ -303,6 +310,7 @@ const Send = ({
               onWhitelist={receiverInWhitelist}
               onBlacklist={receiverInBlacklist}
               address={actionData.to}
+              chain={chain}
               onChange={() => dispatch.securityEngine.init()}
             />
             {engineResultMap['1031'] && (

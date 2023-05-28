@@ -4,14 +4,12 @@ import { Chain } from 'background/service/openapi';
 import { Result } from '@debank/rabby-security-engine';
 import { ApproveNFTRequireData, ParsedActionData } from './utils';
 import { formatAmount, formatUsdValue } from 'ui/utils/number';
-import { ellipsis } from 'ui/utils/address';
 import { getTimeSpan } from 'ui/utils/time';
 import { isSameAddress, useWallet } from '@/ui/utils';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { Table, Col, Row } from './components/Table';
 import AddressMemo from './components/AddressMemo';
 import SecurityLevelTagNoText from '../SecurityEngine/SecurityLevelTagNoText';
-import { NameAndAddress } from '@/ui/component';
 import NFTWithName from './components/NFTWithName';
 import * as Values from './components/Values';
 
@@ -122,8 +120,6 @@ const ApproveNFT = ({
     dispatch.securityEngine.init();
   }, []);
 
-  console.log(requireData);
-
   return (
     <Wrapper>
       <Table>
@@ -138,17 +134,16 @@ const ApproveNFT = ({
                 {actionData?.nft?.collection?.floor_price ? (
                   <>
                     {formatAmount(actionData?.nft?.collection?.floor_price)}
-                    {chain.nativeTokenSymbol}
+                    ETH
                   </>
                 ) : (
                   '-'
                 )}
               </li>
               <li>
-                <NameAndAddress
-                  address={actionData?.nft?.contract_id}
-                  chainEnum={chain?.enum}
-                  openExternal
+                <Values.Address
+                  address={actionData.nft.contract_id}
+                  chain={chain}
                 />
               </li>
             </ul>
@@ -156,7 +151,13 @@ const ApproveNFT = ({
         </Col>
       </Table>
       <div className="header">
-        <div className="left">{ellipsis(actionData.spender)}</div>
+        <div className="left">
+          <Values.Address
+            address={actionData.spender}
+            chain={chain}
+            iconWidth="16px"
+          />
+        </div>
         <div className="right">approve to</div>
       </div>
       <Table>
@@ -210,7 +211,12 @@ const ApproveNFT = ({
         </Col>
         {requireData.riskExposure !== null && (
           <Col>
-            <Row isTitle>Risk exposure</Row>
+            <Row
+              isTitle
+              tip="The USD value of the top NFT that has approved to this spender address"
+            >
+              Risk exposure
+            </Row>
             <Row>
               {formatUsdValue(requireData.riskExposure || 0)}
               {engineResultMap['1044'] && (
@@ -259,7 +265,7 @@ const ApproveNFT = ({
           <Row>
             <Values.AddressMark
               address={actionData.spender}
-              chainId={chain.serverId}
+              chain={chain}
               onWhitelist={spenderInWhitelist}
               onBlacklist={spenderInBlacklist}
               onChange={() => dispatch.securityEngine.init()}

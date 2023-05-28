@@ -4,14 +4,12 @@ import { Chain } from 'background/service/openapi';
 import { Result } from '@debank/rabby-security-engine';
 import { ParsedActionData, SendNFTRequireData } from './utils';
 import { formatAmount, formatUsdValue } from 'ui/utils/number';
-import { ellipsis } from 'ui/utils/address';
 import { getTimeSpan } from 'ui/utils/time';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { Table, Col, Row } from './components/Table';
 import AddressMemo from './components/AddressMemo';
 import LogoWithText from './components/LogoWithText';
 import SecurityLevelTagNoText from '../SecurityEngine/SecurityLevelTagNoText';
-import { NameAndAddress } from '@/ui/component';
 import NFTWithName from './components/NFTWithName';
 import * as Values from './components/Values';
 
@@ -163,7 +161,7 @@ const SendNFT = ({
                 {actionData?.nft?.collection?.floor_price ? (
                   <>
                     {formatAmount(actionData?.nft?.collection?.floor_price)}
-                    {chain.nativeTokenSymbol}
+                    ETH
                   </>
                 ) : (
                   '-'
@@ -173,10 +171,9 @@ const SendNFT = ({
                 <li>Amount: {actionData?.nft?.amount}</li>
               )}
               <li>
-                <NameAndAddress
-                  address={actionData?.nft?.contract_id}
-                  chainEnum={chain?.enum}
-                  openExternal
+                <Values.Address
+                  address={actionData.nft.contract_id}
+                  chain={chain}
                 />
               </li>
             </ul>
@@ -184,7 +181,13 @@ const SendNFT = ({
         </Col>
       </Table>
       <div className="header">
-        <div className="left">{ellipsis(actionData.to)}</div>
+        <div className="left">
+          <Values.Address
+            address={actionData.to}
+            chain={chain}
+            iconWidth="16px"
+          />
+        </div>
         <div className="right">send to</div>
       </div>
       <Table>
@@ -312,6 +315,7 @@ const SendNFT = ({
           <Row>
             <Values.AddressMark
               address={actionData.to}
+              chain={chain}
               onWhitelist={receiverInWhitelist}
               onBlacklist={receiverInBlacklist}
               onChange={() => dispatch.securityEngine.init()}

@@ -5,7 +5,6 @@ import BigNumber from 'bignumber.js';
 import { Chain, TokenItem } from 'background/service/openapi';
 import { Result } from '@debank/rabby-security-engine';
 import { ApproveTokenRequireData, ParsedActionData } from './utils';
-import { ellipsis } from 'ui/utils/address';
 import { ellipsisTokenSymbol } from 'ui/utils/token';
 import { getTimeSpan } from 'ui/utils/time';
 import { isSameAddress, ellipsisOverflowedText } from '@/ui/utils';
@@ -220,7 +219,9 @@ const TokenApprove = ({
   };
 
   const handleClickTokenBalance = () => {
-    handleApproveAmountChange(tokenBalance);
+    if (new BigNumber(approveAmount).gt(tokenBalance)) {
+      handleApproveAmountChange(tokenBalance);
+    }
   };
 
   const handleApproveAmountChange = (value: string) => {
@@ -281,7 +282,13 @@ const TokenApprove = ({
         </Col>
       </Table>
       <div className="header">
-        <div className="left">{ellipsis(actionData.spender)}</div>
+        <div className="left">
+          <Values.Address
+            address={actionData.spender}
+            chain={chain}
+            iconWidth="16px"
+          />
+        </div>
         <div className="right">approve to</div>
       </div>
       <Table>
@@ -334,7 +341,12 @@ const TokenApprove = ({
           </Row>
         </Col>
         <Col>
-          <Row isTitle>Risk exposure</Row>
+          <Row
+            isTitle
+            tip="The total risk exposure approved to this spender address"
+          >
+            Risk exposure
+          </Row>
           <Row>
             <Values.USDValue value={requireData.riskExposure} />
             {engineResultMap['1023'] && (
@@ -384,7 +396,7 @@ const TokenApprove = ({
               onWhitelist={spenderInWhitelist}
               onBlacklist={spenderInBlacklist}
               address={actionData.spender}
-              chainId={chain.serverId}
+              chain={chain}
               isContract
               onChange={() => dispatch.securityEngine.init()}
             />

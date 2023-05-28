@@ -5,8 +5,7 @@ import { splitNumberByStep } from 'ui/utils/number';
 import useBalanceChange from '@/ui/hooks/useBalanceChange';
 import { Table, Col, Row } from '../Actions/components/Table';
 import LogoWithText from '../Actions/components/LogoWithText';
-import IconScam from 'ui/assets/sign/tx/token-scam.svg';
-import IconFake from 'ui/assets/sign/tx/token-fake.svg';
+import * as Values from '../Actions/components/Values';
 import BigNumber from 'bignumber.js';
 
 const NFTBalanceChange = ({
@@ -52,16 +51,22 @@ const NFTBalanceChange = ({
         <Row isTitle>NFT in</Row>
         <Row>
           {receiveNftList.map((item) => (
-            <div className="flex mb-10 last:mb-0">
-              + {item.amount} {item.name}
-              <div className="flex gap-4 flex-shrink-0">
-                {item.collection.is_verified === false && (
-                  <img src={IconFake} className="icon icon-fake" />
-                )}
-                {item.collection.is_suspicious && (
-                  <img src={IconScam} className="icon icon-scam" />
-                )}
+            <div className="mb-0 last:mb-0">
+              <div className="flex">
+                + {item.amount} {item.name}
+                <Values.TokenLabel
+                  isFake={item.collection.is_verified === false}
+                  isScam={!!item.collection.is_suspicious}
+                />
               </div>
+              <ul className="desc-list">
+                <li>
+                  Floor price{' '}
+                  {item.collection.floor_price
+                    ? `${item.collection.floor_price} ETH`
+                    : '-'}
+                </li>
+              </ul>
             </div>
           ))}
         </Row>
@@ -74,16 +79,22 @@ const NFTBalanceChange = ({
         <Row isTitle>NFT out</Row>
         <Row>
           {sendNftList.map((item) => (
-            <div className="flex mb-10 last:mb-0">
-              - {item.amount} {item.name}
-              <div className="flex gap-4 flex-shrink-0">
-                {item.collection.is_verified === false && (
-                  <img src={IconFake} className="icon icon-fake" />
-                )}
-                {item.collection.is_suspicious && (
-                  <img src={IconScam} className="icon icon-scam" />
-                )}
+            <div className="mb-10 last:mb-0">
+              <div className="flex">
+                - {item.amount} {item.name}
+                <Values.TokenLabel
+                  isFake={item.collection.is_verified === false}
+                  isScam={!!item.collection.is_suspicious}
+                />
               </div>
+              <ul className="desc-list">
+                <li>
+                  Floor price{' '}
+                  {item.collection.floor_price
+                    ? `${item.collection.floor_price} ETH`
+                    : '-'}
+                </li>
+              </ul>
             </div>
           ))}
         </Row>
@@ -203,14 +214,10 @@ const BalanceChange = ({
                       )} ${token.symbol}`}
                       key={token.id}
                       icon={
-                        <div className="flex gap-4 shrink-0">
-                          {token.is_verified === false && (
-                            <img src={IconFake} className="icon icon-fake" />
-                          )}
-                          {token.is_suspicious && (
-                            <img src={IconScam} className="icon icon-scam" />
-                          )}
-                        </div>
+                        <Values.TokenLabel
+                          isFake={token.is_verified === false}
+                          isScam={!!token.is_suspicious}
+                        />
                       }
                     />
                   </div>
@@ -233,14 +240,10 @@ const BalanceChange = ({
                       )} ${token.symbol}`}
                       key={token.id}
                       icon={
-                        <div className="flex gap-4 shrink-0">
-                          {token.is_verified === false && (
-                            <img src={IconFake} className="icon icon-fake" />
-                          )}
-                          {token.is_suspicious && (
-                            <img src={IconScam} className="icon icon-scam" />
-                          )}
-                        </div>
+                        <Values.TokenLabel
+                          isFake={token.is_verified === false}
+                          isScam={!!token.is_suspicious}
+                        />
                       }
                     />
                   </div>

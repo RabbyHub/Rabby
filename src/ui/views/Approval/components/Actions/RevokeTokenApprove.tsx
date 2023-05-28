@@ -3,7 +3,6 @@ import styled from 'styled-components';
 import { Chain } from 'background/service/openapi';
 import { Result } from '@debank/rabby-security-engine';
 import { ApproveTokenRequireData, ParsedActionData } from './utils';
-import { ellipsis } from 'ui/utils/address';
 import { ellipsisTokenSymbol } from 'ui/utils/token';
 import { getTimeSpan } from 'ui/utils/time';
 import { isSameAddress } from '@/ui/utils';
@@ -101,7 +100,13 @@ const TokenApprove = ({
         </Col>
       </Table>
       <div className="header">
-        <div className="left">{ellipsis(actionData.spender)}</div>
+        <div className="left">
+          <Values.Address
+            address={actionData.spender}
+            chain={chain}
+            iconWidth="16px"
+          />
+        </div>
         <div className="right">revoke from</div>
       </div>
       <Table>
@@ -120,7 +125,12 @@ const TokenApprove = ({
           <Row>{timeSpan}</Row>
         </Col>
         <Col>
-          <Row isTitle>Risk exposure</Row>
+          <Row
+            isTitle
+            tip="The total risk exposure approved to this spender address"
+          >
+            Risk exposure
+          </Row>
           <Row>
             <Values.USDValue value={requireData.riskExposure} />
           </Row>
@@ -150,7 +160,7 @@ const TokenApprove = ({
               onWhitelist={spenderInWhitelist}
               onBlacklist={spenderInBlacklist}
               address={actionData.spender}
-              chainId={chain.serverId}
+              chain={chain}
               isContract
               onChange={() => dispatch.securityEngine.init()}
             />

@@ -7,7 +7,6 @@ import AddressMemo from './components/AddressMemo';
 import * as Values from './components/Values';
 import { ParsedActionData, WrapTokenRequireData } from './utils';
 import { formatAmount } from 'ui/utils/number';
-import { ellipsis } from 'ui/utils/address';
 import { ellipsisTokenSymbol } from 'ui/utils/token';
 import { Chain } from 'background/service/openapi';
 import SecurityLevelTagNoText from '../SecurityEngine/SecurityLevelTagNoText';
@@ -110,7 +109,7 @@ const WrapToken = ({
           <Row isTitle>Receive token</Row>
           <Row>
             <LogoWithText
-              logo={payToken.logo_url}
+              logo={receiveToken.logo_url}
               text={`${formatAmount(
                 receiveToken.min_amount
               )} ${ellipsisTokenSymbol(receiveToken.symbol)}`}
@@ -120,7 +119,13 @@ const WrapToken = ({
         </Col>
       </Table>
       <div className="header">
-        <div className="left">{ellipsis(requireData.id)}</div>
+        <div className="left">
+          <Values.Address
+            address={requireData.id}
+            chain={chain}
+            iconWidth="16px"
+          />
+        </div>
         <div className="right">contract</div>
       </div>
       <Table>
@@ -169,7 +174,7 @@ const WrapToken = ({
               onWhitelist={contractInWhitelist}
               onBlacklist={contractInBlacklist}
               address={requireData.id}
-              chainId={chain.serverId}
+              chain={chain}
               isContract
               onChange={() => dispatch.securityEngine.init()}
             />

@@ -8,14 +8,11 @@ import AddressMemo from './components/AddressMemo';
 import * as Values from './components/Values';
 import { ParsedActionData, SwapRequireData } from './utils';
 import { formatAmount, formatUsdValue } from 'ui/utils/number';
-import { ellipsis } from 'ui/utils/address';
 import { ellipsisTokenSymbol } from 'ui/utils/token';
 import { Chain } from 'background/service/openapi';
 import SecurityLevelTagNoText from '../SecurityEngine/SecurityLevelTagNoText';
 import { isSameAddress } from '@/ui/utils';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
-import IconFakeToken from 'ui/assets/sign/tx/token-fake.svg';
-import IconScamToken from 'ui/assets/sign/tx/token-scam.svg';
 
 const Wrapper = styled.div`
   .header {
@@ -147,20 +144,10 @@ const Swap = ({
                   receiveToken.amount
                 )} ${ellipsisTokenSymbol(receiveToken.symbol)}`}
                 icon={
-                  <div className="flex gap-4 flex-shrink-0">
-                    {receiveToken.is_verified === false && (
-                      <img
-                        className="icon icon-fake-token"
-                        src={IconFakeToken}
-                      />
-                    )}
-                    {receiveToken.is_suspicious && (
-                      <img
-                        className="icon icon-scam-token"
-                        src={IconScamToken}
-                      />
-                    )}
-                  </div>
+                  <Values.TokenLabel
+                    isFake={receiveToken.is_verified === false}
+                    isScam={!!receiveToken.is_suspicious}
+                  />
                 }
               />
             </div>
@@ -260,7 +247,7 @@ const Swap = ({
           <Col>
             <Row isTitle>Receiver</Row>
             <Row>
-              {ellipsis(receiver)}
+              <Values.Address address={receiver} chain={chain} />
               <ul className="desc-list">
                 <li>
                   not your current address{' '}
@@ -283,6 +270,7 @@ const Swap = ({
                     onWhitelist={receiverInWhitelist}
                     onBlacklist={receiverInBlacklist}
                     address={receiver}
+                    chain={chain}
                     onChange={() => dispatch.securityEngine.init()}
                   />
                 </li>
@@ -292,7 +280,13 @@ const Swap = ({
         )}
       </Table>
       <div className="header">
-        <div className="left">{ellipsis(requireData.id)}</div>
+        <div className="left">
+          <Values.Address
+            address={requireData.id}
+            chain={chain}
+            iconWidth="16px"
+          />
+        </div>
         <div className="right">contract</div>
       </div>
       <Table>
@@ -335,7 +329,7 @@ const Swap = ({
               onWhitelist={contractInWhitelist}
               onBlacklist={contractInBlacklist}
               address={requireData.id}
-              chainId={chain.serverId}
+              chain={chain}
               isContract
               onChange={() => dispatch.securityEngine.init()}
             />
