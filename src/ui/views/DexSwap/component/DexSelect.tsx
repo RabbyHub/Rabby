@@ -8,7 +8,7 @@ import { useCss } from 'react-use';
 import styled from 'styled-components';
 import { ReactComponent as IconClose } from 'ui/assets/swap/modal-close.svg';
 import ImageOx from 'ui/assets/swap/0xswap.png';
-import Image1inch from 'ui/assets/swap/1inch.png';
+import ImageOpenOcean from 'ui/assets/swap/openocean.png';
 import ImagePara from 'ui/assets/swap/paraswap.png';
 import { Checkbox } from '@/ui/component';
 
@@ -50,7 +50,7 @@ export const DexSelectDrawer = (props: DexSelectDrawerProps) => {
       maskClosable={false}
       closable={false}
       placement="bottom"
-      height="410"
+      height="540"
       visible={visible}
       // onClose={close}
       destroyOnClose
@@ -132,10 +132,16 @@ export const DEX = {
   //   name: '1inch',
   //   chains: DEX_SUPPORT_CHAINS[DEX_ENUM.ONEINCH],
   // },
+
   [DEX_ENUM.ZEROXAPI]: {
     logo: ImageOx,
     name: '0x',
     chains: DEX_SUPPORT_CHAINS[DEX_ENUM.ZEROXAPI],
+  },
+  [DEX_ENUM.OPENOCEAN]: {
+    logo: ImageOpenOcean,
+    name: 'OpenOcean',
+    chains: DEX_SUPPORT_CHAINS[DEX_ENUM.OPENOCEAN],
   },
   [DEX_ENUM.PARASWAP]: {
     logo: ImagePara,
@@ -189,10 +195,12 @@ const DexItemBox = styled.div`
     }
 
     .chain-logo {
+      overflow: hidden;
       display: flex;
       align-items: center;
       gap: 6px;
       margin-left: 6px;
+      flex: 1;
     }
   }
 `;

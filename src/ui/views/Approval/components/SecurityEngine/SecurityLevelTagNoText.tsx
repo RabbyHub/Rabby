@@ -142,10 +142,12 @@ const SecurityLevelTag = ({
   level,
   translucent,
   onClick,
+  right = '-6px',
 }: {
   level: Level | 'proceed';
   translucent?: boolean;
   onClick?(): void;
+  right?: string;
 }) => {
   const [isHovering, hoverProps] = useHover();
 
@@ -156,6 +158,9 @@ const SecurityLevelTag = ({
         translucent,
         showText: isHovering,
       })}
+      style={{
+        right,
+      }}
       onClick={onClick}
       {...hoverProps}
     >

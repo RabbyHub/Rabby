@@ -1,14 +1,13 @@
 import React, { useEffect, useMemo, useState } from 'react';
-import { Button } from 'antd';
+import { Button, message } from 'antd';
 import clsx from 'clsx';
 import { useLocation } from 'react-router-dom';
 import { useTranslation } from 'react-i18next';
 import { Chain } from 'background/service/openapi';
 import { ChainSelector, Spin, FallbackSiteLogo } from 'ui/component';
 import { useApproval, useWallet } from 'ui/utils';
-import { CHAINS_ENUM, CHAINS } from 'consts';
+import { CHAINS_ENUM, CHAINS, SecurityEngineLevel } from 'consts';
 import styled from 'styled-components';
-import UserDataList from './UserDataList';
 import {
   ContextActionData,
   RuleConfig,
@@ -18,6 +17,8 @@ import { Result } from '@debank/rabby-security-engine';
 import { useSecurityEngine } from 'ui/utils/securityEngine';
 import RuleResult from './RuleResult';
 import RuleDrawer from '../SecurityEngine/RuleDrawer';
+import UserListDrawer from './UserListDrawer';
+import IconSuccess from 'ui/assets/success.svg';
 
 interface ConnectProps {
   params: any;
@@ -103,15 +104,32 @@ const Footer = styled.div`
     font-weight: 500;
     font-size: 13px;
     line-height: 15px;
-    text-align: center;
-    color: #4b4d59;
+    padding: 6px 12px;
+    display: flex;
+    align-items: center;
+    border-radius: 4px;
+    position: relative;
+    &::before {
+      content: '';
+      position: absolute;
+      width: 0;
+      height: 0;
+      border: 5px solid transparent;
+      border-bottom: 8px solid currentColor;
+      top: -12px;
+      left: 50%;
+      transform: translateX(-50%);
+    }
+    .icon-level {
+      margin-right: 6px;
+    }
   }
 `;
 
 const RuleDesc = [
   {
     id: '1004',
-    desc: 'Listed by community platform',
+    desc: 'Listed by',
     fixed: true,
   },
   {
@@ -120,21 +138,44 @@ const RuleDesc = [
     fixed: true,
   },
   {
+    id: '1006',
+    desc: 'My Mark',
+    fixed: false,
+  },
+  {
     id: '1001',
-    desc: 'Phishing check by Rabby',
+    desc: 'Flagged by Rabby',
     fixed: false,
   },
   {
     id: '1002',
-    desc: 'Phishing check by MetaMask',
+    desc: 'Flagged by MetaMask',
     fixed: false,
   },
   {
     id: '1003',
-    desc: 'Phishing check by ScamSniffer',
+    desc: 'Flagged by ScamSniffer',
     fixed: false,
   },
 ];
+
+const SecurityLevelTipColor = {
+  [Level.FORBIDDEN]: {
+    bg: '#EFCFCF',
+    text: '#AF160E',
+    icon: SecurityEngineLevel[Level.FORBIDDEN].icon,
+  },
+  [Level.DANGER]: {
+    bg: '#FCDCDC',
+    text: '#EC5151',
+    icon: SecurityEngineLevel[Level.DANGER].icon,
+  },
+  [Level.WARNING]: {
+    bg: '#FFEFD2',
+    text: '#FFB020',
+    icon: SecurityEngineLevel[Level.WARNING].icon,
+  },
+};
 
 const Connect = ({ params: { icon, origin } }: ConnectProps) => {
   const { state } = useLocation<{
@@ -147,6 +188,7 @@ const Connect = ({ params: { icon, origin } }: ConnectProps) => {
   const wallet = useWallet();
   const [defaultChain, setDefaultChain] = useState(CHAINS_ENUM.ETH);
   const [isLoading, setIsLoading] = useState(true);
+  const [listDrawerVisible, setListDrawerVisible] = useState(false);
   const [processedRules, setProcessedRules] = useState<string[]>([]);
   const [nonce, setNonce] = useState(0);
   const { rules, userData, executeEngine } = useSecurityEngine(nonce);
@@ -176,10 +218,16 @@ const Connect = ({ params: { icon, origin } }: ConnectProps) => {
   }, [engineResults]);
 
   const sortRules = useMemo(() => {
-    const list: { id: string; desc: string; result: Result | null }[] = [];
+    const list: {
+      id: string;
+      desc: string;
+      result: Result | null;
+    }[] = [];
     for (let i = 0; i < RuleDesc.length; i++) {
       const item = RuleDesc[i];
-      const result = engineResults.find((result) => result.id === item.id);
+      const result = engineResults.find((result) => {
+        return result.id === item.id;
+      });
       if (result || item.fixed) {
         list.push({
           id: item.id,
@@ -188,6 +236,15 @@ const Connect = ({ params: { icon, origin } }: ConnectProps) => {
         });
       }
     }
+    engineResults.forEach((result) => {
+      if (!list.find((item) => item.id === result.id)) {
+        list.push({
+          id: result.id,
+          desc: '',
+          result,
+        });
+      }
+    });
     return list;
   }, [engineResults]);
 
@@ -196,9 +253,11 @@ const Connect = ({ params: { icon, origin } }: ConnectProps) => {
     let text = '';
     let forbiddenCount = 0;
     let safeCount = 0;
+    let warningCount = 0;
+    let dangerCount = 0;
     let needProcessCount = 0;
     let cancelBtnText = 'Cancel';
-
+    let level: Level = Level.SAFE;
     engineResults.forEach((result) => {
       if (result.level === Level.SAFE) {
         safeCount++;
@@ -210,26 +269,32 @@ const Connect = ({ params: { icon, origin } }: ConnectProps) => {
         !processedRules.includes(result.id)
       ) {
         needProcessCount++;
+        if (result.level === Level.WARNING) {
+          warningCount++;
+        } else if (result.level === Level.DANGER) {
+          dangerCount++;
+        }
       }
     });
 
     if (forbiddenCount > 0) {
       disabled = true;
-      text = `Found ${forbiddenCount} forbidden risk${
-        forbiddenCount > 1 ? 's' : ''
-      }. Connection is blocked.`;
+      text = 'Found forbidden risks. Connection is blocked.';
       cancelBtnText = 'Close';
+      level = Level.FORBIDDEN;
     } else if (needProcessCount > 0) {
       if (safeCount > 0) {
         disabled = false;
         text = '';
+        level = Level.SAFE;
       } else {
         disabled = true;
-        text = `Found ${needProcessCount} risk${
-          needProcessCount > 1 ? 's' : ''
-        }. Please process ${
-          needProcessCount > 1 ? 'them' : 'it'
-        } before connecting.`;
+        text = 'Please process the alert before signing';
+        if (dangerCount > 0) {
+          level = Level.DANGER;
+        } else {
+          level = Level.WARNING;
+        }
       }
     }
 
@@ -237,6 +302,7 @@ const Connect = ({ params: { icon, origin } }: ConnectProps) => {
       disabled,
       text,
       cancelBtnText,
+      level,
     };
   }, [engineResults, processedRules]);
 
@@ -247,6 +313,14 @@ const Connect = ({ params: { icon, origin } }: ConnectProps) => {
   const hasSafe = useMemo(() => {
     return engineResults.some((item) => item.level === Level.SAFE);
   }, [engineResults]);
+
+  const isInBlacklist = useMemo(() => {
+    return userData.originBlacklist.includes(origin.toLowerCase());
+  }, [origin, userData]);
+
+  const isInWhitelist = useMemo(() => {
+    return userData.originWhitelist.includes(origin.toLowerCase());
+  }, [origin, userData]);
 
   const handleIgnoreRule = (id: string) => {
     setProcessedRules([...processedRules, id]);
@@ -278,8 +352,65 @@ const Connect = ({ params: { icon, origin } }: ConnectProps) => {
     setNonce(nonce + 1);
   };
 
-  const handleUserDataListChange = () => {
-    setNonce(nonce + 1);
+  const handleUserListChange = async ({
+    onWhitelist,
+    onBlacklist,
+  }: {
+    onWhitelist: boolean;
+    onBlacklist: boolean;
+  }) => {
+    if (onWhitelist === isInWhitelist && onBlacklist === isInBlacklist) return;
+    if (onWhitelist) {
+      await wallet.addOriginWhitelist(origin);
+      message.success({
+        duration: 3,
+        icon: <i />,
+        content: (
+          <div>
+            <div className="flex gap-4">
+              <img src={IconSuccess} alt="" />
+              <div className="text-white">Mark as "Trusted"</div>
+            </div>
+          </div>
+        ),
+      });
+    } else if (onBlacklist) {
+      await wallet.addOriginBlacklist(origin);
+      message.success({
+        duration: 3,
+        icon: <i />,
+        content: (
+          <div>
+            <div className="flex gap-4">
+              <img src={IconSuccess} alt="" />
+              <div className="text-white">Mark as "Blocked"</div>
+            </div>
+          </div>
+        ),
+      });
+    } else {
+      await wallet.removeOriginBlacklist(origin);
+      await wallet.removeOriginWhitelist(origin);
+      message.success({
+        duration: 3,
+        icon: <i />,
+        content: (
+          <div>
+            <div className="flex gap-4">
+              <img src={IconSuccess} alt="" />
+              <div className="text-white">Mark removed</div>
+            </div>
+          </div>
+        ),
+      });
+    }
+    setListDrawerVisible(false);
+    setNonce(nonce + 1); // update security engine
+    handleExecuteSecurityEngine();
+  };
+
+  const handleEditUserDataList = () => {
+    setListDrawerVisible(true);
   };
 
   const handleExecuteSecurityEngine = async () => {
@@ -420,41 +551,54 @@ const Connect = ({ params: { icon, origin } }: ConnectProps) => {
           <div className="connect-card">
             <FallbackSiteLogo url={icon} origin={origin} width="40px" />
             <p className="connect-origin">{origin}</p>
-            <UserDataList
-              origin={origin}
-              logo={icon}
-              userData={userData}
-              ruleResult={userListResult}
-              processedRules={processedRules}
-              onChange={handleUserDataListChange}
-              onUpdateSecurityEngine={handleExecuteSecurityEngine}
-              onIgnore={handleIgnoreRule}
-              onUndo={handleUndoIgnore}
-              onRuleEnableStatusChange={handleRuleEnableStatusChange}
-              rules={rules}
-              hasSafe={hasSafe}
-              hasForbidden={hasForbidden}
-            />
           </div>
         </div>
 
         <div className="rule-list">
-          {sortRules.map((rule) => (
-            <RuleResult
-              rule={rule}
-              key={rule.id}
-              onSelect={handleSelectRule}
-              collectList={collectList}
-              popularLevel={originPopularLevel}
-              ignored={processedRules.includes(rule.id)}
-              hasSafe={hasSafe}
-              hasForbidden={hasForbidden}
-            />
-          ))}
+          {RuleDesc.map((rule) => {
+            if (rule.id === '1006') {
+              return (
+                <RuleResult
+                  rule={{
+                    id: '1006',
+                    desc: 'My mark',
+                    result: userListResult || null,
+                  }}
+                  onSelect={handleSelectRule}
+                  collectList={collectList}
+                  popularLevel={originPopularLevel}
+                  userListResult={userListResult}
+                  ignored={false}
+                  hasSafe={hasSafe}
+                  hasForbidden={hasForbidden}
+                  onEditUserList={handleEditUserDataList}
+                />
+              );
+            } else {
+              if (sortRules.find((item) => item.id === rule.id) || rule.fixed) {
+                return (
+                  <RuleResult
+                    rule={sortRules.find((item) => item.id === rule.id)!}
+                    key={rule.id}
+                    onSelect={handleSelectRule}
+                    collectList={collectList}
+                    popularLevel={originPopularLevel}
+                    userListResult={userListResult}
+                    ignored={processedRules.includes(rule.id)}
+                    hasSafe={hasSafe}
+                    hasForbidden={hasForbidden}
+                    onEditUserList={handleEditUserDataList}
+                  />
+                );
+              } else {
+                return null;
+              }
+            }
+          })}
         </div>
 
         <Footer>
-          <div className="action-buttons flex flex-col mt-4">
+          <div className="action-buttons flex flex-col mt-4 items-center">
             <Button
               type="primary"
               size="large"
@@ -467,7 +611,26 @@ const Connect = ({ params: { icon, origin } }: ConnectProps) => {
               {t('Connect')}
             </Button>
             {connectBtnStatus.text && (
-              <div className="security-tip">{connectBtnStatus.text}</div>
+              <div
+                className={clsx('security-tip', connectBtnStatus.level)}
+                style={{
+                  color: SecurityLevelTipColor[connectBtnStatus.level].bg,
+                  backgroundColor:
+                    SecurityLevelTipColor[connectBtnStatus.level].bg,
+                }}
+              >
+                <img
+                  src={SecurityLevelTipColor[connectBtnStatus.level].icon}
+                  className="icon icon-level"
+                />
+                <span
+                  style={{
+                    color: SecurityLevelTipColor[connectBtnStatus.level].text,
+                  }}
+                >
+                  {connectBtnStatus.text}
+                </span>
+              </div>
             )}
             <Button
               type="primary"
@@ -487,6 +650,15 @@ const Connect = ({ params: { icon, origin } }: ConnectProps) => {
           onUndo={handleUndoIgnore}
           onRuleEnableStatusChange={handleRuleEnableStatusChange}
           onClose={handleRuleDrawerClose}
+        />
+        <UserListDrawer
+          origin={origin}
+          logo={icon}
+          onWhitelist={isInWhitelist}
+          onBlacklist={isInBlacklist}
+          visible={listDrawerVisible}
+          onChange={handleUserListChange}
+          onClose={() => setListDrawerVisible(false)}
         />
       </ConnectWrapper>
     </Spin>

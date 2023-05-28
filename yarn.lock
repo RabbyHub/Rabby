@@ -1330,19 +1330,19 @@
   integrity sha512-JZButFdZ1+/xAfpguQHoabIXkcqRRKpMrWKBkpEZZyxfY9C1DpADFB8PEqGSTeFr135SaTRfKqGKx5xSCLI7ZQ==
 
 "@debank/common@^0.2.28":
-  version "0.2.29"
-  resolved "https://registry.yarnpkg.com/@debank/common/-/common-0.2.29.tgz#a4c04464c7793102d50db24b2c4d1a681f53efb9"
-  integrity sha512-9/Bh4u5dlS9jSXDl3unG226fJDsJkAVhQZbzU9NqIUW3Zj72kPs1tDzBXF2d0I2Z3dcXUK3PWbFBLmMZTR/jQA==
+  version "0.2.37"
+  resolved "https://registry.yarnpkg.com/@debank/common/-/common-0.2.37.tgz#e1e9eb56643c22cfda7afcceca329b1de1537a61"
+  integrity sha512-gsxpSPaWyPEhHSYEuRhN2G/m2k99pOIgucqlU/PMXWcB06nR0WW5v7TPvSvkIPf749rlUrO/v0OBHM4ZS99rAw==
 
 "@debank/common@^0.2.31":
   version "0.2.33"
   resolved "https://registry.yarnpkg.com/@debank/common/-/common-0.2.33.tgz#e3ed9bce272beb47886af15edb000d1496032eb1"
   integrity sha512-6nPvxPazsmHIbpqtKjlbysKagt8EEMYTraez/n1wprfIxviJ/qDyt/gey9HNo1BKeyc5+bDgYTzqR7yh4ljjgA==
 
-"@debank/common@^0.2.37":
-  version "0.2.37"
-  resolved "https://registry.yarnpkg.com/@debank/common/-/common-0.2.37.tgz#e1e9eb56643c22cfda7afcceca329b1de1537a61"
-  integrity sha512-gsxpSPaWyPEhHSYEuRhN2G/m2k99pOIgucqlU/PMXWcB06nR0WW5v7TPvSvkIPf749rlUrO/v0OBHM4ZS99rAw==
+"@debank/common@^0.2.38":
+  version "0.2.38"
+  resolved "https://registry.yarnpkg.com/@debank/common/-/common-0.2.38.tgz#455365b64aafdd5234954e5d4426ab35d29e7eae"
+  integrity sha512-h97wkFeiD7VXv2IS8vwli+WW8c3YJ9ZJNhcar0DbDRzwZ4NVa8JA05e0zNPvAjAgE256mMgQH/GIAzExRN83zA==
 
 "@debank/festats@1.0.0":
   version "1.0.0"
@@ -3661,14 +3661,15 @@
     sinon-chrome "^3.0.1"
     webextension-polyfill-ts "^0.26.0"
 
-"@rabby-wallet/rabby-swap@^0.0.15":
-  version "0.0.15"
-  resolved "https://registry.yarnpkg.com/@rabby-wallet/rabby-swap/-/rabby-swap-0.0.15.tgz#ef903456efd1bb7eca7ec04cf5781acae068d066"
-  integrity sha512-UTf1+sbJ/jE4OT7X7XmBe3yVeJHZ+1JuYO9Gg5/Its9XM4P5R56WbPZiSlb+d0Vatay3NLEPRcXIV8VAsKrYHg==
+"@rabby-wallet/rabby-swap@^0.0.17":
+  version "0.0.17"
+  resolved "https://registry.yarnpkg.com/@rabby-wallet/rabby-swap/-/rabby-swap-0.0.17.tgz#c500b756aa4720937f9a78a94363b35abec6cd5d"
+  integrity sha512-UQmOUBerIO58P1F+rir/Yi+cot84xj0FndbKkl5Dwvsy0LoEAJwiZQi3ZsYC9C6Gd0fcpXjt+Dzr4e1d81HVZA==
   dependencies:
     "@debank/common" "^0.2.28"
     "@ethersproject/abi" "^5.7.0"
     axios "^0.27.2"
+    bignumber.js "^9.1.1"
     web3-eth-abi "^1.8.1"
 
 "@rabby-wallet/widgets@^1.0.9":
@@ -5895,7 +5896,7 @@ bignumber.js@^9.0.2:
   resolved "https://registry.yarnpkg.com/bignumber.js/-/bignumber.js-9.0.2.tgz#71c6c6bed38de64e24a65ebe16cfcf23ae693673"
   integrity sha512-GAcQvbpsM0pUb0zw1EI0KhQEZ+lRwR5fYaAp3vPOYuP7aDvGy6cVN6XHLauvF8SOga2y0dcLcjt3iQDTSEliyw==
 
-bignumber.js@^9.1.0:
+bignumber.js@^9.1.0, bignumber.js@^9.1.1:
   version "9.1.1"
   resolved "https://registry.yarnpkg.com/bignumber.js/-/bignumber.js-9.1.1.tgz#c4df7dc496bd849d4c9464344c1aa74228b4dac6"
   integrity sha512-pHm4LsMJ6lzgNGVfZHjMoO8sdoRhOzOH4MLmY65Jg70bpxCKu5iOHNJyfF6OyvYw7t8Fpf35RuzUyqnQsj8Vig==
@@ -15261,12 +15262,12 @@ web3-eth-abi@^1.7.0:
     web3-utils "1.7.0"
 
 web3-eth-abi@^1.8.1:
-  version "1.8.1"
-  resolved "https://registry.yarnpkg.com/web3-eth-abi/-/web3-eth-abi-1.8.1.tgz#47455d6513217c4b0866fea6f97b1c4afa0b6535"
-  integrity sha512-0mZvCRTIG0UhDhJwNQJgJxu4b4DyIpuMA0GTfqxqeuqzX4Q/ZvmoNurw0ExTfXaGPP82UUmmdkRi6FdZOx+C6w==
+  version "1.10.0"
+  resolved "https://registry.yarnpkg.com/web3-eth-abi/-/web3-eth-abi-1.10.0.tgz#53a7a2c95a571e205e27fd9e664df4919483cce1"
+  integrity sha512-cwS+qRBWpJ43aI9L3JS88QYPfFcSJJ3XapxOQ4j40v6mk7ATpA8CVK1vGTzpihNlOfMVRBkR95oAj7oL6aiDOg==
   dependencies:
     "@ethersproject/abi" "^5.6.3"
-    web3-utils "1.8.1"
+    web3-utils "1.10.0"
 
 web3-eth-iban@1.6.1:
   version "1.6.1"
@@ -15301,6 +15302,19 @@ web3-providers-ws@1.6.1:
     web3-core-helpers "1.6.1"
     websocket "^1.0.32"
 
+web3-utils@1.10.0:
+  version "1.10.0"
+  resolved "https://registry.yarnpkg.com/web3-utils/-/web3-utils-1.10.0.tgz#ca4c1b431a765c14ac7f773e92e0fd9377ccf578"
+  integrity sha512-kSaCM0uMcZTNUSmn5vMEhlo02RObGNRRCkdX0V9UTAU0+lrvn0HSaudyCo6CQzuXUsnuY2ERJGCGPfeWmv19Rg==
+  dependencies:
+    bn.js "^5.2.1"
+    ethereum-bloom-filters "^1.0.6"
+    ethereumjs-util "^7.1.0"
+    ethjs-unit "0.1.6"
+    number-to-bn "1.7.0"
+    randombytes "^2.1.0"
+    utf8 "3.0.0"
+
 web3-utils@1.6.1, web3-utils@^1.6.1:
   version "1.6.1"
   resolved "https://registry.yarnpkg.com/web3-utils/-/web3-utils-1.6.1.tgz#befcb23922b00603ab56d8c5b4158468dc494aca"
@@ -15320,19 +15334,6 @@ web3-utils@1.7.0, web3-utils@^1.7.0:
   integrity sha512-O8Tl4Ky40Sp6pe89Olk2FsaUkgHyb5QAXuaKo38ms3CxZZ4d3rPGfjP9DNKGm5+IUgAZBNpF1VmlSmNCqfDI1w==
   dependencies:
     bn.js "^4.11.9"
-    ethereum-bloom-filters "^1.0.6"
-    ethereumjs-util "^7.1.0"
-    ethjs-unit "0.1.6"
-    number-to-bn "1.7.0"
-    randombytes "^2.1.0"
-    utf8 "3.0.0"
-
-web3-utils@1.8.1:
-  version "1.8.1"
-  resolved "https://registry.yarnpkg.com/web3-utils/-/web3-utils-1.8.1.tgz#f2f7ca7eb65e6feb9f3d61056d0de6bbd57125ff"
-  integrity sha512-LgnM9p6V7rHHUGfpMZod+NST8cRfGzJ1BTXAyNo7A9cJX9LczBfSRxJp+U/GInYe9mby40t3v22AJdlELibnsQ==
-  dependencies:
-    bn.js "^5.2.1"
     ethereum-bloom-filters "^1.0.6"
     ethereumjs-util "^7.1.0"
     ethjs-unit "0.1.6"

@@ -127,7 +127,7 @@ const UserListDrawer = ({
           className="item"
           onClick={() => onChange({ onBlacklist: false, onWhitelist: false })}
         >
-          <div>Not on any list</div>
+          <div>No mark</div>
           <div>
             <Checkbox
               checked={!onWhitelist && !onBlacklist}
@@ -141,7 +141,7 @@ const UserListDrawer = ({
           className="item"
           onClick={() => onChange({ onBlacklist: false, onWhitelist: true })}
         >
-          <div>On your whitelist</div>
+          <div className="text-green">Trusted</div>
           <div>
             <Checkbox
               checked={onWhitelist}
@@ -155,7 +155,7 @@ const UserListDrawer = ({
           className="item"
           onClick={() => onChange({ onBlacklist: true, onWhitelist: false })}
         >
-          <div>On your blacklist</div>
+          <div className="text-red">Blocked</div>
           <div>
             <Checkbox
               checked={onBlacklist}

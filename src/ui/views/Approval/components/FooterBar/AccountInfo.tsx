@@ -132,6 +132,12 @@ export const AccountInfo: React.FC<Props> = ({ account, chain }) => {
           tip="Unable to sign with watch-only address"
         />
       )}
+      {account?.type === KEYRING_CLASS.GNOSIS && (
+        <CommonAccount
+          icon={WALLET_BRAND_CONTENT.Gnosis.icon}
+          tip="Safe address"
+        />
+      )}
     </div>
   );
 };
