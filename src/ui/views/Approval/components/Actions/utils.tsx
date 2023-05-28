@@ -191,7 +191,7 @@ export const parseAction = (
   if (data?.type === 'wrap_token') {
     const { pay_token, receive_token } = data.data as WrapTokenAction;
     const slippageTolerance = calcSlippageTolerance(
-      receive_token.raw_amount || '0',
+      receive_token.min_raw_amount || '0',
       pay_token.raw_amount || '0'
     );
     return {
@@ -205,7 +205,7 @@ export const parseAction = (
   if (data?.type === 'unwrap_token') {
     const { pay_token, receive_token } = data.data as UnWrapTokenAction;
     const slippageTolerance = calcSlippageTolerance(
-      receive_token.raw_amount || '0',
+      receive_token.min_raw_amount || '0',
       pay_token.raw_amount || '0'
     );
     return {
@@ -570,6 +570,8 @@ export const fetchActionRequiredData = async ({
       const { desc } = await wallet.openapi.addrDesc(id);
       if (desc.contract && desc.contract[chainId]) {
         result.bornAt = desc.contract[chainId].create_at;
+      } else {
+        result.bornAt = desc.born_at;
       }
       if (desc.protocol && desc.protocol[chainId]) {
         result.protocol = desc.protocol[chainId];
@@ -603,6 +605,8 @@ export const fetchActionRequiredData = async ({
       const { desc } = await wallet.openapi.addrDesc(id);
       if (desc.contract && desc.contract[chainId]) {
         result.bornAt = desc.contract[chainId].create_at;
+      } else {
+        result.bornAt = desc.born_at;
       }
       if (desc.protocol && desc.protocol[chainId]) {
         result.protocol = desc.protocol[chainId];

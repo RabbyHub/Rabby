@@ -10,7 +10,6 @@ import { ParsedActionData, SwapRequireData } from './utils';
 import { formatAmount, formatUsdValue } from 'ui/utils/number';
 import { ellipsis } from 'ui/utils/address';
 import { ellipsisTokenSymbol } from 'ui/utils/token';
-import { getTimeSpan } from 'ui/utils/time';
 import { Chain } from 'background/service/openapi';
 import SecurityLevelTagNoText from '../SecurityEngine/SecurityLevelTagNoText';
 import { isSameAddress } from '@/ui/utils';
@@ -109,22 +108,6 @@ const Swap = ({
       ignored: processedRules.includes(id),
     });
   };
-
-  const timeSpan = useMemo(() => {
-    const { d, h, m } = getTimeSpan(
-      Math.floor(Date.now() / 1000) - requireData.bornAt
-    );
-    if (d > 0) {
-      return `${d} Day${d > 1 ? 's' : ''} ago`;
-    }
-    if (h > 0) {
-      return `${h} Hour${h > 1 ? 's' : ''} ago`;
-    }
-    if (m > 1) {
-      return `${m} Minutes ago`;
-    }
-    return '1 Minute ago';
-  }, [requireData]);
 
   useEffect(() => {
     dispatch.securityEngine.init();
@@ -255,7 +238,11 @@ const Swap = ({
           <Row isTitle>Slippage tolerance</Row>
           <Row>
             <div>
-              <Values.Percentage value={slippageTolerance} />
+              {hasReceiver ? (
+                '-'
+              ) : (
+                <Values.Percentage value={slippageTolerance} />
+              )}
             </div>
             {engineResultMap['1011'] && (
               <SecurityLevelTagNoText
@@ -317,7 +304,9 @@ const Swap = ({
         </Col>
         <Col>
           <Row isTitle>Deployed</Row>
-          <Row>{timeSpan}</Row>
+          <Row>
+            <Values.TimeSpan value={requireData.bornAt} />
+          </Row>
         </Col>
         {requireData.rank && (
           <Col>

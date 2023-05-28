@@ -1,5 +1,4 @@
 import React, { useMemo, useEffect } from 'react';
-import { BigNumber } from 'bignumber.js';
 import styled from 'styled-components';
 import { Result } from '@debank/rabby-security-engine';
 import { Table, Col, Row } from './components/Table';
@@ -7,10 +6,9 @@ import LogoWithText from './components/LogoWithText';
 import AddressMemo from './components/AddressMemo';
 import * as Values from './components/Values';
 import { ParsedActionData, WrapTokenRequireData } from './utils';
-import { formatAmount, formatUsdValue } from 'ui/utils/number';
+import { formatAmount } from 'ui/utils/number';
 import { ellipsis } from 'ui/utils/address';
 import { ellipsisTokenSymbol } from 'ui/utils/token';
-import { getTimeSpan } from 'ui/utils/time';
 import { Chain } from 'background/service/openapi';
 import SecurityLevelTagNoText from '../SecurityEngine/SecurityLevelTagNoText';
 import { isSameAddress } from '@/ui/utils';
@@ -89,26 +87,10 @@ const WrapToken = ({
     });
   };
 
-  const timeSpan = useMemo(() => {
-    const { d, h, m } = getTimeSpan(
-      Math.floor(Date.now() / 1000) - requireData.bornAt
-    );
-    if (d > 0) {
-      return `${d} Day${d > 1 ? 's' : ''} ago`;
-    }
-    if (h > 0) {
-      return `${h} Hour${h > 1 ? 's' : ''} ago`;
-    }
-    if (m > 1) {
-      return `${m} Minutes ago`;
-    }
-    return '1 Minute ago';
-  }, [requireData]);
-
   useEffect(() => {
     dispatch.securityEngine.init();
   }, []);
-  console.log(data, requireData);
+
   return (
     <Wrapper>
       <Table>
@@ -156,7 +138,9 @@ const WrapToken = ({
         )}
         <Col>
           <Row isTitle>Deployed</Row>
-          <Row>{timeSpan}</Row>
+          <Row>
+            <Values.TimeSpan value={requireData.bornAt} />
+          </Row>
         </Col>
         {requireData.rank && (
           <Col>

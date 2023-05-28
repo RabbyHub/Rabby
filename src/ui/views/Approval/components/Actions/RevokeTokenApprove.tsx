@@ -90,7 +90,7 @@ const TokenApprove = ({
     <Wrapper>
       <Table>
         <Col>
-          <Row isTitle>Approve Token</Row>
+          <Row isTitle>Revoke token</Row>
           <Row>
             <LogoWithText
               logo={actionData.token.logo_url}

@@ -89,22 +89,6 @@ const UnWrapToken = ({
     });
   };
 
-  const timeSpan = useMemo(() => {
-    const { d, h, m } = getTimeSpan(
-      Math.floor(Date.now() / 1000) - requireData.bornAt
-    );
-    if (d > 0) {
-      return `${d} Day${d > 1 ? 's' : ''} ago`;
-    }
-    if (h > 0) {
-      return `${h} Hour${h > 1 ? 's' : ''} ago`;
-    }
-    if (m > 1) {
-      return `${m} Minutes ago`;
-    }
-    return '1 Minute ago';
-  }, [requireData]);
-
   useEffect(() => {
     dispatch.securityEngine.init();
   }, []);
@@ -152,7 +136,9 @@ const UnWrapToken = ({
         )}
         <Col>
           <Row isTitle>Deployed</Row>
-          <Row>{timeSpan}</Row>
+          <Row>
+            <Values.TimeSpan value={requireData.bornAt} />
+          </Row>
         </Col>
         {requireData.rank && (
           <Col>
