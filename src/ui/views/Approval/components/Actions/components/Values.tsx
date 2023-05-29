@@ -32,7 +32,7 @@ const TokenAmount = ({ value }: { value: string | number }) => {
 };
 
 const Percentage = ({ value }: { value: number }) => {
-  return <>{Math.floor(value * 100)}%</>;
+  return <>{(value * 100).toFixed(2)}%</>;
 };
 
 const USDValue = ({ value }: { value: number | string }) => {
@@ -59,7 +59,7 @@ const TimeSpan = ({ value }) => {
 };
 
 const AddressMarkWrapper = styled.div`
-  display: flex;
+  display: inline-flex;
   cursor: pointer;
   .icon-edit-alias {
     width: 13px;
@@ -209,7 +209,7 @@ const TokenLabel = ({
   isFake: boolean;
 }) => {
   return (
-    <div className="ml-8 flex gap-4 shrink-0">
+    <div className="flex gap-4 shrink-0">
       {isFake && (
         <Tooltip
           overlayClassName="rectangle"
@@ -279,7 +279,7 @@ const Address = ({
   };
   return (
     <AddressWrapper className="value-address">
-      {ellipsis(address)}{' '}
+      <span title="address">{ellipsis(address)}</span>
       <img
         onClick={handleClickContractId}
         src={IconExternal}

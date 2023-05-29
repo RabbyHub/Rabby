@@ -1,8 +1,8 @@
+import { Tooltip } from 'antd';
 import { Result } from '@debank/rabby-security-engine';
 import { Chain, ExplainTxResponse } from 'background/service/openapi';
 import React, { useMemo } from 'react';
 import styled from 'styled-components';
-import IconArrowRight from 'ui/assets/approval/edit-arrow-right.svg';
 import BalanceChange from '../TxComponents/BalanceChange';
 import ViewRawModal from '../TxComponents/ViewRawModal';
 import ApproveNFT from './ApproveNFT';
@@ -31,16 +31,25 @@ import {
   SendRequireData,
   SwapRequireData,
   WrapTokenRequireData,
+  getActionTypeText,
 } from './utils';
+import IconArrowRight from 'ui/assets/approval/edit-arrow-right.svg';
+import IconSpeedUp from 'ui/assets/sign/tx/speedup.svg';
 
 const SignTitle = styled.div`
   display: flex;
   justify-content: space-between;
   margin-bottom: 15px;
   .left {
+    display: flex;
     font-size: 18px;
     line-height: 21px;
     color: #333333;
+    .icon-speedup {
+      width: 10px;
+      margin-left: 6px;
+      cursor: pointer;
+    }
   }
   .right {
     font-size: 14px;
@@ -102,6 +111,7 @@ const Actions = ({
   txDetail,
   raw,
   onChange,
+  isSpeedUp,
 }: {
   data: ParsedActionData;
   requireData: ActionRequireData;
@@ -110,47 +120,10 @@ const Actions = ({
   txDetail: ExplainTxResponse;
   raw: Record<string, string | number>;
   onChange(tx: Record<string, any>): void;
+  isSpeedUp: boolean;
 }) => {
   const actionName = useMemo(() => {
-    if (data.swap) {
-      return 'Swap Token';
-    }
-    if (data.wrapToken) {
-      return 'Wrap Token';
-    }
-    if (data.unWrapToken) {
-      return 'Unwrap Token';
-    }
-    if (data.send) {
-      return 'Send Token';
-    }
-    if (data.approveToken) {
-      return 'Token Approval';
-    }
-    if (data.revokeToken) {
-      return 'Revoke Token Approval';
-    }
-    if (data.sendNFT) {
-      return 'Send NFT';
-    }
-    if (data.approveNFT) {
-      return 'NFT Approval';
-    }
-    if (data.revokeNFT) {
-      return 'Revoke NFT Approval';
-    }
-    if (data.approveNFTCollection) {
-      return 'NFT Collection Approval';
-    }
-    if (data.revokeNFTCollection) {
-      return 'Revoke NFT Collection Approval';
-    }
-    if (data.deployContract) {
-      return 'Deploy a Contract';
-    }
-    if (data.cancelTx) {
-      return 'Cancel Pending Transaction';
-    }
+    return getActionTypeText(data);
   }, [data]);
 
   const handleViewRawClick = () => {
@@ -163,7 +136,17 @@ const Actions = ({
   return (
     <>
       <SignTitle>
-        <div className="left">Sign {chain.name} Transaction</div>
+        <div className="left">
+          Sign {chain.name} Transaction
+          {isSpeedUp && (
+            <Tooltip
+              overlayClassName="rectangle"
+              title="This accelerated transaction and the original transaction, only one of which will eventually be completed"
+            >
+              <img src={IconSpeedUp} className="icon icon-speedup" />
+            </Tooltip>
+          )}
+        </div>
         <div
           className="float-right text-12 cursor-pointer flex items-center view-raw"
           onClick={handleViewRawClick}

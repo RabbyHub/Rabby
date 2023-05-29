@@ -128,7 +128,11 @@ const ApproveNFT = ({
           <Row>
             <NFTWithName nft={actionData?.nft}></NFTWithName>
             <ul className="desc-list">
-              <li>{actionData?.nft?.collection?.name}</li>
+              <li>
+                <div className="whitespace-nowrap overflow-hidden overflow-ellipsis">
+                  {actionData?.nft?.collection?.name}
+                </div>
+              </li>
               <li>
                 Floor price{' '}
                 {actionData?.nft?.collection?.floor_price ? (

@@ -98,5 +98,11 @@ export const formatAmount = (amount: string | number, decimals = 4) => {
   }
   if (amount > 10000) return formatNumber(amount);
   if (amount > 1) return formatNumber(amount, 4);
+  if (amount < 0.00001) {
+    if (amount.toString().length > 10) {
+      return Number(amount).toExponential(4);
+    }
+    return amount.toString();
+  }
   return formatNumber(amount, decimals);
 };

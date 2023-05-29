@@ -35,7 +35,7 @@ import {
   MINIMUM_GAS_LIMIT,
 } from 'consts';
 import { addHexPrefix, isHexPrefixed, isHexString } from 'ethereumjs-util';
-import React, { ReactNode, useEffect, useMemo, useState } from 'react';
+import React, { ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import { useTranslation } from 'react-i18next';
 import IconGnosis from 'ui/assets/walletlogo/safe.svg';
@@ -117,8 +117,7 @@ export const TxTypeComponent = ({
   isReady,
   raw,
   onChange,
-  // tx,
-  // isSpeedUp,
+  isSpeedUp,
   engineResults,
   txDetail,
 }: {
@@ -129,7 +128,6 @@ export const TxTypeComponent = ({
   txDetail: ExplainTxResponse;
   raw: Record<string, string | number>;
   onChange(data: Record<string, any>): void;
-  // tx: Tx;
   isSpeedUp: boolean;
   engineResults: Result[];
 }) => {
@@ -145,6 +143,7 @@ export const TxTypeComponent = ({
         txDetail={txDetail}
         raw={raw}
         onChange={onChange}
+        isSpeedUp={isSpeedUp}
       />
     );
   }
@@ -711,6 +710,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
   ]);
   const [isGnosisAccount, setIsGnosisAccount] = useState(false);
   const [gnosisDrawerVisible, setGnosisDrawerVisble] = useState(false);
+  const scrollRef = useRef<HTMLDivElement>(null);
   const [getApproval, resolveApproval, rejectApproval] = useApproval();
   const dispatch = useRabbyDispatch();
   const wallet = useWallet();
@@ -1058,7 +1058,6 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       requireData: requiredData,
       chainId: chain.serverId,
     });
-    console.log('ctx', ctx);
     const result = await executeEngine(ctx);
     setEngineResults(result);
     setActionData(parsed);
@@ -1632,6 +1631,16 @@ const SignTx = ({ params, origin }: SignTxProps) => {
   }, []);
 
   useEffect(() => {
+    console.log('isReady', isReady);
+    if (isReady) {
+      console.log(scrollRef.current?.scrollTop);
+      if (scrollRef.current && scrollRef.current.scrollTop > 0) {
+        scrollRef.current && (scrollRef.current.scrollTop = 0);
+      }
+    }
+  }, [isReady]);
+
+  useEffect(() => {
     if (isGnosisAccount) {
       handleIsGnosisAccountChange();
     }
@@ -1671,6 +1680,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
         className={clsx('approval-tx', {
           'pre-process-failed': !preprocessSuccess,
         })}
+        ref={scrollRef}
       >
         {txDetail && (
           <>
@@ -1687,11 +1697,6 @@ const SignTx = ({ params, origin }: SignTxProps) => {
                   gas: gasLimit!,
                 }}
                 onChange={handleTxChange}
-                // tx={{
-                //   ...tx,
-                //   nonce: realNonce || tx.nonce,
-                //   gas: gasLimit,
-                // }}
                 isSpeedUp={isSpeedUp}
                 engineResults={engineResults}
               />

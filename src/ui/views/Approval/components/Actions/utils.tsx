@@ -1012,17 +1012,27 @@ export const formatSecurityEngineCtx = ({
   }
   if (actionData.wrapToken) {
     const { slippageTolerance } = actionData.wrapToken;
+    const data = requireData as WrapTokenRequireData;
     return {
       wrapToken: {
         slippageTolerance,
+      },
+      contractCall: {
+        id: data.id,
+        chainId,
       },
     };
   }
   if (actionData.unWrapToken) {
     const { slippageTolerance } = actionData.unWrapToken;
+    const data = requireData as WrapTokenRequireData;
     return {
-      wrapToken: {
+      unwrapToken: {
         slippageTolerance,
+      },
+      contractCall: {
+        id: data.id,
+        chainId,
       },
     };
   }
@@ -1062,4 +1072,50 @@ export const useUserData = () => {
   );
 
   return [userData, updateUserData] as const;
+};
+
+export const getActionTypeText = (data: ParsedActionData) => {
+  if (data.swap) {
+    return 'Swap Token';
+  }
+  if (data.wrapToken) {
+    return 'Wrap Token';
+  }
+  if (data.unWrapToken) {
+    return 'Unwrap Token';
+  }
+  if (data.send) {
+    return 'Send Token';
+  }
+  if (data.approveToken) {
+    return 'Token Approval';
+  }
+  if (data.revokeToken) {
+    return 'Revoke Token Approval';
+  }
+  if (data.sendNFT) {
+    return 'Send NFT';
+  }
+  if (data.approveNFT) {
+    return 'NFT Approval';
+  }
+  if (data.revokeNFT) {
+    return 'Revoke NFT Approval';
+  }
+  if (data.approveNFTCollection) {
+    return 'NFT Collection Approval';
+  }
+  if (data.revokeNFTCollection) {
+    return 'Revoke NFT Collection Approval';
+  }
+  if (data.deployContract) {
+    return 'Deploy a Contract';
+  }
+  if (data.cancelTx) {
+    return 'Cancel Pending Transaction';
+  }
+  if (data.contractCall) {
+    return 'Contract Call';
+  }
+  return 'Unknown';
 };

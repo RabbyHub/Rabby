@@ -1,12 +1,11 @@
 import React from 'react';
 import { CHAINS_ENUM } from 'consts';
 import { BalanceChange as IBalanceChange } from 'background/service/openapi';
-import { splitNumberByStep } from 'ui/utils/number';
+import { formatAmount } from 'ui/utils/number';
 import useBalanceChange from '@/ui/hooks/useBalanceChange';
 import { Table, Col, Row } from '../Actions/components/Table';
 import LogoWithText from '../Actions/components/LogoWithText';
 import * as Values from '../Actions/components/Values';
-import BigNumber from 'bignumber.js';
 
 const NFTBalanceChange = ({
   data,
@@ -207,11 +206,7 @@ const BalanceChange = ({
                   <div className="mb-8 last:mb-0">
                     <LogoWithText
                       logo={token.logo_url}
-                      text={`- ${splitNumberByStep(
-                        new BigNumber(
-                          new BigNumber(token.amount).toFixed(9)
-                        ).toFixed()
-                      )} ${token.symbol}`}
+                      text={`- ${formatAmount(token.amount)} ${token.symbol}`}
                       key={token.id}
                       icon={
                         <Values.TokenLabel
@@ -233,11 +228,7 @@ const BalanceChange = ({
                   <div className="mb-8 last:mb-0">
                     <LogoWithText
                       logo={token.logo_url}
-                      text={`+ ${splitNumberByStep(
-                        new BigNumber(
-                          new BigNumber(token.amount).toFixed(9)
-                        ).toFixed()
-                      )} ${token.symbol}`}
+                      text={`+ ${formatAmount(token.amount)} ${token.symbol}`}
                       key={token.id}
                       icon={
                         <Values.TokenLabel

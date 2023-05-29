@@ -39,6 +39,9 @@ const RowWrapper = styled.div`
     flex: 1;
     width: 190px;
   }
+  &:has(.desc-list) {
+    padding-right: 0;
+  }
   &.title {
     font-size: 12px;
     line-height: 14px;
@@ -54,9 +57,10 @@ const RowWrapper = styled.div`
     margin: 0;
     font-weight: 400;
     li {
-      position: relative;
       padding-left: 10px;
       margin-bottom: 8px;
+      padding-right: 10px;
+      position: relative;
       &::before {
         content: '';
         position: absolute;

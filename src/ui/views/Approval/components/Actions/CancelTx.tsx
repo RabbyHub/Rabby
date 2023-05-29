@@ -1,10 +1,14 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo } from 'react';
 import styled from 'styled-components';
-import { Chain, TokenItem } from 'background/service/openapi';
+import { Chain } from 'background/service/openapi';
 import { Result } from '@debank/rabby-security-engine';
 import { sortBy } from 'lodash';
-import { ParsedActionData, CancelTxRequireData } from './utils';
-import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
+import {
+  ParsedActionData,
+  CancelTxRequireData,
+  getActionTypeText,
+} from './utils';
+import { useRabbyDispatch } from '@/ui/store';
 
 const Wrapper = styled.div`
   .container {
@@ -62,9 +66,6 @@ const Wrapper = styled.div`
 const CancelTx = ({
   data,
   requireData,
-  chain,
-  engineResults,
-  raw,
 }: {
   data: ParsedActionData['cancelTx'];
   requireData: CancelTxRequireData;
@@ -86,18 +87,7 @@ const CancelTx = ({
       let type = 'Unknown';
       if (group.action) {
         const data = group.action.actionData;
-        if (data.swap) {
-          type = 'Swap Token';
-        }
-        if (data.send) {
-          type = 'Send Token';
-        }
-        if (data.approveToken) {
-          type = 'Token Approval';
-        }
-        if (data.cancelTx) {
-          type = 'Cancel Pending Transaction';
-        }
+        type = getActionTypeText(data);
       }
       group.txs.forEach((tx) => {
         if ((tx.rawTx as any).isCancel) {

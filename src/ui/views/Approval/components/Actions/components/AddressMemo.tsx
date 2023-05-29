@@ -76,7 +76,7 @@ const AddressMemo = ({ address }: { address: string }) => {
 
   return (
     <div
-      className="flex cursor-pointer"
+      className="inline-flex cursor-pointer"
       onClick={() => updateAddressMemo(addressAlias, updateAlias)}
     >
       <span className="mr-6">{addressAlias || '-'}</span>

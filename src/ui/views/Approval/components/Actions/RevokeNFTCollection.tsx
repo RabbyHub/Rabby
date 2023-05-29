@@ -110,7 +110,11 @@ const RevokeNFTCollection = ({
           <Row>
             {actionData?.collection?.name}
             <ul className="desc-list">
-              <li>{actionData?.collection?.name}</li>
+              <li>
+                <div className="whitespace-nowrap overflow-hidden overflow-ellipsis">
+                  {actionData?.collection?.name}
+                </div>
+              </li>
               <li>
                 Floor price{' '}
                 {actionData?.collection?.floor_price ? (

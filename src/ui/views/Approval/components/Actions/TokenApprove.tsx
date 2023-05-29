@@ -257,7 +257,7 @@ const TokenApprove = ({
         <Col>
           <Row isTitle>Approve Amount</Row>
           <Row>
-            <div className="flex justify-between">
+            <div className="flex justify-between pr-10">
               <Values.TokenAmount value={actionData.token.amount} />
               <span
                 className="text-blue-light text-12 font-medium cursor-pointer"

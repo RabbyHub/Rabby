@@ -178,24 +178,24 @@ const WrapToken = ({
               isContract
               onChange={() => dispatch.securityEngine.init()}
             />
-            {engineResultMap['1014'] && (
+            {engineResultMap['1064'] && (
               <SecurityLevelTagNoText
                 level={
-                  processedRules.includes('1014')
+                  processedRules.includes('1064')
                     ? 'proceed'
-                    : engineResultMap['1014'].level
+                    : engineResultMap['1064'].level
                 }
-                onClick={() => handleClickRule('1014')}
+                onClick={() => handleClickRule('1064')}
               />
             )}
-            {engineResultMap['1015'] && (
+            {engineResultMap['1065'] && (
               <SecurityLevelTagNoText
                 level={
-                  processedRules.includes('1015')
+                  processedRules.includes('1065')
                     ? 'proceed'
-                    : engineResultMap['1015'].level
+                    : engineResultMap['1065'].level
                 }
-                onClick={() => handleClickRule('1015')}
+                onClick={() => handleClickRule('1065')}
               />
             )}
           </Row>

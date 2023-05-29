@@ -317,7 +317,9 @@ const RuleDrawer = ({
       case 'percent':
         return `${Math.floor(value as number)}%`;
       case 'int':
+        return Math.floor(value as number);
       case 'float':
+        return (value as number).toFixed(2);
       default:
         return value;
     }

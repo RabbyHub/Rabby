@@ -136,7 +136,7 @@ const Swap = ({
         <Col>
           <Row isTitle>Receive Token</Row>
           <Row>
-            <div className="flex">
+            <div className="flex relative pr-10">
               <LogoWithText
                 logo={receiveToken.logo_url}
                 logoRadius="100%"
@@ -150,27 +150,27 @@ const Swap = ({
                   />
                 }
               />
+              {engineResultMap['1008'] && (
+                <SecurityLevelTagNoText
+                  level={
+                    processedRules.includes('1008')
+                      ? 'proceed'
+                      : engineResultMap['1008'].level
+                  }
+                  onClick={() => handleClickRule('1008')}
+                />
+              )}
+              {engineResultMap['1009'] && (
+                <SecurityLevelTagNoText
+                  level={
+                    processedRules.includes('1009')
+                      ? 'proceed'
+                      : engineResultMap['1009'].level
+                  }
+                  onClick={() => handleClickRule('1009')}
+                />
+              )}
             </div>
-            {engineResultMap['1008'] && (
-              <SecurityLevelTagNoText
-                level={
-                  processedRules.includes('1008')
-                    ? 'proceed'
-                    : engineResultMap['1008'].level
-                }
-                onClick={() => handleClickRule('1008')}
-              />
-            )}
-            {engineResultMap['1009'] && (
-              <SecurityLevelTagNoText
-                level={
-                  processedRules.includes('1009')
-                    ? 'proceed'
-                    : engineResultMap['1009'].level
-                }
-                onClick={() => handleClickRule('1009')}
-              />
-            )}
             <ul className="desc-list">
               <li>
                 {formatUsdValue(
