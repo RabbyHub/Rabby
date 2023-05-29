@@ -1602,6 +1602,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       chainId: chain.serverId,
     });
     const result = await executeEngine(ctx);
+    console.log('result', result);
     setEngineResults(result);
   };
 
@@ -1631,7 +1632,6 @@ const SignTx = ({ params, origin }: SignTxProps) => {
   }, []);
 
   useEffect(() => {
-    console.log('isReady', isReady);
     if (isReady) {
       console.log(scrollRef.current?.scrollTop);
       if (scrollRef.current && scrollRef.current.scrollTop > 0) {

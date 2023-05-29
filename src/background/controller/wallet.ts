@@ -138,6 +138,7 @@ export class WalletController extends BaseController {
   };
 
   sendRequest = <T = any>(data: ProviderRequest['data']) => {
+    console.log('data', data);
     return provider<T>({
       data,
       session: {
@@ -604,46 +605,92 @@ export class WalletController extends BaseController {
   ) => {
     const account = await preferenceService.getCurrentAccount();
     if (!account) throw new Error('no current account');
-    const chainId = Object.values(CHAINS)
-      .find((chain) => chain.serverId === chainServerId)
-      ?.id.toString();
+    const chainId = Object.values(CHAINS).find(
+      (chain) => chain.serverId === chainServerId
+    )?.id;
     if (!chainId) throw new Error('invalid chain id');
-    buildinProvider.currentProvider.currentAccount = account.address;
-    buildinProvider.currentProvider.currentAccountType = account.type;
-    buildinProvider.currentProvider.currentAccountBrand = account.brandName;
-    buildinProvider.currentProvider.chainId = chainId;
-    buildinProvider.currentProvider.$ctx = $ctx;
-
-    const provider = new ethers.providers.Web3Provider(
-      buildinProvider.currentProvider
-    );
-
-    const signer = provider.getSigner();
-
-    try {
-      if (abi === 'ERC721') {
-        const contract = new Contract(contractId, ERC721ABI, signer);
-        await contract['safeTransferFrom(address,address,uint256)'](
-          account.address,
-          to,
-          tokenId
-        );
-      } else if (abi === 'ERC1155') {
-        const contract = new Contract(contractId, ERC1155ABI, signer);
-        await contract.safeTransferFrom(
-          account.address,
-          to,
-          tokenId,
-          amount,
-          []
-        );
-      } else {
-        throw new Error('unknown contract abi');
-      }
-      buildinProvider.currentProvider.$ctx = undefined;
-    } catch (e) {
-      buildinProvider.currentProvider.$ctx = undefined;
-      throw e;
+    if (abi === 'ERC721') {
+      await this.sendRequest({
+        $ctx,
+        method: 'eth_sendTransaction',
+        params: [
+          {
+            from: account.address,
+            to: contractId,
+            chainId: chainId,
+            data: ((abiCoder as unknown) as AbiCoder).encodeFunctionCall(
+              {
+                constant: false,
+                inputs: [
+                  { internalType: 'address', name: 'from', type: 'address' },
+                  { internalType: 'address', name: 'to', type: 'address' },
+                  {
+                    internalType: 'uint256',
+                    name: 'tokenId',
+                    type: 'uint256',
+                  },
+                ],
+                name: 'safeTransferFrom',
+                outputs: [],
+                payable: false,
+                stateMutability: 'nonpayable',
+                type: 'function',
+              },
+              [account.address, to, tokenId] as any
+            ),
+          },
+        ],
+      });
+    } else if (abi === 'ERC1155') {
+      await this.sendRequest({
+        $ctx,
+        method: 'eth_sendTransaction',
+        params: [
+          {
+            from: account.address,
+            to: contractId,
+            chainId: chainId,
+            data: ((abiCoder as unknown) as AbiCoder).encodeFunctionCall(
+              {
+                inputs: [
+                  {
+                    internalType: 'address',
+                    name: 'from',
+                    type: 'address',
+                  },
+                  {
+                    internalType: 'address',
+                    name: 'to',
+                    type: 'address',
+                  },
+                  {
+                    internalType: 'uint256',
+                    name: 'id',
+                    type: 'uint256',
+                  },
+                  {
+                    internalType: 'uint256',
+                    name: 'amount',
+                    type: 'uint256',
+                  },
+                  {
+                    internalType: 'bytes',
+                    name: 'data',
+                    type: 'bytes',
+                  },
+                ],
+                name: 'safeTransferFrom',
+                outputs: [],
+                stateMutability: 'nonpayable',
+                type: 'function',
+              },
+              [account.address, to, tokenId, amount, []] as any
+            ),
+          },
+        ],
+      });
+    } else {
+      throw new Error('unknown contract abi');
     }
   };
 

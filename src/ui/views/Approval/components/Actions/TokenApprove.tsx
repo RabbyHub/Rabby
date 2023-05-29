@@ -1,4 +1,4 @@
-import React, { useEffect, useMemo, useState } from 'react';
+import React, { useEffect, useMemo, useRef, useState } from 'react';
 import { Button, Form, Input } from 'antd';
 import styled from 'styled-components';
 import BigNumber from 'bignumber.js';
@@ -42,14 +42,17 @@ interface ApproveAmountModalProps {
   balance: string | undefined | null;
   token: TokenItem;
   onChange(value: string): void;
+  visible: boolean;
 }
 
 const ApproveAmountModal = ({
   balance,
   amount,
   token,
+  visible,
   onChange,
 }: ApproveAmountModalProps) => {
+  const inputRef = useRef<Input>(null);
   const [customAmount, setCustomAmount] = useState(
     new BigNumber(amount).toFixed()
   );
@@ -79,6 +82,15 @@ const ApproveAmountModal = ({
     setTokenPrice(Number(customAmount || 0) * token.price);
   }, [customAmount]);
 
+  useEffect(() => {
+    console.log('visible', inputRef.current);
+    if (visible) {
+      setTimeout(() => {
+        inputRef.current?.focus();
+      }, 0);
+    }
+  }, [visible]);
+
   return (
     <Form onFinish={handleSubmit}>
       <Form.Item>
@@ -91,7 +103,7 @@ const ApproveAmountModal = ({
               {ellipsisTokenSymbol(token.symbol, 4)}
             </span>
           }
-          autoFocus
+          ref={inputRef}
         />
       </Form.Item>
       <div className="approve-amount-footer overflow-hidden gap-[8px]">
@@ -446,6 +458,7 @@ const TokenApprove = ({
           amount={approveAmount}
           token={actionData.token}
           onChange={handleApproveAmountChange}
+          visible={editApproveModalVisible}
         />
       </Popup>
     </Wrapper>

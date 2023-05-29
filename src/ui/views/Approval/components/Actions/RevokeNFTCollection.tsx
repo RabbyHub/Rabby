@@ -112,7 +112,7 @@ const RevokeNFTCollection = ({
             <ul className="desc-list">
               <li>
                 <div className="whitespace-nowrap overflow-hidden overflow-ellipsis">
-                  {actionData?.collection?.name}
+                  {actionData?.collection.name || '-'}
                 </div>
               </li>
               <li>

@@ -126,11 +126,13 @@ const RevokeNFT = ({
           <Row>
             <NFTWithName nft={actionData?.nft}></NFTWithName>
             <ul className="desc-list">
-              <li>
-                <div className="whitespace-nowrap overflow-hidden overflow-ellipsis">
-                  {actionData?.nft?.collection?.name}
-                </div>
-              </li>
+              {actionData?.nft?.collection && (
+                <li>
+                  <div className="whitespace-nowrap overflow-hidden overflow-ellipsis">
+                    {actionData?.nft?.collection?.name}
+                  </div>
+                </li>
+              )}
               <li>
                 Floor price{' '}
                 {actionData?.nft?.collection?.floor_price ? (

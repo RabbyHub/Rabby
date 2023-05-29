@@ -127,7 +127,7 @@ const Swap = ({
               <li>
                 {formatUsdValue(
                   new BigNumber(payToken.amount).times(payToken.price).toFixed()
-                )}
+                )}{' '}
                 @{formatUsdValue(payToken.price)}
               </li>
             </ul>
@@ -177,11 +177,11 @@ const Swap = ({
                   new BigNumber(receiveToken.amount)
                     .times(receiveToken.price)
                     .toFixed()
-                )}
+                )}{' '}
                 @{formatUsdValue(receiveToken.price)}
               </li>
               <li>
-                Value diff <Values.Percentage value={usdValuePercentage} />(
+                Value diff <Values.Percentage value={usdValuePercentage} /> (
                 {formatUsdValue(usdValueDiff)})
                 {engineResultMap['1012'] && (
                   <SecurityLevelTagNoText
@@ -215,7 +215,7 @@ const Swap = ({
                   new BigNumber(minReceive.amount)
                     .times(minReceive.price)
                     .toFixed()
-                )}
+                )}{' '}
                 @{formatUsdValue(minReceive.price)}
               </li>
             </ul>

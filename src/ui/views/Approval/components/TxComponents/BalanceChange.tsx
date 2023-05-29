@@ -52,16 +52,18 @@ const NFTBalanceChange = ({
           {receiveNftList.map((item) => (
             <div className="mb-0 last:mb-0">
               <div className="flex">
-                + {item.amount} {item.name}
+                <span className="flex-1 overflow-hidden whitespace-nowrap overflow-ellipsis">
+                  + {item.amount} {item.name}
+                </span>
                 <Values.TokenLabel
-                  isFake={item.collection.is_verified === false}
-                  isScam={!!item.collection.is_suspicious}
+                  isFake={item.collection?.is_verified === false}
+                  isScam={!!item.collection?.is_suspicious}
                 />
               </div>
               <ul className="desc-list">
                 <li>
                   Floor price{' '}
-                  {item.collection.floor_price
+                  {item.collection?.floor_price
                     ? `${item.collection.floor_price} ETH`
                     : '-'}
                 </li>
@@ -80,17 +82,19 @@ const NFTBalanceChange = ({
           {sendNftList.map((item) => (
             <div className="mb-10 last:mb-0">
               <div className="flex">
-                - {item.amount} {item.name}
+                <span className="flex-1 overflow-hidden whitespace-nowrap overflow-ellipsis">
+                  - {item.amount} {item.name}
+                </span>
                 <Values.TokenLabel
-                  isFake={item.collection.is_verified === false}
-                  isScam={!!item.collection.is_suspicious}
+                  isFake={item.collection?.is_verified === false}
+                  isScam={!!item.collection?.is_suspicious}
                 />
               </div>
               <ul className="desc-list">
                 <li>
                   Floor price{' '}
-                  {item.collection.floor_price
-                    ? `${item.collection.floor_price} ETH`
+                  {item.collection?.floor_price
+                    ? `${item.collection?.floor_price} ETH`
                     : '-'}
                 </li>
               </ul>

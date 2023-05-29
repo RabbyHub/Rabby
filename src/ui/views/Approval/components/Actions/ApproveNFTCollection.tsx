@@ -126,7 +126,7 @@ const ApproveNFTCollection = ({
         <Col>
           <Row isTitle>Approve collection</Row>
           <Row>
-            {actionData?.collection?.name}
+            {actionData?.collection?.name || '-'}
             <ul className="desc-list">
               <li>
                 <div className="whitespace-nowrap overflow-hidden overflow-ellipsis">

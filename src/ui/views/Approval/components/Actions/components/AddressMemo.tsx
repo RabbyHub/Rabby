@@ -80,7 +80,7 @@ const AddressMemo = ({ address }: { address: string }) => {
       onClick={() => updateAddressMemo(addressAlias, updateAlias)}
     >
       <span className="mr-6">{addressAlias || '-'}</span>
-      <img src={IconEdit} className="icon-edit-alias icon" />
+      <img src={IconEdit} className="icon-edit-alias icon w-[13px]" />
     </div>
   );
 };
