@@ -66,10 +66,22 @@ const Wrapper = styled.section`
     font-size: 13px;
     line-height: 15px;
     display: inline-flex;
+    position: relative;
     .icon-level {
       width: 14px;
       height: 14px;
       margin-right: 6px;
+    }
+    &::before {
+      content: '';
+      position: absolute;
+      width: 0;
+      height: 0;
+      border: 5px solid transparent;
+      border-bottom: 8px solid currentColor;
+      top: -12px;
+      left: 50%;
+      transform: translateX(-50%);
     }
   }
 `;
@@ -146,7 +158,7 @@ export const FooterBar: React.FC<Props> = ({
         <div
           className="security-level-tip"
           style={{
-            color: SecurityLevelTipColor[securityLevel].text,
+            color: SecurityLevelTipColor[securityLevel].bg,
             backgroundColor: SecurityLevelTipColor[securityLevel].bg,
           }}
         >
@@ -154,9 +166,15 @@ export const FooterBar: React.FC<Props> = ({
             src={SecurityLevelTipColor[securityLevel].icon}
             className="icon icon-level"
           />
-          {securityLevel === Level.FORBIDDEN
-            ? 'Found forbidden risks. Unable to sign'
-            : 'Please process the alert before signing'}
+          <span
+            style={{
+              color: SecurityLevelTipColor[securityLevel].text,
+            }}
+          >
+            {securityLevel === Level.FORBIDDEN
+              ? 'Found forbidden risks. Unable to sign'
+              : 'Please process the alert before signing'}
+          </span>
         </div>
       )}
     </Wrapper>

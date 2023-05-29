@@ -245,7 +245,7 @@ const TokenApprove = ({
     <Wrapper>
       <Table>
         <Col>
-          <Row isTitle>Approve Token</Row>
+          <Row isTitle>Approve token</Row>
           <Row>
             <LogoWithText
               logo={actionData.token.logo_url}
@@ -255,7 +255,7 @@ const TokenApprove = ({
           </Row>
         </Col>
         <Col>
-          <Row isTitle>Approve Amount</Row>
+          <Row isTitle>Approve amount</Row>
           <Row>
             <div className="flex justify-between pr-10">
               <Values.TokenAmount value={actionData.token.amount} />
