@@ -138,7 +138,6 @@ export class WalletController extends BaseController {
   };
 
   sendRequest = <T = any>(data: ProviderRequest['data']) => {
-    console.log('data', data);
     return provider<T>({
       data,
       session: {

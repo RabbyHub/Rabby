@@ -255,7 +255,19 @@ const Send = ({
           <Row isTitle>
             {requireData.contract ? 'Deployed' : 'First on-chain'}
           </Row>
-          <Row>{timeSpan}</Row>
+          <Row>
+            {timeSpan}
+            {engineResultMap['1017'] && (
+              <SecurityLevelTagNoText
+                level={
+                  processedRules.includes('1017')
+                    ? 'proceed'
+                    : engineResultMap['1017'].level
+                }
+                onClick={() => handleClickRule('1017')}
+              />
+            )}
+          </Row>
         </Col>
         <Col>
           <Row isTitle>Balance</Row>

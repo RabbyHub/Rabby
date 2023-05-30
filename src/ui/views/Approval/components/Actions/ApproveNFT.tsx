@@ -224,7 +224,9 @@ const ApproveNFT = ({
               Risk exposure
             </Row>
             <Row>
-              {formatUsdValue(requireData.riskExposure || 0)}
+              <Values.Text>
+                {formatUsdValue(requireData.riskExposure || 0)}
+              </Values.Text>
               {engineResultMap['1044'] && (
                 <SecurityLevelTagNoText
                   level={

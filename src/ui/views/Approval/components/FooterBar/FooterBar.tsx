@@ -18,12 +18,14 @@ interface Props extends Omit<ActionGroupProps, 'account'> {
   origin?: string;
   originLogo?: string;
   hasUnProcessSecurityResult?: boolean;
+  hasShadow?: boolean;
 }
 
 const Wrapper = styled.section`
   padding: 20px;
   box-shadow: 0px -8px 24px rgba(0, 0, 0, 0.1);
   border-radius: 16px 16px 0px 0px;
+  position: relative;
   .request-origin {
     font-weight: 500;
     font-size: 13px;
@@ -84,6 +86,23 @@ const Wrapper = styled.section`
       transform: translateX(-50%);
     }
   }
+  &.has-shadow {
+    &::before {
+      content: '';
+      pointer-events: none;
+      position: absolute;
+      top: -85px;
+      height: 85px;
+      left: 0;
+      width: 100%;
+      background: linear-gradient(
+        180deg,
+        rgba(217, 217, 217, 0) 10.74%,
+        rgba(175, 175, 175, 0.168147) 41.66%,
+        rgba(130, 130, 130, 0.35) 83.44%
+      );
+    }
+  }
 `;
 
 const SecurityLevelTipColor = {
@@ -110,6 +129,7 @@ export const FooterBar: React.FC<Props> = ({
   gnosisAccount,
   securityLevel,
   hasUnProcessSecurityResult,
+  hasShadow = false,
   ...props
 }) => {
   const [account, setAccount] = React.useState<Account>();
@@ -137,7 +157,11 @@ export const FooterBar: React.FC<Props> = ({
   }
 
   return (
-    <Wrapper className={clsx('bg-white')}>
+    <Wrapper
+      className={clsx('bg-white', {
+        'has-shadow': hasShadow,
+      })}
+    >
       {origin && (
         <div className="request-origin">
           {originLogo && !(origin === INTERNAL_REQUEST_ORIGIN) && (

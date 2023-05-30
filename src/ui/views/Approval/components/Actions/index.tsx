@@ -65,7 +65,6 @@ const ActionWrapper = styled.div`
   .action-header {
     display: flex;
     justify-content: space-between;
-    margin-bottom: 16px;
     background: #8697ff;
     padding: 14px;
     align-items: center;

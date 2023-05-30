@@ -546,7 +546,7 @@ const GasSelector = ({
           )}
         >
           <div className="gas-selector-card-title">Gas</div>
-          <div className="gas-selector-card-content ml-[27px]">
+          <div className="gas-selector-card-content ml-4">
             {isGnosisAccount ? (
               <div className="font-semibold">No gas required</div>
             ) : gas.error || !gas.success ? (
@@ -570,7 +570,7 @@ const GasSelector = ({
                     )}{' '}
                     {chain.nativeTokenSymbol}
                   </span>
-                  &nbsp;&nbsp; ≈${new BigNumber(gas.gasCostUsd).toFixed(2)}
+                  &nbsp; ≈${new BigNumber(gas.gasCostUsd).toFixed(2)}
                 </div>
               </div>
             )}

@@ -223,7 +223,9 @@ const ApproveNFTCollection = ({
               Risk exposure
             </Row>
             <Row>
-              {formatUsdValue(requireData.riskExposure)}
+              <Values.Text>
+                {formatUsdValue(requireData.riskExposure)}
+              </Values.Text>
               {engineResultMap['1054'] && (
                 <SecurityLevelTagNoText
                   level={

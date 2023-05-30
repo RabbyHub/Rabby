@@ -1,4 +1,4 @@
-import React, { useMemo } from 'react';
+import React, { useMemo, ReactNode } from 'react';
 import { message, Tooltip } from 'antd';
 import styled from 'styled-components';
 import ClipboardJS from 'clipboard';
@@ -36,7 +36,7 @@ const Percentage = ({ value }: { value: number }) => {
 };
 
 const USDValue = ({ value }: { value: number | string }) => {
-  return <>{formatUsdValue(value)}</>;
+  return <Text>{formatUsdValue(value)}</Text>;
 };
 
 const TimeSpan = ({ value }) => {
@@ -298,6 +298,14 @@ const Address = ({
   );
 };
 
+const Text = ({ children }: { children: ReactNode }) => {
+  return (
+    <div className="overflow-hidden overflow-ellipsis whitespace-nowrap">
+      {children}
+    </div>
+  );
+};
+
 export {
   Boolean,
   TokenAmount,
@@ -309,4 +317,5 @@ export {
   Protocol,
   TokenLabel,
   Address,
+  Text,
 };

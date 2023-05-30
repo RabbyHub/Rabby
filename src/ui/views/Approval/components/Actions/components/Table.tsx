@@ -103,7 +103,6 @@ const Row = ({
       )}
     >
       {children}
-
       {tip && (
         <Tooltip title={tip} overlayClassName="rectangle max-w-[244px]">
           <img src={IconQuestionMark} className="icon ml-6" />

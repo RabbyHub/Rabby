@@ -180,20 +180,22 @@ const Swap = ({
                 )}{' '}
                 @{formatUsdValue(receiveToken.price)}
               </li>
-              <li>
-                Value diff <Values.Percentage value={usdValuePercentage} /> (
-                {formatUsdValue(usdValueDiff)})
-                {engineResultMap['1012'] && (
-                  <SecurityLevelTagNoText
-                    level={
-                      processedRules.includes('1012')
-                        ? 'proceed'
-                        : engineResultMap['1012'].level
-                    }
-                    onClick={() => handleClickRule('1012')}
-                  />
-                )}
-              </li>
+              {usdValueDiff !== null && usdValuePercentage !== null && (
+                <li>
+                  Value diff <Values.Percentage value={usdValuePercentage} /> (
+                  {formatUsdValue(usdValueDiff)})
+                  {engineResultMap['1012'] && (
+                    <SecurityLevelTagNoText
+                      level={
+                        processedRules.includes('1012')
+                          ? 'proceed'
+                          : engineResultMap['1012'].level
+                      }
+                      onClick={() => handleClickRule('1012')}
+                    />
+                  )}
+                </li>
+              )}
             </ul>
           </Row>
         </Col>
@@ -273,6 +275,16 @@ const Swap = ({
                     chain={chain}
                     onChange={() => dispatch.securityEngine.init()}
                   />
+                  {engineResultMap['1066'] && (
+                    <SecurityLevelTagNoText
+                      level={
+                        processedRules.includes('1066')
+                          ? 'proceed'
+                          : engineResultMap['1066'].level
+                      }
+                      onClick={() => handleClickRule('1066')}
+                    />
+                  )}
                 </li>
               </ul>
             </Row>

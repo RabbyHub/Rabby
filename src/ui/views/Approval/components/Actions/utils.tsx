@@ -52,8 +52,8 @@ export interface ParsedActionData {
     minReceive: TokenItem;
     slippageTolerance: number;
     receiver: string;
-    usdValueDiff: string;
-    usdValuePercentage: number;
+    usdValueDiff: string | null;
+    usdValuePercentage: number | null;
   };
   send?: {
     to: string;
@@ -140,11 +140,16 @@ export const parseAction = (
     const payTokenUsdValue = new BigNumber(payToken.amount).times(
       payToken.price
     );
-    const usdValueDiff = receiveTokenUsdValue.minus(payTokenUsdValue).toFixed();
-    const usdValuePercentage = calcSlippageTolerance(
-      payTokenUsdValue.toFixed(),
-      receiveTokenUsdValue.toFixed()
-    );
+    const hasReceiver = !isSameAddress(receiver, tx.from);
+    const usdValueDiff = hasReceiver
+      ? null
+      : receiveTokenUsdValue.minus(payTokenUsdValue).toFixed();
+    const usdValuePercentage = hasReceiver
+      ? null
+      : calcSlippageTolerance(
+          payTokenUsdValue.toFixed(),
+          receiveTokenUsdValue.toFixed()
+        );
     const minReceive = {
       ...receiveToken,
       amount: receiveToken.min_amount || 0,
@@ -209,7 +214,7 @@ export const parseAction = (
       pay_token.raw_amount || '0'
     );
     return {
-      wrapToken: {
+      unWrapToken: {
         payToken: pay_token,
         receiveToken: receive_token,
         slippageTolerance,

@@ -8,7 +8,7 @@ import Safe from '@rabby-wallet/gnosis-sdk';
 import { SafeInfo } from '@rabby-wallet/gnosis-sdk/src/api';
 import * as Sentry from '@sentry/browser';
 import { Drawer, Modal } from 'antd';
-import { maxBy } from 'lodash';
+import { maxBy, set } from 'lodash';
 import {
   Chain,
   ExplainTxResponse,
@@ -38,6 +38,8 @@ import { addHexPrefix, isHexPrefixed, isHexString } from 'ethereumjs-util';
 import React, { ReactNode, useEffect, useMemo, useRef, useState } from 'react';
 import { matomoRequestEvent } from '@/utils/matomo-request';
 import { useTranslation } from 'react-i18next';
+import { useScroll, useMeasure } from 'react-use';
+import { useSize } from 'ahooks';
 import IconGnosis from 'ui/assets/walletlogo/safe.svg';
 import {
   useApproval,
@@ -711,6 +713,8 @@ const SignTx = ({ params, origin }: SignTxProps) => {
   const [isGnosisAccount, setIsGnosisAccount] = useState(false);
   const [gnosisDrawerVisible, setGnosisDrawerVisble] = useState(false);
   const scrollRef = useRef<HTMLDivElement>(null);
+  const scrollRefSize = useSize(scrollRef);
+  const scrollInfo = useScroll(scrollRef);
   const [getApproval, resolveApproval, rejectApproval] = useApproval();
   const dispatch = useRabbyDispatch();
   const wallet = useWallet();
@@ -724,6 +728,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     rules: s.securityEngine.rules,
     currentTx: s.securityEngine.currentTx,
   }));
+  const [footerShowShadow, setFooterShowShadow] = useState(false);
 
   const gaEvent = async (type: 'allow' | 'cancel') => {
     const ga:
@@ -1602,7 +1607,6 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       chainId: chain.serverId,
     });
     const result = await executeEngine(ctx);
-    console.log('result', result);
     setEngineResults(result);
   };
 
@@ -1633,7 +1637,6 @@ const SignTx = ({ params, origin }: SignTxProps) => {
 
   useEffect(() => {
     if (isReady) {
-      console.log(scrollRef.current?.scrollTop);
       if (scrollRef.current && scrollRef.current.scrollTop > 0) {
         scrollRef.current && (scrollRef.current.scrollTop = 0);
       }
@@ -1673,6 +1676,24 @@ const SignTx = ({ params, origin }: SignTxProps) => {
   useEffect(() => {
     executeSecurityEngine();
   }, [userData, rules]);
+
+  useEffect(() => {
+    if (scrollRef.current && scrollInfo && scrollRefSize) {
+      const avaliableHeight =
+        scrollRef.current.scrollHeight - scrollRefSize.height;
+      console.log(
+        'scrollHeight',
+        scrollRef.current.scrollHeight,
+        scrollRefSize.height
+      );
+      console.log('avaliableHeight', avaliableHeight, scrollInfo.y);
+      if (avaliableHeight <= 0) {
+        setFooterShowShadow(false);
+      } else {
+        setFooterShowShadow(avaliableHeight >= scrollInfo.y);
+      }
+    }
+  }, [scrollInfo, scrollRefSize]);
 
   return (
     <>
@@ -1767,6 +1788,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       {txDetail && (
         <>
           <FooterBar
+            hasShadow={footerShowShadow}
             origin={origin}
             originLogo={params.session.icon}
             hasUnProcessSecurityResult={hasUnProcessSecurityResult}

@@ -9,7 +9,6 @@ import { isSameAddress } from '@/ui/utils';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
 import { Table, Col, Row } from './components/Table';
 import AddressMemo from './components/AddressMemo';
-import SecurityLevelTagNoText from '../SecurityEngine/SecurityLevelTagNoText';
 import NFTWithName from './components/NFTWithName';
 import * as Values from './components/Values';
 
@@ -50,7 +49,6 @@ const RevokeNFT = ({
   data,
   requireData,
   chain,
-  engineResults,
 }: {
   data: ParsedActionData['revokeNFT'];
   requireData: RevokeNFTRequireData;
@@ -59,7 +57,7 @@ const RevokeNFT = ({
 }) => {
   const actionData = data!;
   const dispatch = useRabbyDispatch();
-  const { userData, rules, processedRules } = useRabbySelector((s) => ({
+  const { userData } = useRabbySelector((s) => ({
     userData: s.securityEngine.userData,
     rules: s.securityEngine.rules,
     processedRules: s.securityEngine.currentTx.processedRules,
@@ -95,25 +93,6 @@ const RevokeNFT = ({
     return '1 Minute ago';
   }, [requireData]);
 
-  const engineResultMap = useMemo(() => {
-    const map: Record<string, Result> = {};
-    engineResults.forEach((item) => {
-      map[item.id] = item;
-    });
-    return map;
-  }, [engineResults]);
-
-  const handleClickRule = (id: string) => {
-    const rule = rules.find((item) => item.id === id);
-    if (!rule) return;
-    const result = engineResultMap[id];
-    dispatch.securityEngine.openRuleDrawer({
-      ruleConfig: rule,
-      value: result?.value,
-      level: result?.level,
-      ignored: processedRules.includes(id),
-    });
-  };
   useEffect(() => {
     dispatch.securityEngine.init();
   }, []);
@@ -173,45 +152,11 @@ const RevokeNFT = ({
         </Col>
         <Col>
           <Row isTitle>Type</Row>
-          <Row>
-            {requireData.isEOA ? 'EOA' : 'Contract'}
-            {engineResultMap['1022'] && (
-              <SecurityLevelTagNoText
-                level={
-                  processedRules.includes('1022')
-                    ? 'proceed'
-                    : engineResultMap['1022'].level
-                }
-                onClick={() => handleClickRule('1022')}
-              />
-            )}
-            {engineResultMap['1029'] && (
-              <SecurityLevelTagNoText
-                level={
-                  processedRules.includes('1029')
-                    ? 'proceed'
-                    : engineResultMap['1029'].level
-                }
-                onClick={() => handleClickRule('1029')}
-              />
-            )}
-          </Row>
+          <Row>{requireData.isEOA ? 'EOA' : 'Contract'}</Row>
         </Col>
         <Col>
           <Row isTitle>{requireData.isEOA ? 'First on-chain' : 'Deployed'}</Row>
-          <Row>
-            {timeSpan}
-            {engineResultMap['1024'] && (
-              <SecurityLevelTagNoText
-                level={
-                  processedRules.includes('1024')
-                    ? 'proceed'
-                    : engineResultMap['1024'].level
-                }
-                onClick={() => handleClickRule('1024')}
-              />
-            )}
-          </Row>
+          <Row>{timeSpan}</Row>
         </Col>
         {requireData.riskExposure !== null && (
           <Col>
@@ -222,17 +167,9 @@ const RevokeNFT = ({
               Risk exposure
             </Row>
             <Row>
-              {formatUsdValue(requireData.riskExposure)}
-              {engineResultMap['1023'] && (
-                <SecurityLevelTagNoText
-                  level={
-                    processedRules.includes('1023')
-                      ? 'proceed'
-                      : engineResultMap['1023'].level
-                  }
-                  onClick={() => handleClickRule('1023')}
-                />
-              )}
+              <Values.Text>
+                {formatUsdValue(requireData.riskExposure)}
+              </Values.Text>
             </Row>
           </Col>
         )}
@@ -246,16 +183,6 @@ const RevokeNFT = ({
           <Row isTitle>Interacted before</Row>
           <Row>
             <Values.Boolean value={requireData.hasInteraction} />
-            {engineResultMap['1025'] && (
-              <SecurityLevelTagNoText
-                level={
-                  processedRules.includes('1025')
-                    ? 'proceed'
-                    : engineResultMap['1025'].level
-                }
-                onClick={() => handleClickRule('1025')}
-              />
-            )}
           </Row>
         </Col>
         <Col>
@@ -275,36 +202,6 @@ const RevokeNFT = ({
               onChange={() => dispatch.securityEngine.init()}
               isContract
             />
-            {engineResultMap['1026'] && (
-              <SecurityLevelTagNoText
-                level={
-                  processedRules.includes('1026')
-                    ? 'proceed'
-                    : engineResultMap['1026'].level
-                }
-                onClick={() => handleClickRule('1026')}
-              />
-            )}
-            {engineResultMap['1027'] && (
-              <SecurityLevelTagNoText
-                level={
-                  processedRules.includes('1027')
-                    ? 'proceed'
-                    : engineResultMap['1027'].level
-                }
-                onClick={() => handleClickRule('1027')}
-              />
-            )}
-            {engineResultMap['1028'] && (
-              <SecurityLevelTagNoText
-                level={
-                  processedRules.includes('1028')
-                    ? 'proceed'
-                    : engineResultMap['1028'].level
-                }
-                onClick={() => handleClickRule('1028')}
-              />
-            )}
           </Row>
         </Col>
       </Table>
