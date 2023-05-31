@@ -92,7 +92,6 @@ const wallet = new Proxy(
 ) as WalletControllerType;
 
 portMessageChannel.on('message', (data) => {
-  console.log('data', data);
   if (data.event === 'broadcast') {
     eventBus.emit(data.data.type, data.data.data);
   }
