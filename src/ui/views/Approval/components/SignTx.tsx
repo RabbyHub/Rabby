@@ -1681,12 +1681,6 @@ const SignTx = ({ params, origin }: SignTxProps) => {
     if (scrollRef.current && scrollInfo && scrollRefSize) {
       const avaliableHeight =
         scrollRef.current.scrollHeight - scrollRefSize.height;
-      console.log(
-        'scrollHeight',
-        scrollRef.current.scrollHeight,
-        scrollRefSize.height
-      );
-      console.log('avaliableHeight', avaliableHeight, scrollInfo.y);
       if (avaliableHeight <= 0) {
         setFooterShowShadow(false);
       } else {
