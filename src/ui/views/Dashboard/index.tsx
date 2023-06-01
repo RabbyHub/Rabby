@@ -69,6 +69,7 @@ import { SessionSignal } from '@/ui/component/WalletConnect/SessionSignal';
 import { useWalletConnectIcon } from '@/ui/component/WalletConnect/useWalletConnectIcon';
 import { GridPlusSignal } from '@/ui/component/ConnectStatus/GridPlusSignal';
 import { LedgerSignal } from '@/ui/component/ConnectStatus/LedgerSignal';
+import { CommonSignal } from '@/ui/component/ConnectStatus/CommonSignal';
 
 const GnosisAdminItem = ({
   accounts,
@@ -621,21 +622,11 @@ const Dashboard = () => {
                         KEYRING_ICONS_WHITE[currentAccount.type]
                       }
                     />
-                    {currentAccount.type === KEYRING_CLASS.WALLETCONNECT && (
-                      <SessionSignal
-                        isBadge
-                        address={currentAccount.address}
-                        brandName={currentAccount.brandName}
-                        pendingConnect
-                      />
-                    )}
-                    {currentAccount.type === KEYRING_CLASS.HARDWARE.LEDGER && (
-                      <LedgerSignal isBadge />
-                    )}
-                    {currentAccount.type ===
-                      KEYRING_CLASS.HARDWARE.GRIDPLUS && (
-                      <GridPlusSignal isBadge />
-                    )}
+                    <CommonSignal
+                      type={currentAccount.type}
+                      brandName={currentAccount.brandName}
+                      address={currentAccount.address}
+                    />
                   </div>
                   <div
                     className="text-15 text-white ml-6 mr-6 dashboard-name"
