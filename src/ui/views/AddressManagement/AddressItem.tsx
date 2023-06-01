@@ -34,6 +34,7 @@ import { SessionSignal } from '@/ui/component/WalletConnect/SessionSignal';
 import { useWalletConnectIcon } from '@/ui/component/WalletConnect/useWalletConnectIcon';
 import { LedgerSignal } from '@/ui/component/ConnectStatus/LedgerSignal';
 import { GridPlusSignal } from '@/ui/component/ConnectStatus/GridPlusSignal';
+import { CommonSignal } from '@/ui/component/ConnectStatus/CommonSignal';
 
 export interface AddressItemProps {
   balance: number;
@@ -210,27 +211,12 @@ const AddressItem = memo(
                         : 'w-[24px] h-[24px]'
                     }
                   />
-                  {type === KEYRING_CLASS.WALLETCONNECT && (
-                    <SessionSignal
-                      isBadge
-                      address={address}
-                      brandName={brandName}
-                      pendingConnect
-                      className={isCurrentAccount ? 'bottom-0 right-0' : ''}
-                    />
-                  )}
-                  {type === KEYRING_CLASS.HARDWARE.LEDGER && (
-                    <LedgerSignal
-                      isBadge
-                      className={isCurrentAccount ? 'bottom-0 right-0' : ''}
-                    />
-                  )}
-                  {type === KEYRING_CLASS.HARDWARE.GRIDPLUS && (
-                    <GridPlusSignal
-                      isBadge
-                      className={isCurrentAccount ? 'bottom-0 right-0' : ''}
-                    />
-                  )}
+                  <CommonSignal
+                    type={type}
+                    brandName={brandName}
+                    address={address}
+                    className={isCurrentAccount ? 'bottom-0 right-0' : ''}
+                  />
                 </div>
               </Tooltip>
 
