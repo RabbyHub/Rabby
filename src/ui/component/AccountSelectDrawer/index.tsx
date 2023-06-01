@@ -101,9 +101,19 @@ const AccountSelectDrawer = ({
 
   const init = async () => {
     const visibleAccounts: Account[] = await wallet.getAllVisibleAccountsArray();
-    setAccounts(
-      visibleAccounts.filter((item) => item.type !== KEYRING_TYPE.GnosisKeyring)
-    );
+    const watches: Account[] = [];
+    const others: Account[] = [];
+    for (let i = 0; i < visibleAccounts.length; i++) {
+      const account = visibleAccounts[i];
+      if (account.type !== KEYRING_TYPE.GnosisKeyring) {
+        if (account.type === KEYRING_TYPE.WatchAddressKeyring) {
+          watches.push(account);
+        } else {
+          others.push(account);
+        }
+      }
+    }
+    setAccounts([...others, ...watches]);
   };
 
   const handleSelectAccount = (account: Account) => {
