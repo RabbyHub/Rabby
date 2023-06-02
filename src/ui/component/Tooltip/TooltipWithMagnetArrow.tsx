@@ -29,6 +29,8 @@ const TooltipWrapStyled = styled(TooltipWrap)`
  * see https://ant.design/docs/blog/tooltip-align
  *
  * Tooltip with magnet arrow
+ *
+ * 0. **trigger element's parent should have `position: relative`**
  * 1. auto align tooltip arrow to the middle of the trigger element
  * 2. attach tooltip to the trigger element's parent
  * 3. only support bottom or top placement

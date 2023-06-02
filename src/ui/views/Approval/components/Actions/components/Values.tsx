@@ -1,5 +1,5 @@
 import React, { useMemo, ReactNode } from 'react';
-import { message, Tooltip } from 'antd';
+import { message } from 'antd';
 import styled from 'styled-components';
 import ClipboardJS from 'clipboard';
 import { Chain } from 'background/service/openapi';
@@ -17,6 +17,7 @@ import IconScam from 'ui/assets/sign/tx/token-scam.svg';
 import IconFake from 'ui/assets/sign/tx/token-fake.svg';
 import IconAddressCopy from 'ui/assets/icon-copy-2.svg';
 import IconExternal from 'ui/assets/icon-share.svg';
+import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 
 const Boolean = ({ value }: { value: boolean }) => {
   return <>{value ? 'Yes' : 'No'}</>;
@@ -209,22 +210,22 @@ const TokenLabel = ({
   isFake: boolean;
 }) => {
   return (
-    <div className="flex gap-4 shrink-0">
+    <div className="flex gap-4 shrink-0 relative">
       {isFake && (
-        <Tooltip
-          overlayClassName="rectangle"
+        <TooltipWithMagnetArrow
+          overlayClassName="rectangle w-[max-content]"
           title="This is a scam token marked by Rabby"
         >
           <img src={IconFake} className="icon icon-fake" />
-        </Tooltip>
+        </TooltipWithMagnetArrow>
       )}
       {isScam && (
-        <Tooltip
-          overlayClassName="rectangle"
+        <TooltipWithMagnetArrow
+          overlayClassName="rectangle w-[max-content]"
           title="This is potentially a low-quality and scam token based on Rabby's detection"
         >
           <img src={IconScam} className="icon icon-scam" />
-        </Tooltip>
+        </TooltipWithMagnetArrow>
       )}
     </div>
   );
