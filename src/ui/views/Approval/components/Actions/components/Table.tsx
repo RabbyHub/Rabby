@@ -1,8 +1,8 @@
 import React, { ReactNode } from 'react';
 import styled from 'styled-components';
 import clsx from 'clsx';
-import { Tooltip } from 'antd';
 import IconQuestionMark from 'ui/assets/sign/tx/question-mark.svg';
+import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 
 const TableWrapper = styled.div`
   background: #fafbff;
@@ -104,9 +104,12 @@ const Row = ({
     >
       {children}
       {tip && (
-        <Tooltip title={tip} overlayClassName="rectangle max-w-[244px]">
+        <TooltipWithMagnetArrow
+          title={tip}
+          overlayClassName="rectangle w-[max-content] max-w-[244px]"
+        >
           <img src={IconQuestionMark} className="icon ml-6" />
-        </Tooltip>
+        </TooltipWithMagnetArrow>
       )}
     </RowWrapper>
   );
