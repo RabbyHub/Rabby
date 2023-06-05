@@ -31,6 +31,7 @@ export const SecurityListItemTag: React.FC<Props> = ({ id, engineResult }) => {
 
   return (
     <SecurityLevelTagNoText
+      enable={engineResult.enable}
       level={processedRules.includes(id) ? 'proceed' : engineResult.level}
       onClick={() => handleClickRule(id)}
     />

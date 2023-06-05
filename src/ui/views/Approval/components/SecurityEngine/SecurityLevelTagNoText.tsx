@@ -31,13 +31,18 @@ const Wrapper = styled.div`
 `;
 
 const SecurityLevelTagNoText = ({
+  enable,
   level,
   showText,
 }: {
+  enable: boolean;
   level: Level | 'proceed';
   showText: boolean;
 }) => {
   const currentLevel = useMemo(() => {
+    if (!enable) {
+      return SecurityEngineLevel.closed;
+    }
     return SecurityEngineLevel[level];
   }, [level]);
 
@@ -139,11 +144,13 @@ const SecurityLevelTagWrapper = styled.div`
 `;
 
 const SecurityLevelTag = ({
+  enable,
   level,
   translucent,
   onClick,
   right = '-6px',
 }: {
+  enable: boolean;
   level: Level | 'proceed';
   translucent?: boolean;
   onClick?(): void;
@@ -153,10 +160,11 @@ const SecurityLevelTag = ({
 
   return (
     <SecurityLevelTagWrapper
-      className={clsx(level, {
+      className={clsx(enable ? level : '', {
         'cursor-pointer': onClick,
         translucent,
         showText: isHovering,
+        closed: !enable,
       })}
       style={{
         right,
@@ -164,7 +172,11 @@ const SecurityLevelTag = ({
       onClick={onClick}
       {...hoverProps}
     >
-      <SecurityLevelTagNoText level={level} showText={isHovering} />
+      <SecurityLevelTagNoText
+        enable={enable}
+        level={level}
+        showText={isHovering}
+      />
       <IconArrowRight className="icon-arrow-right" />
     </SecurityLevelTagWrapper>
   );

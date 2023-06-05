@@ -265,7 +265,7 @@ const Connect = ({ params: { icon, origin } }: ConnectProps) => {
         forbiddenCount++;
       } else if (
         result.level !== Level.ERROR &&
-        result.level !== Level.CLOSED &&
+        result.enable &&
         !processedRules.includes(result.id)
       ) {
         needProcessCount++;

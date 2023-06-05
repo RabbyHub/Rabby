@@ -328,7 +328,7 @@ const RuleDrawer = ({
   const displayThreshold = useMemo(() => {
     if (!selectRule) return '';
     const { level, ruleConfig, value } = selectRule;
-    if (!level || level === Level.CLOSED || level === Level.ERROR) return '';
+    if (!level || !ruleConfig.enable || level === Level.ERROR) return '';
     const threshold = {
       ...ruleConfig.defaultThreshold,
       ...ruleConfig.customThreshold,
