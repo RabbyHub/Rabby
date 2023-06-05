@@ -275,7 +275,7 @@ const TokenApprove = ({
               <SecurityListItem
                 id="1024"
                 engineResult={engineResultMap['1024']}
-                warningText="Deployed time  < 3 days"
+                warningText="Deployed time < 3 days"
               />
 
               <SecurityListItem
