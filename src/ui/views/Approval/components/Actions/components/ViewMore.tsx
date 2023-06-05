@@ -10,8 +10,16 @@ import {
   ReceiverPopup,
   ReceiverPopupProps,
 } from './ViewMorePopup/ReceiverPopup';
+import {
+  NFTSpenderPopup,
+  NFTSpenderPopupProps,
+} from './ViewMorePopup/NFTSpenderPopup';
 
-type Props = SpenderPopupProps | ContractPopupProps | ReceiverPopupProps;
+type Props =
+  | SpenderPopupProps
+  | ContractPopupProps
+  | ReceiverPopupProps
+  | NFTSpenderPopupProps;
 
 const PopupContainer = styled.div`
   .title {
@@ -48,6 +56,7 @@ const ViewMore = (props: Props) => {
       case 'contract':
         return 304;
       case 'spender':
+      case 'nftSpender':
         return 480;
       case 'receiver':
         return 400;
@@ -71,6 +80,7 @@ const ViewMore = (props: Props) => {
           {props.type === 'contract' && <ContractPopup data={props.data} />}
           {props.type === 'spender' && <SpenderPopup data={props.data} />}
           {props.type === 'receiver' && <ReceiverPopup data={props.data} />}
+          {props.type === 'nftSpender' && <NFTSpenderPopup data={props.data} />}
         </PopupContainer>
       </Popup>
     </>
