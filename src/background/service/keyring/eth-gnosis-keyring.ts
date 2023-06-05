@@ -8,6 +8,7 @@ import {
 } from '@gnosis.pm/safe-core-sdk-types';
 import semverSatisfies from 'semver/functions/satisfies';
 import EthSignSignature from '@gnosis.pm/safe-core-sdk/dist/src/utils/signatures/SafeSignature';
+import { SafeInfo } from '@rabby-wallet/gnosis-sdk/dist/api';
 
 export const keyringType = 'Gnosis';
 export const TransactionBuiltEvent = 'TransactionBuilt';
@@ -21,7 +22,7 @@ interface SignTransactionOptions {
 
 interface DeserializeOption {
   accounts?: string[];
-  networkIdMap?: Record<string, string>;
+  networkIdMap?: Record<string, string | string[]>;
 }
 
 function sanitizeHex(hex: string): string {
@@ -172,7 +173,7 @@ class GnosisKeyring extends EventEmitter {
   type = keyringType;
   accounts: string[] = [];
   accountToAdd: string | null = null;
-  networkIdMap: Record<string, string> = {};
+  networkIdMap: Record<string, string[]> = {};
   currentTransaction: SafeTransaction | null = null;
   currentTransactionHash: string | null = null;
   onExecedTransaction: ((hash: string) => void) | null = null;
@@ -188,7 +189,13 @@ class GnosisKeyring extends EventEmitter {
       this.accounts = opts.accounts;
     }
     if (opts.networkIdMap) {
-      this.networkIdMap = opts.networkIdMap;
+      this.networkIdMap = Object.entries(opts.networkIdMap).reduce(
+        (res, [key, value]) => {
+          res[key] = Array.isArray(value) ? value : [value];
+          return res;
+        },
+        {} as Record<string, string[]>
+      );
     }
     // filter address which dont have networkId in cache
     this.accounts = this.accounts.filter(
@@ -203,10 +210,12 @@ class GnosisKeyring extends EventEmitter {
     });
   }
 
-  setNetworkId = (address: string, networkId: string) => {
+  setNetworkIds = (address: string, networkIds: string | string[]) => {
     this.networkIdMap = {
       ...this.networkIdMap,
-      [address.toLowerCase()]: networkId,
+      [address.toLowerCase()]: Array.isArray(networkIds)
+        ? networkIds
+        : [networkIds],
     };
   };
 
@@ -353,9 +362,9 @@ class GnosisKeyring extends EventEmitter {
     console.log(this.currentTransaction);
   }
 
-  async getOwners(address: string, version: string, provider) {
-    const networkId = this.networkIdMap[address.toLowerCase()];
-    if (!networkId) {
+  async getOwners(address: string, version: string, provider, networkId) {
+    const networkIds = this.networkIdMap[address.toLowerCase()];
+    if (!networkId || !networkIds || !networkIds.includes(networkId)) {
       throw new Error(`No networkId in keyring for address ${address}`);
     }
     const safe = new Safe(address, version, provider, networkId);
@@ -415,7 +424,8 @@ class GnosisKeyring extends EventEmitter {
   async buildTransaction(
     address: string,
     transaction: SafeTransactionDataPartial,
-    provider
+    provider,
+    version: string
   ) {
     if (
       !this.accounts.find(
@@ -435,14 +445,11 @@ class GnosisKeyring extends EventEmitter {
       baseGas: transaction.baseGas,
       operation: transaction.operation,
     };
-    const networkId = this.networkIdMap[address.toLowerCase()];
-    const safeInfo = await Safe.getSafeInfo(checksumAddress, networkId);
-    const safe = new Safe(
-      checksumAddress,
-      safeInfo.version,
-      provider,
-      networkId
-    );
+    // todo: get networkId
+    const networkId = (transaction as any)?.chainId?.toString();
+    // const safeInfo =
+    //   _safeInfo || (await Safe.getSafeInfo(checksumAddress, networkId));
+    const safe = new Safe(checksumAddress, version, provider, networkId);
     this.safeInstance = safe;
     const safeTransaction = await safe.buildTransaction(tx);
     this.currentTransaction = safeTransaction;
@@ -467,7 +474,7 @@ class GnosisKeyring extends EventEmitter {
     }
     let safeTransaction: SafeTransaction;
     let transactionHash: string;
-    const networkId = this.networkIdMap[address.toLowerCase()];
+    const networkId = transaction?.chainId?.toString();
     const checksumAddress = toChecksumAddress(address);
     const safeInfo = await Safe.getSafeInfo(checksumAddress, networkId);
     const safe = new Safe(

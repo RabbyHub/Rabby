@@ -1154,7 +1154,12 @@ const SignTx = ({ params, origin }: SignTxProps) => {
         value: tx.value,
       };
       params.nonce = realNonce;
-      await wallet.buildGnosisTransaction(tx.from, account, params);
+      await wallet.buildGnosisTransaction(
+        tx.from,
+        account,
+        params,
+        safeInfo.version
+      );
     }
     const typedData = await wallet.gnosisGenerateTypedData();
     resolveApproval({
@@ -1426,9 +1431,11 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       );
     }
     if (currentAccount.type === KEYRING_TYPE.GnosisKeyring || isGnosis) {
-      const networkId = await wallet.getGnosisNetworkId(currentAccount.address);
+      const networkIds = await wallet.getGnosisNetworkId(
+        currentAccount.address
+      );
 
-      if ((chainId || CHAINS[site!.chain].id) !== Number(networkId)) {
+      if (!networkIds.includes(String(chainId || CHAINS[site!.chain].id))) {
         setCanProcess(false);
         setCantProcessReason(
           <div className="flex items-center gap-6">
@@ -1442,7 +1449,8 @@ const SignTx = ({ params, origin }: SignTxProps) => {
 
   const getSafeInfo = async () => {
     const currentAccount = (await wallet.getCurrentAccount())!;
-    const networkId = await wallet.getGnosisNetworkId(currentAccount.address);
+    // todo
+    const networkId = String(chainId);
     const safeInfo = await Safe.getSafeInfo(currentAccount.address, networkId);
     const pendingTxs = await Safe.getPendingTransactions(
       currentAccount.address,

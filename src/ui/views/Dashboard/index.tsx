@@ -121,10 +121,6 @@ const Dashboard = () => {
     ...s.appVersion,
   }));
 
-  const { gnosisPendingCount, safeInfo } = useRabbySelector((s) => ({
-    ...s.chains,
-  }));
-
   const { sortedAccountsList } = React.useMemo(() => {
     const restAccounts = [...accountsList];
     let highlightedAccounts: typeof accountsList = [];
@@ -172,7 +168,8 @@ const Dashboard = () => {
   const [accountBalanceUpdateNonce, setAccountBalanceUpdateNonce] = useState(0);
 
   const [startAnimate, setStartAnimate] = useState(false);
-  const isGnosis = useRabbyGetter((s) => s.chains.isCurrentAccountGnosis);
+  const isGnosis = useRabbyGetter((s) => s.safe.isCurrentAccountGnosis);
+  const gnosisPendingCount = useRabbyGetter((s) => s.safe.gnosisPendingCount);
   const [isListLoading, setIsListLoading] = useState(false);
   const [isAssetsLoading, setIsAssetsLoading] = useState(true);
 
@@ -199,10 +196,12 @@ const Dashboard = () => {
   useEffect(() => {
     if (currentAccount) {
       if (currentAccount.type === KEYRING_TYPE.GnosisKeyring) {
-        dispatch.chains.setField({
-          safeInfo: null,
+        dispatch.safe.setField({
+          data: {},
+          loadings: {},
+          networks: [],
         });
-        dispatch.chains.getGnosisPendingCountAsync();
+        dispatch.safe.getAllChainsSafeData();
       } else {
         dispatch.transactions.getPendingTxCountAsync(currentAccount.address);
       }
@@ -567,7 +566,7 @@ const Dashboard = () => {
     }
   }, [showNFT]);
   const showGnosisWrongChainAlert = useRabbyGetter(
-    (s) => s.chains.isShowGnosisWrongChainAlert
+    (s) => s.safe.isShowGnosisWrongChainAlert
   );
   const opacity60 =
     currentAccount?.type === KEYRING_CLASS.MNEMONIC ||
@@ -975,7 +974,7 @@ const Dashboard = () => {
               <QRCode value={currentAccount?.address} size={100} />
             </div>
           </div>
-          {isGnosis && (
+          {/* {isGnosis && (
             <div className="address-popover__gnosis">
               <h4 className="text-15 mb-4">Admins</h4>
               {safeInfo ? (
@@ -1008,7 +1007,7 @@ const Dashboard = () => {
                 </div>
               )}
             </div>
-          )}
+          )} */}
         </div>
       </Modal>
       {!(showToken || showAssets || showNFT) && <DefaultWalletSetting />}
