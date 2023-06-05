@@ -6,17 +6,16 @@ import { Chain, TokenItem } from 'background/service/openapi';
 import { Result } from '@debank/rabby-security-engine';
 import { ApproveTokenRequireData, ParsedActionData } from './utils';
 import { ellipsisTokenSymbol } from 'ui/utils/token';
-import { getTimeSpan } from 'ui/utils/time';
-import { isSameAddress, ellipsisOverflowedText } from '@/ui/utils';
+import { ellipsisOverflowedText } from '@/ui/utils';
 import { getCustomTxParamsData } from 'ui/utils/transaction';
 import { formatAmount, formatUsdValue } from '@/ui/utils/number';
-import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
+import { useRabbyDispatch } from '@/ui/store';
 import { Popup } from 'ui/component';
 import { Table, Col, Row } from './components/Table';
-import AddressMemo from './components/AddressMemo';
 import LogoWithText from './components/LogoWithText';
 import * as Values from './components/Values';
-import SecurityLevelTagNoText from '../SecurityEngine/SecurityLevelTagNoText';
+import ViewMore from './components/ViewMore';
+import { SecurityListItem } from './components/SecurityListItem';
 
 const Wrapper = styled.div`
   .header {
@@ -163,41 +162,6 @@ const TokenApprove = ({
   const actionData = data!;
   const [editApproveModalVisible, setEditApproveModalVisible] = useState(false);
   const dispatch = useRabbyDispatch();
-  const { userData, rules, processedRules } = useRabbySelector((s) => ({
-    userData: s.securityEngine.userData,
-    rules: s.securityEngine.rules,
-    processedRules: s.securityEngine.currentTx.processedRules,
-  }));
-
-  const spenderInWhitelist = useMemo(() => {
-    return !!userData.contractWhitelist.find((contract) => {
-      return (
-        isSameAddress(contract.address, actionData.spender) &&
-        contract.chainId === chain.serverId
-      );
-    });
-  }, [userData, requireData, chain]);
-  const spenderInBlacklist = useMemo(() => {
-    return !!userData.contractBlacklist.find((contract) => {
-      return isSameAddress(contract.address, actionData.spender);
-    });
-  }, [userData, requireData, chain]);
-
-  const timeSpan = useMemo(() => {
-    const bornAt = requireData.bornAt;
-
-    const { d, h, m } = getTimeSpan(Math.floor(Date.now() / 1000) - bornAt);
-    if (d > 0) {
-      return `${d} Day${d > 1 ? 's' : ''} ago`;
-    }
-    if (h > 0) {
-      return `${h} Hour${h > 1 ? 's' : ''} ago`;
-    }
-    if (m > 1) {
-      return `${m} Minutes ago`;
-    }
-    return '1 Minute ago';
-  }, [requireData]);
 
   const engineResultMap = useMemo(() => {
     const map: Record<string, Result> = {};
@@ -217,18 +181,6 @@ const TokenApprove = ({
       .div(10 ** actionData.token.decimals)
       .toFixed();
   }, [actionData]);
-
-  const handleClickRule = (id: string) => {
-    const rule = rules.find((item) => item.id === id);
-    if (!rule) return;
-    const result = engineResultMap[id];
-    dispatch.securityEngine.openRuleDrawer({
-      ruleConfig: rule,
-      value: result?.value,
-      level: result?.level,
-      ignored: processedRules.includes(id),
-    });
-  };
 
   const handleClickTokenBalance = () => {
     if (new BigNumber(approveAmount).gt(tokenBalance)) {
@@ -250,6 +202,8 @@ const TokenApprove = ({
   };
 
   useEffect(() => {
+    // eslint-disable-next-line @typescript-eslint/ban-ts-comment
+    // @ts-ignore
     dispatch.securityEngine.init();
   }, []);
 
@@ -267,7 +221,7 @@ const TokenApprove = ({
           </Row>
         </Col>
         <Col>
-          <Row isTitle>Approve amount</Row>
+          <Row isTitle>Amount</Row>
           <Row>
             <div className="flex justify-between pr-10">
               <Values.TokenAmount value={actionData.token.amount} />
@@ -292,156 +246,56 @@ const TokenApprove = ({
             </ul>
           </Row>
         </Col>
-      </Table>
-      <div className="header">
-        <div className="left">
-          <Values.Address
-            address={actionData.spender}
-            chain={chain}
-            iconWidth="16px"
-          />
-        </div>
-        <div className="right">approve to</div>
-      </div>
-      <Table>
         <Col>
-          <Row isTitle>Protocol</Row>
+          <Row isTitle>Approve to</Row>
           <Row>
-            <Values.Protocol value={requireData.protocol} />
-          </Row>
-        </Col>
-        <Col>
-          <Row isTitle>Type</Row>
-          <Row>
-            {requireData.isEOA ? 'EOA' : 'Contract'}
-            {engineResultMap['1022'] && (
-              <SecurityLevelTagNoText
-                level={
-                  processedRules.includes('1022')
-                    ? 'proceed'
-                    : engineResultMap['1022'].level
-                }
-                onClick={() => handleClickRule('1022')}
+            <div>
+              <Values.Address address={actionData.spender} chain={chain} />
+            </div>
+            <ul className="desc-list">
+              <SecurityListItem
+                id="1022"
+                engineResult={engineResultMap['1022']}
+                dangerText="EOA address"
               />
-            )}
-            {engineResultMap['1029'] && (
-              <SecurityLevelTagNoText
-                level={
-                  processedRules.includes('1029')
-                    ? 'proceed'
-                    : engineResultMap['1029'].level
-                }
-                onClick={() => handleClickRule('1029')}
+
+              <SecurityListItem
+                id="1025"
+                engineResult={engineResultMap['1025']}
+                warningText="Never Interacted before"
               />
-            )}
-          </Row>
-        </Col>
-        <Col>
-          <Row isTitle>{requireData.isEOA ? 'First on-chain' : 'Deployed'}</Row>
-          <Row>
-            {timeSpan}
-            {engineResultMap['1024'] && (
-              <SecurityLevelTagNoText
-                level={
-                  processedRules.includes('1024')
-                    ? 'proceed'
-                    : engineResultMap['1024'].level
-                }
-                onClick={() => handleClickRule('1024')}
+
+              <SecurityListItem
+                id="1023"
+                engineResult={engineResultMap['1023']}
+                dangerText="Risk exposure  < $10,000"
+                warningText="$10,000 < Risk exposure  < $100,000"
               />
-            )}
-          </Row>
-        </Col>
-        <Col>
-          <Row
-            isTitle
-            tip="The total risk exposure approved to this spender address"
-          >
-            Risk exposure
-          </Row>
-          <Row>
-            <Values.USDValue value={requireData.riskExposure} />
-            {engineResultMap['1023'] && (
-              <SecurityLevelTagNoText
-                level={
-                  processedRules.includes('1023')
-                    ? 'proceed'
-                    : engineResultMap['1023'].level
-                }
-                onClick={() => handleClickRule('1023')}
+
+              <SecurityListItem
+                id="1024"
+                engineResult={engineResultMap['1024']}
+                warningText="Deployed time  < 3 days"
               />
-            )}
-          </Row>
-        </Col>
-        <Col>
-          <Row isTitle>Popularity</Row>
-          <Row>
-            {requireData.rank ? `No.${requireData.rank} on ${chain.name}` : '-'}
-          </Row>
-        </Col>
-        <Col>
-          <Row isTitle>Interacted before</Row>
-          <Row>
-            <Values.Boolean value={requireData.hasInteraction} />
-            {engineResultMap['1025'] && (
-              <SecurityLevelTagNoText
-                level={
-                  processedRules.includes('1025')
-                    ? 'proceed'
-                    : engineResultMap['1025'].level
-                }
-                onClick={() => handleClickRule('1025')}
+
+              <SecurityListItem
+                id="1029"
+                engineResult={engineResultMap['1029']}
+                dangerText="Flagged by Rabby"
               />
-            )}
-          </Row>
-        </Col>
-        <Col>
-          <Row isTitle>Address note</Row>
-          <Row>
-            <AddressMemo address={actionData.spender} />
-          </Row>
-        </Col>
-        <Col>
-          <Row isTitle>My mark</Row>
-          <Row>
-            <Values.AddressMark
-              onWhitelist={spenderInWhitelist}
-              onBlacklist={spenderInBlacklist}
-              address={actionData.spender}
-              chain={chain}
-              isContract
-              onChange={() => dispatch.securityEngine.init()}
-            />
-            {engineResultMap['1026'] && (
-              <SecurityLevelTagNoText
-                level={
-                  processedRules.includes('1026')
-                    ? 'proceed'
-                    : engineResultMap['1026'].level
-                }
-                onClick={() => handleClickRule('1026')}
-              />
-            )}
-            {engineResultMap['1027'] && (
-              <SecurityLevelTagNoText
-                level={
-                  processedRules.includes('1027')
-                    ? 'proceed'
-                    : engineResultMap['1027'].level
-                }
-                onClick={() => handleClickRule('1027')}
-              />
-            )}
-            {engineResultMap['1028'] && (
-              <SecurityLevelTagNoText
-                level={
-                  processedRules.includes('1028')
-                    ? 'proceed'
-                    : engineResultMap['1028'].level
-                }
-                onClick={() => handleClickRule('1028')}
-              />
-            )}
+
+              <li>
+                <ViewMore
+                  type="spender"
+                  data={{
+                    ...requireData,
+                    spender: actionData.spender,
+                    chain,
+                    engineResultMap,
+                  }}
+                />
+              </li>
+            </ul>
           </Row>
         </Col>
       </Table>

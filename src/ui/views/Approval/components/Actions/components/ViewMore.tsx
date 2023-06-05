@@ -1,36 +1,17 @@
 import React, { useState } from 'react';
 import styled from 'styled-components';
 import { Popup } from 'ui/component';
-import { Chain } from 'background/service/openapi';
-import { Table, Col, Row } from './Table';
-import * as Values from './Values';
+import { SpenderPopup, SpenderPopupProps } from './ViewMorePopup/SpenderPopup';
+import {
+  ContractPopup,
+  ContractPopupProps,
+} from './ViewMorePopup/ContractPopup';
+import {
+  ReceiverPopup,
+  ReceiverPopupProps,
+} from './ViewMorePopup/ReceiverPopup';
 
-interface ContractData {
-  address: string;
-  chain: Chain;
-  protocol: {
-    name: string;
-    logo_url: string;
-  } | null;
-  hasInteraction: boolean;
-  bornAt: number | null;
-  rank: number | null;
-}
-
-interface SpenderData {
-  address: string;
-  chainId: string;
-}
-
-interface ReceiverData {
-  address: string;
-}
-
-interface Props {
-  actionType: string;
-  type: 'contract' | 'spender' | 'receiver';
-  data: ContractData | SpenderData | ReceiverData;
-}
+type Props = SpenderPopupProps | ContractPopupProps | ReceiverPopupProps;
 
 const PopupContainer = styled.div`
   .title {
@@ -55,53 +36,25 @@ const PopupContainer = styled.div`
   }
 `;
 
-const ContractPopup = ({ data }: { data: ContractData }) => {
-  return (
-    <div>
-      <div className="title">
-        Interact contract{' '}
-        <Values.Address address={data.address} chain={data.chain} />
-      </div>
-      <Table className="view-more-table">
-        <Col>
-          <Row>Protocol</Row>
-          <Row>
-            <Values.Protocol value={data.protocol} />
-          </Row>
-        </Col>
-        <Col>
-          <Row>Interacted before</Row>
-          <Row>
-            <Values.Boolean value={data.hasInteraction} />
-          </Row>
-        </Col>
-        <Col>
-          <Row>Deployed</Row>
-          <Row>
-            <Values.TimeSpan value={data.bornAt} />
-          </Row>
-        </Col>
-        <Col>
-          <Row>Popularity</Row>
-          <Row>{data.rank ? `No.${data.rank} on ${data.chain.name}` : '-'}</Row>
-        </Col>
-        <Col>
-          <Row>Address note</Row>
-          <Row>
-            <Values.AddressMemo address={data.address} />
-          </Row>
-        </Col>
-      </Table>
-    </div>
-  );
-};
-
-const ViewMore = ({ type, data, actionType }: Props) => {
+const ViewMore = (props: Props) => {
   const [popupVisible, setPopupVisible] = useState(false);
 
   const handleClickViewMore = () => {
     setPopupVisible(true);
   };
+
+  const height = React.useMemo(() => {
+    switch (props.type) {
+      case 'contract':
+        return 304;
+      case 'spender':
+        return 480;
+      case 'receiver':
+        return 400;
+      default:
+        return 400;
+    }
+  }, [props.type]);
 
   return (
     <>
@@ -112,10 +65,12 @@ const ViewMore = ({ type, data, actionType }: Props) => {
         visible={popupVisible}
         closable
         onClose={() => setPopupVisible(false)}
-        height={304}
+        height={height}
       >
         <PopupContainer>
-          {type === 'contract' && <ContractPopup data={data as ContractData} />}
+          {props.type === 'contract' && <ContractPopup data={props.data} />}
+          {props.type === 'spender' && <SpenderPopup data={props.data} />}
+          {props.type === 'receiver' && <ReceiverPopup data={props.data} />}
         </PopupContainer>
       </Popup>
     </>
