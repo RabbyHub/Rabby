@@ -2,8 +2,6 @@ import React from 'react';
 import { Table, Col, Row } from '../Table';
 import * as Values from '../Values';
 import { Chain } from 'background/service/openapi';
-import { Result } from '@debank/rabby-security-engine';
-import { SecurityListItemTag } from '../SecurityListItemTag';
 
 interface SpenderData {
   spender: string;
@@ -18,7 +16,6 @@ interface SpenderData {
   riskExposure: number;
   isEOA: boolean;
   isDanger: boolean | null;
-  engineResultMap: Record<string, Result>;
 }
 
 export interface Props {
@@ -44,22 +41,12 @@ export const SpenderPopup: React.FC<Props> = ({ data }) => {
         </Col>
         <Col>
           <Row>Type</Row>
-          <Row>
-            {data.isEOA ? 'EOA' : 'Contract'}
-            <SecurityListItemTag
-              id="1022"
-              engineResult={data.engineResultMap['1022']}
-            />
-          </Row>
+          <Row>{data.isEOA ? 'EOA' : 'Contract'}</Row>
         </Col>
         <Col>
           <Row>{data.isEOA ? 'First on-chain' : 'Deployed'}</Row>
           <Row>
             <Values.TimeSpan value={data.bornAt} />
-            <SecurityListItemTag
-              id="1024"
-              engineResult={data.engineResultMap['1024']}
-            />
           </Row>
         </Col>
         <Col>
@@ -68,10 +55,6 @@ export const SpenderPopup: React.FC<Props> = ({ data }) => {
           </Row>
           <Row>
             <Values.USDValue value={data.riskExposure} />
-            <SecurityListItemTag
-              id="1023"
-              engineResult={data.engineResultMap['1023']}
-            />
           </Row>
         </Col>
         <Col>
@@ -82,10 +65,6 @@ export const SpenderPopup: React.FC<Props> = ({ data }) => {
           <Row>Interacted before</Row>
           <Row>
             <Values.Boolean value={data.hasInteraction} />
-            <SecurityListItemTag
-              id="1025"
-              engineResult={data.engineResultMap['1025']}
-            />
           </Row>
         </Col>
         <Col>
@@ -98,10 +77,6 @@ export const SpenderPopup: React.FC<Props> = ({ data }) => {
           <Row>Flagged by Rabby</Row>
           <Row>
             <Values.Boolean value={!!data.isDanger} />
-            <SecurityListItemTag
-              id="1029"
-              engineResult={data.engineResultMap['1029']}
-            />
           </Row>
         </Col>
       </Table>

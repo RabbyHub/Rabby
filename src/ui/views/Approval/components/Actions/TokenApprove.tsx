@@ -291,7 +291,6 @@ const TokenApprove = ({
                     ...requireData,
                     spender: actionData.spender,
                     chain,
-                    engineResultMap,
                   }}
                 />
               </li>
