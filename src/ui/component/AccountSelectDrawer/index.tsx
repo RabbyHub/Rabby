@@ -13,6 +13,8 @@ import {
   CHAINS,
 } from 'consts';
 import './style.less';
+import { CommonSignal } from '../ConnectStatus/CommonSignal';
+import { useWalletConnectIcon } from '../WalletConnect/useWalletConnectIcon';
 
 interface AccountSelectDrawerProps {
   onChange(account: Account): void;
@@ -59,6 +61,8 @@ const AccountItem = ({ account, onSelect, checked }: AccountItemProps) => {
     init();
   }, []);
 
+  const brandIcon = useWalletConnectIcon(account);
+
   return (
     <FieldCheckbox
       className="item"
@@ -66,13 +70,23 @@ const AccountItem = ({ account, onSelect, checked }: AccountItemProps) => {
       onChange={(checked) => checked && onSelect(account)}
       checked={checked}
     >
-      <img
-        src={
-          WALLET_BRAND_CONTENT[account.brandName]?.image ||
-          KEYRING_ICONS[account.type]
-        }
-        className="icon icon-keyring"
-      />
+      <div className="icon icon-keyring relative">
+        <img
+          width={24}
+          height={24}
+          src={
+            brandIcon ||
+            WALLET_BRAND_CONTENT[account.brandName]?.image ||
+            KEYRING_ICONS[account.type]
+          }
+        />
+        <CommonSignal
+          type={account.type}
+          brandName={account.brandName}
+          address={account.address}
+          className="bottom-[2px] right-0"
+        />
+      </div>
       <div className="flex w-full">
         <div>
           <p className="alian-name">{alianName}</p>
@@ -101,9 +115,19 @@ const AccountSelectDrawer = ({
 
   const init = async () => {
     const visibleAccounts: Account[] = await wallet.getAllVisibleAccountsArray();
-    setAccounts(
-      visibleAccounts.filter((item) => item.type !== KEYRING_TYPE.GnosisKeyring)
-    );
+    const watches: Account[] = [];
+    const others: Account[] = [];
+    for (let i = 0; i < visibleAccounts.length; i++) {
+      const account = visibleAccounts[i];
+      if (account.type !== KEYRING_TYPE.GnosisKeyring) {
+        if (account.type === KEYRING_TYPE.WatchAddressKeyring) {
+          watches.push(account);
+        } else {
+          others.push(account);
+        }
+      }
+    }
+    setAccounts([...others, ...watches]);
   };
 
   const handleSelectAccount = (account: Account) => {

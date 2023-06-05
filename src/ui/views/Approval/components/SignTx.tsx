@@ -1395,12 +1395,17 @@ const SignTx = ({ params, origin }: SignTxProps) => {
       networkId
     );
     const maxNonceTx = maxBy(pendingTxs.results, (item) => item.nonce);
-    const recommendSafeNonce = maxNonceTx
-      ? maxNonceTx.nonce + 1
-      : safeInfo.nonce;
+    let recommendSafeNonce = maxNonceTx ? maxNonceTx.nonce + 1 : safeInfo.nonce;
 
     setSafeInfo(safeInfo);
     setRecommendNonce(`0x${recommendSafeNonce.toString(16)}`);
+    if (
+      Number(tx.nonce || '0') >= safeInfo.nonce &&
+      origin === INTERNAL_REQUEST_ORIGIN
+    ) {
+      recommendSafeNonce = Number(tx.nonce);
+      setRecommendNonce(tx.nonce || '0x0');
+    }
     if (Number(tx.nonce || 0) < safeInfo.nonce) {
       setTx({
         ...tx,
