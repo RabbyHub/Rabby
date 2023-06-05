@@ -57,7 +57,10 @@ const NFTBalanceChange = ({
                 </span>
                 <Values.TokenLabel
                   isFake={item.collection?.is_verified === false}
-                  isScam={!!item.collection?.is_suspicious}
+                  isScam={
+                    !item.collection?.is_verified === false &&
+                    !!item.collection?.is_suspicious
+                  }
                 />
               </div>
               <ul className="desc-list">
@@ -87,7 +90,10 @@ const NFTBalanceChange = ({
                 </span>
                 <Values.TokenLabel
                   isFake={item.collection?.is_verified === false}
-                  isScam={!!item.collection?.is_suspicious}
+                  isScam={
+                    !item.collection?.is_verified === false &&
+                    !!item.collection?.is_suspicious
+                  }
                 />
               </div>
               <ul className="desc-list">
@@ -210,7 +216,10 @@ const BalanceChange = ({
                       icon={
                         <Values.TokenLabel
                           isFake={token.is_verified === false}
-                          isScam={!!token.is_suspicious}
+                          isScam={
+                            !token.is_verified === false &&
+                            !!token.is_suspicious
+                          }
                         />
                       }
                     />
@@ -232,7 +241,10 @@ const BalanceChange = ({
                       icon={
                         <Values.TokenLabel
                           isFake={token.is_verified === false}
-                          isScam={!!token.is_suspicious}
+                          isScam={
+                            !token.is_verified === false &&
+                            !!token.is_suspicious
+                          }
                         />
                       }
                     />

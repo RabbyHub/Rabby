@@ -901,10 +901,15 @@ export const formatSecurityEngineCtx = ({
       usdValuePercentage,
     } = actionData.swap;
     const { sender, id } = data;
+    const receiveTokenIsFake = receiveToken.is_verified === false;
+    const receiveTokenIsScam = receiveTokenIsFake
+      ? false
+      : !!receiveToken.is_suspicious;
+
     return {
       swap: {
-        receiveTokenIsScam: !!receiveToken.is_suspicious,
-        receiveTokenIsFake: receiveToken.is_verified === false,
+        receiveTokenIsScam,
+        receiveTokenIsFake,
         receiver,
         from: sender,
         chainId,

@@ -178,6 +178,7 @@ const ApproveNFTCollection = ({
             {requireData.isEOA ? 'EOA' : 'Contract'}
             {engineResultMap['1053'] && (
               <SecurityLevelTagNoText
+                enable={engineResultMap['1053'].enable}
                 level={
                   processedRules.includes('1053')
                     ? 'proceed'
@@ -188,6 +189,7 @@ const ApproveNFTCollection = ({
             )}
             {engineResultMap['1060'] && (
               <SecurityLevelTagNoText
+                enable={engineResultMap['1060'].enable}
                 level={
                   processedRules.includes('1060')
                     ? 'proceed'
@@ -204,6 +206,7 @@ const ApproveNFTCollection = ({
             {timeSpan}
             {engineResultMap['1055'] && (
               <SecurityLevelTagNoText
+                enable={engineResultMap['1055'].enable}
                 level={
                   processedRules.includes('1055')
                     ? 'proceed'
@@ -228,6 +231,7 @@ const ApproveNFTCollection = ({
               </Values.Text>
               {engineResultMap['1054'] && (
                 <SecurityLevelTagNoText
+                  enable={engineResultMap['1054'].enable}
                   level={
                     processedRules.includes('1054')
                       ? 'proceed'
@@ -251,6 +255,7 @@ const ApproveNFTCollection = ({
             <Values.Boolean value={requireData.hasInteraction} />
             {engineResultMap['1056'] && (
               <SecurityLevelTagNoText
+                enable={engineResultMap['1056'].enable}
                 level={
                   processedRules.includes('1056')
                     ? 'proceed'
@@ -265,49 +270,6 @@ const ApproveNFTCollection = ({
           <Row isTitle>Address note</Row>
           <Row>
             <AddressMemo address={actionData.spender} />
-          </Row>
-        </Col>
-        <Col>
-          <Row isTitle>My mark</Row>
-          <Row>
-            <Values.AddressMark
-              address={actionData.spender}
-              chain={chain}
-              onWhitelist={spenderInWhitelist}
-              onBlacklist={spenderInBlacklist}
-              onChange={() => dispatch.securityEngine.init()}
-              isContract
-            />
-            {engineResultMap['1057'] && (
-              <SecurityLevelTagNoText
-                level={
-                  processedRules.includes('1057')
-                    ? 'proceed'
-                    : engineResultMap['1057'].level
-                }
-                onClick={() => handleClickRule('1057')}
-              />
-            )}
-            {engineResultMap['1058'] && (
-              <SecurityLevelTagNoText
-                level={
-                  processedRules.includes('1058')
-                    ? 'proceed'
-                    : engineResultMap['1058'].level
-                }
-                onClick={() => handleClickRule('1058')}
-              />
-            )}
-            {engineResultMap['1059'] && (
-              <SecurityLevelTagNoText
-                level={
-                  processedRules.includes('1059')
-                    ? 'proceed'
-                    : engineResultMap['1059'].level
-                }
-                onClick={() => handleClickRule('1059')}
-              />
-            )}
           </Row>
         </Col>
       </Table>

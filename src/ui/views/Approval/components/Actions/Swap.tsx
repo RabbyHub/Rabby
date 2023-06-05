@@ -126,7 +126,10 @@ const Swap = ({
                 icon={
                   <Values.TokenLabel
                     isFake={receiveToken.is_verified === false}
-                    isScam={!!receiveToken.is_suspicious}
+                    isScam={
+                      !receiveToken.is_verified === false &&
+                      !!receiveToken.is_suspicious
+                    }
                   />
                 }
               />
