@@ -1,15 +1,12 @@
-import React, { useEffect, useMemo } from 'react';
+import React, { useEffect } from 'react';
 import styled from 'styled-components';
 import { Chain } from 'background/service/openapi';
 import { Result } from '@debank/rabby-security-engine';
 import { ContractCallRequireData, ParsedActionData } from './utils';
-import { isSameAddress } from '@/ui/utils';
-import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
+import { useRabbyDispatch } from '@/ui/store';
 import { Table, Col, Row } from './components/Table';
-import AddressMemo from './components/AddressMemo';
 import * as Values from './components/Values';
-import SecurityLevelTagNoText from '../SecurityEngine/SecurityLevelTagNoText';
-import IconAlert from 'ui/assets/sign/tx/alert.svg';
+import ViewMore from './components/ViewMore';
 
 const Wrapper = styled.div`
   .contract-call-header {
@@ -50,7 +47,6 @@ const Wrapper = styled.div`
 const ContractCall = ({
   requireData,
   chain,
-  engineResults,
 }: {
   data: ParsedActionData['contractCall'];
   requireData: ContractCallRequireData;
@@ -60,45 +56,6 @@ const ContractCall = ({
   onChange(tx: Record<string, any>): void;
 }) => {
   const dispatch = useRabbyDispatch();
-  const { userData, rules, processedRules } = useRabbySelector((s) => ({
-    userData: s.securityEngine.userData,
-    rules: s.securityEngine.rules,
-    processedRules: s.securityEngine.currentTx.processedRules,
-  }));
-
-  const contractInWhitelist = useMemo(() => {
-    return !!userData.contractWhitelist.find((contract) => {
-      return (
-        isSameAddress(contract.address, requireData.call.contract.id) &&
-        contract.chainId === chain.serverId
-      );
-    });
-  }, [userData, requireData, chain]);
-  const contractInBlacklist = useMemo(() => {
-    return !!userData.contractBlacklist.find((contract) => {
-      return isSameAddress(contract.address, requireData.call.contract.id);
-    });
-  }, [userData, requireData, chain]);
-
-  const engineResultMap = useMemo(() => {
-    const map: Record<string, Result> = {};
-    engineResults.forEach((item) => {
-      map[item.id] = item;
-    });
-    return map;
-  }, [engineResults]);
-
-  const handleClickRule = (id: string) => {
-    const rule = rules.find((item) => item.id === id);
-    if (!rule) return;
-    const result = engineResultMap[id];
-    dispatch.securityEngine.openRuleDrawer({
-      ruleConfig: rule,
-      value: result?.value,
-      level: result?.level,
-      ignored: processedRules.includes(id),
-    });
-  };
 
   useEffect(() => {
     dispatch.securityEngine.init();
@@ -106,102 +63,41 @@ const ContractCall = ({
 
   return (
     <Wrapper>
-      <div className="contract-call-header">
-        <div className="alert">
-          <img className="icon icon-alert" src={IconAlert} />
-          This signature can't be decoded by Rabby, but it doesn't imply any
-          risk
-        </div>
-        <div className="text-12 font-medium text-gray-common">
-          {requireData.call.func
-            ? 'Here are the decoded results from ABI:'
-            : "Here is the contract info you'll interact with:"}
-        </div>
-      </div>
-      <div className="header">
-        <div className="left">
-          <Values.Address
-            address={requireData.call.contract.id}
-            chain={chain}
-            iconWidth="16px"
-          />
-        </div>
-        <div className="right">interact with</div>
-      </div>
       <Table>
+        <Col>
+          <Row isTitle>Interact contract</Row>
+          <Row>
+            <div>
+              <Values.Address address={requireData.id} chain={chain} />
+            </div>
+            <ul className="desc-list">
+              {requireData.protocol && (
+                <li>
+                  <Values.Protocol value={requireData.protocol} />
+                </li>
+              )}
+              <li>
+                <ViewMore
+                  type="contract"
+                  data={{
+                    hasInteraction: requireData.hasInteraction,
+                    bornAt: requireData.bornAt,
+                    protocol: requireData.protocol,
+                    rank: requireData.rank,
+                    address: requireData.id,
+                    chain,
+                  }}
+                />
+              </li>
+            </ul>
+          </Row>
+        </Col>
         {requireData.call.func && (
           <Col>
             <Row isTitle>Operation</Row>
             <Row>{requireData.call.func}</Row>
           </Col>
         )}
-        <Col>
-          <Row isTitle>Protocol</Row>
-          <Row>
-            <Values.Protocol value={requireData.protocol} />
-          </Row>
-        </Col>
-        <Col>
-          <Row isTitle>Type</Row>
-          <Row>Contract</Row>
-        </Col>
-        <Col>
-          <Row isTitle>Deployed</Row>
-          <Row>
-            <Values.TimeSpan value={requireData.bornAt} />
-          </Row>
-        </Col>
-        <Col>
-          <Row isTitle>Popularity</Row>
-          <Row>
-            {requireData.rank ? `No.${requireData.rank} on ${chain.name}` : '-'}
-          </Row>
-        </Col>
-        <Col>
-          <Row isTitle>Interacted before</Row>
-          <Row>
-            <Values.Boolean value={requireData.hasInteraction} />
-          </Row>
-        </Col>
-        <Col>
-          <Row isTitle>Address note</Row>
-          <Row>
-            <AddressMemo address={requireData.call.contract.id} />
-          </Row>
-        </Col>
-        <Col>
-          <Row isTitle>My mark</Row>
-          <Row>
-            <Values.AddressMark
-              onBlacklist={contractInBlacklist}
-              onWhitelist={contractInWhitelist}
-              address={requireData.call.contract.id}
-              chain={chain}
-              isContract
-              onChange={() => dispatch.securityEngine.init()}
-            />
-            {engineResultMap['1064'] && (
-              <SecurityLevelTagNoText
-                level={
-                  processedRules.includes('1064')
-                    ? 'proceed'
-                    : engineResultMap['1064'].level
-                }
-                onClick={() => handleClickRule('1064')}
-              />
-            )}
-            {engineResultMap['1065'] && (
-              <SecurityLevelTagNoText
-                level={
-                  processedRules.includes('1065')
-                    ? 'proceed'
-                    : engineResultMap['1065'].level
-                }
-                onClick={() => handleClickRule('1065')}
-              />
-            )}
-          </Row>
-        </Col>
       </Table>
     </Wrapper>
   );

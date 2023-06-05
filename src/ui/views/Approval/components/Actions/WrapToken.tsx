@@ -3,15 +3,14 @@ import styled from 'styled-components';
 import { Result } from '@debank/rabby-security-engine';
 import { Table, Col, Row } from './components/Table';
 import LogoWithText from './components/LogoWithText';
-import AddressMemo from './components/AddressMemo';
 import * as Values from './components/Values';
 import { ParsedActionData, WrapTokenRequireData } from './utils';
 import { formatAmount } from 'ui/utils/number';
 import { ellipsisTokenSymbol } from 'ui/utils/token';
 import { Chain } from 'background/service/openapi';
-import SecurityLevelTagNoText from '../SecurityEngine/SecurityLevelTagNoText';
-import { isSameAddress } from '@/ui/utils';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
+import ViewMore from './components/ViewMore';
+import SecurityLevelTagNoText from '../SecurityEngine/SecurityLevelTagNoText';
 
 const Wrapper = styled.div`
   .header {
@@ -45,8 +44,7 @@ const WrapToken = ({
 }) => {
   const { payToken, receiveToken } = data!;
 
-  const { userData, rules, processedRules } = useRabbySelector((s) => ({
-    userData: s.securityEngine.userData,
+  const { rules, processedRules } = useRabbySelector((s) => ({
     rules: s.securityEngine.rules,
     processedRules: s.securityEngine.currentTx.processedRules,
   }));
@@ -59,20 +57,6 @@ const WrapToken = ({
     });
     return map;
   }, [engineResults]);
-
-  const contractInWhitelist = useMemo(() => {
-    return !!userData.contractWhitelist.find((contract) => {
-      return (
-        isSameAddress(contract.address, requireData.id) &&
-        contract.chainId === chain.serverId
-      );
-    });
-  }, [userData, requireData, chain]);
-  const contractInBlacklist = useMemo(() => {
-    return !!userData.contractBlacklist.find((contract) => {
-      return isSameAddress(contract.address, requireData.id);
-    });
-  }, [userData, requireData, chain]);
 
   const handleClickRule = (id: string) => {
     const rule = rules.find((item) => item.id === id);
@@ -115,89 +99,45 @@ const WrapToken = ({
               )} ${ellipsisTokenSymbol(receiveToken.symbol)}`}
               logoRadius="100%"
             />
-          </Row>
-        </Col>
-      </Table>
-      <div className="header">
-        <div className="left">
-          <Values.Address
-            address={requireData.id}
-            chain={chain}
-            iconWidth="16px"
-          />
-        </div>
-        <div className="right">contract</div>
-      </div>
-      <Table>
-        {requireData.protocol && (
-          <Col>
-            <Row isTitle>Protocol</Row>
-            <Row>
-              <LogoWithText
-                logo={requireData.protocol.logo_url}
-                text={requireData.protocol.name}
-                logoRadius="100%"
-              />
-            </Row>
-          </Col>
-        )}
-        <Col>
-          <Row isTitle>Deployed</Row>
-          <Row>
-            <Values.TimeSpan value={requireData.bornAt} />
-          </Row>
-        </Col>
-        {requireData.rank && (
-          <Col>
-            <Row isTitle>Popularity</Row>
-            <Row>
-              <div className="flex">
-                No.{requireData.rank} on {chain.name}
-              </div>
-            </Row>
-          </Col>
-        )}
-        <Col>
-          <Row isTitle>Interacted before</Row>
-          <Row>{requireData.hasInteraction ? 'Yes' : 'No'}</Row>
-        </Col>
-        <Col>
-          <Row isTitle>Address note</Row>
-          <Row>
-            <AddressMemo address={requireData.id} />
-          </Row>
-        </Col>
-        <Col>
-          <Row isTitle>My mark</Row>
-          <Row>
-            <Values.AddressMark
-              onWhitelist={contractInWhitelist}
-              onBlacklist={contractInBlacklist}
-              address={requireData.id}
-              chain={chain}
-              isContract
-              onChange={() => dispatch.securityEngine.init()}
-            />
-            {engineResultMap['1064'] && (
+            {engineResultMap['1061'] && (
               <SecurityLevelTagNoText
+                enable={engineResultMap['1061'].enable}
                 level={
-                  processedRules.includes('1064')
+                  processedRules.includes('1061')
                     ? 'proceed'
-                    : engineResultMap['1064'].level
+                    : engineResultMap['1061'].level
                 }
-                onClick={() => handleClickRule('1064')}
+                onClick={() => handleClickRule('1061')}
               />
             )}
-            {engineResultMap['1065'] && (
-              <SecurityLevelTagNoText
-                level={
-                  processedRules.includes('1065')
-                    ? 'proceed'
-                    : engineResultMap['1065'].level
-                }
-                onClick={() => handleClickRule('1065')}
-              />
-            )}
+          </Row>
+        </Col>
+        <Col>
+          <Row isTitle>Interact contract</Row>
+          <Row>
+            <div>
+              <Values.Address address={requireData.id} chain={chain} />
+            </div>
+            <ul className="desc-list">
+              {requireData.protocol && (
+                <li>
+                  <Values.Protocol value={requireData.protocol} />
+                </li>
+              )}
+              <li>
+                <ViewMore
+                  type="contract"
+                  data={{
+                    hasInteraction: requireData.hasInteraction,
+                    bornAt: requireData.bornAt,
+                    protocol: requireData.protocol,
+                    rank: requireData.rank,
+                    address: requireData.id,
+                    chain,
+                  }}
+                />
+              </li>
+            </ul>
           </Row>
         </Col>
       </Table>

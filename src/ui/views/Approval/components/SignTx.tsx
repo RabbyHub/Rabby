@@ -1756,6 +1756,7 @@ const SignTx = ({ params, origin }: SignTxProps) => {
               is1559={support1559}
               isHardware={isHardware}
               manuallyChangeGasLimit={manuallyChangeGasLimit}
+              errors={checkErrors}
             />
           </>
         )}

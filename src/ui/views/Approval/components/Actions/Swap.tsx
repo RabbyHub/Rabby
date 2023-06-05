@@ -13,6 +13,7 @@ import { Chain } from 'background/service/openapi';
 import SecurityLevelTagNoText from '../SecurityEngine/SecurityLevelTagNoText';
 import { isSameAddress } from '@/ui/utils';
 import { useRabbyDispatch, useRabbySelector } from '@/ui/store';
+import { SecurityListItem } from './components/SecurityListItem';
 
 const Wrapper = styled.div`
   .header {
@@ -131,6 +132,7 @@ const Swap = ({
               />
               {engineResultMap['1008'] && (
                 <SecurityLevelTagNoText
+                  enable={engineResultMap['1008'].enable}
                   level={
                     processedRules.includes('1008')
                       ? 'proceed'
@@ -141,6 +143,7 @@ const Swap = ({
               )}
               {engineResultMap['1009'] && (
                 <SecurityLevelTagNoText
+                  enable={engineResultMap['1009'].enable}
                   level={
                     processedRules.includes('1009')
                       ? 'proceed'
@@ -159,22 +162,16 @@ const Swap = ({
                 )}{' '}
                 @{formatUsdValue(receiveToken.price)}
               </li>
-              {usdValueDiff !== null &&
-                usdValuePercentage !== null &&
-                engineResultMap['1012'] && (
-                  <li>
-                    Value diff <Values.Percentage value={usdValuePercentage} />{' '}
-                    ({formatUsdValue(usdValueDiff)})
-                    <SecurityLevelTagNoText
-                      level={
-                        processedRules.includes('1012')
-                          ? 'proceed'
-                          : engineResultMap['1012'].level
-                      }
-                      onClick={() => handleClickRule('1012')}
-                    />
-                  </li>
-                )}
+              <SecurityListItem
+                engineResult={engineResultMap['1012']}
+                id="1012"
+                dangerText={`Value diff <Values.Percentage value=${usdValuePercentage} /> (${formatUsdValue(
+                  usdValueDiff || ''
+                )})`}
+                warningText={`Value diff <Values.Percentage value=${usdValuePercentage} /> (${formatUsdValue(
+                  usdValueDiff || ''
+                )})`}
+              />
             </ul>
           </Row>
         </Col>
@@ -208,6 +205,7 @@ const Swap = ({
                 )}
                 {engineResultMap['1011'] && (
                   <SecurityLevelTagNoText
+                    enable={engineResultMap['1011'].enable}
                     level={
                       processedRules.includes('1011')
                         ? 'proceed'
@@ -226,17 +224,11 @@ const Swap = ({
             <Row>
               <Values.Address address={receiver} chain={chain} />
               <ul className="desc-list">
-                <li>
-                  not your current address{' '}
-                  <SecurityLevelTagNoText
-                    level={
-                      processedRules.includes('1069')
-                        ? 'proceed'
-                        : engineResultMap['1069'].level
-                    }
-                    onClick={() => handleClickRule('1069')}
-                  />
-                </li>
+                <SecurityListItem
+                  engineResult={engineResultMap['1069']}
+                  id="1069"
+                  dangerText="not your current address"
+                />
               </ul>
             </Row>
           </Col>

@@ -55,6 +55,11 @@ interface GasSelectorProps {
   }>;
   isGnosisAccount?: boolean;
   manuallyChangeGasLimit: boolean;
+  errors: {
+    code: number;
+    msg: string;
+    level?: 'warn' | 'danger' | 'forbidden';
+  }[];
 }
 
 const useExplainGas = ({
@@ -166,6 +171,23 @@ const ManuallySetGasLimitAlert = styled.div`
   color: #707280;
 `;
 
+const ErrorsWrapper = styled.div`
+  border-top: 1px solid #ededed;
+  padding-top: 14px;
+  margin-top: 14px;
+  .item {
+    display: flex;
+    font-weight: 500;
+    font-size: 15px;
+    line-height: 18px;
+    color: #333333;
+    margin-bottom: 4px;
+    &:nth-last-child(1) {
+      margin-bottom: 0;
+    }
+  }
+`;
+
 const GasSelector = ({
   gasLimit,
   gas,
@@ -185,6 +207,7 @@ const GasSelector = ({
   gasCalcMethod,
   isGnosisAccount,
   manuallyChangeGasLimit,
+  errors,
 }: GasSelectorProps) => {
   const { t } = useTranslation();
   const customerInputRef = useRef<Input>(null);
@@ -596,6 +619,15 @@ const GasSelector = ({
           <ManuallySetGasLimitAlert>
             You have manually set the Gas limit to {Number(gasLimit)}
           </ManuallySetGasLimitAlert>
+        )}
+        {errors.length > 0 && (
+          <ErrorsWrapper>
+            {errors.map((error) => (
+              <div className="item" key={error.code}>
+                {error.msg} #{error.code}
+              </div>
+            ))}
+          </ErrorsWrapper>
         )}
       </div>
       <Popup

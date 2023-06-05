@@ -34,6 +34,7 @@ import {
 } from './utils';
 import IconArrowRight from 'ui/assets/approval/edit-arrow-right.svg';
 import IconSpeedUp from 'ui/assets/sign/tx/speedup.svg';
+import { ReactComponent as IconQuestionMark } from 'ui/assets/sign/tx/question-mark.svg';
 import { TooltipWithMagnetArrow } from '@/ui/component/Tooltip/TooltipWithMagnetArrow';
 
 const SignTitle = styled.div`
@@ -79,6 +80,12 @@ const ActionWrapper = styled.div`
     .right {
       font-size: 14px;
       line-height: 16px;
+      .icon-tip {
+        margin-left: 4px;
+        path {
+          stroke: #fff;
+        }
+      }
     }
   }
   .container {
@@ -155,12 +162,24 @@ const Actions = ({
         </div>
       </SignTitle>
       <ActionWrapper>
-        {!data.contractCall && (
-          <div className="action-header">
-            <div className="left">{actionName}</div>
-            <div className="right">action type</div>
+        <div className="action-header">
+          <div className="left">{actionName}</div>
+          <div className="right">
+            {data.contractCall ? (
+              <span className="flex items-center">
+                Unknown action type{' '}
+                <TooltipWithMagnetArrow
+                  overlayClassName="rectangle"
+                  title="This signature can't be decoded by Rabby, but it doesn't imply any risk"
+                >
+                  <IconQuestionMark className="icon icon-tip" />
+                </TooltipWithMagnetArrow>
+              </span>
+            ) : (
+              'action type'
+            )}
           </div>
-        )}
+        </div>
         <div className="container">
           {data.swap && (
             <Swap

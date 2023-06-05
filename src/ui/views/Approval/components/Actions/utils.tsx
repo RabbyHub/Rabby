@@ -846,7 +846,7 @@ export const fetchActionRequiredData = async ({
       rank: null,
       hasInteraction: false,
       bornAt: 0,
-      protocol: contractCall.contract.protocol,
+      protocol: null,
       call: contractCall,
       id: contractCall.contract.id,
     };
@@ -864,6 +864,9 @@ export const fetchActionRequiredData = async ({
         if (desc.contract[chainId]) {
           result.bornAt = desc.contract[chainId].create_at;
         }
+      }
+      if (desc.protocol && desc.protocol[chainId]) {
+        result.protocol = desc.protocol[chainId];
       }
     });
     queue.add(async () => {
